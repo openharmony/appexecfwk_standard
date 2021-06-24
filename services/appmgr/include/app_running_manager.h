@@ -58,7 +58,7 @@ public:
      *
      * @return process record.
      */
-    std::shared_ptr<AppRunningRecord> GetAppRunningRecordByAppName(const std::string &appName) const;
+    std::shared_ptr<AppRunningRecord> GetAppRunningRecordByAppName(const std::string &appName);
 
     /**
      * GetAppRunningRecordByProcessName, Get process record by application name and process Name.
@@ -69,7 +69,7 @@ public:
      * @return process record.
      */
     std::shared_ptr<AppRunningRecord> GetAppRunningRecordByProcessName(
-        const std::string &appName, const std::string &processName) const;
+        const std::string &appName, const std::string &processName);
 
     /**
      * GetAppRunningRecordByPid, Get process record by application pid.
@@ -78,7 +78,7 @@ public:
      *
      * @return process record.
      */
-    std::shared_ptr<AppRunningRecord> GetAppRunningRecordByPid(const pid_t pid) const;
+    std::shared_ptr<AppRunningRecord> GetAppRunningRecordByPid(const pid_t pid);
 
     /**
      * GetAppRunningRecordByAbilityToken, Get process record by ability token.
@@ -87,7 +87,7 @@ public:
      *
      * @return process record.
      */
-    std::shared_ptr<AppRunningRecord> GetAppRunningRecordByAbilityToken(const sptr<IRemoteObject> &abilityToken) const;
+    std::shared_ptr<AppRunningRecord> GetAppRunningRecordByAbilityToken(const sptr<IRemoteObject> &abilityToken);
 
     /**
      * OnRemoteDied, Equipment death notification.
@@ -102,7 +102,7 @@ public:
      *
      * @return the application record list.
      */
-    const std::map<const int32_t, const std::shared_ptr<AppRunningRecord>> &GetAppRunningRecordMap() const;
+    const std::map<const int32_t, const std::shared_ptr<AppRunningRecord>> &GetAppRunningRecordMap();
 
     /**
      * RemoveAppRunningRecordById, Remove application information through application id.
@@ -119,8 +119,10 @@ public:
      */
     void ClearAppRunningRecordMap();
 
+    bool GetPidsByBundleName(const std::string &bundleName, std::list<pid_t> &pids);
 private:
     std::map<const int32_t, const std::shared_ptr<AppRunningRecord>> appRunningRecordMap_;
+    std::recursive_mutex lock_;
 };
 
 }  // namespace AppExecFwk
