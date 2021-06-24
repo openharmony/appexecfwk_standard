@@ -44,6 +44,7 @@ std::shared_ptr<AppRunningRecord> AppRunningManager::GetOrCreateAppRunningRecord
     const std::shared_ptr<ApplicationInfo> &appInfo, const std::shared_ptr<AbilityInfo> &abilityInfo,
     const std::string &processName, const int32_t uid, RecordQueryResult &result)
 {
+    std::lock_guard<std::recursive_mutex> guard(lock_);
     result.Reset();
     if (!token || !appInfo || !abilityInfo) {
         APP_LOGE("param error");
@@ -81,8 +82,9 @@ std::shared_ptr<AppRunningRecord> AppRunningManager::GetOrCreateAppRunningRecord
     return record;
 }
 
-std::shared_ptr<AppRunningRecord> AppRunningManager::GetAppRunningRecordByAppName(const std::string &appName) const
+std::shared_ptr<AppRunningRecord> AppRunningManager::GetAppRunningRecordByAppName(const std::string &appName)
 {
+    std::lock_guard<std::recursive_mutex> guard(lock_);
     auto iter = std::find_if(appRunningRecordMap_.begin(), appRunningRecordMap_.end(), [&appName](const auto &pair) {
         return pair.second->GetName() == appName;
     });
@@ -90,8 +92,9 @@ std::shared_ptr<AppRunningRecord> AppRunningManager::GetAppRunningRecordByAppNam
 }
 
 std::shared_ptr<AppRunningRecord> AppRunningManager::GetAppRunningRecordByProcessName(
-    const std::string &appName, const std::string &processName) const
+    const std::string &appName, const std::string &processName)
 {
+    std::lock_guard<std::recursive_mutex> guard(lock_);
     auto iter = std::find_if(
         appRunningRecordMap_.begin(), appRunningRecordMap_.end(), [&appName, &processName](const auto &pair) {
             return ((pair.second->GetName() == appName) && (pair.second->GetProcessName() == processName));
@@ -99,8 +102,9 @@ std::shared_ptr<AppRunningRecord> AppRunningManager::GetAppRunningRecordByProces
     return ((iter == appRunningRecordMap_.end()) ? nullptr : iter->second);
 }
 
-std::shared_ptr<AppRunningRecord> AppRunningManager::GetAppRunningRecordByPid(const pid_t pid) const
+std::shared_ptr<AppRunningRecord> AppRunningManager::GetAppRunningRecordByPid(const pid_t pid)
 {
+    std::lock_guard<std::recursive_mutex> guard(lock_);
     auto iter = std::find_if(appRunningRecordMap_.begin(), appRunningRecordMap_.end(), [&pid](const auto &pair) {
         return pair.second->GetPriorityObject()->GetPid() == pid;
     });
@@ -108,8 +112,9 @@ std::shared_ptr<AppRunningRecord> AppRunningManager::GetAppRunningRecordByPid(co
 }
 
 std::shared_ptr<AppRunningRecord> AppRunningManager::GetAppRunningRecordByAbilityToken(
-    const sptr<IRemoteObject> &abilityToken) const
+    const sptr<IRemoteObject> &abilityToken)
 {
+    std::lock_guard<std::recursive_mutex> guard(lock_);
     for (const auto &item : appRunningRecordMap_) {
         const auto &appRecord = item.second;
         if (appRecord && appRecord->GetAbilityRunningRecordByToken(abilityToken)) {
@@ -119,8 +124,26 @@ std::shared_ptr<AppRunningRecord> AppRunningManager::GetAppRunningRecordByAbilit
     return nullptr;
 }
 
+bool AppRunningManager::GetPidsByBundleName(const std::string &bundleName, std::list<pid_t> &pids)
+{
+    std::lock_guard<std::recursive_mutex> guard(lock_);
+    for (const auto &item : appRunningRecordMap_) {
+        const auto &appRecord = item.second;
+        if (appRecord && appRecord->GetBundleName() == bundleName) {
+            pid_t pid = appRecord->GetPriorityObject()->GetPid();
+            if (pid > 0) {
+                pids.push_back(pid);
+                appRecord->ScheduleProcessSecurityExit();
+            }
+        }
+    }
+
+    return (pids.empty() ? false : true);
+}
+
 std::shared_ptr<AppRunningRecord> AppRunningManager::OnRemoteDied(const wptr<IRemoteObject> &remote)
 {
+    std::lock_guard<std::recursive_mutex> guard(lock_);
     if (remote == nullptr) {
         APP_LOGE("remote is null");
         return nullptr;
@@ -148,18 +171,20 @@ std::shared_ptr<AppRunningRecord> AppRunningManager::OnRemoteDied(const wptr<IRe
 }
 
 const std::map<const int32_t, const std::shared_ptr<AppRunningRecord>> &AppRunningManager::GetAppRunningRecordMap()
-    const
 {
+    std::lock_guard<std::recursive_mutex> guard(lock_);
     return appRunningRecordMap_;
 }
 
 void AppRunningManager::RemoveAppRunningRecordById(const int32_t recordId)
 {
+    std::lock_guard<std::recursive_mutex> guard(lock_);
     appRunningRecordMap_.erase(recordId);
 }
 
 void AppRunningManager::ClearAppRunningRecordMap()
 {
+    std::lock_guard<std::recursive_mutex> guard(lock_);
     appRunningRecordMap_.clear();
 }
 

@@ -207,10 +207,14 @@ void AppMgrServiceInner::ApplicationTerminated(const int32_t recordId)
 
 int32_t AppMgrServiceInner::KillApplication(const std::string &bundleName)
 {
+    if (!appRunningManager_) {
+        APP_LOGE("appRunningManager_ is nullptr");
+        return ERR_NO_INIT;
+    }
     int result = ERR_OK;
     int64_t startTime = SystemTimeMillis();
     std::list<pid_t> pids;
-    if (!GetPidsByBundleName(bundleName, pids)) {
+    if (!appRunningManager_->GetPidsByBundleName(bundleName, pids)) {
         APP_LOGI("The process corresponding to the package name did not start");
         return result;
     }
@@ -322,22 +326,6 @@ bool AppMgrServiceInner::WaitForRemoteProcessExit(std::list<pid_t> &pids, const 
         delayTime = SystemTimeMillis() - startTime;
     }
     return false;
-}
-
-bool AppMgrServiceInner::GetPidsByBundleName(const std::string &bundleName, std::list<pid_t> &pids)
-{
-    for (const auto &item : appRunningManager_->GetAppRunningRecordMap()) {
-        const auto &appRecord = item.second;
-        if (appRecord->GetBundleName() == bundleName) {
-            pid_t pid = appRecord->GetPriorityObject()->GetPid();
-            if (pid > 0) {
-                pids.push_back(pid);
-                appRecord->ScheduleProcessSecurityExit();
-            }
-        }
-    }
-
-    return (pids.empty() ? false : true);
 }
 
 bool AppMgrServiceInner::GetAllPids(std::list<pid_t> &pids)
