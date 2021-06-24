@@ -559,16 +559,6 @@ private:
     bool WaitForRemoteProcessExit(std::list<pid_t> &pids, const int64_t startTime);
 
     /**
-     * GetPidsByBundleName, Get the corresponding pid collection through the bundle name.
-     *
-     * @param bundleName, bundle name in Application record.
-     * @param pids, process number collection to exit.
-     *
-     * @return true, return back success，others fail.
-     */
-    bool GetPidsByBundleName(const std::string &bundleName, std::list<pid_t> &pids);
-
-    /**
      * GetAllPids, Get the corresponding pid collection.
      *
      * @param pids, process number collection to exit.
