@@ -36,7 +36,6 @@ using testing::Return;
 namespace {
 
 constexpr int COUNT = 1;
-
 }
 
 namespace OHOS {
@@ -374,15 +373,14 @@ HWTEST_F(AppMgrServiceModuleTest, GetAllRunningProcesses_001, TestSize.Level1)
     ASSERT_TRUE(appMgrService_);
     ASSERT_TRUE(mockAppMgrServiceInner_);
 
-    auto testRunningProcessInfo = std::make_shared<RunningProcessInfo>();
-    ASSERT_TRUE(testRunningProcessInfo);
+    std::vector<RunningProcessInfo> testRunningProcessInfo;
 
     int32_t testPid = 456;
     std::string testProcessName = "testProcess";
 
     Semaphore sem(0);
-    auto mockHandler = [testProcessName, testPid, &sem](std::shared_ptr<RunningProcessInfo> &runningProcessInfo) {
-        auto &it = runningProcessInfo->appProcessInfos.emplace_back();
+    auto mockHandler = [testProcessName, testPid, &sem](std::vector<RunningProcessInfo> &runningProcessInfo) {
+        auto &it = runningProcessInfo.emplace_back();
         it.processName_ = testProcessName;
         it.pid_ = testPid;
         sem.Post();
@@ -390,15 +388,15 @@ HWTEST_F(AppMgrServiceModuleTest, GetAllRunningProcesses_001, TestSize.Level1)
     };
 
     for (int i = 0; i < COUNT; ++i) {
-        testRunningProcessInfo->appProcessInfos.clear();
+        testRunningProcessInfo.clear();
         EXPECT_CALL(*mockAppMgrServiceInner_, GetAllRunningProcesses(_)).Times(1).WillOnce(Invoke(mockHandler));
 
         auto result = appMgrService_->GetAllRunningProcesses(testRunningProcessInfo);
         sem.Wait();
 
-        EXPECT_EQ(testRunningProcessInfo->appProcessInfos.size(), size_t(1));
-        EXPECT_EQ(testRunningProcessInfo->appProcessInfos[0].processName_, testProcessName);
-        EXPECT_EQ(testRunningProcessInfo->appProcessInfos[0].pid_, testPid);
+        EXPECT_EQ(testRunningProcessInfo.size(), size_t(1));
+        EXPECT_EQ(testRunningProcessInfo[0].processName_, testProcessName);
+        EXPECT_EQ(testRunningProcessInfo[0].pid_, testPid);
         EXPECT_EQ(result, ERR_OK);
     }
 }

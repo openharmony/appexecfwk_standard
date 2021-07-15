@@ -57,6 +57,7 @@ struct BundleInfo : public Parcelable {
     std::string entryModuleName;
     bool isKeepAlive = false;
     bool isNativeApp = false;
+    bool isDifferentName = false;
     int64_t installTime = 0;    // the installation time is the number of seconds elapsed since January 1,
                                 // 1970 00:00:00 UTC. The time will be recalculated if the application is reinstalled
                                 // after being uninstalled.

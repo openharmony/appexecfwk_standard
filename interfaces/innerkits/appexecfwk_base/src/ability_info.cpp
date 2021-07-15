@@ -39,6 +39,7 @@ const std::string JSON_KEY_APPLICATION_NAME = "applicationName";
 const std::string JSON_KEY_LABEL = "label";
 const std::string JSON_KEY_DESCRIPTION = "description";
 const std::string JSON_KEY_ICON_PATH = "iconPath";
+const std::string JSON_KEY_THEME = "theme";
 const std::string JSON_KEY_VISIBLE = "visible";
 const std::string JSON_KEY_KIND = "kind";
 const std::string JSON_KEY_TYPE = "type";
@@ -56,6 +57,16 @@ const std::string JSON_KEY_MODULE_NAME = "moduleName";
 const std::string JSON_KEY_DEVICE_ID = "deviceId";
 const std::string JSON_KEY_IS_LAUNCHER_ABILITY = "isLauncherAbility";
 const std::string JSON_KEY_IS_NATIVE_ABILITY = "isNativeAbility";
+const std::string JSON_KEY_ENABLED = "enabled";
+const std::string JSON_KEY_TARGET_ABILITY = "targetAbility";
+const std::string JSON_KEY_READ_PERMISSION = "readPermission";
+const std::string JSON_KEY_WRITE_PERMISSION = "writePermission";
+const std::string JSON_KEY_FORM = "form";
+const std::string JSON_KEY_FORM_ENTITY = "formEntity";
+const std::string JSON_KEY_FORM_MIN_HEIGHT = "minHeight";
+const std::string JSON_KEY_FORM_DEFAULT_HEIGHT = "defaultHeight";
+const std::string JSON_KEY_FORM_MIN_WIDTH = "minWidth";
+const std::string JSON_KEY_FORM_DEFAULT_WIDTH = "defaultWidth";
 
 }  // namespace
 
@@ -65,6 +76,7 @@ bool AbilityInfo::ReadFromParcel(Parcel &parcel)
     label = Str16ToStr8(parcel.ReadString16());
     description = Str16ToStr8(parcel.ReadString16());
     iconPath = Str16ToStr8(parcel.ReadString16());
+    theme = Str16ToStr8(parcel.ReadString16());
     kind = Str16ToStr8(parcel.ReadString16());
     uri = Str16ToStr8(parcel.ReadString16());
     package = Str16ToStr8(parcel.ReadString16());
@@ -76,9 +88,23 @@ bool AbilityInfo::ReadFromParcel(Parcel &parcel)
     codePath = Str16ToStr8(parcel.ReadString16());
     resourcePath = Str16ToStr8(parcel.ReadString16());
     libPath = Str16ToStr8(parcel.ReadString16());
+    targetAbility = Str16ToStr8(parcel.ReadString16());
+    readPermission = Str16ToStr8(parcel.ReadString16());
+    writePermission = Str16ToStr8(parcel.ReadString16());
     visible = parcel.ReadBool();
     isLauncherAbility = parcel.ReadBool();
     isNativeAbility = parcel.ReadBool();
+    enabled = parcel.ReadBool();
+
+    int32_t formEntitySize;
+    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, formEntitySize);
+    for (int32_t i = 0; i < formEntitySize; i++) {
+        form.formEntity.emplace_back(Str16ToStr8(parcel.ReadString16()));
+    }
+    form.minHeight = parcel.ReadInt32();
+    form.defaultHeight = parcel.ReadInt32();
+    form.minWidth = parcel.ReadInt32();
+    form.defaultWidth = parcel.ReadInt32();
 
     int32_t typeData;
     READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, typeData);
@@ -136,6 +162,7 @@ bool AbilityInfo::Marshalling(Parcel &parcel) const
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(label));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(description));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(iconPath));
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(theme));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(kind));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(uri));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(package));
@@ -147,9 +174,21 @@ bool AbilityInfo::Marshalling(Parcel &parcel) const
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(codePath));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(resourcePath));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(libPath));
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(targetAbility));
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(readPermission));
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(writePermission));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, visible);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, isLauncherAbility);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, isNativeAbility);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, enabled);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, form.formEntity.size());
+    for (auto &item : form.formEntity) {
+        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(item));
+    }
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, form.minHeight);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, form.defaultHeight);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, form.minWidth);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, form.defaultWidth);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, static_cast<int32_t>(type));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, static_cast<int32_t>(orientation));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, static_cast<int32_t>(launchMode));
@@ -199,45 +238,70 @@ void AbilityInfo::Dump(std::string prefix, int fd)
     return;
 }
 
+void to_json(nlohmann::json &jsonObject, const Form &form)
+{
+    jsonObject = nlohmann::json{{JSON_KEY_FORM_ENTITY, form.formEntity},
+        {JSON_KEY_FORM_MIN_HEIGHT, form.minHeight},
+        {JSON_KEY_FORM_DEFAULT_HEIGHT, form.defaultHeight},
+        {JSON_KEY_FORM_MIN_WIDTH, form.minWidth},
+        {JSON_KEY_FORM_DEFAULT_WIDTH, form.defaultWidth}};
+}
 void to_json(nlohmann::json &jsonObject, const AbilityInfo &abilityInfo)
 {
-    jsonObject = nlohmann::json{
-        {"name", abilityInfo.name},
-        {"label", abilityInfo.label},
-        {"description", abilityInfo.description},
-        {"iconPath", abilityInfo.iconPath},
-        {"visible", abilityInfo.visible},
-        {"isLauncherAbility", abilityInfo.isLauncherAbility},
-        {"isNativeAbility", abilityInfo.isNativeAbility},
-        {"kind", abilityInfo.kind},
-        {"type", abilityInfo.type},
-        {"orientation", abilityInfo.orientation},
-        {"launchMode", abilityInfo.launchMode},
-        {"permissions", abilityInfo.permissions},
-        {"process", abilityInfo.process},
-        {"deviceTypes", abilityInfo.deviceTypes},
-        {"deviceCapabilities", abilityInfo.deviceCapabilities},
-        {"uri", abilityInfo.uri},
-        {"package", abilityInfo.package},
-        {"bundleName", abilityInfo.bundleName},
-        {"moduleName", abilityInfo.moduleName},
-        {"applicationName", abilityInfo.applicationName},
-        {"deviceId", abilityInfo.deviceId},
-        {"codePath", abilityInfo.codePath},
-        {"resourcePath", abilityInfo.resourcePath},
-        {"libPath", abilityInfo.libPath}
-    };
+    jsonObject = nlohmann::json{{JSON_KEY_NAME, abilityInfo.name},
+        {JSON_KEY_LABEL, abilityInfo.label},
+        {JSON_KEY_DESCRIPTION, abilityInfo.description},
+        {JSON_KEY_ICON_PATH, abilityInfo.iconPath},
+        {JSON_KEY_THEME, abilityInfo.theme},
+        {JSON_KEY_VISIBLE, abilityInfo.visible},
+        {JSON_KEY_IS_LAUNCHER_ABILITY, abilityInfo.isLauncherAbility},
+        {JSON_KEY_IS_NATIVE_ABILITY, abilityInfo.isNativeAbility},
+        {JSON_KEY_ENABLED, abilityInfo.enabled},
+        {JSON_KEY_READ_PERMISSION, abilityInfo.readPermission},
+        {JSON_KEY_WRITE_PERMISSION, abilityInfo.writePermission},
+        {JSON_KEY_FORM, abilityInfo.form},
+        {JSON_KEY_KIND, abilityInfo.kind},
+        {JSON_KEY_TYPE, abilityInfo.type},
+        {JSON_KEY_ORIENTATION, abilityInfo.orientation},
+        {JSON_KEY_LAUNCH_MODE, abilityInfo.launchMode},
+        {JSON_KEY_PERMISSIONS, abilityInfo.permissions},
+        {JSON_KEY_PROCESS, abilityInfo.process},
+        {JSON_KEY_DEVICE_TYPES, abilityInfo.deviceTypes},
+        {JSON_KEY_DEVICE_CAPABILITIES, abilityInfo.deviceCapabilities},
+        {JSON_KEY_URI, abilityInfo.uri},
+        {JSON_KEY_TARGET_ABILITY, abilityInfo.targetAbility},
+        {JSON_KEY_PACKAGE, abilityInfo.package},
+        {JSON_KEY_BUNDLE_NAME, abilityInfo.bundleName},
+        {JSON_KEY_MODULE_NAME, abilityInfo.moduleName},
+        {JSON_KEY_APPLICATION_NAME, abilityInfo.applicationName},
+        {JSON_KEY_DEVICE_ID, abilityInfo.deviceId},
+        {JSON_KEY_CODE_PATH, abilityInfo.codePath},
+        {JSON_KEY_RESOURCE_PATH, abilityInfo.resourcePath},
+        {JSON_KEY_LIB_PATH, abilityInfo.libPath}};
 }
 
+void from_json(const nlohmann::json &jsonObject, Form &form)
+{
+    form.formEntity = jsonObject.at(JSON_KEY_FORM_ENTITY).get<std::vector<std::string>>();
+    form.minHeight = jsonObject.at(JSON_KEY_FORM_MIN_HEIGHT).get<int32_t>();
+    form.defaultHeight = jsonObject.at(JSON_KEY_FORM_DEFAULT_HEIGHT).get<int32_t>();
+    form.minWidth = jsonObject.at(JSON_KEY_FORM_MIN_WIDTH).get<int32_t>();
+    form.defaultWidth = jsonObject.at(JSON_KEY_FORM_DEFAULT_WIDTH).get<int32_t>();
+}
 void from_json(const nlohmann::json &jsonObject, AbilityInfo &abilityInfo)
 {
     abilityInfo.name = jsonObject.at(JSON_KEY_NAME).get<std::string>();
     abilityInfo.label = jsonObject.at(JSON_KEY_LABEL).get<std::string>();
     abilityInfo.description = jsonObject.at(JSON_KEY_DESCRIPTION).get<std::string>();
     abilityInfo.iconPath = jsonObject.at(JSON_KEY_ICON_PATH).get<std::string>();
+    abilityInfo.theme = jsonObject.at(JSON_KEY_THEME).get<std::string>();
     abilityInfo.visible = jsonObject.at(JSON_KEY_VISIBLE).get<bool>();
     abilityInfo.isLauncherAbility = jsonObject.at(JSON_KEY_IS_LAUNCHER_ABILITY).get<bool>();
     abilityInfo.isNativeAbility = jsonObject.at(JSON_KEY_IS_NATIVE_ABILITY).get<bool>();
+    abilityInfo.enabled = jsonObject.at(JSON_KEY_ENABLED).get<bool>();
+    abilityInfo.readPermission = jsonObject.at(JSON_KEY_READ_PERMISSION).get<std::string>();
+    abilityInfo.writePermission = jsonObject.at(JSON_KEY_WRITE_PERMISSION).get<std::string>();
+    abilityInfo.form = jsonObject.at(JSON_KEY_FORM).get<Form>();
     abilityInfo.kind = jsonObject.at(JSON_KEY_KIND).get<std::string>();
     abilityInfo.type = jsonObject.at(JSON_KEY_TYPE).get<AbilityType>();
     abilityInfo.orientation = jsonObject.at(JSON_KEY_ORIENTATION).get<DisplayOrientation>();
@@ -247,6 +311,7 @@ void from_json(const nlohmann::json &jsonObject, AbilityInfo &abilityInfo)
     abilityInfo.deviceTypes = jsonObject.at(JSON_KEY_DEVICE_TYPES).get<std::vector<std::string>>();
     abilityInfo.deviceCapabilities = jsonObject.at(JSON_KEY_DEVICE_CAPABILITIES).get<std::vector<std::string>>();
     abilityInfo.uri = jsonObject.at(JSON_KEY_URI).get<std::string>();
+    abilityInfo.targetAbility = jsonObject.at(JSON_KEY_TARGET_ABILITY).get<std::string>();
     abilityInfo.package = jsonObject.at(JSON_KEY_PACKAGE).get<std::string>();
     abilityInfo.bundleName = jsonObject.at(JSON_KEY_BUNDLE_NAME).get<std::string>();
     abilityInfo.moduleName = jsonObject.at(JSON_KEY_MODULE_NAME).get<std::string>();

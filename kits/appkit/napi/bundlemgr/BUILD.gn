@@ -13,7 +13,7 @@
 
 import("//build/ohos.gni")
 
-ohos_shared_library("bundle_mgr") {
+ohos_shared_library("bundle") {
   include_dirs = [
     "//foundation/ace/napi/interfaces/kits",
     "//third_party/node/src",

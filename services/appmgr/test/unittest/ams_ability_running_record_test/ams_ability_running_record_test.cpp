@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 
+#include "app_mgr_service_inner.h"
 #include "ability_running_record.h"
 #include <gtest/gtest.h>
 #include "app_running_record.h"
@@ -57,6 +58,8 @@ protected:
     sptr<IAppScheduler> client_;
     sptr<MockApplication> mockedAppClient_;
     std::shared_ptr<AppRunningRecord> testAppRecord_;
+    std::shared_ptr<AppMgrServiceInner> serviceInner_ = nullptr;
+    std::shared_ptr<AMSEventHandler> handler_ = nullptr;
 };
 
 void AmsAbilityRunningRecordTest::SetUpTestCase()
@@ -68,6 +71,9 @@ void AmsAbilityRunningRecordTest::TearDownTestCase()
 void AmsAbilityRunningRecordTest::SetUp()
 {
     mockedAppClient_ = new MockApplication();
+    auto runner = EventRunner::Create("AmsAppLifeCycleModuleTest");
+    serviceInner_ = std::make_shared<OHOS::AppExecFwk::AppMgrServiceInner>();
+    handler_ = std::make_shared<AMSEventHandler>(runner, serviceInner_);
 }
 
 void AmsAbilityRunningRecordTest::TearDown()
@@ -90,6 +96,7 @@ std::shared_ptr<AppRunningRecord> AmsAbilityRunningRecordTest::GetTestAppRunning
         appInfo->name = GetTestAppName();
         testAppRecord_ = std::make_shared<AppRunningRecord>(appInfo, AppRecordId::Create(), GetProcessName());
         testAppRecord_->SetApplicationClient(GetMockedAppSchedulerClient());
+        testAppRecord_->SetEventHandler(handler_);
     }
     return testAppRecord_;
 }
@@ -375,7 +382,7 @@ HWTEST_F(AmsAbilityRunningRecordTest, UpdateAbilityRunningRecord_007, TestSize.L
     EXPECT_CALL(*mockedAppClient_, ScheduleCleanAbility(_)).Times(2);
     auto abilities = appRunningRecord->GetAbilities();
     for (auto iter = abilities.begin(); iter != abilities.end(); iter++) {
-        appRunningRecord->TerminateAbility(iter->second->GetToken());
+        appRunningRecord->TerminateAbility(iter->second->GetToken(), false);
         appRunningRecord->AbilityTerminated(iter->second->GetToken());
     }
     APP_LOGD("UpdateAbilityRunningRecord_007 end.");

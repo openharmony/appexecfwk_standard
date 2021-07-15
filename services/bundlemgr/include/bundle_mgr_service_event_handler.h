@@ -48,7 +48,6 @@ private:
      * @return
      */
     void ProcessSystemBundleInstall(Constants::AppType appType) const;
-
     /**
      * @brief Set the flag indicates that all system and vendor applications installed.
      * @return

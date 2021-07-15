@@ -171,17 +171,6 @@ void LifeCycleObserverAbility::OnStart(const Want &want)
     auto lifecycle = GetLifecycle();
     TestUtils::PublishEvent(
         APP_LIFE_CYCLE_OBSERVER_RESP_EVENT_NAME, lifecycle->GetLifecycleState(), "TestLifeCycleGetLifecycleState");
-
-    switch ((CaseIndex)LifeCycleObserverAbility::sequenceNumber_) {
-        case CaseIndex::FOUR:
-            StopAbility(want);
-            break;
-        case CaseIndex::FIVE:
-            TerminateAbility();
-            break;
-        default:
-            break;
-    }
 }
 
 void LifeCycleObserverAbility::OnStop()

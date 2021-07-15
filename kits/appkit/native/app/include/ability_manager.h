@@ -24,12 +24,12 @@ namespace OHOS {
 namespace AppExecFwk {
 
 using OHOS::AAFwk::AbilityManagerClient;
+using OHOS::AAFwk::AbilityMissionInfo;
 using OHOS::AAFwk::RECENT_IGNORE_UNAVAILABLE;
-using OHOS::AAFwk::RecentMissionInfo;
 using OHOS::AAFwk::StackInfo;
 using OHOS::AAFwk::Want;
 using OHOS::AppExecFwk::RunningProcessInfo;
-using RuningMissionInfo = RecentMissionInfo;
+using RuningMissionInfo = AbilityMissionInfo;
 
 class AbilityManager {
 public:
@@ -70,9 +70,9 @@ public:
      * @param falgs Information about what to return.  May be any combination
      * of {@link #RECENT_WITH_EXCLUDED} and {@link #RECENT_IGNORE_UNAVAILABLE}.
      *
-     * @returns Returns the RecentMissionInfo.
+     * @returns Returns the AbilityMissionInfo.
      */
-    std::vector<RecentMissionInfo> QueryRecentAbilityMissionInfo(int numMax, int flags) const;
+    std::vector<AbilityMissionInfo> QueryRecentAbilityMissionInfo(int numMax, int flags) const;
 
     /**
      * Query running Ability Mission info.
@@ -80,7 +80,7 @@ public:
      * actual number returned may be smaller, depending on how many tasks the
      * user has started and the maximum number the system can remember.
      *
-     * @returns Returns the RecentMissionInfo.
+     * @returns Returns the AbilityMissionInfo.
      */
     std::vector<RuningMissionInfo> QueryRunningAbilityMissionInfo(int numMax) const;
 
@@ -94,14 +94,22 @@ public:
      *
      * @param bundleName.
      */
-    void ClearUpApplicationData(const std::string &bundleName);
+    int32_t ClearUpApplicationData(const std::string &bundleName);
 
     /**
      * Obtains information about application processes that are running on the device.
      *
      * @returns Returns a list of running processes.
      */
-    RunningProcessInfo GetAllRunningProcesses();
+    std::vector<RunningProcessInfo> GetAllRunningProcesses();
+
+    /**
+     * Kill the process immediately.
+     *
+     * @param bundleName.
+     * @return Returns ERR_OK on success, others on failure.
+     */
+    int KillProcessesByBundleName(const std::string &bundleName);
 };
 
 }  // namespace AppExecFwk

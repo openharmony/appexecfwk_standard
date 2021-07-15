@@ -11,6 +11,44 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+on init
+    # cpuctl subsystem
+    # set background cpuctl
+    mkdir /dev/cpuctl/background
+    chown system system /dev/cpuctl/background
+    chmod 0755 /dev/cpuctl/background
+    chmod 0755 /dev/cpuctl/background/tasks
+    write /dev/cpuctl/background/cpu.shares 512
+
+    # cpuset subsystem
+    # write cpus in background
+    write /dev/cpuset/background/cpus 0
+
+    # freezer subsystem
+    # create freezer of cgroup point
+    mkdir /dev/freezer
+    chown system system /dev/freezer
+    chmod 0755 /dev/freezer
+    mount cgroup none /dev/freezer freezer
+
+    # create directory of frozen and thawed 
+    mkdir /dev/freezer/frozen
+    mkdir /dev/freezer/thawed
+
+    # change permissions
+    chown system system /dev/freezer/frozen
+    chown system system /dev/freezer/frozen/tasks
+    chown system system /dev/freezer/thawed
+    chown system system /dev/freezer/thawed/tasks
+    chmod 0755 /dev/freezer/frozen
+    chmod 0755 /dev/freezer/frozen/tasks
+    chmod 0755 /dev/freezer/thawed
+    chmod 0755 /dev/freezer/thawed/tasks
+
+    # write freezer state
+    write /dev/freezer/frozen/freezer.state FROZEN
+    write /dev/freezer/thawed/freezer.state THAWED
+
 on boot
     # Add permision for powermanager to control suspend
     # It should be executed before foundation started
@@ -26,3 +64,4 @@ service foundation /system/bin/sa_main /system/profile/foundation.xml
     user system
     group system
     seclabel u:r:foundation:s0
+    capabilities SYS_PTRACE KILL

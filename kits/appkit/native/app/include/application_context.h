@@ -21,10 +21,11 @@
 namespace OHOS {
 namespace AppExecFwk {
 
+class TaskDispatcherContext;
 class ApplicationContext : public ContextContainer, public std::enable_shared_from_this<ApplicationContext> {
 public:
-    ApplicationContext() = default;
-    virtual ~ApplicationContext() = default;
+    ApplicationContext();
+    virtual ~ApplicationContext();
 
     /**
      * @brief Obtains information about the current ability.
@@ -78,6 +79,23 @@ public:
     void TerminateAbility() override;
 
     /**
+     * @brief
+     * Destroys this Service ability if the number of times it has been started equals the number represented by the
+     * given {@code startId}. This method is the same as calling {@link #terminateAbility} to destroy this Service
+     * ability, except that this method helps you avoid destroying it if a client has requested a Service
+     * ability startup in {@link ohos.aafwk.ability.Ability#onCommand} but you are unaware of it.
+     *
+     * @param startId Indicates the number of startup times of this Service ability passed to
+     *                {@link ohos.aafwk.ability.Ability#onCommand}. The {@code startId} is
+     *                incremented by 1 every time this ability is started. For example,
+     *                if this ability has been started for six times, the value of {@code startId} is {@code 6}.
+     *
+     * @return Returns {@code true} if the {@code startId} matches the number of startup times
+     *         and this Service ability will be destroyed; returns {@code false} otherwise.
+     */
+    bool TerminateAbilityResult(int startId) override;
+
+    /**
      * @brief Obtains the bundle name of the ability that called the current ability.
      * You can use the obtained bundle name to check whether the calling ability is allowed to receive the data you will
      * send. If you did not use Ability.startAbilityForResult(ohos.aafwk.content.Want, int,
@@ -118,8 +136,61 @@ public:
      */
     bool StopAbility(const AAFwk::Want &want) override;
 
+    /**
+     * @brief Starts multiple abilities.
+     *
+     * @param wants Indicates the Want containing information array about the target ability to start.
+     */
+    void StartAbilities(const std::vector<AAFwk::Want> &wants) override;
+
+    /**
+     * @brief Checks whether this ability is the first ability in a mission.
+     *
+     * @return Returns true is first in Mission.
+     */
+    bool IsFirstInMission() override;
+
+    /**
+     * @brief Obtains the unique ID of the mission containing this ability.
+     *
+     * @return Returns the unique mission ID.
+     */
+    int GetMissionId() override;
+
+    /**
+     * @brief Creates a parallel task dispatcher with a specified priority.
+     *
+     * @param name Indicates the task dispatcher name. This parameter is used to locate problems.
+     * @param priority Indicates the priority of all tasks dispatched by the parallel task dispatcher.
+     *
+     * @return Returns a parallel task dispatcher.
+     */
+    std::shared_ptr<TaskDispatcher> CreateParallelTaskDispatcher(
+        const std::string &name, const TaskPriority &priority) override;
+
+    /**
+     * @brief Creates a serial task dispatcher with a specified priority.
+     *
+     * @param name Indicates the task dispatcher name. This parameter is used to locate problems.
+     * @param priority Indicates the priority of all tasks dispatched by the created task dispatcher.
+     *
+     * @return Returns a serial task dispatcher.
+     */
+    std::shared_ptr<TaskDispatcher> CreateSerialTaskDispatcher(
+        const std::string &name, const TaskPriority &priority) override;
+
+    /**
+     * @brief Obtains a global task dispatcher with a specified priority.
+     *
+     * @param priority Indicates the priority of all tasks dispatched by the global task dispatcher.
+     *
+     * @return Returns a global task dispatcher.
+     */
+    std::shared_ptr<TaskDispatcher> GetGlobalTaskDispatcher(const TaskPriority &priority) override;
+
 protected:
     sptr<IRemoteObject> GetToken() override;
+    std::shared_ptr<TaskDispatcherContext> taskDispatcherContext_ = nullptr;
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS

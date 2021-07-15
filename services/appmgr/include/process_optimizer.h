@@ -25,8 +25,7 @@
 #include "ability_running_record.h"
 #include "app_running_record.h"
 #include "cgroup_manager.h"
-#include "lmkd_client.h"
-#include "lmk_util.h"
+#include "lmks_client.h"
 #include "event_handler.h"
 #include "nocopyable.h"
 
@@ -39,12 +38,12 @@ public:
     using AppPtr = std::shared_ptr<AppRunningRecord>;
     using AbilityPtr = std::shared_ptr<AbilityRunningRecord>;
     using CgroupManagerPtr = std::shared_ptr<CgroupManager>;
-    using LmkdClientPtr = std::shared_ptr<LmkdClient>;
+    using LmksClientPtr = std::shared_ptr<LmksClient>;
 
     static constexpr int APP_SUSPEND_TIMEOUT_DEFAULT = 5000;  // in milliseconds
 
 public:
-    ProcessOptimizer(const LmkdClientPtr &lmkdClient = nullptr, int suspendTimeout = APP_SUSPEND_TIMEOUT_DEFAULT);
+    ProcessOptimizer(const LmksClientPtr &lmksClient = nullptr, int suspendTimeout = APP_SUSPEND_TIMEOUT_DEFAULT);
 
     virtual ~ProcessOptimizer();
 
@@ -67,6 +66,8 @@ public:
     virtual void OnAbilityVisibleChanged(const AbilityPtr &ability);
     virtual void OnAbilityPerceptibleChanged(const AbilityPtr &ability);
     virtual void OnAbilityRemoved(const AbilityPtr &ability);
+    virtual void SetAppFreezingTime(int time);
+    virtual void GetAppFreezingTime(int &time);
 
 protected:
     bool SetAppOomAdj(const AppPtr &app, int oomAdj);
@@ -85,11 +86,10 @@ private:
     using AppLru = std::list<AppPtr>;
     using SuspendTimers = std::set<std::string>;
 
-    LmkdClientPtr lmkdClient_;
+    LmksClientPtr lmksClient_;
     AppLru appLru_;
     EventHandlerPtr eventHandler_;
     SuspendTimers suspendTimers_;
-    std::unique_ptr<LmkUtil> lmkUtil_;
     int suspendTimeout_;
 };
 }  // namespace AppExecFwk

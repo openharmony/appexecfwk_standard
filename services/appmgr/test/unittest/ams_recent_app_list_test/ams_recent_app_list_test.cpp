@@ -122,7 +122,7 @@ void AmsRecentAppListTest::StartProcessSuccess(const int32_t index) const
  * EnvConditions: RecentAppList is empty.
  * CaseDescription: Verity ams can add app to RecentAppList success when start a new process success.
  */
-HWTEST_F(AmsRecentAppListTest, Create_001, TestSize.Level0)
+HWTEST_F(AmsRecentAppListTest, Create_001, TestSize.Level1)
 {
     // get the recent app list before test.
     EXPECT_TRUE(serviceInner_->GetRecentAppList().empty());
@@ -141,7 +141,7 @@ HWTEST_F(AmsRecentAppListTest, Create_001, TestSize.Level0)
  * EnvConditions: RecentAppList is empty.
  * CaseDescription: Verity ams can not add app to RecentAppList when start a new process failed.
  */
-HWTEST_F(AmsRecentAppListTest, Create_002, TestSize.Level0)
+HWTEST_F(AmsRecentAppListTest, Create_002, TestSize.Level1)
 {
     auto abilityInfo = GetAbilityInfoByIndex(1);
     auto appInfo = GetApplicationByIndex(INDEX_NUM_1);
@@ -166,7 +166,7 @@ HWTEST_F(AmsRecentAppListTest, Create_002, TestSize.Level0)
  * EnvConditions: RecentAppList is empty.
  * CaseDescription: Verity ams can not add app to RecentAppList when start an already exist process.
  */
-HWTEST_F(AmsRecentAppListTest, Create_003, TestSize.Level0)
+HWTEST_F(AmsRecentAppListTest, Create_003, TestSize.Level1)
 {
     EXPECT_TRUE(serviceInner_->GetRecentAppList().empty());
 
@@ -197,7 +197,7 @@ HWTEST_F(AmsRecentAppListTest, Create_003, TestSize.Level0)
  * EnvConditions: RecentAppList has application.
  * CaseDescription: Verity ams can remove app from RecentAppList when app terminated.
  */
-HWTEST_F(AmsRecentAppListTest, Update_001, TestSize.Level0)
+HWTEST_F(AmsRecentAppListTest, Update_001, TestSize.Level1)
 {
     StartProcessSuccess(INDEX_NUM_1);
     EXPECT_EQ(INDEX_NUM_1, static_cast<int32_t>(serviceInner_->GetRecentAppList().size()));
@@ -218,7 +218,7 @@ HWTEST_F(AmsRecentAppListTest, Update_001, TestSize.Level0)
  * EnvConditions: RecentAppList has application.
  * CaseDescription: Verity ams can remove app from RecentAppList when app died.
  */
-HWTEST_F(AmsRecentAppListTest, Update_002, TestSize.Level0)
+HWTEST_F(AmsRecentAppListTest, Update_002, TestSize.Level1)
 {
     StartProcessSuccess(INDEX_NUM_1);
     EXPECT_EQ(INDEX_NUM_1, static_cast<int32_t>(serviceInner_->GetRecentAppList().size()));
@@ -241,7 +241,7 @@ HWTEST_F(AmsRecentAppListTest, Update_002, TestSize.Level0)
  * EnvConditions: RecentAppList has application.
  * CaseDescription: Verity ams can push app front when app is foregrounded.
  */
-HWTEST_F(AmsRecentAppListTest, Update_003, TestSize.Level0)
+HWTEST_F(AmsRecentAppListTest, Update_003, TestSize.Level1)
 {
     for (int32_t index = INDEX_NUM_1; index <= INDEX_NUM_3; index++) {
         StartProcessSuccess(index);
@@ -265,7 +265,7 @@ HWTEST_F(AmsRecentAppListTest, Update_003, TestSize.Level0)
  * EnvConditions: RecentAppList has application.
  * CaseDescription: Verity ams can remove app from RecentAppList when call RemoveAppFromRecentList.
  */
-HWTEST_F(AmsRecentAppListTest, Remove_001, TestSize.Level0)
+HWTEST_F(AmsRecentAppListTest, Remove_001, TestSize.Level1)
 {
     StartProcessSuccess(INDEX_NUM_1);
     EXPECT_EQ(INDEX_NUM_1, static_cast<int32_t>(serviceInner_->GetRecentAppList().size()));
@@ -289,7 +289,7 @@ HWTEST_F(AmsRecentAppListTest, Remove_001, TestSize.Level0)
  * EnvConditions: RecentAppList has application.
  * CaseDescription: Verity ams can not remove app from RecentAppList when app name is not correct.
  */
-HWTEST_F(AmsRecentAppListTest, Remove_002, TestSize.Level0)
+HWTEST_F(AmsRecentAppListTest, Remove_002, TestSize.Level1)
 {
     StartProcessSuccess(INDEX_NUM_1);
     EXPECT_EQ(INDEX_NUM_1, static_cast<int32_t>(serviceInner_->GetRecentAppList().size()));
@@ -307,7 +307,7 @@ HWTEST_F(AmsRecentAppListTest, Remove_002, TestSize.Level0)
  * EnvConditions: RecentAppList has application.
  * CaseDescription: Verity ams can not remove app from RecentAppList when app name is empty.
  */
-HWTEST_F(AmsRecentAppListTest, Remove_003, TestSize.Level0)
+HWTEST_F(AmsRecentAppListTest, Remove_003, TestSize.Level1)
 {
     StartProcessSuccess(INDEX_NUM_1);
     EXPECT_EQ(INDEX_NUM_1, static_cast<int32_t>(serviceInner_->GetRecentAppList().size()));
@@ -324,7 +324,7 @@ HWTEST_F(AmsRecentAppListTest, Remove_003, TestSize.Level0)
  * EnvConditions: RecentAppList has application.
  * CaseDescription: Verity ams can clear RecentAppList when call ClearRecentAppList.
  */
-HWTEST_F(AmsRecentAppListTest, Clear_001, TestSize.Level0)
+HWTEST_F(AmsRecentAppListTest, Clear_001, TestSize.Level1)
 {
     StartProcessSuccess(INDEX_NUM_1);
     EXPECT_EQ(INDEX_NUM_1, static_cast<int32_t>(serviceInner_->GetRecentAppList().size()));
@@ -347,7 +347,7 @@ HWTEST_F(AmsRecentAppListTest, Clear_001, TestSize.Level0)
  * EnvConditions: RecentAppList has application.
  * CaseDescription: Verity ams can clear RecentAppList when RecentAppList is empty.
  */
-HWTEST_F(AmsRecentAppListTest, Clear_002, TestSize.Level0)
+HWTEST_F(AmsRecentAppListTest, Clear_002, TestSize.Level1)
 {
     EXPECT_TRUE(serviceInner_->GetRecentAppList().empty());
     serviceInner_->ClearRecentAppList();
@@ -362,7 +362,7 @@ HWTEST_F(AmsRecentAppListTest, Clear_002, TestSize.Level0)
  * EnvConditions: RecentAppList has application.
  * CaseDescription: Verity ams can Add RecentAppList when RecentAppList is empty.
  */
-HWTEST_F(AmsRecentAppListTest, RecentAppList_001, TestSize.Level0)
+HWTEST_F(AmsRecentAppListTest, RecentAppList_001, TestSize.Level1)
 {
     EXPECT_TRUE(serviceInner_->GetRecentAppList().empty());
     pid_t pid = INDEX_NUM_1;
@@ -390,7 +390,7 @@ HWTEST_F(AmsRecentAppListTest, RecentAppList_001, TestSize.Level0)
  * EnvConditions: app has application.
  * CaseDescription: Verity ams can PushAppFront when App is not empty.
  */
-HWTEST_F(AmsRecentAppListTest, PushAppFront_001, TestSize.Level0)
+HWTEST_F(AmsRecentAppListTest, PushAppFront_001, TestSize.Level1)
 {
     EXPECT_TRUE(serviceInner_->GetRecentAppList().empty());
     pid_t pid = INDEX_NUM_1;

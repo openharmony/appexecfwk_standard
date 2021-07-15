@@ -92,7 +92,7 @@ enum class AppType {
 
 const std::string INTENT_ACTION_HOME = "action.system.home";
 const std::string INTENT_ENTITY_HOME = "entity.system.home";
-const std::string FLAG_HW_HOME_INTENT_FROM_SYSTEM = "flag.home.intent.from.system";
+const std::string FLAG_HOME_INTENT_FROM_SYSTEM = "flag.home.intent.from.system";
 
 // the ability file folder name.
 const std::string LIB_FOLDER_NAME = "libs";
@@ -109,6 +109,12 @@ constexpr uint8_t MAX_MODULE_ABILITIES_READPERMISSION = 255;
 constexpr uint8_t MAX_MODULE_ABILITIES_WRITEPERMISSION = 255;
 constexpr uint8_t MAX_MODULE_SHORTCUTID = 63;
 constexpr uint8_t MAX_MODULE_LABEL = 63;
+// distributed database
+const std::string APP_ID = "bundle_manager_service";
+const std::string STORE_ID = "installed_bundle_datas";
+
+// single max hap size
+constexpr int32_t MAX_HAP_SIZE = 50 * 1024 * 1024;
 
 }  // namespace Constants
 }  // namespace AppExecFwk

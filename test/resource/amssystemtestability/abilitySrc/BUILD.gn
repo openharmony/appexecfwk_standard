@@ -28,6 +28,7 @@ group("ams_system_test_app") {
     "amsSystemTestB:amsSystemTestB",
     "amsSystemTestC:amsSystemTestC",
     "amsSystemTestD:amsSystemTestD",
+    "amsSystemTestDFX:amsSystemTestDFX",
     "amsSystemTestE:amsSystemTestE",
     "amsSystemTestErrorK:amsSystemTestErrorK",
     "amsSystemTestErrorL:amsSystemTestErrorL",
@@ -39,6 +40,8 @@ group("ams_system_test_app") {
     "amsSystemTestN:amsSystemTestN",
     "amsSystemTestO:amsSystemTestO",
     "amsSystemTestP:amsSystemTestP",
+    "amsSystemTestQ:amsSystemTestQ",
+    "amsSystemTestR:amsSystemTestR",
     "amsSystemTestServiceA:amsSystemTestServiceA",
     "amsSystemTestServiceB:amsSystemTestServiceB",
     "amsSystemTestServiceC:amsSystemTestServiceC",
@@ -47,5 +50,7 @@ group("ams_system_test_app") {
     "amsSystemTestServiceF:amsSystemTestServiceF",
     "amsSystemTestServiceG:amsSystemTestServiceG",
     "amsSystemTestServiceH:amsSystemTestServiceH",
+    "taskDispatcherTestA:taskDispatcherTestA",
+    "taskDispatcherTestB:taskDispatcherTestB",
   ]
 }

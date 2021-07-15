@@ -112,7 +112,7 @@ std::shared_ptr<AppRunningRecord> AmsServiceLoadAbilityProcessTest::StartLoadAbi
  * EnvConditions: NA
  * CaseDescription: Normal loadAbility requesets handled inner service.
  */
-HWTEST_F(AmsServiceLoadAbilityProcessTest, LoadAbility_001, TestSize.Level0)
+HWTEST_F(AmsServiceLoadAbilityProcessTest, LoadAbility_001, TestSize.Level1)
 {
     APP_LOGI("AmsServiceLoadAbilityProcessTest LoadAbility_001 start");
     auto abilityInfo = std::make_shared<AbilityInfo>();
@@ -147,7 +147,7 @@ HWTEST_F(AmsServiceLoadAbilityProcessTest, LoadAbility_001, TestSize.Level0)
  * EnvConditions: NA
  * CaseDescription: Multiple different loadAbility requesets handled inner service.
  */
-HWTEST_F(AmsServiceLoadAbilityProcessTest, LoadAbility_002, TestSize.Level0)
+HWTEST_F(AmsServiceLoadAbilityProcessTest, LoadAbility_002, TestSize.Level1)
 {
     APP_LOGI("AmsServiceLoadAbilityProcessTest LoadAbility_002 start");
 
@@ -211,7 +211,7 @@ HWTEST_F(AmsServiceLoadAbilityProcessTest, LoadAbility_002, TestSize.Level0)
  * EnvConditions: NA
  * CaseDescription: Null abilityId loadAbility requesets handled inner service.
  */
-HWTEST_F(AmsServiceLoadAbilityProcessTest, LoadAbility_003, TestSize.Level0)
+HWTEST_F(AmsServiceLoadAbilityProcessTest, LoadAbility_003, TestSize.Level1)
 {
     APP_LOGI("AmsServiceLoadAbilityProcessTest LoadAbility_003 start");
     auto abilityInfo = std::make_shared<AbilityInfo>();
@@ -241,7 +241,7 @@ HWTEST_F(AmsServiceLoadAbilityProcessTest, LoadAbility_003, TestSize.Level0)
  * EnvConditions: NA
  * CaseDescription: Null abilityInfo name loadAbility requesets handled inner service.
  */
-HWTEST_F(AmsServiceLoadAbilityProcessTest, LoadAbility_004, TestSize.Level0)
+HWTEST_F(AmsServiceLoadAbilityProcessTest, LoadAbility_004, TestSize.Level1)
 {
     APP_LOGI("AmsServiceLoadAbilityProcessTest LoadAbility_004 start");
     sptr<IRemoteObject> token = GetMockToken();
@@ -271,7 +271,7 @@ HWTEST_F(AmsServiceLoadAbilityProcessTest, LoadAbility_004, TestSize.Level0)
  * EnvConditions: NA
  * CaseDescription: Null appInfo name loadAbility requesets handled inner service.
  */
-HWTEST_F(AmsServiceLoadAbilityProcessTest, LoadAbility_005, TestSize.Level0)
+HWTEST_F(AmsServiceLoadAbilityProcessTest, LoadAbility_005, TestSize.Level1)
 {
     APP_LOGI("AmsServiceLoadAbilityProcessTest LoadAbility_005 start");
     sptr<IRemoteObject> token = GetMockToken();
@@ -300,7 +300,7 @@ HWTEST_F(AmsServiceLoadAbilityProcessTest, LoadAbility_005, TestSize.Level0)
  * EnvConditions: NA
  * CaseDescription: Different name loadAbility requesets handled inner service.
  */
-HWTEST_F(AmsServiceLoadAbilityProcessTest, LoadAbility_006, TestSize.Level0)
+HWTEST_F(AmsServiceLoadAbilityProcessTest, LoadAbility_006, TestSize.Level1)
 {
     APP_LOGI("AmsServiceLoadAbilityProcessTest LoadAbility_006 start");
     sptr<IRemoteObject> token = GetMockToken();
@@ -330,7 +330,7 @@ HWTEST_F(AmsServiceLoadAbilityProcessTest, LoadAbility_006, TestSize.Level0)
  * EnvConditions: NA
  * CaseDescription: Multiple same loadAbility requesets handled inner service.
  */
-HWTEST_F(AmsServiceLoadAbilityProcessTest, LoadAbility_007, TestSize.Level0)
+HWTEST_F(AmsServiceLoadAbilityProcessTest, LoadAbility_007, TestSize.Level1)
 {
     APP_LOGI("AmsServiceLoadAbilityProcessTest LoadAbility_007 start");
     sptr<IRemoteObject> token = GetMockToken();
@@ -376,7 +376,7 @@ HWTEST_F(AmsServiceLoadAbilityProcessTest, LoadAbility_007, TestSize.Level0)
  * EnvConditions: NA
  * CaseDescription: Multiple different ability with same appName loadAbility requesets handled inner service.
  */
-HWTEST_F(AmsServiceLoadAbilityProcessTest, LoadAbility_008, TestSize.Level0)
+HWTEST_F(AmsServiceLoadAbilityProcessTest, LoadAbility_008, TestSize.Level1)
 {
     APP_LOGI("AmsServiceLoadAbilityProcessTest LoadAbility_008 start");
     sptr<IRemoteObject> token = GetMockToken();
@@ -432,7 +432,7 @@ HWTEST_F(AmsServiceLoadAbilityProcessTest, LoadAbility_008, TestSize.Level0)
  * EnvConditions: NA
  * CaseDescription: Normal loadAbility requesets handled when start process success.
  */
-HWTEST_F(AmsServiceLoadAbilityProcessTest, RequestProcess_001, TestSize.Level0)
+HWTEST_F(AmsServiceLoadAbilityProcessTest, RequestProcess_001, TestSize.Level1)
 {
     APP_LOGI("AmsServiceLoadAbilityProcessTest RequestProcess_001 start");
     sptr<IRemoteObject> token = GetMockToken();
@@ -469,7 +469,7 @@ HWTEST_F(AmsServiceLoadAbilityProcessTest, RequestProcess_001, TestSize.Level0)
  * EnvConditions: NA
  * CaseDescription: Normal loadAbility requesets handled when start process failed.
  */
-HWTEST_F(AmsServiceLoadAbilityProcessTest, RequestProcess_002, TestSize.Level0)
+HWTEST_F(AmsServiceLoadAbilityProcessTest, RequestProcess_002, TestSize.Level1)
 {
     APP_LOGI("AmsServiceLoadAbilityProcessTest RequestProcess_002 start");
     sptr<IRemoteObject> token = GetMockToken();
@@ -501,7 +501,7 @@ HWTEST_F(AmsServiceLoadAbilityProcessTest, RequestProcess_002, TestSize.Level0)
  * EnvConditions: NA
  * CaseDescription: Normal loadAbility and save pid to app running record.
  */
-HWTEST_F(AmsServiceLoadAbilityProcessTest, SavePid_001, TestSize.Level0)
+HWTEST_F(AmsServiceLoadAbilityProcessTest, SavePid_001, TestSize.Level1)
 {
     APP_LOGI("AmsServiceLoadAbilityProcessTest SavePid_001 start");
     sptr<IRemoteObject> token = GetMockToken();
@@ -534,7 +534,7 @@ HWTEST_F(AmsServiceLoadAbilityProcessTest, SavePid_001, TestSize.Level0)
  * EnvConditions: NA
  * CaseDescription: The service can't save pid to app running record when create new process failed.
  */
-HWTEST_F(AmsServiceLoadAbilityProcessTest, SavePid_002, TestSize.Level0)
+HWTEST_F(AmsServiceLoadAbilityProcessTest, SavePid_002, TestSize.Level1)
 {
     APP_LOGI("AmsServiceLoadAbilityProcessTest SavePid_002 start");
     sptr<IRemoteObject> token = GetMockToken();
@@ -564,7 +564,7 @@ HWTEST_F(AmsServiceLoadAbilityProcessTest, SavePid_002, TestSize.Level0)
  * EnvConditions: NA
  * CaseDescription: Normal loadAbility requeset with singleton launch mode handled inner service.
  */
-HWTEST_F(AmsServiceLoadAbilityProcessTest, LaunchMode_001, TestSize.Level0)
+HWTEST_F(AmsServiceLoadAbilityProcessTest, LaunchMode_001, TestSize.Level1)
 {
     APP_LOGI("AmsServiceLoadAbilityProcessTest LaunchMode_001 start");
     auto abilityInfo = std::make_shared<AbilityInfo>();
@@ -600,7 +600,7 @@ HWTEST_F(AmsServiceLoadAbilityProcessTest, LaunchMode_001, TestSize.Level0)
  * EnvConditions: NA
  * CaseDescription: Multiple same loadAbility requesets with singleton launch mode and same ability info.
  */
-HWTEST_F(AmsServiceLoadAbilityProcessTest, LaunchMode_002, TestSize.Level0)
+HWTEST_F(AmsServiceLoadAbilityProcessTest, LaunchMode_002, TestSize.Level1)
 {
     APP_LOGI("AmsServiceLoadAbilityProcessTest LaunchMode_002 start");
     sptr<IRemoteObject> token = GetMockToken();
@@ -648,7 +648,7 @@ HWTEST_F(AmsServiceLoadAbilityProcessTest, LaunchMode_002, TestSize.Level0)
  * EnvConditions: NA
  * CaseDescription: startAbility requesets with ability info.
  */
-HWTEST_F(AmsServiceLoadAbilityProcessTest, StartAbility_001, TestSize.Level0)
+HWTEST_F(AmsServiceLoadAbilityProcessTest, StartAbility_001, TestSize.Level1)
 {
     APP_LOGI("AmsServiceLoadAbilityProcessTest StartAbility_001 start");
     sptr<IRemoteObject> token = GetMockToken();
@@ -703,7 +703,7 @@ HWTEST_F(AmsServiceLoadAbilityProcessTest, StartAbility_001, TestSize.Level0)
  * EnvConditions: NA
  * CaseDescription: startAbility requesets with not apprecord.
  */
-HWTEST_F(AmsServiceLoadAbilityProcessTest, StartAbility_002, TestSize.Level0)
+HWTEST_F(AmsServiceLoadAbilityProcessTest, StartAbility_002, TestSize.Level1)
 {
     APP_LOGI("AmsServiceLoadAbilityProcessTest StartAbility_002 start");
     sptr<IRemoteObject> token = GetMockToken();
@@ -753,7 +753,7 @@ HWTEST_F(AmsServiceLoadAbilityProcessTest, StartAbility_002, TestSize.Level0)
  * EnvConditions: NA
  * CaseDescription: startAbility requesets with the same LaunchMode.
  */
-HWTEST_F(AmsServiceLoadAbilityProcessTest, StartAbility_003, TestSize.Level0)
+HWTEST_F(AmsServiceLoadAbilityProcessTest, StartAbility_003, TestSize.Level1)
 {
     APP_LOGI("AmsServiceLoadAbilityProcessTest StartAbility_003 start");
     sptr<IRemoteObject> token = GetMockToken();
@@ -808,7 +808,7 @@ HWTEST_F(AmsServiceLoadAbilityProcessTest, StartAbility_003, TestSize.Level0)
  * EnvConditions: NA
  * CaseDescription: startAbility requesets with not token.
  */
-HWTEST_F(AmsServiceLoadAbilityProcessTest, StartAbility_004, TestSize.Level0)
+HWTEST_F(AmsServiceLoadAbilityProcessTest, StartAbility_004, TestSize.Level1)
 {
     APP_LOGI("AmsServiceLoadAbilityProcessTest StartAbility_004 start");
     sptr<IRemoteObject> token = GetMockToken();
@@ -857,7 +857,7 @@ HWTEST_F(AmsServiceLoadAbilityProcessTest, StartAbility_004, TestSize.Level0)
  * EnvConditions: NA
  * CaseDescription: startAbility requesets with not preToken.
  */
-HWTEST_F(AmsServiceLoadAbilityProcessTest, StartAbility_005, TestSize.Level0)
+HWTEST_F(AmsServiceLoadAbilityProcessTest, StartAbility_005, TestSize.Level1)
 {
     APP_LOGI("AmsServiceLoadAbilityProcessTest StartAbility_005 start");
     sptr<IRemoteObject> token = GetMockToken();
@@ -911,7 +911,7 @@ HWTEST_F(AmsServiceLoadAbilityProcessTest, StartAbility_005, TestSize.Level0)
  * EnvConditions: NA
  * CaseDescription: startAbility requesets with ABILITY_STATE_CREATE.
  */
-HWTEST_F(AmsServiceLoadAbilityProcessTest, StartAbility_006, TestSize.Level0)
+HWTEST_F(AmsServiceLoadAbilityProcessTest, StartAbility_006, TestSize.Level1)
 {
     APP_LOGI("AmsServiceLoadAbilityProcessTest StartAbility_006 start");
     sptr<IRemoteObject> token = GetMockToken();
@@ -958,7 +958,7 @@ HWTEST_F(AmsServiceLoadAbilityProcessTest, StartAbility_006, TestSize.Level0)
  * EnvConditions: NA
  * CaseDescription: Normal StartProcess requesets handled inner service.
  */
-HWTEST_F(AmsServiceLoadAbilityProcessTest, StartProcess001, TestSize.Level0)
+HWTEST_F(AmsServiceLoadAbilityProcessTest, StartProcess001, TestSize.Level1)
 {
     APP_LOGI("AmsServiceLoadAbilityProcessTest StartProcess001 start");
     auto abilityInfo = std::make_shared<AbilityInfo>();
@@ -1001,7 +1001,7 @@ HWTEST_F(AmsServiceLoadAbilityProcessTest, StartProcess001, TestSize.Level0)
  * EnvConditions: NA
  * CaseDescription: Normal StartProcess requesets with not SpawnClient.
  */
-HWTEST_F(AmsServiceLoadAbilityProcessTest, StartProcess002, TestSize.Level0)
+HWTEST_F(AmsServiceLoadAbilityProcessTest, StartProcess002, TestSize.Level1)
 {
     APP_LOGI("AmsServiceLoadAbilityProcessTest StartProcess002 start");
     auto abilityInfo = std::make_shared<AbilityInfo>();
@@ -1031,7 +1031,7 @@ HWTEST_F(AmsServiceLoadAbilityProcessTest, StartProcess002, TestSize.Level0)
  * EnvConditions: NA
  * CaseDescription: Normal StartProcess requesets with not AppRecord.
  */
-HWTEST_F(AmsServiceLoadAbilityProcessTest, StartProcess003, TestSize.Level0)
+HWTEST_F(AmsServiceLoadAbilityProcessTest, StartProcess003, TestSize.Level1)
 {
     APP_LOGI("AmsServiceLoadAbilityProcessTest StartProcess003 start");
     auto abilityInfo = std::make_shared<AbilityInfo>();
@@ -1062,7 +1062,7 @@ HWTEST_F(AmsServiceLoadAbilityProcessTest, StartProcess003, TestSize.Level0)
  * EnvConditions: NA
  * CaseDescription: Normal StartProcess requesets with StartProcess return fail.
  */
-HWTEST_F(AmsServiceLoadAbilityProcessTest, StartProcess004, TestSize.Level0)
+HWTEST_F(AmsServiceLoadAbilityProcessTest, StartProcess004, TestSize.Level1)
 {
     APP_LOGI("AmsServiceLoadAbilityProcessTest StartProcess004 start");
     auto abilityInfo = std::make_shared<AbilityInfo>();

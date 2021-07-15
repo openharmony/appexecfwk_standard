@@ -464,7 +464,7 @@ void MainAbility::GetCodeCacheDirCase2(int code)
 void MainAbility::GetCodeCacheDirCase3(int code)
 {
     string codeCacheDir = AbilityContext::GetCodeCacheDir();
-    TestUtils::PublishEvent(g_EVENT_RESP_FIRST, code, codeCacheDir);
+    TestUtils::PublishEvent(g_EVENT_RESP_FIRSTB, code, codeCacheDir);
 }
 
 void MainAbility::GetApplicationContextCase1(int code)

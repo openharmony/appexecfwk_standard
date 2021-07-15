@@ -97,7 +97,8 @@ std::shared_ptr<AppRunningRecord> AppRunningManager::GetAppRunningRecordByProces
     std::lock_guard<std::recursive_mutex> guard(lock_);
     auto iter = std::find_if(
         appRunningRecordMap_.begin(), appRunningRecordMap_.end(), [&appName, &processName](const auto &pair) {
-            return ((pair.second->GetName() == appName) && (pair.second->GetProcessName() == processName));
+            return ((pair.second->GetName() == appName) && (pair.second->GetProcessName() == processName) &&
+                    !(pair.second->IsTerminating()));
         });
     return ((iter == appRunningRecordMap_.end()) ? nullptr : iter->second);
 }
@@ -188,5 +189,84 @@ void AppRunningManager::ClearAppRunningRecordMap()
     appRunningRecordMap_.clear();
 }
 
+void AppRunningManager::HandleTerminateTimeOut(int64_t eventId)
+{
+    APP_LOGI("%{public}s, called", __func__);
+    auto abilityRecord = GetAbilityRunningRecord(eventId);
+    if (!abilityRecord) {
+        APP_LOGE("%{public}s, abilityRecord is nullptr", __func__);
+        return;
+    }
+    auto abilityToken = abilityRecord->GetToken();
+    auto appRecord = GetAppRunningRecordByAbilityToken(abilityToken);
+    if (!appRecord) {
+        APP_LOGE("%{public}s, appRecord is nullptr", __func__);
+        return;
+    }
+    appRecord->AbilityTerminated(abilityToken);
+    APP_LOGI("%{public}s, end", __func__);
+}
+
+std::shared_ptr<AbilityRunningRecord> AppRunningManager::GetAbilityRunningRecord(const int64_t eventId)
+{
+    APP_LOGI("%{public}s, called", __func__);
+    std::lock_guard<std::recursive_mutex> guard(lock_);
+    for (auto &item : appRunningRecordMap_) {
+        if (item.second) {
+            auto abilityRecord = item.second->GetAbilityRunningRecord(eventId);
+            if (abilityRecord) {
+                return abilityRecord;
+            }
+        }
+    }
+    return nullptr;
+}
+
+std::shared_ptr<AppRunningRecord> AppRunningManager::GetAppRunningRecord(const int64_t eventId)
+{
+    APP_LOGI("%{public}s, called", __func__);
+    std::lock_guard<std::recursive_mutex> guard(lock_);
+    auto iter = std::find_if(appRunningRecordMap_.begin(), appRunningRecordMap_.end(), [&eventId](const auto &pair) {
+        return pair.second->GetEventId() == eventId;
+    });
+    return ((iter == appRunningRecordMap_.end()) ? nullptr : iter->second);
+}
+
+void AppRunningManager::HandleAbilityAttachTimeOut(const sptr<IRemoteObject> &token)
+{
+    APP_LOGI("%{public}s, called", __func__);
+    if (token == nullptr) {
+        APP_LOGE("%{public}s, token is nullptr", __func__);
+        return;
+    }
+
+    auto appRecord = GetAppRunningRecordByAbilityToken(token);
+    if (!appRecord) {
+        APP_LOGE("%{public}s, appRecord is nullptr", __func__);
+        return;
+    }
+
+    appRecord->TerminateAbility(token, true);
+}
+void AppRunningManager::TerminateAbility(const sptr<IRemoteObject> &token)
+{
+    APP_LOGI("%{public}s, called", __func__);
+    if (!token) {
+        APP_LOGE("%{public}s, token is nullptr", __func__);
+        return;
+    }
+
+    auto appRecord = GetAppRunningRecordByAbilityToken(token);
+    if (!appRecord) {
+        APP_LOGE("%{public}s, appRecord is nullptr", __func__);
+        return;
+    }
+
+    if (appRecord->IsLastAbilityRecord(token)) {
+        appRecord->SetTerminating();
+    }
+
+    appRecord->TerminateAbility(token, false);
+}
 }  // namespace AppExecFwk
 }  // namespace OHOS

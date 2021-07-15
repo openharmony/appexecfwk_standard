@@ -199,31 +199,32 @@ sptr<IAmsMgr> AppMgrProxy::GetAmsMgr()
     return amsMgr;
 }
 
-void AppMgrProxy::ClearUpApplicationData(const std::string &bundleName)
+int32_t AppMgrProxy::ClearUpApplicationData(const std::string &bundleName)
 {
     APP_LOGD("start");
     MessageParcel data;
     MessageParcel reply;
     MessageOption option(MessageOption::TF_SYNC);
     if (!WriteInterfaceToken(data)) {
-        return;
+        return ERR_FLATTEN_OBJECT;
     }
     sptr<IRemoteObject> remote = Remote();
     if (remote == nullptr) {
         APP_LOGE("Remote() is NULL");
-        return;
+        return ERR_NULL_OBJECT;
     }
     if (!data.WriteString(bundleName)) {
         APP_LOGE("parcel WriteString failed");
-        return;
+        return ERR_FLATTEN_OBJECT;
     }
     int32_t ret = remote->SendRequest(
         static_cast<uint32_t>(IAppMgr::Message::AMS_APP_CLEAR_UP_APPLICATION_DATA), data, reply, option);
     if (ret != NO_ERROR) {
         APP_LOGW("SendRequest is failed, error code: %{public}d", ret);
-        return;
+        return ret;
     }
     APP_LOGD("end");
+    return reply.ReadInt32();
 }
 
 int32_t AppMgrProxy::IsBackgroundRunningRestricted(const std::string &bundleName)
@@ -254,7 +255,7 @@ int32_t AppMgrProxy::IsBackgroundRunningRestricted(const std::string &bundleName
     return reply.ReadInt32();
 }
 
-int32_t AppMgrProxy::GetAllRunningProcesses(std::shared_ptr<RunningProcessInfo> &runningProcessInfo)
+int32_t AppMgrProxy::GetAllRunningProcesses(std::vector<RunningProcessInfo> &info)
 {
     APP_LOGD("start");
     MessageParcel data;
@@ -268,20 +269,15 @@ int32_t AppMgrProxy::GetAllRunningProcesses(std::shared_ptr<RunningProcessInfo> 
         APP_LOGE("Remote() is NULL");
         return ERR_NULL_OBJECT;
     }
-    if (!data.WriteParcelable(runningProcessInfo.get())) {
-        APP_LOGE("parcel WriteString failed");
-        return ERR_FLATTEN_OBJECT;
-    }
     if (!SendTransactCmd(IAppMgr::Message::AMS_APP_GET_ALL_RUNNING_PROCESSES, data, reply)) {
         return ERR_NULL_OBJECT;
     }
-    int result = reply.ReadInt32();
-    std::unique_ptr<RunningProcessInfo> info(reply.ReadParcelable<RunningProcessInfo>());
-    if (!info) {
-        APP_LOGE("readParcelableInfo failed");
-        return ERR_NULL_OBJECT;
+    auto error = GetParcelableInfos<RunningProcessInfo>(reply, info);
+    if (error != NO_ERROR) {
+        APP_LOGE("GetParcelableInfos fail, error: %{public}d", error);
+        return error;
     }
-    runningProcessInfo = std::move(info);
+    int result = reply.ReadInt32();
     APP_LOGD("end");
     return result;
 }
@@ -300,6 +296,63 @@ bool AppMgrProxy::SendTransactCmd(IAppMgr::Message code, MessageParcel &data, Me
         return false;
     }
     return true;
+}
+
+void AppMgrProxy::SetAppFreezingTime(int time)
+{
+    APP_LOGD("start");
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option(MessageOption::TF_SYNC);
+    if (!WriteInterfaceToken(data)) {
+        return;
+    }
+
+    if (!data.WriteInt32(time)) {
+        APP_LOGE("parcel WriteInt32 failed");
+        return;
+    }
+    if (!SendTransactCmd(IAppMgr::Message::AMS_APP_SET_APP_FREEZING_TIME, data, reply)) {
+        APP_LOGE("SendTransactCmd faild");
+        return;
+    }
+    APP_LOGD("end");
+
+}
+
+void AppMgrProxy::GetAppFreezingTime(int &time)
+{
+    APP_LOGD("start");
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option(MessageOption::TF_SYNC);
+    if (!WriteInterfaceToken(data)) {
+        APP_LOGE("WriteInterfaceToken faild");
+        return;
+    }
+
+    if (!SendTransactCmd(IAppMgr::Message::AMS_APP_GET_APP_FREEZING_TIME, data, reply)) {
+        APP_LOGE("SendTransactCmd faild");
+        return;
+    }
+    time = reply.ReadInt32();
+    APP_LOGE("get freeze time : %{public}d ", time);
+}
+
+template <typename T>
+int AppMgrProxy::GetParcelableInfos(MessageParcel &reply, std::vector<T> &parcelableInfos)
+{
+    int32_t infoSize = reply.ReadInt32();
+    for (int32_t i = 0; i < infoSize; i++) {
+        std::unique_ptr<T> info(reply.ReadParcelable<T>());
+        if (!info) {
+            APP_LOGE("Read Parcelable infos failed");
+            return ERR_INVALID_VALUE;
+        }
+        parcelableInfos.emplace_back(*info);
+    }
+    APP_LOGD("get parcelable infos success");
+    return NO_ERROR;
 }
 
 }  // namespace AppExecFwk

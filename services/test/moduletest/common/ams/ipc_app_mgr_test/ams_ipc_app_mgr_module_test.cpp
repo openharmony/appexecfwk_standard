@@ -62,9 +62,9 @@ void AmsIpcAppmgrModuleTest::TearDown()
 class MockMockAppMgrService : public MockAppMgrService {
 public:
     MOCK_METHOD0(GetAmsMgr, sptr<IAmsMgr>());
-    MOCK_METHOD1(ClearUpApplicationData, void(const std::string &));
+    MOCK_METHOD1(ClearUpApplicationData, int32_t(const std::string &));
     MOCK_METHOD1(IsBackgroundRunningRestricted, int(const std::string &bundleName));
-    MOCK_METHOD1(GetAllRunningProcesses, int(std::shared_ptr<RunningProcessInfo> &));
+    MOCK_METHOD1(GetAllRunningProcesses, int(std::vector<RunningProcessInfo> &));
 };
 
 /*
@@ -223,6 +223,7 @@ HWTEST_F(AmsIpcAppmgrModuleTest, ExcuteAppmgrIPCInterface_007, TestSize.Level3)
         auto mockHandler = [&](const std::string &name) {
             testResult = (name == testBundleName);
             mockMockAppMgr->Post();
+            return 0;
         };
 
         EXPECT_CALL(*mockMockAppMgr, ClearUpApplicationData(_)).WillOnce(Invoke(mockHandler));
@@ -283,16 +284,16 @@ HWTEST_F(AmsIpcAppmgrModuleTest, ExcuteAppmgrIPCInterface_09, TestSize.Level3)
     for (int i = 0; i < COUNT; i++) {
         sptr<MockMockAppMgrService> mockMockAppMgr(new MockMockAppMgrService());
         sptr<IAppMgr> appMgrClient = iface_cast<IAppMgr>(mockMockAppMgr);
-        auto allRunningProcessInfo = std::make_shared<RunningProcessInfo>();
+        std::vector<RunningProcessInfo> allRunningProcessInfo;
 
-        auto mockHandler = [&](std::shared_ptr<RunningProcessInfo> &result) {
-            result->appProcessInfos.clear();
+        auto mockHandler = [&](std::vector<RunningProcessInfo> &result) {
+            result.clear();
 
-            auto &r1 = result->appProcessInfos.emplace_back();
+            auto &r1 = result.emplace_back();
             r1.processName_ = testBundleName_1;
             r1.pid_ = testApp1Pid;
 
-            auto &r2 = result->appProcessInfos.emplace_back();
+            auto &r2 = result.emplace_back();
             r2.processName_ = testBundleName_2;
             r2.pid_ = testApp2Pid;
 
@@ -306,10 +307,10 @@ HWTEST_F(AmsIpcAppmgrModuleTest, ExcuteAppmgrIPCInterface_09, TestSize.Level3)
         appMgrClient->GetAllRunningProcesses(allRunningProcessInfo);
         mockMockAppMgr->Wait();
 
-        EXPECT_TRUE(allRunningProcessInfo->appProcessInfos.size() == 2);
-        EXPECT_EQ(allRunningProcessInfo->appProcessInfos[0].processName_, testBundleName_1);
-        EXPECT_EQ(allRunningProcessInfo->appProcessInfos[0].pid_, testApp1Pid);
-        EXPECT_EQ(allRunningProcessInfo->appProcessInfos[1].processName_, testBundleName_2);
-        EXPECT_EQ(allRunningProcessInfo->appProcessInfos[1].pid_, testApp2Pid);
+        EXPECT_TRUE(allRunningProcessInfo.size() == 2);
+        EXPECT_EQ(allRunningProcessInfo[0].processName_, testBundleName_1);
+        EXPECT_EQ(allRunningProcessInfo[0].pid_, testApp1Pid);
+        EXPECT_EQ(allRunningProcessInfo[1].processName_, testBundleName_2);
+        EXPECT_EQ(allRunningProcessInfo[1].pid_, testApp2Pid);
     }
 }

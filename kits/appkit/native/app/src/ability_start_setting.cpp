@@ -28,19 +28,37 @@ const std::string AbilityStartSetting::WINDOW_DISPLAY_ID_KEY = "windowId";
 const std::string AbilityStartSetting::WINDOW_MODE_KEY = "windowMode";
 
 /**
+ * @brief Construct copy function.
+ * @param other indicates instance of abilitystartsetting object
+ * @return none.
+ */
+AbilityStartSetting::AbilityStartSetting(const AbilityStartSetting &other)
+{
+    abilityStarKey_.clear();
+    abilityStarKey_ = other.abilityStarKey_;
+}
+/**
+ * @brief Overload assignment operation.
+ * @param other indicates instance of abilitystartsetting object.
+ * @return Returns current instance of abilitystartsetting object.
+ */
+AbilityStartSetting &AbilityStartSetting::operator=(const AbilityStartSetting &other)
+{
+    if (this != &other) {
+        abilityStarKey_.clear();
+        abilityStarKey_ = other.abilityStarKey_;
+    }
+    return *this;
+}
+/**
  * @brief Inner function to create AbilityStartSetting
  *
  * @return Returns the shared_ptr of AbilityStartSetting object.
  */
 std::shared_ptr<AbilityStartSetting> AbilityStartSettingCreator()
 {
-    AbilityStartSetting *ptrAbilityStartSetting = new (std::nothrow) AbilityStartSetting();
-    if (ptrAbilityStartSetting == nullptr) {
-        APP_LOGE("AbilityStartSettingCreator failed, create AbilityStartSetting failed");
-        return nullptr;
-    }
-
-    return std::shared_ptr<AbilityStartSetting>(ptrAbilityStartSetting);
+    std::shared_ptr<AbilityStartSetting> abilityStartSetting{new (std::nothrow) AbilityStartSetting()};
+    return abilityStartSetting;
 }
 
 /**
@@ -91,6 +109,21 @@ void AbilityStartSetting::AddProperty(const std::string &key, const std::string 
 }
 
 /**
+ * @brief Gets the name of the attributes of the AbilityStartSetting object.
+ *
+ * @param key Indicates the name of the key.
+ * @return Returns value Indicates the value of the attributes of the AbilityStartSetting object
+ */
+std::string AbilityStartSetting::GetProperty(const std::string &key)
+{
+    auto it = abilityStarKey_.find(key);
+    if (it == abilityStarKey_.end()) {
+        return std::string();
+    }
+    return abilityStarKey_[key];
+}
+
+/**
  * @brief Write the data of AbilityStartSetting to the file stream
  * @param parcel indicates write the data of AbilityStartSetting to the file stream through parcel
  * @return bool
@@ -120,18 +153,17 @@ bool AbilityStartSetting::Marshalling(Parcel &parcel) const
  * @param parcel indicates reading file stream through parcel to generate AbilityStartSetting instance
  * @return AbilityStartSetting shared_ptr
  */
-std::shared_ptr<AbilityStartSetting> AbilityStartSetting::Unmarshalling(Parcel &parcel)
+AbilityStartSetting *AbilityStartSetting::Unmarshalling(Parcel &parcel)
 {
-    std::shared_ptr<AbilityStartSetting> abilityStartSetting =
-        std::make_shared<AbilityStartSetting>(AbilityStartSetting());
-
+    AbilityStartSetting *abilityStartSetting = new (std::nothrow) AbilityStartSetting();
+    if (abilityStartSetting == nullptr) {
+        return nullptr;
+    }
     // 1. Number of key value pairs read
     uint32_t size = 0;
     parcel.ReadUint32(size);
-
     std::u16string keyReadString16;
     std::u16string dataReadString16;
-
     for (size_t i = 0; (i < size) && abilityStartSetting; i++) {
         // 1.key
         keyReadString16 = parcel.ReadString16();

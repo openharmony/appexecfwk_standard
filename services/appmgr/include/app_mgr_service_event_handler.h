@@ -25,13 +25,18 @@ class AppMgrServiceInner;
 
 class AMSEventHandler : public EventHandler {
 public:
-    AMSEventHandler(const std::shared_ptr<EventRunner> &runner, const std::shared_ptr<AppMgrServiceInner> &ams);
+    AMSEventHandler(const std::shared_ptr<EventRunner> &runner, const std::weak_ptr<AppMgrServiceInner> &appMgr);
     virtual ~AMSEventHandler() override;
 
     virtual void ProcessEvent(const InnerEvent::Pointer &event) override;
 
+    static constexpr uint32_t TERMINATE_ABILITY_TIMEOUT_MSG = 0;
+    static constexpr uint32_t TERMINATE_APPLICATION_TIMEOUT_MSG = 1;
+    static constexpr uint32_t TERMINATE_ABILITY_TIMEOUT = 500;
+    static constexpr uint32_t TERMINATE_APPLICATION_TIMEOUT = 500;
+
 private:
-    std::shared_ptr<AppMgrServiceInner> ams_;
+    std::weak_ptr<AppMgrServiceInner> appMgr_;
 };
 
 }  // namespace AppExecFwk

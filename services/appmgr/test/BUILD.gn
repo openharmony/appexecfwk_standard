@@ -36,7 +36,6 @@ ohos_source_set("appmgr_test_source") {
 
   sources = [
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base/src/ability_info.cpp",
-    "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base/src/app_process_info.cpp",
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base/src/application_info.cpp",
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base/src/bundle_info.cpp",
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base/src/element_name.cpp",
@@ -56,7 +55,11 @@ ohos_source_set("appmgr_test_source") {
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core/src/appmgr/profile.cpp",
   ]
 
-  include_dirs = [ "//third_party/json/include" ]
+  include_dirs = [
+    "//third_party/json/include",
+    "${appexecfwk_path}/services/appmgr/include/lmks",
+    "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core/include",
+  ]
 
   public_configs = [
     ":appmgr_test_config",
@@ -74,6 +77,8 @@ ohos_source_set("appmgr_test_source") {
     cflags += [ "-DBINDER_IPC_32BIT" ]
   }
   deps = [
+    "//base/notification/ces_standard/cesfwk/innerkits:cesfwk_innerkits",
+    "//base/security/permission/interfaces/innerkits/permission_standard/permissionsdk:libpermissionsdk_standard",
     "//foundation/aafwk/standard/interfaces/innerkits/base:base",
     "//foundation/aafwk/standard/interfaces/innerkits/want:want",
     "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_base:appexecfwk_base",
@@ -97,8 +102,14 @@ group("unittest") {
     "unittest/ams_app_running_record_test:unittest",
     "unittest/ams_app_state_callback_test:unittest",
     "unittest/ams_app_workflow_test:unittest",
+
+    # "unittest/ams_cgroup_manager_test:unittest",
     "unittest/ams_ipc_interface_test:unittest",
+
+    # "unittest/ams_lmks_client_test:unittest",
     "unittest/ams_mgr_scheduler_test:unittest",
+
+    # "unittest/ams_process_optimizer_test:unittest",
     "unittest/ams_recent_app_list_test:unittest",
     "unittest/ams_service_app_spawn_client_test:unittest",
     "unittest/ams_service_app_spawn_msg_wrapper_test:unittest",

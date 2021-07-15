@@ -61,6 +61,8 @@ static const std::string terminatePageAbility = "requ_page_ability_terminate";
 static const std::string eventNameAbilityN1 = "resp_st_page_ability_callback";
 static const std::string launcherBundleName = "com.ix.launcher";
 static const std::string systemUiBundle = "com.ohos.systemui";
+constexpr int WAIT_TIME = 3 * 1000;
+constexpr int WAIT_LAUNCHER_OK = 5 * 1000;
 
 std::vector<std::string> bundleNameList = {
     bundleName1,
@@ -74,9 +76,6 @@ std::vector<std::string> hapNameList = {
 };
 static const std::string abilityNameBase = "AmsStAbilityN1";
 int amsKitSTCode = 0;
-constexpr int WAIT_ABILITY_STATUS_OK = 4 * 1000;
-constexpr int WAIT_ABILITY_TERMINATE_OK = 2 * 1000;
-constexpr int WAIT_LAUNCHER_OK = 25 * 1000;
 }  // namespace
 
 class ActsAmsKitTest : public testing::Test {
@@ -87,10 +86,9 @@ public:
     void TearDown();
 
     static bool SubscribeEvent();
-    static void ClearSystem();
     void TestSkills(Want want);
     void StartAbilityKitTest(const std::string &abilityName, const std::string &bundleName);
-    void TerminateAbility(const std::string &eventName, const std::string &abilityName);
+    void CleanMsg();
     class AppEventSubscriber : public CommonEventSubscriber {
     public:
         explicit AppEventSubscriber(const CommonEventSubscribeInfo &sp) : CommonEventSubscriber(sp){};
@@ -115,16 +113,13 @@ std::shared_ptr<ActsAmsKitTest::AppEventSubscriber> ActsAmsKitTest::subscriber_ 
 
 void ActsAmsKitTest::AppEventSubscriber::OnReceiveEvent(const CommonEventData &data)
 {
-    GTEST_LOG_(INFO) << "OnReceiveEvent: event=" << data.GetWant().GetAction();
-    GTEST_LOG_(INFO) << "OnReceiveEvent: data=" << data.GetData();
-    GTEST_LOG_(INFO) << "OnReceiveEvent: code=" << data.GetCode();
     STAbilityUtil::Completed(event, data.GetWant().GetAction(), data.GetCode(), data.GetData());
     STAbilityUtil::Completed(abilityEvent, data.GetData(), data.GetCode());
 }
 
 void ActsAmsKitTest::SetUpTestCase(void)
 {
-    ClearSystem();
+    STAbilityUtil::InstallHaps(hapNameList);
     if (!SubscribeEvent()) {
         GTEST_LOG_(INFO) << "SubscribeEvent error";
     }
@@ -134,23 +129,27 @@ void ActsAmsKitTest::SetUpTestCase(void)
               << "AMS : " << stLevel_.AMSLevel << " "
               << "BMS : " << stLevel_.BMSLevel << " "
               << "CES : " << stLevel_.CESLevel << std::endl;
+    appMs = STAbilityUtil::GetAppMgrService();
+    abilityMs = STAbilityUtil::GetAbilityManagerService();
+    if (appMs) {
+        appMs->SetAppFreezingTime(60);
+    }
 }
 
 void ActsAmsKitTest::TearDownTestCase(void)
 {
     CommonEventManager::UnSubscribeCommonEvent(subscriber_);
+    STAbilityUtil::UninstallBundle(bundleNameList);
 }
 
 void ActsAmsKitTest::SetUp(void)
-{
-    STAbilityUtil::InstallHaps(hapNameList);
-}
+{}
 
 void ActsAmsKitTest::TearDown(void)
 {
-    STAbilityUtil::UninstallBundle(bundleNameList);
-    STAbilityUtil::CleanMsg(event);
-    STAbilityUtil::CleanMsg(abilityEvent);
+    STAbilityUtil::RemoveStack(1, abilityMs, WAIT_TIME, WAIT_LAUNCHER_OK);
+    STAbilityUtil::KillBundleProcess(bundleNameList);
+    CleanMsg();
 }
 
 bool ActsAmsKitTest::SubscribeEvent()
@@ -173,16 +172,6 @@ bool ActsAmsKitTest::SubscribeEvent()
     return CommonEventManager::SubscribeCommonEvent(subscriber_);
 }
 
-void ActsAmsKitTest::ClearSystem()
-{
-    STAbilityUtil::KillService("appspawn");
-    STAbilityUtil::KillService("installs");
-    STAbilityUtil::KillService(launcherBundleName);
-    STAbilityUtil::KillService(systemUiBundle);
-    STAbilityUtil::KillService("foundation");
-    std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_LAUNCHER_OK));
-}
-
 void ActsAmsKitTest::StartAbilityKitTest(const std::string &abilityName, const std::string &bundleName)
 {
     MAP_STR_STR params;
@@ -191,12 +180,10 @@ void ActsAmsKitTest::StartAbilityKitTest(const std::string &abilityName, const s
     EXPECT_EQ(STAbilityUtil::WaitCompleted(abilityEvent, abilityName + g_abilityStateOnActive, 0), 0);
 }
 
-void ActsAmsKitTest::TerminateAbility(const std::string &eventName, const std::string &abilityName)
+void ActsAmsKitTest::CleanMsg()
 {
-    std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_STATUS_OK));
-    STAbilityUtil::PublishEvent(eventName, 0, "TerminateAbility");
-    EXPECT_EQ(STAbilityUtil::WaitCompleted(abilityEvent, abilityName + g_abilityStateOnStop, 0), 0);
-    std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_TERMINATE_OK));
+    STAbilityUtil::CleanMsg(event);
+    STAbilityUtil::CleanMsg(abilityEvent);
 }
 
 /**
@@ -217,12 +204,12 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_0100, Function | MediumTest | L
         std::string data = STAbilityUtil::GetData(event, g_respPageManagerAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_AbilityManager_0100 : " << i;
             break;
         }
     }
-    TerminateAbility(g_requPageManagerAbilityST, abilityManagerName);
 }
 
 /**
@@ -243,12 +230,12 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_0200, Function | MediumTest | L
         std::string data = STAbilityUtil::GetData(event, g_respPageManagerAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_AbilityManager_0200 : " << i;
             break;
         }
     }
-    TerminateAbility(g_requPageManagerAbilityST, abilityManagerName);
 }
 
 /**
@@ -268,12 +255,12 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_0300, Function | MediumTest | L
         std::string data = STAbilityUtil::GetData(event, g_respPageManagerAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_AbilityManager_0300 : " << i;
             break;
         }
     }
-    TerminateAbility(g_requPageManagerAbilityST, abilityManagerName);
 }
 
 /**
@@ -294,12 +281,12 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_0400, Function | MediumTest | L
         std::string data = STAbilityUtil::GetData(event, g_respPageManagerAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_AbilityManager_0400 : " << i;
             break;
         }
     }
-    TerminateAbility(g_requPageManagerAbilityST, abilityManagerName);
 }
 
 /**
@@ -322,13 +309,11 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_0500, Function | MediumTest | L
         std::string data = STAbilityUtil::GetData(event, g_respPageManagerAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_AbilityManager_0500 : " << i;
             break;
         }
-        TerminateAbility(g_requPageManagerSecondAbilityST, abilityManagerSecondName);
-        EXPECT_EQ(STAbilityUtil::WaitCompleted(abilityEvent, abilityManagerName + g_abilityStateOnActive, 0), 0);
-        TerminateAbility(g_requPageManagerAbilityST, abilityManagerName);
     }
 }
 
@@ -351,13 +336,11 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_0600, Function | MediumTest | L
         std::string data = STAbilityUtil::GetData(event, g_respPageManagerAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_AbilityManager_0600 : " << i;
             break;
         }
-        TerminateAbility(g_requPageManagerSecondAbilityST, abilityManagerSecondName);
-        EXPECT_EQ(STAbilityUtil::WaitCompleted(abilityEvent, abilityManagerName + g_abilityStateOnActive, 0), 0);
-        TerminateAbility(g_requPageManagerAbilityST, abilityManagerName);
     }
 }
 
@@ -380,13 +363,11 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_0700, Function | MediumTest | L
         std::string data = STAbilityUtil::GetData(event, g_respPageManagerAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_AbilityManager_0700 : " << i;
             break;
         }
-        TerminateAbility(g_requPageManagerSecondAbilityST, abilityManagerSecondName);
-        EXPECT_EQ(STAbilityUtil::WaitCompleted(abilityEvent, abilityManagerName + g_abilityStateOnActive, 0), 0);
-        TerminateAbility(g_requPageManagerAbilityST, abilityManagerName);
     }
 }
 
@@ -409,13 +390,11 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_0800, Function | MediumTest | L
         std::string data = STAbilityUtil::GetData(event, g_respPageManagerAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_AbilityManager_0800 : " << i;
             break;
         }
-        TerminateAbility(g_requPageManagerSecondAbilityST, abilityManagerSecondName);
-        EXPECT_EQ(STAbilityUtil::WaitCompleted(abilityEvent, abilityManagerName + g_abilityStateOnActive, 0), 0);
-        TerminateAbility(g_requPageManagerAbilityST, abilityManagerName);
     }
 }
 
@@ -438,13 +417,11 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_0900, Function | MediumTest | L
         std::string data = STAbilityUtil::GetData(event, g_respPageManagerAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_AbilityManager_0900 : " << i;
             break;
         }
-        TerminateAbility(g_requPageManagerSecondAbilityST, abilityManagerSecondName);
-        EXPECT_EQ(STAbilityUtil::WaitCompleted(abilityEvent, abilityManagerName + g_abilityStateOnActive, 0), 0);
-        TerminateAbility(g_requPageManagerAbilityST, abilityManagerName);
     }
 }
 
@@ -467,13 +444,11 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_1000, Function | MediumTest | L
         std::string data = STAbilityUtil::GetData(event, g_respPageManagerAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_AbilityManager_1000 : " << i;
             break;
         }
-        TerminateAbility(g_requPageManagerSecondAbilityST, abilityManagerSecondName);
-        EXPECT_EQ(STAbilityUtil::WaitCompleted(abilityEvent, abilityManagerName + g_abilityStateOnActive, 0), 0);
-        TerminateAbility(g_requPageManagerAbilityST, abilityManagerName);
     }
 }
 
@@ -495,12 +470,12 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_1100, Function | MediumTest | L
         std::string data = STAbilityUtil::GetData(event, g_respPageManagerAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_AbilityManager_1100 : " << i;
             break;
         }
     }
-    TerminateAbility(g_requPageManagerAbilityST, abilityManagerName);
 }
 
 /**
@@ -521,12 +496,12 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_1200, Function | MediumTest | L
         std::string data = STAbilityUtil::GetData(event, g_respPageManagerAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_AbilityManager_1200 : " << i;
             break;
         }
     }
-    TerminateAbility(g_requPageManagerAbilityST, abilityManagerName);
 }
 
 /**
@@ -547,12 +522,12 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_1300, Function | MediumTest | L
         std::string data = STAbilityUtil::GetData(event, g_respPageManagerAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_AbilityManager_1300 : " << i;
             break;
         }
     }
-    TerminateAbility(g_requPageManagerAbilityST, abilityManagerName);
 }
 
 /**
@@ -573,12 +548,12 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_1400, Function | MediumTest | L
         std::string data = STAbilityUtil::GetData(event, g_respPageManagerAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_AbilityManager_1400 : " << i;
             break;
         }
     }
-    TerminateAbility(g_requPageManagerAbilityST, abilityManagerName);
 }
 
 /**
@@ -600,13 +575,11 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_1500, Function | MediumTest | L
         std::string data = STAbilityUtil::GetData(event, g_respPageManagerAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_AbilityManager_1500 : " << i;
             break;
         }
-        TerminateAbility(g_requPageManagerSecondAbilityST, abilityManagerSecondName);
-        EXPECT_EQ(STAbilityUtil::WaitCompleted(abilityEvent, abilityManagerName + g_abilityStateOnActive, 0), 0);
-        TerminateAbility(g_requPageManagerAbilityST, abilityManagerName);
     }
 }
 
@@ -629,13 +602,11 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_1600, Function | MediumTest | L
         std::string data = STAbilityUtil::GetData(event, g_respPageManagerAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_AbilityManager_1600 : " << i;
             break;
         }
-        TerminateAbility(g_requPageManagerSecondAbilityST, abilityManagerSecondName);
-        EXPECT_EQ(STAbilityUtil::WaitCompleted(abilityEvent, abilityManagerName + g_abilityStateOnActive, 0), 0);
-        TerminateAbility(g_requPageManagerAbilityST, abilityManagerName);
     }
 }
 
@@ -658,13 +629,11 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_1700, Function | MediumTest | L
         std::string data = STAbilityUtil::GetData(event, g_respPageManagerAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_AbilityManager_1700 : " << i;
             break;
         }
-        TerminateAbility(g_requPageManagerSecondAbilityST, abilityManagerSecondName);
-        EXPECT_EQ(STAbilityUtil::WaitCompleted(abilityEvent, abilityManagerName + g_abilityStateOnActive, 0), 0);
-        TerminateAbility(g_requPageManagerAbilityST, abilityManagerName);
     }
 }
 
@@ -687,13 +656,11 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_1800, Function | MediumTest | L
         std::string data = STAbilityUtil::GetData(event, g_respPageManagerAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_AbilityManager_1800 : " << i;
             break;
         }
-        TerminateAbility(g_requPageManagerSecondAbilityST, abilityManagerSecondName);
-        EXPECT_EQ(STAbilityUtil::WaitCompleted(abilityEvent, abilityManagerName + g_abilityStateOnActive, 0), 0);
-        TerminateAbility(g_requPageManagerAbilityST, abilityManagerName);
     }
 }
 
@@ -716,13 +683,11 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_1900, Function | MediumTest | L
         std::string data = STAbilityUtil::GetData(event, g_respPageManagerAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_AbilityManager_1900 : " << i;
             break;
         }
-        TerminateAbility(g_requPageManagerSecondAbilityST, abilityManagerSecondName);
-        EXPECT_EQ(STAbilityUtil::WaitCompleted(abilityEvent, abilityManagerName + g_abilityStateOnActive, 0), 0);
-        TerminateAbility(g_requPageManagerAbilityST, abilityManagerName);
     }
 }
 
@@ -743,12 +708,12 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_2000, Function | MediumTest | L
         std::string data = STAbilityUtil::GetData(event, g_respPageManagerAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_AbilityManager_2000 : " << i;
             break;
         }
     }
-    TerminateAbility(g_requPageManagerAbilityST, abilityManagerName);
 }
 
 /**
@@ -768,12 +733,12 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_2100, Function | MediumTest | L
         std::string data = STAbilityUtil::GetData(event, g_respPageManagerAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_AbilityManager_2100 : " << i;
             break;
         }
     }
-    TerminateAbility(g_requPageManagerAbilityST, abilityManagerName);
 }
 
 /**
@@ -793,12 +758,12 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_2200, Function | MediumTest | L
         std::string data = STAbilityUtil::GetData(event, g_respPageManagerAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_AbilityManager_2200 : " << i;
             break;
         }
     }
-    TerminateAbility(g_requPageManagerAbilityST, abilityManagerName);
 }
 
 /**
@@ -818,12 +783,12 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_2300, Function | MediumTest | L
         std::string data = STAbilityUtil::GetData(event, g_respPageManagerAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_AbilityManager_2300 : " << i;
             break;
         }
     }
-    TerminateAbility(g_requPageManagerAbilityST, abilityManagerName);
 }
 
 /**
@@ -844,12 +809,12 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_2400, Function | MediumTest | L
         std::string data = STAbilityUtil::GetData(event, g_respPageManagerAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_AbilityManager_2400 : " << i;
             break;
         }
     }
-    TerminateAbility(g_requPageManagerAbilityST, abilityManagerName);
 }
 
 /**
@@ -870,12 +835,12 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_2500, Function | MediumTest | L
         std::string data = STAbilityUtil::GetData(event, g_respPageManagerAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_AbilityManager_2500 : " << i;
             break;
         }
     }
-    TerminateAbility(g_requPageManagerAbilityST, abilityManagerName);
 }
 
 /**
@@ -896,12 +861,12 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_2600, Function | MediumTest | L
         std::string data = STAbilityUtil::GetData(event, g_respPageManagerAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_AbilityManager_2600 : " << i;
             break;
         }
     }
-    TerminateAbility(g_requPageManagerAbilityST, abilityManagerName);
 }
 
 /**
@@ -923,13 +888,11 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_2700, Function | MediumTest | L
         std::string data = STAbilityUtil::GetData(event, g_respPageManagerAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_AbilityManager_2700 : " << i;
             break;
         }
-        TerminateAbility(g_requPageManagerSecondAbilityST, abilityManagerSecondName);
-        EXPECT_EQ(STAbilityUtil::WaitCompleted(abilityEvent, abilityManagerName + g_abilityStateOnActive, 0), 0);
-        TerminateAbility(g_requPageManagerAbilityST, abilityManagerName);
     }
 }
 
@@ -952,13 +915,11 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_2800, Function | MediumTest | L
         std::string data = STAbilityUtil::GetData(event, g_respPageManagerAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_AbilityManager_2800 : " << i;
             break;
         }
-        TerminateAbility(g_requPageManagerSecondAbilityST, abilityManagerSecondName);
-        EXPECT_EQ(STAbilityUtil::WaitCompleted(abilityEvent, abilityManagerName + g_abilityStateOnActive, 0), 0);
-        TerminateAbility(g_requPageManagerAbilityST, abilityManagerName);
     }
 }
 
@@ -981,13 +942,11 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_2900, Function | MediumTest | L
         std::string data = STAbilityUtil::GetData(event, g_respPageManagerAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_AbilityManager_2900 : " << i;
             break;
         }
-        TerminateAbility(g_requPageManagerSecondAbilityST, abilityManagerSecondName);
-        EXPECT_EQ(STAbilityUtil::WaitCompleted(abilityEvent, abilityManagerName + g_abilityStateOnActive, 0), 0);
-        TerminateAbility(g_requPageManagerAbilityST, abilityManagerName);
     }
 }
 
@@ -1008,12 +967,12 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_3000, Function | MediumTest | L
         std::string data = STAbilityUtil::GetData(event, g_respPageManagerAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_AbilityManager_3000 : " << i;
             break;
         }
     }
-    TerminateAbility(g_requPageManagerAbilityST, abilityManagerName);
 }
 
 /**
@@ -1033,12 +992,12 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_3100, Function | MediumTest | L
         std::string data = STAbilityUtil::GetData(event, g_respPageManagerAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_AbilityManager_3100 : " << i;
             break;
         }
     }
-    TerminateAbility(g_requPageManagerAbilityST, abilityManagerName);
 }
 
 /**
@@ -1058,12 +1017,12 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_3200, Function | MediumTest | L
         std::string data = STAbilityUtil::GetData(event, g_respPageManagerAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_AbilityManager_3200 : " << i;
             break;
         }
     }
-    TerminateAbility(g_requPageManagerAbilityST, abilityManagerName);
 }
 
 /**
@@ -1084,12 +1043,12 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_3300, Function | MediumTest | L
         std::string data = STAbilityUtil::GetData(event, g_respPageManagerAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_AbilityManager_3300 : " << i;
             break;
         }
     }
-    TerminateAbility(g_requPageManagerAbilityST, abilityManagerName);
 }
 
 /**
@@ -1111,13 +1070,11 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_3400, Function | MediumTest | L
         std::string data = STAbilityUtil::GetData(event, g_respPageManagerAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_AbilityManager_3400 : " << i;
             break;
         }
-        TerminateAbility(g_requPageManagerSecondAbilityST, abilityManagerSecondName);
-        EXPECT_EQ(STAbilityUtil::WaitCompleted(abilityEvent, abilityManagerName + g_abilityStateOnActive, 0), 0);
-        TerminateAbility(g_requPageManagerAbilityST, abilityManagerName);
     }
 }
 
@@ -1140,13 +1097,11 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_3500, Function | MediumTest | L
         std::string data = STAbilityUtil::GetData(event, g_respPageManagerAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_AbilityManager_3500 : " << i;
             break;
         }
-        TerminateAbility(g_requPageManagerSecondAbilityST, abilityManagerSecondName);
-        EXPECT_EQ(STAbilityUtil::WaitCompleted(abilityEvent, abilityManagerName + g_abilityStateOnActive, 0), 0);
-        TerminateAbility(g_requPageManagerAbilityST, abilityManagerName);
     }
 }
 
@@ -1169,13 +1124,11 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_3600, Function | MediumTest | L
         std::string data = STAbilityUtil::GetData(event, g_respPageManagerAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_AbilityManager_3600 : " << i;
             break;
         }
-        TerminateAbility(g_requPageManagerSecondAbilityST, abilityManagerSecondName);
-        EXPECT_EQ(STAbilityUtil::WaitCompleted(abilityEvent, abilityManagerName + g_abilityStateOnActive, 0), 0);
-        TerminateAbility(g_requPageManagerAbilityST, abilityManagerName);
     }
 }
 
@@ -1197,13 +1150,11 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_3700, Function | MediumTest | L
         std::string data = STAbilityUtil::GetData(event, g_respPageManagerAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_AbilityManager_3700 : " << i;
             break;
         }
-        TerminateAbility(g_requPageManagerSecondAbilityST, abilityManagerSecondName);
-        EXPECT_EQ(STAbilityUtil::WaitCompleted(abilityEvent, abilityManagerName + g_abilityStateOnActive, 0), 0);
-        TerminateAbility(g_requPageManagerAbilityST, abilityManagerName);
     }
 }
 
@@ -1227,12 +1178,12 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_3800, Function | MediumTest | L
         std::string data = STAbilityUtil::GetData(event, g_respPageManagerAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_AbilityManager_3800 : " << i;
             break;
         }
     }
-    TerminateAbility(g_requPageManagerAbilityST, abilityManagerName);
 }
 
 /**
@@ -1252,12 +1203,12 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_3900, Function | MediumTest | L
         std::string data = STAbilityUtil::GetData(event, g_respPageManagerAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_AbilityManager_3900 : " << i;
             break;
         }
     }
-    TerminateAbility(g_requPageManagerAbilityST, abilityManagerName);
 }
 
 /**
@@ -1277,12 +1228,12 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_4000, Function | MediumTest | L
         std::string data = STAbilityUtil::GetData(event, g_respPageManagerAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_AbilityManager_4000 : " << i;
             break;
         }
     }
-    TerminateAbility(g_requPageManagerAbilityST, abilityManagerName);
 }
 
 /**
@@ -1302,12 +1253,12 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_4100, Function | MediumTest | L
         std::string data = STAbilityUtil::GetData(event, g_respPageManagerAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_AbilityManager_4100 : " << i;
             break;
         }
     }
-    TerminateAbility(g_requPageManagerAbilityST, abilityManagerName);
 }
 
 /**
@@ -1327,12 +1278,12 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_4200, Function | MediumTest | L
         std::string data = STAbilityUtil::GetData(event, g_respPageManagerAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_AbilityManager_4200 : " << i;
             break;
         }
     }
-    TerminateAbility(g_requPageManagerAbilityST, abilityManagerName);
 }
 
 /**
@@ -1352,12 +1303,12 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_4300, Function | MediumTest | L
         std::string data = STAbilityUtil::GetData(event, g_respPageManagerAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_AbilityManager_4300 : " << i;
             break;
         }
     }
-    TerminateAbility(g_requPageManagerAbilityST, abilityManagerName);
 }
 
 /**
@@ -1377,12 +1328,12 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_4400, Function | MediumTest | L
         std::string data = STAbilityUtil::GetData(event, g_respPageManagerAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_AbilityManager_4400 : " << i;
             break;
         }
     }
-    TerminateAbility(g_requPageManagerAbilityST, abilityManagerName);
 }
 
 /**
@@ -1403,12 +1354,12 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_Application_0100, Function | MediumTest | Leve
         std::string data = STAbilityUtil::GetData(event, g_respPageSixthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Application_0100 : " << i;
             break;
         }
     }
-    TerminateAbility(g_requPageSixthAbilityST, sixthAbilityName);
 }
 
 /**
@@ -1429,12 +1380,12 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_Application_0200, Function | MediumTest | Leve
         std::string data = STAbilityUtil::GetData(event, g_respPageSixthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Application_0200 : " << i;
             break;
         }
     }
-    TerminateAbility(g_requPageSixthAbilityST, sixthAbilityName);
 }
 
 /**
@@ -1455,12 +1406,12 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_Application_0300, Function | MediumTest | Leve
         std::string data = STAbilityUtil::GetData(event, g_respPageSixthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Application_0300 : " << i;
             break;
         }
     }
-    TerminateAbility(g_requPageSixthAbilityST, sixthAbilityName);
 }
 
 /**
@@ -1481,12 +1432,12 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_Application_0400, Function | MediumTest | Leve
         std::string data = STAbilityUtil::GetData(event, g_respPageSixthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Application_0400 : " << i;
             break;
         }
     }
-    TerminateAbility(g_requPageSixthAbilityST, sixthAbilityName);
 }
 
 /**
@@ -1507,12 +1458,12 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_Application_0500, Function | MediumTest | Leve
         std::string data = STAbilityUtil::GetData(event, g_respPageSixthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Application_0500 : " << i;
             break;
         }
     }
-    TerminateAbility(g_requPageSixthAbilityST, sixthAbilityName);
 }
 
 /**
@@ -1533,12 +1484,12 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_Application_0600, Function | MediumTest | Leve
         std::string data = STAbilityUtil::GetData(event, g_respPageSixthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Application_0600 : " << i;
             break;
         }
     }
-    TerminateAbility(g_requPageSixthAbilityST, sixthAbilityName);
 }
 
 /**
@@ -1559,12 +1510,12 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_Application_0700, Function | MediumTest | Leve
         std::string data = STAbilityUtil::GetData(event, g_respPageSixthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Application_0700 : " << i;
             break;
         }
     }
-    TerminateAbility(g_requPageSixthAbilityST, sixthAbilityName);
 }
 
 /**
@@ -1585,12 +1536,12 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_Application_0800, Function | MediumTest | Leve
         std::string data = STAbilityUtil::GetData(event, g_respPageSixthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Application_0800 : " << i;
             break;
         }
     }
-    TerminateAbility(g_requPageSixthAbilityST, sixthAbilityName);
 }
 
 /**
@@ -1611,12 +1562,12 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_Application_0900, Function | MediumTest | Leve
         std::string data = STAbilityUtil::GetData(event, g_respPageSixthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Application_0900 : " << i;
             break;
         }
     }
-    TerminateAbility(g_requPageSixthAbilityST, sixthAbilityName);
 }
 
 /**
@@ -1637,12 +1588,12 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_Application_1000, Function | MediumTest | Leve
         std::string data = STAbilityUtil::GetData(event, g_respPageSixthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Application_1000 : " << i;
             break;
         }
     }
-    TerminateAbility(g_requPageSixthAbilityST, sixthAbilityName);
 }
 
 /**
@@ -1663,12 +1614,12 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_Application_1100, Function | MediumTest | Leve
         std::string data = STAbilityUtil::GetData(event, g_respPageSixthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Application_1100 : " << i;
             break;
         }
     }
-    TerminateAbility(g_requPageSixthAbilityST, sixthAbilityName);
 }
 
 /**
@@ -1689,12 +1640,12 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_Application_1200, Function | MediumTest | Leve
         std::string data = STAbilityUtil::GetData(event, g_respPageSixthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Application_1200 : " << i;
             break;
         }
     }
-    TerminateAbility(g_requPageSixthAbilityST, sixthAbilityName);
 }
 
 /**
@@ -1715,12 +1666,12 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_Application_1300, Function | MediumTest | Leve
         std::string data = STAbilityUtil::GetData(event, g_respPageSixthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Application_1300 : " << i;
             break;
         }
     }
-    TerminateAbility(g_requPageSixthAbilityST, sixthAbilityName);
 }
 
 /**
@@ -1741,12 +1692,12 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_Application_1400, Function | MediumTest | Leve
         std::string data = STAbilityUtil::GetData(event, g_respPageSixthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Application_1400 : " << i;
             break;
         }
     }
-    TerminateAbility(g_requPageSixthAbilityST, sixthAbilityName);
 }
 
 /**
@@ -1767,12 +1718,12 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_Application_1500, Function | MediumTest | Leve
         std::string data = STAbilityUtil::GetData(event, g_respPageSixthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Application_1500 : " << i;
             break;
         }
     }
-    TerminateAbility(g_requPageSixthAbilityST, sixthAbilityName);
 }
 
 /**
@@ -1793,12 +1744,12 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_Application_1600, Function | MediumTest | Leve
         std::string data = STAbilityUtil::GetData(event, g_respPageSixthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Application_1600 : " << i;
             break;
         }
     }
-    TerminateAbility(g_requPageSixthAbilityST, sixthAbilityName);
 }
 
 /**
@@ -1819,12 +1770,12 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_Application_1700, Function | MediumTest | Leve
         std::string data = STAbilityUtil::GetData(event, g_respPageSixthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Application_1700 : " << i;
             break;
         }
     }
-    TerminateAbility(g_requPageSixthAbilityST, sixthAbilityName);
 }
 
 /**
@@ -1845,12 +1796,12 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_Application_1800, Function | MediumTest | Leve
         std::string data = STAbilityUtil::GetData(event, g_respPageSixthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Application_1800 : " << i;
             break;
         }
     }
-    TerminateAbility(g_requPageSixthAbilityST, sixthAbilityName);
 }
 
 /**
@@ -1871,12 +1822,12 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_Application_1900, Function | MediumTest | Leve
         std::string data = STAbilityUtil::GetData(event, g_respPageSixthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Application_1900 : " << i;
             break;
         }
     }
-    TerminateAbility(g_requPageSixthAbilityST, sixthAbilityName);
 }
 
 /**
@@ -1897,12 +1848,12 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_Application_2000, Function | MediumTest | Leve
         std::string data = STAbilityUtil::GetData(event, g_respPageSixthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Application_2000 : " << i;
             break;
         }
     }
-    TerminateAbility(g_requPageSixthAbilityST, sixthAbilityName);
 }
 
 /**
@@ -1924,12 +1875,12 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_Application_2100, Function | MediumTest | Leve
         std::string data = STAbilityUtil::GetData(event, g_respPageSixthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Application_2100 : " << i;
             break;
         }
     }
-    TerminateAbility(g_requPageSixthAbilityST, sixthAbilityName);
 }
 
 /**
@@ -1950,12 +1901,12 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_Application_2200, Function | MediumTest | Leve
         std::string data = STAbilityUtil::GetData(event, g_respPageSixthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Application_2200 : " << i;
             break;
         }
     }
-    TerminateAbility(g_requPageSixthAbilityST, sixthAbilityName);
 }
 
 /**
@@ -1976,12 +1927,12 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_Application_2300, Function | MediumTest | Leve
         std::string data = STAbilityUtil::GetData(event, g_respPageSixthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Application_2300 : " << i;
             break;
         }
     }
-    TerminateAbility(g_requPageSixthAbilityST, sixthAbilityName);
 }
 
 /**
@@ -2002,12 +1953,12 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_Application_2400, Function | MediumTest | Leve
         std::string data = STAbilityUtil::GetData(event, g_respPageSixthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Application_2400 : " << i;
             break;
         }
     }
-    TerminateAbility(g_requPageSixthAbilityST, sixthAbilityName);
 }
 
 /**
@@ -2028,12 +1979,12 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_Application_2500, Function | MediumTest | Leve
         std::string data = STAbilityUtil::GetData(event, g_respPageSixthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Application_2500 : " << i;
             break;
         }
     }
-    TerminateAbility(g_requPageSixthAbilityST, sixthAbilityName);
 }
 
 /**
@@ -2054,12 +2005,12 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_Application_2600, Function | MediumTest | Leve
         std::string data = STAbilityUtil::GetData(event, g_respPageSixthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
+        CleanMsg();
         if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Application_2600 : " << i;
             break;
         }
     }
-    TerminateAbility(g_requPageSixthAbilityST, sixthAbilityName);
 }
 
 /**
@@ -2071,19 +2022,20 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_Application_2600, Function | MediumTest | Leve
  */
 HWTEST_F(ActsAmsKitTest, AMS_Page_Application_2700, Function | MediumTest | Level1)
 {
-    MAP_STR_STR params;
-    params["targetBundle"] = bundleName2;
-    params["targetAbility"] = thirdAbilityName;
-    Want want = STAbilityUtil::MakeWant("device", sixthAbilityName, bundleName2, params);
-    STAbilityUtil::StartAbility(want, abilityMs);
-    EXPECT_EQ(STAbilityUtil::WaitCompleted(abilityEvent, sixthAbilityName + g_onAbilityActive, 0), 0);
-    EXPECT_EQ(STAbilityUtil::WaitCompleted(abilityEvent, sixthAbilityName + g_onAbilityInactive, 0), 0);
-    EXPECT_EQ(STAbilityUtil::WaitCompleted(abilityEvent, thirdAbilityName + g_onAbilityStart, 0), 0);
-    EXPECT_EQ(STAbilityUtil::WaitCompleted(abilityEvent, thirdAbilityName + g_onAbilityActive, 0), 0);
-    EXPECT_EQ(STAbilityUtil::WaitCompleted(abilityEvent, sixthAbilityName + g_onAbilityBackground, 0), 0);
-    TerminateAbility(g_requPageSixthAbilityST, sixthAbilityName);
-    EXPECT_EQ(STAbilityUtil::WaitCompleted(abilityEvent, sixthAbilityName + g_onAbilityStop, 0), 0);
-    TerminateAbility(g_requPageThirdAbilityST, thirdAbilityName);
+    for (int i = 1; i <= stLevel_.AMSLevel; i++) {
+        MAP_STR_STR params;
+        params["targetBundle"] = bundleName2;
+        params["targetAbility"] = thirdAbilityName;
+        Want want = STAbilityUtil::MakeWant("device", sixthAbilityName, bundleName2, params);
+        STAbilityUtil::StartAbility(want, abilityMs);
+        EXPECT_EQ(STAbilityUtil::WaitCompleted(abilityEvent, sixthAbilityName + g_onAbilityActive, 0), 0);
+        EXPECT_EQ(STAbilityUtil::WaitCompleted(abilityEvent, sixthAbilityName + g_onAbilityInactive, 0), 0);
+        EXPECT_EQ(STAbilityUtil::WaitCompleted(abilityEvent, thirdAbilityName + g_onAbilityStart, 0), 0);
+        EXPECT_EQ(STAbilityUtil::WaitCompleted(abilityEvent, thirdAbilityName + g_onAbilityActive, 0), 0);
+        EXPECT_EQ(STAbilityUtil::WaitCompleted(abilityEvent, sixthAbilityName + g_onAbilityBackground, 0), 0);
+
+        CleanMsg();
+    }
 }
 
 /**
@@ -2095,18 +2047,22 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_Application_2700, Function | MediumTest | Leve
  */
 HWTEST_F(ActsAmsKitTest, AMS_Page_Application_2800, Function | MediumTest | Level1)
 {
-    MAP_STR_STR params;
-    params["targetBundle"] = bundleName3;
-    params["targetAbility"] = abilityNameBase;
-    Want want = STAbilityUtil::MakeWant("device", sixthAbilityName, bundleName2, params);
-    STAbilityUtil::StartAbility(want, abilityMs);
-    EXPECT_EQ(STAbilityUtil::WaitCompleted(abilityEvent, sixthAbilityName + g_onAbilityActive, 0), 0);
-    EXPECT_EQ(STAbilityUtil::WaitCompleted(abilityEvent, sixthAbilityName + g_onAbilityInactive, 0), 0);
-    EXPECT_EQ(STAbilityUtil::WaitCompleted(abilityEvent, sixthAbilityName + g_onAbilityBackground, 0), 0);
-    STAbilityUtil::StopAbility(terminatePageAbility, 0, abilityNameBase);
-    int onStopWantCount = 1;
-    EXPECT_EQ(STAbilityUtil::WaitCompleted(abilityEvent, abilityNameBase + g_abilityStateOnStop, onStopWantCount), 0);
-    EXPECT_EQ(STAbilityUtil::WaitCompleted(abilityEvent, sixthAbilityName + g_onAbilityForeground, 0), 0);
-    EXPECT_EQ(STAbilityUtil::WaitCompleted(abilityEvent, sixthAbilityName + g_onAbilityActive, 0), 0);
-    TerminateAbility(g_requPageSixthAbilityST, sixthAbilityName);
+    for (int i = 1; i <= stLevel_.AMSLevel; i++) {
+        MAP_STR_STR params;
+        params["targetBundle"] = bundleName3;
+        params["targetAbility"] = abilityNameBase;
+        Want want = STAbilityUtil::MakeWant("device", sixthAbilityName, bundleName2, params);
+        STAbilityUtil::StartAbility(want, abilityMs);
+        EXPECT_EQ(STAbilityUtil::WaitCompleted(abilityEvent, sixthAbilityName + g_onAbilityActive, 0), 0);
+        EXPECT_EQ(STAbilityUtil::WaitCompleted(abilityEvent, sixthAbilityName + g_onAbilityInactive, 0), 0);
+        EXPECT_EQ(STAbilityUtil::WaitCompleted(abilityEvent, sixthAbilityName + g_onAbilityBackground, 0), 0);
+        STAbilityUtil::StopAbility(terminatePageAbility, 0, abilityNameBase);
+        int onStopWantCount = 1;
+        EXPECT_EQ(
+            STAbilityUtil::WaitCompleted(abilityEvent, abilityNameBase + g_abilityStateOnStop, onStopWantCount), 0);
+        EXPECT_EQ(STAbilityUtil::WaitCompleted(abilityEvent, sixthAbilityName + g_onAbilityForeground, 0), 0);
+        EXPECT_EQ(STAbilityUtil::WaitCompleted(abilityEvent, sixthAbilityName + g_onAbilityActive, 0), 0);
+
+        CleanMsg();
+    }
 }

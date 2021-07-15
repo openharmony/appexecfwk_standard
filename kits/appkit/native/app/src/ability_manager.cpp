@@ -58,10 +58,10 @@ StackInfo AbilityManager::GetAllStackInfo() const
     return info;
 }
 
-std::vector<RecentMissionInfo> AbilityManager::QueryRecentAbilityMissionInfo(int numMax, int flags) const
+std::vector<AbilityMissionInfo> AbilityManager::QueryRecentAbilityMissionInfo(int numMax, int flags) const
 {
     APP_LOGD("%s, %d", __func__, __LINE__);
-    std::vector<RecentMissionInfo> info;
+    std::vector<AbilityMissionInfo> info;
     ErrCode error = AAFwk::AbilityManagerClient::GetInstance()->GetRecentMissions(numMax, flags, info);
     if (error != ERR_OK) {
         APP_LOGE("%s failed, error : %d", __func__, error);
@@ -70,10 +70,10 @@ std::vector<RecentMissionInfo> AbilityManager::QueryRecentAbilityMissionInfo(int
     return info;
 }
 
-std::vector<RecentMissionInfo> AbilityManager::QueryRunningAbilityMissionInfo(int numMax) const
+std::vector<AbilityMissionInfo> AbilityManager::QueryRunningAbilityMissionInfo(int numMax) const
 {
     APP_LOGD("%s, %d", __func__, __LINE__);
-    std::vector<RecentMissionInfo> info;
+    std::vector<AbilityMissionInfo> info;
     ErrCode error =
         AAFwk::AbilityManagerClient::GetInstance()->GetRecentMissions(numMax, RECENT_IGNORE_UNAVAILABLE, info);
     if (error != ERR_OK) {
@@ -92,35 +92,43 @@ void AbilityManager::RemoveMissions(const std::vector<int> &missionId)
     }
 }
 
-void AbilityManager::ClearUpApplicationData(const std::string &bundleName)
+int32_t AbilityManager::ClearUpApplicationData(const std::string &bundleName)
 {
     APP_LOGD("%s, %d", __func__, __LINE__);
     auto object = OHOS::DelayedSingleton<SysMrgClient>::GetInstance()->GetSystemAbility(APP_MGR_SERVICE_ID);
     sptr<IAppMgr> appMgr_ = iface_cast<IAppMgr>(object);
     if (appMgr_ == nullptr) {
         APP_LOGE("%s, appMgr_ is nullptr", __func__);
-        return;
+        return ERR_NULL_OBJECT;
     }
 
-    appMgr_->ClearUpApplicationData(bundleName);
+    return appMgr_->ClearUpApplicationData(bundleName);
 }
 
-RunningProcessInfo AbilityManager::GetAllRunningProcesses()
+std::vector<RunningProcessInfo> AbilityManager::GetAllRunningProcesses()
 {
     APP_LOGD("%s, %d", __func__, __LINE__);
     auto object = OHOS::DelayedSingleton<SysMrgClient>::GetInstance()->GetSystemAbility(APP_MGR_SERVICE_ID);
     sptr<IAppMgr> appMgr_ = iface_cast<IAppMgr>(object);
-    RunningProcessInfo info;
-    std::shared_ptr<RunningProcessInfo> prpcessInfo = std::make_shared<RunningProcessInfo>();
-
-    if (appMgr_ == nullptr || prpcessInfo == nullptr) {
+    std::vector<RunningProcessInfo> info;
+    if (appMgr_ == nullptr) {
         APP_LOGE("%s, appMgr_ is nullptr", __func__);
         return info;
     }
 
-    appMgr_->GetAllRunningProcesses(prpcessInfo);
-    info.appProcessInfos = prpcessInfo->appProcessInfos;
+    appMgr_->GetAllRunningProcesses(info);
     return info;
+}
+
+int AbilityManager::KillProcessesByBundleName(const std::string &bundleName)
+{
+    APP_LOGD("%s, %d", __func__, __LINE__);
+    ErrCode error = AAFwk::AbilityManagerClient::GetInstance()->KillProcess(bundleName);
+    if (error != ERR_OK) {
+        APP_LOGE("%s failed, error : %d", __func__, error);
+        return error;
+    }
+    return ERR_OK;
 }
 
 }  // namespace AppExecFwk

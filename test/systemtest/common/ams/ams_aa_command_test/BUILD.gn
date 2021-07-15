@@ -45,6 +45,8 @@ ohos_systemtest("ams_aa_command_test") {
     cflags += [ "-DBINDER_IPC_32BIT" ]
   }
   deps = [
+    "${EVENT_DIR}/innerkits:cesfwk_innerkits",
+    "${EVENT_DIR}/kits/native:cesfwk_kits",
     "//foundation/aafwk/standard/interfaces/innerkits/want:want",
     "//foundation/aafwk/standard/services/abilitymgr:abilityms",
     "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_base:appexecfwk_base",

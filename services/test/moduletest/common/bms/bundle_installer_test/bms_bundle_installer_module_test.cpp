@@ -20,7 +20,7 @@
 #include "appexecfwk_errors.h"
 #include "bundle_constants.h"
 #include "bundle_data_mgr.h"
-#include "bundle_data_storage.h"
+#include "bundle_data_storage_database.h"
 #include "bundle_mgr_service.h"
 #include "bundle_profile.h"
 #include "common_tool.h"
@@ -32,6 +32,7 @@
 
 using namespace testing::ext;
 using namespace OHOS::AppExecFwk;
+using namespace OHOS::DistributedKv;
 using namespace std::chrono_literals;
 using namespace OHOS;
 using OHOS::DelayedSingleton;
@@ -96,9 +97,11 @@ public:
         return bms_->IsServiceReady();
     }
 
-    void CheckBundleSaved(const InnerBundleInfo &innerBundleInfo) const;
-    void CheckBundleDeleted(const InnerBundleInfo &innerBundleInfo) const;
-    static void ClearJsonFile();
+    void SaveBundleDataToStorage(const std::string &bundleName, const std::string &data, const std::string &deviceId);
+    void DeleteBundleDataToStorage(const std::string &bundleName, const std::string &deviceId);
+    void DeleteBundleDataToStorage();
+    std::unique_ptr<SingleKvStore> GetKvStorePtr(DistributedKvDataManager &dataManager);
+    InnerBundleInfo CreateInnerBundleInfo(const std::string &bundleName);
     void CheckFileExist(const std::string &bundleName) const;
     void CheckFileExist(const std::string &bundleName, const std::string &modulePackage) const;
     void CheckFileExist(const std::string &bundleName, const std::string &modulePackage,
@@ -111,55 +114,100 @@ protected:
             "appFeature": "ohos_system_app",
             "appType": 0,
             "baseAbilityInfos": {
-                "com.system.hiworld.examples1com.system.hiworld.example.h2bmsSystemBundle_A1": {
-                    "applicationName": "com.system.hiworld.examples1",
-                    "bundleName": "com.system.hiworld.examples1",
+                "com.ohos.launchercom.ohos.launcher.recentscom.ohos.launcher.recents.MainAbility": {
+                    "applicationName": "com.ohos.launcher",
+                    "bundleName": "com.ohos.launcher",
                     "codePath": "",
-                    "description": "",
+                    "description": "$string:mainability_description",
+                    "theme": "mytheme",
                     "deviceCapabilities": [],
                     "deviceId": "",
                     "deviceTypes": [
-                        "tv",
-                        "car"
+                        "phone"
                     ],
-                    "iconPath": "$media:snowball",
+                    "enabled": true,
+                    "iconPath": "$media:icon",
                     "isLauncherAbility": false,
-                    "isNativeAbility": true,
+                    "isNativeAbility": false,
                     "kind": "page",
-                    "label": "bmsSystemBundle_A1 Ability",
+                    "label": "$string:app_name",
                     "launchMode": 0,
                     "libPath": "",
-                    "moduleName": "bmsSystemBundle1",
-                    "name": "bmsSystemBundle_A1",
+                    "moduleName": ".MyApplication",
+                    "name": "com.ohos.launcher.recents.MainAbility",
                     "orientation": 0,
-                    "package": "com.system.hiworld.example.h2",
+                    "package": "com.ohos.launcher.recents",
                     "permissions": [],
                     "process": "",
-                    "resourcePath": "",
+                    "readPermission": "",
+                    "resourcePath": "/data/accounts/account_0/applications/com.ohos.launcher/com.ohos.launcher.recents/assets/recents/resources.index",
+                    "targetAbility": "",
                     "type": 1,
                     "uri": "",
-                    "visible": true
+                    "visible": true,
+                    "writePermission": "",
+                    "form": {
+                        "formEntity": ["homeScreen", "searchbox"],
+                        "minHeight": 0,
+                        "defaultHeight": 100,
+                        "minWidth": 0,
+                        "defaultWidth": 200
+                    }
+                },
+                "com.ohos.launchercom.ohos.launchercom.ohos.launcher.MainAbility": {
+                    "applicationName": "com.ohos.launcher",
+                    "bundleName": "com.ohos.launcher",
+                    "codePath": "",
+                    "description": "$string:mainability_description",
+                    "deviceCapabilities": [],
+                    "deviceId": "",
+                    "deviceTypes": [
+                        "phone"
+                    ],
+                    "enabled": true,
+                    "iconPath": "$media:icon",
+                    "isLauncherAbility": true,
+                    "isNativeAbility": false,
+                    "kind": "page",
+                    "label": "$string:app_name",
+                    "launchMode": 0,
+                    "libPath": "",
+                    "moduleName": ".MyApplication",
+                    "name": "com.ohos.launcher.MainAbility",
+                    "orientation": 0,
+                    "package": "com.ohos.launcher",
+                    "permissions": [],
+                    "process": "",
+                    "readPermission": "",
+                    "resourcePath": "/data/accounts/account_0/applications/com.ohos.launcher/com.ohos.launcher/assets/launcher/resources.index",
+                    "targetAbility": "",
+                    "type": 1,
+                    "uri": "",
+                    "visible": false,
+                    "writePermission": ""
                 }
             },
             "baseApplicationInfo": {
-                "bundleName": "com.system.hiworld.examples1",
-                "cacheDir": "/data/accounts/account_0/appdata/com.system.hiworld.examples1/cache",
-                "codePath": "/data/accounts/account_0/applications/com.system.hiworld.examples1",
-                "dataBaseDir": "/data/accounts/account_0/appdata/com.system.hiworld.examples1/database",
-                "dataDir": "/data/accounts/account_0/appdata/com.system.hiworld.examples1/files",
-                "description": "",
-                "descriptionId": 0,
+                "bundleName": "com.ohos.launcher",
+                "cacheDir": "/data/accounts/account_0/appdata/com.ohos.launcher/cache",
+                "codePath": "/data/accounts/account_0/applications/com.ohos.launcher",
+                "dataBaseDir": "/data/accounts/account_0/appdata/com.ohos.launcher/database",
+                "dataDir": "/data/accounts/account_0/appdata/com.ohos.launcher/files",
+                "description": "$string:mainability_description",
+                "descriptionId": 16777217,
                 "deviceId": "PHONE-001",
+                "enabled": true,
                 "entryDir": "",
-                "iconId": 0,
-                "iconPath": "",
-                "isLauncherApp": false,
+                "flags": 0,
+                "iconId": 16777218,
+                "iconPath": "$media:icon",
+                "isLauncherApp": true,
                 "isSystemApp": true,
-                "label": "",
-                "labelId": 0,
+                "label": "$string:app_name",
+                "labelId": 16777216,
                 "moduleInfos": [],
                 "moduleSourceDirs": [],
-                "name": "com.system.hiworld.examples1",
+                "name": "com.ohos.launcher",
                 "permissions": [],
                 "process": "",
                 "signatureKey": "",
@@ -177,7 +225,9 @@ protected:
                     "description": "",
                     "descriptionId": 0,
                     "deviceId": "",
+                    "enabled": false,
                     "entryDir": "",
+                    "flags": 0,
                     "iconId": 0,
                     "iconPath": "",
                     "isLauncherApp": false,
@@ -192,18 +242,19 @@ protected:
                     "signatureKey": "",
                     "supportedModes": 0
                 },
-                "compatibleVersion": 3,
+                "compatibleVersion": 6,
                 "cpuAbi": "",
                 "defPermissions": [],
                 "description": "",
                 "entryModuleName": "",
-                "gid": 2101,
+                "gid": 2103,
                 "hapModuleNames": [],
-                "installTime": 105590,
+                "installTime": 10631,
+                "isDifferentName": false,
                 "isKeepAlive": false,
-                "isNativeApp": true,
+                "isNativeApp": false,
                 "jointUserId": "",
-                "label": "bmsSystemBundle_A1 Ability",
+                "label": "$string:app_name",
                 "mainEntry": "",
                 "maxSdkVersion": 0,
                 "minSdkVersion": 0,
@@ -211,31 +262,31 @@ protected:
                 "moduleNames": [],
                 "modulePublicDirs": [],
                 "moduleResPaths": [],
-                "name": "com.system.hiworld.examples1",
-                "releaseType": "Release",
+                "name": "com.ohos.launcher",
+                "releaseType": "Canary1",
                 "reqPermissions": [],
                 "seInfo": "",
-                "targetVersion": 3,
-                "uid": 2101,
-                "updateTime": 105590,
-                "vendor": "example",
+                "targetVersion": 6,
+                "uid": 2103,
+                "updateTime": 10635,
+                "vendor": "ohos",
                 "versionCode": 1,
                 "versionName": "1.0"
             },
-            "baseDataDir": "/data/accounts/account_0/appdata/com.system.hiworld.examples1",
+            "baseDataDir": "/data/accounts/account_0/appdata/com.ohos.launcher",
             "bundleStatus": 1,
-            "gid": 2101,
+            "gid": 2103,
             "hasEntry": true,
             "innerModuleInfos": {
-                "com.system.hiworld.example.h2": {
+                "com.ohos.launcher": {
                     "abilityKeys": [
-                        "com.system.hiworld.examples1com.system.hiworld.example.h2bmsSystemBundle_A1"
+                        "com.ohos.launchercom.ohos.launchercom.ohos.launcher.MainAbility"
                     ],
                     "defPermissions": [],
                     "description": "",
                     "distro": {
                         "deliveryWithInstall": true,
-                        "moduleName": "testability",
+                        "moduleName": "launcher",
                         "moduleType": "entry"
                     },
                     "isEntry": true,
@@ -244,31 +295,72 @@ protected:
                         "parameters": [],
                         "results": []
                     },
-                    "moduleDataDir": "/data/accounts/account_0/appdata/com.system.hiworld.examples1/com.system.hiworld.example.h2",
-                    "moduleName": "bmsSystemBundle1",
-                    "modulePackage": "com.system.hiworld.example.h2",
-                    "modulePath": "/data/accounts/account_0/applications/com.system.hiworld.examples1/com.system.hiworld.example.h2",
-                    "moduleResPath": "",
+                    "moduleDataDir": "/data/accounts/account_0/appdata/com.ohos.launcher/com.ohos.launcher",
+                    "moduleName": ".MyApplication",
+                    "modulePackage": "com.ohos.launcher",
+                    "modulePath": "/data/accounts/account_0/applications/com.ohos.launcher/com.ohos.launcher",
+                    "moduleResPath": "/data/accounts/account_0/applications/com.ohos.launcher/com.ohos.launcher/assets/launcher/resources.index",
                     "reqCapabilities": [],
                     "reqPermissions": [],
                     "skillKeys": [
-                        "com.system.hiworld.examples1com.system.hiworld.example.h2bmsSystemBundle_A1"
+                        "com.ohos.launchercom.ohos.launchercom.ohos.launcher.MainAbility"
+                    ]
+                },
+                "com.ohos.launcher.recents": {
+                    "abilityKeys": [
+                        "com.ohos.launchercom.ohos.launcher.recentscom.ohos.launcher.recents.MainAbility"
+                    ],
+                    "defPermissions": [],
+                    "description": "",
+                    "distro": {
+                        "deliveryWithInstall": true,
+                        "moduleName": "recents",
+                        "moduleType": "feature"
+                    },
+                    "isEntry": true,
+                    "metaData": {
+                        "customizeData": [],
+                        "parameters": [],
+                        "results": []
+                    },
+                    "moduleDataDir": "/data/accounts/account_0/appdata/com.ohos.launcher/com.ohos.launcher.recents",
+                    "moduleName": ".MyApplication",
+                    "modulePackage": "com.ohos.launcher.recents",
+                    "modulePath": "/data/accounts/account_0/applications/com.ohos.launcher/com.ohos.launcher.recents",
+                    "moduleResPath": "/data/accounts/account_0/applications/com.ohos.launcher/com.ohos.launcher.recents/assets/recents/resources.index",
+                    "reqCapabilities": [],
+                    "reqPermissions": [],
+                    "skillKeys": [
+                        "com.ohos.launchercom.ohos.launcher.recentscom.ohos.launcher.recents.MainAbility"
                     ]
                 }
             },
             "isKeepData": false,
             "isSupportBackup": false,
-            "mainAbility": "",
+            "mainAbility": "com.ohos.launchercom.ohos.launchercom.ohos.launcher.MainAbility",
             "provisionId": "BNtg4JBClbl92Rgc3jm/RfcAdrHXaM8F0QOiwVEhnV5ebE5jNIYnAx+weFRT3QTyUjRNdhmc2aAzWyi+5t5CoBM=",
             "skillInfos": {
-                "com.system.hiworld.examples1com.system.hiworld.example.h2bmsSystemBundle_A1": []
+                "com.ohos.launchercom.ohos.launcher.recentscom.ohos.launcher.recents.MainAbility": [],
+                "com.ohos.launchercom.ohos.launchercom.ohos.launcher.MainAbility": [
+                    {
+                        "actions": [
+                            "action.system.home",
+                            "com.ohos.action.main"
+                        ],
+                        "entities": [
+                            "entity.system.home",
+                            "flag.home.intent.from.system"
+                        ],
+                        "uris": []
+                    }
+                ]
             },
-            "uid": 2101,
+            "uid": 2103,
             "userId_": 0
         }
         )"_json;
     nlohmann::json bundleInfoJson_ = R"(
-            {
+        {
                 "abilityInfos": [],
                 "appId": "",
                 "applicationInfo": {
@@ -280,7 +372,9 @@ protected:
                     "description": "",
                     "descriptionId": 0,
                     "deviceId": "",
+                    "enabled": false,
                     "entryDir": "",
+                    "flags": 0,
                     "iconId": 0,
                     "iconPath": "",
                     "isLauncherApp": false,
@@ -295,18 +389,19 @@ protected:
                     "signatureKey": "",
                     "supportedModes": 0
                 },
-                "compatibleVersion": 3,
+                "compatibleVersion": 6,
                 "cpuAbi": "",
                 "defPermissions": [],
                 "description": "",
                 "entryModuleName": "",
-                "gid": 2101,
+                "gid": 2103,
                 "hapModuleNames": [],
-                "installTime": 105590,
+                "installTime": 10631,
+                "isDifferentName": false,
                 "isKeepAlive": false,
-                "isNativeApp": true,
+                "isNativeApp": false,
                 "jointUserId": "",
-                "label": "bmsSystemBundle_A1 Ability",
+                "label": "$string:app_name",
                 "mainEntry": "",
                 "maxSdkVersion": 0,
                 "minSdkVersion": 0,
@@ -314,14 +409,14 @@ protected:
                 "moduleNames": [],
                 "modulePublicDirs": [],
                 "moduleResPaths": [],
-                "name": "com.system.hiworld.examples1",
-                "releaseType": "Release",
+                "name": "com.ohos.launcher",
+                "releaseType": "Canary1",
                 "reqPermissions": [],
                 "seInfo": "",
-                "targetVersion": 3,
-                "uid": 2101,
-                "updateTime": 105590,
-                "vendor": "example",
+                "targetVersion": 6,
+                "uid": 2103,
+                "updateTime": 10635,
+                "vendor": "ohos",
                 "versionCode": 1,
                 "versionName": "1.0"
             }
@@ -344,40 +439,96 @@ BmsBundleInstallerModuleTest::~BmsBundleInstallerModuleTest()
     bms_.reset();
 }
 
-void BmsBundleInstallerModuleTest::CheckBundleSaved(const InnerBundleInfo &innerBundleInfo) const
+void BmsBundleInstallerModuleTest::SaveBundleDataToStorage(
+    const std::string &bundleName, const std::string &data, const std::string &deviceId)
 {
-    BundleDataStorage bundleDataStorage;
-    EXPECT_TRUE(bundleDataStorage.SaveStorageBundleInfo(Constants::CURRENT_DEVICE_ID, innerBundleInfo));
-    std::map<std::string, std::map<std::string, InnerBundleInfo>> bundleData;
-    EXPECT_TRUE(bundleDataStorage.LoadAllData(bundleData));
-    std::string bundleName = innerBundleInfo.GetBundleName();
-    auto bundleDataIter = bundleData.find(bundleName);
-    EXPECT_TRUE(bundleDataIter != bundleData.end());
-    auto allDeviceInfos = bundleDataIter->second;
-    auto devicesInfosIter = allDeviceInfos.find(deviceId_);
-    EXPECT_TRUE(devicesInfosIter != allDeviceInfos.end());
-    InnerBundleInfo afterLoadInfo = devicesInfosIter->second;
-    EXPECT_TRUE(innerBundleInfo.ToString() == afterLoadInfo.ToString());
-}
-
-void BmsBundleInstallerModuleTest::CheckBundleDeleted(const InnerBundleInfo &innerBundleInfo) const
-{
-    BundleDataStorage bundleDataStorage;
-    EXPECT_TRUE(bundleDataStorage.DeleteStorageBundleInfo(Constants::CURRENT_DEVICE_ID, innerBundleInfo));
-    std::map<std::string, std::map<std::string, InnerBundleInfo>> bundleData;
-    EXPECT_FALSE(bundleDataStorage.LoadAllData(bundleData));
-}
-
-void BmsBundleInstallerModuleTest::ClearJsonFile()
-{
-    std::string fileName = Constants::BUNDLE_DATA_BASE_FILE;
-    std::ofstream o(fileName);
-    if (!o.is_open()) {
-        std::cout << "failed to open as out" << fileName << std::endl;
-    } else {
-        std::cout << "clear" << fileName << std::endl;
+    DistributedKvDataManager dataManager;
+    std::unique_ptr<SingleKvStore> kvStorePtr = GetKvStorePtr(dataManager);
+    if (!kvStorePtr) {
+        ASSERT_TRUE(false) << "kvStorePtr is nullptr";
     }
-    o.close();
+    Status status;
+    std::string keyString = deviceId + "_" + bundleName;
+
+    Key key(keyString);
+    Value value(data);
+    status = kvStorePtr->Put(key, value);
+    if (status != Status::SUCCESS) {
+        ASSERT_TRUE(false) << "save fail";
+    }
+
+    AppId appId{"bundle_manager_service"};
+    StoreId storeId{"installed_bundle_datas"};
+    dataManager.CloseKvStore(appId, storeId);
+}
+
+void BmsBundleInstallerModuleTest::DeleteBundleDataToStorage(const std::string &bundleName, const std::string &deviceId)
+{
+    DistributedKvDataManager dataManager;
+    std::unique_ptr<SingleKvStore> kvStorePtr = GetKvStorePtr(dataManager);
+    if (!kvStorePtr) {
+        ASSERT_TRUE(false) << "kvStorePtr is nullptr";
+    }
+    Status status;
+    std::string keyString = deviceId + "_" + bundleName;
+
+    Key key(keyString);
+    status = kvStorePtr->Delete(key);
+    if (status != Status::SUCCESS) {
+        ASSERT_TRUE(false) << "delete fail";
+    }
+
+    AppId appId{Constants::APP_ID};
+    StoreId storeId{Constants::STORE_ID};
+    dataManager.CloseKvStore(appId, storeId);
+}
+
+void BmsBundleInstallerModuleTest::DeleteBundleDataToStorage()
+{
+    GTEST_LOG_(INFO) << "begin";
+    DistributedKvDataManager dataManager;
+
+    AppId appId{Constants::APP_ID};
+    StoreId storeId{Constants::STORE_ID};
+    auto status = dataManager.DeleteKvStore(appId, storeId);
+    if (status != Status::SUCCESS) {
+        GTEST_LOG_(INFO) << static_cast<int32_t>(status);
+    }
+    GTEST_LOG_(INFO) << "end";
+}
+
+std::unique_ptr<SingleKvStore> BmsBundleInstallerModuleTest::GetKvStorePtr(DistributedKvDataManager &dataManager)
+{
+    Options options;
+    options.createIfMissing = true;
+    options.encrypt = false;
+    options.autoSync = true;
+    options.kvStoreType = KvStoreType::SINGLE_VERSION;
+    AppId appId{Constants::APP_ID};
+    StoreId storeId{Constants::STORE_ID};
+
+    Status status;
+    std::unique_ptr<SingleKvStore> kvStorePtr = nullptr;
+    dataManager.GetSingleKvStore(
+        options, appId, storeId, [&](Status paramStatus, std::unique_ptr<SingleKvStore> kvStore) {
+            status = paramStatus;
+            kvStorePtr = std::move(kvStore);
+        });
+
+    if (status != Status::SUCCESS) {
+        APP_LOGE("BundleDataStorage::GetKvStore return error: %{public}d", status);
+    }
+
+    return kvStorePtr;
+}
+
+InnerBundleInfo BmsBundleInstallerModuleTest::CreateInnerBundleInfo(const std::string &bundleName)
+{
+    InnerBundleInfo innerBundleInfo;
+    innerBundleInfoJson_["baseApplicationInfo"]["bundleName"] = bundleName;
+    innerBundleInfoJson_["baseBundleInfo"]["name"] = bundleName;
+    innerBundleInfo.FromJson(innerBundleInfoJson_);
+    return innerBundleInfo;
 }
 
 void BmsBundleInstallerModuleTest::CheckFileExist(const std::string &bundleName) const
@@ -1233,42 +1384,164 @@ HWTEST_F(BmsBundleInstallerModuleTest, ThirdAppInstall_1700, Function | MediumTe
 
 /**
  * @tc.number: BundleDataStorage_0100
- * @tc.name: check bundle data storage
- * @tc.desc: 1.save a new bundle installation information for the first time successfully
+ * @tc.name: save bundle install information to persist storage
+ * @tc.desc: test storage too many data, and query data
  */
 HWTEST_F(BmsBundleInstallerModuleTest, BundleDataStorage_0100, Function | MediumTest | Level1)
 {
-    APP_LOGI("BmsBundleInstallerModuleTest::BundleDataStorage_0100 begin");
-    InnerBundleInfo innerBundleInfo;
-    bool result = innerBundleInfo.FromJson(innerBundleInfoJson_);
-    EXPECT_TRUE(result);
-    ClearJsonFile();
-    CheckBundleSaved(innerBundleInfo);
-    CheckBundleDeleted(innerBundleInfo);
-    APP_LOGI("BmsBundleDataStorageTest::BundleDataStorage_0100 end");
+    BundleDataStorageDatabase bundleDataStorage;
+    int repeatTimes = 10;
+    int saveTimes = 100;
+    std::string baseBundleName = "ohos.CR";
+    std::vector<InnerBundleInfo> innerBundleInfos;
+    for (int i = 0; i < repeatTimes; i++) {
+        /**
+         * @tc.steps: step1. save too many data in datastorage
+         * @tc.expected: step1. save success
+         */
+        std::vector<std::string> bundleNames;
+        std::vector<std::string> innerBundleInfoStrs;
+        for (int j = 0; j < saveTimes; j++) {
+            std::string bundleName = baseBundleName + std::to_string(i * saveTimes + j);
+            InnerBundleInfo innerBundleInfo = CreateInnerBundleInfo(bundleName);
+            bool res = bundleDataStorage.SaveStorageBundleInfo(deviceId_, innerBundleInfo);
+            ASSERT_TRUE(res) << "save bundle data fail";
+            bundleNames.emplace_back(bundleName);
+            innerBundleInfoStrs.emplace_back(innerBundleInfo.ToString());
+            innerBundleInfos.emplace_back(innerBundleInfo);
+        }
+        /**
+         * @tc.steps: step2. query data
+         * @tc.expected: step2. query success
+         */
+        std::map<std::string, std::map<std::string, InnerBundleInfo>> dataMap;
+        bool loadRes = bundleDataStorage.LoadAllData(dataMap);
+        ASSERT_TRUE(loadRes) << "load data fail!!!";
+        for (std::string item : bundleNames) {
+            std::map<std::string, InnerBundleInfo> innerBundleInfoMap = dataMap[item];
+            for (auto iter = innerBundleInfoMap.begin(); iter != innerBundleInfoMap.end(); ++iter) {
+                std::string innerBundleInfoStr = iter->second.ToString();
+                for (auto innerBundleInfo = innerBundleInfoStrs.begin(); innerBundleInfo != innerBundleInfoStrs.end();
+                     ++innerBundleInfo) {
+                    if (*innerBundleInfo != innerBundleInfoStr && innerBundleInfo == innerBundleInfoStrs.end()) {
+                        EXPECT_TRUE(false) << "get bundleinfo fail!";
+                    } else {
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    for (InnerBundleInfo inner : innerBundleInfos) {
+        bool delRes = bundleDataStorage.DeleteStorageBundleInfo(deviceId_, inner);
+        ASSERT_TRUE(delRes) << "delete data fail!!!";
+    }
 }
 
 /**
  * @tc.number: BundleDataStorage_0200
  * @tc.name: save bundle install information to persist storage
- * @tc.desc: 1.Update the existing db data
+ * @tc.desc: test storage too many data, load data to memory
  */
 HWTEST_F(BmsBundleInstallerModuleTest, BundleDataStorage_0200, Function | MediumTest | Level1)
 {
-    APP_LOGI("BmsBundleInstallerModuleTest::BundleDataStorage_0200 begin");
+    /**
+     * @tc.steps: step1. save too many data in datastorage
+     */
+    BundleDataStorageDatabase bundleDataStorage;
+    int saveTimes = 100;
+    std::string baseBundleName = "ohos.bundlestoragetest";
+    std::vector<std::string> bundleNames;
+    std::vector<InnerBundleInfo> innerBundleInfos;
+    for (int i = 0; i < saveTimes; i++) {
+        std::string bundleName = baseBundleName + std::to_string(i);
+        InnerBundleInfo innerBundleInfo = CreateInnerBundleInfo(bundleName);
+        bool res = bundleDataStorage.SaveStorageBundleInfo(deviceId_, innerBundleInfo);
+        ASSERT_TRUE(res) << "save bundle data fail";
+        bundleNames.emplace_back(bundleName);
+        innerBundleInfos.emplace_back(innerBundleInfo);
+    }
 
-    InnerBundleInfo innerBundleInfo;
-    innerBundleInfo.FromJson(innerBundleInfoJson_);
-    ClearJsonFile();
-    CheckBundleSaved(innerBundleInfo);
-    CheckBundleDeleted(innerBundleInfo);
+    /**
+     * @tc.steps: step2. load date to memory
+     * @tc.expected: step2. load success
+     */
+    StopBundleMgrService();
+    StartBundleMgrService();
 
-    BundleInfo bundleInfo = bundleInfoJson_;
-    bundleInfo.description = "update test application";
-    InnerBundleInfo otherInnerBundleInfo = innerBundleInfo;
-    otherInnerBundleInfo.SetBaseBundleInfo(bundleInfo);
+    std::shared_ptr<BundleDataMgr> dataMgr = GetBundleDataMgr();
+    if (dataMgr == nullptr) {
+        ASSERT_TRUE(false);
+    }
 
-    CheckBundleSaved(otherInnerBundleInfo);
-    ClearJsonFile();
-    APP_LOGI("BmsBundleInstallerModuleTest::BundleDataStorage_0200 end");
+    for (std::string item : bundleNames) {
+        ApplicationInfo appInfo;
+        bool getAppInfo =
+            dataMgr->GetApplicationInfo(item, ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMS, 0, appInfo);
+        EXPECT_TRUE(getAppInfo) << "Get Application: " + item + " fail!";
+        EXPECT_EQ(appInfo.bundleName, item) << "appinfo bundleName is wrong";
+    }
+
+    for (InnerBundleInfo inner : innerBundleInfos) {
+        bool delRes = bundleDataStorage.DeleteStorageBundleInfo(deviceId_, inner);
+        ASSERT_TRUE(delRes) << "delete data fail!!!";
+    }
+}
+
+/**
+ * @tc.number: BundleDataStorage_0200
+ * @tc.name: save bundle install information to persist storage
+ * @tc.desc: test when storage abnormal data,it does not influence other data to read
+ */
+HWTEST_F(BmsBundleInstallerModuleTest, BundleDataStorage003, TestSize.Level3)
+{
+    /**
+     * @tc.steps: step1. load data to storageDb, which have normal and abnormal data
+     */
+    StartBundleMgrService();
+    int saveTimes = 100;
+    int pos = 50;
+    std::string deviceId = Constants::CURRENT_DEVICE_ID;
+    std::string abnormalData = "{";
+    std::vector<std::string> bundleNames;
+    for (int i = 0; i < saveTimes; i++) {
+        std::string bundleName = "ohos.system" + std::to_string(i);
+        if (i == pos) {
+            SaveBundleDataToStorage(bundleName, abnormalData, deviceId);
+        } else {
+            InnerBundleInfo innerBundleInfo = CreateInnerBundleInfo(bundleName);
+            SaveBundleDataToStorage(bundleName, innerBundleInfo.ToString(), deviceId);
+        }
+        bundleNames.emplace_back(bundleName);
+    }
+
+    /**
+     * @tc.steps: step2. load data to memory
+     * @tc.expected: step2. load success, normal data can save success, abnormal data can save fail
+     */
+    BundleDataStorageDatabase bundleDataStorage;
+    std::map<std::string, std::map<std::string, InnerBundleInfo>> bundleDatas;
+    bool getBundleData = bundleDataStorage.LoadAllData(bundleDatas);
+    ASSERT_TRUE(getBundleData) << "get bundle data from database fail!";
+
+    StopBundleMgrService();
+    StartBundleMgrService();
+
+    std::shared_ptr<BundleDataMgr> dataMgr = GetBundleDataMgr();
+    if (dataMgr == nullptr) {
+        ASSERT_TRUE(false);
+    }
+    ApplicationInfo appInfo;
+    for (int i = 0; i < saveTimes; i++) {
+        bool getAppInfo =
+            dataMgr->GetApplicationInfo(bundleNames[i], ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMS, 0, appInfo);
+        if (i == pos) {
+            EXPECT_FALSE(getAppInfo) << "Get Application: " + bundleNames[i] + " success!";
+        } else {
+            EXPECT_TRUE(getAppInfo) << "Get Application: " + bundleNames[i] + " fail!";
+            EXPECT_EQ(appInfo.bundleName, bundleNames[i]) << "appinfo bundleName is wrong";
+        }
+        std::this_thread::sleep_for(10ms);
+        DeleteBundleDataToStorage(bundleNames[i], deviceId);
+    }
 }

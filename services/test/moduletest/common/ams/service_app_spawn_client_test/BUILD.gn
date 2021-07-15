@@ -19,9 +19,8 @@ module_output_path = "appexecfwk_standard/mstappmgrservice"
 ohos_moduletest("AmsServiceAppSpawnClientModuleTest") {
   module_out_path = module_output_path
 
-  include_dirs = [
-    "//base/hiviewdfx/hilog/interfaces/native/innerkits/include",
-  ]
+  include_dirs =
+      [ "//base/hiviewdfx/hilog/interfaces/native/innerkits/include" ]
   defines = [ "usleep(time) = MockSleep(time)" ]
 
   sources = [ "ams_service_app_spawn_client_module_test.cpp" ]

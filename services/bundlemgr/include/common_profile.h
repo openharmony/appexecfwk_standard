@@ -24,8 +24,9 @@ namespace OHOS {
 namespace AppExecFwk {
 namespace ProfileReader {
 
-// commen tag
+// common tag
 const std::string PROFILE_KEY_NAME = "name";
+const std::string PROFILE_KEY_ORIGINAL_NAME = "originalName";
 const std::string PROFILE_KEY_LABEL = "label";
 const std::string PROFILE_KEY_LABEL_ID = "labelId";
 const std::string PROFILE_KEY_DESCRIPTION = "description";
@@ -87,6 +88,7 @@ const std::string BUNDLE_MODULE_PROFILE_KEY_REQ_CAPABILITIES = "reqCapabilities"
 const std::string BUNDLE_MODULE_PROFILE_KEY_SUPPORTED_REQ_CAPABILITIES = "reqCapabilities";
 const std::string MODULE_SUPPORTED_MODES_VALUE_DRIVE = "drive";
 const std::string BUNDLE_MODULE_PROFILE_KEY_DEVICE_TYPE = "deviceType";
+const std::string BUNDLE_MODULE_PROFILE_KEY_COLOR_MODE = "colorMode";
 const std::string BUNDLE_MODULE_PROFILE_KEY_DISTRO = "distro";
 const std::string BUNDLE_MODULE_PROFILE_KEY_META_DATA = "metaData";
 const std::string BUNDLE_MODULE_PROFILE_KEY_ABILITIES = "abilities";
@@ -206,6 +208,8 @@ const std::string BUNDLE_MODULE_PROFILE_KEY_SHORTCUT_INTENTS = "intents";
 // sub BUNDLE_MODULE_PROFILE_KEY_SHORTCUT_INTENTS
 const std::string BUNDLE_MODULE_PROFILE_KEY_TARGET_CLASS = "targetClass";
 const std::string BUNDLE_MODULE_PROFILE_KEY_TARGET_BUNDLE = "targetBundle";
+
+extern thread_local int32_t parseResult;
 
 }  // namespace ProfileReader
 }  // namespace AppExecFwk

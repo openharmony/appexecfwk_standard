@@ -35,11 +35,11 @@ public:
     bool PublishEvent(const std::string &eventName, const int &code, const std::string &data);
     void SubscribeEvent(const vector_conststr &eventList);
     void AbilityManagerStByCode(int apiIndex, int caseIndex, int code);
-    void CompareProcessName(RunningProcessInfo &info, const std::string &expectedName, int code);
+    void CompareProcessName(std::vector<RunningProcessInfo> &info, const std::string &expectedName, int code);
     void CompareProcessState(
-        RunningProcessInfo &info, const std::string &processName, AppProcessState expectedState, int code);
+        std::vector<RunningProcessInfo> &info, const std::string &processName, AppProcessState expectedState, int code);
     void ProcessStateNotEqual(
-        RunningProcessInfo &info, const std::string &processName, AppProcessState expectedState, int code);
+        std::vector<RunningProcessInfo> &info, const std::string &processName, AppProcessState expectedState, int code);
     void GetAllStackInfo(AAFwk::MissionStackInfo &missionStackInfo, int stackID);
 
     // GetAllRunningProcesses ST kit case

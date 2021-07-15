@@ -34,9 +34,10 @@ using std::string;
 namespace {
 static const std::string bundleName = "com.ohos.amsst.appA";
 static const std::string abilityName = "AmsStAbilityA1";
-constexpr int WAIT_LAUNCHER_OK = 25 * 1000;
+constexpr int WAIT_LAUNCHER_OK = 5 * 1000;
 static std::string launcherBundleName = "com.ix.launcher";
 std::string systemUiBundle = "com.ohos.systemui";
+std::string terminatePageAbility = "requ_page_ability_terminate";
 }  // namespace
 
 class AmsAACommandTest : public testing::Test {
@@ -113,30 +114,12 @@ HWTEST_F(AmsAACommandTest, ams_aa_command_test_0100, TestSize.Level1)
 
 /**
  * @tc.number    : ams_aa_command_test_0200
- * @tc.name      : aa -d <deviceName> -a <abilityName> -b <bundleName>
- * @tc.desc      : start/stop page ability when aa -d -a -b command.
+ * @tc.name      : aa dump -h
+ * @tc.desc      : commands help when aa dump -h command.
  */
 HWTEST_F(AmsAACommandTest, ams_aa_command_test_0200, TestSize.Level1)
 {
     GTEST_LOG_(INFO) << "AmsAACommandTest ams_aa_command_test_0200 start";
-
-    string result;
-    const string cmd{"start -d deviceId -a " + abilityName + " -b " + bundleName};
-    const string expectResult{"start ability successfully.\n"};
-    ExecuteSystemForResult(cmd, result);
-    EXPECT_EQ(result, expectResult);
-
-    GTEST_LOG_(INFO) << "AmsAACommandTest ams_aa_command_test_0200 end";
-}
-
-/**
- * @tc.number    : ams_aa_command_test_0300
- * @tc.name      : aa dump -h
- * @tc.desc      : commands help when aa dump -h command.
- */
-HWTEST_F(AmsAACommandTest, ams_aa_command_test_0300, TestSize.Level1)
-{
-    GTEST_LOG_(INFO) << "AmsAACommandTest ams_aa_command_test_0300 start";
 
     string result;
     const string cmd{"dump -h"};
@@ -145,23 +128,41 @@ HWTEST_F(AmsAACommandTest, ams_aa_command_test_0300, TestSize.Level1)
 
     EXPECT_EQ(result, expectResult);
 
-    GTEST_LOG_(INFO) << "AmsAACommandTest ams_aa_command_test_0300 end";
+    GTEST_LOG_(INFO) << "AmsAACommandTest ams_aa_command_test_0200 end";
 }
 
 /**
- * @tc.number    : ams_aa_command_test_0400
+ * @tc.number    : ams_aa_command_test_0300
  * @tc.name      : aa dump -a
  * @tc.desc      : all page abilities when aa -a command.
  */
-HWTEST_F(AmsAACommandTest, ams_aa_command_test_0400, TestSize.Level1)
+HWTEST_F(AmsAACommandTest, ams_aa_command_test_0300, TestSize.Level1)
 {
-    GTEST_LOG_(INFO) << "AmsAACommandTest ams_aa_command_test_0400 start";
+    GTEST_LOG_(INFO) << "AmsAACommandTest ams_aa_command_test_0300 start";
 
     string dumpInfo, result;
     const string cmd{"dump -a"};
     const string &expectResult = "User ID #0\n  MissionStack ID #0\n    MissionRecord ID #0  bottom app "
                                  "[LauncherAbility]\n      AbilityRecord ID #0\n        app name";
-    Clear();
+    ExecuteSystemForResult(cmd, result);
+    EXPECT_EQ(result.substr(0, expectResult.size()), expectResult);
+
+    GTEST_LOG_(INFO) << "AmsAACommandTest ams_aa_command_test_0300 end";
+}
+
+/**
+ * @tc.number    : ams_aa_command_test_0400
+ * @tc.name      : aa dump -s
+ * @tc.desc      : commands the ability info of a specificed stack when aa -s command.
+ */
+HWTEST_F(AmsAACommandTest, ams_aa_command_test_0400, TestSize.Level1)
+{
+    GTEST_LOG_(INFO) << "AmsAACommandTest ams_aa_command_test_0400 start";
+
+    string result;
+    const string cmd{"dump -s 0"};
+    const string &expectResult = "User ID #0\n  MissionStack ID #0\n    MissionRecord ID #0  bottom app "
+                                 "[LauncherAbility]\n      AbilityRecord ID #0\n        app name";
     ExecuteSystemForResult(cmd, result);
     EXPECT_EQ(result.substr(0, expectResult.size()), expectResult);
 
@@ -170,18 +171,17 @@ HWTEST_F(AmsAACommandTest, ams_aa_command_test_0400, TestSize.Level1)
 
 /**
  * @tc.number    : ams_aa_command_test_0500
- * @tc.name      : aa dump -s
- * @tc.desc      : commands the ability info of a specificed stack when aa -s command.
+ * @tc.name      : aa dump -m
+ * @tc.desc      : dump the ability info of a specificed mission when aa -m command.
  */
 HWTEST_F(AmsAACommandTest, ams_aa_command_test_0500, TestSize.Level1)
 {
     GTEST_LOG_(INFO) << "AmsAACommandTest ams_aa_command_test_0500 start";
 
     string result;
-    const string cmd{"dump -s 0"};
-    const string &expectResult = "User ID #0\n  MissionStack ID #0\n    MissionRecord ID #0  bottom app "
-                                 "[LauncherAbility]\n      AbilityRecord ID #0\n        app name";
-    Clear();
+    const string cmd{"dump -m 0"};
+    const string &expectResult = "User ID #0\n    MissionRecord ID #0  bottom app [LauncherAbility]\n      "
+                                 "AbilityRecord ID #0\n        app name";
     ExecuteSystemForResult(cmd, result);
     EXPECT_EQ(result.substr(0, expectResult.size()), expectResult);
 
@@ -190,38 +190,38 @@ HWTEST_F(AmsAACommandTest, ams_aa_command_test_0500, TestSize.Level1)
 
 /**
  * @tc.number    : ams_aa_command_test_0600
- * @tc.name      : aa dump -m
- * @tc.desc      : dump the ability info of a specificed mission when aa -m command.
+ * @tc.name      : aa dump -l
+ * @tc.desc      : dump the mission list of every stack when aa -l command.
  */
 HWTEST_F(AmsAACommandTest, ams_aa_command_test_0600, TestSize.Level1)
 {
     GTEST_LOG_(INFO) << "AmsAACommandTest ams_aa_command_test_0600 start";
-
     string result;
-    const string cmd{"dump -m 0"};
-    const string &expectResult = "User ID #0\n    MissionRecord ID #0  bottom app [LauncherAbility]\n      "
-                                 "AbilityRecord ID #0\n        app name";
-    Clear();
+    const string cmd{"dump -l"};
+    const string &expectResult = "User ID #0\n  MissionStack ID #0 [ #0 ]\n  MissionStack ID #1 [ ]\n";
     ExecuteSystemForResult(cmd, result);
-    EXPECT_EQ(result.substr(0, expectResult.size()), expectResult);
+    EXPECT_EQ(result, expectResult);
 
     GTEST_LOG_(INFO) << "AmsAACommandTest ams_aa_command_test_0600 end";
 }
 
 /**
  * @tc.number    : ams_aa_command_test_0700
- * @tc.name      : aa dump -l
- * @tc.desc      : dump the mission list of every stack when aa -l command.
+ * @tc.name      : aa -d <deviceName> -a <abilityName> -b <bundleName>
+ * @tc.desc      : start/stop page ability when aa -d -a -b command.
  */
 HWTEST_F(AmsAACommandTest, ams_aa_command_test_0700, TestSize.Level1)
 {
-    GTEST_LOG_(INFO) << "AmsAACommandTest ams_aa_command_test_0700 start";
+    GTEST_LOG_(INFO) << "AmsAACommandTest ams_aa_command_test_0200 start";
+
     string result;
-    const string cmd{"dump -l"};
-    const string &expectResult = "User ID #0\n  MissionStack ID #0 [ #0 ]\n  MissionStack ID #1 [ ]\n";
-    Clear();
+    const string cmd{"start -d deviceId -a " + abilityName + " -b " + bundleName};
+    const string expectResult{"start ability successfully.\n"};
     ExecuteSystemForResult(cmd, result);
     EXPECT_EQ(result, expectResult);
+    std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_LAUNCHER_OK));
+    STAbilityUtil::PublishEvent(terminatePageAbility, 0, abilityName);
+    std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_LAUNCHER_OK));
 
     GTEST_LOG_(INFO) << "AmsAACommandTest ams_aa_command_test_0700 end";
 }

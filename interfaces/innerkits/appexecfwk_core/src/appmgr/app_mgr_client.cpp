@@ -153,17 +153,43 @@ AppMgrResultCode AppMgrClient::ClearUpApplicationData(const std::string &bundleN
 {
     sptr<IAppMgr> service = iface_cast<IAppMgr>(remote_);
     if (service != nullptr) {
-        service->ClearUpApplicationData(bundleName);
+        int32_t result = service->ClearUpApplicationData(bundleName);
+        if (result == ERR_OK) {
+            return AppMgrResultCode::RESULT_OK;
+        }
+        return AppMgrResultCode::ERROR_SERVICE_NOT_READY;
+    }
+    return AppMgrResultCode::ERROR_SERVICE_NOT_CONNECTED;
+}
+
+AppMgrResultCode AppMgrClient::GetAllRunningProcesses(std::vector<RunningProcessInfo> &info)
+{
+    sptr<IAppMgr> service = iface_cast<IAppMgr>(remote_);
+    if (service != nullptr) {
+        int32_t result = service->GetAllRunningProcesses(info);
+        if (result == ERR_OK) {
+            return AppMgrResultCode::RESULT_OK;
+        }
+        return AppMgrResultCode::ERROR_SERVICE_NOT_READY;
+    }
+    return AppMgrResultCode::ERROR_SERVICE_NOT_CONNECTED;
+}
+
+AppMgrResultCode AppMgrClient::SetAppFreezingTime(int time)
+{
+    sptr<IAppMgr> service = iface_cast<IAppMgr>(remote_);
+    if (service != nullptr) {
+        service->SetAppFreezingTime(time);
         return AppMgrResultCode::RESULT_OK;
     }
     return AppMgrResultCode::ERROR_SERVICE_NOT_CONNECTED;
 }
 
-AppMgrResultCode AppMgrClient::GetAllRunningProcesses(std::shared_ptr<RunningProcessInfo> &runningProcessInfo)
+AppMgrResultCode AppMgrClient::GetAppFreezingTime(int &time)
 {
     sptr<IAppMgr> service = iface_cast<IAppMgr>(remote_);
     if (service != nullptr) {
-        service->GetAllRunningProcesses(runningProcessInfo);
+        service->GetAppFreezingTime(time);
         return AppMgrResultCode::RESULT_OK;
     }
     return AppMgrResultCode::ERROR_SERVICE_NOT_CONNECTED;
@@ -186,5 +212,34 @@ void AppMgrClient::SetServiceManager(std::unique_ptr<AppServiceManager> serviceM
     serviceManager_ = std::move(serviceMgr);
 }
 
+void AppMgrClient::AbilityAttachTimeOut(const sptr<IRemoteObject> &token)
+{
+    sptr<IAppMgr> service = iface_cast<IAppMgr>(remote_);
+    if (service == nullptr) {
+        return;
+    }
+    sptr<IAmsMgr> amsService = service->GetAmsMgr();
+    if (amsService == nullptr) {
+        return;
+    }
+    amsService->AbilityAttachTimeOut(token);
+}
+
+int AppMgrClient::CompelVerifyPermission(const std::string &permission, int pid, int uid, std::string &message)
+{
+    sptr<IAppMgr> service = iface_cast<IAppMgr>(remote_);
+    if (service == nullptr) {
+        return AppMgrResultCode::ERROR_SERVICE_NOT_CONNECTED;
+    }
+    sptr<IAmsMgr> amsService = service->GetAmsMgr();
+    if (amsService == nullptr) {
+        return AppMgrResultCode::ERROR_SERVICE_NOT_CONNECTED;
+    }
+    auto result = amsService->CompelVerifyPermission(permission, pid, uid, message);
+    if (result != ERR_OK) {
+        return AppMgrResultCode::ERROR_SERVICE_NOT_READY;
+    }
+    return AppMgrResultCode::RESULT_OK;
+}
 }  // namespace AppExecFwk
 }  // namespace OHOS

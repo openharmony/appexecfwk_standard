@@ -72,6 +72,9 @@ protected:
                         "phone"
                     ],
                     "iconPath": "$media:icon",
+                    "enabled": true,
+                    "readPermission": "readPermission",
+                    "writePermission": "writePermission",
                     "isLauncherAbility": true,
                     "isNativeAbility": false,
                     "kind": "page",
@@ -85,6 +88,7 @@ protected:
                     "permissions": [],
                     "process": "",
                     "resourcePath": "/data/accounts/account_0/applications/com.ohos.launcher/com.ohos.launcher/assets/launcher/resources.index",
+                    "targetAbility": "",
                     "type": 1,
                     "uri": "",
                     "visible": false
@@ -99,7 +103,9 @@ protected:
                 "description": "$string:mainability_description",
                 "descriptionId": 16777217,
                 "deviceId": "PHONE-001",
+                "enabled": true,
                 "entryDir": "",
+                "flags": 0,
                 "iconId": 16777218,
                 "iconPath": "$media:icon",
                 "isLauncherApp": true,
@@ -126,7 +132,9 @@ protected:
                     "description": "",
                     "descriptionId": 0,
                     "deviceId": "",
+                    "enabled": false,
                     "entryDir": "",
+                    "flags": 0,
                     "iconId": 0,
                     "iconPath": "",
                     "isLauncherApp": false,
@@ -151,6 +159,7 @@ protected:
                 "installTime": 17921,
                 "isKeepAlive": false,
                 "isNativeApp": false,
+                "isDifferentName":false,
                 "jointUserId": "",
                 "label": "Launcher",
                 "mainEntry": "",
@@ -275,7 +284,7 @@ void BmsBundleDataStorageTest::CheckBundleDeleted(const InnerBundleInfo &innerBu
     BundleDataStorage bundleDataStorage;
     ASSERT_TRUE(bundleDataStorage.DeleteStorageBundleInfo(Constants::CURRENT_DEVICE_ID, innerBundleInfo));
     std::map<std::string, std::map<std::string, InnerBundleInfo>> bundleDates;
-    ASSERT_FALSE(bundleDataStorage.LoadAllData(bundleDates));
+    ASSERT_TRUE(bundleDataStorage.LoadAllData(bundleDates));
 }
 
 void BmsBundleDataStorageTest::CheckInvalidPropDeserialize(const nlohmann::json infoJson, const InfoType infoType) const
@@ -563,7 +572,7 @@ HWTEST_F(BmsBundleDataStorageTest, SaveData_0400, Function | SmallTest | Level1)
 {
     nlohmann::json sourceInfoJson = innerBundleInfoJson_;
     InnerBundleInfo fromJsonInfo;
-    ASSERT_TRUE(fromJsonInfo.FromJson(innerBundleInfoJson_));
+    ASSERT_EQ(fromJsonInfo.FromJson(innerBundleInfoJson_), 0);
     ASSERT_TRUE(fromJsonInfo.ToString() == sourceInfoJson.dump());
 }
 

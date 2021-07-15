@@ -14,7 +14,7 @@
  */
 
 #include "ams_mgr_proxy.h"
-
+#include "string_ex.h"
 #include "ipc_types.h"
 #include "iremote_object.h"
 
@@ -239,7 +239,57 @@ int32_t AmsMgrProxy::KillApplication(const std::string &bundleName)
         return ret;
     }
     return reply.ReadInt32();
+}
+
+void AmsMgrProxy::AbilityAttachTimeOut(const sptr<IRemoteObject> &token)
+{
+    APP_LOGD("start");
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option(MessageOption::TF_SYNC);
+    if (!WriteInterfaceToken(data)) {
+        return;
+    }
+    data.WriteParcelable(token.GetRefPtr());
+    sptr<IRemoteObject> remote = Remote();
+    if (remote == nullptr) {
+        APP_LOGE("Remote() is NULL");
+        return;
+    }
+    int32_t ret =
+        remote->SendRequest(static_cast<uint32_t>(IAmsMgr::Message::AMS_ABILITY_ATTACH_TIMEOUT), data, reply, option);
+    if (ret != NO_ERROR) {
+        APP_LOGW("SendRequest is failed, error code: %{public}d", ret);
+    }
     APP_LOGD("end");
+}
+
+int AmsMgrProxy::CompelVerifyPermission(const std::string &permission, int pid, int uid, std::string &message)
+{
+    APP_LOGD("start");
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option(MessageOption::TF_SYNC);
+    if (!WriteInterfaceToken(data)) {
+        return ERR_INVALID_DATA;
+    }
+    if (!data.WriteString16(Str8ToStr16(permission)) || !data.WriteInt32(pid) || !data.WriteInt32(uid)) {
+        APP_LOGE("%{public}s, write failed", __func__);
+        return ERR_INVALID_DATA;
+    }
+    sptr<IRemoteObject> remote = Remote();
+    if (remote == nullptr) {
+        APP_LOGE("Remote() is NULL");
+        return ERR_NULL_OBJECT;
+    }
+    auto ret =
+        remote->SendRequest(static_cast<uint32_t>(IAmsMgr::Message::AMS_COMPEL_VERIFY_PERMISSION), data, reply, option);
+    if (ret != NO_ERROR) {
+        APP_LOGW("SendRequest is failed, error code: %{public}d", ret);
+        return ERR_INVALID_DATA;
+    }
+    message = Str16ToStr8(reply.ReadString16());
+    return reply.ReadInt32();
 }
 
 }  // namespace AppExecFwk

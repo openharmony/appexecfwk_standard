@@ -80,7 +80,9 @@
         "//foundation/appexecfwk/standard/tools/test:moduletest",
         "//foundation/appexecfwk/standard/tools/test:unittest",
         "//foundation/appexecfwk/standard/libs/libeventhandler/test:unittest",
-        "//foundation/appexecfwk/standard/libs/test:moduletest"
+        "//foundation/appexecfwk/standard/libs/test:moduletest",
+        "//foundation/appexecfwk/standard/interfaces/innerkits/task_dispatcher/test:unittest",
+        "//foundation/appexecfwk/standard/interfaces/innerkits/test:moduletest"
       ],
 
       "variants": [

@@ -23,6 +23,7 @@
 
 namespace OHOS {
 namespace AppExecFwk {
+using namespace AAFwk;
 
 class MockAbilityMgrStub : public IRemoteStub<AAFwk::IAbilityManager> {
 public:
@@ -30,104 +31,107 @@ public:
     MockAbilityMgrStub() = default;
     virtual ~MockAbilityMgrStub() = default;
 
-    virtual int StartAbility(const AAFwk::Want &want, int requestCode = -1)
+    virtual int StartAbility(const AAFwk::Want &want, int requestCode = -1) override
     {
         return 0;
     }
-    virtual int StartAbility(const AAFwk::Want &want, const sptr<IRemoteObject> &callerToken, int requestCode = -1)
+    virtual int StartAbility(
+        const AAFwk::Want &want, const sptr<IRemoteObject> &callerToken, int requestCode = -1) override
     {
         return 0;
     }
     virtual int TerminateAbility(
-        const sptr<IRemoteObject> &token, int resultCode, const AAFwk::Want *resultWant = nullptr)
+        const sptr<IRemoteObject> &token, int resultCode, const AAFwk::Want *resultWant = nullptr) override
     {
         return 0;
     }
-    virtual int ConnectAbility(
-        const AAFwk::Want &want, const sptr<AAFwk::IAbilityConnection> &connect, const sptr<IRemoteObject> &callerToken)
+    virtual int ConnectAbility(const AAFwk::Want &want, const sptr<AAFwk::IAbilityConnection> &connect,
+        const sptr<IRemoteObject> &callerToken) override
     {
         return 0;
     }
-    virtual int DisconnectAbility(const sptr<AAFwk::IAbilityConnection> &connect)
+    virtual int DisconnectAbility(const sptr<AAFwk::IAbilityConnection> &connect) override
     {
         return 0;
     }
     virtual sptr<AAFwk::IAbilityScheduler> AcquireDataAbility(
-        const Uri &uri, bool tryBind, const sptr<IRemoteObject> &callerToken)
+        const Uri &uri, bool tryBind, const sptr<IRemoteObject> &callerToken) override
     {
         return nullptr;
     }
     virtual int ReleaseDataAbility(
-        sptr<AAFwk::IAbilityScheduler> dataAbilityScheduler, const sptr<IRemoteObject> &callerToken)
+        sptr<AAFwk::IAbilityScheduler> dataAbilityScheduler, const sptr<IRemoteObject> &callerToken) override
     {
         return 0;
     }
-    virtual void AddWindowInfo(const sptr<IRemoteObject> &token, int32_t windowToken)
+    virtual void AddWindowInfo(const sptr<IRemoteObject> &token, int32_t windowToken) override
     {
         return;
     }
-    virtual int AttachAbilityThread(const sptr<AAFwk::IAbilityScheduler> &scheduler, const sptr<IRemoteObject> &token)
+    virtual int AttachAbilityThread(
+        const sptr<AAFwk::IAbilityScheduler> &scheduler, const sptr<IRemoteObject> &token) override
     {
         return 0;
     }
-    virtual int AbilityTransitionDone(const sptr<IRemoteObject> &token, int state)
+    virtual int AbilityTransitionDone(const sptr<IRemoteObject> &token, int state) override
     {
         return 0;
     }
-    virtual int ScheduleConnectAbilityDone(const sptr<IRemoteObject> &token, const sptr<IRemoteObject> &remoteObject)
+    virtual int ScheduleConnectAbilityDone(
+        const sptr<IRemoteObject> &token, const sptr<IRemoteObject> &remoteObject) override
     {
         return 0;
     }
-    virtual int ScheduleDisconnectAbilityDone(const sptr<IRemoteObject> &token)
+    virtual int ScheduleDisconnectAbilityDone(const sptr<IRemoteObject> &token) override
     {
         return 0;
     }
-    virtual int ScheduleCommandAbilityDone(const sptr<IRemoteObject> &token)
+    virtual int ScheduleCommandAbilityDone(const sptr<IRemoteObject> &token) override
     {
         return 0;
     }
-    virtual void DumpState(const std::string &args, std::vector<std::string> &state)
+    virtual void DumpState(const std::string &args, std::vector<std::string> &state) override
     {
         return;
     }
-    virtual int TerminateAbilityResult(const sptr<IRemoteObject> &token, int startId)
+    virtual int TerminateAbilityResult(const sptr<IRemoteObject> &token, int startId) override
     {
         return 0;
     }
-    virtual int StopServiceAbility(const AAFwk::Want &want)
+    virtual int StopServiceAbility(const AAFwk::Want &want) override
     {
         return 0;
     }
-    virtual int GetAllStackInfo(AAFwk::StackInfo &stackInfo)
+    virtual int GetAllStackInfo(AAFwk::StackInfo &stackInfo) override
     {
         return 0;
     }
     virtual int GetRecentMissions(
-        const int32_t numMax, const int32_t flags, std::vector<AAFwk::RecentMissionInfo> &recentList)
+        const int32_t numMax, const int32_t flags, std::vector<AAFwk::AbilityMissionInfo> &recentList) override
     {
         return 0;
     }
-    virtual int GetMissionSnapshot(const int32_t missionId, AAFwk::MissionSnapshotInfo &snapshot)
+    virtual int GetMissionSnapshot(const int32_t missionId, AAFwk::MissionSnapshotInfo &snapshot) override
     {
         return 0;
     }
-    virtual int MoveMissionToTop(int32_t missionId)
+    virtual int MoveMissionToTop(int32_t missionId) override
     {
         return 0;
     }
-    virtual int RemoveMission(int id)
+    virtual int RemoveMission(int id) override
     {
         return 0;
     }
-    virtual int RemoveStack(int id)
+    virtual int RemoveStack(int id) override
     {
         return 0;
     }
-    virtual int KillProcess(const std::string &bundleName)
+    virtual int KillProcess(const std::string &bundleName) override
     {
         return 0;
     }
-    virtual int UninstallApp(const std::string &bundleName)
+    virtual int UninstallApp(const std::string &bundleName) override
     {
         return 0;
     }
@@ -135,7 +139,92 @@ public:
     {
         return 0;
     }
-    virtual int TerminateAbilityByCaller(const sptr<IRemoteObject> &callerToken, int requestCode)
+    virtual int TerminateAbilityByCaller(const sptr<IRemoteObject> &callerToken, int requestCode) override
+    {
+        return 0;
+    }
+
+    virtual int MoveMissionToEnd(const sptr<IRemoteObject> &token, const bool nonFirst) override
+    {
+        return 0;
+    }
+
+    virtual bool IsFirstInMission(const sptr<IRemoteObject> &token) override
+    {
+        return true;
+    }
+
+    virtual int CompelVerifyPermission(const std::string &permission, int pid, int uid, std::string &message) override
+    {
+        return 0;
+    }
+
+    virtual int PowerOff() override
+    {
+        return 0;
+    }
+
+    virtual int PowerOn() override
+    {
+        return 0;
+    }
+
+    virtual int LockMission(int missionId) override
+    {
+        return 0;
+    }
+
+    virtual int UnlockMission(int missionId) override
+    {
+        return 0;
+    }
+
+    virtual sptr<IWantSender> GetWantSender(
+        const WantSenderInfo &wantSenderInfo, const sptr<IRemoteObject> &callerToken) override
+    {
+        return nullptr;
+    }
+
+    virtual int SendWantSender(const sptr<IWantSender> &target, const SenderInfo &senderInfo) override
+    {
+        return 0;
+    }
+
+    virtual void CancelWantSender(const sptr<IWantSender> &sender) override
+    {}
+
+    virtual int GetPendingWantUid(const sptr<IWantSender> &target) override
+    {
+        return 0;
+    }
+
+    virtual int GetPendingWantUserId(const sptr<IWantSender> &target) override
+    {
+        return 0;
+    }
+
+    virtual std::string GetPendingWantBundleName(const sptr<IWantSender> &target) override
+    {
+        return "";
+    }
+
+    virtual int GetPendingWantCode(const sptr<IWantSender> &target) override
+    {
+        return 0;
+    }
+
+    virtual int GetPendingWantType(const sptr<IWantSender> &target) override
+    {
+        return 0;
+    }
+
+    virtual void RegisterCancelListener(const sptr<IWantSender> &sender, const sptr<IWantReceiver> &receiver) override
+    {}
+
+    virtual void UnregisterCancelListener(const sptr<IWantSender> &sender, const sptr<IWantReceiver> &receiver) override
+    {}
+
+    virtual int GetPendingRequestWant(const sptr<IWantSender> &target, std::shared_ptr<Want> &want) override
     {
         return 0;
     }
