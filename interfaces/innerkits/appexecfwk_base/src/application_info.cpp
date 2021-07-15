@@ -47,10 +47,12 @@ bool ApplicationInfo::ReadFromParcel(Parcel &parcel)
     cacheDir = Str16ToStr8(parcel.ReadString16());
     isSystemApp = parcel.ReadBool();
     isLauncherApp = parcel.ReadBool();
+    enabled = parcel.ReadBool();
     supportedModes = parcel.ReadInt32();
     labelId = parcel.ReadInt32();
     iconId = parcel.ReadInt32();
     descriptionId = parcel.ReadInt32();
+    flags = parcel.ReadInt32();
 
     int32_t permissionsSize;
     READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, permissionsSize);
@@ -104,10 +106,12 @@ bool ApplicationInfo::Marshalling(Parcel &parcel) const
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(cacheDir));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, isSystemApp);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, isLauncherApp);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, enabled);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, supportedModes);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, labelId);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, iconId);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, descriptionId);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, flags);
 
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, permissions.size());
     for (auto &permission : permissions) {
@@ -167,6 +171,7 @@ void to_json(nlohmann::json &jsonObject, const ApplicationInfo &applicationInfo)
         {"signatureKey", applicationInfo.signatureKey},
         {"isSystemApp", applicationInfo.isSystemApp},
         {"isLauncherApp", applicationInfo.isLauncherApp},
+        {"enabled", applicationInfo.enabled},
         {"supportedModes", applicationInfo.supportedModes},
         {"process", applicationInfo.process},
         {"permissions", applicationInfo.permissions},
@@ -176,7 +181,8 @@ void to_json(nlohmann::json &jsonObject, const ApplicationInfo &applicationInfo)
         {"codePath", applicationInfo.codePath},
         {"dataDir", applicationInfo.dataDir},
         {"dataBaseDir", applicationInfo.dataBaseDir},
-        {"cacheDir", applicationInfo.cacheDir}
+        {"cacheDir", applicationInfo.cacheDir},
+        {"flags", applicationInfo.flags}
     };
 }
 
@@ -194,6 +200,7 @@ void from_json(const nlohmann::json &jsonObject, ApplicationInfo &applicationInf
     applicationInfo.signatureKey = jsonObject.at("signatureKey").get<std::string>();
     applicationInfo.isSystemApp = jsonObject.at("isSystemApp").get<bool>();
     applicationInfo.isLauncherApp = jsonObject.at("isLauncherApp").get<bool>();
+    applicationInfo.enabled = jsonObject.at("enabled").get<bool>();
     applicationInfo.supportedModes = jsonObject.at("supportedModes").get<int>();
     applicationInfo.process = jsonObject.at("process").get<std::string>();
     applicationInfo.permissions = jsonObject.at("permissions").get<std::vector<std::string>>();
@@ -204,6 +211,7 @@ void from_json(const nlohmann::json &jsonObject, ApplicationInfo &applicationInf
     applicationInfo.dataDir = jsonObject.at("dataDir").get<std::string>();
     applicationInfo.dataBaseDir = jsonObject.at("dataBaseDir").get<std::string>();
     applicationInfo.cacheDir = jsonObject.at("cacheDir").get<std::string>();
+    applicationInfo.flags = jsonObject.at("flags").get<int>();
 }
 
 }  // namespace AppExecFwk

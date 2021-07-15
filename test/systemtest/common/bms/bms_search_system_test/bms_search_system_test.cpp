@@ -1131,7 +1131,7 @@ HWTEST_F(BmsSearchSystemTest, BMS_Search_2900, Function | MediumTest | Level1)
 
     std::vector<BundleInfo> bundleInfos;
     bool result = bundleMgrProxy->QueryKeepAliveBundleInfos(bundleInfos);
-    EXPECT_FALSE(result);
+    EXPECT_TRUE(result);
     std::cout << "END BMS_SEARCH_2900" << std::endl;
 }
 

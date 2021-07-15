@@ -20,6 +20,8 @@
 #include "ability_manager_service.h"
 #include "ability_manager_errors.h"
 #include "app_mgr_service.h"
+#include "bundle_installer_interface.h"
+#include "bundle_mgr_interface.h"
 #include "hilog_wrapper.h"
 #include "module_test_dump_util.h"
 #include "sa_mgr_client.h"
@@ -57,24 +59,10 @@ public:
 
     /**
      *
-     * @param  {string} hapName                  : Hap File Vame
-     * @Introduction: use bm install xxx.hap
-     */
-    static void Install(const std::string &hapName);
-
-    /**
-     *
      * @param  {vector<string>} hapNames                  : container containing multiple hap names
      * @Introduction: use bm install multiple hap
      */
     static void InstallHaps(vector_str &hapNames);
-
-    /**
-     *
-     * @param  {string} bundleName                  : bundleName
-     * @Introduction: use bm uninstall bundleName
-     */
-    static void Uninstall(const std::string &bundleName);
 
     /**
      *
@@ -172,7 +160,7 @@ public:
      * @param  {time_t} delay                  : Waiting time for ability to Get Process Info (milliseconds)
      * @Introduction: Get Top AbilityRecord ID
      */
-    static ErrCode GetRunningProcessInfo(std::shared_ptr<AppExecFwk::RunningProcessInfo> &runningProcessInfo,
+    static ErrCode GetRunningProcessInfo(std::vector<AppExecFwk::RunningProcessInfo> &runningProcessInfo,
         sptr<AppExecFwk::IAppMgr> &appMs, const time_t &delay = 0);
 
     /**
@@ -192,7 +180,7 @@ public:
      * @param  {time_t} delay                  : Waiting time for ability to GetAppProcessInfo (milliseconds)
      * @Introduction: Get Top AbilityRecord ID
      */
-    static AppExecFwk::AppProcessInfo GetAppProcessInfoByName(
+    static AppExecFwk::RunningProcessInfo GetAppProcessInfoByName(
         const std::string &processName, sptr<AppExecFwk::IAppMgr> &appMs, const time_t &delay = 0);
 
     /**
@@ -204,7 +192,7 @@ public:
      * @Introduction: Judge whether the event is received in the event queue, if not, wait
      */
     static int WaitCompleted(
-        STtools::Event &event, const std::string &eventName, const int code, const int timeout = 10);
+        STtools::Event &event, const std::string &eventName, const int code, const int timeout = 15);
 
     /**
      *
@@ -284,7 +272,45 @@ public:
      */
     static ErrCode StopServiceAbility(const AAFwk::Want &want, unsigned int usec = 0);
 
+    /**
+     * Remove the specified mission stack by stack id
+     *
+     * @param id.
+     * @param  {sptr<AAFwk::IAbilityManager>} abilityMs                  : Ability Manager Service ptr
+     * @param  {time_t} delay                  : Waiting time for ability to GetAppProcessInfo (milliseconds)
+     * @return Returns ERR_OK on success, others on failure.
+     */
+    static int RemoveStack(int id, sptr<AAFwk::IAbilityManager> &abilityMs, const time_t &backHmoeDelay = 0,
+        const time_t &removeDelay = 0);
+
+    /**
+     *
+     * @param  {string} bundleFilePath                  : Hap File Name
+     * @param  {AppExecFwk::InstallFlag} installFlag                  : install flag
+     * @Introduction: use bms install
+     */
+    static void Install(
+        const std::string &bundleFilePath, const AppExecFwk::InstallFlag installFlag = AppExecFwk::InstallFlag::NORMAL);
+
+    /**
+     *
+     * @param  {string} bundleName                  : bundleName
+     * @Introduction: use bm uninstall bundleName
+     */
+    static void Uninstall(const std::string &bundleName);
+
 private:
+    /**
+     *
+     * @Introduction: get bundleManger object
+     */
+    static sptr<AppExecFwk::IBundleMgr> GetBundleMgrProxy();
+
+    /**
+     *
+     * @Introduction: get bundleInstaller object
+     */
+    static sptr<AppExecFwk::IBundleInstaller> GetInstallerProxy();
     /**
      *
      * @param  {vector<string>} vectorOperator                   : StOperator Class Object Info Save in vectorOperator

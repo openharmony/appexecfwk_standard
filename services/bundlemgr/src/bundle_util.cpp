@@ -15,6 +15,7 @@
 
 #include "bundle_util.h"
 
+#include <sys/stat.h>
 #include <unistd.h>
 
 #include "string_ex.h"
@@ -42,6 +43,10 @@ ErrCode BundleUtil::CheckFilePath(const std::string &bundlePath, std::string &re
     if (access(realPath.c_str(), F_OK) != 0) {
         APP_LOGE("can not access the bundle file path: %{private}s", realPath.c_str());
         return ERR_APPEXECFWK_INSTALL_INVALID_BUNDLE_FILE;
+    }
+    if(!CheckFileSize(realPath, Constants::MAX_HAP_SIZE)) {
+        APP_LOGE("file size is larger than max size Max size is: %{public}d", Constants::MAX_HAP_SIZE);
+        return ERR_APPEXECFWK_INSTALL_INVALID_HAP_SIZE;
     }
     return ERR_OK;
 }
@@ -71,6 +76,19 @@ bool BundleUtil::CheckFileName(const std::string &fileName)
     }
     if (fileName.size() > Constants::PATH_MAX_SIZE) {
         APP_LOGE("bundle file path length %{public}zu too long", fileName.size());
+        return false;
+    }
+    return true;
+}
+
+bool BundleUtil::CheckFileSize(const std::string &bundlePath, const int32_t fileSize)
+{
+    struct stat fileInfo = { 0 };
+	if (stat(bundlePath.c_str(), &fileInfo) != 0) {
+        APP_LOGE("call stat error");
+		return false;
+	}
+    if (fileInfo.st_size > fileSize) {
         return false;
     }
     return true;

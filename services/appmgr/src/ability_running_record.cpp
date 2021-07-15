@@ -102,5 +102,15 @@ int32_t AbilityRunningRecord::GetConnectionState() const
     return connectionState_;
 }
 
+void AbilityRunningRecord::SetEventId(const int64_t eventId)
+{
+    eventId_ = eventId;
+}
+
+int64_t AbilityRunningRecord::GetEventId() const
+{
+    return eventId_;
+}
+
 }  // namespace AppExecFwk
 }  // namespace OHOS

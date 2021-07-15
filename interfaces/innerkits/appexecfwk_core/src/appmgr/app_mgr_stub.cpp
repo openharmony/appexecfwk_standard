@@ -50,6 +50,10 @@ AppMgrStub::AppMgrStub()
         &AppMgrStub::HandleIsBackgroundRunningRestricted;
     memberFuncMap_[static_cast<uint32_t>(IAppMgr::Message::AMS_APP_GET_ALL_RUNNING_PROCESSES)] =
         &AppMgrStub::HandleGetAllRunningProcesses;
+    memberFuncMap_[static_cast<uint32_t>(IAppMgr::Message::AMS_APP_SET_APP_FREEZING_TIME)] =
+        &AppMgrStub::HandleSetAppFreezingTime;
+    memberFuncMap_[static_cast<uint32_t>(IAppMgr::Message::AMS_APP_GET_APP_FREEZING_TIME)] =
+        &AppMgrStub::HandleGetAppFreezingTime;
 }
 
 AppMgrStub::~AppMgrStub()
@@ -138,7 +142,8 @@ int32_t AppMgrStub::HandleGetAmsMgr(MessageParcel &data, MessageParcel &reply)
 int32_t AppMgrStub::HandleClearUpApplicationData(MessageParcel &data, MessageParcel &reply)
 {
     std::string bundleName = data.ReadString();
-    ClearUpApplicationData(bundleName);
+    int32_t result = ClearUpApplicationData(bundleName);
+    reply.WriteInt32(result);
     return NO_ERROR;
 }
 
@@ -152,10 +157,31 @@ int32_t AppMgrStub::HandleIsBackgroundRunningRestricted(MessageParcel &data, Mes
 
 int32_t AppMgrStub::HandleGetAllRunningProcesses(MessageParcel &data, MessageParcel &reply)
 {
-    std::shared_ptr<RunningProcessInfo> runningProcessInfo(data.ReadParcelable<RunningProcessInfo>());
-    int32_t result = GetAllRunningProcesses(runningProcessInfo);
-    reply.WriteInt32(result);
-    reply.WriteParcelable(runningProcessInfo.get());
+    std::vector<RunningProcessInfo> info;
+    auto result = GetAllRunningProcesses(info);
+    reply.WriteInt32(info.size());
+    for (auto &it : info) {
+        if (!reply.WriteParcelable(&it)) {
+            return ERR_INVALID_VALUE;
+        }
+    }
+    if (!reply.WriteInt32(result)) {
+        return ERR_INVALID_VALUE;
+    }
+    return NO_ERROR;
+}
+
+int32_t AppMgrStub::HandleSetAppFreezingTime(MessageParcel &data, MessageParcel &reply)
+{
+    SetAppFreezingTime(data.ReadInt32());
+    return NO_ERROR;
+}
+
+int32_t AppMgrStub::HandleGetAppFreezingTime(MessageParcel &data, MessageParcel &reply)
+{
+    int time = 0;
+    GetAppFreezingTime(time);
+    reply.WriteInt32(time);
     return NO_ERROR;
 }
 

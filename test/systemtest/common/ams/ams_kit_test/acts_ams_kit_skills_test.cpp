@@ -69,6 +69,7 @@ public:
 
     static bool SubscribeEvent();
     void StartAbilityKitTest(const std::string &abilityName, const std::string &bundleName);
+    void CleanMsg();
     class AppEventSubscriber : public CommonEventSubscriber {
     public:
         explicit AppEventSubscriber(const CommonEventSubscribeInfo &sp) : CommonEventSubscriber(sp){};
@@ -80,50 +81,21 @@ public:
     static sptr<IAbilityManager> abilityMs;
     static Event event;
     static Event abilityEvent;
-    static std::unordered_map<std::string, int> mapState;
-    static std::vector<std::string> eventList;
     static StressTestLevel stLevel_;
     static std::shared_ptr<AppEventSubscriber> subscriber_;
 };
 
-std::vector<std::string> ActsAmsKitSkillsTest::eventList = {
-    g_respPageFourthAbilityST,
-};
 StressTestLevel ActsAmsKitSkillsTest::stLevel_{};
 std::shared_ptr<ActsAmsKitSkillsTest::AppEventSubscriber> ActsAmsKitSkillsTest::subscriber_ = nullptr;
-
 Event ActsAmsKitSkillsTest::event = Event();
 Event ActsAmsKitSkillsTest::abilityEvent = Event();
 sptr<IAppMgr> ActsAmsKitSkillsTest::appMs = nullptr;
 sptr<IAbilityManager> ActsAmsKitSkillsTest::abilityMs = nullptr;
-std::unordered_map<std::string, int> ActsAmsKitSkillsTest::mapState = {
-    {"OnStart", AbilityLifecycleExecutor::LifecycleState::INACTIVE},
-    {"OnStop", AbilityLifecycleExecutor::LifecycleState::INITIAL},
-    {"OnActive", AbilityLifecycleExecutor::LifecycleState::ACTIVE},
-    {"OnInactive", AbilityLifecycleExecutor::LifecycleState::INACTIVE},
-    {"OnBackground", AbilityLifecycleExecutor::LifecycleState::BACKGROUND},
-    {"OnForeground", AbilityLifecycleExecutor::LifecycleState::INACTIVE},
-    {"OnAbilityStart", AbilityLifecycleExecutor::LifecycleState::INACTIVE},
-    {"OnAbilityStop", AbilityLifecycleExecutor::LifecycleState::INITIAL},
-    {"OnAbilityActive", AbilityLifecycleExecutor::LifecycleState::ACTIVE},
-    {"OnAbilityInactive", AbilityLifecycleExecutor::LifecycleState::INACTIVE},
-    {"OnAbilityBackground", AbilityLifecycleExecutor::LifecycleState::BACKGROUND},
-    {"OnAbilityForeground", AbilityLifecycleExecutor::LifecycleState::INACTIVE},
-};
 
 void ActsAmsKitSkillsTest::AppEventSubscriber::OnReceiveEvent(const CommonEventData &data)
 {
-    GTEST_LOG_(INFO) << "OnReceiveEvent: event=" << data.GetWant().GetAction();
-    GTEST_LOG_(INFO) << "OnReceiveEvent: data=" << data.GetData();
-    GTEST_LOG_(INFO) << "OnReceiveEvent: code=" << data.GetCode();
     STAbilityUtil::Completed(event, data.GetWant().GetAction(), data.GetCode(), data.GetData());
     STAbilityUtil::Completed(abilityEvent, data.GetData(), data.GetCode());
-
-    auto eventName = data.GetWant().GetAction();
-    auto iter = std::find(eventList.begin(), eventList.end(), eventName);
-    if (iter != eventList.end()) {
-        STAbilityUtil::Completed(event, data.GetData(), data.GetCode());
-    }
 }
 
 void ActsAmsKitSkillsTest::SetUpTestCase(void)
@@ -151,8 +123,7 @@ void ActsAmsKitSkillsTest::SetUp(void)
 
 void ActsAmsKitSkillsTest::TearDown(void)
 {
-    STAbilityUtil::CleanMsg(event);
-    STAbilityUtil::CleanMsg(abilityEvent);
+    CleanMsg();
 }
 
 bool ActsAmsKitSkillsTest::SubscribeEvent()
@@ -178,6 +149,12 @@ void ActsAmsKitSkillsTest::StartAbilityKitTest(const std::string &abilityName, c
     EXPECT_EQ(STAbilityUtil::WaitCompleted(abilityEvent, abilityName + g_abilityStateOnActive, 0), 0);
 }
 
+void ActsAmsKitSkillsTest::CleanMsg()
+{
+    STAbilityUtil::CleanMsg(event);
+    STAbilityUtil::CleanMsg(abilityEvent);
+}
+
 /**
  * @tc.number    : AMS_Page_Skills_00100
  * @tc.name      : Skills::CountActions
@@ -194,7 +171,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_00100, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_00100 : " << i;
             break;
         }
@@ -217,7 +195,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_00200, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_00200 : " << i;
             break;
         }
@@ -240,7 +219,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_00300, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_00300 : " << i;
             break;
         }
@@ -263,7 +243,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_00400, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_00400 : " << i;
             break;
         }
@@ -286,7 +267,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_00500, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_00500 : " << i;
             break;
         }
@@ -309,7 +291,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_00600, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_00600 : " << i;
             break;
         }
@@ -332,7 +315,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_00700, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_00700 : " << i;
             break;
         }
@@ -355,7 +339,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_00800, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_00800 : " << i;
             break;
         }
@@ -378,7 +363,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_00900, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_00900 : " << i;
             break;
         }
@@ -401,7 +387,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_01000, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_01000 : " << i;
             break;
         }
@@ -424,7 +411,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_01100, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_01100 : " << i;
             break;
         }
@@ -447,7 +435,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_01200, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_01200 : " << i;
             break;
         }
@@ -470,7 +459,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_01300, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_01300 : " << i;
             break;
         }
@@ -493,7 +483,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_01400, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_01400 : " << i;
             break;
         }
@@ -516,7 +507,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_01500, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_01500 : " << i;
             break;
         }
@@ -539,7 +531,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_01600, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_01600 : " << i;
             break;
         }
@@ -562,7 +555,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_01700, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_01700 : " << i;
             break;
         }
@@ -585,7 +579,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_01800, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_01800 : " << i;
             break;
         }
@@ -608,7 +603,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_01900, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_01900 : " << i;
             break;
         }
@@ -631,7 +627,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_02000, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_02000 : " << i;
             break;
         }
@@ -654,7 +651,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_02100, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_02100 : " << i;
             break;
         }
@@ -677,7 +675,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_02200, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_02200 : " << i;
             break;
         }
@@ -700,7 +699,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_02300, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_02300 : " << i;
             break;
         }
@@ -723,7 +723,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_02400, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_02400 : " << i;
             break;
         }
@@ -746,7 +747,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_02500, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_02500 : " << i;
             break;
         }
@@ -769,7 +771,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_02600, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_02600 : " << i;
             break;
         }
@@ -792,7 +795,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_02700, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_02700 : " << i;
             break;
         }
@@ -815,7 +819,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_02800, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_02800 : " << i;
             break;
         }
@@ -838,7 +843,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_02900, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_02900 : " << i;
             break;
         }
@@ -861,7 +867,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_03000, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_03000 : " << i;
             break;
         }
@@ -884,7 +891,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_03100, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_03100 : " << i;
             break;
         }
@@ -907,7 +915,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_03200, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_03200 : " << i;
             break;
         }
@@ -930,7 +939,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_03300, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_03300 : " << i;
             break;
         }
@@ -953,7 +963,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_03400, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_03400 : " << i;
             break;
         }
@@ -976,7 +987,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_03500, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_03500 : " << i;
             break;
         }
@@ -999,7 +1011,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_03600, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_03600 : " << i;
             break;
         }
@@ -1022,7 +1035,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_03700, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_03700 : " << i;
             break;
         }
@@ -1045,7 +1059,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_03800, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_03800 : " << i;
             break;
         }
@@ -1068,7 +1083,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_03900, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_03900 : " << i;
             break;
         }
@@ -1091,7 +1107,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_04000, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_04000 : " << i;
             break;
         }
@@ -1114,7 +1131,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_04100, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_04100 : " << i;
             break;
         }
@@ -1137,7 +1155,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_04200, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_04200 : " << i;
             break;
         }
@@ -1160,7 +1179,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_04300, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_04300 : " << i;
             break;
         }
@@ -1183,7 +1203,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_04400, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_04400 : " << i;
             break;
         }
@@ -1206,7 +1227,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_04500, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_04500 : " << i;
             break;
         }
@@ -1229,7 +1251,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_04600, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_04600 : " << i;
             break;
         }
@@ -1252,7 +1275,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_04700, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_04700 : " << i;
             break;
         }
@@ -1275,7 +1299,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_04800, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_04800 : " << i;
             break;
         }
@@ -1298,7 +1323,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_04900, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_04900 : " << i;
             break;
         }
@@ -1321,7 +1347,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_05000, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_05000 : " << i;
             break;
         }
@@ -1344,7 +1371,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_05100, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_05100 : " << i;
             break;
         }
@@ -1367,7 +1395,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_05200, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_05200 : " << i;
             break;
         }
@@ -1390,7 +1419,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_05300, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_05300 : " << i;
             break;
         }
@@ -1413,7 +1443,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_05400, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_05400 : " << i;
             break;
         }
@@ -1436,7 +1467,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_05500, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_05500 : " << i;
             break;
         }
@@ -1459,7 +1491,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_05600, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_05600 : " << i;
             break;
         }
@@ -1482,7 +1515,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_05700, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_05700 : " << i;
             break;
         }
@@ -1505,7 +1539,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_05800, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_05800 : " << i;
             break;
         }
@@ -1528,7 +1563,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_05900, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_05900 : " << i;
             break;
         }
@@ -1551,7 +1587,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_06000, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_06000 : " << i;
             break;
         }
@@ -1574,7 +1611,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_06100, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_06100 : " << i;
             break;
         }
@@ -1597,7 +1635,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_06200, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_06200 : " << i;
             break;
         }
@@ -1620,7 +1659,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_06300, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_06300 : " << i;
             break;
         }
@@ -1643,7 +1683,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_06400, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_06400 : " << i;
             break;
         }
@@ -1666,7 +1707,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_06500, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_06500 : " << i;
             break;
         }
@@ -1689,7 +1731,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_06600, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_06600 : " << i;
             break;
         }
@@ -1712,7 +1755,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_06700, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_06700 : " << i;
             break;
         }
@@ -1735,7 +1779,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_06800, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_06800 : " << i;
             break;
         }
@@ -1758,7 +1803,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_06900, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_06900 : " << i;
             break;
         }
@@ -1781,7 +1827,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_07000, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_07000 : " << i;
             break;
         }
@@ -1804,7 +1851,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_07100, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_07100 : " << i;
             break;
         }
@@ -1827,7 +1875,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_07200, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_07200 : " << i;
             break;
         }
@@ -1850,7 +1899,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_07300, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_07300 : " << i;
             break;
         }
@@ -1873,7 +1923,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_07400, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_07400 : " << i;
             break;
         }
@@ -1896,7 +1947,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_07500, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_07500 : " << i;
             break;
         }
@@ -1919,7 +1971,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_07600, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_07600 : " << i;
             break;
         }
@@ -1942,7 +1995,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_07700, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_07700 : " << i;
             break;
         }
@@ -1965,7 +2019,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_07800, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_07800 : " << i;
             break;
         }
@@ -1988,7 +2043,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_07900, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_07900 : " << i;
             break;
         }
@@ -2011,7 +2067,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_08000, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_08000 : " << i;
             break;
         }
@@ -2034,7 +2091,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_08100, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_08100 : " << i;
             break;
         }
@@ -2057,7 +2115,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_08200, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_08200 : " << i;
             break;
         }
@@ -2080,7 +2139,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_08300, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_08300 : " << i;
             break;
         }
@@ -2103,7 +2163,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_08400, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_08400 : " << i;
             break;
         }
@@ -2126,7 +2187,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_08500, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_08500 : " << i;
             break;
         }
@@ -2149,7 +2211,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_08600, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_08600 : " << i;
             break;
         }
@@ -2172,7 +2235,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_08700, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_08700 : " << i;
             break;
         }
@@ -2195,7 +2259,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_08800, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_08800 : " << i;
             break;
         }
@@ -2218,7 +2283,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_08900, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_08900 : " << i;
             break;
         }
@@ -2241,7 +2307,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_09000, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_09000 : " << i;
             break;
         }
@@ -2265,7 +2332,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_09100, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_09100 : " << i;
             break;
         }
@@ -2288,7 +2356,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_09200, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_09200 : " << i;
             break;
         }
@@ -2311,7 +2380,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_09300, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_09300 : " << i;
             break;
         }
@@ -2334,7 +2404,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_09400, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_09400 : " << i;
             break;
         }
@@ -2357,7 +2428,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_09500, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_09500 : " << i;
             break;
         }
@@ -2380,7 +2452,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_09600, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_09600 : " << i;
             break;
         }
@@ -2403,7 +2476,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_09700, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_09700 : " << i;
             break;
         }
@@ -2426,7 +2500,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_09800, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_09800 : " << i;
             break;
         }
@@ -2449,7 +2524,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_09900, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_09900 : " << i;
             break;
         }
@@ -2472,7 +2548,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_10000, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_10000 : " << i;
             break;
         }
@@ -2495,7 +2572,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_10100, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_10100 : " << i;
             break;
         }
@@ -2518,7 +2596,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_10200, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_10200 : " << i;
             break;
         }
@@ -2541,7 +2620,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_10300, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_10300 : " << i;
             break;
         }
@@ -2564,7 +2644,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_10400, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_10400 : " << i;
             break;
         }
@@ -2587,7 +2668,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_10500, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_10500 : " << i;
             break;
         }
@@ -2610,7 +2692,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_10600, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_10600 : " << i;
             break;
         }
@@ -2633,7 +2716,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_10700, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_10700 : " << i;
             break;
         }
@@ -2656,7 +2740,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_10800, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_10800 : " << i;
             break;
         }
@@ -2679,7 +2764,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_10900, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_10900 : " << i;
             break;
         }
@@ -2702,7 +2788,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_11000, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_11000 : " << i;
             break;
         }
@@ -2726,7 +2813,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_11100, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_11100 : " << i;
             break;
         }
@@ -2750,7 +2838,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_11200, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_11200 : " << i;
             break;
         }
@@ -2774,7 +2863,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_11300, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_11300 : " << i;
             break;
         }
@@ -2798,7 +2888,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_11400, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_11400 : " << i;
             break;
         }
@@ -2822,7 +2913,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_11500, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_11500 : " << i;
             break;
         }
@@ -2846,7 +2938,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_11600, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_11600 : " << i;
             break;
         }
@@ -2869,7 +2962,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_11700, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_11700 : " << i;
             break;
         }
@@ -2892,7 +2986,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_11800, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_11800 : " << i;
             break;
         }
@@ -2915,7 +3010,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_11900, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_11900 : " << i;
             break;
         }
@@ -2938,7 +3034,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_12000, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_12000 : " << i;
             break;
         }
@@ -2961,7 +3058,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_12100, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_12100 : " << i;
             break;
         }
@@ -2984,7 +3082,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_12200, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_12200 : " << i;
             break;
         }
@@ -3007,7 +3106,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_12300, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_12300 : " << i;
             break;
         }
@@ -3031,7 +3131,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_12400, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_12400 : " << i;
             break;
         }
@@ -3055,7 +3156,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_12500, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_12500 : " << i;
             break;
         }
@@ -3079,7 +3181,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_12600, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_12600 : " << i;
             break;
         }
@@ -3103,7 +3206,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_12700, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_12700 : " << i;
             break;
         }
@@ -3127,7 +3231,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_12800, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_12800 : " << i;
             break;
         }
@@ -3151,7 +3256,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_12900, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_12900 : " << i;
             break;
         }
@@ -3175,7 +3281,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_13000, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_13000 : " << i;
             break;
         }
@@ -3199,7 +3306,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_13100, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_13100 : " << i;
             break;
         }
@@ -3223,7 +3331,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_13200, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_13200 : " << i;
             break;
         }
@@ -3247,7 +3356,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_13300, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_13300 : " << i;
             break;
         }
@@ -3271,7 +3381,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_13400, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_13400 : " << i;
             break;
         }
@@ -3295,7 +3406,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_13500, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_13500 : " << i;
             break;
         }
@@ -3318,7 +3430,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_13600, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_13600 : " << i;
             break;
         }
@@ -3341,7 +3454,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_13700, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_13700 : " << i;
             break;
         }
@@ -3364,7 +3478,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_13800, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_13800 : " << i;
             break;
         }
@@ -3388,7 +3503,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_13900, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_13900 : " << i;
             break;
         }
@@ -3412,7 +3528,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_14000, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_14000 : " << i;
             break;
         }
@@ -3436,7 +3553,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_14100, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_14100 : " << i;
             break;
         }
@@ -3460,7 +3578,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_14200, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_14200 : " << i;
             break;
         }
@@ -3483,7 +3602,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_14300, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_14300 : " << i;
             break;
         }
@@ -3506,7 +3626,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_14400, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_14400 : " << i;
             break;
         }
@@ -3529,7 +3650,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_14500, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_14500 : " << i;
             break;
         }
@@ -3552,7 +3674,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_14600, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_14600 : " << i;
             break;
         }
@@ -3575,7 +3698,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_14700, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_14700 : " << i;
             break;
         }
@@ -3598,7 +3722,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_14800, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_14800 : " << i;
             break;
         }
@@ -3621,7 +3746,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_14900, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_14900 : " << i;
             break;
         }
@@ -3644,7 +3770,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_15000, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_15000 : " << i;
             break;
         }
@@ -3667,7 +3794,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_15100, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_15100 : " << i;
             break;
         }
@@ -3690,7 +3818,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_15200, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_15200 : " << i;
             break;
         }
@@ -3714,7 +3843,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_15300, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_15300 : " << i;
             break;
         }
@@ -3738,7 +3868,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_15400, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_15400 : " << i;
             break;
         }
@@ -3762,7 +3893,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_15500, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_15500 : " << i;
             break;
         }
@@ -3786,7 +3918,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_15600, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_15600 : " << i;
             break;
         }
@@ -3811,7 +3944,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_15700, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_15700 : " << i;
             break;
         }
@@ -3835,7 +3969,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_15800, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_15800 : " << i;
             break;
         }
@@ -3859,7 +3994,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_15900, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_15900 : " << i;
             break;
         }
@@ -3883,7 +4019,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_16000, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_16000 : " << i;
             break;
         }
@@ -3907,7 +4044,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_16100, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_16100 : " << i;
             break;
         }
@@ -3931,7 +4069,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_16200, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_16200 : " << i;
             break;
         }
@@ -3955,7 +4094,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_16300, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_16300 : " << i;
             break;
         }
@@ -3979,7 +4119,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_16400, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_16400 : " << i;
             break;
         }
@@ -4003,7 +4144,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_16500, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_16500 : " << i;
             break;
         }
@@ -4028,7 +4170,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_16600, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_16600 : " << i;
             break;
         }
@@ -4052,7 +4195,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_16700, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_16700 : " << i;
             break;
         }
@@ -4076,7 +4220,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_16800, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_16800 : " << i;
             break;
         }
@@ -4100,7 +4245,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_16900, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_16900 : " << i;
             break;
         }
@@ -4124,7 +4270,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_17000, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_17000 : " << i;
             break;
         }
@@ -4148,7 +4295,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_17100, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_17100 : " << i;
             break;
         }
@@ -4172,7 +4320,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_17200, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_17200 : " << i;
             break;
         }
@@ -4196,7 +4345,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_17300, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_17300 : " << i;
             break;
         }
@@ -4220,7 +4370,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_17400, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_17400 : " << i;
             break;
         }
@@ -4244,7 +4395,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_17500, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_17500 : " << i;
             break;
         }
@@ -4268,7 +4420,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_17600, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_17600 : " << i;
             break;
         }
@@ -4292,7 +4445,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_17700, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_17700 : " << i;
             break;
         }
@@ -4316,7 +4470,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_17800, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_17800 : " << i;
             break;
         }
@@ -4340,7 +4495,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_17900, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_17900 : " << i;
             break;
         }
@@ -4363,7 +4519,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_18000, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_18000 : " << i;
             break;
         }
@@ -4386,7 +4543,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_18100, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_18100 : " << i;
             break;
         }
@@ -4409,7 +4567,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_18200, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_18200 : " << i;
             break;
         }
@@ -4432,7 +4591,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_18300, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_18300 : " << i;
             break;
         }
@@ -4455,7 +4615,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_18400, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_18400 : " << i;
             break;
         }
@@ -4478,7 +4639,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_18500, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_18500 : " << i;
             break;
         }
@@ -4501,7 +4663,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_18600, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_18600 : " << i;
             break;
         }
@@ -4525,7 +4688,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_18700, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_18700 : " << i;
             break;
         }
@@ -4549,7 +4713,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_18800, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_18800 : " << i;
             break;
         }
@@ -4573,7 +4738,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_18900, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_18900 : " << i;
             break;
         }
@@ -4597,7 +4763,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_19000, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_19000 : " << i;
             break;
         }
@@ -4621,7 +4788,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_19100, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_19100 : " << i;
             break;
         }
@@ -4645,7 +4813,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_19200, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_19200 : " << i;
             break;
         }
@@ -4669,7 +4838,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_19300, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_19300 : " << i;
             break;
         }
@@ -4693,7 +4863,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_19400, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_19400 : " << i;
             break;
         }
@@ -4717,7 +4888,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_19500, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_19500 : " << i;
             break;
         }
@@ -4741,7 +4913,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_19600, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_19600 : " << i;
             break;
         }
@@ -4765,7 +4938,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_19700, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_19700 : " << i;
             break;
         }
@@ -4789,7 +4963,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_19800, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_19800 : " << i;
             break;
         }
@@ -4812,7 +4987,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_19900, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_19900 : " << i;
             break;
         }
@@ -4835,7 +5011,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_20000, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_20000 : " << i;
             break;
         }
@@ -4858,7 +5035,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_20100, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_20100 : " << i;
             break;
         }
@@ -4882,7 +5060,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_20200, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_20200 : " << i;
             break;
         }
@@ -4906,7 +5085,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_20300, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_20300 : " << i;
             break;
         }
@@ -4930,7 +5110,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_20400, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_20400 : " << i;
             break;
         }
@@ -4954,7 +5135,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_20500, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_20500 : " << i;
             break;
         }
@@ -4977,7 +5159,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_20600, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_20600 : " << i;
             break;
         }
@@ -5000,7 +5183,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_20700, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_20700 : " << i;
             break;
         }
@@ -5023,7 +5207,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_20800, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_20800 : " << i;
             break;
         }
@@ -5046,7 +5231,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_20900, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_20900 : " << i;
             break;
         }
@@ -5069,7 +5255,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_21000, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_21000 : " << i;
             break;
         }
@@ -5092,7 +5279,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_21100, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_21100 : " << i;
             break;
         }
@@ -5115,7 +5303,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_21200, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_21200 : " << i;
             break;
         }
@@ -5138,7 +5327,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_21300, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_21300 : " << i;
             break;
         }
@@ -5161,7 +5351,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_21400, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_21400 : " << i;
             break;
         }
@@ -5184,7 +5375,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_21500, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_21500 : " << i;
             break;
         }
@@ -5208,7 +5400,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_21600, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_21600 : " << i;
             break;
         }
@@ -5232,7 +5425,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_21700, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_21700 : " << i;
             break;
         }
@@ -5256,7 +5450,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_21800, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_21800 : " << i;
             break;
         }
@@ -5281,7 +5476,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_21900, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_21900 : " << i;
             break;
         }
@@ -5306,7 +5502,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_22000, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_22000 : " << i;
             break;
         }
@@ -5331,7 +5528,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_22100, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_22100 : " << i;
             break;
         }
@@ -5356,7 +5554,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_22200, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_22200 : " << i;
             break;
         }
@@ -5381,7 +5580,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_22300, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_22300 : " << i;
             break;
         }
@@ -5406,7 +5606,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_22400, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_22400 : " << i;
             break;
         }
@@ -5430,7 +5631,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_22500, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_22500 : " << i;
             break;
         }
@@ -5454,7 +5656,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_22600, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_22600 : " << i;
             break;
         }
@@ -5478,7 +5681,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_22700, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_22700 : " << i;
             break;
         }
@@ -5502,7 +5706,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_22800, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_22800 : " << i;
             break;
         }
@@ -5527,7 +5732,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_22900, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_22900 : " << i;
             break;
         }
@@ -5552,7 +5758,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_23000, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_23000 : " << i;
             break;
         }
@@ -5577,7 +5784,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_23100, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_23100 : " << i;
             break;
         }
@@ -5602,7 +5810,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_23200, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_23200 : " << i;
             break;
         }
@@ -5627,7 +5836,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_23300, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_23300 : " << i;
             break;
         }
@@ -5651,7 +5861,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_23400, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_23400 : " << i;
             break;
         }
@@ -5675,7 +5886,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_23500, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_23500 : " << i;
             break;
         }
@@ -5699,7 +5911,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_23600, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_23600 : " << i;
             break;
         }
@@ -5723,7 +5936,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_23700, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_23700 : " << i;
             break;
         }
@@ -5747,7 +5961,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_23800, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_23800 : " << i;
             break;
         }
@@ -5771,7 +5986,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_23900, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_23900 : " << i;
             break;
         }
@@ -5795,7 +6011,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_24000, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_24000 : " << i;
             break;
         }
@@ -5819,7 +6036,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_24100, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_24100 : " << i;
             break;
         }
@@ -5843,7 +6061,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_24200, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_24200 : " << i;
             break;
         }
@@ -5866,7 +6085,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_24300, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_24300 : " << i;
             break;
         }
@@ -5889,7 +6109,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_24400, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_24400 : " << i;
             break;
         }
@@ -5913,7 +6134,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_24500, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_24500 : " << i;
             break;
         }
@@ -5937,7 +6159,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_24600, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_24600 : " << i;
             break;
         }
@@ -5961,7 +6184,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_24700, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_24700 : " << i;
             break;
         }
@@ -5984,7 +6208,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_24800, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_24800 : " << i;
             break;
         }
@@ -6007,7 +6232,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_24900, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_24900 : " << i;
             break;
         }
@@ -6030,7 +6256,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_25000, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_25000 : " << i;
             break;
         }
@@ -6054,7 +6281,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_25100, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_25100 : " << i;
             break;
         }
@@ -6078,7 +6306,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_25200, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_25200 : " << i;
             break;
         }
@@ -6101,7 +6330,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_25300, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_25300 : " << i;
             break;
         }
@@ -6124,7 +6354,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_25400, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_25400 : " << i;
             break;
         }
@@ -6147,7 +6378,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_25500, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_25500 : " << i;
             break;
         }
@@ -6170,7 +6402,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_25600, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_25600 : " << i;
             break;
         }
@@ -6193,7 +6426,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_25700, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_25700 : " << i;
             break;
         }
@@ -6216,7 +6450,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_25800, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_25800 : " << i;
             break;
         }
@@ -6240,7 +6475,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_25900, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_25900 : " << i;
             break;
         }
@@ -6264,7 +6500,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_26000, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_26000 : " << i;
             break;
         }
@@ -6288,7 +6525,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_26100, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_26100 : " << i;
             break;
         }
@@ -6313,7 +6551,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_26200, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_26200 : " << i;
             break;
         }
@@ -6337,7 +6576,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_26300, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_26300 : " << i;
             break;
         }
@@ -6361,7 +6601,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_26400, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_26400 : " << i;
             break;
         }
@@ -6385,7 +6626,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_26500, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_26500 : " << i;
             break;
         }
@@ -6409,7 +6651,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_26600, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_26600 : " << i;
             break;
         }
@@ -6433,7 +6676,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_26700, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_26700 : " << i;
             break;
         }
@@ -6457,7 +6701,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_26800, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_26800 : " << i;
             break;
         }
@@ -6481,7 +6726,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_26900, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_26900 : " << i;
             break;
         }
@@ -6505,7 +6751,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_27000, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_27000 : " << i;
             break;
         }
@@ -6529,7 +6776,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_27100, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_27100 : " << i;
             break;
         }
@@ -6553,7 +6801,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_27200, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_27200 : " << i;
             break;
         }
@@ -6577,7 +6826,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_27300, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_27300 : " << i;
             break;
         }
@@ -6601,7 +6851,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_27400, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_27400 : " << i;
             break;
         }
@@ -6625,7 +6876,8 @@ HWTEST_F(ActsAmsKitSkillsTest, AMS_Page_Skills_27500, Function | MediumTest | Le
         std::string data = STAbilityUtil::GetData(event, g_respPageFourthAbilityST, amsKitSTCode);
         result = data.compare("1") == 0;
         EXPECT_TRUE(result);
-        if (!result && i > 1) {
+        CleanMsg();
+        if (!result && stLevel_.AMSLevel > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Skills_27500 : " << i;
             break;
         }

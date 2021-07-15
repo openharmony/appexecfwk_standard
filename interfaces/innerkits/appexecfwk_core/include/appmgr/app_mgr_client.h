@@ -130,10 +130,41 @@ public:
      * GetAllRunningProcesses, call GetAllRunningProcesses() through proxy project.
      * Obtains information about application processes that are running on the device.
      *
-     * @param runningProcessInfo, app name in Application record.
+     * @param info, app name in Application record.
      * @return ERR_OK ,return back success，others fail.
      */
-    virtual AppMgrResultCode GetAllRunningProcesses(std::shared_ptr<RunningProcessInfo> &runningProcessInfo);
+    virtual AppMgrResultCode GetAllRunningProcesses(std::vector<RunningProcessInfo> &info);
+
+    /**
+     * SetAppSuspendTimes, Setting the Freezing Time of APP Background.
+     *
+     * @param time, The timeout recorded when the application enters the background .
+     *
+     * @return Success or Failure .
+     */
+    virtual AppMgrResultCode SetAppFreezingTime(int time);
+
+    /**
+     * GetAppFreezingTime, Getting the Freezing Time of APP Background.
+     *
+     * @param time, The timeout recorded when the application enters the background .
+     *
+     * @return Success or Failure .
+     */
+    virtual AppMgrResultCode GetAppFreezingTime(int &time);
+    virtual void AbilityAttachTimeOut(const sptr<IRemoteObject> &token);
+
+    /**
+     * Checks whether a specified permission has been granted to the process identified by pid and uid
+     *
+     * @param permission Indicates the permission to check.
+     * @param pid Indicates the ID of the process to check.
+     * @param uid Indicates the UID of the process to check.
+     * @param message Describe success or failure
+     *
+     * @return Returns ERR_OK on success, others on failure.
+     */
+    virtual int CompelVerifyPermission(const std::string &permission, int pid, int uid, std::string &message);
 
 private:
     void SetServiceManager(std::unique_ptr<AppServiceManager> serviceMgr);

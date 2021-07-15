@@ -36,7 +36,7 @@ public:
     using AbilityToken = sptr<IRemoteObject>;
 
 public:
-    ProcessOptimizerUBA(const UbaServicePtr &ubaService, const LmkdClientPtr &lmkdClient = nullptr,
+    ProcessOptimizerUBA(const UbaServicePtr &ubaService, const LmksClientPtr &lmksClient = nullptr,
         int suspendTimeout = APP_SUSPEND_TIMEOUT_DEFAULT);
 
     virtual ~ProcessOptimizerUBA();
@@ -56,6 +56,8 @@ public:
     void OnAbilityVisibleChanged(const AbilityPtr &ability) override;
     void OnAbilityPerceptibleChanged(const AbilityPtr &ability) override;
     void OnAbilityRemoved(const AbilityPtr &ability) override;
+    void SetAppFreezingTime(int time) override;
+    void GetAppFreezingTime(int &time) override;
 
 protected:
     void OnLowMemoryAlert(const CgroupManager::LowMemoryLevel level) override;

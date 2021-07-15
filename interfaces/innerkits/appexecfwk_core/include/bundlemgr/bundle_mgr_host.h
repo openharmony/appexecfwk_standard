@@ -42,6 +42,10 @@ public:
      * @attention This function is implement in the proxy side.
      */
     virtual std::string GetAppType([[maybe_unused]] const std::string &bundleName) override;
+    /**
+     * @attention This function is implement in the proxy side.
+     */
+    virtual std::string GetAppIdByBundleName([[maybe_unused]] const std::string &bundleName, const int userId) override;
 
 private:
     /**
@@ -79,6 +83,20 @@ private:
      * @return Returns ERR_OK if called successfully; returns error code otherwise.
      */
     ErrCode HandleGetBundleNameForUid(Parcel &data, Parcel &reply);
+    /**
+     * @brief Handles the GetBundlesForUid function called from a IBundleMgr proxy object.
+     * @param data Indicates the data to be read.
+     * @param reply Indicates the reply to be sent;
+     * @return Returns ERR_OK if called successfully; returns error code otherwise.
+     */
+    ErrCode HandleGetBundlesForUid(Parcel &data, Parcel &reply);
+    /**
+     * @brief Handles the GetNameForUid function called from a IBundleMgr proxy object.
+     * @param data Indicates the data to be read.
+     * @param reply Indicates the reply to be sent;
+     * @return Returns ERR_OK if called successfully; returns error code otherwise.
+     */
+    ErrCode HandleGetNameForUid(Parcel &data, Parcel &reply);
     /**
      * @brief Handles the GetBundleGids function called from a IBundleMgr proxy object.
      * @param data Indicates the data to be read.
@@ -269,6 +287,27 @@ private:
      */
     ErrCode HandleSetApplicationEnabled(Parcel &data, Parcel &reply);
     /**
+     * @brief Handles the IsAbilityEnabled function called from a IBundleMgr proxy object.
+     * @param data Indicates the data to be read.
+     * @param reply Indicates the reply to be sent;
+     * @return Returns ERR_OK if called successfully; returns error code otherwise.
+     */
+    ErrCode HandleIsAbilityEnabled(Parcel &data, Parcel &reply);
+    /**
+     * @brief Handles the SetAbilityEnabled function called from a IBundleMgr proxy object.
+     * @param data Indicates the data to be read.
+     * @param reply Indicates the reply to be sent;
+     * @return Returns ERR_OK if called successfully; returns error code otherwise.
+     */
+    ErrCode HandleSetAbilityEnabled(Parcel &data, Parcel &reply);
+    /**
+     * @brief Handles the GetAbilityIcon function called from a IBundleMgr proxy object.
+     * @param data Indicates the data to be read.
+     * @param reply Indicates the reply to be sent;
+     * @return Returns ERR_OK if called successfully; returns error code otherwise.
+     */
+    ErrCode HandleGetAbilityIcon(Parcel &data, Parcel &reply);
+    /**
      * @brief Handles the CanRequestPermission function called from a IBundleMgr proxy object.
      * @param data Indicates the data to be read.
      * @param reply Indicates the reply to be sent;
@@ -282,6 +321,48 @@ private:
      * @return Returns ERR_OK if called successfully; returns error code otherwise.
      */
     ErrCode HandleRequestPermissionFromUser(Parcel &data, Parcel &reply);
+    /**
+     * @brief Handles the RegisterAllPermissionsChanged function called from a IBundleMgr proxy object.
+     * @param data Indicates the data to be read.
+     * @param reply Indicates the reply to be sent;
+     * @return Returns ERR_OK if called successfully; returns error code otherwise.
+     */
+    ErrCode HandleRegisterAllPermissionsChanged(Parcel &data, Parcel &reply);
+    /**
+     * @brief Handles the RegisterPermissionsChanged function called from a IBundleMgr proxy object.
+     * @param data Indicates the data to be read.
+     * @param reply Indicates the reply to be sent;
+     * @return Returns ERR_OK if called successfully; returns error code otherwise.
+     */
+    ErrCode HandleRegisterPermissionsChanged(Parcel &data, Parcel &reply);
+    /**
+     * @brief Handles the UnregisterPermissionsChanged function called from a IBundleMgr proxy object.
+     * @param data Indicates the data to be read.
+     * @param reply Indicates the reply to be sent;
+     * @return Returns ERR_OK if called successfully; returns error code otherwise.
+     */
+    ErrCode HandleUnregisterPermissionsChanged(Parcel &data, Parcel &reply);
+	/**
+     * @brief Handles the GetAllFormsInfo function called from a IBundleMgr proxy object.
+     * @param data Indicates the data to be read.
+     * @param reply Indicates the reply to be sent;
+     * @return Returns ERR_OK if called successfully; returns error code otherwise.
+     */
+	ErrCode HandleGetAllFormsInfo(Parcel &data, Parcel &reply);
+	/**
+     * @brief Handles the GetFormsInfoByApp function called from a IBundleMgr proxy object.
+     * @param data Indicates the data to be read.
+     * @param reply Indicates the reply to be sent;
+     * @return Returns ERR_OK if called successfully; returns error code otherwise.
+     */
+	ErrCode HandleGetFormsInfoByApp(Parcel &data, Parcel &reply);
+	/**
+     * @brief Handles the HandleGetFormsInfoByModule function called from a IBundleMgr proxy object.
+     * @param data Indicates the data to be read.
+     * @param reply Indicates the reply to be sent;
+     * @return Returns ERR_OK if called successfully; returns error code otherwise.
+     */
+	ErrCode HandleGetFormsInfoByModule(Parcel &data, Parcel &reply);
 
 private:
     /**

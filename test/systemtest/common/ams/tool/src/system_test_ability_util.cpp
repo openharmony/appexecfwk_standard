@@ -13,7 +13,8 @@
  * limitations under the License.
  */
 #include "system_test_ability_util.h"
-
+#include "status_receiver_host.h"
+#include "iservice_registry.h"
 namespace OHOS {
 namespace STABUtil {
 using namespace OHOS;
@@ -37,21 +38,11 @@ bool STAbilityUtil::PublishEvent(const std::string &eventName, const int &code, 
     return CommonEventManager::PublishCommonEvent(commonData);
 }
 
-void STAbilityUtil::Install(const std::string &hapName)
-{
-    system(("bm install -p /system/vendor/" + hapName + ".hap > /dev/null 2>&1").c_str());
-}
-
 void STAbilityUtil::InstallHaps(vector_str &hapNames)
 {
     for (auto hapName : hapNames) {
         Install(hapName);
     }
-}
-
-void STAbilityUtil::Uninstall(const std::string &bundleName)
-{
-    system(("bm uninstall -n " + bundleName + " > /dev/null 2>&1").c_str());
 }
 
 void STAbilityUtil::UninstallBundle(vector_str &bundleNames)
@@ -238,7 +229,7 @@ ErrCode STAbilityUtil::GetTopAbilityRecordId(int64_t &id, sptr<IAbilityManager> 
 }
 
 ErrCode STAbilityUtil::GetRunningProcessInfo(
-    std::shared_ptr<RunningProcessInfo> &runningProcessInfo, sptr<IAppMgr> &appMs, const time_t &delay)
+    std::vector<RunningProcessInfo> &runningProcessInfo, sptr<IAppMgr> &appMs, const time_t &delay)
 {
     ErrCode result = ERR_OK;
     appMs = GetAppMgrService();
@@ -276,20 +267,19 @@ ErrCode STAbilityUtil::KillApplication(const std::string &appName, sptr<IAppMgr>
     return result;
 }
 
-AppProcessInfo STAbilityUtil::GetAppProcessInfoByName(
+RunningProcessInfo STAbilityUtil::GetAppProcessInfoByName(
     const std::string &processName, sptr<IAppMgr> &appMs, const time_t &delay)
 {
-    AppProcessInfo appProcessInfo;
+    RunningProcessInfo appProcessInfo;
     appProcessInfo.pid_ = 0;
-    std::shared_ptr<RunningProcessInfo> runningProcessInfo = std::make_shared<RunningProcessInfo>();
+    std::vector<RunningProcessInfo> runningProcessInfo;
     if (ERR_OK == GetRunningProcessInfo(runningProcessInfo, appMs, delay)) {
-        for (const auto &info : runningProcessInfo->appProcessInfos) {
+        for (const auto &info : runningProcessInfo) {
             if (processName == info.processName_) {
                 appProcessInfo = info;
             }
         }
     }
-    runningProcessInfo.reset();
     return appProcessInfo;
 }
 
@@ -376,6 +366,172 @@ void STAbilityUtil::PullOperatorFromVector(StOperator &ParentOperator, std::vect
         ParentOperator.AddChildOperator(child);
         PullOperatorFromVector(*(child.get()), vectorOperator);
     }
+}
+
+int STAbilityUtil::RemoveStack(
+    int id, sptr<AAFwk::IAbilityManager> &abilityMs, const time_t &backHmoeDelay, const time_t &removeDelay)
+{
+    Want wantEntity;
+    wantEntity.AddEntity(Want::FLAG_HOME_INTENT_FROM_SYSTEM);
+    StartAbility(wantEntity, abilityMs);
+    std::this_thread::sleep_for(std::chrono::milliseconds(backHmoeDelay));
+    if (!abilityMs) {
+        HILOG_INFO("RemoveStack abilityMs nullptr");
+        return OHOS::ERR_INVALID_VALUE;
+    }
+    int result = abilityMs->RemoveStack(id);
+    std::this_thread::sleep_for(std::chrono::milliseconds(removeDelay));
+    return result;
+}
+
+class InstallToolStatusReceiver : public StatusReceiverHost {
+public:
+    InstallToolStatusReceiver();
+    virtual ~InstallToolStatusReceiver() override;
+    virtual void OnStatusNotify(const int progress) override;
+    virtual void OnFinished(const int32_t resultCode, const std::string &resultMsg) override;
+    static int TestWaitCompleted(Event &event, const std::string eventName, const int code, const int timeout = 10);
+    static void TestCompleted(Event &event, const std::string &eventName, const int code);
+    Event event_ = STtools::Event();
+
+private:
+    int iProgress_ = 0;
+    DISALLOW_COPY_AND_MOVE(InstallToolStatusReceiver);
+};
+InstallToolStatusReceiver::InstallToolStatusReceiver()
+{
+    std::cout << "create status receiver instance" << std::endl;
+}
+
+InstallToolStatusReceiver::~InstallToolStatusReceiver()
+{
+    std::cout << "destroy status receiver instance" << std::endl;
+}
+
+void InstallToolStatusReceiver::OnStatusNotify(const int progress)
+{
+    iProgress_ = progress;
+    std::cout << "destroy status receiver instance" << progress << std::endl;
+}
+
+void InstallToolStatusReceiver::OnFinished(const int32_t resultCode, const std::string &resultMsg)
+{
+    std::cout << "on finished result is " << resultCode << " " << resultMsg << std::endl;
+    TestCompleted(event_, resultMsg, resultCode);
+}
+
+int InstallToolStatusReceiver::TestWaitCompleted(
+    Event &event, const std::string eventName, const int code, const int timeout)
+{
+    std::cout << "TestWaitCompleted " << eventName << std::endl;
+    return STAbilityUtil::WaitCompleted(event, eventName, code, timeout);
+}
+void InstallToolStatusReceiver::TestCompleted(Event &event, const std::string &eventName, const int code)
+{
+    std::cout << "TestCompleted " << eventName << std::endl;
+    STAbilityUtil::Completed(event, eventName, code);
+    return;
+}
+
+const std::string MSG_SUCCESS = "[SUCCESS]";
+void STAbilityUtil::Install(const std::string &bundleFilePath, const InstallFlag installFlag)
+{
+    std::string bundlePath = "/system/vendor/" + bundleFilePath + ".hap";
+    std::string installMsg = "";
+    sptr<IBundleInstaller> installerProxy = GetInstallerProxy();
+    if (!installerProxy) {
+        std::cout << "get bundle installer Failure." << std::endl;
+        installMsg = "Failure";
+        return;
+    }
+
+    InstallParam installParam;
+    installParam.installFlag = installFlag;
+    sptr<InstallToolStatusReceiver> statusReceiver(new (std::nothrow) InstallToolStatusReceiver());
+    if (statusReceiver == nullptr) {
+        std::cout << "get statusReceiver Failure." << std::endl;
+        return;
+    }
+    bool installResult = installerProxy->Install(bundlePath, installParam, statusReceiver);
+    if (!installResult) {
+        installMsg = "Failure";
+        return;
+    }
+    if (InstallToolStatusReceiver::TestWaitCompleted(statusReceiver->event_, MSG_SUCCESS, 0) == 0) {
+        installMsg = "Success";
+    } else {
+        installMsg = "Failure";
+    }
+}
+
+void STAbilityUtil::Uninstall(const std::string &bundleName)
+{
+    std::string uninstallMsg = "";
+    sptr<IBundleInstaller> installerProxy = GetInstallerProxy();
+    if (!installerProxy) {
+        std::cout << "get bundle installer Failure." << std::endl;
+        uninstallMsg = "Failure";
+        return;
+    }
+    if (bundleName.empty()) {
+        std::cout << "bundelname is null." << std::endl;
+        uninstallMsg = "Failure";
+    } else {
+        sptr<InstallToolStatusReceiver> statusReceiver(new (std::nothrow) InstallToolStatusReceiver());
+        if (statusReceiver == nullptr) {
+            std::cout << "get statusReceiver Failure." << std::endl;
+            uninstallMsg = "Failure";
+            return;
+        }
+        InstallParam installParam;
+        bool uninstallResult = installerProxy->Uninstall(bundleName, installParam, statusReceiver);
+        if (!uninstallResult) {
+            std::cout << "Uninstall Failure." << std::endl;
+            uninstallMsg = "Failure";
+            return;
+        }
+        if (InstallToolStatusReceiver::TestWaitCompleted(statusReceiver->event_, MSG_SUCCESS, 0) == 0) {
+            uninstallMsg = "Success";
+        } else {
+            uninstallMsg = "Failure";
+        }
+    }
+}
+
+sptr<IBundleInstaller> STAbilityUtil::GetInstallerProxy()
+{
+    sptr<IBundleMgr> bundleMgrProxy = GetBundleMgrProxy();
+    if (!bundleMgrProxy) {
+        std::cout << "bundle mgr proxy is nullptr." << std::endl;
+        return nullptr;
+    }
+
+    sptr<IBundleInstaller> installerProxy = bundleMgrProxy->GetBundleInstaller();
+    if (!installerProxy) {
+        std::cout << "fail to get bundle installer proxy" << std::endl;
+        return nullptr;
+    }
+    std::cout << "get bundle installer proxy success." << std::endl;
+    return installerProxy;
+}
+
+sptr<IBundleMgr> STAbilityUtil::GetBundleMgrProxy()
+{
+    sptr<ISystemAbilityManager> systemAbilityManager =
+        SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
+    if (!systemAbilityManager) {
+        std::cout << "fail to get system ability mgr." << std::endl;
+        return nullptr;
+    }
+
+    sptr<IRemoteObject> remoteObject = systemAbilityManager->GetSystemAbility(BUNDLE_MGR_SERVICE_SYS_ABILITY_ID);
+    if (!remoteObject) {
+        std::cout << "fail to get bundle manager proxy." << std::endl;
+        return nullptr;
+    }
+
+    std::cout << "get bundle manager proxy success." << std::endl;
+    return iface_cast<IBundleMgr>(remoteObject);
 }
 
 }  // namespace STABUtil

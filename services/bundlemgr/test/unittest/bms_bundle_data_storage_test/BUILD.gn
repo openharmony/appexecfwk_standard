@@ -63,8 +63,44 @@ ohos_unittest("BmsBundleDataStorageTest") {
   ]
 }
 
+ohos_unittest("BmsBundleDataStorageDatabaseTest") {
+  module_out_path = module_output_path
+
+  sources = [
+    "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base/src/ability_info.cpp",
+    "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base/src/application_info.cpp",
+    "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base/src/bundle_info.cpp",
+    "${services_path}/bundlemgr/src/inner_bundle_info.cpp",
+  ]
+
+  sources += [ "bms_bundle_data_storage_database_test.cpp" ]
+
+  configs = [
+    ":private_config",
+    "${services_path}/bundlemgr/test:bundlemgr_test_config",
+    "${services_path}/bundlemgr:bundlemgr_common_config",
+  ]
+  cflags = []
+  if (target_cpu == "arm") {
+    cflags += [ "-DBINDER_IPC_32BIT" ]
+  }
+  deps = [
+    "${services_path}/bundlemgr:bundle_parser",
+    "//foundation/aafwk/standard/interfaces/innerkits/base:base",
+    "//foundation/aafwk/standard/interfaces/innerkits/want:want",
+    "//third_party/googletest:gtest_main",
+  ]
+
+  external_deps = [
+    "hiviewdfx_hilog_native:libhilog",
+    "ipc:ipc_core",
+  ]
+}
+
 group("unittest") {
   testonly = true
-
-  deps = [ ":BmsBundleDataStorageTest" ]
+  deps = [
+    #":BmsBundleDataStorageTest",
+    ":BmsBundleDataStorageDatabaseTest",
+  ]
 }

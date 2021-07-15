@@ -52,6 +52,14 @@ public:
      * @return Returns app record bundleName.
      */
     std::string GetBundleName() const;
+
+    /**
+     * @brief Obtains the app record isLauncherApp flag.
+     *
+     * @return Returns app record isLauncherApp flag.
+     */
+    bool IsLauncherApp() const;
+
     /**
      * @brief Obtains the app record id.
      *
@@ -149,6 +157,8 @@ public:
      * @return the ability record.
      */
     std::shared_ptr<AbilityRunningRecord> GetAbilityRunningRecord(const std::string &abilityName) const;
+
+    std::shared_ptr<AbilityRunningRecord> GetAbilityRunningRecord(const int64_t eventId) const;
 
     // Clear(remove) the specified ability record from the list
 
@@ -287,7 +297,7 @@ public:
      *
      * @return
      */
-    void TerminateAbility(const sptr<IRemoteObject> &token);
+    void TerminateAbility(const sptr<IRemoteObject> &token, const bool isForce);
 
     /**
      * AbilityTerminated, terminate the ability.
@@ -333,6 +343,16 @@ public:
      */
     void RemoveAppDeathRecipient() const;
 
+    void SetEventHandler(const std::shared_ptr<AMSEventHandler> &handler);
+
+    int64_t GetEventId() const;
+
+    bool IsLastAbilityRecord(const sptr<IRemoteObject> &token);
+
+    void SetTerminating();
+
+    bool IsTerminating();
+
 private:
     // drive application state changes when ability state changes.
     /**
@@ -373,6 +393,9 @@ private:
      */
     void OptimizerAbilityStateChanged(const std::shared_ptr<AbilityRunningRecord> &ability, const AbilityState state);
 
+    void SendEvent(uint32_t msg, int64_t timeOut, const std::shared_ptr<AbilityRunningRecord> &abilityRecord);
+    void SendEvent(uint32_t msg, int64_t timeOut);
+
 private:
     ApplicationState curState_ = ApplicationState::APP_STATE_CREATE;  // current state of this process
 
@@ -380,6 +403,8 @@ private:
     int32_t appRecordId_ = 0;
     std::string processName_;  // the name of this process
     int32_t uid_ = 0;
+    static int64_t appEventId_;
+    int64_t eventId_ = 0;
     // List of abilities running in the process
     std::map<const sptr<IRemoteObject>, std::shared_ptr<AbilityRunningRecord>> abilities_;
     std::list<const sptr<IRemoteObject>> foregroundingAbilityTokens_;
@@ -387,6 +412,8 @@ private:
     sptr<AppDeathRecipient> appDeathRecipient_;
     std::shared_ptr<PriorityObject> priorityObject_;
     std::shared_ptr<AppLifeCycleDeal> appLifeCycleDeal_;
+    std::shared_ptr<AMSEventHandler> eventHandler_;
+    bool isTerminating = false;
 };
 
 }  // namespace AppExecFwk

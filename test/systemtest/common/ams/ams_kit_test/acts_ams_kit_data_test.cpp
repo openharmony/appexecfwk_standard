@@ -127,6 +127,8 @@ const std::string DEFAULT_OPENFILE_RESULT = "4444";
 const std::string DEFAULT_GETFILETYPE_RESULT = "filetypes";
 const std::string DEFAULT_QUERY_RESULT = "Query";
 
+const int WAIT_TIMEOUT = 3;
+
 int g_StLevel = 1;
 
 bool PublishEvent(const std::string &eventName, const int &code, const std::string &data)
@@ -248,7 +250,6 @@ void ActsAmsKitDataTest::SetUpTestCase(void)
               << "BMS : " << stLevel_.BMSLevel << " "
               << "CES : " << stLevel_.CESLevel << std::endl;
     g_StLevel = stLevel_.AMSLevel;
-    g_StLevel = 5;
 }
 
 void ActsAmsKitDataTest::TearDownTestCase(void)
@@ -256,8 +257,11 @@ void ActsAmsKitDataTest::TearDownTestCase(void)
 
 void ActsAmsKitDataTest::SetUp(void)
 {
-    ReInstallBundle();
     ResetSystem();
+    std::vector<std::string> bundleNameSuffix = {"A", "B"};
+    for (std::string suffix : bundleNameSuffix) {
+        STAbilityUtil::Install(HAP_NAME_BASE + suffix);
+    }
     STAbilityUtil::CleanMsg(event);
 
     g_abilityMs = STAbilityUtil::GetAbilityManagerService();
@@ -353,7 +357,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_00100, Function | Mediu
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONACTIVE, ABILITY_KIT_PAGE_A_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_PAGE_A_CODE, PAGE_STATE_ONACTIVE);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONACTIVE, LIFECYCLE_CALLBACKS_A1, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONACTIVE, LIFECYCLE_CALLBACKS_A1, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
 
@@ -397,7 +401,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_00200, Function | Mediu
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONACTIVE, ABILITY_KIT_PAGE_B_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_PAGE_B_CODE, PAGE_STATE_ONACTIVE);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONACTIVE, LIFECYCLE_CALLBACKS_A1, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONACTIVE, LIFECYCLE_CALLBACKS_A1, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
 
@@ -445,7 +449,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_00300, Function | Mediu
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_QUERY, ABILITY_KIT_DATA_A1_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_DATA_A1_CODE, DATA_STATE_QUERY);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONACTIVE, LIFECYCLE_CALLBACKS_A2, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONACTIVE, LIFECYCLE_CALLBACKS_A2, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_QUERY + " " + DEFAULT_QUERY_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -492,7 +496,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_00400, Function | Mediu
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_QUERY, ABILITY_KIT_DATA_A1_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_DATA_A1_CODE, DATA_STATE_QUERY);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONACTIVE, LIFECYCLE_CALLBACKS_B, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONACTIVE, LIFECYCLE_CALLBACKS_B, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_QUERY + " " + DEFAULT_QUERY_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -534,7 +538,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_00500, Function | Mediu
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONCOMMAND, ABILITY_KIT_SERVICE_A_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_SERVICE_A_CODE, SERVICE_STATE_ONACTIVE);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONACTIVE, LIFECYCLE_CALLBACKS_A1, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONACTIVE, LIFECYCLE_CALLBACKS_A1, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(
@@ -577,7 +581,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_00600, Function | Mediu
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONCOMMAND, ABILITY_KIT_SERVICE_A_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_SERVICE_A_CODE, SERVICE_STATE_ONACTIVE);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONACTIVE, LIFECYCLE_CALLBACKS_B, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONACTIVE, LIFECYCLE_CALLBACKS_B, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_B_CODE), 0);
         EXPECT_EQ(
@@ -620,7 +624,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_00700, Function | Mediu
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONACTIVE, ABILITY_KIT_PAGE_A_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_PAGE_A_CODE, PAGE_STATE_ONACTIVE);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONINACTIVE, LIFECYCLE_CALLBACKS_A1, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONINACTIVE, LIFECYCLE_CALLBACKS_A1, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
 
@@ -662,7 +666,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_00800, Function | Mediu
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONACTIVE, ABILITY_KIT_PAGE_B_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_PAGE_B_CODE, PAGE_STATE_ONACTIVE);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONINACTIVE, LIFECYCLE_CALLBACKS_A1, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONINACTIVE, LIFECYCLE_CALLBACKS_A1, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
 
@@ -710,7 +714,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_00900, Function | Mediu
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_QUERY, ABILITY_KIT_DATA_A1_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_DATA_A1_CODE, DATA_STATE_QUERY);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONINACTIVE, LIFECYCLE_CALLBACKS_A2, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONINACTIVE, LIFECYCLE_CALLBACKS_A2, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_QUERY + " " + DEFAULT_QUERY_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -757,7 +761,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_01000, Function | Mediu
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_QUERY, ABILITY_KIT_DATA_A1_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_DATA_A1_CODE, DATA_STATE_QUERY);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONINACTIVE, LIFECYCLE_CALLBACKS_B, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONINACTIVE, LIFECYCLE_CALLBACKS_B, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_QUERY + " " + DEFAULT_QUERY_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -799,7 +803,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_01100, Function | Mediu
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONCOMMAND, ABILITY_KIT_SERVICE_A_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_SERVICE_A_CODE, SERVICE_STATE_ONACTIVE);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONINACTIVE, LIFECYCLE_CALLBACKS_A1, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONINACTIVE, LIFECYCLE_CALLBACKS_A1, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(
@@ -842,7 +846,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_01200, Function | Mediu
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONCOMMAND, ABILITY_KIT_SERVICE_A_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_SERVICE_A_CODE, SERVICE_STATE_ONACTIVE);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONINACTIVE, LIFECYCLE_CALLBACKS_B, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONINACTIVE, LIFECYCLE_CALLBACKS_B, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_B_CODE), 0);
         EXPECT_EQ(
@@ -885,7 +889,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_01300, Function | Mediu
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONACTIVE, ABILITY_KIT_PAGE_A_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_PAGE_A_CODE, PAGE_STATE_ONACTIVE);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_CALLBACKS_A1, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_CALLBACKS_A1, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
 
@@ -928,7 +932,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_01400, Function | Mediu
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONACTIVE, ABILITY_KIT_PAGE_B_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_PAGE_B_CODE, PAGE_STATE_ONACTIVE);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_CALLBACKS_A1, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_CALLBACKS_A1, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
 
@@ -976,7 +980,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_01500, Function | Mediu
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_QUERY, ABILITY_KIT_DATA_A1_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_DATA_A1_CODE, DATA_STATE_QUERY);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_CALLBACKS_A2, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_CALLBACKS_A2, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_QUERY + " " + DEFAULT_QUERY_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -1023,7 +1027,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_01600, Function | Mediu
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_QUERY, ABILITY_KIT_DATA_A1_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_DATA_A1_CODE, DATA_STATE_QUERY);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_CALLBACKS_B, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_CALLBACKS_B, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_QUERY + " " + DEFAULT_QUERY_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -1065,7 +1069,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_01700, Function | Mediu
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONCOMMAND, ABILITY_KIT_SERVICE_A_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_SERVICE_A_CODE, SERVICE_STATE_ONACTIVE);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_CALLBACKS_A1, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_CALLBACKS_A1, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(
@@ -1108,7 +1112,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_01800, Function | Mediu
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONCOMMAND, ABILITY_KIT_SERVICE_A_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_SERVICE_A_CODE, SERVICE_STATE_ONACTIVE);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_CALLBACKS_B, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_CALLBACKS_B, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_B_CODE), 0);
         EXPECT_EQ(
@@ -1154,11 +1158,11 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_01900, Function | Mediu
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONACTIVE, ABILITY_KIT_PAGE_A_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_PAGE_A_CODE, PAGE_STATE_ONACTIVE);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_CALLBACKS_A1, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_CALLBACKS_A1, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_CALLBACKS_A1, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_CALLBACKS_A1, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
         ReInstallBundle();
@@ -1202,10 +1206,10 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_02000, Function | Mediu
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONACTIVE, ABILITY_KIT_PAGE_B_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_PAGE_B_CODE, PAGE_STATE_ONACTIVE);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_CALLBACKS_A1, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_CALLBACKS_A1, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_PAGE_B_CODE), 0);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_CALLBACKS_A1, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_CALLBACKS_A1, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_PAGE_B_CODE), 0);
         ReInstallBundle();
@@ -1255,9 +1259,9 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_02100, Function | Mediu
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_QUERY, ABILITY_KIT_DATA_A1_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_DATA_A1_CODE, DATA_STATE_QUERY);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_CALLBACKS_A2, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_CALLBACKS_A2, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_DATA_A1_CODE), 0);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_CALLBACKS_A2, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_CALLBACKS_A2, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_DATA_A1_CODE), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_QUERY + " " + DEFAULT_QUERY_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -1309,9 +1313,9 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_02200, Function | Mediu
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_QUERY, ABILITY_KIT_DATA_A1_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_DATA_A1_CODE, DATA_STATE_QUERY);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_CALLBACKS_B, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_CALLBACKS_B, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_DATA_A1_CODE), 0);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_CALLBACKS_B, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_CALLBACKS_B, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_DATA_A1_CODE), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_QUERY + " " + DEFAULT_QUERY_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -1356,9 +1360,9 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_02300, Function | Mediu
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONCOMMAND, ABILITY_KIT_SERVICE_A_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_SERVICE_A_CODE, SERVICE_STATE_ONACTIVE);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_CALLBACKS_A1, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_CALLBACKS_A1, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_CALLBACKS_A1, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_CALLBACKS_A1, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
 
         EXPECT_EQ(
@@ -1404,9 +1408,9 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_02400, Function | Mediu
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONCOMMAND, ABILITY_KIT_SERVICE_A_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_SERVICE_A_CODE, SERVICE_STATE_ONACTIVE);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_CALLBACKS_B, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_CALLBACKS_B, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_B_CODE), 0);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_CALLBACKS_B, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_CALLBACKS_B, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_B_CODE), 0);
 
         EXPECT_EQ(
@@ -1450,7 +1454,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_02500, Function | Mediu
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_PAGE_A_CODE, PAGE_STATE_ONACTIVE);
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTOP, LIFECYCLE_CALLBACKS_A1, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTOP, LIFECYCLE_CALLBACKS_A1, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
         ReInstallBundle();
     }
@@ -1491,7 +1495,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_02600, Function | Mediu
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_PAGE_B_CODE, PAGE_STATE_ONACTIVE);
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTOP, LIFECYCLE_CALLBACKS_A1, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTOP, LIFECYCLE_CALLBACKS_A1, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_PAGE_B_CODE), 0);
         ReInstallBundle();
@@ -1539,7 +1543,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_02700, Function | Mediu
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_DATA_A1_CODE, DATA_STATE_QUERY);
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A2_CODE), 0);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTOP, LIFECYCLE_CALLBACKS_A2, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTOP, LIFECYCLE_CALLBACKS_A2, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_QUERY + " " + DEFAULT_QUERY_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -1587,7 +1591,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_02800, Function | Mediu
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_QUERY, ABILITY_KIT_DATA_A1_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_DATA_A1_CODE, DATA_STATE_QUERY);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTOP, LIFECYCLE_CALLBACKS_B, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTOP, LIFECYCLE_CALLBACKS_B, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_QUERY + " " + DEFAULT_QUERY_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -1630,7 +1634,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_02900, Function | Mediu
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_SERVICE_A_CODE, SERVICE_STATE_ONACTIVE);
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTOP, LIFECYCLE_CALLBACKS_A1, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTOP, LIFECYCLE_CALLBACKS_A1, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(
             TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -1673,7 +1677,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_03000, Function | Mediu
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_SERVICE_A_CODE, SERVICE_STATE_ONACTIVE);
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_B_CODE), 0);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTOP, LIFECYCLE_CALLBACKS_B, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTOP, LIFECYCLE_CALLBACKS_B, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(
             TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -1718,11 +1722,11 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_03100, Function | Mediu
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONACTIVE, ABILITY_KIT_PAGE_A_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_PAGE_A_CODE, PAGE_STATE_ONACTIVE);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_CHANGE, LIFECYCLE_CALLBACKS_A1, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_CHANGE, LIFECYCLE_CALLBACKS_A1, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_CHANGE, LIFECYCLE_CALLBACKS_A1, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_CHANGE, LIFECYCLE_CALLBACKS_A1, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
         ReInstallBundle();
@@ -1766,10 +1770,10 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_03200, Function | Mediu
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONACTIVE, ABILITY_KIT_PAGE_B_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_PAGE_B_CODE, PAGE_STATE_ONACTIVE);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_CHANGE, LIFECYCLE_CALLBACKS_A1, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_CHANGE, LIFECYCLE_CALLBACKS_A1, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_PAGE_B_CODE), 0);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_CHANGE, LIFECYCLE_CALLBACKS_A1, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_CHANGE, LIFECYCLE_CALLBACKS_A1, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_PAGE_B_CODE), 0);
         ReInstallBundle();
@@ -1819,9 +1823,9 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_03300, Function | Mediu
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_QUERY, ABILITY_KIT_DATA_A1_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_DATA_A1_CODE, DATA_STATE_QUERY);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_CHANGE, LIFECYCLE_CALLBACKS_A2, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_CHANGE, LIFECYCLE_CALLBACKS_A2, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_DATA_A1_CODE), 0);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_CHANGE, LIFECYCLE_CALLBACKS_A2, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_CHANGE, LIFECYCLE_CALLBACKS_A2, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_DATA_A1_CODE), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_QUERY + " " + DEFAULT_QUERY_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -1873,9 +1877,9 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_03400, Function | Mediu
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_QUERY, ABILITY_KIT_DATA_A1_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_DATA_A1_CODE, DATA_STATE_QUERY);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_CHANGE, LIFECYCLE_CALLBACKS_B, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_CHANGE, LIFECYCLE_CALLBACKS_B, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_DATA_A1_CODE), 0);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_CHANGE, LIFECYCLE_CALLBACKS_B, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_CHANGE, LIFECYCLE_CALLBACKS_B, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_DATA_A1_CODE), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_QUERY + " " + DEFAULT_QUERY_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -1920,9 +1924,9 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_03500, Function | Mediu
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONCOMMAND, ABILITY_KIT_SERVICE_A_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_SERVICE_A_CODE, SERVICE_STATE_ONACTIVE);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_CHANGE, LIFECYCLE_CALLBACKS_A1, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_CHANGE, LIFECYCLE_CALLBACKS_A1, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_CHANGE, LIFECYCLE_CALLBACKS_A1, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_CHANGE, LIFECYCLE_CALLBACKS_A1, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
 
         EXPECT_EQ(
@@ -1968,9 +1972,9 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_03600, Function | Mediu
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONCOMMAND, ABILITY_KIT_SERVICE_A_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_SERVICE_A_CODE, SERVICE_STATE_ONACTIVE);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_CHANGE, LIFECYCLE_CALLBACKS_B, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_CHANGE, LIFECYCLE_CALLBACKS_B, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_B_CODE), 0);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_CHANGE, LIFECYCLE_CALLBACKS_B, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_CHANGE, LIFECYCLE_CALLBACKS_B, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_B_CODE), 0);
 
         EXPECT_EQ(
@@ -2014,7 +2018,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_03700, Function | Mediu
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_PAGE_A_CODE, PAGE_STATE_ONACTIVE);
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONBACKGROUND, LIFECYCLE_CALLBACKS_A1, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONBACKGROUND, LIFECYCLE_CALLBACKS_A1, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
         ReInstallBundle();
     }
@@ -2055,7 +2059,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_03800, Function | Mediu
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_PAGE_B_CODE, PAGE_STATE_ONACTIVE);
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONBACKGROUND, LIFECYCLE_CALLBACKS_A1, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONBACKGROUND, LIFECYCLE_CALLBACKS_A1, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_PAGE_B_CODE), 0);
         ReInstallBundle();
@@ -2103,7 +2107,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_03900, Function | Mediu
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_DATA_A1_CODE, DATA_STATE_QUERY);
 
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_DATA_A1_CODE), 0);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONBACKGROUND, LIFECYCLE_CALLBACKS_A2, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONBACKGROUND, LIFECYCLE_CALLBACKS_A2, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_QUERY + " " + DEFAULT_QUERY_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
         ReInstallBundle();
@@ -2150,7 +2154,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_04000, Function | Mediu
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_QUERY, ABILITY_KIT_DATA_A1_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_DATA_A1_CODE, DATA_STATE_QUERY);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_DATA_A1_CODE), 0);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONBACKGROUND, LIFECYCLE_CALLBACKS_B, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONBACKGROUND, LIFECYCLE_CALLBACKS_B, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_QUERY + " " + DEFAULT_QUERY_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
         ReInstallBundle();
@@ -2192,7 +2196,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_04100, Function | Mediu
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_SERVICE_A_CODE, SERVICE_STATE_ONACTIVE);
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONBACKGROUND, LIFECYCLE_CALLBACKS_A1, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONBACKGROUND, LIFECYCLE_CALLBACKS_A1, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(
             TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -2235,7 +2239,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_04200, Function | Mediu
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_SERVICE_A_CODE, SERVICE_STATE_ONACTIVE);
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_B_CODE), 0);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONBACKGROUND, LIFECYCLE_CALLBACKS_B, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONBACKGROUND, LIFECYCLE_CALLBACKS_B, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(
             TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -2550,7 +2554,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_04900, Function | Mediu
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTART, LIFECYCLE_CALLBACKS_A1, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTART, LIFECYCLE_CALLBACKS_A1, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
         ReInstallBundle();
@@ -2597,7 +2601,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_05000, Function | Mediu
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_ONSTART, LIFECYCLE_CALLBACKS_A1), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_PAGE_B_CODE), 0);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTART, LIFECYCLE_CALLBACKS_A1, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTART, LIFECYCLE_CALLBACKS_A1, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_PAGE_B_CODE), 0);
         ReInstallBundle();
@@ -2649,7 +2653,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_05100, Function | Mediu
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_ONSTART, LIFECYCLE_CALLBACKS_A2), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_DATA_A1_CODE), 0);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTART, LIFECYCLE_CALLBACKS_A2, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTART, LIFECYCLE_CALLBACKS_A2, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_DATA_A1_CODE), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_QUERY + " " + DEFAULT_QUERY_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -2703,7 +2707,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_05200, Function | Mediu
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_ONSTART, LIFECYCLE_CALLBACKS_B), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_DATA_A1_CODE), 0);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTART, LIFECYCLE_CALLBACKS_B, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTART, LIFECYCLE_CALLBACKS_B, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_DATA_A1_CODE), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_QUERY + " " + DEFAULT_QUERY_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -2750,7 +2754,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_05300, Function | Mediu
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_ONSTART, LIFECYCLE_CALLBACKS_A1), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTART, LIFECYCLE_CALLBACKS_A1, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTART, LIFECYCLE_CALLBACKS_A1, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
 
         EXPECT_EQ(
@@ -2798,7 +2802,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_05400, Function | Mediu
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_ONSTART, LIFECYCLE_CALLBACKS_B), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_B_CODE), 0);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTART, LIFECYCLE_CALLBACKS_B, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTART, LIFECYCLE_CALLBACKS_B, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_B_CODE), 0);
 
         EXPECT_EQ(
@@ -3623,7 +3627,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_01900, Function | MediumTest | Lev
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTART, ABILITY_KIT_DATA_A1_CODE, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTART, ABILITY_KIT_DATA_A1_CODE, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
         ReInstallBundle();
@@ -3670,7 +3674,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_02000, Function | MediumTest | Lev
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_ONSTART, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_PAGE_B_CODE), 0);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTART, ABILITY_KIT_DATA_A1_CODE, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTART, ABILITY_KIT_DATA_A1_CODE, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_PAGE_B_CODE), 0);
         ReInstallBundle();
@@ -3722,7 +3726,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_02100, Function | MediumTest | Lev
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_ONSTART, ABILITY_KIT_DATA_A2_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_DATA_A1_CODE), 0);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTART, ABILITY_KIT_DATA_A2_CODE, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTART, ABILITY_KIT_DATA_A2_CODE, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_DATA_A1_CODE), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_QUERY + " " + DEFAULT_QUERY_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -3776,7 +3780,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_02200, Function | MediumTest | Lev
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_ONSTART, ABILITY_KIT_DATA_B_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_DATA_A1_CODE), 0);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTART, ABILITY_KIT_DATA_B_CODE, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTART, ABILITY_KIT_DATA_B_CODE, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_DATA_A1_CODE), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_QUERY + " " + DEFAULT_QUERY_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -3823,7 +3827,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_02300, Function | MediumTest | Lev
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_ONSTART, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTART, ABILITY_KIT_DATA_A1_CODE, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTART, ABILITY_KIT_DATA_A1_CODE, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
 
         EXPECT_EQ(
@@ -3871,7 +3875,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_02400, Function | MediumTest | Lev
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_ONSTART, ABILITY_KIT_DATA_B_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_B_CODE), 0);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTART, ABILITY_KIT_DATA_B_CODE, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTART, ABILITY_KIT_DATA_B_CODE, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_B_CODE), 0);
 
         EXPECT_EQ(
@@ -3915,7 +3919,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_02500, Function | MediumTest | Lev
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_PAGE_A_CODE, PAGE_STATE_ONACTIVE);
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTOP, ABILITY_KIT_DATA_A1_CODE, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTOP, ABILITY_KIT_DATA_A1_CODE, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
         ReInstallBundle();
     }
@@ -3956,7 +3960,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_02600, Function | MediumTest | Lev
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_PAGE_B_CODE, PAGE_STATE_ONACTIVE);
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTOP, ABILITY_KIT_DATA_A1_CODE, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTOP, ABILITY_KIT_DATA_A1_CODE, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_PAGE_B_CODE), 0);
         ReInstallBundle();
@@ -4002,7 +4006,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_02700, Function | MediumTest | Lev
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_QUERY, ABILITY_KIT_DATA_A1_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_DATA_A1_CODE, DATA_STATE_QUERY);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTOP, ABILITY_KIT_DATA_A2_CODE, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTOP, ABILITY_KIT_DATA_A2_CODE, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_QUERY + " " + DEFAULT_QUERY_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -4051,7 +4055,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_02800, Function | MediumTest | Lev
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_DATA_A1_CODE, DATA_STATE_QUERY);
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_B_CODE), 0);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTOP, ABILITY_KIT_DATA_B_CODE, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTOP, ABILITY_KIT_DATA_B_CODE, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_QUERY + " " + DEFAULT_QUERY_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -4093,7 +4097,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_02900, Function | MediumTest | Lev
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONCOMMAND, ABILITY_KIT_SERVICE_A_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_SERVICE_A_CODE, SERVICE_STATE_ONACTIVE);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTOP, ABILITY_KIT_DATA_A1_CODE, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTOP, ABILITY_KIT_DATA_A1_CODE, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(
@@ -4136,7 +4140,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_03000, Function | MediumTest | Lev
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONCOMMAND, ABILITY_KIT_SERVICE_A_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_SERVICE_A_CODE, SERVICE_STATE_ONACTIVE);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTOP, ABILITY_KIT_DATA_B_CODE, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTOP, ABILITY_KIT_DATA_B_CODE, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_B_CODE), 0);
         EXPECT_EQ(
@@ -4186,7 +4190,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_03100, Function | MediumTest | Lev
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONNEWWANT, ABILITY_KIT_DATA_A1_CODE, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONNEWWANT, ABILITY_KIT_DATA_A1_CODE, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
         ReInstallBundle();
@@ -4233,7 +4237,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_03200, Function | MediumTest | Lev
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_ONSTART, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_PAGE_B_CODE), 0);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONNEWWANT, ABILITY_KIT_DATA_A1_CODE, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONNEWWANT, ABILITY_KIT_DATA_A1_CODE, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_PAGE_B_CODE), 0);
         ReInstallBundle();
@@ -4285,7 +4289,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_03300, Function | MediumTest | Lev
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_ONSTART, ABILITY_KIT_DATA_A2_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_DATA_A1_CODE), 0);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONNEWWANT, ABILITY_KIT_DATA_A2_CODE, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONNEWWANT, ABILITY_KIT_DATA_A2_CODE, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_DATA_A1_CODE), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_QUERY + " " + DEFAULT_QUERY_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -4339,7 +4343,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_03400, Function | MediumTest | Lev
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_ONSTART, ABILITY_KIT_DATA_B_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_DATA_A1_CODE), 0);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONNEWWANT, ABILITY_KIT_DATA_B_CODE, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONNEWWANT, ABILITY_KIT_DATA_B_CODE, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_DATA_A1_CODE), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_QUERY + " " + DEFAULT_QUERY_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -4386,7 +4390,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_03500, Function | MediumTest | Lev
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_ONSTART, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONNEWWANT, ABILITY_KIT_DATA_A1_CODE, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONNEWWANT, ABILITY_KIT_DATA_A1_CODE, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
 
         EXPECT_EQ(
@@ -4434,7 +4438,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_03600, Function | MediumTest | Lev
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_ONSTART, ABILITY_KIT_DATA_B_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_B_CODE), 0);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONNEWWANT, ABILITY_KIT_DATA_B_CODE, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONNEWWANT, ABILITY_KIT_DATA_B_CODE, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_B_CODE), 0);
 
         EXPECT_EQ(
@@ -4477,7 +4481,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_03700, Function | MediumTest | Lev
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONACTIVE, ABILITY_KIT_PAGE_A_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_PAGE_A_CODE, PAGE_STATE_ONACTIVE);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONINACTIVE, ABILITY_KIT_DATA_A1_CODE, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONINACTIVE, ABILITY_KIT_DATA_A1_CODE, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
         ReInstallBundle();
@@ -4518,7 +4522,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_03800, Function | MediumTest | Lev
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONACTIVE, ABILITY_KIT_PAGE_B_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_PAGE_B_CODE, PAGE_STATE_ONACTIVE);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONINACTIVE, ABILITY_KIT_DATA_A1_CODE, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONINACTIVE, ABILITY_KIT_DATA_A1_CODE, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_PAGE_B_CODE), 0);
@@ -4565,7 +4569,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_03900, Function | MediumTest | Lev
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_QUERY, ABILITY_KIT_DATA_A1_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_DATA_A1_CODE, DATA_STATE_QUERY);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONINACTIVE, ABILITY_KIT_DATA_A2_CODE, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONINACTIVE, ABILITY_KIT_DATA_A2_CODE, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_QUERY + " " + DEFAULT_QUERY_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -4612,7 +4616,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_04000, Function | MediumTest | Lev
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_QUERY, ABILITY_KIT_DATA_A1_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_DATA_A1_CODE, DATA_STATE_QUERY);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONINACTIVE, ABILITY_KIT_DATA_B_CODE, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONINACTIVE, ABILITY_KIT_DATA_B_CODE, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_QUERY + " " + DEFAULT_QUERY_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -4654,7 +4658,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_04100, Function | MediumTest | Lev
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONCOMMAND, ABILITY_KIT_SERVICE_A_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_SERVICE_A_CODE, SERVICE_STATE_ONACTIVE);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONINACTIVE, ABILITY_KIT_DATA_A1_CODE, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONINACTIVE, ABILITY_KIT_DATA_A1_CODE, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(
@@ -4697,7 +4701,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_04200, Function | MediumTest | Lev
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONCOMMAND, ABILITY_KIT_SERVICE_A_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_SERVICE_A_CODE, SERVICE_STATE_ONACTIVE);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONINACTIVE, ABILITY_KIT_DATA_B_CODE, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONINACTIVE, ABILITY_KIT_DATA_B_CODE, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_B_CODE), 0);
         EXPECT_EQ(
@@ -4740,7 +4744,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_04300, Function | MediumTest | Lev
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONACTIVE, ABILITY_KIT_PAGE_A_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_PAGE_A_CODE, PAGE_STATE_ONACTIVE);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONACTIVE, ABILITY_KIT_DATA_A1_CODE, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONACTIVE, ABILITY_KIT_DATA_A1_CODE, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
         ReInstallBundle();
@@ -4781,7 +4785,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_04400, Function | MediumTest | Lev
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONACTIVE, ABILITY_KIT_PAGE_B_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_PAGE_B_CODE, PAGE_STATE_ONACTIVE);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONACTIVE, ABILITY_KIT_DATA_A1_CODE, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONACTIVE, ABILITY_KIT_DATA_A1_CODE, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_PAGE_B_CODE), 0);
@@ -4828,7 +4832,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_04500, Function | MediumTest | Lev
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_QUERY, ABILITY_KIT_DATA_A1_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_DATA_A1_CODE, DATA_STATE_QUERY);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONACTIVE, ABILITY_KIT_DATA_A2_CODE, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONACTIVE, ABILITY_KIT_DATA_A2_CODE, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_QUERY + " " + DEFAULT_QUERY_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -4875,7 +4879,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_04600, Function | MediumTest | Lev
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_QUERY, ABILITY_KIT_DATA_A1_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_DATA_A1_CODE, DATA_STATE_QUERY);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONACTIVE, ABILITY_KIT_DATA_B_CODE, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONACTIVE, ABILITY_KIT_DATA_B_CODE, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_QUERY + " " + DEFAULT_QUERY_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -4917,7 +4921,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_04700, Function | MediumTest | Lev
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONCOMMAND, ABILITY_KIT_SERVICE_A_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_SERVICE_A_CODE, SERVICE_STATE_ONACTIVE);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONACTIVE, ABILITY_KIT_DATA_A1_CODE, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONACTIVE, ABILITY_KIT_DATA_A1_CODE, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(
@@ -4960,7 +4964,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_04800, Function | MediumTest | Lev
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONCOMMAND, ABILITY_KIT_SERVICE_A_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_SERVICE_A_CODE, SERVICE_STATE_ONACTIVE);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONACTIVE, ABILITY_KIT_DATA_B_CODE, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONACTIVE, ABILITY_KIT_DATA_B_CODE, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_B_CODE), 0);
         EXPECT_EQ(
@@ -5003,7 +5007,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_04900, Function | MediumTest | Lev
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONACTIVE, ABILITY_KIT_PAGE_A_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_PAGE_A_CODE, PAGE_STATE_ONACTIVE);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, ABILITY_KIT_DATA_A1_CODE, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, ABILITY_KIT_DATA_A1_CODE, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
         ReInstallBundle();
@@ -5044,7 +5048,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_05000, Function | MediumTest | Lev
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONACTIVE, ABILITY_KIT_PAGE_B_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_PAGE_B_CODE, PAGE_STATE_ONACTIVE);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, ABILITY_KIT_DATA_A1_CODE, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, ABILITY_KIT_DATA_A1_CODE, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_PAGE_B_CODE), 0);
@@ -5091,7 +5095,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_05100, Function | MediumTest | Lev
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_QUERY, ABILITY_KIT_DATA_A1_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_DATA_A1_CODE, DATA_STATE_QUERY);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, ABILITY_KIT_DATA_A2_CODE, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, ABILITY_KIT_DATA_A2_CODE, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_QUERY + " " + DEFAULT_QUERY_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -5138,7 +5142,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_05200, Function | MediumTest | Lev
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_QUERY, ABILITY_KIT_DATA_A1_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_DATA_A1_CODE, DATA_STATE_QUERY);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, ABILITY_KIT_DATA_A2_CODE, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, ABILITY_KIT_DATA_A2_CODE, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_QUERY + " " + DEFAULT_QUERY_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -5180,7 +5184,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_05300, Function | MediumTest | Lev
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONCOMMAND, ABILITY_KIT_SERVICE_A_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_SERVICE_A_CODE, SERVICE_STATE_ONACTIVE);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, ABILITY_KIT_DATA_A1_CODE, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, ABILITY_KIT_DATA_A1_CODE, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(
@@ -5223,7 +5227,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_05400, Function | MediumTest | Lev
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONCOMMAND, ABILITY_KIT_SERVICE_A_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_SERVICE_A_CODE, SERVICE_STATE_ONACTIVE);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, ABILITY_KIT_DATA_B_CODE, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, ABILITY_KIT_DATA_B_CODE, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_B_CODE), 0);
         EXPECT_EQ(
@@ -5269,11 +5273,11 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_05500, Function | MediumTest | Lev
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONACTIVE, ABILITY_KIT_PAGE_A_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_PAGE_A_CODE, PAGE_STATE_ONACTIVE);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, ABILITY_KIT_DATA_A1_CODE, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, ABILITY_KIT_DATA_A1_CODE, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, ABILITY_KIT_DATA_A1_CODE, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, ABILITY_KIT_DATA_A1_CODE, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
         ReInstallBundle();
@@ -5317,10 +5321,10 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_05600, Function | MediumTest | Lev
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONACTIVE, ABILITY_KIT_PAGE_B_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_PAGE_B_CODE, PAGE_STATE_ONACTIVE);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, ABILITY_KIT_DATA_A1_CODE, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, ABILITY_KIT_DATA_A1_CODE, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_PAGE_B_CODE), 0);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, ABILITY_KIT_DATA_A1_CODE, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, ABILITY_KIT_DATA_A1_CODE, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_PAGE_B_CODE), 0);
         ReInstallBundle();
@@ -5370,9 +5374,9 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_05700, Function | MediumTest | Lev
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_QUERY, ABILITY_KIT_DATA_A1_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_DATA_A1_CODE, DATA_STATE_QUERY);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, ABILITY_KIT_DATA_A2_CODE, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, ABILITY_KIT_DATA_A2_CODE, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_DATA_A1_CODE), 0);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, ABILITY_KIT_DATA_A2_CODE, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, ABILITY_KIT_DATA_A2_CODE, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_DATA_A1_CODE), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_QUERY + " " + DEFAULT_QUERY_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -5424,9 +5428,9 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_05800, Function | MediumTest | Lev
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_QUERY, ABILITY_KIT_DATA_A1_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_DATA_A1_CODE, DATA_STATE_QUERY);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, ABILITY_KIT_DATA_A2_CODE, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, ABILITY_KIT_DATA_A2_CODE, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_DATA_A1_CODE), 0);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, ABILITY_KIT_DATA_A2_CODE, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, ABILITY_KIT_DATA_A2_CODE, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_DATA_A1_CODE), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_QUERY + " " + DEFAULT_QUERY_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -5471,9 +5475,9 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_05900, Function | MediumTest | Lev
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONCOMMAND, ABILITY_KIT_SERVICE_A_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_SERVICE_A_CODE, SERVICE_STATE_ONACTIVE);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, ABILITY_KIT_DATA_A1_CODE, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, ABILITY_KIT_DATA_A1_CODE, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, ABILITY_KIT_DATA_A1_CODE, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, ABILITY_KIT_DATA_A1_CODE, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
 
         EXPECT_EQ(
@@ -5519,9 +5523,9 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_06000, Function | MediumTest | Lev
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONCOMMAND, ABILITY_KIT_SERVICE_A_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_SERVICE_A_CODE, SERVICE_STATE_ONACTIVE);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, ABILITY_KIT_DATA_B_CODE, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, ABILITY_KIT_DATA_B_CODE, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_B_CODE), 0);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, ABILITY_KIT_DATA_B_CODE, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, ABILITY_KIT_DATA_B_CODE, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_B_CODE), 0);
 
         EXPECT_EQ(
@@ -5564,7 +5568,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_06100, Function | MediumTest | Lev
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONACTIVE, ABILITY_KIT_PAGE_A_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_PAGE_A_CODE, PAGE_STATE_ONACTIVE);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONBACKGROUND, ABILITY_KIT_DATA_A1_CODE, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONBACKGROUND, ABILITY_KIT_DATA_A1_CODE, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
         ReInstallBundle();
@@ -5605,7 +5609,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_06200, Function | MediumTest | Lev
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONACTIVE, ABILITY_KIT_PAGE_B_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_PAGE_B_CODE, PAGE_STATE_ONACTIVE);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONBACKGROUND, ABILITY_KIT_DATA_A1_CODE, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONBACKGROUND, ABILITY_KIT_DATA_A1_CODE, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_PAGE_B_CODE), 0);
@@ -5652,7 +5656,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_06300, Function | MediumTest | Lev
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_QUERY, ABILITY_KIT_DATA_A1_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_DATA_A1_CODE, DATA_STATE_QUERY);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONBACKGROUND, ABILITY_KIT_DATA_A2_CODE, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONBACKGROUND, ABILITY_KIT_DATA_A2_CODE, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_QUERY + " " + DEFAULT_QUERY_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -5699,7 +5703,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_06400, Function | MediumTest | Lev
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_QUERY, ABILITY_KIT_DATA_A1_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_DATA_A1_CODE, DATA_STATE_QUERY);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONBACKGROUND, ABILITY_KIT_DATA_B_CODE, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONBACKGROUND, ABILITY_KIT_DATA_B_CODE, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_QUERY + " " + DEFAULT_QUERY_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -5741,7 +5745,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_06500, Function | MediumTest | Lev
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONCOMMAND, ABILITY_KIT_SERVICE_A_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_SERVICE_A_CODE, SERVICE_STATE_ONACTIVE);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONBACKGROUND, ABILITY_KIT_DATA_A1_CODE, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONBACKGROUND, ABILITY_KIT_DATA_A1_CODE, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(
@@ -5784,7 +5788,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_06600, Function | MediumTest | Lev
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONCOMMAND, ABILITY_KIT_SERVICE_A_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_SERVICE_A_CODE, SERVICE_STATE_ONACTIVE);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONBACKGROUND, ABILITY_KIT_DATA_B_CODE, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONBACKGROUND, ABILITY_KIT_DATA_B_CODE, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_B_CODE), 0);
         EXPECT_EQ(
@@ -9192,7 +9196,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_00100, Function | Medium
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONACTIVE, ABILITY_KIT_PAGE_A_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_PAGE_A_CODE, PAGE_STATE_ONACTIVE);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONACTIVE, LIFECYCLE_OBSERVER_A1, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONACTIVE, LIFECYCLE_OBSERVER_A1, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
 
@@ -9235,7 +9239,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_00200, Function | Medium
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONACTIVE, ABILITY_KIT_PAGE_B_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_PAGE_B_CODE, PAGE_STATE_ONACTIVE);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONACTIVE, LIFECYCLE_OBSERVER_A1, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONACTIVE, LIFECYCLE_OBSERVER_A1, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
 
@@ -9283,7 +9287,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_00300, Function | Medium
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_QUERY, ABILITY_KIT_DATA_A1_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_DATA_A1_CODE, DATA_STATE_QUERY);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONACTIVE, LIFECYCLE_OBSERVER_A2, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONACTIVE, LIFECYCLE_OBSERVER_A2, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_QUERY + " " + DEFAULT_QUERY_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -9330,7 +9334,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_00400, Function | Medium
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_QUERY, ABILITY_KIT_DATA_A1_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_DATA_A1_CODE, DATA_STATE_QUERY);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONACTIVE, LIFECYCLE_OBSERVER_B, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONACTIVE, LIFECYCLE_OBSERVER_B, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_QUERY + " " + DEFAULT_QUERY_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -9372,7 +9376,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_00500, Function | Medium
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONCOMMAND, ABILITY_KIT_SERVICE_A_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_SERVICE_A_CODE, SERVICE_STATE_ONACTIVE);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONACTIVE, LIFECYCLE_OBSERVER_A1, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONACTIVE, LIFECYCLE_OBSERVER_A1, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(
@@ -9415,7 +9419,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_00600, Function | Medium
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONCOMMAND, ABILITY_KIT_SERVICE_A_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_SERVICE_A_CODE, SERVICE_STATE_ONACTIVE);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONACTIVE, LIFECYCLE_OBSERVER_B, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONACTIVE, LIFECYCLE_OBSERVER_B, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_B_CODE), 0);
         EXPECT_EQ(
@@ -9458,7 +9462,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_00700, Function | Medium
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONACTIVE, ABILITY_KIT_PAGE_A_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_PAGE_A_CODE, PAGE_STATE_ONACTIVE);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONINACTIVE, LIFECYCLE_OBSERVER_A1, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONINACTIVE, LIFECYCLE_OBSERVER_A1, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
 
@@ -9501,7 +9505,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_00800, Function | Medium
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONACTIVE, ABILITY_KIT_PAGE_B_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_PAGE_B_CODE, PAGE_STATE_ONACTIVE);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONINACTIVE, LIFECYCLE_OBSERVER_A1, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONINACTIVE, LIFECYCLE_OBSERVER_A1, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
 
@@ -9549,7 +9553,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_00900, Function | Medium
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_QUERY, ABILITY_KIT_DATA_A1_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_DATA_A1_CODE, DATA_STATE_QUERY);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONINACTIVE, LIFECYCLE_OBSERVER_A2, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONINACTIVE, LIFECYCLE_OBSERVER_A2, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_QUERY + " " + DEFAULT_QUERY_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -9596,7 +9600,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_01000, Function | Medium
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_QUERY, ABILITY_KIT_DATA_A1_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_DATA_A1_CODE, DATA_STATE_QUERY);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONINACTIVE, LIFECYCLE_OBSERVER_B, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONINACTIVE, LIFECYCLE_OBSERVER_B, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_QUERY + " " + DEFAULT_QUERY_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -9638,7 +9642,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_01100, Function | Medium
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONCOMMAND, ABILITY_KIT_SERVICE_A_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_SERVICE_A_CODE, SERVICE_STATE_ONACTIVE);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONINACTIVE, LIFECYCLE_OBSERVER_A1, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONINACTIVE, LIFECYCLE_OBSERVER_A1, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(
@@ -9681,7 +9685,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_01200, Function | Medium
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONCOMMAND, ABILITY_KIT_SERVICE_A_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_SERVICE_A_CODE, SERVICE_STATE_ONACTIVE);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONINACTIVE, LIFECYCLE_OBSERVER_B, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONINACTIVE, LIFECYCLE_OBSERVER_B, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_B_CODE), 0);
         EXPECT_EQ(
@@ -9724,7 +9728,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_01300, Function | Medium
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONACTIVE, ABILITY_KIT_PAGE_A_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_PAGE_A_CODE, PAGE_STATE_ONACTIVE);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_OBSERVER_A1, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_OBSERVER_A1, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
 
@@ -9767,7 +9771,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_01400, Function | Medium
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONACTIVE, ABILITY_KIT_PAGE_B_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_PAGE_B_CODE, PAGE_STATE_ONACTIVE);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_OBSERVER_A1, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_OBSERVER_A1, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
 
@@ -9815,7 +9819,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_01500, Function | Medium
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_QUERY, ABILITY_KIT_DATA_A1_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_DATA_A1_CODE, DATA_STATE_QUERY);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_OBSERVER_A2, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_OBSERVER_A2, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_QUERY + " " + DEFAULT_QUERY_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -9862,7 +9866,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_01600, Function | Medium
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_QUERY, ABILITY_KIT_DATA_A1_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_DATA_A1_CODE, DATA_STATE_QUERY);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_OBSERVER_B, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_OBSERVER_B, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_QUERY + " " + DEFAULT_QUERY_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -9904,7 +9908,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_01700, Function | Medium
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONCOMMAND, ABILITY_KIT_SERVICE_A_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_SERVICE_A_CODE, SERVICE_STATE_ONACTIVE);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_OBSERVER_A1, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_OBSERVER_A1, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(
@@ -9947,7 +9951,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_01800, Function | Medium
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONCOMMAND, ABILITY_KIT_SERVICE_A_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_SERVICE_A_CODE, SERVICE_STATE_ONACTIVE);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_OBSERVER_B, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_OBSERVER_B, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_B_CODE), 0);
         EXPECT_EQ(
@@ -9993,11 +9997,11 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_01900, Function | Medium
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONACTIVE, ABILITY_KIT_PAGE_A_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_PAGE_A_CODE, PAGE_STATE_ONACTIVE);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_OBSERVER_A1, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_OBSERVER_A1, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_OBSERVER_A1, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_OBSERVER_A1, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
         ReInstallBundle();
@@ -10041,10 +10045,10 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_02000, Function | Medium
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONACTIVE, ABILITY_KIT_PAGE_B_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_PAGE_B_CODE, PAGE_STATE_ONACTIVE);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_OBSERVER_A1, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_OBSERVER_A1, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_PAGE_B_CODE), 0);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_OBSERVER_A1, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_OBSERVER_A1, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_PAGE_B_CODE), 0);
         ReInstallBundle();
@@ -10094,9 +10098,9 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_02100, Function | Medium
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_QUERY, ABILITY_KIT_DATA_A1_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_DATA_A1_CODE, DATA_STATE_QUERY);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_OBSERVER_A2, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_OBSERVER_A2, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_DATA_A1_CODE), 0);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_OBSERVER_A2, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_OBSERVER_A2, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_DATA_A1_CODE), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_QUERY + " " + DEFAULT_QUERY_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -10148,9 +10152,9 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_02200, Function | Medium
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_QUERY, ABILITY_KIT_DATA_A1_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_DATA_A1_CODE, DATA_STATE_QUERY);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_OBSERVER_B, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_OBSERVER_B, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_DATA_A1_CODE), 0);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_OBSERVER_B, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_OBSERVER_B, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_DATA_A1_CODE), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_QUERY + " " + DEFAULT_QUERY_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -10195,9 +10199,9 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_02300, Function | Medium
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONCOMMAND, ABILITY_KIT_SERVICE_A_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_SERVICE_A_CODE, SERVICE_STATE_ONACTIVE);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_OBSERVER_A1, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_OBSERVER_A1, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_OBSERVER_A1, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_OBSERVER_A1, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
 
         EXPECT_EQ(
@@ -10243,9 +10247,9 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_02400, Function | Medium
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONCOMMAND, ABILITY_KIT_SERVICE_A_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_SERVICE_A_CODE, SERVICE_STATE_ONACTIVE);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_OBSERVER_B, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_OBSERVER_B, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_B_CODE), 0);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_OBSERVER_B, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONFOREGROUND, LIFECYCLE_OBSERVER_B, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_B_CODE), 0);
 
         EXPECT_EQ(
@@ -10289,7 +10293,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_02500, Function | Medium
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_PAGE_A_CODE, PAGE_STATE_ONACTIVE);
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTOP, LIFECYCLE_OBSERVER_A1, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTOP, LIFECYCLE_OBSERVER_A1, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
         ReInstallBundle();
     }
@@ -10330,7 +10334,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_02600, Function | Medium
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_PAGE_B_CODE, PAGE_STATE_ONACTIVE);
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTOP, LIFECYCLE_OBSERVER_A1, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTOP, LIFECYCLE_OBSERVER_A1, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_PAGE_B_CODE), 0);
         ReInstallBundle();
@@ -10378,7 +10382,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_02700, Function | Medium
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_DATA_A1_CODE, DATA_STATE_QUERY);
 
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_DATA_A1_CODE), 0);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTOP, LIFECYCLE_OBSERVER_A2, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTOP, LIFECYCLE_OBSERVER_A2, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_QUERY + " " + DEFAULT_QUERY_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
         ReInstallBundle();
@@ -10425,7 +10429,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_02800, Function | Medium
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_QUERY, ABILITY_KIT_DATA_A1_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_DATA_A1_CODE, DATA_STATE_QUERY);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_DATA_A1_CODE), 0);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTOP, LIFECYCLE_OBSERVER_B, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTOP, LIFECYCLE_OBSERVER_B, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_QUERY + " " + DEFAULT_QUERY_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
         ReInstallBundle();
@@ -10467,7 +10471,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_02900, Function | Medium
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_SERVICE_A_CODE, SERVICE_STATE_ONACTIVE);
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTOP, LIFECYCLE_OBSERVER_A1, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTOP, LIFECYCLE_OBSERVER_A1, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(
             TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -10510,7 +10514,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_03000, Function | Medium
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_SERVICE_A_CODE, SERVICE_STATE_ONACTIVE);
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_B_CODE), 0);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTOP, LIFECYCLE_OBSERVER_B, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTOP, LIFECYCLE_OBSERVER_B, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(
             TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -10555,7 +10559,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_03100, Function | Medium
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONACTIVE, ABILITY_KIT_PAGE_A_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_PAGE_A_CODE, PAGE_STATE_ONACTIVE);
 
-        EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_CHANGE, LIFECYCLE_OBSERVER_A1, 10), 0);
+        EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_CHANGE, LIFECYCLE_OBSERVER_A1, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
 
@@ -10602,7 +10606,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_03200, Function | Medium
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONACTIVE, ABILITY_KIT_PAGE_B_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_PAGE_B_CODE, PAGE_STATE_ONACTIVE);
 
-        EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_CHANGE, LIFECYCLE_OBSERVER_A1, 10), 0);
+        EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_CHANGE, LIFECYCLE_OBSERVER_A1, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_PAGE_B_CODE), 0);
 
@@ -10655,7 +10659,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_03300, Function | Medium
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_QUERY, ABILITY_KIT_DATA_A1_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_DATA_A1_CODE, DATA_STATE_QUERY);
 
-        EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_CHANGE, LIFECYCLE_OBSERVER_A2, 10), 0);
+        EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_CHANGE, LIFECYCLE_OBSERVER_A2, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_DATA_A1_CODE), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_DATA_A1_CODE), 0);
@@ -10709,7 +10713,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_03400, Function | Medium
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_QUERY, ABILITY_KIT_DATA_A1_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_DATA_A1_CODE, DATA_STATE_QUERY);
 
-        EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_CHANGE, LIFECYCLE_OBSERVER_B, 10), 0);
+        EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_CHANGE, LIFECYCLE_OBSERVER_B, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_DATA_A1_CODE), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_DATA_A1_CODE), 0);
@@ -10756,7 +10760,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_03500, Function | Medium
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONCOMMAND, ABILITY_KIT_SERVICE_A_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_SERVICE_A_CODE, SERVICE_STATE_ONACTIVE);
 
-        EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_CHANGE, LIFECYCLE_OBSERVER_A1, 10), 0);
+        EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_CHANGE, LIFECYCLE_OBSERVER_A1, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
@@ -10804,7 +10808,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_03600, Function | Medium
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONCOMMAND, ABILITY_KIT_SERVICE_A_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_SERVICE_A_CODE, SERVICE_STATE_ONACTIVE);
 
-        EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_CHANGE, LIFECYCLE_OBSERVER_B, 10), 0);
+        EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_CHANGE, LIFECYCLE_OBSERVER_B, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_B_CODE), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_B_CODE), 0);
@@ -10850,7 +10854,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_03700, Function | Medium
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_PAGE_A_CODE, PAGE_STATE_ONACTIVE);
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONBACKGROUND, LIFECYCLE_OBSERVER_A1, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONBACKGROUND, LIFECYCLE_OBSERVER_A1, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
         ReInstallBundle();
     }
@@ -10891,7 +10895,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_03800, Function | Medium
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_PAGE_B_CODE, PAGE_STATE_ONACTIVE);
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONBACKGROUND, LIFECYCLE_OBSERVER_A1, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONBACKGROUND, LIFECYCLE_OBSERVER_A1, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_PAGE_B_CODE), 0);
         ReInstallBundle();
@@ -10939,7 +10943,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_03900, Function | Medium
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_DATA_A1_CODE, DATA_STATE_QUERY);
 
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_DATA_A1_CODE), 0);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONBACKGROUND, LIFECYCLE_OBSERVER_A2, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONBACKGROUND, LIFECYCLE_OBSERVER_A2, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_QUERY + " " + DEFAULT_QUERY_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
         ReInstallBundle();
@@ -10986,7 +10990,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_04000, Function | Medium
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_QUERY, ABILITY_KIT_DATA_A1_CODE), 0);
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_DATA_A1_CODE, DATA_STATE_QUERY);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_DATA_A1_CODE), 0);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONBACKGROUND, LIFECYCLE_OBSERVER_B, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONBACKGROUND, LIFECYCLE_OBSERVER_B, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_QUERY + " " + DEFAULT_QUERY_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
         ReInstallBundle();
@@ -11028,7 +11032,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_04100, Function | Medium
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_SERVICE_A_CODE, SERVICE_STATE_ONACTIVE);
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONBACKGROUND, LIFECYCLE_OBSERVER_A1, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONBACKGROUND, LIFECYCLE_OBSERVER_A1, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(
             TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -11071,7 +11075,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_04200, Function | Medium
         PublishEvent(TEST_EVENT_NAME, ABILITY_KIT_SERVICE_A_CODE, SERVICE_STATE_ONACTIVE);
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_B_CODE), 0);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONBACKGROUND, LIFECYCLE_OBSERVER_B, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONBACKGROUND, LIFECYCLE_OBSERVER_B, WAIT_TIMEOUT), 0);
 
         EXPECT_EQ(
             TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -11386,7 +11390,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_04900, Function | Medium
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
 
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTART, LIFECYCLE_OBSERVER_A1, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTART, LIFECYCLE_OBSERVER_A1, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
         ReInstallBundle();
@@ -11433,7 +11437,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_05000, Function | Medium
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_ONSTART, LIFECYCLE_OBSERVER_A1), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_PAGE_B_CODE), 0);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTART, LIFECYCLE_OBSERVER_A1, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTART, LIFECYCLE_OBSERVER_A1, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_PAGE_B_CODE), 0);
         ReInstallBundle();
@@ -11485,7 +11489,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_05100, Function | Medium
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_ONSTART, LIFECYCLE_OBSERVER_A2), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_DATA_A1_CODE), 0);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTART, LIFECYCLE_OBSERVER_A2, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTART, LIFECYCLE_OBSERVER_A2, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_DATA_A1_CODE), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_QUERY + " " + DEFAULT_QUERY_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -11539,7 +11543,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_05200, Function | Medium
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_ONSTART, LIFECYCLE_OBSERVER_B), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_DATA_A1_CODE), 0);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTART, LIFECYCLE_OBSERVER_B, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTART, LIFECYCLE_OBSERVER_B, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_INSERT + " " + DEFAULT_INSERT_RESULT, ABILITY_KIT_DATA_A1_CODE), 0);
 
         EXPECT_EQ(TestWaitCompleted(event, OPERATOR_QUERY + " " + DEFAULT_QUERY_RESULT, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -11586,7 +11590,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_05300, Function | Medium
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_ONSTART, LIFECYCLE_OBSERVER_A1), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTART, LIFECYCLE_OBSERVER_A1, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTART, LIFECYCLE_OBSERVER_A1, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_A1_CODE), 0);
 
         EXPECT_EQ(
@@ -11634,7 +11638,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_05400, Function | Medium
 
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_ONSTART, LIFECYCLE_OBSERVER_B), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_B_CODE), 0);
-        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTART, LIFECYCLE_OBSERVER_B, 1), 0);
+        EXPECT_NE(TestWaitCompleted(event, DATA_STATE_ONSTART, LIFECYCLE_OBSERVER_B, WAIT_TIMEOUT), 0);
         EXPECT_EQ(TestWaitCompleted(event, DATA_STATE_INSERT, ABILITY_KIT_DATA_B_CODE), 0);
 
         EXPECT_EQ(

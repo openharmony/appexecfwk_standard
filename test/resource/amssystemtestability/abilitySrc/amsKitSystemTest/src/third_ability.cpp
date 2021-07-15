@@ -136,15 +136,15 @@ void ThirdAbility::ProcessInfoGetPidCase2(int code)
 
 void ThirdAbility::ProcessInfoGetPidCase3(int code)
 {
-    ProcessInfo processInfo(normalProcessName, INT32_MIN);
-    bool result = (processInfo.GetPid() == INT32_MIN);
+    ProcessInfo processInfo(normalProcessName, std::numeric_limits<int>::min());
+    bool result = (processInfo.GetPid() == std::numeric_limits<int>::min());
     TestUtils::PublishEvent(g_respPageThirdAbilityST, code, std::to_string(result));
 }
 
 void ThirdAbility::ProcessInfoGetPidCase4(int code)
 {
-    ProcessInfo processInfo(normalProcessName, INT32_MAX);
-    bool result = (processInfo.GetPid() == INT32_MAX);
+    ProcessInfo processInfo(normalProcessName, std::numeric_limits<int>::max());
+    bool result = (processInfo.GetPid() == std::numeric_limits<int>::max());
     TestUtils::PublishEvent(g_respPageThirdAbilityST, code, std::to_string(result));
 }
 
@@ -203,8 +203,8 @@ void ThirdAbility::ProcessInfoMarshallingCase3(int code)
 
 void ThirdAbility::ProcessInfoMarshallingCase4(int code)
 {
-    ProcessInfo processInfo(normalProcessName, INT32_MIN);
-    GetParcelByProcessID(processInfo, INT32_MIN, code);
+    ProcessInfo processInfo(normalProcessName, std::numeric_limits<int>::min());
+    GetParcelByProcessID(processInfo, std::numeric_limits<int>::min(), code);
 }
 
 void ThirdAbility::ProcessInfoMarshallingCase5(int code)
@@ -215,8 +215,8 @@ void ThirdAbility::ProcessInfoMarshallingCase5(int code)
 
 void ThirdAbility::ProcessInfoMarshallingCase6(int code)
 {
-    ProcessInfo processInfo(normalProcessName, INT32_MAX);
-    GetParcelByProcessID(processInfo, INT32_MAX, code);
+    ProcessInfo processInfo(normalProcessName, std::numeric_limits<int>::max());
+    GetParcelByProcessID(processInfo, std::numeric_limits<int>::max(), code);
 }
 
 void ThirdAbility::ProcessInfoUnmarshallingCase1(int code)
@@ -241,17 +241,17 @@ void ThirdAbility::ProcessInfoUnmarshallingCase4(int code)
 
 void ThirdAbility::ProcessInfoUnmarshallingCase5(int code)
 {
-    GetProcessIDByParcel(normalProcessName, INT32_MIN, code);
+    GetProcessIDByParcel(normalProcessName, std::numeric_limits<int>::min(), code);
 }
 
 void ThirdAbility::ProcessInfoUnmarshallingCase6(int code)
 {
-    GetProcessIDByParcel(normalProcessName, INT32_MAX, code);
+    GetProcessIDByParcel(normalProcessName, std::numeric_limits<int>::max(), code);
 }
 
 void ThirdAbility::ProcessInfoUnmarshallingCase7(int code)
 {
-    ProcessInfo processInfoIn(normalProcessName, INT32_MAX);
+    ProcessInfo processInfoIn(normalProcessName, std::numeric_limits<int>::max());
     ProcessInfo *processInfoOut = nullptr;
     Parcel in;
     processInfoIn.Marshalling(in);
@@ -267,7 +267,7 @@ void ThirdAbility::ProcessInfoUnmarshallingCase7(int code)
 
 void ThirdAbility::ProcessInfoUnmarshallingCase8(int code)
 {
-    ProcessInfo processInfoIn(specialProcessName, INT32_MAX);
+    ProcessInfo processInfoIn(specialProcessName, std::numeric_limits<int>::max());
     ProcessInfo *processInfoOut = nullptr;
     Parcel in;
     processInfoIn.Marshalling(in);
@@ -283,7 +283,7 @@ void ThirdAbility::ProcessInfoUnmarshallingCase8(int code)
 
 void ThirdAbility::ProcessInfoUnmarshallingCase9(int code)
 {
-    ProcessInfo processInfoIn(specialProcessName, INT32_MIN);
+    ProcessInfo processInfoIn(specialProcessName, std::numeric_limits<int>::min());
     ProcessInfo *processInfoOut = nullptr;
     Parcel in;
     processInfoIn.Marshalling(in);
@@ -319,14 +319,14 @@ void ThirdAbility::ProcessInfoProcessInfoStringintCase1(int code)
 
 void ThirdAbility::ProcessInfoProcessInfoStringintCase2(int code)
 {
-    ProcessInfo processInfo(normalProcessName, INT32_MIN);
-    ComparePidProcessName(processInfo, INT32_MIN, normalProcessName, code);
+    ProcessInfo processInfo(normalProcessName, std::numeric_limits<int>::min());
+    ComparePidProcessName(processInfo, std::numeric_limits<int>::min(), normalProcessName, code);
 }
 
 void ThirdAbility::ProcessInfoProcessInfoStringintCase3(int code)
 {
-    ProcessInfo processInfo(normalProcessName, INT32_MAX);
-    ComparePidProcessName(processInfo, INT32_MAX, normalProcessName, code);
+    ProcessInfo processInfo(normalProcessName, std::numeric_limits<int>::max());
+    ComparePidProcessName(processInfo, std::numeric_limits<int>::max(), normalProcessName, code);
 }
 
 void ThirdAbility::ProcessInfoProcessInfoStringintCase4(int code)
@@ -337,14 +337,14 @@ void ThirdAbility::ProcessInfoProcessInfoStringintCase4(int code)
 
 void ThirdAbility::ProcessInfoProcessInfoStringintCase5(int code)
 {
-    ProcessInfo processInfo(specialProcessName, INT32_MIN);
-    ComparePidProcessName(processInfo, INT32_MIN, specialProcessName, code);
+    ProcessInfo processInfo(specialProcessName, std::numeric_limits<int>::min());
+    ComparePidProcessName(processInfo, std::numeric_limits<int>::min(), specialProcessName, code);
 }
 
 void ThirdAbility::ProcessInfoProcessInfoStringintCase6(int code)
 {
-    ProcessInfo processInfo(specialProcessName, INT32_MAX);
-    ComparePidProcessName(processInfo, INT32_MAX, specialProcessName, code);
+    ProcessInfo processInfo(specialProcessName, std::numeric_limits<int>::max());
+    ComparePidProcessName(processInfo, std::numeric_limits<int>::max(), specialProcessName, code);
 }
 
 void ThirdAbility::OnStart(const Want &want)

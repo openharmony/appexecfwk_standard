@@ -25,6 +25,7 @@
 #include "bundle_info.h"
 #include "bundle_installer_host.h"
 #include "bundle_mgr_service.h"
+#include "bundle_data_storage_database.h"
 #include "installd/installd_service.h"
 #include "installd_client.h"
 #include "mock_status_receiver.h"
@@ -81,10 +82,9 @@ public:
     void StopBundleService();
     void CheckBundleInfoExist() const;
     void CheckBundleInfoNonExist() const;
-    void ClearJsonFile() const;
     const std::shared_ptr<BundleMgrService> GetBundleMgrService() const;
+    void ClearBundleInfoInDb();
     void DeleteInstallFiles();
-
 private:
     std::shared_ptr<InstalldService> installdService_ = std::make_unique<InstalldService>();
     std::shared_ptr<BundleMgrService> bundleMgrService_ = DelayedSingleton<BundleMgrService>::GetInstance();
@@ -123,16 +123,6 @@ void BmsBundleUninstallerTest::TearDown()
 {
     StopInstalldService();
     StopBundleService();
-}
-
-void BmsBundleUninstallerTest::ClearJsonFile() const
-{
-    OHOS::RemoveFile(Constants::BUNDLE_DATA_BASE_FILE);
-    std::fstream o(Constants::BUNDLE_DATA_BASE_FILE);
-    if (!o.is_open()) {
-        return;
-    }
-    o.close();
 }
 
 ErrCode BmsBundleUninstallerTest::InstallBundle(const std::string &bundlePath) const
@@ -300,13 +290,33 @@ const std::shared_ptr<BundleMgrService> BmsBundleUninstallerTest::GetBundleMgrSe
     return bundleMgrService_;
 }
 
+void BmsBundleUninstallerTest::ClearBundleInfoInDb()
+{
+    if (bundleMgrService_ == nullptr) {
+        return;
+    }
+    auto dataMgt = bundleMgrService_->GetDataMgr();
+    if(dataMgt == nullptr) {
+        return;
+    }
+    auto dataStorage = dataMgt->GetDataStorage();
+    if(dataStorage == nullptr) {
+        return;
+    }
+    InnerBundleInfo innerBundleInfo;
+    ApplicationInfo applicationInfo;
+    applicationInfo.bundleName = BUNDLE_NAME;
+    innerBundleInfo.SetBaseApplicationInfo(applicationInfo);
+    bool result = dataStorage->DeleteStorageBundleInfo(Constants::CURRENT_DEVICE_ID, innerBundleInfo);
+    ASSERT_TRUE(result) << "the bundle info in db clear fail: " << BUNDLE_NAME;
+}
+
 void BmsBundleUninstallerTest::DeleteInstallFiles()
 {
     DelayedSingleton<BundleMgrService>::DestroyInstance();
-    // clear files.
-    ClearJsonFile();
     OHOS::ForceRemoveDirectory(BUNDLE_DATA_DIR);
     OHOS::ForceRemoveDirectory(BUNDLE_CODE_DIR);
+    ClearBundleInfoInDb();
     bundleMgrService_ = DelayedSingleton<BundleMgrService>::GetInstance();
 }
 

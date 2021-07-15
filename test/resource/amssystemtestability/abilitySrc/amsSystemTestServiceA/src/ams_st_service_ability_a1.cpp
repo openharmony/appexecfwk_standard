@@ -78,6 +78,7 @@ void AmsStServiceAbilityA1::StartOtherAbility()
             want.SetParam("targetBundleConn", nextTargetBundleConn_);
             want.SetParam("targetAbilityConn", nextTargetAbilityConn_);
             StartAbility(want);
+            sleep(1);
         }
     }
 }
@@ -108,6 +109,7 @@ void AmsStServiceAbilityA1::ConnectOtherAbility()
             connCallback_ = new (std::nothrow) AbilityConnectionProxy(stub_);
             APP_LOGI("AmsStServiceAbilityA1::ConnectOtherAbility->ConnectAbility");
             bool ret = ConnectAbility(want, connCallback_);
+            sleep(1);
             if (!ret) {
                 APP_LOGE("AmsStServiceAbilityA1::ConnectAbility failed!");
             }
@@ -119,6 +121,7 @@ void AmsStServiceAbilityA1::DisConnectOtherAbility()
     APP_LOGI("AmsStServiceAbilityA1::DisConnectOtherAbility begin");
     if (connCallback_ != nullptr) {
         DisconnectAbility(connCallback_);
+        sleep(1);
     }
     APP_LOGI("AmsStServiceAbilityA1::DisConnectOtherAbility end");
 }

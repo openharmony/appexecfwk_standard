@@ -43,6 +43,8 @@ private:
     int32_t HandleAbilityBehaviorAnalysis(MessageParcel &data, MessageParcel &reply);
     int32_t HandleKillProcessByAbilityToken(MessageParcel &data, MessageParcel &reply);
     int32_t HandleKillApplication(MessageParcel &data, MessageParcel &reply);
+    int32_t HandleAbilityAttachTimeOut(MessageParcel &data, MessageParcel &reply);
+    int32_t HandleCompelVerifyPermission(MessageParcel &data, MessageParcel &reply);
 
     using AmsMgrFunc = int32_t (AmsMgrStub::*)(MessageParcel &data, MessageParcel &reply);
     std::map<uint32_t, AmsMgrFunc> memberFuncMap_;

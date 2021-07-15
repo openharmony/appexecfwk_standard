@@ -55,6 +55,10 @@ bool HapModuleInfo::ReadFromParcel(Parcel &parcel)
         }
         abilityInfos.emplace_back(*abilityInfo);
     }
+
+    int32_t colorModeData;
+    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, colorModeData);
+    colorMode = static_cast<ModuleColorMode>(colorModeData);
     return true;
 }
 
@@ -90,6 +94,7 @@ bool HapModuleInfo::Marshalling(Parcel &parcel) const
     for (auto &abilityInfo : abilityInfos) {
         WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Parcelable, parcel, &abilityInfo);
     }
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, static_cast<int32_t>(colorMode));
     return true;
 }
 

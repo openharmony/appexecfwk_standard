@@ -25,21 +25,25 @@
 #include "event_handler.h"
 #include "securec.h"
 
-#define CG_DIR "/dev/cg"
+#define CG_CPUSET_DIR "/dev/cpuset"
+#define CG_CPUSET_DEFAULT_DIR CG_CPUSET_DIR
+#define CG_CPUSET_DEFAULT_TASKS_PATH CG_CPUSET_DEFAULT_DIR "/tasks"
+#define CG_CPUSET_BACKGROUND_DIR CG_CPUSET_DIR "/background"
+#define CG_CPUSET_BACKGROUND_TASKS_PATH CG_CPUSET_BACKGROUND_DIR "/tasks"
 
-#define CG_CPU_DIR CG_DIR "/cpu"
+#define CG_CPUCTL_DIR "/dev/cpuctl"
+#define CG_CPUCTL_DEFAULT_DIR CG_CPUCTL_DIR
+#define CG_CPUCTL_DEFAULT_TASKS_PATH CG_CPUCTL_DEFAULT_DIR "/tasks"
+#define CG_CPUCTL_BACKGROUND_DIR CG_CPUCTL_DIR "/background"
+#define CG_CPUCTL_BACKGROUND_TASKS_PATH CG_CPUCTL_BACKGROUND_DIR "/tasks"
 
-#define CG_CPU_DEFAULT_DIR CG_CPU_DIR
-#define CG_CPU_DEFAULT_TASKS_PATH CG_CPU_DEFAULT_DIR "/tasks"
+#define CG_FREEZER_DIR "/dev/freezer"
+#define CG_FREEZER_FROZEN_DIR CG_FREEZER_DIR "/frozen"
+#define CG_FREEZER_FROZEN_TASKS_PATH CG_FREEZER_FROZEN_DIR "/tasks"
+#define CG_FREEZER_THAWED_DIR CG_FREEZER_DIR "/thawed"
+#define CG_FREEZER_THAWED_TASKS_PATH CG_FREEZER_THAWED_DIR "/tasks"
 
-#define CG_CPU_BACKGROUND_DIR CG_CPU_DIR "/background"
-#define CG_CPU_BACKGROUND_TASKS_PATH CG_CPU_BACKGROUND_DIR "/tasks"
-
-#define CG_CPU_FREEZED_DIR CG_CPU_DIR "/freezer"
-#define CG_CPU_FREEZED_TASKS_PATH CG_CPU_FREEZED_DIR "/tasks"
-
-#define CG_MEM_DIR CG_DIR "/mem"
-
+#define CG_MEM_DIR "/dev/memcg"
 #define CG_MEM_OOMCTL_PATH CG_MEM_DIR "/memory.oom_control"
 #define CG_MEM_EVTCTL_PATH CG_MEM_DIR "/cgroup.event_control"
 #define CG_MEM_PRESSURE_LEVEL_PATH CG_MEM_DIR "/memory.pressure_level"
@@ -83,6 +87,9 @@ int WriteValue(int fd, std::string_view v)
     }
 
     int ret = TEMP_FAILURE_RETRY(write(fd, v.data(), v.size()));
+    if (ret != 0) {
+        APP_LOGE("%{public}s(%{public}d) err: %{public}s.", __func__, __LINE__, strerror(errno));
+    }
     fsync(fd);
 
     return ret;
@@ -110,7 +117,7 @@ int WriteValue(int fd, int v, bool newLine = true)
 CgroupManager::CgroupManager() : memoryEventControlFd_(-1)
 {
     for (int i = 0; i < SCHED_POLICY_MAX; ++i) {
-        cpuTasksFds_[i] = -1;
+        cpusetTasksFds_[i] = -1;
     }
 
     for (int i = 0; i < LOW_MEMORY_LEVEL_MAX; ++i) {
@@ -138,42 +145,53 @@ CgroupManager::~CgroupManager()
     }
 
     for (int i = 0; i < SCHED_POLICY_MAX; ++i) {
-        if (cpuTasksFds_[i] >= 0) {
-            close(cpuTasksFds_[i]);
+        if (cpusetTasksFds_[i] >= 0) {
+            close(cpusetTasksFds_[i]);
         }
     }
 }
 
 bool CgroupManager::Init()
 {
+    APP_LOGE("%{public}s(%{public}d) Init enter.", __func__, __LINE__);
     if (IsInited()) {
         APP_LOGE("%{public}s(%{public}d) already inited.", __func__, __LINE__);
         return false;
     }
 
-    auto eventHandler = EventHandler::Current();
+    auto eventHandler = std::make_shared<EventHandler>(EventRunner::Create());
     if (!eventHandler) {
         APP_LOGE("%{public}s(%{public}d) failed to get event handler.", __func__, __LINE__);
         return false;
     }
 
-    UniqueFd cpuTasksFds[SCHED_POLICY_MAX];
-    if (InitCpuTasksFds(cpuTasksFds, SCHED_POLICY_MAX)) {
+    UniqueFd cpusetTasksFds[SCHED_POLICY_MAX];
+    if (!InitCpusetTasksFds(cpusetTasksFds)) {
+        return false;
+    }
+
+    UniqueFd cpuctlTasksFds[SCHED_POLICY_MAX];
+    if (!InitCpuctlTasksFds(cpuctlTasksFds)) {
+        return false;
+    }
+
+    UniqueFd freezerTasksFds[SCHED_POLICY_FREEZER_MAX];
+    if (!InitFreezerTasksFds(freezerTasksFds)) {
         return false;
     }
 
     UniqueFd memoryEventControlFd;
-    if (InitMemoryEventControlFd(memoryEventControlFd)) {
+    if (!InitMemoryEventControlFd(memoryEventControlFd)) {
         return false;
     }
 
     UniqueFd memoryEventFds[LOW_MEMORY_LEVEL_MAX];
-    if (InitMemoryEventFds(memoryEventFds, LOW_MEMORY_LEVEL_MAX)) {
+    if (!InitMemoryEventFds(memoryEventFds)) {
         return false;
     }
 
     UniqueFd memoryPressureFds[LOW_MEMORY_LEVEL_MAX];
-    if (InitMemoryPressureFds(memoryPressureFds, LOW_MEMORY_LEVEL_MAX)) {
+    if (!InitMemoryPressureFds(memoryPressureFds)) {
         return false;
     }
 
@@ -227,21 +245,38 @@ bool CgroupManager::SetThreadSchedPolicy(int tid, SchedPolicy schedPolicy)
         return false;
     }
 
-    if (schedPolicy < 0 || schedPolicy >= SCHED_POLICY_MAX) {
+    if (schedPolicy < 0 || schedPolicy >= SchedPolicy::SCHED_POLICY_MAX) {
         APP_LOGE("%{public}s(%{public}d) invalid sched policy %{public}d.", __func__, __LINE__, schedPolicy);
         return false;
     }
 
-    int fd = cpuTasksFds_[schedPolicy];
-    if (fd < 0) {
-        APP_LOGE("%{public}s(%{public}d) invalid cgroup fd for policy %{public}d.", __func__, __LINE__, schedPolicy);
-        return false;
-    }
+    if (schedPolicy == SchedPolicy::SCHED_POLICY_FREEZED) {
+        // set frozen of freezer
+        if(!SetFreezerSubsystem(tid, SchedPolicyFreezer::SCHED_POLICY_FREEZER_FROZEN)) {
+            APP_LOGE("%{public}s(%{public}d) set freezer subsystem failed sched policy %{public}d.",
+                __func__, __LINE__, schedPolicy);
+            return false;
+        }
+    } else {
+        // set cpuset
+        if(!SetCpusetSubsystem(tid, schedPolicy)) {
+            APP_LOGE("%{public}s(%{public}d) set cpuset subsystem failed sched policy %{public}d.",
+                __func__, __LINE__, schedPolicy);
+            return false;
+        }
+        // set cpuctl
+        if(!SetCpuctlSubsystem(tid, schedPolicy)) {
+            APP_LOGE("%{public}s(%{public}d) set cpuctl subsystem failed sched policy %{public}d.",
+                __func__, __LINE__, schedPolicy);
+            return false;
+        }
 
-    int ret = WriteValue(fd, tid);
-    if (ret < 0) {
-        APP_LOGE("%{public}s(%{public}d) write cgroup tid failed %{public}d.", __func__, __LINE__, errno);
-        return false;
+        // set thawed of freezer
+        if(!SetFreezerSubsystem(tid, SchedPolicyFreezer::SCHED_POLICY_FREEZER_THAWED)) {
+            APP_LOGE("%{public}s(%{public}d) set freezer subsystem failed sched policy %{public}d.",
+                __func__, __LINE__, schedPolicy);
+            return false;
+        }
     }
 
     return true;
@@ -272,12 +307,12 @@ bool CgroupManager::SetProcessSchedPolicy(int pid, SchedPolicy schedPolicy)
 
     DIR *dir = opendir(taskDir);
     if (dir == nullptr) {
-        APP_LOGE("%{public}s(%{public}d) invalid pid %{public}d", __func__, __LINE__, pid);
+        APP_LOGE("%{public}s(%{public}d) failed to opendir invalid pid %{public}d taskDir %{public}s , %{public}s", 
+            __func__, __LINE__, pid, taskDir, strerror(errno));
         return false;
     }
 
     struct dirent *dent;
-
     while ((dent = readdir(dir))) {
         // Filter out '.' & '..'
         if (dent->d_name[0] != '.') {
@@ -371,20 +406,45 @@ bool CgroupManager::RegisterLowMemoryMonitor(const int memoryEventFds[LOW_MEMORY
     return true;
 }
 
-bool CgroupManager::InitCpuTasksFds(UniqueFd cpuTasksFds[SCHED_POLICY_MAX], size_t len)
+bool CgroupManager::InitCpusetTasksFds(UniqueFd cpusetTasksFds[SCHED_POLICY_CPU_MAX])
 {
-    cpuTasksFds[SCHED_POLICY_DEFAULT] = UniqueFd(open(CG_CPU_DEFAULT_TASKS_PATH, O_RDWR));
-    cpuTasksFds[SCHED_POLICY_BACKGROUND] = UniqueFd(open(CG_CPU_BACKGROUND_TASKS_PATH, O_RDWR));
-    cpuTasksFds[SCHED_POLICY_FREEZED] = UniqueFd(open(CG_CPU_FREEZED_TASKS_PATH, O_RDWR));
-    if (cpuTasksFds[SCHED_POLICY_DEFAULT].Get() < 0 || cpuTasksFds[SCHED_POLICY_BACKGROUND].Get() < 0 ||
-        cpuTasksFds[SCHED_POLICY_FREEZED].Get() < 0) {
-        APP_LOGE("%{public}s(%{public}d) cannot open cpu cgroups %{public}d.", __func__, __LINE__, errno);
+    cpusetTasksFds[SCHED_POLICY_CPU_DEFAULT] = UniqueFd(open(CG_CPUSET_DEFAULT_TASKS_PATH, O_RDWR));
+    cpusetTasksFds[SCHED_POLICY_CPU_BACKGROUND] = UniqueFd(open(CG_CPUSET_BACKGROUND_TASKS_PATH, O_RDWR));
+    if (cpusetTasksFds[SCHED_POLICY_CPU_DEFAULT].Get() < 0 || cpusetTasksFds[SCHED_POLICY_CPU_BACKGROUND].Get() < 0) {
+        APP_LOGE("%{public}s(%{public}d) cannot open cpuset cgroups %{public}d.", __func__, __LINE__, errno);
         return false;
     }
 
-    cpuTasksFds_[SCHED_POLICY_DEFAULT] = cpuTasksFds[SCHED_POLICY_DEFAULT].Release();
-    cpuTasksFds_[SCHED_POLICY_BACKGROUND] = cpuTasksFds[SCHED_POLICY_BACKGROUND].Release();
-    cpuTasksFds_[SCHED_POLICY_FREEZED] = cpuTasksFds[SCHED_POLICY_FREEZED].Release();
+    cpusetTasksFds_[SCHED_POLICY_CPU_DEFAULT] = cpusetTasksFds[SCHED_POLICY_CPU_DEFAULT].Release();
+    cpusetTasksFds_[SCHED_POLICY_CPU_BACKGROUND] = cpusetTasksFds[SCHED_POLICY_CPU_BACKGROUND].Release();
+    return true;
+}
+
+bool CgroupManager::InitCpuctlTasksFds(UniqueFd cpuctlTasksFds[SCHED_POLICY_CPU_MAX])
+{
+    cpuctlTasksFds[SCHED_POLICY_CPU_DEFAULT] = UniqueFd(open(CG_CPUCTL_DEFAULT_TASKS_PATH, O_RDWR));
+    cpuctlTasksFds[SCHED_POLICY_CPU_BACKGROUND] = UniqueFd(open(CG_CPUCTL_BACKGROUND_TASKS_PATH, O_RDWR));
+    if (cpuctlTasksFds[SCHED_POLICY_CPU_DEFAULT].Get() < 0 || cpuctlTasksFds[SCHED_POLICY_CPU_BACKGROUND].Get() < 0) {
+        APP_LOGE("%{public}s(%{public}d) cannot open cpuctl cgroups %{public}d.", __func__, __LINE__, errno);
+        return false;
+    }
+
+    cpuctlTasksFds_[SCHED_POLICY_CPU_DEFAULT] = cpuctlTasksFds[SCHED_POLICY_CPU_DEFAULT].Release();
+    cpuctlTasksFds_[SCHED_POLICY_CPU_BACKGROUND] = cpuctlTasksFds[SCHED_POLICY_CPU_BACKGROUND].Release();
+    return true;
+}
+
+bool CgroupManager::InitFreezerTasksFds(UniqueFd freezerTasksFds[SCHED_POLICY_FREEZER_MAX])
+{
+    freezerTasksFds[SCHED_POLICY_FREEZER_FROZEN] = UniqueFd(open(CG_FREEZER_FROZEN_TASKS_PATH, O_RDWR));
+    freezerTasksFds[SCHED_POLICY_FREEZER_THAWED] = UniqueFd(open(CG_FREEZER_THAWED_TASKS_PATH, O_RDWR));
+    if (freezerTasksFds[SCHED_POLICY_FREEZER_FROZEN].Get() < 0 || freezerTasksFds[SCHED_POLICY_FREEZER_THAWED].Get() < 0) {
+        APP_LOGE("%{public}s(%{public}d) cannot open freezer cgroups %{public}d.", __func__, __LINE__, errno);
+        return false;
+    }
+
+    freezerTasksFds_[SCHED_POLICY_FREEZER_FROZEN] = freezerTasksFds[SCHED_POLICY_FREEZER_FROZEN].Release();
+    freezerTasksFds_[SCHED_POLICY_FREEZER_THAWED] = freezerTasksFds[SCHED_POLICY_FREEZER_THAWED].Release();
     return true;
 }
 
@@ -401,7 +461,7 @@ bool CgroupManager::InitMemoryEventControlFd(UniqueFd &memoryEventControlFd)
     return true;
 }
 
-bool CgroupManager::InitMemoryEventFds(UniqueFd memoryEventFds[LOW_MEMORY_LEVEL_MAX], size_t len)
+bool CgroupManager::InitMemoryEventFds(UniqueFd memoryEventFds[LOW_MEMORY_LEVEL_MAX])
 {
     memoryEventFds[LOW_MEMORY_LEVEL_LOW] = UniqueFd(eventfd(0, EFD_NONBLOCK));
     memoryEventFds[LOW_MEMORY_LEVEL_MEDIUM] = UniqueFd(eventfd(0, EFD_NONBLOCK));
@@ -418,7 +478,7 @@ bool CgroupManager::InitMemoryEventFds(UniqueFd memoryEventFds[LOW_MEMORY_LEVEL_
     return true;
 }
 
-bool CgroupManager::InitMemoryPressureFds(UniqueFd memoryPressureFds[LOW_MEMORY_LEVEL_MAX], size_t len)
+bool CgroupManager::InitMemoryPressureFds(UniqueFd memoryPressureFds[LOW_MEMORY_LEVEL_MAX])
 {
     memoryPressureFds[LOW_MEMORY_LEVEL_LOW] = UniqueFd(open(CG_MEM_PRESSURE_LEVEL_PATH, O_RDONLY));
     memoryPressureFds[LOW_MEMORY_LEVEL_MEDIUM] = UniqueFd(open(CG_MEM_PRESSURE_LEVEL_PATH, O_RDONLY));
@@ -434,5 +494,57 @@ bool CgroupManager::InitMemoryPressureFds(UniqueFd memoryPressureFds[LOW_MEMORY_
     memoryPressureFds_[LOW_MEMORY_LEVEL_CRITICAL] = memoryPressureFds[LOW_MEMORY_LEVEL_CRITICAL].Release();
     return true;
 }
+
+bool CgroupManager::SetCpusetSubsystem(const int tid, const SchedPolicy schedPolicy)
+{
+    int fd = cpusetTasksFds_[schedPolicy];
+    if (fd < 0) {
+        APP_LOGE("%{public}s(%{public}d) invalid cpuset fd for policy %{public}d.", __func__, __LINE__, schedPolicy);
+        return false;
+    }
+
+    int ret = WriteValue(fd, tid);
+    if (ret < 0) {
+        APP_LOGE("%{public}s(%{public}d) write cpuset tid failed %{public}d.", __func__, __LINE__, errno);
+        return false;
+    }
+
+    return true;
+}
+
+bool CgroupManager::SetCpuctlSubsystem(const int tid, const SchedPolicy schedPolicy)
+{
+    int fd = cpuctlTasksFds_[schedPolicy];
+    if (fd < 0) {
+        APP_LOGE("%{public}s(%{public}d) invalid cpuctl fd for policy %{public}d.", __func__, __LINE__, schedPolicy);
+        return false;
+    }
+
+    int ret = WriteValue(fd, tid);
+    if (ret < 0) {
+        APP_LOGE("%{public}s(%{public}d) write cpuctl tid failed %{public}d.", __func__, __LINE__, errno);
+        return false;
+    }
+
+    return true;
+}
+
+bool CgroupManager::SetFreezerSubsystem(const int tid, const SchedPolicyFreezer state)
+{
+    int fd = freezerTasksFds_[state];
+    if (fd < 0) {
+        APP_LOGE("%{public}s(%{public}d) invalid freezer fd for state %{public}d.", __func__, __LINE__, state);
+        return false;
+    }
+
+    int ret = WriteValue(fd, tid);
+    if (ret < 0) {
+        APP_LOGE("%{public}s(%{public}d) write freezer tid failed %{public}d.", __func__, __LINE__, errno);
+        return false;
+    }
+
+    return true;
+}
+
 }  // namespace AppExecFwk
 }  // namespace OHOS

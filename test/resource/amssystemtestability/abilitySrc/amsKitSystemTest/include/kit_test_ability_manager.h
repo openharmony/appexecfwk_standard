@@ -35,9 +35,9 @@ class KitTestAbilityManager : public Ability {
 public:
     void SubscribeEvent(const vector_conststr &eventList);
     void AbilityManagerStByCode(int apiIndex, int caseIndex, int code);
-    void CompareProcessName(RunningProcessInfo &info, const std::string &expectedName, int code);
+    void CompareProcessName(std::vector<RunningProcessInfo> &info, const std::string &expectedName, int code);
     void CompareProcessState(
-        RunningProcessInfo &info, const std::string &processName, AppProcessState expectedState, int code);
+        std::vector<RunningProcessInfo> &info, const std::string &processName, AppProcessState expectedState, int code);
     void StartAbilitySelf(
         const std::string &bundleName, const std::string &abilityNmae, AbilityManagerApi api, int codeIndex, int code);
     void GetAllStackInfo(AAFwk::MissionStackInfo &missionStackInfo, int stackID);

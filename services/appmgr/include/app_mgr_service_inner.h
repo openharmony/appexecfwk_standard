@@ -38,7 +38,6 @@
 #include "app_running_manager.h"
 #include "record_query_result.h"
 #include "running_process_info.h"
-#include "app_process_info.h"
 #include "bundle_info.h"
 
 #include "process_optimizer_uba.h"
@@ -203,11 +202,11 @@ public:
     /**
      * GetAllRunningProcesses, Obtains information about application processes that are running on the device.
      *
-     * @param runningProcessInfo, app name in Application record.
+     * @param info, app name in Application record.
      *
      * @return ERR_OK ,return back success，others fail.
      */
-    virtual int32_t GetAllRunningProcesses(std::shared_ptr<RunningProcessInfo> &runningProcessInfo);
+    virtual int32_t GetAllRunningProcesses(std::vector<RunningProcessInfo> &info);
 
     // Get AppRunningRecord according to appInfo. Create if not exists.
     // Create ability record if not exists and abilityInfo not null.
@@ -416,6 +415,41 @@ public:
     virtual void OptimizerAppStateChanged(
         const std::shared_ptr<AppRunningRecord> &appRecord, const ApplicationState state);
 
+    /**
+     * SetAppSuspendTimes, Setting the Freezing Time of APP Background.
+     *
+     * @param time, The timeout(second) recorded when the application enters the background .
+     *
+     * @return Success or Failure .
+     */
+    void SetAppFreezingTime(int time);
+
+    /**
+     * GetAppFreezingTime, Getting the Freezing Time of APP Background.
+     *
+     * @param time, The timeout(second) recorded when the application enters the background .
+     *
+     * @return Success or Failure .
+     */
+    void GetAppFreezingTime(int &time);
+    void HandleTimeOut(const InnerEvent::Pointer &event);
+
+    void SetEventHandler(const std::shared_ptr<AMSEventHandler> &handler);
+
+    void HandleAbilityAttachTimeOut(const sptr<IRemoteObject> &token);
+
+    /**
+     * Checks whether a specified permission has been granted to the process identified by pid and uid
+     *
+     * @param permission Indicates the permission to check.
+     * @param pid Indicates the ID of the process to check.
+     * @param uid Indicates the UID of the process to check.
+     * @param message Describe success or failure
+     *
+     * @return Returns ERR_OK on success, others on failure.
+     */
+    int CompelVerifyPermission(const std::string &permission, int pid, int uid, std::string &message);
+
 private:
     /**
      * StartAbility, load the ability that needed to be started(Start on the basis of the original process).
@@ -595,12 +629,16 @@ private:
     // Test add the bundle manager instance.
     void SetBundleManager(sptr<IBundleMgr> bundleManager);
 
+    void HandleTerminateApplicationTimeOut(const int64_t eventId);
+
 private:
     std::vector<const sptr<IAppStateCallback>> appStateCallbacks_;
     std::shared_ptr<AppProcessManager> appProcessManager_;
     std::shared_ptr<RemoteClientManager> remoteClientManager_;
     std::shared_ptr<AppRunningManager> appRunningManager_;
     std::shared_ptr<ProcessOptimizerUBA> processOptimizerUBA_;
+    std::shared_ptr<AMSEventHandler> eventHandler_;
+    std::mutex serviceLock_;
 };
 
 }  // namespace AppExecFwk

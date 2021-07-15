@@ -52,7 +52,6 @@ public:
     void CheckBundleInfoExist(const std::string bundlename) const;
     void CheckBundleInfoNonExist(const std::string bundlename) const;
     void CheckHapDirNonExist(const std::string bundlename, const std::string &modulePackage) const;
-    static void ClearJsonFile();
 
     void StartBundleMgrService()
     {
@@ -181,18 +180,6 @@ void BmsBundleUninstallerModuleTest::CheckHapDirNonExist(
     EXPECT_NE(codeExist, 0) << "the ability code exists: " << bundlename;
 }
 
-void BmsBundleUninstallerModuleTest::ClearJsonFile()
-{
-    std::string fileName = Constants::BUNDLE_DATA_BASE_FILE;
-    std::ofstream o(fileName);
-    if (!o.is_open()) {
-        std::cout << "failed to open as out" << fileName << std::endl;
-    } else {
-        std::cout << "clear" << fileName << std::endl;
-    }
-    o.close();
-}
-
 void BmsBundleUninstallerModuleTest::SetUpTestCase()
 {}
 
@@ -201,9 +188,6 @@ void BmsBundleUninstallerModuleTest::TearDownTestCase()
 
 void BmsBundleUninstallerModuleTest::SetUp()
 {
-    ClearJsonFile();
-    OHOS::ForceRemoveDirectory(BUNDLE_CODE_PATH);
-    OHOS::ForceRemoveDirectory(BUNDLE_DATA_PATH);
     StartInstalld();
     StartBundleMgrService();
 }
@@ -218,9 +202,6 @@ void BmsBundleUninstallerModuleTest::TearDown()
 
     StopInstalld();
     StopBundleMgrService();
-    OHOS::ForceRemoveDirectory(BUNDLE_CODE_PATH);
-    OHOS::ForceRemoveDirectory(BUNDLE_DATA_PATH);
-    ClearJsonFile();
     std::this_thread::sleep_for(50ms);
 }
 

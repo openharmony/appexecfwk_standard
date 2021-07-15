@@ -45,7 +45,7 @@ public:
     MOCK_METHOD1(AbilityTerminated, void(const sptr<IRemoteObject> &token));
     MOCK_METHOD3(ClearUpApplicationData, void(const std::string &, const int32_t, const pid_t));
     MOCK_METHOD1(IsBackgroundRunningRestricted, int32_t(const std::string &));
-    MOCK_METHOD1(GetAllRunningProcesses, int32_t(std::shared_ptr<RunningProcessInfo> &));
+    MOCK_METHOD1(GetAllRunningProcesses, int32_t(std::vector<RunningProcessInfo> &));
     MOCK_METHOD1(RegisterAppStateCallback, void(const sptr<IAppStateCallback> &callback));
     MOCK_METHOD0(StopAllProcess, void());
     MOCK_CONST_METHOD0(QueryAppSpawnConnectionState, SpawnConnectionState());

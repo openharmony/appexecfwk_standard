@@ -18,10 +18,10 @@
 
 #include "context.h"
 #include "profile.h"
+#include "lifecycle_state_info.h"
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class ContextDeal : public Context, public std::enable_shared_from_this<ContextDeal> {
 public:
     ContextDeal() = default;
@@ -487,8 +487,212 @@ public:
      */
     void SerUriString(const std::string &uri);
 
+    /**
+     * @brief Get the string of this Context based on the specified resource ID.
+     *
+     * @param resId Indicates the resource ID of the string to get.
+     *
+     * @return Returns the string of this Context.
+     */
+    std::string GetString(int resId) override;
+
+    /**
+     * @brief Get the string array of this Context based on the specified resource ID.
+     *
+     * @param resId Indicates the resource ID of the string array to get.
+     *
+     * @return Returns the string array of this Context.
+     */
+    std::vector<std::string> GetStringArray(int resId) override;
+
+    /**
+     * @brief Get the integer array of this Context based on the specified resource ID.
+     *
+     * @param resId Indicates the resource ID of the integer array to get.
+     *
+     * @return Returns the integer array of this Context.
+     */
+    std::vector<int> GetIntArray(int resId) override;
+
+    /**
+     * @brief Obtains the theme of this Context.
+     *
+     * @return theme Returns the theme of this Context.
+     */
+    std::map<std::string, std::string> GetTheme() override;
+
+    /**
+     * @brief Sets the theme of this Context based on the specified theme ID.
+     *
+     * @param themeId Indicates the resource ID of the theme to set.
+     */
+    void SetTheme(int themeId) override;
+
+    /**
+     * @brief Obtains the pattern of this Context.
+     *
+     * @return getPattern in interface Context
+     */
+    std::map<std::string, std::string> GetPattern() override;
+
+    /**
+     * @brief Get the color of this Context based on the specified resource ID.
+     *
+     * @param resId Indicates the resource ID of the color to get.
+     *
+     * @return Returns the color value of this Context.
+     */
+    int GetColor(int resId) override;
+
+    /**
+     * @brief Obtains the theme id of this Context.
+     *
+     * @return int Returns the theme id of this Context.
+     */
+    int GetThemeId() override;
+
+    /**
+     * @brief
+     * Destroys this Service ability if the number of times it has been started equals the number represented by the
+     * given {@code startId}. This method is the same as calling {@link #terminateAbility} to destroy this Service
+     * ability, except that this method helps you avoid destroying it if a client has requested a Service
+     * ability startup in {@link ohos.aafwk.ability.Ability#onCommand} but you are unaware of it.
+     *
+     * @param startId Indicates the number of startup times of this Service ability passed to
+     *                {@link ohos.aafwk.ability.Ability#onCommand}. The {@code startId} is
+     *                incremented by 1 every time this ability is started. For example,
+     *                if this ability has been started for six times, the value of {@code startId} is {@code 6}.
+     *
+     * @return Returns {@code true} if the {@code startId} matches the number of startup times
+     *         and this Service ability will be destroyed; returns {@code false} otherwise.
+     */
+    bool TerminateAbilityResult(int startId) override;
+
+    /**
+     * @brief Obtains the current display orientation of this ability.
+     *
+     * @return Returns the current display orientation.
+     */
+    int GetDisplayOrientation() override;
+
+    /**
+     * @brief Obtains the path storing the preference file of the application.
+     *        If the preference file path does not exist, the system creates one and returns the created path.
+     *
+     * @return Returns the preference file path .
+     */
+    std::string GetPreferencesDir() override;
+
+    /**
+     * @brief Set color mode
+     *
+     * @param the value of color mode.
+     */
+    void SetColorMode(int mode) override;
+
+    /**
+     * @brief Obtains color mode.
+     *
+     * @return Returns the color mode value.
+     */
+    int GetColorMode() override;
+
+    /**
+     * @brief Set the LifeCycleStateInfo to the deal.
+     *
+     * @param info the info to set.
+     */
+    void SetLifeCycleStateInfo(const AAFwk::LifeCycleStateInfo &info);
+
+    /**
+     * @brief Obtains the unique ID of the mission containing this ability.
+     *
+     * @return Returns the unique mission ID.
+     */
+    int GetMissionId() override;
+
+    /**
+     * @brief Call this when your ability should be closed and the mission should be completely removed as a part of
+     * finishing the root ability of the mission.
+     */
+    void TerminateAndRemoveMission() override;
+
+    /**
+     * @brief Starts multiple abilities.
+     *
+     * @param wants Indicates the Want containing information array about the target ability to start.
+     */
+    void StartAbilities(const std::vector<AAFwk::Want> &wants) override;
+
+    /**
+     * @brief Checks whether this ability is the first ability in a mission.
+     *
+     * @return Returns true is first in Mission.
+     */
+    bool IsFirstInMission() override;
+
+    /**
+     * @brief Obtains a task dispatcher that is bound to the UI thread.
+     *
+     * @return Returns the task dispatcher that is bound to the UI thread.
+     */
+    std::shared_ptr<TaskDispatcher> GetUITaskDispatcher() final override;
+
+    /**
+     * @brief Obtains a task dispatcher that is bound to the application main thread.
+     *
+     * @return Returns the task dispatcher that is bound to the application main thread.
+     */
+    std::shared_ptr<TaskDispatcher> GetMainTaskDispatcher() override;
+
+    /**
+     * @brief Creates a parallel task dispatcher with a specified priority.
+     *
+     * @param name Indicates the task dispatcher name. This parameter is used to locate problems.
+     * @param priority Indicates the priority of all tasks dispatched by the parallel task dispatcher.
+     *
+     * @return Returns a parallel task dispatcher.
+     */
+    std::shared_ptr<TaskDispatcher> CreateParallelTaskDispatcher(
+        const std::string &name, const TaskPriority &priority) override;
+
+    /**
+     * @brief Creates a serial task dispatcher with a specified priority.
+     *
+     * @param name Indicates the task dispatcher name. This parameter is used to locate problems.
+     * @param priority Indicates the priority of all tasks dispatched by the created task dispatcher.
+     *
+     * @return Returns a serial task dispatcher.
+     */
+    std::shared_ptr<TaskDispatcher> CreateSerialTaskDispatcher(
+        const std::string &name, const TaskPriority &priority) override;
+
+    /**
+     * @brief Obtains a global task dispatcher with a specified priority.
+     *
+     * @param priority Indicates the priority of all tasks dispatched by the global task dispatcher.
+     *
+     * @return Returns a global task dispatcher.
+     */
+    std::shared_ptr<TaskDispatcher> GetGlobalTaskDispatcher(const TaskPriority &priority) override;
+
+    /**
+     * @brief Set EventRunner for main thread.
+     *
+     * @param runner The EventRunner.
+     */
+    void SetRunner(const std::shared_ptr<EventRunner> &runner);
+
+public:
+    static const std::string CONTEXT_DEAL_FILE_SEPARATOR;
+    static const std::string CONTEXT_DEAL_CODE_CACHE;
+    static const std::string CONTEXT_DEAL_Files;
+    static const std::string CONTEXT_DEAL_NO_BACKUP_Files;
+    static const std::string CONTEXT_DEAL_DIRNAME;
+
 protected:
     sptr<IRemoteObject> GetToken() override;
+    bool HapModuleInfoRequestInit();
 
 private:
     std::shared_ptr<ProcessInfo> processInfo_ = nullptr;
@@ -498,8 +702,15 @@ private:
     std::shared_ptr<Context> appContext_ = nullptr;
     std::shared_ptr<Context> abilityContext_ = nullptr;
     std::shared_ptr<Global::Resource::ResourceManager> resourceManager_ = nullptr;
-    std::string path_;
-    std::string uriString_;
+    std::string path_ = "";
+    std::string uriString_ = "";
+    std::string preferenceDir_ = "";
+    std::map<std::string, std::string> pattern_;
+    std::map<std::string, std::string> theme_;
+    AAFwk::LifeCycleStateInfo lifeCycleStateInfo_;
+    std::shared_ptr<TaskDispatcher> mainTaskDispatcher_;
+    std::shared_ptr<EventRunner> mainEventRunner_;
+    std::shared_ptr<HapModuleInfo> hapModuleInfoLocal_ = nullptr;
 };
 
 }  // namespace AppExecFwk

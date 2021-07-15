@@ -45,6 +45,8 @@ private:
     int32_t HandleClearUpApplicationData(MessageParcel &data, MessageParcel &reply);
     int32_t HandleIsBackgroundRunningRestricted(MessageParcel &data, MessageParcel &reply);
     int32_t HandleGetAllRunningProcesses(MessageParcel &data, MessageParcel &reply);
+    int32_t HandleSetAppFreezingTime(MessageParcel &data, MessageParcel &reply);
+    int32_t HandleGetAppFreezingTime(MessageParcel &data, MessageParcel &reply);
 
     using AppMgrFunc = int32_t (AppMgrStub::*)(MessageParcel &data, MessageParcel &reply);
     std::map<uint32_t, AppMgrFunc> memberFuncMap_;

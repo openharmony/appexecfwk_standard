@@ -26,6 +26,7 @@ ohos_unittest("AmsAbilityRunningRecordTest") {
     "//foundation/distributedschedule/dmsfwk/services/dtbschedmgr/include",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy/include",
     "//foundation/distributedschedule/samgr/adapter/interfaces/innerkits/include/",
+    "//foundation/aafwk/standard/interfaces/innerkits/want/include/ohos/aafwk/content",
   ]
 
   sources = [

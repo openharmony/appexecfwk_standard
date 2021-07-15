@@ -22,6 +22,7 @@ appexecfwk_headers = {
     "bundlemgr/bundle_status_callback_interface.h",
     "bundlemgr/clean_cache_callback_interface.h",
     "bundlemgr/status_receiver_interface.h",
+    "bundlemgr/on_permission_changed_callback_interface.h",
     "appmgr/app_process_data.h",
   ]
 

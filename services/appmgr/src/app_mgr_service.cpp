@@ -123,6 +123,7 @@ ErrCode AppMgrService::Init()
         APP_LOGE("init failed without handler");
         return ERR_INVALID_OPERATION;
     }
+    appMgrServiceInner_->SetEventHandler(handler_);
     ErrCode openErr = appMgrServiceInner_->OpenAppSpawnConnection();
     if (FAILED(openErr)) {
         APP_LOGW("failed to connect to AppSpawnDaemon! errCode: %{public}08x", openErr);
@@ -235,16 +236,17 @@ sptr<IAmsMgr> AppMgrService::GetAmsMgr()
     return amsMgrScheduler_;
 }
 
-void AppMgrService::ClearUpApplicationData(const std::string &bundleName)
+int32_t AppMgrService::ClearUpApplicationData(const std::string &bundleName)
 {
     if (!IsReady()) {
-        return;
+        return ERR_INVALID_OPERATION;
     }
     int32_t uid = IPCSkeleton::GetCallingUid();
     pid_t pid = IPCSkeleton::GetCallingPid();
     std::function<void()> clearUpApplicationDataFunc =
         std::bind(&AppMgrServiceInner::ClearUpApplicationData, appMgrServiceInner_, bundleName, uid, pid);
     handler_->PostTask(clearUpApplicationDataFunc, TASK_CLEAR_UP_APPLICATION_DATA);
+    return ERR_OK;
 }
 
 int32_t AppMgrService::IsBackgroundRunningRestricted(const std::string &bundleName)
@@ -255,12 +257,30 @@ int32_t AppMgrService::IsBackgroundRunningRestricted(const std::string &bundleNa
     return appMgrServiceInner_->IsBackgroundRunningRestricted(bundleName);
 }
 
-int32_t AppMgrService::GetAllRunningProcesses(std::shared_ptr<RunningProcessInfo> &runningProcessInfo)
+int32_t AppMgrService::GetAllRunningProcesses(std::vector<RunningProcessInfo> &info)
 {
     if (!IsReady()) {
         return ERR_INVALID_OPERATION;
     }
-    return appMgrServiceInner_->GetAllRunningProcesses(runningProcessInfo);
+    return appMgrServiceInner_->GetAllRunningProcesses(info);
+}
+
+void AppMgrService::SetAppFreezingTime(int time)
+{
+    APP_LOGE("set app freeze time %{public}d ", time);
+    if (!IsReady()) {
+        return;
+    }
+    appMgrServiceInner_->SetAppFreezingTime(time);
+}
+
+void AppMgrService::GetAppFreezingTime(int &time)
+{
+    if (!IsReady()) {
+        return;
+    }
+    appMgrServiceInner_->GetAppFreezingTime(time);
+    APP_LOGE("get app freeze time %{public}d ", time);
 }
 
 }  // namespace AppExecFwk

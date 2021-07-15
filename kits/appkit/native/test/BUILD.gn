@@ -30,6 +30,10 @@ config("module_private_config") {
     "//foundation/appexecfwk/standard/kits/appkit/native/test/mock/include",
     "//foundation/aafwk/standard/frameworks/kits/ability/native/test/mock/include",
     "//foundation/aafwk/standard/frameworks/kits/ability/native/include",
+    "//foundation/appexecfwk/standard/interfaces/innerkits/task_dispatcher/include/dispatcher",
+    "//foundation/appexecfwk/standard/interfaces/innerkits/task_dispatcher/include/task",
+    "//foundation/appexecfwk/standard/interfaces/innerkits/task_dispatcher/include/threading",
+    "//foundation/appexecfwk/standard/kits/appkit/native/app/include/task",
   ]
   cflags = []
   if (target_cpu == "arm") {
@@ -51,6 +55,10 @@ config("module_context_config") {
     "//foundation/appexecfwk/standard/kits/appkit/native/test/mock/include",
     "//foundation/aafwk/standard/frameworks/kits/ability/native/test/mock/include",
     "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_core/include/bundlemgr",
+    "//foundation/appexecfwk/standard/interfaces/innerkits/task_dispatcher/include/dispatcher",
+    "//foundation/appexecfwk/standard/interfaces/innerkits/task_dispatcher/include/task",
+    "//foundation/appexecfwk/standard/interfaces/innerkits/task_dispatcher/include/threading",
+    "//foundation/appexecfwk/standard/kits/appkit/native/app/include/task",
   ]
   cflags = []
   if (target_cpu == "arm") {
@@ -59,6 +67,38 @@ config("module_context_config") {
   defines = [
     "APP_LOG_TAG = \"ApplicationUnitTest\"",
     "LOG_DOMAIN = 0xD001151",
+  ]
+}
+
+ohos_unittest("context_deal_interface_test") {
+  module_out_path = module_output_path
+  sources = [
+    "mock/include/mock_ability_manager_client_interface1.cpp",
+    "mock/include/mock_resourceManager_interface1.cpp",
+    "unittest/context_deal_interface1_test.cpp",
+  ]
+
+  configs = [ ":module_private_config" ]
+
+  deps = [
+    "${ABILITY_INNERKITS_PATH}/want:want",
+    "//base/global/resmgr_standard/frameworks/resmgr:global_resmgr",
+    "//foundation/aafwk/standard/frameworks/kits/ability/native:abilitykit_native",
+    "//foundation/aafwk/standard/frameworks/kits/ability/native:dummy_classes",
+    "//foundation/aafwk/standard/interfaces/innerkits/ability_manager:ability_manager",
+    "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_base:appexecfwk_base",
+    "//foundation/appexecfwk/standard/interfaces/innerkits/libeventhandler:libeventhandler",
+    "//foundation/appexecfwk/standard/kits:appkit_native",
+    "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
+    "//foundation/multimodalinput/input/interfaces/native/innerkits/event:mmi_event",
+    "//third_party/googletest:gmock_main",
+    "//third_party/googletest:gtest_main",
+    "//utils/native/base:utils",
+  ]
+
+  external_deps = [
+    "hiviewdfx_hilog_native:libhilog",
+    "ipc:ipc_core",
   ]
 }
 
@@ -83,6 +123,7 @@ ohos_unittest("application_test") {
     "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_base:appexecfwk_base",
     "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_core:appexecfwk_core",
     "//foundation/appexecfwk/standard/interfaces/innerkits/libeventhandler:libeventhandler",
+    "//foundation/appexecfwk/standard/interfaces/innerkits/task_dispatcher:appkit_dispatcher_td",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
     "//third_party/googletest:gtest_main",
     "//utils/native/base:utils",
@@ -115,6 +156,59 @@ ohos_unittest("context_container_test") {
     "//foundation/appexecfwk/standard/common:libappexecfwk_common",
     "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_base:appexecfwk_base",
     "//foundation/appexecfwk/standard/interfaces/innerkits/libeventhandler:libeventhandler",
+    "//foundation/appexecfwk/standard/interfaces/innerkits/task_dispatcher:appkit_dispatcher_td",
+    "//foundation/appexecfwk/standard/kits:appkit_native",
+    "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
+    "//third_party/googletest:gtest_main",
+    "//utils/native/base:utils",
+  ]
+
+  external_deps = [
+    "hiviewdfx_hilog_native:libhilog",
+    "ipc:ipc_core",
+  ]
+}
+
+ohos_unittest("application_context_for_task_dispacher_test") {
+  module_out_path = module_output_path
+  sources = [ "unittest/application_context_for_task_dispacher_test.cpp" ]
+
+  configs = [ ":module_context_config" ]
+
+  deps = [
+    "${ABILITY_INNERKITS_PATH}/want:want",
+    "//foundation/aafwk/standard/frameworks/kits/ability/native:abilitykit_native",
+    "//foundation/aafwk/standard/interfaces/innerkits/ability_manager:ability_manager",
+    "//foundation/appexecfwk/standard/common:libappexecfwk_common",
+    "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_base:appexecfwk_base",
+    "//foundation/appexecfwk/standard/interfaces/innerkits/libeventhandler:libeventhandler",
+    "//foundation/appexecfwk/standard/interfaces/innerkits/task_dispatcher:appkit_dispatcher_td",
+    "//foundation/appexecfwk/standard/kits:appkit_native",
+    "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
+    "//third_party/googletest:gtest_main",
+    "//utils/native/base:utils",
+  ]
+
+  external_deps = [
+    "hiviewdfx_hilog_native:libhilog",
+    "ipc:ipc_core",
+  ]
+}
+
+ohos_unittest("context_deal_for_task_dispacher_test") {
+  module_out_path = module_output_path
+  sources = [ "unittest/context_deal_for_task_dispacher_test.cpp" ]
+
+  configs = [ ":module_context_config" ]
+
+  deps = [
+    "${ABILITY_INNERKITS_PATH}/want:want",
+    "//foundation/aafwk/standard/frameworks/kits/ability/native:abilitykit_native",
+    "//foundation/aafwk/standard/interfaces/innerkits/ability_manager:ability_manager",
+    "//foundation/appexecfwk/standard/common:libappexecfwk_common",
+    "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_base:appexecfwk_base",
+    "//foundation/appexecfwk/standard/interfaces/innerkits/libeventhandler:libeventhandler",
+    "//foundation/appexecfwk/standard/interfaces/innerkits/task_dispatcher:appkit_dispatcher_td",
     "//foundation/appexecfwk/standard/kits:appkit_native",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
     "//third_party/googletest:gtest_main",
@@ -146,6 +240,7 @@ ohos_unittest("context_deal_test") {
     "//foundation/appexecfwk/standard/common:libappexecfwk_common",
     "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_base:appexecfwk_base",
     "//foundation/appexecfwk/standard/interfaces/innerkits/libeventhandler:libeventhandler",
+    "//foundation/appexecfwk/standard/interfaces/innerkits/task_dispatcher:appkit_dispatcher_td",
     "//foundation/appexecfwk/standard/kits:appkit_native",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
     "//third_party/googletest:gtest_main",
@@ -180,10 +275,43 @@ ohos_unittest("application_impl_test") {
     "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_base:appexecfwk_base",
     "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_core:appexecfwk_core",
     "//foundation/appexecfwk/standard/interfaces/innerkits/libeventhandler:libeventhandler",
+    "//foundation/appexecfwk/standard/interfaces/innerkits/task_dispatcher:appkit_dispatcher_td",
     "//foundation/appexecfwk/standard/kits:appkit_native",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
     "//third_party/googletest:gtest_main",
     "//utils/native/base:utils",
+  ]
+
+  external_deps = [
+    "hiviewdfx_hilog_native:libhilog",
+    "ipc:ipc_core",
+  ]
+}
+
+config("ability_start_setting_config") {
+  visibility = [ ":*" ]
+  include_dirs = [
+    "//foundation/appexecfwk/standard/kits/appkit/native/app/include",
+    "//foundation/appexecfwk/common/log/include/",
+    "//utils/native/base/include",
+  ]
+}
+
+ohos_unittest("ability_start_setting_test") {
+  module_out_path = module_output_path
+
+  configs = [
+    ":module_context_config",
+    ":ability_start_setting_config",
+  ]
+
+  sources = [ "unittest/ability_start_setting_test.cpp" ]
+
+  deps = [
+    "//foundation/appexecfwk/standard/kits:appkit_native",
+    "//third_party/googletest:gtest_main",
+    "//utils/native/base:utils",
+    "//utils/native/base:utilsbase",
   ]
 
   external_deps = [
@@ -199,6 +327,7 @@ group("unittest") {
   deps = []
 
   deps += [
+    ":ability_start_setting_test",
     ":application_impl_test",
     ":application_test",
     ":context_container_test",

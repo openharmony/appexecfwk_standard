@@ -32,8 +32,7 @@ ohos_source_set("appmgr_mst_source") {
     "${services_path}/appmgr/src/app_spawn_msg_wrapper.cpp",
     "${services_path}/appmgr/src/app_spawn_socket.cpp",
     "${services_path}/appmgr/src/cgroup_manager.cpp",
-    "${services_path}/appmgr/src/lmk_util.cpp",
-    "${services_path}/appmgr/src/lmkd_client.cpp",
+    "${services_path}/appmgr/src/lmks_client.cpp",
     "${services_path}/appmgr/src/process_optimizer.cpp",
     "${services_path}/appmgr/src/process_optimizer_uba.cpp",
     "${services_path}/appmgr/src/remote_client_manager.cpp",
@@ -45,6 +44,7 @@ ohos_source_set("appmgr_mst_source") {
   include_dirs = [
     "//third_party/json/include",
     "${services_path}/appmgr/test/mock/include",
+    "${services_path}/appmgr/include/lmks",
   ]
 
   public_configs = [
@@ -73,6 +73,8 @@ ohos_source_set("appmgr_mst_source") {
     "${innerkits_path}/appexecfwk_base:appexecfwk_base",
     "${innerkits_path}/appexecfwk_core:appexecfwk_core",
     "${libs_path}/libeventhandler:libeventhandler_target",
+    "//base/notification/ces_standard/cesfwk/innerkits:cesfwk_innerkits",
+    "//base/security/permission/interfaces/innerkits/permission_standard/permissionsdk:libpermissionsdk_standard",
     "//base/startup/appspawn_standard:appspawn_socket_client",
     "//foundation/aafwk/standard/interfaces/innerkits/base:base",
     "//foundation/aafwk/standard/interfaces/innerkits/want:want",
@@ -104,5 +106,7 @@ group("moduletest") {
     "service_app_spawn_client_test:moduletest",
     "service_event_drive_test:moduletest",
     "service_start_process_test:moduletest",
+
+    # "process_optimizer_uba_test:moduletest",
   ]
 }

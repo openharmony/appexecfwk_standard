@@ -1058,7 +1058,7 @@ HWTEST_F(AmsAppRunningRecordTest, TerminateAbility_001, TestSize.Level0)
 
     auto record = GetTestAppRunningRecord();
     EXPECT_CALL(*mockAppSchedulerClient_, ScheduleCleanAbility(_)).Times(0);
-    record->TerminateAbility(GetMockToken());
+    record->TerminateAbility(GetMockToken(), false);
 
     APP_LOGI("AmsAppRunningRecordTest TerminateAbility_001 end");
 }
@@ -1080,7 +1080,7 @@ HWTEST_F(AmsAppRunningRecordTest, TerminateAbility_002, TestSize.Level0)
     auto record = GetTestAppRunningRecord();
     EXPECT_NE(nullptr, record->AddAbility(GetMockToken(), abilityInfo));
     EXPECT_CALL(*mockAppSchedulerClient_, ScheduleCleanAbility(_)).Times(0);
-    record->TerminateAbility(GetMockToken());
+    record->TerminateAbility(GetMockToken(), false);
 
     APP_LOGI("AmsAppRunningRecordTest TerminateAbility_002 end");
 }

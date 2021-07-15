@@ -21,7 +21,7 @@
 #include "json_serializer.h"
 #include "parcel.h"
 #include "bundle_data_storage_interface.h"
-#include "bundle_data_storage.h"
+#include "bundle_data_storage_database.h"
 #include "bundle_data_mgr.h"
 
 using namespace testing::ext;
@@ -83,13 +83,7 @@ void BmsDataMgrTest::SetUp()
 
 void BmsDataMgrTest::TearDown()
 {
-    // create db file
-    std::ofstream o(Constants::BUNDLE_DATA_BASE_FILE);
     dataMgr_->UpdateBundleInstallState(BUNDLE_NAME, InstallState::UNINSTALL_SUCCESS);
-    if (!o.is_open()) {
-        return;
-    }
-    o.close();
 }
 
 AbilityInfo BmsDataMgrTest::GetDefaultAbilityInfo() const
@@ -512,11 +506,12 @@ HWTEST_F(BmsDataMgrTest, LoadDataFromPersistentStorage_0100, Function | SmallTes
     info.SetBaseBundleInfo(bundleInfo);
     info.SetBaseApplicationInfo(applicationInfo);
 
-    std::shared_ptr<IBundleDataStorage> dataStorage_ = std::make_shared<BundleDataStorage>();
+    std::shared_ptr<IBundleDataStorage> dataStorage_ = std::make_shared<BundleDataStorageDatabase>();
     dataStorage_->SaveStorageBundleInfo(Constants::CURRENT_DEVICE_ID, info);
 
     bool ret2 = dataMgr->LoadDataFromPersistentStorage();
     EXPECT_TRUE(ret2);
+    dataStorage_->DeleteStorageBundleInfo(Constants::CURRENT_DEVICE_ID, info);
 }
 
 /**

@@ -39,6 +39,15 @@ public:
         CanRequestPermission, bool(const std::string &bundleName, const std::string &permissionName, const int userId));
     MOCK_METHOD3(RequestPermissionFromUser,
         bool(const std::string &bundleName, const std::string &permission, const int userId));
+    MOCK_METHOD2(GetNameForUid, bool(const int uid, std::string &name));
+    MOCK_METHOD2(GetBundlesForUid, bool(const int uid, std::vector<std::string> &));
+    MOCK_METHOD2(SetAbilityEnabled, bool(const AbilityInfo &, bool));
+    MOCK_METHOD1(IsAbilityEnabled, bool(const AbilityInfo &));
+    MOCK_METHOD2(GetAbilityIcon, std::string(const std::string &bundleName, const std::string &className));
+    MOCK_METHOD1(RegisterAllPermissionsChanged, bool(const sptr<OnPermissionChangedCallback> &callback));
+    MOCK_METHOD2(RegisterPermissionsChanged,
+        bool(const std::vector<int> &uids, const sptr<OnPermissionChangedCallback> &callback));
+    MOCK_METHOD1(UnregisterPermissionsChanged, bool(const sptr<OnPermissionChangedCallback> &callback));
     bool QueryAbilityInfo(const AAFwk::Want &want, AbilityInfo &abilityInfo) override;
     bool QueryAbilityInfoByUri(const std::string &uri, AbilityInfo &abilityInfo) override;
 
@@ -62,6 +71,10 @@ public:
     virtual int GetUidByBundleName(const std::string &bundleName, const int userId) override
     {
         return 0;
+    };
+    virtual std::string GetAppIdByBundleName(const std::string &bundleName, const int userId) override
+    {
+        return "";
     };
     virtual bool GetBundleNameForUid(const int uid, std::string &bundleName) override
     {
@@ -173,13 +186,22 @@ public:
 class BundleMgrService : public BundleMgrStub {
 public:
     MOCK_METHOD2(GetUidByBundleName, int(const std::string &bundleName, const int userId));
+    MOCK_METHOD2(GetAppIdByBundleName, std::string(const std::string &bundleName, const int userId));
     MOCK_METHOD2(CheckPermission, int(const std::string &bundleName, const std::string &permission));
     MOCK_METHOD1(CleanBundleDataFiles, bool(const std::string &bundleName));
     MOCK_METHOD3(
         CanRequestPermission, bool(const std::string &bundleName, const std::string &permissionName, const int userId));
     MOCK_METHOD3(RequestPermissionFromUser,
         bool(const std::string &bundleName, const std::string &permission, const int userId));
-
+    MOCK_METHOD2(GetNameForUid, bool(const int uid, std::string &name));
+    MOCK_METHOD2(GetBundlesForUid, bool(const int uid, std::vector<std::string> &));
+    MOCK_METHOD2(SetAbilityEnabled, bool(const AbilityInfo &, bool));
+    MOCK_METHOD1(IsAbilityEnabled, bool(const AbilityInfo &));
+    MOCK_METHOD2(GetAbilityIcon, std::string(const std::string &bundleName, const std::string &className));
+    MOCK_METHOD1(RegisterAllPermissionsChanged, bool(const sptr<OnPermissionChangedCallback> &callback));
+    MOCK_METHOD2(RegisterPermissionsChanged,
+        bool(const std::vector<int> &uids, const sptr<OnPermissionChangedCallback> &callback));
+    MOCK_METHOD1(UnregisterPermissionsChanged, bool(const sptr<OnPermissionChangedCallback> &callback));
     bool QueryAbilityInfo(const AAFwk::Want &want, AbilityInfo &abilityInfo) override;
     bool QueryAbilityInfoByUri(const std::string &uri, AbilityInfo &abilityInfo) override;
 
@@ -298,6 +320,18 @@ public:
     {
         return true;
     };
+    virtual bool GetAllFormsInfo(std::vector<FormInfo> &formInfos) override
+    {
+        return true;
+    }
+	virtual bool GetFormsInfoByApp(const std::string &bundleName, std::vector<FormInfo> &formInfos) override
+    {
+        return true;
+    }
+	virtual bool GetFormsInfoByModule(const std::string &bundleName, const std::string &moduleName, std::vector<FormInfo> &formInfos) override
+    {
+        return true;
+    }
 };
 
 }  // namespace AppExecFwk

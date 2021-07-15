@@ -80,6 +80,26 @@ bool BundleMgrHostImpl::GetBundleNameForUid(const int uid, std::string &bundleNa
     return dataMgr->GetBundleNameForUid(uid, bundleName);
 }
 
+bool BundleMgrHostImpl::GetBundlesForUid(const int uid, std::vector<std::string> &bundleNames)
+{
+    auto dataMgr = GetDataMgrFromService();
+    if (dataMgr == nullptr) {
+        APP_LOGE("DataMgr is nullptr");
+        return false;
+    }
+    return dataMgr->GetBundlesForUid(uid, bundleNames);
+}
+
+bool BundleMgrHostImpl::GetNameForUid(const int uid, std::string &name)
+{
+    auto dataMgr = GetDataMgrFromService();
+    if (dataMgr == nullptr) {
+        APP_LOGE("DataMgr is nullptr");
+        return false;
+    }
+    return dataMgr->GetNameForUid(uid, name);
+}
+
 bool BundleMgrHostImpl::GetBundleGids(const std::string &bundleName, std::vector<int> &gids)
 {
     auto dataMgr = GetDataMgrFromService();
@@ -196,7 +216,12 @@ bool BundleMgrHostImpl::GetLaunchWantForBundle(const std::string &bundleName, Wa
 
 int BundleMgrHostImpl::CheckPublicKeys(const std::string &firstBundleName, const std::string &secondBundleName)
 {
-    return -1;
+    auto dataMgr = GetDataMgrFromService();
+    if (dataMgr == nullptr) {
+        APP_LOGE("DataMgr is nullptr");
+        return false;
+    }
+    return dataMgr->CheckPublicKeys(firstBundleName, secondBundleName);
 }
 
 int BundleMgrHostImpl::CheckPermission(const std::string &bundleName, const std::string &permission)
@@ -394,6 +419,36 @@ bool BundleMgrHostImpl::SetApplicationEnabled(const std::string &bundleName, boo
     return dataMgr->SetApplicationEnabled(bundleName, isEnable);
 }
 
+bool BundleMgrHostImpl::IsAbilityEnabled(const AbilityInfo &abilityInfo)
+{
+    auto dataMgr = GetDataMgrFromService();
+    if (dataMgr == nullptr) {
+        APP_LOGE("DataMgr is nullptr");
+        return false;
+    }
+    return dataMgr->IsAbilityEnabled(abilityInfo);
+}
+
+bool BundleMgrHostImpl::SetAbilityEnabled(const AbilityInfo &abilityInfo, bool isEnabled)
+{
+    auto dataMgr = GetDataMgrFromService();
+    if (dataMgr == nullptr) {
+        APP_LOGE("DataMgr is nullptr");
+        return false;
+    }
+    return dataMgr->SetAbilityEnabled(abilityInfo, isEnabled);
+}
+
+std::string BundleMgrHostImpl::GetAbilityIcon(const std::string &bundleName, const std::string &className)
+{
+    auto dataMgr = GetDataMgrFromService();
+    if (dataMgr == nullptr) {
+        APP_LOGE("DataMgr is nullptr");
+        return Constants::EMPTY_STRING;
+    }
+    return dataMgr->GetAbilityIcon(bundleName, className);
+}
+
 sptr<IBundleInstaller> BundleMgrHostImpl::GetBundleInstaller()
 {
     return DelayedSingleton<BundleMgrService>::GetInstance()->GetBundleInstaller();
@@ -417,6 +472,53 @@ bool BundleMgrHostImpl::RequestPermissionFromUser(
         return false;
     }
     return BundlePermissionMgr::RequestPermissionFromUser(bundleName, permissionName, userId);
+}
+
+bool BundleMgrHostImpl::RegisterAllPermissionsChanged(const sptr<OnPermissionChangedCallback> &callback)
+{
+    return true;
+}
+
+bool BundleMgrHostImpl::RegisterPermissionsChanged(
+    const std::vector<int> &uids, const sptr<OnPermissionChangedCallback> &callback)
+{
+    return true;
+}
+
+bool BundleMgrHostImpl::UnregisterPermissionsChanged(const sptr<OnPermissionChangedCallback> &callback)
+{
+    return true;
+}
+
+bool BundleMgrHostImpl::GetAllFormsInfo(std::vector<FormInfo> &formInfos)
+{
+    auto dataMgr = GetDataMgrFromService();
+    if (dataMgr == nullptr) {
+        APP_LOGE("DataMgr is nullptr");
+        return false;
+    }
+    return dataMgr->GetAllFormsInfo(formInfos);
+}
+
+bool BundleMgrHostImpl::GetFormsInfoByApp(const std::string &bundleName, std::vector<FormInfo> &formInfos)
+{
+    auto dataMgr = GetDataMgrFromService();
+    if (dataMgr == nullptr) {
+        APP_LOGE("DataMgr is nullptr");
+        return false;
+    }
+    return dataMgr->GetFormsInfoByApp(bundleName, formInfos);
+}
+
+bool BundleMgrHostImpl::GetFormsInfoByModule(
+    const std::string &bundleName, const std::string &moduleName, std::vector<FormInfo> &formInfos)
+{
+    auto dataMgr = GetDataMgrFromService();
+    if (dataMgr == nullptr) {
+        APP_LOGE("DataMgr is nullptr");
+        return false;
+    }
+    return dataMgr->GetFormsInfoByModule(bundleName, moduleName, formInfos);
 }
 
 const std::shared_ptr<BundleDataMgr> BundleMgrHostImpl::GetDataMgrFromService()

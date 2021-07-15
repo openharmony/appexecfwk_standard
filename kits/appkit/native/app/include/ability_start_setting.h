@@ -31,6 +31,19 @@ public:
     static const std::string WINDOW_DISPLAY_ID_KEY;
     static const std::string WINDOW_MODE_KEY;
 
+    /**
+     * @brief Construct copy function.
+     * @param other indicates instance of abilitystartsetting object
+     * @return none.
+     */
+    AbilityStartSetting(const AbilityStartSetting &other);
+    /**
+     * @brief Overload assignment operation.
+     * @param other indicates instance of abilitystartsetting object.
+     * @return Returns current instance of abilitystartsetting object.
+     */
+    AbilityStartSetting &operator=(const AbilityStartSetting &other);
+
     virtual ~AbilityStartSetting() = default;
 
     /**
@@ -63,6 +76,14 @@ public:
     void AddProperty(const std::string &key, const std::string &value);
 
     /**
+     * @brief Gets the name of the attributes of the AbilityStartSetting object.
+     *
+     * @param key Indicates the name of the key.
+     * @return Returns value Indicates the value of the attributes of the AbilityStartSetting object
+     */
+    std::string GetProperty(const std::string &key);
+
+    /*
      * @brief Write the data of AbilityStartSetting to the file stream
      * @param parcel indicates write the data of AbilityStartSetting to the file stream through parcel
      * @return bool
@@ -74,7 +95,7 @@ public:
      * @param parcel indicates reading file stream through parcel to generate AbilityStartSetting instance
      * @return AbilityStartSetting shared_ptr
      */
-    static std::shared_ptr<AbilityStartSetting> Unmarshalling(Parcel &parcel);
+    static AbilityStartSetting *Unmarshalling(Parcel &parcel);
 
 protected:
     AbilityStartSetting() = default;

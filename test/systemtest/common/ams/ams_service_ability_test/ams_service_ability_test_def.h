@@ -34,10 +34,10 @@ const std::string DUMP_DATA = "--data";
 const std::string DUMP_MISSION = "--mission";
 const std::string DUMP_TOP = "--top";
 const std::string DUMP_ALL = "-a";
-constexpr int WAIT_TIME = 2 * 1000 * 1000;
-constexpr int WAIT_LAUNCHER_OK = 2 * 1000 * 1000;
+constexpr int WAIT_TIME = 5 * 1000 * 1000;
+constexpr int WAIT_LAUNCHER_OK = 5 * 1000 * 1000;
 constexpr size_t TIMES = 3;
-constexpr int DELAY_TIME = 6;
+constexpr int DELAY_TIME = 10;
 constexpr int BUFFER_SIZE = 1024;
 
 enum AbilityState_Test {

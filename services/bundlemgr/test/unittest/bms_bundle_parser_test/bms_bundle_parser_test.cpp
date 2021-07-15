@@ -235,6 +235,7 @@ void BmsBundleParserTest::GetProfileTypeErrorProps(nlohmann::json &typeErrorProp
     typeErrorProps[BUNDLE_MODULE_PROFILE_KEY_SHORTCUTS] = JsonConstants::NOT_ARRAY_TYPE;
     typeErrorProps[BUNDLE_MODULE_PROFILE_KEY_DEF_PERMISSIONS] = JsonConstants::NOT_ARRAY_TYPE;
     typeErrorProps[BUNDLE_MODULE_PROFILE_KEY_REQ_PERMISSIONS] = JsonConstants::NOT_ARRAY_TYPE;
+    typeErrorProps[BUNDLE_MODULE_PROFILE_KEY_COLOR_MODE] = JsonConstants::NOT_STRING_TYPE;
     // BUNDLE_MODULE_PROFILE_KEY_DISTRO
     typeErrorProps[BUNDLE_MODULE_PROFILE_KEY_DELIVERY_WITH_INSTALL] = JsonConstants::NOT_BOOL_TYPE;
     typeErrorProps[BUNDLE_MODULE_PROFILE_KEY_MODULE_NAME] = JsonConstants::NOT_STRING_TYPE;
@@ -332,7 +333,7 @@ void BmsBundleParserTest::CheckProfilePermission(const nlohmann::json &checkedPr
     profileFileBuffer << checkedProfileJson.dump();
 
     ErrCode result = bundleProfile.TransformTo(profileFileBuffer, innerBundleInfo);
-    EXPECT_EQ(result, 0) << profileFileBuffer.str();
+    EXPECT_EQ(result, ERR_APPEXECFWK_PARSE_PROFILE_MISSING_PROP) << profileFileBuffer.str();
 }
 
 /**
@@ -418,7 +419,7 @@ HWTEST_F(BmsBundleParserTest, TestParse_0500, Function | SmallTest | Level0)
     InnerBundleInfo innerBundleInfo;
     pathStream_ << RESOURCE_ROOT_PATH << FORMAT_ERROR_PROFILE << INSTALL_FILE_SUFFIX;
     ErrCode result = bundleParser.Parse(pathStream_.str(), innerBundleInfo);
-    EXPECT_EQ(result, ERR_APPEXECFWK_PARSE_BAD_PROFILE);
+    EXPECT_EQ(result, ERR_APPEXECFWK_PARSE_PROFILE_MISSING_PROP);
 }
 
 /**
@@ -500,6 +501,7 @@ HWTEST_F(BmsBundleParserTest, TestParse_0800, Function | SmallTest | Level0)
         BUNDLE_MODULE_PROFILE_KEY_SHORTCUTS,
         BUNDLE_MODULE_PROFILE_KEY_DEF_PERMISSIONS,
         BUNDLE_MODULE_PROFILE_KEY_REQ_PERMISSIONS,
+        BUNDLE_MODULE_PROFILE_KEY_COLOR_MODE,
         // sub BUNDLE_MODULE_PROFILE_KEY_ABILITIES
         BUNDLE_MODULE_PROFILE_KEY_PROCESS,
         BUNDLE_MODULE_PROFILE_KEY_ICON,
@@ -551,27 +553,26 @@ HWTEST_F(BmsBundleParserTest, TestParse_0900, Function | SmallTest | Level0)
 
     for (const auto &propKey : mustPropKeys) {
         APP_LOGD("test must prop %{public}s not exist", propKey.c_str());
-        CheckNoPropProfileParseApp(propKey, ERR_APPEXECFWK_PARSE_BAD_PROFILE);
+        CheckNoPropProfileParseApp(propKey, ERR_APPEXECFWK_PARSE_PROFILE_MISSING_PROP);
     }
 }
 
 /**
  * @tc.number: TestParse_1000
- * @tc.name: parse bundle package by config.json
+ * @tc.name: parse bundle deviceType by config.json
  * @tc.desc: 1. system running normally
- *           2. test parse bundle failed when prop(configJson.module.package,deviceType) is not exist in the
+ *           2. test parse bundle failed when prop(configJson.module.deviceType) is not exist in the
  *              config.json
  */
 HWTEST_F(BmsBundleParserTest, TestParse_1000, Function | SmallTest | Level0)
 {
     std::vector<std::string> mustPropKeys = {
-        BUNDLE_MODULE_PROFILE_KEY_PACKAGE,
         BUNDLE_MODULE_PROFILE_KEY_DEVICE_TYPE,
     };
 
     for (const auto &propKey : mustPropKeys) {
         APP_LOGD("test must prop %{public}s not exist", propKey.c_str());
-        CheckNoPropProfileParseModule(propKey, ERR_APPEXECFWK_PARSE_BAD_PROFILE);
+        CheckNoPropProfileParseModule(propKey, ERR_APPEXECFWK_PARSE_PROFILE_MISSING_PROP);
     }
 }
 
@@ -579,18 +580,19 @@ HWTEST_F(BmsBundleParserTest, TestParse_1000, Function | SmallTest | Level0)
  * @tc.number: TestParse_1100
  * @tc.name: parse bundle package by config.json
  * @tc.desc: 1. system running normally
- *           2. test parse bundle failed when prop(configJson.module.distro.moduleName) is not exist in the
+ *           2. test parse bundle failed when prop(configJson.module.package,distro.moduleName) is not exist in the
  *           config.json
  */
 HWTEST_F(BmsBundleParserTest, TestParse_1100, Function | SmallTest | Level0)
 {
     std::vector<std::string> mustPropKeys = {
+        BUNDLE_MODULE_PROFILE_KEY_PACKAGE,
         BUNDLE_MODULE_PROFILE_KEY_DISTRO,
     };
 
     for (const auto &propKey : mustPropKeys) {
         APP_LOGD("test must prop %{public}s not exist", propKey.c_str());
-        CheckNoPropProfileParseModule(propKey, ERR_APPEXECFWK_PARSE_BAD_PROFILE);
+        CheckNoPropProfileParseModule(propKey, ERR_APPEXECFWK_PARSE_PROFILE_PROP_CHECK_ERROR);
     }
 }
 
@@ -608,7 +610,7 @@ HWTEST_F(BmsBundleParserTest, TestParse_1200, Function | SmallTest | Level0)
 
     for (const auto &propKey : mustPropKeys) {
         APP_LOGD("test must prop %{public}s not exist", propKey.c_str());
-        CheckNoPropProfileParseModule(propKey, ERR_APPEXECFWK_PARSE_BAD_PROFILE);
+        CheckNoPropProfileParseModule(propKey, ERR_APPEXECFWK_PARSE_PROFILE_PROP_CHECK_ERROR);
     }
 }
 
@@ -639,7 +641,7 @@ HWTEST_F(BmsBundleParserTest, TestParse_1400, Function | SmallTest | Level0)
     InnerBundleInfo innerBundleInfo;
     pathStream_ << RESOURCE_ROOT_PATH << FORMAT_MISSING_PROFILE << INSTALL_FILE_SUFFIX;
     ErrCode result = bundleParser.Parse(pathStream_.str(), innerBundleInfo);
-    EXPECT_EQ(result, ERR_APPEXECFWK_PARSE_BAD_PROFILE);
+    EXPECT_EQ(result, ERR_APPEXECFWK_PARSE_PROFILE_MISSING_PROP);
 }
 
 /**
@@ -770,7 +772,6 @@ HWTEST_F(BmsBundleParserTest, TestParse_2100, Function | SmallTest | Level1)
     nlohmann::json errorReqPermJson = CONFIG_JSON;
     errorReqPermJson[BUNDLE_PROFILE_KEY_MODULE][BUNDLE_MODULE_PROFILE_KEY_REQ_PERMISSIONS] = R"(
         [{
-            "name": "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-",
             "reason": "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-",
             "when": "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-"
         }]

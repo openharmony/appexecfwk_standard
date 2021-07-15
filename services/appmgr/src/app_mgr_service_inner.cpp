@@ -26,12 +26,17 @@
 #include "iservice_registry.h"
 #include "system_ability_definition.h"
 #include "iremote_object.h"
-
+#include "common_event.h"
+#include "bundle_constants.h"
 #include "app_process_data.h"
+#include "permission/permission_kit.h"
+
 namespace OHOS {
 namespace AppExecFwk {
-namespace {
 
+using namespace OHOS::Security;
+
+namespace {
 // NANOSECONDS mean 10^9 nano second
 constexpr int64_t NANOSECONDS = 1000000000;
 // MICROSECONDS mean 10^6 millias second
@@ -45,8 +50,13 @@ const std::string FUNC_NAME = "main";
 const std::string SO_PATH = "system/lib64/libmapleappkit.z.so";
 const int32_t SIGNAL_KILL = 9;
 const std::string REQ_PERMISSION = "ohos.permission.LOCATION_IN_BACKGROUND";
-
+constexpr int32_t SYSTEM_UID = 1000;
+#define ENUM_TO_STRING(s) #s
 }  // namespace
+
+using OHOS::AppExecFwk::Constants::PERMISSION_GRANTED;
+using OHOS::AppExecFwk::Constants::PERMISSION_NOT_GRANTED;
+using OHOS::AppExecFwk::Constants::ROOT_UID;
 
 AppMgrServiceInner::AppMgrServiceInner()
     : appProcessManager_(std::make_shared<AppProcessManager>()),
@@ -88,6 +98,7 @@ void AppMgrServiceInner::LoadAbility(const sptr<IRemoteObject> &token, const spt
             APP_LOGE("create appRunningRecord failed");
             return;
         }
+        appRecord->SetEventHandler(eventHandler_);
         if (preToken != nullptr) {
             auto abilityRecord = appRecord->GetAbilityRunningRecordByToken(token);
             abilityRecord->SetPreToken(preToken);
@@ -153,6 +164,9 @@ void AppMgrServiceInner::ApplicationForegrounded(const int32_t recordId)
         appRecord->SetState(ApplicationState::APP_STATE_FOREGROUND);
         OptimizerAppStateChanged(appRecord, appState);
         OnAppStateChanged(appRecord, ApplicationState::APP_STATE_FOREGROUND);
+    } else if (appState == ApplicationState::APP_STATE_SUSPENDED) {
+        appRecord->SetState(ApplicationState::APP_STATE_BACKGROUND);
+        OptimizerAppStateChanged(appRecord, ApplicationState::APP_STATE_SUSPENDED);
     } else {
         APP_LOGW("app name(%{public}s), app state(%{public}d)!",
             appRecord->GetName().c_str(),
@@ -175,6 +189,9 @@ void AppMgrServiceInner::ApplicationBackgrounded(const int32_t recordId)
         appRecord->SetState(ApplicationState::APP_STATE_BACKGROUND);
         OptimizerAppStateChanged(appRecord, ApplicationState::APP_STATE_FOREGROUND);
         OnAppStateChanged(appRecord, ApplicationState::APP_STATE_BACKGROUND);
+    } else if (appRecord->GetState() == ApplicationState::APP_STATE_SUSPENDED) {
+        appRecord->SetState(ApplicationState::APP_STATE_BACKGROUND);
+        OptimizerAppStateChanged(appRecord, ApplicationState::APP_STATE_SUSPENDED);
     } else {
         APP_LOGW("app name(%{public}s), app state(%{public}d)!",
             appRecord->GetName().c_str(),
@@ -258,8 +275,17 @@ void AppMgrServiceInner::ClearUpApplicationData(const std::string &bundleName, i
     } else {
         result = bundleMgr_->CheckPermission(bundleName, REQ_PERMISSION);
         if (result) {
-            // request to clear user information permission.
+            APP_LOGE("No permission to clear application data");
+            return;
         }
+        // request to clear user information permission.
+        result = Permission::PermissionKit::RemoveUserGrantedReqPermissions(bundleName, Constants::DEFAULT_USERID);
+        if (result) {
+            APP_LOGE("RemoveUserGrantedReqPermissions failed");
+        }
+    }
+    if (result) {
+        APP_LOGE("clear user information permission failed");
     }
     // 2.delete bundle side user data
     if (!bundleMgr_->CleanBundleDataFiles(bundleName)) {
@@ -285,7 +311,7 @@ int32_t AppMgrServiceInner::IsBackgroundRunningRestricted(const std::string &bun
     return bundleMgr_->CheckPermission(bundleName, REQ_PERMISSION);
 }
 
-int32_t AppMgrServiceInner::GetAllRunningProcesses(std::shared_ptr<RunningProcessInfo> &runningProcessInfo)
+int32_t AppMgrServiceInner::GetAllRunningProcesses(std::vector<RunningProcessInfo> &info)
 {
     auto bundleMgr_ = remoteClientManager_->GetBundleManager();
     if (bundleMgr_ == nullptr) {
@@ -295,12 +321,12 @@ int32_t AppMgrServiceInner::GetAllRunningProcesses(std::shared_ptr<RunningProces
     // check permission
     for (const auto &item : appRunningManager_->GetAppRunningRecordMap()) {
         const auto &appRecord = item.second;
-        AppProcessInfo appProcessInfo_;
-        appProcessInfo_.processName_ = appRecord->GetName();
-        appProcessInfo_.pid_ = appRecord->GetPriorityObject()->GetPid();
-        appProcessInfo_.uid_ = appRecord->GetUid();
-        appProcessInfo_.state_ = static_cast<AppProcessState>(appRecord->GetState());
-        runningProcessInfo->appProcessInfos.push_back(appProcessInfo_);
+        RunningProcessInfo runningProcessInfo;
+        runningProcessInfo.processName_ = appRecord->GetName();
+        runningProcessInfo.pid_ = appRecord->GetPriorityObject()->GetPid();
+        runningProcessInfo.uid_ = appRecord->GetUid();
+        runningProcessInfo.state_ = static_cast<AppProcessState>(appRecord->GetState());
+        info.emplace_back(runningProcessInfo);
     }
     return ERR_OK;
 }
@@ -418,10 +444,13 @@ void AppMgrServiceInner::TerminateAbility(const sptr<IRemoteObject> &token)
         return;
     }
     if (appRecord->GetState() == ApplicationState::APP_STATE_SUSPENDED) {
-        UnsuspendApplication(appRecord);
+        appRecord->SetState(ApplicationState::APP_STATE_BACKGROUND);
         OptimizerAppStateChanged(appRecord, ApplicationState::APP_STATE_SUSPENDED);
     }
-    appRecord->TerminateAbility(token);
+
+    if (appRunningManager_) {
+        appRunningManager_->TerminateAbility(token);
+    }
     APP_LOGD("AppMgrServiceInner::TerminateAbility end");
 }
 
@@ -450,9 +479,10 @@ void AppMgrServiceInner::UpdateAbilityState(const sptr<IRemoteObject> &token, co
         return;
     }
     if (appRecord->GetState() == ApplicationState::APP_STATE_SUSPENDED) {
-        UnsuspendApplication(appRecord);
+        appRecord->SetState(ApplicationState::APP_STATE_BACKGROUND);
         OptimizerAppStateChanged(appRecord, ApplicationState::APP_STATE_SUSPENDED);
     }
+
     appRecord->UpdateAbilityState(token, state);
     APP_LOGD("end");
 }
@@ -604,7 +634,7 @@ void AppMgrServiceInner::StartAbility(const sptr<IRemoteObject> &token, const sp
 
     ApplicationState appState = appRecord->GetState();
     if (appState == ApplicationState::APP_STATE_SUSPENDED) {
-        UnsuspendApplication(appRecord);
+        appRecord->SetState(ApplicationState::APP_STATE_BACKGROUND);
         OptimizerAppStateChanged(appRecord, ApplicationState::APP_STATE_SUSPENDED);
     }
 
@@ -638,10 +668,12 @@ void AppMgrServiceInner::UnsuspendApplication(const std::shared_ptr<AppRunningRe
         return;
     }
 
-    APP_LOGD("app name is %{public}s", appRecord->GetName().c_str());
+    APP_LOGD("%{public}s : app name is %{public}s , Uid is %{public}d",
+        __func__,
+        appRecord->GetName().c_str(),
+        appRecord->GetUid());
     // Resume subscription via UID
-    appRecord->SetState(ApplicationState::APP_STATE_BACKGROUND);
-    OptimizerAppStateChanged(appRecord, ApplicationState::APP_STATE_SUSPENDED);
+    DelayedSingleton<EventFwk::CommonEvent>::GetInstance()->Unfreeze(appRecord->GetUid());
 }
 
 void AppMgrServiceInner::SuspendApplication(const std::shared_ptr<AppRunningRecord> &appRecord)
@@ -650,10 +682,14 @@ void AppMgrServiceInner::SuspendApplication(const std::shared_ptr<AppRunningReco
         APP_LOGE("app record is null");
         return;
     }
-    APP_LOGD("app name is %{public}s", appRecord->GetName().c_str());
+    APP_LOGD("%{public}s : app name is %{public}s , Uid is %{public}d",
+        __func__,
+        appRecord->GetName().c_str(),
+        appRecord->GetUid());
     // Temporary unsubscribe via UID
     appRecord->SetState(ApplicationState::APP_STATE_SUSPENDED);
     OptimizerAppStateChanged(appRecord, ApplicationState::APP_STATE_BACKGROUND);
+    DelayedSingleton<EventFwk::CommonEvent>::GetInstance()->Freeze(appRecord->GetUid());
 }
 
 void AppMgrServiceInner::LowMemoryApplicationAlert(
@@ -1012,5 +1048,134 @@ void AppMgrServiceInner::OptimizerAppStateChanged(
     }
 }
 
+void AppMgrServiceInner::SetAppFreezingTime(int time)
+{
+    if (!processOptimizerUBA_) {
+        APP_LOGE("process optimizer is not init");
+        return;
+    }
+
+    std::lock_guard<std::mutex> setFreezeTimeLock(serviceLock_);
+    processOptimizerUBA_->SetAppFreezingTime(time);
+}
+
+void AppMgrServiceInner::GetAppFreezingTime(int &time)
+{
+    if (!processOptimizerUBA_) {
+        APP_LOGE("process optimizer is not init");
+        return;
+    }
+    std::lock_guard<std::mutex> getFreezeTimeLock(serviceLock_);
+    processOptimizerUBA_->GetAppFreezingTime(time);
+}
+
+void AppMgrServiceInner::HandleTimeOut(const InnerEvent::Pointer &event)
+{
+    APP_LOGI("%{public}s", __func__);
+    if (!appRunningManager_ || event == nullptr) {
+        APP_LOGE("appRunningManager or event is nullptr");
+        return;
+    }
+    switch (event->GetInnerEventId()) {
+        case AMSEventHandler::TERMINATE_ABILITY_TIMEOUT_MSG:
+            appRunningManager_->HandleTerminateTimeOut(event->GetParam());
+            break;
+        case AMSEventHandler::TERMINATE_APPLICATION_TIMEOUT_MSG:
+            HandleTerminateApplicationTimeOut(event->GetParam());
+            break;
+        default:
+            break;
+    }
+}
+
+void AppMgrServiceInner::SetEventHandler(const std::shared_ptr<AMSEventHandler> &handler)
+{
+    eventHandler_ = handler;
+}
+
+void AppMgrServiceInner::HandleAbilityAttachTimeOut(const sptr<IRemoteObject> &token)
+{
+    APP_LOGI("%{public}s called", __func__);
+    if (!appRunningManager_) {
+        APP_LOGE("appRunningManager_ is nullptr");
+        return;
+    }
+    appRunningManager_->HandleAbilityAttachTimeOut(token);
+}
+
+void AppMgrServiceInner::HandleTerminateApplicationTimeOut(const int64_t eventId)
+{
+    APP_LOGI("%{public}s called", __func__);
+    if (!appRunningManager_) {
+        APP_LOGE("appRunningManager_ is nullptr");
+        return;
+    }
+    auto appRecord = appRunningManager_->GetAppRunningRecord(eventId);
+    if (!appRecord) {
+        APP_LOGE("appRecord is nullptr");
+        return;
+    }
+    appRecord->SetState(ApplicationState::APP_STATE_TERMINATED);
+    OptimizerAppStateChanged(appRecord, ApplicationState::APP_STATE_BACKGROUND);
+    appRecord->RemoveAppDeathRecipient();
+    OnAppStateChanged(appRecord, ApplicationState::APP_STATE_TERMINATED);
+    pid_t pid = appRecord->GetPriorityObject()->GetPid();
+    if (pid > 0) {
+        int32_t result = KillProcessByPid(pid);
+        if (result < 0) {
+            APP_LOGE("KillProcessByAbilityToken kill process is fail");
+            return;
+        }
+    }
+    appRunningManager_->RemoveAppRunningRecordById(appRecord->GetRecordId());
+    RemoveAppFromRecentListById(appRecord->GetRecordId());
+}
+
+int AppMgrServiceInner::CompelVerifyPermission(const std::string &permission, int pid, int uid, std::string &message)
+{
+    APP_LOGI("%{public}s called", __func__);
+    message = ENUM_TO_STRING(PERMISSION_NOT_GRANTED);
+    if (!remoteClientManager_) {
+        APP_LOGE("%{public}s remoteClientManager_ is nullptr", __func__);
+        return ERR_NO_INIT;
+    }
+    if (permission.empty()) {
+        APP_LOGI("permission is empty, PERMISSION_GRANTED");
+        message = ENUM_TO_STRING(PERMISSION_GRANTED);
+        return ERR_OK;
+    }
+    if (pid == getpid()) {
+        APP_LOGI("pid is my pid, PERMISSION_GRANTED");
+        message = ENUM_TO_STRING(PERMISSION_GRANTED);
+        return ERR_OK;
+    }
+    auto appRecord = GetAppRunningRecordByPid(pid);
+    if (!appRecord) {
+        APP_LOGE("%{public}s app record is nullptr", __func__);
+        return PERMISSION_NOT_GRANTED;
+    }
+    auto bundleName = appRecord->GetBundleName();
+    auto bundleMgr = remoteClientManager_->GetBundleManager();
+    if (bundleMgr == nullptr) {
+        APP_LOGE("%{public}s GetBundleManager fail", __func__);
+        return ERR_NO_INIT;
+    }
+    auto bmsUid = bundleMgr->GetUidByBundleName(bundleName, 0);
+    if (bmsUid == ROOT_UID || bmsUid == SYSTEM_UID) {
+        APP_LOGI("uid is root or system, PERMISSION_GRANTED");
+        message = ENUM_TO_STRING(PERMISSION_GRANTED);
+        return ERR_OK;
+    }
+    if (bmsUid != uid) {
+        APP_LOGI("check uid != bms uid, PERMISSION_NOT_GRANTED");
+        return PERMISSION_NOT_GRANTED;
+    }
+    auto result = bundleMgr->CheckPermission(bundleName, permission);
+    if (result != PERMISSION_GRANTED) {
+        return PERMISSION_NOT_GRANTED;
+    }
+    message = ENUM_TO_STRING(PERMISSION_GRANTED);
+    return ERR_OK;
+}
 }  // namespace AppExecFwk
 }  // namespace OHOS

@@ -22,8 +22,8 @@ namespace OHOS {
 namespace AppExecFwk {
 
 AMSEventHandler::AMSEventHandler(
-    const std::shared_ptr<EventRunner> &runner, const std::shared_ptr<AppMgrServiceInner> &ams)
-    : EventHandler(runner), ams_(ams)
+    const std::shared_ptr<EventRunner> &runner, const std::weak_ptr<AppMgrServiceInner> &appMgr)
+    : EventHandler(runner), appMgr_(appMgr)
 {
     APP_LOGI("instance created");
 }
@@ -33,8 +33,20 @@ AMSEventHandler::~AMSEventHandler()
     APP_LOGI("instance destroyed");
 }
 
-void AMSEventHandler::ProcessEvent([[maybe_unused]] const InnerEvent::Pointer &event)
-{}
+void AMSEventHandler::ProcessEvent(const InnerEvent::Pointer &event)
+{
+    if (event == nullptr) {
+        APP_LOGE("AppEventHandler::ProcessEvent::parameter error");
+        return;
+    }
 
+    auto appManager = appMgr_.lock();
+    if (!appManager) {
+        APP_LOGE("%{public}s, app manager is nullptr", __func__);
+        return;
+    }
+    appManager->HandleTimeOut(event);
+    // this->PostTask([&event, &appManager]() { appManager->HandleTimeOut(event); });
+}
 }  // namespace AppExecFwk
 }  // namespace OHOS

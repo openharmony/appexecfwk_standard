@@ -24,31 +24,25 @@
 namespace OHOS {
 namespace AppExecFwk {
 
+namespace {
+
+const std::string JSON_KEY_PROCESSNAME = "processName";
+const std::string JSON_KEY_PID = "pid";
+const std::string JSON_KEY_STATE = "state";
+}  // namespace
+
 bool RunningProcessInfo::ReadFromParcel(Parcel &parcel)
 {
-    int32_t processInfoSize = parcel.ReadInt32();
-    for (int32_t i = 0; i < processInfoSize; i++) {
-        std::unique_ptr<AppProcessInfo> appProcessInfo(parcel.ReadParcelable<AppProcessInfo>());
-        if (!appProcessInfo) {
-            APP_LOGE("ReadParcelable<appProcessInfo> failed");
-            return false;
-        }
-        appProcessInfos.emplace_back(*appProcessInfo);
-    }
-    return true;
-}
-
-bool RunningProcessInfo::Marshalling(Parcel &parcel) const
-{
-    size_t appProcessInfoSize = appProcessInfos.size();
-    if (!parcel.WriteInt32(appProcessInfoSize)) {
-        return false;
-    }
-    for (size_t i = 0; i < appProcessInfoSize; i++) {
-        if (!parcel.WriteParcelable(&appProcessInfos[i])) {
-            return false;
-        }
-    }
+    processName_ = Str16ToStr8(parcel.ReadString16());
+    int32_t typeData;
+    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, typeData);
+    pid_ = static_cast<int32_t>(typeData);
+    int32_t uidData;
+    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, uidData);
+    uid_ = static_cast<int32_t>(uidData);
+    int32_t stateData;
+    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, stateData);
+    state_ = static_cast<AppProcessState>(stateData);
     return true;
 }
 
@@ -61,6 +55,15 @@ RunningProcessInfo *RunningProcessInfo::Unmarshalling(Parcel &parcel)
         info = nullptr;
     }
     return info;
+}
+
+bool RunningProcessInfo::Marshalling(Parcel &parcel) const
+{
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(processName_));
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, static_cast<int32_t>(pid_));
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, static_cast<int32_t>(uid_));
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, static_cast<int32_t>(state_));
+    return true;
 }
 
 }  // namespace AppExecFwk

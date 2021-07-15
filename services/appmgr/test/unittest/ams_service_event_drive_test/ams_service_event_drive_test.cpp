@@ -70,7 +70,7 @@ void AmsServiceEventDriveTest::TearDown()
  * EnvConditions: Mobile that can run ohos test framework
  * CaseDescription: Verify if post AttachApplication task success
  */
-HWTEST_F(AmsServiceEventDriveTest, EventDrive_001, TestSize.Level0)
+HWTEST_F(AmsServiceEventDriveTest, EventDrive_001, TestSize.Level1)
 {
     APP_LOGI("ams_service_event_drive_test_001 start");
 
@@ -99,7 +99,7 @@ HWTEST_F(AmsServiceEventDriveTest, EventDrive_001, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework
  * CaseDescription: Verify if post ApplicationForegrounded task success
  */
-HWTEST_F(AmsServiceEventDriveTest, EventDrive_002, TestSize.Level0)
+HWTEST_F(AmsServiceEventDriveTest, EventDrive_002, TestSize.Level1)
 {
     APP_LOGI("ams_service_event_drive_test_002 start");
 
@@ -126,7 +126,7 @@ HWTEST_F(AmsServiceEventDriveTest, EventDrive_002, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework
  * CaseDescription: Verify if post ApplicationBackgrounded task success
  */
-HWTEST_F(AmsServiceEventDriveTest, EventDrive_003, TestSize.Level0)
+HWTEST_F(AmsServiceEventDriveTest, EventDrive_003, TestSize.Level1)
 {
     APP_LOGI("ams_service_event_drive_test_003 start");
 
@@ -152,7 +152,7 @@ HWTEST_F(AmsServiceEventDriveTest, EventDrive_003, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework
  * CaseDescription: Verify if post ApplicationTerminated task success
  */
-HWTEST_F(AmsServiceEventDriveTest, EventDrive_004, TestSize.Level0)
+HWTEST_F(AmsServiceEventDriveTest, EventDrive_004, TestSize.Level1)
 {
     APP_LOGI("ams_service_event_drive_test_004 start");
 
@@ -178,7 +178,7 @@ HWTEST_F(AmsServiceEventDriveTest, EventDrive_004, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework
  * CaseDescription: Verify if post AbilityCleaned task success
  */
-HWTEST_F(AmsServiceEventDriveTest, EventDrive_005, TestSize.Level0)
+HWTEST_F(AmsServiceEventDriveTest, EventDrive_005, TestSize.Level1)
 {
     APP_LOGI("ams_service_event_drive_test_005 start");
 
@@ -204,7 +204,7 @@ HWTEST_F(AmsServiceEventDriveTest, EventDrive_005, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework
  * CaseDescription: Verify if post ClearUpApplicationData task success
  */
-HWTEST_F(AmsServiceEventDriveTest, EventDrive_006, TestSize.Level0)
+HWTEST_F(AmsServiceEventDriveTest, EventDrive_006, TestSize.Level1)
 {
     APP_LOGI("ams_service_event_drive_test_006 start");
 
@@ -230,7 +230,7 @@ HWTEST_F(AmsServiceEventDriveTest, EventDrive_006, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework
  * CaseDescription: Verify if post IsBackgroundRunningRestricted task success
  */
-HWTEST_F(AmsServiceEventDriveTest, EventDrive_007, TestSize.Level0)
+HWTEST_F(AmsServiceEventDriveTest, EventDrive_007, TestSize.Level1)
 {
     APP_LOGI("ams_service_event_drive_test_007 start");
 
@@ -254,7 +254,7 @@ HWTEST_F(AmsServiceEventDriveTest, EventDrive_007, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework
  * CaseDescription: Verify if post IsBackgroundRunningRestricted task success
  */
-HWTEST_F(AmsServiceEventDriveTest, EventDrive_008, TestSize.Level0)
+HWTEST_F(AmsServiceEventDriveTest, EventDrive_008, TestSize.Level1)
 {
     APP_LOGI("ams_service_event_drive_test_008 start");
 
@@ -264,7 +264,7 @@ HWTEST_F(AmsServiceEventDriveTest, EventDrive_008, TestSize.Level0)
 
     EXPECT_CALL(*innerService, GetAllRunningProcesses(_)).WillOnce(Return(0));
 
-    std::shared_ptr<RunningProcessInfo> runningProcessInfo = std::make_shared<RunningProcessInfo>();
+    std::vector<RunningProcessInfo> runningProcessInfo;
     EXPECT_EQ(0, appMgrService_->GetAllRunningProcesses(runningProcessInfo));
 
     APP_LOGI("ams_service_event_drive_test_008 end");
@@ -278,7 +278,7 @@ HWTEST_F(AmsServiceEventDriveTest, EventDrive_008, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework
  * CaseDescription: Verify if AttachApplication act normal without initialize AppMgrService
  */
-HWTEST_F(AmsServiceEventDriveTest, EventDrive_009, TestSize.Level0)
+HWTEST_F(AmsServiceEventDriveTest, EventDrive_009, TestSize.Level1)
 {
     APP_LOGI("ams_service_event_drive_test_009 start");
 
@@ -301,7 +301,7 @@ HWTEST_F(AmsServiceEventDriveTest, EventDrive_009, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework
  * CaseDescription: Verify if ApplicationForegrounded act normal without initialize AppMgrService
  */
-HWTEST_F(AmsServiceEventDriveTest, EventDrive_010, TestSize.Level0)
+HWTEST_F(AmsServiceEventDriveTest, EventDrive_010, TestSize.Level1)
 {
     APP_LOGI("ams_service_event_drive_test_010 start");
 
@@ -324,7 +324,7 @@ HWTEST_F(AmsServiceEventDriveTest, EventDrive_010, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework
  * CaseDescription: Verify if ApplicationBackgrounded act normal without initialize AppMgrService
  */
-HWTEST_F(AmsServiceEventDriveTest, EventDrive_011, TestSize.Level0)
+HWTEST_F(AmsServiceEventDriveTest, EventDrive_011, TestSize.Level1)
 {
     APP_LOGI("ams_service_event_drive_test_011 start");
 
@@ -347,7 +347,7 @@ HWTEST_F(AmsServiceEventDriveTest, EventDrive_011, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework
  * CaseDescription: Verify if ApplicationTerminated act normal without initialize AppMgrService
  */
-HWTEST_F(AmsServiceEventDriveTest, EventDrive_012, TestSize.Level0)
+HWTEST_F(AmsServiceEventDriveTest, EventDrive_012, TestSize.Level1)
 {
     APP_LOGI("ams_service_event_drive_test_012 start");
 
@@ -370,7 +370,7 @@ HWTEST_F(AmsServiceEventDriveTest, EventDrive_012, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework
  * CaseDescription: Verify if AbilityCleaned act normal without initialize AppMgrService
  */
-HWTEST_F(AmsServiceEventDriveTest, EventDrive_013, TestSize.Level0)
+HWTEST_F(AmsServiceEventDriveTest, EventDrive_013, TestSize.Level1)
 {
     APP_LOGI("ams_service_event_drive_test_013 start");
 
@@ -393,7 +393,7 @@ HWTEST_F(AmsServiceEventDriveTest, EventDrive_013, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework
  * CaseDescription: Verify if ClearUpApplicationData act normal without initialize AppMgrService
  */
-HWTEST_F(AmsServiceEventDriveTest, EventDrive_014, TestSize.Level0)
+HWTEST_F(AmsServiceEventDriveTest, EventDrive_014, TestSize.Level1)
 {
     APP_LOGI("ams_service_event_drive_test_014 start");
 
@@ -416,7 +416,7 @@ HWTEST_F(AmsServiceEventDriveTest, EventDrive_014, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework
  * CaseDescription: Verify if IsBackgroundRunningRestricted act normal after AppMgrService stopped
  */
-HWTEST_F(AmsServiceEventDriveTest, EventDrive_015, TestSize.Level0)
+HWTEST_F(AmsServiceEventDriveTest, EventDrive_015, TestSize.Level1)
 {
     APP_LOGI("ams_service_event_drive_test_015 start");
 
@@ -437,14 +437,14 @@ HWTEST_F(AmsServiceEventDriveTest, EventDrive_015, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework
  * CaseDescription: Verify if GetAllRunningProcesses act normal after AppMgrService stopped
  */
-HWTEST_F(AmsServiceEventDriveTest, EventDrive_016, TestSize.Level0)
+HWTEST_F(AmsServiceEventDriveTest, EventDrive_016, TestSize.Level1)
 {
     APP_LOGI("ams_service_event_drive_test_016 start");
 
     std::shared_ptr<MockAppMgrServiceInner> innerService = std::make_shared<MockAppMgrServiceInner>();
     appMgrService_->SetInnerService(innerService);
 
-    std::shared_ptr<RunningProcessInfo> runningProcessInfo = std::make_shared<RunningProcessInfo>();
+    std::vector<RunningProcessInfo> runningProcessInfo;
     EXPECT_EQ(OHOS::ERR_INVALID_OPERATION, appMgrService_->GetAllRunningProcesses(runningProcessInfo));
 
     APP_LOGI("ams_service_event_drive_test_016 end");
@@ -458,7 +458,7 @@ HWTEST_F(AmsServiceEventDriveTest, EventDrive_016, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework
  * CaseDescription: Verify if AttachApplication act normal after AppMgrService stopped
  */
-HWTEST_F(AmsServiceEventDriveTest, EventDrive_017, TestSize.Level0)
+HWTEST_F(AmsServiceEventDriveTest, EventDrive_017, TestSize.Level1)
 {
     APP_LOGI("ams_service_event_drive_test_017 start");
 
@@ -483,7 +483,7 @@ HWTEST_F(AmsServiceEventDriveTest, EventDrive_017, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework
  * CaseDescription: Verify if ApplicationForegrounded act normal after AppMgrService stopped
  */
-HWTEST_F(AmsServiceEventDriveTest, EventDrive_018, TestSize.Level0)
+HWTEST_F(AmsServiceEventDriveTest, EventDrive_018, TestSize.Level1)
 {
     APP_LOGI("ams_service_event_drive_test_018 start");
 
@@ -508,7 +508,7 @@ HWTEST_F(AmsServiceEventDriveTest, EventDrive_018, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework
  * CaseDescription: Verify if ApplicationBackgrounded act normal after AppMgrService stopped
  */
-HWTEST_F(AmsServiceEventDriveTest, EventDrive_019, TestSize.Level0)
+HWTEST_F(AmsServiceEventDriveTest, EventDrive_019, TestSize.Level1)
 {
     APP_LOGI("ams_service_event_drive_test_019 start");
 
@@ -533,7 +533,7 @@ HWTEST_F(AmsServiceEventDriveTest, EventDrive_019, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework
  * CaseDescription: Verify if ApplicationTerminated act normal after AppMgrService stopped
  */
-HWTEST_F(AmsServiceEventDriveTest, EventDrive_020, TestSize.Level0)
+HWTEST_F(AmsServiceEventDriveTest, EventDrive_020, TestSize.Level1)
 {
     APP_LOGI("ams_service_event_drive_test_020 start");
 
@@ -558,7 +558,7 @@ HWTEST_F(AmsServiceEventDriveTest, EventDrive_020, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework
  * CaseDescription: Verify if AbilityCleaned act normal after AppMgrService stopped
  */
-HWTEST_F(AmsServiceEventDriveTest, EventDrive_021, TestSize.Level0)
+HWTEST_F(AmsServiceEventDriveTest, EventDrive_021, TestSize.Level1)
 {
     APP_LOGI("ams_service_event_drive_test_021 start");
     std::shared_ptr<MockAppMgrServiceInner> innerService = std::make_shared<MockAppMgrServiceInner>();
@@ -582,7 +582,7 @@ HWTEST_F(AmsServiceEventDriveTest, EventDrive_021, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework
  * CaseDescription: Verify if ClearUpApplicationData act normal after AppMgrService stopped
  */
-HWTEST_F(AmsServiceEventDriveTest, EventDrive_022, TestSize.Level0)
+HWTEST_F(AmsServiceEventDriveTest, EventDrive_022, TestSize.Level1)
 {
     APP_LOGI("ams_service_event_drive_test_022 start");
     std::shared_ptr<MockAppMgrServiceInner> innerService = std::make_shared<MockAppMgrServiceInner>();
@@ -606,7 +606,7 @@ HWTEST_F(AmsServiceEventDriveTest, EventDrive_022, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework
  * CaseDescription: Verify if IsBackgroundRunningRestricted act normal after AppMgrService stopped
  */
-HWTEST_F(AmsServiceEventDriveTest, EventDrive_023, TestSize.Level0)
+HWTEST_F(AmsServiceEventDriveTest, EventDrive_023, TestSize.Level1)
 {
     APP_LOGI("ams_service_event_drive_test_023 start");
     std::shared_ptr<MockAppMgrServiceInner> innerService = std::make_shared<MockAppMgrServiceInner>();
@@ -628,7 +628,7 @@ HWTEST_F(AmsServiceEventDriveTest, EventDrive_023, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework
  * CaseDescription: Verify if GetAllRunningProcesses act normal after AppMgrService stopped
  */
-HWTEST_F(AmsServiceEventDriveTest, EventDrive_024, TestSize.Level0)
+HWTEST_F(AmsServiceEventDriveTest, EventDrive_024, TestSize.Level1)
 {
     APP_LOGI("ams_service_event_drive_test_024 start");
     std::shared_ptr<MockAppMgrServiceInner> innerService = std::make_shared<MockAppMgrServiceInner>();
@@ -638,7 +638,7 @@ HWTEST_F(AmsServiceEventDriveTest, EventDrive_024, TestSize.Level0)
 
     appMgrService_->SetInnerService(innerService);
 
-    std::shared_ptr<RunningProcessInfo> runningProcessInfo = std::make_shared<RunningProcessInfo>();
+    std::vector<RunningProcessInfo> runningProcessInfo;
     EXPECT_EQ(OHOS::ERR_INVALID_OPERATION, appMgrService_->GetAllRunningProcesses(runningProcessInfo));
 
     APP_LOGI("ams_service_event_drive_test_024 end");
@@ -652,7 +652,7 @@ HWTEST_F(AmsServiceEventDriveTest, EventDrive_024, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework
  * CaseDescription: Verify if post application from background to foreground task act normal
  */
-HWTEST_F(AmsServiceEventDriveTest, EventDrive_025, TestSize.Level0)
+HWTEST_F(AmsServiceEventDriveTest, EventDrive_025, TestSize.Level1)
 {
     APP_LOGI("ams_service_event_drive_test_025 start");
     std::shared_ptr<MockAppMgrServiceInner> innerService = std::make_shared<MockAppMgrServiceInner>();
@@ -681,7 +681,7 @@ HWTEST_F(AmsServiceEventDriveTest, EventDrive_025, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework
  * CaseDescription: Verify if post application from foreground to background task act normal
  */
-HWTEST_F(AmsServiceEventDriveTest, EventDrive_026, TestSize.Level0)
+HWTEST_F(AmsServiceEventDriveTest, EventDrive_026, TestSize.Level1)
 {
     APP_LOGI("ams_service_event_drive_test_026 start");
     std::shared_ptr<MockAppMgrServiceInner> innerService = std::make_shared<MockAppMgrServiceInner>();
@@ -710,7 +710,7 @@ HWTEST_F(AmsServiceEventDriveTest, EventDrive_026, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework
  * CaseDescription: Verify if post application from background to terminate task act normal
  */
-HWTEST_F(AmsServiceEventDriveTest, EventDrive_027, TestSize.Level0)
+HWTEST_F(AmsServiceEventDriveTest, EventDrive_027, TestSize.Level1)
 {
     APP_LOGI("ams_service_event_drive_test_027 start");
     std::shared_ptr<MockAppMgrServiceInner> innerService = std::make_shared<MockAppMgrServiceInner>();
@@ -739,7 +739,7 @@ HWTEST_F(AmsServiceEventDriveTest, EventDrive_027, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework
  * CaseDescription: Verify if post application from foreground to terminated task act normal
  */
-HWTEST_F(AmsServiceEventDriveTest, EventDrive_028, TestSize.Level0)
+HWTEST_F(AmsServiceEventDriveTest, EventDrive_028, TestSize.Level1)
 {
     APP_LOGI("ams_service_event_drive_test_028 start");
     std::shared_ptr<MockAppMgrServiceInner> innerService = std::make_shared<MockAppMgrServiceInner>();
@@ -768,7 +768,7 @@ HWTEST_F(AmsServiceEventDriveTest, EventDrive_028, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework
  * CaseDescription: Verify if post application from terminate to foreground task act normal
  */
-HWTEST_F(AmsServiceEventDriveTest, EventDrive_029, TestSize.Level0)
+HWTEST_F(AmsServiceEventDriveTest, EventDrive_029, TestSize.Level1)
 {
     APP_LOGI("ams_service_event_drive_test_029 start");
     std::shared_ptr<MockAppMgrServiceInner> innerService = std::make_shared<MockAppMgrServiceInner>();
@@ -797,7 +797,7 @@ HWTEST_F(AmsServiceEventDriveTest, EventDrive_029, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Verify if post application from terminate to background task act normal
  */
-HWTEST_F(AmsServiceEventDriveTest, EventDrive_030, TestSize.Level0)
+HWTEST_F(AmsServiceEventDriveTest, EventDrive_030, TestSize.Level1)
 {
     APP_LOGI("ams_service_event_drive_test_030 start");
     std::shared_ptr<MockAppMgrServiceInner> innerService = std::make_shared<MockAppMgrServiceInner>();
@@ -826,7 +826,7 @@ HWTEST_F(AmsServiceEventDriveTest, EventDrive_030, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework
  * CaseDescription: Verify if post AddAppDeathRecipient task success
  */
-HWTEST_F(AmsServiceEventDriveTest, EventDrive_034, TestSize.Level0)
+HWTEST_F(AmsServiceEventDriveTest, EventDrive_034, TestSize.Level1)
 {
     APP_LOGI("ams_service_event_drive_test_034 start");
     std::shared_ptr<MockAppMgrServiceInner> innerService = std::make_shared<MockAppMgrServiceInner>();
@@ -850,7 +850,7 @@ HWTEST_F(AmsServiceEventDriveTest, EventDrive_034, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework
  * CaseDescription: Verify if AddAppDeathRecipient act normal without initialize AppMgrService
  */
-HWTEST_F(AmsServiceEventDriveTest, EventDrive_035, TestSize.Level0)
+HWTEST_F(AmsServiceEventDriveTest, EventDrive_035, TestSize.Level1)
 {
     APP_LOGI("ams_service_event_drive_test_035 start");
 
@@ -873,7 +873,7 @@ HWTEST_F(AmsServiceEventDriveTest, EventDrive_035, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework
  * CaseDescription: Verify if AddAppDeathRecipient act normal after AppMgrService stopped
  */
-HWTEST_F(AmsServiceEventDriveTest, EventDrive_036, TestSize.Level0)
+HWTEST_F(AmsServiceEventDriveTest, EventDrive_036, TestSize.Level1)
 {
     APP_LOGI("ams_service_event_drive_test_036 start");
 
@@ -898,7 +898,7 @@ HWTEST_F(AmsServiceEventDriveTest, EventDrive_036, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework
  * CaseDescription: Verify if QueryServiceState act normal
  */
-HWTEST_F(AmsServiceEventDriveTest, EventDrive_037, TestSize.Level0)
+HWTEST_F(AmsServiceEventDriveTest, EventDrive_037, TestSize.Level1)
 {
     APP_LOGI("ams_service_event_drive_test_037 start");
 
@@ -922,7 +922,7 @@ HWTEST_F(AmsServiceEventDriveTest, EventDrive_037, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework
  * CaseDescription: Verify if QueryServiceState act normal without initialize AppMgrService
  */
-HWTEST_F(AmsServiceEventDriveTest, EventDrive_038, TestSize.Level0)
+HWTEST_F(AmsServiceEventDriveTest, EventDrive_038, TestSize.Level1)
 {
     APP_LOGI("ams_service_event_drive_test_038 start");
 
@@ -944,7 +944,7 @@ HWTEST_F(AmsServiceEventDriveTest, EventDrive_038, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework
  * CaseDescription: Verify if QueryServiceState act normal after AppMgrService stopped
  */
-HWTEST_F(AmsServiceEventDriveTest, EventDrive_039, TestSize.Level0)
+HWTEST_F(AmsServiceEventDriveTest, EventDrive_039, TestSize.Level1)
 {
     APP_LOGI("ams_service_event_drive_test_039 start");
 

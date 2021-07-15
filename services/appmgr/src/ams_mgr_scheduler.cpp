@@ -134,6 +134,17 @@ void AmsMgrScheduler::KillProcessByAbilityToken(const sptr<IRemoteObject> &token
     amsHandler_->PostTask(killProcessByAbilityTokenFunc, TASK_KILL_PROCESS_BY_ABILITYTOKEN);
 }
 
+void AmsMgrScheduler::AbilityAttachTimeOut(const sptr<IRemoteObject> &token)
+{
+    APP_LOGI("AmsMgrScheduler AttachTimeOut begin");
+    if (!IsReady()) {
+        return;
+    }
+    auto task = [=]() { amsMgrServiceInner_->HandleAbilityAttachTimeOut(token); };
+    amsHandler_->PostTask(task);
+    APP_LOGI("AmsMgrScheduler AttachTimeOut end");
+}
+
 int32_t AmsMgrScheduler::KillApplication(const std::string &bundleName)
 {
     if (!IsReady()) {
@@ -155,5 +166,12 @@ bool AmsMgrScheduler::IsReady() const
     return true;
 }
 
+int AmsMgrScheduler::CompelVerifyPermission(const std::string &permission, int pid, int uid, std::string &message)
+{
+    if (!IsReady()) {
+        return ERR_INVALID_OPERATION;
+    }
+    return amsMgrServiceInner_->CompelVerifyPermission(permission, pid, uid, message);
+}
 }  // namespace AppExecFwk
 }  // namespace OHOS

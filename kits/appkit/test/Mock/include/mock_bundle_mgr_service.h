@@ -43,6 +43,10 @@ public:
     {
         return 0;
     }
+    virtual std::string GetAppIdByBundleName(const std::string &bundleName, const int userId) override
+    {
+        return "";
+    }
     virtual bool GetBundleNameForUid(const int uid, std::string &bundleName) override
     {
         return false;
@@ -101,6 +105,15 @@ public:
     {
         return true;
     }
+    MOCK_METHOD2(GetNameForUid, bool(const int uid, std::string &name));
+    MOCK_METHOD2(GetBundlesForUid, bool(const int uid, std::vector<std::string> &));
+    MOCK_METHOD2(SetAbilityEnabled, bool(const AbilityInfo &, bool));
+    MOCK_METHOD1(IsAbilityEnabled, bool(const AbilityInfo &));
+    MOCK_METHOD2(GetAbilityIcon, std::string(const std::string &bundleName, const std::string &className));
+    MOCK_METHOD1(RegisterAllPermissionsChanged, bool(const sptr<OnPermissionChangedCallback> &callback));
+    MOCK_METHOD2(RegisterPermissionsChanged,
+        bool(const std::vector<int> &uids, const sptr<OnPermissionChangedCallback> &callback));
+    MOCK_METHOD1(UnregisterPermissionsChanged, bool(const sptr<OnPermissionChangedCallback> &callback));
     void Wait()
     {
         sem_.Wait();
