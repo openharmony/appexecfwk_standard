@@ -127,11 +127,13 @@ ohos_shared_library("libbms") {
   sources = [
     "src/bundle_data_mgr.cpp",
     "src/bundle_data_storage.cpp",
+    "src/bundle_data_storage_database.cpp",
     "src/bundle_mgr_host_impl.cpp",
     "src/bundle_mgr_service.cpp",
     "src/bundle_mgr_service_event_handler.cpp",
     "src/bundle_scanner.cpp",
     "src/bundle_status_callback_death_recipient.cpp",
+    "src/kvstore_death_recipient_callback.cpp",
     "src/system_ability_helper.cpp",
   ]
 
@@ -160,6 +162,7 @@ ohos_shared_library("libbms") {
     "//base/security/permission/interfaces/innerkits/permission_standard/permissionsdk:libpermissionsdk_standard",
     "//foundation/aafwk/standard/interfaces/innerkits/base:base",
     "//foundation/aafwk/standard/interfaces/innerkits/want:want",
+    "//foundation/distributeddatamgr/distributeddatamgr/interfaces/innerkits/distributeddata:distributeddata_inner",
     "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
   ]

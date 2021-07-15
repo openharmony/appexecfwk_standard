@@ -49,8 +49,8 @@ static const std::string DUMP_STACK_LIST = "--stack-list";
 static const std::string DUMP_STACK = "--stack";
 static const std::string DUMP_MISSION = "--mission";
 static const std::string DUMP_TOP = "--top";
-constexpr int WAIT_TIME = 7 * 1000;
-constexpr int WAIT_LAUNCHER_OK = 25 * 1000;
+constexpr int WAIT_TIME = 3 * 1000;
+constexpr int WAIT_LAUNCHER_OK = 5 * 1000;
 static const std::string abilityStateOnStart = ":OnStart";
 static const std::string abilityStateOnStop = ":OnStop";
 static const std::string abilityStateOnActive = ":OnActive";
@@ -96,32 +96,44 @@ std::shared_ptr<AmsAppProcessManageTest::AppEventSubscriber> AmsAppProcessManage
 
 void AmsAppProcessManageTest::SetUpTestCase(void)
 {
+    GTEST_LOG_(INFO) << "void AmsAppProcessManageTest::SetUpTestCase(void)";
     std::vector<std::string> hapNames = GetBundleNames(hapNameBase, bundleNameSuffix);
     STAbilityUtil::InstallHaps(hapNames);
-    GTEST_LOG_(INFO) << "void AmsAppProcessManageTest::SetUpTestCase(void)";
+    SubscribeEvent();
+    appMs_ = STAbilityUtil::GetAppMgrService();
+    abilityMs_ = STAbilityUtil::GetAbilityManagerService();
+    if (appMs_) {
+        appMs_->SetAppFreezingTime(60);
+        int time = 0;
+        appMs_->GetAppFreezingTime(time);
+        std::cout << "appMs_->GetAppFreezingTime();" << time << std::endl;
+    }
 }
 
 void AmsAppProcessManageTest::TearDownTestCase(void)
 {
+    GTEST_LOG_(INFO) << "void AmsAppProcessManageTest::TearDownTestCase(void)";
+    CommonEventManager::UnSubscribeCommonEvent(subscriber_);
     std::vector<std::string> bundleNames = GetBundleNames(bundleNameBase, bundleNameSuffix);
     STAbilityUtil::UninstallBundle(bundleNames);
-    GTEST_LOG_(INFO) << "void AmsAppProcessManageTest::TearDownTestCase(void)";
 }
 
 void AmsAppProcessManageTest::SetUp(void)
 {
-    ClearSystem();
-    auto bundleNames = GetBundleNames(bundleNameBase, bundleNameSuffix);
-    STAbilityUtil::KillBundleProcess(bundleNames);
-    SubscribeEvent();
     GTEST_LOG_(INFO) << "void AmsAppProcessManageTest::SetUp(void)";
 }
 
 void AmsAppProcessManageTest::TearDown(void)
 {
-    CommonEventManager::UnSubscribeCommonEvent(subscriber_);
-    STAbilityUtil::CleanMsg(event_);
     GTEST_LOG_(INFO) << "void AmsAppProcessManageTest::TearDown(void)";
+    STAbilityUtil::RemoveStack(1, abilityMs_, WAIT_TIME, WAIT_LAUNCHER_OK);
+    std::vector<std::string> vecBundleName;
+    for (const auto &suffix : bundleNameSuffix) {
+        vecBundleName.push_back(bundleNameBase + suffix);
+    }
+    STAbilityUtil::KillBundleProcess(vecBundleName);
+
+    STAbilityUtil::CleanMsg(event_);
 }
 
 std::vector<std::string> AmsAppProcessManageTest::GetBundleNames(
@@ -200,7 +212,7 @@ HWTEST_F(AmsAppProcessManageTest, AMS_App_Process_0100, TestSize.Level1)
 
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName + abilityStateOnActive, abilityStateCountOne), 0);
 
-    AppProcessInfo pInfo = STAbilityUtil::GetAppProcessInfoByName(bundleName, appMs_);
+    RunningProcessInfo pInfo = STAbilityUtil::GetAppProcessInfoByName(bundleName, appMs_);
     EXPECT_TRUE(pInfo.pid_ > 0);
 
     GTEST_LOG_(INFO) << "AmsAppProcessManageTest AMS_App_Process_0100 end";
@@ -227,7 +239,7 @@ HWTEST_F(AmsAppProcessManageTest, AMS_App_Process_0200, TestSize.Level1)
     std::string bundleName2 = bundleNameBase + "B";
     std::string abilityName2 = abilityNameBase + "B1";
     Want wantEntity;
-    wantEntity.AddEntity(Want::FLAG_HW_HOME_INTENT_FROM_SYSTEM);
+    wantEntity.AddEntity(Want::FLAG_HOME_INTENT_FROM_SYSTEM);
     MAP_STR_STR params;
     params["targetBundle"] = bundleNameBase + "B";
     params["targetAbility"] = abilityNameBase + "B1";
@@ -245,14 +257,16 @@ HWTEST_F(AmsAppProcessManageTest, AMS_App_Process_0200, TestSize.Level1)
     STAbilityUtil::StartAbility(wantEntity, abilityMs_);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName2 + abilityStateOnBackground, abilityStateCountOne), 0);
     STAbilityUtil::CleanMsg(event_);
-    AppProcessInfo pInfo1 = STAbilityUtil::GetAppProcessInfoByName(bundleName, appMs_, WAIT_TIME);
+    RunningProcessInfo pInfo1 = STAbilityUtil::GetAppProcessInfoByName(bundleName, appMs_, WAIT_TIME);
     EXPECT_TRUE(pInfo1.pid_ > 0);
     EXPECT_EQ(AppProcessState::APP_STATE_BACKGROUND, pInfo1.state_);
-    AppProcessInfo pInfo2 = STAbilityUtil::GetAppProcessInfoByName(bundleName2, appMs_, WAIT_TIME);
+    RunningProcessInfo pInfo2 = STAbilityUtil::GetAppProcessInfoByName(bundleName2, appMs_, WAIT_TIME);
     EXPECT_TRUE(pInfo2.pid_ > 0);
     EXPECT_EQ(AppProcessState::APP_STATE_BACKGROUND, pInfo2.state_);
+    ShowDump();
 
     STAbilityUtil::StartAbility(want2, abilityMs_);
+    ShowDump();
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName2 + abilityStateOnActive, abilityStateCountTwo), 0);
     pInfo1 = STAbilityUtil::GetAppProcessInfoByName(bundleName, appMs_, WAIT_TIME);
     EXPECT_TRUE(pInfo1.pid_ > 0);
@@ -287,7 +301,7 @@ HWTEST_F(AmsAppProcessManageTest, AMS_App_Process_0300, TestSize.Level1)
     STAbilityUtil::StartAbility(want, abilityMs_);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName + abilityStateOnActive, abilityStateCountOne), 0);
 
-    AppProcessInfo pInfo = STAbilityUtil::GetAppProcessInfoByName(bundleName, appMs_);
+    RunningProcessInfo pInfo = STAbilityUtil::GetAppProcessInfoByName(bundleName, appMs_);
     EXPECT_TRUE(pInfo.pid_ > 0);
 
     want = STAbilityUtil::MakeWant("device", abilityName2, bundleName, params);
@@ -296,7 +310,7 @@ HWTEST_F(AmsAppProcessManageTest, AMS_App_Process_0300, TestSize.Level1)
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName2 + abilityStateOnActive, abilityStateCountOne), 0);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName + abilityStateOnBackground, abilityStateCountOne), 0);
 
-    AppProcessInfo pInfo2 = STAbilityUtil::GetAppProcessInfoByName(bundleName, appMs_);
+    RunningProcessInfo pInfo2 = STAbilityUtil::GetAppProcessInfoByName(bundleName, appMs_);
     EXPECT_EQ(pInfo.pid_, pInfo2.pid_);
 
     GTEST_LOG_(INFO) << "AmsAppProcessManageTest AMS_App_Process_0300 end";
@@ -322,12 +336,12 @@ HWTEST_F(AmsAppProcessManageTest, AMS_App_Process_0400, TestSize.Level1)
     STAbilityUtil::StartAbility(want, abilityMs_);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName + abilityStateOnActive, abilityStateCountOne), 0);
 
-    AppProcessInfo pInfo = STAbilityUtil::GetAppProcessInfoByName(bundleName, appMs_);
+    RunningProcessInfo pInfo = STAbilityUtil::GetAppProcessInfoByName(bundleName, appMs_);
     EXPECT_TRUE(pInfo.pid_ > 0);
 
     STAbilityUtil::KillApplication(bundleName, appMs_, WAIT_TIME);
 
-    AppProcessInfo pInfo2 = STAbilityUtil::GetAppProcessInfoByName(bundleName, appMs_);
+    RunningProcessInfo pInfo2 = STAbilityUtil::GetAppProcessInfoByName(bundleName, appMs_);
     EXPECT_EQ(0, pInfo2.pid_);
 
     std::vector<std::string> dumpInfo;
@@ -351,7 +365,7 @@ HWTEST_F(AmsAppProcessManageTest, AMS_App_Process_0500, TestSize.Level1)
     GTEST_LOG_(INFO) << "AmsAppProcessManageTest AMS_App_Process_0500 start";
 
     std::string bundleName = bundleNameBase + "A";
-    AppProcessInfo pInfo = STAbilityUtil::GetAppProcessInfoByName(bundleName, appMs_);
+    RunningProcessInfo pInfo = STAbilityUtil::GetAppProcessInfoByName(bundleName, appMs_);
     EXPECT_TRUE(pInfo.pid_ == 0);
 
     STAbilityUtil::KillApplication(bundleName, appMs_, WAIT_TIME);
@@ -382,14 +396,14 @@ HWTEST_F(AmsAppProcessManageTest, AMS_App_Process_0600, TestSize.Level1)
     STAbilityUtil::StartAbility(want, abilityMs_);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName + abilityStateOnActive, abilityStateCountOne), 0);
 
-    AppProcessInfo pInfo = STAbilityUtil::GetAppProcessInfoByName(bundleName, appMs_);
+    RunningProcessInfo pInfo = STAbilityUtil::GetAppProcessInfoByName(bundleName, appMs_, WAIT_TIME);
     EXPECT_TRUE(pInfo.pid_ > 0);
     Want want2 = STAbilityUtil::MakeWant("device", abilityName2, bundleName2, params);
     STAbilityUtil::StartAbility(want2, abilityMs_);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName2 + abilityStateOnActive, abilityStateCountOne), 0);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName + abilityStateOnBackground, abilityStateCountOne), 0);
 
-    AppProcessInfo pInfo2 = STAbilityUtil::GetAppProcessInfoByName(bundleName2, appMs_);
+    RunningProcessInfo pInfo2 = STAbilityUtil::GetAppProcessInfoByName(bundleName2, appMs_, WAIT_TIME);
     EXPECT_TRUE(pInfo2.pid_ > 0);
     EXPECT_TRUE(pInfo2.pid_ != pInfo.pid_);
 
@@ -418,7 +432,7 @@ HWTEST_F(AmsAppProcessManageTest, AMS_App_Process_0700, TestSize.Level1)
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName + abilityStateOnBackground, abilityStateCountOne), 0);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName + abilityStateOnStop, abilityStateCountOne), 0);
 
-    AppProcessInfo pInfo = STAbilityUtil::GetAppProcessInfoByName(bundleName, appMs_, WAIT_TIME);
+    RunningProcessInfo pInfo = STAbilityUtil::GetAppProcessInfoByName(bundleName, appMs_, WAIT_TIME);
     EXPECT_EQ(pInfo.pid_, 0);
 
     GTEST_LOG_(INFO) << "AmsAppProcessManageTest AMS_App_Process_0700 end";
@@ -446,11 +460,11 @@ HWTEST_F(AmsAppProcessManageTest, AMS_App_Process_0800, TestSize.Level1)
 
     // simulate ENTITY_HOME
     Want wantEntity;
-    wantEntity.AddEntity(Want::FLAG_HW_HOME_INTENT_FROM_SYSTEM);
+    wantEntity.AddEntity(Want::FLAG_HOME_INTENT_FROM_SYSTEM);
     STAbilityUtil::StartAbility(wantEntity, abilityMs_);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName + abilityStateOnBackground, abilityStateCountOne), 0);
 
-    AppProcessInfo pInfo = STAbilityUtil::GetAppProcessInfoByName(bundleName, appMs_, WAIT_TIME);
+    RunningProcessInfo pInfo = STAbilityUtil::GetAppProcessInfoByName(bundleName, appMs_, WAIT_TIME);
     EXPECT_EQ(AppProcessState::APP_STATE_BACKGROUND, pInfo.state_);
 
     GTEST_LOG_(INFO) << "AmsAppProcessManageTest AMS_App_Process_0800 end";
@@ -485,7 +499,7 @@ HWTEST_F(AmsAppProcessManageTest, AMS_App_Process_0900, TestSize.Level1)
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName2 + abilityStateOnActive, abilityStateCountOne), 0);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName + abilityStateOnBackground, abilityStateCountOne), 0);
 
-    AppProcessInfo pInfo = STAbilityUtil::GetAppProcessInfoByName(bundleName, appMs_, WAIT_TIME);
+    RunningProcessInfo pInfo = STAbilityUtil::GetAppProcessInfoByName(bundleName, appMs_, WAIT_TIME);
     EXPECT_EQ(AppProcessState::APP_STATE_BACKGROUND, pInfo.state_);
 
     GTEST_LOG_(INFO) << "AmsAppProcessManageTest AMS_App_Process_0900 end";
@@ -519,7 +533,7 @@ HWTEST_F(AmsAppProcessManageTest, AMS_App_Process_1000, TestSize.Level1)
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName2 + abilityStateOnActive, abilityStateCountOne), 0);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName + abilityStateOnBackground, abilityStateCountOne), 0);
 
-    AppProcessInfo pInfo = STAbilityUtil::GetAppProcessInfoByName(bundleName, appMs_, WAIT_TIME);
+    RunningProcessInfo pInfo = STAbilityUtil::GetAppProcessInfoByName(bundleName, appMs_, WAIT_TIME);
     EXPECT_EQ(AppProcessState::APP_STATE_BACKGROUND, pInfo.state_);
 
     GTEST_LOG_(INFO) << "AmsAppProcessManageTest AMS_App_Process_1000 end";
@@ -542,7 +556,7 @@ HWTEST_F(AmsAppProcessManageTest, AMS_App_Process_1100, TestSize.Level1)
     std::string bundleName = bundleNameBase + "A";
     std::string abilityName = abilityNameBase + "A1";
     MAP_STR_STR params;
-    AppProcessInfo pInfo = STAbilityUtil::GetAppProcessInfoByName(launcherBundle, appMs_);
+    RunningProcessInfo pInfo = STAbilityUtil::GetAppProcessInfoByName(launcherBundle, appMs_);
     EXPECT_EQ(AppProcessState::APP_STATE_FOREGROUND, pInfo.state_);
     Want want = STAbilityUtil::MakeWant("device", abilityName, bundleName, params);
     STAbilityUtil::StartAbility(want, abilityMs_);
@@ -552,7 +566,7 @@ HWTEST_F(AmsAppProcessManageTest, AMS_App_Process_1100, TestSize.Level1)
 
     // simulate ENTITY_HOME
     Want wantEntity;
-    wantEntity.AddEntity(Want::FLAG_HW_HOME_INTENT_FROM_SYSTEM);
+    wantEntity.AddEntity(Want::FLAG_HOME_INTENT_FROM_SYSTEM);
     STAbilityUtil::StartAbility(wantEntity, abilityMs_);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName + abilityStateOnBackground, abilityStateCountOne), 0);
 
@@ -592,7 +606,7 @@ HWTEST_F(AmsAppProcessManageTest, AMS_App_Process_1200, TestSize.Level1)
     STAbilityUtil::StartAbility(want, abilityMs_);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName + abilityStateOnActive, abilityStateCountOne), 0);
 
-    AppProcessInfo pInfo = STAbilityUtil::GetAppProcessInfoByName(bundleName, appMs_, WAIT_TIME);
+    RunningProcessInfo pInfo = STAbilityUtil::GetAppProcessInfoByName(bundleName, appMs_, WAIT_TIME);
     EXPECT_EQ(AppProcessState::APP_STATE_FOREGROUND, pInfo.state_);
 
     STAbilityUtil::KillApplication(bundleName, appMs_, WAIT_TIME);
@@ -600,7 +614,7 @@ HWTEST_F(AmsAppProcessManageTest, AMS_App_Process_1200, TestSize.Level1)
     STAbilityUtil::StartAbility(want, abilityMs_);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName + abilityStateOnActive, abilityStateCountOne), 0);
 
-    AppProcessInfo pInfo2 = STAbilityUtil::GetAppProcessInfoByName(bundleName, appMs_, WAIT_TIME);
+    RunningProcessInfo pInfo2 = STAbilityUtil::GetAppProcessInfoByName(bundleName, appMs_, WAIT_TIME);
     EXPECT_EQ(AppProcessState::APP_STATE_FOREGROUND, pInfo2.state_);
     // new process
     EXPECT_NE(pInfo.pid_, pInfo2.pid_);
@@ -636,15 +650,15 @@ HWTEST_F(AmsAppProcessManageTest, AMS_App_Process_1300, TestSize.Level1)
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName2 + abilityStateOnActive, abilityStateCountOne), 0);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName + abilityStateOnBackground, abilityStateCountOne), 0);
 
-    AppProcessInfo pInfo = STAbilityUtil::GetAppProcessInfoByName(bundleName, appMs_);
+    RunningProcessInfo pInfo = STAbilityUtil::GetAppProcessInfoByName(bundleName, appMs_, WAIT_TIME);
     EXPECT_EQ(AppProcessState::APP_STATE_BACKGROUND, pInfo.state_);
 
     STAbilityUtil::KillApplication(bundleName, appMs_);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName2 + abilityStateOnStop, abilityStateCountOne), 0);
 
-    AppProcessInfo pInfo2 = STAbilityUtil::GetAppProcessInfoByName(bundleName, appMs_);
+    RunningProcessInfo pInfo2 = STAbilityUtil::GetAppProcessInfoByName(bundleName, appMs_, WAIT_TIME);
     EXPECT_EQ(0, pInfo2.pid_);
-    AppProcessInfo pInfo1 = STAbilityUtil::GetAppProcessInfoByName(bundleName2, appMs_);
+    RunningProcessInfo pInfo1 = STAbilityUtil::GetAppProcessInfoByName(bundleName2, appMs_, WAIT_TIME);
     EXPECT_EQ(0, pInfo1.pid_);
 
     GTEST_LOG_(INFO) << "AmsAppProcessManageTest AMS_App_Process_1300 end";
@@ -667,12 +681,8 @@ HWTEST_F(AmsAppProcessManageTest, AMS_App_Process_1400, TestSize.Level1)
     Want want = STAbilityUtil::MakeWant("device", abilityName, bundleName, params);
     STAbilityUtil::StartAbility(want, abilityMs_, WAIT_TIME);
     // when app collapse in OnStart, app process should be terminated?
-    AppProcessInfo pInfo = STAbilityUtil::GetAppProcessInfoByName(bundleName, appMs_);
+    RunningProcessInfo pInfo = STAbilityUtil::GetAppProcessInfoByName(bundleName, appMs_, WAIT_TIME);
     EXPECT_EQ(0, pInfo.pid_);
-    // when app collapse in OnStart, ability record should be removed from stack?
-    int64_t abilityRecordId;
-    STAbilityUtil::GetTopAbilityRecordId(abilityRecordId, abilityMs_);
-    EXPECT_EQ(-1, abilityRecordId);
 
     GTEST_LOG_(INFO) << "AmsAppProcessManageTest AMS_App_Process_1400 end";
 }
@@ -716,10 +726,10 @@ HWTEST_F(AmsAppProcessManageTest, AMS_App_Process_1500, TestSize.Level1)
     STAbilityUtil::StartAbility(want1, abilityMs_);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName + abilityStateOnActive, abilityStateCountOne), 0);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName2 + abilityStateOnBackground, abilityStateCountOne), 0);
-    AppProcessInfo pInfo1 = STAbilityUtil::GetAppProcessInfoByName(bundleName, appMs_, WAIT_TIME);
+    RunningProcessInfo pInfo1 = STAbilityUtil::GetAppProcessInfoByName(bundleName, appMs_, WAIT_TIME);
     EXPECT_TRUE(pInfo1.pid_ > 0);
     EXPECT_EQ(AppProcessState::APP_STATE_FOREGROUND, pInfo1.state_);
-    AppProcessInfo pInfo2 = STAbilityUtil::GetAppProcessInfoByName(bundleName2, appMs_, WAIT_TIME);
+    RunningProcessInfo pInfo2 = STAbilityUtil::GetAppProcessInfoByName(bundleName2, appMs_, WAIT_TIME);
     EXPECT_TRUE(pInfo2.pid_ > 0);
     EXPECT_EQ(AppProcessState::APP_STATE_BACKGROUND, pInfo2.state_);
     STAbilityUtil::CleanMsg(event_);
@@ -781,10 +791,10 @@ HWTEST_F(AmsAppProcessManageTest, AMS_App_Process_1600, TestSize.Level1)
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName2 + abilityStateOnActive, abilityStateCountOne), 0);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName + abilityStateOnBackground, abilityStateCountOne), 0);
     STAbilityUtil::CleanMsg(event_);
-    AppProcessInfo pInfo1 = STAbilityUtil::GetAppProcessInfoByName(bundleName, appMs_, WAIT_TIME);
+    RunningProcessInfo pInfo1 = STAbilityUtil::GetAppProcessInfoByName(bundleName, appMs_, WAIT_TIME);
     EXPECT_TRUE(pInfo1.pid_ > 0);
     EXPECT_EQ(AppProcessState::APP_STATE_BACKGROUND, pInfo1.state_);
-    AppProcessInfo pInfo2 = STAbilityUtil::GetAppProcessInfoByName(bundleName2, appMs_, WAIT_TIME);
+    RunningProcessInfo pInfo2 = STAbilityUtil::GetAppProcessInfoByName(bundleName2, appMs_, WAIT_TIME);
     EXPECT_TRUE(pInfo2.pid_ > 0);
     EXPECT_EQ(AppProcessState::APP_STATE_FOREGROUND, pInfo2.state_);
 
@@ -821,7 +831,7 @@ HWTEST_F(AmsAppProcessManageTest, AMS_App_Process_1700, TestSize.Level1)
     std::string bundleName2 = bundleNameBase + "B";
     std::string abilityName2 = abilityNameBase + "B1";
     Want wantEntity;
-    wantEntity.AddEntity(Want::FLAG_HW_HOME_INTENT_FROM_SYSTEM);
+    wantEntity.AddEntity(Want::FLAG_HOME_INTENT_FROM_SYSTEM);
     MAP_STR_STR params;
     Want want1 = STAbilityUtil::MakeWant("device", abilityName, bundleName, params);
     Want want2 = STAbilityUtil::MakeWant("device", abilityName2, bundleName2, params);
@@ -836,9 +846,9 @@ HWTEST_F(AmsAppProcessManageTest, AMS_App_Process_1700, TestSize.Level1)
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName2 + abilityStateOnBackground, abilityStateCountOne), 0);
     STAbilityUtil::StartAbility(want1, abilityMs_);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName + abilityStateOnActive, abilityStateCountTwo), 0);
-    AppProcessInfo pInfo = STAbilityUtil::GetAppProcessInfoByName(bundleName, appMs_, WAIT_TIME);
+    RunningProcessInfo pInfo = STAbilityUtil::GetAppProcessInfoByName(bundleName, appMs_, WAIT_TIME);
     EXPECT_EQ(AppProcessState::APP_STATE_FOREGROUND, pInfo.state_);
-    AppProcessInfo pInfo2 = STAbilityUtil::GetAppProcessInfoByName(bundleName2, appMs_, WAIT_TIME);
+    RunningProcessInfo pInfo2 = STAbilityUtil::GetAppProcessInfoByName(bundleName2, appMs_, WAIT_TIME);
     EXPECT_EQ(AppProcessState::APP_STATE_BACKGROUND, pInfo2.state_);
     // new process
     EXPECT_NE(pInfo.pid_, pInfo2.pid_);
@@ -863,7 +873,7 @@ HWTEST_F(AmsAppProcessManageTest, AMS_App_Process_1800, TestSize.Level1)
     std::string bundleName2 = bundleNameBase + "B";
     std::string abilityName2 = abilityNameBase + "B1";
     Want wantEntity;
-    wantEntity.AddEntity(Want::FLAG_HW_HOME_INTENT_FROM_SYSTEM);
+    wantEntity.AddEntity(Want::FLAG_HOME_INTENT_FROM_SYSTEM);
     MAP_STR_STR params;
 
     Want want1 = STAbilityUtil::MakeWant("device", abilityName, bundleName, params);
@@ -880,9 +890,9 @@ HWTEST_F(AmsAppProcessManageTest, AMS_App_Process_1800, TestSize.Level1)
     STAbilityUtil::StartAbility(want2, abilityMs_);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName2 + abilityStateOnActive, abilityStateCountTwo), 0);
 
-    AppProcessInfo pInfo = STAbilityUtil::GetAppProcessInfoByName(bundleName2, appMs_, WAIT_TIME);
+    RunningProcessInfo pInfo = STAbilityUtil::GetAppProcessInfoByName(bundleName2, appMs_, WAIT_TIME);
     EXPECT_EQ(AppProcessState::APP_STATE_FOREGROUND, pInfo.state_);
-    AppProcessInfo pInfo2 = STAbilityUtil::GetAppProcessInfoByName(bundleName, appMs_, WAIT_TIME);
+    RunningProcessInfo pInfo2 = STAbilityUtil::GetAppProcessInfoByName(bundleName, appMs_, WAIT_TIME);
     EXPECT_EQ(AppProcessState::APP_STATE_BACKGROUND, pInfo2.state_);
     // new process
     EXPECT_NE(pInfo.pid_, pInfo2.pid_);
@@ -908,7 +918,7 @@ HWTEST_F(AmsAppProcessManageTest, AMS_App_Process_1900, TestSize.Level1)
     std::string abilityName2 = abilityNameBase + "B1";
     std::string abilityName3 = abilityNameBase + "A2";
     Want wantEntity;
-    wantEntity.AddEntity(Want::FLAG_HW_HOME_INTENT_FROM_SYSTEM);
+    wantEntity.AddEntity(Want::FLAG_HOME_INTENT_FROM_SYSTEM);
     MAP_STR_STR params;
 
     Want want1 = STAbilityUtil::MakeWant("device", abilityName, bundleName, params);
@@ -924,9 +934,9 @@ HWTEST_F(AmsAppProcessManageTest, AMS_App_Process_1900, TestSize.Level1)
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName2 + abilityStateOnBackground, abilityStateCountOne), 0);
     STAbilityUtil::StartAbility(want3, abilityMs_);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName2 + abilityStateOnActive, abilityStateCountTwo), 0);
-    AppProcessInfo pInfo = STAbilityUtil::GetAppProcessInfoByName(bundleName2, appMs_, WAIT_TIME);
+    RunningProcessInfo pInfo = STAbilityUtil::GetAppProcessInfoByName(bundleName2, appMs_, WAIT_TIME);
     EXPECT_EQ(AppProcessState::APP_STATE_FOREGROUND, pInfo.state_);
-    AppProcessInfo pInfo2 = STAbilityUtil::GetAppProcessInfoByName(bundleName, appMs_, WAIT_TIME);
+    RunningProcessInfo pInfo2 = STAbilityUtil::GetAppProcessInfoByName(bundleName, appMs_, WAIT_TIME);
     EXPECT_EQ(AppProcessState::APP_STATE_BACKGROUND, pInfo2.state_);
     // new process
     EXPECT_NE(pInfo.pid_, pInfo2.pid_);
@@ -952,7 +962,7 @@ HWTEST_F(AmsAppProcessManageTest, AMS_App_Process_2000, TestSize.Level1)
     std::string abilityName2 = abilityNameBase + "B1";
     std::string abilityName3 = abilityNameBase + "A2";
     Want wantEntity;
-    wantEntity.AddEntity(Want::FLAG_HW_HOME_INTENT_FROM_SYSTEM);
+    wantEntity.AddEntity(Want::FLAG_HOME_INTENT_FROM_SYSTEM);
     MAP_STR_STR params;
 
     Want want1 = STAbilityUtil::MakeWant("device", abilityName, bundleName, params);
@@ -969,9 +979,9 @@ HWTEST_F(AmsAppProcessManageTest, AMS_App_Process_2000, TestSize.Level1)
     STAbilityUtil::StartAbility(want3, abilityMs_);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName3 + abilityStateOnActive, abilityStateCountOne), 0);
 
-    AppProcessInfo pInfo = STAbilityUtil::GetAppProcessInfoByName(bundleName2, appMs_, WAIT_TIME);
+    RunningProcessInfo pInfo = STAbilityUtil::GetAppProcessInfoByName(bundleName2, appMs_, WAIT_TIME);
     EXPECT_EQ(AppProcessState::APP_STATE_BACKGROUND, pInfo.state_);
-    AppProcessInfo pInfo2 = STAbilityUtil::GetAppProcessInfoByName(bundleName, appMs_, WAIT_TIME);
+    RunningProcessInfo pInfo2 = STAbilityUtil::GetAppProcessInfoByName(bundleName, appMs_, WAIT_TIME);
     EXPECT_EQ(AppProcessState::APP_STATE_FOREGROUND, pInfo2.state_);
     // new process
     EXPECT_NE(pInfo.pid_, pInfo2.pid_);
@@ -996,7 +1006,7 @@ HWTEST_F(AmsAppProcessManageTest, AMS_App_Process_2100, TestSize.Level1)
     std::string bundleName2 = bundleNameBase + "B";
     std::string abilityName2 = abilityNameBase + "B1";
     Want wantEntity;
-    wantEntity.AddEntity(Want::FLAG_HW_HOME_INTENT_FROM_SYSTEM);
+    wantEntity.AddEntity(Want::FLAG_HOME_INTENT_FROM_SYSTEM);
     MAP_STR_STR params;
     Want want1 = STAbilityUtil::MakeWant("device", abilityName, bundleName, params);
     Want want2 = STAbilityUtil::MakeWant("device", abilityName2, bundleName2, params);
@@ -1010,9 +1020,9 @@ HWTEST_F(AmsAppProcessManageTest, AMS_App_Process_2100, TestSize.Level1)
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName2 + abilityStateOnBackground, abilityStateCountOne), 0);
     STAbilityUtil::StartAbility(want1, abilityMs_);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName2 + abilityStateOnActive, abilityStateCountTwo), 0);
-    AppProcessInfo pInfo = STAbilityUtil::GetAppProcessInfoByName(bundleName, appMs_, WAIT_TIME);
+    RunningProcessInfo pInfo = STAbilityUtil::GetAppProcessInfoByName(bundleName, appMs_, WAIT_TIME);
     EXPECT_EQ(AppProcessState::APP_STATE_BACKGROUND, pInfo.state_);
-    AppProcessInfo pInfo2 = STAbilityUtil::GetAppProcessInfoByName(bundleName2, appMs_, WAIT_TIME);
+    RunningProcessInfo pInfo2 = STAbilityUtil::GetAppProcessInfoByName(bundleName2, appMs_, WAIT_TIME);
     EXPECT_EQ(AppProcessState::APP_STATE_FOREGROUND, pInfo2.state_);
     // new process
     EXPECT_NE(pInfo.pid_, pInfo2.pid_);

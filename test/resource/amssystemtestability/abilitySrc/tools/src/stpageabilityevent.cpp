@@ -112,6 +112,24 @@ int STPageAbilityEvent::GetOnNewWantCount()
     return onNewWantCount_;
 }
 
+int STPageAbilityEvent::GetOnCommandCount()
+{
+    onCommandCount_++;
+    return onCommandCount_;
+}
+
+int STPageAbilityEvent::GetOnConnectCount()
+{
+    onConnectCount_++;
+    return onConnectCount_;
+}
+
+int STPageAbilityEvent::GetOnDisconnectCount()
+{
+    onDisconnectCount_++;
+    return onDisconnectCount_;
+}
+
 void STPageAbilityEventSubscriber::OnReceiveEvent(const CommonEventData &data)
 {
     APP_LOGI("DataTestPageAEventSubscriber::OnReceiveEvent:event=%{public}s", data.GetWant().GetAction().c_str());

@@ -52,11 +52,9 @@ void BundleDataStorage::DeviceAndNameToKey(
     APP_LOGD("bundleName = %{public}s", bundleName.c_str());
 }
 
-bool BundleDataStorage::LoadAllData(std::map<std::string, std::map<std::string, InnerBundleInfo>> &infos) const
+bool BundleDataStorage::LoadAllData(std::map<std::string, std::map<std::string, InnerBundleInfo>> &infos)
 {
-    bool ret = false;
     APP_LOGI("load all installed bundle data to map");
-
     std::fstream i(Constants::BUNDLE_DATA_BASE_FILE);
     nlohmann::json jParse;
     if (!i.is_open()) {
@@ -71,23 +69,27 @@ bool BundleDataStorage::LoadAllData(std::map<std::string, std::map<std::string, 
     int len = static_cast<int>(i.tellg());
     if (len > 0) {
         i.seekg(0, std::ios::beg);
-        i >> jParse;
+        jParse = nlohmann::json::parse(i, nullptr, false);
+        if (jParse.is_discarded()) {
+            APP_LOGE("bad bundle database file");
+            return false;
+        }
         for (auto &app : jParse.items()) {
             std::map<std::string, InnerBundleInfo> deviceMap;
             for (auto &device : app.value().items()) {
                 InnerBundleInfo innerBundleInfo;
-                ret = innerBundleInfo.FromJson(device.value());
-                deviceMap.emplace(device.key(), innerBundleInfo);
+                if (!innerBundleInfo.FromJson(device.value())) {
+                    deviceMap.try_emplace(device.key(), innerBundleInfo);
+                }
             }
-            auto pair = infos.emplace(app.key(), deviceMap);
-            ret = pair.second;
+            infos.try_emplace(app.key(), deviceMap);
         }
     }
     i.close();
-    return ret;
+    return true;
 }
 
-bool BundleDataStorage::SaveStorageBundleInfo(const std::string &deviceId, const InnerBundleInfo &innerBundleInfo) const
+bool BundleDataStorage::SaveStorageBundleInfo(const std::string &deviceId, const InnerBundleInfo &innerBundleInfo)
 {
     APP_LOGI("save bundle data");
     bool ret = true;
@@ -136,14 +138,7 @@ bool BundleDataStorage::SaveStorageBundleInfo(const std::string &deviceId, const
     return ret;
 }
 
-bool BundleDataStorage::ModifyStorageBundleInfo(
-    const std::string &deviceId, const InnerBundleInfo &innerBundleInfo) const
-{
-    return true;
-}
-
-bool BundleDataStorage::DeleteStorageBundleInfo(
-    const std::string &deviceId, const InnerBundleInfo &innerBundleInfo) const
+bool BundleDataStorage::DeleteStorageBundleInfo(const std::string &deviceId, const InnerBundleInfo &innerBundleInfo)
 {
     APP_LOGI("delete bundle data");
     bool ret = false;
@@ -192,12 +187,6 @@ bool BundleDataStorage::DeleteStorageBundleInfo(
     }
     o.close();
     return ret;
-}
-
-bool BundleDataStorage::DeleteStorageModuleInfo(
-    const std::string &deviceId, const InnerBundleInfo &innerBundleInfo, const std::string &moduleName) const
-{
-    return true;
 }
 
 }  // namespace AppExecFwk

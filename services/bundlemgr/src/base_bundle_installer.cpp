@@ -220,6 +220,8 @@ ErrCode BaseBundleInstaller::ProcessBundleInstall(
         APP_LOGE("Get dataMgr shared_ptr nullptr");
         return ERR_APPEXECFWK_INSTALL_BUNDLE_MGR_SERVICE_ERROR;
     }
+    auto &mtx = dataMgr_->GetBundleMutex(bundleName_);
+    std::lock_guard lock{mtx};
     isAppExist_ = dataMgr_->GetInnerBundleInfo(bundleName_, Constants::CURRENT_DEVICE_ID, oldInfo);
     if (isAppExist_) {
         APP_LOGI("app is exist");
@@ -245,7 +247,8 @@ ErrCode BaseBundleInstaller::ProcessBundleUninstall(const std::string &bundleNam
         APP_LOGE("Get dataMgr shared_ptr nullptr");
         return ERR_APPEXECFWK_UNINSTALL_BUNDLE_MGR_SERVICE_ERROR;
     }
-
+    auto &mtx = dataMgr_->GetBundleMutex(bundleName);
+    std::lock_guard lock{mtx};
     InnerBundleInfo oldInfo;
     if (!dataMgr_->GetInnerBundleInfo(bundleName, Constants::CURRENT_DEVICE_ID, oldInfo)) {
         APP_LOGE("uninstall bundle info missing");
@@ -295,6 +298,8 @@ ErrCode BaseBundleInstaller::ProcessBundleUninstall(
         APP_LOGE("Get dataMgr shared_ptr nullptr");
         return ERR_APPEXECFWK_UNINSTALL_BUNDLE_MGR_SERVICE_ERROR;
     }
+    auto &mtx = dataMgr_->GetBundleMutex(bundleName);
+    std::lock_guard lock{mtx};
     InnerBundleInfo oldInfo;
     if (!dataMgr_->GetInnerBundleInfo(bundleName, Constants::CURRENT_DEVICE_ID, oldInfo)) {
         APP_LOGE("uninstall bundle info missing");

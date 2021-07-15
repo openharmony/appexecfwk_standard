@@ -58,9 +58,9 @@ enum class AddFunctionType { Add_String, Add_String_MatchType, Add_PatternMatche
     if (AddFunctionType::Add_String == addFunctionType) {                      \
         objeceName.addFunction(stringParameter);                               \
     } else if (AddFunctionType::Add_String_MatchType == addFunctionType) {     \
-        skill.addFunction(stringParameter, MatchType::PATTERN_PREFIX);         \
+        skill.addFunction(stringParameter, MatchType::PREFIX);                 \
     } else {                                                                   \
-        PatternsMatcher pm(stringParameter, MatchType::PATTERN_PREFIX);        \
+        PatternsMatcher pm(stringParameter, MatchType::PREFIX);                \
         skill.addFunction(pm);                                                 \
     }
 
@@ -68,9 +68,9 @@ enum class AddFunctionType { Add_String, Add_String_MatchType, Add_PatternMatche
     if (AddFunctionType::Add_String == addFunctionType) {                            \
         objeceName.removeFunction(stringParameter);                                  \
     } else if (AddFunctionType::Add_String_MatchType == addFunctionType) {           \
-        skill.removeFunction(stringParameter, MatchType::PATTERN_PREFIX);            \
+        skill.removeFunction(stringParameter, MatchType::PREFIX);                    \
     } else {                                                                         \
-        PatternsMatcher pm(stringParameter, MatchType::PATTERN_PREFIX);              \
+        PatternsMatcher pm(stringParameter, MatchType::PREFIX);                      \
         skill.removeFunction(pm);                                                    \
     }
 
@@ -357,72 +357,72 @@ enum class AddFunctionType { Add_String, Add_String_MatchType, Add_PatternMatche
 #define SKILLS_ADDFUNCTIONTYPE_AND_REMOVE_CASE10(addFunction, removeFunction, hasFunction, code) \
     Skills skill;                                                                                \
     skill.addFunction(specialString);                                                            \
-    skill.addFunction(specialString, MatchType::PATTERN_PREFIX);                                 \
+    skill.addFunction(specialString, MatchType::PREFIX);                                         \
     skill.removeFunction(specialString);                                                         \
     HASFUNCTION(skill, hasFunction, specialString, true, code)
 
 #define SKILLS_ADDFUNCTIONTYPE_AND_REMOVE_CASE11(addFunction, removeFunction, countFunction, code) \
     Skills skill;                                                                                  \
-    skill.addFunction(specialString, MatchType::PATTERN_LITERAL);                                  \
-    skill.addFunction(specialString, MatchType::PATTERN_PREFIX);                                   \
-    skill.addFunction(specialString, MatchType::PATTERN_SIMPLE_GLOB);                              \
+    skill.addFunction(specialString, MatchType::DEFAULT);                                          \
+    skill.addFunction(specialString, MatchType::PREFIX);                                           \
+    skill.addFunction(specialString, MatchType::GLOBAL);                                           \
     skill.removeFunction(specialString);                                                           \
     COUNTFUNCTION(skill, countFunction, 2, code)
 
 #define SKILLS_ADDFUNCTIONTYPE_AND_REMOVE_CASE12(addFunction, countFunction, code) \
     Skills skill;                                                                  \
     skill.addFunction(specialString);                                              \
-    skill.addFunction(specialString, MatchType::PATTERN_LITERAL);                  \
-    skill.addFunction(specialString, MatchType::PATTERN_PREFIX);                   \
-    skill.addFunction(specialString, MatchType::PATTERN_SIMPLE_GLOB);              \
+    skill.addFunction(specialString, MatchType::DEFAULT);                          \
+    skill.addFunction(specialString, MatchType::PREFIX);                           \
+    skill.addFunction(specialString, MatchType::GLOBAL);                           \
     COUNTFUNCTION(skill, countFunction, 3, code)
 
 #define SKILLS_ADDFUNCTIONTYPE_AND_REMOVE_CASE13(addFunction, countFunction, code) \
     Skills skill;                                                                  \
     skill.addFunction(skillspecialTypeStr1);                                       \
-    skill.addFunction(skillspecialTypeStr1, MatchType::PATTERN_LITERAL);           \
-    skill.addFunction(skillspecialTypeStr1, MatchType::PATTERN_PREFIX);            \
-    skill.addFunction(skillspecialTypeStr1, MatchType::PATTERN_SIMPLE_GLOB);       \
+    skill.addFunction(skillspecialTypeStr1, MatchType::DEFAULT);                   \
+    skill.addFunction(skillspecialTypeStr1, MatchType::PREFIX);                    \
+    skill.addFunction(skillspecialTypeStr1, MatchType::GLOBAL);                    \
     COUNTFUNCTION(skill, countFunction, 0, code)
 
 #define SKILLS_ADDFUNCTIONTYPE_AND_REMOVE_CASE14(addFunction, hasFunction, code) \
     Skills skill;                                                                \
     skill.addFunction(skillspecialTypeStr1);                                     \
-    skill.addFunction(skillspecialTypeStr1, MatchType::PATTERN_LITERAL);         \
-    skill.addFunction(skillspecialTypeStr1, MatchType::PATTERN_PREFIX);          \
-    skill.addFunction(skillspecialTypeStr1, MatchType::PATTERN_SIMPLE_GLOB);     \
+    skill.addFunction(skillspecialTypeStr1, MatchType::DEFAULT);                 \
+    skill.addFunction(skillspecialTypeStr1, MatchType::PREFIX);                  \
+    skill.addFunction(skillspecialTypeStr1, MatchType::GLOBAL);                  \
     HASFUNCTION(skill, hasFunction, skillspecialTypeStr1, false, code)
 
 #define SKILLS_ADDFUNCTIONTYPE_AND_REMOVE_CASE15(addFunction, hasFunction, code) \
     Skills skill;                                                                \
     skill.addFunction(skillspecialTypeStr2);                                     \
-    skill.addFunction(skillspecialTypeStr2, MatchType::PATTERN_LITERAL);         \
-    skill.addFunction(skillspecialTypeStr2, MatchType::PATTERN_PREFIX);          \
-    skill.addFunction(skillspecialTypeStr2, MatchType::PATTERN_SIMPLE_GLOB);     \
+    skill.addFunction(skillspecialTypeStr2, MatchType::DEFAULT);                 \
+    skill.addFunction(skillspecialTypeStr2, MatchType::PREFIX);                  \
+    skill.addFunction(skillspecialTypeStr2, MatchType::GLOBAL);                  \
     HASFUNCTION(skill, hasFunction, skillspecialTypeStr1, true, code)
 
 #define SKILLS_ADDFUNCTIONTYPE_AND_REMOVE_CASE16(addFunction, countFunction, code) \
     Skills skill;                                                                  \
     skill.addFunction(skillspecialTypeStr2);                                       \
-    skill.addFunction(skillspecialTypeStr2, MatchType::PATTERN_LITERAL);           \
-    skill.addFunction(skillspecialTypeStr2, MatchType::PATTERN_PREFIX);            \
-    skill.addFunction(skillspecialTypeStr2, MatchType::PATTERN_SIMPLE_GLOB);       \
+    skill.addFunction(skillspecialTypeStr2, MatchType::DEFAULT);                   \
+    skill.addFunction(skillspecialTypeStr2, MatchType::PREFIX);                    \
+    skill.addFunction(skillspecialTypeStr2, MatchType::GLOBAL);                    \
     COUNTFUNCTION(skill, countFunction, 3, code)
 
 #define SKILLS_ADDFUNCTIONTYPE_AND_REMOVE_CASE17(addFunction, countFunction, code) \
     Skills skill;                                                                  \
     skill.addFunction(skillspecialTypeStr3);                                       \
-    skill.addFunction(skillspecialTypeStr3, MatchType::PATTERN_LITERAL);           \
-    skill.addFunction(skillspecialTypeStr3, MatchType::PATTERN_PREFIX);            \
-    skill.addFunction(skillspecialTypeStr3, MatchType::PATTERN_SIMPLE_GLOB);       \
+    skill.addFunction(skillspecialTypeStr3, MatchType::DEFAULT);                   \
+    skill.addFunction(skillspecialTypeStr3, MatchType::PREFIX);                    \
+    skill.addFunction(skillspecialTypeStr3, MatchType::GLOBAL);                    \
     COUNTFUNCTION(skill, countFunction, 3, code)
 
 #define SKILLS_ADDFUNCTIONTYPE_AND_REMOVE_CASE18(addFunction, hasFunction, code) \
     Skills skill;                                                                \
     skill.addFunction(skillspecialTypeStr3);                                     \
-    skill.addFunction(skillspecialTypeStr3, MatchType::PATTERN_LITERAL);         \
-    skill.addFunction(skillspecialTypeStr3, MatchType::PATTERN_PREFIX);          \
-    skill.addFunction(skillspecialTypeStr3, MatchType::PATTERN_SIMPLE_GLOB);     \
+    skill.addFunction(skillspecialTypeStr3, MatchType::DEFAULT);                 \
+    skill.addFunction(skillspecialTypeStr3, MatchType::PREFIX);                  \
+    skill.addFunction(skillspecialTypeStr3, MatchType::GLOBAL);                  \
     HASFUNCTION(skill, hasFunction, skillspecialTypeStr3, true, code)
 
 // Skills Add ST Case

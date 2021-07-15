@@ -39,6 +39,7 @@ using namespace OHOS::EventFwk;
 namespace {
 typedef std::map<std::string, std::string> MAP_STR_STR;
 std::vector<std::string> bundleNameSuffix = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "M", "N", "O", "P"};
+std::vector<std::string> uninstallBundleNameSuffix = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "M", "N", "O"};
 std::string bundleNameBase = "com.ohos.amsst.app";
 std::string abilityNameBase = "AmsStAbility";
 std::string hapNameBase = "amsSystemTest";
@@ -62,8 +63,8 @@ static const std::string lifecycleStateBackground =
     std::to_string(AbilityLifecycleExecutor::LifecycleState::BACKGROUND);
 static const std::string lifecycleStateInactive = std::to_string(AbilityLifecycleExecutor::LifecycleState::INACTIVE);
 static const std::string lifecycleStateInitial = std::to_string(AbilityLifecycleExecutor::LifecycleState::INITIAL);
-constexpr int WAIT_TIME = 7 * 1000;
-constexpr int WAIT_LAUNCHER_OK = 25 * 1000;
+constexpr int WAIT_TIME = 3 * 1000;
+constexpr int WAIT_LAUNCHER_OK = 5 * 1000;
 enum AbilityState_Test {
     INITIAL = 0,
     INACTIVE,
@@ -149,27 +150,38 @@ void AmsPageAbilityTest::SetUpTestCase(void)
     GTEST_LOG_(INFO) << "AmsPageAbilityTest::SetUpTestCase(void)";
     std::vector<std::string> hapNames = GetBundleNames(hapNameBase, bundleNameSuffix);
     STAbilityUtil::InstallHaps(hapNames);
+    SubscribeEvent();
+    appMs_ = STAbilityUtil::GetAppMgrService();
+    abilityMs_ = STAbilityUtil::GetAbilityManagerService();
+    if (appMs_) {
+        appMs_->SetAppFreezingTime(60);
+        int time = 0;
+        appMs_->GetAppFreezingTime(time);
+        std::cout << "appMs_->GetAppFreezingTime();" << time << std::endl;
+    }
 }
 
 void AmsPageAbilityTest::TearDownTestCase(void)
 {
     GTEST_LOG_(INFO) << "AmsPageAbilityTest::TearDownTestCase(void)";
-    std::vector<std::string> bundleNames = GetBundleNames(bundleNameBase, bundleNameSuffix);
+    std::vector<std::string> bundleNames = GetBundleNames(bundleNameBase, uninstallBundleNameSuffix);
     STAbilityUtil::UninstallBundle(bundleNames);
 }
 
 void AmsPageAbilityTest::SetUp(void)
 {
     GTEST_LOG_(INFO) << "AmsPageAbilityTest::SetUp(void)";
-    ClearSystem();
-    std::vector<std::string> bundleNames = GetBundleNames(bundleNameBase, bundleNameSuffix);
-    STAbilityUtil::KillBundleProcess(bundleNames);
-    SubscribeEvent();
 }
 
 void AmsPageAbilityTest::TearDown(void)
 {
     GTEST_LOG_(INFO) << "void AmsPageAbilityTest::TearDown(void)";
+    STAbilityUtil::RemoveStack(1, abilityMs_, WAIT_TIME, WAIT_LAUNCHER_OK);
+    std::vector<std::string> vecBundleName;
+    for (const auto &suffix : bundleNameSuffix) {
+        vecBundleName.push_back(bundleNameBase + suffix);
+    }
+    STAbilityUtil::KillBundleProcess(vecBundleName);
     STAbilityUtil::CleanMsg(event_);
     STAbilityUtil::CleanMsg(processInfoEvent_);
 }
@@ -700,7 +712,7 @@ HWTEST_F(AmsPageAbilityTest, AMS_Page_Ability_1000, Function | MediumTest | Leve
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName + abilityStateOnBackground, abilityStateCountOne), 0);
     // simulate ENTITY_HOME
     Want wantEntity;
-    wantEntity.AddEntity(Want::FLAG_HW_HOME_INTENT_FROM_SYSTEM);
+    wantEntity.AddEntity(Want::FLAG_HOME_INTENT_FROM_SYSTEM);
     STAbilityUtil::StartAbility(wantEntity, abilityMs_);
 
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName2 + abilityStateOnBackground, abilityStateCountOne), 0);
@@ -756,7 +768,7 @@ HWTEST_F(AmsPageAbilityTest, AMS_Page_Ability_1100, Function | MediumTest | Leve
 
     // simulate ENTITY_HOME
     Want wantEntity;
-    wantEntity.AddEntity(Want::FLAG_HW_HOME_INTENT_FROM_SYSTEM);
+    wantEntity.AddEntity(Want::FLAG_HOME_INTENT_FROM_SYSTEM);
     STAbilityUtil::StartAbility(wantEntity, abilityMs_);
 
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName + abilityStateOnBackground, abilityStateCountOne), 0);
@@ -891,7 +903,7 @@ HWTEST_F(AmsPageAbilityTest, AMS_Page_Ability_1400, Function | MediumTest | Leve
 
     // simulate ENTITY_HOME
     Want wantEntity;
-    wantEntity.AddEntity(Want::FLAG_HW_HOME_INTENT_FROM_SYSTEM);
+    wantEntity.AddEntity(Want::FLAG_HOME_INTENT_FROM_SYSTEM);
     STAbilityUtil::StartAbility(wantEntity, abilityMs_);
 
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName + abilityStateOnBackground, abilityStateCountOne), 0);
@@ -1619,7 +1631,7 @@ HWTEST_F(AmsPageAbilityTest, AMS_Page_Ability_3000, Function | MediumTest | Leve
 
     // simulate ENTITY_HOME
     Want wantEntity;
-    wantEntity.AddEntity(Want::FLAG_HW_HOME_INTENT_FROM_SYSTEM);
+    wantEntity.AddEntity(Want::FLAG_HOME_INTENT_FROM_SYSTEM);
     STAbilityUtil::StartAbility(wantEntity, abilityMs_);
 
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName3 + abilityStateOnBackground, abilityStateCountOne), 0);
@@ -1695,7 +1707,7 @@ HWTEST_F(AmsPageAbilityTest, AMS_Page_Ability_3100, Function | MediumTest | Leve
 
     // simulate ENTITY_HOME
     Want wantEntity;
-    wantEntity.AddEntity(Want::FLAG_HW_HOME_INTENT_FROM_SYSTEM);
+    wantEntity.AddEntity(Want::FLAG_HOME_INTENT_FROM_SYSTEM);
     STAbilityUtil::StartAbility(wantEntity, abilityMs_);
 
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName3 + abilityStateOnBackground, abilityStateCountOne), 0);
@@ -1836,7 +1848,7 @@ HWTEST_F(AmsPageAbilityTest, AMS_Page_Ability_3400, Function | MediumTest | Leve
 
     // simulate ENTITY_HOME,G1 go backstage.
     Want wantEntity;
-    wantEntity.AddEntity(Want::FLAG_HW_HOME_INTENT_FROM_SYSTEM);
+    wantEntity.AddEntity(Want::FLAG_HOME_INTENT_FROM_SYSTEM);
     STAbilityUtil::StartAbility(wantEntity, abilityMs_);
 
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName1 + abilityStateOnBackground, abilityStateCountOne), 0);
@@ -2026,7 +2038,7 @@ HWTEST_F(AmsPageAbilityTest, AMS_Page_Ability_3900, Function | MediumTest | Leve
 
     // simulate ENTITY_HOME,G1 go backstage.
     Want wantEntity;
-    wantEntity.AddEntity(Want::FLAG_HW_HOME_INTENT_FROM_SYSTEM);
+    wantEntity.AddEntity(Want::FLAG_HOME_INTENT_FROM_SYSTEM);
     STAbilityUtil::StartAbility(wantEntity, abilityMs_);
 
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName1 + abilityStateOnBackground, abilityStateCountOne), 0);
@@ -2657,7 +2669,7 @@ HWTEST_F(AmsPageAbilityTest, AMS_Page_Ability_5300, Function | MediumTest | Leve
 
     // simulate ENTITY_HOME
     Want wantEntity;
-    wantEntity.AddEntity(Want::FLAG_HW_HOME_INTENT_FROM_SYSTEM);
+    wantEntity.AddEntity(Want::FLAG_HOME_INTENT_FROM_SYSTEM);
     STAbilityUtil::StartAbility(wantEntity, abilityMs_);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName2 + abilityStateOnBackground, abilityStateCountOne), 0);
 
@@ -2708,7 +2720,7 @@ HWTEST_F(AmsPageAbilityTest, AMS_Page_Ability_5400, Function | MediumTest | Leve
 
     // simulate ENTITY_HOME
     Want wantEntity;
-    wantEntity.AddEntity(Want::FLAG_HW_HOME_INTENT_FROM_SYSTEM);
+    wantEntity.AddEntity(Want::FLAG_HOME_INTENT_FROM_SYSTEM);
     STAbilityUtil::StartAbility(wantEntity, abilityMs_);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName + abilityStateOnBackground, abilityStateCountOne), 0);
 
@@ -2840,7 +2852,7 @@ HWTEST_F(AmsPageAbilityTest, AMS_Page_Ability_5700, Function | MediumTest | Leve
 
     // simulate ENTITY_HOME
     Want wantEntity;
-    wantEntity.AddEntity(Want::FLAG_HW_HOME_INTENT_FROM_SYSTEM);
+    wantEntity.AddEntity(Want::FLAG_HOME_INTENT_FROM_SYSTEM);
     STAbilityUtil::StartAbility(wantEntity, abilityMs_);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName + abilityStateOnBackground, abilityStateCountOne), 0);
 
@@ -3100,7 +3112,7 @@ HWTEST_F(AmsPageAbilityTest, AMS_Page_Ability_6300, Function | MediumTest | Leve
     ExpectAbilityCurrentState(abilityName3, AbilityState_Test::ACTIVE, AbilityState_Test::ACTIVATING);
     // simulate ENTITY_HOME
     Want wantEntity;
-    wantEntity.AddEntity(Want::FLAG_HW_HOME_INTENT_FROM_SYSTEM);
+    wantEntity.AddEntity(Want::FLAG_HOME_INTENT_FROM_SYSTEM);
     STAbilityUtil::StartAbility(wantEntity, abilityMs_);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName3 + abilityStateOnBackground, abilityStateCountOne), 0);
     params["targetBundle"] = bundleName1;
@@ -3169,7 +3181,7 @@ HWTEST_F(AmsPageAbilityTest, AMS_Page_Ability_6400, Function | MediumTest | Leve
     ExpectAbilityCurrentState(abilityName3, AbilityState_Test::ACTIVE, AbilityState_Test::ACTIVATING);
     // simulate ENTITY_HOME
     Want wantEntity;
-    wantEntity.AddEntity(Want::FLAG_HW_HOME_INTENT_FROM_SYSTEM);
+    wantEntity.AddEntity(Want::FLAG_HOME_INTENT_FROM_SYSTEM);
     STAbilityUtil::StartAbility(wantEntity, abilityMs_);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName3 + abilityStateOnBackground, abilityStateCountOne), 0);
     params["targetBundle"] = bundleName1;
@@ -3237,7 +3249,7 @@ HWTEST_F(AmsPageAbilityTest, AMS_Page_Ability_6500, Function | MediumTest | Leve
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName2 + abilityStateOnBackground, abilityStateCountOne), 0);
     // simulate ENTITY_HOME
     Want wantEntity;
-    wantEntity.AddEntity(Want::FLAG_HW_HOME_INTENT_FROM_SYSTEM);
+    wantEntity.AddEntity(Want::FLAG_HOME_INTENT_FROM_SYSTEM);
     STAbilityUtil::StartAbility(wantEntity, abilityMs_);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName3 + abilityStateOnBackground, abilityStateCountOne), 0);
     // Start Ability B1(singletop)
@@ -3308,7 +3320,7 @@ HWTEST_F(AmsPageAbilityTest, AMS_Page_Ability_6600, Function | MediumTest | Leve
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName2 + abilityStateOnBackground, abilityStateCountOne), 0);
     // simulate ENTITY_HOME
     Want wantEntity;
-    wantEntity.AddEntity(Want::FLAG_HW_HOME_INTENT_FROM_SYSTEM);
+    wantEntity.AddEntity(Want::FLAG_HOME_INTENT_FROM_SYSTEM);
     STAbilityUtil::StartAbility(wantEntity, abilityMs_);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName3 + abilityStateOnBackground, abilityStateCountOne), 0);
     // Start Ability B1(singletop)
@@ -3475,7 +3487,7 @@ HWTEST_F(AmsPageAbilityTest, AMS_Page_Ability_6900, TestSize.Level1)
     STAbilityUtil::StartAbility(want, abilityMs_);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName1 + abilityStateOnActive, abilityStateCountOne), 0);
 
-    AppProcessInfo pInfo = STAbilityUtil::GetAppProcessInfoByName(bundleName1, appMs_, WAIT_TIME);
+    RunningProcessInfo pInfo = STAbilityUtil::GetAppProcessInfoByName(bundleName1, appMs_, WAIT_TIME);
     EXPECT_EQ(AppProcessState::APP_STATE_FOREGROUND, pInfo.state_);
 
     STAbilityUtil::KillApplication(bundleName1, appMs_, WAIT_TIME);
@@ -3487,9 +3499,9 @@ HWTEST_F(AmsPageAbilityTest, AMS_Page_Ability_6900, TestSize.Level1)
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName1 + abilityStateOnActive, abilityStateCountOne), 0);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName2 + abilityStateOnBackground, abilityStateCountOne), 0);
 
-    AppProcessInfo pInfo1 = STAbilityUtil::GetAppProcessInfoByName(bundleName1, appMs_, WAIT_TIME);
+    RunningProcessInfo pInfo1 = STAbilityUtil::GetAppProcessInfoByName(bundleName1, appMs_, WAIT_TIME);
     EXPECT_EQ(AppProcessState::APP_STATE_FOREGROUND, pInfo1.state_);
-    AppProcessInfo pInfo2 = STAbilityUtil::GetAppProcessInfoByName(bundleName2, appMs_, WAIT_TIME);
+    RunningProcessInfo pInfo2 = STAbilityUtil::GetAppProcessInfoByName(bundleName2, appMs_, WAIT_TIME);
     EXPECT_EQ(AppProcessState::APP_STATE_BACKGROUND, pInfo2.state_);
     ExpectAbilityCurrentState(abilityName1, AbilityState_Test::ACTIVE, AbilityState_Test::ACTIVATING);
     GTEST_LOG_(INFO) << "AmsPageAbilityTest AMS_Page_Ability_6900 end";
@@ -3517,7 +3529,7 @@ HWTEST_F(AmsPageAbilityTest, AMS_Page_Ability_7000, TestSize.Level1)
     STAbilityUtil::StartAbility(want, abilityMs_);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName + abilityStateOnActive, abilityStateCountOne), 0);
 
-    AppProcessInfo pInfo = STAbilityUtil::GetAppProcessInfoByName(bundleName, appMs_, WAIT_TIME);
+    RunningProcessInfo pInfo = STAbilityUtil::GetAppProcessInfoByName(bundleName, appMs_, WAIT_TIME);
     EXPECT_EQ(AppProcessState::APP_STATE_FOREGROUND, pInfo.state_);
 
     STAbilityUtil::KillApplication(bundleName, appMs_, WAIT_TIME);
@@ -3525,7 +3537,7 @@ HWTEST_F(AmsPageAbilityTest, AMS_Page_Ability_7000, TestSize.Level1)
     STAbilityUtil::StartAbility(want, abilityMs_);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName + abilityStateOnActive, abilityStateCountOne), 0);
 
-    AppProcessInfo pInfo2 = STAbilityUtil::GetAppProcessInfoByName(bundleName, appMs_, WAIT_TIME);
+    RunningProcessInfo pInfo2 = STAbilityUtil::GetAppProcessInfoByName(bundleName, appMs_, WAIT_TIME);
     EXPECT_EQ(AppProcessState::APP_STATE_FOREGROUND, pInfo2.state_);
     ExpectAbilityCurrentState(abilityName, AbilityState_Test::ACTIVE, AbilityState_Test::ACTIVATING);
     GTEST_LOG_(INFO) << "AmsPageAbilityTest AMS_Page_Ability_7000 end";

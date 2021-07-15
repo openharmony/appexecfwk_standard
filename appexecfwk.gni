@@ -25,3 +25,4 @@ tools_path = "${appexecfwk_path}/tools"
 test_hap_common_path = "${appexecfwk_path}/test/common"
 system_test_app_path =
     "${appexecfwk_path}/test/resource/amssystemtestability/abilitySrc"
+dispatcher_path = "${appexecfwk_path}/interfaces/innerkits/task_dispatcher"

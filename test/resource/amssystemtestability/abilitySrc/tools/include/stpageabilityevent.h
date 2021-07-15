@@ -29,6 +29,7 @@ namespace AppExecFwk {
 namespace STEventName {
 const std::string g_eventName = "resp_st_page_ability_callback";
 const std::string g_pidEventName = "resp_st_page_ability_pid_callback";
+const std::string g_abilityStateInit = ":Init";
 const std::string g_abilityStateOnStart = ":OnStart";
 const std::string g_abilityStateOnStop = ":OnStop";
 const std::string g_abilityStateOnActive = ":OnActive";
@@ -36,8 +37,21 @@ const std::string g_abilityStateOnInactive = ":OnInactive";
 const std::string g_abilityStateOnBackground = ":OnBackground";
 const std::string g_abilityStateOnForeground = ":OnForeground";
 const std::string g_abilityStateOnNewWant = ":OnNewWant";
+const std::string g_abilityStateOnCommand = ":OnCommand";
+const std::string g_abilityStateOnConnect = ":OnConnect";
+const std::string g_abilityStateOnDisconnect = ":OnDisconnect";
 const int eventCode = 0;
 const std::vector<std::string> g_eventList = {"requ_page_ability_terminate"};
+static constexpr uint32_t LOAD_TIMEOUT = 500;          // ms
+static constexpr uint32_t ACTIVE_TIMEOUT = 5000;       // ms
+static constexpr uint32_t INACTIVE_TIMEOUT = 500;      // ms
+static constexpr uint32_t BACKGROUND_TIMEOUT = 10000;  // ms
+static constexpr uint32_t TERMINATE_TIMEOUT = 10000;   // ms
+static constexpr uint32_t CONNECT_TIMEOUT = 500;       // ms
+static constexpr uint32_t DISCONNECT_TIMEOUT = 500;    // ms
+static constexpr uint32_t COMMAND_TIMEOUT = 5000;      // ms
+static constexpr uint32_t SYSTEM_UI_TIMEOUT = 5000;    // ms
+static constexpr uint32_t RESTART_TIMEOUT = 5000;      // ms
 }  // namespace STEventName
 
 class STPageAbilityEventSubscriber : public EventFwk::CommonEventSubscriber {
@@ -73,6 +87,9 @@ public:
     int GetOnBackgroundCount();
     int GetOnForegroundCount();
     int GetOnNewWantCount();
+    int GetOnCommandCount();
+    int GetOnConnectCount();
+    int GetOnDisconnectCount();
 
 private:
     std::shared_ptr<STPageAbilityEventSubscriber> subscriber_;
@@ -83,6 +100,9 @@ private:
     int onBackgroundCount_ = 0;
     int onForegroundCount_ = 0;
     int onNewWantCount_ = 0;
+    int onCommandCount_ = 0;
+    int onConnectCount_ = 0;
+    int onDisconnectCount_ = 0;
     std::string className_;
     std::string callBackPath_;
     std::string abilityStatus_;

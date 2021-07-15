@@ -1,0 +1,81 @@
+# Copyright (C) 2021 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import("//build/test.gni")
+import("//foundation/appexecfwk/standard/appexecfwk.gni")
+SUBSYSTEM_DIR = "//foundation/appexecfwk/standard"
+
+group("unittest") {
+  testonly = true
+
+  deps = [
+    "unittest/barrier_handler_test:unittest",
+    "unittest/base_task_dispatcher_test:unittest",
+    "unittest/global_task_dispatcher_test:unittest",
+    "unittest/groupImpl_test:unittest",
+    "unittest/parallel_task_dispatcher_base_test:unittest",
+    "unittest/parallel_task_dispatcher_test:unittest",
+    "unittest/serial_task_dispatcher_test:unittest",
+    "unittest/spec_dispatcher_config_test:unittest",
+    "unittest/spec_task_dispatcher_test:unittest",
+    "unittest/sync_task_test:unittest",
+    "unittest/task_dispatcher_context_test:unittest",
+    "unittest/task_executor_test:unittest",
+    "unittest/task_handler_libevent_adapter_test:unittest",
+    "unittest/task_test:unittest",
+    "unittest/work_thread_test:unittest",
+    "unittest/worker_pool_test:unittest",
+  ]
+}
+
+config("dispatcher_test_config") {
+  configs = []
+
+  defines = []
+
+  include_dirs = [
+    "${appexecfwk_path}/common/log/include",
+    "$SUBSYSTEM_DIR/interfaces/innerkits/libeventhandler/include",
+
+    "${dispatcher_path}/include/dispatcher",
+    "${dispatcher_path}/include/threading",
+    "${dispatcher_path}/include/task",
+
+    "${appexecfwk_path}/kits/appkit/native/app/include",
+    "${appexecfwk_path}/kits/appkit/native/app/include/task",
+    "$SUBSYSTEM_DIR/interfaces/innerkits/appexecfwk_base/include",
+  ]
+}
+
+ohos_source_set("dispatcher_test_source") {
+  testonly = true
+
+  sources = []
+
+  include_dirs = [ "//third_party/json/include" ]
+
+  public_configs = [
+    "//utils/native/base:utils_config",
+    ":dispatcher_test_config",
+  ]
+
+  public_deps = [
+    "//third_party/googletest:gmock_main",
+    "//third_party/googletest:gtest_main",
+    "//utils/native/base:utils",
+  ]
+
+  deps = [ "//foundation/appexecfwk/standard/interfaces/innerkits/libeventhandler:libeventhandler" ]
+
+  external_deps = [ "hiviewdfx_hilog_native:libhilog" ]
+}

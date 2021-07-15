@@ -15,7 +15,6 @@
 
 #include "inner_bundle_info.h"
 
-#include "app_log_wrapper.h"
 #include "common_profile.h"
 
 namespace OHOS {
@@ -45,6 +44,7 @@ const std::string MODULE_NAME = "moduleName";
 const std::string MODULE_DESCRIPTION = "description";
 const std::string MODULE_IS_ENTRY = "isEntry";
 const std::string MODULE_METADATA = "metaData";
+const std::string MODULE_COLOR_MODE = "colorMode";
 const std::string MODULE_DISTRO = "distro";
 const std::string MODULE_REQ_CAPABILITIES = "reqCapabilities";
 const std::string MODULE_REQ_PERMS = "reqPermissions";
@@ -53,6 +53,7 @@ const std::string MODULE_DATA_DIR = "moduleDataDir";
 const std::string MODULE_RES_PATH = "moduleResPath";
 const std::string MODULE_ABILITY_KEYS = "abilityKeys";
 const std::string MODULE_SKILL_KEYS = "skillKeys";
+const std::string MODULE_FORMS = "formInfos";
 
 }  // namespace
 
@@ -66,7 +67,7 @@ InnerBundleInfo::~InnerBundleInfo()
     APP_LOGD("inner bundle info instance is destroyed");
 }
 
-void to_json(nlohmann::json &jsonObject, const CustomizeData &customizeData)
+void to_json(nlohmann::json &jsonObject, const InnerCustomizeData &customizeData)
 {
     jsonObject = nlohmann::json{
         {ProfileReader::PROFILE_KEY_NAME, customizeData.name},
@@ -108,7 +109,7 @@ void to_json(nlohmann::json &jsonObject, const Distro &distro)
             {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_DELIVERY_WITH_INSTALL, distro.deliveryWithInstall},
             {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_MODULE_NAME, distro.moduleName},
             {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_MODULE_TYPE, distro.moduleType}
-            };
+    };
 }
 
 void to_json(nlohmann::json &jsonObject, const UsedScene &usedScene)
@@ -151,6 +152,7 @@ void to_json(nlohmann::json &jsonObject, const InnerModuleInfo &info)
         {MODULE_RES_PATH, info.moduleResPath},
         {MODULE_IS_ENTRY, info.isEntry},
         {MODULE_METADATA, info.metaData},
+        {MODULE_COLOR_MODE, info.colorMode},
         {MODULE_DISTRO, info.distro},
         {MODULE_DESCRIPTION, info.description},
         {MODULE_REQ_CAPABILITIES, info.reqCapabilities},
@@ -200,280 +202,625 @@ void InnerBundleInfo::ToJson(nlohmann::json &jsonObject) const
     jsonObject[PROVISION_ID] = provisionId_;
     jsonObject[APP_FEATURE] = appFeature_;
     jsonObject[HAS_ENTRY] = hasEntry_;
+	jsonObject[MODULE_FORMS] = formInfos_;
 }
 
 void from_json(const nlohmann::json &jsonObject, InnerModuleInfo &info)
 {
     // these are not required fields.
     const auto &jsonObjectEnd = jsonObject.end();
-    if (jsonObject.find(MODULE_PACKAGE) != jsonObjectEnd) {
-        info.modulePackage = jsonObject.at(MODULE_PACKAGE).get<std::string>();
-    }
-    if (jsonObject.find(MODULE_NAME) != jsonObjectEnd) {
-        info.moduleName = jsonObject.at(MODULE_NAME).get<std::string>();
-    }
-    if (jsonObject.find(MODULE_PATH) != jsonObjectEnd) {
-        info.modulePath = jsonObject.at(MODULE_PATH).get<std::string>();
-    }
-    if (jsonObject.find(MODULE_DATA_DIR) != jsonObjectEnd) {
-        info.moduleDataDir = jsonObject.at(MODULE_DATA_DIR).get<std::string>();
-    }
-    if (jsonObject.find(MODULE_RES_PATH) != jsonObjectEnd) {
-        info.moduleResPath = jsonObject.at(MODULE_RES_PATH).get<std::string>();
-    }
-    if (jsonObject.find(MODULE_IS_ENTRY) != jsonObjectEnd) {
-        info.isEntry = jsonObject.at(MODULE_IS_ENTRY).get<bool>();
-    }
-    if (jsonObject.find(MODULE_METADATA) != jsonObjectEnd) {
-        info.metaData = jsonObject.at(MODULE_METADATA).get<MetaData>();
-    }
-    if (jsonObject.find(MODULE_DISTRO) != jsonObjectEnd) {
-        info.distro = jsonObject.at(MODULE_DISTRO).get<Distro>();
-    }
-    if (jsonObject.find(MODULE_DESCRIPTION) != jsonObjectEnd) {
-        info.description = jsonObject.at(MODULE_DESCRIPTION).get<std::string>();
-    }
-    if (jsonObject.find(MODULE_REQ_CAPABILITIES) != jsonObjectEnd) {
-        info.reqCapabilities = jsonObject.at(MODULE_REQ_CAPABILITIES).get<std::vector<std::string>>();
-    }
-    if (jsonObject.find(MODULE_REQ_PERMS) != jsonObjectEnd) {
-        info.reqPermissions = jsonObject.at(MODULE_REQ_PERMS).get<std::vector<ReqPermission>>();
-    }
-    if (jsonObject.find(MODULE_DEF_PERMS) != jsonObjectEnd) {
-        info.defPermissions = jsonObject.at(MODULE_DEF_PERMS).get<std::vector<DefPermission>>();
-    }
-    if (jsonObject.find(MODULE_ABILITY_KEYS) != jsonObjectEnd) {
-        info.abilityKeys = jsonObject.at(MODULE_ABILITY_KEYS).get<std::vector<std::string>>();
-    }
-    if (jsonObject.find(MODULE_SKILL_KEYS) != jsonObjectEnd) {
-        info.skillKeys = jsonObject.at(MODULE_SKILL_KEYS).get<std::vector<std::string>>();
-    }
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        MODULE_PACKAGE,
+        info.modulePackage,
+        JsonType::STRING,
+        false,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        MODULE_NAME,
+        info.moduleName,
+        JsonType::STRING,
+        false,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        MODULE_PATH,
+        info.modulePath,
+        JsonType::STRING,
+        false,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        MODULE_DATA_DIR,
+        info.moduleDataDir,
+        JsonType::STRING,
+        false,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        MODULE_RES_PATH,
+        info.moduleResPath,
+        JsonType::STRING,
+        false,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<bool>(jsonObject,
+        jsonObjectEnd,
+        MODULE_IS_ENTRY,
+        info.isEntry,
+        JsonType::BOOLEAN,
+        false,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<MetaData>(jsonObject,
+        jsonObjectEnd,
+        MODULE_METADATA,
+        info.metaData,
+        JsonType::OBJECT,
+        false,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<ModuleColorMode>(jsonObject,
+        jsonObjectEnd,
+        MODULE_COLOR_MODE,
+        info.colorMode,
+        JsonType::NUMBER,
+        false,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<Distro>(jsonObject,
+        jsonObjectEnd,
+        MODULE_DISTRO,
+        info.distro,
+        JsonType::OBJECT,
+        false,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        MODULE_DESCRIPTION,
+        info.description,
+        JsonType::STRING,
+        false,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::vector<std::string>>(jsonObject,
+        jsonObjectEnd,
+        MODULE_REQ_CAPABILITIES,
+        info.reqCapabilities,
+        JsonType::ARRAY,
+        false,
+        ProfileReader::parseResult,
+        ArrayType::STRING);
+    GetValueIfFindKey<std::vector<ReqPermission>>(jsonObject,
+        jsonObjectEnd,
+        MODULE_REQ_PERMS,
+        info.reqPermissions,
+        JsonType::ARRAY,
+        false,
+        ProfileReader::parseResult,
+        ArrayType::OBJECT);
+    GetValueIfFindKey<std::vector<DefPermission>>(jsonObject,
+        jsonObjectEnd,
+        MODULE_DEF_PERMS,
+        info.defPermissions,
+        JsonType::ARRAY,
+        false,
+        ProfileReader::parseResult,
+        ArrayType::OBJECT);
+    GetValueIfFindKey<std::vector<std::string>>(jsonObject,
+        jsonObjectEnd,
+        MODULE_ABILITY_KEYS,
+        info.abilityKeys,
+        JsonType::ARRAY,
+        false,
+        ProfileReader::parseResult,
+        ArrayType::STRING);
+    GetValueIfFindKey<std::vector<std::string>>(jsonObject,
+        jsonObjectEnd,
+        MODULE_SKILL_KEYS,
+        info.skillKeys,
+        JsonType::ARRAY,
+        false,
+        ProfileReader::parseResult,
+        ArrayType::STRING);
 }
 
 void from_json(const nlohmann::json &jsonObject, SkillUri &uri)
 {
     // these are required fields.
-    uri.scheme = jsonObject.at(ProfileReader::BUNDLE_MODULE_PROFILE_KEY_SCHEME).get<std::string>();
-    // these are not required fields.
     const auto &jsonObjectEnd = jsonObject.end();
-    if (jsonObject.find(ProfileReader::BUNDLE_MODULE_PROFILE_KEY_HOST) != jsonObjectEnd) {
-        uri.host = jsonObject.at(ProfileReader::BUNDLE_MODULE_PROFILE_KEY_HOST).get<std::string>();
-    }
-
-    if (jsonObject.find(ProfileReader::BUNDLE_MODULE_PROFILE_KEY_PORT) != jsonObjectEnd) {
-        uri.port = jsonObject.at(ProfileReader::BUNDLE_MODULE_PROFILE_KEY_PORT).get<std::string>();
-    }
-
-    if (jsonObject.find(ProfileReader::BUNDLE_MODULE_PROFILE_KEY_PATH) != jsonObjectEnd) {
-        uri.path = jsonObject.at(ProfileReader::BUNDLE_MODULE_PROFILE_KEY_PATH).get<std::string>();
-    }
-
-    if (jsonObject.find(ProfileReader::BUNDLE_MODULE_PROFILE_KEY_TYPE) != jsonObjectEnd) {
-        uri.type = jsonObject.at(ProfileReader::BUNDLE_MODULE_PROFILE_KEY_TYPE).get<std::string>();
-    }
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        ProfileReader::BUNDLE_MODULE_PROFILE_KEY_SCHEME,
+        uri.scheme,
+        JsonType::STRING,
+        true,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
+    // these are not required fields.
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        ProfileReader::BUNDLE_MODULE_PROFILE_KEY_HOST,
+        uri.host,
+        JsonType::STRING,
+        false,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        ProfileReader::BUNDLE_MODULE_PROFILE_KEY_PORT,
+        uri.port,
+        JsonType::STRING,
+        false,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        ProfileReader::BUNDLE_MODULE_PROFILE_KEY_PATH,
+        uri.path,
+        JsonType::STRING,
+        false,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        ProfileReader::BUNDLE_MODULE_PROFILE_KEY_TYPE,
+        uri.type,
+        JsonType::STRING,
+        false,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
 }
 
 void from_json(const nlohmann::json &jsonObject, Skill &skill)
 {
     // these are not required fields.
     const auto &jsonObjectEnd = jsonObject.end();
-    if (jsonObject.find(ProfileReader::BUNDLE_MODULE_PROFILE_KEY_ACTIONS) != jsonObjectEnd) {
-        skill.actions = jsonObject.at(ProfileReader::BUNDLE_MODULE_PROFILE_KEY_ACTIONS).get<std::vector<std::string>>();
-    }
-
-    if (jsonObject.find(ProfileReader::BUNDLE_MODULE_PROFILE_KEY_ENTITIES) != jsonObjectEnd) {
-        skill.entities =
-            jsonObject.at(ProfileReader::BUNDLE_MODULE_PROFILE_KEY_ENTITIES).get<std::vector<std::string>>();
-    }
-
-    if (jsonObject.find(ProfileReader::BUNDLE_MODULE_PROFILE_KEY_URIS) != jsonObjectEnd) {
-        skill.uris = jsonObject.at(ProfileReader::BUNDLE_MODULE_PROFILE_KEY_URIS).get<std::vector<SkillUri>>();
-    }
+    GetValueIfFindKey<std::vector<std::string>>(jsonObject,
+        jsonObjectEnd,
+        ProfileReader::BUNDLE_MODULE_PROFILE_KEY_ACTIONS,
+        skill.actions,
+        JsonType::ARRAY,
+        false,
+        ProfileReader::parseResult,
+        ArrayType::STRING);
+    GetValueIfFindKey<std::vector<std::string>>(jsonObject,
+        jsonObjectEnd,
+        ProfileReader::BUNDLE_MODULE_PROFILE_KEY_ENTITIES,
+        skill.entities,
+        JsonType::ARRAY,
+        false,
+        ProfileReader::parseResult,
+        ArrayType::STRING);
+    GetValueIfFindKey<std::vector<SkillUri>>(jsonObject,
+        jsonObjectEnd,
+        ProfileReader::BUNDLE_MODULE_PROFILE_KEY_URIS,
+        skill.uris,
+        JsonType::ARRAY,
+        false,
+        ProfileReader::parseResult,
+        ArrayType::OBJECT);
 }
 
-void from_json(const nlohmann::json &jsonObject, CustomizeData &customizeData)
+void from_json(const nlohmann::json &jsonObject, InnerCustomizeData &customizeData)
 {
     // these are not required fields.
     const auto &jsonObjectEnd = jsonObject.end();
-    if (jsonObject.find(ProfileReader::PROFILE_KEY_NAME) != jsonObjectEnd) {
-        customizeData.name = jsonObject.at(ProfileReader::PROFILE_KEY_NAME).get<std::string>();
-    }
-
-    if (jsonObject.find(ProfileReader::BUNDLE_MODULE_META_KEY_EXTRA) != jsonObjectEnd) {
-        customizeData.extra = jsonObject.at(ProfileReader::BUNDLE_MODULE_META_KEY_EXTRA).get<std::string>();
-    }
-
-    if (jsonObject.find(ProfileReader::BUNDLE_MODULE_META_KEY_VALUE) != jsonObjectEnd) {
-        customizeData.value = jsonObject.at(ProfileReader::BUNDLE_MODULE_META_KEY_VALUE).get<std::string>();
-    }
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        ProfileReader::PROFILE_KEY_NAME,
+        customizeData.name,
+        JsonType::STRING,
+        false,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        ProfileReader::BUNDLE_MODULE_META_KEY_EXTRA,
+        customizeData.extra,
+        JsonType::STRING,
+        false,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        ProfileReader::BUNDLE_MODULE_META_KEY_VALUE,
+        customizeData.value,
+        JsonType::STRING,
+        false,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
 }
 
 void from_json(const nlohmann::json &jsonObject, Parameters &parameters)
 {
     // these are required fields.
     const auto &jsonObjectEnd = jsonObject.end();
-    if (jsonObject.find(ProfileReader::BUNDLE_MODULE_PROFILE_KEY_TYPE) != jsonObjectEnd) {
-        parameters.type = jsonObject.at(ProfileReader::BUNDLE_MODULE_PROFILE_KEY_TYPE).get<std::string>();
-    }
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        ProfileReader::BUNDLE_MODULE_PROFILE_KEY_TYPE,
+        parameters.type,
+        JsonType::STRING,
+        true,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
     // these are not required fields.
-
-    if (jsonObject.find(ProfileReader::PROFILE_KEY_DESCRIPTION) != jsonObjectEnd) {
-        parameters.description = jsonObject.at(ProfileReader::PROFILE_KEY_DESCRIPTION).get<std::string>();
-    }
-
-    if (jsonObject.find(ProfileReader::PROFILE_KEY_NAME) != jsonObjectEnd) {
-        parameters.name = jsonObject.at(ProfileReader::PROFILE_KEY_NAME).get<std::string>();
-    }
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        ProfileReader::PROFILE_KEY_DESCRIPTION,
+        parameters.description,
+        JsonType::STRING,
+        false,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        ProfileReader::PROFILE_KEY_NAME,
+        parameters.name,
+        JsonType::STRING,
+        false,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
 }
 
 void from_json(const nlohmann::json &jsonObject, Results &results)
 {
     // these are required fields.
     const auto &jsonObjectEnd = jsonObject.end();
-    if (jsonObject.find(ProfileReader::BUNDLE_MODULE_PROFILE_KEY_TYPE) != jsonObjectEnd) {
-        results.type = jsonObject.at(ProfileReader::BUNDLE_MODULE_PROFILE_KEY_TYPE).get<std::string>();
-    }
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        ProfileReader::BUNDLE_MODULE_PROFILE_KEY_TYPE,
+        results.type,
+        JsonType::STRING,
+        true,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
     // these are not required fields.
-    if (jsonObject.find(ProfileReader::PROFILE_KEY_DESCRIPTION) != jsonObjectEnd) {
-        results.description = jsonObject.at(ProfileReader::PROFILE_KEY_DESCRIPTION).get<std::string>();
-    }
-
-    if (jsonObject.find(ProfileReader::PROFILE_KEY_NAME) != jsonObjectEnd) {
-        results.name = jsonObject.at(ProfileReader::PROFILE_KEY_NAME).get<std::string>();
-    }
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        ProfileReader::PROFILE_KEY_DESCRIPTION,
+        results.description,
+        JsonType::STRING,
+        false,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        ProfileReader::PROFILE_KEY_NAME,
+        results.name,
+        JsonType::STRING,
+        false,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
 }
 
 void from_json(const nlohmann::json &jsonObject, MetaData &metaData)
 {
     // these are not required fields.
     const auto &jsonObjectEnd = jsonObject.end();
-    if (jsonObject.find(ProfileReader::BUNDLE_MODULE_META_KEY_CUSTOMIZE_DATA) != jsonObjectEnd) {
-        metaData.customizeData =
-            jsonObject.at(ProfileReader::BUNDLE_MODULE_META_KEY_CUSTOMIZE_DATA).get<std::vector<CustomizeData>>();
-    }
-
-    if (jsonObject.find(ProfileReader::BUNDLE_MODULE_META_KEY_PARAMETERS) != jsonObjectEnd) {
-        metaData.parameters =
-            jsonObject.at(ProfileReader::BUNDLE_MODULE_META_KEY_PARAMETERS).get<std::vector<Parameters>>();
-    }
-
-    if (jsonObject.find(ProfileReader::BUNDLE_MODULE_META_KEY_RESULTS) != jsonObjectEnd) {
-        metaData.results = jsonObject.at(ProfileReader::BUNDLE_MODULE_META_KEY_RESULTS).get<std::vector<Results>>();
-    }
+	GetValueIfFindKey<std::vector<InnerCustomizeData>>(jsonObject,
+        jsonObjectEnd,
+        ProfileReader::BUNDLE_MODULE_META_KEY_CUSTOMIZE_DATA,
+        metaData.customizeData,
+        JsonType::ARRAY,
+        false,
+        ProfileReader::parseResult,
+        ArrayType::OBJECT);
+    GetValueIfFindKey<std::vector<Parameters>>(jsonObject,
+        jsonObjectEnd,
+        ProfileReader::BUNDLE_MODULE_META_KEY_PARAMETERS,
+        metaData.parameters,
+        JsonType::ARRAY,
+        false,
+        ProfileReader::parseResult,
+        ArrayType::OBJECT);
+    GetValueIfFindKey<std::vector<Results>>(jsonObject,
+        jsonObjectEnd,
+        ProfileReader::BUNDLE_MODULE_META_KEY_RESULTS,
+        metaData.results,
+        JsonType::ARRAY,
+        false,
+        ProfileReader::parseResult,
+        ArrayType::OBJECT);
 }
 
 void from_json(const nlohmann::json &jsonObject, Distro &distro)
 {
     const auto &jsonObjectEnd = jsonObject.end();
-    if (jsonObject.find(ProfileReader::BUNDLE_MODULE_PROFILE_KEY_DELIVERY_WITH_INSTALL) != jsonObjectEnd) {
-        distro.deliveryWithInstall =
-            jsonObject.at(ProfileReader::BUNDLE_MODULE_PROFILE_KEY_DELIVERY_WITH_INSTALL).get<bool>();
-    }
-
-    if (jsonObject.find(ProfileReader::BUNDLE_MODULE_PROFILE_KEY_MODULE_NAME) != jsonObjectEnd) {
-        distro.moduleName = jsonObject.at(ProfileReader::BUNDLE_MODULE_PROFILE_KEY_MODULE_NAME).get<std::string>();
-    }
-
-    if (jsonObject.find(ProfileReader::BUNDLE_MODULE_PROFILE_KEY_MODULE_TYPE) != jsonObjectEnd) {
-        distro.moduleType = jsonObject.at(ProfileReader::BUNDLE_MODULE_PROFILE_KEY_MODULE_TYPE).get<std::string>();
-    }
+    GetValueIfFindKey<bool>(jsonObject,
+        jsonObjectEnd,
+        ProfileReader::BUNDLE_MODULE_PROFILE_KEY_DELIVERY_WITH_INSTALL,
+        distro.deliveryWithInstall,
+        JsonType::BOOLEAN,
+        true,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        ProfileReader::BUNDLE_MODULE_PROFILE_KEY_MODULE_NAME,
+        distro.moduleName,
+        JsonType::STRING,
+        true,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        ProfileReader::BUNDLE_MODULE_PROFILE_KEY_MODULE_TYPE,
+        distro.moduleType,
+        JsonType::STRING,
+        true,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
 }
 
 void from_json(const nlohmann::json &jsonObject, UsedScene &usedScene)
 {
     const auto &jsonObjectEnd = jsonObject.end();
-    if (jsonObject.find(ProfileReader::BUNDLE_MODULE_PROFILE_KEY_REQ_PERMISSIONS_ABILITY) != jsonObjectEnd) {
-        usedScene.ability = jsonObject.at(ProfileReader::BUNDLE_MODULE_PROFILE_KEY_REQ_PERMISSIONS_ABILITY)
-                                .get<std::vector<std::string>>();
-    }
-    if (jsonObject.find(ProfileReader::BUNDLE_MODULE_PROFILE_KEY_REQ_PERMISSIONS_WHEN) != jsonObjectEnd) {
-        usedScene.when =
-            jsonObject.at(ProfileReader::BUNDLE_MODULE_PROFILE_KEY_REQ_PERMISSIONS_WHEN).get<std::string>();
-    }
+    GetValueIfFindKey<std::vector<std::string>>(jsonObject,
+        jsonObjectEnd,
+        ProfileReader::BUNDLE_MODULE_PROFILE_KEY_REQ_PERMISSIONS_ABILITY,
+        usedScene.ability,
+        JsonType::ARRAY,
+        false,
+        ProfileReader::parseResult,
+        ArrayType::STRING);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        ProfileReader::BUNDLE_MODULE_PROFILE_KEY_REQ_PERMISSIONS_WHEN,
+        usedScene.when,
+        JsonType::STRING,
+        false,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
 }
 
 void from_json(const nlohmann::json &jsonObject, ReqPermission &reqPermission)
 {
     const auto &jsonObjectEnd = jsonObject.end();
-    if (jsonObject.find(ProfileReader::BUNDLE_MODULE_PROFILE_KEY_REQ_PERMISSIONS_NAME) != jsonObjectEnd) {
-        reqPermission.name =
-            jsonObject.at(ProfileReader::BUNDLE_MODULE_PROFILE_KEY_REQ_PERMISSIONS_NAME).get<std::string>();
-    }
-    if (jsonObject.find(ProfileReader::BUNDLE_MODULE_PROFILE_KEY_REQ_PERMISSIONS_REASON) != jsonObjectEnd) {
-        reqPermission.reason =
-            jsonObject.at(ProfileReader::BUNDLE_MODULE_PROFILE_KEY_REQ_PERMISSIONS_REASON).get<std::string>();
-    }
-    if (jsonObject.find(ProfileReader::BUNDLE_MODULE_PROFILE_KEY_REQ_PERMISSIONS_USEDSCENE) != jsonObjectEnd) {
-        reqPermission.usedScene =
-            jsonObject.at(ProfileReader::BUNDLE_MODULE_PROFILE_KEY_REQ_PERMISSIONS_USEDSCENE).get<UsedScene>();
-    }
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        ProfileReader::BUNDLE_MODULE_PROFILE_KEY_REQ_PERMISSIONS_NAME,
+        reqPermission.name,
+        JsonType::STRING,
+        true,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        ProfileReader::BUNDLE_MODULE_PROFILE_KEY_REQ_PERMISSIONS_REASON,
+        reqPermission.reason,
+        JsonType::STRING,
+        false,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<UsedScene>(jsonObject,
+        jsonObjectEnd,
+        ProfileReader::BUNDLE_MODULE_PROFILE_KEY_REQ_PERMISSIONS_USEDSCENE,
+        reqPermission.usedScene,
+        JsonType::OBJECT,
+        false,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
 }
 
 void from_json(const nlohmann::json &jsonObject, DefPermission &defPermission)
 {
     const auto &jsonObjectEnd = jsonObject.end();
-    if (jsonObject.find(ProfileReader::BUNDLE_MODULE_PROFILE_KEY_DEF_PERMISSIONS_NAME) != jsonObjectEnd) {
-        defPermission.name =
-            jsonObject.at(ProfileReader::BUNDLE_MODULE_PROFILE_KEY_DEF_PERMISSIONS_NAME).get<std::string>();
-    }
-    if (jsonObject.find(ProfileReader::BUNDLE_MODULE_PROFILE_KEY_DEF_PERMISSIONS_GRANTMODE) != jsonObjectEnd) {
-        defPermission.grantMode =
-            jsonObject.at(ProfileReader::BUNDLE_MODULE_PROFILE_KEY_DEF_PERMISSIONS_GRANTMODE).get<std::string>();
-    }
-    if (jsonObject.find(ProfileReader::BUNDLE_MODULE_PROFILE_KEY_DEF_PERMISSIONS_AVAILABLESCOPE) != jsonObjectEnd) {
-        defPermission.availableScope =
-            jsonObject.at(ProfileReader::BUNDLE_MODULE_PROFILE_KEY_DEF_PERMISSIONS_AVAILABLESCOPE)
-                .get<std::vector<std::string>>();
-    }
-    if (jsonObject.find(ProfileReader::BUNDLE_MODULE_PROFILE_KEY_DEF_PERMISSIONS_LABEL) != jsonObjectEnd) {
-        defPermission.label =
-            jsonObject.at(ProfileReader::BUNDLE_MODULE_PROFILE_KEY_DEF_PERMISSIONS_LABEL).get<std::string>();
-    }
-    if (jsonObject.find(ProfileReader::BUNDLE_MODULE_PROFILE_KEY_DEF_PERMISSIONS_LABEL_ID) != jsonObjectEnd) {
-        defPermission.labelId =
-            jsonObject.at(ProfileReader::BUNDLE_MODULE_PROFILE_KEY_DEF_PERMISSIONS_LABEL_ID).get<int32_t>();
-    }
-    if (jsonObject.find(ProfileReader::BUNDLE_MODULE_PROFILE_KEY_DEF_PERMISSIONS_DESCRIPTION) != jsonObjectEnd) {
-        defPermission.description =
-            jsonObject.at(ProfileReader::BUNDLE_MODULE_PROFILE_KEY_DEF_PERMISSIONS_DESCRIPTION).get<std::string>();
-    }
-    if (jsonObject.find(ProfileReader::BUNDLE_MODULE_PROFILE_KEY_DEF_PERMISSIONS_DESCRIPTION_ID) != jsonObjectEnd) {
-        defPermission.descriptionId =
-            jsonObject.at(ProfileReader::BUNDLE_MODULE_PROFILE_KEY_DEF_PERMISSIONS_DESCRIPTION_ID).get<int32_t>();
-    }
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        ProfileReader::BUNDLE_MODULE_PROFILE_KEY_DEF_PERMISSIONS_NAME,
+        defPermission.name,
+        JsonType::STRING,
+        true,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        ProfileReader::BUNDLE_MODULE_PROFILE_KEY_DEF_PERMISSIONS_GRANTMODE,
+        defPermission.grantMode,
+        JsonType::STRING,
+        true,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::vector<std::string>>(jsonObject,
+        jsonObjectEnd,
+        ProfileReader::BUNDLE_MODULE_PROFILE_KEY_DEF_PERMISSIONS_AVAILABLESCOPE,
+        defPermission.availableScope,
+        JsonType::ARRAY,
+        false,
+        ProfileReader::parseResult,
+        ArrayType::STRING);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        ProfileReader::BUNDLE_MODULE_PROFILE_KEY_DEF_PERMISSIONS_LABEL,
+        defPermission.label,
+        JsonType::STRING,
+        false,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<int32_t>(jsonObject,
+        jsonObjectEnd,
+        ProfileReader::BUNDLE_MODULE_PROFILE_KEY_DEF_PERMISSIONS_LABEL_ID,
+        defPermission.labelId,
+        JsonType::NUMBER,
+        false,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        ProfileReader::BUNDLE_MODULE_PROFILE_KEY_DEF_PERMISSIONS_DESCRIPTION,
+        defPermission.description,
+        JsonType::STRING,
+        false,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<int32_t>(jsonObject,
+        jsonObjectEnd,
+        ProfileReader::BUNDLE_MODULE_PROFILE_KEY_DEF_PERMISSIONS_DESCRIPTION_ID,
+        defPermission.descriptionId,
+        JsonType::NUMBER,
+        false,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
 }
 
-bool InnerBundleInfo::FromJson(const nlohmann::json &jsonObject)
+int32_t InnerBundleInfo::FromJson(const nlohmann::json &jsonObject)
 {
-    try {
-        isSupportBackup_ = jsonObject.at(IS_SUPPORT_BACKUP).get<bool>();
-        appType_ = jsonObject.at(APP_TYPE).get<Constants::AppType>();
-        uid_ = jsonObject.at(UID).get<int>();
-        gid_ = jsonObject.at(GID).get<int>();
-        baseDataDir_ = jsonObject.at(BASE_DATA_DIR).get<std::string>();
-        bundleStatus_ = jsonObject.at(BUNDLE_STATUS).get<BundleStatus>();
-        baseBundleInfo_ = jsonObject.at(BASE_BUNDLE_INFO).get<BundleInfo>();
-        baseApplicationInfo_ = jsonObject.at(BASE_APPLICATION_INFO).get<ApplicationInfo>();
-        baseAbilityInfos_ = jsonObject.at(BASE_ABILITY_INFO).get<std::map<std::string, AbilityInfo>>();
-        innerModuleInfos_ = jsonObject.at(INNER_MODULE_INFO).get<std::map<std::string, InnerModuleInfo>>();
-        skillInfos_ = jsonObject.at(SKILL_INFOS).get<std::map<std::string, std::vector<Skill>>>();
-        isKeepData_ = jsonObject.at(IS_KEEP_DATA).get<bool>();
-        userId_ = jsonObject.at(USER_ID).get<int>();
-        mainAbility_ = jsonObject.at(MAIN_ABILITY).get<std::string>();
-        provisionId_ = jsonObject.at(PROVISION_ID).get<std::string>();
-        appFeature_ = jsonObject.at(APP_FEATURE).get<std::string>();
-        hasEntry_ = jsonObject.at(HAS_ENTRY).get<bool>();
-    } catch (nlohmann::detail::parse_error &exception) {
-        APP_LOGE("has a parse_error:%{public}s", exception.what());
-        return false;
-    } catch (nlohmann::detail::type_error &exception) {
-        APP_LOGE("has a type_error:%{public}s.", exception.what());
-        return false;
-    } catch (nlohmann::detail::out_of_range &exception) {
-        APP_LOGE("has an out_of_range exception:%{public}s.", exception.what());
-        return false;
-    }
-    return true;
+    const auto &jsonObjectEnd = jsonObject.end();
+    GetValueIfFindKey<bool>(jsonObject,
+        jsonObjectEnd,
+        IS_SUPPORT_BACKUP,
+        isSupportBackup_,
+        JsonType::BOOLEAN,
+        true,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<Constants::AppType>(jsonObject,
+        jsonObjectEnd,
+        APP_TYPE,
+        appType_,
+        JsonType::NUMBER,
+        true,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<int>(jsonObject,
+        jsonObjectEnd,
+        UID,
+        uid_,
+        JsonType::NUMBER,
+        true,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<int>(jsonObject,
+        jsonObjectEnd,
+        GID,
+        gid_,
+        JsonType::NUMBER,
+        true,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        BASE_DATA_DIR,
+        baseDataDir_,
+        JsonType::STRING,
+        true,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<BundleStatus>(jsonObject,
+        jsonObjectEnd,
+        BUNDLE_STATUS,
+        bundleStatus_,
+        JsonType::NUMBER,
+        true,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<BundleInfo>(jsonObject,
+        jsonObjectEnd,
+        BASE_BUNDLE_INFO,
+        baseBundleInfo_,
+        JsonType::OBJECT,
+        true,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<ApplicationInfo>(jsonObject,
+        jsonObjectEnd,
+        BASE_APPLICATION_INFO,
+        baseApplicationInfo_,
+        JsonType::OBJECT,
+        true,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::map<std::string, AbilityInfo>>(jsonObject,
+        jsonObjectEnd,
+        BASE_ABILITY_INFO,
+        baseAbilityInfos_,
+        JsonType::OBJECT,
+        true,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::map<std::string, InnerModuleInfo>>(jsonObject,
+        jsonObjectEnd,
+        INNER_MODULE_INFO,
+        innerModuleInfos_,
+        JsonType::OBJECT,
+        true,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::map<std::string, std::vector<Skill>>>(jsonObject,
+        jsonObjectEnd,
+        SKILL_INFOS,
+        skillInfos_,
+        JsonType::OBJECT,
+        true,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<bool>(jsonObject,
+        jsonObjectEnd,
+        IS_KEEP_DATA,
+        isKeepData_,
+        JsonType::BOOLEAN,
+        true,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<int>(jsonObject,
+        jsonObjectEnd,
+        USER_ID,
+        userId_,
+        JsonType::NUMBER,
+        true,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        MAIN_ABILITY,
+        mainAbility_,
+        JsonType::STRING,
+        true,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        PROVISION_ID,
+        provisionId_,
+        JsonType::STRING,
+        true,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        APP_FEATURE,
+        appFeature_,
+        JsonType::STRING,
+        true,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
+	GetValueIfFindKey<std::map<std::string, std::vector<FormInfo>>>(jsonObject,
+		jsonObjectEnd,
+		MODULE_FORMS,
+		formInfos_,
+		JsonType::OBJECT,
+		true,
+		ProfileReader::parseResult,
+		ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<bool>(jsonObject,
+        jsonObjectEnd,
+        HAS_ENTRY,
+        hasEntry_,
+        JsonType::BOOLEAN,
+        true,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
+    int32_t ret = ProfileReader::parseResult;
+    // need recover parse result to ERR_OK
+    ProfileReader::parseResult = ERR_OK;
+    return ret;
 }
 
 std::optional<std::vector<Skill>> InnerBundleInfo::FindSkills(const std::string &keyName) const
@@ -502,6 +849,7 @@ std::optional<HapModuleInfo> InnerBundleInfo::FindHapModuleInfo(const std::strin
     hapInfo.description = it->second.description;
     hapInfo.supportedModes = baseApplicationInfo_.supportedModes;
     hapInfo.reqCapabilities = it->second.reqCapabilities;
+    hapInfo.colorMode = it->second.colorMode;
     bool first = false;
     for (auto &ability : baseAbilityInfos_) {
         if (ability.first.find(modulePackage) != std::string::npos) {
@@ -550,6 +898,7 @@ bool InnerBundleInfo::AddModuleInfo(const InnerBundleInfo &newInfo)
     AddInnerModuleInfo(newInfo.innerModuleInfos_);
     AddModuleAbilityInfo(newInfo.baseAbilityInfos_);
     AddModuleSkillInfo(newInfo.skillInfos_);
+    AddModuleFormInfo(newInfo.formInfos_);
     return true;
 }
 
@@ -579,6 +928,7 @@ void InnerBundleInfo::UpdateModuleInfo(const InnerBundleInfo &newInfo)
     for (auto it = baseAbilityInfos_.begin(); it != baseAbilityInfos_.end();) {
         if (it->first.find(newInfo.currentPackage_) != std::string::npos) {
             skillInfos_.erase(it->first);
+            formInfos_.erase(it->first);
             it = baseAbilityInfos_.erase(it);
         } else {
             ++it;
@@ -593,6 +943,7 @@ void InnerBundleInfo::UpdateModuleInfo(const InnerBundleInfo &newInfo)
     AddInnerModuleInfo(newInfo.innerModuleInfos_);
     AddModuleAbilityInfo(newInfo.baseAbilityInfos_);
     AddModuleSkillInfo(newInfo.skillInfos_);
+    AddModuleFormInfo(newInfo.formInfos_);
 }
 
 void InnerBundleInfo::RemoveModuleInfo(const std::string &modulePackage)
@@ -612,6 +963,9 @@ void InnerBundleInfo::RemoveModuleInfo(const std::string &modulePackage)
     }
     for (auto it = skillInfos_.begin(); it != skillInfos_.end();) {
         (it->first.find(modulePackage) != std::string::npos) ? skillInfos_.erase(it++) : (++it);
+    }
+    for (auto it = formInfos_.begin(); it != formInfos_.end();) {
+        (it->first.find(modulePackage) != std::string::npos) ? formInfos_.erase(it++) : (++it);
     }
 }
 
@@ -635,6 +989,7 @@ std::string InnerBundleInfo::ToString() const
     j[APP_FEATURE] = appFeature_;
     j[PROVISION_ID] = provisionId_;
     j[HAS_ENTRY] = hasEntry_;
+    j[MODULE_FORMS] = formInfos_;
     return j.dump();
 }
 
@@ -703,6 +1058,26 @@ bool InnerBundleInfo::CheckSpecialMetaData(const std::string &metaData) const
         }
     }
     return false;
+}
+
+void InnerBundleInfo::GetFormsInfoByModule(const std::string &moduleName, std::vector<FormInfo> &formInfos) const
+{
+	for (const auto &data : formInfos_) {
+		for (auto &form : data.second) {
+			if (form.moduleName == moduleName) {
+				formInfos.emplace_back(form);
+			}
+		}
+	}
+}
+
+void InnerBundleInfo::GetFormsInfoByApp(std::vector<FormInfo> &formInfos) const
+{
+	for (const auto &data : formInfos_) {
+		for (auto &form : data.second) {
+			formInfos.emplace_back(form);
+		}
+	}
 }
 
 }  // namespace AppExecFwk

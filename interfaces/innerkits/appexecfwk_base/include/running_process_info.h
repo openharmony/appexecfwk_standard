@@ -20,14 +20,40 @@
 #include <vector>
 
 #include "parcel.h"
-#include "app_process_info.h"
 
 namespace OHOS {
 
 namespace AppExecFwk {
 
+enum class AppProcessState {
+    APP_STATE_BEGIN = 0,
+    APP_STATE_CREATE = APP_STATE_BEGIN,
+    APP_STATE_READY,
+    APP_STATE_FOREGROUND,
+    APP_STATE_BACKGROUND,
+    APP_STATE_SUSPENDED,
+    APP_STATE_TERMINATED,
+    APP_STATE_END,
+};
+
+enum class WeightReasonCode {
+    REASON_UNKNOWN = 0,
+    WEIGHT_FOREGROUND = 100,
+    WEIGHT_FOREGROUND_SERVICE = 125,
+    WEIGHT_VISIBLE = 200,
+    WEIGHT_PERCEPTIBLE = 230,
+    WEIGHT_SERVICE = 300,
+    WEIGHT_TOP_SLEEPING = 325,
+    WEIGHT_CANT_SAVE_STATE = 350,
+    WEIGHT_CACHED = 400,
+    WEIGHT_GONE = 1000,
+};
+
 struct RunningProcessInfo : public Parcelable {
-    std::vector<AppProcessInfo> appProcessInfos;
+    std::string processName_;
+    std::int32_t pid_;
+    std::int32_t uid_;
+    AppProcessState state_;
 
     bool ReadFromParcel(Parcel &parcel);
     virtual bool Marshalling(Parcel &parcel) const override;

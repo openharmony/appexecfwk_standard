@@ -94,11 +94,12 @@ public:
     sptr<MockAbilityToken> GetAbilityToken();
 
 protected:
-    std::unique_ptr<AppMgrServiceInner> serviceInner_ = nullptr;
+    std::shared_ptr<AppMgrServiceInner> serviceInner_ = nullptr;
     sptr<MockAbilityToken> mockToken_ = nullptr;
     sptr<MockAppStateCallback> mockAppStateCallbackStub_ = nullptr;
     std::shared_ptr<AppMgrServiceInner> inner_ = nullptr;
     sptr<BundleMgrService> mockBundleMgr;
+    std::shared_ptr<AMSEventHandler> handler_ = nullptr;
 };
 
 void AmsAppLifeCycleModuleTest::SetUpTestCase()
@@ -124,6 +125,12 @@ void AmsAppLifeCycleModuleTest::SetUp()
 
     mockBundleMgr = new (std::nothrow) BundleMgrService();
     serviceInner_->SetBundleManager(mockBundleMgr);
+
+    serviceInner_->ProcessOptimizerInit();
+
+    auto runner = EventRunner::Create("AmsAppLifeCycleModuleTest");
+    handler_ = std::make_shared<AMSEventHandler>(runner, serviceInner_);
+    serviceInner_->SetEventHandler(handler_);
 }
 
 void AmsAppLifeCycleModuleTest::TearDown()
@@ -202,7 +209,8 @@ void AmsAppLifeCycleModuleTest::ChangeAbilityStateToForegroud(const sptr<MockApp
 {
     if (!isChange) {
         EXPECT_CALL(*mockAppScheduler, ScheduleForegroundApplication()).Times(1);
-        EXPECT_CALL(*mockAppStateCallbackStub_, OnAppStateChanged(_)).Times(1);
+        EXPECT_CALL(*mockAppStateCallbackStub_, OnAppStateChanged(_)).Times(testing::AtLeast(1));
+        EXPECT_CALL(*mockAppStateCallbackStub_, OnAbilityRequestDone(_, _)).Times(testing::AtLeast(1));
     }
 
     serviceInner_->UpdateAbilityState(token, AbilityState::ABILITY_STATE_FOREGROUND);
@@ -220,7 +228,8 @@ void AmsAppLifeCycleModuleTest::ChangeAbilityStateToBackGroud(const sptr<MockApp
 {
     if (!isChange) {
         EXPECT_CALL(*mockAppScheduler, ScheduleBackgroundApplication()).Times(1);
-        EXPECT_CALL(*mockAppStateCallbackStub_, OnAppStateChanged(_)).Times(1);
+        EXPECT_CALL(*mockAppStateCallbackStub_, OnAppStateChanged(_)).Times(testing::AtLeast(1));
+        EXPECT_CALL(*mockAppStateCallbackStub_, OnAbilityRequestDone(_, _)).Times(testing::AtLeast(1));
     }
 
     serviceInner_->UpdateAbilityState(token, AbilityState::ABILITY_STATE_BACKGROUND);
@@ -240,7 +249,7 @@ void AmsAppLifeCycleModuleTest::ChangeAppToTerminate(const sptr<MockAppScheduler
 
     if (isStop) {
         EXPECT_CALL(*mockAppScheduler, ScheduleTerminateApplication()).Times(1);
-        EXPECT_CALL(*mockAppStateCallbackStub_, OnAppStateChanged(_)).Times(1);
+        EXPECT_CALL(*mockAppStateCallbackStub_, OnAppStateChanged(_)).Times(testing::AtLeast(1));
         serviceInner_->AbilityTerminated(token);
         ASSERT_NE(appRunningRecord, nullptr);
         int32_t recordId = appRunningRecord->GetRecordId();
@@ -341,10 +350,10 @@ sptr<MockAbilityToken> AmsAppLifeCycleModuleTest::GetAbilityToken()
     return mockToken_;
 }
 
-void InvokeOnAbilityRequestDone(const sptr<IRemoteObject> &obj, const AbilityState state)
-{
-    EXPECT_EQ(state, AbilityState::ABILITY_STATE_BACKGROUND);
-}
+// void InvokeOnAbilityRequestDone(const sptr<IRemoteObject> &obj, const AbilityState state)
+// {
+//     EXPECT_EQ(state, AbilityState::ABILITY_STATE_BACKGROUND);
+// }
 
 /*
  * Feature: Ams
@@ -890,9 +899,9 @@ HWTEST_F(AmsAppLifeCycleModuleTest, StateChange_010, TestSize.Level3)
 
     sptr<BundleMgrService> bundleMgr = new BundleMgrService();
     serviceInner_->SetBundleManager(bundleMgr.GetRefPtr());
-    auto allRunningProcessInfo = std::make_shared<RunningProcessInfo>();
+    std::vector<RunningProcessInfo> allRunningProcessInfo;
     serviceInner_->GetAllRunningProcesses(allRunningProcessInfo);
-    EXPECT_EQ(allRunningProcessInfo->appProcessInfos.size(), size_t(APPLICATION_NUM));
+    EXPECT_EQ(allRunningProcessInfo.size(), size_t(APPLICATION_NUM));
 
     serviceInner_->StopAllProcess();
 
@@ -1029,10 +1038,6 @@ HWTEST_F(AmsAppLifeCycleModuleTest, StateChange_015, TestSize.Level0)
     auto appRunningRecord = StartProcessAndLoadAbility(mockAppScheduler, token, abilityInfo, appInfo, testProcessInfo);
 
     EXPECT_CALL(*mockAppScheduler, ScheduleBackgroundApplication()).Times(1);
-    EXPECT_CALL(*mockAppStateCallbackStub_, OnAbilityRequestDone(_, _))
-        .Times(1)
-        .WillOnce(testing::Invoke(InvokeOnAbilityRequestDone));
-
     ChangeAbilityStateAfterAppStart(mockAppScheduler, testProcessInfo.pid);
     CheckState(appRunningRecord, token, AbilityState::ABILITY_STATE_READY, ApplicationState::APP_STATE_READY);
 

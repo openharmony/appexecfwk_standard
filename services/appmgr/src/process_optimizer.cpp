@@ -21,7 +21,6 @@
 
 #include "app_log_wrapper.h"
 
-#define LMK_UTIL
 #define APP_SUSPEND_TIMER_NAME_PREFIX "AppSuspendTimer"
 
 namespace OHOS {
@@ -30,7 +29,7 @@ namespace AppExecFwk {
 using namespace std::placeholders;
 
 namespace {
-// constexpr int APP_OOM_ADJ_SYSTEM = -1;
+constexpr int APP_OOM_ADJ_SYSTEM = -100;
 // foreground process oom_adj
 constexpr int APP_OOM_ADJ_FOREGROUND = 0;
 
@@ -61,18 +60,28 @@ constexpr int APP_OOM_ADJ_EMPTY_MAX_VALUE = 32 * 1024;
 
 constexpr int APP_OOM_ADJ_UNKNOWN = 1000;
 constexpr int APP_OOM_ADJ_UNKNOWN_VALUE = 64 * 1024;
+
+constexpr std::string_view SYSTEM_UI_BUNDLE_NAME = "com.ohos.systemui";
+
+// pressure level low
+constexpr int LMKS_OOM_ADJ_LOW = 800;
+// pressure level medium
+constexpr int LMKS_OOM_ADJ_MEDIUM = 600;
+// pressure level critical
+constexpr int LMKS_OOM_ADJ_CRITICAL = 0;
+constexpr int MemoryLevel[] = {LMKS_OOM_ADJ_LOW, LMKS_OOM_ADJ_MEDIUM, LMKS_OOM_ADJ_CRITICAL};
 }  // namespace
 
-ProcessOptimizer::ProcessOptimizer(const LmkdClientPtr &lmkdClient, int suspendTimeout)
-    : lmkdClient_(lmkdClient), suspendTimeout_(suspendTimeout)
+ProcessOptimizer::ProcessOptimizer(const LmksClientPtr &lmksClient, int suspendTimeout)
+    : lmksClient_(lmksClient), suspendTimeout_(suspendTimeout)
 {
     APP_LOGI("%{public}s(%{public}d) constructed.", __func__, __LINE__);
 }
 
 ProcessOptimizer::~ProcessOptimizer()
 {
-    if (lmkdClient_) {
-        lmkdClient_->ProcPurge();
+    if (lmksClient_) {
+        lmksClient_->ProcPurge();
     }
 
     APP_LOGI("%{public}s(%{public}d) destructed.", __func__, __LINE__);
@@ -92,17 +101,10 @@ bool ProcessOptimizer::Init()
         return false;
     }
 
-#ifdef LMK_UTIL
-    // create lmkManager
-    if (!lmkUtil_) {
-        lmkUtil_ = std::make_unique<LmkUtil>();
-    }
-#endif
-
     // Initializing cgroup manager.
     if (!DelayedSingleton<CgroupManager>::GetInstance()->IsInited()) {
         APP_LOGW("%{public}s(%{public}d) cgroup manager not inited.", __func__, __LINE__);
-        if (DelayedSingleton<CgroupManager>::GetInstance()->Init()) {
+        if (!DelayedSingleton<CgroupManager>::GetInstance()->Init()) {
             APP_LOGE("%{public}s(%{public}d) cannot init cgroup manager.", __func__, __LINE__);
             return false;
         }
@@ -115,25 +117,9 @@ bool ProcessOptimizer::Init()
     DelayedSingleton<CgroupManager>::GetInstance()->LowMemoryAlert =
         std::bind(&ProcessOptimizer::OnLowMemoryAlert, this, _1);
 
-    // Initializing lmkd.
-    LmkdClientPtr lmkdClientLocal;
-    lmkdClientLocal.swap(lmkdClient_);
-    if (!lmkdClientLocal) {
-        lmkdClientLocal = std::make_shared<LmkdClient>();
-        if (!lmkdClientLocal) {
-            APP_LOGE("%{public}s(%{public}d) failed to create lmkd client.", __func__, __LINE__);
-            return false;
-        }
-    }
-
-    if (!lmkdClientLocal->IsOpen()) {
-        if (!lmkdClientLocal->Open()) {
-            APP_LOGE("%{public}s(%{public}d) cannot open lmkd connection.", __func__, __LINE__);
-            return false;
-        }
-    }
-
-    LmkdClient::Targets targets = {
+    // Initializing lmks.
+    LmksClientPtr lmksClientLocal = nullptr;
+    LmksClient::Targets targets = {
         {APP_OOM_ADJ_VISIBLE_MAX_VALUE, APP_OOM_ADJ_VISIBLE_MAX},
         {APP_OOM_ADJ_PERCEPTIBLE_MAX_VALUE, APP_OOM_ADJ_PERCEPTIBLE_MAX},
         {APP_OOM_ADJ_BACKGROUND_MAX_VALUE, APP_OOM_ADJ_BACKGROUND_MAX},
@@ -142,20 +128,36 @@ bool ProcessOptimizer::Init()
         {APP_OOM_ADJ_UNKNOWN_VALUE, APP_OOM_ADJ_UNKNOWN},
     };
 
-    if (!lmkdClientLocal->Target(targets)) {
-        APP_LOGE("%{public}s(%{public}d) cannot init lmkd.", __func__, __LINE__);
-        return false;
+    lmksClientLocal.swap(lmksClient_);
+    if (!lmksClientLocal) {
+        lmksClientLocal = std::make_shared<LmksClient>();
+        if (!lmksClientLocal) {
+            APP_LOGE("%{public}s(%{public}d) failed to create lmks client.", __func__, __LINE__);
+            return false;
+        }
     }
 
+    if (!lmksClientLocal->IsOpen()) {
+        if (lmksClientLocal->Open()) {
+            APP_LOGE("%{public}s(%{public}d) cannot open lmks connection.", __func__, __LINE__);
+            return false;
+        }
+    }
+
+    if (lmksClientLocal->Target(targets) != ERR_OK) {
+        // print warning when lmks server not implement.
+        APP_LOGW("%{public}s(%{public}d) cannot init lmks.", __func__, __LINE__);
+    }
+    lmksClient_ = lmksClientLocal;
+
     // Save initialized states.
-    auto eventHandler = EventHandler::Current();
+    auto eventHandler = std::make_shared<EventHandler>(EventRunner::Create());
     if (!eventHandler) {
         APP_LOGE("%{public}s(%{public}d) no available event handler for current thread.", __func__, __LINE__);
         return false;
     }
 
     eventHandler_ = eventHandler;
-    lmkdClient_ = lmkdClientLocal;
 
     return true;
 }
@@ -191,8 +193,8 @@ void ProcessOptimizer::OnAppRemoved(const AppPtr &app)
         return;
     }
 
-    if (!lmkdClient_) {
-        APP_LOGE("%{public}s(%{public}d) invalid lmkd client.", __func__, __LINE__);
+    if (!lmksClient_) {
+        APP_LOGE("%{public}s(%{public}d) invalid lmks client.", __func__, __LINE__);
         return;
     }
 
@@ -212,8 +214,8 @@ void ProcessOptimizer::OnAppRemoved(const AppPtr &app)
         return;
     }
 
-    if (lmkdClient_->ProcRemove(priorityObject->GetPid()) != ERR_OK) {
-        APP_LOGE("%{public}s(%{public}d) failed to remove app '%{public}s'(%{publid}d) from lmkd.",
+    if (lmksClient_->ProcRemove(priorityObject->GetPid()) != ERR_OK) {
+        APP_LOGE("%{public}s(%{public}d) failed to remove app '%{public}s'(%{publid}d) from lmks.",
             __func__,
             __LINE__,
             app->GetName().c_str(),
@@ -356,13 +358,13 @@ bool ProcessOptimizer::SetAppOomAdj(const AppPtr &app, int oomAdj)
         return false;
     }
 
-    if (!LmkdClient::CheckOomAdj(oomAdj)) {
+    if (!LmksClient::CheckOomAdj(oomAdj)) {
         APP_LOGE("%{public}s(%{public}d) invalid oom adj %{public}d.", __func__, __LINE__, oomAdj);
         return false;
     }
 
-    if (!lmkdClient_) {
-        APP_LOGE("%{public}s(%{public}d) invalid lmkd client.", __func__, __LINE__);
+    if (!lmksClient_) {
+        APP_LOGE("%{public}s(%{public}d) invalid lmks client.", __func__, __LINE__);
         return false;
     }
 
@@ -377,9 +379,9 @@ bool ProcessOptimizer::SetAppOomAdj(const AppPtr &app, int oomAdj)
         return true;
     }
 
-    if (lmkdClient_->ProcPrio(priorityObject->GetPid(), app->GetUid(), oomAdj) != ERR_OK) {
-        APP_LOGE("%{public}s(%{public}d) lmkd proc prio failed.", __func__, __LINE__);
-        return false;
+    if (lmksClient_->ProcPrio(priorityObject->GetPid(), app->GetUid(), oomAdj) != ERR_OK) {
+        // print warning when lmks server not implement.
+        APP_LOGW("%{public}s(%{public}d) lmks proc prio failed.", __func__, __LINE__);
     }
 
     priorityObject->SetCurAdj(oomAdj);
@@ -426,6 +428,7 @@ bool ProcessOptimizer::SetAppSchedPolicy(const AppPtr &app, const CgroupManager:
 
 void ProcessOptimizer::OnLowMemoryAlert(const CgroupManager::LowMemoryLevel level)
 {
+    APP_LOGI("OnLowMemoryAlert level %{public}d", level);
     // Find the oldest background app.
     for (auto it(appLru_.rbegin()); it != appLru_.rend(); ++it) {
         if ((*it)->GetState() == ApplicationState::APP_STATE_BACKGROUND) {
@@ -434,27 +437,27 @@ void ProcessOptimizer::OnLowMemoryAlert(const CgroupManager::LowMemoryLevel leve
         }
     }
 
-    // kill process
-    if (lmkUtil_) {
-        int32_t proc_cnt = 0;
-        int64_t free_rss = 0;
+    // send pid which will be killed.
+    std::list<AppPtr>::iterator iter = appLru_.begin();
+    while (iter != appLru_.end()) {
+        auto priorityObject = (*iter)->GetPriorityObject();
+        if (priorityObject != nullptr && priorityObject->GetCurAdj() >= MemoryLevel[level]) {
+            auto pid = priorityObject->GetPid();
+            if (pid <= 0) {
+                APP_LOGE("pid %{public}d invalid", pid);
+                iter = appLru_.erase(iter);
+                continue;
+            }
 
-        // kill process and free memory by oom_adj. the function will remove app object in appLru
-        proc_cnt = lmkUtil_->KillProcess(appLru_, level, free_rss);
-        #if __WORDSIZE == 64
-            APP_LOGI("%{public}s(%{public}d) free memory proc count %{public}d rss %{public}ld",
-            __func__,
-            __LINE__,
-            proc_cnt,
-            free_rss);
-        #else
-            APP_LOGI("%{public}s(%{public}d) free memory proc count %{public}d rss %{public}lld",
-            __func__,
-            __LINE__,
-            proc_cnt,
-            free_rss);
-        #endif
-
+            if (lmksClient_->ProcRemove(priorityObject->GetPid()) != ERR_OK) {
+                APP_LOGE("failed to remove pid (%{publid}d) from lmks.", priorityObject->GetPid());
+            } else {
+                APP_LOGE("success to remove pid (%{publid}d) from lmks.", priorityObject->GetPid());
+                iter = appLru_.erase(iter);
+                continue;
+            }
+        }
+        iter++;
     }
 }
 
@@ -464,11 +467,21 @@ bool ProcessOptimizer::UpdateAppOomAdj(const AppPtr &app)
         APP_LOGE("%{public}s(%{public}d) invalid app.", __func__, __LINE__);
         return false;
     }
+    APP_LOGI("UpdateAppOomAdj bundleName[%{public}s] state[%{public}d] pid[%{public}d] curadj[%{public}d]",
+        app->GetBundleName().c_str(),
+        app->GetState(),
+        app->GetPriorityObject()->GetPid(),
+        app->GetPriorityObject()->GetCurAdj());
 
     auto priorityObject = app->GetPriorityObject();
     if (!priorityObject) {
         APP_LOGE("%{public}s(%{public}d) invalid priority object.", __func__, __LINE__);
         return false;
+    }
+
+    // special set launcher and systemui adj
+    if (app->IsLauncherApp() || app->GetBundleName() == SYSTEM_UI_BUNDLE_NAME) {
+        return SetAppOomAdj(app, APP_OOM_ADJ_SYSTEM);
     }
 
     auto state = app->GetState();
@@ -512,6 +525,12 @@ bool ProcessOptimizer::UpdateAppOomAdj(const AppPtr &app)
         if (curApp->GetState() != state) {
             continue;
         }
+
+        // adj of launcher and systemui is always APP_OOM_ADJ_SYSTEM
+        if (curApp->IsLauncherApp() || curApp->GetBundleName() == SYSTEM_UI_BUNDLE_NAME) {
+            continue;
+        }
+
         SetAppOomAdj(curApp, oomAdj);
         if (oomAdj < oomAdjMax) {
             oomAdj += 1;
@@ -676,5 +695,32 @@ std::string ProcessOptimizer::GetAppSuspendTimerName(const AppPtr &app)
 
     return ret;
 }
+
+void ProcessOptimizer::SetAppFreezingTime(int time)
+{
+    APP_LOGE("%{public}s  input second time:[%{public}d]", __func__, time);
+
+    if (time < 0) {
+        APP_LOGE("%{public}s  input time error.", __func__);
+        return;
+    }
+
+    suspendTimeout_ = time;
+    // convert seconds to milliseconds
+    suspendTimeout_ *= 1000;
+    if (suspendTimeout_ > INT_MAX) {
+        suspendTimeout_ = APP_SUSPEND_TIMEOUT_DEFAULT;
+        APP_LOGE("data overflow");
+        return;
+    }
+}
+
+void ProcessOptimizer::GetAppFreezingTime(int &time)
+{
+    time = suspendTimeout_ / 1000;
+    APP_LOGE("%{public}s  current freez time:[%{public}d]", __func__, time);
+    return;
+}
+
 }  // namespace AppExecFwk
 }  // namespace OHOS

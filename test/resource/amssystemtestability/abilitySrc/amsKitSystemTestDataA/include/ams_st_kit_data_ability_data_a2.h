@@ -97,7 +97,7 @@ public:
 
 class KitTestDataA2EventSubscriber : public CommonEventSubscriber {
 public:
-    explicit KitTestDataA2EventSubscriber(const CommonEventSubscribeInfo &sp, AmsStKitDataAbilityDataA2 *ability)
+    KitTestDataA2EventSubscriber(const CommonEventSubscribeInfo &sp, AmsStKitDataAbilityDataA2 *ability)
         : CommonEventSubscriber(sp)
     {
         mainAbility_ = ability;

@@ -12,7 +12,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #include "context_container.h"
 #include "app_log_wrapper.h"
 #include "ability_manager_errors.h"
@@ -709,6 +708,307 @@ Uri ContextContainer::GetCaller()
         APP_LOGE("ContextContainer::GetCaller baseContext_ is nullptr");
         Uri uri("");
         return uri;
+    }
+}
+
+/**
+ * @brief Get the string of this Context based on the specified resource ID.
+ *
+ * @param resId Indicates the resource ID of the string to get.
+ *
+ * @return Returns the string of this Context.
+ */
+std::string ContextContainer::GetString(int resId)
+{
+    if (baseContext_ != nullptr) {
+        std::string ret = baseContext_->GetString(resId);
+        return ret;
+    } else {
+        APP_LOGE("ContextContainer::GetString baseContext_ is nullptr");
+        return "";
+    }
+}
+
+/**
+ * @brief Get the string array of this Context based on the specified resource ID.
+ *
+ * @param resId Indicates the resource ID of the string array to get.
+ *
+ * @return Returns the string array of this Context.
+ */
+std::vector<std::string> ContextContainer::GetStringArray(int resId)
+{
+    if (baseContext_ != nullptr) {
+        return baseContext_->GetStringArray(resId);
+    } else {
+        return std::vector<std::string>();
+        APP_LOGE("ContextContainer::GetStringArray baseContext_ is nullptr");
+    }
+}
+
+/**
+ * @brief Get the integer array of this Context based on the specified resource ID.
+ *
+ * @param resId Indicates the resource ID of the integer array to get.
+ *
+ * @return Returns the integer array of this Context.
+ */
+std::vector<int> ContextContainer::GetIntArray(int resId)
+{
+    if (baseContext_ != nullptr) {
+        return baseContext_->GetIntArray(resId);
+    } else {
+        APP_LOGE("ContextContainer::GetIntArray baseContext_ is nullptr");
+        return std::vector<int>();
+    }
+}
+
+/**
+ * @brief Obtains the theme of this Context.
+ *
+ * @return theme Returns the theme of this Context.
+ */
+std::map<std::string, std::string> ContextContainer::GetTheme()
+{
+    if (baseContext_ != nullptr) {
+        return baseContext_->GetTheme();
+    } else {
+        APP_LOGE("ContextContainer::GetTheme baseContext_ is nullptr");
+        return std::map<std::string, std::string>();
+    }
+}
+
+/**
+ * @brief Sets the theme of this Context based on the specified theme ID.
+ *
+ * @param themeId Indicates the resource ID of the theme to set.
+ */
+void ContextContainer::SetTheme(int themeId)
+{
+    if (baseContext_ != nullptr) {
+        baseContext_->SetTheme(themeId);
+    } else {
+        APP_LOGE("ContextContainer::SetTheme baseContext_ is nullptr");
+    }
+}
+
+/**
+ * @brief Obtains the pattern of this Context.
+ *
+ * @return getPattern in interface Context
+ */
+std::map<std::string, std::string> ContextContainer::GetPattern()
+{
+    if (baseContext_ != nullptr) {
+        return baseContext_->GetPattern();
+    } else {
+        APP_LOGE("ContextContainer::GetPattern baseContext_ is nullptr");
+        return std::map<std::string, std::string>();
+    }
+}
+
+/**
+ * @brief Get the color of this Context based on the specified resource ID.
+ *
+ * @param resId Indicates the resource ID of the color to get.
+ *
+ * @return Returns the color value of this Context.
+ */
+int ContextContainer::GetColor(int resId)
+{
+    if (baseContext_ != nullptr) {
+        return baseContext_->GetColor(resId);
+    } else {
+        APP_LOGE("ContextContainer::GetColor baseContext_ is nullptr");
+        return INVALID_RESOURCE_VALUE;
+    }
+}
+
+/**
+ * @brief Obtains the theme id of this Context.
+ *
+ * @return int Returns the theme id of this Context.
+ */
+int ContextContainer::GetThemeId()
+{
+    if (baseContext_ != nullptr) {
+        return baseContext_->GetThemeId();
+    } else {
+        APP_LOGE("ContextContainer::GetThemeId baseContext_ is nullptr");
+        return -1;
+    }
+}
+
+/**
+ * @brief Obtains the current display orientation of this ability.
+ *
+ * @return Returns the current display orientation.
+ */
+int ContextContainer::GetDisplayOrientation()
+{
+    if (baseContext_ != nullptr) {
+        return baseContext_->GetDisplayOrientation();
+    } else {
+        APP_LOGE("ContextContainer::GetDisplayOrientation baseContext_ is nullptr");
+        return static_cast<int>(DisplayOrientation::UNSPECIFIED);
+    }
+}
+
+/**
+ * @brief Obtains the path storing the preference file of the application.
+ *        If the preference file path does not exist, the system creates one and returns the created path.
+ *
+ * @return Returns the preference file path .
+ */
+std::string ContextContainer::GetPreferencesDir()
+{
+    if (baseContext_ != nullptr) {
+        return baseContext_->GetPreferencesDir();
+    } else {
+        APP_LOGE("ContextContainer::GetPreferencesDir baseContext_ is nullptr");
+        return "";
+    }
+}
+
+/**
+ * @brief Set color mode
+ *
+ * @param the value of color mode.
+ */
+void ContextContainer::SetColorMode(int mode)
+{
+    if (baseContext_ == nullptr) {
+        APP_LOGE("ContextContainer::SetColorMode baseContext_ is nullptr");
+        return;
+    }
+
+    baseContext_->SetColorMode(mode);
+}
+
+/**
+ * @brief Obtains color mode.
+ *
+ * @return Returns the color mode value.
+ */
+int ContextContainer::GetColorMode()
+{
+    if (baseContext_ == nullptr) {
+        APP_LOGE("ContextContainer::GetColorMode baseContext_ is nullptr");
+        return -1;
+    }
+
+    return baseContext_->GetColorMode();
+}
+
+/**
+ * @brief Obtains the unique ID of the mission containing this ability.
+ *
+ * @return Returns the unique mission ID.
+ */
+int ContextContainer::GetMissionId()
+{
+    if (baseContext_ != nullptr) {
+        return baseContext_->GetMissionId();
+    } else {
+        APP_LOGE("ContextContainer::GetMissionId baseContext_ is nullptr");
+        return -1;
+    }
+}
+
+/**
+ * @brief Call this when your ability should be closed and the mission should be completely removed as a part of
+ * finishing the root ability of the mission.
+ */
+void ContextContainer::TerminateAndRemoveMission()
+{
+    if (baseContext_ != nullptr) {
+        baseContext_->TerminateAndRemoveMission();
+    } else {
+        APP_LOGE("ContextContainer::TerminateAndRemoveMission baseContext_ is nullptr");
+    }
+}
+
+/**
+ * @brief Obtains a task dispatcher that is bound to the UI thread.
+ *
+ * @return Returns the task dispatcher that is bound to the UI thread.
+ */
+std::shared_ptr<TaskDispatcher> ContextContainer::GetUITaskDispatcher()
+{
+    if (baseContext_ != nullptr) {
+        return baseContext_->GetUITaskDispatcher();
+    } else {
+        APP_LOGE("ContextContainer::GetUITaskDispatcher baseContext_ is nullptr");
+        return nullptr;
+    }
+}
+
+/**
+ * @brief Obtains a task dispatcher that is bound to the application main thread.
+ *
+ * @return Returns the task dispatcher that is bound to the application main thread.
+ */
+std::shared_ptr<TaskDispatcher> ContextContainer::GetMainTaskDispatcher()
+{
+    if (baseContext_ != nullptr) {
+        return baseContext_->GetMainTaskDispatcher();
+    } else {
+        APP_LOGE("ContextContainer::GetMainTaskDispatcher baseContext_ is nullptr");
+        return nullptr;
+    }
+}
+/**
+ * @brief Creates a parallel task dispatcher with a specified priority.
+ *
+ * @param name Indicates the task dispatcher name. This parameter is used to locate problems.
+ * @param priority Indicates the priority of all tasks dispatched by the parallel task dispatcher.
+ *
+ * @return Returns a parallel task dispatcher.
+ */
+std::shared_ptr<TaskDispatcher> ContextContainer::CreateParallelTaskDispatcher(
+    const std::string &name, const TaskPriority &priority)
+{
+    if (baseContext_ != nullptr) {
+        return baseContext_->CreateParallelTaskDispatcher(name, priority);
+    } else {
+        APP_LOGE("ContextContainer::CreateParallelTaskDispatcher baseContext_ is nullptr");
+        return nullptr;
+    }
+}
+
+/**
+ * @brief Creates a serial task dispatcher with a specified priority.
+ *
+ * @param name Indicates the task dispatcher name. This parameter is used to locate problems.
+ * @param priority Indicates the priority of all tasks dispatched by the created task dispatcher.
+ *
+ * @return Returns a serial task dispatcher.
+ */
+std::shared_ptr<TaskDispatcher> ContextContainer::CreateSerialTaskDispatcher(
+    const std::string &name, const TaskPriority &priority)
+{
+    if (baseContext_ != nullptr) {
+        return baseContext_->CreateSerialTaskDispatcher(name, priority);
+    } else {
+        APP_LOGE("ContextContainer::CreateSerialTaskDispatcher baseContext_ is nullptr");
+        return nullptr;
+    }
+}
+
+/**
+ * @brief Obtains a global task dispatcher with a specified priority.
+ *
+ * @param priority Indicates the priority of all tasks dispatched by the global task dispatcher.
+ *
+ * @return Returns a global task dispatcher.
+ */
+std::shared_ptr<TaskDispatcher> ContextContainer::GetGlobalTaskDispatcher(const TaskPriority &priority)
+{
+    if (baseContext_ != nullptr) {
+        return baseContext_->GetGlobalTaskDispatcher(priority);
+    } else {
+        APP_LOGE("ContextContainer::GetGlobalTaskDispatcher baseContext_ is nullptr");
+        return nullptr;
     }
 }
 

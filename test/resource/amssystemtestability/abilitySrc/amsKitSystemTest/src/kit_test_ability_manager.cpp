@@ -60,10 +60,11 @@ void KitTestAbilityManager::AbilityManagerStByCode(int apiIndex, int caseIndex, 
     }
 }
 
-void KitTestAbilityManager::CompareProcessName(RunningProcessInfo &info, const std::string &expectedName, int code)
+void KitTestAbilityManager::CompareProcessName(
+    std::vector<RunningProcessInfo> &info, const std::string &expectedName, int code)
 {
     bool result = false;
-    for (auto processInfo : info.appProcessInfos) {
+    for (auto processInfo : info) {
         if (processInfo.processName_ == expectedName) {
             result = true;
         }
@@ -72,10 +73,10 @@ void KitTestAbilityManager::CompareProcessName(RunningProcessInfo &info, const s
 }
 
 void KitTestAbilityManager::CompareProcessState(
-    RunningProcessInfo &info, const std::string &processName, AppProcessState expectedState, int code)
+    std::vector<RunningProcessInfo> &info, const std::string &processName, AppProcessState expectedState, int code)
 {
     bool result = false;
-    for (auto processInfo : info.appProcessInfos) {
+    for (auto processInfo : info) {
         if (processInfo.processName_ == processName && processInfo.state_ == expectedState) {
             result = true;
         }
@@ -90,7 +91,7 @@ void KitTestAbilityManager::StartAbilitySelf(
     params["apiIndex"] = std::to_string(static_cast<int>(api));
     params["caseIndex"] = std::to_string(codeIndex);
     params["code"] = std::to_string(code);
-    Want want = TestUtils::MakeWant("device", abilityNmae, bundleName, params);
+    Want want = TestUtils::MakeWant("", abilityNmae, bundleName, params);
     StartAbility(want);
 }
 
@@ -109,24 +110,24 @@ void KitTestAbilityManager::GetAllStackInfo(MissionStackInfo &missionStackInfo, 
 void KitTestAbilityManager::AbilityManagerGetAllRunningProcessesCase1(int code)
 {
     APP_LOGI("KitTestAbilityManager::AbilityManagerGetAllRunningProcessesCase1");
-    RunningProcessInfo info = AbilityManager::GetInstance().GetAllRunningProcesses();
+    std::vector<RunningProcessInfo> info = AbilityManager::GetInstance().GetAllRunningProcesses();
     CompareProcessName(info, currentProcessInfo, code);
 }
 
 void KitTestAbilityManager::AbilityManagerGetAllRunningProcessesCase2(int code)
 {
     APP_LOGI("KitTestAbilityManager::AbilityManagerGetAllRunningProcessesCase2");
-    RunningProcessInfo info = AbilityManager::GetInstance().GetAllRunningProcesses();
+    std::vector<RunningProcessInfo> info = AbilityManager::GetInstance().GetAllRunningProcesses();
     CompareProcessName(info, launchProcessInfo, code);
 }
 
 void KitTestAbilityManager::AbilityManagerGetAllRunningProcessesCase3(int code)
 {
     APP_LOGI("KitTestAbilityManager::AbilityManagerGetAllRunningProcessesCase3");
-    RunningProcessInfo info = AbilityManager::GetInstance().GetAllRunningProcesses();
+    std::vector<RunningProcessInfo> info = AbilityManager::GetInstance().GetAllRunningProcesses();
     std::shared_ptr<ProcessInfo> processInfo = AbilityContext::GetProcessInfo();
     bool result = false;
-    for (auto runProcessInfo : info.appProcessInfos) {
+    for (auto runProcessInfo : info) {
         if (runProcessInfo.processName_ == currentProcessInfo && processInfo->GetPid() == runProcessInfo.pid_) {
             result = true;
         }
@@ -137,7 +138,7 @@ void KitTestAbilityManager::AbilityManagerGetAllRunningProcessesCase3(int code)
 void KitTestAbilityManager::AbilityManagerGetAllRunningProcessesCase4(int code)
 {
     APP_LOGI("KitTestAbilityManager::AbilityManagerGetAllRunningProcessesCase4");
-    RunningProcessInfo info = AbilityManager::GetInstance().GetAllRunningProcesses();
+    std::vector<RunningProcessInfo> info = AbilityManager::GetInstance().GetAllRunningProcesses();
     CompareProcessState(info, currentProcessInfo, AppProcessState::APP_STATE_FOREGROUND, code);
 }
 
@@ -260,7 +261,7 @@ void KitTestAbilityManager::AbilityManagerGetAllStackInfoCase9(int code)
 // QueryRecentAbilityMissionInfo ST kit case
 void KitTestAbilityManager::QueryRecentAbilityMissionInfoParam(int numMax, int code, std::size_t size, int flags)
 {
-    std::vector<RecentMissionInfo> info;
+    std::vector<AbilityMissionInfo> info;
     info = AbilityManager::GetInstance().QueryRecentAbilityMissionInfo(numMax, flags);
     bool result = (info.size() == size);
     TestUtils::PublishEvent(g_respPageManagerAbilityST, code, std::to_string(result));
@@ -320,7 +321,7 @@ void KitTestAbilityManager::AbilityManagerQueryRecentAbilityMissionInfoCase6(int
 void KitTestAbilityManager::AbilityManagerQueryRecentAbilityMissionInfoCase7(int code)
 {
     APP_LOGI("KitTestAbilityManager::AbilityManagerQueryRecentAbilityMissionInfoCase7");
-    std::vector<RecentMissionInfo> info;
+    std::vector<AbilityMissionInfo> info;
     auto num = 3;
     info = AbilityManager::GetInstance().QueryRecentAbilityMissionInfo(num, RECENT_WITH_EXCLUDED);
     bool result = false;
@@ -354,7 +355,7 @@ void KitTestAbilityManager::AbilityManagerQueryRecentAbilityMissionInfoCase10(in
 void KitTestAbilityManager::AbilityManagerQueryRecentAbilityMissionInfoCase11(int code)
 {
     APP_LOGI("KitTestAbilityManager::AbilityManagerQueryRecentAbilityMissionInfoCase11");
-    auto num = INT32_MIN;
+    auto num = std::numeric_limits<int>::min();
     auto size = 0;
     QueryRecentAbilityMissionInfoParam(num, code, size, RECENT_WITH_EXCLUDED);
 }
@@ -362,7 +363,7 @@ void KitTestAbilityManager::AbilityManagerQueryRecentAbilityMissionInfoCase11(in
 void KitTestAbilityManager::AbilityManagerQueryRecentAbilityMissionInfoCase12(int code)
 {
     APP_LOGI("KitTestAbilityManager::AbilityManagerQueryRecentAbilityMissionInfoCase12");
-    auto num = INT32_MAX;
+    auto num = std::numeric_limits<int>::max();
     auto size = 1;
     QueryRecentAbilityMissionInfoParam(num, code, size, RECENT_WITH_EXCLUDED);
 }
@@ -372,7 +373,7 @@ void KitTestAbilityManager::AbilityManagerQueryRecentAbilityMissionInfoCase13(in
     APP_LOGI("KitTestAbilityManager::AbilityManagerQueryRecentAbilityMissionInfoCase13");
     auto num = 3;
     auto size = 0;
-    auto flag = INT32_MIN;
+    auto flag = std::numeric_limits<int>::min();
     QueryRecentAbilityMissionInfoParam(num, code, size, flag);
 }
 
@@ -381,14 +382,14 @@ void KitTestAbilityManager::AbilityManagerQueryRecentAbilityMissionInfoCase14(in
     APP_LOGI("KitTestAbilityManager::AbilityManagerQueryRecentAbilityMissionInfoCase14");
     auto num = 3;
     auto size = 0;
-    auto flag = INT32_MAX;
+    auto flag = std::numeric_limits<int>::max();
     QueryRecentAbilityMissionInfoParam(num, code, size, flag);
 }
 
 // QueryRunningAbilityMissionInfo ST kit case
 void KitTestAbilityManager::QueryRunningAbilityMissionInfoParam(int numMax, int code, std::size_t size)
 {
-    std::vector<RecentMissionInfo> info;
+    std::vector<AbilityMissionInfo> info;
     info = AbilityManager::GetInstance().QueryRunningAbilityMissionInfo(numMax);
     bool result = (info.size() == size);
     TestUtils::PublishEvent(g_respPageManagerAbilityST, code, std::to_string(result));
@@ -421,7 +422,7 @@ void KitTestAbilityManager::AbilityManagerQueryRunningAbilityMissionInfoCase3(in
 void KitTestAbilityManager::AbilityManagerQueryRunningAbilityMissionInfoCase4(int code)
 {
     APP_LOGI("KitTestAbilityManager::AbilityManagerQueryRunningAbilityMissionInfoCase4");
-    std::vector<RecentMissionInfo> info;
+    std::vector<AbilityMissionInfo> info;
     auto num = 3;
     info = AbilityManager::GetInstance().QueryRunningAbilityMissionInfo(num);
     bool result = false;
@@ -455,13 +456,13 @@ void KitTestAbilityManager::AbilityManagerQueryRunningAbilityMissionInfoCase7(in
 void KitTestAbilityManager::AbilityManagerQueryRunningAbilityMissionInfoCase8(int code)
 {
     APP_LOGI("KitTestAbilityManager::AbilityManagerQueryRunningAbilityMissionInfoCase8");
-    QueryRunningAbilityMissionInfoParam(INT32_MIN, code, 0);
+    QueryRunningAbilityMissionInfoParam(std::numeric_limits<int>::min(), code, 0);
 }
 
 void KitTestAbilityManager::AbilityManagerQueryRunningAbilityMissionInfoCase9(int code)
 {
     APP_LOGI("KitTestAbilityManager::AbilityManagerQueryRunningAbilityMissionInfoCase9");
-    QueryRunningAbilityMissionInfoParam(INT32_MAX, code, 1);
+    QueryRunningAbilityMissionInfoParam(std::numeric_limits<int>::max(), code, 1);
 }
 
 // MoveMissionToTop ST kit case
@@ -477,7 +478,7 @@ void KitTestAbilityManager::AbilityManagerMoveMissionToTopCase2(int code)
     moveMissionToTopCode = code;
     isMoveMissionToTop = true;
     Want wantEntity;
-    wantEntity.AddEntity(Want::FLAG_HW_HOME_INTENT_FROM_SYSTEM);
+    wantEntity.AddEntity(Want::FLAG_HOME_INTENT_FROM_SYSTEM);
     StartAbility(wantEntity);
 }
 
@@ -532,7 +533,7 @@ void KitTestAbilityManager::OnBackground()
     APP_LOGI("KitTestAbilityManager::OnBackground");
     Ability::OnBackground();
     if (isMoveMissionToTop) {
-        std::vector<RecentMissionInfo> info;
+        std::vector<AbilityMissionInfo> info;
         info = AbilityManager::GetInstance().QueryRecentAbilityMissionInfo(3, RECENT_WITH_EXCLUDED);
         if (1 == info.size() && 1 == info[0].size) {
             GetAbilityManager()->MoveMissionToTop(info[0].id);

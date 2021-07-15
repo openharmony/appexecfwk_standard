@@ -71,6 +71,12 @@ int BundleMgrHost::OnRemoteRequest(uint32_t code, MessageParcel &data, MessagePa
         case static_cast<uint32_t>(IBundleMgr::Message::GET_BUNDLE_NAME_FOR_UID):
             errCode = HandleGetBundleNameForUid(data, reply);
             break;
+        case static_cast<uint32_t>(IBundleMgr::Message::GET_BUNDLES_FOR_UID):
+            errCode = HandleGetBundlesForUid(data, reply);
+            break;
+        case static_cast<uint32_t>(IBundleMgr::Message::GET_NAME_FOR_UID):
+            errCode = HandleGetNameForUid(data, reply);
+            break;
         case static_cast<uint32_t>(IBundleMgr::Message::GET_BUNDLE_GIDS):
             errCode = HandleGetBundleGids(data, reply);
             break;
@@ -102,7 +108,7 @@ int BundleMgrHost::OnRemoteRequest(uint32_t code, MessageParcel &data, MessagePa
             errCode = HandleGetLaunchWantForBundle(data, reply);
             break;
         case static_cast<uint32_t>(IBundleMgr::Message::CHECK_PUBLICKEYS):
-            errCode = HandleGetApplicationInfo(data, reply);
+            errCode = HandleCheckPublicKeys(data, reply);
             break;
         case static_cast<uint32_t>(IBundleMgr::Message::CHECK_PERMISSION):
             errCode = HandleCheckPermission(data, reply);
@@ -140,6 +146,21 @@ int BundleMgrHost::OnRemoteRequest(uint32_t code, MessageParcel &data, MessagePa
         case static_cast<uint32_t>(IBundleMgr::Message::UNREGISTER_BUNDLE_STATUS_CALLBACK):
             errCode = HandleUnregisterBundleStatusCallback(data, reply);
             break;
+        case static_cast<uint32_t>(IBundleMgr::Message::IS_APPLICATION_ENABLED):
+            errCode = HandleIsApplicationEnabled(data, reply);
+            break;
+        case static_cast<uint32_t>(IBundleMgr::Message::SET_APPLICATION_ENABLED):
+            errCode = HandleSetApplicationEnabled(data, reply);
+            break;
+        case static_cast<uint32_t>(IBundleMgr::Message::IS_ABILITY_ENABLED):
+            errCode = HandleIsAbilityEnabled(data, reply);
+            break;
+        case static_cast<uint32_t>(IBundleMgr::Message::SET_ABILITY_ENABLED):
+            errCode = HandleSetAbilityEnabled(data, reply);
+            break;
+        case static_cast<uint32_t>(IBundleMgr::Message::GET_ABILITY_ICON):
+            errCode = HandleGetAbilityIcon(data, reply);
+            break;
         case static_cast<uint32_t>(IBundleMgr::Message::DUMP_INFOS):
             errCode = HandleDumpInfos(data, reply);
             break;
@@ -152,6 +173,24 @@ int BundleMgrHost::OnRemoteRequest(uint32_t code, MessageParcel &data, MessagePa
         case static_cast<uint32_t>(IBundleMgr::Message::REQUEST_PERMISSION_FROM_USER):
             errCode = HandleRequestPermissionFromUser(data, reply);
             break;
+        case static_cast<uint32_t>(IBundleMgr::Message::REGISTER_ALL_PERMISSIONS_CHANGED):
+            errCode = HandleRegisterAllPermissionsChanged(data, reply);
+            break;
+        case static_cast<uint32_t>(IBundleMgr::Message::REGISTER_PERMISSIONS_CHANGED):
+            errCode = HandleRegisterPermissionsChanged(data, reply);
+            break;
+        case static_cast<uint32_t>(IBundleMgr::Message::UNREGISTER_PERMISSIONS_CHANGED):
+            errCode = HandleUnregisterPermissionsChanged(data, reply);
+            break;
+		case static_cast<uint32_t>(IBundleMgr::Message::GET_ALL_FORMS_INFO):
+			errCode = HandleGetAllFormsInfo(data, reply);
+			break;
+		case static_cast<uint32_t>(IBundleMgr::Message::GET_FORMS_INFO_BY_APP):
+			errCode = HandleGetFormsInfoByApp(data, reply);
+			break;
+		case static_cast<uint32_t>(IBundleMgr::Message::GET_FORMS_INFO_BY_MODULE):
+			errCode = HandleGetFormsInfoByModule(data, reply);
+			break;
         default:
             return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
     }
@@ -163,6 +202,12 @@ int BundleMgrHost::GetUidByBundleName([[maybe_unused]] const std::string &bundle
 {
     APP_LOGD("need not impl for host interface");
     return Constants::INVALID_UID;
+}
+
+std::string BundleMgrHost::GetAppIdByBundleName([[maybe_unused]] const std::string &bundleName, const int userId)
+{
+    APP_LOGD("need not impl for host interface");
+    return Constants::EMPTY_STRING;
 }
 
 std::string BundleMgrHost::GetAppType([[maybe_unused]] const std::string &bundleName)
@@ -256,6 +301,42 @@ ErrCode BundleMgrHost::HandleGetBundleNameForUid(Parcel &data, Parcel &reply)
     int uid = data.ReadInt32();
     std::string name;
     bool ret = GetBundleNameForUid(uid, name);
+    if (!reply.WriteBool(ret)) {
+        APP_LOGE("write failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    if (ret) {
+        if (!reply.WriteString(name)) {
+            APP_LOGE("write failed");
+            return ERR_APPEXECFWK_PARCEL_ERROR;
+        }
+    }
+    return ERR_OK;
+}
+
+ErrCode BundleMgrHost::HandleGetBundlesForUid(Parcel &data, Parcel &reply)
+{
+    int uid = data.ReadInt32();
+    std::vector<std::string> names;
+    bool ret = GetBundlesForUid(uid, names);
+    if (!reply.WriteBool(ret)) {
+        APP_LOGE("write failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    if (ret) {
+        if (!reply.WriteStringVector(names)) {
+            APP_LOGE("write failed");
+            return ERR_APPEXECFWK_PARCEL_ERROR;
+        }
+    }
+    return ERR_OK;
+}
+
+ErrCode BundleMgrHost::HandleGetNameForUid(Parcel &data, Parcel &reply)
+{
+    int uid = data.ReadInt32();
+    std::string name;
+    bool ret = GetNameForUid(uid, name);
     if (!reply.WriteBool(ret)) {
         APP_LOGE("write failed");
         return ERR_APPEXECFWK_PARCEL_ERROR;
@@ -373,7 +454,7 @@ ErrCode BundleMgrHost::HandleGetAbilityLabel(Parcel &data, Parcel &reply)
     APP_LOGI("bundleName %{public}s, className %{public}s", bundleName.c_str(), className.c_str());
     BundleInfo info;
     std::string label = GetAbilityLabel(bundleName, className);
-    if (!reply.WriteString16(Str8ToStr16(label))) {
+    if (!reply.WriteString(label)) {
         APP_LOGE("write failed");
         return ERR_APPEXECFWK_PARCEL_ERROR;
     }
@@ -696,6 +777,52 @@ ErrCode BundleMgrHost::HandleSetApplicationEnabled(Parcel &data, Parcel &reply)
     return ERR_OK;
 }
 
+ErrCode BundleMgrHost::HandleIsAbilityEnabled(Parcel &data, Parcel &reply)
+{
+    std::unique_ptr<AbilityInfo> abilityInfo(data.ReadParcelable<AbilityInfo>());
+    if (!abilityInfo) {
+        APP_LOGE("ReadParcelable<abilityInfo> failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    bool ret = IsAbilityEnabled(*abilityInfo);
+    if (!reply.WriteBool(ret)) {
+        APP_LOGE("write failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    return ERR_OK;
+}
+
+ErrCode BundleMgrHost::HandleSetAbilityEnabled(Parcel &data, Parcel &reply)
+{
+    std::unique_ptr<AbilityInfo> abilityInfo(data.ReadParcelable<AbilityInfo>());
+    if (!abilityInfo) {
+        APP_LOGE("ReadParcelable<abilityInfo> failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    bool isEnabled = data.ReadBool();
+    bool ret = SetAbilityEnabled(*abilityInfo, isEnabled);
+    if (!reply.WriteBool(ret)) {
+        APP_LOGE("write failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    return ERR_OK;
+}
+
+ErrCode BundleMgrHost::HandleGetAbilityIcon(Parcel &data, Parcel &reply)
+{
+    std::string bundleName = data.ReadString();
+    std::string className = data.ReadString();
+
+    APP_LOGI("bundleName %{public}s, className %{public}s", bundleName.c_str(), className.c_str());
+    BundleInfo info;
+    std::string icon = GetAbilityIcon(bundleName, className);
+    if (!reply.WriteString(icon)) {
+        APP_LOGE("write failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    return ERR_OK;
+}
+
 ErrCode BundleMgrHost::HandleCanRequestPermission(Parcel &data, Parcel &reply)
 {
     std::string bundleName = data.ReadString();
@@ -726,6 +853,63 @@ ErrCode BundleMgrHost::HandleRequestPermissionFromUser(Parcel &data, Parcel &rep
     return ERR_OK;
 }
 
+ErrCode BundleMgrHost::HandleRegisterAllPermissionsChanged(Parcel &data, Parcel &reply)
+{
+    sptr<IRemoteObject> object = data.ReadParcelable<IRemoteObject>();
+    sptr<OnPermissionChangedCallback> callback = iface_cast<OnPermissionChangedCallback>(object);
+
+    bool ret = false;
+    if (!callback) {
+        APP_LOGE("Get OnPermissionChangedCallback failed");
+    } else {
+        ret = RegisterAllPermissionsChanged(callback);
+    }
+    if (!reply.WriteBool(ret)) {
+        APP_LOGE("write failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    return ERR_OK;
+}
+
+ErrCode BundleMgrHost::HandleRegisterPermissionsChanged(Parcel &data, Parcel &reply)
+{
+    std::vector<int> uids;
+    if (!data.ReadInt32Vector(&uids)) {
+        APP_LOGE("read parcel failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    sptr<IRemoteObject> object = data.ReadParcelable<IRemoteObject>();
+    sptr<OnPermissionChangedCallback> callback = iface_cast<OnPermissionChangedCallback>(object);
+    bool ret = false;
+    if (!callback) {
+        APP_LOGE("Get OnPermissionChangedCallback failed");
+    } else {
+        ret = RegisterPermissionsChanged(uids, callback);
+    }
+    if (!reply.WriteBool(ret)) {
+        APP_LOGE("write failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    return ERR_OK;
+}
+
+ErrCode BundleMgrHost::HandleUnregisterPermissionsChanged(Parcel &data, Parcel &reply)
+{
+    sptr<IRemoteObject> object = data.ReadParcelable<IRemoteObject>();
+    sptr<OnPermissionChangedCallback> callback = iface_cast<OnPermissionChangedCallback>(object);
+    bool ret = false;
+    if (!callback) {
+        APP_LOGE("Get OnPermissionChangedCallback failed");
+    } else {
+        ret = UnregisterPermissionsChanged(callback);
+    }
+    if (!reply.WriteBool(ret)) {
+        APP_LOGE("write failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    return ERR_OK;
+}
+
 ErrCode BundleMgrHost::HandleGetBundleInstaller(Parcel &data, Parcel &reply)
 {
     sptr<IBundleInstaller> installer = GetBundleInstaller();
@@ -739,6 +923,63 @@ ErrCode BundleMgrHost::HandleGetBundleInstaller(Parcel &data, Parcel &reply)
         return ERR_APPEXECFWK_PARCEL_ERROR;
     }
     return ERR_OK;
+}
+
+ErrCode BundleMgrHost::HandleGetAllFormsInfo(Parcel &data, Parcel &reply)
+{
+	std::vector<FormInfo> infos;
+	bool ret = GetAllFormsInfo(infos);
+	if (!reply.WriteBool(ret)) {
+		APP_LOGE("write failed");
+		return ERR_APPEXECFWK_PARCEL_ERROR;
+	}
+
+	if (ret) {
+		if (!WriteParcelableVector(infos, reply)) {
+			APP_LOGE("write failed");
+			return ERR_APPEXECFWK_PARCEL_ERROR;
+		}
+	}
+	return ERR_OK;
+}
+
+ErrCode BundleMgrHost::HandleGetFormsInfoByApp(Parcel &data, Parcel &reply)
+{
+	std::string bundlename = data.ReadString();
+	std::vector<FormInfo> infos;
+	bool ret = GetFormsInfoByApp(bundlename, infos);
+	if (!reply.WriteBool(ret)) {
+		APP_LOGE("write failed");
+		return ERR_APPEXECFWK_PARCEL_ERROR;
+	}
+
+	if (ret) {
+		if (!WriteParcelableVector(infos, reply)) {
+			APP_LOGE("write failed");
+			return ERR_APPEXECFWK_PARCEL_ERROR;
+		}
+	}
+	return ERR_OK;
+}
+
+ErrCode BundleMgrHost::HandleGetFormsInfoByModule(Parcel &data, Parcel &reply)
+{
+	std::string bundlename = data.ReadString();
+	std::string modulename = data.ReadString();
+	std::vector<FormInfo> infos;
+	bool ret = GetFormsInfoByModule(bundlename, modulename, infos);
+	if (!reply.WriteBool(ret)) {
+		APP_LOGE("write failed");
+		return ERR_APPEXECFWK_PARCEL_ERROR;
+	}
+
+	if (ret) {
+		if (!WriteParcelableVector(infos, reply)) {
+			APP_LOGE("write failed");
+			return ERR_APPEXECFWK_PARCEL_ERROR;
+		}
+	}
+	return ERR_OK;
 }
 
 template<typename T>

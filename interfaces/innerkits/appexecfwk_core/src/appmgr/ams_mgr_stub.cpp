@@ -44,6 +44,10 @@ AmsMgrStub::AmsMgrStub()
     memberFuncMap_[static_cast<uint32_t>(IAmsMgr::Message::AMS_KILL_PEOCESS_BY_ABILITY_TOKEN)] =
         &AmsMgrStub::HandleKillProcessByAbilityToken;
     memberFuncMap_[static_cast<uint32_t>(IAmsMgr::Message::AMS_KILL_APPLICATION)] = &AmsMgrStub::HandleKillApplication;
+    memberFuncMap_[static_cast<uint32_t>(IAmsMgr::Message::AMS_ABILITY_ATTACH_TIMEOUT)] =
+        &AmsMgrStub::HandleAbilityAttachTimeOut;
+    memberFuncMap_[static_cast<uint32_t>(IAmsMgr::Message::AMS_COMPEL_VERIFY_PERMISSION)] =
+        &AmsMgrStub::HandleCompelVerifyPermission;
 }
 
 AmsMgrStub::~AmsMgrStub()
@@ -148,5 +152,23 @@ ErrCode AmsMgrStub::HandleKillApplication(MessageParcel &data, MessageParcel &re
     return NO_ERROR;
 }
 
+int32_t AmsMgrStub::HandleAbilityAttachTimeOut(MessageParcel &data, MessageParcel &reply)
+{
+    sptr<IRemoteObject> token = data.ReadParcelable<IRemoteObject>();
+    AbilityAttachTimeOut(token);
+    return NO_ERROR;
+}
+
+int32_t AmsMgrStub::HandleCompelVerifyPermission(MessageParcel &data, MessageParcel &reply)
+{
+    auto permission = Str16ToStr8(data.ReadString16());
+    auto pid = data.ReadInt32();
+    auto uid = data.ReadInt32();
+    std::string message;
+    auto result = CompelVerifyPermission(permission, pid, uid, message);
+    reply.WriteString16(Str8ToStr16(message));
+    reply.WriteInt32(result);
+    return NO_ERROR;
+}
 }  // namespace AppExecFwk
 }  // namespace OHOS

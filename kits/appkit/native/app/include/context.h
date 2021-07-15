@@ -26,19 +26,37 @@
 #include "ability_start_setting.h"
 #include "dummy_hap_module_info.h"
 #include "hap_module_info.h"
+#include "task/task_priority.h"
 
 namespace OHOS {
 namespace AppExecFwk {
 
 using Want = OHOS::AAFwk::Want;
 
-#define OHOS_PERMISSIONS_REQUEST_KEY "HAS_CURRENT_PERMISSIONS_REQUEST_KEY"
-#define OHOS_PERMISSIONS_REQUEST_RESULT_KEY "HAS_CURRENT_PERMISSIONS_RESULT_KEY"
-#define OHOS_PERMISSIONS_REQUEST_BUNDLE_NAME_KEY "HAS_CURRENT_PERMISSIONS_REQUEST_BUNDLE_NAME_KEY"
-#define OHOS_PERMISSIONS_REQUEST_USER_ID_KEY "HAS_CURRENT_PERMISSIONS_REQUEST_USER_ID_KEY"
+// Request permissions for user
+#define OHOS_REQUEST_PERMISSION_BUNDLENAME "com.ohos.systemui"
+#define OHOS_REQUEST_PERMISSION_ABILITY_NAME "com.ohos.systemui.systemdialog.MainAbility"
+
+#define OHOS_REQUEST_PERMISSION_KEY "OHOS_REQUEST_PERMISSION_KEY"
+#define OHOS_REQUEST_PERMISSIONS_LIST "OHOS_REQUEST_PERMISSIONS_LIST"
+#define OHOS_REQUEST_PERMISSIONS_DES_LIST "OHOS_REQUEST_PERMISSIONS_DES_LIST"
+#define OHOS_REQUEST_CALLER_BUNDLERNAME "OHOS_REQUEST_CALLER_BUNDLERNAME"
+
+#define OHOS_RESULT_PERMISSION_KEY "OHOS_RESULT_PERMISSION_KEY"
+#define OHOS_RESULT_PERMISSIONS_LIST "OHOS_RESULT_PERMISSIONS_LIST"
+#define OHOS_RESULT_PERMISSIONS_LIST_YES "OHOS_RESULT_PERMISSIONS_LIST_YES"
+#define OHOS_RESULT_PERMISSIONS_LIST_NO "OHOS_RESULT_PERMISSIONS_LIST_NO"
+#define OHOS_RESULT_CALLER_BUNDLERNAME "OHOS_RESULT_CALLER_BUNDLERNAME"
+
+#define OHOS_REQUEST_PERMISSION_VALUE 1
+
+constexpr int INVALID_RESOURCE_VALUE = -1;  // GetColor() Failed return Value
 
 class DataAbilityHelper;
+class ContinuationConnector;
 class IAbilityManager;
+class TaskDispatcher;
+class EventRunner;
 class Context {
 public:
     Context() = default;
@@ -475,7 +493,190 @@ public:
      */
     virtual Uri GetCaller() = 0;
 
+    /**
+     * @brief Get the string of this Context based on the specified resource ID.
+     *
+     * @param resId Indicates the resource ID of the string to get.
+     *
+     * @return Returns the string of this Context.
+     */
+    virtual std::string GetString(int resId) = 0;
+
+    /**
+     * @brief Get the string array of this Context based on the specified resource ID.
+     *
+     * @param resId Indicates the resource ID of the string array to get.
+     *
+     * @return Returns the string array of this Context.
+     */
+    virtual std::vector<std::string> GetStringArray(int resId) = 0;
+
+    /**
+     * @brief Get the integer array of this Context based on the specified resource ID.
+     *
+     * @param resId Indicates the resource ID of the integer array to get.
+     *
+     * @return Returns the integer array of this Context.
+     */
+    virtual std::vector<int> GetIntArray(int resId) = 0;
+
+    /**
+     * @brief Obtains the theme of this Context.
+     *
+     * @return theme Returns the theme of this Context.
+     */
+    virtual std::map<std::string, std::string> GetTheme() = 0;
+
+    /**
+     * @brief Sets the theme of this Context based on the specified theme ID.
+     *
+     * @param themeId Indicates the resource ID of the theme to set.
+     */
+    virtual void SetTheme(int themeId) = 0;
+
+    /**
+     * @brief Obtains the pattern of this Context.
+     *
+     * @return getPattern in interface Context
+     */
+    virtual std::map<std::string, std::string> GetPattern() = 0;
+
+    /**
+     * @brief Get the color of this Context based on the specified resource ID.
+     *
+     * @param resId Indicates the resource ID of the color to get.
+     *
+     * @return Returns the color value of this Context.
+     */
+    virtual int GetColor(int resId) = 0;
+
+    /**
+     * @brief Obtains the theme id of this Context.
+     *
+     * @return int Returns the theme id of this Context.
+     */
+    virtual int GetThemeId() = 0;
+
+    /**
+     * @brief
+     * Destroys this Service ability if the number of times it has been started equals the number represented by the
+     * given {@code startId}. This method is the same as calling {@link #terminateAbility} to destroy this Service
+     * ability, except that this method helps you avoid destroying it if a client has requested a Service
+     * ability startup in {@link ohos.aafwk.ability.Ability#onCommand} but you are unaware of it.
+     *
+     * @param startId Indicates the number of startup times of this Service ability passed to
+     *                {@link ohos.aafwk.ability.Ability#onCommand}. The {@code startId} is
+     *                incremented by 1 every time this ability is started. For example,
+     *                if this ability has been started for six times, the value of {@code startId} is {@code 6}.
+     *
+     * @return Returns {@code true} if the {@code startId} matches the number of startup times
+     *         and this Service ability will be destroyed; returns {@code false} otherwise.
+     */
+    virtual bool TerminateAbilityResult(int startId) = 0;
+
+    /**
+     * @brief Obtains the current display orientation of this ability.
+     *
+     * @return Returns the current display orientation.
+     */
+    virtual int GetDisplayOrientation() = 0;
+
+    /**
+     * @brief Obtains the path storing the preference file of the application.
+     *        If the preference file path does not exist, the system creates one and returns the created path.
+     *
+     * @return Returns the preference file path .
+     */
+    virtual std::string GetPreferencesDir() = 0;
+
+    /**
+     * @brief Set color mode
+     *
+     * @param the value of color mode.
+     */
+    virtual void SetColorMode(int mode) = 0;
+
+    /**
+     * @brief Obtains color mode.
+     *
+     * @return Returns the color mode value.
+     */
+    virtual int GetColorMode() = 0;
+
+    /**
+     * @brief Obtains the unique ID of the mission containing this ability.
+     *
+     * @return Returns the unique mission ID.
+     */
+    virtual int GetMissionId() = 0;
+
+    /**
+     * @brief Call this when your ability should be closed and the mission should be completely removed as a part of
+     * finishing the root ability of the mission.
+     */
+    virtual void TerminateAndRemoveMission() = 0;
+
+    /**
+     * @brief Starts multiple abilities.
+     *
+     * @param wants Indicates the Want containing information array about the target ability to start.
+     */
+    virtual void StartAbilities(const std::vector<AAFwk::Want> &wants) = 0;
+
+    /**
+     * @brief Checks whether this ability is the first ability in a mission.
+     *
+     * @return Returns true is first in Mission.
+     */
+    virtual bool IsFirstInMission() = 0;
+	
+	/**
+     * @brief Obtains a task dispatcher that is bound to the UI thread.
+     *
+     * @return Returns the task dispatcher that is bound to the UI thread.
+     */
+    virtual std::shared_ptr<TaskDispatcher> GetUITaskDispatcher() = 0;
+
+    /**
+     * @brief Obtains a task dispatcher that is bound to the application main thread.
+     *
+     * @return Returns the task dispatcher that is bound to the application main thread.
+     */
+    virtual std::shared_ptr<TaskDispatcher> GetMainTaskDispatcher() = 0;
+
+    /**
+     * @brief Creates a parallel task dispatcher with a specified priority.
+     *
+     * @param name Indicates the task dispatcher name. This parameter is used to locate problems.
+     * @param priority Indicates the priority of all tasks dispatched by the parallel task dispatcher.
+     *
+     * @return Returns a parallel task dispatcher.
+     */
+    virtual std::shared_ptr<TaskDispatcher> CreateParallelTaskDispatcher(
+        const std::string &name, const TaskPriority &priority) = 0;
+
+    /**
+     * @brief Creates a serial task dispatcher with a specified priority.
+     *
+     * @param name Indicates the task dispatcher name. This parameter is used to locate problems.
+     * @param priority Indicates the priority of all tasks dispatched by the created task dispatcher.
+     *
+     * @return Returns a serial task dispatcher.
+     */
+    virtual std::shared_ptr<TaskDispatcher> CreateSerialTaskDispatcher(
+        const std::string &name, const TaskPriority &priority) = 0;
+
+    /**
+     * @brief Obtains a global task dispatcher with a specified priority.
+     *
+     * @param priority Indicates the priority of all tasks dispatched by the global task dispatcher.
+     *
+     * @return Returns a global task dispatcher.
+     */
+    virtual std::shared_ptr<TaskDispatcher> GetGlobalTaskDispatcher(const TaskPriority &priority) = 0;
+
     friend DataAbilityHelper;
+    friend ContinuationConnector;
 
 protected:
     virtual sptr<IRemoteObject> GetToken() = 0;

@@ -73,10 +73,10 @@ void KitTestAbilityManagerSecond::AbilityManagerStByCode(int apiIndex, int caseI
 }
 
 void KitTestAbilityManagerSecond::CompareProcessName(
-    RunningProcessInfo &info, const std::string &expectedName, int code)
+    std::vector<RunningProcessInfo> &info, const std::string &expectedName, int code)
 {
     bool result = false;
-    for (auto processInfo : info.appProcessInfos) {
+    for (auto processInfo : info) {
         if (processInfo.processName_ == expectedName) {
             result = true;
         }
@@ -85,10 +85,10 @@ void KitTestAbilityManagerSecond::CompareProcessName(
 }
 
 void KitTestAbilityManagerSecond::CompareProcessState(
-    RunningProcessInfo &info, const std::string &processName, AppProcessState expectedState, int code)
+    std::vector<RunningProcessInfo> &info, const std::string &processName, AppProcessState expectedState, int code)
 {
     bool result = false;
-    for (auto processInfo : info.appProcessInfos) {
+    for (auto processInfo : info) {
         if (processInfo.processName_ == processName && processInfo.state_ == expectedState) {
             result = true;
         }
@@ -97,10 +97,10 @@ void KitTestAbilityManagerSecond::CompareProcessState(
 }
 
 void KitTestAbilityManagerSecond::ProcessStateNotEqual(
-    RunningProcessInfo &info, const std::string &processName, AppProcessState expectedState, int code)
+    std::vector<RunningProcessInfo> &info, const std::string &processName, AppProcessState expectedState, int code)
 {
     bool result = false;
-    for (auto processInfo : info.appProcessInfos) {
+    for (auto processInfo : info) {
         if (processInfo.processName_ == processName && processInfo.state_ != expectedState) {
             result = true;
         }
@@ -124,45 +124,45 @@ void KitTestAbilityManagerSecond::GetAllStackInfo(MissionStackInfo &missionStack
 void KitTestAbilityManagerSecond::AbilityManagerGetAllRunningProcessesCase1(int code)
 {
     APP_LOGI("KitTestAbilityManagerSecond::AbilityManagerGetAllRunningProcessesCase1");
-    RunningProcessInfo info = AbilityManager::GetInstance().GetAllRunningProcesses();
+    std::vector<RunningProcessInfo> info = AbilityManager::GetInstance().GetAllRunningProcesses();
     CompareProcessName(info, currentProcessInfo, code);
 }
 
 void KitTestAbilityManagerSecond::AbilityManagerGetAllRunningProcessesCase2(int code)
 {
     APP_LOGI("KitTestAbilityManagerSecond::AbilityManagerGetAllRunningProcessesCase2");
-    RunningProcessInfo info = AbilityManager::GetInstance().GetAllRunningProcesses();
+    std::vector<RunningProcessInfo> info = AbilityManager::GetInstance().GetAllRunningProcesses();
     CompareProcessName(info, topProcessInfo, code);
 }
 
 void KitTestAbilityManagerSecond::AbilityManagerGetAllRunningProcessesCase3(int code)
 {
     APP_LOGI("KitTestAbilityManagerSecond::AbilityManagerGetAllRunningProcessesCase3");
-    RunningProcessInfo info = AbilityManager::GetInstance().GetAllRunningProcesses();
+    std::vector<RunningProcessInfo> info = AbilityManager::GetInstance().GetAllRunningProcesses();
     CompareProcessName(info, launchProcessInfo, code);
 }
 
 void KitTestAbilityManagerSecond::AbilityManagerGetAllRunningProcessesCase4(int code)
 {
     APP_LOGI("KitTestAbilityManagerSecond::AbilityManagerGetAllRunningProcessesCase4");
-    RunningProcessInfo info = AbilityManager::GetInstance().GetAllRunningProcesses();
+    std::vector<RunningProcessInfo> info = AbilityManager::GetInstance().GetAllRunningProcesses();
     CompareProcessState(info, launchProcessInfo, AppProcessState::APP_STATE_BACKGROUND, code);
 }
 
 void KitTestAbilityManagerSecond::AbilityManagerGetAllRunningProcessesCase5(int code)
 {
     APP_LOGI("KitTestAbilityManagerSecond::AbilityManagerGetAllRunningProcessesCase5");
-    RunningProcessInfo info = AbilityManager::GetInstance().GetAllRunningProcesses();
+    std::vector<RunningProcessInfo> info = AbilityManager::GetInstance().GetAllRunningProcesses();
     CompareProcessState(info, currentProcessInfo, AppProcessState::APP_STATE_FOREGROUND, code);
 }
 
 void KitTestAbilityManagerSecond::AbilityManagerGetAllRunningProcessesCase6(int code)
 {
     APP_LOGI("KitTestAbilityManagerSecond::AbilityManagerGetAllRunningProcessesCase6");
-    RunningProcessInfo info = AbilityManager::GetInstance().GetAllRunningProcesses();
+    std::vector<RunningProcessInfo> info = AbilityManager::GetInstance().GetAllRunningProcesses();
     std::shared_ptr<ProcessInfo> processInfo = AbilityContext::GetProcessInfo();
     bool result = false;
-    for (auto runProcessInfo : info.appProcessInfos) {
+    for (auto runProcessInfo : info) {
         if (runProcessInfo.processName_ == currentProcessInfo && processInfo->GetPid() == runProcessInfo.pid_) {
             result = true;
         }
@@ -227,7 +227,7 @@ void KitTestAbilityManagerSecond::AbilityManagerGetAllStackInfoCase5(int code)
 void KitTestAbilityManagerSecond::AbilityManagerQueryRecentAbilityMissionInfoCase1(int code)
 {
     APP_LOGI("KitTestAbilityManagerSecond::AbilityManagerQueryRecentAbilityMissionInfoCase1");
-    std::vector<RecentMissionInfo> info;
+    std::vector<AbilityMissionInfo> info;
     info = AbilityManager::GetInstance().QueryRecentAbilityMissionInfo(3, RECENT_WITH_EXCLUDED);
     bool result = false;
     if (1 == info.size() && 2 == info[0].size) {
@@ -241,7 +241,7 @@ void KitTestAbilityManagerSecond::AbilityManagerQueryRecentAbilityMissionInfoCas
 void KitTestAbilityManagerSecond::AbilityManagerQueryRecentAbilityMissionInfoCase2(int code)
 {
     APP_LOGI("KitTestAbilityManagerSecond::AbilityManagerQueryRecentAbilityMissionInfoCase2");
-    std::vector<RecentMissionInfo> info;
+    std::vector<AbilityMissionInfo> info;
     info = AbilityManager::GetInstance().QueryRecentAbilityMissionInfo(3, RECENT_WITH_EXCLUDED);
     bool result = false;
     if (1 == info.size() && 2 == info[0].size) {
@@ -253,7 +253,7 @@ void KitTestAbilityManagerSecond::AbilityManagerQueryRecentAbilityMissionInfoCas
 void KitTestAbilityManagerSecond::AbilityManagerQueryRecentAbilityMissionInfoCase3(int code)
 {
     APP_LOGI("KitTestAbilityManagerSecond::AbilityManagerQueryRecentAbilityMissionInfoCase3");
-    std::vector<RecentMissionInfo> info;
+    std::vector<AbilityMissionInfo> info;
     info = AbilityManager::GetInstance().QueryRecentAbilityMissionInfo(3, RECENT_WITH_EXCLUDED);
     bool result = false;
     if (1 == info.size() && 2 == info[0].size) {
@@ -269,7 +269,7 @@ void KitTestAbilityManagerSecond::AbilityManagerQueryRecentAbilityMissionInfoCas
 void KitTestAbilityManagerSecond::AbilityManagerQueryRunningAbilityMissionInfoCase1(int code)
 {
     APP_LOGI("KitTestAbilityManagerSecond::AbilityManagerQueryRunningAbilityMissionInfoCase1");
-    std::vector<RecentMissionInfo> info;
+    std::vector<AbilityMissionInfo> info;
     info = AbilityManager::GetInstance().QueryRunningAbilityMissionInfo(3);
     bool result = false;
     if (1 == info.size() && 2 == info[0].size) {
@@ -283,7 +283,7 @@ void KitTestAbilityManagerSecond::AbilityManagerQueryRunningAbilityMissionInfoCa
 void KitTestAbilityManagerSecond::AbilityManagerQueryRunningAbilityMissionInfoCase2(int code)
 {
     APP_LOGI("KitTestAbilityManagerSecond::AbilityManagerQueryRunningAbilityMissionInfoCase2");
-    std::vector<RecentMissionInfo> info;
+    std::vector<AbilityMissionInfo> info;
     info = AbilityManager::GetInstance().QueryRunningAbilityMissionInfo(3);
     bool result = false;
     if (1 == info.size() && 2 == info[0].size) {
@@ -295,7 +295,7 @@ void KitTestAbilityManagerSecond::AbilityManagerQueryRunningAbilityMissionInfoCa
 void KitTestAbilityManagerSecond::AbilityManagerQueryRunningAbilityMissionInfoCase3(int code)
 {
     APP_LOGI("KitTestAbilityManagerSecond::AbilityManagerQueryRunningAbilityMissionInfoCase3");
-    std::vector<RecentMissionInfo> info;
+    std::vector<AbilityMissionInfo> info;
     info = AbilityManager::GetInstance().QueryRunningAbilityMissionInfo(3);
     bool result = false;
     if (1 == info.size() && 2 == info[0].size) {
@@ -313,7 +313,7 @@ void KitTestAbilityManagerSecond::AbilityManagerMoveMissionToTopCase1(int code)
     moveMissionToTopCode = code;
     isMoveMissionToTop = true;
     Want wantEntity;
-    wantEntity.AddEntity(Want::FLAG_HW_HOME_INTENT_FROM_SYSTEM);
+    wantEntity.AddEntity(Want::FLAG_HOME_INTENT_FROM_SYSTEM);
     StartAbility(wantEntity);
 }
 
@@ -379,7 +379,7 @@ void KitTestAbilityManagerSecond::OnBackground()
     APP_LOGI("KitTestAbilityManagerSecond::OnBackground");
     Ability::OnBackground();
     if (true == isMoveMissionToTop) {
-        std::vector<RecentMissionInfo> info;
+        std::vector<AbilityMissionInfo> info;
         info = AbilityManager::GetInstance().QueryRecentAbilityMissionInfo(3, RECENT_WITH_EXCLUDED);
         if (1 == info.size() && 2 == info[0].size) {
             GetAbilityManager()->MoveMissionToTop(info[0].id);

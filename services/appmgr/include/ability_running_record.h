@@ -146,11 +146,15 @@ public:
      */
     int32_t GetConnectionState() const;
 
+    void SetEventId(const int64_t eventId);
+    int64_t GetEventId() const;
+
 private:
     int32_t lastLaunchTime_ = 0;
     int32_t visibility_ = 0;
     int32_t perceptibility_ = 0;
     int32_t connectionState_ = 0;
+    int64_t eventId_;
     AbilityState state_ = AbilityState::ABILITY_STATE_BEGIN;
     std::shared_ptr<AbilityInfo> info_;
     sptr<IRemoteObject> token_;

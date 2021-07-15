@@ -40,8 +40,16 @@ enum class DisplayOrientation {
 
 enum class LaunchMode {
     SINGLETON = 0,
-    SINGLETOP,
     STANDARD,  // support more than one instance
+    SINGLETOP,
+};
+
+struct Form {
+    std::vector<std::string> formEntity;
+    int32_t minHeight = 0;
+    int32_t defaultHeight = 0;
+    int32_t minWidth = 0;
+    int32_t defaultWidth = 0;
 };
 
 // configuration information about an ability
@@ -50,6 +58,7 @@ struct AbilityInfo : public Parcelable {
     std::string label;
     std::string description;
     std::string iconPath;
+    std::string theme;
     bool visible = false;
     std::string kind;  // ability category
     AbilityType type = AbilityType::UNKNOWN;
@@ -61,9 +70,14 @@ struct AbilityInfo : public Parcelable {
     std::vector<std::string> deviceTypes;
     std::vector<std::string> deviceCapabilities;
     std::string uri;
+    std::string targetAbility;
     ApplicationInfo applicationInfo;
     bool isLauncherAbility = false;
     bool isNativeAbility = false;
+    bool enabled = false;
+    std::string readPermission;
+    std::string writePermission;
+    Form form;
 
     // set when install
     std::string package;  // the "module.package" in config.json

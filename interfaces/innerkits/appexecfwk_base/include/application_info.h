@@ -57,6 +57,8 @@ struct ApplicationInfo : public Parcelable {
     std::string dataDir;
     std::string dataBaseDir;
     std::string cacheDir;
+    int flags = 0;
+    bool enabled = false;
 
     bool ReadFromParcel(Parcel &parcel);
     virtual bool Marshalling(Parcel &parcel) const override;

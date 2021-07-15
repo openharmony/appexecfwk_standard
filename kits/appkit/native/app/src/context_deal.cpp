@@ -22,10 +22,19 @@
 #include "ability_manager_client.h"
 #include "system_ability_definition.h"
 #include "sys_mgr_client.h"
+#include "spec_task_dispatcher.h"
+#include "application_context.h"
+#include "task_dispatcher_context.h"
 
 #define MODE 0771
 namespace OHOS {
 namespace AppExecFwk {
+
+const std::string ContextDeal::CONTEXT_DEAL_FILE_SEPARATOR("/");
+const std::string ContextDeal::CONTEXT_DEAL_CODE_CACHE("code_cache");
+const std::string ContextDeal::CONTEXT_DEAL_Files("files");
+const std::string ContextDeal::CONTEXT_DEAL_NO_BACKUP_Files("no_backup");
+const std::string ContextDeal::CONTEXT_DEAL_DIRNAME("preferences");
 
 /**
  * Called when getting the ProcessInfo
@@ -232,7 +241,7 @@ std::shared_ptr<Profile> ContextDeal::GetProfile() const
  */
 bool ContextDeal::DeleteFile(const std::string &fileName)
 {
-    std::string path = GetDataDir() + "/" + fileName;
+    std::string path = GetDataDir() + CONTEXT_DEAL_FILE_SEPARATOR + fileName;
     return OHOS::RemoveFile(path);
 }
 
@@ -272,7 +281,9 @@ std::string ContextDeal::GetCacheDir()
  */
 std::string ContextDeal::GetCodeCacheDir()
 {
-    return (applicationInfo_ != nullptr) ? (applicationInfo_->dataDir + "/" + "code_cache") : "";
+    return (applicationInfo_ != nullptr)
+               ? (applicationInfo_->dataDir + CONTEXT_DEAL_FILE_SEPARATOR + CONTEXT_DEAL_CODE_CACHE)
+               : "";
 }
 
 /**
@@ -313,7 +324,7 @@ std::string ContextDeal::GetDir(const std::string &name, int mode)
         APP_LOGE("ContextDeal::GetDir failed, applicationInfo_ == nullptr");
         return "";
     }
-    std::string dir = applicationInfo_->dataDir + "/" + name;
+    std::string dir = applicationInfo_->dataDir + CONTEXT_DEAL_FILE_SEPARATOR + name;
     if (!OHOS::FileExists(dir)) {
         APP_LOGI("ContextDeal::GetDir File is not exits");
         OHOS::ForceCreateDirectory(dir);
@@ -355,7 +366,9 @@ std::string ContextDeal::GetExternalFilesDir(std::string &type)
  */
 std::string ContextDeal::GetFilesDir()
 {
-    return (applicationInfo_ != nullptr) ? (applicationInfo_->dataDir + "/" + "files") : "";
+    return (applicationInfo_ != nullptr)
+               ? (applicationInfo_->dataDir + CONTEXT_DEAL_FILE_SEPARATOR + CONTEXT_DEAL_Files)
+               : "";
 }
 
 /**
@@ -367,7 +380,7 @@ std::string ContextDeal::GetFilesDir()
  */
 std::string ContextDeal::GetNoBackupFilesDir()
 {
-    std::string dir = applicationInfo_->dataDir + "no_backup";
+    std::string dir = applicationInfo_->dataDir + CONTEXT_DEAL_NO_BACKUP_Files;
     if (!OHOS::FileExists(dir)) {
         APP_LOGI("ContextDeal::GetDir GetNoBackupFilesDir is not exits");
         OHOS::ForceCreateDirectory(dir);
@@ -563,7 +576,20 @@ std::string ContextDeal::GetDistributedDir()
  * @param patternId Indicates the resource ID of the pattern to set.
  */
 void ContextDeal::SetPattern(int patternId)
-{}
+{
+    if (resourceManager_ != nullptr) {
+        if (!pattern_.empty()) {
+            pattern_.clear();
+        }
+
+        OHOS::Global::Resource::RState errval = resourceManager_->GetPatternById(patternId, pattern_);
+        if (errval != OHOS::Global::Resource::RState::SUCCESS) {
+            APP_LOGE("ContextDeal::SetPattern GetPatternById(patternId:%d) retval is %u", patternId, errval);
+        }
+    } else {
+        APP_LOGE("ContextDeal::SetPattern resourceManager_ is nullptr");
+    }
+}
 
 /**
  * @brief Obtains the Context object of this ability.
@@ -582,19 +608,12 @@ std::shared_ptr<Context> ContextDeal::GetAbilityPackageContext()
  */
 std::shared_ptr<HapModuleInfo> ContextDeal::GetHapModuleInfo()
 {
-    sptr<IBundleMgr> ptr = GetBundleManager();
-    if (ptr == nullptr) {
-        APP_LOGE("GetHapModuleInfo failed to get bundle manager service");
-        return nullptr;
+    // fix set HapModuleInfoLocal data failed, request only once
+    if (hapModuleInfoLocal_ == nullptr) {
+        HapModuleInfoRequestInit();
     }
 
-    if (abilityInfo_ == nullptr) {
-        APP_LOGE("GetHapModuleInfo failed for abilityInfo_ is nullptr");
-        return nullptr;
-    }
-    HapModuleInfo hapModuleInfo;
-    ptr->GetHapModuleInfo(*abilityInfo_.get(), hapModuleInfo);
-    return std::make_shared<HapModuleInfo>(hapModuleInfo);
+    return hapModuleInfoLocal_;
 }
 
 /**
@@ -708,6 +727,493 @@ Uri ContextDeal::GetCaller()
 void ContextDeal::SerUriString(const std::string &uri)
 {
     uriString_ = uri;
+}
+
+/**
+ * @brief Get the string of this Context based on the specified resource ID.
+ *
+ * @param resId Indicates the resource ID of the string to get.
+ *
+ * @return Returns the string of this Context.
+ */
+std::string ContextDeal::GetString(int resId)
+{
+    if (resourceManager_ == nullptr) {
+        APP_LOGE("ContextDeal::GetString resourceManager_ is nullptr");
+        return "";
+    }
+
+    std::string ret;
+    OHOS::Global::Resource::RState errval = resourceManager_->GetStringById(resId, ret);
+    if (errval == OHOS::Global::Resource::RState::SUCCESS) {
+        return ret;
+    } else {
+        APP_LOGE("ContextDeal::GetString GetStringById(resId:%d) retval is %u", resId, errval);
+        return "";
+    }
+}
+
+/**
+ * @brief Get the string array of this Context based on the specified resource ID.
+ *
+ * @param resId Indicates the resource ID of the string array to get.
+ *
+ * @return Returns the string array of this Context.
+ */
+std::vector<std::string> ContextDeal::GetStringArray(int resId)
+{
+    if (resourceManager_ == nullptr) {
+        APP_LOGE("ContextDeal::GetStringArray resourceManager_ is nullptr");
+        return std::vector<std::string>();
+    }
+
+    std::vector<std::string> retv;
+    OHOS::Global::Resource::RState errval = resourceManager_->GetStringArrayById(resId, retv);
+    if (errval == OHOS::Global::Resource::RState::SUCCESS) {
+        return retv;
+    } else {
+        APP_LOGE("ContextDeal::GetStringArray GetStringArrayById(resId:%d) retval is %u", resId, errval);
+        return std::vector<std::string>();
+    }
+}
+
+/**
+ * @brief Get the integer array of this Context based on the specified resource ID.
+ *
+ * @param resId Indicates the resource ID of the integer array to get.
+ *
+ * @return Returns the integer array of this Context.
+ */
+std::vector<int> ContextDeal::GetIntArray(int resId)
+{
+    if (resourceManager_ == nullptr) {
+        APP_LOGE("ContextDeal::GetIntArray resourceManager_ is nullptr");
+        return std::vector<int>();
+    }
+
+    std::vector<int> retv;
+    OHOS::Global::Resource::RState errval = resourceManager_->GetIntArrayById(resId, retv);
+    if (errval == OHOS::Global::Resource::RState::SUCCESS) {
+        return retv;
+    } else {
+        APP_LOGE("ContextDeal::GetIntArray GetIntArrayById(resId:%d) retval is %u", resId, errval);
+        return std::vector<int>();
+    }
+}
+
+/**
+ * @brief Obtains the theme of this Context.
+ *
+ * @return theme Returns the theme of this Context.
+ */
+std::map<std::string, std::string> ContextDeal::GetTheme()
+{
+    if (theme_.empty()) {
+        SetTheme(GetThemeId());
+    }
+
+    return theme_;
+}
+
+/**
+ * @brief Sets the theme of this Context based on the specified theme ID.
+ *
+ * @param themeId Indicates the resource ID of the theme to set.
+ */
+void ContextDeal::SetTheme(int themeId)
+{
+    if (resourceManager_ == nullptr) {
+        APP_LOGE("ContextDeal::SetTheme resourceManager_ is nullptr");
+        return;
+    }
+
+    auto hapModInfo = GetHapModuleInfo();
+    if (hapModInfo == nullptr) {
+        APP_LOGE("ContextDeal::SetTheme hapModInfo is nullptr");
+        return;
+    }
+
+    if (!theme_.empty()) {
+        theme_.clear();
+    }
+
+    OHOS::Global::Resource::RState errval = resourceManager_->GetThemeById(themeId, theme_);
+    if (errval != OHOS::Global::Resource::RState::SUCCESS) {
+        APP_LOGE("ContextDeal::SetTheme GetThemeById(themeId:%d) retval is %u", themeId, errval);
+        return;
+    }
+
+    // hapModInfo->themeId = themeId;
+
+    return;
+}
+
+/**
+ * @brief Obtains the pattern of this Context.
+ *
+ * @return getPattern in interface Context
+ */
+std::map<std::string, std::string> ContextDeal::GetPattern()
+{
+    if (!pattern_.empty()) {
+        return pattern_;
+    } else {
+        APP_LOGE("ContextDeal::GetPattern pattern_ is empty");
+        return std::map<std::string, std::string>();
+    }
+}
+
+/**
+ * @brief Get the color of this Context based on the specified resource ID.
+ *
+ * @param resId Indicates the resource ID of the color to get.
+ *
+ * @return Returns the color value of this Context.
+ */
+int ContextDeal::GetColor(int resId)
+{
+    if (resourceManager_ == nullptr) {
+        APP_LOGE("ContextDeal::GetColor resourceManager_ is nullptr");
+        return INVALID_RESOURCE_VALUE;
+    }
+
+    uint32_t ret = INVALID_RESOURCE_VALUE;
+    OHOS::Global::Resource::RState errval = resourceManager_->GetColorById(resId, ret);
+    if (errval == OHOS::Global::Resource::RState::SUCCESS) {
+        return ret;
+    } else {
+        APP_LOGE("ContextDeal::GetColor GetColorById(resId:%d) retval is %u", resId, errval);
+        return INVALID_RESOURCE_VALUE;
+    }
+}
+
+/**
+ * @brief Obtains the theme id of this Context.
+ *
+ * @return int Returns the theme id of this Context.
+ */
+int ContextDeal::GetThemeId()
+{
+    auto hapModInfo = GetHapModuleInfo();
+    if (hapModInfo != nullptr) {
+        // return hapModInfo->themeId;
+        return -1;
+    } else {
+        APP_LOGE("ContextDeal::GetThemeId hapModInfo is nullptr");
+        return -1;
+    }
+}
+
+/**
+ * @brief
+ * Destroys this Service ability if the number of times it has been started equals the number represented by the
+ * given {@code startId}. This method is the same as calling {@link #terminateAbility} to destroy this Service
+ * ability, except that this method helps you avoid destroying it if a client has requested a Service
+ * ability startup in {@link ohos.aafwk.ability.Ability#onCommand} but you are unaware of it.
+ *
+ * @param startId Indicates the number of startup times of this Service ability passed to
+ *                {@link ohos.aafwk.ability.Ability#onCommand}. The {@code startId} is
+ *                incremented by 1 every time this ability is started. For example,
+ *                if this ability has been started for six times, the value of {@code startId} is {@code 6}.
+ *
+ * @return Returns {@code true} if the {@code startId} matches the number of startup times
+ *         and this Service ability will be destroyed; returns {@code false} otherwise.
+ */
+bool ContextDeal::TerminateAbilityResult(int startId)
+{
+    return false;
+}
+
+/**
+ * @brief Obtains the current display orientation of this ability.
+ *
+ * @return Returns the current display orientation.
+ */
+int ContextDeal::GetDisplayOrientation()
+{
+    if (abilityInfo_ != nullptr) {
+        return static_cast<int>(abilityInfo_->orientation);
+    } else {
+        APP_LOGE("ContextDeal::GetDisplayOrientation abilityInfo_ is nullptr");
+        return static_cast<int>(DisplayOrientation::UNSPECIFIED);
+    }
+}
+
+/**
+ * @brief Obtains the path storing the preference file of the application.
+ *        If the preference file path does not exist, the system creates one and returns the created path.
+ *
+ * @return Returns the preference file path .
+ */
+std::string ContextDeal::GetPreferencesDir()
+{
+    if (!preferenceDir_.empty()) {
+        return preferenceDir_;
+    }
+
+    if (abilityInfo_ == nullptr || applicationInfo_ == nullptr) {
+        APP_LOGE("ContextDeal::GetPreferencesDir %s is nullptr",
+            (abilityInfo_ == nullptr) ? "abilityInfo_" : "applicationInfo_");
+        return "";
+    }
+
+    std::string abilityDirectoryName = "";
+    if (abilityInfo_->isNativeAbility) {  // Native Interface corresponding IX-1038
+        abilityDirectoryName = abilityInfo_->name;
+    } else {
+        std::string abilityname = abilityInfo_->name;
+        size_t findpos = abilityname.find_last_of(".");
+        if (findpos == std::string::npos) {
+            APP_LOGE("ContextDeal::GetPreferencesDir Find last of string failed.");
+            return "";
+        }
+
+        abilityDirectoryName = abilityname.substr(findpos + 1, abilityname.length());
+        if (abilityDirectoryName == "") {
+            APP_LOGE("ContextDeal::GetPreferencesDir abilityDirectoryName is nullptr");
+            return "";
+        }
+    }
+
+    std::string dataDir = applicationInfo_->dataDir + CONTEXT_DEAL_FILE_SEPARATOR + abilityDirectoryName +
+                          CONTEXT_DEAL_FILE_SEPARATOR + CONTEXT_DEAL_DIRNAME;
+
+    if (!OHOS::FileExists(dataDir)) {
+        APP_LOGI("ContextDeal::GetPreferencesDir File is not exits. Bengin create");
+        if (!OHOS::ForceCreateDirectory(dataDir)) {
+            APP_LOGE("ContextDeal::GetPreferencesDir ForceCreateDirectory return false. Create failed");
+            return "";
+        }
+        if (!OHOS::ChangeModeDirectory(dataDir, MODE)) {
+            APP_LOGW("ContextDeal::GetPreferencesDir ChangeModeDirectory(%s, 0771) return false. Change failed",
+                dataDir.c_str());
+        }
+        APP_LOGI("ContextDeal::GetPreferencesDir File create complete");
+    }
+
+    preferenceDir_ = dataDir;
+
+    return preferenceDir_;
+}
+
+/**
+ * @brief Set color mode
+ *
+ * @param the value of color mode.
+ */
+void ContextDeal::SetColorMode(int mode)
+{
+    auto hapModInfo = GetHapModuleInfo();
+    if (hapModInfo == nullptr) {
+        APP_LOGE("ContextDeal::SetColorMode hapModInfo is nullptr");
+        return;
+    }
+
+    if (mode == static_cast<int>(ModuleColorMode::DARK)) {
+        hapModInfo->colorMode = ModuleColorMode::DARK;
+    } else if (mode == static_cast<int>(ModuleColorMode::LIGHT)) {
+        hapModInfo->colorMode = ModuleColorMode::LIGHT;
+    } else {  // default use AUTO
+        hapModInfo->colorMode = ModuleColorMode::AUTO;
+    }
+}
+
+/**
+ * @brief Obtains color mode.
+ *
+ * @return Returns the color mode value.
+ */
+int ContextDeal::GetColorMode()
+{
+    auto hapModInfo = GetHapModuleInfo();
+    if (hapModInfo == nullptr) {
+        APP_LOGE("ContextDeal::GetColorMode hapModInfo is nullptr");
+        return -1;
+    }
+
+    return static_cast<int>(hapModInfo->colorMode);
+}
+
+/**
+ * @brief Set the LifeCycleStateInfo to the deal.
+ *
+ * @param info the info to set.
+ */
+void ContextDeal::SetLifeCycleStateInfo(const AAFwk::LifeCycleStateInfo &info)
+{
+    lifeCycleStateInfo_ = info;
+}
+
+/**
+ * @brief Obtains the unique ID of the mission containing this ability.
+ *
+ * @return Returns the unique mission ID.
+ */
+int ContextDeal::GetMissionId()
+{
+    return lifeCycleStateInfo_.missionId;
+}
+
+/**
+ * @brief Call this when your ability should be closed and the mission should be completely removed as a part of
+ * finishing the root ability of the mission.
+ */
+void ContextDeal::TerminateAndRemoveMission()
+{
+    auto abilityManagerClient = AAFwk::AbilityManagerClient::GetInstance();
+    if (abilityManagerClient == nullptr) {
+        APP_LOGE("ContextDeal::TerminateAndRemoveMission abilityManagerClient is nullptr");
+        return;
+    }
+
+    std::vector<int32_t> removeIdList = {GetMissionId()};
+    ErrCode errval = abilityManagerClient->RemoveMissions(removeIdList);
+    if (errval != ERR_OK) {
+        APP_LOGW("ContextDeal::TerminateAndRemoveMission RemoveMissions retval is ERROR(%d)", errval);
+    }
+}
+
+/**
+ * @brief Starts multiple abilities.
+ *
+ * @param wants Indicates the Want containing information array about the target ability to start.
+ */
+void ContextDeal::StartAbilities(const std::vector<AAFwk::Want> &wants)
+{}
+
+/**
+ * @brief Checks whether this ability is the first ability in a mission.
+ *
+ * @return Returns true is first in Mission.
+ */
+bool ContextDeal::IsFirstInMission()
+{
+    return false;
+}
+
+/**
+ * @brief Obtains a task dispatcher that is bound to the UI thread.
+ *
+ * @return Returns the task dispatcher that is bound to the UI thread.
+ */
+std::shared_ptr<TaskDispatcher> ContextDeal::GetUITaskDispatcher()
+{
+    return ContextDeal::GetMainTaskDispatcher();
+}
+
+/**
+ * @brief Obtains a task dispatcher that is bound to the application main thread.
+ *
+ * @return Returns the task dispatcher that is bound to the application main thread.
+ */
+std::shared_ptr<TaskDispatcher> ContextDeal::GetMainTaskDispatcher()
+{
+    if (mainTaskDispatcher_ != nullptr) {
+        return mainTaskDispatcher_;
+    }
+
+    if (mainEventRunner_ == nullptr) {
+        APP_LOGE("ContextDeal::GetMainTaskDispatcher mainTaskDispatcher_ is nullptr");
+        return nullptr;
+    }
+
+    std::shared_ptr<SpecDispatcherConfig> config =
+        std::make_shared<SpecDispatcherConfig>(SpecDispatcherConfig::MAIN, TaskPriority::HIGH);
+    if (config == nullptr) {
+        APP_LOGE("ContextDeal::GetMainTaskDispatcher config is nullptr");
+        return nullptr;
+    }
+
+    mainTaskDispatcher_ = std::make_shared<SpecTaskDispatcher>(config, mainEventRunner_);
+
+    return mainTaskDispatcher_;
+}
+
+/**
+ * @brief Creates a parallel task dispatcher with a specified priority.
+ *
+ * @param name Indicates the task dispatcher name. This parameter is used to locate problems.
+ * @param priority Indicates the priority of all tasks dispatched by the parallel task dispatcher.
+ *
+ * @return Returns a parallel task dispatcher.
+ */
+std::shared_ptr<TaskDispatcher> ContextDeal::CreateParallelTaskDispatcher(
+    const std::string &name, const TaskPriority &priority)
+{
+    if (appContext_ == nullptr) {
+        APP_LOGE("ContextDeal::CreateParallelTaskDispatcher appContext_ is nullptr");
+        return nullptr;
+    }
+
+    return appContext_->CreateParallelTaskDispatcher(name, priority);
+}
+
+/**
+ * @brief Creates a serial task dispatcher with a specified priority.
+ *
+ * @param name Indicates the task dispatcher name. This parameter is used to locate problems.
+ * @param priority Indicates the priority of all tasks dispatched by the created task dispatcher.
+ *
+ * @return Returns a serial task dispatcher.
+ */
+std::shared_ptr<TaskDispatcher> ContextDeal::CreateSerialTaskDispatcher(
+    const std::string &name, const TaskPriority &priority)
+{
+    if (appContext_ == nullptr) {
+        APP_LOGE("ContextDeal::CreateSerialTaskDispatcher appContext_ is nullptr");
+        return nullptr;
+    }
+
+    return appContext_->CreateSerialTaskDispatcher(name, priority);
+}
+
+/**
+ * @brief Obtains a global task dispatcher with a specified priority.
+ *
+ * @param priority Indicates the priority of all tasks dispatched by the global task dispatcher.
+ *
+ * @return Returns a global task dispatcher.
+ */
+std::shared_ptr<TaskDispatcher> ContextDeal::GetGlobalTaskDispatcher(const TaskPriority &priority)
+{
+    if (appContext_ == nullptr) {
+        APP_LOGE("ContextDeal::GetGlobalTaskDispatcher appContext_ is nullptr");
+        return nullptr;
+    }
+
+    return appContext_->GetGlobalTaskDispatcher(priority);
+}
+
+/**
+ * @brief Set EventRunner for main thread.
+ *
+ * @param runner The EventRunner.
+ */
+void ContextDeal::SetRunner(const std::shared_ptr<EventRunner> &runner)
+{
+    mainEventRunner_ = runner;
+}
+
+bool ContextDeal::HapModuleInfoRequestInit()
+{
+    sptr<IBundleMgr> ptr = GetBundleManager();
+    if (ptr == nullptr) {
+        APP_LOGE("GetHapModuleInfo failed to get bundle manager service");
+        return false;
+    }
+
+    if (abilityInfo_ == nullptr) {
+        APP_LOGE("GetHapModuleInfo failed for abilityInfo_ is nullptr");
+        return false;
+    }
+
+    hapModuleInfoLocal_ = std::make_shared<HapModuleInfo>();
+    if (!ptr->GetHapModuleInfo(*abilityInfo_.get(), *hapModuleInfoLocal_)) {
+        APP_LOGE("IBundleMgr::GetHapModuleInfo failed, will retval false value");
+        return false;
+    }
+
+    return true;
 }
 
 }  // namespace AppExecFwk

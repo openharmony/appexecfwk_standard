@@ -64,7 +64,8 @@ protected:
         const std::string &app, const AbilityState abilityState, const ApplicationState appState) const;
 
 protected:
-    std::unique_ptr<AppMgrServiceInner> serviceInner_;
+    std::shared_ptr<AppMgrServiceInner> serviceInner_;
+    std::shared_ptr<AMSEventHandler> handler_ = nullptr;
 };
 
 void AmsWorkFlowTest::SetUpTestCase()
@@ -76,6 +77,9 @@ void AmsWorkFlowTest::TearDownTestCase()
 void AmsWorkFlowTest::SetUp()
 {
     serviceInner_ = std::make_unique<AppMgrServiceInner>();
+    auto runner = EventRunner::Create("AmsWorkFlowTest");
+    handler_ = std::make_shared<AMSEventHandler>(runner, serviceInner_);
+    serviceInner_->SetEventHandler(handler_);
 }
 
 void AmsWorkFlowTest::TearDown()
@@ -128,6 +132,7 @@ TestApplicationPreRecord AmsWorkFlowTest::CreateTestApplicationRecord(const std:
         appRecord->GetPriorityObject()->SetPid(g_mockPid++);
     }
     EXPECT_NE(appRecord, nullptr);
+    appRecord->SetEventHandler(handler_);
     auto abilityRecord = appRecord->GetAbilityRunningRecordByToken(token);
     EXPECT_NE(abilityRecord, nullptr);
     abilityRecord->SetState(abilityState);

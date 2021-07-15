@@ -47,10 +47,10 @@
   <target name="ActsBmsKitSystemTest">
     <depend resource="stThirdBundle/." pushpath="/data/test/bms_bundle/" findpath="res" presetcmd=""/>
     <depend resource="../../../../event/common/test/systemtest/common/resource/testconfig/stress/."
-        pushpath="/testconfig" findpath="res" presetcmd=""/>
+        pushpath="/data/testconfig" findpath="res" presetcmd=""/>
     <preparer>
    	 <option name="push" value="stThirdBundle/. -> /data/test/bms_bundle/" src="res" />
-     <option name="push" value="../../../../event/common/test/systemtest/common/resource/testconfig/stress/. -> /testconfig"
+     <option name="push" value="../../../../event/common/test/systemtest/common/resource/testconfig/stress/. -> /data/testconfig"
          src="res" />
     </preparer>
   </target>

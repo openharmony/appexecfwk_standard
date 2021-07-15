@@ -20,6 +20,7 @@
 #include <memory>
 #include <mutex>
 #include <string>
+#include <shared_mutex>
 
 #include "ohos/aafwk/content/want.h"
 
@@ -176,6 +177,20 @@ public:
      */
     bool GetBundleNameForUid(const int uid, std::string &bundleName) const;
     /**
+     * @brief Obtains all bundle names of a specified application based on the given application UID.
+     * @param uid Indicates the uid.
+     * @param bundleNames Indicates the obtained bundle names.
+     * @return Returns true if the bundle names is successfully obtained; returns false otherwise.
+     */
+    bool GetBundlesForUid(const int uid, std::vector<std::string> &bundleNames) const;
+    /**
+     * @brief Obtains the formal name associated with the given UID.
+     * @param uid Indicates the uid.
+     * @param name Indicates the obtained formal name.
+     * @return Returns true if the formal name is successfully obtained; returns false otherwise.
+     */
+    bool GetNameForUid(const int uid, std::string &name) const;
+    /**
      * @brief Obtains an array of all group IDs associated with a specified bundle.
      * @param bundleName Indicates the bundle name.
      * @param gids Indicates the group IDs associated with the specified bundle.
@@ -247,6 +262,27 @@ public:
      */
     bool SetApplicationEnabled(const std::string &bundleName, bool isEnable);
     /**
+     * @brief Sets whether to enable a specified ability through the proxy object.
+     * @param abilityInfo Indicates information about the ability to check.
+     * @return Returns true if the ability is enabled; returns false otherwise.
+     */
+    bool IsAbilityEnabled(const AbilityInfo &abilityInfo) const;
+    /**
+     * @brief Sets whether to enable a specified ability through the proxy object.
+     * @param abilityInfo Indicates information about the ability.
+     * @param isEnabled Specifies whether to enable the ability.
+     *                 The value true means to enable it, and the value false means to disable it.
+     * @return Returns true if the ability is enabled; returns false otherwise.
+     */
+    bool SetAbilityEnabled(const AbilityInfo &abilityInfo, bool isEnabled);
+    /**
+     * @brief Obtains the icon of a specified ability through the proxy object.
+     * @param bundleName Indicates the bundle name.
+     * @param className Indicates the ability class name.
+     * @return Returns the icon resource string of the ability if exist; returns empty string otherwise.
+     */
+    std::string GetAbilityIcon(const std::string &bundleName, const std::string &className) const;
+    /**
      * @brief Register the bundle status callback function.
      * @param bundleStatusCallback Indicates the callback object that using for notifing the bundle status.
      * @return Returns true if this function is successfully called; returns false otherwise.
@@ -275,6 +311,12 @@ public:
     bool NotifyBundleStatus(const std::string &bundleName, const std::string &modulePackage,
         const std::string &mainAbility, const ErrCode resultCode, const NotifyType type);
     /**
+     * @brief Get a mutex for locking by bundle name.
+     * @param bundleName Indicates the bundle name.
+     * @return Returns a reference of mutex that for locing by bundle name.
+     */
+    std::mutex &GetBundleMutex(const std::string &bundleName);
+    /**
      * @brief Obtains the provision Id based on a given bundle name.
      * @param bundleName Indicates the application bundle name to be queried.
      * @param provisionId Indicates the provision Id to be returned.
@@ -288,13 +330,51 @@ public:
      * @return Returns true if the app feature is successfully obtained; returns false otherwise.
      */
     bool GetAppFeature(const std::string &bundleName, std::string &appFeature) const;
-
     /**
      * @brief Set the flag that indicates whether all applications are installed.
      * @param flag Indicates the flag to be set.
      * @return
      */
     void SetAllInstallFlag(bool flag);
+    /**
+     * @brief Checks whether the publickeys of two bundles are the same.
+     * @param firstBundleName Indicates the first bundle name.
+     * @param secondBundleName Indicates the second bundle name.
+     * @return Returns SIGNATURE_UNKNOWN_BUNDLE if at least one of the given bundles is not found;
+     *         returns SIGNATURE_NOT_MATCHED if their publickeys are different;
+     *         returns SIGNATURE_MATCHED if their publickeys are the same.
+     */
+    int CheckPublicKeys(const std::string &firstBundleName, const std::string &secondBundleName) const;
+    /**
+     * @brief Get a shared pointer to the IBundleDataStorage object.
+     * @return Returns the pointer of IBundleDataStorage object.
+     */
+    std::shared_ptr<IBundleDataStorage> GetDataStorage() const;
+    /**
+     * @brief Obtains the FormInfo objects provided by all applications on the device.
+     * @param formInfo List of FormInfo objects if obtained; returns an empty List if no FormInfo is available on the
+     * device.
+     * @return Returns true if this function is successfully called; returns false otherwise.
+     */
+    bool GetAllFormsInfo(std::vector<FormInfo> &formInfos) const;
+    /**
+     * @brief Obtains the FormInfo objects provided by a specified application on the device.
+     * @param bundleName Indicates the bundle name of the HarmonyOS application.
+     * @param formInfo List of FormInfo objects if obtained; returns an empty List if no FormInfo is available on the
+     * device.
+     * @return Returns true if this function is successfully called; returns false otherwise.
+     */
+    bool GetFormsInfoByApp(const std::string &bundleName, std::vector<FormInfo> &formInfos) const;
+    /**
+     * @brief Obtains the FormInfo objects provided by a specified module name.
+     * @param formInfo List of FormInfo objects if obtained; returns an empty List if no FormInfo is available on the
+     * device.
+     * @param moduleName Indicates the module name of the HarmonyOS application.
+     * @param bundleName Indicates the bundle name of the HarmonyOS application.
+     * @return Returns true if this function is successfully called; returns false otherwise.
+     */
+    bool GetFormsInfoByModule(
+        const std::string &bundleName, const std::string &moduleName, std::vector<FormInfo> &formInfos) const;
 
 private:
     /**
@@ -345,7 +425,10 @@ private:
     mutable std::mutex stateMutex_;
     mutable std::mutex uidMapMutex_;
     mutable std::mutex callbackMutex_;
+    mutable std::shared_mutex bundleMutex_;
     bool allInstallFlag_ = false;
+    // using for locking by bundleName
+    std::unordered_map<std::string, std::mutex> bundleMutexMap_;
     // using for generating uid and gid
     std::map<int, std::string> sysUidMap_;
     std::map<int, std::string> sysVendorUidMap_;

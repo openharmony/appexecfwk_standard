@@ -27,7 +27,7 @@ ohos_unittest("BmsDataMgrTest") {
     "${innerkits_path}/appexecfwk_base/src/bundle_info.cpp",
     "${innerkits_path}/appexecfwk_base/src/element_name.cpp",
     "${services_path}/bundlemgr/src/bundle_data_mgr.cpp",
-    "${services_path}/bundlemgr/src/bundle_data_storage.cpp",
+    "${services_path}/bundlemgr/src/bundle_data_storage_database.cpp",
     "${services_path}/bundlemgr/src/bundle_status_callback_death_recipient.cpp",
   ]
 
@@ -52,6 +52,7 @@ ohos_unittest("BmsDataMgrTest") {
     "${services_path}/bundlemgr:parser_common",
     "//foundation/aafwk/standard/interfaces/innerkits/base:base",
     "//foundation/aafwk/standard/interfaces/innerkits/want:want",
+    "//foundation/distributeddatamgr/distributeddatamgr/interfaces/innerkits/distributeddata:distributeddata_inner",
     "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
     "//third_party/googletest:gtest_main",
   ]

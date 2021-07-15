@@ -60,9 +60,6 @@ bool InstalldService::Init()
     if (!InitDir(Constants::SYSTEM_APP_INSTALL_PATH)) {
         APP_LOGI("SYSTEM_APP_INSTALL_PATH is already exists");
     }
-    if (!InitDir(Constants::BUNDLE_DATA_BASE_DIR)) {
-        APP_LOGI("BUNDLE_DATA_BASE_DIR is already exists");
-    }
     if (!InitDir(Constants::EXTRACT_TMP_PATH)) {
         APP_LOGI("EXTRACT_TMP_PATH is already exists");
     }

@@ -32,6 +32,8 @@ public:
             const std::shared_ptr<AbilityInfo> &abilityInfo, const std::shared_ptr<ApplicationInfo> &appInfo));
     MOCK_METHOD1(TerminateAbility, void(const sptr<IRemoteObject> &token));
     MOCK_METHOD2(UpdateAbilityState, void(const sptr<IRemoteObject> &token, const AbilityState state));
+    MOCK_METHOD1(SetAppFreezingTime, void(int time));
+    MOCK_METHOD1(GetAppFreezingTime, void(int &time));
 
     virtual void AttachApplication(const sptr<IRemoteObject> &app) override
     {
@@ -76,12 +78,16 @@ public:
     {
         return nullptr;
     };
-    virtual void ClearUpApplicationData(const std::string &appName) override{};
+    virtual int32_t ClearUpApplicationData(const std::string &appName) override
+    {
+        return 0;
+    }
+
     virtual int IsBackgroundRunningRestricted(const std::string &appName) override
     {
         return 0;
     };
-    virtual int GetAllRunningProcesses(std::shared_ptr<RunningProcessInfo> &runningProcessInfo) override
+    virtual int GetAllRunningProcesses(std::vector<RunningProcessInfo> &info) override
     {
         return 0;
     };

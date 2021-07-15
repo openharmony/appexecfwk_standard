@@ -1,0 +1,70 @@
+# Copyright (c) 2021 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import("//build/ohos.gni")
+SUBSYSTEM_DIR = "//foundation/appexecfwk/standard"
+config("appkit_config") {
+  config("appkit_public_config") {
+    visibility = [ ":*" ]
+    include_dirs = []
+  }
+  include_dirs = []
+}
+
+ohos_shared_library("appkit_dispatcher_td") {
+  include_dirs = [
+    "$SUBSYSTEM_DIR/common/log/include",
+    "$SUBSYSTEM_DIR/interfaces/innerkits/libeventhandler/include",
+
+    "$SUBSYSTEM_DIR/interfaces/innerkits/task_dispatcher/include/dispatcher",
+    "$SUBSYSTEM_DIR/interfaces/innerkits/task_dispatcher/include/task",
+    "$SUBSYSTEM_DIR/interfaces/innerkits/task_dispatcher/include/threading",
+    "$SUBSYSTEM_DIR/kits/appkit/native/app/include/task",
+    "$SUBSYSTEM_DIR/kits/appkit/native/app/include",
+  ]
+
+  configs = [ ":appkit_config" ]
+
+  public_configs = [ ":appkit_public_config" ]
+
+  sources = [
+    "$SUBSYSTEM_DIR/interfaces/innerkits/task_dispatcher/src/dispatcher/base_task_dispatcher.cpp",
+    "$SUBSYSTEM_DIR/interfaces/innerkits/task_dispatcher/src/dispatcher/global_task_dispatcher.cpp",
+    "$SUBSYSTEM_DIR/interfaces/innerkits/task_dispatcher/src/dispatcher/group_impl.cpp",
+    "$SUBSYSTEM_DIR/interfaces/innerkits/task_dispatcher/src/dispatcher/parallel_task_dispatcher.cpp",
+    "$SUBSYSTEM_DIR/interfaces/innerkits/task_dispatcher/src/dispatcher/parallel_task_dispatcher_base.cpp",
+    "$SUBSYSTEM_DIR/interfaces/innerkits/task_dispatcher/src/dispatcher/serial_task_dispatcher.cpp",
+    "$SUBSYSTEM_DIR/interfaces/innerkits/task_dispatcher/src/dispatcher/spec_task_dispatcher.cpp",
+    "$SUBSYSTEM_DIR/interfaces/innerkits/task_dispatcher/src/dispatcher/task_dispatcher_context.cpp",
+    "$SUBSYSTEM_DIR/interfaces/innerkits/task_dispatcher/src/task/barrier_handler.cpp",
+    "$SUBSYSTEM_DIR/interfaces/innerkits/task_dispatcher/src/task/sync_task.cpp",
+    "$SUBSYSTEM_DIR/interfaces/innerkits/task_dispatcher/src/task/task.cpp",
+    "$SUBSYSTEM_DIR/interfaces/innerkits/task_dispatcher/src/threading/default_thread_factory.cpp",
+    "$SUBSYSTEM_DIR/interfaces/innerkits/task_dispatcher/src/threading/default_worker_pool_config.cpp",
+    "$SUBSYSTEM_DIR/interfaces/innerkits/task_dispatcher/src/threading/task_executor.cpp",
+    "$SUBSYSTEM_DIR/interfaces/innerkits/task_dispatcher/src/threading/work_thread.cpp",
+    "$SUBSYSTEM_DIR/interfaces/innerkits/task_dispatcher/src/threading/worker_pool.cpp",
+  ]
+  cflags = []
+  if (target_cpu == "arm") {
+    cflags += [ "-DBINDER_IPC_32BIT" ]
+  }
+  deps = [
+    "$SUBSYSTEM_DIR/common:libappexecfwk_common",
+    "$SUBSYSTEM_DIR/interfaces/innerkits/appexecfwk_base:appexecfwk_base",
+    "//foundation/appexecfwk/standard/interfaces/innerkits/libeventhandler:libeventhandler",
+  ]
+  external_deps = [ "hiviewdfx_hilog_native:libhilog" ]
+
+  part_name = "appexecfwk_standard"
+}

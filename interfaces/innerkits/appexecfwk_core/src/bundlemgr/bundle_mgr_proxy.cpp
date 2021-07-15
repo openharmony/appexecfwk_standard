@@ -159,6 +159,21 @@ int BundleMgrProxy::GetUidByBundleName(const std::string &bundleName, const int 
     return uid;
 }
 
+std::string BundleMgrProxy::GetAppIdByBundleName(const std::string &bundleName, const int userId)
+{
+    APP_LOGI("begin to get uid of %{public}s", bundleName.c_str());
+    BundleInfo bundleInfo;
+    std::string appId = Constants::EMPTY_STRING;
+    bool ret = GetBundleInfo(bundleName, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo);
+    if (ret) {
+        appId = bundleInfo.appId;
+        APP_LOGD("get bundle appId success");
+    } else {
+        APP_LOGE("can not get bundleInfo's appId");
+    }
+    return appId;
+}
+
 bool BundleMgrProxy::GetBundleNameForUid(const int uid, std::string &bundleName)
 {
     APP_LOGI("begin to GetBundleNameForUid of %{public}d", uid);
@@ -185,6 +200,61 @@ bool BundleMgrProxy::GetBundleNameForUid(const int uid, std::string &bundleName)
     return true;
 }
 
+bool BundleMgrProxy::GetBundlesForUid(const int uid, std::vector<std::string> &bundleNames)
+{
+    APP_LOGI("begin to GetBundlesForUid of %{public}d", uid);
+    MessageParcel data;
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        APP_LOGE("fail to GetBundlesForUid due to write InterfaceToken fail");
+        return false;
+    }
+    if (!data.WriteInt32(uid)) {
+        APP_LOGE("fail to GetBundlesForUid due to write uid fail");
+        return false;
+    }
+
+    MessageParcel reply;
+    if (!SendTransactCmd(IBundleMgr::Message::GET_BUNDLES_FOR_UID, data, reply)) {
+        APP_LOGE("fail to GetBundlesForUid from server");
+        return false;
+    }
+    if (!reply.ReadBool()) {
+        APP_LOGE("reply result false");
+        return false;
+    }
+    if (!reply.ReadStringVector(&bundleNames)) {
+        APP_LOGE("fail to GetBundlesForUid from reply");
+        return false;
+    }
+    return true;
+}
+
+bool BundleMgrProxy::GetNameForUid(const int uid, std::string &name)
+{
+    APP_LOGI("begin to GetNameForUid of %{public}d", uid);
+    MessageParcel data;
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        APP_LOGE("fail to GetNameForUid due to write InterfaceToken fail");
+        return false;
+    }
+    if (!data.WriteInt32(uid)) {
+        APP_LOGE("fail to GetNameForUid due to write uid fail");
+        return false;
+    }
+
+    MessageParcel reply;
+    if (!SendTransactCmd(IBundleMgr::Message::GET_NAME_FOR_UID, data, reply)) {
+        APP_LOGE("fail to GetNameForUid from server");
+        return false;
+    }
+    if (!reply.ReadBool()) {
+        APP_LOGE("reply result false");
+        return false;
+    }
+    name = reply.ReadString();
+    return true;
+}
+
 bool BundleMgrProxy::GetBundleGids(const std::string &bundleName, std::vector<int> &gids)
 {
     APP_LOGI("begin to GetBundleGids of %{public}s", bundleName.c_str());
@@ -203,7 +273,10 @@ bool BundleMgrProxy::GetBundleGids(const std::string &bundleName, std::vector<in
         APP_LOGE("fail to GetBundleGids from server");
         return false;
     }
-
+    if (!reply.ReadBool()) {
+        APP_LOGE("reply result false");
+        return false;
+    }
     if (!reply.ReadInt32Vector(&gids)) {
         APP_LOGE("fail to GetBundleGids from reply");
         return false;
@@ -859,6 +932,92 @@ bool BundleMgrProxy::SetApplicationEnabled(const std::string &bundleName, bool i
     return reply.ReadBool();
 }
 
+bool BundleMgrProxy::IsAbilityEnabled(const AbilityInfo &abilityInfo)
+{
+    APP_LOGI("begin to IsAbilityEnabled of %{public}s", abilityInfo.name.c_str());
+    if (abilityInfo.name.empty()) {
+        APP_LOGE("fail to IsAbilityEnabled due to params empty");
+        return false;
+    }
+
+    MessageParcel data;
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        APP_LOGE("fail to IsAbilityEnabled due to write InterfaceToken fail");
+        return false;
+    }
+    if (!data.WriteParcelable(&abilityInfo)) {
+        APP_LOGE("fail to IsAbilityEnabled due to write abilityInfo fail");
+        return false;
+    }
+
+    MessageParcel reply;
+    if (!SendTransactCmd(IBundleMgr::Message::IS_ABILITY_ENABLED, data, reply)) {
+        APP_LOGE("fail to IsAbilityEnabled from server");
+        return false;
+    }
+    return reply.ReadBool();
+}
+
+bool BundleMgrProxy::SetAbilityEnabled(const AbilityInfo &abilityInfo, bool isEnabled)
+{
+    APP_LOGI("begin to SetAbilityEnabled of %{public}s", abilityInfo.name.c_str());
+    if (abilityInfo.name.empty()) {
+        APP_LOGE("fail to SetAbilityEnabled due to params empty");
+        return false;
+    }
+
+    MessageParcel data;
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        APP_LOGE("fail to SetAbilityEnabled due to write InterfaceToken fail");
+        return false;
+    }
+    if (!data.WriteParcelable(&abilityInfo)) {
+        APP_LOGE("fail to SetAbilityEnabled due to write abilityInfo fail");
+        return false;
+    }
+    if (!data.WriteBool(isEnabled)) {
+        APP_LOGE("fail to SetAbilityEnabled due to write isEnabled fail");
+        return false;
+    }
+
+    MessageParcel reply;
+    if (!SendTransactCmd(IBundleMgr::Message::SET_ABILITY_ENABLED, data, reply)) {
+        APP_LOGE("fail to SetAbilityEnabled from server");
+        return false;
+    }
+    return reply.ReadBool();
+}
+
+std::string BundleMgrProxy::GetAbilityIcon(const std::string &bundleName, const std::string &className)
+{
+    APP_LOGI("begin to get bundle info of %{public}s", bundleName.c_str());
+    if (bundleName.empty()) {
+        APP_LOGE("fail to GetAbilityIcon due to params empty");
+        return Constants::EMPTY_STRING;
+    }
+
+    MessageParcel data;
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        APP_LOGE("fail to GetAbilityIcon due to write InterfaceToken fail");
+        return Constants::EMPTY_STRING;
+    }
+    if (!data.WriteString(bundleName)) {
+        APP_LOGE("fail to GetAbilityIcon due to write bundleName fail");
+        return Constants::EMPTY_STRING;
+    }
+    if (!data.WriteString(className)) {
+        APP_LOGE("fail to GetAbilityIcon due to write className fail");
+        return Constants::EMPTY_STRING;
+    }
+
+    MessageParcel reply;
+    if (!SendTransactCmd(IBundleMgr::Message::GET_ABILITY_ICON, data, reply)) {
+        APP_LOGE("fail to GetAbilityIcon from server");
+        return Constants::EMPTY_STRING;
+    }
+    return reply.ReadString();
+}
+
 sptr<IBundleInstaller> BundleMgrProxy::GetBundleInstaller()
 {
     APP_LOGD("begin to get bundle installer");
@@ -952,7 +1111,159 @@ bool BundleMgrProxy::RequestPermissionFromUser(
     return reply.ReadBool();
 }
 
-template<typename T>
+bool BundleMgrProxy::RegisterAllPermissionsChanged(const sptr<OnPermissionChangedCallback> &callback)
+{
+    APP_LOGI("begin to RegisterAllPermissionsChanged");
+    if (!callback) {
+        APP_LOGE("fail to RegisterAllPermissionsChanged");
+        return false;
+    }
+
+    MessageParcel data;
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        APP_LOGE("fail to RegisterAllPermissionsChanged due to write InterfaceToken fail");
+        return false;
+    }
+    if (!data.WriteParcelable(callback->AsObject())) {
+        APP_LOGE("fail to RegisterAllPermissionsChanged, for write parcel failed");
+        return false;
+    }
+
+    MessageParcel reply;
+    if (!SendTransactCmd(IBundleMgr::Message::REGISTER_ALL_PERMISSIONS_CHANGED, data, reply)) {
+        APP_LOGE("fail to RegisterAllPermissionsChanged from server");
+        return false;
+    }
+    return reply.ReadBool();
+}
+
+bool BundleMgrProxy::RegisterPermissionsChanged(
+    const std::vector<int> &uids, const sptr<OnPermissionChangedCallback> &callback)
+{
+    APP_LOGI("begin to RegisterAllPermissionsChanged");
+    if (!callback || uids.empty()) {
+        APP_LOGE("fail to RegisterAllPermissionsChanged");
+        return false;
+    }
+
+    MessageParcel data;
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        APP_LOGE("fail to RegisterAllPermissionsChanged due to write InterfaceToken fail");
+        return false;
+    }
+    if (!data.WriteInt32Vector(uids)) {
+        APP_LOGE("fail to RegisterAllPermissionsChanged due to write permissions fail");
+        return false;
+    }
+    if (!data.WriteParcelable(callback->AsObject())) {
+        APP_LOGE("fail to RegisterAllPermissionsChanged, for write parcel failed");
+        return false;
+    }
+
+    MessageParcel reply;
+    if (!SendTransactCmd(IBundleMgr::Message::REGISTER_PERMISSIONS_CHANGED, data, reply)) {
+        APP_LOGE("fail to RegisterAllPermissionsChanged from server");
+        return false;
+    }
+    return reply.ReadBool();
+}
+
+bool BundleMgrProxy::UnregisterPermissionsChanged(const sptr<OnPermissionChangedCallback> &callback)
+{
+    APP_LOGI("begin to UnregisterPermissionsChanged");
+    if (!callback) {
+        APP_LOGE("fail to UnregisterPermissionsChanged, for callback is nullptr");
+        return false;
+    }
+
+    MessageParcel data;
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        APP_LOGE("fail to UnregisterPermissionsChanged due to write InterfaceToken fail");
+        return false;
+    }
+    if (!data.WriteParcelable(callback->AsObject())) {
+        APP_LOGE("fail to UnregisterPermissionsChanged, for write parcel failed");
+        return false;
+    }
+
+    MessageParcel reply;
+    if (!SendTransactCmd(IBundleMgr::Message::UNREGISTER_PERMISSIONS_CHANGED, data, reply)) {
+        APP_LOGE("fail to UnregisterPermissionsChanged from server");
+        return false;
+    }
+    return reply.ReadBool();
+}
+
+bool BundleMgrProxy::GetAllFormsInfo(std::vector<FormInfo> &formInfos)
+{
+    MessageParcel data;
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        APP_LOGE("fail to GetAllFormsInfo due to write MessageParcel fail");
+        return false;
+    }
+
+    if (!GetParcelableInfos<FormInfo>(IBundleMgr::Message::GET_ALL_FORMS_INFO, data, formInfos)) {
+        APP_LOGE("fail to GetAllFormsInfo from server");
+        return false;
+    }
+    return true;
+}
+
+bool BundleMgrProxy::GetFormsInfoByApp(const std::string &bundleName, std::vector<FormInfo> &formInfos)
+{
+    if (bundleName.empty()) {
+        APP_LOGE("fail to GetFormsInfoByApp due to params empty");
+        return false;
+    }
+
+    MessageParcel data;
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        APP_LOGE("fail to GetFormsInfoByApp due to write MessageParcel fail");
+        return false;
+    }
+    if (!data.WriteString(bundleName)) {
+        APP_LOGE("fail to GetFormsInfoByApp due to write bundleName fail");
+        return false;
+    }
+    if (!GetParcelableInfos<FormInfo>(IBundleMgr::Message::GET_FORMS_INFO_BY_APP, data, formInfos)) {
+        APP_LOGE("fail to GetFormsInfoByApp from server");
+        return false;
+    }
+    return true;
+}
+
+bool BundleMgrProxy::GetFormsInfoByModule(
+    const std::string &bundleName, const std::string &moduleName, std::vector<FormInfo> &formInfos)
+{
+    if (bundleName.empty() || moduleName.empty()) {
+        APP_LOGE("fail to GetFormsByModule due to params empty");
+        return false;
+    }
+
+    MessageParcel data;
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        APP_LOGE("fail to GetFormsInfoByModule due to write MessageParcel fail");
+        return false;
+    }
+
+    if (!data.WriteString(bundleName)) {
+        APP_LOGE("fail to GetFormsInfoByModule due to write bundleName fail");
+        return false;
+    }
+
+    if (!data.WriteString(moduleName)) {
+        APP_LOGE("fail to GetFormsInfoByModule due to write moduleName fail");
+        return false;
+    }
+
+    if (!GetParcelableInfos<FormInfo>(IBundleMgr::Message::GET_FORMS_INFO_BY_MODULE, data, formInfos)) {
+        APP_LOGE("fail to GetFormsInfoByModule from server");
+        return false;
+    }
+    return true;
+}
+
+template <typename T>
 bool BundleMgrProxy::GetParcelableInfo(IBundleMgr::Message code, MessageParcel &data, T &parcelableInfo)
 {
     MessageParcel reply;
@@ -975,7 +1286,7 @@ bool BundleMgrProxy::GetParcelableInfo(IBundleMgr::Message code, MessageParcel &
     return true;
 }
 
-template<typename T>
+template <typename T>
 bool BundleMgrProxy::GetParcelableInfos(IBundleMgr::Message code, MessageParcel &data, std::vector<T> &parcelableInfos)
 {
     MessageParcel reply;

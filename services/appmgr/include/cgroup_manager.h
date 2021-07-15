@@ -49,6 +49,20 @@ public:
         LOW_MEMORY_LEVEL_MAX
     };
 
+    enum SchedPolicyCpu {
+        SCHED_POLICY_CPU_DEFAULT = 0,
+        SCHED_POLICY_CPU_BACKGROUND,
+
+        SCHED_POLICY_CPU_MAX
+    };
+
+    enum SchedPolicyFreezer {
+        SCHED_POLICY_FREEZER_FROZEN = 0,
+        SCHED_POLICY_FREEZER_THAWED,
+
+        SCHED_POLICY_FREEZER_MAX
+    };
+
     std::function<void(CgroupManager::LowMemoryLevel)> LowMemoryAlert;
 
 public:
@@ -60,7 +74,9 @@ public:
 
 private:
     std::shared_ptr<EventHandler> eventHandler_;
-    int cpuTasksFds_[SCHED_POLICY_MAX];
+    int cpusetTasksFds_[SCHED_POLICY_CPU_MAX];
+    int cpuctlTasksFds_[SCHED_POLICY_CPU_MAX];
+    int freezerTasksFds_[SCHED_POLICY_FREEZER_MAX];
     int memoryEventControlFd_;
     int memoryEventFds_[LOW_MEMORY_LEVEL_MAX];
     int memoryPressureFds_[LOW_MEMORY_LEVEL_MAX];
@@ -68,10 +84,15 @@ private:
     bool RegisterLowMemoryMonitor(const int memoryEventFds[LOW_MEMORY_LEVEL_MAX],
         const int memoryPressureFds[LOW_MEMORY_LEVEL_MAX], const int memoryEventControlFd, const LowMemoryLevel level,
         const std::shared_ptr<EventHandler> &eventHandler);
-    bool InitCpuTasksFds(UniqueFd cpuTasksFds[SCHED_POLICY_MAX], size_t len = SCHED_POLICY_MAX);
+    bool InitCpusetTasksFds(UniqueFd cpusetTasksFds[SCHED_POLICY_CPU_MAX]);
+    bool InitCpuctlTasksFds(UniqueFd cpuctlTasksFds[SCHED_POLICY_CPU_MAX]);
+    bool InitFreezerTasksFds(UniqueFd freezerTasksFds[SCHED_POLICY_FREEZER_MAX]);
     bool InitMemoryEventControlFd(UniqueFd &memoryEventControlFd);
-    bool InitMemoryEventFds(UniqueFd memoryEventFds[LOW_MEMORY_LEVEL_MAX], size_t len = LOW_MEMORY_LEVEL_MAX);
-    bool InitMemoryPressureFds(UniqueFd memoryPressureFds[LOW_MEMORY_LEVEL_MAX], size_t len = LOW_MEMORY_LEVEL_MAX);
+    bool InitMemoryEventFds(UniqueFd memoryEventFds[LOW_MEMORY_LEVEL_MAX]);
+    bool InitMemoryPressureFds(UniqueFd memoryPressureFds[LOW_MEMORY_LEVEL_MAX]);
+    bool SetCpusetSubsystem(const int tid, const SchedPolicy schedPolicy);
+    bool SetCpuctlSubsystem(const int tid, const SchedPolicy schedPolicy);
+    bool SetFreezerSubsystem(const int tid, const SchedPolicyFreezer state);
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS

@@ -18,8 +18,11 @@
 
 #include "nocopyable.h"
 #include "permission/permission_kit.h"
+#include "app_log_wrapper.h"
 
+#include "appexecfwk_errors.h"
 #include "ability_info.h"
+#include "form_info.h"
 #include "bundle_info.h"
 #include "hap_module_info.h"
 #include "bundle_constants.h"
@@ -41,7 +44,7 @@ struct Results {
     std::string type;
 };
 
-struct CustomizeData {
+struct InnerCustomizeData {
     std::string name;
     std::string value;
     std::string extra;
@@ -50,7 +53,7 @@ struct CustomizeData {
 struct MetaData {
     std::vector<Parameters> parameters;
     std::vector<Results> results;
-    std::vector<CustomizeData> customizeData;
+	std::vector<InnerCustomizeData> customizeData;
 };
 
 struct Distro {
@@ -89,6 +92,7 @@ struct InnerModuleInfo {
     std::string description;
     bool isEntry;
     MetaData metaData;
+    ModuleColorMode colorMode = ModuleColorMode::AUTO;
     Distro distro;
     std::vector<std::string> reqCapabilities;
     std::vector<ReqPermission> reqPermissions;
@@ -111,6 +115,140 @@ struct Skill {
     std::vector<SkillUri> uris;
 };
 
+enum class JsonType {
+    NULLABLE,
+    BOOLEAN,
+    NUMBER,
+    OBJECT,
+    ARRAY,
+    STRING,
+};
+
+enum class ArrayType {
+    NUMBER,
+    OBJECT,
+    STRING,
+    NOT_ARRAY,
+};
+
+template<typename T, typename dataType>
+void CheckArrayType(
+    const nlohmann::json &jsonObject, const std::string &key, dataType &data, ArrayType arrayType, int32_t &parseResult)
+{
+    auto arrays = jsonObject.at(key);
+    if (arrays.empty()) {
+        APP_LOGI("array is empty");
+        return;
+    }
+    switch (arrayType) {
+        case ArrayType::STRING:
+            for (const auto& array : arrays) {
+                if (!array.is_string()) {
+                    APP_LOGE("array %{public}s is not string type", key.c_str());
+                    parseResult = ERR_APPEXECFWK_PARSE_PROFILE_PROP_TYPE_ERROR;
+                }
+            }
+            if (parseResult == ERR_OK) {
+                data = jsonObject.at(key).get<T>();
+            }
+            break;
+        case ArrayType::OBJECT:
+            for (const auto& array : arrays) {
+                if (!array.is_object()) {
+                    APP_LOGE("array %{public}s is not object type", key.c_str());
+                    parseResult = ERR_APPEXECFWK_PARSE_PROFILE_PROP_TYPE_ERROR;
+                    break;
+                }
+            }
+            if (parseResult == ERR_OK) {
+                data = jsonObject.at(key).get<T>();
+            }
+            break;
+        case ArrayType::NUMBER:
+            for (const auto& array : arrays) {
+                if (!array.is_number()) {
+                    APP_LOGE("array %{public}s is not number type", key.c_str());
+                    parseResult = ERR_APPEXECFWK_PARSE_PROFILE_PROP_TYPE_ERROR;
+                }
+            }
+            if (parseResult == ERR_OK) {
+                data = jsonObject.at(key).get<T>();
+            }
+            break;
+        case ArrayType::NOT_ARRAY:
+            APP_LOGE("array %{public}s is not string type", key.c_str());
+            break;
+        default:
+            APP_LOGE("array %{public}s type error", key.c_str());
+            break;
+    }
+}
+
+template<typename T, typename dataType>
+void GetValueIfFindKey(const nlohmann::json &jsonObject, const nlohmann::detail::iter_impl<const nlohmann::json> &end,
+    const std::string &key, dataType &data, JsonType jsonType, bool isNecessary, int32_t &parseResult,
+    ArrayType arrayType)
+{
+    if (parseResult) {
+        return;
+    }
+    if (jsonObject.find(key) != end) {
+        switch (jsonType) {
+            case JsonType::BOOLEAN:
+                if (!jsonObject.at(key).is_boolean()) {
+                    APP_LOGE("type is error %{public}s is not boolean", key.c_str());
+                    parseResult = ERR_APPEXECFWK_PARSE_PROFILE_PROP_TYPE_ERROR;
+                    break;
+                }
+                data = jsonObject.at(key).get<T>();
+                break;
+            case JsonType::NUMBER:
+                if (!jsonObject.at(key).is_number()) {
+                    APP_LOGE("type is error %{public}s is not number", key.c_str());
+                    parseResult = ERR_APPEXECFWK_PARSE_PROFILE_PROP_TYPE_ERROR;
+                    break;
+                }
+                data = jsonObject.at(key).get<T>();
+                break;
+            case JsonType::OBJECT:
+                if (!jsonObject.at(key).is_object()) {
+                    APP_LOGE("type is error %{public}s is not object", key.c_str());
+                    parseResult = ERR_APPEXECFWK_PARSE_PROFILE_PROP_TYPE_ERROR;
+                    break;
+                }
+                data = jsonObject.at(key).get<T>();
+                break;
+            case JsonType::ARRAY:
+                if (!jsonObject.at(key).is_array()) {
+                    APP_LOGE("type is error %{public}s is not array", key.c_str());
+                    parseResult = ERR_APPEXECFWK_PARSE_PROFILE_PROP_TYPE_ERROR;
+                    break;
+                }
+                CheckArrayType<T>(jsonObject, key, data, arrayType, parseResult);
+                break;
+            case JsonType::STRING:
+                if (!jsonObject.at(key).is_string()) {
+                    APP_LOGE("type is error %{public}s is not string", key.c_str());
+                    parseResult = ERR_APPEXECFWK_PARSE_PROFILE_PROP_TYPE_ERROR;
+                    break;
+                }
+                data = jsonObject.at(key).get<T>();
+                break;
+            case JsonType::NULLABLE:
+                APP_LOGE("type is error %{public}s is nullable", key.c_str());
+                break;
+            default:
+                APP_LOGE("type is error %{public}s is not jsonType", key.c_str());
+                parseResult = ERR_APPEXECFWK_PARSE_PROFILE_PROP_TYPE_ERROR;
+        }
+        return;
+    }
+    if (isNecessary) {
+        APP_LOGE("profile prop %{public}s is mission", key.c_str());
+        parseResult = ERR_APPEXECFWK_PARSE_PROFILE_MISSING_PROP;
+    }
+}
+
 class InnerBundleInfo {
 public:
     enum class BundleStatus {
@@ -129,13 +267,13 @@ public:
     /**
      * @brief Transform the json object to InnerBundleInfo object.
      * @param jsonObject Indicates the obtained json object.
-     * @return
+     * @return Returns 0 if the json object parsed successfully; returns error code otherwise.
      */
-    bool FromJson(const nlohmann::json &jsonObject);
+    int32_t FromJson(const nlohmann::json &jsonObject);
     /**
      * @brief Add module info to old InnerBundleInfo object.
      * @param newInfo Indicates the new InnerBundleInfo object.
-     * @return  Returns true if the module successfully added; returns false otherwise.
+     * @return Returns true if the module successfully added; returns false otherwise.
      */
     bool AddModuleInfo(const InnerBundleInfo &newInfo);
     /**
@@ -202,6 +340,17 @@ public:
             skillInfos_.try_emplace(skills.first, skills.second);
         }
     }
+    /**
+     * @brief Add form infos to old InnerBundleInfo object.
+     * @param formInfos Indicates the Forms object to be add.
+     * @return
+     */
+	void AddModuleFormInfo(const std::map<std::string, std::vector<FormInfo>> &formInfos)
+	{
+		for (const auto &forms : formInfos) {
+			formInfos_.try_emplace(forms.first, forms.second);
+		}
+	}
     /**
      * @brief Add innerModuleInfos to old InnerBundleInfo object.
      * @param innerModuleInfos Indicates the InnerModuleInfo object to be add.
@@ -344,6 +493,22 @@ public:
     ApplicationInfo GetBaseApplicationInfo() const
     {
         return baseApplicationInfo_;
+    }
+    /**
+     * @brief Get application enabled.
+     * @return Return whether the application is enabled.
+     */
+    bool GetApplicationEnabled() const
+    {
+        return baseApplicationInfo_.enabled;
+    }
+    /**
+     * @brief Set application enabled.
+     * @return Return whether the application is enabled.
+     */
+    void SetApplicationEnabled(bool enabled)
+    {
+        baseApplicationInfo_.enabled = enabled;
     }
     /**
      * @brief Get application code path.
@@ -750,6 +915,25 @@ public:
         return hasEntry_;
     }
 
+    bool SetAbilityEnabled(const std::string &bundleName, const std::string &abilityName, bool isEnabled)
+    {
+        for (auto &ability : baseAbilityInfos_) {
+            if ((ability.second.bundleName == bundleName) && (ability.second.name == abilityName)) {
+                ability.second.enabled = isEnabled;
+                return true;
+            }
+        }
+        return false;
+    }
+    /**
+     * @brief Insert formInfo.
+     * @param modulePackage Indicates the modulePackage object as key.
+     * @param abilityInfo Indicates the formInfo object as value.
+     */
+	void InsertFormInfos(const std::string &keyName, const std::vector<FormInfo> &formInfos)
+	{
+		formInfos_.emplace(keyName, formInfos);
+	}
     // use for new Info in updating progress
     void RestoreFromOldInfo(const InnerBundleInfo &oldInfo)
     {
@@ -784,6 +968,17 @@ public:
      * @param bundleInfos Returns true if the metadata in application; returns false otherwise.
      */
     bool CheckSpecialMetaData(const std::string &metaData) const;
+    /**
+     * @brief Obtains the FormInfo objects provided by all applications on the device. 
+     * @param moduleName Indicates the module name of the HarmonyOS application.
+     * @param formInfos list of FormInfo objects if obtained; returns an empty List if no FormInfo is available on the device.
+     */
+	void GetFormsInfoByModule(const std::string &moduleName, std::vector<FormInfo> &formInfos) const;
+    /**
+     * @brief Obtains the FormInfo objects provided by a specified application on the device.
+     * @param formInfos list of FormInfo objects if obtained; returns an empty List if no FormInfo is available on the device.
+     */
+	void GetFormsInfoByApp(std::vector<FormInfo> &formInfos) const;
 
 private:
     // using for get
@@ -805,6 +1000,7 @@ private:
     std::string currentPackage_;
     std::string mainAbilityName_;
 
+	std::map<std::string, std::vector<FormInfo>> formInfos_;
     std::map<std::string, AbilityInfo> baseAbilityInfos_;
     std::map<std::string, InnerModuleInfo> innerModuleInfos_;
     std::map<std::string, std::vector<Skill>> skillInfos_;
@@ -813,7 +1009,7 @@ private:
 void from_json(const nlohmann::json &jsonObject, InnerModuleInfo &info);
 void from_json(const nlohmann::json &jsonObject, SkillUri &uri);
 void from_json(const nlohmann::json &jsonObject, Skill &skill);
-void from_json(const nlohmann::json &jsonObject, CustomizeData &customizeData);
+void from_json(const nlohmann::json &jsonObject, InnerCustomizeData &customizeData);
 void from_json(const nlohmann::json &jsonObject, Parameters &parameters);
 void from_json(const nlohmann::json &jsonObject, Results &results);
 void from_json(const nlohmann::json &jsonObject, MetaData &metaData);
