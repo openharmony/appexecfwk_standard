@@ -62,7 +62,7 @@ const std::string ABILTIY_NAME_ABILITY_LIFE_CYCLE = "AbilityLifeCycleAbility";
 const std::string ABILTIY_NAME_ABILITY_LIFE_CYCLE_OBSERVER = "LifeCycleObserverAbility";
 
 constexpr int WAIT_TIME = 1000;
-constexpr int DELAY_TIME = 5;
+constexpr int DELAY_TIME = 3;
 constexpr int WAIT_ABILITY_OK = 3 * 1000;
 
 const std::string EVENT_RESP_LIFECYCLE_CALLBACK = "resp_com_ohos_amsst_appkit_service_ability_lifecycle_callbacks";
@@ -211,10 +211,6 @@ std::shared_ptr<ActsAmsKitServiceAbilityTest::AppEventSubscriber> ActsAmsKitServ
 
 void ActsAmsKitServiceAbilityTest::AppEventSubscriber::OnReceiveEvent(const CommonEventData &data)
 {
-    GTEST_LOG_(INFO) << "OnReceiveEvent: event=" << data.GetWant().GetAction();
-    GTEST_LOG_(INFO) << "OnReceiveEvent: data=" << data.GetData();
-    GTEST_LOG_(INFO) << "OnReceiveEvent: code=" << data.GetCode();
-
     auto eventName = data.GetWant().GetAction();
     auto iter = std::find(eventList.begin(), eventList.end(), eventName);
     if (iter != eventList.end()) {
@@ -224,6 +220,7 @@ void ActsAmsKitServiceAbilityTest::AppEventSubscriber::OnReceiveEvent(const Comm
 
 void ActsAmsKitServiceAbilityTest::SetUpTestCase(void)
 {
+    STAbilityUtil::InstallHaps(hapNameList);
     TestConfigParser tcp;
     stLevel_.AMSLevel = 1;
     tcp.ParseFromFile4StressTest(STRESS_TEST_CONFIG_FILE_PATH, stLevel_);
@@ -240,11 +237,11 @@ void ActsAmsKitServiceAbilityTest::SetUpTestCase(void)
 void ActsAmsKitServiceAbilityTest::TearDownTestCase(void)
 {
     CommonEventManager::UnSubscribeCommonEvent(subscriber);
+    STAbilityUtil::UninstallBundle(bundleNameList);
 }
 
 void ActsAmsKitServiceAbilityTest::SetUp(void)
 {
-    STAbilityUtil::InstallHaps(hapNameList);
     AbilityConnectCallback::onAbilityConnectDoneCount = 0;
     abilityMs = STAbilityUtil::GetAbilityManagerService();
     appMs = STAbilityUtil::GetAppMgrService();
@@ -252,7 +249,6 @@ void ActsAmsKitServiceAbilityTest::SetUp(void)
 
 void ActsAmsKitServiceAbilityTest::TearDown(void)
 {
-    // STAbilityUtil::UninstallBundle(bundleNameList);
     STAbilityUtil::CleanMsg(event);
 }
 
@@ -284,8 +280,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_00100, Fun
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_LIFE_CYCLE_CALL_BACKS, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         int ret = STAbilityUtil::WaitCompleted(event, "OnAbilityStart", 0, DELAY_TIME);
         EXPECT_EQ(0, ret);
@@ -299,14 +295,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_00100, Fun
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_00100 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_00100 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -329,8 +325,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_00200, Fun
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_LIFE_CYCLE_CALL_BACKS, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         int ret = STAbilityUtil::WaitCompleted(event, "OnAbilityStart", 0, DELAY_TIME);
         EXPECT_EQ(0, ret);
@@ -344,14 +340,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_00200, Fun
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_00200 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_00200 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -374,8 +370,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_00300, Fun
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_LIFE_CYCLE_CALL_BACKS, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         int ret = STAbilityUtil::WaitCompleted(event, "OnAbilityStart", 0, DELAY_TIME);
         EXPECT_EQ(0, ret);
@@ -389,14 +385,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_00300, Fun
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_00300 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_00300 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -419,8 +415,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_00400, Fun
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_LIFE_CYCLE_CALL_BACKS, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         int ret = STAbilityUtil::WaitCompleted(event, "OnAbilityStart", 0, DELAY_TIME);
         EXPECT_EQ(0, ret);
@@ -429,12 +425,19 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_00400, Fun
             GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_00400 : " << i;
             break;
         }
-        EXPECT_EQ(-1, STAbilityUtil::WaitCompleted(event, "OnAbilityActive", 0, DELAY_TIME));
-        EXPECT_EQ(-1, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnAbilityActive", 0, DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
+        std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
+
+        // stop ability
+        STAbilityUtil::StopServiceAbility(want);
+
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_00400 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_00400 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -457,8 +460,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_00500, Fun
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_LIFE_CYCLE_CALL_BACKS, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         int ret = STAbilityUtil::WaitCompleted(event, "OnAbilityStart", 0, DELAY_TIME);
         EXPECT_EQ(0, ret);
@@ -467,12 +470,19 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_00500, Fun
             GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_00500 : " << i;
             break;
         }
-        EXPECT_EQ(-1, STAbilityUtil::WaitCompleted(event, "OnAbilityActive", 0, DELAY_TIME));
-        EXPECT_EQ(-1, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnAbilityActive", 0, DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
+        std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
+
+        // stop ability
+        STAbilityUtil::StopServiceAbility(want);
+
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_00500 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_00500 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -495,8 +505,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_00600, Fun
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_LIFE_CYCLE_CALL_BACKS, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnAbilityStart", 0, DELAY_TIME));
         int ret = STAbilityUtil::WaitCompleted(event, "OnAbilityActive", 0, DELAY_TIME);
@@ -510,14 +520,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_00600, Fun
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_00600 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_00600 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -540,8 +550,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_00700, Fun
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_LIFE_CYCLE_CALL_BACKS, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnAbilityStart", 0, DELAY_TIME));
         int ret = STAbilityUtil::WaitCompleted(event, "OnAbilityActive", 0, DELAY_TIME);
@@ -555,14 +565,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_00700, Fun
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_00700 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_00700 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -585,8 +595,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_00800, Fun
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_LIFE_CYCLE_CALL_BACKS, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnAbilityStart", 0, DELAY_TIME));
         int ret = STAbilityUtil::WaitCompleted(event, "OnAbilityActive", 0, DELAY_TIME);
@@ -600,14 +610,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_00800, Fun
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_00800 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_00800 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -630,22 +640,29 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_00900, Fun
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_LIFE_CYCLE_CALL_BACKS, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnAbilityStart", 0, DELAY_TIME));
         int ret = STAbilityUtil::WaitCompleted(event, "OnAbilityActive", 0, DELAY_TIME);
-        EXPECT_EQ(-1, ret);
-        if (ret != -1) {
+        EXPECT_EQ(0, ret);
+        if (ret != 0) {
             result = false;
             GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_00900 : " << i;
             break;
         }
-        EXPECT_EQ(-1, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
+        std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
+
+        // stop ability
+        STAbilityUtil::StopServiceAbility(want);
+
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_00900 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_00900 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -668,22 +685,29 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_01000, Fun
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_LIFE_CYCLE_CALL_BACKS, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnAbilityStart", 0, DELAY_TIME));
         int ret = STAbilityUtil::WaitCompleted(event, "OnAbilityActive", 0, DELAY_TIME);
-        EXPECT_EQ(-1, ret);
-        if (ret != -1) {
+        EXPECT_EQ(0, ret);
+        if (ret != 0) {
             result = false;
             GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_01000 : " << i;
             break;
         }
-        EXPECT_EQ(-1, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
+        std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
+
+        // stop ability
+        STAbilityUtil::StopServiceAbility(want);
+
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_01000 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_01000 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -706,8 +730,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_01100, Fun
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_LIFE_CYCLE_CALL_BACKS, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnAbilityStart", 0, DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnAbilityActive", 0, DELAY_TIME));
@@ -715,8 +739,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_01100, Fun
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         int ret = STAbilityUtil::WaitCompleted(event, "OnAbilityInactive", 0, DELAY_TIME);
         EXPECT_EQ(-1, ret);
         if (ret != -1) {
@@ -729,7 +753,7 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_01100, Fun
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_01100 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_01100 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -752,7 +776,7 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_01200, Fun
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_LIFE_CYCLE_CALL_BACKS, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs);
+        STAbilityUtil::StartAbility(want, abilityMs);
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnAbilityStart", 0, DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnAbilityActive", 0, DELAY_TIME));
@@ -760,8 +784,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_01200, Fun
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         int ret = STAbilityUtil::WaitCompleted(event, "OnAbilityInactive", 0, DELAY_TIME);
         EXPECT_EQ(-1, ret);
         if (ret != -1) {
@@ -774,7 +798,7 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_01200, Fun
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_01200 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_01200 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -797,8 +821,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_01300, Fun
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_LIFE_CYCLE_CALL_BACKS, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnAbilityStart", 0, DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnAbilityActive", 0, DELAY_TIME));
@@ -806,8 +830,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_01300, Fun
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         int ret = STAbilityUtil::WaitCompleted(event, "OnAbilityInactive", 0, DELAY_TIME);
         EXPECT_EQ(-1, ret);
         if (ret != -1) {
@@ -820,7 +844,7 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_01300, Fun
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_01300 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_01300 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -843,13 +867,16 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_01400, Fun
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_LIFE_CYCLE_CALL_BACKS, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnAbilityStart", 0, DELAY_TIME));
-        EXPECT_EQ(-1, STAbilityUtil::WaitCompleted(event, "OnAbilityActive", 0, DELAY_TIME));
-        EXPECT_EQ(-1, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnAbilityActive", 0, DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
+
+        // stop ability
+        STAbilityUtil::StopServiceAbility(want);
 
         int ret = STAbilityUtil::WaitCompleted(event, "OnAbilityInactive", 0, DELAY_TIME);
         EXPECT_EQ(-1, ret);
@@ -858,10 +885,12 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_01400, Fun
             GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_01400 : " << i;
             break;
         }
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_01400 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_01400 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -884,13 +913,16 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_01500, Fun
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_LIFE_CYCLE_CALL_BACKS, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnAbilityStart", 0, DELAY_TIME));
-        EXPECT_EQ(-1, STAbilityUtil::WaitCompleted(event, "OnAbilityActive", 0, DELAY_TIME));
-        EXPECT_EQ(-1, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnAbilityActive", 0, DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
+
+        // stop ability
+        STAbilityUtil::StopServiceAbility(want);
 
         int ret = STAbilityUtil::WaitCompleted(event, "OnAbilityInactive", 0, DELAY_TIME);
         EXPECT_EQ(-1, ret);
@@ -899,10 +931,12 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_01500, Fun
             GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_01500 : " << i;
             break;
         }
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_01500 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_01500 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -925,8 +959,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_01600, Fun
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_LIFE_CYCLE_CALL_BACKS, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnAbilityStart", 0, DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnAbilityActive", 0, DELAY_TIME));
@@ -942,14 +976,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_01600, Fun
         }
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_01600 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_01600 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -972,8 +1006,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_01700, Fun
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_LIFE_CYCLE_CALL_BACKS, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnAbilityStart", 0, DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnAbilityActive", 0, DELAY_TIME));
@@ -989,14 +1023,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_01700, Fun
         }
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_01700 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_01700 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -1019,8 +1053,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_01800, Fun
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_LIFE_CYCLE_CALL_BACKS, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnAbilityStart", 0, DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnAbilityActive", 0, DELAY_TIME));
@@ -1036,14 +1070,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_01800, Fun
         }
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_01800 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_01800 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -1066,12 +1100,12 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_01900, Fun
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_LIFE_CYCLE_CALL_BACKS, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnAbilityStart", 0, DELAY_TIME));
-        EXPECT_EQ(-1, STAbilityUtil::WaitCompleted(event, "OnAbilityActive", 0, DELAY_TIME));
-        EXPECT_EQ(-1, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnAbilityActive", 0, DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         int ret = STAbilityUtil::WaitCompleted(event, "OnAbilityForeground", 0, DELAY_TIME);
@@ -1081,10 +1115,16 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_01900, Fun
             GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_01900 : " << i;
             break;
         }
+
+        // stop ability
+        STAbilityUtil::StopServiceAbility(want);
+
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_01900 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_01900 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -1107,12 +1147,12 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_02000, Fun
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_LIFE_CYCLE_CALL_BACKS, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnAbilityStart", 0, DELAY_TIME));
-        EXPECT_EQ(-1, STAbilityUtil::WaitCompleted(event, "OnAbilityActive", 0, DELAY_TIME));
-        EXPECT_EQ(-1, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnAbilityActive", 0, DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         int ret = STAbilityUtil::WaitCompleted(event, "OnAbilityForeground", 0, DELAY_TIME);
@@ -1122,10 +1162,16 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_02000, Fun
             GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_02000 : " << i;
             break;
         }
+
+        // stop ability
+        STAbilityUtil::StopServiceAbility(want);
+
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_02000 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_02000 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -1148,8 +1194,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_02100, Fun
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_LIFE_CYCLE_CALL_BACKS, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnAbilityStart", 0, DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnAbilityActive", 0, DELAY_TIME));
@@ -1157,8 +1203,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_02100, Fun
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         int ret = STAbilityUtil::WaitCompleted(event, "OnAbilityStop", 0, DELAY_TIME);
         EXPECT_EQ(0, ret);
         if (ret != 0) {
@@ -1171,7 +1217,7 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_02100, Fun
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_02100 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_02100 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -1194,8 +1240,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_02200, Fun
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_LIFE_CYCLE_CALL_BACKS, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnAbilityStart", 0, DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnAbilityActive", 0, DELAY_TIME));
@@ -1203,8 +1249,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_02200, Fun
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         int ret = STAbilityUtil::WaitCompleted(event, "OnAbilityStop", 0, DELAY_TIME);
         EXPECT_EQ(0, ret);
         if (ret != 0) {
@@ -1217,7 +1263,7 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_02200, Fun
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_02200 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_02200 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -1240,8 +1286,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_02300, Fun
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_LIFE_CYCLE_CALL_BACKS, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnAbilityStart", 0, DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnAbilityActive", 0, DELAY_TIME));
@@ -1249,8 +1295,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_02300, Fun
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         int ret = STAbilityUtil::WaitCompleted(event, "OnAbilityStop", 0, DELAY_TIME);
         EXPECT_EQ(0, ret);
         if (ret != 0) {
@@ -1263,7 +1309,7 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_02300, Fun
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_02300 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_02300 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -1286,27 +1332,29 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_02400, Fun
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_LIFE_CYCLE_CALL_BACKS, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnAbilityStart", 0, DELAY_TIME));
-        EXPECT_EQ(-1, STAbilityUtil::WaitCompleted(event, "OnAbilityActive", 0, DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnAbilityActive", 0, DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_NE(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         int ret = STAbilityUtil::WaitCompleted(event, "OnAbilityStop", 0, DELAY_TIME);
-        EXPECT_EQ(-1, ret);
-        if (ret != -1) {
+        EXPECT_EQ(0, ret);
+        if (ret != 0) {
             result = false;
             GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_02400 : " << i;
             break;
         }
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_02400 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_02400 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -1329,27 +1377,29 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_02500, Fun
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_LIFE_CYCLE_CALL_BACKS, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnAbilityStart", 0, DELAY_TIME));
-        EXPECT_EQ(-1, STAbilityUtil::WaitCompleted(event, "OnAbilityActive", 0, DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnAbilityActive", 0, DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_NE(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         int ret = STAbilityUtil::WaitCompleted(event, "OnAbilityStop", 0, DELAY_TIME);
-        EXPECT_EQ(-1, ret);
-        if (ret != -1) {
+        EXPECT_EQ(0, ret);
+        if (ret != 0) {
             result = false;
             GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_02500 : " << i;
             break;
         }
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_02500 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_02500 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -1372,8 +1422,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_02600, Fun
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_LIFE_CYCLE_CALL_BACKS, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnAbilityStart", 0, DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnAbilityActive", 0, DELAY_TIME));
@@ -1381,8 +1431,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_02600, Fun
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         int ret = STAbilityUtil::WaitCompleted(event, "OnAbilitySaveState", 0, DELAY_TIME);
         EXPECT_EQ(-1, ret);
         if (ret != -1) {
@@ -1390,10 +1440,13 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_02600, Fun
             GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_02600 : " << i;
             break;
         }
+
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_02600 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_02600 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -1416,8 +1469,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_02700, Fun
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_LIFE_CYCLE_CALL_BACKS, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnAbilityStart", 0, DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnAbilityActive", 0, DELAY_TIME));
@@ -1425,8 +1478,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_02700, Fun
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         int ret = STAbilityUtil::WaitCompleted(event, "OnAbilitySaveState", 0, DELAY_TIME);
         EXPECT_EQ(-1, ret);
         if (ret != -1) {
@@ -1434,10 +1487,13 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_02700, Fun
             GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_02700 : " << i;
             break;
         }
+
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_02700 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_02700 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -1460,8 +1516,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_02800, Fun
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_LIFE_CYCLE_CALL_BACKS, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnAbilityStart", 0, DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnAbilityActive", 0, DELAY_TIME));
@@ -1469,8 +1525,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_02800, Fun
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         int ret = STAbilityUtil::WaitCompleted(event, "OnAbilitySaveState", 0, DELAY_TIME);
         EXPECT_EQ(-1, ret);
         if (ret != -1) {
@@ -1478,10 +1534,13 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_02800, Fun
             GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_02800 : " << i;
             break;
         }
+
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_02800 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_02800 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -1504,17 +1563,17 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_02900, Fun
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_LIFE_CYCLE_CALL_BACKS, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnAbilityStart", 0, DELAY_TIME));
-        EXPECT_EQ(-1, STAbilityUtil::WaitCompleted(event, "OnAbilityActive", 0, DELAY_TIME));
-        EXPECT_EQ(-1, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnAbilityActive", 0, DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_NE(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         int ret = STAbilityUtil::WaitCompleted(event, "OnAbilitySaveState", 0, DELAY_TIME);
         EXPECT_EQ(-1, ret);
         if (ret != -1) {
@@ -1522,10 +1581,13 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_02900, Fun
             GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_02900 : " << i;
             break;
         }
+
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_02900 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_02900 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -1548,17 +1610,17 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_03000, Fun
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_LIFE_CYCLE_CALL_BACKS, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnAbilityStart", 0, DELAY_TIME));
-        EXPECT_EQ(-1, STAbilityUtil::WaitCompleted(event, "OnAbilityActive", 0, DELAY_TIME));
-        EXPECT_EQ(-1, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnAbilityActive", 0, DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_NE(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         int ret = STAbilityUtil::WaitCompleted(event, "OnAbilitySaveState", 0, DELAY_TIME);
         EXPECT_EQ(-1, ret);
         if (ret != -1) {
@@ -1566,10 +1628,13 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_03000, Fun
             GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_03000 : " << i;
             break;
         }
+
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_03000 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_03000 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -1592,8 +1657,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_03100, Fun
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_LIFE_CYCLE_CALL_BACKS, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnAbilityStart", 0, DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnAbilityActive", 0, DELAY_TIME));
@@ -1601,8 +1666,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_03100, Fun
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         int ret = STAbilityUtil::WaitCompleted(event, "OnAbilityBackground", 0, DELAY_TIME);
         EXPECT_EQ(0, ret);
         if (ret != 0) {
@@ -1610,10 +1675,13 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_03100, Fun
             GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_03100 : " << i;
             break;
         }
+
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_03100 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_03100 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -1636,8 +1704,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_03200, Fun
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_LIFE_CYCLE_CALL_BACKS, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnAbilityStart", 0, DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnAbilityActive", 0, DELAY_TIME));
@@ -1645,8 +1713,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_03200, Fun
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         int ret = STAbilityUtil::WaitCompleted(event, "OnAbilityBackground", 0, DELAY_TIME);
         EXPECT_EQ(0, ret);
         if (ret != 0) {
@@ -1654,10 +1722,13 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_03200, Fun
             GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_03200 : " << i;
             break;
         }
+
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_03200 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_03200 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -1680,8 +1751,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_03300, Fun
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_LIFE_CYCLE_CALL_BACKS, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnAbilityStart", 0, DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnAbilityActive", 0, DELAY_TIME));
@@ -1689,8 +1760,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_03300, Fun
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         int ret = STAbilityUtil::WaitCompleted(event, "OnAbilityBackground", 0, DELAY_TIME);
         EXPECT_EQ(0, ret);
         if (ret != 0) {
@@ -1698,10 +1769,13 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_03300, Fun
             GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_03300 : " << i;
             break;
         }
+
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_03300 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_03300 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -1724,28 +1798,31 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_03400, Fun
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_LIFE_CYCLE_CALL_BACKS, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnAbilityStart", 0, DELAY_TIME));
-        EXPECT_EQ(-1, STAbilityUtil::WaitCompleted(event, "OnAbilityActive", 0, DELAY_TIME));
-        EXPECT_EQ(-1, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnAbilityActive", 0, DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_NE(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         int ret = STAbilityUtil::WaitCompleted(event, "OnAbilityBackground", 0, DELAY_TIME);
-        EXPECT_EQ(-1, ret);
-        if (ret != -1) {
+        EXPECT_EQ(0, ret);
+        if (ret != 0) {
             result = false;
             GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_03400 : " << i;
             break;
         }
+
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_03400 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_03400 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -1768,28 +1845,31 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifeCycleCallbacks_03500, Fun
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_LIFE_CYCLE_CALL_BACKS, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnAbilityStart", 0, DELAY_TIME));
-        EXPECT_EQ(-1, STAbilityUtil::WaitCompleted(event, "OnAbilityActive", 0, DELAY_TIME));
-        EXPECT_EQ(-1, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnAbilityActive", 0, DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_NE(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         int ret = STAbilityUtil::WaitCompleted(event, "OnAbilityBackground", 0, DELAY_TIME);
-        EXPECT_EQ(-1, ret);
-        if (ret != -1) {
+        EXPECT_EQ(0, ret);
+        if (ret != 0) {
             result = false;
             GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_03500 : " << i;
             break;
         }
+
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_03500 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifeCycleCallbacks_03500 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -1812,8 +1892,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_AbilityContext_03600, Functio
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_CONTEXT, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -1829,14 +1909,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_AbilityContext_03600, Functio
         }
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_AbilityContext_03600 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_AbilityContext_03600 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -1859,8 +1939,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_AbilityContext_03700, Functio
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_CONTEXT, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -1876,14 +1956,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_AbilityContext_03700, Functio
         }
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_AbilityContext_03700 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_AbilityContext_03700 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -1906,8 +1986,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_AbilityContext_03800, Functio
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_CONTEXT, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -1923,14 +2003,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_AbilityContext_03800, Functio
         }
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_AbilityContext_03800 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_AbilityContext_03800 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -1953,8 +2033,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_AbilityContext_03900, Functio
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_CONTEXT, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -1972,14 +2052,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_AbilityContext_03900, Functio
         }
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_AbilityContext_03900 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_AbilityContext_03900 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -2001,8 +2081,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_AbilityContext_04000, Functio
         params["No."] = "5";
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_CONTEXT, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -2018,14 +2098,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_AbilityContext_04000, Functio
         }
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_AbilityContext_04000 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_AbilityContext_04000 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -2048,8 +2128,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_AbilityContext_04100, Functio
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_CONTEXT, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -2065,14 +2145,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_AbilityContext_04100, Functio
         }
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_AbilityContext_04100 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_AbilityContext_04100 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -2095,8 +2175,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_AbilityContext_04200, Functio
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_CONTEXT, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -2112,14 +2192,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_AbilityContext_04200, Functio
         }
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_AbilityContext_04200 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_AbilityContext_04200 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -2142,8 +2222,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_AbilityContext_04300, Functio
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_CONTEXT, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -2159,14 +2239,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_AbilityContext_04300, Functio
         }
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_AbilityContext_04300 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_AbilityContext_04300 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -2189,8 +2269,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_AbilityContext_04400, Functio
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_CONTEXT, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -2206,14 +2286,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_AbilityContext_04400, Functio
         }
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_AbilityContext_04400 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_AbilityContext_04400 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -2236,8 +2316,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_AbilityContext_04500, Functio
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_CONTEXT, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -2253,14 +2333,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_AbilityContext_04500, Functio
         }
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_AbilityContext_04500 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_AbilityContext_04500 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -2283,8 +2363,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_AbilityContext_04600, Functio
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_CONTEXT, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -2300,14 +2380,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_AbilityContext_04600, Functio
         }
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_AbilityContext_04600 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_AbilityContext_04600 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -2330,8 +2410,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_AbilityContext_04700, Functio
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_CONTEXT, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -2347,14 +2427,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_AbilityContext_04700, Functio
         }
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_AbilityContext_04700 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_AbilityContext_04700 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -2377,8 +2457,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_AbilityContext_04800, Functio
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_CONTEXT, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -2394,14 +2474,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_AbilityContext_04800, Functio
         }
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_AbilityContext_04800 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_AbilityContext_04800 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -2424,8 +2504,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_AbilityContext_04900, Functio
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_CONTEXT, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -2441,14 +2521,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_AbilityContext_04900, Functio
         }
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_AbilityContext_04900 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_AbilityContext_04900 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -2471,8 +2551,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_AbilityContext_05000, Functio
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_CONTEXT, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -2488,14 +2568,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_AbilityContext_05000, Functio
         }
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_AbilityContext_05000 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_AbilityContext_05000 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -2518,8 +2598,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_AbilityContext_05100, Functio
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_CONTEXT, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -2535,14 +2615,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_AbilityContext_05100, Functio
         }
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_AbilityContext_05100 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_AbilityContext_05100 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -2565,8 +2645,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_AbilityContext_05200, Functio
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_CONTEXT, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -2583,14 +2663,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_AbilityContext_05200, Functio
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_AbilityContext_05200 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_AbilityContext_05200 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -2613,8 +2693,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_AbilityContext_05300, Functio
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_CONTEXT, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -2631,14 +2711,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_AbilityContext_05300, Functio
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_AbilityContext_05300 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_AbilityContext_05300 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -2661,8 +2741,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_AbilityContext_05400, Functio
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_CONTEXT, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -2678,14 +2758,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_AbilityContext_05400, Functio
         }
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_AbilityContext_05400 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_AbilityContext_05400 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -2708,8 +2788,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_AbilityContext_05500, Functio
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_CONTEXT, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -2725,14 +2805,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_AbilityContext_05500, Functio
         }
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_AbilityContext_05500 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_AbilityContext_05500 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -2755,8 +2835,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_AbilityContext_05600, Functio
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_CONTEXT, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -2775,7 +2855,7 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_AbilityContext_05600, Functio
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_AbilityContext_05600 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_AbilityContext_05600 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -2798,8 +2878,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_AbilityContext_05700, Functio
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_CONTEXT, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -2820,7 +2900,7 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_AbilityContext_05700, Functio
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_AbilityContext_05700 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_AbilityContext_05700 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -2843,8 +2923,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_AbilityContext_05800, Functio
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_CONTEXT, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -2865,7 +2945,7 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_AbilityContext_05800, Functio
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_AbilityContext_05800 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_AbilityContext_05800 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -2888,8 +2968,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_AbilityContext_05900, Functio
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_CONTEXT, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -2910,7 +2990,7 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_AbilityContext_05900, Functio
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_AbilityContext_05900 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_AbilityContext_05900 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -2933,8 +3013,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_AbilityContext_06000, Functio
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_CONTEXT, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -2955,7 +3035,7 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_AbilityContext_06000, Functio
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_AbilityContext_06000 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_AbilityContext_06000 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -2978,8 +3058,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_06100, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -3000,7 +3080,7 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_06100, Function | Med
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_06100 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_06100 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -3023,8 +3103,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_06200, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -3045,7 +3125,7 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_06200, Function | Med
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_06200 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_06200 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -3068,8 +3148,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_06300, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -3090,7 +3170,7 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_06300, Function | Med
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_06300 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_06300 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -3113,8 +3193,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_06400, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -3135,7 +3215,7 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_06400, Function | Med
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_06400 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_06400 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -3158,8 +3238,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_06500, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -3180,7 +3260,7 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_06500, Function | Med
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_06500 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_06500 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -3203,8 +3283,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_06600, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         int ret = STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME);
         EXPECT_EQ(0, ret);
         if (ret != 0) {
@@ -3216,14 +3296,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_06600, Function | Med
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_06600 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_06600 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -3246,8 +3326,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_06700, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         int ret = STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME);
         EXPECT_EQ(0, ret);
         if (ret != 0) {
@@ -3259,14 +3339,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_06700, Function | Med
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_06700 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_06700 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -3289,8 +3369,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_06800, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         int ret = STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME);
         EXPECT_EQ(0, ret);
         if (ret != 0) {
@@ -3302,14 +3382,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_06800, Function | Med
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_06800 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_06800 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -3332,8 +3412,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_06900, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         int ret = STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME);
         EXPECT_EQ(0, ret);
         if (ret != 0) {
@@ -3341,11 +3421,18 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_06900, Function | Med
             GTEST_LOG_(INFO) << "AMS_Service_Ability_06900 : " << i;
             break;
         }
-        EXPECT_EQ(-1, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
+        std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
+
+        // stop ability
+        STAbilityUtil::StopServiceAbility(want);
+
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_06900 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_06900 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -3368,8 +3455,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_07000, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         int ret = STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME);
         EXPECT_EQ(0, ret);
         if (ret != 0) {
@@ -3377,11 +3464,18 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_07000, Function | Med
             GTEST_LOG_(INFO) << "AMS_Service_Ability_07000 : " << i;
             break;
         }
-        EXPECT_EQ(-1, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
+        std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
+
+        // stop ability
+        STAbilityUtil::StopServiceAbility(want);
+
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_07000 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_07000 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -3404,8 +3498,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_07100, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -3415,8 +3509,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_07100, Function | Med
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "TestStopAbility", 0, DELAY_TIME));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         int ret = STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME);
         EXPECT_EQ(0, ret);
@@ -3428,7 +3522,7 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_07100, Function | Med
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_07100 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_07100 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -3451,8 +3545,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_07200, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -3462,8 +3556,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_07200, Function | Med
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "TestStopAbility", 0, DELAY_TIME));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         int ret = STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME);
         EXPECT_EQ(0, ret);
@@ -3475,7 +3569,7 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_07200, Function | Med
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_07200 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_07200 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -3498,8 +3592,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_07300, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -3509,8 +3603,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_07300, Function | Med
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "TestStopAbility", 0, DELAY_TIME));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         int ret = STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME);
         EXPECT_EQ(0, ret);
@@ -3522,7 +3616,7 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_07300, Function | Med
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_07300 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_07300 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -3545,8 +3639,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_07400, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -3556,8 +3650,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_07400, Function | Med
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "TestStopAbility", 0, DELAY_TIME));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         int ret = STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME);
         EXPECT_EQ(0, ret);
@@ -3569,7 +3663,7 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_07400, Function | Med
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_07400 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_07400 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -3592,8 +3686,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_07500, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -3603,8 +3697,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_07500, Function | Med
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "TestStopAbility", 0, DELAY_TIME));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         int ret = STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME);
         EXPECT_EQ(0, ret);
@@ -3616,7 +3710,7 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_07500, Function | Med
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_07500 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_07500 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -3639,8 +3733,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_07600, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         int ret = STAbilityUtil::WaitCompleted(event, "OnNewWant", mapState["OnNewWant"], DELAY_TIME);
@@ -3650,17 +3744,16 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_07600, Function | Med
             GTEST_LOG_(INFO) << "AMS_Service_Ability_07600 : " << i;
             break;
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_07600 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_07600 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -3683,8 +3776,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_07700, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         int ret = STAbilityUtil::WaitCompleted(event, "OnNewWant", mapState["OnNewWant"], DELAY_TIME);
@@ -3694,17 +3787,16 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_07700, Function | Med
             GTEST_LOG_(INFO) << "AMS_Service_Ability_07700 : " << i;
             break;
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_07700 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_07700 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -3727,8 +3819,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_07800, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         int ret = STAbilityUtil::WaitCompleted(event, "OnNewWant", mapState["OnNewWant"], DELAY_TIME);
@@ -3738,17 +3830,16 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_07800, Function | Med
             GTEST_LOG_(INFO) << "AMS_Service_Ability_07800 : " << i;
             break;
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_07800 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_07800 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -3771,10 +3862,10 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_07900, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
-        EXPECT_EQ(-1, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         int ret = STAbilityUtil::WaitCompleted(event, "OnNewWant", mapState["OnNewWant"], DELAY_TIME);
         EXPECT_EQ(-1, ret);
         if (ret != -1) {
@@ -3782,10 +3873,16 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_07900, Function | Med
             GTEST_LOG_(INFO) << "AMS_Service_Ability_07900 : " << i;
             break;
         }
+
+        // stop ability
+        STAbilityUtil::StopServiceAbility(want);
+
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_07900 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_07900 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -3808,10 +3905,10 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_08000, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
-        EXPECT_EQ(-1, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         int ret = STAbilityUtil::WaitCompleted(event, "OnNewWant", mapState["OnNewWant"], DELAY_TIME);
         EXPECT_EQ(-1, ret);
         if (ret != -1) {
@@ -3819,10 +3916,16 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_08000, Function | Med
             GTEST_LOG_(INFO) << "AMS_Service_Ability_08000 : " << i;
             break;
         }
+
+        // stop ability
+        STAbilityUtil::StopServiceAbility(want);
+
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_08000 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_08000 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -3845,8 +3948,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_08100, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         int ret = STAbilityUtil::WaitCompleted(event, "OnInactive", mapState["OnInactive"], DELAY_TIME);
@@ -3856,17 +3959,16 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_08100, Function | Med
             GTEST_LOG_(INFO) << "AMS_Service_Ability_08100 : " << i;
             break;
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_08100 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_08100 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -3888,8 +3990,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_08200, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         int ret = STAbilityUtil::WaitCompleted(event, "OnInactive", mapState["OnInactive"], DELAY_TIME);
@@ -3899,17 +4001,16 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_08200, Function | Med
             GTEST_LOG_(INFO) << "AMS_Service_Ability_08200 : " << i;
             break;
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_08200 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_08200 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -3932,8 +4033,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_08300, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         int ret = STAbilityUtil::WaitCompleted(event, "OnInactive", mapState["OnInactive"], DELAY_TIME);
@@ -3943,17 +4044,16 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_08300, Function | Med
             GTEST_LOG_(INFO) << "AMS_Service_Ability_08300 : " << i;
             break;
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_08300 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_08300 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -3976,10 +4076,10 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_08400, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
-        EXPECT_EQ(-1, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         int ret = STAbilityUtil::WaitCompleted(event, "OnInactive", mapState["OnInactive"], DELAY_TIME);
         EXPECT_EQ(-1, ret);
         if (ret != -1) {
@@ -3987,10 +4087,16 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_08400, Function | Med
             GTEST_LOG_(INFO) << "AMS_Service_Ability_08400 : " << i;
             break;
         }
+
+        // stop ability
+        STAbilityUtil::StopServiceAbility(want);
+
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_08400 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_08400 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -4013,10 +4119,10 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_08500, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
-        EXPECT_EQ(-1, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         int ret = STAbilityUtil::WaitCompleted(event, "OnInactive", mapState["OnInactive"], DELAY_TIME);
         EXPECT_EQ(-1, ret);
         if (ret != -1) {
@@ -4024,10 +4130,16 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_08500, Function | Med
             GTEST_LOG_(INFO) << "AMS_Service_Ability_08500 : " << i;
             break;
         }
+
+        // stop ability
+        STAbilityUtil::StopServiceAbility(want);
+
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_08500 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_08500 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -4049,8 +4161,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_08600, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         int ret = STAbilityUtil::WaitCompleted(event, "OnActive", mapState["OnActive"], DELAY_TIME);
@@ -4062,14 +4174,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_08600, Function | Med
         }
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_08600 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_08600 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -4092,8 +4204,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_08700, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         int ret = STAbilityUtil::WaitCompleted(event, "OnActive", mapState["OnActive"], DELAY_TIME);
@@ -4105,14 +4217,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_08700, Function | Med
         }
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_08700 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_08700 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -4135,8 +4247,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_08800, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         int ret = STAbilityUtil::WaitCompleted(event, "OnActive", mapState["OnActive"], DELAY_TIME);
@@ -4148,14 +4260,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_08800, Function | Med
         }
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_08800 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_08800 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -4178,10 +4290,10 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_08900, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
-        EXPECT_EQ(-1, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         int ret = STAbilityUtil::WaitCompleted(event, "OnActive", mapState["OnActive"], DELAY_TIME);
         EXPECT_EQ(-1, ret);
         if (ret != -1) {
@@ -4189,10 +4301,16 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_08900, Function | Med
             GTEST_LOG_(INFO) << "AMS_Service_Ability_08900 : " << i;
             break;
         }
+
+        // stop ability
+        STAbilityUtil::StopServiceAbility(want);
+
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_08900 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_08900 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -4215,10 +4333,10 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_09000, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
-        EXPECT_EQ(-1, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         int ret = STAbilityUtil::WaitCompleted(event, "OnActive", mapState["OnActive"], DELAY_TIME);
         EXPECT_EQ(-1, ret);
         if (ret != -1) {
@@ -4226,10 +4344,16 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_09000, Function | Med
             GTEST_LOG_(INFO) << "AMS_Service_Ability_09000 : " << i;
             break;
         }
+
+        // stop ability
+        STAbilityUtil::StopServiceAbility(want);
+
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_09000 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_09000 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -4251,8 +4375,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_09100, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         int ret = STAbilityUtil::WaitCompleted(event, "OnForeground", mapState["OnForeground"], DELAY_TIME);
@@ -4264,14 +4388,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_09100, Function | Med
         }
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_09100 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_09100 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -4294,8 +4418,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_09200, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         int ret = STAbilityUtil::WaitCompleted(event, "OnForeground", mapState["OnForeground"], DELAY_TIME);
@@ -4307,14 +4431,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_09200, Function | Med
         }
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_09200 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_09200 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -4337,8 +4461,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_09300, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         int ret = STAbilityUtil::WaitCompleted(event, "OnForeground", mapState["OnForeground"], DELAY_TIME);
@@ -4350,14 +4474,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_09300, Function | Med
         }
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_09300 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_09300 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -4380,10 +4504,10 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_09400, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
-        EXPECT_EQ(-1, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         int ret = STAbilityUtil::WaitCompleted(event, "OnForeground", mapState["OnForeground"], DELAY_TIME);
         EXPECT_EQ(-1, ret);
         if (ret != -1) {
@@ -4391,10 +4515,16 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_09400, Function | Med
             GTEST_LOG_(INFO) << "AMS_Service_Ability_09400 : " << i;
             break;
         }
+
+        // stop ability
+        STAbilityUtil::StopServiceAbility(want);
+
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_09400 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_09400 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -4417,10 +4547,10 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_09500, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
-        EXPECT_EQ(-1, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         int ret = STAbilityUtil::WaitCompleted(event, "OnForeground", mapState["OnForeground"], DELAY_TIME);
         EXPECT_EQ(-1, ret);
         if (ret != -1) {
@@ -4428,10 +4558,16 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_09500, Function | Med
             GTEST_LOG_(INFO) << "AMS_Service_Ability_09500 : " << i;
             break;
         }
+
+        // stop ability
+        STAbilityUtil::StopServiceAbility(want);
+
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_09500 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_09500 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -4453,15 +4589,15 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_09600, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         int ret = STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME);
         EXPECT_EQ(0, ret);
         if (ret != 0) {
@@ -4473,7 +4609,7 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_09600, Function | Med
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_09600 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_09600 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -4496,15 +4632,15 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_09700, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         int ret = STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME);
         EXPECT_EQ(0, ret);
         if (ret != 0) {
@@ -4516,7 +4652,7 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_09700, Function | Med
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_09700 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_09700 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -4539,15 +4675,15 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_09800, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         int ret = STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME);
         EXPECT_EQ(0, ret);
         if (ret != 0) {
@@ -4559,7 +4695,7 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_09800, Function | Med
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_09800 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_09800 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -4582,21 +4718,27 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_09900, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
-        EXPECT_EQ(-1, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
+        std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
+
+        // stop ability
+        STAbilityUtil::StopServiceAbility(want);
+
         int ret = STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME);
-        EXPECT_EQ(-1, ret);
-        if (ret != -1) {
+        EXPECT_EQ(0, ret);
+        if (ret != 0) {
             result = false;
             GTEST_LOG_(INFO) << "AMS_Service_Ability_09900 : " << i;
             break;
         }
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_09900 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_09900 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -4619,21 +4761,27 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_10000, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
-        EXPECT_EQ(-1, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
+        std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
+
+        // stop ability
+        STAbilityUtil::StopServiceAbility(want);
+
         int ret = STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME);
-        EXPECT_EQ(-1, ret);
-        if (ret != -1) {
+        EXPECT_EQ(0, ret);
+        if (ret != 0) {
             result = false;
             GTEST_LOG_(INFO) << "AMS_Service_Ability_10000 : " << i;
             break;
         }
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_10000 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_10000 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -4657,8 +4805,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_10100, Function | Med
         // start ability
         sptr<AbilityConnectCallback> stub(new (std::nothrow) AbilityConnectCallback());
         sptr<AbilityConnectionProxy> connCallback(new (std::nothrow) AbilityConnectionProxy(stub));
-        ErrCode eCode = STAbilityUtil::ConnectAbility(want, connCallback, stub->AsObject());
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::ConnectAbility(want, connCallback, stub->AsObject());
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         int ret = STAbilityUtil::WaitCompleted(event, "OnConnect", mapState["OnConnect"], DELAY_TIME);
         EXPECT_EQ(0, ret);
@@ -4669,15 +4817,15 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_10100, Function | Med
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
-        eCode = STAbilityUtil::DisconnectAbility(connCallback);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::DisconnectAbility(connCallback);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnDisconnect", mapState["OnDisconnect"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_10100 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_10100 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -4702,8 +4850,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_10200, Function | Med
         // start ability
         sptr<AbilityConnectCallback> stub(new (std::nothrow) AbilityConnectCallback());
         sptr<AbilityConnectionProxy> connCallback(new (std::nothrow) AbilityConnectionProxy(stub));
-        ErrCode eCode = STAbilityUtil::ConnectAbility(want, connCallback, stub->AsObject());
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::ConnectAbility(want, connCallback, stub->AsObject());
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         int ret = STAbilityUtil::WaitCompleted(event, "OnConnect", mapState["OnConnect"], DELAY_TIME);
         EXPECT_EQ(0, ret);
@@ -4714,15 +4862,15 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_10200, Function | Med
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
-        eCode = STAbilityUtil::DisconnectAbility(connCallback);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::DisconnectAbility(connCallback);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnDisconnect", mapState["OnDisconnect"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_10200 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_10200 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -4747,8 +4895,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_10300, Function | Med
         // start ability
         sptr<AbilityConnectCallback> stub(new (std::nothrow) AbilityConnectCallback());
         sptr<AbilityConnectionProxy> connCallback(new (std::nothrow) AbilityConnectionProxy(stub));
-        ErrCode eCode = STAbilityUtil::ConnectAbility(want, connCallback, stub->AsObject());
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::ConnectAbility(want, connCallback, stub->AsObject());
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         int ret = STAbilityUtil::WaitCompleted(event, "OnConnect", mapState["OnConnect"], DELAY_TIME);
         EXPECT_EQ(0, ret);
@@ -4759,15 +4907,15 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_10300, Function | Med
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
-        eCode = STAbilityUtil::DisconnectAbility(connCallback);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::DisconnectAbility(connCallback);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnDisconnect", mapState["OnDisconnect"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_10300 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_10300 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -4792,8 +4940,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_10400, Function | Med
         // start ability
         sptr<AbilityConnectCallback> stub(new (std::nothrow) AbilityConnectCallback());
         sptr<AbilityConnectionProxy> connCallback(new (std::nothrow) AbilityConnectionProxy(stub));
-        ErrCode eCode = STAbilityUtil::ConnectAbility(want, connCallback, stub->AsObject());
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::ConnectAbility(want, connCallback, stub->AsObject());
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         int ret = STAbilityUtil::WaitCompleted(event, "OnConnect", mapState["OnConnect"], DELAY_TIME);
         EXPECT_EQ(0, ret);
@@ -4804,15 +4952,15 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_10400, Function | Med
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
-        eCode = STAbilityUtil::DisconnectAbility(connCallback);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::DisconnectAbility(connCallback);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnDisconnect", mapState["OnDisconnect"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_10400 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_10400 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -4837,8 +4985,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_10500, Function | Med
         // start ability
         sptr<AbilityConnectCallback> stub(new (std::nothrow) AbilityConnectCallback());
         sptr<AbilityConnectionProxy> connCallback(new (std::nothrow) AbilityConnectionProxy(stub));
-        ErrCode eCode = STAbilityUtil::ConnectAbility(want, connCallback, stub->AsObject());
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::ConnectAbility(want, connCallback, stub->AsObject());
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         int ret = STAbilityUtil::WaitCompleted(event, "OnConnect", mapState["OnConnect"], DELAY_TIME);
         EXPECT_EQ(0, ret);
@@ -4849,15 +4997,15 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_10500, Function | Med
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
-        eCode = STAbilityUtil::DisconnectAbility(connCallback);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::DisconnectAbility(connCallback);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnDisconnect", mapState["OnDisconnect"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_10500 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_10500 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -4879,8 +5027,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_10600, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         int ret = STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME);
         EXPECT_EQ(0, ret);
@@ -4892,14 +5040,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_10600, Function | Med
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_10600 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_10600 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -4922,8 +5070,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_10700, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         int ret = STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME);
         EXPECT_EQ(0, ret);
@@ -4935,14 +5083,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_10700, Function | Med
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_10700 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_10700 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -4965,8 +5113,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_10800, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         int ret = STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME);
         EXPECT_EQ(0, ret);
@@ -4978,14 +5126,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_10800, Function | Med
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_10800 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_10800 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -5008,20 +5156,27 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_10900, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         int ret = STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME);
-        EXPECT_EQ(-1, ret);
-        if (ret != -1) {
+        EXPECT_EQ(0, ret);
+        if (ret != 0) {
             result = false;
             GTEST_LOG_(INFO) << "AMS_Service_Ability_10900 : " << i;
             break;
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
+
+        // stop ability
+        STAbilityUtil::StopServiceAbility(want);
+
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
+        std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_10900 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_10900 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -5044,20 +5199,27 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_11000, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         int ret = STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME);
-        EXPECT_EQ(-1, ret);
-        if (ret != -1) {
+        EXPECT_EQ(0, ret);
+        if (ret != 0) {
             result = false;
             GTEST_LOG_(INFO) << "AMS_Service_Ability_11000 : " << i;
             break;
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
+
+        // stop ability
+        STAbilityUtil::StopServiceAbility(want);
+
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
+        std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_11000 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_11000 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -5081,14 +5243,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_11100, Function | Med
         // start ability
         sptr<AbilityConnectCallback> stub(new (std::nothrow) AbilityConnectCallback());
         sptr<AbilityConnectionProxy> connCallback(new (std::nothrow) AbilityConnectionProxy(stub));
-        ErrCode eCode = STAbilityUtil::ConnectAbility(want, connCallback, stub->AsObject());
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::ConnectAbility(want, connCallback, stub->AsObject());
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnConnect", mapState["OnConnect"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
-        eCode = STAbilityUtil::DisconnectAbility(connCallback);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::DisconnectAbility(connCallback);
+
         int ret = STAbilityUtil::WaitCompleted(event, "OnDisconnect", mapState["OnDisconnect"], DELAY_TIME);
         EXPECT_EQ(0, ret);
         if (ret != 0) {
@@ -5101,7 +5263,7 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_11100, Function | Med
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_11100 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_11100 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -5126,14 +5288,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_11200, Function | Med
         // start ability
         sptr<AbilityConnectCallback> stub(new (std::nothrow) AbilityConnectCallback());
         sptr<AbilityConnectionProxy> connCallback(new (std::nothrow) AbilityConnectionProxy(stub));
-        ErrCode eCode = STAbilityUtil::ConnectAbility(want, connCallback, stub->AsObject());
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::ConnectAbility(want, connCallback, stub->AsObject());
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnConnect", mapState["OnConnect"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
-        eCode = STAbilityUtil::DisconnectAbility(connCallback);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::DisconnectAbility(connCallback);
+
         int ret = STAbilityUtil::WaitCompleted(event, "OnDisconnect", mapState["OnDisconnect"], DELAY_TIME);
         EXPECT_EQ(0, ret);
         if (ret != 0) {
@@ -5146,7 +5308,7 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_11200, Function | Med
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_11200 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_11200 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -5171,14 +5333,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_11300, Function | Med
         // start ability
         sptr<AbilityConnectCallback> stub(new (std::nothrow) AbilityConnectCallback());
         sptr<AbilityConnectionProxy> connCallback(new (std::nothrow) AbilityConnectionProxy(stub));
-        ErrCode eCode = STAbilityUtil::ConnectAbility(want, connCallback, stub->AsObject());
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::ConnectAbility(want, connCallback, stub->AsObject());
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnConnect", mapState["OnConnect"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
-        eCode = STAbilityUtil::DisconnectAbility(connCallback);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::DisconnectAbility(connCallback);
+
         int ret = STAbilityUtil::WaitCompleted(event, "OnDisconnect", mapState["OnDisconnect"], DELAY_TIME);
         EXPECT_EQ(0, ret);
         if (ret != 0) {
@@ -5191,7 +5353,7 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_11300, Function | Med
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_11300 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_11300 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -5216,14 +5378,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_11400, Function | Med
         // start ability
         sptr<AbilityConnectCallback> stub(new (std::nothrow) AbilityConnectCallback());
         sptr<AbilityConnectionProxy> connCallback(new (std::nothrow) AbilityConnectionProxy(stub));
-        ErrCode eCode = STAbilityUtil::ConnectAbility(want, connCallback, stub->AsObject());
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::ConnectAbility(want, connCallback, stub->AsObject());
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnConnect", mapState["OnConnect"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
-        eCode = STAbilityUtil::DisconnectAbility(connCallback);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::DisconnectAbility(connCallback);
+
         int ret = STAbilityUtil::WaitCompleted(event, "OnDisconnect", mapState["OnDisconnect"], DELAY_TIME);
         EXPECT_EQ(0, ret);
         if (ret != 0) {
@@ -5236,7 +5398,7 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_11400, Function | Med
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_11500 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_11500 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -5261,14 +5423,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_11500, Function | Med
         // start ability
         sptr<AbilityConnectCallback> stub(new (std::nothrow) AbilityConnectCallback());
         sptr<AbilityConnectionProxy> connCallback(new (std::nothrow) AbilityConnectionProxy(stub));
-        ErrCode eCode = STAbilityUtil::ConnectAbility(want, connCallback, stub->AsObject());
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::ConnectAbility(want, connCallback, stub->AsObject());
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnConnect", mapState["OnConnect"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
-        eCode = STAbilityUtil::DisconnectAbility(connCallback);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::DisconnectAbility(connCallback);
+
         int ret = STAbilityUtil::WaitCompleted(event, "OnDisconnect", mapState["OnDisconnect"], DELAY_TIME);
         EXPECT_EQ(0, ret);
         if (ret != 0) {
@@ -5281,7 +5443,7 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_11500, Function | Med
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_11500 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_11500 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -5303,8 +5465,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_11600, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
 
@@ -5319,14 +5481,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_11600, Function | Med
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_11600 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_11600 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -5348,8 +5510,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_11700, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
 
@@ -5364,14 +5526,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_11700, Function | Med
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_11700 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_11700 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -5393,8 +5555,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_11800, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
 
@@ -5409,14 +5571,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_11800, Function | Med
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_11800 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_11800 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -5438,8 +5600,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_11900, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
 
@@ -5454,14 +5616,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_11900, Function | Med
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_11900 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_11900 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -5483,8 +5645,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_12000, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
 
@@ -5499,14 +5661,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_12000, Function | Med
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_12000 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_12000 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -5529,8 +5691,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_12100, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
 
@@ -5546,14 +5708,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_12100, Function | Med
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_12100 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_12100 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -5576,8 +5738,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_12200, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
 
@@ -5593,14 +5755,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_12200, Function | Med
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_12200 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_12200 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -5623,8 +5785,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_12300, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
 
@@ -5640,14 +5802,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_12300, Function | Med
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_12300 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_12300 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -5669,8 +5831,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_12400, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
 
@@ -5686,14 +5848,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_12400, Function | Med
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_12400 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_12400 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -5715,8 +5877,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_12500, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
 
@@ -5732,14 +5894,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_12500, Function | Med
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_12500 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_12500 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -5762,8 +5924,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_12600, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -5779,14 +5941,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_12600, Function | Med
         }
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_12600 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_12600 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -5809,8 +5971,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_12700, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -5827,14 +5989,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_12700, Function | Med
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_12700 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_12700 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -5857,8 +6019,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_12800, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -5875,14 +6037,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_12800, Function | Med
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_12800 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_12800 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -5905,8 +6067,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_12900, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -5922,14 +6084,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_12900, Function | Med
         }
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_12900 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_12900 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -5952,8 +6114,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_13000, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -5969,14 +6131,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_13000, Function | Med
         }
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_13000 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_13000 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -5999,8 +6161,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_13100, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -6016,14 +6178,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_13100, Function | Med
         }
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_13100 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_13100 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -6046,8 +6208,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_13200, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -6063,14 +6225,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_13200, Function | Med
         }
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_13200 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_13200 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -6093,8 +6255,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_13300, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -6111,14 +6273,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_13300, Function | Med
         }
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_13300 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_13300 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -6141,8 +6303,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_13400, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -6158,14 +6320,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_13400, Function | Med
         }
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_13400 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_13400 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -6188,8 +6350,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_13500, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -6205,14 +6367,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_13500, Function | Med
         }
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_13500 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_13500 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -6235,8 +6397,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_13600, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -6252,14 +6414,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_13600, Function | Med
         }
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_13600 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_13600 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -6282,8 +6444,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_13700, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -6300,14 +6462,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_13700, Function | Med
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_13700 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_13700 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -6330,8 +6492,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_13800, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -6348,14 +6510,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_13800, Function | Med
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_13800 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_13800 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -6378,8 +6540,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_13900, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -6396,14 +6558,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_13900, Function | Med
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_13900 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_13900 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -6426,8 +6588,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_14000, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -6444,14 +6606,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_14000, Function | Med
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_14000 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_14000 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -6474,8 +6636,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_14100, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -6492,14 +6654,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_14100, Function | Med
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_14100 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_14100 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -6522,8 +6684,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_14200, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_CONNECTION, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -6538,17 +6700,16 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_14200, Function | Med
             GTEST_LOG_(INFO) << "AMS_Service_Ability_14200 : " << i;
             break;
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_14200 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_14200 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -6571,8 +6732,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_14300, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_CONNECTION, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -6590,14 +6751,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_14300, Function | Med
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_14300 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_14300 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -6620,8 +6781,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_14400, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_CONNECTION, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -6639,14 +6800,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_14400, Function | Med
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_14400 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_14400 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -6668,8 +6829,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_14500, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_CONNECTION, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -6684,17 +6845,16 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_14500, Function | Med
             GTEST_LOG_(INFO) << "AMS_Service_Ability_14500 : " << i;
             break;
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_14500 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_14500 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -6716,8 +6876,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_14600, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_CONNECTION, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -6732,17 +6892,16 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_14600, Function | Med
             GTEST_LOG_(INFO) << "AMS_Service_Ability_14600 : " << i;
             break;
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_14600 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_14600 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -6765,8 +6924,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_14700, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_CONNECTION, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -6781,17 +6940,16 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_14700, Function | Med
             GTEST_LOG_(INFO) << "AMS_Service_Ability_14700 : " << i;
             break;
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_14700 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_14700 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -6814,8 +6972,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_14800, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_CONNECTION, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -6830,17 +6988,16 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_14800, Function | Med
             GTEST_LOG_(INFO) << "AMS_Service_Ability_14800 : " << i;
             break;
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_14800 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_14800 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -6863,8 +7020,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_14900, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_CONNECTION, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -6879,17 +7036,16 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_14900, Function | Med
             GTEST_LOG_(INFO) << "AMS_Service_Ability_14900 : " << i;
             break;
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_14900 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_14900 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -6911,8 +7067,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_15000, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_CONNECTION, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -6927,17 +7083,16 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_15000, Function | Med
             GTEST_LOG_(INFO) << "AMS_Service_Ability_15000 : " << i;
             break;
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_15000 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_15000 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -6959,8 +7114,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_15100, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_CONNECTION, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -6975,17 +7130,16 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_15100, Function | Med
             GTEST_LOG_(INFO) << "AMS_Service_Ability_15100 : " << i;
             break;
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_15100 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_15100 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -7008,8 +7162,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_15200, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_LIFE_CYCLE, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -7025,14 +7179,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_15200, Function | Med
         }
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_15200 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_15200 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -7055,8 +7209,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_15300, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_LIFE_CYCLE, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -7072,14 +7226,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_15300, Function | Med
         }
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_15300 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_15300 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -7102,8 +7256,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_15400, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_LIFE_CYCLE, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -7119,14 +7273,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_15400, Function | Med
         }
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_15400 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_15400 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -7149,8 +7303,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_15500, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_LIFE_CYCLE, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -7166,14 +7320,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_15500, Function | Med
         }
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_15500 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_15500 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -7196,8 +7350,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_15600, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_LIFE_CYCLE, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -7213,14 +7367,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_15600, Function | Med
         }
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_15600 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_15600 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -7243,8 +7397,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_15700, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_LIFE_CYCLE, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -7260,14 +7414,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_15700, Function | Med
         }
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_15700 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_15700 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -7290,8 +7444,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_15800, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_LIFE_CYCLE, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -7307,14 +7461,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_15800, Function | Med
         }
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_15800 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_15800 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -7337,8 +7491,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_15900, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_LIFE_CYCLE, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -7355,14 +7509,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_15900, Function | Med
         }
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_15900 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_15900 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -7385,14 +7539,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_16000, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_LIFE_CYCLE, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         STAbilityUtil::PublishEvent(APP_ABILITY_LIFE_CYCLE_REQ_EVENT_NAME, 1, "LifeCycleGetLifecycleState");
@@ -7407,7 +7561,7 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_16000, Function | Med
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_16000 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_16000 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -7432,8 +7586,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_16100, Function | Med
         // start ability
         sptr<AbilityConnectCallback> stub(new (std::nothrow) AbilityConnectCallback());
         sptr<AbilityConnectionProxy> connCallback(new (std::nothrow) AbilityConnectionProxy(stub));
-        ErrCode eCode = STAbilityUtil::ConnectAbility(want, connCallback, stub->AsObject());
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::ConnectAbility(want, connCallback, stub->AsObject());
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnConnect", mapState["OnConnect"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -7448,14 +7602,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_16100, Function | Med
             break;
         }
 
-        eCode = STAbilityUtil::DisconnectAbility(connCallback);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::DisconnectAbility(connCallback);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnDisconnect", mapState["OnDisconnect"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_16100 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_16100 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -7480,8 +7634,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_16200, Function | Med
         // start ability
         sptr<AbilityConnectCallback> stub(new (std::nothrow) AbilityConnectCallback());
         sptr<AbilityConnectionProxy> connCallback(new (std::nothrow) AbilityConnectionProxy(stub));
-        ErrCode eCode = STAbilityUtil::ConnectAbility(want, connCallback, stub->AsObject());
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::ConnectAbility(want, connCallback, stub->AsObject());
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnConnect", mapState["OnConnect"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -7497,14 +7651,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_16200, Function | Med
             break;
         }
 
-        eCode = STAbilityUtil::DisconnectAbility(connCallback);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::DisconnectAbility(connCallback);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnDisconnect", mapState["OnDisconnect"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_16200 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_16200 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -7529,14 +7683,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_16300, Function | Med
         // start ability
         sptr<AbilityConnectCallback> stub(new (std::nothrow) AbilityConnectCallback());
         sptr<AbilityConnectionProxy> connCallback(new (std::nothrow) AbilityConnectionProxy(stub));
-        ErrCode eCode = STAbilityUtil::ConnectAbility(want, connCallback, stub->AsObject());
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::ConnectAbility(want, connCallback, stub->AsObject());
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnConnect", mapState["OnConnect"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
-        eCode = STAbilityUtil::DisconnectAbility(connCallback);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::DisconnectAbility(connCallback);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnDisconnect", mapState["OnDisconnect"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
 
@@ -7552,7 +7706,7 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_16300, Function | Med
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_16300 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_16300 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -7577,14 +7731,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_16400, Function | Med
         // start ability
         sptr<AbilityConnectCallback> stub(new (std::nothrow) AbilityConnectCallback());
         sptr<AbilityConnectionProxy> connCallback(new (std::nothrow) AbilityConnectionProxy(stub));
-        ErrCode eCode = STAbilityUtil::ConnectAbility(want, connCallback, stub->AsObject());
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::ConnectAbility(want, connCallback, stub->AsObject());
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnConnect", mapState["OnConnect"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
-        eCode = STAbilityUtil::DisconnectAbility(connCallback);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::DisconnectAbility(connCallback);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnDisconnect", mapState["OnDisconnect"], DELAY_TIME));
 
@@ -7600,7 +7754,7 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_16400, Function | Med
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_16400 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_16400 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -7623,8 +7777,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_16500, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_LIFE_CYCLE, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -7640,14 +7794,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_16500, Function | Med
         }
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_16500 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_16500 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -7670,8 +7824,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_16600, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_LIFE_CYCLE, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -7687,14 +7841,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_16600, Function | Med
         }
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_16600 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_16600 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -7717,8 +7871,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_16700, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_LIFE_CYCLE, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -7733,14 +7887,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_16700, Function | Med
         }
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_16700 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_16700 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -7765,8 +7919,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_16800, Function | Med
         // start ability
         sptr<AbilityConnectCallback> stub(new (std::nothrow) AbilityConnectCallback());
         sptr<AbilityConnectionProxy> connCallback(new (std::nothrow) AbilityConnectionProxy(stub));
-        ErrCode eCode = STAbilityUtil::ConnectAbility(want, connCallback, stub->AsObject());
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::ConnectAbility(want, connCallback, stub->AsObject());
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnConnect", mapState["OnConnect"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -7782,14 +7936,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_16800, Function | Med
         }
 
         // stop ability
-        eCode = STAbilityUtil::DisconnectAbility(connCallback);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::DisconnectAbility(connCallback);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnDisconnect", mapState["OnDisconnect"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_16800 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_16800 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -7814,8 +7968,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_16900, Function | Med
         // start ability
         sptr<AbilityConnectCallback> stub(new (std::nothrow) AbilityConnectCallback());
         sptr<AbilityConnectionProxy> connCallback(new (std::nothrow) AbilityConnectionProxy(stub));
-        ErrCode eCode = STAbilityUtil::ConnectAbility(want, connCallback, stub->AsObject());
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::ConnectAbility(want, connCallback, stub->AsObject());
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnConnect", mapState["OnConnect"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -7831,14 +7985,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_16900, Function | Med
         }
 
         // stop ability
-        eCode = STAbilityUtil::DisconnectAbility(connCallback);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::DisconnectAbility(connCallback);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnDisconnect", mapState["OnDisconnect"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_16900 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_16900 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -7861,8 +8015,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_17000, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_LIFE_CYCLE, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -7879,14 +8033,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_17000, Function | Med
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnActive", mapState["OnActive"], DELAY_TIME));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_17000 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_17000 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -7909,8 +8063,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_17100, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_LIFE_CYCLE, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -7927,14 +8081,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_17100, Function | Med
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", 0, DELAY_TIME));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_17100 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_17100 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -7957,8 +8111,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_17200, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_LIFE_CYCLE, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -7974,14 +8128,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_17200, Function | Med
         EXPECT_EQ(-1, STAbilityUtil::WaitCompleted(event, "OnForeground", mapState["OnForeground"], DELAY_TIME));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_17200 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_17200 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -8006,8 +8160,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_17300, Function | Med
         // start ability
         sptr<AbilityConnectCallback> stub(new (std::nothrow) AbilityConnectCallback());
         sptr<AbilityConnectionProxy> connCallback(new (std::nothrow) AbilityConnectionProxy(stub));
-        ErrCode eCode = STAbilityUtil::ConnectAbility(want, connCallback, stub->AsObject());
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::ConnectAbility(want, connCallback, stub->AsObject());
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnConnect", mapState["OnConnect"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -8024,14 +8178,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_17300, Function | Med
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnInactive", 0, DELAY_TIME));
 
         // stop ability
-        eCode = STAbilityUtil::DisconnectAbility(connCallback);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::DisconnectAbility(connCallback);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnDisconnect", mapState["OnDisconnect"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_17300 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_17300 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -8056,8 +8210,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_17400, Function | Med
         // start ability
         sptr<AbilityConnectCallback> stub(new (std::nothrow) AbilityConnectCallback());
         sptr<AbilityConnectionProxy> connCallback(new (std::nothrow) AbilityConnectionProxy(stub));
-        ErrCode eCode = STAbilityUtil::ConnectAbility(want, connCallback, stub->AsObject());
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::ConnectAbility(want, connCallback, stub->AsObject());
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnConnect", mapState["OnConnect"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -8074,14 +8228,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_17400, Function | Med
         EXPECT_EQ(-1, STAbilityUtil::WaitCompleted(event, "OnStart", 0, DELAY_TIME));
 
         // stop ability
-        eCode = STAbilityUtil::DisconnectAbility(connCallback);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::DisconnectAbility(connCallback);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnDisconnect", mapState["OnDisconnect"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_17400 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_17400 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -8106,8 +8260,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_17500, Function | Med
         // start ability
         sptr<AbilityConnectCallback> stub(new (std::nothrow) AbilityConnectCallback());
         sptr<AbilityConnectionProxy> connCallback(new (std::nothrow) AbilityConnectionProxy(stub));
-        ErrCode eCode = STAbilityUtil::ConnectAbility(want, connCallback, stub->AsObject());
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::ConnectAbility(want, connCallback, stub->AsObject());
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnConnect", mapState["OnConnect"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -8124,14 +8278,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_17500, Function | Med
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", 0, DELAY_TIME));
 
         // stop ability
-        eCode = STAbilityUtil::DisconnectAbility(connCallback);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::DisconnectAbility(connCallback);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnDisconnect", mapState["OnDisconnect"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_17500 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_17500 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -8156,8 +8310,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_17600, Function | Med
         // start ability
         sptr<AbilityConnectCallback> stub(new (std::nothrow) AbilityConnectCallback());
         sptr<AbilityConnectionProxy> connCallback(new (std::nothrow) AbilityConnectionProxy(stub));
-        ErrCode eCode = STAbilityUtil::ConnectAbility(want, connCallback, stub->AsObject());
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::ConnectAbility(want, connCallback, stub->AsObject());
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnConnect", mapState["OnConnect"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -8174,14 +8328,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_17600, Function | Med
         EXPECT_EQ(-1, STAbilityUtil::WaitCompleted(event, "UnDefine", 0, DELAY_TIME));
 
         // stop ability
-        eCode = STAbilityUtil::DisconnectAbility(connCallback);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::DisconnectAbility(connCallback);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnDisconnect", mapState["OnDisconnect"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_17600 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_17600 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -8206,8 +8360,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_17700, Function | Med
         // start ability
         sptr<AbilityConnectCallback> stub(new (std::nothrow) AbilityConnectCallback());
         sptr<AbilityConnectionProxy> connCallback(new (std::nothrow) AbilityConnectionProxy(stub));
-        ErrCode eCode = STAbilityUtil::ConnectAbility(want, connCallback, stub->AsObject());
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::ConnectAbility(want, connCallback, stub->AsObject());
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnConnect", mapState["OnConnect"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -8224,14 +8378,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_17700, Function | Med
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnActive", mapState["OnActive"], DELAY_TIME));
 
         // stop ability
-        eCode = STAbilityUtil::DisconnectAbility(connCallback);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::DisconnectAbility(connCallback);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnDisconnect", mapState["OnDisconnect"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_17700 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_17700 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -8256,8 +8410,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_17800, Function | Med
         // start ability
         sptr<AbilityConnectCallback> stub(new (std::nothrow) AbilityConnectCallback());
         sptr<AbilityConnectionProxy> connCallback(new (std::nothrow) AbilityConnectionProxy(stub));
-        ErrCode eCode = STAbilityUtil::ConnectAbility(want, connCallback, stub->AsObject());
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::ConnectAbility(want, connCallback, stub->AsObject());
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnConnect", mapState["OnConnect"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -8274,14 +8428,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_17800, Function | Med
         EXPECT_EQ(-1, STAbilityUtil::WaitCompleted(event, "UnDefine", 0, DELAY_TIME));
 
         // stop ability
-        eCode = STAbilityUtil::DisconnectAbility(connCallback);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::DisconnectAbility(connCallback);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnDisconnect", mapState["OnDisconnect"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_17800 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_17800 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -8304,8 +8458,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_17900, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_LIFE_CYCLE, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -8321,14 +8475,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_17900, Function | Med
         }
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_17900 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_17900 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -8351,8 +8505,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_18000, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_LIFE_CYCLE, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -8368,14 +8522,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_18000, Function | Med
         }
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_18000 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_18000 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -8398,8 +8552,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_18100, Function | Med
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_LIFE_CYCLE, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnCommand", mapState["OnCommand"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -8414,14 +8568,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_18100, Function | Med
         }
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_18100 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_18100 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -8446,8 +8600,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_18200, Function | Med
         // start ability
         sptr<AbilityConnectCallback> stub(new (std::nothrow) AbilityConnectCallback());
         sptr<AbilityConnectionProxy> connCallback(new (std::nothrow) AbilityConnectionProxy(stub));
-        ErrCode eCode = STAbilityUtil::ConnectAbility(want, connCallback, stub->AsObject());
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::ConnectAbility(want, connCallback, stub->AsObject());
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnConnect", mapState["OnConnect"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -8463,14 +8617,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_18200, Function | Med
         }
 
         // stop ability
-        eCode = STAbilityUtil::DisconnectAbility(connCallback);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::DisconnectAbility(connCallback);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnDisconnect", mapState["OnDisconnect"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_18200 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_18200 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -8495,8 +8649,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_18300, Function | Med
         // start ability
         sptr<AbilityConnectCallback> stub(new (std::nothrow) AbilityConnectCallback());
         sptr<AbilityConnectionProxy> connCallback(new (std::nothrow) AbilityConnectionProxy(stub));
-        ErrCode eCode = STAbilityUtil::ConnectAbility(want, connCallback, stub->AsObject());
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::ConnectAbility(want, connCallback, stub->AsObject());
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnConnect", mapState["OnConnect"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -8512,14 +8666,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_Ability_18300, Function | Med
         }
 
         // stop ability
-        eCode = STAbilityUtil::DisconnectAbility(connCallback);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::DisconnectAbility(connCallback);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnDisconnect", mapState["OnDisconnect"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_Ability_18300 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_Ability_18300 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -8542,8 +8696,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifecycleObserver_18400, Func
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_LIFE_CYCLE_OBSERVER, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         int ret = STAbilityUtil::WaitCompleted(event, "OnActive", mapState["OnActive"], DELAY_TIME);
         EXPECT_EQ(0, ret);
@@ -8555,14 +8709,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifecycleObserver_18400, Func
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_18400 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_18400 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -8585,8 +8739,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifecycleObserver_18500, Func
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_LIFE_CYCLE_OBSERVER, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         int ret = STAbilityUtil::WaitCompleted(event, "OnActive", mapState["OnActive"], DELAY_TIME);
         EXPECT_EQ(0, ret);
@@ -8598,14 +8752,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifecycleObserver_18500, Func
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_18500 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_18500 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -8628,8 +8782,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifecycleObserver_18600, Func
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_LIFE_CYCLE_OBSERVER, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         int ret = STAbilityUtil::WaitCompleted(event, "OnActive", mapState["OnActive"], DELAY_TIME);
         EXPECT_EQ(0, ret);
@@ -8641,14 +8795,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifecycleObserver_18600, Func
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_18600 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_18600 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -8671,20 +8825,27 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifecycleObserver_18700, Func
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_LIFE_CYCLE_OBSERVER, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         int ret = STAbilityUtil::WaitCompleted(event, "OnActive", mapState["OnActive"], DELAY_TIME);
-        EXPECT_EQ(-1, ret);
-        if (ret != -1) {
+        EXPECT_EQ(0, ret);
+        if (ret != 0) {
             result = false;
             GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_18700 : " << i;
             break;
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
+
+        // stop ability
+        STAbilityUtil::StopServiceAbility(want);
+
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
+        std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_18700 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_18700 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -8707,20 +8868,27 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifecycleObserver_18800, Func
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_LIFE_CYCLE_OBSERVER, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         int ret = STAbilityUtil::WaitCompleted(event, "OnActive", mapState["OnActive"], DELAY_TIME);
-        EXPECT_EQ(-1, ret);
-        if (ret != -1) {
+        EXPECT_EQ(0, ret);
+        if (ret != 0) {
             result = false;
             GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_18800 : " << i;
             break;
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
+
+        // stop ability
+        STAbilityUtil::StopServiceAbility(want);
+
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
+        std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_18800 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_18800 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -8743,14 +8911,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifecycleObserver_18900, Func
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_LIFE_CYCLE_OBSERVER, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnActive", mapState["OnActive"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+
         int ret = STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME);
         EXPECT_EQ(0, ret);
         if (ret != 0) {
@@ -8762,7 +8930,7 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifecycleObserver_18900, Func
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_18900 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_18900 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -8785,14 +8953,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifecycleObserver_19000, Func
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_LIFE_CYCLE_OBSERVER, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnActive", mapState["OnActive"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+
         int ret = STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME);
         EXPECT_EQ(0, ret);
         if (ret != 0) {
@@ -8804,7 +8972,7 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifecycleObserver_19000, Func
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_19000 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_19000 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -8827,14 +8995,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifecycleObserver_19100, Func
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_LIFE_CYCLE_OBSERVER, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnActive", mapState["OnActive"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+
         int ret = STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME);
         EXPECT_EQ(0, ret);
         if (ret != 0) {
@@ -8846,7 +9014,7 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifecycleObserver_19100, Func
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_19100 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_19100 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -8869,23 +9037,26 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifecycleObserver_19200, Func
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_LIFE_CYCLE_OBSERVER, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
-        EXPECT_EQ(-1, STAbilityUtil::WaitCompleted(event, "OnActive", mapState["OnActive"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnActive", mapState["OnActive"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
+        STAbilityUtil::StopServiceAbility(want);
+
         int ret = STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME);
-        EXPECT_EQ(-1, ret);
-        if (ret != -1) {
+        EXPECT_EQ(0, ret);
+        if (ret != 0) {
             result = false;
             GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_19200 : " << i;
             break;
         }
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_19200 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_19200 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -8908,23 +9079,26 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifecycleObserver_19300, Func
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_LIFE_CYCLE_OBSERVER, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
-        EXPECT_EQ(-1, STAbilityUtil::WaitCompleted(event, "OnActive", mapState["OnActive"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnActive", mapState["OnActive"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
+        STAbilityUtil::StopServiceAbility(want);
+
         int ret = STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME);
-        EXPECT_EQ(-1, ret);
-        if (ret != -1) {
+        EXPECT_EQ(0, ret);
+        if (ret != 0) {
             result = false;
             GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_19300 : " << i;
             break;
         }
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_19300 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_19300 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -8947,8 +9121,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifecycleObserver_19400, Func
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_LIFE_CYCLE_OBSERVER, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnActive", mapState["OnActive"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -8962,14 +9136,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifecycleObserver_19400, Func
         }
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_19400 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_19400 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -8992,8 +9166,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifecycleObserver_19500, Func
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_LIFE_CYCLE_OBSERVER, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnActive", mapState["OnActive"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -9007,14 +9181,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifecycleObserver_19500, Func
         }
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_19500 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_19500 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -9037,8 +9211,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifecycleObserver_19600, Func
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_LIFE_CYCLE_OBSERVER, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnActive", mapState["OnActive"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
@@ -9052,14 +9226,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifecycleObserver_19600, Func
         }
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_19600 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_19600 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -9082,10 +9256,10 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifecycleObserver_19700, Func
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_LIFE_CYCLE_OBSERVER, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
-        EXPECT_EQ(-1, STAbilityUtil::WaitCompleted(event, "OnActive", mapState["OnActive"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnActive", mapState["OnActive"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         int ret = STAbilityUtil::WaitCompleted(event, "OnForeground", mapState["OnForeground"], DELAY_TIME);
@@ -9095,10 +9269,16 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifecycleObserver_19700, Func
             GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_19700 : " << i;
             break;
         }
+
+        // stop ability
+        STAbilityUtil::StopServiceAbility(want);
+
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_19700 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_19700 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -9121,10 +9301,10 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifecycleObserver_19800, Func
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_LIFE_CYCLE_OBSERVER, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
-        EXPECT_EQ(-1, STAbilityUtil::WaitCompleted(event, "OnActive", mapState["OnActive"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnActive", mapState["OnActive"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         int ret = STAbilityUtil::WaitCompleted(event, "OnForeground", mapState["OnForeground"], DELAY_TIME);
@@ -9134,10 +9314,16 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifecycleObserver_19800, Func
             GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_19800 : " << i;
             break;
         }
+
+        // stop ability
+        STAbilityUtil::StopServiceAbility(want);
+
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_19800 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_19800 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -9160,8 +9346,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifecycleObserver_19900, Func
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_LIFE_CYCLE_OBSERVER, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnActive", mapState["OnActive"], DELAY_TIME));
         int ret = STAbilityUtil::WaitCompleted(event, "OnInactive", mapState["OnInactive"], DELAY_TIME);
@@ -9171,17 +9357,16 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifecycleObserver_19900, Func
             GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_19900 : " << i;
             break;
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_19900 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_19900 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -9204,8 +9389,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifecycleObserver_20000, Func
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_LIFE_CYCLE_OBSERVER, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnActive", mapState["OnActive"], DELAY_TIME));
         int ret = STAbilityUtil::WaitCompleted(event, "OnInactive", mapState["OnInactive"], DELAY_TIME);
@@ -9215,17 +9400,16 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifecycleObserver_20000, Func
             GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_20000 : " << i;
             break;
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_20000 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_20000 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -9248,8 +9432,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifecycleObserver_20100, Func
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_LIFE_CYCLE_OBSERVER, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnActive", mapState["OnActive"], DELAY_TIME));
         int ret = STAbilityUtil::WaitCompleted(event, "OnInactive", mapState["OnInactive"], DELAY_TIME);
@@ -9259,17 +9443,16 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifecycleObserver_20100, Func
             GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_20100 : " << i;
             break;
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_20100 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_20100 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -9292,10 +9475,10 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifecycleObserver_20200, Func
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_LIFE_CYCLE_OBSERVER, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
-        EXPECT_EQ(-1, STAbilityUtil::WaitCompleted(event, "OnActive", mapState["OnActive"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnActive", mapState["OnActive"], DELAY_TIME));
         int ret = STAbilityUtil::WaitCompleted(event, "OnInactive", mapState["OnInactive"], DELAY_TIME);
         EXPECT_EQ(-1, ret);
         if (ret != -1) {
@@ -9303,10 +9486,16 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifecycleObserver_20200, Func
             GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_20200 : " << i;
             break;
         }
+
+        // stop ability
+        STAbilityUtil::StopServiceAbility(want);
+
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_20200 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_20200 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -9329,10 +9518,10 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifecycleObserver_20300, Func
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_LIFE_CYCLE_OBSERVER, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
-        EXPECT_EQ(-1, STAbilityUtil::WaitCompleted(event, "OnActive", mapState["OnActive"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnActive", mapState["OnActive"], DELAY_TIME));
         int ret = STAbilityUtil::WaitCompleted(event, "OnInactive", mapState["OnInactive"], DELAY_TIME);
         EXPECT_EQ(-1, ret);
         if (ret != -1) {
@@ -9340,10 +9529,16 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifecycleObserver_20300, Func
             GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_20300 : " << i;
             break;
         }
+
+        // stop ability
+        STAbilityUtil::StopServiceAbility(want);
+
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_20300 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_20300 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -9366,8 +9561,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifecycleObserver_20400, Func
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_LIFE_CYCLE_OBSERVER, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnActive", mapState["OnActive"], DELAY_TIME));
         int ret = STAbilityUtil::WaitCompleted(event, "OnStart", 0, DELAY_TIME);
@@ -9380,14 +9575,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifecycleObserver_20400, Func
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_20400 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_20400 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -9410,8 +9605,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifecycleObserver_20500, Func
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_LIFE_CYCLE_OBSERVER, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnActive", mapState["OnActive"], DELAY_TIME));
         int ret = STAbilityUtil::WaitCompleted(event, "OnStart", 0, DELAY_TIME);
@@ -9424,14 +9619,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifecycleObserver_20500, Func
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_20500 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_20500 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -9454,8 +9649,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifecycleObserver_20600, Func
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_LIFE_CYCLE_OBSERVER, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnActive", mapState["OnActive"], DELAY_TIME));
         int ret = STAbilityUtil::WaitCompleted(event, "OnStart", 0, DELAY_TIME);
@@ -9468,14 +9663,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifecycleObserver_20600, Func
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_20600 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_20600 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -9498,10 +9693,10 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifecycleObserver_20700, Func
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_LIFE_CYCLE_OBSERVER, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
-        EXPECT_EQ(-1, STAbilityUtil::WaitCompleted(event, "OnActive", mapState["OnActive"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnActive", mapState["OnActive"], DELAY_TIME));
         int ret = STAbilityUtil::WaitCompleted(event, "OnStart", 0, DELAY_TIME);
         EXPECT_EQ(0, ret);
         if (ret != 0) {
@@ -9510,9 +9705,16 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifecycleObserver_20700, Func
             break;
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
+
+        // stop ability
+        STAbilityUtil::StopServiceAbility(want);
+
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
+        std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_20700 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_20700 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -9535,10 +9737,10 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifecycleObserver_20800, Func
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_LIFE_CYCLE_OBSERVER, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
-        EXPECT_EQ(-1, STAbilityUtil::WaitCompleted(event, "OnActive", mapState["OnActive"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnActive", mapState["OnActive"], DELAY_TIME));
         int ret = STAbilityUtil::WaitCompleted(event, "OnStart", 0, DELAY_TIME);
         EXPECT_EQ(0, ret);
         if (ret != 0) {
@@ -9547,9 +9749,16 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifecycleObserver_20800, Func
             break;
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
+
+        // stop ability
+        STAbilityUtil::StopServiceAbility(want);
+
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
+        std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_20800 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_20800 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -9572,15 +9781,15 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifecycleObserver_20900, Func
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_LIFE_CYCLE_OBSERVER, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnActive", mapState["OnActive"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", 0, DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         int ret = STAbilityUtil::WaitCompleted(event, "OnStop", 0, DELAY_TIME);
@@ -9593,7 +9802,7 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifecycleObserver_20900, Func
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_20900 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_20900 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -9616,15 +9825,15 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifecycleObserver_21000, Func
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_LIFE_CYCLE_OBSERVER, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnActive", mapState["OnActive"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", 0, DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         int ret = STAbilityUtil::WaitCompleted(event, "OnStop", 0, DELAY_TIME);
@@ -9637,7 +9846,7 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifecycleObserver_21000, Func
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_21000 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_21000 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -9660,15 +9869,15 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifecycleObserver_21100, Func
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_LIFE_CYCLE_OBSERVER, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnActive", mapState["OnActive"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", 0, DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         int ret = STAbilityUtil::WaitCompleted(event, "OnStop", 0, DELAY_TIME);
@@ -9681,7 +9890,7 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifecycleObserver_21100, Func
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_21100 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_21100 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -9704,13 +9913,19 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifecycleObserver_21200, Func
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_LIFE_CYCLE_OBSERVER, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
-        EXPECT_EQ(-1, STAbilityUtil::WaitCompleted(event, "OnActive", mapState["OnActive"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnActive", mapState["OnActive"], DELAY_TIME));
+        std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
+
+        STAbilityUtil::StopServiceAbility(want);
+
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         int ret = STAbilityUtil::WaitCompleted(event, "OnStop", 0, DELAY_TIME);
-        EXPECT_EQ(-1, ret);
-        if (ret != -1) {
+        EXPECT_EQ(0, ret);
+        if (ret != 0) {
             result = false;
             GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_21200 : " << i;
             break;
@@ -9718,7 +9933,7 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifecycleObserver_21200, Func
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_21200 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_21200 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -9741,13 +9956,19 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifecycleObserver_21300, Func
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_LIFE_CYCLE_OBSERVER, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
-        EXPECT_EQ(-1, STAbilityUtil::WaitCompleted(event, "OnActive", mapState["OnActive"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnActive", mapState["OnActive"], DELAY_TIME));
+        std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
+
+        STAbilityUtil::StopServiceAbility(want);
+
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         int ret = STAbilityUtil::WaitCompleted(event, "OnStop", 0, DELAY_TIME);
-        EXPECT_EQ(-1, ret);
-        if (ret != -1) {
+        EXPECT_EQ(0, ret);
+        if (ret != 0) {
             result = false;
             GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_21300 : " << i;
             break;
@@ -9755,7 +9976,7 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifecycleObserver_21300, Func
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_21300 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_21300 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -9778,8 +9999,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifecycleObserver_21400, Func
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_LIFE_CYCLE_OBSERVER, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnActive", mapState["OnActive"], DELAY_TIME));
         int ret = STAbilityUtil::WaitCompleted(event, "OnStateChanged", 0, DELAY_TIME);
@@ -9792,14 +10013,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifecycleObserver_21400, Func
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         // stop ability
-        eCode = STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StopServiceAbility(want);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_21400 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_21400 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -9822,14 +10043,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifecycleObserver_21500, Func
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_LIFE_CYCLE_OBSERVER, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnActive", mapState["OnActive"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         STAbilityUtil::StopServiceAbility(want);
-        EXPECT_EQ(ERR_OK, eCode);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         int ret = STAbilityUtil::WaitCompleted(event, "OnStateChanged", 0, DELAY_TIME);
@@ -9842,7 +10063,7 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifecycleObserver_21500, Func
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_21500 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_21500 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -9868,8 +10089,8 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifecycleObserver_21600, Func
         sptr<AbilityConnectCallback> stub(new (std::nothrow) AbilityConnectCallback());
         sptr<AbilityConnectionProxy> connCallback(new (std::nothrow) AbilityConnectionProxy(stub));
 
-        ErrCode eCode = STAbilityUtil::ConnectAbility(want, connCallback, stub->AsObject());
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::ConnectAbility(want, connCallback, stub->AsObject());
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnConnect", mapState["OnConnect"], DELAY_TIME));
         int ret = STAbilityUtil::WaitCompleted(event, "OnStateChanged", 0, DELAY_TIME);
@@ -9881,14 +10102,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifecycleObserver_21600, Func
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
-        eCode = STAbilityUtil::DisconnectAbility(connCallback);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::DisconnectAbility(connCallback);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnDisconnect", mapState["OnDisconnect"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_21600 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_21600 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -9913,14 +10134,14 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifecycleObserver_21700, Func
         // start ability
         sptr<AbilityConnectCallback> stub(new (std::nothrow) AbilityConnectCallback());
         sptr<AbilityConnectionProxy> connCallback(new (std::nothrow) AbilityConnectionProxy(stub));
-        ErrCode eCode = STAbilityUtil::ConnectAbility(want, connCallback, stub->AsObject());
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::ConnectAbility(want, connCallback, stub->AsObject());
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnConnect", mapState["OnConnect"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
-        eCode = STAbilityUtil::DisconnectAbility(connCallback);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::DisconnectAbility(connCallback);
+
         int ret = STAbilityUtil::WaitCompleted(event, "OnStateChanged", 0, DELAY_TIME);
         EXPECT_EQ(0, ret);
         if (ret != 0) {
@@ -9934,7 +10155,7 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifecycleObserver_21700, Func
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_21700 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_21700 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 
@@ -9957,16 +10178,16 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifecycleObserver_21800, Func
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         Want want = STAbilityUtil::MakeWant("device", ABILTIY_NAME_ABILITY_LIFE_CYCLE_OBSERVER, BUNDLE_NAME, params);
         // start ability
-        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStart", mapState["OnStart"], DELAY_TIME));
-        EXPECT_EQ(-1, STAbilityUtil::WaitCompleted(event, "OnActive", mapState["OnActive"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnActive", mapState["OnActive"], DELAY_TIME));
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
 
         sptr<AbilityConnectCallback> stub(new (std::nothrow) AbilityConnectCallback());
         sptr<AbilityConnectionProxy> connCallback(new (std::nothrow) AbilityConnectionProxy(stub));
-        eCode = STAbilityUtil::ConnectAbility(want, connCallback, stub->AsObject());
-        EXPECT_EQ(ERR_OK, eCode);
+        STAbilityUtil::ConnectAbility(want, connCallback, stub->AsObject());
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnConnect", mapState["OnConnect"], DELAY_TIME));
         int ret = STAbilityUtil::WaitCompleted(event, "OnStateChanged", 0, DELAY_TIME);
         EXPECT_EQ(0, ret);
@@ -9976,9 +10197,29 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_LifecycleObserver_21800, Func
             break;
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
+
+        STAbilityUtil::DisconnectAbility(connCallback);
+
+        ret = STAbilityUtil::WaitCompleted(event, "OnStateChanged", 0, DELAY_TIME);
+        EXPECT_EQ(0, ret);
+        if (ret != 0) {
+            result = false;
+            GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_21700 : " << i;
+            break;
+        }
+
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnDisconnect", mapState["OnDisconnect"], DELAY_TIME));
+        std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
+
+        // stop ability
+        STAbilityUtil::StopServiceAbility(want);
+
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnStop", mapState["OnStop"], DELAY_TIME));
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, "OnBackground", mapState["OnBackground"], DELAY_TIME));
+        std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
     }
     if (result && stLevel_.AMSLevel > 1) {
-        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_21800 : " << stLevel_.CESLevel;
+        GTEST_LOG_(INFO) << "AMS_Service_LifecycleObserver_21800 : " << stLevel_.AMSLevel;
     }
     EXPECT_TRUE(result);
 

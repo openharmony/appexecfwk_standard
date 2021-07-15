@@ -100,7 +100,7 @@ public:
      * @param bundleName, bundle name in Application record.
      * @return
      */
-    virtual void ClearUpApplicationData(const std::string &bundleName) = 0;
+    virtual int32_t ClearUpApplicationData(const std::string &bundleName) = 0;
 
     /**
      * IsBackgroundRunningRestricted, call IsBackgroundRunningRestricted() through proxy project,
@@ -115,10 +115,28 @@ public:
      * GetAllRunningProcesses, call GetAllRunningProcesses() through proxy project.
      * Obtains information about application processes that are running on the device.
      *
-     * @param runningProcessInfo, app name in Application record.
+     * @param info, app name in Application record.
      * @return ERR_OK ,return back success，others fail.
      */
-    virtual int GetAllRunningProcesses(std::shared_ptr<RunningProcessInfo> &runningProcessInfo) = 0;
+    virtual int GetAllRunningProcesses(std::vector<RunningProcessInfo> &info) = 0;
+
+    /**
+     * SetAppSuspendTimes, Setting the Freezing Time of APP Background.
+     *
+     * @param time, The timeout recorded when the application enters the background .
+     *
+     * @return Success or Failure .
+     */
+    virtual void SetAppFreezingTime(int time) = 0;
+
+    /**
+     * GetAppFreezingTime, Getting the Freezing Time of APP Background.
+     *
+     * @param time, The timeout recorded when the application enters the background .
+     *
+     * @return Success or Failure .
+     */
+    virtual void GetAppFreezingTime(int &time) = 0;
 
     enum class Message {
         AMS_APP_ATTACH_APPLICATION = 0,
@@ -131,6 +149,8 @@ public:
         AMS_APP_CLEAR_UP_APPLICATION_DATA,
         AMS_APP_IS_BACKGROUND_RUNNING_RESTRICTED,
         AMS_APP_GET_ALL_RUNNING_PROCESSES,
+        AMS_APP_SET_APP_FREEZING_TIME,
+        AMS_APP_GET_APP_FREEZING_TIME,
     };
 };
 

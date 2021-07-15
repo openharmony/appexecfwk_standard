@@ -52,7 +52,6 @@ std::vector<std::string> bundleNameList = {
     BUNDLE_NAME_BASE + "E",
     BUNDLE_NAME_BASE + "F",
     BUNDLE_NAME_BASE + "G",
-    BUNDLE_NAME_BASE + "H",
 };
 
 std::vector<std::string> hapNameList = {
@@ -248,6 +247,7 @@ void AmsServiceAbilityTest::SetUp(void)
     AbilityConnectCallback::onAbilityConnectDoneCount = 0;
     abilityMs = STAbilityUtil::GetAbilityManagerService();
     appMs = STAbilityUtil::GetAppMgrService();
+    usleep(WAIT_TIME);
 }
 
 bool AmsServiceAbilityTest::SubscribeEvent()
@@ -265,6 +265,7 @@ bool AmsServiceAbilityTest::SubscribeEvent()
 void AmsServiceAbilityTest::TearDown(void)
 {
     STAbilityUtil::UninstallBundle(bundleNameList);
+    usleep(WAIT_TIME);
     STAbilityUtil::CleanMsg(event);
 }
 
@@ -380,6 +381,7 @@ HWTEST_F(AmsServiceAbilityTest, AMS_Service_Ability_0100, Function | MediumTest 
     EXPECT_EQ(STAbilityUtil::WaitCompleted(
                   event, SERVICE_STATE_ON_STOP, AbilityLifecycleExecutor::LifecycleState::INITIAL, DELAY_TIME),
         0);
+    usleep(WAIT_TIME);
 
     GTEST_LOG_(INFO) << "AmsServiceAbilityTest AMS_Service_Ability_0100 end";
 }
@@ -423,6 +425,7 @@ HWTEST_F(AmsServiceAbilityTest, AMS_Service_Ability_0200, Function | MediumTest 
     EXPECT_EQ(STAbilityUtil::WaitCompleted(
                   event, SERVICE_STATE_ON_STOP, AbilityLifecycleExecutor::LifecycleState::INITIAL, DELAY_TIME),
         0);
+    usleep(WAIT_TIME);
 
     GTEST_LOG_(INFO) << "AmsServiceAbilityTest AMS_Service_Ability_0200 end";
 }
@@ -491,6 +494,7 @@ HWTEST_F(AmsServiceAbilityTest, AMS_Service_Ability_0300, Function | MediumTest 
     EXPECT_EQ(STAbilityUtil::WaitCompleted(
                   event, PAGE_STATE_ON_STOP, AbilityLifecycleExecutor::LifecycleState::INITIAL, DELAY_TIME),
         0);
+    usleep(WAIT_TIME);
 
     GTEST_LOG_(INFO) << "AmsServiceAbilityTest AMS_Service_Ability_0300 end";
 }
@@ -528,6 +532,7 @@ HWTEST_F(AmsServiceAbilityTest, AMS_Service_Ability_0400, Function | MediumTest 
     EXPECT_EQ(STAbilityUtil::WaitCompleted(
                   event, SERVICE_STATE_ON_STOP, AbilityLifecycleExecutor::LifecycleState::INITIAL, DELAY_TIME),
         0);
+    usleep(WAIT_TIME);
 
     GTEST_LOG_(INFO) << "AmsServiceAbilityTest AMS_Service_Ability_0400 end";
 }
@@ -580,6 +585,7 @@ HWTEST_F(AmsServiceAbilityTest, AMS_Service_Ability_0500, Function | MediumTest 
     EXPECT_EQ(STAbilityUtil::WaitCompleted(
                   event, SERVICE_STATE_ON_STOP, AbilityLifecycleExecutor::LifecycleState::INITIAL, DELAY_TIME),
         0);
+    usleep(WAIT_TIME);
 
     GTEST_LOG_(INFO) << "AmsServiceAbilityTest AMS_Service_Ability_0500 end";
 }
@@ -631,6 +637,7 @@ HWTEST_F(AmsServiceAbilityTest, AMS_Service_Ability_0600, Function | MediumTest 
     EXPECT_EQ(STAbilityUtil::WaitCompleted(
                   event, SERVICE_STATE_ON_STOP, AbilityLifecycleExecutor::LifecycleState::INITIAL, DELAY_TIME),
         0);
+    usleep(WAIT_TIME);
 
     GTEST_LOG_(INFO) << "AmsServiceAbilityTest AMS_Service_Ability_0600 end";
 }
@@ -688,6 +695,7 @@ HWTEST_F(AmsServiceAbilityTest, AMS_Service_Ability_0700, Function | MediumTest 
     EXPECT_EQ(STAbilityUtil::WaitCompleted(
                   event, SERVICE_STATE_ON_STOP, AbilityLifecycleExecutor::LifecycleState::INITIAL, DELAY_TIME),
         0);
+    usleep(WAIT_TIME);
 
     GTEST_LOG_(INFO) << "AmsServiceAbilityTest AMS_Service_Ability_0700 end";
 }
@@ -748,6 +756,7 @@ HWTEST_F(AmsServiceAbilityTest, AMS_Service_Ability_0800, Function | MediumTest 
     EXPECT_EQ(STAbilityUtil::WaitCompleted(
                   event, SERVICE_STATE_ON_STOP, AbilityLifecycleExecutor::LifecycleState::INITIAL, DELAY_TIME),
         0);
+    usleep(WAIT_TIME);
 
     GTEST_LOG_(INFO) << "AmsServiceAbilityTest AMS_Service_Ability_0800 end";
 }
@@ -782,7 +791,7 @@ HWTEST_F(AmsServiceAbilityTest, AMS_Service_Ability_0900, Function | MediumTest 
     // check number of connections
     EXPECT_EQ(AbilityConnectCallback::onAbilityConnectDoneCount, (size_t)1);
 
-    AppProcessInfo pInfo = STAbilityUtil::GetAppProcessInfoByName(bundleName, appMs);
+    RunningProcessInfo pInfo = STAbilityUtil::GetAppProcessInfoByName(bundleName, appMs);
     EXPECT_TRUE(pInfo.pid_ > 0);
 
     eCode = STAbilityUtil::DisconnectAbility(connCallback);
@@ -904,6 +913,7 @@ HWTEST_F(AmsServiceAbilityTest, AMS_Service_Ability_1100, Function | MediumTest 
     EXPECT_EQ(STAbilityUtil::WaitCompleted(
                   event, PAGE_STATE_ON_STOP, AbilityLifecycleExecutor::LifecycleState::INITIAL, DELAY_TIME),
         0);
+    usleep(WAIT_TIME);
 
     GTEST_LOG_(INFO) << "AmsServiceAbilityTest AMS_Service_Ability_1100 end";
 }
@@ -959,6 +969,7 @@ HWTEST_F(AmsServiceAbilityTest, AMS_Service_Ability_1200, Function | MediumTest 
     EXPECT_EQ(STAbilityUtil::WaitCompleted(
                   event, SERVICE_STATE_ON_STOP, AbilityLifecycleExecutor::LifecycleState::INITIAL, DELAY_TIME),
         0);
+    usleep(WAIT_TIME);
 
     GTEST_LOG_(INFO) << "AmsServiceAbilityTest AMS_Service_Ability_1200 end";
 }
@@ -999,6 +1010,7 @@ HWTEST_F(AmsServiceAbilityTest, AMS_Service_Ability_1300, Function | MediumTest 
     EXPECT_EQ(STAbilityUtil::WaitCompleted(
                   event, SERVICE_STATE_ON_DISCONNECT, AbilityLifecycleExecutor::LifecycleState::BACKGROUND, DELAY_TIME),
         0);
+    usleep(WAIT_TIME);
 
     GTEST_LOG_(INFO) << "AmsServiceAbilityTest AMS_Service_Ability_1300 end";
 }
@@ -1042,6 +1054,7 @@ HWTEST_F(AmsServiceAbilityTest, AMS_Service_Ability_1400, Function | MediumTest 
     EXPECT_EQ(STAbilityUtil::WaitCompleted(
                   event, SERVICE_STATE_ON_DISCONNECT, AbilityLifecycleExecutor::LifecycleState::BACKGROUND, DELAY_TIME),
         0);
+    usleep(WAIT_TIME);
 
     GTEST_LOG_(INFO) << "AmsServiceAbilityTest AMS_Service_Ability_1400 end";
 }
@@ -1109,6 +1122,7 @@ HWTEST_F(AmsServiceAbilityTest, AMS_Service_Ability_1500, Function | MediumTest 
     EXPECT_EQ(STAbilityUtil::WaitCompleted(
                   event, PAGE_STATE_ON_STOP, AbilityLifecycleExecutor::LifecycleState::INITIAL, DELAY_TIME),
         0);
+    usleep(WAIT_TIME);
 
     GTEST_LOG_(INFO) << "AmsServiceAbilityTest AMS_Service_Ability_1500 end";
 }
@@ -1150,6 +1164,7 @@ void AmsServiceAbilityTest::AmsServiceAbilityTest16001() const
     EXPECT_EQ(STAbilityUtil::WaitCompleted(
                   event, SERVICE_STATE_ON_COMMAND, AbilityLifecycleExecutor::LifecycleState::ACTIVE, DELAY_TIME),
         0);
+    usleep(WAIT_TIME);
 }
 
 void AmsServiceAbilityTest::AmsServiceAbilityTest16002() const
@@ -1230,6 +1245,7 @@ void AmsServiceAbilityTest::AmsServiceAbilityTest16002() const
     EXPECT_EQ(STAbilityUtil::WaitCompleted(
                   event, PAGE_STATE_ON_STOP, AbilityLifecycleExecutor::LifecycleState::INITIAL, DELAY_TIME),
         0);
+    usleep(WAIT_TIME);
 }
 
 /**
@@ -1282,6 +1298,7 @@ void AmsServiceAbilityTest::AmsServiceAbilityTest17001() const
     EXPECT_EQ(STAbilityUtil::WaitCompleted(
                   event, SERVICE_STATE_ON_COMMAND, AbilityLifecycleExecutor::LifecycleState::ACTIVE, DELAY_TIME),
         0);
+    usleep(WAIT_TIME);
 }
 
 void AmsServiceAbilityTest::AmsServiceAbilityTest17002() const
@@ -1349,6 +1366,7 @@ void AmsServiceAbilityTest::AmsServiceAbilityTest17002() const
     EXPECT_EQ(STAbilityUtil::WaitCompleted(
                   event, SERVICE_STATE_ON_STOP, AbilityLifecycleExecutor::LifecycleState::INITIAL, DELAY_TIME),
         0);
+    usleep(WAIT_TIME);
 }
 
 /**
@@ -1461,6 +1479,7 @@ void AmsServiceAbilityTest::AmsServiceAbilityTest18002() const
     EXPECT_EQ(STAbilityUtil::WaitCompleted(
                   event, PAGE_STATE_ON_STOP, AbilityLifecycleExecutor::LifecycleState::INITIAL, DELAY_TIME),
         0);
+    usleep(WAIT_TIME);
 }
 
 /**
@@ -1556,6 +1575,7 @@ HWTEST_F(AmsServiceAbilityTest, AMS_Service_Ability_1900, Function | MediumTest 
     EXPECT_EQ(STAbilityUtil::WaitCompleted(
                   event, PAGE_STATE_ON_STOP, AbilityLifecycleExecutor::LifecycleState::INITIAL, DELAY_TIME),
         0);
+    usleep(WAIT_TIME);
 
     GTEST_LOG_(INFO) << "AmsServiceAbilityTest AMS_Service_Ability_1900 end";
 }
@@ -1612,6 +1632,7 @@ HWTEST_F(AmsServiceAbilityTest, AMS_Service_Ability_2000, Function | MediumTest 
     EXPECT_EQ(STAbilityUtil::WaitCompleted(
                   event, PAGE_STATE_ON_STOP, AbilityLifecycleExecutor::LifecycleState::INITIAL, DELAY_TIME),
         0);
+    usleep(WAIT_TIME);
 
     GTEST_LOG_(INFO) << "AmsServiceAbilityTest AMS_Service_Ability_2000 end";
 }
@@ -1644,7 +1665,7 @@ HWTEST_F(AmsServiceAbilityTest, AMS_Service_Ability_2100, Function | MediumTest 
         0);
     usleep(WAIT_TIME);
 
-    AppProcessInfo pInfo1 = STAbilityUtil::GetAppProcessInfoByName(bundleName1, appMs);
+    RunningProcessInfo pInfo1 = STAbilityUtil::GetAppProcessInfoByName(bundleName1, appMs);
     EXPECT_TRUE(pInfo1.pid_ > 0);
 
     // start ability H1
@@ -1662,7 +1683,7 @@ HWTEST_F(AmsServiceAbilityTest, AMS_Service_Ability_2100, Function | MediumTest 
         0);
     usleep(WAIT_TIME);
 
-    AppProcessInfo pInfo2 = STAbilityUtil::GetAppProcessInfoByName(bundleName2, appMs);
+    RunningProcessInfo pInfo2 = STAbilityUtil::GetAppProcessInfoByName(bundleName2, appMs);
     EXPECT_TRUE(pInfo2.pid_ > 0);
     EXPECT_TRUE(pInfo1.pid_ == pInfo2.pid_);
 
@@ -1686,6 +1707,7 @@ HWTEST_F(AmsServiceAbilityTest, AMS_Service_Ability_2100, Function | MediumTest 
     EXPECT_EQ(STAbilityUtil::WaitCompleted(
                   event, SERVICE_STATE_ON_STOP, AbilityLifecycleExecutor::LifecycleState::INITIAL, DELAY_TIME),
         0);
+    usleep(WAIT_TIME);
 
     GTEST_LOG_(INFO) << "AmsServiceAbilityTest AMS_Service_Ability_2100 end";
 }
@@ -1721,7 +1743,7 @@ HWTEST_F(AmsServiceAbilityTest, AMS_Service_Ability_2200, Function | MediumTest 
         0);
     usleep(WAIT_TIME);
 
-    AppProcessInfo pInfo1 = STAbilityUtil::GetAppProcessInfoByName(bundleName1, appMs);
+    RunningProcessInfo pInfo1 = STAbilityUtil::GetAppProcessInfoByName(bundleName1, appMs);
     EXPECT_TRUE(pInfo1.pid_ > 0);
 
     // service ability G1 connect service ability H1
@@ -1749,7 +1771,7 @@ HWTEST_F(AmsServiceAbilityTest, AMS_Service_Ability_2200, Function | MediumTest 
         0);
     usleep(WAIT_TIME);
 
-    AppProcessInfo pInfo2 = STAbilityUtil::GetAppProcessInfoByName(bundleName2, appMs);
+    RunningProcessInfo pInfo2 = STAbilityUtil::GetAppProcessInfoByName(bundleName2, appMs);
     EXPECT_TRUE(pInfo2.pid_ > 0);
     EXPECT_TRUE(pInfo1.pid_ == pInfo2.pid_);
 
@@ -1798,6 +1820,7 @@ HWTEST_F(AmsServiceAbilityTest, AMS_Service_Ability_2200, Function | MediumTest 
     EXPECT_EQ(STAbilityUtil::WaitCompleted(
                   event, SERVICE_STATE_ON_STOP, AbilityLifecycleExecutor::LifecycleState::INITIAL, DELAY_TIME),
         0);
+    usleep(WAIT_TIME);
 
     GTEST_LOG_(INFO) << "AmsServiceAbilityTest AMS_Service_Ability_2200 end";
 }
@@ -1984,6 +2007,7 @@ HWTEST_F(AmsServiceAbilityTest, AppSpawn_TEST_0200, Function | MediumTest | Leve
     EXPECT_EQ(STAbilityUtil::WaitCompleted(
                   event, SERVICE_STATE_ON_COMMAND, AbilityLifecycleExecutor::LifecycleState::ACTIVE, DELAY_TIME),
         0);
+    usleep(WAIT_TIME);
 
     // check app process information
     std::string cmd = "ps -ef |grep com.ohos.amsst.service.appA |grep -v grep | awk '{print $2}'";
@@ -2001,6 +2025,7 @@ HWTEST_F(AmsServiceAbilityTest, AppSpawn_TEST_0200, Function | MediumTest | Leve
     EXPECT_EQ(STAbilityUtil::WaitCompleted(
                   event, SERVICE_STATE_ON_STOP, AbilityLifecycleExecutor::LifecycleState::INITIAL, DELAY_TIME),
         0);
+    usleep(WAIT_TIME);
 
     GTEST_LOG_(INFO) << "AmsServiceAbilityTest AppSpawn_TEST_0200 end";
 }
@@ -2028,6 +2053,7 @@ HWTEST_F(AmsServiceAbilityTest, AppSpawn_0300, Function | MediumTest | Level1)
     EXPECT_EQ(STAbilityUtil::WaitCompleted(
                   event, SERVICE_STATE_ON_COMMAND, AbilityLifecycleExecutor::LifecycleState::ACTIVE, DELAY_TIME),
         0);
+    usleep(WAIT_TIME);
 
     // stop ability
     eCode = STAbilityUtil::StopServiceAbility(want);
@@ -2044,6 +2070,7 @@ HWTEST_F(AmsServiceAbilityTest, AppSpawn_0300, Function | MediumTest | Level1)
     std::string result;
     ExecuteSystemForResult(cmd, result);
     EXPECT_TRUE(Trim(result).empty());
+    usleep(WAIT_TIME);
 
     GTEST_LOG_(INFO) << "AmsServiceAbilityTest AppSpawn_0300 end";
 }
@@ -2085,6 +2112,7 @@ HWTEST_F(AmsServiceAbilityTest, AppSpawn_0400, Function | MediumTest | Level1)
     // stop ability
     eCode = STAbilityUtil::StopServiceAbility(want);
     EXPECT_NE(ERR_OK, eCode);
+    usleep(WAIT_TIME);
 
     GTEST_LOG_(INFO) << "AmsServiceAbilityTest AppSpawn_0400 end";
 }

@@ -127,8 +127,6 @@ void ActsAmsKitATest::SetUpTestCase(void)
     if (!SubscribeEvent()) {
         GTEST_LOG_(INFO) << "SubscribeEvent error";
     }
-    Reinstall(KIT_HAP_NAME + "A", KIT_BUNDLE_NAME + "A");
-    Reinstall(KIT_HAP_NAME + "B", KIT_BUNDLE_NAME + "B");
     TestConfigParser tcp;
     tcp.ParseFromFile4StressTest(STRESS_TEST_CONFIG_FILE_PATH, stLevel_);
     std::cout << "stress test level : "
@@ -136,21 +134,17 @@ void ActsAmsKitATest::SetUpTestCase(void)
               << "BMS : " << stLevel_.BMSLevel << " "
               << "CES : " << stLevel_.CESLevel << std::endl;
     g_StLevel = stLevel_.AMSLevel;
-    g_StLevel = 5;
 }
 
 void ActsAmsKitATest::TearDownTestCase(void)
-{
-    STAbilityUtil::Uninstall(KIT_BUNDLE_NAME + "A");
-    STAbilityUtil::Uninstall(KIT_BUNDLE_NAME + "B");
-}
+{}
 
 static int CODE_ = 0;
 void ActsAmsKitATest::SetUp(void)
 {
     ResetSystem();
-    Reinstall(KIT_HAP_NAME + "A", KIT_BUNDLE_NAME + "A");
-    Reinstall(KIT_HAP_NAME + "B", KIT_BUNDLE_NAME + "B");
+    STAbilityUtil::Install(KIT_HAP_NAME + "A");
+    STAbilityUtil::Install(KIT_HAP_NAME + "B");
     STAbilityUtil::CleanMsg(event);
 
     CODE_++;
@@ -342,7 +336,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_00400, Function | MediumTest |
         STAbilityUtil::CleanMsg(event);
         STAbilityUtil::PublishEvent(
             g_EVENT_REQU_FIRST, CODE_, "Ability_" + std::to_string((int)AbilityContextApi::GetCacheDir) + "_0");
-        TestWaitCompleted(event, g_EVENT_RESP_FIRST, CODE_);
+        EXPECT_EQ(TestWaitCompleted(event, g_EVENT_RESP_FIRST, CODE_), 0);
         string cacheDir = g_eventMessage;
 
         GTEST_LOG_(INFO) << cacheDir;
@@ -381,7 +375,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_00500, Function | MediumTest |
         STAbilityUtil::CleanMsg(event);
         STAbilityUtil::PublishEvent(
             g_EVENT_REQU_FIRST, CODE_, "Ability_" + std::to_string((int)AbilityContextApi::GetCacheDir) + "_1");
-        TestWaitCompleted(event, g_EVENT_RESP_FIRST, CODE_);
+        EXPECT_EQ(TestWaitCompleted(event, g_EVENT_RESP_FIRST, CODE_), 0);
         string cacheDir1 = g_eventMessage;
         STAbilityUtil::PublishEvent(
             g_EVENT_REQU_SECOND, CODE_, "Ability_" + std::to_string((int)AbilityContextApi::GetCacheDir) + "_1");
@@ -1486,7 +1480,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_03200, Function | MediumTest |
     EXPECT_EQ(TestWaitCompleted(event, "OnActive", SECOND_ABILITY_A_CODE), 0);
     STAbilityUtil::PublishEvent(
         g_EVENT_REQU_SECOND, CODE_, "Ability_" + std::to_string((int)AbilityContextApi::GetCallingAbility) + "_2");
-    TestWaitCompleted(event, g_EVENT_RESP_SECOND, CODE_);
+    EXPECT_EQ(TestWaitCompleted(event, g_EVENT_RESP_SECOND, CODE_), 0);
 
     // start second ability
     want = STAbilityUtil::MakeWant("device", THIRD_ABILITY_NAME, KIT_BUNDLE_NAME + "B", params);
@@ -1501,18 +1495,18 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_03200, Function | MediumTest |
     EXPECT_EQ(TestWaitCompleted(event, "OnActive", SECOND_ABILITY_A_CODE), 0);
     STAbilityUtil::PublishEvent(
         g_EVENT_REQU_SECOND, CODE_ + 1, "Ability_" + std::to_string((int)AbilityContextApi::GetCallingAbility) + "_2");
-    TestWaitCompleted(event, g_EVENT_RESP_SECOND, CODE_ + 1);
+    EXPECT_EQ(TestWaitCompleted(event, g_EVENT_RESP_SECOND, CODE_ + 1), 0);
 
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         STAbilityUtil::PublishEvent(
             g_EVENT_REQU_SECOND, CODE_, "Ability_" + std::to_string((int)AbilityContextApi::GetCallingAbility) + "_2");
-        TestWaitCompleted(event, g_EVENT_RESP_SECOND, CODE_);
+        EXPECT_EQ(TestWaitCompleted(event, g_EVENT_RESP_SECOND, CODE_), 0);
         string callingAbility1 = g_eventMessage;
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND,
             CODE_ + 1,
             "Ability_" + std::to_string((int)AbilityContextApi::GetCallingAbility) + "_2");
-        TestWaitCompleted(event, g_EVENT_RESP_SECOND, CODE_ + 1);
+        EXPECT_EQ(TestWaitCompleted(event, g_EVENT_RESP_SECOND, CODE_ + 1), 0);
         string callingAbility2 = g_eventMessage;
 
         GTEST_LOG_(INFO) << callingAbility1;
@@ -1938,7 +1932,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_04300, Function | MediumTest |
     EXPECT_EQ(TestWaitCompleted(event, "OnActive", SECOND_ABILITY_A_CODE), 0);
     STAbilityUtil::PublishEvent(
         g_EVENT_REQU_SECOND, CODE_, "Ability_" + std::to_string((int)AbilityContextApi::GetCallingBundle) + "_2");
-    TestWaitCompleted(event, g_EVENT_RESP_SECOND, CODE_);
+    EXPECT_EQ(TestWaitCompleted(event, g_EVENT_RESP_SECOND, CODE_), 0);
 
     // start second ability
     want = STAbilityUtil::MakeWant("device", THIRD_ABILITY_NAME, KIT_BUNDLE_NAME + "B", params);
@@ -1953,7 +1947,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_04300, Function | MediumTest |
     EXPECT_EQ(TestWaitCompleted(event, "OnActive", SECOND_ABILITY_A_CODE), 0);
     STAbilityUtil::PublishEvent(
         g_EVENT_REQU_SECOND, CODE_ + 1, "Ability_" + std::to_string((int)AbilityContextApi::GetCallingBundle) + "_2");
-    TestWaitCompleted(event, g_EVENT_RESP_SECOND, CODE_ + 1);
+    EXPECT_EQ(TestWaitCompleted(event, g_EVENT_RESP_SECOND, CODE_ + 1), 0);
 
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
@@ -2071,15 +2065,17 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_04600, Function | MediumTest |
 
         EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_A_CODE), 0);
         EXPECT_EQ(TestWaitCompleted(event, "OnActive", MAIN_ABILITY_A_CODE), 0);
+        sleep(50);
         STAbilityUtil::PublishEvent(
             g_EVENT_REQU_FIRST, CODE_, "Ability_" + std::to_string((int)AbilityContextApi::TerminateAbility) + "_0");
         EXPECT_EQ(TestWaitCompleted(event, g_EVENT_RESP_FIRST, CODE_), 0);
         string result = g_eventMessage;
 
-        EXPECT_EQ(TestWaitCompleted(event, "OnStop", MAIN_ABILITY_A_CODE), 0);
+        EXPECT_EQ(TestWaitCompleted(event, "OnStop", MAIN_ABILITY_A_CODE, 30), 0);
 
         GTEST_LOG_(INFO) << result;
         EXPECT_EQ(result, "TerminateAbility");
+        sleep(50);
         Reinstall(KIT_HAP_NAME + "A", KIT_BUNDLE_NAME + "A");
         Reinstall(KIT_HAP_NAME + "B", KIT_BUNDLE_NAME + "B");
         STAbilityUtil::CleanMsg(event);

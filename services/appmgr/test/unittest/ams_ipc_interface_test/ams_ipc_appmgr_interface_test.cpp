@@ -253,7 +253,7 @@ HWTEST_F(AmsIpcAppMgrInterfaceTest, GetAllRunningProcesses_010, TestSize.Level0)
 
     EXPECT_CALL(*mockAppMgr, GetAllRunningProcesses(_)).Times(1).WillOnce(Return(OHOS::ERR_NULL_OBJECT));
 
-    std::shared_ptr<RunningProcessInfo> runningProcessInfo;
+    std::vector<RunningProcessInfo> runningProcessInfo;
     int32_t ret = appMgrClient->GetAllRunningProcesses(runningProcessInfo);
     EXPECT_EQ(ret, OHOS::ERR_NULL_OBJECT);
 

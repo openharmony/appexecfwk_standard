@@ -107,23 +107,11 @@ void LifecycleCallbacksAbility::OnStart(const Want &want)
 {
     APP_LOGI("LifecycleCallbacksAbility::OnStart");
 
+    sequenceNumber_ = GetNoFromWantInfo(want);
+
     Ability::OnStart(want);
     TestUtils::PublishEvent(
         APP_LIFE_CYCLE_CALL_BACKS_RESP_EVENT_NAME, AbilityLifecycleExecutor::LifecycleState::INACTIVE, "OnStart");
-
-    sequenceNumber_ = GetNoFromWantInfo(want);
-    if (!LifecycleCallbacksAbility::sequenceNumber_.empty()) {
-        switch ((CaseIndex)std::stoi(LifecycleCallbacksAbility::sequenceNumber_)) {
-            case CaseIndex::FOUR:
-                StopAbility(want);
-                break;
-            case CaseIndex::FIVE:
-                TerminateAbility();
-                break;
-            default:
-                break;
-        }
-    }
 }
 
 void LifecycleCallbacksAbility::StopSelfAbility()

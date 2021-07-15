@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef FOUNDATION_APPEXECFWK_TOOLS_TEST_MOCK_MOCK_BUNDLE_MGR_HOST_H
-#define FOUNDATION_APPEXECFWK_TOOLS_TEST_MOCK_MOCK_BUNDLE_MGR_HOST_H
+#ifndef FOUNDATION_APPEXECFWK_STANDARD_TOOLS_TEST_MOCK_MOCK_BUNDLE_MGR_HOST_H
+#define FOUNDATION_APPEXECFWK_STANDARD_TOOLS_TEST_MOCK_MOCK_BUNDLE_MGR_HOST_H
 
 #include "gmock/gmock.h"
 
@@ -33,6 +33,7 @@ public:
     MOCK_METHOD3(GetBundleInfo, bool(const std::string &bundleName, const BundleFlag flag, BundleInfo &bundleInfo));
     MOCK_METHOD2(GetBundleInfos, bool(const BundleFlag flag, std::vector<BundleInfo> &bundleInfos));
     MOCK_METHOD2(GetUidByBundleName, int(const std::string &bundleName, const int userId));
+    MOCK_METHOD2(GetAppIdByBundleName, std::string(const std::string &bundleName, const int userId));
     MOCK_METHOD2(GetBundleNameForUid, bool(const int uid, std::string &bundleName));
     MOCK_METHOD2(GetBundleGids, bool(const std::string &bundleName, std::vector<int> &gids));
     MOCK_METHOD1(GetAppType, std::string(const std::string &bundleName));
@@ -71,9 +72,21 @@ public:
         CanRequestPermission, bool(const std::string &bundleName, const std::string &permissionName, const int userId));
     MOCK_METHOD3(RequestPermissionFromUser,
         bool(const std::string &bundleName, const std::string &permission, const int userId));
+    MOCK_METHOD2(GetNameForUid, bool(const int uid, std::string &name));
+    MOCK_METHOD2(GetBundlesForUid, bool(const int uid, std::vector<std::string> &));
+    MOCK_METHOD2(SetAbilityEnabled, bool(const AbilityInfo &, bool));
+    MOCK_METHOD1(IsAbilityEnabled, bool(const AbilityInfo &));
+    MOCK_METHOD2(GetAbilityIcon, std::string(const std::string &bundleName, const std::string &className));
+    MOCK_METHOD1(RegisterAllPermissionsChanged, bool(const sptr<OnPermissionChangedCallback> &callback));
+    MOCK_METHOD2(RegisterPermissionsChanged,
+        bool(const std::vector<int> &uids, const sptr<OnPermissionChangedCallback> &callback));
+    MOCK_METHOD1(UnregisterPermissionsChanged, bool(const sptr<OnPermissionChangedCallback> &callback));
+    MOCK_METHOD1(GetAllFormsInfo, bool(std::vector<FormInfo> &formInfos));
+    MOCK_METHOD2(GetFormsInfoByApp, bool(const std::string &bundleName,std::vector<FormInfo> &formInfos));
+    MOCK_METHOD3(GetFormsInfoByModule, bool(const std::string &bundleName, const std::string &moduleName, std::vector<FormInfo> &formInfos));
 };
 
 }  // namespace AppExecFwk
 }  // namespace OHOS
 
-#endif  // FOUNDATION_APPEXECFWK_TOOLS_TEST_MOCK_MOCK_BUNDLE_MGR_HOST_H
+#endif  // FOUNDATION_APPEXECFWK_STANDARD_TOOLS_TEST_MOCK_MOCK_BUNDLE_MGR_HOST_H

@@ -110,9 +110,9 @@ public:
      * clear the application data.
      *
      * @param bundleName, bundle name in Application record.
-     * @return
+     * @return ERR_OK, return back success, others fail.
      */
-    virtual void ClearUpApplicationData(const std::string &bundleName) override;
+    virtual int32_t ClearUpApplicationData(const std::string &bundleName) override;
 
     /**
      * IsBackgroundRunningRestricted, call IsBackgroundRunningRestricted() through proxy project,
@@ -127,10 +127,10 @@ public:
      * GetAllRunningProcesses, call GetAllRunningProcesses() through proxy project.
      * Obtains information about application processes that are running on the device.
      *
-     * @param runningProcessInfo, app name in Application record.
+     * @param info, app name in Application record.
      * @return ERR_OK ,return back success，others fail.
      */
-    virtual int32_t GetAllRunningProcesses(std::shared_ptr<RunningProcessInfo> &runningProcessInfo) override;
+    virtual int32_t GetAllRunningProcesses(std::vector<RunningProcessInfo> &info) override;
 
     // the function about system
     /**
@@ -156,6 +156,24 @@ public:
      * @return sptr<IAmsMgr>, return to AMS interface instance.
      */
     virtual sptr<IAmsMgr> GetAmsMgr() override;
+
+    /**
+     * SetAppSuspendTimes, Setting the Freezing Time of APP Background.
+     *
+     * @param time, The timeout recorded when the application enters the background .
+     *
+     * @return Success or Failure .
+     */
+    virtual void SetAppFreezingTime(int time) override;
+
+    /**
+     * GetAppFreezingTime, Getting the Freezing Time of APP Background.
+     *
+     * @param time, The timeout recorded when the application enters the background .
+     *
+     * @return Success or Failure .
+     */
+    virtual void GetAppFreezingTime(int &time) override;
 
 private:
     /**

@@ -36,10 +36,12 @@ public:
     MOCK_METHOD2(CheckPermission, int32_t(const int32_t recordId, const std::string &permission));
     MOCK_METHOD1(AbilityCleaned, void(const sptr<IRemoteObject> &token));
     MOCK_METHOD1(KillApplication, int32_t(const std::string &appName));
-    MOCK_METHOD1(ClearUpApplicationData, void(const std::string &bundleName));
     MOCK_METHOD1(IsBackgroundRunningRestricted, int(const std::string &bundleName));
-    MOCK_METHOD1(GetAllRunningProcesses, int(std::shared_ptr<RunningProcessInfo> &runningProcessInfo));
+    MOCK_METHOD1(GetAllRunningProcesses, int(std::vector<RunningProcessInfo> &info));
     MOCK_METHOD0(GetAmsMgr, sptr<IAmsMgr>());
+    MOCK_METHOD1(GetAppFreezingTime, void(int &time));
+    MOCK_METHOD1(SetAppFreezingTime, void(int time));
+    MOCK_METHOD1(ClearUpApplicationData, int32_t(const std::string &bundleName));
 
     virtual void RegisterAppStateCallback(const sptr<IAppStateCallback> &callback)
     {

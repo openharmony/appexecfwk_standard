@@ -18,6 +18,7 @@
 
 #include "nlohmann/json.hpp"
 #include "bundle_info.h"
+#include "form_info.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -28,12 +29,18 @@ namespace AppExecFwk {
  */
 void to_json(nlohmann::json &jsonObject, const AbilityInfo &abilityInfo);
 void from_json(const nlohmann::json &jsonObject, AbilityInfo &abilityInfo);
+void to_json(nlohmann::json &jsonObject, const Form &form);
+void from_json(const nlohmann::json &jsonObject, Form &form);
 void to_json(nlohmann::json &jsonObject, const ApplicationInfo &applicationInfo);
 void from_json(const nlohmann::json &jsonObject, ApplicationInfo &applicationInfo);
 void to_json(nlohmann::json &jsonObject, const BundleInfo &bundleInfo);
 void from_json(const nlohmann::json &jsonObject, BundleInfo &bundleInfo);
 void to_json(nlohmann::json &jsonObject, const ModuleInfo &moduleInfo);
 void from_json(const nlohmann::json &jsonObject, ModuleInfo &moduleInfo);
+void to_json(nlohmann::json &jsonObject, const CustomizeData &customizeDatas);
+void from_json(const nlohmann::json &jsonObject, CustomizeData &customizeDatas);
+void to_json(nlohmann::json &jsonObject, const FormInfo &formInfo);
+void from_json(const nlohmann::json &jsonObject, FormInfo &formInfo);
 
 }  // namespace AppExecFwk
 }  // namespace OHOS

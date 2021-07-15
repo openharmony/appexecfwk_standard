@@ -116,6 +116,7 @@ std::string Event::GetData(const std::string &message)
 void Event::Clean()
 {
     HILOG_INFO("Event::Clean()");
+    std::unique_lock<std::mutex> lock(mutex_);
     waiting_message_ = "";
     complete_message_.clear();
     message_data_.clear();

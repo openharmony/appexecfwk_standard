@@ -50,6 +50,7 @@ ohos_executable("appexec") {
     "//foundation/aafwk/standard/interfaces/innerkits/ability_manager/include",
     "//foundation/aafwk/standard/services/abilitymgr/include",
     "//foundation/appexecfwk/standard/kits/appkit/native/app/include",
+    "//foundation/communication/ipc/interfaces/innerkits/ipc_core/include",
     "//utils/native/base/include",
     "//foundation/distributedschedule/dmsfwk/services/dtbschedmgr/include",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy/include",
@@ -78,6 +79,7 @@ ohos_shared_library("appkit_native") {
   include_dirs = [
     "$SUBSYSTEM_DIR/common/log/include",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy/include",
+    "//foundation/communication/ipc/interfaces/innerkits/ipc_core/include",
     "$SUBSYSTEM_DIR/interfaces/innerkits/appexecfwk_base/include",
     "$SUBSYSTEM_DIR/interfaces/innerkits/appexecfwk_core/include/appmgr",
     "$SUBSYSTEM_DIR/interfaces/innerkits/libeventhandler/include",
@@ -88,6 +90,11 @@ ohos_shared_library("appkit_native") {
     "//utils/native/base/include",
     "//foundation/distributedschedule/dmsfwk/services/dtbschedmgr/include",
     "//foundation/aafwk/standard/interfaces/innerkits/want/include/ohos/aafwk_L2/content",
+
+    "//foundation/appexecfwk/standard/interfaces/innerkits/task_dispatcher/include/dispatcher",
+    "$SUBSYSTEM_DIR/interfaces/innerkits/task_dispatcher/include/task",
+    "$SUBSYSTEM_DIR/interfaces/innerkits/task_dispatcher/include/threading",
+    "$SUBSYSTEM_DIR/kits/appkit/native/app/include/task",
   ]
 
   configs = [ ":appkit_config" ]
@@ -123,6 +130,7 @@ ohos_shared_library("appkit_native") {
     "//foundation/aafwk/standard/frameworks/kits/ability/native:abilitykit_native",
     "//foundation/aafwk/standard/interfaces/innerkits/ability_manager:ability_manager",
     "//foundation/appexecfwk/standard/interfaces/innerkits/libeventhandler:libeventhandler",
+    "//foundation/appexecfwk/standard/interfaces/innerkits/task_dispatcher:appkit_dispatcher_td",
     "//foundation/distributedschedule/dmsfwk/interfaces/innerkits/uri:zuri",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
     "//utils/native/base:utils",

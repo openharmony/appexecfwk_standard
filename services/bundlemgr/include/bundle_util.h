@@ -44,6 +44,12 @@ public:
      * @return Returns true if the file name checked successfully; returns false otherwise.
      */
     static bool CheckFileName(const std::string &fileName);
+    /**
+     * @brief Check whether a Hap size is valid.
+     * @param fileName Indicates the file path.
+     * @return Returns true if the file size checked successfully; returns false otherwise.
+     */
+    static bool CheckFileSize(const std::string &bundlePath, const int32_t fileSize);
 };
 
 }  // namespace AppExecFwk

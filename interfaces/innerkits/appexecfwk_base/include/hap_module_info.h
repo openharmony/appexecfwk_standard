@@ -24,6 +24,12 @@
 namespace OHOS {
 namespace AppExecFwk {
 
+enum class ModuleColorMode{
+    AUTO = -1,
+    DARK,
+    LIGHT,
+};
+
 // configuration information about an module
 struct HapModuleInfo : public Parcelable {
     std::string name;        // module.package in config.json
@@ -37,6 +43,7 @@ struct HapModuleInfo : public Parcelable {
     std::vector<std::string> reqCapabilities;
     std::vector<std::string> deviceTypes;
     std::vector<AbilityInfo> abilityInfos;
+    ModuleColorMode colorMode = ModuleColorMode::AUTO;
 
     bool ReadFromParcel(Parcel &parcel);
     virtual bool Marshalling(Parcel &parcel) const override;

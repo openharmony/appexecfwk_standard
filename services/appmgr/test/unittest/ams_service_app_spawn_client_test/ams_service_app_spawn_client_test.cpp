@@ -113,7 +113,7 @@ void AmsServiceAppSpawnClientTest::TearDown()
  * EnvConditions: Mobile that can run ohos test framework
  * CaseDescription: Verify if AppMgrService act normal when create appspawnclient and connect to AppSpawnDaemon
  */
-HWTEST_F(AmsServiceAppSpawnClientTest, AppSpawnClient_001, TestSize.Level0)
+HWTEST_F(AmsServiceAppSpawnClientTest, AppSpawnClient_001, TestSize.Level1)
 {
     APP_LOGI("ams_service_app_spawn_client_001 start");
     std::shared_ptr<AppMgrService> appMgrService = std::make_shared<AppMgrService>();
@@ -137,7 +137,7 @@ HWTEST_F(AmsServiceAppSpawnClientTest, AppSpawnClient_001, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework
  * CaseDescription: Verify if AppMgrService act normal when create appspawnclient and failed connect to AppSpawnDaemon
  */
-HWTEST_F(AmsServiceAppSpawnClientTest, AppSpawnClient_002, TestSize.Level0)
+HWTEST_F(AmsServiceAppSpawnClientTest, AppSpawnClient_002, TestSize.Level1)
 {
     APP_LOGI("ams_service_app_spawn_client_002 start");
     std::shared_ptr<AppMgrService> appMgrService = std::make_shared<AppMgrService>();
@@ -161,7 +161,7 @@ HWTEST_F(AmsServiceAppSpawnClientTest, AppSpawnClient_002, TestSize.Level0)
  * EnvConditions: mobile that can run ohos test framework
  * CaseDescription: Verify if AppSpawnClient act normal when successfully connect to AppSpawnDaemon
  */
-HWTEST_F(AmsServiceAppSpawnClientTest, AppSpawnClient_003, TestSize.Level0)
+HWTEST_F(AmsServiceAppSpawnClientTest, AppSpawnClient_003, TestSize.Level1)
 {
     APP_LOGI("ams_service_app_spawn_client_003 start");
     std::shared_ptr<AppSpawnClient> appSpawnClient = std::make_shared<AppSpawnClient>();
@@ -182,7 +182,7 @@ HWTEST_F(AmsServiceAppSpawnClientTest, AppSpawnClient_003, TestSize.Level0)
  * EnvConditions: mobile that can run ohos test framework
  * CaseDescription: Verify if AppSpawnClient act normal when failed to connect to AppSpawnDaemon
  */
-HWTEST_F(AmsServiceAppSpawnClientTest, AppSpawnClient_004, TestSize.Level0)
+HWTEST_F(AmsServiceAppSpawnClientTest, AppSpawnClient_004, TestSize.Level1)
 {
     APP_LOGI("ams_service_app_spawn_client_004 start");
     std::shared_ptr<AppSpawnClient> appSpawnClient = std::make_shared<AppSpawnClient>();
@@ -203,7 +203,7 @@ HWTEST_F(AmsServiceAppSpawnClientTest, AppSpawnClient_004, TestSize.Level0)
  * EnvConditions: mobile that can run ohos test framework
  * CaseDescription: Verify if AppSpawnClient act normal when successfully to send fork request
  */
-HWTEST_F(AmsServiceAppSpawnClientTest, AppSpawnClient_005, TestSize.Level0)
+HWTEST_F(AmsServiceAppSpawnClientTest, AppSpawnClient_005, TestSize.Level1)
 {
     APP_LOGI("ams_service_app_spawn_client_005 start");
     std::shared_ptr<AppSpawnClient> appSpawnClient = std::make_shared<AppSpawnClient>();
@@ -232,7 +232,7 @@ HWTEST_F(AmsServiceAppSpawnClientTest, AppSpawnClient_005, TestSize.Level0)
  * CaseDescription: Verify if AppSpawnClient act normal when failed to connect daemon but reconnect success
  *                  when try to send fork request
  */
-HWTEST_F(AmsServiceAppSpawnClientTest, AppSpawnClient_006, TestSize.Level0)
+HWTEST_F(AmsServiceAppSpawnClientTest, AppSpawnClient_006, TestSize.Level1)
 {
     APP_LOGI("ams_service_app_spawn_client_006 start");
     std::shared_ptr<AppSpawnClient> appSpawnClient = std::make_shared<AppSpawnClient>();
@@ -262,7 +262,7 @@ HWTEST_F(AmsServiceAppSpawnClientTest, AppSpawnClient_006, TestSize.Level0)
  * CaseDescription: Verify if AppSpawnClient act normal when failed to connect daemon and reconnect fail
  *                  when try to send fork request
  */
-HWTEST_F(AmsServiceAppSpawnClientTest, AppSpawnClient_007, TestSize.Level0)
+HWTEST_F(AmsServiceAppSpawnClientTest, AppSpawnClient_007, TestSize.Level1)
 {
     APP_LOGI("ams_service_app_spawn_client_007 start");
     std::shared_ptr<AppSpawnClient> appSpawnClient = std::make_shared<AppSpawnClient>();
@@ -285,7 +285,7 @@ HWTEST_F(AmsServiceAppSpawnClientTest, AppSpawnClient_007, TestSize.Level0)
  * EnvConditions: mobile that can run ohos test framework
  * CaseDescription: Verify if AppSpawnClient act normal when try to send request without connect but reconnect success
  */
-HWTEST_F(AmsServiceAppSpawnClientTest, AppSpawnClient_008, TestSize.Level0)
+HWTEST_F(AmsServiceAppSpawnClientTest, AppSpawnClient_008, TestSize.Level1)
 {
     APP_LOGI("ams_service_app_spawn_client_008 start");
     std::shared_ptr<AppSpawnClient> appSpawnClient = std::make_shared<AppSpawnClient>();
@@ -312,7 +312,7 @@ HWTEST_F(AmsServiceAppSpawnClientTest, AppSpawnClient_008, TestSize.Level0)
  * EnvConditions: mobile that can run ohos test framework
  * CaseDescription: Verify if AppSpawnClient act normal when try to send request without connect and reconnect failed
  */
-HWTEST_F(AmsServiceAppSpawnClientTest, AppSpawnClient_009, TestSize.Level0)
+HWTEST_F(AmsServiceAppSpawnClientTest, AppSpawnClient_009, TestSize.Level1)
 {
     APP_LOGI("ams_service_app_spawn_client_009 start");
     std::shared_ptr<AppSpawnClient> appSpawnClient = std::make_shared<AppSpawnClient>();
@@ -334,7 +334,7 @@ HWTEST_F(AmsServiceAppSpawnClientTest, AppSpawnClient_009, TestSize.Level0)
  * EnvConditions: mobile that can run ohos test framework
  * CaseDescription: Verify if AppSpawnClient act normal when failed to send message to AppSpawnDaemon
  */
-HWTEST_F(AmsServiceAppSpawnClientTest, AppSpawnClient_010, TestSize.Level0)
+HWTEST_F(AmsServiceAppSpawnClientTest, AppSpawnClient_010, TestSize.Level1)
 {
     APP_LOGI("ams_service_app_spawn_client_010 start");
     std::shared_ptr<AppSpawnClient> appSpawnClient = std::make_shared<AppSpawnClient>();
@@ -359,7 +359,7 @@ HWTEST_F(AmsServiceAppSpawnClientTest, AppSpawnClient_010, TestSize.Level0)
  * EnvConditions: mobile that can run ohos test framework
  * CaseDescription: Verify if AppSpawnClient act normal when failed to read message from AppSpawnDaemon
  */
-HWTEST_F(AmsServiceAppSpawnClientTest, AppSpawnClient_011, TestSize.Level0)
+HWTEST_F(AmsServiceAppSpawnClientTest, AppSpawnClient_011, TestSize.Level1)
 {
     APP_LOGI("ams_service_app_spawn_client_011 start");
     std::shared_ptr<AppSpawnClient> appSpawnClient = std::make_shared<AppSpawnClient>();
@@ -385,7 +385,7 @@ HWTEST_F(AmsServiceAppSpawnClientTest, AppSpawnClient_011, TestSize.Level0)
  * EnvConditions: mobile that can run ohos test framework
  * CaseDescription: Verify if AppSpawnClient act normal when pass invalid param procName(empty)
  */
-HWTEST_F(AmsServiceAppSpawnClientTest, AppSpawnClient_012, TestSize.Level0)
+HWTEST_F(AmsServiceAppSpawnClientTest, AppSpawnClient_012, TestSize.Level1)
 {
     APP_LOGI("ams_service_app_spawn_client_012 start");
     std::shared_ptr<AppSpawnClient> appSpawnClient = std::make_shared<AppSpawnClient>();
@@ -409,7 +409,7 @@ HWTEST_F(AmsServiceAppSpawnClientTest, AppSpawnClient_012, TestSize.Level0)
  * EnvConditions: mobile that can run ohos test framework
  * CaseDescription: Verify if AppSpawnClient act normal when pass invalid param soPath(empty)
  */
-HWTEST_F(AmsServiceAppSpawnClientTest, AppSpawnClient_013, TestSize.Level0)
+HWTEST_F(AmsServiceAppSpawnClientTest, AppSpawnClient_013, TestSize.Level1)
 {
     APP_LOGI("ams_service_app_spawn_client_013 start");
     std::shared_ptr<AppSpawnClient> appSpawnClient = std::make_shared<AppSpawnClient>();
@@ -439,7 +439,7 @@ HWTEST_F(AmsServiceAppSpawnClientTest, AppSpawnClient_013, TestSize.Level0)
  * EnvConditions: mobile that can run ohos test framework
  * CaseDescription: Verify if AppSpawnClient act normal when pass invalid param procName(oversize)
  */
-HWTEST_F(AmsServiceAppSpawnClientTest, AppSpawnClient_014, TestSize.Level0)
+HWTEST_F(AmsServiceAppSpawnClientTest, AppSpawnClient_014, TestSize.Level1)
 {
     APP_LOGI("ams_service_app_spawn_client_014 start");
     std::shared_ptr<AppSpawnClient> appSpawnClient = std::make_shared<AppSpawnClient>();
@@ -467,7 +467,7 @@ HWTEST_F(AmsServiceAppSpawnClientTest, AppSpawnClient_014, TestSize.Level0)
  * EnvConditions: mobile that can run ohos test framework
  * CaseDescription: Verify if AppSpawnClient act normal when pass invalid param soPath(oversize)
  */
-HWTEST_F(AmsServiceAppSpawnClientTest, AppSpawnClient_015, TestSize.Level0)
+HWTEST_F(AmsServiceAppSpawnClientTest, AppSpawnClient_015, TestSize.Level1)
 {
     APP_LOGI("ams_service_app_spawn_client_015 start");
     std::shared_ptr<AppSpawnClient> appSpawnClient = std::make_shared<AppSpawnClient>();
@@ -495,7 +495,7 @@ HWTEST_F(AmsServiceAppSpawnClientTest, AppSpawnClient_015, TestSize.Level0)
  * EnvConditions: mobile that can run ohos test framework
  * CaseDescription: Verify if AppSpawnClient CloseConnection act normal after OpenConnection
  */
-HWTEST_F(AmsServiceAppSpawnClientTest, AppSpawnClient_016, TestSize.Level0)
+HWTEST_F(AmsServiceAppSpawnClientTest, AppSpawnClient_016, TestSize.Level1)
 {
     APP_LOGI("ams_service_app_spawn_client_016 start");
     std::shared_ptr<AppSpawnClient> appSpawnClient = std::make_shared<AppSpawnClient>();
@@ -517,7 +517,7 @@ HWTEST_F(AmsServiceAppSpawnClientTest, AppSpawnClient_016, TestSize.Level0)
  * EnvConditions: mobile that can run ohos test framework
  * CaseDescription: Verify if AppSpawnClient CloseConnection act normal without OpenConnection
  */
-HWTEST_F(AmsServiceAppSpawnClientTest, AppSpawnClient_017, TestSize.Level0)
+HWTEST_F(AmsServiceAppSpawnClientTest, AppSpawnClient_017, TestSize.Level1)
 {
     APP_LOGI("ams_service_app_spawn_client_017 start");
     std::shared_ptr<AppSpawnClient> appSpawnClient = std::make_shared<AppSpawnClient>();
@@ -537,7 +537,7 @@ HWTEST_F(AmsServiceAppSpawnClientTest, AppSpawnClient_017, TestSize.Level0)
  * EnvConditions: mobile that can run ohos test framework
  * CaseDescription: Verify if AppSpawnClient CloseConnection act normal when OpenConnection failed
  */
-HWTEST_F(AmsServiceAppSpawnClientTest, AppSpawnClient_018, TestSize.Level0)
+HWTEST_F(AmsServiceAppSpawnClientTest, AppSpawnClient_018, TestSize.Level1)
 {
     APP_LOGI("ams_service_app_spawn_client_018 start");
     std::shared_ptr<AppSpawnClient> appSpawnClient = std::make_shared<AppSpawnClient>();
@@ -559,7 +559,7 @@ HWTEST_F(AmsServiceAppSpawnClientTest, AppSpawnClient_018, TestSize.Level0)
  * CaseDescription: Verify if after close connection with appspawn, appspawnclient startprocess
  *                  will invoke openconnection.
  */
-HWTEST_F(AmsServiceAppSpawnClientTest, AppSpawnClient_019, TestSize.Level0)
+HWTEST_F(AmsServiceAppSpawnClientTest, AppSpawnClient_019, TestSize.Level1)
 {
     APP_LOGI("ams_service_app_spawn_client_019 start");
     std::shared_ptr<AppSpawnClient> appSpawnClient = std::make_shared<AppSpawnClient>();
@@ -591,7 +591,7 @@ HWTEST_F(AmsServiceAppSpawnClientTest, AppSpawnClient_019, TestSize.Level0)
  * EnvConditions: mobile that can run ohos test framework
  * CaseDescription: Verify if AppSpawnClient first time connection fail, but second time is success.
  */
-HWTEST_F(AmsServiceAppSpawnClientTest, ReConnectAppSpawn_001, TestSize.Level0)
+HWTEST_F(AmsServiceAppSpawnClientTest, ReConnectAppSpawn_001, TestSize.Level1)
 {
     APP_LOGI("ams_service_reconnect_app_spawn_001 start");
     std::shared_ptr<AppSpawnClient> appSpawnClient = std::make_shared<AppSpawnClient>();
@@ -614,7 +614,7 @@ HWTEST_F(AmsServiceAppSpawnClientTest, ReConnectAppSpawn_001, TestSize.Level0)
  * EnvConditions: mobile that can run ohos test framework
  * CaseDescription: Verify if AppSpawnClient first n time connection fail, but last time is success.
  */
-HWTEST_F(AmsServiceAppSpawnClientTest, ReConnectAppSpawn_002, TestSize.Level0)
+HWTEST_F(AmsServiceAppSpawnClientTest, ReConnectAppSpawn_002, TestSize.Level1)
 {
     APP_LOGI("ams_service_reconnect_app_spawn_002 start");
     std::shared_ptr<AppSpawnClient> appSpawnClient = std::make_shared<AppSpawnClient>();
@@ -641,7 +641,7 @@ HWTEST_F(AmsServiceAppSpawnClientTest, ReConnectAppSpawn_002, TestSize.Level0)
  * EnvConditions: mobile that can run ohos test framework
  * CaseDescription: Verify if AppSpawnClient all (n+1) times connection fail.
  */
-HWTEST_F(AmsServiceAppSpawnClientTest, ReConnectAppSpawn_003, TestSize.Level0)
+HWTEST_F(AmsServiceAppSpawnClientTest, ReConnectAppSpawn_003, TestSize.Level1)
 {
     APP_LOGI("ams_service_reconnect_app_spawn_003 start");
     std::shared_ptr<AppSpawnClient> appSpawnClient = std::make_shared<AppSpawnClient>();
@@ -665,7 +665,7 @@ HWTEST_F(AmsServiceAppSpawnClientTest, ReConnectAppSpawn_003, TestSize.Level0)
  * EnvConditions: mobile that can run ohos test framework
  * CaseDescription: Verify if AppSpawnClient first time start process fail, but second time is success.
  */
-HWTEST_F(AmsServiceAppSpawnClientTest, ReConnectAppSpawn_004, TestSize.Level0)
+HWTEST_F(AmsServiceAppSpawnClientTest, ReConnectAppSpawn_004, TestSize.Level1)
 {
     APP_LOGI("ams_service_reconnect_app_spawn_004 start");
     std::shared_ptr<AppSpawnClient> appSpawnClient = std::make_shared<AppSpawnClient>();
@@ -695,7 +695,7 @@ HWTEST_F(AmsServiceAppSpawnClientTest, ReConnectAppSpawn_004, TestSize.Level0)
  * EnvConditions: mobile that can run ohos test framework
  * CaseDescription: Verify if AppSpawnClient first n time start process fail, but last time is success.
  */
-HWTEST_F(AmsServiceAppSpawnClientTest, ReConnectAppSpawn_005, TestSize.Level0)
+HWTEST_F(AmsServiceAppSpawnClientTest, ReConnectAppSpawn_005, TestSize.Level1)
 {
     APP_LOGI("ams_service_reconnect_app_spawn_005 start");
     std::shared_ptr<AppSpawnClient> appSpawnClient = std::make_shared<AppSpawnClient>();
@@ -730,7 +730,7 @@ HWTEST_F(AmsServiceAppSpawnClientTest, ReConnectAppSpawn_005, TestSize.Level0)
  * EnvConditions: mobile that can run ohos test framework
  * CaseDescription: Verify if AppSpawnClient all(n+1) times start process fail.
  */
-HWTEST_F(AmsServiceAppSpawnClientTest, ReConnectAppSpawn_006, TestSize.Level0)
+HWTEST_F(AmsServiceAppSpawnClientTest, ReConnectAppSpawn_006, TestSize.Level1)
 {
     APP_LOGI("ams_service_reconnect_app_spawn_006 start");
     std::shared_ptr<AppSpawnClient> appSpawnClient = std::make_shared<AppSpawnClient>();

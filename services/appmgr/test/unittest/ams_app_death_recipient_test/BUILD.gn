@@ -18,7 +18,6 @@ module_output_path = "appexecfwk_standard/appmgrservice"
 
 ohos_unittest("AppDeathRecipientTest") {
   module_out_path = module_output_path
-
   sources = [
     "${services_path}/appmgr/src/ability_running_record.cpp",
     "${services_path}/appmgr/src/app_death_recipient.cpp",
@@ -32,8 +31,7 @@ ohos_unittest("AppDeathRecipientTest") {
     "${services_path}/appmgr/src/app_spawn_msg_wrapper.cpp",
     "${services_path}/appmgr/src/app_spawn_socket.cpp",
     "${services_path}/appmgr/src/cgroup_manager.cpp",
-    "${services_path}/appmgr/src/lmk_util.cpp",
-    "${services_path}/appmgr/src/lmkd_client.cpp",
+    "${services_path}/appmgr/src/lmks_client.cpp",
     "${services_path}/appmgr/src/process_optimizer.cpp",
     "${services_path}/appmgr/src/process_optimizer_uba.cpp",
     "${services_path}/appmgr/src/remote_client_manager.cpp",

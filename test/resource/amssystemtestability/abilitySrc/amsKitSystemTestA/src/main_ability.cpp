@@ -485,7 +485,7 @@ void MainAbility::GetCallingBundleCase3(int code)
 void MainAbility::StartAbilityCase1(int code)
 {
     std::map<std::string, std::string> params;
-    Want want = TestUtils::MakeWant("device", "SecondAbility", "com.ohos.amsst.AppKitA", params);
+    Want want = TestUtils::MakeWant("", "SecondAbility", "com.ohos.amsst.AppKitA", params);
     AbilityContext::StartAbility(want, 1);
     TestUtils::PublishEvent(g_EVENT_RESP_FIRST, code, "startAbility");
 }
@@ -493,7 +493,7 @@ void MainAbility::StartAbilityCase1(int code)
 void MainAbility::StartAbilityCase2(int code)
 {
     std::map<std::string, std::string> params;
-    Want want = TestUtils::MakeWant("device", "MainAbility", "com.ohos.amsst.AppKitB", params);
+    Want want = TestUtils::MakeWant("", "MainAbility", "com.ohos.amsst.AppKitB", params);
     AbilityContext::StartAbility(want, 1);
     TestUtils::PublishEvent(g_EVENT_RESP_FIRST, code, "startAbility");
 }

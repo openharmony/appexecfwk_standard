@@ -134,10 +134,6 @@ void BundleInstallerHost::HandleUninstallModuleMessage(Parcel &data)
 bool BundleInstallerHost::Install(
     const std::string &bundleFilePath, const InstallParam &installParam, const sptr<IStatusReceiver> &statusReceiver)
 {
-    if (installParam.userId == Constants::INVALID_USERID) {
-        APP_LOGE("userId invalid");
-        return false;
-    }
     if (!CheckBundleInstallerManager(statusReceiver)) {
         APP_LOGE("statusReceiver invalid");
         return false;
@@ -154,10 +150,6 @@ bool BundleInstallerHost::Install(
 bool BundleInstallerHost::Uninstall(
     const std::string &bundleName, const InstallParam &installParam, const sptr<IStatusReceiver> &statusReceiver)
 {
-    if (installParam.userId == Constants::INVALID_USERID) {
-        APP_LOGE("userId invalid");
-        return false;
-    }
     if (!CheckBundleInstallerManager(statusReceiver)) {
         APP_LOGE("statusReceiver invalid");
         return false;
@@ -174,10 +166,6 @@ bool BundleInstallerHost::Uninstall(
 bool BundleInstallerHost::Uninstall(const std::string &bundleName, const std::string &modulePackage,
     const InstallParam &installParam, const sptr<IStatusReceiver> &statusReceiver)
 {
-    if (installParam.userId == Constants::INVALID_USERID) {
-        APP_LOGE("userId invalid");
-        return false;
-    }
     if (!CheckBundleInstallerManager(statusReceiver)) {
         APP_LOGE("statusReceiver invalid");
         return false;

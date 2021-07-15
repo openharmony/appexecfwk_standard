@@ -89,7 +89,7 @@ private:
 
 private:
     const int MAX_TASK_NUMBER = 10;
-    const int THREAD_NUMBER = 1;
+    const int THREAD_NUMBER = std::thread::hardware_concurrency();
     // Thread pool used to start multipule installer in parallel.
     ThreadPool installersPool_;
     std::mutex mutex_;

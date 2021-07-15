@@ -1323,5 +1323,52 @@ HWTEST_F(BmsUninstallSystemTest, BMS_UidTest_0300, Function | MediumTest | Level
     std::cout << "BMS_UidTest_0300 end" << std::endl;
 }
 
+/**
+ * @tc.number: BMS_DFX_0500
+ * @tc.name: test error code
+ * @tc.desc: 1.there is an app which includes two haps
+ *           2.install two haps
+ *           3.uninstall hap with the first module package
+ *           4.uninstall hap with the first module package
+ *           5.get ERR_UNINSTALL_MISSING_INSTALLED_MODULE
+ */
+HWTEST_F(BmsUninstallSystemTest, BMS_DFX_0500, Function | MediumTest | Level2)
+{
+    std::cout << "START BMS_DFX_0500" << std::endl;
+    std::string bundleFilePath1 = THIRD_BUNDLE_PATH + "bmsThirdBundle1.hap";
+    std::string modulePackage1 = BASE_MODULE_PACKAGE + ".h1";
+    std::string modulePackage2 = BASE_MODULE_PACKAGE + ".h2";
+    std::vector<std::string> resvec;
+    std::string installMsg;
+    CommonTool commonTool;
+    Install(bundleFilePath1, InstallFlag::NORMAL, resvec);
+    installMsg = commonTool.VectorToStr(resvec);
+    ASSERT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath1;
+    resvec.clear();
+
+    std::string bundleFilePath2 = THIRD_BUNDLE_PATH + "bmsThirdBundle4.hap";
+    Install(bundleFilePath2, InstallFlag::NORMAL, resvec);
+    installMsg = commonTool.VectorToStr(resvec);
+    ASSERT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath2;
+    resvec.clear();
+
+    std::string bundleName = BASE_BUNDLE_NAME + "1";
+
+    HapUninstall(bundleName, modulePackage1, resvec);
+    std::string uninstallMsg = commonTool.VectorToStr(resvec);
+    ASSERT_EQ(uninstallMsg, "Success") << "unistall fail!";
+    resvec.clear();
+
+    HapUninstall(bundleName, modulePackage1, resvec);
+    uninstallMsg = commonTool.VectorToStr(resvec);
+    ASSERT_EQ(uninstallMsg, "Failure[ERR_UNINSTALL_MISSING_INSTALLED_MODULE]");
+    resvec.clear();
+
+    HapUninstall(bundleName, modulePackage2, resvec);
+    uninstallMsg = commonTool.VectorToStr(resvec);
+    ASSERT_EQ(uninstallMsg, "Success") << "uninstall fail!";
+    std::cout << "END BMS_DFX_0500" << std::endl;
+}
+
 }  // namespace AppExecFwk
 }  // namespace OHOS

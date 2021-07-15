@@ -46,12 +46,6 @@ void AbilityAbility::DoTestCase()
             case CaseIndex::THIRTEEN:
                 DoWhile<AbilityConnectCallback>();
                 break;
-            case CaseIndex::FOURTEEN:
-                StopAbility(want_);
-                break;
-            case CaseIndex::FIFTEEN:
-                TerminateAbility();
-                break;
             default:
                 break;
         }

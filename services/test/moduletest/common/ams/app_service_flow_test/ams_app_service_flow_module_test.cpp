@@ -78,7 +78,8 @@ protected:
         const std::string &appName, const AbilityState abilityState, const ApplicationState appState) const;
 
 protected:
-    std::unique_ptr<AppMgrServiceInner> serviceInner_;
+    std::shared_ptr<AppMgrServiceInner> serviceInner_;
+    std::shared_ptr<AMSEventHandler> handler_ = nullptr;
 };
 
 void AmsAppServiceFlowModuleTest::SetUpTestCase()
@@ -90,6 +91,10 @@ void AmsAppServiceFlowModuleTest::TearDownTestCase()
 void AmsAppServiceFlowModuleTest::SetUp()
 {
     serviceInner_.reset(new (std::nothrow) AppMgrServiceInner());
+
+    auto runner = EventRunner::Create("AmsAppServiceFlowModuleTest");
+    handler_ = std::make_shared<AMSEventHandler>(runner, serviceInner_);
+    serviceInner_->SetEventHandler(handler_);
 }
 
 void AmsAppServiceFlowModuleTest::TearDown()
@@ -126,7 +131,10 @@ TestApplicationPreRunningRecord AmsAppServiceFlowModuleTest::TestCreateApplicati
         appInfo.bundleName,
         0,
         result);
-    EXPECT_NE(appRecord, nullptr);
+
+    EXPECT_TRUE(appRecord);
+    appRecord->SetEventHandler(handler_);
+
     if (!result.appExists && appRecord) {
         appRecord->GetPriorityObject()->SetPid(TestApplicationPreRunningRecord::g_pid++);
     }

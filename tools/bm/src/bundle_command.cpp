@@ -118,6 +118,10 @@ ErrCode BundleManagerShellCommand::CreateMessageMap()
             "error: install invalid bundle file.",
         },
         {
+            IStatusReceiver::ERR_INSTALL_INVALID_HAP_SIZE,
+            "error: install invalid hap size.",
+        },
+        {
             IStatusReceiver::ERR_INSTALL_GENERATE_UID_ERROR,
             "error: install generate uid error.",
         },
@@ -161,6 +165,10 @@ ErrCode BundleManagerShellCommand::CreateMessageMap()
         {
             IStatusReceiver::ERR_INSTALL_PARSE_PROFILE_MISSING_PROP,
             "error: install parse profile missing prop.",
+        },
+        {
+            IStatusReceiver::ERR_INSTALL_PARSE_PROFILE_PROP_CHECK_ERROR,
+            "error: install parse profile prop check error.",
         },
         {
             IStatusReceiver::ERR_INSTALL_PARSE_PERMISSION_ERROR,
@@ -364,24 +372,24 @@ ErrCode BundleManagerShellCommand::RunAsInstallCommand()
                     break;
                 }
                 case 0: {
-                    // 'bm install' with a unknown option: bm install --x
-                    // 'bm install' with a unknown option: bm install --xxx
+                    // 'bm install' with an unknown option: bm install --x
+                    // 'bm install' with an unknown option: bm install --xxx
                     std::string unknownOption = "";
                     std::string unknownOptionMsg = GetUnknownOptionMsg(unknownOption);
 
-                    APP_LOGI("'bm install' with a unknown option: %{public}s", unknownOption.c_str());
+                    APP_LOGI("'bm install' with an unknown option: %{public}s", unknownOption.c_str());
 
                     resultReceiver_.append(unknownOptionMsg);
                     result = OHOS::ERR_INVALID_VALUE;
                     break;
                 }
                 default: {
-                    // 'bm install' with a unknown option: bm install -x
-                    // 'bm install' with a unknown option: bm install -xxx
+                    // 'bm install' with an unknown option: bm install -x
+                    // 'bm install' with an unknown option: bm install -xxx
                     std::string unknownOption = "";
                     std::string unknownOptionMsg = GetUnknownOptionMsg(unknownOption);
 
-                    APP_LOGI("'bm install' with a unknown option: %{public}s", unknownOption.c_str());
+                    APP_LOGI("'bm install' with an unknown option: %{public}s", unknownOption.c_str());
 
                     resultReceiver_.append(unknownOptionMsg);
                     result = OHOS::ERR_INVALID_VALUE;
@@ -510,24 +518,24 @@ ErrCode BundleManagerShellCommand::RunAsUninstallCommand()
                     break;
                 }
                 case 0: {
-                    // 'bm uninstall' with a unknown option: bm uninstall --x
-                    // 'bm uninstall' with a unknown option: bm uninstall --xxx
+                    // 'bm uninstall' with an unknown option: bm uninstall --x
+                    // 'bm uninstall' with an unknown option: bm uninstall --xxx
                     std::string unknownOption = "";
                     std::string unknownOptionMsg = GetUnknownOptionMsg(unknownOption);
 
-                    APP_LOGI("'bm uninstall' with a unknown option: %{public}s", unknownOption.c_str());
+                    APP_LOGI("'bm uninstall' with an unknown option: %{public}s", unknownOption.c_str());
 
                     resultReceiver_.append(unknownOptionMsg);
                     result = OHOS::ERR_INVALID_VALUE;
                     break;
                 }
                 default: {
-                    // 'bm uninstall' with a unknown option: bm uninstall -x
-                    // 'bm uninstall' with a unknown option: bm uninstall -xxx
+                    // 'bm uninstall' with an unknown option: bm uninstall -x
+                    // 'bm uninstall' with an unknown option: bm uninstall -xxx
                     std::string unknownOption = "";
                     std::string unknownOptionMsg = GetUnknownOptionMsg(unknownOption);
 
-                    APP_LOGI("'bm uninstall' with a unknown option: %{public}s", unknownOption.c_str());
+                    APP_LOGI("'bm uninstall' with an unknown option: %{public}s", unknownOption.c_str());
 
                     resultReceiver_.append(unknownOptionMsg);
                     result = OHOS::ERR_INVALID_VALUE;
@@ -660,24 +668,24 @@ ErrCode BundleManagerShellCommand::RunAsDumpCommand()
                     break;
                 }
                 case 0: {
-                    // 'bm dump' with a unknown option: bm dump --x
-                    // 'bm dump' with a unknown option: bm dump --xxx
+                    // 'bm dump' with an unknown option: bm dump --x
+                    // 'bm dump' with an unknown option: bm dump --xxx
                     std::string unknownOption = "";
                     std::string unknownOptionMsg = GetUnknownOptionMsg(unknownOption);
 
-                    APP_LOGI("'bm dump' with a unknown option: %{public}s", unknownOption.c_str());
+                    APP_LOGI("'bm dump' with an unknown option: %{public}s", unknownOption.c_str());
 
                     resultReceiver_.append(unknownOptionMsg);
                     result = OHOS::ERR_INVALID_VALUE;
                     break;
                 }
                 default: {
-                    // 'bm dump' with a unknown option: bm dump -x
-                    // 'bm dump' with a unknown option: bm dump -xxx
+                    // 'bm dump' with an unknown option: bm dump -x
+                    // 'bm dump' with an unknown option: bm dump -xxx
                     std::string unknownOption = "";
                     std::string unknownOptionMsg = GetUnknownOptionMsg(unknownOption);
 
-                    APP_LOGI("'bm dump' with a unknown option: %{public}s", unknownOption.c_str());
+                    APP_LOGI("'bm dump' with an unknown option: %{public}s", unknownOption.c_str());
 
                     resultReceiver_.append(unknownOptionMsg);
                     result = OHOS::ERR_INVALID_VALUE;

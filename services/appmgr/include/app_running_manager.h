@@ -17,6 +17,7 @@
 #define FOUNDATION_APPEXECFWK_SERVICES_APPMGR_INCLUDE_APP_MGR_RUNNING_MANAGER_H
 
 #include <map>
+#include <mutex>
 
 #include "iremote_object.h"
 #include "refbase.h"
@@ -119,7 +120,15 @@ public:
      */
     void ClearAppRunningRecordMap();
 
+    void HandleTerminateTimeOut(int64_t eventId);
+    void HandleAbilityAttachTimeOut(const sptr<IRemoteObject> &token);
+    std::shared_ptr<AppRunningRecord> GetAppRunningRecord(const int64_t eventId);
+    void TerminateAbility(const sptr<IRemoteObject> &token);
     bool GetPidsByBundleName(const std::string &bundleName, std::list<pid_t> &pids);
+
+private:
+    std::shared_ptr<AbilityRunningRecord> GetAbilityRunningRecord(const int64_t eventId);
+
 private:
     std::map<const int32_t, const std::shared_ptr<AppRunningRecord>> appRunningRecordMap_;
     std::recursive_mutex lock_;

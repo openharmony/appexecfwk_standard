@@ -19,15 +19,53 @@ config("appmgr_config") {
     "include",
     "${appspawn_path}/include",
     "//utils/system/safwk/native/include",
+    "//base/notification/ces_standard/cesfwk/innerkits/include",
+    "//base/notification/ces_standard/cesfwk/kits/native/include",
+    "//base/security/permission/interfaces/innerkits/permission_standard/permissionsdk/main/cpp/include",
   ]
 }
 
 group("ams_target") {
   deps = [
     ":libams",
+    ":lmks",
+    ":lmks.rc",
     "examples:appmgrserviceregtest",
     "examples:appspawnclienttest",
   ]
+}
+
+ohos_executable("lmks") {
+  include_dirs = [
+    "include/lmks",
+    "//utils/native/base/include",
+  ]
+
+  sources = [
+    "src/lmks/lmks_main.cpp",
+    "src/lmks/lmks_server.cpp",
+    "src/lmks/lmks_utils.cpp",
+  ]
+
+  cflags = []
+  if (target_cpu == "arm") {
+    cflags += [ "-DBINDER_IPC_32BIT" ]
+  }
+
+  deps = [ "//utils/native/base:utils" ]
+
+  external_deps = [ "hiviewdfx_hilog_native:libhilog" ]
+
+  install_enable = true
+  subsystem_name = "appexecfwk"
+  part_name = "appexecfwk_standard"
+}
+
+ohos_prebuilt_etc("lmks.rc") {
+  source = "lmks.rc"
+  relative_install_dir = "init"
+  subsystem_name = "appexecfwk"
+  part_name = "appexecfwk_standard"
 }
 
 ohos_shared_library("libams") {
@@ -46,8 +84,7 @@ ohos_shared_library("libams") {
     "src/app_spawn_msg_wrapper.cpp",
     "src/app_spawn_socket.cpp",
     "src/cgroup_manager.cpp",
-    "src/lmk_util.cpp",
-    "src/lmkd_client.cpp",
+    "src/lmks_client.cpp",
     "src/process_optimizer.cpp",
     "src/process_optimizer_uba.cpp",
     "src/remote_client_manager.cpp",
@@ -72,6 +109,8 @@ ohos_shared_library("libams") {
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base:appexecfwk_base",
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core:appexecfwk_core",
     "${libs_path}/libeventhandler:libeventhandler_target",
+    "//base/notification/ces_standard/cesfwk/innerkits:cesfwk_innerkits",
+    "//base/security/permission/interfaces/innerkits/permission_standard/permissionsdk:libpermissionsdk_standard",
     "//base/startup/appspawn_standard:appspawn_socket_client",
     "//foundation/aafwk/standard/interfaces/innerkits/base:base",
     "//foundation/aafwk/standard/interfaces/innerkits/want:want",

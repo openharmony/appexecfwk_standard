@@ -47,6 +47,7 @@ bool BundleInfo::ReadFromParcel(Parcel &parcel)
     gid = parcel.ReadInt32();
     isKeepAlive = parcel.ReadBool();
     isNativeApp = parcel.ReadBool();
+    isDifferentName = parcel.ReadBool();
     installTime = parcel.ReadInt64();
     updateTime = parcel.ReadInt64();
 
@@ -134,6 +135,7 @@ bool BundleInfo::Marshalling(Parcel &parcel) const
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, gid);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, isKeepAlive);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, isNativeApp);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, isDifferentName);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int64, parcel, installTime);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int64, parcel, updateTime);
 
@@ -201,6 +203,7 @@ void to_json(nlohmann::json &jsonObject, const BundleInfo &bundleInfo)
         {"vendor", bundleInfo.vendor},
         {"isKeepAlive", bundleInfo.isKeepAlive},
         {"isNativeApp", bundleInfo.isNativeApp},
+        {"isDifferentName", bundleInfo.isDifferentName},
         {"applicationInfo", bundleInfo.applicationInfo},
         {"abilityInfos", bundleInfo.abilityInfos},
         {"jointUserId", bundleInfo.jointUserId},
@@ -238,6 +241,7 @@ void from_json(const nlohmann::json &jsonObject, BundleInfo &bundleInfo)
     bundleInfo.vendor = jsonObject.at("vendor").get<std::string>();
     bundleInfo.isKeepAlive = jsonObject.at("isKeepAlive").get<bool>();
     bundleInfo.isNativeApp = jsonObject.at("isNativeApp").get<bool>();
+    bundleInfo.isDifferentName = jsonObject.at("isDifferentName").get<bool>();
     bundleInfo.applicationInfo = jsonObject.at("applicationInfo").get<ApplicationInfo>();
     bundleInfo.abilityInfos = jsonObject.at("abilityInfos").get<std::vector<AbilityInfo>>();
     bundleInfo.versionCode = jsonObject.at("versionCode").get<uint32_t>();

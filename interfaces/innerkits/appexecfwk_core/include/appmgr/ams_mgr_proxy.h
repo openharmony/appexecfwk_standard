@@ -103,6 +103,20 @@ public:
      */
     virtual int32_t KillApplication(const std::string &bundleName) override;
 
+    virtual void AbilityAttachTimeOut(const sptr<IRemoteObject> &token) override;
+
+    /**
+     * Checks whether a specified permission has been granted to the process identified by pid and uid
+     *
+     * @param permission Indicates the permission to check.
+     * @param pid Indicates the ID of the process to check.
+     * @param uid Indicates the UID of the process to check.
+     * @param message Describe success or failure
+     *
+     * @return Returns ERR_OK on success, others on failure.
+     */
+    virtual int CompelVerifyPermission(const std::string &permission, int pid, int uid, std::string &message) override;
+
 private:
     bool WriteInterfaceToken(MessageParcel &data);
 

@@ -81,9 +81,10 @@ protected:
         const std::shared_ptr<AppRunningRecord> &appRecord, const std::string &index) const;
 
 protected:
-    std::unique_ptr<AppMgrServiceInner> serviceInner_;
+    std::shared_ptr<AppMgrServiceInner> serviceInner_;
     sptr<MockAbilityToken> mock_token_ = nullptr;
     sptr<BundleMgrService> mockBundleMgr = nullptr;
+    std::shared_ptr<AMSEventHandler> handler_ = nullptr;
 };
 
 void AmsAppLifeCycleTest::SetUpTestCase()
@@ -98,6 +99,11 @@ void AmsAppLifeCycleTest::SetUp()
     mock_token_ = new (std::nothrow) MockAbilityToken();
     mockBundleMgr = new (std::nothrow) BundleMgrService();
     serviceInner_->SetBundleManager(mockBundleMgr);
+
+    auto runner = EventRunner::Create("AmsAppLifeCycleTest");
+    handler_ = std::make_shared<AMSEventHandler>(runner, serviceInner_);
+    serviceInner_->SetEventHandler(handler_);
+
 }
 
 void AmsAppLifeCycleTest::TearDown()
@@ -170,6 +176,7 @@ TestApplicationPreRecord AmsAppLifeCycleTest::CreateTestApplicationRecord(
     sptr<IRemoteObject> token = GetMockToken();
 
     auto appRecord = serviceInner_->GetOrCreateAppRunningRecord(token, appInfo, abilityInfo, "test_app", 0, result);
+    appRecord->SetEventHandler(handler_);
     EXPECT_NE(appRecord, nullptr);
     auto abilityRecord = appRecord->GetAbilityRunningRecordByToken(GetMockToken());
     EXPECT_NE(abilityRecord, nullptr);
@@ -191,6 +198,7 @@ std::shared_ptr<AppRunningRecord> AmsAppLifeCycleTest::CreateTestApplicationAndS
     auto appRecord =
         serviceInner_->GetOrCreateAppRunningRecord(token, appInfo, abilityInfo, "AmsAppLifeCycleTest", 0, result);
     EXPECT_NE(appRecord, nullptr);
+       appRecord->SetEventHandler(handler_);
     EXPECT_EQ(appRecord->GetRecordId(), result.appRecordId);
     appRecord->SetState(appState);
     return appRecord;
@@ -270,7 +278,7 @@ std::shared_ptr<AbilityRunningRecord> AmsAppLifeCycleTest::AddNewAbility(
  * FunctionPoints: Init
  * CaseDescription: test application init process
  */
-HWTEST_F(AmsAppLifeCycleTest, Init_001, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Init_001, TestSize.Level1)
 {
     const pid_t NEW_PID = 123;
     auto abilityInfo = GetAbilityInfoByIndex("0");
@@ -295,7 +303,7 @@ HWTEST_F(AmsAppLifeCycleTest, Init_001, TestSize.Level0)
  * FunctionPoints: LoadAbility
  * CaseDescription: LoadAbility when ability is loaded.
  */
-HWTEST_F(AmsAppLifeCycleTest, Schedule_001, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Schedule_001, TestSize.Level1)
 {
     const pid_t NEW_PID = 123;
     auto abilityInfo = GetAbilityInfoByIndex("0");
@@ -320,7 +328,7 @@ HWTEST_F(AmsAppLifeCycleTest, Schedule_001, TestSize.Level0)
  * FunctionPoints: LoadAbility
  * CaseDescription: LoadAbility when ability and application is not created.
  */
-HWTEST_F(AmsAppLifeCycleTest, Schedule_002, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Schedule_002, TestSize.Level1)
 {
     const pid_t NEW_PID = 123;
     auto abilityInfo = GetAbilityInfoByIndex("0");
@@ -348,7 +356,7 @@ HWTEST_F(AmsAppLifeCycleTest, Schedule_002, TestSize.Level0)
  * FunctionPoints: LoadAbility
  * CaseDescription: Load ability when ability is not created but application is create.
  */
-HWTEST_F(AmsAppLifeCycleTest, Schedule_003, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Schedule_003, TestSize.Level1)
 {
     TestApplicationPreRecord testAppRecord = PrepareLoadTestAbilityAndApp(ApplicationState::APP_STATE_CREATE);
 
@@ -364,7 +372,7 @@ HWTEST_F(AmsAppLifeCycleTest, Schedule_003, TestSize.Level0)
  * FunctionPoints: LoadAbility
  * CaseDescription: Load ability when ability is not created but application is ready.
  */
-HWTEST_F(AmsAppLifeCycleTest, Schedule_004, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Schedule_004, TestSize.Level1)
 {
     TestApplicationPreRecord testAppRecord = PrepareLoadTestAbilityAndApp(ApplicationState::APP_STATE_READY);
 
@@ -381,7 +389,7 @@ HWTEST_F(AmsAppLifeCycleTest, Schedule_004, TestSize.Level0)
  * FunctionPoints: LoadAbility
  * CaseDescription: Load ability when ability is not created but application is foreground.
  */
-HWTEST_F(AmsAppLifeCycleTest, Schedule_005, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Schedule_005, TestSize.Level1)
 {
     TestApplicationPreRecord testAppRecord = PrepareLoadTestAbilityAndApp(ApplicationState::APP_STATE_FOREGROUND);
 
@@ -398,7 +406,7 @@ HWTEST_F(AmsAppLifeCycleTest, Schedule_005, TestSize.Level0)
  * FunctionPoints: LoadAbility
  * CaseDescription: Load ability when ability is not created but application is background.
  */
-HWTEST_F(AmsAppLifeCycleTest, Schedule_006, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Schedule_006, TestSize.Level1)
 {
     TestApplicationPreRecord testAppRecord = PrepareLoadTestAbilityAndApp(ApplicationState::APP_STATE_BACKGROUND);
     EXPECT_CALL(*(testAppRecord.mockAppScheduler_), ScheduleLaunchAbility(_, _)).Times(1);
@@ -415,7 +423,7 @@ HWTEST_F(AmsAppLifeCycleTest, Schedule_006, TestSize.Level0)
  * FunctionPoints: LoadAbility
  * CaseDescription: Load ability when ability is not created but application is suspended.
  */
-HWTEST_F(AmsAppLifeCycleTest, Schedule_007, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Schedule_007, TestSize.Level1)
 {
     TestApplicationPreRecord testAppRecord = PrepareLoadTestAbilityAndApp(ApplicationState::APP_STATE_SUSPENDED);
 
@@ -432,7 +440,7 @@ HWTEST_F(AmsAppLifeCycleTest, Schedule_007, TestSize.Level0)
  * FunctionPoints: Update ability state to foreground
  * CaseDescription: Update ability state to foreground when ability is not loaded.
  */
-HWTEST_F(AmsAppLifeCycleTest, Schedule_008, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Schedule_008, TestSize.Level1)
 {
     TestUpdateAbilityStateWhenAbilityIsUnLoaded(AbilityState::ABILITY_STATE_FOREGROUND);
 }
@@ -444,7 +452,7 @@ HWTEST_F(AmsAppLifeCycleTest, Schedule_008, TestSize.Level0)
  * FunctionPoints: Update ability state to foreground
  * CaseDescription: Update ability state to foreground when ability and app is create.
  */
-HWTEST_F(AmsAppLifeCycleTest, Schedule_009, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Schedule_009, TestSize.Level1)
 {
     TestUpdateAbilityStateWhenAbilityIsCreate(
         AbilityState::ABILITY_STATE_FOREGROUND, ApplicationState::APP_STATE_CREATE);
@@ -457,7 +465,7 @@ HWTEST_F(AmsAppLifeCycleTest, Schedule_009, TestSize.Level0)
  * FunctionPoints: Update ability state to foreground
  * CaseDescription: Update ability state to foreground when ability is create but app is ready.
  */
-HWTEST_F(AmsAppLifeCycleTest, Schedule_010, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Schedule_010, TestSize.Level1)
 {
     TestUpdateAbilityStateWhenAbilityIsCreate(
         AbilityState::ABILITY_STATE_FOREGROUND, ApplicationState::APP_STATE_READY);
@@ -470,7 +478,7 @@ HWTEST_F(AmsAppLifeCycleTest, Schedule_010, TestSize.Level0)
  * FunctionPoints: Update ability state to foreground
  * CaseDescription: Update ability state to foreground when ability is create but app is foreground.
  */
-HWTEST_F(AmsAppLifeCycleTest, Schedule_011, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Schedule_011, TestSize.Level1)
 {
     TestUpdateAbilityStateWhenAbilityIsCreate(
         AbilityState::ABILITY_STATE_FOREGROUND, ApplicationState::APP_STATE_FOREGROUND);
@@ -483,7 +491,7 @@ HWTEST_F(AmsAppLifeCycleTest, Schedule_011, TestSize.Level0)
  * FunctionPoints: Update ability state to foreground
  * CaseDescription: Update ability state to foreground when ability is create but app is background.
  */
-HWTEST_F(AmsAppLifeCycleTest, Schedule_012, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Schedule_012, TestSize.Level1)
 {
     TestUpdateAbilityStateWhenAbilityIsCreate(
         AbilityState::ABILITY_STATE_FOREGROUND, ApplicationState::APP_STATE_BACKGROUND);
@@ -496,7 +504,7 @@ HWTEST_F(AmsAppLifeCycleTest, Schedule_012, TestSize.Level0)
  * FunctionPoints: Update ability state to foreground
  * CaseDescription: Update ability state to foreground when ability and app is ready.
  */
-HWTEST_F(AmsAppLifeCycleTest, Schedule_013, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Schedule_013, TestSize.Level1)
 {
     auto testAppPreRecord =
         CreateTestApplicationRecord(AbilityState::ABILITY_STATE_READY, ApplicationState::APP_STATE_READY);
@@ -515,7 +523,7 @@ HWTEST_F(AmsAppLifeCycleTest, Schedule_013, TestSize.Level0)
  * FunctionPoints: Update ability state to foreground
  * CaseDescription: Update ability state to foreground when ability is ready and app is foreground.
  */
-HWTEST_F(AmsAppLifeCycleTest, Schedule_014, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Schedule_014, TestSize.Level1)
 {
     auto testAppPreRecord =
         CreateTestApplicationRecord(AbilityState::ABILITY_STATE_READY, ApplicationState::APP_STATE_FOREGROUND);
@@ -532,7 +540,7 @@ HWTEST_F(AmsAppLifeCycleTest, Schedule_014, TestSize.Level0)
  * FunctionPoints: Update ability state to foreground
  * CaseDescription: Update ability state to foreground when ability is ready and app is background.
  */
-HWTEST_F(AmsAppLifeCycleTest, Schedule_015, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Schedule_015, TestSize.Level1)
 {
     auto testAppPreRecord =
         CreateTestApplicationRecord(AbilityState::ABILITY_STATE_READY, ApplicationState::APP_STATE_BACKGROUND);
@@ -551,7 +559,7 @@ HWTEST_F(AmsAppLifeCycleTest, Schedule_015, TestSize.Level0)
  * FunctionPoints: Update ability state to foreground
  * CaseDescription: Update ability state to foreground when ability and app is foreground.
  */
-HWTEST_F(AmsAppLifeCycleTest, Schedule_016, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Schedule_016, TestSize.Level1)
 {
     auto testAppPreRecord =
         CreateTestApplicationRecord(AbilityState::ABILITY_STATE_FOREGROUND, ApplicationState::APP_STATE_FOREGROUND);
@@ -568,7 +576,7 @@ HWTEST_F(AmsAppLifeCycleTest, Schedule_016, TestSize.Level0)
  * FunctionPoints: Update ability state to foreground
  * CaseDescription: Update ability state to foreground when ability is background and app is foreground.
  */
-HWTEST_F(AmsAppLifeCycleTest, Schedule_017, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Schedule_017, TestSize.Level1)
 {
     auto testAppPreRecord =
         CreateTestApplicationRecord(AbilityState::ABILITY_STATE_BACKGROUND, ApplicationState::APP_STATE_FOREGROUND);
@@ -585,7 +593,7 @@ HWTEST_F(AmsAppLifeCycleTest, Schedule_017, TestSize.Level0)
  * FunctionPoints: Update ability state to foreground
  * CaseDescription: Update ability state to foreground when ability and app is background.
  */
-HWTEST_F(AmsAppLifeCycleTest, Schedule_018, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Schedule_018, TestSize.Level1)
 {
     auto testAppPreRecord =
         CreateTestApplicationRecord(AbilityState::ABILITY_STATE_BACKGROUND, ApplicationState::APP_STATE_BACKGROUND);
@@ -604,7 +612,7 @@ HWTEST_F(AmsAppLifeCycleTest, Schedule_018, TestSize.Level0)
  * FunctionPoints: Update ability state to foreground
  * CaseDescription: Update ability state to foreground when ability is background and app is foreground.
  */
-HWTEST_F(AmsAppLifeCycleTest, Schedule_019, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Schedule_019, TestSize.Level1)
 {
     auto testAppPreRecord =
         CreateTestApplicationRecord(AbilityState::ABILITY_STATE_BACKGROUND, ApplicationState::APP_STATE_SUSPENDED);
@@ -623,7 +631,7 @@ HWTEST_F(AmsAppLifeCycleTest, Schedule_019, TestSize.Level0)
  * FunctionPoints: Update ability state to background
  * CaseDescription: Update ability state to background when ability is not loaded.
  */
-HWTEST_F(AmsAppLifeCycleTest, Schedule_020, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Schedule_020, TestSize.Level1)
 {
     TestUpdateAbilityStateWhenAbilityIsUnLoaded(AbilityState::ABILITY_STATE_BACKGROUND);
 }
@@ -635,7 +643,7 @@ HWTEST_F(AmsAppLifeCycleTest, Schedule_020, TestSize.Level0)
  * FunctionPoints: Update ability state to background
  * CaseDescription: Update ability state to background when ability and app is create.
  */
-HWTEST_F(AmsAppLifeCycleTest, Schedule_021, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Schedule_021, TestSize.Level1)
 {
     TestUpdateAbilityStateWhenAbilityIsCreate(
         AbilityState::ABILITY_STATE_BACKGROUND, ApplicationState::APP_STATE_CREATE);
@@ -648,7 +656,7 @@ HWTEST_F(AmsAppLifeCycleTest, Schedule_021, TestSize.Level0)
  * FunctionPoints: Update ability state to background
  * CaseDescription: Update ability state to background when ability is create but app is ready.
  */
-HWTEST_F(AmsAppLifeCycleTest, Schedule_022, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Schedule_022, TestSize.Level1)
 {
     TestUpdateAbilityStateWhenAbilityIsCreate(
         AbilityState::ABILITY_STATE_BACKGROUND, ApplicationState::APP_STATE_READY);
@@ -661,7 +669,7 @@ HWTEST_F(AmsAppLifeCycleTest, Schedule_022, TestSize.Level0)
  * FunctionPoints: Update ability state to background
  * CaseDescription: Update ability state to background when ability is create but app is foreground.
  */
-HWTEST_F(AmsAppLifeCycleTest, Schedule_023, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Schedule_023, TestSize.Level1)
 {
     TestUpdateAbilityStateWhenAbilityIsCreate(
         AbilityState::ABILITY_STATE_BACKGROUND, ApplicationState::APP_STATE_FOREGROUND);
@@ -674,7 +682,7 @@ HWTEST_F(AmsAppLifeCycleTest, Schedule_023, TestSize.Level0)
  * FunctionPoints: Update ability state to background
  * CaseDescription: Update ability state to background when ability is create but app is background.
  */
-HWTEST_F(AmsAppLifeCycleTest, Schedule_024, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Schedule_024, TestSize.Level1)
 {
     TestUpdateAbilityStateWhenAbilityIsCreate(
         AbilityState::ABILITY_STATE_BACKGROUND, ApplicationState::APP_STATE_BACKGROUND);
@@ -687,7 +695,7 @@ HWTEST_F(AmsAppLifeCycleTest, Schedule_024, TestSize.Level0)
  * FunctionPoints: Update ability state to background
  * CaseDescription: Update ability state to background when ability and app is ready.
  */
-HWTEST_F(AmsAppLifeCycleTest, Schedule_025, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Schedule_025, TestSize.Level1)
 {
     TestUpdateAbilityStateToBackgroundWhenAbilityIsReady(ApplicationState::APP_STATE_READY);
 }
@@ -699,7 +707,7 @@ HWTEST_F(AmsAppLifeCycleTest, Schedule_025, TestSize.Level0)
  * FunctionPoints: Update ability state to background
  * CaseDescription: Update ability state to background when ability is ready and app is foreground.
  */
-HWTEST_F(AmsAppLifeCycleTest, Schedule_026, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Schedule_026, TestSize.Level1)
 {
     TestUpdateAbilityStateToBackgroundWhenAbilityIsReady(ApplicationState::APP_STATE_FOREGROUND);
 }
@@ -711,7 +719,7 @@ HWTEST_F(AmsAppLifeCycleTest, Schedule_026, TestSize.Level0)
  * FunctionPoints: Update ability state to background
  * CaseDescription: Update ability state to background when ability is ready and app is background.
  */
-HWTEST_F(AmsAppLifeCycleTest, Schedule_027, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Schedule_027, TestSize.Level1)
 {
     TestUpdateAbilityStateToBackgroundWhenAbilityIsReady(ApplicationState::APP_STATE_BACKGROUND);
 }
@@ -723,7 +731,7 @@ HWTEST_F(AmsAppLifeCycleTest, Schedule_027, TestSize.Level0)
  * FunctionPoints: Update ability state to background
  * CaseDescription: Update ability state to background when ability and app is foreground.
  */
-HWTEST_F(AmsAppLifeCycleTest, Schedule_028, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Schedule_028, TestSize.Level1)
 {
     auto testAppPreRecord =
         CreateTestApplicationRecord(AbilityState::ABILITY_STATE_FOREGROUND, ApplicationState::APP_STATE_FOREGROUND);
@@ -742,7 +750,7 @@ HWTEST_F(AmsAppLifeCycleTest, Schedule_028, TestSize.Level0)
  * FunctionPoints: Update ability state to background
  * CaseDescription: Update ability state to background when multiple ability.
  */
-HWTEST_F(AmsAppLifeCycleTest, Schedule_029, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Schedule_029, TestSize.Level1)
 {
     auto testAppPreRecord =
         CreateTestApplicationRecord(AbilityState::ABILITY_STATE_FOREGROUND, ApplicationState::APP_STATE_FOREGROUND);
@@ -764,7 +772,7 @@ HWTEST_F(AmsAppLifeCycleTest, Schedule_029, TestSize.Level0)
  * FunctionPoints: Update ability state to background
  * CaseDescription: Update ability state to background when ability is background and app is foreground.
  */
-HWTEST_F(AmsAppLifeCycleTest, Schedule_030, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Schedule_030, TestSize.Level1)
 {
     TestUpdateAbilityStateToBackgroundWhenAbilityIsBackground(ApplicationState::APP_STATE_FOREGROUND);
 }
@@ -776,7 +784,7 @@ HWTEST_F(AmsAppLifeCycleTest, Schedule_030, TestSize.Level0)
  * FunctionPoints: Update ability state to background
  * CaseDescription: Update ability state to background when ability is background and app is background.
  */
-HWTEST_F(AmsAppLifeCycleTest, Schedule_031, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Schedule_031, TestSize.Level1)
 {
     TestUpdateAbilityStateToBackgroundWhenAbilityIsBackground(ApplicationState::APP_STATE_BACKGROUND);
 }
@@ -788,7 +796,7 @@ HWTEST_F(AmsAppLifeCycleTest, Schedule_031, TestSize.Level0)
  * FunctionPoints: Update ability state to background
  * CaseDescription: Update ability state to background when ability is background and app is suspended.
  */
-HWTEST_F(AmsAppLifeCycleTest, Schedule_032, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Schedule_032, TestSize.Level1)
 {
     TestUpdateAbilityStateToBackgroundWhenAbilityIsBackground(ApplicationState::APP_STATE_SUSPENDED);
 }
@@ -800,7 +808,7 @@ HWTEST_F(AmsAppLifeCycleTest, Schedule_032, TestSize.Level0)
  * FunctionPoints: Terminate ability
  * CaseDescription: Terminate ability when ability is unload.
  */
-HWTEST_F(AmsAppLifeCycleTest, Schedule_033, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Schedule_033, TestSize.Level1)
 {
     serviceInner_->TerminateAbility(GetMockToken());
     auto appRecord = serviceInner_->GetAppRunningRecordByAbilityToken(GetMockToken());
@@ -814,7 +822,7 @@ HWTEST_F(AmsAppLifeCycleTest, Schedule_033, TestSize.Level0)
  * FunctionPoints: Terminate ability
  * CaseDescription: Terminate ability when ability and app is create.
  */
-HWTEST_F(AmsAppLifeCycleTest, Schedule_034, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Schedule_034, TestSize.Level1)
 {
     TestTerminateAbilityWhenAbilityIsNotBackground(
         AbilityState::ABILITY_STATE_CREATE, ApplicationState::APP_STATE_CREATE);
@@ -827,7 +835,7 @@ HWTEST_F(AmsAppLifeCycleTest, Schedule_034, TestSize.Level0)
  * FunctionPoints: Terminate ability
  * CaseDescription: Terminate ability when ability is create and app is ready.
  */
-HWTEST_F(AmsAppLifeCycleTest, Schedule_035, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Schedule_035, TestSize.Level1)
 {
     TestTerminateAbilityWhenAbilityIsNotBackground(
         AbilityState::ABILITY_STATE_CREATE, ApplicationState::APP_STATE_READY);
@@ -840,7 +848,7 @@ HWTEST_F(AmsAppLifeCycleTest, Schedule_035, TestSize.Level0)
  * FunctionPoints: Terminate ability
  * CaseDescription: Terminate ability when ability is create and app is foreground.
  */
-HWTEST_F(AmsAppLifeCycleTest, Schedule_036, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Schedule_036, TestSize.Level1)
 {
     TestTerminateAbilityWhenAbilityIsNotBackground(
         AbilityState::ABILITY_STATE_CREATE, ApplicationState::APP_STATE_FOREGROUND);
@@ -853,7 +861,7 @@ HWTEST_F(AmsAppLifeCycleTest, Schedule_036, TestSize.Level0)
  * FunctionPoints: Terminate ability
  * CaseDescription: Terminate ability when ability is create and app is background.
  */
-HWTEST_F(AmsAppLifeCycleTest, Schedule_037, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Schedule_037, TestSize.Level1)
 {
     TestTerminateAbilityWhenAbilityIsNotBackground(
         AbilityState::ABILITY_STATE_CREATE, ApplicationState::APP_STATE_BACKGROUND);
@@ -866,7 +874,7 @@ HWTEST_F(AmsAppLifeCycleTest, Schedule_037, TestSize.Level0)
  * FunctionPoints: Terminate ability
  * CaseDescription: Terminate ability when ability and app is ready.
  */
-HWTEST_F(AmsAppLifeCycleTest, Schedule_038, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Schedule_038, TestSize.Level1)
 {
     TestTerminateAbilityWhenAbilityIsNotBackground(
         AbilityState::ABILITY_STATE_READY, ApplicationState::APP_STATE_READY);
@@ -879,7 +887,7 @@ HWTEST_F(AmsAppLifeCycleTest, Schedule_038, TestSize.Level0)
  * FunctionPoints: Terminate ability
  * CaseDescription: Terminate ability when ability is ready and app is foreground.
  */
-HWTEST_F(AmsAppLifeCycleTest, Schedule_039, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Schedule_039, TestSize.Level1)
 {
     TestTerminateAbilityWhenAbilityIsNotBackground(
         AbilityState::ABILITY_STATE_READY, ApplicationState::APP_STATE_FOREGROUND);
@@ -892,7 +900,7 @@ HWTEST_F(AmsAppLifeCycleTest, Schedule_039, TestSize.Level0)
  * FunctionPoints: Terminate ability
  * CaseDescription: Terminate ability when ability is ready and app is background.
  */
-HWTEST_F(AmsAppLifeCycleTest, Schedule_040, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Schedule_040, TestSize.Level1)
 {
     TestTerminateAbilityWhenAbilityIsNotBackground(
         AbilityState::ABILITY_STATE_READY, ApplicationState::APP_STATE_BACKGROUND);
@@ -905,7 +913,7 @@ HWTEST_F(AmsAppLifeCycleTest, Schedule_040, TestSize.Level0)
  * FunctionPoints: Terminate ability
  * CaseDescription: Terminate ability when ability and app is foreground.
  */
-HWTEST_F(AmsAppLifeCycleTest, Schedule_041, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Schedule_041, TestSize.Level1)
 {
     TestTerminateAbilityWhenAbilityIsNotBackground(
         AbilityState::ABILITY_STATE_FOREGROUND, ApplicationState::APP_STATE_FOREGROUND);
@@ -918,7 +926,7 @@ HWTEST_F(AmsAppLifeCycleTest, Schedule_041, TestSize.Level0)
  * FunctionPoints: Terminate ability
  * CaseDescription: Terminate ability when ability is background and app is foreground.
  */
-HWTEST_F(AmsAppLifeCycleTest, Schedule_042, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Schedule_042, TestSize.Level1)
 {
     auto testAppRecord =
         CreateTestApplicationRecord(AbilityState::ABILITY_STATE_FOREGROUND, ApplicationState::APP_STATE_FOREGROUND);
@@ -941,7 +949,7 @@ HWTEST_F(AmsAppLifeCycleTest, Schedule_042, TestSize.Level0)
  * FunctionPoints: Terminate ability
  * CaseDescription: Terminate ability when ability and app is background.
  */
-HWTEST_F(AmsAppLifeCycleTest, Schedule_043, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Schedule_043, TestSize.Level1)
 {
     auto testAppRecord =
         CreateTestApplicationRecord(AbilityState::ABILITY_STATE_BACKGROUND, ApplicationState::APP_STATE_BACKGROUND);
@@ -965,7 +973,7 @@ HWTEST_F(AmsAppLifeCycleTest, Schedule_043, TestSize.Level0)
  * FunctionPoints: Terminate ability
  * CaseDescription: Terminate ability when multiple abilities and app is background.
  */
-HWTEST_F(AmsAppLifeCycleTest, Schedule_044, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Schedule_044, TestSize.Level1)
 {
     auto testAppRecord =
         CreateTestApplicationRecord(AbilityState::ABILITY_STATE_BACKGROUND, ApplicationState::APP_STATE_BACKGROUND);
@@ -989,7 +997,7 @@ HWTEST_F(AmsAppLifeCycleTest, Schedule_044, TestSize.Level0)
  * FunctionPoints: Terminate ability
  * CaseDescription: Terminate ability when ability is background and app is suspended.
  */
-HWTEST_F(AmsAppLifeCycleTest, Schedule_045, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Schedule_045, TestSize.Level1)
 {
     auto testAppRecord =
         CreateTestApplicationRecord(AbilityState::ABILITY_STATE_BACKGROUND, ApplicationState::APP_STATE_SUSPENDED);
@@ -1013,7 +1021,7 @@ HWTEST_F(AmsAppLifeCycleTest, Schedule_045, TestSize.Level0)
  * FunctionPoints: Terminate ability
  * CaseDescription: Terminate ability when multiple abilities is backgroung and app is suspended.
  */
-HWTEST_F(AmsAppLifeCycleTest, Schedule_046, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Schedule_046, TestSize.Level1)
 {
     auto testAppRecord =
         CreateTestApplicationRecord(AbilityState::ABILITY_STATE_BACKGROUND, ApplicationState::APP_STATE_SUSPENDED);
@@ -1038,7 +1046,7 @@ HWTEST_F(AmsAppLifeCycleTest, Schedule_046, TestSize.Level0)
  * FunctionPoints: ApplicationForegrounded
  * CaseDescription: Verify application can not change to foreground if application is create.
  */
-HWTEST_F(AmsAppLifeCycleTest, Process_001, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Process_001, TestSize.Level1)
 {
     auto appRecord = CreateTestApplicationAndSetState(ApplicationState::APP_STATE_CREATE);
     int32_t appRecordId = appRecord->GetRecordId();
@@ -1057,7 +1065,7 @@ HWTEST_F(AmsAppLifeCycleTest, Process_001, TestSize.Level0)
  * FunctionPoints: ApplicationForegrounded
  * CaseDescription: Verify application can change to foreground if application is ready.
  */
-HWTEST_F(AmsAppLifeCycleTest, Process_002, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Process_002, TestSize.Level1)
 {
     auto appRecord = CreateTestApplicationAndSetState(ApplicationState::APP_STATE_READY);
     int32_t appRecordId = appRecord->GetRecordId();
@@ -1076,7 +1084,7 @@ HWTEST_F(AmsAppLifeCycleTest, Process_002, TestSize.Level0)
  * FunctionPoints: ApplicationForegrounded
  * CaseDescription: Verify application can not change to foreground if application is foreground.
  */
-HWTEST_F(AmsAppLifeCycleTest, Process_003, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Process_003, TestSize.Level1)
 {
     auto appRecord = CreateTestApplicationAndSetState(ApplicationState::APP_STATE_FOREGROUND);
     int32_t appRecordId = appRecord->GetRecordId();
@@ -1095,7 +1103,7 @@ HWTEST_F(AmsAppLifeCycleTest, Process_003, TestSize.Level0)
  * FunctionPoints: ApplicationForegrounded
  * CaseDescription: Verify application can change to foreground if application is background.
  */
-HWTEST_F(AmsAppLifeCycleTest, Process_004, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Process_004, TestSize.Level1)
 {
     auto appRecord = CreateTestApplicationAndSetState(ApplicationState::APP_STATE_BACKGROUND);
     int32_t appRecordId = appRecord->GetRecordId();
@@ -1114,7 +1122,7 @@ HWTEST_F(AmsAppLifeCycleTest, Process_004, TestSize.Level0)
  * FunctionPoints: ApplicationForegrounded
  * CaseDescription: Verify application can change to foregrounded if application is not exist.
  */
-HWTEST_F(AmsAppLifeCycleTest, Process_005, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Process_005, TestSize.Level1)
 {
     int32_t appRecordId = AppRecordId::Create();
 
@@ -1130,7 +1138,7 @@ HWTEST_F(AmsAppLifeCycleTest, Process_005, TestSize.Level0)
  * FunctionPoints: ApplicationBackgrounded
  * CaseDescription: Verify application can not change to background if application is create.
  */
-HWTEST_F(AmsAppLifeCycleTest, Process_006, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Process_006, TestSize.Level1)
 {
     auto appRecord = CreateTestApplicationAndSetState(ApplicationState::APP_STATE_CREATE);
     int32_t appRecordId = appRecord->GetRecordId();
@@ -1149,7 +1157,7 @@ HWTEST_F(AmsAppLifeCycleTest, Process_006, TestSize.Level0)
  * FunctionPoints: ApplicationBackgrounded
  * CaseDescription: Verify application can change to background if application is foreground.
  */
-HWTEST_F(AmsAppLifeCycleTest, Process_007, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Process_007, TestSize.Level1)
 {
     auto appRecord = CreateTestApplicationAndSetState(ApplicationState::APP_STATE_FOREGROUND);
     int32_t appRecordId = appRecord->GetRecordId();
@@ -1168,7 +1176,7 @@ HWTEST_F(AmsAppLifeCycleTest, Process_007, TestSize.Level0)
  * FunctionPoints: ApplicationBackgrounded
  * CaseDescription: Verify application can not change to background if application is ready.
  */
-HWTEST_F(AmsAppLifeCycleTest, Process_008, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Process_008, TestSize.Level1)
 {
     auto appRecord = CreateTestApplicationAndSetState(ApplicationState::APP_STATE_READY);
     int32_t appRecordId = appRecord->GetRecordId();
@@ -1187,7 +1195,7 @@ HWTEST_F(AmsAppLifeCycleTest, Process_008, TestSize.Level0)
  * FunctionPoints: ApplicationBackgrounded
  * CaseDescription: Verify application can not change to background if application is not exist.
  */
-HWTEST_F(AmsAppLifeCycleTest, Process_009, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Process_009, TestSize.Level1)
 {
     int32_t appRecordId = AppRecordId::Create();
 
@@ -1203,7 +1211,7 @@ HWTEST_F(AmsAppLifeCycleTest, Process_009, TestSize.Level0)
  * FunctionPoints: ApplicationTerminated
  * CaseDescription: Verify application can change to terminate if application is background.
  */
-HWTEST_F(AmsAppLifeCycleTest, Process_010, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Process_010, TestSize.Level1)
 {
     auto testAppRecord = PrepareLoadTestAbilityAndApp(ApplicationState::APP_STATE_BACKGROUND);
     EXPECT_CALL(*(testAppRecord.mockAppScheduler_), ScheduleTerminateApplication()).Times(1);
@@ -1223,7 +1231,7 @@ HWTEST_F(AmsAppLifeCycleTest, Process_010, TestSize.Level0)
  * FunctionPoints: ApplicationTerminated
  * CaseDescription: Verify application can not change to terminate if application is foreground.
  */
-HWTEST_F(AmsAppLifeCycleTest, Process_011, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Process_011, TestSize.Level1)
 {
     auto appRecord = CreateTestApplicationAndSetState(ApplicationState::APP_STATE_FOREGROUND);
     int32_t appRecordId = appRecord->GetRecordId();
@@ -1242,7 +1250,7 @@ HWTEST_F(AmsAppLifeCycleTest, Process_011, TestSize.Level0)
  * FunctionPoints: ApplicationTerminated
  * CaseDescription: Verify application can not change to foregrounded if application is not exist.
  */
-HWTEST_F(AmsAppLifeCycleTest, Process_012, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Process_012, TestSize.Level1)
 {
     int32_t appRecordId = AppRecordId::Create();
     serviceInner_->ApplicationTerminated(appRecordId);
@@ -1257,7 +1265,7 @@ HWTEST_F(AmsAppLifeCycleTest, Process_012, TestSize.Level0)
  * FunctionPoints: AppMgrService stop
  * CaseDescription: Verify if AppMgrService stop successfully.
  */
-HWTEST_F(AmsAppLifeCycleTest, Stop_001, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Stop_001, TestSize.Level1)
 {
     const pid_t NEW_PID = 123;
     auto abilityInfo = GetAbilityInfoByIndex("0");
@@ -1289,7 +1297,7 @@ HWTEST_F(AmsAppLifeCycleTest, Stop_001, TestSize.Level0)
  * FunctionPoints: AppMgrService stop
  * CaseDescription: Verify if AppMgrService stop successfully.
  */
-HWTEST_F(AmsAppLifeCycleTest, Stop_002, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Stop_002, TestSize.Level1)
 {
     std::shared_ptr<AppSpawnClient> appSpawnClient = std::make_shared<AppSpawnClient>();
     std::shared_ptr<MockAppSpawnSocket> socketMock = std::make_shared<MockAppSpawnSocket>();
@@ -1316,7 +1324,7 @@ HWTEST_F(AmsAppLifeCycleTest, Stop_002, TestSize.Level0)
  * FunctionPoints: AppMgrService stop
  * CaseDescription: Verify if AppMgrService stop successfully.
  */
-HWTEST_F(AmsAppLifeCycleTest, Stop_003, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Stop_003, TestSize.Level1)
 {
     const pid_t NEW_PID = 123;
     auto abilityInfo = GetAbilityInfoByIndex("0");
@@ -1357,7 +1365,7 @@ HWTEST_F(AmsAppLifeCycleTest, Stop_003, TestSize.Level0)
  * FunctionPoints: Kill application
  * CaseDescription: Verify if AppMgrService Kill by appname fail.
  */
-HWTEST_F(AmsAppLifeCycleTest, KillApplication_001, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, KillApplication_001, TestSize.Level1)
 {
     int result = serviceInner_->KillApplication("hwei.ss.bb");
     EXPECT_EQ(ERR_OK, result);
@@ -1370,7 +1378,7 @@ HWTEST_F(AmsAppLifeCycleTest, KillApplication_001, TestSize.Level0)
  * FunctionPoints: Kill application
  * CaseDescription: Verify if AppMgrService Kill by appname successfully.
  */
-HWTEST_F(AmsAppLifeCycleTest, KillApplication_002, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, KillApplication_002, TestSize.Level1)
 {
     const pid_t NEW_PID = 123;
     auto abilityInfo = GetAbilityInfoByIndex("0");
@@ -1407,7 +1415,7 @@ HWTEST_F(AmsAppLifeCycleTest, KillApplication_002, TestSize.Level0)
  * FunctionPoints: Kill application
  * CaseDescription: Verify if AppMgrService Kill by pid successfully.
  */
-HWTEST_F(AmsAppLifeCycleTest, KillProcessByPid001, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, KillProcessByPid001, TestSize.Level1)
 {
     pid_t pid = fork();
 
@@ -1429,7 +1437,7 @@ HWTEST_F(AmsAppLifeCycleTest, KillProcessByPid001, TestSize.Level0)
  * FunctionPoints: Kill application
  * CaseDescription: Verify if AppMgrService Kill by pid fail.
  */
-HWTEST_F(AmsAppLifeCycleTest, KillProcessByPid002, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, KillProcessByPid002, TestSize.Level1)
 {
     int32_t ret = serviceInner_->KillProcessByPid(-1);
     EXPECT_EQ(-1, ret);
@@ -1442,7 +1450,7 @@ HWTEST_F(AmsAppLifeCycleTest, KillProcessByPid002, TestSize.Level0)
  * FunctionPoints: Register App State Callback
  * CaseDescription: Verify if AppMgrService Register Callback.
  */
-HWTEST_F(AmsAppLifeCycleTest, Callback001, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Callback001, TestSize.Level1)
 {
     sptr<MockAppStateCallback> mockCallback(new MockAppStateCallback());
     sptr<IAppStateCallback> callback = iface_cast<IAppStateCallback>(mockCallback);
@@ -1466,7 +1474,7 @@ HWTEST_F(AmsAppLifeCycleTest, Callback001, TestSize.Level0)
  * FunctionPoints: Register App State Callback
  * CaseDescription: Verify if AppMgrService Register Callback.
  */
-HWTEST_F(AmsAppLifeCycleTest, Callback002, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Callback002, TestSize.Level1)
 {
     sptr<MockAppStateCallback> mockCallback(new MockAppStateCallback());
     sptr<IAppStateCallback> callback = iface_cast<IAppStateCallback>(mockCallback);
@@ -1484,7 +1492,7 @@ HWTEST_F(AmsAppLifeCycleTest, Callback002, TestSize.Level0)
  * FunctionPoints: Register Ability State Callback
  * CaseDescription: Verify if AppMgrService Register Callback.
  */
-HWTEST_F(AmsAppLifeCycleTest, Callback003, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Callback003, TestSize.Level1)
 {
     sptr<MockAppStateCallback> mockCallback(new MockAppStateCallback());
     sptr<IAppStateCallback> callback = iface_cast<IAppStateCallback>(mockCallback);
@@ -1510,7 +1518,7 @@ HWTEST_F(AmsAppLifeCycleTest, Callback003, TestSize.Level0)
  * FunctionPoints: Register Ability State Callback
  * CaseDescription: Verify if AppMgrService Register Callback.
  */
-HWTEST_F(AmsAppLifeCycleTest, Callback004, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Callback004, TestSize.Level1)
 {
     sptr<MockAppStateCallback> mockCallback(new MockAppStateCallback());
     sptr<IAppStateCallback> callback = iface_cast<IAppStateCallback>(mockCallback);
@@ -1526,7 +1534,7 @@ HWTEST_F(AmsAppLifeCycleTest, Callback004, TestSize.Level0)
  * FunctionPoints: Register Ability State Changed
  * CaseDescription: Verify if AppMgrService Ability State Changed Callback.
  */
-HWTEST_F(AmsAppLifeCycleTest, AbilityStateChanged001, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, AbilityStateChanged001, TestSize.Level1)
 {
     sptr<MockAppStateCallback> mockCallback(new MockAppStateCallback());
     sptr<IAppStateCallback> callback = iface_cast<IAppStateCallback>(mockCallback);
@@ -1562,7 +1570,7 @@ HWTEST_F(AmsAppLifeCycleTest, AbilityStateChanged001, TestSize.Level0)
  * FunctionPoints: Register App State Changed
  * CaseDescription: Verify if AppMgrService App State Changed Callback.
  */
-HWTEST_F(AmsAppLifeCycleTest, AppStateChanged001, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, AppStateChanged001, TestSize.Level1)
 {
     sptr<MockAppStateCallback> mockCallback(new MockAppStateCallback());
     sptr<IAppStateCallback> callback = iface_cast<IAppStateCallback>(mockCallback);
@@ -1598,7 +1606,7 @@ HWTEST_F(AmsAppLifeCycleTest, AppStateChanged001, TestSize.Level0)
  * FunctionPoints: UnsuspendApplication
  * CaseDescription: test application state is APP_STATE_BACKGROUND
  */
-HWTEST_F(AmsAppLifeCycleTest, Unsuspend_001, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Unsuspend_001, TestSize.Level1)
 {
     TestApplicationPreRecord testAppRecord = PrepareLoadTestAbilityAndApp(ApplicationState::APP_STATE_FOREGROUND);
 
@@ -1611,7 +1619,7 @@ HWTEST_F(AmsAppLifeCycleTest, Unsuspend_001, TestSize.Level0)
     testAppRecord.appRecord_->SetState(ApplicationState::APP_STATE_SUSPENDED);
     EXPECT_EQ(ApplicationState::APP_STATE_SUSPENDED, testAppRecord.appRecord_->GetState());
     serviceInner_->UnsuspendApplication(testAppRecord.appRecord_);
-    EXPECT_EQ(ApplicationState::APP_STATE_BACKGROUND, testAppRecord.appRecord_->GetState());
+    EXPECT_EQ(ApplicationState::APP_STATE_SUSPENDED, testAppRecord.appRecord_->GetState());
 }
 
 /*
@@ -1621,7 +1629,7 @@ HWTEST_F(AmsAppLifeCycleTest, Unsuspend_001, TestSize.Level0)
  * FunctionPoints: UnsuspendApplication
  * CaseDescription: test application state is APP_STATE_SUSPENDED(apprecord is nullptr)
  */
-HWTEST_F(AmsAppLifeCycleTest, Unsuspend_002, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Unsuspend_002, TestSize.Level1)
 {
     TestApplicationPreRecord testAppRecord = PrepareLoadTestAbilityAndApp(ApplicationState::APP_STATE_FOREGROUND);
 
@@ -1644,7 +1652,7 @@ HWTEST_F(AmsAppLifeCycleTest, Unsuspend_002, TestSize.Level0)
  * FunctionPoints: suspendApplication
  * CaseDescription: test application state is APP_STATE_SUSPENDED
  */
-HWTEST_F(AmsAppLifeCycleTest, Suspend_001, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Suspend_001, TestSize.Level1)
 {
     TestApplicationPreRecord testAppRecord = PrepareLoadTestAbilityAndApp(ApplicationState::APP_STATE_FOREGROUND);
 
@@ -1665,7 +1673,7 @@ HWTEST_F(AmsAppLifeCycleTest, Suspend_001, TestSize.Level0)
  * FunctionPoints: UnsuspendApplication
  * CaseDescription: test application state is APP_STATE_BACKGROUND(apprecord is nullptr)
  */
-HWTEST_F(AmsAppLifeCycleTest, Suspend_002, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, Suspend_002, TestSize.Level1)
 {
     TestApplicationPreRecord testAppRecord = PrepareLoadTestAbilityAndApp(ApplicationState::APP_STATE_FOREGROUND);
 
@@ -1686,7 +1694,7 @@ HWTEST_F(AmsAppLifeCycleTest, Suspend_002, TestSize.Level0)
  * FunctionPoints: UnsuspendApplication
  * CaseDescription: test application state is APP_STATE_BACKGROUND(apprecord is nullptr)
  */
-HWTEST_F(AmsAppLifeCycleTest, AbilityBehaviorAnalysis_001, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, AbilityBehaviorAnalysis_001, TestSize.Level1)
 {
     const pid_t NEW_PID = 1234;
     auto abilityInfo = GetAbilityInfoByIndex("110");
@@ -1718,7 +1726,7 @@ HWTEST_F(AmsAppLifeCycleTest, AbilityBehaviorAnalysis_001, TestSize.Level0)
  * FunctionPoints: UnsuspendApplication
  * CaseDescription: test application state is APP_STATE_BACKGROUND(apprecord is nullptr)
  */
-HWTEST_F(AmsAppLifeCycleTest, AbilityBehaviorAnalysis_002, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, AbilityBehaviorAnalysis_002, TestSize.Level1)
 {
     const pid_t NEW_PID = 1234;
     auto abilityInfo = GetAbilityInfoByIndex("110");
@@ -1751,7 +1759,7 @@ HWTEST_F(AmsAppLifeCycleTest, AbilityBehaviorAnalysis_002, TestSize.Level0)
  * FunctionPoints: UnsuspendApplication
  * CaseDescription: test application state is APP_STATE_BACKGROUND(apprecord is nullptr)
  */
-HWTEST_F(AmsAppLifeCycleTest, ClearUpApplicationData_001, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, ClearUpApplicationData_001, TestSize.Level1)
 {
     const pid_t NEW_PID = 1234;
     auto abilityInfo = GetAbilityInfoByIndex("110");
@@ -1788,7 +1796,7 @@ HWTEST_F(AmsAppLifeCycleTest, ClearUpApplicationData_001, TestSize.Level0)
  * FunctionPoints: UnsuspendApplication
  * CaseDescription: test application state is APP_STATE_BACKGROUND(apprecord is nullptr)
  */
-HWTEST_F(AmsAppLifeCycleTest, ClearUpApplicationData_002, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, ClearUpApplicationData_002, TestSize.Level1)
 {
     auto abilityInfo = GetAbilityInfoByIndex("110");
     auto appInfo = GetApplication();
@@ -1818,7 +1826,7 @@ HWTEST_F(AmsAppLifeCycleTest, ClearUpApplicationData_002, TestSize.Level0)
  * FunctionPoints: UnsuspendApplication
  * CaseDescription: Check if there is background operation permission
  */
-HWTEST_F(AmsAppLifeCycleTest, IsBackgroundRunningRestricted_001, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, IsBackgroundRunningRestricted_001, TestSize.Level1)
 {
     sptr<BundleMgrService> bundleMgr = new BundleMgrService();
     serviceInner_->SetBundleManager(bundleMgr);
@@ -1833,7 +1841,7 @@ HWTEST_F(AmsAppLifeCycleTest, IsBackgroundRunningRestricted_001, TestSize.Level0
  * FunctionPoints: UnsuspendApplication
  * CaseDescription: Check if there is background operation permission
  */
-HWTEST_F(AmsAppLifeCycleTest, GetOrCreateAppRunningRecord_001, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, GetOrCreateAppRunningRecord_001, TestSize.Level1)
 {
     RecordQueryResult result;
     auto abilityInfo = GetAbilityInfoByIndex("0");
@@ -1862,7 +1870,7 @@ HWTEST_F(AmsAppLifeCycleTest, GetOrCreateAppRunningRecord_001, TestSize.Level0)
  * FunctionPoints: UnsuspendApplication
  * CaseDescription: Check if there is background operation permission
  */
-HWTEST_F(AmsAppLifeCycleTest, GetOrCreateAppRunningRecord_002, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, GetOrCreateAppRunningRecord_002, TestSize.Level1)
 {
     RecordQueryResult result;
     auto abilityInfo = GetAbilityInfoByIndex("0");
@@ -1914,7 +1922,7 @@ HWTEST_F(AmsAppLifeCycleTest, GetOrCreateAppRunningRecord_002, TestSize.Level0)
  * FunctionPoints: UnsuspendApplication
  * CaseDescription: Check if there is background operation permission
  */
-HWTEST_F(AmsAppLifeCycleTest, GetAppRunningRecordByProcessName_001, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, GetAppRunningRecordByProcessName_001, TestSize.Level1)
 {
     RecordQueryResult result;
     auto abilityInfo = GetAbilityInfoByIndex("0");
@@ -1944,7 +1952,7 @@ HWTEST_F(AmsAppLifeCycleTest, GetAppRunningRecordByProcessName_001, TestSize.Lev
  * FunctionPoints: UnsuspendApplication
  * CaseDescription: Check if there is background operation permission
  */
-HWTEST_F(AmsAppLifeCycleTest, RemoveAppFromRecentList_001, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, RemoveAppFromRecentList_001, TestSize.Level1)
 {
     RecordQueryResult result;
     sptr<MockAppScheduler> mockAppScheduler = new MockAppScheduler();
@@ -1998,7 +2006,7 @@ HWTEST_F(AmsAppLifeCycleTest, RemoveAppFromRecentList_001, TestSize.Level0)
  * FunctionPoints: UnsuspendApplication
  * CaseDescription: Check if there is background operation permission
  */
-HWTEST_F(AmsAppLifeCycleTest, GetAbilityRunningRecordByAbilityToken_001, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleTest, GetAbilityRunningRecordByAbilityToken_001, TestSize.Level1)
 {
     // RecordQueryResult result;
     auto abilityInfo = GetAbilityInfoByIndex("0");

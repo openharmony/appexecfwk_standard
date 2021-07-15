@@ -22,7 +22,6 @@ appexecfwk_base_headers = {
     "install_param.h",
     "module_info.h",
     "permission_def.h",
-    "app_process_info.h",
     "running_process_info.h",
   ]
 

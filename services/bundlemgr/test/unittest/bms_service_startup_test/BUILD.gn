@@ -23,7 +23,7 @@ ohos_unittest("BmsServiceStartupTest") {
 
   sources = [
     "${services_path}/bundlemgr/src/bundle_data_mgr.cpp",
-    "${services_path}/bundlemgr/src/bundle_data_storage.cpp",
+    "${services_path}/bundlemgr/src/bundle_data_storage_database.cpp",
     "${services_path}/bundlemgr/src/bundle_mgr_host_impl.cpp",
     "${services_path}/bundlemgr/src/bundle_mgr_service.cpp",
     "${services_path}/bundlemgr/src/bundle_mgr_service_event_handler.cpp",
@@ -54,6 +54,7 @@ ohos_unittest("BmsServiceStartupTest") {
     "//base/security/permission/interfaces/innerkits/permission_standard/permissionsdk:libpermissionsdk_standard",
     "//foundation/aafwk/standard/interfaces/innerkits/base:base",
     "//foundation/aafwk/standard/interfaces/innerkits/want:want",
+    "//foundation/distributeddatamgr/distributeddatamgr/interfaces/innerkits/distributeddata:distributeddata_inner",
     "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
     "//third_party/googletest:gtest_main",
     "//utils/native/base:utils",

@@ -230,8 +230,8 @@ void SecondAbility::WantAddFlagsCase1(int code)
 void SecondAbility::WantAddFlagsCase2(int code)
 {
     Want want;
-    want.AddFlags(UINT32_MAX);
-    bool result = (want.GetFlags() == UINT32_MAX);
+    want.AddFlags(std::numeric_limits<int>::max());
+    bool result = (want.GetFlags() == std::numeric_limits<int>::max());
     TestUtils::PublishEvent(g_EVENT_RESP_SECOND, code, std::to_string(result));
 }
 
@@ -1341,7 +1341,7 @@ void SecondAbility::WantRemoveFlagsCase2(int code)
 // set and remove flags
 void SecondAbility::WantRemoveFlagsCase3(int code)
 {
-    unsigned flags = UINT_MAX;
+    unsigned flags = std::numeric_limits<int>::max();
     unsigned removedFlags = 1;
     Want want;
     bool result = (want.GetFlags() == 0);
@@ -1374,7 +1374,7 @@ void SecondAbility::WantRemoveFlagsCase4(int code)
 void SecondAbility::WantRemoveFlagsCase5(int code)
 {
     Want want;
-    unsigned flags = UINT_MAX;
+    unsigned flags = std::numeric_limits<int>::max();
     unsigned removedFlags = 0;
     want.SetFlags(flags);
     for (unsigned i = 0; i < pressureTimes; i++) {
@@ -2216,8 +2216,8 @@ void SecondAbility::WantSetFlagsCase1(int code)
 void SecondAbility::WantSetFlagsCase2(int code)
 {
     Want want;
-    want.SetFlags(UINT_MAX);
-    bool result = want.GetFlags() == UINT_MAX;
+    want.SetFlags(std::numeric_limits<int>::max());
+    bool result = want.GetFlags() == std::numeric_limits<int>::max();
     TestUtils::PublishEvent(g_EVENT_RESP_SECOND, code, std::to_string(result));
 }
 
@@ -2225,7 +2225,7 @@ void SecondAbility::WantSetFlagsCase2(int code)
 void SecondAbility::WantSetFlagsCase3(int code)
 {
     Want want;
-    want.RemoveFlags(UINT_MAX);
+    want.RemoveFlags(std::numeric_limits<int>::max());
     bool result = want.GetFlags() == 0;
     TestUtils::PublishEvent(g_EVENT_RESP_SECOND, code, std::to_string(result));
 }
@@ -2234,9 +2234,9 @@ void SecondAbility::WantSetFlagsCase3(int code)
 void SecondAbility::WantSetFlagsCase4(int code)
 {
     Want want;
-    want.SetFlags(UINT_MAX);
-    bool result = want.GetFlags() == UINT_MAX;
-    want.RemoveFlags(UINT_MAX);
+    want.SetFlags(std::numeric_limits<int>::max());
+    bool result = want.GetFlags() == std::numeric_limits<int>::max();
+    want.RemoveFlags(std::numeric_limits<int>::max());
     result = result && (want.GetFlags() == 0);
     TestUtils::PublishEvent(g_EVENT_RESP_SECOND, code, std::to_string(result));
 }
@@ -2245,8 +2245,8 @@ void SecondAbility::WantSetFlagsCase4(int code)
 void SecondAbility::WantSetFlagsCase5(int code)
 {
     Want want;
-    want.AddFlags(UINT_MAX);
-    bool result = want.GetFlags() == UINT_MAX;
+    want.AddFlags(std::numeric_limits<int>::max());
+    bool result = want.GetFlags() == std::numeric_limits<int>::max();
     TestUtils::PublishEvent(g_EVENT_RESP_SECOND, code, std::to_string(result));
 }
 
@@ -2254,9 +2254,9 @@ void SecondAbility::WantSetFlagsCase5(int code)
 void SecondAbility::WantSetFlagsCase6(int code)
 {
     Want want;
-    want.AddFlags(UINT_MAX);
-    bool result = want.GetFlags() == UINT_MAX;
-    want.RemoveFlags(UINT_MAX);
+    want.AddFlags(std::numeric_limits<int>::max());
+    bool result = want.GetFlags() == std::numeric_limits<int>::max();
+    want.RemoveFlags(std::numeric_limits<int>::max());
     result = result && (want.GetFlags() == 0);
     TestUtils::PublishEvent(g_EVENT_RESP_SECOND, code, std::to_string(result));
 }
@@ -2527,7 +2527,7 @@ void SecondAbility::WantToUriCase3(int code)
 // Want with flags to uri
 void SecondAbility::WantToUriCase4(int code)
 {
-    unsigned value = UINT_MAX;
+    unsigned value = std::numeric_limits<int>::max();
     Want want;
     want.SetFlags(value);
     Want *newWant = nullptr;
@@ -4025,8 +4025,8 @@ void SecondAbility::WantSetParamIntCase1(int code)
 {
     std::string key = "key";
     Want want;
-    want.SetParam(key, INT_MAX);
-    bool result = want.GetIntParam(key, 0) == INT_MAX;
+    want.SetParam(key, std::numeric_limits<int>::max());
+    bool result = want.GetIntParam(key, 0) == std::numeric_limits<int>::max();
     TestUtils::PublishEvent(g_EVENT_RESP_SECOND, code, std::to_string(result));
 }
 
@@ -4035,8 +4035,8 @@ void SecondAbility::WantSetParamIntCase2(int code)
 {
     std::string key = "key";
     Want want;
-    want.SetParam(key, INT_MIN);
-    bool result = want.GetIntParam(key, 0) == INT_MIN;
+    want.SetParam(key, std::numeric_limits<int>::min());
+    bool result = want.GetIntParam(key, 0) == std::numeric_limits<int>::min();
     TestUtils::PublishEvent(g_EVENT_RESP_SECOND, code, std::to_string(result));
 }
 
@@ -4156,8 +4156,8 @@ void SecondAbility::WantSetParamDoubleCase1(int code)
 {
     std::string key = "key";
     Want want;
-    want.SetParam(key, DBL_MAX);
-    bool result = want.GetDoubleParam(key, 0) == DBL_MAX;
+    want.SetParam(key, std::numeric_limits<double>::max());
+    bool result = want.GetDoubleParam(key, 0) == std::numeric_limits<double>::max();
     TestUtils::PublishEvent(g_EVENT_RESP_SECOND, code, std::to_string(result));
 }
 
@@ -4166,8 +4166,8 @@ void SecondAbility::WantSetParamDoubleCase2(int code)
 {
     std::string key = "key";
     Want want;
-    want.SetParam(key, DBL_MIN);
-    bool result = want.GetDoubleParam(key, 0) == DBL_MIN;
+    want.SetParam(key, std::numeric_limits<double>::min());
+    bool result = want.GetDoubleParam(key, 0) == std::numeric_limits<double>::min();
     TestUtils::PublishEvent(g_EVENT_RESP_SECOND, code, std::to_string(result));
 }
 
@@ -4293,8 +4293,8 @@ void SecondAbility::WantSetParamFloatCase1(int code)
 {
     std::string key = "key";
     Want want;
-    want.SetParam(key, FLT_MAX);
-    bool result = want.GetFloatParam(key, 0) == FLT_MAX;
+    want.SetParam(key, std::numeric_limits<float>::max());
+    bool result = want.GetFloatParam(key, 0) == std::numeric_limits<float>::max();
     TestUtils::PublishEvent(g_EVENT_RESP_SECOND, code, std::to_string(result));
 }
 
@@ -4303,8 +4303,8 @@ void SecondAbility::WantSetParamFloatCase2(int code)
 {
     std::string key = "key";
     Want want;
-    want.SetParam(key, FLT_MIN);
-    bool result = want.GetFloatParam(key, 0) == FLT_MIN;
+    want.SetParam(key, std::numeric_limits<float>::min());
+    bool result = want.GetFloatParam(key, 0) == std::numeric_limits<float>::min();
     TestUtils::PublishEvent(g_EVENT_RESP_SECOND, code, std::to_string(result));
 }
 
@@ -4428,8 +4428,8 @@ void SecondAbility::WantSetParamLongCase1(int code)
 {
     std::string key = "key";
     Want want;
-    want.SetParam(key, LONG_MAX);
-    bool result = want.GetLongParam(key, 0) == LONG_MAX;
+    want.SetParam(key, std::numeric_limits<long>::max());
+    bool result = want.GetLongParam(key, 0) == std::numeric_limits<long>::max();
     TestUtils::PublishEvent(g_EVENT_RESP_SECOND, code, std::to_string(result));
 }
 
@@ -4438,8 +4438,8 @@ void SecondAbility::WantSetParamLongCase2(int code)
 {
     std::string key = "key";
     Want want;
-    want.SetParam(key, LONG_MIN);
-    bool result = want.GetLongParam(key, 0) == LONG_MIN;
+    want.SetParam(key, std::numeric_limits<long>::min());
+    bool result = want.GetLongParam(key, 0) == std::numeric_limits<long>::min();
     TestUtils::PublishEvent(g_EVENT_RESP_SECOND, code, std::to_string(result));
 }
 
@@ -4564,10 +4564,10 @@ void SecondAbility::WantSetParamLongArrayCase5(int code)
 void SecondAbility::WantSetParamShortCase1(int code)
 {
     std::string key = "key";
-    short value = SHRT_MAX;
+    short value = std::numeric_limits<short>::max();
     Want want;
     want.SetParam(key, value);
-    bool result = want.GetShortParam(key, 0) == SHRT_MAX;
+    bool result = want.GetShortParam(key, 0) == std::numeric_limits<short>::max();
     TestUtils::PublishEvent(g_EVENT_RESP_SECOND, code, std::to_string(result));
 }
 
@@ -4575,10 +4575,10 @@ void SecondAbility::WantSetParamShortCase1(int code)
 void SecondAbility::WantSetParamShortCase2(int code)
 {
     std::string key = "key";
-    short value = SHRT_MIN;
+    short value = std::numeric_limits<short>::min();
     Want want;
     want.SetParam(key, value);
-    bool result = want.GetShortParam(key, 0) == SHRT_MIN;
+    bool result = want.GetShortParam(key, 0) == std::numeric_limits<short>::min();
     TestUtils::PublishEvent(g_EVENT_RESP_SECOND, code, std::to_string(result));
 }
 

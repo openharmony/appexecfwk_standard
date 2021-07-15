@@ -56,4 +56,10 @@
    	 <option name="push" value="bundle_kit/. -> /data/test/resource/bms/bundle_kit/" src="res" />
     </preparer>
   </target>
+  <target name="BmsBundlePermissionTest">
+    <depend resource="permission_bundle/." pushpath="/data/test/resource/bms/bundle_permission/" findpath="res" presetcmd=""/>
+ 	<preparer>
+   	 <option name="push" value="permission_bundle/. -> /data/test/resource/bms/bundle_permission/" src="res" />
+    </preparer>
+  </target>
 </configuration>

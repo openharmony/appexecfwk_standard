@@ -22,7 +22,7 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
+using namespace AAFwk;
 class MockAbilityMgrStub : public IRemoteStub<AAFwk::IAbilityManager> {
 public:
     using Uri = OHOS::Uri;
@@ -105,7 +105,7 @@ public:
         return 0;
     }
     virtual int GetRecentMissions(
-        const int32_t numMax, const int32_t flags, std::vector<AAFwk::RecentMissionInfo> &recentList) override
+        const int32_t numMax, const int32_t flags, std::vector<AAFwk::AbilityMissionInfo> &recentList) override
     {
         return 0;
     }
@@ -134,6 +134,93 @@ public:
         return 0;
     }
     virtual int TerminateAbilityByCaller(const sptr<IRemoteObject> &callerToken, int requestCode) override
+    {
+        return 0;
+    }
+
+    virtual int MoveMissionToEnd(const sptr<IRemoteObject> &token, const bool nonFirst) override
+    {
+        return 0;
+    }
+
+    virtual bool IsFirstInMission(const sptr<IRemoteObject> &token) override
+    {
+        return true;
+    }
+
+    virtual int CompelVerifyPermission(const std::string &permission, int pid, int uid, std::string &message) override
+    {
+        return 0;
+    }
+
+    virtual int PowerOff() override
+    {
+        return 0;
+    }
+
+    virtual int PowerOn() override
+    {
+        return 0;
+    }
+
+    virtual int LockMission(int missionId) override
+    {
+        return 0;
+    }
+
+    virtual int UnlockMission(int missionId) override
+    {
+        return 0;
+    }
+
+    virtual sptr<AAFwk::IWantSender> GetWantSender(
+        const WantSenderInfo &wantSenderInfo, const sptr<IRemoteObject> &callerToken) override
+    {
+        return nullptr;
+    }
+
+    virtual int SendWantSender(const sptr<AAFwk::IWantSender> &target, const SenderInfo &senderInfo) override
+    {
+        return 0;
+    }
+
+    virtual void CancelWantSender(const sptr<AAFwk::IWantSender> &sender) override
+    {}
+
+    virtual int GetPendingWantUid(const sptr<AAFwk::IWantSender> &target) override
+    {
+        return 0;
+    }
+
+    virtual int GetPendingWantUserId(const sptr<AAFwk::IWantSender> &target) override
+    {
+        return 0;
+    }
+
+    virtual std::string GetPendingWantBundleName(const sptr<AAFwk::IWantSender> &target) override
+    {
+        return "";
+    }
+
+    virtual int GetPendingWantCode(const sptr<AAFwk::IWantSender> &target) override
+    {
+        return 0;
+    }
+
+    virtual int GetPendingWantType(const sptr<AAFwk::IWantSender> &target) override
+    {
+        return 0;
+    }
+
+    virtual void RegisterCancelListener(
+        const sptr<AAFwk::IWantSender> &sender, const sptr<IWantReceiver> &receiver) override
+    {}
+
+    virtual void UnregisterCancelListener(
+        const sptr<AAFwk::IWantSender> &sender, const sptr<IWantReceiver> &receiver) override
+    {}
+
+    virtual int GetPendingRequestWant(const sptr<IWantSender> &target, std::shared_ptr<Want> &want) override
     {
         return 0;
     }
