@@ -64,4 +64,4 @@ service foundation /system/bin/sa_main /system/profile/foundation.xml
     user system
     group system
     seclabel u:r:foundation:s0
-    capabilities SYS_PTRACE KILL
+    capabilities SYS_PTRACE KILL SYS_BOOT
