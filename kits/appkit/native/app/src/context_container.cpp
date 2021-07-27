@@ -686,9 +686,9 @@ void ContextContainer::InitResourceManager(BundleInfo &bundleInfo, std::shared_p
     resConfig->SetLocaleInfo("zh", "Hans", "CN");
     if (resConfig->GetLocaleInfo() != nullptr) {
         APP_LOGI("ContextContainer::InitResourceManager language: %{public}s, script: %{public}s, region: %{public}s,",
-            resConfig->GetLocaleInfo()->GetLanguage(),
-            resConfig->GetLocaleInfo()->GetScript(),
-            resConfig->GetLocaleInfo()->GetRegion());
+            resConfig->GetLocaleInfo()->getLanguage(),
+            resConfig->GetLocaleInfo()->getScript(),
+            resConfig->GetLocaleInfo()->getCountry());
     } else {
         APP_LOGI("ContextContainer::InitResourceManager language: GetLocaleInfo is null.");
     }
