@@ -28,14 +28,15 @@ config("appkit_config") {
     "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_core/include/appmgr",
     "//foundation/aafwk/standard/frameworks/kits/ability/native/include",
     "//foundation/aafwk/standard/interfaces/innerkits/want/include/ohos/aafwk/content",
-    "//base/global/resmgr_standard/interfaces/innerkits/include",
   ]
 }
 
 config("appkit_public_config") {
   visibility = [ ":*" ]
-  include_dirs =
-      [ "//base/global/resmgr_standard/interfaces/innerkits/include" ]
+  include_dirs = [
+    "//base/global/resmgr_standard/interfaces/innerkits/include",
+    "//third_party/icu/icu4c/source/common",
+  ]
 }
 
 #build bin
@@ -126,7 +127,6 @@ ohos_shared_library("appkit_native") {
     "$SUBSYSTEM_DIR/common:libappexecfwk_common",
     "$SUBSYSTEM_DIR/interfaces/innerkits/appexecfwk_base:appexecfwk_base",
     "$SUBSYSTEM_DIR/interfaces/innerkits/appexecfwk_core:appexecfwk_core",
-    "//base/global/resmgr_standard/frameworks/resmgr:global_resmgr",
     "//foundation/aafwk/standard/frameworks/kits/ability/native:abilitykit_native",
     "//foundation/aafwk/standard/interfaces/innerkits/ability_manager:ability_manager",
     "//foundation/appexecfwk/standard/interfaces/innerkits/libeventhandler:libeventhandler",
@@ -134,6 +134,10 @@ ohos_shared_library("appkit_native") {
     "//foundation/distributedschedule/dmsfwk/interfaces/innerkits/uri:zuri",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
     "//utils/native/base:utils",
+  ]
+
+  public_deps = [
+    "//base/global/resmgr_standard/frameworks/resmgr:global_resmgr",
   ]
 
   external_deps = [
