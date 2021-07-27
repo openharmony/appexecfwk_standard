@@ -20,7 +20,6 @@ config("bundlemgr_config") {
   include_dirs = [
     "include",
     "//utils/system/safwk/native/include",
-    "//foundation/appexecfwk/standard/event/cesfwk/kits/native/include",
   ]
 }
 
@@ -120,7 +119,7 @@ ohos_shared_library("libbms") {
     "//foundation/aafwk/standard/interfaces/innerkits/want/include/ohos/aafwk/content/",
     "//foundation/aafwk/standard/interfaces/innerkits/ability_manager/include",
     "//foundation/distributedschedule/dmsfwk/services/dtbschedmgr/include",
-    "//base/notification/ces_standard/cesfwk/kits/native/include",
+    "//base/notification/ces_standard/interfaces/innerkits/native/include",
     "//utils/system/safwk/native/include",
   ]
 
@@ -157,7 +156,6 @@ ohos_shared_library("libbms") {
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core:appexecfwk_core",
     "${common_path}:libappexecfwk_common",
     "${libs_path}/libeventhandler:libeventhandler_target",
-    "//base/notification/ces_standard/cesfwk/kits/native:cesfwk_kits",
     "//base/security/appverify/interfaces/innerkits/appverify:libhapverify",
     "//base/security/permission/interfaces/innerkits/permission_standard/permissionsdk:libpermissionsdk_standard",
     "//foundation/aafwk/standard/interfaces/innerkits/base:base",
@@ -168,6 +166,8 @@ ohos_shared_library("libbms") {
   ]
 
   external_deps = [
+    "ces_standard:cesfwk_core",
+    "ces_standard:cesfwk_innerkits",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
   ]
@@ -209,7 +209,11 @@ ohos_executable("installs") {
 }
 
 ohos_prebuilt_etc("installs.rc") {
-  source = "installs.rc"
+  if (use_musl) {
+    source = "installs.cfg"
+  } else {
+    source = "installs.rc"
+  }
   relative_install_dir = "init"
   subsystem_name = "appexecfwk"
   part_name = "appexecfwk_standard"

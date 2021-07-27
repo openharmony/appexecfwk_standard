@@ -153,6 +153,30 @@ struct Forms {
     FormsMetaData metaData;
 };
 
+struct Parameters {
+    std::string description;
+    std::string name;
+    std::string type;
+};
+
+struct Results {
+    std::string description;
+    std::string name;
+    std::string type;
+};
+
+struct CustomizeData {
+    std::string name;
+    std::string value;
+    std::string extra;
+};
+
+struct MetaData {
+    std::vector<Parameters> parameters;
+    std::vector<Results> results;
+	std::vector<CustomizeData> customizeData;
+};
+
 struct UriPermission {
     std::string mode;
     std::string path;
@@ -223,6 +247,7 @@ struct CommonEvent {
 struct Shortcut {
     std::string shortcutId;
     std::string label;
+    std::string icon;
     std::vector<Intent> intents;
 };
 
@@ -666,6 +691,128 @@ void from_json(const nlohmann::json &jsonObject, Form &form)
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
+}
+
+void from_json(const nlohmann::json &jsonObject, CustomizeData &customizeData)
+{
+    // these are not required fields.
+    const auto &jsonObjectEnd = jsonObject.end();
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        PROFILE_KEY_NAME,
+        customizeData.name,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        BUNDLE_MODULE_META_KEY_EXTRA,
+        customizeData.extra,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        BUNDLE_MODULE_META_KEY_VALUE,
+        customizeData.value,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+}
+
+void from_json(const nlohmann::json &jsonObject, Parameters &parameters)
+{
+    // these are required fields.
+    const auto &jsonObjectEnd = jsonObject.end();
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        BUNDLE_MODULE_PROFILE_KEY_TYPE,
+        parameters.type,
+        JsonType::STRING,
+        true,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    // these are not required fields.
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        PROFILE_KEY_DESCRIPTION,
+        parameters.description,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        PROFILE_KEY_NAME,
+        parameters.name,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+}
+
+void from_json(const nlohmann::json &jsonObject, Results &results)
+{
+    // these are required fields.
+    const auto &jsonObjectEnd = jsonObject.end();
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        BUNDLE_MODULE_PROFILE_KEY_TYPE,
+        results.type,
+        JsonType::STRING,
+        true,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    // these are not required fields.
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        PROFILE_KEY_DESCRIPTION,
+        results.description,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        PROFILE_KEY_NAME,
+        results.name,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+}
+
+void from_json(const nlohmann::json &jsonObject, MetaData &metaData)
+{
+    // these are not required fields.
+    const auto &jsonObjectEnd = jsonObject.end();
+	GetValueIfFindKey<std::vector<CustomizeData>>(jsonObject,
+        jsonObjectEnd,
+        BUNDLE_MODULE_META_KEY_CUSTOMIZE_DATA,
+        metaData.customizeData,
+        JsonType::ARRAY,
+        false,
+        parseResult,
+        ArrayType::OBJECT);
+    GetValueIfFindKey<std::vector<Parameters>>(jsonObject,
+        jsonObjectEnd,
+        BUNDLE_MODULE_META_KEY_PARAMETERS,
+        metaData.parameters,
+        JsonType::ARRAY,
+        false,
+        parseResult,
+        ArrayType::OBJECT);
+    GetValueIfFindKey<std::vector<Results>>(jsonObject,
+        jsonObjectEnd,
+        BUNDLE_MODULE_META_KEY_RESULTS,
+        metaData.results,
+        JsonType::ARRAY,
+        false,
+        parseResult,
+        ArrayType::OBJECT);
 }
 
 void from_json(const nlohmann::json &jsonObject, FormsCustomizeData &customizeDataForms)
@@ -1201,14 +1348,14 @@ void from_json(const nlohmann::json &jsonObject, Js &js)
         ArrayType::NOT_ARRAY);
 }
 
-void from_json(const nlohmann::json &jsonObject, Intent &intent)
+void from_json(const nlohmann::json &jsonObject, Intent &intents)
 {
     // these are not required fields.
     const auto &jsonObjectEnd = jsonObject.end();
     GetValueIfFindKey<std::string>(jsonObject,
         jsonObjectEnd,
         BUNDLE_MODULE_PROFILE_KEY_TARGET_CLASS,
-        intent.targetClass,
+        intents.targetClass,
         JsonType::STRING,
         false,
         parseResult,
@@ -1216,7 +1363,7 @@ void from_json(const nlohmann::json &jsonObject, Intent &intent)
     GetValueIfFindKey<std::string>(jsonObject,
         jsonObjectEnd,
         BUNDLE_MODULE_PROFILE_KEY_TARGET_BUNDLE,
-        intent.targetBundle,
+        intents.targetBundle,
         JsonType::STRING,
         false,
         parseResult,
@@ -1287,6 +1434,14 @@ void from_json(const nlohmann::json &jsonObject, Shortcut &shortcut)
         jsonObjectEnd,
         PROFILE_KEY_LABEL,
         shortcut.label,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        BUNDLE_MODULE_PROFILE_KEY_ICON,
+        shortcut.icon,
         JsonType::STRING,
         false,
         parseResult,
@@ -1557,7 +1712,7 @@ bool ConvertFormInfo(FormInfo &forminfos, const ProfileReader::Forms &form)
     forminfos.updateDuration = form.updateDuration;
     forminfos.jsComponentName = form.jsComponentName;
     for (auto data : form.metaData.customizeData) {
-        CustomizeData customizeData;
+        FormCustomizeData customizeData;
         customizeData.name = data.name;
         customizeData.value = data.value;
         forminfos.customizeDatas.emplace_back(customizeData);
@@ -1628,10 +1783,35 @@ bool TransformToInfo(const ProfileReader::ConfigJson &configJson, BundleInfo &bu
     return true;
 }
 
+void GetMetaData(MetaData &metaData, const ProfileReader::MetaData &profileMetaData)
+{
+    for (const auto& item : profileMetaData.parameters) {
+        Parameters parameter;
+        parameter.description = item.description;
+        parameter.name = item.name;
+        parameter.type = item.type;
+        metaData.parameters.emplace_back(parameter);
+    }
+    for (const auto& item : profileMetaData.results) {
+        Results result;
+        result.description = item.description;
+        result.name = item.name;
+        result.type = item.type;
+        metaData.results.emplace_back(result);
+    }
+    for (const auto& item : profileMetaData.customizeData) {
+        CustomizeData customizeData;
+        customizeData.name = item.name;
+        customizeData.extra = item.extra;
+        customizeData.value = item.value;
+        metaData.customizeData.emplace_back(customizeData);
+    }
+}
+
 bool TransformToInfo(const ProfileReader::ConfigJson &configJson, InnerModuleInfo &innerModuleInfo)
 {
     innerModuleInfo.modulePackage = configJson.module.package;
-    innerModuleInfo.moduleName = configJson.module.name;
+    innerModuleInfo.moduleName = configJson.module.distro.moduleName;
     innerModuleInfo.description = configJson.module.description;
     auto colorModeInfo = std::find_if(std::begin(ProfileReader::moduleColorMode),
         std::end(ProfileReader::moduleColorMode),
@@ -1639,7 +1819,7 @@ bool TransformToInfo(const ProfileReader::ConfigJson &configJson, InnerModuleInf
     if (colorModeInfo != ProfileReader::moduleColorMode.end()) {
         innerModuleInfo.colorMode = colorModeInfo->second;
     }
-    innerModuleInfo.metaData = configJson.module.metaData;
+    GetMetaData(innerModuleInfo.metaData, configJson.module.metaData);
     innerModuleInfo.distro = configJson.module.distro;
     innerModuleInfo.reqCapabilities = configJson.module.reqCapabilities;
     innerModuleInfo.defPermissions = configJson.module.defPermissions;
@@ -1689,17 +1869,18 @@ bool TransformToInfo(
     abilityInfo.uri = ability.uri;
     abilityInfo.package = configJson.module.package;
     abilityInfo.bundleName = configJson.app.bundleName;
-    abilityInfo.moduleName = configJson.module.name;
+    abilityInfo.moduleName = configJson.module.distro.moduleName;
     abilityInfo.applicationName = configJson.app.bundleName;
     abilityInfo.targetAbility = ability.targetAbility;
     abilityInfo.enabled = true;
     abilityInfo.readPermission = ability.readPermission;
     abilityInfo.writePermission = ability.writePermission;
-    abilityInfo.form.formEntity = ability.form.formEntity;
-    abilityInfo.form.minHeight = ability.form.minHeight;
-    abilityInfo.form.defaultHeight = ability.form.defaultHeight;
-    abilityInfo.form.minWidth = ability.form.minWidth;
-    abilityInfo.form.defaultWidth = ability.form.defaultWidth;
+    abilityInfo.formEntity = ability.form.formEntity;
+    abilityInfo.minFormHeight = ability.form.minHeight;
+    abilityInfo.defaultFormHeight = ability.form.defaultHeight;
+    abilityInfo.minFormWidth = ability.form.minWidth;
+    abilityInfo.defaultFormWidth = ability.form.defaultWidth;
+    GetMetaData(abilityInfo.metaData, ability.metaData);
     return true;
 }
 
@@ -1723,7 +1904,21 @@ bool TransformToInfo(ProfileReader::ConfigJson &configJson, InnerBundleInfo &inn
 
     InnerModuleInfo innerModuleInfo;
     TransformToInfo(configJson, innerModuleInfo);
-
+    for (const auto &info : configJson.module.shortcuts) {
+        ShortcutInfo shortcutInfo;
+        shortcutInfo.id = info.shortcutId;
+        shortcutInfo.bundleName = configJson.app.bundleName;
+        shortcutInfo.icon = info.icon;
+        shortcutInfo.label = info.label;
+        for (const auto &intent : info.intents) {
+            ShortcutIntent shortcutIntent;
+            shortcutIntent.targetBundle = intent.targetBundle;
+            shortcutIntent.targetClass = intent.targetClass;
+            shortcutInfo.intents.emplace_back(shortcutIntent);
+        }
+        std::string shortcutkey = configJson.app.bundleName + configJson.module.package + info.shortcutId;
+        innerBundleInfo.InsertShortcutInfos(shortcutkey, shortcutInfo);
+    }
     bool find = false;
     for (const auto &ability : configJson.module.abilities) {
         AbilityInfo abilityInfo;

@@ -54,6 +54,7 @@ const std::string MODULE_RES_PATH = "moduleResPath";
 const std::string MODULE_ABILITY_KEYS = "abilityKeys";
 const std::string MODULE_SKILL_KEYS = "skillKeys";
 const std::string MODULE_FORMS = "formInfos";
+const std::string MODULE_SHORTCUT = "shortcutInfos";
 
 }  // namespace
 
@@ -67,41 +68,7 @@ InnerBundleInfo::~InnerBundleInfo()
     APP_LOGD("inner bundle info instance is destroyed");
 }
 
-void to_json(nlohmann::json &jsonObject, const InnerCustomizeData &customizeData)
-{
-    jsonObject = nlohmann::json{
-        {ProfileReader::PROFILE_KEY_NAME, customizeData.name},
-        {ProfileReader::BUNDLE_MODULE_META_KEY_EXTRA, customizeData.extra},
-        {ProfileReader::BUNDLE_MODULE_META_KEY_VALUE, customizeData.value}
-    };
-}
 
-void to_json(nlohmann::json &jsonObject, const Parameters &parameters)
-{
-    jsonObject = nlohmann::json{
-        {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_TYPE, parameters.type},
-        {ProfileReader::PROFILE_KEY_DESCRIPTION, parameters.description},
-        {ProfileReader::PROFILE_KEY_NAME, parameters.name}
-    };
-}
-
-void to_json(nlohmann::json &jsonObject, const Results &results)
-{
-    jsonObject = nlohmann::json{
-        {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_TYPE, results.type},
-        {ProfileReader::PROFILE_KEY_DESCRIPTION, results.description},
-        {ProfileReader::PROFILE_KEY_NAME, results.name}
-    };
-}
-
-void to_json(nlohmann::json &jsonObject, const MetaData &metaData)
-{
-    jsonObject = nlohmann::json{
-        {ProfileReader::BUNDLE_MODULE_META_KEY_CUSTOMIZE_DATA, metaData.customizeData},
-        {ProfileReader::BUNDLE_MODULE_META_KEY_PARAMETERS, metaData.parameters},
-        {ProfileReader::BUNDLE_MODULE_META_KEY_RESULTS, metaData.results}
-    };
-}
 
 void to_json(nlohmann::json &jsonObject, const Distro &distro)
 {
@@ -203,6 +170,7 @@ void InnerBundleInfo::ToJson(nlohmann::json &jsonObject) const
     jsonObject[APP_FEATURE] = appFeature_;
     jsonObject[HAS_ENTRY] = hasEntry_;
 	jsonObject[MODULE_FORMS] = formInfos_;
+    jsonObject[MODULE_SHORTCUT] = shortcutInfos_;
 }
 
 void from_json(const nlohmann::json &jsonObject, InnerModuleInfo &info)
@@ -408,127 +376,7 @@ void from_json(const nlohmann::json &jsonObject, Skill &skill)
         ArrayType::OBJECT);
 }
 
-void from_json(const nlohmann::json &jsonObject, InnerCustomizeData &customizeData)
-{
-    // these are not required fields.
-    const auto &jsonObjectEnd = jsonObject.end();
-    GetValueIfFindKey<std::string>(jsonObject,
-        jsonObjectEnd,
-        ProfileReader::PROFILE_KEY_NAME,
-        customizeData.name,
-        JsonType::STRING,
-        false,
-        ProfileReader::parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<std::string>(jsonObject,
-        jsonObjectEnd,
-        ProfileReader::BUNDLE_MODULE_META_KEY_EXTRA,
-        customizeData.extra,
-        JsonType::STRING,
-        false,
-        ProfileReader::parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<std::string>(jsonObject,
-        jsonObjectEnd,
-        ProfileReader::BUNDLE_MODULE_META_KEY_VALUE,
-        customizeData.value,
-        JsonType::STRING,
-        false,
-        ProfileReader::parseResult,
-        ArrayType::NOT_ARRAY);
-}
 
-void from_json(const nlohmann::json &jsonObject, Parameters &parameters)
-{
-    // these are required fields.
-    const auto &jsonObjectEnd = jsonObject.end();
-    GetValueIfFindKey<std::string>(jsonObject,
-        jsonObjectEnd,
-        ProfileReader::BUNDLE_MODULE_PROFILE_KEY_TYPE,
-        parameters.type,
-        JsonType::STRING,
-        true,
-        ProfileReader::parseResult,
-        ArrayType::NOT_ARRAY);
-    // these are not required fields.
-    GetValueIfFindKey<std::string>(jsonObject,
-        jsonObjectEnd,
-        ProfileReader::PROFILE_KEY_DESCRIPTION,
-        parameters.description,
-        JsonType::STRING,
-        false,
-        ProfileReader::parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<std::string>(jsonObject,
-        jsonObjectEnd,
-        ProfileReader::PROFILE_KEY_NAME,
-        parameters.name,
-        JsonType::STRING,
-        false,
-        ProfileReader::parseResult,
-        ArrayType::NOT_ARRAY);
-}
-
-void from_json(const nlohmann::json &jsonObject, Results &results)
-{
-    // these are required fields.
-    const auto &jsonObjectEnd = jsonObject.end();
-    GetValueIfFindKey<std::string>(jsonObject,
-        jsonObjectEnd,
-        ProfileReader::BUNDLE_MODULE_PROFILE_KEY_TYPE,
-        results.type,
-        JsonType::STRING,
-        true,
-        ProfileReader::parseResult,
-        ArrayType::NOT_ARRAY);
-    // these are not required fields.
-    GetValueIfFindKey<std::string>(jsonObject,
-        jsonObjectEnd,
-        ProfileReader::PROFILE_KEY_DESCRIPTION,
-        results.description,
-        JsonType::STRING,
-        false,
-        ProfileReader::parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<std::string>(jsonObject,
-        jsonObjectEnd,
-        ProfileReader::PROFILE_KEY_NAME,
-        results.name,
-        JsonType::STRING,
-        false,
-        ProfileReader::parseResult,
-        ArrayType::NOT_ARRAY);
-}
-
-void from_json(const nlohmann::json &jsonObject, MetaData &metaData)
-{
-    // these are not required fields.
-    const auto &jsonObjectEnd = jsonObject.end();
-	GetValueIfFindKey<std::vector<InnerCustomizeData>>(jsonObject,
-        jsonObjectEnd,
-        ProfileReader::BUNDLE_MODULE_META_KEY_CUSTOMIZE_DATA,
-        metaData.customizeData,
-        JsonType::ARRAY,
-        false,
-        ProfileReader::parseResult,
-        ArrayType::OBJECT);
-    GetValueIfFindKey<std::vector<Parameters>>(jsonObject,
-        jsonObjectEnd,
-        ProfileReader::BUNDLE_MODULE_META_KEY_PARAMETERS,
-        metaData.parameters,
-        JsonType::ARRAY,
-        false,
-        ProfileReader::parseResult,
-        ArrayType::OBJECT);
-    GetValueIfFindKey<std::vector<Results>>(jsonObject,
-        jsonObjectEnd,
-        ProfileReader::BUNDLE_MODULE_META_KEY_RESULTS,
-        metaData.results,
-        JsonType::ARRAY,
-        false,
-        ProfileReader::parseResult,
-        ArrayType::OBJECT);
-}
 
 void from_json(const nlohmann::json &jsonObject, Distro &distro)
 {
@@ -809,6 +657,14 @@ int32_t InnerBundleInfo::FromJson(const nlohmann::json &jsonObject)
 		true,
 		ProfileReader::parseResult,
 		ArrayType::NOT_ARRAY);
+     GetValueIfFindKey<std::map<std::string, ShortcutInfo>>(jsonObject,
+        jsonObjectEnd,
+        MODULE_SHORTCUT,
+        shortcutInfos_,
+        JsonType::OBJECT,
+        true,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
     GetValueIfFindKey<bool>(jsonObject,
         jsonObjectEnd,
         HAS_ENTRY,
@@ -899,6 +755,7 @@ bool InnerBundleInfo::AddModuleInfo(const InnerBundleInfo &newInfo)
     AddModuleAbilityInfo(newInfo.baseAbilityInfos_);
     AddModuleSkillInfo(newInfo.skillInfos_);
     AddModuleFormInfo(newInfo.formInfos_);
+    AddModuleShortcutInfo(newInfo.shortcutInfos_);
     return true;
 }
 
@@ -934,6 +791,9 @@ void InnerBundleInfo::UpdateModuleInfo(const InnerBundleInfo &newInfo)
             ++it;
         }
     }
+    for (auto it = shortcutInfos_.begin(); it != shortcutInfos_.end();) {
+        (it->first.find(newInfo.currentPackage_) != std::string::npos) ? shortcutInfos_.erase(it++) : (++it);
+    }
     if (!hasEntry_ && newInfo.HasEntry()) {
         hasEntry_ = true;
     }
@@ -944,6 +804,7 @@ void InnerBundleInfo::UpdateModuleInfo(const InnerBundleInfo &newInfo)
     AddModuleAbilityInfo(newInfo.baseAbilityInfos_);
     AddModuleSkillInfo(newInfo.skillInfos_);
     AddModuleFormInfo(newInfo.formInfos_);
+    AddModuleShortcutInfo(newInfo.shortcutInfos_);
 }
 
 void InnerBundleInfo::RemoveModuleInfo(const std::string &modulePackage)
@@ -966,6 +827,9 @@ void InnerBundleInfo::RemoveModuleInfo(const std::string &modulePackage)
     }
     for (auto it = formInfos_.begin(); it != formInfos_.end();) {
         (it->first.find(modulePackage) != std::string::npos) ? formInfos_.erase(it++) : (++it);
+    }
+    for (auto it = shortcutInfos_.begin(); it != shortcutInfos_.end();) {
+        (it->first.find(modulePackage) != std::string::npos) ? shortcutInfos_.erase(it++) : (++it);
     }
 }
 
@@ -990,6 +854,7 @@ std::string InnerBundleInfo::ToString() const
     j[PROVISION_ID] = provisionId_;
     j[HAS_ENTRY] = hasEntry_;
     j[MODULE_FORMS] = formInfos_;
+    j[MODULE_SHORTCUT] = shortcutInfos_;
     return j.dump();
 }
 
@@ -1077,6 +942,13 @@ void InnerBundleInfo::GetFormsInfoByApp(std::vector<FormInfo> &formInfos) const
 		for (auto &form : data.second) {
 			formInfos.emplace_back(form);
 		}
+	}
+}
+
+void InnerBundleInfo::GetShortcutInfos(std::vector<ShortcutInfo> &shortcutInfos) const
+{
+    for (const auto &shortcut : shortcutInfos_) {
+		shortcutInfos.emplace_back(shortcut.second);	
 	}
 }
 

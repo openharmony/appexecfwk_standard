@@ -73,7 +73,6 @@ ohos_source_set("appmgr_mst_source") {
     "${innerkits_path}/appexecfwk_base:appexecfwk_base",
     "${innerkits_path}/appexecfwk_core:appexecfwk_core",
     "${libs_path}/libeventhandler:libeventhandler_target",
-    "//base/notification/ces_standard/cesfwk/innerkits:cesfwk_innerkits",
     "//base/security/permission/interfaces/innerkits/permission_standard/permissionsdk:libpermissionsdk_standard",
     "//base/startup/appspawn_standard:appspawn_socket_client",
     "//foundation/aafwk/standard/interfaces/innerkits/base:base",
@@ -85,6 +84,7 @@ ohos_source_set("appmgr_mst_source") {
   ]
 
   external_deps = [
+    "ces_standard:cesfwk_core",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
   ]

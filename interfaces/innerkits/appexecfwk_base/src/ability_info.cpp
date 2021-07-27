@@ -63,10 +63,16 @@ const std::string JSON_KEY_READ_PERMISSION = "readPermission";
 const std::string JSON_KEY_WRITE_PERMISSION = "writePermission";
 const std::string JSON_KEY_FORM = "form";
 const std::string JSON_KEY_FORM_ENTITY = "formEntity";
-const std::string JSON_KEY_FORM_MIN_HEIGHT = "minHeight";
-const std::string JSON_KEY_FORM_DEFAULT_HEIGHT = "defaultHeight";
-const std::string JSON_KEY_FORM_MIN_WIDTH = "minWidth";
-const std::string JSON_KEY_FORM_DEFAULT_WIDTH = "defaultWidth";
+const std::string JSON_KEY_MIN_FORM_HEIGHT = "minFormHeight";
+const std::string JSON_KEY_DEFAULT_FORM_HEIGHT = "defaultFormHeight";
+const std::string JSON_KEY_MIN_FORM_WIDTH = "minFormWidth";
+const std::string JSON_KEY_DEFAULT_FORM_WIDTH = "defaultFormWidth";
+const std::string JSON_KEY_PARAMETERS = "parameters";
+const std::string JSON_KEY_RESULTS = "results";
+const std::string JSON_KEY_CUSTOMIZE_DATA = "customizeData";
+const std::string JSON_KEY_META_DATA = "metaData";
+const std::string JSON_KEY_META_VALUE = "value";
+const std::string JSON_KEY_META_EXTRA = "extra";
 
 }  // namespace
 
@@ -99,12 +105,12 @@ bool AbilityInfo::ReadFromParcel(Parcel &parcel)
     int32_t formEntitySize;
     READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, formEntitySize);
     for (int32_t i = 0; i < formEntitySize; i++) {
-        form.formEntity.emplace_back(Str16ToStr8(parcel.ReadString16()));
+        formEntity.emplace_back(Str16ToStr8(parcel.ReadString16()));
     }
-    form.minHeight = parcel.ReadInt32();
-    form.defaultHeight = parcel.ReadInt32();
-    form.minWidth = parcel.ReadInt32();
-    form.defaultWidth = parcel.ReadInt32();
+    minFormHeight = parcel.ReadInt32();
+    defaultFormHeight = parcel.ReadInt32();
+    minFormWidth = parcel.ReadInt32();
+    defaultFormWidth = parcel.ReadInt32();
 
     int32_t typeData;
     READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, typeData);
@@ -134,6 +140,45 @@ bool AbilityInfo::ReadFromParcel(Parcel &parcel)
     READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, deviceCapabilitiesSize);
     for (int32_t i = 0; i < deviceCapabilitiesSize; i++) {
         deviceCapabilities.emplace_back(Str16ToStr8(parcel.ReadString16()));
+    }
+
+    int32_t customizeDataSize;
+    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, customizeDataSize);
+    for (auto i = 0; i < customizeDataSize; i++) {
+        CustomizeData customizeData;
+        std::string customizeName = Str16ToStr8(parcel.ReadString16());
+        std::string customizeValue = Str16ToStr8(parcel.ReadString16());
+        std::string customizeExtra = Str16ToStr8(parcel.ReadString16());
+        customizeData.name = customizeName;
+        customizeData.value = customizeValue;
+        customizeData.extra = customizeExtra;
+        metaData.customizeData.emplace_back(customizeData);
+    }
+
+    int32_t parametersSize;
+    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, parametersSize);
+    for (auto i = 0; i < parametersSize; i++) {
+        Parameters parameters;
+        std::string parametersDescription = Str16ToStr8(parcel.ReadString16());
+        std::string parametersName = Str16ToStr8(parcel.ReadString16());
+        std::string parametersType = Str16ToStr8(parcel.ReadString16());
+        parameters.description = parametersDescription;
+        parameters.name = parametersName;
+        parameters.type = parametersType;
+        metaData.parameters.emplace_back(parameters);
+    }
+
+    int32_t ResultsSize;
+    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, ResultsSize);
+    for (auto i = 0; i < ResultsSize; i++) {
+        Results results;
+        std::string resultsDescription = Str16ToStr8(parcel.ReadString16());
+        std::string resultsName = Str16ToStr8(parcel.ReadString16());
+        std::string resultsType = Str16ToStr8(parcel.ReadString16());
+        results.description = resultsDescription;
+        results.name = resultsName;
+        results.type = resultsType;
+        metaData.results.emplace_back(results);
     }
 
     std::unique_ptr<ApplicationInfo> appInfo(parcel.ReadParcelable<ApplicationInfo>());
@@ -181,14 +226,14 @@ bool AbilityInfo::Marshalling(Parcel &parcel) const
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, isLauncherAbility);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, isNativeAbility);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, enabled);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, form.formEntity.size());
-    for (auto &item : form.formEntity) {
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, formEntity.size());
+    for (auto &item : formEntity) {
         WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(item));
     }
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, form.minHeight);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, form.defaultHeight);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, form.minWidth);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, form.defaultWidth);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, minFormHeight);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, defaultFormHeight);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, minFormWidth);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, defaultFormWidth);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, static_cast<int32_t>(type));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, static_cast<int32_t>(orientation));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, static_cast<int32_t>(launchMode));
@@ -206,6 +251,30 @@ bool AbilityInfo::Marshalling(Parcel &parcel) const
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, deviceCapabilities.size());
     for (auto &deviceCapability : deviceCapabilities) {
         WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(deviceCapability));
+    }
+
+    const auto customizeDataSize = static_cast<int32_t>(metaData.customizeData.size());
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, customizeDataSize);
+    for (auto i = 0; i < customizeDataSize; i++) {
+        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(metaData.customizeData[i].name));
+        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(metaData.customizeData[i].value));
+        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(metaData.customizeData[i].extra));
+    }
+
+    const auto parametersSize = static_cast<int32_t>(metaData.parameters.size());
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, parametersSize);
+    for (auto i = 0; i < parametersSize; i++) {
+        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(metaData.parameters[i].description));
+        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(metaData.parameters[i].name));
+        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(metaData.parameters[i].type));
+    }
+
+    const auto resultsSize = static_cast<int32_t>(metaData.results.size());
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, resultsSize);
+    for (auto i = 0; i < resultsSize; i++) {
+        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(metaData.results[i].description));
+        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(metaData.results[i].name));
+        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(metaData.results[i].type));
     }
 
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Parcelable, parcel, &applicationInfo);
@@ -238,14 +307,42 @@ void AbilityInfo::Dump(std::string prefix, int fd)
     return;
 }
 
-void to_json(nlohmann::json &jsonObject, const Form &form)
+void to_json(nlohmann::json &jsonObject, const Parameters &parameters)
 {
-    jsonObject = nlohmann::json{{JSON_KEY_FORM_ENTITY, form.formEntity},
-        {JSON_KEY_FORM_MIN_HEIGHT, form.minHeight},
-        {JSON_KEY_FORM_DEFAULT_HEIGHT, form.defaultHeight},
-        {JSON_KEY_FORM_MIN_WIDTH, form.minWidth},
-        {JSON_KEY_FORM_DEFAULT_WIDTH, form.defaultWidth}};
+    jsonObject = nlohmann::json{
+        {JSON_KEY_DESCRIPTION, parameters.description},
+        {JSON_KEY_NAME, parameters.name},
+        {JSON_KEY_TYPE, parameters.type}
+    };
 }
+
+void to_json(nlohmann::json &jsonObject, const Results &results)
+{
+    jsonObject = nlohmann::json{
+        {JSON_KEY_DESCRIPTION, results.description},
+        {JSON_KEY_NAME, results.name},
+        {JSON_KEY_TYPE, results.type}
+    };
+}
+
+void to_json(nlohmann::json &jsonObject, const CustomizeData &customizeData)
+{
+    jsonObject = nlohmann::json{
+        {JSON_KEY_NAME, customizeData.name},
+        {JSON_KEY_META_VALUE, customizeData.value},
+        {JSON_KEY_META_EXTRA, customizeData.extra}
+    };
+}
+
+void to_json(nlohmann::json &jsonObject, const MetaData &metaData)
+{
+    jsonObject = nlohmann::json{
+        {JSON_KEY_PARAMETERS, metaData.parameters},
+        {JSON_KEY_RESULTS, metaData.results},
+        {JSON_KEY_CUSTOMIZE_DATA, metaData.customizeData}
+    };
+}
+
 void to_json(nlohmann::json &jsonObject, const AbilityInfo &abilityInfo)
 {
     jsonObject = nlohmann::json{{JSON_KEY_NAME, abilityInfo.name},
@@ -259,7 +356,11 @@ void to_json(nlohmann::json &jsonObject, const AbilityInfo &abilityInfo)
         {JSON_KEY_ENABLED, abilityInfo.enabled},
         {JSON_KEY_READ_PERMISSION, abilityInfo.readPermission},
         {JSON_KEY_WRITE_PERMISSION, abilityInfo.writePermission},
-        {JSON_KEY_FORM, abilityInfo.form},
+        {JSON_KEY_FORM_ENTITY, abilityInfo.formEntity},
+        {JSON_KEY_MIN_FORM_HEIGHT, abilityInfo.minFormHeight},
+        {JSON_KEY_DEFAULT_FORM_HEIGHT, abilityInfo.defaultFormHeight},
+        {JSON_KEY_MIN_FORM_WIDTH, abilityInfo.minFormWidth},
+        {JSON_KEY_DEFAULT_FORM_WIDTH, abilityInfo.defaultFormWidth},
         {JSON_KEY_KIND, abilityInfo.kind},
         {JSON_KEY_TYPE, abilityInfo.type},
         {JSON_KEY_ORIENTATION, abilityInfo.orientation},
@@ -277,17 +378,39 @@ void to_json(nlohmann::json &jsonObject, const AbilityInfo &abilityInfo)
         {JSON_KEY_DEVICE_ID, abilityInfo.deviceId},
         {JSON_KEY_CODE_PATH, abilityInfo.codePath},
         {JSON_KEY_RESOURCE_PATH, abilityInfo.resourcePath},
-        {JSON_KEY_LIB_PATH, abilityInfo.libPath}};
+        {JSON_KEY_LIB_PATH, abilityInfo.libPath},
+        {JSON_KEY_META_DATA, abilityInfo.metaData}
+    };
 }
 
-void from_json(const nlohmann::json &jsonObject, Form &form)
+void from_json(const nlohmann::json &jsonObject, Parameters &parameters)
 {
-    form.formEntity = jsonObject.at(JSON_KEY_FORM_ENTITY).get<std::vector<std::string>>();
-    form.minHeight = jsonObject.at(JSON_KEY_FORM_MIN_HEIGHT).get<int32_t>();
-    form.defaultHeight = jsonObject.at(JSON_KEY_FORM_DEFAULT_HEIGHT).get<int32_t>();
-    form.minWidth = jsonObject.at(JSON_KEY_FORM_MIN_WIDTH).get<int32_t>();
-    form.defaultWidth = jsonObject.at(JSON_KEY_FORM_DEFAULT_WIDTH).get<int32_t>();
+    parameters.description = jsonObject.at(JSON_KEY_DESCRIPTION).get<std::string>();
+    parameters.name = jsonObject.at(JSON_KEY_NAME).get<std::string>();
+    parameters.type = jsonObject.at(JSON_KEY_TYPE).get<std::string>();
 }
+
+void from_json(const nlohmann::json &jsonObject, Results &results)
+{
+    results.description = jsonObject.at(JSON_KEY_DESCRIPTION).get<std::string>();
+    results.name = jsonObject.at(JSON_KEY_NAME).get<std::string>();
+    results.type = jsonObject.at(JSON_KEY_TYPE).get<std::string>();
+}
+
+void from_json(const nlohmann::json &jsonObject, CustomizeData &customizeData)
+{
+    customizeData.name = jsonObject.at(JSON_KEY_NAME).get<std::string>();
+    customizeData.value = jsonObject.at(JSON_KEY_META_VALUE).get<std::string>();
+    customizeData.extra = jsonObject.at(JSON_KEY_META_EXTRA).get<std::string>();
+}
+
+void from_json(const nlohmann::json &jsonObject, MetaData &metaData)
+{
+    metaData.parameters = jsonObject.at(JSON_KEY_PARAMETERS).get<std::vector<Parameters>>();
+    metaData.results = jsonObject.at(JSON_KEY_RESULTS).get<std::vector<Results>>();
+    metaData.customizeData = jsonObject.at(JSON_KEY_CUSTOMIZE_DATA).get<std::vector<CustomizeData>>();
+}
+
 void from_json(const nlohmann::json &jsonObject, AbilityInfo &abilityInfo)
 {
     abilityInfo.name = jsonObject.at(JSON_KEY_NAME).get<std::string>();
@@ -301,7 +424,11 @@ void from_json(const nlohmann::json &jsonObject, AbilityInfo &abilityInfo)
     abilityInfo.enabled = jsonObject.at(JSON_KEY_ENABLED).get<bool>();
     abilityInfo.readPermission = jsonObject.at(JSON_KEY_READ_PERMISSION).get<std::string>();
     abilityInfo.writePermission = jsonObject.at(JSON_KEY_WRITE_PERMISSION).get<std::string>();
-    abilityInfo.form = jsonObject.at(JSON_KEY_FORM).get<Form>();
+    abilityInfo.formEntity = jsonObject.at(JSON_KEY_FORM_ENTITY).get<std::vector<std::string>>();
+    abilityInfo.minFormHeight = jsonObject.at(JSON_KEY_MIN_FORM_HEIGHT).get<int32_t>();
+    abilityInfo.defaultFormHeight = jsonObject.at(JSON_KEY_DEFAULT_FORM_HEIGHT).get<int32_t>();
+    abilityInfo.minFormWidth = jsonObject.at(JSON_KEY_MIN_FORM_WIDTH).get<int32_t>();
+    abilityInfo.defaultFormWidth = jsonObject.at(JSON_KEY_DEFAULT_FORM_WIDTH).get<int32_t>();
     abilityInfo.kind = jsonObject.at(JSON_KEY_KIND).get<std::string>();
     abilityInfo.type = jsonObject.at(JSON_KEY_TYPE).get<AbilityType>();
     abilityInfo.orientation = jsonObject.at(JSON_KEY_ORIENTATION).get<DisplayOrientation>();
@@ -320,6 +447,7 @@ void from_json(const nlohmann::json &jsonObject, AbilityInfo &abilityInfo)
     abilityInfo.codePath = jsonObject.at(JSON_KEY_CODE_PATH).get<std::string>();
     abilityInfo.resourcePath = jsonObject.at(JSON_KEY_RESOURCE_PATH).get<std::string>();
     abilityInfo.libPath = jsonObject.at(JSON_KEY_LIB_PATH).get<std::string>();
+    abilityInfo.metaData = jsonObject.at(JSON_KEY_META_DATA).get<MetaData>();
 }
 
 }  // namespace AppExecFwk

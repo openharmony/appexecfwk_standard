@@ -111,7 +111,7 @@ bool FormInfo::ReadFromParcel(Parcel &parcel)
     int32_t customizeDataSize;
     READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, customizeDataSize);
     for (auto i = 0; i < customizeDataSize; i++) {
-        CustomizeData customizeData;
+        FormCustomizeData customizeData;
         std::string customizeName = Str16ToStr8(parcel.ReadString16());
         std::string customizeValue = Str16ToStr8(parcel.ReadString16());
         customizeData.name = customizeName;
@@ -182,7 +182,7 @@ bool FormInfo::Marshalling(Parcel &parcel) const
     return true;
 }
 
-void to_json(nlohmann::json &jsonObject, const CustomizeData &customizeDatas)
+void to_json(nlohmann::json &jsonObject, const FormCustomizeData &customizeDatas)
 {
     jsonObject = nlohmann::json{{JSON_KEY_NAME, customizeDatas.name}, {JSON_KEY_VALUE, customizeDatas.value}};
 }
@@ -215,7 +215,7 @@ void to_json(nlohmann::json &jsonObject, const FormInfo &formInfo)
         {JSON_KEY_PORTRAIT_LAYOUTS, formInfo.portraitLayouts}};
 }
 
-void from_json(const nlohmann::json &jsonObject, CustomizeData &customizeDatas)
+void from_json(const nlohmann::json &jsonObject, FormCustomizeData &customizeDatas)
 {
     customizeDatas.name = jsonObject.at(JSON_KEY_NAME).get<std::string>();
     customizeDatas.value = jsonObject.at(JSON_KEY_VALUE).get<std::string>();
@@ -244,7 +244,7 @@ void from_json(const nlohmann::json &jsonObject, FormInfo &formInfo)
     formInfo.type = jsonObject.at(JSON_KEY_TYPE).get<FormType>();
     formInfo.colorMode = jsonObject.at(JSON_KEY_COLOR_MODE).get<FormsColorMode>();
     formInfo.supportDimensions = jsonObject.at(JSON_KEY_SUPPORT_DIMENSIONS).get<std::vector<int32_t>>();
-    formInfo.customizeDatas = jsonObject.at(JSON_KEY_CUSTOMIZE_DATA).get<std::vector<CustomizeData>>();
+    formInfo.customizeDatas = jsonObject.at(JSON_KEY_CUSTOMIZE_DATA).get<std::vector<FormCustomizeData>>();
     formInfo.landscapeLayouts = jsonObject.at(JSON_KEY_LANDSCAPE_LAYOUTS).get<std::vector<std::string>>();
     formInfo.portraitLayouts = jsonObject.at(JSON_KEY_PORTRAIT_LAYOUTS).get<std::vector<std::string>>();
 }

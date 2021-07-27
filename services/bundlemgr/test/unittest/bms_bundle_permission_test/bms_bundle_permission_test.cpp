@@ -419,8 +419,8 @@ void BmsBundlePermissionTest::MockDefPermissionBundleSystemGrant(InnerBundleInfo
 
     AppExecFwk::Parameters parameters{"description", "name", "type"};
     AppExecFwk::Results results{"description", "name", "type"};
-    AppExecFwk::InnerCustomizeData InnerCustomizeData{"name", "value", "extra"};
-    MetaData metaData{{parameters}, {results}, {InnerCustomizeData}};
+    AppExecFwk::CustomizeData customizeData{"name", "value", "extra"};
+    MetaData metaData{{parameters}, {results}, {customizeData}};
     moduleInfo.metaData = metaData;
     innerbundleinfo.SetCurrentModulePackage(PACKAGE_NAME);
     innerbundleinfo.SetBaseApplicationInfo(appInfo);
@@ -463,8 +463,8 @@ void BmsBundlePermissionTest::MockUpdateDefPermissionBundleSystemGrant(InnerBund
 
     AppExecFwk::Parameters parameters{"description", "name", "type"};
     AppExecFwk::Results results{"description", "name", "type"};
-    AppExecFwk::InnerCustomizeData InnerCustomizeData{"name", "value", "extra"};
-    MetaData metaData{{parameters}, {results}, {InnerCustomizeData}};
+    AppExecFwk::CustomizeData customizeData{"name", "value", "extra"};
+    MetaData metaData{{parameters}, {results}, {customizeData}};
     moduleInfo.metaData = metaData;
     innerbundleinfo.SetCurrentModulePackage(PACKAGE_NAME);
     innerbundleinfo.SetBaseApplicationInfo(appInfo);
@@ -507,8 +507,8 @@ void BmsBundlePermissionTest::MockDefPermissionBundleTestReqpermission(InnerBund
 
     AppExecFwk::Parameters parameters{"description", "name", "type"};
     AppExecFwk::Results results{"description", "name", "type"};
-    AppExecFwk::InnerCustomizeData InnerCustomizeData{"name", "value", "extra"};
-    MetaData metaData{{parameters}, {results}, {InnerCustomizeData}};
+    AppExecFwk::CustomizeData customizeData{"name", "value", "extra"};
+    MetaData metaData{{parameters}, {results}, {customizeData}};
     moduleInfo.metaData = metaData;
     innerbundleinfo.SetCurrentModulePackage(PACKAGE_NAME);
     innerbundleinfo.SetBaseApplicationInfo(appInfo);
@@ -550,8 +550,8 @@ void BmsBundlePermissionTest::MockNoDefPermissionBundle(InnerBundleInfo &innerbu
 
     AppExecFwk::Parameters parameters{"description", "name", "type"};
     AppExecFwk::Results results{"description", "name", "type"};
-    AppExecFwk::InnerCustomizeData InnerCustomizeData{"name", "value", "extra"};
-    MetaData metaData{{parameters}, {results}, {InnerCustomizeData}};
+    AppExecFwk::CustomizeData customizeData{"name", "value", "extra"};
+    MetaData metaData{{parameters}, {results}, {customizeData}};
     moduleInfo.metaData = metaData;
     innerbundleinfo.SetCurrentModulePackage(PACKAGE_NAME);
     innerbundleinfo.SetBaseApplicationInfo(appInfo);
@@ -594,8 +594,8 @@ void BmsBundlePermissionTest::MockNoAvailableScopeDefPermissionBundle(InnerBundl
 
     AppExecFwk::Parameters parameters{"description", "name", "type"};
     AppExecFwk::Results results{"description", "name", "type"};
-    AppExecFwk::InnerCustomizeData InnerCustomizeData{"name", "value", "extra"};
-    MetaData metaData{{parameters}, {results}, {InnerCustomizeData}};
+    AppExecFwk::CustomizeData customizeData{"name", "value", "extra"};
+    MetaData metaData{{parameters}, {results}, {customizeData}};
     moduleInfo.metaData = metaData;
     innerbundleinfo.SetCurrentModulePackage(PACKAGE_NAME);
     innerbundleinfo.SetBaseApplicationInfo(appInfo);
@@ -643,8 +643,8 @@ void BmsBundlePermissionTest::MockDefPermissionBundleUserGrant(InnerBundleInfo &
 
     AppExecFwk::Parameters parameters{"description", "name", "type"};
     AppExecFwk::Results results{"description", "name", "type"};
-    AppExecFwk::InnerCustomizeData InnerCustomizeData{"name", "value", "extra"};
-    MetaData metaData{{parameters}, {results}, {InnerCustomizeData}};
+    AppExecFwk::CustomizeData customizeData{"name", "value", "extra"};
+    MetaData metaData{{parameters}, {results}, {customizeData}};
     moduleInfo.metaData = metaData;
     innerbundleinfo.SetCurrentModulePackage(PACKAGE_NAME);
     innerbundleinfo.SetBaseApplicationInfo(appInfo);
@@ -688,8 +688,8 @@ void BmsBundlePermissionTest::MockSameDefPermissionNameBundleSystemGrant(InnerBu
 
     AppExecFwk::Parameters parameters{"description", "name", "type"};
     AppExecFwk::Results results{"description", "name", "type"};
-    AppExecFwk::InnerCustomizeData InnerCustomizeData{"name", "value", "extra"};
-    MetaData metaData{{parameters}, {results}, {InnerCustomizeData}};
+    AppExecFwk::CustomizeData customizeData{"name", "value", "extra"};
+    MetaData metaData{{parameters}, {results}, {customizeData}};
     moduleInfo.metaData = metaData;
     innerbundleinfo.SetCurrentModulePackage(PACKAGE_NAME);
     innerbundleinfo.SetBaseApplicationInfo(appInfo);
@@ -732,8 +732,8 @@ void BmsBundlePermissionTest::MockDefPermissionBundleSame(InnerBundleInfo &inner
 
     AppExecFwk::Parameters parameters{"description", "name", "type"};
     AppExecFwk::Results results{"description", "name", "type"};
-    AppExecFwk::InnerCustomizeData InnerCustomizeData{"name", "value", "extra"};
-    MetaData metaData{{parameters}, {results}, {InnerCustomizeData}};
+    AppExecFwk::CustomizeData customizeData{"name", "value", "extra"};
+    MetaData metaData{{parameters}, {results}, {customizeData}};
     moduleInfo.metaData = metaData;
     innerbundleinfo.SetCurrentModulePackage(PACKAGE_NAME);
     innerbundleinfo.SetBaseApplicationInfo(appInfo);
@@ -777,8 +777,8 @@ void BmsBundlePermissionTest::MockReqPermissionBundle(InnerBundleInfo &innerbund
 
     AppExecFwk::Parameters parameters{"description", "name", "type"};
     AppExecFwk::Results results{"description", "name", "type"};
-    AppExecFwk::InnerCustomizeData InnerCustomizeData{"name", "value", "extra"};
-    MetaData metaData{{parameters}, {results}, {InnerCustomizeData}};
+    AppExecFwk::CustomizeData customizeData{"name", "value", "extra"};
+    MetaData metaData{{parameters}, {results}, {customizeData}};
     moduleInfo.metaData = metaData;
     innerbundleinfo.SetCurrentModulePackage(PACKAGE_NAME);
     innerbundleinfo.SetBaseApplicationInfo(appInfo);
@@ -821,8 +821,8 @@ void BmsBundlePermissionTest::MockOtherReqPermissionBundle(InnerBundleInfo &inne
 
     AppExecFwk::Parameters parameters{"description", "name", "type"};
     AppExecFwk::Results results{"description", "name", "type"};
-    AppExecFwk::InnerCustomizeData InnerCustomizeData{"name", "value", "extra"};
-    MetaData metaData{{parameters}, {results}, {InnerCustomizeData}};
+    AppExecFwk::CustomizeData customizeData{"name", "value", "extra"};
+    MetaData metaData{{parameters}, {results}, {customizeData}};
     moduleInfo.metaData = metaData;
     innerbundleinfo.SetCurrentModulePackage(PACKAGE_NAME);
     innerbundleinfo.SetBaseApplicationInfo(appInfo);

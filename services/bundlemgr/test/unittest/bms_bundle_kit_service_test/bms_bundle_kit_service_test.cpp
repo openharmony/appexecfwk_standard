@@ -24,6 +24,7 @@
 #include "bundle_info.h"
 #include "installd/installd_service.h"
 #include "installd_client.h"
+#include "inner_bundle_info.h"
 #include "mock_clean_cache.h"
 #include "mock_bundle_status.h"
 
@@ -58,6 +59,7 @@ const int APPLICATION_INFO_FLAGS = 1;
 const int DEFAULT_USER_ID = 0;
 const std::string LABEL = "hello";
 const std::string DESCRIPTION = "mainEntry";
+const std::string THEME = "mytheme";
 const std::string ICON_PATH = "/data/data/icon.png";
 const std::string KIND = "test";
 const std::string ACTION = "action.system.home";
@@ -68,6 +70,14 @@ const std::string TARGET_ABILITY = "MockTargetAbility";
 const AbilityType ABILITY_TYPE = AbilityType::PAGE;
 const DisplayOrientation ORIENTATION = DisplayOrientation::PORTRAIT;
 const LaunchMode LAUNCH_MODE = LaunchMode::SINGLETON;
+const std::vector<std::string> FORM_ENTITY = {"homeScreen","searchbox"};
+const int DEFAULT_FORM_HEIGHT = 100;
+const int DEFAULT_FORM_WIDTH = 200;
+const std::string META_DATA_DESCRIPTION = "description";
+const std::string META_DATA_NAME = "name";
+const std::string META_DATA_TYPE = "type";
+const std::string META_DATA_VALUE = "value";
+const std::string META_DATA_EXTRA = "extra";
 const ModuleColorMode COLOR_MODE = ModuleColorMode::AUTO;
 const std::string CODE_PATH = "/data/accounts/account_0/com.example.bundlekit.test/code";
 const std::string RESOURCE_PATH = "/data/accounts/account_0/com.example.bundlekit.test/res";
@@ -96,6 +106,25 @@ const std::string DATA_BASE_DIR = "/data/accounts/account_0/appdata/com.example.
 const std::string TEST_DATA_BASE_DIR = "/data/accounts/account_0/appdata/com.example.bundlekit.test/database/database";
 const std::string CACHE_DIR = "/data/accounts/account_0/appdata/com.example.bundlekit.test/cache";
 const std::string TEST_CACHE_DIR = "/data/accounts/account_0/appdata/com.example.bundlekit.test/cache/cache";
+const std::string FORM_NAME = "form_js";
+const std::string FORM_PATH = "data/app";
+const std::string FORM_JS_COMPONENT_NAME = "JS";
+const std::string FORM_DESCRIPTION = "description";
+const std::string FORM_SCHEDULED_UPDATE_TIME = "11:00";
+const std::string FORM_CUSTOMIZE_DATAS_NAME = "customizeDataName";
+const std::string FORM_CUSTOMIZE_DATAS_VALUE = "customizeDataValue";
+const std::string FORM_PORTRAIT_LAYOUTS1 = "port1";
+const std::string FORM_PORTRAIT_LAYOUTS2 = "port2";
+const std::string FORM_LANDSCAPE_LAYOUTS1 = "land1";
+const std::string FORM_LANDSCAPE_LAYOUTS2 = "land2";
+const std::string SHORTCUT_TEST_ID = "shortcutTestId";
+const std::string SHORTCUT_DEMO_ID = "shortcutDemoId";
+const std::string SHORTCUT_HOST_ABILITY = "hostAbility";
+const std::string SHORTCUT_ICON = "/data/test/bms_bundle";
+const std::string SHORTCUT_LABEL = "shortcutLabel";
+const std::string SHORTCUT_DISABLE_MESSAGE = "shortcutDisableMessage";
+const std::string SHORTCUT_INTENTS_TARGET_BUNDLE = "targetBundle";
+const std::string SHORTCUT_INTENTS_TARGET_CLASS = "targetClass";
 
 }  // namespace
 
@@ -112,6 +141,9 @@ public:
     void MockUninstallBundle(const std::string &bundleName) const;
     AbilityInfo MockAbilityInfo(
         const std::string &bundleName, const std::string &module, const std::string &abilityName) const;
+    FormInfo MockFormInfo(
+        const std::string &bundleName, const std::string &module, const std::string &abilityName) const;
+    ShortcutInfo MockShortcutInfo(const std::string &bundleName, const std::string &shortcutId) const;
     void CheckBundleInfo(const std::string &bundleName, const std::string &moduleName, const uint32_t abilitySize,
         const BundleInfo &bundleInfo) const;
     void CheckBundleArchiveInfo(const std::string &bundleName, const std::string &moduleName,
@@ -130,6 +162,10 @@ public:
     void CheckFileNonExist() const;
     void CheckCacheExist() const;
     void CheckCacheNonExist() const;
+    void CheckFormInfoTest(const std::vector<FormInfo> &forms) const;
+    void CheckFormInfoDemo(const std::vector<FormInfo> &forms) const;
+    void CheckShortcutInfoTest(std::vector<ShortcutInfo> &shortcutInfos) const;
+    void CheckShortcutInfoDemo(std::vector<ShortcutInfo> &shortcutInfos) const;
 
 public:
     std::shared_ptr<BundleMgrService> bundleMgrService_ = DelayedSingleton<BundleMgrService>::GetInstance();
@@ -198,10 +234,11 @@ void BmsBundleKitServiceTest::MockInstallBundle(
 
     AppExecFwk::Parameters parameters{"description", "name", "type"};
     AppExecFwk::Results results{"description", "name", "type"};
-    AppExecFwk::InnerCustomizeData customizeData{"name", "value", "extra"};
+    AppExecFwk::CustomizeData customizeData{"name", "value", "extra"};
     MetaData metaData{{parameters}, {results}, {customizeData}};
     moduleInfo.metaData = metaData;
 
+    FormInfo form = MockFormInfo(bundleName, moduleName, abilityName);
     AbilityInfo abilityInfo = MockAbilityInfo(bundleName, moduleName, abilityName);
     innerBundleInfo.SetBaseApplicationInfo(appInfo);
     innerBundleInfo.SetBaseBundleInfo(bundleInfo);
@@ -218,7 +255,19 @@ void BmsBundleKitServiceTest::MockInstallBundle(
         innerBundleInfo.SetMainAbility(keyName);
         innerBundleInfo.InsertSkillInfo(keyName, skills);
     }
-
+    std::vector<FormInfo> formInfos;
+    formInfos.emplace_back(form);
+    if(bundleName == BUNDLE_NAME_TEST) {
+        ShortcutInfo shortcut = MockShortcutInfo(bundleName, SHORTCUT_TEST_ID);
+        std::string shortcutKey = bundleName + moduleName + SHORTCUT_TEST_ID;
+        innerBundleInfo.InsertShortcutInfos(shortcutKey, shortcut);
+    }
+    else {
+        ShortcutInfo shortcut = MockShortcutInfo(bundleName, SHORTCUT_DEMO_ID);
+        std::string shortcutKey = bundleName + moduleName + SHORTCUT_DEMO_ID;
+        innerBundleInfo.InsertShortcutInfos(shortcutKey, shortcut);
+    }
+    innerBundleInfo.InsertFormInfos(keyName, formInfos);
     auto dataMgr = GetBundleDataMgr();
     ASSERT_NE(dataMgr, nullptr);
     bool startRet = dataMgr->UpdateBundleInstallState(bundleName, InstallState::INSTALL_START);
@@ -228,6 +277,57 @@ void BmsBundleKitServiceTest::MockInstallBundle(
     ASSERT_TRUE(startRet);
     ASSERT_TRUE(finishRet);
     ASSERT_TRUE(addRet);
+}
+
+FormInfo BmsBundleKitServiceTest::MockFormInfo(
+    const std::string &bundleName, const std::string &moduleName, const std::string &abilityName) const
+{
+    FormInfo formInfo;
+    formInfo.name = FORM_NAME;
+    formInfo.bundleName = bundleName;
+    formInfo.abilityName = abilityName;
+    formInfo.moduleName = moduleName;
+    formInfo.package = PACKAGE_NAME;
+    formInfo.descriptionId = 123;
+    formInfo.formConfigAbility = FORM_PATH;
+    formInfo.description = FORM_DESCRIPTION;
+    formInfo.defaultFlag = false;
+    formInfo.type = FormType::JS;
+    formInfo.colorMode = FormsColorMode::LIGHT_MODE;
+    formInfo.supportDimensions = {1, 2};
+    formInfo.portraitLayouts = {FORM_PORTRAIT_LAYOUTS1, FORM_PORTRAIT_LAYOUTS2};
+    formInfo.landscapeLayouts = {FORM_LANDSCAPE_LAYOUTS1, FORM_LANDSCAPE_LAYOUTS2};
+    formInfo.defaultDimension = 1;
+    formInfo.updateDuration = 0;
+    formInfo.formVisibleNotify = true;
+    formInfo.deepLink = FORM_PATH;
+    formInfo.scheduledUpateTime = FORM_SCHEDULED_UPDATE_TIME;
+    formInfo.updateEnabled = true;
+    formInfo.jsComponentName = FORM_JS_COMPONENT_NAME;
+    for (auto &info : formInfo.customizeDatas) {
+        info.name = FORM_CUSTOMIZE_DATAS_NAME;
+        info.value = FORM_CUSTOMIZE_DATAS_VALUE;
+    }
+    return formInfo;
+}
+
+ShortcutInfo BmsBundleKitServiceTest::MockShortcutInfo(const std::string &bundleName, const std::string &shortcutId) const
+{
+    ShortcutInfo shortcutInfos;
+    shortcutInfos.id = shortcutId;
+    shortcutInfos.bundleName = bundleName;
+    shortcutInfos.hostAbility = SHORTCUT_HOST_ABILITY;
+    shortcutInfos.icon = SHORTCUT_ICON;
+    shortcutInfos.label = SHORTCUT_LABEL;
+    shortcutInfos.disableMessage = SHORTCUT_DISABLE_MESSAGE;
+    shortcutInfos.isStatic = true;
+    shortcutInfos.isHomeShortcut = true;
+    shortcutInfos.isEnables = true;
+    for (auto &info : shortcutInfos.intents) {
+        info.targetBundle = SHORTCUT_INTENTS_TARGET_BUNDLE;
+        info.targetClass = SHORTCUT_INTENTS_TARGET_CLASS;
+    }
+    return shortcutInfos;
 }
 
 void BmsBundleKitServiceTest::MockUninstallBundle(const std::string &bundleName) const
@@ -252,18 +352,27 @@ AbilityInfo BmsBundleKitServiceTest::MockAbilityInfo(
     abilityInfo.deviceId = DEVICE_ID;
     abilityInfo.label = LABEL;
     abilityInfo.description = DESCRIPTION;
+    abilityInfo.theme = THEME;
     abilityInfo.iconPath = ICON_PATH;
     abilityInfo.visible = VISIBLE;
     abilityInfo.kind = KIND;
     abilityInfo.type = ABILITY_TYPE;
     abilityInfo.orientation = ORIENTATION;
     abilityInfo.launchMode = LAUNCH_MODE;
+    abilityInfo.formEntity = {"homeScreen","searchbox"},
+    abilityInfo.defaultFormHeight = DEFAULT_FORM_HEIGHT;
+    abilityInfo.defaultFormWidth = DEFAULT_FORM_WIDTH;
     abilityInfo.codePath = CODE_PATH;
     abilityInfo.resourcePath = RESOURCE_PATH;
     abilityInfo.libPath = LIB_PATH;
     abilityInfo.uri = URI;
     abilityInfo.enabled = true;
     abilityInfo.targetAbility = TARGET_ABILITY;
+    AppExecFwk::Parameters parameters{"description", "name", "type"};
+    AppExecFwk::Results results{"description", "name", "type"};
+    AppExecFwk::CustomizeData customizeData{"name", "value", "extra"};
+    MetaData metaData{{parameters}, {results}, {customizeData}};
+    abilityInfo.metaData = metaData;
     return abilityInfo;
 }
 
@@ -331,12 +440,31 @@ void BmsBundleKitServiceTest::CheckAbilityInfo(
     EXPECT_EQ(LABEL, abilityInfo.label);
     EXPECT_EQ(DESCRIPTION, abilityInfo.description);
     EXPECT_EQ(DEVICE_ID, abilityInfo.deviceId);
+    EXPECT_EQ(THEME, abilityInfo.theme);
     EXPECT_EQ(ICON_PATH, abilityInfo.iconPath);
     EXPECT_EQ(CODE_PATH, abilityInfo.codePath);
     EXPECT_EQ(ORIENTATION, abilityInfo.orientation);
     EXPECT_EQ(LAUNCH_MODE, abilityInfo.launchMode);
     EXPECT_EQ(URI, abilityInfo.uri);
     EXPECT_EQ(TARGET_ABILITY, abilityInfo.targetAbility);
+    EXPECT_EQ(FORM_ENTITY, abilityInfo.formEntity);
+    EXPECT_EQ(DEFAULT_FORM_HEIGHT, abilityInfo.defaultFormHeight);
+    EXPECT_EQ(DEFAULT_FORM_WIDTH, abilityInfo.defaultFormWidth);
+    for (auto &info : abilityInfo.metaData.customizeData) {
+            EXPECT_EQ(info.name, META_DATA_NAME);
+            EXPECT_EQ(info.value, META_DATA_VALUE);
+            EXPECT_EQ(info.extra, META_DATA_EXTRA);
+        }
+    for (auto &info : abilityInfo.metaData.parameters) {
+            EXPECT_EQ(info.description, META_DATA_DESCRIPTION);
+            EXPECT_EQ(info.name, META_DATA_NAME);
+            EXPECT_EQ(info.type, META_DATA_TYPE);
+        }
+    for (auto &info : abilityInfo.metaData.results) {
+            EXPECT_EQ(info.description, META_DATA_DESCRIPTION);
+            EXPECT_EQ(info.name, META_DATA_NAME);
+            EXPECT_EQ(info.type, META_DATA_TYPE);
+        }
 }
 
 void BmsBundleKitServiceTest::CheckModuleInfo(const HapModuleInfo &hapModuleInfo) const
@@ -460,6 +588,104 @@ void BmsBundleKitServiceTest::CheckCacheNonExist() const
     ASSERT_NE(dataExist, 0);
 }
 
+void BmsBundleKitServiceTest::CheckFormInfoTest(const std::vector<FormInfo> &formInfos) const
+{
+    for (auto &formInfo : formInfos) {
+        EXPECT_EQ(formInfo.name, FORM_NAME);
+        EXPECT_EQ(formInfo.bundleName, BUNDLE_NAME_TEST);
+        EXPECT_EQ(formInfo.moduleName, MODULE_NAME_TEST);
+        EXPECT_EQ(formInfo.abilityName, ABILITY_NAME_TEST);
+        EXPECT_EQ(formInfo.description, FORM_DESCRIPTION);
+        EXPECT_EQ(formInfo.formConfigAbility, FORM_PATH);
+        EXPECT_EQ(formInfo.defaultFlag, false);
+        EXPECT_EQ(formInfo.type, FormType::JS);
+        EXPECT_EQ(formInfo.colorMode, FormsColorMode::LIGHT_MODE);
+        EXPECT_EQ(formInfo.descriptionId, 123);
+        EXPECT_EQ(formInfo.deepLink, FORM_PATH);
+        EXPECT_EQ(formInfo.package, PACKAGE_NAME);
+        EXPECT_EQ(formInfo.formVisibleNotify, true);
+        unsigned i = 2;
+        EXPECT_EQ(formInfo.supportDimensions.size(), i);
+        EXPECT_EQ(formInfo.defaultDimension, 1);
+        EXPECT_EQ(formInfo.updateDuration, 0);
+        EXPECT_EQ(formInfo.scheduledUpateTime, FORM_SCHEDULED_UPDATE_TIME);
+        EXPECT_EQ(formInfo.jsComponentName, FORM_JS_COMPONENT_NAME);
+        EXPECT_EQ(formInfo.updateEnabled, true);
+        for (auto &info : formInfo.customizeDatas) {
+            EXPECT_EQ(info.name, FORM_CUSTOMIZE_DATAS_NAME);
+            EXPECT_EQ(info.value, FORM_CUSTOMIZE_DATAS_VALUE);
+        }
+    }
+}
+
+void BmsBundleKitServiceTest::CheckFormInfoDemo(const std::vector<FormInfo> &formInfos) const
+{
+    for (const auto &formInfo : formInfos) {
+        EXPECT_EQ(formInfo.name, FORM_NAME);
+        EXPECT_EQ(formInfo.bundleName, BUNDLE_NAME_DEMO);
+        EXPECT_EQ(formInfo.moduleName, MODULE_NAME_DEMO);
+        EXPECT_EQ(formInfo.abilityName, ABILITY_NAME_TEST);
+        EXPECT_EQ(formInfo.description, FORM_DESCRIPTION);
+        EXPECT_EQ(formInfo.formConfigAbility, FORM_PATH);
+        EXPECT_EQ(formInfo.defaultFlag, false);
+        EXPECT_EQ(formInfo.type, FormType::JS);
+        EXPECT_EQ(formInfo.colorMode, FormsColorMode::LIGHT_MODE);
+        EXPECT_EQ(formInfo.descriptionId, 123);
+        EXPECT_EQ(formInfo.deepLink, FORM_PATH);
+        EXPECT_EQ(formInfo.package, PACKAGE_NAME);
+        EXPECT_EQ(formInfo.formVisibleNotify, true);
+        unsigned i = 2;
+        EXPECT_EQ(formInfo.supportDimensions.size(), i);
+        EXPECT_EQ(formInfo.defaultDimension, 1);
+        EXPECT_EQ(formInfo.updateDuration, 0);
+        EXPECT_EQ(formInfo.scheduledUpateTime, FORM_SCHEDULED_UPDATE_TIME);
+        EXPECT_EQ(formInfo.jsComponentName, FORM_JS_COMPONENT_NAME);
+        EXPECT_EQ(formInfo.updateEnabled, true);
+        for (auto &info : formInfo.customizeDatas) {
+            EXPECT_EQ(info.name, FORM_CUSTOMIZE_DATAS_NAME);
+            EXPECT_EQ(info.value, FORM_CUSTOMIZE_DATAS_VALUE);
+        }
+    }
+}
+
+void BmsBundleKitServiceTest::CheckShortcutInfoTest(std::vector<ShortcutInfo> &shortcutInfos) const 
+{
+    for (const auto &shortcutInfo : shortcutInfos) {
+        EXPECT_EQ(shortcutInfo.id, SHORTCUT_TEST_ID);
+        EXPECT_EQ(shortcutInfo.bundleName, BUNDLE_NAME_TEST);
+        EXPECT_EQ(shortcutInfo.hostAbility, SHORTCUT_HOST_ABILITY);
+        EXPECT_EQ(shortcutInfo.icon, SHORTCUT_ICON);
+        EXPECT_EQ(shortcutInfo.label, SHORTCUT_LABEL);
+        EXPECT_EQ(shortcutInfo.disableMessage, SHORTCUT_DISABLE_MESSAGE);
+        EXPECT_EQ(shortcutInfo.isStatic, true);
+        EXPECT_EQ(shortcutInfo.isHomeShortcut, true);
+        EXPECT_EQ(shortcutInfo.isEnables, true);
+        for (auto &intent : shortcutInfo.intents) {
+            EXPECT_EQ(intent.targetBundle, SHORTCUT_INTENTS_TARGET_BUNDLE);
+            EXPECT_EQ(intent.targetClass, SHORTCUT_INTENTS_TARGET_CLASS);
+        }
+    }
+}
+
+void BmsBundleKitServiceTest::CheckShortcutInfoDemo(std::vector<ShortcutInfo> &shortcutInfos) const 
+{
+    for (const auto &shortcutInfo : shortcutInfos) {
+        EXPECT_EQ(shortcutInfo.id, SHORTCUT_DEMO_ID);
+        EXPECT_EQ(shortcutInfo.bundleName, BUNDLE_NAME_DEMO);
+        EXPECT_EQ(shortcutInfo.hostAbility, SHORTCUT_HOST_ABILITY);
+        EXPECT_EQ(shortcutInfo.icon, SHORTCUT_ICON);
+        EXPECT_EQ(shortcutInfo.label, SHORTCUT_LABEL);
+        EXPECT_EQ(shortcutInfo.disableMessage, SHORTCUT_DISABLE_MESSAGE);
+        EXPECT_EQ(shortcutInfo.isStatic, true);
+        EXPECT_EQ(shortcutInfo.isHomeShortcut, true);
+        EXPECT_EQ(shortcutInfo.isEnables, true);
+        for (auto &intent : shortcutInfo.intents) {
+            EXPECT_EQ(intent.targetBundle, SHORTCUT_INTENTS_TARGET_BUNDLE);
+            EXPECT_EQ(intent.targetClass, SHORTCUT_INTENTS_TARGET_CLASS);
+        }
+    }
+}
+
 /**
  * @tc.number: GetBundleInfo_0100
  * @tc.name: test can get the bundleName's bundle info
@@ -470,12 +696,10 @@ HWTEST_F(BmsBundleKitServiceTest, GetBundleInfo_0100, Function | SmallTest | Lev
 {
     MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
     MockInstallBundle(BUNDLE_NAME_DEMO, MODULE_NAME_DEMO, ABILITY_NAME_DEMO);
-
     BundleInfo testResult;
     bool testRet = GetBundleDataMgr()->GetBundleInfo(BUNDLE_NAME_TEST, BundleFlag::GET_BUNDLE_DEFAULT, testResult);
     EXPECT_TRUE(testRet);
     CheckBundleInfo(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_SIZE_ZERO, testResult);
-
     BundleInfo demoResult;
     bool demoRet =
         GetBundleDataMgr()->GetBundleInfo(BUNDLE_NAME_DEMO, BundleFlag::GET_BUNDLE_WITH_ABILITIES, demoResult);
@@ -2186,7 +2410,7 @@ HWTEST_F(BmsBundleKitServiceTest, GetAbilityIcon_0100, Function | SmallTest | Le
  * @tc.desc: 1.system run normally
  *           2.get empty ability icon
  */
-HWTEST_F(BmsBundleKitServiceTest,GetAbilityIcon_0200, Function | SmallTest | Level1)
+HWTEST_F(BmsBundleKitServiceTest, GetAbilityIcon_0200, Function | SmallTest | Level1)
 {
     std::string icon = GetBundleDataMgr()->GetAbilityIcon(BUNDLE_NAME_TEST, ABILITY_NAME_TEST);
     EXPECT_EQ(EMPTY_STRING, icon);
@@ -2222,4 +2446,311 @@ HWTEST_F(BmsBundleKitServiceTest, GetAbilityIcon_0400, Function | SmallTest | Le
     EXPECT_EQ(EMPTY_STRING, icon);
 
     MockUninstallBundle(BUNDLE_NAME_TEST);
+}
+/**
+ * @tc.number: GetFormInfoByModule_0100
+ * @tc.name: test can  get the formInfo
+ * @tc.desc: 1.system run normally
+ *           2.get formInfo by moduleName successful
+ */
+HWTEST_F(BmsBundleKitServiceTest, GetFormInfoByModule_0100, Function | SmallTest | Level1)
+{
+    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
+    std::vector<FormInfo> formInfos;
+    auto result = GetBundleDataMgr()->GetFormsInfoByModule(BUNDLE_NAME_TEST, MODULE_NAME_TEST, formInfos);
+    EXPECT_EQ(result, true);
+    EXPECT_FALSE(formInfos.empty());
+    CheckFormInfoTest(formInfos);
+    MockUninstallBundle(BUNDLE_NAME_TEST);
+}
+
+/**
+ * @tc.number: GetFormInfoByModule_0200
+ * @tc.name: test can get the formInfo
+ * @tc.desc: 1.system run normally
+ *           2.get forms info in different bundle
+ */
+HWTEST_F(BmsBundleKitServiceTest, GetFormInfoByModule_0200, Function | SmallTest | Level1)
+{
+    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
+    std::vector<FormInfo> formInfo1;
+    auto result = GetBundleDataMgr()->GetFormsInfoByModule(BUNDLE_NAME_TEST, MODULE_NAME_TEST, formInfo1);
+    EXPECT_EQ(result, true);
+    EXPECT_FALSE(formInfo1.empty());
+    CheckFormInfoTest(formInfo1);
+
+    MockInstallBundle(BUNDLE_NAME_DEMO, MODULE_NAME_DEMO, ABILITY_NAME_TEST);
+    std::vector<FormInfo> formInfo2;
+    auto result1 = GetBundleDataMgr()->GetFormsInfoByModule(BUNDLE_NAME_DEMO, MODULE_NAME_DEMO, formInfo2);
+    EXPECT_EQ(result1, true);
+    EXPECT_FALSE(formInfo2.empty());
+    CheckFormInfoDemo(formInfo2);
+
+    MockUninstallBundle(BUNDLE_NAME_TEST);
+    MockUninstallBundle(BUNDLE_NAME_DEMO);
+}
+
+/**
+ * @tc.number: GetFormInfoByModule_0400
+ * @tc.name: test can not get the formInfo
+ * @tc.desc:1.system run normally
+ *          2.get form info with error moduleName
+ */
+HWTEST_F(BmsBundleKitServiceTest, GetFormInfoByModule_0300, Function | SmallTest | Level1)
+{
+    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
+    std::vector<FormInfo> formInfos;
+    GetBundleDataMgr()->GetFormsInfoByModule(BUNDLE_NAME_TEST, MODULE_NAME_DEMO, formInfos);
+    EXPECT_TRUE(formInfos.empty());
+    MockUninstallBundle(BUNDLE_NAME_TEST);
+}
+
+/**
+ * @tc.number: GetFormInfoByModule_0400
+ * @tc.name: test can not get the formInfo
+ * @tc.desc: 1.system run normally
+ *           2.get form info with empty moduleName
+ */
+HWTEST_F(BmsBundleKitServiceTest, GetFormInfoByModule_0400, Function | SmallTest | Level1)
+{
+    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_DEMO);
+    std::vector<FormInfo> formInfos;
+    GetBundleDataMgr()->GetFormsInfoByModule(BUNDLE_NAME_TEST, EMPTY_STRING, formInfos);
+    EXPECT_TRUE(formInfos.empty());
+    MockUninstallBundle(BUNDLE_NAME_TEST);
+}
+
+/**
+ * @tc.number: GetFormInfoByModule_0500
+ * @tc.name: test can not get the formInfo
+ * @tc.desc: 1.system run normally
+ *           2.get form info with non bundle
+ */
+HWTEST_F(BmsBundleKitServiceTest, GetFormInfoByModule_0500, Function | SmallTest | Level1)
+{
+    std::vector<FormInfo> formInfos;
+    GetBundleDataMgr()->GetFormsInfoByModule(BUNDLE_NAME_TEST, EMPTY_STRING, formInfos);
+    EXPECT_TRUE(formInfos.empty());
+}
+
+/**
+ * @tc.number: GetFormInfoByApp_0100
+ * @tc.name: test can get the formInfo by bundlename
+ * @tc.desc: 1.system run normally
+ *           2.get form info by bundleName
+ */
+HWTEST_F(BmsBundleKitServiceTest, GetFormInfoByApp_0100, Function | SmallTest | Level1)
+{
+    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
+    std::vector<FormInfo> formInfos;
+    auto result = GetBundleDataMgr()->GetFormsInfoByApp(BUNDLE_NAME_TEST, formInfos);
+    EXPECT_EQ(result, true);
+    EXPECT_FALSE(formInfos.empty());
+    CheckFormInfoTest(formInfos);
+    MockUninstallBundle(BUNDLE_NAME_TEST);
+}
+
+/**
+ * @tc.number: GetFormInfoByApp_0200
+ * @tc.name: test can get the formInfo in different app by bundlename
+ * @tc.desc: 1.system run normally
+ *           2.get form info by different bundleName
+ */
+HWTEST_F(BmsBundleKitServiceTest, GetFormInfoByApp_0200, Function | SmallTest | Level1)
+{
+    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
+    std::vector<FormInfo> formInfo1;
+    auto result = GetBundleDataMgr()->GetFormsInfoByApp(BUNDLE_NAME_TEST, formInfo1);
+    EXPECT_EQ(result, true);
+    EXPECT_FALSE(formInfo1.empty());
+    CheckFormInfoTest(formInfo1);
+
+    MockInstallBundle(BUNDLE_NAME_DEMO, MODULE_NAME_DEMO, ABILITY_NAME_TEST);
+    std::vector<FormInfo> formInfo2;
+    auto result1 = GetBundleDataMgr()->GetFormsInfoByApp(BUNDLE_NAME_DEMO, formInfo2);
+    EXPECT_EQ(result1, true);
+    EXPECT_FALSE(formInfo2.empty());
+    CheckFormInfoDemo(formInfo2);
+
+    MockUninstallBundle(BUNDLE_NAME_TEST);
+    MockUninstallBundle(BUNDLE_NAME_DEMO);
+}
+
+/**
+ * @tc.number: GetFormInfoByApp_0300
+ * @tc.name: test can't get the formInfo in app by error app name
+ * @tc.desc: 1.system run normally
+ *           2.get form info by error bundleName
+ */
+HWTEST_F(BmsBundleKitServiceTest, GetFormInfoByApp_0300, Function | SmallTest | Level1)
+{
+    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
+    std::vector<FormInfo> formInfo1;
+    GetBundleDataMgr()->GetFormsInfoByApp(BUNDLE_NAME_DEMO, formInfo1);
+    EXPECT_TRUE(formInfo1.empty());
+    MockUninstallBundle(BUNDLE_NAME_TEST);
+}
+
+/**
+ * @tc.number: GetFormInfoByApp_0400
+ * @tc.name: test can't get the formInfo in app by empty app name
+ * @tc.desc: 1.system run normally
+ *           2.get form info by empty bundleName
+ */
+HWTEST_F(BmsBundleKitServiceTest, GetFormInfoByApp_0400, Function | SmallTest | Level1)
+{
+    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
+    std::vector<FormInfo> formInfo1;
+    GetBundleDataMgr()->GetFormsInfoByApp(EMPTY_STRING, formInfo1);
+    EXPECT_TRUE(formInfo1.empty());
+    MockUninstallBundle(BUNDLE_NAME_TEST);
+}
+
+/**
+ * @tc.number: GetFormInfoByApp_0500
+ * @tc.name: test can't get the formInfo have no bundle
+ * @tc.desc: 1.system run normally
+ *           2.get form info with non bundle
+ */
+HWTEST_F(BmsBundleKitServiceTest, GetFormInfoByApp_0500, Function | SmallTest | Level1)
+{
+    std::vector<FormInfo> formInfo1;
+    GetBundleDataMgr()->GetFormsInfoByApp(BUNDLE_NAME_DEMO, formInfo1);
+    EXPECT_TRUE(formInfo1.empty());
+}
+
+/**
+ * @tc.number: GetAllFormInfo_0100
+ * @tc.name: test can get all the formInfo
+ * @tc.desc: 1.system run normally
+ *           2.get forms by all the bundle
+ */
+HWTEST_F(BmsBundleKitServiceTest, GetAllFormInfo_0100, Function | SmallTest | Level1)
+{
+    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
+    std::vector<FormInfo> formInfos;
+    auto result = GetBundleDataMgr()->GetAllFormsInfo(formInfos);
+    EXPECT_EQ(result, true);
+    EXPECT_FALSE(formInfos.empty());
+    CheckFormInfoTest(formInfos);
+    MockUninstallBundle(BUNDLE_NAME_TEST);
+}
+
+/**
+ * @tc.number: GetAllFormInfo_0100
+ * @tc.name: test can get all the formInfo
+ * @tc.desc: 1.system run normally
+ *           2.get forms by all the bundle
+ */
+HWTEST_F(BmsBundleKitServiceTest, GetAllFormInfo_0200, Function | SmallTest | Level1)
+{
+    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
+    MockInstallBundle(BUNDLE_NAME_DEMO, MODULE_NAME_DEMO, ABILITY_NAME_TEST);
+    std::vector<FormInfo> formInfos;
+    auto result = GetBundleDataMgr()->GetAllFormsInfo(formInfos);
+    EXPECT_FALSE(formInfos.empty());
+    EXPECT_EQ(result, true);
+    for (const auto &info : formInfos) {
+        if (info.bundleName != BUNDLE_NAME_TEST) {
+            std::vector<FormInfo> formInfo1;
+            formInfo1.emplace_back(info);
+            CheckFormInfoDemo(formInfo1);
+        } else {
+            std::vector<FormInfo> formInfo2;
+            formInfo2.emplace_back(info);
+            CheckFormInfoTest(formInfo2);
+        }
+    }
+    MockUninstallBundle(BUNDLE_NAME_TEST);
+    MockUninstallBundle(BUNDLE_NAME_DEMO);
+}
+
+/**
+ * @tc.number: GetAllFormInfo_0300
+ * @tc.name: test can not get have no form
+ * @tc.desc: 1.system run normally
+ *           2.get forms by all the bundle
+ */
+HWTEST_F(BmsBundleKitServiceTest, GetAllFormInfo_0300, Function | SmallTest | Level1)
+{
+    std::vector<FormInfo> formInfos;
+    GetBundleDataMgr()->GetAllFormsInfo(formInfos);
+    EXPECT_TRUE(formInfos.empty());
+}
+
+/**
+ * @tc.number: GetShortcutInfos_0100
+ * @tc.name: test can get shortcutInfo by bundleName
+ * @tc.desc: 1.can get shortcutInfo
+ */
+HWTEST_F(BmsBundleKitServiceTest, GetShortcutInfos_0100, Function | SmallTest | Level1)
+{
+    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
+    std::vector<ShortcutInfo> shortcutInfos;
+    auto result = GetBundleDataMgr()->GetShortcutInfos(BUNDLE_NAME_TEST, shortcutInfos);
+    EXPECT_TRUE(result);
+    CheckShortcutInfoTest(shortcutInfos);
+    MockUninstallBundle(BUNDLE_NAME_TEST);
+}
+
+/**
+ * @tc.number: GetShortcutInfos_0200
+ * @tc.name: test have two bundle can get shortcutInfo by bundleName
+ * @tc.desc: 1.can get shortcutInfo
+ */
+HWTEST_F(BmsBundleKitServiceTest, GetShortcutInfos_0200, Function | SmallTest | Level1)
+{
+    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
+    MockInstallBundle(BUNDLE_NAME_DEMO, MODULE_NAME_DEMO, ABILITY_NAME_TEST);
+    std::vector<ShortcutInfo> shortcutInfo1;
+    auto result1 = GetBundleDataMgr()->GetShortcutInfos(BUNDLE_NAME_TEST, shortcutInfo1);
+    EXPECT_TRUE(result1);
+    CheckShortcutInfoTest(shortcutInfo1);
+    std::vector<ShortcutInfo> shortcutInfo2;
+    auto result2 = GetBundleDataMgr()->GetShortcutInfos(BUNDLE_NAME_DEMO, shortcutInfo2);
+    EXPECT_TRUE(result2);
+    CheckShortcutInfoDemo(shortcutInfo2);
+    MockUninstallBundle(BUNDLE_NAME_TEST);
+    MockUninstallBundle(BUNDLE_NAME_DEMO);
+}
+
+/**
+ * @tc.number: GetShortcutInfos_0300
+ * @tc.name: test can't get the shortcutInfo in app by error app name
+ * @tc.desc: 1.have not get shortcutinfo by appName
+ */
+HWTEST_F(BmsBundleKitServiceTest, GetShortcutInfos_0300, Function | SmallTest | Level1)
+{
+    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
+    std::vector<ShortcutInfo> shortcutInfos;
+    GetBundleDataMgr()->GetShortcutInfos(BUNDLE_NAME_DEMO, shortcutInfos);
+    EXPECT_TRUE(shortcutInfos.empty());
+    MockUninstallBundle(BUNDLE_NAME_TEST);
+}
+
+/**
+ * @tc.number: GetShortcutInfos_0400
+ * @tc.name: test can't get the shortcutInfo in app by null app name
+ * @tc.desc: 1.have not get shortcutinfo by null app name
+ */
+HWTEST_F(BmsBundleKitServiceTest, GetShortcutInfos_0400, Function | SmallTest | Level1)
+{
+    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
+    std::vector<ShortcutInfo> shortcutInfos;
+    GetBundleDataMgr()->GetShortcutInfos(EMPTY_STRING, shortcutInfos);
+    EXPECT_TRUE(shortcutInfos.empty());
+    MockUninstallBundle(BUNDLE_NAME_TEST);
+}
+
+/**
+ * @tc.number: GetShortcutInfos_0500
+ * @tc.name: test can't get the shortcutInfo have no bundle
+ * @tc.desc: 1.have not get shortcutInfo by appName
+ *           2.can't get shortcutInfo
+ */
+HWTEST_F(BmsBundleKitServiceTest, GetShortcutInfos_0500, Function | SmallTest | Level1)
+{
+    std::vector<ShortcutInfo> shortcutInfos;
+    GetBundleDataMgr()->GetShortcutInfos(BUNDLE_NAME_TEST, shortcutInfos);
+    EXPECT_TRUE(shortcutInfos.empty());
 }

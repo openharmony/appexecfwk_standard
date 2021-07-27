@@ -173,6 +173,17 @@ public:
         return 0;
     }
 
+    int SetMissionDescriptionInfo(
+        const sptr<IRemoteObject> &token, const MissionDescriptionInfo &missionDescriptionInfo) override
+    {
+        return 0;
+    }
+
+    int GetMissionLockModeState() override
+    {
+        return 0;
+    }
+
     virtual sptr<AAFwk::IWantSender> GetWantSender(
         const WantSenderInfo &wantSenderInfo, const sptr<IRemoteObject> &callerToken) override
     {
