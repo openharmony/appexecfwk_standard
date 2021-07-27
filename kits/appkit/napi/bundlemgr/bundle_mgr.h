@@ -147,6 +147,16 @@ struct AsyncFormInfosByAppCallbackInfo {
     bool ret = false;
 };
 
+struct AsyncShortcutInfosCallbackInfo {
+    napi_env env;
+    napi_async_work asyncWork;
+    napi_deferred deferred;
+    napi_ref callback = 0;
+    std::string bundleName;
+    std::vector<OHOS::AppExecFwk::ShortcutInfo> shortcutInfos;
+    bool ret = false;
+};
+
 extern napi_value g_classBundleInstaller;
 
 napi_value GetApplicationInfos(napi_env env, napi_callback_info);
@@ -163,6 +173,7 @@ napi_value BundleInstallerConstructor(napi_env env, napi_callback_info info);
 napi_value GetAllFormsInfo(napi_env env, napi_callback_info info);
 napi_value GetFormsInfoByApp(napi_env env, napi_callback_info info);
 napi_value GetFormsInfoByModule(napi_env env, napi_callback_info info);
+napi_value GetShortcutInfos(napi_env env, napi_callback_info info);
 void CreateAbilityTypeObject(napi_env env, napi_value value);
 void CreateAbilitySubTypeObject(napi_env env, napi_value value);
 void CreateDisplayOrientationObject(napi_env env, napi_value value);

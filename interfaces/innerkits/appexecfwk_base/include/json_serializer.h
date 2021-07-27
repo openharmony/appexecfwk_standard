@@ -19,6 +19,7 @@
 #include "nlohmann/json.hpp"
 #include "bundle_info.h"
 #include "form_info.h"
+#include "shortcut_info.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -27,20 +28,26 @@ namespace AppExecFwk {
  * form_json and to_json is global static overload method, which need callback by json library,
  * and can not rename this function, so don't named according UpperCamelCase style
  */
+void to_json(nlohmann::json &jsonObject, const Parameters &parameters);
+void from_json(const nlohmann::json &jsonObject, Parameters &parameters);
+void to_json(nlohmann::json &jsonObject, const Results &results);
+void from_json(const nlohmann::json &jsonObject, Results &results);
+void to_json(nlohmann::json &jsonObject, const CustomizeData &customizeData);
+void from_json(const nlohmann::json &jsonObject, CustomizeData &customizeData);
+void to_json(nlohmann::json &jsonObject, const MetaData &metaData);
+void from_json(const nlohmann::json &jsonObject, MetaData &metaData);
 void to_json(nlohmann::json &jsonObject, const AbilityInfo &abilityInfo);
 void from_json(const nlohmann::json &jsonObject, AbilityInfo &abilityInfo);
-void to_json(nlohmann::json &jsonObject, const Form &form);
-void from_json(const nlohmann::json &jsonObject, Form &form);
 void to_json(nlohmann::json &jsonObject, const ApplicationInfo &applicationInfo);
 void from_json(const nlohmann::json &jsonObject, ApplicationInfo &applicationInfo);
 void to_json(nlohmann::json &jsonObject, const BundleInfo &bundleInfo);
 void from_json(const nlohmann::json &jsonObject, BundleInfo &bundleInfo);
 void to_json(nlohmann::json &jsonObject, const ModuleInfo &moduleInfo);
 void from_json(const nlohmann::json &jsonObject, ModuleInfo &moduleInfo);
-void to_json(nlohmann::json &jsonObject, const CustomizeData &customizeDatas);
-void from_json(const nlohmann::json &jsonObject, CustomizeData &customizeDatas);
 void to_json(nlohmann::json &jsonObject, const FormInfo &formInfo);
 void from_json(const nlohmann::json &jsonObject, FormInfo &formInfo);
+void to_json(nlohmann::json &jsonObject, const ShortcutInfo &shortcutInfo);
+void from_json(const nlohmann::json &jsonObject, ShortcutInfo &shortcutInfo);
 
 }  // namespace AppExecFwk
 }  // namespace OHOS

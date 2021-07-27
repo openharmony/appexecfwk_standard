@@ -3199,14 +3199,15 @@ HWTEST_F(AmsPageAbilityTest, AMS_Page_Ability_6400, Function | MediumTest | Leve
     std::vector<std::string> dumpInfo;
     abilityMs_->DumpState((DUMP_STACK + " 1"), dumpInfo);
     MTDumpUtil::GetInstance()->GetAll("AbilityName", dumpInfo, result);
-    std::vector<std::string> expectedResult = {abilityName2, abilityName1, abilityName3, abilityName5};
+    std::vector<std::string> expectedResult = {abilityName2, abilityName2, abilityName1, abilityName3, abilityName5};
     EXPECT_TRUE(MTDumpUtil::GetInstance()->CompStrVec(result, expectedResult));
     MissionStackInfo missionStackInfo;
     GetAllStackInfo(missionStackInfo);
     EXPECT_TRUE(missionStackInfo.missionRecords.size() == 3);
     auto abilityInfos = missionStackInfo.missionRecords[0].abilityRecordInfos;
     EXPECT_EQ(0, abilityInfos[0].mainName.compare(abilityName2));
-    EXPECT_EQ(0, abilityInfos[1].mainName.compare(abilityName1));
+    EXPECT_EQ(0, abilityInfos[1].mainName.compare(abilityName2));
+    EXPECT_EQ(0, abilityInfos[2].mainName.compare(abilityName1));
     abilityInfos = missionStackInfo.missionRecords[1].abilityRecordInfos;
     EXPECT_EQ(0, abilityInfos[0].mainName.compare(abilityName3));
     abilityInfos = missionStackInfo.missionRecords[2].abilityRecordInfos;

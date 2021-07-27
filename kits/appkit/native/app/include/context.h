@@ -27,6 +27,7 @@
 #include "dummy_hap_module_info.h"
 #include "hap_module_info.h"
 #include "task/task_priority.h"
+#include "mission_information.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -629,8 +630,8 @@ public:
      * @return Returns true is first in Mission.
      */
     virtual bool IsFirstInMission() = 0;
-	
-	/**
+
+    /**
      * @brief Obtains a task dispatcher that is bound to the UI thread.
      *
      * @return Returns the task dispatcher that is bound to the UI thread.
@@ -674,6 +675,34 @@ public:
      * @return Returns a global task dispatcher.
      */
     virtual std::shared_ptr<TaskDispatcher> GetGlobalTaskDispatcher(const TaskPriority &priority) = 0;
+
+    /**
+     * @brief Requires that tasks associated with a given capability token be moved to the background
+     *
+     * @param nonFirst If nonfirst is false and not the lowest ability of the mission, you cannot move mission to end
+     *
+     * @return Returns true on success, others on failure.
+     */
+    virtual bool MoveMissionToEnd(bool nonFirst) = 0;
+
+    /**
+     * @brief Sets the application to start its ability in lock mission mode.
+     */
+    virtual void LockMission() = 0;
+
+    /**
+     * @brief Unlocks this ability by exiting the lock mission mode.
+     */
+    virtual void UnlockMission() = 0;
+
+    /**
+     * @brief Sets description information about the mission containing this ability.
+     *
+     * @param MissionInformation Indicates the object containing information about the
+     *                               mission. This parameter cannot be null.
+     * @return Returns true on success, others on failure.
+     */
+    virtual bool SetMissionInformation(const MissionInformation &missionInformation) = 0;
 
     friend DataAbilityHelper;
     friend ContinuationConnector;

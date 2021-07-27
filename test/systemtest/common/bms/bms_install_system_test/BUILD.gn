@@ -13,16 +13,12 @@
 
 import("//build/test.gni")
 import("//foundation/appexecfwk/standard/appexecfwk.gni")
-EVENT_DIR = "//base/notification/ces_standard/cesfwk"
 module_output_path = "appexecfwk_standard/bundlemgrsst"
 
 ohos_systemtest("BmsInstallSystemTest") {
   module_out_path = module_output_path
 
-  include_dirs = [
-    "${EVENT_DIR}/kits/native/include",
-    "//foundation/aafwk/standard/interfaces/innerkits/want/include/ohos/aafwk/content/",
-  ]
+  include_dirs = [ "//foundation/aafwk/standard/interfaces/innerkits/want/include/ohos/aafwk/content/" ]
 
   sources = [ "bms_install_system_test.cpp" ]
   cflags = []
@@ -30,7 +26,6 @@ ohos_systemtest("BmsInstallSystemTest") {
     cflags += [ "-DBINDER_IPC_32BIT" ]
   }
   deps = [
-    "${EVENT_DIR}/kits/native:cesfwk_kits",
     "${common_path}:libappexecfwk_common",
     "${innerkits_path}/appexecfwk_base:appexecfwk_base",
     "${innerkits_path}/appexecfwk_core:appexecfwk_core",
@@ -45,6 +40,7 @@ ohos_systemtest("BmsInstallSystemTest") {
   defines = [ "APP_LOG_TAG = \"BundleMgrTool\"" ]
 
   external_deps = [
+    "ces_standard:cesfwk_innerkits",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
   ]

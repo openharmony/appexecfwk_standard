@@ -13,6 +13,8 @@
 
 group("ams_system_test_app") {
   deps = [
+    "amsAbilityAppendTestA:amsAbilityAppendTestA",
+    "amsAbilityAppendTestB:amsAbilityAppendTestB",
     "amsDataSystemTestA:amsDataSystemTestA",
     "amsDataSystemTestB:amsDataSystemTestB",
     "amsDataSystemTestC:amsDataSystemTestC",

@@ -24,7 +24,7 @@ config("bundlemgr_test_config") {
     "//foundation/distributedschedule/dmsfwk/services/dtbschedmgr/include",
     "//foundation/aafwk/standard/services/abilitymgr/include",
     "//foundation/aafwk/standard/services/common/include",
-    "//base/notification/ces_standard/cesfwk/kits/native/include",
+    "//base/notification/ces_standard/interfaces/innerkits/native/include",
   ]
 
   configs = [

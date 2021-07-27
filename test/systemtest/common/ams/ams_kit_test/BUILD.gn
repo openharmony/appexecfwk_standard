@@ -13,17 +13,12 @@
 import("//build/test.gni")
 import("//foundation/appexecfwk/standard/appexecfwk.gni")
 
-event_cesfwk_path = "//base/notification/ces_standard/cesfwk"
-event_cesfwk_kits_path = "${event_cesfwk_path}/kits"
-event_cesfwk_innerkits_path = "${event_cesfwk_path}/innerkits"
 module_output_path = "appexecfwk_standard/ams"
 ohos_systemtest("ams_kit_test") {
   module_out_path = module_output_path
   include_dirs = [
     "${appexecfwk_path}/test/resource/amssystemtestability/abilitySrc/common/",
     "${appexecfwk_path}/test/systemtest/common/ams/tool/include",
-    "${event_cesfwk_innerkits_path}/include",
-    "${event_cesfwk_kits_path}/native/include",
     "//foundation/distributedschedule/safwk/services/safwk/include",
     "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/include",
     "//base/notification/ces_standard/test/systemtest/common/resource",
@@ -49,13 +44,13 @@ ohos_systemtest("ams_kit_test") {
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base:appexecfwk_base",
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core:appexecfwk_core",
     "${appexecfwk_path}/interfaces/innerkits/libeventhandler:libeventhandler",
-    "${event_cesfwk_innerkits_path}:cesfwk_innerkits",
-    "${event_cesfwk_kits_path}/native:cesfwk_kits",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
     "//third_party/googletest:gtest_main",
     "//utils/native/base:utils",
   ]
   external_deps = [
+    "ces_standard:cesfwk_core",
+    "ces_standard:cesfwk_innerkits",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
   ]
@@ -65,8 +60,6 @@ ohos_systemtest("ams_kit_service_ability_test") {
   module_out_path = module_output_path
   include_dirs = [
     "${appexecfwk_path}/test/systemtest/common/ams/tool/include",
-    "${event_cesfwk_innerkits_path}/include",
-    "${event_cesfwk_kits_path}/native/include",
     "//foundation/distributedschedule/safwk/services/safwk/include",
     "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/include",
     "//base/notification/ces_standard/test/systemtest/common/resource",
@@ -92,13 +85,13 @@ ohos_systemtest("ams_kit_service_ability_test") {
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base:appexecfwk_base",
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core:appexecfwk_core",
     "${appexecfwk_path}/interfaces/innerkits/libeventhandler:libeventhandler",
-    "${event_cesfwk_innerkits_path}:cesfwk_innerkits",
-    "${event_cesfwk_kits_path}/native:cesfwk_kits",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
     "//third_party/googletest:gtest_main",
     "//utils/native/base:utils",
   ]
   external_deps = [
+    "ces_standard:cesfwk_core",
+    "ces_standard:cesfwk_innerkits",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
   ]
@@ -108,8 +101,6 @@ ohos_systemtest("ams_kit_data_test") {
   module_out_path = module_output_path
   include_dirs = [
     "${appexecfwk_path}/test/systemtest/common/ams/tool/include",
-    "${event_cesfwk_innerkits_path}/include",
-    "${event_cesfwk_kits_path}/native/include",
     "//foundation/distributedschedule/safwk/services/safwk/include",
     "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/include",
     "//base/notification/ces_standard/test/systemtest/common/resource",
@@ -137,14 +128,14 @@ ohos_systemtest("ams_kit_data_test") {
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base:appexecfwk_base",
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core:appexecfwk_core",
     "${appexecfwk_path}/interfaces/innerkits/libeventhandler:libeventhandler",
-    "${event_cesfwk_innerkits_path}:cesfwk_innerkits",
-    "${event_cesfwk_kits_path}/native:cesfwk_kits",
     "//foundation/distributedschedule/dmsfwk/interfaces/innerkits/uri:zuri",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
     "//third_party/googletest:gtest_main",
     "//utils/native/base:utils",
   ]
   external_deps = [
+    "ces_standard:cesfwk_core",
+    "ces_standard:cesfwk_innerkits",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
   ]
@@ -155,8 +146,6 @@ ohos_systemtest("ams_kit_a_test") {
   include_dirs = [
     "${appexecfwk_path}/test/resource/amssystemtestability/abilitySrc/common/",
     "${appexecfwk_path}/test/systemtest/common/ams/tool/include",
-    "${event_cesfwk_innerkits_path}/include",
-    "${event_cesfwk_kits_path}/native/include",
     "//foundation/distributedschedule/safwk/services/safwk/include",
     "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/include",
     "//base/notification/ces_standard/test/systemtest/common/resource",
@@ -182,14 +171,14 @@ ohos_systemtest("ams_kit_a_test") {
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base:appexecfwk_base",
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core:appexecfwk_core",
     "${appexecfwk_path}/interfaces/innerkits/libeventhandler:libeventhandler",
-    "${event_cesfwk_innerkits_path}:cesfwk_innerkits",
-    "${event_cesfwk_kits_path}/native:cesfwk_kits",
     "//foundation/distributedschedule/dmsfwk/interfaces/innerkits/uri:zuri",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
     "//third_party/googletest:gtest_main",
     "//utils/native/base:utils",
   ]
   external_deps = [
+    "ces_standard:cesfwk_core",
+    "ces_standard:cesfwk_innerkits",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
   ]
@@ -200,8 +189,6 @@ ohos_systemtest("ams_kit_want_test") {
   include_dirs = [
     "${appexecfwk_path}/test/resource/amssystemtestability/abilitySrc/common/",
     "${appexecfwk_path}/test/systemtest/common/ams/tool/include",
-    "${event_cesfwk_innerkits_path}/include",
-    "${event_cesfwk_kits_path}/native/include",
     "//foundation/distributedschedule/safwk/services/safwk/include",
     "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/include",
     "//base/notification/ces_standard/test/systemtest/common/resource",
@@ -227,13 +214,13 @@ ohos_systemtest("ams_kit_want_test") {
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base:appexecfwk_base",
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core:appexecfwk_core",
     "${appexecfwk_path}/interfaces/innerkits/libeventhandler:libeventhandler",
-    "${event_cesfwk_innerkits_path}:cesfwk_innerkits",
-    "${event_cesfwk_kits_path}/native:cesfwk_kits",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
     "//third_party/googletest:gtest_main",
     "//utils/native/base:utils",
   ]
   external_deps = [
+    "ces_standard:cesfwk_core",
+    "ces_standard:cesfwk_innerkits",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
   ]
@@ -244,8 +231,6 @@ ohos_systemtest("ams_kit_skills_test") {
   include_dirs = [
     "${appexecfwk_path}/test/resource/amssystemtestability/abilitySrc/common/",
     "${appexecfwk_path}/test/systemtest/common/ams/tool/include",
-    "${event_cesfwk_innerkits_path}/include",
-    "${event_cesfwk_kits_path}/native/include",
     "//foundation/distributedschedule/safwk/services/safwk/include",
     "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/include",
     "//base/notification/ces_standard/test/systemtest/common/resource",
@@ -271,13 +256,13 @@ ohos_systemtest("ams_kit_skills_test") {
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base:appexecfwk_base",
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core:appexecfwk_core",
     "${appexecfwk_path}/interfaces/innerkits/libeventhandler:libeventhandler",
-    "${event_cesfwk_innerkits_path}:cesfwk_innerkits",
-    "${event_cesfwk_kits_path}/native:cesfwk_kits",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
     "//third_party/googletest:gtest_main",
     "//utils/native/base:utils",
   ]
   external_deps = [
+    "ces_standard:cesfwk_core",
+    "ces_standard:cesfwk_innerkits",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
   ]
@@ -288,8 +273,6 @@ ohos_systemtest("ams_kit_lifecycle_test") {
   include_dirs = [
     "${appexecfwk_path}/test/resource/amssystemtestability/abilitySrc/common/",
     "${appexecfwk_path}/test/systemtest/common/ams/tool/include",
-    "${event_cesfwk_innerkits_path}/include",
-    "${event_cesfwk_kits_path}/native/include",
     "//foundation/distributedschedule/safwk/services/safwk/include",
     "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/include",
     "//base/notification/ces_standard/test/systemtest/common/resource",
@@ -315,13 +298,13 @@ ohos_systemtest("ams_kit_lifecycle_test") {
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base:appexecfwk_base",
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core:appexecfwk_core",
     "${appexecfwk_path}/interfaces/innerkits/libeventhandler:libeventhandler",
-    "${event_cesfwk_innerkits_path}:cesfwk_innerkits",
-    "${event_cesfwk_kits_path}/native:cesfwk_kits",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
     "//third_party/googletest:gtest_main",
     "//utils/native/base:utils",
   ]
   external_deps = [
+    "ces_standard:cesfwk_core",
+    "ces_standard:cesfwk_innerkits",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
   ]
@@ -332,8 +315,6 @@ ohos_systemtest("ams_kit_processinfo_test") {
   include_dirs = [
     "${appexecfwk_path}/test/resource/amssystemtestability/abilitySrc/common/",
     "${appexecfwk_path}/test/systemtest/common/ams/tool/include",
-    "${event_cesfwk_innerkits_path}/include",
-    "${event_cesfwk_kits_path}/native/include",
     "//foundation/distributedschedule/safwk/services/safwk/include",
     "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/include",
     "//base/notification/ces_standard/test/systemtest/common/resource",
@@ -359,13 +340,13 @@ ohos_systemtest("ams_kit_processinfo_test") {
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base:appexecfwk_base",
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core:appexecfwk_core",
     "${appexecfwk_path}/interfaces/innerkits/libeventhandler:libeventhandler",
-    "${event_cesfwk_innerkits_path}:cesfwk_innerkits",
-    "${event_cesfwk_kits_path}/native:cesfwk_kits",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
     "//third_party/googletest:gtest_main",
     "//utils/native/base:utils",
   ]
   external_deps = [
+    "ces_standard:cesfwk_core",
+    "ces_standard:cesfwk_innerkits",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
   ]

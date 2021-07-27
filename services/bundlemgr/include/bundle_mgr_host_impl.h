@@ -350,7 +350,13 @@ public:
      */
     virtual bool GetFormsInfoByModule(
         const std::string &bundleName, const std::string &moduleName, std::vector<FormInfo> &formInfos) override;
-
+    /**
+     * @brief Obtains the ShortcutInfo objects provided by a specified application on the device.
+     * @param bundleName Indicates the bundle name of the application.
+     * @param shortcutInfos List of ShortcutInfo objects if obtained.
+     * @return Returns true if GetShortcutInfos successfully; returns false otherwise.
+     */
+    virtual bool GetShortcutInfos(const std::string &bundleName, std::vector<ShortcutInfo> &shortcutInfos) override;
 private:
     const std::shared_ptr<BundleDataMgr> GetDataMgrFromService();
 };

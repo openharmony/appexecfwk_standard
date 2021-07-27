@@ -282,6 +282,7 @@ void AppMgrServiceInner::ClearUpApplicationData(const std::string &bundleName, i
         result = Permission::PermissionKit::RemoveUserGrantedReqPermissions(bundleName, Constants::DEFAULT_USERID);
         if (result) {
             APP_LOGE("RemoveUserGrantedReqPermissions failed");
+            return;
         }
     }
     if (result) {

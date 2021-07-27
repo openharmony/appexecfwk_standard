@@ -14,7 +14,6 @@
 import("//build/ohos.gni")
 import("//build/test.gni")
 import("//foundation/appexecfwk/standard/appexecfwk.gni")
-EVENT_DIR = "//base/notification/ces_standard/cesfwk"
 module_output_path = "appexecfwk_standard/task_dispatcher/"
 
 config("system_test_task_dispatcher_config") {
@@ -34,7 +33,6 @@ ohos_systemtest("task_dispatcher_test") {
 
   include_dirs = [
     "//foundation/distributedschedule/safwk/services/safwk/include",
-    "${EVENT_DIR}/kits/native/include",
     "//foundation/appexecfwk/standard/test/systemtest/common/task_dispatcher/include",
 
     "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/include",
@@ -64,7 +62,6 @@ ohos_systemtest("task_dispatcher_test") {
     cflags += [ "-DBINDER_IPC_32BIT" ]
   }
   deps = [
-    "${EVENT_DIR}/kits/native:cesfwk_kits",
     "${aafwk_path}/interfaces/innerkits/want:want",
     "${aafwk_path}/services/abilitymgr:abilityms",
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base:appexecfwk_base",
@@ -79,6 +76,7 @@ ohos_systemtest("task_dispatcher_test") {
   ]
 
   external_deps = [
+    "ces_standard:cesfwk_innerkits",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
   ]

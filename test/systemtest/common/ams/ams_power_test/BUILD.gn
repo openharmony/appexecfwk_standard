@@ -12,7 +12,6 @@
 # limitations under the License.
 import("//build/test.gni")
 import("//foundation/appexecfwk/standard/appexecfwk.gni")
-EVENT_DIR = "//base/notification/ces_standard/cesfwk"
 module_output_path = "appexecfwk_standard/ams"
 
 ohos_systemtest("ams_power_test") {
@@ -20,8 +19,6 @@ ohos_systemtest("ams_power_test") {
 
   include_dirs = [
     "//foundation/distributedschedule/safwk/services/safwk/include",
-    "${EVENT_DIR}/innerkits/include",
-    "${EVENT_DIR}/kits/native/include",
     "${appexecfwk_path}/test/resource/amssystemtestability/abilitySrc/common",
     "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/include",
   ]
@@ -43,8 +40,6 @@ ohos_systemtest("ams_power_test") {
     cflags += [ "-DBINDER_IPC_32BIT" ]
   }
   deps = [
-    "${EVENT_DIR}/innerkits:cesfwk_innerkits",
-    "${EVENT_DIR}/kits/native:cesfwk_kits",
     "${aafwk_path}/interfaces/innerkits/want:want",
     "${aafwk_path}/services/abilitymgr:abilityms",
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base:appexecfwk_base",
@@ -56,6 +51,8 @@ ohos_systemtest("ams_power_test") {
   ]
 
   external_deps = [
+    "ces_standard:cesfwk_core",
+    "ces_standard:cesfwk_innerkits",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
   ]

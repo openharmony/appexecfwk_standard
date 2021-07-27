@@ -49,7 +49,6 @@ ohos_unittest("BmsServiceBundleScanTest") {
   deps = [
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core:appexecfwk_core",
     "${libs_path}/libeventhandler:libeventhandler_target",
-    "//base/notification/ces_standard/cesfwk/kits/native:cesfwk_kits",
     "//base/security/appverify/interfaces/innerkits/appverify:libhapverify",
     "//base/security/permission/interfaces/innerkits/permission_standard/permissionsdk:libpermissionsdk_standard",
     "//foundation/aafwk/standard/interfaces/innerkits/base:base",
@@ -62,6 +61,7 @@ ohos_unittest("BmsServiceBundleScanTest") {
   deps += bundle_install_deps
 
   external_deps = [
+    "ces_standard:cesfwk_innerkits",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
   ]
