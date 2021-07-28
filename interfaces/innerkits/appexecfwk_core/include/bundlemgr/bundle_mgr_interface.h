@@ -18,6 +18,7 @@
 
 #include "ability_info.h"
 #include "form_info.h"
+#include "shortcut_info.h"
 #include "application_info.h"
 #include "bundle_info.h"
 #include "hap_module_info.h"
@@ -384,6 +385,13 @@ public:
     virtual bool GetFormsInfoByModule(
         const std::string &bundleName, const std::string &moduleName, std::vector<FormInfo> &formInfos) = 0;
     /**
+     * @brief Obtains the ShortcutInfo objects provided by a specified application on the device.
+     * @param bundleName Indicates the bundle name of the application.
+     * @param shortcutInfos List of ShortcutInfo objects if obtained.
+     * @return Returns true if this function is successfully called; returns false otherwise.
+     */
+    virtual bool GetShortcutInfos(const std::string &bundleName, std::vector<ShortcutInfo> &shortcutInfos) = 0;
+    /**
      * @brief Obtains the interface used to install and uninstall bundles.
      * @return Returns a pointer to IBundleInstaller class if exist; returns nullptr otherwise.
      */
@@ -437,6 +445,7 @@ public:
         GET_ALL_FORMS_INFO,
         GET_FORMS_INFO_BY_APP,
         GET_FORMS_INFO_BY_MODULE,
+		GET_SHORTCUT_INFO,
         GET_BUNDLE_INSTALLER,
     };
 };

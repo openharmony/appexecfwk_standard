@@ -191,6 +191,9 @@ int BundleMgrHost::OnRemoteRequest(uint32_t code, MessageParcel &data, MessagePa
 		case static_cast<uint32_t>(IBundleMgr::Message::GET_FORMS_INFO_BY_MODULE):
 			errCode = HandleGetFormsInfoByModule(data, reply);
 			break;
+        case static_cast<uint32_t>(IBundleMgr::Message::GET_SHORTCUT_INFO):
+            errCode = HandleGetShortcutInfos(data, reply);
+            break;
         default:
             return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
     }
@@ -980,6 +983,25 @@ ErrCode BundleMgrHost::HandleGetFormsInfoByModule(Parcel &data, Parcel &reply)
 		}
 	}
 	return ERR_OK;
+}
+
+ErrCode BundleMgrHost::HandleGetShortcutInfos(Parcel &data, Parcel &reply)
+{
+    std::string bundlename = data.ReadString();
+    std::vector<ShortcutInfo> infos;
+    bool ret = GetShortcutInfos(bundlename, infos);
+    if (!reply.WriteBool(ret)) {
+        APP_LOGE("write failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+
+    if (ret) {
+        if (!WriteParcelableVector(infos, reply)) {
+            APP_LOGE("write failed");
+            return ERR_APPEXECFWK_PARCEL_ERROR;
+        }
+    }
+    return ERR_OK;
 }
 
 template<typename T>

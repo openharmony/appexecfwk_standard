@@ -28,33 +28,10 @@
 #include "bundle_constants.h"
 #include "json_serializer.h"
 #include "common_profile.h"
+#include "shortcut_info.h"
 
 namespace OHOS {
 namespace AppExecFwk {
-
-struct Parameters {
-    std::string description;
-    std::string name;
-    std::string type;
-};
-
-struct Results {
-    std::string description;
-    std::string name;
-    std::string type;
-};
-
-struct InnerCustomizeData {
-    std::string name;
-    std::string value;
-    std::string extra;
-};
-
-struct MetaData {
-    std::vector<Parameters> parameters;
-    std::vector<Results> results;
-	std::vector<InnerCustomizeData> customizeData;
-};
 
 struct Distro {
     bool deliveryWithInstall;
@@ -349,6 +326,17 @@ public:
 	{
 		for (const auto &forms : formInfos) {
 			formInfos_.try_emplace(forms.first, forms.second);
+		}
+	}
+    /**
+     * @brief Add shortcut infos to old InnerBundleInfo object.
+     * @param shortcutInfos Indicates the Shortcut object to be add.
+     * @return
+     */
+	void AddModuleShortcutInfo(const std::map<std::string, ShortcutInfo> &shortcutInfos)
+	{
+		for (const auto &shortcut : shortcutInfos) {
+			shortcutInfos_.try_emplace(shortcut.first, shortcut.second);
 		}
 	}
     /**
@@ -927,12 +915,21 @@ public:
     }
     /**
      * @brief Insert formInfo.
-     * @param modulePackage Indicates the modulePackage object as key.
-     * @param abilityInfo Indicates the formInfo object as value.
+     * @param keyName Indicates object as key.
+     * @param formInfos Indicates the formInfo object as value.
      */
 	void InsertFormInfos(const std::string &keyName, const std::vector<FormInfo> &formInfos)
 	{
 		formInfos_.emplace(keyName, formInfos);
+	}
+    /**
+     * @brief Insert shortcutInfos.
+     * @param keyName Indicates object as key.
+     * @param shortcutInfos Indicates the shortcutInfos object as value.
+     */
+	void InsertShortcutInfos(const std::string &keyName, const ShortcutInfo &shortcutInfos)
+	{
+		shortcutInfos_.emplace(keyName, shortcutInfos);
 	}
     // use for new Info in updating progress
     void RestoreFromOldInfo(const InnerBundleInfo &oldInfo)
@@ -970,16 +967,20 @@ public:
     bool CheckSpecialMetaData(const std::string &metaData) const;
     /**
      * @brief Obtains the FormInfo objects provided by all applications on the device. 
-     * @param moduleName Indicates the module name of the HarmonyOS application.
-     * @param formInfos list of FormInfo objects if obtained; returns an empty List if no FormInfo is available on the device.
+     * @param moduleName Indicates the module name of the application.
+     * @param formInfos List of FormInfo objects if obtained;
      */
 	void GetFormsInfoByModule(const std::string &moduleName, std::vector<FormInfo> &formInfos) const;
     /**
      * @brief Obtains the FormInfo objects provided by a specified application on the device.
-     * @param formInfos list of FormInfo objects if obtained; returns an empty List if no FormInfo is available on the device.
+     * @param formInfos List of FormInfo objects if obtained;
      */
 	void GetFormsInfoByApp(std::vector<FormInfo> &formInfos) const;
-
+    /**
+     * @brief Obtains the ShortcutInfo objects provided by a specified application on the device.
+     * @param shortcutInfos List of ShortcutInfo objects if obtained.
+     */
+    void GetShortcutInfos(std::vector<ShortcutInfo> &shortcutInfos) const;
 private:
     // using for get
     bool isSupportBackup_ = false;
@@ -1004,15 +1005,12 @@ private:
     std::map<std::string, AbilityInfo> baseAbilityInfos_;
     std::map<std::string, InnerModuleInfo> innerModuleInfos_;
     std::map<std::string, std::vector<Skill>> skillInfos_;
+    std::map<std::string, ShortcutInfo> shortcutInfos_;
 };
 
 void from_json(const nlohmann::json &jsonObject, InnerModuleInfo &info);
 void from_json(const nlohmann::json &jsonObject, SkillUri &uri);
 void from_json(const nlohmann::json &jsonObject, Skill &skill);
-void from_json(const nlohmann::json &jsonObject, InnerCustomizeData &customizeData);
-void from_json(const nlohmann::json &jsonObject, Parameters &parameters);
-void from_json(const nlohmann::json &jsonObject, Results &results);
-void from_json(const nlohmann::json &jsonObject, MetaData &metaData);
 void from_json(const nlohmann::json &jsonObject, Distro &distro);
 void from_json(const nlohmann::json &jsonObject, ReqPermission &ReqPermission);
 void from_json(const nlohmann::json &jsonObject, DefPermission &DefPermission);

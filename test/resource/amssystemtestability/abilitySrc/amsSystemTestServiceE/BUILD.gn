@@ -26,8 +26,6 @@ config("amsSystemTestCConfig") {
     "${aafwk_path}/services/abilitymgr/include",
     "${appexecfwk_path}/common/log/include",
     "//foundation/distributedschedule/services/dtbschedmgr/include",
-    "${even_path}/cesfwk/innerkits/include",
-    "${even_path}/cesfwk/kits/native/include",
   ]
   defines = [
     "APP_LOG_TAG = \"amsSystemTestServiceE\"",
@@ -46,12 +44,12 @@ ohos_shared_library("amsSystemTestServiceE") {
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core:appexecfwk_core",
     "${appexecfwk_path}/kits:appkit_native",
     "${appexecfwk_path}/services/bundlemgr:libbms",
-    "${even_path}/cesfwk/innerkits:cesfwk_innerkits",
-    "${even_path}/cesfwk/kits/native:cesfwk_kits",
     "//foundation/distributedschedule/dmsfwk/interfaces/innerkits/uri:zuri",
     "//utils/native/base:utilsbase",
   ]
   external_deps = [
+    "ces_standard:cesfwk_core",
+    "ces_standard:cesfwk_innerkits",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
   ]
