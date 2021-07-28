@@ -75,6 +75,19 @@ const nlohmann::json CONFIG_JSON = R"(
             "deviceType": [
                 "car"
             ],
+            "shortcuts": [
+                {
+                    "shortcutId": "id",
+                    "label": "$string:shortcut",
+                    "icon": "$media:icon",
+                    "intents": [
+                      {
+                        "targetBundle": "com.huawei.hiworld.himusic",
+                        "targetClass": "com.huawei.hiworld.himusic.entry.MainAbility"
+                      }
+                    ]
+                }
+            ],
             "abilities": [
                 {
                     "name": ".MainAbility",
@@ -84,6 +97,38 @@ const nlohmann::json CONFIG_JSON = R"(
                     "launchType": "standard",
                     "orientation": "unspecified",
                     "visible": true,
+                    "forms": [
+                        {
+                        "name": "Form_JS",
+                        "description": "It's JS Form",
+                        "type": "JS",
+                        "colorMode": "auto",
+                        "isDefault": false,
+                        "updateEnabled": true,
+                        "scheduledUpdateTime": "21:05",
+                        "updateDuration": 1,
+                        "defaultDimension": "1*2",
+                        "supportDimensions": [
+                            "1*2"
+                        ],
+                        "landscapeLayouts": [
+                            "$layout:ability_form"
+                        ],
+                        "portraitLayouts": [
+                            "$layout:ability_form"
+                        ],
+                        "deepLink": "ability://com.example.myapplication.fa/.MainAbility",
+                        "formConfigAbility": "ability://com.example.myapplication.fa/.MainAbility",
+                            "metaData": {
+                                "customizeData": [
+                                    {
+                                        "name": "originWidgetName",
+                                        "value": "com.weather.testWidget"
+                                    }
+                                ]
+                            }
+                        }
+                    ],
                     "skills": [
                         {
                             "actions": [
@@ -95,7 +140,7 @@ const nlohmann::json CONFIG_JSON = R"(
                         }
                     ],
                     "type": "page",
-                    "formEnabled": false
+                    "formEnabled": true
                 },
                 {
                     "name": ".PlayService",
@@ -160,7 +205,8 @@ protected:
     void CheckNoPropProfileParseDeviceConfig(const std::string &propKey, const ErrCode expectCode) const;
     void CheckNoPropProfileParseModule(const std::string &propKey, const ErrCode expectCode) const;
     void CheckProfilePermission(const nlohmann::json &checkedProfileJson) const;
-
+    void CheckProfileForms(const nlohmann::json &checkedProfileJson) const;
+    void CheckProfileShortcut(const nlohmann::json &checkedProfileJson) const;
 protected:
     std::ostringstream pathStream_;
 };
@@ -325,6 +371,30 @@ void BmsBundleParserTest::CheckNoPropProfileParseModule(const std::string &propK
 }
 
 void BmsBundleParserTest::CheckProfilePermission(const nlohmann::json &checkedProfileJson) const
+{
+    BundleProfile bundleProfile;
+    InnerBundleInfo innerBundleInfo;
+    std::ostringstream profileFileBuffer;
+
+    profileFileBuffer << checkedProfileJson.dump();
+
+    ErrCode result = bundleProfile.TransformTo(profileFileBuffer, innerBundleInfo);
+    EXPECT_EQ(result, ERR_APPEXECFWK_PARSE_PROFILE_MISSING_PROP) << profileFileBuffer.str();
+}
+
+void BmsBundleParserTest::CheckProfileForms(const nlohmann::json &checkedProfileJson) const
+{
+    BundleProfile bundleProfile;
+    InnerBundleInfo innerBundleInfo;
+    std::ostringstream profileFileBuffer;
+
+    profileFileBuffer << checkedProfileJson.dump();
+
+    ErrCode result = bundleProfile.TransformTo(profileFileBuffer, innerBundleInfo);
+    EXPECT_EQ(result, ERR_APPEXECFWK_PARSE_PROFILE_MISSING_PROP) << profileFileBuffer.str();
+}
+
+void BmsBundleParserTest::CheckProfileShortcut(const nlohmann::json &checkedProfileJson) const
 {
     BundleProfile bundleProfile;
     InnerBundleInfo innerBundleInfo;
@@ -813,6 +883,142 @@ HWTEST_F(BmsBundleParserTest, TestParse_2300, Function | SmallTest | Level1)
     CheckProfilePermission(errorReqPermJson);
 }
 
+/**
+ * @tc.number: TestParse_2400
+ * @tc.name: parse bundle package by config.json
+ * @tc.desc: 1. system running normally
+ *           2. test parsing failed when forms prop has error in the config.json
+ */
+HWTEST_F(BmsBundleParserTest, TestParse_2400, Function | SmallTest | Level1)
+{
+    nlohmann::json errorFormsJson = CONFIG_JSON;
+    errorFormsJson[BUNDLE_PROFILE_KEY_MODULE][BUNDLE_MODULE_PROFILE_KEY_ABILITIES]= R"(
+    [{     
+        "skills": [
+          {
+            "entities": [
+              "entity.system.home",
+              "flag.home.intent.from.system"
+            ],
+            "actions": [
+              "action.system.home"
+            ]
+          }
+        ],
+        "forms": [
+            {
+            "description": "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-",
+            "type": "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-",
+            "colorMode": "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-",
+            "isDefault": "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-",
+            "updateEnabled": "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-",
+            "scheduledUpateTime": "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-",
+            "updateDuration": "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-",
+            "defaultDimension": "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-",
+            "supportDimensions": [
+              "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-",
+              "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-"
+            ],
+            "jsComponentName": "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-",
+            "deepLink": "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-",
+            "metaData": {
+              "customizeData": [
+                {
+                  "name": "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-",
+                  "value": "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-"
+                }
+              ]
+            }
+          }
+        ],
+        "name": "com.example.napi_test_suite.MainAbility",
+        "icon": "$media:icon",
+        "description": "$string:mainability_description",
+        "label": "MyApplication11",
+        "type": "page",
+        "launchType": "standard"
+    }]
+    
+    )"_json;
+    CheckProfileForms(errorFormsJson);
+}
+
+/**
+ * @tc.number: TestParse_2500
+ * @tc.name: parse bundle package by config.json
+ * @tc.desc: 1. system running normally
+ *           2. test parsing failed when forms prop has empty in the config.json
+ */
+HWTEST_F(BmsBundleParserTest, TestParse_2500, Function | SmallTest | Level1)
+{
+    nlohmann::json errorFormsJson = CONFIG_JSON;
+    errorFormsJson[BUNDLE_PROFILE_KEY_MODULE][BUNDLE_MODULE_PROFILE_KEY_ABILITIES] = R"(
+        [{
+        "skills": [
+          {
+            "entities": [
+              "entity.system.home",
+              "flag.home.intent.from.system"
+            ],
+            "actions": [
+              "action.system.home"
+            ]
+          }
+        ],
+        "forms": [{
+                 }],
+        "name": "com.example.napi_test_suite.MainAbility",
+        "icon": "$media:icon",
+        "description": "$string:mainability_description",
+        "label": "MyApplication11",
+        "type": "page",
+        "launchType": "standard"
+        }]
+    )"_json;
+    CheckProfileForms(errorFormsJson);
+}
+
+/**
+ * @tc.number: TestParse_2600
+ * @tc.name: parse bundle package by config.json
+ * @tc.desc: 1. system running normally
+ *           2. test parsing failed when shortcuts prop has empty in the config.json
+ */
+HWTEST_F(BmsBundleParserTest, TestParse_2600, Function | SmallTest | Level1)
+{
+    nlohmann::json errorShortcutJson = CONFIG_JSON;
+    errorShortcutJson[BUNDLE_PROFILE_KEY_MODULE][BUNDLE_MODULE_PROFILE_KEY_SHORTCUTS] = R"(
+        [{
+
+        }]
+    )"_json;
+    CheckProfileShortcut(errorShortcutJson);
+}
+
+/**
+ * @tc.number: TestParse_2700
+ * @tc.name: parse bundle package by config.json
+ * @tc.desc: 1. system running normally
+ *           2. test parsing failed when shortcuts prop has error in the config.json
+ */
+HWTEST_F(BmsBundleParserTest, TestParse_2700, Function | SmallTest | Level1)
+{
+    nlohmann::json errorShortcutJson = CONFIG_JSON;
+    errorShortcutJson[BUNDLE_PROFILE_KEY_MODULE][BUNDLE_MODULE_PROFILE_KEY_SHORTCUTS] = R"(
+        [{
+            "shortcutId": "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-",
+            "label": "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-",
+            "icon": "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-",
+            "intents": [
+              {
+                "targetBundle": "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-",
+                "targetClass": "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-"
+              }
+            ]
+        }]
+    )"_json;
+    CheckProfileShortcut(errorShortcutJson);
+}
 /**
  * @tc.number: TestExtractByName_0100
  * @tc.name: extract file stream by file name from package

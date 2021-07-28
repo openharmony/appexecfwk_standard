@@ -521,6 +521,16 @@ bool BundleMgrHostImpl::GetFormsInfoByModule(
     return dataMgr->GetFormsInfoByModule(bundleName, moduleName, formInfos);
 }
 
+bool BundleMgrHostImpl::GetShortcutInfos(const std::string &bundleName, std::vector<ShortcutInfo> &shortcutInfos)
+{
+    auto dataMgr = GetDataMgrFromService();
+    if (dataMgr == nullptr) {
+        APP_LOGE("DataMgr is nullptr");
+        return false;
+    }
+    return dataMgr->GetShortcutInfos(bundleName, shortcutInfos);
+}
+
 const std::shared_ptr<BundleDataMgr> BundleMgrHostImpl::GetDataMgrFromService()
 {
     return DelayedSingleton<BundleMgrService>::GetInstance()->GetDataMgr();

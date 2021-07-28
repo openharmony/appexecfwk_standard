@@ -1325,5 +1325,34 @@ bool BundleDataMgr::GetFormsInfoByApp(const std::string &bundleName, std::vector
     APP_LOGE("App forminfo find success");
     return true;
 }
+
+bool BundleDataMgr::GetShortcutInfos(const std::string &bundleName, std::vector<ShortcutInfo> &shortcutInfos) const
+{
+    if (bundleName.empty()) {
+        APP_LOGW("bundle name is empty");
+        return false;
+    }
+    std::lock_guard<std::mutex> lock(bundleInfoMutex_);
+    if (bundleInfos_.empty()) {
+        APP_LOGI("bundleInfos_ data is empty");
+        return false;
+    }
+    auto infoItem = bundleInfos_.find(bundleName);
+    if (infoItem == bundleInfos_.end()) {
+        return false;
+    }
+    auto innerBundleInfo = infoItem->second.find(Constants::CURRENT_DEVICE_ID);
+    if (innerBundleInfo == infoItem->second.end()) {
+        return false;
+    }
+    if (innerBundleInfo->second.IsDisabled()) {
+        APP_LOGI("app %{public}s is disabled", innerBundleInfo->second.GetBundleName().c_str());
+        return false;
+    }
+    innerBundleInfo->second.GetShortcutInfos(shortcutInfos);
+    APP_LOGE("shortcutInfo find success");
+    return true;
+}
+
 }  // namespace AppExecFwk
 }  // namespace OHOS

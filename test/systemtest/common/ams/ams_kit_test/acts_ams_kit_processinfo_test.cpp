@@ -941,8 +941,8 @@ HWTEST_F(ActsAmsKitProcessInfoTest, AMS_Page_WantParams_0100, Function | MediumT
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         STAbilityUtil::PublishEvent(g_EVENT_REQU_FIFTH, ++amsKitSystemTestFifthAbilityCode, data);
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result) {
             GTEST_LOG_(INFO) << "AMS_Page_WantParams_0100 : " << i;
@@ -964,8 +964,8 @@ HWTEST_F(ActsAmsKitProcessInfoTest, AMS_Page_WantParams_0200, Function | MediumT
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         STAbilityUtil::PublishEvent(g_EVENT_REQU_FIFTH, ++amsKitSystemTestFifthAbilityCode, data);
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result) {
             GTEST_LOG_(INFO) << "AMS_Page_WantParams_0200 : " << i;
@@ -987,8 +987,8 @@ HWTEST_F(ActsAmsKitProcessInfoTest, AMS_Page_WantParams_0300, Function | MediumT
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         STAbilityUtil::PublishEvent(g_EVENT_REQU_FIFTH, ++amsKitSystemTestFifthAbilityCode, data);
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result) {
             GTEST_LOG_(INFO) << "AMS_Page_WantParams_0300 : " << i;
@@ -1010,8 +1010,8 @@ HWTEST_F(ActsAmsKitProcessInfoTest, AMS_Page_WantParams_0400, Function | MediumT
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         STAbilityUtil::PublishEvent(g_EVENT_REQU_FIFTH, ++amsKitSystemTestFifthAbilityCode, data);
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result) {
             GTEST_LOG_(INFO) << "AMS_Page_WantParams_0400 : " << i;
@@ -1033,8 +1033,8 @@ HWTEST_F(ActsAmsKitProcessInfoTest, AMS_Page_WantParams_0500, Function | MediumT
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         STAbilityUtil::PublishEvent(g_EVENT_REQU_FIFTH, ++amsKitSystemTestFifthAbilityCode, data);
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result) {
             GTEST_LOG_(INFO) << "AMS_Page_WantParams_0500 : " << i;
@@ -1056,8 +1056,8 @@ HWTEST_F(ActsAmsKitProcessInfoTest, AMS_Page_WantParams_0600, Function | MediumT
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         STAbilityUtil::PublishEvent(g_EVENT_REQU_FIFTH, ++amsKitSystemTestFifthAbilityCode, data);
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result) {
             GTEST_LOG_(INFO) << "AMS_Page_WantParams_0600 : " << i;
@@ -1079,8 +1079,8 @@ HWTEST_F(ActsAmsKitProcessInfoTest, AMS_Page_WantParams_0700, Function | MediumT
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         STAbilityUtil::PublishEvent(g_EVENT_REQU_FIFTH, ++amsKitSystemTestFifthAbilityCode, data);
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result) {
             GTEST_LOG_(INFO) << "AMS_Page_WantParams_0700 : " << i;
@@ -1102,8 +1102,8 @@ HWTEST_F(ActsAmsKitProcessInfoTest, AMS_Page_WantParams_0800, Function | MediumT
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         STAbilityUtil::PublishEvent(g_EVENT_REQU_FIFTH, ++amsKitSystemTestFifthAbilityCode, data);
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result) {
             GTEST_LOG_(INFO) << "AMS_Page_WantParams_0800 : " << i;
@@ -1125,8 +1125,8 @@ HWTEST_F(ActsAmsKitProcessInfoTest, AMS_Page_WantParams_0900, Function | MediumT
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         STAbilityUtil::PublishEvent(g_EVENT_REQU_FIFTH, ++amsKitSystemTestFifthAbilityCode, data);
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result) {
             GTEST_LOG_(INFO) << "AMS_Page_WantParams_0900 : " << i;
@@ -1148,8 +1148,8 @@ HWTEST_F(ActsAmsKitProcessInfoTest, AMS_Page_WantParams_1000, Function | MediumT
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         STAbilityUtil::PublishEvent(g_EVENT_REQU_FIFTH, ++amsKitSystemTestFifthAbilityCode, data);
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result) {
             GTEST_LOG_(INFO) << "AMS_Page_WantParams_1000 : " << i;
@@ -1171,8 +1171,8 @@ HWTEST_F(ActsAmsKitProcessInfoTest, AMS_Page_WantParams_1100, Function | MediumT
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         STAbilityUtil::PublishEvent(g_EVENT_REQU_FIFTH, ++amsKitSystemTestFifthAbilityCode, data);
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result) {
             GTEST_LOG_(INFO) << "AMS_Page_WantParams_1100 : " << i;
@@ -1194,8 +1194,8 @@ HWTEST_F(ActsAmsKitProcessInfoTest, AMS_Page_WantParams_1200, Function | MediumT
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         STAbilityUtil::PublishEvent(g_EVENT_REQU_FIFTH, ++amsKitSystemTestFifthAbilityCode, data);
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result) {
             GTEST_LOG_(INFO) << "AMS_Page_WantParams_1200 : " << i;
@@ -1217,8 +1217,8 @@ HWTEST_F(ActsAmsKitProcessInfoTest, AMS_Page_WantParams_1300, Function | MediumT
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         STAbilityUtil::PublishEvent(g_EVENT_REQU_FIFTH, ++amsKitSystemTestFifthAbilityCode, data);
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result) {
             GTEST_LOG_(INFO) << "AMS_Page_WantParams_1300 : " << i;
@@ -1240,8 +1240,8 @@ HWTEST_F(ActsAmsKitProcessInfoTest, AMS_Page_WantParams_1400, Function | MediumT
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         STAbilityUtil::PublishEvent(g_EVENT_REQU_FIFTH, ++amsKitSystemTestFifthAbilityCode, data);
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result) {
             GTEST_LOG_(INFO) << "AMS_Page_WantParams_1400 : " << i;
@@ -1263,8 +1263,8 @@ HWTEST_F(ActsAmsKitProcessInfoTest, AMS_Page_WantParams_1500, Function | MediumT
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         STAbilityUtil::PublishEvent(g_EVENT_REQU_FIFTH, ++amsKitSystemTestFifthAbilityCode, data);
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result) {
             GTEST_LOG_(INFO) << "AMS_Page_WantParams_1500 : " << i;
@@ -1286,8 +1286,8 @@ HWTEST_F(ActsAmsKitProcessInfoTest, AMS_Page_WantParams_1600, Function | MediumT
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         STAbilityUtil::PublishEvent(g_EVENT_REQU_FIFTH, ++amsKitSystemTestFifthAbilityCode, data);
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result) {
             GTEST_LOG_(INFO) << "AMS_Page_WantParams_1600 : " << i;
@@ -1309,8 +1309,8 @@ HWTEST_F(ActsAmsKitProcessInfoTest, AMS_Page_WantParams_1700, Function | MediumT
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         STAbilityUtil::PublishEvent(g_EVENT_REQU_FIFTH, ++amsKitSystemTestFifthAbilityCode, data);
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result) {
             GTEST_LOG_(INFO) << "AMS_Page_WantParams_1700 : " << i;
@@ -1332,8 +1332,8 @@ HWTEST_F(ActsAmsKitProcessInfoTest, AMS_Page_WantParams_1800, Function | MediumT
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         STAbilityUtil::PublishEvent(g_EVENT_REQU_FIFTH, ++amsKitSystemTestFifthAbilityCode, data);
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result) {
             GTEST_LOG_(INFO) << "AMS_Page_WantParams_1800 : " << i;
@@ -1355,8 +1355,8 @@ HWTEST_F(ActsAmsKitProcessInfoTest, AMS_Page_WantParams_1900, Function | MediumT
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         STAbilityUtil::PublishEvent(g_EVENT_REQU_FIFTH, ++amsKitSystemTestFifthAbilityCode, data);
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result) {
             GTEST_LOG_(INFO) << "AMS_Page_WantParams_1900 : " << i;
@@ -1378,8 +1378,8 @@ HWTEST_F(ActsAmsKitProcessInfoTest, AMS_Page_WantParams_2000, Function | MediumT
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         STAbilityUtil::PublishEvent(g_EVENT_REQU_FIFTH, ++amsKitSystemTestFifthAbilityCode, data);
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result) {
             GTEST_LOG_(INFO) << "AMS_Page_WantParams_2000 : " << i;
@@ -1401,8 +1401,8 @@ HWTEST_F(ActsAmsKitProcessInfoTest, AMS_Page_WantParams_2100, Function | MediumT
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         STAbilityUtil::PublishEvent(g_EVENT_REQU_FIFTH, ++amsKitSystemTestFifthAbilityCode, data);
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result) {
             GTEST_LOG_(INFO) << "AMS_Page_WantParams_2100 : " << i;
@@ -1424,8 +1424,8 @@ HWTEST_F(ActsAmsKitProcessInfoTest, AMS_Page_WantParams_2200, Function | MediumT
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         STAbilityUtil::PublishEvent(g_EVENT_REQU_FIFTH, ++amsKitSystemTestFifthAbilityCode, data);
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result) {
             GTEST_LOG_(INFO) << "AMS_Page_WantParams_2200 : " << i;
@@ -1447,8 +1447,8 @@ HWTEST_F(ActsAmsKitProcessInfoTest, AMS_Page_WantParams_2300, Function | MediumT
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         STAbilityUtil::PublishEvent(g_EVENT_REQU_FIFTH, ++amsKitSystemTestFifthAbilityCode, data);
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result) {
             GTEST_LOG_(INFO) << "AMS_Page_WantParams_2300 : " << i;
@@ -1470,8 +1470,8 @@ HWTEST_F(ActsAmsKitProcessInfoTest, AMS_Page_WantParams_2400, Function | MediumT
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         STAbilityUtil::PublishEvent(g_EVENT_REQU_FIFTH, ++amsKitSystemTestFifthAbilityCode, data);
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result) {
             GTEST_LOG_(INFO) << "AMS_Page_WantParams_2400 : " << i;
@@ -1493,8 +1493,8 @@ HWTEST_F(ActsAmsKitProcessInfoTest, AMS_Page_WantParams_2500, Function | MediumT
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         STAbilityUtil::PublishEvent(g_EVENT_REQU_FIFTH, ++amsKitSystemTestFifthAbilityCode, data);
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result) {
             GTEST_LOG_(INFO) << "AMS_Page_WantParams_2500 : " << i;
@@ -1516,8 +1516,8 @@ HWTEST_F(ActsAmsKitProcessInfoTest, AMS_Page_WantParams_2600, Function | MediumT
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         STAbilityUtil::PublishEvent(g_EVENT_REQU_FIFTH, ++amsKitSystemTestFifthAbilityCode, data);
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result) {
             GTEST_LOG_(INFO) << "AMS_Page_WantParams_2600 : " << i;
@@ -1539,8 +1539,8 @@ HWTEST_F(ActsAmsKitProcessInfoTest, AMS_Page_WantParams_2700, Function | MediumT
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         STAbilityUtil::PublishEvent(g_EVENT_REQU_FIFTH, ++amsKitSystemTestFifthAbilityCode, data);
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result) {
             GTEST_LOG_(INFO) << "AMS_Page_WantParams_2700 : " << i;
@@ -1562,8 +1562,8 @@ HWTEST_F(ActsAmsKitProcessInfoTest, AMS_Page_WantParams_2800, Function | MediumT
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         STAbilityUtil::PublishEvent(g_EVENT_REQU_FIFTH, ++amsKitSystemTestFifthAbilityCode, data);
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result) {
             GTEST_LOG_(INFO) << "AMS_Page_WantParams_2800 : " << i;
@@ -1585,8 +1585,8 @@ HWTEST_F(ActsAmsKitProcessInfoTest, AMS_Page_WantParams_2900, Function | MediumT
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         STAbilityUtil::PublishEvent(g_EVENT_REQU_FIFTH, ++amsKitSystemTestFifthAbilityCode, data);
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result) {
             GTEST_LOG_(INFO) << "AMS_Page_WantParams_2900 : " << i;
@@ -1608,8 +1608,8 @@ HWTEST_F(ActsAmsKitProcessInfoTest, AMS_Page_WantParams_3000, Function | MediumT
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         STAbilityUtil::PublishEvent(g_EVENT_REQU_FIFTH, ++amsKitSystemTestFifthAbilityCode, data);
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result) {
             GTEST_LOG_(INFO) << "AMS_Page_WantParams_3000 : " << i;
@@ -1631,8 +1631,8 @@ HWTEST_F(ActsAmsKitProcessInfoTest, AMS_Page_WantParams_3100, Function | MediumT
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         STAbilityUtil::PublishEvent(g_EVENT_REQU_FIFTH, ++amsKitSystemTestFifthAbilityCode, data);
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result) {
             GTEST_LOG_(INFO) << "AMS_Page_WantParams_3100 : " << i;
@@ -1654,8 +1654,8 @@ HWTEST_F(ActsAmsKitProcessInfoTest, AMS_Page_WantParams_3200, Function | MediumT
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         STAbilityUtil::PublishEvent(g_EVENT_REQU_FIFTH, ++amsKitSystemTestFifthAbilityCode, data);
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result) {
             GTEST_LOG_(INFO) << "AMS_Page_WantParams_3200 : " << i;
@@ -1677,8 +1677,8 @@ HWTEST_F(ActsAmsKitProcessInfoTest, AMS_Page_WantParams_3300, Function | MediumT
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         STAbilityUtil::PublishEvent(g_EVENT_REQU_FIFTH, ++amsKitSystemTestFifthAbilityCode, data);
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result) {
             GTEST_LOG_(INFO) << "AMS_Page_WantParams_3300 : " << i;
@@ -1700,8 +1700,8 @@ HWTEST_F(ActsAmsKitProcessInfoTest, AMS_Page_WantParams_3400, Function | MediumT
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         STAbilityUtil::PublishEvent(g_EVENT_REQU_FIFTH, ++amsKitSystemTestFifthAbilityCode, data);
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result) {
             GTEST_LOG_(INFO) << "AMS_Page_WantParams_3400 : " << i;
@@ -1723,8 +1723,8 @@ HWTEST_F(ActsAmsKitProcessInfoTest, AMS_Page_WantParams_3500, Function | MediumT
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         STAbilityUtil::PublishEvent(g_EVENT_REQU_FIFTH, ++amsKitSystemTestFifthAbilityCode, data);
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result) {
             GTEST_LOG_(INFO) << "AMS_Page_WantParams_3500 : " << i;
@@ -1746,8 +1746,8 @@ HWTEST_F(ActsAmsKitProcessInfoTest, AMS_Page_WantParams_3600, Function | MediumT
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         STAbilityUtil::PublishEvent(g_EVENT_REQU_FIFTH, ++amsKitSystemTestFifthAbilityCode, data);
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result) {
             GTEST_LOG_(INFO) << "AMS_Page_WantParams_3600 : " << i;
@@ -1769,8 +1769,8 @@ HWTEST_F(ActsAmsKitProcessInfoTest, AMS_Page_WantParams_3700, Function | MediumT
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         STAbilityUtil::PublishEvent(g_EVENT_REQU_FIFTH, ++amsKitSystemTestFifthAbilityCode, data);
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result) {
             GTEST_LOG_(INFO) << "AMS_Page_WantParams_3700 : " << i;
@@ -1792,8 +1792,8 @@ HWTEST_F(ActsAmsKitProcessInfoTest, AMS_Page_WantParams_3800, Function | MediumT
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         STAbilityUtil::PublishEvent(g_EVENT_REQU_FIFTH, ++amsKitSystemTestFifthAbilityCode, data);
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result) {
             GTEST_LOG_(INFO) << "AMS_Page_WantParams_3800 : " << i;
@@ -1815,8 +1815,8 @@ HWTEST_F(ActsAmsKitProcessInfoTest, AMS_Page_WantParams_3900, Function | MediumT
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         STAbilityUtil::PublishEvent(g_EVENT_REQU_FIFTH, ++amsKitSystemTestFifthAbilityCode, data);
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result) {
             GTEST_LOG_(INFO) << "AMS_Page_WantParams_3900 : " << i;
@@ -1838,8 +1838,8 @@ HWTEST_F(ActsAmsKitProcessInfoTest, AMS_Page_WantParams_4000, Function | MediumT
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         STAbilityUtil::PublishEvent(g_EVENT_REQU_FIFTH, ++amsKitSystemTestFifthAbilityCode, data);
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result) {
             GTEST_LOG_(INFO) << "AMS_Page_WantParams_4000 : " << i;
@@ -1861,8 +1861,8 @@ HWTEST_F(ActsAmsKitProcessInfoTest, AMS_Page_WantParams_4100, Function | MediumT
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         STAbilityUtil::PublishEvent(g_EVENT_REQU_FIFTH, ++amsKitSystemTestFifthAbilityCode, data);
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result) {
             GTEST_LOG_(INFO) << "AMS_Page_WantParams_4100 : " << i;
@@ -1884,8 +1884,8 @@ HWTEST_F(ActsAmsKitProcessInfoTest, AMS_Page_WantParams_4200, Function | MediumT
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         STAbilityUtil::PublishEvent(g_EVENT_REQU_FIFTH, ++amsKitSystemTestFifthAbilityCode, data);
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result) {
             GTEST_LOG_(INFO) << "AMS_Page_WantParams_4200 : " << i;
@@ -1907,8 +1907,8 @@ HWTEST_F(ActsAmsKitProcessInfoTest, AMS_Page_WantParams_4300, Function | MediumT
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         STAbilityUtil::PublishEvent(g_EVENT_REQU_FIFTH, ++amsKitSystemTestFifthAbilityCode, data);
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result) {
             GTEST_LOG_(INFO) << "AMS_Page_WantParams_4300 : " << i;
@@ -1930,8 +1930,8 @@ HWTEST_F(ActsAmsKitProcessInfoTest, AMS_Page_WantParams_4400, Function | MediumT
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         STAbilityUtil::PublishEvent(g_EVENT_REQU_FIFTH, ++amsKitSystemTestFifthAbilityCode, data);
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result) {
             GTEST_LOG_(INFO) << "AMS_Page_WantParams_4400 : " << i;
@@ -1953,8 +1953,8 @@ HWTEST_F(ActsAmsKitProcessInfoTest, AMS_Page_WantParams_4500, Function | MediumT
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         STAbilityUtil::PublishEvent(g_EVENT_REQU_FIFTH, ++amsKitSystemTestFifthAbilityCode, data);
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result) {
             GTEST_LOG_(INFO) << "AMS_Page_WantParams_4500 : " << i;
@@ -1976,8 +1976,8 @@ HWTEST_F(ActsAmsKitProcessInfoTest, AMS_Page_WantParams_4600, Function | MediumT
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         STAbilityUtil::PublishEvent(g_EVENT_REQU_FIFTH, ++amsKitSystemTestFifthAbilityCode, data);
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result) {
             GTEST_LOG_(INFO) << "AMS_Page_WantParams_4600 : " << i;
@@ -1999,8 +1999,8 @@ HWTEST_F(ActsAmsKitProcessInfoTest, AMS_Page_WantParams_4700, Function | MediumT
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         STAbilityUtil::PublishEvent(g_EVENT_REQU_FIFTH, ++amsKitSystemTestFifthAbilityCode, data);
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result) {
             GTEST_LOG_(INFO) << "AMS_Page_WantParams_4700 : " << i;
@@ -2022,8 +2022,8 @@ HWTEST_F(ActsAmsKitProcessInfoTest, AMS_Page_WantParams_4800, Function | MediumT
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         STAbilityUtil::PublishEvent(g_EVENT_REQU_FIFTH, ++amsKitSystemTestFifthAbilityCode, data);
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result) {
             GTEST_LOG_(INFO) << "AMS_Page_WantParams_4800 : " << i;
@@ -2045,8 +2045,8 @@ HWTEST_F(ActsAmsKitProcessInfoTest, AMS_Page_WantParams_4900, Function | MediumT
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         STAbilityUtil::PublishEvent(g_EVENT_REQU_FIFTH, ++amsKitSystemTestFifthAbilityCode, data);
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result) {
             GTEST_LOG_(INFO) << "AMS_Page_WantParams_4900 : " << i;
@@ -2068,8 +2068,8 @@ HWTEST_F(ActsAmsKitProcessInfoTest, AMS_Page_WantParams_5000, Function | MediumT
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         STAbilityUtil::PublishEvent(g_EVENT_REQU_FIFTH, ++amsKitSystemTestFifthAbilityCode, data);
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result) {
             GTEST_LOG_(INFO) << "AMS_Page_WantParams_5000 : " << i;
@@ -2091,8 +2091,8 @@ HWTEST_F(ActsAmsKitProcessInfoTest, AMS_Page_WantParams_5100, Function | MediumT
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         STAbilityUtil::PublishEvent(g_EVENT_REQU_FIFTH, ++amsKitSystemTestFifthAbilityCode, data);
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result) {
             GTEST_LOG_(INFO) << "AMS_Page_WantParams_5100 : " << i;
@@ -2114,8 +2114,8 @@ HWTEST_F(ActsAmsKitProcessInfoTest, AMS_Page_WantParams_5200, Function | MediumT
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         STAbilityUtil::PublishEvent(g_EVENT_REQU_FIFTH, ++amsKitSystemTestFifthAbilityCode, data);
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_FIFTH, amsKitSystemTestFifthAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result) {
             GTEST_LOG_(INFO) << "AMS_Page_WantParams_5200 : " << i;

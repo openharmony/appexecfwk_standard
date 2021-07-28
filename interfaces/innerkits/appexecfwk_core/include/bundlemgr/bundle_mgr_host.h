@@ -363,6 +363,13 @@ private:
      * @return Returns ERR_OK if called successfully; returns error code otherwise.
      */
 	ErrCode HandleGetFormsInfoByModule(Parcel &data, Parcel &reply);
+    /**
+     * @brief Handles the HandleGetShortcutInfo function called from a IBundleMgr proxy object.
+     * @param data Indicates the data to be read.
+     * @param reply Indicates the reply to be sent;
+     * @return Returns ERR_OK if called successfully; returns error code otherwise.
+     */
+    ErrCode HandleGetShortcutInfos(Parcel &data, Parcel &reply);
 
 private:
     /**

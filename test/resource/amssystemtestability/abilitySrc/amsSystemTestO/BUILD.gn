@@ -13,7 +13,6 @@
 import("//build/ohos.gni")
 SUBDEMOSYSTEM_DIR = "//foundation/appexecfwk/standard/test/resource/amssystemtestability/abilitySrc/amsSystemTestO"
 SUBST_TOOLS_DIR = "//foundation/appexecfwk/standard/test/resource/amssystemtestability/abilitySrc/tools"
-EVENT_DIR = "//base/notification/ces_standard/cesfwk"
 config("amsSystemTestOConfig") {
   visibility = [ ":*" ]
   include_dirs = [
@@ -26,8 +25,6 @@ config("amsSystemTestOConfig") {
     "//foundation/aafwk/standard/services/abilitymgr/include",
     "//foundation/appexecfwk/standard/common/log/include",
     "//foundation/distributedschedule/dmsfwk/services/dtbschedmgr/include",
-    "${EVENT_DIR}/innerkits/include",
-    "${EVENT_DIR}/kits/native/include",
     "${SUBST_TOOLS_DIR}/include",
   ]
   defines = [
@@ -42,8 +39,6 @@ ohos_shared_library("amsSystemTestO") {
   ]
   configs = [ ":amsSystemTestOConfig" ]
   deps = [
-    "${EVENT_DIR}/innerkits:cesfwk_innerkits",
-    "${EVENT_DIR}/kits/native:cesfwk_kits",
     "//foundation/aafwk/standard/frameworks/kits/ability/native:abilitykit_native",
     "//foundation/aafwk/standard/interfaces/innerkits/want:want",
     "//foundation/appexecfwk/standard/common:libappexecfwk_common",
@@ -54,6 +49,8 @@ ohos_shared_library("amsSystemTestO") {
     "//utils/native/base:utilsbase",
   ]
   external_deps = [
+    "ces_standard:cesfwk_core",
+    "ces_standard:cesfwk_innerkits",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
   ]

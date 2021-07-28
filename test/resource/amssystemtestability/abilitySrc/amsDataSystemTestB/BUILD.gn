@@ -13,7 +13,6 @@
 
 import("//build/ohos.gni")
 import("//foundation/appexecfwk/standard/appexecfwk.gni")
-EVENT_DIR = "//base/notification/ces_standard/cesfwk"
 SUBDEMOSYSTEM_DIR = "//foundation/appexecfwk/standard/test/resource/amssystemtestability/abilitySrc/amsDataSystemTestB"
 SUBST_TOOLS_DIR = "//foundation/appexecfwk/standard/test/resource/amssystemtestability/abilitySrc/tools"
 config("amsDataSystemTestBConfig") {
@@ -28,7 +27,6 @@ config("amsDataSystemTestBConfig") {
     "//foundation/aafwk/standard/services/abilitymgr/include",
     "//foundation/appexecfwk/standard/common/log/include",
     "//foundation/distributedschedule/dmsfwk/services/dtbschedmgr/include",
-    "${EVENT_DIR}/kits/native/include",
     "${SUBST_TOOLS_DIR}/include",
   ]
   defines = [
@@ -49,7 +47,6 @@ ohos_shared_library("amsDataSystemTestB") {
   ]
   configs = [ ":amsDataSystemTestBConfig" ]
   deps = [
-    "${EVENT_DIR}/kits/native:cesfwk_kits",
     "//foundation/aafwk/standard/frameworks/kits/ability/native:abilitykit_native",
     "//foundation/aafwk/standard/frameworks/kits/ability/native:dummy_classes",
     "//foundation/aafwk/standard/interfaces/innerkits/want:want",
@@ -62,6 +59,7 @@ ohos_shared_library("amsDataSystemTestB") {
     "//utils/native/base:utilsbase",
   ]
   external_deps = [
+    "ces_standard:cesfwk_innerkits",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
   ]

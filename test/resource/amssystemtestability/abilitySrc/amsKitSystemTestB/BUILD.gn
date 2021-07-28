@@ -12,7 +12,6 @@
 # limitations under the License.
 import("//build/ohos.gni")
 import("//foundation/appexecfwk/standard/appexecfwk.gni")
-EVENT_DIR = "//base/notification/ces_standard/cesfwk"
 SUBDEMOSYSTEM_DIR = "${appexecfwk_path}/test/resource/amssystemtestability/abilitySrc/amsKitSystemTestB"
 SUBST_TOOLS_DIR =
     "${appexecfwk_path}/test/resource/amssystemtestability/abilitySrc/tools"
@@ -29,7 +28,6 @@ config("amsKitSystemTestBConfig") {
     "${common_path}/log/include",
     "//foundation/distributedschedule/dmsfwk/services/dtbschedmgr/include",
     "${appexecfwk_path}/test/resource/amssystemtestability/abilitySrc/common",
-    "${EVENT_DIR}/kits/native/include",
     "${SUBST_TOOLS_DIR}/include",
   ]
   defines = [
@@ -48,7 +46,6 @@ ohos_shared_library("amsKitSystemTestB") {
   ]
   configs = [ ":amsKitSystemTestBConfig" ]
   deps = [
-    "${EVENT_DIR}/kits/native:cesfwk_kits",
     "${aafwk_path}/frameworks/kits/ability/native:abilitykit_native",
     "${aafwk_path}/frameworks/kits/ability/native:dummy_classes",
     "${aafwk_path}/interfaces/innerkits/want:want",
@@ -61,6 +58,7 @@ ohos_shared_library("amsKitSystemTestB") {
     "//utils/native/base:utilsbase",
   ]
   external_deps = [
+    "ces_standard:cesfwk_innerkits",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
   ]

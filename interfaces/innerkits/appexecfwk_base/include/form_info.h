@@ -33,7 +33,7 @@ enum class FormType {
     JS = 1,
 };
 
-struct CustomizeData {
+struct FormCustomizeData {
     std::string name;
     std::string value;
 };
@@ -62,7 +62,7 @@ struct FormInfo : public Parcelable {
     FormsColorMode colorMode = FormsColorMode::AUTO_MODE;
     std::vector<std::string> landscapeLayouts;
     std::vector<std::string> portraitLayouts;
-    std::vector<CustomizeData> customizeDatas;
+    std::vector<FormCustomizeData> customizeDatas;
 
     bool ReadFromParcel(Parcel &parcel);
     virtual bool Marshalling(Parcel &parcel) const override;

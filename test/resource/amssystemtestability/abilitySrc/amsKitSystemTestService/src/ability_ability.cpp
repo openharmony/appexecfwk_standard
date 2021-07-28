@@ -194,7 +194,7 @@ void AbilityAbility::TestConnectAbility()
             connCallback_ = new (std::nothrow) AbilityConnectionProxy(stub_);
             MAP_STR_STR params;
             Want want =
-                TestUtils::MakeWant("device", "LifecycleCallbacksAbility", "com.ohos.amsst.service.AppKit", params);
+                TestUtils::MakeWant("", "LifecycleCallbacksAbility", "com.ohos.amsst.service.AppKit", params);
             bool ret = ConnectAbility(want, connCallback_);
             TestUtils::PublishEvent(APP_ABILITY_RESP_EVENT_NAME, ret, "TestConnectAbility");
             sleep(2);
@@ -204,7 +204,7 @@ void AbilityAbility::TestConnectAbility()
             stub_ = new (std::nothrow) AbilityConnectCallback();
             connCallback_ = new (std::nothrow) AbilityConnectionProxy(stub_);
             MAP_STR_STR params;
-            Want want = TestUtils::MakeWant("device", "AmsStServiceAbilityA1", "com.ohos.amsst.service.appA", params);
+            Want want = TestUtils::MakeWant("", "AmsStServiceAbilityA1", "com.ohos.amsst.service.appA", params);
             bool ret = ConnectAbility(want, connCallback_);
             TestUtils::PublishEvent(APP_ABILITY_RESP_EVENT_NAME, ret, "TestConnectAbility");
             sleep(2);
@@ -247,13 +247,13 @@ void AbilityAbility::TestStopAbility()
         case CaseIndex::TWO: {
             MAP_STR_STR params;
             Want want =
-                TestUtils::MakeWant("device", "LifecycleCallbacksAbility", "com.ohos.amsst.service.AppKit", params);
+                TestUtils::MakeWant("", "LifecycleCallbacksAbility", "com.ohos.amsst.service.AppKit", params);
             bool ret = StopAbility(want);
             TestUtils::PublishEvent(APP_ABILITY_RESP_EVENT_NAME, ret, "TestStopAbility");
         } break;
         case CaseIndex::THREE: {
             MAP_STR_STR params;
-            Want want = TestUtils::MakeWant("device", "AmsStServiceAbilityA1", "com.ohos.amsst.service.appA", params);
+            Want want = TestUtils::MakeWant("", "AmsStServiceAbilityA1", "com.ohos.amsst.service.appA", params);
             bool ret = StopAbility(want);
             TestUtils::PublishEvent(APP_ABILITY_RESP_EVENT_NAME, ret, "TestStopAbility");
         } break;
@@ -266,7 +266,7 @@ void AbilityAbility::TestStopAbility()
         case CaseIndex::FIVE: {
             MAP_STR_STR params;
             Want want =
-                TestUtils::MakeWant("device", "LifecycleCallbacksAbility", "com.ohos.amsst.service.AppKitx", params);
+                TestUtils::MakeWant("", "LifecycleCallbacksAbility", "com.ohos.amsst.service.AppKitx", params);
             bool ret = StopAbility(want);
             TestUtils::PublishEvent(APP_ABILITY_RESP_EVENT_NAME, ret, "TestStopAbility");
         } break;
@@ -292,7 +292,7 @@ void AbilityAbility::TestDisconnectAbility()
         case CaseIndex::TWO: {
             MAP_STR_STR params;
             Want want =
-                TestUtils::MakeWant("device", "LifecycleCallbacksAbility", "com.ohos.amsst.service.AppKit", params);
+                TestUtils::MakeWant("", "LifecycleCallbacksAbility", "com.ohos.amsst.service.AppKit", params);
             stub_ = new (std::nothrow) AbilityConnectCallback();
             connCallback_ = new (std::nothrow) AbilityConnectionProxy(stub_);
             bool ret = ConnectAbility(want, connCallback_);
@@ -301,7 +301,7 @@ void AbilityAbility::TestDisconnectAbility()
         } break;
         case CaseIndex::THREE: {
             MAP_STR_STR params;
-            Want want = TestUtils::MakeWant("device", "AmsStServiceAbilityA1", "com.ohos.amsst.service.appA", params);
+            Want want = TestUtils::MakeWant("", "AmsStServiceAbilityA1", "com.ohos.amsst.service.appA", params);
             stub_ = new (std::nothrow) AbilityConnectCallback();
             connCallback_ = new (std::nothrow) AbilityConnectionProxy(stub_);
             bool ret = ConnectAbility(want, connCallback_);
@@ -320,7 +320,7 @@ void AbilityAbility::TestDisconnectAbility()
         case CaseIndex::FIVE: {
             MAP_STR_STR params;
             Want want =
-                TestUtils::MakeWant("device", "LifecycleCallbacksAbility", "com.ohos.amsst.service.AppKitx", params);
+                TestUtils::MakeWant("", "LifecycleCallbacksAbility", "com.ohos.amsst.service.AppKitx", params);
             stub_ = new (std::nothrow) AbilityConnectCallback();
             connCallback_ = new (std::nothrow) AbilityConnectionProxy(stub_);
             bool ret = ConnectAbility(want, connCallback_);
@@ -346,13 +346,13 @@ void AbilityAbility::TestStartAbility()
         case CaseIndex::TWO: {
             MAP_STR_STR params;
             Want want =
-                TestUtils::MakeWant("device", "LifecycleCallbacksAbility", "com.ohos.amsst.service.AppKit", params);
+                TestUtils::MakeWant("", "LifecycleCallbacksAbility", "com.ohos.amsst.service.AppKit", params);
             StartAbility(want, INT_MAX);
             TestUtils::PublishEvent(APP_ABILITY_RESP_EVENT_NAME, 1, "TestStartAbility");
         } break;
         case CaseIndex::THREE: {
             MAP_STR_STR params;
-            Want want = TestUtils::MakeWant("device", "AmsStServiceAbilityA1", "com.ohos.amsst.service.appA", params);
+            Want want = TestUtils::MakeWant("", "AmsStServiceAbilityA1", "com.ohos.amsst.service.appA", params);
             StartAbility(want, INT_MIN);
             TestUtils::PublishEvent(APP_ABILITY_RESP_EVENT_NAME, 1, "TestStartAbility");
         } break;
@@ -365,7 +365,7 @@ void AbilityAbility::TestStartAbility()
         case CaseIndex::FIVE: {
             MAP_STR_STR params;
             Want want =
-                TestUtils::MakeWant("device", "LifecycleCallbacksAbility", "com.ohos.amsst.service.AppKitx", params);
+                TestUtils::MakeWant("", "LifecycleCallbacksAbility", "com.ohos.amsst.service.AppKitx", params);
             StartAbility(want, 0);
             TestUtils::PublishEvent(APP_ABILITY_RESP_EVENT_NAME, 1, "TestStartAbility");
         } break;
@@ -388,7 +388,7 @@ void AbilityAbility::TestTerminateAbility()
         case CaseIndex::TWO: {
             MAP_STR_STR params;
             Want want =
-                TestUtils::MakeWant("device", "LifecycleCallbacksAbility", "com.ohos.amsst.service.AppKit", params);
+                TestUtils::MakeWant("", "LifecycleCallbacksAbility", "com.ohos.amsst.service.AppKit", params);
             StartAbility(want, 0);
             TestUtils::PublishEvent(APP_ABILITY_RESP_EVENT_NAME, 1, "TestTerminateAbility");
             sleep(2);
@@ -397,7 +397,7 @@ void AbilityAbility::TestTerminateAbility()
         } break;
         case CaseIndex::THREE: {
             MAP_STR_STR params;
-            Want want = TestUtils::MakeWant("device", "AmsStServiceAbilityA1", "com.ohos.amsst.service.appA", params);
+            Want want = TestUtils::MakeWant("", "AmsStServiceAbilityA1", "com.ohos.amsst.service.appA", params);
             StartAbility(want, 0);
             TestUtils::PublishEvent(APP_ABILITY_RESP_EVENT_NAME, 1, "TestTerminateAbility");
             sleep(2);
@@ -413,7 +413,7 @@ void AbilityAbility::TestTerminateAbility()
         case CaseIndex::FIVE: {
             MAP_STR_STR params;
             Want want =
-                TestUtils::MakeWant("device", "LifecycleCallbacksAbility", "com.ohos.amsst.service.AppKitx", params);
+                TestUtils::MakeWant("", "LifecycleCallbacksAbility", "com.ohos.amsst.service.AppKitx", params);
             StartAbility(want, 0);
             sleep(2);
             TerminateAbility();
@@ -438,7 +438,7 @@ void AbilityAbility::TestAbilityStartAbility()
         case CaseIndex::TWO: {
             MAP_STR_STR params;
             Want want =
-                TestUtils::MakeWant("device", "LifecycleCallbacksAbility", "com.ohos.amsst.service.AppKit", params);
+                TestUtils::MakeWant("", "LifecycleCallbacksAbility", "com.ohos.amsst.service.AppKit", params);
             StartAbility(want);
             TestUtils::PublishEvent(APP_ABILITY_RESP_EVENT_NAME, 1, "TestAbilityStartAbility");
             sleep(1);
@@ -446,7 +446,7 @@ void AbilityAbility::TestAbilityStartAbility()
         } break;
         case CaseIndex::THREE: {
             MAP_STR_STR params;
-            Want want = TestUtils::MakeWant("device", "AmsStServiceAbilityA1", "com.ohos.amsst.service.appA", params);
+            Want want = TestUtils::MakeWant("", "AmsStServiceAbilityA1", "com.ohos.amsst.service.appA", params);
             StartAbility(want);
             TestUtils::PublishEvent(APP_ABILITY_RESP_EVENT_NAME, 1, "TestAbilityStartAbility");
             sleep(1);
@@ -461,7 +461,7 @@ void AbilityAbility::TestAbilityStartAbility()
         case CaseIndex::FIVE: {
             MAP_STR_STR params;
             Want want =
-                TestUtils::MakeWant("device", "LifecycleCallbacksAbility", "com.ohos.amsst.service.AppKitx", params);
+                TestUtils::MakeWant("", "LifecycleCallbacksAbility", "com.ohos.amsst.service.AppKitx", params);
             StartAbility(want);
             TestUtils::PublishEvent(APP_ABILITY_RESP_EVENT_NAME, 1, "TestAbilityStartAbility");
         } break;
@@ -488,7 +488,7 @@ void AbilityAbility::TestAbilityConnectAbility()
             connCallback_ = new (std::nothrow) AbilityConnectionProxy(stub_);
             MAP_STR_STR params;
             Want want =
-                TestUtils::MakeWant("device", "LifecycleCallbacksAbility", "com.ohos.amsst.service.AppKit", params);
+                TestUtils::MakeWant("", "LifecycleCallbacksAbility", "com.ohos.amsst.service.AppKit", params);
             bool ret = ConnectAbility(want, connCallback_);
             TestUtils::PublishEvent(APP_ABILITY_RESP_EVENT_NAME, ret, "TestAbilityConnectAbility");
             sleep(2);
@@ -498,7 +498,7 @@ void AbilityAbility::TestAbilityConnectAbility()
             stub_ = new (std::nothrow) AbilityConnectCallback();
             connCallback_ = new (std::nothrow) AbilityConnectionProxy(stub_);
             MAP_STR_STR params;
-            Want want = TestUtils::MakeWant("device", "AmsStServiceAbilityA1", "com.ohos.amsst.service.appA", params);
+            Want want = TestUtils::MakeWant("", "AmsStServiceAbilityA1", "com.ohos.amsst.service.appA", params);
             bool ret = ConnectAbility(want, connCallback_);
             TestUtils::PublishEvent(APP_ABILITY_RESP_EVENT_NAME, ret, "TestAbilityConnectAbility");
             sleep(2);
@@ -537,7 +537,7 @@ void AbilityAbility::TestAbilityStopAbility()
         case CaseIndex::TWO: {
             MAP_STR_STR params;
             Want want =
-                TestUtils::MakeWant("device", "LifecycleCallbacksAbility", "com.ohos.amsst.service.AppKit", params);
+                TestUtils::MakeWant("", "LifecycleCallbacksAbility", "com.ohos.amsst.service.AppKit", params);
             StartAbility(want);
             sleep(1);
             bool ret = StopAbility(want);
@@ -545,7 +545,7 @@ void AbilityAbility::TestAbilityStopAbility()
         } break;
         case CaseIndex::THREE: {
             MAP_STR_STR params;
-            Want want = TestUtils::MakeWant("device", "AmsStServiceAbilityA1", "com.ohos.amsst.service.appA", params);
+            Want want = TestUtils::MakeWant("", "AmsStServiceAbilityA1", "com.ohos.amsst.service.appA", params);
             StartAbility(want);
             sleep(1);
             bool ret = StopAbility(want);
@@ -560,7 +560,7 @@ void AbilityAbility::TestAbilityStopAbility()
         case CaseIndex::FIVE: {
             MAP_STR_STR params;
             Want want =
-                TestUtils::MakeWant("device", "LifecycleCallbacksAbility", "com.ohos.amsst.service.AppKitx", params);
+                TestUtils::MakeWant("", "LifecycleCallbacksAbility", "com.ohos.amsst.service.AppKitx", params);
             StartAbility(want);
             bool ret = StopAbility(want);
             TestUtils::PublishEvent(APP_ABILITY_RESP_EVENT_NAME, ret, "TestAbilityStopAbility");
@@ -630,7 +630,7 @@ void AbilityAbility::TestAbilityDisconnectAbility()
         case CaseIndex::TWO: {
             MAP_STR_STR params;
             Want want =
-                TestUtils::MakeWant("device", "LifecycleCallbacksAbility", "com.ohos.amsst.service.AppKit", params);
+                TestUtils::MakeWant("", "LifecycleCallbacksAbility", "com.ohos.amsst.service.AppKit", params);
             stub_ = new (std::nothrow) AbilityConnectCallback();
             connCallback_ = new (std::nothrow) AbilityConnectionProxy(stub_);
             bool ret = ConnectAbility(want, connCallback_);
@@ -640,7 +640,7 @@ void AbilityAbility::TestAbilityDisconnectAbility()
         } break;
         case CaseIndex::THREE: {
             MAP_STR_STR params;
-            Want want = TestUtils::MakeWant("device", "AmsStServiceAbilityA1", "com.ohos.amsst.service.appA", params);
+            Want want = TestUtils::MakeWant("", "AmsStServiceAbilityA1", "com.ohos.amsst.service.appA", params);
             stub_ = new (std::nothrow) AbilityConnectCallback();
             connCallback_ = new (std::nothrow) AbilityConnectionProxy(stub_);
             bool ret = ConnectAbility(want, connCallback_);
@@ -661,7 +661,7 @@ void AbilityAbility::TestAbilityDisconnectAbility()
         case CaseIndex::FIVE: {
             MAP_STR_STR params;
             Want want =
-                TestUtils::MakeWant("device", "LifecycleCallbacksAbility", "com.ohos.amsst.service.AppKitx", params);
+                TestUtils::MakeWant("", "LifecycleCallbacksAbility", "com.ohos.amsst.service.AppKitx", params);
             stub_ = new (std::nothrow) AbilityConnectCallback();
             connCallback_ = new (std::nothrow) AbilityConnectionProxy(stub_);
             bool ret = ConnectAbility(want, connCallback_);

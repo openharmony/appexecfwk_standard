@@ -97,8 +97,10 @@ public:
         return bms_->IsServiceReady();
     }
 
-    void SaveBundleDataToStorage(const std::string &bundleName, const std::string &data, const std::string &deviceId);
-    void DeleteBundleDataToStorage(const std::string &bundleName, const std::string &deviceId);
+    void SaveBundleDataToStorage(std::unique_ptr<SingleKvStore> &kvStorePtr, const std::string &bundleName,
+        const std::string &data, const std::string &deviceId);
+    void DeleteBundleDataToStorage(
+        std::unique_ptr<SingleKvStore> &kvStorePtr, const std::string &bundleName, const std::string &deviceId);
     void DeleteBundleDataToStorage();
     std::unique_ptr<SingleKvStore> GetKvStorePtr(DistributedKvDataManager &dataManager);
     InnerBundleInfo CreateInnerBundleInfo(const std::string &bundleName);
@@ -159,6 +161,7 @@ protected:
                     "bundleName": "com.ohos.launcher",
                     "codePath": "",
                     "description": "$string:mainability_description",
+                    "theme": "mytheme",
                     "deviceCapabilities": [],
                     "deviceId": "",
                     "deviceTypes": [
@@ -184,7 +187,14 @@ protected:
                     "type": 1,
                     "uri": "",
                     "visible": false,
-                    "writePermission": ""
+                    "writePermission": "",
+                    "form": {
+                        "formEntity": ["homeScreen", "searchbox"],
+                        "minHeight": 0,
+                        "defaultHeight": 100,
+                        "minWidth": 0,
+                        "defaultWidth": 200
+                    }
                 }
             },
             "baseApplicationInfo": {
@@ -355,6 +365,64 @@ protected:
                     }
                 ]
             },
+            "formInfos": {
+                "com.ohos.launchercom.ohos.launchercom.ohos.launcher.MainAbility": [
+                    {
+                        "package": "com.ohos.launcher",
+                        "bundleName": "com.ohos.launcher",
+                        "originalBundleName": "com.ohos.launcher",
+                        "relatedBundleName": "com.ohos.launcher",
+                        "moduleName": "launcher",
+                        "abilityName": "com.ohos.launcher.MainAbility",
+                        "name": "Form_JS",
+                        "description": "It's JS Form",
+                        "jsComponentName": "com.ohos.launcher",
+                        "deepLink": "com.example.myapplication.fa/.MainAbility",
+                        "formConfigAbility": "com.example.myapplication.fa/.MainAbility",
+                        "scheduledUpateTime": "21:05",
+                        "descriptionId": 125,
+                        "updateDuration": 1,
+                        "defaultDimension": 1,
+                        "defaultFlag": true,
+                        "formVisibleNotify": true,
+                        "updateEnabled": true,
+                        "type": 0,
+                        "colorMode": 0,
+                        "supportDimensions": [
+                            1
+                        ],
+                        "landscapeLayouts": [],
+                        "portraitLayouts": [],
+                        "customizeData": [
+                            {
+                                "name": "originWidgetName",
+                                "value": "com.weather.testWidget"
+                            }
+                        ]    
+                    }
+                ]
+            },
+            "shortcutInfos": {
+                "com.ohos.launchercom.ohos.launcherid": [
+                    {
+                        "id": "id",
+                        "bundleName": "com.ohos.launcher",
+                        "hostAbility": "com.ohos.launcher.MainAbility",
+                        "icon": "/data/bms_bundle",
+                        "label": "shortcutInfo",
+                        "disableMessage": "disableMessage",
+                        "isStatic": true,
+                        "isHomeShortcut": true,
+                        "isEnables": true,
+                        "intents": [
+                            {
+                                "targetBundle": "com.ohos.launcher",
+                                "targetClass": "com.ohos.launcher.MainAbility"
+                            }
+                        ]
+                    }
+                ]
+            }
             "uid": 2103,
             "userId_": 0
         }
@@ -439,14 +507,9 @@ BmsBundleInstallerModuleTest::~BmsBundleInstallerModuleTest()
     bms_.reset();
 }
 
-void BmsBundleInstallerModuleTest::SaveBundleDataToStorage(
+void BmsBundleInstallerModuleTest::SaveBundleDataToStorage(std::unique_ptr<SingleKvStore> &kvStorePtr,
     const std::string &bundleName, const std::string &data, const std::string &deviceId)
 {
-    DistributedKvDataManager dataManager;
-    std::unique_ptr<SingleKvStore> kvStorePtr = GetKvStorePtr(dataManager);
-    if (!kvStorePtr) {
-        ASSERT_TRUE(false) << "kvStorePtr is nullptr";
-    }
     Status status;
     std::string keyString = deviceId + "_" + bundleName;
 
@@ -454,21 +517,14 @@ void BmsBundleInstallerModuleTest::SaveBundleDataToStorage(
     Value value(data);
     status = kvStorePtr->Put(key, value);
     if (status != Status::SUCCESS) {
+        std::cout << static_cast<int32_t>(status) << std::endl;
         ASSERT_TRUE(false) << "save fail";
     }
-
-    AppId appId{"bundle_manager_service"};
-    StoreId storeId{"installed_bundle_datas"};
-    dataManager.CloseKvStore(appId, storeId);
 }
 
-void BmsBundleInstallerModuleTest::DeleteBundleDataToStorage(const std::string &bundleName, const std::string &deviceId)
+void BmsBundleInstallerModuleTest::DeleteBundleDataToStorage(
+    std::unique_ptr<SingleKvStore> &kvStorePtr, const std::string &bundleName, const std::string &deviceId)
 {
-    DistributedKvDataManager dataManager;
-    std::unique_ptr<SingleKvStore> kvStorePtr = GetKvStorePtr(dataManager);
-    if (!kvStorePtr) {
-        ASSERT_TRUE(false) << "kvStorePtr is nullptr";
-    }
     Status status;
     std::string keyString = deviceId + "_" + bundleName;
 
@@ -477,10 +533,6 @@ void BmsBundleInstallerModuleTest::DeleteBundleDataToStorage(const std::string &
     if (status != Status::SUCCESS) {
         ASSERT_TRUE(false) << "delete fail";
     }
-
-    AppId appId{Constants::APP_ID};
-    StoreId storeId{Constants::STORE_ID};
-    dataManager.CloseKvStore(appId, storeId);
 }
 
 void BmsBundleInstallerModuleTest::DeleteBundleDataToStorage()
@@ -1499,6 +1551,12 @@ HWTEST_F(BmsBundleInstallerModuleTest, BundleDataStorage003, TestSize.Level3)
      * @tc.steps: step1. load data to storageDb, which have normal and abnormal data
      */
     StartBundleMgrService();
+    DistributedKvDataManager dataManager;
+    std::unique_ptr<SingleKvStore> kvStorePtr = GetKvStorePtr(dataManager);
+    if (!kvStorePtr) {
+        ASSERT_TRUE(false) << "kvStorePtr is nullptr";
+    }
+
     int saveTimes = 100;
     int pos = 50;
     std::string deviceId = Constants::CURRENT_DEVICE_ID;
@@ -1507,10 +1565,10 @@ HWTEST_F(BmsBundleInstallerModuleTest, BundleDataStorage003, TestSize.Level3)
     for (int i = 0; i < saveTimes; i++) {
         std::string bundleName = "ohos.system" + std::to_string(i);
         if (i == pos) {
-            SaveBundleDataToStorage(bundleName, abnormalData, deviceId);
+            SaveBundleDataToStorage(kvStorePtr, bundleName, abnormalData, deviceId);
         } else {
             InnerBundleInfo innerBundleInfo = CreateInnerBundleInfo(bundleName);
-            SaveBundleDataToStorage(bundleName, innerBundleInfo.ToString(), deviceId);
+            SaveBundleDataToStorage(kvStorePtr, bundleName, innerBundleInfo.ToString(), deviceId);
         }
         bundleNames.emplace_back(bundleName);
     }
@@ -1541,7 +1599,9 @@ HWTEST_F(BmsBundleInstallerModuleTest, BundleDataStorage003, TestSize.Level3)
             EXPECT_TRUE(getAppInfo) << "Get Application: " + bundleNames[i] + " fail!";
             EXPECT_EQ(appInfo.bundleName, bundleNames[i]) << "appinfo bundleName is wrong";
         }
-        std::this_thread::sleep_for(10ms);
-        DeleteBundleDataToStorage(bundleNames[i], deviceId);
+        DeleteBundleDataToStorage(kvStorePtr, bundleNames[i], deviceId);
     }
+    AppId appId{Constants::APP_ID};
+    StoreId storeId{Constants::STORE_ID};
+    dataManager.CloseKvStore(appId, storeId);
 }

@@ -82,8 +82,10 @@ public:
         bool(const std::vector<int> &uids, const sptr<OnPermissionChangedCallback> &callback));
     MOCK_METHOD1(UnregisterPermissionsChanged, bool(const sptr<OnPermissionChangedCallback> &callback));
     MOCK_METHOD1(GetAllFormsInfo, bool(std::vector<FormInfo> &formInfos));
-    MOCK_METHOD2(GetFormsInfoByApp, bool(const std::string &bundleName,std::vector<FormInfo> &formInfos));
-    MOCK_METHOD3(GetFormsInfoByModule, bool(const std::string &bundleName, const std::string &moduleName, std::vector<FormInfo> &formInfos));
+    MOCK_METHOD2(GetFormsInfoByApp, bool(const std::string &bundleName, std::vector<FormInfo> &formInfos));
+    MOCK_METHOD3(GetFormsInfoByModule,
+        bool(const std::string &bundleName, const std::string &moduleName, std::vector<FormInfo> &formInfos));
+    MOCK_METHOD2(GetShortcutInfos, bool(const std::string &bundleName, std::vector<ShortcutInfo> &shortcutInfos));
 };
 
 }  // namespace AppExecFwk

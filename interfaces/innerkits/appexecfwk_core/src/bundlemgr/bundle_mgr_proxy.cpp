@@ -1263,6 +1263,31 @@ bool BundleMgrProxy::GetFormsInfoByModule(
     return true;
 }
 
+bool BundleMgrProxy::GetShortcutInfos(const std::string &bundleName, std::vector<ShortcutInfo> &shortcutInfos)
+{
+    if (bundleName.empty()) {
+        APP_LOGE("fail to GetShortcutInfos due to params empty");
+        return false;
+    }
+
+    MessageParcel data;
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        APP_LOGE("fail to GetShortcutInfos due to write MessageParcel fail");
+        return false;
+    }
+
+    if (!data.WriteString(bundleName)) {
+        APP_LOGE("fail to GetShortcutInfos due to write bundleName fail");
+        return false;
+    }
+
+    if (!GetParcelableInfos<ShortcutInfo>(IBundleMgr::Message::GET_SHORTCUT_INFO, data, shortcutInfos)) {
+        APP_LOGE("fail to GetShortcutInfos from server");
+        return false;
+    }
+    return true;
+}
+
 template <typename T>
 bool BundleMgrProxy::GetParcelableInfo(IBundleMgr::Message code, MessageParcel &data, T &parcelableInfo)
 {

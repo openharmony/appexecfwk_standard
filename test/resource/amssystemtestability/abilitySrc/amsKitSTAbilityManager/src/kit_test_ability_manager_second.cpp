@@ -402,6 +402,7 @@ void KitTestAbilityManagerSecond::OnNewWant(const Want &want)
 {
     APP_LOGI("KitTestAbilityManagerSecond::OnNewWant");
     Ability::OnNewWant(want);
+    GetWantInfo(want);
     std::string eventData = GetAbilityName() + g_abilityStateOnNewWant;
     PublishEvent(g_respPageManagerSecondAbilityST, 0, eventData);
 }
