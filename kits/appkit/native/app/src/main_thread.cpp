@@ -626,12 +626,12 @@ void MainThread::HandleLaunchApplication(const AppLaunchData &appLaunchData)
 
     std::unique_ptr<Global::Resource::ResConfig> resConfig(Global::Resource::CreateResConfig());
     resConfig->SetLocaleInfo("zh", "Hans", "CN");
-    const Global::Resource::LocaleInfo *localeInfo = resConfig->GetLocaleInfo();
+    const icu::Locale *localeInfo = resConfig->GetLocaleInfo();
     if (localeInfo != nullptr) {
         APP_LOGI("MainThread::handleLaunchApplication language: %{public}s, script: %{public}s, region: %{public}s,",
-            localeInfo->GetLanguage(),
-            localeInfo->GetScript(),
-            localeInfo->GetRegion());
+            localeInfo->getLanguage(),
+            localeInfo->getScript(),
+            localeInfo->getCountry());
     } else {
         APP_LOGI("MainThread::handleLaunchApplication localeInfo is nullptr.");
     }
