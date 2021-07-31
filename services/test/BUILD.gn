@@ -16,7 +16,7 @@ import("//foundation/appexecfwk/standard/appexecfwk.gni")
 config("services_module_test_config") {
   include_dirs = [
     "mock/include",
-    "//base/notification/ces_standard/cesfwk/kits/native/include",
+    "//base/notification/ces_standard/interfaces/innerkits/native/include",
   ]
 
   configs = []

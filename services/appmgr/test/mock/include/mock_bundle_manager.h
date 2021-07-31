@@ -332,6 +332,10 @@ public:
     {
         return true;
     }
+    virtual bool GetShortcutInfos(const std::string &bundleName, std::vector<ShortcutInfo> &shortcutInfos) override
+    {
+        return true;
+    }
 };
 
 }  // namespace AppExecFwk

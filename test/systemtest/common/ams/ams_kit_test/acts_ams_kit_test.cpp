@@ -89,6 +89,7 @@ public:
     void TestSkills(Want want);
     void StartAbilityKitTest(const std::string &abilityName, const std::string &bundleName);
     void CleanMsg();
+    void ShowDump();
     class AppEventSubscriber : public CommonEventSubscriber {
     public:
         explicit AppEventSubscriber(const CommonEventSubscribeInfo &sp) : CommonEventSubscriber(sp){};
@@ -148,7 +149,6 @@ void ActsAmsKitTest::SetUp(void)
 void ActsAmsKitTest::TearDown(void)
 {
     STAbilityUtil::RemoveStack(1, abilityMs, WAIT_TIME, WAIT_LAUNCHER_OK);
-    STAbilityUtil::KillBundleProcess(bundleNameList);
     CleanMsg();
 }
 
@@ -184,6 +184,17 @@ void ActsAmsKitTest::CleanMsg()
 {
     STAbilityUtil::CleanMsg(event);
     STAbilityUtil::CleanMsg(abilityEvent);
+}
+
+void ActsAmsKitTest::ShowDump()
+{
+    if (abilityMs) {
+        std::vector<std::string> dumpInfo;
+        abilityMs->DumpState("-a", dumpInfo);
+        for (const auto &info : dumpInfo) {
+            std::cout << info << std::endl;
+        }
+    }
 }
 
 /**
@@ -408,8 +419,8 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_0800, Function | MediumTest | L
 HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_0900, Function | MediumTest | Level1)
 {
     bool result = false;
+    StartAbilityKitTest(abilityManagerName, bundleName2);
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
-        StartAbilityKitTest(abilityManagerName, bundleName2);
         int apiIndex = static_cast<int>(AbilityManagerApi::GetAllRunningProcesses);
         std::string eventData = "AbilityManagerApi_" + std::to_string(apiIndex) + "_8";
         STAbilityUtil::PublishEvent(g_requPageManagerAbilityST, ++amsKitSTCode, eventData);
@@ -647,8 +658,8 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_1700, Function | MediumTest | L
 HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_1800, Function | MediumTest | Level1)
 {
     bool result = false;
+    StartAbilityKitTest(abilityManagerName, bundleName2);
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
-        StartAbilityKitTest(abilityManagerName, bundleName2);
         int apiIndex = static_cast<int>(AbilityManagerApi::GetAllStackInfo);
         std::string eventData = "AbilityManagerApi_" + std::to_string(apiIndex) + "_7";
         STAbilityUtil::PublishEvent(g_requPageManagerAbilityST, ++amsKitSTCode, eventData);
@@ -879,8 +890,8 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_2600, Function | MediumTest | L
 HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_2700, Function | MediumTest | Level1)
 {
     bool result = false;
+    StartAbilityKitTest(abilityManagerName, bundleName2);
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
-        StartAbilityKitTest(abilityManagerName, bundleName2);
         int apiIndex = static_cast<int>(AbilityManagerApi::QueryRecentAbilityMissionInfo);
         std::string eventData = "AbilityManagerApi_" + std::to_string(apiIndex) + "_7";
         STAbilityUtil::PublishEvent(g_requPageManagerAbilityST, ++amsKitSTCode, eventData);
@@ -906,8 +917,8 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_2700, Function | MediumTest | L
 HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_2800, Function | MediumTest | Level1)
 {
     bool result = false;
+    StartAbilityKitTest(abilityManagerName, bundleName2);
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
-        StartAbilityKitTest(abilityManagerName, bundleName2);
         int apiIndex = static_cast<int>(AbilityManagerApi::QueryRecentAbilityMissionInfo);
         std::string eventData = "AbilityManagerApi_" + std::to_string(apiIndex) + "_8";
         STAbilityUtil::PublishEvent(g_requPageManagerAbilityST, ++amsKitSTCode, eventData);
@@ -933,8 +944,8 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_2800, Function | MediumTest | L
 HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_2900, Function | MediumTest | Level1)
 {
     bool result = false;
+    StartAbilityKitTest(abilityManagerName, bundleName2);
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
-        StartAbilityKitTest(abilityManagerName, bundleName2);
         int apiIndex = static_cast<int>(AbilityManagerApi::QueryRecentAbilityMissionInfo);
         std::string eventData = "AbilityManagerApi_" + std::to_string(apiIndex) + "_9";
         STAbilityUtil::PublishEvent(g_requPageManagerAbilityST, ++amsKitSTCode, eventData);
@@ -1061,8 +1072,8 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_3300, Function | MediumTest | L
 HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_3400, Function | MediumTest | Level1)
 {
     bool result = false;
+    StartAbilityKitTest(abilityManagerName, bundleName2);
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
-        StartAbilityKitTest(abilityManagerName, bundleName2);
         int apiIndex = static_cast<int>(AbilityManagerApi::QueryRunningAbilityMissionInfo);
         std::string eventData = "AbilityManagerApi_" + std::to_string(apiIndex) + "_4";
         STAbilityUtil::PublishEvent(g_requPageManagerAbilityST, ++amsKitSTCode, eventData);
@@ -1088,8 +1099,8 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_3400, Function | MediumTest | L
 HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_3500, Function | MediumTest | Level1)
 {
     bool result = false;
+    StartAbilityKitTest(abilityManagerName, bundleName2);
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
-        StartAbilityKitTest(abilityManagerName, bundleName2);
         int apiIndex = static_cast<int>(AbilityManagerApi::QueryRunningAbilityMissionInfo);
         std::string eventData = "AbilityManagerApi_" + std::to_string(apiIndex) + "_5";
         STAbilityUtil::PublishEvent(g_requPageManagerAbilityST, ++amsKitSTCode, eventData);
@@ -1115,8 +1126,8 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_3500, Function | MediumTest | L
 HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_3600, Function | MediumTest | Level1)
 {
     bool result = false;
+    StartAbilityKitTest(abilityManagerName, bundleName2);
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
-        StartAbilityKitTest(abilityManagerName, bundleName2);
         int apiIndex = static_cast<int>(AbilityManagerApi::QueryRunningAbilityMissionInfo);
         std::string eventData = "AbilityManagerApi_" + std::to_string(apiIndex) + "_6";
         STAbilityUtil::PublishEvent(g_requPageManagerAbilityST, ++amsKitSTCode, eventData);
@@ -1141,8 +1152,8 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_3600, Function | MediumTest | L
 HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_3700, Function | MediumTest | Level1)
 {
     bool result = false;
+    StartAbilityKitTest(abilityManagerName, bundleName2);
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
-        StartAbilityKitTest(abilityManagerName, bundleName2);
         int apiIndex = static_cast<int>(AbilityManagerApi::MoveMissionToTop);
         std::string eventData = "AbilityManagerApi_" + std::to_string(apiIndex) + "_0";
         STAbilityUtil::PublishEvent(g_requPageManagerAbilityST, ++amsKitSTCode, eventData);
@@ -2033,8 +2044,8 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_Application_2700, Function | MediumTest | Leve
         EXPECT_EQ(STAbilityUtil::WaitCompleted(abilityEvent, thirdAbilityName + g_onAbilityStart, 0), 0);
         EXPECT_EQ(STAbilityUtil::WaitCompleted(abilityEvent, thirdAbilityName + g_onAbilityActive, 0), 0);
         EXPECT_EQ(STAbilityUtil::WaitCompleted(abilityEvent, sixthAbilityName + g_onAbilityBackground, 0), 0);
-
         CleanMsg();
+        STAbilityUtil::RemoveStack(1, abilityMs, WAIT_TIME, WAIT_LAUNCHER_OK);
     }
 }
 
@@ -2049,20 +2060,22 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_Application_2800, Function | MediumTest | Leve
 {
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         MAP_STR_STR params;
+        int onStopWantCount = 1;
         params["targetBundle"] = bundleName3;
         params["targetAbility"] = abilityNameBase;
         Want want = STAbilityUtil::MakeWant("device", sixthAbilityName, bundleName2, params);
         STAbilityUtil::StartAbility(want, abilityMs);
         EXPECT_EQ(STAbilityUtil::WaitCompleted(abilityEvent, sixthAbilityName + g_onAbilityActive, 0), 0);
         EXPECT_EQ(STAbilityUtil::WaitCompleted(abilityEvent, sixthAbilityName + g_onAbilityInactive, 0), 0);
+        EXPECT_EQ(
+            STAbilityUtil::WaitCompleted(abilityEvent, abilityNameBase + g_abilityStateOnActive, onStopWantCount), 0);
         EXPECT_EQ(STAbilityUtil::WaitCompleted(abilityEvent, sixthAbilityName + g_onAbilityBackground, 0), 0);
         STAbilityUtil::StopAbility(terminatePageAbility, 0, abilityNameBase);
-        int onStopWantCount = 1;
+        EXPECT_EQ(STAbilityUtil::WaitCompleted(abilityEvent, sixthAbilityName + g_onAbilityActive, 0), 0);
         EXPECT_EQ(
             STAbilityUtil::WaitCompleted(abilityEvent, abilityNameBase + g_abilityStateOnStop, onStopWantCount), 0);
-        EXPECT_EQ(STAbilityUtil::WaitCompleted(abilityEvent, sixthAbilityName + g_onAbilityForeground, 0), 0);
-        EXPECT_EQ(STAbilityUtil::WaitCompleted(abilityEvent, sixthAbilityName + g_onAbilityActive, 0), 0);
 
         CleanMsg();
+        STAbilityUtil::RemoveStack(1, abilityMs, WAIT_TIME, WAIT_LAUNCHER_OK);
     }
 }

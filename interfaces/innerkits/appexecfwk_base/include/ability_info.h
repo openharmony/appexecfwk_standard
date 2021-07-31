@@ -44,12 +44,28 @@ enum class LaunchMode {
     SINGLETOP,
 };
 
-struct Form {
-    std::vector<std::string> formEntity;
-    int32_t minHeight = 0;
-    int32_t defaultHeight = 0;
-    int32_t minWidth = 0;
-    int32_t defaultWidth = 0;
+struct Parameters {
+    std::string description;
+    std::string name;
+    std::string type;
+};
+
+struct Results {
+    std::string description;
+    std::string name;
+    std::string type;
+};
+
+struct CustomizeData {
+    std::string name;
+    std::string value;
+    std::string extra;
+};
+
+struct MetaData {
+    std::vector<Parameters> parameters;
+    std::vector<Results> results;
+	std::vector<CustomizeData> customizeData;
 };
 
 // configuration information about an ability
@@ -77,7 +93,12 @@ struct AbilityInfo : public Parcelable {
     bool enabled = false;
     std::string readPermission;
     std::string writePermission;
-    Form form;
+    std::vector<std::string> formEntity;
+    int32_t minFormHeight = 0;
+    int32_t defaultFormHeight = 0;
+    int32_t minFormWidth = 0;
+    int32_t defaultFormWidth = 0;
+    MetaData metaData;
 
     // set when install
     std::string package;  // the "module.package" in config.json

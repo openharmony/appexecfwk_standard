@@ -1977,10 +1977,10 @@ HWTEST_F(AmsServiceAbilityTest, AppSpawn_TEST_0100, Function | MediumTest | Leve
 {
     GTEST_LOG_(INFO) << "AmsServiceAbilityTest AppSpawn_TEST_0100 start";
 
-    std::string cmd = "ps -ef |grep appspawn |grep -v grep | awk '{print $1}'";
+    std::string cmd = "ps -ef |grep appspawn |grep -v grep";
     std::string result;
     ExecuteSystemForResult(cmd, result);
-    EXPECT_EQ(Trim(result).compare("root"), 0);
+    EXPECT_NE(result.find("root"), std::string::npos);
 
     GTEST_LOG_(INFO) << "AmsServiceAbilityTest AppSpawn_TEST_0100 end";
 }
@@ -2010,10 +2010,10 @@ HWTEST_F(AmsServiceAbilityTest, AppSpawn_TEST_0200, Function | MediumTest | Leve
     usleep(WAIT_TIME);
 
     // check app process information
-    std::string cmd = "ps -ef |grep com.ohos.amsst.service.appA |grep -v grep | awk '{print $2}'";
+    std::string cmd = "ps -ef |grep com.ohos.amsst.service.appA |grep -v grep";
     std::string result;
     ExecuteSystemForResult(cmd, result);
-    EXPECT_FALSE(Trim(result).empty());
+    EXPECT_FALSE(result.empty());
     usleep(WAIT_TIME);
 
     // stop ability
@@ -2066,7 +2066,7 @@ HWTEST_F(AmsServiceAbilityTest, AppSpawn_0300, Function | MediumTest | Level1)
         0);
 
     // check app process information
-    std::string cmd = "ps -ef |grep com.ohos.amsst.service.appA |grep -v grep | awk '{print $2}'";
+    std::string cmd = "ps -ef |grep com.ohos.amsst.service.appA |grep -v grep";
     std::string result;
     ExecuteSystemForResult(cmd, result);
     EXPECT_TRUE(Trim(result).empty());
@@ -2104,7 +2104,7 @@ HWTEST_F(AmsServiceAbilityTest, AppSpawn_0400, Function | MediumTest | Level1)
 
     usleep(WAIT_TIME * 5);
     // check app process information
-    std::string cmd = "ps -ef |grep com.ohos.amsst.service.appA |grep -v grep | awk '{print $2}'";
+    std::string cmd = "ps -ef |grep com.ohos.amsst.service.appA |grep -v grep";
     std::string result;
     ExecuteSystemForResult(cmd, result);
     EXPECT_TRUE(Trim(result).empty());

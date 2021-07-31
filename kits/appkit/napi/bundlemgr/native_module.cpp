@@ -93,6 +93,7 @@ static napi_value Init(napi_env env, napi_value exports)
         DECLARE_NAPI_FUNCTION("getFormsInfoByModule", GetFormsInfoByModule),
         DECLARE_NAPI_FUNCTION("getFormsInfo", GetFormsInfoByApp),
         DECLARE_NAPI_FUNCTION("getAllFormsInfo", GetAllFormsInfo),
+        DECLARE_NAPI_FUNCTION("getShortcutInfos", GetShortcutInfos),
         DECLARE_NAPI_PROPERTY("AbilityType", nAbilityType),
         DECLARE_NAPI_PROPERTY("AbilitySubType", nAbilitySubType),
         DECLARE_NAPI_PROPERTY("DisplayOrientation", nDisplayOrientation),
