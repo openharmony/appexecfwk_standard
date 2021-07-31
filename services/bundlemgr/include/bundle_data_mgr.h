@@ -352,30 +352,33 @@ public:
     std::shared_ptr<IBundleDataStorage> GetDataStorage() const;
     /**
      * @brief Obtains the FormInfo objects provided by all applications on the device.
-     * @param formInfo List of FormInfo objects if obtained; returns an empty List if no FormInfo is available on the
-     * device.
+     * @param formInfos List of FormInfo objects if obtained;
      * @return Returns true if this function is successfully called; returns false otherwise.
      */
     bool GetAllFormsInfo(std::vector<FormInfo> &formInfos) const;
     /**
      * @brief Obtains the FormInfo objects provided by a specified application on the device.
-     * @param bundleName Indicates the bundle name of the HarmonyOS application.
-     * @param formInfo List of FormInfo objects if obtained; returns an empty List if no FormInfo is available on the
-     * device.
+     * @param bundleName Indicates the bundle name of the  application.
+     * @param formInfos List of FormInfo objects if obtained;
      * @return Returns true if this function is successfully called; returns false otherwise.
      */
     bool GetFormsInfoByApp(const std::string &bundleName, std::vector<FormInfo> &formInfos) const;
     /**
      * @brief Obtains the FormInfo objects provided by a specified module name.
-     * @param formInfo List of FormInfo objects if obtained; returns an empty List if no FormInfo is available on the
-     * device.
-     * @param moduleName Indicates the module name of the HarmonyOS application.
-     * @param bundleName Indicates the bundle name of the HarmonyOS application.
+     * @param formInfos List of FormInfo objects if obtained;
+     * @param moduleName Indicates the module name of the application.
+     * @param bundleName Indicates the bundle name of the application.
      * @return Returns true if this function is successfully called; returns false otherwise.
      */
     bool GetFormsInfoByModule(
         const std::string &bundleName, const std::string &moduleName, std::vector<FormInfo> &formInfos) const;
-
+    /**
+     * @brief Obtains the ShortcutInfo objects provided by a specified application on the device.
+     * @param bundleName Indicates the bundle name of the application.
+     * @param shortcutInfos List of ShortcutInfo objects if obtained.
+     * @return Returns true if this function is successfully called; returns false otherwise.
+     */
+    bool GetShortcutInfos(const std::string &bundleName, std::vector<ShortcutInfo> &shortcutInfos) const;
 private:
     /**
      * @brief Init transferStates.

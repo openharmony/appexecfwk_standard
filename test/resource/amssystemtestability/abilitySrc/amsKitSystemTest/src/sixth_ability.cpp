@@ -411,7 +411,6 @@ void SixthAbility::OnBackground()
 void SixthAbility::OnForeground(const Want &want)
 {
     APP_LOGI("SixthAbility::OnForeground");
-    GetWantInfo(want);
     Ability::OnForeground(want);
     std::string eventData = GetAbilityName() + g_abilityStateOnForeground;
     TestUtils::PublishEvent(g_respPageSixthAbilityST, 0, eventData);

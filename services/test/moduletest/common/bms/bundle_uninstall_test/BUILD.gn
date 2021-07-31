@@ -65,7 +65,6 @@ ohos_moduletest("BmsBundleUninstallerModuleTest") {
     "${services_path}/bundlemgr:bundle_parser",
     "${services_path}/bundlemgr:parser_common",
     "${services_path}/test/moduletest/utils:tool_common",
-    "//base/notification/ces_standard/cesfwk/kits/native:cesfwk_kits",
     "//base/security/appverify/interfaces/innerkits/appverify:libhapverify",
     "//base/security/permission/interfaces/innerkits/permission_standard/permissionsdk:libpermissionsdk_standard",
     "//foundation/aafwk/standard/interfaces/innerkits/base:base",
@@ -76,6 +75,7 @@ ohos_moduletest("BmsBundleUninstallerModuleTest") {
   ]
 
   external_deps = [
+    "ces_standard:cesfwk_innerkits",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
   ]

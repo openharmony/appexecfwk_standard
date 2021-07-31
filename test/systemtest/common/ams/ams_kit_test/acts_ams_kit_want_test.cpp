@@ -186,8 +186,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_0100, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_0100 : " << i;
@@ -210,8 +210,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_0200, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_0200 : " << i;
@@ -234,8 +234,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_0300, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_0300 : " << i;
@@ -258,8 +258,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_0400, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_0400 : " << i;
@@ -282,8 +282,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_0500, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_0500 : " << i;
@@ -306,8 +306,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_0600, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_0600 : " << i;
@@ -330,8 +330,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_0700, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_0700 : " << i;
@@ -354,8 +354,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_0800, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_0800 : " << i;
@@ -378,8 +378,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_0900, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_0900 : " << i;
@@ -402,8 +402,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_1000, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_1000 : " << i;
@@ -426,8 +426,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_1100, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_1100 : " << i;
@@ -450,8 +450,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_1200, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_1200 : " << i;
@@ -474,8 +474,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_1300, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_1300 : " << i;
@@ -498,8 +498,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_1400, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_1400 : " << i;
@@ -522,8 +522,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_1500, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_1500 : " << i;
@@ -546,8 +546,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_1600, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_1600 : " << i;
@@ -570,8 +570,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_1700, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_1700 : " << i;
@@ -594,8 +594,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_1800, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_1800 : " << i;
@@ -618,8 +618,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_1900, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_1900 : " << i;
@@ -642,8 +642,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_2000, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_2000 : " << i;
@@ -666,8 +666,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_2100, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_2100 : " << i;
@@ -690,8 +690,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_2200, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_2200 : " << i;
@@ -714,8 +714,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_2300, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_2300 : " << i;
@@ -738,8 +738,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_2400, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_2400 : " << i;
@@ -762,8 +762,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_2500, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_2500 : " << i;
@@ -786,8 +786,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_2600, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_2600 : " << i;
@@ -810,8 +810,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_2700, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_2700 : " << i;
@@ -834,8 +834,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_2800, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_2800 : " << i;
@@ -858,8 +858,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_2900, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_2900 : " << i;
@@ -882,8 +882,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_3000, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_3000 : " << i;
@@ -906,8 +906,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_3100, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_3100 : " << i;
@@ -930,8 +930,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_3200, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_3200 : " << i;
@@ -954,8 +954,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_3300, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_3300 : " << i;
@@ -978,8 +978,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_3400, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_3400 : " << i;
@@ -1002,8 +1002,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_3500, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_3500 : " << i;
@@ -1026,8 +1026,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_3600, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_3600 : " << i;
@@ -1050,8 +1050,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_3700, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_3700 : " << i;
@@ -1074,8 +1074,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_3800, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_3800 : " << i;
@@ -1098,8 +1098,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_3900, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_3900 : " << i;
@@ -1122,8 +1122,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_4000, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_4000 : " << i;
@@ -1146,8 +1146,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_4100, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_4100 : " << i;
@@ -1170,8 +1170,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_4200, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_4200 : " << i;
@@ -1194,8 +1194,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_4300, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_4300 : " << i;
@@ -1218,8 +1218,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_4400, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_4400 : " << i;
@@ -1242,8 +1242,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_4500, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_4500 : " << i;
@@ -1266,8 +1266,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_4600, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_4600 : " << i;
@@ -1290,8 +1290,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_4700, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_4700 : " << i;
@@ -1314,8 +1314,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_4800, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_4800 : " << i;
@@ -1338,8 +1338,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_4900, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_4900 : " << i;
@@ -1362,8 +1362,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_5000, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_5000 : " << i;
@@ -1386,8 +1386,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_5100, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_5100 : " << i;
@@ -1410,8 +1410,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_5200, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_5200 : " << i;
@@ -1434,8 +1434,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_5300, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_5300 : " << i;
@@ -1458,8 +1458,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_5400, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_5400 : " << i;
@@ -1482,8 +1482,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_5500, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_5500 : " << i;
@@ -1506,8 +1506,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_5600, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_5600 : " << i;
@@ -1530,8 +1530,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_5700, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_5700 : " << i;
@@ -1554,8 +1554,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_5800, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_5800 : " << i;
@@ -1578,8 +1578,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_5900, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_5900 : " << i;
@@ -1602,8 +1602,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_6000, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_6000 : " << i;
@@ -1626,8 +1626,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_6100, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_6100 : " << i;
@@ -1650,8 +1650,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_6200, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_6200 : " << i;
@@ -1674,8 +1674,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_6300, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_6300 : " << i;
@@ -1698,8 +1698,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_6400, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_6400 : " << i;
@@ -1722,8 +1722,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_6500, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_6500 : " << i;
@@ -1746,8 +1746,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_6600, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_6600 : " << i;
@@ -1770,8 +1770,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_6700, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_6700 : " << i;
@@ -1794,8 +1794,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_6800, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_6800 : " << i;
@@ -1818,8 +1818,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_6900, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_6900 : " << i;
@@ -1842,8 +1842,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_7000, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_7000 : " << i;
@@ -1866,8 +1866,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_7100, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_7100 : " << i;
@@ -1890,8 +1890,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_7200, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_7200 : " << i;
@@ -1914,8 +1914,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_7300, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_7300 : " << i;
@@ -1938,8 +1938,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_7400, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_7400 : " << i;
@@ -1962,8 +1962,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_7500, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_7500 : " << i;
@@ -1986,8 +1986,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_7600, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_7600 : " << i;
@@ -2010,8 +2010,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_7700, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_7700 : " << i;
@@ -2034,8 +2034,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_7800, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_7800 : " << i;
@@ -2058,8 +2058,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_7900, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_7900 : " << i;
@@ -2082,8 +2082,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_8000, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_8000 : " << i;
@@ -2106,8 +2106,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_8100, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_8100 : " << i;
@@ -2130,8 +2130,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_8200, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_8200 : " << i;
@@ -2154,8 +2154,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_8300, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_8300 : " << i;
@@ -2178,8 +2178,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_8400, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_8400 : " << i;
@@ -2202,8 +2202,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_8500, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_8500 : " << i;
@@ -2226,8 +2226,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_8600, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_8600 : " << i;
@@ -2250,8 +2250,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_8700, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_8700 : " << i;
@@ -2274,8 +2274,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_8800, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_8800 : " << i;
@@ -2298,8 +2298,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_8900, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_8900 : " << i;
@@ -2322,8 +2322,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_9000, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_9000 : " << i;
@@ -2346,8 +2346,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_9100, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_9100 : " << i;
@@ -2370,8 +2370,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_9200, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_9200 : " << i;
@@ -2394,8 +2394,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_9300, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_9300 : " << i;
@@ -2418,8 +2418,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_9400, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_9400 : " << i;
@@ -2442,8 +2442,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_9500, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_9500 : " << i;
@@ -2466,8 +2466,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_9600, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_9600 : " << i;
@@ -2490,8 +2490,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_9700, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_9700 : " << i;
@@ -2514,8 +2514,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_9800, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_9800 : " << i;
@@ -2538,8 +2538,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_9900, Function | MediumTest | Level1)
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_9900 : " << i;
@@ -2562,8 +2562,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_10000, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_10000 : " << i;
@@ -2586,8 +2586,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_10100, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_10100 : " << i;
@@ -2610,8 +2610,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_10200, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_10200 : " << i;
@@ -2634,8 +2634,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_10300, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_10300 : " << i;
@@ -2658,8 +2658,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_10400, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_10400 : " << i;
@@ -2682,8 +2682,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_10500, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_10500 : " << i;
@@ -2706,8 +2706,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_10600, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_10600 : " << i;
@@ -2730,8 +2730,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_10700, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_10700 : " << i;
@@ -2754,8 +2754,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_10800, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_10800 : " << i;
@@ -2778,8 +2778,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_10900, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_10900 : " << i;
@@ -2802,8 +2802,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_11000, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_11000 : " << i;
@@ -2826,8 +2826,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_11100, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_11100 : " << i;
@@ -2850,8 +2850,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_11200, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_11200 : " << i;
@@ -2874,8 +2874,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_11300, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_11300 : " << i;
@@ -2898,8 +2898,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_11400, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_11400 : " << i;
@@ -2922,8 +2922,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_11500, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_11500 : " << i;
@@ -2946,8 +2946,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_11600, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_11600 : " << i;
@@ -2970,8 +2970,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_11700, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_11700 : " << i;
@@ -2994,8 +2994,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_11800, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_11800 : " << i;
@@ -3018,8 +3018,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_11900, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_11900 : " << i;
@@ -3042,8 +3042,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_12000, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_12000 : " << i;
@@ -3066,8 +3066,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_12100, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_12100 : " << i;
@@ -3090,8 +3090,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_12200, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_12200 : " << i;
@@ -3114,8 +3114,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_12300, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_12300 : " << i;
@@ -3138,8 +3138,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_12400, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_12400 : " << i;
@@ -3162,8 +3162,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_12500, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_12500 : " << i;
@@ -3186,8 +3186,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_12600, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_12600 : " << i;
@@ -3210,8 +3210,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_12700, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_12700 : " << i;
@@ -3234,8 +3234,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_12800, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_12800 : " << i;
@@ -3258,8 +3258,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_12900, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_12900 : " << i;
@@ -3282,8 +3282,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_13000, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_13000 : " << i;
@@ -3306,8 +3306,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_13100, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_13100 : " << i;
@@ -3330,8 +3330,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_13200, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_13200 : " << i;
@@ -3354,8 +3354,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_13300, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_13300 : " << i;
@@ -3378,8 +3378,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_13400, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_13400 : " << i;
@@ -3402,8 +3402,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_13500, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_13500 : " << i;
@@ -3426,8 +3426,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_13600, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_13600 : " << i;
@@ -3450,8 +3450,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_13700, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_13700 : " << i;
@@ -3474,8 +3474,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_13800, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_13800 : " << i;
@@ -3498,8 +3498,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_13900, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_13900 : " << i;
@@ -3522,8 +3522,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_14000, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_14000 : " << i;
@@ -3546,8 +3546,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_14100, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_14100 : " << i;
@@ -3570,8 +3570,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_14200, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_14200 : " << i;
@@ -3594,8 +3594,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_14300, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_14300 : " << i;
@@ -3618,8 +3618,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_14400, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_14400 : " << i;
@@ -3642,8 +3642,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_14500, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_14500 : " << i;
@@ -3666,8 +3666,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_14600, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_14600 : " << i;
@@ -3690,8 +3690,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_14700, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_14700 : " << i;
@@ -3714,8 +3714,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_14800, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_14800 : " << i;
@@ -3738,8 +3738,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_14900, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_14900 : " << i;
@@ -3762,8 +3762,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_15000, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_15000 : " << i;
@@ -3786,8 +3786,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_15100, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_15100 : " << i;
@@ -3810,8 +3810,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_15200, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_15200 : " << i;
@@ -3834,8 +3834,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_15300, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_15300 : " << i;
@@ -3858,8 +3858,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_15400, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_15400 : " << i;
@@ -3882,8 +3882,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_15500, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_15500 : " << i;
@@ -3906,8 +3906,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_15600, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_15600 : " << i;
@@ -3930,8 +3930,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_15700, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_15700 : " << i;
@@ -3954,8 +3954,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_15800, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_15800 : " << i;
@@ -3978,8 +3978,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_15900, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_15900 : " << i;
@@ -4002,8 +4002,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_16000, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_16000 : " << i;
@@ -4026,8 +4026,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_16100, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_16100 : " << i;
@@ -4050,8 +4050,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_16200, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_16200 : " << i;
@@ -4074,8 +4074,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_16300, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_16300 : " << i;
@@ -4098,8 +4098,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_16400, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_16400 : " << i;
@@ -4122,8 +4122,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_16500, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_16500 : " << i;
@@ -4146,8 +4146,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_16600, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_16600 : " << i;
@@ -4170,8 +4170,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_16700, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_16700 : " << i;
@@ -4194,8 +4194,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_16800, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_16800 : " << i;
@@ -4218,8 +4218,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_16900, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_16900 : " << i;
@@ -4242,8 +4242,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_17000, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_17000 : " << i;
@@ -4266,8 +4266,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_17100, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_17100 : " << i;
@@ -4290,8 +4290,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_17200, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_17200 : " << i;
@@ -4314,8 +4314,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_17300, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_17300 : " << i;
@@ -4338,8 +4338,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_17400, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_17400 : " << i;
@@ -4362,8 +4362,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_17500, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_17500 : " << i;
@@ -4386,8 +4386,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_17600, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_17600 : " << i;
@@ -4410,8 +4410,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_17700, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_17700 : " << i;
@@ -4434,8 +4434,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_17800, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_17800 : " << i;
@@ -4458,8 +4458,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_17900, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_17900 : " << i;
@@ -4482,8 +4482,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_18000, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_18000 : " << i;
@@ -4506,8 +4506,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_18100, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_18100 : " << i;
@@ -4530,8 +4530,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_18200, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_18200 : " << i;
@@ -4554,8 +4554,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_18300, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_18300 : " << i;
@@ -4578,8 +4578,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_18400, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_18400 : " << i;
@@ -4602,8 +4602,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_18500, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_18500 : " << i;
@@ -4626,8 +4626,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_18600, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_18600 : " << i;
@@ -4650,8 +4650,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_18700, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_18700 : " << i;
@@ -4674,8 +4674,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_18800, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_18800 : " << i;
@@ -4698,8 +4698,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_18900, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_18900 : " << i;
@@ -4722,8 +4722,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_19000, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_19000 : " << i;
@@ -4746,8 +4746,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_19100, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_19100 : " << i;
@@ -4770,8 +4770,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_19200, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_19200 : " << i;
@@ -4794,8 +4794,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_19300, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_19300 : " << i;
@@ -4818,8 +4818,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_19400, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_19400 : " << i;
@@ -4842,8 +4842,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_19500, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_19500 : " << i;
@@ -4866,8 +4866,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_19600, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_19600 : " << i;
@@ -4890,8 +4890,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_19700, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_19700 : " << i;
@@ -4914,8 +4914,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_19800, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_19800 : " << i;
@@ -4938,8 +4938,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_19900, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_19900 : " << i;
@@ -4962,8 +4962,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_20000, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_20000 : " << i;
@@ -4986,8 +4986,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_20100, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_20100 : " << i;
@@ -5010,8 +5010,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_20200, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_20200 : " << i;
@@ -5034,8 +5034,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_20300, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_20300 : " << i;
@@ -5058,8 +5058,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_20400, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_20400 : " << i;
@@ -5082,8 +5082,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_20500, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_20500 : " << i;
@@ -5106,8 +5106,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_20600, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_20600 : " << i;
@@ -5130,8 +5130,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_20700, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_20700 : " << i;
@@ -5154,8 +5154,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_20800, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_20800 : " << i;
@@ -5178,8 +5178,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_20900, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_20900 : " << i;
@@ -5202,8 +5202,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_21000, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_21000 : " << i;
@@ -5226,8 +5226,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_21100, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_21100 : " << i;
@@ -5250,8 +5250,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_21200, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_21200 : " << i;
@@ -5274,8 +5274,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_21300, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_21300 : " << i;
@@ -5298,8 +5298,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_21400, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_21400 : " << i;
@@ -5322,8 +5322,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_21500, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_21500 : " << i;
@@ -5346,8 +5346,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_21600, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_21600 : " << i;
@@ -5370,8 +5370,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_21700, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_21700 : " << i;
@@ -5394,8 +5394,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_21800, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_21800 : " << i;
@@ -5418,8 +5418,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_21900, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_21900 : " << i;
@@ -5442,8 +5442,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_22000, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_22000 : " << i;
@@ -5466,8 +5466,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_22100, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_22100 : " << i;
@@ -5490,8 +5490,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_22200, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_22200 : " << i;
@@ -5514,8 +5514,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_22300, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_22300 : " << i;
@@ -5538,8 +5538,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_22400, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_22400 : " << i;
@@ -5562,8 +5562,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_22500, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_22500 : " << i;
@@ -5586,8 +5586,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_22600, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_22600 : " << i;
@@ -5610,8 +5610,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_22700, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_22700 : " << i;
@@ -5634,8 +5634,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_22800, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_22800 : " << i;
@@ -5658,8 +5658,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_22900, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_22900 : " << i;
@@ -5682,8 +5682,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_23000, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_23000 : " << i;
@@ -5706,8 +5706,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_23100, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_23100 : " << i;
@@ -5730,8 +5730,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_23200, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_23200 : " << i;
@@ -5754,8 +5754,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_23300, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_23300 : " << i;
@@ -5778,8 +5778,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_23400, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_23400 : " << i;
@@ -5802,8 +5802,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_23500, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_23500 : " << i;
@@ -5826,8 +5826,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_23600, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_23600 : " << i;
@@ -5850,8 +5850,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_23700, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_23700 : " << i;
@@ -5874,8 +5874,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_23800, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_23800 : " << i;
@@ -5898,8 +5898,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_23900, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_23900 : " << i;
@@ -5922,8 +5922,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_24000, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_24000 : " << i;
@@ -5946,8 +5946,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_24100, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_24100 : " << i;
@@ -5970,8 +5970,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_24200, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_24200 : " << i;
@@ -5994,8 +5994,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_24300, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_24300 : " << i;
@@ -6018,8 +6018,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_24400, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_24400 : " << i;
@@ -6042,8 +6042,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_24500, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_24500 : " << i;
@@ -6066,8 +6066,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_24600, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_24600 : " << i;
@@ -6090,8 +6090,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_24700, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_24700 : " << i;
@@ -6114,8 +6114,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_24800, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_24800 : " << i;
@@ -6138,8 +6138,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_24900, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_24900 : " << i;
@@ -6162,8 +6162,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_25000, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_25000 : " << i;
@@ -6186,8 +6186,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_25100, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_25100 : " << i;
@@ -6210,8 +6210,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_25200, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_25200 : " << i;
@@ -6234,8 +6234,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_25300, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_25300 : " << i;
@@ -6258,8 +6258,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_25400, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_25400 : " << i;
@@ -6282,8 +6282,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_25500, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_25500 : " << i;
@@ -6306,8 +6306,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_25600, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_25600 : " << i;
@@ -6330,8 +6330,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_25700, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_25700 : " << i;
@@ -6354,8 +6354,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_25800, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_25800 : " << i;
@@ -6378,8 +6378,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_25900, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_25900 : " << i;
@@ -6402,8 +6402,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_26000, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_26000 : " << i;
@@ -6426,8 +6426,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_26100, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_26100 : " << i;
@@ -6450,8 +6450,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_26200, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_26200 : " << i;
@@ -6474,8 +6474,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_26300, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_26300 : " << i;
@@ -6498,8 +6498,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_26400, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_26400 : " << i;
@@ -6522,8 +6522,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_26500, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_26500 : " << i;
@@ -6546,8 +6546,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_26600, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_26600 : " << i;
@@ -6570,8 +6570,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_26700, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_26700 : " << i;
@@ -6594,8 +6594,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_26800, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_26800 : " << i;
@@ -6618,8 +6618,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_26900, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_26900 : " << i;
@@ -6642,8 +6642,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_27000, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_27000 : " << i;
@@ -6666,8 +6666,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_27100, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_27100 : " << i;
@@ -6690,8 +6690,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_27200, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_27200 : " << i;
@@ -6714,8 +6714,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_27300, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_27300 : " << i;
@@ -6738,8 +6738,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_27400, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_27400 : " << i;
@@ -6762,8 +6762,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_27500, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_27500 : " << i;
@@ -6786,8 +6786,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_27600, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_27600 : " << i;
@@ -6810,8 +6810,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_27700, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_27700 : " << i;
@@ -6834,8 +6834,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_27800, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_27800 : " << i;
@@ -6858,8 +6858,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_27900, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_27900 : " << i;
@@ -6882,8 +6882,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_28000, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_28000 : " << i;
@@ -6906,8 +6906,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_28100, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_28100 : " << i;
@@ -6930,8 +6930,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_28200, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_28200 : " << i;
@@ -6954,8 +6954,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_28300, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_28300 : " << i;
@@ -6978,8 +6978,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_28400, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_28400 : " << i;
@@ -7002,8 +7002,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_28500, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_28500 : " << i;
@@ -7026,8 +7026,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_28600, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_28600 : " << i;
@@ -7050,8 +7050,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_28700, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_28700 : " << i;
@@ -7074,8 +7074,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_28800, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_28800 : " << i;
@@ -7098,8 +7098,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_28900, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_28900 : " << i;
@@ -7122,8 +7122,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_29000, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_29000 : " << i;
@@ -7146,8 +7146,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_29100, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_29100 : " << i;
@@ -7170,8 +7170,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_29200, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_29200 : " << i;
@@ -7194,8 +7194,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_29300, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_29300 : " << i;
@@ -7218,8 +7218,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_29400, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_29400 : " << i;
@@ -7242,8 +7242,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_29500, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_29500 : " << i;
@@ -7266,8 +7266,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_29600, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_29600 : " << i;
@@ -7290,8 +7290,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_29700, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_29700 : " << i;
@@ -7314,8 +7314,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_29800, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_29800 : " << i;
@@ -7338,8 +7338,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_29900, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_29900 : " << i;
@@ -7362,8 +7362,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_30000, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_30000 : " << i;
@@ -7386,8 +7386,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_30100, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_30100 : " << i;
@@ -7410,8 +7410,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_30200, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_30200 : " << i;
@@ -7434,8 +7434,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_30300, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_30300 : " << i;
@@ -7458,8 +7458,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_30400, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_30400 : " << i;
@@ -7482,8 +7482,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_30500, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_30500 : " << i;
@@ -7506,8 +7506,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_30600, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_30600 : " << i;
@@ -7530,8 +7530,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_30700, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_30700 : " << i;
@@ -7554,8 +7554,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_30800, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_30800 : " << i;
@@ -7578,8 +7578,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_30900, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_30900 : " << i;
@@ -7602,8 +7602,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_31000, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_31000 : " << i;
@@ -7626,8 +7626,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_31100, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_31100 : " << i;
@@ -7650,8 +7650,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_31200, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_31200 : " << i;
@@ -7674,8 +7674,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_31300, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_31300 : " << i;
@@ -7698,8 +7698,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_31400, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_31400 : " << i;
@@ -7722,8 +7722,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_31500, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_31500 : " << i;
@@ -7746,8 +7746,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_31600, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_31600 : " << i;
@@ -7770,8 +7770,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_31700, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_31700 : " << i;
@@ -7794,8 +7794,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_31800, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_31800 : " << i;
@@ -7818,8 +7818,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_31900, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_31900 : " << i;
@@ -7842,8 +7842,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_32000, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_32000 : " << i;
@@ -7866,8 +7866,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_32100, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_32100 : " << i;
@@ -7890,8 +7890,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_32200, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_32200 : " << i;
@@ -7914,8 +7914,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_32300, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_32300 : " << i;
@@ -7938,8 +7938,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_32400, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_32400 : " << i;
@@ -7962,8 +7962,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_32500, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_32500 : " << i;
@@ -7986,8 +7986,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_32600, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_32600 : " << i;
@@ -8010,8 +8010,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_32700, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_32700 : " << i;
@@ -8034,8 +8034,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_32800, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_32800 : " << i;
@@ -8058,8 +8058,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_32900, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_32900 : " << i;
@@ -8082,8 +8082,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_33000, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_33000 : " << i;
@@ -8106,8 +8106,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_33100, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_33100 : " << i;
@@ -8130,8 +8130,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_33200, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_33200 : " << i;
@@ -8154,8 +8154,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_33300, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_33300 : " << i;
@@ -8178,8 +8178,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_33400, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_33400 : " << i;
@@ -8202,8 +8202,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_33500, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_33500 : " << i;
@@ -8226,8 +8226,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_33600, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_33600 : " << i;
@@ -8250,8 +8250,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_33700, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_33700 : " << i;
@@ -8274,8 +8274,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_33800, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_33800 : " << i;
@@ -8298,8 +8298,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_33900, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_33900 : " << i;
@@ -8322,8 +8322,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_34000, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_34000 : " << i;
@@ -8346,8 +8346,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_34100, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_34100 : " << i;
@@ -8370,8 +8370,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_34200, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_34200 : " << i;
@@ -8394,8 +8394,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_34300, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_34300 : " << i;
@@ -8418,8 +8418,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_34400, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_34400 : " << i;
@@ -8442,8 +8442,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_34500, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_34500 : " << i;
@@ -8466,8 +8466,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_34600, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_34600 : " << i;
@@ -8490,8 +8490,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_34700, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_34700 : " << i;
@@ -8514,8 +8514,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_34800, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_34800 : " << i;
@@ -8538,8 +8538,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_34900, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_34900 : " << i;
@@ -8562,8 +8562,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_35000, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_35000 : " << i;
@@ -8586,8 +8586,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_35100, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_35100 : " << i;
@@ -8610,8 +8610,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_35200, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_35200 : " << i;
@@ -8634,8 +8634,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_35300, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_35300 : " << i;
@@ -8658,8 +8658,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_35400, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_35400 : " << i;
@@ -8682,8 +8682,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_35500, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_35500 : " << i;
@@ -8706,8 +8706,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_35600, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_35600 : " << i;
@@ -8730,8 +8730,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_35700, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_35700 : " << i;
@@ -8754,8 +8754,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_35800, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_35800 : " << i;
@@ -8778,8 +8778,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_35900, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_35900 : " << i;
@@ -8802,8 +8802,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_36000, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_36000 : " << i;
@@ -8826,8 +8826,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_36100, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_36100 : " << i;
@@ -8850,8 +8850,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_36200, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_36200 : " << i;
@@ -8874,8 +8874,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_36300, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_36300 : " << i;
@@ -8898,8 +8898,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_36400, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_36400 : " << i;
@@ -8922,8 +8922,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_36500, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_36500 : " << i;
@@ -8946,8 +8946,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_36600, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_36600 : " << i;
@@ -8970,8 +8970,8 @@ HWTEST_F(ActsAmsKitWantTest, AMS_Page_Want_36700, Function | MediumTest | Level1
         STAbilityUtil::PublishEvent(g_EVENT_REQU_SECOND, ++amsKitSystemTestSecondAbilityCode, data);
         EXPECT_EQ(
             0, STAbilityUtil::WaitCompleted(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode, delay));
-        data = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
-        result = data.compare("1") == 0;
+        std::string respData = STAbilityUtil::GetData(event, g_EVENT_RESP_SECOND, amsKitSystemTestSecondAbilityCode);
+        result = respData.compare("1") == 0;
         EXPECT_TRUE(result);
         if (!result && i > 1) {
             GTEST_LOG_(INFO) << "AMS_Page_Want_36700 : " << i;

@@ -436,6 +436,7 @@ HWTEST_F(AmsDFXTest, AMS_DFX_0200, TestSize.Level1)
  */
 HWTEST_F(AmsDFXTest, AMS_DFX_0300, TestSize.Level1)
 {
+    std::this_thread::sleep_for(std::chrono::milliseconds(5000));
     GTEST_LOG_(INFO) << "AmsDFXTest AMS_DFX_0300 start";
     std::string bundleName = bundleNameBase + "R";
     std::string abilityName = abilityNameBase + "R1";

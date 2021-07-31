@@ -169,38 +169,88 @@ static void ConvertApplicationInfo(napi_env env, napi_value objAppInfo, const Ap
     HILOG_INFO("ConvertApplicationInfo entryDir=%{public}s.", appInfo.entryDir.c_str());
 }
 
-static void ConvertForm(napi_env env, napi_value objForm, const Form &form)
+static void ConvertCustomizeData(napi_env env, napi_value objCustomizeData, const CustomizeData &customizeData)
 {
-    napi_value nFormEntities;
-    NAPI_CALL_RETURN_VOID(env, napi_create_array(env, &nFormEntities));
-    for (size_t idx = 0; idx < form.formEntity.size(); idx++) {
-        napi_value nFormEntity;
-        NAPI_CALL_RETURN_VOID(
-            env, napi_create_string_utf8(env, form.formEntity[idx].c_str(), NAPI_AUTO_LENGTH, &nFormEntity));
-        NAPI_CALL_RETURN_VOID(env, napi_set_element(env, nFormEntities, idx, nFormEntity));
-    }
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objForm, "formEntity", nFormEntities));
-
-    napi_value nMinHeight;
-    NAPI_CALL_RETURN_VOID(env, napi_create_int32(env, DEFAULT_INT32, &nMinHeight));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objForm, "minFormHeight", nMinHeight));
-    HILOG_INFO("form.nMinHeight=%{public}d.", form.minHeight);
-
-    napi_value nMinWidth;
-    NAPI_CALL_RETURN_VOID(env, napi_create_int32(env, DEFAULT_INT32, &nMinWidth));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objForm, "minFormWidth", nMinWidth));
-    HILOG_INFO("form.nMinWidth=%{public}d.", form.minWidth);
-
-    napi_value nDefaultHeight;
-    NAPI_CALL_RETURN_VOID(env, napi_create_int32(env, DEFAULT_INT32, &nDefaultHeight));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objForm, "defaultFormHeight", nDefaultHeight));
-    HILOG_INFO("form.nDefaultHeight=%{public}d.", form.defaultHeight);
-
-    napi_value nDefaultWidth;
-    NAPI_CALL_RETURN_VOID(env, napi_create_int32(env, DEFAULT_INT32, &nDefaultWidth));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objForm, "defaultFormWidth", nDefaultWidth));
-    HILOG_INFO("form.nDefaultWidth=%{public}d.", form.defaultWidth);
+    napi_value nName;
+    NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, customizeData.name.c_str(), NAPI_AUTO_LENGTH, &nName));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objCustomizeData, "name", nName));
+    HILOG_INFO("ConvertCustomizeData name=%{public}s.", customizeData.name.c_str());
+    napi_value nValue;
+    NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, customizeData.value.c_str(), NAPI_AUTO_LENGTH, &nValue));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objCustomizeData, "value", nValue));
+    HILOG_INFO("ConvertCustomizeData value=%{public}s.", customizeData.value.c_str());
+    napi_value nExtra;
+    NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, customizeData.extra.c_str(), NAPI_AUTO_LENGTH, &nExtra));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objCustomizeData, "value", nExtra));
+    HILOG_INFO("ConvertCustomizeData extra=%{public}s.", customizeData.extra.c_str());
 }
+
+static void ConvertParameters(napi_env env, napi_value objParameters, const Parameters &parameters)
+{
+    napi_value nDescription;
+    NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, parameters.description.c_str(), NAPI_AUTO_LENGTH, &nDescription));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objParameters, "description", nDescription));
+    HILOG_INFO("ConvertParameters parameters.description=%{public}s.", parameters.description.c_str());
+    napi_value nName;
+    NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, parameters.name.c_str(), NAPI_AUTO_LENGTH, &nName));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objParameters, "name", nName));
+    HILOG_INFO("ConvertParameters parameters.name=%{public}s.", parameters.name.c_str());
+    napi_value nType;
+    NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, parameters.type.c_str(), NAPI_AUTO_LENGTH, &nType));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objParameters, "type", nType));
+    HILOG_INFO("ConvertParameters parameters.type=%{public}s.", parameters.type.c_str());
+}
+
+static void ConvertResults(napi_env env, napi_value objResults, const Results &results)
+{
+    napi_value nDescription;
+    NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, results.description.c_str(), NAPI_AUTO_LENGTH, &nDescription));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objResults, "description", nDescription));
+    HILOG_INFO("ConvertResults results.description=%{public}s.", results.description.c_str());
+    napi_value nName;
+    NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, results.name.c_str(), NAPI_AUTO_LENGTH, &nName));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objResults, "name", nName));
+    HILOG_INFO("ConvertResults results.name=%{public}s.", results.name.c_str());
+    napi_value nType;
+    NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, results.type.c_str(), NAPI_AUTO_LENGTH, &nType));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objResults, "type", nType));
+    HILOG_INFO("ConvertResults results.type=%{public}s.", results.type.c_str());
+}
+
+
+static void ConvertMetaData(napi_env env, napi_value objMetaData, const MetaData &metaData)
+{
+    napi_value nCustomizeDatas;
+    NAPI_CALL_RETURN_VOID(env, napi_create_array(env, &nCustomizeDatas));
+    for (size_t idx = 0; idx < metaData.customizeData.size(); idx++) {
+        napi_value nCustomizeData;
+        NAPI_CALL_RETURN_VOID(env, napi_create_object(env, &nCustomizeData));
+        ConvertCustomizeData(env, nCustomizeData, metaData.customizeData[idx]);
+        NAPI_CALL_RETURN_VOID(env, napi_set_element(env, nCustomizeDatas, idx, nCustomizeData));
+    }
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objMetaData, "customizeDatas", nCustomizeDatas));
+
+    napi_value nParameters;
+    NAPI_CALL_RETURN_VOID(env, napi_create_array(env, &nParameters));
+    for (size_t idx = 0; idx < metaData.parameters.size(); idx++) {
+        napi_value nParameter;
+        NAPI_CALL_RETURN_VOID(env, napi_create_object(env, &nParameter));
+        ConvertParameters(env, nParameter, metaData.parameters[idx]);
+        NAPI_CALL_RETURN_VOID(env, napi_set_element(env, nParameters, idx, nParameter));
+    }
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objMetaData, "parameters", nParameters));
+
+    napi_value nResults;
+    NAPI_CALL_RETURN_VOID(env, napi_create_array(env, &nResults));
+    for (size_t idx = 0; idx < metaData.results.size(); idx++) {
+        napi_value nResult;
+        NAPI_CALL_RETURN_VOID(env, napi_create_object(env, &nResult));
+        ConvertResults(env, nResult, metaData.results[idx]);
+        NAPI_CALL_RETURN_VOID(env, napi_set_element(env, nResults, idx, nResult));
+    }
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objMetaData, "results", nResults));
+}
+
 static void ConvertAbilityInfo(napi_env env, napi_value objAbilityInfo, const AbilityInfo &abilityInfo)
 {
     napi_value nName;
@@ -299,14 +349,6 @@ static void ConvertAbilityInfo(napi_env env, napi_value objAbilityInfo, const Ab
     NAPI_CALL_RETURN_VOID(env, napi_create_int32(env, DEFAULT_INT32, &nBackgroundModes));
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objAbilityInfo, "backgroundModes", nBackgroundModes));
 
-    napi_value nDefaultFormHeight;
-    NAPI_CALL_RETURN_VOID(env, napi_create_int32(env, DEFAULT_INT32, &nDefaultFormHeight));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objAbilityInfo, "defaultFormHeight", nDefaultFormHeight));
-
-    napi_value nDefaultFormWidth;
-    NAPI_CALL_RETURN_VOID(env, napi_create_int32(env, DEFAULT_INT32, &nDefaultFormWidth));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objAbilityInfo, "defaultFormWidth", nDefaultFormWidth));
-
     napi_value nDescriptionId;
     NAPI_CALL_RETURN_VOID(env, napi_create_int32(env, DEFAULT_INT32, &nDescriptionId));
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objAbilityInfo, "descriptionId", nDescriptionId));
@@ -314,10 +356,6 @@ static void ConvertAbilityInfo(napi_env env, napi_value objAbilityInfo, const Ab
     napi_value nFormEnabled;
     NAPI_CALL_RETURN_VOID(env, napi_get_boolean(env, false, &nFormEnabled));
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objAbilityInfo, "formEnabled", nFormEnabled));
-
-    napi_value nFormEntity;
-    NAPI_CALL_RETURN_VOID(env, napi_create_int32(env, DEFAULT_INT32, &nFormEntity));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objAbilityInfo, "formEntity", nFormEntity));
 
     napi_value nIconId;
     NAPI_CALL_RETURN_VOID(env, napi_create_int32(env, DEFAULT_INT32, &nIconId));
@@ -327,17 +365,35 @@ static void ConvertAbilityInfo(napi_env env, napi_value objAbilityInfo, const Ab
     NAPI_CALL_RETURN_VOID(env, napi_create_int32(env, DEFAULT_INT32, &nLabelId));
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objAbilityInfo, "labelId", nLabelId));
 
+    napi_value nFormEntities;
+    NAPI_CALL_RETURN_VOID(env, napi_create_array(env, &nFormEntities));
+    for (size_t idx = 0; idx < abilityInfo.formEntity.size(); idx++) {
+        napi_value nFormEntity;
+        NAPI_CALL_RETURN_VOID(
+            env, napi_create_string_utf8(env, abilityInfo.formEntity[idx].c_str(), NAPI_AUTO_LENGTH, &nFormEntity));
+        NAPI_CALL_RETURN_VOID(env, napi_set_element(env, nFormEntities, idx, nFormEntity));
+    }
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objAbilityInfo, "formEntity", nFormEntities));
+
     napi_value nMinFormHeight;
-    NAPI_CALL_RETURN_VOID(env, napi_create_int32(env, DEFAULT_INT32, &nMinFormHeight));
+    NAPI_CALL_RETURN_VOID(env, napi_create_int32(env, abilityInfo.minFormHeight, &nMinFormHeight));
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objAbilityInfo, "minFormHeight", nMinFormHeight));
+
+    napi_value nMinFormWidth;
+    NAPI_CALL_RETURN_VOID(env, napi_create_int32(env, abilityInfo.minFormWidth, &nMinFormWidth));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objAbilityInfo, "minFormWidth", nMinFormWidth));
+
+    napi_value nDefaultFormHeight;
+    NAPI_CALL_RETURN_VOID(env, napi_create_int32(env, abilityInfo.defaultFormHeight, &nDefaultFormHeight));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objAbilityInfo, "defaultFormHeight", nDefaultFormHeight));
+
+    napi_value nDefaultFormWidth;
+    NAPI_CALL_RETURN_VOID(env, napi_create_int32(env, abilityInfo.defaultFormWidth, &nDefaultFormWidth));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objAbilityInfo, "defaultFormWidth", nDefaultFormWidth));
 
     napi_value nSubType;
     NAPI_CALL_RETURN_VOID(env, napi_create_int32(env, DEFAULT_INT32, &nSubType));
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objAbilityInfo, "subType", nSubType));
-
-    napi_value nMinFormWidth;
-    NAPI_CALL_RETURN_VOID(env, napi_create_int32(env, DEFAULT_INT32, &nMinFormWidth));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objAbilityInfo, "minFormWidth", nMinFormWidth));
 
     napi_value nReadPermission;
     NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, std::string().c_str(), NAPI_AUTO_LENGTH, &nReadPermission));
@@ -351,15 +407,16 @@ static void ConvertAbilityInfo(napi_env env, napi_value objAbilityInfo, const Ab
     napi_value nTargetAbility;
     NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, std::string().c_str(), NAPI_AUTO_LENGTH, &nTargetAbility));
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objAbilityInfo, "targetAbility", nTargetAbility));
+
     napi_value nTheme;
     NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, std::string().c_str(), NAPI_AUTO_LENGTH, &nTheme));
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objAbilityInfo, "theme", nTheme));
     HILOG_INFO("nTheme=%{public}s.", abilityInfo.theme.c_str());
 
-    napi_value nForm;
-    NAPI_CALL_RETURN_VOID(env, napi_create_object(env, &nForm));
-    ConvertForm(env, nForm, abilityInfo.form);
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objAbilityInfo, "form", nForm));
+    napi_value nMetaData;
+    NAPI_CALL_RETURN_VOID(env, napi_create_object(env, &nMetaData));
+    ConvertMetaData(env, nMetaData, abilityInfo.metaData);
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objAbilityInfo, "metaData", nMetaData));
 }
 
 static void ConvertBundleInfo(napi_env env, napi_value objBundleInfo, const BundleInfo &bundleInfo)
@@ -474,7 +531,7 @@ static void ConvertBundleInfo(napi_env env, napi_value objBundleInfo, const Bund
         env, napi_set_named_property(env, objBundleInfo, "entryInstallationFree", nEntryInstallationFree));
 }
 
-static void ConvertCustomizeData(napi_env env, napi_value objformInfo, const CustomizeData &customizeData)
+static void ConvertFormCustomizeData(napi_env env, napi_value objformInfo, const FormCustomizeData &customizeData)
 {
     napi_value nName;
     NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, customizeData.name.c_str(), NAPI_AUTO_LENGTH, &nName));
@@ -568,12 +625,76 @@ static void ConvertFormInfo(napi_env env, napi_value objformInfo, const FormInfo
     for (size_t idx = 0; idx < formInfo.customizeDatas.size(); idx++) {
         napi_value nCustomizeData;
         NAPI_CALL_RETURN_VOID(env, napi_create_object(env, &nCustomizeData));
-        ConvertCustomizeData(env, nCustomizeData, formInfo.customizeDatas[idx]);
+        ConvertFormCustomizeData(env, nCustomizeData, formInfo.customizeDatas[idx]);
         NAPI_CALL_RETURN_VOID(env, napi_set_element(env, nCustomizeDatas, idx, nCustomizeData));
     }
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objformInfo, "customizeDatas", nCustomizeDatas));
 }
 
+static void ConvertShortcutIntent(napi_env env, napi_value objShortcutInfo, const ShortcutIntent &shortcutIntent)
+{
+    napi_value nTargetBundle;
+    NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, shortcutIntent.targetBundle.c_str(), NAPI_AUTO_LENGTH, &nTargetBundle));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objShortcutInfo, "targetBundle", nTargetBundle));
+    napi_value nTargetClass;
+    NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, shortcutIntent.targetClass.c_str(), NAPI_AUTO_LENGTH, &nTargetClass));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objShortcutInfo, "targetClass", nTargetClass));
+}
+
+static void ConvertShortcutInfos(napi_env env, napi_value objShortcutInfo, const ShortcutInfo &shortcutInfo)
+{
+    napi_value nId;
+    NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, shortcutInfo.id.c_str(), NAPI_AUTO_LENGTH, &nId));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objShortcutInfo, "id", nId));
+    HILOG_INFO("ConvertShortcutInfos Id=%{public}s.", shortcutInfo.id.c_str());
+
+    napi_value nBundleName;
+    NAPI_CALL_RETURN_VOID(
+        env, napi_create_string_utf8(env, shortcutInfo.bundleName.c_str(), NAPI_AUTO_LENGTH, &nBundleName));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objShortcutInfo, "bundleName", nBundleName));
+
+    napi_value nHostAbility;
+    NAPI_CALL_RETURN_VOID(
+        env, napi_create_string_utf8(env, shortcutInfo.hostAbility.c_str(), NAPI_AUTO_LENGTH, &nHostAbility));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objShortcutInfo, "hostAbility", nHostAbility));
+
+    napi_value nIcon;
+    NAPI_CALL_RETURN_VOID(
+        env, napi_create_string_utf8(env, shortcutInfo.icon.c_str(), NAPI_AUTO_LENGTH, &nIcon));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objShortcutInfo, "icon", nIcon));
+
+    napi_value nLabel;
+    NAPI_CALL_RETURN_VOID(
+        env, napi_create_string_utf8(env, shortcutInfo.label.c_str(), NAPI_AUTO_LENGTH, &nLabel));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objShortcutInfo, "label", nLabel));
+
+    napi_value nDisableMessage;
+    NAPI_CALL_RETURN_VOID(
+        env, napi_create_string_utf8(env, shortcutInfo.disableMessage.c_str(), NAPI_AUTO_LENGTH, &nDisableMessage));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objShortcutInfo, "disableMessage", nDisableMessage));
+
+    napi_value nIsStatic;
+    NAPI_CALL_RETURN_VOID(env, napi_get_boolean(env, shortcutInfo.isStatic, &nIsStatic));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objShortcutInfo, "isStatic", nIsStatic));
+
+    napi_value nIsHomeShortcut;
+    NAPI_CALL_RETURN_VOID(env, napi_get_boolean(env, shortcutInfo.isHomeShortcut, &nIsHomeShortcut));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objShortcutInfo, "isHomeShortcut", nIsHomeShortcut));
+ 
+    napi_value nIsEnables;
+    NAPI_CALL_RETURN_VOID(env, napi_get_boolean(env, shortcutInfo.isEnables, &nIsEnables));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objShortcutInfo, "isEnables", nIsEnables));
+
+    napi_value nIntents;
+    NAPI_CALL_RETURN_VOID(env, napi_create_array(env, &nIntents));
+    for (size_t idx = 0; idx < shortcutInfo.intents.size(); idx++) {
+        napi_value nIntent;
+        NAPI_CALL_RETURN_VOID(env, napi_create_object(env, &nIntent));
+        ConvertShortcutIntent(env, nIntent, shortcutInfo.intents[idx]);
+        NAPI_CALL_RETURN_VOID(env, napi_set_element(env, nIntents, idx, nIntent));
+    }
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objShortcutInfo, "intents", nIntents));
+}
 static std::string GetStringFromNAPI(napi_env env, napi_value value)
 {
     std::string result;
@@ -2463,6 +2584,126 @@ napi_value GetFormsInfoByApp(napi_env env, napi_callback_info info)
                 napi_value result;
                 napi_create_array(env, &result);
                 ProcessFormsInfo(env, result, asyncCallbackInfo->formInfos);
+                napi_resolve_deferred(asyncCallbackInfo->env, asyncCallbackInfo->deferred, result);
+                napi_delete_async_work(env, asyncCallbackInfo->asyncWork);
+                delete asyncCallbackInfo;
+            },
+            (void *)asyncCallbackInfo,
+            &asyncCallbackInfo->asyncWork);
+        napi_queue_async_work(env, asyncCallbackInfo->asyncWork);
+        return promise;
+    }
+}
+
+static void ProcessShortcutInfos(napi_env env, napi_value result, const std::vector<OHOS::AppExecFwk::ShortcutInfo> &shortcutInfos)
+{
+    if (shortcutInfos.size() > 0) {
+        HILOG_INFO("-----ShortcutInfos is not null-----");
+        size_t index = 0;
+        for (const auto &item : shortcutInfos) {
+            HILOG_INFO("shortcutId{%s} ", item.id.c_str());
+            HILOG_INFO("bundleName{%s} ", item.bundleName.c_str());
+            napi_value objShortcutInfo;
+            NAPI_CALL_RETURN_VOID(env, napi_create_object(env, &objShortcutInfo));
+            ConvertShortcutInfos(env, objShortcutInfo, item);
+            NAPI_CALL_RETURN_VOID(env, napi_set_element(env, result, index, objShortcutInfo));
+            index++;
+        }
+    } else {
+        HILOG_INFO("-----ShortcutInfos is null-----");
+    }
+}
+
+static bool InnerGetShortcutInfos(napi_env env, const std::string &bundleName, std::vector<OHOS::AppExecFwk::ShortcutInfo> &shortcutInfos)
+{
+    auto iBundleMgr = GetBundleMgr();
+    if (!iBundleMgr) {
+        HILOG_ERROR("can not get iBundleMgr");
+        return false;
+    }
+    return iBundleMgr-> GetShortcutInfos(bundleName, shortcutInfos);
+}
+/**
+ * Promise and async callback
+ */
+napi_value GetShortcutInfos(napi_env env, napi_callback_info info)
+{
+    size_t argc = ARGS_SIZE_THREE;
+    napi_value argv[ARGS_SIZE_THREE] = {nullptr};    
+    napi_value thisArg;
+    void *data = nullptr;
+    NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, &thisArg, &data));
+    HILOG_INFO("ARGCSIZE is =%{public}d.", argc);
+    std::string bundleName;
+    ParseString(env, bundleName, argv[0]);
+    AsyncShortcutInfosCallbackInfo *asyncCallbackInfo = new AsyncShortcutInfosCallbackInfo{
+        .env = env, .asyncWork = nullptr, .deferred = nullptr, .bundleName = bundleName};
+    if (argc > (ARGS_SIZE_TWO - CALLBACK_SIZE)) {
+        HILOG_INFO("GetShortcutInfos asyncCallback.");
+        napi_value resourceName;
+        NAPI_CALL(env, napi_create_string_latin1(env, "GetShortcutInfos", NAPI_AUTO_LENGTH, &resourceName));
+        napi_valuetype valuetype = napi_undefined;
+        napi_typeof(env, argv[ARGS_SIZE_ONE], &valuetype);
+        NAPI_ASSERT(env, valuetype == napi_function, "Wrong argument type. Function expected.");
+        NAPI_CALL(env, napi_create_reference(env, argv[ARGS_SIZE_ONE], 1, &asyncCallbackInfo->callback));
+    
+        napi_create_async_work(
+            env,
+            nullptr,
+            resourceName,
+            [](napi_env env, void *data) {
+                AsyncShortcutInfosCallbackInfo *asyncCallbackInfo = (AsyncShortcutInfosCallbackInfo *)data;
+                asyncCallbackInfo->ret =
+                    InnerGetShortcutInfos(env, asyncCallbackInfo->bundleName, asyncCallbackInfo->shortcutInfos);
+            },
+            [](napi_env env, napi_status status, void *data) {
+                AsyncShortcutInfosCallbackInfo *asyncCallbackInfo = (AsyncShortcutInfosCallbackInfo *)data;
+                napi_value result[ARGS_SIZE_TWO] = {0};
+                napi_value callback = 0;
+                napi_value undefined = 0;
+                napi_value callResult = 0;
+                napi_get_undefined(env, &undefined);
+                napi_create_array(env, &result[PARAM1]);
+                ProcessShortcutInfos(env, result[PARAM1], asyncCallbackInfo->shortcutInfos);
+                result[PARAM0] = GetCallbackErrorValue(env, asyncCallbackInfo->ret ? CODE_SUCCESS : CODE_FAILED);
+                napi_get_reference_value(env, asyncCallbackInfo->callback, &callback);
+                napi_call_function(env, undefined, callback, ARGS_SIZE_TWO, &result[PARAM0], &callResult);
+
+                if (asyncCallbackInfo->callback != nullptr) {
+                    napi_delete_reference(env, asyncCallbackInfo->callback);
+                }
+                napi_delete_async_work(env, asyncCallbackInfo->asyncWork);
+                delete asyncCallbackInfo;
+            },
+            (void *)asyncCallbackInfo,
+            &asyncCallbackInfo->asyncWork);
+        NAPI_CALL(env, napi_queue_async_work(env, asyncCallbackInfo->asyncWork));
+        napi_value result;
+        NAPI_CALL(env, napi_create_int32(env, 1, &result));
+        return result;
+    } else {
+        HILOG_INFO("GetShortcutInfos promise.");
+        napi_deferred deferred;
+        napi_value promise;
+        NAPI_CALL(env, napi_create_promise(env, &deferred, &promise));
+        asyncCallbackInfo->deferred = deferred;
+
+        napi_value resourceName;
+        napi_create_string_latin1(env, "GetShortcutInfos", NAPI_AUTO_LENGTH, &resourceName);
+        napi_create_async_work(
+            env,
+            nullptr,
+            resourceName,
+            [](napi_env env, void *data) {
+                AsyncShortcutInfosCallbackInfo *asyncCallbackInfo = (AsyncShortcutInfosCallbackInfo *)data;
+                InnerGetShortcutInfos(env, asyncCallbackInfo->bundleName, asyncCallbackInfo->shortcutInfos);
+            },
+            [](napi_env env, napi_status status, void *data) {
+                HILOG_INFO("=================load=================");
+                AsyncShortcutInfosCallbackInfo *asyncCallbackInfo = (AsyncShortcutInfosCallbackInfo *)data;
+                napi_value result;
+                napi_create_array(env, &result);
+                ProcessShortcutInfos(env, result, asyncCallbackInfo->shortcutInfos);
                 napi_resolve_deferred(asyncCallbackInfo->env, asyncCallbackInfo->deferred, result);
                 napi_delete_async_work(env, asyncCallbackInfo->asyncWork);
                 delete asyncCallbackInfo;

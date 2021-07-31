@@ -17,6 +17,7 @@
 #include "ability_manager_errors.h"
 #include "application_context.h"
 #include "bundle_constants.h"
+#include "ability_manager_client.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -1010,6 +1011,102 @@ std::shared_ptr<TaskDispatcher> ContextContainer::GetGlobalTaskDispatcher(const 
         APP_LOGE("ContextContainer::GetGlobalTaskDispatcher baseContext_ is nullptr");
         return nullptr;
     }
+}
+
+/**
+ * @brief Requires that tasks associated with a given capability token be moved to the background
+ *
+ * @param nonFirst If nonfirst is false and not the lowest ability of the mission, you cannot move mission to end
+ *
+ * @return Returns true on success, others on failure.
+ */
+bool ContextContainer::MoveMissionToEnd(bool nonFirst)
+{
+    sptr<IRemoteObject> token = GetToken();
+    if (token == nullptr) {
+        APP_LOGE("ContextContainer::MoveMissionToEnd GetToken return nullptr");
+        return false;
+    }
+
+    auto abilityClient = AAFwk::AbilityManagerClient::GetInstance();
+    if (abilityClient == nullptr) {
+        APP_LOGE("ContextContainer::MoveMissionToEnd abilityClient is nullptr");
+        return false;
+    }
+
+    ErrCode errval = abilityClient->MoveMissionToEnd(token, nonFirst);
+    if (errval != ERR_OK) {
+        APP_LOGE("ContextContainer::MoveMissionToEnd MoveMissionToEnd retval is %d", errval);
+    }
+
+    return (errval == ERR_OK) ? true : false;
+}
+
+/**
+ * @brief Sets the application to start its ability in lock mission mode.
+ */
+void ContextContainer::LockMission()
+{
+    auto abilityClient = AAFwk::AbilityManagerClient::GetInstance();
+    if (abilityClient == nullptr) {
+        APP_LOGE("ContextContainer::LockMission abilityClient is nullptr");
+        return;
+    }
+
+    ErrCode errval = abilityClient->LockMission(GetMissionId());
+    if (errval != ERR_OK) {
+        APP_LOGE("ContextContainer::LockMission LockMission retval is %d", errval);
+    }
+}
+
+/**
+ * @brief Unlocks this ability by exiting the lock mission mode.
+ */
+void ContextContainer::UnlockMission()
+{
+    auto abilityClient = AAFwk::AbilityManagerClient::GetInstance();
+    if (abilityClient == nullptr) {
+        APP_LOGE("ContextContainer::UnlockMission abilityClient is nullptr");
+        return;
+    }
+
+    ErrCode errval = abilityClient->UnlockMission(GetMissionId());
+    if (errval != ERR_OK) {
+        APP_LOGE("ContextContainer::UnlockMission UnlockMission retval is %d", errval);
+    }
+}
+
+/**
+ * @brief Sets description information about the mission containing this ability.
+ *
+ * @param MissionInformation Indicates the object containing information about the
+ *                               mission. This parameter cannot be null.
+ * @return Returns true on success, others on failure.
+ */
+bool ContextContainer::SetMissionInformation(const MissionInformation &missionInformation)
+{
+    sptr<IRemoteObject> token = GetToken();
+    if (token == nullptr) {
+        APP_LOGE("ContextContainer::SetMissionInformation GetToken return nullptr");
+        return false;
+    }
+
+    auto abilityClient = AAFwk::AbilityManagerClient::GetInstance();
+    if (abilityClient == nullptr) {
+        APP_LOGE("ContextContainer::SetMissionInformation abilityClient is nullptr");
+        return false;
+    }
+
+    AAFwk::MissionDescriptionInfo missionInfoMat;
+    missionInfoMat.label = missionInformation.label;
+    missionInfoMat.iconPath = missionInformation.iconPath;
+
+    ErrCode errval = abilityClient->SetMissionDescriptionInfo(token, missionInfoMat);
+    if (errval != ERR_OK) {
+        APP_LOGE("ContextContainer::SetMissionInformation SetMissionDescriptionInfo retval is %d", errval);
+    }
+
+    return (errval == ERR_OK) ? true : false;
 }
 
 }  // namespace AppExecFwk

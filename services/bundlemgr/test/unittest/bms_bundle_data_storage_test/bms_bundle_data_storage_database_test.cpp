@@ -78,6 +78,23 @@ protected:
                         "minWidth": 0,
                         "defaultWidth": 200
                     },
+                    "metaData": {
+                        "customizeData": [{
+                        ?    "name" : "string",
+                        ?    "value" : "string",
+                        ?    "extra" : "$string:customizeData_description"
+                        }],
+                        "parameters": [{
+                            "name" : "string",
+                        ?    "type" : "Float",
+                        ?    "description" : "$string:parameters_description"
+                        }],
+                        "results": [{
+                        ?    "name" : "string",
+                        ?    "type" : "Float",
+                        ?    "description" : "$string:results_description"
+                        }]
+                    },
                     "isLauncherAbility": true,
                     "isNativeAbility": false,
                     "kind": "page",
@@ -234,6 +251,43 @@ protected:
                             "flag.home.intent.from.system"
                         ],
                         "uris": []
+                    }
+                ]
+            },
+            "formInfos": {
+                "com.ohos.launchercom.ohos.launchercom.ohos.launcher.MainAbility": [
+                    {
+                        "package": "com.ohos.launcher",
+                        "bundleName": "com.ohos.launcher",
+                        "originalBundleName": "com.ohos.launcher",
+                        "relatedBundleName": "com.ohos.launcher",
+                        "moduleName": "launcher",
+                        "abilityName": "com.ohos.launcher.MainAbility",
+                        "name": "Form_JS",
+                        "description": "It's JS Form",
+                        "jsComponentName": "com.ohos.launcher",
+                        "deepLink": "com.example.myapplication.fa/.MainAbility",
+                        "formConfigAbility": "com.example.myapplication.fa/.MainAbility",
+                        "scheduledUpateTime": "21:05",
+                        "descriptionId": 125,
+                        "updateDuration": 1,
+                        "defaultDimension": 1,
+                        "defaultFlag": true,
+                        "formVisibleNotify": true,
+                        "updateEnabled": true,
+                        "type": 0,
+                        "colorMode": 0,
+                        "supportDimensions": [
+                            1
+                        ],
+                        "landscapeLayouts": [],
+                        "portraitLayouts": [],
+                        "customizeData": [
+                            {
+                                "name": "originWidgetName",
+                                "value": "com.weather.testWidget"
+                            }
+                        ]    
                     }
                 ]
             },

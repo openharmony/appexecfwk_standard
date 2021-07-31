@@ -56,7 +56,7 @@ static const string KIT_HAP_NAME = "amsKitSystemTest";
 static const string FIRST_ABILITY_NAME = "MainAbility";
 static const string SECOND_ABILITY_NAME = "SecondAbility";
 static const string THIRD_ABILITY_NAME = "MainAbility";
-static constexpr int WAIT_TIME = 1;
+static constexpr int WAIT_TIME = 5;
 
 static const int MAIN_ABILITY_A_CODE = 100;
 static const int SECOND_ABILITY_A_CODE = 200;
