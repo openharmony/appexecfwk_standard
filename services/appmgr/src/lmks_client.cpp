@@ -197,7 +197,7 @@ int32_t LmksClient::ProcRemove(pid_t pid)
         APP_LOGE("failed to write");
         return -1;
     }
-    
+
     LmksClientMsg msg;
     if (!Read(msg.resultBuf, sizeof(int32_t))) {
         APP_LOGE("failed to read");
@@ -210,7 +210,7 @@ int32_t LmksClient::ProcRemove(pid_t pid)
     }
 
     APP_LOGI("success to remove process");
-    return  0;
+    return 0;
 }
 
 bool LmksClient::ProcPurge()
@@ -256,7 +256,7 @@ bool LmksClient::Write(const void *buf, size_t len)
 bool LmksClient::Read(void *buf, size_t len)
 {
     if (buf == nullptr || len < 1) {
-        APP_LOGE("invalid parameter. len %d", len);
+        APP_LOGE("invalid parameter. len %zu", len);
         return false;
     }
 
