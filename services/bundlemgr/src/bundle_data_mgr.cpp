@@ -15,6 +15,7 @@
 
 #include "bundle_data_mgr.h"
 
+#include <cinttypes>
 #include <chrono>
 
 #include "nlohmann/json.hpp"
@@ -127,11 +128,7 @@ bool BundleDataMgr::AddInnerBundleInfo(const std::string &bundleName, InnerBundl
         int64_t time =
             std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch())
                 .count();
-#if __WORDSIZE == 64
-        APP_LOGI("the bundle install time is %{public}ld", time);
-#else
-        APP_LOGI("the bundle install time is %{public}lld", time);
-#endif
+        APP_LOGI("the bundle install time is %{public}" PRId64, time);
         info.SetBundleInstallTime(time);
         if (dataStorage_->SaveStorageBundleInfo(Constants::CURRENT_DEVICE_ID, info)) {
             APP_LOGI("write storage success bundle:%{public}s", bundleName.c_str());
@@ -165,11 +162,7 @@ bool BundleDataMgr::AddNewModuleInfo(
         int64_t time =
             std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch())
                 .count();
-#if __WORDSIZE == 64
-        APP_LOGI("the bundle update time is %{public}ld", time);
-#else
-        APP_LOGI("the bundle update time is %{public}lld", time);
-#endif
+        APP_LOGI("the bundle update time is %{public}" PRId64, time);
         oldInfo.SetBundleUpdateTime(time);
         oldInfo.UpdateVersionInfo(newInfo);
         oldInfo.AddModuleInfo(newInfo);
@@ -238,11 +231,7 @@ bool BundleDataMgr::UpdateInnerBundleInfo(
         int64_t time =
             std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch())
                 .count();
-#if __WORDSIZE == 64
-        APP_LOGI("the bundle update time is %{public}ld", time);
-#else
-        APP_LOGI("the bundle update time is %{public}lld", time);
-#endif
+        APP_LOGI("the bundle update time is %{public}" PRId64, time);
         oldInfo.SetBundleUpdateTime(time);
         oldInfo.UpdateVersionInfo(newInfo);
         oldInfo.UpdateModuleInfo(newInfo);

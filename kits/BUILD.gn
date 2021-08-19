@@ -136,9 +136,8 @@ ohos_shared_library("appkit_native") {
     "//utils/native/base:utils",
   ]
 
-  public_deps = [
-    "//base/global/resmgr_standard/frameworks/resmgr:global_resmgr",
-  ]
+  public_deps =
+      [ "//base/global/resmgr_standard/frameworks/resmgr:global_resmgr" ]
 
   external_deps = [
     "hiviewdfx_hilog_native:libhilog",
