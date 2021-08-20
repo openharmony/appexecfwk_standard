@@ -252,29 +252,37 @@ bool CgroupManager::SetThreadSchedPolicy(int tid, SchedPolicy schedPolicy)
 
     if (schedPolicy == SchedPolicy::SCHED_POLICY_FREEZED) {
         // set frozen of freezer
-        if(!SetFreezerSubsystem(tid, SchedPolicyFreezer::SCHED_POLICY_FREEZER_FROZEN)) {
+        if (!SetFreezerSubsystem(tid, SchedPolicyFreezer::SCHED_POLICY_FREEZER_FROZEN)) {
             APP_LOGE("%{public}s(%{public}d) set freezer subsystem failed sched policy %{public}d.",
-                __func__, __LINE__, schedPolicy);
+                __func__,
+                __LINE__,
+                schedPolicy);
             return false;
         }
     } else {
         // set cpuset
-        if(!SetCpusetSubsystem(tid, schedPolicy)) {
+        if (!SetCpusetSubsystem(tid, schedPolicy)) {
             APP_LOGE("%{public}s(%{public}d) set cpuset subsystem failed sched policy %{public}d.",
-                __func__, __LINE__, schedPolicy);
+                __func__,
+                __LINE__,
+                schedPolicy);
             return false;
         }
         // set cpuctl
-        if(!SetCpuctlSubsystem(tid, schedPolicy)) {
+        if (!SetCpuctlSubsystem(tid, schedPolicy)) {
             APP_LOGE("%{public}s(%{public}d) set cpuctl subsystem failed sched policy %{public}d.",
-                __func__, __LINE__, schedPolicy);
+                __func__,
+                __LINE__,
+                schedPolicy);
             return false;
         }
 
         // set thawed of freezer
-        if(!SetFreezerSubsystem(tid, SchedPolicyFreezer::SCHED_POLICY_FREEZER_THAWED)) {
+        if (!SetFreezerSubsystem(tid, SchedPolicyFreezer::SCHED_POLICY_FREEZER_THAWED)) {
             APP_LOGE("%{public}s(%{public}d) set freezer subsystem failed sched policy %{public}d.",
-                __func__, __LINE__, schedPolicy);
+                __func__,
+                __LINE__,
+                schedPolicy);
             return false;
         }
     }
@@ -307,8 +315,12 @@ bool CgroupManager::SetProcessSchedPolicy(int pid, SchedPolicy schedPolicy)
 
     DIR *dir = opendir(taskDir);
     if (dir == nullptr) {
-        APP_LOGE("%{public}s(%{public}d) failed to opendir invalid pid %{public}d taskDir %{public}s , %{public}s", 
-            __func__, __LINE__, pid, taskDir, strerror(errno));
+        APP_LOGE("%{public}s(%{public}d) failed to opendir invalid pid %{public}d taskDir %{public}s , %{public}s",
+            __func__,
+            __LINE__,
+            pid,
+            taskDir,
+            strerror(errno));
         return false;
     }
 
@@ -344,12 +356,11 @@ void CgroupManager::OnReadable(int32_t fd)
                 return false;
             }
             if (count < 1) {
-                #if __WORDSIZE == 64
-                    APP_LOGW("%{public}s(%{public}d) invalid eventfd count %{public}lu.", __func__, __LINE__, count);
-                #else
-                    APP_LOGW("%{public}s(%{public}d) invalid eventfd count %{public}llu.", __func__, __LINE__, count);
-                #endif
-
+#if BINDER_IPC_32BIT
+                APP_LOGW("%{public}s(%{public}d) invalid eventfd count %{public}llu.", __func__, __LINE__, count);
+#else
+                APP_LOGW("%{public}s(%{public}d) invalid eventfd count %{public}lu.", __func__, __LINE__, count);
+#endif
                 return false;
             }
             APP_LOGW(
@@ -438,7 +449,8 @@ bool CgroupManager::InitFreezerTasksFds(UniqueFd freezerTasksFds[SCHED_POLICY_FR
 {
     freezerTasksFds[SCHED_POLICY_FREEZER_FROZEN] = UniqueFd(open(CG_FREEZER_FROZEN_TASKS_PATH, O_RDWR));
     freezerTasksFds[SCHED_POLICY_FREEZER_THAWED] = UniqueFd(open(CG_FREEZER_THAWED_TASKS_PATH, O_RDWR));
-    if (freezerTasksFds[SCHED_POLICY_FREEZER_FROZEN].Get() < 0 || freezerTasksFds[SCHED_POLICY_FREEZER_THAWED].Get() < 0) {
+    if (freezerTasksFds[SCHED_POLICY_FREEZER_FROZEN].Get() < 0 ||
+        freezerTasksFds[SCHED_POLICY_FREEZER_THAWED].Get() < 0) {
         APP_LOGE("%{public}s(%{public}d) cannot open freezer cgroups %{public}d.", __func__, __LINE__, errno);
         return false;
     }

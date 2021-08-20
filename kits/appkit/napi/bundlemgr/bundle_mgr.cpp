@@ -680,7 +680,7 @@ static void ConvertShortcutInfos(napi_env env, napi_value objShortcutInfo, const
     napi_value nIsHomeShortcut;
     NAPI_CALL_RETURN_VOID(env, napi_get_boolean(env, shortcutInfo.isHomeShortcut, &nIsHomeShortcut));
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objShortcutInfo, "isHomeShortcut", nIsHomeShortcut));
- 
+
     napi_value nIsEnables;
     NAPI_CALL_RETURN_VOID(env, napi_get_boolean(env, shortcutInfo.isEnables, &nIsEnables));
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objShortcutInfo, "isEnables", nIsEnables));
@@ -785,7 +785,7 @@ napi_value GetApplicationInfos(napi_env env, napi_callback_info info)
     napi_value thisArg;
     void *data = nullptr;
     NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, &thisArg, &data));
-    HILOG_INFO("ARGCSIZE is =%{public}d.", argc);
+    HILOG_INFO("ARGCSIZE is =%{public}zu.", argc);
     int flag;
     int userId;
     ParseInt(env, flag, argv[0]);
@@ -986,7 +986,7 @@ napi_value QueryAbilityInfo(napi_env env, napi_callback_info info)
     size_t argc = ARGS_SIZE_THREE;
     napi_value argv[ARGS_SIZE_THREE] = {nullptr};
     NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, NULL, NULL));
-    HILOG_INFO("argc = [%{public}d]", argc);
+    HILOG_INFO("argc = [%{public}zu]", argc);
     Want want;
     ParseWant(env, want, argv[0]);
     HILOG_INFO("After ParseWant action=%{public}s.", want.GetAction().c_str());
@@ -1109,7 +1109,7 @@ napi_value GetApplicationInfo(napi_env env, napi_callback_info info)
     size_t argc = ARGS_SIZE_FOUR;
     napi_value argv[ARGS_SIZE_FOUR] = {nullptr};
     NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, NULL, NULL));
-    HILOG_INFO("argc = [%{public}d]", argc);
+    HILOG_INFO("argc = [%{public}zu]", argc);
     int flag;
     int userId;
     std::string bundleName;
@@ -1371,7 +1371,7 @@ napi_value GetBundleInfo(napi_env env, napi_callback_info info)
     size_t argc = ARGS_SIZE_THREE;
     napi_value argv[ARGS_SIZE_THREE] = {nullptr};
     NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, NULL, NULL));
-    HILOG_INFO("argc = [%{public}d]", argc);
+    HILOG_INFO("argc = [%{public}zu]", argc);
     std::string bundleName;
     int flag;
     ParseString(env, bundleName, argv[0]);
@@ -1485,7 +1485,7 @@ napi_value GetBundleArchiveInfo(napi_env env, napi_callback_info info)
     size_t argc = ARGS_SIZE_THREE;
     napi_value argv[ARGS_SIZE_THREE] = {nullptr};
     NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, NULL, NULL));
-    HILOG_INFO("argc = [%{public}d]", argc);
+    HILOG_INFO("argc = [%{public}zu]", argc);
     std::string hapFilePath;
     int flag;
     ParseString(env, hapFilePath, argv[0]);
@@ -1657,7 +1657,7 @@ napi_value GetPermissionDef(napi_env env, napi_callback_info info)
     size_t argc = ARGS_SIZE_TWO;
     napi_value argv[ARGS_SIZE_TWO] = {nullptr};
     NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, NULL, NULL));
-    HILOG_INFO("argc = [%{public}d]", argc);
+    HILOG_INFO("argc = [%{public}zu]", argc);
     std::string permissionName;
     ParseString(env, permissionName, argv[0]);
     AsyncPermissionDefCallbackInfo *asyncCallbackInfo = new AsyncPermissionDefCallbackInfo{
@@ -1779,7 +1779,7 @@ napi_value GetBundleInstaller(napi_env env, napi_callback_info info)
     size_t argc = ARGS_SIZE_ONE;
     napi_value argv[ARGS_SIZE_ONE] = {nullptr};
     NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, NULL, NULL));
-    HILOG_INFO("argc = [%{public}d]", argc);
+    HILOG_INFO("argc = [%{public}zu]", argc);
 
     AsyncGetBundleInstallerCallbackInfo *asyncCallbackInfo =
         new AsyncGetBundleInstallerCallbackInfo{.env = env, .asyncWork = nullptr, .deferred = nullptr};
@@ -2011,7 +2011,7 @@ napi_value Install(napi_env env, napi_callback_info info)
     size_t argc = ARGS_SIZE_THREE;
     napi_value argv[ARGS_SIZE_THREE] = {nullptr};
     NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, NULL, NULL));
-    HILOG_INFO("argc = [%{public}d]", argc);
+    HILOG_INFO("argc = [%{public}zu]", argc);
     std::vector<std::string> bundleFilePaths;
     ParseStringArray(env, bundleFilePaths, argv[0]);
     InstallParam installParam;
@@ -2154,7 +2154,7 @@ napi_value Uninstall(napi_env env, napi_callback_info info)
     size_t argc = ARGS_SIZE_THREE;
     napi_value argv[ARGS_SIZE_THREE] = {nullptr};
     NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, NULL, NULL));
-    HILOG_INFO("argc = [%{public}d]", argc);
+    HILOG_INFO("argc = [%{public}zu]", argc);
     std::string bundleName;
     ParseString(env, bundleName, argv[0]);
     InstallParam installParam;
@@ -2306,7 +2306,7 @@ napi_value GetAllFormsInfo(napi_env env, napi_callback_info info)
     napi_value thisArg;
     void *data = nullptr;
     NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, &thisArg, &data));
-    HILOG_INFO("ARGCSIZE is =%{public}d.", argc);
+    HILOG_INFO("ARGCSIZE is =%{public}zu.", argc);
 
     AsyncFormInfosCallbackInfo *asyncCallbackInfo =
         new AsyncFormInfosCallbackInfo{.env = env, .asyncWork = nullptr, .deferred = nullptr};
@@ -2406,7 +2406,7 @@ napi_value GetFormsInfoByModule(napi_env env, napi_callback_info info)
     napi_value thisArg;
     void *data = nullptr;
     NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, &thisArg, &data));
-    HILOG_INFO("ARGCSIZE is =%{public}d.", argc);
+    HILOG_INFO("ARGCSIZE is =%{public}zu.", argc);
     std::string bundleName;
     std::string moduleName;
     ParseString(env, bundleName, argv[0]);
@@ -2512,7 +2512,7 @@ napi_value GetFormsInfoByApp(napi_env env, napi_callback_info info)
     napi_value thisArg;
     void *data = nullptr;
     NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, &thisArg, &data));
-    HILOG_INFO("ARGCSIZE is =%{public}d.", argc);
+    HILOG_INFO("ARGCSIZE is =%{public}zu.", argc);
     std::string bundleName;
     ParseString(env, bundleName, argv[0]);
 
@@ -2629,11 +2629,11 @@ static bool InnerGetShortcutInfos(napi_env env, const std::string &bundleName, s
 napi_value GetShortcutInfos(napi_env env, napi_callback_info info)
 {
     size_t argc = ARGS_SIZE_THREE;
-    napi_value argv[ARGS_SIZE_THREE] = {nullptr};    
+    napi_value argv[ARGS_SIZE_THREE] = {nullptr};
     napi_value thisArg;
     void *data = nullptr;
     NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, &thisArg, &data));
-    HILOG_INFO("ARGCSIZE is =%{public}d.", argc);
+    HILOG_INFO("ARGCSIZE is =%{public}zu.", argc);
     std::string bundleName;
     ParseString(env, bundleName, argv[0]);
     AsyncShortcutInfosCallbackInfo *asyncCallbackInfo = new AsyncShortcutInfosCallbackInfo{
@@ -2646,7 +2646,7 @@ napi_value GetShortcutInfos(napi_env env, napi_callback_info info)
         napi_typeof(env, argv[ARGS_SIZE_ONE], &valuetype);
         NAPI_ASSERT(env, valuetype == napi_function, "Wrong argument type. Function expected.");
         NAPI_CALL(env, napi_create_reference(env, argv[ARGS_SIZE_ONE], 1, &asyncCallbackInfo->callback));
-    
+
         napi_create_async_work(
             env,
             nullptr,

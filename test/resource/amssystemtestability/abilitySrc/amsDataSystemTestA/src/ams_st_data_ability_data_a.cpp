@@ -205,7 +205,7 @@ void DataTestDataAEventSubscriber::TestPost(const std::string funName)
         APP_LOGI("---------data--------targetAbility:%{public}s", child->GetAbilityName().c_str());
         APP_LOGI("---------data--------targetAbilityType:%{public}s", child->GetAbilityType().c_str());
         APP_LOGI("---------data--------operatorName:%{public}s", child->GetOperatorName().c_str());
-        APP_LOGI("---------data--------childOperatorNum:%{public}d", child->GetChildOperator().size());
+        APP_LOGI("---------data--------childOperatorNum:%{public}zu", child->GetChildOperator().size());
     }
     std::shared_ptr<DataAbilityHelper> helper = DataAbilityHelper::Creator(mainAbility_->GetContext());
     for (auto child : allOperator.GetChildOperator()) {
