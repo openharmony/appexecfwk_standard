@@ -153,12 +153,12 @@ void GetTaskIndex(std::vector<size_t> &outerTaskIndex, std::vector<std::vector<s
     std::string outerTaskId;
     std::string innerTaskId;
     outerTaskIndex.resize(outerCnt);
-    APP_LOGI("-- -- -- -- -- --MainAbility::GetTaskIndex outersize : %{public}d", outerTaskIndex.size());
+    APP_LOGI("-- -- -- -- -- --MainAbility::GetTaskIndex outersize : %{public}zu", outerTaskIndex.size());
     innerTaskIndex.resize(outerCnt);
-    APP_LOGI("-- -- -- -- -- --MainAbility::GetTaskIndex innersize : %{public}d", innerTaskIndex.size());
+    APP_LOGI("-- -- -- -- -- --MainAbility::GetTaskIndex innersize : %{public}zu", innerTaskIndex.size());
     for (auto &inner : innerTaskIndex) {
         inner.resize(innerCnt);
-        APP_LOGI("-- -- -- -- -- --MainAbility::GetTaskIndex inner :%{public}d", inner.size());
+        APP_LOGI("-- -- -- -- -- --MainAbility::GetTaskIndex inner :%{public}zu", inner.size());
     }
     APP_LOGI("-- -- -- -- -- --MainAbility::GetTaskIndex mid1");
     for (int i = 0; i < outerCnt; i++) {
@@ -267,7 +267,7 @@ void FirstEventSubscriber::OnReceiveEvent(const CommonEventData &data)
     if (std::strcmp(eventName.c_str(), g_EVENT_REQU_FIRST_B.c_str()) == 0) {
         auto target = data.GetData();
         auto caseInfo = TestUtils::split(target, "_");
-        APP_LOGI("FirstEventSubscriber::OnReceiveEvent:caseInfo.size()=%{public}d", caseInfo.size());
+        APP_LOGI("FirstEventSubscriber::OnReceiveEvent:caseInfo.size()=%{public}zu", caseInfo.size());
         if (caseInfo.size() < 3) {
             return;
         }

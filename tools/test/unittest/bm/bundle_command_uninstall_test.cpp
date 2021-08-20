@@ -149,7 +149,7 @@ HWTEST_F(BmCommandUninstallTest, Bm_Command_Uninstall_0300, Function | MediumTes
     // set the mock objects
     SetMockObjects(cmd);
 
-    EXPECT_EQ(cmd.ExecCommand(), "error: unknown option '-x'.\n" + HELP_MSG_UNINSTALL);
+    EXPECT_EQ(cmd.ExecCommand(), "error: unknown option.\n" + HELP_MSG_UNINSTALL);
 }
 
 /**
@@ -172,7 +172,7 @@ HWTEST_F(BmCommandUninstallTest, Bm_Command_Uninstall_0400, Function | MediumTes
     // set the mock objects
     SetMockObjects(cmd);
 
-    EXPECT_EQ(cmd.ExecCommand(), "error: unknown option '-xxx'.\n" + HELP_MSG_UNINSTALL);
+    EXPECT_EQ(cmd.ExecCommand(), "error: unknown option.\n" + HELP_MSG_UNINSTALL);
 }
 
 /**
@@ -195,7 +195,7 @@ HWTEST_F(BmCommandUninstallTest, Bm_Command_Uninstall_0500, Function | MediumTes
     // set the mock objects
     SetMockObjects(cmd);
 
-    EXPECT_EQ(cmd.ExecCommand(), "error: unknown option '--x'.\n" + HELP_MSG_UNINSTALL);
+    EXPECT_EQ(cmd.ExecCommand(), "error: unknown option.\n" + HELP_MSG_UNINSTALL);
 }
 
 /**
@@ -218,7 +218,7 @@ HWTEST_F(BmCommandUninstallTest, Bm_Command_Uninstall_0600, Function | MediumTes
     // set the mock objects
     SetMockObjects(cmd);
 
-    EXPECT_EQ(cmd.ExecCommand(), "error: unknown option '--xxx'.\n" + HELP_MSG_UNINSTALL);
+    EXPECT_EQ(cmd.ExecCommand(), "error: unknown option.\n" + HELP_MSG_UNINSTALL);
 }
 
 /**
@@ -287,7 +287,7 @@ HWTEST_F(BmCommandUninstallTest, Bm_Command_Uninstall_0900, Function | MediumTes
     // set the mock objects
     SetMockObjects(cmd);
 
-    EXPECT_EQ(cmd.ExecCommand(), "error: option '-n' requires a value.\n" + HELP_MSG_UNINSTALL);
+    EXPECT_EQ(cmd.ExecCommand(), "error: option requires a value.\n" + HELP_MSG_UNINSTALL);
 }
 
 /**
@@ -336,7 +336,7 @@ HWTEST_F(BmCommandUninstallTest, Bm_Command_Uninstall_1100, Function | MediumTes
     // set the mock objects
     SetMockObjects(cmd);
 
-    EXPECT_EQ(cmd.ExecCommand(), "error: option '-m' requires a value.\n" + HELP_MSG_UNINSTALL);
+    EXPECT_EQ(cmd.ExecCommand(), "error: option requires a value.\n" + HELP_MSG_UNINSTALL);
 }
 
 /**

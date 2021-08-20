@@ -150,7 +150,7 @@ HWTEST_F(BmCommandDumpTest, Bm_Command_Dump_0300, Function | MediumTest | Level1
     // set the mock objects
     SetMockObjects(cmd);
 
-    EXPECT_EQ(cmd.ExecCommand(), "error: unknown option '-x'.\n" + HELP_MSG_DUMP);
+    EXPECT_EQ(cmd.ExecCommand(), "error: unknown option.\n" + HELP_MSG_DUMP);
 }
 
 /**
@@ -173,7 +173,7 @@ HWTEST_F(BmCommandDumpTest, Bm_Command_Dump_0400, Function | MediumTest | Level1
     // set the mock objects
     SetMockObjects(cmd);
 
-    EXPECT_EQ(cmd.ExecCommand(), "error: unknown option '-xxx'.\n" + HELP_MSG_DUMP);
+    EXPECT_EQ(cmd.ExecCommand(), "error: unknown option.\n" + HELP_MSG_DUMP);
 }
 
 /**
@@ -196,7 +196,7 @@ HWTEST_F(BmCommandDumpTest, Bm_Command_Dump_0500, Function | MediumTest | Level1
     // set the mock objects
     SetMockObjects(cmd);
 
-    EXPECT_EQ(cmd.ExecCommand(), "error: unknown option '--x'.\n" + HELP_MSG_DUMP);
+    EXPECT_EQ(cmd.ExecCommand(), "error: unknown option.\n" + HELP_MSG_DUMP);
 }
 
 /**
@@ -219,7 +219,7 @@ HWTEST_F(BmCommandDumpTest, Bm_Command_Dump_0600, Function | MediumTest | Level1
     // set the mock objects
     SetMockObjects(cmd);
 
-    EXPECT_EQ(cmd.ExecCommand(), "error: unknown option '--xxx'.\n" + HELP_MSG_DUMP);
+    EXPECT_EQ(cmd.ExecCommand(), "error: unknown option.\n" + HELP_MSG_DUMP);
 }
 
 /**
@@ -334,7 +334,7 @@ HWTEST_F(BmCommandDumpTest, Bm_Command_Dump_1100, Function | MediumTest | Level1
     // set the mock objects
     SetMockObjects(cmd);
 
-    EXPECT_EQ(cmd.ExecCommand(), "error: option '-n' requires a value.\n" + HELP_MSG_DUMP);
+    EXPECT_EQ(cmd.ExecCommand(), "error: option requires a value.\n" + HELP_MSG_DUMP);
 }
 
 /**

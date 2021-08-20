@@ -244,22 +244,22 @@ void GetTaskIndex(std::vector<size_t> &outerTaskIndex, std::vector<std::vector<s
     std::string outerTaskId;
     std::string innerTaskId;
     outerTaskIndex.resize(outerCnt);
-    APP_LOGI("-- -- -- -- -- --MainAbility::GetTaskIndex outersize : %{public}d", outerTaskIndex.size());
+    APP_LOGI("-- -- -- -- -- --MainAbility::GetTaskIndex outersize : %{public}zu", outerTaskIndex.size());
     innerTaskIndex.resize(outerCnt);
-    APP_LOGI("-- -- -- -- -- --MainAbility::GetTaskIndex innersize : %{public}d", innerTaskIndex.size());
+    APP_LOGI("-- -- -- -- -- --MainAbility::GetTaskIndex innersize : %{public}zu", innerTaskIndex.size());
     for (auto &inner : innerTaskIndex) {
         inner.resize(innerCnt);
-        APP_LOGI("-- -- -- -- -- --MainAbility::GetTaskIndex inner :%{public}d", inner.size());
+        APP_LOGI("-- -- -- -- -- --MainAbility::GetTaskIndex inner :%{public}zu", inner.size());
     }
     for (int i = 0; i < outerCnt; i++) {
         outerTaskId = delimiter + std::to_string(i) + delimiter;
         outerTaskIndex[i] = task_execution_sequence.find(outerTaskId);
         APP_LOGI(
-            "-- -- -- -- -- --MainAbility::GetTaskIndex outerTaskIndex[%{public}d]:%{public}d", i, outerTaskIndex[i]);
+            "-- -- -- -- -- --MainAbility::GetTaskIndex outerTaskIndex[%{public}d]:%{public}zu", i, outerTaskIndex[i]);
         for (int j = 0; j < innerCnt; j++) {
             innerTaskId = delimiter + std::to_string(i) + innerDelimiter + std::to_string(j) + delimiter;
             innerTaskIndex[i][j] = task_execution_sequence.find(innerTaskId);
-            APP_LOGI("-- -- -- -- -- --MainAbility::GetTaskIndex innerTaskIndex[%{public}d][%{public}d]:%{public}d",
+            APP_LOGI("-- -- -- -- -- --MainAbility::GetTaskIndex innerTaskIndex[%{public}d][%{public}d]:%{public}zu",
                 i,
                 j,
                 innerTaskIndex[i][j]);
@@ -359,7 +359,7 @@ void FirstEventSubscriber::OnReceiveEvent(const CommonEventData &data)
     if (std::strcmp(eventName.c_str(), g_EVENT_REQU_FIRST.c_str()) == 0) {
         auto target = data.GetData();
         auto caseInfo = TestUtils::split(target, "_");
-        APP_LOGI("FirstEventSubscriber::OnReceiveEvent:caseInfo.size()=%{public}d", caseInfo.size());
+        APP_LOGI("FirstEventSubscriber::OnReceiveEvent:caseInfo.size()=%{public}zu", caseInfo.size());
         if (caseInfo.size() < 3) {
             return;
         }
