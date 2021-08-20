@@ -362,11 +362,10 @@ ErrCode BundleManagerShellCommand::RunAsInstallCommand()
                 case 'p': {
                     // 'bm install -p' with no argument: bm install -p
                     // 'bm install --bundle-path' with no argument: bm install --bundle-path
-                    APP_LOGI("'bm install %{public}s' with no argument.", argv_[optind - 1]);
+                    APP_LOGI("'bm install' with no argument.");
 
-                    resultReceiver_.append("error: option '");
-                    resultReceiver_.append(argv_[optind - 1]);
-                    resultReceiver_.append("' requires a value.\n");
+                    resultReceiver_.append("error: option ");
+                    resultReceiver_.append("requires a value.\n");
 
                     result = OHOS::ERR_INVALID_VALUE;
                     break;
@@ -377,7 +376,7 @@ ErrCode BundleManagerShellCommand::RunAsInstallCommand()
                     std::string unknownOption = "";
                     std::string unknownOptionMsg = GetUnknownOptionMsg(unknownOption);
 
-                    APP_LOGI("'bm install' with an unknown option: %{public}s", unknownOption.c_str());
+                    APP_LOGI("'bm install' with an unknown option.");
 
                     resultReceiver_.append(unknownOptionMsg);
                     result = OHOS::ERR_INVALID_VALUE;
@@ -389,7 +388,7 @@ ErrCode BundleManagerShellCommand::RunAsInstallCommand()
                     std::string unknownOption = "";
                     std::string unknownOptionMsg = GetUnknownOptionMsg(unknownOption);
 
-                    APP_LOGI("'bm install' with an unknown option: %{public}s", unknownOption.c_str());
+                    APP_LOGI("'bm install' with an unknown option.");
 
                     resultReceiver_.append(unknownOptionMsg);
                     result = OHOS::ERR_INVALID_VALUE;
@@ -500,9 +499,8 @@ ErrCode BundleManagerShellCommand::RunAsUninstallCommand()
                     // 'bm uninstall --bundle-name' with no argument: bm uninstall --bundle-name
                     APP_LOGI("'bm uninstall -n' with no argument.");
 
-                    resultReceiver_.append("error: option '");
-                    resultReceiver_.append(argv_[optind - 1]);
-                    resultReceiver_.append("' requires a value.\n");
+                    resultReceiver_.append("error: option ");
+                    resultReceiver_.append("requires a value.\n");
                     result = OHOS::ERR_INVALID_VALUE;
                     break;
                 }
@@ -511,9 +509,8 @@ ErrCode BundleManagerShellCommand::RunAsUninstallCommand()
                     // 'bm uninstall --module-name' with no argument: bm uninstall --module-name
                     APP_LOGI("'bm uninstall -m' with no argument.");
 
-                    resultReceiver_.append("error: option '");
-                    resultReceiver_.append(argv_[optind - 1]);
-                    resultReceiver_.append("' requires a value.\n");
+                    resultReceiver_.append("error: option ");
+                    resultReceiver_.append("requires a value.\n");
                     result = OHOS::ERR_INVALID_VALUE;
                     break;
                 }
@@ -523,7 +520,7 @@ ErrCode BundleManagerShellCommand::RunAsUninstallCommand()
                     std::string unknownOption = "";
                     std::string unknownOptionMsg = GetUnknownOptionMsg(unknownOption);
 
-                    APP_LOGI("'bm uninstall' with an unknown option: %{public}s", unknownOption.c_str());
+                    APP_LOGI("'bm uninstall' with an unknown option.");
 
                     resultReceiver_.append(unknownOptionMsg);
                     result = OHOS::ERR_INVALID_VALUE;
@@ -535,7 +532,7 @@ ErrCode BundleManagerShellCommand::RunAsUninstallCommand()
                     std::string unknownOption = "";
                     std::string unknownOptionMsg = GetUnknownOptionMsg(unknownOption);
 
-                    APP_LOGI("'bm uninstall' with an unknown option: %{public}s", unknownOption.c_str());
+                    APP_LOGI("'bm uninstall' with an unknown option.");
 
                     resultReceiver_.append(unknownOptionMsg);
                     result = OHOS::ERR_INVALID_VALUE;
@@ -661,9 +658,8 @@ ErrCode BundleManagerShellCommand::RunAsDumpCommand()
                     // 'bm dump --bundle-name' with no argument: bm dump --bundle-name
                     APP_LOGI("'bm dump -n' with no argument.");
 
-                    resultReceiver_.append("error: option '");
-                    resultReceiver_.append(argv_[optind - 1]);
-                    resultReceiver_.append("' requires a value.\n");
+                    resultReceiver_.append("error: option ");
+                    resultReceiver_.append("requires a value.\n");
                     result = OHOS::ERR_INVALID_VALUE;
                     break;
                 }
@@ -673,7 +669,7 @@ ErrCode BundleManagerShellCommand::RunAsDumpCommand()
                     std::string unknownOption = "";
                     std::string unknownOptionMsg = GetUnknownOptionMsg(unknownOption);
 
-                    APP_LOGI("'bm dump' with an unknown option: %{public}s", unknownOption.c_str());
+                    APP_LOGI("'bm dump' with an unknown option.");
 
                     resultReceiver_.append(unknownOptionMsg);
                     result = OHOS::ERR_INVALID_VALUE;
@@ -685,7 +681,7 @@ ErrCode BundleManagerShellCommand::RunAsDumpCommand()
                     std::string unknownOption = "";
                     std::string unknownOptionMsg = GetUnknownOptionMsg(unknownOption);
 
-                    APP_LOGI("'bm dump' with an unknown option: %{public}s", unknownOption.c_str());
+                    APP_LOGI("'bm dump' with an unknown option.");
 
                     resultReceiver_.append(unknownOptionMsg);
                     result = OHOS::ERR_INVALID_VALUE;

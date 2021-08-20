@@ -607,15 +607,15 @@ void MainThread::HandleLaunchApplication(const AppLaunchData &appLaunchData)
     }
 
     BundleInfo bundleInfo;
-    APP_LOGI("MainThread::handleLaunchApplication length: %{public}d, bundleName: %{public}s",
+    APP_LOGI("MainThread::handleLaunchApplication length: %{public}zu, bundleName: %{public}s",
         appInfo.bundleName.length(),
         appInfo.bundleName.c_str());
     bundleMgr->GetBundleInfo(appInfo.bundleName, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo);
 
-    APP_LOGI("MainThread::handleLaunchApplication moduleResPaths count: %{public}d", bundleInfo.moduleResPaths.size());
+    APP_LOGI("MainThread::handleLaunchApplication moduleResPaths count: %{public}zu", bundleInfo.moduleResPaths.size());
     for (auto moduleResPath : bundleInfo.moduleResPaths) {
         if (!moduleResPath.empty()) {
-            APP_LOGI("MainThread::handleLaunchApplication length: %{public}d, moduleResPath: %{public}s",
+            APP_LOGI("MainThread::handleLaunchApplication length: %{public}zu, moduleResPath: %{public}s",
                 moduleResPath.length(),
                 moduleResPath.c_str());
             if (!resourceManager->AddResource(moduleResPath.c_str())) {

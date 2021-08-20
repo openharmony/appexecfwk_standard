@@ -267,7 +267,7 @@ bool WorkerPool::AddWorker(const std::shared_ptr<Delegate> &delegate, const std:
             APP_LOGD("WorkerPool::AddWorker create new thread");
 
             pool_.emplace_back(newThread);
-            APP_LOGD("POOL SIZE: %{public}d", pool_.size());
+            APP_LOGD("POOL SIZE: %{public}zu", pool_.size());
             APP_LOGD("pool_ add end");
 
             added = true;
@@ -284,10 +284,10 @@ void WorkerPool::OnWorkerExit(const std::shared_ptr<WorkerThread> &worker, bool 
 
     std::unique_lock<std::mutex> mLock(poolLock_);
     APP_LOGD("WorkerPool::OnWorkerExit start");
-    APP_LOGD("size:%{public}d", pool_.size());
+    APP_LOGD("size:%{public}zu", pool_.size());
     for (auto it = pool_.begin(); it != pool_.end(); it++) {
         if ((*it).get() == worker.get()) {
-            APP_LOGD("WorkerPool::OnWorkerExit erase current, size=%{public}d, threads=%{public}d",
+            APP_LOGD("WorkerPool::OnWorkerExit erase current, size=%{public}zu, threads=%{public}d",
                 pool_.size(),
                 GetWorkingThreadNum(control_.load()));
             {
