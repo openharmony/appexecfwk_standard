@@ -296,7 +296,7 @@ void ProcessOptimizerUBA::CommitAbilityActions()
         return;
     }
 
-    APP_LOGI("%{public}s(%{pubic}d) committing %{public}d actions...", __func__, __LINE__, n);
+    APP_LOGI("%{public}s(%{pubic}d) committing %{public}zu actions...", __func__, __LINE__, n);
 
     for (size_t i = 0; i < n; ++i) {
         auto &abilityAction = abilityActionCache_[i];
@@ -314,7 +314,7 @@ void ProcessOptimizerUBA::CommitAbilityActions()
 
         auto connectAbilityAction = std::get_if<ConnectAbilityAction>(&abilityAction);
         if (connectAbilityAction) {
-            APP_LOGD("  [%{public}d] %{public}s ability '%{public}s' connect to '%{public}s'",
+            APP_LOGD("  [%{public}zu] %{public}s ability '%{public}s' connect to '%{public}s'",
                 i,
                 connectAbilityAction->GetTimeString().c_str(),
                 connectAbilityAction->GetName().c_str(),
@@ -325,7 +325,7 @@ void ProcessOptimizerUBA::CommitAbilityActions()
 
         auto disconnectAbilityAction = std::get_if<DisconnectAbilityAction>(&abilityAction);
         if (disconnectAbilityAction) {
-            APP_LOGD("  [%{public}d] %{public}s '%{public}s' ability disconnect with '%{public}s'",
+            APP_LOGD("  [%{public}zu] %{public}s '%{public}s' ability disconnect with '%{public}s'",
                 i,
                 disconnectAbilityAction->GetTimeString().c_str(),
                 disconnectAbilityAction->GetName().c_str(),
@@ -336,7 +336,7 @@ void ProcessOptimizerUBA::CommitAbilityActions()
 
         auto changedAbilityStateAction = std::get_if<ChangeAbilityStateAction>(&abilityAction);
         if (changedAbilityStateAction) {
-            APP_LOGD("  [%{public}d] %{public}s ability '%{public}s' state changed from %{public}d to %{public}d.",
+            APP_LOGD("  [%{public}zu] %{public}s ability '%{public}s' state changed from %{public}d to %{public}d.",
                 i,
                 changedAbilityStateAction->GetTimeString().c_str(),
                 changedAbilityStateAction->GetName().c_str(),
@@ -348,7 +348,7 @@ void ProcessOptimizerUBA::CommitAbilityActions()
 
         auto removeAbilityAction = std::get_if<RemoveAbilityAction>(&abilityAction);
         if (removeAbilityAction) {
-            APP_LOGD("  [%{public}d] %{public}s '%{public}s' removed.",
+            APP_LOGD("  [%{public}zu] %{public}s '%{public}s' removed.",
                 i,
                 removeAbilityAction->GetTimeString().c_str(),
                 removeAbilityAction->GetName().c_str());

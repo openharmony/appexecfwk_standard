@@ -141,7 +141,7 @@ void AmsStDataAbilityPageA::GetWantInfo(const Want &want)
         APP_LOGI("-----------------targetAbility:%{public}s", child->GetAbilityName().c_str());
         APP_LOGI("-----------------targetAbilityType:%{public}s", child->GetAbilityType().c_str());
         APP_LOGI("-----------------operatorName:%{public}s", child->GetOperatorName().c_str());
-        APP_LOGI("-----------------childOperatorNum:%{public}d", child->GetChildOperator().size());
+        APP_LOGI("-----------------childOperatorNum:%{public}zu", child->GetChildOperator().size());
     }
 }
 
@@ -194,7 +194,7 @@ void DataTestPageAEventSubscriber::TestPost(const std::string funName)
         APP_LOGI("-----------------targetAbility:%{public}s", child->GetAbilityName().c_str());
         APP_LOGI("-----------------targetAbilityType:%{public}s", child->GetAbilityType().c_str());
         APP_LOGI("-----------------operatorName:%{public}s", child->GetOperatorName().c_str());
-        APP_LOGI("-----------------childOperatorNum:%{public}d", child->GetChildOperator().size());
+        APP_LOGI("-----------------childOperatorNum:%{public}zu", child->GetChildOperator().size());
     }
     std::shared_ptr<DataAbilityHelper> helper = DataAbilityHelper::Creator(mainAbility_->GetContext());
     for (auto child : allOperator.GetChildOperator()) {
