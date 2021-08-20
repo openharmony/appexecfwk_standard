@@ -633,7 +633,7 @@ std::shared_ptr<Context> ContextContainer::CreateBundleContext(std::string bundl
     }
 
     BundleInfo bundleInfo;
-    APP_LOGI("ContextContainer::CreateBundleContext length: %{public}d, bundleName: %{public}s",
+    APP_LOGI("ContextContainer::CreateBundleContext length: %{public}zu, bundleName: %{public}s",
         bundleName.length(),
         bundleName.c_str());
     bundleMgr->GetBundleInfo(bundleName, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo);
@@ -671,10 +671,10 @@ void ContextContainer::InitResourceManager(BundleInfo &bundleInfo, std::shared_p
     }
 
     APP_LOGI(
-        "ContextContainer::InitResourceManager moduleResPaths count: %{public}d", bundleInfo.moduleResPaths.size());
+        "ContextContainer::InitResourceManager moduleResPaths count: %{public}zu", bundleInfo.moduleResPaths.size());
     for (auto moduleResPath : bundleInfo.moduleResPaths) {
         if (!moduleResPath.empty()) {
-            APP_LOGI("ContextContainer::InitResourceManager length: %{public}d, moduleResPath: %{public}s",
+            APP_LOGI("ContextContainer::InitResourceManager length: %{public}zu, moduleResPath: %{public}s",
                 moduleResPath.length(),
                 moduleResPath.c_str());
             if (!resourceManager->AddResource(moduleResPath.c_str())) {
