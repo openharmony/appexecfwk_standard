@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 #include "cgroup_manager.h"
+#include <cinttypes>
 #include <dirent.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -356,11 +357,7 @@ void CgroupManager::OnReadable(int32_t fd)
                 return false;
             }
             if (count < 1) {
-#if BINDER_IPC_32BIT
-                APP_LOGW("%{public}s(%{public}d) invalid eventfd count %{public}llu.", __func__, __LINE__, count);
-#else
-                APP_LOGW("%{public}s(%{public}d) invalid eventfd count %{public}lu.", __func__, __LINE__, count);
-#endif
+                APP_LOGW("%{public}s(%{public}d) invalid eventfd count %{public}" PRIu64 ".", __func__, __LINE__, count);
                 return false;
             }
             APP_LOGW(
