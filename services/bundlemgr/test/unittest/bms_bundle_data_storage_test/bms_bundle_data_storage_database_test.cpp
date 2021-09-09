@@ -142,7 +142,7 @@ protected:
             },
             "baseBundleInfo": {
                 "abilityInfos": [],
-                "appId": "",
+                "appId": "BNtg4JBClbl92Rgc3jm/RfcAdrHXaM8F0QOiwVEhnV5ebE5jNIYnAx+weFRT3QTyUjRNdhmc2aAzWyi+5t5CoBM=",
                 "applicationInfo": {
                     "bundleName": "",
                     "cacheDir": "",
@@ -238,7 +238,6 @@ protected:
             "isKeepData": false,
             "isSupportBackup": false,
             "mainAbility": "com.ohos.launchercom.ohos.launchercom.ohos.launcher.MainAbility",
-            "provisionId": "BNtg4JBClbl92Rgc3jm/RfcAdrHXaM8F0QOiwVEhnV5ebE5jNIYnAx+weFRT3QTyUjRNdhmc2aAzWyi+5t5CoBM=",
             "skillInfos": {
                 "com.ohos.launchercom.ohos.launchercom.ohos.launcher.MainAbility": [
                     {
@@ -287,7 +286,7 @@ protected:
                                 "name": "originWidgetName",
                                 "value": "com.weather.testWidget"
                             }
-                        ]    
+                        ]
                     }
                 ]
             },

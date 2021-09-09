@@ -201,16 +201,34 @@ int BundleMgrHost::OnRemoteRequest(uint32_t code, MessageParcel &data, MessagePa
     return (errCode == ERR_OK) ? NO_ERROR : UNKNOWN_ERROR;
 }
 
-int BundleMgrHost::GetUidByBundleName([[maybe_unused]] const std::string &bundleName, const int userId)
+int BundleMgrHost::GetUidByBundleName(const std::string &bundleName, const int userId)
 {
-    APP_LOGD("need not impl for host interface");
-    return Constants::INVALID_UID;
+    APP_LOGI("begin to get uid of %{public}s", bundleName.c_str());
+    BundleInfo bundleInfo;
+    int uid = Constants::INVALID_UID;
+    bool ret = GetBundleInfo(bundleName, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo);
+    if (ret) {
+        uid = bundleInfo.uid;
+        APP_LOGD("get bundle uid success");
+    } else {
+        APP_LOGE("can not get bundleInfo's uid");
+    }
+    return uid;
 }
 
 std::string BundleMgrHost::GetAppIdByBundleName([[maybe_unused]] const std::string &bundleName, const int userId)
 {
-    APP_LOGD("need not impl for host interface");
-    return Constants::EMPTY_STRING;
+    APP_LOGI("begin to get appId of %{public}s", bundleName.c_str());
+    BundleInfo bundleInfo;
+    std::string appId = Constants::EMPTY_STRING;
+    bool ret = GetBundleInfo(bundleName, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo);
+    if (ret) {
+        appId = bundleInfo.appId;
+        APP_LOGD("get bundle appId success");
+    } else {
+        APP_LOGE("can not get bundleInfo's appId");
+    }
+    return appId;
 }
 
 std::string BundleMgrHost::GetAppType([[maybe_unused]] const std::string &bundleName)

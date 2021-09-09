@@ -209,6 +209,14 @@ const std::string BUNDLE_MODULE_PROFILE_KEY_SHORTCUT_INTENTS = "intents";
 const std::string BUNDLE_MODULE_PROFILE_KEY_TARGET_CLASS = "targetClass";
 const std::string BUNDLE_MODULE_PROFILE_KEY_TARGET_BUNDLE = "targetBundle";
 
+const uint32_t VALUE_HOME_SCREEN = 1 << 0;
+// 000010 represents supporting search box
+const uint32_t VALUE_SEARCHBOX = 1 << 1;
+
+const std::string KEY_HOME_SCREEN = "homeScreen";
+const std::string KEY_SEARCHBOX = "searchbox";
+static std::map<std::string, uint32_t> formEntityMap;
+
 extern thread_local int32_t parseResult;
 
 }  // namespace ProfileReader
