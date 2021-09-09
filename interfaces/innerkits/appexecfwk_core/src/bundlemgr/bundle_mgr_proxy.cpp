@@ -161,7 +161,7 @@ int BundleMgrProxy::GetUidByBundleName(const std::string &bundleName, const int 
 
 std::string BundleMgrProxy::GetAppIdByBundleName(const std::string &bundleName, const int userId)
 {
-    APP_LOGI("begin to get uid of %{public}s", bundleName.c_str());
+    APP_LOGI("begin to get appId of %{public}s", bundleName.c_str());
     BundleInfo bundleInfo;
     std::string appId = Constants::EMPTY_STRING;
     bool ret = GetBundleInfo(bundleName, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo);

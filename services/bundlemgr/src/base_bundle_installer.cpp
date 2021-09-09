@@ -192,7 +192,6 @@ ErrCode BaseBundleInstaller::ProcessBundleInstall(
     newInfo.SetIsKeepData(installParam.isKeepData);
     auto provisionInfo = hapVerifyResult.GetProvisionInfo();
     newInfo.SetProvisionId(provisionInfo.appId);
-    newInfo.SetAppFeature(provisionInfo.bundleInfo.appFeature);
 
     if (!ModifyInstallDirByHapType(newInfo)) {
         APP_LOGE("modify bundle install dir failed %{public}d", result);
@@ -203,6 +202,8 @@ ErrCode BaseBundleInstaller::ProcessBundleInstall(
         APP_LOGE("bundle parse failed %{public}d", result);
         return result;
     }
+    newInfo.SetAppFeature(provisionInfo.bundleInfo.appFeature);
+
     UpdateInstallerState(InstallerState::INSTALL_PARSED);
 
     bundleName_ = newInfo.GetBundleName();

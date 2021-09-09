@@ -1687,6 +1687,22 @@ bool CheckModuleInfosIsValid(ProfileReader::ConfigJson &configJson)
     return true;
 }
 
+uint32_t GetFormEntity(const std::vector<std::string>& formEntity)
+{
+    if (ProfileReader::formEntityMap.empty()) {
+        ProfileReader::formEntityMap.insert({ProfileReader::KEY_HOME_SCREEN, ProfileReader::VALUE_HOME_SCREEN});
+        ProfileReader::formEntityMap.insert({ProfileReader::KEY_SEARCHBOX, ProfileReader::VALUE_SEARCHBOX});
+    }
+
+    uint32_t formEntityInBinary = 0;
+    for (const auto& item : formEntity) {
+        if (ProfileReader::formEntityMap.find(item) != ProfileReader::formEntityMap.end()) {
+            formEntityInBinary |= ProfileReader::formEntityMap[item];
+        }
+    }
+    return formEntityInBinary;
+}
+
 bool ConvertFormInfo(FormInfo &forminfos, const ProfileReader::Forms &form)
 {
     forminfos.name = form.name;
@@ -1875,7 +1891,7 @@ bool TransformToInfo(
     abilityInfo.enabled = true;
     abilityInfo.readPermission = ability.readPermission;
     abilityInfo.writePermission = ability.writePermission;
-    abilityInfo.formEntity = ability.form.formEntity;
+    abilityInfo.formEntity = GetFormEntity(ability.form.formEntity);
     abilityInfo.minFormHeight = ability.form.minHeight;
     abilityInfo.defaultFormHeight = ability.form.defaultHeight;
     abilityInfo.minFormWidth = ability.form.minWidth;

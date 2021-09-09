@@ -875,12 +875,12 @@ public:
 
     void SetProvisionId(const std::string &provisionId)
     {
-        provisionId_ = provisionId;
+        baseBundleInfo_.appId = provisionId;
     }
 
     std::string GetProvisionId() const
     {
-        return provisionId_;
+        return baseBundleInfo_.appId;
     }
 
     void SetAppFeature(const std::string &appFeature)
@@ -966,7 +966,7 @@ public:
      */
     bool CheckSpecialMetaData(const std::string &metaData) const;
     /**
-     * @brief Obtains the FormInfo objects provided by all applications on the device. 
+     * @brief Obtains the FormInfo objects provided by all applications on the device.
      * @param moduleName Indicates the module name of the application.
      * @param formInfos List of FormInfo objects if obtained;
      */
@@ -994,7 +994,6 @@ private:
     ApplicationInfo baseApplicationInfo_;
     BundleInfo baseBundleInfo_;  // applicationInfo and abilityInfo empty
     std::string mainAbility_;
-    std::string provisionId_;
     std::string appFeature_;
     bool hasEntry_ = false;
     // only using for install or update progress, doesn't need to save to database

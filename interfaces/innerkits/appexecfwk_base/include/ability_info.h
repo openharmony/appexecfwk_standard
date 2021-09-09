@@ -31,6 +31,11 @@ enum class AbilityType {
     DATA,
 };
 
+enum class AbilitySubType {
+    UNSPECIFIED = 0,
+    CA,
+};
+
 enum class DisplayOrientation {
     UNSPECIFIED = 0,
     LANDSCAPE,
@@ -68,6 +73,75 @@ struct MetaData {
 	std::vector<CustomizeData> customizeData;
 };
 
+struct AbilityInfo;
+
+/*
+* According to Ability profile 1.0
+*/
+struct CompatibleAbilityInfo : public Parcelable {
+    // deprecated: ability code class simple name, use 'className' instead.
+    std::string package;
+    std::string name;
+    std::string label; // display name on screen.
+    std::string description;
+    std::string iconPath; // used as icon data (base64) for WEB Ability.
+    std::string uri; // uri of ability.
+    std::string moduleName; // indicates the name of the .hap package to which the capability belongs.
+    std::string process;
+    std::string targetAbility;
+    std::string appName;
+    std::string privacyUrl;
+    std::string privacyName;
+    std::string downloadUrl;
+    std::string versionName;
+    uint32_t backgroundModes = 0;
+    uint32_t packageSize = 0; // The size of the package that AbilityInfo.uri points to.
+    bool visible = false;
+    bool formEnabled = false;
+    bool multiUserShared = false;
+    // deprecated: remove this field in new package format.
+    AbilityType type = AbilityType::UNKNOWN;
+    AbilitySubType subType = AbilitySubType::UNSPECIFIED;
+    DisplayOrientation orientation = DisplayOrientation::UNSPECIFIED;
+    LaunchMode launchMode = LaunchMode::STANDARD;
+    std::vector<std::string> permissions;
+    std::vector<std::string> deviceTypes;
+    std::vector<std::string> deviceCapabilities;
+    bool supportPipMode = false;
+    bool grantPermission = false;
+    std::string readPermission;
+    std::string writePermission;
+    std::string uriPermissionMode;
+    std::string uriPermissionPath;
+    bool directLaunch = true;
+
+    // set when install
+    std::string bundleName; // bundle name which has this ability.
+    std::string className;  // the ability full class name.
+    std::string originalClassName; // the original ability full class name
+    std::string deviceId; // device UDID information.
+    CompatibleApplicationInfo applicationInfo;
+
+    // form widget info
+    uint32_t formEntity = 1; // where form can be displayed
+    int32_t minFormHeight = 0; // minimum height of ability.
+    int32_t defaultFormHeight = 0; // default height of ability.
+    int32_t minFormWidth = 0; // minimum width of ability.
+    int32_t defaultFormWidth = 0; // default width of ability.
+
+    uint32_t iconId = 0;
+    uint32_t labelId = 0;
+    uint32_t descriptionId = 0;
+    bool enabled = true;
+
+    bool ReadFromParcel(Parcel& parcel);
+    virtual bool Marshalling(Parcel& parcel) const override;
+    static CompatibleAbilityInfo* Unmarshalling(Parcel& parcel);
+
+    void CopyToDest(CompatibleAbilityInfo& dest) const;
+    void ConvertToAbilityInfo(AbilityInfo& abilityInfo) const;
+};
+
 // configuration information about an ability
 struct AbilityInfo : public Parcelable {
     std::string name;  // ability name, only the main class name
@@ -93,7 +167,7 @@ struct AbilityInfo : public Parcelable {
     bool enabled = false;
     std::string readPermission;
     std::string writePermission;
-    std::vector<std::string> formEntity;
+    uint32_t formEntity = 1;
     int32_t minFormHeight = 0;
     int32_t defaultFormHeight = 0;
     int32_t minFormWidth = 0;
@@ -114,6 +188,7 @@ struct AbilityInfo : public Parcelable {
     virtual bool Marshalling(Parcel &parcel) const override;
     static AbilityInfo *Unmarshalling(Parcel &parcel);
     void Dump(std::string prefix, int fd);
+    void ConvertToCompatiableAbilityInfo(CompatibleAbilityInfo& compatibleAbilityInfo) const;
 };
 
 }  // namespace AppExecFwk

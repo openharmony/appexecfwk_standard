@@ -214,5 +214,20 @@ void from_json(const nlohmann::json &jsonObject, ApplicationInfo &applicationInf
     applicationInfo.flags = jsonObject.at("flags").get<int>();
 }
 
+void ApplicationInfo::ConvertToCompatibleApplicationInfo(CompatibleApplicationInfo& compatibleApplicationInfo) const
+{
+    compatibleApplicationInfo.name = name;
+    compatibleApplicationInfo.label = label;
+    compatibleApplicationInfo.description = description;
+    compatibleApplicationInfo.process = process;
+    compatibleApplicationInfo.systemApp = isSystemApp;
+    compatibleApplicationInfo.iconId = iconId;
+    compatibleApplicationInfo.labelId = labelId;
+    compatibleApplicationInfo.descriptionId = descriptionId;
+    compatibleApplicationInfo.permissions = permissions;
+    compatibleApplicationInfo.moduleInfos = moduleInfos;
+    compatibleApplicationInfo.supportedModes = supportedModes;
+}
+
 }  // namespace AppExecFwk
 }  // namespace OHOS

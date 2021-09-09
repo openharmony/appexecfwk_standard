@@ -116,6 +116,8 @@ const std::string STORE_ID = "installed_bundle_datas";
 // single max hap size
 constexpr int32_t MAX_HAP_SIZE = 50 * 1024 * 1024;
 
+const int32_t MAX_LIMIT_SIZE = 4;
+
 }  // namespace Constants
 }  // namespace AppExecFwk
 }  // namespace OHOS

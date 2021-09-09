@@ -102,11 +102,7 @@ bool AbilityInfo::ReadFromParcel(Parcel &parcel)
     isNativeAbility = parcel.ReadBool();
     enabled = parcel.ReadBool();
 
-    int32_t formEntitySize;
-    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, formEntitySize);
-    for (int32_t i = 0; i < formEntitySize; i++) {
-        formEntity.emplace_back(Str16ToStr8(parcel.ReadString16()));
-    }
+    formEntity = parcel.ReadInt32();
     minFormHeight = parcel.ReadInt32();
     defaultFormHeight = parcel.ReadInt32();
     minFormWidth = parcel.ReadInt32();
@@ -226,10 +222,7 @@ bool AbilityInfo::Marshalling(Parcel &parcel) const
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, isLauncherAbility);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, isNativeAbility);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, enabled);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, formEntity.size());
-    for (auto &item : formEntity) {
-        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(item));
-    }
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, formEntity);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, minFormHeight);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, defaultFormHeight);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, minFormWidth);
@@ -424,7 +417,7 @@ void from_json(const nlohmann::json &jsonObject, AbilityInfo &abilityInfo)
     abilityInfo.enabled = jsonObject.at(JSON_KEY_ENABLED).get<bool>();
     abilityInfo.readPermission = jsonObject.at(JSON_KEY_READ_PERMISSION).get<std::string>();
     abilityInfo.writePermission = jsonObject.at(JSON_KEY_WRITE_PERMISSION).get<std::string>();
-    abilityInfo.formEntity = jsonObject.at(JSON_KEY_FORM_ENTITY).get<std::vector<std::string>>();
+    abilityInfo.formEntity = jsonObject.at(JSON_KEY_FORM_ENTITY).get<uint32_t>();
     abilityInfo.minFormHeight = jsonObject.at(JSON_KEY_MIN_FORM_HEIGHT).get<int32_t>();
     abilityInfo.defaultFormHeight = jsonObject.at(JSON_KEY_DEFAULT_FORM_HEIGHT).get<int32_t>();
     abilityInfo.minFormWidth = jsonObject.at(JSON_KEY_MIN_FORM_WIDTH).get<int32_t>();
@@ -448,6 +441,40 @@ void from_json(const nlohmann::json &jsonObject, AbilityInfo &abilityInfo)
     abilityInfo.resourcePath = jsonObject.at(JSON_KEY_RESOURCE_PATH).get<std::string>();
     abilityInfo.libPath = jsonObject.at(JSON_KEY_LIB_PATH).get<std::string>();
     abilityInfo.metaData = jsonObject.at(JSON_KEY_META_DATA).get<MetaData>();
+}
+
+void AbilityInfo::ConvertToCompatiableAbilityInfo(CompatibleAbilityInfo& compatibleAbilityInfo) const
+{
+    APP_LOGE("AbilityInfo::ConvertToCompatiableAbilityInfo called");
+    compatibleAbilityInfo.package = package;
+    compatibleAbilityInfo.name = name;
+    compatibleAbilityInfo.label = label;
+    compatibleAbilityInfo.description = description;
+    compatibleAbilityInfo.iconPath = iconPath;
+    compatibleAbilityInfo.uri = uri;
+    compatibleAbilityInfo.moduleName = moduleName;
+    compatibleAbilityInfo.process = process;
+    compatibleAbilityInfo.targetAbility = targetAbility;
+    compatibleAbilityInfo.visible = visible;
+    compatibleAbilityInfo.type = type;
+    compatibleAbilityInfo.orientation = orientation;
+    compatibleAbilityInfo.launchMode = launchMode;
+    compatibleAbilityInfo.permissions = permissions;
+    compatibleAbilityInfo.deviceTypes = deviceTypes;
+    compatibleAbilityInfo.deviceCapabilities = deviceCapabilities;
+    compatibleAbilityInfo.readPermission = readPermission;
+    compatibleAbilityInfo.writePermission = writePermission;
+    compatibleAbilityInfo.bundleName = bundleName;
+    compatibleAbilityInfo.deviceId = deviceId;
+    CompatibleApplicationInfo convertedCompatibleApplicationInfo;
+    applicationInfo.ConvertToCompatibleApplicationInfo(convertedCompatibleApplicationInfo);
+    compatibleAbilityInfo.applicationInfo = convertedCompatibleApplicationInfo;
+    compatibleAbilityInfo.formEntity = formEntity;
+    compatibleAbilityInfo.minFormHeight = minFormHeight;
+    compatibleAbilityInfo.defaultFormHeight = defaultFormHeight;
+    compatibleAbilityInfo.minFormWidth = minFormWidth;
+    compatibleAbilityInfo.defaultFormWidth = defaultFormWidth;
+    compatibleAbilityInfo.enabled = enabled;
 }
 
 }  // namespace AppExecFwk

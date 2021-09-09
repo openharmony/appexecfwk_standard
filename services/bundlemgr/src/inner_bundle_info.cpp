@@ -35,7 +35,6 @@ const std::string MAIN_ABILITY = "mainAbility";
 const std::string SKILL_INFOS = "skillInfos";
 const std::string USER_ID = "userId_";
 const std::string IS_KEEP_DATA = "isKeepData";
-const std::string PROVISION_ID = "provisionId";
 const std::string APP_FEATURE = "appFeature";
 const std::string HAS_ENTRY = "hasEntry";
 const std::string MODULE_PACKAGE = "modulePackage";
@@ -166,7 +165,6 @@ void InnerBundleInfo::ToJson(nlohmann::json &jsonObject) const
     jsonObject[IS_KEEP_DATA] = isKeepData_;
     jsonObject[USER_ID] = userId_;
     jsonObject[MAIN_ABILITY] = mainAbility_;
-    jsonObject[PROVISION_ID] = provisionId_;
     jsonObject[APP_FEATURE] = appFeature_;
     jsonObject[HAS_ENTRY] = hasEntry_;
 	jsonObject[MODULE_FORMS] = formInfos_;
@@ -635,14 +633,6 @@ int32_t InnerBundleInfo::FromJson(const nlohmann::json &jsonObject)
         ArrayType::NOT_ARRAY);
     GetValueIfFindKey<std::string>(jsonObject,
         jsonObjectEnd,
-        PROVISION_ID,
-        provisionId_,
-        JsonType::STRING,
-        true,
-        ProfileReader::parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<std::string>(jsonObject,
-        jsonObjectEnd,
         APP_FEATURE,
         appFeature_,
         JsonType::STRING,
@@ -851,7 +841,6 @@ std::string InnerBundleInfo::ToString() const
     j[USER_ID] = userId_;
     j[MAIN_ABILITY] = mainAbility_;
     j[APP_FEATURE] = appFeature_;
-    j[PROVISION_ID] = provisionId_;
     j[HAS_ENTRY] = hasEntry_;
     j[MODULE_FORMS] = formInfos_;
     j[MODULE_SHORTCUT] = shortcutInfos_;
@@ -948,7 +937,7 @@ void InnerBundleInfo::GetFormsInfoByApp(std::vector<FormInfo> &formInfos) const
 void InnerBundleInfo::GetShortcutInfos(std::vector<ShortcutInfo> &shortcutInfos) const
 {
     for (const auto &shortcut : shortcutInfos_) {
-		shortcutInfos.emplace_back(shortcut.second);	
+		shortcutInfos.emplace_back(shortcut.second);
 	}
 }
 

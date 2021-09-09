@@ -70,7 +70,7 @@ const std::string TARGET_ABILITY = "MockTargetAbility";
 const AbilityType ABILITY_TYPE = AbilityType::PAGE;
 const DisplayOrientation ORIENTATION = DisplayOrientation::PORTRAIT;
 const LaunchMode LAUNCH_MODE = LaunchMode::SINGLETON;
-const std::vector<std::string> FORM_ENTITY = {"homeScreen","searchbox"};
+const uint32_t FORM_ENTITY = 1;
 const int DEFAULT_FORM_HEIGHT = 100;
 const int DEFAULT_FORM_WIDTH = 200;
 const std::string META_DATA_DESCRIPTION = "description";
@@ -125,6 +125,7 @@ const std::string SHORTCUT_LABEL = "shortcutLabel";
 const std::string SHORTCUT_DISABLE_MESSAGE = "shortcutDisableMessage";
 const std::string SHORTCUT_INTENTS_TARGET_BUNDLE = "targetBundle";
 const std::string SHORTCUT_INTENTS_TARGET_CLASS = "targetClass";
+const int FORMINFO_DESCRIPTIONID = 123;
 
 }  // namespace
 
@@ -153,6 +154,10 @@ public:
         const std::string &bundleName, const uint32_t permissionSize, const ApplicationInfo &appInfo) const;
     void CheckAbilityInfo(
         const std::string &bundleName, const std::string &abilityName, const AbilityInfo &appInfo) const;
+    void CheckCompatibleApplicationInfo(
+        const std::string &bundleName, const uint32_t permissionSize, const CompatibleApplicationInfo &appInfo) const;
+    void CheckCompatibleAbilityInfo(
+        const std::string &bundleName, const std::string &abilityName, const CompatibleAbilityInfo &appInfo) const;
     void CheckInstalledBundleInfos(const uint32_t abilitySize, const std::vector<BundleInfo> &bundleInfos) const;
     void CheckInstalledApplicationInfos(const uint32_t permsSize, const std::vector<ApplicationInfo> &appInfos) const;
     void CheckModuleInfo(const HapModuleInfo &hapModuleInfo) const;
@@ -288,7 +293,7 @@ FormInfo BmsBundleKitServiceTest::MockFormInfo(
     formInfo.abilityName = abilityName;
     formInfo.moduleName = moduleName;
     formInfo.package = PACKAGE_NAME;
-    formInfo.descriptionId = 123;
+    formInfo.descriptionId = FORMINFO_DESCRIPTIONID;
     formInfo.formConfigAbility = FORM_PATH;
     formInfo.description = FORM_DESCRIPTION;
     formInfo.defaultFlag = false;
@@ -359,7 +364,7 @@ AbilityInfo BmsBundleKitServiceTest::MockAbilityInfo(
     abilityInfo.type = ABILITY_TYPE;
     abilityInfo.orientation = ORIENTATION;
     abilityInfo.launchMode = LAUNCH_MODE;
-    abilityInfo.formEntity = {"homeScreen","searchbox"},
+    abilityInfo.formEntity = 1;
     abilityInfo.defaultFormHeight = DEFAULT_FORM_HEIGHT;
     abilityInfo.defaultFormWidth = DEFAULT_FORM_WIDTH;
     abilityInfo.codePath = CODE_PATH;
@@ -465,6 +470,35 @@ void BmsBundleKitServiceTest::CheckAbilityInfo(
             EXPECT_EQ(info.name, META_DATA_NAME);
             EXPECT_EQ(info.type, META_DATA_TYPE);
         }
+}
+
+void BmsBundleKitServiceTest::CheckCompatibleAbilityInfo(
+    const std::string &bundleName, const std::string &abilityName, const CompatibleAbilityInfo &abilityInfo) const
+{
+    EXPECT_EQ(abilityName, abilityInfo.name);
+    EXPECT_EQ(bundleName, abilityInfo.bundleName);
+    EXPECT_EQ(LABEL, abilityInfo.label);
+    EXPECT_EQ(DESCRIPTION, abilityInfo.description);
+    EXPECT_EQ(DEVICE_ID, abilityInfo.deviceId);
+    EXPECT_EQ(ICON_PATH, abilityInfo.iconPath);
+    EXPECT_EQ(ORIENTATION, abilityInfo.orientation);
+    EXPECT_EQ(LAUNCH_MODE, abilityInfo.launchMode);
+    EXPECT_EQ(URI, abilityInfo.uri);
+    EXPECT_EQ(false, abilityInfo.supportPipMode);
+    EXPECT_EQ(TARGET_ABILITY, abilityInfo.targetAbility);
+    EXPECT_EQ(FORM_ENTITY, abilityInfo.formEntity);
+    EXPECT_EQ(DEFAULT_FORM_HEIGHT, abilityInfo.defaultFormHeight);
+    EXPECT_EQ(DEFAULT_FORM_WIDTH, abilityInfo.defaultFormWidth);
+
+}
+void BmsBundleKitServiceTest::CheckCompatibleApplicationInfo(
+    const std::string &bundleName, const uint32_t permissionSize, const CompatibleApplicationInfo &appInfo) const
+{
+    EXPECT_EQ(bundleName, appInfo.name);
+    EXPECT_EQ(BUNDLE_LABEL, appInfo.label);
+    EXPECT_EQ(BUNDLE_DESCRIPTION, appInfo.description);
+    EXPECT_EQ(PROCESS_TEST, appInfo.process);
+    EXPECT_EQ(permissionSize, static_cast<uint32_t>(appInfo.permissions.size()));
 }
 
 void BmsBundleKitServiceTest::CheckModuleInfo(const HapModuleInfo &hapModuleInfo) const
@@ -600,7 +634,7 @@ void BmsBundleKitServiceTest::CheckFormInfoTest(const std::vector<FormInfo> &for
         EXPECT_EQ(formInfo.defaultFlag, false);
         EXPECT_EQ(formInfo.type, FormType::JS);
         EXPECT_EQ(formInfo.colorMode, FormsColorMode::LIGHT_MODE);
-        EXPECT_EQ(formInfo.descriptionId, 123);
+        EXPECT_EQ(formInfo.descriptionId, FORMINFO_DESCRIPTIONID);
         EXPECT_EQ(formInfo.deepLink, FORM_PATH);
         EXPECT_EQ(formInfo.package, PACKAGE_NAME);
         EXPECT_EQ(formInfo.formVisibleNotify, true);
@@ -630,7 +664,7 @@ void BmsBundleKitServiceTest::CheckFormInfoDemo(const std::vector<FormInfo> &for
         EXPECT_EQ(formInfo.defaultFlag, false);
         EXPECT_EQ(formInfo.type, FormType::JS);
         EXPECT_EQ(formInfo.colorMode, FormsColorMode::LIGHT_MODE);
-        EXPECT_EQ(formInfo.descriptionId, 123);
+        EXPECT_EQ(formInfo.descriptionId, FORMINFO_DESCRIPTIONID);
         EXPECT_EQ(formInfo.deepLink, FORM_PATH);
         EXPECT_EQ(formInfo.package, PACKAGE_NAME);
         EXPECT_EQ(formInfo.formVisibleNotify, true);
@@ -648,7 +682,7 @@ void BmsBundleKitServiceTest::CheckFormInfoDemo(const std::vector<FormInfo> &for
     }
 }
 
-void BmsBundleKitServiceTest::CheckShortcutInfoTest(std::vector<ShortcutInfo> &shortcutInfos) const 
+void BmsBundleKitServiceTest::CheckShortcutInfoTest(std::vector<ShortcutInfo> &shortcutInfos) const
 {
     for (const auto &shortcutInfo : shortcutInfos) {
         EXPECT_EQ(shortcutInfo.id, SHORTCUT_TEST_ID);
@@ -667,7 +701,7 @@ void BmsBundleKitServiceTest::CheckShortcutInfoTest(std::vector<ShortcutInfo> &s
     }
 }
 
-void BmsBundleKitServiceTest::CheckShortcutInfoDemo(std::vector<ShortcutInfo> &shortcutInfos) const 
+void BmsBundleKitServiceTest::CheckShortcutInfoDemo(std::vector<ShortcutInfo> &shortcutInfos) const
 {
     for (const auto &shortcutInfo : shortcutInfos) {
         EXPECT_EQ(shortcutInfo.id, SHORTCUT_DEMO_ID);
@@ -2753,4 +2787,101 @@ HWTEST_F(BmsBundleKitServiceTest, GetShortcutInfos_0500, Function | SmallTest | 
     std::vector<ShortcutInfo> shortcutInfos;
     GetBundleDataMgr()->GetShortcutInfos(BUNDLE_NAME_TEST, shortcutInfos);
     EXPECT_TRUE(shortcutInfos.empty());
+}
+
+/**
+ * @tc.number: Ability_0100
+ * @tc.name: test can get the compatibleAbilityInfo by one bundle
+ * @tc.desc: 1.can get compatibleAbilityInfo
+ */
+HWTEST_F(BmsBundleKitServiceTest, Ability_0100, Function | SmallTest | Level1)
+{
+    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
+    Want want;
+    want.SetElementName(BUNDLE_NAME_TEST, ABILITY_NAME_TEST);
+    AbilityInfo abilityInfo;
+    bool testRet = GetBundleDataMgr()->QueryAbilityInfo(want, abilityInfo);
+    EXPECT_TRUE(testRet);
+    CompatibleAbilityInfo compatibleAbilityInfo;
+    abilityInfo.ConvertToCompatiableAbilityInfo(compatibleAbilityInfo);
+    CheckCompatibleAbilityInfo(BUNDLE_NAME_TEST, ABILITY_NAME_TEST, compatibleAbilityInfo);
+    MockUninstallBundle(BUNDLE_NAME_TEST);
+}
+
+/**
+ * @tc.number: Ability_0200
+ * @tc.name: test can get the compatibleAbilityInfo by two bundle
+ * @tc.desc: 1.can get compatibleAbilityInfo
+ */
+HWTEST_F(BmsBundleKitServiceTest, Ability_0200, Function | SmallTest | Level1)
+{
+    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
+    MockInstallBundle(BUNDLE_NAME_DEMO, MODULE_NAME_DEMO, ABILITY_NAME_DEMO);
+    Want want1;
+    want1.SetElementName(BUNDLE_NAME_TEST, ABILITY_NAME_TEST);
+    AbilityInfo abilityInfo1;
+    bool testRet1 = GetBundleDataMgr()->QueryAbilityInfo(want1, abilityInfo1);
+    EXPECT_TRUE(testRet1);
+    CompatibleAbilityInfo compatibleAbilityInfo1;
+    abilityInfo1.ConvertToCompatiableAbilityInfo(compatibleAbilityInfo1);
+    CheckCompatibleAbilityInfo(BUNDLE_NAME_TEST, ABILITY_NAME_TEST, compatibleAbilityInfo1);
+    Want want2;
+    want2.SetElementName(BUNDLE_NAME_DEMO, ABILITY_NAME_DEMO);
+    AbilityInfo abilityInfo2;
+    bool testRet2 = GetBundleDataMgr()->QueryAbilityInfo(want2, abilityInfo2);
+    EXPECT_TRUE(testRet2);
+    CompatibleAbilityInfo compatibleAbilityInfo2;
+    abilityInfo2.ConvertToCompatiableAbilityInfo(compatibleAbilityInfo2);
+    CheckCompatibleAbilityInfo(BUNDLE_NAME_DEMO, ABILITY_NAME_DEMO, compatibleAbilityInfo2);
+    MockUninstallBundle(BUNDLE_NAME_TEST);
+    MockUninstallBundle(BUNDLE_NAME_DEMO);
+}
+
+/**
+ * @tc.number: Application_0100
+ * @tc.name: test can get the compatibleApplicationInfo by one bundle
+ * @tc.desc: 1.can get compatibleApplicationInfo
+ */
+HWTEST_F(BmsBundleKitServiceTest, Application_0100, Function | SmallTest | Level1)
+{
+    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
+
+    ApplicationInfo testResult;
+    bool testRet = GetBundleDataMgr()->GetApplicationInfo(
+        BUNDLE_NAME_TEST, ApplicationFlag::GET_BASIC_APPLICATION_INFO, DEFAULT_USER_ID, testResult);
+    EXPECT_TRUE(testRet);
+    CompatibleApplicationInfo appInfo;
+    testResult.ConvertToCompatibleApplicationInfo(appInfo);
+    CheckCompatibleApplicationInfo(BUNDLE_NAME_TEST, PERMISSION_SIZE_ZERO, appInfo);
+
+    MockUninstallBundle(BUNDLE_NAME_TEST);
+}
+
+/**
+ * @tc.number: Application_0100
+ * @tc.name: test can get the compatibleApplicationInfo by two bundle
+ * @tc.desc: 1.can get compatibleApplicationInfo
+ */
+HWTEST_F(BmsBundleKitServiceTest, Application_0200, Function | SmallTest | Level1)
+{
+    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
+    MockInstallBundle(BUNDLE_NAME_DEMO, MODULE_NAME_DEMO, ABILITY_NAME_DEMO);
+
+    ApplicationInfo testResult1;
+    bool testRet1 = GetBundleDataMgr()->GetApplicationInfo(
+        BUNDLE_NAME_TEST, ApplicationFlag::GET_BASIC_APPLICATION_INFO, DEFAULT_USER_ID, testResult1);
+    EXPECT_TRUE(testRet1);
+    CompatibleApplicationInfo appInfo1;
+    testResult1.ConvertToCompatibleApplicationInfo(appInfo1);
+    CheckCompatibleApplicationInfo(BUNDLE_NAME_TEST, PERMISSION_SIZE_ZERO, appInfo1);
+
+    ApplicationInfo testResult2;
+    bool testRet2 = GetBundleDataMgr()->GetApplicationInfo(
+        BUNDLE_NAME_DEMO, ApplicationFlag::GET_BASIC_APPLICATION_INFO, DEFAULT_USER_ID, testResult2);
+    EXPECT_TRUE(testRet2);
+    CompatibleApplicationInfo appInfo2;
+    testResult2.ConvertToCompatibleApplicationInfo(appInfo2);
+    CheckCompatibleApplicationInfo(BUNDLE_NAME_DEMO, PERMISSION_SIZE_ZERO, appInfo2);
+    MockUninstallBundle(BUNDLE_NAME_TEST);
+    MockUninstallBundle(BUNDLE_NAME_DEMO);
 }
