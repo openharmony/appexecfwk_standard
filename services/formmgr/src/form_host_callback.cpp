@@ -13,6 +13,8 @@
  * limitations under the License.
  */
 
+#include <cinttypes>
+
 #include "appexecfwk_errors.h"
 #include "app_log_wrapper.h"
 #include "form_host_callback.h"
@@ -32,7 +34,7 @@ namespace AppExecFwk {
 void FormHostCallback::OnAcquired(const int64_t formId, const FormRecord& record, 
 const sptr<IRemoteObject> &callerToken)
 {
-    //APP_LOGD("FormHostCallback OnAcquired, formId:%{public}lld", formId);
+    APP_LOGD("FormHostCallback OnAcquired, formId:%{public}" PRId64 "", formId);
     FormTaskMgr::GetInstance().PostAcquireTaskToHost(formId, record, callerToken);
 }
 
@@ -50,7 +52,7 @@ void FormHostCallback::OnUpdate(const int64_t formId, const FormRecord &record, 
 
     // check formId
     if (formId < 0) {
-        //APP_LOGE("%{public}s: OnUpdate invalid param, formId:%{public}lld.", __func__, formId);
+        APP_LOGE("%{public}s: OnUpdate invalid param, formId:%{public}" PRId64 ".", __func__, formId);
         return;
     }
 

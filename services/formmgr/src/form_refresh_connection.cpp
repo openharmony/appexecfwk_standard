@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+#include <cinttypes>
+
 #include "appexecfwk_errors.h"
 #include "app_log_wrapper.h"
 #include "form_constants.h"
@@ -45,8 +47,8 @@ void FormRefreshConnection::OnAbilityConnectDone(
     APP_LOGI("%{public}s called.", __func__);
 
     if (resultCode != ERR_OK) {
-        // APP_LOGE("%{public}s, abilityName:%{public}s, formId:%{public}lld, resultCode:%{public}d", 
-        //    __func__, element.GetAbilityName().c_str(), formId_, resultCode);
+        APP_LOGE("%{public}s, abilityName:%{public}s, formId:%{public}" PRId64 ", resultCode:%{public}d", 
+           __func__, element.GetAbilityName().c_str(), formId_, resultCode);
         return;
     }
     FormSupplyCallback::GetInstance()->AddConnection(this);

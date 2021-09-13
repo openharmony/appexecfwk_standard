@@ -123,6 +123,9 @@ const int32_t MAX_LIMIT_SIZE = 4;
 const std::string DATA_ABILITY_URI_PREFIX = "dataability://";
 const char DATA_ABILITY_URI_SEPARATOR = '/';
 
+const int MAX_DIMENSION_SIZE = 10;
+const int MAX_DEVICETYPE_SIZE = 50;
+
 }  // namespace Constants
 }  // namespace AppExecFwk
 }  // namespace OHOS

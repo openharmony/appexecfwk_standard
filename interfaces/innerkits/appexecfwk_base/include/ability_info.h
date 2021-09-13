@@ -193,21 +193,22 @@ struct AbilityInfo : public Parcelable {
     std::string libPath;          // ability library path without name, libPath->libDir
 
     // element that does not exist for a while
+    std::string originalBundleName;
     std::string appName;
     std::string privacyUrl;
     std::string privacyName;
     std::string downloadUrl;
     std::string versionName;
+    std::string className;
+    std::string originalClassName;
+    std::string uriPermissionMode;
+    std::string uriPermissionPath;
     uint32_t backgroundModes = 0;
     uint32_t packageSize = 0;
     bool multiUserShared = false;
-    AbilitySubType subType = AbilitySubType::UNSPECIFIED;
     bool grantPermission = false;
-    std::string uriPermissionMode;
-    std::string uriPermissionPath;
     bool directLaunch = true;
-    std::string className;
-    std::string originalClassName;
+    AbilitySubType subType = AbilitySubType::UNSPECIFIED;
 
     bool ReadFromParcel(Parcel &parcel);
     virtual bool Marshalling(Parcel &parcel) const override;

@@ -13,6 +13,8 @@
  * limitations under the License.
  */
 
+#include <cinttypes>
+
 #include "appexecfwk_errors.h"
 #include "app_log_wrapper.h"
 #include "common_event_manager.h"
@@ -41,7 +43,7 @@ FormTimerMgr::~FormTimerMgr()
  */
 bool FormTimerMgr::AddFormTimer(const FormTimer &task)
 {
-    //APP_LOGI("%{public}s, formId: %{public}lld", __func__, task.formId);
+    APP_LOGI("%{public}s, formId: %{public}" PRId64 "", __func__, task.formId);
     if (task.isUpdateAt) {
         if (task.hour >= Constants::MIN_TIME && task.hour <= Constants::MAX_HOUR && task.min >= Constants::MIN_TIME && 
         task.min <= Constants::MAX_MININUTE) {
@@ -90,7 +92,7 @@ bool FormTimerMgr::AddFormTimer(const int64_t formId, const long updateAtHour, c
  */
 bool FormTimerMgr::RemoveFormTimer(const int64_t formId)
 {
-    //APP_LOGI("%{public}s, task: %{public}lld", __func__, formId);
+    APP_LOGI("%{public}s, task: %{public}" PRId64 "", __func__, formId);
 
     if (!DeleteIntervalTimer(formId)) {
         DeleteUpdateAtTimer(formId);
@@ -336,7 +338,7 @@ void FormTimerMgr::SetEnableFlag(int64_t formId, bool flag)
     auto iter = intervalTimerTasks_.find(formId); 
     if (iter != intervalTimerTasks_.end()) {
         iter->second.isEnable = flag;
-        //APP_LOGI("%{public}s, formId:%{public}lld, isEnable:%{public}d", __func__, formId, flag ? 1 : 0);
+        APP_LOGI("%{public}s, formId:%{public}" PRId64 ", isEnable:%{public}d", __func__, formId, flag ? 1 : 0);
         return;
     }
 }
@@ -371,7 +373,7 @@ bool FormTimerMgr::AddUpdateAtTimer(const FormTimer &task)
         std::lock_guard<std::mutex> lock(updateAtMutex_);
         for (auto &updateAtTimer : updateAtTimerTasks_) {
             if (updateAtTimer.refreshTask.formId == task.formId) {
-                //APP_LOGW("%{public}s, already exist formTimer, formId:%{public}lld task", __func__, task.formId);
+                APP_LOGW("%{public}s, already exist formTimer, formId:%{public}" PRId64 " task", __func__, task.formId);
                 return true;
             }
         }
@@ -402,7 +404,7 @@ bool FormTimerMgr::AddIntervalTimer(const FormTimer &task)
         std::lock_guard<std::mutex> lock(intervalMutex_);
         EnsureInitIntervalTimer();
         if (intervalTimerTasks_.find(task.formId) != intervalTimerTasks_.end()) {
-            //APP_LOGW("%{public}s, already exist formTimer, formId:%{public}lld task", __func__, task.formId);
+            APP_LOGW("%{public}s, already exist formTimer, formId:%{public}" PRId64 " task", __func__, task.formId);
             return true;
         }
         intervalTimerTasks_.emplace(task.formId, task);
@@ -570,7 +572,7 @@ void FormTimerMgr::SetIntervalEnableFlag(int64_t formId, bool flag)
     auto refreshTask = intervalTimerTasks_.find(formId);
     if (refreshTask != intervalTimerTasks_.end()) {
         refreshTask->second.isEnable = flag;
-        //APP_LOGI("%{public}s, formId:%{public}lld, isEnable:%{public}d", __func__, formId, flag ? 1 : 0);
+        APP_LOGI("%{public}s, formId:%{public}" PRId64 ", isEnable:%{public}d", __func__, formId, flag ? 1 : 0);
         return;
     }
 }
