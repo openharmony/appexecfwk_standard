@@ -37,6 +37,7 @@ struct Distro {
     bool deliveryWithInstall;
     std::string moduleName;
     std::string moduleType;
+    bool installationFree = false;
 };
 
 struct DefPermission {
@@ -66,8 +67,12 @@ struct InnerModuleInfo {
     std::string modulePath;
     std::string moduleDataDir;
     std::string moduleResPath;
+    std::string label;
+    int32_t labelId = 0;
     std::string description;
+    int32_t descriptionId = 0;
     bool isEntry;
+    bool installationFree;
     MetaData metaData;
     ModuleColorMode colorMode = ModuleColorMode::AUTO;
     Distro distro;
@@ -108,7 +113,7 @@ enum class ArrayType {
     NOT_ARRAY,
 };
 
-template<typename T, typename dataType>
+template <typename T, typename dataType>
 void CheckArrayType(
     const nlohmann::json &jsonObject, const std::string &key, dataType &data, ArrayType arrayType, int32_t &parseResult)
 {
@@ -119,7 +124,7 @@ void CheckArrayType(
     }
     switch (arrayType) {
         case ArrayType::STRING:
-            for (const auto& array : arrays) {
+            for (const auto &array : arrays) {
                 if (!array.is_string()) {
                     APP_LOGE("array %{public}s is not string type", key.c_str());
                     parseResult = ERR_APPEXECFWK_PARSE_PROFILE_PROP_TYPE_ERROR;
@@ -130,7 +135,7 @@ void CheckArrayType(
             }
             break;
         case ArrayType::OBJECT:
-            for (const auto& array : arrays) {
+            for (const auto &array : arrays) {
                 if (!array.is_object()) {
                     APP_LOGE("array %{public}s is not object type", key.c_str());
                     parseResult = ERR_APPEXECFWK_PARSE_PROFILE_PROP_TYPE_ERROR;
@@ -142,7 +147,7 @@ void CheckArrayType(
             }
             break;
         case ArrayType::NUMBER:
-            for (const auto& array : arrays) {
+            for (const auto &array : arrays) {
                 if (!array.is_number()) {
                     APP_LOGE("array %{public}s is not number type", key.c_str());
                     parseResult = ERR_APPEXECFWK_PARSE_PROFILE_PROP_TYPE_ERROR;
@@ -161,7 +166,7 @@ void CheckArrayType(
     }
 }
 
-template<typename T, typename dataType>
+template <typename T, typename dataType>
 void GetValueIfFindKey(const nlohmann::json &jsonObject, const nlohmann::detail::iter_impl<const nlohmann::json> &end,
     const std::string &key, dataType &data, JsonType jsonType, bool isNecessary, int32_t &parseResult,
     ArrayType arrayType)
@@ -291,6 +296,12 @@ public:
      */
     std::optional<AbilityInfo> FindAbilityInfo(const std::string &bundleName, const std::string &abilityName) const;
     /**
+     * @brief Find abilityInfo of list  by bundle name.
+     * @param bundleName Indicates the bundle name.
+     * @return Returns the AbilityInfo of list if find it; returns null otherwise.
+     */
+    std::optional<std::vector<AbilityInfo>> FindAbilityInfos(const std::string &bundleName) const;
+    /**
      * @brief Transform the InnerBundleInfo object to string.
      * @return Returns the string object
      */
@@ -322,23 +333,23 @@ public:
      * @param formInfos Indicates the Forms object to be add.
      * @return
      */
-	void AddModuleFormInfo(const std::map<std::string, std::vector<FormInfo>> &formInfos)
-	{
-		for (const auto &forms : formInfos) {
-			formInfos_.try_emplace(forms.first, forms.second);
-		}
-	}
+    void AddModuleFormInfo(const std::map<std::string, std::vector<FormInfo>> &formInfos)
+    {
+        for (const auto &forms : formInfos) {
+            formInfos_.try_emplace(forms.first, forms.second);
+        }
+    }
     /**
      * @brief Add shortcut infos to old InnerBundleInfo object.
      * @param shortcutInfos Indicates the Shortcut object to be add.
      * @return
      */
-	void AddModuleShortcutInfo(const std::map<std::string, ShortcutInfo> &shortcutInfos)
-	{
-		for (const auto &shortcut : shortcutInfos) {
-			shortcutInfos_.try_emplace(shortcut.first, shortcut.second);
-		}
-	}
+    void AddModuleShortcutInfo(const std::map<std::string, ShortcutInfo> &shortcutInfos)
+    {
+        for (const auto &shortcut : shortcutInfos) {
+            shortcutInfos_.try_emplace(shortcut.first, shortcut.second);
+        }
+    }
     /**
      * @brief Add innerModuleInfos to old InnerBundleInfo object.
      * @param innerModuleInfos Indicates the InnerModuleInfo object to be add.
@@ -548,8 +559,14 @@ public:
      */
     std::optional<AbilityInfo> FindAbilityInfoByUri(const std::string &abilityUri) const
     {
+        APP_LOGI("Uri is %{public}s", abilityUri.c_str());
         for (const auto &ability : baseAbilityInfos_) {
-            if (ability.second.uri == abilityUri) {
+            if (ability.second.uri.size() < Constants::DATA_ABILITY_URI_PREFIX.size()) {
+                continue;
+            }
+            auto configUri = ability.second.uri.substr(Constants::DATA_ABILITY_URI_PREFIX.size());
+            APP_LOGI("configUri is %{public}s", configUri.c_str());
+            if (configUri == abilityUri) {
                 return ability.second;
             }
         }
@@ -918,19 +935,19 @@ public:
      * @param keyName Indicates object as key.
      * @param formInfos Indicates the formInfo object as value.
      */
-	void InsertFormInfos(const std::string &keyName, const std::vector<FormInfo> &formInfos)
-	{
-		formInfos_.emplace(keyName, formInfos);
-	}
+    void InsertFormInfos(const std::string &keyName, const std::vector<FormInfo> &formInfos)
+    {
+        formInfos_.emplace(keyName, formInfos);
+    }
     /**
      * @brief Insert shortcutInfos.
      * @param keyName Indicates object as key.
      * @param shortcutInfos Indicates the shortcutInfos object as value.
      */
-	void InsertShortcutInfos(const std::string &keyName, const ShortcutInfo &shortcutInfos)
-	{
-		shortcutInfos_.emplace(keyName, shortcutInfos);
-	}
+    void InsertShortcutInfos(const std::string &keyName, const ShortcutInfo &shortcutInfos)
+    {
+        shortcutInfos_.emplace(keyName, shortcutInfos);
+    }
     // use for new Info in updating progress
     void RestoreFromOldInfo(const InnerBundleInfo &oldInfo)
     {
@@ -970,17 +987,22 @@ public:
      * @param moduleName Indicates the module name of the application.
      * @param formInfos List of FormInfo objects if obtained;
      */
-	void GetFormsInfoByModule(const std::string &moduleName, std::vector<FormInfo> &formInfos) const;
+    void GetFormsInfoByModule(const std::string &moduleName, std::vector<FormInfo> &formInfos) const;
     /**
      * @brief Obtains the FormInfo objects provided by a specified application on the device.
      * @param formInfos List of FormInfo objects if obtained;
      */
-	void GetFormsInfoByApp(std::vector<FormInfo> &formInfos) const;
+    void GetFormsInfoByApp(std::vector<FormInfo> &formInfos) const;
     /**
      * @brief Obtains the ShortcutInfo objects provided by a specified application on the device.
      * @param shortcutInfos List of ShortcutInfo objects if obtained.
      */
     void GetShortcutInfos(std::vector<ShortcutInfo> &shortcutInfos) const;
+
+    std::optional<InnerModuleInfo> GetInnerModuleInfoByModuleName(const std::string &moduleName) const;
+
+    void GetModuleNames(std::vector<std::string> &moduleNames) const;
+
 private:
     // using for get
     bool isSupportBackup_ = false;
@@ -1000,7 +1022,7 @@ private:
     std::string currentPackage_;
     std::string mainAbilityName_;
 
-	std::map<std::string, std::vector<FormInfo>> formInfos_;
+    std::map<std::string, std::vector<FormInfo>> formInfos_;
     std::map<std::string, AbilityInfo> baseAbilityInfos_;
     std::map<std::string, InnerModuleInfo> innerModuleInfos_;
     std::map<std::string, std::vector<Skill>> skillInfos_;

@@ -97,7 +97,7 @@ static const std::string abilityStateOnForeground = ":OnForeground";
 static const std::string abilityStateOnNewWant = ":OnNewWant";
 static const int abilityStateCountOne = 1;
 static const int abilityStateCountTwo = 2;
-static const int abilityStateCountThree = 3;
+static const int FreezingTime = 60;
 }  // namespace
 
 class AmsPageAbilityTest : public testing::Test {
@@ -111,7 +111,7 @@ public:
     static void CheckAbilityStateByName(const std::string &abilityName, const std::vector<std::string> &info,
         const std::string &state, const std::string &midState);
     void ExpectAbilityCurrentState(const std::string &abilityName, const AbilityState_Test &currentState,
-        const AbilityState_Test &midState = AbilityState_Test::ALLSUM, const std::string &args = (DUMP_STACK + " 1"));
+        const AbilityState_Test &midState = AbilityState_Test::ALLSUM, const std::string &args = DUMP_ALL);
     void ExpectAbilityNumInStack(const std::string &abilityName, int abilityNum);
     void ClearSystem();
     void ShowDump();
@@ -154,7 +154,7 @@ void AmsPageAbilityTest::SetUpTestCase(void)
     appMs_ = STAbilityUtil::GetAppMgrService();
     abilityMs_ = STAbilityUtil::GetAbilityManagerService();
     if (appMs_) {
-        appMs_->SetAppFreezingTime(60);
+        appMs_->SetAppFreezingTime(FreezingTime);
         int time = 0;
         appMs_->GetAppFreezingTime(time);
         std::cout << "appMs_->GetAppFreezingTime();" << time << std::endl;
@@ -206,6 +206,10 @@ void AmsPageAbilityTest::CheckAbilityStateByName(const std::string &abilityName,
     EXPECT_NE(pos, result.end());
     MTDumpUtil::GetInstance()->GetAll("State", info, result);
     EXPECT_TRUE(pos < result.end());
+    if (pos == result.end()) {
+        HILOG_ERROR("pos == result.end()");
+        return;
+    }
     // ability state
     if (midState != "") {
         bool compareResult = ((*pos == state) || (*pos == midState));
@@ -1163,12 +1167,13 @@ HWTEST_F(AmsPageAbilityTest, AMS_Page_Ability_2200, Function | MediumTest | Leve
     std::string bundleName = bundleNameBase + "A";
     std::string abilityName = abilityNameBase + "A1";
     MAP_STR_STR params;
-    params["shouldReturn"] = abilityName;
     Want want = STAbilityUtil::MakeWant("device", abilityName, bundleName, params);
     STAbilityUtil::StartAbility(want, abilityMs_);
 
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName + abilityStateOnStart, abilityStateCountOne), 0);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName + abilityStateOnActive, abilityStateCountOne), 0);
+    int eventCode = 0;
+    STAbilityUtil::PublishEvent(terminatePageAbility, eventCode, abilityName);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName + abilityStateOnInactive, abilityStateCountOne), 0);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName + abilityStateOnBackground, abilityStateCountOne), 0);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName + abilityStateOnStop, abilityStateCountOne), 0);
@@ -1198,7 +1203,6 @@ HWTEST_F(AmsPageAbilityTest, AMS_Page_Ability_2300, Function | MediumTest | Leve
     MAP_STR_STR params;
     params["targetBundle"] = bundleName;
     params["targetAbility"] = abilityName2;
-    params["shouldReturn"] = abilityName2;
     Want want = STAbilityUtil::MakeWant("device", abilityName, bundleName, params);
     STAbilityUtil::StartAbility(want, abilityMs_);
 
@@ -1206,6 +1210,8 @@ HWTEST_F(AmsPageAbilityTest, AMS_Page_Ability_2300, Function | MediumTest | Leve
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName + abilityStateOnActive, abilityStateCountOne), 0);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName + abilityStateOnInactive, abilityStateCountOne), 0);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName2 + abilityStateOnActive, abilityStateCountOne), 0);
+    int eventCode = 0;
+    STAbilityUtil::PublishEvent(terminatePageAbility, eventCode, abilityName2);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName2 + abilityStateOnInactive, abilityStateCountOne), 0);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName + abilityStateOnActive, abilityStateCountTwo), 0);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName2 + abilityStateOnBackground, abilityStateCountOne), 0);
@@ -1239,7 +1245,6 @@ HWTEST_F(AmsPageAbilityTest, AMS_Page_Ability_2400, Function | MediumTest | Leve
     MAP_STR_STR params;
     params["targetBundle"] = bundleName2;
     params["targetAbility"] = abilityName2;
-    params["shouldReturn"] = abilityName2;
     Want want = STAbilityUtil::MakeWant("device", abilityName, bundleName, params);
     STAbilityUtil::StartAbility(want, abilityMs_);
 
@@ -1247,6 +1252,8 @@ HWTEST_F(AmsPageAbilityTest, AMS_Page_Ability_2400, Function | MediumTest | Leve
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName + abilityStateOnActive, abilityStateCountOne), 0);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName + abilityStateOnInactive, abilityStateCountOne), 0);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName2 + abilityStateOnActive, abilityStateCountOne), 0);
+    int eventCode = 0;
+    STAbilityUtil::PublishEvent(terminatePageAbility, eventCode, abilityName2);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName2 + abilityStateOnInactive, abilityStateCountOne), 0);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName + abilityStateOnActive, abilityStateCountTwo), 0);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName2 + abilityStateOnBackground, abilityStateCountOne), 0);
@@ -1279,16 +1286,17 @@ HWTEST_F(AmsPageAbilityTest, AMS_Page_Ability_2500, Function | MediumTest | Leve
     MAP_STR_STR params;
     params["targetBundle"] = bundleName;
     params["targetAbility"] = abilityName2;
-    params["shouldReturn"] = abilityName;
     Want want = STAbilityUtil::MakeWant("device", abilityName, bundleName, params);
     STAbilityUtil::StartAbility(want, abilityMs_);
 
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName + abilityStateOnStart, abilityStateCountOne), 0);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName + abilityStateOnActive, abilityStateCountOne), 0);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName + abilityStateOnInactive, abilityStateCountOne), 0);
+    EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName2 + abilityStateOnActive, abilityStateCountOne), 0);
+    int eventCode = 0;
+    STAbilityUtil::PublishEvent(terminatePageAbility, eventCode, abilityName);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName + abilityStateOnBackground, abilityStateCountOne), 0);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName + abilityStateOnStop, abilityStateCountOne), 0);
-    EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName2 + abilityStateOnActive, abilityStateCountOne), 0);
 
     // ability "A1" not in stack(terminated)
     ExpectAbilityNumInStack(abilityName, 0);
@@ -1413,9 +1421,8 @@ HWTEST_F(AmsPageAbilityTest, AMS_Page_Ability_2700, Function | MediumTest | Leve
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName3 + abilityStateOnBackground, abilityStateCountOne), 0);
 
     // Back Ability I4(singletop)
-    params["shouldReturn"] = abilityName4;
-    want = STAbilityUtil::MakeWant("device", abilityName4, bundleName1, params);
-    STAbilityUtil::StartAbility(want, abilityMs_);
+    int eventCode = 0;
+    STAbilityUtil::PublishEvent(terminatePageAbility, eventCode, abilityName4);
 
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName2 + abilityStateOnActive, abilityStateCountTwo), 0);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName4 + abilityStateOnStop, abilityStateCountOne), 0);
@@ -1424,9 +1431,7 @@ HWTEST_F(AmsPageAbilityTest, AMS_Page_Ability_2700, Function | MediumTest | Leve
     ExpectAbilityCurrentState(abilityName2, AbilityState_Test::ACTIVE, AbilityState_Test::ACTIVATING);
     ExpectAbilityCurrentState(abilityName3, AbilityState_Test::BACKGROUND, AbilityState_Test::ACTIVATING);
     // Back Ability I2(singletop)
-    params["shouldReturn"] = abilityName2;
-    want = STAbilityUtil::MakeWant("device", abilityName2, bundleName1, params);
-    STAbilityUtil::StartAbility(want, abilityMs_);
+    STAbilityUtil::PublishEvent(terminatePageAbility, eventCode, abilityName2);
 
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName1 + abilityStateOnActive, abilityStateCountTwo), 0);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName2 + abilityStateOnStop, abilityStateCountOne), 0);
@@ -1435,9 +1440,7 @@ HWTEST_F(AmsPageAbilityTest, AMS_Page_Ability_2700, Function | MediumTest | Leve
     ExpectAbilityCurrentState(abilityName1, AbilityState_Test::ACTIVE, AbilityState_Test::ACTIVATING);
     ExpectAbilityCurrentState(abilityName3, AbilityState_Test::BACKGROUND, AbilityState_Test::MOVING_BACKGROUND);
     // Back Ability I1(singletop)
-    params["shouldReturn"] = abilityName1;
-    want = STAbilityUtil::MakeWant("device", abilityName1, bundleName1, params);
-    STAbilityUtil::StartAbility(want, abilityMs_);
+    STAbilityUtil::PublishEvent(terminatePageAbility, eventCode, abilityName1);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName1 + abilityStateOnStop, abilityStateCountOne), 0);
 
     ExpectAbilityCurrentState(launcherAbilityName, AbilityState_Test::ACTIVE, AbilityState_Test::ACTIVATING, DUMP_ALL);
@@ -1577,9 +1580,8 @@ HWTEST_F(AmsPageAbilityTest, AMS_Page_Ability_2900, Function | MediumTest | Leve
     ExpectAbilityNumInStack(abilityName3, 1);
     ExpectAbilityCurrentState(abilityName3, AbilityState_Test::ACTIVE, AbilityState_Test::ACTIVATING);
     // Start Ability I3(SI) Back
-    params["shouldReturn"] = abilityName3;
-    want = STAbilityUtil::MakeWant("device", abilityName3, bundleName1, params);
-    STAbilityUtil::StartAbility(want, abilityMs_);
+    int eventCode = 0;
+    STAbilityUtil::PublishEvent(terminatePageAbility, eventCode, abilityName3);
 
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName5 + abilityStateOnActive, abilityStateCountTwo), 0);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName3 + abilityStateOnStop, abilityStateCountOne), 0);
@@ -1728,20 +1730,16 @@ HWTEST_F(AmsPageAbilityTest, AMS_Page_Ability_3100, Function | MediumTest | Leve
     ExpectAbilityCurrentState(abilityName3, AbilityState_Test::ACTIVE, AbilityState_Test::ACTIVATING);
 
     // I3(SI) back
-    params["shouldReturn"] = abilityName3;
-    want = STAbilityUtil::MakeWant("device", abilityName3, bundleName1, params);
-    STAbilityUtil::StartAbility(want, abilityMs_);
+    int eventCode = 0;
+    STAbilityUtil::PublishEvent(terminatePageAbility, eventCode, abilityName3);
 
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName5 + abilityStateOnActive, abilityStateCountTwo), 0);
 
     // Ability I3 back, B1(singletop) State Is ACTIVE
     ExpectAbilityCurrentState(abilityName5, AbilityState_Test::ACTIVE, AbilityState_Test::ACTIVATING);
     // B1(singletop) back
-    params["shouldReturn"] = abilityName5;
-    want = STAbilityUtil::MakeWant("device", abilityName5, bundleName2, params);
-    STAbilityUtil::StartAbility(want, abilityMs_);
+    STAbilityUtil::PublishEvent(terminatePageAbility, eventCode, abilityName5);
 
-    EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName5 + abilityStateOnActive, abilityStateCountThree), 0);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName5 + abilityStateOnBackground, abilityStateCountTwo), 0);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName5 + abilityStateOnStop, abilityStateCountOne), 0);
 
@@ -1955,9 +1953,8 @@ HWTEST_F(AmsPageAbilityTest, AMS_Page_Ability_3700, Function | MediumTest | Leve
 
     ExpectAbilityCurrentState(abilityName1, AbilityState_Test::BACKGROUND, AbilityState_Test::MOVING_BACKGROUND);
     // Back Ability G2(singletop)
-    params["shouldReturn"] = abilityName2;
-    want = STAbilityUtil::MakeWant("device", abilityName2, bundleName1, params);
-    STAbilityUtil::StartAbility(want, abilityMs_);
+    int eventCode = 0;
+    STAbilityUtil::PublishEvent(terminatePageAbility, eventCode, abilityName2);
 
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName1 + abilityStateOnActive, abilityStateCountTwo), 0);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName2 + abilityStateOnBackground, abilityStateCountOne), 0);
@@ -2000,9 +1997,8 @@ HWTEST_F(AmsPageAbilityTest, AMS_Page_Ability_3800, Function | MediumTest | Leve
 
     ExpectAbilityCurrentState(abilityName1, AbilityState_Test::BACKGROUND, AbilityState_Test::MOVING_BACKGROUND);
     // Back Ability H1(singletop)
-    params["shouldReturn"] = abilityName2;
-    want = STAbilityUtil::MakeWant("device", abilityName2, bundleName2, params);
-    STAbilityUtil::StartAbility(want, abilityMs_);
+    int eventCode = 0;
+    STAbilityUtil::PublishEvent(terminatePageAbility, eventCode, abilityName2);
 
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName1 + abilityStateOnActive, abilityStateCountTwo), 0);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName2 + abilityStateOnBackground, abilityStateCountOne), 0);
@@ -2080,11 +2076,8 @@ HWTEST_F(AmsPageAbilityTest, AMS_Page_Ability_4000, Function | MediumTest | Leve
 
     ExpectAbilityCurrentState(abilityName1, AbilityState_Test::ACTIVE, AbilityState_Test::ACTIVATING);
     // Terminate Ability G1(SI)
-    params["shouldReturn"] = abilityName1;
-    want = STAbilityUtil::MakeWant("device", abilityName1, bundleName1, params);
-    STAbilityUtil::StartAbility(want, abilityMs_);
-    EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName1 + abilityStateOnNewWant, abilityStateCountOne), 0);
-    EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName1 + abilityStateOnActive, abilityStateCountTwo), 0);
+    int eventCode = 0;
+    STAbilityUtil::PublishEvent(terminatePageAbility, eventCode, abilityName1);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName1 + abilityStateOnBackground, abilityStateCountOne), 0);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName1 + abilityStateOnStop, abilityStateCountOne), 0);
 
@@ -2127,9 +2120,8 @@ HWTEST_F(AmsPageAbilityTest, AMS_Page_Ability_4100, Function | MediumTest | Leve
     ExpectAbilityCurrentState(abilityName2, AbilityState_Test::ACTIVE, AbilityState_Test::ACTIVATING);
     ExpectAbilityCurrentState(abilityName1, AbilityState_Test::BACKGROUND, AbilityState_Test::MOVING_BACKGROUND);
     // terminate Ability G2(singletop)
-    params["shouldReturn"] = abilityName2;
-    want = STAbilityUtil::MakeWant("device", abilityName2, bundleName1, params);
-    STAbilityUtil::StartAbility(want, abilityMs_);
+    int eventCode = 0;
+    STAbilityUtil::PublishEvent(terminatePageAbility, eventCode, abilityName2);
 
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName1 + abilityStateOnActive, abilityStateCountTwo), 0);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName2 + abilityStateOnBackground, abilityStateCountOne), 0);
@@ -2176,11 +2168,9 @@ HWTEST_F(AmsPageAbilityTest, AMS_Page_Ability_4200, Function | MediumTest | Leve
     ExpectAbilityCurrentState(abilityName1, AbilityState_Test::BACKGROUND, AbilityState_Test::MOVING_BACKGROUND);
 
     // terminate Ability H1(singletop)
-    params["shouldReturn"] = abilityName2;
-    want = STAbilityUtil::MakeWant("device", abilityName2, bundleName2, params);
-    STAbilityUtil::StartAbility(want, abilityMs_);
-    EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName2 + abilityStateOnActive, abilityStateCountTwo), 0);
-    EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName2 + abilityStateOnNewWant, abilityStateCountOne), 0);
+    int eventCode = 0;
+    STAbilityUtil::PublishEvent(terminatePageAbility, eventCode, abilityName2);
+
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName2 + abilityStateOnBackground, abilityStateCountOne), 0);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName1 + abilityStateOnActive, abilityStateCountTwo), 0);
 
@@ -2236,14 +2226,10 @@ HWTEST_F(AmsPageAbilityTest, AMS_Page_Ability_4300, Function | MediumTest | Leve
     ExpectAbilityCurrentState(abilityName1, AbilityState_Test::BACKGROUND, AbilityState_Test::MOVING_BACKGROUND);
 
     // terminate Ability G1(SI)
-    params["shouldReturn"] = abilityName1;
-    want = STAbilityUtil::MakeWant("device", abilityName1, bundleName1, params);
-    STAbilityUtil::StartAbility(want, abilityMs_);
+    int eventCode = 0;
+    STAbilityUtil::PublishEvent(terminatePageAbility, eventCode, abilityName1);
 
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName1 + abilityStateOnStop, abilityStateCountOne), 0);
-
-    // terminate Ability G1(SI), Launcher Ability State Is ACTIVE
-    ExpectAbilityCurrentState(launcherAbilityName, AbilityState_Test::ACTIVE, AbilityState_Test::ACTIVATING, DUMP_ALL);
 
     GTEST_LOG_(INFO) << "AmsPageAbilityTest AMS_Page_Ability_4300 end";
 }
@@ -2768,7 +2754,6 @@ HWTEST_F(AmsPageAbilityTest, AMS_Page_Ability_5500, Function | MediumTest | Leve
 
     STAbilityUtil::StopAbility(terminatePageAbility, 0, abilityName2);
 
-    EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName + abilityStateOnForeground, abilityStateCountOne), 0);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName + abilityStateOnActive, abilityStateCountTwo), 0);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName2 + abilityStateOnBackground, abilityStateCountOne), 0);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName2 + abilityStateOnStop, abilityStateCountOne), 0);
@@ -2777,6 +2762,7 @@ HWTEST_F(AmsPageAbilityTest, AMS_Page_Ability_5500, Function | MediumTest | Leve
     ExpectAbilityCurrentState(abilityName, AbilityState_Test::ACTIVE, AbilityState_Test::ACTIVATING);
     // ability "N2" not in stack
     ExpectAbilityNumInStack(abilityName2, 0);
+    ShowDump();
 
     GTEST_LOG_(INFO) << "AmsPageAbilityTest AMS_Page_Ability_5500 end";
 }
@@ -2884,11 +2870,12 @@ HWTEST_F(AmsPageAbilityTest, AMS_Page_Ability_5800, Function | MediumTest | Leve
     std::string bundleName = bundleNameBase + "N";
     std::string abilityName = abilityNameBase + "N1";
     MAP_STR_STR params;
-    params["shouldReturn"] = abilityName;
     Want want = STAbilityUtil::MakeWant("device", abilityName, bundleName, params);
     STAbilityUtil::StartAbility(want, abilityMs_);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName + abilityStateOnStart, abilityStateCountOne), 0);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName + abilityStateOnActive, abilityStateCountOne), 0);
+    int eventCode = 0;
+    STAbilityUtil::PublishEvent(terminatePageAbility, eventCode, abilityName);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName + abilityStateOnInactive, abilityStateCountOne), 0);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName + abilityStateOnBackground, abilityStateCountOne), 0);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName + abilityStateOnStop, abilityStateCountOne), 0);
@@ -2918,7 +2905,6 @@ HWTEST_F(AmsPageAbilityTest, AMS_Page_Ability_5900, Function | MediumTest | Leve
     MAP_STR_STR params;
     params["targetBundle"] = bundleName;
     params["targetAbility"] = abilityName2;
-    params["shouldReturn"] = abilityName2;
     Want want = STAbilityUtil::MakeWant("device", abilityName, bundleName, params);
     STAbilityUtil::StartAbility(want, abilityMs_);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName + abilityStateOnStart, abilityStateCountOne), 0);
@@ -2926,6 +2912,8 @@ HWTEST_F(AmsPageAbilityTest, AMS_Page_Ability_5900, Function | MediumTest | Leve
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName + abilityStateOnInactive, abilityStateCountOne), 0);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName2 + abilityStateOnStart, abilityStateCountOne), 0);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName2 + abilityStateOnActive, abilityStateCountOne), 0);
+    int eventCode = 0;
+    STAbilityUtil::PublishEvent(terminatePageAbility, eventCode, abilityName2);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName2 + abilityStateOnBackground, abilityStateCountOne), 0);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName2 + abilityStateOnStop, abilityStateCountOne), 0);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName + abilityStateOnActive, abilityStateCountTwo), 0);
@@ -2958,7 +2946,6 @@ HWTEST_F(AmsPageAbilityTest, AMS_Page_Ability_6000, Function | MediumTest | Leve
     MAP_STR_STR params;
     params["targetBundle"] = bundleName2;
     params["targetAbility"] = abilityName2;
-    params["shouldReturn"] = abilityName2;
     Want want = STAbilityUtil::MakeWant("device", abilityName, bundleName, params);
     STAbilityUtil::StartAbility(want, abilityMs_);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName + abilityStateOnStart, abilityStateCountOne), 0);
@@ -2966,6 +2953,8 @@ HWTEST_F(AmsPageAbilityTest, AMS_Page_Ability_6000, Function | MediumTest | Leve
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName + abilityStateOnInactive, abilityStateCountOne), 0);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName2 + abilityStateOnStart, abilityStateCountOne), 0);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName2 + abilityStateOnActive, abilityStateCountOne), 0);
+    int eventCode = 0;
+    STAbilityUtil::PublishEvent(terminatePageAbility, eventCode, abilityName2);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName2 + abilityStateOnBackground, abilityStateCountOne), 0);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName2 + abilityStateOnStop, abilityStateCountOne), 0);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName + abilityStateOnActive, abilityStateCountTwo), 0);
@@ -2997,7 +2986,6 @@ HWTEST_F(AmsPageAbilityTest, AMS_Page_Ability_6100, Function | MediumTest | Leve
     MAP_STR_STR params;
     params["targetBundle"] = bundleName;
     params["targetAbility"] = abilityName2;
-    params["shouldReturn"] = abilityName;
     Want want = STAbilityUtil::MakeWant("device", abilityName, bundleName, params);
     STAbilityUtil::StartAbility(want, abilityMs_);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName + abilityStateOnStart, abilityStateCountOne), 0);
@@ -3006,6 +2994,8 @@ HWTEST_F(AmsPageAbilityTest, AMS_Page_Ability_6100, Function | MediumTest | Leve
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName2 + abilityStateOnStart, abilityStateCountOne), 0);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName2 + abilityStateOnActive, abilityStateCountOne), 0);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName + abilityStateOnBackground, abilityStateCountOne), 0);
+    int eventCode = 0;
+    STAbilityUtil::PublishEvent(terminatePageAbility, eventCode, abilityName);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName + abilityStateOnStop, abilityStateCountOne), 0);
 
     // ability "N1" not in stack(terminated)
@@ -3393,14 +3383,18 @@ HWTEST_F(AmsPageAbilityTest, AMS_Page_Ability_6700, Function | MediumTest | Leve
     STAbilityUtil::PublishEvent(terminatePageAbility, eventCode, abilityName5);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName3 + abilityStateOnActive, abilityStateCountTwo), 0);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName5 + abilityStateOnStop, abilityStateCountOne), 0);
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     STAbilityUtil::PublishEvent(terminatePageAbility, eventCode, abilityName3);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName2 + abilityStateOnActive, abilityStateCountTwo), 0);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName3 + abilityStateOnStop, abilityStateCountOne), 0);
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     STAbilityUtil::PublishEvent(terminatePageAbility, eventCode, abilityName2);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName1 + abilityStateOnActive, abilityStateCountTwo), 0);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName2 + abilityStateOnStop, abilityStateCountOne), 0);
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     STAbilityUtil::PublishEvent(terminatePageAbility, eventCode, abilityName1);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName1 + abilityStateOnStop, abilityStateCountOne), 0);
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     MissionStackInfo missionStackInfo;
     GetAllStackInfo(missionStackInfo);
     EXPECT_TRUE(missionStackInfo.missionRecords.size() == 0);
@@ -3450,14 +3444,18 @@ HWTEST_F(AmsPageAbilityTest, AMS_Page_Ability_6800, Function | MediumTest | Leve
     STAbilityUtil::PublishEvent(terminatePageAbility, eventCode, abilityName5);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName3 + abilityStateOnActive, abilityStateCountTwo), 0);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName5 + abilityStateOnStop, abilityStateCountOne), 0);
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     STAbilityUtil::PublishEvent(terminatePageAbility, eventCode, abilityName3);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName2 + abilityStateOnActive, abilityStateCountTwo), 0);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName3 + abilityStateOnStop, abilityStateCountOne), 0);
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     STAbilityUtil::PublishEvent(terminatePageAbility, eventCode, abilityName2);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName1 + abilityStateOnActive, abilityStateCountTwo), 0);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName2 + abilityStateOnStop, abilityStateCountOne), 0);
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     STAbilityUtil::PublishEvent(terminatePageAbility, eventCode, abilityName1);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName1 + abilityStateOnStop, abilityStateCountOne), 0);
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     MissionStackInfo missionStackInfo;
     GetAllStackInfo(missionStackInfo);
     EXPECT_TRUE(missionStackInfo.missionRecords.size() == 0);

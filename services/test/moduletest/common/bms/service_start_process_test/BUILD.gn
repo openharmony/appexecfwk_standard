@@ -21,7 +21,10 @@ module_output_path = "appexecfwk_standard/mstbundlemgrservice"
 ohos_moduletest("BmsServiceStartModuleTest") {
   module_out_path = module_output_path
 
-  include_dirs = [ "${appexecfwk_path}/interfaces" ]
+  include_dirs = [
+    "${appexecfwk_path}/interfaces",
+    "//third_party/jsoncpp/include",
+  ]
 
   sources = [
     "${services_path}/bundlemgr/src/bundle_data_mgr.cpp",
@@ -31,6 +34,9 @@ ohos_moduletest("BmsServiceStartModuleTest") {
     "${services_path}/bundlemgr/src/bundle_mgr_service_event_handler.cpp",
     "${services_path}/bundlemgr/src/bundle_scanner.cpp",
     "${services_path}/bundlemgr/src/bundle_status_callback_death_recipient.cpp",
+    "${services_path}/bundlemgr/src/kvstore_death_recipient_callback.cpp",
+    "${services_path}/bundlemgr/src/module_usage_data_storage.cpp",
+    "${services_path}/bundlemgr/src/permission_changed_death_recipient.cpp",
   ]
 
   sources +=
@@ -60,6 +66,7 @@ ohos_moduletest("BmsServiceStartModuleTest") {
     "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
     "//third_party/googletest:gtest_main",
+    "//third_party/jsoncpp:jsoncpp",
   ]
 
   deps += bundle_install_deps

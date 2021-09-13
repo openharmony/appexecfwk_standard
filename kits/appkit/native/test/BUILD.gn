@@ -294,6 +294,7 @@ config("ability_start_setting_config") {
     "//foundation/appexecfwk/standard/kits/appkit/native/app/include",
     "//foundation/appexecfwk/common/log/include/",
     "//utils/native/base/include",
+    "//foundation/aafwk/standard/interfaces/innerkits/ability_manager/include",
   ]
 }
 
@@ -305,7 +306,10 @@ ohos_unittest("ability_start_setting_test") {
     ":ability_start_setting_config",
   ]
 
-  sources = [ "unittest/ability_start_setting_test.cpp" ]
+  sources = [
+    "//foundation/aafwk/standard/services/abilitymgr/src/ability_start_setting.cpp",
+    "unittest/ability_start_setting_test.cpp",
+  ]
 
   deps = [
     "//foundation/appexecfwk/standard/kits:appkit_native",

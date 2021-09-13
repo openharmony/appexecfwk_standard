@@ -25,7 +25,7 @@ namespace AppExecFwk {
 using namespace testing::ext;
 using namespace OHOS;
 using namespace OHOS::AppExecFwk;
-
+using namespace OHOS::AAFwk;
 class AbilityStartSettingTest : public testing::Test {
 public:
     AbilityStartSettingTest() : abilityStartSetting_(nullptr)

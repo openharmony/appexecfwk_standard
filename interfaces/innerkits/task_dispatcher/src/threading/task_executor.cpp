@@ -30,15 +30,15 @@ TaskExecutor::TaskExecutor(const std::shared_ptr<WorkerPoolConfig> &config) : Wo
 TaskExecutor::~TaskExecutor()
 {
     if ((consumer_) && consumer_->joinable()) {
-        APP_LOGD("TaskExecutor::~TaskExecutor consumer is running");
+        APP_LOGI("TaskExecutor::~TaskExecutor consumer is running");
         consumer_->join();
     }
-    APP_LOGD("TaskExecutor::~TaskExecutor");
+    APP_LOGI("TaskExecutor::~TaskExecutor");
 }
 
 void TaskExecutor::Execute(const std::shared_ptr<Task> &task)
 {
-    APP_LOGD("TaskExecutor::Execute begin");
+    APP_LOGI("TaskExecutor::Execute begin");
     task->SetSequence(GetAndIncrement(sequence));
 
     std::shared_ptr<TaskExecutor> executor = shared_from_this();
@@ -50,12 +50,12 @@ void TaskExecutor::Execute(const std::shared_ptr<Task> &task)
             APP_LOGW("TaskExecutor::Execute rejected a task");
         }
     }
-    APP_LOGD("TaskExecutor::Execute end");
+    APP_LOGI("TaskExecutor::Execute end");
 }
 
 ErrCode TaskExecutor::DoWorks(const std::shared_ptr<WorkerThread> &worker)
 {
-    APP_LOGD("TaskExecutor::DoWorks begin");
+    APP_LOGI("TaskExecutor::DoWorks begin");
     if (worker == nullptr) {
         APP_LOGE("TaskExecutor::DoWorks worker is nullptr");
         return ERR_APPEXECFWK_CHECK_FAILED;
@@ -70,7 +70,7 @@ ErrCode TaskExecutor::DoWorks(const std::shared_ptr<WorkerThread> &worker)
     bool isInterrupted = false;
     bool done = false;
     while (((task != nullptr && done == false) || ((task = GetTask(worker)) != nullptr))) {
-        APP_LOGD("TaskExecutor::DoWorks loop tasks.");
+        APP_LOGI("TaskExecutor::DoWorks loop tasks.");
 
         BeforeRun(task);
 
@@ -85,7 +85,7 @@ ErrCode TaskExecutor::DoWorks(const std::shared_ptr<WorkerThread> &worker)
         done = true;
     }
     OnWorkerExit(worker, isInterrupted);
-    APP_LOGD("TaskExecutor::DoWorks end");
+    APP_LOGI("TaskExecutor::DoWorks end");
     return ERR_OK;
 }
 std::shared_ptr<Task> TaskExecutor::GetTask(const std::shared_ptr<WorkerThread> &workerThread)
@@ -96,33 +96,33 @@ std::shared_ptr<Task> TaskExecutor::GetTask(const std::shared_ptr<WorkerThread> 
 
     for (;;) {
         if (terminated_.load() && pendingTasks_->Empty()) {
-            APP_LOGD("TaskExecutor::GetTask end: loop thread %{public}s is terminated",
+            APP_LOGI("TaskExecutor::GetTask end: loop thread %{public}s is terminated",
                 workerThread->GetThreadName().c_str());
             DecrementThread();
             return nullRunnable;
         }
 
         int workerCount = GetWorkCount();
-        APP_LOGD("TaskExecutor::GetTask  workerCount:%{public}d, GetCoreThreadCount: %{public}d",
+        APP_LOGI("TaskExecutor::GetTask  workerCount:%{public}d, GetCoreThreadCount: %{public}d",
             workerCount,
             GetCoreThreadCount());
         bool needCheckTimeout = (workerCount > GetCoreThreadCount());
         if (isTimeout && needCheckTimeout && pendingTasks_->Empty()) {
-            APP_LOGD("TaskExecutor::GetTask isTimeout is true");
+            APP_LOGI("TaskExecutor::GetTask isTimeout is true");
             if (CompareAndDecNum(workerCount)) {
-                APP_LOGD("TaskExecutor::GetTask end: loop thread %{public}s is timeout",
+                APP_LOGI("TaskExecutor::GetTask end: loop thread %{public}s is timeout",
                     workerThread->GetThreadName().c_str());
                 return nullRunnable;
             }
             continue;
         }
 
-        APP_LOGD("TaskExecutor::GetTask need timeout=%{public}d", needCheckTimeout);
+        APP_LOGI("TaskExecutor::GetTask need timeout=%{public}d", needCheckTimeout);
         std::shared_ptr<PriorityTaskWrapper> next =
             needCheckTimeout ? pendingTasks_->Poll(GetKeepAliveTime()) : pendingTasks_->Take();
 
         if (next != nullptr && next->task_ != nullptr) {
-            APP_LOGD("TaskExecutor::GetTask end: loop thread %{public}s get next task",
+            APP_LOGI("TaskExecutor::GetTask end: loop thread %{public}s get next task",
                 workerThread->GetThreadName().c_str());
             return next->task_;
         }
@@ -132,10 +132,10 @@ std::shared_ptr<Task> TaskExecutor::GetTask(const std::shared_ptr<WorkerThread> 
 
 void TaskExecutor::Terminate(bool force)
 {
-    APP_LOGD("TaskExecutor::Terminate begin");
+    APP_LOGI("TaskExecutor::Terminate begin");
     TerminateConsumer();
     ClosePool(force);
-    APP_LOGD("TaskExecutor::Terminate end");
+    APP_LOGI("TaskExecutor::Terminate end");
 }
 
 void TaskExecutor::AfterRun(const std::shared_ptr<Task> &task)
@@ -152,7 +152,7 @@ bool TaskExecutor::DelayExecute(const Runnable &task, long delayMs)
 {
     if (delayMs <= 0) {
         task();
-        APP_LOGD("TaskExecutor::DelayExecute end and delayMs less than 0");
+        APP_LOGI("TaskExecutor::DelayExecute end and delayMs less than 0");
         return true;
     }
     if (terminated_.load()) {
@@ -192,10 +192,10 @@ bool TaskExecutor::EnsureConsumeStarted()
             if (consumer_ == nullptr) {
                 consumer_ = std::make_shared<std::thread>(&TaskExecutor::Consume, this);
                 if (consumer_ == nullptr) {
-                    APP_LOGD("TaskExecutor::EnsureConsumeStarted consumer_ is nullptr");
+                    APP_LOGE("TaskExecutor::EnsureConsumeStarted consumer_ is nullptr");
                     return false;
                 }
-                APP_LOGD("TaskExecutor::EnsureConsumeStarted start a delay task consumer");
+                APP_LOGI("TaskExecutor::EnsureConsumeStarted start a delay task consumer");
             }
         }
     }
@@ -206,16 +206,16 @@ void TaskExecutor::Consume()
 {
     for (;;) {
         if (terminated_.load() && delayTasks_->Empty()) {
-            APP_LOGD("TaskExecutor::Consume delay task is empty");
+            APP_LOGI("TaskExecutor::Consume delay task is empty");
             break;
         }
         std::shared_ptr<DelayTaskWrapper> delayTaskWrapper = delayTasks_->Take();
         if (delayTaskWrapper == nullptr || delayTaskWrapper->runnable_ == nullptr) {
-            APP_LOGD("TaskExecutor::Consume delayTaskWrapper is nullptr");
+            APP_LOGE("TaskExecutor::Consume delayTaskWrapper is nullptr");
             return;
         };
         (delayTaskWrapper->runnable_)();
-        APP_LOGD("TaskExecutor::Consume after run");
+        APP_LOGI("TaskExecutor::Consume after run");
     }
 }
 

@@ -17,9 +17,7 @@
 #include "app_log_wrapper.h"
 
 namespace OHOS {
-
 namespace AppExecFwk {
-
 AppLifeCycleDeal::AppLifeCycleDeal()
 {}
 
@@ -94,6 +92,5 @@ sptr<IAppScheduler> AppLifeCycleDeal::GetApplicationClient() const
 {
     return appThread_;
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

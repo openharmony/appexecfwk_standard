@@ -22,7 +22,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 enum class SpawnConnectionState { STATE_NOT_CONNECT, STATE_CONNECTED, STATE_CONNECT_FAILED };
 
 class AppSpawnClient {
@@ -83,7 +82,6 @@ private:
     std::shared_ptr<AppSpawnSocket> socket_;
     SpawnConnectionState state_ = SpawnConnectionState::STATE_NOT_CONNECT;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_APPMGR_INCLUDE_APP_SPAWN_CLIENT_H

@@ -187,16 +187,14 @@ HWTEST_F(SerialTaskDispatcherModuleTest, SerialTaskDispatcher_AsyncDispatchTest_
     const int total = 300;
     std::atomic<int> count(0);
     long wait = 100;
-    int period = 10;
     for (int i = 0; i < total; i++) {
-        ptr->AsyncDispatch(std::make_shared<Runnable>([&count, &period, &name]() {
-            int sleep = std::rand() % period;
-            auto time = std::chrono::milliseconds(sleep);
+        ptr->AsyncDispatch(std::make_shared<Runnable>([&count, &name]() {
+            auto time = std::chrono::milliseconds(1);
             std::this_thread::sleep_for(time);
             int index = count.fetch_add(1);
             GTEST_LOG_(INFO) << "SerialTaskDispatcher_AsyncDispatchTest_002 task" + std::to_string(index) + "end";
         }));
-        wait += period;
+        wait += 1;
     }
     EXPECT_TRUE(count.load() < total);
     auto time = std::chrono::milliseconds(wait + 1000);

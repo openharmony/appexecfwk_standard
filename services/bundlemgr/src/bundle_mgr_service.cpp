@@ -51,6 +51,9 @@ BundleMgrService::~BundleMgrService()
     if (dataMgr_) {
         dataMgr_.reset();
     }
+    if (perChangeSub_) {
+        perChangeSub_.reset();
+    }
     APP_LOGI("instance is destroyed");
 }
 
@@ -81,6 +84,9 @@ void BundleMgrService::OnStop()
 {
     APP_LOGI("OnStop is called");
     SelfClean();
+    if (perChangeSub_) {
+        EventFwk::CommonEventManager::UnSubscribeCommonEvent(perChangeSub_);
+    }
 }
 
 bool BundleMgrService::IsServiceReady() const
@@ -143,7 +149,13 @@ bool BundleMgrService::Init()
         handler_->SendEvent(BMSEventHandler::BUNDLE_SCAN_START);
         needToScan_ = true;
     }
-
+    if (!perChangeSub_) {
+        EventFwk::MatchingSkills matchingSkills;
+        matchingSkills.AddEvent("PERMISSIONS_CHANGED_EVENT");
+        EventFwk::CommonEventSubscribeInfo subscribeInfo(matchingSkills);
+        perChangeSub_ = std::make_shared<BundlePermissionsChangedMonitor>(dataMgr_, subscribeInfo);
+        EventFwk::CommonEventManager::SubscribeCommonEvent(perChangeSub_);
+    }
     ready_ = true;
     APP_LOGI("init end success");
     return true;

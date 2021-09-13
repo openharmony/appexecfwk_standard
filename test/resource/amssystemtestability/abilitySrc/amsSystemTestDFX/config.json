@@ -28,18 +28,18 @@
             "moduleType": "entry"
         },
         "abilities": [{
-            "name": "AmsStAbilityDFXA1",
+            "name": "AmsDfxStServiceAbilityA1",
             "icon": "$media:snowball",
-            "label": "AmsStAbilityDFXA1 Ability",
+            "label": "AmsDfxStServiceAbilityA1 Ability",
             "launchType": "standard",
             "orientation": "unspecified",
             "type": "service",
             "visible": true
             },
         {
-            "name": "AmsStAbilityDFXA2",
+            "name": "AmsDfxStServiceAbilityA2",
             "icon": "$media:snowball",
-            "label": "AmsStAbilityDFXA2 Ability",
+            "label": "AmsDfxStServiceAbilityA1 Ability",
             "launchType": "standard",
             "orientation": "unspecified",
             "type": "service",

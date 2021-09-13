@@ -62,7 +62,11 @@ ohos_executable("lmks") {
 }
 
 ohos_prebuilt_etc("lmks.rc") {
-  source = "lmks.rc"
+  if (use_musl) {
+    source = "lmks.cfg"
+  } else {
+    source = "lmks.rc"
+  }
   relative_install_dir = "init"
   subsystem_name = "appexecfwk"
   part_name = "appexecfwk_standard"

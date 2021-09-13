@@ -34,6 +34,7 @@ std::shared_ptr<TaskExecuteInterceptor> ParallelTaskDispatcher::GetInterceptor()
 
 ErrCode ParallelTaskDispatcher::SyncDispatchBarrier(const std::shared_ptr<Runnable> &runnable)
 {
+    APP_LOGI("ParallelTaskDispatcher::SyncDispatchBarrier start");
     if (Check(runnable) != ERR_OK) {
         APP_LOGE("ParallelTaskDispatcher::SyncDispatchBarrier Check failed");
         return ERR_APPEXECFWK_CHECK_FAILED;
@@ -62,7 +63,9 @@ ErrCode ParallelTaskDispatcher::SyncDispatchBarrier(const std::shared_ptr<Runnab
 
 ErrCode ParallelTaskDispatcher::AsyncDispatchBarrier(const std::shared_ptr<Runnable> &runnable)
 {
+    APP_LOGI("ParallelTaskDispatcher::AsyncDispatchBarrier start");
     if (Check(runnable) != ERR_OK) {
+        APP_LOGE("ParallelTaskDispatcher::AsyncDispatchBarrier check failed");
         return ERR_APPEXECFWK_CHECK_FAILED;
     }
     if (barrierHandler_ == nullptr) {
@@ -70,13 +73,14 @@ ErrCode ParallelTaskDispatcher::AsyncDispatchBarrier(const std::shared_ptr<Runna
         return ERR_APPEXECFWK_CHECK_FAILED;
     }
     std::shared_ptr<Task> innerTask = std::make_shared<Task>(runnable, GetPriority(), shared_from_this());
-    APP_LOGD("ParallelTaskDispatcher::AsyncDispatchBarrier into new async task");
+    APP_LOGI("ParallelTaskDispatcher::AsyncDispatchBarrier into new async task");
     if (innerTask == nullptr) {
         APP_LOGE("ParallelTaskDispatcher::AsyncDispatchBarrier innerTask is nullptr");
         return ERR_APPEXECFWK_CHECK_FAILED;
     }
 
     barrierHandler_->AddBarrier(innerTask);
+    APP_LOGI("ParallelTaskDispatcher::AsyncDispatchBarrier end");
     return ERR_OK;
 }
 

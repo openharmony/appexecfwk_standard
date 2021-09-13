@@ -22,39 +22,39 @@ using namespace OHOS::EventFwk;
 namespace OHOS {
 namespace AppExecFwk {
 
-AmsStAbilityDFXA1::~AmsStAbilityDFXA1()
+AmsDfxStServiceAbilityA1::~AmsDfxStServiceAbilityA1()
 {}
 
-void AmsStAbilityDFXA1::OnStart(const Want &want)
+void AmsDfxStServiceAbilityA1::OnStart(const Want &want)
 {
-    APP_LOGI("AmsStAbilityDFXA1::OnStart");
+    APP_LOGI("AmsDfxStServiceAbilityA1::OnStart");
     pageAbilityEvent.SubscribeEvent(STEventName::g_eventList, shared_from_this());
     Ability::OnStart(want);
     std::string eventData = GetAbilityName() + STEventName::g_abilityStateOnStart;
     pageAbilityEvent.PublishEvent(STEventName::g_eventName, pageAbilityEvent.GetOnStartCount(), eventData);
 }
 
-void AmsStAbilityDFXA1::OnCommand(const AAFwk::Want &want, bool restart, int startId)
+void AmsDfxStServiceAbilityA1::OnCommand(const AAFwk::Want &want, bool restart, int startId)
 {
-    APP_LOGI("AmsStAbilityDFXA1::OnCommand");
+    APP_LOGI("AmsDfxStServiceAbilityA1::OnCommand");
 
     Ability::OnCommand(want, restart, startId);
     std::string eventData = GetAbilityName() + STEventName::g_abilityStateOnCommand;
     pageAbilityEvent.PublishEvent(STEventName::g_eventName, pageAbilityEvent.GetOnCommandCount(), eventData);
 }
 
-void AmsStAbilityDFXA1::OnNewWant(const Want &want)
+void AmsDfxStServiceAbilityA1::OnNewWant(const Want &want)
 {
-    APP_LOGI("AmsStAbilityDFXA1::OnNewWant");
+    APP_LOGI("AmsDfxStServiceAbilityA1::OnNewWant");
 
     Ability::OnNewWant(want);
     std::string eventData = GetAbilityName() + STEventName::g_abilityStateOnNewWant;
     pageAbilityEvent.PublishEvent(STEventName::g_eventName, pageAbilityEvent.GetOnNewWantCount(), eventData);
 }
 
-void AmsStAbilityDFXA1::OnStop()
+void AmsDfxStServiceAbilityA1::OnStop()
 {
-    APP_LOGI("AmsStAbilityDFXA1::OnStop");
+    APP_LOGI("AmsDfxStServiceAbilityA1::OnStop");
 
     Ability::OnStop();
     pageAbilityEvent.UnsubscribeEvent();
@@ -62,36 +62,36 @@ void AmsStAbilityDFXA1::OnStop()
     pageAbilityEvent.PublishEvent(STEventName::g_eventName, pageAbilityEvent.GetOnStopCount(), eventData);
 }
 
-void AmsStAbilityDFXA1::OnActive()
+void AmsDfxStServiceAbilityA1::OnActive()
 {
-    APP_LOGI("AmsStAbilityDFXA1::OnActive");
+    APP_LOGI("AmsDfxStServiceAbilityA1::OnActive");
 
     Ability::OnActive();
     std::string eventData = GetAbilityName() + STEventName::g_abilityStateOnActive;
     pageAbilityEvent.PublishEvent(STEventName::g_eventName, pageAbilityEvent.GetOnActiveCount(), eventData);
 }
 
-void AmsStAbilityDFXA1::OnInactive()
+void AmsDfxStServiceAbilityA1::OnInactive()
 {
-    APP_LOGI("AmsStAbilityDFXA1::OnInactive");
+    APP_LOGI("AmsDfxStServiceAbilityA1::OnInactive");
 
     Ability::OnInactive();
     std::string eventData = GetAbilityName() + STEventName::g_abilityStateOnInactive;
     pageAbilityEvent.PublishEvent(STEventName::g_eventName, pageAbilityEvent.GetOnInactiveCount(), eventData);
 }
 
-void AmsStAbilityDFXA1::OnBackground()
+void AmsDfxStServiceAbilityA1::OnBackground()
 {
-    APP_LOGI("AmsStAbilityDFXA1::OnBackground");
+    APP_LOGI("AmsDfxStServiceAbilityA1::OnBackground");
 
     Ability::OnBackground();
     std::string eventData = GetAbilityName() + STEventName::g_abilityStateOnBackground;
     pageAbilityEvent.PublishEvent(STEventName::g_eventName, pageAbilityEvent.GetOnBackgroundCount(), eventData);
 }
 
-sptr<IRemoteObject> AmsStAbilityDFXA1::OnConnect(const Want &want)
+sptr<IRemoteObject> AmsDfxStServiceAbilityA1::OnConnect(const Want &want)
 {
-    APP_LOGI("AmsStAbilityDFXA1::OnConnect");
+    APP_LOGI("AmsDfxStServiceAbilityA1::OnConnect");
 
     sptr<IRemoteObject> ret = Ability::OnConnect(want);
     std::string eventData = GetAbilityName() + STEventName::g_abilityStateOnConnect;
@@ -100,15 +100,15 @@ sptr<IRemoteObject> AmsStAbilityDFXA1::OnConnect(const Want &want)
     return ret;
 }
 
-void AmsStAbilityDFXA1::OnDisconnect(const Want &want)
+void AmsDfxStServiceAbilityA1::OnDisconnect(const Want &want)
 {
-    APP_LOGI("AmsStAbilityDFXA1::OnDisconnect");
+    APP_LOGI("AmsDfxStServiceAbilityA1::OnDisconnect");
 
     Ability::OnDisconnect(want);
     std::string eventData = GetAbilityName() + STEventName::g_abilityStateOnDisconnect;
     pageAbilityEvent.PublishEvent(STEventName::g_eventName, pageAbilityEvent.GetOnDisconnectCount(), eventData);
 }
 
-REGISTER_AA(AmsStAbilityDFXA1);
+REGISTER_AA(AmsDfxStServiceAbilityA1);
 }  // namespace AppExecFwk
 }  // namespace OHOS

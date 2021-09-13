@@ -119,6 +119,13 @@ private:
      */
     ErrCode HandleQueryAbilityInfo(Parcel &data, Parcel &reply);
     /**
+     * @brief Handles the QueryAbilityInfos function called from a IBundleMgr proxy object.
+     * @param data Indicates the data to be read.
+     * @param reply Indicates the reply to be sent;
+     * @return Returns ERR_OK if called successfully; returns error code otherwise.
+     */
+    ErrCode HandleQueryAbilityInfos(Parcel &data, Parcel &reply);
+    /**
      * @brief Handles the QueryAbilityInfoByUri function called from a IBundleMgr proxy object.
      * @param data Indicates the data to be read.
      * @param reply Indicates the reply to be sent;
@@ -370,7 +377,20 @@ private:
      * @return Returns ERR_OK if called successfully; returns error code otherwise.
      */
     ErrCode HandleGetShortcutInfos(Parcel &data, Parcel &reply);
-
+    /**
+     * @brief Handles the HandleGetModuleUsageRecords function called from a IBundleMgr proxy object.
+     * @param data Indicates the data to be read.
+     * @param reply Indicates the reply to be sent;
+     * @return Returns ERR_OK if called successfully; returns error code otherwise.
+     */
+    ErrCode HandleGetModuleUsageRecords(Parcel &data, Parcel &reply);
+    /**
+     * @brief Handles the HandleNotifyActivityLifeStatus function called from a IBundleMgr proxy object.
+     * @param data Indicates the data to be read.
+     * @param reply Indicates the reply to be sent;
+     * @return Returns ERR_OK if called successfully; returns error code otherwise.
+     */
+    ErrCode HandleNotifyActivityLifeStatus(Parcel &data, Parcel &reply);
 private:
     /**
      * @brief Write a parcelabe vector objects to the proxy node.

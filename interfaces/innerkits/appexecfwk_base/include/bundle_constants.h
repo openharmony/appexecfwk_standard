@@ -112,11 +112,16 @@ constexpr uint8_t MAX_MODULE_LABEL = 63;
 // distributed database
 const std::string APP_ID = "bundle_manager_service";
 const std::string STORE_ID = "installed_bundle_datas";
+const std::string ABILITY_USAGE_STORE_ID = "ability_usage_datas";
 
 // single max hap size
 constexpr int32_t MAX_HAP_SIZE = 50 * 1024 * 1024;
 
+const std::string UID = "uid";
 const int32_t MAX_LIMIT_SIZE = 4;
+
+const std::string DATA_ABILITY_URI_PREFIX = "dataability://";
+const char DATA_ABILITY_URI_SEPARATOR = '/';
 
 }  // namespace Constants
 }  // namespace AppExecFwk

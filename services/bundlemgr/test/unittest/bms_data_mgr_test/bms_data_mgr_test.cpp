@@ -122,7 +122,7 @@ const std::shared_ptr<BundleDataMgr> BmsDataMgrTest::GetDataMgr() const
 HWTEST_F(BmsDataMgrTest, UpdateInstallState_0100, Function | SmallTest | Level0)
 {
     auto dataMgr = GetDataMgr();
-    ASSERT_NE(dataMgr, nullptr);
+    EXPECT_NE(dataMgr, nullptr);
     bool ret1 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_START);
     bool ret2 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_FAIL);
     EXPECT_TRUE(ret1);
@@ -138,7 +138,7 @@ HWTEST_F(BmsDataMgrTest, UpdateInstallState_0100, Function | SmallTest | Level0)
 HWTEST_F(BmsDataMgrTest, UpdateInstallState_0200, Function | SmallTest | Level0)
 {
     auto dataMgr = GetDataMgr();
-    ASSERT_NE(dataMgr, nullptr);
+    EXPECT_NE(dataMgr, nullptr);
     bool ret1 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_START);
     bool ret2 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_SUCCESS);
     bool ret3 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::UPDATING_START);
@@ -158,7 +158,7 @@ HWTEST_F(BmsDataMgrTest, UpdateInstallState_0200, Function | SmallTest | Level0)
 HWTEST_F(BmsDataMgrTest, UpdateInstallState_0300, Function | SmallTest | Level0)
 {
     auto dataMgr = GetDataMgr();
-    ASSERT_NE(dataMgr, nullptr);
+    EXPECT_NE(dataMgr, nullptr);
     bool ret1 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_START);
     bool ret2 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_SUCCESS);
     bool ret3 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::UPDATING_START);
@@ -180,7 +180,7 @@ HWTEST_F(BmsDataMgrTest, UpdateInstallState_0300, Function | SmallTest | Level0)
 HWTEST_F(BmsDataMgrTest, UpdateInstallState_0400, Function | SmallTest | Level0)
 {
     auto dataMgr = GetDataMgr();
-    ASSERT_NE(dataMgr, nullptr);
+    EXPECT_NE(dataMgr, nullptr);
     bool ret1 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_START);
     bool ret2 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_SUCCESS);
     bool ret3 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::UNINSTALL_START);
@@ -200,7 +200,7 @@ HWTEST_F(BmsDataMgrTest, UpdateInstallState_0400, Function | SmallTest | Level0)
 HWTEST_F(BmsDataMgrTest, UpdateInstallState_0500, Function | SmallTest | Level0)
 {
     auto dataMgr = GetDataMgr();
-    ASSERT_NE(dataMgr, nullptr);
+    EXPECT_NE(dataMgr, nullptr);
     bool ret1 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_START);
     bool ret2 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_SUCCESS);
     bool ret3 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::UNINSTALL_START);
@@ -220,7 +220,7 @@ HWTEST_F(BmsDataMgrTest, UpdateInstallState_0500, Function | SmallTest | Level0)
 HWTEST_F(BmsDataMgrTest, UpdateInstallState_0600, Function | SmallTest | Level0)
 {
     auto dataMgr = GetDataMgr();
-    ASSERT_NE(dataMgr, nullptr);
+    EXPECT_NE(dataMgr, nullptr);
     bool ret1 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_START);
     bool ret2 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_START);
     EXPECT_TRUE(ret1);
@@ -237,7 +237,7 @@ HWTEST_F(BmsDataMgrTest, UpdateInstallState_0600, Function | SmallTest | Level0)
 HWTEST_F(BmsDataMgrTest, UpdateInstallState_0700, Function | SmallTest | Level0)
 {
     auto dataMgr = GetDataMgr();
-    ASSERT_NE(dataMgr, nullptr);
+    EXPECT_NE(dataMgr, nullptr);
     bool ret1 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_START);
     bool ret2 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::UNINSTALL_START);
     EXPECT_TRUE(ret1);
@@ -254,7 +254,7 @@ HWTEST_F(BmsDataMgrTest, UpdateInstallState_0700, Function | SmallTest | Level0)
 HWTEST_F(BmsDataMgrTest, UpdateInstallState_0800, Function | SmallTest | Level0)
 {
     auto dataMgr = GetDataMgr();
-    ASSERT_NE(dataMgr, nullptr);
+    EXPECT_NE(dataMgr, nullptr);
     bool ret1 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_START);
     bool ret2 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::UNINSTALL_SUCCESS);
     EXPECT_TRUE(ret1);
@@ -271,7 +271,7 @@ HWTEST_F(BmsDataMgrTest, UpdateInstallState_0800, Function | SmallTest | Level0)
 HWTEST_F(BmsDataMgrTest, UpdateInstallState_0900, Function | SmallTest | Level0)
 {
     auto dataMgr = GetDataMgr();
-    ASSERT_NE(dataMgr, nullptr);
+    EXPECT_NE(dataMgr, nullptr);
     bool ret1 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_START);
     bool ret2 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::UNINSTALL_FAIL);
     EXPECT_TRUE(ret1);
@@ -288,7 +288,7 @@ HWTEST_F(BmsDataMgrTest, UpdateInstallState_0900, Function | SmallTest | Level0)
 HWTEST_F(BmsDataMgrTest, UpdateInstallState_1000, Function | SmallTest | Level0)
 {
     auto dataMgr = GetDataMgr();
-    ASSERT_NE(dataMgr, nullptr);
+    EXPECT_NE(dataMgr, nullptr);
     bool ret1 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_START);
     bool ret2 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::UPDATING_START);
     EXPECT_TRUE(ret1);
@@ -305,7 +305,7 @@ HWTEST_F(BmsDataMgrTest, UpdateInstallState_1000, Function | SmallTest | Level0)
 HWTEST_F(BmsDataMgrTest, UpdateInstallState_1100, Function | SmallTest | Level0)
 {
     auto dataMgr = GetDataMgr();
-    ASSERT_NE(dataMgr, nullptr);
+    EXPECT_NE(dataMgr, nullptr);
     bool ret1 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_START);
     bool ret2 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::UPDATING_SUCCESS);
     EXPECT_TRUE(ret1);
@@ -322,7 +322,7 @@ HWTEST_F(BmsDataMgrTest, UpdateInstallState_1100, Function | SmallTest | Level0)
 HWTEST_F(BmsDataMgrTest, UpdateInstallState_1200, Function | SmallTest | Level0)
 {
     auto dataMgr = GetDataMgr();
-    ASSERT_NE(dataMgr, nullptr);
+    EXPECT_NE(dataMgr, nullptr);
     bool ret1 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_START);
     bool ret2 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::UPDATING_FAIL);
     EXPECT_TRUE(ret1);
@@ -339,7 +339,7 @@ HWTEST_F(BmsDataMgrTest, UpdateInstallState_1200, Function | SmallTest | Level0)
 HWTEST_F(BmsDataMgrTest, UpdateInstallState_1300, Function | SmallTest | Level0)
 {
     auto dataMgr = GetDataMgr();
-    ASSERT_NE(dataMgr, nullptr);
+    EXPECT_NE(dataMgr, nullptr);
     bool ret1 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_START);
     bool ret2 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_SUCCESS);
     bool ret3 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_SUCCESS);
@@ -359,7 +359,7 @@ HWTEST_F(BmsDataMgrTest, UpdateInstallState_1300, Function | SmallTest | Level0)
 HWTEST_F(BmsDataMgrTest, UpdateInstallState_1400, Function | SmallTest | Level0)
 {
     auto dataMgr = GetDataMgr();
-    ASSERT_NE(dataMgr, nullptr);
+    EXPECT_NE(dataMgr, nullptr);
     bool ret1 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_START);
     bool ret2 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_SUCCESS);
     bool ret3 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_START);
@@ -379,7 +379,7 @@ HWTEST_F(BmsDataMgrTest, UpdateInstallState_1400, Function | SmallTest | Level0)
 HWTEST_F(BmsDataMgrTest, UpdateInstallState_1500, Function | SmallTest | Level0)
 {
     auto dataMgr = GetDataMgr();
-    ASSERT_NE(dataMgr, nullptr);
+    EXPECT_NE(dataMgr, nullptr);
     bool ret1 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_START);
     bool ret2 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_SUCCESS);
     bool ret3 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_FAIL);
@@ -399,7 +399,7 @@ HWTEST_F(BmsDataMgrTest, UpdateInstallState_1500, Function | SmallTest | Level0)
 HWTEST_F(BmsDataMgrTest, UpdateInstallState_1600, Function | SmallTest | Level0)
 {
     auto dataMgr = GetDataMgr();
-    ASSERT_NE(dataMgr, nullptr);
+    EXPECT_NE(dataMgr, nullptr);
     bool ret1 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_START);
     bool ret2 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_SUCCESS);
     bool ret3 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::UNINSTALL_SUCCESS);
@@ -419,7 +419,7 @@ HWTEST_F(BmsDataMgrTest, UpdateInstallState_1600, Function | SmallTest | Level0)
 HWTEST_F(BmsDataMgrTest, UpdateInstallState_1700, Function | SmallTest | Level0)
 {
     auto dataMgr = GetDataMgr();
-    ASSERT_NE(dataMgr, nullptr);
+    EXPECT_NE(dataMgr, nullptr);
     bool ret1 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_START);
     bool ret2 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_SUCCESS);
     bool ret3 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::UNINSTALL_FAIL);
@@ -439,7 +439,7 @@ HWTEST_F(BmsDataMgrTest, UpdateInstallState_1700, Function | SmallTest | Level0)
 HWTEST_F(BmsDataMgrTest, UpdateInstallState_1800, Function | SmallTest | Level0)
 {
     auto dataMgr = GetDataMgr();
-    ASSERT_NE(dataMgr, nullptr);
+    EXPECT_NE(dataMgr, nullptr);
     bool ret1 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_START);
     bool ret2 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_SUCCESS);
     bool ret3 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::UPDATING_FAIL);
@@ -459,7 +459,7 @@ HWTEST_F(BmsDataMgrTest, UpdateInstallState_1800, Function | SmallTest | Level0)
 HWTEST_F(BmsDataMgrTest, UpdateInstallState_1900, Function | SmallTest | Level0)
 {
     auto dataMgr = GetDataMgr();
-    ASSERT_NE(dataMgr, nullptr);
+    EXPECT_NE(dataMgr, nullptr);
     bool ret1 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_START);
     bool ret2 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_SUCCESS);
     bool ret3 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::UPDATING_SUCCESS);
@@ -479,7 +479,7 @@ HWTEST_F(BmsDataMgrTest, UpdateInstallState_1900, Function | SmallTest | Level0)
 HWTEST_F(BmsDataMgrTest, UpdateInstallState_2000, Function | SmallTest | Level0)
 {
     auto dataMgr = GetDataMgr();
-    ASSERT_NE(dataMgr, nullptr);
+    EXPECT_NE(dataMgr, nullptr);
     bool ret1 = dataMgr->UpdateBundleInstallState("", InstallState::INSTALL_START);
     EXPECT_FALSE(ret1);
 }
@@ -493,7 +493,7 @@ HWTEST_F(BmsDataMgrTest, UpdateInstallState_2000, Function | SmallTest | Level0)
 HWTEST_F(BmsDataMgrTest, LoadDataFromPersistentStorage_0100, Function | SmallTest | Level0)
 {
     auto dataMgr = GetDataMgr();
-    ASSERT_NE(dataMgr, nullptr);
+    EXPECT_NE(dataMgr, nullptr);
     bool ret1 = dataMgr->LoadDataFromPersistentStorage();
     EXPECT_FALSE(ret1);
 
@@ -532,7 +532,7 @@ HWTEST_F(BmsDataMgrTest, AddBundleInfo_0100, Function | SmallTest | Level0)
     info.SetBaseBundleInfo(bundleInfo);
     info.SetBaseApplicationInfo(applicationInfo);
     auto dataMgr = GetDataMgr();
-    ASSERT_NE(dataMgr, nullptr);
+    EXPECT_NE(dataMgr, nullptr);
     InnerBundleInfo info1;
     bool ret1 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_START);
     bool ret2 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_SUCCESS);
@@ -577,7 +577,7 @@ HWTEST_F(BmsDataMgrTest, AddBundleInfo_0200, Function | SmallTest | Level0)
     info2.SetBaseBundleInfo(bundleInfo2);
     info2.SetBaseApplicationInfo(applicationInfo2);
     auto dataMgr = GetDataMgr();
-    ASSERT_NE(dataMgr, nullptr);
+    EXPECT_NE(dataMgr, nullptr);
     bool ret1 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_START);
     bool ret2 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_SUCCESS);
     bool ret3 = dataMgr->AddInnerBundleInfo(BUNDLE_NAME, info1);
@@ -610,7 +610,7 @@ HWTEST_F(BmsDataMgrTest, AddBundleInfo_0200, Function | SmallTest | Level0)
 HWTEST_F(BmsDataMgrTest, AddBundleInfo_0300, Function | SmallTest | Level0)
 {
     auto dataMgr = GetDataMgr();
-    ASSERT_NE(dataMgr, nullptr);
+    EXPECT_NE(dataMgr, nullptr);
     InnerBundleInfo info;
     bool ret = dataMgr->AddInnerBundleInfo("", info);
     EXPECT_FALSE(ret);
@@ -634,7 +634,7 @@ HWTEST_F(BmsDataMgrTest, AddBundleInfo_0400, Function | SmallTest | Level0)
     info.SetBaseBundleInfo(bundleInfo);
     info.SetBaseApplicationInfo(applicationInfo);
     auto dataMgr = GetDataMgr();
-    ASSERT_NE(dataMgr, nullptr);
+    EXPECT_NE(dataMgr, nullptr);
     bool ret1 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_START);
     bool ret2 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_SUCCESS);
     bool ret3 = dataMgr->AddInnerBundleInfo(BUNDLE_NAME, info);
@@ -687,7 +687,7 @@ HWTEST_F(BmsDataMgrTest, AddBundleInfo_0500, Function | SmallTest | Level0)
     InnerBundleInfo info3;
     InnerBundleInfo info4;
     auto dataMgr = GetDataMgr();
-    ASSERT_NE(dataMgr, nullptr);
+    EXPECT_NE(dataMgr, nullptr);
     bool ret1 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_START);
     bool ret2 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_SUCCESS);
     bool ret3 = dataMgr->AddInnerBundleInfo(BUNDLE_NAME, info1);
@@ -734,7 +734,7 @@ HWTEST_F(BmsDataMgrTest, GenerateUidAndGid_0100, Function | SmallTest | Level0)
     info.SetBaseApplicationInfo(applicationInfo);
     info.SetAppType(Constants::AppType::SYSTEM_APP);
     auto dataMgr = GetDataMgr();
-    ASSERT_NE(dataMgr, nullptr);
+    EXPECT_NE(dataMgr, nullptr);
     bool ret1 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_START);
     bool ret2 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_SUCCESS);
     bool ret3 = dataMgr->AddInnerBundleInfo(BUNDLE_NAME, info);
@@ -767,7 +767,7 @@ HWTEST_F(BmsDataMgrTest, GenerateUidAndGid_0200, Function | SmallTest | Level0)
     info.SetBaseApplicationInfo(applicationInfo);
     info.SetAppType(Constants::AppType::THIRD_SYSTEM_APP);
     auto dataMgr = GetDataMgr();
-    ASSERT_NE(dataMgr, nullptr);
+    EXPECT_NE(dataMgr, nullptr);
     bool ret1 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_START);
     bool ret2 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_SUCCESS);
     bool ret3 = dataMgr->AddInnerBundleInfo(BUNDLE_NAME, info);
@@ -800,7 +800,7 @@ HWTEST_F(BmsDataMgrTest, GenerateUidAndGid_0300, Function | SmallTest | Level0)
     info.SetBaseApplicationInfo(applicationInfo);
     info.SetAppType(Constants::AppType::THIRD_PARTY_APP);
     auto dataMgr = GetDataMgr();
-    ASSERT_NE(dataMgr, nullptr);
+    EXPECT_NE(dataMgr, nullptr);
     bool ret1 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_START);
     bool ret2 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_SUCCESS);
     bool ret3 = dataMgr->AddInnerBundleInfo(BUNDLE_NAME, info);
@@ -836,7 +836,7 @@ HWTEST_F(BmsDataMgrTest, QueryAbilityInfo_0100, Function | SmallTest | Level0)
     info1.SetBaseApplicationInfo(applicationInfo1);
     info1.InsertAbilitiesInfo(BUNDLE_NAME + PACKAGE_NAME + ABILITY_NAME, abilityInfo);
     auto dataMgr = GetDataMgr();
-    ASSERT_NE(dataMgr, nullptr);
+    EXPECT_NE(dataMgr, nullptr);
     bool ret1 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_START);
     EXPECT_TRUE(ret1);
     bool ret2 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_SUCCESS);
@@ -893,7 +893,7 @@ HWTEST_F(BmsDataMgrTest, QueryAbilityInfo_0200, Function | SmallTest | Level0)
     name.SetAbilityName(ABILITY_NAME);
     want.SetElement(name);
     auto dataMgr = GetDataMgr();
-    ASSERT_NE(dataMgr, nullptr);
+    EXPECT_NE(dataMgr, nullptr);
     AbilityInfo abilityInfo;
     bool ret = dataMgr->QueryAbilityInfo(want, abilityInfo);
     EXPECT_FALSE(ret);
@@ -937,7 +937,7 @@ HWTEST_F(BmsDataMgrTest, QueryAbilityInfo_0300, Function | SmallTest | Level0)
 
     want.SetElement(element1);
     auto dataMgr = GetDataMgr();
-    ASSERT_NE(dataMgr, nullptr);
+    EXPECT_NE(dataMgr, nullptr);
     AbilityInfo abilityInfo;
     bool ret = dataMgr->QueryAbilityInfo(want, abilityInfo);
     EXPECT_FALSE(ret);
@@ -961,7 +961,7 @@ HWTEST_F(BmsDataMgrTest, GetApplicationInfo_0100, Function | SmallTest | Level0)
     info1.SetBaseBundleInfo(bundleInfo1);
     info1.SetBaseApplicationInfo(applicationInfo1);
     auto dataMgr = GetDataMgr();
-    ASSERT_NE(dataMgr, nullptr);
+    EXPECT_NE(dataMgr, nullptr);
     bool ret1 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_START);
     bool ret2 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_SUCCESS);
     bool ret3 = dataMgr->AddInnerBundleInfo(BUNDLE_NAME, info1);
@@ -999,7 +999,7 @@ HWTEST_F(BmsDataMgrTest, GetApplicationInfo_0200, Function | SmallTest | Level0)
     EXPECT_EQ(appInfo.bundleName, appInfo2->bundleName);
     EXPECT_EQ(appInfo.deviceId, appInfo2->deviceId);
     auto dataMgr = GetDataMgr();
-    ASSERT_NE(dataMgr, nullptr);
+    EXPECT_NE(dataMgr, nullptr);
     ApplicationInfo appInfo3;
     bool ret = dataMgr->GetApplicationInfo(BUNDLE_NAME, ApplicationFlag::GET_BASIC_APPLICATION_INFO, USERID, appInfo3);
     EXPECT_FALSE(ret);

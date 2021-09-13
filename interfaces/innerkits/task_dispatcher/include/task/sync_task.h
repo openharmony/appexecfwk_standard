@@ -34,27 +34,11 @@ namespace AppExecFwk {
 class SyncTask final : public Task {
 
 public:
-    /**
-     *@brief Constructs the object.
-     *@param runnable The task.
-     *@param priority The priority
-     *@return -
-     */
     SyncTask(const std::shared_ptr<Runnable> &runnable, TaskPriority priority,
         const std::shared_ptr<BaseTaskDispatcher> &baseTaskDispatcher);
-
-    /**
-     *@brief invoke the function to execute the task
-     *@param -
-     *@return void
-     */
+    ~SyncTask() = default;
     void Run() override;
 
-    /**
-     *@brief wait the task to run completely
-     *@param -
-     *@return void
-     */
     void WaitTask();
 
 private:

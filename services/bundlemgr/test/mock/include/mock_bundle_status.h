@@ -32,6 +32,9 @@ public:
 
     virtual void OnBundleStateChanged(const uint8_t installType, const int32_t resultCode, const std::string &resultMsg,
         const std::string &bundleName) override;
+    virtual void OnBundleAdded(const std::string &bundleName, const int userId) override {};
+    virtual void OnBundleUpdated(const std::string &bundleName, const int userId) override {};
+    virtual void OnBundleRemoved(const std::string &bundleName, const int userId) override {};
     virtual sptr<IRemoteObject> AsObject() override;
     int32_t GetResultCode();
 

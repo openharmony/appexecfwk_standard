@@ -154,7 +154,10 @@ protected:
                         "defaultHeight": 100,
                         "minWidth": 0,
                         "defaultWidth": 200
-                    }
+                    },
+                    "labelId": 1,
+                    "descriptionId": 1,
+                    "iconId": 1
                 },
                 "com.ohos.launchercom.ohos.launchercom.ohos.launcher.MainAbility": {
                     "applicationName": "com.ohos.launcher",
@@ -517,7 +520,7 @@ void BmsBundleInstallerModuleTest::SaveBundleDataToStorage(std::unique_ptr<Singl
     status = kvStorePtr->Put(key, value);
     if (status != Status::SUCCESS) {
         std::cout << static_cast<int32_t>(status) << std::endl;
-        ASSERT_TRUE(false) << "save fail";
+        EXPECT_TRUE(false) << "save fail";
     }
 }
 
@@ -530,7 +533,7 @@ void BmsBundleInstallerModuleTest::DeleteBundleDataToStorage(
     Key key(keyString);
     status = kvStorePtr->Delete(key);
     if (status != Status::SUCCESS) {
-        ASSERT_TRUE(false) << "delete fail";
+        EXPECT_TRUE(false) << "delete fail";
     }
 }
 
@@ -626,13 +629,13 @@ void BmsBundleInstallerModuleTest::SetUpTestCase()
 {
     if (access(ROOT_DIR.c_str(), F_OK) != 0) {
         bool result = OHOS::ForceCreateDirectory(ROOT_DIR);
-        ASSERT_TRUE(result);
+        EXPECT_TRUE(result);
     }
     if (chown(ROOT_DIR.c_str(), ROOT_UID, ROOT_UID) != 0) {
-        ASSERT_TRUE(false);
+        EXPECT_TRUE(false);
     }
     if (chmod(ROOT_DIR.c_str(), S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH) != 0) {
-        ASSERT_TRUE(false);
+        EXPECT_TRUE(false);
     }
 }
 
@@ -665,7 +668,7 @@ HWTEST_F(BmsBundleInstallerModuleTest, SystemAppInstall_0100, Function | MediumT
 {
     std::string bundleName = SYSTEM_BUNDLE_NAME + "s1";
     std::shared_ptr<BundleDataMgr> dataMgr = GetBundleDataMgr();
-    ASSERT_NE(dataMgr, nullptr);
+    EXPECT_NE(dataMgr, nullptr);
     BundleInfo bundleInfo;
     bool ret = false;
     int checkCount = 0;
@@ -689,7 +692,7 @@ HWTEST_F(BmsBundleInstallerModuleTest, SystemAppInstall_0200, Function | MediumT
 {
     int bundleNum = 2;
     std::shared_ptr<BundleDataMgr> dataMgr = GetBundleDataMgr();
-    ASSERT_NE(dataMgr, nullptr);
+    EXPECT_NE(dataMgr, nullptr);
     BundleInfo bundleInfo;
 
     for (int i = 1; i <= bundleNum; i++) {
@@ -718,7 +721,7 @@ HWTEST_F(BmsBundleInstallerModuleTest, SystemAppInstall_0300, Function | MediumT
 {
     std::string norBundleName = SYSTEM_BUNDLE_NAME + "s2";
     std::shared_ptr<BundleDataMgr> dataMgr = GetBundleDataMgr();
-    ASSERT_NE(dataMgr, nullptr);
+    EXPECT_NE(dataMgr, nullptr);
     BundleInfo bundleInfo;
     bool ret = false;
     int checkCount = 0;
@@ -752,7 +755,7 @@ HWTEST_F(BmsBundleInstallerModuleTest, SystemAppInstall_0400, Function | MediumT
     std::string bundleName = SYSTEM_BUNDLE_NAME + "s3";
     CheckFileNonExist(bundleName);
     std::shared_ptr<BundleDataMgr> dataMgr = GetBundleDataMgr();
-    ASSERT_NE(dataMgr, nullptr);
+    EXPECT_NE(dataMgr, nullptr);
     BundleInfo bundleInfo;
     bool ret = false;
     int checkCount = 0;
@@ -776,7 +779,7 @@ HWTEST_F(BmsBundleInstallerModuleTest, SystemAppInstall_0500, Function | MediumT
     std::string bundleName = SYSTEM_BUNDLE_NAME + "s4";
     CheckFileNonExist(bundleName);
     std::shared_ptr<BundleDataMgr> dataMgr = GetBundleDataMgr();
-    ASSERT_NE(dataMgr, nullptr);
+    EXPECT_NE(dataMgr, nullptr);
     BundleInfo bundleInfo;
     bool ret = false;
     int checkCount = 0;
@@ -798,19 +801,19 @@ HWTEST_F(BmsBundleInstallerModuleTest, SystemAppInstall_0500, Function | MediumT
 HWTEST_F(BmsBundleInstallerModuleTest, ThirdAppInstall_0100, Function | MediumTest | Level1)
 {
     auto installer = DelayedSingleton<BundleMgrService>::GetInstance()->GetBundleInstaller();
-    ASSERT_NE(installer, nullptr);
+    EXPECT_NE(installer, nullptr);
     OHOS::sptr<MockStatusReceiver> receiver = new (std::nothrow) MockStatusReceiver();
-    ASSERT_NE(receiver, nullptr);
+    EXPECT_NE(receiver, nullptr);
     InstallParam installParam;
 
     installParam.installFlag = InstallFlag::NORMAL;
     std::string bundleFilePath = BUNDLE_TMPPATH + "bmsThirdBundle1" + Constants::INSTALL_FILE_SUFFIX;
     installer->Install(bundleFilePath, installParam, receiver);
-    ASSERT_EQ(receiver->GetResultCode(), ERR_OK) << "install fail!" << bundleFilePath;
+    EXPECT_EQ(receiver->GetResultCode(), ERR_OK) << "install fail!" << bundleFilePath;
     std::string bundleName = THIRD_BUNDLE_NAME + "1";
     CheckFileExist(bundleName);
     OHOS::sptr<MockStatusReceiver> recUninstall = new (std::nothrow) MockStatusReceiver();
-    ASSERT_NE(recUninstall, nullptr);
+    EXPECT_NE(recUninstall, nullptr);
     installParam.userId = Constants::DEFAULT_USERID;
     installer->Uninstall(bundleName, installParam, recUninstall);
     EXPECT_EQ(recUninstall->GetResultCode(), ERR_OK) << "uninstall fail!" << bundleName;
@@ -826,14 +829,14 @@ HWTEST_F(BmsBundleInstallerModuleTest, ThirdAppInstall_0100, Function | MediumTe
 HWTEST_F(BmsBundleInstallerModuleTest, ThirdAppInstall_0200, Function | MediumTest | Level1)
 {
     auto installer = DelayedSingleton<BundleMgrService>::GetInstance()->GetBundleInstaller();
-    ASSERT_NE(installer, nullptr);
+    EXPECT_NE(installer, nullptr);
     OHOS::sptr<MockStatusReceiver> receiver = new (std::nothrow) MockStatusReceiver();
-    ASSERT_NE(receiver, nullptr);
+    EXPECT_NE(receiver, nullptr);
     InstallParam installParam;
     installParam.installFlag = InstallFlag::NORMAL;
     std::string bundleFilePath = BUNDLE_TMPPATH + "bmsThirdBundle1" + Constants::INSTALL_FILE_SUFFIX;
     installer->Install(bundleFilePath, installParam, receiver);
-    ASSERT_EQ(receiver->GetResultCode(), ERR_OK);
+    EXPECT_EQ(receiver->GetResultCode(), ERR_OK);
     std::string bundleName = THIRD_BUNDLE_NAME + "1";
     CheckFileExist(bundleName);
 
@@ -841,7 +844,7 @@ HWTEST_F(BmsBundleInstallerModuleTest, ThirdAppInstall_0200, Function | MediumTe
     StartBundleMgrService();
     CheckFileExist(bundleName);
     std::shared_ptr<BundleDataMgr> dataMgr = GetBundleDataMgr();
-    ASSERT_NE(dataMgr, nullptr);
+    EXPECT_NE(dataMgr, nullptr);
     BundleInfo bundleInfo;
     bool ret = false;
     ret = dataMgr->GetBundleInfo(bundleName, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo);
@@ -850,7 +853,7 @@ HWTEST_F(BmsBundleInstallerModuleTest, ThirdAppInstall_0200, Function | MediumTe
 
     installParam.userId = Constants::DEFAULT_USERID;
     OHOS::sptr<MockStatusReceiver> recUninstall = new (std::nothrow) MockStatusReceiver();
-    ASSERT_NE(recUninstall, nullptr);
+    EXPECT_NE(recUninstall, nullptr);
     installer->Uninstall(bundleName, installParam, recUninstall);
     EXPECT_EQ(recUninstall->GetResultCode(), ERR_OK);
 }
@@ -865,21 +868,21 @@ HWTEST_F(BmsBundleInstallerModuleTest, ThirdAppInstall_0200, Function | MediumTe
 HWTEST_F(BmsBundleInstallerModuleTest, ThirdAppInstall_0300, Function | MediumTest | Level2)
 {
     auto installer = DelayedSingleton<BundleMgrService>::GetInstance()->GetBundleInstaller();
-    ASSERT_NE(installer, nullptr);
+    EXPECT_NE(installer, nullptr);
     OHOS::sptr<MockStatusReceiver> receiver = new (std::nothrow) MockStatusReceiver();
-    ASSERT_NE(receiver, nullptr);
+    EXPECT_NE(receiver, nullptr);
     InstallParam installParam;
     installParam.installFlag = InstallFlag::NORMAL;
     std::string bundleFilePath = BUNDLE_TMPPATH + "bmsThirdBundle12" + ERROR_SUFFIX;
     installer->Install(bundleFilePath, installParam, receiver);
-    ASSERT_EQ(receiver->GetResultCode(), ERR_APPEXECFWK_INSTALL_INVALID_HAP_NAME);
+    EXPECT_EQ(receiver->GetResultCode(), ERR_APPEXECFWK_INSTALL_INVALID_HAP_NAME);
     std::string bundleName = THIRD_BUNDLE_NAME + "12";
     CheckFileNonExist(bundleName);
 
     BundleInfo info;
     std::shared_ptr<BundleMgrService> bms = DelayedSingleton<BundleMgrService>::GetInstance();
     auto dataMgr = bms->GetDataMgr();
-    ASSERT_NE(dataMgr, nullptr);
+    EXPECT_NE(dataMgr, nullptr);
     bool isBundleExist = dataMgr->GetBundleInfo(bundleName, BundleFlag::GET_BUNDLE_DEFAULT, info);
     EXPECT_FALSE(isBundleExist);
 }
@@ -893,11 +896,11 @@ HWTEST_F(BmsBundleInstallerModuleTest, ThirdAppInstall_0300, Function | MediumTe
 HWTEST_F(BmsBundleInstallerModuleTest, ThirdAppInstall_0400, Function | MediumTest | Level1)
 {
     auto installer = DelayedSingleton<BundleMgrService>::GetInstance()->GetBundleInstaller();
-    ASSERT_NE(installer, nullptr);
+    EXPECT_NE(installer, nullptr);
     OHOS::sptr<MockStatusReceiver> receiver = new (std::nothrow) MockStatusReceiver();
-    ASSERT_NE(receiver, nullptr);
+    EXPECT_NE(receiver, nullptr);
     OHOS::sptr<MockStatusReceiver> receiver2 = new (std::nothrow) MockStatusReceiver();
-    ASSERT_NE(receiver2, nullptr);
+    EXPECT_NE(receiver2, nullptr);
     InstallParam installParam;
     installParam.installFlag = InstallFlag::NORMAL;
     std::string bundleName = THIRD_BUNDLE_NAME + "5";
@@ -914,10 +917,10 @@ HWTEST_F(BmsBundleInstallerModuleTest, ThirdAppInstall_0400, Function | MediumTe
     StartInstalld();
     std::this_thread::sleep_for(1ms);
     installer->Install(bundleFilePath, installParam, receiver2);
-    ASSERT_EQ(receiver2->GetResultCode(), ERR_OK);
+    EXPECT_EQ(receiver2->GetResultCode(), ERR_OK);
     CheckFileExist(bundleName);
     OHOS::sptr<MockStatusReceiver> recUninstall = new (std::nothrow) MockStatusReceiver();
-    ASSERT_NE(recUninstall, nullptr);
+    EXPECT_NE(recUninstall, nullptr);
     installer->Uninstall(bundleName, installParam, recUninstall);
     EXPECT_EQ(recUninstall->GetResultCode(), ERR_OK);
 }
@@ -932,27 +935,27 @@ HWTEST_F(BmsBundleInstallerModuleTest, ThirdAppInstall_0400, Function | MediumTe
 HWTEST_F(BmsBundleInstallerModuleTest, ThirdAppInstall_0500, Function | MediumTest | Level1)
 {
     auto installer = DelayedSingleton<BundleMgrService>::GetInstance()->GetBundleInstaller();
-    ASSERT_NE(installer, nullptr);
+    EXPECT_NE(installer, nullptr);
     OHOS::sptr<MockStatusReceiver> normalInstall = new (std::nothrow) MockStatusReceiver();
-    ASSERT_NE(normalInstall, nullptr);
+    EXPECT_NE(normalInstall, nullptr);
 
     InstallParam installParam;
     installParam.installFlag = InstallFlag::NORMAL;
     std::string bundleFilePath = BUNDLE_TMPPATH + "bmsThirdBundle9" + Constants::INSTALL_FILE_SUFFIX;
     installer->Install(bundleFilePath, installParam, normalInstall);
-    ASSERT_EQ(normalInstall->GetResultCode(), ERR_OK);
+    EXPECT_EQ(normalInstall->GetResultCode(), ERR_OK);
     std::string bundleName = THIRD_BUNDLE_NAME + "2";
     CheckFileExist(bundleName);
     std::string upgradeFilePath = BUNDLE_TMPPATH + "bmsThirdBundle7" + Constants::INSTALL_FILE_SUFFIX;
     OHOS::sptr<MockStatusReceiver> replaceInstall = new (std::nothrow) MockStatusReceiver();
-    ASSERT_NE(replaceInstall, nullptr);
+    EXPECT_NE(replaceInstall, nullptr);
     installParam.installFlag = InstallFlag::REPLACE_EXISTING;
     installer->Install(upgradeFilePath, installParam, replaceInstall);
-    ASSERT_EQ(replaceInstall->GetResultCode(), ERR_APPEXECFWK_INSTALL_VERSION_DOWNGRADE);
+    EXPECT_EQ(replaceInstall->GetResultCode(), ERR_APPEXECFWK_INSTALL_VERSION_DOWNGRADE);
     CheckFileExist(bundleName);
 
     OHOS::sptr<MockStatusReceiver> uninstall = new (std::nothrow) MockStatusReceiver();
-    ASSERT_NE(uninstall, nullptr);
+    EXPECT_NE(uninstall, nullptr);
     installParam.userId = Constants::DEFAULT_USERID;
     installer->Uninstall(bundleName, installParam, uninstall);
     EXPECT_EQ(uninstall->GetResultCode(), ERR_OK) << "uninstall fail!" << bundleName;
@@ -968,23 +971,23 @@ HWTEST_F(BmsBundleInstallerModuleTest, ThirdAppInstall_0500, Function | MediumTe
 HWTEST_F(BmsBundleInstallerModuleTest, ThirdAppInstall_0600, Function | MediumTest | Level1)
 {
     auto installer = DelayedSingleton<BundleMgrService>::GetInstance()->GetBundleInstaller();
-    ASSERT_NE(installer, nullptr);
+    EXPECT_NE(installer, nullptr);
     OHOS::sptr<MockStatusReceiver> normalInstall = new (std::nothrow) MockStatusReceiver();
-    ASSERT_NE(normalInstall, nullptr);
+    EXPECT_NE(normalInstall, nullptr);
 
     InstallParam installParam;
     installParam.installFlag = InstallFlag::NORMAL;
     std::string bundleFilePath = BUNDLE_TMPPATH + "bmsThirdBundle7" + Constants::INSTALL_FILE_SUFFIX;
     installer->Install(bundleFilePath, installParam, normalInstall);
-    ASSERT_EQ(normalInstall->GetResultCode(), ERR_OK);
+    EXPECT_EQ(normalInstall->GetResultCode(), ERR_OK);
     std::string bundleName = THIRD_BUNDLE_NAME + "2";
     CheckFileExist(bundleName);
     std::string upgradeFilePath = BUNDLE_TMPPATH + "bmsThirdBundle9" + Constants::INSTALL_FILE_SUFFIX;
     OHOS::sptr<MockStatusReceiver> replaceInstall = new (std::nothrow) MockStatusReceiver();
-    ASSERT_NE(replaceInstall, nullptr);
+    EXPECT_NE(replaceInstall, nullptr);
     installParam.installFlag = InstallFlag::REPLACE_EXISTING;
     installer->Install(upgradeFilePath, installParam, replaceInstall);
-    ASSERT_EQ(replaceInstall->GetResultCode(), ERR_OK);
+    EXPECT_EQ(replaceInstall->GetResultCode(), ERR_OK);
     CheckFileExist(bundleName);
 
     StopBundleMgrService();
@@ -994,14 +997,14 @@ HWTEST_F(BmsBundleInstallerModuleTest, ThirdAppInstall_0600, Function | MediumTe
     BundleInfo info;
     std::shared_ptr<BundleMgrService> bms = DelayedSingleton<BundleMgrService>::GetInstance();
     auto dataMgr = bms->GetDataMgr();
-    ASSERT_NE(dataMgr, nullptr);
+    EXPECT_NE(dataMgr, nullptr);
     bool isBundleExist = dataMgr->GetBundleInfo(bundleName, BundleFlag::GET_BUNDLE_DEFAULT, info);
     EXPECT_TRUE(isBundleExist);
 
     std::cout << "info-name:" << info.name << std::endl;
 
     OHOS::sptr<MockStatusReceiver> uninstall = new (std::nothrow) MockStatusReceiver();
-    ASSERT_NE(uninstall, nullptr);
+    EXPECT_NE(uninstall, nullptr);
     installParam.userId = Constants::DEFAULT_USERID;
     installer->Uninstall(bundleName, installParam, uninstall);
     EXPECT_EQ(uninstall->GetResultCode(), ERR_OK) << "uninstall fail!" << bundleName;
@@ -1017,27 +1020,27 @@ HWTEST_F(BmsBundleInstallerModuleTest, ThirdAppInstall_0600, Function | MediumTe
 HWTEST_F(BmsBundleInstallerModuleTest, ThirdAppInstall_0700, Function | MediumTest | Level1)
 {
     auto installer = DelayedSingleton<BundleMgrService>::GetInstance()->GetBundleInstaller();
-    ASSERT_NE(installer, nullptr);
+    EXPECT_NE(installer, nullptr);
     OHOS::sptr<MockStatusReceiver> normalInstall = new (std::nothrow) MockStatusReceiver();
-    ASSERT_NE(normalInstall, nullptr);
+    EXPECT_NE(normalInstall, nullptr);
 
     InstallParam installParam;
     installParam.installFlag = InstallFlag::NORMAL;
     std::string bundleFilePath = BUNDLE_TMPPATH + "bmsThirdBundle7" + Constants::INSTALL_FILE_SUFFIX;
     installer->Install(bundleFilePath, installParam, normalInstall);
-    ASSERT_EQ(normalInstall->GetResultCode(), ERR_OK);
+    EXPECT_EQ(normalInstall->GetResultCode(), ERR_OK);
     std::string bundleName = THIRD_BUNDLE_NAME + "2";
     CheckFileExist(bundleName);
     std::string upgradeFilePath = BUNDLE_TMPPATH + "bmsThirdBundle10" + Constants::INSTALL_FILE_SUFFIX;
     OHOS::sptr<MockStatusReceiver> replaceInstall = new (std::nothrow) MockStatusReceiver();
-    ASSERT_NE(replaceInstall, nullptr);
+    EXPECT_NE(replaceInstall, nullptr);
     installParam.installFlag = InstallFlag::REPLACE_EXISTING;
     installer->Install(upgradeFilePath, installParam, replaceInstall);
-    ASSERT_EQ(replaceInstall->GetResultCode(), ERR_OK);
+    EXPECT_EQ(replaceInstall->GetResultCode(), ERR_OK);
     CheckFileExist(bundleName);
 
     OHOS::sptr<MockStatusReceiver> uninstall = new (std::nothrow) MockStatusReceiver();
-    ASSERT_NE(uninstall, nullptr);
+    EXPECT_NE(uninstall, nullptr);
     installParam.userId = Constants::DEFAULT_USERID;
     installer->Uninstall(bundleName, installParam, uninstall);
     EXPECT_EQ(uninstall->GetResultCode(), ERR_OK) << "uninstall fail!" << bundleName;
@@ -1052,29 +1055,29 @@ HWTEST_F(BmsBundleInstallerModuleTest, ThirdAppInstall_0700, Function | MediumTe
 HWTEST_F(BmsBundleInstallerModuleTest, ThirdAppInstall_0800, Function | MediumTest | Level1)
 {
     auto installer = DelayedSingleton<BundleMgrService>::GetInstance()->GetBundleInstaller();
-    ASSERT_NE(installer, nullptr);
+    EXPECT_NE(installer, nullptr);
     OHOS::sptr<MockStatusReceiver> receiver = new (std::nothrow) MockStatusReceiver();
-    ASSERT_NE(receiver, nullptr);
+    EXPECT_NE(receiver, nullptr);
     OHOS::sptr<MockStatusReceiver> receiver2 = new (std::nothrow) MockStatusReceiver();
-    ASSERT_NE(receiver2, nullptr);
+    EXPECT_NE(receiver2, nullptr);
     InstallParam installParam;
 
     installParam.installFlag = InstallFlag::NORMAL;
     std::string bundleFilePath = BUNDLE_TMPPATH + "bmsThirdBundle1" + Constants::INSTALL_FILE_SUFFIX;
     installer->Install(bundleFilePath, installParam, receiver);
-    ASSERT_EQ(receiver->GetResultCode(), ERR_OK) << "install fail!" << bundleFilePath;
+    EXPECT_EQ(receiver->GetResultCode(), ERR_OK) << "install fail!" << bundleFilePath;
     std::string bundleName = THIRD_BUNDLE_NAME + "1";
     std::string modulePackage = "com.third.hiworld.example.h1";
     CheckFileExist(bundleName, modulePackage);
 
     bundleFilePath = BUNDLE_TMPPATH + "bmsThirdBundle4" + Constants::INSTALL_FILE_SUFFIX;
     installer->Install(bundleFilePath, installParam, receiver2);
-    ASSERT_EQ(receiver2->GetResultCode(), ERR_OK) << "install fail!" << bundleFilePath;
+    EXPECT_EQ(receiver2->GetResultCode(), ERR_OK) << "install fail!" << bundleFilePath;
     std::string modulePackage2 = "com.third.hiworld.example.h2";
     CheckFileExist(bundleName, modulePackage2);
 
     OHOS::sptr<MockStatusReceiver> recUninstall = new (std::nothrow) MockStatusReceiver();
-    ASSERT_NE(recUninstall, nullptr);
+    EXPECT_NE(recUninstall, nullptr);
     installParam.userId = Constants::DEFAULT_USERID;
     installer->Uninstall(bundleName, installParam, recUninstall);
     EXPECT_EQ(recUninstall->GetResultCode(), ERR_OK) << "uninstall fail!" << bundleName;
@@ -1089,17 +1092,17 @@ HWTEST_F(BmsBundleInstallerModuleTest, ThirdAppInstall_0800, Function | MediumTe
 HWTEST_F(BmsBundleInstallerModuleTest, ThirdAppInstall_0900, Function | MediumTest | Level1)
 {
     auto installer = DelayedSingleton<BundleMgrService>::GetInstance()->GetBundleInstaller();
-    ASSERT_NE(installer, nullptr);
+    EXPECT_NE(installer, nullptr);
     OHOS::sptr<MockStatusReceiver> receiver = new (std::nothrow) MockStatusReceiver();
-    ASSERT_NE(receiver, nullptr);
+    EXPECT_NE(receiver, nullptr);
     OHOS::sptr<MockStatusReceiver> receiver2 = new (std::nothrow) MockStatusReceiver();
-    ASSERT_NE(receiver2, nullptr);
+    EXPECT_NE(receiver2, nullptr);
     InstallParam installParam;
 
     installParam.installFlag = InstallFlag::NORMAL;
     std::string bundleFilePath = BUNDLE_TMPPATH + "bmsThirdBundle3" + Constants::INSTALL_FILE_SUFFIX;
     installer->Install(bundleFilePath, installParam, receiver);
-    ASSERT_EQ(receiver->GetResultCode(), ERR_OK) << "install fail!" << bundleFilePath;
+    EXPECT_EQ(receiver->GetResultCode(), ERR_OK) << "install fail!" << bundleFilePath;
     std::string bundleName = THIRD_BUNDLE_NAME + "1";
     std::string modulePackage = "com.third.hiworld.example.h1";
     std::vector<std::string> hap1AbilityNames = {};
@@ -1107,13 +1110,13 @@ HWTEST_F(BmsBundleInstallerModuleTest, ThirdAppInstall_0900, Function | MediumTe
 
     bundleFilePath = BUNDLE_TMPPATH + "bmsThirdBundle6" + Constants::INSTALL_FILE_SUFFIX;
     installer->Install(bundleFilePath, installParam, receiver2);
-    ASSERT_EQ(receiver2->GetResultCode(), ERR_OK) << "install fail!" << bundleFilePath;
+    EXPECT_EQ(receiver2->GetResultCode(), ERR_OK) << "install fail!" << bundleFilePath;
     std::string modulePackage2 = "com.third.hiworld.example.h2";
     std::vector<std::string> hap2AbilityNames = {};
     CheckFileExist(bundleName, modulePackage2, hap2AbilityNames);
 
     OHOS::sptr<MockStatusReceiver> recUninstall = new (std::nothrow) MockStatusReceiver();
-    ASSERT_NE(recUninstall, nullptr);
+    EXPECT_NE(recUninstall, nullptr);
     installParam.userId = Constants::DEFAULT_USERID;
     installer->Uninstall(bundleName, installParam, recUninstall);
     EXPECT_EQ(recUninstall->GetResultCode(), ERR_OK) << "uninstall fail!" << bundleName;
@@ -1128,17 +1131,17 @@ HWTEST_F(BmsBundleInstallerModuleTest, ThirdAppInstall_0900, Function | MediumTe
 HWTEST_F(BmsBundleInstallerModuleTest, ThirdAppInstall_1000, Function | MediumTest | Level1)
 {
     auto installer = DelayedSingleton<BundleMgrService>::GetInstance()->GetBundleInstaller();
-    ASSERT_NE(installer, nullptr);
+    EXPECT_NE(installer, nullptr);
     OHOS::sptr<MockStatusReceiver> receiver = new (std::nothrow) MockStatusReceiver();
-    ASSERT_NE(receiver, nullptr);
+    EXPECT_NE(receiver, nullptr);
     OHOS::sptr<MockStatusReceiver> receiver2 = new (std::nothrow) MockStatusReceiver();
-    ASSERT_NE(receiver2, nullptr);
+    EXPECT_NE(receiver2, nullptr);
     InstallParam installParam;
 
     installParam.installFlag = InstallFlag::NORMAL;
     std::string bundleFilePath = BUNDLE_TMPPATH + "bmsThirdBundle3" + Constants::INSTALL_FILE_SUFFIX;
     installer->Install(bundleFilePath, installParam, receiver);
-    ASSERT_EQ(receiver->GetResultCode(), ERR_OK) << "install fail!" << bundleFilePath;
+    EXPECT_EQ(receiver->GetResultCode(), ERR_OK) << "install fail!" << bundleFilePath;
     std::string bundleName = THIRD_BUNDLE_NAME + "1";
     std::string modulePackage = "com.third.hiworld.example.h1";
     std::vector<std::string> hap1AbilityNames = {};
@@ -1146,13 +1149,13 @@ HWTEST_F(BmsBundleInstallerModuleTest, ThirdAppInstall_1000, Function | MediumTe
 
     bundleFilePath = BUNDLE_TMPPATH + "bmsThirdBundle4" + Constants::INSTALL_FILE_SUFFIX;
     installer->Install(bundleFilePath, installParam, receiver2);
-    ASSERT_EQ(receiver2->GetResultCode(), ERR_OK) << "install fail!" << bundleFilePath;
+    EXPECT_EQ(receiver2->GetResultCode(), ERR_OK) << "install fail!" << bundleFilePath;
     std::string modulePackage2 = "com.third.hiworld.example.h2";
     std::vector<std::string> hap2AbilityNames = {"bmsThirdBundle_A1"};
     CheckFileExist(bundleName, modulePackage2, hap2AbilityNames);
 
     OHOS::sptr<MockStatusReceiver> recUninstall = new (std::nothrow) MockStatusReceiver();
-    ASSERT_NE(recUninstall, nullptr);
+    EXPECT_NE(recUninstall, nullptr);
     installParam.userId = Constants::DEFAULT_USERID;
     installer->Uninstall(bundleName, installParam, recUninstall);
     EXPECT_EQ(recUninstall->GetResultCode(), ERR_OK) << "uninstall fail!" << bundleName;
@@ -1168,17 +1171,17 @@ HWTEST_F(BmsBundleInstallerModuleTest, ThirdAppInstall_1000, Function | MediumTe
 HWTEST_F(BmsBundleInstallerModuleTest, ThirdAppInstall_1100, Function | MediumTest | Level1)
 {
     auto installer = DelayedSingleton<BundleMgrService>::GetInstance()->GetBundleInstaller();
-    ASSERT_NE(installer, nullptr);
+    EXPECT_NE(installer, nullptr);
     OHOS::sptr<MockStatusReceiver> receiver = new (std::nothrow) MockStatusReceiver();
-    ASSERT_NE(receiver, nullptr);
+    EXPECT_NE(receiver, nullptr);
     OHOS::sptr<MockStatusReceiver> receiver2 = new (std::nothrow) MockStatusReceiver();
-    ASSERT_NE(receiver2, nullptr);
+    EXPECT_NE(receiver2, nullptr);
     InstallParam installParam;
 
     installParam.installFlag = InstallFlag::NORMAL;
     std::string bundleFilePath = BUNDLE_TMPPATH + "bmsThirdBundle3" + Constants::INSTALL_FILE_SUFFIX;
     installer->Install(bundleFilePath, installParam, receiver);
-    ASSERT_EQ(receiver->GetResultCode(), ERR_OK) << "install fail!" << bundleFilePath;
+    EXPECT_EQ(receiver->GetResultCode(), ERR_OK) << "install fail!" << bundleFilePath;
     std::string bundleName = THIRD_BUNDLE_NAME + "1";
     std::string modulePackage = "com.third.hiworld.example.h1";
     std::vector<std::string> hap1AbilityNames = {};
@@ -1186,13 +1189,13 @@ HWTEST_F(BmsBundleInstallerModuleTest, ThirdAppInstall_1100, Function | MediumTe
 
     bundleFilePath = BUNDLE_TMPPATH + "bmsThirdBundle5" + Constants::INSTALL_FILE_SUFFIX;
     installer->Install(bundleFilePath, installParam, receiver2);
-    ASSERT_EQ(receiver2->GetResultCode(), ERR_OK) << "install fail!" << bundleFilePath;
+    EXPECT_EQ(receiver2->GetResultCode(), ERR_OK) << "install fail!" << bundleFilePath;
     std::string modulePackage2 = "com.third.hiworld.example.h2";
     std::vector<std::string> hap2AbilityNames = {"bmsThirdBundle_A1", "bmsThirdBundle_A2"};
     CheckFileExist(bundleName, modulePackage2, hap2AbilityNames);
 
     OHOS::sptr<MockStatusReceiver> recUninstall = new (std::nothrow) MockStatusReceiver();
-    ASSERT_NE(recUninstall, nullptr);
+    EXPECT_NE(recUninstall, nullptr);
     installParam.userId = Constants::DEFAULT_USERID;
     installer->Uninstall(bundleName, installParam, recUninstall);
     EXPECT_EQ(recUninstall->GetResultCode(), ERR_OK) << "uninstall fail!" << bundleName;
@@ -1207,17 +1210,17 @@ HWTEST_F(BmsBundleInstallerModuleTest, ThirdAppInstall_1100, Function | MediumTe
 HWTEST_F(BmsBundleInstallerModuleTest, ThirdAppInstall_1200, Function | MediumTest | Level1)
 {
     auto installer = DelayedSingleton<BundleMgrService>::GetInstance()->GetBundleInstaller();
-    ASSERT_NE(installer, nullptr);
+    EXPECT_NE(installer, nullptr);
     OHOS::sptr<MockStatusReceiver> receiver = new (std::nothrow) MockStatusReceiver();
-    ASSERT_NE(receiver, nullptr);
+    EXPECT_NE(receiver, nullptr);
     OHOS::sptr<MockStatusReceiver> receiver2 = new (std::nothrow) MockStatusReceiver();
-    ASSERT_NE(receiver2, nullptr);
+    EXPECT_NE(receiver2, nullptr);
     InstallParam installParam;
 
     installParam.installFlag = InstallFlag::NORMAL;
     std::string bundleFilePath = BUNDLE_TMPPATH + "bmsThirdBundle1" + Constants::INSTALL_FILE_SUFFIX;
     installer->Install(bundleFilePath, installParam, receiver);
-    ASSERT_EQ(receiver->GetResultCode(), ERR_OK) << "install fail!" << bundleFilePath;
+    EXPECT_EQ(receiver->GetResultCode(), ERR_OK) << "install fail!" << bundleFilePath;
     std::string bundleName = THIRD_BUNDLE_NAME + "1";
     std::string modulePackage = "com.third.hiworld.example.h1";
     std::vector<std::string> hap1AbilityNames = {"bmsThirdBundle_A1"};
@@ -1225,13 +1228,13 @@ HWTEST_F(BmsBundleInstallerModuleTest, ThirdAppInstall_1200, Function | MediumTe
 
     bundleFilePath = BUNDLE_TMPPATH + "bmsThirdBundle6" + Constants::INSTALL_FILE_SUFFIX;
     installer->Install(bundleFilePath, installParam, receiver2);
-    ASSERT_EQ(receiver2->GetResultCode(), ERR_OK) << "install fail!" << bundleFilePath;
+    EXPECT_EQ(receiver2->GetResultCode(), ERR_OK) << "install fail!" << bundleFilePath;
     std::string modulePackage2 = "com.third.hiworld.example.h2";
     std::vector<std::string> hap2AbilityNames = {};
     CheckFileExist(bundleName, modulePackage2, hap2AbilityNames);
 
     OHOS::sptr<MockStatusReceiver> recUninstall = new (std::nothrow) MockStatusReceiver();
-    ASSERT_NE(recUninstall, nullptr);
+    EXPECT_NE(recUninstall, nullptr);
     installParam.userId = Constants::DEFAULT_USERID;
     installer->Uninstall(bundleName, installParam, recUninstall);
     EXPECT_EQ(recUninstall->GetResultCode(), ERR_OK) << "uninstall fail!" << bundleName;
@@ -1246,17 +1249,17 @@ HWTEST_F(BmsBundleInstallerModuleTest, ThirdAppInstall_1200, Function | MediumTe
 HWTEST_F(BmsBundleInstallerModuleTest, ThirdAppInstall_1300, Function | MediumTest | Level1)
 {
     auto installer = DelayedSingleton<BundleMgrService>::GetInstance()->GetBundleInstaller();
-    ASSERT_NE(installer, nullptr);
+    EXPECT_NE(installer, nullptr);
     OHOS::sptr<MockStatusReceiver> receiver = new (std::nothrow) MockStatusReceiver();
-    ASSERT_NE(receiver, nullptr);
+    EXPECT_NE(receiver, nullptr);
     OHOS::sptr<MockStatusReceiver> receiver2 = new (std::nothrow) MockStatusReceiver();
-    ASSERT_NE(receiver2, nullptr);
+    EXPECT_NE(receiver2, nullptr);
     InstallParam installParam;
 
     installParam.installFlag = InstallFlag::NORMAL;
     std::string bundleFilePath = BUNDLE_TMPPATH + "bmsThirdBundle1" + Constants::INSTALL_FILE_SUFFIX;
     installer->Install(bundleFilePath, installParam, receiver);
-    ASSERT_EQ(receiver->GetResultCode(), ERR_OK) << "install fail!" << bundleFilePath;
+    EXPECT_EQ(receiver->GetResultCode(), ERR_OK) << "install fail!" << bundleFilePath;
     std::string bundleName = THIRD_BUNDLE_NAME + "1";
     std::string modulePackage = "com.third.hiworld.example.h1";
     std::vector<std::string> hap1AbilityNames = {"bmsThirdBundle_A1"};
@@ -1264,13 +1267,13 @@ HWTEST_F(BmsBundleInstallerModuleTest, ThirdAppInstall_1300, Function | MediumTe
 
     bundleFilePath = BUNDLE_TMPPATH + "bmsThirdBundle4" + Constants::INSTALL_FILE_SUFFIX;
     installer->Install(bundleFilePath, installParam, receiver2);
-    ASSERT_EQ(receiver2->GetResultCode(), ERR_OK) << "install fail!" << bundleFilePath;
+    EXPECT_EQ(receiver2->GetResultCode(), ERR_OK) << "install fail!" << bundleFilePath;
     std::string modulePackage2 = "com.third.hiworld.example.h2";
     std::vector<std::string> hap2AbilityNames = {"bmsThirdBundle_A1"};
     CheckFileExist(bundleName, modulePackage2, hap2AbilityNames);
 
     OHOS::sptr<MockStatusReceiver> recUninstall = new (std::nothrow) MockStatusReceiver();
-    ASSERT_NE(recUninstall, nullptr);
+    EXPECT_NE(recUninstall, nullptr);
     installParam.userId = Constants::DEFAULT_USERID;
     installer->Uninstall(bundleName, installParam, recUninstall);
     EXPECT_EQ(recUninstall->GetResultCode(), ERR_OK) << "uninstall fail!" << bundleName;
@@ -1285,17 +1288,17 @@ HWTEST_F(BmsBundleInstallerModuleTest, ThirdAppInstall_1300, Function | MediumTe
 HWTEST_F(BmsBundleInstallerModuleTest, ThirdAppInstall_1400, Function | MediumTest | Level1)
 {
     auto installer = DelayedSingleton<BundleMgrService>::GetInstance()->GetBundleInstaller();
-    ASSERT_NE(installer, nullptr);
+    EXPECT_NE(installer, nullptr);
     OHOS::sptr<MockStatusReceiver> receiver = new (std::nothrow) MockStatusReceiver();
-    ASSERT_NE(receiver, nullptr);
+    EXPECT_NE(receiver, nullptr);
     OHOS::sptr<MockStatusReceiver> receiver2 = new (std::nothrow) MockStatusReceiver();
-    ASSERT_NE(receiver2, nullptr);
+    EXPECT_NE(receiver2, nullptr);
     InstallParam installParam;
 
     installParam.installFlag = InstallFlag::NORMAL;
     std::string bundleFilePath = BUNDLE_TMPPATH + "bmsThirdBundle1" + Constants::INSTALL_FILE_SUFFIX;
     installer->Install(bundleFilePath, installParam, receiver);
-    ASSERT_EQ(receiver->GetResultCode(), ERR_OK) << "install fail!" << bundleFilePath;
+    EXPECT_EQ(receiver->GetResultCode(), ERR_OK) << "install fail!" << bundleFilePath;
     std::string bundleName = THIRD_BUNDLE_NAME + "1";
     std::string modulePackage = "com.third.hiworld.example.h1";
     std::vector<std::string> hap1AbilityNames = {"bmsThirdBundle_A1"};
@@ -1303,13 +1306,13 @@ HWTEST_F(BmsBundleInstallerModuleTest, ThirdAppInstall_1400, Function | MediumTe
 
     bundleFilePath = BUNDLE_TMPPATH + "bmsThirdBundle5" + Constants::INSTALL_FILE_SUFFIX;
     installer->Install(bundleFilePath, installParam, receiver2);
-    ASSERT_EQ(receiver2->GetResultCode(), ERR_OK) << "install fail!" << bundleFilePath;
+    EXPECT_EQ(receiver2->GetResultCode(), ERR_OK) << "install fail!" << bundleFilePath;
     std::string modulePackage2 = "com.third.hiworld.example.h2";
     std::vector<std::string> hap2AbilityNames = {"bmsThirdBundle_A1", "bmsThirdBundle_A2"};
     CheckFileExist(bundleName, modulePackage2, hap2AbilityNames);
 
     OHOS::sptr<MockStatusReceiver> recUninstall = new (std::nothrow) MockStatusReceiver();
-    ASSERT_NE(recUninstall, nullptr);
+    EXPECT_NE(recUninstall, nullptr);
     installParam.userId = Constants::DEFAULT_USERID;
     installer->Uninstall(bundleName, installParam, recUninstall);
     EXPECT_EQ(recUninstall->GetResultCode(), ERR_OK) << "uninstall fail!" << bundleName;
@@ -1325,17 +1328,17 @@ HWTEST_F(BmsBundleInstallerModuleTest, ThirdAppInstall_1400, Function | MediumTe
 HWTEST_F(BmsBundleInstallerModuleTest, ThirdAppInstall_1500, Function | MediumTest | Level1)
 {
     auto installer = DelayedSingleton<BundleMgrService>::GetInstance()->GetBundleInstaller();
-    ASSERT_NE(installer, nullptr);
+    EXPECT_NE(installer, nullptr);
     OHOS::sptr<MockStatusReceiver> receiver = new (std::nothrow) MockStatusReceiver();
-    ASSERT_NE(receiver, nullptr);
+    EXPECT_NE(receiver, nullptr);
     OHOS::sptr<MockStatusReceiver> receiver2 = new (std::nothrow) MockStatusReceiver();
-    ASSERT_NE(receiver2, nullptr);
+    EXPECT_NE(receiver2, nullptr);
     InstallParam installParam;
 
     installParam.installFlag = InstallFlag::NORMAL;
     std::string bundleFilePath = BUNDLE_TMPPATH + "bmsThirdBundle2" + Constants::INSTALL_FILE_SUFFIX;
     installer->Install(bundleFilePath, installParam, receiver);
-    ASSERT_EQ(receiver->GetResultCode(), ERR_OK) << "install fail!" << bundleFilePath;
+    EXPECT_EQ(receiver->GetResultCode(), ERR_OK) << "install fail!" << bundleFilePath;
     std::string bundleName = THIRD_BUNDLE_NAME + "1";
     std::string modulePackage = "com.third.hiworld.example.h1";
     std::vector<std::string> hap1AbilityNames = {"bmsThirdBundle_A1", "bmsThirdBundle_A2"};
@@ -1343,13 +1346,13 @@ HWTEST_F(BmsBundleInstallerModuleTest, ThirdAppInstall_1500, Function | MediumTe
 
     bundleFilePath = BUNDLE_TMPPATH + "bmsThirdBundle6" + Constants::INSTALL_FILE_SUFFIX;
     installer->Install(bundleFilePath, installParam, receiver2);
-    ASSERT_EQ(receiver2->GetResultCode(), ERR_OK) << "install fail!" << bundleFilePath;
+    EXPECT_EQ(receiver2->GetResultCode(), ERR_OK) << "install fail!" << bundleFilePath;
     std::string modulePackage2 = "com.third.hiworld.example.h2";
     std::vector<std::string> hap2AbilityNames = {};
     CheckFileExist(bundleName, modulePackage2, hap2AbilityNames);
 
     OHOS::sptr<MockStatusReceiver> recUninstall = new (std::nothrow) MockStatusReceiver();
-    ASSERT_NE(recUninstall, nullptr);
+    EXPECT_NE(recUninstall, nullptr);
     installParam.userId = Constants::DEFAULT_USERID;
     installer->Uninstall(bundleName, installParam, recUninstall);
     EXPECT_EQ(recUninstall->GetResultCode(), ERR_OK) << "uninstall fail!" << bundleName;
@@ -1364,17 +1367,17 @@ HWTEST_F(BmsBundleInstallerModuleTest, ThirdAppInstall_1500, Function | MediumTe
 HWTEST_F(BmsBundleInstallerModuleTest, ThirdAppInstall_1600, Function | MediumTest | Level1)
 {
     auto installer = DelayedSingleton<BundleMgrService>::GetInstance()->GetBundleInstaller();
-    ASSERT_NE(installer, nullptr);
+    EXPECT_NE(installer, nullptr);
     OHOS::sptr<MockStatusReceiver> receiver = new (std::nothrow) MockStatusReceiver();
-    ASSERT_NE(receiver, nullptr);
+    EXPECT_NE(receiver, nullptr);
     OHOS::sptr<MockStatusReceiver> receiver2 = new (std::nothrow) MockStatusReceiver();
-    ASSERT_NE(receiver2, nullptr);
+    EXPECT_NE(receiver2, nullptr);
     InstallParam installParam;
 
     installParam.installFlag = InstallFlag::NORMAL;
     std::string bundleFilePath = BUNDLE_TMPPATH + "bmsThirdBundle2" + Constants::INSTALL_FILE_SUFFIX;
     installer->Install(bundleFilePath, installParam, receiver);
-    ASSERT_EQ(receiver->GetResultCode(), ERR_OK) << "install fail!" << bundleFilePath;
+    EXPECT_EQ(receiver->GetResultCode(), ERR_OK) << "install fail!" << bundleFilePath;
     std::string bundleName = THIRD_BUNDLE_NAME + "1";
     std::string modulePackage = "com.third.hiworld.example.h1";
     std::vector<std::string> hap1AbilityNames = {"bmsThirdBundle_A1", "bmsThirdBundle_A2"};
@@ -1382,13 +1385,13 @@ HWTEST_F(BmsBundleInstallerModuleTest, ThirdAppInstall_1600, Function | MediumTe
 
     bundleFilePath = BUNDLE_TMPPATH + "bmsThirdBundle4" + Constants::INSTALL_FILE_SUFFIX;
     installer->Install(bundleFilePath, installParam, receiver2);
-    ASSERT_EQ(receiver2->GetResultCode(), ERR_OK) << "install fail!" << bundleFilePath;
+    EXPECT_EQ(receiver2->GetResultCode(), ERR_OK) << "install fail!" << bundleFilePath;
     std::string modulePackage2 = "com.third.hiworld.example.h2";
     std::vector<std::string> hap2AbilityNames = {"bmsThirdBundle_A1"};
     CheckFileExist(bundleName, modulePackage2, hap2AbilityNames);
 
     OHOS::sptr<MockStatusReceiver> recUninstall = new (std::nothrow) MockStatusReceiver();
-    ASSERT_NE(recUninstall, nullptr);
+    EXPECT_NE(recUninstall, nullptr);
     installParam.userId = Constants::DEFAULT_USERID;
     installer->Uninstall(bundleName, installParam, recUninstall);
     EXPECT_EQ(recUninstall->GetResultCode(), ERR_OK) << "uninstall fail!" << bundleName;
@@ -1403,17 +1406,17 @@ HWTEST_F(BmsBundleInstallerModuleTest, ThirdAppInstall_1600, Function | MediumTe
 HWTEST_F(BmsBundleInstallerModuleTest, ThirdAppInstall_1700, Function | MediumTest | Level1)
 {
     auto installer = DelayedSingleton<BundleMgrService>::GetInstance()->GetBundleInstaller();
-    ASSERT_NE(installer, nullptr);
+    EXPECT_NE(installer, nullptr);
     OHOS::sptr<MockStatusReceiver> receiver = new (std::nothrow) MockStatusReceiver();
-    ASSERT_NE(receiver, nullptr);
+    EXPECT_NE(receiver, nullptr);
     OHOS::sptr<MockStatusReceiver> receiver2 = new (std::nothrow) MockStatusReceiver();
-    ASSERT_NE(receiver2, nullptr);
+    EXPECT_NE(receiver2, nullptr);
     InstallParam installParam;
 
     installParam.installFlag = InstallFlag::NORMAL;
     std::string bundleFilePath = BUNDLE_TMPPATH + "bmsThirdBundle2" + Constants::INSTALL_FILE_SUFFIX;
     installer->Install(bundleFilePath, installParam, receiver);
-    ASSERT_EQ(receiver->GetResultCode(), ERR_OK) << "install fail!" << bundleFilePath;
+    EXPECT_EQ(receiver->GetResultCode(), ERR_OK) << "install fail!" << bundleFilePath;
     std::string bundleName = THIRD_BUNDLE_NAME + "1";
     std::string modulePackage = "com.third.hiworld.example.h1";
     std::vector<std::string> hap1AbilityNames = {"bmsThirdBundle_A1", "bmsThirdBundle_A2"};
@@ -1421,13 +1424,13 @@ HWTEST_F(BmsBundleInstallerModuleTest, ThirdAppInstall_1700, Function | MediumTe
 
     bundleFilePath = BUNDLE_TMPPATH + "bmsThirdBundle5" + Constants::INSTALL_FILE_SUFFIX;
     installer->Install(bundleFilePath, installParam, receiver2);
-    ASSERT_EQ(receiver2->GetResultCode(), ERR_OK) << "install fail!" << bundleFilePath;
+    EXPECT_EQ(receiver2->GetResultCode(), ERR_OK) << "install fail!" << bundleFilePath;
     std::string modulePackage2 = "com.third.hiworld.example.h2";
     std::vector<std::string> hap2AbilityNames = {"bmsThirdBundle_A1", "bmsThirdBundle_A2"};
     CheckFileExist(bundleName, modulePackage2, hap2AbilityNames);
 
     OHOS::sptr<MockStatusReceiver> recUninstall = new (std::nothrow) MockStatusReceiver();
-    ASSERT_NE(recUninstall, nullptr);
+    EXPECT_NE(recUninstall, nullptr);
     installParam.userId = Constants::DEFAULT_USERID;
     installer->Uninstall(bundleName, installParam, recUninstall);
     EXPECT_EQ(recUninstall->GetResultCode(), ERR_OK) << "uninstall fail!" << bundleName;
@@ -1456,7 +1459,7 @@ HWTEST_F(BmsBundleInstallerModuleTest, BundleDataStorage_0100, Function | Medium
             std::string bundleName = baseBundleName + std::to_string(i * saveTimes + j);
             InnerBundleInfo innerBundleInfo = CreateInnerBundleInfo(bundleName);
             bool res = bundleDataStorage.SaveStorageBundleInfo(deviceId_, innerBundleInfo);
-            ASSERT_TRUE(res) << "save bundle data fail";
+            EXPECT_TRUE(res) << "save bundle data fail";
             bundleNames.emplace_back(bundleName);
             innerBundleInfoStrs.emplace_back(innerBundleInfo.ToString());
             innerBundleInfos.emplace_back(innerBundleInfo);
@@ -1467,7 +1470,7 @@ HWTEST_F(BmsBundleInstallerModuleTest, BundleDataStorage_0100, Function | Medium
          */
         std::map<std::string, std::map<std::string, InnerBundleInfo>> dataMap;
         bool loadRes = bundleDataStorage.LoadAllData(dataMap);
-        ASSERT_TRUE(loadRes) << "load data fail!!!";
+        EXPECT_TRUE(loadRes) << "load data fail!!!";
         for (std::string item : bundleNames) {
             std::map<std::string, InnerBundleInfo> innerBundleInfoMap = dataMap[item];
             for (auto iter = innerBundleInfoMap.begin(); iter != innerBundleInfoMap.end(); ++iter) {
@@ -1485,7 +1488,7 @@ HWTEST_F(BmsBundleInstallerModuleTest, BundleDataStorage_0100, Function | Medium
     }
     for (InnerBundleInfo inner : innerBundleInfos) {
         bool delRes = bundleDataStorage.DeleteStorageBundleInfo(deviceId_, inner);
-        ASSERT_TRUE(delRes) << "delete data fail!!!";
+        EXPECT_TRUE(delRes) << "delete data fail!!!";
     }
 }
 
@@ -1508,7 +1511,7 @@ HWTEST_F(BmsBundleInstallerModuleTest, BundleDataStorage_0200, Function | Medium
         std::string bundleName = baseBundleName + std::to_string(i);
         InnerBundleInfo innerBundleInfo = CreateInnerBundleInfo(bundleName);
         bool res = bundleDataStorage.SaveStorageBundleInfo(deviceId_, innerBundleInfo);
-        ASSERT_TRUE(res) << "save bundle data fail";
+        EXPECT_TRUE(res) << "save bundle data fail";
         bundleNames.emplace_back(bundleName);
         innerBundleInfos.emplace_back(innerBundleInfo);
     }
@@ -1522,7 +1525,7 @@ HWTEST_F(BmsBundleInstallerModuleTest, BundleDataStorage_0200, Function | Medium
 
     std::shared_ptr<BundleDataMgr> dataMgr = GetBundleDataMgr();
     if (dataMgr == nullptr) {
-        ASSERT_TRUE(false);
+        EXPECT_TRUE(false);
     }
 
     for (std::string item : bundleNames) {
@@ -1535,7 +1538,7 @@ HWTEST_F(BmsBundleInstallerModuleTest, BundleDataStorage_0200, Function | Medium
 
     for (InnerBundleInfo inner : innerBundleInfos) {
         bool delRes = bundleDataStorage.DeleteStorageBundleInfo(deviceId_, inner);
-        ASSERT_TRUE(delRes) << "delete data fail!!!";
+        EXPECT_TRUE(delRes) << "delete data fail!!!";
     }
 }
 
@@ -1553,7 +1556,7 @@ HWTEST_F(BmsBundleInstallerModuleTest, BundleDataStorage003, TestSize.Level3)
     DistributedKvDataManager dataManager;
     std::unique_ptr<SingleKvStore> kvStorePtr = GetKvStorePtr(dataManager);
     if (!kvStorePtr) {
-        ASSERT_TRUE(false) << "kvStorePtr is nullptr";
+        EXPECT_TRUE(false) << "kvStorePtr is nullptr";
     }
 
     int saveTimes = 100;
@@ -1579,14 +1582,14 @@ HWTEST_F(BmsBundleInstallerModuleTest, BundleDataStorage003, TestSize.Level3)
     BundleDataStorageDatabase bundleDataStorage;
     std::map<std::string, std::map<std::string, InnerBundleInfo>> bundleDatas;
     bool getBundleData = bundleDataStorage.LoadAllData(bundleDatas);
-    ASSERT_TRUE(getBundleData) << "get bundle data from database fail!";
+    EXPECT_TRUE(getBundleData) << "get bundle data from database fail!";
 
     StopBundleMgrService();
     StartBundleMgrService();
 
     std::shared_ptr<BundleDataMgr> dataMgr = GetBundleDataMgr();
     if (dataMgr == nullptr) {
-        ASSERT_TRUE(false);
+        EXPECT_TRUE(false);
     }
     ApplicationInfo appInfo;
     for (int i = 0; i < saveTimes; i++) {

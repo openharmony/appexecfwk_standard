@@ -32,6 +32,7 @@ ParallelTaskDispatcherBase::ParallelTaskDispatcherBase(
 }
 ErrCode ParallelTaskDispatcherBase::InterceptedExecute(std::shared_ptr<Task> &task)
 {
+    APP_LOGI("ParallelTaskDispatcherBase::InterceptedExecute start");
     if (executor_ == nullptr) {
         APP_LOGE("ParallelTaskDispatcherBase::InterceptedExecute executor_ is nullptr");
         return ERR_APPEXECFWK_CHECK_FAILED;
@@ -44,11 +45,13 @@ ErrCode ParallelTaskDispatcherBase::InterceptedExecute(std::shared_ptr<Task> &ta
     }
 
     executor_->Execute(task);
+    APP_LOGI("ParallelTaskDispatcherBase::InterceptedExecute end");
     return ERR_OK;
 }
 
 ErrCode ParallelTaskDispatcherBase::SyncDispatch(const std::shared_ptr<Runnable> &runnable)
 {
+    APP_LOGI("ParallelTaskDispatcherBase::SyncDispatch start");
     if (Check(runnable) != ERR_OK) {
         APP_LOGE("ParallelTaskDispatcherBase::SyncDispatch check failed");
         return ERR_APPEXECFWK_CHECK_FAILED;
@@ -64,40 +67,45 @@ ErrCode ParallelTaskDispatcherBase::SyncDispatch(const std::shared_ptr<Runnable>
         APP_LOGE("ParallelTaskDispatcherBase::SyncDispatch innerTask is nullptr");
         return ERR_APPEXECFWK_CHECK_FAILED;
     }
-    APP_LOGD("ParallelTaskDispatcherBase::SyncDispatch into new sync task");
+    APP_LOGI("ParallelTaskDispatcherBase::SyncDispatch into new sync task");
     ErrCode execute = InterceptedExecute(innerTask);
     if (execute != ERR_OK) {
         APP_LOGE("ParallelTaskDispatcherBase::SyncDispatch execute failed");
         return execute;
     }
     innerSyncTask->WaitTask();
-    APP_LOGD("ParallelTaskDispatcherBase::SyncDispatch end");
+    APP_LOGI("ParallelTaskDispatcherBase::SyncDispatch end");
     return ERR_OK;
 }
 
 std::shared_ptr<Revocable> ParallelTaskDispatcherBase::AsyncDispatch(const std::shared_ptr<Runnable> &runnable)
 {
+    APP_LOGI("ParallelTaskDispatcherBase::AsyncDispatch start");
     if (Check(runnable) != ERR_OK) {
+        APP_LOGE("ParallelTaskDispatcherBase::AsyncDispatch check failed.");
         return nullptr;
     }
 
     std::shared_ptr<Task> innerTask = std::make_shared<Task>(runnable, GetPriority(), shared_from_this());
     if (innerTask == nullptr) {
+        APP_LOGE("ParallelTaskDispatcherBase::AsyncDispatch innerTask is nullptr.");
         return nullptr;
     }
     TracePointBeforePost(innerTask, true, ASYNC_DISPATCHER_TAG);
-    APP_LOGD("ParallelTaskDispatcherBase::AsyncDispatch into new async task");
+    APP_LOGI("ParallelTaskDispatcherBase::AsyncDispatch into new async task");
     ErrCode execute = InterceptedExecute(innerTask);
     if (execute != ERR_OK) {
         APP_LOGE("ParallelTaskDispatcherBase::AsyncDispatch execute failed");
         return nullptr;
     }
+    APP_LOGI("ParallelTaskDispatcherBase::AsyncDispatch end");
     return innerTask;
 }
 
 std::shared_ptr<Revocable> ParallelTaskDispatcherBase::DelayDispatch(
     const std::shared_ptr<Runnable> &runnable, long delayMs)
 {
+    APP_LOGI("ParallelTaskDispatcherBase::DelayDispatch start");
     if (Check(runnable) != ERR_OK) {
         APP_LOGE("ParallelTaskDispatcherBase::DelayDispatch Check failed");
         return nullptr;
@@ -110,6 +118,7 @@ std::shared_ptr<Revocable> ParallelTaskDispatcherBase::DelayDispatch(
 
     std::shared_ptr<Task> innerTask = std::make_shared<Task>(runnable, GetPriority(), shared_from_this());
     if (innerTask == nullptr) {
+        APP_LOGE("ParallelTaskDispatcherBase::DelayDispatch innerTask is nullptr");
         return nullptr;
     }
     TracePointBeforePost(innerTask, true, DELAY_DISPATCHER_TAG);
@@ -120,12 +129,14 @@ std::shared_ptr<Revocable> ParallelTaskDispatcherBase::DelayDispatch(
         APP_LOGE("ParallelTaskDispatcherBase::DelayDispatch execute failed");
         return nullptr;
     }
+    APP_LOGI("ParallelTaskDispatcherBase::DelayDispatch end");
     return innerTask;
 }
 
 std::shared_ptr<Revocable> ParallelTaskDispatcherBase::AsyncGroupDispatch(
     const std::shared_ptr<Group> &group, const std::shared_ptr<Runnable> &runnable)
 {
+    APP_LOGI("ParallelTaskDispatcherBase::AsyncGroupDispatch start");
     if (group == nullptr) {
         APP_LOGE("ParallelTaskDispatcherBase::AsyncGroupDispatch group is nullptr");
         return nullptr;
@@ -161,6 +172,7 @@ std::shared_ptr<Revocable> ParallelTaskDispatcherBase::AsyncGroupDispatch(
         APP_LOGE("ParallelTaskDispatcherBase::AsyncGroupDispatch execute failed");
         return nullptr;
     }
+    APP_LOGI("ParallelTaskDispatcherBase::AsyncGroupDispatch end");
     return innerTask;
 }
 

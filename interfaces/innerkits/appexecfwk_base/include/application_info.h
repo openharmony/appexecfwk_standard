@@ -35,7 +35,7 @@ enum class ApplicationFlag {
 
 struct ApplicationInfo;
 
-struct CompatibleApplicationInfo : public Parcelable {
+struct CompatibleApplicationInfo : public Parcelable {    
     // items set when installing.
     std::string name; // application name.
     std::string icon; // application icon resource index.
@@ -90,6 +90,13 @@ struct ApplicationInfo : public Parcelable {
     std::string cacheDir;
     int flags = 0;
     bool enabled = false;
+    
+    //  element that does not exist for a while
+    std::string icon;
+    std::string cpuAbi;
+    bool isCompressNativeLibs = true;
+    bool debug = false;
+    bool systemApp = false;
 
     bool ReadFromParcel(Parcel &parcel);
     virtual bool Marshalling(Parcel &parcel) const override;

@@ -34,6 +34,7 @@ BundleDataStorageDatabase::BundleDataStorageDatabase()
 {
     APP_LOGI("instance:%{private}p is created", this);
     TryTwice([this] { return GetKvStore(); });
+    RegisterKvStoreDeathListener();
 }
 
 BundleDataStorageDatabase::~BundleDataStorageDatabase()
@@ -111,10 +112,6 @@ void BundleDataStorageDatabase::SaveEntries(
             allDevicesInfos.emplace(deviceId, innerBundleInfo);
             infos.emplace(bundleName, allDevicesInfos);
         }
-
-        // don't care result, must be right
-        // Security::Permission::PermissionKit permissionKit;
-        // permissionKit.RestoreAppPermissions(innerBundleInfo->GetAppPermissionInfo());
     }
     APP_LOGD("SaveEntries end");
 }
@@ -142,7 +139,6 @@ bool BundleDataStorageDatabase::LoadAllData(std::map<std::string, std::map<std::
         // KEY_NOT_FOUND means no data in database, no need to report.
         if (status != Status::KEY_NOT_FOUND) {
             const std::string interfaceName = "KvStoreSnapshot::GetEntries()";
-            // SendEvent(interfaceName, "", status);
         }
         ret = false;
     } else {
@@ -176,10 +172,8 @@ bool BundleDataStorageDatabase::SaveStorageBundleInfo(
             APP_LOGW("distribute database ipc error and try to call again, result = %{public}d", status);
         }
     }
-    // ProfileManager::GetInstance().ChangeDatasToProfile(data, ProfileManager::PUT_DATAS_TO_PROFILE, 0);
     if (status != Status::SUCCESS) {
         const std::string interfaceName = "kvStorePtr::Put()";
-        // SendEvent(interfaceName, data->GetBundleName(), status);
         APP_LOGE("put valLocalAbilityManager::InitializeSaProfilesue to kvStore error: %{public}d", status);
         return false;
     } else {
@@ -213,11 +207,8 @@ bool BundleDataStorageDatabase::DeleteStorageBundleInfo(
         }
     }
 
-    // ProfileManager::GetInstance().ChangeDatasToProfile(data, ProfileManager::DELETE_DATAS_FROM_PROFILE, 0);
-
     if (status != Status::SUCCESS) {
         const std::string interfaceName = "kvStorePtr::Delete()";
-        // SendEvent(interfaceName, data->GetBundleName(), status);
         APP_LOGE("delete key error: %{public}d", status);
         return false;
     } else {

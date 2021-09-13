@@ -34,7 +34,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class AmsMgrScheduler : public AmsMgrStub {
 public:
     AmsMgrScheduler(
@@ -144,7 +143,6 @@ private:
 
     DISALLOW_COPY_AND_MOVE(AmsMgrScheduler);
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_APPMGR_INCLUDE_AMS_MGR_SCHEDULER_H

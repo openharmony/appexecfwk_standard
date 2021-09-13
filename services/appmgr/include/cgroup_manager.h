@@ -28,7 +28,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class CgroupManager : public FileDescriptorListener, public std::enable_shared_from_this<CgroupManager> {
 
     DECLARE_DELAYED_SINGLETON(CgroupManager)
@@ -74,12 +73,12 @@ public:
 
 private:
     std::shared_ptr<EventHandler> eventHandler_;
-    int cpusetTasksFds_[SCHED_POLICY_CPU_MAX];
-    int cpuctlTasksFds_[SCHED_POLICY_CPU_MAX];
-    int freezerTasksFds_[SCHED_POLICY_FREEZER_MAX];
-    int memoryEventControlFd_;
-    int memoryEventFds_[LOW_MEMORY_LEVEL_MAX];
-    int memoryPressureFds_[LOW_MEMORY_LEVEL_MAX];
+    int cpusetTasksFds_[SCHED_POLICY_CPU_MAX] = {-1};
+    int cpuctlTasksFds_[SCHED_POLICY_CPU_MAX] = {-1};
+    int freezerTasksFds_[SCHED_POLICY_FREEZER_MAX] = {-1};
+    int memoryEventControlFd_ = -1;
+    int memoryEventFds_[LOW_MEMORY_LEVEL_MAX] = {-1};
+    int memoryPressureFds_[LOW_MEMORY_LEVEL_MAX] = {-1};
 
     bool RegisterLowMemoryMonitor(const int memoryEventFds[LOW_MEMORY_LEVEL_MAX],
         const int memoryPressureFds[LOW_MEMORY_LEVEL_MAX], const int memoryEventControlFd, const LowMemoryLevel level,

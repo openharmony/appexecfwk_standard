@@ -89,13 +89,13 @@ void BmsBundleUpdaterTest::SetUpTestCase()
 {
     if (access(ROOT_DIR.c_str(), F_OK) != 0) {
         bool result = OHOS::ForceCreateDirectory(ROOT_DIR);
-        ASSERT_TRUE(result) << "fail to create root dir";
+        EXPECT_TRUE(result) << "fail to create root dir";
     }
     if (chown(ROOT_DIR.c_str(), ROOT_UID, ROOT_UID) != 0) {
-        ASSERT_TRUE(false) << "fail to change root dir own ship";
+        EXPECT_TRUE(false) << "fail to change root dir own ship";
     }
     if (chmod(ROOT_DIR.c_str(), S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH) != 0) {
-        ASSERT_TRUE(false) << "fail to change root dir mode";
+        EXPECT_TRUE(false) << "fail to change root dir mode";
     }
 }
 
@@ -289,7 +289,7 @@ bool BmsBundleUpdaterTest::CheckApplicationInfo() const
 HWTEST_F(BmsBundleUpdaterTest, Update_0100, Function | SmallTest | Level2)
 {
     ErrCode installResult = InstallBundle(BUNDLE_FILE_DIR + V1_BUNDLE);
-    ASSERT_EQ(installResult, ERR_OK);
+    EXPECT_EQ(installResult, ERR_OK);
     CommonTool tool;
     long codeDirFirstCreateTime = tool.GetFileBuildTime(BUNDLE_CODE_DIR.c_str());
     long dataDirFirstCreateTime = tool.GetFileBuildTime(BUNDLE_DATA_DIR.c_str());
@@ -298,12 +298,12 @@ HWTEST_F(BmsBundleUpdaterTest, Update_0100, Function | SmallTest | Level2)
     std::this_thread::sleep_for(SLEEP_TIME);
 
     ErrCode updateResult = UpdateBundle(BUNDLE_FILE_DIR + V2_BUNDLE, true);
-    ASSERT_EQ(updateResult, ERR_OK);
+    EXPECT_EQ(updateResult, ERR_OK);
 
     long codeDirSecondCreateTime = tool.GetFileBuildTime(BUNDLE_CODE_DIR.c_str());
     long dataDirSecondCreateTime = tool.GetFileBuildTime(BUNDLE_DATA_DIR.c_str());
-    ASSERT_EQ(dataDirFirstCreateTime, dataDirSecondCreateTime);
-    ASSERT_NE(codeDirFirstCreateTime, codeDirSecondCreateTime);
+    EXPECT_EQ(dataDirFirstCreateTime, dataDirSecondCreateTime);
+    EXPECT_NE(codeDirFirstCreateTime, codeDirSecondCreateTime);
 
     bool isExist = CheckBundleInfo(VERSION_2, true);
     EXPECT_TRUE(isExist);
@@ -318,10 +318,10 @@ HWTEST_F(BmsBundleUpdaterTest, Update_0100, Function | SmallTest | Level2)
 HWTEST_F(BmsBundleUpdaterTest, Update_0200, Function | SmallTest | Level1)
 {
     ErrCode installResult = InstallBundle(BUNDLE_FILE_DIR + V2_BUNDLE);
-    ASSERT_EQ(installResult, ERR_OK);
+    EXPECT_EQ(installResult, ERR_OK);
 
     ErrCode updateResult = UpdateBundle(BUNDLE_FILE_DIR + V3_BUNDLE);
-    ASSERT_EQ(updateResult, ERR_OK);
+    EXPECT_EQ(updateResult, ERR_OK);
     CheckFileExist();
 
     bool result = CheckBundleInfo(VERSION_3, true);
@@ -337,7 +337,7 @@ HWTEST_F(BmsBundleUpdaterTest, Update_0200, Function | SmallTest | Level1)
 HWTEST_F(BmsBundleUpdaterTest, Update_0300, Function | SmallTest | Level0)
 {
     ErrCode installResult = InstallBundle(BUNDLE_FILE_DIR + V1_BUNDLE);
-    ASSERT_EQ(installResult, ERR_OK);
+    EXPECT_EQ(installResult, ERR_OK);
 
     ErrCode updateResult = UpdateBundle("");
     EXPECT_EQ(updateResult, ERR_APPEXECFWK_INSTALL_FILE_PATH_INVALID);
@@ -352,7 +352,7 @@ HWTEST_F(BmsBundleUpdaterTest, Update_0300, Function | SmallTest | Level0)
 HWTEST_F(BmsBundleUpdaterTest, Update_0400, Function | SmallTest | Level0)
 {
     ErrCode installResult = InstallBundle(BUNDLE_FILE_DIR + V1_BUNDLE);
-    ASSERT_EQ(installResult, ERR_OK);
+    EXPECT_EQ(installResult, ERR_OK);
 
     ErrCode updateResult = UpdateBundle(BUNDLE_FILE_DIR + ERROR_BUNDLE_NAME);
     EXPECT_EQ(updateResult, ERR_APPEXECFWK_INSTALL_INVALID_HAP_NAME);
@@ -367,7 +367,7 @@ HWTEST_F(BmsBundleUpdaterTest, Update_0400, Function | SmallTest | Level0)
 HWTEST_F(BmsBundleUpdaterTest, Update_0500, Function | SmallTest | Level0)
 {
     ErrCode installResult = InstallBundle(BUNDLE_FILE_DIR + V1_BUNDLE);
-    ASSERT_EQ(installResult, ERR_OK);
+    EXPECT_EQ(installResult, ERR_OK);
 
     ErrCode updateResult = UpdateBundle(BUNDLE_FILE_DIR + ERROR_FORMART_BUNDLE);
     EXPECT_EQ(updateResult, ERR_APPEXECFWK_PARSE_NO_PROFILE);
@@ -382,7 +382,7 @@ HWTEST_F(BmsBundleUpdaterTest, Update_0500, Function | SmallTest | Level0)
 HWTEST_F(BmsBundleUpdaterTest, Update_0600, Function | SmallTest | Level0)
 {
     ErrCode installResult = InstallBundle(BUNDLE_FILE_DIR + V2_BUNDLE);
-    ASSERT_EQ(installResult, ERR_OK);
+    EXPECT_EQ(installResult, ERR_OK);
 
     ErrCode updateResult = UpdateBundle(BUNDLE_FILE_DIR + V1_BUNDLE);
     EXPECT_EQ(updateResult, ERR_APPEXECFWK_INSTALL_VERSION_DOWNGRADE);
@@ -398,23 +398,23 @@ HWTEST_F(BmsBundleUpdaterTest, Update_0600, Function | SmallTest | Level0)
 HWTEST_F(BmsBundleUpdaterTest, Update_0700, Function | SmallTest | Level1)
 {
     ErrCode installResult = InstallBundle(BUNDLE_FILE_DIR + V1_BUNDLE);
-    ASSERT_EQ(installResult, ERR_OK);
+    EXPECT_EQ(installResult, ERR_OK);
 
     StopInstalldService();
     ErrCode updateResult = UpdateBundle(BUNDLE_FILE_DIR + V3_BUNDLE);
-    ASSERT_EQ(updateResult, ERR_APPEXECFWK_INSTALLD_GET_PROXY_ERROR);
+    EXPECT_EQ(updateResult, ERR_APPEXECFWK_INSTALLD_GET_PROXY_ERROR);
 
     BundleInfo info;
     auto dataMgr = GetBundleDataMgr();
-    ASSERT_NE(dataMgr, nullptr);
+    EXPECT_NE(dataMgr, nullptr);
     bool isInfoExist = dataMgr->GetBundleInfo(BUNDLE_NAME, BundleFlag::GET_BUNDLE_DEFAULT, info);
-    ASSERT_TRUE(isInfoExist);
-    ASSERT_EQ(info.versionCode, VERSION_1);
+    EXPECT_TRUE(isInfoExist);
+    EXPECT_EQ(info.versionCode, VERSION_1);
 
     StartInstalldService();
     updateResult = UpdateBundle(BUNDLE_FILE_DIR + V3_BUNDLE);
-    ASSERT_EQ(updateResult, ERR_OK);
-    ASSERT_EQ(info.versionCode, VERSION_1);
+    EXPECT_EQ(updateResult, ERR_OK);
+    EXPECT_EQ(info.versionCode, VERSION_1);
     CheckFileExist();
 }
 
@@ -428,32 +428,32 @@ HWTEST_F(BmsBundleUpdaterTest, Update_0700, Function | SmallTest | Level1)
 HWTEST_F(BmsBundleUpdaterTest, Update_0800, Function | SmallTest | Level1)
 {
     ErrCode installResult = InstallBundle(BUNDLE_FILE_DIR + V1_BUNDLE);
-    ASSERT_EQ(installResult, ERR_OK);
+    EXPECT_EQ(installResult, ERR_OK);
 
     StopBundleService();
     DelayedSingleton<BundleMgrService>::DestroyInstance();
 
     sptr<BundleInstallerHost> installer = new (std::nothrow) BundleInstallerHost();
-    ASSERT_NE(installer, nullptr);
+    EXPECT_NE(installer, nullptr);
     installer->Init();
     sptr<MockStatusReceiver> receiver = new (std::nothrow) MockStatusReceiver();
-    ASSERT_NE(receiver, nullptr);
+    EXPECT_NE(receiver, nullptr);
     InstallParam installParam;
     installParam.installFlag = InstallFlag::REPLACE_EXISTING;
     installer->Install(BUNDLE_FILE_DIR + V3_BUNDLE, installParam, receiver);
     ErrCode result = receiver->GetResultCode();
-    ASSERT_EQ(result, ERR_APPEXECFWK_INSTALL_BUNDLE_MGR_SERVICE_ERROR);
+    EXPECT_EQ(result, ERR_APPEXECFWK_INSTALL_BUNDLE_MGR_SERVICE_ERROR);
 
     DelayedSingleton<BundleMgrService>::GetInstance()->OnStart();
     BundleInfo info;
     auto dataMgr = GetBundleDataMgr();
-    ASSERT_NE(dataMgr, nullptr);
+    EXPECT_NE(dataMgr, nullptr);
     bool isInfoExist = dataMgr->GetBundleInfo(BUNDLE_NAME, BundleFlag::GET_BUNDLE_DEFAULT, info);
-    ASSERT_TRUE(isInfoExist);
-    ASSERT_EQ(info.versionCode, VERSION_1);
+    EXPECT_TRUE(isInfoExist);
+    EXPECT_EQ(info.versionCode, VERSION_1);
 
     ErrCode updateResult = UpdateBundle(BUNDLE_FILE_DIR + V3_BUNDLE);
-    ASSERT_EQ(updateResult, ERR_OK);
+    EXPECT_EQ(updateResult, ERR_OK);
     CheckFileExist();
 }
 
@@ -466,13 +466,13 @@ HWTEST_F(BmsBundleUpdaterTest, Update_0800, Function | SmallTest | Level1)
 HWTEST_F(BmsBundleUpdaterTest, Update_0900, Function | SmallTest | Level2)
 {
     ErrCode installResult = InstallBundle(BUNDLE_FILE_DIR + V1_BUNDLE);
-    ASSERT_EQ(installResult, ERR_OK);
+    EXPECT_EQ(installResult, ERR_OK);
     CommonTool tool;
     long codeDirFirstCreateTime = tool.GetFileBuildTime(BUNDLE_CODE_DIR.c_str());
     long dataDirFirstCreateTime = tool.GetFileBuildTime(BUNDLE_DATA_DIR.c_str());
 
     auto installer = DelayedSingleton<BundleMgrService>::GetInstance()->GetBundleInstaller();
-    ASSERT_FALSE(!installer);
+    EXPECT_FALSE(!installer);
     InstallParam installParam;
     installParam.installFlag = InstallFlag::REPLACE_EXISTING;
     installer->Install(BUNDLE_FILE_DIR + V2_BUNDLE, installParam, nullptr);
@@ -482,8 +482,8 @@ HWTEST_F(BmsBundleUpdaterTest, Update_0900, Function | SmallTest | Level2)
     long codeDirSecondCreateTime = tool.GetFileBuildTime(BUNDLE_CODE_DIR.c_str());
     long dataDirSecondCreateTime = tool.GetFileBuildTime(BUNDLE_DATA_DIR.c_str());
 
-    ASSERT_EQ(dataDirFirstCreateTime, dataDirSecondCreateTime);
-    ASSERT_EQ(codeDirFirstCreateTime, codeDirSecondCreateTime);
+    EXPECT_EQ(dataDirFirstCreateTime, dataDirSecondCreateTime);
+    EXPECT_EQ(codeDirFirstCreateTime, codeDirSecondCreateTime);
 
     bool isExist = CheckBundleInfo(VERSION_1, true);
     EXPECT_TRUE(isExist);
@@ -498,7 +498,7 @@ HWTEST_F(BmsBundleUpdaterTest, Update_0900, Function | SmallTest | Level2)
 HWTEST_F(BmsBundleUpdaterTest, Update_1000, Function | SmallTest | Level2)
 {
     ErrCode installResult = InstallBundle(BUNDLE_FILE_DIR + V1_BUNDLE);
-    ASSERT_EQ(installResult, ERR_OK);
+    EXPECT_EQ(installResult, ERR_OK);
     CommonTool tool;
     long codeDirFirstCreateTime = tool.GetFileBuildTime(BUNDLE_CODE_DIR.c_str());
     long dataDirFirstCreateTime = tool.GetFileBuildTime(BUNDLE_DATA_DIR.c_str());
@@ -507,12 +507,12 @@ HWTEST_F(BmsBundleUpdaterTest, Update_1000, Function | SmallTest | Level2)
     std::this_thread::sleep_for(SLEEP_TIME);
 
     ErrCode updateResult = UpdateBundle(BUNDLE_FILE_DIR + V2_BUNDLE);
-    ASSERT_EQ(updateResult, ERR_OK);
+    EXPECT_EQ(updateResult, ERR_OK);
 
     long codeDirSecondCreateTime = tool.GetFileBuildTime(BUNDLE_CODE_DIR.c_str());
     long dataDirSecondCreateTime = tool.GetFileBuildTime(BUNDLE_DATA_DIR.c_str());
-    ASSERT_EQ(dataDirFirstCreateTime, dataDirSecondCreateTime);
-    ASSERT_NE(codeDirFirstCreateTime, codeDirSecondCreateTime);
+    EXPECT_EQ(dataDirFirstCreateTime, dataDirSecondCreateTime);
+    EXPECT_NE(codeDirFirstCreateTime, codeDirSecondCreateTime);
 
     bool isExist = CheckBundleInfo(VERSION_2, true);
     EXPECT_TRUE(isExist);
@@ -520,12 +520,12 @@ HWTEST_F(BmsBundleUpdaterTest, Update_1000, Function | SmallTest | Level2)
     std::this_thread::sleep_for(SLEEP_TIME);
 
     updateResult = UpdateBundle(BUNDLE_FILE_DIR + V3_BUNDLE);
-    ASSERT_EQ(updateResult, ERR_OK);
+    EXPECT_EQ(updateResult, ERR_OK);
 
     long codeDirThirdCreateTime = tool.GetFileBuildTime(BUNDLE_CODE_DIR.c_str());
     long dataDirThirdCreateTime = tool.GetFileBuildTime(BUNDLE_DATA_DIR.c_str());
-    ASSERT_EQ(dataDirSecondCreateTime, dataDirThirdCreateTime);
-    ASSERT_NE(codeDirSecondCreateTime, codeDirThirdCreateTime);
+    EXPECT_EQ(dataDirSecondCreateTime, dataDirThirdCreateTime);
+    EXPECT_NE(codeDirSecondCreateTime, codeDirThirdCreateTime);
 
     isExist = CheckBundleInfo(VERSION_3, true);
     EXPECT_TRUE(isExist);

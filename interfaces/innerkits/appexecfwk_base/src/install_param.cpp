@@ -36,6 +36,7 @@ bool InstallParam::ReadFromParcel(Parcel &parcel)
 
     userId = parcel.ReadInt32();
     isKeepData = parcel.ReadBool();
+    noCheckSignature = parcel.ReadBool();
     return true;
 }
 
@@ -56,6 +57,7 @@ bool InstallParam::Marshalling(Parcel &parcel) const
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, static_cast<int32_t>(installLocation));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, userId);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, isKeepData);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, noCheckSignature);
     return true;
 }
 

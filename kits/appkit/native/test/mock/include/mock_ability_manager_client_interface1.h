@@ -281,6 +281,23 @@ public:
     {
         return nullptr;
     };
+    bool QueryAbilityInfos(const Want &want, std::vector<AbilityInfo> &abilityInfos)
+    {
+        return true;
+    }
+    bool GetShortcutInfos(const std::string &bundleName, std::vector<ShortcutInfo> &shortcutInfos)
+    {
+        return true;
+    }
+    bool GetModuleUsageRecords(const int32_t number, std::vector<ModuleUsageRecord> &moduleUsageRecords)
+    {
+        return true;
+    }
+    bool NotifyActivityLifeStatus(
+        const std::string &bundleName, const std::string &abilityName, const int64_t launchTime)
+    {
+        return true;
+    }
 };
 
 class MockAbilityContextDeal : public ContextDeal {

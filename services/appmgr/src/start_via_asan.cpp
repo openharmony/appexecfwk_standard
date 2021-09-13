@@ -14,14 +14,11 @@
  */
 
 #include "start_via_asan.h"
-
 #include "properties.h"
-
 #include "app_log_wrapper.h"
 
 namespace OHOS {
 namespace AppExecFwk {
-
 StartViaAsan::StartViaAsan()
 {}
 
@@ -54,6 +51,5 @@ void StartViaAsan::GetAsanStartMsg(AppSpawnStartMsg &startMsg) const
     }
     startMsg.argsNum++;
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

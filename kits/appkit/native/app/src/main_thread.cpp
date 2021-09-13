@@ -149,7 +149,7 @@ std::shared_ptr<ApplicationImpl> MainThread::GetApplicationImpl()
  */
 bool MainThread::ConnectToAppMgr()
 {
-    APP_LOGI("MainThread::connectToAppMgr start");
+    APP_LOGI("MainThread::ConnectToAppMgr start");
     auto object = OHOS::DelayedSingleton<SysMrgClient>::GetInstance()->GetSystemAbility(APP_MGR_SERVICE_ID);
     if (object == nullptr) {
         APP_LOGE("failed to get bundle manager service");
@@ -161,17 +161,21 @@ bool MainThread::ConnectToAppMgr()
         return false;
     }
 
+    APP_LOGI("%{public}s, Start calling AddDeathRecipient.", __func__);
     if (!object->AddDeathRecipient(deathRecipient_)) {
         APP_LOGE("failed to AddDeathRecipient");
         return false;
     }
+    APP_LOGI("%{public}s, End calling AddDeathRecipient.", __func__);
 
     appMgr_ = iface_cast<IAppMgr>(object);
     if (appMgr_ == nullptr) {
         APP_LOGE("failed to iface_cast object to appMgr_");
         return false;
     }
+    APP_LOGI("MainThread::connectToAppMgr before AttachApplication");
     appMgr_->AttachApplication(this);
+    APP_LOGI("MainThread::connectToAppMgr after AttachApplication");
     APP_LOGI("MainThread::connectToAppMgr end");
     return true;
 }
@@ -199,7 +203,7 @@ void MainThread::Attach()
  */
 void MainThread::RemoveAppMgrDeathRecipient()
 {
-    APP_LOGD("MainThread::RemoveAppMgrDeathRecipient called");
+    APP_LOGI("MainThread::RemoveAppMgrDeathRecipient called begin");
     if (appMgr_ == nullptr) {
         APP_LOGE("MainThread::RemoveAppMgrDeathRecipient failed");
         return;
@@ -207,10 +211,13 @@ void MainThread::RemoveAppMgrDeathRecipient()
 
     sptr<IRemoteObject> object = appMgr_->AsObject();
     if (object != nullptr) {
+        APP_LOGI("%{public}s called. Start calling  RemoveDeathRecipient.", __func__);
         object->RemoveDeathRecipient(deathRecipient_);
+        APP_LOGI("%{public}s called. End calling  RemoveDeathRecipient.", __func__);
     } else {
         APP_LOGE("appMgr_->AsObject() failed");
     }
+    APP_LOGI("%{public}s called end.", __func__);
 }
 
 /**
@@ -231,11 +238,12 @@ std::shared_ptr<EventHandler> MainThread::GetMainHandler() const
  */
 void MainThread::ScheduleForegroundApplication()
 {
-    APP_LOGI("MainThread::scheduleForegroundApplication called");
+    APP_LOGI("MainThread::scheduleForegroundApplication called begin");
     auto task = [appThread = this]() { appThread->HandleForegroundApplication(); };
     if (!mainHandler_->PostTask(task)) {
         APP_LOGE("PostTask task failed");
     }
+    APP_LOGI("MainThread::scheduleForegroundApplication called end.");
 }
 
 /**
@@ -245,12 +253,13 @@ void MainThread::ScheduleForegroundApplication()
  */
 void MainThread::ScheduleBackgroundApplication()
 {
-    APP_LOGI("MainThread::scheduleBackgroundApplication called");
+    APP_LOGI("MainThread::scheduleBackgroundApplication called begin");
 
     auto task = [appThread = this]() { appThread->HandleBackgroundApplication(); };
     if (!mainHandler_->PostTask(task)) {
         APP_LOGE("MainThread::ScheduleBackgroundApplication PostTask task failed");
     }
+    APP_LOGI("MainThread::scheduleBackgroundApplication called end.");
 }
 
 /**
@@ -260,12 +269,13 @@ void MainThread::ScheduleBackgroundApplication()
  */
 void MainThread::ScheduleTerminateApplication()
 {
-    APP_LOGI("MainThread::scheduleTerminateApplication called");
+    APP_LOGI("MainThread::scheduleTerminateApplication called begin");
 
     auto task = [appThread = this]() { appThread->HandleTerminateApplication(); };
     if (!mainHandler_->PostTask(task)) {
         APP_LOGE("MainThread::ScheduleTerminateApplication PostTask task failed");
     }
+    APP_LOGI("MainThread::scheduleTerminateApplication called.");
 }
 
 /**
@@ -282,6 +292,7 @@ void MainThread::ScheduleShrinkMemory(const int level)
     if (!mainHandler_->PostTask(task)) {
         APP_LOGE("MainThread::ScheduleShrinkMemory PostTask task failed");
     }
+    APP_LOGI("MainThread::scheduleShrinkMemory level: %{public}d end.", level);
 }
 
 /**
@@ -291,12 +302,13 @@ void MainThread::ScheduleShrinkMemory(const int level)
  */
 void MainThread::ScheduleProcessSecurityExit()
 {
-    APP_LOGI("MainThread::ScheduleProcessSecurityExit called");
+    APP_LOGI("MainThread::ScheduleProcessSecurityExit called start");
 
     auto task = [appThread = this]() { appThread->HandleProcessSecurityExit(); };
     if (!mainHandler_->PostTask(task)) {
         APP_LOGE("MainThread::ScheduleProcessSecurityExit PostTask task failed");
     }
+    APP_LOGI("MainThread::ScheduleProcessSecurityExit called end");
 }
 
 /**
@@ -318,12 +330,13 @@ void MainThread::ScheduleLowMemory()
  */
 void MainThread::ScheduleLaunchApplication(const AppLaunchData &data)
 {
-    APP_LOGI("MainThread::scheduleLaunchApplication called");
+    APP_LOGI("MainThread::scheduleLaunchApplication start");
 
     auto task = [appThread = this, data]() { appThread->HandleLaunchApplication(data); };
     if (!mainHandler_->PostTask(task)) {
         APP_LOGE("MainThread::ScheduleLaunchApplication PostTask task failed");
     }
+    APP_LOGI("MainThread::scheduleLaunchApplication end.");
 }
 
 /**
@@ -336,7 +349,7 @@ void MainThread::ScheduleLaunchApplication(const AppLaunchData &data)
  */
 void MainThread::ScheduleLaunchAbility(const AbilityInfo &info, const sptr<IRemoteObject> &token)
 {
-    APP_LOGI("MainThread::scheduleLaunchAbility called");
+    APP_LOGI("MainThread::scheduleLaunchAbility called start.");
     APP_LOGI(
         "MainThread::scheduleLaunchAbility AbilityInfo name:%{public}s type:%{public}d", info.name.c_str(), info.type);
 
@@ -352,6 +365,7 @@ void MainThread::ScheduleLaunchAbility(const AbilityInfo &info, const sptr<IRemo
     if (!mainHandler_->PostTask(task)) {
         APP_LOGE("MainThread::ScheduleLaunchAbility PostTask task failed");
     }
+    APP_LOGI("MainThread::scheduleLaunchAbility called end.");
 }
 
 /**
@@ -363,11 +377,12 @@ void MainThread::ScheduleLaunchAbility(const AbilityInfo &info, const sptr<IRemo
  */
 void MainThread::ScheduleCleanAbility(const sptr<IRemoteObject> &token)
 {
-    APP_LOGI("MainThread::scheduleCleanAbility called");
+    APP_LOGI("MainThread::scheduleCleanAbility called start.");
     auto task = [appThread = this, token]() { appThread->HandleCleanAbility(token); };
     if (!mainHandler_->PostTask(task)) {
         APP_LOGE("MainThread::ScheduleCleanAbility PostTask task failed");
     }
+    APP_LOGI("MainThread::scheduleCleanAbility called end.");
 }
 
 /**
@@ -391,11 +406,12 @@ void MainThread::ScheduleProfileChanged(const Profile &profile)
  */
 void MainThread::ScheduleConfigurationUpdated(const Configuration &config)
 {
-    APP_LOGI("MainThread::ScheduleConfigurationUpdated called");
+    APP_LOGI("MainThread::ScheduleConfigurationUpdated called start.");
     auto task = [appThread = this, config]() { appThread->HandleConfigurationUpdated(config); };
     if (!mainHandler_->PostTask(task)) {
         APP_LOGE("MainThread::ScheduleConfigurationUpdated PostTask task failed");
     }
+    APP_LOGI("MainThread::ScheduleConfigurationUpdated called end.");
 }
 
 /**
@@ -408,6 +424,8 @@ void MainThread::ScheduleConfigurationUpdated(const Configuration &config)
  */
 bool MainThread::CheckLaunchApplicationParam(const AppLaunchData &appLaunchData) const
 {
+    APP_LOGI("MainThread::CheckLaunchApplicationParam called start.");
+
     ApplicationInfo appInfo = appLaunchData.GetApplicationInfo();
     ProcessInfo processInfo = appLaunchData.GetProcessInfo();
 
@@ -421,6 +439,7 @@ bool MainThread::CheckLaunchApplicationParam(const AppLaunchData &appLaunchData)
         return false;
     }
 
+    APP_LOGI("MainThread::CheckLaunchApplicationParam called end.");
     return true;
 }
 
@@ -434,6 +453,7 @@ bool MainThread::CheckLaunchApplicationParam(const AppLaunchData &appLaunchData)
  */
 bool MainThread::CheckAbilityItem(const std::shared_ptr<AbilityLocalRecord> &record) const
 {
+    APP_LOGI("MainThread::CheckAbilityItem called start.");
     if (record == nullptr) {
         APP_LOGE("MainThread::checkAbilityItem record is null");
         return false;
@@ -452,6 +472,7 @@ bool MainThread::CheckAbilityItem(const std::shared_ptr<AbilityLocalRecord> &rec
         return false;
     }
 
+    APP_LOGI("MainThread::CheckAbilityItem called end.");
     return true;
 }
 
@@ -462,12 +483,14 @@ bool MainThread::CheckAbilityItem(const std::shared_ptr<AbilityLocalRecord> &rec
  */
 void MainThread::HandleTerminateApplicationLocal()
 {
-    APP_LOGI("MainThread::HandleTerminateApplicationLocal called...");
+    APP_LOGI("MainThread::HandleTerminateApplicationLocal called start.");
     if (application_ == nullptr) {
         APP_LOGE("MainThread::HandleTerminateApplicationLocal error!");
         return;
     }
+    APP_LOGI("MainThread::HandleTerminateApplicationLocal before PerformTerminateStrong.");
     applicationImpl_->PerformTerminateStrong();
+    APP_LOGI("MainThread::HandleTerminateApplicationLocal after PerformTerminateStrong.");
     std::shared_ptr<EventRunner> runner = mainHandler_->GetEventRunner();
     if (runner == nullptr) {
         APP_LOGE("MainThread::HandleTerminateApplicationLocal get manHandler error");
@@ -481,14 +504,19 @@ void MainThread::HandleTerminateApplicationLocal()
     SetRunnerStarted(false);
 
 #ifdef ABILITY_LIBRARY_LOADER
+    APP_LOGI("MainThread::HandleTerminateApplicationLocal called. Start calling CloseAbilityLibrary.");
     CloseAbilityLibrary();
+    APP_LOGI("MainThread::HandleTerminateApplicationLocal called. End calling CloseAbilityLibrary.");
 #endif  // ABILITY_LIBRARY_LOADER
 #ifdef APPLICATION_LIBRARY_LOADER
     if (handleAppLib_ != nullptr) {
+        APP_LOGI("MainThread::HandleTerminateApplicationLocal called. Start calling dlclose.");
         dlclose(handleAppLib_);
+        APP_LOGI("MainThread::HandleTerminateApplicationLocal called. End calling dlclose.");
         handleAppLib_ = nullptr;
     }
 #endif  // APPLICATION_LIBRARY_LOADER
+    APP_LOGI("MainThread::HandleTerminateApplicationLocal called end.");
 }
 
 /**
@@ -498,7 +526,7 @@ void MainThread::HandleTerminateApplicationLocal()
  */
 void MainThread::HandleProcessSecurityExit()
 {
-    APP_LOGI("MainThread::HandleProcessSecurityExit called");
+    APP_LOGI("MainThread::HandleProcessSecurityExit called start.");
     if (abilityRecordMgr_ == nullptr) {
         APP_LOGE("MainThread::HandleProcessSecurityExit abilityRecordMgr_ is null");
         return;
@@ -511,6 +539,7 @@ void MainThread::HandleProcessSecurityExit()
     }
 
     HandleTerminateApplicationLocal();
+    APP_LOGI("MainThread::HandleProcessSecurityExit called end.");
 }
 
 /**
@@ -522,7 +551,7 @@ void MainThread::HandleProcessSecurityExit()
  */
 void MainThread::HandleLaunchApplication(const AppLaunchData &appLaunchData)
 {
-    APP_LOGI("MainThread::handleLaunchApplication called");
+    APP_LOGI("MainThread::handleLaunchApplication called start.");
     if (application_ != nullptr) {
         APP_LOGE("MainThread::handleLaunchApplication already create application");
         return;
@@ -534,15 +563,19 @@ void MainThread::HandleLaunchApplication(const AppLaunchData &appLaunchData)
     }
 
 #ifdef ABILITY_LIBRARY_LOADER
+    APP_LOGI("MainThread::handleLaunchApplication Start calling LoadAbilityLibrary.");
     LoadAbilityLibrary(appLaunchData.GetApplicationInfo().moduleSourceDirs);
+    APP_LOGI("MainThread::handleLaunchApplication End calling LoadAbilityLibrary.");
 #endif  // ABILITY_LIBRARY_LOADER
 #ifdef APPLICATION_LIBRARY_LOADER
     std::string appPath = applicationLibraryPath;
+    APP_LOGI("MainThread::handleLaunchApplication Start calling dlopen. appPath=%{public}s", appPath.c_str());
     handleAppLib_ = dlopen(appPath.c_str(), RTLD_NOW | RTLD_GLOBAL);
     if (handleAppLib_ == nullptr) {
         APP_LOGE("Fail to dlopen %{public}s, [%{public}s]", appPath.c_str(), dlerror());
         exit(-1);
     }
+    APP_LOGI("MainThread::handleLaunchApplication End calling dlopen.";
 #endif  // APPLICATION_LIBRARY_LOADER
 
     ApplicationInfo appInfo = appLaunchData.GetApplicationInfo();
@@ -600,11 +633,13 @@ void MainThread::HandleLaunchApplication(const AppLaunchData &appLaunchData)
         return;
     }
 
+    APP_LOGI("MainThread::handleLaunchApplication. Start calling GetBundleManager.");
     sptr<IBundleMgr> bundleMgr = contextDeal->GetBundleManager();
     if (bundleMgr == nullptr) {
         APP_LOGE("MainThread::handleLaunchApplication GetBundleManager is nullptr");
         return;
     }
+    APP_LOGI("MainThread::handleLaunchApplication. End calling GetBundleManager.");
 
     BundleInfo bundleInfo;
     APP_LOGI("MainThread::handleLaunchApplication length: %{public}zu, bundleName: %{public}s",
@@ -612,19 +647,23 @@ void MainThread::HandleLaunchApplication(const AppLaunchData &appLaunchData)
         appInfo.bundleName.c_str());
     bundleMgr->GetBundleInfo(appInfo.bundleName, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo);
 
-    APP_LOGI("MainThread::handleLaunchApplication moduleResPaths count: %{public}zu", bundleInfo.moduleResPaths.size());
+    APP_LOGI("MainThread::handleLaunchApplication moduleResPaths count: %{public}zu start", bundleInfo.moduleResPaths.size());
     for (auto moduleResPath : bundleInfo.moduleResPaths) {
         if (!moduleResPath.empty()) {
             APP_LOGI("MainThread::handleLaunchApplication length: %{public}zu, moduleResPath: %{public}s",
                 moduleResPath.length(),
                 moduleResPath.c_str());
+            APP_LOGI("MainThread::handleLaunchApplication. before resourceManager->AddResource.");
             if (!resourceManager->AddResource(moduleResPath.c_str())) {
                 APP_LOGE("MainThread::handleLaunchApplication AddResource failed");
             }
+            APP_LOGI("MainThread::handleLaunchApplication. after resourceManager->AddResource.");
         }
     }
-
+    APP_LOGI("MainThread::handleLaunchApplication moduleResPaths end.");
+    APP_LOGI("MainThread::handleLaunchApplication before Resource::CreateResConfig.");
     std::unique_ptr<Global::Resource::ResConfig> resConfig(Global::Resource::CreateResConfig());
+    APP_LOGI("MainThread::handleLaunchApplication after Resource::CreateResConfig.");
     resConfig->SetLocaleInfo("zh", "Hans", "CN");
     const icu::Locale *localeInfo = resConfig->GetLocaleInfo();
     if (localeInfo != nullptr) {
@@ -636,10 +675,21 @@ void MainThread::HandleLaunchApplication(const AppLaunchData &appLaunchData)
         APP_LOGI("MainThread::handleLaunchApplication localeInfo is nullptr.");
     }
 
+    APP_LOGI("MainThread::handleLaunchApplication. Start calling UpdateResConfig.");
     resourceManager->UpdateResConfig(*resConfig);
+    APP_LOGI("MainThread::handleLaunchApplication. End calling UpdateResConfig.");
+
+    APP_LOGI("MainThread::handleLaunchApplication. Start calling initResourceManager.");
     contextDeal->initResourceManager(resourceManager);
+    APP_LOGI("MainThread::handleLaunchApplication. End calling initResourceManager.");
+
+    APP_LOGI("MainThread::handleLaunchApplication. Start calling SetApplicationContext.");
     contextDeal->SetApplicationContext(application_);
+    APP_LOGI("MainThread::handleLaunchApplication. End calling SetApplicationContext.");
+
+    APP_LOGI("MainThread::handleLaunchApplication. Start calling AttachBaseContext.");
     application_->AttachBaseContext(contextDeal);
+    APP_LOGI("MainThread::handleLaunchApplication. End calling AttachBaseContext.");
 
     abilityRecordMgr_ = std::make_shared<AbilityRecordMgr>();
     if (abilityRecordMgr_ == nullptr) {
@@ -647,22 +697,29 @@ void MainThread::HandleLaunchApplication(const AppLaunchData &appLaunchData)
         return;
     }
 
+    APP_LOGI("MainThread::handleLaunchApplication. Start calling SetAbilityRecordMgr.");
     application_->SetAbilityRecordMgr(abilityRecordMgr_);
+    APP_LOGI("MainThread::handleLaunchApplication. End calling SetAbilityRecordMgr.");
 
     applicationImpl_->SetRecordId(appLaunchData.GetRecordId());
     applicationImpl_->SetApplication(application_);
     mainThreadState_ = MainThreadState::READY;
+    APP_LOGI("MainThread::handleLaunchApplication before PerformAppReady.");
     if (!applicationImpl_->PerformAppReady()) {
         APP_LOGE("HandleLaunchApplication::application applicationImpl_->PerformAppReady failed");
         return;
     }
-
+    APP_LOGI("MainThread::handleLaunchApplication after PerformAppReady.");
     // L1 needs to add corresponding interface
     ApplicationEnvImpl *pAppEvnIml = ApplicationEnvImpl::GetInstance();
 
     if (pAppEvnIml) {
         pAppEvnIml->SetAppInfo(*applicationInfo_.get());
+    } else {
+        APP_LOGE("HandleLaunchApplication::application pAppEvnIml is null");
     }
+
+    APP_LOGI("MainThread::handleLaunchApplication called end.");
 }
 
 /**
@@ -674,26 +731,26 @@ void MainThread::HandleLaunchApplication(const AppLaunchData &appLaunchData)
  */
 void MainThread::HandleLaunchAbility(const std::shared_ptr<AbilityLocalRecord> &abilityRecord)
 {
-    APP_LOGI("MainThread::handleLaunchAbility called");
+    APP_LOGI("MainThread::handleLaunchAbility called start.");
 
     if (applicationImpl_ == nullptr) {
-        APP_LOGE("MainThread::ScheduleLaunchAbility applicationImpl_ is null");
+        APP_LOGE("MainThread::HandleLaunchAbility applicationImpl_ is null");
         return;
     }
 
     if (abilityRecordMgr_ == nullptr) {
-        APP_LOGE("MainThread::ScheduleLaunchAbility abilityRecordMgr_ is null");
+        APP_LOGE("MainThread::HandleLaunchAbility abilityRecordMgr_ is null");
         return;
     }
 
     if (abilityRecord == nullptr) {
-        APP_LOGE("MainThread::ScheduleLaunchAbility parameter(abilityRecord) is null");
+        APP_LOGE("MainThread::HandleLaunchAbility parameter(abilityRecord) is null");
         return;
     }
 
     auto abilityToken = abilityRecord->GetToken();
     if (abilityToken == nullptr) {
-        APP_LOGE("MainThread::ScheduleLaunchAbility failed. abilityRecord->GetToken failed");
+        APP_LOGE("MainThread::HandleLaunchAbility failed. abilityRecord->GetToken failed");
         return;
     }
 
@@ -712,10 +769,15 @@ void MainThread::HandleLaunchAbility(const std::shared_ptr<AbilityLocalRecord> &
 
     mainThreadState_ = MainThreadState::RUNNING;
 #ifdef APP_ABILITY_USE_TWO_RUNNER
+    APP_LOGI("MainThread::handleLaunchAbility. Start calling AbilityThreadMain start.");
     AbilityThread::AbilityThreadMain(application_, abilityRecord);
+    APP_LOGI("MainThread::handleLaunchAbility. Start calling AbilityThreadMain end.");
 #else
+    APP_LOGI("MainThread::handleLaunchAbility. Start calling 2 AbilityThreadMain start.");
     AbilityThread::AbilityThreadMain(application_, abilityRecord, mainHandler_->GetEventRunner());
+    APP_LOGI("MainThread::handleLaunchAbility. Start calling 2 AbilityThreadMain end.");
 #endif
+    APP_LOGI("MainThread::handleLaunchAbility called end.");
 }
 
 /**
@@ -727,7 +789,7 @@ void MainThread::HandleLaunchAbility(const std::shared_ptr<AbilityLocalRecord> &
  */
 void MainThread::HandleCleanAbilityLocal(const sptr<IRemoteObject> &token)
 {
-    APP_LOGI("MainThread::HandleCleanAbilityLocal called");
+    APP_LOGI("MainThread::HandleCleanAbilityLocal called start.");
     if (!IsApplicationReady()) {
         APP_LOGE("MainThread::HandleCleanAbilityLocal not init OHOSApplication, should launch application first");
         return;
@@ -765,6 +827,7 @@ void MainThread::HandleCleanAbilityLocal(const sptr<IRemoteObject> &token)
         APP_LOGW("MainThread::HandleCleanAbilityLocal runner not found");
     }
 #endif
+    APP_LOGI("MainThread::HandleCleanAbilityLocal called end.");
 }
 
 /**
@@ -776,7 +839,7 @@ void MainThread::HandleCleanAbilityLocal(const sptr<IRemoteObject> &token)
  */
 void MainThread::HandleCleanAbility(const sptr<IRemoteObject> &token)
 {
-    APP_LOGI("MainThread::handleCleanAbility called");
+    APP_LOGI("MainThread::handleCleanAbility called start.");
     if (!IsApplicationReady()) {
         APP_LOGE("MainThread::handleCleanAbility not init OHOSApplication, should launch application first");
         return;
@@ -814,7 +877,10 @@ void MainThread::HandleCleanAbility(const sptr<IRemoteObject> &token)
         APP_LOGW("MainThread::handleCleanAbility runner not found");
     }
 #endif
+    APP_LOGI("MainThread::handleCleanAbility before AbilityCleaned.");
     appMgr_->AbilityCleaned(token);
+    APP_LOGI("MainThread::handleCleanAbility after AbilityCleaned.");
+    APP_LOGI("MainThread::handleCleanAbility called end.");
 }
 
 /**
@@ -824,7 +890,7 @@ void MainThread::HandleCleanAbility(const sptr<IRemoteObject> &token)
  */
 void MainThread::HandleForegroundApplication()
 {
-    APP_LOGI("MainThread::handleForegroundApplication called...");
+    APP_LOGI("MainThread::handleForegroundApplication called start.");
     if ((application_ == nullptr) || (appMgr_ == nullptr)) {
         APP_LOGE("MainThread::handleForegroundApplication error!");
         return;
@@ -835,7 +901,10 @@ void MainThread::HandleForegroundApplication()
         return;
     }
 
+    APP_LOGI("MainThread::handleForegroundApplication before ApplicationForegrounded");
     appMgr_->ApplicationForegrounded(applicationImpl_->GetRecordId());
+    APP_LOGI("MainThread::handleForegroundApplication after ApplicationForegrounded");
+    APP_LOGI("MainThread::handleForegroundApplication called end");
 }
 
 /**
@@ -845,7 +914,7 @@ void MainThread::HandleForegroundApplication()
  */
 void MainThread::HandleBackgroundApplication()
 {
-    APP_LOGI("MainThread::handleBackgroundApplication called...");
+    APP_LOGI("MainThread::handleBackgroundApplication called start.");
 
     if ((application_ == nullptr) || (appMgr_ == nullptr)) {
         APP_LOGE("MainThread::handleBackgroundApplication error!");
@@ -856,8 +925,11 @@ void MainThread::HandleBackgroundApplication()
         APP_LOGE("MainThread::handleForegroundApplication error!, applicationImpl_->PerformBackground() failed");
         return;
     }
-
+    APP_LOGI("MainThread::handleBackgroundApplication before ApplicationBackgrounded");
     appMgr_->ApplicationBackgrounded(applicationImpl_->GetRecordId());
+    APP_LOGI("MainThread::handleBackgroundApplication after ApplicationBackgrounded");
+
+    APP_LOGI("MainThread::handleBackgroundApplication called end");
 }
 
 /**
@@ -867,31 +939,40 @@ void MainThread::HandleBackgroundApplication()
  */
 void MainThread::HandleTerminateApplication()
 {
-    APP_LOGI("MainThread::handleTerminateApplication called...");
+    APP_LOGI("MainThread::handleTerminateApplication called start.");
     if ((application_ == nullptr) || (appMgr_ == nullptr)) {
         APP_LOGE("MainThread::handleTerminateApplication error!");
         return;
     }
 
+    APP_LOGI("MainThread::handleTerminateApplication before PerformTerminate");
     if (!applicationImpl_->PerformTerminate()) {
         APP_LOGE("MainThread::handleForegroundApplication error!, applicationImpl_->PerformTerminate() failed");
         return;
     }
+    APP_LOGI("MainThread::handleTerminateApplication after PerformTerminate");
 
+    APP_LOGI("MainThread::handleTerminateApplication before ApplicationTerminated");
     appMgr_->ApplicationTerminated(applicationImpl_->GetRecordId());
+    APP_LOGI("MainThread::handleTerminateApplication after ApplicationTerminated");
     std::shared_ptr<EventRunner> runner = mainHandler_->GetEventRunner();
     if (runner == nullptr) {
         APP_LOGE("MainThread::handleTerminateApplication get manHandler error");
         return;
     }
+
+    APP_LOGI("MainThread::handleTerminateApplication before stop runner");
     int ret = runner->Stop();
+    APP_LOGI("MainThread::handleTerminateApplication after stop runner");
     if (ret != ERR_OK) {
         APP_LOGE("MainThread::handleTerminateApplication failed. runner->Run failed ret = %{public}d", ret);
     }
     SetRunnerStarted(false);
 
 #ifdef ABILITY_LIBRARY_LOADER
+    APP_LOGI("MainThread::handleTerminateApplication. Start callint CloseAbilityLibrary.");
     CloseAbilityLibrary();
+    APP_LOGI("MainThread::handleTerminateApplication. End callint CloseAbilityLibrary.");
 #endif  // ABILITY_LIBRARY_LOADER
 #ifdef APPLICATION_LIBRARY_LOADER
     if (handleAppLib_ != nullptr) {
@@ -899,6 +980,7 @@ void MainThread::HandleTerminateApplication()
         handleAppLib_ = nullptr;
     }
 #endif  // APPLICATION_LIBRARY_LOADER
+    APP_LOGI("MainThread::handleTerminateApplication called end.");
 }
 
 /**
@@ -910,7 +992,7 @@ void MainThread::HandleTerminateApplication()
  */
 void MainThread::HandleShrinkMemory(const int level)
 {
-    APP_LOGI("MainThread::HandleShrinkMemory called...");
+    APP_LOGI("MainThread::HandleShrinkMemory called start.");
 
     if (applicationImpl_ == nullptr) {
         APP_LOGE("MainThread::HandleShrinkMemory error! applicationImpl_ is null");
@@ -918,6 +1000,7 @@ void MainThread::HandleShrinkMemory(const int level)
     }
 
     applicationImpl_->PerformMemoryLevel(level);
+    APP_LOGI("MainThread::HandleShrinkMemory called end.");
 }
 
 /**
@@ -929,7 +1012,7 @@ void MainThread::HandleShrinkMemory(const int level)
  */
 void MainThread::HandleConfigurationUpdated(const Configuration &config)
 {
-    APP_LOGI("MainThread::HandleConfigurationUpdated called...");
+    APP_LOGI("MainThread::HandleConfigurationUpdated called start.");
 
     if (applicationImpl_ == nullptr) {
         APP_LOGE("MainThread::HandleConfigurationUpdated error! applicationImpl_ is null");
@@ -937,10 +1020,12 @@ void MainThread::HandleConfigurationUpdated(const Configuration &config)
     }
 
     applicationImpl_->PerformConfigurationUpdated(config);
+    APP_LOGI("MainThread::HandleConfigurationUpdated called end.");
 }
 
 void MainThread::Init(const std::shared_ptr<EventRunner> &runner)
 {
+    APP_LOGI("MainThread:Init Start");
     mainHandler_ = std::make_shared<MainHandler>(runner, this);
     auto task = [appThread = this]() {
         APP_LOGI("MainThread:MainHandler Start");
@@ -949,8 +1034,10 @@ void MainThread::Init(const std::shared_ptr<EventRunner> &runner)
     if (!mainHandler_->PostTask(task)) {
         APP_LOGE("MainThread::Init PostTask task failed");
     }
-
+    APP_LOGI("MainThread:Init before CreateRunner.");
     TaskHandlerClient::GetInstance()->CreateRunner();
+    APP_LOGI("MainThread:Init after CreateRunner.");
+    APP_LOGI("MainThread:Init end.");
 }
 
 void MainThread::Start()
@@ -967,8 +1054,13 @@ void MainThread::Start()
         return;
     }
 
+    APP_LOGI("MainThread::main called start Init");
     thread->Init(runner);
+    APP_LOGI("MainThread::main called end Init");
+
+    APP_LOGI("MainThread::main called start Attach");
     thread->Attach();
+    APP_LOGI("MainThread::main called end Attach");
 
     int ret = runner->Run();
     if (ret != ERR_OK) {
@@ -976,7 +1068,7 @@ void MainThread::Start()
     }
 
     thread->RemoveAppMgrDeathRecipient();
-    APP_LOGW("MainThread::main runner stopped");
+    APP_LOGI("MainThread::main runner stopped");
 }
 
 MainThread::MainHandler::MainHandler(const std::shared_ptr<EventRunner> &runner, const sptr<MainThread> &thread)
@@ -1002,10 +1094,13 @@ void MainThread::MainHandler::ProcessEvent(const OHOS::AppExecFwk::InnerEvent::P
  */
 bool MainThread::IsApplicationReady() const
 {
+    APP_LOGI("MainThread::IsApplicationReady called start");
     if (application_ == nullptr || applicationImpl_ == nullptr) {
+        APP_LOGI("MainThread::IsApplicationReady called. application_=null or applicationImpl_=null");
         return false;
     }
 
+    APP_LOGI("MainThread::IsApplicationReady called end");
     return true;
 }
 
@@ -1019,9 +1114,11 @@ bool MainThread::IsApplicationReady() const
  */
 void MainThread::LoadAbilityLibrary(const std::vector<std::string> &libraryPaths)
 {
+    APP_LOGI("MainThread::LoadAbilityLibrary called start");
 #ifdef ACEABILITY_LIBRARY_LOADER
     std::string acelibdir("/system/lib/libace.z.so");
     void *AceAbilityLib = nullptr;
+    APP_LOGI("MainThread::LoadAbilityLibrary. Start calling dlopen acelibdir.");
     AceAbilityLib = dlopen(acelibdir.c_str(), RTLD_NOW | RTLD_GLOBAL);
     if (AceAbilityLib == nullptr) {
         APP_LOGE("Fail to dlopen %{public}s, [%{public}s]", acelibdir.c_str(), dlerror());
@@ -1029,13 +1126,19 @@ void MainThread::LoadAbilityLibrary(const std::vector<std::string> &libraryPaths
         APP_LOGI("Success to dlopen %{public}s", acelibdir.c_str());
         handleAbilityLib_.emplace_back(AceAbilityLib);
     }
+    APP_LOGI("MainThread::LoadAbilityLibrary. End calling dlopen.");
 #endif  // ACEABILITY_LIBRARY_LOADER
     int size = libraryPaths.size();
+    APP_LOGI("MainThread::LoadAbilityLibrary. size=%{public}d.", size);
     for (int index = 0; index < size; index++) {
         std::string libraryPath = libraryPaths[index];
+        APP_LOGI("Try to scanDir %{public}s", libraryPath.c_str());
         if (!ScanDir(libraryPath)) {
             APP_LOGE("Fail to scanDir %{public}s", libraryPath.c_str());
-            continue;
+        }
+        libraryPath = libraryPath + "/libs";
+        if (!ScanDir(libraryPath)) {
+            APP_LOGE("Fail to scanDir %{public}s", libraryPath.c_str());
         }
     }
 
@@ -1047,7 +1150,9 @@ void MainThread::LoadAbilityLibrary(const std::vector<std::string> &libraryPaths
     void *handleAbilityLib = nullptr;
     for (auto fileEntry : fileEntries_) {
         if (!fileEntry.empty()) {
+            APP_LOGI("MainThread::LoadAbilityLibrary. Start calling dlopen fileEntry.");
             handleAbilityLib = dlopen(fileEntry.c_str(), RTLD_NOW | RTLD_GLOBAL);
+            APP_LOGI("MainThread::LoadAbilityLibrary. End calling dlopen fileEntry.");
             if (handleAbilityLib == nullptr) {
                 APP_LOGE("Fail to dlopen %{public}s, [%{public}s]", fileEntry.c_str(), dlerror());
                 exit(-1);
@@ -1057,6 +1162,7 @@ void MainThread::LoadAbilityLibrary(const std::vector<std::string> &libraryPaths
             handleAbilityLib_.emplace_back(handleAbilityLib);
         }
     }
+    APP_LOGI("MainThread::LoadAbilityLibrary called end.");
 }
 
 /**
@@ -1066,14 +1172,18 @@ void MainThread::LoadAbilityLibrary(const std::vector<std::string> &libraryPaths
  */
 void MainThread::CloseAbilityLibrary()
 {
+    APP_LOGI("MainThread::CloseAbilityLibrary called start");
     for (auto iter : handleAbilityLib_) {
         if (iter != nullptr) {
+            APP_LOGI("MainThread::CloseAbilityLibrary before dlclose");
             dlclose(iter);
+            APP_LOGI("MainThread::CloseAbilityLibrary after dlclose");
             iter = nullptr;
         }
     }
     handleAbilityLib_.clear();
     fileEntries_.clear();
+    APP_LOGI("MainThread::CloseAbilityLibrary called end");
 }
 
 /**
@@ -1085,33 +1195,41 @@ void MainThread::CloseAbilityLibrary()
  */
 bool MainThread::ScanDir(const std::string &dirPath)
 {
+    APP_LOGI("MainThread::ScanDir called start. dirPath:  %{public}s.", dirPath.c_str());
+    APP_LOGI("MainThread::ScanDir before opendir.");
     DIR *dirp = opendir(dirPath.c_str());
     if (dirp == nullptr) {
-        APP_LOGE("MainThread::ScanDir open dir:%{private}s fail", dirPath.c_str());
+        APP_LOGE("MainThread::ScanDir open dir:%{public}s fail", dirPath.c_str());
         return false;
     }
-
+    APP_LOGI("MainThread::ScanDir after opendir.");
     struct dirent *df = nullptr;
     for (;;) {
+        APP_LOGI("MainThread::ScanDir before readdir.");
         df = readdir(dirp);
+        APP_LOGI("MainThread::ScanDir after readdir.");
         if (df == nullptr) {
             break;
         }
 
         std::string currentName(df->d_name);
-        APP_LOGD("folder found:'%{private}s'", df->d_name);
+        APP_LOGD("folder found:'%{public}s'", df->d_name);
         if (currentName.compare(".") == 0 || currentName.compare("..") == 0) {
             continue;
         }
 
         if (CheckFileType(currentName, abilityLibraryType_)) {
+            APP_LOGI("MainThread::ScanDir CheckFileType == true.");
             fileEntries_.emplace_back(dirPath + pathSeparator_ + currentName);
         }
     }
 
+    APP_LOGI("MainThread::ScanDir before closedir.");
     if (closedir(dirp) == -1) {
         APP_LOGW("close dir fail");
     }
+    APP_LOGI("MainThread::ScanDir after closedir.");
+    APP_LOGI("MainThread::ScanDir called end.");
     return true;
 }
 
@@ -1127,7 +1245,10 @@ bool MainThread::ScanDir(const std::string &dirPath)
  */
 bool MainThread::CheckFileType(const std::string &fileName, const std::string &extensionName)
 {
-    APP_LOGD("path is %{public}s, support suffix is %{public}s", fileName.c_str(), extensionName.c_str());
+    APP_LOGD("MainThread::CheckFileType path is %{public}s, support suffix is %{public}s",
+        fileName.c_str(),
+        extensionName.c_str());
+
     if (fileName.empty()) {
         APP_LOGE("the file name is empty");
         return false;
@@ -1140,6 +1261,7 @@ bool MainThread::CheckFileType(const std::string &fileName, const std::string &e
     }
 
     std::string suffixStr = fileName.substr(position);
+    APP_LOGD("MainThread::CheckFileType end.");
     return LowerStr(suffixStr) == extensionName;
 }
 #endif  // ABILITY_LIBRARY_LOADER

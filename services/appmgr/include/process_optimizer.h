@@ -31,7 +31,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class ProcessOptimizer : public NoCopyable {
 public:
     using EventHandlerPtr = std::shared_ptr<EventHandler>;
@@ -40,7 +39,8 @@ public:
     using CgroupManagerPtr = std::shared_ptr<CgroupManager>;
     using LmksClientPtr = std::shared_ptr<LmksClient>;
 
-    static constexpr int APP_SUSPEND_TIMEOUT_DEFAULT = 5000;  // in milliseconds
+    static constexpr int APP_SUSPEND_TIMEOUT_DEFAULT = 5000;   // in milliseconds
+    static constexpr int APP_SUSPEND_TIMEOUT_MAX = 30 * 1000;  // in milliseconds
 
 public:
     ProcessOptimizer(const LmksClientPtr &lmksClient = nullptr, int suspendTimeout = APP_SUSPEND_TIMEOUT_DEFAULT);

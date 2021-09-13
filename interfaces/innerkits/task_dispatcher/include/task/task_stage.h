@@ -17,11 +17,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-/**
- *  Enumeration for task execute stage.
- *  Attention: |REVOKED| is conflict with |AFTER_EXECUTE| and |BEFORE_EXECUTE|, which means,
- *             once |REVOKED|, the other stage will not be notified. So use |isDone| for judging.
- */
 class TaskStage {
 public:
     TaskStage() : index_(0)
@@ -30,7 +25,12 @@ public:
     {
         index_ = index;
     }
-
+    ~TaskStage() = default;
+    /**
+     *  Enumeration for task execute stage.
+     *  Attention: |REVOKED| is conflict with |AFTER_EXECUTE| and |BEFORE_EXECUTE|, which means,
+     *             once |REVOKED|, the other stage will not be notified. So use |isDone| for judging.
+     */
     enum TASKSTAGE { BEFORE_EXECUTE = 0, AFTER_EXECUTE = 1, REVOKED = 2 };
     /**
      * Gets the index.

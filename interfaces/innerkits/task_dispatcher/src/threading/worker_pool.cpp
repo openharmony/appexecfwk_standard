@@ -23,7 +23,7 @@ const int WorkerPool::THREAD_UPPER_LIMIT = 256;
 const int WorkerPool::MAX_THREAD_LOWER_LIMIT = 1;
 const int WorkerPool::CORE_THREAD_LOWER_LIMIT = 0;
 const int WorkerPool::COUNT_BITS = sizeof(int) * __CHAR_BIT__ - 3;
-const int WorkerPool::CAPACITY = (1 << COUNT_BITS) - 1;
+const unsigned int WorkerPool::CAPACITY = (1 << COUNT_BITS) - 1;
 const int WorkerPool::RUNNING = (-(1 << COUNT_BITS));
 const int WorkerPool::CLOSING = (0 << COUNT_BITS);
 const int WorkerPool::INTERRUPT = (1 << COUNT_BITS);
@@ -44,7 +44,7 @@ WorkerPool::~WorkerPool()
 {
     control_ = 0;
 
-    APP_LOGD("WorkerPool::~WorkerPool");
+    APP_LOGI("WorkerPool::~WorkerPool");
 }
 
 bool WorkerPool::Init(const std::shared_ptr<WorkerPoolConfig> &config)
@@ -128,7 +128,7 @@ int WorkerPool::GetMaxThreadCount(void) const
 
 int WorkerPool::GetWorkCount(void) const
 {
-    int value = control_.load();
+    unsigned int value = control_.load();
     return GetWorkingThreadNum(value);
 }
 
@@ -147,19 +147,20 @@ std::map<std::string, long> WorkerPool::GetWorkerThreadsInfo(void)
 
 void WorkerPool::ClosePool(bool interrupt)
 {
-    APP_LOGD("WorkerPool::ClosePool begin interrupt=%{public}d", interrupt);
+    APP_LOGI("WorkerPool::ClosePool begin interrupt=%{public}d", interrupt);
     std::unique_lock<std::mutex> mLock(poolLock_);
 
     AdvanceStateTo(CLOSING);
     InterruptWorkers();
 
-    APP_LOGD("WorkerPool::ClosePool end");
+    APP_LOGI("WorkerPool::ClosePool end");
 }
 
 void WorkerPool::InterruptWorkers(void)
 {
-    APP_LOGD("WorkerPool::InterruptWorkers begin");
+    APP_LOGI("WorkerPool::InterruptWorkers begin");
     if (guardThread_ == nullptr) {
+        APP_LOGE("WorkerPool::InterruptWorkers guardThread is nullptr");
         return;
     }
     poolLock_.unlock();
@@ -174,18 +175,19 @@ void WorkerPool::InterruptWorkers(void)
         std::unique_lock<std::mutex> lock(exitPoolLock_);
         exitGuard_.wait(lock);
         if (guardThread_->joinable()) {
-            APP_LOGD("WorkerPool::InterruptWorkers guardThread_ joinable");
+            APP_LOGI("WorkerPool::InterruptWorkers guardThread_ joinable");
             guardThread_->join();
-            guardThread_ = nullptr;  // 防止再次手动调用
+            // Prevent manual call again
+            guardThread_ = nullptr;
         }
     }
 
-    APP_LOGD("WorkerPool::InterruptWorkers end");
+    APP_LOGI("WorkerPool::InterruptWorkers end");
 }
 
 void WorkerPool::CreateGuardThread()
 {
-    APP_LOGD("WorkerPool::CreateGuardThread START");
+    APP_LOGI("WorkerPool::CreateGuardThread START");
     if (guardThread_ != nullptr) {
         APP_LOGW("WorkerPool::CreateGuardThread guardThread_ is not nullptr");
         return;
@@ -205,11 +207,11 @@ void WorkerPool::CreateGuardThread()
             }
             if (stop_.load() && exitPool_.empty() && pool_.empty()) {
                 exitGuard_.notify_all();
-                APP_LOGD("WorkerPool::CreateGuardThread break while");
+                APP_LOGI("WorkerPool::CreateGuardThread break while");
                 break;
             }
         }
-        APP_LOGD("WorkerPool::CreateGuardThread STOP");
+        APP_LOGI("WorkerPool::CreateGuardThread STOP");
     };
 
     guardThread_ = std::make_shared<std::thread>(guardTask);
@@ -238,16 +240,16 @@ bool WorkerPool::AddWorker(const std::shared_ptr<Delegate> &delegate, const std:
     std::shared_ptr<WorkerThread> newThread = nullptr;
 
     for (;;) {
-        int value = control_.load();
+        unsigned int value = control_.load();
         int num = GetWorkingThreadNum(value);
         if (num >= thread_limit_) {
-            APP_LOGD("WorkerPool::AddWorker thread count exceed limits, num=%{public}d, limits=%{public}d",
+            APP_LOGI("WorkerPool::AddWorker thread count exceed limits, num=%{public}d, limits=%{public}d",
                 num,
                 thread_limit_);
             break;
         }
         if (!IsRunning(value)) {
-            APP_LOGD("WorkerPool::AddWorker thread pool is not running. value=%{public}d, closing=%{public}d, "
+            APP_LOGI("WorkerPool::AddWorker thread pool is not running. value=%{public}d, closing=%{public}d, "
                      "count_bits=%{public}d",
                 value,
                 CLOSING,
@@ -264,35 +266,33 @@ bool WorkerPool::AddWorker(const std::shared_ptr<Delegate> &delegate, const std:
 
             newThread->CreateThread();
 
-            APP_LOGD("WorkerPool::AddWorker create new thread");
+            APP_LOGI("WorkerPool::AddWorker create new thread");
 
             pool_.emplace_back(newThread);
-            APP_LOGD("POOL SIZE: %{public}zu", pool_.size());
-            APP_LOGD("pool_ add end");
+            APP_LOGI("WorkerPool::AddWorker pool_ add thread ,POOL SIZE: %{public}zu", pool_.size());
 
             added = true;
             break;
         }
 
-        APP_LOGD("WorkerPool::AddWorker set thread state error. retry. ");
+        APP_LOGW("WorkerPool::AddWorker set thread state error. retry. ");
     }
     return added;
 }
 
 void WorkerPool::OnWorkerExit(const std::shared_ptr<WorkerThread> &worker, bool isInterrupted)
 {
-
     std::unique_lock<std::mutex> mLock(poolLock_);
-    APP_LOGD("WorkerPool::OnWorkerExit start");
-    APP_LOGD("size:%{public}zu", pool_.size());
+    APP_LOGI("WorkerPool::OnWorkerExit start, pool size: %{public}zu", pool_.size());
     for (auto it = pool_.begin(); it != pool_.end(); it++) {
         if ((*it).get() == worker.get()) {
-            APP_LOGD("WorkerPool::OnWorkerExit erase current, size=%{public}zu, threads=%{public}d",
+            APP_LOGI("WorkerPool::OnWorkerExit erase current, size=%{public}zu, threads=%{public}d",
                 pool_.size(),
                 GetWorkingThreadNum(control_.load()));
             {
                 std::unique_lock<std::mutex> lock(exitPoolLock_);
                 exitPool_.emplace_back(worker);
+                APP_LOGI("WorkerPool::OnWorkerExit exit notify all");
                 exit_.notify_all();
             }
             pool_.erase(it);
@@ -300,7 +300,7 @@ void WorkerPool::OnWorkerExit(const std::shared_ptr<WorkerThread> &worker, bool 
             break;
         }
     }
-    APP_LOGD("WorkerPool::OnWorkerExit end");
+    APP_LOGI("WorkerPool::OnWorkerExit end");
 }
 
 void WorkerPool::AfterRun(const std::shared_ptr<Task> &task)
@@ -309,7 +309,7 @@ void WorkerPool::AfterRun(const std::shared_ptr<Task> &task)
 void WorkerPool::BeforeRun(const std::shared_ptr<Task> &task)
 {}
 
-int WorkerPool::GetWorkingThreadNum(int ctl)
+unsigned int WorkerPool::GetWorkingThreadNum(unsigned int ctl)
 {
     return ctl & CAPACITY;
 }
@@ -324,21 +324,21 @@ int WorkerPool::GetStateFromControl(int ctl)
     return ctl & ~CAPACITY;
 }
 
-void WorkerPool::AdvanceStateTo(int target)
+void WorkerPool::AdvanceStateTo(unsigned int target)
 {
-    APP_LOGD("WorkerPool::AdvanceStateTo begin");
+    APP_LOGI("WorkerPool::AdvanceStateTo begin");
     for (;;) {
-        int current = control_.load();
+        unsigned int current = control_.load();
         if ((current >= target) ||
             CompareAndSet(control_, current, CombineToControl(target, GetWorkingThreadNum(current)))) {
-            APP_LOGD("WorkerPool::AdvanceStateTo break");
+            APP_LOGI("WorkerPool::AdvanceStateTo break");
             break;
         }
     }
-    APP_LOGD("WorkerPool::AdvanceStateTo end");
+    APP_LOGI("WorkerPool::AdvanceStateTo end");
 }
 
-int WorkerPool::CombineToControl(int state, int count)
+int WorkerPool::CombineToControl(unsigned int state, unsigned int count)
 {
     return state | count;
 }
@@ -352,12 +352,12 @@ bool WorkerPool::CompareAndIncThreadNum(int expect)
 
 void WorkerPool::DecrementThread(void)
 {
-    APP_LOGD("WorkerPool::DecrementThread begin");
+    APP_LOGI("WorkerPool::DecrementThread begin");
     int curr = control_.load();
     while (!CompareAndDecThreadNum(curr)) {
         curr = control_.load();
     }
-    APP_LOGD("WorkerPool::DecrementThread end");
+    APP_LOGI("WorkerPool::DecrementThread end");
 }
 
 bool WorkerPool::CompareAndDecThreadNum(int expect)

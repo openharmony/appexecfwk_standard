@@ -148,12 +148,17 @@ struct AbilityInfo : public Parcelable {
     std::string label;
     std::string description;
     std::string iconPath;
+    int32_t labelId;
+    int32_t descriptionId;
+    int32_t iconId;
     std::string theme;
     bool visible = false;
     std::string kind;  // ability category
     AbilityType type = AbilityType::UNKNOWN;
     DisplayOrientation orientation = DisplayOrientation::UNSPECIFIED;
     LaunchMode launchMode = LaunchMode::STANDARD;
+    std::string srcPath;
+    std::string srcLanguage="js";
     std::vector<std::string> permissions;
 
     std::string process;
@@ -165,9 +170,12 @@ struct AbilityInfo : public Parcelable {
     bool isLauncherAbility = false;
     bool isNativeAbility = false;
     bool enabled = false;
+    bool supportPipMode = false;
+    bool formEnabled = false;
     std::string readPermission;
     std::string writePermission;
-    uint32_t formEntity = 1;
+    std::vector<std::string> configChanges;
+    uint32_t formEntity;
     int32_t minFormHeight = 0;
     int32_t defaultFormHeight = 0;
     int32_t minFormWidth = 0;
@@ -183,6 +191,23 @@ struct AbilityInfo : public Parcelable {
     std::string codePath;         // ability main code path with name
     std::string resourcePath;     // resource path for resource init
     std::string libPath;          // ability library path without name, libPath->libDir
+
+    // element that does not exist for a while
+    std::string appName;
+    std::string privacyUrl;
+    std::string privacyName;
+    std::string downloadUrl;
+    std::string versionName;
+    uint32_t backgroundModes = 0;
+    uint32_t packageSize = 0;
+    bool multiUserShared = false;
+    AbilitySubType subType = AbilitySubType::UNSPECIFIED;
+    bool grantPermission = false;
+    std::string uriPermissionMode;
+    std::string uriPermissionPath;
+    bool directLaunch = true;
+    std::string className;
+    std::string originalClassName;
 
     bool ReadFromParcel(Parcel &parcel);
     virtual bool Marshalling(Parcel &parcel) const override;

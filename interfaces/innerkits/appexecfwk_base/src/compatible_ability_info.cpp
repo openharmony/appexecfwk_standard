@@ -123,7 +123,6 @@ bool CompatibleAbilityInfo::Marshalling(Parcel& parcel) const
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, static_cast<int32_t>(type));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, static_cast<int32_t>(orientation));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, static_cast<int32_t>(launchMode));
-
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, supportPipMode);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, grantPermission);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(readPermission));
@@ -166,6 +165,7 @@ void CompatibleAbilityInfo::ConvertToAbilityInfo(AbilityInfo& abilityInfo) const
     abilityInfo.permissions = permissions;
     abilityInfo.deviceTypes = deviceTypes;
     abilityInfo.deviceCapabilities = deviceCapabilities;
+    abilityInfo.supportPipMode = supportPipMode;
     abilityInfo.readPermission = readPermission;
     abilityInfo.writePermission = writePermission;
     abilityInfo.bundleName = bundleName;
@@ -178,6 +178,9 @@ void CompatibleAbilityInfo::ConvertToAbilityInfo(AbilityInfo& abilityInfo) const
     abilityInfo.defaultFormHeight = defaultFormHeight;
     abilityInfo.minFormWidth = minFormWidth;
     abilityInfo.defaultFormWidth = defaultFormWidth;
+    abilityInfo.iconId = iconId;
+    abilityInfo.labelId = labelId;
+    abilityInfo.descriptionId = descriptionId;
     abilityInfo.enabled = enabled;
 }
 } // namespace AppExecFwk

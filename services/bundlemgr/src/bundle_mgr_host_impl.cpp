@@ -140,6 +140,16 @@ bool BundleMgrHostImpl::QueryAbilityInfo(const Want &want, AbilityInfo &abilityI
     return dataMgr->QueryAbilityInfo(want, abilityInfo);
 }
 
+bool BundleMgrHostImpl::QueryAbilityInfos(const Want &want, std::vector<AbilityInfo> &abilityInfos)
+{
+    auto dataMgr = GetDataMgrFromService();
+    if (dataMgr == nullptr) {
+        APP_LOGE("DataMgr is nullptr");
+        return false;
+    }
+    return dataMgr->QueryAbilityInfos(want, abilityInfos);
+}
+
 bool BundleMgrHostImpl::QueryAbilityInfoByUri(const std::string &abilityUri, AbilityInfo &abilityInfo)
 {
     auto dataMgr = GetDataMgrFromService();
@@ -471,23 +481,52 @@ bool BundleMgrHostImpl::RequestPermissionFromUser(
         APP_LOGE("fail to CanRequestPermission due to params empty");
         return false;
     }
-    return BundlePermissionMgr::RequestPermissionFromUser(bundleName, permissionName, userId);
+    bool ret = BundlePermissionMgr::RequestPermissionFromUser(bundleName, permissionName, userId);
+    // send Permissions Changed event
+    APP_LOGI("send Permissions Changed event");
+    BundleInfo info;
+    bool ret_getInfo = GetBundleInfo(bundleName, BundleFlag::GET_BUNDLE_DEFAULT, info);
+    APP_LOGI("ret_getInfo = %{public}d",ret_getInfo);
+    if ( ret && ret_getInfo) {
+        Want want;
+        want.SetAction("PERMISSIONS_CHANGED_EVENT");
+        EventFwk::CommonEventData commonData;
+        commonData.SetWant(want);
+        commonData.SetCode(info.uid);
+        EventFwk::CommonEventManager::PublishCommonEvent(commonData);
+    }
+    return ret;
 }
 
 bool BundleMgrHostImpl::RegisterAllPermissionsChanged(const sptr<OnPermissionChangedCallback> &callback)
 {
-    return true;
+    auto dataMgr = GetDataMgrFromService();
+    if (dataMgr == nullptr) {
+        APP_LOGE("DataMgr is nullptr");
+        return false;
+    }
+    return dataMgr->RegisterAllPermissionsChanged(callback);
 }
 
 bool BundleMgrHostImpl::RegisterPermissionsChanged(
     const std::vector<int> &uids, const sptr<OnPermissionChangedCallback> &callback)
 {
-    return true;
+    auto dataMgr = GetDataMgrFromService();
+    if (dataMgr == nullptr) {
+        APP_LOGE("DataMgr is nullptr");
+        return false;
+    }
+    return dataMgr->RegisterPermissionsChanged(uids,callback);
 }
 
 bool BundleMgrHostImpl::UnregisterPermissionsChanged(const sptr<OnPermissionChangedCallback> &callback)
 {
-    return true;
+    auto dataMgr = GetDataMgrFromService();
+    if (dataMgr == nullptr) {
+        APP_LOGE("DataMgr is nullptr");
+        return false;
+    }
+    return dataMgr->UnregisterPermissionsChanged(callback);
 }
 
 bool BundleMgrHostImpl::GetAllFormsInfo(std::vector<FormInfo> &formInfos)
@@ -529,6 +568,28 @@ bool BundleMgrHostImpl::GetShortcutInfos(const std::string &bundleName, std::vec
         return false;
     }
     return dataMgr->GetShortcutInfos(bundleName, shortcutInfos);
+}
+
+bool BundleMgrHostImpl::GetModuleUsageRecords(const int32_t number, std::vector<ModuleUsageRecord> &moduleUsageRecords)
+{
+    auto dataMgr = GetDataMgrFromService();
+    if (dataMgr == nullptr) {
+        APP_LOGE("DataMgr is nullptr");
+        return false;
+    }
+    return dataMgr->GetUsageRecords(number, moduleUsageRecords);
+}
+
+bool BundleMgrHostImpl::NotifyActivityLifeStatus(
+    const std::string &bundleName, const std::string &abilityName, const int64_t launchTime)
+{
+    APP_LOGI("NotifyActivityLifeStatus begin");
+    std::thread([this, bundleName, abilityName, launchTime]() {
+        auto dataMgr = GetDataMgrFromService();
+        dataMgr->NotifyActivityLifeStatus(bundleName, abilityName, launchTime);
+    }).detach();
+    APP_LOGI("NotifyActivityLifeStatus end");
+    return true;
 }
 
 const std::shared_ptr<BundleDataMgr> BundleMgrHostImpl::GetDataMgrFromService()
