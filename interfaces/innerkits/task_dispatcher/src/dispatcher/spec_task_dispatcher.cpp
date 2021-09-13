@@ -31,53 +31,74 @@ SpecTaskDispatcher::SpecTaskDispatcher(
 
 ErrCode SpecTaskDispatcher::SyncDispatch(const std::shared_ptr<Runnable> &runnable)
 {
-    APP_LOGD("SpecTaskDispatcher::SyncDispatch begin");
-    if (Check(runnable) != ERR_OK || handler_ == nullptr) {
+    APP_LOGI("SpecTaskDispatcher::SyncDispatch start");
+    if (handler_ == nullptr) {
+        APP_LOGE("SpecTaskDispatcher::SyncDispatch handler is nullptr");
+        return ERR_APPEXECFWK_CHECK_FAILED;
+    }
+    if (Check(runnable) != ERR_OK) {
+        APP_LOGE("SpecTaskDispatcher::SyncDispatch check failed");
         return ERR_APPEXECFWK_CHECK_FAILED;
     }
 
     std::shared_ptr<Task> innerTask = std::make_shared<Task>(runnable, GetPriority(), shared_from_this());
     if (innerTask == nullptr) {
+        APP_LOGE("SpecTaskDispatcher::SyncDispatch innerTask is nullptr");
         return ERR_APPEXECFWK_CHECK_FAILED;
     }
     TracePointBeforePost(innerTask, false, SYNC_DISPATCHER_TAG);
-    APP_LOGD("SpecTaskDispatcher::SyncDispatch into new sync task");
+    APP_LOGI("SpecTaskDispatcher::SyncDispatch into new sync task");
     handler_->DispatchSync(runnable);
-    // innerSyncTask->WaitTask();
     TracePointAfterPost(innerTask, false, DISPATCHER_TAG);
 
-    APP_LOGD("SpecTaskDispatcher::SyncDispatch end");
+    APP_LOGI("SpecTaskDispatcher::SyncDispatch end");
     return ERR_OK;
 }
 
 std::shared_ptr<Revocable> SpecTaskDispatcher::AsyncDispatch(const std::shared_ptr<Runnable> &runnable)
 {
-    if (Check(runnable) != ERR_OK || handler_ == nullptr) {
+    APP_LOGI("SpecTaskDispatcher::AsyncDispatch start");
+    if (handler_ == nullptr) {
+        APP_LOGE("SpecTaskDispatcher::AsyncDispatch handler is nullptr");
+        return nullptr;
+    }
+    if (Check(runnable) != ERR_OK) {
+        APP_LOGE("SpecTaskDispatcher::AsyncDispatch check failed");
         return nullptr;
     }
 
     std::shared_ptr<Task> innerTask = std::make_shared<Task>(runnable, GetPriority(), shared_from_this());
     if (innerTask == nullptr) {
+        APP_LOGE("SpecTaskDispatcher::AsyncDispatch innerTask is nullptr");
         return nullptr;
     }
     TracePointBeforePost(innerTask, true, ASYNC_DISPATCHER_TAG);
-    APP_LOGD("SpecTaskDispatcher::AsyncDispatch into new async task");
+    APP_LOGI("SpecTaskDispatcher::AsyncDispatch into new async task");
     handler_->Dispatch(runnable);
+    APP_LOGI("SpecTaskDispatcher::AsyncDispatch end");
     return innerTask;
 }
 
 std::shared_ptr<Revocable> SpecTaskDispatcher::DelayDispatch(const std::shared_ptr<Runnable> &runnable, long delayMs)
 {
-    if (Check(runnable) != ERR_OK || handler_ == nullptr) {
+    APP_LOGI("SpecTaskDispatcher::DelayDispatch start");
+    if (handler_ == nullptr) {
+        APP_LOGE("SpecTaskDispatcher::DelayDispatch handler is nullptr");
+        return nullptr;
+    }
+    if (Check(runnable) != ERR_OK) {
+        APP_LOGE("SpecTaskDispatcher::DelayDispatch check failed");
         return nullptr;
     }
 
     std::shared_ptr<Task> innerTask = std::make_shared<Task>(runnable, GetPriority(), shared_from_this());
     if (innerTask == nullptr) {
+        APP_LOGE("SpecTaskDispatcher::DelayDispatch innerTask is nullptr");
         return nullptr;
     }
     TracePointBeforePost(innerTask, true, DELAY_DISPATCHER_TAG);
     handler_->Dispatch(runnable, delayMs);
+    APP_LOGI("SpecTaskDispatcher::DelayDispatch end");
     return innerTask;
 }
 }  // namespace AppExecFwk

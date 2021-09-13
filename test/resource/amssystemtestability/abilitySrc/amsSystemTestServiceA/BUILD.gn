@@ -26,6 +26,7 @@ config("amsSystemTestCConfig") {
     "${aafwk_path}/services/abilitymgr/include",
     "${appexecfwk_path}/common/log/include",
     "//foundation/distributedschedule/services/dtbschedmgr/include",
+    "//third_party/jsoncpp/include",
   ]
   defines = [
     "APP_LOG_TAG = \"amsSystemTestServiceA\"",

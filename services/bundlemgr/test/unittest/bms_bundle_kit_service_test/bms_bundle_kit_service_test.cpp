@@ -15,7 +15,8 @@
 
 #include <gtest/gtest.h>
 #include <fstream>
-
+#include "ability_manager_client.h"
+#include <chrono>
 #include "directory_ex.h"
 #include "bundle_data_mgr.h"
 #include "install_param.h"
@@ -27,6 +28,8 @@
 #include "inner_bundle_info.h"
 #include "mock_clean_cache.h"
 #include "mock_bundle_status.h"
+#include "ohos/aafwk/content/want.h"
+#include "module_usage_data_storage.h"
 
 using namespace testing::ext;
 using namespace OHOS;
@@ -37,6 +40,7 @@ namespace {
 
 const std::string BUNDLE_NAME_TEST = "com.example.bundlekit.test";
 const std::string MODULE_NAME_TEST = "com.example.bundlekit.test.entry";
+const std::string ABILITY_NAME_TEST1 = ".Reading1";
 const std::string ABILITY_NAME_TEST = ".Reading";
 const int TEST_UID = 1001;
 const std::string BUNDLE_LABEL = "Hello, OHOS";
@@ -48,6 +52,7 @@ const int32_t BUNDLE_MAX_SDK_VERSION = 0;
 const int32_t BUNDLE_MIN_SDK_VERSION = 0;
 const std::string BUNDLE_JOINT_USERID = "3";
 const uint32_t BUNDLE_VERSION_CODE = 1001;
+const std::string BUNDLE_NAME_TEST1 = "com.example.bundlekit.test1";
 const std::string BUNDLE_NAME_DEMO = "com.example.bundlekit.demo";
 const std::string MODULE_NAME_DEMO = "com.example.bundlekit.demo.entry";
 const std::string ABILITY_NAME_DEMO = ".Writing";
@@ -56,7 +61,7 @@ const std::string PACKAGE_NAME = "com.example.bundlekit.test.entry";
 const std::string PROCESS_TEST = "test.process";
 const std::string DEVICE_ID = "PHONE-001";
 const int APPLICATION_INFO_FLAGS = 1;
-const int DEFAULT_USER_ID = 0;
+const int DEFAULT_USER_ID_TEST = 0;
 const std::string LABEL = "hello";
 const std::string DESCRIPTION = "mainEntry";
 const std::string THEME = "mytheme";
@@ -71,6 +76,7 @@ const AbilityType ABILITY_TYPE = AbilityType::PAGE;
 const DisplayOrientation ORIENTATION = DisplayOrientation::PORTRAIT;
 const LaunchMode LAUNCH_MODE = LaunchMode::SINGLETON;
 const uint32_t FORM_ENTITY = 1;
+const std::vector<std::string> CONFIG_CHANGES = {"locale"};
 const int DEFAULT_FORM_HEIGHT = 100;
 const int DEFAULT_FORM_WIDTH = 200;
 const std::string META_DATA_DESCRIPTION = "description";
@@ -92,6 +98,7 @@ const uint32_t BUNDLE_NAMES_SIZE_ZERO = 0;
 const uint32_t BUNDLE_NAMES_SIZE_ONE = 1;
 const std::string EMPTY_STRING = "";
 const int INVALID_UID = -1;
+const std::string ABILITY_URI = "dataability:///com.example.hiworld.himusic.UserADataAbility/person/10";
 const std::string URI = "dataability://com.example.hiworld.himusic.UserADataAbility";
 const std::string ERROR_URI = "dataability://";
 const std::string HAP_FILE_PATH = "/data/test/resource/bms/bundle_kit/test.hap";
@@ -137,6 +144,8 @@ public:
     void SetUp();
     void TearDown();
     std::shared_ptr<BundleDataMgr> GetBundleDataMgr() const;
+    void MockInnerBundleInfo(const std::string &bundleName, const std::string &moduleName,
+        const std::string &abilityName, InnerBundleInfo &innerBundleInfo) const;
     void MockInstallBundle(
         const std::string &bundleName, const std::string &moduleName, const std::string &abilityName) const;
     void MockUninstallBundle(const std::string &bundleName) const;
@@ -233,7 +242,7 @@ void BmsBundleKitServiceTest::MockInstallBundle(
     ReqPermission reqPermission2 = {.name = "permission1"};
     moduleInfo.reqPermissions = {reqPermission1, reqPermission2};
     moduleInfo.modulePackage = PACKAGE_NAME;
-    moduleInfo.moduleName = PACKAGE_NAME;
+    moduleInfo.moduleName = moduleName;
     moduleInfo.description = BUNDLE_DESCRIPTION;
     moduleInfo.colorMode = COLOR_MODE;
 
@@ -262,26 +271,25 @@ void BmsBundleKitServiceTest::MockInstallBundle(
     }
     std::vector<FormInfo> formInfos;
     formInfos.emplace_back(form);
-    if(bundleName == BUNDLE_NAME_TEST) {
+    if (bundleName == BUNDLE_NAME_TEST) {
         ShortcutInfo shortcut = MockShortcutInfo(bundleName, SHORTCUT_TEST_ID);
         std::string shortcutKey = bundleName + moduleName + SHORTCUT_TEST_ID;
         innerBundleInfo.InsertShortcutInfos(shortcutKey, shortcut);
-    }
-    else {
+    } else {
         ShortcutInfo shortcut = MockShortcutInfo(bundleName, SHORTCUT_DEMO_ID);
         std::string shortcutKey = bundleName + moduleName + SHORTCUT_DEMO_ID;
         innerBundleInfo.InsertShortcutInfos(shortcutKey, shortcut);
     }
     innerBundleInfo.InsertFormInfos(keyName, formInfos);
     auto dataMgr = GetBundleDataMgr();
-    ASSERT_NE(dataMgr, nullptr);
+    EXPECT_NE(dataMgr, nullptr);
     bool startRet = dataMgr->UpdateBundleInstallState(bundleName, InstallState::INSTALL_START);
     bool finishRet = dataMgr->UpdateBundleInstallState(bundleName, InstallState::INSTALL_SUCCESS);
     bool addRet = dataMgr->AddInnerBundleInfo(bundleName, innerBundleInfo);
 
-    ASSERT_TRUE(startRet);
-    ASSERT_TRUE(finishRet);
-    ASSERT_TRUE(addRet);
+    EXPECT_TRUE(startRet);
+    EXPECT_TRUE(finishRet);
+    EXPECT_TRUE(addRet);
 }
 
 FormInfo BmsBundleKitServiceTest::MockFormInfo(
@@ -316,7 +324,8 @@ FormInfo BmsBundleKitServiceTest::MockFormInfo(
     return formInfo;
 }
 
-ShortcutInfo BmsBundleKitServiceTest::MockShortcutInfo(const std::string &bundleName, const std::string &shortcutId) const
+ShortcutInfo BmsBundleKitServiceTest::MockShortcutInfo(
+    const std::string &bundleName, const std::string &shortcutId) const
 {
     ShortcutInfo shortcutInfos;
     shortcutInfos.id = shortcutId;
@@ -338,12 +347,12 @@ ShortcutInfo BmsBundleKitServiceTest::MockShortcutInfo(const std::string &bundle
 void BmsBundleKitServiceTest::MockUninstallBundle(const std::string &bundleName) const
 {
     auto dataMgr = GetBundleDataMgr();
-    ASSERT_NE(dataMgr, nullptr);
+    EXPECT_NE(dataMgr, nullptr);
     bool startRet = dataMgr->UpdateBundleInstallState(bundleName, InstallState::UNINSTALL_START);
     bool finishRet = dataMgr->UpdateBundleInstallState(bundleName, InstallState::UNINSTALL_SUCCESS);
 
-    ASSERT_TRUE(startRet);
-    ASSERT_TRUE(finishRet);
+    EXPECT_TRUE(startRet);
+    EXPECT_TRUE(finishRet);
 }
 
 AbilityInfo BmsBundleKitServiceTest::MockAbilityInfo(
@@ -364,6 +373,7 @@ AbilityInfo BmsBundleKitServiceTest::MockAbilityInfo(
     abilityInfo.type = ABILITY_TYPE;
     abilityInfo.orientation = ORIENTATION;
     abilityInfo.launchMode = LAUNCH_MODE;
+    abilityInfo.configChanges = {"locale"};
     abilityInfo.formEntity = 1;
     abilityInfo.defaultFormHeight = DEFAULT_FORM_HEIGHT;
     abilityInfo.defaultFormWidth = DEFAULT_FORM_WIDTH;
@@ -372,6 +382,7 @@ AbilityInfo BmsBundleKitServiceTest::MockAbilityInfo(
     abilityInfo.libPath = LIB_PATH;
     abilityInfo.uri = URI;
     abilityInfo.enabled = true;
+    abilityInfo.supportPipMode = false;
     abilityInfo.targetAbility = TARGET_ABILITY;
     AppExecFwk::Parameters parameters{"description", "name", "type"};
     AppExecFwk::Results results{"description", "name", "type"};
@@ -379,6 +390,25 @@ AbilityInfo BmsBundleKitServiceTest::MockAbilityInfo(
     MetaData metaData{{parameters}, {results}, {customizeData}};
     abilityInfo.metaData = metaData;
     return abilityInfo;
+}
+
+void BmsBundleKitServiceTest::MockInnerBundleInfo(const std::string &bundleName, const std::string &moduleName,
+    const std::string &abilityName, InnerBundleInfo &innerBundleInfo) const
+{
+    ApplicationInfo appInfo;
+    appInfo.bundleName = bundleName;
+    BundleInfo bundleInfo;
+    bundleInfo.name = bundleName;
+    innerBundleInfo.SetBaseBundleInfo(bundleInfo);
+    InnerModuleInfo moduleInfo;
+    moduleInfo.modulePackage = moduleName;
+    moduleInfo.moduleName = moduleName;
+    moduleInfo.description = BUNDLE_DESCRIPTION;
+    innerBundleInfo.InsertInnerModuleInfo(moduleName, moduleInfo);
+    AbilityInfo abilityInfo = MockAbilityInfo(bundleName, moduleName, abilityName);
+    std::string keyName = bundleName + moduleName + abilityName;
+    innerBundleInfo.InsertAbilitiesInfo(keyName, abilityInfo);
+    innerBundleInfo.SetBaseApplicationInfo(appInfo);
 }
 
 void BmsBundleKitServiceTest::CheckBundleInfo(const std::string &bundleName, const std::string &moduleName,
@@ -451,25 +481,27 @@ void BmsBundleKitServiceTest::CheckAbilityInfo(
     EXPECT_EQ(ORIENTATION, abilityInfo.orientation);
     EXPECT_EQ(LAUNCH_MODE, abilityInfo.launchMode);
     EXPECT_EQ(URI, abilityInfo.uri);
+    EXPECT_EQ(false, abilityInfo.supportPipMode);
     EXPECT_EQ(TARGET_ABILITY, abilityInfo.targetAbility);
+    EXPECT_EQ(CONFIG_CHANGES, abilityInfo.configChanges);
     EXPECT_EQ(FORM_ENTITY, abilityInfo.formEntity);
     EXPECT_EQ(DEFAULT_FORM_HEIGHT, abilityInfo.defaultFormHeight);
     EXPECT_EQ(DEFAULT_FORM_WIDTH, abilityInfo.defaultFormWidth);
     for (auto &info : abilityInfo.metaData.customizeData) {
-            EXPECT_EQ(info.name, META_DATA_NAME);
-            EXPECT_EQ(info.value, META_DATA_VALUE);
-            EXPECT_EQ(info.extra, META_DATA_EXTRA);
-        }
+        EXPECT_EQ(info.name, META_DATA_NAME);
+        EXPECT_EQ(info.value, META_DATA_VALUE);
+        EXPECT_EQ(info.extra, META_DATA_EXTRA);
+    }
     for (auto &info : abilityInfo.metaData.parameters) {
-            EXPECT_EQ(info.description, META_DATA_DESCRIPTION);
-            EXPECT_EQ(info.name, META_DATA_NAME);
-            EXPECT_EQ(info.type, META_DATA_TYPE);
-        }
+        EXPECT_EQ(info.description, META_DATA_DESCRIPTION);
+        EXPECT_EQ(info.name, META_DATA_NAME);
+        EXPECT_EQ(info.type, META_DATA_TYPE);
+    }
     for (auto &info : abilityInfo.metaData.results) {
-            EXPECT_EQ(info.description, META_DATA_DESCRIPTION);
-            EXPECT_EQ(info.name, META_DATA_NAME);
-            EXPECT_EQ(info.type, META_DATA_TYPE);
-        }
+        EXPECT_EQ(info.description, META_DATA_DESCRIPTION);
+        EXPECT_EQ(info.name, META_DATA_NAME);
+        EXPECT_EQ(info.type, META_DATA_TYPE);
+    }
 }
 
 void BmsBundleKitServiceTest::CheckCompatibleAbilityInfo(
@@ -489,7 +521,6 @@ void BmsBundleKitServiceTest::CheckCompatibleAbilityInfo(
     EXPECT_EQ(FORM_ENTITY, abilityInfo.formEntity);
     EXPECT_EQ(DEFAULT_FORM_HEIGHT, abilityInfo.defaultFormHeight);
     EXPECT_EQ(DEFAULT_FORM_WIDTH, abilityInfo.defaultFormWidth);
-
 }
 void BmsBundleKitServiceTest::CheckCompatibleApplicationInfo(
     const std::string &bundleName, const uint32_t permissionSize, const CompatibleApplicationInfo &appInfo) const
@@ -581,12 +612,12 @@ void BmsBundleKitServiceTest::CreateFileDir() const
 
     if (access(TEST_FILE_DIR.c_str(), F_OK) != 0) {
         bool result = OHOS::ForceCreateDirectory(TEST_FILE_DIR);
-        ASSERT_TRUE(result) << "fail to create file dir";
+        EXPECT_TRUE(result) << "fail to create file dir";
     }
 
     if (access(TEST_CACHE_DIR.c_str(), F_OK) != 0) {
         bool result = OHOS::ForceCreateDirectory(TEST_CACHE_DIR);
-        ASSERT_TRUE(result) << "fail to create cache dir";
+        EXPECT_TRUE(result) << "fail to create cache dir";
     }
 }
 
@@ -601,25 +632,25 @@ void BmsBundleKitServiceTest::CleanFileDir() const
 void BmsBundleKitServiceTest::CheckFileExist() const
 {
     int dataExist = access(TEST_FILE_DIR.c_str(), F_OK);
-    ASSERT_EQ(dataExist, 0);
+    EXPECT_EQ(dataExist, 0);
 }
 
 void BmsBundleKitServiceTest::CheckFileNonExist() const
 {
     int dataExist = access(TEST_FILE_DIR.c_str(), F_OK);
-    ASSERT_NE(dataExist, 0);
+    EXPECT_NE(dataExist, 0);
 }
 
 void BmsBundleKitServiceTest::CheckCacheExist() const
 {
     int dataExist = access(TEST_CACHE_DIR.c_str(), F_OK);
-    ASSERT_EQ(dataExist, 0);
+    EXPECT_EQ(dataExist, 0);
 }
 
 void BmsBundleKitServiceTest::CheckCacheNonExist() const
 {
     int dataExist = access(TEST_CACHE_DIR.c_str(), F_OK);
-    ASSERT_NE(dataExist, 0);
+    EXPECT_NE(dataExist, 0);
 }
 
 void BmsBundleKitServiceTest::CheckFormInfoTest(const std::vector<FormInfo> &formInfos) const
@@ -790,7 +821,7 @@ HWTEST_F(BmsBundleKitServiceTest, GetBundleInfo_0400, Function | SmallTest | Lev
 {
     BundleInfo bundleInfo;
     bool ret = GetBundleDataMgr()->GetBundleInfo(BUNDLE_NAME_TEST, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo);
-    ASSERT_FALSE(ret);
+    EXPECT_FALSE(ret);
     EXPECT_EQ(EMPTY_STRING, bundleInfo.name);
     EXPECT_EQ(EMPTY_STRING, bundleInfo.label);
 }
@@ -831,7 +862,7 @@ HWTEST_F(BmsBundleKitServiceTest, GetBundleInfos_0100, Function | SmallTest | Le
 
     std::vector<BundleInfo> bundleInfos;
     bool ret = GetBundleDataMgr()->GetBundleInfos(BundleFlag::GET_BUNDLE_DEFAULT, bundleInfos);
-    ASSERT_TRUE(ret);
+    EXPECT_TRUE(ret);
     CheckInstalledBundleInfos(ABILITY_SIZE_ZERO, bundleInfos);
 
     MockUninstallBundle(BUNDLE_NAME_TEST);
@@ -851,7 +882,7 @@ HWTEST_F(BmsBundleKitServiceTest, GetBundleInfos_0200, Function | SmallTest | Le
 
     std::vector<BundleInfo> bundleInfos;
     bool ret = GetBundleDataMgr()->GetBundleInfos(BundleFlag::GET_BUNDLE_WITH_ABILITIES, bundleInfos);
-    ASSERT_TRUE(ret);
+    EXPECT_TRUE(ret);
     CheckInstalledBundleInfos(ABILITY_SIZE_ONE, bundleInfos);
 
     MockUninstallBundle(BUNDLE_NAME_TEST);
@@ -868,7 +899,7 @@ HWTEST_F(BmsBundleKitServiceTest, GetBundleInfos_0300, Function | SmallTest | Le
 {
     std::vector<BundleInfo> bundleInfos;
     bool ret = GetBundleDataMgr()->GetBundleInfos(BundleFlag::GET_BUNDLE_WITH_ABILITIES, bundleInfos);
-    ASSERT_FALSE(ret);
+    EXPECT_FALSE(ret);
 }
 
 /**
@@ -884,13 +915,13 @@ HWTEST_F(BmsBundleKitServiceTest, GetApplicationInfo_0100, Function | SmallTest 
 
     ApplicationInfo testResult;
     bool testRet = GetBundleDataMgr()->GetApplicationInfo(
-        BUNDLE_NAME_TEST, ApplicationFlag::GET_BASIC_APPLICATION_INFO, DEFAULT_USER_ID, testResult);
+        BUNDLE_NAME_TEST, ApplicationFlag::GET_BASIC_APPLICATION_INFO, DEFAULT_USER_ID_TEST, testResult);
     EXPECT_TRUE(testRet);
     CheckApplicationInfo(BUNDLE_NAME_TEST, PERMISSION_SIZE_ZERO, testResult);
 
     ApplicationInfo demoResult;
     bool demoRet = GetBundleDataMgr()->GetApplicationInfo(
-        BUNDLE_NAME_DEMO, ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMS, DEFAULT_USER_ID, demoResult);
+        BUNDLE_NAME_DEMO, ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMS, DEFAULT_USER_ID_TEST, demoResult);
     EXPECT_TRUE(demoRet);
     CheckApplicationInfo(BUNDLE_NAME_DEMO, PERMISSION_SIZE_TWO, demoResult);
 
@@ -910,7 +941,7 @@ HWTEST_F(BmsBundleKitServiceTest, GetApplicationInfo_0200, Function | SmallTest 
 
     ApplicationInfo result;
     bool ret = GetBundleDataMgr()->GetApplicationInfo(
-        BUNDLE_NAME_DEMO, ApplicationFlag::GET_BASIC_APPLICATION_INFO, DEFAULT_USER_ID, result);
+        BUNDLE_NAME_DEMO, ApplicationFlag::GET_BASIC_APPLICATION_INFO, DEFAULT_USER_ID_TEST, result);
     EXPECT_FALSE(ret);
     EXPECT_EQ(EMPTY_STRING, result.name);
 
@@ -929,7 +960,7 @@ HWTEST_F(BmsBundleKitServiceTest, GetApplicationInfo_0300, Function | SmallTest 
 
     ApplicationInfo result;
     bool ret = GetBundleDataMgr()->GetApplicationInfo(
-        EMPTY_STRING, ApplicationFlag::GET_BASIC_APPLICATION_INFO, DEFAULT_USER_ID, result);
+        EMPTY_STRING, ApplicationFlag::GET_BASIC_APPLICATION_INFO, DEFAULT_USER_ID_TEST, result);
     EXPECT_FALSE(ret);
     EXPECT_EQ(EMPTY_STRING, result.name);
 
@@ -946,8 +977,8 @@ HWTEST_F(BmsBundleKitServiceTest, GetApplicationInfo_0400, Function | SmallTest 
 {
     ApplicationInfo result;
     bool ret = GetBundleDataMgr()->GetApplicationInfo(
-        BUNDLE_NAME_TEST, ApplicationFlag::GET_BASIC_APPLICATION_INFO, DEFAULT_USER_ID, result);
-    ASSERT_FALSE(ret);
+        BUNDLE_NAME_TEST, ApplicationFlag::GET_BASIC_APPLICATION_INFO, DEFAULT_USER_ID_TEST, result);
+    EXPECT_FALSE(ret);
     EXPECT_EQ(EMPTY_STRING, result.name);
     EXPECT_EQ(EMPTY_STRING, result.label);
 }
@@ -964,7 +995,7 @@ HWTEST_F(BmsBundleKitServiceTest, GetApplicationInfo_0500, Function | SmallTest 
 
     ApplicationInfo result;
     bool ret = GetBundleDataMgr()->GetApplicationInfo(
-        BUNDLE_NAME_TEST, ApplicationFlag::GET_BASIC_APPLICATION_INFO, DEFAULT_USER_ID, result);
+        BUNDLE_NAME_TEST, ApplicationFlag::GET_BASIC_APPLICATION_INFO, DEFAULT_USER_ID_TEST, result);
     EXPECT_TRUE(ret);
     Parcel parcel;
     parcel.WriteParcelable(&result);
@@ -988,9 +1019,9 @@ HWTEST_F(BmsBundleKitServiceTest, GetApplicationInfos_0100, Function | SmallTest
     MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
 
     std::vector<ApplicationInfo> appInfos;
-    bool ret =
-        GetBundleDataMgr()->GetApplicationInfos(ApplicationFlag::GET_BASIC_APPLICATION_INFO, DEFAULT_USER_ID, appInfos);
-    ASSERT_TRUE(ret);
+    bool ret = GetBundleDataMgr()->GetApplicationInfos(
+        ApplicationFlag::GET_BASIC_APPLICATION_INFO, DEFAULT_USER_ID_TEST, appInfos);
+    EXPECT_TRUE(ret);
     CheckInstalledApplicationInfos(PERMISSION_SIZE_ZERO, appInfos);
 
     MockUninstallBundle(BUNDLE_NAME_TEST);
@@ -1010,8 +1041,8 @@ HWTEST_F(BmsBundleKitServiceTest, GetApplicationInfos_0200, Function | SmallTest
 
     std::vector<ApplicationInfo> appInfos;
     bool ret = GetBundleDataMgr()->GetApplicationInfos(
-        ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMS, DEFAULT_USER_ID, appInfos);
-    ASSERT_TRUE(ret);
+        ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMS, DEFAULT_USER_ID_TEST, appInfos);
+    EXPECT_TRUE(ret);
     CheckInstalledApplicationInfos(PERMISSION_SIZE_TWO, appInfos);
 
     MockUninstallBundle(BUNDLE_NAME_TEST);
@@ -1028,8 +1059,8 @@ HWTEST_F(BmsBundleKitServiceTest, GetApplicationInfos_0300, Function | SmallTest
 {
     std::vector<ApplicationInfo> appInfos;
     bool ret = GetBundleDataMgr()->GetApplicationInfos(
-        ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMS, DEFAULT_USER_ID, appInfos);
-    ASSERT_FALSE(ret);
+        ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMS, DEFAULT_USER_ID_TEST, appInfos);
+    EXPECT_FALSE(ret);
 }
 
 /**
@@ -1501,7 +1532,7 @@ HWTEST_F(BmsBundleKitServiceTest, QueryAbilityInfoByUri_0100, Function | SmallTe
     MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
 
     AbilityInfo result;
-    bool testRet = GetBundleDataMgr()->QueryAbilityInfoByUri(URI, result);
+    bool testRet = GetBundleDataMgr()->QueryAbilityInfoByUri(ABILITY_URI, result);
     EXPECT_EQ(true, testRet);
     EXPECT_EQ(ABILITY_NAME_TEST, result.name);
     EXPECT_NE(ABILITY_NAME_DEMO, result.name);
@@ -1521,7 +1552,7 @@ HWTEST_F(BmsBundleKitServiceTest, QueryAbilityInfoByUri_0200, Function | SmallTe
     MockInstallBundle(BUNDLE_NAME_DEMO, MODULE_NAME_TEST, ABILITY_NAME_TEST);
 
     AbilityInfo result;
-    bool testRet = GetBundleDataMgr()->QueryAbilityInfoByUri(URI, result);
+    bool testRet = GetBundleDataMgr()->QueryAbilityInfoByUri(ABILITY_URI, result);
     EXPECT_EQ(true, testRet);
     EXPECT_EQ(ABILITY_NAME_TEST, result.name);
     EXPECT_NE(ABILITY_NAME_DEMO, result.name);
@@ -1540,7 +1571,7 @@ HWTEST_F(BmsBundleKitServiceTest, QueryAbilityInfoByUri_0200, Function | SmallTe
 HWTEST_F(BmsBundleKitServiceTest, QueryAbilityInfoByUri_0300, Function | SmallTest | Level1)
 {
     AbilityInfo result;
-    bool testRet = GetBundleDataMgr()->QueryAbilityInfoByUri(URI, result);
+    bool testRet = GetBundleDataMgr()->QueryAbilityInfoByUri(ABILITY_URI, result);
     EXPECT_EQ(false, testRet);
 }
 
@@ -2051,7 +2082,7 @@ HWTEST_F(BmsBundleKitServiceTest, RegisterBundleStatus_0100, Function | SmallTes
     EXPECT_TRUE(result);
 
     bool resultNotify = GetBundleDataMgr()->NotifyBundleStatus(
-        HAP_FILE_PATH, HAP_FILE_PATH, ABILITY_NAME_DEMO, ERR_OK, NotifyType::INSTALL);
+        HAP_FILE_PATH, HAP_FILE_PATH, ABILITY_NAME_DEMO, ERR_OK, NotifyType::INSTALL, Constants::INVALID_UID);
     EXPECT_TRUE(resultNotify);
 
     int32_t callbackResult = bundleStatusCallback->GetResultCode();
@@ -2071,8 +2102,8 @@ HWTEST_F(BmsBundleKitServiceTest, RegisterBundleStatus_0200, Function | SmallTes
     bool result = GetBundleDataMgr()->RegisterBundleStatusCallback(bundleStatusCallback);
     EXPECT_TRUE(result);
 
-    bool resultNotify =
-        GetBundleDataMgr()->NotifyBundleStatus("", HAP_FILE_PATH, ABILITY_NAME_DEMO, ERR_OK, NotifyType::INSTALL);
+    bool resultNotify = GetBundleDataMgr()->NotifyBundleStatus(
+        "", HAP_FILE_PATH, ABILITY_NAME_DEMO, ERR_OK, NotifyType::INSTALL, Constants::INVALID_UID);
     EXPECT_TRUE(resultNotify);
 
     int32_t callbackResult = bundleStatusCallback->GetResultCode();
@@ -2093,7 +2124,7 @@ HWTEST_F(BmsBundleKitServiceTest, RegisterBundleStatus_0300, Function | SmallTes
     EXPECT_TRUE(result);
 
     bool resultNotify = GetBundleDataMgr()->NotifyBundleStatus(
-        ERROR_HAP_FILE_PATH, HAP_FILE_PATH, ABILITY_NAME_DEMO, ERR_OK, NotifyType::INSTALL);
+        ERROR_HAP_FILE_PATH, HAP_FILE_PATH, ABILITY_NAME_DEMO, ERR_OK, NotifyType::INSTALL, Constants::INVALID_UID);
     EXPECT_TRUE(resultNotify);
 
     int32_t callbackResult = bundleStatusCallback->GetResultCode();
@@ -2122,14 +2153,14 @@ HWTEST_F(BmsBundleKitServiceTest, ClearBundleStatus_0100, Function | SmallTest |
     EXPECT_TRUE(result);
 
     bool resultNotify = GetBundleDataMgr()->NotifyBundleStatus(
-        HAP_FILE_PATH, HAP_FILE_PATH, ABILITY_NAME_DEMO, ERR_OK, NotifyType::INSTALL);
+        HAP_FILE_PATH, HAP_FILE_PATH, ABILITY_NAME_DEMO, ERR_OK, NotifyType::INSTALL, Constants::INVALID_UID);
     EXPECT_TRUE(resultNotify);
 
     int32_t callbackResult = bundleStatusCallback->GetResultCode();
     EXPECT_EQ(callbackResult, ERR_OK);
 
     bool resultNotify1 = GetBundleDataMgr()->NotifyBundleStatus(
-        HAP_FILE_PATH1, HAP_FILE_PATH, ABILITY_NAME_DEMO, ERR_OK, NotifyType::INSTALL);
+        HAP_FILE_PATH1, HAP_FILE_PATH, ABILITY_NAME_DEMO, ERR_OK, NotifyType::INSTALL, Constants::INVALID_UID);
     EXPECT_TRUE(resultNotify1);
 
     int32_t callbackResult1 = bundleStatusCallback1->GetResultCode();
@@ -2158,14 +2189,14 @@ HWTEST_F(BmsBundleKitServiceTest, UnregisterBundleStatus_0100, Function | SmallT
     EXPECT_TRUE(result2);
 
     bool resultNotify = GetBundleDataMgr()->NotifyBundleStatus(
-        HAP_FILE_PATH, HAP_FILE_PATH, ABILITY_NAME_DEMO, ERR_OK, NotifyType::INSTALL);
+        HAP_FILE_PATH, HAP_FILE_PATH, ABILITY_NAME_DEMO, ERR_OK, NotifyType::INSTALL, Constants::INVALID_UID);
     EXPECT_TRUE(resultNotify);
 
     int32_t callbackResult = bundleStatusCallback->GetResultCode();
     EXPECT_EQ(callbackResult, ERR_TIMED_OUT);
 
     bool resultNotify1 = GetBundleDataMgr()->NotifyBundleStatus(
-        HAP_FILE_PATH1, HAP_FILE_PATH, ABILITY_NAME_DEMO, ERR_OK, NotifyType::INSTALL);
+        HAP_FILE_PATH1, HAP_FILE_PATH, ABILITY_NAME_DEMO, ERR_OK, NotifyType::INSTALL, Constants::INVALID_UID);
     EXPECT_TRUE(resultNotify1);
 
     int32_t callbackResult1 = bundleStatusCallback1->GetResultCode();
@@ -2790,6 +2821,186 @@ HWTEST_F(BmsBundleKitServiceTest, GetShortcutInfos_0500, Function | SmallTest | 
 }
 
 /**
+ * @tc.number: GetUsageRecords_0100
+ * @tc.name: test can get usage records by notify activity life status
+ * @tc.desc: 1.can get usage records
+ */
+HWTEST_F(BmsBundleKitServiceTest, GetUsageRecords_0100, Function | SmallTest | Level1)
+{
+    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
+    auto ret = GetBundleDataMgr()->NotifyActivityLifeStatus(BUNDLE_NAME_TEST, ABILITY_NAME_TEST, 1629094922);
+    EXPECT_TRUE(ret);
+    std::vector<ModuleUsageRecord> records;
+    auto result = GetBundleDataMgr()->GetUsageRecords(100, records);
+    EXPECT_TRUE(result);
+    auto iter = std::find_if(records.begin(), records.end(), [](const auto &item) {
+        return (item.bundleName == BUNDLE_NAME_TEST && item.name == MODULE_NAME_TEST &&
+                item.abilityName == ABILITY_NAME_TEST);
+    });
+    EXPECT_NE(iter, records.end());
+    uint32_t count = 1;
+    EXPECT_EQ(iter->launchedCount, count);
+    InnerBundleInfo innerBundleInfo;
+    MockInnerBundleInfo(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST, innerBundleInfo);
+    ModuleUsageRecordStorage moduleUsageRecordStorage;
+    moduleUsageRecordStorage.DeleteUsageRecord(innerBundleInfo, 0);
+    MockUninstallBundle(BUNDLE_NAME_TEST);
+}
+
+/**
+ * @tc.number: GetUsageRecords_0200
+ * @tc.name: test can get usage records by notify activity life status
+ * @tc.desc: 1.no other ability have been activitied
+ *           2.can get two bundle usage records
+ */
+HWTEST_F(BmsBundleKitServiceTest, GetUsageRecords_0200, Function | SmallTest | Level1)
+{
+    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
+    MockInstallBundle(BUNDLE_NAME_DEMO, MODULE_NAME_DEMO, ABILITY_NAME_DEMO);
+    int64_t time =
+        std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+    auto ret = GetBundleDataMgr()->NotifyActivityLifeStatus(BUNDLE_NAME_TEST, ABILITY_NAME_TEST, time);
+    auto ret1 = GetBundleDataMgr()->NotifyActivityLifeStatus(BUNDLE_NAME_DEMO, ABILITY_NAME_DEMO, time);
+    EXPECT_TRUE(ret);
+    EXPECT_TRUE(ret1);
+    std::vector<ModuleUsageRecord> records;
+    auto result = GetBundleDataMgr()->GetUsageRecords(100, records);
+    EXPECT_TRUE(result);
+    size_t size = 2;
+    EXPECT_EQ(records.size(), size);
+    auto iter = std::find_if(records.begin(), records.end(), [](const auto &item) {
+        return (item.bundleName == BUNDLE_NAME_TEST && item.name == MODULE_NAME_TEST &&
+                item.abilityName == ABILITY_NAME_TEST);
+    });
+    EXPECT_NE(iter, records.end());
+    uint32_t count = 1;
+    EXPECT_EQ(iter->launchedCount, count);
+    InnerBundleInfo innerBundleInfo1;
+    InnerBundleInfo innerBundleInfo2;
+    MockInnerBundleInfo(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST, innerBundleInfo1);
+    MockInnerBundleInfo(BUNDLE_NAME_DEMO, ABILITY_NAME_DEMO, ABILITY_NAME_DEMO, innerBundleInfo2);
+    ModuleUsageRecordStorage moduleUsageRecordStorage;
+    moduleUsageRecordStorage.DeleteUsageRecord(innerBundleInfo1, 0);
+    moduleUsageRecordStorage.DeleteUsageRecord(innerBundleInfo2, 0);
+    MockUninstallBundle(BUNDLE_NAME_TEST);
+    MockUninstallBundle(BUNDLE_NAME_DEMO);
+}
+
+/**
+ * @tc.number: GetUsageRecords_0300
+ * @tc.name: test can get usage records by notify activity life status
+ * @tc.desc: 1.can get usage records called two notify activity
+ */
+HWTEST_F(BmsBundleKitServiceTest, GetUsageRecords_0300, Function | SmallTest | Level1)
+{
+    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
+    int64_t time =
+        std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+    auto ret = GetBundleDataMgr()->NotifyActivityLifeStatus(BUNDLE_NAME_TEST, ABILITY_NAME_TEST, time);
+    auto ret1 = GetBundleDataMgr()->NotifyActivityLifeStatus(BUNDLE_NAME_TEST, ABILITY_NAME_TEST, time);
+    EXPECT_TRUE(ret);
+    EXPECT_TRUE(ret1);
+    std::vector<ModuleUsageRecord> records;
+    auto result = GetBundleDataMgr()->GetUsageRecords(100, records);
+    EXPECT_TRUE(result);
+    auto iter = std::find_if(records.begin(), records.end(), [](const auto &item) {
+        return (item.bundleName == BUNDLE_NAME_TEST && item.name == MODULE_NAME_TEST &&
+                item.abilityName == ABILITY_NAME_TEST);
+    });
+    EXPECT_NE(iter, records.end());
+    uint32_t count = 2;
+    EXPECT_EQ(iter->launchedCount, count);
+    InnerBundleInfo innerBundleInfo1;
+    MockInnerBundleInfo(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST, innerBundleInfo1);
+    ModuleUsageRecordStorage moduleUsageRecordStorage;
+    moduleUsageRecordStorage.DeleteUsageRecord(innerBundleInfo1, 0);
+    MockUninstallBundle(BUNDLE_NAME_TEST);
+}
+
+/**
+ * @tc.number: NotifyActivityLifeStatus_0100
+ * @tc.name: test can called notify activity life status
+ * @tc.desc: 1. have called notify activity life status
+ *           2. called notify activity life
+ */
+HWTEST_F(BmsBundleKitServiceTest, NotifyActivityLifeStatus_0100, Function | SmallTest | Level1)
+{
+    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_DEMO, ABILITY_NAME_TEST);
+    int64_t time =
+        std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+    auto ret = GetBundleDataMgr()->NotifyActivityLifeStatus(BUNDLE_NAME_TEST, ABILITY_NAME_TEST, time);
+    EXPECT_TRUE(ret);
+    InnerBundleInfo innerBundleInfo;
+    MockInnerBundleInfo(BUNDLE_NAME_TEST, MODULE_NAME_DEMO, ABILITY_NAME_TEST, innerBundleInfo);
+    ModuleUsageRecordStorage moduleUsageRecordStorage;
+    moduleUsageRecordStorage.DeleteUsageRecord(innerBundleInfo, 0);
+    MockUninstallBundle(BUNDLE_NAME_TEST);
+}
+
+/**
+ * @tc.number: NotifyActivityLifeStatus_0200
+ * @tc.name: test can called notify activity life status
+ * @tc.desc: 1. have two bundle to called notify activity life status
+ *           2. notify activity life
+ */
+HWTEST_F(BmsBundleKitServiceTest, NotifyActivityLifeStatus_0200, Function | SmallTest | Level1)
+{
+    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
+    MockInstallBundle(BUNDLE_NAME_DEMO, MODULE_NAME_DEMO, ABILITY_NAME_DEMO);
+    int64_t time =
+        std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+    auto ret = GetBundleDataMgr()->NotifyActivityLifeStatus(BUNDLE_NAME_DEMO, ABILITY_NAME_DEMO, time);
+    auto ret1 = GetBundleDataMgr()->NotifyActivityLifeStatus(BUNDLE_NAME_TEST, ABILITY_NAME_TEST, time);
+    EXPECT_TRUE(ret);
+    EXPECT_TRUE(ret1);
+    InnerBundleInfo innerBundleInfo1;
+    InnerBundleInfo innerBundleInfo2;
+    MockInnerBundleInfo(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST, innerBundleInfo1);
+    MockInnerBundleInfo(BUNDLE_NAME_DEMO, MODULE_NAME_DEMO, ABILITY_NAME_DEMO, innerBundleInfo2);
+    ModuleUsageRecordStorage moduleUsageRecordStorage;
+    moduleUsageRecordStorage.DeleteUsageRecord(innerBundleInfo1, 0);
+    moduleUsageRecordStorage.DeleteUsageRecord(innerBundleInfo2, 0);
+    MockUninstallBundle(BUNDLE_NAME_DEMO);
+    MockUninstallBundle(BUNDLE_NAME_TEST);
+}
+
+/**
+ * @tc.number: NotifyActivityLifeStatus_0300
+ * @tc.name: test can't called notify activity life status by error bundleName
+ * @tc.desc: 1. can't to called notify activity life status
+ */
+HWTEST_F(BmsBundleKitServiceTest, NotifyActivityLifeStatus_0300, Function | SmallTest | Level1)
+{
+    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
+    int64_t time =
+        std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+    auto ret = GetBundleDataMgr()->NotifyActivityLifeStatus(BUNDLE_NAME_DEMO, ABILITY_NAME_DEMO, time);
+    EXPECT_FALSE(ret);
+    InnerBundleInfo innerBundleInfo;
+    MockInnerBundleInfo(BUNDLE_NAME_DEMO, MODULE_NAME_TEST, ABILITY_NAME_DEMO, innerBundleInfo);
+    ModuleUsageRecordStorage moduleUsageRecordStorage;
+    moduleUsageRecordStorage.DeleteUsageRecord(innerBundleInfo, 0);
+    MockUninstallBundle(BUNDLE_NAME_TEST);
+}
+
+/**
+ * @tc.number: NotifyActivityLifeStatus_0400
+ * @tc.name: test can't called notify activity life status by null bundleName
+ * @tc.desc: 1. can't to called notify activity life status
+ */
+HWTEST_F(BmsBundleKitServiceTest, NotifyActivityLifeStatus_0400, Function | SmallTest | Level1)
+{
+    int64_t time =
+        std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+    auto ret = GetBundleDataMgr()->NotifyActivityLifeStatus(BUNDLE_NAME_DEMO, ABILITY_NAME_DEMO, time);
+    InnerBundleInfo innerBundleInfo;
+    MockInnerBundleInfo(BUNDLE_NAME_DEMO, MODULE_NAME_TEST, ABILITY_NAME_DEMO, innerBundleInfo);
+    ModuleUsageRecordStorage moduleUsageRecordStorage;
+    moduleUsageRecordStorage.DeleteUsageRecord(innerBundleInfo, 0);
+    EXPECT_FALSE(ret);
+}
+
+/**
  * @tc.number: Ability_0100
  * @tc.name: test can get the compatibleAbilityInfo by one bundle
  * @tc.desc: 1.can get compatibleAbilityInfo
@@ -2848,7 +3059,7 @@ HWTEST_F(BmsBundleKitServiceTest, Application_0100, Function | SmallTest | Level
 
     ApplicationInfo testResult;
     bool testRet = GetBundleDataMgr()->GetApplicationInfo(
-        BUNDLE_NAME_TEST, ApplicationFlag::GET_BASIC_APPLICATION_INFO, DEFAULT_USER_ID, testResult);
+        BUNDLE_NAME_TEST, ApplicationFlag::GET_BASIC_APPLICATION_INFO, DEFAULT_USER_ID_TEST, testResult);
     EXPECT_TRUE(testRet);
     CompatibleApplicationInfo appInfo;
     testResult.ConvertToCompatibleApplicationInfo(appInfo);
@@ -2869,7 +3080,7 @@ HWTEST_F(BmsBundleKitServiceTest, Application_0200, Function | SmallTest | Level
 
     ApplicationInfo testResult1;
     bool testRet1 = GetBundleDataMgr()->GetApplicationInfo(
-        BUNDLE_NAME_TEST, ApplicationFlag::GET_BASIC_APPLICATION_INFO, DEFAULT_USER_ID, testResult1);
+        BUNDLE_NAME_TEST, ApplicationFlag::GET_BASIC_APPLICATION_INFO, DEFAULT_USER_ID_TEST, testResult1);
     EXPECT_TRUE(testRet1);
     CompatibleApplicationInfo appInfo1;
     testResult1.ConvertToCompatibleApplicationInfo(appInfo1);
@@ -2877,7 +3088,7 @@ HWTEST_F(BmsBundleKitServiceTest, Application_0200, Function | SmallTest | Level
 
     ApplicationInfo testResult2;
     bool testRet2 = GetBundleDataMgr()->GetApplicationInfo(
-        BUNDLE_NAME_DEMO, ApplicationFlag::GET_BASIC_APPLICATION_INFO, DEFAULT_USER_ID, testResult2);
+        BUNDLE_NAME_DEMO, ApplicationFlag::GET_BASIC_APPLICATION_INFO, DEFAULT_USER_ID_TEST, testResult2);
     EXPECT_TRUE(testRet2);
     CompatibleApplicationInfo appInfo2;
     testResult2.ConvertToCompatibleApplicationInfo(appInfo2);

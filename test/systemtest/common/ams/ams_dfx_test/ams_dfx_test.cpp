@@ -66,9 +66,9 @@ static const std::string abilityStateOnInactive = ":OnInactive";
 static const std::string abilityStateOnBackground = ":OnBackground";
 static const std::string abilityStateOnForeground = ":OnForeground";
 static const std::string abilityStateOnNewWant = ":OnNewWant";
-static const std::string g_abilityStateOnCommand = ":OnCommand";
-static const std::string g_abilityStateOnConnect = ":OnConnect";
-static const std::string g_abilityStateOnDisconnect = ":OnDisconnect";
+static const std::string abilityStateOnCommand = ":OnCommand";
+static const std::string abilityStateOnConnect = ":OnConnect";
+static const std::string abilityStateOnDisconnect = ":OnDisconnect";
 static const int abilityStateCountOne = 1;
 static const int abilityStateCountTwo = 2;
 enum AbilityState_Test {
@@ -114,9 +114,6 @@ public:
         const AbilityState_Test &midState = AbilityState_Test::ALLSUM, const std::string &args = (DUMP_STACK + " 1"));
     void ExpectAbilityNumInStack(const std::string &abilityName, int abilityNum);
     void ExpectServiceAbilityNumInStack(const std::string &abilityName, int abilityNum);
-    void GetFreeMem(const std::string &cmd, std::string &result);
-    std::string RemoveSurplusSpaces(const std::string &src);
-    std::vector<std::string> Split(std::string str, const std::string &delim);
     class AppEventSubscriber : public CommonEventSubscriber {
     public:
         explicit AppEventSubscriber(const CommonEventSubscribeInfo &sp) : CommonEventSubscriber(sp)
@@ -167,13 +164,11 @@ public:
     static sptr<IAbilityManager> abilityMs_;
     static STtools::Event event_;
     static std::shared_ptr<AppEventSubscriber> subscriber_;
-    static int *memTestValue_;
 };
 
 sptr<IAppMgr> AmsDFXTest::appMs_ = nullptr;
 sptr<IAbilityManager> AmsDFXTest::abilityMs_ = nullptr;
 STtools::Event AmsDFXTest::event_ = STtools::Event();
-int *AmsDFXTest::memTestValue_ = nullptr;
 std::shared_ptr<AmsDFXTest::AppEventSubscriber> AmsDFXTest::subscriber_ = nullptr;
 size_t AmsDFXTest::AbilityConnectCallback::onAbilityConnectDoneCount = 0;
 int AmsDFXTest::AbilityConnectCallback::resultConnectCode = 0;
@@ -186,7 +181,8 @@ void AmsDFXTest::SetUpTestCase(void)
     appMs_ = STAbilityUtil::GetAppMgrService();
     abilityMs_ = STAbilityUtil::GetAbilityManagerService();
     if (appMs_) {
-        appMs_->SetAppFreezingTime(60);
+        int freeTime = 60;
+        appMs_->SetAppFreezingTime(freeTime);
         int time = 0;
         appMs_->GetAppFreezingTime(time);
         std::cout << "appMs_->GetAppFreezingTime();" << time << std::endl;
@@ -209,9 +205,6 @@ void AmsDFXTest::SetUp(void)
 void AmsDFXTest::TearDown(void)
 {
     GTEST_LOG_(INFO) << "void AmsDFXTest::TearDown(void)";
-    if (memTestValue_) {
-        delete[] memTestValue_;
-    }
 
     std::vector<std::string> bundleNames = GetBundleNames(bundleNameBase, bundleNameSuffix);
     STAbilityUtil::UninstallBundle(bundleNames);
@@ -263,6 +256,10 @@ void AmsDFXTest::CheckAbilityStateByName(const std::string &abilityName, const s
     EXPECT_NE(pos, result.end());
     MTDumpUtil::GetInstance()->GetAll("State", info, result);
     EXPECT_TRUE(pos < result.end());
+    if (pos == result.end()) {
+        HILOG_ERROR("pos == result.end()");
+        return;
+    }
     // ability state
     if (midState != "") {
         bool compareResult = ((*pos == state) || (*pos == midState));
@@ -328,53 +325,6 @@ void AmsDFXTest::AppEventSubscriber::OnReceiveEvent(const CommonEventData &data)
         std::string target = data.GetData();
         STAbilityUtil::Completed(event_, target, data.GetCode());
     }
-}
-
-void AmsDFXTest::GetFreeMem(const std::string &cmd, std::string &result)
-{
-    result.clear();
-    int MAX_SIZE = 1024;
-    char buf_ps[MAX_SIZE];
-    FILE *ptr;
-    string command = "free " + cmd + "| grep Mem:";
-    if (!command.empty() && (ptr = popen(command.c_str(), "r")) != nullptr) {
-        while (fgets(buf_ps, MAX_SIZE, ptr) != nullptr) {
-            result.append(buf_ps);
-        }
-        pclose(ptr);
-        ptr = nullptr;
-    }
-}
-
-std::string AmsDFXTest::RemoveSurplusSpaces(const std::string &src)
-{
-    std::string result = "";
-    for (int i = 0; src[i] != '\0'; i++) {
-        if (src[i] != ' ')
-            result.append(1, src[i]);
-        else if (src[i + 1] != ' ')
-            result.append(1, src[i]);
-    }
-    return result;
-}
-
-std::vector<std::string> AmsDFXTest::Split(std::string str, const std::string &delim)
-{
-    std::vector<std::string> splitString;
-    while (str.size()) {
-        size_t index = str.find(delim);
-        if (index != std::string::npos) {
-            splitString.push_back(str.substr(0, index));
-            str = str.substr(index + delim.size());
-            if (str.size() == 0) {
-                splitString.push_back(str);
-            }
-        } else {
-            splitString.push_back(str);
-            str = "";
-        }
-    }
-    return splitString;
 }
 
 /*
@@ -645,7 +595,7 @@ HWTEST_F(AmsDFXTest, AMS_DFX_1000, TestSize.Level1)
 {
     GTEST_LOG_(INFO) << "AmsDFXTest AMS_DFX_1000 start";
     std::string bundleName = bundleNameBase + "DFX";
-    std::string abilityName = abilityNameBase + "DFXA1";
+    std::string abilityName = "AmsDfxStServiceAbilityA1";
 
     MAP_STR_STR params;
     Want want = STAbilityUtil::MakeWant("device", abilityName, bundleName, params);
@@ -679,7 +629,7 @@ HWTEST_F(AmsDFXTest, AMS_DFX_1100, TestSize.Level1)
 {
     GTEST_LOG_(INFO) << "AmsDFXTest AMS_DFX_1100 start";
     std::string bundleName = bundleNameBase + "DFX";
-    std::string abilityName = abilityNameBase + "DFXA2";
+    std::string abilityName = "AmsDfxStServiceAbilityA2";
 
     MAP_STR_STR params;
     Want want = STAbilityUtil::MakeWant("device", abilityName, bundleName, params);

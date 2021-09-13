@@ -24,7 +24,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class StartViaAsan {
     DECLARE_DELAYED_SINGLETON(StartViaAsan);
 
@@ -32,7 +31,6 @@ public:
     bool IsAsanVersion(const std::string &appName) const;
     void GetAsanStartMsg(AppSpawnStartMsg &startMsg) const;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_APPMGR_INCLUDE_START_VIA_ASAN_H

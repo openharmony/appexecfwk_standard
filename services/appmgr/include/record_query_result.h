@@ -18,7 +18,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 struct RecordQueryResult {
     void Reset()
     {
@@ -34,7 +33,6 @@ struct RecordQueryResult {
     bool abilityExists = false;
     ErrCode error = ERR_OK;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 

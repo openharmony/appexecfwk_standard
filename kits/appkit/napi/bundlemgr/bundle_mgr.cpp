@@ -21,6 +21,9 @@
 #include "if_system_ability_manager.h"
 #include "iservice_registry.h"
 #include "installer_callback.h"
+#include "permission_callback.h"
+#include "ipc_skeleton.h"
+#include "bundle_constants.h"
 
 using namespace OHOS;
 using namespace OHOS::AAFwk;
@@ -62,6 +65,24 @@ enum class InstallErrorCode {
     STATUS_BMS_SERVICE_ERROR = 0x41
 };
 
+const std::string PERMISSION_CHANGE = "permissionChange";
+const std::string ANY_PERMISSION_CHANGE = "anyPermissionChange";
+
+std::mutex permissionsCallbackMutex;
+std::mutex anyPermissionsCallbackMutex;
+
+struct PermissionsKey {
+    napi_ref callback = 0;
+    std::vector<int32_t> uids;
+    bool operator<(const PermissionsKey &other) const
+    {
+        return this->callback < other.callback;
+    }
+};
+
+std::map<PermissionsKey, OHOS::sptr<PermissionCallback>> permissionsCallback;
+std::map<napi_ref, OHOS::sptr<PermissionCallback>> anyPermissionsCallback;
+
 }  // namespace
 
 napi_value g_classBundleInstaller;
@@ -73,6 +94,15 @@ static OHOS::sptr<OHOS::AppExecFwk::IBundleMgr> GetBundleMgr()
     OHOS::sptr<OHOS::IRemoteObject> remoteObject =
         systemAbilityManager->GetSystemAbility(OHOS::BUNDLE_MGR_SERVICE_SYS_ABILITY_ID);
     return OHOS::iface_cast<IBundleMgr>(remoteObject);
+}
+
+static bool CheckIsSystemApp()
+{
+    int32_t uid = IPCSkeleton::GetCallingUid();
+    if (uid >= OHOS::AppExecFwk::Constants::ROOT_UID && uid <= OHOS::AppExecFwk::Constants::MAX_SYS_UID) {
+        return true;
+    }
+    return false;
 }
 
 static void ConvertApplicationInfo(napi_env env, napi_value objAppInfo, const ApplicationInfo &appInfo)
@@ -119,9 +149,12 @@ static void ConvertApplicationInfo(napi_env env, napi_value objAppInfo, const Ap
     NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, appInfo.process.c_str(), NAPI_AUTO_LENGTH, &nProcess));
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objAppInfo, "process", nProcess));
 
-    napi_value nEntryDir;
-    NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, appInfo.entryDir.c_str(), NAPI_AUTO_LENGTH, &nEntryDir));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objAppInfo, "entryDir", nEntryDir));
+    if (CheckIsSystemApp()) {
+        napi_value nEntryDir;
+        NAPI_CALL_RETURN_VOID(
+            env, napi_create_string_utf8(env, appInfo.entryDir.c_str(), NAPI_AUTO_LENGTH, &nEntryDir));
+        NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objAppInfo, "entryDir", nEntryDir));
+    }
 
     napi_value nPermissions;
     NAPI_CALL_RETURN_VOID(env, napi_create_array(env, &nPermissions));
@@ -187,14 +220,15 @@ static void ConvertCustomizeData(napi_env env, napi_value objCustomizeData, cons
     HILOG_INFO("ConvertCustomizeData value=%{public}s.", customizeData.value.c_str());
     napi_value nExtra;
     NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, customizeData.extra.c_str(), NAPI_AUTO_LENGTH, &nExtra));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objCustomizeData, "value", nExtra));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objCustomizeData, "extra", nExtra));
     HILOG_INFO("ConvertCustomizeData extra=%{public}s.", customizeData.extra.c_str());
 }
 
 static void ConvertParameters(napi_env env, napi_value objParameters, const Parameters &parameters)
 {
     napi_value nDescription;
-    NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, parameters.description.c_str(), NAPI_AUTO_LENGTH, &nDescription));
+    NAPI_CALL_RETURN_VOID(
+        env, napi_create_string_utf8(env, parameters.description.c_str(), NAPI_AUTO_LENGTH, &nDescription));
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objParameters, "description", nDescription));
     HILOG_INFO("ConvertParameters parameters.description=%{public}s.", parameters.description.c_str());
     napi_value nName;
@@ -210,7 +244,8 @@ static void ConvertParameters(napi_env env, napi_value objParameters, const Para
 static void ConvertResults(napi_env env, napi_value objResults, const Results &results)
 {
     napi_value nDescription;
-    NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, results.description.c_str(), NAPI_AUTO_LENGTH, &nDescription));
+    NAPI_CALL_RETURN_VOID(
+        env, napi_create_string_utf8(env, results.description.c_str(), NAPI_AUTO_LENGTH, &nDescription));
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objResults, "description", nDescription));
     HILOG_INFO("ConvertResults results.description=%{public}s.", results.description.c_str());
     napi_value nName;
@@ -222,7 +257,6 @@ static void ConvertResults(napi_env env, napi_value objResults, const Results &r
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objResults, "type", nType));
     HILOG_INFO("ConvertResults results.type=%{public}s.", results.type.c_str());
 }
-
 
 static void ConvertMetaData(napi_env env, napi_value objMetaData, const MetaData &metaData)
 {
@@ -278,6 +312,16 @@ static void ConvertAbilityInfo(napi_env env, napi_value objAbilityInfo, const Ab
     NAPI_CALL_RETURN_VOID(
         env, napi_create_string_utf8(env, abilityInfo.iconPath.c_str(), NAPI_AUTO_LENGTH, &nIconPath));
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objAbilityInfo, "icon", nIconPath));
+
+    napi_value nsrcPath;
+    NAPI_CALL_RETURN_VOID(
+        env, napi_create_string_utf8(env, abilityInfo.srcPath.c_str(), NAPI_AUTO_LENGTH, &nsrcPath));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objAbilityInfo, "srcPath", nsrcPath));
+
+    napi_value nLaunguage;
+    NAPI_CALL_RETURN_VOID(
+        env, napi_create_string_utf8(env, abilityInfo.srcLanguage.c_str(), NAPI_AUTO_LENGTH, &nLaunguage));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objAbilityInfo, "srcLanguage", nLaunguage));
 
     napi_value nVisible;
     NAPI_CALL_RETURN_VOID(env, napi_get_boolean(env, abilityInfo.visible, &nVisible));
@@ -634,10 +678,12 @@ static void ConvertFormInfo(napi_env env, napi_value objformInfo, const FormInfo
 static void ConvertShortcutIntent(napi_env env, napi_value objShortcutInfo, const ShortcutIntent &shortcutIntent)
 {
     napi_value nTargetBundle;
-    NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, shortcutIntent.targetBundle.c_str(), NAPI_AUTO_LENGTH, &nTargetBundle));
+    NAPI_CALL_RETURN_VOID(
+        env, napi_create_string_utf8(env, shortcutIntent.targetBundle.c_str(), NAPI_AUTO_LENGTH, &nTargetBundle));
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objShortcutInfo, "targetBundle", nTargetBundle));
     napi_value nTargetClass;
-    NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, shortcutIntent.targetClass.c_str(), NAPI_AUTO_LENGTH, &nTargetClass));
+    NAPI_CALL_RETURN_VOID(
+        env, napi_create_string_utf8(env, shortcutIntent.targetClass.c_str(), NAPI_AUTO_LENGTH, &nTargetClass));
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objShortcutInfo, "targetClass", nTargetClass));
 }
 
@@ -659,13 +705,11 @@ static void ConvertShortcutInfos(napi_env env, napi_value objShortcutInfo, const
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objShortcutInfo, "hostAbility", nHostAbility));
 
     napi_value nIcon;
-    NAPI_CALL_RETURN_VOID(
-        env, napi_create_string_utf8(env, shortcutInfo.icon.c_str(), NAPI_AUTO_LENGTH, &nIcon));
+    NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, shortcutInfo.icon.c_str(), NAPI_AUTO_LENGTH, &nIcon));
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objShortcutInfo, "icon", nIcon));
 
     napi_value nLabel;
-    NAPI_CALL_RETURN_VOID(
-        env, napi_create_string_utf8(env, shortcutInfo.label.c_str(), NAPI_AUTO_LENGTH, &nLabel));
+    NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, shortcutInfo.label.c_str(), NAPI_AUTO_LENGTH, &nLabel));
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objShortcutInfo, "label", nLabel));
 
     napi_value nDisableMessage;
@@ -683,7 +727,7 @@ static void ConvertShortcutInfos(napi_env env, napi_value objShortcutInfo, const
 
     napi_value nIsEnables;
     NAPI_CALL_RETURN_VOID(env, napi_get_boolean(env, shortcutInfo.isEnables, &nIsEnables));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objShortcutInfo, "isEnables", nIsEnables));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objShortcutInfo, "isEnabled", nIsEnables));
 
     napi_value nIntents;
     NAPI_CALL_RETURN_VOID(env, napi_create_array(env, &nIntents));
@@ -693,8 +737,80 @@ static void ConvertShortcutInfos(napi_env env, napi_value objShortcutInfo, const
         ConvertShortcutIntent(env, nIntent, shortcutInfo.intents[idx]);
         NAPI_CALL_RETURN_VOID(env, napi_set_element(env, nIntents, idx, nIntent));
     }
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objShortcutInfo, "intents", nIntents));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objShortcutInfo, "wants", nIntents));
 }
+
+static void ConvertModuleUsageRecords(
+    napi_env env, napi_value objModuleUsageRecord, const ModuleUsageRecord &moduleUsageRecord)
+{
+    napi_value nbundleName;
+    NAPI_CALL_RETURN_VOID(
+        env, napi_create_string_utf8(env, moduleUsageRecord.bundleName.c_str(), NAPI_AUTO_LENGTH, &nbundleName));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objModuleUsageRecord, "bundleName", nbundleName));
+    HILOG_INFO("ConvertModuleUsageRecords bundleName=%{public}s.", moduleUsageRecord.bundleName.c_str());
+
+    napi_value nappLabelId;
+    NAPI_CALL_RETURN_VOID(env, napi_create_uint32(env, moduleUsageRecord.appLabelId, &nappLabelId));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objModuleUsageRecord, "appLabelId", nappLabelId));
+    HILOG_INFO("ConvertModuleUsageRecords appLabelId=%{public}ud.", moduleUsageRecord.appLabelId);
+
+    napi_value nname;
+    NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, moduleUsageRecord.name.c_str(), NAPI_AUTO_LENGTH, &nname));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objModuleUsageRecord, "name", nname));
+    HILOG_INFO("ConvertModuleUsageRecords name=%{public}s.", moduleUsageRecord.name.c_str());
+
+    napi_value nlabelId;
+    NAPI_CALL_RETURN_VOID(env, napi_create_uint32(env, moduleUsageRecord.labelId, &nlabelId));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objModuleUsageRecord, "labelId", nlabelId));
+    HILOG_INFO("ConvertModuleUsageRecords labelId=%{public}ud.", moduleUsageRecord.labelId);
+
+    napi_value ndescriptionId;
+    NAPI_CALL_RETURN_VOID(env, napi_create_uint32(env, moduleUsageRecord.descriptionId, &ndescriptionId));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objModuleUsageRecord, "descriptionId", ndescriptionId));
+    HILOG_INFO("ConvertModuleUsageRecords descriptionId=%{public}ud.", moduleUsageRecord.descriptionId);
+
+    napi_value nabilityName;
+    NAPI_CALL_RETURN_VOID(
+        env, napi_create_string_utf8(env, moduleUsageRecord.abilityName.c_str(), NAPI_AUTO_LENGTH, &nabilityName));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objModuleUsageRecord, "abilityName", nabilityName));
+    HILOG_INFO("ConvertModuleUsageRecords abilityName=%{public}s.", moduleUsageRecord.abilityName.c_str());
+
+    napi_value nabilityLabelId;
+    NAPI_CALL_RETURN_VOID(env, napi_create_uint32(env, moduleUsageRecord.abilityLabelId, &nabilityLabelId));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objModuleUsageRecord, "abilityLabelId", nabilityLabelId));
+    HILOG_INFO("ConvertModuleUsageRecords abilityLabelId=%{public}ud.", moduleUsageRecord.abilityLabelId);
+
+    napi_value nabilityDescriptionId;
+    NAPI_CALL_RETURN_VOID(env, napi_create_uint32(env, moduleUsageRecord.abilityDescriptionId, &nabilityDescriptionId));
+    NAPI_CALL_RETURN_VOID(
+        env, napi_set_named_property(env, objModuleUsageRecord, "abilityDescriptionId", nabilityDescriptionId));
+    HILOG_INFO("ConvertModuleUsageRecords abilityDescriptionId=%{public}ud.", moduleUsageRecord.abilityDescriptionId);
+
+    napi_value nabilityIconId;
+    NAPI_CALL_RETURN_VOID(env, napi_create_uint32(env, moduleUsageRecord.abilityIconId, &nabilityIconId));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objModuleUsageRecord, "abilityIconId", nabilityIconId));
+    HILOG_INFO("ConvertModuleUsageRecords abilityIconId=%{public}ud.", moduleUsageRecord.abilityIconId);
+
+    napi_value nlaunchedCount;
+    NAPI_CALL_RETURN_VOID(env, napi_create_uint32(env, moduleUsageRecord.launchedCount, &nlaunchedCount));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objModuleUsageRecord, "launchedCount", nlaunchedCount));
+    HILOG_INFO("ConvertModuleUsageRecords launchedCount=%{public}ud.", moduleUsageRecord.launchedCount);
+
+    napi_value nlastLaunchTime;
+    NAPI_CALL_RETURN_VOID(env, napi_create_int64(env, moduleUsageRecord.lastLaunchTime, &nlastLaunchTime));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objModuleUsageRecord, "lastLaunchTime", nlastLaunchTime));
+
+    napi_value nremoved;
+    NAPI_CALL_RETURN_VOID(env, napi_get_boolean(env, moduleUsageRecord.removed, &nremoved));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objModuleUsageRecord, "isRemoved", nremoved));
+
+    napi_value ninstallationFreeSupported;
+    NAPI_CALL_RETURN_VOID(
+        env, napi_get_boolean(env, moduleUsageRecord.installationFreeSupported, &ninstallationFreeSupported));
+    NAPI_CALL_RETURN_VOID(env,
+        napi_set_named_property(env, objModuleUsageRecord, "installationFreeSupported", ninstallationFreeSupported));
+}
+
 static std::string GetStringFromNAPI(napi_env env, napi_value value)
 {
     std::string result;
@@ -837,6 +953,14 @@ napi_value GetApplicationInfos(napi_env env, napi_callback_info info)
             (void *)asyncCallbackInfo,
             &asyncCallbackInfo->asyncWork);
         NAPI_CALL(env, napi_queue_async_work(env, asyncCallbackInfo->asyncWork));
+        napi_value ret = nullptr;
+        NAPI_CALL(env, napi_get_null(env, &ret));
+        if (ret == nullptr) {
+            if (asyncCallbackInfo != nullptr) {
+                delete asyncCallbackInfo;
+                asyncCallbackInfo = nullptr;
+            }
+        }
         napi_value result;
         NAPI_CALL(env, napi_create_int32(env, NAPI_RETURN_ONE, &result));
         return result;
@@ -871,6 +995,15 @@ napi_value GetApplicationInfos(napi_env env, napi_callback_info info)
             (void *)asyncCallbackInfo,
             &asyncCallbackInfo->asyncWork);
         napi_queue_async_work(env, asyncCallbackInfo->asyncWork);
+
+        napi_value ret = nullptr;
+        NAPI_CALL(env, napi_get_null(env, &ret));
+        if (ret == nullptr) {
+            if (asyncCallbackInfo != nullptr) {
+                delete asyncCallbackInfo;
+                asyncCallbackInfo = nullptr;
+            }
+        }
         return promise;
     }
 }
@@ -1038,6 +1171,14 @@ napi_value QueryAbilityInfo(napi_env env, napi_callback_info info)
             &asyncCallbackInfo->asyncWork);
         NAPI_CALL(env, napi_queue_async_work(env, asyncCallbackInfo->asyncWork));
 
+        napi_value ret = nullptr;
+        NAPI_CALL(env, napi_get_null(env, &ret));
+        if (ret == nullptr) {
+            if (asyncCallbackInfo != nullptr) {
+                delete asyncCallbackInfo;
+                asyncCallbackInfo = nullptr;
+            }
+        }
         napi_value result;
         NAPI_CALL(env, napi_create_int32(env, NAPI_RETURN_ONE, &result));
         return result;
@@ -1071,6 +1212,16 @@ napi_value QueryAbilityInfo(napi_env env, napi_callback_info info)
             (void *)asyncCallbackInfo,
             &asyncCallbackInfo->asyncWork);
         napi_queue_async_work(env, asyncCallbackInfo->asyncWork);
+
+        napi_value ret = nullptr;
+        NAPI_CALL(env, napi_get_null(env, &ret));
+        if (ret == nullptr) {
+            if (asyncCallbackInfo != nullptr) {
+                delete asyncCallbackInfo;
+                asyncCallbackInfo = nullptr;
+            }
+        }
+
         return promise;
     }
 }
@@ -1175,6 +1326,14 @@ napi_value GetApplicationInfo(napi_env env, napi_callback_info info)
             &asyncCallbackInfo->asyncWork);
         NAPI_CALL(env, napi_queue_async_work(env, asyncCallbackInfo->asyncWork));
 
+        napi_value ret = nullptr;
+        NAPI_CALL(env, napi_get_null(env, &ret));
+        if (ret == nullptr) {
+            if (asyncCallbackInfo != nullptr) {
+                delete asyncCallbackInfo;
+                asyncCallbackInfo = nullptr;
+            }
+        }
         napi_value result;
         NAPI_CALL(env, napi_create_int32(env, NAPI_RETURN_ONE, &result));
         return result;
@@ -1216,6 +1375,15 @@ napi_value GetApplicationInfo(napi_env env, napi_callback_info info)
             (void *)asyncCallbackInfo,
             &asyncCallbackInfo->asyncWork);
         napi_queue_async_work(env, asyncCallbackInfo->asyncWork);
+
+        napi_value ret = nullptr;
+        NAPI_CALL(env, napi_get_null(env, &ret));
+        if (ret == nullptr) {
+            if (asyncCallbackInfo != nullptr) {
+                delete asyncCallbackInfo;
+                asyncCallbackInfo = nullptr;
+            }
+        }
         return promise;
     }
 }
@@ -1312,6 +1480,15 @@ napi_value GetBundleInfos(napi_env env, napi_callback_info info)
             (void *)asyncCallbackInfo,
             &asyncCallbackInfo->asyncWork);
         NAPI_CALL(env, napi_queue_async_work(env, asyncCallbackInfo->asyncWork));
+
+        napi_value ret = nullptr;
+        NAPI_CALL(env, napi_get_null(env, &ret));
+        if (ret == nullptr) {
+            if (asyncCallbackInfo != nullptr) {
+                delete asyncCallbackInfo;
+                asyncCallbackInfo = nullptr;
+            }
+        }
         napi_value result;
         NAPI_CALL(env, napi_create_int32(env, NAPI_RETURN_ONE, &result));
         return result;
@@ -1345,9 +1522,19 @@ napi_value GetBundleInfos(napi_env env, napi_callback_info info)
             (void *)asyncCallbackInfo,
             &asyncCallbackInfo->asyncWork);
         napi_queue_async_work(env, asyncCallbackInfo->asyncWork);
+
+        napi_value ret = nullptr;
+        NAPI_CALL(env, napi_get_null(env, &ret));
+        if (ret == nullptr) {
+            if (asyncCallbackInfo != nullptr) {
+                delete asyncCallbackInfo;
+                asyncCallbackInfo = nullptr;
+            }
+        }
         return promise;
     }
 }
+
 static bool InnerGetBundleInfo(
     napi_env env, const std::string &bundleName, const BundleFlag bundleFlag, BundleInfo &bundleInfo)
 {
@@ -1424,6 +1611,14 @@ napi_value GetBundleInfo(napi_env env, napi_callback_info info)
             &asyncCallbackInfo->asyncWork);
 
         NAPI_CALL(env, napi_queue_async_work(env, asyncCallbackInfo->asyncWork));
+        napi_value ret = nullptr;
+        NAPI_CALL(env, napi_get_null(env, &ret));
+        if (ret == nullptr) {
+            if (asyncCallbackInfo != nullptr) {
+                delete asyncCallbackInfo;
+                asyncCallbackInfo = nullptr;
+            }
+        }
         napi_value result;
         NAPI_CALL(env, napi_create_int32(env, NAPI_RETURN_ONE, &result));
         return result;
@@ -1458,6 +1653,15 @@ napi_value GetBundleInfo(napi_env env, napi_callback_info info)
             (void *)asyncCallbackInfo,
             &asyncCallbackInfo->asyncWork);
         napi_queue_async_work(env, asyncCallbackInfo->asyncWork);
+
+        napi_value ret = nullptr;
+        NAPI_CALL(env, napi_get_null(env, &ret));
+        if (ret == nullptr) {
+            if (asyncCallbackInfo != nullptr) {
+                delete asyncCallbackInfo;
+                asyncCallbackInfo = nullptr;
+            }
+        }
         return promise;
     }
 }
@@ -1537,6 +1741,14 @@ napi_value GetBundleArchiveInfo(napi_env env, napi_callback_info info)
             (void *)asyncCallbackInfo,
             &asyncCallbackInfo->asyncWork);
         NAPI_CALL(env, napi_queue_async_work(env, asyncCallbackInfo->asyncWork));
+        napi_value ret = nullptr;
+        NAPI_CALL(env, napi_get_null(env, &ret));
+        if (ret == nullptr) {
+            if (asyncCallbackInfo != nullptr) {
+                delete asyncCallbackInfo;
+                asyncCallbackInfo = nullptr;
+            }
+        }
         napi_value result;
         NAPI_CALL(env, napi_create_int32(env, NAPI_RETURN_ONE, &result));
         return result;
@@ -1571,6 +1783,15 @@ napi_value GetBundleArchiveInfo(napi_env env, napi_callback_info info)
             (void *)asyncCallbackInfo,
             &asyncCallbackInfo->asyncWork);
         napi_queue_async_work(env, asyncCallbackInfo->asyncWork);
+
+        napi_value ret = nullptr;
+        NAPI_CALL(env, napi_get_null(env, &ret));
+        if (ret == nullptr) {
+            if (asyncCallbackInfo != nullptr) {
+                delete asyncCallbackInfo;
+                asyncCallbackInfo = nullptr;
+            }
+        }
         return promise;
     }
 }
@@ -1703,6 +1924,14 @@ napi_value GetPermissionDef(napi_env env, napi_callback_info info)
             (void *)asyncCallbackInfo,
             &asyncCallbackInfo->asyncWork);
         NAPI_CALL(env, napi_queue_async_work(env, asyncCallbackInfo->asyncWork));
+        napi_value ret = nullptr;
+        NAPI_CALL(env, napi_get_null(env, &ret));
+        if (ret == nullptr) {
+            if (asyncCallbackInfo != nullptr) {
+                delete asyncCallbackInfo;
+                asyncCallbackInfo = nullptr;
+            }
+        }
         napi_value result;
         NAPI_CALL(env, napi_create_int32(env, NAPI_RETURN_ONE, &result));
         return result;
@@ -1735,6 +1964,15 @@ napi_value GetPermissionDef(napi_env env, napi_callback_info info)
             (void *)asyncCallbackInfo,
             &asyncCallbackInfo->asyncWork);
         napi_queue_async_work(env, asyncCallbackInfo->asyncWork);
+
+        napi_value ret = nullptr;
+        NAPI_CALL(env, napi_get_null(env, &ret));
+        if (ret == nullptr) {
+            if (asyncCallbackInfo != nullptr) {
+                delete asyncCallbackInfo;
+                asyncCallbackInfo = nullptr;
+            }
+        }
         return promise;
     }
 }
@@ -1818,6 +2056,14 @@ napi_value GetBundleInstaller(napi_env env, napi_callback_info info)
             (void *)asyncCallbackInfo,
             &asyncCallbackInfo->asyncWork);
         NAPI_CALL(env, napi_queue_async_work(env, asyncCallbackInfo->asyncWork));
+        napi_value ret = nullptr;
+        NAPI_CALL(env, napi_get_null(env, &ret));
+        if (ret == nullptr) {
+            if (asyncCallbackInfo != nullptr) {
+                delete asyncCallbackInfo;
+                asyncCallbackInfo = nullptr;
+            }
+        }
         napi_value result;
         NAPI_CALL(env, napi_create_int32(env, NAPI_RETURN_ONE, &result));
         return result;
@@ -1846,6 +2092,15 @@ napi_value GetBundleInstaller(napi_env env, napi_callback_info info)
             (void *)asyncCallbackInfo,
             &asyncCallbackInfo->asyncWork);
         napi_queue_async_work(env, asyncCallbackInfo->asyncWork);
+
+        napi_value ret = nullptr;
+        NAPI_CALL(env, napi_get_null(env, &ret));
+        if (ret == nullptr) {
+            if (asyncCallbackInfo != nullptr) {
+                delete asyncCallbackInfo;
+                asyncCallbackInfo = nullptr;
+            }
+        }
         return promise;
     }
 }
@@ -1875,6 +2130,16 @@ static napi_value ParseInstallParam(napi_env env, InstallParam &installParam, na
     HILOG_INFO("ParseInstallParam userId=%{public}d.", installParam.userId);
 
     property = nullptr;
+    status = napi_get_named_property(env, installProp, "noCheckSignature", &property);
+    NAPI_ASSERT(env, status == napi_ok, "property noCheckSignature incorrect!");
+    napi_typeof(env, property, &valueType);
+    NAPI_ASSERT(env, valueType == napi_boolean, "property type mismatch!");
+    bool noCheckSignature = false;
+    NAPI_CALL(env, napi_get_value_bool(env, property, &noCheckSignature));
+    installParam.noCheckSignature = noCheckSignature;
+    HILOG_INFO("ParseInstallParam noCheckSignature=%{public}d.", installParam.noCheckSignature);
+
+    property = nullptr;
     status = napi_get_named_property(env, installProp, "isKeepData", &property);
     NAPI_ASSERT(env, status == napi_ok, "property isKeepData incorrect!");
     napi_typeof(env, property, &valueType);
@@ -1899,7 +2164,7 @@ static napi_value ParseStringArray(napi_env env, std::vector<std::string> &hapFi
     napi_valuetype valueAryType = napi_undefined;
     NAPI_CALL(env, napi_is_array(env, args, &isArray));
     NAPI_CALL(env, napi_get_array_length(env, args, &arrayLength));
-    HILOG_INFO("ParseStringArray args is array, length=%{public}d", arrayLength);
+    HILOG_INFO("ParseStringArray args is array, length=%{public}ud", arrayLength);
 
     for (uint32_t j = 0; j < arrayLength; j++) {
         NAPI_CALL(env, napi_get_element(env, args, j, &valueAry));
@@ -1978,17 +2243,21 @@ static void ConvertInstallResult(InstallResult &installResult)
             installResult.resultCode = static_cast<int32_t>(InstallErrorCode::STATUS_INSTALL_FAILURE_STORAGE);
             installResult.resultMsg = "STATUS_INSTALL_FAILURE_STORAGE";
             break;
-        case static_cast<int32_t>(IStatusReceiver::ERR_UNINSTALL_SYSTEM_APP_ERROR):
-        case static_cast<int32_t>(IStatusReceiver::ERR_UNINSTALL_KILLING_APP_ERROR):
-            installResult.resultCode = static_cast<int32_t>(InstallErrorCode::STATUS_UNINSTALL_FAILURE_CONFLICT);
-            installResult.resultMsg = "STATUS_UNINSTALL_FAILURE_CONFLICT";
-            break;
         case static_cast<int32_t>(IStatusReceiver::ERR_UNINSTALL_INVALID_NAME):
         case static_cast<int32_t>(IStatusReceiver::ERR_UNINSTALL_PARAM_ERROR):
         case static_cast<int32_t>(IStatusReceiver::ERR_UNINSTALL_PERMISSION_DENIED):
-            installResult.resultCode = static_cast<int32_t>(InstallErrorCode::STATUS_UNINSTALL_FAILURE_ABORTED);
-            installResult.resultMsg = "STATUS_UNINSTALL_FAILURE_ABORTED";
-            break;
+            if (CheckIsSystemApp()) {
+                installResult.resultCode = static_cast<int32_t>(InstallErrorCode::STATUS_UNINSTALL_FAILURE_ABORTED);
+                installResult.resultMsg = "STATUS_UNINSTALL_FAILURE_ABORTED";
+                break;
+            }
+        case static_cast<int32_t>(IStatusReceiver::ERR_UNINSTALL_SYSTEM_APP_ERROR):
+        case static_cast<int32_t>(IStatusReceiver::ERR_UNINSTALL_KILLING_APP_ERROR):
+            if (CheckIsSystemApp()) {
+                installResult.resultCode = static_cast<int32_t>(InstallErrorCode::STATUS_UNINSTALL_FAILURE_CONFLICT);
+                installResult.resultMsg = "STATUS_UNINSTALL_FAILURE_CONFLICT";
+                break;
+            }
         case static_cast<int32_t>(IStatusReceiver::ERR_UNINSTALL_BUNDLE_MGR_SERVICE_ERROR):
         case static_cast<int32_t>(IStatusReceiver::ERR_UNINSTALL_MISSING_INSTALLED_BUNDLE):
         case static_cast<int32_t>(IStatusReceiver::ERR_UNINSTALL_MISSING_INSTALLED_MODULE):
@@ -2074,6 +2343,14 @@ napi_value Install(napi_env env, napi_callback_info info)
             (void *)asyncCallbackInfo,
             &asyncCallbackInfo->asyncWork);
         NAPI_CALL(env, napi_queue_async_work(env, asyncCallbackInfo->asyncWork));
+        napi_value ret = nullptr;
+        NAPI_CALL(env, napi_get_null(env, &ret));
+        if (ret == nullptr) {
+            if (asyncCallbackInfo != nullptr) {
+                delete asyncCallbackInfo;
+                asyncCallbackInfo = nullptr;
+            }
+        }
         napi_value result;
         NAPI_CALL(env, napi_create_int32(env, NAPI_RETURN_ONE, &result));
         return result;
@@ -2116,6 +2393,15 @@ napi_value Install(napi_env env, napi_callback_info info)
             (void *)asyncCallbackInfo,
             &asyncCallbackInfo->asyncWork);
         napi_queue_async_work(env, asyncCallbackInfo->asyncWork);
+
+        napi_value ret = nullptr;
+        NAPI_CALL(env, napi_get_null(env, &ret));
+        if (ret == nullptr) {
+            if (asyncCallbackInfo != nullptr) {
+                delete asyncCallbackInfo;
+                asyncCallbackInfo = nullptr;
+            }
+        }
         return promise;
     }
 }
@@ -2216,9 +2502,16 @@ napi_value Uninstall(napi_env env, napi_callback_info info)
             &asyncCallbackInfo->asyncWork);
         NAPI_CALL(env, napi_queue_async_work(env, asyncCallbackInfo->asyncWork));
 
+        napi_value ret = nullptr;
+        NAPI_CALL(env, napi_get_null(env, &ret));
+        if (ret == nullptr) {
+            if (asyncCallbackInfo != nullptr) {
+                delete asyncCallbackInfo;
+                asyncCallbackInfo = nullptr;
+            }
+        }
         napi_value result;
         NAPI_CALL(env, napi_create_int32(env, NAPI_RETURN_ONE, &result));
-
         return result;
     } else {
         napi_deferred deferred;
@@ -2257,6 +2550,15 @@ napi_value Uninstall(napi_env env, napi_callback_info info)
             (void *)asyncCallbackInfo,
             &asyncCallbackInfo->asyncWork);
         napi_queue_async_work(env, asyncCallbackInfo->asyncWork);
+
+        napi_value ret = nullptr;
+        NAPI_CALL(env, napi_get_null(env, &ret));
+        if (ret == nullptr) {
+            if (asyncCallbackInfo != nullptr) {
+                delete asyncCallbackInfo;
+                asyncCallbackInfo = nullptr;
+            }
+        }
         return promise;
     }
 }
@@ -2349,6 +2651,15 @@ napi_value GetAllFormsInfo(napi_env env, napi_callback_info info)
             (void *)asyncCallbackInfo,
             &asyncCallbackInfo->asyncWork);
         NAPI_CALL(env, napi_queue_async_work(env, asyncCallbackInfo->asyncWork));
+
+        napi_value ret = nullptr;
+        NAPI_CALL(env, napi_get_null(env, &ret));
+        if (ret == nullptr) {
+            if (asyncCallbackInfo != nullptr) {
+                delete asyncCallbackInfo;
+                asyncCallbackInfo = nullptr;
+            }
+        }
         napi_value result;
         NAPI_CALL(env, napi_create_int32(env, NAPI_RETURN_ONE, &result));
         return result;
@@ -2382,6 +2693,15 @@ napi_value GetAllFormsInfo(napi_env env, napi_callback_info info)
             (void *)asyncCallbackInfo,
             &asyncCallbackInfo->asyncWork);
         napi_queue_async_work(env, asyncCallbackInfo->asyncWork);
+
+        napi_value ret = nullptr;
+        NAPI_CALL(env, napi_get_null(env, &ret));
+        if (ret == nullptr) {
+            if (asyncCallbackInfo != nullptr) {
+                delete asyncCallbackInfo;
+                asyncCallbackInfo = nullptr;
+            }
+        }
         return promise;
     }
 }
@@ -2454,6 +2774,14 @@ napi_value GetFormsInfoByModule(napi_env env, napi_callback_info info)
             (void *)asyncCallbackInfo,
             &asyncCallbackInfo->asyncWork);
         NAPI_CALL(env, napi_queue_async_work(env, asyncCallbackInfo->asyncWork));
+        napi_value ret = nullptr;
+        NAPI_CALL(env, napi_get_null(env, &ret));
+        if (ret == nullptr) {
+            if (asyncCallbackInfo != nullptr) {
+                delete asyncCallbackInfo;
+                asyncCallbackInfo = nullptr;
+            }
+        }
         napi_value result;
         NAPI_CALL(env, napi_create_int32(env, NAPI_RETURN_ONE, &result));
         return result;
@@ -2488,6 +2816,15 @@ napi_value GetFormsInfoByModule(napi_env env, napi_callback_info info)
             (void *)asyncCallbackInfo,
             &asyncCallbackInfo->asyncWork);
         napi_queue_async_work(env, asyncCallbackInfo->asyncWork);
+
+        napi_value ret = nullptr;
+        NAPI_CALL(env, napi_get_null(env, &ret));
+        if (ret == nullptr) {
+            if (asyncCallbackInfo != nullptr) {
+                delete asyncCallbackInfo;
+                asyncCallbackInfo = nullptr;
+            }
+        }
         return promise;
     }
 }
@@ -2558,6 +2895,14 @@ napi_value GetFormsInfoByApp(napi_env env, napi_callback_info info)
             (void *)asyncCallbackInfo,
             &asyncCallbackInfo->asyncWork);
         NAPI_CALL(env, napi_queue_async_work(env, asyncCallbackInfo->asyncWork));
+        napi_value ret = nullptr;
+        NAPI_CALL(env, napi_get_null(env, &ret));
+        if (ret == nullptr) {
+            if (asyncCallbackInfo != nullptr) {
+                delete asyncCallbackInfo;
+                asyncCallbackInfo = nullptr;
+            }
+        }
         napi_value result;
         NAPI_CALL(env, napi_create_int32(env, NAPI_RETURN_ONE, &result));
         return result;
@@ -2591,11 +2936,21 @@ napi_value GetFormsInfoByApp(napi_env env, napi_callback_info info)
             (void *)asyncCallbackInfo,
             &asyncCallbackInfo->asyncWork);
         napi_queue_async_work(env, asyncCallbackInfo->asyncWork);
+
+        napi_value ret = nullptr;
+        NAPI_CALL(env, napi_get_null(env, &ret));
+        if (ret == nullptr) {
+            if (asyncCallbackInfo != nullptr) {
+                delete asyncCallbackInfo;
+                asyncCallbackInfo = nullptr;
+            }
+        }
         return promise;
     }
 }
 
-static void ProcessShortcutInfos(napi_env env, napi_value result, const std::vector<OHOS::AppExecFwk::ShortcutInfo> &shortcutInfos)
+static void ProcessShortcutInfos(
+    napi_env env, napi_value result, const std::vector<OHOS::AppExecFwk::ShortcutInfo> &shortcutInfos)
 {
     if (shortcutInfos.size() > 0) {
         HILOG_INFO("-----ShortcutInfos is not null-----");
@@ -2614,14 +2969,15 @@ static void ProcessShortcutInfos(napi_env env, napi_value result, const std::vec
     }
 }
 
-static bool InnerGetShortcutInfos(napi_env env, const std::string &bundleName, std::vector<OHOS::AppExecFwk::ShortcutInfo> &shortcutInfos)
+static bool InnerGetShortcutInfos(
+    napi_env env, const std::string &bundleName, std::vector<OHOS::AppExecFwk::ShortcutInfo> &shortcutInfos)
 {
     auto iBundleMgr = GetBundleMgr();
     if (!iBundleMgr) {
         HILOG_ERROR("can not get iBundleMgr");
         return false;
     }
-    return iBundleMgr-> GetShortcutInfos(bundleName, shortcutInfos);
+    return iBundleMgr->GetShortcutInfos(bundleName, shortcutInfos);
 }
 /**
  * Promise and async callback
@@ -2678,6 +3034,14 @@ napi_value GetShortcutInfos(napi_env env, napi_callback_info info)
             (void *)asyncCallbackInfo,
             &asyncCallbackInfo->asyncWork);
         NAPI_CALL(env, napi_queue_async_work(env, asyncCallbackInfo->asyncWork));
+        napi_value ret = nullptr;
+        NAPI_CALL(env, napi_get_null(env, &ret));
+        if (ret == nullptr) {
+            if (asyncCallbackInfo != nullptr) {
+                delete asyncCallbackInfo;
+                asyncCallbackInfo = nullptr;
+            }
+        }
         napi_value result;
         NAPI_CALL(env, napi_create_int32(env, NAPI_RETURN_ONE, &result));
         return result;
@@ -2711,6 +3075,611 @@ napi_value GetShortcutInfos(napi_env env, napi_callback_info info)
             (void *)asyncCallbackInfo,
             &asyncCallbackInfo->asyncWork);
         napi_queue_async_work(env, asyncCallbackInfo->asyncWork);
+
+        napi_value ret = nullptr;
+        NAPI_CALL(env, napi_get_null(env, &ret));
+        if (ret == nullptr) {
+            if (asyncCallbackInfo != nullptr) {
+                delete asyncCallbackInfo;
+                asyncCallbackInfo = nullptr;
+            }
+        }
+        return promise;
+    }
+}
+
+static void ProcessModuleUsageRecords(
+    napi_env env, napi_value result, const std::vector<OHOS::AppExecFwk::ModuleUsageRecord> &moduleUsageRecords)
+{
+    if (moduleUsageRecords.size() > 0) {
+        HILOG_INFO("-----moduleUsageRecords is not null-----");
+        size_t index = 0;
+        for (const auto &item : moduleUsageRecords) {
+            HILOG_INFO("bundleName{%s} ", item.bundleName.c_str());
+            HILOG_INFO("abilityName{%s} ", item.abilityName.c_str());
+            napi_value objModuleUsageRecord;
+            NAPI_CALL_RETURN_VOID(env, napi_create_object(env, &objModuleUsageRecord));
+            ConvertModuleUsageRecords(env, objModuleUsageRecord, item);
+            NAPI_CALL_RETURN_VOID(env, napi_set_element(env, result, index, objModuleUsageRecord));
+            index++;
+        }
+    } else {
+        HILOG_INFO("-----moduleUsageRecords is null-----");
+    }
+}
+
+static bool InnerGetModuleUsageRecords(
+    napi_env env, const int32_t number, std::vector<OHOS::AppExecFwk::ModuleUsageRecord> &moduleUsageRecords)
+{
+    auto iBundleMgr = GetBundleMgr();
+    if (!iBundleMgr) {
+        HILOG_ERROR("can not get iBundleMgr");
+        return false;
+    }
+    return iBundleMgr->GetModuleUsageRecords(number, moduleUsageRecords);
+}
+/**
+ * Promise and async callback
+ */
+napi_value GetModuleUsageRecords(napi_env env, napi_callback_info info)
+{
+    size_t argc = ARGS_SIZE_THREE;
+    napi_value argv[ARGS_SIZE_THREE] = {nullptr};
+    napi_value thisArg;
+    void *data = nullptr;
+    NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, &thisArg, &data));
+    HILOG_INFO("ARGCSIZE is =%{public}zu.", argc);
+    int number;
+    ParseInt(env, number, argv[PARAM0]);
+    AsyncModuleUsageRecordsCallbackInfo *asyncCallbackInfo = new AsyncModuleUsageRecordsCallbackInfo{
+        .env = env, .asyncWork = nullptr, .deferred = nullptr, .number = number};
+    if (argc > (ARGS_SIZE_TWO - CALLBACK_SIZE)) {
+        HILOG_INFO("GetModuleUsageRecords asyncCallback.");
+        napi_value resourceName;
+        NAPI_CALL(env, napi_create_string_latin1(env, "GetModuleUsageRecords", NAPI_AUTO_LENGTH, &resourceName));
+        napi_valuetype valuetype = napi_undefined;
+        napi_typeof(env, argv[ARGS_SIZE_ONE], &valuetype);
+        NAPI_ASSERT(env, valuetype == napi_function, "Wrong argument type. Function expected.");
+        NAPI_CALL(env, napi_create_reference(env, argv[ARGS_SIZE_ONE], NAPI_RETURN_ONE, &asyncCallbackInfo->callback));
+
+        napi_create_async_work(
+            env,
+            nullptr,
+            resourceName,
+            [](napi_env env, void *data) {
+                AsyncModuleUsageRecordsCallbackInfo *asyncCallbackInfo = (AsyncModuleUsageRecordsCallbackInfo *)data;
+                asyncCallbackInfo->ret =
+                    InnerGetModuleUsageRecords(env, asyncCallbackInfo->number, asyncCallbackInfo->moduleUsageRecords);
+            },
+            [](napi_env env, napi_status status, void *data) {
+                AsyncModuleUsageRecordsCallbackInfo *asyncCallbackInfo = (AsyncModuleUsageRecordsCallbackInfo *)data;
+                napi_value result[ARGS_SIZE_TWO] = {0};
+                napi_value callback = 0;
+                napi_value undefined = 0;
+                napi_value callResult = 0;
+                napi_get_undefined(env, &undefined);
+                napi_create_array(env, &result[PARAM1]);
+                ProcessModuleUsageRecords(env, result[PARAM1], asyncCallbackInfo->moduleUsageRecords);
+                result[PARAM0] = GetCallbackErrorValue(env, asyncCallbackInfo->ret ? CODE_SUCCESS : CODE_FAILED);
+                napi_get_reference_value(env, asyncCallbackInfo->callback, &callback);
+                napi_call_function(env, undefined, callback, ARGS_SIZE_TWO, &result[PARAM0], &callResult);
+
+                if (asyncCallbackInfo->callback != nullptr) {
+                    napi_delete_reference(env, asyncCallbackInfo->callback);
+                }
+                napi_delete_async_work(env, asyncCallbackInfo->asyncWork);
+                delete asyncCallbackInfo;
+            },
+            (void *)asyncCallbackInfo,
+            &asyncCallbackInfo->asyncWork);
+        NAPI_CALL(env, napi_queue_async_work(env, asyncCallbackInfo->asyncWork));
+        napi_value ret = nullptr;
+        NAPI_CALL(env, napi_get_null(env, &ret));
+        if (ret == nullptr) {
+            if (asyncCallbackInfo != nullptr) {
+                delete asyncCallbackInfo;
+                asyncCallbackInfo = nullptr;
+            }
+        }
+        napi_value result;
+        NAPI_CALL(env, napi_create_int32(env, NAPI_RETURN_ONE, &result));
+        return result;
+    } else {
+        HILOG_INFO("GetModuleUsageRecords promise.");
+        napi_deferred deferred;
+        napi_value promise;
+        NAPI_CALL(env, napi_create_promise(env, &deferred, &promise));
+        asyncCallbackInfo->deferred = deferred;
+
+        napi_value resourceName;
+        napi_create_string_latin1(env, "GetModuleUsageRecords", NAPI_AUTO_LENGTH, &resourceName);
+        napi_create_async_work(
+            env,
+            nullptr,
+            resourceName,
+            [](napi_env env, void *data) {
+                AsyncModuleUsageRecordsCallbackInfo *asyncCallbackInfo = (AsyncModuleUsageRecordsCallbackInfo *)data;
+                InnerGetModuleUsageRecords(env, asyncCallbackInfo->number, asyncCallbackInfo->moduleUsageRecords);
+            },
+            [](napi_env env, napi_status status, void *data) {
+                HILOG_INFO("=================load=================");
+                AsyncModuleUsageRecordsCallbackInfo *asyncCallbackInfo = (AsyncModuleUsageRecordsCallbackInfo *)data;
+                napi_value result;
+                napi_create_array(env, &result);
+                ProcessModuleUsageRecords(env, result, asyncCallbackInfo->moduleUsageRecords);
+                napi_resolve_deferred(asyncCallbackInfo->env, asyncCallbackInfo->deferred, result);
+                napi_delete_async_work(env, asyncCallbackInfo->asyncWork);
+                delete asyncCallbackInfo;
+            },
+            (void *)asyncCallbackInfo,
+            &asyncCallbackInfo->asyncWork);
+        napi_queue_async_work(env, asyncCallbackInfo->asyncWork);
+
+        napi_value ret = nullptr;
+        NAPI_CALL(env, napi_get_null(env, &ret));
+        if (ret == nullptr) {
+            if (asyncCallbackInfo != nullptr) {
+                delete asyncCallbackInfo;
+                asyncCallbackInfo = nullptr;
+            }
+        }
+        return promise;
+    }
+}
+
+static bool InnerRegisterAllPermissionsChanged(napi_env env, napi_ref callbackRef)
+{
+    HILOG_INFO("InnerRegisterAllPermissionsChanged begin");
+    auto iBundleMgr = GetBundleMgr();
+    if (!iBundleMgr) {
+        HILOG_ERROR("can not get iBundleMgr");
+        return false;
+    }
+    OHOS::sptr<PermissionCallback> callback = new PermissionCallback(env, callbackRef);
+    if (!callback) {
+        HILOG_ERROR("callback nullptr");
+        return false;
+    }
+    auto result = iBundleMgr->RegisterAllPermissionsChanged(callback);
+    if (!result) {
+        HILOG_ERROR("RegisterAllPermissionsChanged call error");
+        return false;
+    }
+    std::lock_guard<std::mutex> lock(anyPermissionsCallbackMutex);
+    auto ret = anyPermissionsCallback.emplace(callbackRef, callback);
+    if (!ret.second) {
+        HILOG_ERROR("RegisterAllPermissionsChanged emplace failed");
+        return false;
+    }
+    HILOG_INFO("InnerRegisterAllPermissionsChanged end");
+    return true;
+}
+
+static napi_value ParseInt32Array(napi_env env, std::vector<int32_t> &uids, napi_value args)
+{
+    HILOG_INFO("Parseint32Array called");
+    bool isArray = false;
+    uint32_t arrayLength = 0;
+    napi_value valueAry = 0;
+    napi_valuetype valueAryType = napi_undefined;
+    NAPI_CALL(env, napi_is_array(env, args, &isArray));
+    NAPI_CALL(env, napi_get_array_length(env, args, &arrayLength));
+    HILOG_INFO("Parseint32Array args is array, length=%{public}ud", arrayLength);
+
+    for (uint32_t j = 0; j < arrayLength; j++) {
+        NAPI_CALL(env, napi_get_element(env, args, j, &valueAry));
+        NAPI_CALL(env, napi_typeof(env, valueAry, &valueAryType));
+        int uid;
+        ParseInt(env, uid, valueAry);
+        uids.emplace_back(uid);
+    }
+    // create result code
+    napi_value result;
+    napi_status status;
+    status = napi_create_int32(env, NAPI_RETURN_ONE, &result);
+    NAPI_ASSERT(env, status == napi_ok, "napi_create_int32 error!");
+    return result;
+}
+
+static bool InnerRegisterPermissionsChanged(napi_env env, const std::vector<int32_t> &uids, napi_ref callbackRef)
+{
+    HILOG_INFO("InnerRegisterPermissionsChanged begin");
+    auto iBundleMgr = GetBundleMgr();
+    if (!iBundleMgr) {
+        HILOG_ERROR("can not get iBundleMgr");
+        return false;
+    }
+    OHOS::sptr<PermissionCallback> callback = new PermissionCallback(env, callbackRef);
+    if (!callback) {
+        HILOG_ERROR("callback nullptr");
+        return false;
+    }
+    auto result = iBundleMgr->RegisterPermissionsChanged(uids, callback);
+    if (!result) {
+        HILOG_ERROR("RegisterAllPermissionsChanged call error");
+        return false;
+    }
+
+    PermissionsKey permissonsKey{.callback = callbackRef, .uids = uids};
+
+    std::lock_guard<std::mutex> lock(permissionsCallbackMutex);
+    auto ret = permissionsCallback.emplace(permissonsKey, callback);
+    if (!ret.second) {
+        HILOG_ERROR("InnerRegisterPermissionsChanged emplace failed");
+        return false;
+    }
+    HILOG_INFO("InnerRegisterPermissionsChanged end");
+    return true;
+}
+
+napi_value RegisterAllPermissionsChanged(napi_env env, napi_callback_info info)
+{
+    size_t argc = ARGS_SIZE_THREE;
+    napi_value argv[ARGS_SIZE_THREE] = {nullptr};
+    napi_value thisArg;
+    void *data = nullptr;
+    NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, &thisArg, &data));
+    HILOG_INFO("ARGCSIZE is = %{public}zu.", argc);
+    std::string permissionEvent;
+    ParseString(env, permissionEvent, argv[PARAM0]);
+    if (permissionEvent == PERMISSION_CHANGE && argc == ARGS_SIZE_THREE) {
+        std::vector<int32_t> uids;
+        ParseInt32Array(env, uids, argv[ARGS_SIZE_ONE]);
+        AsyncRegisterPermissions *asyncCallbackInfo =
+            new AsyncRegisterPermissions{.env = env, .asyncWork = nullptr, .uids = uids};
+        HILOG_INFO("RegisterAllPermissionsChanged permissionChange asyncCallback.");
+        napi_valuetype valuetype = napi_undefined;
+        napi_typeof(env, argv[ARGS_SIZE_TWO], &valuetype);
+        NAPI_ASSERT(env, valuetype == napi_function, "Wrong argument type. Function expected.");
+        NAPI_CALL(env, napi_create_reference(env, argv[ARGS_SIZE_TWO], NAPI_RETURN_ONE, &asyncCallbackInfo->callback));
+
+        napi_value resourceName;
+        napi_create_string_latin1(env, "NAPI_RegisterPermissionsChanged", NAPI_AUTO_LENGTH, &resourceName);
+        napi_create_async_work(
+            env,
+            nullptr,
+            resourceName,
+            [](napi_env env, void *data) {
+                AsyncRegisterPermissions *asyncCallbackInfo = (AsyncRegisterPermissions *)data;
+                InnerRegisterPermissionsChanged(env, asyncCallbackInfo->uids, asyncCallbackInfo->callback);
+            },
+            [](napi_env env, napi_status status, void *data) {
+                AsyncRegisterPermissions *asyncCallbackInfo = (AsyncRegisterPermissions *)data;
+                napi_delete_async_work(env, asyncCallbackInfo->asyncWork);
+                delete asyncCallbackInfo;
+            },
+            (void *)asyncCallbackInfo,
+            &asyncCallbackInfo->asyncWork);
+        NAPI_CALL(env, napi_queue_async_work(env, asyncCallbackInfo->asyncWork));
+
+        napi_value result;
+        NAPI_CALL(env, napi_create_int32(env, NAPI_RETURN_ONE, &result));
+        return result;
+    } else if (permissionEvent == ANY_PERMISSION_CHANGE && argc == ARGS_SIZE_TWO) {
+        AsyncRegisterAllPermissions *asyncCallbackInfo =
+            new AsyncRegisterAllPermissions{.env = env, .asyncWork = nullptr};
+        HILOG_INFO("RegisterAllPermissionsChanged anyPermissionChange asyncCallback.");
+        napi_valuetype valuetype = napi_undefined;
+        napi_typeof(env, argv[ARGS_SIZE_ONE], &valuetype);
+        NAPI_ASSERT(env, valuetype == napi_function, "Wrong argument type. Function expected.");
+        NAPI_CALL(env, napi_create_reference(env, argv[ARGS_SIZE_ONE], NAPI_RETURN_ONE, &asyncCallbackInfo->callback));
+        napi_value resourceName;
+        napi_create_string_latin1(env, "NAPI_RegisterAllPermissionsChanged", NAPI_AUTO_LENGTH, &resourceName);
+        napi_create_async_work(
+            env,
+            nullptr,
+            resourceName,
+            [](napi_env env, void *data) {
+                AsyncRegisterAllPermissions *asyncCallbackInfo = (AsyncRegisterAllPermissions *)data;
+                InnerRegisterAllPermissionsChanged(env, asyncCallbackInfo->callback);
+            },
+            [](napi_env env, napi_status status, void *data) {
+                AsyncRegisterAllPermissions *asyncCallbackInfo = (AsyncRegisterAllPermissions *)data;
+                napi_delete_async_work(env, asyncCallbackInfo->asyncWork);
+                delete asyncCallbackInfo;
+            },
+            (void *)asyncCallbackInfo,
+            &asyncCallbackInfo->asyncWork);
+        NAPI_CALL(env, napi_queue_async_work(env, asyncCallbackInfo->asyncWork));
+
+        napi_value result;
+        NAPI_CALL(env, napi_create_int32(env, NAPI_RETURN_ONE, &result));
+        return result;
+    }
+
+    napi_value result;
+    NAPI_CALL(env, napi_create_int32(env, NAPI_RETURN_ZERO, &result));
+    return result;
+}
+
+static bool InnerUnregisterAnyPermissionsChanged(napi_env env, napi_ref callbackRef)
+{
+    HILOG_INFO("InnerUnregisterAnyPermissionsChanged");
+    std::lock_guard<std::mutex> lock(anyPermissionsCallbackMutex);
+    for (const auto &item : anyPermissionsCallback) {
+        napi_value callback = 0;
+        napi_value ref = 0;
+        napi_get_reference_value(env, item.first, &callback);
+        napi_get_reference_value(env, callbackRef, &ref);
+        bool result = false;
+        auto napiRet = napi_strict_equals(env, callback, ref, &result);
+        HILOG_INFO("status is = %{public}d.", napiRet);
+        if (result) {
+            HILOG_INFO("find value in anyPermissionsCallback");
+            auto iBundleMgr = GetBundleMgr();
+            if (!iBundleMgr) {
+                HILOG_ERROR("can not get iBundleMgr");
+                return false;
+            }
+            auto ret = iBundleMgr->UnregisterPermissionsChanged(item.second);
+            if (!ret) {
+                HILOG_ERROR("UnregisterPermissionsChanged call error");
+                return false;
+            }
+            anyPermissionsCallback.erase(item.first);
+            return true;
+        }
+    }
+    HILOG_INFO("InnerUnregisterAnyPermissionsChanged end");
+    return false;
+}
+
+static bool InnerUnregisterPermissionsChanged(napi_env env, const std::vector<int32_t> &uids, napi_ref callbackRef)
+{
+    HILOG_INFO("InnerUnregisterPermissionsChanged");
+    std::lock_guard<std::mutex> lock(permissionsCallbackMutex);
+    for (const auto &item : permissionsCallback) {
+        napi_value callback = 0;
+        napi_value ref = 0;
+        napi_get_reference_value(env, item.first.callback, &callback);
+        napi_get_reference_value(env, callbackRef, &ref);
+        bool result = false;
+        auto napiRet = napi_strict_equals(env, callback, ref, &result);
+        HILOG_INFO("status is = %{public}d.", napiRet);
+        if (result && uids == item.first.uids) {
+            HILOG_INFO("find value in permissionsCallback");
+            auto iBundleMgr = GetBundleMgr();
+            if (!iBundleMgr) {
+                HILOG_ERROR("can not get iBundleMgr");
+                return false;
+            }
+            auto ret = iBundleMgr->UnregisterPermissionsChanged(item.second);
+            if (!ret) {
+                HILOG_ERROR("InnerUnregisterPermissionsChanged call error");
+                return false;
+            }
+            HILOG_INFO("call UnregisterPermissionsChanged success = %{public}zu.", permissionsCallback.size());
+            permissionsCallback.erase(item.first);
+            return true;
+        }
+        HILOG_INFO("can not find value in permissionsCallback");
+    }
+    HILOG_INFO("InnerUnregisterPermissionsChanged end");
+    return false;
+}
+
+napi_value UnregisterPermissionsChanged(napi_env env, napi_callback_info info)
+{
+    size_t argc = ARGS_SIZE_THREE;
+    napi_value argv[ARGS_SIZE_THREE] = {nullptr};
+    napi_value thisArg;
+    void *data = nullptr;
+    NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, &thisArg, &data));
+    HILOG_INFO("ARGCSIZE is =%{public}zu.", argc);
+    std::string permissionEvent;
+    ParseString(env, permissionEvent, argv[PARAM0]);
+
+    if (permissionEvent == ANY_PERMISSION_CHANGE && argc == ARGS_SIZE_TWO) {
+        AsyncUnregisterPermissions *asyncCallbackInfo = new AsyncUnregisterPermissions{
+            .env = env,
+            .asyncWork = nullptr,
+        };
+        HILOG_INFO("UnregisterAnyPermissionsChanged asyncCallback.");
+        napi_valuetype valuetype = napi_undefined;
+        napi_typeof(env, argv[ARGS_SIZE_ONE], &valuetype);
+        NAPI_ASSERT(env, valuetype == napi_function, "Wrong argument type. Function expected.");
+        NAPI_CALL(env, napi_create_reference(env, argv[ARGS_SIZE_ONE], NAPI_RETURN_ONE, &asyncCallbackInfo->callback));
+        napi_value resourceName;
+        napi_create_string_latin1(env, "NAPI_UnreegisterAnyPermissionsChanged", NAPI_AUTO_LENGTH, &resourceName);
+        napi_create_async_work(
+            env,
+            nullptr,
+            resourceName,
+            [](napi_env env, void *data) {
+                AsyncUnregisterPermissions *asyncCallbackInfo = (AsyncUnregisterPermissions *)data;
+                asyncCallbackInfo->ret = InnerUnregisterAnyPermissionsChanged(env, asyncCallbackInfo->callback);
+            },
+            [](napi_env env, napi_status status, void *data) {
+                AsyncUnregisterPermissions *asyncCallbackInfo = (AsyncUnregisterPermissions *)data;
+                napi_value result[ARGS_SIZE_ONE] = {0};
+                napi_value callback = 0;
+                napi_value undefined = 0;
+                napi_value callResult = 0;
+                result[PARAM0] = GetCallbackErrorValue(env, asyncCallbackInfo->ret ? CODE_SUCCESS : CODE_FAILED);
+                napi_get_reference_value(env, asyncCallbackInfo->callback, &callback);
+                napi_call_function(env, undefined, callback, ARGS_SIZE_ONE, &result[PARAM0], &callResult);
+                if (asyncCallbackInfo->callback != nullptr) {
+                    napi_delete_reference(env, asyncCallbackInfo->callback);
+                }
+                napi_delete_async_work(env, asyncCallbackInfo->asyncWork);
+                delete asyncCallbackInfo;
+            },
+            (void *)asyncCallbackInfo,
+            &asyncCallbackInfo->asyncWork);
+        NAPI_CALL(env, napi_queue_async_work(env, asyncCallbackInfo->asyncWork));
+
+        napi_value result;
+        NAPI_CALL(env, napi_create_int32(env, NAPI_RETURN_ONE, &result));
+        return result;
+    } else if (permissionEvent == PERMISSION_CHANGE && argc == ARGS_SIZE_THREE) {
+        std::vector<int32_t> uids;
+        ParseInt32Array(env, uids, argv[ARGS_SIZE_ONE]);
+        AsyncUnregisterPermissions *asyncCallbackInfo =
+            new AsyncUnregisterPermissions{.env = env, .asyncWork = nullptr, .uids = uids};
+        HILOG_INFO("UnregisterPermissionsChanged asyncCallback.");
+        napi_valuetype valuetype = napi_undefined;
+        napi_typeof(env, argv[ARGS_SIZE_TWO], &valuetype);
+        NAPI_ASSERT(env, valuetype == napi_function, "Wrong argument type. Function expected.");
+        NAPI_CALL(env, napi_create_reference(env, argv[ARGS_SIZE_TWO], NAPI_RETURN_ONE, &asyncCallbackInfo->callback));
+        napi_value resourceName;
+        napi_create_string_latin1(env, "NAPI_UnreegisterPermissionsChanged", NAPI_AUTO_LENGTH, &resourceName);
+        napi_create_async_work(
+            env,
+            nullptr,
+            resourceName,
+            [](napi_env env, void *data) {
+                AsyncUnregisterPermissions *asyncCallbackInfo = (AsyncUnregisterPermissions *)data;
+                asyncCallbackInfo->ret =
+                    InnerUnregisterPermissionsChanged(env, asyncCallbackInfo->uids, asyncCallbackInfo->callback);
+            },
+            [](napi_env env, napi_status status, void *data) {
+                AsyncUnregisterPermissions *asyncCallbackInfo = (AsyncUnregisterPermissions *)data;
+                napi_value result[ARGS_SIZE_ONE] = {0};
+                napi_value callback = 0;
+                napi_value undefined = 0;
+                napi_value callResult = 0;
+                result[PARAM0] = GetCallbackErrorValue(env, asyncCallbackInfo->ret ? CODE_SUCCESS : CODE_FAILED);
+                napi_get_reference_value(env, asyncCallbackInfo->callback, &callback);
+                napi_call_function(env, undefined, callback, ARGS_SIZE_ONE, &result[PARAM0], &callResult);
+                if (asyncCallbackInfo->callback != nullptr) {
+                    napi_delete_reference(env, asyncCallbackInfo->callback);
+                }
+                napi_delete_async_work(env, asyncCallbackInfo->asyncWork);
+                delete asyncCallbackInfo;
+            },
+            (void *)asyncCallbackInfo,
+            &asyncCallbackInfo->asyncWork);
+        NAPI_CALL(env, napi_queue_async_work(env, asyncCallbackInfo->asyncWork));
+
+        napi_value result;
+        NAPI_CALL(env, napi_create_int32(env, NAPI_RETURN_ONE, &result));
+        return result;
+    }
+    napi_value result;
+    NAPI_CALL(env, napi_create_int32(env, NAPI_RETURN_ZERO, &result));
+    return result;
+}
+
+static int InnerCheckPermission(napi_env env, const std::string &bundleName, const std::string &permission)
+{
+    auto iBundleMgr = GetBundleMgr();
+    if (!iBundleMgr) {
+        HILOG_ERROR("can not get iBundleMgr");
+        return false;
+    };
+    int ret = iBundleMgr->CheckPermission(bundleName, permission);
+
+    return ret;
+}
+
+/**
+ * Promise and async callback
+ */
+napi_value CheckPermission(napi_env env, napi_callback_info info)
+{
+    size_t argc = ARGS_SIZE_THREE;
+    napi_value argv[ARGS_SIZE_THREE] = {0};
+    napi_value thisArg = nullptr;
+    void *data = nullptr;
+    NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, &thisArg, &data));
+    std::string bundleName;
+    ParseString(env, bundleName, argv[PARAM0]);
+    std::string permission;
+    ParseString(env, permission, argv[PARAM1]);
+
+    AsyncPermissionCallbackInfo *asyncCallbackInfo = new AsyncPermissionCallbackInfo{
+        .env = env, .asyncWork = nullptr, .deferred = nullptr, .bundleName = bundleName, .permission = permission};
+    if (argc > (ARGS_SIZE_THREE - CALLBACK_SIZE)) {
+        HILOG_INFO("CheckPermission asyncCallback.");
+        napi_value resourceName;
+        napi_create_string_latin1(env, "CheckPermission", NAPI_AUTO_LENGTH, &resourceName);
+
+        napi_valuetype valuetype = napi_undefined;
+        napi_typeof(env, argv[ARGS_SIZE_TWO], &valuetype);
+        NAPI_ASSERT(env, valuetype == napi_function, "Wrong argument type. Function expected.");
+        NAPI_CALL(env, napi_create_reference(env, argv[ARGS_SIZE_TWO], NAPI_RETURN_ONE, &asyncCallbackInfo->callback));
+
+        napi_create_async_work(
+            env,
+            nullptr,
+            resourceName,
+            [](napi_env env, void *data) {
+                AsyncPermissionCallbackInfo *asyncCallbackInfo = (AsyncPermissionCallbackInfo *)data;
+                asyncCallbackInfo->ret =
+                    InnerCheckPermission(env, asyncCallbackInfo->bundleName, asyncCallbackInfo->permission);
+            },
+            [](napi_env env, napi_status status, void *data) {
+                AsyncPermissionCallbackInfo *asyncCallbackInfo = (AsyncPermissionCallbackInfo *)data;
+                napi_value result[ARGS_SIZE_TWO] = {0};
+                napi_value callback = 0;
+                napi_value undefined = 0;
+                napi_value callResult = 0;
+                napi_get_undefined(env, &undefined);
+                napi_create_int32(env, asyncCallbackInfo->ret, &result[PARAM1]);
+                result[PARAM0] = GetCallbackErrorValue(env, asyncCallbackInfo->ret == 0 ? CODE_SUCCESS : CODE_FAILED);
+                napi_get_reference_value(env, asyncCallbackInfo->callback, &callback);
+                napi_call_function(env, undefined, callback, ARGS_SIZE_TWO, &result[PARAM0], &callResult);
+
+                if (asyncCallbackInfo->callback != nullptr) {
+                    napi_delete_reference(env, asyncCallbackInfo->callback);
+                }
+                napi_delete_async_work(env, asyncCallbackInfo->asyncWork);
+                delete asyncCallbackInfo;
+            },
+            (void *)asyncCallbackInfo,
+            &asyncCallbackInfo->asyncWork);
+
+        NAPI_CALL(env, napi_queue_async_work(env, asyncCallbackInfo->asyncWork));
+        napi_value ret = nullptr;
+        NAPI_CALL(env, napi_get_null(env, &ret));
+        if (ret == nullptr) {
+            if (asyncCallbackInfo != nullptr) {
+                delete asyncCallbackInfo;
+                asyncCallbackInfo = nullptr;
+            }
+        }
+        napi_value result;
+        NAPI_CALL(env, napi_create_int32(env, NAPI_RETURN_ONE, &result));
+        return result;
+    } else {
+        HILOG_INFO("BundleMgr::CheckPermission promise.");
+        napi_deferred deferred;
+        napi_value promise;
+        NAPI_CALL(env, napi_create_promise(env, &deferred, &promise));
+        asyncCallbackInfo->deferred = deferred;
+
+        napi_value resourceName;
+        napi_create_string_latin1(env, "CheckPermission", NAPI_AUTO_LENGTH, &resourceName);
+        napi_create_async_work(
+            env,
+            nullptr,
+            resourceName,
+            [](napi_env env, void *data) {
+                AsyncPermissionCallbackInfo *asyncCallbackInfo = (AsyncPermissionCallbackInfo *)data;
+                asyncCallbackInfo->ret =
+                    InnerCheckPermission(env, asyncCallbackInfo->bundleName, asyncCallbackInfo->permission);
+            },
+            [](napi_env env, napi_status status, void *data) {
+                HILOG_INFO("=================load=================");
+                AsyncPermissionCallbackInfo *asyncCallbackInfo = (AsyncPermissionCallbackInfo *)data;
+                napi_value result;
+                napi_create_int32(asyncCallbackInfo->env, asyncCallbackInfo->ret, &result);
+                napi_resolve_deferred(asyncCallbackInfo->env, asyncCallbackInfo->deferred, result);
+                napi_delete_async_work(env, asyncCallbackInfo->asyncWork);
+                delete asyncCallbackInfo;
+            },
+            (void *)asyncCallbackInfo,
+            &asyncCallbackInfo->asyncWork);
+        napi_queue_async_work(env, asyncCallbackInfo->asyncWork);
+
+        napi_value ret = nullptr;
+        NAPI_CALL(env, napi_get_null(env, &ret));
+        if (ret == nullptr) {
+            if (asyncCallbackInfo != nullptr) {
+                delete asyncCallbackInfo;
+                asyncCallbackInfo = nullptr;
+            }
+        }
         return promise;
     }
 }

@@ -367,6 +367,25 @@ bool BundleMgrProxy::QueryAbilityInfo(const Want &want, AbilityInfo &abilityInfo
     return true;
 }
 
+bool BundleMgrProxy::QueryAbilityInfos(const Want &want, std::vector<AbilityInfo> &abilityInfos)
+{
+    MessageParcel data;
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        APP_LOGE("fail to QueryAbilityInfo due to write MessageParcel fail");
+        return false;
+    }
+    if (!data.WriteParcelable(&want)) {
+        APP_LOGE("fail to QueryAbilityInfo due to write want fail");
+        return false;
+    }
+
+    if (!GetParcelableInfos<AbilityInfo>(IBundleMgr::Message::QUERY_ABILITY_INFOS, data, abilityInfos)) {
+        APP_LOGE("fail to QueryAbilityInfos from server");
+        return false;
+    }
+    return true;
+}
+
 bool BundleMgrProxy::QueryAbilityInfoByUri(const std::string &abilityUri, AbilityInfo &abilityInfo)
 {
     MessageParcel data;
@@ -1104,7 +1123,7 @@ bool BundleMgrProxy::RequestPermissionFromUser(
     }
 
     MessageParcel reply;
-    if (!SendTransactCmd(IBundleMgr::Message::CAN_REQUEST_PERMISSION, data, reply)) {
+    if (!SendTransactCmd(IBundleMgr::Message::REQUEST_PERMISSION_FROM_USER, data, reply)) {
         APP_LOGE("fail to RequestPermissionsFromUser from server");
         return false;
     }
@@ -1286,6 +1305,62 @@ bool BundleMgrProxy::GetShortcutInfos(const std::string &bundleName, std::vector
         return false;
     }
     return true;
+}
+
+bool BundleMgrProxy::GetModuleUsageRecords(const int32_t number, std::vector<ModuleUsageRecord> &moduleUsageRecords)
+{
+    MessageParcel data;
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        APP_LOGE("fail to GetModuleUsageRecords due to write MessageParcel fail");
+        return false;
+    }
+
+    if (!data.WriteInt32(number)) {
+        APP_LOGE("fail to GetModuleUsageRecords due to write number fail");
+        return false;
+    }
+
+    if (!GetParcelableInfos<ModuleUsageRecord>(IBundleMgr::Message::GET_MODULE_USAGE_RECORD, data, moduleUsageRecords)) {
+        APP_LOGE("fail to GetModuleUsageRecords from server");
+        return false;
+    }
+    return true;
+}
+
+bool BundleMgrProxy::NotifyActivityLifeStatus(
+    const std::string &bundleName, const std::string &abilityName, const int64_t launchTime)
+{
+    APP_LOGI("begin to NotifyActivityLifeStatus of %{public}s", abilityName.c_str());
+    if (bundleName.empty() || abilityName.empty()) {
+        APP_LOGE("fail to NotifyActivityLifeStatus due to params empty");
+        return false;
+    }
+
+    MessageParcel data;
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        APP_LOGE("fail to NotifyActivityLifeStatus due to write InterfaceToken fail");
+        return false;
+    }
+    if (!data.WriteString(bundleName)) {
+        APP_LOGE("fail to NotifyActivityLifeStatus due to write bundleName fail");
+        return false;
+    }
+    if (!data.WriteString(abilityName)) {
+        APP_LOGE("fail to NotifyActivityLifeStatus due to write abilityName fail");
+        return false;
+    }
+    if (!data.WriteInt64(launchTime)) {
+        APP_LOGE("fail to NotifyActivityLifeStatus due to write launchTime fail");
+        return false;
+    }
+
+    MessageParcel reply;
+    if (!SendTransactCmd(IBundleMgr::Message::NOTIFY_ACTIVITY_LIFE_STATUS, data, reply)) {
+        APP_LOGE("fail to NotifyActivityLifeStatus from server");
+        return false;
+    }
+    return reply.ReadBool();
+
 }
 
 template <typename T>

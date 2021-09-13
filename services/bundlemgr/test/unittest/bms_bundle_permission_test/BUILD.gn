@@ -19,7 +19,7 @@ module_output_path = "appexecfwk_standard/bundlemgrservice"
 
 ohos_unittest("BmsBundlePermissionTest") {
   module_out_path = module_output_path
-
+  include_dirs = [ "//third_party/jsoncpp/include" ]
   sources = [
     "${innerkits_path}/appexecfwk_base/src/ability_info.cpp",
     "${innerkits_path}/appexecfwk_base/src/application_info.cpp",
@@ -34,6 +34,9 @@ ohos_unittest("BmsBundlePermissionTest") {
     "${services_path}/bundlemgr/src/installd/installd_host_impl.cpp",
     "${services_path}/bundlemgr/src/installd/installd_operator.cpp",
     "${services_path}/bundlemgr/src/installd/installd_service.cpp",
+    "${services_path}/bundlemgr/src/kvstore_death_recipient_callback.cpp",
+    "${services_path}/bundlemgr/src/module_usage_data_storage.cpp",
+    "${services_path}/bundlemgr/src/permission_changed_death_recipient.cpp",
   ]
 
   sources += [
@@ -66,6 +69,7 @@ ohos_unittest("BmsBundlePermissionTest") {
     "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
     "//third_party/googletest:gtest_main",
+    "//third_party/jsoncpp:jsoncpp",
   ]
 
   deps += bundle_install_deps

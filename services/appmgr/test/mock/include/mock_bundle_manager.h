@@ -60,6 +60,10 @@ public:
     {
         return true;
     };
+    virtual bool QueryAbilityInfos(const Want &want, std::vector<AbilityInfo> &abilityInfos) override
+    {
+         return true;
+    };
     virtual bool GetBundleInfo(const std::string &bundleName, const BundleFlag flag, BundleInfo &bundleInfo) override
     {
         return true;
@@ -174,6 +178,16 @@ public:
     {
         return nullptr;
     };
+    virtual bool GetModuleUsageRecords(
+        const int32_t number, std::vector<ModuleUsageRecord> &moduleUsageRecords) override
+    {
+        return true;
+    }
+    virtual bool NotifyActivityLifeStatus(
+        const std::string &bundleName, const std::string &abilityName, const int64_t launchTime) override
+    {
+        return true;
+    }
 };
 
 class BundleMgrStub : public IRemoteStub<IBundleMgr> {
@@ -213,6 +227,10 @@ public:
         const ApplicationFlag flag, const int userId, std::vector<ApplicationInfo> &appInfos) override
     {
         return true;
+    };
+    virtual bool QueryAbilityInfos(const Want &want, std::vector<AbilityInfo> &abilityInfos) override
+    {
+         return true;
     };
     virtual bool GetBundleInfo(const std::string &bundleName, const BundleFlag flag, BundleInfo &bundleInfo) override;
     virtual bool GetBundleInfos(const BundleFlag flag, std::vector<BundleInfo> &bundleInfos) override
@@ -328,11 +346,21 @@ public:
     {
         return true;
     }
-	virtual bool GetFormsInfoByModule(const std::string &bundleName, const std::string &moduleName, std::vector<FormInfo> &formInfos) override
+    virtual bool GetFormsInfoByModule(
+        const std::string &bundleName, const std::string &moduleName, std::vector<FormInfo> &formInfos) override
     {
         return true;
     }
     virtual bool GetShortcutInfos(const std::string &bundleName, std::vector<ShortcutInfo> &shortcutInfos) override
+    {
+        return true;
+    }
+    virtual bool GetModuleUsageRecords(const int32_t number, std::vector<ModuleUsageRecord> &moduleUsageRecords) override
+    {
+        return true;
+    }
+    virtual bool NotifyActivityLifeStatus(
+        const std::string &bundleName, const std::string &abilityName, const int64_t launchTime) override
     {
         return true;
     }

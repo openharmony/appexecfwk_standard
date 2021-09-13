@@ -111,10 +111,15 @@ ErrCode BaseBundleInstaller::InstallBundle(
     APP_LOGI("begin to process %{public}s bundle install", bundlePath.c_str());
     PerfProfile::GetInstance().SetBundleInstallStartTime(GetTickCount());
 
-    ErrCode result = ProcessBundleInstall(bundlePath, installParam, appType);
+    int32_t uid = Constants::INVALID_UID;
+    ErrCode result = ProcessBundleInstall(bundlePath, installParam, appType, uid);
     if (dataMgr_ && !bundleName_.empty() && !modulePackage_.empty()) {
-        dataMgr_->NotifyBundleStatus(
-            bundleName_, modulePackage_, mainAbility_, result, isAppExist_ ? NotifyType::UPDATE : NotifyType::INSTALL);
+        dataMgr_->NotifyBundleStatus(bundleName_,
+            modulePackage_,
+            mainAbility_,
+            result,
+            isAppExist_ ? NotifyType::UPDATE : NotifyType::INSTALL,
+            uid);
     }
 
     PerfProfile::GetInstance().SetBundleInstallEndTime(GetTickCount());
@@ -127,10 +132,11 @@ ErrCode BaseBundleInstaller::UninstallBundle(const std::string &bundleName, cons
     APP_LOGD("begin to process %{public}s bundle uninstall", bundleName.c_str());
     PerfProfile::GetInstance().SetBundleUninstallStartTime(GetTickCount());
 
-    ErrCode result = ProcessBundleUninstall(bundleName, installParam);
+    int32_t uid = Constants::INVALID_UID;
+    ErrCode result = ProcessBundleUninstall(bundleName, installParam, uid);
     if (dataMgr_) {
         dataMgr_->NotifyBundleStatus(
-            bundleName, Constants::EMPTY_STRING, Constants::EMPTY_STRING, result, NotifyType::UNINSTALL_BUNDLE);
+            bundleName, Constants::EMPTY_STRING, Constants::EMPTY_STRING, result, NotifyType::UNINSTALL_BUNDLE, uid);
     }
 
     PerfProfile::GetInstance().SetBundleUninstallEndTime(GetTickCount());
@@ -144,10 +150,11 @@ ErrCode BaseBundleInstaller::UninstallBundle(
     APP_LOGD("begin to process %{public}s module in %{public}s uninstall", modulePackage.c_str(), bundleName.c_str());
     PerfProfile::GetInstance().SetBundleUninstallStartTime(GetTickCount());
 
-    ErrCode result = ProcessBundleUninstall(bundleName, modulePackage, installParam);
+    int32_t uid = Constants::INVALID_UID;
+    ErrCode result = ProcessBundleUninstall(bundleName, modulePackage, installParam, uid);
     if (dataMgr_) {
         dataMgr_->NotifyBundleStatus(
-            bundleName, modulePackage, Constants::EMPTY_STRING, result, NotifyType::UNINSTALL_MODULE);
+            bundleName, modulePackage, Constants::EMPTY_STRING, result, NotifyType::UNINSTALL_MODULE, uid);
     }
 
     PerfProfile::GetInstance().SetBundleUninstallEndTime(GetTickCount());
@@ -162,7 +169,7 @@ void BaseBundleInstaller::UpdateInstallerState(const InstallerState state)
 }
 
 ErrCode BaseBundleInstaller::ProcessBundleInstall(
-    const std::string &inBundlePath, const InstallParam &installParam, const Constants::AppType appType)
+    const std::string &inBundlePath, const InstallParam &installParam, const Constants::AppType appType, int32_t &uid)
 {
     APP_LOGI("ProcessBundleInstall bundlePath %{public}s", inBundlePath.c_str());
     if (installParam.userId == Constants::INVALID_USERID) {
@@ -179,9 +186,11 @@ ErrCode BaseBundleInstaller::ProcessBundleInstall(
     UpdateInstallerState(InstallerState::INSTALL_BUNDLE_CHECKED);
 
     Security::Verify::HapVerifyResult hapVerifyResult;
-    if (!BundleVerifyMgr::HapVerify(bundlePath, hapVerifyResult)) {
-        APP_LOGE("hap file verify failed");
-        return ERR_APPEXECFWK_INSTALL_NO_SIGNATURE_INFO;
+    if (installParam.noCheckSignature == false) {
+        if (!BundleVerifyMgr::HapVerify(bundlePath, hapVerifyResult)) {
+            APP_LOGE("hap file verify failed");
+            return ERR_APPEXECFWK_INSTALL_NO_SIGNATURE_INFO;
+        }
     }
 
     // parse the single bundle info to get the bundle name.
@@ -190,9 +199,6 @@ ErrCode BaseBundleInstaller::ProcessBundleInstall(
     newInfo.SetAppType(appType);
     newInfo.SetUserId(installParam.userId);
     newInfo.SetIsKeepData(installParam.isKeepData);
-    auto provisionInfo = hapVerifyResult.GetProvisionInfo();
-    newInfo.SetProvisionId(provisionInfo.appId);
-
     if (!ModifyInstallDirByHapType(newInfo)) {
         APP_LOGE("modify bundle install dir failed %{public}d", result);
         return ERR_APPEXECFWK_INSTALL_PARAM_ERROR;
@@ -202,8 +208,11 @@ ErrCode BaseBundleInstaller::ProcessBundleInstall(
         APP_LOGE("bundle parse failed %{public}d", result);
         return result;
     }
-    newInfo.SetAppFeature(provisionInfo.bundleInfo.appFeature);
-
+    if (installParam.noCheckSignature == false) {
+        auto provisionInfo = hapVerifyResult.GetProvisionInfo();
+        newInfo.SetProvisionId(provisionInfo.appId);
+        newInfo.SetAppFeature(provisionInfo.bundleInfo.appFeature);
+    }
     UpdateInstallerState(InstallerState::INSTALL_PARSED);
 
     bundleName_ = newInfo.GetBundleName();
@@ -226,13 +235,15 @@ ErrCode BaseBundleInstaller::ProcessBundleInstall(
     isAppExist_ = dataMgr_->GetInnerBundleInfo(bundleName_, Constants::CURRENT_DEVICE_ID, oldInfo);
     if (isAppExist_) {
         APP_LOGI("app is exist");
+        uid = oldInfo.GetUid();
         bool isReplace = (installParam.installFlag == InstallFlag::REPLACE_EXISTING);
         return ProcessBundleUpdateStatus(oldInfo, newInfo, isReplace);  // app exist, but module may not
     }
-    return ProcessBundleInstallStatus(newInfo);
+    return ProcessBundleInstallStatus(newInfo, uid);
 }
 
-ErrCode BaseBundleInstaller::ProcessBundleUninstall(const std::string &bundleName, const InstallParam &installParam)
+ErrCode BaseBundleInstaller::ProcessBundleUninstall(
+    const std::string &bundleName, const InstallParam &installParam, int32_t &uid)
 {
     if (bundleName.empty()) {
         APP_LOGE("uninstall bundle name empty");
@@ -255,6 +266,7 @@ ErrCode BaseBundleInstaller::ProcessBundleUninstall(const std::string &bundleNam
         APP_LOGE("uninstall bundle info missing");
         return ERR_APPEXECFWK_UNINSTALL_MISSING_INSTALLED_BUNDLE;
     }
+    uid = oldInfo.GetUid();
     ScopeGuard enableGuard([&] { dataMgr_->EnableBundle(bundleName); });
     if (oldInfo.GetAppType() == Constants::AppType::SYSTEM_APP) {
         APP_LOGE("uninstall system app");
@@ -283,7 +295,7 @@ ErrCode BaseBundleInstaller::ProcessBundleUninstall(const std::string &bundleNam
 }
 
 ErrCode BaseBundleInstaller::ProcessBundleUninstall(
-    const std::string &bundleName, const std::string &modulePackage, const InstallParam &installParam)
+    const std::string &bundleName, const std::string &modulePackage, const InstallParam &installParam, int32_t &uid)
 {
     if (bundleName.empty() || modulePackage.empty()) {
         APP_LOGE("uninstall bundle name or module name empty");
@@ -306,6 +318,7 @@ ErrCode BaseBundleInstaller::ProcessBundleUninstall(
         APP_LOGE("uninstall bundle info missing");
         return ERR_APPEXECFWK_UNINSTALL_MISSING_INSTALLED_BUNDLE;
     }
+    uid = oldInfo.GetUid();
     ScopeGuard enableGuard([&] { dataMgr_->EnableBundle(bundleName); });
 
     if (oldInfo.GetAppType() == Constants::AppType::SYSTEM_APP) {
@@ -369,7 +382,7 @@ ErrCode BaseBundleInstaller::RemoveBundle(InnerBundleInfo &info)
     return ERR_OK;
 }
 
-ErrCode BaseBundleInstaller::ProcessBundleInstallStatus(InnerBundleInfo &info)
+ErrCode BaseBundleInstaller::ProcessBundleInstallStatus(InnerBundleInfo &info, int32_t &uid)
 {
     APP_LOGI("ProcessBundleInstallStatus %{public}s", info.GetBundleName().c_str());
     if (!dataMgr_->UpdateBundleInstallState(bundleName_, InstallState::INSTALL_START)) {
@@ -382,6 +395,7 @@ ErrCode BaseBundleInstaller::ProcessBundleInstallStatus(InnerBundleInfo &info)
         APP_LOGE("create bundle and data dir failed");
         return result;
     }
+    uid = info.GetUid();
     UpdateInstallerState(InstallerState::INSTALL_CREATDIR);
     ScopeGuard bundleGuard([&] { RemoveBundleAndDataDir(info, false); });
 

@@ -23,7 +23,6 @@
 #include "ability_info.h"
 #include "process_info.h"
 #include "resource_manager.h"
-#include "ability_start_setting.h"
 #include "dummy_hap_module_info.h"
 #include "hap_module_info.h"
 #include "task/task_priority.h"
@@ -33,7 +32,7 @@ namespace OHOS {
 namespace AppExecFwk {
 
 using Want = OHOS::AAFwk::Want;
-
+using AbilityStartSetting = AAFwk::AbilityStartSetting;
 // Request permissions for user
 #define OHOS_REQUEST_PERMISSION_BUNDLENAME "com.ohos.systemui"
 #define OHOS_REQUEST_PERMISSION_ABILITY_NAME "com.ohos.systemui.systemdialog.MainAbility"

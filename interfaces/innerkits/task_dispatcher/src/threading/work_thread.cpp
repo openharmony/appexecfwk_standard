@@ -30,10 +30,10 @@ WorkerThread::WorkerThread(const std::shared_ptr<Delegate> &delegate, const std:
 void WorkerThread::Join()
 {
     if ((thread_) && (thread_->thread_) && thread_->thread_->joinable()) {
-        APP_LOGD("WorkerThread::Join joinable thread");
+        APP_LOGI("WorkerThread::Join joinable thread");
         thread_->thread_->join();
     }
-    APP_LOGD("WorkerThread::Join end");
+    APP_LOGI("WorkerThread::Join end");
 }
 
 void WorkerThread::CreateThread()
@@ -48,7 +48,7 @@ void WorkerThread::CreateThread()
 
     // start a thread to run task function.
     thread_->thread_ = std::make_shared<std::thread>(task);
-    APP_LOGD("WorkerThread::CreateThread start thread. ");
+    APP_LOGI("WorkerThread::CreateThread start thread. ");
 }
 
 void WorkerThread::IncTaskCount()

@@ -68,7 +68,6 @@ std::shared_ptr<TaskDispatcher> GlobalTaskDispatcherModuleTest::GetMtGlobalTaskD
 HWTEST_F(GlobalTaskDispatcherModuleTest, GetMtGlobalTaskDispatcherTest_001, TestSize.Level1)
 {
     auto name = std::string("GetMtGlobalTaskDispatcherTest_001");
-    // TaskDispatcherContext context;
     GTEST_LOG_(INFO) << name + " start";
     TaskPriority defaultPriority = TaskPriority::DEFAULT;
     std::shared_ptr<TaskDispatcher> defaultPtr1 = GetMtGlobalTaskDispatcher(defaultPriority);

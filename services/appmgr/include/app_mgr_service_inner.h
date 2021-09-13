@@ -46,7 +46,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 using OHOS::AAFwk::Want;
 
 class AppMgrServiceInner : public std::enable_shared_from_this<AppMgrServiceInner> {
@@ -450,6 +449,14 @@ public:
      */
     int CompelVerifyPermission(const std::string &permission, int pid, int uid, std::string &message);
 
+    /**
+     * SuspendApplication, Application state changed.
+     *
+     * @param appRecord, the app information.
+     * @param state, the app state.
+     */
+    void OnAppStateChanged(const std::shared_ptr<AppRunningRecord> &appRecord, const ApplicationState state);
+
 private:
     /**
      * StartAbility, load the ability that needed to be started(Start on the basis of the original process).
@@ -512,14 +519,6 @@ private:
      */
     std::shared_ptr<AbilityRunningRecord> GetAbilityRunningRecordByAbilityToken(
         const sptr<IRemoteObject> &abilityToken) const;
-
-    /**
-     * SuspendApplication, Application state changed.
-     *
-     * @param appRecord, the app information.
-     * @param state, the app state.
-     */
-    void OnAppStateChanged(const std::shared_ptr<AppRunningRecord> &appRecord, const ApplicationState state);
 
     /**
      * StartProcess, load the ability that needed to be started(Start on a new boot process).
@@ -640,7 +639,6 @@ private:
     std::shared_ptr<AMSEventHandler> eventHandler_;
     std::mutex serviceLock_;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_APPMGR_INCLUDE_APP_MGR_SERVICE_INNER_H

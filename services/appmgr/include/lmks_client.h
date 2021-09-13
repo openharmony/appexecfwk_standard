@@ -28,7 +28,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 union LmksClientMsg {
     int32_t result = -1;
     int8_t resultBuf[sizeof(int32_t)];
@@ -57,7 +56,6 @@ private:
 private:
     int socket_;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 

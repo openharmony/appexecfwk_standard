@@ -33,8 +33,6 @@ namespace AppExecFwk {
 
 /**
  *  Dispatcher for serial thread model.
- *
- *
  */
 class SerialTaskDispatcher : public BaseTaskDispatcher, public std::enable_shared_from_this<SerialTaskDispatcher> {
 private:
@@ -123,7 +121,7 @@ public:
     /**
      *  Called when post a task group to the TaskDispatcher and without waiting
      *
-     *  @param runnable    is the job to execute
+     *  @param runnable  is the job to execute
      *  @param delayMs indicate the delay time to execute
      *  @return an interface for revoke the task if it hasn't been invoked.
      *

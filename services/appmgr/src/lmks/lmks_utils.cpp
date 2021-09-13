@@ -15,7 +15,7 @@
 
 #include "lmks_utils.h"
 
-#include <signal.h>
+#include <csignal>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -60,7 +60,8 @@ int LmksUtils::RemoveProcess(pid_t pid)
         HiLog::Warn(LABEL, "kill pid %{public}d err %{public}s", pid, strerror(errno));
         return (-errno);
     } else {
-        HiLog::Info(LABEL, "kill pid %{public}d success, name %{public}s size %{public}d", pid, procName.c_str(), procSize);
+        HiLog::Info(
+            LABEL, "kill pid %{public}d success, name %{public}s size %{public}d", pid, procName.c_str(), procSize);
     }
 
     return 0;
@@ -103,11 +104,11 @@ std::string LmksUtils::GetProcName(pid_t pid)
 
     ret = ReadAll(fd, line, sizeof(line) - 1);
     if (ret < 0) {
-    close(fd);
+        close(fd);
         return name;
     }
 
-    if (strlen(line) != 0) {
+    if (strlen(line) < PROC_LINE_MAX && strlen(line) != 0) {
         name = line;
     } else {
         HiLog::Error(LABEL, "cmdline no data");
@@ -159,8 +160,7 @@ int LmksUtils::GetProcSize(pid_t pid)
         return -1;
     }
 
-    if ((strlen(line) != 0) &&
-        (sscanf_s(line, "%d %d ", &total, &rss) > 0)) {
+    if ((strlen(line) < PROC_LINE_MAX && strlen(line) != 0) && (sscanf_s(line, "%d %d ", &total, &rss) > 0)) {
         HiLog::Info(LABEL, "pid %{public}d total %{public}d rss %{public}d", pid, total, rss);
     } else {
         HiLog::Error(LABEL, "strlen or sscanf_s err %{public}s", strerror(errno));
@@ -193,5 +193,5 @@ ssize_t LmksUtils::ReadAll(int fd, char *buf, size_t maxLen)
 
     return ret;
 }
-}  // namespace AppExecFwk
+}  // namespace LMKS
 }  // namespace OHOS

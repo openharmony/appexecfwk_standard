@@ -49,5 +49,5 @@ ohos_systemtest("BmsInstallSystemTest") {
 group("systemtest") {
   testonly = true
 
-  deps = []
+  deps = [ ":BmsInstallSystemTest" ]
 }

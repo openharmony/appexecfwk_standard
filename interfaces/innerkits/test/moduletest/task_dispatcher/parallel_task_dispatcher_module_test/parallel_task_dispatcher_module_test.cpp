@@ -300,15 +300,11 @@ HWTEST_F(ParallelTaskDispatcherModuleTest, ParallelTaskDispatcher_DelayDispatchT
         GTEST_LOG_(INFO) << name << " Runnable2";
     }),
         sleep2);
-    // printf("111111111111111111111111111111111111111111111111111111111111111111");
     EXPECT_TRUE(count.load() < 2);
     long wait = 1000;
     auto time = std::chrono::milliseconds(wait);
     std::this_thread::sleep_for(time);
-    // printf("222222222222222222222222222222222222222222222222222222222222222222");
     EXPECT_TRUE(count.load() == 2);
-    // printf("33333333333333333333333333333333333333333333333333333333333333333");
-    // printf("context use count:%d", context.use_count());
     GTEST_LOG_(INFO) << name << " end";
 }
 

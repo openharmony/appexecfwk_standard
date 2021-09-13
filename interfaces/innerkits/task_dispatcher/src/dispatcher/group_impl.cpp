@@ -30,11 +30,13 @@ GroupImpl::GroupImpl()
  */
 bool GroupImpl::AwaitAllTasks(long timeout)
 {
+    APP_LOGI("GroupImpl::AwaitAllTasks start");
     if (count_.load() == 0) {
-        APP_LOGD("GroupImpl::AwaitAllTasks number of count_ is zero");
+        APP_LOGI("GroupImpl::AwaitAllTasks number of count_ is zero");
         return true;
     }
     if (timeout <= 0L) {
+        APP_LOGW("GroupImpl::AwaitAllTasks timeout<=0");
         return false;
     }
     bool success = true;
@@ -42,34 +44,31 @@ bool GroupImpl::AwaitAllTasks(long timeout)
     while (count_.load() > 0) {
         if (condition_.wait_for(lock, std::chrono::milliseconds(timeout)) == std::cv_status::timeout) {
             success = false;
-            APP_LOGD("GroupImpl::awaitAllTasks timeout");
+            APP_LOGI("GroupImpl::awaitAllTasks timeout");
             break;
         }
-        APP_LOGD("GroupImpl::awaitAllTasks success");
+        APP_LOGI("GroupImpl::awaitAllTasks success");
     }
+    APP_LOGI("GroupImpl::AwaitAllTasks end");
     return success;
 }
 
 /**
- *  @brief Associates a task to this group.
+ * @brief Associates a task to this group.
  *
- * @return None
  */
 void GroupImpl::Associate()
 {
-    APP_LOGD("GroupImpl::Associate called  add a task");
-    // count_++;
+    APP_LOGI("GroupImpl::Associate called  add a task");
     count_.fetch_add(1);
 }
 /**
  * @brief Notify group that a task is done or canceled.
  *
- * @return None
  */
 void GroupImpl::NotifyTaskDone()
 {
-    APP_LOGD("GroupImpl::NotifyTaskDone called notify a task to complete");
-    // int newValue = (--count_);
+    APP_LOGI("GroupImpl::NotifyTaskDone start. Called notify a task to complete");
     count_.fetch_sub(1);
     int newValue = count_.load();
     if (newValue > 0) {
@@ -78,6 +77,8 @@ void GroupImpl::NotifyTaskDone()
     std::unique_lock<std::mutex> lock(dataMutex_);
     condition_.notify_all();
     DrainNotifications();
+
+    APP_LOGI("GroupImpl::NotifyTaskDone end");
 }
 /**
  * @brief Adds the |notification| to notification list.
@@ -86,10 +87,10 @@ void GroupImpl::NotifyTaskDone()
  *
  * @param notification Called when all tasks done.
  *
- *  @return None
  */
 bool GroupImpl::AddNotification(const std::shared_ptr<Runnable> &notification)
 {
+    APP_LOGI("GroupImpl::AddNotification start");
     if (count_.load() != 0) {
         std::unique_lock<std::mutex> lock(dataMutex_);
         if (notifications_.size() == MAX_TASK) {
@@ -97,30 +98,32 @@ bool GroupImpl::AddNotification(const std::shared_ptr<Runnable> &notification)
             return false;
         }
         if (count_.load() != 0) {
-            APP_LOGD("GroupImpl::AddNotification called add task");
+            APP_LOGI("GroupImpl::AddNotification called add task");
             notifications_.push_back(notification);
             return true;
         }
     }
     if (notification) {
+        APP_LOGI("GroupImpl::AddNotification notification execute");
         (*notification)();
     }
+    APP_LOGI("GroupImpl::AddNotification end");
     return true;
 }
 /**
- *@brief  Notify all tasks and remove from queue.
+ * @brief  Notify all tasks and remove from queue.
  * Attention: Notifications added after all tasks done is not guaranteed.
- *
- * @return None
  */
 void GroupImpl::DrainNotifications()
 {
-    APP_LOGD("GroupImpl::DrainNotifications called task execution");
+    APP_LOGI("GroupImpl::DrainNotifications start");
     while (notifications_.size() > 0) {
         std::shared_ptr<Runnable> notification = notifications_.front();
         notifications_.pop_front();
+        APP_LOGI("GroupImpl::DrainNotifications execute notification");
         (*notification)();
     }
+    APP_LOGI("GroupImpl::DrainNotifications end");
 }
 
 }  // namespace AppExecFwk

@@ -23,11 +23,8 @@
 #include "appexecfwk_errors.h"
 
 namespace OHOS {
-
 namespace AppExecFwk {
-
 namespace {
-
 bool CheckUid(const int32_t uid)
 {
     return uid >= 0 && uid < std::numeric_limits<int32_t>::max();
@@ -198,13 +195,26 @@ void AppRunningManager::HandleTerminateTimeOut(int64_t eventId)
         return;
     }
     auto abilityToken = abilityRecord->GetToken();
-    auto appRecord = GetAppRunningRecordByAbilityToken(abilityToken);
+    auto appRecord = GetTerminatingAppRunningRecord(abilityToken);
     if (!appRecord) {
         APP_LOGE("%{public}s, appRecord is nullptr", __func__);
         return;
     }
     appRecord->AbilityTerminated(abilityToken);
     APP_LOGI("%{public}s, end", __func__);
+}
+
+std::shared_ptr<AppRunningRecord> AppRunningManager::GetTerminatingAppRunningRecord(
+    const sptr<IRemoteObject> &abilityToken)
+{
+    std::lock_guard<std::recursive_mutex> guard(lock_);
+    for (const auto &item : appRunningRecordMap_) {
+        const auto &appRecord = item.second;
+        if (appRecord && appRecord->GetAbilityByTerminateLists(abilityToken)) {
+            return appRecord;
+        }
+    }
+    return nullptr;
 }
 
 std::shared_ptr<AbilityRunningRecord> AppRunningManager::GetAbilityRunningRecord(const int64_t eventId)
@@ -244,6 +254,10 @@ void AppRunningManager::HandleAbilityAttachTimeOut(const sptr<IRemoteObject> &to
     if (!appRecord) {
         APP_LOGE("%{public}s, appRecord is nullptr", __func__);
         return;
+    }
+
+    if (appRecord->IsLastAbilityRecord(token)) {
+        appRecord->SetTerminating();
     }
 
     appRecord->TerminateAbility(token, true);

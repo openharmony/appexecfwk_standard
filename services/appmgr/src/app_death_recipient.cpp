@@ -21,7 +21,6 @@
 namespace OHOS {
 namespace AppExecFwk {
 namespace {
-
 const std::string TASK_ON_REMOTE_DIED = "OnRemoteDiedTask";
 }
 
@@ -56,6 +55,5 @@ void AppDeathRecipient::SetAppMgrServiceInner(const std::shared_ptr<AppMgrServic
 {
     appMgrServiceInner_ = serviceInner;
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

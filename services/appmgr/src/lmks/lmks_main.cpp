@@ -17,6 +17,8 @@
 
 int main(int argc, char *const argv[])
 {
+    (void)argc;
+    (void)argv;
     OHOS::LMKS::LmksServer lmksServer;
     lmksServer.StartServer();
 

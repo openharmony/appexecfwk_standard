@@ -17,6 +17,7 @@ import("//build/ohos/sa_profile/sa_profile.gni")
 ohos_sa_profile("appexecfwk_sa_profile") {
   sources = [
     "401.xml",
+    "403.xml",
     "501.xml",
   ]
 

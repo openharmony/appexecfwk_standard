@@ -13,12 +13,12 @@
  * limitations under the License.
  */
 #include "cgroup_manager.h"
+#include <cerrno>
 #include <cinttypes>
+#include <cstdlib>
+#include <cstdio>
 #include <dirent.h>
-#include <errno.h>
 #include <fcntl.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <sys/eventfd.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -26,34 +26,19 @@
 #include "event_handler.h"
 #include "securec.h"
 
-#define CG_CPUSET_DIR "/dev/cpuset"
-#define CG_CPUSET_DEFAULT_DIR CG_CPUSET_DIR
-#define CG_CPUSET_DEFAULT_TASKS_PATH CG_CPUSET_DEFAULT_DIR "/tasks"
-#define CG_CPUSET_BACKGROUND_DIR CG_CPUSET_DIR "/background"
-#define CG_CPUSET_BACKGROUND_TASKS_PATH CG_CPUSET_BACKGROUND_DIR "/tasks"
-
-#define CG_CPUCTL_DIR "/dev/cpuctl"
-#define CG_CPUCTL_DEFAULT_DIR CG_CPUCTL_DIR
-#define CG_CPUCTL_DEFAULT_TASKS_PATH CG_CPUCTL_DEFAULT_DIR "/tasks"
-#define CG_CPUCTL_BACKGROUND_DIR CG_CPUCTL_DIR "/background"
-#define CG_CPUCTL_BACKGROUND_TASKS_PATH CG_CPUCTL_BACKGROUND_DIR "/tasks"
-
-#define CG_FREEZER_DIR "/dev/freezer"
-#define CG_FREEZER_FROZEN_DIR CG_FREEZER_DIR "/frozen"
-#define CG_FREEZER_FROZEN_TASKS_PATH CG_FREEZER_FROZEN_DIR "/tasks"
-#define CG_FREEZER_THAWED_DIR CG_FREEZER_DIR "/thawed"
-#define CG_FREEZER_THAWED_TASKS_PATH CG_FREEZER_THAWED_DIR "/tasks"
-
-#define CG_MEM_DIR "/dev/memcg"
-#define CG_MEM_OOMCTL_PATH CG_MEM_DIR "/memory.oom_control"
-#define CG_MEM_EVTCTL_PATH CG_MEM_DIR "/cgroup.event_control"
-#define CG_MEM_PRESSURE_LEVEL_PATH CG_MEM_DIR "/memory.pressure_level"
+constexpr std::string_view CG_CPUSET_DEFAULT_TASKS_PATH("/dev/cpuset/tasks");
+constexpr std::string_view CG_CPUSET_BACKGROUND_TASKS_PATH("/dev/cpuset/background/tasks");
+constexpr std::string_view CG_CPUCTL_DEFAULT_TASKS_PATH("/dev/cpuctl/tasks");
+constexpr std::string_view CG_CPUCTL_BACKGROUND_TASKS_PATH("/dev/cpuctl/background/tasks");
+constexpr std::string_view CG_FREEZER_FROZEN_TASKS_PATH("/dev/freezer/frozen/tasks");
+constexpr std::string_view CG_FREEZER_THAWED_TASKS_PATH("/dev/freezer/thawed/tasks");
+[[maybe_unused]] constexpr std::string_view CG_MEM_OOMCTL_PATH("/dev/memcg/memory.oom_control");
+constexpr std::string_view CG_MEM_EVTCTL_PATH("/dev/memcg/cgroup.event_control");
+constexpr std::string_view CG_MEM_PRESSURE_LEVEL_PATH("/dev/memcg/memory.pressure_level");
 
 namespace OHOS {
 namespace AppExecFwk {
-
 namespace {
-
 class ScopeGuard final {
 public:
     using Function = std::function<void()>;
@@ -115,17 +100,8 @@ int WriteValue(int fd, int v, bool newLine = true)
 
 }  // namespace
 
-CgroupManager::CgroupManager() : memoryEventControlFd_(-1)
-{
-    for (int i = 0; i < SCHED_POLICY_MAX; ++i) {
-        cpusetTasksFds_[i] = -1;
-    }
-
-    for (int i = 0; i < LOW_MEMORY_LEVEL_MAX; ++i) {
-        memoryEventFds_[i] = -1;
-        memoryPressureFds_[i] = -1;
-    }
-}
+CgroupManager::CgroupManager()
+{}
 
 CgroupManager::~CgroupManager()
 {
@@ -145,7 +121,7 @@ CgroupManager::~CgroupManager()
         close(memoryEventControlFd_);
     }
 
-    for (int i = 0; i < SCHED_POLICY_MAX; ++i) {
+    for (int i = 0; i < SCHED_POLICY_CPU_MAX; ++i) {
         if (cpusetTasksFds_[i] >= 0) {
             close(cpusetTasksFds_[i]);
         }
@@ -166,12 +142,12 @@ bool CgroupManager::Init()
         return false;
     }
 
-    UniqueFd cpusetTasksFds[SCHED_POLICY_MAX];
+    UniqueFd cpusetTasksFds[SCHED_POLICY_CPU_MAX];
     if (!InitCpusetTasksFds(cpusetTasksFds)) {
         return false;
     }
 
-    UniqueFd cpuctlTasksFds[SCHED_POLICY_MAX];
+    UniqueFd cpuctlTasksFds[SCHED_POLICY_CPU_MAX];
     if (!InitCpuctlTasksFds(cpuctlTasksFds)) {
         return false;
     }
@@ -357,7 +333,8 @@ void CgroupManager::OnReadable(int32_t fd)
                 return false;
             }
             if (count < 1) {
-                APP_LOGW("%{public}s(%{public}d) invalid eventfd count %{public}" PRIu64 ".", __func__, __LINE__, count);
+                APP_LOGW(
+                    "%{public}s(%{public}d) invalid eventfd count %{public}" PRIu64 ".", __func__, __LINE__, count);
                 return false;
             }
             APP_LOGW(
@@ -416,8 +393,8 @@ bool CgroupManager::RegisterLowMemoryMonitor(const int memoryEventFds[LOW_MEMORY
 
 bool CgroupManager::InitCpusetTasksFds(UniqueFd cpusetTasksFds[SCHED_POLICY_CPU_MAX])
 {
-    cpusetTasksFds[SCHED_POLICY_CPU_DEFAULT] = UniqueFd(open(CG_CPUSET_DEFAULT_TASKS_PATH, O_RDWR));
-    cpusetTasksFds[SCHED_POLICY_CPU_BACKGROUND] = UniqueFd(open(CG_CPUSET_BACKGROUND_TASKS_PATH, O_RDWR));
+    cpusetTasksFds[SCHED_POLICY_CPU_DEFAULT] = UniqueFd(open(CG_CPUSET_DEFAULT_TASKS_PATH.data(), O_RDWR));
+    cpusetTasksFds[SCHED_POLICY_CPU_BACKGROUND] = UniqueFd(open(CG_CPUSET_BACKGROUND_TASKS_PATH.data(), O_RDWR));
     if (cpusetTasksFds[SCHED_POLICY_CPU_DEFAULT].Get() < 0 || cpusetTasksFds[SCHED_POLICY_CPU_BACKGROUND].Get() < 0) {
         APP_LOGE("%{public}s(%{public}d) cannot open cpuset cgroups %{public}d.", __func__, __LINE__, errno);
         return false;
@@ -430,8 +407,8 @@ bool CgroupManager::InitCpusetTasksFds(UniqueFd cpusetTasksFds[SCHED_POLICY_CPU_
 
 bool CgroupManager::InitCpuctlTasksFds(UniqueFd cpuctlTasksFds[SCHED_POLICY_CPU_MAX])
 {
-    cpuctlTasksFds[SCHED_POLICY_CPU_DEFAULT] = UniqueFd(open(CG_CPUCTL_DEFAULT_TASKS_PATH, O_RDWR));
-    cpuctlTasksFds[SCHED_POLICY_CPU_BACKGROUND] = UniqueFd(open(CG_CPUCTL_BACKGROUND_TASKS_PATH, O_RDWR));
+    cpuctlTasksFds[SCHED_POLICY_CPU_DEFAULT] = UniqueFd(open(CG_CPUCTL_DEFAULT_TASKS_PATH.data(), O_RDWR));
+    cpuctlTasksFds[SCHED_POLICY_CPU_BACKGROUND] = UniqueFd(open(CG_CPUCTL_BACKGROUND_TASKS_PATH.data(), O_RDWR));
     if (cpuctlTasksFds[SCHED_POLICY_CPU_DEFAULT].Get() < 0 || cpuctlTasksFds[SCHED_POLICY_CPU_BACKGROUND].Get() < 0) {
         APP_LOGE("%{public}s(%{public}d) cannot open cpuctl cgroups %{public}d.", __func__, __LINE__, errno);
         return false;
@@ -444,8 +421,8 @@ bool CgroupManager::InitCpuctlTasksFds(UniqueFd cpuctlTasksFds[SCHED_POLICY_CPU_
 
 bool CgroupManager::InitFreezerTasksFds(UniqueFd freezerTasksFds[SCHED_POLICY_FREEZER_MAX])
 {
-    freezerTasksFds[SCHED_POLICY_FREEZER_FROZEN] = UniqueFd(open(CG_FREEZER_FROZEN_TASKS_PATH, O_RDWR));
-    freezerTasksFds[SCHED_POLICY_FREEZER_THAWED] = UniqueFd(open(CG_FREEZER_THAWED_TASKS_PATH, O_RDWR));
+    freezerTasksFds[SCHED_POLICY_FREEZER_FROZEN] = UniqueFd(open(CG_FREEZER_FROZEN_TASKS_PATH.data(), O_RDWR));
+    freezerTasksFds[SCHED_POLICY_FREEZER_THAWED] = UniqueFd(open(CG_FREEZER_THAWED_TASKS_PATH.data(), O_RDWR));
     if (freezerTasksFds[SCHED_POLICY_FREEZER_FROZEN].Get() < 0 ||
         freezerTasksFds[SCHED_POLICY_FREEZER_THAWED].Get() < 0) {
         APP_LOGE("%{public}s(%{public}d) cannot open freezer cgroups %{public}d.", __func__, __LINE__, errno);
@@ -459,7 +436,7 @@ bool CgroupManager::InitFreezerTasksFds(UniqueFd freezerTasksFds[SCHED_POLICY_FR
 
 bool CgroupManager::InitMemoryEventControlFd(UniqueFd &memoryEventControlFd)
 {
-    memoryEventControlFd = UniqueFd(open(CG_MEM_EVTCTL_PATH, O_WRONLY));
+    memoryEventControlFd = UniqueFd(open(CG_MEM_EVTCTL_PATH.data(), O_WRONLY));
     if (memoryEventControlFd.Get() < 0) {
         APP_LOGE(
             "%{pubid}s(%{publid}d) failed to open memory event control node %{public}d.", __func__, __LINE__, errno);
@@ -489,9 +466,9 @@ bool CgroupManager::InitMemoryEventFds(UniqueFd memoryEventFds[LOW_MEMORY_LEVEL_
 
 bool CgroupManager::InitMemoryPressureFds(UniqueFd memoryPressureFds[LOW_MEMORY_LEVEL_MAX])
 {
-    memoryPressureFds[LOW_MEMORY_LEVEL_LOW] = UniqueFd(open(CG_MEM_PRESSURE_LEVEL_PATH, O_RDONLY));
-    memoryPressureFds[LOW_MEMORY_LEVEL_MEDIUM] = UniqueFd(open(CG_MEM_PRESSURE_LEVEL_PATH, O_RDONLY));
-    memoryPressureFds[LOW_MEMORY_LEVEL_CRITICAL] = UniqueFd(open(CG_MEM_PRESSURE_LEVEL_PATH, O_RDONLY));
+    memoryPressureFds[LOW_MEMORY_LEVEL_LOW] = UniqueFd(open(CG_MEM_PRESSURE_LEVEL_PATH.data(), O_RDONLY));
+    memoryPressureFds[LOW_MEMORY_LEVEL_MEDIUM] = UniqueFd(open(CG_MEM_PRESSURE_LEVEL_PATH.data(), O_RDONLY));
+    memoryPressureFds[LOW_MEMORY_LEVEL_CRITICAL] = UniqueFd(open(CG_MEM_PRESSURE_LEVEL_PATH.data(), O_RDONLY));
     if (memoryPressureFds[LOW_MEMORY_LEVEL_LOW].Get() < 0 || memoryPressureFds[LOW_MEMORY_LEVEL_MEDIUM].Get() < 0 ||
         memoryPressureFds[LOW_MEMORY_LEVEL_CRITICAL].Get() < 0) {
         APP_LOGE("%{public}s(${public}d) failed to open memory pressure fd %{public}d.", __func__, __LINE__, errno);

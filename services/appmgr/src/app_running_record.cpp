@@ -21,7 +21,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 int64_t AppRunningRecord::appEventId_ = 0;
 AppRunningRecord::AppRunningRecord(
     const std::shared_ptr<ApplicationInfo> &info, const int32_t recordId, const std::string &processName)
@@ -125,7 +124,17 @@ std::shared_ptr<AbilityRunningRecord> AppRunningRecord::GetAbilityRunningRecord(
     const auto &iter = std::find_if(abilities_.begin(), abilities_.end(), [eventId](const auto &pair) {
         return pair.second->GetEventId() == eventId;
     });
-    return ((iter == abilities_.end()) ? nullptr : iter->second);
+    if (iter != abilities_.end()) {
+        return iter->second;
+    }
+
+    const auto &finder = std::find_if(terminateAbilitys_.begin(),
+        terminateAbilitys_.end(),
+        [eventId](const auto &pair) { return pair.second->GetEventId() == eventId; });
+    if (finder != terminateAbilitys_.end()) {
+        return finder->second;
+    }
+    return nullptr;
 }
 
 void AppRunningRecord::ClearAbility(const std::shared_ptr<AbilityRunningRecord> &record)
@@ -248,6 +257,20 @@ std::shared_ptr<AbilityRunningRecord> AppRunningRecord::GetAbilityRunningRecordB
     return nullptr;
 }
 
+std::shared_ptr<AbilityRunningRecord> AppRunningRecord::GetAbilityByTerminateLists(
+    const sptr<IRemoteObject> &token) const
+{
+    if (!token) {
+        APP_LOGE("token is null");
+        return nullptr;
+    }
+    const auto &iter = terminateAbilitys_.find(token);
+    if (iter != terminateAbilitys_.end()) {
+        return iter->second;
+    }
+    return nullptr;
+}
+
 void AppRunningRecord::UpdateAbilityState(const sptr<IRemoteObject> &token, const AbilityState state)
 {
     APP_LOGD("state is :%{public}d", static_cast<int32_t>(state));
@@ -293,6 +316,10 @@ void AppRunningRecord::AbilityForeground(const std::shared_ptr<AbilityRunningRec
     } else if (curState_ == ApplicationState::APP_STATE_FOREGROUND) {
         // Just change ability to foreground if current application state is foreground.
         OnAbilityStateChanged(ability, AbilityState::ABILITY_STATE_FOREGROUND);
+        auto serviceInner = appMgrServiceInner_.lock();
+        if (serviceInner) {
+            serviceInner->OnAppStateChanged(shared_from_this(), curState_);
+        }
     } else {
         APP_LOGW("wrong application state");
     }
@@ -359,6 +386,9 @@ void AppRunningRecord::TerminateAbility(const sptr<IRemoteObject> &token, const 
         return;
     }
 
+    terminateAbilitys_.emplace(token, abilityRecord);
+    abilities_.erase(token);
+
     SendEvent(
         AMSEventHandler::TERMINATE_ABILITY_TIMEOUT_MSG, AMSEventHandler::TERMINATE_ABILITY_TIMEOUT, abilityRecord);
 
@@ -389,15 +419,15 @@ void AppRunningRecord::AbilityTerminated(const sptr<IRemoteObject> &token)
         APP_LOGE("eventHandler_ is nullptr");
         return;
     }
-    
-    auto abilityRecord = GetAbilityRunningRecordByToken(token);
+
+    auto abilityRecord = GetAbilityByTerminateLists(token);
     if (!abilityRecord) {
         APP_LOGE("AppRunningRecord::AbilityTerminated can not find ability record");
         return;
     }
-  
+
     eventHandler_->RemoveEvent(AMSEventHandler::TERMINATE_ABILITY_TIMEOUT_MSG, abilityRecord->GetEventId());
-    abilities_.erase(token);
+    terminateAbilitys_.erase(token);
     if (abilities_.empty()) {
         ScheduleTerminate();
     }

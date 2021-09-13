@@ -76,15 +76,15 @@ private:
 
     void InterruptWorkers(void);
 
-    static int GetWorkingThreadNum(int ctl);
+    static unsigned int GetWorkingThreadNum(unsigned int ctl);
 
     static bool IsRunning(int ctl);
 
     static int GetStateFromControl(int ctl);
 
-    static int CombineToControl(int state, int count);
+    static int CombineToControl(unsigned int state, unsigned int count);
 
-    void AdvanceStateTo(int target);
+    void AdvanceStateTo(unsigned int target);
 
     bool CompareAndIncThreadNum(int expect);
 
@@ -97,7 +97,7 @@ private:
     static const int MAX_THREAD_LOWER_LIMIT;
     static const int CORE_THREAD_LOWER_LIMIT;
     static const int COUNT_BITS;
-    static const int CAPACITY;
+    static const unsigned int CAPACITY;
     static const int RUNNING;
     static const int CLOSING;
     static const int INTERRUPT;

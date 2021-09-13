@@ -28,6 +28,7 @@ config("amsSystemTestCConfig") {
     "${appexecfwk_path}/common/log/include",
     "//foundation/distributedschedule/services/dtbschedmgr/include",
     "${SUBST_TOOLS_DIR}/include",
+    "//third_party/jsoncpp/include",
   ]
   defines = [
     "APP_LOG_TAG = \"amsSystemTestDFX\"",
@@ -50,6 +51,7 @@ ohos_shared_library("amsSystemTestDFX") {
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core:appexecfwk_core",
     "${appexecfwk_path}/kits:appkit_native",
     "${appexecfwk_path}/services/bundlemgr:libbms",
+    "//third_party/jsoncpp:jsoncpp",
     "//utils/native/base:utilsbase",
   ]
   external_deps = [
