@@ -92,6 +92,7 @@ struct ApplicationInfo : public Parcelable {
     bool enabled = false;
     
     //  element that does not exist for a while
+    std::string entryModuleName;
     std::string icon;
     std::string cpuAbi;
     bool isCompressNativeLibs = true;

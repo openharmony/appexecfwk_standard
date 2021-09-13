@@ -12,6 +12,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#include <cinttypes>
+
 #include "app_log_wrapper.h"
 #include "form_host_client.h"
 
@@ -161,10 +164,10 @@ void FormHostClient::OnAcquired(const FormJsInfo &formJsInfo)
     }
     std::shared_ptr<FormCallbackInterface> targetCallback = FindTargetCallback(formId);
     if (targetCallback == nullptr) {
-        // APP_LOGE("%{public}s error, can't find target callback. formId: %{public}lld.", __func__, formId);
+        APP_LOGE("%{public}s error, can't find target callback. formId: %{public}" PRId64 ".", __func__, formId);
         return;
     }
-    // APP_LOGI("%{public}s, formId: %{public}lld, data: %{public}s", __func__, formId, formJsInfo.formData.c_str());
+    APP_LOGI("%{public}s, formId: %{public}" PRId64 ", data: %{public}s", __func__, formId, formJsInfo.formData.c_str());
     targetCallback->ProcessFormUpdate(formJsInfo);
 }
 
@@ -184,7 +187,7 @@ void FormHostClient::OnUpdate(const FormJsInfo &formJsInfo)
     }
     std::shared_ptr<FormCallbackInterface> targetCallback = FindTargetCallback(formId);
     if (targetCallback == nullptr) {
-        // APP_LOGE("%{public}s error, can't find target callback. formId: %{public}lld.", __func__, formId);
+        APP_LOGE("%{public}s error, can't find target callback. formId: %{public}" PRId64 ".", __func__, formId);
         return;
     }
     targetCallback->ProcessFormUpdate(formJsInfo);
@@ -210,7 +213,7 @@ void FormHostClient::OnUninstall(const std::vector<int64_t> &formIds)
         }
         std::shared_ptr<FormCallbackInterface> targetCallback = FindTargetCallback(formId);
         if (targetCallback == nullptr) {
-            // APP_LOGE("%{public}s error, can't find target callback. formId: %{public}lld.", __func__, formId);
+            APP_LOGE("%{public}s error, can't find target callback. formId: %{public}" PRId64 ".", __func__, formId);
             continue;
         }
         targetCallback->ProcessFormUninstall(formId);

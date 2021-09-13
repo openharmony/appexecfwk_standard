@@ -12,6 +12,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#include <cinttypes>
+
 #include "app_log_wrapper.h"
 #include "form_constants.h"
 #include "form_data_mgr.h"
@@ -421,7 +424,7 @@ void FormTaskMgr::NotifyCastTemp(const int64_t formId, const Want &want, const s
 void FormTaskMgr::AcquireTaskToHost(const int64_t formId, const FormRecord &record, 
 const sptr<IRemoteObject> &remoteObject)
 {
-    //APP_LOGI("FormTaskMgr AcquireTaskToHost, formId:%{public}lld", formId);
+    APP_LOGI("FormTaskMgr AcquireTaskToHost, formId:%{public}" PRId64 "", formId);
 
     sptr<IFormHost> remoteFormHost = iface_cast<IFormHost>(remoteObject);
     if (remoteFormHost == nullptr) {

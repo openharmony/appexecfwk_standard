@@ -137,10 +137,13 @@ void CompatibleApplicationInfo::ConvertToApplicationInfo(ApplicationInfo& applic
 {
     APP_LOGD("CompatibleApplicationInfo::ConvertToApplicationInfo called");
     applicationInfo.name = name;
+    applicationInfo.icon = icon;
     applicationInfo.label = label;
     applicationInfo.description = description;
+    applicationInfo.cpuAbi = cpuAbi;
     applicationInfo.process = process;
-    applicationInfo.isSystemApp = systemApp;
+    applicationInfo.systemApp = systemApp;
+    applicationInfo.isCompressNativeLibs = isCompressNativeLibs;
     applicationInfo.iconId = iconId;
     applicationInfo.labelId = labelId;
     applicationInfo.descriptionId = descriptionId;
@@ -148,6 +151,7 @@ void CompatibleApplicationInfo::ConvertToApplicationInfo(ApplicationInfo& applic
     applicationInfo.moduleInfos = moduleInfos;
     applicationInfo.supportedModes = supportedModes;
     applicationInfo.enabled = debug;
+    applicationInfo.entryModuleName = "";
 }
 } // namespace AppExecFwk
 } // namespace OHOS

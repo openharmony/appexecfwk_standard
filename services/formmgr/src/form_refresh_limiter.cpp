@@ -12,6 +12,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#include <cinttypes>
+
 #include "app_log_wrapper.h"
 #include "form_constants.h"
 #include "form_refresh_limiter.h"
@@ -85,7 +88,7 @@ bool FormRefreshLimiter::IsEnableRefresh(const int64_t formId)
 
         if (info->second.refreshCount == Constants::LIMIT_COUNT && !info->second.isReported) {
             info->second.isReported = true;
-            //APP_LOGI("report refresh to 50 count,formId:%{public}lld", formId);
+            APP_LOGI("report refresh to 50 count,formId:%{public}" PRId64 "", formId);
         }
     }
     APP_LOGI("%{public}s end", __func__);
@@ -120,10 +123,10 @@ void FormRefreshLimiter::Increase(const int64_t formId)
     auto info = limiterMap_.find(formId);
     if (info != limiterMap_.end()) {   
         info->second.refreshCount++;
-        //APP_LOGI("increase,formId:%{public}lld, count:%{public}d", formId, info->second.refreshCount);
+        APP_LOGI("increase,formId:%{public}" PRId64 ", count:%{public}d", formId, info->second.refreshCount);
         if (info->second.refreshCount == Constants::LIMIT_COUNT && !info->second.isReported) {
             info->second.isReported = true;
-           // APP_LOGI("report refresh to 50 count,formId:%{public}lld", formId);
+            APP_LOGI("report refresh to 50 count,formId:%{public}" PRId64 "", formId);
         }
     }
     APP_LOGI("%{public}s end", __func__);
