@@ -30,8 +30,6 @@ void AmsStAbilityQ4::OnStart(const Want &want)
 
 void AmsStAbilityQ4::OnNewWant(const Want &want)
 {
-    GetWantInfo(want);
-
     APP_LOGI("AmsStAbilityQ4::OnNewWant");
     Ability::OnNewWant(want);
     std::string eventData = GetAbilityName() + STEventName::g_abilityStateOnNewWant;
@@ -40,8 +38,6 @@ void AmsStAbilityQ4::OnNewWant(const Want &want)
 
 void AmsStAbilityQ4::OnForeground(const Want &want)
 {
-    GetWantInfo(want);
-
     APP_LOGI("AmsStAbilityQ4::OnForeground");
     Ability::OnForeground(want);
     std::string eventData = GetAbilityName() + STEventName::g_abilityStateOnForeground;

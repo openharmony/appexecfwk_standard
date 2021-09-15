@@ -80,7 +80,7 @@ public:
     {
         std::unique_lock<std::mutex> lock(mutex_);
         while (queue_.empty() && !stopFlag_) {
-            APP_LOGD("BlockingQueue::Take empty_wait");
+            APP_LOGI("BlockingQueue::Take empty_wait");
             empty_.wait(lock);
         }
 
@@ -98,7 +98,7 @@ public:
         std::unique_lock<std::mutex> lock(mutex_);
         while (queue_.empty() && !stopFlag_) {
             if (empty_.wait_until(lock, timeout) == std::cv_status::timeout) {
-                APP_LOGD("BlockingQueue::Poll timeout");
+                APP_LOGI("BlockingQueue::Poll timeout");
                 break;
             }
         }

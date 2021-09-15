@@ -22,7 +22,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class AppMgrServiceInner;
 
 class AppDeathRecipient : public IRemoteObject::DeathRecipient {
@@ -47,7 +46,6 @@ private:
     std::weak_ptr<AMSEventHandler> handler_;
     std::weak_ptr<AppMgrServiceInner> appMgrServiceInner_;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_APPMGR_INCLUDE_APP_DEATH_RECIPIENT_H

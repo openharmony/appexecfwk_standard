@@ -22,6 +22,7 @@ ohos_systemtest("ams_data_ability_test") {
   include_dirs = [
     "//foundation/distributedschedule/safwk/services/safwk/include",
     "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/include",
+    "//third_party/jsoncpp/include",
   ]
 
   sources = [
@@ -50,6 +51,7 @@ ohos_systemtest("ams_data_ability_test") {
     "//foundation/distributedschedule/dmsfwk/interfaces/innerkits/uri:zuri",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
     "//third_party/googletest:gtest_main",
+    "//third_party/jsoncpp:jsoncpp",
     "//utils/native/base:utils",
   ]
 

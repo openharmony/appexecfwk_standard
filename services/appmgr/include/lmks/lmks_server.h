@@ -23,11 +23,10 @@
 
 namespace OHOS {
 namespace LMKS {
+constexpr uint32_t MAX_LMKS_TARGETS = 6;  // max number of lmks command targets
+constexpr uint32_t MAX_LMKS_TARGETS_SIZE = sizeof(int) * (MAX_LMKS_TARGETS * 2 + 1);  // max packet length
 
-constexpr uint32_t MAX_LMKS_TARGETS = 6;                                                // max number of lmks command targets
-constexpr uint32_t MAX_LMKS_TARGETS_SIZE = sizeof(int) * (MAX_LMKS_TARGETS * 2 + 1);    // max packet length
-
-using LMKS_PACKET=int[MAX_LMKS_TARGETS_SIZE / sizeof(int)];
+using LMKS_PACKET = int[MAX_LMKS_TARGETS_SIZE / sizeof(int)];
 
 class LmksServer {
 public:

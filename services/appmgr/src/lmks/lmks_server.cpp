@@ -28,25 +28,28 @@ namespace OHOS {
 namespace LMKS {
 
 namespace {
+#ifdef __MUSL__
+const std::string LMKS_SOCKET_NAME = "/dev/unix/socket/lmks";
+#else
 const std::string LMKS_SOCKET_NAME = "/dev/socket/lmks";
-constexpr uint32_t LISTEN_CLIENTS = 5;                  // 5: max num of clients
-constexpr uint32_t WAIT_DELAY_US = 100 * 1000;           // 100ms
+#endif
+constexpr uint32_t LISTEN_CLIENTS = 5;          // 5: max num of clients
+constexpr uint32_t WAIT_DELAY_US = 100 * 1000;  // 100ms
 
 constexpr int LMKS_CMD_TARGET = 0;
 constexpr int LMKS_CMD_PROCPRIO = 1;
 constexpr int LMKS_CMD_PROCREMOVE = 2;
 constexpr int LMKS_CMD_PROCPURGE = 3;
-constexpr uid_t LMKS_ID_ROOT = 0;         // chown owner
-constexpr gid_t LMKS_ID_SYSTEM = 1000;    // chown group
-constexpr mode_t SOCKET_PERM = 0666;  // root system can read and write lmks socket
+constexpr uid_t LMKS_ID_ROOT = 0;                  // chown owner
+constexpr gid_t LMKS_ID_SYSTEM = 1000;             // chown group
+constexpr mode_t SOCKET_PERM = 0666;               // root system can read and write lmks socket
 constexpr struct timeval SOCKET_TIMEOUT = {5, 0};  // 5, 0: { 5 sec, 0 msec } for timeout
 }  // namespace
 
 using namespace OHOS::HiviewDFX;
 static constexpr HiLogLabel LABEL = {LOG_CORE, 0, "LmksServer"};
 
-LmksServer::LmksServer() 
-    : isStart_(false), socketFd_(-1), socketAddrLen_(0), lmksUtils_(nullptr)
+LmksServer::LmksServer() : isStart_(false), socketFd_(-1), socketAddrLen_(0), lmksUtils_(nullptr)
 {
     memset_s(&socketAddr_, sizeof(socketAddr_), 0, sizeof(socketAddr_));
 }
@@ -59,7 +62,7 @@ LmksServer::~LmksServer()
 void LmksServer::StartServer()
 {
     if (isStart_) {
-        HiLog::Error(LABEL, "Lmks server has started.");        
+        HiLog::Error(LABEL, "Lmks server has started.");
         return;
     }
 
@@ -81,7 +84,7 @@ void LmksServer::StartServer()
         }
 
         LMKS_PACKET cmds;
-        int len = RecvSocketMessage(connectFd, (void*)cmds, sizeof(cmds));
+        int len = RecvSocketMessage(connectFd, (void *)cmds, sizeof(cmds));
         if (len <= 0) {
             HiLog::Error(LABEL, "Failed to read socket message, len %{public}d", len);
             close(connectFd);
@@ -114,7 +117,7 @@ int LmksServer::RegisterSocket()
     }
 
     if (strcpy_s(socketAddr_.sun_path, sizeof(socketAddr_.sun_path), LMKS_SOCKET_NAME.c_str()) != 0) {
-        HiLog::Error(LABEL, "Failed to snprint32_tf_s socket addr, err %{public}s", strerror(errno));        
+        HiLog::Error(LABEL, "Failed to snprint32_tf_s socket addr, err %{public}s", strerror(errno));
         return (-errno);
     }
 
@@ -160,7 +163,8 @@ int LmksServer::RegisterSocket()
     return 0;
 }
 
-int LmksServer::WaitConnection() {
+int LmksServer::WaitConnection()
+{
     if (socketFd_ < 0) {
         HiLog::Error(LABEL, "lmks server not register.");
         return -1;
@@ -168,6 +172,7 @@ int LmksServer::WaitConnection() {
 
     struct sockaddr_un clientAddr;
     socklen_t clientLen = sizeof(clientAddr);
+
     if (memset_s(&clientAddr, clientLen, 0, clientLen) != 0) {
         HiLog::Warn(LABEL, "Failed to memset client addr, err %{public}s", strerror(errno));
     }
@@ -181,6 +186,7 @@ int LmksServer::WaitConnection() {
     if ((setsockopt(connFd, SOL_SOCKET, SO_RCVTIMEO, &SOCKET_TIMEOUT, sizeof(SOCKET_TIMEOUT)) < 0) ||
         (setsockopt(connFd, SOL_SOCKET, SO_SNDTIMEO, &SOCKET_TIMEOUT, sizeof(SOCKET_TIMEOUT)) < 0)) {
         HiLog::Error(LABEL, "Failed to set opt of Connection %d, err %{public}s", connFd, strerror(errno));
+        close(connFd);
         return (-errno);
     }
 
@@ -236,7 +242,8 @@ int LmksServer::RecvSocketMessage(int connectFd, void *buf, int len)
 void LmksServer::ProcessMessage(int connectFd, LMKS_PACKET cmds, int len)
 {
     if (!isStart_ || (lmksUtils_ == nullptr)) {
-        HiLog::Error(LABEL, "Lmks server not start isStart_ %{public}d lmksUtils_%{public}p", isStart_, lmksUtils_.get());
+        HiLog::Error(
+            LABEL, "Lmks server not start isStart_ %{public}d lmksUtils_%{public}p", isStart_, lmksUtils_.get());
         close(connectFd);
         return;
     }
@@ -250,27 +257,27 @@ void LmksServer::ProcessMessage(int connectFd, LMKS_PACKET cmds, int len)
     int ret = -1;
     pid_t pid = 0;
 
-    switch(cmds[0]){
-    case LMKS_CMD_TARGET:
-        HiLog::Info(LABEL, "ProcessMessage LMKS_CMD_TARGET ");
-        break;
-    case LMKS_CMD_PROCPRIO:
-        HiLog::Info(LABEL, "ProcessMessage LMKS_CMD_PROCPRIO");
-        break;
-    case LMKS_CMD_PROCREMOVE:
-        HiLog::Info(LABEL, "ProcessMessage LMKS_CMD_PROCREMOVE");
-        pid = cmds[1];
-        ret = lmksUtils_->RemoveProcess(pid);
-        if (SendSocketMessage(connectFd, &ret, sizeof(ret)) <= 0){
-            HiLog::Error(LABEL, "Failed to return the result of remove process");
-        }
-        break;
-    case LMKS_CMD_PROCPURGE:
-        HiLog::Info(LABEL, "ProcessMessage LMKS_CMD_PROCPURGE");
-        break;
-    default:
-        HiLog::Error(LABEL, "Wrong cmd %d", cmds[0]);
-        break;
+    switch (cmds[0]) {
+        case LMKS_CMD_TARGET:
+            HiLog::Info(LABEL, "ProcessMessage LMKS_CMD_TARGET ");
+            break;
+        case LMKS_CMD_PROCPRIO:
+            HiLog::Info(LABEL, "ProcessMessage LMKS_CMD_PROCPRIO");
+            break;
+        case LMKS_CMD_PROCREMOVE:
+            HiLog::Info(LABEL, "ProcessMessage LMKS_CMD_PROCREMOVE");
+            pid = cmds[1];
+            ret = lmksUtils_->RemoveProcess(pid);
+            if (SendSocketMessage(connectFd, &ret, sizeof(ret)) <= 0) {
+                HiLog::Error(LABEL, "Failed to return the result of remove process");
+            }
+            break;
+        case LMKS_CMD_PROCPURGE:
+            HiLog::Info(LABEL, "ProcessMessage LMKS_CMD_PROCPURGE");
+            break;
+        default:
+            HiLog::Error(LABEL, "Wrong cmd %d", cmds[0]);
+            break;
     }
 
     // close connect fd.

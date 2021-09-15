@@ -26,7 +26,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 // UBA short for User Behavior Analysis
 using UbaService = int;
 using UbaServicePtr = std::shared_ptr<UbaService>;

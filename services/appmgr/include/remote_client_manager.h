@@ -23,9 +23,7 @@
 #include "bundlemgr/bundle_mgr_interface.h"
 
 namespace OHOS {
-
 namespace AppExecFwk {
-
 class RemoteClientManager {
 public:
     RemoteClientManager();
@@ -63,7 +61,6 @@ private:
     std::shared_ptr<AppSpawnClient> appSpawnClient_;
     sptr<IBundleMgr> bundleManager_;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 

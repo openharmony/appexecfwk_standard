@@ -28,6 +28,7 @@ enum class InstallFlag {
     // Allow to replace the existing bundle when the new version isn't lower than the old one.
     // If the bundle does not exist, just like normal flag.
     REPLACE_EXISTING = 1,
+    FREE_INSTALL = 0x10,
 };
 
 enum class InstallLocation {
@@ -42,6 +43,7 @@ struct InstallParam : public Parcelable {
     int userId = 0;
     // is keep user data while uninstall.
     bool isKeepData = false;
+    bool noCheckSignature = false;
 
     // the parcel object function is not const.
     bool ReadFromParcel(Parcel &parcel);

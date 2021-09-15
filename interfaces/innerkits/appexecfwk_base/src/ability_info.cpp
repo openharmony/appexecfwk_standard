@@ -58,9 +58,11 @@ const std::string JSON_KEY_DEVICE_ID = "deviceId";
 const std::string JSON_KEY_IS_LAUNCHER_ABILITY = "isLauncherAbility";
 const std::string JSON_KEY_IS_NATIVE_ABILITY = "isNativeAbility";
 const std::string JSON_KEY_ENABLED = "enabled";
+const std::string JSON_KEY_SUPPORT_PIP_MODE = "supportPipMode";
 const std::string JSON_KEY_TARGET_ABILITY = "targetAbility";
 const std::string JSON_KEY_READ_PERMISSION = "readPermission";
 const std::string JSON_KEY_WRITE_PERMISSION = "writePermission";
+const std::string JSON_KEY_CONFIG_CHANGES = "configChanges";
 const std::string JSON_KEY_FORM = "form";
 const std::string JSON_KEY_FORM_ENTITY = "formEntity";
 const std::string JSON_KEY_MIN_FORM_HEIGHT = "minFormHeight";
@@ -73,6 +75,10 @@ const std::string JSON_KEY_CUSTOMIZE_DATA = "customizeData";
 const std::string JSON_KEY_META_DATA = "metaData";
 const std::string JSON_KEY_META_VALUE = "value";
 const std::string JSON_KEY_META_EXTRA = "extra";
+const std::string JSON_KEY_LABEL_ID = "labelId";
+const std::string JSON_KEY_DESCRIPTION_ID = "descriptionId";
+const std::string JSON_KEY_ICON_ID = "iconId";
+const std::string JSON_KEY_FORM_ENABLED = "formEnabled";
 
 }  // namespace
 
@@ -101,16 +107,21 @@ bool AbilityInfo::ReadFromParcel(Parcel &parcel)
     isLauncherAbility = parcel.ReadBool();
     isNativeAbility = parcel.ReadBool();
     enabled = parcel.ReadBool();
-
-    int32_t formEntitySize;
-    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, formEntitySize);
-    for (int32_t i = 0; i < formEntitySize; i++) {
-        formEntity.emplace_back(Str16ToStr8(parcel.ReadString16()));
+    supportPipMode = parcel.ReadBool();
+    formEnabled = parcel.ReadBool();
+    int32_t configChangesSize;
+    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, configChangesSize);
+    for (int32_t i = 0; i < configChangesSize; i++) {
+        configChanges.emplace_back(Str16ToStr8(parcel.ReadString16()));
     }
+    formEntity = parcel.ReadInt32();
     minFormHeight = parcel.ReadInt32();
     defaultFormHeight = parcel.ReadInt32();
     minFormWidth = parcel.ReadInt32();
     defaultFormWidth = parcel.ReadInt32();
+    labelId = parcel.ReadInt32();
+    descriptionId = parcel.ReadInt32();
+    iconId = parcel.ReadInt32();
 
     int32_t typeData;
     READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, typeData);
@@ -226,14 +237,20 @@ bool AbilityInfo::Marshalling(Parcel &parcel) const
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, isLauncherAbility);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, isNativeAbility);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, enabled);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, formEntity.size());
-    for (auto &item : formEntity) {
-        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(item));
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, supportPipMode);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, formEnabled);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, configChanges.size());
+    for (auto &configChange : configChanges) {
+        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(configChange));
     }
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, formEntity);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, minFormHeight);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, defaultFormHeight);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, minFormWidth);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, defaultFormWidth);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, labelId);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, descriptionId);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, iconId);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, static_cast<int32_t>(type));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, static_cast<int32_t>(orientation));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, static_cast<int32_t>(launchMode));
@@ -293,8 +310,9 @@ void AbilityInfo::Dump(std::string prefix, int fd)
         APP_LOGE("dump Abilityinfo fcntl error %{public}s", strerror(errno));
         return;
     }
-    flags &= O_ACCMODE;
-    if ((flags == O_WRONLY) || (flags == O_RDWR)) {
+    uint uflags = static_cast<uint>(flags);
+    uflags &= O_ACCMODE;
+    if ((uflags == O_WRONLY) || (uflags == O_RDWR)) {
         nlohmann::json jsonObject = *this;
         std::string result;
         result.append(prefix);
@@ -354,13 +372,18 @@ void to_json(nlohmann::json &jsonObject, const AbilityInfo &abilityInfo)
         {JSON_KEY_IS_LAUNCHER_ABILITY, abilityInfo.isLauncherAbility},
         {JSON_KEY_IS_NATIVE_ABILITY, abilityInfo.isNativeAbility},
         {JSON_KEY_ENABLED, abilityInfo.enabled},
+        {JSON_KEY_SUPPORT_PIP_MODE, abilityInfo.supportPipMode},
         {JSON_KEY_READ_PERMISSION, abilityInfo.readPermission},
         {JSON_KEY_WRITE_PERMISSION, abilityInfo.writePermission},
+        {JSON_KEY_CONFIG_CHANGES, abilityInfo.configChanges},
         {JSON_KEY_FORM_ENTITY, abilityInfo.formEntity},
         {JSON_KEY_MIN_FORM_HEIGHT, abilityInfo.minFormHeight},
         {JSON_KEY_DEFAULT_FORM_HEIGHT, abilityInfo.defaultFormHeight},
         {JSON_KEY_MIN_FORM_WIDTH, abilityInfo.minFormWidth},
         {JSON_KEY_DEFAULT_FORM_WIDTH, abilityInfo.defaultFormWidth},
+        {JSON_KEY_LABEL_ID, abilityInfo.labelId},
+        {JSON_KEY_DESCRIPTION_ID, abilityInfo.descriptionId},
+        {JSON_KEY_ICON_ID, abilityInfo.iconId},
         {JSON_KEY_KIND, abilityInfo.kind},
         {JSON_KEY_TYPE, abilityInfo.type},
         {JSON_KEY_ORIENTATION, abilityInfo.orientation},
@@ -379,7 +402,8 @@ void to_json(nlohmann::json &jsonObject, const AbilityInfo &abilityInfo)
         {JSON_KEY_CODE_PATH, abilityInfo.codePath},
         {JSON_KEY_RESOURCE_PATH, abilityInfo.resourcePath},
         {JSON_KEY_LIB_PATH, abilityInfo.libPath},
-        {JSON_KEY_META_DATA, abilityInfo.metaData}
+        {JSON_KEY_META_DATA, abilityInfo.metaData},
+        {JSON_KEY_FORM_ENABLED, abilityInfo.formEnabled}
     };
 }
 
@@ -422,13 +446,18 @@ void from_json(const nlohmann::json &jsonObject, AbilityInfo &abilityInfo)
     abilityInfo.isLauncherAbility = jsonObject.at(JSON_KEY_IS_LAUNCHER_ABILITY).get<bool>();
     abilityInfo.isNativeAbility = jsonObject.at(JSON_KEY_IS_NATIVE_ABILITY).get<bool>();
     abilityInfo.enabled = jsonObject.at(JSON_KEY_ENABLED).get<bool>();
+    abilityInfo.supportPipMode = jsonObject.at(JSON_KEY_SUPPORT_PIP_MODE).get<bool>();
     abilityInfo.readPermission = jsonObject.at(JSON_KEY_READ_PERMISSION).get<std::string>();
     abilityInfo.writePermission = jsonObject.at(JSON_KEY_WRITE_PERMISSION).get<std::string>();
-    abilityInfo.formEntity = jsonObject.at(JSON_KEY_FORM_ENTITY).get<std::vector<std::string>>();
+    abilityInfo.configChanges = jsonObject.at(JSON_KEY_CONFIG_CHANGES).get<std::vector<std::string>>();
+    abilityInfo.formEntity = jsonObject.at(JSON_KEY_FORM_ENTITY).get<uint32_t>();
     abilityInfo.minFormHeight = jsonObject.at(JSON_KEY_MIN_FORM_HEIGHT).get<int32_t>();
     abilityInfo.defaultFormHeight = jsonObject.at(JSON_KEY_DEFAULT_FORM_HEIGHT).get<int32_t>();
     abilityInfo.minFormWidth = jsonObject.at(JSON_KEY_MIN_FORM_WIDTH).get<int32_t>();
     abilityInfo.defaultFormWidth = jsonObject.at(JSON_KEY_DEFAULT_FORM_WIDTH).get<int32_t>();
+    abilityInfo.labelId = jsonObject.at(JSON_KEY_LABEL_ID).get<int32_t>();
+    abilityInfo.descriptionId = jsonObject.at(JSON_KEY_DESCRIPTION_ID).get<int32_t>();
+    abilityInfo.iconId = jsonObject.at(JSON_KEY_ICON_ID).get<int32_t>();
     abilityInfo.kind = jsonObject.at(JSON_KEY_KIND).get<std::string>();
     abilityInfo.type = jsonObject.at(JSON_KEY_TYPE).get<AbilityType>();
     abilityInfo.orientation = jsonObject.at(JSON_KEY_ORIENTATION).get<DisplayOrientation>();
@@ -448,6 +477,61 @@ void from_json(const nlohmann::json &jsonObject, AbilityInfo &abilityInfo)
     abilityInfo.resourcePath = jsonObject.at(JSON_KEY_RESOURCE_PATH).get<std::string>();
     abilityInfo.libPath = jsonObject.at(JSON_KEY_LIB_PATH).get<std::string>();
     abilityInfo.metaData = jsonObject.at(JSON_KEY_META_DATA).get<MetaData>();
+    abilityInfo.formEnabled = jsonObject.at(JSON_KEY_FORM_ENABLED).get<bool>();
+}
+
+void AbilityInfo::ConvertToCompatiableAbilityInfo(CompatibleAbilityInfo& compatibleAbilityInfo) const
+{
+    APP_LOGE("AbilityInfo::ConvertToCompatiableAbilityInfo called");
+    compatibleAbilityInfo.package = package;
+    compatibleAbilityInfo.name = name;
+    compatibleAbilityInfo.label = label;
+    compatibleAbilityInfo.description = description;
+    compatibleAbilityInfo.iconPath = iconPath;
+    compatibleAbilityInfo.uri = uri;
+    compatibleAbilityInfo.moduleName = moduleName;
+    compatibleAbilityInfo.process = process;
+    compatibleAbilityInfo.targetAbility = targetAbility;
+    compatibleAbilityInfo.appName = appName;
+    compatibleAbilityInfo.privacyUrl = privacyUrl;
+    compatibleAbilityInfo.privacyName = privacyName;
+    compatibleAbilityInfo.downloadUrl = downloadUrl;
+    compatibleAbilityInfo.versionName = versionName;
+    compatibleAbilityInfo.backgroundModes = backgroundModes;
+    compatibleAbilityInfo.packageSize = packageSize;
+    compatibleAbilityInfo.visible = visible;
+    compatibleAbilityInfo.formEnabled = formEnabled;
+    compatibleAbilityInfo.multiUserShared = multiUserShared;
+    compatibleAbilityInfo.type = type;
+    compatibleAbilityInfo.subType = subType;
+    compatibleAbilityInfo.orientation = orientation;
+    compatibleAbilityInfo.launchMode = launchMode;
+    compatibleAbilityInfo.permissions = permissions;
+    compatibleAbilityInfo.deviceTypes = deviceTypes;
+    compatibleAbilityInfo.deviceCapabilities = deviceCapabilities;
+    compatibleAbilityInfo.supportPipMode = supportPipMode;
+    compatibleAbilityInfo.grantPermission = grantPermission;
+    compatibleAbilityInfo.readPermission = readPermission;
+    compatibleAbilityInfo.writePermission = writePermission;
+    compatibleAbilityInfo.uriPermissionMode = uriPermissionMode;
+    compatibleAbilityInfo.uriPermissionPath = uriPermissionPath;
+    compatibleAbilityInfo.directLaunch = directLaunch;
+    compatibleAbilityInfo.bundleName = bundleName;
+    compatibleAbilityInfo.className = className;
+    compatibleAbilityInfo.originalClassName = originalClassName;
+    compatibleAbilityInfo.deviceId = deviceId;
+    CompatibleApplicationInfo convertedCompatibleApplicationInfo;
+    applicationInfo.ConvertToCompatibleApplicationInfo(convertedCompatibleApplicationInfo);
+    compatibleAbilityInfo.applicationInfo = convertedCompatibleApplicationInfo;
+    compatibleAbilityInfo.formEntity = formEntity;
+    compatibleAbilityInfo.minFormHeight = minFormHeight;
+    compatibleAbilityInfo.defaultFormHeight = defaultFormHeight;
+    compatibleAbilityInfo.minFormWidth = minFormWidth;
+    compatibleAbilityInfo.defaultFormWidth = defaultFormWidth;
+    compatibleAbilityInfo.iconId = iconId;
+    compatibleAbilityInfo.labelId = labelId;
+    compatibleAbilityInfo.descriptionId = descriptionId;
+    compatibleAbilityInfo.enabled = enabled;
 }
 
 }  // namespace AppExecFwk

@@ -57,7 +57,7 @@ HWTEST(TaskDispatcherContextTest, TaskDispatcherContext_0100, Function | MediumT
     GTEST_LOG_(INFO) << "TaskDispatcherContext_0100 start";
     std::shared_ptr<TaskDispatcherContext> taskDispatcherContext = std::make_shared<TaskDispatcherContext>();
     std::shared_ptr<WorkerPoolConfig> config = taskDispatcherContext->GetWorkerPoolConfig();
-    ASSERT_EQ(config.get()->GetMaxThreadCount(), 32);
+    EXPECT_EQ(config.get()->GetMaxThreadCount(), 32);
     GTEST_LOG_(INFO) << "TaskDispatcherContext_0100 end";
 }
 
@@ -76,7 +76,7 @@ HWTEST(TaskDispatcherContextTest, TaskDispatcherContext_0200, Function | MediumT
         std::make_shared<TaskDispatcherContext>(testTaskExecutor);
     std::map<std::string, long> workerThreadsInfo = taskDispatcherContext->GetWorkerThreadsInfo();
     bool flag = (workerThreadsInfo.size() == 0);
-    ASSERT_TRUE(flag);
+    EXPECT_TRUE(flag);
     GTEST_LOG_(INFO) << "TaskDispatcherContext_0200 end";
 }
 
@@ -91,7 +91,7 @@ HWTEST(TaskDispatcherContextTest, GetWorkerPoolConfig_0100, Function | MediumTes
     GTEST_LOG_(INFO) << "GetWorkerPoolConfig_0100 start";
     std::shared_ptr<TaskDispatcherContext> taskDispatcherContext = std::make_shared<TaskDispatcherContext>();
     std::shared_ptr<WorkerPoolConfig> config = taskDispatcherContext->GetWorkerPoolConfig();
-    ASSERT_EQ(config.get()->GetMaxThreadCount(), 32);
+    EXPECT_EQ(config.get()->GetMaxThreadCount(), 32);
     GTEST_LOG_(INFO) << "GetWorkerPoolConfig_0100 end";
 }
 /**
@@ -107,7 +107,7 @@ HWTEST(TaskDispatcherContextTest, GetWorkerThreadsInfo_0100, Function | MediumTe
     std::shared_ptr<TaskDispatcherContext> taskDispatcherContext = std::make_shared<TaskDispatcherContext>(nullptr);
     std::map<std::string, long> workerThreadsInfo = taskDispatcherContext->GetWorkerThreadsInfo();
     bool flag = (workerThreadsInfo.size() == 0);
-    ASSERT_TRUE(flag);
+    EXPECT_TRUE(flag);
     GTEST_LOG_(INFO) << "GetWorkerThreadsInfo_0100 end";
 }
 /**
@@ -125,7 +125,7 @@ HWTEST(TaskDispatcherContextTest, GetWorkerThreadsInfo_0200, Function | MediumTe
         std::make_shared<TaskDispatcherContext>(testTaskExecutor);
     std::map<std::string, long> workerThreadsInfo = taskDispatcherContext->GetWorkerThreadsInfo();
     bool flag = (workerThreadsInfo.size() == 0);
-    ASSERT_TRUE(flag);
+    EXPECT_TRUE(flag);
     GTEST_LOG_(INFO) << "TaskDispatcherContext_0200 end";
 }
 /**
@@ -143,7 +143,7 @@ HWTEST(TaskDispatcherContextTest, CreateSerialDispatcher_0100, Function | Medium
     TaskPriority taskPriority = TaskPriority::DEFAULT;
     std::shared_ptr<SerialTaskDispatcher> ptrSerialTaskDispatcher =
         taskDispatcherContext->CreateSerialDispatcher(dispatcherName, taskPriority);
-    ASSERT_EQ(ptrSerialTaskDispatcher->GetDispatcherName(), dispatcherName);
+    EXPECT_EQ(ptrSerialTaskDispatcher->GetDispatcherName(), dispatcherName);
     GTEST_LOG_(INFO) << "CreateSerialDispatcher_0100 end";
 }
 /**
@@ -168,10 +168,10 @@ HWTEST(TaskDispatcherContextTest, GetSerialDispatchers_0100, Function | MediumTe
     std::map<std::shared_ptr<SerialTaskDispatcher>, std::string> serialDispatchers =
         taskDispatcherContext->GetSerialDispatchers();
     bool flag = (serialDispatchers.size() == 2);
-    ASSERT_TRUE(flag);
+    EXPECT_TRUE(flag);
     std::map<std::shared_ptr<SerialTaskDispatcher>, std::string>::iterator iter;
     for (iter = serialDispatchers.begin(); iter != serialDispatchers.end(); iter++) {
-        ASSERT_EQ(iter->second, dispatcherName);
+        EXPECT_EQ(iter->second, dispatcherName);
     }
     GTEST_LOG_(INFO) << "GetSerialDispatchers_0100 end";
 }
@@ -189,7 +189,7 @@ HWTEST(TaskDispatcherContextTest, CreateParallelDispatcher_0100, Function | Medi
     TaskPriority taskPriority = TaskPriority::HIGH;
     std::shared_ptr<ParallelTaskDispatcher> ptrSerialTaskDispatcher =
         taskDispatcherContext->CreateParallelDispatcher(dispatcherName, taskPriority);
-    ASSERT_EQ(ptrSerialTaskDispatcher->GetPriority(), taskPriority);
+    EXPECT_EQ(ptrSerialTaskDispatcher->GetPriority(), taskPriority);
     GTEST_LOG_(INFO) << "CreateParallelDispatcher_0100 end";
 }
 
@@ -252,7 +252,7 @@ HWTEST(TaskDispatcherContextTest, GetWaitingTasksCount_0100, Function | MediumTe
     const std::shared_ptr<TaskExecutor> testTaskExecutor = nullptr;
     std::shared_ptr<TaskDispatcherContext> taskDispatcherContext =
         std::make_shared<TaskDispatcherContext>(testTaskExecutor);
-    ASSERT_EQ(taskDispatcherContext->GetWaitingTasksCount(), 0);
+    EXPECT_EQ(taskDispatcherContext->GetWaitingTasksCount(), 0);
     GTEST_LOG_(INFO) << "GetWaitingTasksCount_0100 end";
 }
 
@@ -269,7 +269,7 @@ HWTEST(TaskDispatcherContextTest, GetWaitingTasksCount_0200, Function | MediumTe
     const std::shared_ptr<TaskExecutor> testTaskExecutor = std::make_shared<TaskExecutor>(config);
     std::shared_ptr<TaskDispatcherContext> taskDispatcherContext =
         std::make_shared<TaskDispatcherContext>(testTaskExecutor);
-    ASSERT_EQ(taskDispatcherContext->GetWaitingTasksCount(), 0);
+    EXPECT_EQ(taskDispatcherContext->GetWaitingTasksCount(), 0);
     GTEST_LOG_(INFO) << "GetWaitingTasksCount_0200 end";
 }
 /**
@@ -285,6 +285,6 @@ HWTEST(TaskDispatcherContextTest, GetTaskCounter_0100, Function | MediumTest | L
     const std::shared_ptr<TaskExecutor> testTaskExecutor = std::make_shared<TaskExecutor>(config);
     std::shared_ptr<TaskDispatcherContext> taskDispatcherContext =
         std::make_shared<TaskDispatcherContext>(testTaskExecutor);
-    ASSERT_EQ(taskDispatcherContext->GetTaskCounter(), 0);
+    EXPECT_EQ(taskDispatcherContext->GetTaskCounter(), 0);
     GTEST_LOG_(INFO) << "GetTaskCounter_0100 end";
 }

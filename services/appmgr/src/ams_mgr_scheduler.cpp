@@ -26,11 +26,8 @@
 #include "perf_profile.h"
 
 namespace OHOS {
-
 namespace AppExecFwk {
-
 namespace {
-
 const std::string TASK_LOAD_ABILITY = "LoadAbilityTask";
 const std::string TASK_TERMINATE_ABILITY = "TerminateAbilityTask";
 const std::string TASK_UPDATE_ABILITY_STATE = "UpdateAbilityStateTask";

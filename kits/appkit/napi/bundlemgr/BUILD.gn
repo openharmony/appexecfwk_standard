@@ -17,6 +17,7 @@ ohos_shared_library("bundle") {
   include_dirs = [
     "//foundation/ace/napi/interfaces/kits",
     "//third_party/node/src",
+    "//third_party/libuv/include",
     "//foundation/aafwk/standard/services/common/include",
     "//utils/system/safwk/native/include",
     "./",
@@ -26,6 +27,7 @@ ohos_shared_library("bundle") {
     "bundle_mgr.cpp",
     "installer_callback.cpp",
     "native_module.cpp",
+    "permission_callback.cpp",
   ]
 
   deps = [

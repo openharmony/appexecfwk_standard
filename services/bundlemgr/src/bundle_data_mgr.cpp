@@ -27,6 +27,7 @@
 #include "common_event_manager.h"
 #include "common_event_support.h"
 #include "bundle_status_callback_death_recipient.h"
+#include "permission_changed_death_recipient.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -34,9 +35,10 @@ namespace AppExecFwk {
 BundleDataMgr::BundleDataMgr()
 {
     InitStateTransferMap();
-    if (!dataStorage_) {
-        dataStorage_ = std::make_shared<BundleDataStorageDatabase>();
-    }
+    dataStorage_ = std::make_shared<BundleDataStorageDatabase>();
+    usageRecordStorage_ = std::make_shared<ModuleUsageRecordStorage>();
+    // register distributed data process death listener.
+    usageRecordStorage_->RegisterKvStoreDeathListener();
     APP_LOGI("BundleDataMgr instance is created");
 }
 
@@ -308,10 +310,56 @@ bool BundleDataMgr::QueryAbilityInfo(const Want &want, AbilityInfo &abilityInfo)
     return true;
 }
 
+bool BundleDataMgr::QueryAbilityInfos(const Want &want, std::vector<AbilityInfo> &abilityInfo) const
+{
+    ElementName element = want.GetElement();
+    std::string abilityName = element.GetAbilityName();
+    std::string bundleName = element.GetBundleName();
+    APP_LOGI("bundle name:%{public}s, ability name:%{public}s", bundleName.c_str(), abilityName.c_str());
+
+    std::string keyName = bundleName + abilityName;
+    APP_LOGI("ability, name:%{public}s", keyName.c_str());
+    std::lock_guard<std::mutex> lock(bundleInfoMutex_);
+    if (bundleInfos_.empty()) {
+        APP_LOGI("bundleInfos_ is empty");
+        return false;
+    }
+    auto item = bundleInfos_.find(bundleName);
+    if (item == bundleInfos_.end()) {
+        APP_LOGI("bundle:%{public}s not find", bundleName.c_str());
+        return false;
+    }
+
+    auto infoWithIdItem = item->second.find(Constants::CURRENT_DEVICE_ID);
+    if (infoWithIdItem == item->second.end()) {
+        APP_LOGI("bundle:%{public}s device id not find", bundleName.c_str());
+        return false;
+    }
+    if (infoWithIdItem->second.IsDisabled()) {
+        APP_LOGI("app %{public}s is disabled", infoWithIdItem->second.GetBundleName().c_str());
+        return false;
+    }
+    auto ability = infoWithIdItem->second.FindAbilityInfos(bundleName);
+    if (!ability) {
+        APP_LOGE("ability:%{public}s not find", keyName.c_str());
+        return false;
+    }
+    abilityInfo = (*ability);
+    for (auto &ability : abilityInfo) {
+        infoWithIdItem->second.GetApplicationInfo(
+            ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMS, 0, ability.applicationInfo);
+    }
+
+    return true;
+}
+
 bool BundleDataMgr::QueryAbilityInfoByUri(const std::string &abilityUri, AbilityInfo &abilityInfo) const
 {
-    APP_LOGI("QueryAbilityInfoByUri");
+    APP_LOGI("abilityUri is %{public}s", abilityUri.c_str());
     if (abilityUri.empty()) {
+        return false;
+    }
+    if (abilityUri.find(Constants::DATA_ABILITY_URI_PREFIX) == std::string::npos) {
         return false;
     }
     std::lock_guard<std::mutex> lock(bundleInfoMutex_);
@@ -319,21 +367,41 @@ bool BundleDataMgr::QueryAbilityInfoByUri(const std::string &abilityUri, Ability
         APP_LOGI("bundleInfos_ data is empty");
         return false;
     }
+    std::string noPpefixUri = abilityUri.substr(Constants::DATA_ABILITY_URI_PREFIX.size());
+    auto posFirstSeparator = noPpefixUri.find(Constants::DATA_ABILITY_URI_SEPARATOR);
+    if (posFirstSeparator == std::string::npos) {
+        return false;
+    }
+    auto posSecondSeparator = noPpefixUri.find(Constants::DATA_ABILITY_URI_SEPARATOR, posFirstSeparator + 1);
+    std::string uri;
+    if (posSecondSeparator == std::string::npos) {
+        uri = noPpefixUri.substr(posFirstSeparator + 1, noPpefixUri.size() - posFirstSeparator - 1);
+    } else {
+        uri = noPpefixUri.substr(posFirstSeparator + 1, posSecondSeparator - posFirstSeparator - 1);
+    }
+
+    std::string deviceId = noPpefixUri.substr(0, posFirstSeparator);
+    if (deviceId.empty()) {
+        deviceId = Constants::CURRENT_DEVICE_ID;
+    }
     for (const auto &item : bundleInfos_) {
-        for (const auto &info : item.second) {
-            if (info.second.IsDisabled()) {
-                APP_LOGI("app %{public}s is disabled", info.second.GetBundleName().c_str());
-                continue;
-            }
-            auto ability = info.second.FindAbilityInfoByUri(abilityUri);
-            if (!ability) {
-                continue;
-            }
-            abilityInfo = (*ability);
-            info.second.GetApplicationInfo(
-                ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMS, 0, abilityInfo.applicationInfo);
-            return true;
+        auto infoWithIdItem = item.second.find(deviceId);
+        if (infoWithIdItem == item.second.end()) {
+            APP_LOGI("bundle device id:%{public}s not find", deviceId.c_str());
+            return false;
         }
+        if (infoWithIdItem->second.IsDisabled()) {
+            APP_LOGI("app %{public}s is disabled", infoWithIdItem->second.GetBundleName().c_str());
+            continue;
+        }
+        auto ability = infoWithIdItem->second.FindAbilityInfoByUri(uri);
+        if (!ability) {
+            continue;
+        }
+        abilityInfo = (*ability);
+        infoWithIdItem->second.GetApplicationInfo(
+            ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMS, 0, abilityInfo.applicationInfo);
+        return true;
     }
     return false;
 }
@@ -1062,6 +1130,67 @@ bool BundleDataMgr::RecycleUidAndGid(const InnerBundleInfo &info)
     return true;
 }
 
+bool BundleDataMgr::GetUsageRecords(const int32_t maxNum, std::vector<ModuleUsageRecord> &records)
+{
+    APP_LOGI("GetUsageRecords, maxNum: %{public}d", maxNum);
+    records.clear();
+    std::vector<ModuleUsageRecord> usageRecords;
+    bool result = usageRecordStorage_->QueryRecordByNum(maxNum, usageRecords, 0);
+    if (!result) {
+        APP_LOGI("GetUsageRecords error");
+        return false;
+    }
+    for (ModuleUsageRecord &item : usageRecords) {
+        APP_LOGD("GetUsageRecords item:%{public}s,%{public}s,%{public}s",
+            item.bundleName.c_str(),
+            item.name.c_str(),
+            item.abilityName.c_str());
+
+        std::lock_guard<std::mutex> lock(bundleInfoMutex_);
+        if (bundleInfos_.empty()) {
+            APP_LOGI("bundleInfos_ data is empty");
+            break;
+        }
+        auto infoItem = bundleInfos_.find(item.bundleName);
+        if (infoItem == bundleInfos_.end()) {
+            continue;
+        }
+        APP_LOGI("GetUsageRecords %{public}s", infoItem->first.c_str());
+        auto bundleInfo = infoItem->second.find(Constants::CURRENT_DEVICE_ID);
+        if (bundleInfo == infoItem->second.end()) {
+            continue;
+        }
+        if (bundleInfo->second.IsDisabled()) {
+            APP_LOGI("app %{public}s is disabled", bundleInfo->second.GetBundleName().c_str());
+            continue;
+        }
+        auto innerModuleInfo = bundleInfo->second.GetInnerModuleInfoByModuleName(item.name);
+        if (!innerModuleInfo) {
+            continue;
+        }
+        item.labelId = innerModuleInfo->labelId;
+        item.descriptionId = innerModuleInfo->descriptionId;
+        item.installationFreeSupported = innerModuleInfo->installationFree;
+        auto appInfo = bundleInfo->second.GetBaseApplicationInfo();
+        item.appLabelId = appInfo.labelId;
+        auto ability = bundleInfo->second.FindAbilityInfo(item.bundleName, item.abilityName);
+        if (!ability) {
+            APP_LOGE("ability:%{public}s not find", item.abilityName.c_str());
+            continue;
+        }
+        if (ability->type != AbilityType::PAGE) {
+            APP_LOGE("ability:%{public}s type is not PAGE", item.abilityName.c_str());
+            continue;
+        }
+        item.abilityName = ability->name;
+        item.abilityLabelId = ability->labelId;
+        item.abilityDescriptionId = ability->descriptionId;
+        item.abilityIconId = ability->iconId;
+        records.emplace_back(item);
+    }
+    return true;
+}
+
 bool BundleDataMgr::RestoreUidAndGid()
 {
     // this function should be called with bundleInfoMutex_ locked
@@ -1081,7 +1210,7 @@ bool BundleDataMgr::RestoreUidAndGid()
 }
 
 bool BundleDataMgr::NotifyBundleStatus(const std::string &bundleName, const std::string &modulePackage,
-    const std::string &mainAbility, const ErrCode resultCode, const NotifyType type)
+    const std::string &mainAbility, const ErrCode resultCode, const NotifyType type, const int32_t &uid)
 {
     APP_LOGI("notify type %{public}d with %{public}d for %{public}s-%{public}s in %{public}s",
         type,
@@ -1130,6 +1259,8 @@ bool BundleDataMgr::NotifyBundleStatus(const std::string &bundleName, const std:
     element.SetBundleName(bundleName);
     element.SetAbilityName(mainAbility);
     want.SetElement(element);
+    want.SetParam(Constants::UID, uid);
+    APP_LOGI("want.SetParam uid %{public}d", uid);
     EventFwk::CommonEventData commonData{want};
     EventFwk::CommonEventManager::PublishCommonEvent(commonData);
     return true;
@@ -1315,6 +1446,75 @@ bool BundleDataMgr::GetFormsInfoByApp(const std::string &bundleName, std::vector
     return true;
 }
 
+bool BundleDataMgr::NotifyActivityLifeStatus(
+    const std::string &bundleName, const std::string &abilityName, const int64_t launchTime) const
+{
+    APP_LOGI("NotifyActivityLifeStatus %{public}s, %{public}s", bundleName.c_str(), abilityName.c_str());
+    if (bundleName.empty() || abilityName.empty()) {
+        return false;
+    }
+    std::lock_guard<std::mutex> lock(bundleInfoMutex_);
+    if (bundleInfos_.empty()) {
+        APP_LOGI("bundleInfos_ data is empty");
+        return false;
+    }
+    auto infoItem = bundleInfos_.find(bundleName);
+    if (infoItem == bundleInfos_.end()) {
+        return false;
+    }
+    APP_LOGI("NotifyActivityLifeStatus %{public}s", infoItem->first.c_str());
+    auto bundleInfo = infoItem->second.find(Constants::CURRENT_DEVICE_ID);
+    if (bundleInfo == infoItem->second.end()) {
+        return false;
+    }
+    if (bundleInfo->second.IsDisabled()) {
+        APP_LOGI("app %{public}s is disabled", bundleInfo->second.GetBundleName().c_str());
+        return false;
+    }
+    auto ability = bundleInfo->second.FindAbilityInfo(bundleName, abilityName);
+    if (!ability) {
+        APP_LOGE("ability:%{public}s not find", abilityName.c_str());
+        return false;
+    }
+    if (ability->type != AbilityType::PAGE) {
+        APP_LOGE("ability:%{public}s type is not PAGE", abilityName.c_str());
+        return false;
+    }
+    ModuleUsageRecord moduleUsageRecord;
+    moduleUsageRecord.bundleName = bundleName;
+    moduleUsageRecord.name = ability->moduleName;
+    moduleUsageRecord.abilityName = abilityName;
+    moduleUsageRecord.lastLaunchTime = launchTime;
+    moduleUsageRecord.launchedCount = 1;
+    return usageRecordStorage_->AddOrUpdateRecord(moduleUsageRecord, Constants::CURRENT_DEVICE_ID, 0);
+}
+
+bool BundleDataMgr::UpdateUsageRecordOnBundleRemoved(
+    bool keepUsage, const int userId, const std::string &bundleName) const
+{
+    std::lock_guard<std::mutex> lock(bundleInfoMutex_);
+    if (bundleInfos_.empty()) {
+        APP_LOGI("bundleInfos_ data is empty");
+        return false;
+    }
+    auto infoItem = bundleInfos_.find(bundleName);
+    if (infoItem == bundleInfos_.end()) {
+        return false;
+    }
+    APP_LOGI("UpdateUsageRecordOnBundleRemoved %{public}s", infoItem->first.c_str());
+    auto bundleInfo = infoItem->second.find(Constants::CURRENT_DEVICE_ID);
+    if (bundleInfo == infoItem->second.end()) {
+        return false;
+    }
+    if (bundleInfo->second.IsDisabled()) {
+        APP_LOGI("app %{public}s is disabled", bundleInfo->second.GetBundleName().c_str());
+        return false;
+    }
+    std::vector<std::string> moduleNames;
+    return keepUsage ? usageRecordStorage_->MarkUsageRecordRemoved(bundleInfo->second, userId)
+                     : usageRecordStorage_->DeleteUsageRecord(bundleInfo->second, userId);
+}
+
 bool BundleDataMgr::GetShortcutInfos(const std::string &bundleName, std::vector<ShortcutInfo> &shortcutInfos) const
 {
     if (bundleName.empty()) {
@@ -1340,6 +1540,165 @@ bool BundleDataMgr::GetShortcutInfos(const std::string &bundleName, std::vector<
     }
     innerBundleInfo->second.GetShortcutInfos(shortcutInfos);
     APP_LOGE("shortcutInfo find success");
+    return true;
+}
+
+bool BundleDataMgr::RegisterAllPermissionsChanged(const sptr<OnPermissionChangedCallback> &callback)
+{
+    if (!callback) {
+        APP_LOGE("callback is nullptr");
+        return false;
+    }
+    std::lock_guard<std::mutex> lock(allPermissionsChangedLock_);
+    std::set<sptr<OnPermissionChangedCallback>>::iterator it = allPermissionsCallbacks_.begin();
+    while (it != allPermissionsCallbacks_.end()) {
+        if ((*it)->AsObject() == callback->AsObject()) {
+            break;
+        }
+        it++;
+    }
+    if (it == allPermissionsCallbacks_.end()) {
+        allPermissionsCallbacks_.emplace(callback);
+    }
+    APP_LOGD("all permissions callbacks size = %{public}zu", allPermissionsCallbacks_.size());
+    return AddDeathRecipient(callback);
+}
+
+bool BundleDataMgr::RegisterPermissionsChanged(
+    const std::vector<int> &uids, const sptr<OnPermissionChangedCallback> &callback)
+{
+    if (!callback) {
+        APP_LOGE("callback is nullptr");
+        return false;
+    }
+    std::lock_guard<std::mutex> lock(permissionsChangedLock_);
+    for (int32_t uid : uids) {
+        std::set<sptr<OnPermissionChangedCallback>>::iterator it = permissionsCallbacks_[uid].begin();
+        while (it != permissionsCallbacks_[uid].end()) {
+            if ((*it)->AsObject() == callback->AsObject()) {
+                break;
+            }
+            it++;
+        }
+        if (it == permissionsCallbacks_[uid].end()) {
+            permissionsCallbacks_[uid].emplace(callback);
+        }
+    }
+    APP_LOGD("specified permissions callbacks size = %{public}zu", permissionsCallbacks_.size());
+
+    for (const auto &item1 : permissionsCallbacks_) {
+        APP_LOGD("item1->first = %{public}d", item1.first);
+        APP_LOGD("item1->second.size() = %{public}zu", item1.second.size());
+    }
+    return AddDeathRecipient(callback);
+}
+
+bool BundleDataMgr::AddDeathRecipient(const sptr<OnPermissionChangedCallback> &callback)
+{
+    if (!callback) {
+        APP_LOGE("callback is nullptr");
+        return false;
+    }
+    auto object = callback->AsObject();
+    if (!object) {
+        APP_LOGW("callback object is nullptr");
+        return false;
+    }
+    // add callback death recipient.
+    sptr<PermissionChangedDeathRecipient> deathRecipient = new PermissionChangedDeathRecipient();
+    object->AddDeathRecipient(deathRecipient);
+    return true;
+}
+
+bool BundleDataMgr::UnregisterPermissionsChanged(const sptr<OnPermissionChangedCallback> &callback)
+{
+    bool ret = false;
+    if (!callback) {
+        APP_LOGE("callback is nullptr");
+        return ret;
+    }
+    {
+        std::lock_guard<std::mutex> lock(allPermissionsChangedLock_);
+
+        for (auto allPermissionsItem = allPermissionsCallbacks_.begin(); allPermissionsItem != allPermissionsCallbacks_.end();) {
+            if ((*allPermissionsItem)->AsObject() == callback->AsObject()) {
+                allPermissionsItem = allPermissionsCallbacks_.erase(allPermissionsItem);
+                APP_LOGI("unregister from all permissions callbacks success!");
+                ret = true;
+                break;
+            } else {
+                allPermissionsItem++;
+            }
+        }
+    }
+    {
+        std::lock_guard<std::mutex> lock(permissionsChangedLock_);
+        for (auto mapIter = permissionsCallbacks_.begin(); mapIter != permissionsCallbacks_.end();) {
+            for (auto it = mapIter->second.begin(); it != mapIter->second.end();) {
+                if ((*it)->AsObject() == callback->AsObject()) {
+                    it = mapIter->second.erase(it);
+                    APP_LOGI("unregister from specific permissions callbacks success!");
+                    APP_LOGD("mapIter->first = %{public}d", (*mapIter).first);
+                    APP_LOGD("*mapIter.second.size() = %{public}zu", (*mapIter).second.size());
+                    ret = true;
+                } else {
+                    it++;
+                }
+            }
+            if (mapIter->second.empty()) {
+                mapIter = permissionsCallbacks_.erase(mapIter);
+            } else {
+                mapIter++;
+            }
+        }
+    }
+    for (const auto &item1 : permissionsCallbacks_) {
+        APP_LOGD("item1->first = %{public}d", item1.first);
+        APP_LOGD("item1->second.size() = %{public}zu", item1.second.size());
+    }
+    return ret;
+}
+bool BundleDataMgr::NotifyPermissionsChanged(int32_t uid)
+{
+    if (uid < 0) {
+        APP_LOGE("uid(%{private}d) is invalid", uid);
+        return false;
+    }
+    APP_LOGI("notify permission changed, uid = %{public}d", uid);
+    // for all permissions callback.
+    {
+        std::lock_guard<std::mutex> lock(allPermissionsChangedLock_);
+        for (const auto &allPermissionItem : allPermissionsCallbacks_) {
+            if (!allPermissionItem) {
+                APP_LOGE("callback is nullptr");
+                return false;
+            }
+
+            allPermissionItem->OnChanged(uid);
+            APP_LOGD("all permissions changed callback");
+        }
+    }
+    // for uid permissions callback.
+    {
+        std::lock_guard<std::mutex> lock(permissionsChangedLock_);
+        APP_LOGD("specified permissions callbacks size = %{public}zu", permissionsCallbacks_.size());
+        for (const auto &item1 : permissionsCallbacks_) {
+            APP_LOGD("item1->first = %{public}d", item1.first);
+            APP_LOGD("item1->second.size() = %{public}zu", item1.second.size());
+        }
+        auto callbackItem = permissionsCallbacks_.find(uid);
+        if (callbackItem != permissionsCallbacks_.end()) {
+            auto callbacks = callbackItem->second;
+            for (const auto &item : callbacks) {
+                if (!item) {
+                    APP_LOGE("callback is nullptr");
+                    return false;
+                }
+                item->OnChanged(uid);
+                APP_LOGD("specified permissions changed callback");
+            }
+        }
+    }
     return true;
 }
 

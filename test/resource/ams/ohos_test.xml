@@ -120,6 +120,12 @@
         <option name="push" value="ams_page_ability_bundle/. -> /system/vendor/" src="res" />
       </preparer>
   </target>
+  <target name="ams_ability_visible_test">
+    <depend resource="ams_page_ability_bundle/." pushpath="/system/vendor/" findpath="res" presetcmd=""/>
+    <preparer>
+        <option name="push" value="ams_page_ability_bundle/. -> /system/vendor/" src="res" />
+      </preparer>
+  </target>
     <target name="task_dispatcher_test">
     <depend resource="ams_task_dispatcher/." pushpath="/system/vendor/" findpath="res" presetcmd=""/>
     <depend resource="../../../../event/common/test/systemtest/common/resource/testconfig/stress/."

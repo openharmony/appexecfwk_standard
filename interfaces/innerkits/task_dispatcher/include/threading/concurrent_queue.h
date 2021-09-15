@@ -27,8 +27,8 @@ namespace AppExecFwk {
 template <typename T>
 class ConcurrentQueue {
 public:
-    ConcurrentQueue() : empty_()
-    {}
+    ConcurrentQueue() : empty_(){};
+    ~ConcurrentQueue() = default;
 
     /**
      * get data without block
@@ -52,7 +52,7 @@ public:
     {
         std::unique_lock<std::mutex> lock(mutex_);
         while (queue_.empty()) {
-            APP_LOGD("ConcurrentQueue::Take blocked");
+            APP_LOGI("ConcurrentQueue::Take blocked");
             empty_.wait(lock);
         }
 
@@ -64,7 +64,7 @@ public:
     {
         std::unique_lock<std::mutex> lock(mutex_);
         if (queue_.empty()) {
-            APP_LOGD("ConcurrentQueue::Poll empty");
+            APP_LOGI("ConcurrentQueue::Poll empty");
             return nullptr;
         }
         T front(queue_.front());

@@ -19,7 +19,10 @@ module_output_path = "appexecfwk_standard/tools"
 ohos_systemtest("bundle_command_install_system_test") {
   module_out_path = module_output_path
 
-  include_dirs = [ "${aafwk_path}/tools/test/systemtest/aa" ]
+  include_dirs = [
+    "${aafwk_path}/tools/test/systemtest/aa",
+    "//third_party/jsoncpp/include",
+  ]
 
   sources = [
     "${aafwk_path}/tools/test/systemtest/aa/tool_system_test.cpp",
@@ -36,6 +39,7 @@ ohos_systemtest("bundle_command_install_system_test") {
   deps = [
     "${aafwk_path}/tools/aa:tools_aa_source_set",
     "//third_party/googletest:gtest_main",
+    "//third_party/jsoncpp:jsoncpp",
   ]
 
   external_deps = [
@@ -47,7 +51,10 @@ ohos_systemtest("bundle_command_install_system_test") {
 ohos_systemtest("bundle_command_uninstall_system_test") {
   module_out_path = module_output_path
 
-  include_dirs = [ "${aafwk_path}/tools/test/systemtest/aa" ]
+  include_dirs = [
+    "${aafwk_path}/tools/test/systemtest/aa",
+    "//third_party/jsoncpp/include",
+  ]
 
   sources = [
     "${aafwk_path}/tools/test/systemtest/aa/tool_system_test.cpp",
@@ -64,6 +71,7 @@ ohos_systemtest("bundle_command_uninstall_system_test") {
   deps = [
     "${aafwk_path}/tools/aa:tools_aa_source_set",
     "//third_party/googletest:gtest_main",
+    "//third_party/jsoncpp:jsoncpp",
   ]
 
   external_deps = [
@@ -75,7 +83,10 @@ ohos_systemtest("bundle_command_uninstall_system_test") {
 ohos_systemtest("bundle_command_dump_system_test") {
   module_out_path = module_output_path
 
-  include_dirs = [ "${aafwk_path}/tools/test/systemtest/aa" ]
+  include_dirs = [
+    "${aafwk_path}/tools/test/systemtest/aa",
+    "//third_party/jsoncpp/include",
+  ]
 
   sources = [
     "${aafwk_path}/tools/test/systemtest/aa/tool_system_test.cpp",
@@ -92,6 +103,7 @@ ohos_systemtest("bundle_command_dump_system_test") {
   deps = [
     "${aafwk_path}/tools/aa:tools_aa_source_set",
     "//third_party/googletest:gtest_main",
+    "//third_party/jsoncpp:jsoncpp",
   ]
 
   external_deps = [

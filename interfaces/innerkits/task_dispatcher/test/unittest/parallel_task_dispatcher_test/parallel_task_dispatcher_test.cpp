@@ -110,7 +110,7 @@ HWTEST(ParallelTaskDispatcherTest, ParallelTaskDispatcher_SyncDispatchBarrierTes
     std::shared_ptr<ParallelTaskDispatcher> parallelTaskDispatcher =
         CreateParallelTaskDispatcher(name, TaskPriority::DEFAULT);
     ErrCode result = parallelTaskDispatcher->SyncDispatchBarrier(nullptr);
-    ASSERT_TRUE(result == ERR_APPEXECFWK_CHECK_FAILED);
+    EXPECT_TRUE(result == ERR_APPEXECFWK_CHECK_FAILED);
     GTEST_LOG_(INFO) << name << " end";
 }
 
@@ -149,6 +149,6 @@ HWTEST(ParallelTaskDispatcherTest, ParallelTaskDispatcher_AsyncDispatchBarrierTe
     std::shared_ptr<ParallelTaskDispatcher> parallelTaskDispatcher =
         CreateParallelTaskDispatcher(name, TaskPriority::DEFAULT);
     ErrCode result = parallelTaskDispatcher->AsyncDispatchBarrier(nullptr);
-    ASSERT_TRUE(result == ERR_APPEXECFWK_CHECK_FAILED);
+    EXPECT_TRUE(result == ERR_APPEXECFWK_CHECK_FAILED);
     GTEST_LOG_(INFO) << name << " end";
 }

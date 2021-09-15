@@ -105,7 +105,6 @@ ohos_shared_library("appkit_native") {
   sources = [
     "$SUBSYSTEM_DIR/kits/appkit/native/app/src/ability_manager.cpp",
     "$SUBSYSTEM_DIR/kits/appkit/native/app/src/ability_record_mgr.cpp",
-    "$SUBSYSTEM_DIR/kits/appkit/native/app/src/ability_start_setting.cpp",
     "$SUBSYSTEM_DIR/kits/appkit/native/app/src/app_loader.cpp",
     "$SUBSYSTEM_DIR/kits/appkit/native/app/src/application_context.cpp",
     "$SUBSYSTEM_DIR/kits/appkit/native/app/src/application_env.cpp",
@@ -138,7 +137,6 @@ ohos_shared_library("appkit_native") {
 
   public_deps =
       [ "//base/global/resmgr_standard/frameworks/resmgr:global_resmgr" ]
-
   external_deps = [
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",

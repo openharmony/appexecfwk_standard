@@ -145,8 +145,8 @@ void AmsStAbilityN2::SendPath(const std::string &callBackPath)
     std::string abilityStatus = pageAbilityEvent.GetAbilityStatus(std::to_string(Ability::GetState()));
     std::string callBackPathEventData = Ability::GetAbilityName() + callBack;
     std::string abilityStatusEventData = Ability::GetAbilityName() + abilityStatus;
-    pageAbilityEvent.PublishEvent(STEventName::g_eventName, STEventName::eventCode, callBackPathEventData);
-    pageAbilityEvent.PublishEvent(STEventName::g_eventName, STEventName::eventCode, abilityStatusEventData);
+    pageAbilityEvent.PublishEvent(STEventName::g_eventName, STEventName::g_defeventCode, callBackPathEventData);
+    pageAbilityEvent.PublishEvent(STEventName::g_eventName, STEventName::g_defeventCode, abilityStatusEventData);
 }
 
 REGISTER_AA(AmsStAbilityN2);

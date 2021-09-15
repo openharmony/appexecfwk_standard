@@ -21,9 +21,7 @@
 #include "app_log_wrapper.h"
 
 namespace OHOS {
-
 namespace AppExecFwk {
-
 RemoteClientManager::RemoteClientManager() : appSpawnClient_(std::make_shared<AppSpawnClient>())
 {}
 
@@ -61,6 +59,5 @@ void RemoteClientManager::SetBundleManager(sptr<IBundleMgr> bundleManager)
 {
     bundleManager_ = bundleManager;
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

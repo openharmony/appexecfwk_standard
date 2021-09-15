@@ -190,6 +190,11 @@ public:
         return 0;
     }
 
+    int UpdateConfiguration(const DummyConfiguration &config) override
+    {
+        return 0;
+    }
+
     virtual sptr<IWantSender> GetWantSender(
         const WantSenderInfo &wantSenderInfo, const sptr<IRemoteObject> &callerToken) override
     {
@@ -236,6 +241,43 @@ public:
     {}
 
     virtual int GetPendingRequestWant(const sptr<IWantSender> &target, std::shared_ptr<Want> &want) override
+    {
+        return 0;
+    }
+    int MoveMissionToFloatingStack(const MissionOption &missionOption) override
+    {
+        return 0;
+    }
+    int MoveMissionToSplitScreenStack(const MissionOption &missionOption) override
+    {
+        return 0;
+    }
+    int MinimizeMultiWindow(int missionId) override
+    {
+        return 0;
+    }
+    int MaximizeMultiWindow(int missionId) override
+    {
+        return 0;
+    }
+    int GetFloatingMissions(std::vector<AbilityMissionInfo> &list) override
+    {
+        return 0;
+    }
+    int CloseMultiWindow(int missionId) override
+    {
+        return 0;
+    }
+    int SetMissionStackSetting(const StackSetting &stackSetting) override
+    {
+        return 0;
+    }
+    int StartAbility(const Want &want, const AbilityStartSetting &abilityStartSetting,
+        const sptr<IRemoteObject> &callerToken, int requestCode = 0) override
+    {
+        return 0;
+    }
+    int ChangeFocusAbility(const sptr<IRemoteObject> &lostFocusToken, const sptr<IRemoteObject> &getFocusToken) override
     {
         return 0;
     }

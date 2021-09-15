@@ -19,6 +19,17 @@
 #include "uri.h"
 #include "ohos/aafwk/content/operation_builder.h"
 #include "test_utils.h"
+#include "ohos/aafwk/base/array_wrapper.h"
+#include "ohos/aafwk/base/bool_wrapper.h"
+#include "ohos/aafwk/base/zchar_wrapper.h"
+#include "ohos/aafwk/base/byte_wrapper.h"
+#include "ohos/aafwk/base/short_wrapper.h"
+#include "ohos/aafwk/base/int_wrapper.h"
+#include "ohos/aafwk/base/long_wrapper.h"
+#include "ohos/aafwk/base/float_wrapper.h"
+#include "ohos/aafwk/base/double_wrapper.h"
+#include "ohos/aafwk/base/string_wrapper.h"
+#include "ohos/aafwk/base/zchar_wrapper.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -27,6 +38,14 @@ using namespace OHOS::EventFwk;
 
 constexpr size_t ARRAY_SIZE = 10000;
 constexpr int LARGE_STR_LEN = 65534;
+constexpr int SMALL_INT = 5;
+constexpr unsigned setValue = 128;
+constexpr unsigned addValue = 64;
+constexpr unsigned removeValue = 128;
+constexpr int even = 2;
+constexpr int index_f = 0;
+constexpr int index_s = 1;
+constexpr int index_t = 2;
 
 bool SecondAbility::CompareWantNoParams(const Want &source, const Want &target)
 {
@@ -141,8 +160,8 @@ void SecondEventSubscriber::OnReceiveEvent(const CommonEventData &data)
         if (caseInfo.size() < static_cast<unsigned int>(paramMinSize)) {
             return;
         }
-        if (mapTestFunc_.find(caseInfo[0]) != mapTestFunc_.end()) {
-            mapTestFunc_[caseInfo[0]](std::stoi(caseInfo[1]), std::stoi(caseInfo[2]), data.GetCode());
+        if (mapTestFunc_.find(caseInfo[index_f]) != mapTestFunc_.end()) {
+            mapTestFunc_[caseInfo[index_f]](std::stoi(caseInfo[index_s]), std::stoi(caseInfo[index_t]), data.GetCode());
         } else {
             APP_LOGI("OnReceiveEvent: CommonEventData error(%{public}s)", target.c_str());
         }
@@ -1139,7 +1158,7 @@ void SecondAbility::WantMarshallingCase19(int code)
 {
     Want want;
     std::string key = "key";
-    long value = 99l;
+    long value = 99L;
     want.SetParam(key, value);
     Parcel parcel;
     bool result = want.Marshalling(parcel);
@@ -1157,7 +1176,7 @@ void SecondAbility::WantMarshallingCase20(int code)
 {
     Want want;
     std::string key = "key";
-    std::vector<long> value = {99l, 999l, 9999l, 99999l};
+    std::vector<long> value = {99L, 999L, 9999L, 99999L};
     want.SetParam(key, value);
     Parcel parcel;
     bool result = want.Marshalling(parcel);
@@ -2264,8 +2283,6 @@ void SecondAbility::WantSetFlagsCase6(int code)
 // set and add flags
 void SecondAbility::WantSetFlagsCase7(int code)
 {
-    unsigned setValue = 2 ^ 7;
-    unsigned addValue = 2 ^ 6;
     Want want;
     want.SetFlags(setValue);
     want.AddFlags(addValue);
@@ -2276,8 +2293,6 @@ void SecondAbility::WantSetFlagsCase7(int code)
 // add and set flags
 void SecondAbility::WantSetFlagsCase8(int code)
 {
-    unsigned setValue = 2 ^ 7;
-    unsigned addValue = 2 ^ 6;
     Want want;
     want.AddFlags(addValue);
     want.SetFlags(setValue);
@@ -2288,8 +2303,6 @@ void SecondAbility::WantSetFlagsCase8(int code)
 // add one flags and remove another flags
 void SecondAbility::WantSetFlagsCase9(int code)
 {
-    unsigned removeValue = 128;
-    unsigned addValue = 64;
     Want want;
     want.AddFlags(addValue);
     want.RemoveFlags(removeValue);
@@ -2665,7 +2678,7 @@ void SecondAbility::WantToUriCase11(int code)
 void SecondAbility::WantToUriCase12(int code)
 {
     std::string key = std::to_string(Long::SIGNATURE) + ".#Want;key=\"\\b\\\";end";
-    long value = 9999l;
+    long value = 9999L;
     Want want;
     want.SetParam(key, value);
     Want *newWant = nullptr;
@@ -2984,7 +2997,7 @@ void SecondAbility::WantGetByteParamCase3(int code)
     Want want;
     bool result = true;
     for (int i = 0; i < pressureTimes; i++) {
-        value = i % 128;
+        value = i % setValue;
         want.SetParam(key, value);
         result = result && want.GetByteParam(key, defaultValue) == value;
     }
@@ -3019,7 +3032,7 @@ void SecondAbility::WantGetByteArrayParamCase3(int code)
     Want want;
     bool result = true;
     for (int i = 0; i < pressureTimes; i++) {
-        value[0] = i % 128;
+        value[0] = i % setValue;
         want.SetParam(key, value);
         result = result && want.GetByteArrayParam(key) == value;
     }
@@ -3057,7 +3070,7 @@ void SecondAbility::WantGetBoolParamCase3(int code)
     Want want;
     bool result = true;
     for (int i = 0; i < pressureTimes; i++) {
-        value = i % 2 == 0;
+        value = i % even == 0;
         want.SetParam(key, value);
         result = result && want.GetBoolParam(key, defaultValue) == value;
     }
@@ -3405,8 +3418,8 @@ void SecondAbility::WantGetLongParamCase1(int code)
 void SecondAbility::WantGetLongParamCase2(int code)
 {
     std::string key = "key";
-    long value = 10l;
-    long defaultValue = 7l;
+    long value = 10L;
+    long defaultValue = 7L;
     Want want;
     want.SetParam(key, value);
     bool result = want.GetLongParam(key, defaultValue) == value;
@@ -3418,7 +3431,7 @@ void SecondAbility::WantGetLongParamCase3(int code)
 {
     std::string key = "key";
     long value;
-    long defaultValue = 7l;
+    long defaultValue = 7L;
     Want want;
     bool result = true;
     for (int i = 0; i < pressureTimes; i++) {
@@ -3442,7 +3455,7 @@ void SecondAbility::WantGetLongArrayParamCase1(int code)
 void SecondAbility::WantGetLongArrayParamCase2(int code)
 {
     std::string key = "key";
-    std::vector<long> value = {1l, 12l, 127l};
+    std::vector<long> value = {1L, 12L, 127L};
     Want want;
     want.SetParam(key, value);
     bool result = want.GetLongArrayParam(key) == value;
@@ -3453,7 +3466,7 @@ void SecondAbility::WantGetLongArrayParamCase2(int code)
 void SecondAbility::WantGetLongArrayParamCase3(int code)
 {
     std::string key = "key";
-    std::vector<long> value = {1l, 12l, 127l};
+    std::vector<long> value = {1L, 12L, 127L};
     Want want;
     bool result = true;
     for (int i = 0; i < pressureTimes; i++) {
@@ -3478,7 +3491,7 @@ void SecondAbility::WantGetShortParamCase1(int code)
 void SecondAbility::WantGetShortParamCase2(int code)
 {
     std::string key = "key";
-    short value = 10l;
+    short value = 10;
     short defaultValue = 7;
     Want want;
     want.SetParam(key, value);
@@ -4097,7 +4110,7 @@ void SecondAbility::WantSetParamIntArrayCase1(int code)
 void SecondAbility::WantSetParamIntArrayCase2(int code)
 {
     std::string key = "key";
-    std::vector<int> value(ARRAY_SIZE, 5);
+    std::vector<int> value(ARRAY_SIZE, SMALL_INT);
     Want want;
     want.SetParam(key, value);
     bool result = want.GetIntArrayParam(key) == value;

@@ -19,7 +19,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 // arg "AppSpawn" cannot be defined as string object since REGISTER_SYSTEM_ABILITY will
 // firstly start without init this string object, which leads to error.
 
@@ -106,6 +105,5 @@ void AppSpawnSocket::SetClientSocket(const std::shared_ptr<OHOS::AppSpawn::Clien
 {
     clientSocket_ = clientSocket;
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

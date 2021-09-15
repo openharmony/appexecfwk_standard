@@ -63,7 +63,7 @@ protected:
     void CheckLaunchApplication(const sptr<MockApplication> &mockApplication, const unsigned long index,
         std::shared_ptr<AppRunningRecord> record, const std::string &testPoint) const
     {
-        ASSERT_TRUE(record != nullptr) << "record is nullptr!";
+        EXPECT_TRUE(record != nullptr) << "record is nullptr!";
         sptr<IAppScheduler> client = iface_cast<IAppScheduler>(mockApplication);
         record->SetApplicationClient(client);
 
@@ -92,10 +92,10 @@ protected:
         const std::shared_ptr<AbilityInfo> abilityInfo, const std::shared_ptr<AppRunningRecord> record, const int index,
         RecordQueryResult &result) const
     {
-        ASSERT_TRUE(service_ != nullptr) << "init service fail!";
-        ASSERT_TRUE(appInfo != nullptr) << "appInfo is nullptr!";
-        ASSERT_TRUE(abilityInfo != nullptr) << "abilityInfo is nullptr!";
-        ASSERT_TRUE(record != nullptr) << "record is nullptr!";
+        EXPECT_TRUE(service_ != nullptr) << "init service fail!";
+        EXPECT_TRUE(appInfo != nullptr) << "appInfo is nullptr!";
+        EXPECT_TRUE(abilityInfo != nullptr) << "abilityInfo is nullptr!";
+        EXPECT_TRUE(record != nullptr) << "record is nullptr!";
         auto abilityRecord = record->GetAbilityRunningRecord(GetTestAbilityName(index));
         int32_t id = record->GetRecordId();
         auto name = record->GetName();
@@ -111,7 +111,7 @@ protected:
         sptr<IRemoteObject> tokenFromServ = abilityRecordFromServ->GetToken();
         auto nameFromServ = appRecordFromServ->GetName();
         auto abilityNameFromServ = abilityRecordFromServ->GetName();
-        ASSERT_TRUE(result.appExists) << "result is wrong!";
+        EXPECT_TRUE(result.appExists) << "result is wrong!";
         EXPECT_TRUE(id == idFromServ) << "fail, RecordId is not equal!";
         EXPECT_TRUE(tokenFromServ.GetRefPtr() == token.GetRefPtr()) << "fail, token is not equal!";
         EXPECT_EQ(name, nameFromServ) << "fail, app record name is not equal!";
@@ -170,7 +170,7 @@ HWTEST_F(AmsAppRunningRecordModuleTest, ApplicationStart_001, TestSize.Level0)
     std::string processName = GetTestAppName(index);
     RecordQueryResult result;
     auto record = service_->GetOrCreateAppRunningRecord(GetMockToken(), appInfo, abilityInfo, processName, 0, result);
-    ASSERT_TRUE(record != nullptr) << ",create apprunningrecord fail!";
+    EXPECT_TRUE(record != nullptr) << ",create apprunningrecord fail!";
     ASSERT_FALSE(result.appExists) << ",result is wrong!";
 
     // check apprunningrecord
@@ -196,7 +196,7 @@ HWTEST_F(AmsAppRunningRecordModuleTest, ApplicationStart_001, TestSize.Level0)
         service_->GetOrCreateAppRunningRecord(GetMockToken(), appInfo, abilityInfo, processName, 0, newResult);
     EXPECT_TRUE(newRecord);
     auto stateFromRec = newRecord->GetState();
-    ASSERT_TRUE(newResult.appExists) << "fail, app is not exist!";
+    EXPECT_TRUE(newResult.appExists) << "fail, app is not exist!";
     EXPECT_EQ(stateFromRec, ApplicationState::APP_STATE_FOREGROUND);
 
     // clear apprunningrecord
@@ -230,7 +230,7 @@ HWTEST_F(AmsAppRunningRecordModuleTest, MultiApplicationStart_002, TestSize.Leve
         RecordQueryResult result;
         auto record =
             service_->GetOrCreateAppRunningRecord(GetMockToken(), appInfo, abilityInfo, processName, 0, result);
-        ASSERT_TRUE(record != nullptr) << "create apprunningrecord fail!";
+        EXPECT_TRUE(record != nullptr) << "create apprunningrecord fail!";
         ASSERT_FALSE(result.appExists) << "result is wrong!";
 
         // check abilityrunningrecord & apprunningrecord
@@ -262,7 +262,7 @@ HWTEST_F(AmsAppRunningRecordModuleTest, MultiApplicationStart_002, TestSize.Leve
  */
 HWTEST_F(AmsAppRunningRecordModuleTest, ScheduleTrimMemory_003, TestSize.Level1)
 {
-    ASSERT_TRUE(service_ != nullptr) << "init service fail!";
+    EXPECT_TRUE(service_ != nullptr) << "init service fail!";
 
     // init AppRunningRecord
     unsigned long index = 0;
@@ -273,7 +273,7 @@ HWTEST_F(AmsAppRunningRecordModuleTest, ScheduleTrimMemory_003, TestSize.Level1)
     appInfo->name = GetTestAppName(index);
     RecordQueryResult result;
     auto record = service_->GetOrCreateAppRunningRecord(GetMockToken(), appInfo, abilityInfo, processName, 0, result);
-    ASSERT_TRUE(record != nullptr) << "create apprunningrecord fail!";
+    EXPECT_TRUE(record != nullptr) << "create apprunningrecord fail!";
     ASSERT_FALSE(result.appExists) << "result is wrong!";
 
     // LaunchApplication
@@ -310,7 +310,7 @@ HWTEST_F(AmsAppRunningRecordModuleTest, ScheduleTrimMemory_003, TestSize.Level1)
  */
 HWTEST_F(AmsAppRunningRecordModuleTest, LowMemoryWarning_004, TestSize.Level1)
 {
-    ASSERT_TRUE(service_ != nullptr) << "init service fail!";
+    EXPECT_TRUE(service_ != nullptr) << "init service fail!";
 
     // init AppRunningRecord
     unsigned long index = 0;
@@ -321,7 +321,7 @@ HWTEST_F(AmsAppRunningRecordModuleTest, LowMemoryWarning_004, TestSize.Level1)
     appInfo->name = GetTestAppName(index);
     RecordQueryResult result;
     auto record = service_->GetOrCreateAppRunningRecord(GetMockToken(), appInfo, abilityInfo, processName, 0, result);
-    ASSERT_TRUE(record != nullptr) << "create apprunningrecord fail!";
+    EXPECT_TRUE(record != nullptr) << "create apprunningrecord fail!";
     ASSERT_FALSE(result.appExists) << "result is wrong!";
 
     // LaunchApplication
@@ -358,7 +358,7 @@ HWTEST_F(AmsAppRunningRecordModuleTest, LowMemoryWarning_004, TestSize.Level1)
  */
 HWTEST_F(AmsAppRunningRecordModuleTest, ApplicationStartAndQuit_005, TestSize.Level2)
 {
-    ASSERT_TRUE(service_ != nullptr) << "init service fail!";
+    EXPECT_TRUE(service_ != nullptr) << "init service fail!";
 
     unsigned long index = 0;
     int startCount = 10000;
@@ -372,7 +372,7 @@ HWTEST_F(AmsAppRunningRecordModuleTest, ApplicationStartAndQuit_005, TestSize.Le
         RecordQueryResult result;
         auto record =
             service_->GetOrCreateAppRunningRecord(GetMockToken(), appInfo, abilityInfo, processName, 0, result);
-        ASSERT_TRUE(record != nullptr) << "create apprunningrecord fail!";
+        EXPECT_TRUE(record != nullptr) << "create apprunningrecord fail!";
 
         // LaunchApplication
         sptr<MockApplication> mockApplication(new MockApplication());
@@ -428,7 +428,7 @@ HWTEST_F(AmsAppRunningRecordModuleTest, ApplicationStartAndQuit_005, TestSize.Le
  */
 HWTEST_F(AmsAppRunningRecordModuleTest, ApplicationStatusChange_006, TestSize.Level2)
 {
-    ASSERT_TRUE(service_ != nullptr) << "init service fail!";
+    EXPECT_TRUE(service_ != nullptr) << "init service fail!";
 
     // init AppRunningRecord
     unsigned long index = 0;
@@ -439,7 +439,7 @@ HWTEST_F(AmsAppRunningRecordModuleTest, ApplicationStatusChange_006, TestSize.Le
     appInfo->name = GetTestAppName(index);
     RecordQueryResult result;
     auto record = service_->GetOrCreateAppRunningRecord(GetMockToken(), appInfo, abilityInfo, processName, 0, result);
-    ASSERT_TRUE(record != nullptr) << "create apprunningrecord fail!";
+    EXPECT_TRUE(record != nullptr) << "create apprunningrecord fail!";
 
     // LaunchApplication
     sptr<MockApplication> mockApplication(new MockApplication());

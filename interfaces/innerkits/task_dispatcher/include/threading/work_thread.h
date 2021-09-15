@@ -29,7 +29,6 @@ namespace AppExecFwk {
 class WorkerThread;
 /**
  *  Interface for a work delegate.
- *
  */
 class Delegate {
 public:
@@ -44,7 +43,6 @@ public:
 
 /**
  *  WorkerThread is a thread with a loop which can execute incoming tasks.
- *
  */
 class WorkerThread : public std::enable_shared_from_this<WorkerThread> {
 public:

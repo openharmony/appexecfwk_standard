@@ -44,7 +44,7 @@ std::string SerialTaskDispatcher::GetDispatcherName()
 
 ErrCode SerialTaskDispatcher::SyncDispatch(const std::shared_ptr<Runnable> &runnable)
 {
-    APP_LOGD("SerialTaskDispatcher::SyncDispatch begin");
+    APP_LOGI("SerialTaskDispatcher::SyncDispatch start");
     if (Check(runnable) != ERR_OK) {
         APP_LOGE("SerialTaskDispatcher::SyncDispatch check failed");
         return ERR_APPEXECFWK_CHECK_FAILED;
@@ -65,12 +65,13 @@ ErrCode SerialTaskDispatcher::SyncDispatch(const std::shared_ptr<Runnable> &runn
     innerSyncTask->WaitTask();
     TracePointAfterPost(innerTask, false, DISPATCHER_TAG);
 
-    APP_LOGD("SerialTaskDispatcher::SyncDispatch end");
+    APP_LOGI("SerialTaskDispatcher::SyncDispatch end");
     return ERR_OK;
 }
 
 std::shared_ptr<Revocable> SerialTaskDispatcher::AsyncDispatch(const std::shared_ptr<Runnable> &runnable)
 {
+    APP_LOGI("SerialTaskDispatcher::AsyncDispatch start");
     if (Check(runnable) != ERR_OK) {
         APP_LOGE("SerialTaskDispatcher::AsyncDispatch Check failed");
         return nullptr;
@@ -82,13 +83,15 @@ std::shared_ptr<Revocable> SerialTaskDispatcher::AsyncDispatch(const std::shared
         return nullptr;
     }
     TracePointBeforePost(innerTask, true, ASYNC_DISPATCHER_TAG);
-    APP_LOGD("SerialTaskDispatcher::AsyncDispatch into new async task");
+    APP_LOGI("SerialTaskDispatcher::AsyncDispatch into new async task");
     OnNewTaskIn(innerTask);
+    APP_LOGI("SerialTaskDispatcher::AsyncDispatch end");
     return innerTask;
 }
 
 std::shared_ptr<Revocable> SerialTaskDispatcher::DelayDispatch(const std::shared_ptr<Runnable> &runnable, long delayMs)
 {
+    APP_LOGI("SerialTaskDispatcher::DelayDispatch start");
     if (executor_ == nullptr) {
         APP_LOGE("SerialTaskDispatcher::DelayDispatch executor_ is nullptr");
         return nullptr;
@@ -111,14 +114,13 @@ std::shared_ptr<Revocable> SerialTaskDispatcher::DelayDispatch(const std::shared
         APP_LOGE("SerialTaskDispatcher::DelayDispatch execute failed");
         return nullptr;
     }
-
+    APP_LOGI("SerialTaskDispatcher::DelayDispatch end");
     return innerTask;
 }
 
 ErrCode SerialTaskDispatcher::OnNewTaskIn(std::shared_ptr<Task> &task)
 {
-    APP_LOGD("SerialTaskDispatcher::OnNewTaskIn begin");
-
+    APP_LOGI("SerialTaskDispatcher::OnNewTaskIn start");
     ErrCode code = Prepare(task);
     if (code != ERR_OK) {
         APP_LOGE("SerialTaskDispatcher::OnNewTaskIn Prepare failed");
@@ -132,12 +134,13 @@ ErrCode SerialTaskDispatcher::OnNewTaskIn(std::shared_ptr<Task> &task)
     }
 
     Schedule();
-    APP_LOGD("SerialTaskDispatcher::OnNewTaskIn end");
+    APP_LOGI("SerialTaskDispatcher::OnNewTaskIn end");
     return ERR_OK;
 }
 
 ErrCode SerialTaskDispatcher::Prepare(std::shared_ptr<Task> &task)
 {
+    APP_LOGI("SerialTaskDispatcher::Prepare start");
     if (task == nullptr) {
         APP_LOGE("SerialTaskDispatcher::Prepare task is nullptr");
         return ERR_APPEXECFWK_CHECK_FAILED;
@@ -170,48 +173,51 @@ ErrCode SerialTaskDispatcher::Prepare(std::shared_ptr<Task> &task)
     const std::function<void()> onTaskDone = [&]() { OnTaskDone(); };
     ptrlistener->Callback(onTaskDone);
     task->AddTaskListener(ptrlistener);
+    APP_LOGI("SerialTaskDispatcher::Prepare end");
     return ERR_OK;
 }
 
 void SerialTaskDispatcher::OnTaskDone()
 {
-    // isExhausted: is an inaccurate judge indicate that the workingTasks is empty.If true, do double - check.
+    APP_LOGI("SerialTaskDispatcher::OnTaskDone start");
     bool isExhausted = workingTasks_.Empty();
     DoNext(isExhausted);
-    // APP_LOGD("SerialTaskDispatcher::OnTaskDone end, running=%d", running.load());
+    APP_LOGI("SerialTaskDispatcher::OnTaskDone end");
 }
 
 bool SerialTaskDispatcher::Schedule()
 {
     bool init = false;
     if (!running_.compare_exchange_strong(init, true)) {
-        APP_LOGD("SerialTaskDispatcher::schedule already running");
+        APP_LOGW("SerialTaskDispatcher::schedule already running");
         return false;
     }
-    APP_LOGD("SerialTaskDispatcher::Schedule do next");
+    APP_LOGI("SerialTaskDispatcher::Schedule do next");
     return DoNext(false);
 }
 
 bool SerialTaskDispatcher::DoNext(bool isExhausted)
 {
+    APP_LOGI("SerialTaskDispatcher::DoNext start");
     std::shared_ptr<Task> nextptr = nullptr;
     {
         std::unique_lock<std::mutex> lock(mutex_);
         nextptr = workingTasks_.Poll();
         if (nextptr == nullptr) {
             running_.store(false);
-            APP_LOGD("SerialTaskDispatcher::DoNext no more task");
+            APP_LOGW("SerialTaskDispatcher::DoNext no more task");
             return false;
         }
     }
 
     DoWork(nextptr);
-    APP_LOGD("SerialTaskDispatcher::DoNext end");
+    APP_LOGI("SerialTaskDispatcher::DoNext end");
     return true;
 }
 
 void SerialTaskDispatcher::DoWork(std::shared_ptr<Task> &task)
 {
+    APP_LOGI("SerialTaskDispatcher::DoWork called.");
     // |task| mustn't be null
     executor_->Execute(task);
 }

@@ -29,7 +29,7 @@ namespace AppExecFwk {
 class BarrierHandler : public TaskExecuteInterceptor {
 public:
     BarrierHandler(const std::shared_ptr<TaskExecutor> &executor);
-
+    ~BarrierHandler() = default;
     /**
      * Intercept executing a task.
      */
@@ -58,6 +58,7 @@ private:
             tasks_ = tasks;
             barrier_ = barrier;
         };
+        ~BarrierPair() = default;
     };
 
     class MyTaskListener : public TaskListener {
@@ -68,7 +69,7 @@ private:
         void OnChanged(const TaskStage &stage)
         {
             if (stage.IsDone()) {
-                APP_LOGI("task done.");
+                APP_LOGI("BarrierHandler task done.");
                 callback_();
             }
         };

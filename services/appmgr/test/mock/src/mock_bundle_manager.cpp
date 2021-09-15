@@ -28,6 +28,7 @@ bool BundleMgrProxy::QueryAbilityInfo(const AAFwk::Want &want, AbilityInfo &abil
     if (eleName.GetBundleName().empty()) {
         return false;
     }
+    abilityInfo.visible = true;
     abilityInfo.name = eleName.GetAbilityName();
     abilityInfo.bundleName = eleName.GetBundleName();
     abilityInfo.applicationName = "Helloworld";
@@ -70,6 +71,7 @@ bool BundleMgrService::QueryAbilityInfo(const AAFwk::Want &want, AbilityInfo &ab
     if (std::string::npos != elementName.GetBundleName().find("service")) {
         abilityInfo.type = AppExecFwk::AbilityType::SERVICE;
     }
+    abilityInfo.visible = true;
     abilityInfo.name = elementName.GetAbilityName();
     abilityInfo.bundleName = elementName.GetBundleName();
     abilityInfo.applicationName = elementName.GetBundleName();

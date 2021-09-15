@@ -16,12 +16,9 @@
 #include "process_optimizer.h"
 
 #include <algorithm>
+#include <cerrno>
 #include <string>
-#include <errno.h>
-
 #include "app_log_wrapper.h"
-
-#define APP_SUSPEND_TIMER_NAME_PREFIX "AppSuspendTimer"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -29,6 +26,8 @@ namespace AppExecFwk {
 using namespace std::placeholders;
 
 namespace {
+constexpr auto APP_SUSPEND_TIMER_NAME_PREFIX = "AppSuspendTimer";
+
 constexpr int APP_OOM_ADJ_SYSTEM = -100;
 // foreground process oom_adj
 constexpr int APP_OOM_ADJ_FOREGROUND = 0;
@@ -54,7 +53,7 @@ constexpr int APP_OOM_ADJ_SUSPEND_MAX = 799;
 constexpr int APP_OOM_ADJ_SUSPEND_MAX_VALUE = 24 * 1024;
 
 // empty process oom_adj
-// constexpr int APP_OOM_ADJ_EMPTY_MIN = 800;
+[[maybe_unused]] constexpr int APP_OOM_ADJ_EMPTY_MIN = 800;
 constexpr int APP_OOM_ADJ_EMPTY_MAX = 999;
 constexpr int APP_OOM_ADJ_EMPTY_MAX_VALUE = 32 * 1024;
 
@@ -62,6 +61,8 @@ constexpr int APP_OOM_ADJ_UNKNOWN = 1000;
 constexpr int APP_OOM_ADJ_UNKNOWN_VALUE = 64 * 1024;
 
 constexpr std::string_view SYSTEM_UI_BUNDLE_NAME = "com.ohos.systemui";
+
+constexpr int TIME_ADVANCE_RATE = 1000;
 
 // pressure level low
 constexpr int LMKS_OOM_ADJ_LOW = 800;
@@ -607,13 +608,13 @@ void ProcessOptimizer::StartAppSuspendTimer(const AppPtr &app)
 
     eventHandler_->PostTask(
         [=]() {
-            auto it = suspendTimers_.find(timerName);
-            if (it != suspendTimers_.end()) {
+            auto finder = suspendTimers_.find(timerName);
+            if (finder != suspendTimers_.end()) {
                 APP_LOGD("%{public}s(%{public}d) removing app '%{public}s' suspend timer name...",
                     timerName.c_str(),
                     __LINE__,
                     app->GetName().c_str());
-                suspendTimers_.erase(it);
+                suspendTimers_.erase(finder);
             } else {
                 APP_LOGE("%{public}s(%{public}d) invalid suspend timer for app '%{public}s'.",
                     timerName.c_str(),
@@ -700,14 +701,14 @@ void ProcessOptimizer::SetAppFreezingTime(int time)
 {
     APP_LOGE("%{public}s  input second time:[%{public}d]", __func__, time);
 
-    if (time < 0) {
+    if (time > APP_SUSPEND_TIMEOUT_MAX && time < 0) {
         APP_LOGE("%{public}s  input time error.", __func__);
         return;
     }
 
     suspendTimeout_ = time;
     // convert seconds to milliseconds
-    suspendTimeout_ *= 1000;
+    suspendTimeout_ *= TIME_ADVANCE_RATE;
     if (suspendTimeout_ > INT_MAX) {
         suspendTimeout_ = APP_SUSPEND_TIMEOUT_DEFAULT;
         APP_LOGE("data overflow");
@@ -717,7 +718,7 @@ void ProcessOptimizer::SetAppFreezingTime(int time)
 
 void ProcessOptimizer::GetAppFreezingTime(int &time)
 {
-    time = suspendTimeout_ / 1000;
+    time = suspendTimeout_ / TIME_ADVANCE_RATE;
     APP_LOGE("%{public}s  current freez time:[%{public}d]", __func__, time);
     return;
 }

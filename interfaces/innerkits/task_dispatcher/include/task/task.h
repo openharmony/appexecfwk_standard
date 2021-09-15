@@ -31,12 +31,6 @@ namespace AppExecFwk {
 class BaseTaskDispatcher;
 class Task : public Revocable {
 public:
-    /**
-     * @brief Constructs the object.
-     * @param runnable The user task wrapped in.
-     * @param priority The priority
-     * @return -
-     */
     Task(const std::shared_ptr<Runnable> &runnable, const TaskPriority priority,
         const std::shared_ptr<BaseTaskDispatcher> &baseTaskDispatcher);
 
@@ -44,36 +38,29 @@ public:
 
     /**
      *@brief invoke the function to execute the task
-     *@param -
-     *@return void
      */
     virtual void Run();
 
     /**
      *  @brief Gets the priority.
-     *  @param -
      *  @return The priority.
      */
     TaskPriority GetPriority() const;
 
     /**
      *  @brief Sets the sequence.
-     *  @param -
      *  @param sequence The sequence
-     *  @return void
      */
     void SetSequence(long sequence);
 
     /**
      *@brief Gets the sequence.
-     *@param -
      *@return The sequence.
      */
     long GetSequence() const;
 
     /**
      *@brief Revoke this task if hasn't run.
-     *@param -
      *@return true if set revoked or already revoked. False if the task has start executing.
      */
     bool Revoke() override;
@@ -81,44 +68,27 @@ public:
     /**
      *@brief Adds a task listener.
      *@param listener The listener
-     *@return void
      */
     void AddTaskListener(const std::shared_ptr<TaskListener> &listener);
 
     /**
      *@brief Called when task is about to run.
-     *@param -
-     *@return void
      */
     void BeforeTaskExecute();
 
     /**
      *@brief Called when task is done.
-     *@param -
-     *@return void
      */
     void AfterTaskExecute();
 
     /**
      *@brief Called when task is canceled.
-     *@param -
-     *@return void
      */
     void OnTaskCanceled();
-
-    /**
-     *@brief Save traceId for using on task running thread.
-     *@param hiTraceId The traceId.
-     *@return void
-     */
-    // void SetTaskHiTraceId(HiTraceId &hiTraceId);
 
     bool operator==(std::shared_ptr<Task> &rec) const;
 
 protected:
-    /**
-     *  The user task wrapped in.
-     */
     std::shared_ptr<Runnable> runnable_;
 
 private:
@@ -143,10 +113,10 @@ private:
     void ConcurrentQueueStatusUpdate(const TaskStage::TASKSTAGE taskstage);
 
 private:
-    const static int EXECUTED = (1 << 0);
-    const static int REVOKED = (1 << 1);
-    long sequence_;
-    std::atomic<int> state_;
+    const static unsigned int EXECUTED = (1 << 0);
+    const static unsigned int REVOKED = (1 << 1);
+    long sequence_ = 0;
+    std::atomic<unsigned int> state_;
     TaskPriority priority_;
     std::shared_ptr<Revocable> revocable_ = nullptr;
     ConcurrentQueue<std::shared_ptr<TaskListener>> taskListeners_;

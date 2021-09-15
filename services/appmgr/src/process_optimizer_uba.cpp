@@ -18,7 +18,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 ProcessOptimizerUBA::BaseAbilityAction::BaseAbilityAction(const AbilityPtr &ability)
     : time_(Clock::now()), name_(ability->GetName())
 {}
@@ -387,6 +386,5 @@ void ProcessOptimizerUBA::GetAppFreezingTime(int &time)
         ProcessOptimizer::GetAppFreezingTime(time);
     }
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

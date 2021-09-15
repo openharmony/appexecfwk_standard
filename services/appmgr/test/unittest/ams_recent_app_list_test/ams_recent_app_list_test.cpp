@@ -104,7 +104,7 @@ void AmsRecentAppListTest::StartProcessSuccess(const int32_t index) const
     auto appInfo = GetApplicationByIndex(index);
     sptr<IRemoteObject> token = new (std::nothrow) MockAbilityToken();
     MockAppSpawnClient *mockClientPtr = new (std::nothrow) MockAppSpawnClient();
-    ASSERT_TRUE(mockClientPtr);
+    EXPECT_TRUE(mockClientPtr);
 
     // mock start process success, and pid is right.
     EXPECT_CALL(*mockClientPtr, StartProcess(_, _)).Times(1).WillOnce(DoAll(SetArgReferee<1>(pid), Return(ERR_OK)));
@@ -150,7 +150,7 @@ HWTEST_F(AmsRecentAppListTest, Create_002, TestSize.Level1)
 
     // mock start process failed.
     MockAppSpawnClient *mockClientPtr = new (std::nothrow) MockAppSpawnClient();
-    ASSERT_TRUE(mockClientPtr);
+    EXPECT_TRUE(mockClientPtr);
 
     EXPECT_CALL(*mockClientPtr, StartProcess(_, _)).WillOnce(Return(ERR_APPEXECFWK_ASSEMBLE_START_MSG_FAILED));
     serviceInner_->SetAppSpawnClient(std::unique_ptr<MockAppSpawnClient>(mockClientPtr));
@@ -175,7 +175,7 @@ HWTEST_F(AmsRecentAppListTest, Create_003, TestSize.Level1)
     auto appInfo = GetApplicationByIndex(INDEX_NUM_1);
     sptr<IRemoteObject> token = new (std::nothrow) MockAbilityToken();
     MockAppSpawnClient *mockClientPtr = new (std::nothrow) MockAppSpawnClient();
-    ASSERT_TRUE(mockClientPtr);
+    EXPECT_TRUE(mockClientPtr);
 
     // mock start process success, and pid is right.
     EXPECT_CALL(*mockClientPtr, StartProcess(_, _)).Times(1).WillOnce(DoAll(SetArgReferee<1>(pid), Return(ERR_OK)));
@@ -370,7 +370,7 @@ HWTEST_F(AmsRecentAppListTest, RecentAppList_001, TestSize.Level1)
     auto appInfo = GetApplicationByIndex(INDEX_NUM_1);
     sptr<IRemoteObject> token = new (std::nothrow) MockAbilityToken();
     MockAppSpawnClient *mockClientPtr = new (std::nothrow) MockAppSpawnClient();
-    ASSERT_TRUE(mockClientPtr);
+    EXPECT_TRUE(mockClientPtr);
 
     EXPECT_CALL(*mockClientPtr, StartProcess(_, _)).Times(1).WillOnce(DoAll(SetArgReferee<1>(pid), Return(ERR_OK)));
     serviceInner_->SetAppSpawnClient(std::unique_ptr<MockAppSpawnClient>(mockClientPtr));
@@ -398,7 +398,7 @@ HWTEST_F(AmsRecentAppListTest, PushAppFront_001, TestSize.Level1)
     auto appInfo = GetApplicationByIndex(INDEX_NUM_1);
     sptr<IRemoteObject> token = new (std::nothrow) MockAbilityToken();
     MockAppSpawnClient *mockClientPtr = new (std::nothrow) MockAppSpawnClient();
-    ASSERT_TRUE(mockClientPtr);
+    EXPECT_TRUE(mockClientPtr);
 
     EXPECT_CALL(*mockClientPtr, StartProcess(_, _)).Times(1).WillOnce(DoAll(SetArgReferee<1>(pid), Return(ERR_OK)));
     serviceInner_->SetAppSpawnClient(std::unique_ptr<MockAppSpawnClient>(mockClientPtr));

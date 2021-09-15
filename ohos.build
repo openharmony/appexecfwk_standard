@@ -1,4 +1,6 @@
 {
+  "aosp_java_api_allowlist": "//foundation/appexecfwk/adapter/appexecfwk-java-aosp-apis.txt",
+  "aosp_cxx_api_allowlist": "//foundation/appexecfwk/adapter/appexecfwk_cxx_api_allowlist.txt",
   "parts": {
     "appexecfwk_standard": {
       "inner_kits": [
@@ -10,7 +12,9 @@
               "appexecfwk_errors.h",
               "application_info.h",
               "element_name.h",
-              "bundle_info.h"
+              "bundle_info.h",
+              "form_constants.h",
+              "form_js_info.h"
             ]
           },
           "name": "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_base:appexecfwk_base"
@@ -28,7 +32,9 @@
               "bundlemgr/bundle_status_callback_interface.h",
               "bundlemgr/clean_cache_callback_interface.h",
               "bundlemgr/status_receiver_interface.h",
-              "appmgr/app_process_data.h"
+              "appmgr/app_process_data.h",
+              "formmgr/form_mgr_interface.h"
+
             ]
           },
           "name": "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_core:appexecfwk_core"
@@ -56,6 +62,17 @@
             ]
           },
           "name": "//foundation/appexecfwk/standard/interfaces/innerkits/eventhandler_native:eventhandler_native"
+        },
+        {
+          "header": {
+            "header_base": "//foundation/appexecfwk/standard/interfaces/innerkits/fmskit/native/include",
+            "header_files": [
+              "form_callback_interface.h",
+              "form_host_client.h",
+              "form_mgr.h"             
+            ]
+          },
+          "name": "//foundation/appexecfwk/standard/interfaces/innerkits/fmskit:fmskit_native"
         }
       ],
       "module_list": [
@@ -63,11 +80,12 @@
         "//foundation/appexecfwk/standard/services:services_target",
         "//foundation/appexecfwk/standard/tools:tools_target",
         "//foundation/appexecfwk/standard/interfaces/innerkits:innerkits_target",
-        "//foundation/appexecfwk/standard/kits:appkit_native",
+        "//foundation/appexecfwk/standard/kits:appkit_native",        
         "//foundation/appexecfwk/standard/kits:appexec",
         "//foundation/appexecfwk/standard/sa_profile:appexecfwk_sa_profile",
         "//foundation/appexecfwk/standard/sa_profile:foundation.rc",
         "//foundation/appexecfwk/standard/test/resource/amssystemtestability/abilitySrc:ams_system_test_app",
+        "//foundation/appexecfwk/standard/test/resource/bmssystemtestability/abilitySrc:bms_system_test_app",
         "//foundation/appexecfwk/standard/kits/appkit/napi:napi_packages"
       ],
       "test_list": [
@@ -76,8 +94,10 @@
         "//foundation/appexecfwk/standard/services/test:moduletest",
         "//foundation/appexecfwk/standard/services/bundlemgr/test:unittest",
         "//foundation/appexecfwk/standard/services/appmgr/test:unittest",
+        "//foundation/appexecfwk/standard/services/formmgr/test:unittest",
         "//foundation/appexecfwk/standard/test/systemtest:systemtest",
         "//foundation/appexecfwk/standard/tools/test:moduletest",
+        "//foundation/appexecfwk/standard/tools/test:systemtest",
         "//foundation/appexecfwk/standard/tools/test:unittest",
         "//foundation/appexecfwk/standard/libs/libeventhandler/test:unittest",
         "//foundation/appexecfwk/standard/libs/test:moduletest",

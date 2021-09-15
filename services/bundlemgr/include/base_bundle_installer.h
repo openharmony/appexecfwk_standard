@@ -106,32 +106,36 @@ private:
      *                   to install or update.
      * @param installParam Indicates the install parameters.
      * @param appType Indicates the application type.
+     * @param uid Indicates the uid of the application.
      * @return Returns ERR_OK if the bundle install successfully; returns error code otherwise.
      */
-    ErrCode ProcessBundleInstall(
-        const std::string &bundlePath, const InstallParam &installParam, const Constants::AppType appType);
+    ErrCode ProcessBundleInstall(const std::string &bundlePath, const InstallParam &installParam,
+        const Constants::AppType appType, int32_t &uid);
     /**
      * @brief The real procedure function for uninstall a bundle.
      * @param bundleName Indicates the bundle name of the application to uninstall.
      * @param installParam Indicates the uninstall parameters.
+     * @param uid Indicates the uid of the application.
      * @return Returns ERR_OK if the bundle uninstall successfully; returns error code otherwise.
      */
-    ErrCode ProcessBundleUninstall(const std::string &bundleName, const InstallParam &installParam);
+    ErrCode ProcessBundleUninstall(const std::string &bundleName, const InstallParam &installParam, int32_t &uid);
     /**
      * @brief The real procedure for uninstall a module in a specific bundle.
      * @param bundleName Indicates the bundle name of the application to uninstall.
      * @param modulePackage Indicates the module package of the module to uninstall.
      * @param installParam Indicates the uninstall parameters.
+     * @param uid Indicates the uid of the application.
      * @return Returns ERR_OK if the module uninstall successfully; returns error code otherwise.
      */
-    ErrCode ProcessBundleUninstall(
-        const std::string &bundleName, const std::string &modulePackage, const InstallParam &installParam);
+    ErrCode ProcessBundleUninstall(const std::string &bundleName, const std::string &modulePackage,
+        const InstallParam &installParam, int32_t &uid);
     /**
      * @brief The process of installing a new bundle.
      * @param info Indicates the InnerBundleInfo parsed from the config.json in the HAP package.
+     * @param uid Indicates the uid of the application.
      * @return Returns ERR_OK if the new bundle install successfully; returns error code otherwise.
      */
-    ErrCode ProcessBundleInstallStatus(InnerBundleInfo &info);
+    ErrCode ProcessBundleInstallStatus(InnerBundleInfo &info, int32_t &uid);
     /**
      * @brief The process of updating an exist bundle.
      * @param oldInfo Indicates the exist InnerBundleInfo object get from the database.

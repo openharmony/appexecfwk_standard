@@ -377,7 +377,7 @@ HWTEST_F(AmsAppLifeCycleModuleTest, StateChange_001, TestSize.Level2)
     auto abilityInfo = GetAbilityInfo("0", "MainAbility", "p1", "com.ohos.test.helloworld");
     auto appInfo = GetApplicationInfo("com.ohos.test.helloworld");
     sptr<MockAppScheduler> mockAppScheduler = new (std::nothrow) MockAppScheduler();
-    ASSERT_TRUE(mockAppScheduler);
+    EXPECT_TRUE(mockAppScheduler);
 
     TestProcessInfo testProcessInfo;
     testProcessInfo.pid = pid;
@@ -473,7 +473,7 @@ HWTEST_F(AmsAppLifeCycleModuleTest, StateChange_002, TestSize.Level3)
 HWTEST_F(AmsAppLifeCycleModuleTest, StateChange_003, TestSize.Level3)
 {
     pid_t pid = 1025;
-    ASSERT_TRUE(serviceInner_);
+    EXPECT_TRUE(serviceInner_);
     std::shared_ptr<AppRunningRecord> appRunningRecord = nullptr;
     std::vector<sptr<IRemoteObject>> tokens;
     auto abilityInfo = std::make_shared<AbilityInfo>();
@@ -643,7 +643,7 @@ HWTEST_F(AmsAppLifeCycleModuleTest, StateChange_006, TestSize.Level2)
         exit(0);
     }
 
-    ASSERT_TRUE(pid > 0);
+    EXPECT_TRUE(pid > 0);
     usleep(50000);
 
     sptr<IRemoteObject> token = GetAbilityToken();
@@ -868,10 +868,10 @@ HWTEST_F(AmsAppLifeCycleModuleTest, StateChange_010, TestSize.Level3)
 
         char index[32];
         int ref = snprintf_s(index, sizeof(index), sizeof(index) - 1, "%d", i);
-        ASSERT_TRUE(ref > 0);
+        EXPECT_TRUE(ref > 0);
         char name[128];
         ref = snprintf_s(name, sizeof(name), sizeof(name) - 1, "com.ohos.test.helloworld%d", i);
-        ASSERT_TRUE(ref > 0);
+        EXPECT_TRUE(ref > 0);
         auto abilityInfo = GetAbilityInfo(index, "MainAbility", index, name);
         auto appInfo = GetApplicationInfo(name);
         auto token = new (std::nothrow) MockAbilityToken();
@@ -882,7 +882,7 @@ HWTEST_F(AmsAppLifeCycleModuleTest, StateChange_010, TestSize.Level3)
 
         appRunningRecord =
             StartProcessAndLoadAbility(mockAppScheduler[i], token, abilityInfo, appInfo, testProcessInfo);
-        ASSERT_TRUE(appRunningRecord);
+        EXPECT_TRUE(appRunningRecord);
 
         ChangeAbilityStateAfterAppStart(mockAppScheduler[i], testProcessInfo.pid);
 
@@ -966,12 +966,12 @@ HWTEST_F(AmsAppLifeCycleModuleTest, StateChange_012, TestSize.Level0)
  */
 HWTEST_F(AmsAppLifeCycleModuleTest, StateChange_013, TestSize.Level3)
 {
-    ASSERT_TRUE(serviceInner_);
-    ASSERT_TRUE(serviceInner_->remoteClientManager_);
-    ASSERT_TRUE(serviceInner_->remoteClientManager_->GetSpawnClient());
+    EXPECT_TRUE(serviceInner_);
+    EXPECT_TRUE(serviceInner_->remoteClientManager_);
+    EXPECT_TRUE(serviceInner_->remoteClientManager_->GetSpawnClient());
 
     auto mockAppSpawnSocket = std::make_shared<MockAppSpawnSocket>();
-    ASSERT_TRUE(mockAppSpawnSocket);
+    EXPECT_TRUE(mockAppSpawnSocket);
     serviceInner_->remoteClientManager_->GetSpawnClient()->SetSocket(mockAppSpawnSocket);
 
     EXPECT_EQ(serviceInner_->QueryAppSpawnConnectionState(), SpawnConnectionState::STATE_NOT_CONNECT);
