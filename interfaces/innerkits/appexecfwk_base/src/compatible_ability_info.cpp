@@ -63,6 +63,51 @@ bool CompatibleAbilityInfo::ReadFromParcel(Parcel& parcel)
     READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, launchModeData);
     launchMode = static_cast<LaunchMode>(launchModeData);
 
+    int32_t permissionsSize;
+    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, permissionsSize);
+    if (permissionsSize > Constants::MAX_LIMIT_SIZE) {
+        APP_LOGE("permissions size is overflow");
+        return false;
+    }
+    for (int32_t i = 0; i < permissionsSize; i++) {
+        std::string permission = Str16ToStr8(parcel.ReadString16());
+        if (permission.empty()) {
+            APP_LOGE("ReadParcelable<string> failed");
+            return false;
+        }
+        permissions.emplace_back(permission);
+    }
+
+    int32_t deviceTypeSize;
+    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, deviceTypeSize);
+    if (deviceTypeSize > Constants::MAX_DEVICETYPE_SIZE) {
+        APP_LOGE("device type size is overflow");
+        return false;
+    }
+    for (auto i = 0; i < deviceTypeSize; i++) {
+        std::string deviceType = Str16ToStr8(parcel.ReadString16());
+        if (deviceType.empty()) {
+            APP_LOGE("ReadParcelable<string> failed");
+            return false;
+        }
+        deviceTypes.emplace_back(deviceType);
+    }
+
+    int32_t deviceCapabilitySize;
+    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, deviceCapabilitySize);
+    if (deviceCapabilitySize > Constants::MAX_LIMIT_SIZE) {
+        APP_LOGE("device capability size is overflow");
+        return false;
+    }
+    for (auto i = 0; i < deviceCapabilitySize; i++) {
+        std::string deviceCapability = Str16ToStr8(parcel.ReadString16());
+        if (deviceCapability.empty()) {
+            APP_LOGE("ReadParcelable<string> failed");
+            return false;
+        }
+        deviceCapabilities.emplace_back(deviceCapability);
+    }
+
     supportPipMode = parcel.ReadBool();
     grantPermission = parcel.ReadBool();
     readPermission = Str16ToStr8(parcel.ReadString16());
@@ -73,6 +118,12 @@ bool CompatibleAbilityInfo::ReadFromParcel(Parcel& parcel)
     bundleName = Str16ToStr8(parcel.ReadString16());
     className = Str16ToStr8(parcel.ReadString16());
     deviceId = Str16ToStr8(parcel.ReadString16());
+    std::unique_ptr<CompatibleApplicationInfo> appInfo(parcel.ReadParcelable<CompatibleApplicationInfo>());
+    if (!appInfo) {
+        APP_LOGE("ReadParcelable<CompatibleApplicationInfo> failed");
+        return false;
+    }
+    applicationInfo = *appInfo;
     formEntity = parcel.ReadInt32();
     minFormHeight = parcel.ReadInt32();
     defaultFormHeight = parcel.ReadInt32();
@@ -123,6 +174,21 @@ bool CompatibleAbilityInfo::Marshalling(Parcel& parcel) const
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, static_cast<int32_t>(type));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, static_cast<int32_t>(orientation));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, static_cast<int32_t>(launchMode));
+    const auto permissionsSize = static_cast<int32_t>(permissions.size());
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, permissionsSize);
+    for (auto i = 0; i < permissionsSize; i++) {
+        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(permissions[i]));
+    }
+    const auto deviceTypeSize = static_cast<int32_t>(deviceTypes.size());
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, deviceTypeSize);
+    for (auto i = 0; i < deviceTypeSize; i++) {
+        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(deviceTypes[i]));
+    }
+    const auto deviceCapabilitySize = static_cast<int32_t>(deviceCapabilities.size());
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, deviceCapabilitySize);
+    for (auto i = 0; i < deviceCapabilitySize; i++) {
+        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(deviceCapabilities[i]));
+    }
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, supportPipMode);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, grantPermission);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(readPermission));
@@ -134,6 +200,9 @@ bool CompatibleAbilityInfo::Marshalling(Parcel& parcel) const
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(className));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(deviceId));
     APP_LOGE("CompatibleAbilityInfo::Marshalling start to write application info.");
+    if (!parcel.WriteParcelable(&applicationInfo)) {
+        return false;
+    }
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, formEntity);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, minFormHeight);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, defaultFormHeight);
@@ -158,17 +227,33 @@ void CompatibleAbilityInfo::ConvertToAbilityInfo(AbilityInfo& abilityInfo) const
     abilityInfo.moduleName = moduleName;
     abilityInfo.process = process;
     abilityInfo.targetAbility = targetAbility;
+    abilityInfo.appName = appName;
+    abilityInfo.privacyUrl = privacyUrl;
+    abilityInfo.privacyName = privacyName;
+    abilityInfo.downloadUrl = downloadUrl;
+    abilityInfo.versionName = versionName;
+    abilityInfo.backgroundModes = backgroundModes;
+    abilityInfo.packageSize = packageSize;
     abilityInfo.visible = visible;
+    abilityInfo.formEnabled = formEnabled;
+    abilityInfo.multiUserShared = multiUserShared;
     abilityInfo.type = type;
+    abilityInfo.subType = subType;
     abilityInfo.orientation = orientation;
     abilityInfo.launchMode = launchMode;
     abilityInfo.permissions = permissions;
     abilityInfo.deviceTypes = deviceTypes;
     abilityInfo.deviceCapabilities = deviceCapabilities;
     abilityInfo.supportPipMode = supportPipMode;
+    abilityInfo.grantPermission = grantPermission;
     abilityInfo.readPermission = readPermission;
     abilityInfo.writePermission = writePermission;
+    abilityInfo.uriPermissionMode = uriPermissionMode;
+    abilityInfo.uriPermissionPath = uriPermissionPath;
+    abilityInfo.directLaunch = directLaunch;
     abilityInfo.bundleName = bundleName;
+    abilityInfo.className = className;
+    abilityInfo.originalClassName = originalClassName;
     abilityInfo.deviceId = deviceId;
     ApplicationInfo convertedApplicationInfo;
     applicationInfo.ConvertToApplicationInfo(convertedApplicationInfo);
@@ -182,6 +267,8 @@ void CompatibleAbilityInfo::ConvertToAbilityInfo(AbilityInfo& abilityInfo) const
     abilityInfo.labelId = labelId;
     abilityInfo.descriptionId = descriptionId;
     abilityInfo.enabled = enabled;
+    abilityInfo.originalBundleName = bundleName;
+
 }
 } // namespace AppExecFwk
 } // namespace OHOS

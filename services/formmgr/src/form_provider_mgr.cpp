@@ -12,6 +12,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#include <cinttypes>
+
 #include "appexecfwk_errors.h"
 #include "app_log_wrapper.h"
 #include "form_ams_helper.h"
@@ -39,7 +42,7 @@ FormProviderMgr::~FormProviderMgr(){}
  */
 ErrCode FormProviderMgr::AcquireForm(const int64_t formId, const FormProviderInfo &formProviderInfo)
 {
-    //APP_LOGD("%{public}s start, formId:%{public}lld", __func__, formId);
+    APP_LOGD("%{public}s start, formId:%{public}" PRId64 "", __func__, formId);
 
     if (formId <= 0) {
         APP_LOGE("%{public}s fail, formId should be greater than 0", __func__);
@@ -49,7 +52,7 @@ ErrCode FormProviderMgr::AcquireForm(const int64_t formId, const FormProviderInf
     FormRecord formRecord;
     bool isGetFormRecord = FormDataMgr::GetInstance().GetFormRecord(formId, formRecord);
     if (!isGetFormRecord) {
-        //APP_LOGE("%{public}s fail, not exist such form, formId:%{public}lld", __func__, formId);
+        APP_LOGE("%{public}s fail, not exist such form, formId:%{public}" PRId64 "", __func__, formId);
         return ERR_APPEXECFWK_FORM_INFO_NOT_EXIST;
     }
     
@@ -100,11 +103,11 @@ ErrCode FormProviderMgr::AcquireForm(const int64_t formId, const FormProviderInf
  */
 ErrCode FormProviderMgr::RefreshForm(const int64_t formId, const Want &want)
 {
-    //APP_LOGI("%{public}s called, formId:%{public}lld.", __func__, formId);
+    APP_LOGI("%{public}s called, formId:%{public}" PRId64 ".", __func__, formId);
     FormRecord record;
     bool bGetRecord = FormDataMgr::GetInstance().GetFormRecord(formId, record);
     if (!bGetRecord) {
-        //APP_LOGE("%{public}s fail, not exist such form:%{public}lld", __func__, formId);
+        APP_LOGE("%{public}s fail, not exist such form:%{public}" PRId64 "", __func__, formId);
         return ERR_APPEXECFWK_FORM_INFO_NOT_EXIST;
     }
 
@@ -250,7 +253,7 @@ ErrCode FormProviderMgr::UpdateForm(const int64_t formId, const FormProviderInfo
     // check exist and get the formRecord
     FormRecord formRecord;
     if (!FormDataMgr::GetInstance().GetFormRecord(formId, formRecord)) {
-        //APP_LOGE("%{public}s error, not exist such form:%{public}lld.", __func__, formId);
+        APP_LOGE("%{public}s error, not exist such form:%{public}" PRId64 ".", __func__, formId);
         return ERR_NOT_EXIST_ID;
     }
     return UpdateForm(formId, formRecord, formProviderInfo.GetFormData());
@@ -309,7 +312,7 @@ const FormProviderData &formProviderData)
  */
 int FormProviderMgr::MessageEvent(const int64_t formId, const FormRecord &record, const Want &want)
 {
-    //APP_LOGI("%{public}s called, formId:%{public}lld.", __func__, formId);
+    APP_LOGI("%{public}s called, formId:%{public}" PRId64 ".", __func__, formId);
    
     bool screenOnFlag = PowerMgr::PowerMgrClient::GetInstance().IsScreenOn();
     if (!screenOnFlag) {        
@@ -340,7 +343,7 @@ void FormProviderMgr::IncreaseTimerRefreshCount(const int64_t formId)
 {
     FormRecord record;
     if (FormDataMgr::GetInstance().GetFormRecord(formId, record)) {
-        //APP_LOGE("%{public}s failed, not exist such form:%{public}lld.", __func__, formId);
+        APP_LOGE("%{public}s failed, not exist such form:%{public}" PRId64 ".", __func__, formId);
         return;
     }
 

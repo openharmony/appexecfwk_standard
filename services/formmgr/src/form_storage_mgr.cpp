@@ -14,6 +14,8 @@
  */
 
 #include <cinttypes>
+
+#include <cinttypes>
 #include <dirent.h>
 #include <fstream>
 #include <iomanip> 
@@ -212,7 +214,7 @@ ErrCode FormStorageMgr::GetStorageFormInfoById(const std::string &formId, InnerF
  */
 ErrCode FormStorageMgr::SaveStorageFormInfo(const InnerFormInfo &innerFormInfo) const
 {
-    //APP_LOGI("%{public}s called, formId[%{public}lld]", __func__, innerFormInfo.GetFormId());
+    APP_LOGI("%{public}s called, formId[%{public}" PRId64 "]", __func__, innerFormInfo.GetFormId());
     ErrCode ret = ERR_OK;
     std::string formId = std::to_string(innerFormInfo.GetFormId());
 
@@ -269,9 +271,9 @@ ErrCode FormStorageMgr::SaveStorageFormInfo(const InnerFormInfo &innerFormInfo) 
  */
 ErrCode FormStorageMgr::ModifyStorageFormInfo(const InnerFormInfo &innerFormInfo) const
 {
-    //APP_LOGI("%{public}s called, formId[%{public}lld]", __func__, innerFormInfo.GetFormId());
+    APP_LOGI("%{public}s called, formId[%{public}" PRId64 "]", __func__, innerFormInfo.GetFormId());
     char fileNamePath[FORM_DB_DATA_BASE_FILE_PATH_LEN] = {0};
-    //sprintf(fileNamePath, "%s/%lld.json", FORM_DB_DATA_BASE_FILE_DIR, innerFormInfo.GetFormId());
+    sprintf(fileNamePath, "%s/%" PRId64 ".json", FORM_DB_DATA_BASE_FILE_DIR, innerFormInfo.GetFormId());
 
     std::ofstream o(fileNamePath, std::ios_base::trunc | std::ios_base::out);
     if (!o.is_open()) {

@@ -13,6 +13,8 @@
  * limitations under the License.
  */
 
+#include <cinttypes>
+
 #include "appexecfwk_errors.h"
 #include "app_log_wrapper.h"
 #include "form_ams_helper.h"
@@ -55,8 +57,8 @@ int FormSupplyCallback::OnAcquire(const FormProviderInfo &formProviderInfo, cons
 
     int64_t formId  = formProviderInfo.GetFormId();
     int type = want.GetIntParam(Constants::ACQUIRE_TYPE, 0);
-    // APP_LOGD("%{public}s come: %{public}lld, %{public}ld, %{public}d", __func__,
-    // formId, connectId, type);
+    APP_LOGD("%{public}s come: %{public}" PRId64 ", %{public}ld, %{public}d", __func__,
+    formId, connectId, type);
     RemoveConnection(connectId);
 
     switch (type) {
