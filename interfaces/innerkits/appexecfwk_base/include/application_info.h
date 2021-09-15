@@ -33,6 +33,37 @@ enum class ApplicationFlag {
     GET_APPLICATION_INFO_WITH_PERMS = 0x00000008,
 };
 
+struct ApplicationInfo;
+
+struct CompatibleApplicationInfo : public Parcelable {    
+    // items set when installing.
+    std::string name; // application name.
+    std::string icon; // application icon resource index.
+    std::string label; // application name displayed to the user.
+    std::string description; // description of application.
+    std::string cpuAbi; // current device cpu abi.
+    std::string process;
+    bool isCompressNativeLibs = true;
+
+    uint32_t iconId = 0;
+    uint32_t labelId = 0;
+    uint32_t descriptionId = 0;
+
+    bool systemApp = false;
+
+    std::vector<std::string> permissions;
+    std::vector<ModuleInfo> moduleInfos;
+
+    uint32_t supportedModes = 0; // supported modes.
+    bool enabled = true;
+    bool debug = false;
+
+    bool ReadFromParcel(Parcel& parcel);
+    virtual bool Marshalling(Parcel& parcel) const override;
+    static CompatibleApplicationInfo* Unmarshalling(Parcel& parcel);
+    void ConvertToApplicationInfo(ApplicationInfo& applicationInfo) const;
+};
+
 // configuration information about an application
 struct ApplicationInfo : public Parcelable {
     std::string name;  // application name is same to bundleName
@@ -59,11 +90,20 @@ struct ApplicationInfo : public Parcelable {
     std::string cacheDir;
     int flags = 0;
     bool enabled = false;
+    
+    //  element that does not exist for a while
+    std::string entryModuleName;
+    std::string icon;
+    std::string cpuAbi;
+    bool isCompressNativeLibs = true;
+    bool debug = false;
+    bool systemApp = false;
 
     bool ReadFromParcel(Parcel &parcel);
     virtual bool Marshalling(Parcel &parcel) const override;
     static ApplicationInfo *Unmarshalling(Parcel &parcel);
     void Dump(std::string prefix, int fd);
+    void ConvertToCompatibleApplicationInfo(CompatibleApplicationInfo& compatibleApplicationInfo) const;
 };
 
 }  // namespace AppExecFwk

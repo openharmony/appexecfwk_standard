@@ -73,6 +73,16 @@ struct AsyncPermissionDefCallbackInfo {
     bool ret = false;
 };
 
+struct AsyncPermissionCallbackInfo {
+    napi_env env;
+    napi_async_work asyncWork;
+    napi_deferred deferred;
+    napi_ref callback = 0;
+    std::string bundleName;
+    std::string permission;
+    int ret = -1;
+};
+
 struct AsyncBundleInfosCallbackInfo {
     napi_env env;
     napi_async_work asyncWork;
@@ -157,9 +167,40 @@ struct AsyncShortcutInfosCallbackInfo {
     bool ret = false;
 };
 
+struct AsyncModuleUsageRecordsCallbackInfo {
+    napi_env env;
+    napi_async_work asyncWork;
+    napi_deferred deferred;
+    napi_ref callback = 0;
+    int32_t number;
+    std::vector<OHOS::AppExecFwk::ModuleUsageRecord> moduleUsageRecords;
+    bool ret = false;
+};
+
+struct AsyncRegisterAllPermissions {
+    napi_env env;
+    napi_async_work asyncWork;
+    napi_ref callback = 0;
+};
+
+struct AsyncRegisterPermissions {
+    napi_env env;
+    napi_async_work asyncWork;
+    napi_ref callback = 0;
+    std::vector<int32_t> uids;
+};
+
+struct AsyncUnregisterPermissions {
+    napi_env env;
+    napi_async_work asyncWork;
+    napi_ref callback = 0;
+    std::vector<int32_t> uids;
+    bool ret = false;
+};
+
 extern napi_value g_classBundleInstaller;
 
-napi_value GetApplicationInfos(napi_env env, napi_callback_info);
+napi_value GetApplicationInfos(napi_env env, napi_callback_info info);
 napi_value GetApplicationInfo(napi_env env, napi_callback_info info);
 napi_value QueryAbilityInfo(napi_env env, napi_callback_info info);
 napi_value GetBundleInfos(napi_env env, napi_callback_info info);
@@ -174,6 +215,10 @@ napi_value GetAllFormsInfo(napi_env env, napi_callback_info info);
 napi_value GetFormsInfoByApp(napi_env env, napi_callback_info info);
 napi_value GetFormsInfoByModule(napi_env env, napi_callback_info info);
 napi_value GetShortcutInfos(napi_env env, napi_callback_info info);
+napi_value GetModuleUsageRecords(napi_env env, napi_callback_info info);
+napi_value RegisterAllPermissionsChanged(napi_env env, napi_callback_info info);
+napi_value UnregisterPermissionsChanged(napi_env env, napi_callback_info info);
+napi_value CheckPermission(napi_env env, napi_callback_info info);
 void CreateAbilityTypeObject(napi_env env, napi_value value);
 void CreateAbilitySubTypeObject(napi_env env, napi_value value);
 void CreateDisplayOrientationObject(napi_env env, napi_value value);

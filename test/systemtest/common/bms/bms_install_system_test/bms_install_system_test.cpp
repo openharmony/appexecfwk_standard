@@ -199,9 +199,9 @@ void BmsInstallSystemTest::InstallBundle(
         installParam.userId = userId;
     }
     sptr<StatusReceiverImpl> statusReceiver(new (std::nothrow) StatusReceiverImpl());
-    ASSERT_NE(statusReceiver, nullptr);
+    EXPECT_NE(statusReceiver, nullptr);
     bool installResult = installerProxy->Install(bundleFilePath, installParam, statusReceiver);
-    ASSERT_TRUE(installResult);
+    EXPECT_TRUE(installResult);
     installMsg = statusReceiver->GetResultMsg();
 }
 
@@ -215,9 +215,9 @@ void BmsInstallSystemTest::InstallMultiBundle(const std::string bundleFilePath, 
     InstallParam installParam;
     installParam.installFlag = (InstallFlag)installFlag;
     sptr<StatusReceiverImpl> statusReceiver(new (std::nothrow) StatusReceiverImpl());
-    ASSERT_NE(statusReceiver, nullptr);
+    EXPECT_NE(statusReceiver, nullptr);
     bool installResult = installerProxy->Install(bundleFilePath, installParam, statusReceiver);
-    ASSERT_TRUE(installResult);
+    EXPECT_TRUE(installResult);
     APP_LOGI("Install MSG: %{public}s", statusReceiver->GetResultMsg().c_str());
 }
 
@@ -232,13 +232,13 @@ void BmsInstallSystemTest::UninstallBundle(
     }
 
     sptr<StatusReceiverImpl> statusReceiver(new (std::nothrow) StatusReceiverImpl());
-    ASSERT_NE(statusReceiver, nullptr);
+    EXPECT_NE(statusReceiver, nullptr);
     InstallParam installParam;
     if (userId != 0) {
         installParam.userId = userId;
     }
     bool uninstallResult = installerProxy->Uninstall(bundleName, installParam, statusReceiver);
-    ASSERT_TRUE(uninstallResult);
+    EXPECT_TRUE(uninstallResult);
     uninstallMsg = statusReceiver->GetResultMsg();
 }
 
@@ -255,10 +255,10 @@ void BmsInstallSystemTest::CheckBundleInfo(const std::string &version, const std
     sptr<IBundleMgr> bundleMgrProxy = GetBundleMgrProxy();
     if (!bundleMgrProxy) {
         APP_LOGE("bundle mgr proxy is nullptr.");
-        ASSERT_EQ(bundleMgrProxy, nullptr);
+        EXPECT_EQ(bundleMgrProxy, nullptr);
     }
     bool isGetInfoSuccess = bundleMgrProxy->GetBundleInfo(bundleName, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo);
-    ASSERT_TRUE(isGetInfoSuccess);
+    EXPECT_TRUE(isGetInfoSuccess);
     EXPECT_EQ(bundleInfo.name, bundleName);
     EXPECT_EQ(bundleInfo.versionName, version);
 }
@@ -299,7 +299,7 @@ void BmsInstallSystemTest::CheckInstallIsSuccess(
 void BmsInstallSystemTest::CheckFileNonExist(const std::string &bundleName) const
 {
     int bundleDataExist = access((DATA_ROOT_PATH + bundleName).c_str(), F_OK);
-    ASSERT_NE(bundleDataExist, 0) << "the bundle data dir exists: " << bundleName;
+    EXPECT_NE(bundleDataExist, 0) << "the bundle data dir exists: " << bundleName;
     int codeExist = access((CODE_ROOT_PATH + bundleName).c_str(), F_OK);
     EXPECT_NE(codeExist, 0) << "the bundle code dir exists: " << bundleName;
 }
@@ -341,7 +341,7 @@ HWTEST_F(BmsInstallSystemTest, BMS_Install_0100, Function | MediumTest | Level1)
     std::string bundleFilePath = THIRD_BUNDLE_PATH + "bmsThirdBundle1.hap";
     std::string installMsg;
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
-    ASSERT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
+    EXPECT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
 
     std::string bundleName = THIRD_BASE_BUNDLE_NAME + "1";
     std::string modulePackage = THIRD_BASE_BUNDLE_NAME + ".h1";
@@ -352,7 +352,7 @@ HWTEST_F(BmsInstallSystemTest, BMS_Install_0100, Function | MediumTest | Level1)
 
     std::string uninstallMsg;
     UninstallBundle(bundleName, uninstallMsg);
-    ASSERT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
+    EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
     std::cout << "END BMS_Install_0100" << std::endl;
 }
 
@@ -372,7 +372,7 @@ HWTEST_F(BmsInstallSystemTest, BMS_Install_0200, Function | MediumTest | Level2)
     std::string installMsg;
 
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
-    ASSERT_EQ(installMsg, "Success") << "install fail!";
+    EXPECT_EQ(installMsg, "Success") << "install fail!";
 
     std::string bundleName = THIRD_BASE_BUNDLE_NAME + "1";
     CheckInstallIsSuccess(bundleName, modulePackage, abilityNames);
@@ -388,7 +388,7 @@ HWTEST_F(BmsInstallSystemTest, BMS_Install_0200, Function | MediumTest | Level2)
 
     std::string uninstallMsg;
     UninstallBundle(bundleName, uninstallMsg);
-    ASSERT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
+    EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
     std::cout << "END BMS_Install_0200" << std::endl;
 }
 
@@ -421,7 +421,7 @@ HWTEST_F(BmsInstallSystemTest, BMS_Install_0300, Function | MediumTest | Level1)
 
         std::string uninstallMsg;
         UninstallBundle(bundleName, uninstallMsg);
-        ASSERT_EQ(uninstallMsg, "Success");
+        EXPECT_EQ(uninstallMsg, "Success");
     }
     std::cout << "END BMS_Install_0300" << std::endl;
 }
@@ -439,7 +439,7 @@ HWTEST_F(BmsInstallSystemTest, BMS_Install_0400, Function | MediumTest | Level1)
     std::string bundleFilePath = THIRD_BUNDLE_PATH + "bmsThirdBundle13.hap";
 
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
-    ASSERT_EQ(installMsg, "Success") << "install fail!";
+    EXPECT_EQ(installMsg, "Success") << "install fail!";
 
     std::string bundleName = THIRD_BASE_BUNDLE_NAME + "5";
     std::string modulePackage = THIRD_BASE_BUNDLE_NAME + ".h1";
@@ -453,7 +453,7 @@ HWTEST_F(BmsInstallSystemTest, BMS_Install_0400, Function | MediumTest | Level1)
     sptr<IBundleMgr> bundleMgrProxy = GetBundleMgrProxy();
     if (!bundleMgrProxy) {
         APP_LOGI("bundle mgr proxy is nullptr.");
-        ASSERT_EQ(bundleMgrProxy, nullptr);
+        EXPECT_EQ(bundleMgrProxy, nullptr);
     }
     bool getInfosResult = bundleMgrProxy->GetBundleInfos(BundleFlag::GET_BUNDLE_DEFAULT, bundleInfos);
     EXPECT_TRUE(getInfosResult);
@@ -468,7 +468,7 @@ HWTEST_F(BmsInstallSystemTest, BMS_Install_0400, Function | MediumTest | Level1)
     EXPECT_TRUE(isSubStrExist);
     std::string uninstallMsg;
     UninstallBundle(bundleName, uninstallMsg);
-    ASSERT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
+    EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
     std::cout << "END BMS_Install_0400" << std::endl;
 }
 
@@ -487,7 +487,7 @@ HWTEST_F(BmsInstallSystemTest, BMS_Install_0500, Function | MediumTest | Level2)
     std::string installMsg;
 
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
-    ASSERT_EQ(installMsg, "Success") << "install fail!";
+    EXPECT_EQ(installMsg, "Success") << "install fail!";
 
     std::string bundleName = THIRD_BASE_BUNDLE_NAME + "2";
     std::string modulePackage = THIRD_BASE_BUNDLE_NAME + ".h2";
@@ -496,12 +496,12 @@ HWTEST_F(BmsInstallSystemTest, BMS_Install_0500, Function | MediumTest | Level2)
 
     bundleFilePath = THIRD_BUNDLE_PATH + "bmsThirdBundle7.hap";
     InstallBundle(bundleFilePath, InstallFlag::REPLACE_EXISTING, installMsg);
-    ASSERT_EQ(installMsg, "Failure[ERR_INSTALL_VERSION_DOWNGRADE]");
+    EXPECT_EQ(installMsg, "Failure[ERR_INSTALL_VERSION_DOWNGRADE]");
 
     CheckInstallIsSuccess(bundleName, modulePackage, abilityNames);
     std::string uninstallMsg;
     UninstallBundle(bundleName, uninstallMsg);
-    ASSERT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
+    EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
     std::cout << "END BMS_Install_0500" << std::endl;
 }
 
@@ -520,7 +520,7 @@ HWTEST_F(BmsInstallSystemTest, BMS_Install_0600, Function | MediumTest | Level1)
     std::string installMsg;
 
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
-    ASSERT_EQ(installMsg, "Success") << "install fail!";
+    EXPECT_EQ(installMsg, "Success") << "install fail!";
 
     std::string bundleName = THIRD_BASE_BUNDLE_NAME + "2";
     std::string modulePackage = THIRD_BASE_BUNDLE_NAME + ".h2";
@@ -530,7 +530,7 @@ HWTEST_F(BmsInstallSystemTest, BMS_Install_0600, Function | MediumTest | Level1)
     std::string bundleReFilePath = THIRD_BUNDLE_PATH + "bmsThirdBundle9.hap";
     std::this_thread::sleep_for(50ms);
     InstallBundle(bundleReFilePath, InstallFlag::REPLACE_EXISTING, installMsg);
-    ASSERT_EQ(installMsg, "Success") << "install fail!";
+    EXPECT_EQ(installMsg, "Success") << "install fail!";
 
     CheckInstallIsSuccess(bundleName, modulePackage, abilityNames);
 
@@ -538,7 +538,7 @@ HWTEST_F(BmsInstallSystemTest, BMS_Install_0600, Function | MediumTest | Level1)
     CheckBundleInfo(version, bundleName);
     std::string uninstallMsg;
     UninstallBundle(bundleName, uninstallMsg);
-    ASSERT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
+    EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
     std::cout << "END BMS_Install_0600" << std::endl;
 }
 
@@ -561,7 +561,7 @@ HWTEST_F(BmsInstallSystemTest, BMS_Install_0700, Function | MediumTest | Level2)
     int32_t size = bundlePaths.size();
     for (int i = 0; i < size; i++) {
         InstallBundle(bundlePaths[i], InstallFlag::NORMAL, installMsg);
-        ASSERT_EQ(installMsg, errorCodes[i]);
+        EXPECT_EQ(installMsg, errorCodes[i]);
         CheckFileNonExist(bundleNames[i]);
     }
 
@@ -569,7 +569,7 @@ HWTEST_F(BmsInstallSystemTest, BMS_Install_0700, Function | MediumTest | Level2)
     sptr<IBundleMgr> bundleMgrProxy = GetBundleMgrProxy();
     if (!bundleMgrProxy) {
         APP_LOGE("bundle mgr proxy is nullptr.");
-        ASSERT_EQ(bundleMgrProxy, nullptr);
+        EXPECT_EQ(bundleMgrProxy, nullptr);
     }
 
     bundleMgrProxy->GetBundleInfos(BundleFlag::GET_BUNDLE_DEFAULT, bundleInfos);
@@ -599,9 +599,9 @@ HWTEST_F(BmsInstallSystemTest, BMS_Install_0800, Function | MediumTest | Level2)
     std::string bundleFilePath = THIRD_BUNDLE_PATH + "bmsThirdBundle14.hap";
 
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
-    ASSERT_EQ(installMsg, "Failure[ERR_INSTALL_PARSE_PROFILE_MISSING_PROP]");
+    EXPECT_EQ(installMsg, "Failure[ERR_INSTALL_PARSE_PROFILE_MISSING_PROP]");
     InstallBundle(bundleFilePath, InstallFlag::REPLACE_EXISTING, installMsg);
-    ASSERT_EQ(installMsg, "Failure[ERR_INSTALL_PARSE_PROFILE_MISSING_PROP]");
+    EXPECT_EQ(installMsg, "Failure[ERR_INSTALL_PARSE_PROFILE_MISSING_PROP]");
 
     std::string bundleName = THIRD_BASE_BUNDLE_NAME + "14";
 
@@ -609,7 +609,7 @@ HWTEST_F(BmsInstallSystemTest, BMS_Install_0800, Function | MediumTest | Level2)
     sptr<IBundleMgr> bundleMgrProxy = GetBundleMgrProxy();
     if (!bundleMgrProxy) {
         APP_LOGE("bundle mgr proxy is nullptr.");
-        ASSERT_EQ(bundleMgrProxy, nullptr);
+        EXPECT_EQ(bundleMgrProxy, nullptr);
     }
     bool getInfoResult = bundleMgrProxy->GetBundleInfo(bundleName, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo);
     EXPECT_FALSE(getInfoResult);
@@ -628,10 +628,10 @@ HWTEST_F(BmsInstallSystemTest, BMS_Install_0900, Function | MediumTest | Level2)
     std::string installMsg;
     std::string bundleFilePath = THIRD_BUNDLE_PATH + "notexist.hap";
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
-    ASSERT_EQ(installMsg, "Failure[MSG_ERR_INSTALL_FILE_PATH_INVALID]");
+    EXPECT_EQ(installMsg, "Failure[MSG_ERR_INSTALL_FILE_PATH_INVALID]");
 
     InstallBundle(bundleFilePath, InstallFlag::REPLACE_EXISTING, installMsg);
-    ASSERT_EQ(installMsg, "Failure[MSG_ERR_INSTALL_FILE_PATH_INVALID]");
+    EXPECT_EQ(installMsg, "Failure[MSG_ERR_INSTALL_FILE_PATH_INVALID]");
     std::cout << "END BMS_Install_0900" << std::endl;
 }
 
@@ -648,7 +648,7 @@ HWTEST_F(BmsInstallSystemTest, BMS_Install_1000, Function | MediumTest | Level2)
     std::string bundleFilePath = THIRD_BUNDLE_PATH + "bmsThirdBundleNoSign.hap";
     std::string installMsg;
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
-    ASSERT_EQ(installMsg, "Failure[ERR_INSTALL_NO_SIGNATURE_INFO]");
+    EXPECT_EQ(installMsg, "Failure[ERR_INSTALL_NO_SIGNATURE_INFO]");
 
     std::string bundleName = "com.third.hiworld.example1";
     CheckFileNonExist(bundleName);
@@ -670,7 +670,7 @@ HWTEST_F(BmsInstallSystemTest, BMS_Install_1100, Function | MediumTest | Level1)
     std::string installMsg;
 
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
-    ASSERT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
+    EXPECT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
 
     std::string modulePackage = THIRD_BASE_BUNDLE_NAME + ".h2";
     std::vector<std::string> hap2AbilityNames = {"bmsThirdBundle_A1", "bmsThirdBundle_A2"};
@@ -679,7 +679,7 @@ HWTEST_F(BmsInstallSystemTest, BMS_Install_1100, Function | MediumTest | Level1)
     bundleFilePath = THIRD_BUNDLE_PATH + "bmsThirdBundle1.hap";
 
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
-    ASSERT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
+    EXPECT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
 
     modulePackage = THIRD_BASE_BUNDLE_NAME + ".h1";
     std::vector<std::string> hap1AbilityNames = {"bmsThirdBundle_A1"};
@@ -689,7 +689,7 @@ HWTEST_F(BmsInstallSystemTest, BMS_Install_1100, Function | MediumTest | Level1)
     CheckBundleInfo(version, bundleName);
     std::string uninstallMsg;
     UninstallBundle(bundleName, uninstallMsg);
-    ASSERT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
+    EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
     std::cout << "END BMS_Install_1100" << std::endl;
 }
 
@@ -708,7 +708,7 @@ HWTEST_F(BmsInstallSystemTest, BMS_Install_1200, Function | MediumTest | Level1)
 
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
 
-    ASSERT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
+    EXPECT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
 
     std::string bundleName = THIRD_BASE_BUNDLE_NAME + "1";
     std::string modulePackage = THIRD_BASE_BUNDLE_NAME + ".h1";
@@ -719,7 +719,7 @@ HWTEST_F(BmsInstallSystemTest, BMS_Install_1200, Function | MediumTest | Level1)
     CheckBundleInfo(version, bundleName);
     std::string uninstallMsg;
     UninstallBundle(bundleName, uninstallMsg);
-    ASSERT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
+    EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
     std::cout << "END BMS_Install_1200" << std::endl;
 }
 
@@ -738,7 +738,7 @@ HWTEST_F(BmsInstallSystemTest, BMS_Install_1300, Function | MediumTest | Level1)
 
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
 
-    ASSERT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
+    EXPECT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
 
     std::string bundleName = THIRD_BASE_BUNDLE_NAME + "1";
     std::string modulePackage = THIRD_BASE_BUNDLE_NAME + ".h1";
@@ -749,7 +749,7 @@ HWTEST_F(BmsInstallSystemTest, BMS_Install_1300, Function | MediumTest | Level1)
     CheckBundleInfo(version, bundleName);
     std::string uninstallMsg;
     UninstallBundle(bundleName, uninstallMsg);
-    ASSERT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
+    EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
     std::cout << "END BMS_Install_1300" << std::endl;
 }
 
@@ -768,7 +768,7 @@ HWTEST_F(BmsInstallSystemTest, BMS_Install_1400, Function | MediumTest | Level1)
 
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
 
-    ASSERT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
+    EXPECT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
 
     std::string bundleName = THIRD_BASE_BUNDLE_NAME + "1";
     std::string modulePackage = THIRD_BASE_BUNDLE_NAME + ".h1";
@@ -779,7 +779,7 @@ HWTEST_F(BmsInstallSystemTest, BMS_Install_1400, Function | MediumTest | Level1)
     CheckBundleInfo(version, bundleName);
     std::string uninstallMsg;
     UninstallBundle(bundleName, uninstallMsg);
-    ASSERT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
+    EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
     std::cout << "END BMS_Install_1400" << std::endl;
 }
 
@@ -797,12 +797,12 @@ HWTEST_F(BmsInstallSystemTest, BMS_Install_1500, Function | MediumTest | Level1)
     std::string installMsg;
 
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
-    ASSERT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
+    EXPECT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
 
     bundleFilePath = THIRD_BUNDLE_PATH + "bmsThirdBundle42.hap";
 
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
-    ASSERT_EQ(installMsg, "Success");
+    EXPECT_EQ(installMsg, "Success");
 
     std::string bundleName = THIRD_BASE_BUNDLE_NAME + "1";
     std::string modulePackage = THIRD_BASE_BUNDLE_NAME + ".h1";
@@ -813,7 +813,7 @@ HWTEST_F(BmsInstallSystemTest, BMS_Install_1500, Function | MediumTest | Level1)
     CheckBundleInfo(version, bundleName);
     std::string uninstallMsg;
     UninstallBundle(bundleName, uninstallMsg);
-    ASSERT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
+    EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
     std::cout << "END BMS_Install_1500" << std::endl;
 }
 
@@ -832,12 +832,12 @@ HWTEST_F(BmsInstallSystemTest, BMS_Install_1600, Function | MediumTest | Level1)
     std::string installMsg;
 
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
-    ASSERT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
+    EXPECT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
 
     bundleFilePath = THIRD_BUNDLE_PATH + "bmsThirdBundle4.hap";
 
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
-    ASSERT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
+    EXPECT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
 
     std::string bundleName = THIRD_BASE_BUNDLE_NAME + "1";
     std::string modulePackage = THIRD_BASE_BUNDLE_NAME + ".h1";
@@ -852,7 +852,7 @@ HWTEST_F(BmsInstallSystemTest, BMS_Install_1600, Function | MediumTest | Level1)
     CheckBundleInfo(version, bundleName);
     std::string uninstallMsg;
     UninstallBundle(bundleName, uninstallMsg);
-    ASSERT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
+    EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
     std::cout << "END BMS_Install_1600" << std::endl;
 }
 
@@ -871,12 +871,12 @@ HWTEST_F(BmsInstallSystemTest, BMS_Install_1700, Function | MediumTest | Level1)
     std::string installMsg;
 
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
-    ASSERT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
+    EXPECT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
 
     bundleFilePath = THIRD_BUNDLE_PATH + "bmsThirdBundle5.hap";
 
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
-    ASSERT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
+    EXPECT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
 
     std::string bundleName = THIRD_BASE_BUNDLE_NAME + "1";
     std::string modulePackage = THIRD_BASE_BUNDLE_NAME + ".h1";
@@ -891,7 +891,7 @@ HWTEST_F(BmsInstallSystemTest, BMS_Install_1700, Function | MediumTest | Level1)
     CheckBundleInfo(version, bundleName);
     std::string uninstallMsg;
     UninstallBundle(bundleName, uninstallMsg);
-    ASSERT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
+    EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
     std::cout << "END BMS_Install_1700" << std::endl;
 }
 
@@ -910,12 +910,12 @@ HWTEST_F(BmsInstallSystemTest, BMS_Install_1800, Function | MediumTest | Level1)
     std::string installMsg;
 
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
-    ASSERT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
+    EXPECT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
 
     bundleFilePath = THIRD_BUNDLE_PATH + "bmsThirdBundle42.hap";
 
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
-    ASSERT_EQ(installMsg, "Success");
+    EXPECT_EQ(installMsg, "Success");
 
     std::string bundleName = THIRD_BASE_BUNDLE_NAME + "1";
     std::string modulePackage = THIRD_BASE_BUNDLE_NAME + ".h1";
@@ -923,7 +923,7 @@ HWTEST_F(BmsInstallSystemTest, BMS_Install_1800, Function | MediumTest | Level1)
     CheckInstallIsSuccess(bundleName, modulePackage, hap1AbilityNames);
     std::string uninstallMsg;
     UninstallBundle(bundleName, uninstallMsg);
-    ASSERT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
+    EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
     std::cout << "END BMS_Install_1800" << std::endl;
 }
 
@@ -941,12 +941,12 @@ HWTEST_F(BmsInstallSystemTest, BMS_Install_1900, Function | MediumTest | Level1)
     std::string installMsg;
 
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
-    ASSERT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
+    EXPECT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
 
     bundleFilePath = THIRD_BUNDLE_PATH + "bmsThirdBundle4.hap";
 
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
-    ASSERT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
+    EXPECT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
 
     std::string bundleName = THIRD_BASE_BUNDLE_NAME + "1";
     std::string modulePackage = THIRD_BASE_BUNDLE_NAME + ".h1";
@@ -961,7 +961,7 @@ HWTEST_F(BmsInstallSystemTest, BMS_Install_1900, Function | MediumTest | Level1)
     CheckBundleInfo(version, bundleName);
     std::string uninstallMsg;
     UninstallBundle(bundleName, uninstallMsg);
-    ASSERT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
+    EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
     std::cout << "END BMS_Install_1900" << std::endl;
 }
 
@@ -980,12 +980,12 @@ HWTEST_F(BmsInstallSystemTest, BMS_Install_2000, Function | MediumTest | Level1)
     std::string installMsg;
 
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
-    ASSERT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
+    EXPECT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
 
     bundleFilePath = THIRD_BUNDLE_PATH + "bmsThirdBundle5.hap";
 
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
-    ASSERT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
+    EXPECT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
 
     std::string bundleName = THIRD_BASE_BUNDLE_NAME + "1";
     std::string modulePackage = THIRD_BASE_BUNDLE_NAME + ".h1";
@@ -1000,7 +1000,7 @@ HWTEST_F(BmsInstallSystemTest, BMS_Install_2000, Function | MediumTest | Level1)
     CheckBundleInfo(version, bundleName);
     std::string uninstallMsg;
     UninstallBundle(bundleName, uninstallMsg);
-    ASSERT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
+    EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
     std::cout << "END BMS_Install_2000" << std::endl;
 }
 
@@ -1019,12 +1019,12 @@ HWTEST_F(BmsInstallSystemTest, BMS_Install_2100, Function | MediumTest | Level1)
     std::string installMsg;
 
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
-    ASSERT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
+    EXPECT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
 
     bundleFilePath = THIRD_BUNDLE_PATH + "bmsThirdBundle6.hap";
 
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
-    ASSERT_EQ(installMsg, "Failure[MSG_ERR_INSTALL_ENTRY_ALREADY_EXIST]");
+    EXPECT_EQ(installMsg, "Failure[MSG_ERR_INSTALL_ENTRY_ALREADY_EXIST]");
 
     std::string bundleName = THIRD_BASE_BUNDLE_NAME + "1";
     std::string modulePackage = THIRD_BASE_BUNDLE_NAME + ".h1";
@@ -1035,7 +1035,7 @@ HWTEST_F(BmsInstallSystemTest, BMS_Install_2100, Function | MediumTest | Level1)
     CheckBundleInfo(version, bundleName);
     std::string uninstallMsg;
     UninstallBundle(bundleName, uninstallMsg);
-    ASSERT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
+    EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
     std::cout << "START BMS_Install_2100" << std::endl;
 }
 
@@ -1054,12 +1054,12 @@ HWTEST_F(BmsInstallSystemTest, BMS_Install_2200, Function | MediumTest | Level1)
     std::string installMsg;
 
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
-    ASSERT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
+    EXPECT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
 
     bundleFilePath = THIRD_BUNDLE_PATH + "bmsThirdBundle4.hap";
 
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
-    ASSERT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
+    EXPECT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
 
     std::string bundleName = THIRD_BASE_BUNDLE_NAME + "1";
     std::string modulePackage = THIRD_BASE_BUNDLE_NAME + ".h1";
@@ -1074,7 +1074,7 @@ HWTEST_F(BmsInstallSystemTest, BMS_Install_2200, Function | MediumTest | Level1)
     CheckBundleInfo(version, bundleName);
     std::string uninstallMsg;
     UninstallBundle(bundleName, uninstallMsg);
-    ASSERT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
+    EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
     std::cout << "START BMS_Install_2200" << std::endl;
 }
 
@@ -1092,12 +1092,12 @@ HWTEST_F(BmsInstallSystemTest, BMS_Install_2300, Function | MediumTest | Level1)
     std::string installMsg;
 
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
-    ASSERT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
+    EXPECT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
 
     bundleFilePath = THIRD_BUNDLE_PATH + "bmsThirdBundle5.hap";
 
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
-    ASSERT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
+    EXPECT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
 
     std::string bundleName = THIRD_BASE_BUNDLE_NAME + "1";
     std::string modulePackage = THIRD_BASE_BUNDLE_NAME + ".h1";
@@ -1113,7 +1113,7 @@ HWTEST_F(BmsInstallSystemTest, BMS_Install_2300, Function | MediumTest | Level1)
 
     std::string uninstallMsg;
     UninstallBundle(bundleName, uninstallMsg);
-    ASSERT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
+    EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
     std::cout << "END BMS_Install_2300" << std::endl;
 }
 
@@ -1131,14 +1131,14 @@ HWTEST_F(BmsInstallSystemTest, BMS_Install_2400, Function | MediumTest | Level2)
     std::string bundleFilePath = THIRD_BUNDLE_PATH + "e23.hap";
 
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
-    ASSERT_EQ(installMsg, "Failure[ERR_INSTALL_PARSE_PROFILE_PROP_CHECK_ERROR]");
+    EXPECT_EQ(installMsg, "Failure[ERR_INSTALL_PARSE_PROFILE_PROP_CHECK_ERROR]");
 
     std::string bundleName = THIRD_BASE_BUNDLE_NAME + "1";
     BundleInfo bundleInfo;
     sptr<IBundleMgr> bundleMgrProxy = GetBundleMgrProxy();
     if (!bundleMgrProxy) {
         APP_LOGE("bundle mgr proxy is nullptr.");
-        ASSERT_EQ(bundleMgrProxy, nullptr);
+        EXPECT_EQ(bundleMgrProxy, nullptr);
     }
     bool getInfoResult = bundleMgrProxy->GetBundleInfo(bundleName, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo);
     EXPECT_FALSE(getInfoResult);
@@ -1157,7 +1157,7 @@ HWTEST_F(BmsInstallSystemTest, BMS_Install_2500, Function | MediumTest | Level2)
     std::string bundleFilePath = THIRD_BUNDLE_PATH + "bmsThirdBundle1.hap";
     std::string installMsg;
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
-    ASSERT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
+    EXPECT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
 
     std::string bundleName = THIRD_BASE_BUNDLE_NAME + "1";
     std::string modulePackage = THIRD_BASE_BUNDLE_NAME + ".h1";
@@ -1168,7 +1168,7 @@ HWTEST_F(BmsInstallSystemTest, BMS_Install_2500, Function | MediumTest | Level2)
 
     std::string bundleFilePath2 = THIRD_BUNDLE_PATH + "e14.hap";
     InstallBundle(bundleFilePath2, InstallFlag::NORMAL, installMsg);
-    ASSERT_EQ(installMsg, "Failure[ERR_INSTALL_PARSE_PROFILE_PROP_CHECK_ERROR]");
+    EXPECT_EQ(installMsg, "Failure[ERR_INSTALL_PARSE_PROFILE_PROP_CHECK_ERROR]");
 
     std::string uninstallMsg;
     UninstallBundle(bundleName, uninstallMsg);
@@ -1189,14 +1189,14 @@ HWTEST_F(BmsInstallSystemTest, BMS_Install_2600, Function | MediumTest | Level2)
     std::string bundleFilePath = THIRD_BUNDLE_PATH + "e22.hap";
 
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
-    ASSERT_EQ(installMsg, "Failure[ERR_INSTALL_PARSE_PROFILE_PROP_CHECK_ERROR]");
+    EXPECT_EQ(installMsg, "Failure[ERR_INSTALL_PARSE_PROFILE_PROP_CHECK_ERROR]");
 
     std::string bundleName = THIRD_BASE_BUNDLE_NAME + "1";
     BundleInfo bundleInfo;
     sptr<IBundleMgr> bundleMgrProxy = GetBundleMgrProxy();
     if (!bundleMgrProxy) {
         APP_LOGE("bundle mgr proxy is nullptr.");
-        ASSERT_EQ(bundleMgrProxy, nullptr);
+        EXPECT_EQ(bundleMgrProxy, nullptr);
     }
     bool getInfoResult = bundleMgrProxy->GetBundleInfo(bundleName, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo);
     EXPECT_FALSE(getInfoResult);
@@ -1215,7 +1215,7 @@ HWTEST_F(BmsInstallSystemTest, BMS_Install_2700, Function | MediumTest | Level1)
     std::string bundleFilePath = THIRD_BUNDLE_PATH + "bmsThirdBundle41.hap";
     std::string installMsg;
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
-    ASSERT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
+    EXPECT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
 
     std::string bundleName = THIRD_BASE_BUNDLE_NAME + "1";
     std::string modulePackage = THIRD_BASE_BUNDLE_NAME + ".h1";
@@ -1227,7 +1227,7 @@ HWTEST_F(BmsInstallSystemTest, BMS_Install_2700, Function | MediumTest | Level1)
     sptr<IBundleMgr> bundleMgrProxy = GetBundleMgrProxy();
     if (!bundleMgrProxy) {
         APP_LOGE("bundle mgr proxy is nullptr.");
-        ASSERT_EQ(bundleMgrProxy, nullptr);
+        EXPECT_EQ(bundleMgrProxy, nullptr);
     }
 
     BundleInfo bundleInfo;
@@ -1268,14 +1268,14 @@ HWTEST_F(BmsInstallSystemTest, BMS_Install_2800, Function | MediumTest | Level2)
     std::string bundleFilePath = THIRD_BUNDLE_PATH + "e3.hap";
 
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
-    ASSERT_EQ(installMsg, "Failure[ERR_INSTALL_PARSE_PROFILE_PROP_CHECK_ERROR]");
+    EXPECT_EQ(installMsg, "Failure[ERR_INSTALL_PARSE_PROFILE_PROP_CHECK_ERROR]");
 
     std::string bundleName = THIRD_BASE_BUNDLE_NAME + "1";
     BundleInfo bundleInfo;
     sptr<IBundleMgr> bundleMgrProxy = GetBundleMgrProxy();
     if (!bundleMgrProxy) {
         APP_LOGE("bundle mgr proxy is nullptr.");
-        ASSERT_EQ(bundleMgrProxy, nullptr);
+        EXPECT_EQ(bundleMgrProxy, nullptr);
     }
     bool getInfoResult = bundleMgrProxy->GetBundleInfo(bundleName, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo);
     EXPECT_FALSE(getInfoResult);
@@ -1296,14 +1296,14 @@ HWTEST_F(BmsInstallSystemTest, BMS_Install_2900, Function | MediumTest | Level2)
     std::string bundleFilePath = THIRD_BUNDLE_PATH + "e21.hap";
 
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
-    ASSERT_EQ(installMsg, "Failure[ERR_INSTALL_PARSE_PROFILE_PROP_CHECK_ERROR]");
+    EXPECT_EQ(installMsg, "Failure[ERR_INSTALL_PARSE_PROFILE_PROP_CHECK_ERROR]");
 
     std::string bundleName = THIRD_BASE_BUNDLE_NAME + "1";
     BundleInfo bundleInfo;
     sptr<IBundleMgr> bundleMgrProxy = GetBundleMgrProxy();
     if (!bundleMgrProxy) {
         APP_LOGE("bundle mgr proxy is nullptr.");
-        ASSERT_EQ(bundleMgrProxy, nullptr);
+        EXPECT_EQ(bundleMgrProxy, nullptr);
     }
     bool getInfoResult = bundleMgrProxy->GetBundleInfo(bundleName, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo);
     EXPECT_FALSE(getInfoResult);
@@ -1324,17 +1324,17 @@ HWTEST_F(BmsInstallSystemTest, BMS_Install_3000, Function | MediumTest | Level2)
     std::string bundleFilePath = THIRD_BUNDLE_PATH + "e14.hap";
 
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
-    ASSERT_EQ(installMsg, "Failure[ERR_INSTALL_PARSE_PROFILE_PROP_CHECK_ERROR]");
+    EXPECT_EQ(installMsg, "Failure[ERR_INSTALL_PARSE_PROFILE_PROP_CHECK_ERROR]");
 
     std::string bundleName = THIRD_BASE_BUNDLE_NAME + "1";
     BundleInfo bundleInfo;
     sptr<IBundleMgr> bundleMgrProxy = GetBundleMgrProxy();
     if (!bundleMgrProxy) {
         APP_LOGE("bundle mgr proxy is nullptr.");
-        ASSERT_EQ(bundleMgrProxy, nullptr);
+        EXPECT_EQ(bundleMgrProxy, nullptr);
     }
     bool getInfoResult = bundleMgrProxy->GetBundleInfo(bundleName, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo);
-    ASSERT_FALSE(getInfoResult);
+    EXPECT_FALSE(getInfoResult);
     std::cout << "END BMS_Install_3000" << std::endl;
 }
 
@@ -1352,14 +1352,14 @@ HWTEST_F(BmsInstallSystemTest, BMS_Install_3100, Function | MediumTest | Level2)
     std::string bundleFilePath = THIRD_BUNDLE_PATH + "e12.hap";
 
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
-    ASSERT_EQ(installMsg, "Failure[ERR_INSTALL_PARSE_PROFILE_PROP_CHECK_ERROR]");
+    EXPECT_EQ(installMsg, "Failure[ERR_INSTALL_PARSE_PROFILE_PROP_CHECK_ERROR]");
 
     std::string bundleName = THIRD_BASE_BUNDLE_NAME + "1";
     BundleInfo bundleInfo;
     sptr<IBundleMgr> bundleMgrProxy = GetBundleMgrProxy();
     if (!bundleMgrProxy) {
         APP_LOGE("bundle mgr proxy is nullptr.");
-        ASSERT_EQ(bundleMgrProxy, nullptr);
+        EXPECT_EQ(bundleMgrProxy, nullptr);
     }
     bool getInfoResult = bundleMgrProxy->GetBundleInfo(bundleName, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo);
     EXPECT_FALSE(getInfoResult);
@@ -1380,7 +1380,7 @@ HWTEST_F(BmsInstallSystemTest, BMS_Install_3200, Function | MediumTest | Level1)
     std::string bundleFilePath = THIRD_BUNDLE_PATH + "bmsThirdBundle1.hap";
     std::string installMsg;
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
-    ASSERT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
+    EXPECT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
 
     std::string bundleName = THIRD_BASE_BUNDLE_NAME + "1";
     std::string modulePackage = THIRD_BASE_BUNDLE_NAME + ".h1";
@@ -1391,7 +1391,7 @@ HWTEST_F(BmsInstallSystemTest, BMS_Install_3200, Function | MediumTest | Level1)
 
     bundleFilePath = THIRD_BUNDLE_PATH + "bmsThirdBundle7.hap";
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
-    ASSERT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
+    EXPECT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
 
     std::string bundleName2 = THIRD_BASE_BUNDLE_NAME + "2";
     modulePackage = THIRD_BASE_BUNDLE_NAME + ".h2";
@@ -1425,7 +1425,7 @@ HWTEST_F(BmsInstallSystemTest, BMS_Install_3300, Function | MediumTest | Level2)
     std::string bundleFilePath = THIRD_BUNDLE_PATH + "bmsThirdBundles1.hap";
     std::string installMsg;
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
-    ASSERT_EQ(installMsg, "Failure[ERR_INSTALL_ALREADY_EXIST]") << "Success!" << bundleFilePath;
+    EXPECT_EQ(installMsg, "Failure[ERR_INSTALL_ALREADY_EXIST]") << "Success!" << bundleFilePath;
     std::cout << "END BMS_Install_3300" << std::endl;
 }
 
@@ -1443,14 +1443,14 @@ HWTEST_F(BmsInstallSystemTest, BMS_Install_3400, Function | MediumTest | Level2)
     std::string bundleFilePath = THIRD_BUNDLE_PATH + "e4.hap";
 
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
-    ASSERT_EQ(installMsg, "Failure[ERR_INSTALL_PARSE_PROFILE_PROP_TYPE_ERROR]");
+    EXPECT_EQ(installMsg, "Failure[ERR_INSTALL_PARSE_PROFILE_PROP_TYPE_ERROR]");
 
     std::string bundleName = THIRD_BASE_BUNDLE_NAME + "1";
     BundleInfo bundleInfo;
     sptr<IBundleMgr> bundleMgrProxy = GetBundleMgrProxy();
     if (!bundleMgrProxy) {
         APP_LOGE("bundle mgr proxy is nullptr.");
-        ASSERT_EQ(bundleMgrProxy, nullptr);
+        EXPECT_EQ(bundleMgrProxy, nullptr);
     }
     bool getInfoResult = bundleMgrProxy->GetBundleInfo(bundleName, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo);
     EXPECT_FALSE(getInfoResult);
@@ -1471,14 +1471,14 @@ HWTEST_F(BmsInstallSystemTest, BMS_Install_3500, Function | MediumTest | Level2)
     std::string bundleFilePath = THIRD_BUNDLE_PATH + "e5.hap";
 
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
-    ASSERT_EQ(installMsg, "Failure[ERR_INSTALL_PARSE_PROFILE_PROP_CHECK_ERROR]");
+    EXPECT_EQ(installMsg, "Failure[ERR_INSTALL_PARSE_PROFILE_PROP_CHECK_ERROR]");
 
     std::string bundleName = THIRD_BASE_BUNDLE_NAME + "1";
     BundleInfo bundleInfo;
     sptr<IBundleMgr> bundleMgrProxy = GetBundleMgrProxy();
     if (!bundleMgrProxy) {
         APP_LOGE("bundle mgr proxy is nullptr.");
-        ASSERT_EQ(bundleMgrProxy, nullptr);
+        EXPECT_EQ(bundleMgrProxy, nullptr);
     }
     bool getInfoResult = bundleMgrProxy->GetBundleInfo(bundleName, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo);
     EXPECT_FALSE(getInfoResult);
@@ -1499,14 +1499,14 @@ HWTEST_F(BmsInstallSystemTest, BMS_Install_3600, Function | MediumTest | Level2)
     std::string bundleFilePath = THIRD_BUNDLE_PATH + "e6.hap";
 
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
-    ASSERT_EQ(installMsg, "Failure[ERR_INSTALL_PARSE_BAD_PROFILE]");
+    EXPECT_EQ(installMsg, "Failure[ERR_INSTALL_PARSE_BAD_PROFILE]");
 
     std::string bundleName = THIRD_BASE_BUNDLE_NAME + "1";
     BundleInfo bundleInfo;
     sptr<IBundleMgr> bundleMgrProxy = GetBundleMgrProxy();
     if (!bundleMgrProxy) {
         APP_LOGE("bundle mgr proxy is nullptr.");
-        ASSERT_EQ(bundleMgrProxy, nullptr);
+        EXPECT_EQ(bundleMgrProxy, nullptr);
     }
     bool getInfoResult = bundleMgrProxy->GetBundleInfo(bundleName, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo);
     EXPECT_FALSE(getInfoResult);
@@ -1525,7 +1525,7 @@ HWTEST_F(BmsInstallSystemTest, BMS_InstallProgressInfo_0100, Function | MediumTe
     std::string bundleFilePath = THIRD_BUNDLE_PATH + "bmsThirdBundle1.hap";
     std::string installMsg;
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
-    ASSERT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
+    EXPECT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
 
     std::string bundleName = THIRD_BASE_BUNDLE_NAME + "1";
     std::string modulePackage = THIRD_BASE_BUNDLE_NAME + ".h1";
@@ -1575,7 +1575,7 @@ HWTEST_F(BmsInstallSystemTest, BMS_MultiHapInstall_0100, Function | MediumTest |
     sptr<IBundleMgr> bundleMgrProxy = GetBundleMgrProxy();
     if (!bundleMgrProxy) {
         APP_LOGE("bundle mgr proxy is nullptr.");
-        ASSERT_EQ(bundleMgrProxy, nullptr);
+        EXPECT_EQ(bundleMgrProxy, nullptr);
     }
     bool getInfosResult = bundleMgrProxy->GetBundleInfos(BundleFlag::GET_BUNDLE_DEFAULT, bundleInfos);
     EXPECT_TRUE(getInfosResult);
@@ -1718,7 +1718,7 @@ HWTEST_F(BmsInstallSystemTest, BMS_SystemAppInstall_0300, Function | MediumTest 
     sptr<IBundleMgr> bundleMgrProxy = GetBundleMgrProxy();
     if (!bundleMgrProxy) {
         APP_LOGE("bundle mgr proxy is nullptr.");
-        ASSERT_EQ(bundleMgrProxy, nullptr);
+        EXPECT_EQ(bundleMgrProxy, nullptr);
     }
 
     std::vector<BundleInfo> bundleInfos;
@@ -1765,7 +1765,7 @@ HWTEST_F(BmsInstallSystemTest, BMS_Upgrade_0100, Function | MediumTest | Level1)
     std::string installMsg;
 
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
-    ASSERT_EQ(installMsg, "Success");
+    EXPECT_EQ(installMsg, "Success");
 
     std::string bundleName = THIRD_BASE_BUNDLE_NAME + "2";
     std::string modulePackage = THIRD_BASE_BUNDLE_NAME + ".h2";
@@ -1775,7 +1775,7 @@ HWTEST_F(BmsInstallSystemTest, BMS_Upgrade_0100, Function | MediumTest | Level1)
     std::this_thread::sleep_for(50ms);
     bundleFilePath = THIRD_BUNDLE_PATH + "bmsThirdBundle9.hap";
     InstallBundle(bundleFilePath, InstallFlag::REPLACE_EXISTING, installMsg);
-    ASSERT_EQ(installMsg, "Success");
+    EXPECT_EQ(installMsg, "Success");
 
     std::string version = "3.0";
     hap1AbilityNames = {"bmsThirdBundle_A1"};
@@ -1802,7 +1802,7 @@ HWTEST_F(BmsInstallSystemTest, BMS_Upgrade_0200, Function | MediumTest | Level1)
     std::string installMsg;
 
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
-    ASSERT_EQ(installMsg, "Success");
+    EXPECT_EQ(installMsg, "Success");
 
     std::string bundleName = THIRD_BASE_BUNDLE_NAME + "2";
     std::string modulePackage = THIRD_BASE_BUNDLE_NAME + ".h2";
@@ -1812,7 +1812,7 @@ HWTEST_F(BmsInstallSystemTest, BMS_Upgrade_0200, Function | MediumTest | Level1)
     std::this_thread::sleep_for(50ms);
     bundleFilePath = THIRD_BUNDLE_PATH + "bmsThirdBundle10.hap";
     InstallBundle(bundleFilePath, InstallFlag::REPLACE_EXISTING, installMsg);
-    ASSERT_EQ(installMsg, "Success");
+    EXPECT_EQ(installMsg, "Success");
 
     std::string version = "1.0";
     CheckBundleInfo(version, bundleName);
@@ -1838,7 +1838,7 @@ HWTEST_F(BmsInstallSystemTest, BMS_Upgrade_0300, Function | MediumTest | Level2)
     std::string installMsg;
 
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
-    ASSERT_EQ(installMsg, "Success");
+    EXPECT_EQ(installMsg, "Success");
 
     std::string bundleName = THIRD_BASE_BUNDLE_NAME + "2";
     std::string modulePackage = THIRD_BASE_BUNDLE_NAME + ".h2";
@@ -1847,7 +1847,7 @@ HWTEST_F(BmsInstallSystemTest, BMS_Upgrade_0300, Function | MediumTest | Level2)
 
     bundleFilePath = THIRD_BUNDLE_PATH + "bmsThirdBundle7.hap";
     InstallBundle(bundleFilePath, InstallFlag::REPLACE_EXISTING, installMsg);
-    ASSERT_EQ(installMsg, "Failure[ERR_INSTALL_VERSION_DOWNGRADE]");
+    EXPECT_EQ(installMsg, "Failure[ERR_INSTALL_VERSION_DOWNGRADE]");
 
     std::string version = "3.0";
     CheckBundleInfo(version, bundleName);
@@ -1874,7 +1874,7 @@ HWTEST_F(BmsInstallSystemTest, BMS_Upgrade_0400, Function | MediumTest | Level1)
     std::string installMsg;
 
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
-    ASSERT_EQ(installMsg, "Success");
+    EXPECT_EQ(installMsg, "Success");
 
     std::string bundleName = THIRD_BASE_BUNDLE_NAME + "2";
     std::string modulePackage = THIRD_BASE_BUNDLE_NAME + ".h2";
@@ -1888,7 +1888,7 @@ HWTEST_F(BmsInstallSystemTest, BMS_Upgrade_0400, Function | MediumTest | Level1)
     std::this_thread::sleep_for(50ms);
     bundleFilePath = THIRD_BUNDLE_PATH + "bmsThirdBundle9.hap";
     InstallBundle(bundleFilePath, InstallFlag::REPLACE_EXISTING, installMsg);
-    ASSERT_EQ(installMsg, "Success");
+    EXPECT_EQ(installMsg, "Success");
 
     CheckInstallIsSuccess(bundleName, modulePackage, hap1AbilityNames);
     std::string uninstallMsg;
@@ -1994,7 +1994,7 @@ HWTEST_F(BmsInstallSystemTest, BMS_BundleDataStorage_0100, Function | MediumTest
 
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
 
-    ASSERT_EQ(installMsg, "Success") << "install fail!";
+    EXPECT_EQ(installMsg, "Success") << "install fail!";
 
     std::string bundleName = THIRD_BASE_BUNDLE_NAME + "1";
     std::string modulePackage = THIRD_BASE_BUNDLE_NAME + ".h1";
@@ -2004,7 +2004,7 @@ HWTEST_F(BmsInstallSystemTest, BMS_BundleDataStorage_0100, Function | MediumTest
     sptr<IBundleMgr> bundleMgrProxy = GetBundleMgrProxy();
     if (!bundleMgrProxy) {
         APP_LOGE("bundle mgr proxy is nullptr.");
-        ASSERT_EQ(bundleMgrProxy, nullptr);
+        EXPECT_EQ(bundleMgrProxy, nullptr);
     }
     BundleInfo bundleInfo;
     bool isGetInfoSuccess = bundleMgrProxy->GetBundleInfo(bundleName, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo);
@@ -2038,14 +2038,14 @@ HWTEST_F(BmsInstallSystemTest, BMS_BundleDataStorage_0200, Function | MediumTest
     sptr<IBundleMgr> bundleMgrProxy = GetBundleMgrProxy();
     if (!bundleMgrProxy) {
         APP_LOGE("bundle mgr proxy is nullptr.");
-        ASSERT_EQ(bundleMgrProxy, nullptr);
+        EXPECT_EQ(bundleMgrProxy, nullptr);
     }
 
     std::string installMsg;
     std::string bundleFilePath = THIRD_BUNDLE_PATH + "bmsThirdBundle2.hap";
 
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
-    ASSERT_EQ(installMsg, "Success");
+    EXPECT_EQ(installMsg, "Success");
 
     std::string bundleName = THIRD_BASE_BUNDLE_NAME + "1";
     std::string modulePackage = THIRD_BASE_BUNDLE_NAME + ".h1";
@@ -2053,7 +2053,7 @@ HWTEST_F(BmsInstallSystemTest, BMS_BundleDataStorage_0200, Function | MediumTest
     CheckInstallIsSuccess(bundleName, modulePackage, hap1AbilityNames);
 
     bool isGetInfoSuccess = bundleMgrProxy->GetBundleInfo(bundleName, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo);
-    ASSERT_TRUE(isGetInfoSuccess);
+    EXPECT_TRUE(isGetInfoSuccess);
 
     EXPECT_EQ(bundleInfo.name, "com.third.hiworld.example1");
     EXPECT_EQ(bundleInfo.vendor, "example");
@@ -2066,7 +2066,7 @@ HWTEST_F(BmsInstallSystemTest, BMS_BundleDataStorage_0200, Function | MediumTest
 
     bundleFilePath = THIRD_BUNDLE_PATH + "bmsThirdBundle11.hap";
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
-    ASSERT_EQ(installMsg, "Failure[ERR_INSTALL_PARSE_NO_PROFILE]");
+    EXPECT_EQ(installMsg, "Failure[ERR_INSTALL_PARSE_NO_PROFILE]");
 
     std::string eBundleName = THIRD_BASE_BUNDLE_NAME + "11";
     CheckFileNonExist(eBundleName);
@@ -2095,22 +2095,22 @@ HWTEST_F(BmsInstallSystemTest, BMS_Broadcasting_0100, Function | MediumTest | Le
     CommonEventSubscribeInfo subscriberInfo(matchingSkillsObj);
     std::shared_ptr<SubscriberTest> subScriber = std::make_shared<SubscriberTest>(subscriberInfo);
     bool isSubscribeSuccess = CommonEventManager::SubscribeCommonEvent(subScriber);
-    ASSERT_TRUE(isSubscribeSuccess);
+    EXPECT_TRUE(isSubscribeSuccess);
 
     std::string bundleFilePath = THIRD_BUNDLE_PATH + "bmsThirdBundle2.hap";
     std::string bundleName = THIRD_BASE_BUNDLE_NAME + "1";
     std::string installMsg;
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
-    ASSERT_EQ(installMsg, "Success") << "install fail!";
+    EXPECT_EQ(installMsg, "Success") << "install fail!";
 
     std::string subScriberResult = subScriber->GetSubscriberResultMsg();
     EXPECT_EQ(subScriberResult, CommonEventSupport::COMMON_EVENT_PACKAGE_ADDED);
 
     bool isUnSubscribeSuccess = CommonEventManager::UnSubscribeCommonEvent(subScriber);
-    ASSERT_TRUE(isUnSubscribeSuccess);
+    EXPECT_TRUE(isUnSubscribeSuccess);
     std::string uninstallMsg;
     UninstallBundle(bundleName, uninstallMsg);
-    ASSERT_EQ(uninstallMsg, "Success") << "uninstall fail!";
+    EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!";
     std::cout << "END BMS_Broadcasting_0100" << std::endl;
 }
 
@@ -2129,26 +2129,26 @@ HWTEST_F(BmsInstallSystemTest, BMS_Broadcasting_0200, Function | MediumTest | Le
     CommonEventSubscribeInfo subScriberInfo(matchingSkillsObj);
     std::shared_ptr<SubscriberTest> subScriber = std::make_shared<SubscriberTest>(subScriberInfo);
     bool isSubscribeSuccess = CommonEventManager::SubscribeCommonEvent(subScriber);
-    ASSERT_TRUE(isSubscribeSuccess);
+    EXPECT_TRUE(isSubscribeSuccess);
 
     std::string bundleFilePath = THIRD_BUNDLE_PATH + "bmsThirdBundle7.hap";
     std::string installMsg;
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
-    ASSERT_EQ(installMsg, "Success") << "install fail!";
+    EXPECT_EQ(installMsg, "Success") << "install fail!";
 
     std::string bundleName = THIRD_BASE_BUNDLE_NAME + "2";
     std::string bundleReFilePath = THIRD_BUNDLE_PATH + "bmsThirdBundle9.hap";
     std::this_thread::sleep_for(50ms);
     InstallBundle(bundleReFilePath, InstallFlag::REPLACE_EXISTING, installMsg);
-    ASSERT_EQ(installMsg, "Success") << "install fail!";
+    EXPECT_EQ(installMsg, "Success") << "install fail!";
     std::string subScriberResult = subScriber->GetSubscriberResultMsg();
     EXPECT_EQ(subScriberResult, CommonEventSupport::COMMON_EVENT_PACKAGE_CHANGED);
     std::string uninstallMsg;
     UninstallBundle(bundleName, uninstallMsg);
-    ASSERT_EQ(uninstallMsg, "Success") << "uninstall fail!";
+    EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!";
 
     bool isUnSubscribeSuccess = CommonEventManager::UnSubscribeCommonEvent(subScriber);
-    ASSERT_TRUE(isUnSubscribeSuccess);
+    EXPECT_TRUE(isUnSubscribeSuccess);
     std::cout << "END BMS_Broadcasting_0200" << std::endl;
 }
 
@@ -2167,21 +2167,21 @@ HWTEST_F(BmsInstallSystemTest, BMS_Broadcasting_0300, Function | MediumTest | Le
     CommonEventSubscribeInfo subscriberInfo(matchingSkillsObj);
     std::shared_ptr<SubscriberTest> subScriber = std::make_shared<SubscriberTest>(subscriberInfo);
     bool isSubscribeSuccess = CommonEventManager::SubscribeCommonEvent(subScriber);
-    ASSERT_TRUE(isSubscribeSuccess);
+    EXPECT_TRUE(isSubscribeSuccess);
     std::string bundleFilePath = THIRD_BUNDLE_PATH + "bmsThirdBundle2.hap";
     std::string bundleName = THIRD_BASE_BUNDLE_NAME + "1";
     std::string installMsg;
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
-    ASSERT_EQ(installMsg, "Success") << "install fail!";
+    EXPECT_EQ(installMsg, "Success") << "install fail!";
 
     std::string uninstallMsg;
     UninstallBundle(bundleName, uninstallMsg);
-    ASSERT_EQ(uninstallMsg, "Success") << "uninstall fail!";
+    EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!";
     std::string subScriberResult = subScriber->GetSubscriberResultMsg();
 
     EXPECT_EQ(subScriberResult, CommonEventSupport::COMMON_EVENT_PACKAGE_REMOVED);
     bool isUnSubscribeSuccess = CommonEventManager::UnSubscribeCommonEvent(subScriber);
-    ASSERT_TRUE(isUnSubscribeSuccess);
+    EXPECT_TRUE(isUnSubscribeSuccess);
     std::cout << "END BMS_Broadcasting_0300" << std::endl;
 }
 
@@ -2203,15 +2203,15 @@ HWTEST_F(BmsInstallSystemTest, BMS_Permission_0100, Function | MediumTest | Leve
     sptr<IBundleMgr> bundleMgrProxy = GetBundleMgrProxy();
     if (!bundleMgrProxy) {
         APP_LOGE("bundle mgr proxy is nullptr.");
-        ASSERT_EQ(bundleMgrProxy, nullptr);
+        EXPECT_EQ(bundleMgrProxy, nullptr);
     }
     std::string bundleFilePath = THIRD_BUNDLE_PATH + "bmsThirdBundlePermission1.hap";
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
-    ASSERT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
+    EXPECT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
 
     bundleFilePath = THIRD_BUNDLE_PATH + "bmsThirdBundlePermission2.hap";
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
-    ASSERT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
+    EXPECT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
 
     std::string bundleName = "com.third.hiworld.example2";
     std::string modulePackage = "com.third.hiworld.example.h2";
@@ -2220,12 +2220,12 @@ HWTEST_F(BmsInstallSystemTest, BMS_Permission_0100, Function | MediumTest | Leve
     std::string bundleName2 = "com.third.hiworld.example3";
     std::string permissionName = "com.example.permission";
     bool isGetInfoSuccess = bundleMgrProxy->GetBundleInfo(bundleName, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo);
-    ASSERT_TRUE(isGetInfoSuccess);
+    EXPECT_TRUE(isGetInfoSuccess);
     EXPECT_EQ(commonTool.VectorToStr(bundleInfo.defPermissions), permissionName);
 
     CheckInstallIsSuccess(bundleName2, modulePackage, abilityNames);
     isGetInfoSuccess = bundleMgrProxy->GetBundleInfo(bundleName2, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo);
-    ASSERT_TRUE(isGetInfoSuccess);
+    EXPECT_TRUE(isGetInfoSuccess);
 
     bool ret = bundleMgrProxy->CanRequestPermission(bundleName2, permissionName, userid);
     EXPECT_TRUE(ret);
@@ -2234,9 +2234,9 @@ HWTEST_F(BmsInstallSystemTest, BMS_Permission_0100, Function | MediumTest | Leve
 
     std::string uninstallMsg;
     UninstallBundle(bundleName, uninstallMsg);
-    ASSERT_EQ(uninstallMsg, "Success") << "uninstall fail!";
+    EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!";
     UninstallBundle(bundleName2, uninstallMsg);
-    ASSERT_EQ(uninstallMsg, "Success") << "uninstall fail!";
+    EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!";
     std::cout << "END BMS_Permission_0100" << std::endl;
 }
 
@@ -2258,15 +2258,15 @@ HWTEST_F(BmsInstallSystemTest, BMS_Permission_0200, Function | MediumTest | Leve
     sptr<IBundleMgr> bundleMgrProxy = GetBundleMgrProxy();
     if (!bundleMgrProxy) {
         APP_LOGE("bundle mgr proxy is nullptr.");
-        ASSERT_EQ(bundleMgrProxy, nullptr);
+        EXPECT_EQ(bundleMgrProxy, nullptr);
     }
     std::string bundleFilePath = THIRD_BUNDLE_PATH + "bmsThirdBundle7.hap";
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
-    ASSERT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
+    EXPECT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
 
     bundleFilePath = THIRD_BUNDLE_PATH + "bmsThirdBundle8.hap";
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
-    ASSERT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
+    EXPECT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
 
     std::string bundleName = "com.third.hiworld.example2";
     std::string modulePackage = "com.third.hiworld.example.h2";
@@ -2275,12 +2275,12 @@ HWTEST_F(BmsInstallSystemTest, BMS_Permission_0200, Function | MediumTest | Leve
     std::string bundleName2 = "com.third.hiworld.example3";
     std::string permissionName = "com.example.permission";
     bool isGetInfoSuccess = bundleMgrProxy->GetBundleInfo(bundleName, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo);
-    ASSERT_TRUE(isGetInfoSuccess);
+    EXPECT_TRUE(isGetInfoSuccess);
     EXPECT_EQ(commonTool.VectorToStr(bundleInfo.defPermissions), permissionName);
 
     CheckInstallIsSuccess(bundleName2, modulePackage, abilityNames);
     isGetInfoSuccess = bundleMgrProxy->GetBundleInfo(bundleName2, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo);
-    ASSERT_TRUE(isGetInfoSuccess);
+    EXPECT_TRUE(isGetInfoSuccess);
     bool ret = bundleMgrProxy->CanRequestPermission(bundleName2, permissionName, userid);
     EXPECT_FALSE(ret);
     ret = bundleMgrProxy->RequestPermissionFromUser(bundleName2, permissionName, userid);
@@ -2290,9 +2290,9 @@ HWTEST_F(BmsInstallSystemTest, BMS_Permission_0200, Function | MediumTest | Leve
 
     std::string uninstallMsg;
     UninstallBundle(bundleName, uninstallMsg);
-    ASSERT_EQ(uninstallMsg, "Success") << "uninstall fail!";
+    EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!";
     UninstallBundle(bundleName2, uninstallMsg);
-    ASSERT_EQ(uninstallMsg, "Success") << "uninstall fail!";
+    EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!";
     std::cout << "END BMS_Permission_0200" << std::endl;
 }
 
@@ -2311,15 +2311,15 @@ HWTEST_F(BmsInstallSystemTest, BMS_Permission_0300, Function | MediumTest | Leve
     sptr<IBundleMgr> bundleMgrProxy = GetBundleMgrProxy();
     if (!bundleMgrProxy) {
         APP_LOGE("bundle mgr proxy is nullptr.");
-        ASSERT_EQ(bundleMgrProxy, nullptr);
+        EXPECT_EQ(bundleMgrProxy, nullptr);
     }
     std::string bundleFilePath = THIRD_BUNDLE_PATH + "bmsThirdBundlePermission1.hap";
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
-    ASSERT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
+    EXPECT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
 
     bundleFilePath = THIRD_BUNDLE_PATH + "bmsThirdBundlePermission2.hap";
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
-    ASSERT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
+    EXPECT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
 
     std::string bundleName = "com.third.hiworld.example2";
     std::string modulePackage = "com.third.hiworld.example.h2";
@@ -2336,9 +2336,9 @@ HWTEST_F(BmsInstallSystemTest, BMS_Permission_0300, Function | MediumTest | Leve
 
     std::string uninstallMsg;
     UninstallBundle(bundleName, uninstallMsg);
-    ASSERT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
+    EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
     UninstallBundle(bundleName2, uninstallMsg);
-    ASSERT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
+    EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
     std::cout << "END BMS_Permission_0300" << std::endl;
 }
 
@@ -2373,7 +2373,7 @@ HWTEST_F(BmsInstallSystemTest, BMS_DFX_0200, Function | MediumTest | Level2)
     std::string bundleFilePath = THIRD_BUNDLE_PATH + "bmsThirdBundle1.hap";
     std::string installMsg;
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
-    ASSERT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
+    EXPECT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
 
     std::string bundleName = THIRD_BASE_BUNDLE_NAME + "1";
     std::string modulePackage = THIRD_BASE_BUNDLE_NAME + ".h1";
@@ -2384,7 +2384,7 @@ HWTEST_F(BmsInstallSystemTest, BMS_DFX_0200, Function | MediumTest | Level2)
     UninstallBundle(bundleName, uninstallMsg, Constants::INVALID_USERID);
     EXPECT_EQ(uninstallMsg, "Failure[ERR_UNINSTALL_PARAM_ERROR]");
     UninstallBundle(bundleName, uninstallMsg);
-    ASSERT_EQ(uninstallMsg, "Success") << "install fail!" << bundleFilePath;
+    EXPECT_EQ(uninstallMsg, "Success") << "install fail!" << bundleFilePath;
     std::cout << "END BMS_DFX_0200" << std::endl;
 }
 
@@ -2402,7 +2402,7 @@ HWTEST_F(BmsInstallSystemTest, BMS_DFX_0300, Function | MediumTest | Level2)
     std::string bundleFilePath = THIRD_BUNDLE_PATH + "bmsThirdBundle1.hap";
     std::string installMsg;
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
-    ASSERT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
+    EXPECT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
 
     std::string bundleName = THIRD_BASE_BUNDLE_NAME + "1";
     std::string errBundleName = "";
@@ -2414,7 +2414,7 @@ HWTEST_F(BmsInstallSystemTest, BMS_DFX_0300, Function | MediumTest | Level2)
     UninstallBundle(errBundleName, uninstallMsg);
     EXPECT_EQ(uninstallMsg, "Failure[ERR_UNINSTALL_INVALID_NAME]");
     UninstallBundle(bundleName, uninstallMsg);
-    ASSERT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
+    EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
     std::cout << "END BMS_DFX_0300" << std::endl;
 }
 
@@ -2432,14 +2432,14 @@ HWTEST_F(BmsInstallSystemTest, BMS_DFX_0400, Function | MediumTest | Level2)
     std::string bundleFilePath = THIRD_BUNDLE_PATH + "bmsThirdBundle43.hap";
 
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
-    ASSERT_EQ(installMsg, "Failure[ERR_INSTALL_INVALID_HAP_SIZE]");
+    EXPECT_EQ(installMsg, "Failure[ERR_INSTALL_INVALID_HAP_SIZE]");
 
     std::string bundleName = THIRD_BASE_BUNDLE_NAME + "big";
     BundleInfo bundleInfo;
     sptr<IBundleMgr> bundleMgrProxy = GetBundleMgrProxy();
     if (!bundleMgrProxy) {
         APP_LOGE("bundle mgr proxy is nullptr.");
-        ASSERT_EQ(bundleMgrProxy, nullptr);
+        EXPECT_EQ(bundleMgrProxy, nullptr);
     }
     bool getInfoResult = bundleMgrProxy->GetBundleInfo(bundleName, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo);
     EXPECT_FALSE(getInfoResult);

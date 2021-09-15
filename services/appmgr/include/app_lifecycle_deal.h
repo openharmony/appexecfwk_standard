@@ -21,11 +21,8 @@
 #include "ability_running_record.h"
 
 namespace OHOS {
-
 namespace AppExecFwk {
-
 class AppLifeCycleDeal {
-
 public:
     AppLifeCycleDeal();
     virtual ~AppLifeCycleDeal();
@@ -125,7 +122,6 @@ public:
 private:
     sptr<IAppScheduler> appThread_;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 

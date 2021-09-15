@@ -30,6 +30,7 @@ class GroupImpl : public Group {
 
 public:
     GroupImpl();
+    ~GroupImpl() = default;
     /**
      *  Wait all tasks associated to this group to be done.
      *  @param timeout is the max waiting time for jobs in group execute, in ms.

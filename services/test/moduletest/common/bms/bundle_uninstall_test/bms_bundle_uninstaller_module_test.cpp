@@ -157,7 +157,7 @@ void BmsBundleUninstallerModuleTest::CheckBundleInfoExist(const std::string bund
     BundleInfo info;
     std::shared_ptr<BundleMgrService> bms = DelayedSingleton<BundleMgrService>::GetInstance();
     auto dataMgr = bms->GetDataMgr();
-    ASSERT_NE(dataMgr, nullptr);
+    EXPECT_NE(dataMgr, nullptr);
     bool isBundleExist = dataMgr->GetBundleInfo(bundlename, BundleFlag::GET_BUNDLE_DEFAULT, info);
     EXPECT_TRUE(isBundleExist);
 }
@@ -167,7 +167,7 @@ void BmsBundleUninstallerModuleTest::CheckBundleInfoNonExist(const std::string b
     BundleInfo info;
     std::shared_ptr<BundleMgrService> bms = DelayedSingleton<BundleMgrService>::GetInstance();
     auto dataMgr = bms->GetDataMgr();
-    ASSERT_NE(dataMgr, nullptr);
+    EXPECT_NE(dataMgr, nullptr);
     bool isBundleExist = dataMgr->GetBundleInfo(bundlename, BundleFlag::GET_BUNDLE_DEFAULT, info);
     EXPECT_FALSE(isBundleExist);
 }
@@ -214,13 +214,13 @@ HWTEST_F(BmsBundleUninstallerModuleTest, Uninstall_0100, Function | MediumTest |
 {
     std::string bundlePath = THIRD_BUNDLE_PATH + "bmsThirdBundle1" + Constants::INSTALL_FILE_SUFFIX;
     ErrCode installResult = InstallBundle(bundlePath);
-    ASSERT_EQ(installResult, ERR_OK);
+    EXPECT_EQ(installResult, ERR_OK);
 
     CheckFileExist(BUNDLE_NAME);
     CheckBundleInfoExist(BUNDLE_NAME);
 
     ErrCode uninstallResult = UninstallBundle(BUNDLE_NAME);
-    ASSERT_EQ(uninstallResult, ERR_OK);
+    EXPECT_EQ(uninstallResult, ERR_OK);
     CheckFileNonExist(BUNDLE_NAME);
     CheckBundleInfoNonExist(BUNDLE_NAME);
 }
@@ -234,14 +234,14 @@ HWTEST_F(BmsBundleUninstallerModuleTest, Uninstall_0200, Function | MediumTest |
 {
     std::string bundlePath = THIRD_BUNDLE_PATH + "bmsThirdBundle1" + Constants::INSTALL_FILE_SUFFIX;
     ErrCode installResult = InstallBundle(bundlePath);
-    ASSERT_EQ(installResult, ERR_OK);
+    EXPECT_EQ(installResult, ERR_OK);
 
     CheckFileExist(BUNDLE_NAME);
     CheckBundleInfoExist(BUNDLE_NAME);
 
     std::string errorBundleName = "com.third.test0";
     ErrCode uninstallResult = UninstallBundle(errorBundleName);
-    ASSERT_EQ(uninstallResult, ERR_APPEXECFWK_UNINSTALL_MISSING_INSTALLED_BUNDLE);
+    EXPECT_EQ(uninstallResult, ERR_APPEXECFWK_UNINSTALL_MISSING_INSTALLED_BUNDLE);
 
     CheckFileNonExist(errorBundleName);
     CheckBundleInfoNonExist(errorBundleName);
@@ -256,18 +256,18 @@ HWTEST_F(BmsBundleUninstallerModuleTest, Uninstall_0300, Function | MediumTest |
 {
     std::string bundlePath = THIRD_BUNDLE_PATH + "bmsThirdBundle1" + Constants::INSTALL_FILE_SUFFIX;
     ErrCode installResult = InstallBundle(bundlePath);
-    ASSERT_EQ(installResult, ERR_OK);
+    EXPECT_EQ(installResult, ERR_OK);
 
     CheckFileExist(BUNDLE_NAME);
     CheckBundleInfoExist(BUNDLE_NAME);
 
     ErrCode uninstallResult = UninstallBundle(BUNDLE_NAME);
-    ASSERT_EQ(uninstallResult, ERR_OK);
+    EXPECT_EQ(uninstallResult, ERR_OK);
     CheckFileNonExist(BUNDLE_NAME);
     CheckBundleInfoNonExist(BUNDLE_NAME);
 
     uninstallResult = UninstallBundle(BUNDLE_NAME);
-    ASSERT_EQ(uninstallResult, ERR_APPEXECFWK_UNINSTALL_MISSING_INSTALLED_BUNDLE);
+    EXPECT_EQ(uninstallResult, ERR_APPEXECFWK_UNINSTALL_MISSING_INSTALLED_BUNDLE);
 }
 
 /**
@@ -279,13 +279,13 @@ HWTEST_F(BmsBundleUninstallerModuleTest, Uninstall_0400, Function | MediumTest |
 {
     std::string bundlePath = THIRD_BUNDLE_PATH + "bmsThirdBundle1" + Constants::INSTALL_FILE_SUFFIX;
     ErrCode installResult = InstallBundle(bundlePath);
-    ASSERT_EQ(installResult, ERR_OK);
+    EXPECT_EQ(installResult, ERR_OK);
 
     CheckFileExist(BUNDLE_NAME);
     CheckBundleInfoExist(BUNDLE_NAME);
 
     ErrCode uninstallResult = UninstallHap(BUNDLE_NAME, MODULE_PACKAGE);
-    ASSERT_EQ(uninstallResult, ERR_OK);
+    EXPECT_EQ(uninstallResult, ERR_OK);
     CheckFileNonExist(BUNDLE_NAME);
     CheckBundleInfoNonExist(BUNDLE_NAME);
 }
@@ -299,17 +299,17 @@ HWTEST_F(BmsBundleUninstallerModuleTest, Uninstall_0500, Function | MediumTest |
 {
     std::string bundlePath = THIRD_BUNDLE_PATH + "bmsThirdBundle1" + Constants::INSTALL_FILE_SUFFIX;
     ErrCode installResult = InstallBundle(bundlePath);
-    ASSERT_EQ(installResult, ERR_OK);
+    EXPECT_EQ(installResult, ERR_OK);
 
     bundlePath = THIRD_BUNDLE_PATH + "bmsThirdBundle4" + Constants::INSTALL_FILE_SUFFIX;
     installResult = InstallBundle(bundlePath);
-    ASSERT_EQ(installResult, ERR_OK);
+    EXPECT_EQ(installResult, ERR_OK);
 
     CheckFileExist(BUNDLE_NAME);
     CheckBundleInfoExist(BUNDLE_NAME);
 
     ErrCode uninstallResult = UninstallHap(BUNDLE_NAME, MODULE_PACKAGE);
-    ASSERT_EQ(uninstallResult, ERR_OK);
+    EXPECT_EQ(uninstallResult, ERR_OK);
     CheckHapDirNonExist(BUNDLE_NAME, MODULE_PACKAGE);
     CheckFileExist(BUNDLE_NAME);
     CheckBundleInfoExist(BUNDLE_NAME);
@@ -325,24 +325,24 @@ HWTEST_F(BmsBundleUninstallerModuleTest, Uninstall_0600, Function | MediumTest |
     BundleInfo info;
     std::shared_ptr<BundleMgrService> bms = DelayedSingleton<BundleMgrService>::GetInstance();
     auto dataMgr = bms->GetDataMgr();
-    ASSERT_NE(dataMgr, nullptr);
+    EXPECT_NE(dataMgr, nullptr);
     std::string bundlePath = THIRD_BUNDLE_PATH + "bmsThirdBundle13" + Constants::INSTALL_FILE_SUFFIX;
     std::string bundleName = "com.third.hiworld.example5";
     ErrCode installResult = InstallBundle(bundlePath);
-    ASSERT_EQ(installResult, ERR_OK);
+    EXPECT_EQ(installResult, ERR_OK);
     bool isBundleExist = dataMgr->GetBundleInfo(bundleName, BundleFlag::GET_BUNDLE_DEFAULT, info);
     EXPECT_TRUE(isBundleExist);
     CheckFileExist(bundleName);
     CheckBundleInfoExist(bundleName);
 
     auto installer = DelayedSingleton<BundleMgrService>::GetInstance()->GetBundleInstaller();
-    ASSERT_NE(installer, nullptr);
+    EXPECT_NE(installer, nullptr);
     OHOS::sptr<MockStatusReceiver> receiver = new (std::nothrow) MockStatusReceiver();
-    ASSERT_NE(receiver, nullptr);
+    EXPECT_NE(receiver, nullptr);
     InstallParam installParam;
     installParam.userId = Constants::DEFAULT_USERID;
     installer->Uninstall(bundleName, installParam, receiver);
-    ASSERT_EQ(receiver->GetResultCode(), ERR_OK);
+    EXPECT_EQ(receiver->GetResultCode(), ERR_OK);
     isBundleExist = dataMgr->GetBundleInfo(bundleName, BundleFlag::GET_BUNDLE_DEFAULT, info);
     EXPECT_FALSE(isBundleExist);
     CheckFileNonExist(bundleName);

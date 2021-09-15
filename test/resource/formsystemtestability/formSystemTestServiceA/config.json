@@ -1,0 +1,87 @@
+{
+  "app": {
+    "bundleName": "com.provider.bundleName1",
+    "vendor": "ohos",
+    "version": {
+      "code": 1,
+      "name": "1.0"
+    },
+    "apiVersion": {
+      "compatible": 3,
+      "target": 3
+    }
+  },
+  "deviceConfig": {
+    "default": {
+    }
+  },
+  "module": {
+    "package": "com.provider.FormSystemTestServiceA.src",
+    "name": "moduleName11",
+    "deviceType": [
+      "phone"
+    ],
+    "distro": {
+      "deliveryWithInstall": true,
+      "moduleName": "testability",
+      "moduleType": "entry"
+    },
+    "abilities": [
+      {
+        "name": "FormStServiceAbilityA1",
+        "icon": "$media:snowball",
+        "label": "FormStServiceAbilityA1 Ability",
+        "launchType": "standard",
+        "orientation": "unspecified",
+        "type": "service",
+        "visible": true,
+        "formsEnabled": true,
+        "forms": [
+          {
+            "name": "formName111",
+            "description": "form_description",
+            "isDefault": true,
+            "type": "JS",
+            "colorMode": "auto",
+            "supportDimensions":[ "1*2", "2*2" ],
+            "defaultDimension": "1*2",
+            "landscapeLayouts": [""],
+            "portraitLayouts": [""],
+            "updateEnabled": true,
+            "scheduledUpateTime": "10:30",
+            "updateDuration": 1,
+            "deepLink": "",
+            "jsComponentName": "card",
+            "formVisibleNotify" : true,
+            "metaData": {
+              "customizeData": [
+                {
+                  "name": "originWidgetName",
+                  "value": "myTest"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ],
+    "defPermissions": [
+      {
+        "name": "com.permission.CAMERA",
+        "grantMode": "system_grant",
+        "availableScope": ["signature"],
+        "label": "CAMERA permission",
+        "description": "CAMERA permission in detail"
+      }
+    ],
+    "js": [
+      {
+        "name": "card",
+        "pages": [
+          "pages/index/index"
+        ],
+        "type": "form"
+      }
+    ]
+  }
+}

@@ -39,7 +39,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 enum class ServiceRunningState { STATE_NOT_START, STATE_RUNNING };
 
 struct AppMgrServiceState {
@@ -232,7 +231,6 @@ private:
 
     DISALLOW_COPY_AND_MOVE(AppMgrService);
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_APPMGR_INCLUDE_APP_MGR_SERVICE_H

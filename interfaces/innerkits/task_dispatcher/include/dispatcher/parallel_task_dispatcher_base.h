@@ -35,14 +35,10 @@ namespace OHOS {
 namespace AppExecFwk {
 /**
  *  Base implementation for parallel TaskDispatcher
- *
- *
  */
 class ParallelTaskDispatcherBase : public BaseTaskDispatcher,
                                    public std::enable_shared_from_this<ParallelTaskDispatcherBase> {
 public:
-    // ParallelTaskDispatcherBase();
-
     ParallelTaskDispatcherBase(
         TaskPriority taskPriority, std::shared_ptr<TaskExecutor> &executor, const std::string &dispatcherName);
     virtual ~ParallelTaskDispatcherBase() = default;
@@ -108,7 +104,7 @@ private:
         void OnChanged(const TaskStage &stage)
         {
             if (stage.IsDone()) {
-                APP_LOGD("task done.");
+                APP_LOGI("ParallelTaskDispatcherBase task done.");
                 callback_();
             }
         }

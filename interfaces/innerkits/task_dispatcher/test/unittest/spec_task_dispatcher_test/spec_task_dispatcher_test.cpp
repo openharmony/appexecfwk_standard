@@ -94,7 +94,7 @@ HWTEST(SpecTaskDispatcherTest, SpecTaskDispatcher_0100, Function | MediumTest | 
     GTEST_LOG_(INFO) << "SpecTaskDispatcher_0100 start";
     std::shared_ptr<SpecTaskDispatcher> ptr = CreateSpecTaskDispatcher();
     // same to func CreateSpecTaskDispatcher  TaskPriority
-    ASSERT_EQ(ptr->GetPriority(), TaskPriority::HIGH);
+    EXPECT_EQ(ptr->GetPriority(), TaskPriority::HIGH);
     GTEST_LOG_(INFO) << "SpecTaskDispatcher_0100 end";
 }
 
@@ -114,36 +114,36 @@ HWTEST(SpecTaskDispatcherTest, SyncDispatch_0100, Function | MediumTest | Level1
     // task runs synchronized
     // use elapsed time to identify a task.
     std::atomic<int> count(0);
-    ASSERT_TRUE(count.load() == 0);
+    EXPECT_TRUE(count.load() == 0);
     int sleep1 = 2000;
     ptr->SyncDispatch(std::make_shared<Runnable>([&count, sleep = sleep1]() {
         auto time = std::chrono::milliseconds(sleep);
         std::this_thread::sleep_for(time);
         int index = count.fetch_add(1);
-        ASSERT_TRUE(index == 0);
+        EXPECT_TRUE(index == 0);
         APP_LOGD("task %{public}d end, elapsed %{public}d ms", index, sleep);
     }));
-    ASSERT_TRUE(count.load() == 1);
+    EXPECT_TRUE(count.load() == 1);
 
     int sleep2 = 100;
     ptr->SyncDispatch(std::make_shared<Runnable>([&count, sleep = sleep2]() {
         auto time = std::chrono::milliseconds(sleep);
         std::this_thread::sleep_for(time);
         int index = count.fetch_add(1);
-        ASSERT_TRUE(index == 1);
+        EXPECT_TRUE(index == 1);
         APP_LOGD("task %{public}d end, elapsed %{public}d ms", index, sleep);
     }));
-    ASSERT_TRUE(count.load() == 2);
+    EXPECT_TRUE(count.load() == 2);
 
     int sleep3 = 1000;
     ptr->SyncDispatch(std::make_shared<Runnable>([&count, sleep = sleep3]() {
         auto time = std::chrono::milliseconds(sleep);
         std::this_thread::sleep_for(time);
         int index = count.fetch_add(1);
-        ASSERT_TRUE(index == 2);
+        EXPECT_TRUE(index == 2);
         APP_LOGD("task %{public}d end, elapsed %{public}d ms", index, sleep);
     }));
-    ASSERT_TRUE(count.load() == 3);
+    EXPECT_TRUE(count.load() == 3);
 
     long wait = 1000;
     GTEST_LOG_(INFO) << ("wait for " + std::to_string(wait));
@@ -182,36 +182,36 @@ HWTEST(SpecTaskDispatcherTest, AsyncDispatch_0100, Function | MediumTest | Level
     // task runs synchronized
     // use elapsed time to identify a task.
     std::atomic<int> count(0);
-    ASSERT_TRUE(count.load() == 0);
+    EXPECT_TRUE(count.load() == 0);
     int sleep1 = 2000;
     ptr->AsyncDispatch(std::make_shared<Runnable>([&count, sleep = sleep1]() {
         auto time = std::chrono::milliseconds(sleep);
         std::this_thread::sleep_for(time);
         int index = count.fetch_add(1);
-        ASSERT_TRUE(index == 0);
+        EXPECT_TRUE(index == 0);
         APP_LOGD("task %{public}d end, elapsed %{public}d ms", index, sleep);
     }));
-    ASSERT_TRUE(count.load() == 0);
+    EXPECT_TRUE(count.load() == 0);
 
     int sleep2 = 1000;
     ptr->AsyncDispatch(std::make_shared<Runnable>([&count, sleep = sleep2]() {
         auto time = std::chrono::milliseconds(sleep);
         std::this_thread::sleep_for(time);
         int index = count.fetch_add(1);
-        ASSERT_TRUE(index == 1);
+        EXPECT_TRUE(index == 1);
         APP_LOGD("task %{public}d end, elapsed %{public}d ms", index, sleep);
     }));
-    ASSERT_TRUE(count.load() == 0);
+    EXPECT_TRUE(count.load() == 0);
 
     int sleep3 = 1000;
     ptr->AsyncDispatch(std::make_shared<Runnable>([&count, sleep = sleep3]() {
         auto time = std::chrono::milliseconds(sleep);
         std::this_thread::sleep_for(time);
         int index = count.fetch_add(1);
-        ASSERT_TRUE(index == 2);
+        EXPECT_TRUE(index == 2);
         APP_LOGD("task %{public}d end, elapsed %{public}d ms", index, sleep);
     }));
-    ASSERT_TRUE(count.load() == 0);
+    EXPECT_TRUE(count.load() == 0);
 
     {
         long wait = 100;
@@ -223,28 +223,28 @@ HWTEST(SpecTaskDispatcherTest, AsyncDispatch_0100, Function | MediumTest | Level
         GTEST_LOG_(INFO) << ("wait for task, wait= " + std::to_string(wait) + " ms");
         auto time = std::chrono::milliseconds(wait);
         std::this_thread::sleep_for(time);
-        ASSERT_TRUE(count.load() == 0);
+        EXPECT_TRUE(count.load() == 0);
     }
     {
         long wait = 1000;
         GTEST_LOG_(INFO) << ("wait for task, wait= " + std::to_string(wait) + " ms");
         auto time = std::chrono::milliseconds(wait);
         std::this_thread::sleep_for(time);
-        ASSERT_TRUE(count.load() == 1);
+        EXPECT_TRUE(count.load() == 1);
     }
     {
         long wait = 1000;
         GTEST_LOG_(INFO) << ("wait for task, wait= " + std::to_string(wait) + " ms");
         auto time = std::chrono::milliseconds(wait);
         std::this_thread::sleep_for(time);
-        ASSERT_TRUE(count.load() == 2);
+        EXPECT_TRUE(count.load() == 2);
     }
     {
         long wait = 1000;
         GTEST_LOG_(INFO) << ("wait for task, wait= " + std::to_string(wait) + " ms");
         auto time = std::chrono::milliseconds(wait);
         std::this_thread::sleep_for(time);
-        ASSERT_TRUE(count.load() == 3);
+        EXPECT_TRUE(count.load() == 3);
     }
 
     GTEST_LOG_(INFO) << "AsyncDispatch_0100 end";
@@ -283,31 +283,31 @@ HWTEST(SpecTaskDispatcherTest, DelayDispatch_0100, Function | MediumTest | Level
     ptr->DelayDispatch(std::make_shared<Runnable>([&count, sleep = sleep1]() {
         // execute second
         int index = count.fetch_add(1);
-        ASSERT_TRUE(index == 2);
+        EXPECT_TRUE(index == 2);
         APP_LOGD("task %{public}d end, elapsed %{public}d ms", index, sleep);
     }),
         sleep1);
-    ASSERT_TRUE(count.load() == 0);
+    EXPECT_TRUE(count.load() == 0);
 
     int sleep2 = 1000;
     ptr->DelayDispatch(std::make_shared<Runnable>([&count, sleep = sleep2]() {
         // execute first
         int index = count.fetch_add(1);
-        ASSERT_TRUE(index == 0 || index == 1);
+        EXPECT_TRUE(index == 0 || index == 1);
         APP_LOGD("task %{public}d end, elapsed %{public}d ms", index, sleep);
     }),
         sleep2);
-    ASSERT_TRUE(count.load() == 0);
+    EXPECT_TRUE(count.load() == 0);
 
     int sleep3 = 1000;
     ptr->DelayDispatch(std::make_shared<Runnable>([&count, sleep = sleep3]() {
         // execute first
         int index = count.fetch_add(1);
-        ASSERT_TRUE(index == 0 || index == 1);
+        EXPECT_TRUE(index == 0 || index == 1);
         APP_LOGD("task %{public}d end, elapsed %{public}d ms", index, sleep);
     }),
         sleep3);
-    ASSERT_TRUE(count.load() == 0);
+    EXPECT_TRUE(count.load() == 0);
 
     {
         long wait = 100;
@@ -319,21 +319,21 @@ HWTEST(SpecTaskDispatcherTest, DelayDispatch_0100, Function | MediumTest | Level
         GTEST_LOG_(INFO) << ("wait for task, wait= " + std::to_string(wait) + " ms");
         auto time = std::chrono::milliseconds(wait);
         std::this_thread::sleep_for(time);
-        ASSERT_TRUE(count.load() == 2);
+        EXPECT_TRUE(count.load() == 2);
     }
     {
         long wait = 500;
         GTEST_LOG_(INFO) << ("wait for task, wait= " + std::to_string(wait) + " ms");
         auto time = std::chrono::milliseconds(wait);
         std::this_thread::sleep_for(time);
-        ASSERT_TRUE(count.load() == 2);
+        EXPECT_TRUE(count.load() == 2);
     }
     {
         long wait = 1000;
         GTEST_LOG_(INFO) << ("wait for task, wait= " + std::to_string(wait) + " ms");
         auto time = std::chrono::milliseconds(wait);
         std::this_thread::sleep_for(time);
-        ASSERT_TRUE(count.load() == 3);
+        EXPECT_TRUE(count.load() == 3);
     }
     GTEST_LOG_(INFO) << "DelayDispatch_0100 end";
 }

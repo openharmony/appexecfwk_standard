@@ -27,6 +27,7 @@ config("amsKitSystemTestServiceconfig") {
     "${appexecfwk_path}/services/bundlemgr/include",
     "//foundation/distributedschedule/dmsfwk/services/dtbschedmgr/include",
     "//utils/system/safwk/native/include",
+    "//third_party/jsoncpp/include",
   ]
   defines = [
     "APP_LOG_TAG = \"amsKitSystemTestService\"",
@@ -59,6 +60,7 @@ ohos_shared_library("amsKitSystemTestService") {
     "${appexecfwk_path}/kits:appkit_native",
     "${appexecfwk_path}/services/bundlemgr:libbms",
     "${libs_path}/libeventhandler:libeventhandler_target",
+    "//third_party/jsoncpp:jsoncpp",
     "//utils/native/base:utilsbase",
   ]
   external_deps = [

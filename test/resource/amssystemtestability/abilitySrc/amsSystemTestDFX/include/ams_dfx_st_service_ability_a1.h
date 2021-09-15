@@ -28,9 +28,9 @@
 namespace OHOS {
 namespace AppExecFwk {
 
-class AmsStAbilityDFXA1 : public Ability {
+class AmsDfxStServiceAbilityA1 : public Ability {
 public:
-    ~AmsStAbilityDFXA1();
+    ~AmsDfxStServiceAbilityA1();
 
 protected:
     virtual void OnStart(const Want &want) override;

@@ -25,7 +25,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 struct AppSpawnStartMsg {
     int32_t uid;
     int32_t gid;
@@ -116,7 +115,6 @@ private:
     // because AppSpawnMsg's size is uncertain, so should use raw pointer.
     AppSpawnMsg *msg_ = nullptr;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_APPMGR_INCLUDE_APP_SPAWN_MSG_WRAPPER_H

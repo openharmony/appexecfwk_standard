@@ -28,11 +28,8 @@
 #include "record_query_result.h"
 
 namespace OHOS {
-
 namespace AppExecFwk {
-
 class AppRunningManager {
-
 public:
     AppRunningManager();
     virtual ~AppRunningManager();
@@ -126,6 +123,8 @@ public:
     void TerminateAbility(const sptr<IRemoteObject> &token);
     bool GetPidsByBundleName(const std::string &bundleName, std::list<pid_t> &pids);
 
+    std::shared_ptr<AppRunningRecord> GetTerminatingAppRunningRecord(const sptr<IRemoteObject> &abilityToken);
+
 private:
     std::shared_ptr<AbilityRunningRecord> GetAbilityRunningRecord(const int64_t eventId);
 
@@ -133,7 +132,6 @@ private:
     std::map<const int32_t, const std::shared_ptr<AppRunningRecord>> appRunningRecordMap_;
     std::recursive_mutex lock_;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 

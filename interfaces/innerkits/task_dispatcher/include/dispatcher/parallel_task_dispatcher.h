@@ -32,13 +32,9 @@ namespace OHOS {
 namespace AppExecFwk {
 /**
  *  Customed parallel TaskDispatcher which means it can be created multi times.
- *
- *
  */
 class ParallelTaskDispatcher : public ParallelTaskDispatcherBase {
 public:
-    // ParallelTaskDispatcher();
-
     ParallelTaskDispatcher(const std::string &name, TaskPriority priority, std::shared_ptr<TaskExecutor> &executor);
     ~ParallelTaskDispatcher(){};
 

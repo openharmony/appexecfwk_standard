@@ -86,6 +86,9 @@ int BundleMgrHost::OnRemoteRequest(uint32_t code, MessageParcel &data, MessagePa
         case static_cast<uint32_t>(IBundleMgr::Message::QUERY_ABILITY_INFO):
             errCode = HandleQueryAbilityInfo(data, reply);
             break;
+        case static_cast<uint32_t>(IBundleMgr::Message::QUERY_ABILITY_INFOS):
+            errCode = HandleQueryAbilityInfos(data, reply);
+            break;
         case static_cast<uint32_t>(IBundleMgr::Message::QUERY_ABILITY_INFO_BY_URI):
             errCode = HandleQueryAbilityInfoByUri(data, reply);
             break;
@@ -194,6 +197,12 @@ int BundleMgrHost::OnRemoteRequest(uint32_t code, MessageParcel &data, MessagePa
         case static_cast<uint32_t>(IBundleMgr::Message::GET_SHORTCUT_INFO):
             errCode = HandleGetShortcutInfos(data, reply);
             break;
+        case static_cast<uint32_t>(IBundleMgr::Message::GET_MODULE_USAGE_RECORD):
+            errCode = HandleGetModuleUsageRecords(data, reply);
+            break;
+        case static_cast<uint32_t>(IBundleMgr::Message::NOTIFY_ACTIVITY_LIFE_STATUS):
+            errCode = HandleNotifyActivityLifeStatus(data, reply);
+            break;
         default:
             return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
     }
@@ -201,16 +210,34 @@ int BundleMgrHost::OnRemoteRequest(uint32_t code, MessageParcel &data, MessagePa
     return (errCode == ERR_OK) ? NO_ERROR : UNKNOWN_ERROR;
 }
 
-int BundleMgrHost::GetUidByBundleName([[maybe_unused]] const std::string &bundleName, const int userId)
+int BundleMgrHost::GetUidByBundleName(const std::string &bundleName, const int userId)
 {
-    APP_LOGD("need not impl for host interface");
-    return Constants::INVALID_UID;
+    APP_LOGI("begin to get uid of %{public}s", bundleName.c_str());
+    BundleInfo bundleInfo;
+    int uid = Constants::INVALID_UID;
+    bool ret = GetBundleInfo(bundleName, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo);
+    if (ret) {
+        uid = bundleInfo.uid;
+        APP_LOGD("get bundle uid success");
+    } else {
+        APP_LOGE("can not get bundleInfo's uid");
+    }
+    return uid;
 }
 
 std::string BundleMgrHost::GetAppIdByBundleName([[maybe_unused]] const std::string &bundleName, const int userId)
 {
-    APP_LOGD("need not impl for host interface");
-    return Constants::EMPTY_STRING;
+    APP_LOGI("begin to get appId of %{public}s", bundleName.c_str());
+    BundleInfo bundleInfo;
+    std::string appId = Constants::EMPTY_STRING;
+    bool ret = GetBundleInfo(bundleName, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo);
+    if (ret) {
+        appId = bundleInfo.appId;
+        APP_LOGD("get bundle appId success");
+    } else {
+        APP_LOGE("can not get bundleInfo's appId");
+    }
+    return appId;
 }
 
 std::string BundleMgrHost::GetAppType([[maybe_unused]] const std::string &bundleName)
@@ -407,6 +434,29 @@ ErrCode BundleMgrHost::HandleQueryAbilityInfo(Parcel &data, Parcel &reply)
     }
     if (ret) {
         if (!reply.WriteParcelable(&info)) {
+            APP_LOGE("write failed");
+            return ERR_APPEXECFWK_PARCEL_ERROR;
+        }
+    }
+    return ERR_OK;
+}
+
+ErrCode BundleMgrHost::HandleQueryAbilityInfos(Parcel &data, Parcel &reply)
+{
+    std::unique_ptr<Want> want(data.ReadParcelable<Want>());
+    if (!want) {
+        APP_LOGE("ReadParcelable<want> failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+
+    std::vector<AbilityInfo> abilityInfos;
+    bool ret = QueryAbilityInfos(*want, abilityInfos);
+    if (!reply.WriteBool(ret)) {
+        APP_LOGE("write failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    if (ret) {
+        if (!WriteParcelableVector(abilityInfos, reply)) {
             APP_LOGE("write failed");
             return ERR_APPEXECFWK_PARCEL_ERROR;
         }
@@ -1004,7 +1054,44 @@ ErrCode BundleMgrHost::HandleGetShortcutInfos(Parcel &data, Parcel &reply)
     return ERR_OK;
 }
 
-template<typename T>
+ErrCode BundleMgrHost::HandleGetModuleUsageRecords(Parcel &data, Parcel &reply)
+{
+    int32_t number = data.ReadInt32();
+    std::vector<ModuleUsageRecord> records;
+    bool ret = GetModuleUsageRecords(number, records);
+    if (!reply.WriteBool(ret)) {
+        APP_LOGE("write failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+
+    if (ret) {
+        if (!WriteParcelableVector(records, reply)) {
+            APP_LOGE("write failed");
+            return ERR_APPEXECFWK_PARCEL_ERROR;
+        }
+    }
+    return ERR_OK;
+}
+
+ErrCode BundleMgrHost::HandleNotifyActivityLifeStatus(Parcel &data, Parcel &reply)
+{
+    std::string bundleName = data.ReadString();
+    std::string abilityName = data.ReadString();
+    int64_t launchTime = data.ReadInt64();
+    APP_LOGI("bundleName %{public}s, abilityName %{public}s, launchTime %{public}" PRId64,
+        bundleName.c_str(),
+        abilityName.c_str(),
+        launchTime);
+        
+    bool ret = NotifyActivityLifeStatus(bundleName, abilityName, launchTime);
+    if (!reply.WriteBool(ret)) {
+        APP_LOGE("write failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    return ERR_OK;
+}
+
+template <typename T>
 bool BundleMgrHost::WriteParcelableVector(std::vector<T> &parcelableVector, Parcel &reply)
 {
     if (!reply.WriteInt32(parcelableVector.size())) {

@@ -15,7 +15,7 @@
 
 #include "lmks_client.h"
 
-#include <errno.h>
+#include <cerrno>
 #include <memory>
 #include <string>
 #include <sys/socket.h>
@@ -35,6 +35,8 @@ namespace AppExecFwk {
 namespace {
 constexpr int LMKS_SOCKET_TIMEOUT = 3;
 
+constexpr size_t LMKS_START_VALUE = 1;
+constexpr size_t LMKS_MULTIPLE = 2;
 constexpr size_t LMKS_MAX_TARGETS = 6;
 
 constexpr int LMKS_CMD_TARGET = 0;
@@ -145,7 +147,7 @@ int32_t LmksClient::Target(const Targets &targets)
     }
 
     int i = 0;
-    int32_t buf[1 + 2 * LMKS_MAX_TARGETS];
+    int32_t buf[LMKS_START_VALUE + LMKS_MULTIPLE * LMKS_MAX_TARGETS];
     buf[i++] = LMKS_CMD_TARGET;
 
     for (auto target : targets) {

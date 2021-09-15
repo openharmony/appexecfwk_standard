@@ -32,6 +32,8 @@ const std::string PROFILE_KEY_LABEL_ID = "labelId";
 const std::string PROFILE_KEY_DESCRIPTION = "description";
 const std::string PROFILE_KEY_DESCRIPTION_ID = "descriptionId";
 const std::string PROFILE_KEY_TYPE = "type";
+const std::string PROFILE_KEY_SRCPATH = "srcPath";
+const std::string PROFILE_KEY_SRCLANGUAGE = "srcLanguage";
 
 // bundle profile tag
 const std::string BUNDLE_PROFILE_KEY_APP = "app";
@@ -121,6 +123,7 @@ const std::string BUNDLE_MODULE_PROFILE_KEY_CUSTOMIZE_DATA = "customizeData";
 const std::string BUNDLE_MODULE_PROFILE_KEY_DELIVERY_WITH_INSTALL = "deliveryWithInstall";
 const std::string BUNDLE_MODULE_PROFILE_KEY_MODULE_NAME = "moduleName";
 const std::string BUNDLE_MODULE_PROFILE_KEY_MODULE_TYPE = "moduleType";
+const std::string BUNDLE_MODULE_PROFILE_KEY_MODULE_INSTALLATION_FREE = "installationFree";
 // sub BUNDLE_MODULE_PROFILE_KEY_SKILLS
 const std::string BUNDLE_MODULE_PROFILE_KEY_ACTIONS = "actions";
 const std::string BUNDLE_MODULE_PROFILE_KEY_ENTITIES = "entities";
@@ -190,6 +193,8 @@ const std::string BUNDLE_MODULE_PROFILE_FORMS_UPDATE_DURATION = "updateDuration"
 const std::string BUNDLE_MODULE_PROFILE_FORMS_DEEP_LINK = "deepLink";
 const std::string BUNDLE_MODULE_PROFILE_FORMS_JS_COMPONENT_NAME = "jsComponentName";
 const std::string BUNDLE_MODULE_PROFILE_FORMS_VALUE = "value";
+const std::string BUNDLE_MODULE_PROFILE_FORMS_FORM_CONFIG_ABILITY = "formConfigAbility";
+const std::string BUNDLE_MODULE_PROFILE_FORMS_FORM_VISIBLE_NOTIFY = "formEnabled";
 // sub BUNDLE_MODULE_PROFILE_KEY_JS
 const std::string BUNDLE_MODULE_PROFILE_KEY_PAGES = "pages";
 const std::string BUNDLE_MODULE_PROFILE_KEY_WINDOW = "window";
@@ -208,6 +213,14 @@ const std::string BUNDLE_MODULE_PROFILE_KEY_SHORTCUT_INTENTS = "intents";
 // sub BUNDLE_MODULE_PROFILE_KEY_SHORTCUT_INTENTS
 const std::string BUNDLE_MODULE_PROFILE_KEY_TARGET_CLASS = "targetClass";
 const std::string BUNDLE_MODULE_PROFILE_KEY_TARGET_BUNDLE = "targetBundle";
+
+const uint32_t VALUE_HOME_SCREEN = 1 << 0;
+// 000010 represents supporting search box
+const uint32_t VALUE_SEARCHBOX = 1 << 1;
+
+const std::string KEY_HOME_SCREEN = "homeScreen";
+const std::string KEY_SEARCHBOX = "searchbox";
+static std::map<std::string, uint32_t> formEntityMap;
 
 extern thread_local int32_t parseResult;
 

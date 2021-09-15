@@ -30,11 +30,12 @@ namespace AppExecFwk {
 namespace {
 const std::string BUNDLE_NAME_EMPTY = "";
 
-const std::string SHORT_OPTIONS = "hp:rn:m:ai";
+const std::string SHORT_OPTIONS = "hp:rfn:m:ai";
 const struct option LONG_OPTIONS[] = {
     {"help", no_argument, nullptr, 'h'},
     {"bundle-path", required_argument, nullptr, 'p'},
     {"replace", no_argument, nullptr, 'r'},
+    {"force", no_argument, nullptr, 'f'},
     {"bundle-name", required_argument, nullptr, 'n'},
     {"module-name", required_argument, nullptr, 'm'},
     {"all", no_argument, nullptr, 'a'},
@@ -321,7 +322,9 @@ ErrCode BundleManagerShellCommand::RunAsHelpCommand()
 ErrCode BundleManagerShellCommand::RunAsInstallCommand()
 {
     int result = OHOS::ERR_OK;
+
     InstallFlag installFlag = InstallFlag::NORMAL;
+    bool noCheckSignature = false;
 
     int option = -1;
     int counter = 0;
@@ -419,6 +422,12 @@ ErrCode BundleManagerShellCommand::RunAsInstallCommand()
                 installFlag = InstallFlag::REPLACE_EXISTING;
                 break;
             }
+            case 'f': {
+                // 'bm install -f'
+                // 'bm install -f'
+                noCheckSignature = true;
+                break;
+            }
             case 0: {
                 break;
             }
@@ -441,7 +450,11 @@ ErrCode BundleManagerShellCommand::RunAsInstallCommand()
     if (result != OHOS::ERR_OK) {
         resultReceiver_.append(HELP_MSG_INSTALL);
     } else {
-        int32_t installResult = InstallOperation(bundlePath, installFlag);
+        InstallParam installParam;
+        installParam.installFlag = installFlag;
+        installParam.noCheckSignature = noCheckSignature;
+
+        int32_t installResult = InstallOperation(bundlePath, installParam);
         if (installResult == OHOS::ERR_OK) {
             resultReceiver_ = STRING_INSTALL_BUNDLE_OK + "\n";
         } else {
@@ -745,7 +758,7 @@ std::string BundleManagerShellCommand::DumpBundleInfo() const
     return dumpResults;
 }
 
-int32_t BundleManagerShellCommand::InstallOperation(const std::string bundlePath, const InstallFlag installFlag) const
+int32_t BundleManagerShellCommand::InstallOperation(const std::string &bundlePath, InstallParam &installParam) const
 {
     std::string absoluteBundlePath = "";
     if (bundlePath.size() > 0) {
@@ -769,17 +782,16 @@ int32_t BundleManagerShellCommand::InstallOperation(const std::string bundlePath
     APP_LOGI("bundlePath: %{public}s", bundlePath.c_str());
     APP_LOGI("absoluteBundlePath: %{public}s", absoluteBundlePath.c_str());
 
-    sptr<StatusReceiverImpl> statusReceiver(new StatusReceiverImpl());
-    InstallParam installParam;
-    installParam.installFlag = installFlag;
     installParam.userId = 0;
+    sptr<StatusReceiverImpl> statusReceiver(new StatusReceiverImpl());
 
     bundleInstallerProxy_->Install(absoluteBundlePath, installParam, statusReceiver);
 
     return statusReceiver->GetResultCode();
 }
 
-int32_t BundleManagerShellCommand::UninstallOperation(const std::string bundleName, const std::string moduleName) const
+int32_t BundleManagerShellCommand::UninstallOperation(
+    const std::string &bundleName, const std::string &moduleName) const
 {
     sptr<StatusReceiverImpl> statusReceiver(new StatusReceiverImpl());
     InstallParam installParam;

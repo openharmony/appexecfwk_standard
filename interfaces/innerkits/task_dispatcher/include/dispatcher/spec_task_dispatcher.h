@@ -29,18 +29,13 @@ namespace OHOS {
 namespace AppExecFwk {
 
 class EventRunner;
-/**
- *  Dispatcher for specific thread model like UI / Main / IO and so on.
- *
- *
- */
 class SpecTaskDispatcher : public BaseTaskDispatcher, public std::enable_shared_from_this<SpecTaskDispatcher> {
 public:
     /**
      *  constructor for special task dispatchers
      *
      *  @param config which is the config of this dispatcher
-     *  @param looper task looper
+     *  @param runner event runner
      *
      */
     SpecTaskDispatcher(std::shared_ptr<SpecDispatcherConfig> config, std::shared_ptr<EventRunner> runner);
@@ -50,7 +45,7 @@ public:
      *  Called when post a task to the TaskDispatcher with waiting Attention: Call
      *  this function of Specific dispatcher on the corresponding thread will lock.
      *
-     *  @param task is the job to execute
+     *  @param runnable is the job to execute
      *
      */
     ErrCode SyncDispatch(const std::shared_ptr<Runnable> &runnable);
@@ -58,7 +53,7 @@ public:
     /**
      *  Called when post a task to the TaskDispatcher without waiting
      *
-     *  @param task is the job to execute
+     *  @param runnable is the job to execute
      *  @return an interface for revoke the task if it hasn't been invoked.
      *
      */
@@ -67,7 +62,7 @@ public:
     /**
      *  Called when post a task group to the TaskDispatcher and without waiting
      *
-     *  @param task    is the job to execute
+     *  @param runnable is the job to execute
      *  @param delayMs indicate the delay time in milliseconds to execute
      *  @return an interface for revoke the task if it hasn't been invoked.
      *

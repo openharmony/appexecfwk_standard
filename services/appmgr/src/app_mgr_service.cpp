@@ -29,7 +29,6 @@
 namespace OHOS {
 namespace AppExecFwk {
 namespace {
-
 const std::string TASK_ATTACH_APPLICATION = "AttachApplicationTask";
 const std::string TASK_APPLICATION_FOREGROUNDED = "ApplicationForegroundedTask";
 const std::string TASK_APPLICATION_BACKGROUNDED = "ApplicationBackgroundedTask";
@@ -37,7 +36,6 @@ const std::string TASK_APPLICATION_TERMINATED = "ApplicationTerminatedTask";
 const std::string TASK_ABILITY_CLEANED = "AbilityCleanedTask";
 const std::string TASK_ADD_APP_DEATH_RECIPIENT = "AddAppRecipientTask";
 const std::string TASK_CLEAR_UP_APPLICATION_DATA = "ClearUpApplicationDataTask";
-
 }  // namespace
 
 REGISTER_SYSTEM_ABILITY_BY_ID(AppMgrService, APP_MGR_SERVICE_ID, true);

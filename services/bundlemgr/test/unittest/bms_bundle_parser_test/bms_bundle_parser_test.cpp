@@ -104,6 +104,7 @@ const nlohmann::json CONFIG_JSON = R"(
                         "type": "JS",
                         "colorMode": "auto",
                         "isDefault": false,
+                        "jsComponentName": "card4x4",
                         "updateEnabled": true,
                         "scheduledUpdateTime": "21:05",
                         "updateDuration": 1,
@@ -117,6 +118,7 @@ const nlohmann::json CONFIG_JSON = R"(
                         "portraitLayouts": [
                             "$layout:ability_form"
                         ],
+                        "formVisibleNotify": true,
                         "deepLink": "ability://com.example.myapplication.fa/.MainAbility",
                         "formConfigAbility": "ability://com.example.myapplication.fa/.MainAbility",
                             "metaData": {
@@ -893,7 +895,7 @@ HWTEST_F(BmsBundleParserTest, TestParse_2400, Function | SmallTest | Level1)
 {
     nlohmann::json errorFormsJson = CONFIG_JSON;
     errorFormsJson[BUNDLE_PROFILE_KEY_MODULE][BUNDLE_MODULE_PROFILE_KEY_ABILITIES]= R"(
-    [{     
+    [{
         "skills": [
           {
             "entities": [
@@ -938,7 +940,7 @@ HWTEST_F(BmsBundleParserTest, TestParse_2400, Function | SmallTest | Level1)
         "type": "page",
         "launchType": "standard"
     }]
-    
+
     )"_json;
     CheckProfileForms(errorFormsJson);
 }
@@ -1006,7 +1008,6 @@ HWTEST_F(BmsBundleParserTest, TestParse_2700, Function | SmallTest | Level1)
     nlohmann::json errorShortcutJson = CONFIG_JSON;
     errorShortcutJson[BUNDLE_PROFILE_KEY_MODULE][BUNDLE_MODULE_PROFILE_KEY_SHORTCUTS] = R"(
         [{
-            "shortcutId": "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-",
             "label": "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-",
             "icon": "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-",
             "intents": [
@@ -1033,7 +1034,7 @@ HWTEST_F(BmsBundleParserTest, TestExtractByName_0100, Function | SmallTest | Lev
 
     BundleExtractor bundleExtractor(pathStream_.str());
     bool result = bundleExtractor.ExtractByName(fileInBundle, fileBuffer);
-    ASSERT_FALSE(result);
+    EXPECT_FALSE(result);
 }
 
 /**
@@ -1050,7 +1051,7 @@ HWTEST_F(BmsBundleParserTest, TestExtractByName_0200, Function | SmallTest | Lev
 
     BundleExtractor bundleExtractor(pathStream_.str());
     bool result = bundleExtractor.ExtractByName(fileInBundle, fileBuffer);
-    ASSERT_FALSE(result);
+    EXPECT_FALSE(result);
 }
 
 /**
@@ -1073,7 +1074,7 @@ HWTEST_F(BmsBundleParserTest, TestExtractByName_0300, Function | SmallTest | Lev
 
     BundleExtractor bundleExtractor(pathStream_.str());
     bool result = bundleExtractor.ExtractByName(fileInBundle, fileBuffer);
-    ASSERT_FALSE(result);
+    EXPECT_FALSE(result);
 }
 
 /**
@@ -1096,7 +1097,7 @@ HWTEST_F(BmsBundleParserTest, TestExtractByName_0400, Function | SmallTest | Lev
 
     BundleExtractor bundleExtractor(pathStream_.str());
     bool result = bundleExtractor.ExtractByName(fileInBundle, fileBuffer);
-    ASSERT_FALSE(result);
+    EXPECT_FALSE(result);
 }
 
 /**
@@ -1116,5 +1117,5 @@ HWTEST_F(BmsBundleParserTest, TestExtractByName_0500, Function | SmallTest | Lev
 
     BundleExtractor bundleExtractor(pathStream_.str());
     bool result = bundleExtractor.ExtractByName(fileInBundle, fileBuffer);
-    ASSERT_FALSE(result);
+    EXPECT_FALSE(result);
 }

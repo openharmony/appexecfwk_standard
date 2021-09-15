@@ -55,7 +55,7 @@ HWTEST_F(BmsServiceStartupTest, Startup_0100, Function | SmallTest | Level0)
 {
     std::shared_ptr<BundleMgrService> bms = DelayedSingleton<BundleMgrService>::GetInstance();
     bool ready = bms->IsServiceReady();
-    ASSERT_EQ(false, ready);
+    EXPECT_EQ(false, ready);
     bms->OnStart();
     ready = bms->IsServiceReady();
     EXPECT_EQ(true, ready);
@@ -72,7 +72,7 @@ HWTEST_F(BmsServiceStartupTest, Startup_0200,Function | SmallTest | Level0)
     std::shared_ptr<BundleMgrService> bms = DelayedSingleton<BundleMgrService>::GetInstance();
     bms->OnStart();
     bool ready = bms->IsServiceReady();
-    ASSERT_EQ(true, ready);
+    EXPECT_EQ(true, ready);
     bms->OnStop();
     ready = bms->IsServiceReady();
     EXPECT_EQ(false, ready);
@@ -89,10 +89,10 @@ HWTEST_F(BmsServiceStartupTest, Startup_0300,Function | SmallTest | Level0)
     std::shared_ptr<BundleMgrService> bms = DelayedSingleton<BundleMgrService>::GetInstance();
     bms->OnStart();
     bool ready = bms->IsServiceReady();
-    ASSERT_EQ(true, ready);
+    EXPECT_EQ(true, ready);
     bms->OnStop();
     ready = bms->IsServiceReady();
-    ASSERT_EQ(false, ready);
+    EXPECT_EQ(false, ready);
     bms->OnStart();
     ready = bms->IsServiceReady();
     EXPECT_EQ(true, ready);
@@ -109,7 +109,7 @@ HWTEST_F(BmsServiceStartupTest, Startup_0400,Function | SmallTest | Level0)
     std::shared_ptr<BundleMgrService> bms = DelayedSingleton<BundleMgrService>::GetInstance();
     bms->OnStart();
     bool ready = bms->IsServiceReady();
-    ASSERT_EQ(true, ready);
+    EXPECT_EQ(true, ready);
     bms->OnStart();
     ready = bms->IsServiceReady();
     EXPECT_EQ(true, ready);

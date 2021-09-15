@@ -18,11 +18,16 @@ config("appmgr_sdk_config") {
   include_dirs = [
     "include/appmgr",
     "//foundation/aafwk/standard/frameworks/kits/ability/native/include",
+    "//foundation/aafwk/standard/interfaces/innerkits/ability_manager/include",
   ]
 }
 
 config("bundlemgr_sdk_config") {
   include_dirs = [ "include/bundlemgr" ]
+}
+
+config("formmgr_sdk_config") {
+  include_dirs = [ "include/formmgr" ]
 }
 
 config("appexecfwk_core_config") {
@@ -34,6 +39,7 @@ ohos_shared_library("appexecfwk_core") {
     "//third_party/json/include",
     "${services_path}/appmgr/include",
     "${services_path}/bundlemgr/include",
+    "${services_path}/formmgr/include",
     "//utils/system/safwk/native/include",
   ]
 
@@ -59,20 +65,33 @@ ohos_shared_library("appexecfwk_core") {
     "src/bundlemgr/bundle_installer_proxy.cpp",
     "src/bundlemgr/bundle_mgr_host.cpp",
     "src/bundlemgr/bundle_mgr_proxy.cpp",
+    "src/bundlemgr/bundle_monitor.cpp",
     "src/bundlemgr/bundle_status_callback_host.cpp",
     "src/bundlemgr/bundle_status_callback_proxy.cpp",
     "src/bundlemgr/clean_cache_callback_host.cpp",
     "src/bundlemgr/clean_cache_callback_proxy.cpp",
+    "src/bundlemgr/launcher_service.cpp",
     "src/bundlemgr/on_permission_changed_callback_host.cpp",
     "src/bundlemgr/on_permission_changed_callback_proxy.cpp",
     "src/bundlemgr/status_receiver_host.cpp",
     "src/bundlemgr/status_receiver_proxy.cpp",
+    "src/formmgr/form_host_proxy.cpp",
+    "src/formmgr/form_host_stub.cpp",
+    "src/formmgr/form_mgr_proxy.cpp",
+    "src/formmgr/form_mgr_stub.cpp",
+    "src/formmgr/form_provider_proxy.cpp",
+    "src/formmgr/form_provider_stub.cpp",
+    "src/formmgr/form_supply_proxy.cpp",
+    "src/formmgr/form_supply_stub.cpp",
+    "src/formmgr/provider_connect_proxy.cpp",
+    "src/formmgr/provider_connect_stub.cpp",
   ]
 
   public_configs = [
     ":appexecfwk_core_config",
     ":appmgr_sdk_config",
     ":bundlemgr_sdk_config",
+    ":formmgr_sdk_config",
   ]
 
   defines = [
@@ -93,6 +112,9 @@ ohos_shared_library("appexecfwk_core") {
   ]
 
   external_deps = [
+    "ces_standard:cesfwk_core",
+    "ces_standard:cesfwk_innerkits",
+    "hiviewdfx_hilog_native:libhilog",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
   ]

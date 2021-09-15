@@ -30,8 +30,8 @@ Task::Task(const std::shared_ptr<Runnable> &runnable, const TaskPriority priorit
     runnable_ = runnable;
     priority_ = priority;
     baseTaskDispatcher_ = baseTaskDispatcher;
-    std::atomic_init(&state_, 0);
-    APP_LOGD("Task::Task init listener count=%{public}zu", taskListeners_.Size());
+    std::atomic_init(&state_, 0U);
+    APP_LOGI("Task::Task init listener count=%{public}zu", taskListeners_.Size());
 }
 Task::~Task()
 {}
@@ -43,17 +43,17 @@ Task::~Task()
  */
 void Task::Run()
 {
-    APP_LOGD("Task::Run task run called start");
+    APP_LOGI("Task::Run task run called start");
     if (runnable_ == nullptr) {
         APP_LOGI("Task::Run called runnable_ is null");
         return;
     }
     // Task cannot be reused.
     if (EnterExecute()) {
-        APP_LOGD("Task::Run runnable_ Run called start");
+        APP_LOGI("Task::Run runnable_ Run called start");
         (*runnable_.get())();
     }
-    APP_LOGD("Task::Run runnable_ Run called end");
+    APP_LOGI("Task::Run runnable_ Run called end");
 }
 
 /**
@@ -95,11 +95,11 @@ long Task::GetSequence() const
 bool Task::Revoke()
 {
     if (runnable_ == nullptr) {
-        APP_LOGI("Task.Revoke called runnable_ is null");
+        APP_LOGE("Task.Revoke called runnable_ is null");
         return false;
     }
     RevokeResult result = SetRevoked();
-    APP_LOGD("Task.Revoke result: %{public}u", result);
+    APP_LOGI("Task.Revoke result: %{public}u", result);
     if (result == SUCCESS) {
         OnTaskCanceled();
     }
@@ -113,7 +113,7 @@ bool Task::Revoke()
  */
 void Task::AddTaskListener(const std::shared_ptr<TaskListener> &listener)
 {
-    APP_LOGD("Task.AddTaskListener listener called start");
+    APP_LOGI("Task.AddTaskListener listener called start");
     taskListeners_.Offer(listener);
 }
 
@@ -137,7 +137,7 @@ void Task::BeforeTaskExecute()
 void Task::AfterTaskExecute()
 {
     if ((state_ & EXECUTED) == EXECUTED) {
-        APP_LOGD("Task.AfterTaskExecute taskStage called AFTER_EXECUTE");
+        APP_LOGI("Task.AfterTaskExecute taskStage called AFTER_EXECUTE");
         ConcurrentQueueStatusUpdate(TaskStage::AFTER_EXECUTE);
     }
 }
@@ -149,7 +149,7 @@ void Task::AfterTaskExecute()
  */
 void Task::OnTaskCanceled()
 {
-    APP_LOGD("Task.OnTaskCanceled taskStage called REVOKED");
+    APP_LOGI("Task.OnTaskCanceled taskStage called REVOKED");
     ConcurrentQueueStatusUpdate(TaskStage::REVOKED);
 }
 
@@ -160,17 +160,17 @@ void Task::OnTaskCanceled()
  */
 bool Task::EnterExecute()
 {
-    int stateNotIn = EXECUTED | REVOKED;
+    unsigned int stateNotIn = EXECUTED | REVOKED;
     while (true) {
-        int value = state_.load();
+        unsigned int value = state_.load();
         if ((state_ & stateNotIn) == 0) {
             // Not executed or revoked
             if (state_.compare_exchange_strong(value, EXECUTED)) {
-                APP_LOGD("Task.EnterExecute return success");
+                APP_LOGI("Task.EnterExecute return success");
                 return true;
             }
         } else {
-            APP_LOGD("Task.EnterExecute return fail, state=%{public}d, stateNotIn=%{public}d", value, stateNotIn);
+            APP_LOGE("Task.EnterExecute return fail, state=%{public}d, stateNotIn=%{public}d", value, stateNotIn);
             return false;
         }
     }
@@ -179,18 +179,18 @@ bool Task::EnterExecute()
 Task::RevokeResult Task::SetRevoked()
 {
     while (true) {
-        int value = state_.load();
+        unsigned int value = state_.load();
         if ((value & REVOKED) == REVOKED) {
-            APP_LOGD("Task.SetRevoked return ALREADY_REVOKED");
+            APP_LOGW("Task.SetRevoked return ALREADY_REVOKED");
             return ALREADY_REVOKED;
         }
         if ((value & EXECUTED) == 0) {
             if (state_.compare_exchange_strong(value, REVOKED)) {
-                APP_LOGD("Task.SetRevoked return SUCCESS");
+                APP_LOGI("Task.SetRevoked return SUCCESS");
                 return SUCCESS;
             }
         } else {
-            APP_LOGD("Task.SetRevoked return FAIL");
+            APP_LOGE("Task.SetRevoked return FAIL");
             return FAIL;
         }
     }
@@ -198,7 +198,7 @@ Task::RevokeResult Task::SetRevoked()
 
 void Task::ConcurrentQueueStatusUpdate(const TaskStage::TASKSTAGE taskstage)
 {
-    APP_LOGD("Task.ConcurrentQueueStatusUpdate taskListeners_ called start");
+    APP_LOGI("Task.ConcurrentQueueStatusUpdate taskListeners_ called start");
     for (auto iter = taskListeners_.Begin(); iter != taskListeners_.End(); iter++) {
         (*iter)->OnChanged(taskstage);
     }

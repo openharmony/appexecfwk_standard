@@ -121,6 +121,7 @@ ohos_shared_library("libbms") {
     "//foundation/distributedschedule/dmsfwk/services/dtbschedmgr/include",
     "//base/notification/ces_standard/interfaces/innerkits/native/include",
     "//utils/system/safwk/native/include",
+    "//third_party/jsoncpp/include",
   ]
 
   sources = [
@@ -133,6 +134,8 @@ ohos_shared_library("libbms") {
     "src/bundle_scanner.cpp",
     "src/bundle_status_callback_death_recipient.cpp",
     "src/kvstore_death_recipient_callback.cpp",
+    "src/module_usage_data_storage.cpp",
+    "src/permission_changed_death_recipient.cpp",
     "src/system_ability_helper.cpp",
   ]
 
@@ -163,6 +166,7 @@ ohos_shared_library("libbms") {
     "//foundation/distributeddatamgr/distributeddatamgr/interfaces/innerkits/distributeddata:distributeddata_inner",
     "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
+    "//third_party/jsoncpp:jsoncpp",
   ]
 
   external_deps = [
@@ -196,6 +200,7 @@ ohos_executable("installs") {
     ":parser_common",
     "${common_path}:libappexecfwk_common",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
+    "//third_party/jsoncpp:jsoncpp",
   ]
 
   external_deps = [

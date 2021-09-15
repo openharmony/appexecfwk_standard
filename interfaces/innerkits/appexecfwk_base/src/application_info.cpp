@@ -142,8 +142,9 @@ void ApplicationInfo::Dump(std::string prefix, int fd)
         APP_LOGE("dump ApplicationInfo fcntl error %{public}s", strerror(errno));
         return;
     }
-    flags &= O_ACCMODE;
-    if ((flags == O_WRONLY) || (flags == O_RDWR)) {
+    uint uflags = static_cast<uint>(flags);
+    uflags &= O_ACCMODE;
+    if ((uflags == O_WRONLY) || (uflags == O_RDWR)) {
         nlohmann::json jsonObject = *this;
         std::string result;
         result.append(prefix);
@@ -212,6 +213,26 @@ void from_json(const nlohmann::json &jsonObject, ApplicationInfo &applicationInf
     applicationInfo.dataBaseDir = jsonObject.at("dataBaseDir").get<std::string>();
     applicationInfo.cacheDir = jsonObject.at("cacheDir").get<std::string>();
     applicationInfo.flags = jsonObject.at("flags").get<int>();
+}
+
+void ApplicationInfo::ConvertToCompatibleApplicationInfo(CompatibleApplicationInfo& compatibleApplicationInfo) const
+{
+    APP_LOGD("ApplicationInfo::ConvertToCompatibleApplicationInfo called");
+    compatibleApplicationInfo.name = name;
+    compatibleApplicationInfo.icon = icon;
+    compatibleApplicationInfo.label = label;
+    compatibleApplicationInfo.description = description;
+    compatibleApplicationInfo.cpuAbi = cpuAbi;
+    compatibleApplicationInfo.process = process;
+    compatibleApplicationInfo.systemApp = isSystemApp;
+    compatibleApplicationInfo.isCompressNativeLibs = isCompressNativeLibs;
+    compatibleApplicationInfo.iconId = iconId;
+    compatibleApplicationInfo.labelId = labelId;
+    compatibleApplicationInfo.descriptionId = descriptionId;
+    compatibleApplicationInfo.permissions = permissions;
+    compatibleApplicationInfo.moduleInfos = moduleInfos;
+    compatibleApplicationInfo.supportedModes = supportedModes;
+    compatibleApplicationInfo.enabled = debug;
 }
 
 }  // namespace AppExecFwk

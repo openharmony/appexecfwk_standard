@@ -23,7 +23,7 @@ namespace AppExecFwk {
 bool AppProcessData::Marshalling(Parcel &parcel) const
 {
     return (parcel.WriteString(appName) && parcel.WriteString(processName) &&
-            parcel.WriteInt32(static_cast<int32_t>(appState)) && parcel.WriteInt32(pid));
+            parcel.WriteInt32(static_cast<int32_t>(appState)) && parcel.WriteInt32(pid) && parcel.WriteInt32(uid));
 }
 
 bool AppProcessData::ReadFromParcel(Parcel &parcel)
@@ -35,6 +35,8 @@ bool AppProcessData::ReadFromParcel(Parcel &parcel)
     appState = static_cast<ApplicationState>(parcel.ReadInt32());
 
     pid = parcel.ReadInt32();
+
+    uid = parcel.ReadInt32();
 
     return true;
 }

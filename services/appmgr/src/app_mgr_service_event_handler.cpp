@@ -46,7 +46,6 @@ void AMSEventHandler::ProcessEvent(const InnerEvent::Pointer &event)
         return;
     }
     appManager->HandleTimeOut(event);
-    // this->PostTask([&event, &appManager]() { appManager->HandleTimeOut(event); });
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS

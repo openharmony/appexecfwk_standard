@@ -140,13 +140,13 @@ void BmsBundleInstallerTest::SetUpTestCase()
 {
     if (access(ROOT_DIR.c_str(), F_OK) != 0) {
         bool result = OHOS::ForceCreateDirectory(ROOT_DIR);
-        ASSERT_TRUE(result) << "fail to create root dir";
+        EXPECT_TRUE(result) << "fail to create root dir";
     }
     if (chown(ROOT_DIR.c_str(), ROOT_UID, ROOT_UID) != 0) {
-        ASSERT_TRUE(false) << "fail to change root dir own ship";
+        EXPECT_TRUE(false) << "fail to change root dir own ship";
     }
     if (chmod(ROOT_DIR.c_str(), S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH) != 0) {
-        ASSERT_TRUE(false) << "fail to change root dir mode";
+        EXPECT_TRUE(false) << "fail to change root dir mode";
     }
 }
 
@@ -173,19 +173,19 @@ void BmsBundleInstallerTest::TearDown()
 void BmsBundleInstallerTest::CheckFileExist() const
 {
     int bundleCodeExist = access(BUNDLE_CODE_DIR.c_str(), F_OK);
-    ASSERT_EQ(bundleCodeExist, 0) << "the bundle code dir does not exists: " << BUNDLE_CODE_DIR;
+    EXPECT_EQ(bundleCodeExist, 0) << "the bundle code dir does not exists: " << BUNDLE_CODE_DIR;
 
     int bundleDataExist = access(BUNDLE_DATA_DIR.c_str(), F_OK);
-    ASSERT_EQ(bundleDataExist, 0) << "the bundle data dir does not exists: " << BUNDLE_DATA_DIR;
+    EXPECT_EQ(bundleDataExist, 0) << "the bundle data dir does not exists: " << BUNDLE_DATA_DIR;
 }
 
 void BmsBundleInstallerTest::CheckFileNonExist() const
 {
     int bundleCodeExist = access(BUNDLE_CODE_DIR.c_str(), F_OK);
-    ASSERT_NE(bundleCodeExist, 0) << "the bundle code dir exists: " << BUNDLE_CODE_DIR;
+    EXPECT_NE(bundleCodeExist, 0) << "the bundle code dir exists: " << BUNDLE_CODE_DIR;
 
     int bundleDataExist = access(BUNDLE_DATA_DIR.c_str(), F_OK);
-    ASSERT_NE(bundleDataExist, 0) << "the bundle data dir exists: " << BUNDLE_DATA_DIR;
+    EXPECT_NE(bundleDataExist, 0) << "the bundle data dir exists: " << BUNDLE_DATA_DIR;
 }
 
 const std::shared_ptr<BundleDataMgr> BmsBundleInstallerTest::GetBundleDataMgr() const
@@ -210,7 +210,7 @@ void BmsBundleInstallerTest::StopBundleService()
         return;
     }
     auto dataMgr = bundleMgrService_->GetDataMgr();
-    ASSERT_NE(dataMgr, nullptr);
+    EXPECT_NE(dataMgr, nullptr);
     dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::UNINSTALL_START);
     dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::UNINSTALL_SUCCESS);
     bundleMgrService_->OnStop();
@@ -227,7 +227,7 @@ void BmsBundleInstallerTest::CreateInstallerManager()
         return;
     }
     manager_ = std::make_shared<BundleInstallerManager>(installRunner);
-    ASSERT_NE(nullptr, manager_);
+    EXPECT_NE(nullptr, manager_);
 }
 
 void BmsBundleInstallerTest::ClearBundleInfoInDb()
@@ -248,7 +248,7 @@ void BmsBundleInstallerTest::ClearBundleInfoInDb()
     applicationInfo.bundleName = BUNDLE_NAME;
     innerBundleInfo.SetBaseApplicationInfo(applicationInfo);
     bool result = dataStorage->DeleteStorageBundleInfo(Constants::CURRENT_DEVICE_ID, innerBundleInfo);
-    ASSERT_TRUE(result) << "the bundle info in db clear fail: " << BUNDLE_NAME;
+    EXPECT_TRUE(result) << "the bundle info in db clear fail: " << BUNDLE_NAME;
 }
 
 /**
@@ -261,7 +261,7 @@ HWTEST_F(BmsBundleInstallerTest, SystemInstall_0100, Function | SmallTest | Leve
 {
     std::string bundleFile = RESOURCE_ROOT_PATH + RIGHT_BUNDLE;
     bool result = InstallSystemBundle(bundleFile);
-    ASSERT_TRUE(result) << "the bundle file install failed: " << bundleFile;
+    EXPECT_TRUE(result) << "the bundle file install failed: " << bundleFile;
     CheckFileExist();
     ClearBundleInfoInDb();
 }
@@ -276,7 +276,7 @@ HWTEST_F(BmsBundleInstallerTest, SystemInstall_0200, Function | SmallTest | Leve
 {
     std::string nonExistFile = RESOURCE_ROOT_PATH + INVALID_BUNDLE;
     bool result = InstallSystemBundle(nonExistFile);
-    ASSERT_FALSE(result) << "the bundle file install success: " << nonExistFile;
+    EXPECT_FALSE(result) << "the bundle file install success: " << nonExistFile;
     CheckFileNonExist();
 }
 
@@ -289,7 +289,7 @@ HWTEST_F(BmsBundleInstallerTest, SystemInstall_0200, Function | SmallTest | Leve
 HWTEST_F(BmsBundleInstallerTest, SystemInstall_0300, Function | SmallTest | Level0)
 {
     bool result = InstallSystemBundle("");
-    ASSERT_FALSE(result) << "the empty path install success";
+    EXPECT_FALSE(result) << "the empty path install success";
     CheckFileNonExist();
 }
 
@@ -303,7 +303,7 @@ HWTEST_F(BmsBundleInstallerTest, SystemInstall_0400, Function | SmallTest | Leve
 {
     std::string wrongBundleName = RESOURCE_ROOT_PATH + WRONG_BUNDLE_NAME;
     bool result = InstallSystemBundle(wrongBundleName);
-    ASSERT_FALSE(result) << "the wrong bundle file install success";
+    EXPECT_FALSE(result) << "the wrong bundle file install success";
     CheckFileNonExist();
 }
 
@@ -317,7 +317,7 @@ HWTEST_F(BmsBundleInstallerTest, SystemInstall_0500, Function | SmallTest | Leve
 {
     std::string errorFormat = RESOURCE_ROOT_PATH + FORMAT_ERROR_BUNDLE;
     bool result = InstallSystemBundle(errorFormat);
-    ASSERT_FALSE(result) << "the wrong format file install success";
+    EXPECT_FALSE(result) << "the wrong format file install success";
     CheckFileNonExist();
 }
 
@@ -331,7 +331,7 @@ HWTEST_F(BmsBundleInstallerTest, SystemInstall_0600, Function | SmallTest | Leve
 {
     std::string bundleFile = INVALID_PATH + RIGHT_BUNDLE;
     bool result = InstallSystemBundle(bundleFile);
-    ASSERT_FALSE(result) << "the invalid path install success";
+    EXPECT_FALSE(result) << "the invalid path install success";
     CheckFileNonExist();
 }
 
@@ -359,14 +359,14 @@ HWTEST_F(BmsBundleInstallerTest, SystemUpdateData_0100, Function | SmallTest | L
 {
     ApplicationInfo info;
     auto dataMgr = GetBundleDataMgr();
-    ASSERT_NE(dataMgr, nullptr);
+    EXPECT_NE(dataMgr, nullptr);
     bool result = dataMgr->GetApplicationInfo(BUNDLE_NAME, ApplicationFlag::GET_BASIC_APPLICATION_INFO, USERID, info);
-    ASSERT_FALSE(result);
+    EXPECT_FALSE(result);
     std::string bundleFile = RESOURCE_ROOT_PATH + RIGHT_BUNDLE;
     bool installResult = InstallSystemBundle(bundleFile);
-    ASSERT_TRUE(installResult);
+    EXPECT_TRUE(installResult);
     result = dataMgr->GetApplicationInfo(BUNDLE_NAME, ApplicationFlag::GET_BASIC_APPLICATION_INFO, USERID, info);
-    ASSERT_TRUE(result);
+    EXPECT_TRUE(result);
     EXPECT_EQ(info.name, BUNDLE_NAME);
     ClearBundleInfoInDb();
 }
@@ -381,12 +381,12 @@ HWTEST_F(BmsBundleInstallerTest, SystemUpdateData_0200, Function | SmallTest | L
 {
     ApplicationInfo info;
     auto dataMgr = GetBundleDataMgr();
-    ASSERT_NE(dataMgr, nullptr);
+    EXPECT_NE(dataMgr, nullptr);
     bool result = dataMgr->GetApplicationInfo(BUNDLE_NAME, ApplicationFlag::GET_BASIC_APPLICATION_INFO, USERID, info);
-    ASSERT_FALSE(result);
+    EXPECT_FALSE(result);
     std::string wrongBundleName = RESOURCE_ROOT_PATH + WRONG_BUNDLE_NAME;
     bool installResult = InstallSystemBundle(wrongBundleName);
-    ASSERT_FALSE(installResult);
+    EXPECT_FALSE(installResult);
     result = dataMgr->GetApplicationInfo(BUNDLE_NAME, ApplicationFlag::GET_BASIC_APPLICATION_INFO, USERID, info);
     EXPECT_FALSE(result);
 }
@@ -400,15 +400,15 @@ HWTEST_F(BmsBundleInstallerTest, SystemUpdateData_0200, Function | SmallTest | L
 HWTEST_F(BmsBundleInstallerTest, SystemUpdateData_0300, Function | SmallTest | Level0)
 {
     auto dataMgr = GetBundleDataMgr();
-    ASSERT_NE(dataMgr, nullptr);
+    EXPECT_NE(dataMgr, nullptr);
     // prepare already install information.
     std::string bundleFile = RESOURCE_ROOT_PATH + RIGHT_BUNDLE;
     bool firstInstall = InstallSystemBundle(bundleFile);
-    ASSERT_TRUE(firstInstall);
+    EXPECT_TRUE(firstInstall);
     ApplicationInfo info;
     auto result = dataMgr->GetApplicationInfo(BUNDLE_NAME, ApplicationFlag::GET_BASIC_APPLICATION_INFO, USERID, info);
-    ASSERT_TRUE(result);
-    ASSERT_EQ(info.name, BUNDLE_NAME);
+    EXPECT_TRUE(result);
+    EXPECT_EQ(info.name, BUNDLE_NAME);
     bool secondInstall = InstallSystemBundle(bundleFile);
     EXPECT_FALSE(secondInstall);
     ClearBundleInfoInDb();
@@ -424,7 +424,7 @@ HWTEST_F(BmsBundleInstallerTest, SystemUpdateData_0400, Function | SmallTest | L
 {
     // prepare already install information.
     auto dataMgr = GetBundleDataMgr();
-    ASSERT_NE(dataMgr, nullptr);
+    EXPECT_NE(dataMgr, nullptr);
     dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_START);
     // begin to  reinstall package
     std::string bundleFile = RESOURCE_ROOT_PATH + RIGHT_BUNDLE;
@@ -444,7 +444,7 @@ HWTEST_F(BmsBundleInstallerTest, CreateInstallTask_0100, Function | SmallTest | 
 {
     CreateInstallerManager();
     sptr<MockStatusReceiver> receiver = new (std::nothrow) MockStatusReceiver();
-    ASSERT_NE(receiver, nullptr);
+    EXPECT_NE(receiver, nullptr);
     InstallParam installParam;
     std::string bundleFile = RESOURCE_ROOT_PATH + RIGHT_BUNDLE;
     GetBundleInstallerManager()->CreateInstallTask(bundleFile, installParam, receiver);
@@ -463,7 +463,7 @@ HWTEST_F(BmsBundleInstallerTest, CreateInstallTask_0200, Function | SmallTest | 
 {
     CreateInstallerManager();
     sptr<MockStatusReceiver> receiver = new (std::nothrow) MockStatusReceiver();
-    ASSERT_NE(receiver, nullptr);
+    EXPECT_NE(receiver, nullptr);
     InstallParam installParam;
     std::string bundleFile = RESOURCE_ROOT_PATH + INVALID_BUNDLE;
     GetBundleInstallerManager()->CreateInstallTask(bundleFile, installParam, receiver);
@@ -481,7 +481,7 @@ HWTEST_F(BmsBundleInstallerTest, CreateUninstallTask_0100, Function | SmallTest 
 {
     CreateInstallerManager();
     sptr<MockStatusReceiver> receiver = new (std::nothrow) MockStatusReceiver();
-    ASSERT_NE(receiver, nullptr);
+    EXPECT_NE(receiver, nullptr);
     InstallParam installParam;
     std::string bundleFile = RESOURCE_ROOT_PATH + RIGHT_BUNDLE;
     GetBundleInstallerManager()->CreateInstallTask(bundleFile, installParam, receiver);
@@ -504,7 +504,7 @@ HWTEST_F(BmsBundleInstallerTest, CreateUninstallTask_0200, Function | SmallTest 
 {
     CreateInstallerManager();
     sptr<MockStatusReceiver> receiver = new (std::nothrow) MockStatusReceiver();
-    ASSERT_NE(receiver, nullptr);
+    EXPECT_NE(receiver, nullptr);
     InstallParam installParam;
     std::string bundleFile = RESOURCE_ROOT_PATH + INVALID_BUNDLE;
     GetBundleInstallerManager()->CreateUninstallTask(bundleFile, installParam, receiver);
@@ -522,7 +522,7 @@ HWTEST_F(BmsBundleInstallerTest, ThirdPartyInstall_0100, Function | SmallTest | 
 {
     std::string bundleFile = RESOURCE_ROOT_PATH + RIGHT_BUNDLE;
     ErrCode result = InstallThirdPartyBundle(bundleFile);
-    ASSERT_EQ(result, ERR_OK);
+    EXPECT_EQ(result, ERR_OK);
     CheckFileExist();
     ClearBundleInfoInDb();
 }
@@ -537,7 +537,7 @@ HWTEST_F(BmsBundleInstallerTest, ThirdPartyInstall_0200, Function | SmallTest | 
 {
     std::string nonExistFile = RESOURCE_ROOT_PATH + INVALID_BUNDLE;
     ErrCode result = InstallThirdPartyBundle(nonExistFile);
-    ASSERT_EQ(result, ERR_APPEXECFWK_INSTALL_FILE_PATH_INVALID);
+    EXPECT_EQ(result, ERR_APPEXECFWK_INSTALL_FILE_PATH_INVALID);
     CheckFileNonExist();
 }
 
@@ -550,7 +550,7 @@ HWTEST_F(BmsBundleInstallerTest, ThirdPartyInstall_0200, Function | SmallTest | 
 HWTEST_F(BmsBundleInstallerTest, ThirdPartyInstall_0300, Function | SmallTest | Level0)
 {
     ErrCode result = InstallThirdPartyBundle("");
-    ASSERT_EQ(result, ERR_APPEXECFWK_INSTALL_FILE_PATH_INVALID);
+    EXPECT_EQ(result, ERR_APPEXECFWK_INSTALL_FILE_PATH_INVALID);
     CheckFileNonExist();
 }
 
@@ -564,7 +564,7 @@ HWTEST_F(BmsBundleInstallerTest, ThirdPartyInstall_0400, Function | SmallTest | 
 {
     std::string wrongBundleName = RESOURCE_ROOT_PATH + WRONG_BUNDLE_NAME;
     ErrCode result = InstallThirdPartyBundle(wrongBundleName);
-    ASSERT_EQ(result, ERR_APPEXECFWK_INSTALL_INVALID_HAP_NAME);
+    EXPECT_EQ(result, ERR_APPEXECFWK_INSTALL_INVALID_HAP_NAME);
     CheckFileNonExist();
 }
 
@@ -578,7 +578,7 @@ HWTEST_F(BmsBundleInstallerTest, ThirdPartyInstall_0500, Function | SmallTest | 
 {
     std::string errorFormat = RESOURCE_ROOT_PATH + FORMAT_ERROR_BUNDLE;
     ErrCode result = InstallThirdPartyBundle(errorFormat);
-    ASSERT_EQ(result, ERR_APPEXECFWK_PARSE_NO_PROFILE);
+    EXPECT_EQ(result, ERR_APPEXECFWK_PARSE_NO_PROFILE);
     CheckFileNonExist();
 }
 
@@ -592,7 +592,7 @@ HWTEST_F(BmsBundleInstallerTest, ThirdPartyInstall_0600, Function | SmallTest | 
 {
     std::string bundleFile = INVALID_PATH + RIGHT_BUNDLE;
     ErrCode result = InstallThirdPartyBundle(bundleFile);
-    ASSERT_EQ(result, ERR_APPEXECFWK_INSTALL_FILE_PATH_INVALID);
+    EXPECT_EQ(result, ERR_APPEXECFWK_INSTALL_FILE_PATH_INVALID);
     CheckFileNonExist();
 }
 
@@ -607,7 +607,7 @@ HWTEST_F(BmsBundleInstallerTest, ThirdPartyInstall_0700, Function | SmallTest | 
     StopInstalldService();
     std::string bundleFile = RESOURCE_ROOT_PATH + RIGHT_BUNDLE;
     ErrCode result = InstallThirdPartyBundle(bundleFile);
-    ASSERT_EQ(result, ERR_APPEXECFWK_INSTALLD_GET_PROXY_ERROR);
+    EXPECT_EQ(result, ERR_APPEXECFWK_INSTALLD_GET_PROXY_ERROR);
 }
 
 /**
@@ -620,14 +620,14 @@ HWTEST_F(BmsBundleInstallerTest, ThirdPartyUpdateData_0100, Function | SmallTest
 {
     ApplicationInfo info;
     auto dataMgr = GetBundleDataMgr();
-    ASSERT_NE(dataMgr, nullptr);
+    EXPECT_NE(dataMgr, nullptr);
     bool result = dataMgr->GetApplicationInfo(BUNDLE_NAME, ApplicationFlag::GET_BASIC_APPLICATION_INFO, USERID, info);
-    ASSERT_FALSE(result);
+    EXPECT_FALSE(result);
     std::string bundleFile = RESOURCE_ROOT_PATH + RIGHT_BUNDLE;
     ErrCode installResult = InstallThirdPartyBundle(bundleFile);
-    ASSERT_EQ(installResult, ERR_OK);
+    EXPECT_EQ(installResult, ERR_OK);
     result = dataMgr->GetApplicationInfo(BUNDLE_NAME, ApplicationFlag::GET_BASIC_APPLICATION_INFO, USERID, info);
-    ASSERT_TRUE(result);
+    EXPECT_TRUE(result);
     EXPECT_EQ(info.name, BUNDLE_NAME);
     ClearBundleInfoInDb();
 }
@@ -642,12 +642,12 @@ HWTEST_F(BmsBundleInstallerTest, ThirdPartyUpdateData_0200, Function | SmallTest
 {
     ApplicationInfo info;
     auto dataMgr = GetBundleDataMgr();
-    ASSERT_NE(dataMgr, nullptr);
+    EXPECT_NE(dataMgr, nullptr);
     bool result = dataMgr->GetApplicationInfo(BUNDLE_NAME, ApplicationFlag::GET_BASIC_APPLICATION_INFO, USERID, info);
-    ASSERT_FALSE(result);
+    EXPECT_FALSE(result);
     std::string wrongBundleName = RESOURCE_ROOT_PATH + WRONG_BUNDLE_NAME;
     ErrCode installResult = InstallThirdPartyBundle(wrongBundleName);
-    ASSERT_EQ(installResult, ERR_APPEXECFWK_INSTALL_INVALID_HAP_NAME);
+    EXPECT_EQ(installResult, ERR_APPEXECFWK_INSTALL_INVALID_HAP_NAME);
     result = dataMgr->GetApplicationInfo(BUNDLE_NAME, ApplicationFlag::GET_BASIC_APPLICATION_INFO, USERID, info);
     EXPECT_FALSE(result);
 }
@@ -661,15 +661,15 @@ HWTEST_F(BmsBundleInstallerTest, ThirdPartyUpdateData_0200, Function | SmallTest
 HWTEST_F(BmsBundleInstallerTest, ThirdPartyUpdateData_0300, Function | SmallTest | Level0)
 {
     auto dataMgr = GetBundleDataMgr();
-    ASSERT_NE(dataMgr, nullptr);
+    EXPECT_NE(dataMgr, nullptr);
     // prepare already install information.
     std::string bundleFile = RESOURCE_ROOT_PATH + RIGHT_BUNDLE;
     ErrCode firstInstall = InstallThirdPartyBundle(bundleFile);
-    ASSERT_EQ(firstInstall, ERR_OK);
+    EXPECT_EQ(firstInstall, ERR_OK);
     ApplicationInfo info;
     auto result = dataMgr->GetApplicationInfo(BUNDLE_NAME, ApplicationFlag::GET_BASIC_APPLICATION_INFO, USERID, info);
-    ASSERT_TRUE(result);
-    ASSERT_EQ(info.name, BUNDLE_NAME);
+    EXPECT_TRUE(result);
+    EXPECT_EQ(info.name, BUNDLE_NAME);
     ErrCode secondInstall = InstallThirdPartyBundle(bundleFile);
     EXPECT_EQ(secondInstall, ERR_APPEXECFWK_INSTALL_ALREADY_EXIST);
     ClearBundleInfoInDb();
@@ -684,15 +684,15 @@ HWTEST_F(BmsBundleInstallerTest, ThirdPartyUpdateData_0300, Function | SmallTest
 HWTEST_F(BmsBundleInstallerTest, ThirdPartyUpdateData_0400, Function | SmallTest | Level0)
 {
     auto dataMgr = GetBundleDataMgr();
-    ASSERT_NE(dataMgr, nullptr);
+    EXPECT_NE(dataMgr, nullptr);
     // prepare already install information.
     std::string bundleFile = RESOURCE_ROOT_PATH + RIGHT_BUNDLE;
     ErrCode firstInstall = InstallThirdPartyBundle(bundleFile);
-    ASSERT_EQ(firstInstall, ERR_OK);
+    EXPECT_EQ(firstInstall, ERR_OK);
     ApplicationInfo info;
     auto result = dataMgr->GetApplicationInfo(BUNDLE_NAME, ApplicationFlag::GET_BASIC_APPLICATION_INFO, USERID, info);
-    ASSERT_TRUE(result);
-    ASSERT_EQ(info.name, BUNDLE_NAME);
+    EXPECT_TRUE(result);
+    EXPECT_EQ(info.name, BUNDLE_NAME);
     ErrCode secondInstall = UpdateThirdPartyBundle(bundleFile);
     EXPECT_EQ(secondInstall, ERR_OK);
     ClearBundleInfoInDb();
@@ -708,7 +708,7 @@ HWTEST_F(BmsBundleInstallerTest, ThirdPartyUpdateData_0500, Function | SmallTest
 {
     // prepare already install information.
     auto dataMgr = GetBundleDataMgr();
-    ASSERT_NE(dataMgr, nullptr);
+    EXPECT_NE(dataMgr, nullptr);
     dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_START);
     // begin to  reinstall package
     std::string bundleFile = RESOURCE_ROOT_PATH + RIGHT_BUNDLE;
