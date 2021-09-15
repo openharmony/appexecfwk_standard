@@ -1,0 +1,65 @@
+# Copyright (c) 2021 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import("//build/test.gni")
+import("//foundation/appexecfwk/standard/appexecfwk.gni")
+
+module_output_path = "appexecfwk_standard/formmgrservice"
+
+ohos_unittest("FmsFormProviderDataTest") {
+  module_out_path = module_output_path
+
+  sources = [ "//foundation/appexecfwk/standard/services/formmgr/test/unittest/fms_form_provider_data_test/fms_form_provider_data_test.cpp" ]
+
+  include_dirs = [
+    "//third_party/json/include",
+    "//foundation/appexecfwk/standard/common/log/include/",
+    "//foundation/appexecfwk/standard/services/formmgr/include",
+    "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_base/include/",
+    "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_core/include/formmgr/",
+
+    #"//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_core/include/bundlemgr/",
+    "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy/include/",
+    "//foundation/appexecfwk/standard/interfaces/innerkits/libeventhandler/include",
+  ]
+
+  configs = [ "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core:formmgr_sdk_config" ]
+  cflags = []
+  if (target_cpu == "arm") {
+    cflags += [ "-DBINDER_IPC_32BIT" ]
+  }
+  deps = [
+    "${appexecfwk_path}/common:libappexecfwk_common",
+    "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base:appexecfwk_base",
+    "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core:appexecfwk_core",
+    "${services_path}/formmgr:fms_target",
+    "//foundation/aafwk/standard/interfaces/innerkits/base:base",
+    "//foundation/aafwk/standard/interfaces/innerkits/want:want",
+    "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
+    "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
+    "//utils/native/base:utils",
+  ]
+
+  external_deps = [
+    "hiviewdfx_hilog_native:libhilog",
+    "ipc:ipc_core",
+  ]
+}
+
+###############################################################################
+group("unittest") {
+  testonly = true
+
+  deps = [ ":FmsFormProviderDataTest" ]
+}
+###############################################################################

@@ -24,7 +24,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class AppSpawnSocket {
 public:
     /**
@@ -78,7 +77,6 @@ public:
 private:
     std::shared_ptr<AppSpawn::ClientSocket> clientSocket_;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_APPMGR_INCLUDE_APP_SPAWN_SOCKET_H

@@ -1,0 +1,65 @@
+# Copyright (c) 2021 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import("//build/test.gni")
+import("//foundation/appexecfwk/standard/appexecfwk.gni")
+module_output_path = "appexecfwk_standard/bundlemgrsst"
+
+ohos_systemtest("BmsLauncherServiceSystemTest") {
+  module_out_path = module_output_path
+
+  configs = [ "${libs_path}/libeventhandler:libeventhandler_config" ]
+
+  include_dirs = [
+    "//foundation/aafwk/standard/interfaces/innerkits/want/include/ohos/aafwk/content/",
+    "${services_path}/bundlemgr/include",
+  ]
+
+  cflags = []
+  if (target_cpu == "arm") {
+    cflags += [ "-DBINDER_IPC_32BIT" ]
+  }
+  deps = [
+    "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base:appexecfwk_base",
+    "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core:appexecfwk_core",
+    "${common_path}:libappexecfwk_common",
+    "${libs_path}/libeventhandler:libeventhandler_target",
+    "${services_path}/bundlemgr:libbms",
+    "${services_path}/test/moduletest/utils:tool_common",
+    "//base/security/appverify/interfaces/innerkits/appverify:libhapverify",
+    "//base/security/permission/interfaces/innerkits/permission_standard/permissionsdk:libpermissionsdk_standard",
+    "//foundation/aafwk/standard/interfaces/innerkits/ability_manager:ability_manager",
+    "//foundation/aafwk/standard/interfaces/innerkits/base:base",
+    "//foundation/aafwk/standard/interfaces/innerkits/want:want",
+    "//foundation/distributeddatamgr/distributeddatamgr/interfaces/innerkits/distributeddata:distributeddata_inner",
+    "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
+    "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
+    "//third_party/googletest:gtest_main",
+    "//utils/native/base:utils",
+  ]
+  sources = [ "bms_launcher_service_system_test.cpp" ]
+
+  defines = [ "APP_LOG_TAG = \"BundleMgrTool\"" ]
+
+  external_deps = [
+    "ces_standard:cesfwk_innerkits",
+    "hiviewdfx_hilog_native:libhilog",
+    "ipc:ipc_core",
+  ]
+}
+
+group("systemtest") {
+  testonly = true
+
+  deps = [ ":BmsLauncherServiceSystemTest" ]
+}

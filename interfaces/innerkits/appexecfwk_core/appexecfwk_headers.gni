@@ -24,6 +24,10 @@ appexecfwk_headers = {
     "bundlemgr/status_receiver_interface.h",
     "bundlemgr/on_permission_changed_callback_interface.h",
     "appmgr/app_process_data.h",
+    "formmgr/form_mgr_interface.h",
+    "formmgr/form_host_interface.h",
+    "formmgr/form_provider_interface.h",
+    "formmgr/form_supply_interface.h",
   ]
 
   header_base = "interfaces/innerkits/appexecfwk_core/include"

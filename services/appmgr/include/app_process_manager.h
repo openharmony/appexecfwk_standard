@@ -24,11 +24,8 @@
 #include "app_task_info.h"
 
 namespace OHOS {
-
 namespace AppExecFwk {
-
 class AppProcessManager {
-
 public:
     AppProcessManager();
     virtual ~AppProcessManager();
@@ -110,7 +107,6 @@ public:
 private:
     std::list<const std::shared_ptr<AppTaskInfo>> recentAppList_;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 

@@ -122,7 +122,7 @@ protected:
             },
             "baseBundleInfo": {
                 "abilityInfos": [],
-                "appId": "",
+                "appId": "BNtg4JBClbl92Rgc3jm/RfcAdrHXaM8F0QOiwVEhnV5ebE5jNIYnAx+weFRT3QTyUjRNdhmc2aAzWyi+5t5CoBM=",
                 "applicationInfo": {
                     "bundleName": "",
                     "cacheDir": "",
@@ -217,7 +217,6 @@ protected:
             "isKeepData": false,
             "isSupportBackup": false,
             "mainAbility": "com.ohos.launchercom.ohos.launchercom.ohos.launcher.MainAbility",
-            "provisionId": "BNtg4JBClbl92Rgc3jm/RfcAdrHXaM8F0QOiwVEhnV5ebE5jNIYnAx+weFRT3QTyUjRNdhmc2aAzWyi+5t5CoBM=",
             "skillInfos": {
                 "com.ohos.launchercom.ohos.launchercom.ohos.launcher.MainAbility": [
                     {
@@ -261,30 +260,30 @@ BmsBundleDataStorageTest::~BmsBundleDataStorageTest()
 void BmsBundleDataStorageTest::CheckBundleSaved(const InnerBundleInfo &innerBundleInfo) const
 {
     BundleDataStorage bundleDataStorage;
-    ASSERT_TRUE(bundleDataStorage.SaveStorageBundleInfo(Constants::CURRENT_DEVICE_ID, innerBundleInfo));
+    EXPECT_TRUE(bundleDataStorage.SaveStorageBundleInfo(Constants::CURRENT_DEVICE_ID, innerBundleInfo));
     std::map<std::string, std::map<std::string, InnerBundleInfo>> bundleData;
-    ASSERT_TRUE(bundleDataStorage.LoadAllData(bundleData));
+    EXPECT_TRUE(bundleDataStorage.LoadAllData(bundleData));
 
     // search allDeviceInfos by bundle name
     std::string bundleName = innerBundleInfo.GetBundleName();
     auto bundleDataIter = bundleData.find(bundleName);
-    ASSERT_TRUE(bundleDataIter != bundleData.end());
+    EXPECT_TRUE(bundleDataIter != bundleData.end());
 
     // search InnerBundleInfo by device id
     auto allDeviceInfos = bundleDataIter->second;
     auto devicesInfosIter = allDeviceInfos.find(deviceId_);
-    ASSERT_TRUE(devicesInfosIter != allDeviceInfos.end());
+    EXPECT_TRUE(devicesInfosIter != allDeviceInfos.end());
 
     InnerBundleInfo afterLoadInfo = devicesInfosIter->second;
-    ASSERT_TRUE(innerBundleInfo.ToString() == afterLoadInfo.ToString());
+    EXPECT_TRUE(innerBundleInfo.ToString() == afterLoadInfo.ToString());
 }
 
 void BmsBundleDataStorageTest::CheckBundleDeleted(const InnerBundleInfo &innerBundleInfo) const
 {
     BundleDataStorage bundleDataStorage;
-    ASSERT_TRUE(bundleDataStorage.DeleteStorageBundleInfo(Constants::CURRENT_DEVICE_ID, innerBundleInfo));
+    EXPECT_TRUE(bundleDataStorage.DeleteStorageBundleInfo(Constants::CURRENT_DEVICE_ID, innerBundleInfo));
     std::map<std::string, std::map<std::string, InnerBundleInfo>> bundleDates;
-    ASSERT_TRUE(bundleDataStorage.LoadAllData(bundleDates));
+    EXPECT_TRUE(bundleDataStorage.LoadAllData(bundleDates));
 }
 
 void BmsBundleDataStorageTest::CheckInvalidPropDeserialize(const nlohmann::json infoJson, const InfoType infoType) const
@@ -318,14 +317,14 @@ void BmsBundleDataStorageTest::CheckInvalidPropDeserialize(const nlohmann::json 
         throwError = true;
     }
 
-    ASSERT_TRUE(throwError);
+    EXPECT_TRUE(throwError);
     if (!throwError) {
         GTEST_LOG_(ERROR) << "not catch any type_error";
     }
 
     innerBundleInfoJson["baseBundleInfo"] = bundleInfoJson;
     InnerBundleInfo fromJsonInfo;
-    ASSERT_FALSE(fromJsonInfo.FromJson(innerBundleInfoJson));
+    EXPECT_FALSE(fromJsonInfo.FromJson(innerBundleInfoJson));
 }
 
 void BmsBundleDataStorageTest::SetUpTestCase()
@@ -367,7 +366,7 @@ HWTEST_F(BmsBundleDataStorageTest, BundleInfoJsonSerializer_0100, Function | Sma
     // serialize fromJsonInfo to json
     nlohmann::json toJsonObject = fromJsonInfo;
 
-    ASSERT_TRUE(toJsonObject.dump() == sourceInfoJson.dump());
+    EXPECT_TRUE(toJsonObject.dump() == sourceInfoJson.dump());
 }
 
 /**
@@ -410,7 +409,7 @@ HWTEST_F(BmsBundleDataStorageTest, AbilityInfoJsonSerializer_0100, Function | Sm
     AbilityInfo fromJsonInfo = sourceInfoJson;
     // serialize fromJsonInfo to json
     nlohmann::json toJsonObject = fromJsonInfo;
-    ASSERT_TRUE(toJsonObject.dump() == sourceInfoJson.dump());
+    EXPECT_TRUE(toJsonObject.dump() == sourceInfoJson.dump());
 }
 
 /**
@@ -463,7 +462,7 @@ HWTEST_F(BmsBundleDataStorageTest, ApplicationInfoJsonSerializer_0100, Function 
     // serialize fromJsonInfo to json
     nlohmann::json toJsonObject = fromJsonInfo;
 
-    ASSERT_TRUE(toJsonObject.dump() == sourceInfoJson.dump());
+    EXPECT_TRUE(toJsonObject.dump() == sourceInfoJson.dump());
 }
 
 /**
@@ -505,7 +504,7 @@ HWTEST_F(BmsBundleDataStorageTest, ModuleInfoJsonSerializer_0100, Function | Sma
     // serialize fromJsonInfo to json
     nlohmann::json toJsonObject = fromJsonInfo;
 
-    ASSERT_TRUE(toJsonObject.dump() == sourceInfoJson.dump());
+    EXPECT_TRUE(toJsonObject.dump() == sourceInfoJson.dump());
 }
 
 /**
@@ -572,8 +571,8 @@ HWTEST_F(BmsBundleDataStorageTest, SaveData_0400, Function | SmallTest | Level1)
 {
     nlohmann::json sourceInfoJson = innerBundleInfoJson_;
     InnerBundleInfo fromJsonInfo;
-    ASSERT_EQ(fromJsonInfo.FromJson(innerBundleInfoJson_), 0);
-    ASSERT_TRUE(fromJsonInfo.ToString() == sourceInfoJson.dump());
+    EXPECT_EQ(fromJsonInfo.FromJson(innerBundleInfoJson_), 0);
+    EXPECT_TRUE(fromJsonInfo.ToString() == sourceInfoJson.dump());
 }
 
 /**
@@ -595,11 +594,11 @@ HWTEST_F(BmsBundleDataStorageTest, LoadAllData_0100, Function | SmallTest | Leve
         baseApp.name = NORMAL_BUNDLE_NAME + std::to_string(i);
         baseApp.bundleName = baseApp.name;
         innerBundleInfo.SetBaseApplicationInfo(baseApp);
-        ASSERT_TRUE(bundleDataStorage.SaveStorageBundleInfo(Constants::CURRENT_DEVICE_ID, innerBundleInfo));
+        EXPECT_TRUE(bundleDataStorage.SaveStorageBundleInfo(Constants::CURRENT_DEVICE_ID, innerBundleInfo));
     }
 
     std::map<std::string, std::map<std::string, InnerBundleInfo>> bundleDates;
-    ASSERT_TRUE(bundleDataStorage.LoadAllData(bundleDates));
+    EXPECT_TRUE(bundleDataStorage.LoadAllData(bundleDates));
 
     for (int i = 0; i < count; i++) {
         std::string bundleName = NORMAL_BUNDLE_NAME + std::to_string(i);
@@ -609,14 +608,14 @@ HWTEST_F(BmsBundleDataStorageTest, LoadAllData_0100, Function | SmallTest | Leve
 
         // search allDeviceInfos by bundle name
         auto bundleDatesIter = bundleDates.find(bundleName);
-        ASSERT_TRUE(bundleDatesIter != bundleDates.end());
+        EXPECT_TRUE(bundleDatesIter != bundleDates.end());
         // search InnerBundleInfo by device id
         auto allDeviceInfos = bundleDatesIter->second;
         auto devicesInfosIter = allDeviceInfos.find(deviceId_);
-        ASSERT_TRUE(devicesInfosIter != allDeviceInfos.end());
+        EXPECT_TRUE(devicesInfosIter != allDeviceInfos.end());
 
         InnerBundleInfo afterLoadInfo = devicesInfosIter->second;
-        ASSERT_TRUE(innerBundleInfo.ToString() == afterLoadInfo.ToString());
+        EXPECT_TRUE(innerBundleInfo.ToString() == afterLoadInfo.ToString());
     }
 }
 
@@ -632,7 +631,7 @@ HWTEST_F(BmsBundleDataStorageTest, DeleteBundleData_0100, Function | SmallTest |
     innerBundleInfo.FromJson(innerBundleInfoJson_);
 
     BundleDataStorage bundleDataStorage;
-    ASSERT_TRUE(bundleDataStorage.SaveStorageBundleInfo(Constants::CURRENT_DEVICE_ID, innerBundleInfo));
+    EXPECT_TRUE(bundleDataStorage.SaveStorageBundleInfo(Constants::CURRENT_DEVICE_ID, innerBundleInfo));
 
     CheckBundleDeleted(innerBundleInfo);
 }
@@ -648,7 +647,7 @@ HWTEST_F(BmsBundleDataStorageTest, DeleteBundleData_0200, Function | SmallTest |
     InnerBundleInfo innerBundleInfo;
     innerBundleInfo.FromJson(innerBundleInfoJson_);
     BundleDataStorage bundleDataStorage;
-    ASSERT_FALSE(bundleDataStorage.DeleteStorageBundleInfo(Constants::CURRENT_DEVICE_ID, innerBundleInfo));
+    EXPECT_FALSE(bundleDataStorage.DeleteStorageBundleInfo(Constants::CURRENT_DEVICE_ID, innerBundleInfo));
 }
 
 /**
@@ -659,14 +658,14 @@ HWTEST_F(BmsBundleDataStorageTest, DeleteBundleData_0200, Function | SmallTest |
  */
 HWTEST_F(BmsBundleDataStorageTest, DeleteBundleData_0300, Function | SmallTest | Level1)
 {
-    ASSERT_EQ(remove(Constants::BUNDLE_DATA_BASE_FILE.c_str()), 0);
+    EXPECT_EQ(remove(Constants::BUNDLE_DATA_BASE_FILE.c_str()), 0);
 
     InnerBundleInfo innerBundleInfo;
     innerBundleInfo.FromJson(innerBundleInfoJson_);
     BundleDataStorage bundleDataStorage;
-    ASSERT_FALSE(bundleDataStorage.DeleteStorageBundleInfo(Constants::CURRENT_DEVICE_ID, innerBundleInfo));
+    EXPECT_FALSE(bundleDataStorage.DeleteStorageBundleInfo(Constants::CURRENT_DEVICE_ID, innerBundleInfo));
 
     std::map<std::string, std::map<std::string, InnerBundleInfo>> bundleDates;
-    ASSERT_FALSE(bundleDataStorage.SaveStorageBundleInfo(Constants::CURRENT_DEVICE_ID, innerBundleInfo));
-    ASSERT_FALSE(bundleDataStorage.LoadAllData(bundleDates));
+    EXPECT_FALSE(bundleDataStorage.SaveStorageBundleInfo(Constants::CURRENT_DEVICE_ID, innerBundleInfo));
+    EXPECT_FALSE(bundleDataStorage.LoadAllData(bundleDates));
 }

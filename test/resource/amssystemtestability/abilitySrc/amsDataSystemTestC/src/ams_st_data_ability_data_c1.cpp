@@ -36,6 +36,7 @@ static const int DEFAULT_UPDATE_RESULT = 3333;
 static const std::string ABILITY_TYPE_PAGE = "0";
 static const std::string ABILITY_TYPE_SERVICE = "1";
 static const std::string ABILITY_TYPE_DATA = "2";
+constexpr int charCnt = 5;
 
 bool AmsStDataAbilityDataC1::PublishEvent(const std::string &eventName, const int &code, const std::string &data)
 {
@@ -141,17 +142,7 @@ std::vector<std::string> AmsStDataAbilityDataC1::GetFileTypes(const Uri &uri, co
 
 int AmsStDataAbilityDataC1::OpenFile(const Uri &uri, const std::string &mode)
 {
-    APP_LOGI("AmsStDataAbilityDataC1 <<<<OpenFile>>>>");
-
-    FILE *fd1 = fopen("/system/vendor/test.txt", "r");
-    if (fd1 == nullptr) {
-        APP_LOGI("-------------------------------AmsStDataAbilityDataC1 <<<<OpenFile>>>> fdr == nullptr");
-        return -1;
-    }
-    fd = fileno(fd1);
-    APP_LOGI("--------------------------------AmsStDataAbilityDataC1 fd: %{public}d", fd);
-    PublishEvent(abilityEventName, ABILITY_DATA_C1_CODE, "OpenFile");
-    return fd;
+    return 0;
 }
 
 static void GetResult(std::shared_ptr<STtools::StOperator> child, std::shared_ptr<DataAbilityHelper> helper,
@@ -183,9 +174,9 @@ static void GetResult(std::shared_ptr<STtools::StOperator> child, std::shared_pt
             return;
         }
         result = std::to_string(fd);
-        char str[5];
+        char str[charCnt];
         if (!feof(file))
-            fgets(str, 5, file);
+            fgets(str, charCnt, file);
         result = str;
         fclose(file);
     }
@@ -227,18 +218,15 @@ void DataTestDataC1EventSubscriber::GetResultBySelf(
         }
     } else if (child->GetOperatorName() == OPERATOR_OPENFILE) {
         APP_LOGI("---------------------OpenFile--------------------");
-        int fd = mainAbility->OpenFile(dataAbilityUri, child->GetMessage());
-        if (fd < 0) {
-            return;
-        }
-        FILE *file = fdopen(fd, "r");
+        FILE *file = fopen("/system/vendor/test.txt", "r");
         if (file == nullptr) {
             return;
         }
-        result = std::to_string(fd);
-        char str[5];
+        mainAbility_->PublishEvent(abilityEventName, ABILITY_DATA_C1_CODE, "OpenFile");
+
+        char str[charCnt];
         if (!feof(file))
-            fgets(str, 5, file);
+            fgets(str, charCnt, file);
         result = str;
         fclose(file);
     }

@@ -139,9 +139,9 @@ void AppMgrServiceModuleTest::TearDown()
  */
 HWTEST_F(AppMgrServiceModuleTest, AttachApplication_001, TestSize.Level1)
 {
-    ASSERT_TRUE(appMgrService_);
-    ASSERT_TRUE(mockAppMgrServiceInner_);
-    ASSERT_TRUE(testRemoteObject_);
+    EXPECT_TRUE(appMgrService_);
+    EXPECT_TRUE(mockAppMgrServiceInner_);
+    EXPECT_TRUE(testRemoteObject_);
 
     for (int i = 0; i < COUNT; ++i) {
         EXPECT_CALL(*mockAppMgrServiceInner_, AddAppDeathRecipient(_, _))
@@ -164,8 +164,8 @@ HWTEST_F(AppMgrServiceModuleTest, AttachApplication_001, TestSize.Level1)
  */
 HWTEST_F(AppMgrServiceModuleTest, ApplicationForegrounded_001, TestSize.Level1)
 {
-    ASSERT_TRUE(appMgrService_);
-    ASSERT_TRUE(mockAppMgrServiceInner_);
+    EXPECT_TRUE(appMgrService_);
+    EXPECT_TRUE(mockAppMgrServiceInner_);
 
     int32_t testRecordId = 123;
     bool testResult = false;
@@ -198,8 +198,8 @@ HWTEST_F(AppMgrServiceModuleTest, ApplicationForegrounded_001, TestSize.Level1)
  */
 HWTEST_F(AppMgrServiceModuleTest, ApplicationBackgrounded_001, TestSize.Level1)
 {
-    ASSERT_TRUE(appMgrService_);
-    ASSERT_TRUE(mockAppMgrServiceInner_);
+    EXPECT_TRUE(appMgrService_);
+    EXPECT_TRUE(mockAppMgrServiceInner_);
 
     int32_t testRecordId = 123;
     bool testResult = false;
@@ -232,8 +232,8 @@ HWTEST_F(AppMgrServiceModuleTest, ApplicationBackgrounded_001, TestSize.Level1)
  */
 HWTEST_F(AppMgrServiceModuleTest, ApplicationTerminated_001, TestSize.Level1)
 {
-    ASSERT_TRUE(appMgrService_);
-    ASSERT_TRUE(mockAppMgrServiceInner_);
+    EXPECT_TRUE(appMgrService_);
+    EXPECT_TRUE(mockAppMgrServiceInner_);
 
     int32_t testRecordId = 123;
     bool testResult = false;
@@ -266,9 +266,9 @@ HWTEST_F(AppMgrServiceModuleTest, ApplicationTerminated_001, TestSize.Level1)
  */
 HWTEST_F(AppMgrServiceModuleTest, AbilityCleaned_001, TestSize.Level1)
 {
-    ASSERT_TRUE(appMgrService_);
-    ASSERT_TRUE(mockAppMgrServiceInner_);
-    ASSERT_TRUE(testRemoteObject_);
+    EXPECT_TRUE(appMgrService_);
+    EXPECT_TRUE(mockAppMgrServiceInner_);
+    EXPECT_TRUE(testRemoteObject_);
 
     bool testResult = false;
     Semaphore sem(0);
@@ -300,8 +300,8 @@ HWTEST_F(AppMgrServiceModuleTest, AbilityCleaned_001, TestSize.Level1)
  */
 HWTEST_F(AppMgrServiceModuleTest, ClearUpApplicationData_001, TestSize.Level1)
 {
-    ASSERT_TRUE(appMgrService_);
-    ASSERT_TRUE(mockAppMgrServiceInner_);
+    EXPECT_TRUE(appMgrService_);
+    EXPECT_TRUE(mockAppMgrServiceInner_);
 
     std::string testAppName("testApp");
     bool testResult = false;
@@ -334,8 +334,8 @@ HWTEST_F(AppMgrServiceModuleTest, ClearUpApplicationData_001, TestSize.Level1)
  */
 HWTEST_F(AppMgrServiceModuleTest, IsBackgroundRunningRestricted_001, TestSize.Level1)
 {
-    ASSERT_TRUE(appMgrService_);
-    ASSERT_TRUE(mockAppMgrServiceInner_);
+    EXPECT_TRUE(appMgrService_);
+    EXPECT_TRUE(mockAppMgrServiceInner_);
 
     std::string testAppName("testApp");
     bool testResult = false;
@@ -370,8 +370,8 @@ HWTEST_F(AppMgrServiceModuleTest, IsBackgroundRunningRestricted_001, TestSize.Le
  */
 HWTEST_F(AppMgrServiceModuleTest, GetAllRunningProcesses_001, TestSize.Level1)
 {
-    ASSERT_TRUE(appMgrService_);
-    ASSERT_TRUE(mockAppMgrServiceInner_);
+    EXPECT_TRUE(appMgrService_);
+    EXPECT_TRUE(mockAppMgrServiceInner_);
 
     std::vector<RunningProcessInfo> testRunningProcessInfo;
 
@@ -410,8 +410,8 @@ HWTEST_F(AppMgrServiceModuleTest, GetAllRunningProcesses_001, TestSize.Level1)
  */
 HWTEST_F(AppMgrServiceModuleTest, KillApplication_001, TestSize.Level1)
 {
-    ASSERT_TRUE(appMgrService_);
-    ASSERT_TRUE(mockAppMgrServiceInner_);
+    EXPECT_TRUE(appMgrService_);
+    EXPECT_TRUE(mockAppMgrServiceInner_);
 
     std::string testBundleName("testApp");
     bool testResult = false;
@@ -446,8 +446,8 @@ HWTEST_F(AppMgrServiceModuleTest, KillApplication_001, TestSize.Level1)
  */
 HWTEST_F(AppMgrServiceModuleTest, QueryServiceState_001, TestSize.Level1)
 {
-    ASSERT_TRUE(appMgrService_);
-    ASSERT_TRUE(mockAppMgrServiceInner_);
+    EXPECT_TRUE(appMgrService_);
+    EXPECT_TRUE(mockAppMgrServiceInner_);
 
     SpawnConnectionState testSpawnConnectionState = SpawnConnectionState::STATE_CONNECTED;
     Semaphore sem(0);
@@ -477,7 +477,7 @@ HWTEST_F(AppMgrServiceModuleTest, QueryServiceState_001, TestSize.Level1)
  */
 HWTEST_F(AppMgrServiceModuleTest, GetAmsMgr_001, TestSize.Level1)
 {
-    ASSERT_TRUE(appMgrService_);
+    EXPECT_TRUE(appMgrService_);
 
     auto amsMgr = appMgrService_->GetAmsMgr();
 

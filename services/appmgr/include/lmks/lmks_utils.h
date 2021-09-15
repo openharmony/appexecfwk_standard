@@ -21,13 +21,13 @@
 
 namespace OHOS {
 namespace LMKS {
-
 class LmksUtils {
 public:
     LmksUtils();
     virtual ~LmksUtils();
 
     int RemoveProcess(pid_t pid);
+
 private:
     std::string GetProcName(pid_t pid);
     int GetProcSize(pid_t pid);

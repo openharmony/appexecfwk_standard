@@ -36,7 +36,7 @@ ohos_unittest("SpecDispatcherConfigTest") {
     "${dispatcher_path}/src/threading/worker_pool.cpp",
   ]
 
-  sources += [ "spec_dispatcher_config_test .cpp" ]
+  sources += [ "spec_dispatcher_config_test.cpp" ]
 
   configs = [ "${dispatcher_path}/test:dispatcher_test_config" ]
 

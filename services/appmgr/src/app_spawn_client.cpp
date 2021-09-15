@@ -20,10 +20,8 @@
 namespace OHOS {
 namespace AppExecFwk {
 namespace {
-
 const int32_t CONNECT_RETRY_DELAY = 200 * 1000;  // 200ms
 const int32_t CONNECT_RETRY_MAX_TIMES = 15;
-
 }  // namespace
 
 AppSpawnClient::AppSpawnClient()
@@ -132,6 +130,5 @@ void AppSpawnClient::SetSocket(const std::shared_ptr<AppSpawnSocket> socket)
 {
     socket_ = socket;
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

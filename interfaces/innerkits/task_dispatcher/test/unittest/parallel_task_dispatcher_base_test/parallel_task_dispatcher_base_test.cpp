@@ -87,7 +87,7 @@ HWTEST(ParallelTaskDispatcherBaseTest, ParallelTaskDispatcherBase_SyncDispatchTe
     std::shared_ptr<ParallelTaskDispatcherBase> parallelTaskDispatcherBase =
         CreateParallelTaskDispatcherBase(name, TaskPriority::DEFAULT);
     ErrCode errCode = parallelTaskDispatcherBase->SyncDispatch(nullptr);
-    ASSERT_TRUE(errCode == ERR_APPEXECFWK_CHECK_FAILED);
+    EXPECT_TRUE(errCode == ERR_APPEXECFWK_CHECK_FAILED);
     std::atomic<int> count(0);
     EXPECT_EQ(count.load(), 0);
     std::shared_ptr<Runnable> rptr = std::make_shared<Runnable>([&]() {
@@ -120,7 +120,7 @@ HWTEST(ParallelTaskDispatcherBaseTest, ParallelTaskDispatcherBase_AsyncDispatchT
     std::shared_ptr<ParallelTaskDispatcherBase> parallelTaskDispatcherBase =
         CreateParallelTaskDispatcherBase(name, TaskPriority::DEFAULT);
     std::shared_ptr<Revocable> revocable = parallelTaskDispatcherBase->AsyncDispatch(nullptr);
-    ASSERT_TRUE(revocable == nullptr);
+    EXPECT_TRUE(revocable == nullptr);
     std::atomic<int> count(0);
     EXPECT_EQ(count.load(), 0);
     std::shared_ptr<Runnable> rptr = std::make_shared<Runnable>([&]() {
@@ -177,7 +177,7 @@ HWTEST(ParallelTaskDispatcherBaseTest, ParallelTaskDispatcherBase_DelayDispatchT
         GTEST_LOG_(INFO) << name << " Runnable";
     });
     std::shared_ptr<Revocable> revocable = parallelTaskDispatcherBase->DelayDispatch(nullptr, 1000);
-    ASSERT_TRUE(revocable == nullptr);
+    EXPECT_TRUE(revocable == nullptr);
     GTEST_LOG_(INFO) << name << " end";
 }
 
@@ -235,6 +235,6 @@ HWTEST(ParallelTaskDispatcherBaseTest, ParallelTaskDispatcherBase_AsyncGroupDisp
         CreateParallelTaskDispatcherBase(name, TaskPriority::DEFAULT);
 
     std::shared_ptr<Revocable> revocable = parallelTaskDispatcherBase->AsyncGroupDispatch(nullptr, nullptr);
-    ASSERT_TRUE(revocable == nullptr);
+    EXPECT_TRUE(revocable == nullptr);
     GTEST_LOG_(INFO) << name << " end";
 }

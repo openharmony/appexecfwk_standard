@@ -35,13 +35,16 @@ const std::string MAIN_ABILITY = "mainAbility";
 const std::string SKILL_INFOS = "skillInfos";
 const std::string USER_ID = "userId_";
 const std::string IS_KEEP_DATA = "isKeepData";
-const std::string PROVISION_ID = "provisionId";
 const std::string APP_FEATURE = "appFeature";
 const std::string HAS_ENTRY = "hasEntry";
 const std::string MODULE_PACKAGE = "modulePackage";
 const std::string MODULE_PATH = "modulePath";
 const std::string MODULE_NAME = "moduleName";
 const std::string MODULE_DESCRIPTION = "description";
+const std::string MODULE_DESCRIPTION_ID = "descriptionId";
+const std::string MODULE_LABEL = "label";
+const std::string MODULE_LABEL_ID = "labelId";
+const std::string MODULE_DESCRIPTION_INSTALLATION_FREE = "installationFree";
 const std::string MODULE_IS_ENTRY = "isEntry";
 const std::string MODULE_METADATA = "metaData";
 const std::string MODULE_COLOR_MODE = "colorMode";
@@ -68,14 +71,13 @@ InnerBundleInfo::~InnerBundleInfo()
     APP_LOGD("inner bundle info instance is destroyed");
 }
 
-
-
 void to_json(nlohmann::json &jsonObject, const Distro &distro)
 {
     jsonObject = nlohmann::json{
             {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_DELIVERY_WITH_INSTALL, distro.deliveryWithInstall},
             {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_MODULE_NAME, distro.moduleName},
-            {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_MODULE_TYPE, distro.moduleType}
+            {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_MODULE_TYPE, distro.moduleType},
+            {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_MODULE_INSTALLATION_FREE, distro.installationFree}
     };
 }
 
@@ -122,6 +124,10 @@ void to_json(nlohmann::json &jsonObject, const InnerModuleInfo &info)
         {MODULE_COLOR_MODE, info.colorMode},
         {MODULE_DISTRO, info.distro},
         {MODULE_DESCRIPTION, info.description},
+        {MODULE_DESCRIPTION_ID, info.descriptionId},
+        {MODULE_LABEL, info.label},
+        {MODULE_LABEL_ID, info.labelId},
+        {MODULE_DESCRIPTION_INSTALLATION_FREE, info.installationFree},
         {MODULE_REQ_CAPABILITIES, info.reqCapabilities},
         {MODULE_REQ_PERMS, info.reqPermissions},
         {MODULE_DEF_PERMS, info.defPermissions},
@@ -166,7 +172,6 @@ void InnerBundleInfo::ToJson(nlohmann::json &jsonObject) const
     jsonObject[IS_KEEP_DATA] = isKeepData_;
     jsonObject[USER_ID] = userId_;
     jsonObject[MAIN_ABILITY] = mainAbility_;
-    jsonObject[PROVISION_ID] = provisionId_;
     jsonObject[APP_FEATURE] = appFeature_;
     jsonObject[HAS_ENTRY] = hasEntry_;
 	jsonObject[MODULE_FORMS] = formInfos_;
@@ -254,6 +259,38 @@ void from_json(const nlohmann::json &jsonObject, InnerModuleInfo &info)
         MODULE_DESCRIPTION,
         info.description,
         JsonType::STRING,
+        false,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<int32_t>(jsonObject,
+        jsonObjectEnd,
+        MODULE_DESCRIPTION_ID,
+        info.descriptionId,
+        JsonType::NUMBER,
+        false,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        MODULE_LABEL,
+        info.label,
+        JsonType::STRING,
+        false,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<int32_t>(jsonObject,
+        jsonObjectEnd,
+        MODULE_LABEL_ID,
+        info.labelId,
+        JsonType::NUMBER,
+        false,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<bool>(jsonObject,
+        jsonObjectEnd,
+        MODULE_DESCRIPTION_INSTALLATION_FREE,
+        info.installationFree,
+        JsonType::BOOLEAN,
         false,
         ProfileReader::parseResult,
         ArrayType::NOT_ARRAY);
@@ -376,8 +413,6 @@ void from_json(const nlohmann::json &jsonObject, Skill &skill)
         ArrayType::OBJECT);
 }
 
-
-
 void from_json(const nlohmann::json &jsonObject, Distro &distro)
 {
     const auto &jsonObjectEnd = jsonObject.end();
@@ -403,6 +438,15 @@ void from_json(const nlohmann::json &jsonObject, Distro &distro)
         distro.moduleType,
         JsonType::STRING,
         true,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
+    // mustFlag decide by distro.moduleType
+    GetValueIfFindKey<bool>(jsonObject,
+        jsonObjectEnd,
+        ProfileReader::BUNDLE_MODULE_PROFILE_KEY_MODULE_INSTALLATION_FREE,
+        distro.installationFree,
+        JsonType::BOOLEAN,
+        false,
         ProfileReader::parseResult,
         ArrayType::NOT_ARRAY);
 }
@@ -635,14 +679,6 @@ int32_t InnerBundleInfo::FromJson(const nlohmann::json &jsonObject)
         ArrayType::NOT_ARRAY);
     GetValueIfFindKey<std::string>(jsonObject,
         jsonObjectEnd,
-        PROVISION_ID,
-        provisionId_,
-        JsonType::STRING,
-        true,
-        ProfileReader::parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<std::string>(jsonObject,
-        jsonObjectEnd,
         APP_FEATURE,
         appFeature_,
         JsonType::STRING,
@@ -730,6 +766,26 @@ std::optional<AbilityInfo> InnerBundleInfo::FindAbilityInfo(
             return ability.second;
         }
     }
+    return std::nullopt;
+}
+
+std::optional<std::vector<AbilityInfo>> InnerBundleInfo::FindAbilityInfos(const std::string &bundleName) const
+{
+    std::vector<AbilityInfo> abilitys;
+
+    if (bundleName.empty()) {
+        return std::nullopt;
+    }
+
+    for (const auto &ability : baseAbilityInfos_) {
+        if ((ability.second.bundleName == bundleName)) {
+            abilitys.emplace_back(ability.second);
+        }
+    }
+    if (!abilitys.empty()) {
+        return abilitys;
+    }
+
     return std::nullopt;
 }
 
@@ -851,7 +907,6 @@ std::string InnerBundleInfo::ToString() const
     j[USER_ID] = userId_;
     j[MAIN_ABILITY] = mainAbility_;
     j[APP_FEATURE] = appFeature_;
-    j[PROVISION_ID] = provisionId_;
     j[HAS_ENTRY] = hasEntry_;
     j[MODULE_FORMS] = formInfos_;
     j[MODULE_SHORTCUT] = shortcutInfos_;
@@ -948,8 +1003,25 @@ void InnerBundleInfo::GetFormsInfoByApp(std::vector<FormInfo> &formInfos) const
 void InnerBundleInfo::GetShortcutInfos(std::vector<ShortcutInfo> &shortcutInfos) const
 {
     for (const auto &shortcut : shortcutInfos_) {
-		shortcutInfos.emplace_back(shortcut.second);	
+		shortcutInfos.emplace_back(shortcut.second);
 	}
+}
+
+std::optional<InnerModuleInfo> InnerBundleInfo::GetInnerModuleInfoByModuleName(const std::string &moduleName) const
+{
+    for (const auto &innerModuleInfo : innerModuleInfos_) {
+        if (innerModuleInfo.second.moduleName == moduleName) {
+            return innerModuleInfo.second;
+        }
+    }
+    return std::nullopt;
+}
+
+void InnerBundleInfo::GetModuleNames(std::vector<std::string> &moduleNames) const
+{
+    for (const auto &innerModuleInfo : innerModuleInfos_) {
+        moduleNames.emplace_back(innerModuleInfo.second.moduleName);
+    }
 }
 
 }  // namespace AppExecFwk

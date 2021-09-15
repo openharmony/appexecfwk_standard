@@ -41,6 +41,24 @@ public:
      */
     virtual void OnBundleStateChanged(const uint8_t installType, const int32_t resultCode, const std::string &resultMsg,
         const std::string &bundleName) = 0;
+    /**
+     * @brief Called when a new application package has been installed on the device.
+     * @param bundleName Indicates the name of the bundle whose state has been installed.
+     * @param userId Indicates the id of the bundle whose state has been installed.
+     */
+    virtual void OnBundleAdded(const std::string &bundleName, const int userId) = 0;
+    /**
+     * @brief Called when a new application package has been Updated on the device.
+     * @param bundleName Indicates the name of the bundle whose state has been Updated.
+     * @param userId Indicates the id of the bundle whose state has been Updated.
+     */
+    virtual void OnBundleUpdated(const std::string &bundleName, const int userId) = 0;
+    /**
+     * @brief Called when a new application package has been Removed on the device.
+     * @param bundleName Indicates the name of the bundle whose state has been Removed.
+     * @param userId Indicates the id of the bundle whose state has been Removed.
+     */
+    virtual void OnBundleRemoved(const std::string &bundleName, const int userId) = 0;
 
     enum class Message {
         ON_BUNDLE_STATE_CHANGED,

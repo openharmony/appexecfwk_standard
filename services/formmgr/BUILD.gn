@@ -1,0 +1,111 @@
+# Copyright (c) 2021 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import("//build/ohos.gni")
+import("//foundation/appexecfwk/standard/appexecfwk.gni")
+
+config("formmgr_config") {
+  include_dirs = [
+    "include",
+    "//third_party/json/include",
+    "//utils/system/safwk/native/include",
+  ]
+  cflags_cc = [ "-fexceptions" ]
+}
+
+group("fms_target") {
+  deps = [ ":libfms" ]
+}
+
+ohos_shared_library("libfms") {
+  include_dirs = [
+    "//foundation/appexecfwk/standard/interfaces/innerkits/libeventhandler/include",
+    "//foundation/aafwk/standard/interfaces/innerkits/ability_manager/include",
+    "//base/security/permission/interfaces/innerkits/permission_standard/permissionsdk/main/cpp/include",
+    "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_core/include/bundlemgr",
+
+    #  "//third_party/libuuid",
+  ]
+  sources = [
+    "src/form_ability_connection.cpp",
+    "src/form_acquire_connection.cpp",
+    "src/form_ams_helper.cpp",
+    "src/form_batch_delete_connection.cpp",
+    "src/form_bms_helper.cpp",
+    "src/form_cache_mgr.cpp",
+    "src/form_cast_temp_connection.cpp",
+    "src/form_data_mgr.cpp",
+    "src/form_db_cache.cpp",
+    "src/form_db_info.cpp",
+    "src/form_delete_connection.cpp",
+    "src/form_dump_mgr.cpp",
+    "src/form_event_notify_connection.cpp",
+    "src/form_host_callback.cpp",
+    "src/form_host_record.cpp",
+    "src/form_item_info.cpp",
+    "src/form_mgr_adapter.cpp",
+    "src/form_mgr_service.cpp",
+    "src/form_msg_event_connection.cpp",
+    "src/form_provider_mgr.cpp",
+    "src/form_refresh_connection.cpp",
+    "src/form_refresh_limiter.cpp",
+    "src/form_storage_mgr.cpp",
+    "src/form_supply_callback.cpp",
+    "src/form_sys_event_receiver.cpp",
+    "src/form_task_mgr.cpp",
+    "src/form_timer_mgr.cpp",
+    "src/form_util.cpp",
+  ]
+
+  defines = [
+    "APP_LOG_TAG = \"FormMgrService\"",
+    "LOG_DOMAIN = 0xD001120",
+  ]
+
+  configs = [
+    ":formmgr_config",
+    "//base/miscservices/time/services:time_service_config",
+    "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core:formmgr_sdk_config",
+  ]
+  cflags = []
+  if (target_cpu == "arm") {
+    cflags += [ "-DBINDER_IPC_32BIT" ]
+  }
+  deps = [
+    "${appexecfwk_path}/common:libappexecfwk_common",
+    "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base:appexecfwk_base",
+    "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core:appexecfwk_core",
+    "${libs_path}/libeventhandler:libeventhandler_target",
+    "//base/powermgr/power_manager/interfaces/innerkits:powermgr_client",
+    "//base/security/permission/interfaces/innerkits/permission_standard/permissionsdk:libpermissionsdk_standard",
+    "//foundation/aafwk/standard/interfaces/innerkits/base:base",
+    "//foundation/aafwk/standard/interfaces/innerkits/want:want",
+    "//foundation/distributedschedule/dmsfwk/interfaces/innerkits/uri:zuri",
+    "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
+    "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
+    "//utils/native/base:utils",
+
+    #  "//third_party/libuuid:libuuid_static",
+  ]
+
+  external_deps = [
+    "ces_standard:cesfwk_core",
+    "ces_standard:cesfwk_innerkits",
+    "hiviewdfx_hilog_native:libhilog",
+    "ipc:ipc_core",
+    "os_account_standard:libaccountkits",
+  ]
+
+  subsystem_name = "appexecfwk"
+  part_name = "appexecfwk_standard"
+}

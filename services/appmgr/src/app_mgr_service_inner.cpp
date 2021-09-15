@@ -33,7 +33,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 using namespace OHOS::Security;
 
 namespace {
@@ -626,10 +625,10 @@ void AppMgrServiceInner::StartAbility(const sptr<IRemoteObject> &token, const sp
         }
     }
 
-    auto abilityRecord = appRecord->GetAbilityRunningRecordByToken(token);
-    if (abilityRecord && preToken) {
+    auto ability = appRecord->GetAbilityRunningRecordByToken(token);
+    if (ability && preToken) {
         APP_LOGE("Ability is already started");
-        abilityRecord->SetPreToken(preToken);
+        ability->SetPreToken(preToken);
         return;
     }
 
@@ -639,21 +638,21 @@ void AppMgrServiceInner::StartAbility(const sptr<IRemoteObject> &token, const sp
         OptimizerAppStateChanged(appRecord, ApplicationState::APP_STATE_SUSPENDED);
     }
 
-    abilityRecord = appRecord->AddAbility(token, abilityInfo);
-    if (!abilityRecord) {
+    ability = appRecord->AddAbility(token, abilityInfo);
+    if (!ability) {
         APP_LOGE("add ability failed");
         return;
     }
 
     if (preToken != nullptr) {
-        abilityRecord->SetPreToken(preToken);
+        ability->SetPreToken(preToken);
     }
 
     if (appState == ApplicationState::APP_STATE_CREATE) {
         APP_LOGE("in create state, don't launch ability");
         return;
     }
-    appRecord->LaunchAbility(abilityRecord);
+    appRecord->LaunchAbility(ability);
 }
 
 std::shared_ptr<AppRunningRecord> AppMgrServiceInner::GetAppRunningRecordByAbilityToken(
@@ -748,11 +747,13 @@ void AppMgrServiceInner::AbilityTerminated(const sptr<IRemoteObject> &token)
         APP_LOGE("token is null!");
         return;
     }
-    auto appRecord = GetAppRunningRecordByAbilityToken(token);
+
+    auto appRecord = appRunningManager_->GetTerminatingAppRunningRecord(token);
     if (!appRecord) {
         APP_LOGE("app is not exist!");
         return;
     }
+
     appRecord->AbilityTerminated(token);
     APP_LOGD("end");
 }
@@ -782,6 +783,7 @@ void AppMgrServiceInner::OnAppStateChanged(
             processData.processName = appRecord->GetProcessName();
             processData.pid = appRecord->GetPriorityObject()->GetPid();
             processData.appState = state;
+            processData.uid = appRecord->GetUid();
             callback->OnAppStateChanged(processData);
         }
     }

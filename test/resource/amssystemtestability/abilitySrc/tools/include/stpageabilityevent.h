@@ -22,12 +22,15 @@
 #include "common_event_manager.h"
 #include "ability_loader.h"
 #include "app_log_wrapper.h"
+#include "ability_manager.h"
+#include "running_process_info.h"
 
 namespace OHOS {
 namespace AppExecFwk {
 
 namespace STEventName {
 const std::string g_eventName = "resp_st_page_ability_callback";
+const std::string g_eventNameProcessMemory = "resp_st_process_memory_info";
 const std::string g_pidEventName = "resp_st_page_ability_pid_callback";
 const std::string g_abilityStateInit = ":Init";
 const std::string g_abilityStateOnStart = ":OnStart";
@@ -40,8 +43,22 @@ const std::string g_abilityStateOnNewWant = ":OnNewWant";
 const std::string g_abilityStateOnCommand = ":OnCommand";
 const std::string g_abilityStateOnConnect = ":OnConnect";
 const std::string g_abilityStateOnDisconnect = ":OnDisconnect";
-const int eventCode = 0;
-const std::vector<std::string> g_eventList = {"requ_page_ability_terminate"};
+const std::string g_abilityStateInsert = ":Insert";
+const std::string g_abilityStateDelete = ":Delete";
+const std::string g_abilityStateUpdate = ":Update";
+const std::string g_abilityStateQuery = ":Query";
+const std::string g_abilityStateGetFileTypes = ":GetFileTypes";
+const std::string g_abilityStateOpenFile = ":OpenFile";
+const std::string g_getWantAgentState = ":GetWantAgentFail";
+const std::string g_triggerWantAgentState = ":TriggerWantAgentSuccess";
+const int g_defeventCode = 0;
+const std::vector<std::string> g_eventList = {
+    "requ_page_ability_terminate",
+    "requ_get_process_memory_info",
+    "requ_disconnect_service",
+    "requ_page_ability_terminate_caller",
+    "requ_page_ability_terminate_result",
+};
 static constexpr uint32_t LOAD_TIMEOUT = 500;          // ms
 static constexpr uint32_t ACTIVE_TIMEOUT = 5000;       // ms
 static constexpr uint32_t INACTIVE_TIMEOUT = 500;      // ms
@@ -56,15 +73,19 @@ static constexpr uint32_t RESTART_TIMEOUT = 5000;      // ms
 
 class STPageAbilityEventSubscriber : public EventFwk::CommonEventSubscriber {
 public:
-    STPageAbilityEventSubscriber(const EventFwk::CommonEventSubscribeInfo &sp, const std::shared_ptr<Ability> &ability)
-        : CommonEventSubscriber(sp), ability_(std::move(ability))
+    STPageAbilityEventSubscriber(const EventFwk::CommonEventSubscribeInfo &sp, std::shared_ptr<Ability> ability,
+        sptr<AAFwk::IAbilityConnection> &stub)
+        : CommonEventSubscriber(sp), ability_(ability), stub_(stub)
     {}
     ~STPageAbilityEventSubscriber()
     {}
     virtual void OnReceiveEvent(const EventFwk::CommonEventData &data) override;
+    std::string RunningProcessInfoToString(std::vector<RunningProcessInfo> &infos);
+    bool PublishEvent(const std::string &eventName, const int &code, const std::string &data);
 
 private:
-    std::shared_ptr<Ability> ability_;
+    std::weak_ptr<Ability> ability_;
+    wptr<AAFwk::IAbilityConnection> stub_;
 };
 
 class STPageAbilityEvent {
@@ -73,8 +94,9 @@ public:
     STPageAbilityEvent(const std::string &className);
     ~STPageAbilityEvent() = default;
 
-    bool PublishEvent(const std::string &eventName, const int &code, const std::string &data);
-    void SubscribeEvent(std::vector<std::string> eventList, const std::shared_ptr<Ability> &ability);
+    static bool PublishEvent(const std::string &eventName, const int &code, const std::string &data);
+    void SubscribeEvent(std::vector<std::string> eventList, std::shared_ptr<Ability> ability,
+        sptr<AAFwk::IAbilityConnection> stub = nullptr);
     void UnsubscribeEvent();
     std::string GetEventDate(const std::string &stateCallbackCount);
     std::string GetCallBackPath(const std::string &callBackPath);

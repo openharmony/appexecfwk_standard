@@ -183,7 +183,7 @@ HWTEST_F(AmsAbilityRunningRecordTest, UpdateAbilityRunningRecord_001, TestSize.L
     sptr<IRemoteObject> token = new MockAbilityToken();
 
     auto abilityRunningRecord = appRunningRecord->AddAbility(token, abilityInfo);
-    ASSERT_TRUE(abilityRunningRecord != nullptr);
+    EXPECT_TRUE(abilityRunningRecord != nullptr);
     abilityRunningRecord->SetState(AbilityState::ABILITY_STATE_READY);
     appRunningRecord->SetState(ApplicationState::APP_STATE_READY);
 
@@ -216,7 +216,7 @@ HWTEST_F(AmsAbilityRunningRecordTest, UpdateAbilityRunningRecord_002, TestSize.L
     sptr<IRemoteObject> token = new MockAbilityToken();
 
     auto abilityRunningRecord = appRunningRecord->AddAbility(token, abilityInfo);
-    ASSERT_TRUE(abilityRunningRecord != nullptr);
+    EXPECT_TRUE(abilityRunningRecord != nullptr);
 
     AbilityState state = abilityRunningRecord->GetState();
     appRunningRecord->UpdateAbilityState(token, AbilityState::ABILITY_STATE_END);
@@ -241,7 +241,7 @@ HWTEST_F(AmsAbilityRunningRecordTest, UpdateAbilityRunningRecord_003, TestSize.L
     abilityInfo->name = GetTestAbilityName();
     sptr<IRemoteObject> token = new MockAbilityToken();
     auto abilityRunningRecord = appRunningRecord->AddAbility(token, abilityInfo);
-    ASSERT_TRUE(abilityRunningRecord != nullptr);
+    EXPECT_TRUE(abilityRunningRecord != nullptr);
 
     AbilityState state = abilityRunningRecord->GetState();
 
@@ -272,7 +272,7 @@ HWTEST_F(AmsAbilityRunningRecordTest, UpdateAbilityRunningRecord_004, TestSize.L
     sptr<IRemoteObject> token2 = new MockAbilityToken();
 
     auto abilityRunningRecord = appRunningRecord->AddAbility(token, abilityInfo);
-    ASSERT_TRUE(abilityRunningRecord != nullptr);
+    EXPECT_TRUE(abilityRunningRecord != nullptr);
 
     AbilityState state = abilityRunningRecord->GetState();
     EXPECT_TRUE(appRunningRecord->GetAbilityRunningRecordByToken(token2) == nullptr);
@@ -304,8 +304,8 @@ HWTEST_F(AmsAbilityRunningRecordTest, UpdateAbilityRunningRecord_005, TestSize.L
     auto abilityRunningRecord = appRunningRecord->AddAbility(token, abilityInfo);
     auto anotherAbilityRunningRecord = appRunningRecord->AddAbility(anotherToken, anotherAbilityInfo);
 
-    ASSERT_TRUE(abilityRunningRecord != nullptr);
-    ASSERT_TRUE(anotherAbilityRunningRecord != nullptr);
+    EXPECT_TRUE(abilityRunningRecord != nullptr);
+    EXPECT_TRUE(anotherAbilityRunningRecord != nullptr);
     anotherAbilityRunningRecord->SetState(AbilityState::ABILITY_STATE_BACKGROUND);
     appRunningRecord->SetState(ApplicationState::APP_STATE_BACKGROUND);
 
@@ -373,7 +373,7 @@ HWTEST_F(AmsAbilityRunningRecordTest, UpdateAbilityRunningRecord_007, TestSize.L
     auto abilityRunningRecord = appRunningRecord->AddAbility(token, abilityInfo);
     auto anotherAbilityRunningRecord = appRunningRecord->AddAbility(anotherToken, anotherAbilityInfo);
     EXPECT_TRUE(abilityRunningRecord != nullptr);
-    ASSERT_TRUE(anotherAbilityRunningRecord != nullptr);
+    EXPECT_TRUE(anotherAbilityRunningRecord != nullptr);
     anotherAbilityRunningRecord->SetState(AbilityState::ABILITY_STATE_BACKGROUND);
     appRunningRecord->SetState(ApplicationState::APP_STATE_BACKGROUND);
     abilityRunningRecord->SetState(AbilityState::ABILITY_STATE_BACKGROUND);
@@ -406,7 +406,7 @@ HWTEST_F(AmsAbilityRunningRecordTest, DeleteAbilityRunningRecord_001, TestSize.L
     auto abilityRunningRecord = appRunningRecord->AddAbility(token, abilityInfo);
 
     EXPECT_TRUE(abilityRunningRecord != nullptr);
-    ASSERT_TRUE(appRunningRecord->GetAbilityRunningRecordByToken(token) != nullptr);
+    EXPECT_TRUE(appRunningRecord->GetAbilityRunningRecordByToken(token) != nullptr);
 
     appRunningRecord->ClearAbility(abilityRunningRecord);
     EXPECT_TRUE(appRunningRecord->GetAbilityRunningRecordByToken(token) == nullptr);
@@ -431,7 +431,7 @@ HWTEST_F(AmsAbilityRunningRecordTest, DeleteAbilityRunningRecord_002, TestSize.L
     auto abilityRunnningRecord = appRunningRecord->AddAbility(token, abilityInfo);
 
     EXPECT_TRUE(abilityRunnningRecord != nullptr);
-    ASSERT_TRUE(appRunningRecord->GetAbilityRunningRecordByToken(token) != nullptr);
+    EXPECT_TRUE(appRunningRecord->GetAbilityRunningRecordByToken(token) != nullptr);
 
     appRunningRecord->ClearAbility(nullptr);
     EXPECT_TRUE(appRunningRecord->GetAbilityRunningRecordByToken(token) != nullptr);
@@ -517,7 +517,7 @@ HWTEST_F(AmsAbilityRunningRecordTest, SetGetAbilityRecord_001, TestSize.Level0)
     sptr<IRemoteObject> token = new MockAbilityToken();
     auto abilityRunningRecord = appRunningRecord->AddAbility(token, abilityInfo);
 
-    ASSERT_TRUE(abilityRunningRecord != nullptr);
+    EXPECT_TRUE(abilityRunningRecord != nullptr);
     abilityRunningRecord->SetVisibility(1);
     abilityRunningRecord->SetPerceptibility(1);
     abilityRunningRecord->SetConnectionState(1);

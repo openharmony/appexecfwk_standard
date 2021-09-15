@@ -40,6 +40,7 @@ public:
     MOCK_METHOD1(CheckIsSystemAppByUid, bool(const int uid));
     MOCK_METHOD2(GetBundleInfosByMetaData, bool(const std::string &metaData, std::vector<BundleInfo> &bundleInfos));
     MOCK_METHOD2(QueryAbilityInfo, bool(const Want &want, AbilityInfo &abilityInfo));
+    MOCK_METHOD2(QueryAbilityInfos, bool(const Want &want, std::vector<AbilityInfo> &abilityInfos));
     MOCK_METHOD2(QueryAbilityInfoByUri, bool(const std::string &abilityUri, AbilityInfo &abilityInfo));
     MOCK_METHOD1(QueryKeepAliveBundleInfos, bool(std::vector<BundleInfo> &bundleInfos));
     MOCK_METHOD2(GetAbilityLabel, std::string(const std::string &bundleName, const std::string &className));
@@ -86,6 +87,9 @@ public:
     MOCK_METHOD3(GetFormsInfoByModule,
         bool(const std::string &bundleName, const std::string &moduleName, std::vector<FormInfo> &formInfos));
     MOCK_METHOD2(GetShortcutInfos, bool(const std::string &bundleName, std::vector<ShortcutInfo> &shortcutInfos));
+    MOCK_METHOD2(GetModuleUsageRecords,
+        bool(const int32_t number, std::vector<ModuleUsageRecord> &moduleUsageRecords));
+    MOCK_METHOD3(NotifyActivityLifeStatus, bool(const std::string &bundleName, const std::string &abilityName, const int64_t launchTime));
 };
 
 }  // namespace AppExecFwk

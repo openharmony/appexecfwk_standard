@@ -843,7 +843,7 @@ bool BmsBundlePermissionTest::ConvertPermissionDef(
         return Permission::GrantMode::USER_GRANT;
     }();
     permDef.availableScope = [&defPermission]() -> int {
-        int flag = 0;
+        uint flag = 0;
         if (std::find(defPermission.availableScope.begin(),
                 defPermission.availableScope.end(),
                 ProfileReader::BUNDLE_MODULE_PROFILE_KEY_DEF_PERMISSIONS_AVAILABLESCOPE_SIGNATURE) !=
@@ -873,14 +873,14 @@ void BmsBundlePermissionTest::CheckPermissionDef(
 {
     Permission::PermissionDef permDef;
     ConvertPermissionDef(permDef, defPermission, bundlename);
-    ASSERT_EQ(permissionDef.permissionName, permDef.permissionName);
-    ASSERT_EQ(permissionDef.bundleName, bundlename);
-    ASSERT_EQ(permissionDef.availableScope, permDef.availableScope);
-    ASSERT_EQ(permissionDef.grantMode, permDef.grantMode);
-    ASSERT_EQ(permissionDef.labelId, permDef.labelId);
-    ASSERT_EQ(permissionDef.label, permDef.label);
-    ASSERT_EQ(permissionDef.description, permDef.description);
-    ASSERT_EQ(permissionDef.descriptionId, permDef.descriptionId);
+    EXPECT_EQ(permissionDef.permissionName, permDef.permissionName);
+    EXPECT_EQ(permissionDef.bundleName, bundlename);
+    EXPECT_EQ(permissionDef.availableScope, permDef.availableScope);
+    EXPECT_EQ(permissionDef.grantMode, permDef.grantMode);
+    EXPECT_EQ(permissionDef.labelId, permDef.labelId);
+    EXPECT_EQ(permissionDef.label, permDef.label);
+    EXPECT_EQ(permissionDef.description, permDef.description);
+    EXPECT_EQ(permissionDef.descriptionId, permDef.descriptionId);
 }
 
 void BmsBundlePermissionTest::CheckErrPermissionDef(
@@ -888,14 +888,14 @@ void BmsBundlePermissionTest::CheckErrPermissionDef(
 {
     Permission::PermissionDef permDef;
     ConvertPermissionDef(permDef, defPermission, bundlename);
-    ASSERT_NE(permissionDef.permissionName, permDef.permissionName);
-    ASSERT_NE(permissionDef.bundleName, bundlename);
-    ASSERT_NE(permissionDef.availableScope, permDef.availableScope);
-    ASSERT_NE(permissionDef.grantMode, permDef.grantMode);
-    ASSERT_NE(permissionDef.labelId, permDef.labelId);
-    ASSERT_NE(permissionDef.label, permDef.label);
-    ASSERT_NE(permissionDef.description, permDef.description);
-    ASSERT_NE(permissionDef.descriptionId, permDef.descriptionId);
+    EXPECT_NE(permissionDef.permissionName, permDef.permissionName);
+    EXPECT_NE(permissionDef.bundleName, bundlename);
+    EXPECT_NE(permissionDef.availableScope, permDef.availableScope);
+    EXPECT_NE(permissionDef.grantMode, permDef.grantMode);
+    EXPECT_NE(permissionDef.labelId, permDef.labelId);
+    EXPECT_NE(permissionDef.label, permDef.label);
+    EXPECT_NE(permissionDef.description, permDef.description);
+    EXPECT_NE(permissionDef.descriptionId, permDef.descriptionId);
 }
 
 /**
@@ -910,7 +910,7 @@ HWTEST_F(BmsBundlePermissionTest, HapVerify_0100, Function | SmallTest | Level0)
 
     Verify::HapVerifyResult hapVerifyResult;
     bool result = BundleVerifyMgr::HapVerify(HAP_FILE_PATH, hapVerifyResult);
-    ASSERT_EQ(result, true);
+    EXPECT_EQ(result, true);
 }
 
 /**
@@ -924,7 +924,7 @@ HWTEST_F(BmsBundlePermissionTest, HapVerify_0200, Function | SmallTest | Level0)
 {
     Verify::HapVerifyResult hapVerifyResult;
     bool result = BundleVerifyMgr::HapVerify(HAP_FILE_PATH1, hapVerifyResult);
-    ASSERT_EQ(result, false);
+    EXPECT_EQ(result, false);
 }
 
 /**
@@ -1011,7 +1011,7 @@ HWTEST_F(BmsBundlePermissionTest, InstallPermissions_0300, Function | SmallTest 
     MockReqPermissionBundle(innerbundleinfo2);
     BundlePermissionMgr::InstallPermissions(innerbundleinfo2);
     auto result = BundlePermissionMgr::VerifyPermission(MOCK_REQPERMISSION_NAME, DEFPERMISSION_NAME_WECHAT, 1);
-    ASSERT_EQ(result, Permission::TypePermissionState::PERMISSION_GRANTED);
+    EXPECT_EQ(result, Permission::TypePermissionState::PERMISSION_GRANTED);
     BundlePermissionMgr::UninstallPermissions(innerbundleinfo1);
     BundlePermissionMgr::UninstallPermissions(innerbundleinfo2);
 }
@@ -1043,15 +1043,15 @@ HWTEST_F(BmsBundlePermissionTest, InstallPermissions_0400, Function | SmallTest 
     BundlePermissionMgr::InstallPermissions(innerbundleinfo2);
     auto result1 = BundlePermissionMgr::VerifyPermission(MOCK_REQPERMISSION_NAME, DEFPERMISSION_NAME_WECHAT, 1);
     auto result2 = BundlePermissionMgr::VerifyPermission(MOCK_REQPERMISSION_NAME, DEFPERMISSION_NAME_EMAIL, 1);
-    ASSERT_EQ(result1, Permission::TypePermissionState::PERMISSION_GRANTED);
-    ASSERT_EQ(result2, Permission::TypePermissionState::PERMISSION_GRANTED);
+    EXPECT_EQ(result1, Permission::TypePermissionState::PERMISSION_GRANTED);
+    EXPECT_EQ(result2, Permission::TypePermissionState::PERMISSION_GRANTED);
     InnerBundleInfo innerbundleinfo3;
     MockOtherReqPermissionBundle(innerbundleinfo3);
     BundlePermissionMgr::InstallPermissions(innerbundleinfo3);
     auto result3 = BundlePermissionMgr::VerifyPermission(MOCK_REQPERMISSION_NAME_1, DEFPERMISSION_NAME_MUSIC, 1);
     auto result4 = BundlePermissionMgr::VerifyPermission(MOCK_REQPERMISSION_NAME_1, DEFPERMISSION_NAME_APP, 1);
-    ASSERT_EQ(result3, Permission::TypePermissionState::PERMISSION_GRANTED);
-    ASSERT_EQ(result4, Permission::TypePermissionState::PERMISSION_GRANTED);
+    EXPECT_EQ(result3, Permission::TypePermissionState::PERMISSION_GRANTED);
+    EXPECT_EQ(result4, Permission::TypePermissionState::PERMISSION_GRANTED);
     BundlePermissionMgr::UninstallPermissions(innerbundleinfo1);
     BundlePermissionMgr::UninstallPermissions(innerbundleinfo2);
     BundlePermissionMgr::UninstallPermissions(innerbundleinfo3);
@@ -1095,7 +1095,7 @@ HWTEST_F(BmsBundlePermissionTest, InstallPermissions_0700, Function | SmallTest 
     MockReqPermissionBundle(innerbundleinfo2);
     BundlePermissionMgr::InstallPermissions(innerbundleinfo2);
     auto result = BundlePermissionMgr::VerifyPermission(MOCK_REQPERMISSION_NAME, DEFPERMISSION_NAME1, 1);
-    ASSERT_EQ(result, Permission::TypePermissionState::PERMISSION_NOT_GRANTED);
+    EXPECT_EQ(result, Permission::TypePermissionState::PERMISSION_NOT_GRANTED);
     BundlePermissionMgr::UninstallPermissions(innerbundleinfo1);
     BundlePermissionMgr::UninstallPermissions(innerbundleinfo2);
 }
@@ -1123,11 +1123,11 @@ HWTEST_F(BmsBundlePermissionTest, InstallPermissions_0800, Function | SmallTest 
     MockDefPermissionBundleUserGrant(innerbundleinfo2);
     BundlePermissionMgr::InstallPermissions(innerbundleinfo2);
     BundlePermissionMgr::GetPermissionDef(DEFPERMISSION_NAME10, permissionDef2);
-    ASSERT_NE(permissionDef2.label, DEF_LABEL2);
-    ASSERT_NE(permissionDef2.grantMode, Permission::GrantMode::USER_GRANT);
+    EXPECT_NE(permissionDef2.label, DEF_LABEL2);
+    EXPECT_NE(permissionDef2.grantMode, Permission::GrantMode::USER_GRANT);
     BundlePermissionMgr::GetPermissionDef(DEFPERMISSION_NAME11, permissionDef2);
-    ASSERT_NE(permissionDef2.label, DEF_LABEL2);
-    ASSERT_NE(permissionDef2.grantMode, Permission::GrantMode::USER_GRANT);
+    EXPECT_NE(permissionDef2.label, DEF_LABEL2);
+    EXPECT_NE(permissionDef2.grantMode, Permission::GrantMode::USER_GRANT);
     auto bundlename1 = innerbundleinfo2.GetBundleName();
     BundlePermissionMgr::GetPermissionDef(DEFPERMISSION_NAME12, permissionDef2);
     CheckPermissionDef(DEFPERMISSION_USERGRANT3, bundlename1, permissionDef2);
@@ -1199,14 +1199,14 @@ HWTEST_F(BmsBundlePermissionTest, UninstallPermissions_0200, Function | SmallTes
     MockReqPermissionBundle(innerbundleinfo1);
     BundlePermissionMgr::InstallPermissions(innerbundleinfo1);
     auto result = BundlePermissionMgr::VerifyPermission(MOCK_REQPERMISSION_NAME, DEFPERMISSION_NAME_EMAIL, 1);
-    ASSERT_EQ(result, Permission::TypePermissionState::PERMISSION_GRANTED);
+    EXPECT_EQ(result, Permission::TypePermissionState::PERMISSION_GRANTED);
     auto result1 = BundlePermissionMgr::VerifyPermission(MOCK_REQPERMISSION_NAME, DEFPERMISSION_NAME_WECHAT, 1);
-    ASSERT_EQ(result1, Permission::TypePermissionState::PERMISSION_GRANTED);
+    EXPECT_EQ(result1, Permission::TypePermissionState::PERMISSION_GRANTED);
     BundlePermissionMgr::UninstallPermissions(innerbundleinfo1);
     auto result2 = BundlePermissionMgr::VerifyPermission(MOCK_REQPERMISSION_NAME, DEFPERMISSION_NAME_EMAIL, 1);
-    ASSERT_EQ(result2, Permission::TypePermissionState::PERMISSION_NOT_GRANTED);
+    EXPECT_EQ(result2, Permission::TypePermissionState::PERMISSION_NOT_GRANTED);
     auto result3 = BundlePermissionMgr::VerifyPermission(MOCK_REQPERMISSION_NAME, DEFPERMISSION_NAME_WECHAT, 1);
-    ASSERT_EQ(result3, Permission::TypePermissionState::PERMISSION_NOT_GRANTED);
+    EXPECT_EQ(result3, Permission::TypePermissionState::PERMISSION_NOT_GRANTED);
     BundlePermissionMgr::UninstallPermissions(innerbundleinfo);
     BundlePermissionMgr::UninstallPermissions(innerbundleinfo1);
 }
@@ -1289,25 +1289,25 @@ HWTEST_F(BmsBundlePermissionTest, UninstallPermissions_0400, Function | SmallTes
     BundlePermissionMgr::InstallPermissions(innerbundleinfo2);
     auto result1 = BundlePermissionMgr::VerifyPermission(MOCK_REQPERMISSION_NAME, DEFPERMISSION_NAME_EMAIL, 1);
     auto result2 = BundlePermissionMgr::VerifyPermission(MOCK_REQPERMISSION_NAME, DEFPERMISSION_NAME_WECHAT, 1);
-    ASSERT_EQ(result1, Permission::TypePermissionState::PERMISSION_GRANTED);
-    ASSERT_EQ(result2, Permission::TypePermissionState::PERMISSION_GRANTED);
+    EXPECT_EQ(result1, Permission::TypePermissionState::PERMISSION_GRANTED);
+    EXPECT_EQ(result2, Permission::TypePermissionState::PERMISSION_GRANTED);
     InnerBundleInfo innerbundleinfo3;
     PermissionDef permissionDef3;
     MockOtherReqPermissionBundle(innerbundleinfo3);
     BundlePermissionMgr::InstallPermissions(innerbundleinfo3);
     auto result3 = BundlePermissionMgr::VerifyPermission(MOCK_REQPERMISSION_NAME_1, DEFPERMISSION_NAME_APP, 1);
     auto result4 = BundlePermissionMgr::VerifyPermission(MOCK_REQPERMISSION_NAME_1, DEFPERMISSION_NAME_MUSIC, 1);
-    ASSERT_EQ(result3, Permission::TypePermissionState::PERMISSION_GRANTED);
-    ASSERT_EQ(result4, Permission::TypePermissionState::PERMISSION_GRANTED);
+    EXPECT_EQ(result3, Permission::TypePermissionState::PERMISSION_GRANTED);
+    EXPECT_EQ(result4, Permission::TypePermissionState::PERMISSION_GRANTED);
     BundlePermissionMgr::UninstallPermissions(innerbundleinfo2);
     auto result5 = BundlePermissionMgr::VerifyPermission(MOCK_REQPERMISSION_NAME, DEFPERMISSION_NAME_EMAIL, 1);
     auto result6 = BundlePermissionMgr::VerifyPermission(MOCK_REQPERMISSION_NAME, DEFPERMISSION_NAME_WECHAT, 1);
     auto result7 = BundlePermissionMgr::VerifyPermission(MOCK_REQPERMISSION_NAME_1, DEFPERMISSION_NAME_APP, 1);
     auto result8 = BundlePermissionMgr::VerifyPermission(MOCK_REQPERMISSION_NAME_1, DEFPERMISSION_NAME_MUSIC, 1);
-    ASSERT_EQ(result5, Permission::TypePermissionState::PERMISSION_NOT_GRANTED);
-    ASSERT_EQ(result6, Permission::TypePermissionState::PERMISSION_NOT_GRANTED);
-    ASSERT_EQ(result7, Permission::TypePermissionState::PERMISSION_GRANTED);
-    ASSERT_EQ(result8, Permission::TypePermissionState::PERMISSION_GRANTED);
+    EXPECT_EQ(result5, Permission::TypePermissionState::PERMISSION_NOT_GRANTED);
+    EXPECT_EQ(result6, Permission::TypePermissionState::PERMISSION_NOT_GRANTED);
+    EXPECT_EQ(result7, Permission::TypePermissionState::PERMISSION_GRANTED);
+    EXPECT_EQ(result8, Permission::TypePermissionState::PERMISSION_GRANTED);
     BundlePermissionMgr::UninstallPermissions(innerbundleinfo1);
     BundlePermissionMgr::UninstallPermissions(innerbundleinfo2);
     BundlePermissionMgr::UninstallPermissions(innerbundleinfo3);
@@ -1378,9 +1378,9 @@ HWTEST_F(BmsBundlePermissionTest, UninstallPermissions_0600, Function | SmallTes
     MockReqPermissionBundle(innerbundleinfo2);
     BundlePermissionMgr::InstallPermissions(innerbundleinfo2);
     auto result1 = BundlePermissionMgr::VerifyPermission(MOCK_REQPERMISSION_NAME, DEFPERMISSION_NAME_WECHAT, 1);
-    ASSERT_EQ(result1, Permission::TypePermissionState::PERMISSION_GRANTED);
+    EXPECT_EQ(result1, Permission::TypePermissionState::PERMISSION_GRANTED);
     auto result2 = BundlePermissionMgr::VerifyPermission(MOCK_REQPERMISSION_NAME, DEFPERMISSION_NAME_EMAIL, 1);
-    ASSERT_EQ(result2, Permission::TypePermissionState::PERMISSION_GRANTED);
+    EXPECT_EQ(result2, Permission::TypePermissionState::PERMISSION_GRANTED);
     InnerBundleInfo innerbundleinfo3;
     PermissionDef permissionDef1;
     MockNoDefPermissionBundle(innerbundleinfo3);
@@ -1394,9 +1394,9 @@ HWTEST_F(BmsBundlePermissionTest, UninstallPermissions_0600, Function | SmallTes
     CheckErrPermissionDef(DEFPERMISSION_SYSTEM3, bundlename1, permissionDef1);
     BundlePermissionMgr::UninstallPermissions(innerbundleinfo3);
     auto result3 = BundlePermissionMgr::VerifyPermission(MOCK_REQPERMISSION_NAME, DEFPERMISSION_NAME_EMAIL, 1);
-    ASSERT_EQ(result3, Permission::TypePermissionState::PERMISSION_GRANTED);
+    EXPECT_EQ(result3, Permission::TypePermissionState::PERMISSION_GRANTED);
     auto result4 = BundlePermissionMgr::VerifyPermission(MOCK_REQPERMISSION_NAME, DEFPERMISSION_NAME_WECHAT, 1);
-    ASSERT_EQ(result4, Permission::TypePermissionState::PERMISSION_GRANTED);
+    EXPECT_EQ(result4, Permission::TypePermissionState::PERMISSION_GRANTED);
     BundlePermissionMgr::UninstallPermissions(innerbundleinfo);
     BundlePermissionMgr::UninstallPermissions(innerbundleinfo2);
     BundlePermissionMgr::UninstallPermissions(innerbundleinfo3);
@@ -1433,7 +1433,7 @@ HWTEST_F(BmsBundlePermissionTest, UpdatePermissions_0100, Function | SmallTest |
     CheckPermissionDef(DEFPERMISSION_SAME2, bundlename1, permissionDef2);
     BundlePermissionMgr::GetPermissionDef(DEFPERMISSION_NAME18, permissionDef2);
     CheckPermissionDef(DEFPERMISSION_SAME3, bundlename1, permissionDef2);
-    ASSERT_EQ(result, true);
+    EXPECT_EQ(result, true);
 }
 
 /**
@@ -1449,7 +1449,7 @@ HWTEST_F(BmsBundlePermissionTest, CheckCallingPermission_0100, Function | SmallT
     MockDefPermissionBundleSystemGrant(innerbundleinfo);
     std::string permissionName = DEFPERMISSION_NAME1;
     ErrCode result = BundlePermissionMgr::CheckCallingPermission(permissionName);
-    ASSERT_EQ(result, true);
+    EXPECT_EQ(result, true);
 }
 
 /**
@@ -1479,8 +1479,8 @@ HWTEST_F(BmsBundlePermissionTest, VerifyPermission_0100, Function | SmallTest | 
     BundlePermissionMgr::InstallPermissions(innerbundleinfo2);
     auto result = BundlePermissionMgr::VerifyPermission(MOCK_REQPERMISSION_NAME, DEFPERMISSION_NAME_EMAIL, 1);
     auto result1 = BundlePermissionMgr::VerifyPermission(MOCK_REQPERMISSION_NAME, DEFPERMISSION_NAME_WECHAT, 1);
-    ASSERT_EQ(result, Permission::TypePermissionState::PERMISSION_GRANTED);
-    ASSERT_EQ(result1, Permission::TypePermissionState::PERMISSION_GRANTED);
+    EXPECT_EQ(result, Permission::TypePermissionState::PERMISSION_GRANTED);
+    EXPECT_EQ(result1, Permission::TypePermissionState::PERMISSION_GRANTED);
 }
 
 /**
@@ -1509,7 +1509,7 @@ HWTEST_F(BmsBundlePermissionTest, VerifyPermission_0200, Function | SmallTest | 
     MockReqPermissionBundle(innerbundleinfo2);
     BundlePermissionMgr::InstallPermissions(innerbundleinfo2);
     auto result = BundlePermissionMgr::VerifyPermission(MOCK_REQPERMISSION_NAME, "error", 1);
-    ASSERT_EQ(result, Permission::TypePermissionState::PERMISSION_NOT_GRANTED);
+    EXPECT_EQ(result, Permission::TypePermissionState::PERMISSION_NOT_GRANTED);
 }
 
 /**
@@ -1528,7 +1528,7 @@ HWTEST_F(BmsBundlePermissionTest, GetPermissionDef_0100, Function | SmallTest | 
     std::string permissionName = DEFPERMISSION_NAME1;
     ErrCode result = BundlePermissionMgr::GetPermissionDef(permissionName, permdef);
     CheckPermissionDef(DEFPERMISSION_SYSTEM1, bundlename, permdef);
-    ASSERT_EQ(result, true);
+    EXPECT_EQ(result, true);
 }
 
 /**
@@ -1547,12 +1547,12 @@ HWTEST_F(BmsBundlePermissionTest, GetPermissionDef_0200, Function | SmallTest | 
     std::string permissionName1 = DEFPERMISSION_NAME1;
     ErrCode result1 = BundlePermissionMgr::GetPermissionDef(permissionName1, permdef1);
     CheckPermissionDef(DEFPERMISSION_SYSTEM1, bundlename, permdef1);
-    ASSERT_EQ(result1, true);
+    EXPECT_EQ(result1, true);
     PermissionDef permdef2;
     std::string permissionName2 = DEFPERMISSION_NAME2;
     ErrCode result2 = BundlePermissionMgr::GetPermissionDef(permissionName2, permdef2);
     CheckPermissionDef(DEFPERMISSION_SYSTEM2, bundlename, permdef2);
-    ASSERT_EQ(result2, true);
+    EXPECT_EQ(result2, true);
 }
 
 /**
@@ -1574,32 +1574,32 @@ HWTEST_F(BmsBundlePermissionTest, GetPermissionDef_0300, Function | SmallTest | 
     std::string permissionName1 = DEFPERMISSION_NAME1;
     ErrCode result1 = BundlePermissionMgr::GetPermissionDef(permissionName1, permdef);
     CheckPermissionDef(DEFPERMISSION_SYSTEM1, bundlename, permdef);
-    ASSERT_EQ(result1, true);
+    EXPECT_EQ(result1, true);
     PermissionDef permdef1;
     std::string permissionName2 = DEFPERMISSION_NAME2;
     ErrCode result2 = BundlePermissionMgr::GetPermissionDef(permissionName2, permdef1);
     CheckPermissionDef(DEFPERMISSION_SYSTEM2, bundlename, permdef1);
-    ASSERT_EQ(result2, true);
+    EXPECT_EQ(result2, true);
     PermissionDef permdef2;
     std::string permissionName3 = DEFPERMISSION_NAME3;
     ErrCode result3 = BundlePermissionMgr::GetPermissionDef(permissionName3, permdef2);
     CheckPermissionDef(DEFPERMISSION_SYSTEM3, bundlename, permdef2);
-    ASSERT_EQ(result3, true);
+    EXPECT_EQ(result3, true);
     PermissionDef permdef3;
     std::string permissionName4 = DEFPERMISSION_NAME16;
     ErrCode result4 = BundlePermissionMgr::GetPermissionDef(permissionName4, permdef3);
     CheckPermissionDef(DEFPERMISSION_SAME1, bundlename1, permdef3);
-    ASSERT_EQ(result4, true);
+    EXPECT_EQ(result4, true);
     PermissionDef permdef4;
     std::string permissionName5 = DEFPERMISSION_NAME17;
     ErrCode result5 = BundlePermissionMgr::GetPermissionDef(permissionName5, permdef4);
     CheckPermissionDef(DEFPERMISSION_SAME2, bundlename1, permdef4);
-    ASSERT_EQ(result5, true);
+    EXPECT_EQ(result5, true);
     PermissionDef permdef5;
     std::string permissionName6 = DEFPERMISSION_NAME18;
     ErrCode result6 = BundlePermissionMgr::GetPermissionDef(permissionName6, permdef5);
     CheckPermissionDef(DEFPERMISSION_SAME3, bundlename1, permdef5);
-    ASSERT_EQ(result6, true);
+    EXPECT_EQ(result6, true);
 }
 
 /**
@@ -1618,10 +1618,10 @@ HWTEST_F(BmsBundlePermissionTest, GetPermissionDef_0400, Function | SmallTest | 
     std::string permissionName = "1";
     ErrCode result = BundlePermissionMgr::GetPermissionDef(permissionName, permdef);
     CheckErrPermissionDef(DEFPERMISSION_SYSTEM1, bundlename, permdef);
-    ASSERT_NE(permdef.permissionName, DEFPERMISSION_NAME1);
-    ASSERT_NE(permdef.permissionName, DEFPERMISSION_NAME2);
-    ASSERT_NE(permdef.permissionName, DEFPERMISSION_NAME3);
-    ASSERT_EQ(result, false);
+    EXPECT_NE(permdef.permissionName, DEFPERMISSION_NAME1);
+    EXPECT_NE(permdef.permissionName, DEFPERMISSION_NAME2);
+    EXPECT_NE(permdef.permissionName, DEFPERMISSION_NAME3);
+    EXPECT_NE(result, true);
 }
 
 /**
@@ -1640,10 +1640,10 @@ HWTEST_F(BmsBundlePermissionTest, GetPermissionDef_0500, Function | SmallTest | 
     std::string permissionName = "";
     ErrCode result = BundlePermissionMgr::GetPermissionDef(permissionName, permdef);
     CheckErrPermissionDef(DEFPERMISSION_SYSTEM1, bundlename, permdef);
-    ASSERT_NE(permdef.permissionName, DEFPERMISSION_NAME1);
-    ASSERT_NE(permdef.permissionName, DEFPERMISSION_NAME2);
-    ASSERT_NE(permdef.permissionName, DEFPERMISSION_NAME3);
-    ASSERT_EQ(result, false);
+    EXPECT_NE(permdef.permissionName, DEFPERMISSION_NAME1);
+    EXPECT_NE(permdef.permissionName, DEFPERMISSION_NAME2);
+    EXPECT_NE(permdef.permissionName, DEFPERMISSION_NAME3);
+    EXPECT_EQ(result, false);
 }
 
 /**
@@ -1660,7 +1660,7 @@ HWTEST_F(BmsBundlePermissionTest, CanRequestPermission_0100, Function | SmallTes
     std::string permissionName = DEFPERMISSION_NAME3;
     int userId = '1';
     ErrCode result = BundlePermissionMgr::CanRequestPermission(innerbundleinfo.GetBundleName(), permissionName, userId);
-    ASSERT_EQ(result, 0);
+    EXPECT_EQ(result, 0);
 }
 
 /**
@@ -1678,5 +1678,5 @@ HWTEST_F(BmsBundlePermissionTest, RequestPermissionFromUser_0100, Function | Sma
     int userId = '1';
     ErrCode result =
         BundlePermissionMgr::RequestPermissionFromUser(innerbundleinfo.GetBundleName(), permissionName, userId);
-    ASSERT_EQ(result, true);
+    EXPECT_EQ(result, true);
 }

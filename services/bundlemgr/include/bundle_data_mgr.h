@@ -21,6 +21,7 @@
 #include <mutex>
 #include <string>
 #include <shared_mutex>
+#include <set>
 
 #include "ohos/aafwk/content/want.h"
 
@@ -29,6 +30,10 @@
 #include "inner_bundle_info.h"
 #include "bundle_status_callback_interface.h"
 #include "bundle_data_storage_interface.h"
+#include "module_usage_record.h"
+#include "module_usage_data_storage.h"
+#include "on_permission_changed_callback_interface.h"
+#include "common_event_manager.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -119,6 +124,13 @@ public:
      * @return Returns true if the AbilityInfo is successfully obtained; returns false otherwise.
      */
     bool QueryAbilityInfo(const Want &want, AbilityInfo &abilityInfo) const;
+    /**
+     * @brief Query a AbilityInfo of list by the given Want.
+     * @param want Indicates the information of the ability.
+     * @param abilityInfo Indicates the obtained AbilityInfo of list.
+     * @return Returns true if the AbilityInfo is successfully obtained; returns false otherwise.
+     */
+    bool QueryAbilityInfos(const Want &want, std::vector<AbilityInfo> &abilityInfo) const;
     /**
      * @brief Query the AbilityInfo by ability.uri in config.json.
      * @param abilityUri Indicates the uri of the ability.
@@ -306,10 +318,11 @@ public:
      * @param resultCode Indicates the status code returned for the application installation, update, or uninstall
      *  result.
      * @param type Indicates the NotifyType object.
+     * @param uid Indicates the uid of the application.
      * @return Returns true if this function is successfully called; returns false otherwise.
      */
     bool NotifyBundleStatus(const std::string &bundleName, const std::string &modulePackage,
-        const std::string &mainAbility, const ErrCode resultCode, const NotifyType type);
+        const std::string &mainAbility, const ErrCode resultCode, const NotifyType type, const int32_t &uid);
     /**
      * @brief Get a mutex for locking by bundle name.
      * @param bundleName Indicates the bundle name.
@@ -379,6 +392,72 @@ public:
      * @return Returns true if this function is successfully called; returns false otherwise.
      */
     bool GetShortcutInfos(const std::string &bundleName, std::vector<ShortcutInfo> &shortcutInfos) const;
+    /**
+     * @brief Notify a specified ability for activity.
+     * @param bundleName Indicates the bundle name of the ability to activity.
+     * @param abilityName Indicates the name of the ability to activity.
+     * @param launchTime Indicates the ability launchTime.
+     * @return Returns true if this function is successfully called; returns false otherwise.
+     */
+    bool NotifyActivityLifeStatus(
+        const std::string &bundleName, const std::string &abilityName, const int64_t launchTime) const;
+    /**
+     * @brief Query ModuleUsageRecord objects ordered by lastLaunchTime desc
+     * @param maxNum Indicates the max number ShortcutInfo objects to get.
+     * @param records List of ModuleUsageRecord objects if obtained.
+     * @return Returns true if this function is successfully called; returns false otherwise.
+     */
+    bool GetUsageRecords(int32_t maxNum, std::vector<ModuleUsageRecord> &records);
+    /**
+     * @brief Registers a callback for listening for permission changes of all UIDs.
+     * @param callback Indicates the callback method to register.
+     * @return Returns true if this function is successfully called; returns false otherwise.
+     */
+    bool RegisterAllPermissionsChanged(const sptr<OnPermissionChangedCallback> &callback);
+    /**
+     * @brief Registers a callback for listening for permission changes of specified UIDs.
+     * @param uids Indicates the list of UIDs whose permission changes will be monitored.
+     * @param callback Indicates the callback method to register.
+     * @return Returns true if this function is successfully called; returns false otherwise.
+     */
+    bool RegisterPermissionsChanged(const std::vector<int> &uids, const sptr<OnPermissionChangedCallback> &callback);
+    /**
+     * @brief Add death recipient for specified callback registerd.
+     * @param callback Indicates the callback for death recipient.
+     * @return Returns true if this function is successfully called; returns false otherwise.
+     */
+    bool AddDeathRecipient(const sptr<OnPermissionChangedCallback> &callback);
+    /**
+     * @brief Unregisters a specified callback for listening for permission changes.
+     * @param callback Indicates the callback method to unregister.
+     * @return Returns true if this function is successfully called; returns false otherwise.
+     */
+    bool UnregisterPermissionsChanged(const sptr<OnPermissionChangedCallback> &callback);
+    /**
+     * @brief Call callback for listening the uid permission changes.
+     * @param uid Indicates the bundle uid whose permission changes.
+     * @return Returns true if this function is successfully called; returns false otherwise.
+     */
+    bool NotifyPermissionsChanged(int32_t uid);
+    /**
+     * @brief Update bundle usage record on bundle removed.
+     * @param keepUsage Indicates the flag record is remove on bundle removed.
+     * @param userId Indicates the user Id of the application.
+     * @param bundleName Indicates the bundle name of the application.
+     * @return Returns true if this function is successfully called; returns false otherwise.
+     */
+    bool UpdateUsageRecordOnBundleRemoved(bool keepUsage, const int userId, const std::string &bundleName) const;
+    /**
+     * @brief Update bundle usage record on module removed.
+     * @param keepUsage Indicates the flag record is remove on module removed.
+     * @param userId Indicates the user Id of the application.
+     * @param bundleName Indicates the bundle name of the application.
+     * @param moduleName Indicates the module name of the  application.
+     * @return Returns true if this function is successfully called; returns false otherwise.
+     */
+    bool UpdateUsageRecordOnModuleRemoved(
+        bool keepUsage, const int userId, const std::string &bundleName, const std::string &moduleName) const;
+
 private:
     /**
      * @brief Init transferStates.
@@ -429,6 +508,8 @@ private:
     mutable std::mutex uidMapMutex_;
     mutable std::mutex callbackMutex_;
     mutable std::shared_mutex bundleMutex_;
+    mutable std::mutex allPermissionsChangedLock_;
+    mutable std::mutex permissionsChangedLock_;
     bool allInstallFlag_ = false;
     // using for locking by bundleName
     std::unordered_map<std::string, std::mutex> bundleMutexMap_;
@@ -447,6 +528,10 @@ private:
     // current-status:previous-statue pair
     std::multimap<InstallState, InstallState> transferStates_;
     std::shared_ptr<IBundleDataStorage> dataStorage_;
+    std::shared_ptr<ModuleUsageRecordStorage> usageRecordStorage_;
+    std::set<sptr<OnPermissionChangedCallback>> allPermissionsCallbacks_;
+    // map<uid, callback>.
+    std::map<int32_t, std::set<sptr<OnPermissionChangedCallback>>> permissionsCallbacks_;
 };
 
 }  // namespace AppExecFwk

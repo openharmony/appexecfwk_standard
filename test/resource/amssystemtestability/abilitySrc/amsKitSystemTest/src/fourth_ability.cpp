@@ -18,6 +18,16 @@
 #include <numeric>
 #include <sstream>
 #include "app_log_wrapper.h"
+#include "ohos/aafwk/base/array_wrapper.h"
+#include "ohos/aafwk/base/bool_wrapper.h"
+#include "ohos/aafwk/base/byte_wrapper.h"
+#include "ohos/aafwk/base/short_wrapper.h"
+#include "ohos/aafwk/base/int_wrapper.h"
+#include "ohos/aafwk/base/long_wrapper.h"
+#include "ohos/aafwk/base/float_wrapper.h"
+#include "ohos/aafwk/base/double_wrapper.h"
+#include "ohos/aafwk/base/string_wrapper.h"
+#include "ohos/aafwk/base/zchar_wrapper.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -38,402 +48,520 @@ const int cycleCount = 1000;
 enum class AddFunctionType { Add_String, Add_String_MatchType, Add_PatternMatcher };
 }  // namespace
 
-#define COUNTFUNCTION(objectName, countFunction, expected, code) \
-    int actionCount = objectName.countFunction();                \
-    bool result = (actionCount == expected);                     \
-    TestUtils::PublishEvent(g_respPageFourthAbilityST, code, std::to_string(result))
+#define COUNTFUNCTION(objectName, countFunction, expected, code)                         \
+    do {                                                                                 \
+        int actionCount = objectName.countFunction();                                    \
+        bool result = (actionCount == (expected));                                       \
+        TestUtils::PublishEvent(g_respPageFourthAbilityST, code, std::to_string(result)); \
+    } while (0);
 
-#define GETFUNCTION(objectName, getFunction, parameter, expected, code) \
-    std::string skillAction = objectName.getFunction(parameter);        \
-    bool result = (skillAction == expected);                            \
-    TestUtils::PublishEvent(g_respPageFourthAbilityST, code, std::to_string(result))
+#define GETFUNCTION(objectName, getFunction, parameter, expected, code)                  \
+    do {                                                                                 \
+        std::string skillAction = objectName.getFunction(parameter);                     \
+        bool result = (skillAction == (expected));                                       \
+        TestUtils::PublishEvent(g_respPageFourthAbilityST, code, std::to_string(result)); \
+    } while (0);
 
-#define HASFUNCTION(objectName, hasFunction, parameter, expected, code) \
-    bool isHas = objectName.hasFunction(parameter);                     \
-    bool result = (isHas == expected);                                  \
-    TestUtils::PublishEvent(g_respPageFourthAbilityST, code, std::to_string(result))
+#define HASFUNCTION(objectName, hasFunction, parameter, expected, code)                  \
+    do {                                                                                 \
+        bool isHas = objectName.hasFunction(parameter);                                  \
+        bool result = (isHas == (expected));                                             \
+        TestUtils::PublishEvent(g_respPageFourthAbilityST, code, std::to_string(result)); \
+    } while (0);
 
 // Add Path and Type Define Function
-#define ADDFUNCTION(objeceName, addFunction, stringParameter, addFunctionType) \
-    if (AddFunctionType::Add_String == addFunctionType) {                      \
-        objeceName.addFunction(stringParameter);                               \
-    } else if (AddFunctionType::Add_String_MatchType == addFunctionType) {     \
-        skill.addFunction(stringParameter, MatchType::PREFIX);                 \
-    } else {                                                                   \
-        PatternsMatcher pm(stringParameter, MatchType::PREFIX);                \
-        skill.addFunction(pm);                                                 \
-    }
+#define ADDFUNCTION(objeceName, addFunction, stringParameter, addFunctionType)   \
+    do {                                                                         \
+        if (AddFunctionType::Add_String == (addFunctionType)) {                  \
+            objeceName.addFunction((stringParameter));                           \
+        } else if (AddFunctionType::Add_String_MatchType == (addFunctionType)) { \
+            skill.addFunction((stringParameter), MatchType::PREFIX);             \
+        } else {                                                                 \
+            PatternsMatcher pm((stringParameter), MatchType::PREFIX);            \
+            skill.addFunction(pm);                                               \
+        }                                                                        \
+    } while (0);
 
 #define REMOVEFUNCTION(objeceName, removeFunction, stringParameter, addFunctionType) \
-    if (AddFunctionType::Add_String == addFunctionType) {                            \
-        objeceName.removeFunction(stringParameter);                                  \
-    } else if (AddFunctionType::Add_String_MatchType == addFunctionType) {           \
-        skill.removeFunction(stringParameter, MatchType::PREFIX);                    \
-    } else {                                                                         \
-        PatternsMatcher pm(stringParameter, MatchType::PREFIX);                      \
-        skill.removeFunction(pm);                                                    \
-    }
+    do {                                                                             \
+        if (AddFunctionType::Add_String == (addFunctionType)) {                      \
+            objeceName.removeFunction((stringParameter));                            \
+        } else if (AddFunctionType::Add_String_MatchType == (addFunctionType)) {     \
+            skill.removeFunction((stringParameter), MatchType::PREFIX);              \
+        } else {                                                                     \
+            PatternsMatcher pm((stringParameter), MatchType::PREFIX);                \
+            skill.removeFunction(pm);                                                \
+        }                                                                            \
+    } while (0);
 
 // Add and Count ST kit Case(Action,Entity,Authority,Scheme,SchemeSpecificPart)
 #define SKILLS_ADD_AND_COUNT_CASE1(addFunction, countFunction, code) \
-    Skills skill;                                                    \
-    skill.addFunction(normalString);                                 \
-    COUNTFUNCTION(skill, countFunction, 1, code)
+    do {                                                             \
+        Skills skill;                                                \
+        skill.addFunction(normalString);                             \
+        COUNTFUNCTION(skill, countFunction, 1, code);                 \
+    } while (0);
 
 #define SKILLS_ADD_AND_COUNT_CASE2(countFunction, code) \
-    Skills skill;                                       \
-    COUNTFUNCTION(skill, countFunction, 0, code)
+    do {                                                \
+        Skills skill;                                   \
+        COUNTFUNCTION(skill, countFunction, 0, code);    \
+    } while (0);
 
 #define SKILLS_ADD_AND_COUNT_CASE3(addFunction, countFunction, code) \
-    Skills skill;                                                    \
-    for (int index = 0; index < cycleCount; index++) {               \
-        skill.addFunction(normalString);                             \
-    }                                                                \
-    COUNTFUNCTION(skill, countFunction, 1, code)
+    do {                                                             \
+        Skills skill;                                                \
+        for (int index = 0; index < cycleCount; index++) {           \
+            skill.addFunction(normalString);                         \
+        }                                                            \
+        COUNTFUNCTION(skill, countFunction, 1, code);                 \
+    } while (0);
 
 // Add and Get ST kit Case(Action,Entity,Authority,Scheme,SchemeSpecificPart)
 #define SKILLS_ADD_AND_GET_CASE1(addFunction, getFunction, code) \
-    Skills skill;                                                \
-    skill.addFunction(normalString);                             \
-    GETFUNCTION(skill, getFunction, 0, normalString, code)
+    do {                                                         \
+        Skills skill;                                            \
+        skill.addFunction(normalString);                         \
+        GETFUNCTION(skill, getFunction, 0, normalString, code);   \
+    } while (0);
 
 #define SKILLS_ADD_AND_GET_CASE2(addFunction, getFunction, code) \
-    Skills skill;                                                \
-    skill.addFunction(normalString);                             \
-    GETFUNCTION(skill, getFunction, 10, std::string(), code)
+    do {                                                         \
+        Skills skill;                                            \
+        skill.addFunction(normalString);                         \
+        GETFUNCTION(skill, getFunction, 10, std::string(), code); \
+    } while (0);
 
-#define SKILLS_ADD_AND_GET_CASE3(addFunction, getFunction, code) \
-    Skills skill;                                                \
-    skill.addFunction(normalString);                             \
-    GETFUNCTION(skill, getFunction, -10, std::string(), code)
+#define SKILLS_ADD_AND_GET_CASE3(addFunction, getFunction, code)  \
+    do {                                                          \
+        Skills skill;                                             \
+        skill.addFunction(normalString);                          \
+        GETFUNCTION(skill, getFunction, -10, std::string(), code); \
+    } while (0);
 
-#define SKILLS_ADD_AND_GET_CASE4(getFunction, code) \
-    Skills skill;                                   \
-    GETFUNCTION(skill, getFunction, 0, std::string(), code)
+#define SKILLS_ADD_AND_GET_CASE4(getFunction, code)             \
+    do {                                                        \
+        Skills skill;                                           \
+        GETFUNCTION(skill, getFunction, 0, std::string(), code) \
+    } while (0);
 
 #define SKILLS_ADD_AND_GET_CASE5(addFunction, getFunction, code) \
-    Skills skill;                                                \
-    skill.addFunction(specialString);                            \
-    GETFUNCTION(skill, getFunction, 0, specialString, code)
+    do {                                                         \
+        Skills skill;                                            \
+        skill.addFunction(specialString);                        \
+        GETFUNCTION(skill, getFunction, 0, specialString, code);  \
+    } while (0);
 
 #define SKILLS_ADD_AND_GET_CASE6(addFunction, getFunction, code) \
-    Skills skill;                                                \
-    for (int index = 0; index < cycleCount; index++) {           \
-        skill.addFunction(normalString);                         \
-    }                                                            \
-    GETFUNCTION(skill, getFunction, 0, normalString, code)
+    do {                                                         \
+        Skills skill;                                            \
+        for (int index = 0; index < cycleCount; index++) {       \
+            skill.addFunction(normalString);                     \
+        }                                                        \
+        GETFUNCTION(skill, getFunction, 0, normalString, code);   \
+    } while (0);
 
-#define SKILLS_ADD_AND_GET_CASE7(addFunction, getFunction, code) \
-    Skills skill;                                                \
-    for (int index = 0; index < cycleCount; index++) {           \
-        skill.addFunction(normalString);                         \
-    }                                                            \
-    GETFUNCTION(skill, getFunction, 150, std::string(), code)
+#define SKILLS_ADD_AND_GET_CASE7(addFunction, getFunction, code)  \
+    do {                                                          \
+        Skills skill;                                             \
+        for (int index = 0; index < cycleCount; index++) {        \
+            skill.addFunction(normalString);                      \
+        }                                                         \
+        GETFUNCTION(skill, getFunction, 150, std::string(), code) \
+    } while (0);
 
 // Add and Has ST kit Case(Action,Entity,Authority,Scheme,SchemeSpecificPart)
-#define SKILLS_ADD_AND_HAS_CASE1(addFunction, hasFunction, code) \
-    Skills skill;                                                \
-    for (int index = 0; index < cycleCount; index++) {           \
-        skill.addFunction(normalString);                         \
-    }                                                            \
-    HASFUNCTION(skill, hasFunction, normalString, true, code)
+#define SKILLS_ADD_AND_HAS_CASE1(addFunction, hasFunction, code)  \
+    do {                                                          \
+        Skills skill;                                             \
+        for (int index = 0; index < cycleCount; index++) {        \
+            skill.addFunction(normalString);                      \
+        }                                                         \
+        HASFUNCTION(skill, hasFunction, normalString, true, code); \
+    } while (0);
 
-#define SKILLS_ADD_AND_HAS_CASE2(hasFunction, code) \
-    Skills skill;                                   \
-    HASFUNCTION(skill, hasFunction, normalString, false, code)
+#define SKILLS_ADD_AND_HAS_CASE2(hasFunction, code)                \
+    do {                                                           \
+        Skills skill;                                              \
+        HASFUNCTION(skill, hasFunction, normalString, false, code); \
+    } while (0);
 
-#define SKILLS_ADD_AND_HAS_CASE3(addFunction, hasFunction, code) \
-    Skills skill;                                                \
-    skill.addFunction(specialString);                            \
-    HASFUNCTION(skill, hasFunction, specialString, true, code)
+#define SKILLS_ADD_AND_HAS_CASE3(addFunction, hasFunction, code)   \
+    do {                                                           \
+        Skills skill;                                              \
+        skill.addFunction(specialString);                          \
+        HASFUNCTION(skill, hasFunction, specialString, true, code); \
+    } while (0);
 
 // Add,Remove,Count and Has ST kit Case(Action,Entity,Authority,Scheme,SchemeSpecificPart)
 #define SKILLS_ADD_AND_REMOVE_CASE1(addFunction, removeFunction, hasFunction, code) \
-    Skills skill;                                                                   \
-    skill.addFunction(specialString);                                               \
-    skill.removeFunction(specialString);                                            \
-    HASFUNCTION(skill, hasFunction, specialString, false, code)
+    do {                                                                            \
+        Skills skill;                                                               \
+        skill.addFunction(specialString);                                           \
+        skill.removeFunction(specialString);                                        \
+        HASFUNCTION(skill, hasFunction, specialString, false, code);                 \
+    } while (0);
 
 #define SKILLS_ADD_AND_REMOVE_CASE2(addFunction, removeFunction, getFunction, code) \
-    Skills skill;                                                                   \
-    skill.addFunction(specialString);                                               \
-    skill.removeFunction(specialString);                                            \
-    GETFUNCTION(skill, getFunction, 0, std::string(), code)
+    do {                                                                            \
+        Skills skill;                                                               \
+        skill.addFunction(specialString);                                           \
+        skill.removeFunction(specialString);                                        \
+        GETFUNCTION(skill, getFunction, 0, std::string(), code);                     \
+    } while (0);
 
 #define SKILLS_ADD_AND_REMOVE_CASE3(addFunction, removeFunction, hasFunction, code) \
-    Skills skill;                                                                   \
-    for (int index = 0; index < cycleCount; index++) {                              \
-        skill.addFunction(normalString);                                            \
-    }                                                                               \
-    skill.removeFunction(normalString);                                             \
-    HASFUNCTION(skill, hasFunction, normalString, false, code)
+    do {                                                                            \
+        Skills skill;                                                               \
+        for (int index = 0; index < cycleCount; index++) {                          \
+            skill.addFunction(normalString);                                        \
+        }                                                                           \
+        skill.removeFunction(normalString);                                         \
+        HASFUNCTION(skill, hasFunction, normalString, false, code);                  \
+    } while (0);
 
 #define SKILLS_ADD_AND_REMOVE_CASE4(addFunction, removeFunction, hasFunction, code) \
-    Skills skill;                                                                   \
-    for (int index = 0; index < cycleCount; index++) {                              \
-        skill.addFunction(normalString);                                            \
-    }                                                                               \
-    skill.removeFunction(specialString);                                            \
-    HASFUNCTION(skill, hasFunction, normalString, true, code)
+    do {                                                                            \
+        Skills skill;                                                               \
+        for (int index = 0; index < cycleCount; index++) {                          \
+            skill.addFunction(normalString);                                        \
+        }                                                                           \
+        skill.removeFunction(specialString);                                        \
+        HASFUNCTION(skill, hasFunction, normalString, true, code);                   \
+    } while (0);
 
 #define SKILLS_ADD_AND_REMOVE_CASE5(addFunction, removeFunction, getFunction, code) \
-    Skills skill;                                                                   \
-    for (int index = 0; index < cycleCount; index++) {                              \
-        skill.addFunction(normalString);                                            \
-    }                                                                               \
-    skill.removeFunction(normalString);                                             \
-    GETFUNCTION(skill, getFunction, 150, std::string(), code)
+    do {                                                                            \
+        Skills skill;                                                               \
+        for (int index = 0; index < cycleCount; index++) {                          \
+            skill.addFunction(normalString);                                        \
+        }                                                                           \
+        skill.removeFunction(normalString);                                         \
+        GETFUNCTION(skill, getFunction, 150, std::string(), code);                   \
+    } while (0);
 
 #define SKILLS_ADD_AND_REMOVE_CASE6(addFunction, removeFunction, getFunction, code) \
-    Skills skill;                                                                   \
-    for (int index = 0; index < cycleCount; index++) {                              \
-        skill.addFunction(normalString);                                            \
-    }                                                                               \
-    skill.removeFunction(specialString);                                            \
-    GETFUNCTION(skill, getFunction, 0, normalString, code)
+    do {                                                                            \
+        Skills skill;                                                               \
+        for (int index = 0; index < cycleCount; index++) {                          \
+            skill.addFunction(normalString);                                        \
+        }                                                                           \
+        skill.removeFunction(specialString);                                        \
+        GETFUNCTION(skill, getFunction, 0, normalString, code);                      \
+    } while (0);
 
 #define SKILLS_ADD_AND_REMOVE_CASE7(addFunction, removeFunction, countFunction, code) \
-    Skills skill;                                                                     \
-    skill.addFunction(specialString);                                                 \
-    skill.removeFunction(specialString);                                              \
-    COUNTFUNCTION(skill, countFunction, 0, code)
+    do {                                                                              \
+        Skills skill;                                                                 \
+        skill.addFunction(specialString);                                             \
+        skill.removeFunction(specialString);                                          \
+        COUNTFUNCTION(skill, countFunction, 0, code);                                  \
+    } while (0);
 
 #define SKILLS_ADD_AND_REMOVE_CASE8(addFunction, removeFunction, countFunction, code) \
-    Skills skill;                                                                     \
-    for (int index = 0; index < cycleCount; index++) {                                \
-        skill.addFunction(normalString);                                              \
-    }                                                                                 \
-    skill.removeFunction(normalString);                                               \
-    COUNTFUNCTION(skill, countFunction, 0, code)
+    do {                                                                              \
+        Skills skill;                                                                 \
+        for (int index = 0; index < cycleCount; index++) {                            \
+            skill.addFunction(normalString);                                          \
+        }                                                                             \
+        skill.removeFunction(normalString);                                           \
+        COUNTFUNCTION(skill, countFunction, 0, code);                                  \
+    } while (0);
 
 #define SKILLS_ADD_AND_REMOVE_CASE9(addFunction, removeFunction, countFunction, code) \
-    Skills skill;                                                                     \
-    for (int index = 0; index < cycleCount; index++) {                                \
-        skill.addFunction(normalString);                                              \
-    }                                                                                 \
-    skill.removeFunction(specialString);                                              \
-    COUNTFUNCTION(skill, countFunction, 1, code)
+    do {                                                                              \
+        Skills skill;                                                                 \
+        for (int index = 0; index < cycleCount; index++) {                            \
+            skill.addFunction(normalString);                                          \
+        }                                                                             \
+        skill.removeFunction(specialString);                                          \
+        COUNTFUNCTION(skill, countFunction, 1, code);                                  \
+    } while (0);
 
 // Add and Count ST kit Case(Path,Type)
 #define SKILLS_ADDFUNCTIONTYPE_AND_COUNT_CASE1(addFunction, countFunction, code, addFunctionType) \
-    Skills skill;                                                                                 \
-    ADDFUNCTION(skill, addFunction, normalPathAndType, addFunctionType)                           \
-    COUNTFUNCTION(skill, countFunction, 1, code)
+    do {                                                                                          \
+        Skills skill;                                                                             \
+        ADDFUNCTION(skill, addFunction, normalPathAndType, (addFunctionType))                     \
+        COUNTFUNCTION(skill, countFunction, 1, code);                                              \
+    } while (0);
 
 #define SKILLS_ADDFUNCTIONTYPE_AND_COUNT_CASE2(countFunction, code) \
-    Skills skill;                                                   \
-    COUNTFUNCTION(skill, countFunction, 0, code)
+    do {                                                            \
+        Skills skill;                                               \
+        COUNTFUNCTION(skill, countFunction, 0, code);                \
+    } while (0);
 
 #define SKILLS_ADDFUNCTIONTYPE_AND_COUNT_CASE3(addFunction, countFunction, code, addFunctionType) \
-    Skills skill;                                                                                 \
-    for (int index = 0; index < cycleCount; index++) {                                            \
-        ADDFUNCTION(skill, addFunction, normalPathAndType, addFunctionType)                       \
-    }                                                                                             \
-    COUNTFUNCTION(skill, countFunction, 1, code)
+    do {                                                                                          \
+        Skills skill;                                                                             \
+        for (int index = 0; index < cycleCount; index++) {                                        \
+            ADDFUNCTION(skill, addFunction, normalPathAndType, (addFunctionType));                 \
+        }                                                                                         \
+        COUNTFUNCTION(skill, countFunction, 1, code);                                              \
+    } while (0);
 
 // Add and Get ST kit Case(Path,Type)
 #define SKILLS_ADDFUNCTIONTYPE_AND_GET_CASE1(addFunction, getFunction, code, addFunctionType) \
-    Skills skill;                                                                             \
-    ADDFUNCTION(skill, addFunction, normalPathAndType, addFunctionType)                       \
-    GETFUNCTION(skill, getFunction, 0, normalPathAndType, code)
+    do {                                                                                      \
+        Skills skill;                                                                         \
+        ADDFUNCTION(skill, addFunction, normalPathAndType, (addFunctionType));                 \
+        GETFUNCTION(skill, getFunction, 0, normalPathAndType, code);                           \
+    } while (0);
 
 #define SKILLS_ADDFUNCTIONTYPE_AND_GET_CASE2(addFunction, getFunction, code, addFunctionType) \
-    Skills skill;                                                                             \
-    ADDFUNCTION(skill, addFunction, normalPathAndType, addFunctionType)                       \
-    GETFUNCTION(skill, getFunction, 10, std::string(), code)
+    do {                                                                                      \
+        Skills skill;                                                                         \
+        ADDFUNCTION(skill, addFunction, normalPathAndType, (addFunctionType));                 \
+        GETFUNCTION(skill, getFunction, 10, std::string(), code);                              \
+    } while (0);
 
 #define SKILLS_ADDFUNCTIONTYPE_AND_GET_CASE3(addFunction, getFunction, code, addFunctionType) \
-    Skills skill;                                                                             \
-    ADDFUNCTION(skill, addFunction, normalPathAndType, addFunctionType)                       \
-    GETFUNCTION(skill, getFunction, -10, std::string(), code)
+    do {                                                                                      \
+        Skills skill;                                                                         \
+        ADDFUNCTION(skill, addFunction, normalPathAndType, (addFunctionType))                 \
+        GETFUNCTION(skill, getFunction, -10, std::string(), code);                             \
+    } while (0);
 
 #define SKILLS_ADDFUNCTIONTYPE_AND_GET_CASE4(getFunction, code) \
-    Skills skill;                                               \
-    GETFUNCTION(skill, getFunction, 0, std::string(), code)
+    do {                                                        \
+        Skills skill;                                           \
+        GETFUNCTION(skill, getFunction, 0, std::string(), code); \
+    } while (0);
 
 #define SKILLS_ADDFUNCTIONTYPE_AND_GET_CASE5(addFunction, getFunction, code, addFunctionType) \
-    Skills skill;                                                                             \
-    ADDFUNCTION(skill, addFunction, specialString, addFunctionType)                           \
-    GETFUNCTION(skill, getFunction, 0, specialString, code)
+    do {                                                                                      \
+        Skills skill;                                                                         \
+        ADDFUNCTION(skill, addFunction, specialString, (addFunctionType))                     \
+        GETFUNCTION(skill, getFunction, 0, specialString, code);                               \
+    } while (0);
 
 #define SKILLS_ADDFUNCTIONTYPE_AND_GET_CASE6(addFunction, getFunction, code, addFunctionType) \
-    Skills skill;                                                                             \
-    for (int index = 0; index < cycleCount; index++) {                                        \
-        ADDFUNCTION(skill, addFunction, normalPathAndType, addFunctionType)                   \
-    }                                                                                         \
-    GETFUNCTION(skill, getFunction, 0, normalPathAndType, code)
+    do {                                                                                      \
+        Skills skill;                                                                         \
+        for (int index = 0; index < cycleCount; index++) {                                    \
+            ADDFUNCTION(skill, addFunction, normalPathAndType, (addFunctionType))             \
+        }                                                                                     \
+        GETFUNCTION(skill, getFunction, 0, normalPathAndType, code);                           \
+    } while (0);
 
 #define SKILLS_ADDFUNCTIONTYPE_AND_GET_CASE7(addFunction, getFunction, code, addFunctionType) \
-    Skills skill;                                                                             \
-    for (int index = 0; index < cycleCount; index++) {                                        \
-        ADDFUNCTION(skill, addFunction, normalPathAndType, addFunctionType)                   \
-    }                                                                                         \
-    GETFUNCTION(skill, getFunction, 150, std::string(), code)
+    do {                                                                                      \
+        Skills skill;                                                                         \
+        for (int index = 0; index < cycleCount; index++) {                                    \
+            ADDFUNCTION(skill, addFunction, normalPathAndType, (addFunctionType))             \
+        }                                                                                     \
+        GETFUNCTION(skill, getFunction, 150, std::string(), code);                             \
+    } while (0);
 
 // Add and Has ST kit Case(Path,Type)
 #define SKILLS_ADDFUNCTIONTYPE_AND_HAS_CASE1(addFunction, hasFunction, code, addFunctionType) \
-    Skills skill;                                                                             \
-    for (int index = 0; index < cycleCount; index++) {                                        \
-        ADDFUNCTION(skill, addFunction, normalPathAndType, addFunctionType)                   \
-    }                                                                                         \
-    HASFUNCTION(skill, hasFunction, normalPathAndType, true, code)
+    do {                                                                                      \
+        Skills skill;                                                                         \
+        for (int index = 0; index < cycleCount; index++) {                                    \
+            ADDFUNCTION(skill, addFunction, normalPathAndType, (addFunctionType))             \
+        }                                                                                     \
+        HASFUNCTION(skill, hasFunction, normalPathAndType, true, code);                        \
+    } while (0);
 
-#define SKILLS_ADDFUNCTIONTYPE_AND_HAS_CASE2(hasFunction, code) \
-    Skills skill;                                               \
-    HASFUNCTION(skill, hasFunction, normalPathAndType, false, code)
+#define SKILLS_ADDFUNCTIONTYPE_AND_HAS_CASE2(hasFunction, code)         \
+    do {                                                                \
+        Skills skill;                                                   \
+        HASFUNCTION(skill, hasFunction, normalPathAndType, false, code) \
+    } while (0);
 
 #define SKILLS_ADDFUNCTIONTYPE_AND_HAS_CASE3(addFunction, hasFunction, code, addFunctionType) \
-    Skills skill;                                                                             \
-    ADDFUNCTION(skill, addFunction, specialString, addFunctionType)                           \
-    HASFUNCTION(skill, hasFunction, specialString, true, code)
+    do {                                                                                      \
+        Skills skill;                                                                         \
+        ADDFUNCTION(skill, addFunction, specialString, (addFunctionType))                     \
+        HASFUNCTION(skill, hasFunction, specialString, true, code);                            \
+    } while (0);
 
 // Add,Remove,Count and Has ST kit Case(Path,Type)
 #define SKILLS_ADDFUNCTIONTYPE_AND_REMOVE_CASE1(addFunction, removeFunction, hasFunction, code, addFunctionType) \
-    Skills skill;                                                                                                \
-    ADDFUNCTION(skill, addFunction, specialString, addFunctionType)                                              \
-    REMOVEFUNCTION(skill, removeFunction, specialString, addFunctionType)                                        \
-    HASFUNCTION(skill, hasFunction, specialString, false, code)
+    do {                                                                                                         \
+        Skills skill;                                                                                            \
+        ADDFUNCTION(skill, addFunction, specialString, (addFunctionType));                                        \
+        REMOVEFUNCTION(skill, removeFunction, specialString, (addFunctionType));                                  \
+        HASFUNCTION(skill, hasFunction, specialString, false, code);                                              \
+    } while (0);
 
 #define SKILLS_ADDFUNCTIONTYPE_AND_REMOVE_CASE2(addFunction, removeFunction, getFunction, code, addFunctionType) \
-    Skills skill;                                                                                                \
-    ADDFUNCTION(skill, addFunction, specialString, addFunctionType)                                              \
-    REMOVEFUNCTION(skill, removeFunction, specialString, addFunctionType)                                        \
-    GETFUNCTION(skill, getFunction, 0, std::string(), code)
+    do {                                                                                                         \
+        Skills skill;                                                                                            \
+        ADDFUNCTION(skill, addFunction, specialString, (addFunctionType));                                        \
+        REMOVEFUNCTION(skill, removeFunction, specialString, (addFunctionType));                                  \
+        GETFUNCTION(skill, getFunction, 0, std::string(), code);                                                  \
+    } while (0);
 
 #define SKILLS_ADDFUNCTIONTYPE_AND_REMOVE_CASE3(addFunction, removeFunction, hasFunction, code, addFunctionType) \
-    Skills skill;                                                                                                \
-    for (int index = 0; index < cycleCount; index++) {                                                           \
-        ADDFUNCTION(skill, addFunction, normalPathAndType, addFunctionType)                                      \
-    }                                                                                                            \
-    REMOVEFUNCTION(skill, removeFunction, normalPathAndType, addFunctionType)                                    \
-    HASFUNCTION(skill, hasFunction, normalPathAndType, false, code)
+    do {                                                                                                         \
+        Skills skill;                                                                                            \
+        for (int index = 0; index < cycleCount; index++) {                                                       \
+            ADDFUNCTION(skill, addFunction, normalPathAndType, (addFunctionType));                                \
+        }                                                                                                        \
+        REMOVEFUNCTION(skill, removeFunction, normalPathAndType, (addFunctionType));                              \
+        HASFUNCTION(skill, hasFunction, normalPathAndType, false, code);                                          \
+    } while (0);
 
 #define SKILLS_ADDFUNCTIONTYPE_AND_REMOVE_CASE4(addFunction, removeFunction, hasFunction, code, addFunctionType) \
-    Skills skill;                                                                                                \
-    for (int index = 0; index < cycleCount; index++) {                                                           \
-        ADDFUNCTION(skill, addFunction, normalPathAndType, addFunctionType)                                      \
-    }                                                                                                            \
-    REMOVEFUNCTION(skill, removeFunction, specialString, addFunctionType)                                        \
-    HASFUNCTION(skill, hasFunction, normalPathAndType, true, code)
+    do {                                                                                                         \
+        Skills skill;                                                                                            \
+        for (int index = 0; index < cycleCount; index++) {                                                       \
+            ADDFUNCTION(skill, addFunction, normalPathAndType, (addFunctionType));                                \
+        }                                                                                                        \
+        REMOVEFUNCTION(skill, removeFunction, specialString, (addFunctionType));                                  \
+        HASFUNCTION(skill, hasFunction, normalPathAndType, true, code);                                           \
+    } while (0);
 
 #define SKILLS_ADDFUNCTIONTYPE_AND_REMOVE_CASE5(addFunction, removeFunction, getFunction, code, addFunctionType) \
-    Skills skill;                                                                                                \
-    for (int index = 0; index < cycleCount; index++) {                                                           \
-        ADDFUNCTION(skill, addFunction, normalPathAndType, addFunctionType)                                      \
-    }                                                                                                            \
-    REMOVEFUNCTION(skill, removeFunction, normalPathAndType, addFunctionType)                                    \
-    GETFUNCTION(skill, getFunction, 150, std::string(), code)
+    do {                                                                                                         \
+        Skills skill;                                                                                            \
+        for (int index = 0; index < cycleCount; index++) {                                                       \
+            ADDFUNCTION(skill, addFunction, normalPathAndType, (addFunctionType));                                \
+        }                                                                                                        \
+        REMOVEFUNCTION(skill, removeFunction, normalPathAndType, (addFunctionType)) ;                             \
+        GETFUNCTION(skill, getFunction, 150, std::string(), code);                                                \
+    } while (0);
 
 #define SKILLS_ADDFUNCTIONTYPE_AND_REMOVE_CASE6(addFunction, removeFunction, getFunction, code, addFunctionType) \
-    Skills skill;                                                                                                \
-    for (int index = 0; index < cycleCount; index++) {                                                           \
-        ADDFUNCTION(skill, addFunction, normalPathAndType, addFunctionType)                                      \
-    }                                                                                                            \
-    REMOVEFUNCTION(skill, removeFunction, specialString, addFunctionType)                                        \
-    GETFUNCTION(skill, getFunction, 0, normalPathAndType, code)
+    do {                                                                                                         \
+        Skills skill;                                                                                            \
+        for (int index = 0; index < cycleCount; index++) {                                                       \
+            ADDFUNCTION(skill, addFunction, normalPathAndType, (addFunctionType));                                \
+        }                                                                                                        \
+        REMOVEFUNCTION(skill, removeFunction, specialString, (addFunctionType));                                  \
+        GETFUNCTION(skill, getFunction, 0, normalPathAndType, code);                                              \
+    } while (0);
 
 #define SKILLS_ADDFUNCTIONTYPE_AND_REMOVE_CASE7(addFunction, removeFunction, countFunction, code, addFunctionType) \
-    Skills skill;                                                                                                  \
-    ADDFUNCTION(skill, addFunction, specialString, addFunctionType)                                                \
-    REMOVEFUNCTION(skill, removeFunction, specialString, addFunctionType)                                          \
-    COUNTFUNCTION(skill, countFunction, 0, code)
+    do {                                                                                                           \
+        Skills skill;                                                                                              \
+        ADDFUNCTION(skill, addFunction, specialString, (addFunctionType));                                          \
+        REMOVEFUNCTION(skill, removeFunction, specialString, (addFunctionType));                                    \
+        COUNTFUNCTION(skill, countFunction, 0, code);                                                               \
+    } while (0);
 
 #define SKILLS_ADDFUNCTIONTYPE_AND_REMOVE_CASE8(addFunction, removeFunction, countFunction, code, addFunctionType) \
-    Skills skill;                                                                                                  \
-    for (int index = 0; index < cycleCount; index++) {                                                             \
-        ADDFUNCTION(skill, addFunction, normalPathAndType, addFunctionType)                                        \
-    }                                                                                                              \
-    REMOVEFUNCTION(skill, removeFunction, normalPathAndType, addFunctionType)                                      \
-    COUNTFUNCTION(skill, countFunction, 0, code)
+    do {                                                                                                           \
+        Skills skill;                                                                                              \
+        for (int index = 0; index < cycleCount; index++) {                                                         \
+            ADDFUNCTION(skill, addFunction, normalPathAndType, (addFunctionType));                                  \
+        }                                                                                                          \
+        REMOVEFUNCTION(skill, removeFunction, normalPathAndType, (addFunctionType));                                \
+        COUNTFUNCTION(skill, countFunction, 0, code)                                                               \
+    } while (0);
 
 #define SKILLS_ADDFUNCTIONTYPE_AND_REMOVE_CASE9(addFunction, removeFunction, countFunction, code, addFunctionType) \
-    Skills skill;                                                                                                  \
-    for (int index = 0; index < cycleCount; index++) {                                                             \
-        ADDFUNCTION(skill, addFunction, normalPathAndType, addFunctionType)                                        \
-    }                                                                                                              \
-    REMOVEFUNCTION(skill, removeFunction, specialString, addFunctionType)                                          \
-    COUNTFUNCTION(skill, countFunction, 1, code)
+    do {                                                                                                           \
+        Skills skill;                                                                                              \
+        for (int index = 0; index < cycleCount; index++) {                                                         \
+            ADDFUNCTION(skill, addFunction, normalPathAndType, (addFunctionType))                                  \
+        }                                                                                                          \
+        REMOVEFUNCTION(skill, removeFunction, specialString, (addFunctionType))                                    \
+        COUNTFUNCTION(skill, countFunction, 1, code);                                                               \
+    } while (0);
 
 #define SKILLS_ADDFUNCTIONTYPE_AND_REMOVE_CASE10(addFunction, removeFunction, hasFunction, code) \
-    Skills skill;                                                                                \
-    skill.addFunction(specialString);                                                            \
-    skill.addFunction(specialString, MatchType::PREFIX);                                         \
-    skill.removeFunction(specialString);                                                         \
-    HASFUNCTION(skill, hasFunction, specialString, true, code)
+    do {                                                                                         \
+        Skills skill;                                                                            \
+        skill.addFunction(specialString);                                                        \
+        skill.addFunction(specialString, MatchType::PREFIX);                                     \
+        skill.removeFunction(specialString);                                                     \
+        HASFUNCTION(skill, hasFunction, specialString, true, code);                               \
+    } while (0);
 
 #define SKILLS_ADDFUNCTIONTYPE_AND_REMOVE_CASE11(addFunction, removeFunction, countFunction, code) \
-    Skills skill;                                                                                  \
-    skill.addFunction(specialString, MatchType::DEFAULT);                                          \
-    skill.addFunction(specialString, MatchType::PREFIX);                                           \
-    skill.addFunction(specialString, MatchType::GLOBAL);                                           \
-    skill.removeFunction(specialString);                                                           \
-    COUNTFUNCTION(skill, countFunction, 2, code)
+    do {                                                                                           \
+        Skills skill;                                                                              \
+        skill.addFunction(specialString, MatchType::DEFAULT);                                      \
+        skill.addFunction(specialString, MatchType::PREFIX);                                       \
+        skill.addFunction(specialString, MatchType::GLOBAL);                                       \
+        skill.removeFunction(specialString);                                                       \
+        COUNTFUNCTION(skill, countFunction, 2, code);                                               \
+    } while (0);
 
 #define SKILLS_ADDFUNCTIONTYPE_AND_REMOVE_CASE12(addFunction, countFunction, code) \
-    Skills skill;                                                                  \
-    skill.addFunction(specialString);                                              \
-    skill.addFunction(specialString, MatchType::DEFAULT);                          \
-    skill.addFunction(specialString, MatchType::PREFIX);                           \
-    skill.addFunction(specialString, MatchType::GLOBAL);                           \
-    COUNTFUNCTION(skill, countFunction, 3, code)
+    do {                                                                           \
+        Skills skill;                                                              \
+        skill.addFunction(specialString);                                          \
+        skill.addFunction(specialString, MatchType::DEFAULT);                      \
+        skill.addFunction(specialString, MatchType::PREFIX);                       \
+        skill.addFunction(specialString, MatchType::GLOBAL);                       \
+        COUNTFUNCTION(skill, countFunction, 3, code);                               \
+    } while (0);
 
 #define SKILLS_ADDFUNCTIONTYPE_AND_REMOVE_CASE13(addFunction, countFunction, code) \
-    Skills skill;                                                                  \
-    skill.addFunction(skillspecialTypeStr1);                                       \
-    skill.addFunction(skillspecialTypeStr1, MatchType::DEFAULT);                   \
-    skill.addFunction(skillspecialTypeStr1, MatchType::PREFIX);                    \
-    skill.addFunction(skillspecialTypeStr1, MatchType::GLOBAL);                    \
-    COUNTFUNCTION(skill, countFunction, 0, code)
+    do {                                                                           \
+        Skills skill;                                                              \
+        skill.addFunction(skillspecialTypeStr1);                                   \
+        skill.addFunction(skillspecialTypeStr1, MatchType::DEFAULT);               \
+        skill.addFunction(skillspecialTypeStr1, MatchType::PREFIX);                \
+        skill.addFunction(skillspecialTypeStr1, MatchType::GLOBAL);                \
+        COUNTFUNCTION(skill, countFunction, 0, code);                               \
+    } while (0);
 
 #define SKILLS_ADDFUNCTIONTYPE_AND_REMOVE_CASE14(addFunction, hasFunction, code) \
-    Skills skill;                                                                \
-    skill.addFunction(skillspecialTypeStr1);                                     \
-    skill.addFunction(skillspecialTypeStr1, MatchType::DEFAULT);                 \
-    skill.addFunction(skillspecialTypeStr1, MatchType::PREFIX);                  \
-    skill.addFunction(skillspecialTypeStr1, MatchType::GLOBAL);                  \
-    HASFUNCTION(skill, hasFunction, skillspecialTypeStr1, false, code)
+    do {                                                                         \
+        Skills skill;                                                            \
+        skill.addFunction(skillspecialTypeStr1);                                 \
+        skill.addFunction(skillspecialTypeStr1, MatchType::DEFAULT);             \
+        skill.addFunction(skillspecialTypeStr1, MatchType::PREFIX);              \
+        skill.addFunction(skillspecialTypeStr1, MatchType::GLOBAL);              \
+        HASFUNCTION(skill, hasFunction, skillspecialTypeStr1, false, code);       \
+    } while (0);
 
 #define SKILLS_ADDFUNCTIONTYPE_AND_REMOVE_CASE15(addFunction, hasFunction, code) \
-    Skills skill;                                                                \
-    skill.addFunction(skillspecialTypeStr2);                                     \
-    skill.addFunction(skillspecialTypeStr2, MatchType::DEFAULT);                 \
-    skill.addFunction(skillspecialTypeStr2, MatchType::PREFIX);                  \
-    skill.addFunction(skillspecialTypeStr2, MatchType::GLOBAL);                  \
-    HASFUNCTION(skill, hasFunction, skillspecialTypeStr1, true, code)
+    do {                                                                         \
+        Skills skill;                                                            \
+        skill.addFunction(skillspecialTypeStr2);                                 \
+        skill.addFunction(skillspecialTypeStr2, MatchType::DEFAULT);             \
+        skill.addFunction(skillspecialTypeStr2, MatchType::PREFIX);              \
+        skill.addFunction(skillspecialTypeStr2, MatchType::GLOBAL);              \
+        HASFUNCTION(skill, hasFunction, skillspecialTypeStr1, true, code);        \
+    } while (0);
 
 #define SKILLS_ADDFUNCTIONTYPE_AND_REMOVE_CASE16(addFunction, countFunction, code) \
-    Skills skill;                                                                  \
-    skill.addFunction(skillspecialTypeStr2);                                       \
-    skill.addFunction(skillspecialTypeStr2, MatchType::DEFAULT);                   \
-    skill.addFunction(skillspecialTypeStr2, MatchType::PREFIX);                    \
-    skill.addFunction(skillspecialTypeStr2, MatchType::GLOBAL);                    \
-    COUNTFUNCTION(skill, countFunction, 3, code)
+    do {                                                                           \
+        Skills skill;                                                              \
+        skill.addFunction(skillspecialTypeStr2);                                   \
+        skill.addFunction(skillspecialTypeStr2, MatchType::DEFAULT);               \
+        skill.addFunction(skillspecialTypeStr2, MatchType::PREFIX);                \
+        skill.addFunction(skillspecialTypeStr2, MatchType::GLOBAL);                \
+        COUNTFUNCTION(skill, countFunction, 3, code);                               \
+    } while (0);
 
 #define SKILLS_ADDFUNCTIONTYPE_AND_REMOVE_CASE17(addFunction, countFunction, code) \
-    Skills skill;                                                                  \
-    skill.addFunction(skillspecialTypeStr3);                                       \
-    skill.addFunction(skillspecialTypeStr3, MatchType::DEFAULT);                   \
-    skill.addFunction(skillspecialTypeStr3, MatchType::PREFIX);                    \
-    skill.addFunction(skillspecialTypeStr3, MatchType::GLOBAL);                    \
-    COUNTFUNCTION(skill, countFunction, 3, code)
+    do {                                                                           \
+        Skills skill;                                                              \
+        skill.addFunction(skillspecialTypeStr3);                                   \
+        skill.addFunction(skillspecialTypeStr3, MatchType::DEFAULT);               \
+        skill.addFunction(skillspecialTypeStr3, MatchType::PREFIX);                \
+        skill.addFunction(skillspecialTypeStr3, MatchType::GLOBAL);                \
+        COUNTFUNCTION(skill, countFunction, 3, code);                               \
+    } while (0);
 
 #define SKILLS_ADDFUNCTIONTYPE_AND_REMOVE_CASE18(addFunction, hasFunction, code) \
-    Skills skill;                                                                \
-    skill.addFunction(skillspecialTypeStr3);                                     \
-    skill.addFunction(skillspecialTypeStr3, MatchType::DEFAULT);                 \
-    skill.addFunction(skillspecialTypeStr3, MatchType::PREFIX);                  \
-    skill.addFunction(skillspecialTypeStr3, MatchType::GLOBAL);                  \
-    HASFUNCTION(skill, hasFunction, skillspecialTypeStr3, true, code)
+    do {                                                                         \
+        Skills skill;                                                            \
+        skill.addFunction(skillspecialTypeStr3);                                 \
+        skill.addFunction(skillspecialTypeStr3, MatchType::DEFAULT);             \
+        skill.addFunction(skillspecialTypeStr3, MatchType::PREFIX);              \
+        skill.addFunction(skillspecialTypeStr3, MatchType::GLOBAL);              \
+        HASFUNCTION(skill, hasFunction, skillspecialTypeStr3, true, code);        \
+    } while (0);
 
 // Skills Add ST Case
 #define SKILLS_ADD_CASE1(addFunction, countFunction, code) \
-    Skills skill;                                          \
-    skill.addFunction(normalString);                       \
-    skill.addFunction(specialString);                      \
-    skill.addFunction(specialString);                      \
-    skill.addFunction(normalPathAndType);                  \
-    skill.addFunction("Ams_Kit_ST_Case");                  \
-    COUNTFUNCTION(skill, countFunction, 4, code)
+    do {                                                   \
+        Skills skill;                                      \
+        skill.addFunction(normalString);                   \
+        skill.addFunction(specialString);                  \
+        skill.addFunction(specialString);                  \
+        skill.addFunction(normalPathAndType);              \
+        skill.addFunction("Ams_Kit_ST_Case");              \
+        COUNTFUNCTION(skill, countFunction, 4, code);       \
+    } while (0);
 
 void FourthAbility::SubscribeEvent(const vector_conststr &eventList)
 {

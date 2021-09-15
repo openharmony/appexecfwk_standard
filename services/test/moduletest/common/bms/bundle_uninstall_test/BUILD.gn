@@ -32,6 +32,7 @@ ohos_moduletest("BmsBundleUninstallerModuleTest") {
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core/include/bundlemgr",
     "//third_party/json/include",
     "${services_path}/test/mock/include",
+    "//third_party/jsoncpp/include",
   ]
 
   sources = [
@@ -45,6 +46,9 @@ ohos_moduletest("BmsBundleUninstallerModuleTest") {
     "${services_path}/bundlemgr/src/installd/installd_host_impl.cpp",
     "${services_path}/bundlemgr/src/installd/installd_operator.cpp",
     "${services_path}/bundlemgr/src/installd/installd_service.cpp",
+    "${services_path}/bundlemgr/src/kvstore_death_recipient_callback.cpp",
+    "${services_path}/bundlemgr/src/module_usage_data_storage.cpp",
+    "${services_path}/bundlemgr/src/permission_changed_death_recipient.cpp",
   ]
 
   sources += bundle_install_sources
@@ -72,6 +76,7 @@ ohos_moduletest("BmsBundleUninstallerModuleTest") {
     "//foundation/distributeddatamgr/distributeddatamgr/interfaces/innerkits/distributeddata:distributeddata_inner",
     "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
     "//third_party/googletest:gtest_main",
+    "//third_party/jsoncpp:jsoncpp",
   ]
 
   external_deps = [

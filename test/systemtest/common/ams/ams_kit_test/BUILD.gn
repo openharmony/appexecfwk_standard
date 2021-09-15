@@ -22,6 +22,7 @@ ohos_systemtest("ams_kit_test") {
     "//foundation/distributedschedule/safwk/services/safwk/include",
     "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/include",
     "//base/notification/ces_standard/test/systemtest/common/resource",
+    "//third_party/jsoncpp/include",
   ]
   sources = [
     "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/src/event.cpp",
@@ -46,6 +47,7 @@ ohos_systemtest("ams_kit_test") {
     "${appexecfwk_path}/interfaces/innerkits/libeventhandler:libeventhandler",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
     "//third_party/googletest:gtest_main",
+    "//third_party/jsoncpp:jsoncpp",
     "//utils/native/base:utils",
   ]
   external_deps = [
@@ -63,6 +65,7 @@ ohos_systemtest("ams_kit_service_ability_test") {
     "//foundation/distributedschedule/safwk/services/safwk/include",
     "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/include",
     "//base/notification/ces_standard/test/systemtest/common/resource",
+    "//third_party/jsoncpp/include",
   ]
   sources = [
     "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/src/event.cpp",
@@ -87,6 +90,7 @@ ohos_systemtest("ams_kit_service_ability_test") {
     "${appexecfwk_path}/interfaces/innerkits/libeventhandler:libeventhandler",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
     "//third_party/googletest:gtest_main",
+    "//third_party/jsoncpp:jsoncpp",
     "//utils/native/base:utils",
   ]
   external_deps = [
@@ -104,6 +108,7 @@ ohos_systemtest("ams_kit_data_test") {
     "//foundation/distributedschedule/safwk/services/safwk/include",
     "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/include",
     "//base/notification/ces_standard/test/systemtest/common/resource",
+    "//third_party/jsoncpp/include",
   ]
   sources = [
     "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/src/event.cpp",
@@ -131,6 +136,7 @@ ohos_systemtest("ams_kit_data_test") {
     "//foundation/distributedschedule/dmsfwk/interfaces/innerkits/uri:zuri",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
     "//third_party/googletest:gtest_main",
+    "//third_party/jsoncpp:jsoncpp",
     "//utils/native/base:utils",
   ]
   external_deps = [
@@ -149,6 +155,7 @@ ohos_systemtest("ams_kit_a_test") {
     "//foundation/distributedschedule/safwk/services/safwk/include",
     "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/include",
     "//base/notification/ces_standard/test/systemtest/common/resource",
+    "//third_party/jsoncpp/include",
   ]
   sources = [
     "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/src/event.cpp",
@@ -174,6 +181,7 @@ ohos_systemtest("ams_kit_a_test") {
     "//foundation/distributedschedule/dmsfwk/interfaces/innerkits/uri:zuri",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
     "//third_party/googletest:gtest_main",
+    "//third_party/jsoncpp:jsoncpp",
     "//utils/native/base:utils",
   ]
   external_deps = [
@@ -192,6 +200,7 @@ ohos_systemtest("ams_kit_want_test") {
     "//foundation/distributedschedule/safwk/services/safwk/include",
     "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/include",
     "//base/notification/ces_standard/test/systemtest/common/resource",
+    "//third_party/jsoncpp/include",
   ]
   sources = [
     "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/src/event.cpp",
@@ -216,6 +225,7 @@ ohos_systemtest("ams_kit_want_test") {
     "${appexecfwk_path}/interfaces/innerkits/libeventhandler:libeventhandler",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
     "//third_party/googletest:gtest_main",
+    "//third_party/jsoncpp:jsoncpp",
     "//utils/native/base:utils",
   ]
   external_deps = [
@@ -234,6 +244,7 @@ ohos_systemtest("ams_kit_skills_test") {
     "//foundation/distributedschedule/safwk/services/safwk/include",
     "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/include",
     "//base/notification/ces_standard/test/systemtest/common/resource",
+    "//third_party/jsoncpp/include",
   ]
   sources = [
     "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/src/event.cpp",
@@ -258,6 +269,7 @@ ohos_systemtest("ams_kit_skills_test") {
     "${appexecfwk_path}/interfaces/innerkits/libeventhandler:libeventhandler",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
     "//third_party/googletest:gtest_main",
+    "//third_party/jsoncpp:jsoncpp",
     "//utils/native/base:utils",
   ]
   external_deps = [
@@ -276,6 +288,7 @@ ohos_systemtest("ams_kit_lifecycle_test") {
     "//foundation/distributedschedule/safwk/services/safwk/include",
     "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/include",
     "//base/notification/ces_standard/test/systemtest/common/resource",
+    "//third_party/jsoncpp/include",
   ]
   sources = [
     "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/src/event.cpp",
@@ -300,6 +313,7 @@ ohos_systemtest("ams_kit_lifecycle_test") {
     "${appexecfwk_path}/interfaces/innerkits/libeventhandler:libeventhandler",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
     "//third_party/googletest:gtest_main",
+    "//third_party/jsoncpp:jsoncpp",
     "//utils/native/base:utils",
   ]
   external_deps = [
@@ -318,6 +332,7 @@ ohos_systemtest("ams_kit_processinfo_test") {
     "//foundation/distributedschedule/safwk/services/safwk/include",
     "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/include",
     "//base/notification/ces_standard/test/systemtest/common/resource",
+    "//third_party/jsoncpp/include",
   ]
   sources = [
     "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/src/event.cpp",
@@ -342,6 +357,7 @@ ohos_systemtest("ams_kit_processinfo_test") {
     "${appexecfwk_path}/interfaces/innerkits/libeventhandler:libeventhandler",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
     "//third_party/googletest:gtest_main",
+    "//third_party/jsoncpp:jsoncpp",
     "//utils/native/base:utils",
   ]
   external_deps = [

@@ -205,7 +205,7 @@ HWTEST_F(EventHandlerPressModuleTest, FdListenerPress001, TestSize.Level3)
      */
     int32_t fds[] = {-1, -1};
     int32_t pipe = pipe2(fds, O_NONBLOCK);
-    ASSERT_GE(pipe, 0);
+    EXPECT_GE(pipe, 0);
 
     auto listener = std::make_shared<MyFileDescriptorListener>();
     auto myRunner = EventRunner::Create(false);

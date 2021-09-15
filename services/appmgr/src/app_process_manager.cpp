@@ -20,9 +20,7 @@
 #include "app_log_wrapper.h"
 
 namespace OHOS {
-
 namespace AppExecFwk {
-
 AppProcessManager::AppProcessManager()
 {}
 
@@ -91,6 +89,5 @@ std::shared_ptr<AppTaskInfo> AppProcessManager::GetAppTaskInfoByProcessName(
         });
     return ((iter == recentAppList_.end()) ? nullptr : *iter);
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

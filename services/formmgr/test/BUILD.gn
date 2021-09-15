@@ -1,0 +1,65 @@
+# Copyright (c) 2021 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import("//foundation/appexecfwk/standard/appexecfwk.gni")
+
+config("formmgr_test_config") {
+  include_dirs = [
+    "//utils/native/base/include",
+    "//utils/system/safwk/native/include",
+    "mock/include",
+  ]
+
+  configs = [
+    "${services_path}/formmgr:formmgr_config",
+    "${common_path}:appexecfwk_common_config",
+  ]
+}
+
+public_configs = [
+  ":formmgr_test_config",
+  "//utils/native/base:utils_config",
+]
+
+public_deps = [
+  "${common_path}:libappexecfwk_common",
+  "//third_party/googletest:gmock_main",
+  "//third_party/googletest:gtest_main",
+  "//utils/native/base:utils",
+]
+
+group("unittest") {
+  testonly = true
+
+  deps = [
+    "unittest/fms_form_cache_mgr_test:unittest",
+    "unittest/fms_form_data_mgr_test:unittest",
+    "unittest/fms_form_db_record_test:unittest",
+    "unittest/fms_form_host_record_test:unittest",
+    "unittest/fms_form_mgr_add_form_test:unittest",
+    "unittest/fms_form_mgr_cast_temp_form_test:unittest",
+    "unittest/fms_form_mgr_delete_form_test:unittest",
+    "unittest/fms_form_mgr_lifecycle_update_test:unittest",
+    "unittest/fms_form_mgr_message_event_test:unittest",
+    "unittest/fms_form_mgr_notify_invisible_forms_test:unittest",
+    "unittest/fms_form_mgr_notify_visible_forms_test:unittest",
+    "unittest/fms_form_mgr_release_form_test:unittest",
+    "unittest/fms_form_mgr_request_form_test:unittest",
+    "unittest/fms_form_mgr_update_form_test:unittest",
+    "unittest/fms_form_provider_data_test:unittest",
+    "unittest/fms_form_provider_mgr_test:unittest",
+    "unittest/fms_form_set_next_refresh_test:unittest",
+    "unittest/fms_form_sys_event_receiver_test:unittest",
+    "unittest/fms_form_timer_mgr_test:unittest",
+  ]
+}

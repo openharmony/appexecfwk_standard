@@ -139,7 +139,7 @@ HWTEST_F(EventHandlerFdListenerModuleTest, AddListener001, TestSize.Level1)
      */
     int32_t fds[] = {-1, -1};
     int32_t pipe = pipe2(fds, O_NONBLOCK);
-    ASSERT_GE(pipe, 0);
+    EXPECT_GE(pipe, 0);
 
     auto listener = std::make_shared<MyFileDescriptorListener>();
     auto myRunner = EventRunner::Create(false);
@@ -191,7 +191,7 @@ HWTEST_F(EventHandlerFdListenerModuleTest, AddListener003, TestSize.Level1)
      */
     int32_t fds[] = {-1, -1};
     int32_t pipe = pipe2(fds, O_NONBLOCK);
-    ASSERT_GE(pipe, 0);
+    EXPECT_GE(pipe, 0);
 
     auto listener = std::make_shared<MyFileDescriptorListener>();
     auto myRunner = EventRunner::Create(true);
@@ -216,7 +216,7 @@ HWTEST_F(EventHandlerFdListenerModuleTest, AddListener004, TestSize.Level1)
      */
     int32_t fds[] = {-1, -1};
     int32_t pipe = pipe2(fds, O_NONBLOCK);
-    ASSERT_GE(pipe, 0);
+    EXPECT_GE(pipe, 0);
 
     auto myRunner = EventRunner::Create(true);
     auto handler = std::make_shared<MyEventHandler>(myRunner);
@@ -239,7 +239,7 @@ HWTEST_F(EventHandlerFdListenerModuleTest, AddListener005, TestSize.Level1)
      */
     int32_t fds[] = {-1, -1};
     int32_t pipe = pipe2(fds, O_NONBLOCK);
-    ASSERT_GE(pipe, 0);
+    EXPECT_GE(pipe, 0);
 
     auto listener = std::make_shared<MyFileDescriptorListener>();
     auto handler = std::make_shared<MyEventHandler>(nullptr);
@@ -262,7 +262,7 @@ HWTEST_F(EventHandlerFdListenerModuleTest, RemoveListener001, TestSize.Level1)
      */
     int32_t fds[] = {-1, -1};
     int32_t pipe = pipe2(fds, O_NONBLOCK);
-    ASSERT_GE(pipe, 0);
+    EXPECT_GE(pipe, 0);
 
     auto listener = std::make_shared<MyFileDescriptorListener>();
     auto myRunner = EventRunner::Create(false);
@@ -294,7 +294,7 @@ HWTEST_F(EventHandlerFdListenerModuleTest, RemoveListener002, TestSize.Level1)
      */
     int32_t fds[] = {-1, -1};
     int32_t pipe = pipe2(fds, O_NONBLOCK);
-    ASSERT_GE(pipe, 0);
+    EXPECT_GE(pipe, 0);
 
     auto listener = std::make_shared<MyFileDescriptorListener>();
     auto myRunner = EventRunner::Create(false);
@@ -326,7 +326,7 @@ HWTEST_F(EventHandlerFdListenerModuleTest, TriggerShutdown001, TestSize.Level1)
      */
     int32_t fds[] = {-1, -1};
     int32_t pipe = pipe2(fds, O_NONBLOCK);
-    ASSERT_GE(pipe, 0);
+    EXPECT_GE(pipe, 0);
 
     auto listener = std::make_shared<MyFileDescriptorListener>();
     auto myRunner = EventRunner::Create(false);
@@ -362,7 +362,7 @@ HWTEST_F(EventHandlerFdListenerModuleTest, TriggerException001, TestSize.Level1)
      */
     int32_t fds[] = {-1, -1};
     int32_t pipe = pipe2(fds, O_NONBLOCK);
-    ASSERT_GE(pipe, 0);
+    EXPECT_GE(pipe, 0);
 
     auto listener = std::make_shared<MyFileDescriptorListener>(fds[0]);
     auto myRunner = EventRunner::Create(false);
