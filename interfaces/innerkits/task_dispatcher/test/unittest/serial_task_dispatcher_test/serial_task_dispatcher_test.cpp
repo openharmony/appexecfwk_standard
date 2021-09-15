@@ -51,14 +51,14 @@ HWTEST(SerialTaskDispatcherTest, SerialTaskDispatcher_SyncDispatchTest_1000, Tes
     std::shared_ptr<SerialTaskDispatcher> dispatcher = std::make_shared<SerialTaskDispatcher>(name, priority, executor);
 
     std::atomic<int> count(0);
-    ASSERT_TRUE(count.load() == 0);
+    EXPECT_TRUE(count.load() == 0);
     dispatcher->SyncDispatch(std::make_shared<Runnable>([&count, &name]() {
         int index = count.fetch_add(1);
-        ASSERT_TRUE(index == 0);
+        EXPECT_TRUE(index == 0);
         GTEST_LOG_(INFO) << name + " task " + std::to_string(index) + " end";
     }));
 
-    ASSERT_TRUE(count.load() == 1);
+    EXPECT_TRUE(count.load() == 1);
 
     GTEST_LOG_(INFO) << name + " end";
 }
@@ -221,21 +221,21 @@ HWTEST(SerialTaskDispatcherTest, SerialTaskDispatcher_GetWorkingTasksSizeTest_00
         auto time = std::chrono::milliseconds(wait);
         std::this_thread::sleep_for(time);
         GTEST_LOG_(INFO) << name + " size: " + std::to_string(dispatcher->GetWorkingTasksSize());
-        ASSERT_EQ(dispatcher->GetWorkingTasksSize(), 2 - 1);
+        EXPECT_EQ(dispatcher->GetWorkingTasksSize(), 2 - 1);
     }
     {
         long wait = 2000;
         auto time = std::chrono::milliseconds(wait);
         std::this_thread::sleep_for(time);
         GTEST_LOG_(INFO) << name + " size: " + std::to_string(dispatcher->GetWorkingTasksSize());
-        ASSERT_EQ(dispatcher->GetWorkingTasksSize(), 1 - 1);
+        EXPECT_EQ(dispatcher->GetWorkingTasksSize(), 1 - 1);
     }
     {
         long wait = 2000;
         auto time = std::chrono::milliseconds(wait);
         std::this_thread::sleep_for(time);
         GTEST_LOG_(INFO) << name + " size: " + std::to_string(dispatcher->GetWorkingTasksSize());
-        ASSERT_EQ(dispatcher->GetWorkingTasksSize(), 0);
+        EXPECT_EQ(dispatcher->GetWorkingTasksSize(), 0);
     }
     long wait = 5000;
     auto time = std::chrono::milliseconds(wait);
@@ -271,14 +271,14 @@ HWTEST(SerialTaskDispatcherTest, SerialTaskDispatcher_GetWorkingTasksSizeTest_00
         auto time = std::chrono::milliseconds(wait);
         std::this_thread::sleep_for(time);
         GTEST_LOG_(INFO) << name + " size: " + std::to_string(dispatcher->GetWorkingTasksSize());
-        ASSERT_EQ(dispatcher->GetWorkingTasksSize(), times - 1);
+        EXPECT_EQ(dispatcher->GetWorkingTasksSize(), times - 1);
     }
     {
-        long wait = 300 * times;
+        long wait = 300 * (long)times;
         auto time = std::chrono::milliseconds(wait);
         std::this_thread::sleep_for(time);
         GTEST_LOG_(INFO) << name + " size: " + std::to_string(dispatcher->GetWorkingTasksSize());
-        ASSERT_EQ(dispatcher->GetWorkingTasksSize(), 0);
+        EXPECT_EQ(dispatcher->GetWorkingTasksSize(), 0);
     }
 
     GTEST_LOG_(INFO) << name + " end";
@@ -302,39 +302,39 @@ HWTEST(SerialTaskDispatcherTest, SerialTaskDispatcher_SyncDispatchTest_001, Test
     std::shared_ptr<SerialTaskDispatcher> dispatcher = std::make_shared<SerialTaskDispatcher>("", priority, executor);
 
     std::atomic<int> count(0);
-    ASSERT_TRUE(count.load() == 0);
+    EXPECT_TRUE(count.load() == 0);
     int sleep1 = 2000;
     dispatcher->SyncDispatch(std::make_shared<Runnable>([&count, sleep = sleep1]() {
         auto time = std::chrono::milliseconds(sleep);
         std::this_thread::sleep_for(time);
         int index = count.fetch_add(1);
-        ASSERT_TRUE(index == 0);
+        EXPECT_TRUE(index == 0);
         GTEST_LOG_(INFO) << "SerialTaskDispatcher_SyncDispatchTest_001 task" + std::to_string(index) +
                                 " end, elapsed " + std::to_string(sleep);
     }));
-    ASSERT_TRUE(count.load() == 1);
+    EXPECT_TRUE(count.load() == 1);
 
     int sleep2 = 100;
     dispatcher->SyncDispatch(std::make_shared<Runnable>([&count, sleep = sleep2]() {
         auto time = std::chrono::milliseconds(sleep);
         std::this_thread::sleep_for(time);
         int index = count.fetch_add(1);
-        ASSERT_TRUE(index == 1);
+        EXPECT_TRUE(index == 1);
         GTEST_LOG_(INFO) << "SerialTaskDispatcher_SyncDispatchTest_001 task" + std::to_string(index) +
                                 " end, elapsed " + std::to_string(sleep);
     }));
-    ASSERT_TRUE(count.load() == 2);
+    EXPECT_TRUE(count.load() == 2);
 
     int sleep3 = 1000;
     dispatcher->SyncDispatch(std::make_shared<Runnable>([&count, sleep = sleep3]() {
         auto time = std::chrono::milliseconds(sleep);
         std::this_thread::sleep_for(time);
         int index = count.fetch_add(1);
-        ASSERT_TRUE(index == 2);
+        EXPECT_TRUE(index == 2);
         GTEST_LOG_(INFO) << "SerialTaskDispatcher_SyncDispatchTest_001 task" + std::to_string(index) +
                                 " end, elapsed " + std::to_string(sleep);
     }));
-    ASSERT_TRUE(count.load() == 3);
+    EXPECT_TRUE(count.load() == 3);
 
     long wait = 1000;
     GTEST_LOG_(INFO) << ("wait for " + std::to_string(wait));
@@ -353,7 +353,7 @@ HWTEST(SerialTaskDispatcherTest, SerialTaskDispatcher_SyncDispatchTest_002, Test
     std::shared_ptr<SerialTaskDispatcher> dispatcher = std::make_shared<SerialTaskDispatcher>("", priority, executor);
 
     ErrCode errCode = dispatcher->SyncDispatch(nullptr);
-    ASSERT_TRUE(errCode == ERR_APPEXECFWK_CHECK_FAILED);
+    EXPECT_TRUE(errCode == ERR_APPEXECFWK_CHECK_FAILED);
 
     GTEST_LOG_(INFO) << name + " end";
 }
@@ -376,39 +376,39 @@ HWTEST(SerialTaskDispatcherTest, SerialTaskDispatcher_AsyncDispatchTest_001, Tes
     std::shared_ptr<SerialTaskDispatcher> dispatcher = std::make_shared<SerialTaskDispatcher>("", priority, executor);
 
     std::atomic<int> count(0);
-    ASSERT_TRUE(count.load() == 0);
+    EXPECT_TRUE(count.load() == 0);
     int sleep1 = 2000;
     dispatcher->AsyncDispatch(std::make_shared<Runnable>([&count, sleep = sleep1]() {
         auto time = std::chrono::milliseconds(sleep);
         std::this_thread::sleep_for(time);
         int index = count.fetch_add(1);
-        ASSERT_TRUE(index == 0);
+        EXPECT_TRUE(index == 0);
         GTEST_LOG_(INFO) << "SerialTaskDispatcher_AsyncDispatchTest_001 task" + std::to_string(index) +
                                 " end, elapsed " + std::to_string(sleep);
     }));
-    ASSERT_TRUE(count.load() == 0);
+    EXPECT_TRUE(count.load() == 0);
 
     int sleep2 = 1000;
     dispatcher->AsyncDispatch(std::make_shared<Runnable>([&count, sleep = sleep2]() {
         auto time = std::chrono::milliseconds(sleep);
         std::this_thread::sleep_for(time);
         int index = count.fetch_add(1);
-        ASSERT_TRUE(index == 1);
+        EXPECT_TRUE(index == 1);
         GTEST_LOG_(INFO) << "SerialTaskDispatcher_AsyncDispatchTest_001 task" + std::to_string(index) +
                                 " end, elapsed " + std::to_string(sleep);
     }));
-    ASSERT_TRUE(count.load() == 0);
+    EXPECT_TRUE(count.load() == 0);
 
     int sleep3 = 1000;
     dispatcher->AsyncDispatch(std::make_shared<Runnable>([&count, sleep = sleep3]() {
         auto time = std::chrono::milliseconds(sleep);
         std::this_thread::sleep_for(time);
         int index = count.fetch_add(1);
-        ASSERT_TRUE(index == 2);
+        EXPECT_TRUE(index == 2);
         GTEST_LOG_(INFO) << "SerialTaskDispatcher_AsyncDispatchTest_001 task" + std::to_string(index) +
                                 " end, elapsed " + std::to_string(sleep);
     }));
-    ASSERT_TRUE(count.load() == 0);
+    EXPECT_TRUE(count.load() == 0);
 
     {
         long wait = 100;
@@ -420,28 +420,28 @@ HWTEST(SerialTaskDispatcherTest, SerialTaskDispatcher_AsyncDispatchTest_001, Tes
         GTEST_LOG_(INFO) << ("wait for task, wait= " + std::to_string(wait) + " ms");
         auto time = std::chrono::milliseconds(wait);
         std::this_thread::sleep_for(time);
-        ASSERT_TRUE(count.load() == 0);
+        EXPECT_TRUE(count.load() == 0);
     }
     {
         long wait = 1000;
         GTEST_LOG_(INFO) << ("wait for task, wait= " + std::to_string(wait) + " ms");
         auto time = std::chrono::milliseconds(wait);
         std::this_thread::sleep_for(time);
-        ASSERT_TRUE(count.load() == 1);
+        EXPECT_TRUE(count.load() == 1);
     }
     {
         long wait = 1000;
         GTEST_LOG_(INFO) << ("wait for task, wait= " + std::to_string(wait) + " ms");
         auto time = std::chrono::milliseconds(wait);
         std::this_thread::sleep_for(time);
-        ASSERT_TRUE(count.load() == 2);
+        EXPECT_TRUE(count.load() == 2);
     }
     {
         long wait = 1000;
         GTEST_LOG_(INFO) << ("wait for task, wait= " + std::to_string(wait) + " ms");
         auto time = std::chrono::milliseconds(wait);
         std::this_thread::sleep_for(time);
-        ASSERT_TRUE(count.load() == 3);
+        EXPECT_TRUE(count.load() == 3);
     }
 
     GTEST_LOG_(INFO) << name + " end";
@@ -456,7 +456,7 @@ HWTEST(SerialTaskDispatcherTest, SerialTaskDispatcher_AsyncDispatchTest_002, Tes
     std::shared_ptr<SerialTaskDispatcher> dispatcher = std::make_shared<SerialTaskDispatcher>("", priority, executor);
 
     std::shared_ptr<Revocable> revocable = dispatcher->AsyncDispatch(nullptr);
-    ASSERT_TRUE(revocable == nullptr);
+    EXPECT_TRUE(revocable == nullptr);
 
     GTEST_LOG_(INFO) << name + " end";
 }
@@ -482,32 +482,32 @@ HWTEST(SerialTaskDispatcherTest, SerialTaskDispatcher_DelayDispatchTest_001, Tes
     int sleep1 = 2000;
     dispatcher->DelayDispatch(std::make_shared<Runnable>([&count, sleep = sleep1]() {
         int index = count.fetch_add(1);
-        ASSERT_TRUE(index == 2);
+        EXPECT_TRUE(index == 2);
         GTEST_LOG_(INFO) << "SerialTaskDispatcher_DelayDispatchTest_001 task" + std::to_string(index) +
                                 " end, elapsed " + std::to_string(sleep);
     }),
         sleep1);
-    ASSERT_TRUE(count.load() == 0);
+    EXPECT_TRUE(count.load() == 0);
 
     int sleep2 = 1000;
     dispatcher->DelayDispatch(std::make_shared<Runnable>([&count, sleep = sleep2]() {
         int index = count.fetch_add(1);
-        ASSERT_TRUE(index == 0 || index == 1);
+        EXPECT_TRUE(index == 0 || index == 1);
         GTEST_LOG_(INFO) << "SerialTaskDispatcher_DelayDispatchTest_001 task" + std::to_string(index) +
                                 " end, elapsed " + std::to_string(sleep);
     }),
         sleep2);
-    ASSERT_TRUE(count.load() == 0);
+    EXPECT_TRUE(count.load() == 0);
 
     int sleep3 = 1000;
     dispatcher->DelayDispatch(std::make_shared<Runnable>([&count, sleep = sleep3]() {
         int index = count.fetch_add(1);
-        ASSERT_TRUE(index == 0 || index == 1);
+        EXPECT_TRUE(index == 0 || index == 1);
         GTEST_LOG_(INFO) << "SerialTaskDispatcher_DelayDispatchTest_001 task" + std::to_string(index) +
                                 " end, elapsed " + std::to_string(sleep);
     }),
         sleep3);
-    ASSERT_TRUE(count.load() == 0);
+    EXPECT_TRUE(count.load() == 0);
 
     {
         long wait = 100;
@@ -519,7 +519,7 @@ HWTEST(SerialTaskDispatcherTest, SerialTaskDispatcher_DelayDispatchTest_001, Tes
         GTEST_LOG_(INFO) << ("wait for task, wait= " + std::to_string(wait) + " ms");
         auto time = std::chrono::milliseconds(wait);
         std::this_thread::sleep_for(time);
-        ASSERT_TRUE(count.load() == 2);
+        EXPECT_TRUE(count.load() == 2);
     }
     {
         long wait = 500;
@@ -527,14 +527,14 @@ HWTEST(SerialTaskDispatcherTest, SerialTaskDispatcher_DelayDispatchTest_001, Tes
         auto time = std::chrono::milliseconds(wait);
         std::this_thread::sleep_for(time);
         GTEST_LOG_(INFO) << ("wait for task, load= " + std::to_string(count.load()));
-        ASSERT_TRUE(count.load() == 2);
+        EXPECT_TRUE(count.load() == 2);
     }
     {
         long wait = 1000;
         GTEST_LOG_(INFO) << ("wait for task, wait= " + std::to_string(wait) + " ms");
         auto time = std::chrono::milliseconds(wait);
         std::this_thread::sleep_for(time);
-        ASSERT_TRUE(count.load() == 3);
+        EXPECT_TRUE(count.load() == 3);
     }
 
     GTEST_LOG_(INFO) << name + " end";
@@ -568,7 +568,7 @@ HWTEST(SerialTaskDispatcherTest, SerialTaskDispatcher_DelayDispatchTest_003, Tes
     int sleep1 = -2000;
     dispatcher->DelayDispatch(std::make_shared<Runnable>([&count, sleep = sleep1]() {
         int index = count.fetch_add(1);
-        ASSERT_TRUE(index == 1 || index == 0);
+        EXPECT_TRUE(index == 1 || index == 0);
         GTEST_LOG_(INFO) << "SerialTaskDispatcher_DelayDispatchTest_003 task" + std::to_string(index) +
                                 " end, elapsed " + std::to_string(sleep);
     }),
@@ -577,7 +577,7 @@ HWTEST(SerialTaskDispatcherTest, SerialTaskDispatcher_DelayDispatchTest_003, Tes
     int sleep2 = -1000;
     dispatcher->DelayDispatch(std::make_shared<Runnable>([&count, sleep = sleep2]() {
         int index = count.fetch_add(1);
-        ASSERT_TRUE(index == 0 || index == 1);
+        EXPECT_TRUE(index == 0 || index == 1);
         GTEST_LOG_(INFO) << "SerialTaskDispatcher_DelayDispatchTest_003 task" + std::to_string(index) +
                                 " end, elapsed " + std::to_string(sleep);
     }),
@@ -588,7 +588,7 @@ HWTEST(SerialTaskDispatcherTest, SerialTaskDispatcher_DelayDispatchTest_003, Tes
         GTEST_LOG_(INFO) << ("wait for task, wait= " + std::to_string(wait) + " ms");
         auto time = std::chrono::milliseconds(wait);
         std::this_thread::sleep_for(time);
-        ASSERT_TRUE(count.load() == 2);
+        EXPECT_TRUE(count.load() == 2);
     }
 
     GTEST_LOG_(INFO) << name + " end";

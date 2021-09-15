@@ -28,6 +28,8 @@ namespace {
 const std::string STRING_BUNDLE_PATH = "/data/test/resource/bm/pageAbilityBundleForInstall.hap";
 const std::string STRING_BUNDLE_PATH_INVALID = STRING_BUNDLE_PATH + ".invalid";
 const std::string STRING_BUNDLE_NAME = "com.ohos.tools.pageAbilityBundleForInstall";
+
+const std::string STRING_BUNDLE_PATH_NO_SIGNATURE = "/data/test/resource/bm/pageAbilityBundleForInstallNoSignature.hap";
 }  // namespace
 
 class BmCommandInstallSystemTest : public ::testing::Test {
@@ -99,6 +101,46 @@ HWTEST_F(BmCommandInstallSystemTest, Bm_Command_Install_SystemTest_0300, Functio
 
     // install the same bundle
     std::string command = "bm install -p " + STRING_BUNDLE_PATH + " -r";
+    std::string commandResult = ToolSystemTest::ExecuteCommand(command);
+
+    EXPECT_EQ(commandResult, STRING_INSTALL_BUNDLE_OK + "\n");
+
+    // uninstall the bundle
+    ToolSystemTest::UninstallBundle(STRING_BUNDLE_NAME);
+}
+
+/**
+ * @tc.number: Bm_Command_Install_SystemTest_0400
+ * @tc.name: ExecCommand
+ * @tc.desc: Verify the "bm install -p <bundle-path>" command.
+ */
+HWTEST_F(BmCommandInstallSystemTest, Bm_Command_Install_SystemTest_0400, Function | MediumTest | Level1)
+{
+    // uninstall the bundle
+    ToolSystemTest::UninstallBundle(STRING_BUNDLE_NAME);
+
+    // install a valid bundle with no signature
+    std::string command = "bm install -p " + STRING_BUNDLE_PATH_NO_SIGNATURE;
+    std::string commandResult = ToolSystemTest::ExecuteCommand(command);
+
+    EXPECT_NE(commandResult, STRING_INSTALL_BUNDLE_OK + "\n");
+
+    // uninstall the bundle
+    ToolSystemTest::UninstallBundle(STRING_BUNDLE_NAME);
+}
+
+/**
+ * @tc.number: Bm_Command_Install_SystemTest_0500
+ * @tc.name: ExecCommand
+ * @tc.desc: Verify the "bm install -p <bundle-path> -f" command.
+ */
+HWTEST_F(BmCommandInstallSystemTest, Bm_Command_Install_SystemTest_0500, Function | MediumTest | Level1)
+{
+    // uninstall the bundle
+    ToolSystemTest::UninstallBundle(STRING_BUNDLE_NAME);
+
+    // install a valid bundle with no signature
+    std::string command = "bm install -p " + STRING_BUNDLE_PATH_NO_SIGNATURE + " -f";
     std::string commandResult = ToolSystemTest::ExecuteCommand(command);
 
     EXPECT_EQ(commandResult, STRING_INSTALL_BUNDLE_OK + "\n");

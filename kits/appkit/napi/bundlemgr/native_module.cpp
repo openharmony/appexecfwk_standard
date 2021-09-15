@@ -82,9 +82,9 @@ static napi_value Init(napi_env env, napi_value exports)
      * Propertise define
      */
     napi_property_descriptor desc[] = {
-        DECLARE_NAPI_FUNCTION("getApplicationInfos", GetApplicationInfos),
+        DECLARE_NAPI_FUNCTION("getAllApplicationInfo", GetApplicationInfos),
         DECLARE_NAPI_FUNCTION("getApplicationInfo", GetApplicationInfo),
-        DECLARE_NAPI_FUNCTION("getBundleInfos", GetBundleInfos),
+        DECLARE_NAPI_FUNCTION("getAllBundleInfo", GetBundleInfos),
         DECLARE_NAPI_FUNCTION("getBundleInfo", GetBundleInfo),
         DECLARE_NAPI_FUNCTION("getBundleArchiveInfo", GetBundleArchiveInfo),
         DECLARE_NAPI_FUNCTION("getPermissionDef", GetPermissionDef),
@@ -93,7 +93,11 @@ static napi_value Init(napi_env env, napi_value exports)
         DECLARE_NAPI_FUNCTION("getFormsInfoByModule", GetFormsInfoByModule),
         DECLARE_NAPI_FUNCTION("getFormsInfo", GetFormsInfoByApp),
         DECLARE_NAPI_FUNCTION("getAllFormsInfo", GetAllFormsInfo),
-        DECLARE_NAPI_FUNCTION("getShortcutInfos", GetShortcutInfos),
+        DECLARE_NAPI_FUNCTION("getAllShortcutInfo", GetShortcutInfos),
+        DECLARE_NAPI_FUNCTION("getModuleUsageRecords", GetModuleUsageRecords),
+        DECLARE_NAPI_FUNCTION("on", RegisterAllPermissionsChanged),
+        DECLARE_NAPI_FUNCTION("off", UnregisterPermissionsChanged),
+        DECLARE_NAPI_FUNCTION("checkPermission", CheckPermission),
         DECLARE_NAPI_PROPERTY("AbilityType", nAbilityType),
         DECLARE_NAPI_PROPERTY("AbilitySubType", nAbilitySubType),
         DECLARE_NAPI_PROPERTY("DisplayOrientation", nDisplayOrientation),

@@ -21,7 +21,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 AppSpawnMsgWrapper::~AppSpawnMsgWrapper()
 {
     FreeMsg();
@@ -119,6 +118,5 @@ void AppSpawnMsgWrapper::FreeMsg()
         isValid_ = false;
     }
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

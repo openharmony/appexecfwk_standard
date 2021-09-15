@@ -26,6 +26,7 @@ config("amsSystemTestHConfig") {
     "//foundation/appexecfwk/standard/common/log/include",
     "//foundation/distributedschedule/dmsfwk/services/dtbschedmgr/include",
     "${SUBST_TOOLS_DIR}/include",
+    "//third_party/jsoncpp/include",
   ]
   defines = [
     "APP_LOG_TAG = \"amsSystemTestH\"",
@@ -46,6 +47,7 @@ ohos_shared_library("amsSystemTestH") {
     "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_core:appexecfwk_core",
     "//foundation/appexecfwk/standard/kits:appkit_native",
     "//foundation/appexecfwk/standard/services/bundlemgr:libbms",
+    "//third_party/jsoncpp:jsoncpp",
     "//utils/native/base:utilsbase",
   ]
   external_deps = [

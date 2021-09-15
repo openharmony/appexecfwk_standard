@@ -71,7 +71,7 @@ HWTEST_F(AmsServiceStartModuleTest, AmsStartupMoretimes_001, TestSize.Level1)
 {
     APP_LOGI("AmsStartupMoretimes_001 start");
     std::shared_ptr<AppMgrService> appMgrService = std::make_shared<AppMgrService>();
-    ASSERT_TRUE(appMgrService.get() != nullptr);
+    EXPECT_TRUE(appMgrService.get() != nullptr);
     std::shared_ptr<AppMgrServiceInnerMock> innerService = std::make_shared<AppMgrServiceInnerMock>();
     appMgrService->SetInnerService(innerService);
     EXPECT_EQ(ServiceRunningState::STATE_NOT_START, appMgrService->QueryServiceState().serviceRunningState);
@@ -98,7 +98,7 @@ HWTEST_F(AmsServiceStartModuleTest, AmsStartupMoretimes_002, TestSize.Level1)
 {
     APP_LOGI("AmsStartupMoretimes_002 start");
     std::shared_ptr<AppMgrService> appMgrService = std::make_shared<AppMgrService>();
-    ASSERT_TRUE(appMgrService.get() != nullptr);
+    EXPECT_TRUE(appMgrService.get() != nullptr);
     std::shared_ptr<AppMgrServiceInnerMock> innerService = std::make_shared<AppMgrServiceInnerMock>();
     appMgrService->SetInnerService(innerService);
     EXPECT_EQ(ServiceRunningState::STATE_NOT_START, appMgrService->QueryServiceState().serviceRunningState);

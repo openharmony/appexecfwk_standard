@@ -100,13 +100,13 @@ void BmsBundleUninstallerTest::SetUpTestCase()
 {
     if (access(ROOT_DIR.c_str(), F_OK) != 0) {
         bool result = OHOS::ForceCreateDirectory(ROOT_DIR);
-        ASSERT_TRUE(result);
+        EXPECT_TRUE(result);
     }
     if (chown(ROOT_DIR.c_str(), ROOT_UID, ROOT_UID) != 0) {
-        ASSERT_TRUE(false);
+        EXPECT_TRUE(false);
     }
     if (chmod(ROOT_DIR.c_str(), S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH) != 0) {
-        ASSERT_TRUE(false);
+        EXPECT_TRUE(false);
     }
 }
 
@@ -194,46 +194,46 @@ ErrCode BmsBundleUninstallerTest::UninstallModule(const std::string &bundleName,
 void BmsBundleUninstallerTest::CheckFileExist() const
 {
     int bundleDataExist = access(BUNDLE_DATA_DIR.c_str(), F_OK);
-    ASSERT_EQ(bundleDataExist, 0);
+    EXPECT_EQ(bundleDataExist, 0);
 
     int bundleCodeExist = access(BUNDLE_CODE_DIR.c_str(), F_OK);
-    ASSERT_EQ(bundleCodeExist, 0);
+    EXPECT_EQ(bundleCodeExist, 0);
 }
 
 void BmsBundleUninstallerTest::CheckModuleFileExist() const
 {
     int moduleDataExist = access(MODULE_DATA_DIR.c_str(), F_OK);
-    ASSERT_EQ(moduleDataExist, 0);
+    EXPECT_EQ(moduleDataExist, 0);
 
     int moduleCodeExist = access(MODULE_CODE_DIR.c_str(), F_OK);
-    ASSERT_EQ(moduleCodeExist, 0);
+    EXPECT_EQ(moduleCodeExist, 0);
 }
 
 void BmsBundleUninstallerTest::CheckModuleFileExist1() const
 {
     int moduleDataExist1 = access(MODULE_DATA_DIR1.c_str(), F_OK);
-    ASSERT_EQ(moduleDataExist1, 0);
+    EXPECT_EQ(moduleDataExist1, 0);
 
     int moduleCodeExist1 = access(MODULE_CODE_DIR1.c_str(), F_OK);
-    ASSERT_EQ(moduleCodeExist1, 0);
+    EXPECT_EQ(moduleCodeExist1, 0);
 }
 
 void BmsBundleUninstallerTest::CheckFileNonExist() const
 {
     int bundleDataExist = access(BUNDLE_DATA_DIR.c_str(), F_OK);
-    ASSERT_NE(bundleDataExist, 0);
+    EXPECT_NE(bundleDataExist, 0);
 
     int bundleCodeExist = access(BUNDLE_CODE_DIR.c_str(), F_OK);
-    ASSERT_NE(bundleCodeExist, 0);
+    EXPECT_NE(bundleCodeExist, 0);
 }
 
 void BmsBundleUninstallerTest::CheckModuleFileNonExist() const
 {
     int moduleDataExist = access(MODULE_DATA_DIR.c_str(), F_OK);
-    ASSERT_NE(moduleDataExist, 0);
+    EXPECT_NE(moduleDataExist, 0);
 
     int moduleCodeExist = access(MODULE_CODE_DIR.c_str(), F_OK);
-    ASSERT_NE(moduleCodeExist, 0);
+    EXPECT_NE(moduleCodeExist, 0);
 }
 
 void BmsBundleUninstallerTest::StopInstalldService() const
@@ -267,22 +267,22 @@ void BmsBundleUninstallerTest::StopBundleService()
 
 void BmsBundleUninstallerTest::CheckBundleInfoExist() const
 {
-    ASSERT_NE(bundleMgrService_, nullptr);
+    EXPECT_NE(bundleMgrService_, nullptr);
     auto dataMgr = bundleMgrService_->GetDataMgr();
-    ASSERT_NE(dataMgr, nullptr);
+    EXPECT_NE(dataMgr, nullptr);
     BundleInfo info;
     bool isBundleExist = dataMgr->GetBundleInfo(BUNDLE_NAME, BundleFlag::GET_BUNDLE_DEFAULT, info);
-    ASSERT_TRUE(isBundleExist);
+    EXPECT_TRUE(isBundleExist);
 }
 
 void BmsBundleUninstallerTest::CheckBundleInfoNonExist() const
 {
-    ASSERT_NE(bundleMgrService_, nullptr);
+    EXPECT_NE(bundleMgrService_, nullptr);
     auto dataMgr = bundleMgrService_->GetDataMgr();
-    ASSERT_NE(dataMgr, nullptr);
+    EXPECT_NE(dataMgr, nullptr);
     BundleInfo info;
     bool isBundleExist = dataMgr->GetBundleInfo(BUNDLE_NAME, BundleFlag::GET_BUNDLE_DEFAULT, info);
-    ASSERT_FALSE(isBundleExist);
+    EXPECT_FALSE(isBundleExist);
 }
 
 const std::shared_ptr<BundleMgrService> BmsBundleUninstallerTest::GetBundleMgrService() const
@@ -308,7 +308,7 @@ void BmsBundleUninstallerTest::ClearBundleInfoInDb()
     applicationInfo.bundleName = BUNDLE_NAME;
     innerBundleInfo.SetBaseApplicationInfo(applicationInfo);
     bool result = dataStorage->DeleteStorageBundleInfo(Constants::CURRENT_DEVICE_ID, innerBundleInfo);
-    ASSERT_TRUE(result) << "the bundle info in db clear fail: " << BUNDLE_NAME;
+    EXPECT_TRUE(result) << "the bundle info in db clear fail: " << BUNDLE_NAME;
 }
 
 void BmsBundleUninstallerTest::DeleteInstallFiles()
@@ -329,12 +329,12 @@ void BmsBundleUninstallerTest::DeleteInstallFiles()
 HWTEST_F(BmsBundleUninstallerTest, Bundle_Uninstall_0100, Function | SmallTest | Level0)
 {
     ErrCode installResult = InstallBundle(BUNDLE_FILE_PATH);
-    ASSERT_EQ(installResult, ERR_OK);
+    EXPECT_EQ(installResult, ERR_OK);
     CheckBundleInfoExist();
     CheckFileExist();
 
     ErrCode uninstallResult = UninstallBundle(BUNDLE_NAME);
-    ASSERT_EQ(uninstallResult, ERR_OK);
+    EXPECT_EQ(uninstallResult, ERR_OK);
     CheckFileNonExist();
     CheckBundleInfoNonExist();
 }
@@ -373,19 +373,19 @@ HWTEST_F(BmsBundleUninstallerTest, Bundle_Uninstall_0300, Function | SmallTest |
 HWTEST_F(BmsBundleUninstallerTest, Bundle_Uninstall_0400, Function | SmallTest | Level0)
 {
     ErrCode installResult = InstallBundle(BUNDLE_FILE_PATH);
-    ASSERT_EQ(installResult, ERR_OK);
+    EXPECT_EQ(installResult, ERR_OK);
     CheckFileExist();
     CheckBundleInfoExist();
 
     StopBundleService();
     ErrCode secondResult = UninstallBundle(BUNDLE_NAME);
-    ASSERT_EQ(secondResult, ERR_APPEXECFWK_UNINSTALL_BUNDLE_MGR_SERVICE_ERROR);
+    EXPECT_EQ(secondResult, ERR_APPEXECFWK_UNINSTALL_BUNDLE_MGR_SERVICE_ERROR);
     CheckFileExist();
     StartBundleService();
     CheckBundleInfoExist();
 
     ErrCode thirdResult = UninstallBundle(BUNDLE_NAME);
-    ASSERT_EQ(thirdResult, ERR_OK);
+    EXPECT_EQ(thirdResult, ERR_OK);
     CheckFileNonExist();
     CheckBundleInfoNonExist();
 }
@@ -399,13 +399,13 @@ HWTEST_F(BmsBundleUninstallerTest, Bundle_Uninstall_0400, Function | SmallTest |
 HWTEST_F(BmsBundleUninstallerTest, Bundle_Uninstall_0500, Function | SmallTest | Level0)
 {
     ErrCode installResult = InstallBundle(BUNDLE_FILE_PATH);
-    ASSERT_EQ(installResult, ERR_OK);
+    EXPECT_EQ(installResult, ERR_OK);
     CheckFileExist();
     CheckBundleInfoExist();
 
     StopInstalldService();
     ErrCode uninstallResult = UninstallBundle(BUNDLE_NAME);
-    ASSERT_EQ(uninstallResult, ERR_APPEXECFWK_INSTALLD_GET_PROXY_ERROR);
+    EXPECT_EQ(uninstallResult, ERR_APPEXECFWK_INSTALLD_GET_PROXY_ERROR);
     CheckFileExist();
 
     StartInstalldService();
@@ -422,16 +422,16 @@ HWTEST_F(BmsBundleUninstallerTest, Bundle_Uninstall_0500, Function | SmallTest |
 HWTEST_F(BmsBundleUninstallerTest, Bundle_Uninstall_0600, Function | SmallTest | Level1)
 {
     ErrCode installResult = InstallBundle(BUNDLE_FILE_PATH);
-    ASSERT_EQ(installResult, ERR_OK);
+    EXPECT_EQ(installResult, ERR_OK);
     CheckFileExist();
     CheckBundleInfoExist();
 
     InstallParam installParam;
     installParam.installFlag = InstallFlag::NORMAL;
     auto bms = GetBundleMgrService();
-    ASSERT_NE(bms, nullptr);
+    EXPECT_NE(bms, nullptr);
     auto installer = bms->GetBundleInstaller();
-    ASSERT_NE(installer, nullptr);
+    EXPECT_NE(installer, nullptr);
     bool result = installer->Uninstall(BUNDLE_NAME, installParam, nullptr);
     EXPECT_FALSE(result);
 
@@ -450,14 +450,14 @@ HWTEST_F(BmsBundleUninstallerTest, Bundle_Uninstall_0600, Function | SmallTest |
 HWTEST_F(BmsBundleUninstallerTest, Bundle_Uninstall_0700, Function | SmallTest | Level0)
 {
     auto installer = std::make_unique<SystemBundleInstaller>(BUNDLE_FILE_PATH);
-    ASSERT_NE(installer, nullptr);
+    EXPECT_NE(installer, nullptr);
     bool installResult = installer->InstallSystemBundle(Constants::AppType::SYSTEM_APP);
-    ASSERT_EQ(installResult, true);
+    EXPECT_EQ(installResult, true);
     CheckFileExist();
     CheckBundleInfoExist();
 
     ErrCode uninstallResult = UninstallBundle(BUNDLE_NAME);
-    ASSERT_EQ(uninstallResult, ERR_APPEXECFWK_UNINSTALL_SYSTEM_APP_ERROR);
+    EXPECT_EQ(uninstallResult, ERR_APPEXECFWK_UNINSTALL_SYSTEM_APP_ERROR);
     CheckFileExist();
     CheckBundleInfoExist();
     DeleteInstallFiles();
@@ -472,12 +472,12 @@ HWTEST_F(BmsBundleUninstallerTest, Bundle_Uninstall_0700, Function | SmallTest |
 HWTEST_F(BmsBundleUninstallerTest, Module_Uninstall_0100, Function | SmallTest | Level0)
 {
     ErrCode installResult = InstallBundle(BUNDLE_FILE_PATH);
-    ASSERT_EQ(installResult, ERR_OK);
+    EXPECT_EQ(installResult, ERR_OK);
     CheckBundleInfoExist();
     CheckFileExist();
 
     ErrCode uninstallResult = UninstallModule(BUNDLE_NAME, MODULE_PACKAGE);
-    ASSERT_EQ(uninstallResult, ERR_OK);
+    EXPECT_EQ(uninstallResult, ERR_OK);
     CheckFileNonExist();
     CheckBundleInfoNonExist();
 }
@@ -516,19 +516,19 @@ HWTEST_F(BmsBundleUninstallerTest, Module_Uninstall_0300, Function | SmallTest |
 HWTEST_F(BmsBundleUninstallerTest, Module_Uninstall_0400, Function | SmallTest | Level0)
 {
     ErrCode installResult = InstallBundle(BUNDLE_FILE_PATH);
-    ASSERT_EQ(installResult, ERR_OK);
+    EXPECT_EQ(installResult, ERR_OK);
     CheckFileExist();
     CheckBundleInfoExist();
 
     StopBundleService();
     ErrCode secondResult = UninstallModule(BUNDLE_NAME, MODULE_PACKAGE);
-    ASSERT_EQ(secondResult, ERR_APPEXECFWK_UNINSTALL_BUNDLE_MGR_SERVICE_ERROR);
+    EXPECT_EQ(secondResult, ERR_APPEXECFWK_UNINSTALL_BUNDLE_MGR_SERVICE_ERROR);
     CheckFileExist();
     StartBundleService();
     CheckBundleInfoExist();
 
     ErrCode thirdResult = UninstallModule(BUNDLE_NAME, MODULE_PACKAGE);
-    ASSERT_EQ(thirdResult, ERR_OK);
+    EXPECT_EQ(thirdResult, ERR_OK);
     CheckFileNonExist();
     CheckBundleInfoNonExist();
 }
@@ -542,13 +542,13 @@ HWTEST_F(BmsBundleUninstallerTest, Module_Uninstall_0400, Function | SmallTest |
 HWTEST_F(BmsBundleUninstallerTest, Module_Uninstall_0500, Function | SmallTest | Level0)
 {
     ErrCode installResult = InstallBundle(BUNDLE_FILE_PATH);
-    ASSERT_EQ(installResult, ERR_OK);
+    EXPECT_EQ(installResult, ERR_OK);
     CheckFileExist();
     CheckBundleInfoExist();
 
     StopInstalldService();
     ErrCode uninstallResult = UninstallModule(BUNDLE_NAME, MODULE_PACKAGE);
-    ASSERT_EQ(uninstallResult, ERR_APPEXECFWK_INSTALLD_GET_PROXY_ERROR);
+    EXPECT_EQ(uninstallResult, ERR_APPEXECFWK_INSTALLD_GET_PROXY_ERROR);
     CheckFileExist();
 
     StartInstalldService();
@@ -565,16 +565,16 @@ HWTEST_F(BmsBundleUninstallerTest, Module_Uninstall_0500, Function | SmallTest |
 HWTEST_F(BmsBundleUninstallerTest, Module_Uninstall_0600, Function | SmallTest | Level1)
 {
     ErrCode installResult = InstallBundle(BUNDLE_FILE_PATH);
-    ASSERT_EQ(installResult, ERR_OK);
+    EXPECT_EQ(installResult, ERR_OK);
     CheckFileExist();
     CheckBundleInfoExist();
 
     InstallParam installParam;
     installParam.installFlag = InstallFlag::NORMAL;
     auto bms = GetBundleMgrService();
-    ASSERT_NE(bms, nullptr);
+    EXPECT_NE(bms, nullptr);
     auto installer = bms->GetBundleInstaller();
-    ASSERT_NE(installer, nullptr);
+    EXPECT_NE(installer, nullptr);
     bool result = installer->Uninstall(BUNDLE_NAME, MODULE_PACKAGE, installParam, nullptr);
     EXPECT_FALSE(result);
 
@@ -593,14 +593,14 @@ HWTEST_F(BmsBundleUninstallerTest, Module_Uninstall_0600, Function | SmallTest |
 HWTEST_F(BmsBundleUninstallerTest, Module_Uninstall_0700, Function | SmallTest | Level0)
 {
     auto installer = std::make_unique<SystemBundleInstaller>(BUNDLE_FILE_PATH);
-    ASSERT_NE(installer, nullptr);
+    EXPECT_NE(installer, nullptr);
     bool installResult = installer->InstallSystemBundle(Constants::AppType::SYSTEM_APP);
-    ASSERT_EQ(installResult, true);
+    EXPECT_EQ(installResult, true);
     CheckFileExist();
     CheckBundleInfoExist();
 
     ErrCode uninstallResult = UninstallModule(BUNDLE_NAME, MODULE_PACKAGE);
-    ASSERT_EQ(uninstallResult, ERR_APPEXECFWK_UNINSTALL_SYSTEM_APP_ERROR);
+    EXPECT_EQ(uninstallResult, ERR_APPEXECFWK_UNINSTALL_SYSTEM_APP_ERROR);
     CheckFileExist();
     CheckBundleInfoExist();
     DeleteInstallFiles();
@@ -615,16 +615,16 @@ HWTEST_F(BmsBundleUninstallerTest, Module_Uninstall_0700, Function | SmallTest |
 HWTEST_F(BmsBundleUninstallerTest, Module_Uninstall_0800, Function | SmallTest | Level0)
 {
     ErrCode installResult = InstallBundle(BUNDLE_FILE_PATH);
-    ASSERT_EQ(installResult, ERR_OK);
+    EXPECT_EQ(installResult, ERR_OK);
     ErrCode installResult1 = InstallBundle(BUNDLE_FILE_PATH1);
-    ASSERT_EQ(installResult1, ERR_OK);
+    EXPECT_EQ(installResult1, ERR_OK);
     CheckBundleInfoExist();
     CheckFileExist();
     CheckModuleFileExist();
     CheckModuleFileExist1();
 
     ErrCode uninstallResult = UninstallModule(BUNDLE_NAME, MODULE_PACKAGE);
-    ASSERT_EQ(uninstallResult, ERR_OK);
+    EXPECT_EQ(uninstallResult, ERR_OK);
     CheckModuleFileNonExist();
     CheckModuleFileExist1();
     CheckBundleInfoExist();
@@ -640,18 +640,18 @@ HWTEST_F(BmsBundleUninstallerTest, Module_Uninstall_0800, Function | SmallTest |
 HWTEST_F(BmsBundleUninstallerTest, Module_Uninstall_0900, Function | SmallTest | Level0)
 {
     ErrCode installResult = InstallBundle(BUNDLE_FILE_PATH);
-    ASSERT_EQ(installResult, ERR_OK);
+    EXPECT_EQ(installResult, ERR_OK);
     ErrCode installResult1 = InstallBundle(BUNDLE_FILE_PATH1);
-    ASSERT_EQ(installResult1, ERR_OK);
+    EXPECT_EQ(installResult1, ERR_OK);
     CheckBundleInfoExist();
     CheckFileExist();
     CheckModuleFileExist();
     CheckModuleFileExist1();
 
     ErrCode uninstallResult = UninstallModule(BUNDLE_NAME, MODULE_PACKAGE);
-    ASSERT_EQ(uninstallResult, ERR_OK);
+    EXPECT_EQ(uninstallResult, ERR_OK);
     ErrCode uninstallResult1 = UninstallModule(BUNDLE_NAME, MODULE_PACKAGE1);
-    ASSERT_EQ(uninstallResult1, ERR_OK);
+    EXPECT_EQ(uninstallResult1, ERR_OK);
     CheckFileNonExist();
     CheckBundleInfoNonExist();
     DeleteInstallFiles();

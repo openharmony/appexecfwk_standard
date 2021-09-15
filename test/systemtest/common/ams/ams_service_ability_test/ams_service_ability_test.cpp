@@ -331,7 +331,7 @@ void AmsServiceAbilityTest::CheckAbilityStateByName(
     // ability exist
     EXPECT_NE(pos, result.end());
     MTDumpUtil::GetInstance()->GetAll("State", info, result);
-    ASSERT_TRUE(pos < result.end());
+    EXPECT_TRUE(pos < result.end());
     // ability state
     EXPECT_EQ(Trim(*pos), state);
 }

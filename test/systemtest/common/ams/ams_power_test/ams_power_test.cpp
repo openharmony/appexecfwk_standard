@@ -119,13 +119,11 @@ public:
     static sptr<IAbilityManager> abilityMs_;
     static STtools::Event event_;
     static std::shared_ptr<AppEventSubscriber> subscriber_;
-    static int *memTestValue_;
 };
 
 sptr<IAppMgr> AmsPowerTest::appMs_ = nullptr;
 sptr<IAbilityManager> AmsPowerTest::abilityMs_ = nullptr;
 STtools::Event AmsPowerTest::event_ = STtools::Event();
-int *AmsPowerTest::memTestValue_ = nullptr;
 std::shared_ptr<AmsPowerTest::AppEventSubscriber> AmsPowerTest::subscriber_ = nullptr;
 
 void AmsPowerTest::SetUpTestCase(void)
@@ -137,7 +135,8 @@ void AmsPowerTest::SetUpTestCase(void)
     appMs_ = STAbilityUtil::GetAppMgrService();
     abilityMs_ = STAbilityUtil::GetAbilityManagerService();
     if (appMs_) {
-        appMs_->SetAppFreezingTime(60);
+        int freeTime = 60;
+        appMs_->SetAppFreezingTime(freeTime);
         int time = 0;
         appMs_->GetAppFreezingTime(time);
         std::cout << "appMs_->GetAppFreezingTime();" << time << std::endl;
@@ -160,9 +159,6 @@ void AmsPowerTest::SetUp(void)
 void AmsPowerTest::TearDown(void)
 {
     GTEST_LOG_(INFO) << "void AmsPowerTest::TearDown(void)";
-    if (memTestValue_) {
-        delete[] memTestValue_;
-    }
     STAbilityUtil::RemoveStack(1, abilityMs_, WAIT_TIME, WAIT_LAUNCHER_OK);
     std::vector<std::string> vecBundleName;
     for (const auto &suffix : bundleNameSuffix) {
@@ -217,6 +213,10 @@ void AmsPowerTest::CheckAbilityStateByName(const std::string &abilityName, const
     EXPECT_NE(pos, result.end());
     MTDumpUtil::GetInstance()->GetAll("State", info, result);
     EXPECT_TRUE(pos < result.end());
+    if (pos == result.end()) {
+        HILOG_ERROR("pos == result.end()");
+        return;
+    }
     // ability state
     if (midState != "") {
         bool compareResult = ((*pos == state) || (*pos == midState));

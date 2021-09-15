@@ -36,11 +36,10 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class AbilityRunningRecord;
 class AppMgrServiceInner;
 
-class AppRunningRecord {
+class AppRunningRecord : public std::enable_shared_from_this<AppRunningRecord> {
 public:
     AppRunningRecord(
         const std::shared_ptr<ApplicationInfo> &info, const int32_t recordId, const std::string &processName);
@@ -273,6 +272,8 @@ public:
      */
     std::shared_ptr<AbilityRunningRecord> GetAbilityRunningRecordByToken(const sptr<IRemoteObject> &token) const;
 
+    std::shared_ptr<AbilityRunningRecord> GetAbilityByTerminateLists(const sptr<IRemoteObject> &token) const;
+
     /**
      * UpdateAbilityState, update the ability status.
      *
@@ -407,6 +408,7 @@ private:
     int64_t eventId_ = 0;
     // List of abilities running in the process
     std::map<const sptr<IRemoteObject>, std::shared_ptr<AbilityRunningRecord>> abilities_;
+    std::map<const sptr<IRemoteObject>, std::shared_ptr<AbilityRunningRecord>> terminateAbilitys_;
     std::list<const sptr<IRemoteObject>> foregroundingAbilityTokens_;
     std::weak_ptr<AppMgrServiceInner> appMgrServiceInner_;
     sptr<AppDeathRecipient> appDeathRecipient_;
@@ -415,7 +417,6 @@ private:
     std::shared_ptr<AMSEventHandler> eventHandler_;
     bool isTerminating = false;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_APPMGR_INCLUDE_APP_RUNNING_RECORD_H

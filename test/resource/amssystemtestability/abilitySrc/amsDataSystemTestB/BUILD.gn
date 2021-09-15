@@ -28,6 +28,7 @@ config("amsDataSystemTestBConfig") {
     "//foundation/appexecfwk/standard/common/log/include",
     "//foundation/distributedschedule/dmsfwk/services/dtbschedmgr/include",
     "${SUBST_TOOLS_DIR}/include",
+    "//third_party/jsoncpp/include",
   ]
   defines = [
     "APP_LOG_TAG = \"amsDataSystemTestB\"",
@@ -56,6 +57,7 @@ ohos_shared_library("amsDataSystemTestB") {
     "//foundation/appexecfwk/standard/kits:appkit_native",
     "//foundation/appexecfwk/standard/services/bundlemgr:libbms",
     "//foundation/distributedschedule/dmsfwk/interfaces/innerkits/uri:zuri",
+    "//third_party/jsoncpp:jsoncpp",
     "//utils/native/base:utilsbase",
   ]
   external_deps = [

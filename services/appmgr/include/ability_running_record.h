@@ -26,7 +26,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class AbilityRunningRecord {
 public:
     AbilityRunningRecord(const std::shared_ptr<AbilityInfo> &info, const sptr<IRemoteObject> &token);
@@ -154,13 +153,12 @@ private:
     int32_t visibility_ = 0;
     int32_t perceptibility_ = 0;
     int32_t connectionState_ = 0;
-    int64_t eventId_;
+    int64_t eventId_ = 0;
     AbilityState state_ = AbilityState::ABILITY_STATE_BEGIN;
     std::shared_ptr<AbilityInfo> info_;
     sptr<IRemoteObject> token_;
     sptr<IRemoteObject> preToken_;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_APPMGR_INCLUDE_ABILITY_RUNNING_RECORD_H

@@ -71,32 +71,35 @@ protected:
                     "enabled": true,
                     "readPermission": "readPermission",
                     "writePermission": "writePermission",
-                    "form": {
-                        "formEntity": ["homeScreen", "searchbox"],
-                        "minHeight": 0,
-                        "defaultHeight": 100,
-                        "minWidth": 0,
-                        "defaultWidth": 200
-                    },
+                    "configChanges": [
+                        "locale"
+                    ],
+                    "formEnabled": true,
+                    "formEntity": 1,
+                    "minFormHeight": 0,
+                    "defaultFormHeight": 100,
+                    "minFormWidth": 0,
+                    "defaultFormWidth": 200,
                     "metaData": {
                         "customizeData": [{
-                        ?    "name" : "string",
-                        ?    "value" : "string",
-                        ?    "extra" : "$string:customizeData_description"
+                            "name" : "string",
+                            "value" : "string",
+                            "extra" : "$string:customizeData_description"
                         }],
                         "parameters": [{
                             "name" : "string",
-                        ?    "type" : "Float",
-                        ?    "description" : "$string:parameters_description"
+                            "type" : "Float",
+                            "description" : "$string:parameters_description"
                         }],
                         "results": [{
-                        ?    "name" : "string",
-                        ?    "type" : "Float",
-                        ?    "description" : "$string:results_description"
+                            "name" : "string",
+                            "type" : "Float",
+                            "description" : "$string:results_description"
                         }]
                     },
                     "isLauncherAbility": true,
                     "isNativeAbility": false,
+                    "supportPipMode" : false,
                     "kind": "page",
                     "label": "Launcher",
                     "launchMode": 0,
@@ -111,7 +114,10 @@ protected:
                     "targetAbility": "",
                     "type": 1,
                     "uri": "",
-                    "visible": false
+                    "visible": false,
+                    "labelId": 1,
+                    "descriptionId": 1,
+                    "iconId": 1
                 }
             },
             "baseApplicationInfo": {
@@ -142,7 +148,7 @@ protected:
             },
             "baseBundleInfo": {
                 "abilityInfos": [],
-                "appId": "",
+                "appId": "BNtg4JBClbl92Rgc3jm/RfcAdrHXaM8F0QOiwVEhnV5ebE5jNIYnAx+weFRT3QTyUjRNdhmc2aAzWyi+5t5CoBM=",
                 "applicationInfo": {
                     "bundleName": "",
                     "cacheDir": "",
@@ -238,7 +244,6 @@ protected:
             "isKeepData": false,
             "isSupportBackup": false,
             "mainAbility": "com.ohos.launchercom.ohos.launchercom.ohos.launcher.MainAbility",
-            "provisionId": "BNtg4JBClbl92Rgc3jm/RfcAdrHXaM8F0QOiwVEhnV5ebE5jNIYnAx+weFRT3QTyUjRNdhmc2aAzWyi+5t5CoBM=",
             "skillInfos": {
                 "com.ohos.launchercom.ohos.launchercom.ohos.launcher.MainAbility": [
                     {
@@ -287,9 +292,28 @@ protected:
                                 "name": "originWidgetName",
                                 "value": "com.weather.testWidget"
                             }
-                        ]    
+                        ]
                     }
                 ]
+            },
+            "shortcutInfos": {
+                "com.example.myapplication1com.example.myapplication.h1id": {
+                    "bundleName": "com.example.myapplication1",
+                    "disableMessage": "",
+                    "hostAbility": "",
+                    "icon": "$string:mainability_description",
+                    "id": "id",
+                    "intents": [
+                        {
+                            "targetBundle": "com.example.myapplication1",
+                            "targetClass": "com.example.myapplication.MainAbility"
+                        }
+                    ],
+                    "isEnables": false,
+                    "isHomeShortcut": false,
+                    "isStatic": false,
+                    "label": "$string:mainability_description"
+                }
             },
             "uid": 10000,
             "userId_": 0
@@ -348,14 +372,14 @@ void BmsBundleDataStorageDatabaseTest::CheckInvalidPropDeserialize(
         throwError = true;
     }
 
-    ASSERT_TRUE(throwError);
+    EXPECT_TRUE(throwError);
     if (!throwError) {
         GTEST_LOG_(ERROR) << "not catch any type_error";
     }
 
     innerBundleInfoJson["baseBundleInfo"] = bundleInfoJson;
     InnerBundleInfo fromJsonInfo;
-    ASSERT_FALSE(fromJsonInfo.FromJson(innerBundleInfoJson));
+    EXPECT_FALSE(fromJsonInfo.FromJson(innerBundleInfoJson));
 }
 
 void BmsBundleDataStorageDatabaseTest::SetUpTestCase()
@@ -384,7 +408,7 @@ HWTEST_F(BmsBundleDataStorageDatabaseTest, BundleInfoJsonSerializer_0100, Functi
     // serialize fromJsonInfo to json
     nlohmann::json toJsonObject = fromJsonInfo;
 
-    ASSERT_TRUE(toJsonObject.dump() == sourceInfoJson.dump());
+    EXPECT_TRUE(toJsonObject.dump() == sourceInfoJson.dump());
 }
 
 /**
@@ -427,7 +451,7 @@ HWTEST_F(BmsBundleDataStorageDatabaseTest, AbilityInfoJsonSerializer_0100, Funct
     AbilityInfo fromJsonInfo = sourceInfoJson;
     // serialize fromJsonInfo to json
     nlohmann::json toJsonObject = fromJsonInfo;
-    ASSERT_TRUE(toJsonObject.dump() == sourceInfoJson.dump());
+    EXPECT_TRUE(toJsonObject.dump() == sourceInfoJson.dump());
 }
 
 /**
@@ -480,7 +504,7 @@ HWTEST_F(BmsBundleDataStorageDatabaseTest, ApplicationInfoJsonSerializer_0100, F
     // serialize fromJsonInfo to json
     nlohmann::json toJsonObject = fromJsonInfo;
 
-    ASSERT_TRUE(toJsonObject.dump() == sourceInfoJson.dump());
+    EXPECT_TRUE(toJsonObject.dump() == sourceInfoJson.dump());
 }
 
 /**
@@ -522,7 +546,7 @@ HWTEST_F(BmsBundleDataStorageDatabaseTest, ModuleInfoJsonSerializer_0100, Functi
     // serialize fromJsonInfo to json
     nlohmann::json toJsonObject = fromJsonInfo;
 
-    ASSERT_TRUE(toJsonObject.dump() == sourceInfoJson.dump());
+    EXPECT_TRUE(toJsonObject.dump() == sourceInfoJson.dump());
 }
 
 /**
@@ -534,5 +558,5 @@ HWTEST_F(BmsBundleDataStorageDatabaseTest, ModuleInfoJsonSerializer_0100, Functi
 HWTEST_F(BmsBundleDataStorageDatabaseTest, SaveData_0100, Function | SmallTest | Level0)
 {
     InnerBundleInfo innerBundleInfo;
-    ASSERT_EQ(innerBundleInfo.FromJson(innerBundleInfoJson_), OHOS::ERR_OK);
+    EXPECT_EQ(innerBundleInfo.FromJson(innerBundleInfoJson_), OHOS::ERR_OK);
 }

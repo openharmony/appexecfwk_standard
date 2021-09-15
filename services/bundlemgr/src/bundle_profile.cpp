@@ -149,6 +149,8 @@ struct Forms {
     std::string scheduledUpateTime = "0:0";
     int32_t updateDuration = 0;
     std::string deepLink;
+    std::string formConfigAbility;
+    bool formVisibleNotify = false;
     std::string jsComponentName;
     FormsMetaData metaData;
 };
@@ -174,7 +176,7 @@ struct CustomizeData {
 struct MetaData {
     std::vector<Parameters> parameters;
     std::vector<Results> results;
-	std::vector<CustomizeData> customizeData;
+    std::vector<CustomizeData> customizeData;
 };
 
 struct UriPermission {
@@ -201,6 +203,8 @@ struct Ability {
     std::vector<std::string> deviceCapability;
     MetaData metaData;
     std::string type;
+    std::string srcPath;
+    std::string srcLanguage = "js";
     bool formEnabled = false;
     Form form;
     std::string orientation = "unspecified";
@@ -256,6 +260,7 @@ struct Module {
     std::string package;
     std::string name;
     std::string description;
+    int32_t descriptionId = 0;
     std::string colorMode = "auto";
     std::vector<std::string> supportedModes;
     std::vector<std::string> reqCapabilities;
@@ -789,7 +794,7 @@ void from_json(const nlohmann::json &jsonObject, MetaData &metaData)
 {
     // these are not required fields.
     const auto &jsonObjectEnd = jsonObject.end();
-	GetValueIfFindKey<std::vector<CustomizeData>>(jsonObject,
+    GetValueIfFindKey<std::vector<CustomizeData>>(jsonObject,
         jsonObjectEnd,
         BUNDLE_MODULE_META_KEY_CUSTOMIZE_DATA,
         metaData.customizeData,
@@ -976,6 +981,22 @@ void from_json(const nlohmann::json &jsonObject, Forms &forms)
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        BUNDLE_MODULE_PROFILE_FORMS_FORM_CONFIG_ABILITY,
+        forms.formConfigAbility,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<bool>(jsonObject,
+        jsonObjectEnd,
+        BUNDLE_MODULE_PROFILE_FORMS_FORM_VISIBLE_NOTIFY,
+        forms.formVisibleNotify,
+        JsonType::BOOLEAN,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
     GetValueIfFindKey<FormsMetaData>(jsonObject,
         jsonObjectEnd,
         BUNDLE_MODULE_PROFILE_KEY_META_DATA,
@@ -1037,6 +1058,22 @@ void from_json(const nlohmann::json &jsonObject, Ability &ability)
         parseResult,
         ArrayType::NOT_ARRAY);
     // these are not required fields.
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        PROFILE_KEY_SRCPATH,
+        ability.srcPath,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        PROFILE_KEY_SRCLANGUAGE,
+        ability.srcLanguage,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
     GetValueIfFindKey<std::string>(jsonObject,
         jsonObjectEnd,
         PROFILE_KEY_DESCRIPTION,
@@ -1509,6 +1546,14 @@ void from_json(const nlohmann::json &jsonObject, Module &module)
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<int32_t>(jsonObject,
+        jsonObjectEnd,
+        PROFILE_KEY_DESCRIPTION_ID,
+        module.descriptionId,
+        JsonType::NUMBER,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
     GetValueIfFindKey<std::vector<std::string>>(jsonObject,
         jsonObjectEnd,
         BUNDLE_MODULE_PROFILE_KEY_SUPPORTED_MODES,
@@ -1686,13 +1731,29 @@ bool CheckModuleInfosIsValid(ProfileReader::ConfigJson &configJson)
     }
     return true;
 }
+uint32_t GetFormEntity(const std::vector<std::string> &formEntity)
+{
+    if (ProfileReader::formEntityMap.empty()) {
+        ProfileReader::formEntityMap.insert({ProfileReader::KEY_HOME_SCREEN, ProfileReader::VALUE_HOME_SCREEN});
+        ProfileReader::formEntityMap.insert({ProfileReader::KEY_SEARCHBOX, ProfileReader::VALUE_SEARCHBOX});
+    }
+
+    uint32_t formEntityInBinary = 0;
+    for (const auto &item : formEntity) {
+        if (ProfileReader::formEntityMap.find(item) != ProfileReader::formEntityMap.end()) {
+            formEntityInBinary |= ProfileReader::formEntityMap[item];
+        }
+    }
+    return formEntityInBinary;
+}
 
 bool ConvertFormInfo(FormInfo &forminfos, const ProfileReader::Forms &form)
 {
     forminfos.name = form.name;
     forminfos.description = form.description;
     forminfos.descriptionId = form.descriptionId;
-    forminfos.formConfigAbility = form.deepLink;
+    forminfos.formConfigAbility = form.formConfigAbility;
+    forminfos.formVisibleNotify = form.formVisibleNotify;
     forminfos.deepLink = form.deepLink;
     forminfos.defaultFlag = form.isDefault;
     auto type = std::find_if(std::begin(ProfileReader::formTypeMap),
@@ -1711,13 +1772,13 @@ bool ConvertFormInfo(FormInfo &forminfos, const ProfileReader::Forms &form)
     forminfos.scheduledUpateTime = form.scheduledUpateTime;
     forminfos.updateDuration = form.updateDuration;
     forminfos.jsComponentName = form.jsComponentName;
-    for (auto data : form.metaData.customizeData) {
+    for (auto &data : form.metaData.customizeData) {
         FormCustomizeData customizeData;
         customizeData.name = data.name;
         customizeData.value = data.value;
         forminfos.customizeDatas.emplace_back(customizeData);
     }
-    for (const auto dimensions : form.supportDimensions) {
+    for (const auto &dimensions : form.supportDimensions) {
         auto dimension = std::find_if(std::begin(ProfileReader::dimensionMap),
             std::end(ProfileReader::dimensionMap),
             [&dimensions](const auto &item) { return item.first == dimensions; });
@@ -1785,21 +1846,21 @@ bool TransformToInfo(const ProfileReader::ConfigJson &configJson, BundleInfo &bu
 
 void GetMetaData(MetaData &metaData, const ProfileReader::MetaData &profileMetaData)
 {
-    for (const auto& item : profileMetaData.parameters) {
+    for (const auto &item : profileMetaData.parameters) {
         Parameters parameter;
         parameter.description = item.description;
         parameter.name = item.name;
         parameter.type = item.type;
         metaData.parameters.emplace_back(parameter);
     }
-    for (const auto& item : profileMetaData.results) {
+    for (const auto &item : profileMetaData.results) {
         Results result;
         result.description = item.description;
         result.name = item.name;
         result.type = item.type;
         metaData.results.emplace_back(result);
     }
-    for (const auto& item : profileMetaData.customizeData) {
+    for (const auto &item : profileMetaData.customizeData) {
         CustomizeData customizeData;
         customizeData.name = item.name;
         customizeData.extra = item.extra;
@@ -1813,6 +1874,7 @@ bool TransformToInfo(const ProfileReader::ConfigJson &configJson, InnerModuleInf
     innerModuleInfo.modulePackage = configJson.module.package;
     innerModuleInfo.moduleName = configJson.module.distro.moduleName;
     innerModuleInfo.description = configJson.module.description;
+    innerModuleInfo.descriptionId = configJson.module.descriptionId;
     auto colorModeInfo = std::find_if(std::begin(ProfileReader::moduleColorMode),
         std::end(ProfileReader::moduleColorMode),
         [&configJson](const auto &item) { return item.first == configJson.module.colorMode; });
@@ -1831,11 +1893,19 @@ bool TransformToInfo(
     const ProfileReader::ConfigJson &configJson, const ProfileReader::Ability &ability, AbilityInfo &abilityInfo)
 {
     abilityInfo.name = ability.name;
+    if (ability.srcLanguage != "c++" && ability.name.substr(0, 1) == ".") {
+        abilityInfo.name = configJson.module.package + ability.name;
+    }
     abilityInfo.label = ability.label;
     abilityInfo.description = ability.description;
     abilityInfo.iconPath = ability.icon;
+    abilityInfo.labelId = ability.labelId;
+    abilityInfo.descriptionId = ability.descriptionId;
+    abilityInfo.iconId = ability.iconId;
     abilityInfo.visible = ability.visible;
     abilityInfo.kind = ability.type;
+    abilityInfo.srcPath = ability.srcPath;
+    abilityInfo.srcLanguage = ability.srcLanguage;
     auto iterType = std::find_if(std::begin(ProfileReader::ABILITY_TYPE_MAP),
         std::end(ProfileReader::ABILITY_TYPE_MAP),
         [&ability](const auto &item) { return item.first == ability.type; });
@@ -1866,6 +1936,10 @@ bool TransformToInfo(
     abilityInfo.theme = ability.theme;
     abilityInfo.deviceTypes = configJson.module.deviceType;
     abilityInfo.deviceCapabilities = ability.deviceCapability;
+    if (iterType->second == AbilityType::DATA &&
+        ability.uri.find(Constants::DATA_ABILITY_URI_PREFIX) == std::string::npos) {
+        return false;
+    }
     abilityInfo.uri = ability.uri;
     abilityInfo.package = configJson.module.package;
     abilityInfo.bundleName = configJson.app.bundleName;
@@ -1873,9 +1947,11 @@ bool TransformToInfo(
     abilityInfo.applicationName = configJson.app.bundleName;
     abilityInfo.targetAbility = ability.targetAbility;
     abilityInfo.enabled = true;
+    abilityInfo.supportPipMode = ability.supportPipMode;
     abilityInfo.readPermission = ability.readPermission;
     abilityInfo.writePermission = ability.writePermission;
-    abilityInfo.formEntity = ability.form.formEntity;
+    abilityInfo.configChanges = ability.configChanges;
+    abilityInfo.formEntity = GetFormEntity(ability.form.formEntity);
     abilityInfo.minFormHeight = ability.form.minHeight;
     abilityInfo.defaultFormHeight = ability.form.defaultHeight;
     abilityInfo.minFormWidth = ability.form.minWidth;
@@ -1935,6 +2011,9 @@ bool TransformToInfo(ProfileReader::ConfigJson &configJson, InnerBundleInfo &inn
             FormInfo formInfo;
             ConvertFormInfo(formInfo, form);
             formInfo.abilityName = ability.name;
+            if (ability.srcLanguage != "c++" && ability.name.substr(0, 1) == ".") {
+                formInfo.abilityName = configJson.module.package + ability.name;
+            }
             formInfo.bundleName = configJson.app.bundleName;
             formInfo.moduleName = configJson.module.distro.moduleName;
             formInfo.package = configJson.module.package;
@@ -1951,6 +2030,9 @@ bool TransformToInfo(ProfileReader::ConfigJson &configJson, InnerBundleInfo &inn
                     (find == false)) {
                     innerBundleInfo.SetMainAbility(keyName);
                     innerBundleInfo.SetMainAbilityName(ability.name);
+                    if (ability.srcLanguage != "c++" && ability.name.substr(0, 1) == ".") {
+                        innerBundleInfo.SetMainAbilityName(configJson.module.package + ability.name);
+                    }
                     // if there is main ability, it's label will be the application's label
                     applicationInfo.label = ability.label;
                     applicationInfo.labelId = ability.labelId;
@@ -1958,6 +2040,10 @@ bool TransformToInfo(ProfileReader::ConfigJson &configJson, InnerBundleInfo &inn
                     applicationInfo.iconId = ability.iconId;
                     applicationInfo.description = ability.description;
                     applicationInfo.descriptionId = ability.descriptionId;
+                    if (innerModuleInfo.label.empty()) {
+                        innerModuleInfo.label = ability.label;
+                        innerModuleInfo.labelId = ability.labelId;
+                    }
                     find = true;
                 }
                 if (std::find(skill.entities.begin(), skill.entities.end(), Constants::FLAG_HOME_INTENT_FROM_SYSTEM) !=

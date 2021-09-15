@@ -109,6 +109,13 @@ public:
      */
     virtual bool QueryAbilityInfo(const Want &want, AbilityInfo &abilityInfo) override;
     /**
+     * @brief Query the AbilityInfo of list by the given Want.
+     * @param want Indicates the information of the ability.
+     * @param abilityInfos Indicates the obtained AbilityInfos object.
+     * @return Returns true if the AbilityInfos is successfully obtained; returns false otherwise.
+     */
+    virtual bool QueryAbilityInfos(const Want &want, std::vector<AbilityInfo> &abilityInfos) override;
+    /**
      * @brief Query the AbilityInfo by ability.uri in config.json.
      * @param abilityUri Indicates the uri of the ability.
      * @param abilityInfo Indicates the obtained AbilityInfo object.
@@ -357,6 +364,23 @@ public:
      * @return Returns true if GetShortcutInfos successfully; returns false otherwise.
      */
     virtual bool GetShortcutInfos(const std::string &bundleName, std::vector<ShortcutInfo> &shortcutInfos) override;
+     /**
+     * @brief Get module usage record list in descending order of lastLaunchTime.
+     * @param maxNum the return size of the records, must be in range of 1 to 1000.
+     * @param moduleUsageRecords List of ModuleUsageRecord objects if obtained.
+     * @return Returns true if this function is successfully called; returns false otherwise.
+     */
+    virtual bool GetModuleUsageRecords(const int32_t number, std::vector<ModuleUsageRecord> &moduleUsageRecords) override;
+    /**
+     * @brief Notify a specified ability for activity.
+     * @param bundleName Indicates the bundle name of the ability to activity.
+     * @param abilityName Indicates the name of the ability to activity.
+     * @param launchTime Indicates the ability launchTime.
+     * @return Returns true if this function is successfully called; returns false otherwise.
+     */
+    virtual bool NotifyActivityLifeStatus(
+        const std::string &bundleName, const std::string &abilityName, const int64_t launchTime) override;
+
 private:
     const std::shared_ptr<BundleDataMgr> GetDataMgrFromService();
 };

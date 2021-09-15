@@ -26,6 +26,7 @@ config("amsSystemTestCConfig") {
     "${aafwk_path}/services/abilitymgr/include",
     "${appexecfwk_path}/common/log/include",
     "//foundation/distributedschedule/services/dtbschedmgr/include",
+    "//third_party/jsoncpp/include",
   ]
   defines = [
     "APP_LOG_TAG = \"amsSystemTestServiceD\"",
@@ -45,6 +46,7 @@ ohos_shared_library("amsSystemTestServiceD") {
     "${appexecfwk_path}/kits:appkit_native",
     "${appexecfwk_path}/services/bundlemgr:libbms",
     "//foundation/distributedschedule/dmsfwk/interfaces/innerkits/uri:zuri",
+    "//third_party/jsoncpp:jsoncpp",
     "//utils/native/base:utilsbase",
   ]
   external_deps = [

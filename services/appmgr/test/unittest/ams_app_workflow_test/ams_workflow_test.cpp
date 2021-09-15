@@ -90,6 +90,7 @@ void AmsWorkFlowTest::TearDown()
 AbilityInfo AmsWorkFlowTest::CreateAbilityInfo(const std::string &ability, const std::string &app) const
 {
     AbilityInfo abilityInfo;
+    abilityInfo.visible = true;
     abilityInfo.name = "test_ability" + ability;
     abilityInfo.applicationName = "test_app" + app;
     return abilityInfo;

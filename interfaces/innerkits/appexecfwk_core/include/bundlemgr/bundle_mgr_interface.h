@@ -19,6 +19,7 @@
 #include "ability_info.h"
 #include "form_info.h"
 #include "shortcut_info.h"
+#include "module_usage_record.h"
 #include "application_info.h"
 #include "bundle_info.h"
 #include "hap_module_info.h"
@@ -147,6 +148,13 @@ public:
      * @return Returns true if the AbilityInfo is successfully obtained; returns false otherwise.
      */
     virtual bool QueryAbilityInfo(const Want &want, AbilityInfo &abilityInfo) = 0;
+     /**
+     * @brief Query the AbilityInfo of list by the given Want.
+     * @param want Indicates the information of the ability.
+     * @param abilityInfos Indicates the obtained AbilityInfos object.
+     * @return Returns true if the AbilityInfos is successfully obtained; returns false otherwise.
+     */
+    virtual bool QueryAbilityInfos(const Want &want, std::vector<AbilityInfo> &abilityInfos) = 0;
     /**
      * @brief Query the AbilityInfo by ability.uri in config.json.
      * @param abilityUri Indicates the uri of the ability.
@@ -391,11 +399,27 @@ public:
      * @return Returns true if this function is successfully called; returns false otherwise.
      */
     virtual bool GetShortcutInfos(const std::string &bundleName, std::vector<ShortcutInfo> &shortcutInfos) = 0;
+     /**
+     * @brief Get module usage record list in descending order of lastLaunchTime.
+     * @param maxNum the return size of the records, must be in range of 1 to 1000.
+     * @param moduleUsageRecords List of ModuleUsageRecord objects if obtained.
+     * @return Returns true if this function is successfully called; returns false otherwise.
+     */
+    virtual bool GetModuleUsageRecords(const int32_t number, std::vector<ModuleUsageRecord> &moduleUsageRecords) = 0;
     /**
      * @brief Obtains the interface used to install and uninstall bundles.
      * @return Returns a pointer to IBundleInstaller class if exist; returns nullptr otherwise.
      */
     virtual sptr<IBundleInstaller> GetBundleInstaller() = 0;
+    /**
+     * @brief Notify a specified ability for activity.
+     * @param bundleName Indicates the bundle name of the ability to activity.
+     * @param abilityName Indicates the name of the ability to activity.
+     * @param launchTime Indicates the ability launchTime.
+     * @return Returns true if this function is successfully called; returns false otherwise.
+     */
+    virtual bool NotifyActivityLifeStatus(
+        const std::string &bundleName, const std::string &abilityName, const int64_t launchTime) = 0;
 
     enum class Message {
         GET_APPLICATION_INFO,
@@ -412,6 +436,7 @@ public:
         CHECK_IS_SYSTEM_APP_BY_UID,
         GET_BUNDLE_INFOS_BY_METADATA,
         QUERY_ABILITY_INFO,
+        QUERY_ABILITY_INFOS,
         QUERY_ABILITY_INFO_BY_URI,
         QUERY_KEEPALIVE_BUNDLE_INFOS,
         GET_ABILITY_LABEL,
@@ -445,8 +470,10 @@ public:
         GET_ALL_FORMS_INFO,
         GET_FORMS_INFO_BY_APP,
         GET_FORMS_INFO_BY_MODULE,
-		GET_SHORTCUT_INFO,
+		GET_MODULE_USAGE_RECORD,
+        GET_SHORTCUT_INFO,
         GET_BUNDLE_INSTALLER,
+        NOTIFY_ACTIVITY_LIFE_STATUS,
     };
 };
 

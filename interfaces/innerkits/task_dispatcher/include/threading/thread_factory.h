@@ -37,8 +37,6 @@ public:
 
 /**
  *  ThreadFactory is an interface for producing thread.
- *
- *
  */
 class ThreadFactory {
 public:

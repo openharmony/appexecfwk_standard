@@ -29,6 +29,7 @@ config("amsAbilityAppendTestBConfig") {
     "//foundation/distributedschedule/dmsfwk/services/dtbschedmgr/include",
     "${appexecfwk_path}/test/resource/amssystemtestability/abilitySrc/common",
     "${SUBST_TOOLS_DIR}/include",
+    "//third_party/jsoncpp/include",
   ]
   defines = [
     "APP_LOG_TAG = \"amsAbilityAppendTestB\"",
@@ -55,6 +56,7 @@ ohos_shared_library("amsAbilityAppendTestB") {
     "${kits_path}:appkit_native",
     "${services_path}/bundlemgr:libbms",
     "//foundation/distributedschedule/dmsfwk/interfaces/innerkits/uri:zuri",
+    "//third_party/jsoncpp:jsoncpp",
     "//utils/native/base:utilsbase",
   ]
   external_deps = [

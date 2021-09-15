@@ -16,6 +16,7 @@ import("//foundation/appexecfwk/standard/appexecfwk.gni")
 
 config("system_test_ability_util_config") {
   include_dirs = [
+    "//third_party/jsoncpp/include",
     "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/include",
     "//foundation/distributedschedule/safwk/services/safwk/include",
   ]
@@ -48,6 +49,7 @@ ohos_shared_library("system_test_ability_util_lib") {
     "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_core:appexecfwk_core",
     "//foundation/appexecfwk/standard/interfaces/innerkits/libeventhandler:libeventhandler",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
+    "//third_party/jsoncpp:jsoncpp",
     "//utils/native/base:utils",
   ]
 

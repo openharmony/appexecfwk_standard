@@ -89,8 +89,8 @@ private:
     std::string DumpBundleInfo() const;
     std::string DumpBundleInfos() const;
 
-    int32_t InstallOperation(const std::string bundlePath, const InstallFlag installFlag) const;
-    int32_t UninstallOperation(const std::string bundleName, const std::string moduleName) const;
+    int32_t InstallOperation(const std::string &bundlePath, InstallParam &installParam) const;
+    int32_t UninstallOperation(const std::string &bundleName, const std::string &moduleName) const;
 
     sptr<IBundleMgr> bundleMgrProxy_;
     sptr<IBundleInstaller> bundleInstallerProxy_;

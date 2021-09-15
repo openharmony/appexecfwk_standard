@@ -65,11 +65,12 @@ public:
         while (true) {
             std::unique_lock<std::mutex> lock(mutex_);
             while (taskQueue_.empty() && !stopFlag_) {
-                APP_LOGD("DelayQueue::taskQueue_ is empty");
+                APP_LOGI("DelayQueue::taskQueue_ is empty");
                 emptyWait_.wait(lock);
             }
 
             if (taskQueue_.empty() && stopFlag_) {
+                APP_LOGI("DelayQueue::taskQueue is empty and stopFlag is true");
                 return nullptr;
             }
 

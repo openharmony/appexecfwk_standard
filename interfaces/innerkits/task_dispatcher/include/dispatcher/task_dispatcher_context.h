@@ -34,8 +34,6 @@ namespace OHOS {
 namespace AppExecFwk {
 /**
  *  Dispatcher management for all kinds dispatchers and executor.
- *
- *
  */
 class TaskDispatcherContext {
 public:

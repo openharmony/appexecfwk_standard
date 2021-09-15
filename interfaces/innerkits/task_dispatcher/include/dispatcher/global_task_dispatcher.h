@@ -24,8 +24,6 @@ namespace OHOS {
 namespace AppExecFwk {
 /**
  *  Dispatcher for global thread model.
- *
- *
  */
 class GlobalTaskDispatcher : public ParallelTaskDispatcherBase {
 private:

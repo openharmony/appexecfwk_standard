@@ -73,17 +73,10 @@ void BaseTaskDispatcherTest::TearDown()
     context = nullptr;
     ptrSerialTaskDispatcher = nullptr;
 }
-std::string Now()
-{
-    time_t now = std::time(0);
-    char mbstr[10];
-    std::strftime(mbstr, sizeof(mbstr), "%T", std::localtime(&now));
-    return mbstr;
-}
 
 const std::string Prefix(const std::string &name)
 {
-    return std::string(">>> ") + Now() + std::string(" ") + name + std::string(": ");
+    return std::string(">>> prefix :") + std::string(" ") + name + std::string(": ");
 }
 
 /**
@@ -171,7 +164,7 @@ HWTEST_F(BaseTaskDispatcherTest, AsyncDispatchBarrier_0100, Function | MediumTes
     }));
 
     // async execute
-    ASSERT_LT(count.load(), 1);
+    EXPECT_LT(count.load(), 1);
 
     long sleep2 = 100;
     ptrSerialTaskDispatcher->AsyncDispatchBarrier(std::make_shared<Runnable>([&]() {
@@ -182,7 +175,7 @@ HWTEST_F(BaseTaskDispatcherTest, AsyncDispatchBarrier_0100, Function | MediumTes
         GTEST_LOG_(INFO) << Prefix(name) << "AsyncDispatchBarrier-" << index << " thread " << std::this_thread::get_id()
                          << ", sleep for " << sleep2 << " ms";
     }));
-    ASSERT_LT(count.load(), 2);
+    EXPECT_LT(count.load(), 2);
     long wait = sleep1 + sleep2 + 100;
     GTEST_LOG_(INFO) << Prefix(name) << "wait for " << (wait);
     auto time = std::chrono::milliseconds(wait);
@@ -202,7 +195,7 @@ HWTEST_F(BaseTaskDispatcherTest, CreateDispatchGroup_0100, Function | MediumTest
 {
     GTEST_LOG_(INFO) << "CreateDispatchGroup_0100 start";
     std::shared_ptr<Group> gptr = ptrSerialTaskDispatcher->CreateDispatchGroup();
-    ASSERT_TRUE(ptrSerialTaskDispatcher->GroupDispatchWait(gptr, 10));
+    EXPECT_TRUE(ptrSerialTaskDispatcher->GroupDispatchWait(gptr, 10));
     GTEST_LOG_(INFO) << "CreateDispatchGroup_0100 end";
 }
 
@@ -230,7 +223,7 @@ HWTEST_F(BaseTaskDispatcherTest, AsyncGroupDispatch_0100, Function | MediumTest 
     }));
 
     // async execute
-    ASSERT_LT(count.load(), 1);
+    EXPECT_LT(count.load(), 1);
 
     long sleep2 = 100;
     ptrSerialTaskDispatcher->AsyncGroupDispatch(gptr, std::make_shared<Runnable>([&count, &sleep2, &name]() {
@@ -241,7 +234,7 @@ HWTEST_F(BaseTaskDispatcherTest, AsyncGroupDispatch_0100, Function | MediumTest 
         GTEST_LOG_(INFO) << Prefix(name) << "AsyncGroupDispatch-" << index << " thread " << std::this_thread::get_id()
                          << ", sleep for " << sleep2 << " ms";
     }));
-    ASSERT_LT(count.load(), 2);
+    EXPECT_LT(count.load(), 2);
     long wait = sleep1 + sleep2 + 100;
     GTEST_LOG_(INFO) << Prefix(name) << "wait for " << (wait);
     auto time = std::chrono::milliseconds(wait);
@@ -285,7 +278,7 @@ HWTEST_F(BaseTaskDispatcherTest, ApplyDispatch_0100, Function | MediumTest | Lev
     });
     ptrSerialTaskDispatcher->ApplyDispatch(repeats2, 10);
     // async execute
-    ASSERT_LT(count.load(), 20);
+    EXPECT_LT(count.load(), 20);
     long wait = sleep1 * 10 + sleep2 * 10 + 100 + 100;
     GTEST_LOG_(INFO) << Prefix(name) << "wait for " << (wait);
     auto time = std::chrono::milliseconds(wait);
@@ -339,7 +332,7 @@ HWTEST_F(BaseTaskDispatcherTest, GroupDispatchWait_0100, Function | MediumTest |
 {
     GTEST_LOG_(INFO) << "GroupDispatchWait_0100 start";
     std::shared_ptr<Group> gptr = ptrSerialTaskDispatcher->CreateDispatchGroup();
-    ASSERT_TRUE(ptrSerialTaskDispatcher->GroupDispatchWait(gptr, 0));
+    EXPECT_TRUE(ptrSerialTaskDispatcher->GroupDispatchWait(gptr, 0));
     GTEST_LOG_(INFO) << "GroupDispatchWait_0100 end";
 }
 

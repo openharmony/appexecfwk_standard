@@ -74,13 +74,13 @@ void BmsInstallDaemonTest::SetUpTestCase()
 {
     if (access(ROOT_DIR.c_str(), F_OK) != 0) {
         bool result = OHOS::ForceCreateDirectory(ROOT_DIR);
-        ASSERT_TRUE(result) << "fail to create root dir";
+        EXPECT_TRUE(result) << "fail to create root dir";
     }
     if (chown(ROOT_DIR.c_str(), ROOT_UID, ROOT_UID) != 0) {
-        ASSERT_TRUE(false) << "fail to change root dir own ship";
+        EXPECT_TRUE(false) << "fail to change root dir own ship";
     }
     if (chmod(ROOT_DIR.c_str(), S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH) != 0) {
-        ASSERT_TRUE(false) << "fail to change root dir mode";
+        EXPECT_TRUE(false) << "fail to change root dir mode";
     }
 }
 
@@ -186,9 +186,9 @@ bool BmsInstallDaemonTest::CheckBundleDataDirExist() const
 HWTEST_F(BmsInstallDaemonTest, Startup_0100, Function | SmallTest | Level0)
 {
     std::shared_ptr<InstalldService> installdService = std::make_shared<InstalldService>();
-    ASSERT_NE(installdService, nullptr);
+    EXPECT_NE(installdService, nullptr);
     bool ready = installdService->IsServiceReady();
-    ASSERT_EQ(false, ready);
+    EXPECT_EQ(false, ready);
     installdService->Start();
     ready = installdService->IsServiceReady();
     EXPECT_EQ(true, ready);
@@ -203,10 +203,10 @@ HWTEST_F(BmsInstallDaemonTest, Startup_0100, Function | SmallTest | Level0)
 HWTEST_F(BmsInstallDaemonTest, Startup_0200, Function | SmallTest | Level0)
 {
     std::shared_ptr<InstalldService> installdService = std::make_shared<InstalldService>();
-    ASSERT_NE(installdService, nullptr);
+    EXPECT_NE(installdService, nullptr);
     installdService->Start();
     bool ready = installdService->IsServiceReady();
-    ASSERT_EQ(true, ready);
+    EXPECT_EQ(true, ready);
     installdService->Stop();
     ready = installdService->IsServiceReady();
     EXPECT_EQ(false, ready);
@@ -221,13 +221,13 @@ HWTEST_F(BmsInstallDaemonTest, Startup_0200, Function | SmallTest | Level0)
 HWTEST_F(BmsInstallDaemonTest, Startup_0300, Function | SmallTest | Level0)
 {
     std::shared_ptr<InstalldService> installdService = std::make_shared<InstalldService>();
-    ASSERT_NE(installdService, nullptr);
+    EXPECT_NE(installdService, nullptr);
     installdService->Start();
     bool ready = installdService->IsServiceReady();
-    ASSERT_EQ(true, ready);
+    EXPECT_EQ(true, ready);
     installdService->Stop();
     ready = installdService->IsServiceReady();
-    ASSERT_EQ(false, ready);
+    EXPECT_EQ(false, ready);
     installdService->Start();
     ready = installdService->IsServiceReady();
     EXPECT_EQ(true, ready);
@@ -242,10 +242,10 @@ HWTEST_F(BmsInstallDaemonTest, Startup_0300, Function | SmallTest | Level0)
 HWTEST_F(BmsInstallDaemonTest, Startup_0400, Function | SmallTest | Level0)
 {
     std::shared_ptr<InstalldService> installdService = std::make_shared<InstalldService>();
-    ASSERT_NE(installdService, nullptr);
+    EXPECT_NE(installdService, nullptr);
     installdService->Start();
     bool ready = installdService->IsServiceReady();
-    ASSERT_EQ(true, ready);
+    EXPECT_EQ(true, ready);
     installdService->Start();
     ready = installdService->IsServiceReady();
     EXPECT_EQ(true, ready);
@@ -272,9 +272,9 @@ HWTEST_F(BmsInstallDaemonTest, Communication_0100, Function | SmallTest | Level0
 HWTEST_F(BmsInstallDaemonTest, Communication_0200, Function | SmallTest | Level0)
 {
     std::shared_ptr<InstalldService> installdService = std::make_shared<InstalldService>();
-    ASSERT_NE(installdService, nullptr);
+    EXPECT_NE(installdService, nullptr);
     bool ready = installdService->IsServiceReady();
-    ASSERT_EQ(false, ready);
+    EXPECT_EQ(false, ready);
     InstalldClient::GetInstance()->ResetInstalldProxy();
     int result = InstalldClient::GetInstance()->CreateBundleDir(BUNDLE_CODE_DIR);
     EXPECT_EQ(result, ERR_APPEXECFWK_INSTALLD_GET_PROXY_ERROR);
@@ -301,9 +301,9 @@ HWTEST_F(BmsInstallDaemonTest, Communication_0300, Function | SmallTest | Level0
 HWTEST_F(BmsInstallDaemonTest, Communication_0400, Function | SmallTest | Level0)
 {
     std::shared_ptr<InstalldService> installdService = std::make_shared<InstalldService>();
-    ASSERT_NE(installdService, nullptr);
+    EXPECT_NE(installdService, nullptr);
     bool ready = installdService->IsServiceReady();
-    ASSERT_EQ(false, ready);
+    EXPECT_EQ(false, ready);
     InstalldClient::GetInstance()->ResetInstalldProxy();
     int result = InstalldClient::GetInstance()->CreateBundleDataDir(BUNDLE_DATA_DIR, UID, GID);
     EXPECT_EQ(result, ERR_APPEXECFWK_INSTALLD_GET_PROXY_ERROR);
@@ -318,11 +318,11 @@ HWTEST_F(BmsInstallDaemonTest, Communication_0400, Function | SmallTest | Level0
 HWTEST_F(BmsInstallDaemonTest, BundleDir_0100, Function | SmallTest | Level0)
 {
     int result = CreateBundleDir(BUNDLE_CODE_DIR);
-    ASSERT_EQ(result, 0);
+    EXPECT_EQ(result, 0);
     bool dirExist = CheckBundleDirExist();
-    ASSERT_TRUE(dirExist);
+    EXPECT_TRUE(dirExist);
     int result1 = RemoveBundleDir(BUNDLE_CODE_DIR);
-    ASSERT_EQ(result1, 0);
+    EXPECT_EQ(result1, 0);
     dirExist = CheckBundleDirExist();
     EXPECT_FALSE(dirExist);
 }
@@ -336,7 +336,7 @@ HWTEST_F(BmsInstallDaemonTest, BundleDir_0100, Function | SmallTest | Level0)
 HWTEST_F(BmsInstallDaemonTest, BundleDir_0200, Function | SmallTest | Level0)
 {
     int result = CreateBundleDir("");
-    ASSERT_EQ(result, ERR_APPEXECFWK_INSTALLD_PARAM_ERROR);
+    EXPECT_EQ(result, ERR_APPEXECFWK_INSTALLD_PARAM_ERROR);
     bool dirExist = CheckBundleDirExist();
     EXPECT_FALSE(dirExist);
 }
@@ -350,7 +350,7 @@ HWTEST_F(BmsInstallDaemonTest, BundleDir_0200, Function | SmallTest | Level0)
 HWTEST_F(BmsInstallDaemonTest, BundleDir_0300, Function | SmallTest | Level0)
 {
     int result1 = CreateBundleDir(SYSTEM_DIR);
-    ASSERT_EQ(result1, ERR_APPEXECFWK_INSTALLD_CREATE_DIR_FAILED);
+    EXPECT_EQ(result1, ERR_APPEXECFWK_INSTALLD_CREATE_DIR_FAILED);
     bool dirExist = CheckBundleDirExist();
     EXPECT_FALSE(dirExist);
 }
@@ -364,11 +364,11 @@ HWTEST_F(BmsInstallDaemonTest, BundleDir_0300, Function | SmallTest | Level0)
 HWTEST_F(BmsInstallDaemonTest, BundleDataDir_0100, Function | SmallTest | Level0)
 {
     int result = CreateBundleDataDir(BUNDLE_DATA_DIR, UID, GID);
-    ASSERT_EQ(result, 0);
+    EXPECT_EQ(result, 0);
     bool dirExist = CheckBundleDataDirExist();
-    ASSERT_TRUE(dirExist);
+    EXPECT_TRUE(dirExist);
     int result1 = RemoveBundleDataDir(BUNDLE_DATA_DIR);
-    ASSERT_EQ(result1, 0);
+    EXPECT_EQ(result1, 0);
     dirExist = CheckBundleDataDirExist();
     EXPECT_FALSE(dirExist);
 }
@@ -382,11 +382,11 @@ HWTEST_F(BmsInstallDaemonTest, BundleDataDir_0100, Function | SmallTest | Level0
 HWTEST_F(BmsInstallDaemonTest, BundleDataDir_0200, Function | SmallTest | Level0)
 {
     int result = CreateBundleDataDir(BUNDLE_DATA_DIR, UID, GID);
-    ASSERT_EQ(result, 0);
+    EXPECT_EQ(result, 0);
     bool dirExist = CheckBundleDataDirExist();
-    ASSERT_TRUE(dirExist);
+    EXPECT_TRUE(dirExist);
     int result1 = CleanBundleDataDir(BUNDLE_DATA_DIR);
-    ASSERT_EQ(result1, 0);
+    EXPECT_EQ(result1, 0);
     dirExist = CheckBundleDataDirExist();
     EXPECT_TRUE(dirExist);
 }
@@ -400,7 +400,7 @@ HWTEST_F(BmsInstallDaemonTest, BundleDataDir_0200, Function | SmallTest | Level0
 HWTEST_F(BmsInstallDaemonTest, BundleDataDir_0300, Function | SmallTest | Level0)
 {
     int result = CreateBundleDataDir("", UID, GID);
-    ASSERT_EQ(result, ERR_APPEXECFWK_INSTALLD_PARAM_ERROR);
+    EXPECT_EQ(result, ERR_APPEXECFWK_INSTALLD_PARAM_ERROR);
     bool dirExist = CheckBundleDataDirExist();
     EXPECT_FALSE(dirExist);
 }
@@ -414,7 +414,7 @@ HWTEST_F(BmsInstallDaemonTest, BundleDataDir_0300, Function | SmallTest | Level0
 HWTEST_F(BmsInstallDaemonTest, BundleDataDir_0400, Function | SmallTest | Level0)
 {
     int result = CreateBundleDataDir(BUNDLE_DATA_DIR, -1, GID);
-    ASSERT_EQ(result, ERR_APPEXECFWK_INSTALLD_PARAM_ERROR);
+    EXPECT_EQ(result, ERR_APPEXECFWK_INSTALLD_PARAM_ERROR);
     bool dirExist = CheckBundleDataDirExist();
     EXPECT_FALSE(dirExist);
 }
@@ -428,7 +428,7 @@ HWTEST_F(BmsInstallDaemonTest, BundleDataDir_0400, Function | SmallTest | Level0
 HWTEST_F(BmsInstallDaemonTest, BundleDataDir_0500, Function | SmallTest | Level0)
 {
     int result = CreateBundleDataDir(BUNDLE_DATA_DIR, UID, -1);
-    ASSERT_EQ(result, ERR_APPEXECFWK_INSTALLD_PARAM_ERROR);
+    EXPECT_EQ(result, ERR_APPEXECFWK_INSTALLD_PARAM_ERROR);
     bool dirExist = CheckBundleDataDirExist();
     EXPECT_FALSE(dirExist);
 }
@@ -442,7 +442,7 @@ HWTEST_F(BmsInstallDaemonTest, BundleDataDir_0500, Function | SmallTest | Level0
 HWTEST_F(BmsInstallDaemonTest, BundleDataDir_0600, Function | SmallTest | Level0)
 {
     int result = CreateBundleDataDir(SYSTEM_DIR, UID, GID);
-    ASSERT_EQ(result, ERR_APPEXECFWK_INSTALLD_CREATE_DIR_FAILED);
+    EXPECT_EQ(result, ERR_APPEXECFWK_INSTALLD_CREATE_DIR_FAILED);
     bool dirExist = CheckBundleDataDirExist();
     EXPECT_FALSE(dirExist);
 }
@@ -457,10 +457,10 @@ HWTEST_F(BmsInstallDaemonTest, ExtractBundleFile_0100, Function | SmallTest | Le
 {
     CreateBundleDir(BUNDLE_CODE_DIR);
     bool dirExist = CheckBundleDirExist();
-    ASSERT_TRUE(dirExist);
+    EXPECT_TRUE(dirExist);
     auto bundleFile = BUNDLE_FILE;
     int result = ExtractModuleFiles(bundleFile, TEMP_DIR);
-    ASSERT_EQ(result, 0);
+    EXPECT_EQ(result, 0);
     int result1 = RenameModuleDir(TEMP_DIR, MODULE_DIR);
     EXPECT_EQ(result1, 0);
 }
@@ -475,7 +475,7 @@ HWTEST_F(BmsInstallDaemonTest, ExtractBundleFile_0200, Function | SmallTest | Le
 {
     CreateBundleDir(BUNDLE_CODE_DIR);
     bool dirExist = CheckBundleDirExist();
-    ASSERT_TRUE(dirExist);
+    EXPECT_TRUE(dirExist);
     int result = ExtractModuleFiles("", TEMP_DIR);
     EXPECT_EQ(result, ERR_APPEXECFWK_INSTALLD_PARAM_ERROR);
 }
@@ -490,7 +490,7 @@ HWTEST_F(BmsInstallDaemonTest, ExtractBundleFile_0300, Function | SmallTest | Le
 {
     CreateBundleDir(BUNDLE_CODE_DIR);
     bool dirExist = CheckBundleDirExist();
-    ASSERT_TRUE(dirExist);
+    EXPECT_TRUE(dirExist);
     auto bundleFile = BUNDLE_FILE;
     int result = ExtractModuleFiles(bundleFile, "");
     EXPECT_EQ(result, ERR_APPEXECFWK_INSTALLD_PARAM_ERROR);
@@ -506,10 +506,10 @@ HWTEST_F(BmsInstallDaemonTest, ExtractBundleFile_0400, Function | SmallTest | Le
 {
     CreateBundleDir(BUNDLE_CODE_DIR);
     bool dirExist = CheckBundleDirExist();
-    ASSERT_TRUE(dirExist);
+    EXPECT_TRUE(dirExist);
     auto bundleFile = BUNDLE_FILE;
     int result = ExtractModuleFiles(bundleFile, TEMP_DIR);
-    ASSERT_EQ(result, 0);
+    EXPECT_EQ(result, 0);
     int result1 = RenameModuleDir("", MODULE_DIR);
     EXPECT_EQ(result1, ERR_APPEXECFWK_INSTALLD_PARAM_ERROR);
 }
@@ -524,10 +524,10 @@ HWTEST_F(BmsInstallDaemonTest, ExtractBundleFile_0500, Function | SmallTest | Le
 {
     CreateBundleDir(BUNDLE_CODE_DIR);
     bool dirExist = CheckBundleDirExist();
-    ASSERT_TRUE(dirExist);
+    EXPECT_TRUE(dirExist);
     auto bundleFile = BUNDLE_FILE;
     int result = ExtractModuleFiles(bundleFile, TEMP_DIR);
-    ASSERT_EQ(result, 0);
+    EXPECT_EQ(result, 0);
     int result1 = RenameModuleDir(TEMP_DIR, "");
     EXPECT_EQ(result1, ERR_APPEXECFWK_INSTALLD_PARAM_ERROR);
 }
