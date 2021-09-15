@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 
+#include <cinttypes>
 #include <chrono>
 #include <ctime>
 // #include <sys/file.h>
@@ -91,7 +92,7 @@ int64_t FormUtil::GenerateFormId(int64_t udidHash)
     size_t elapsedHash = std::hash<std::string>()(std::to_string(elapsedTime));
     APP_LOGI("%{public}s, GenerateFormId generate elapsed hash %{public}zu", __func__, elapsedHash);
     int64_t formId = udidHash | (int32_t)(elapsedHash & 0x000000007fffffffL);
-    //APP_LOGI("%{public}s, GenerateFormId generate formId %{public}lld", __func__, formId);
+    APP_LOGI("%{public}s, GenerateFormId generate formId %{public}" PRId64 "", __func__, formId);
     return formId;
 }
 
@@ -117,7 +118,7 @@ int64_t FormUtil::PaddingUDIDHash(int64_t formId, int64_t udidHash)
  */
 bool FormUtil::GenerateUdidHash(int64_t &udidHash)
 {
-    //APP_LOGI("%{public}s start, udidHash: %{public}lld", __func__, udidHash);
+    APP_LOGI("%{public}s start, udidHash: %{public}" PRId64 "", __func__, udidHash);
     if (udidHash != INVALID_UDID_HASH) {
         return true;
     }
@@ -135,7 +136,7 @@ bool FormUtil::GenerateUdidHash(int64_t &udidHash)
     if(udidHash < 0) {
         udidHash = 0L;
     }
-    //APP_LOGI("%{public}s, FormAdapter generate hash %{public}lld", __func__, udidHash);
+    APP_LOGI("%{public}s, FormAdapter generate hash %{public}" PRId64 "", __func__, udidHash);
     
     return true;
 }

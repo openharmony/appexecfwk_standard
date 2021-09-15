@@ -12,6 +12,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#include <cinttypes>
+
 #include "appexecfwk_errors.h"
 #include "app_log_wrapper.h"
 #include "form_cache_mgr.h"
@@ -914,14 +917,14 @@ const bool flag, std::vector<int64_t> &refreshForms)
         if (callerToken == itHostRecord->GetClientStub()) {
             for (const int64_t formId : formIds) {
                 if (formId <= 0) {
-                    //APP_LOGW("%{public}s, formId %{public}lld is less than 0", __func__, formId);
+                    APP_LOGW("%{public}s, formId %{public}" PRId64 " is less than 0", __func__, formId);
                     continue;
                 }
 
                 int64_t matchedFormId = FindMatchedFormId(formId);
                 if (!itHostRecord->Contains(matchedFormId)) {
-                    // APP_LOGW("%{public}s, form %{public}lld is not owned by this client, don't need to update flag", 
-                    // __func__, formId);
+                    APP_LOGW("%{public}s, form %{public}" PRId64 " is not owned by this client, don't need to update flag", 
+                    __func__, formId);
                     continue;
                 }
 
@@ -939,7 +942,7 @@ const bool flag, std::vector<int64_t> &refreshForms)
                         continue;
                     }
                 } else {
-                    //APP_LOGW("%{public}s, not exist such form:%{public}lld", __func__, matchedFormId);
+                    APP_LOGW("%{public}s, not exist such form:%{public}" PRId64 "", __func__, matchedFormId);
                     continue;
                 }
 

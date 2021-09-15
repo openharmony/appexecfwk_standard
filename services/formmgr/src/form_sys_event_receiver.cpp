@@ -12,6 +12,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#include <cinttypes>
+
 #include "appexecfwk_errors.h"
 #include "app_log_wrapper.h"
 #include "bundle_info.h"
@@ -244,7 +247,7 @@ void FormSysEventReceiver::ClearFormDBRecordData(const int uid, std::map<int64_t
         }
     }
 
-    //APP_LOGD("%{public}s, noHostFormDbMap size:%{public}d", __func__, noHostFormDbMap.size());
+    APP_LOGD("%{public}s, noHostFormDbMap size:%{public}zu", __func__, noHostFormDbMap.size());
     if (noHostFormDbMap.size() > 0) {
         BatchDeleteNoHostDBForms(uid, noHostFormDbMap, foundFormsMap);
     }
@@ -258,7 +261,7 @@ void FormSysEventReceiver::ClearTempFormRecordData(const int uid, std::map<int64
     std::map<int64_t, bool> foundFormsMap;
     std::map<FormIdKey, std::set<int64_t>> noHostTempFormsMap;
     FormDataMgr::GetInstance().GetNoHostTempForms(uid, noHostTempFormsMap, foundFormsMap);
-    //APP_LOGD("%{public}s, noHostTempFormsMap size:%{public}d", __func__, noHostTempFormsMap.size());
+    APP_LOGD("%{public}s, noHostTempFormsMap size:%{public}zu", __func__, noHostTempFormsMap.size());
     if (noHostTempFormsMap.size() > 0) {
         BatchDeleteNoHostTempForms(uid, noHostTempFormsMap, foundFormsMap);
     }
@@ -343,12 +346,12 @@ std::set<int64_t>> &noHostTempFormsMap, std::map<int64_t, bool> &foundFormsMap)
 }
 void FormSysEventReceiver::ReCreateForm(const int64_t formId)
 {
-    //APP_LOGI("%{public}s start, formId:%{public}lld", __func__, formId);
+    APP_LOGI("%{public}s start, formId:%{public}" PRId64 "", __func__, formId);
     FormRecord reCreateRecord;
     FormRecord record;
     bool isGetForm = FormDataMgr::GetInstance().GetFormRecord(formId, record);
     if (!isGetForm) {
-        //APP_LOGE("%{public}s error, not exist such form:%{public}lld", __func__, formId);
+        APP_LOGE("%{public}s error, not exist such form:%{public}" PRId64 "", __func__, formId);
         return;
     }
     FormCacheMgr::GetInstance().DeleteData(formId);
@@ -443,7 +446,7 @@ const FormTimerCfg &timerCfg)
         FormDataMgr::GetInstance().SetUpdateInfo(formId, true, timerCfg.updateDuration, timerCfg.updateAtHour, 
         timerCfg.updateAtMin);
         if (timerCfg.updateDuration > 0) {
-            //APP_LOGI("%{public}s, add interval timer:%{public}lld", __func__, timerCfg.updateDuration);
+            APP_LOGI("%{public}s, add interval timer:%{public}" PRId64 "", __func__, timerCfg.updateDuration);
             FormTimerMgr::GetInstance().AddFormTimer(formId, timerCfg.updateDuration);
         } else {
             APP_LOGI("%{public}s, add at timer:%{public}d, %{public}d", __func__, timerCfg.updateAtHour, 

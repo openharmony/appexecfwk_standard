@@ -71,7 +71,7 @@ public:
     // std::string GetProviderKey();
     
 private:
-    //int64_t formId_;
+    int64_t formId_;
     std::string deviceId_;
     std::string bundleName_;
     std::string abilityName_;
