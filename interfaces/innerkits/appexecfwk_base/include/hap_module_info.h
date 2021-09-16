@@ -38,6 +38,7 @@ struct HapModuleInfo : public Parcelable {
     std::string iconPath;
     std::string label;
     std::string backgroundImg;
+    std::string mainAbility;
     int supportedModes = 0;
 
     std::vector<std::string> reqCapabilities;
