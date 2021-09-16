@@ -23,6 +23,7 @@
 
 #include "ability_info.h"
 #include "application_info.h"
+#include "hap_module_info.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -66,6 +67,7 @@ struct BundleInfo : public Parcelable {
                                 // update time is the same as the installation time.
     ApplicationInfo applicationInfo;
     std::vector<AbilityInfo> abilityInfos;
+    std::vector<HapModuleInfo> hapModuleInfos;
     std::vector<std::string> reqPermissions;
     std::vector<std::string> defPermissions;    // the permissions required for accessing the application.
     std::vector<std::string> hapModuleNames;    // the "module.package" in each config.json
