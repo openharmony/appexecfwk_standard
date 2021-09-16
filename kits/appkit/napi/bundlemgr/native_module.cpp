@@ -83,8 +83,10 @@ static napi_value Init(napi_env env, napi_value exports)
      */
     napi_property_descriptor desc[] = {
         DECLARE_NAPI_FUNCTION("getAllApplicationInfo", GetApplicationInfos),
+        DECLARE_NAPI_FUNCTION("getApplicationInfos", GetApplicationInfos),
         DECLARE_NAPI_FUNCTION("getApplicationInfo", GetApplicationInfo),
         DECLARE_NAPI_FUNCTION("getAllBundleInfo", GetBundleInfos),
+        DECLARE_NAPI_FUNCTION("getBundleInfos", GetBundleInfos),
         DECLARE_NAPI_FUNCTION("getBundleInfo", GetBundleInfo),
         DECLARE_NAPI_FUNCTION("getBundleArchiveInfo", GetBundleArchiveInfo),
         DECLARE_NAPI_FUNCTION("getPermissionDef", GetPermissionDef),
