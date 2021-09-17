@@ -194,13 +194,42 @@ HWTEST_F(SerialTaskDispatcherModuleTest, SerialTaskDispatcher_AsyncDispatchTest_
             int index = count.fetch_add(1);
             GTEST_LOG_(INFO) << "SerialTaskDispatcher_AsyncDispatchTest_002 task" + std::to_string(index) + "end";
         }));
-        wait += 1;
+        wait += 10;
     }
     EXPECT_TRUE(count.load() < total);
     auto time = std::chrono::milliseconds(wait + 1000);
     std::this_thread::sleep_for(time);
     EXPECT_TRUE(count.load() == total);
     GTEST_LOG_(INFO) << name + " end";
+}
+
+void DelayDispatchTestWait (std::atomic<int> &count){
+    {
+        long wait = 100;
+        auto time = std::chrono::milliseconds(wait);
+        std::this_thread::sleep_for(time);
+    }
+    {
+        long wait = 1000;
+        GTEST_LOG_(INFO) << ("wait for task, wait= " + std::to_string(wait) + " ms");
+        auto time = std::chrono::milliseconds(wait);
+        std::this_thread::sleep_for(time);
+        EXPECT_TRUE(count.load() == 2);
+    }
+    {
+        long wait = 500;
+        GTEST_LOG_(INFO) << ("wait for task, wait= " + std::to_string(wait) + " ms");
+        auto time = std::chrono::milliseconds(wait);
+        std::this_thread::sleep_for(time);
+        EXPECT_TRUE(count.load() == 2);
+    }
+    {
+        long wait = 1000;
+        GTEST_LOG_(INFO) << ("wait for task, wait= " + std::to_string(wait) + " ms");
+        auto time = std::chrono::milliseconds(wait);
+        std::this_thread::sleep_for(time);
+        EXPECT_TRUE(count.load() == 3);
+    }
 }
 
 /**
@@ -243,33 +272,7 @@ HWTEST_F(SerialTaskDispatcherModuleTest, SerialTaskDispatcher_DelayDispatchTest_
     }),
         sleep3);
     EXPECT_TRUE(count.load() == 0);
-
-    {
-        long wait = 100;
-        auto time = std::chrono::milliseconds(wait);
-        std::this_thread::sleep_for(time);
-    }
-    {
-        long wait = 1000;
-        GTEST_LOG_(INFO) << ("wait for task, wait= " + std::to_string(wait) + " ms");
-        auto time = std::chrono::milliseconds(wait);
-        std::this_thread::sleep_for(time);
-        EXPECT_TRUE(count.load() == 2);
-    }
-    {
-        long wait = 500;
-        GTEST_LOG_(INFO) << ("wait for task, wait= " + std::to_string(wait) + " ms");
-        auto time = std::chrono::milliseconds(wait);
-        std::this_thread::sleep_for(time);
-        EXPECT_TRUE(count.load() == 2);
-    }
-    {
-        long wait = 1000;
-        GTEST_LOG_(INFO) << ("wait for task, wait= " + std::to_string(wait) + " ms");
-        auto time = std::chrono::milliseconds(wait);
-        std::this_thread::sleep_for(time);
-        EXPECT_TRUE(count.load() == 3);
-    }
+    DelayDispatchTestWait(count);
     GTEST_LOG_(INFO) << name + " end";
 }
 

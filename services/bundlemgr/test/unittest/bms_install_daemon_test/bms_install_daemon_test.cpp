@@ -27,7 +27,6 @@ using namespace OHOS::AppExecFwk;
 using namespace OHOS;
 
 namespace {
-
 const std::string BUNDLE_FILE = "/data/test/resource/bms/install_daemon/right.hap";
 const std::string SYSTEM_DIR = "/sys/com.example.l3jsdemo";
 const std::string TEMP_DIR = "/data/accounts/account_0/applications/com.example.l3jsdemo/temp";
@@ -38,7 +37,6 @@ const std::string ROOT_DIR = "/data/accounts";
 const int32_t ROOT_UID = 0;
 const int32_t UID = 1000;
 const int32_t GID = 1000;
-
 }  // namespace
 
 class BmsInstallDaemonTest : public testing::Test {

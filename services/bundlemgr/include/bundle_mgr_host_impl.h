@@ -364,13 +364,14 @@ public:
      * @return Returns true if GetShortcutInfos successfully; returns false otherwise.
      */
     virtual bool GetShortcutInfos(const std::string &bundleName, std::vector<ShortcutInfo> &shortcutInfos) override;
-     /**
+    /**
      * @brief Get module usage record list in descending order of lastLaunchTime.
      * @param maxNum the return size of the records, must be in range of 1 to 1000.
      * @param moduleUsageRecords List of ModuleUsageRecord objects if obtained.
      * @return Returns true if this function is successfully called; returns false otherwise.
      */
-    virtual bool GetModuleUsageRecords(const int32_t number, std::vector<ModuleUsageRecord> &moduleUsageRecords) override;
+    virtual bool GetModuleUsageRecords(
+        const int32_t number, std::vector<ModuleUsageRecord> &moduleUsageRecords) override;
     /**
      * @brief Notify a specified ability for activity.
      * @param bundleName Indicates the bundle name of the ability to activity.

@@ -80,7 +80,7 @@ private:
 
     static bool IsRunning(int ctl);
 
-    static int GetStateFromControl(int ctl);
+    static int GetStateFromControl(unsigned int ctl);
 
     static int CombineToControl(unsigned int state, unsigned int count);
 

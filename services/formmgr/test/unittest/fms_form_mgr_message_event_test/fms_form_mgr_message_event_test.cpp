@@ -106,8 +106,8 @@ void FmsFormMgrMessageEventTest::SetUp()
     permDef.descriptionId = 1;
     permList.emplace_back(permDef);
     Permission::PermissionKit::AddDefPermissions(permList);
-    Permission::PermissionKit::AddUserGrantedReqPermissions(FORM_PROVIDER_BUNDLE_NAME, {PERMISSION_NAME_REQUIRE_FORM}, 
-    0);
+    Permission::PermissionKit::AddUserGrantedReqPermissions(FORM_PROVIDER_BUNDLE_NAME, 
+        {PERMISSION_NAME_REQUIRE_FORM}, 0);
     Permission::PermissionKit::GrantUserGrantedPermission(FORM_PROVIDER_BUNDLE_NAME, PERMISSION_NAME_REQUIRE_FORM, 0);
 }
 
@@ -284,7 +284,7 @@ HWTEST_F(FmsFormMgrMessageEventTest, MessageEvent_006, TestSize.Level0)
     want.SetParam(Constants::PARAM_FORM_NAME_KEY, PARAM_FORM_NAME);
     want.SetElementName(DEVICE_ID, FORM_PROVIDER_BUNDLE_NAME, FORM_PROVIDER_ABILITY_NAME);
     want.SetParam(Constants::PARAM_MESSAGE_KEY, FORM_MESSAGE_EVENT_VALUE_1);
-    EXPECT_EQ(ERR_APPEXECFWK_FORM_INFO_NOT_EXIST, FormMgr::GetInstance().MessageEvent(formId, want, token_));
+    EXPECT_EQ(ERR_APPEXECFWK_FORM_NOT_EXIST_ID, FormMgr::GetInstance().MessageEvent(formId, want, token_));
     GTEST_LOG_(INFO) << "fms_form_mgr_message_event_test_006 end";
 }
 /*
@@ -306,7 +306,7 @@ HWTEST_F(FmsFormMgrMessageEventTest, MessageEvent_007, TestSize.Level0)
     want.SetParam(Constants::PARAM_FORM_NAME_KEY, PARAM_FORM_NAME);
     want.SetElementName(DEVICE_ID, FORM_PROVIDER_BUNDLE_NAME, FORM_PROVIDER_ABILITY_NAME);
     want.SetParam(Constants::PARAM_MESSAGE_KEY, FORM_MESSAGE_EVENT_VALUE_1);
-    EXPECT_EQ(ERR_APPEXECFWK_FORM_HOST_INFO_NOT_EXIST, FormMgr::GetInstance().MessageEvent(formId, want, 
+    EXPECT_EQ(ERR_APPEXECFWK_FORM_COMMON_CODE, FormMgr::GetInstance().MessageEvent(formId, want, 
     new (std::nothrow) MockFormHostClient()));
     GTEST_LOG_(INFO) << "fms_form_mgr_message_event_test_007 end";
 }
@@ -350,7 +350,7 @@ HWTEST_F(FmsFormMgrMessageEventTest, MessageEvent_008, TestSize.Level0)
     want.SetParam(Constants::PARAM_FORM_NAME_KEY, PARAM_FORM_NAME);
     want.SetElementName(DEVICE_ID, FORM_PROVIDER_BUNDLE_NAME, FORM_PROVIDER_ABILITY_NAME);
     want.SetParam(Constants::PARAM_MESSAGE_KEY, FORM_MESSAGE_EVENT_VALUE_1);
-    EXPECT_EQ(ERR_OPERATION_FORM_NOT_SELF, FormMgr::GetInstance().MessageEvent(formId2, want, token_));
+    EXPECT_EQ(ERR_APPEXECFWK_FORM_OPERATION_NOT_SELF, FormMgr::GetInstance().MessageEvent(formId2, want, token_));
     GTEST_LOG_(INFO) << "fms_form_mgr_message_event_test_008 end";
 }
 }

@@ -139,7 +139,6 @@ public:
     void KitTerminateAbility();
     KitTestAbilityManagerSecond *kitTestAbility_;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // _KIT_TEST_ABILITY_MANAGER_SECOND_H_

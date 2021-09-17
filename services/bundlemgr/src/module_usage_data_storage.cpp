@@ -31,7 +31,6 @@ using namespace OHOS::DistributedKv;
 namespace OHOS {
 namespace AppExecFwk {
 namespace {
-
 const int32_t MAX_TIMES = 6000;             // tem min
 const int32_t SLEEP_INTERVAL = 100 * 1000;  // 100ms
 const std::string POUND_KEY_SEPARATOR = "#";
@@ -321,8 +320,8 @@ Status ModuleUsageRecordStorage::GetKvStore()
 {
     Status status;
     Options options = {
-        .createIfMissing = true, .encrypt = false, .autoSync = true, .kvStoreType = KvStoreType::SINGLE_VERSION};
-
+        .createIfMissing = true, .encrypt = false, .autoSync = true, .kvStoreType = KvStoreType::SINGLE_VERSION
+    };
     options.schema = SCHEMA_DEFINE;
     dataManager_.GetSingleKvStore(
         options, appId_, storeId_, [this, &status](Status paramStatus, std::unique_ptr<SingleKvStore> singleKvStore) {

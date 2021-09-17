@@ -162,7 +162,6 @@ void MainAbility::GetAbilityPackageCase1(int code)
 // get want from empty Want
 void MainAbility::GetWantCase1(int code)
 {
-    Want want;
     auto getWant = Ability::GetWant();
     bool result = getWant == nullptr;
     TestUtils::PublishEvent(g_EVENT_RESP_FIRST, code, std::to_string(result));
@@ -172,7 +171,6 @@ void MainAbility::GetWantCase1(int code)
 void MainAbility::GetWantCase2(int code)
 {
     std::string action = "action";
-    Want want;
     Want setWant;
     setWant.SetAction(action);
     Ability::SetWant(setWant);
@@ -184,7 +182,6 @@ void MainAbility::GetWantCase2(int code)
 void MainAbility::GetWantCase3(int code)
 {
     std::string action = "action";
-    Want want;
     bool result = true;
     std::string tmpAction;
     for (int i = 0; i < pressureTimes; i++) {
@@ -217,7 +214,6 @@ void MainAbility::DumpCase1(int code)
 void MainAbility::SetWantCase1(int code)
 {
     std::string empty;
-    Want want;
     Want setWant;
     Ability::SetWant(setWant);
     bool result = Ability::GetWant()->GetAction() == empty;
@@ -228,7 +224,6 @@ void MainAbility::SetWantCase1(int code)
 void MainAbility::SetWantCase2(int code)
 {
     std::string action = "action";
-    Want want;
     std::string tmpAction;
     for (int i = 0; i < pressureTimes; i++) {
         Want setWant;

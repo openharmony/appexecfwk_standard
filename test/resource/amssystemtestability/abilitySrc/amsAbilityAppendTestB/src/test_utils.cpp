@@ -47,7 +47,7 @@ Want TestUtils::MakeWant(
 
 std::vector<std::string> TestUtils::split(const std::string &in, const std::string &delim)
 {
-    std::regex reg{delim};
+    std::regex reg { delim};
     return std::vector<std::string>{
         std::sregex_token_iterator(in.begin(), in.end(), reg, -1), std::sregex_token_iterator()};
 }

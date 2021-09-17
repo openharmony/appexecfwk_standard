@@ -32,7 +32,7 @@ namespace AppExecFwk {
  * @return Returns ERR_OK on success, others on failure.
  */
 void FormHostCallback::OnAcquired(const int64_t formId, const FormRecord& record, 
-const sptr<IRemoteObject> &callerToken)
+    const sptr<IRemoteObject> &callerToken)
 {
     APP_LOGD("FormHostCallback OnAcquired, formId:%{public}" PRId64 "", formId);
     FormTaskMgr::GetInstance().PostAcquireTaskToHost(formId, record, callerToken);

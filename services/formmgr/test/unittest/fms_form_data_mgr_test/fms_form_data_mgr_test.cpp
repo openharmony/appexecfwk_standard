@@ -95,7 +95,7 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_AllotFormRecord_001, TestSize.Le
     FormItemInfo form_item_info;
     InitFormItemInfo(formId, form_item_info);
 
-    FormRecord recordResult = formDataMgr_.AllotFormRecord(form_item_info, callingUid );
+    FormRecord recordResult = formDataMgr_.AllotFormRecord(form_item_info, callingUid);
     EXPECT_EQ(formId, recordResult.formId);
 
     GTEST_LOG_(INFO) << "FmsFormDataMgrTest_AllotFormRecord_001 end";
@@ -123,7 +123,7 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_AllotFormRecord_002, TestSize.Le
     FormRecord record = formDataMgr_.CreateFormRecord(form_item_info, callingUid);
     formDataMgr_.formRecords_.emplace(formId, record);
 
-    FormRecord recordResult = formDataMgr_.AllotFormRecord(form_item_info, callingUid );
+    FormRecord recordResult = formDataMgr_.AllotFormRecord(form_item_info, callingUid);
     EXPECT_EQ(formId, recordResult.formId);
 
     GTEST_LOG_(INFO) << "FmsFormDataMgrTest_AllotFormRecord_002 end";
@@ -156,7 +156,7 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_AllotFormRecord_003, TestSize.Le
     FormRecord record = formDataMgr_.CreateFormRecord(otherFormItemInfo, callingUid);
     formDataMgr_.formRecords_.emplace(otherformId, record);
 
-    FormRecord recordResult = formDataMgr_.AllotFormRecord(form_item_info, callingUid );
+    FormRecord recordResult = formDataMgr_.AllotFormRecord(form_item_info, callingUid);
     EXPECT_EQ(formId, recordResult.formId);
 
     GTEST_LOG_(INFO) << "FmsFormDataMgrTest_AllotFormRecord_003 end";
@@ -182,7 +182,7 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_AllotFormRecord_004, TestSize.Le
     InitFormItemInfo(formId, form_item_info);
     form_item_info.SetUpdateDuration(Constants::MAX_CONFIG_DURATION);
 
-    FormRecord recordResult = formDataMgr_.AllotFormRecord(form_item_info, callingUid );
+    FormRecord recordResult = formDataMgr_.AllotFormRecord(form_item_info, callingUid);
     EXPECT_EQ(formId, recordResult.formId);
 
     GTEST_LOG_(INFO) << "FmsFormDataMgrTest_AllotFormRecord_004 end";
@@ -208,7 +208,7 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_AllotFormRecord_005, TestSize.Le
     InitFormItemInfo(formId, form_item_info);
     form_item_info.SetUpdateDuration(Constants::MAX_CONFIG_DURATION-2);
 
-    FormRecord recordResult = formDataMgr_.AllotFormRecord(form_item_info, callingUid );
+    FormRecord recordResult = formDataMgr_.AllotFormRecord(form_item_info, callingUid);
     EXPECT_EQ(formId, recordResult.formId);
 
     GTEST_LOG_(INFO) << "FmsFormDataMgrTest_AllotFormRecord_005 end";
@@ -235,7 +235,7 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_AllotFormRecord_006, TestSize.Le
     form_item_info.SetUpdateDuration(0);
     form_item_info.scheduledUpdateTime_.clear();
 
-    FormRecord recordResult = formDataMgr_.AllotFormRecord(form_item_info, callingUid );
+    FormRecord recordResult = formDataMgr_.AllotFormRecord(form_item_info, callingUid);
     EXPECT_EQ(formId, recordResult.formId);
 
     GTEST_LOG_(INFO) << "FmsFormDataMgrTest_AllotFormRecord_006 end";
@@ -262,7 +262,7 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_AllotFormRecord_007, TestSize.Le
     form_item_info.SetUpdateDuration(0);
     form_item_info.SetScheduledUpdateTime("10:30:10");
 
-    FormRecord recordResult = formDataMgr_.AllotFormRecord(form_item_info, callingUid );
+    FormRecord recordResult = formDataMgr_.AllotFormRecord(form_item_info, callingUid);
     EXPECT_EQ(formId, recordResult.formId);
 
     GTEST_LOG_(INFO) << "FmsFormDataMgrTest_AllotFormRecord_007 end";
@@ -291,7 +291,7 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_AllotFormRecord_008, TestSize.Le
     form_item_info.SetScheduledUpdateTime("10:70");
     form_item_info.hapSourceDirs_.clear();
 
-    FormRecord recordResult = formDataMgr_.AllotFormRecord(form_item_info, callingUid );
+    FormRecord recordResult = formDataMgr_.AllotFormRecord(form_item_info, callingUid);
     EXPECT_EQ(formId, recordResult.formId);
 
     GTEST_LOG_(INFO) << "FmsFormDataMgrTest_AllotFormRecord_008 end";
@@ -317,7 +317,7 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_AllotFormRecord_009, TestSize.Le
     InitFormItemInfo(formId, form_item_info);
     form_item_info.SetUpdateDuration(0);
 
-    FormRecord recordResult = formDataMgr_.AllotFormRecord(form_item_info, callingUid );
+    FormRecord recordResult = formDataMgr_.AllotFormRecord(form_item_info, callingUid);
     EXPECT_EQ(formId, recordResult.formId);
 
     GTEST_LOG_(INFO) << "FmsFormDataMgrTest_AllotFormRecord_009 end";
@@ -368,7 +368,7 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_AllotFormHostRecord_002, TestSiz
     int64_t formId = 2;
     int callingUid = 0;
 
-    //create FormItemInfo
+    // create FormItemInfo
     FormItemInfo formItemInfo;
     InitFormItemInfo(formId, formItemInfo);
 
@@ -462,7 +462,7 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_CheckTempEnoughForm_002, TestSiz
     for (int index = 0; index < Constants::MAX_TEMP_FORMS; index++) {
         formDataMgr_.tempForms_.emplace_back(index);
     }
-    EXPECT_EQ(ERR_MAX_SYSTEM_TEMP_FORMS, formDataMgr_.CheckTempEnoughForm());
+    EXPECT_EQ(ERR_APPEXECFWK_FORM_MAX_SYSTEM_TEMP_FORMS, formDataMgr_.CheckTempEnoughForm());
 
     GTEST_LOG_(INFO) << "FmsFormDataMgrTest_CheckTempEnoughForm_002 end";
 }
@@ -489,7 +489,7 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_CheckEnoughForm_001, TestSize.Le
         formDataMgr_.formRecords_.emplace(formId_index, record);
     }
 
-    EXPECT_EQ(ERR_MAX_SYSTEM_FORMS, formDataMgr_.CheckEnoughForm(callingUid));
+    EXPECT_EQ(ERR_APPEXECFWK_FORM_MAX_SYSTEM_FORMS, formDataMgr_.CheckEnoughForm(callingUid));
 
     GTEST_LOG_(INFO) << "FmsFormDataMgrTest_CheckEnoughForm_001 end";
 }
@@ -534,7 +534,7 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_CheckEnoughForm_003, TestSize.Le
         formDataMgr_.formRecords_.emplace(formId_index, record);
     }
 
-    EXPECT_EQ(ERR_MAX_RECORDS_PER_APP, formDataMgr_.CheckEnoughForm(callingUid));
+    EXPECT_EQ(ERR_APPEXECFWK_FORM_MAX_FORMS_PER_CLIENT, formDataMgr_.CheckEnoughForm(callingUid));
 
     GTEST_LOG_(INFO) << "FmsFormDataMgrTest_CheckEnoughForm_003 end";
 }
@@ -1349,6 +1349,12 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_GetUpdatedForm_001, TestSize.Lev
     GTEST_LOG_(INFO) << "FmsFormDataMgrTest_GetUpdatedForm_001 start";
         
     FormRecord record;
+    record.bundleName = "";
+    record.moduleName = "";
+    record.abilityName = "";
+    record.formName = "";
+    record.specification = 0;
+    
     std::vector<FormInfo> targetForms;
     FormInfo updatedForm;
 
@@ -1768,7 +1774,7 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_SetVersionUpgrade_001, TestSize.
 
 /**
  * @tc.number: FmsFormDataMgrTest_SetVersionUpgrade_002
- * @tc.name: SetFormCacheInitedTrue
+ * @tc.name: SetFormCacheInited
  * @tc.desc: Verify that the return value is correct. 
  * @tc.details: 
  *       formRecords_ is found.
@@ -1856,7 +1862,7 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_UpdateHostFormFlag_001, TestSize
 
     std::vector<int64_t> refreshForms;
 
-    EXPECT_EQ(ERR_FORM_INVALID_PARAM, formDataMgr_.UpdateHostFormFlag(formIds, token_, flag, refreshForms));
+    EXPECT_EQ(ERR_APPEXECFWK_FORM_INVALID_PARAM, formDataMgr_.UpdateHostFormFlag(formIds, token_, flag, refreshForms));
 
     GTEST_LOG_(INFO) << "FmsFormDataMgrTest_UpdateHostFormFlag_001 end";
 }

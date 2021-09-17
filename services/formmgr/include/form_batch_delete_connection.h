@@ -32,7 +32,8 @@ using WantParams = OHOS::AAFwk::WantParams;
  */
 class FormBatchDeleteConnection : public FormAbilityConnection {
 public:
-    FormBatchDeleteConnection(const std::set<int64_t> &formIds);
+    FormBatchDeleteConnection(const std::set<int64_t> &formIds, const std::string &bundleName,
+        const std::string &abilityName);
     virtual ~FormBatchDeleteConnection() = default;
 
     /**

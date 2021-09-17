@@ -16,10 +16,8 @@
 #include <cinttypes>
 #include <chrono>
 #include <ctime>
-// #include <sys/file.h>
 #include <regex>
 #include <sys/time.h>
-// #include <uuid/uuid.h>
 
 #include "app_log_wrapper.h"
 #include "form_constants.h"
@@ -42,8 +40,8 @@ constexpr int64_t INVALID_UDID_HASH = 0;
  * @param isTemporaryForm temporary form or not.
  * @param want The want of the form.
  */
-void FormUtil::CreateFormWant(const std::string &formName, const int32_t specificationId,  const bool isTemporaryForm, 
-Want &want)
+void FormUtil::CreateFormWant(const std::string &formName, 
+    const int32_t specificationId,  const bool isTemporaryForm, Want &want)
 {
     want.SetParam(Constants::PARAM_FORM_NAME_KEY, formName);
     want.SetParam(Constants::PARAM_FORM_DIMENSION_KEY, specificationId);
@@ -68,11 +66,7 @@ void FormUtil::CreateDefaultFormWant(Want &want, const std::string &uri, const i
  */
 std::string FormUtil::GenerateUdid()
 {
-    // uuid_t uuid;
     char buf[256] = {0};
-    // uuid_generate(uuid);
-
-    // uuid_unparse(uuid, buf);
     return buf;
 }
 
@@ -91,7 +85,8 @@ int64_t FormUtil::GenerateFormId(int64_t udidHash)
     int64_t elapsedTime { ((t.tv_sec) * SEC_TO_NANOSEC + t.tv_nsec) };
     size_t elapsedHash = std::hash<std::string>()(std::to_string(elapsedTime));
     APP_LOGI("%{public}s, GenerateFormId generate elapsed hash %{public}zu", __func__, elapsedHash);
-    int64_t formId = udidHash | (int32_t)(elapsedHash & 0x000000007fffffffL);
+    uint64_t unsignedudidHash = static_cast<int64_t>(udidHash);
+    uint64_t formId = unsignedudidHash | (int32_t)(elapsedHash & 0x000000007fffffffL);
     APP_LOGI("%{public}s, GenerateFormId generate formId %{public}" PRId64 "", __func__, formId);
     return formId;
 }
@@ -102,7 +97,7 @@ int64_t FormUtil::GenerateFormId(int64_t udidHash)
  * @param udidHash udid hash
  * @return new form id.
  */
-int64_t FormUtil::PaddingUDIDHash(int64_t formId, int64_t udidHash)
+int64_t FormUtil::PaddingUDIDHash(uint64_t formId, uint64_t udidHash)
 {
     // Compatible with int form id.
     if ((formId & 0xffffffff00000000L) == 0) {
@@ -122,18 +117,11 @@ bool FormUtil::GenerateUdidHash(int64_t &udidHash)
     if (udidHash != INVALID_UDID_HASH) {
         return true;
     }
-    
-    // std::string deviceId = GenerateUdid();
-    // if (deviceId.empty()) {
-    //     APP_LOGE("%{public}s fail, get udid failed.", __func__);
-    //     return false;
-    // }
-    
-    // u_int64_t hashId = std::hash<std::string>()(deviceId);
+ 
     u_int64_t hashId = 0L;
     const int32_t thirtyTwo = 32;
     udidHash = (hashId & 0x0000000000ffffffL) << thirtyTwo;
-    if(udidHash < 0) {
+    if (udidHash < 0) {
         udidHash = 0L;
     }
     APP_LOGI("%{public}s, FormAdapter generate hash %{public}" PRId64 "", __func__, udidHash);

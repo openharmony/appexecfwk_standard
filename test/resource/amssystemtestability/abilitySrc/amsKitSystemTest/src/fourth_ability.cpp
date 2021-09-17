@@ -34,7 +34,6 @@ namespace AppExecFwk {
 using namespace OHOS::EventFwk;
 using namespace OHOS::AAFwk;
 namespace {
-
 const std::string normalString = "kitapp.system.test";
 // Special string
 const std::string specialString = "@#￥#//\\%&*_=+[]^:!~();,.'?3243adsafdf_中文";

@@ -71,6 +71,7 @@ struct InnerModuleInfo {
     int32_t labelId = 0;
     std::string description;
     int32_t descriptionId = 0;
+    std::string mainAbility;
     bool isEntry;
     bool installationFree;
     MetaData metaData;

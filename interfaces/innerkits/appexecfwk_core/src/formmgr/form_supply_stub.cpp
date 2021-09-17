@@ -49,7 +49,7 @@ int FormSupplyStub::OnRemoteRequest(uint32_t code, MessageParcel &data, MessageP
     std::u16string remoteDescriptor = data.ReadInterfaceToken();
     if (descriptor != remoteDescriptor) {
         APP_LOGE("%{public}s failed, local descriptor is not equal to remote", __func__);
-        return ERR_INVALID_STATE;
+        return ERR_APPEXECFWK_FORM_INVALID_PARAM;
     }
 
     auto itFunc = memberFuncMap_.find(code);
@@ -73,8 +73,8 @@ int FormSupplyStub::HandleOnAcquire(MessageParcel &data, MessageParcel &reply)
     std::unique_ptr<Want> want(data.ReadParcelable<Want>());
     if (!want) {
         APP_LOGE("%{public}s, failed to ReadParcelable<Want>", __func__);
-        reply.WriteInt32(ERR_INVALID_VALUE);
-        return ERR_INVALID_VALUE;
+        reply.WriteInt32(ERR_APPEXECFWK_PARCEL_ERROR);
+        return ERR_APPEXECFWK_PARCEL_ERROR;
     }
 
     int errCode = ERR_OK;
@@ -87,7 +87,7 @@ int FormSupplyStub::HandleOnAcquire(MessageParcel &data, MessageParcel &reply)
         std::unique_ptr<FormProviderInfo> formInfo(data.ReadParcelable<FormProviderInfo>());
         if (formInfo == nullptr) {
             APP_LOGE("%{public}s, failed to ReadParcelable<FormProviderInfo>", __func__);      
-            errCode = ERR_INVALID_VALUE;
+            errCode = ERR_APPEXECFWK_PARCEL_ERROR;
             break;
         }
         int32_t result = OnAcquire(*formInfo, *want);
@@ -112,8 +112,8 @@ int FormSupplyStub::HandleOnEventHandle(MessageParcel &data, MessageParcel &repl
     std::unique_ptr<Want> want(data.ReadParcelable<Want>());
     if (!want) {
         APP_LOGE("%{public}s, failed to ReadParcelable<Want>", __func__);
-        reply.WriteInt32(ERR_INVALID_VALUE);
-        return ERR_INVALID_VALUE;
+        reply.WriteInt32(ERR_APPEXECFWK_PARCEL_ERROR);
+        return ERR_APPEXECFWK_PARCEL_ERROR;
     }
 
     int32_t result = OnEventHandle(*want);

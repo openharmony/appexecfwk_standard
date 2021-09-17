@@ -48,7 +48,7 @@ void RemoveFileDescriptorListenerLocked(std::map<int32_t, std::shared_ptr<FileDe
     if (!ioWaiter) {
         return;
     }
-    for (auto it = listeners.begin(); it != listeners.end(); ) {
+    for (auto it = listeners.begin(); it != listeners.end();) {
         if (filter(it->second)) {
             ioWaiter->RemoveFileDescriptor(it->first);
             it = listeners.erase(it);

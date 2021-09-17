@@ -45,7 +45,6 @@ const std::string OPERATION_SUCCESS = "Success";
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class BundleStatusCallbackImpl : public BundleStatusCallbackHost {
 public:
     BundleStatusCallbackImpl();
@@ -1427,6 +1426,5 @@ HWTEST_F(BmsSearchSystemTest, BMS_Search_3900, Function | MediumTest | Level1)
     EXPECT_NE(name2Exist, 0) << "the test file2 exists.";
     std::cout << "END BMS_SEARCH_3900" << std::endl;
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

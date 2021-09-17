@@ -16,6 +16,7 @@
 #ifndef FOUNDATION_APPEXECFWK_OHOS_FORM_PROVIDER_DATA_H
 #define FOUNDATION_APPEXECFWK_OHOS_FORM_PROVIDER_DATA_H
 
+#include <cstddef>
 #include <map>
 #include <string>
 

@@ -124,7 +124,7 @@ HWTEST_F(FmsFormCacheMgrTest, FmsFormCacheMgrTest_004, TestSize.Level0)
     std::string dataResult2 = "{'a':'2','b':'2'}";
     formCacheMgr_.AddData(PARAM_FORM_ID_FIRST, dataResult1);
     EXPECT_TRUE(formCacheMgr_.AddData(PARAM_FORM_ID_SECOND, dataResult2));
-    EXPECT_EQ(formCacheMgr_.cacheData_[PARAM_FORM_ID_SECOND],dataResult2);
+    EXPECT_EQ(formCacheMgr_.cacheData_[PARAM_FORM_ID_SECOND], dataResult2);
 
     GTEST_LOG_(INFO) << "fms_form_cache_mgr_test_004 end";
 }

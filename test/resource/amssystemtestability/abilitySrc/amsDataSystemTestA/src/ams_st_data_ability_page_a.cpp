@@ -26,6 +26,7 @@
 
 namespace OHOS {
 namespace AppExecFwk {
+namespace {
 static const int ABILITY_PAGE_A_CODE = 110;
 static const std::string OPERATOR_INSERT = "Insert";
 static const std::string OPERATOR_DELETE = "Delete";
@@ -33,6 +34,8 @@ static const std::string OPERATOR_UPDATE = "Update";
 static const std::string OPERATOR_QUERY = "Query";
 static const std::string OPERATOR_GETFILETYPES = "GetFileTypes";
 static const std::string OPERATOR_OPENFILE = "OpenFile";
+static const int charCnt = 5;
+}  // namespace
 
 bool AmsStDataAbilityPageA::PublishEvent(const std::string &eventName, const int &code, const std::string &data)
 {
@@ -176,9 +179,9 @@ static void GetResult(std::shared_ptr<STtools::StOperator> child, std::shared_pt
             return;
         }
         result = std::to_string(fd);
-        char str[5];
+        char str[charCnt];
         if (!feof(file))
-            fgets(str, 5, file);
+            fgets(str, charCnt, file);
         result = str;
         fclose(file);
     }

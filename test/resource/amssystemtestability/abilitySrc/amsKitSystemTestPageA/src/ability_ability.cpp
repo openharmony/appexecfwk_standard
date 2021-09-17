@@ -709,6 +709,28 @@ void AbilityAbility::TestAbilityGetLifecycle()
     }
 }
 
+void AbilityAbility::caseIndexOne() {
+    stub_ = new (std::nothrow) AbilityConnectCallback();
+    connCallback_ = new (std::nothrow) AbilityConnectionProxy(stub_);
+    bool ret = ConnectAbility(want_, connCallback_);
+    TestUtils::PublishEvent(APP_ABILITY_RESP_EVENT_NAME, ret, "TestAbilityDisconnectAbility");
+    sleep(1);
+    DisconnectAbility(connCallback_);
+}
+
+void AbilityAbility::caseIndexTwo() {
+    MAP_STR_STR params;
+    Want want =
+        TestUtils::MakeWant("", "LifecycleCallbacksAbility", "com.ohos.amsst.service.AppKit", params);
+    stub_ = new (std::nothrow) AbilityConnectCallback();
+    connCallback_ = new (std::nothrow) AbilityConnectionProxy(stub_);
+    bool ret = ConnectAbility(want, connCallback_);
+    TestUtils::PublishEvent(APP_ABILITY_RESP_EVENT_NAME, ret, "TestAbilityDisconnectAbility");
+    sleep(1);
+    DisconnectAbility(connCallback_);
+
+}
+
 void AbilityAbility::TestAbilityDisconnectAbility()
 {
     APP_LOGI("AbilityAbility::OnStart sequenceNumber_ = %{public}s  %{public}d",
@@ -717,23 +739,10 @@ void AbilityAbility::TestAbilityDisconnectAbility()
 
     switch ((CaseIndex)std::stoi(AbilityAbility::sequenceNumber_)) {
         case CaseIndex::ONE: {
-            stub_ = new (std::nothrow) AbilityConnectCallback();
-            connCallback_ = new (std::nothrow) AbilityConnectionProxy(stub_);
-            bool ret = ConnectAbility(want_, connCallback_);
-            TestUtils::PublishEvent(APP_ABILITY_RESP_EVENT_NAME, ret, "TestAbilityDisconnectAbility");
-            sleep(1);
-            DisconnectAbility(connCallback_);
+            caseIndexOne();
         } break;
         case CaseIndex::TWO: {
-            MAP_STR_STR params;
-            Want want =
-                TestUtils::MakeWant("", "LifecycleCallbacksAbility", "com.ohos.amsst.service.AppKit", params);
-            stub_ = new (std::nothrow) AbilityConnectCallback();
-            connCallback_ = new (std::nothrow) AbilityConnectionProxy(stub_);
-            bool ret = ConnectAbility(want, connCallback_);
-            TestUtils::PublishEvent(APP_ABILITY_RESP_EVENT_NAME, ret, "TestAbilityDisconnectAbility");
-            sleep(1);
-            DisconnectAbility(connCallback_);
+            caseIndexTwo();
         } break;
         case CaseIndex::THREE: {
             MAP_STR_STR params;

@@ -287,7 +287,7 @@ void FormStServiceAbilityA1::AppEventSubscriber::OnReceiveEvent(const CommonEven
     }
 }
 
-FormProviderInfo FormStServiceAbilityA1::OnCreateForm(const Want &want)
+FormProviderInfo FormStServiceAbilityA1::OnCreate(const Want &want)
 {
     APP_LOGI("%{public}s start", __func__);
     FormProviderInfo formProviderInfo;
