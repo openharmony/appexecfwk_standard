@@ -146,7 +146,7 @@ void FormDumpMgr::DumpFormInfo(const FormRecord &formRecordInfo, std::string &fo
     if (formRecordInfo.formUserUids.size() > 0) {
         formInfo += "    formUserUids [";
         for (auto &uId : formRecordInfo.formUserUids) {
-            formInfo +="    Uid [" + std::to_string(uId) + "]";
+            formInfo += "    Uid [" + std::to_string(uId) + "]";
         }
         formInfo += "]";
     }

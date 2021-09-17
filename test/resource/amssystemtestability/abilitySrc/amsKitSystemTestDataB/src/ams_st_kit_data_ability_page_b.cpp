@@ -26,6 +26,7 @@
 
 namespace OHOS {
 namespace AppExecFwk {
+namespace {
 static const int ABILITY_PAGE_CODE = 140;
 static const std::string OPERATOR_INSERT = "Insert";
 static const std::string OPERATOR_DELETE = "Delete";
@@ -34,6 +35,8 @@ static const std::string OPERATOR_QUERY = "Query";
 static const std::string OPERATOR_GETFILETYPES = "GetFileTypes";
 static const std::string OPERATOR_OPENFILE = "OpenFile";
 static const std::string OPERATOR_GETTYPE = "GetType";
+constexpr int charCnt = 5;
+}
 
 bool AmsStKitDataAbilityPageB::PublishEvent(const std::string &eventName, const int &code, const std::string &data)
 {
@@ -70,7 +73,7 @@ AmsStKitDataAbilityPageB::~AmsStKitDataAbilityPageB()
 
 void AmsStKitDataAbilityPageB::SubscribeEvent(const Want &want)
 {
-    Want mwant{want};
+    Want mwant {want};
     std::vector<std::string> eventList = {
         "event_data_test_action",
     };
@@ -133,7 +136,7 @@ void AmsStKitDataAbilityPageB::OnBackground()
 void AmsStKitDataAbilityPageB::GetWantInfo(const Want &want)
 {
     Want mWant(want);
-    STtools::StOperator allOperator{};
+    STtools::StOperator allOperator {};
     std::vector<std::string> vectorOperator = mWant.GetStringArrayParam("operator");
     STtools::DeserializationStOperatorFromVector(allOperator, vectorOperator);
 
@@ -175,9 +178,10 @@ static void GetResult(std::shared_ptr<STtools::StOperator> child, std::shared_pt
             return;
         }
         result = std::to_string(fd);
-        char str[5];
-        if (!feof(file))
-            fgets(str, 5, file);
+        char str[charCnt];
+        if (!feof(file)) {
+            fgets(str, charCnt, file);
+        }
         result = str;
         fclose(file);
     } else if (child->GetOperatorName() == OPERATOR_GETTYPE) {
@@ -189,7 +193,7 @@ static void GetResult(std::shared_ptr<STtools::StOperator> child, std::shared_pt
 void KitTestPageBEventSubscriber::TestPost(const std::string funName)
 {
     APP_LOGI("KitTestPageBEventSubscriber::TestPost %{public}s", funName.c_str());
-    STtools::StOperator allOperator{};
+    STtools::StOperator allOperator {};
     STtools::DeserializationStOperatorFromVector(allOperator, vectorOperator_);
     std::shared_ptr<DataAbilityHelper> helper = DataAbilityHelper::Creator(mainAbility_->GetContext());
     for (auto child : allOperator.GetChildOperator()) {

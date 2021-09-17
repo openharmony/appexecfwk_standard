@@ -26,6 +26,8 @@ using namespace OHOS::EventFwk;
 
 namespace {
 const int cycleCount = 1000;
+const int paramCnt = 3;
+const int caseIndx = 2;
 }  // namespace
 
 #define APPREGISTERABILITYLIFECYCALLBACK(onAbilityFunctionName, getAbilityCountFunction, expected, code) \
@@ -466,9 +468,9 @@ void KitTestSixEventSubscriber::OnReceiveEvent(const CommonEventData &data)
         auto target = data.GetData();
         vector_str splitResult = TestUtils::split(target, "_");
         auto keyMap = splitResult.at(0);
-        if (mapTestFunc_.find(keyMap) != mapTestFunc_.end() && splitResult.size() >= 3) {
+        if (mapTestFunc_.find(keyMap) != mapTestFunc_.end() && splitResult.size() >= paramCnt) {
             auto apiIndex = atoi(splitResult.at(1).c_str());
-            auto caseIndex = atoi(splitResult.at(2).c_str());
+            auto caseIndex = atoi(splitResult.at(caseIndx).c_str());
             mapTestFunc_[keyMap](apiIndex, caseIndex, data.GetCode());
         } else {
             if (keyMap == "TerminateAbility") {

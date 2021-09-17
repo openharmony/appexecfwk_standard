@@ -36,6 +36,7 @@ ohos_shared_library("fmskit_native") {
   configs = [ ":fmskit_config" ]
   public_configs = [ ":fmskit_public_config" ]
   sources = [
+    "$SUBSYSTEM_DIR/interfaces/innerkits/fmskit/native/src/form_errors.cpp",
     "$SUBSYSTEM_DIR/interfaces/innerkits/fmskit/native/src/form_host_client.cpp",
     "$SUBSYSTEM_DIR/interfaces/innerkits/fmskit/native/src/form_mgr.cpp",
   ]

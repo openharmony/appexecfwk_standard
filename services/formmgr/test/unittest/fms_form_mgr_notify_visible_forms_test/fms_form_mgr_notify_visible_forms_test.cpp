@@ -88,10 +88,12 @@ void FmsFormMgrNotifyVisibleFormsTest::SetUp(void)
     permDef.descriptionId = 1;
     permList.emplace_back(permDef);
     OHOS::Security::Permission::PermissionKit::AddDefPermissions(permList);
+    std::vector<std::string> permnameList;
+    permnameList.emplace_back(PERMISSION_NAME_REQUIRE_FORM);
     OHOS::Security::Permission::PermissionKit::AddUserGrantedReqPermissions(FORM_PROVIDER_BUNDLE_NAME,
-    {PERMISSION_NAME_REQUIRE_FORM}, 0);
+        permnameList, 0);
     OHOS::Security::Permission::PermissionKit::GrantUserGrantedPermission(FORM_PROVIDER_BUNDLE_NAME,
-    PERMISSION_NAME_REQUIRE_FORM, 0);
+        PERMISSION_NAME_REQUIRE_FORM, 0);
 }
 
 void FmsFormMgrNotifyVisibleFormsTest::TearDown(void)

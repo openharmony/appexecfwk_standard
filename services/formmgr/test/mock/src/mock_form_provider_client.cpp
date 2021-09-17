@@ -30,7 +30,7 @@ namespace AppExecFwk {
  * @return none.
  */
 int MockFormProviderClient::AcquireProviderFormInfo(const int64_t formId, const Want &want, 
-const sptr<IRemoteObject> &callerToken)
+    const sptr<IRemoteObject> &callerToken)
 {
     // avoid the user modify the number in onCreate
 
@@ -40,15 +40,7 @@ const sptr<IRemoteObject> &callerToken)
     if (formSupply == nullptr) {
         APP_LOGE("failed to get formSupplyProxy");
     }
-    // Want newWant;
-    // newWant.SetElement(want.GetElement());
-    // long formId = want.GetLongParam(Constants::PARAM_FORM_IDENTITY_KEY, 0);
-    // APP_LOGD("AcquireProviderFormInfo, formId:%{public}ld", formId);
 
-    // newWant.SetParam(Constants::PARAM_FORM_IDENTITY_KEY, formId);
-
-    // int type = want.GetIntParam(Constants::ACQUIRE_TYPE, 0);
-    // newWant.SetParam(Constants::ACQUIRE_TYPE, type);
     FormProviderInfo formProviderInfo;
     formSupply->OnAcquire(formProviderInfo, want);
     return ERR_OK;
@@ -62,7 +54,7 @@ const sptr<IRemoteObject> &callerToken)
  * @return none.
  */
 int MockFormProviderClient::NotifyFormDelete(const int64_t formId, const Want &want, 
-const sptr<IRemoteObject> &callerToken)
+    const sptr<IRemoteObject> &callerToken)
 {
     APP_LOGD("Notify form delete");
     return ERR_OK;
@@ -76,7 +68,7 @@ const sptr<IRemoteObject> &callerToken)
  * @return none.
  */
 int MockFormProviderClient::NotifyFormsDelete(const std::vector<int64_t> &formIds, const Want &want, 
-const sptr<IRemoteObject> &callerToken)
+    const sptr<IRemoteObject> &callerToken)
 {
     APP_LOGD("Notify forms delete");
     return ERR_OK;
@@ -89,7 +81,7 @@ const sptr<IRemoteObject> &callerToken)
  * @param callerToken Caller ability token.
  */
 int MockFormProviderClient::NotifyFormUpdate(const int64_t formId, const Want &want, 
-const sptr<IRemoteObject> &callerToken)
+    const sptr<IRemoteObject> &callerToken)
 {
     APP_LOGD("Notify form update");
     return ERR_OK;
@@ -119,7 +111,7 @@ int MockFormProviderClient::EventNotify(const std::vector<int64_t> &formIds, con
  * @return none.
  */
 int MockFormProviderClient::NotifyFormCastTempForm(const int64_t formId, const Want &want, 
-const sptr<IRemoteObject> &callerToken)
+    const sptr<IRemoteObject> &callerToken)
 {
     APP_LOGD("Notify cast temp form");
     return ERR_OK;
@@ -133,7 +125,7 @@ const sptr<IRemoteObject> &callerToken)
  * @return Returns ERR_OK on success, others on failure.
  */
 int MockFormProviderClient::FireFormEvent(const int64_t formId, const std::string &message, const Want &want, 
-const sptr<IRemoteObject> &callerToken)
+    const sptr<IRemoteObject> &callerToken)
 {
     APP_LOGD("Fire form event");
     return ERR_OK;

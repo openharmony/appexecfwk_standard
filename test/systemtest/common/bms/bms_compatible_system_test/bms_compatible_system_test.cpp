@@ -49,7 +49,6 @@ const int MIN_WIDTH = 100;
 const int DEFAULT_HEIGHT = 100;
 const int DEFAULT_WIDTH = 200;
 const int FORM_NUM = 3;
-
 }  // namespace
 using OHOS::AAFwk::Want;
 using namespace testing::ext;
@@ -152,7 +151,7 @@ void BmsCompatibleSystemTest::Uninstall(const std::string &bundleName, std::stri
     } else {
         InstallParam installParam;
         installParam.userId = Constants::DEFAULT_USERID;
-        sptr<StatusReceiverImpl> statusReceiver = (new (std::nothrow) StatusReceiverImpl());
+        sptr<StatusReceiverImpl> statusReceiver = new (std::nothrow) StatusReceiverImpl();
         EXPECT_NE(statusReceiver, nullptr);
         installerProxy->Uninstall(bundleName, installParam, statusReceiver);
         uninstallMessage = statusReceiver->GetResultMsg();
@@ -509,7 +508,7 @@ HWTEST_F(BmsCompatibleSystemTest, BMS_ConvertToCompatible_0800, Function | Mediu
     int userId = Constants::DEFAULT_USERID;
 
     Install(bundleFilePath, InstallFlag::NORMAL, message);
-    ASSERT_EQ(message, "Success") << "install fail!";
+    EXPECT_EQ(message, "Success") << "install fail!";
 
     sptr<IBundleMgr> bundleMgrProxy = GetBundleMgrProxy();
     if (bundleMgrProxy == nullptr) {
@@ -527,7 +526,7 @@ HWTEST_F(BmsCompatibleSystemTest, BMS_ConvertToCompatible_0800, Function | Mediu
     std::string permissions = commonTool.VectorToStr(compatibleApplicationInfo.permissions);
     EXPECT_EQ(permissions, CAMERA);
     Uninstall(bundleName, message);
-    ASSERT_EQ(message, "Success") << "uninstall fail!";
+    EXPECT_EQ(message, "Success") << "uninstall fail!";
     GTEST_LOG_(INFO) << "END BMS_ConvertToCompatible_0800";
 }
 /**
@@ -572,9 +571,9 @@ HWTEST_F(BmsCompatibleSystemTest, BMS_ConvertToCompatible_1000, Function | Mediu
     int userId = Constants::DEFAULT_USERID;
 
     Install(bundleFilePath1, InstallFlag::NORMAL, message);
-    ASSERT_EQ(message, "Success") << "install fail!";
+    EXPECT_EQ(message, "Success") << "install fail!";
     Install(bundleFilePath2, InstallFlag::REPLACE_EXISTING, message);
-    ASSERT_EQ(message, "Success") << "install fail!";
+    EXPECT_EQ(message, "Success") << "install fail!";
 
     sptr<IBundleMgr> bundleMgrProxy = GetBundleMgrProxy();
     if (bundleMgrProxy == nullptr) {
@@ -590,7 +589,7 @@ HWTEST_F(BmsCompatibleSystemTest, BMS_ConvertToCompatible_1000, Function | Mediu
     EXPECT_EQ(compatibleApplicationInfo.name, bundleName);
     CheckCompatibleApplicationInfo(compatibleApplicationInfo, bundleName);
     Uninstall(bundleName, message);
-    ASSERT_EQ(message, "Success") << "uninstall fail!";
+    EXPECT_EQ(message, "Success") << "uninstall fail!";
     GTEST_LOG_(INFO) << "END BMS_ConvertToCompatible_1000";
 }
 /**
@@ -607,9 +606,9 @@ HWTEST_F(BmsCompatibleSystemTest, BMS_ConvertToCompatible_1100, Function | Mediu
     std::string message;
     int userId = Constants::DEFAULT_USERID;
     Install(bundleFilePath, InstallFlag::NORMAL, message);
-    ASSERT_EQ(message, "Success") << "install fail!";
+    EXPECT_EQ(message, "Success") << "install fail!";
     Uninstall(bundleName, message);
-    ASSERT_EQ(message, "Success") << "uninstall fail!";
+    EXPECT_EQ(message, "Success") << "uninstall fail!";
 
     sptr<IBundleMgr> bundleMgrProxy = GetBundleMgrProxy();
     if (bundleMgrProxy == nullptr) {
@@ -664,7 +663,7 @@ HWTEST_F(BmsCompatibleSystemTest, BMS_QueryAbilityInfoByUri_0100, Function | Med
     std::string uri = "dataability://com.test.demo.dataability.UserADataAbility";
     std::string message;
     Install(bundleFilePath, InstallFlag::NORMAL, message);
-    ASSERT_EQ(message, "Success") << "install fail!";
+    EXPECT_EQ(message, "Success") << "install fail!";
     std::string abilityUri = "dataability:///com.test.demo.dataability.UserADataAbility";
     AbilityInfo abilityInfo;
     sptr<IBundleMgr> bundleMgrProxy = GetBundleMgrProxy();
@@ -678,7 +677,7 @@ HWTEST_F(BmsCompatibleSystemTest, BMS_QueryAbilityInfoByUri_0100, Function | Med
     EXPECT_EQ(abilityInfo.bundleName, bundleName);
     EXPECT_EQ(abilityInfo.uri, uri);
     Uninstall(bundleName, message);
-    ASSERT_EQ(message, "Success") << "uninstall fail!";
+    EXPECT_EQ(message, "Success") << "uninstall fail!";
     GTEST_LOG_(INFO) << "END BMS_QueryAbilityInfoByUri_0100";
 }
 /**
@@ -725,6 +724,5 @@ HWTEST_F(BmsCompatibleSystemTest, BMS_QueryAbilityInfoByUri_0300, Function | Med
     EXPECT_EQ(abilityInfo.uri, "");
     GTEST_LOG_(INFO) << "END BMS_QueryAbilityInfoByUri_0300";
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

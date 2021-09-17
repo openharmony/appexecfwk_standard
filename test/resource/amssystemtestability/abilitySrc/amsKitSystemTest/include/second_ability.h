@@ -1534,7 +1534,6 @@ public:
     SecondAbility *secondAbility;
     std::unordered_map<std::string, std::function<void(int, int, int)>> mapTestFunc_;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // _AMS_KIT_SYSTEM_TEST_SECOND_ABILITY_H_

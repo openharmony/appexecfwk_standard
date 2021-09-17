@@ -24,13 +24,16 @@
 #include "app_mgr_interface.h"
 #include "ability_record_mgr.h"
 #include "application_impl.h"
+#include "resource_manager.h"
 #include "ohos/aafwk/base/ipc_singleton.h"
 #define ABILITY_LIBRARY_LOADER
 
 namespace OHOS {
 namespace AppExecFwk {
+using namespace OHOS::Global;
 enum class MainThreadState { INIT, ATTACH, READY, RUNNING };
-
+class ContextDeal;
+// class Global::Resource::ResourceManager;
 class AppMgrDeathRecipient : public IRemoteObject::DeathRecipient {
 public:
     /**
@@ -400,6 +403,8 @@ private:
      */
     void LoadAbilityLibrary(const std::vector<std::string> &libraryPaths);
 
+    void LoadAppLibrary();
+
     /**
      *
      * @brief Close the ability library loaded.
@@ -427,6 +432,12 @@ private:
      *
      */
     bool CheckFileType(const std::string &fileName, const std::string &extensionName);
+
+    bool InitCreate(std::shared_ptr<ContextDeal> &contextDeal, ApplicationInfo &appInfo, ProcessInfo &processInfo,
+        Profile &appProfile);
+    bool CheckForHandleLaunchApplication(const AppLaunchData &appLaunchData);
+    bool InitResourceManager(std::shared_ptr<Global::Resource::ResourceManager> &resourceManager,
+        std::shared_ptr<ContextDeal> &contextDeal, ApplicationInfo &appInfo);
     std::vector<std::string> fileEntries_;
     std::vector<void *> handleAbilityLib_;  // the handler of ACE Library.
 #endif                                      // ABILITY_LIBRARY_LOADER

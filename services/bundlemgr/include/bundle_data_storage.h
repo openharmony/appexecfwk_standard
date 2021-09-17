@@ -47,7 +47,11 @@ public:
      */
     virtual bool DeleteStorageBundleInfo(const std::string &deviceId, const InnerBundleInfo &innerBundleInfo);
 
-    virtual bool ResetKvStore() { return true;}
+    virtual bool ResetKvStore()
+    {
+        return true;
+    }
+
 private:
     bool KeyToDeviceAndName(const std::string &key, std::string &deviceId, std::string &bundleName) const;
     void DeviceAndNameToKey(const std::string &deviceId, const std::string &bundleName, std::string &key) const;

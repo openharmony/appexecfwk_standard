@@ -23,6 +23,7 @@
 
 namespace OHOS {
 namespace AppExecFwk {
+namespace {
 static const int ABILITY_DATA_C1_CODE = 230;
 static const std::string OPERATOR_INSERT = "Insert";
 static const std::string OPERATOR_DELETE = "Delete";
@@ -37,6 +38,7 @@ static const std::string ABILITY_TYPE_PAGE = "0";
 static const std::string ABILITY_TYPE_SERVICE = "1";
 static const std::string ABILITY_TYPE_DATA = "2";
 constexpr int charCnt = 5;
+}  // namespace
 
 bool AmsStDataAbilityDataC1::PublishEvent(const std::string &eventName, const int &code, const std::string &data)
 {
@@ -175,8 +177,9 @@ static void GetResult(std::shared_ptr<STtools::StOperator> child, std::shared_pt
         }
         result = std::to_string(fd);
         char str[charCnt];
-        if (!feof(file))
+        if (!feof(file)) {
             fgets(str, charCnt, file);
+        }
         result = str;
         fclose(file);
     }
@@ -225,8 +228,9 @@ void DataTestDataC1EventSubscriber::GetResultBySelf(
         mainAbility_->PublishEvent(abilityEventName, ABILITY_DATA_C1_CODE, "OpenFile");
 
         char str[charCnt];
-        if (!feof(file))
+        if (!feof(file)) {
             fgets(str, charCnt, file);
+        }
         result = str;
         fclose(file);
     }

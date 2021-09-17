@@ -33,9 +33,8 @@
 #include "common_event_subscribe_info.h"
 #include "form_refresh_limiter.h"
 #include "form_timer.h"
-
 #include "thread_pool.h"
-#include "timer.h"
+// #include "timer.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -115,22 +114,26 @@ public:
 
     /**
      * @brief Handle system time changed.
+     * @return Returns true on success, false on failure.
      */
-    void HandleSystemTimeChanged();
+    bool HandleSystemTimeChanged();
     /**
      * @brief Reset form limiter.
+     * @return Returns true on success, false on failure.
      */
-    void HandleResetLimiter();
+    bool HandleResetLimiter();
     /**
      * @brief Update attime trigger.
      * @param updateTime Update time.
+     * @return Returns true on success, false on failure.
      */
-    void OnUpdateAtTrigger(long updateTime);
+    bool OnUpdateAtTrigger(long updateTime);
     /**
      * @brief Dynamic time trigger.
      * @param updateTime Update time.
+     * @return Returns true on success, false on failure.
      */
-    void OnDynamicTimeTrigger(long updateTime);
+    bool OnDynamicTimeTrigger(long updateTime);
 
 private:
     /**
@@ -154,6 +157,7 @@ private:
      * @brief interval timer task timeout.
      */ 
     void OnIntervalTimeOut();
+
     /**
      * @brief Get remind tasks.
      * @param remindTasks Remind tasks.
@@ -203,8 +207,9 @@ private:
     /**
      * @brief Delete update at timer.
      * @param formId The Id of the form.
+     * @return Returns true on success, false on failure.
      */
-    void DeleteUpdateAtTimer(const int64_t formId);
+    bool DeleteUpdateAtTimer(const int64_t formId);
     /**
      * @brief Update at timer task alarm.
      * @return Returns true on success, false on failure.
@@ -216,10 +221,15 @@ private:
      */ 
     bool UpdateLimiterAlarm();
     /**
+     * @brief Clear limiter timer resource.
+     */ 
+    void ClearLimiterTimerResource();
+    /**
      * @brief Delete dynamic refresh item.
      * @param formId The Id of the form.
+     * @return Returns true on success, false on failure.
      */  
-    void DeleteDynamicItem(const int64_t formId);
+    bool DeleteDynamicItem(const int64_t formId);
     /**
      * @brief Update dynamic refresh task alarm.
      * @return Returns true on success, false on failure.
@@ -303,14 +313,18 @@ private:
     std::list<UpdateAtItem> updateAtTimerTasks_;
     std::vector<DynamicRefreshItem> dynamicRefreshTasks_;
     
-    std::shared_ptr<TimerReceiver> timerReceiver_;
+    std::shared_ptr<TimerReceiver> timerReceiver_ = nullptr;
+    OHOS::ThreadPool* taskExecutor_ = nullptr;
 
-    OHOS::ThreadPool* taskExecutor_;
-    Utils::Timer* intervalTimer_;
+    uint64_t intervalTimerId_ = 0L;
+    uint64_t updateAtTimerId_ = 0L;
+    uint64_t dynamicAlarmTimerId_ = 0L;
+    uint64_t limiterTimerId_= 0L;
 
-    long dynamicWakeUpTime_ = LONG_MAX;
-    long atTimerWakeUpTime_ = LONG_MAX;
+
+
 };
+
 }  // namespace AppExecFwk
 }  // namespace OHOS
 

@@ -118,13 +118,15 @@ void OHOSApplication::DumpApplication()
  */
 void OHOSApplication::SetAbilityRecordMgr(const std::shared_ptr<AbilityRecordMgr> &abilityRecordMgr)
 {
+    APP_LOGI("OHOSApplication::SetAbilityRecordMgr. Start");
     if (abilityRecordMgr == nullptr) {
         APP_LOGE("ContextDeal::SetAbilityRecordMgr failed, abilityRecordMgr is nullptr");
         return;
     }
     abilityRecordMgr_ = abilityRecordMgr;
+    APP_LOGI("OHOSApplication::SetAbilityRecordMgr. End");
 }
-
+    
 /**
  *
  * Register AbilityLifecycleCallbacks with OHOSApplication

@@ -20,6 +20,12 @@
 namespace OHOS {
 namespace AppExecFwk {
 using namespace OHOS::EventFwk;
+namespace {
+static const int paramCnt = 3;
+static const int index_f = 0;
+static const int index_s = 1;
+static const int index_t = 2;
+}  // namespace
 
 void MainAbility::Init(const std::shared_ptr<AbilityInfo> &abilityInfo,
     const std::shared_ptr<OHOSApplication> &application, std::shared_ptr<AbilityHandler> &handler,
@@ -103,11 +109,11 @@ void FirstEventSubscriber::OnReceiveEvent(const CommonEventData &data)
     if (std::strcmp(eventName.c_str(), g_EVENT_REQU_FIRSTB.c_str()) == 0) {
         auto target = data.GetData();
         auto caseInfo = TestUtils::split(target, "_");
-        if (caseInfo.size() < 3) {
+        if (caseInfo.size() < paramCnt) {
             return;
         }
-        if (mapTestFunc_.find(caseInfo[0]) != mapTestFunc_.end()) {
-            mapTestFunc_[caseInfo[0]](std::stoi(caseInfo[1]), std::stoi(caseInfo[2]), data.GetCode());
+        if (mapTestFunc_.find(caseInfo[index_f]) != mapTestFunc_.end()) {
+            mapTestFunc_[caseInfo[index_f]](std::stoi(caseInfo[index_s]), std::stoi(caseInfo[index_t]), data.GetCode());
         } else {
             APP_LOGI("OnReceiveEvent: CommonEventData error(%{public}s)", target.c_str());
         }

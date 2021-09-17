@@ -28,13 +28,11 @@ namespace OHOS {
 namespace AppExecFwk {
 class ApplicationTest : public testing::Test {
 public:
-    ApplicationTest() : ApplicationTest_(nullptr)
+    ApplicationTest()
     {}
     ~ApplicationTest()
-    {
-        ApplicationTest_ = nullptr;
-    }
-    OHOSApplication *ApplicationTest_ = nullptr;
+    {}
+    std::shared_ptr<OHOSApplication> ApplicationTest_ = nullptr;
     static void SetUpTestCase(void);
     static void TearDownTestCase(void);
     void SetUp();
@@ -49,14 +47,11 @@ void ApplicationTest::TearDownTestCase(void)
 
 void ApplicationTest::SetUp(void)
 {
-    ApplicationTest_ = new (std::nothrow) OHOSApplication();
+    ApplicationTest_ = std::make_shared<OHOSApplication>();
 }
 
 void ApplicationTest::TearDown(void)
-{
-    delete ApplicationTest_;
-    ApplicationTest_ = nullptr;
-}
+{}
 
 /**
  * @tc.number: AppExecFwk_Application_RegisterAbilityLifecycleCallbacks_0100

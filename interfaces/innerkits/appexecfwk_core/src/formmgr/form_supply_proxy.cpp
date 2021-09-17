@@ -47,8 +47,11 @@ int FormSupplyProxy::OnAcquire(const FormProviderInfo &formInfo, const Want& wan
 
     MessageParcel reply;
     MessageOption option;
-    int error = Remote()->SendRequest(static_cast<uint32_t>(IFormSupply::Message::TRANSACTION_FORM_ACQUIRED), 
-    data, reply, option);
+    int error = Remote()->SendRequest(
+        static_cast<uint32_t>(IFormSupply::Message::TRANSACTION_FORM_ACQUIRED), 
+        data, 
+        reply, 
+        option);
     if (error != ERR_OK) {
         APP_LOGE("%{public}s, failed to SendRequest: %{public}d", __func__, error);
     }
@@ -77,8 +80,11 @@ int FormSupplyProxy::OnEventHandle(const Want& want)
 
     MessageParcel reply;
     MessageOption option;
-    int error = Remote()->SendRequest(static_cast<uint32_t>(IFormSupply::Message::TRANSACTION_EVENT_HANDLE), 
-    data, reply, option);
+    int error = Remote()->SendRequest(
+        static_cast<uint32_t>(IFormSupply::Message::TRANSACTION_EVENT_HANDLE), 
+        data, 
+        reply, 
+        option);
     if (error != ERR_OK) {
         APP_LOGE("%{public}s, failed to SendRequest: %{public}d", __func__, error);
     }

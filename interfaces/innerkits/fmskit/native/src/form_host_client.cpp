@@ -105,7 +105,7 @@ void FormHostClient::RemoveForm(std::shared_ptr<FormCallbackInterface> formCallb
     {
         std::lock_guard<std::mutex> lock(lockMutex_);
         int64_t key = FindKeyByCallback(formCallback);
-        if(key == -1) {
+        if (key == -1) {
             APP_LOGE("%{public}s, failed to find callback.", __func__);
             return;
         }
@@ -167,7 +167,8 @@ void FormHostClient::OnAcquired(const FormJsInfo &formJsInfo)
         APP_LOGE("%{public}s error, can't find target callback. formId: %{public}" PRId64 ".", __func__, formId);
         return;
     }
-    APP_LOGI("%{public}s, formId: %{public}" PRId64 ", data: %{public}s", __func__, formId, formJsInfo.formData.c_str());
+    APP_LOGI("%{public}s, formId: %{public}" PRId64 ", jspath: %{public}s, data: %{public}s", __func__, formId, 
+        formJsInfo.jsFormCodePath.c_str(), formJsInfo.formData.c_str());
     targetCallback->ProcessFormUpdate(formJsInfo);
 }
 
@@ -206,8 +207,8 @@ void FormHostClient::OnUninstall(const std::vector<int64_t> &formIds)
         APP_LOGE("%{public}s error, formIds is empty.", __func__);
         return;
     }
-    for(auto &formId : formIds) {
-         if (formId < 0) {
+    for (auto &formId : formIds) {
+        if (formId < 0) {
             APP_LOGE("%{public}s error, the passed form id can't be negative.", __func__);
             continue;
         }
