@@ -30,22 +30,7 @@ class FormProviderInfo : public Parcelable {
 public:
     FormProviderInfo() = default;
     ~FormProviderInfo() = default;
-    /**
-     * @brief Set the id of the form.
-     * @param formId the id of the form.
-     */
-    inline void SetFormId(const int64_t formId)
-    {
-        formId_ = formId;
-    }
-    /**
-     * @brief Get the id of the form.
-     * @return the id of the form.
-     */
-    inline int64_t GetFormId() const
-    {
-        return formId_;
-    }
+
     /**
      * @brief Set the form data.
      * @param formProviderData The form data.
@@ -105,7 +90,6 @@ public:
     virtual bool Marshalling(Parcel &parcel) const override;
     static FormProviderInfo *Unmarshalling(Parcel &parcel);
 private:
-    int64_t formId_;
     FormProviderData jsBindingData_;
     bool upgradeFlg_;
 };

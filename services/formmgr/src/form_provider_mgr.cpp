@@ -46,21 +46,21 @@ ErrCode FormProviderMgr::AcquireForm(const int64_t formId, const FormProviderInf
 
     if (formId <= 0) {
         APP_LOGE("%{public}s fail, formId should be greater than 0", __func__);
-        return ERR_FORM_INVALID_PARAM;
+        return ERR_APPEXECFWK_FORM_INVALID_PARAM;
     }
 
     FormRecord formRecord;
     bool isGetFormRecord = FormDataMgr::GetInstance().GetFormRecord(formId, formRecord);
     if (!isGetFormRecord) {
         APP_LOGE("%{public}s fail, not exist such form, formId:%{public}" PRId64 "", __func__, formId);
-        return ERR_APPEXECFWK_FORM_INFO_NOT_EXIST;
+        return ERR_APPEXECFWK_FORM_NOT_EXIST_ID;
     }
     
     FormHostRecord clientHost;
     bool isGetFormHostRecord = FormDataMgr::GetInstance().GetFormHostRecord(formId, clientHost);
     if (!isGetFormHostRecord) {
         APP_LOGE("%{public}s fail, clientHost is null", __func__);
-        return ERR_APPEXECFWK_FORM_HOST_INFO_NOT_EXIST;
+        return ERR_APPEXECFWK_FORM_COMMON_CODE;
     }
 
     if (formRecord.isInited) {
@@ -108,7 +108,7 @@ ErrCode FormProviderMgr::RefreshForm(const int64_t formId, const Want &want)
     bool bGetRecord = FormDataMgr::GetInstance().GetFormRecord(formId, record);
     if (!bGetRecord) {
         APP_LOGE("%{public}s fail, not exist such form:%{public}" PRId64 "", __func__, formId);
-        return ERR_APPEXECFWK_FORM_INFO_NOT_EXIST;
+        return ERR_APPEXECFWK_FORM_NOT_EXIST_ID;
     }
 
     bool isTimerRefresh = want.GetBoolParam(Constants::KEY_IS_TIMER, false);
@@ -149,13 +149,14 @@ ErrCode FormProviderMgr::RefreshForm(const int64_t formId, const Want &want)
  * @param isTimerRefresh The flag of timer refresh.
  * @return Returns ERR_OK on success, others on failure.
  */
-ErrCode FormProviderMgr::ConnectAmsForRefresh(const int64_t formId, const FormRecord &record, const Want &want, 
-const bool isTimerRefresh)
+ErrCode FormProviderMgr::ConnectAmsForRefresh(const int64_t formId, 
+    const FormRecord &record, const Want &want, const bool isTimerRefresh)
 {
     APP_LOGD("%{public}s called, bundleName:%{public}s, abilityName:%{public}s.",
         __func__, record.bundleName.c_str(), record.abilityName.c_str());
 
-    sptr<IAbilityConnection> formRefreshConnection = new FormRefreshConnection(formId, want);
+    sptr<IAbilityConnection> formRefreshConnection = new FormRefreshConnection(formId, want,
+        record.bundleName, record.abilityName);
     Want connectWant;
     connectWant.AddFlags(Want::FLAG_ABILITY_FORM_ENABLED);
     connectWant.SetElementName(record.bundleName, record.abilityName);
@@ -163,14 +164,14 @@ const bool isTimerRefresh)
     if (isTimerRefresh) {
         if (!FormTimerMgr::GetInstance().IsLimiterEnableRefresh(formId)) {
             APP_LOGE("%{public}s, timer refresh, already limit.", __func__);
-            return ERR_APPEXECFWK_FORM_SUPPLIER_DEL_FAIL;
+            return ERR_APPEXECFWK_FORM_PROVIDER_DEL_FAIL;
         }
     }
 
     ErrCode errorCode = FormAmsHelper::GetInstance().ConnectServiceAbility(connectWant, formRefreshConnection);
     if (errorCode != ERR_OK) {
         APP_LOGE("%{public}s, ConnectServiceAbility failed.", __func__);
-        return errorCode;
+        return ERR_APPEXECFWK_FORM_BIND_PROVIDER_FAILED;
     }
     
     if (record.isCountTimerRefresh) {
@@ -190,21 +191,28 @@ ErrCode FormProviderMgr::NotifyProviderFormDelete(const int64_t formId, const Fo
 {
     if (formRecord.abilityName.empty()) {
         APP_LOGE("%{public}s, formRecord.abilityName is empty.", __func__);
-        return ERR_CODE_COMMON;
+        return ERR_APPEXECFWK_FORM_INVALID_PARAM;
     }
 
     if (formRecord.bundleName.empty()) {
         APP_LOGE("%{public}s, formRecord.bundleName is empty.", __func__);
-        return ERR_CODE_COMMON;
+        return ERR_APPEXECFWK_FORM_INVALID_PARAM;
     }
 
     APP_LOGD("%{public}s, connectAbility,bundleName:%{public}s, abilityName:%{public}s",
         __func__, formRecord.bundleName.c_str(), formRecord.abilityName.c_str());
-    sptr<IAbilityConnection> formDeleteConnection = new FormDeleteConnection(formId);
+    sptr<IAbilityConnection> formDeleteConnection = new FormDeleteConnection(formId, 
+        formRecord.bundleName, formRecord.abilityName);
     Want want;
     want.SetElementName(formRecord.bundleName, formRecord.abilityName);
     want.SetFlags(Want::FLAG_ABILITY_FORM_ENABLED);
-    return FormAmsHelper::GetInstance().ConnectServiceAbility(want, formDeleteConnection);
+
+    ErrCode errorCode = FormAmsHelper::GetInstance().ConnectServiceAbility(want, formDeleteConnection);
+    if (errorCode != ERR_OK) {
+        APP_LOGE("%{public}s, ConnectServiceAbility failed.", __func__);
+        return ERR_APPEXECFWK_FORM_BIND_PROVIDER_FAILED;
+    }
+    return ERR_OK;
 }
 
 /**
@@ -214,8 +222,8 @@ ErrCode FormProviderMgr::NotifyProviderFormDelete(const int64_t formId, const Fo
  * @param formIds form id list.
  * @return Returns ERR_OK on success, others on failure.
  */
-ErrCode FormProviderMgr::NotifyProviderFormsBatchDelete(const std::string &bundleName, const std::string &abilityName, 
-const std::set<int64_t> &formIds)
+ErrCode FormProviderMgr::NotifyProviderFormsBatchDelete(const std::string &bundleName, 
+    const std::string &abilityName, const std::set<int64_t> &formIds)
 {
     if (abilityName.empty()) {
         APP_LOGE("%{public}s error, abilityName is empty.",  __func__);
@@ -227,9 +235,9 @@ const std::set<int64_t> &formIds)
         return ERR_APPEXECFWK_FORM_INVALID_PARAM;
     }
 
-    APP_LOGD("%{public}s, bundleName:%{public}s, abilityName:%{public}s",  __func__, bundleName.c_str(), 
-    abilityName.c_str());
-    sptr<IAbilityConnection> batchDeleteConnection = new FormBatchDeleteConnection(formIds);
+    APP_LOGD("%{public}s, bundleName:%{public}s, abilityName:%{public}s",  
+        __func__, bundleName.c_str(), abilityName.c_str());
+    sptr<IAbilityConnection> batchDeleteConnection = new FormBatchDeleteConnection(formIds, bundleName, abilityName);
     Want want;
     want.AddFlags(Want::FLAG_ABILITY_FORM_ENABLED);
     want.SetElementName(bundleName, abilityName);
@@ -237,7 +245,7 @@ const std::set<int64_t> &formIds)
     ErrCode errorCode = FormAmsHelper::GetInstance().ConnectServiceAbility(want, batchDeleteConnection);
     if (errorCode != ERR_OK) {
         APP_LOGE("%{public}s, ConnectServiceAbility failed.", __func__);
-        return errorCode;
+        return ERR_APPEXECFWK_FORM_BIND_PROVIDER_FAILED;
     }
     return ERR_OK;
 }
@@ -254,7 +262,7 @@ ErrCode FormProviderMgr::UpdateForm(const int64_t formId, const FormProviderInfo
     FormRecord formRecord;
     if (!FormDataMgr::GetInstance().GetFormRecord(formId, formRecord)) {
         APP_LOGE("%{public}s error, not exist such form:%{public}" PRId64 ".", __func__, formId);
-        return ERR_NOT_EXIST_ID;
+        return ERR_APPEXECFWK_FORM_NOT_EXIST_ID;
     }
     return UpdateForm(formId, formRecord, formProviderInfo.GetFormData());
 }
@@ -266,13 +274,14 @@ ErrCode FormProviderMgr::UpdateForm(const int64_t formId, const FormProviderInfo
  * @param formProviderData provider form info.
  * @return Returns ERR_OK on success, others on failure.
  */
-ErrCode FormProviderMgr::UpdateForm(const int64_t formId, FormRecord &formRecord, 
-const FormProviderData &formProviderData)
+ErrCode FormProviderMgr::UpdateForm(const int64_t formId, 
+    FormRecord &formRecord, const FormProviderData &formProviderData)
 {
     APP_LOGI("%{public}s start", __func__);
 
     if (formRecord.versionUpgrade) {
         formRecord.formProviderInfo.SetFormData(formProviderData);
+        formRecord.formProviderInfo.SetUpgradeFlg(true);
     } else {
         nlohmann::json addJsonData = formProviderData.GetData();
         formRecord.formProviderInfo.MergeData(addJsonData);
@@ -290,8 +299,11 @@ const FormProviderData &formProviderData)
     if (screenOnFlag) {
         if (FormDataMgr::GetInstance().UpdateHostForm(formId, formRecord)) {
             FormDataMgr::GetInstance().SetVersionUpgrade(formId, false);
+            formRecord.formProviderInfo.SetUpgradeFlg(false);
         }
     }
+    // update formProviderInfo to formRecord
+    FormDataMgr::GetInstance().UpdateFormProviderInfo(formId, formRecord.formProviderInfo);
     // check if cache data size is less than 1k or not    
     std::string jsonData = formRecord.formProviderInfo.GetFormDataString(); // get json data
     APP_LOGD("%{public}s , jsonData is %{public}s.",  __func__, jsonData.c_str());
@@ -320,7 +332,8 @@ int FormProviderMgr::MessageEvent(const int64_t formId, const FormRecord &record
         return ERR_APPEXECFWK_FORM_COMMON_CODE;
     }
 
-    sptr<IAbilityConnection> formMsgEventConnection = new FormMsgEventConnection(formId, want);
+    sptr<IAbilityConnection> formMsgEventConnection = new FormMsgEventConnection(formId, want,
+        record.bundleName, record.abilityName);
     Want connectWant;
     connectWant.AddFlags(Want::FLAG_ABILITY_FORM_ENABLED);
     connectWant.SetElementName(record.bundleName, record.abilityName);
@@ -328,7 +341,7 @@ int FormProviderMgr::MessageEvent(const int64_t formId, const FormRecord &record
     ErrCode errorCode = FormAmsHelper::GetInstance().ConnectServiceAbility(connectWant, formMsgEventConnection);
     if (errorCode != ERR_OK) {
         APP_LOGE("%{public}s, ConnectServiceAbility failed.", __func__);
-        return errorCode;
+        return ERR_APPEXECFWK_FORM_BIND_PROVIDER_FAILED;
     }
 
     return ERR_OK;

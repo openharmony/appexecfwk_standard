@@ -21,7 +21,9 @@
 #include <iomanip> 
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <stdio.h>
 
+#include "securec.h"
 #include "app_log_wrapper.h"
 #include "form_storage_mgr.h"
 #include "string_ex.h"
@@ -32,67 +34,6 @@ namespace {
 const char* FORM_DB_DATA_BASE_FILE_DIR = "/data/formmgr";
 const int32_t FORM_DB_DATA_BASE_FILE_PATH_LEN = 255;
 }
-
-// bool FormStorageMgr::KeyToDeviceAndName(const std::string &key, std::string &deviceId, std::string &bundleName) const
-// {
-//     bool ret = false;
-//     std::vector<std::string> splitStrs;
-//     const std::string::size_type EXPECT_SPLIT_SIZE = 2;
-//     OHOS::SplitStr(key, Constants::FILE_UNDERLINE, splitStrs);
-//     // the expect split size should be 2.
-//     // key rule is <deviceId>_<bundleName>
-//     if (splitStrs.size() == EXPECT_SPLIT_SIZE) {
-//         deviceId = splitStrs[0];
-//         bundleName = splitStrs[1];
-//         ret = true;
-//     }
-//     APP_LOGD("key = %{private}s, bundleName = %{public}s", key.c_str(), bundleName.c_str());
-//     return ret;
-// }
-
-// void FormStorageMgr::DeviceAndNameToKey(
-//     const std::string &deviceId, const std::string &bundleName, std::string &key) const
-// {
-//     key.append(deviceId);
-//     key.append(Constants::FILE_UNDERLINE);
-//     key.append(bundleName);
-//     APP_LOGD("key = %{private}s, bundleName = %{public}s", key.c_str(), bundleName.c_str());
-// }
-
-// bool FormStorageMgr::bool LoadAllData(std::map<std::string, std::map<std::string, InnerFormInfo>> &infos) const
-// {
-//     bool ret = false;
-//     APP_LOGI("load all installed bundle data to map");
-
-//     std::fstream i(Constants::BUNDLE_DATA_BASE_FILE);
-//     nlohmann::json jParse;
-//     if (!i.is_open()) {
-//         APP_LOGE("failed to open bundle database file");
-//         // if file not exist, should create file here
-//         std::ofstream o(Constants::BUNDLE_DATA_BASE_FILE);
-//         o.close();
-//         return false;
-//     }
-//     APP_LOGI("open bundle database file success");
-//     i.seekg(0, std::ios::end);
-//     int len = static_cast<int>(i.tellg());
-//     if (len > 0) {
-//         i.seekg(0, std::ios::beg);
-//         i >> jParse;
-//         for (auto &app : jParse.items()) {
-//             std::map<std::string, InnerBundleInfo> deviceMap;
-//             for (auto &device : app.value().items()) {
-//                 InnerBundleInfo innerBundleInfo;
-//                 ret = innerBundleInfo.FromJson(device.value());
-//                 deviceMap.emplace(device.key(), innerBundleInfo);
-//             }
-//             auto pair = infos.emplace(app.key(), deviceMap);
-//             ret = pair.second;
-//         }
-//     }
-//     i.close();
-//     return ret;
-// }
 
 /**
  * @brief Load form data from fileNamePath to innerFormInfos.
@@ -143,7 +84,7 @@ ErrCode FormStorageMgr::LoadFormData(std::vector<InnerFormInfo> &innerFormInfos)
     DIR *dirptr = opendir(FORM_DB_DATA_BASE_FILE_DIR);
     if (dirptr == NULL) {
         APP_LOGE("%{public}s, opendir failed, should no formmgr dir", __func__);
-        return ERR_APPEXECFWK_FORM_JSON_NO_DIR;
+        return ERR_APPEXECFWK_FORM_COMMON_CODE;
     }
 
     struct dirent *ptr;
@@ -153,7 +94,7 @@ ErrCode FormStorageMgr::LoadFormData(std::vector<InnerFormInfo> &innerFormInfos)
             continue;
         }
         char fileNamePath[FORM_DB_DATA_BASE_FILE_PATH_LEN] = {0};
-        sprintf(fileNamePath, "%s/%s", FORM_DB_DATA_BASE_FILE_DIR, ptr->d_name);
+        sprintf_s(fileNamePath, FORM_DB_DATA_BASE_FILE_PATH_LEN, "%s/%s", FORM_DB_DATA_BASE_FILE_DIR, ptr->d_name);
         if (!LoadFormDataFile(fileNamePath, innerFormInfos)) {
             APP_LOGE("%{public}s, LoadFormDataFile failed, file[%{public}s]", __func__, ptr->d_name);
         }
@@ -173,12 +114,12 @@ ErrCode FormStorageMgr::GetStorageFormInfoById(const std::string &formId, InnerF
     ErrCode ret = ERR_OK;
     APP_LOGD("%{public}s called, formId[%{public}s]", __func__, formId.c_str());
     char fileNamePath[FORM_DB_DATA_BASE_FILE_PATH_LEN] = {0};
-    sprintf(fileNamePath, "%s/%s.json", FORM_DB_DATA_BASE_FILE_DIR, formId.c_str());
+    sprintf_s(fileNamePath, FORM_DB_DATA_BASE_FILE_PATH_LEN, "%s/%s.json", FORM_DB_DATA_BASE_FILE_DIR, formId.c_str());
     std::ifstream i(fileNamePath);
     nlohmann::json jParse;
     if (!i.is_open()) {
         APP_LOGE("%{public}s, open failed, should no this file[%{public}s.json]", __func__, formId.c_str());
-        return ERR_APPEXECFWK_FORM_JSON_OPEN_FAIL;
+        return ERR_APPEXECFWK_FORM_COMMON_CODE;
     }
     APP_LOGD("%{public}s, open success file[%{public}s.json]", __func__, formId.c_str());
     i.seekg(0, std::ios::end);
@@ -190,17 +131,17 @@ ErrCode FormStorageMgr::GetStorageFormInfoById(const std::string &formId, InnerF
         if (it != jParse.end()) {
             if (innerFormInfo.FromJson(it.value()) == false) {
                 APP_LOGE("%{public}s, fromJson parse failed formId[%{public}s]", __func__, it.key().c_str());
-                ret = ERR_APPEXECFWK_FORM_JSON_PARSE_FAIL;
+                ret = ERR_APPEXECFWK_FORM_COMMON_CODE;
             } else {
                 ret = ERR_OK;
             }
         } else {
             APP_LOGE("%{public}s, not find formId[%{public}s]", __func__, formId.c_str());
-            ret = ERR_APPEXECFWK_FORM_JSON_FIND_FAIL;
+            ret = ERR_APPEXECFWK_FORM_COMMON_CODE;
         }
     } else {
         APP_LOGE("%{public}s, file is empty formId[%{public}s]", __func__, formId.c_str());
-        ret = ERR_APPEXECFWK_FORM_JSON_FILE_EMPTY;
+        ret = ERR_APPEXECFWK_FORM_COMMON_CODE;
     }
     i.close();
 
@@ -223,21 +164,20 @@ ErrCode FormStorageMgr::SaveStorageFormInfo(const InnerFormInfo &innerFormInfo) 
         APP_LOGW("%{public}s, failed to open dir", __func__);
         if (-1 == mkdir(FORM_DB_DATA_BASE_FILE_DIR, S_IRWXU)) {
             APP_LOGE("%{public}s, failed to create dir", __func__);
-            return ERR_APPEXECFWK_FORM_JSON_CREATE_DIR_FAIL;
+            return ERR_APPEXECFWK_FORM_COMMON_CODE;
         }
     } else {
         closedir(dirptr);
     }
     char tmpFilePath[FORM_DB_DATA_BASE_FILE_PATH_LEN] = {0};
-    sprintf(tmpFilePath, "%s/%s.json", FORM_DB_DATA_BASE_FILE_DIR, formId.c_str());
-
+    sprintf_s(tmpFilePath, FORM_DB_DATA_BASE_FILE_PATH_LEN, "%s/%s.json", FORM_DB_DATA_BASE_FILE_DIR, formId.c_str());
     std::fstream f(tmpFilePath);
     nlohmann::json jParse;
     if (!f.is_open()) {
         std::ofstream o(tmpFilePath); // if file not exist, should create file here
         if (!o.is_open()) {
             APP_LOGE("%{public}s, touch new file[%{public}s] failed", __func__, tmpFilePath);
-            return ERR_APPEXECFWK_FORM_JSON_NEW_FILE_FAIL;
+            return ERR_APPEXECFWK_FORM_COMMON_CODE;
         }
         o.close();
         APP_LOGI("%{public}s, touch new file[%{public}s.json]", __func__, formId.c_str());
@@ -258,7 +198,7 @@ ErrCode FormStorageMgr::SaveStorageFormInfo(const InnerFormInfo &innerFormInfo) 
         }
     } else {
         APP_LOGE("%{public}s, touch new file[%{public}s] failed", __func__, formId.c_str());
-        ret = ERR_APPEXECFWK_FORM_JSON_OPEN_FAIL;
+        ret = ERR_APPEXECFWK_FORM_COMMON_CODE;
     }
     f.close();
     return ret;
@@ -273,12 +213,12 @@ ErrCode FormStorageMgr::ModifyStorageFormInfo(const InnerFormInfo &innerFormInfo
 {
     APP_LOGI("%{public}s called, formId[%{public}" PRId64 "]", __func__, innerFormInfo.GetFormId());
     char fileNamePath[FORM_DB_DATA_BASE_FILE_PATH_LEN] = {0};
-    sprintf(fileNamePath, "%s/%" PRId64 ".json", FORM_DB_DATA_BASE_FILE_DIR, innerFormInfo.GetFormId());
+    sprintf_s(fileNamePath, FORM_DB_DATA_BASE_FILE_PATH_LEN, "%s/%" PRId64 ".json", FORM_DB_DATA_BASE_FILE_DIR, innerFormInfo.GetFormId());
 
     std::ofstream o(fileNamePath, std::ios_base::trunc | std::ios_base::out);
     if (!o.is_open()) {
         APP_LOGE("%{public}s, open failed file[%{public}s]", __func__, fileNamePath);
-        return ERR_APPEXECFWK_FORM_JSON_OPEN_FAIL;
+        return ERR_APPEXECFWK_FORM_COMMON_CODE;
     }
 
     nlohmann::json innerInfo;
@@ -302,11 +242,11 @@ ErrCode FormStorageMgr::DeleteStorageFormInfo(const std::string &formId) const
 {
     APP_LOGI("%{public}s called, formId[%{public}s]", __func__, formId.c_str());
     char fileNamePath[FORM_DB_DATA_BASE_FILE_PATH_LEN] = {0};
-    sprintf(fileNamePath, "%s/%s.json", FORM_DB_DATA_BASE_FILE_DIR, formId.c_str());
+    sprintf_s(fileNamePath, FORM_DB_DATA_BASE_FILE_PATH_LEN, "%s/%s.json", FORM_DB_DATA_BASE_FILE_DIR, formId.c_str());
 
     if (std::remove(fileNamePath) != 0) {
         APP_LOGE("%{public}s, delete failed file[%{public}s]", __func__, fileNamePath);
-        return ERR_APPEXECFWK_FORM_JSON_DELETE_FAIL;
+        return ERR_APPEXECFWK_FORM_COMMON_CODE;
     }
 
     return ERR_OK;

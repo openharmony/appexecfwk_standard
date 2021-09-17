@@ -21,7 +21,9 @@
 namespace OHOS {
 namespace AppExecFwk {
 using namespace OHOS::EventFwk;
-
+namespace {
+constexpr int loopCnt = 100;
+}
 void LifecycleObserverLifecycleObserver::DoTask()
 {
     switch ((CaseIndex)LifeCycleObserverAbility::sequenceNumber_) {
@@ -492,7 +494,7 @@ void LifeCycleObserverAbility::TestLifeCycleGetLifecycle()
             TestUtils::PublishEvent(APP_LIFE_CYCLE_OBSERVER_RESP_EVENT_NAME, 1, "TestLifeCycleGetLifecycle");
         } break;
         case CaseIndex::TWO: {
-            for (int i = 0; i < 100; i++) {
+            for (int i = 0; i < loopCnt; i++) {
                 auto lifecycle = GetLifecycle();
             }
             TestUtils::PublishEvent(APP_LIFE_CYCLE_OBSERVER_RESP_EVENT_NAME, 1, "TestLifeCycleGetLifecycle");

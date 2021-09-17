@@ -46,7 +46,7 @@ protected:
     virtual void OnCommand(const AAFwk::Want &want, bool restart, int startId) override;
     virtual sptr<IRemoteObject> OnConnect(const Want &want) override;
     virtual void OnDisconnect(const Want &want) override;
-    virtual FormProviderInfo OnCreateForm(const Want &want) override;
+    virtual FormProviderInfo OnCreate(const Want &want) override;
 
 private:
     void Clear();

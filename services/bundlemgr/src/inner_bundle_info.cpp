@@ -58,6 +58,7 @@ const std::string MODULE_ABILITY_KEYS = "abilityKeys";
 const std::string MODULE_SKILL_KEYS = "skillKeys";
 const std::string MODULE_FORMS = "formInfos";
 const std::string MODULE_SHORTCUT = "shortcutInfos";
+const std::string MODULE_MAIN_ABILITY = "mainAbility";
 
 }  // namespace
 
@@ -73,48 +74,40 @@ InnerBundleInfo::~InnerBundleInfo()
 
 void to_json(nlohmann::json &jsonObject, const Distro &distro)
 {
-    jsonObject = nlohmann::json{
-            {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_DELIVERY_WITH_INSTALL, distro.deliveryWithInstall},
+    jsonObject =
+        nlohmann::json{{ProfileReader::BUNDLE_MODULE_PROFILE_KEY_DELIVERY_WITH_INSTALL, distro.deliveryWithInstall},
             {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_MODULE_NAME, distro.moduleName},
             {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_MODULE_TYPE, distro.moduleType},
-            {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_MODULE_INSTALLATION_FREE, distro.installationFree}
-    };
+            {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_MODULE_INSTALLATION_FREE, distro.installationFree}};
 }
 
 void to_json(nlohmann::json &jsonObject, const UsedScene &usedScene)
 {
-    jsonObject = nlohmann::json{
-        {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_REQ_PERMISSIONS_ABILITY, usedScene.ability},
-        {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_REQ_PERMISSIONS_WHEN, usedScene.when}
-    };
+    jsonObject = nlohmann::json{{ProfileReader::BUNDLE_MODULE_PROFILE_KEY_REQ_PERMISSIONS_ABILITY, usedScene.ability},
+        {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_REQ_PERMISSIONS_WHEN, usedScene.when}};
 }
 
 void to_json(nlohmann::json &jsonObject, const ReqPermission &reqPermission)
 {
-    jsonObject = nlohmann::json{
-        {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_REQ_PERMISSIONS_NAME, reqPermission.name},
+    jsonObject = nlohmann::json{{ProfileReader::BUNDLE_MODULE_PROFILE_KEY_REQ_PERMISSIONS_NAME, reqPermission.name},
         {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_REQ_PERMISSIONS_REASON, reqPermission.reason},
-        {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_REQ_PERMISSIONS_USEDSCENE, reqPermission.usedScene}
-    };
+        {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_REQ_PERMISSIONS_USEDSCENE, reqPermission.usedScene}};
 }
 
 void to_json(nlohmann::json &jsonObject, const DefPermission &defPermission)
 {
-    jsonObject = nlohmann::json{
-        {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_DEF_PERMISSIONS_NAME, defPermission.name},
+    jsonObject = nlohmann::json{{ProfileReader::BUNDLE_MODULE_PROFILE_KEY_DEF_PERMISSIONS_NAME, defPermission.name},
         {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_DEF_PERMISSIONS_GRANTMODE, defPermission.grantMode},
         {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_DEF_PERMISSIONS_AVAILABLESCOPE, defPermission.availableScope},
         {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_DEF_PERMISSIONS_LABEL, defPermission.label},
         {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_DEF_PERMISSIONS_LABEL_ID, defPermission.labelId},
         {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_DEF_PERMISSIONS_DESCRIPTION, defPermission.description},
-        {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_DEF_PERMISSIONS_DESCRIPTION_ID, defPermission.descriptionId}
-    };
+        {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_DEF_PERMISSIONS_DESCRIPTION_ID, defPermission.descriptionId}};
 }
 
 void to_json(nlohmann::json &jsonObject, const InnerModuleInfo &info)
 {
-    jsonObject = nlohmann::json{
-        {MODULE_PACKAGE, info.modulePackage},
+    jsonObject = nlohmann::json{{MODULE_PACKAGE, info.modulePackage},
         {MODULE_NAME, info.moduleName},
         {MODULE_PATH, info.modulePath},
         {MODULE_DATA_DIR, info.moduleDataDir},
@@ -132,28 +125,24 @@ void to_json(nlohmann::json &jsonObject, const InnerModuleInfo &info)
         {MODULE_REQ_PERMS, info.reqPermissions},
         {MODULE_DEF_PERMS, info.defPermissions},
         {MODULE_ABILITY_KEYS, info.abilityKeys},
-        {MODULE_SKILL_KEYS, info.skillKeys}
-    };
+        {MODULE_SKILL_KEYS, info.skillKeys},
+        {MODULE_MAIN_ABILITY, info.mainAbility}};
 }
 
 void to_json(nlohmann::json &jsonObject, const SkillUri &uri)
 {
-    jsonObject = nlohmann::json{
-        {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_SCHEME, uri.scheme},
+    jsonObject = nlohmann::json{{ProfileReader::BUNDLE_MODULE_PROFILE_KEY_SCHEME, uri.scheme},
         {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_HOST, uri.host},
         {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_PORT, uri.port},
         {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_PATH, uri.path},
-        {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_TYPE, uri.type}
-    };
+        {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_TYPE, uri.type}};
 }
 
 void to_json(nlohmann::json &jsonObject, const Skill &skill)
 {
-    jsonObject = nlohmann::json{
-        {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_ACTIONS, skill.actions},
+    jsonObject = nlohmann::json{{ProfileReader::BUNDLE_MODULE_PROFILE_KEY_ACTIONS, skill.actions},
         {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_ENTITIES, skill.entities},
-        {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_URIS, skill.uris}
-    };
+        {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_URIS, skill.uris}};
 }
 
 void InnerBundleInfo::ToJson(nlohmann::json &jsonObject) const
@@ -174,7 +163,7 @@ void InnerBundleInfo::ToJson(nlohmann::json &jsonObject) const
     jsonObject[MAIN_ABILITY] = mainAbility_;
     jsonObject[APP_FEATURE] = appFeature_;
     jsonObject[HAS_ENTRY] = hasEntry_;
-	jsonObject[MODULE_FORMS] = formInfos_;
+    jsonObject[MODULE_FORMS] = formInfos_;
     jsonObject[MODULE_SHORTCUT] = shortcutInfos_;
 }
 
@@ -283,6 +272,14 @@ void from_json(const nlohmann::json &jsonObject, InnerModuleInfo &info)
         MODULE_LABEL_ID,
         info.labelId,
         JsonType::NUMBER,
+        false,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        MODULE_MAIN_ABILITY,
+        info.mainAbility,
+        JsonType::STRING,
         false,
         ProfileReader::parseResult,
         ArrayType::NOT_ARRAY);
@@ -581,22 +578,10 @@ int32_t InnerBundleInfo::FromJson(const nlohmann::json &jsonObject)
         true,
         ProfileReader::parseResult,
         ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<int>(jsonObject,
-        jsonObjectEnd,
-        UID,
-        uid_,
-        JsonType::NUMBER,
-        true,
-        ProfileReader::parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<int>(jsonObject,
-        jsonObjectEnd,
-        GID,
-        gid_,
-        JsonType::NUMBER,
-        true,
-        ProfileReader::parseResult,
-        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<int>(
+        jsonObject, jsonObjectEnd, UID, uid_, JsonType::NUMBER, true, ProfileReader::parseResult, ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<int>(
+        jsonObject, jsonObjectEnd, GID, gid_, JsonType::NUMBER, true, ProfileReader::parseResult, ArrayType::NOT_ARRAY);
     GetValueIfFindKey<std::string>(jsonObject,
         jsonObjectEnd,
         BASE_DATA_DIR,
@@ -685,15 +670,15 @@ int32_t InnerBundleInfo::FromJson(const nlohmann::json &jsonObject)
         true,
         ProfileReader::parseResult,
         ArrayType::NOT_ARRAY);
-	GetValueIfFindKey<std::map<std::string, std::vector<FormInfo>>>(jsonObject,
-		jsonObjectEnd,
-		MODULE_FORMS,
-		formInfos_,
-		JsonType::OBJECT,
-		true,
-		ProfileReader::parseResult,
-		ArrayType::NOT_ARRAY);
-     GetValueIfFindKey<std::map<std::string, ShortcutInfo>>(jsonObject,
+    GetValueIfFindKey<std::map<std::string, std::vector<FormInfo>>>(jsonObject,
+        jsonObjectEnd,
+        MODULE_FORMS,
+        formInfos_,
+        JsonType::OBJECT,
+        true,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::map<std::string, ShortcutInfo>>(jsonObject,
         jsonObjectEnd,
         MODULE_SHORTCUT,
         shortcutInfos_,
@@ -725,7 +710,7 @@ std::optional<std::vector<Skill>> InnerBundleInfo::FindSkills(const std::string 
     if (skills.empty()) {
         return std::nullopt;
     }
-    return std::optional<std::vector<Skill>> {skills};
+    return std::optional<std::vector<Skill>>{skills};
 }
 
 std::optional<HapModuleInfo> InnerBundleInfo::FindHapModuleInfo(const std::string &modulePackage) const
@@ -742,6 +727,7 @@ std::optional<HapModuleInfo> InnerBundleInfo::FindHapModuleInfo(const std::strin
     hapInfo.supportedModes = baseApplicationInfo_.supportedModes;
     hapInfo.reqCapabilities = it->second.reqCapabilities;
     hapInfo.colorMode = it->second.colorMode;
+    hapInfo.mainAbility = it->second.mainAbility;
     bool first = false;
     for (auto &ability : baseAbilityInfos_) {
         if (ability.first.find(modulePackage) != std::string::npos) {
@@ -948,10 +934,16 @@ void InnerBundleInfo::GetBundleInfo(const BundleFlag flag, BundleInfo &bundleInf
             std::back_inserter(bundleInfo.defPermissions),
             [](const auto &p) { return p.name; });
         bundleInfo.hapModuleNames.emplace_back(info.second.modulePackage);
-        bundleInfo.moduleNames.emplace_back(info.second.moduleName);
-        bundleInfo.moduleDirs.emplace_back(info.second.modulePath);
-        bundleInfo.modulePublicDirs.emplace_back(info.second.moduleDataDir);
-        bundleInfo.moduleResPaths.emplace_back(info.second.moduleResPath);
+        auto hapmoduleinfo = FindHapModuleInfo(info.second.modulePackage);
+        if (!hapmoduleinfo) {
+            APP_LOGE("can not find hapmoduleinfo %{public}s", info.second.moduleName.c_str());
+        } else {
+            bundleInfo.hapModuleInfos.emplace_back(*hapmoduleinfo);
+            bundleInfo.moduleNames.emplace_back(info.second.moduleName);
+            bundleInfo.moduleDirs.emplace_back(info.second.modulePath);
+            bundleInfo.modulePublicDirs.emplace_back(info.second.moduleDataDir);
+            bundleInfo.moduleResPaths.emplace_back(info.second.moduleResPath);
+        }
         if (info.second.isEntry) {
             bundleInfo.mainEntry = info.second.modulePackage;
             bundleInfo.entryModuleName = info.second.moduleName;
@@ -982,29 +974,29 @@ bool InnerBundleInfo::CheckSpecialMetaData(const std::string &metaData) const
 
 void InnerBundleInfo::GetFormsInfoByModule(const std::string &moduleName, std::vector<FormInfo> &formInfos) const
 {
-	for (const auto &data : formInfos_) {
-		for (auto &form : data.second) {
-			if (form.moduleName == moduleName) {
-				formInfos.emplace_back(form);
-			}
-		}
-	}
+    for (const auto &data : formInfos_) {
+        for (auto &form : data.second) {
+            if (form.moduleName == moduleName) {
+                formInfos.emplace_back(form);
+            }
+        }
+    }
 }
 
 void InnerBundleInfo::GetFormsInfoByApp(std::vector<FormInfo> &formInfos) const
 {
-	for (const auto &data : formInfos_) {
-		for (auto &form : data.second) {
-			formInfos.emplace_back(form);
-		}
-	}
+    for (const auto &data : formInfos_) {
+        for (auto &form : data.second) {
+            formInfos.emplace_back(form);
+        }
+    }
 }
 
 void InnerBundleInfo::GetShortcutInfos(std::vector<ShortcutInfo> &shortcutInfos) const
 {
     for (const auto &shortcut : shortcutInfos_) {
-		shortcutInfos.emplace_back(shortcut.second);
-	}
+        shortcutInfos.emplace_back(shortcut.second);
+    }
 }
 
 std::optional<InnerModuleInfo> InnerBundleInfo::GetInnerModuleInfoByModuleName(const std::string &moduleName) const

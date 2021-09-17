@@ -1620,7 +1620,8 @@ bool BundleDataMgr::UnregisterPermissionsChanged(const sptr<OnPermissionChangedC
     {
         std::lock_guard<std::mutex> lock(allPermissionsChangedLock_);
 
-        for (auto allPermissionsItem = allPermissionsCallbacks_.begin(); allPermissionsItem != allPermissionsCallbacks_.end();) {
+        for (auto allPermissionsItem = allPermissionsCallbacks_.begin();
+             allPermissionsItem != allPermissionsCallbacks_.end();) {
             if ((*allPermissionsItem)->AsObject() == callback->AsObject()) {
                 allPermissionsItem = allPermissionsCallbacks_.erase(allPermissionsItem);
                 APP_LOGI("unregister from all permissions callbacks success!");

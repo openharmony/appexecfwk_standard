@@ -112,7 +112,14 @@ public:
 
     MainAbility()
     {
-        mapCase_ = {
+        initCaseFirst();
+        initCaseSecond();
+        initCaseThird();
+    }
+
+    void initCaseFirst()
+    {
+        std::unordered_map<int, std::vector<std::function<void(int)>>> testCase = {
             {(int)AbilityContextApi::GetApplicationInfo,
                 {
                     [this](int code) { GetApplicationInfoCase1(code); },
@@ -143,6 +150,13 @@ public:
                     [this](int code) { GetDataDirCase2(code); },
                     [this](int code) { GetDataDirCase3(code); },
                 }},
+        };
+        mapCase_.insert(testCase.begin(), testCase.end());
+    }
+
+    void initCaseSecond()
+    {
+        std::unordered_map<int, std::vector<std::function<void(int)>>> testCase = {
             {(int)AbilityContextApi::GetDir,
                 {
                     [this](int code) { GetDirCase1(code); },
@@ -185,6 +199,13 @@ public:
                 {
                     [this](int code) { GetContextCase1(code); },
                 }},
+        };
+        mapCase_.insert(testCase.begin(), testCase.end());
+    }
+
+    void initCaseThird()
+    {
+        std::unordered_map<int, std::vector<std::function<void(int)>>> testCase = {
             {(int)AbilityContextApi::GetAbilityManager,
                 {
                     [this](int code) { GetAbilityManagerCase1(code); },
@@ -229,6 +250,7 @@ public:
                     [this](int code) { GetHapModuleInfoCase3(code); },
                 }},
         };
+        mapCase_.insert(testCase.begin(), testCase.end());
     }
     void SubscribeEvent();
     void TestAbility(int apiIndex, int caseIndex, int code);

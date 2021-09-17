@@ -56,6 +56,13 @@ public:
      * @param connectId The ability connection id generated when save.
      */
     void RemoveConnection(long connectId);
+
+private:
+    /**
+     * @brief check if disconnect ability or not.
+     * @param connection The ability connection.
+     */  
+    bool CanDisConnect(sptr<FormAbilityConnection> &connection);
 private:
     static std::mutex mutex_;
     static sptr<FormSupplyCallback> instance_;

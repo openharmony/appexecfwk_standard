@@ -73,7 +73,8 @@ public:
     static void TearDownTestCase();
     void SetUp();
     void TearDown();
-    void CreateEventData(std::string bundle, int64_t formId, int callingUid, std::string actionType, EventFwk::CommonEventData &eventData);
+    void CreateEventData(std::string bundle, int64_t formId, 
+        int callingUid, std::string actionType, EventFwk::CommonEventData &eventData);
     void CreateFormRecordAndFormInfo(std::string bundle, int64_t formId, int callingUid);
     void ClearFormRecord(int64_t formId);
 
@@ -119,15 +120,16 @@ void FmsFormSysEventReceiverTest::SetUp()
     permDef.descriptionId = 1;
     permList.emplace_back(permDef);
     Permission::PermissionKit::AddDefPermissions(permList);
-    Permission::PermissionKit::AddUserGrantedReqPermissions(FORM_PROVIDER_BUNDLE_NAME, {PERMISSION_NAME_REQUIRE_FORM},
-    0);
+    Permission::PermissionKit::AddUserGrantedReqPermissions(FORM_PROVIDER_BUNDLE_NAME, 
+        {PERMISSION_NAME_REQUIRE_FORM}, 0);
     Permission::PermissionKit::GrantUserGrantedPermission(FORM_PROVIDER_BUNDLE_NAME, PERMISSION_NAME_REQUIRE_FORM, 0);
 }
 
 void FmsFormSysEventReceiverTest::TearDown()
 {}
 
-void FmsFormSysEventReceiverTest::CreateEventData(std::string bundle, int64_t formId, int callingUid, std::string actionType, EventFwk::CommonEventData &eventData)
+void FmsFormSysEventReceiverTest::CreateEventData(std::string bundle, int64_t formId, 
+    int callingUid, std::string actionType, EventFwk::CommonEventData &eventData)
 {
     Want want;
     want.SetAction(actionType);
@@ -205,7 +207,7 @@ HWTEST_F(FmsFormSysEventReceiverTest, OnReceiveEvent_001, TestSize.Level0)
     FormSysEventReceiver testCase;
     testCase.OnReceiveEvent(eventData);
     FormDbCache::GetInstance().GetAllFormInfo(allFormInfo);
-    EXPECT_EQ(ERR_APPEXECFWK_FORM_JSON_DELETE_FAIL, FormDbCache::GetInstance().DeleteFormInfo(formId));
+    EXPECT_EQ(ERR_APPEXECFWK_FORM_COMMON_CODE, FormDbCache::GetInstance().DeleteFormInfo(formId));
     FormDataMgr::GetInstance().DeleteFormRecord(formId);
     FormDbCache::GetInstance().DeleteFormInfo(formId);
     FormDataMgr::GetInstance().DeleteHostRecord(token_, formId);
@@ -352,7 +354,7 @@ HWTEST_F(FmsFormSysEventReceiverTest, OnReceiveEvent_006, TestSize.Level0)
     EventFwk::CommonEventData eventData;
     CreateEventData(bundle, formId, callingUid, actionType, eventData);
     
-    //CreateFormRecordAndFormInfo
+    // CreateFormRecordAndFormInfo
     FormItemInfo record;
     record.SetFormId(formId);
     record.SetProviderBundleName(bundle);
@@ -362,7 +364,7 @@ HWTEST_F(FmsFormSysEventReceiverTest, OnReceiveEvent_006, TestSize.Level0)
     record.SetSpecificationId(PARAM_FORM_DIMENSION_VALUE);
     record.SetTemporaryFlag(true);
     FormDataMgr::GetInstance().AllotFormRecord(record, callingUid);
-    ////AddFormUserUid
+    // AddFormUserUid
     int new_callingUid = 150;
     FormDataMgr::GetInstance().AddFormUserUid(formId, new_callingUid);
     FormRecord realFormRecord;
@@ -440,13 +442,13 @@ HWTEST_F(FmsFormSysEventReceiverTest, OnReceiveEvent_008, TestSize.Level0)
     EventFwk::CommonEventData eventData;
     CreateEventData(bundle, formId, callingUid, actionType, eventData);
 
-    //CreateFormRecordAndFormInfo
+    // CreateFormRecordAndFormInfo
     FormItemInfo record;
     record.SetFormId(formId);
     record.SetProviderBundleName(bundle);
     record.SetModuleName(PARAM_PROVIDER_MODULE_NAME); // model name
-    record.SetAbilityName(FORM_PROVIDER_ABILITY_NAME); //ability name
-    record.SetFormName(PARAM_FORM_NAME); //form name
+    record.SetAbilityName(FORM_PROVIDER_ABILITY_NAME); // ability name
+    record.SetFormName(PARAM_FORM_NAME); // form name
     record.SetSpecificationId(PARAM_FORM_DIMENSION_VALUE);
     record.SetTemporaryFlag(true);
 
@@ -469,5 +471,4 @@ HWTEST_F(FmsFormSysEventReceiverTest, OnReceiveEvent_008, TestSize.Level0)
 
     GTEST_LOG_(INFO) << "fms_form_sys_event_receiver_test_008 end";
 }
-
 }

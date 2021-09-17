@@ -115,7 +115,13 @@ public:
 
     SecondAbility()
     {
-        mapCase_ = {
+        initCaseFirst();
+        initCaseSecond();
+        initCaseThird();
+    }
+
+    void initCaseFirst() {
+        std::unordered_map<int, std::vector<std::function<void(int)>>> first = {
             {(int)AbilityContextApi::GetApplicationInfo,
                 {
                     [this](int code) { GetApplicationInfoCase1(code); },
@@ -146,12 +152,12 @@ public:
                     [this](int code) { GetDataDirCase2(code); },
                     [this](int code) { GetDataDirCase3(code); },
                 }},
-            {(int)AbilityContextApi::GetDir,
-                {
-                    [this](int code) { GetDirCase1(code); },
-                    [this](int code) { GetDirCase2(code); },
-                    [this](int code) { GetDirCase3(code); },
-                }},
+        };
+        mapCase_.insert(first.begin(), first.end());
+    }
+
+    void initCaseSecond() {
+        std::unordered_map<int, std::vector<std::function<void(int)>>> second = {
             {(int)AbilityContextApi::GetBundleManager,
                 {
                     [this](int code) { GetBundleManagerCase1(code); },
@@ -188,6 +194,12 @@ public:
                 {
                     [this](int code) { GetContextCase1(code); },
                 }},
+        };
+        mapCase_.insert(second.begin(), second.end());
+    }
+
+    void initCaseThird() {
+        std::unordered_map<int, std::vector<std::function<void(int)>>> third = {
             {(int)AbilityContextApi::GetAbilityManager,
                 {
                     [this](int code) { GetAbilityManagerCase1(code); },
@@ -232,8 +244,8 @@ public:
                     [this](int code) { GetHapModuleInfoCase3(code); },
                 }},
         };
+        mapCase_.insert(third.begin(), third.end());
     }
-
     std::unordered_map<int, std::vector<std::function<void(int)>>> mapCase_;
     int callingTime = 0;
     ~SecondAbility();

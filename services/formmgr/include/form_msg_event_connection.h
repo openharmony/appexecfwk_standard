@@ -29,7 +29,8 @@ using Want = OHOS::AAFwk::Want;
  */
 class FormMsgEventConnection : public FormAbilityConnection {
 public:
-    FormMsgEventConnection(const int64_t formId, const Want &want);
+    FormMsgEventConnection(const int64_t formId, const Want &want, 
+        const std::string &bundleName, const std::string &abilityName);
     virtual ~FormMsgEventConnection() = default;
 
     /**
