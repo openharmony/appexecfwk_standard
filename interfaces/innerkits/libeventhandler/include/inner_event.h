@@ -67,7 +67,7 @@ public:
      * @param param Basic parameter of the event, default is 0.
      * @return Returns the pointer of InnerEvent instance.
      */
-    template <typename T>
+    template<typename T>
     static inline Pointer Get(uint32_t innerEventId, const std::shared_ptr<T> &object, int64_t param = 0)
     {
         auto event = Get(innerEventId, param);
@@ -83,7 +83,7 @@ public:
      * @param param Basic parameter of the event, default is 0.
      * @return Returns the pointer of InnerEvent instance.
      */
-    template <typename T>
+    template<typename T>
     static inline Pointer Get(uint32_t innerEventId, const std::weak_ptr<T> &object, int64_t param = 0)
     {
         auto event = Get(innerEventId, param);
@@ -99,7 +99,7 @@ public:
      * @param param Basic parameter of the event, default is 0.
      * @return Returns the pointer of InnerEvent instance.
      */
-    template <typename T, typename D>
+    template<typename T, typename D>
     static inline Pointer Get(uint32_t innerEventId, std::unique_ptr<T, D> &&object, int64_t param = 0)
     {
         auto event = Get(innerEventId, param);
@@ -115,7 +115,7 @@ public:
      * @param param Basic parameter of the event, default is 0.
      * @return Returns the pointer of InnerEvent instance.
      */
-    template <typename T, typename D>
+    template<typename T, typename D>
     static inline Pointer Get(uint32_t innerEventId, std::unique_ptr<T, D> &object, int64_t param = 0)
     {
         auto event = Get(innerEventId, param);
@@ -131,7 +131,7 @@ public:
      * @param object Shared pointer of the object.
      * @return Returns the pointer of InnerEvent instance.
      */
-    template <typename T>
+    template<typename T>
     static inline Pointer Get(uint32_t innerEventId, int64_t param, const std::shared_ptr<T> &object)
     {
         auto event = Get(innerEventId, param);
@@ -147,7 +147,7 @@ public:
      * @param object Weak pointer of the object.
      * @return Returns the pointer of InnerEvent instance.
      */
-    template <typename T>
+    template<typename T>
     static inline Pointer Get(uint32_t innerEventId, int64_t param, const std::weak_ptr<T> &object)
     {
         auto event = Get(innerEventId, param);
@@ -163,7 +163,7 @@ public:
      * @param object Unique pointer of the object.
      * @return Returns the pointer of InnerEvent instance.
      */
-    template <typename T, typename D>
+    template<typename T, typename D>
     static inline Pointer Get(uint32_t innerEventId, int64_t param, std::unique_ptr<T, D> &&object)
     {
         auto event = Get(innerEventId, param);
@@ -179,7 +179,7 @@ public:
      * @param object Unique pointer of the object.
      * @return Returns the pointer of InnerEvent instance.
      */
-    template <typename T, typename D>
+    template<typename T, typename D>
     static inline Pointer Get(uint32_t innerEventId, int64_t param, std::unique_ptr<T, D> &object)
     {
         auto event = Get(innerEventId, param);
@@ -290,7 +290,7 @@ public:
      *
      * @return Returns shared pointer of saved object.
      */
-    template <typename T>
+    template<typename T>
     std::shared_ptr<T> GetSharedObject() const
     {
         const std::shared_ptr<T> &sharedObject = *reinterpret_cast<const std::shared_ptr<T> *>(smartPtr_);
@@ -312,7 +312,7 @@ public:
      *
      * @return Returns unique pointer of saved object.
      */
-    template <typename T>
+    template<typename T>
     std::unique_ptr<T> GetUniqueObject() const
     {
         std::unique_ptr<T> &object = *reinterpret_cast<std::unique_ptr<T> *>(smartPtr_);
@@ -329,7 +329,7 @@ public:
      *
      * @return Returns unique pointer of saved object.
      */
-    template <typename T, typename D>
+    template<typename T, typename D>
     std::unique_ptr<T, D> GetUniqueObject() const
     {
         std::unique_ptr<T, D> &object = *reinterpret_cast<std::unique_ptr<T, D> *>(smartPtr_);
@@ -401,7 +401,7 @@ private:
 
     static void WarnSmartPtrCastMismatch();
 
-    template <typename T>
+    template<typename T>
     static void ReleaseSmartPtr(void *smartPtr)
     {
         if (smartPtr != nullptr) {
@@ -409,7 +409,7 @@ private:
         }
     }
 
-    template <typename T>
+    template<typename T>
     inline void SaveSharedPtr(const T &object)
     {
         smartPtr_ = new T(object);
@@ -417,7 +417,7 @@ private:
         smartPtrTypeId_ = CalculateSmartPtrTypeId(object);
     }
 
-    template <typename T>
+    template<typename T>
     inline void SaveUniquePtr(T &object)
     {
         smartPtr_ = new T(std::move(object));
@@ -430,7 +430,7 @@ private:
      */
 #ifdef __GXX_RTTI
     // If RTTI(Run-Time Type Info) is enabled, use hash code of type info.
-    template <typename T>
+    template<typename T>
     static inline size_t CalculateSmartPtrTypeId(const T &)
     {
         return typeid(T).hash_code();
@@ -442,25 +442,25 @@ private:
     static const size_t UNIQUE_PTR_TYPE = 0x30000000;
     static const size_t UNIQUE_PTR_ARRAY_TYPE = 0x40000000;
 
-    template <typename T>
+    template<typename T>
     static inline size_t CalculateSmartPtrTypeId(const std::shared_ptr<T> &)
     {
         return (sizeof(T) | SHARED_PTR_TYPE);
     }
 
-    template <typename T>
+    template<typename T>
     static inline size_t CalculateSmartPtrTypeId(const std::weak_ptr<T> &)
     {
         return (sizeof(T) | WEAK_PTR_TYPE);
     }
 
-    template <typename T, typename D>
+    template<typename T, typename D>
     static inline size_t CalculateSmartPtrTypeId(const std::unique_ptr<T, D> &)
     {
         return (sizeof(T) | (sizeof(D) - 1) | UNIQUE_PTR_TYPE);
     }
 
-    template <typename T, typename D>
+    template<typename T, typename D>
     static inline size_t CalculateSmartPtrTypeId(const std::unique_ptr<T[], D> &)
     {
         return (sizeof(T) | (sizeof(D) - 1) | UNIQUE_PTR_ARRAY_TYPE);

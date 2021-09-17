@@ -254,7 +254,6 @@ public:
 private:
     CallbackCount callbackCount_;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // _Six_ABILITY_H_

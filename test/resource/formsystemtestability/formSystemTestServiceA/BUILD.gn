@@ -35,7 +35,7 @@ config("formSystemTestAConfig") {
   ]
 }
 ohos_shared_library("formSystemTestServiceA") {
-  sources = [ "${subdemosystem_path}/src/form_st_service_ability_a1.cpp" ]
+  sources = [ "${subdemosystem_path}/src/form_st_service_ability_A.cpp" ]
   configs = [ ":formSystemTestAConfig" ]
   deps = [
     "${aafwk_path}/frameworks/kits/ability/native:abilitykit_native",

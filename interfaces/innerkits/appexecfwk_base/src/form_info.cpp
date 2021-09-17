@@ -29,9 +29,7 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 namespace {
-
 const std::string JSON_KEY_COLOR_MODE = "colorMode";
 const std::string JSON_KEY_PACKAGE = "package";
 const std::string JSON_KEY_SUPPORT_DIMENSIONS = "supportDimensions";
@@ -57,7 +55,6 @@ const std::string JSON_KEY_FORM_VISIBLE_NOTIFY = "formVisibleNotify";
 const std::string JSON_KEY_RELATED_BUNDLE_NAME = "relatedBundleName";
 const std::string JSON_KEY_DEFAULT_FLAG = "defaultFlag";
 const std::string JSON_KEY_PORTRAIT_LAYOUTS = "portraitLayouts";
-
 }  // namespace
 
 bool FormInfo::ReadFromParcel(Parcel &parcel)
@@ -184,12 +181,16 @@ bool FormInfo::Marshalling(Parcel &parcel) const
 
 void to_json(nlohmann::json &jsonObject, const FormCustomizeData &customizeDatas)
 {
-    jsonObject = nlohmann::json{{JSON_KEY_NAME, customizeDatas.name}, {JSON_KEY_VALUE, customizeDatas.value}};
+    jsonObject = nlohmann::json{
+        {JSON_KEY_NAME, customizeDatas.name}, 
+        {JSON_KEY_VALUE, customizeDatas.value}
+        };
 }
 
 void to_json(nlohmann::json &jsonObject, const FormInfo &formInfo)
 {
-    jsonObject = nlohmann::json{{JSON_KEY_NAME, formInfo.name},
+    jsonObject = nlohmann::json{
+        {JSON_KEY_NAME, formInfo.name},
         {JSON_KEY_PACKAGE, formInfo.package},
         {JSON_KEY_BUNDLE_NAME, formInfo.bundleName},
         {JSON_KEY_MODULE_NAME, formInfo.moduleName},
@@ -212,7 +213,8 @@ void to_json(nlohmann::json &jsonObject, const FormInfo &formInfo)
         {JSON_KEY_SUPPORT_DIMENSIONS, formInfo.supportDimensions},
         {JSON_KEY_CUSTOMIZE_DATA, formInfo.customizeDatas},
         {JSON_KEY_LANDSCAPE_LAYOUTS, formInfo.landscapeLayouts},
-        {JSON_KEY_PORTRAIT_LAYOUTS, formInfo.portraitLayouts}};
+        {JSON_KEY_PORTRAIT_LAYOUTS, formInfo.portraitLayouts}
+        };
 }
 
 void from_json(const nlohmann::json &jsonObject, FormCustomizeData &customizeDatas)
@@ -248,6 +250,5 @@ void from_json(const nlohmann::json &jsonObject, FormInfo &formInfo)
     formInfo.landscapeLayouts = jsonObject.at(JSON_KEY_LANDSCAPE_LAYOUTS).get<std::vector<std::string>>();
     formInfo.portraitLayouts = jsonObject.at(JSON_KEY_PORTRAIT_LAYOUTS).get<std::vector<std::string>>();
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

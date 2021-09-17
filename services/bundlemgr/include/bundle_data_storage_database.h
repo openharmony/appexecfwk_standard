@@ -69,7 +69,6 @@ private:
     void DeviceAndNameToKey(const std::string &deviceId, const std::string &bundleName, std::string &key) const;
     DistributedKv::DistributedKvDataManager dataManager_;
     std::unique_ptr<DistributedKv::SingleKvStore> kvStorePtr_;
-    // std::shared_ptr<DataChangeListener> dataChangeListener_;
     mutable std::mutex kvStorePtrMutex_;
 };
 

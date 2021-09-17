@@ -49,7 +49,7 @@ const std::string BUNDLE_CODE_DIR = "/data/accounts/account_0/applications/com.e
 const std::string ROOT_DIR = "/data/accounts";
 const std::string PROFILE_FILE = "config.json";
 const std::string SEPARATOR = "/";
-const std::chrono::seconds SLEEP_TIME {2};
+const std::chrono::seconds SLEEP_TIME{2};
 const int32_t ROOT_UID = 0;
 const int32_t USERID = 0;
 const uint32_t VERSION_1 = 1;

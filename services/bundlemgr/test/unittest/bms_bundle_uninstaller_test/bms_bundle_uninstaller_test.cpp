@@ -38,7 +38,6 @@ using namespace OHOS;
 using namespace OHOS::AppExecFwk;
 
 namespace {
-
 const std::string BUNDLE_NAME = "com.example.l3jsdemo";
 const std::string MODULE_PACKAGE = "com.example.l3jsdemo";
 const std::string MODULE_PACKAGE1 = "com.example.l3jsdemo1";
@@ -55,7 +54,6 @@ const std::string MODULE_CODE_DIR1 = "/data/accounts/account_0/applications/com.
 const std::string ROOT_DIR = "/data/accounts";
 const std::string DB_FILE_PATH = "/data/bundlemgr";
 const int32_t ROOT_UID = 0;
-
 }  // namespace
 
 class BmsBundleUninstallerTest : public testing::Test {
@@ -85,6 +83,7 @@ public:
     const std::shared_ptr<BundleMgrService> GetBundleMgrService() const;
     void ClearBundleInfoInDb();
     void DeleteInstallFiles();
+
 private:
     std::shared_ptr<InstalldService> installdService_ = std::make_unique<InstalldService>();
     std::shared_ptr<BundleMgrService> bundleMgrService_ = DelayedSingleton<BundleMgrService>::GetInstance();
@@ -296,11 +295,11 @@ void BmsBundleUninstallerTest::ClearBundleInfoInDb()
         return;
     }
     auto dataMgt = bundleMgrService_->GetDataMgr();
-    if(dataMgt == nullptr) {
+    if (dataMgt == nullptr) {
         return;
     }
     auto dataStorage = dataMgt->GetDataStorage();
-    if(dataStorage == nullptr) {
+    if (dataStorage == nullptr) {
         return;
     }
     InnerBundleInfo innerBundleInfo;

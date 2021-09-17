@@ -60,6 +60,8 @@ ohos_unittest("FmsFormSysEventReceiverTest") {
     "${appexecfwk_path}/interfaces/innerkits/fmskit:fmskit_native",
     "${libs_path}/libeventhandler:libeventhandler_target",
     "${services_path}/formmgr:fms_target",
+    "//base/miscservices/time/services:time_service",
+    "//base/notification/ans_standard/frameworks/wantagent:wantagent_innerkits",
     "//base/security/permission/interfaces/innerkits/permission_standard/permissionsdk:libpermissionsdk_standard",
     "//base/startup/appspawn_standard:appspawn_socket_client",
     "//foundation/aafwk/standard/interfaces/innerkits/base:base",
@@ -67,6 +69,7 @@ ohos_unittest("FmsFormSysEventReceiverTest") {
 
     #"${services_path}/bundlemgr:bms_target",
     "//foundation/aafwk/standard/services/abilitymgr:abilityms_target",
+    "//foundation/distributedschedule/dmsfwk/services/dtbschedmgr:distributedschedsvr",
     "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
     "//third_party/googletest:gmock_main",

@@ -26,7 +26,7 @@
 #include "app_log_wrapper.h"
 #include "event_handler.h"
 #include "form_constants.h"
-#include "form_death_callback.h"
+#include "form_callback_interface.h"
 #include "form_mgr_stub.h"
 #include "form_js_info.h"
 #include "form_provider_data.h"
@@ -39,7 +39,7 @@ namespace AppExecFwk {
  * @class MockFormDeathCallback.
  * The MockFormDeathCallback for form mgr test.
  */
-class MockFormDeathCallback : public FormDeathCallback {
+class MockFormDeathCallback : public FormCallbackInterface {
 public:
     MockFormDeathCallback() = default;
     virtual ~MockFormDeathCallback() = default;
@@ -49,7 +49,22 @@ public:
         APP_LOGI("%{public}s called.", __func__);
     }
 
-    void OnReconnectFailed()
+    /**
+     * @brief Update form.
+     *
+     * @param formJsInfo Indicates the obtained {@code FormJsInfo} instance.
+     */
+    void ProcessFormUpdate(const FormJsInfo &formJsInfo)
+    {
+        APP_LOGI("%{public}s called.", __func__);
+    }
+
+    /**
+     * @brief Uninstall form.
+     *
+     * @param formId Indicates the ID of the form to uninstall.
+     */
+    void ProcessFormUninstall(const int64_t formId)
     {
         APP_LOGI("%{public}s called.", __func__);
     }

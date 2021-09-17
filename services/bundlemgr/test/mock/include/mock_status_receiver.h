@@ -24,7 +24,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class MockStatusReceiver : public IStatusReceiver {
 public:
     MockStatusReceiver() = default;
@@ -40,7 +39,6 @@ private:
 
     DISALLOW_COPY_AND_MOVE(MockStatusReceiver);
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_TEST_MOCK_INCLUDE_MOCK_STATUS_RECEIVER_H

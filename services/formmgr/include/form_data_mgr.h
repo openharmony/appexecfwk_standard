@@ -69,23 +69,6 @@ public:
      */
     void CleanHostRemovedForms(const std::vector<int64_t> &removedFormIds);
     /**
-     * @brief Delete form js info by form record.
-     * @return Returns all form records map.
-     */
-    std::map<int64_t, FormRecord> &GetAllFormRecord();
-
-    /**
-     * @brief Get all form client host record.
-     * @return Returns all form client host record.
-     */
-    std::vector<FormHostRecord> &GetClientRecords();
-
-    /**
-     * @brief Get all form host records.
-     * @return Returns all form host records vector.
-     */
-    std::vector<FormHostRecord> &GetAllFormHostRecord();
-    /**
      * @brief Allot form host record by caller token.
      * @param info The form item info.
      * @param callerToken callerToken
@@ -339,7 +322,14 @@ public:
      * @param foundFormsMap Form Id list.
      */
     void GetNoHostTempForms(const int uid, std::map<FormIdKey, std::set<int64_t>> &noHostTempFormsMap, 
-    std::map<int64_t, bool> &foundFormsMap);
+        std::map<int64_t, bool> &foundFormsMap);
+
+    /**
+     * @brief Update form for host clients.
+     * @param formId The Id of the form.
+     * @param formProviderInfo FormProviderInfo object
+     */
+    void UpdateFormProviderInfo(const int64_t formId, const FormProviderInfo &formProviderInfo);
 private:
     /**
      * @brief Create form record.
@@ -376,7 +366,7 @@ private:
      * @param record The form record.
      * @param info form item info.
      */
-    void ParseAtTimerConfig(FormRecord record, const FormItemInfo &info) const;
+    void ParseAtTimerConfig(FormRecord &record, const FormItemInfo &info) const;
     /**
      * @brief Get the temp forms from host and delete temp form in cache.
      * @param record The form record.

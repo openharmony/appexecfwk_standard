@@ -12,7 +12,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+ 
+#include "appexecfwk_errors.h"
 #include "app_log_wrapper.h"
 #include "app_scheduler_interface.h"
 #include "errors.h"
@@ -51,7 +52,7 @@ int FormHostStub::OnRemoteRequest(uint32_t code, MessageParcel &data, MessagePar
     std::u16string remoteDescriptor = data.ReadInterfaceToken();
     if (descriptor != remoteDescriptor) {
         APP_LOGE("%{public}s failed, local descriptor is not equal to remote", __func__);
-        return ERR_INVALID_STATE;
+        return ERR_APPEXECFWK_FORM_INVALID_PARAM;
     }
 
     auto itFunc = memberFuncMap_.find(code);
@@ -75,7 +76,7 @@ int FormHostStub::HandleAcquired(MessageParcel &data, MessageParcel &reply)
     std::unique_ptr<FormJsInfo> formInfo(data.ReadParcelable<FormJsInfo>());
     if (!formInfo) {
         APP_LOGE("%{public}s, failed to ReadParcelable<FormJsInfo>", __func__);
-        return ERR_NULL_OBJECT;
+        return ERR_APPEXECFWK_PARCEL_ERROR;
     }
     OnAcquired(*formInfo);
     reply.WriteInt32(ERR_OK);
@@ -92,7 +93,7 @@ int FormHostStub::HandleOnUpdate(MessageParcel &data, MessageParcel &reply)
     std::unique_ptr<FormJsInfo> formInfo(data.ReadParcelable<FormJsInfo>());
     if (!formInfo) {
         APP_LOGE("%{public}s, failed to ReadParcelable<FormJsInfo>", __func__);
-        return ERR_NULL_OBJECT;
+        return ERR_APPEXECFWK_PARCEL_ERROR;
     }
     OnUpdate(*formInfo);
     reply.WriteInt32(ERR_OK);
@@ -114,7 +115,7 @@ int FormHostStub::HandleOnUninstall(MessageParcel &data, MessageParcel &reply)
         reply.WriteInt32(ERR_OK);
         return ERR_OK;
     }
-    return ERR_INVALID_DATA;
+    return ERR_APPEXECFWK_PARCEL_ERROR;
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS

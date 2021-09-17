@@ -73,8 +73,8 @@ void FormBmsHelper::SetBundleManager(const sptr<IBundleMgr> &bundleManager)
  */
 void FormBmsHelper::NotifyModuleRemovable(const std::string &bundleName, const std::string &moduleName)
 {
-    APP_LOGI("%{public}s, bundleName:%{public}s, moduleName:%{public}s", __func__, bundleName.c_str(), 
-    moduleName.c_str());
+    APP_LOGI("%{public}s, bundleName:%{public}s, moduleName:%{public}s", 
+        __func__, bundleName.c_str(), moduleName.c_str());
     if (bundleName.empty() || moduleName.empty()) {
         return;
     }
@@ -88,7 +88,6 @@ void FormBmsHelper::NotifyModuleRemovable(const std::string &bundleName, const s
     }
 
     std::string originId = IPCSkeleton::ResetCallingIdentity();
-    // iBundleMgr->UpdateModuleRemovableFlag(bundleName, moduleName, FLAG_MODULE_NOT_USED_BY_FORM);
     
     IPCSkeleton::SetCallingIdentity(originId);
 }

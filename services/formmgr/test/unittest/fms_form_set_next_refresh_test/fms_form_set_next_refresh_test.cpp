@@ -86,7 +86,7 @@ HWTEST_F(FmsFormSetNextRefreshTest, FmsFormSetNextRefreshTest_SetNextRefreshTime
     int64_t formId = 0; // invalid formId
     int64_t nextTime = Constants::MIN_NEXT_TIME;
     
-    EXPECT_EQ(ERR_FORM_INVALID_PARAM, formSetNextRefresh_->SetNextRefreshTime(formId, nextTime));
+    EXPECT_EQ(ERR_APPEXECFWK_FORM_INVALID_PARAM, formSetNextRefresh_->SetNextRefreshTime(formId, nextTime));
     GTEST_LOG_(INFO) << "FmsFormSetNextRefreshTest_SetNextRefreshTime_001 end";
 }
 
@@ -101,7 +101,7 @@ HWTEST_F(FmsFormSetNextRefreshTest, FmsFormSetNextRefreshTest_SetNextRefreshTime
     int64_t formId = 2;
     int64_t nextTime = Constants::MIN_NEXT_TIME;
     
-    EXPECT_EQ(ERR_APPEXECFWK_FORM_INFO_NOT_EXIST, formSetNextRefresh_->SetNextRefreshTime(formId, nextTime));
+    EXPECT_EQ(ERR_APPEXECFWK_FORM_NOT_EXIST_ID, formSetNextRefresh_->SetNextRefreshTime(formId, nextTime));
     GTEST_LOG_(INFO) << "FmsFormSetNextRefreshTest_SetNextRefreshTime_002 end";
 }
 
@@ -124,6 +124,7 @@ HWTEST_F(FmsFormSetNextRefreshTest, FmsFormSetNextRefreshTest_SetNextRefreshTime
     iteminfo.formId_ = formId;
     iteminfo.providerBundleName_ = FORM_HOST_BUNDLE_NAME;
     iteminfo.abilityName_ = FORM_PROVIDER_ABILITY_NAME;
+    iteminfo.temporaryFlag_ = true;
     FormDataMgr::GetInstance().AllotFormRecord(iteminfo, 0);	
 
     EXPECT_EQ(ERR_OK, formSetNextRefresh_->SetNextRefreshTime(formId, nextTime));
@@ -150,9 +151,10 @@ HWTEST_F(FmsFormSetNextRefreshTest, FmsFormSetNextRefreshTest_SetNextRefreshTime
     iteminfo.formId_ = formId;
     iteminfo.providerBundleName_ = "other_bundleName";
     iteminfo.abilityName_ = FORM_PROVIDER_ABILITY_NAME;
+    iteminfo.temporaryFlag_ = true;
     FormDataMgr::GetInstance().AllotFormRecord(iteminfo, 0);	
 
-    EXPECT_EQ(ERR_OPERATION_FORM_NOT_SELF, formSetNextRefresh_->SetNextRefreshTime(formId, nextTime));
+    EXPECT_EQ(ERR_APPEXECFWK_FORM_OPERATION_NOT_SELF, formSetNextRefresh_->SetNextRefreshTime(formId, nextTime));
     GTEST_LOG_(INFO) << "FmsFormSetNextRefreshTest_SetNextRefreshTime_004 end";
 }
 
@@ -172,6 +174,7 @@ HWTEST_F(FmsFormSetNextRefreshTest, FmsFormSetNextRefreshTest_SetNextRefreshTime
     iteminfo.formId_ = formId;
     iteminfo.providerBundleName_ = FORM_HOST_BUNDLE_NAME;
     iteminfo.abilityName_ = FORM_PROVIDER_ABILITY_NAME;
+    iteminfo.temporaryFlag_ = true;
     FormDataMgr::GetInstance().AllotFormRecord(iteminfo, 0);	
 
     // Creat dynamicRefreshTasks_
@@ -213,6 +216,7 @@ HWTEST_F(FmsFormSetNextRefreshTest, FmsFormSetNextRefreshTest_SetNextRefreshTime
     iteminfo.formId_ = formId;
     iteminfo.providerBundleName_ = FORM_HOST_BUNDLE_NAME;
     iteminfo.abilityName_ = FORM_PROVIDER_ABILITY_NAME;
+    iteminfo.temporaryFlag_ = true;
     FormDataMgr::GetInstance().AllotFormRecord(iteminfo, 0);
 
     // set timerRefreshedCount
@@ -223,7 +227,7 @@ HWTEST_F(FmsFormSetNextRefreshTest, FmsFormSetNextRefreshTest_SetNextRefreshTime
     } else {
         iter->second.refreshCount = Constants::LIMIT_COUNT;
     }
-    EXPECT_EQ(ERR_MAX_REFRESH, formSetNextRefresh_->SetNextRefreshTime(formId, nextTime));
+    EXPECT_EQ(ERR_APPEXECFWK_FORM_MAX_REFRESH, formSetNextRefresh_->SetNextRefreshTime(formId, nextTime));
     
     GTEST_LOG_(INFO) << "FmsFormSetNextRefreshTest_SetNextRefreshTime_006 end";
 }

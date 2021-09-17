@@ -170,13 +170,13 @@ public:
     void SetHostBundleName(const std::string &hostBundleName);
 
 private:
-    int callerUid_;
+    int callerUid_ = 0;
     sptr<IRemoteObject> clientStub_ = nullptr;
     std::shared_ptr<FormHostCallback>  clientImpl_ = nullptr;
     sptr<IRemoteObject::DeathRecipient> deathRecipient_ = nullptr;
     std::unordered_map<int64_t, bool> forms_;
     std::unordered_map<int64_t, bool> needRefresh_;
-    std::string hostBundleName_;
+    std::string hostBundleName_ = "";
 
     /**
      * @class ClientDeathRecipient

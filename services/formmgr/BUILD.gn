@@ -19,6 +19,8 @@ config("formmgr_config") {
     "include",
     "//third_party/json/include",
     "//utils/system/safwk/native/include",
+
+    #    "//base/miscservices/time/interfaces/innerkits/include",
   ]
   cflags_cc = [ "-fexceptions" ]
 }
@@ -83,27 +85,31 @@ ohos_shared_library("libfms") {
   }
   deps = [
     "${appexecfwk_path}/common:libappexecfwk_common",
-    "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base:appexecfwk_base",
-    "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core:appexecfwk_core",
     "${libs_path}/libeventhandler:libeventhandler_target",
-    "//base/powermgr/power_manager/interfaces/innerkits:powermgr_client",
-    "//base/security/permission/interfaces/innerkits/permission_standard/permissionsdk:libpermissionsdk_standard",
-    "//foundation/aafwk/standard/interfaces/innerkits/base:base",
-    "//foundation/aafwk/standard/interfaces/innerkits/want:want",
-    "//foundation/distributedschedule/dmsfwk/interfaces/innerkits/uri:zuri",
-    "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
-    "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
+    "//base/miscservices/time/services:time_service",
+    "//base/notification/ans_standard/frameworks/wantagent:wantagent_innerkits",
+    "//foundation/distributedschedule/dmsfwk/services/dtbschedmgr:distributedschedsvr",
     "//utils/native/base:utils",
 
     #  "//third_party/libuuid:libuuid_static",
   ]
 
   external_deps = [
+    "aafwk_standard:base",
+    "aafwk_standard:want",
+    "appexecfwk_standard:appexecfwk_base",
+    "appexecfwk_standard:appexecfwk_core",
     "ces_standard:cesfwk_core",
     "ces_standard:cesfwk_innerkits",
+    "dmsfwk_standard:zuri",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
     "os_account_standard:libaccountkits",
+    "os_account_standard:libaccountkits",
+    "permission_standard:libpermissionsdk_standard",
+    "power_manager_native:powermgr_client",
+    "safwk:system_ability_fwk",
+    "samgr_L2:samgr_proxy",
   ]
 
   subsystem_name = "appexecfwk"

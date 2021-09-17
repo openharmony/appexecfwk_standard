@@ -14,6 +14,7 @@
  */
 #ifndef FOUNDATION_APPEXECFWK_SERVICES_FORMMGR_INCLUDE_FORM_TIMER_TASK_H
 #define FOUNDATION_APPEXECFWK_SERVICES_FORMMGR_INCLUDE_FORM_TIMER_TASK_H
+
 namespace OHOS {
 namespace AppExecFwk {
 /**
@@ -41,7 +42,7 @@ public:
     int64_t refreshTime;
     bool isEnable = true;
     bool isCountTimer = false;
-    UpdateType type;
+    UpdateType type = UpdateType::TYPE_INTERVAL_CHANGE;
     
     FormTimer()
     {
@@ -51,6 +52,8 @@ public:
         min = -1;
         isUpdateAt = false;
         isCountTimer = false;
+        refreshTime = 0;
+        type = UpdateType::TYPE_INTERVAL_CHANGE;
     }
 
     FormTimer(int64_t id, bool countTimer)
@@ -61,6 +64,8 @@ public:
         min = -1;
         isUpdateAt = false;
         isCountTimer = countTimer;
+        refreshTime = 0;
+        type = UpdateType::TYPE_INTERVAL_CHANGE;
     }
 
     FormTimer(int64_t id, long repeatTime)
@@ -71,6 +76,8 @@ public:
         min = -1;
         isUpdateAt = false;
         isCountTimer = true;
+        refreshTime = 0;
+        type = UpdateType::TYPE_INTERVAL_CHANGE;
     }
 
     FormTimer(int64_t id, int hourTime, int minTime)
@@ -81,6 +88,10 @@ public:
         period = -1;
         isUpdateAt = true;
         isCountTimer = false;
+        refreshTime = 0;
+        type = UpdateType::TYPE_INTERVAL_CHANGE;
+    }
+    ~FormTimer(void){
     }
 };
 /**
@@ -108,6 +119,8 @@ public:
         formId = id;
         settedTime = time;
     }
+    ~DynamicRefreshItem(void){
+    }
 };
 /**
  * @struct LimitInfo
@@ -129,57 +142,6 @@ struct FormTimerCfg {
     int updateAtHour = -1;
     int updateAtMin = -1;
 };
-
-// class TimerInfo : public ITimerInfo {
-// public:
-//     TimerInfo();
-//     virtual ~TimerInfo();
-//     virtual void OnTrigger() override;
-//     virtual void SetType(const int &type) override;
-//     virtual void SetRepeat(bool repeat) override;
-//     virtual void SetInterval(const uint64_t &interval) override;
-//     virtual void SetWantAgent(std::shared_ptr<OHOS::Notification::WantAgent::WantAgent> wantAgent) override;
-//     void SetCallbackInfo(std::function<void()> callBack);
-
-//     private:
-//         std::function<void()> callBack_;
-// };
-
-// TimerInfo::TimerInfo()
-// {
-// }
-
-// TimerInfo::~TimerInfo()
-// {
-// }
-
-// void TimerInfo::OnTrigger()
-// {
-//     callBack_();
-// }
-
-// void TimerInfo::SetCallbackInfo(std::function<void()> callBack)
-// {
-//     callBack_ = callBack;
-// }
-
-// void TimerInfo::SetType(const int &_type)
-// {
-//     type = _type;
-// }
-
-// void TimerInfo::SetRepeat(bool _repeat)
-// {
-//     repeat = _repeat;
-// }
-// void TimerInfo::SetInterval(const uint64_t &_interval)
-// {
-//     interval = _interval;
-// }
-// void TimerInfo::SetWantAgent(std::shared_ptr<OHOS::Notification::WantAgent::WantAgent> _wantAgent)
-// {
-//     wantAgent = _wantAgent;
-// }
 
 }  // namespace AppExecFwk
 }  // namespace OHOS

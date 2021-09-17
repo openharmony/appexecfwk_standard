@@ -106,8 +106,8 @@ void FmsFormMgrCastTempFormTest::SetUp()
     permDef.descriptionId = 1;
     permList.emplace_back(permDef);
     Permission::PermissionKit::AddDefPermissions(permList);
-    Permission::PermissionKit::AddUserGrantedReqPermissions(FORM_PROVIDER_BUNDLE_NAME, {PERMISSION_NAME_REQUIRE_FORM}, 
-    0);
+    Permission::PermissionKit::AddUserGrantedReqPermissions(FORM_PROVIDER_BUNDLE_NAME, 
+        {PERMISSION_NAME_REQUIRE_FORM}, 0);
     Permission::PermissionKit::GrantUserGrantedPermission(FORM_PROVIDER_BUNDLE_NAME, PERMISSION_NAME_REQUIRE_FORM, 0);
 }
 
@@ -182,10 +182,10 @@ HWTEST_F(FmsFormMgrCastTempFormTest, CastTempForm_002, TestSize.Level0)
 {
     GTEST_LOG_(INFO) << "fms_form_mgr_cast_temp_form_test_002 start";
     // form id <= 0
-    ASSERT_EQ(ERR_FORM_INVALID_PARAM, FormMgr::GetInstance().CastTempForm(0L, token_));
+    ASSERT_EQ(ERR_APPEXECFWK_FORM_INVALID_PARAM, FormMgr::GetInstance().CastTempForm(0L, token_));
     // Caller ability token is nullptr
     int64_t formId {FormDataMgr::GetInstance().GenerateFormId()};
-    ASSERT_EQ(ERR_FORM_INVALID_PARAM, FormMgr::GetInstance().CastTempForm(formId, nullptr));
+    ASSERT_EQ(ERR_APPEXECFWK_FORM_INVALID_PARAM, FormMgr::GetInstance().CastTempForm(formId, nullptr));
     GTEST_LOG_(INFO) << "fms_form_mgr_cast_temp_form_test_002 end";
 }
 
@@ -202,7 +202,7 @@ HWTEST_F(FmsFormMgrCastTempFormTest, CastTempForm_003, TestSize.Level0)
     GTEST_LOG_(INFO) << "fms_form_mgr_cast_temp_form_test_003 start";
     int64_t formId {FormDataMgr::GetInstance().GenerateFormId()};
     // form is not exist in cache
-    ASSERT_EQ(ERR_NOT_EXIST_ID, FormMgr::GetInstance().CastTempForm(formId, token_));
+    ASSERT_EQ(ERR_APPEXECFWK_FORM_NOT_EXIST_ID, FormMgr::GetInstance().CastTempForm(formId, token_));
     GTEST_LOG_(INFO) << "fms_form_mgr_cast_temp_form_test_003 end";
 }
 
@@ -231,7 +231,7 @@ HWTEST_F(FmsFormMgrCastTempFormTest, CastTempForm_004, TestSize.Level0)
     record1.SetTemporaryFlag(true);
     FormRecord retFormRec = FormDataMgr::GetInstance().AllotFormRecord(record1, callingUid);
 
-    ASSERT_EQ(ERR_OPERATION_FORM_NOT_SELF, FormMgr::GetInstance().CastTempForm(formId, token_));
+    ASSERT_EQ(ERR_APPEXECFWK_FORM_OPERATION_NOT_SELF, FormMgr::GetInstance().CastTempForm(formId, token_));
 
     FormDataMgr::GetInstance().DeleteFormRecord(formId);
     FormDbCache::GetInstance().DeleteFormInfo(formId);

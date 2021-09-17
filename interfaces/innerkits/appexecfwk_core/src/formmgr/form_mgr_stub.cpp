@@ -86,7 +86,7 @@ int FormMgrStub::OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParc
     std::u16string remoteDescriptor = data.ReadInterfaceToken();
     if (descriptor != remoteDescriptor) {
         APP_LOGE("%{public}s failed, local descriptor is not equal to remote", __func__);
-        return ERR_INVALID_STATE;
+        return ERR_APPEXECFWK_FORM_INVALID_PARAM;
     }
 
     auto itFunc = memberFuncMap_.find(code);
@@ -116,7 +116,7 @@ int32_t FormMgrStub::HandleAddForm(MessageParcel &data, MessageParcel &reply)
     sptr<IRemoteObject> client = data.ReadParcelable<IRemoteObject>();
     if (client == nullptr) {
         APP_LOGE("%{public}s, failed to RemoteObject invalidate", __func__);
-        return ERR_APPEXECFWK_SERVICE_NOT_CONNECTED;
+        return ERR_APPEXECFWK_PARCEL_ERROR;
     }
 
     FormJsInfo formInfo;
@@ -137,7 +137,7 @@ int32_t FormMgrStub::HandleDeleteForm(MessageParcel &data, MessageParcel &reply)
     int64_t formId = data.ReadInt64();
     sptr<IRemoteObject> client = data.ReadParcelable<IRemoteObject>();
     if (client == nullptr) {
-        return ERR_APPEXECFWK_SERVICE_NOT_CONNECTED;
+        return ERR_APPEXECFWK_PARCEL_ERROR;
     }
     int32_t result = DeleteForm(formId, client);
     reply.WriteInt32(result);
@@ -154,7 +154,7 @@ int32_t FormMgrStub::HandleReleaseForm(MessageParcel &data, MessageParcel &reply
     int64_t formId = data.ReadInt64();
     sptr<IRemoteObject> client = data.ReadParcelable<IRemoteObject>();
     if (client == nullptr) {
-        return ERR_APPEXECFWK_SERVICE_NOT_CONNECTED;
+        return ERR_APPEXECFWK_PARCEL_ERROR;
     }
     bool delCache = data.ReadBool();
     
@@ -207,7 +207,7 @@ int32_t FormMgrStub::HandleLifecycleUpdate(MessageParcel &data, MessageParcel &r
     sptr<IRemoteObject> client = data.ReadParcelable<IRemoteObject>();
     if (client == nullptr) {
         APP_LOGE("%{public}s, failed to ReadParcelable<IRemoteObject>", __func__);
-        return ERR_APPEXECFWK_SERVICE_NOT_CONNECTED;
+        return ERR_APPEXECFWK_PARCEL_ERROR;
     }
     int32_t updateType = data.ReadInt32();
     int32_t result = LifecycleUpdate(formIds, client, updateType);
@@ -229,7 +229,7 @@ int32_t FormMgrStub::HandleRequestForm(MessageParcel &data, MessageParcel &reply
     sptr<IRemoteObject> client = data.ReadParcelable<IRemoteObject>();
     if (client == nullptr) {
         APP_LOGE("%{public}s, failed to ReadParcelable<IRemoteObject>", __func__);
-        return ERR_APPEXECFWK_SERVICE_NOT_CONNECTED;
+        return ERR_APPEXECFWK_PARCEL_ERROR;
     }
 
     std::unique_ptr<Want> want(data.ReadParcelable<Want>());
@@ -258,7 +258,7 @@ int32_t FormMgrStub::HandleNotifyWhetherVisibleForms(MessageParcel &data, Messag
 
     sptr<IRemoteObject> client = data.ReadParcelable<IRemoteObject>();
     if (client == nullptr) {
-        return ERR_APPEXECFWK_SERVICE_NOT_CONNECTED;
+        return ERR_APPEXECFWK_PARCEL_ERROR;
     }
     int32_t formVisibleType = data.ReadInt32();
 
@@ -278,7 +278,7 @@ int32_t FormMgrStub::HandleCastTempForm(MessageParcel &data, MessageParcel &repl
     int64_t formId = data.ReadInt64();
     sptr<IRemoteObject> client = data.ReadParcelable<IRemoteObject>();
     if (client == nullptr) {
-        return ERR_APPEXECFWK_SERVICE_NOT_CONNECTED;
+        return ERR_APPEXECFWK_PARCEL_ERROR;
     }
 
     int32_t result = CastTempForm(formId, client);
@@ -374,7 +374,7 @@ int32_t FormMgrStub::HandleMessageEvent(MessageParcel &data, MessageParcel &repl
     sptr<IRemoteObject> client = data.ReadParcelable<IRemoteObject>();
     if (client == nullptr) {
         APP_LOGE("%{public}s, failed to ReadParcelable<IRemoteObject>", __func__);
-        return ERR_APPEXECFWK_SERVICE_NOT_CONNECTED;
+        return ERR_APPEXECFWK_PARCEL_ERROR;
     }
     
     int32_t result = MessageEvent(formId, *want, client);
