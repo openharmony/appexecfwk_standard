@@ -29,7 +29,7 @@ namespace ProfileReader {
 
 thread_local int32_t parseResult;
 const std::map<std::string, AbilityType> ABILITY_TYPE_MAP = {
-    {"page", AbilityType::PAGE}, {"service", AbilityType::SERVICE}, {"data", AbilityType::DATA}}, {"form", AbilityType::FORM};
+    {"page", AbilityType::PAGE}, {"service", AbilityType::SERVICE}, {"data", AbilityType::DATA}, {"form", AbilityType::FORM}};
 const std::map<std::string, DisplayOrientation> DISPLAY_ORIENTATION_MAP = {
     {"unspecified", DisplayOrientation::UNSPECIFIED},
     {"landscape", DisplayOrientation::LANDSCAPE},
