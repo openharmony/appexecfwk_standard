@@ -29,6 +29,7 @@ enum class AbilityType {
     PAGE,
     SERVICE,
     DATA,
+    FORM,
 };
 
 enum class AbilitySubType {
