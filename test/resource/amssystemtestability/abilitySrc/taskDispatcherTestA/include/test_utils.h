@@ -19,7 +19,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class TestUtils {
 public:
     TestUtils() = default;

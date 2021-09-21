@@ -47,35 +47,35 @@ public:
                 {
                     [this](int code) { OnSetCallerCase1(code); },
                 }},
-            {(int)AppendApi::TerminateAndRemoveMisson,
+                {(int)AppendApi::TerminateAndRemoveMisson,
                 {
                     [this](int code) { TerminateAndRemoveMissonCase1(code); },
                 }},
-            {(int)AppendApi::TerminateAbilityResult,
+                {(int)AppendApi::TerminateAbilityResult,
                 {
                     [this](int code) { TerminateAbilityResultCase1(code); },
                 }},
-            {(int)AppendApi::GetDispalyOrientation,
+                {(int)AppendApi::GetDispalyOrientation,
                 {
                     [this](int code) { GetDispalyOrientationCase1(code); },
                 }},
-            {(int)AppendApi::GetPreferencesDir,
+                {(int)AppendApi::GetPreferencesDir,
                 {
                     [this](int code) { GetPreferencesDirCase1(code); },
                 }},
-            {(int)AppendApi::StartAbilities,
+                {(int)AppendApi::StartAbilities,
                 {
                     [this](int code) { StartAbilitiesCase1(code); },
                 }},
-            {(int)AppendApi::GetColorMode,
+                {(int)AppendApi::GetColorMode,
                 {
                     [this](int code) { GetColorModeCase1(code); },
                 }},
-            {(int)AppendApi::SetColorMode,
+                {(int)AppendApi::SetColorMode,
                 {
                     [this](int code) { SetColorModeCase1(code); },
                 }},
-            {(int)AppendApi::IsFirstInMission,
+                {(int)AppendApi::IsFirstInMission,
                 {
                     [this](int code) { IsFirstInMissionCase1(code); },
                 }},

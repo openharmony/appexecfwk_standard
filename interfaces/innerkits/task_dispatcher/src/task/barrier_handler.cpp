@@ -171,9 +171,9 @@ bool BarrierHandler::HasTask(const std::set<std::shared_ptr<Task>> &tasks)
 
 std::set<std::shared_ptr<Task>> BarrierHandler::CreateTaskSet(std::shared_ptr<Task> &firstTask)
 {
-    std::set<std::shared_ptr<Task>> newSet;
-    newSet.insert(firstTask);
-    return newSet;
+    std::set<std::shared_ptr<Task>> taskSet;
+    taskSet.insert(firstTask);
+    return taskSet;
 }
 
 }  // namespace AppExecFwk

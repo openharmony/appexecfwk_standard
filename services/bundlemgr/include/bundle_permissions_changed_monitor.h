@@ -28,6 +28,7 @@
 #include "json_serializer.h"
 #include "app_log_wrapper.h"
 
+
 #include "bundle_parser.h"
 #include "installd_client.h"
 #include "bundle_permission_mgr.h"
@@ -36,15 +37,13 @@ namespace OHOS {
 namespace AppExecFwk {
 class BundlePermissionsChangedMonitor : public EventFwk::CommonEventSubscriber {
 public:
-    BundlePermissionsChangedMonitor(
-        const std::shared_ptr<BundleDataMgr> &dataMgr, const EventFwk::CommonEventSubscribeInfo &sp)
-        : CommonEventSubscriber(sp)
+    BundlePermissionsChangedMonitor(const std::shared_ptr<BundleDataMgr> &dataMgr,
+                const EventFwk::CommonEventSubscribeInfo& sp):CommonEventSubscriber(sp)
     {
         dataMgr_ = dataMgr;
     }
-    ~BundlePermissionsChangedMonitor()
-    {
-        if (!dataMgr_) {
+    ~BundlePermissionsChangedMonitor(){
+        if(!dataMgr_){
             dataMgr_.reset();
         }
     }
@@ -53,11 +52,10 @@ public:
         OHOS::AAFwk::Want want = data.GetWant();
         std::string action = want.GetAction();
         int32_t uid = data.GetCode();
-        if (dataMgr_ != nullptr && uid >= 0) {
+        if ( dataMgr_ != nullptr && uid >=0 ) {
             dataMgr_->NotifyPermissionsChanged(uid);
         }
     }
-
 private:
     std::shared_ptr<BundleDataMgr> dataMgr_;
 };

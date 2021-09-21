@@ -18,7 +18,6 @@
 #include <condition_variable>
 
 namespace STtools {
-
 class Event {
 public:
     Event();
@@ -38,5 +37,4 @@ private:
 int WaitCompleted(Event &event, const std::string &eventName, const int code, const int timeout = 60);
 void Completed(Event &event, const std::string &eventName, const int code);
 void CleanMsg(Event &event);
-
 }  // namespace STtools

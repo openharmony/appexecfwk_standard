@@ -76,7 +76,6 @@ HWTEST(BarrierHandlerTest, BarrierHandler_interceptTest_001, TestSize.Level0)
     auto name = std::string("BarrierHandler_interceptTest_001");
     GTEST_LOG_(INFO) << name << " start";
     std::shared_ptr<BarrierHandler> barrierHandler = CreateBarrierHandler();
-    //每次添加组任务, 给任务添加监听，当任务完成时候。。。。。判断任务是否应该执行（前面有屏障时候，不立即执行）。
     std::shared_ptr<Runnable> runnable = std::make_shared<Runnable>([&]() { GTEST_LOG_(INFO) << name << " Runnable"; });
     std::shared_ptr<Task> task = std::make_shared<Task>(runnable, TaskPriority::DEFAULT, nullptr);
     ErrCode result = barrierHandler->Intercept(task);

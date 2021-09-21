@@ -37,52 +37,52 @@ public:
     virtual ~Task();
 
     /**
-     *@brief invoke the function to execute the task
+     * @brief invoke the function to execute the task
      */
     virtual void Run();
 
     /**
-     *  @brief Gets the priority.
-     *  @return The priority.
+     * @brief Gets the priority.
+     * @return The priority.
      */
     TaskPriority GetPriority() const;
 
     /**
-     *  @brief Sets the sequence.
-     *  @param sequence The sequence
+     * @brief Sets the sequence.
+     * @param sequence The sequence
      */
     void SetSequence(long sequence);
 
     /**
-     *@brief Gets the sequence.
-     *@return The sequence.
+     * @brief Gets the sequence.
+     * @return The sequence.
      */
     long GetSequence() const;
 
     /**
-     *@brief Revoke this task if hasn't run.
-     *@return true if set revoked or already revoked. False if the task has start executing.
+     * @brief Revoke this task if hasn't run.
+     * @return true if set revoked or already revoked. False if the task has start executing.
      */
     bool Revoke() override;
 
     /**
-     *@brief Adds a task listener.
-     *@param listener The listener
+     * @brief Adds a task listener.
+     * @param listener The listener
      */
     void AddTaskListener(const std::shared_ptr<TaskListener> &listener);
 
     /**
-     *@brief Called when task is about to run.
+     * @brief Called when task is about to run.
      */
     void BeforeTaskExecute();
 
     /**
-     *@brief Called when task is done.
+     * @brief Called when task is done.
      */
     void AfterTaskExecute();
 
     /**
-     *@brief Called when task is canceled.
+     * @brief Called when task is canceled.
      */
     void OnTaskCanceled();
 
@@ -102,9 +102,9 @@ private:
     };
 
     /**
-     *@brief Return true if not executed or revoked, and if not executed or revoked, ensure |EXECUTED| to be set.
-     *@param -
-     *@return bool
+     * @brief Return true if not executed or revoked, and if not executed or revoked, ensure |EXECUTED| to be set.
+     * @param -
+     * @return bool
      */
     bool EnterExecute();
 

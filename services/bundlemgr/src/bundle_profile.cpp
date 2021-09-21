@@ -1684,11 +1684,11 @@ bool CheckBundleNameIsValid(const std::string &bundleName)
         return false;
     }
     char head = bundleName.at(0);
-    if (head < 'A' || (head > 'Z' && head < 'a') || head > 'z') {
+    if (head < 'A' || ('Z' < head && head < 'a') || head > 'z') {
         return false;
     }
     for (const auto &c : bundleName) {
-        if (c < '.' || c == '/' || (c > '9' && c < 'A') || (c > 'Z' && c < '_') || c == '`' || c > 'z') {
+        if (c < '.' || c == '/' || ('9' < c && c < 'A') || ('Z' < c && c < '_') || c == '`' || c > 'z') {
             return false;
         }
     }

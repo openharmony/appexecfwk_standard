@@ -46,11 +46,11 @@ void BmsServiceStartupTest::TearDown()
 }
 
 /**
- * @tc.number: Startup_0100
- * @tc.name: test the start function of the BMS service when service is not ready
- * @tc.desc: 1. the service is not initialized
- *           2. the non initialized BMS service can be started
- */
+* @tc.number: Startup_0100
+* @tc.name: test the start function of the BMS service when service is not ready
+* @tc.desc: 1. the service is not initialized
+*           2. the non initialized BMS service can be started
+*/
 HWTEST_F(BmsServiceStartupTest, Startup_0100, Function | SmallTest | Level0)
 {
     std::shared_ptr<BundleMgrService> bms = DelayedSingleton<BundleMgrService>::GetInstance();
@@ -62,12 +62,12 @@ HWTEST_F(BmsServiceStartupTest, Startup_0100, Function | SmallTest | Level0)
 }
 
 /**
- * @tc.number: Startup_0200
- * @tc.name: test the stop function of the BMS service when service is ready
- * @tc.desc: 1. the service is already initialized
- *           2. the initialized BMS service can be stopped
- */
-HWTEST_F(BmsServiceStartupTest, Startup_0200, Function | SmallTest | Level0)
+* @tc.number: Startup_0200
+* @tc.name: test the stop function of the BMS service when service is ready
+* @tc.desc: 1. the service is already initialized
+*           2. the initialized BMS service can be stopped
+*/
+HWTEST_F(BmsServiceStartupTest, Startup_0200,Function | SmallTest | Level0)
 {
     std::shared_ptr<BundleMgrService> bms = DelayedSingleton<BundleMgrService>::GetInstance();
     bms->OnStart();
@@ -79,12 +79,12 @@ HWTEST_F(BmsServiceStartupTest, Startup_0200, Function | SmallTest | Level0)
 }
 
 /**
- * @tc.number: Startup_0300
- * @tc.name:  test the restart function of the BMS service
- * @tc.desc: 1. the service is already initialized
- *           2. the stopped BMS service can be restarted
- */
-HWTEST_F(BmsServiceStartupTest, Startup_0300, Function | SmallTest | Level0)
+* @tc.number: Startup_0300
+* @tc.name:  test the restart function of the BMS service
+* @tc.desc: 1. the service is already initialized
+*           2. the stopped BMS service can be restarted
+*/
+HWTEST_F(BmsServiceStartupTest, Startup_0300,Function | SmallTest | Level0)
 {
     std::shared_ptr<BundleMgrService> bms = DelayedSingleton<BundleMgrService>::GetInstance();
     bms->OnStart();
@@ -99,12 +99,12 @@ HWTEST_F(BmsServiceStartupTest, Startup_0300, Function | SmallTest | Level0)
 }
 
 /**
- * @tc.number: Startup_0400
- * @tc.name:  test the restart function of the BMS service which is already initialized
- * @tc.desc: 1. the service is already initialized
- *           2. the recall start function will not affect the initialized BMS service
- */
-HWTEST_F(BmsServiceStartupTest, Startup_0400, Function | SmallTest | Level0)
+* @tc.number: Startup_0400
+* @tc.name:  test the restart function of the BMS service which is already initialized
+* @tc.desc: 1. the service is already initialized
+*           2. the recall start function will not affect the initialized BMS service
+*/
+HWTEST_F(BmsServiceStartupTest, Startup_0400,Function | SmallTest | Level0)
 {
     std::shared_ptr<BundleMgrService> bms = DelayedSingleton<BundleMgrService>::GetInstance();
     bms->OnStart();
@@ -116,12 +116,12 @@ HWTEST_F(BmsServiceStartupTest, Startup_0400, Function | SmallTest | Level0)
 }
 
 /**
- * @tc.number: GetDataMgr_0100
- * @tc.name:  test the dataMgr can be obtained
- * @tc.desc: 1. the service is already initialized
- *           2. the dataMgr can be obtained
- */
-HWTEST_F(BmsServiceStartupTest, GetDataMgr_0100, Function | SmallTest | Level0)
+* @tc.number: GetDataMgr_0100
+* @tc.name:  test the dataMgr can be obtained
+* @tc.desc: 1. the service is already initialized
+*           2. the dataMgr can be obtained
+*/
+HWTEST_F(BmsServiceStartupTest, GetDataMgr_0100,Function | SmallTest | Level0)
 {
     std::shared_ptr<BundleMgrService> bms = DelayedSingleton<BundleMgrService>::GetInstance();
     bms->OnStart();
@@ -131,12 +131,12 @@ HWTEST_F(BmsServiceStartupTest, GetDataMgr_0100, Function | SmallTest | Level0)
 }
 
 /**
- * @tc.number: GetBundleInstaller_0100
- * @tc.name:  test the installer can be obtained
- * @tc.desc: 1. the service is already initialized
- *           2. the installer can be obtained
- */
-HWTEST_F(BmsServiceStartupTest, GetBundleInstaller_0100, Function | SmallTest | Level0)
+* @tc.number: GetBundleInstaller_0100
+* @tc.name:  test the installer can be obtained
+* @tc.desc: 1. the service is already initialized
+*           2. the installer can be obtained
+*/
+HWTEST_F(BmsServiceStartupTest, GetBundleInstaller_0100,Function | SmallTest | Level0)
 {
     std::shared_ptr<BundleMgrService> bms = DelayedSingleton<BundleMgrService>::GetInstance();
     bms->OnStart();

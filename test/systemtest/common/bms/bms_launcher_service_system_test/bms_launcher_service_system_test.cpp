@@ -44,7 +44,7 @@ const std::string BUNDLE_ADD = "Bundle Add Success";
 const std::string BUNDLE_UPDATE = "Bundle Update Success";
 const std::string BUNDLE_REMOVE = "Bundle Remove Success";
 constexpr uint32_t WAIT_SECONDS = 5;
-const unsigned int LIST_SIZE = 2;
+
 }  // namespace
 using OHOS::AAFwk::Want;
 using namespace testing::ext;
@@ -173,7 +173,7 @@ void BmsLauncherServiceSystemTest::Install(
     InstallParam installParam;
     installParam.installFlag = installFlag;
     installParam.userId = Constants::DEFAULT_USERID;
-    sptr<StatusReceiverImpl> statusReceiver = new (std::nothrow) StatusReceiverImpl();
+    sptr<StatusReceiverImpl> statusReceiver = (new (std::nothrow) StatusReceiverImpl());
     EXPECT_NE(statusReceiver, nullptr);
     installerProxy->Install(bundleFilePath, installParam, statusReceiver);
     installMessage = statusReceiver->GetResultMsg();
@@ -194,7 +194,7 @@ void BmsLauncherServiceSystemTest::Uninstall(const std::string &bundleName, std:
     } else {
         InstallParam installParam;
         installParam.userId = Constants::DEFAULT_USERID;
-        sptr<StatusReceiverImpl> statusReceiver = new (std::nothrow) StatusReceiverImpl();
+        sptr<StatusReceiverImpl> statusReceiver = (new (std::nothrow) StatusReceiverImpl());
         EXPECT_NE(statusReceiver, nullptr);
         installerProxy->Uninstall(bundleName, installParam, statusReceiver);
         uninstallMessage = statusReceiver->GetResultMsg();
@@ -294,13 +294,13 @@ HWTEST_F(BmsLauncherServiceSystemTest, BMS_Register_0100, Function | MediumTest 
     std::string bundleFilePath = THIRD_BUNDLE_PATH + "bmsThirdBundle1.hap";
     std::string bundleName = "com.example.third1";
     std::string message;
-    LauncherService launcherservice;
+    std::shared_ptr<LauncherService> launcherservice = std::make_shared<LauncherService>();
     sptr<TestBundleStatusCallback> callback = new TestBundleStatusCallback();
-    launcherservice.RegisterCallback(callback);
+    launcherservice->RegisterCallback(callback);
     Install(bundleFilePath, InstallFlag::NORMAL, message);
     EXPECT_EQ(message, "Success") << "install fail!";
     EXPECT_TRUE(Wait(BUNDLE_ADD));
-    launcherservice.UnRegisterCallback();
+    launcherservice->UnRegisterCallback();
     Uninstall(bundleName, message);
     EXPECT_EQ(message, "Success") << "uninstall fail!";
     GTEST_LOG_(INFO) << "END BMS_Register_0100";
@@ -316,15 +316,15 @@ HWTEST_F(BmsLauncherServiceSystemTest, BMS_Register_0200, Function | MediumTest 
     std::string bundleFilePath = THIRD_BUNDLE_PATH + "bmsThirdBundle1.hap";
     std::string bundleName = "com.example.third1";
     std::string message;
-    LauncherService launcherservice;
+    std::shared_ptr<LauncherService> launcherservice = std::make_shared<LauncherService>();
     sptr<TestBundleStatusCallback> callback = new TestBundleStatusCallback();
-    launcherservice.RegisterCallback(callback);
+    launcherservice->RegisterCallback(callback);
     Install(bundleFilePath, InstallFlag::NORMAL, message);
     EXPECT_EQ(message, "Success") << "install fail!";
     Uninstall(bundleName, message);
     EXPECT_TRUE(Wait(BUNDLE_REMOVE));
     EXPECT_EQ(message, "Success") << "uninstall fail!";
-    launcherservice.UnRegisterCallback();
+    launcherservice->UnRegisterCallback();
     GTEST_LOG_(INFO) << "END BMS_Register_0200";
 }
 /**
@@ -339,16 +339,16 @@ HWTEST_F(BmsLauncherServiceSystemTest, BMS_Register_0300, Function | MediumTest 
     std::string bundleFilePath1 = THIRD_BUNDLE_PATH + "bmsThirdBundle1.hap";
     std::string bundleFilePath2 = THIRD_BUNDLE_PATH + "bmsThirdBundle4.hap";
     std::string message;
-    LauncherService launcherservice;
+    std::shared_ptr<LauncherService> launcherservice = std::make_shared<LauncherService>();
     sptr<TestBundleStatusCallback> callback = new TestBundleStatusCallback();
-    launcherservice.RegisterCallback(callback);
+    launcherservice->RegisterCallback(callback);
     Install(bundleFilePath1, InstallFlag::NORMAL, message);
     EXPECT_EQ(message, "Success") << "install fail!";
     EXPECT_TRUE(Wait(BUNDLE_ADD));
     Install(bundleFilePath2, InstallFlag::REPLACE_EXISTING, message);
     EXPECT_EQ(message, "Success") << "install fail!";
     EXPECT_TRUE(Wait(BUNDLE_UPDATE));
-    launcherservice.UnRegisterCallback();
+    launcherservice->UnRegisterCallback();
     Uninstall(bundleName, message);
     EXPECT_EQ(message, "Success") << "uninstall fail!";
     GTEST_LOG_(INFO) << "END BMS_Register_0300";
@@ -364,10 +364,10 @@ HWTEST_F(BmsLauncherServiceSystemTest, BMS_Register_0400, Function | MediumTest 
     std::string bundleName = THIRD_BASE_BUNDLE_NAME + "2";
     std::string bundleFilePath = THIRD_BUNDLE_PATH + "bmsThirdBundle2.hap";
     std::string message;
-    LauncherService launcherservice;
+    std::shared_ptr<LauncherService> launcherservice = std::make_shared<LauncherService>();
     sptr<TestBundleStatusCallback> callback = new TestBundleStatusCallback();
-    launcherservice.RegisterCallback(callback);
-    launcherservice.UnRegisterCallback();
+    launcherservice->RegisterCallback(callback);
+    launcherservice->UnRegisterCallback();
     Install(bundleFilePath, InstallFlag::NORMAL, message);
     EXPECT_EQ(message, "Success") << "install fail!";
     EXPECT_FALSE(Wait(BUNDLE_ADD));
@@ -392,9 +392,13 @@ HWTEST_F(BmsLauncherServiceSystemTest, BMS_GetAbilityList_0100, Function | Mediu
     Install(bundleFilePath, InstallFlag::NORMAL, message);
     EXPECT_EQ(message, "Success") << "install fail!";
 
-    LauncherService launcherservice;
+    std::shared_ptr<LauncherService> launcherservice = std::make_shared<LauncherService>();
     std::vector<LauncherAbilityInfo> launcherAbilityInfos;
-    bool result = launcherservice.GetAbilityList(bundleName, userId, launcherAbilityInfos);
+    if (!launcherservice) {
+        APP_LOGE("launcher service is nullptr.");
+        EXPECT_EQ(launcherservice, nullptr);
+    }
+    bool result = launcherservice->GetAbilityList(bundleName, userId, launcherAbilityInfos);
     EXPECT_TRUE(result) << "Get ability list failed";
     EXPECT_FALSE(launcherAbilityInfos.empty()) << "Launcher ability infos is empty";
     EXPECT_EQ(launcherAbilityInfos[0].name, abilityName);
@@ -425,9 +429,13 @@ HWTEST_F(BmsLauncherServiceSystemTest, BMS_GetAbilityList_0200, Function | Mediu
     Install(bundleFilePath2, InstallFlag::REPLACE_EXISTING, message);
     EXPECT_EQ(message, "Success") << "install fail!";
 
-    LauncherService launcherservice;
+    std::shared_ptr<LauncherService> launcherservice = std::make_shared<LauncherService>();
     std::vector<LauncherAbilityInfo> launcherAbilityInfos;
-    bool result = launcherservice.GetAbilityList(bundleName, userId, launcherAbilityInfos);
+    if (!launcherservice) {
+        APP_LOGE("launcher service is nullptr.");
+        EXPECT_EQ(launcherservice, nullptr);
+    }
+    bool result = launcherservice->GetAbilityList(bundleName, userId, launcherAbilityInfos);
     EXPECT_TRUE(result) << "Get ability list failed";
     EXPECT_FALSE(launcherAbilityInfos.empty()) << "Launcher ability infos is empty";
     EXPECT_EQ(launcherAbilityInfos[0].name, abilityName);
@@ -454,12 +462,15 @@ HWTEST_F(BmsLauncherServiceSystemTest, BMS_GetAbilityList_0300, Function | Mediu
     Install(bundleFilePath, InstallFlag::NORMAL, message);
     EXPECT_EQ(message, "Success") << "install fail!";
     std::vector<LauncherAbilityInfo> launcherAbilityInfos;
-    LauncherService launcherservice;
-
-    bool result = launcherservice.GetAbilityList(bundleName, userId, launcherAbilityInfos);
+    std::shared_ptr<LauncherService> launcherservice = std::make_shared<LauncherService>();
+    if (!launcherservice) {
+        APP_LOGE("launcher service is nullptr.");
+        EXPECT_EQ(launcherservice, nullptr);
+    }
+    bool result = launcherservice->GetAbilityList(bundleName, userId, launcherAbilityInfos);
     EXPECT_TRUE(result) << "Get ability list failed";
     EXPECT_FALSE(launcherAbilityInfos.empty()) << "Launcher ability infos is empty";
-    EXPECT_EQ(launcherAbilityInfos.size(), LIST_SIZE);
+    EXPECT_GE(launcherAbilityInfos.size(), 1);
     EXPECT_EQ(launcherAbilityInfos[0].name, abilityName1);
     EXPECT_EQ(launcherAbilityInfos[1].name, abilityName2);
     Uninstall(bundleName, message);
@@ -489,12 +500,15 @@ HWTEST_F(BmsLauncherServiceSystemTest, BMS_GetAbilityList_0400, Function | Mediu
     Install(bundleFilePath2, InstallFlag::NORMAL, message);
     EXPECT_EQ(message, "Success") << "install fail!";
     std::vector<LauncherAbilityInfo> launcherAbilityInfos;
-    LauncherService launcherservice;
-
-    bool result = launcherservice.GetAbilityList(bundleName, userId, launcherAbilityInfos);
+    std::shared_ptr<LauncherService> launcherservice = std::make_shared<LauncherService>();
+    if (!launcherservice) {
+        APP_LOGE("launcher service is nullptr.");
+        EXPECT_EQ(launcherservice, nullptr);
+    }
+    bool result = launcherservice->GetAbilityList(bundleName, userId, launcherAbilityInfos);
     EXPECT_TRUE(result) << "Get ability list failed";
     EXPECT_FALSE(launcherAbilityInfos.empty()) << "Launcher ability infos is empty";
-    EXPECT_EQ(launcherAbilityInfos.size(), LIST_SIZE);
+    EXPECT_GE(launcherAbilityInfos.size(), 1);
     EXPECT_EQ(launcherAbilityInfos[0].name, abilityName1);
     EXPECT_EQ(launcherAbilityInfos[1].name, abilityName2);
     Uninstall(bundleName, message);
@@ -513,9 +527,12 @@ HWTEST_F(BmsLauncherServiceSystemTest, BMS_GetAbilityList_0500, Function | Mediu
     int userId = Constants::DEFAULT_USERID;
 
     std::vector<LauncherAbilityInfo> launcherAbilityInfos;
-    LauncherService launcherservice;
-
-    bool result = launcherservice.GetAbilityList(bundleName, userId, launcherAbilityInfos);
+    std::shared_ptr<LauncherService> launcherservice = std::make_shared<LauncherService>();
+    if (!launcherservice) {
+        APP_LOGE("launcher service is nullptr.");
+        EXPECT_EQ(launcherservice, nullptr);
+    }
+    bool result = launcherservice->GetAbilityList(bundleName, userId, launcherAbilityInfos);
     EXPECT_FALSE(result);
     GTEST_LOG_(INFO) << "END BMS_GetAbilityList_0500";
 }
@@ -537,10 +554,13 @@ HWTEST_F(BmsLauncherServiceSystemTest, BMS_GetAbilityList_0600, Function | Mediu
     Install(bundleFilePath, InstallFlag::NORMAL, message);
     EXPECT_EQ(message, "Success") << "install fail!";
 
-    LauncherService launcherservice;
+    std::shared_ptr<LauncherService> launcherservice = std::make_shared<LauncherService>();
     std::vector<LauncherAbilityInfo> launcherAbilityInfos;
-
-    bool result1 = launcherservice.GetAbilityList(bundleName, userId, launcherAbilityInfos);
+    if (!launcherservice) {
+        APP_LOGE("launcher service is nullptr.");
+        EXPECT_EQ(launcherservice, nullptr);
+    }
+    bool result1 = launcherservice->GetAbilityList(bundleName, userId, launcherAbilityInfos);
     EXPECT_TRUE(result1) << "Get ability list failed";
     EXPECT_FALSE(launcherAbilityInfos.empty()) << "Launcher ability infos is empty";
     EXPECT_EQ(launcherAbilityInfos[0].name, abilityName);
@@ -548,7 +568,7 @@ HWTEST_F(BmsLauncherServiceSystemTest, BMS_GetAbilityList_0600, Function | Mediu
     Uninstall(bundleName, message);
     EXPECT_EQ(message, "Success") << "uninstall fail!";
 
-    bool result2 = launcherservice.GetAbilityList(bundleName, userId, launcherAbilityInfos);
+    bool result2 = launcherservice->GetAbilityList(bundleName, userId, launcherAbilityInfos);
     EXPECT_FALSE(result2);
     GTEST_LOG_(INFO) << "END BMS_GetAbilityList_0600";
 }
@@ -565,9 +585,12 @@ HWTEST_F(BmsLauncherServiceSystemTest, BMS_GetAbilityList_0700, Function | Mediu
     int userId = Constants::DEFAULT_USERID;
 
     std::vector<LauncherAbilityInfo> launcherAbilityInfos;
-    LauncherService launcherservice;
-
-    bool result = launcherservice.GetAbilityList(bundleName, userId, launcherAbilityInfos);
+    std::shared_ptr<LauncherService> launcherservice = std::make_shared<LauncherService>();
+    if (!launcherservice) {
+        APP_LOGE("launcher service is nullptr.");
+        EXPECT_EQ(launcherservice, nullptr);
+    }
+    bool result = launcherservice->GetAbilityList(bundleName, userId, launcherAbilityInfos);
     EXPECT_TRUE(result);
     EXPECT_FALSE(launcherAbilityInfos.empty()) << "Launcher ability infos is empty";
     EXPECT_EQ(launcherAbilityInfos[0].name, abilityName);
@@ -599,9 +622,12 @@ HWTEST_F(BmsLauncherServiceSystemTest, BMS_GetAbilityInfo_0100, Function | Mediu
     want.SetElement(name);
 
     LauncherAbilityInfo launcherAbilityInfo;
-    LauncherService launcherservice;
-
-    bool Result = launcherservice.GetAbilityInfo(want, userId, launcherAbilityInfo);
+    std::shared_ptr<LauncherService> launcherservice = std::make_shared<LauncherService>();
+    if (!launcherservice) {
+        APP_LOGE("launcherservice is nullptr.");
+        EXPECT_EQ(launcherservice, nullptr);
+    }
+    bool Result = launcherservice->GetAbilityInfo(want, userId, launcherAbilityInfo);
     EXPECT_TRUE(Result);
     EXPECT_EQ(launcherAbilityInfo.name, abilityName);
 
@@ -632,9 +658,12 @@ HWTEST_F(BmsLauncherServiceSystemTest, BMS_GetAbilityInfo_0200, Function | Mediu
     want.SetElement(name);
 
     LauncherAbilityInfo launcherAbilityInfos;
-    LauncherService launcherservice;
-
-    bool result = launcherservice.GetAbilityInfo(want, userId, launcherAbilityInfos);
+    std::shared_ptr<LauncherService> launcherservice = std::make_shared<LauncherService>();
+    if (!launcherservice) {
+        APP_LOGE("launcher service is nullptr.");
+        EXPECT_EQ(launcherservice, nullptr);
+    }
+    bool result = launcherservice->GetAbilityInfo(want, userId, launcherAbilityInfos);
     EXPECT_TRUE(result) << "Get ability list failed";
     EXPECT_EQ(launcherAbilityInfos.name, abilityName);
     Uninstall(bundleName, message);
@@ -668,9 +697,12 @@ HWTEST_F(BmsLauncherServiceSystemTest, BMS_GetAbilityInfo_0300, Function | Mediu
     name.SetBundleName(bundleName);
     want.SetElement(name);
     LauncherAbilityInfo launcherAbilityInfo;
-    LauncherService launcherservice;
-
-    bool result = launcherservice.GetAbilityInfo(want, userId, launcherAbilityInfo);
+    std::shared_ptr<LauncherService> launcherservice = std::make_shared<LauncherService>();
+    if (!launcherservice) {
+        APP_LOGE("launcherservice is nullptr.");
+        EXPECT_EQ(launcherservice, nullptr);
+    }
+    bool result = launcherservice->GetAbilityInfo(want, userId, launcherAbilityInfo);
     EXPECT_FALSE(result);
     GTEST_LOG_(INFO) << "END GetAbilityInfo_0300";
 }
@@ -692,9 +724,12 @@ HWTEST_F(BmsLauncherServiceSystemTest, BMS_GetAbilityInfo_0400, Function | Mediu
     want.SetElement(name);
 
     LauncherAbilityInfo launcherAbilityInfo;
-    LauncherService launcherservice;
-
-    bool Result = launcherservice.GetAbilityInfo(want, userId, launcherAbilityInfo);
+    std::shared_ptr<LauncherService> launcherservice = std::make_shared<LauncherService>();
+    if (!launcherservice) {
+        APP_LOGE("launcherservice is nullptr.");
+        EXPECT_EQ(launcherservice, nullptr);
+    }
+    bool Result = launcherservice->GetAbilityInfo(want, userId, launcherAbilityInfo);
     EXPECT_TRUE(Result);
     EXPECT_EQ(launcherAbilityInfo.name, abilityName);
 
@@ -729,9 +764,12 @@ HWTEST_F(BmsLauncherServiceSystemTest, BMS_GetAbilityInfo_0500, Function | Mediu
     want.SetElement(name);
 
     LauncherAbilityInfo launcherAbilityInfos;
-    LauncherService launcherservice;
-
-    bool result = launcherservice.GetAbilityInfo(want, userId, launcherAbilityInfos);
+    std::shared_ptr<LauncherService> launcherservice = std::make_shared<LauncherService>();
+    if (!launcherservice) {
+        APP_LOGE("launcher service is nullptr.");
+        EXPECT_EQ(launcherservice, nullptr);
+    }
+    bool result = launcherservice->GetAbilityInfo(want, userId, launcherAbilityInfos);
     EXPECT_TRUE(result);
     EXPECT_EQ(launcherAbilityInfos.name, abilityName);
     Uninstall(bundleName, message);
@@ -752,11 +790,14 @@ HWTEST_F(BmsLauncherServiceSystemTest, BMS_GetApplicationInfo_0100, Function | M
     int userId = Constants::DEFAULT_USERID;
     Install(bundleFilePath, InstallFlag::NORMAL, message);
     EXPECT_EQ(message, "Success") << "install fail!";
-    LauncherService launcherservice;
-
+    std::shared_ptr<LauncherService> launcherservice = std::make_shared<LauncherService>();
+    if (!launcherservice) {
+        APP_LOGE("launcher service is nullptr.");
+        EXPECT_EQ(launcherservice, nullptr);
+    }
     ApplicationInfo appInfo;
     ApplicationFlag flag = ApplicationFlag::GET_BASIC_APPLICATION_INFO;
-    bool result = launcherservice.GetApplicationInfo(bundleName, flag, userId, appInfo);
+    bool result = launcherservice->GetApplicationInfo(bundleName, flag, userId, appInfo);
     EXPECT_TRUE(result);
     EXPECT_EQ(appInfo.name, bundleName);
     Uninstall(bundleName, message);
@@ -779,10 +820,13 @@ HWTEST_F(BmsLauncherServiceSystemTest, BMS_GetApplicationInfo_0200, Function | M
     Install(bundleFilePath, InstallFlag::NORMAL, message);
     EXPECT_EQ(message, "Success") << "install fail!";
 
-    LauncherService launcherservice;
-
+    std::shared_ptr<LauncherService> launcherservice = std::make_shared<LauncherService>();
+    if (!launcherservice) {
+        APP_LOGE("launcherservice is nullptr.");
+        EXPECT_EQ(launcherservice, nullptr);
+    }
     ApplicationInfo applicationInfo;
-    bool Result = launcherservice.GetApplicationInfo(
+    bool Result = launcherservice->GetApplicationInfo(
         bundleName, ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMS, userId, applicationInfo);
     EXPECT_TRUE(Result);
 
@@ -805,10 +849,13 @@ HWTEST_F(BmsLauncherServiceSystemTest, BMS_GetApplicationInfo_0300, Function | M
     std::string bundleName = SYSTEM_BASE_BUNDLE_NAME + "1";
     int userId = Constants::DEFAULT_USERID;
 
-    LauncherService launcherservice;
-
+    std::shared_ptr<LauncherService> launcherservice = std::make_shared<LauncherService>();
+    if (!launcherservice) {
+        APP_LOGE("launcherservice is nullptr.");
+        EXPECT_EQ(launcherservice, nullptr);
+    }
     ApplicationInfo applicationInfo;
-    bool Result = launcherservice.GetApplicationInfo(
+    bool Result = launcherservice->GetApplicationInfo(
         bundleName, ApplicationFlag::GET_BASIC_APPLICATION_INFO, userId, applicationInfo);
     EXPECT_TRUE(Result);
     EXPECT_EQ(applicationInfo.name, bundleName);
@@ -835,10 +882,13 @@ HWTEST_F(BmsLauncherServiceSystemTest, BMS_GetApplicationInfo_0400, Function | M
     Install(bundleFilePath2, InstallFlag::REPLACE_EXISTING, message);
     EXPECT_EQ(message, "Success") << "install fail!";
 
-    LauncherService launcherservice;
-
+    std::shared_ptr<LauncherService> launcherservice = std::make_shared<LauncherService>();
+    if (!launcherservice) {
+        APP_LOGE("launcher service is nullptr.");
+        EXPECT_EQ(launcherservice, nullptr);
+    }
     ApplicationInfo applicationInfo;
-    bool Result = launcherservice.GetApplicationInfo(
+    bool Result = launcherservice->GetApplicationInfo(
         bundleName, ApplicationFlag::GET_BASIC_APPLICATION_INFO, userId, applicationInfo);
     EXPECT_TRUE(Result);
     EXPECT_EQ(applicationInfo.name, bundleName);
@@ -863,11 +913,14 @@ HWTEST_F(BmsLauncherServiceSystemTest, BMS_GetApplicationInfo_0500, Function | M
     Uninstall(bundleName, message);
     EXPECT_EQ(message, "Success") << "uninstall fail!";
 
-    LauncherService launcherservice;
-
+    std::shared_ptr<LauncherService> launcherservice = std::make_shared<LauncherService>();
+    if (!launcherservice) {
+        APP_LOGE("launcher service is nullptr.");
+        EXPECT_EQ(launcherservice, nullptr);
+    }
     ApplicationInfo appInfo;
     bool result =
-        launcherservice.GetApplicationInfo(bundleName, ApplicationFlag::GET_BASIC_APPLICATION_INFO, userId, appInfo);
+        launcherservice->GetApplicationInfo(bundleName, ApplicationFlag::GET_BASIC_APPLICATION_INFO, userId, appInfo);
     EXPECT_FALSE(result);
     GTEST_LOG_(INFO) << "END BMS_GetApplicationInfo_0500";
 }
@@ -883,11 +936,14 @@ HWTEST_F(BmsLauncherServiceSystemTest, BMS_GetApplicationInfo_0600, Function | M
     std::string bundleName = "";
     int userId = Constants::DEFAULT_USERID;
 
-    LauncherService launcherservice;
-
+    std::shared_ptr<LauncherService> launcherservice = std::make_shared<LauncherService>();
+    if (!launcherservice) {
+        APP_LOGE("launcher service is nullptr.");
+        EXPECT_EQ(launcherservice, nullptr);
+    }
     ApplicationInfo appInfo;
     bool result =
-        launcherservice.GetApplicationInfo(bundleName, ApplicationFlag::GET_BASIC_APPLICATION_INFO, userId, appInfo);
+        launcherservice->GetApplicationInfo(bundleName, ApplicationFlag::GET_BASIC_APPLICATION_INFO, userId, appInfo);
     EXPECT_FALSE(result);
     GTEST_LOG_(INFO) << "END BMS_GetApplicationInfo_0600";
 }
@@ -908,9 +964,12 @@ HWTEST_F(BmsLauncherServiceSystemTest, BMS_IsAbilityEnabled_0100, Function | Med
     AbilityInfo abilityInfo;
     abilityInfo.bundleName = bundleName;
     abilityInfo.name = abilityName;
-    LauncherService launcherservice;
-
-    bool result = launcherservice.IsAbilityEnabled(abilityInfo);
+    std::shared_ptr<LauncherService> launcherservice = std::make_shared<LauncherService>();
+    if (!launcherservice) {
+        APP_LOGE("launcherservice is nullptr.");
+        EXPECT_EQ(launcherservice, nullptr);
+    }
+    bool result = launcherservice->IsAbilityEnabled(abilityInfo);
     EXPECT_TRUE(result);
     Uninstall(bundleName, message);
     EXPECT_EQ(message, "Success") << "uninstall fail!";
@@ -934,9 +993,12 @@ HWTEST_F(BmsLauncherServiceSystemTest, BMS_IsAbilityEnabled_0200, Function | Med
         APP_LOGE("bundle mgr proxy is nullptr.");
         EXPECT_EQ(bundleMgrProxy, nullptr);
     }
-    LauncherService launcherservice;
-
-    bool result = launcherservice.IsAbilityEnabled(abilityInfo);
+    std::shared_ptr<LauncherService> launcherservice = std::make_shared<LauncherService>();
+    if (!launcherservice) {
+        APP_LOGE("launcherservice is nullptr.");
+        EXPECT_EQ(launcherservice, nullptr);
+    }
+    bool result = launcherservice->IsAbilityEnabled(abilityInfo);
     EXPECT_TRUE(result);
     GTEST_LOG_(INFO) << "END BMS_IsAbilityEnabled_0200";
 }
@@ -953,9 +1015,12 @@ HWTEST_F(BmsLauncherServiceSystemTest, BMS_IsAbilityEnabled_0300, Function | Med
     AbilityInfo abilityInfo;
     abilityInfo.bundleName = bundleName;
     abilityInfo.name = abilityName;
-    LauncherService launcherservice;
-
-    bool result = launcherservice.IsAbilityEnabled(abilityInfo);
+    std::shared_ptr<LauncherService> launcherservice = std::make_shared<LauncherService>();
+    if (!launcherservice) {
+        APP_LOGE("launcherservice is nullptr.");
+        EXPECT_EQ(launcherservice, nullptr);
+    }
+    bool result = launcherservice->IsAbilityEnabled(abilityInfo);
     EXPECT_FALSE(result);
     GTEST_LOG_(INFO) << "END BMS_IsAbilityEnabled_0300";
 }
@@ -984,9 +1049,12 @@ HWTEST_F(BmsLauncherServiceSystemTest, BMS_IsAbilityEnabled_0400, Function | Med
     }
     bool ret = bundleMgrProxy->SetAbilityEnabled(abilityInfo, true);
     EXPECT_TRUE(ret);
-    LauncherService launcherservice;
-
-    bool result = launcherservice.IsAbilityEnabled(abilityInfo);
+    std::shared_ptr<LauncherService> launcherservice = std::make_shared<LauncherService>();
+    if (!launcherservice) {
+        APP_LOGE("launcherservice is nullptr.");
+        EXPECT_EQ(launcherservice, nullptr);
+    }
+    bool result = launcherservice->IsAbilityEnabled(abilityInfo);
     EXPECT_TRUE(result);
     Uninstall(bundleName, message);
     EXPECT_EQ(message, "Success") << "uninstall fail!";
@@ -1005,9 +1073,12 @@ HWTEST_F(BmsLauncherServiceSystemTest, BMS_IsBundleEnabled_0100, Function | Medi
     std::string bundleName = THIRD_BASE_BUNDLE_NAME + "1";
     Install(bundleFilePath, InstallFlag::NORMAL, message);
     EXPECT_EQ(message, "Success") << "install fail!";
-    LauncherService launcherservice;
-
-    bool result = launcherservice.IsBundleEnabled(bundleName);
+    std::shared_ptr<LauncherService> launcherservice = std::make_shared<LauncherService>();
+    if (!launcherservice) {
+        APP_LOGE("launcherservice is nullptr.");
+        EXPECT_EQ(launcherservice, nullptr);
+    }
+    bool result = launcherservice->IsBundleEnabled(bundleName);
     EXPECT_TRUE(result);
     Uninstall(bundleName, message);
     EXPECT_EQ(message, "Success") << "uninstall fail!";
@@ -1027,12 +1098,15 @@ HWTEST_F(BmsLauncherServiceSystemTest, BMS_IsBundleEnabled_0200, Function | Medi
     std::string bundleName = THIRD_BASE_BUNDLE_NAME + "1";
     Install(bundleFilePath, InstallFlag::NORMAL, message);
     EXPECT_EQ(message, "Success") << "install fail!";
-    LauncherService launcherservice;
+    std::shared_ptr<LauncherService> launcherservice = std::make_shared<LauncherService>();
     sptr<IBundleMgr> bundleMgrProxy = GetBundleMgrProxy();
-
+    if (!launcherservice) {
+        APP_LOGE("launcherservice is nullptr.");
+        EXPECT_EQ(launcherservice, nullptr);
+    }
     bool ret = bundleMgrProxy->SetApplicationEnabled(bundleName, false);
     EXPECT_TRUE(ret);
-    bool result = launcherservice.IsBundleEnabled(bundleName);
+    bool result = launcherservice->IsBundleEnabled(bundleName);
     EXPECT_FALSE(result);
     Uninstall(bundleName, message);
     EXPECT_EQ(message, "Success") << "uninstall fail!";
@@ -1047,9 +1121,12 @@ HWTEST_F(BmsLauncherServiceSystemTest, BMS_IsBundleEnabled_0300, Function | Medi
 {
     GTEST_LOG_(INFO) << "START BMS_IsBundleEnabled_0300";
     std::string bundleName = SYSTEM_BASE_BUNDLE_NAME + "1";
-    LauncherService launcherservice;
-
-    bool result = launcherservice.IsBundleEnabled(bundleName);
+    std::shared_ptr<LauncherService> launcherservice = std::make_shared<LauncherService>();
+    if (!launcherservice) {
+        APP_LOGE("launcherservice is nullptr.");
+        EXPECT_EQ(launcherservice, nullptr);
+    }
+    bool result = launcherservice->IsBundleEnabled(bundleName);
     EXPECT_TRUE(result);
     GTEST_LOG_(INFO) << "END BMS_IsBundleEnabled_0300";
 }
@@ -1062,9 +1139,12 @@ HWTEST_F(BmsLauncherServiceSystemTest, BMS_IsBundleEnabled_0400, Function | Medi
 {
     GTEST_LOG_(INFO) << "START BMS_IsBundleEnabled_0400";
     std::string bundleName = "";
-    LauncherService launcherservice;
-
-    bool result = launcherservice.IsBundleEnabled(bundleName);
+    std::shared_ptr<LauncherService> launcherservice = std::make_shared<LauncherService>();
+    if (!launcherservice) {
+        APP_LOGE("launcherservice is nullptr.");
+        EXPECT_EQ(launcherservice, nullptr);
+    }
+    bool result = launcherservice->IsBundleEnabled(bundleName);
     EXPECT_FALSE(result);
     GTEST_LOG_(INFO) << "END BMS_IsBundleEnabled_0400";
 }
@@ -1084,9 +1164,12 @@ HWTEST_F(BmsLauncherServiceSystemTest, BMS_GetShortcutInfos_0100, Function | Med
     Install(bundleFilePath, InstallFlag::NORMAL, message);
     EXPECT_EQ(message, "Success") << "install fail!";
     std::vector<LauncherShortcutInfo> launcherShortcutInfo;
-    LauncherService launcherservice;
-
-    bool result = launcherservice.GetShortcutInfos(bundleName, launcherShortcutInfo);
+    std::shared_ptr<LauncherService> launcherservice = std::make_shared<LauncherService>();
+    if (!launcherservice) {
+        APP_LOGE("launcher service is nullptr.");
+        EXPECT_EQ(launcherservice, nullptr);
+    }
+    bool result = launcherservice->GetShortcutInfos(bundleName, launcherShortcutInfo);
     EXPECT_TRUE(result) << "Get shortcut info failed";
     EXPECT_FALSE(launcherShortcutInfo.empty()) << "Launcher shortcut infos is empty";
     EXPECT_EQ(launcherShortcutInfo[0].bundleName, bundleName);
@@ -1117,12 +1200,15 @@ HWTEST_F(BmsLauncherServiceSystemTest, BMS_GetShortcutInfos_0200, Function | Med
     Install(bundleFilePath2, InstallFlag::NORMAL, message);
     EXPECT_EQ(message, "Success") << "install fail!";
     std::vector<LauncherShortcutInfo> launcherShortcutInfo;
-    LauncherService launcherservice;
-
-    bool result = launcherservice.GetShortcutInfos(bundleName, launcherShortcutInfo);
+    std::shared_ptr<LauncherService> launcherservice = std::make_shared<LauncherService>();
+    if (!launcherservice) {
+        APP_LOGE("launcher service is nullptr.");
+        EXPECT_EQ(launcherservice, nullptr);
+    }
+    bool result = launcherservice->GetShortcutInfos(bundleName, launcherShortcutInfo);
     EXPECT_TRUE(result) << "Get shortcut info failed";
     EXPECT_FALSE(launcherShortcutInfo.empty()) << "Launcher shortcut infos is empty";
-    EXPECT_EQ(launcherShortcutInfo.size(), LIST_SIZE);
+    EXPECT_GE(launcherShortcutInfo.size(), 1);
     EXPECT_EQ(launcherShortcutInfo[0].shortcutid, shortcutId1);
     EXPECT_EQ(launcherShortcutInfo[1].shortcutid, shortcutId2);
     Uninstall(bundleName, message);
@@ -1144,9 +1230,12 @@ HWTEST_F(BmsLauncherServiceSystemTest, BMS_GetShortcutInfos_0300, Function | Med
     Install(bundleFilePath, InstallFlag::NORMAL, message);
     EXPECT_EQ(message, "Success") << "install fail!";
     std::vector<LauncherShortcutInfo> launcherShortcutInfo;
-    LauncherService launcherservice;
-
-    bool result = launcherservice.GetShortcutInfos(bundleName, launcherShortcutInfo);
+    std::shared_ptr<LauncherService> launcherservice = std::make_shared<LauncherService>();
+    if (!launcherservice) {
+        APP_LOGE("launcher service is nullptr.");
+        EXPECT_EQ(launcherservice, nullptr);
+    }
+    bool result = launcherservice->GetShortcutInfos(bundleName, launcherShortcutInfo);
     EXPECT_FALSE(result);
     EXPECT_TRUE(launcherShortcutInfo.empty());
     Uninstall(bundleName, message);
@@ -1163,9 +1252,12 @@ HWTEST_F(BmsLauncherServiceSystemTest, BMS_GetShortcutInfos_0400, Function | Med
     GTEST_LOG_(INFO) << "START BMS_GetShortcutInfos_0400";
     std::string bundleName = "";
     std::vector<LauncherShortcutInfo> launcherShortcutInfo;
-    LauncherService launcherservice;
-
-    bool result = launcherservice.GetShortcutInfos(bundleName, launcherShortcutInfo);
+    std::shared_ptr<LauncherService> launcherservice = std::make_shared<LauncherService>();
+    if (!launcherservice) {
+        APP_LOGE("launcher service is nullptr.");
+        EXPECT_EQ(launcherservice, nullptr);
+    }
+    bool result = launcherservice->GetShortcutInfos(bundleName, launcherShortcutInfo);
     EXPECT_FALSE(result);
     GTEST_LOG_(INFO) << "END BMS_GetShortcutInfos_0400";
 }
@@ -1191,9 +1283,12 @@ HWTEST_F(BmsLauncherServiceSystemTest, BMS_GetShortcutInfos_0500, Function | Med
     EXPECT_EQ(message, "Success") << "install fail!";
 
     std::vector<LauncherShortcutInfo> launcherShortcutInfo;
-    LauncherService launcherservice;
-
-    bool result = launcherservice.GetShortcutInfos(bundleName, launcherShortcutInfo);
+    std::shared_ptr<LauncherService> launcherservice = std::make_shared<LauncherService>();
+    if (!launcherservice) {
+        APP_LOGE("launcher service is nullptr.");
+        EXPECT_EQ(launcherservice, nullptr);
+    }
+    bool result = launcherservice->GetShortcutInfos(bundleName, launcherShortcutInfo);
     EXPECT_TRUE(result);
     EXPECT_FALSE(launcherShortcutInfo.empty()) << "Launcher shortcut info is empty";
     EXPECT_EQ(launcherShortcutInfo[0].bundleName, bundleName);

@@ -83,7 +83,12 @@ public:
     void TestAbilityDisconnectAbility();
 
     void DoTestCase();
-
+    void CaseIndexOne();
+    void CaseIndexTwo();
+    void DisconnectCaseIndexOne();
+    void DisconnectCaseIndexTwo();
+    void AbilityDisconnectCaseIndexOne();
+    void AbilityDisconnectCaseIndexTwo();
 protected:
     void Init(const std::shared_ptr<AbilityInfo> &abilityInfo, const std::shared_ptr<OHOSApplication> &application,
         std::shared_ptr<AbilityHandler> &handler, const sptr<IRemoteObject> &token) override;

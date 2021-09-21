@@ -55,6 +55,7 @@ void GlobalTaskDispatcherModuleTest::TearDown()
 
 std::shared_ptr<TaskDispatcher> GlobalTaskDispatcherModuleTest::GetMtGlobalTaskDispatcher(TaskPriority priority) const
 {
+    // TaskDispatcherContext context;
     std::shared_ptr<TaskDispatcher> ptrGlobalTaskDispatcher = context->GetGlobalTaskDispatcher(priority);
     return ptrGlobalTaskDispatcher;
 }

@@ -21,7 +21,9 @@
 namespace OHOS {
 namespace AppExecFwk {
 using namespace OHOS::EventFwk;
-
+namespace {
+constexpr int loopCnt = 3;
+}
 AbilityLifeCycleAbility::~AbilityLifeCycleAbility()
 {
     CommonEventManager::UnSubscribeCommonEvent(subscriber_);
@@ -234,7 +236,7 @@ void AbilityLifeCycleAbility::TestStopAbility()
             TestUtils::PublishEvent(APP_ABILITY_LIFE_CYCLE_RESP_EVENT_NAME, ret, "TestStopAbility");
         } break;
         case CaseIndex::FOUR: {
-            for (int i = 0; i < 3; i++) {
+            for (int i = 0; i < loopCnt; i++) {
                 bool ret = BaseAbility::GetContext()->StopAbility(want_);
                 TestUtils::PublishEvent(APP_ABILITY_LIFE_CYCLE_RESP_EVENT_NAME, ret, "TestStopAbility");
             }
@@ -420,14 +422,18 @@ void AbilityLifeCycleAbility::TestLifeCycleGetLifecycle()
     }
 }
 
+void AbilityLifeCycleAbility::GetLifecycleStateCaseOne() {
+    auto lifecycle = GetLifecycle();
+    TestUtils::PublishEvent(APP_ABILITY_LIFE_CYCLE_RESP_EVENT_NAME,
+        lifecycle->GetLifecycleState(),
+        "TestLifeCycleGetLifecycleState");
+}
+
 void AbilityLifeCycleAbility::TestLifeCycleGetLifecycleState()
 {
     switch ((CaseIndex)AbilityLifeCycleAbility::sequenceNumber_) {
         case CaseIndex::ONE: {
-            auto lifecycle = GetLifecycle();
-            TestUtils::PublishEvent(APP_ABILITY_LIFE_CYCLE_RESP_EVENT_NAME,
-                lifecycle->GetLifecycleState(),
-                "TestLifeCycleGetLifecycleState");
+            GetLifecycleStateCaseOne();
         } break;
         case CaseIndex::TWO: {
             auto lifecycle = GetLifecycle();

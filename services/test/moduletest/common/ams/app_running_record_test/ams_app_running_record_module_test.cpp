@@ -171,7 +171,7 @@ HWTEST_F(AmsAppRunningRecordModuleTest, ApplicationStart_001, TestSize.Level0)
     RecordQueryResult result;
     auto record = service_->GetOrCreateAppRunningRecord(GetMockToken(), appInfo, abilityInfo, processName, 0, result);
     EXPECT_TRUE(record != nullptr) << ",create apprunningrecord fail!";
-    EXPECT_FALSE(result.appExists) << ",result is wrong!";
+    ASSERT_FALSE(result.appExists) << ",result is wrong!";
 
     // check apprunningrecord
     int32_t id = record->GetRecordId();
@@ -231,7 +231,7 @@ HWTEST_F(AmsAppRunningRecordModuleTest, MultiApplicationStart_002, TestSize.Leve
         auto record =
             service_->GetOrCreateAppRunningRecord(GetMockToken(), appInfo, abilityInfo, processName, 0, result);
         EXPECT_TRUE(record != nullptr) << "create apprunningrecord fail!";
-        EXPECT_FALSE(result.appExists) << "result is wrong!";
+        ASSERT_FALSE(result.appExists) << "result is wrong!";
 
         // check abilityrunningrecord & apprunningrecord
         int32_t id = record->GetRecordId();
@@ -274,7 +274,7 @@ HWTEST_F(AmsAppRunningRecordModuleTest, ScheduleTrimMemory_003, TestSize.Level1)
     RecordQueryResult result;
     auto record = service_->GetOrCreateAppRunningRecord(GetMockToken(), appInfo, abilityInfo, processName, 0, result);
     EXPECT_TRUE(record != nullptr) << "create apprunningrecord fail!";
-    EXPECT_FALSE(result.appExists) << "result is wrong!";
+    ASSERT_FALSE(result.appExists) << "result is wrong!";
 
     // LaunchApplication
     sptr<MockApplication> mockApplication(new MockApplication());
@@ -322,7 +322,7 @@ HWTEST_F(AmsAppRunningRecordModuleTest, LowMemoryWarning_004, TestSize.Level1)
     RecordQueryResult result;
     auto record = service_->GetOrCreateAppRunningRecord(GetMockToken(), appInfo, abilityInfo, processName, 0, result);
     EXPECT_TRUE(record != nullptr) << "create apprunningrecord fail!";
-    EXPECT_FALSE(result.appExists) << "result is wrong!";
+    ASSERT_FALSE(result.appExists) << "result is wrong!";
 
     // LaunchApplication
     sptr<MockApplication> mockApplication(new MockApplication());

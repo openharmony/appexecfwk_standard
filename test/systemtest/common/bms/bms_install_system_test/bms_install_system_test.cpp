@@ -31,6 +31,7 @@
 using namespace testing::ext;
 using namespace std::chrono_literals;
 namespace {
+
 const std::string THIRD_BUNDLE_PATH = "/data/test/bms_bundle/";
 const std::string CODE_ROOT_PATH = "/data/accounts/account_0/applications/";
 const std::string DATA_ROOT_PATH = "/data/accounts/account_0/appdata/";
@@ -40,7 +41,6 @@ const std::string SYSTEM_BASE_BUNDLE_NAME = "com.system.hiworld.example";
 const std::string MSG_SUCCESS = "[SUCCESS]";
 const std::string OPERATION_FAILURE = "Failure";
 const std::string OPERATION_SUCCESS = "Success";
-const int TIMEOUT = 10;
 }  // namespace
 
 namespace OHOS {
@@ -87,7 +87,7 @@ void StatusReceiverImpl::OnFinished(const int32_t resultCode, const std::string 
 std::string StatusReceiverImpl::GetResultMsg() const
 {
     auto future = resultMsgSignal_.get_future();
-    std::chrono::seconds timeout(TIMEOUT);
+    std::chrono::seconds timeout(10);
     if (future.wait_for(timeout) == std::future_status::timeout) {
         return OPERATION_FAILURE + " timeout";
     }
@@ -103,7 +103,6 @@ public:
     explicit SubscriberTest(const CommonEventSubscribeInfo &sp) : CommonEventSubscriber(sp){};
     virtual void OnReceiveEvent(const CommonEventData &data) override;
     std::string GetSubscriberResultMsg() const;
-    virtual ~SubscriberTest() = default;
 
 private:
     mutable std::promise<std::string> subscriberMsgSignal_;
@@ -2446,5 +2445,6 @@ HWTEST_F(BmsInstallSystemTest, BMS_DFX_0400, Function | MediumTest | Level2)
     EXPECT_FALSE(getInfoResult);
     std::cout << "END BMS_DFX_0400" << std::endl;
 }
+
 }  // namespace AppExecFwk
 }  // namespace OHOS

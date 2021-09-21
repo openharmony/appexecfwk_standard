@@ -265,7 +265,7 @@ HWTEST_F(AmsIpcAppSchedulerModuleTest, ExcuteApplicationIPCInterface_008, TestSi
         mockApplication->Wait();
 
         bool isEqual = mockApplication->CompareAppLaunchData(launchData);
-        EXPECT_EQ(true, isEqual) << "excute fail, index is " << i;
+        ASSERT_EQ(true, isEqual) << "excute fail, index is " << i;
     }
 }
 

@@ -17,6 +17,7 @@
 
 namespace OHOS {
 namespace AppExecFwk {
+
 void AmsAbilityVisibleTestPageB2::Init(const std::shared_ptr<AbilityInfo> &abilityInfo,
     const std::shared_ptr<OHOSApplication> &application, std::shared_ptr<AbilityHandler> &handler,
     const sptr<IRemoteObject> &token)
@@ -90,7 +91,7 @@ void AmsAbilityVisibleTestPageB2::OnActive()
         if (startAbilityType == "Data" || startAbilityType == "DataRelease") {
             Uri dataAbilityUri("dataability:///" + startBundleName + "." + startAbilityName);
             std::shared_ptr<DataAbilityHelper> helper = DataAbilityHelper::Creator(GetContext());
-            AppExecFwk::ValuesBucket bucket;
+            ValuesBucket bucket;
             helper->Insert(dataAbilityUri, bucket);
             if (startAbilityType == "DataRelease") {
                 helper->Release();

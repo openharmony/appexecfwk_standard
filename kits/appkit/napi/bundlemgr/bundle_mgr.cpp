@@ -956,7 +956,7 @@ static napi_value ParseInt(napi_env env, int &param, napi_value args)
     NAPI_CALL(env, napi_typeof(env, args, &valuetype));
     HILOG_INFO("param=%{public}d.", valuetype);
     NAPI_ASSERT(env, valuetype == napi_number, "Wrong argument type. int32 expected.");
-    int32_t value;
+    int32_t value = 0;
     napi_get_value_int32(env, args, &value);
     HILOG_INFO("param=%{public}d.", value);
     param = value;
@@ -1031,7 +1031,7 @@ napi_value GetApplicationInfos(napi_env env, napi_callback_info info)
         applicationFlag = ApplicationFlag::GET_BASIC_APPLICATION_INFO;
     }
 
-    AsyncApplicationInfosCallbackInfo *asyncCallbackInfo = new AsyncApplicationInfosCallbackInfo{
+    AsyncApplicationInfosCallbackInfo *asyncCallbackInfo = new (std::nothrow) AsyncApplicationInfosCallbackInfo{
         .env = env, .asyncWork = nullptr, .deferred = nullptr, .applicationFlag = applicationFlag, .userId = userId};
     if (asyncCallbackInfo == nullptr) {
         return nullptr;
@@ -1363,7 +1363,7 @@ napi_value GetApplicationInfo(napi_env env, napi_callback_info info)
     if (flag == static_cast<int>(ApplicationFlag::GET_BASIC_APPLICATION_INFO)) {
         applicationFlag = ApplicationFlag::GET_BASIC_APPLICATION_INFO;
     }
-    AsyncApplicationInfoCallbackInfo *asyncCallbackInfo = new AsyncApplicationInfoCallbackInfo{.env = env,
+    AsyncApplicationInfoCallbackInfo *asyncCallbackInfo = new (std::nothrow) AsyncApplicationInfoCallbackInfo{.env = env,
         .asyncWork = nullptr,
         .deferred = nullptr,
         .bundleName = bundleName,
@@ -1533,7 +1533,7 @@ napi_value GetBundleInfos(napi_env env, napi_callback_info info)
     if (flag == static_cast<int>(BundleFlag::GET_BUNDLE_DEFAULT)) {
         bundleFlag = BundleFlag::GET_BUNDLE_DEFAULT;
     }
-    AsyncBundleInfosCallbackInfo *asyncCallbackInfo = new AsyncBundleInfosCallbackInfo{
+    AsyncBundleInfosCallbackInfo *asyncCallbackInfo = new (std::nothrow) AsyncBundleInfosCallbackInfo{
         .env = env, .asyncWork = nullptr, .deferred = nullptr, .bundleFlag = bundleFlag};
     if (asyncCallbackInfo == nullptr) {
         return nullptr;
@@ -1665,7 +1665,7 @@ napi_value GetBundleInfo(napi_env env, napi_callback_info info)
     if (flag == static_cast<int>(BundleFlag::GET_BUNDLE_DEFAULT)) {
         bundleFlag = BundleFlag::GET_BUNDLE_DEFAULT;
     }
-    AsyncBundleInfoCallbackInfo *asyncCallbackInfo = new AsyncBundleInfoCallbackInfo{
+    AsyncBundleInfoCallbackInfo *asyncCallbackInfo = new (std::nothrow) AsyncBundleInfoCallbackInfo{
         .env = env, .asyncWork = nullptr, .deferred = nullptr, .param = bundleName, .bundleFlag = bundleFlag};
     if (asyncCallbackInfo == nullptr) {
         return nullptr;
@@ -1798,7 +1798,7 @@ napi_value GetBundleArchiveInfo(napi_env env, napi_callback_info info)
     if (flag == static_cast<int>(BundleFlag::GET_BUNDLE_DEFAULT)) {
         bundleFlag = BundleFlag::GET_BUNDLE_DEFAULT;
     }
-    AsyncBundleInfoCallbackInfo *asyncCallbackInfo = new AsyncBundleInfoCallbackInfo{
+    AsyncBundleInfoCallbackInfo *asyncCallbackInfo = new (std::nothrow) AsyncBundleInfoCallbackInfo{
         .env = env, .asyncWork = nullptr, .deferred = nullptr, .param = hapFilePath, .bundleFlag = bundleFlag};
     if (asyncCallbackInfo == nullptr) {
         return nullptr;
@@ -1983,7 +1983,7 @@ napi_value GetPermissionDef(napi_env env, napi_callback_info info)
     HILOG_INFO("argc = [%{public}zu]", argc);
     std::string permissionName;
     ParseString(env, permissionName, argv[PARAM0]);
-    AsyncPermissionDefCallbackInfo *asyncCallbackInfo = new AsyncPermissionDefCallbackInfo{
+    AsyncPermissionDefCallbackInfo *asyncCallbackInfo = new (std::nothrow) AsyncPermissionDefCallbackInfo{
         .env = env, .asyncWork = nullptr, .deferred = nullptr, .permissionName = permissionName};
     if (asyncCallbackInfo == nullptr) {
         return nullptr;
@@ -2391,7 +2391,7 @@ napi_value Install(napi_env env, napi_callback_info info)
     ParseStringArray(env, bundleFilePaths, argv[PARAM0]);
     InstallParam installParam;
     ParseInstallParam(env, installParam, argv[PARAM1]);
-    AsyncInstallCallbackInfo *asyncCallbackInfo = new AsyncInstallCallbackInfo{
+    AsyncInstallCallbackInfo *asyncCallbackInfo = new (std::nothrow) AsyncInstallCallbackInfo{
         .env = env,
         .asyncWork = nullptr,
         .deferred = nullptr,
@@ -2553,7 +2553,7 @@ napi_value Uninstall(napi_env env, napi_callback_info info)
     ParseString(env, bundleName, argv[PARAM0]);
     InstallParam installParam;
     ParseInstallParam(env, installParam, argv[PARAM1]);
-    AsyncInstallCallbackInfo *asyncCallbackInfo = new AsyncInstallCallbackInfo{
+    AsyncInstallCallbackInfo *asyncCallbackInfo = new (std::nothrow) AsyncInstallCallbackInfo{
         .env = env,
         .asyncWork = nullptr,
         .deferred = nullptr,
@@ -2845,7 +2845,7 @@ napi_value GetFormsInfoByModule(napi_env env, napi_callback_info info)
     ParseString(env, bundleName, argv[PARAM0]);
     ParseString(env, moduleName, argv[PARAM1]);
 
-    AsyncFormInfosByModuleCallbackInfo *asyncCallbackInfo = new AsyncFormInfosByModuleCallbackInfo{
+    AsyncFormInfosByModuleCallbackInfo *asyncCallbackInfo = new (std::nothrow) AsyncFormInfosByModuleCallbackInfo{
         .env = env, .asyncWork = nullptr, .deferred = nullptr, .bundleName = bundleName, .moduleName = moduleName};
     if (asyncCallbackInfo == nullptr) {
         return nullptr;
@@ -2969,7 +2969,7 @@ napi_value GetFormsInfoByApp(napi_env env, napi_callback_info info)
     std::string bundleName;
     ParseString(env, bundleName, argv[PARAM0]);
 
-    AsyncFormInfosByAppCallbackInfo *asyncCallbackInfo = new AsyncFormInfosByAppCallbackInfo{
+    AsyncFormInfosByAppCallbackInfo *asyncCallbackInfo = new (std::nothrow) AsyncFormInfosByAppCallbackInfo{
         .env = env, .asyncWork = nullptr, .deferred = nullptr, .bundleName = bundleName};
     if (asyncCallbackInfo == nullptr) {
         return nullptr;
@@ -3111,7 +3111,7 @@ napi_value GetShortcutInfos(napi_env env, napi_callback_info info)
     HILOG_INFO("ARGCSIZE is =%{public}zu.", argc);
     std::string bundleName;
     ParseString(env, bundleName, argv[PARAM0]);
-    AsyncShortcutInfosCallbackInfo *asyncCallbackInfo = new AsyncShortcutInfosCallbackInfo{
+    AsyncShortcutInfosCallbackInfo *asyncCallbackInfo = new (std::nothrow) AsyncShortcutInfosCallbackInfo{
         .env = env, .asyncWork = nullptr, .deferred = nullptr, .bundleName = bundleName};
     if (asyncCallbackInfo == nullptr) {
         return nullptr;
@@ -3253,7 +3253,7 @@ napi_value GetModuleUsageRecords(napi_env env, napi_callback_info info)
     HILOG_INFO("ARGCSIZE is =%{public}zu.", argc);
     int number;
     ParseInt(env, number, argv[PARAM0]);
-    AsyncModuleUsageRecordsCallbackInfo *asyncCallbackInfo = new AsyncModuleUsageRecordsCallbackInfo{
+    AsyncModuleUsageRecordsCallbackInfo *asyncCallbackInfo = new (std::nothrow) AsyncModuleUsageRecordsCallbackInfo{
         .env = env, .asyncWork = nullptr, .deferred = nullptr, .number = number};
     if (asyncCallbackInfo == nullptr) {
         return nullptr;
@@ -3495,6 +3495,9 @@ napi_value RegisterAllPermissionsChanged(napi_env env, napi_callback_info info)
     } else if (permissionEvent == ANY_PERMISSION_CHANGE && argc == ARGS_SIZE_TWO) {
         AsyncRegisterAllPermissions *asyncCallbackInfo =
             new AsyncRegisterAllPermissions{.env = env, .asyncWork = nullptr};
+        if (asyncCallbackInfo == nullptr) {
+            return nullptr;
+        }
         HILOG_INFO("RegisterAllPermissionsChanged anyPermissionChange asyncCallback.");
         napi_valuetype valuetype = napi_undefined;
         napi_typeof(env, argv[ARGS_SIZE_ONE], &valuetype);
@@ -3616,7 +3619,7 @@ napi_value UnregisterPermissionsChanged(napi_env env, napi_callback_info info)
     ParseString(env, permissionEvent, argv[PARAM0]);
 
     if (permissionEvent == ANY_PERMISSION_CHANGE && argc == ARGS_SIZE_TWO) {
-        AsyncUnregisterPermissions *asyncCallbackInfo = new AsyncUnregisterPermissions{
+        AsyncUnregisterPermissions *asyncCallbackInfo = new (std::nothrow) AsyncUnregisterPermissions{
             .env = env,
             .asyncWork = nullptr,
         };
@@ -3756,7 +3759,7 @@ napi_value CheckPermission(napi_env env, napi_callback_info info)
     std::string permission;
     ParseString(env, permission, argv[PARAM1]);
 
-    AsyncPermissionCallbackInfo *asyncCallbackInfo = new AsyncPermissionCallbackInfo{
+    AsyncPermissionCallbackInfo *asyncCallbackInfo = new (std::nothrow) AsyncPermissionCallbackInfo{
         .env = env, .asyncWork = nullptr, .deferred = nullptr, .bundleName = bundleName, .permission = permission};
     if (asyncCallbackInfo == nullptr) {
         return nullptr;
