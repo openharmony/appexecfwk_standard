@@ -59,17 +59,10 @@ void SpecTaskDispatcherTest::SetUp()
 
 void SpecTaskDispatcherTest::TearDown()
 {}
-std::string Now()
-{
-    time_t now = std::time(0);
-    char mbstr[10];
-    std::strftime(mbstr, sizeof(mbstr), "%T", std::localtime(&now));
-    return mbstr;
-}
 
 const std::string Prefix(const std::string &name)
 {
-    return std::string(">>> ") + Now() + std::string(" ") + name + std::string(": ");
+    return std::string(">>> prefix :") + std::string(" ") + name + std::string(": ");
 }
 
 std::shared_ptr<SpecTaskDispatcher> CreateSpecTaskDispatcher()

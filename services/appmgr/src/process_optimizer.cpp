@@ -709,11 +709,6 @@ void ProcessOptimizer::SetAppFreezingTime(int time)
     suspendTimeout_ = time;
     // convert seconds to milliseconds
     suspendTimeout_ *= TIME_ADVANCE_RATE;
-    if (suspendTimeout_ > INT_MAX) {
-        suspendTimeout_ = APP_SUSPEND_TIMEOUT_DEFAULT;
-        APP_LOGE("data overflow");
-        return;
-    }
 }
 
 void ProcessOptimizer::GetAppFreezingTime(int &time)

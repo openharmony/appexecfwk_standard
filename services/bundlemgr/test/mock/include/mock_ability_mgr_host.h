@@ -180,7 +180,7 @@ public:
     }
 
     int SetMissionDescriptionInfo(
-        const sptr<IRemoteObject> &token, const MissionDescriptionInfo &missionDescInfo) override
+        const sptr<IRemoteObject> &token, const MissionDescriptionInfo &missionDescriptionInfo) override
     {
         return 0;
     }

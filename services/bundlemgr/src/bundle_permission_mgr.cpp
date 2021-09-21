@@ -59,15 +59,15 @@ bool ConvertPermissionDef(
     permDef.availableScope = [&defPermission]() -> int {
         unsigned flag = 0;
         if (std::find(defPermission.availableScope.begin(),
-                defPermission.availableScope.end(),
-                ProfileReader::BUNDLE_MODULE_PROFILE_KEY_DEF_PERMISSIONS_AVAILABLESCOPE_SIGNATURE) !=
-            defPermission.availableScope.end()) {
+                      defPermission.availableScope.end(),
+                      ProfileReader::BUNDLE_MODULE_PROFILE_KEY_DEF_PERMISSIONS_AVAILABLESCOPE_SIGNATURE) !=
+                      defPermission.availableScope.end()) {
             flag |= Permission::AvailableScope::AVAILABLE_SCOPE_SIGNATURE;
         }
         if (std::find(defPermission.availableScope.begin(),
-                defPermission.availableScope.end(),
-                ProfileReader::BUNDLE_MODULE_PROFILE_KEY_DEF_PERMISSIONS_AVAILABLESCOPE_RESTRICTED) !=
-            defPermission.availableScope.end()) {
+                      defPermission.availableScope.end(),
+                      ProfileReader::BUNDLE_MODULE_PROFILE_KEY_DEF_PERMISSIONS_AVAILABLESCOPE_RESTRICTED) !=
+                      defPermission.availableScope.end()) {
             flag |= Permission::AvailableScope::AVAILABLE_SCOPE_RESTRICTED;
         }
         if (flag == 0) {
@@ -300,8 +300,8 @@ bool BundlePermissionMgr::CheckCallingPermission(const std::string &permissionNa
         APP_LOGI(
             "get app bundleName %{public}s and permissionName %{public}s", bundleName.c_str(), permissionName.c_str());
         ApplicationInfo appInfo;
-        bool ret = dataMgr->GetApplicationInfo(
-            bundleName, ApplicationFlag::GET_BASIC_APPLICATION_INFO, Constants::DEFAULT_USERID, appInfo);
+        bool ret = dataMgr->GetApplicationInfo(bundleName, ApplicationFlag::GET_BASIC_APPLICATION_INFO,
+                                            Constants::DEFAULT_USERID, appInfo);
         if (ret && appInfo.isLauncherApp && (permissionName == Constants::PERMISSION_INSTALL_BUNDLE)) {
             APP_LOGE("launcher app %{public}s pass through", bundleName.c_str());
             return true;

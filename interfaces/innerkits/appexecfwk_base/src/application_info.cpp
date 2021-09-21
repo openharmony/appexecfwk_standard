@@ -232,7 +232,7 @@ void ApplicationInfo::ConvertToCompatibleApplicationInfo(CompatibleApplicationIn
     compatibleApplicationInfo.permissions = permissions;
     compatibleApplicationInfo.moduleInfos = moduleInfos;
     compatibleApplicationInfo.supportedModes = supportedModes;
-    compatibleApplicationInfo.enabled = debug;
+    compatibleApplicationInfo.enabled = enabled;
 }
 
 }  // namespace AppExecFwk

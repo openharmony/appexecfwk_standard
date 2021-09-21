@@ -27,9 +27,9 @@ namespace AppExecFwk {
 namespace {
 
 const int32_t CHECK_TIMES = 300;
-const int32_t CHECK_INTERVAL = 100000;  // 100ms
+const int32_t CHECK_INTERVAL = 100000; // 100ms
 
-}  // namespace
+} // namespace
 
 KvStoreDeathRecipientCallback::KvStoreDeathRecipientCallback()
 {
@@ -63,7 +63,7 @@ void KvStoreDeathRecipientCallback::OnRemoteDied()
             // init kvStore.
             if (dataStorage && dataStorage->ResetKvStore()) {
                 // register data change listener again.
-                // dataStorage->RegisterChangeListener();
+                //dataStorage->RegisterChangeListener();
                 APP_LOGI("current times is %{public}d", times);
                 // auto service = DelayedSingleton<BundleMgrService>::GetInstance();
                 // std::shared_ptr<BMSEventHandler> handler = service->GetEventHandler();
@@ -79,5 +79,5 @@ void KvStoreDeathRecipientCallback::OnRemoteDied()
     APP_LOGI("OnRemoteDied, register data change listener end");
 }
 
-}  // namespace AppExecFwk
-}  // namespace OHOS
+} // namespace AppExecFwk
+} // namespace OHOS

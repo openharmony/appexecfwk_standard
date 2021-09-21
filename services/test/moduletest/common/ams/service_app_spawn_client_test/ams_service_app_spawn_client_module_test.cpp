@@ -208,8 +208,8 @@ HWTEST_F(AmsServiceAppSpawnClientModuleTest, ConnectAppSpawnDaemon_001, TestSize
     for (uint32_t i = 0; i < CYCLE_NUMBER; i++) {
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
         appMgrService->OnStart();
-        EXPECT_EQ(SpawnConnectionState::STATE_CONNECTED, appMgrService->QueryServiceState().connectionState);
-        EXPECT_EQ(SpawnConnectionState::STATE_CONNECTED, amsInner->QueryAppSpawnConnectionState());
+        ASSERT_EQ(SpawnConnectionState::STATE_CONNECTED, appMgrService->QueryServiceState().connectionState);
+        ASSERT_EQ(SpawnConnectionState::STATE_CONNECTED, amsInner->QueryAppSpawnConnectionState());
         appMgrService->OnStop();
         EXPECT_EQ(SpawnConnectionState::STATE_NOT_CONNECT, appMgrService->QueryServiceState().connectionState);
         EXPECT_EQ(SpawnConnectionState::STATE_NOT_CONNECT, amsInner->QueryAppSpawnConnectionState());
@@ -243,8 +243,8 @@ HWTEST_F(AmsServiceAppSpawnClientModuleTest, ConnectAppSpawnDaemon_002, TestSize
         EXPECT_EQ(SpawnConnectionState::STATE_NOT_CONNECT, amsInner->QueryAppSpawnConnectionState());
         MockedAppSpawnSocket::gConnectSuccess_ = true;
         appMgrService->OnStart();
-        EXPECT_EQ(SpawnConnectionState::STATE_CONNECTED, appMgrService->QueryServiceState().connectionState);
-        EXPECT_EQ(SpawnConnectionState::STATE_CONNECTED, amsInner->QueryAppSpawnConnectionState());
+        ASSERT_EQ(SpawnConnectionState::STATE_CONNECTED, appMgrService->QueryServiceState().connectionState);
+        ASSERT_EQ(SpawnConnectionState::STATE_CONNECTED, amsInner->QueryAppSpawnConnectionState());
         appMgrService->OnStop();
         EXPECT_EQ(SpawnConnectionState::STATE_NOT_CONNECT, appMgrService->QueryServiceState().connectionState);
         EXPECT_EQ(SpawnConnectionState::STATE_NOT_CONNECT, amsInner->QueryAppSpawnConnectionState());
@@ -270,8 +270,8 @@ HWTEST_F(AmsServiceAppSpawnClientModuleTest, ConnectAppSpawnDaemon_003, TestSize
     for (uint32_t i = 0; i < CYCLE_NUMBER; i++) {
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
         appMgrService->OnStart();
-        EXPECT_EQ(SpawnConnectionState::STATE_CONNECTED, appMgrService->QueryServiceState().connectionState);
-        EXPECT_EQ(SpawnConnectionState::STATE_CONNECTED, amsInner->QueryAppSpawnConnectionState());
+        ASSERT_EQ(SpawnConnectionState::STATE_CONNECTED, appMgrService->QueryServiceState().connectionState);
+        ASSERT_EQ(SpawnConnectionState::STATE_CONNECTED, amsInner->QueryAppSpawnConnectionState());
         appMgrService->OnStart();
         EXPECT_EQ(SpawnConnectionState::STATE_CONNECTED, appMgrService->QueryServiceState().connectionState);
         EXPECT_EQ(SpawnConnectionState::STATE_CONNECTED, amsInner->QueryAppSpawnConnectionState());

@@ -23,7 +23,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-namespace {
 static const int ABILITY_DATA_C1_CODE = 230;
 static const std::string OPERATOR_INSERT = "Insert";
 static const std::string OPERATOR_DELETE = "Delete";
@@ -38,7 +37,6 @@ static const std::string ABILITY_TYPE_PAGE = "0";
 static const std::string ABILITY_TYPE_SERVICE = "1";
 static const std::string ABILITY_TYPE_DATA = "2";
 constexpr int charCnt = 5;
-}  // namespace
 
 bool AmsStDataAbilityDataC1::PublishEvent(const std::string &eventName, const int &code, const std::string &data)
 {
@@ -151,7 +149,7 @@ static void GetResult(std::shared_ptr<STtools::StOperator> child, std::shared_pt
     Uri dataAbilityUri, string &result)
 {
     AppExecFwk::DataAbilityPredicates predicates;
-    AppExecFwk::ValuesBucket bucket;
+    ValuesBucket bucket;
     result = "failed";
     if (child->GetOperatorName() == OPERATOR_INSERT) {
         result = std::to_string(helper->Insert(dataAbilityUri, bucket));
@@ -177,9 +175,8 @@ static void GetResult(std::shared_ptr<STtools::StOperator> child, std::shared_pt
         }
         result = std::to_string(fd);
         char str[charCnt];
-        if (!feof(file)) {
+        if (!feof(file))
             fgets(str, charCnt, file);
-        }
         result = str;
         fclose(file);
     }
@@ -190,7 +187,7 @@ void DataTestDataC1EventSubscriber::GetResultBySelf(
 {
     if (child->GetOperatorName() == OPERATOR_INSERT) {
         APP_LOGI("---------------------Insert--------------------");
-        AppExecFwk::ValuesBucket bucket;
+        ValuesBucket bucket;
         result = std::to_string(mainAbility->Insert(dataAbilityUri, bucket));
     } else if (child->GetOperatorName() == OPERATOR_DELETE) {
         APP_LOGI("---------------------Delete--------------------");
@@ -198,7 +195,7 @@ void DataTestDataC1EventSubscriber::GetResultBySelf(
         result = std::to_string(mainAbility->Delete(dataAbilityUri, predicates));
     } else if (child->GetOperatorName() == OPERATOR_UPDATE) {
         APP_LOGI("---------------------Update--------------------");
-        AppExecFwk::ValuesBucket bucket;
+        ValuesBucket bucket;
         AppExecFwk::DataAbilityPredicates predicates;
         result = std::to_string(mainAbility->Update(dataAbilityUri, bucket, predicates));
     } else if (child->GetOperatorName() == OPERATOR_QUERY) {
@@ -228,9 +225,8 @@ void DataTestDataC1EventSubscriber::GetResultBySelf(
         mainAbility_->PublishEvent(abilityEventName, ABILITY_DATA_C1_CODE, "OpenFile");
 
         char str[charCnt];
-        if (!feof(file)) {
+        if (!feof(file))
             fgets(str, charCnt, file);
-        }
         result = str;
         fclose(file);
     }

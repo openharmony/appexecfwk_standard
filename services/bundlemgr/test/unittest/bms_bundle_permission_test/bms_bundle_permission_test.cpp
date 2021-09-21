@@ -93,62 +93,78 @@ const std::string DEFPERMISSION_NAME18 = "com.myability.permission.MYPERMISSION1
 const std::string DEF_LABEL1 = "MockDefPermissionBundleSystemGrant";
 const std::string DEF_LABEL2 = "MockDefPermissionBundleUserGrant";
 const std::string DEF_LABEL3 = "MockSameDefPermissionNameBundleSystemGrant";
-const DefPermission DEFPERMISSION_SYSTEM1 = {.name = DEFPERMISSION_NAME1,
+const DefPermission DEFPERMISSION_SYSTEM1 = {
+    .name = DEFPERMISSION_NAME1,
     .grantMode = "system_grant",
     .availableScope = {"signature"},
     .label = DEF_LABEL1,
     .labelId = 1,
     .description = DEF_LABEL1,
-    .descriptionId = 1};
-const DefPermission DEFPERMISSION_SYSTEM2 = {.name = DEFPERMISSION_NAME2,
+    .descriptionId = 1
+};
+const DefPermission DEFPERMISSION_SYSTEM2 = {
+    .name = DEFPERMISSION_NAME2,
     .grantMode = "system_grant",
     .availableScope = {"signature"},
     .label = DEF_LABEL1,
     .labelId = 1,
     .description = DEF_LABEL1,
-    .descriptionId = 1};
-const DefPermission DEFPERMISSION_SYSTEM3 = {.name = DEFPERMISSION_NAME3,
+    .descriptionId = 1
+};
+const DefPermission DEFPERMISSION_SYSTEM3 = {
+    .name = DEFPERMISSION_NAME3,
     .grantMode = "system_grant",
     .availableScope = {"signature"},
     .label = DEF_LABEL1,
     .labelId = 1,
     .description = DEF_LABEL1,
-    .descriptionId = 1};
-const DefPermission DEFPERMISSION_UPDATE1 = {.name = DEFPERMISSION_NAME1,
+    .descriptionId = 1
+};
+const DefPermission DEFPERMISSION_UPDATE1 = {
+    .name = DEFPERMISSION_NAME1,
     .grantMode = "user_grant",
     .availableScope = {"signature"},
     .label = DEF_LABEL2,
     .labelId = 10,
     .description = DEF_LABEL2,
-    .descriptionId = 10};
-const DefPermission DEFPERMISSION_UPDATE2 = {.name = DEFPERMISSION_NAME2,
+    .descriptionId = 10
+};
+const DefPermission DEFPERMISSION_UPDATE2 = {
+    .name = DEFPERMISSION_NAME2,
     .grantMode = "user_grant",
     .availableScope = {"signature"},
     .label = DEF_LABEL2,
     .labelId = 10,
     .description = DEF_LABEL2,
-    .descriptionId = 10};
-const DefPermission DEFPERMISSION_UPDATE3 = {.name = DEFPERMISSION_NAME3,
+    .descriptionId = 10
+};
+const DefPermission DEFPERMISSION_UPDATE3 = {
+    .name = DEFPERMISSION_NAME3,
     .grantMode = "user_grant",
     .availableScope = {"signature"},
     .label = DEF_LABEL2,
     .labelId = 10,
     .description = DEF_LABEL2,
-    .descriptionId = 10};
-const DefPermission DEFPERMISSION_EMAIL = {.name = DEFPERMISSION_NAME_EMAIL,
+    .descriptionId = 10
+};
+const DefPermission DEFPERMISSION_EMAIL = {
+    .name = DEFPERMISSION_NAME_EMAIL,
     .grantMode = "system_grant",
     .availableScope = {""},
     .label = DEF_LABEL1,
     .labelId = 1,
     .description = DEF_LABEL1,
-    .descriptionId = 1};
-const DefPermission DEFPERMISSION_MUSIC = {.name = DEFPERMISSION_NAME_MUSIC,
+    .descriptionId = 1
+};
+const DefPermission DEFPERMISSION_MUSIC = {
+    .name = DEFPERMISSION_NAME_MUSIC,
     .grantMode = "system_grant",
     .availableScope = {""},
     .label = DEF_LABEL1,
     .labelId = 1,
     .description = DEF_LABEL1,
-    .descriptionId = 1};
+    .descriptionId = 1
+};
 const DefPermission DEFPERMISSION_APP = {.name = DEFPERMISSION_NAME_APP,
     .grantMode = "system_grant",
     .availableScope = {""},
@@ -156,119 +172,173 @@ const DefPermission DEFPERMISSION_APP = {.name = DEFPERMISSION_NAME_APP,
     .labelId = 1,
     .description = DEF_LABEL1,
     .descriptionId = 1};
-const DefPermission DEFPERMISSION_WECHAT = {.name = DEFPERMISSION_NAME_WECHAT,
+const DefPermission DEFPERMISSION_WECHAT = {
+    .name = DEFPERMISSION_NAME_WECHAT,
     .grantMode = "system_grant",
     .availableScope = {""},
     .label = DEF_LABEL1,
     .labelId = 1,
     .description = DEF_LABEL1,
-    .descriptionId = 1};
-const DefPermission DEFPERMISSION_NOAVAILIAVLE1 = {.name = DEFPERMISSION_NAME4,
+    .descriptionId = 1
+};
+const DefPermission DEFPERMISSION_NOAVAILIAVLE1 = {
+    .name = DEFPERMISSION_NAME4,
     .grantMode = "system_grant",
     .availableScope = {""},
     .label = DEF_LABEL1,
     .labelId = 1,
     .description = DEF_LABEL1,
-    .descriptionId = 1};
-const DefPermission DEFPERMISSION_NOAVAILIAVLE2 = {.name = DEFPERMISSION_NAME5,
+    .descriptionId = 1
+};
+const DefPermission DEFPERMISSION_NOAVAILIAVLE2 = {
+    .name = DEFPERMISSION_NAME5,
     .grantMode = "system_grant",
     .availableScope = {""},
     .label = DEF_LABEL1,
     .labelId = 1,
     .description = DEF_LABEL1,
-    .descriptionId = 1};
-const DefPermission DEFPERMISSION_NOAVAILIAVLE3 = {.name = DEFPERMISSION_NAME6,
+    .descriptionId = 1
+};
+const DefPermission DEFPERMISSION_NOAVAILIAVLE3 = {
+    .name = DEFPERMISSION_NAME6,
     .grantMode = "system_grant",
     .availableScope = {""},
     .label = DEF_LABEL1,
     .labelId = 1,
     .description = DEF_LABEL1,
-    .descriptionId = 1};
-const DefPermission DEFPERMISSION_USERGRANT1 = {.name = DEFPERMISSION_NAME10,
+    .descriptionId = 1
+};
+const DefPermission DEFPERMISSION_USERGRANT1 = {
+    .name = DEFPERMISSION_NAME10,
     .grantMode = "user_grant",
     .availableScope = {"signature"},
     .label = DEF_LABEL2,
     .labelId = 1,
     .description = DEF_LABEL1,
-    .descriptionId = 1};
-const DefPermission DEFPERMISSION_USERGRANT2 = {.name = DEFPERMISSION_NAME11,
+    .descriptionId = 1
+};
+const DefPermission DEFPERMISSION_USERGRANT2 = {
+    .name = DEFPERMISSION_NAME11,
     .grantMode = "user_grant",
     .availableScope = {"signature"},
     .label = DEF_LABEL2,
     .labelId = 1,
     .description = DEF_LABEL1,
-    .descriptionId = 1};
-const DefPermission DEFPERMISSION_USERGRANT3 = {.name = DEFPERMISSION_NAME12,
+    .descriptionId = 1
+};
+const DefPermission DEFPERMISSION_USERGRANT3 = {
+    .name = DEFPERMISSION_NAME12,
     .grantMode = "user_grant",
     .availableScope = {"signature"},
     .label = DEF_LABEL2,
     .labelId = 1,
     .description = DEF_LABEL1,
-    .descriptionId = 1};
-const DefPermission DEFPERMISSION_USERGRANT4 = {.name = DEFPERMISSION_NAME13,
+    .descriptionId = 1
+};
+const DefPermission DEFPERMISSION_USERGRANT4 = {
+    .name = DEFPERMISSION_NAME13,
     .grantMode = "user_grant",
     .availableScope = {"signature"},
     .label = DEF_LABEL2,
     .labelId = 1,
     .description = DEF_LABEL1,
-    .descriptionId = 1};
-const DefPermission DEFPERMISSION_USERGRANT5 = {.name = DEFPERMISSION_NAME14,
+    .descriptionId = 1
+};
+const DefPermission DEFPERMISSION_USERGRANT5 = {
+    .name = DEFPERMISSION_NAME14,
     .grantMode = "user_grant",
     .availableScope = {"signature"},
     .label = DEF_LABEL2,
     .labelId = 1,
     .description = DEF_LABEL1,
-    .descriptionId = 1};
-const DefPermission DEFPERMISSION_USERGRANT6 = {.name = DEFPERMISSION_NAME15,
+    .descriptionId = 1
+};
+const DefPermission DEFPERMISSION_USERGRANT6 = {
+    .name = DEFPERMISSION_NAME15,
     .grantMode = "user_grant",
     .availableScope = {"signature"},
     .label = DEF_LABEL2,
     .labelId = 1,
     .description = DEF_LABEL1,
-    .descriptionId = 1};
-const DefPermission DEFPERMISSION_SAMENAME1 = {.name = DEFPERMISSION_NAME10,
+    .descriptionId = 1
+};
+const DefPermission DEFPERMISSION_SAMENAME1 = {
+    .name = DEFPERMISSION_NAME10,
     .grantMode = "system_grant",
     .availableScope = {"signature"},
     .label = DEF_LABEL3,
     .labelId = 1,
     .description = DEF_LABEL1,
-    .descriptionId = 1};
-const DefPermission DEFPERMISSION_SAMENAME2 = {.name = DEFPERMISSION_NAME11,
+    .descriptionId = 1
+};
+const DefPermission DEFPERMISSION_SAMENAME2 = {
+    .name = DEFPERMISSION_NAME11,
     .grantMode = "system_grant",
     .availableScope = {"signature"},
     .label = DEF_LABEL3,
     .labelId = 1,
     .description = DEF_LABEL1,
-    .descriptionId = 1};
-const DefPermission DEFPERMISSION_SAME2 = {.name = DEFPERMISSION_NAME17,
+    .descriptionId = 1
+};
+const DefPermission DEFPERMISSION_SAME2 = {
+    .name = DEFPERMISSION_NAME17,
     .grantMode = "system_grant",
     .availableScope = {"signature"},
     .label = DEF_LABEL3,
     .labelId = 1,
     .description = DEF_LABEL1,
-    .descriptionId = 1};
-const DefPermission DEFPERMISSION_SAME1 = {.name = DEFPERMISSION_NAME16,
+    .descriptionId = 1
+};
+const DefPermission DEFPERMISSION_SAME1 = {
+    .name = DEFPERMISSION_NAME16,
     .grantMode = "system_grant",
     .availableScope = {"signature"},
     .label = DEF_LABEL3,
     .labelId = 1,
     .description = DEF_LABEL1,
-    .descriptionId = 1};
-const DefPermission DEFPERMISSION_SAME3 = {.name = DEFPERMISSION_NAME18,
+    .descriptionId = 1
+};
+const DefPermission DEFPERMISSION_SAME3 = {
+    .name = DEFPERMISSION_NAME18,
     .grantMode = "system_grant",
     .availableScope = {"signature"},
     .label = DEF_LABEL3,
     .labelId = 1,
     .description = DEF_LABEL1,
-    .descriptionId = 1};
+    .descriptionId = 1
+};
 const ReqPermission REQPERMISSION1 = {
-    .name = DEFPERMISSION_NAME_EMAIL, .reason = "reason", .usedScene = {.ability = {"ability"}, .when = "when"}};
+    .name = DEFPERMISSION_NAME_EMAIL,
+    .reason = "reason",
+    .usedScene = {
+        .ability = {"ability"},
+        .when = "when"
+    }
+};
 const ReqPermission REQPERMISSION2 = {
-    .name = DEFPERMISSION_NAME_WECHAT, .reason = "reason", .usedScene = {.ability = {"ability"}, .when = "when"}};
+    .name = DEFPERMISSION_NAME_WECHAT,
+    .reason = "reason",
+    .usedScene = {
+        .ability = {"ability"},
+        .when = "when"
+    }
+};
 const ReqPermission REQPERMISSION3 = {
-    .name = DEFPERMISSION_NAME_APP, .reason = "reason", .usedScene = {.ability = {"ability"}, .when = "when"}};
+    .name = DEFPERMISSION_NAME_APP,
+    .reason = "reason",
+    .usedScene = {
+        .ability = {"ability"},
+        .when = "when"
+    }
+};
 const ReqPermission REQPERMISSION4 = {
-    .name = DEFPERMISSION_NAME_MUSIC, .reason = "reason", .usedScene = {.ability = {"ability"}, .when = "when"}};
+    .name = DEFPERMISSION_NAME_MUSIC,
+    .reason = "reason",
+    .usedScene = {
+        .ability = {"ability"},
+        .when = "when"
+    }
+};
 
 }  // namespace
 class BmsBundlePermissionTest : public testing::Test {

@@ -30,6 +30,7 @@ using namespace OHOS::AppExecFwk;
 using OHOS::DelayedSingleton;
 
 namespace {
+
 const std::string TEST_DIR = "/data/test/resource";
 const std::string BUNDLE_FILENAME_1 = "app1.hap";
 const std::string BUNDLE_FILENAME_2 = "app2.hap";
@@ -37,6 +38,7 @@ const std::string BUNDLE_FILENAME_3 = "app3.hap";
 const std::string BUNDLE_FILENAME_4 = "app1.ha";
 const std::string BUNDLE_FILENAME_5 = "app2..ap";
 const std::string BUNDLE_FILENAME_6 = "app3";
+
 }  // namespace
 
 class BmsServiceBundleScanTest : public testing::Test {
@@ -147,11 +149,11 @@ bool BmsServiceBundleScanTest::IsScanResultContain(const std::string name) const
     return true;
 }
 /**
- * @tc.number: BundleScan_0100
- * @tc.name:  Scan
- * @tc.desc: 1. scan dir not exist
- *           2. verify scan result file number is 0
- */
+* @tc.number: BundleScan_0100
+* @tc.name:  Scan
+* @tc.desc: 1. scan dir not exist
+*           2. verify scan result file number is 0
+*/
 HWTEST_F(BmsServiceBundleScanTest, BundleScan_0100, Function | SmallTest | Level0)
 {
     DeleteDir(TEST_DIR);
@@ -159,22 +161,22 @@ HWTEST_F(BmsServiceBundleScanTest, BundleScan_0100, Function | SmallTest | Level
     EXPECT_EQ(0, number);
 }
 /**
- * @tc.number: BundleScan_0200
- * @tc.name:  Scan
- * @tc.desc: 1. scan dir exist, no bundle file
- *           2. verify scan result file number is 0
- */
+* @tc.number: BundleScan_0200
+* @tc.name:  Scan
+* @tc.desc: 1. scan dir exist, no bundle file
+*           2. verify scan result file number is 0
+*/
 HWTEST_F(BmsServiceBundleScanTest, BundleScan_0200, Function | SmallTest | Level0)
 {
     int number = static_cast<int>(TriggerScan());
     EXPECT_EQ(0, number);
 }
 /**
- * @tc.number: BundleScan_0300
- * @tc.name:  Scan
- * @tc.desc: 1. scan dir exist, 3 legal file exist
- *           2. verify scan result file number is 3 and file name correct
- */
+* @tc.number: BundleScan_0300
+* @tc.name:  Scan
+* @tc.desc: 1. scan dir exist, 3 legal file exist
+*           2. verify scan result file number is 3 and file name correct
+*/
 HWTEST_F(BmsServiceBundleScanTest, BundleScan_0300, Function | SmallTest | Level0)
 {
     CreateDir(TEST_DIR);
@@ -197,11 +199,11 @@ HWTEST_F(BmsServiceBundleScanTest, BundleScan_0300, Function | SmallTest | Level
     DeleteFile(TEST_FILE_NAME_3);
 }
 /**
- * @tc.number: BundleScan_0400
- * @tc.name:  Scan
- * @tc.desc: 1. scan dir exist, 3 illegal file exist
- *           2. verify scan result file number is 0
- */
+* @tc.number: BundleScan_0400
+* @tc.name:  Scan
+* @tc.desc: 1. scan dir exist, 3 illegal file exist
+*           2. verify scan result file number is 0
+*/
 HWTEST_F(BmsServiceBundleScanTest, BundleScan_0400, Function | SmallTest | Level0)
 {
     const std::string TEST_FILE_NAME_4 = TEST_DIR + "/" + BUNDLE_FILENAME_4;
@@ -220,11 +222,11 @@ HWTEST_F(BmsServiceBundleScanTest, BundleScan_0400, Function | SmallTest | Level
     DeleteFile(TEST_FILE_NAME_6);
 }
 /**
- * @tc.number: BundleScan_0500
- * @tc.name:  Scan
- * @tc.desc: 1. scan dir exist, 3 illegal and 3 legal file exist
- *           2. verify scan result file number is 3 and file name correct
- */
+* @tc.number: BundleScan_0500
+* @tc.name:  Scan
+* @tc.desc: 1. scan dir exist, 3 illegal and 3 legal file exist
+*           2. verify scan result file number is 3 and file name correct
+*/
 HWTEST_F(BmsServiceBundleScanTest, BundleScan_0500, Function | SmallTest | Level0)
 {
     const std::string TEST_FILE_NAME_1 = TEST_DIR + "/" + BUNDLE_FILENAME_1;

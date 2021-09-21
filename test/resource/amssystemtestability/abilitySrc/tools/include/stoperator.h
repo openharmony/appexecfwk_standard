@@ -20,11 +20,8 @@
 namespace STtools {
 using std::string;
 class StOperator;
-
 std::vector<string> SerializationStOperatorToVector(StOperator &ParentOperator);
-
 void DeserializationStOperatorFromVector(StOperator &ParentOperator, std::vector<string> &vectorOperator);
-
 class StOperator {
 private:
     std::vector<std::shared_ptr<StOperator>> g_childOperator;
@@ -57,5 +54,4 @@ public:
     std::vector<std::shared_ptr<StOperator>> GetChildOperator();
     std::vector<std::shared_ptr<StOperator>> PopChildOperator();
 };
-
 }  // namespace STtools

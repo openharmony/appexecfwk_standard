@@ -55,7 +55,6 @@ class AbilityContextStartAbilityTest : public EventFwk::CommonEventSubscriber {
 public:
     AbilityContextStartAbilityTest(const EventFwk::CommonEventSubscribeInfo &sp)
         : EventFwk::CommonEventSubscriber(sp){};
-    virtual ~AbilityContextStartAbilityTest() = default;
     virtual void OnReceiveEvent(const EventFwk::CommonEventData &data);
 };
 class ConnectServiceAbilityTest : public EventFwk::CommonEventSubscriber {
@@ -67,7 +66,6 @@ public:
         abilityContext_ = abilityContext;
         conne_ = conne;
     };
-    virtual ~ConnectServiceAbilityTest() = default;
     virtual void OnReceiveEvent(const EventFwk::CommonEventData &data) override;
 
     std::shared_ptr<Context> abilityContext_ = nullptr;

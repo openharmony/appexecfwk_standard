@@ -20,12 +20,6 @@
 namespace OHOS {
 namespace AppExecFwk {
 using namespace OHOS::EventFwk;
-namespace {
-constexpr int paramCnt = 3;
-constexpr int index_f = 0;
-constexpr int index_s = 1;
-constexpr int index_t = 2;
-}  // namespace
 
 void MainAbility::Init(const std::shared_ptr<AbilityInfo> &abilityInfo,
     const std::shared_ptr<OHOSApplication> &application, std::shared_ptr<AbilityHandler> &handler,
@@ -116,11 +110,11 @@ void FirstEventSubscriber::OnReceiveEvent(const CommonEventData &data)
     if (std::strcmp(eventName.c_str(), g_EVENT_REQU_FIRST.c_str()) == 0) {
         auto target = data.GetData();
         auto caseInfo = TestUtils::split(target, "_");
-        if (caseInfo.size() < paramCnt) {
+        if (caseInfo.size() < 3) {
             return;
         }
-        if (mapTestFunc_.find(caseInfo[index_f]) != mapTestFunc_.end()) {
-            mapTestFunc_[caseInfo[index_f]](std::stoi(caseInfo[index_s]), std::stoi(caseInfo[index_t]), data.GetCode());
+        if (mapTestFunc_.find(caseInfo[0]) != mapTestFunc_.end()) {
+            mapTestFunc_[caseInfo[0]](std::stoi(caseInfo[1]), std::stoi(caseInfo[2]), data.GetCode());
         } else {
             APP_LOGI("OnReceiveEvent: CommonEventData error(%{public}s)", target.c_str());
         }
@@ -166,11 +160,11 @@ void MainAbility::GetDispalyOrientationCase1(int code)
 
 void MainAbility::GetPreferencesDirCase1(int code)
 {
-    unsigned int result = true;
+    bool result = true;
     string preferencesDir = GetPreferencesDir();
     result = !preferencesDir.empty();
-    result = result & (unsigned int)preferencesDir.find(this->GetBundleName());
-    result = result & (unsigned int)preferencesDir.find("com.ohos.amsst.AppAppendA/files/MainAbility/preferences");
+    result = result & (bool)preferencesDir.find(this->GetBundleName());
+    result = result & (bool)preferencesDir.find("com.ohos.amsst.AppAppendA/files/MainAbility/preferences");
 
     TestUtils::PublishEvent(g_EVENT_RESP_FIRST, code, std::to_string(result));
 }

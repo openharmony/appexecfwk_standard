@@ -79,7 +79,8 @@ const std::string JSON_KEY_LABEL_ID = "labelId";
 const std::string JSON_KEY_DESCRIPTION_ID = "descriptionId";
 const std::string JSON_KEY_ICON_ID = "iconId";
 const std::string JSON_KEY_FORM_ENABLED = "formEnabled";
-
+const std::string JSON_KEY_SRC_PATH = "srcPath";
+const std::string JSON_KEY_SRC_LANGUAGE = "srcLanguage";
 }  // namespace
 
 bool AbilityInfo::ReadFromParcel(Parcel &parcel)
@@ -103,6 +104,8 @@ bool AbilityInfo::ReadFromParcel(Parcel &parcel)
     targetAbility = Str16ToStr8(parcel.ReadString16());
     readPermission = Str16ToStr8(parcel.ReadString16());
     writePermission = Str16ToStr8(parcel.ReadString16());
+    srcPath = Str16ToStr8(parcel.ReadString16());
+    srcLanguage = Str16ToStr8(parcel.ReadString16());
     visible = parcel.ReadBool();
     isLauncherAbility = parcel.ReadBool();
     isNativeAbility = parcel.ReadBool();
@@ -233,6 +236,8 @@ bool AbilityInfo::Marshalling(Parcel &parcel) const
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(targetAbility));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(readPermission));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(writePermission));
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(srcPath));
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(srcLanguage));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, visible);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, isLauncherAbility);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, isNativeAbility);
@@ -375,6 +380,8 @@ void to_json(nlohmann::json &jsonObject, const AbilityInfo &abilityInfo)
         {JSON_KEY_SUPPORT_PIP_MODE, abilityInfo.supportPipMode},
         {JSON_KEY_READ_PERMISSION, abilityInfo.readPermission},
         {JSON_KEY_WRITE_PERMISSION, abilityInfo.writePermission},
+        {JSON_KEY_SRC_PATH, abilityInfo.srcPath},
+        {JSON_KEY_SRC_LANGUAGE, abilityInfo.srcLanguage},
         {JSON_KEY_CONFIG_CHANGES, abilityInfo.configChanges},
         {JSON_KEY_FORM_ENTITY, abilityInfo.formEntity},
         {JSON_KEY_MIN_FORM_HEIGHT, abilityInfo.minFormHeight},
@@ -449,6 +456,8 @@ void from_json(const nlohmann::json &jsonObject, AbilityInfo &abilityInfo)
     abilityInfo.supportPipMode = jsonObject.at(JSON_KEY_SUPPORT_PIP_MODE).get<bool>();
     abilityInfo.readPermission = jsonObject.at(JSON_KEY_READ_PERMISSION).get<std::string>();
     abilityInfo.writePermission = jsonObject.at(JSON_KEY_WRITE_PERMISSION).get<std::string>();
+    abilityInfo.srcPath = jsonObject.at(JSON_KEY_SRC_PATH).get<std::string>();
+    abilityInfo.srcLanguage = jsonObject.at(JSON_KEY_SRC_LANGUAGE).get<std::string>();
     abilityInfo.configChanges = jsonObject.at(JSON_KEY_CONFIG_CHANGES).get<std::vector<std::string>>();
     abilityInfo.formEntity = jsonObject.at(JSON_KEY_FORM_ENTITY).get<uint32_t>();
     abilityInfo.minFormHeight = jsonObject.at(JSON_KEY_MIN_FORM_HEIGHT).get<int32_t>();
