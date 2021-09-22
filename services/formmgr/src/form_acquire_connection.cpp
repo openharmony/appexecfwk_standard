@@ -29,12 +29,15 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-FormAcquireConnection::FormAcquireConnection(const int64_t formId, const FormItemInfo &info, 
-const WantParams &wantParams)
+FormAcquireConnection::FormAcquireConnection(
+    const int64_t formId, 
+    const FormItemInfo &info, 
+    const WantParams &wantParams)
     :formId_(formId),
     info_(info), 
     wantParams_(wantParams)
 {
+    SetProviderKey(info.GetProviderBundleName(), info.GetAbilityName());
 }
 /**
  * @brief OnAbilityConnectDone, AbilityMs notify caller ability the result of connect.
@@ -46,6 +49,7 @@ void FormAcquireConnection::OnAbilityConnectDone(
     const AppExecFwk::ElementName &element, const sptr<IRemoteObject> &remoteObject, int resultCode)
 {
     APP_LOGI("%{public}s called.", __func__);
+
     if (resultCode != ERR_OK) {
         APP_LOGE("%{public}s, abilityName:%{public}s, formId:%{public}" PRId64 ", resultCode:%{public}d", 
            __func__, element.GetAbilityName().c_str(), formId_, resultCode);

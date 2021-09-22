@@ -91,8 +91,8 @@ void FmsFormMgrReleaseFormTest::SetUp()
     permDef.descriptionId = 1;
     permList.emplace_back(permDef);
     Permission::PermissionKit::AddDefPermissions(permList);
-    Permission::PermissionKit::AddUserGrantedReqPermissions(FORM_PROVIDER_BUNDLE_NAME, {PERMISSION_NAME_REQUIRE_FORM},
-    0);
+    Permission::PermissionKit::AddUserGrantedReqPermissions(FORM_PROVIDER_BUNDLE_NAME, 
+        {PERMISSION_NAME_REQUIRE_FORM}, 0);
     Permission::PermissionKit::GrantUserGrantedPermission(FORM_PROVIDER_BUNDLE_NAME, PERMISSION_NAME_REQUIRE_FORM, 0);
 }
 
@@ -206,9 +206,9 @@ HWTEST_F(FmsFormMgrReleaseFormTest, ReleaseForm_003, TestSize.Level0)
     GTEST_LOG_(INFO) << "fms_form_mgr_release_test_003 start";
     int64_t formId = FormDataMgr::GetInstance().GenerateFormId();
     // formId<=0
-    EXPECT_EQ(ERR_FORM_INVALID_PARAM, FormMgr::GetInstance().ReleaseForm(0L, token_, false));
+    EXPECT_EQ(ERR_APPEXECFWK_FORM_INVALID_PARAM, FormMgr::GetInstance().ReleaseForm(0L, token_, false));
     // sptr<IRemoteObject> is nullptr
-    EXPECT_EQ(ERR_FORM_INVALID_PARAM, FormMgr::GetInstance().ReleaseForm(formId, nullptr, false));
+    EXPECT_EQ(ERR_APPEXECFWK_FORM_INVALID_PARAM, FormMgr::GetInstance().ReleaseForm(formId, nullptr, false));
 
     // Remove Permission
     OHOS::Security::Permission::PermissionKit::RemoveDefPermissions(FORM_PROVIDER_BUNDLE_NAME);
@@ -246,7 +246,7 @@ HWTEST_F(FmsFormMgrReleaseFormTest, ReleaseForm_004, TestSize.Level0)
 {
     GTEST_LOG_(INFO) << "fms_form_mgr_release_test_004 start";
     int64_t formId = FormDataMgr::GetInstance().GenerateFormId();
-    EXPECT_EQ(ERR_NOT_EXIST_ID, FormMgr::GetInstance().ReleaseForm(formId, token_, true));
+    EXPECT_EQ(ERR_APPEXECFWK_FORM_NOT_EXIST_ID, FormMgr::GetInstance().ReleaseForm(formId, token_, true));
     GTEST_LOG_(INFO) << "fms_form_mgr_release_test_004 end";
 }
 
@@ -268,7 +268,7 @@ HWTEST_F(FmsFormMgrReleaseFormTest, ReleaseForm_005, TestSize.Level0)
     record.SetAbilityName(FORM_PROVIDER_ABILITY_NAME);
     record.SetTemporaryFlag(false);
     FormDataMgr::GetInstance().AllotFormRecord(record, 0);
-    EXPECT_EQ(ERR_OPERATION_FORM_NOT_SELF, FormMgr::GetInstance().ReleaseForm(formId, token_, true));
+    EXPECT_EQ(ERR_APPEXECFWK_FORM_OPERATION_NOT_SELF, FormMgr::GetInstance().ReleaseForm(formId, token_, true));
     GTEST_LOG_(INFO) << "fms_form_mgr_release_test_005 end";
 }
 }

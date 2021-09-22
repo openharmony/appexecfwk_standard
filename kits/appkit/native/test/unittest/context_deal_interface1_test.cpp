@@ -131,7 +131,6 @@ HWTEST_F(ContextDealInterfaceTest, AppExecFwk_ContextDeal_SetTheme_0100, Functio
     resourceManager->SetThemeById(testValue, testList);
     contextDeal->initResourceManager(resourceManager);
     contextDeal->SetTheme(testValue);
-    // EXPECT_EQ(testValue, contextDeal->GetHapModuleInfo()->themeId);
     GTEST_LOG_(INFO) << "AppExecFwk_ContextDeal_SetTheme_0100 end";
 }
 
@@ -146,7 +145,6 @@ HWTEST_F(ContextDealInterfaceTest, AppExecFwk_ContextDeal_SetTheme_0200, Functio
     int testValue = 1;
     std::shared_ptr<ContextDeal> contextDeal = std::make_shared<ContextDeal>();
     contextDeal->SetTheme(testValue);
-    // EXPECT_NE(testValue, contextDeal->GetHapModuleInfo()->themeId);
     GTEST_LOG_(INFO) << "AppExecFwk_ContextDeal_SetTheme_0200 end";
 }
 
@@ -249,7 +247,6 @@ HWTEST_F(ContextDealInterfaceTest, AppExecFwk_ContextDeal_GetTheme_0100, Functio
     contextDeal->initResourceManager(resourceManager);
     std::map<std::string, std::string> retVal = contextDeal->GetTheme();
 
-    // EXPECT_TRUE((retVal == testList));
     GTEST_LOG_(INFO) << "AppExecFwk_ContextDeal_GetTheme_0100 end";
 }
 
@@ -279,12 +276,6 @@ HWTEST_F(ContextDealInterfaceTest, AppExecFwk_ContextDeal_GetString_ById_0100, F
 HWTEST_F(ContextDealInterfaceTest, AppExecFwk_ContextDeal_GetString_ByIdAndFormat_0100, Function | MediumTest | Level1)
 {
     GTEST_LOG_(INFO) << "AppExecFwk_ContextDeal_GetString_ByIdAndFormat_0100 start";
-    // std::shared_ptr<Global::Resource::ResourceManager2> resourceManager(Global::Resource::CreateResourceManager2());
-    // std::shared_ptr<ContextDeal> contextDeal = std::make_shared<ContextDeal>();
-    // int testCount = 0;
-    // std::string testByName = "";
-    // std::string retVal = contextDeal->GetString(testCount, testByName);
-    // EXPECT_TRUE(false);
     GTEST_LOG_(INFO) << "AppExecFwk_ContextDeal_GetString_ByIdAndFormat_0100 end";
 }
 
@@ -410,10 +401,6 @@ HWTEST_F(ContextDealInterfaceTest, AppExecFwk_ContextDeal_GetColor_0200, Functio
 HWTEST_F(ContextDealInterfaceTest, AppExecFwk_ContextDeal_GetThemeId_0100, Function | MediumTest | Level1)
 {
     GTEST_LOG_(INFO) << "AppExecFwk_ContextDeal_GetThemeId_0100 start";
-    // std::shared_ptr<ContextDeal> contextDeal = std::make_shared<ContextDeal>();
-    // const int testValue = 1;
-    // contextDeal->GetHapModuleInfo()->themeId = testValue;
-    // EXPECT_EQ(testValue, contextDeal->GetThemeId());
     GTEST_LOG_(INFO) << "AppExecFwk_ContextDeal_GetThemeId_0100 end";
 }
 

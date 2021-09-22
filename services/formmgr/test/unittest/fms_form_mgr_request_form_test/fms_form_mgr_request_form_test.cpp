@@ -94,8 +94,8 @@ void FmsFormMgrRequestFormTest::SetUp()
     permDef.descriptionId = 1;
     permList.emplace_back(permDef);
     Permission::PermissionKit::AddDefPermissions(permList);
-    Permission::PermissionKit::AddUserGrantedReqPermissions(FORM_PROVIDER_BUNDLE_NAME, {PERMISSION_NAME_REQUIRE_FORM}, 
-    0);
+    Permission::PermissionKit::AddUserGrantedReqPermissions(FORM_PROVIDER_BUNDLE_NAME, 
+        {PERMISSION_NAME_REQUIRE_FORM}, 0);
     Permission::PermissionKit::GrantUserGrantedPermission(FORM_PROVIDER_BUNDLE_NAME, PERMISSION_NAME_REQUIRE_FORM, 0);
 }
 
@@ -202,7 +202,7 @@ HWTEST_F(FmsFormMgrRequestFormTest, RequestForm_003, TestSize.Level0)
     FormRecord retFormRec = FormDataMgr::GetInstance().AllotFormRecord(record, callingUid);
 
     Want want;
-    EXPECT_EQ(ERR_FORM_INVALID_PARAM, FormMgr::GetInstance().RequestForm(formId, token_, want));
+    EXPECT_EQ(ERR_APPEXECFWK_FORM_INVALID_PARAM, FormMgr::GetInstance().RequestForm(formId, token_, want));
 
     token_->Wait();
     FormDataMgr::GetInstance().DeleteFormRecord(formId);
@@ -235,7 +235,7 @@ HWTEST_F(FmsFormMgrRequestFormTest, RequestForm_004, TestSize.Level0)
     FormDataMgr::GetInstance().AllotFormHostRecord(itemInfo, token_, fakeFormId, 0);
 
     Want want;
-    EXPECT_EQ(ERR_OPERATION_FORM_NOT_SELF, FormMgr::GetInstance().RequestForm(formId, token_, want));
+    EXPECT_EQ(ERR_APPEXECFWK_FORM_OPERATION_NOT_SELF, FormMgr::GetInstance().RequestForm(formId, token_, want));
 
     token_->Wait();
     FormDataMgr::GetInstance().DeleteFormRecord(formId);

@@ -54,14 +54,11 @@ using VECTOR_STR = std::vector<std::string>;
 static const std::string BUNDLE_NAME_BASE = "com.ohos.amsst.AppKitData";
 static const std::string ABILITY_NAME_BASE = "AmsStKitDataAbility";
 static const std::string HAP_NAME_BASE = "amsKitSystemTestData";
-
 static const int ABILITY_CODE_BASE = 100;
 static const long DEFAULT_ID = 100;
-
 const int PAGE_ABILITY_CODE = 1;
 const int DATA_ABILITY_CODE = 2;
 const int SERVICE_ABILITY_CODE = 3;
-
 const int ABILITY_KIT_PAGE_A_CODE = 130;
 const int ABILITY_KIT_SERVICE_A_CODE = 310;
 const int ABILITY_KIT_DATA_A1_CODE = 250;
@@ -72,24 +69,18 @@ const int LIFECYCLE_CALLBACKS_A2 = 261;
 const int LIFECYCLE_OBSERVER_A2 = 262;
 const int ABILITY_KIT_DATA_A3_CODE = 290;
 const int LIFECYCLE_OBSERVER_A3 = 292;
-
 const int ABILITY_KIT_PAGE_B_CODE = 140;
 const int ABILITY_KIT_DATA_B_CODE = 270;
 const int LIFECYCLE_CALLBACKS_B = 271;
 const int LIFECYCLE_OBSERVER_B = 272;
-
 const std::string DEVICE_ID = "device";
-
 const std::string ABILITY_TYPE_PAGE = "0";
 const std::string ABILITY_TYPE_SERVICE = "1";
 const std::string ABILITY_TYPE_DATA = "2";
-
 const std::string ABILITY_EVENT_NAME = "event_data_ability_callback";
 const std::string TEST_EVENT_NAME = "event_data_test_action";
-
 const std::string PAGE_STATE_ONSTART = "onStart";
 const std::string PAGE_STATE_ONACTIVE = "OnActive";
-
 const std::string DATA_STATE_ONSTART = "OnStart";
 const std::string DATA_STATE_ONSTOP = "OnStop";
 const std::string DATA_STATE_ONACTIVE = "OnActive";
@@ -102,14 +93,11 @@ const std::string DATA_STATE_UPDATE = "Update";
 const std::string DATA_STATE_QUERY = "Query";
 const std::string DATA_STATE_GETFILETYPES = "GetFileTypes";
 const std::string DATA_STATE_OPENFILE = "OpenFile";
-
 const std::string SERVICE_STATE_ONSTART = "onStart";
 const std::string SERVICE_STATE_ONACTIVE = "OnActive";
 const std::string SERVICE_STATE_ONCOMMAND = "OnCommand";
-
 const std::string DATA_STATE_CHANGE = "OnStateChanged";
 const std::string DATA_STATE_ONNEWWANT = "OnNewWant";
-
 const std::string OPERATOR_INSERT = "Insert";
 const std::string OPERATOR_DELETE = "Delete";
 const std::string OPERATOR_UPDATE = "Update";
@@ -119,18 +107,15 @@ const std::string OPERATOR_OPENFILE = "OpenFile";
 const std::string OPERATOR_GETTYPE = "GetType";
 const std::string OPERATOR_TEST_LIFECYCLE = "TestLifeCycle";
 const std::string OPERATOR_GETLIFECYCLESTATE = "GetLifecycleState";
-
 const std::string DEFAULT_INSERT_RESULT = "1111";
 const std::string DEFAULT_DELETE_RESULT = "2222";
 const std::string DEFAULT_UPDATE_RESULT = "3333";
 const std::string DEFAULT_OPENFILE_RESULT = "4444";
 const std::string DEFAULT_GETFILETYPE_RESULT = "filetypes";
 const std::string DEFAULT_QUERY_RESULT = "Query";
-
 const int WAIT_TIMEOUT = 3;
-
 int g_StLevel = 1;
-
+}
 bool PublishEvent(const std::string &eventName, const int &code, const std::string &data)
 {
     Want want;
@@ -153,8 +138,8 @@ public:
     static bool SubscribeEvent();
     void ReInstallBundle() const;
     void UnInstallBundle() const;
-    static sptr<IAppMgr> g_appMs;
-    static sptr<IAbilityManager> g_abilityMs;
+    static sptr<IAppMgr> appMgrService;
+    static sptr<IAbilityManager> abilityMgrService;
 
     static int TestWaitCompleted(Event &event, const std::string &eventName, const int code, const int timeout = 10);
     static void TestCompleted(Event &event, const std::string &eventName, const int code);
@@ -204,7 +189,7 @@ public:
     };
 };
 
-StressTestLevel ActsAmsKitDataTest::stLevel_{};
+StressTestLevel ActsAmsKitDataTest::stLevel_ {};
 STtools::Event ActsAmsKitDataTest::event = STtools::Event();
 
 void ActsAmsKitDataTest::AppEventSubscriber::OnReceiveEvent(const CommonEventData &data)
@@ -215,23 +200,19 @@ void ActsAmsKitDataTest::AppEventSubscriber::OnReceiveEvent(const CommonEventDat
 
     std::string eventName = data.GetWant().GetAction();
     if (eventName.compare(ABILITY_EVENT_NAME) == 0) {
-
         std::string target = data.GetData();
         if (target.find(" ") != target.npos) {
             ActsAmsKitDataTest::TestCompleted(event, target, data.GetCode());
             return;
         }
 
-        if (PAGE_ABILITY_CODE == data.GetCode() / ABILITY_CODE_BASE)  // page ability
-        {
+        if (PAGE_ABILITY_CODE == data.GetCode() / ABILITY_CODE_BASE) {  // page ability
             ActsAmsKitDataTest::TestCompleted(event, target, data.GetCode());
             return;
-        } else if (DATA_ABILITY_CODE == data.GetCode() / ABILITY_CODE_BASE)  // data ability
-        {
+        } else if (DATA_ABILITY_CODE == data.GetCode() / ABILITY_CODE_BASE) {  // data ability
             ActsAmsKitDataTest::TestCompleted(event, target, data.GetCode());
             return;
-        } else if (SERVICE_ABILITY_CODE == data.GetCode() / ABILITY_CODE_BASE)  // data ability
-        {
+        } else if (SERVICE_ABILITY_CODE == data.GetCode() / ABILITY_CODE_BASE) {  // data ability
             ActsAmsKitDataTest::TestCompleted(event, target, data.GetCode());
             return;
         }
@@ -264,8 +245,8 @@ void ActsAmsKitDataTest::SetUp(void)
     }
     STAbilityUtil::CleanMsg(event);
 
-    g_abilityMs = STAbilityUtil::GetAbilityManagerService();
-    g_appMs = STAbilityUtil::GetAppMgrService();
+    abilityMgrService = STAbilityUtil::GetAbilityManagerService();
+    appMgrService = STAbilityUtil::GetAppMgrService();
 }
 
 void ActsAmsKitDataTest::TearDown(void)
@@ -304,8 +285,8 @@ void ActsAmsKitDataTest::UnInstallBundle() const
     }
 }
 
-sptr<IAppMgr> ActsAmsKitDataTest::g_appMs = nullptr;
-sptr<IAbilityManager> ActsAmsKitDataTest::g_abilityMs = nullptr;
+sptr<IAppMgr> ActsAmsKitDataTest::appMgrService = nullptr;
+sptr<IAbilityManager> ActsAmsKitDataTest::abilityMgrService = nullptr;
 
 void ActsAmsKitDataTest::ResetSystem() const
 {
@@ -350,7 +331,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_00100, Function | Mediu
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -394,7 +375,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_00200, Function | Mediu
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_B_CODE), 0);
@@ -440,7 +421,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_00300, Function | Mediu
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -487,7 +468,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_00400, Function | Mediu
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -531,7 +512,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_00500, Function | Mediu
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -574,7 +555,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_00600, Function | Mediu
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -617,7 +598,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_00700, Function | Mediu
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -659,7 +640,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_00800, Function | Mediu
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_B_CODE), 0);
@@ -705,7 +686,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_00900, Function | Mediu
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -752,7 +733,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_01000, Function | Mediu
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -796,7 +777,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_01100, Function | Mediu
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -839,7 +820,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_01200, Function | Mediu
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -882,7 +863,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_01300, Function | Mediu
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -925,7 +906,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_01400, Function | Mediu
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_B_CODE), 0);
@@ -971,7 +952,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_01500, Function | Mediu
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -1018,7 +999,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_01600, Function | Mediu
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -1062,7 +1043,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_01700, Function | Mediu
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -1105,7 +1086,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_01800, Function | Mediu
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -1151,7 +1132,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_01900, Function | Mediu
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -1199,7 +1180,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_02000, Function | Mediu
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_B_CODE), 0);
@@ -1249,7 +1230,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_02100, Function | Mediu
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -1303,7 +1284,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_02200, Function | Mediu
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -1353,7 +1334,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_02300, Function | Mediu
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -1401,7 +1382,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_02400, Function | Mediu
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -1446,7 +1427,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_02500, Function | Mediu
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -1487,7 +1468,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_02600, Function | Mediu
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_B_CODE), 0);
@@ -1532,7 +1513,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_02700, Function | Mediu
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -1581,7 +1562,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_02800, Function | Mediu
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -1626,7 +1607,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_02900, Function | Mediu
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -1669,7 +1650,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_03000, Function | Mediu
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -1715,7 +1696,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_03100, Function | Mediu
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -1763,7 +1744,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_03200, Function | Mediu
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_B_CODE), 0);
@@ -1813,7 +1794,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_03300, Function | Mediu
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -1867,7 +1848,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_03400, Function | Mediu
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -1917,7 +1898,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_03500, Function | Mediu
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -1965,7 +1946,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_03600, Function | Mediu
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -2010,7 +1991,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_03700, Function | Mediu
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -2051,7 +2032,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_03800, Function | Mediu
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_B_CODE), 0);
@@ -2096,7 +2077,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_03900, Function | Mediu
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -2144,7 +2125,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_04000, Function | Mediu
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -2188,7 +2169,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_04100, Function | Mediu
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -2231,7 +2212,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_04200, Function | Mediu
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -2274,7 +2255,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_04300, Function | Mediu
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -2317,7 +2298,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_04400, Function | Mediu
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_B_CODE), 0);
@@ -2363,7 +2344,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_04500, Function | Mediu
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -2410,7 +2391,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_04600, Function | Mediu
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -2454,7 +2435,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_04700, Function | Mediu
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -2497,7 +2478,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_04800, Function | Mediu
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -2543,7 +2524,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_04900, Function | Mediu
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -2591,7 +2572,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_05000, Function | Mediu
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_B_CODE), 0);
@@ -2641,7 +2622,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_05100, Function | Mediu
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -2695,7 +2676,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_05200, Function | Mediu
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -2745,7 +2726,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_05300, Function | Mediu
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -2793,7 +2774,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleCallbacks_05400, Function | Mediu
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -2838,7 +2819,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_00100, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -2878,7 +2859,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_00200, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_B_CODE), 0);
@@ -2921,7 +2902,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_00300, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -2968,7 +2949,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_00400, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -3012,7 +2993,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_00500, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -3053,7 +3034,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_00600, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -3094,7 +3075,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_00700, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -3134,7 +3115,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_00800, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_B_CODE), 0);
@@ -3177,7 +3158,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_00900, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -3224,7 +3205,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_01000, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -3268,7 +3249,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_01100, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -3309,7 +3290,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_01200, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -3350,7 +3331,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_01300, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -3391,7 +3372,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_01400, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_B_CODE), 0);
@@ -3436,7 +3417,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_01500, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -3483,7 +3464,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_01600, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -3527,7 +3508,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_01700, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -3570,7 +3551,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_01800, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -3616,7 +3597,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_01900, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -3664,7 +3645,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_02000, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_B_CODE), 0);
@@ -3714,7 +3695,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_02100, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -3768,7 +3749,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_02200, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -3818,7 +3799,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_02300, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -3866,7 +3847,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_02400, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -3911,7 +3892,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_02500, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -3952,7 +3933,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_02600, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_B_CODE), 0);
@@ -3997,7 +3978,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_02700, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -4044,7 +4025,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_02800, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -4090,7 +4071,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_02900, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -4133,7 +4114,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_03000, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -4179,7 +4160,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_03100, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -4227,7 +4208,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_03200, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_B_CODE), 0);
@@ -4277,7 +4258,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_03300, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -4331,7 +4312,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_03400, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -4381,7 +4362,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_03500, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -4429,7 +4410,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_03600, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -4474,7 +4455,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_03700, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -4515,7 +4496,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_03800, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_B_CODE), 0);
@@ -4560,7 +4541,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_03900, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -4607,7 +4588,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_04000, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -4651,7 +4632,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_04100, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -4694,7 +4675,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_04200, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -4737,7 +4718,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_04300, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -4778,7 +4759,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_04400, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_B_CODE), 0);
@@ -4823,7 +4804,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_04500, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -4870,7 +4851,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_04600, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -4914,7 +4895,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_04700, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -4957,7 +4938,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_04800, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -5000,7 +4981,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_04900, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -5041,7 +5022,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_05000, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_B_CODE), 0);
@@ -5086,7 +5067,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_05100, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -5133,7 +5114,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_05200, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -5177,7 +5158,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_05300, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -5220,7 +5201,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_05400, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -5266,7 +5247,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_05500, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -5314,7 +5295,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_05600, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_B_CODE), 0);
@@ -5364,7 +5345,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_05700, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -5418,7 +5399,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_05800, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -5468,7 +5449,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_05900, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -5516,7 +5497,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_06000, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -5561,7 +5542,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_06100, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -5602,7 +5583,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_06200, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_B_CODE), 0);
@@ -5647,7 +5628,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_06300, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -5694,7 +5675,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_06400, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -5738,7 +5719,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_06500, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -5781,7 +5762,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_06600, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -5824,7 +5805,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_06700, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -5865,7 +5846,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_06800, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_B_CODE), 0);
@@ -5909,7 +5890,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_06900, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -5956,7 +5937,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_07000, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -6000,7 +5981,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_07100, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -6041,7 +6022,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_07200, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -6082,7 +6063,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_07300, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -6125,7 +6106,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_07400, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_B_CODE), 0);
@@ -6171,7 +6152,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_07500, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -6220,7 +6201,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_07600, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -6266,7 +6247,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_07700, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -6308,7 +6289,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_07800, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -6350,7 +6331,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_07900, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -6392,7 +6373,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_08000, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -6437,7 +6418,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_08100, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -6485,7 +6466,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_08200, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -6530,7 +6511,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_08300, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -6571,7 +6552,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_08400, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -6612,7 +6593,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_08500, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -6654,7 +6635,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_08600, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -6699,7 +6680,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_08700, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -6747,7 +6728,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_08800, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -6792,7 +6773,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_08900, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -6833,7 +6814,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_09000, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -6874,7 +6855,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_09100, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -6916,7 +6897,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_09200, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_B_CODE), 0);
@@ -6961,7 +6942,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_09300, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -7010,7 +6991,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Ability_09400, Function | MediumTest | Lev
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_B_CODE), 0);
@@ -7056,7 +7037,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_DataAbilityHelper_00100, Function | MediumTest 
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -7097,7 +7078,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_DataAbilityHelper_00200, Function | MediumTest 
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_B_CODE), 0);
@@ -7141,7 +7122,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_DataAbilityHelper_00300, Function | MediumTest 
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -7188,7 +7169,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_DataAbilityHelper_00400, Function | MediumTest 
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -7232,7 +7213,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_DataAbilityHelper_00500, Function | MediumTest 
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -7273,7 +7254,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_DataAbilityHelper_00600, Function | MediumTest 
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -7314,7 +7295,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_DataAbilityHelper_00700, Function | MediumTest 
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -7355,7 +7336,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_DataAbilityHelper_00800, Function | MediumTest 
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_B_CODE), 0);
@@ -7399,7 +7380,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_DataAbilityHelper_00900, Function | MediumTest 
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -7446,7 +7427,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_DataAbilityHelper_01000, Function | MediumTest 
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -7490,7 +7471,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_DataAbilityHelper_01100, Function | MediumTest 
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -7531,7 +7512,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_DataAbilityHelper_01200, Function | MediumTest 
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -7572,7 +7553,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_DataAbilityHelper_01300, Function | MediumTest 
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -7613,7 +7594,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_DataAbilityHelper_01400, Function | MediumTest 
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_B_CODE), 0);
@@ -7657,7 +7638,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_DataAbilityHelper_01500, Function | MediumTest 
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -7704,7 +7685,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_DataAbilityHelper_01600, Function | MediumTest 
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -7748,7 +7729,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_DataAbilityHelper_01700, Function | MediumTest 
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -7789,7 +7770,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_DataAbilityHelper_01800, Function | MediumTest 
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -7830,7 +7811,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_DataAbilityHelper_01900, Function | MediumTest 
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -7873,7 +7854,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_DataAbilityHelper_02000, Function | MediumTest 
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_B_CODE), 0);
@@ -7919,7 +7900,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_DataAbilityHelper_02100, Function | MediumTest 
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -7968,7 +7949,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_DataAbilityHelper_02200, Function | MediumTest 
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -8014,7 +7995,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_DataAbilityHelper_02300, Function | MediumTest 
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -8056,7 +8037,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_DataAbilityHelper_02400, Function | MediumTest 
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -8098,7 +8079,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_DataAbilityHelper_02500, Function | MediumTest 
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -8137,7 +8118,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_DataAbilityHelper_02600, Function | MediumTest 
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_B_CODE), 0);
@@ -8179,7 +8160,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_DataAbilityHelper_02700, Function | MediumTest 
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -8225,7 +8206,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_DataAbilityHelper_02800, Function | MediumTest 
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -8268,7 +8249,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_DataAbilityHelper_02900, Function | MediumTest 
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -8307,7 +8288,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_DataAbilityHelper_03000, Function | MediumTest 
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -8346,7 +8327,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_DataAbilityHelper_03100, Function | MediumTest 
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -8387,7 +8368,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_DataAbilityHelper_03200, Function | MediumTest 
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_B_CODE), 0);
@@ -8431,7 +8412,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_DataAbilityHelper_03300, Function | MediumTest 
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -8478,7 +8459,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_DataAbilityHelper_03400, Function | MediumTest 
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -8522,7 +8503,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_DataAbilityHelper_03500, Function | MediumTest 
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -8563,7 +8544,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_DataAbilityHelper_03600, Function | MediumTest 
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -8604,7 +8585,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_DataAbilityHelper_03700, Function | MediumTest 
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -8647,7 +8628,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_DataAbilityHelper_03800, Function | MediumTest 
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_B_CODE), 0);
@@ -8693,7 +8674,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_DataAbilityHelper_03900, Function | MediumTest 
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -8739,7 +8720,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Lifecycle_00100, Function | MediumTest | L
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -8781,7 +8762,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Lifecycle_00200, Function | MediumTest | L
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_B_CODE), 0);
@@ -8823,7 +8804,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Lifecycle_00300, Function | MediumTest | L
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_B_CODE), 0);
@@ -8865,7 +8846,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Lifecycle_00400, Function | MediumTest | L
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_B_CODE), 0);
@@ -8910,7 +8891,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Lifecycle_00500, Function | MediumTest | L
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_B_CODE), 0);
@@ -8957,7 +8938,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Lifecycle_00600, Function | MediumTest | L
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_B_CODE), 0);
@@ -9004,7 +8985,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Lifecycle_00700, Function | MediumTest | L
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_B_CODE), 0);
@@ -9051,7 +9032,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Lifecycle_00800, Function | MediumTest | L
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_B_CODE), 0);
@@ -9098,7 +9079,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Lifecycle_00900, Function | MediumTest | L
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_B_CODE), 0);
@@ -9145,7 +9126,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_Lifecycle_01000, Function | MediumTest | L
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_B_CODE), 0);
@@ -9189,7 +9170,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_00100, Function | Medium
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -9232,7 +9213,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_00200, Function | Medium
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_B_CODE), 0);
@@ -9278,7 +9259,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_00300, Function | Medium
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -9325,7 +9306,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_00400, Function | Medium
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -9369,7 +9350,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_00500, Function | Medium
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -9412,7 +9393,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_00600, Function | Medium
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -9455,7 +9436,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_00700, Function | Medium
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -9498,7 +9479,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_00800, Function | Medium
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_B_CODE), 0);
@@ -9544,7 +9525,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_00900, Function | Medium
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -9591,7 +9572,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_01000, Function | Medium
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -9635,7 +9616,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_01100, Function | Medium
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -9678,7 +9659,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_01200, Function | Medium
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -9721,7 +9702,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_01300, Function | Medium
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -9764,7 +9745,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_01400, Function | Medium
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_B_CODE), 0);
@@ -9810,7 +9791,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_01500, Function | Medium
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -9857,7 +9838,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_01600, Function | Medium
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -9901,7 +9882,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_01700, Function | Medium
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -9944,7 +9925,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_01800, Function | Medium
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -9990,7 +9971,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_01900, Function | Medium
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -10038,7 +10019,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_02000, Function | Medium
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_B_CODE), 0);
@@ -10088,7 +10069,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_02100, Function | Medium
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -10142,7 +10123,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_02200, Function | Medium
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -10192,7 +10173,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_02300, Function | Medium
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -10240,7 +10221,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_02400, Function | Medium
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -10285,7 +10266,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_02500, Function | Medium
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -10326,7 +10307,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_02600, Function | Medium
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_B_CODE), 0);
@@ -10371,7 +10352,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_02700, Function | Medium
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -10419,7 +10400,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_02800, Function | Medium
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -10463,7 +10444,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_02900, Function | Medium
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -10506,7 +10487,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_03000, Function | Medium
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -10552,7 +10533,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_03100, Function | Medium
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -10599,7 +10580,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_03200, Function | Medium
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_B_CODE), 0);
@@ -10649,7 +10630,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_03300, Function | Medium
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -10703,7 +10684,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_03400, Function | Medium
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -10753,7 +10734,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_03500, Function | Medium
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -10801,7 +10782,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_03600, Function | Medium
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -10846,7 +10827,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_03700, Function | Medium
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -10887,7 +10868,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_03800, Function | Medium
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_B_CODE), 0);
@@ -10932,7 +10913,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_03900, Function | Medium
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -10980,7 +10961,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_04000, Function | Medium
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -11024,7 +11005,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_04100, Function | Medium
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -11067,7 +11048,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_04200, Function | Medium
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -11110,7 +11091,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_04300, Function | Medium
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -11153,7 +11134,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_04400, Function | Medium
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_B_CODE), 0);
@@ -11199,7 +11180,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_04500, Function | Medium
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -11246,7 +11227,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_04600, Function | Medium
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -11290,7 +11271,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_04700, Function | Medium
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -11333,7 +11314,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_04800, Function | Medium
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -11379,7 +11360,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_04900, Function | Medium
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -11427,7 +11408,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_05000, Function | Medium
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_B_CODE), 0);
@@ -11477,7 +11458,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_05100, Function | Medium
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -11531,7 +11512,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_05200, Function | Medium
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, PAGE_STATE_ONSTART, ABILITY_KIT_PAGE_A_CODE), 0);
@@ -11581,7 +11562,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_05300, Function | Medium
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -11629,7 +11610,7 @@ HWTEST_F(ActsAmsKitDataTest, AMS_Data_LifeCycleObserver_05400, Function | Medium
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         GTEST_LOG_(INFO) << "StartAbility start";
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService);
         GTEST_LOG_(INFO) << eCode;
         GTEST_LOG_(INFO) << "StartAbility done";
         EXPECT_EQ(TestWaitCompleted(event, SERVICE_STATE_ONSTART, ABILITY_KIT_SERVICE_A_CODE), 0);
@@ -11747,4 +11728,3 @@ HWTEST_F(ActsAmsKitDataTest, AMS_DataUriUtils_0300, Function | MediumTest | Leve
     }
     GTEST_LOG_(INFO) << "ActsAmsKitDataTest AMS_DataUriUtils_0300 end";
 }
-}  // namespace

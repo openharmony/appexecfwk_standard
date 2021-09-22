@@ -700,7 +700,7 @@ bool BaseBundleInstaller::ModifyInstallDirByHapType(InnerBundleInfo &info)
 bool BaseBundleInstaller::UpdateBundlePaths(InnerBundleInfo &info, const std::string baseDataPath) const
 {
     info.SetBaseDataDir(baseDataPath);
-    info.SetAppDataDir(baseDataPath + Constants::PATH_SEPARATOR + Constants::DATA_DIR);
+    info.SetAppDataDir(baseDataPath);
     info.SetAppDataBaseDir(baseDataPath + Constants::PATH_SEPARATOR + Constants::DATA_BASE_DIR);
     info.SetAppCacheDir(baseDataPath + Constants::PATH_SEPARATOR + Constants::CACHE_DIR);
     return true;

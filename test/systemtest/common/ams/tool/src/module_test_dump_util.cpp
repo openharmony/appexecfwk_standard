@@ -21,7 +21,7 @@ namespace OHOS {
 namespace MTUtil {
 std::mutex MTDumpUtil::mutex_;
 std::shared_ptr<MTDumpUtil> MTDumpUtil::instance_ = nullptr;
-
+std::size_t matchSize = 2;
 std::shared_ptr<MTDumpUtil> MTDumpUtil::GetInstance()
 {
     if (instance_ == nullptr) {
@@ -90,7 +90,7 @@ bool MTDumpUtil::MatchRegex(const regex &rgx, const string &text, string &result
 {
     std::smatch baseMatch;
     if (std::regex_match(text, baseMatch, rgx)) {
-        if (baseMatch.size() == 2) {
+        if (baseMatch.size() == matchSize) {
             result = baseMatch[1].str();
             return true;
         }
@@ -157,6 +157,5 @@ size_t MTDumpUtil::GetBindingsByUri(const string &uri, const str_vec &dumpInfo, 
         [&result](auto &&it) { result.push_back(it); });
     return ret;
 }
-
 }  // namespace MTUtil
 }  // namespace OHOS

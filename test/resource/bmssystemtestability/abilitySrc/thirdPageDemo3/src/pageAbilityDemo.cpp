@@ -74,24 +74,12 @@ void PageAbilityDemo::OnBackground()
 
 void PageAbilityDemo::CreateFile(const std::string &path) const
 {
-    if (path.size() > PATH_MAX) {
-        APP_LOGE("CreateFile the length of path is too long");
-        return;
-    }
-
-    std::string realPath;
-    realPath.reserve(PATH_MAX);
-    realPath.resize(PATH_MAX - 1);
-
-    if (realpath(path.c_str(), &(realPath[0])) == nullptr) {
-        APP_LOGW("CreateFile-translate:%{public}s not exist path", realPath.c_str());
-    }
 
     std::ofstream file(path);
     file.close();
 
-    if (access(realPath.c_str(), F_OK) != 0) {
-        APP_LOGE("CreateFile-checkFile:%{public}s not exist", realPath.c_str());
+    if (access(path.c_str(), F_OK) != 0) {
+        APP_LOGE("CreateFile-checkFile:%{public}s not exist", path.c_str());
     }
 }
 

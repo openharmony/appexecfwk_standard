@@ -37,9 +37,9 @@ Task::~Task()
 {}
 
 /**
- *@brief invoke the function to execute the task
- *@param None
- *@return None
+ * @brief invoke the function to execute the task
+ * @param None
+ * @return None
  */
 void Task::Run()
 {
@@ -57,9 +57,9 @@ void Task::Run()
 }
 
 /**
- *  @brief Gets the priority.
- *  @param None
- *  @return The priority.
+ * @brief Gets the priority.
+ * @param None
+ * @return The priority.
  */
 TaskPriority Task::GetPriority() const
 {
@@ -67,10 +67,10 @@ TaskPriority Task::GetPriority() const
 }
 
 /**
- *  @brief Sets the sequence.
- *  @param None
- *  @param sequence The sequence
- *  @return None
+ * @brief Sets the sequence.
+ * @param None
+ * @param sequence The sequence
+ * @return None
  */
 void Task::SetSequence(long sequence)
 {
@@ -78,9 +78,9 @@ void Task::SetSequence(long sequence)
 }
 
 /**
- *@brief Gets the sequence.
- *@param None
- *@return The sequence.
+ * @brief Gets the sequence.
+ * @param None
+ * @return The sequence.
  */
 long Task::GetSequence() const
 {
@@ -88,9 +88,9 @@ long Task::GetSequence() const
 }
 
 /**
- *@brief Revoke this task if hasn't run.
- *@param None
- *@return true if set revoked or already revoked. False if the task has start executing.
+ * @brief Revoke this task if hasn't run.
+ * @param None
+ * @return true if set revoked or already revoked. False if the task has start executing.
  */
 bool Task::Revoke()
 {
@@ -107,9 +107,9 @@ bool Task::Revoke()
 }
 
 /**
- *@brief Adds a task listener.
- *@param listener The listener
- *@return None
+ * @brief Adds a task listener.
+ * @param listener The listener
+ * @return None
  */
 void Task::AddTaskListener(const std::shared_ptr<TaskListener> &listener)
 {
@@ -118,9 +118,9 @@ void Task::AddTaskListener(const std::shared_ptr<TaskListener> &listener)
 }
 
 /**
- *@brief Called when task is about to run.
- *@param None
- *@return None
+ * @brief Called when task is about to run.
+ * @param None
+ * @return None
  */
 void Task::BeforeTaskExecute()
 {
@@ -130,9 +130,9 @@ void Task::BeforeTaskExecute()
 }
 
 /**
- *@brief Called when task is done.
- *@param None
- *@return None
+ * @brief Called when task is done.
+ * @param None
+ * @return None
  */
 void Task::AfterTaskExecute()
 {
@@ -143,9 +143,9 @@ void Task::AfterTaskExecute()
 }
 
 /**
- *@brief Called when task is canceled.
- *@param None
- *@return None
+ * @brief Called when task is canceled.
+ * @param None
+ * @return None
  */
 void Task::OnTaskCanceled()
 {
@@ -154,9 +154,9 @@ void Task::OnTaskCanceled()
 }
 
 /**
- *@brief Return true if not executed or revoked, and if not executed or revoked, ensure |EXECUTED| to be set.
- *@param None
- *@return bool
+ * @brief Return true if not executed or revoked, and if not executed or revoked, ensure |EXECUTED| to be set.
+ * @param None
+ * @return bool
  */
 bool Task::EnterExecute()
 {

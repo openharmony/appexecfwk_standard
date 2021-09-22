@@ -542,74 +542,43 @@ void MainThread::HandleProcessSecurityExit()
     APP_LOGI("MainThread::HandleProcessSecurityExit called end.");
 }
 
-/**
- *
- * @brief Launch the application.
- *
- * @param appLaunchData The launchdata of the application witch launced.
- *
- */
-void MainThread::HandleLaunchApplication(const AppLaunchData &appLaunchData)
+bool MainThread::InitCreate(
+    std::shared_ptr<ContextDeal> &contextDeal, ApplicationInfo &appInfo, ProcessInfo &processInfo, Profile &appProfile)
 {
-    APP_LOGI("MainThread::handleLaunchApplication called start.");
-    if (application_ != nullptr) {
-        APP_LOGE("MainThread::handleLaunchApplication already create application");
-        return;
-    }
-
-    if (!CheckLaunchApplicationParam(appLaunchData)) {
-        APP_LOGE("MainThread::handleLaunchApplication appLaunchData invalid");
-        return;
-    }
-
-#ifdef ABILITY_LIBRARY_LOADER
-    APP_LOGI("MainThread::handleLaunchApplication Start calling LoadAbilityLibrary.");
-    LoadAbilityLibrary(appLaunchData.GetApplicationInfo().moduleSourceDirs);
-    APP_LOGI("MainThread::handleLaunchApplication End calling LoadAbilityLibrary.");
-#endif  // ABILITY_LIBRARY_LOADER
-#ifdef APPLICATION_LIBRARY_LOADER
-    std::string appPath = applicationLibraryPath;
-    APP_LOGI("MainThread::handleLaunchApplication Start calling dlopen. appPath=%{public}s", appPath.c_str());
-    handleAppLib_ = dlopen(appPath.c_str(), RTLD_NOW | RTLD_GLOBAL);
-    if (handleAppLib_ == nullptr) {
-        APP_LOGE("Fail to dlopen %{public}s, [%{public}s]", appPath.c_str(), dlerror());
-        exit(-1);
-    }
-    APP_LOGI("MainThread::handleLaunchApplication End calling dlopen.";
-#endif  // APPLICATION_LIBRARY_LOADER
-
-    ApplicationInfo appInfo = appLaunchData.GetApplicationInfo();
-    ProcessInfo processInfo = appLaunchData.GetProcessInfo();
-    Profile appProfile = appLaunchData.GetProfile();
-
     applicationInfo_ = std::make_shared<ApplicationInfo>(appInfo);
     if (applicationInfo_ == nullptr) {
-        APP_LOGE("MainThread::handleLaunchApplication create applicationInfo_ failed");
-        return;
+        APP_LOGE("MainThread::InitCreate create applicationInfo_ failed");
+        return false;
     }
 
     processInfo_ = std::make_shared<ProcessInfo>(processInfo);
     if (processInfo_ == nullptr) {
-        APP_LOGE("MainThread::handleLaunchApplication create processInfo_ failed");
-        return;
+        APP_LOGE("MainThread::InitCreate create processInfo_ failed");
+        return false;
     }
 
     appProfile_ = std::make_shared<Profile>(appProfile);
     if (appProfile_ == nullptr) {
-        APP_LOGE("MainThread::handleLaunchApplication create appProfile_ failed");
-        return;
+        APP_LOGE("MainThread::InitCreate create appProfile_ failed");
+        return false;
     }
 
     applicationImpl_ = std::make_shared<ApplicationImpl>();
     if (applicationImpl_ == nullptr) {
-        APP_LOGE("MainThread::handleLaunchApplication create applicationImpl_ failed");
-        return;
+        APP_LOGE("MainThread::InitCreate create applicationImpl_ failed");
+        return false;
     }
 
-    std::shared_ptr<ContextDeal> contextDeal = std::make_shared<ContextDeal>();
+    abilityRecordMgr_ = std::make_shared<AbilityRecordMgr>();
+    if (abilityRecordMgr_ == nullptr) {
+        APP_LOGE("MainThread::InitCreate create AbilityRecordMgr failed");
+        return false;
+    }
+
+    contextDeal = std::make_shared<ContextDeal>();
     if (contextDeal == nullptr) {
-        APP_LOGE("MainThread::handleLaunchApplication create contextDeal failed");
-        return;
+        APP_LOGE("MainThread::InitCreate create contextDeal failed");
+        return false;
     }
 
     contextDeal->SetProcessInfo(processInfo_);
@@ -617,27 +586,31 @@ void MainThread::HandleLaunchApplication(const AppLaunchData &appLaunchData)
     contextDeal->SetProfile(appProfile_);
     contextDeal->SetBundleCodePath(applicationInfo_->codePath);  // BMS need to add cpath
 
-    // BMS should set the type (native or ace) of application
-    bool isNativeApp = true;
-    std::string appName = isNativeApp ? appInfo.name : aceApplicationName_;
-    application_ = std::shared_ptr<OHOSApplication>(ApplicationLoader::GetInstance().GetApplicationByName(appName));
-    if (application_ == nullptr) {
-        APP_LOGE("HandleLaunchApplication::application launch failed");
-        return;
+    return true;
+}
+
+bool MainThread::CheckForHandleLaunchApplication(const AppLaunchData &appLaunchData)
+{
+    if (application_ != nullptr) {
+        APP_LOGE("MainThread::handleLaunchApplication already create application");
+        return false;
     }
 
-    // init resourceManager.
-    std::shared_ptr<Global::Resource::ResourceManager> resourceManager(Global::Resource::CreateResourceManager());
-    if (resourceManager == nullptr) {
-        APP_LOGE("MainThread::handleLaunchApplication create resourceManager failed");
-        return;
+    if (!CheckLaunchApplicationParam(appLaunchData)) {
+        APP_LOGE("MainThread::handleLaunchApplication appLaunchData invalid");
+        return false;
     }
+    return true;
+}
 
-    APP_LOGI("MainThread::handleLaunchApplication. Start calling GetBundleManager.");
+bool MainThread::InitResourceManager(std::shared_ptr<Global::Resource::ResourceManager> &resourceManager,
+    std::shared_ptr<ContextDeal> &contextDeal, ApplicationInfo &appInfo)
+{
+    APP_LOGI("MainThread::InitResourceManager. Start calling GetBundleManager.");
     sptr<IBundleMgr> bundleMgr = contextDeal->GetBundleManager();
     if (bundleMgr == nullptr) {
         APP_LOGE("MainThread::handleLaunchApplication GetBundleManager is nullptr");
-        return;
+        return false;
     }
     APP_LOGI("MainThread::handleLaunchApplication. End calling GetBundleManager.");
 
@@ -647,7 +620,8 @@ void MainThread::HandleLaunchApplication(const AppLaunchData &appLaunchData)
         appInfo.bundleName.c_str());
     bundleMgr->GetBundleInfo(appInfo.bundleName, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo);
 
-    APP_LOGI("MainThread::handleLaunchApplication moduleResPaths count: %{public}zu start", bundleInfo.moduleResPaths.size());
+    APP_LOGI("MainThread::handleLaunchApplication moduleResPaths count: %{public}zu start",
+        bundleInfo.moduleResPaths.size());
     for (auto moduleResPath : bundleInfo.moduleResPaths) {
         if (!moduleResPath.empty()) {
             APP_LOGI("MainThread::handleLaunchApplication length: %{public}zu, moduleResPath: %{public}s",
@@ -678,28 +652,60 @@ void MainThread::HandleLaunchApplication(const AppLaunchData &appLaunchData)
     APP_LOGI("MainThread::handleLaunchApplication. Start calling UpdateResConfig.");
     resourceManager->UpdateResConfig(*resConfig);
     APP_LOGI("MainThread::handleLaunchApplication. End calling UpdateResConfig.");
+    return true;
+}
+/**
+ *
+ * @brief Launch the application.
+ *
+ * @param appLaunchData The launchdata of the application witch launced.
+ *
+ */
+void MainThread::HandleLaunchApplication(const AppLaunchData &appLaunchData)
+{
+    APP_LOGI("MainThread::handleLaunchApplication called start.");
+    if (!CheckForHandleLaunchApplication(appLaunchData)) {
+        APP_LOGE("MainThread::handleLaunchApplication CheckForHandleLaunchApplication failed");
+        return;
+    }
+    LoadAbilityLibrary(appLaunchData.GetApplicationInfo().moduleSourceDirs);
+    LoadAppLibrary();
 
-    APP_LOGI("MainThread::handleLaunchApplication. Start calling initResourceManager.");
-    contextDeal->initResourceManager(resourceManager);
-    APP_LOGI("MainThread::handleLaunchApplication. End calling initResourceManager.");
+    ApplicationInfo appInfo = appLaunchData.GetApplicationInfo();
+    ProcessInfo processInfo = appLaunchData.GetProcessInfo();
+    Profile appProfile = appLaunchData.GetProfile();
 
-    APP_LOGI("MainThread::handleLaunchApplication. Start calling SetApplicationContext.");
-    contextDeal->SetApplicationContext(application_);
-    APP_LOGI("MainThread::handleLaunchApplication. End calling SetApplicationContext.");
-
-    APP_LOGI("MainThread::handleLaunchApplication. Start calling AttachBaseContext.");
-    application_->AttachBaseContext(contextDeal);
-    APP_LOGI("MainThread::handleLaunchApplication. End calling AttachBaseContext.");
-
-    abilityRecordMgr_ = std::make_shared<AbilityRecordMgr>();
-    if (abilityRecordMgr_ == nullptr) {
-        APP_LOGE("HandleLaunchApplication::application create AbilityRecordMgr failed");
+    std::shared_ptr<ContextDeal> contextDeal = nullptr;
+    if (!InitCreate(contextDeal, appInfo, processInfo, appProfile)) {
+        APP_LOGE("MainThread::handleLaunchApplication InitCreate failed");
         return;
     }
 
-    APP_LOGI("MainThread::handleLaunchApplication. Start calling SetAbilityRecordMgr.");
+    // BMS should set the type (native or ace) of application
+    bool isNativeApp = true;
+    std::string appName = isNativeApp ? appInfo.name : aceApplicationName_;
+    application_ = std::shared_ptr<OHOSApplication>(ApplicationLoader::GetInstance().GetApplicationByName(appName));
+    if (application_ == nullptr) {
+        APP_LOGE("HandleLaunchApplication::application launch failed");
+        return;
+    }
+
+    // init resourceManager.
+    std::shared_ptr<Global::Resource::ResourceManager> resourceManager(Global::Resource::CreateResourceManager());
+    if (resourceManager == nullptr) {
+        APP_LOGE("MainThread::handleLaunchApplication create resourceManager failed");
+        return;
+    }
+
+    if (!InitResourceManager(resourceManager, contextDeal, appInfo)) {
+        APP_LOGE("MainThread::handleLaunchApplication InitResourceManager failed");
+        return;
+    }
+
+    contextDeal->initResourceManager(resourceManager);
+    contextDeal->SetApplicationContext(application_);
+    application_->AttachBaseContext(contextDeal);
     application_->SetAbilityRecordMgr(abilityRecordMgr_);
-    APP_LOGI("MainThread::handleLaunchApplication. End calling SetAbilityRecordMgr.");
 
     applicationImpl_->SetRecordId(appLaunchData.GetRecordId());
     applicationImpl_->SetApplication(application_);
@@ -1114,6 +1120,7 @@ bool MainThread::IsApplicationReady() const
  */
 void MainThread::LoadAbilityLibrary(const std::vector<std::string> &libraryPaths)
 {
+#ifdef ABILITY_LIBRARY_LOADER
     APP_LOGI("MainThread::LoadAbilityLibrary called start");
 #ifdef ACEABILITY_LIBRARY_LOADER
     std::string acelibdir("/system/lib/libace.z.so");
@@ -1163,6 +1170,21 @@ void MainThread::LoadAbilityLibrary(const std::vector<std::string> &libraryPaths
         }
     }
     APP_LOGI("MainThread::LoadAbilityLibrary called end.");
+#endif  // ABILITY_LIBRARY_LOADER
+}
+
+void MainThread::LoadAppLibrary()
+{
+#ifdef APPLICATION_LIBRARY_LOADER
+    std::string appPath = applicationLibraryPath;
+    APP_LOGI("MainThread::handleLaunchApplication Start calling dlopen. appPath=%{public}s", appPath.c_str());
+    handleAppLib_ = dlopen(appPath.c_str(), RTLD_NOW | RTLD_GLOBAL);
+    if (handleAppLib_ == nullptr) {
+        APP_LOGE("Fail to dlopen %{public}s, [%{public}s]", appPath.c_str(), dlerror());
+        exit(-1);
+    }
+    APP_LOGI("MainThread::handleLaunchApplication End calling dlopen.";
+#endif  // APPLICATION_LIBRARY_LOADER
 }
 
 /**

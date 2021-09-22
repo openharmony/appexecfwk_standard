@@ -102,8 +102,8 @@ void FmsFormMgrUpdateFormTest::SetUp()
     permDef.descriptionId = 1;
     permList.emplace_back(permDef);
     Permission::PermissionKit::AddDefPermissions(permList);
-    Permission::PermissionKit::AddUserGrantedReqPermissions(FORM_PROVIDER_BUNDLE_NAME, {PERMISSION_NAME_REQUIRE_FORM},
-    0);
+    Permission::PermissionKit::AddUserGrantedReqPermissions(FORM_PROVIDER_BUNDLE_NAME, 
+        {PERMISSION_NAME_REQUIRE_FORM}, 0);
     Permission::PermissionKit::GrantUserGrantedPermission(FORM_PROVIDER_BUNDLE_NAME, PERMISSION_NAME_REQUIRE_FORM, 0);
 }
 
@@ -231,7 +231,7 @@ HWTEST_F(FmsFormMgrUpdateFormTest, UpdateForm_003, TestSize.Level0)
     FormDataMgr::GetInstance().AllotFormHostRecord(itemInfo, token_, formId, callingUid);
 
     // test exec
-    EXPECT_EQ(ERR_FORM_INVALID_PARAM, FormMgr::GetInstance().UpdateForm(formId, bandleName, formProviderData));
+    EXPECT_EQ(ERR_APPEXECFWK_FORM_INVALID_PARAM, FormMgr::GetInstance().UpdateForm(formId, bandleName, formProviderData));
 
     GTEST_LOG_(INFO) << "fms_form_mgr_client_updateForm_test_003 end";
 }
@@ -267,7 +267,7 @@ HWTEST_F(FmsFormMgrUpdateFormTest, UpdateForm_004, TestSize.Level0)
     FormDataMgr::GetInstance().AllotFormHostRecord(itemInfo, token_, formId, callingUid);
 
     // test exec
-    EXPECT_EQ(ERR_FORM_INVALID_PARAM, FormMgr::GetInstance().UpdateForm(formId, bandleName, formProviderData));
+    EXPECT_EQ(ERR_APPEXECFWK_FORM_INVALID_PARAM, FormMgr::GetInstance().UpdateForm(formId, bandleName, formProviderData));
 
     GTEST_LOG_(INFO) << "fms_form_mgr_client_updateForm_test_004 end";
 }
@@ -303,7 +303,7 @@ HWTEST_F(FmsFormMgrUpdateFormTest, UpdateForm_005, TestSize.Level0)
     FormDataMgr::GetInstance().AllotFormHostRecord(itemInfo, token_, formId, callingUid);
 
     // test exec
-    EXPECT_EQ(ERR_NOT_EXIST_ID, FormMgr::GetInstance().UpdateForm(formId, bandleName, formProviderData));
+    EXPECT_EQ(ERR_APPEXECFWK_FORM_NOT_EXIST_ID, FormMgr::GetInstance().UpdateForm(formId, bandleName, formProviderData));
 
     GTEST_LOG_(INFO) << "fms_form_mgr_client_updateForm_test_005 end";
 }
@@ -339,7 +339,7 @@ HWTEST_F(FmsFormMgrUpdateFormTest, UpdateForm_006, TestSize.Level0)
     FormDataMgr::GetInstance().AllotFormHostRecord(itemInfo, token_, formId, callingUid);
 
     // test exec
-    EXPECT_EQ(ERR_FORM_INVALID_PARAM, FormMgr::GetInstance().UpdateForm(formId, bandleName, formProviderData));
+    EXPECT_EQ(ERR_APPEXECFWK_FORM_INVALID_PARAM, FormMgr::GetInstance().UpdateForm(formId, bandleName, formProviderData));
 
     GTEST_LOG_(INFO) << "fms_form_mgr_client_updateForm_test_006 end";
 }

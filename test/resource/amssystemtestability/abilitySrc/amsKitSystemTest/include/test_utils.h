@@ -34,9 +34,6 @@ public:
     static bool PublishEvent(const std::string &eventName, const int &code, const std::string &data);
     static Want MakeWant(std::string deviceId, std::string abilityName, std::string bundleName,
         std::map<std::string, std::string> params);
-    static std::string ApplicationInfoToString(std::shared_ptr<ApplicationInfo> applicationInfo);
-    static std::string AbilityInfoToString(std::shared_ptr<AbilityInfo> abilityInfo);
-    static std::string ProcessInfoToString(std::shared_ptr<ProcessInfo> processInfo);
     static std::vector<std::string> split(const std::string &in, const std::string &delim);
 };
 }  // namespace AppExecFwk

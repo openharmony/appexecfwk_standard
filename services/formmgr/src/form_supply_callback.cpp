@@ -48,6 +48,7 @@ sptr<FormSupplyCallback> FormSupplyCallback::GetInstance()
  */
 int FormSupplyCallback::OnAcquire(const FormProviderInfo &formProviderInfo, const Want &want)
 {
+    APP_LOGI("%{public}s called.", __func__);
     long connectId = want.GetLongParam(Constants::FORM_CONNECT_ID, 0);
     int errCode = want.GetIntParam(Constants::PROVIDER_FLAG, ERR_OK);
     if (errCode != ERR_OK) {
@@ -55,7 +56,8 @@ int FormSupplyCallback::OnAcquire(const FormProviderInfo &formProviderInfo, cons
         return errCode;
     }
 
-    int64_t formId  = formProviderInfo.GetFormId();
+    std::string strFormId  = want.GetStringParam(Constants::PARAM_FORM_IDENTITY_KEY);
+    int64_t formId = std::stoll(strFormId);
     int type = want.GetIntParam(Constants::ACQUIRE_TYPE, 0);
     APP_LOGD("%{public}s come: %{public}" PRId64 ", %{public}ld, %{public}d", __func__,
     formId, connectId, type);
@@ -69,6 +71,7 @@ int FormSupplyCallback::OnAcquire(const FormProviderInfo &formProviderInfo, cons
         default:
             APP_LOGW("%{public}s warning, onAcquired type: %{public}d", __func__, type);
     }
+    APP_LOGI("%{public}s end.", __func__);
     return ERR_APPEXECFWK_FORM_INVALID_PARAM;
 }
 
@@ -79,10 +82,12 @@ int FormSupplyCallback::OnAcquire(const FormProviderInfo &formProviderInfo, cons
  */
 int FormSupplyCallback::OnEventHandle(const Want &want)
 {
+    APP_LOGI("%{public}s called.", __func__);
     long connectId = want.GetLongParam(Constants::FORM_CONNECT_ID, 0);
     std::string supplyInfo = want.GetStringParam(Constants::FORM_SUPPLY_INFO);
     APP_LOGD("%{public}s come: %{public}ld, %{public}s", __func__, connectId, supplyInfo.c_str());
     RemoveConnection(connectId);
+    APP_LOGI("%{public}s end.", __func__);
     return ERR_OK;
 }
 /**
@@ -91,6 +96,7 @@ int FormSupplyCallback::OnEventHandle(const Want &want)
  */
 void FormSupplyCallback::AddConnection(sptr<FormAbilityConnection> connection)
 {
+    APP_LOGI("%{public}s called.", __func__);
     std::lock_guard<std::mutex> lock_l(conMutex_);
     long connectKey = FormUtil::GetCurrentMillisecond();
     while (connections_.find(connectKey) != connections_.end()) {
@@ -98,6 +104,7 @@ void FormSupplyCallback::AddConnection(sptr<FormAbilityConnection> connection)
     }
     connection->SetConnectId(connectKey);
     connections_.emplace(connectKey, connection);
+    APP_LOGI("%{public}s end.", __func__);
 }
 
 /**
@@ -106,15 +113,44 @@ void FormSupplyCallback::AddConnection(sptr<FormAbilityConnection> connection)
  */  
 void FormSupplyCallback::RemoveConnection(long connectId)
 {
+    APP_LOGI("%{public}s called.", __func__);
     std::lock_guard<std::mutex> lock_l(conMutex_);
     auto conIterator = connections_.find(connectId);
     if (conIterator != connections_.end()) {
         sptr<FormAbilityConnection> connection = conIterator->second;
         if (connection != nullptr) {
-            FormAmsHelper::GetInstance().DisConnectServiceAbility(connection);
+            if(CanDisConnect(connection)) {
+                FormAmsHelper::GetInstance().DisConnectServiceAbility(connection);
+                APP_LOGI("%{public}s end, disconnect service ability", __func__);
+            } else {
+                FormAmsHelper::GetInstance().DisConnectServiceAbilityDelay(connection);
+                APP_LOGI("%{public}s end, disconnect service ability delay", __func__);
+            }            
         }
         connections_.erase(connectId);
     }
+    APP_LOGI("%{public}s end.", __func__);
+}
+/**
+ * @brief check if disconnect ability or not.
+ * @param connection The ability connection.
+ */  
+bool FormSupplyCallback::CanDisConnect(sptr<FormAbilityConnection> &connection)
+{
+    APP_LOGI("%{public}s called.", __func__);
+    int count = 0;
+    for(auto &conn : connections_) {
+        if(connection->GetProviderKey() == conn.second->GetProviderKey()) {
+            APP_LOGI("%{public}s, key: %{public}s", __func__, conn.second->GetProviderKey().c_str());
+            count++;
+            if(count > 1) {
+                APP_LOGI("%{public}s end, true.", __func__);
+                return true;
+            }
+        }
+    }
+    APP_LOGI("%{public}s end, false.", __func__);
+    return false;
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS

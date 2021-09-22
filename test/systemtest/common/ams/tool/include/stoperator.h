@@ -22,7 +22,6 @@
 
 namespace OHOS {
 namespace STtools {
-
 using std::string;
 
 class StOperator {
@@ -56,8 +55,6 @@ public:
     StOperator &AddChildOperator(std::shared_ptr<StOperator> childOperator);
     std::vector<std::shared_ptr<StOperator>> GetChildOperator();
 };
-
 }  // namespace STtools
 }  // namespace OHOS
-
 #endif  // OHOS_SYSTEM_TEST_STOPERATORTREE_H

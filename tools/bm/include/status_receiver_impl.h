@@ -21,7 +21,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class StatusReceiverImpl : public StatusReceiverHost {
 public:
     StatusReceiverImpl();
@@ -36,7 +35,6 @@ private:
 
     DISALLOW_COPY_AND_MOVE(StatusReceiverImpl);
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 

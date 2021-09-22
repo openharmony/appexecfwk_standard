@@ -19,11 +19,13 @@
 
 #include "appexecfwk_errors.h"
 #include "app_log_wrapper.h"
+#include "form_ams_helper.h"
 #include "form_bms_helper.h"
 #include "form_constants.h"
 #include "form_data_mgr.h"
 #include "form_db_cache.h"
 #include "form_mgr_service.h"
+#include "form_mgr_adapter.h"
 #include "form_task_mgr.h"
 #include "form_timer_mgr.h"
 #include "ipc_skeleton.h"
@@ -48,8 +50,7 @@ FormMgrService::FormMgrService()
     : SystemAbility(FORM_MGR_SERVICE_ID, true),
       state_(ServiceRunningState::STATE_NOT_START),
       runner_(nullptr),
-      handler_(nullptr),
-      formMgrAdapter_(std::make_unique<FormMgrAdapter>())
+      handler_(nullptr)
 {
 }
 
@@ -77,14 +78,14 @@ bool FormMgrService::IsReady() const
  * @param formInfo Form info.
  * @return Returns ERR_OK on success, others on failure.
  */
-int FormMgrService::AddForm(const int64_t formId, const Want &want, const sptr<IRemoteObject> &callerToken, 
-FormJsInfo &formInfo)
+int FormMgrService::AddForm(const int64_t formId, const Want &want, 
+    const sptr<IRemoteObject> &callerToken, FormJsInfo &formInfo)
 {
     if (!CheckFormPermission()) {
         APP_LOGE("%{public}s fail, add form permission denied", __func__);
         return ERR_APPEXECFWK_FORM_PERMISSION_DENY;
     }
-    return formMgrAdapter_->AddForm(formId, want, callerToken, formInfo);
+    return FormMgrAdapter::GetInstance().AddForm(formId, want, callerToken, formInfo);
 }
 
 /**
@@ -100,7 +101,7 @@ int FormMgrService::DeleteForm(const int64_t formId, const sptr<IRemoteObject> &
         return ERR_APPEXECFWK_FORM_PERMISSION_DENY;
     }
         
-    return formMgrAdapter_->DeleteForm(formId, callerToken);
+    return FormMgrAdapter::GetInstance().DeleteForm(formId, callerToken);
 }
 
 /**
@@ -117,7 +118,7 @@ int FormMgrService::ReleaseForm(const int64_t formId, const sptr<IRemoteObject> 
         return ERR_APPEXECFWK_FORM_PERMISSION_DENY;
     }
     
-    return formMgrAdapter_->ReleaseForm(formId, callerToken, delCache);
+    return FormMgrAdapter::GetInstance().ReleaseForm(formId, callerToken, delCache);
 }
 
 /**
@@ -127,14 +128,14 @@ int FormMgrService::ReleaseForm(const int64_t formId, const sptr<IRemoteObject> 
  * @param formBindingData Form binding data.
  * @return Returns ERR_OK on success, others on failure.
  */
-int FormMgrService::UpdateForm(const int64_t formId, const std::string &bundleName, 
-const FormProviderData &formBindingData)
+int FormMgrService::UpdateForm(const int64_t formId, 
+    const std::string &bundleName, const FormProviderData &formBindingData)
 {
     if (!CheckFormPermission()) {
         APP_LOGE("%{public}s fail, update form permission denied", __func__);
         return ERR_APPEXECFWK_FORM_PERMISSION_DENY;
     }
-    return formMgrAdapter_->UpdateForm(formId, bundleName, formBindingData);
+    return FormMgrAdapter::GetInstance().UpdateForm(formId, bundleName, formBindingData);
 }
 
 /**
@@ -153,7 +154,7 @@ int FormMgrService::RequestForm(const int64_t formId, const sptr<IRemoteObject> 
         return ERR_APPEXECFWK_FORM_PERMISSION_DENY;
     }
 
-    return formMgrAdapter_->RequestForm(formId, callerToken, want);
+    return FormMgrAdapter::GetInstance().RequestForm(formId, callerToken, want);
 }
 
 /**
@@ -167,7 +168,7 @@ int FormMgrService::SetNextRefreshTime(const int64_t formId, const int64_t nextT
 {
     APP_LOGI("%{public}s called.", __func__);
 
-    return formMgrAdapter_->SetNextRefreshTime(formId, nextTime);
+    return FormMgrAdapter::GetInstance().SetNextRefreshTime(formId, nextTime);
 }
 
 
@@ -179,14 +180,14 @@ int FormMgrService::SetNextRefreshTime(const int64_t formId, const int64_t nextT
  * @return Returns ERR_OK on success, others on failure.
  */
 int FormMgrService::NotifyWhetherVisibleForms(const std::vector<int64_t> &formIds, 
-const sptr<IRemoteObject> &callerToken, const int32_t formVisibleType)
+    const sptr<IRemoteObject> &callerToken, const int32_t formVisibleType)
 {
     if (!CheckFormPermission()) {
         APP_LOGE("%{public}s fail, event notify visible permission denied", __func__);
         return ERR_APPEXECFWK_FORM_PERMISSION_DENY;
     }
    
-    return formMgrAdapter_->NotifyWhetherVisibleForms(formIds, callerToken, formVisibleType);
+    return FormMgrAdapter::GetInstance().NotifyWhetherVisibleForms(formIds, callerToken, formVisibleType);
 }
 
 /**
@@ -202,7 +203,7 @@ int FormMgrService::CastTempForm(const int64_t formId, const sptr<IRemoteObject>
         return ERR_APPEXECFWK_FORM_PERMISSION_DENY;
     }
 
-    return formMgrAdapter_->CastTempForm(formId, callerToken);
+    return FormMgrAdapter::GetInstance().CastTempForm(formId, callerToken);
 }
 
 /**
@@ -212,8 +213,8 @@ int FormMgrService::CastTempForm(const int64_t formId, const sptr<IRemoteObject>
  * @param updateType update type,enable or disable.
  * @return Returns true on success, false on failure.
  */
-int FormMgrService::LifecycleUpdate(const std::vector<int64_t> &formIds, const sptr<IRemoteObject> &callerToken, 
-const int32_t updateType)
+int FormMgrService::LifecycleUpdate(const std::vector<int64_t> &formIds, 
+    const sptr<IRemoteObject> &callerToken, const int32_t updateType)
 {
     APP_LOGI("lifecycleUpdate.");
 
@@ -223,9 +224,9 @@ const int32_t updateType)
     }
  
     if (updateType == ENABLE_FORM_UPDATE) {
-        return formMgrAdapter_->EnableUpdateForm(formIds, callerToken);
+        return FormMgrAdapter::GetInstance().EnableUpdateForm(formIds, callerToken);
     } else {
-        return formMgrAdapter_->DisableUpdateForm(formIds, callerToken);
+        return FormMgrAdapter::GetInstance().DisableUpdateForm(formIds, callerToken);
     }
 }
 /**
@@ -235,7 +236,7 @@ const int32_t updateType)
  */
 int FormMgrService::DumpStorageFormInfos(std::string &formInfos)
 {
-    return formMgrAdapter_->DumpStorageFormInfos(formInfos);
+    return FormMgrAdapter::GetInstance().DumpStorageFormInfos(formInfos);
 }
 /**
  * @brief Dump form info by a bundle name.
@@ -245,7 +246,7 @@ int FormMgrService::DumpStorageFormInfos(std::string &formInfos)
  */
 int FormMgrService::DumpFormInfoByBundleName(const std::string &bundleName, std::string &formInfos)
 {
-    return formMgrAdapter_->DumpFormInfoByBundleName(bundleName, formInfos);
+    return FormMgrAdapter::GetInstance().DumpFormInfoByBundleName(bundleName, formInfos);
 }
 /**
  * @brief Dump form info by a bundle name.
@@ -255,7 +256,7 @@ int FormMgrService::DumpFormInfoByBundleName(const std::string &bundleName, std:
  */
 int FormMgrService::DumpFormInfoByFormId(const std::int64_t formId, std::string &formInfo)
 {
-    return formMgrAdapter_->DumpFormInfoByFormId(formId, formInfo);
+    return FormMgrAdapter::GetInstance().DumpFormInfoByFormId(formId, formInfo);
 }
 /**
  * @brief Process js message event.
@@ -273,7 +274,7 @@ int FormMgrService::MessageEvent(const int64_t formId, const Want &want, const s
         return ERR_APPEXECFWK_FORM_PERMISSION_DENY;
     }
 
-    return formMgrAdapter_->MessageEvent(formId, want, callerToken);
+    return FormMgrAdapter::GetInstance().MessageEvent(formId, want, callerToken);
 }
 /**
  * @brief Start envent for the form manager service.
@@ -329,6 +330,7 @@ ErrCode FormMgrService::Init()
         return ERR_INVALID_OPERATION;
     }
     FormTaskMgr::GetInstance().SetEventHandler(handler_);
+    FormAmsHelper::GetInstance().SetEventHandler(handler_);
     /* Publish service maybe failed, so we need call this function at the last,
      * so it can't affect the TDD test program */
     bool ret = Publish(DelayedSingleton<FormMgrService>::GetInstance().get());   
@@ -380,7 +382,7 @@ bool FormMgrService::CheckFormPermission(const std::string &bundleName) const
     int result = PermissionKit::VerifyPermission(bundleName, Constants::PERMISSION_REQUIRE_FORM, 0);
     if (result != PermissionState::PERMISSION_GRANTED) {
         APP_LOGW("permission = %{public}s, bundleName = %{public}s, result = %{public}d", 
-        Constants::PERMISSION_REQUIRE_FORM.c_str(), bundleName.c_str(), result);
+            Constants::PERMISSION_REQUIRE_FORM.c_str(), bundleName.c_str(), result);
     }
     return result == PermissionState::PERMISSION_GRANTED;
 }

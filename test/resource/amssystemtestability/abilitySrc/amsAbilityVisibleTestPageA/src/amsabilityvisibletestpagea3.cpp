@@ -17,6 +17,7 @@
 
 namespace OHOS {
 namespace AppExecFwk {
+
 void AmsAbilityVisibleTestPageA3::OnStart(const Want &want)
 {
     GetWantInfo(want);
@@ -79,7 +80,7 @@ void AmsAbilityVisibleTestPageA3::OnActive()
         if (startAbilityType == "Data") {
             Uri dataAbilityUri("dataability:///" + startBundleName + "." + startAbilityName);
             std::shared_ptr<DataAbilityHelper> helper = DataAbilityHelper::Creator(GetContext());
-            AppExecFwk::ValuesBucket bucket;
+            ValuesBucket bucket;
             helper->Insert(dataAbilityUri, bucket);
         }
     }

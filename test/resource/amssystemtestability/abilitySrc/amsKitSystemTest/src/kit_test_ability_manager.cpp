@@ -21,10 +21,8 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 using namespace OHOS::EventFwk;
 using namespace OHOS::AAFwk;
-
 namespace {
 const std::string bundleName = "com.ohos.amsst.AppKitAbilityManager";
 const std::string abilityName = "KitTestAbilityManagerSecond";
@@ -35,6 +33,7 @@ const std::string launchProcessInfo = "com.ix.launcher";
 bool isMoveMissionToTop = false;
 int moveMissionToTopCode = -1;
 int isClearUpApplicationData = false;
+int numThree = 3;
 }  // namespace
 
 void KitTestAbilityManager::SubscribeEvent(const vector_conststr &eventList)
@@ -534,8 +533,8 @@ void KitTestAbilityManager::OnBackground()
     Ability::OnBackground();
     if (isMoveMissionToTop) {
         std::vector<AbilityMissionInfo> info;
-        info = AbilityManager::GetInstance().QueryRecentAbilityMissionInfo(3, RECENT_WITH_EXCLUDED);
-        if (1 == info.size() && 1 == info[0].size) {
+        info = AbilityManager::GetInstance().QueryRecentAbilityMissionInfo(numThree, RECENT_WITH_EXCLUDED);
+        if (info.size() == 1 && info[0].size == 1) {
             GetAbilityManager()->MoveMissionToTop(info[0].id);
         }
     }

@@ -31,7 +31,9 @@ bool FormJsInfo::ReadFromParcel(Parcel &parcel)
 
     auto bindingData = parcel.ReadParcelable<FormProviderData>();
     formProviderData = *bindingData;
-
+    if (nullptr == bindingData){
+        return false;
+    }
     return true;
 }
 
@@ -78,12 +80,11 @@ bool FormJsInfo::Marshalling(Parcel &parcel) const
     if (!parcel.WriteString16(Str8ToStr16(formData))) {
         return false;
     }
-    
+
     // write formProviderData
     if (!parcel.WriteParcelable(&formProviderData)) {
         return false;
     }
-
 
     return true;
 }

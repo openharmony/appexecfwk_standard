@@ -27,7 +27,8 @@ namespace AppExecFwk {
  */
 class FormCastTempConnection : public FormAbilityConnection {
 public:
-    FormCastTempConnection(const int64_t formId);
+    FormCastTempConnection(const int64_t formId, const std::string &bundleName,
+        const std::string &abilityName);
     virtual ~FormCastTempConnection() = default;
 
     /**

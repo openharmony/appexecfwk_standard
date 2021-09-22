@@ -23,14 +23,14 @@
     ],
     "distro": {
       "deliveryWithInstall": true,
-      "moduleName": "testability",
+      "moduleName": "moduleName11",
       "moduleType": "entry"
     },
     "abilities": [
       {
-        "name": "FormStServiceAbilityA1",
+        "name": "FormStServiceAbilityA",
         "icon": "$media:snowball",
-        "label": "FormStServiceAbilityA1 Ability",
+        "label": "FormStServiceAbilityA Ability",
         "launchType": "standard",
         "orientation": "unspecified",
         "type": "service",
@@ -48,8 +48,33 @@
             "landscapeLayouts": [""],
             "portraitLayouts": [""],
             "updateEnabled": true,
-            "scheduledUpateTime": "10:30",
+            "scheduledUpateTime": "0:0",
             "updateDuration": 1,
+            "deepLink": "",
+            "jsComponentName": "card",
+            "formVisibleNotify" : true,
+            "metaData": {
+              "customizeData": [
+                {
+                  "name": "originWidgetName",
+                  "value": "myTest"
+                }
+              ]
+            }
+          },
+          {
+            "name": "formName112",
+            "description": "form_description",
+            "isDefault": true,
+            "type": "JS",
+            "colorMode": "auto",
+            "supportDimensions":[ "1*2", "2*2" ],
+            "defaultDimension": "1*2",
+            "landscapeLayouts": [""],
+            "portraitLayouts": [""],
+            "updateEnabled": true,
+            "scheduledUpateTime": "10:30",
+            "updateDuration": 0,
             "deepLink": "",
             "jsComponentName": "card",
             "formVisibleNotify" : true,
