@@ -23,7 +23,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class FirstEventSubscriber;
 class MainAbility : public Ability {
 public:

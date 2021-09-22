@@ -26,13 +26,11 @@ using namespace OHOS::AppExecFwk;
 
 class ApplicationImplTest : public testing::Test {
 public:
-    ApplicationImplTest() : applicationImpl_(nullptr)
+    ApplicationImplTest()
     {}
     ~ApplicationImplTest()
-    {
-        applicationImpl_ = nullptr;
-    }
-    ApplicationImpl *applicationImpl_ = nullptr;
+    {}
+    std::shared_ptr<ApplicationImpl> applicationImpl_ = nullptr;
     static void SetUpTestCase(void);
     static void TearDownTestCase(void);
     void SetUp();
@@ -47,14 +45,11 @@ void ApplicationImplTest::TearDownTestCase(void)
 
 void ApplicationImplTest::SetUp(void)
 {
-    applicationImpl_ = new (std::nothrow) ApplicationImpl();
+    applicationImpl_ = std::make_shared<ApplicationImpl>();
 }
 
 void ApplicationImplTest::TearDown(void)
-{
-    delete applicationImpl_;
-    applicationImpl_ = nullptr;
-}
+{}
 
 /**
  * @tc.number: AppExecFwk_ApplicationImpl_PerformAppReady_0100

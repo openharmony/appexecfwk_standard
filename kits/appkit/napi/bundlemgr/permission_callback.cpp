@@ -18,7 +18,6 @@
 #include "hilog_wrapper.h"
 
 namespace {
-
 constexpr size_t ARGS_SIZE_TWO = 2;
 }
 
@@ -38,17 +37,28 @@ void PermissionCallback::OnChanged(const int32_t uid)
 #if NAPI_VERSION >= 2
     napi_get_uv_event_loop(env_, &loop);
 #endif  // NAPI_VERSION >= 2
+    if (loop == nullptr) {
+        HILOG_INFO("loop instance is nullptr");
+        return;
+    }
 
-    uv_work_t *work = new uv_work_t;
+    uv_work_t *work = new (std::nothrow) uv_work_t;
+    if (work == nullptr) {
+        HILOG_ERROR("new uv_work_t failed");
+        return;
+    }
     CallbackInfo *callbackInfo = new (std::nothrow) CallbackInfo{
         .env = env_,
         .callback = callback_,
         .uid = uid,
     };
-
+    if (callbackInfo == nullptr) {
+        HILOG_ERROR("new CallbackInfo failed");
+        return;
+    }
     work->data = (void *)callbackInfo;
 
-    uv_queue_work(
+    int rev = uv_queue_work(
         loop,
         work,
         [](uv_work_t *work) {},
@@ -74,8 +84,17 @@ void PermissionCallback::OnChanged(const int32_t uid)
             napi_get_reference_value(event->env, event->callback, &callback);
             napi_call_function(event->env, undefined, callback, ARGS_SIZE_TWO, &result[0], &callbackResult);
             delete event;
+            event = nullptr;
             delete work;
+            work = nullptr;
         });
-
+    if (rev != 0) {
+        if (callbackInfo != nullptr) {
+            delete callbackInfo;
+        }
+        if (work != nullptr) {
+            delete work;
+        }
+    }
     HILOG_INFO("OnChanged, end");
 }

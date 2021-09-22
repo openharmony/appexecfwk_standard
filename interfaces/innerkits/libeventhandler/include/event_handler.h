@@ -27,7 +27,7 @@ enum class EventType {
     TIMING_EVENT = 2,
 };
 
-template <typename T>
+template<typename T>
 class ThreadLocalData;
 
 class EventHandler : public std::enable_shared_from_this<EventHandler> {
@@ -154,7 +154,7 @@ public:
      * @param delayTime Process the event after 'delayTime' milliseconds.
      * @return Returns true if event has been sent successfully.
      */
-    template <typename T>
+    template<typename T>
     inline bool SendEvent(uint32_t innerEventId, const std::shared_ptr<T> &object, int64_t delayTime = 0)
     {
         return SendEvent(InnerEvent::Get(innerEventId, object), delayTime);
@@ -168,7 +168,7 @@ public:
      * @param delayTime Process the event after 'delayTime' milliseconds.
      * @return Returns true if event has been sent successfully.
      */
-    template <typename T>
+    template<typename T>
     inline bool SendEvent(uint32_t innerEventId, const std::weak_ptr<T> &object, int64_t delayTime = 0)
     {
         return SendEvent(InnerEvent::Get(innerEventId, object), delayTime);
@@ -182,7 +182,7 @@ public:
      * @param delayTime Process the event after 'delayTime' milliseconds.
      * @return Returns true if event has been sent successfully.
      */
-    template <typename T, typename D>
+    template<typename T, typename D>
     inline bool SendEvent(uint32_t innerEventId, std::unique_ptr<T, D> &object, int64_t delayTime = 0)
     {
         return SendEvent(InnerEvent::Get(innerEventId, object), delayTime);
@@ -196,7 +196,7 @@ public:
      * @param delayTime Process the event after 'delayTime' milliseconds.
      * @return Returns true if event has been sent successfully.
      */
-    template <typename T, typename D>
+    template<typename T, typename D>
     inline bool SendEvent(uint32_t innerEventId, std::unique_ptr<T, D> &&object, int64_t delayTime = 0)
     {
         return SendEvent(InnerEvent::Get(innerEventId, object), delayTime);
@@ -243,7 +243,7 @@ public:
      * @param object Shared pointer of object.
      * @return Returns true if event has been sent successfully.
      */
-    template <typename T>
+    template<typename T>
     inline bool SendImmediateEvent(uint32_t innerEventId, const std::shared_ptr<T> &object)
     {
         return SendImmediateEvent(InnerEvent::Get(innerEventId, object));
@@ -256,7 +256,7 @@ public:
      * @param object Weak pointer of object.
      * @return Returns true if event has been sent successfully.
      */
-    template <typename T>
+    template<typename T>
     inline bool SendImmediateEvent(uint32_t innerEventId, const std::weak_ptr<T> &object)
     {
         return SendImmediateEvent(InnerEvent::Get(innerEventId, object));
@@ -269,7 +269,7 @@ public:
      * @param object Unique pointer of object.
      * @return Returns true if event has been sent successfully.
      */
-    template <typename T, typename D>
+    template<typename T, typename D>
     inline bool SendImmediateEvent(uint32_t innerEventId, std::unique_ptr<T, D> &object)
     {
         return SendImmediateEvent(InnerEvent::Get(innerEventId, object));
@@ -282,7 +282,7 @@ public:
      * @param object Unique pointer of object.
      * @return Returns true if event has been sent successfully.
      */
-    template <typename T, typename D>
+    template<typename T, typename D>
     inline bool SendImmediateEvent(uint32_t innerEventId, std::unique_ptr<T, D> &&object)
     {
         return SendImmediateEvent(InnerEvent::Get(innerEventId, object));
@@ -333,7 +333,7 @@ public:
      * @param delayTime Process the event after 'delayTime' milliseconds.
      * @return Returns true if event has been sent successfully.
      */
-    template <typename T>
+    template<typename T>
     inline bool SendHighPriorityEvent(uint32_t innerEventId, const std::shared_ptr<T> &object, int64_t delayTime = 0)
     {
         return SendHighPriorityEvent(InnerEvent::Get(innerEventId, object), delayTime);
@@ -347,7 +347,7 @@ public:
      * @param delayTime Process the event after 'delayTime' milliseconds.
      * @return Returns true if event has been sent successfully.
      */
-    template <typename T>
+    template<typename T>
     inline bool SendHighPriorityEvent(uint32_t innerEventId, const std::weak_ptr<T> &object, int64_t delayTime = 0)
     {
         return SendHighPriorityEvent(InnerEvent::Get(innerEventId, object), delayTime);
@@ -361,7 +361,7 @@ public:
      * @param delayTime Process the event after 'delayTime' milliseconds.
      * @return Returns true if event has been sent successfully.
      */
-    template <typename T, typename D>
+    template<typename T, typename D>
     inline bool SendHighPriorityEvent(uint32_t innerEventId, std::unique_ptr<T, D> &object, int64_t delayTime = 0)
     {
         return SendHighPriorityEvent(InnerEvent::Get(innerEventId, object), delayTime);
@@ -375,7 +375,7 @@ public:
      * @param delayTime Process the event after 'delayTime' milliseconds.
      * @return Returns true if event has been sent successfully.
      */
-    template <typename T, typename D>
+    template<typename T, typename D>
     inline bool SendHighPriorityEvent(uint32_t innerEventId, std::unique_ptr<T, D> &&object, int64_t delayTime = 0)
     {
         return SendHighPriorityEvent(InnerEvent::Get(innerEventId, object), delayTime);
@@ -539,7 +539,7 @@ public:
      * @param priority Priority of the event queue for this event, IDLE is not permitted for sync event.
      * @return Returns true if event has been sent successfully.
      */
-    template <typename T>
+    template<typename T>
     inline bool SendSyncEvent(
         uint32_t innerEventId, const std::shared_ptr<T> &object, Priority priority = Priority::LOW)
     {
@@ -554,7 +554,7 @@ public:
      * @param priority Priority of the event queue for this event, IDLE is not permitted for sync event.
      * @return Returns true if event has been sent successfully.
      */
-    template <typename T>
+    template<typename T>
     inline bool SendSyncEvent(uint32_t innerEventId, const std::weak_ptr<T> &object, Priority priority = Priority::LOW)
     {
         return SendSyncEvent(InnerEvent::Get(innerEventId, object), priority);
@@ -568,7 +568,7 @@ public:
      * @param priority Priority of the event queue for this event, IDLE is not permitted for sync event.
      * @return Returns true if event has been sent successfully.
      */
-    template <typename T, typename D>
+    template<typename T, typename D>
     inline bool SendSyncEvent(uint32_t innerEventId, std::unique_ptr<T, D> &object, Priority priority = Priority::LOW)
     {
         return SendSyncEvent(InnerEvent::Get(innerEventId, object), priority);
@@ -582,7 +582,7 @@ public:
      * @param priority Priority of the event queue for this event, IDLE is not permitted for sync event.
      * @return Returns true if event has been sent successfully.
      */
-    template <typename T, typename D>
+    template<typename T, typename D>
     inline bool SendSyncEvent(uint32_t innerEventId, std::unique_ptr<T, D> &&object, Priority priority = Priority::LOW)
     {
         return SendSyncEvent(InnerEvent::Get(innerEventId, object), priority);
@@ -686,7 +686,7 @@ public:
      * @param priority Priority of the event queue for this event
      * @return Returns true if event has been sent successfully.
      */
-    template <typename T>
+    template<typename T>
     inline bool SendTimingEvent(
         uint32_t innerEventId, const std::shared_ptr<T> &object, int64_t taskTime, Priority priority = Priority::LOW)
     {
@@ -702,7 +702,7 @@ public:
      * @param priority Priority of the event queue for this event
      * @return Returns true if event has been sent successfully.
      */
-    template <typename T>
+    template<typename T>
     inline bool SendTimingEvent(
         uint32_t innerEventId, const std::weak_ptr<T> &object, int64_t taskTime, Priority priority = Priority::LOW)
     {
@@ -718,7 +718,7 @@ public:
      * @param priority Priority of the event queue for this event
      * @return Returns true if event has been sent successfully.
      */
-    template <typename T, typename D>
+    template<typename T, typename D>
     inline bool SendTimingEvent(
         uint32_t innerEventId, std::unique_ptr<T, D> &object, int64_t taskTime, Priority priority = Priority::LOW)
     {
@@ -734,7 +734,7 @@ public:
      * @param priority Priority of the event queue for this event
      * @return Returns true if event has been sent successfully.
      */
-    template <typename T, typename D>
+    template<typename T, typename D>
     inline bool SendTimingEvent(
         uint32_t innerEventId, std::unique_ptr<T, D> &&object, int64_t taskTime, Priority priority = Priority::LOW)
     {

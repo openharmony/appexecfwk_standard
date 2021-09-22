@@ -51,7 +51,7 @@ public:
      * @param formInfo Form info.
      * @return Returns ERR_OK on success, others on failure.
      */
-    virtual int AddForm(const int64_t formId, const Want &want, const sptr<IRemoteObject> &callerToken, 
+    int AddForm(const int64_t formId, const Want &want, const sptr<IRemoteObject> &callerToken, 
     FormJsInfo &formInfo);
 
     /**
@@ -197,6 +197,13 @@ public:
      */
     bool CheckIsDeathCallbackRegistered(const std::shared_ptr<FormCallbackInterface> &formDeathCallback);
 
+    /**
+     * @brief Get the error message content.
+     * 
+     * @param errCode Error code.
+     * @return Message content.
+     */
+    std::string GetErrorMessage(int errCode);
 private:
     /**
      * @brief Connect form manager service.

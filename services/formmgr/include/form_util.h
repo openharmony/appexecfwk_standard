@@ -63,7 +63,7 @@ public:
      * @param udidHash udid hash.
      * @return new form id.
      */
-    static int64_t PaddingUDIDHash(int64_t formId, int64_t udidHash);
+    static int64_t PaddingUDIDHash(uint64_t formId, uint64_t udidHash);
     
     /**
      * @brief create udid hash.

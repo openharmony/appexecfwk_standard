@@ -23,7 +23,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class ServiceLifecycleCallbacks : public AbilityLifecycleCallbacks {
 public:
     ServiceLifecycleCallbacks() = default;

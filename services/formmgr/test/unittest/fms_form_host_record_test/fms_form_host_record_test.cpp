@@ -104,8 +104,8 @@ void FmsFormHostRecordTest::SetUp()
     permDef.descriptionId = 1;
     permList.emplace_back(permDef);
     Permission::PermissionKit::AddDefPermissions(permList);
-    Permission::PermissionKit::AddUserGrantedReqPermissions(FORM_PROVIDER_BUNDLE_NAME, {PERMISSION_NAME_REQUIRE_FORM},
-     0);
+    Permission::PermissionKit::AddUserGrantedReqPermissions(FORM_PROVIDER_BUNDLE_NAME, 
+        {PERMISSION_NAME_REQUIRE_FORM}, 0);
     Permission::PermissionKit::GrantUserGrantedPermission(FORM_PROVIDER_BUNDLE_NAME, PERMISSION_NAME_REQUIRE_FORM, 0);
 }
 

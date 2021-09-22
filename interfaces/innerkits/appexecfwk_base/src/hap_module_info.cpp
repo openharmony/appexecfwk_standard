@@ -32,6 +32,7 @@ bool HapModuleInfo::ReadFromParcel(Parcel &parcel)
     iconPath = Str16ToStr8(parcel.ReadString16());
     label = Str16ToStr8(parcel.ReadString16());
     backgroundImg = Str16ToStr8(parcel.ReadString16());
+    mainAbility = Str16ToStr8(parcel.ReadString16());
     supportedModes = parcel.ReadInt32();
 
     int32_t reqCapabilitiesSize;
@@ -81,6 +82,7 @@ bool HapModuleInfo::Marshalling(Parcel &parcel) const
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(iconPath));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(label));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(backgroundImg));
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(mainAbility));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, supportedModes);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, reqCapabilities.size());
     for (auto &reqCapability : reqCapabilities) {

@@ -111,7 +111,7 @@ bool GroupImpl::AddNotification(const std::shared_ptr<Runnable> &notification)
     return true;
 }
 /**
- * @brief  Notify all tasks and remove from queue.
+ * @brief Notify all tasks and remove from queue.
  * Attention: Notifications added after all tasks done is not guaranteed.
  */
 void GroupImpl::DrainNotifications()

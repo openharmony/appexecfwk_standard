@@ -342,7 +342,6 @@ void ActsBmsKitSystemTest::CheckFileNonExist(const std::string &bundleName, cons
 
 void ActsBmsKitSystemTest::CheckBundleInfo(const uint32_t index, BundleInfo &bundleInfo) const
 {
-    CommonTool commonTool;
     EXPECT_EQ(bundleInfo.name, BASE_BUNDLE_NAME + std::to_string(index));
     EXPECT_EQ(bundleInfo.minSdkVersion, 0);
     EXPECT_EQ(bundleInfo.maxSdkVersion, 0);
@@ -353,22 +352,8 @@ void ActsBmsKitSystemTest::CheckBundleInfo(const uint32_t index, BundleInfo &bun
     std::string strVersion = std::to_string(index) + ".0";
     EXPECT_EQ(bundleInfo.versionName, strVersion);
     EXPECT_EQ(bundleInfo.jointUserId, "");
-    std::cout << "bundleInfo-appId:" << bundleInfo.appId << std::endl;
-    std::cout << "bundleInfo-entryModuleName:" << bundleInfo.entryModuleName << std::endl;
     EXPECT_EQ(bundleInfo.compatibleVersion, COMPATIBLEVERSION);
     EXPECT_EQ(bundleInfo.targetVersion, TARGETVERSION);
-
-    EXPECT_EQ(bundleInfo.appId, "");
-    std::cout << "bundleInfo-installTime:" << bundleInfo.installTime << std::endl;
-    std::cout << "bundleInfo-updateTime:" << bundleInfo.updateTime << std::endl;
-    std::cout << "bundleInfo-moduleDirs:" << commonTool.VectorToStr(bundleInfo.moduleDirs) << std::endl;
-    std::cout << "bundleInfo-moduleNames:" << commonTool.VectorToStr(bundleInfo.moduleNames) << std::endl;
-    std::cout << "bundleInfo-reqPermissions:" << commonTool.VectorToStr(bundleInfo.reqPermissions) << std::endl;
-    std::cout << "bundleInfo-defPermissions:" << commonTool.VectorToStr(bundleInfo.defPermissions) << std::endl;
-    std::cout << "bundleInfo-hapModuleNames:" << commonTool.VectorToStr(bundleInfo.hapModuleNames) << std::endl;
-    std::cout << "bundleInfo-modulePublicDirs:" << commonTool.VectorToStr(bundleInfo.modulePublicDirs) << std::endl;
-    std::cout << "bundleInfo-moduleResPaths:" << commonTool.VectorToStr(bundleInfo.moduleResPaths) << std::endl;
-
     std::vector<AbilityInfo> abilities = bundleInfo.abilityInfos;
     for (auto iter = abilities.begin(); iter != abilities.end(); iter++) {
         EXPECT_EQ(iter->bundleName, BASE_BUNDLE_NAME + std::to_string(index));
@@ -384,25 +369,11 @@ void ActsBmsKitSystemTest::CheckBundleInfo(const uint32_t index, BundleInfo &bun
         EXPECT_EQ(iOrientation, 0);
         int iType = (int)iter->type;
         EXPECT_EQ(iType, 1);
-        std::cout << "abilityInfo-type:" << iType << std::endl;
-        std::cout << "abilityInfo-process:" << iter->process << std::endl;
-        std::cout << "abilityInfo-permissions:" << commonTool.VectorToStr(iter->permissions) << std::endl;
-        std::cout << "abilityInfo-deviceTypes:" << commonTool.VectorToStr(iter->deviceTypes) << std::endl;
-        std::cout << "deviceCapabilities:" << commonTool.VectorToStr(iter->deviceCapabilities) << std::endl;
     }
-
     ApplicationInfo applicationInfo = bundleInfo.applicationInfo;
     EXPECT_EQ(applicationInfo.name, (BASE_BUNDLE_NAME + std::to_string(index)));
-    std::cout << "applicationInfo-description:" << applicationInfo.description << std::endl;
-    std::cout << "applicationInfo-iconPath:" << applicationInfo.iconPath << std::endl;
-    std::cout << "applicationInfo-label:" << applicationInfo.label << std::endl;
     EXPECT_FALSE(applicationInfo.isSystemApp);
     EXPECT_EQ(applicationInfo.supportedModes, 0);
-    std::cout << "applicationInfo-supportedModes:" << applicationInfo.supportedModes << std::endl;
-    std::cout << "applicationInfo-process:" << applicationInfo.process << std::endl;
-    std::cout << "moduleSourceDirs:" << commonTool.VectorToStr(applicationInfo.moduleSourceDirs) << std::endl;
-    std::cout << "permissions:" << commonTool.VectorToStr(applicationInfo.permissions) << std::endl;
-
     for (auto appModuleInfo : applicationInfo.moduleInfos) {
         std::cout << "applicationInfo-moduleName:" << appModuleInfo.moduleName << std::endl;
         std::cout << "applicationInfo-moduleSourceDir:" << appModuleInfo.moduleSourceDir << std::endl;

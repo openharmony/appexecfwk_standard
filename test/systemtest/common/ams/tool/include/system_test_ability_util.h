@@ -36,13 +36,11 @@
 
 namespace OHOS {
 namespace STABUtil {
-
 namespace {
 using vector_str = std::vector<std::string>;
 using MAP_STR_STR = std::map<std::string, std::string>;
 }  // namespace
 class STAbilityUtil {
-
 public:
     static std::shared_ptr<STAbilityUtil> GetInstance();
     static void DestroyInstance();
@@ -330,7 +328,6 @@ private:
     static std::shared_ptr<STAbilityUtil> instance_;
     static std::mutex mutex_;
 };
-
 }  // namespace STABUtil
 }  // namespace OHOS
 #endif  // OHOS_SYSTEM_TEST_ABILITY_UTIL_H

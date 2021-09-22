@@ -17,6 +17,7 @@
 #define FOUNDATION_APPEXECFWK_SERVICES_FORMMGR_INCLUDE_FORM_MGR_ADAPTER_H
 
 #include <mutex>
+#include <singleton.h>
 
 #include "bundle_info.h"
 #include "bundle_mgr_interface.h"
@@ -38,10 +39,10 @@ using WantParams = OHOS::AAFwk::WantParams;
  * @class FormMgrAdapter
  * Form request handler from form host.
  */
-class FormMgrAdapter {
+class FormMgrAdapter  final : public DelayedRefSingleton<FormMgrAdapter> {
+DECLARE_DELAYED_REF_SINGLETON(FormMgrAdapter)
 public:
-    FormMgrAdapter(){};
-    virtual ~FormMgrAdapter(){};
+    DISALLOW_COPY_AND_MOVE(FormMgrAdapter);
 
     /**
      * @brief Add form with want, send want to form manager service.
@@ -161,6 +162,22 @@ public:
      * @return Returns true if execute success, false otherwise.
      */
     int MessageEvent(const int64_t formId, const Want &want, const sptr<IRemoteObject> &callerToken);
+
+    /**
+     * @brief Acquire form data from form provider.
+     * @param formId The Id of the from.
+     * @param want The want of the request.
+     * @param remoteObject Form provider proxy object.
+     */
+    void AcquireProviderFormInfo(const int64_t formId, const Want &want, const sptr<IRemoteObject> &remoteObject);
+    /**
+     * @brief Notify form provider for delete form.
+     * @param formId The Id of the from.
+     * @param want The want of the form.
+     * @param remoteObject Form provider proxy object.
+     * @return none.
+     */
+    void NotifyFormDelete(const int64_t formId, const Want &want, const sptr<IRemoteObject> &remoteObject);
 private:
     /**
      * @brief Get form configure info.

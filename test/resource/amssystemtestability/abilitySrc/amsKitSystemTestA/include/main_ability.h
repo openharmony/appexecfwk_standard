@@ -113,9 +113,11 @@ public:
 
     void GetApplicationContextCase1(int code);
 
-    MainAbility()
-    {
-        mapCase_ = {
+    std::unordered_map<int, std::vector<std::function<void(int)>>> mapCase_;
+    ~MainAbility();
+
+    void initCaseFirst() {
+        std::unordered_map<int, std::vector<std::function<void(int)>>> first = {
             {(int)AbilityContextApi::GetApplicationInfo,
                 {
                     [this](int code) { GetApplicationInfoCase1(code); },
@@ -146,6 +148,12 @@ public:
                     [this](int code) { GetDataDirCase2(code); },
                     [this](int code) { GetDataDirCase3(code); },
                 }},
+        };
+        mapCase_.insert(first.begin(), first.end());
+    }
+
+    void initCaseSecond() {
+        std::unordered_map<int, std::vector<std::function<void(int)>>> second = {
             {(int)AbilityContextApi::GetDir,
                 {
                     [this](int code) { GetDirCase1(code); },
@@ -188,6 +196,12 @@ public:
                 {
                     [this](int code) { GetContextCase1(code); },
                 }},
+        };
+        mapCase_.insert(second.begin(), second.end());
+    }
+
+    void initCaseThird() {
+        std::unordered_map<int, std::vector<std::function<void(int)>>> third = {
             {(int)AbilityContextApi::GetAbilityManager,
                 {
                     [this](int code) { GetAbilityManagerCase1(code); },
@@ -232,10 +246,15 @@ public:
                     [this](int code) { GetHapModuleInfoCase3(code); },
                 }},
         };
+        mapCase_.insert(third.begin(), third.end());
     }
 
-    std::unordered_map<int, std::vector<std::function<void(int)>>> mapCase_;
-    ~MainAbility();
+    MainAbility()
+    {
+        initCaseFirst();
+        initCaseSecond();
+        initCaseThird();
+    }
 
 protected:
     void Init(const std::shared_ptr<AbilityInfo> &abilityInfo, const std::shared_ptr<OHOSApplication> &application,

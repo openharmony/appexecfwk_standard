@@ -36,6 +36,8 @@ bool isMoveMissionToTop = false;
 int moveMissionToTopCode = -1;
 bool isClearUpApplicationData = false;
 int clearUpApplicationDataCode = -1;
+int numTwo = 2;
+int numThree = 3;
 }  // namespace
 
 bool KitTestAbilityManagerSecond::PublishEvent(const std::string &eventName, const int &code, const std::string &data)

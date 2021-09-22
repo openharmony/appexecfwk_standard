@@ -37,13 +37,10 @@ void FormAbilityConnection::OnAbilityConnectDone(
     const AppExecFwk::ElementName &element, const sptr<IRemoteObject> &remoteObject, int resultCode)
 {
     if (resultCode != ERR_OK) {
-        APP_LOGE("%{public}s, abilityName:%{public}s, formId:%{public}" PRId64 ", resultCode:%{public}d", 
-        __func__, element.GetAbilityName().c_str(), formId_, resultCode);
+        APP_LOGE("%{public}s, formId:%{public}" PRId64 ", resultCode:%{public}d", 
+        __func__, formId_, resultCode);
         return;
     }
-    // deviceId_ = element.GetDeviceID();
-    // bundleName_ = element.GetBundleName();
-    // abilityName_ = element.GetAbilityName();
 
     if (isFreeInstall_) {
         // Handle free install for form provider app
@@ -93,12 +90,29 @@ long FormAbilityConnection::GetConnectId()
 {
     return connectId_;
 }
-// std::string FormAbilityConnection::GetProviderKey()
-// {
-//     if(deviceId_.empty() || bundleName_.empty() || abilityName_.empty()) {
-//         return "";
-//     }
-//     return deviceId_ + "::" + bundleName_ + "::" + abilityName_;
-// }
+/**
+ * @brief Get the provider Key
+ * 
+ * @return The provider Key 
+ */
+std::string FormAbilityConnection::GetProviderKey()
+{
+    if(bundleName_.empty() || abilityName_.empty()) {
+        return "";
+    }
+    return bundleName_ + "::" + abilityName_;
+}
+
+/**
+ * @brief Set the Provider Key
+ * 
+ * @param bundleName bundleName
+ * @param abilityName abilityName
+ */
+void FormAbilityConnection::SetProviderKey(const std::string &bundleName, const std::string &abilityName)
+{
+    bundleName_ = bundleName;
+    abilityName_ = abilityName;
+}
 }  // namespace AppExecFwk
 }  // namespace OHOS

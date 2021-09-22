@@ -109,6 +109,16 @@ bool BundleInfo::ReadFromParcel(Parcel &parcel)
         }
         abilityInfos.emplace_back(*abilityInfo);
     }
+
+    int32_t hapModuleInfosSize = parcel.ReadInt32();
+    for (int32_t i = 0; i < hapModuleInfosSize; i++) {
+        std::unique_ptr<HapModuleInfo> hapModuleInfo(parcel.ReadParcelable<HapModuleInfo>());
+        if (!hapModuleInfo) {
+            APP_LOGE("ReadParcelable<HapModuleInfo> failed");
+            return false;
+        }
+        hapModuleInfos.emplace_back(*hapModuleInfo);
+    }
     return true;
 }
 
@@ -179,6 +189,11 @@ bool BundleInfo::Marshalling(Parcel &parcel) const
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, abilityInfos.size());
     for (auto &abilityInfo : abilityInfos) {
         WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Parcelable, parcel, &abilityInfo);
+    }
+
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, hapModuleInfos.size());
+    for (auto &hapModuleInfo : hapModuleInfos) {
+        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Parcelable, parcel, &hapModuleInfo);
     }
     return true;
 }

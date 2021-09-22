@@ -110,8 +110,8 @@ void FmsFormMgrAddFormTest::SetUp()
     permDef.descriptionId = 1;
     permList.emplace_back(permDef);
     Permission::PermissionKit::AddDefPermissions(permList);
-    Permission::PermissionKit::AddUserGrantedReqPermissions(FORM_PROVIDER_BUNDLE_NAME, {PERMISSION_NAME_REQUIRE_FORM}, 
-    0);
+    Permission::PermissionKit::AddUserGrantedReqPermissions(FORM_PROVIDER_BUNDLE_NAME, 
+        {PERMISSION_NAME_REQUIRE_FORM}, 0);
     Permission::PermissionKit::GrantUserGrantedPermission(FORM_PROVIDER_BUNDLE_NAME, PERMISSION_NAME_REQUIRE_FORM, 0);
 }
 
@@ -417,7 +417,7 @@ HWTEST_F(FmsFormMgrAddFormTest, AddForm_006, TestSize.Level0)
     want.SetParam(Constants::ACQUIRE_TYPE, Constants::ACQUIRE_TYPE_CREATE_FORM);
 
     GTEST_LOG_(INFO) << "formId :"<<formId;
-    EXPECT_EQ(ERR_CFG_NOT_MATCH_ID, FormMgr::GetInstance().AddForm(formId, want, token_, formJsInfo));
+    EXPECT_EQ(ERR_APPEXECFWK_FORM_CFG_NOT_MATCH_ID, FormMgr::GetInstance().AddForm(formId, want, token_, formJsInfo));
     token_->Wait();
 
     FormDataMgr::GetInstance().DeleteFormRecord(formId);
@@ -470,7 +470,7 @@ HWTEST_F(FmsFormMgrAddFormTest, AddForm_007, TestSize.Level0)
     want.SetParam(Constants::ACQUIRE_TYPE, Constants::ACQUIRE_TYPE_CREATE_FORM);
 
     GTEST_LOG_(INFO) << "formId :"<<formId;
-    EXPECT_EQ(ERR_MAX_SYSTEM_TEMP_FORMS, FormMgr::GetInstance().AddForm(0, want, token_, formJsInfo));
+    EXPECT_EQ(ERR_APPEXECFWK_FORM_MAX_SYSTEM_TEMP_FORMS, FormMgr::GetInstance().AddForm(0, want, token_, formJsInfo));
     token_->Wait();
 
     FormDataMgr::GetInstance().DeleteFormRecord(formId);
@@ -530,7 +530,7 @@ HWTEST_F(FmsFormMgrAddFormTest, AddForm_008, TestSize.Level0)
     want.SetParam(Constants::ACQUIRE_TYPE, Constants::ACQUIRE_TYPE_CREATE_FORM);
 
     GTEST_LOG_(INFO) << "formId :"<<formId;
-    EXPECT_EQ(ERR_MAX_SYSTEM_FORMS, FormMgr::GetInstance().AddForm(formId-1, want, token_, formJsInfo));
+    EXPECT_EQ(ERR_APPEXECFWK_FORM_MAX_SYSTEM_FORMS, FormMgr::GetInstance().AddForm(formId-1, want, token_, formJsInfo));
     token_->Wait();
 
     FormDataMgr::GetInstance().DeleteFormRecord(formId);

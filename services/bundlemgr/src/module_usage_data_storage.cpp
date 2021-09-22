@@ -31,7 +31,6 @@ using namespace OHOS::DistributedKv;
 namespace OHOS {
 namespace AppExecFwk {
 namespace {
-
 const int32_t MAX_TIMES = 6000;             // tem min
 const int32_t SLEEP_INTERVAL = 100 * 1000;  // 100ms
 const std::string POUND_KEY_SEPARATOR = "#";
@@ -96,8 +95,7 @@ void ModuleUsageRecordStorage::AbilityRecordToKey(const std::string &userId, con
 
 void ModuleUsageRecordStorage::UpdateUsageRecord(const std::string &jsonString, ModuleUsageRecord &data)
 {
-    nlohmann::json jsonObject;
-    jsonObject = nlohmann::json::parse(jsonString);
+    nlohmann::json jsonObject = nlohmann::json::parse(jsonString);
     if (jsonObject.is_discarded()) {
         APP_LOGE("failed to parse existing usage record: %{private}s.", jsonString.c_str());
         return;

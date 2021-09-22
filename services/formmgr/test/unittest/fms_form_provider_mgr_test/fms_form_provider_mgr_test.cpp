@@ -108,8 +108,8 @@ void FmsFormProviderMgrTest::SetUp()
     permDef.descriptionId = 1;
     permList.emplace_back(permDef);
     Permission::PermissionKit::AddDefPermissions(permList);
-    Permission::PermissionKit::AddUserGrantedReqPermissions(FORM_PROVIDER_BUNDLE_NAME, {PERMISSION_NAME_REQUIRE_FORM},
-    0);
+    Permission::PermissionKit::AddUserGrantedReqPermissions(FORM_PROVIDER_BUNDLE_NAME, 
+        {PERMISSION_NAME_REQUIRE_FORM}, 0);
     Permission::PermissionKit::GrantUserGrantedPermission(FORM_PROVIDER_BUNDLE_NAME, PERMISSION_NAME_REQUIRE_FORM, 0);
 }
 
@@ -130,7 +130,7 @@ HWTEST_F(FmsFormProviderMgrTest, AcquireForm_001, TestSize.Level0)
     GTEST_LOG_(INFO) << "fms_form_mgr_provider_test_001 start";
     int64_t formId = 0x114514aa00000000;
     FormProviderInfo formProviderInfo;
-    EXPECT_EQ(ERR_FORM_INVALID_PARAM, FormProviderMgr::GetInstance().AcquireForm(-114514L, formProviderInfo));
+    EXPECT_EQ(ERR_APPEXECFWK_FORM_INVALID_PARAM, FormProviderMgr::GetInstance().AcquireForm(-114514L, formProviderInfo));
     int callingUid {0};
     FormItemInfo record;
     record.SetFormId(formId);
@@ -154,7 +154,7 @@ HWTEST_F(FmsFormProviderMgrTest, AcquireForm_002, TestSize.Level0)
     GTEST_LOG_(INFO) << "fms_form_mgr_provider_test_002 start";
     int64_t formId = 0x11451aaa00000000;
     FormProviderInfo formProviderInfo;
-    EXPECT_EQ(ERR_APPEXECFWK_FORM_INFO_NOT_EXIST,FormProviderMgr::GetInstance().AcquireForm(formId,formProviderInfo));
+    EXPECT_EQ(ERR_APPEXECFWK_FORM_NOT_EXIST_ID, FormProviderMgr::GetInstance().AcquireForm(formId, formProviderInfo));
     int callingUid {0};
     FormItemInfo record;
     record.SetFormId(formId);
@@ -183,8 +183,8 @@ HWTEST_F(FmsFormProviderMgrTest, AcquireForm_003, TestSize.Level0)
     FormItemInfo record;
     record.SetFormId(formId);
     FormRecord realFormRecord = FormDataMgr::GetInstance().AllotFormRecord(record, callingUid);
-    EXPECT_EQ(ERR_APPEXECFWK_FORM_HOST_INFO_NOT_EXIST,
-    FormProviderMgr::GetInstance().AcquireForm(formId,formProviderInfo));
+    EXPECT_EQ(ERR_APPEXECFWK_FORM_COMMON_CODE,
+    FormProviderMgr::GetInstance().AcquireForm(formId, formProviderInfo));
     FormItemInfo info;
     FormDataMgr::GetInstance().AllotFormHostRecord(info, token_, formId, callingUid);
     GTEST_LOG_(INFO) << "fms_form_mgr_provider_test_003 end";
@@ -206,7 +206,7 @@ HWTEST_F(FmsFormProviderMgrTest, RefreshForm_001, TestSize.Level0)
     int64_t formId = 0x1145aaaa00001200;
     Want want;
     int callingUid {0};
-    EXPECT_EQ(ERR_APPEXECFWK_FORM_INFO_NOT_EXIST, FormProviderMgr::GetInstance().RefreshForm(formId, want));
+    EXPECT_EQ(ERR_APPEXECFWK_FORM_NOT_EXIST_ID, FormProviderMgr::GetInstance().RefreshForm(formId, want));
     FormItemInfo record;
     record.SetFormId(formId);
     record.SetModuleName(PARAM_FORM_NAME);
@@ -240,7 +240,7 @@ HWTEST_F(FmsFormProviderMgrTest, RefreshForm_002, TestSize.Level0)
     FormRecord realFormRecord = FormDataMgr::GetInstance().AllotFormRecord(record, callingUid);
     FormItemInfo info;
     FormDataMgr::GetInstance().AllotFormHostRecord(info, token_, formId, callingUid);
-    EXPECT_EQ(ERR_APPEXECFWK_FORM_SUPPLIER_DEL_FAIL, FormProviderMgr::GetInstance().RefreshForm(formId, want));
+    EXPECT_EQ(ERR_APPEXECFWK_FORM_PROVIDER_DEL_FAIL, FormProviderMgr::GetInstance().RefreshForm(formId, want));
     GTEST_LOG_(INFO) << "fms_form_mgr_provider_test_005 end";
 }
 }

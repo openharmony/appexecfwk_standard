@@ -69,7 +69,7 @@ public:
 
 Event TaskDispatcherTest::event = STtools::Event();
 sptr<IAbilityManager> TaskDispatcherTest::abilityMs = nullptr;
-StressTestLevel TaskDispatcherTest::stLevel_{};
+StressTestLevel TaskDispatcherTest::stLevel_ {};
 std::shared_ptr<TaskDispatcherTest::AppEventSubscriber> TaskDispatcherTest::subscriber_ = nullptr;
 
 void TaskDispatcherTest::SetUpTestCase(void)
@@ -8186,5 +8186,4 @@ HWTEST_F(TaskDispatcherTest, TaskDispatcher_CancelTask_00600, Function | MediumT
         }
     }
 }
-
 }  // namespace

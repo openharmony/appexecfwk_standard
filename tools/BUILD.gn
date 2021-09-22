@@ -12,5 +12,8 @@
 # limitations under the License.
 
 group("tools_target") {
-  deps = [ "bm:tools_bm" ]
+  deps = [
+    "bm:tools_bm",
+    "fm:tools_fm",
+  ]
 }

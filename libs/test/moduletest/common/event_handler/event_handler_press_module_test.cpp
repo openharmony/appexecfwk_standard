@@ -211,9 +211,9 @@ HWTEST_F(EventHandlerPressModuleTest, FdListenerPress001, TestSize.Level3)
     auto myRunner = EventRunner::Create(false);
     auto handler = std::make_shared<MyEventHandler>(myRunner);
     auto inResult = handler->AddFileDescriptorListener(fds[0], FILE_DESCRIPTOR_INPUT_EVENT, listener);
-    ASSERT_EQ(inResult, ERR_OK);
+    EXPECT_EQ(inResult, ERR_OK);
     auto outResult = handler->AddFileDescriptorListener(fds[1], FILE_DESCRIPTOR_OUTPUT_EVENT, listener);
-    ASSERT_EQ(outResult, ERR_OK);
+    EXPECT_EQ(outResult, ERR_OK);
 
     int64_t delayTime = 20000;
     int64_t param = 0;

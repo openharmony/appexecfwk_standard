@@ -28,10 +28,12 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-FormMsgEventConnection::FormMsgEventConnection(const int64_t formId, const Want& want)
+FormMsgEventConnection::FormMsgEventConnection(const int64_t formId, const Want& want,
+    const std::string &bundleName, const std::string &abilityName)
     :formId_(formId),  
     want_(want)
 {
+    SetProviderKey(bundleName, abilityName);
 }
 /**
  * @brief OnAbilityConnectDone, AbilityMs notify caller ability the result of connect.
@@ -45,10 +47,9 @@ void FormMsgEventConnection::OnAbilityConnectDone(
     const AppExecFwk::ElementName &element, const sptr<IRemoteObject> &remoteObject, int resultCode)
 {
     APP_LOGI("%{public}s called.", __func__);
-
     if (resultCode != ERR_OK) {
         APP_LOGE("%{public}s, abilityName:%{public}s, formId:%{public}" PRId64 ", resultCode:%{public}d", 
-           __func__, element.GetAbilityName().c_str(), formId_, resultCode);
+            __func__, element.GetAbilityName().c_str(), formId_, resultCode);
         return;
     }
     FormSupplyCallback::GetInstance()->AddConnection(this);

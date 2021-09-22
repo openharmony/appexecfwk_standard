@@ -58,11 +58,13 @@ public:
     KitTestPageBEventSubscriber(const CommonEventSubscribeInfo &sp, AmsStKitDataAbilityPageB *ability)
         : CommonEventSubscriber(sp)
     {
-        mapTestFunc_ = {{"OnStart", [this]() { TestPost("OnStart"); }},
+        mapTestFunc_ = {
+            {"OnStart", [this]() { TestPost("OnStart"); }},
             {"OnStop", [this]() { TestPost("OnStop"); }},
             {"OnActive", [this]() { TestPost("OnActive"); }},
             {"OnInactive", [this]() { TestPost("OnInactive"); }},
-            {"OnBackground", [this]() { TestPost("OnBackground"); }}};
+            {"OnBackground", [this]() { TestPost("OnBackground"); }}
+        };
         mainAbility_ = ability;
     };
     virtual void OnReceiveEvent(const CommonEventData &data);

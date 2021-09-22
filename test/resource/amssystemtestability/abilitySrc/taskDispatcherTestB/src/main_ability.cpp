@@ -25,7 +25,7 @@ namespace OHOS {
 namespace AppExecFwk {
 using namespace OHOS::EventFwk;
 using namespace OHOS::STtools;
-
+namespace {
 int terminated_task_num = 0;
 std::condition_variable cv;
 std::mutex cv_mutex;
@@ -38,17 +38,28 @@ std::string outerSyncBarrierId = "outerSyncBarrierId";
 std::string outerAsyncBarrierId = "outerAsyncBarrierId";
 std::string outerGroupWaitId = "outerGroupWaitId";
 std::string outerGroupNotifyId = "outerGroupNotifyId";
-
 std::string delimiter = "_";
 std::string innerDelimiter = "-";
 std::string task_execution_sequence = delimiter;
+std::vector<std::shared_ptr<AppExecFwk::TaskDispatcher>> allDispatchers;
+std::mutex dispatcher_mutex;
+constexpr int numZero = 0;
+constexpr int numOne = 1;
+constexpr int numTwo = 2;
+constexpr int numThree = 3;
+}
 
 bool Wait(const int task_num)
 {
     APP_LOGI("-- -- -- -- -- --MainAbility::Wait");
     std::unique_lock<std::mutex> ulock(cv_mutex);
     using namespace std::chrono_literals;
-    return cv.wait_for(ulock, 5000ms, [task_num] { return terminated_task_num == task_num; });
+    bool result = cv.wait_for(ulock, 5000ms, [task_num] { return terminated_task_num == task_num; });
+    if (result) {
+        allDispatchers.clear();
+    }
+    APP_LOGI("-- -- -- -- -- --MainAbility::Wait result:%{public}d", result);
+    return result;
 }
 
 void TestTask(const std::string &task_id)
@@ -68,6 +79,7 @@ void Reset()
     APP_LOGI("-- -- -- -- -- --MainAbility::Reset");
     terminated_task_num = 0;
     task_execution_sequence = delimiter;
+    allDispatchers.clear();
 }
 
 bool IsAscend(const std::vector<size_t> &vec)
@@ -268,14 +280,11 @@ void FirstEventSubscriber::OnReceiveEvent(const CommonEventData &data)
         auto target = data.GetData();
         auto caseInfo = TestUtils::split(target, "_");
         APP_LOGI("FirstEventSubscriber::OnReceiveEvent:caseInfo.size()=%{public}zu", caseInfo.size());
-        if (caseInfo.size() < 3) {
+        if (caseInfo.size() < numThree) {
             return;
         }
-        APP_LOGI("FirstEventSubscriber::OnReceiveEvent:caseInfo[0]=%{public}s", caseInfo[0].c_str());
-        APP_LOGI("FirstEventSubscriber::OnReceiveEvent:caseInfo[1]=%{public}s", caseInfo[1].c_str());
-        APP_LOGI("FirstEventSubscriber::OnReceiveEvent:caseInfo[2]=%{public}s", caseInfo[2].c_str());
-        if (mapTestFunc_.find(caseInfo[0]) != mapTestFunc_.end()) {
-            mapTestFunc_[caseInfo[0]](std::stoi(caseInfo[1]), std::stoi(caseInfo[2]), data.GetCode());
+        if (mapTestFunc_.find(caseInfo[numZero]) != mapTestFunc_.end()) {
+            mapTestFunc_[caseInfo[numZero]](std::stoi(caseInfo[numOne]), std::stoi(caseInfo[numTwo]), data.GetCode());
         } else {
             APP_LOGI("OnReceiveEvent: CommonEventData error(%{public}s)", target.c_str());
         }
@@ -291,68 +300,41 @@ void MainAbility::TestDispatcher(int apiIndex, int caseIndex, int code)
     }
 }
 
-int MainAbility::Dispatch(TestSetting outerSetting, TestSetting innerSetting)
-{
-    APP_LOGI("-- -- -- -- -- --MainAbility::Dispatch begin");
-    std::string outerName = "outerDispatcher";
-    std::string innerName = "innerDispatcher";
+void SetInnerTask(TaskList innerDispatcher, TestSetting innerSetting, std::string outerTaskId, int innerTaskSeq) {
+    std::string innerTaskId = outerTaskId + innerDelimiter + std::to_string(innerTaskSeq);
+    auto innerTask = std::make_shared<Runnable>([=]() { TestTask(innerTaskId); });
+    innerDispatcher.addOperation(innerSetting.op);
+    if (innerSetting.op == TestOperation::APPLY && innerSetting.apply > 0) {
+        innerDispatcher.addApply(innerSetting.apply);
+    }
+    if (innerSetting.op == TestOperation::DELAY && innerSetting.delay > 0) {
+        innerDispatcher.addDelay(innerSetting.delay);
+    }
+    innerDispatcher.addFunc(innerTask);
+}
 
-    std::string outerTaskId;
-    auto context = GetContext();
-    TaskList outerDispatcher{outerSetting.dispatcher, context, outerName};
-    if (outerSetting.create_group) {
-        outerDispatcher.addOperation(TestOperation::CREATE_GROUP);
+void SetInnerTaskOther(TaskList innerDispatcher, TestSetting innerSetting, int outerTaskSeq) {
+    if (innerSetting.sync_barrier) {
+        std::string taskId = innerSyncBarrierId + std::to_string(outerTaskSeq);
+        auto task = std::make_shared<Runnable>([=]() { TestTask(taskId); });
+        innerDispatcher.addOperation(TestOperation::SYNC_BARRIER).addFunc(task);
     }
-    for (int i = 0; i < testTaskCount; i++) {
-        outerTaskId = std::to_string(i);
-        auto outerTask = std::make_shared<Runnable>([=]() {
-            auto context = this->GetContext();
-            TaskList innerDispatcher{innerSetting.dispatcher, context, innerName + std::to_string(i)};
-            if (innerSetting.create_group) {
-                innerDispatcher.addOperation(TestOperation::CREATE_GROUP);
-            }
-            for (int j = 0; j < testTaskCount; j++) {
-                std::string innerTaskId = outerTaskId + innerDelimiter + std::to_string(j);
-                auto innerTask = std::make_shared<Runnable>([=]() { TestTask(innerTaskId); });
-                innerDispatcher.addOperation(innerSetting.op);
-                if (innerSetting.op == TestOperation::APPLY && innerSetting.apply > 0) {
-                    innerDispatcher.addApply(innerSetting.apply);
-                }
-                if (innerSetting.op == TestOperation::DELAY && innerSetting.delay > 0) {
-                    innerDispatcher.addDelay(innerSetting.delay);
-                }
-                innerDispatcher.addFunc(innerTask);
-            }
-            if (innerSetting.sync_barrier) {
-                std::string taskId = innerSyncBarrierId + std::to_string(i);
-                auto task = std::make_shared<Runnable>([=]() { TestTask(taskId); });
-                innerDispatcher.addOperation(TestOperation::SYNC_BARRIER).addFunc(task);
-            }
-            if (innerSetting.async_barrier) {
-                std::string taskId = innerAsyncBarrierId + std::to_string(i);
-                auto task = std::make_shared<Runnable>([=]() { TestTask(taskId); });
-                innerDispatcher.addOperation(TestOperation::ASYNC_BARRIER).addFunc(task);
-            }
-            if (innerSetting.group_wait) {
-                innerDispatcher.addOperation(TestOperation::GROUP_WAIT).addWaitTime(innerSetting.group_timeout);
-            }
-            if (innerSetting.group_notify) {
-                std::string taskId = innerGroupNotifyId + std::to_string(i);
-                auto task = std::make_shared<Runnable>([=]() { TestTask(taskId); });
-                innerDispatcher.addOperation(TestOperation::GROUP_NOTIFY).addFunc(task);
-            }
-            innerDispatcher.executedTask();
-            TestTask(outerTaskId);
-        });
-        outerDispatcher.addOperation(outerSetting.op);
-        if (outerSetting.op == TestOperation::APPLY && outerSetting.apply > 0) {
-            outerDispatcher.addApply(outerSetting.apply);
-        }
-        if (outerSetting.op == TestOperation::DELAY && outerSetting.delay > 0) {
-            outerDispatcher.addDelay(outerSetting.delay);
-        }
-        outerDispatcher.addFunc(outerTask);
+    if (innerSetting.async_barrier) {
+        std::string taskId = innerAsyncBarrierId + std::to_string(outerTaskSeq);
+        auto task = std::make_shared<Runnable>([=]() { TestTask(taskId); });
+        innerDispatcher.addOperation(TestOperation::ASYNC_BARRIER).addFunc(task);
     }
+    if (innerSetting.group_wait) {
+        innerDispatcher.addOperation(TestOperation::GROUP_WAIT).addWaitTime(innerSetting.group_timeout);
+    }
+    if (innerSetting.group_notify) {
+        std::string taskId = innerGroupNotifyId + std::to_string(outerTaskSeq);
+        auto task = std::make_shared<Runnable>([=]() { TestTask(taskId); });
+        innerDispatcher.addOperation(TestOperation::GROUP_NOTIFY).addFunc(task);
+    }
+}
+
+void SetOuterTaskOther(TaskList outerDispatcher, TestSetting outerSetting) {
     if (outerSetting.sync_barrier) {
         auto task = std::make_shared<Runnable>([=]() { TestTask(outerSyncBarrierId); });
         outerDispatcher.addOperation(TestOperation::SYNC_BARRIER).addFunc(task);
@@ -368,14 +350,80 @@ int MainAbility::Dispatch(TestSetting outerSetting, TestSetting innerSetting)
         auto task = std::make_shared<Runnable>([=]() { TestTask(outerGroupNotifyId); });
         outerDispatcher.addOperation(TestOperation::GROUP_NOTIFY).addFunc(task);
     }
-    outerDispatcher.executedTask();
+}
+
+int CountTask(TestSetting outerSetting, TestSetting innerSetting) {
     int taskCount = 0;
     taskCount = (innerSetting.op == TestOperation::APPLY) ? (innerSetting.apply * testTaskCount) : testTaskCount;
+    if (innerSetting.sync_barrier) {
+        taskCount++;
+    }
+    if (innerSetting.async_barrier) {
+        taskCount++;
+    }
+    if (innerSetting.group_notify) {
+        taskCount++;
+    }
     taskCount = (outerSetting.op == TestOperation::APPLY)
-                    ? (innerSetting.apply * testTaskCount + innerSetting.apply * testTaskCount * taskCount)
+                    ? (outerSetting.apply * testTaskCount + outerSetting.apply * testTaskCount * taskCount)
                     : (testTaskCount + testTaskCount * taskCount);
+    if (outerSetting.sync_barrier) {
+        taskCount++;
+    }
+    if (outerSetting.async_barrier) {
+        taskCount++;
+    }
+    if (outerSetting.group_notify) {
+        taskCount++;
+    }
+    return taskCount;
+}
 
-    APP_LOGI("-- -- -- -- -- --MainAbility::Dispatch end");
+int MainAbility::Dispatch(TestSetting outerSetting, TestSetting innerSetting)
+{
+    std::string outerName = "outerDispatcher";
+    std::string innerName = "innerDispatcher";
+    std::string outerTaskId;
+    auto context = GetContext();
+    TaskList outerDispatcher {outerSetting.dispatcher, context, outerName};
+    if (outerSetting.create_group) {
+        outerDispatcher.addOperation(TestOperation::CREATE_GROUP);
+    }
+    for (int i = 0; i < testTaskCount; i++) {
+        outerTaskId = std::to_string(i);
+        auto outerTask = std::make_shared<Runnable>([=]() {
+            auto context = this->GetContext();
+            TaskList innerDispatcher {innerSetting.dispatcher, context, innerName + std::to_string(i)};
+            if (innerSetting.create_group) {
+                innerDispatcher.addOperation(TestOperation::CREATE_GROUP);
+            }
+            for (int j = 0; j < testTaskCount; j++) {
+                SetInnerTask(innerDispatcher, innerSetting, outerTaskId, j);
+            }
+            SetInnerTaskOther(innerDispatcher, innerSetting, i);
+            innerDispatcher.executedTask();
+            {
+                std::lock_guard<std::mutex> lock(dispatcher_mutex);
+                allDispatchers.push_back(innerDispatcher.getDispatcher());
+            }
+            TestTask(outerTaskId);
+        });
+        outerDispatcher.addOperation(outerSetting.op);
+        if (outerSetting.op == TestOperation::APPLY && outerSetting.apply > 0) {
+            outerDispatcher.addApply(outerSetting.apply);
+        }
+        if (outerSetting.op == TestOperation::DELAY && outerSetting.delay > 0) {
+            outerDispatcher.addDelay(outerSetting.delay);
+        }
+        outerDispatcher.addFunc(outerTask);
+    }
+    SetOuterTaskOther(outerDispatcher, outerSetting);
+    outerDispatcher.executedTask();
+    {
+        std::lock_guard<std::mutex> lock(dispatcher_mutex);
+        allDispatchers.push_back(outerDispatcher.getDispatcher());
+    }
+    int taskCount = CountTask(outerSetting, innerSetting);
     return taskCount;
 }
 
@@ -403,7 +451,7 @@ void MainAbility::MultiAppCase1(int code)
     APP_LOGI("-- -- -- -- -- --MainAbility::%{public}s", __FUNCTION__);
     Reset();
     auto context = GetContext();
-    TaskList globalDispatcher = TaskList{TestDispatcher::GLOBAL, context, "global"};
+    TaskList globalDispatcher = TaskList {TestDispatcher::GLOBAL, context, "global"};
     std::vector<TestOperation> operationList = {
         TestOperation::ASYNC,
         TestOperation::ASYNC,
@@ -435,7 +483,7 @@ void MainAbility::MultiAppCase2(int code)
     APP_LOGI("-- -- -- -- -- --MainAbility::%{public}s", __FUNCTION__);
     Reset();
     auto context = GetContext();
-    TaskList globalDispatcher = TaskList{TestDispatcher::PARALLEL, context, "parallel"};
+    TaskList globalDispatcher = TaskList {TestDispatcher::PARALLEL, context, "parallel"};
     std::vector<TestOperation> operationList = {
         TestOperation::ASYNC,
         TestOperation::ASYNC,
@@ -467,7 +515,7 @@ void MainAbility::MultiAppCase3(int code)
     APP_LOGI("-- -- -- -- -- --MainAbility::%{public}s", __FUNCTION__);
     Reset();
     auto context = GetContext();
-    TaskList globalDispatcher = TaskList{TestDispatcher::SERIAL, context, "serial"};
+    TaskList globalDispatcher = TaskList {TestDispatcher::SERIAL, context, "serial"};
     std::vector<TestOperation> operationList = {
         TestOperation::ASYNC,
         TestOperation::ASYNC,
@@ -499,7 +547,7 @@ void MainAbility::MultiAppCase4(int code)
     APP_LOGI("-- -- -- -- -- --MainAbility::%{public}s", __FUNCTION__);
     Reset();
     auto context = GetContext();
-    TaskList globalDispatcher = TaskList{TestDispatcher::MAIN, context, "main"};
+    TaskList globalDispatcher = TaskList {TestDispatcher::MAIN, context, "main"};
     std::vector<TestOperation> operationList = {
         TestOperation::ASYNC,
         TestOperation::ASYNC,

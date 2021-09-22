@@ -149,7 +149,7 @@ static void GetResult(std::shared_ptr<STtools::StOperator> child, std::shared_pt
     Uri dataAbilityUri, string &result)
 {
     AppExecFwk::DataAbilityPredicates predicates;
-    AppExecFwk::ValuesBucket bucket;
+    ValuesBucket bucket;
     result = "failed";
     if (child->GetOperatorName() == OPERATOR_INSERT) {
         result = std::to_string(helper->Insert(dataAbilityUri, bucket));
@@ -187,7 +187,7 @@ void DataTestDataC1EventSubscriber::GetResultBySelf(
 {
     if (child->GetOperatorName() == OPERATOR_INSERT) {
         APP_LOGI("---------------------Insert--------------------");
-        AppExecFwk::ValuesBucket bucket;
+        ValuesBucket bucket;
         result = std::to_string(mainAbility->Insert(dataAbilityUri, bucket));
     } else if (child->GetOperatorName() == OPERATOR_DELETE) {
         APP_LOGI("---------------------Delete--------------------");
@@ -195,7 +195,7 @@ void DataTestDataC1EventSubscriber::GetResultBySelf(
         result = std::to_string(mainAbility->Delete(dataAbilityUri, predicates));
     } else if (child->GetOperatorName() == OPERATOR_UPDATE) {
         APP_LOGI("---------------------Update--------------------");
-        AppExecFwk::ValuesBucket bucket;
+        ValuesBucket bucket;
         AppExecFwk::DataAbilityPredicates predicates;
         result = std::to_string(mainAbility->Update(dataAbilityUri, bucket, predicates));
     } else if (child->GetOperatorName() == OPERATOR_QUERY) {

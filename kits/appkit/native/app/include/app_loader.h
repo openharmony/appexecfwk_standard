@@ -80,7 +80,7 @@ private:
     __attribute__((constructor)) void REGISTER_APPLICATION##className()                       \
     {                                                                                         \
         ApplicationLoader::GetInstance().RegisterApplication(                                 \
-            #bundleName, []() -> OHOSApplication * { return new (std::nothrow) className; }); \
+            #bundleName, []()->OHOSApplication * { return new (std::nothrow) className; });   \
     }
 
 }  // namespace AppExecFwk
