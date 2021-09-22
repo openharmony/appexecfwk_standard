@@ -50,13 +50,11 @@ using namespace testing::ext;
 using MAP_STR_STR = std::map<std::string, std::string>;
 
 static const std::string kitPageBundleName = "com.ohos.amsst.page.AppKitA";
-
 static const std::string ABILTIY_NAME_LIFE_CYCLE_CALL_BACKS = "LifecycleCallbacksAbility";
 static const std::string ABILTIY_NAME_ABILITY_CONTEXT = "AbilityContextAbility";
 static const std::string ABILTIY_NAME_ABILITY = "AbilityAbility";
 static const std::string ABILTIY_NAME_ABILITY_LIFE_CYCLE = "AbilityLifeCycleAbility";
 static const std::string ABILTIY_NAME_ABILITY_LIFE_CYCLE_OBSERVER = "LifeCycleObserverAbility";
-
 static const std::string EVENT_RESP_LIFECYCLE_CALLBACK =
     "resp_com_ohos_amsst_appkit_service_ability_lifecycle_callbacks";
 static const std::string EVENT_RESP_LIFECYCLE_OBSERVER = "resp_com_ohos_amsst_appkit_service_lifecycle_observer";
@@ -67,30 +65,22 @@ static const std::string EVENT_REQU_KITTEST = "requ_com_ohos_amsst_appkit_servic
 static const std::string EVENT_RESP_SECOND_ABILITY_CONTEXT =
     "resp_com_ohos_amsst_appkit_service_secondability_ability_context";
 static const std::string EVENT_REQU_KITTEST_SECOND = "resp_com_ohos_amsst_appkit_service_secondability_kittest";
-
 static const std::string APP_LIFE_CYCLE_CALL_BACKS_RESP_EVENT_NAME =
     "resp_com_ohos_amsst_service_app_life_cycle_call_backs";
 static const std::string APP_LIFE_CYCLE_CALL_BACKS_REQ_EVENT_NAME =
     "req_com_ohos_amsst_service_app_life_cycle_call_backs";
-
 static const std::string APP_ABILITY_CONTEXT_RESP_EVENT_NAME = "resp_com_ohos_amsst_service_app_ability_context";
 static const std::string APP_ABILITY_CONTEXT_REQ_EVENT_NAME = "req_com_ohos_amsst_service_app_ability_context";
-
 static const std::string APP_ABILITY_RESP_EVENT_NAME = "resp_com_ohos_amsst_service_app_ability";
 static const std::string APP_ABILITY_REQ_EVENT_NAME = "req_com_ohos_amsst_service_app_ability";
-
 static const std::string APP_ABILITY_CONNECTION_RESP_EVENT_NAME = "resp_com_ohos_amsst_service_app_ability_connection";
 static const std::string APP_ABILITY_CONNECTION_REQ_EVENT_NAME = "req_com_ohos_amsst_service_app_ability_connection";
-
 static const std::string APP_ABILITY_LIFE_CYCLE_RESP_EVENT_NAME = "resp_com_ohos_amsst_service_app_ability_life_cycle";
 static const std::string APP_ABILITY_LIFE_CYCLE_REQ_EVENT_NAME = "req_com_ohos_amsst_service_app_ability_life_cycle";
-
 static const std::string APP_LIFE_CYCLE_OBSERVER_RESP_EVENT_NAME =
     "resp_com_ohos_amsst_service_app_life_cycle_observer";
 static const std::string APP_LIFE_CYCLE_OBSERVER_REQ_EVENT_NAME = "req_com_ohos_amsst_service_app_life_cycle_observer";
-
 static const std::string EVENT_RESP_ON_ABILITY_RESULT = "resp_com_ohos_amsst_appkit_mainabilitydemo_onabilityresult";
-
 std::vector<std::string> bundleNameList = {
     "com.ohos.amsst.page.AppKitA",
     "com.ohos.amsst.service.appA",

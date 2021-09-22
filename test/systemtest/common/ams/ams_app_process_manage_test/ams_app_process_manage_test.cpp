@@ -44,7 +44,6 @@ std::string hapNameBase = "amsSystemTest";
 std::string abilityNameBase = "AmsStAbility";
 std::string launcherBundle = "com.ix.launcher";
 std::string systemUiBundle = "com.ohos.systemui";
-
 static const std::string DUMP_STACK_LIST = "--stack-list";
 static const std::string DUMP_STACK = "--stack";
 static const std::string DUMP_MISSION = "--mission";
@@ -60,6 +59,7 @@ static const std::string abilityStateOnForeground = ":OnForeground";
 static const std::string abilityStateOnNewWant = ":OnNewWant";
 static const int abilityStateCountOne = 1;
 static const int abilityStateCountTwo = 2;
+constexpr int appFreezingTime = 60;
 }  // namespace
 class AppEventSubscriber;
 
@@ -103,7 +103,7 @@ void AmsAppProcessManageTest::SetUpTestCase(void)
     appMs_ = STAbilityUtil::GetAppMgrService();
     abilityMs_ = STAbilityUtil::GetAbilityManagerService();
     if (appMs_) {
-        appMs_->SetAppFreezingTime(60);
+        appMs_->SetAppFreezingTime(appFreezingTime);
         int time = 0;
         appMs_->GetAppFreezingTime(time);
         std::cout << "appMs_->GetAppFreezingTime();" << time << std::endl;

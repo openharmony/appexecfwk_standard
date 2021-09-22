@@ -26,7 +26,6 @@
 
 namespace OHOS {
 namespace MTUtil {
-
 using str_vec = std::vector<std::string>;
 using str_iter = std::vector<std::string>::iterator;
 using dump_info_map = std::unordered_map<std::string, std::string>;
@@ -98,7 +97,6 @@ private:
 
     inline bool MatchRegex(const regex &regex, const string &str, string &result);
 };
-
 }  // namespace MTUtil
 }  // namespace OHOS
 #endif  // OHOS_MODULE_TEST_DUMP_UTIL_H
