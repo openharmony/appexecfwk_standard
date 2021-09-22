@@ -194,7 +194,6 @@ HWTEST(ParallelTaskDispatcherBaseTest, ParallelTaskDispatcherBase_AsyncGroupDisp
         CreateParallelTaskDispatcherBase(name, TaskPriority::DEFAULT);
     std::atomic<int> count(0);
     EXPECT_EQ(count.load(), 0);
-    //添加个group1
     std::shared_ptr<Group> group1 = parallelTaskDispatcherBase->CreateDispatchGroup();
     std::shared_ptr<Runnable> group1Run1 = std::make_shared<Runnable>([&]() {
         std::this_thread::sleep_for(std::chrono::milliseconds(800));
@@ -209,7 +208,6 @@ HWTEST(ParallelTaskDispatcherBaseTest, ParallelTaskDispatcherBase_AsyncGroupDisp
         GTEST_LOG_(INFO) << name << " Group1 : Runnable2";
     });
     parallelTaskDispatcherBase->AsyncGroupDispatch(group1, group1Run2);
-    //添加group2
     std::shared_ptr<Group> group2 = parallelTaskDispatcherBase->CreateDispatchGroup();
     std::shared_ptr<Runnable> group2Run = std::make_shared<Runnable>([&]() {
         count.fetch_add(1);

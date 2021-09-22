@@ -113,11 +113,11 @@ protected:
     virtual void OnDisconnect(const Want &want) override;
 
     bool SubscribeEvent();
-
+    void GetLifecycleStateCaseOne();
 private:
-    Want want_{};
-    sptr<AbilityLifeCycleConnectCallback> stub_{};
-    sptr<AAFwk::AbilityConnectionProxy> connCallback_{};
+    Want want_ {};
+    sptr<AbilityLifeCycleConnectCallback> stub_ {};
+    sptr<AAFwk::AbilityConnectionProxy> connCallback_ {};
     std::shared_ptr<AbilityLifeCycleAbilityEventSubscriber> subscriber_ = {};
 };
 int AbilityLifeCycleAbility::sequenceNumber_ = 0;

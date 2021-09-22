@@ -175,9 +175,9 @@ HWTEST(GroupImplTest, AppExecFwk_GroupImpl_AddNotification_002, TestSize.Level0)
             std::make_shared<Runnable>([&]() { GTEST_LOG_(INFO) << "GroupImpl AddNotification"; });
         groupPtr->AddNotification(notification);
     }
-    std::shared_ptr<Runnable> newNotification =
+    std::shared_ptr<Runnable> notificationTask =
         std::make_shared<Runnable>([&]() { GTEST_LOG_(INFO) << "GroupImpl AddNotification"; });
-    bool result = groupPtr->AddNotification(newNotification);
+    bool result = groupPtr->AddNotification(notificationTask);
     EXPECT_TRUE(result);
     GTEST_LOG_(INFO) << name << " end";
 }
@@ -198,9 +198,9 @@ HWTEST(GroupImplTest, AppExecFwk_GroupImpl_AddNotification_003, TestSize.Level0)
             std::make_shared<Runnable>([&]() { GTEST_LOG_(INFO) << "GroupImpl AddNotification"; });
         groupPtr->AddNotification(notification);
     }
-    std::shared_ptr<Runnable> newNotification =
+    std::shared_ptr<Runnable> notificationTask =
         std::make_shared<Runnable>([&]() { GTEST_LOG_(INFO) << "GroupImpl AddNotification"; });
-    bool result = groupPtr->AddNotification(newNotification);
+    bool result = groupPtr->AddNotification(notificationTask);
     EXPECT_FALSE(result);
     GTEST_LOG_(INFO) << name << " end";
 }

@@ -28,7 +28,7 @@
 namespace OHOS {
 namespace AppExecFwk {
 /**
- *Base implementation for interface of TaskDispatcher.
+ * Base implementation for interface of TaskDispatcher.
  */
 
 class BaseTaskDispatcher : public TaskDispatcher {

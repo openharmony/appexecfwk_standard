@@ -893,7 +893,7 @@ public:
 
     void SetProvisionId(const std::string &provisionId)
     {
-        baseBundleInfo_.appId = provisionId;
+        baseBundleInfo_.appId = baseBundleInfo_.name + Constants::FILE_UNDERLINE + provisionId;
     }
 
     std::string GetProvisionId() const

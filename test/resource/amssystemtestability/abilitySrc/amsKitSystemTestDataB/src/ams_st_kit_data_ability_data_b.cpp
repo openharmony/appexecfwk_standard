@@ -320,7 +320,7 @@ static void GetResult(std::shared_ptr<STtools::StOperator> child, std::shared_pt
     AmsStKitDataAbilityDataB *mainAbility, Uri dataAbilityUri, string &result)
 {
     AppExecFwk::DataAbilityPredicates predicates;
-    AppExecFwk::ValuesBucket bucket;
+    ValuesBucket bucket;
     result = "failed";
     if (child->GetOperatorName() == OPERATOR_INSERT) {
         result = std::to_string(helper->Insert(dataAbilityUri, bucket));

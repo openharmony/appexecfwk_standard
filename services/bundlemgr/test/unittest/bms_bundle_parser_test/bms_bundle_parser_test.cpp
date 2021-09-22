@@ -32,6 +32,7 @@ using namespace OHOS::AppExecFwk::Constants;
 using namespace OHOS::AppExecFwk::ProfileReader;
 
 namespace {
+
 const std::string RESOURCE_ROOT_PATH = "/data/test/resource/bms/parse_bundle/";
 const std::string NEW_APP = "new";
 const std::string BREAK_ZIP = "break_zip";
@@ -190,6 +191,7 @@ const nlohmann::json CONFIG_JSON = R"(
         }
     }
 )"_json;
+
 }  // namespace
 
 class BmsBundleParserTest : public testing::Test {
@@ -207,7 +209,6 @@ protected:
     void CheckProfilePermission(const nlohmann::json &checkedProfileJson) const;
     void CheckProfileForms(const nlohmann::json &checkedProfileJson) const;
     void CheckProfileShortcut(const nlohmann::json &checkedProfileJson) const;
-
 protected:
     std::ostringstream pathStream_;
 };
@@ -893,7 +894,7 @@ HWTEST_F(BmsBundleParserTest, TestParse_2300, Function | SmallTest | Level1)
 HWTEST_F(BmsBundleParserTest, TestParse_2400, Function | SmallTest | Level1)
 {
     nlohmann::json errorFormsJson = CONFIG_JSON;
-    errorFormsJson[BUNDLE_PROFILE_KEY_MODULE][BUNDLE_MODULE_PROFILE_KEY_ABILITIES] = R"(
+    errorFormsJson[BUNDLE_PROFILE_KEY_MODULE][BUNDLE_MODULE_PROFILE_KEY_ABILITIES]= R"(
     [{
         "skills": [
           {

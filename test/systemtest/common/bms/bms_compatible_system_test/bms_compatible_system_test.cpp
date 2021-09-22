@@ -49,6 +49,7 @@ const int MIN_WIDTH = 100;
 const int DEFAULT_HEIGHT = 100;
 const int DEFAULT_WIDTH = 200;
 const int FORM_NUM = 3;
+
 }  // namespace
 using OHOS::AAFwk::Want;
 using namespace testing::ext;
@@ -151,7 +152,7 @@ void BmsCompatibleSystemTest::Uninstall(const std::string &bundleName, std::stri
     } else {
         InstallParam installParam;
         installParam.userId = Constants::DEFAULT_USERID;
-        sptr<StatusReceiverImpl> statusReceiver = new (std::nothrow) StatusReceiverImpl();
+        sptr<StatusReceiverImpl> statusReceiver = (new (std::nothrow) StatusReceiverImpl());
         EXPECT_NE(statusReceiver, nullptr);
         installerProxy->Uninstall(bundleName, installParam, statusReceiver);
         uninstallMessage = statusReceiver->GetResultMsg();
@@ -724,5 +725,6 @@ HWTEST_F(BmsCompatibleSystemTest, BMS_QueryAbilityInfoByUri_0300, Function | Med
     EXPECT_EQ(abilityInfo.uri, "");
     GTEST_LOG_(INFO) << "END BMS_QueryAbilityInfoByUri_0300";
 }
+
 }  // namespace AppExecFwk
 }  // namespace OHOS

@@ -129,12 +129,12 @@ HWTEST_F(AmsServiceLoadAbilityProcessTest, LoadAbility_001, TestSize.Level1)
     const auto &recordMap = service_->GetRecordMap();
     EXPECT_EQ(recordMap.size(), (uint32_t)1);
     auto record = service_->GetAppRunningRecordByAppName(GetTestAppName());
-    EXPECT_NE(record, nullptr);
+    ASSERT_NE(record, nullptr);
     EXPECT_EQ(record->GetState(), ApplicationState::APP_STATE_CREATE);
     const auto &abilityMap = record->GetAbilities();
     EXPECT_EQ(abilityMap.size(), (uint32_t)1);
     auto abilityRecord = record->GetAbilityRunningRecordByToken(token);
-    EXPECT_NE(abilityRecord, nullptr);
+    ASSERT_NE(abilityRecord, nullptr);
     EXPECT_EQ(abilityRecord->GetState(), AbilityState::ABILITY_STATE_CREATE);
     APP_LOGI("AmsServiceLoadAbilityProcessTest LoadAbility_001 end");
 }
@@ -171,13 +171,13 @@ HWTEST_F(AmsServiceLoadAbilityProcessTest, LoadAbility_002, TestSize.Level1)
     const auto &recordMap = service_->GetRecordMap();
     EXPECT_EQ(recordMap.size(), (uint32_t)1);
     auto record = service_->GetAppRunningRecordByAppName(GetTestAppName());
-    EXPECT_NE(record, nullptr);
+    ASSERT_NE(record, nullptr);
     EXPECT_EQ(record->GetState(), ApplicationState::APP_STATE_CREATE);
     const auto &abilityMap = record->GetAbilities();
     EXPECT_EQ(abilityMap.size(), (uint32_t)1);
 
     auto abilityRecord = record->GetAbilityRunningRecordByToken(token);
-    EXPECT_NE(abilityRecord, nullptr);
+    ASSERT_NE(abilityRecord, nullptr);
     EXPECT_EQ(abilityRecord->GetState(), AbilityState::ABILITY_STATE_CREATE);
 
     sptr<IRemoteObject> token2 = GetMockToken();
@@ -195,10 +195,10 @@ HWTEST_F(AmsServiceLoadAbilityProcessTest, LoadAbility_002, TestSize.Level1)
     const uint32_t EXPECT_MAP_SIZE = 2;
     EXPECT_EQ(recordMap.size(), EXPECT_MAP_SIZE);
     auto record2 = service_->GetAppRunningRecordByAppName(GetTestAppName() + "_1");
-    EXPECT_NE(record2, nullptr);
+    ASSERT_NE(record2, nullptr);
     EXPECT_EQ(record2->GetState(), ApplicationState::APP_STATE_CREATE);
     auto abilityRecord2 = record2->GetAbilityRunningRecordByToken(token2);
-    EXPECT_NE(abilityRecord2, nullptr);
+    ASSERT_NE(abilityRecord2, nullptr);
     EXPECT_EQ(abilityRecord2->GetState(), AbilityState::ABILITY_STATE_CREATE);
     APP_LOGI("AmsServiceLoadAbilityProcessTest LoadAbility_002 end");
 }
@@ -348,12 +348,12 @@ HWTEST_F(AmsServiceLoadAbilityProcessTest, LoadAbility_007, TestSize.Level1)
     const auto &recordMap = service_->GetRecordMap();
     EXPECT_EQ(recordMap.size(), (uint32_t)1);
     auto record = service_->GetAppRunningRecordByAppName(GetTestAppName());
-    EXPECT_NE(record, nullptr);
+    ASSERT_NE(record, nullptr);
     EXPECT_EQ(record->GetState(), ApplicationState::APP_STATE_CREATE);
     const auto &abilityMap = record->GetAbilities();
     EXPECT_EQ(abilityMap.size(), (uint32_t)1);
     auto abilityRecord = record->GetAbilityRunningRecordByToken(token);
-    EXPECT_NE(abilityRecord, nullptr);
+    ASSERT_NE(abilityRecord, nullptr);
     EXPECT_EQ(abilityRecord->GetState(), AbilityState::ABILITY_STATE_CREATE);
     std::shared_ptr<MockAppSpawnClient> mockClientPtr = std::make_shared<MockAppSpawnClient>();
     EXPECT_CALL(*mockClientPtr, StartProcess(_, _)).Times(0);
@@ -394,12 +394,12 @@ HWTEST_F(AmsServiceLoadAbilityProcessTest, LoadAbility_008, TestSize.Level1)
     const auto &recordMap = service_->GetRecordMap();
     EXPECT_EQ(recordMap.size(), (uint32_t)1);
     auto record = service_->GetAppRunningRecordByAppName(GetTestAppName());
-    EXPECT_NE(record, nullptr);
+    ASSERT_NE(record, nullptr);
     EXPECT_EQ(record->GetState(), ApplicationState::APP_STATE_CREATE);
     const auto &abilityMap = record->GetAbilities();
     EXPECT_EQ(abilityMap.size(), (uint32_t)1);
     auto abilityRecord = record->GetAbilityRunningRecordByToken(token);
-    EXPECT_NE(abilityRecord, nullptr);
+    ASSERT_NE(abilityRecord, nullptr);
     EXPECT_EQ(abilityRecord->GetState(), AbilityState::ABILITY_STATE_CREATE);
     sptr<IRemoteObject> token2 = new MockAbilityToken();
     sptr<IRemoteObject> preToken = token;
@@ -418,7 +418,7 @@ HWTEST_F(AmsServiceLoadAbilityProcessTest, LoadAbility_008, TestSize.Level1)
     const auto &abilityMap2 = record2->GetAbilities();
     EXPECT_EQ(abilityMap2.size(), EXPECT_MAP_SIZE);
     auto abilityRecord2 = record2->GetAbilityRunningRecordByToken(token2);
-    EXPECT_NE(abilityRecord2, nullptr);
+    ASSERT_NE(abilityRecord2, nullptr);
     EXPECT_EQ(abilityRecord2->GetState(), AbilityState::ABILITY_STATE_CREATE);
     EXPECT_EQ(abilityRecord2->GetPreToken(), token);
     APP_LOGI("AmsServiceLoadAbilityProcessTest LoadAbility_008 end");
@@ -455,7 +455,7 @@ HWTEST_F(AmsServiceLoadAbilityProcessTest, RequestProcess_001, TestSize.Level1)
     const auto &recordMap = service_->GetRecordMap();
     EXPECT_EQ(recordMap.size(), (uint32_t)1);
     auto record = service_->GetAppRunningRecordByAppName(GetTestAppName());
-    EXPECT_NE(record, nullptr);
+    ASSERT_NE(record, nullptr);
     EXPECT_EQ(record->GetPriorityObject()->GetPid(), PID);
     EXPECT_EQ(record->GetState(), ApplicationState::APP_STATE_CREATE);
     APP_LOGI("AmsServiceLoadAbilityProcessTest RequestProcess_001 end");
@@ -582,12 +582,12 @@ HWTEST_F(AmsServiceLoadAbilityProcessTest, LaunchMode_001, TestSize.Level1)
     const auto &recordMap = service_->GetRecordMap();
     EXPECT_EQ(recordMap.size(), (uint32_t)1);
     auto record = service_->GetAppRunningRecordByAppName(GetTestAppName());
-    EXPECT_NE(record, nullptr);
+    ASSERT_NE(record, nullptr);
     EXPECT_EQ(record->GetState(), ApplicationState::APP_STATE_CREATE);
     const auto &abilityMap = record->GetAbilities();
     EXPECT_EQ(abilityMap.size(), (uint32_t)1);
     auto abilityRecord = record->GetAbilityRunningRecordByToken(token);
-    EXPECT_NE(abilityRecord, nullptr);
+    ASSERT_NE(abilityRecord, nullptr);
     EXPECT_EQ(abilityRecord->GetState(), AbilityState::ABILITY_STATE_CREATE);
     APP_LOGI("AmsServiceLoadAbilityProcessTest LaunchMode_001 end");
 }
@@ -619,12 +619,12 @@ HWTEST_F(AmsServiceLoadAbilityProcessTest, LaunchMode_002, TestSize.Level1)
     const auto &recordMap = service_->GetRecordMap();
     EXPECT_EQ(recordMap.size(), (uint32_t)1);
     auto record = service_->GetAppRunningRecordByAppName(GetTestAppName());
-    EXPECT_NE(record, nullptr);
+    ASSERT_NE(record, nullptr);
     EXPECT_EQ(record->GetState(), ApplicationState::APP_STATE_CREATE);
     const auto &abilityMap = record->GetAbilities();
     EXPECT_EQ(abilityMap.size(), (uint32_t)1);
     auto abilityRecord = record->GetAbilityRunningRecordByToken(token);
-    EXPECT_NE(abilityRecord, nullptr);
+    ASSERT_NE(abilityRecord, nullptr);
     EXPECT_EQ(abilityRecord->GetState(), AbilityState::ABILITY_STATE_CREATE);
     std::shared_ptr<MockAppSpawnClient> mockClientPtr = std::make_shared<MockAppSpawnClient>();
     EXPECT_CALL(*mockClientPtr, StartProcess(_, _)).Times(0);
@@ -666,12 +666,12 @@ HWTEST_F(AmsServiceLoadAbilityProcessTest, StartAbility_001, TestSize.Level1)
     const auto &recordMap = service_->GetRecordMap();
     EXPECT_EQ(recordMap.size(), (uint32_t)1);
     auto record = service_->GetAppRunningRecordByAppName(GetTestAppName());
-    EXPECT_NE(record, nullptr);
+    ASSERT_NE(record, nullptr);
     EXPECT_EQ(record->GetState(), ApplicationState::APP_STATE_CREATE);
     const auto &abilityMap = record->GetAbilities();
     EXPECT_EQ(abilityMap.size(), (uint32_t)1);
     auto abilityRecord = record->GetAbilityRunningRecordByToken(token);
-    EXPECT_NE(abilityRecord, nullptr);
+    ASSERT_NE(abilityRecord, nullptr);
     EXPECT_EQ(abilityRecord->GetState(), AbilityState::ABILITY_STATE_CREATE);
     sptr<IRemoteObject> token2 = new MockAbilityToken();
     auto abilityInfo2 = std::make_shared<AbilityInfo>();
@@ -690,7 +690,7 @@ HWTEST_F(AmsServiceLoadAbilityProcessTest, StartAbility_001, TestSize.Level1)
     const auto &abilityMap1 = record1->GetAbilities();
     EXPECT_EQ(abilityMap1.size(), (uint32_t)2);
     auto abilityrecord1 = record1->GetAbilityRunningRecordByToken(token2);
-    EXPECT_NE(abilityrecord1, nullptr);
+    ASSERT_NE(abilityrecord1, nullptr);
     EXPECT_EQ(abilityrecord1->GetState(), AbilityState::ABILITY_STATE_READY);
     APP_LOGI("AmsServiceLoadAbilityProcessTest StartAbility_001 end");
 }
@@ -720,12 +720,12 @@ HWTEST_F(AmsServiceLoadAbilityProcessTest, StartAbility_002, TestSize.Level1)
     const auto &recordMap = service_->GetRecordMap();
     EXPECT_EQ(recordMap.size(), (uint32_t)1);
     auto record = service_->GetAppRunningRecordByAppName(GetTestAppName());
-    EXPECT_NE(record, nullptr);
+    ASSERT_NE(record, nullptr);
     EXPECT_EQ(record->GetState(), ApplicationState::APP_STATE_CREATE);
     const auto &abilityMap = record->GetAbilities();
     EXPECT_EQ(abilityMap.size(), (uint32_t)1);
     auto abilityRecord = record->GetAbilityRunningRecordByToken(token);
-    EXPECT_NE(abilityRecord, nullptr);
+    ASSERT_NE(abilityRecord, nullptr);
     EXPECT_EQ(abilityRecord->GetState(), AbilityState::ABILITY_STATE_CREATE);
     sptr<IRemoteObject> token2 = new MockAbilityToken();
     auto abilityInfo2 = std::make_shared<AbilityInfo>();
@@ -773,12 +773,12 @@ HWTEST_F(AmsServiceLoadAbilityProcessTest, StartAbility_003, TestSize.Level1)
     const auto &recordMap = service_->GetRecordMap();
     EXPECT_EQ(recordMap.size(), (uint32_t)1);
     auto record = service_->GetAppRunningRecordByAppName(GetTestAppName());
-    EXPECT_NE(record, nullptr);
+    ASSERT_NE(record, nullptr);
     EXPECT_EQ(record->GetState(), ApplicationState::APP_STATE_CREATE);
     const auto &abilityMap = record->GetAbilities();
     EXPECT_EQ(abilityMap.size(), (uint32_t)1);
     auto abilityRecord = record->GetAbilityRunningRecordByToken(token);
-    EXPECT_NE(abilityRecord, nullptr);
+    ASSERT_NE(abilityRecord, nullptr);
     EXPECT_EQ(abilityRecord->GetState(), AbilityState::ABILITY_STATE_CREATE);
 
     sptr<IRemoteObject> token2 = new MockAbilityToken();
@@ -825,12 +825,12 @@ HWTEST_F(AmsServiceLoadAbilityProcessTest, StartAbility_004, TestSize.Level1)
     const auto &recordMap = service_->GetRecordMap();
     EXPECT_EQ(recordMap.size(), (uint32_t)1);
     auto record = service_->GetAppRunningRecordByAppName(GetTestAppName());
-    EXPECT_NE(record, nullptr);
+    ASSERT_NE(record, nullptr);
     EXPECT_EQ(record->GetState(), ApplicationState::APP_STATE_CREATE);
     const auto &abilityMap = record->GetAbilities();
     EXPECT_EQ(abilityMap.size(), (uint32_t)1);
     auto abilityRecord = record->GetAbilityRunningRecordByToken(token);
-    EXPECT_NE(abilityRecord, nullptr);
+    ASSERT_NE(abilityRecord, nullptr);
     EXPECT_EQ(abilityRecord->GetState(), AbilityState::ABILITY_STATE_CREATE);
     auto abilityInfo2 = std::make_shared<AbilityInfo>();
     abilityInfo2->name = GetTestAbilityName() + "_1";
@@ -876,12 +876,12 @@ HWTEST_F(AmsServiceLoadAbilityProcessTest, StartAbility_005, TestSize.Level1)
     const auto &recordMap = service_->GetRecordMap();
     EXPECT_EQ(recordMap.size(), (uint32_t)1);
     auto record = service_->GetAppRunningRecordByAppName(GetTestAppName());
-    EXPECT_NE(record, nullptr);
+    ASSERT_NE(record, nullptr);
     EXPECT_EQ(record->GetState(), ApplicationState::APP_STATE_CREATE);
     const auto &abilityMap = record->GetAbilities();
     EXPECT_EQ(abilityMap.size(), (uint32_t)1);
     auto abilityRecord = record->GetAbilityRunningRecordByToken(token);
-    EXPECT_NE(abilityRecord, nullptr);
+    ASSERT_NE(abilityRecord, nullptr);
     EXPECT_EQ(abilityRecord->GetState(), AbilityState::ABILITY_STATE_CREATE);
     sptr<IRemoteObject> token2 = new MockAbilityToken();
     auto abilityInfo2 = std::make_shared<AbilityInfo>();
@@ -898,7 +898,7 @@ HWTEST_F(AmsServiceLoadAbilityProcessTest, StartAbility_005, TestSize.Level1)
     const auto &abilityMap1 = record1->GetAbilities();
     EXPECT_EQ(abilityMap1.size(), (uint32_t)2);
     auto abilityrecord1 = record1->GetAbilityRunningRecordByToken(token2);
-    EXPECT_NE(abilityrecord1, nullptr);
+    ASSERT_NE(abilityrecord1, nullptr);
     EXPECT_EQ(abilityrecord1->GetState(), AbilityState::ABILITY_STATE_READY);
     APP_LOGI("AmsServiceLoadAbilityProcessTest StartAbility_005 end");
 }
@@ -928,12 +928,12 @@ HWTEST_F(AmsServiceLoadAbilityProcessTest, StartAbility_006, TestSize.Level1)
     const auto &recordMap = service_->GetRecordMap();
     EXPECT_EQ(recordMap.size(), (uint32_t)1);
     auto record = service_->GetAppRunningRecordByAppName(GetTestAppName());
-    EXPECT_NE(record, nullptr);
+    ASSERT_NE(record, nullptr);
     EXPECT_EQ(record->GetState(), ApplicationState::APP_STATE_CREATE);
     const auto &abilityMap = record->GetAbilities();
     EXPECT_EQ(abilityMap.size(), (uint32_t)1);
     auto abilityRecord = record->GetAbilityRunningRecordByToken(token);
-    EXPECT_NE(abilityRecord, nullptr);
+    ASSERT_NE(abilityRecord, nullptr);
     EXPECT_EQ(abilityRecord->GetState(), AbilityState::ABILITY_STATE_CREATE);
     auto abilityInfo2 = std::make_shared<AbilityInfo>();
     abilityInfo2->name = GetTestAbilityName() + "_1";
@@ -983,12 +983,12 @@ HWTEST_F(AmsServiceLoadAbilityProcessTest, StartProcess001, TestSize.Level1)
     EXPECT_EQ(recordMap.size(), (uint32_t)1);
     auto record1 = service_->GetAppRunningRecordByAppName(GetTestAppName());
     EXPECT_EQ(record1->GetPriorityObject()->GetPid(), PID);
-    EXPECT_NE(record1, nullptr);
+    ASSERT_NE(record1, nullptr);
     EXPECT_EQ(record1->GetState(), ApplicationState::APP_STATE_CREATE);
     const auto &abilityMap = record1->GetAbilities();
     EXPECT_EQ(abilityMap.size(), (uint32_t)1);
     auto abilityRecord = record1->GetAbilityRunningRecordByToken(token);
-    EXPECT_NE(abilityRecord, nullptr);
+    ASSERT_NE(abilityRecord, nullptr);
     EXPECT_EQ(abilityRecord->GetState(), AbilityState::ABILITY_STATE_CREATE);
     APP_LOGI("AmsServiceLoadAbilityProcessTest StartProcess001 end");
 }
@@ -1019,7 +1019,7 @@ HWTEST_F(AmsServiceLoadAbilityProcessTest, StartProcess002, TestSize.Level1)
     const auto &recordMap = service_->GetRecordMap();
     EXPECT_EQ(recordMap.size(), (uint32_t)1);
     auto record1 = service_->GetAppRunningRecordByAppName(GetTestAppName());
-    EXPECT_NE(record1, nullptr);
+    ASSERT_NE(record1, nullptr);
     APP_LOGI("AmsServiceLoadAbilityProcessTest StartProcess002 end");
 }
 
@@ -1050,7 +1050,7 @@ HWTEST_F(AmsServiceLoadAbilityProcessTest, StartProcess003, TestSize.Level1)
     const auto &recordMap = service_->GetRecordMap();
     EXPECT_EQ(recordMap.size(), (uint32_t)1);
     auto record1 = service_->GetAppRunningRecordByAppName(GetTestAppName());
-    EXPECT_NE(record1, nullptr);
+    ASSERT_NE(record1, nullptr);
     APP_LOGI("AmsServiceLoadAbilityProcessTest StartProcess003 end");
 }
 
@@ -1083,7 +1083,7 @@ HWTEST_F(AmsServiceLoadAbilityProcessTest, StartProcess004, TestSize.Level1)
         .WillOnce(DoAll(SetArgReferee<1>(PID), Return(ERR_TIMED_OUT)));
     std::shared_ptr<AppRunningRecord> record =
         service_->GetOrCreateAppRunningRecord(token, appInfo, abilityInfo, GetTestAppName(), 0, result);
-    EXPECT_NE(record, nullptr);
+    ASSERT_NE(record, nullptr);
     service_->StartProcess(abilityInfo->applicationName, GetTestAppName(), record);
     auto record1 = service_->GetAppRunningRecordByAppRecordId(record->GetRecordId());
     EXPECT_EQ(record1, nullptr);

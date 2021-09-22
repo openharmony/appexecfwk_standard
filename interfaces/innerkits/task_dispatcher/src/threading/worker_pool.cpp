@@ -237,32 +237,44 @@ bool WorkerPool::AddWorker(const std::shared_ptr<Delegate> &delegate, const std:
         return added;
     }
     std::unique_lock<std::mutex> mLock(poolLock_);
-    std::shared_ptr<WorkerThread> workerThread = nullptr;
-    for(;;) {
+    std::shared_ptr<WorkerThread> newThread = nullptr;
+
+    for (;;) {
         unsigned int value = control_.load();
         int num = GetWorkingThreadNum(value);
         if (num >= thread_limit_) {
-            APP_LOGI("WorkerPool::AddWorker thread count exceed limits, num=%{public}d", num);
+            APP_LOGI("WorkerPool::AddWorker thread count exceed limits, num=%{public}d, limits=%{public}d",
+                num,
+                thread_limit_);
             break;
         }
         if (!IsRunning(value)) {
-            APP_LOGI("WorkerPool::AddWorker thread pool is not running. value=%{public}d, closing=%{public}d, ",
+            APP_LOGI("WorkerPool::AddWorker thread pool is not running. value=%{public}d, closing=%{public}d, "
+                     "count_bits=%{public}d",
                 value,
-                CLOSING);
+                CLOSING,
+                COUNT_BITS);
             break;
         }
+
         if (CompareAndIncThreadNum(num)) {
-            workerThread = std::make_shared<WorkerThread>(delegate, task, factory_);
-            if (workerThread == nullptr) {
+            newThread = std::make_shared<WorkerThread>(delegate, task, factory_);
+            if (newThread == nullptr) {
                 APP_LOGE("WorkerPool::AddWorker create thread fail");
                 break;
             }
-            workerThread->CreateThread();
-            pool_.emplace_back(workerThread);
+
+            newThread->CreateThread();
+
+            APP_LOGI("WorkerPool::AddWorker create new thread");
+
+            pool_.emplace_back(newThread);
             APP_LOGI("WorkerPool::AddWorker pool_ add thread ,POOL SIZE: %{public}zu", pool_.size());
+
             added = true;
             break;
         }
+
         APP_LOGW("WorkerPool::AddWorker set thread state error. retry. ");
     }
     return added;
@@ -307,7 +319,7 @@ bool WorkerPool::IsRunning(int ctl)
     return ctl < CLOSING;
 }
 
-int WorkerPool::GetStateFromControl(unsigned int ctl)
+int WorkerPool::GetStateFromControl(int ctl)
 {
     return ctl & ~CAPACITY;
 }
@@ -315,7 +327,7 @@ int WorkerPool::GetStateFromControl(unsigned int ctl)
 void WorkerPool::AdvanceStateTo(unsigned int target)
 {
     APP_LOGI("WorkerPool::AdvanceStateTo begin");
-    for(;;) {
+    for (;;) {
         unsigned int current = control_.load();
         if ((current >= target) ||
             CompareAndSet(control_, current, CombineToControl(target, GetWorkingThreadNum(current)))) {
@@ -333,7 +345,7 @@ int WorkerPool::CombineToControl(unsigned int state, unsigned int count)
 
 bool WorkerPool::CompareAndIncThreadNum(int expect)
 {
-    unsigned int ctl = control_.load();
+    int ctl = control_.load();
     int state = GetStateFromControl(ctl);
     return CompareAndSet(control_, ctl, CombineToControl(state, expect + 1));
 }
@@ -355,7 +367,7 @@ bool WorkerPool::CompareAndDecThreadNum(int expect)
 
 bool WorkerPool::CompareAndDecNum(int expectCount)
 {
-    unsigned int curr = control_.load();
+    int curr = control_.load();
     int state = GetStateFromControl(curr);
     int expectControl = CombineToControl(state, expectCount);
     return CompareAndDecThreadNum(expectControl);

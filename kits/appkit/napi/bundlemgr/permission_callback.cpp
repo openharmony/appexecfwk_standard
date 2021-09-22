@@ -38,23 +38,16 @@ void PermissionCallback::OnChanged(const int32_t uid)
     napi_get_uv_event_loop(env_, &loop);
 #endif  // NAPI_VERSION >= 2
 
-    uv_work_t *work = new (std::nothrow) uv_work_t;
-    if (work == nullptr) {
-        HILOG_ERROR("new uv_work_t failed");
-        return;
-    }
-    CallbackInfo *callbackInfo = new (std::nothrow) CallbackInfo {
+    uv_work_t *work = new uv_work_t;
+    CallbackInfo *callbackInfo = new (std::nothrow) CallbackInfo{
         .env = env_,
         .callback = callback_,
         .uid = uid,
     };
-    if (callbackInfo == nullptr) {
-        HILOG_ERROR("new CallbackInfo failed");
-        return;
-    }
+
     work->data = (void *)callbackInfo;
 
-    int rev = uv_queue_work(
+    uv_queue_work(
         loop,
         work,
         [](uv_work_t *work) {},
@@ -82,13 +75,6 @@ void PermissionCallback::OnChanged(const int32_t uid)
             delete event;
             delete work;
         });
-    if (rev != 0) {
-        if (callbackInfo != nullptr) {
-            delete callbackInfo;
-        }
-        if (work != nullptr) {
-            delete work;
-        }
-    }
+
     HILOG_INFO("OnChanged, end");
 }
