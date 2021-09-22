@@ -57,13 +57,12 @@ static const string FIRST_ABILITY_NAME = "MainAbility";
 static const string SECOND_ABILITY_NAME = "SecondAbility";
 static const string THIRD_ABILITY_NAME = "MainAbility";
 static constexpr int WAIT_TIME = 5;
-
 static const int MAIN_ABILITY_A_CODE = 100;
 static const int SECOND_ABILITY_A_CODE = 200;
 static const int MAIN_ABILITY_B_CODE = 300;
-
 static string g_eventMessage = "";
 int g_StLevel = 1;
+}
 class ActsAmsKitATest : public testing::Test {
 public:
     static void SetUpTestCase(void);
@@ -84,14 +83,14 @@ public:
         ~AppEventSubscriber(){};
     };
 
-    static sptr<IAbilityManager> g_abilityMs;
+    static sptr<IAbilityManager> abilityMgrService;
     static Event event;
     static StressTestLevel stLevel_;
 };
 
-StressTestLevel ActsAmsKitATest::stLevel_{};
+StressTestLevel ActsAmsKitATest::stLevel_ {};
 Event ActsAmsKitATest::event = Event();
-sptr<IAbilityManager> ActsAmsKitATest::g_abilityMs = nullptr;
+sptr<IAbilityManager> ActsAmsKitATest::abilityMgrService = nullptr;
 
 void ActsAmsKitATest::AppEventSubscriber::OnReceiveEvent(const CommonEventData &data)
 {
@@ -159,12 +158,14 @@ void ActsAmsKitATest::TearDown(void)
 
 bool ActsAmsKitATest::SubscribeEvent()
 {
-    std::vector<std::string> eventList = {g_EVENT_RESP_FIRST_LIFECYCLE,
+    std::vector<std::string> eventList = {
+        g_EVENT_RESP_FIRST_LIFECYCLE,
         g_EVENT_RESP_SECOND_LIFECYCLE,
         g_EVENT_RESP_FIRSTB_LIFECYCLE,
         g_EVENT_RESP_FIRST,
         g_EVENT_RESP_SECOND,
-        g_EVENT_RESP_FIRSTB};
+        g_EVENT_RESP_FIRSTB
+    };
     MatchingSkills matchingSkills;
     for (const auto &e : eventList) {
         matchingSkills.AddEvent(e);
@@ -199,7 +200,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_00100, Function | MediumTest |
     Want want = STAbilityUtil::MakeWant("device", FIRST_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     // start first ability
     sleep(WAIT_TIME);
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_A_CODE), 0);
@@ -231,7 +232,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_00200, Function | MediumTest |
     Want want = STAbilityUtil::MakeWant("device", FIRST_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     // start first ability
     sleep(WAIT_TIME);
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_A_CODE), 0);
@@ -240,7 +241,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_00200, Function | MediumTest |
     // start second ability
     want = STAbilityUtil::MakeWant("device", SECOND_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     sleep(WAIT_TIME);
-    eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
     EXPECT_EQ(TestWaitCompleted(event, "onStart", SECOND_ABILITY_A_CODE), 0);
     EXPECT_EQ(TestWaitCompleted(event, "OnActive", SECOND_ABILITY_A_CODE), 0);
@@ -278,7 +279,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_00300, Function | MediumTest |
     Want want = STAbilityUtil::MakeWant("device", FIRST_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     // start first ability
     sleep(WAIT_TIME);
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_A_CODE), 0);
@@ -287,7 +288,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_00300, Function | MediumTest |
     // start second ability
     want = STAbilityUtil::MakeWant("device", THIRD_ABILITY_NAME, KIT_BUNDLE_NAME + "B", params);
     sleep(WAIT_TIME);
-    eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_B_CODE), 0);
     EXPECT_EQ(TestWaitCompleted(event, "OnActive", MAIN_ABILITY_B_CODE), 0);
@@ -326,7 +327,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_00400, Function | MediumTest |
     Want want = STAbilityUtil::MakeWant("device", FIRST_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     // start first ability
     sleep(WAIT_TIME);
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_A_CODE), 0);
@@ -357,7 +358,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_00500, Function | MediumTest |
     Want want = STAbilityUtil::MakeWant("device", FIRST_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     // start first ability
     sleep(WAIT_TIME);
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_A_CODE), 0);
@@ -366,7 +367,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_00500, Function | MediumTest |
     // start second ability
     want = STAbilityUtil::MakeWant("device", SECOND_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     sleep(WAIT_TIME);
-    eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
     EXPECT_EQ(TestWaitCompleted(event, "onStart", SECOND_ABILITY_A_CODE), 0);
     EXPECT_EQ(TestWaitCompleted(event, "OnActive", SECOND_ABILITY_A_CODE), 0);
@@ -402,7 +403,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_00600, Function | MediumTest |
     Want want = STAbilityUtil::MakeWant("device", FIRST_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     // start first ability
     sleep(WAIT_TIME);
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_A_CODE), 0);
@@ -411,7 +412,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_00600, Function | MediumTest |
     // start second ability
     want = STAbilityUtil::MakeWant("device", THIRD_ABILITY_NAME, KIT_BUNDLE_NAME + "B", params);
     sleep(WAIT_TIME);
-    eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_B_CODE), 0);
     EXPECT_EQ(TestWaitCompleted(event, "OnActive", MAIN_ABILITY_B_CODE), 0);
@@ -450,7 +451,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_00700, Function | MediumTest |
     Want want = STAbilityUtil::MakeWant("device", FIRST_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     // start first ability
     sleep(WAIT_TIME);
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_A_CODE), 0);
@@ -481,7 +482,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_00800, Function | MediumTest |
     Want want = STAbilityUtil::MakeWant("device", FIRST_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     // start first ability
     sleep(WAIT_TIME);
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_A_CODE), 0);
@@ -490,7 +491,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_00800, Function | MediumTest |
     // start second ability
     want = STAbilityUtil::MakeWant("device", SECOND_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     sleep(WAIT_TIME);
-    eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
     EXPECT_EQ(TestWaitCompleted(event, "onStart", SECOND_ABILITY_A_CODE), 0);
     EXPECT_EQ(TestWaitCompleted(event, "OnActive", SECOND_ABILITY_A_CODE), 0);
@@ -525,7 +526,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_00900, Function | MediumTest |
     Want want = STAbilityUtil::MakeWant("device", FIRST_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     // start first ability
     sleep(WAIT_TIME);
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_A_CODE), 0);
@@ -534,7 +535,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_00900, Function | MediumTest |
     // start second ability
     want = STAbilityUtil::MakeWant("device", THIRD_ABILITY_NAME, KIT_BUNDLE_NAME + "B", params);
     sleep(WAIT_TIME);
-    eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_B_CODE), 0);
     EXPECT_EQ(TestWaitCompleted(event, "OnActive", MAIN_ABILITY_B_CODE), 0);
@@ -571,7 +572,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_01000, Function | MediumTest |
     Want want = STAbilityUtil::MakeWant("device", FIRST_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     // start first ability
     sleep(WAIT_TIME);
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_A_CODE), 0);
@@ -603,7 +604,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_01100, Function | MediumTest |
     Want want = STAbilityUtil::MakeWant("device", FIRST_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     // start first ability
     sleep(WAIT_TIME);
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_A_CODE), 0);
@@ -612,7 +613,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_01100, Function | MediumTest |
     // start second ability
     want = STAbilityUtil::MakeWant("device", SECOND_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     sleep(WAIT_TIME);
-    eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
     EXPECT_EQ(TestWaitCompleted(event, "onStart", SECOND_ABILITY_A_CODE), 0);
     EXPECT_EQ(TestWaitCompleted(event, "OnActive", SECOND_ABILITY_A_CODE), 0);
@@ -649,7 +650,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_01200, Function | MediumTest |
     Want want = STAbilityUtil::MakeWant("device", FIRST_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     // start first ability
     sleep(WAIT_TIME);
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_A_CODE), 0);
@@ -658,7 +659,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_01200, Function | MediumTest |
     // start second ability
     want = STAbilityUtil::MakeWant("device", THIRD_ABILITY_NAME, KIT_BUNDLE_NAME + "B", params);
     sleep(WAIT_TIME);
-    eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_B_CODE), 0);
     EXPECT_EQ(TestWaitCompleted(event, "OnActive", MAIN_ABILITY_B_CODE), 0);
@@ -696,7 +697,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_01300, Function | MediumTest |
     Want want = STAbilityUtil::MakeWant("device", FIRST_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     // start first ability
     sleep(WAIT_TIME);
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_A_CODE), 0);
@@ -727,7 +728,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_01400, Function | MediumTest |
     Want want = STAbilityUtil::MakeWant("device", FIRST_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     // start first ability
     sleep(WAIT_TIME);
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_A_CODE), 0);
@@ -736,7 +737,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_01400, Function | MediumTest |
     // start second ability
     want = STAbilityUtil::MakeWant("device", SECOND_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     sleep(WAIT_TIME);
-    eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
     EXPECT_EQ(TestWaitCompleted(event, "onStart", SECOND_ABILITY_A_CODE), 0);
     EXPECT_EQ(TestWaitCompleted(event, "OnActive", SECOND_ABILITY_A_CODE), 0);
@@ -773,7 +774,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_01500, Function | MediumTest |
     Want want = STAbilityUtil::MakeWant("device", FIRST_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     // start first ability
     sleep(WAIT_TIME);
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_A_CODE), 0);
@@ -782,7 +783,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_01500, Function | MediumTest |
     // start second ability
     want = STAbilityUtil::MakeWant("device", THIRD_ABILITY_NAME, KIT_BUNDLE_NAME + "B", params);
     sleep(WAIT_TIME);
-    eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_B_CODE), 0);
     EXPECT_EQ(TestWaitCompleted(event, "OnActive", MAIN_ABILITY_B_CODE), 0);
@@ -820,7 +821,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_01600, Function | MediumTest |
     Want want = STAbilityUtil::MakeWant("device", FIRST_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     // start first ability
     sleep(WAIT_TIME);
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_A_CODE), 0);
@@ -851,7 +852,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_01700, Function | MediumTest |
     Want want = STAbilityUtil::MakeWant("device", FIRST_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     // start first ability
     sleep(WAIT_TIME);
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_A_CODE), 0);
@@ -860,7 +861,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_01700, Function | MediumTest |
     // start second ability
     want = STAbilityUtil::MakeWant("device", SECOND_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     sleep(WAIT_TIME);
-    eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
     EXPECT_EQ(TestWaitCompleted(event, "onStart", SECOND_ABILITY_A_CODE), 0);
     EXPECT_EQ(TestWaitCompleted(event, "OnActive", SECOND_ABILITY_A_CODE), 0);
@@ -897,7 +898,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_01800, Function | MediumTest |
     Want want = STAbilityUtil::MakeWant("device", FIRST_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     // start first ability
     sleep(WAIT_TIME);
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_A_CODE), 0);
@@ -906,7 +907,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_01800, Function | MediumTest |
     // start second ability
     want = STAbilityUtil::MakeWant("device", THIRD_ABILITY_NAME, KIT_BUNDLE_NAME + "B", params);
     sleep(WAIT_TIME);
-    eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_B_CODE), 0);
     EXPECT_EQ(TestWaitCompleted(event, "OnActive", MAIN_ABILITY_B_CODE), 0);
@@ -945,7 +946,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_01900, Function | MediumTest |
     Want want = STAbilityUtil::MakeWant("device", FIRST_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     // start first ability
     sleep(WAIT_TIME);
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_A_CODE), 0);
@@ -976,7 +977,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_02000, Function | MediumTest |
     Want want = STAbilityUtil::MakeWant("device", FIRST_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     // start first ability
     sleep(WAIT_TIME);
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_A_CODE), 0);
@@ -1007,7 +1008,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_02100, Function | MediumTest |
     Want want = STAbilityUtil::MakeWant("device", FIRST_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     // start first ability
     sleep(WAIT_TIME);
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_A_CODE), 0);
@@ -1016,7 +1017,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_02100, Function | MediumTest |
     // start second ability
     want = STAbilityUtil::MakeWant("device", SECOND_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     sleep(WAIT_TIME);
-    eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
     EXPECT_EQ(TestWaitCompleted(event, "onStart", SECOND_ABILITY_A_CODE), 0);
     EXPECT_EQ(TestWaitCompleted(event, "OnActive", SECOND_ABILITY_A_CODE), 0);
@@ -1054,7 +1055,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_02200, Function | MediumTest |
     Want want = STAbilityUtil::MakeWant("device", FIRST_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     // start first ability
     sleep(WAIT_TIME);
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_A_CODE), 0);
@@ -1063,7 +1064,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_02200, Function | MediumTest |
     // start second ability
     want = STAbilityUtil::MakeWant("device", THIRD_ABILITY_NAME, KIT_BUNDLE_NAME + "B", params);
     sleep(WAIT_TIME);
-    eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_B_CODE), 0);
     EXPECT_EQ(TestWaitCompleted(event, "OnActive", MAIN_ABILITY_B_CODE), 0);
@@ -1102,7 +1103,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_02300, Function | MediumTest |
     Want want = STAbilityUtil::MakeWant("device", FIRST_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     // start first ability
     sleep(WAIT_TIME);
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_A_CODE), 0);
@@ -1132,7 +1133,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_02400, Function | MediumTest |
     Want want = STAbilityUtil::MakeWant("device", FIRST_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     // start first ability
     sleep(WAIT_TIME);
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_A_CODE), 0);
@@ -1141,7 +1142,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_02400, Function | MediumTest |
     // start second ability
     want = STAbilityUtil::MakeWant("device", SECOND_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     sleep(WAIT_TIME);
-    eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
     EXPECT_EQ(TestWaitCompleted(event, "onStart", SECOND_ABILITY_A_CODE), 0);
     EXPECT_EQ(TestWaitCompleted(event, "OnActive", SECOND_ABILITY_A_CODE), 0);
@@ -1178,7 +1179,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_02500, Function | MediumTest |
     Want want = STAbilityUtil::MakeWant("device", FIRST_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     // start first ability
     sleep(WAIT_TIME);
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_A_CODE), 0);
@@ -1187,7 +1188,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_02500, Function | MediumTest |
     // start second ability
     want = STAbilityUtil::MakeWant("device", THIRD_ABILITY_NAME, KIT_BUNDLE_NAME + "B", params);
     sleep(WAIT_TIME);
-    eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_B_CODE), 0);
     EXPECT_EQ(TestWaitCompleted(event, "OnActive", MAIN_ABILITY_B_CODE), 0);
@@ -1227,7 +1228,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_02600, Function | MediumTest |
     Want want = STAbilityUtil::MakeWant("device", FIRST_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     // start first ability
     sleep(WAIT_TIME);
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_A_CODE), 0);
@@ -1258,7 +1259,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_02700, Function | MediumTest |
     Want want = STAbilityUtil::MakeWant("device", FIRST_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     // start first ability
     sleep(WAIT_TIME);
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_A_CODE), 0);
@@ -1267,7 +1268,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_02700, Function | MediumTest |
     // start second ability
     want = STAbilityUtil::MakeWant("device", SECOND_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     sleep(WAIT_TIME);
-    eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
     EXPECT_EQ(TestWaitCompleted(event, "onStart", SECOND_ABILITY_A_CODE), 0);
     EXPECT_EQ(TestWaitCompleted(event, "OnActive", SECOND_ABILITY_A_CODE), 0);
@@ -1306,7 +1307,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_02800, Function | MediumTest |
     Want want = STAbilityUtil::MakeWant("device", FIRST_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     // start first ability
     sleep(WAIT_TIME);
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_A_CODE), 0);
@@ -1315,7 +1316,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_02800, Function | MediumTest |
     // start second ability
     want = STAbilityUtil::MakeWant("device", THIRD_ABILITY_NAME, KIT_BUNDLE_NAME + "B", params);
     sleep(WAIT_TIME);
-    eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_B_CODE), 0);
     EXPECT_EQ(TestWaitCompleted(event, "OnActive", MAIN_ABILITY_B_CODE), 0);
@@ -1355,7 +1356,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_02900, Function | MediumTest |
     Want want = STAbilityUtil::MakeWant("device", FIRST_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     // start first ability
     sleep(WAIT_TIME);
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_A_CODE), 0);
@@ -1385,7 +1386,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_03000, Function | MediumTest |
     Want want = STAbilityUtil::MakeWant("device", FIRST_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     // start first ability
     sleep(WAIT_TIME);
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_A_CODE), 0);
@@ -1421,7 +1422,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_03100, Function | MediumTest |
     Want want = STAbilityUtil::MakeWant("device", FIRST_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     // start first ability
     sleep(WAIT_TIME);
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_A_CODE), 0);
@@ -1469,7 +1470,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_03200, Function | MediumTest |
     Want want = STAbilityUtil::MakeWant("device", FIRST_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     // start first ability
     sleep(WAIT_TIME);
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_A_CODE), 0);
@@ -1485,7 +1486,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_03200, Function | MediumTest |
     // start second ability
     want = STAbilityUtil::MakeWant("device", THIRD_ABILITY_NAME, KIT_BUNDLE_NAME + "B", params);
     sleep(WAIT_TIME);
-    eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_B_CODE), 0);
     EXPECT_EQ(TestWaitCompleted(event, "OnActive", MAIN_ABILITY_B_CODE), 0);
@@ -1531,7 +1532,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_03300, Function | MediumTest |
     Want want = STAbilityUtil::MakeWant("device", FIRST_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     // start first ability
     sleep(WAIT_TIME);
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_A_CODE), 0);
@@ -1562,7 +1563,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_03400, Function | MediumTest |
     Want want = STAbilityUtil::MakeWant("device", FIRST_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     // start first ability
     sleep(WAIT_TIME);
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_A_CODE), 0);
@@ -1593,7 +1594,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_03500, Function | MediumTest |
     Want want = STAbilityUtil::MakeWant("device", FIRST_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     // start first ability
     sleep(WAIT_TIME);
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_A_CODE), 0);
@@ -1624,7 +1625,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_03600, Function | MediumTest |
     Want want = STAbilityUtil::MakeWant("device", FIRST_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     // start first ability
     sleep(WAIT_TIME);
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_A_CODE), 0);
@@ -1633,7 +1634,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_03600, Function | MediumTest |
     // start second ability
     want = STAbilityUtil::MakeWant("device", SECOND_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     sleep(WAIT_TIME);
-    eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
     EXPECT_EQ(TestWaitCompleted(event, "onStart", SECOND_ABILITY_A_CODE), 0);
     EXPECT_EQ(TestWaitCompleted(event, "OnActive", SECOND_ABILITY_A_CODE), 0);
@@ -1671,7 +1672,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_03700, Function | MediumTest |
     Want want = STAbilityUtil::MakeWant("device", FIRST_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     // start first ability
     sleep(WAIT_TIME);
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_A_CODE), 0);
@@ -1680,7 +1681,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_03700, Function | MediumTest |
     // start second ability
     want = STAbilityUtil::MakeWant("device", THIRD_ABILITY_NAME, KIT_BUNDLE_NAME + "B", params);
     sleep(WAIT_TIME);
-    eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_B_CODE), 0);
     EXPECT_EQ(TestWaitCompleted(event, "OnActive", MAIN_ABILITY_B_CODE), 0);
@@ -1718,7 +1719,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_03800, Function | MediumTest |
     Want want = STAbilityUtil::MakeWant("device", FIRST_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     // start first ability
     sleep(WAIT_TIME);
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_A_CODE), 0);
@@ -1748,7 +1749,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_03900, Function | MediumTest |
     Want want = STAbilityUtil::MakeWant("device", FIRST_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     // start first ability
     sleep(WAIT_TIME);
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_A_CODE), 0);
@@ -1757,7 +1758,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_03900, Function | MediumTest |
     // start second ability
     want = STAbilityUtil::MakeWant("device", SECOND_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     sleep(WAIT_TIME);
-    eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
     EXPECT_EQ(TestWaitCompleted(event, "onStart", SECOND_ABILITY_A_CODE), 0);
     EXPECT_EQ(TestWaitCompleted(event, "OnActive", SECOND_ABILITY_A_CODE), 0);
@@ -1793,7 +1794,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_04000, Function | MediumTest |
     Want want = STAbilityUtil::MakeWant("device", FIRST_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     // start first ability
     sleep(WAIT_TIME);
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_A_CODE), 0);
@@ -1802,7 +1803,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_04000, Function | MediumTest |
     // start second ability
     want = STAbilityUtil::MakeWant("device", THIRD_ABILITY_NAME, KIT_BUNDLE_NAME + "B", params);
     sleep(WAIT_TIME);
-    eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_B_CODE), 0);
     EXPECT_EQ(TestWaitCompleted(event, "OnActive", MAIN_ABILITY_B_CODE), 0);
@@ -1837,7 +1838,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_04100, Function | MediumTest |
     Want want = STAbilityUtil::MakeWant("device", FIRST_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     // start first ability
     sleep(WAIT_TIME);
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_A_CODE), 0);
@@ -1873,7 +1874,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_04200, Function | MediumTest |
     Want want = STAbilityUtil::MakeWant("device", FIRST_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     // start first ability
     sleep(WAIT_TIME);
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_A_CODE), 0);
@@ -1921,7 +1922,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_04300, Function | MediumTest |
     Want want = STAbilityUtil::MakeWant("device", FIRST_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     // start first ability
     sleep(WAIT_TIME);
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_A_CODE), 0);
@@ -1937,7 +1938,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_04300, Function | MediumTest |
     // start second ability
     want = STAbilityUtil::MakeWant("device", THIRD_ABILITY_NAME, KIT_BUNDLE_NAME + "B", params);
     sleep(WAIT_TIME);
-    eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_B_CODE), 0);
     EXPECT_EQ(TestWaitCompleted(event, "OnActive", MAIN_ABILITY_B_CODE), 0);
@@ -1985,7 +1986,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_04400, Function | MediumTest |
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         sleep(WAIT_TIME);
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
         GTEST_LOG_(INFO) << eCode;
 
         EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_A_CODE), 0);
@@ -2023,7 +2024,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_04500, Function | MediumTest |
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         sleep(WAIT_TIME);
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
         GTEST_LOG_(INFO) << eCode;
 
         EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_A_CODE), 0);
@@ -2060,7 +2061,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_04600, Function | MediumTest |
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         sleep(WAIT_TIME);
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
         GTEST_LOG_(INFO) << eCode;
 
         EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_A_CODE), 0);
@@ -2095,7 +2096,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_04700, Function | MediumTest |
     Want want = STAbilityUtil::MakeWant("device", FIRST_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     // start first ability
     sleep(WAIT_TIME);
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_A_CODE), 0);
@@ -2126,7 +2127,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_04800, Function | MediumTest |
     Want want = STAbilityUtil::MakeWant("device", FIRST_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     // start first ability
     sleep(WAIT_TIME);
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_A_CODE), 0);
@@ -2135,7 +2136,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_04800, Function | MediumTest |
     // start second ability
     want = STAbilityUtil::MakeWant("device", SECOND_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     sleep(WAIT_TIME);
-    eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
     EXPECT_EQ(TestWaitCompleted(event, "onStart", SECOND_ABILITY_A_CODE), 0);
     EXPECT_EQ(TestWaitCompleted(event, "OnActive", SECOND_ABILITY_A_CODE), 0);
@@ -2172,7 +2173,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_04900, Function | MediumTest |
     Want want = STAbilityUtil::MakeWant("device", FIRST_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     // start first ability
     sleep(WAIT_TIME);
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_A_CODE), 0);
@@ -2181,7 +2182,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_04900, Function | MediumTest |
     // start second ability
     want = STAbilityUtil::MakeWant("device", THIRD_ABILITY_NAME, KIT_BUNDLE_NAME + "B", params);
     sleep(WAIT_TIME);
-    eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_B_CODE), 0);
     EXPECT_EQ(TestWaitCompleted(event, "OnActive", MAIN_ABILITY_B_CODE), 0);
@@ -2218,7 +2219,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_05000, Function | MediumTest |
     Want want = STAbilityUtil::MakeWant("device", FIRST_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     // start first ability
     sleep(WAIT_TIME);
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_A_CODE), 0);
@@ -2249,7 +2250,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_05100, Function | MediumTest |
     Want want = STAbilityUtil::MakeWant("device", FIRST_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     // start first ability
     sleep(WAIT_TIME);
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_A_CODE), 0);
@@ -2258,7 +2259,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_05100, Function | MediumTest |
     // start second ability
     want = STAbilityUtil::MakeWant("device", SECOND_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     sleep(WAIT_TIME);
-    eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
     EXPECT_EQ(TestWaitCompleted(event, "onStart", SECOND_ABILITY_A_CODE), 0);
     EXPECT_EQ(TestWaitCompleted(event, "OnActive", SECOND_ABILITY_A_CODE), 0);
@@ -2297,7 +2298,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_05200, Function | MediumTest |
     Want want = STAbilityUtil::MakeWant("device", FIRST_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     // start first ability
     sleep(WAIT_TIME);
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_A_CODE), 0);
@@ -2306,7 +2307,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_05200, Function | MediumTest |
     // start second ability
     want = STAbilityUtil::MakeWant("device", THIRD_ABILITY_NAME, KIT_BUNDLE_NAME + "B", params);
     sleep(WAIT_TIME);
-    eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_B_CODE), 0);
     EXPECT_EQ(TestWaitCompleted(event, "OnActive", MAIN_ABILITY_B_CODE), 0);
@@ -2346,7 +2347,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_05300, Function | MediumTest |
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         sleep(WAIT_TIME);
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
         GTEST_LOG_(INFO) << eCode;
 
         EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_A_CODE), 0);
@@ -2373,7 +2374,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_05400, Function | MediumTest |
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         sleep(WAIT_TIME);
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
         GTEST_LOG_(INFO) << eCode;
 
         EXPECT_EQ(TestWaitCompleted(event, "onStart", SECOND_ABILITY_A_CODE), 0);
@@ -2399,7 +2400,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_05500, Function | MediumTest |
     for (int i = 0; i < g_StLevel; i++) {
         STAbilityUtil::CleanMsg(event);
         sleep(WAIT_TIME);
-        ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+        ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
         GTEST_LOG_(INFO) << eCode;
 
         EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_B_CODE), 0);
@@ -2410,4 +2411,3 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_05500, Function | MediumTest |
     }
     GTEST_LOG_(INFO) << "ActsAmsKitATest AMS_Page_AbilityContext_05500 end";
 }
-}  // namespace
