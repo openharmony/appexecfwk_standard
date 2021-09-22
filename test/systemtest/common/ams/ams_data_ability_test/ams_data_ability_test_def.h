@@ -105,7 +105,6 @@ const std::string DEFAULT_OPENFILE_RESULT = "4444";
 const std::string DEFAULT_GETFILETYPE_RESULT = "filetypes";
 const std::string DEFAULT_QUERY_RESULT = "Query";
 const std::string DEFAULT_GETTYPE_RESULT = "GetType";
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
-#endif  //_AMS_DATA_ABILITY_TEST_DEF_H_
+#endif  // _AMS_DATA_ABILITY_TEST_DEF_H_

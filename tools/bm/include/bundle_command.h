@@ -95,7 +95,6 @@ private:
     sptr<IBundleMgr> bundleMgrProxy_;
     sptr<IBundleInstaller> bundleInstallerProxy_;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 

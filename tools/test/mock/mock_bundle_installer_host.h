@@ -41,7 +41,6 @@ public:
     bool Uninstall(const std::string &bundleName, const std::string &modulePackage, const InstallParam &installParam,
         const sptr<IStatusReceiver> &statusReceiver);
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 

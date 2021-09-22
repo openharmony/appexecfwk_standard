@@ -63,6 +63,7 @@ static const std::string launcherBundleName = "com.ix.launcher";
 static const std::string systemUiBundle = "com.ohos.systemui";
 constexpr int WAIT_TIME = 3 * 1000;
 constexpr int WAIT_LAUNCHER_OK = 5 * 1000;
+constexpr int appFreezingTime = 60;
 
 std::vector<std::string> bundleNameList = {
     bundleName1,
@@ -109,7 +110,7 @@ Event ActsAmsKitTest::event = Event();
 Event ActsAmsKitTest::abilityEvent = Event();
 sptr<IAppMgr> ActsAmsKitTest::appMs = nullptr;
 sptr<IAbilityManager> ActsAmsKitTest::abilityMs = nullptr;
-StressTestLevel ActsAmsKitTest::stLevel_{};
+StressTestLevel ActsAmsKitTest::stLevel_ {};
 std::shared_ptr<ActsAmsKitTest::AppEventSubscriber> ActsAmsKitTest::subscriber_ = nullptr;
 
 void ActsAmsKitTest::AppEventSubscriber::OnReceiveEvent(const CommonEventData &data)
@@ -133,7 +134,7 @@ void ActsAmsKitTest::SetUpTestCase(void)
     appMs = STAbilityUtil::GetAppMgrService();
     abilityMs = STAbilityUtil::GetAbilityManagerService();
     if (appMs) {
-        appMs->SetAppFreezingTime(60);
+        appMs->SetAppFreezingTime(appFreezingTime);
     }
 }
 

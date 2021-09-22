@@ -38,7 +38,6 @@ enum class TestFunc {
     CANCEL_TASK,
     EXTRA,
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 

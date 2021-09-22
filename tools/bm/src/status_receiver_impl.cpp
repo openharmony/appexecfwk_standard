@@ -19,7 +19,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 StatusReceiverImpl::StatusReceiverImpl()
 {
     APP_LOGI("create status receiver instance");
@@ -49,6 +48,5 @@ int32_t StatusReceiverImpl::GetResultCode() const
 
     return resultCode;
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

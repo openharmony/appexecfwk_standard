@@ -31,7 +31,6 @@
 
 namespace OHOS {
 namespace STtools {
-
 enum class TestDispatcher {
     GLOBAL = 0,
     PARALLEL,
@@ -116,5 +115,4 @@ private:
 };
 }  // namespace STtools
 }  // namespace OHOS
-
 #endif  // TASK_DISPATCHER_ST_TOOLS
