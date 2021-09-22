@@ -16,7 +16,6 @@
 
 namespace OHOS {
 namespace STtools {
-
 Event::Event()
 {
     waiting_message_ = "";
@@ -121,6 +120,5 @@ void Event::Clean()
     complete_message_.clear();
     message_data_.clear();
 }
-
 }  // namespace STtools
 }  // namespace OHOS
