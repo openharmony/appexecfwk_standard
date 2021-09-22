@@ -35,51 +35,7 @@ namespace AppExecFwk {
  *  Dispatcher for serial thread model.
  */
 class SerialTaskDispatcher : public BaseTaskDispatcher, public std::enable_shared_from_this<SerialTaskDispatcher> {
-private:
-    static std::string DISPATCHER_TAG;
-    static std::string ASYNC_DISPATCHER_TAG;
-    static std::string SYNC_DISPATCHER_TAG;
-    static std::string DELAY_DISPATCHER_TAG;
-
-    std::atomic<bool> running_;
-    ConcurrentQueue<std::shared_ptr<Task>> workingTasks_;
-
-    std::shared_ptr<TaskExecutor> executor_;
-    std::mutex mutex_;
-
-private:
-    ErrCode OnNewTaskIn(std::shared_ptr<Task> &task);
-
-    ErrCode Prepare(std::shared_ptr<Task> &task);
-
-    /**
-     *  Callback for task when finish.
-     *
-     */
-    void OnTaskDone();
-
-    bool Schedule();
-
-    /**
-     *  Do task in turn, until the task queue is empty.
-     *
-     *  @param isExhausted is an inaccurate judge indicate that the workingTasks is empty. If true, do double-check.
-     *  @return true if has work remain to do else false.
-     *
-     */
-    bool DoNext(bool isExhausted);
-
-    void DoWork(std::shared_ptr<Task> &task);
-
 public:
-    /**
-     *  Constructs a serial TaskDispatcher using priority.
-     *
-     *  @param dispatcherName is the identity for dispatcher. It's for debug purpose.
-     *  @param priority is the priority for tasks dispatched by this Dispatcher.
-     *  @param executor contains thread pool(s) for executing tasks concurrently.
-     *
-     */
     SerialTaskDispatcher(
         const std::string &dispatcherName, const TaskPriority priority, const std::shared_ptr<TaskExecutor> &executor);
     ~SerialTaskDispatcher(){};
@@ -127,6 +83,40 @@ public:
      *
      */
     std::shared_ptr<Revocable> DelayDispatch(const std::shared_ptr<Runnable> &runnable, long delayMs);
+private:
+    ErrCode OnNewTaskIn(std::shared_ptr<Task> &task);
+
+    ErrCode Prepare(std::shared_ptr<Task> &task);
+
+    /**
+     *  Callback for task when finish.
+     *
+     */
+    void OnTaskDone();
+
+    bool Schedule();
+
+    /**
+     *  Do task in turn, until the task queue is empty.
+     *
+     *  @param isExhausted is an inaccurate judge indicate that the workingTasks is empty. If true, do double-check.
+     *  @return true if has work remain to do else false.
+     *
+     */
+    bool DoNext(bool isExhausted);
+
+    void DoWork(std::shared_ptr<Task> &task);
+private:
+    static std::string DISPATCHER_TAG;
+    static std::string ASYNC_DISPATCHER_TAG;
+    static std::string SYNC_DISPATCHER_TAG;
+    static std::string DELAY_DISPATCHER_TAG;
+
+    std::atomic<bool> running_;
+    ConcurrentQueue<std::shared_ptr<Task>> workingTasks_;
+
+    std::shared_ptr<TaskExecutor> executor_;
+    std::mutex mutex_;
 };
 
 }  // namespace AppExecFwk

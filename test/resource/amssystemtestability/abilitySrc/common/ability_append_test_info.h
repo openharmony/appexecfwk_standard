@@ -102,7 +102,6 @@ enum class TestAbilityState {
     OnRestoreAbilityState,
     End
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // ABILITY_APPEND_TEST_INFO_H

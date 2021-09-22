@@ -17,6 +17,7 @@
 
 namespace OHOS {
 namespace AppExecFwk {
+
 void MockStatusReceiver::OnFinished(const int32_t resultCode, [[maybe_unused]] const std::string &resultMsg)
 {
     signal_.set_value(resultCode);
@@ -38,5 +39,6 @@ int32_t MockStatusReceiver::GetResultCode()
     future.wait();
     return future.get();
 }
+
 }  // namespace AppExecFwk
 }  // namespace OHOS

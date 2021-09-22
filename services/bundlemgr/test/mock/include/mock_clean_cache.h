@@ -24,6 +24,7 @@
 
 namespace OHOS {
 namespace AppExecFwk {
+
 class MockCleanCache : public ICleanCacheCallback {
 public:
     MockCleanCache() = default;
@@ -38,6 +39,7 @@ private:
 
     DISALLOW_COPY_AND_MOVE(MockCleanCache);
 };
+
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_TEST_MOCK_INCLUDE_MOCK_CLEAN_CACHE_H

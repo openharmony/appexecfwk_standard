@@ -43,7 +43,7 @@ public:
     bool CompareType(const AAFwk::Skills &skills1, const AAFwk::Skills &skills2);
     bool CompareWantParams(const AAFwk::Skills &skills1, const AAFwk::Skills &skills2);
     bool CompareSkills(const AAFwk::Skills &skills1, const AAFwk::Skills &skills2);
-    template<typename T, typename IT, typename M>
+    template <typename T, typename IT, typename M>
     void SkillsGetWantParams(M params, int code)
     {
         AAFwk::Skills skill;
@@ -778,6 +778,7 @@ public:
 private:
     std::unordered_map<std::string, std::function<void(int, int, int)>> mapTestFunc_;
 };
+
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // _THIRD_ABILITY_H_

@@ -128,6 +128,8 @@ int TaskDispatcherContext::MapPriorityIndex(TaskPriority priority) const
             return DEFAULT_PRIORITY_INDEX;
         case TaskPriority::LOW:
             return LOW_PRIORITY_INDEX;
+        default:
+            return DEFAULT_PRIORITY_INDEX;
     }
     APP_LOGE("TaskDispatcherContext.mapPriorityIndex unhandled priority=%{public}d", priority);
 

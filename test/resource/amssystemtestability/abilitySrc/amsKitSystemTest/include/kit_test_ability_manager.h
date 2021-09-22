@@ -189,6 +189,7 @@ private:
     std::unordered_map<std::string, std::function<void(int, int, int)>> mapTestFunc_;
     KitTestAbilityManager *kitTestAbility_;
 };
+
 }  // namespace AppExecFwk
 }  // namespace OHOS
-#endif  // _KIT_TEST_ABILITY_MANAGER_H_
+#endif  //_KIT_TEST_ABILITY_MANAGER_H_

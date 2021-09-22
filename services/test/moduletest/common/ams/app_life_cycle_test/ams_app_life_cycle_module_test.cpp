@@ -216,7 +216,7 @@ void AmsAppLifeCycleModuleTest::ChangeAbilityStateToForegroud(const sptr<MockApp
     serviceInner_->UpdateAbilityState(token, AbilityState::ABILITY_STATE_FOREGROUND);
 
     if (!isChange) {
-        EXPECT_NE(appRunningRecord, nullptr);
+        ASSERT_NE(appRunningRecord, nullptr);
         int32_t recordId = appRunningRecord->GetRecordId();
         serviceInner_->ApplicationForegrounded(recordId);
     }
@@ -235,7 +235,7 @@ void AmsAppLifeCycleModuleTest::ChangeAbilityStateToBackGroud(const sptr<MockApp
     serviceInner_->UpdateAbilityState(token, AbilityState::ABILITY_STATE_BACKGROUND);
 
     if (!isChange) {
-        EXPECT_NE(appRunningRecord, nullptr);
+        ASSERT_NE(appRunningRecord, nullptr);
         int32_t recordId = appRunningRecord->GetRecordId();
         serviceInner_->ApplicationBackgrounded(recordId);
     }
@@ -251,7 +251,7 @@ void AmsAppLifeCycleModuleTest::ChangeAppToTerminate(const sptr<MockAppScheduler
         EXPECT_CALL(*mockAppScheduler, ScheduleTerminateApplication()).Times(1);
         EXPECT_CALL(*mockAppStateCallbackStub_, OnAppStateChanged(_)).Times(testing::AtLeast(1));
         serviceInner_->AbilityTerminated(token);
-        EXPECT_NE(appRunningRecord, nullptr);
+        ASSERT_NE(appRunningRecord, nullptr);
         int32_t recordId = appRunningRecord->GetRecordId();
         serviceInner_->ApplicationTerminated(recordId);
     } else {
@@ -269,11 +269,11 @@ void AmsAppLifeCycleModuleTest::ChangeAbilityStateToTerminate(
 void AmsAppLifeCycleModuleTest::CheckState(const std::shared_ptr<AppRunningRecord> &appRunningRecord,
     const sptr<IRemoteObject> &token, const AbilityState abilityState, const ApplicationState appState) const
 {
-    EXPECT_NE(appRunningRecord, nullptr);
+    ASSERT_NE(appRunningRecord, nullptr);
     auto abilityRunningRecord = appRunningRecord->GetAbilityRunningRecordByToken(token);
     ApplicationState getAppState = appRunningRecord->GetState();
     EXPECT_EQ(appState, getAppState);
-    EXPECT_NE(abilityRunningRecord, nullptr);
+    ASSERT_NE(abilityRunningRecord, nullptr);
     AbilityState getAbilityState = abilityRunningRecord->GetState();
     EXPECT_EQ(abilityState, getAbilityState);
 }
@@ -371,7 +371,7 @@ sptr<MockAbilityToken> AmsAppLifeCycleModuleTest::GetAbilityToken()
  */
 HWTEST_F(AmsAppLifeCycleModuleTest, StateChange_001, TestSize.Level2)
 {
-    EXPECT_NE(serviceInner_, nullptr);
+    ASSERT_NE(serviceInner_, nullptr);
     pid_t pid = 1024;
     sptr<IRemoteObject> token = GetAbilityToken();
     auto abilityInfo = GetAbilityInfo("0", "MainAbility", "p1", "com.ohos.test.helloworld");
@@ -416,7 +416,7 @@ HWTEST_F(AmsAppLifeCycleModuleTest, StateChange_001, TestSize.Level2)
 HWTEST_F(AmsAppLifeCycleModuleTest, StateChange_002, TestSize.Level3)
 {
     pid_t pid = 1023;
-    EXPECT_NE(serviceInner_, nullptr);
+    ASSERT_NE(serviceInner_, nullptr);
     std::shared_ptr<AppRunningRecord> appRunningRecord = nullptr;
     std::vector<sptr<IRemoteObject>> tokens;
     auto abilityInfo = std::make_shared<AbilityInfo>();
@@ -525,7 +525,7 @@ HWTEST_F(AmsAppLifeCycleModuleTest, StateChange_003, TestSize.Level3)
  */
 HWTEST_F(AmsAppLifeCycleModuleTest, StateChange_004, TestSize.Level3)
 {
-    EXPECT_NE(serviceInner_, nullptr);
+    ASSERT_NE(serviceInner_, nullptr);
     pid_t pid = 1024;
     sptr<IRemoteObject> token = GetAbilityToken();
     auto abilityInfo = GetAbilityInfo("0", "MainAbility", "p3", "com.ohos.test.helloworld");
@@ -572,7 +572,7 @@ HWTEST_F(AmsAppLifeCycleModuleTest, StateChange_004, TestSize.Level3)
  */
 HWTEST_F(AmsAppLifeCycleModuleTest, StateChange_005, TestSize.Level2)
 {
-    EXPECT_NE(serviceInner_, nullptr);
+    ASSERT_NE(serviceInner_, nullptr);
     pid_t pid = 1024;
 
     sptr<IRemoteObject> token0 = new (std::nothrow) MockAbilityToken();
@@ -635,7 +635,7 @@ HWTEST_F(AmsAppLifeCycleModuleTest, StateChange_005, TestSize.Level2)
  */
 HWTEST_F(AmsAppLifeCycleModuleTest, StateChange_006, TestSize.Level2)
 {
-    EXPECT_NE(serviceInner_, nullptr);
+    ASSERT_NE(serviceInner_, nullptr);
 
     pid_t pid = fork();
     if (pid == 0) {
@@ -692,7 +692,7 @@ HWTEST_F(AmsAppLifeCycleModuleTest, StateChange_006, TestSize.Level2)
  */
 HWTEST_F(AmsAppLifeCycleModuleTest, StateChange_007, TestSize.Level2)
 {
-    EXPECT_NE(serviceInner_, nullptr);
+    ASSERT_NE(serviceInner_, nullptr);
     pid_t pid = 1024;
     sptr<IRemoteObject> token = GetAbilityToken();
     auto abilityInfo = GetAbilityInfo("0", "MainAbility", "p1", "com.ohos.test.helloworld");
@@ -741,7 +741,7 @@ HWTEST_F(AmsAppLifeCycleModuleTest, StateChange_007, TestSize.Level2)
  */
 HWTEST_F(AmsAppLifeCycleModuleTest, StateChange_008, TestSize.Level2)
 {
-    EXPECT_NE(serviceInner_, nullptr);
+    ASSERT_NE(serviceInner_, nullptr);
     pid_t pid_0 = 1024;
     pid_t pid_1 = 2048;
     sptr<IRemoteObject> token_0 = new (std::nothrow) MockAbilityToken();
@@ -811,7 +811,7 @@ HWTEST_F(AmsAppLifeCycleModuleTest, StateChange_008, TestSize.Level2)
 HWTEST_F(AmsAppLifeCycleModuleTest, StateChange_009, TestSize.Level3)
 {
     pid_t pid = 1025;
-    EXPECT_NE(serviceInner_, nullptr);
+    ASSERT_NE(serviceInner_, nullptr);
     std::shared_ptr<AppRunningRecord> appRunningRecord = nullptr;
     auto abilityInfo = std::make_shared<AbilityInfo>();
     auto appInfo = std::make_shared<ApplicationInfo>();
@@ -857,7 +857,7 @@ HWTEST_F(AmsAppLifeCycleModuleTest, StateChange_009, TestSize.Level3)
 HWTEST_F(AmsAppLifeCycleModuleTest, StateChange_010, TestSize.Level3)
 {
     pid_t pid = 1025;
-    EXPECT_NE(serviceInner_, nullptr);
+    ASSERT_NE(serviceInner_, nullptr);
     std::shared_ptr<AppRunningRecord> appRunningRecord = nullptr;
     int32_t recordId[APPLICATION_NUM];
     sptr<MockAppScheduler> mockAppScheduler[APPLICATION_NUM];
@@ -979,7 +979,7 @@ HWTEST_F(AmsAppLifeCycleModuleTest, StateChange_013, TestSize.Level3)
     EXPECT_CALL(*mockAppSpawnSocket, OpenAppSpawnConnection()).Times(1).WillOnce(Return(0));
 
     int ret = serviceInner_->OpenAppSpawnConnection();
-    EXPECT_EQ(ret, 0);
+    ASSERT_EQ(ret, 0);
     EXPECT_EQ(serviceInner_->QueryAppSpawnConnectionState(), SpawnConnectionState::STATE_CONNECTED);
 
     EXPECT_CALL(*mockAppSpawnSocket, CloseAppSpawnConnection()).Times(1);

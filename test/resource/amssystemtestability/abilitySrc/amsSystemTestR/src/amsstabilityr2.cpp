@@ -17,6 +17,9 @@
 
 namespace OHOS {
 namespace AppExecFwk {
+namespace {
+constexpr uint32_t multiple = 100;
+}
 void AmsStAbilityR2::Init(const std::shared_ptr<AbilityInfo> &abilityInfo,
     const std::shared_ptr<OHOSApplication> &application, std::shared_ptr<AbilityHandler> &handler,
     const sptr<IRemoteObject> &token)
@@ -98,7 +101,7 @@ void AmsStAbilityR2::OnBackground()
 {
     APP_LOGI("AmsStAbilityR2::OnBackground");
     Ability::OnBackground();
-    std::this_thread::sleep_for(std::chrono::milliseconds(STEventName::BACKGROUND_TIMEOUT * 100));
+    std::this_thread::sleep_for(std::chrono::milliseconds(STEventName::BACKGROUND_TIMEOUT * multiple));
     std::string eventData = GetAbilityName() + STEventName::g_abilityStateOnBackground;
     pageAbilityEvent.PublishEvent(STEventName::g_eventName, pageAbilityEvent.GetOnBackgroundCount(), eventData);
 }

@@ -23,7 +23,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-namespace {
 static const int ABILITY_DATA_B_CODE = 220;
 static const std::string OPERATOR_INSERT = "Insert";
 static const std::string OPERATOR_DELETE = "Delete";
@@ -37,8 +36,6 @@ static const int DEFAULT_UPDATE_RESULT = 3333;
 static const std::string ABILITY_TYPE_PAGE = "0";
 static const std::string ABILITY_TYPE_SERVICE = "1";
 static const std::string ABILITY_TYPE_DATA = "2";
-static const int charCnt = 5;
-}  // namespace
 
 bool AmsStDataAbilityDataB::PublishEvent(const std::string &eventName, const int &code, const std::string &data)
 {
@@ -153,7 +150,7 @@ static void GetResult(std::shared_ptr<STtools::StOperator> child, std::shared_pt
     Uri dataAbilityUri, string &result)
 {
     AppExecFwk::DataAbilityPredicates predicates;
-    AppExecFwk::ValuesBucket bucket;
+    ValuesBucket bucket;
     result = "failed";
     if (child->GetOperatorName() == OPERATOR_INSERT) {
         result = std::to_string(helper->Insert(dataAbilityUri, bucket));
@@ -178,10 +175,9 @@ static void GetResult(std::shared_ptr<STtools::StOperator> child, std::shared_pt
             return;
         }
         result = std::to_string(fd);
-        char str[charCnt];
-        if (!feof(file)) {
-            fgets(str, charCnt, file);
-        }
+        char str[5];
+        if (!feof(file))
+            fgets(str, 5, file);
         result = str;
         fclose(file);
     }

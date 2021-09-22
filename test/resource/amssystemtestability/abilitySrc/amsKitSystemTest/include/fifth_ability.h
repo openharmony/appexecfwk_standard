@@ -239,6 +239,7 @@ public:
     FifthAbility *fifthAbility;
     std::unordered_map<std::string, std::function<void(int, int, int)>> mapTestFunc_;
 };
+
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // _SECOND_ABILITY_H_

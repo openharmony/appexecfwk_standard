@@ -44,7 +44,7 @@ ErrCode BundleUtil::CheckFilePath(const std::string &bundlePath, std::string &re
         APP_LOGE("can not access the bundle file path: %{private}s", realPath.c_str());
         return ERR_APPEXECFWK_INSTALL_INVALID_BUNDLE_FILE;
     }
-    if (!CheckFileSize(realPath, Constants::MAX_HAP_SIZE)) {
+    if(!CheckFileSize(realPath, Constants::MAX_HAP_SIZE)) {
         APP_LOGE("file size is larger than max size Max size is: %{public}d", Constants::MAX_HAP_SIZE);
         return ERR_APPEXECFWK_INSTALL_INVALID_HAP_SIZE;
     }
@@ -83,11 +83,11 @@ bool BundleUtil::CheckFileName(const std::string &fileName)
 
 bool BundleUtil::CheckFileSize(const std::string &bundlePath, const int32_t fileSize)
 {
-    struct stat fileInfo = {0};
-    if (stat(bundlePath.c_str(), &fileInfo) != 0) {
+    struct stat fileInfo = { 0 };
+	if (stat(bundlePath.c_str(), &fileInfo) != 0) {
         APP_LOGE("call stat error");
-        return false;
-    }
+		return false;
+	}
     if (fileInfo.st_size > fileSize) {
         return false;
     }

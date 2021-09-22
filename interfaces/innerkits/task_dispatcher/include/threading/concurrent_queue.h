@@ -24,7 +24,7 @@
 namespace OHOS {
 namespace AppExecFwk {
 
-template <typename T>
+template<typename T>
 class ConcurrentQueue {
 public:
     ConcurrentQueue() : empty_(){};

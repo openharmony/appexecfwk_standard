@@ -80,6 +80,10 @@ public:
     void TestDisconnectAbility();
     void TestStartAbility();
     void TestTerminateAbility();
+    void DisconnectCaseIndexOne();
+    void DisconnectCaseIndexTwo();
+    void ConnectCaseIndexOne();
+    void ConnectCaseIndexTwo();
 
 protected:
     void Init(const std::shared_ptr<AbilityInfo> &abilityInfo, const std::shared_ptr<OHOSApplication> &application,
@@ -97,9 +101,9 @@ protected:
     bool SubscribeEvent();
 
 private:
-    Want want_{};
-    sptr<AbilityConnectionConnectCallback> stub_{};
-    sptr<AAFwk::AbilityConnectionProxy> connCallback_{};
+    Want want_ {};
+    sptr<AbilityConnectionConnectCallback> stub_ {};
+    sptr<AAFwk::AbilityConnectionProxy> connCallback_ {};
     std::shared_ptr<AbilityConnectionAbilityEventSubscriber> subscriber_ = {};
 };
 std::string AbilityConnectionAbility::sequenceNumber_ = "0";

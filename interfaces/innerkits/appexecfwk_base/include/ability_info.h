@@ -159,7 +159,7 @@ struct AbilityInfo : public Parcelable {
     DisplayOrientation orientation = DisplayOrientation::UNSPECIFIED;
     LaunchMode launchMode = LaunchMode::STANDARD;
     std::string srcPath;
-    std::string srcLanguage="js";
+    std::string srcLanguage = "js";
     std::vector<std::string> permissions;
 
     std::string process;
