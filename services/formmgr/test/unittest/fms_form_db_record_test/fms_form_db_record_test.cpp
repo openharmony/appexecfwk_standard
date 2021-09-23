@@ -189,7 +189,7 @@ HWTEST_F(FmsFormDbRecordTest, FmsFormDbRecordTest_010, TestSize.Level0) // Delet
 HWTEST_F(FmsFormDbRecordTest, FmsFormDbRecordTest_011, TestSize.Level0) // DeleteDbRecord not exist
 {
     GTEST_LOG_(INFO) << "FmsFormDbRecordTest_011 start";
-    EXPECT_EQ(ERR_APPEXECFWK_FORM_JSON_DELETE_FAIL, FormDbCache::GetInstance().DeleteFormInfo(2));
+    EXPECT_EQ(ERR_APPEXECFWK_FORM_COMMON_CODE, FormDbCache::GetInstance().DeleteFormInfo(2));
     GTEST_LOG_(INFO) << "FmsFormDbRecordTest_011 end";
 }
 }

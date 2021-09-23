@@ -90,11 +90,14 @@ protected:
     virtual void OnDisconnect(const Want &want) override;
 
     bool SubscribeEvent();
-
+    void ConnectCaseIndexOne();
+    void ConnectCaseIndexTwo();
+    void DisconnectCaseIndexOne();
+    void DisconnectCaseIndexTwo();
 private:
-    Want want_{};
-    sptr<AbilityContextConnectCallback> stub_{};
-    sptr<AAFwk::AbilityConnectionProxy> connCallback_{};
+    Want want_ {};
+    sptr<AbilityContextConnectCallback> stub_ {};
+    sptr<AAFwk::AbilityConnectionProxy> connCallback_ {};
     std::shared_ptr<AbilityContextAbilityEventSubscriber> subscriber_ = {};
 };
 int AbilityContextAbility::sequenceNumber_ = 0;

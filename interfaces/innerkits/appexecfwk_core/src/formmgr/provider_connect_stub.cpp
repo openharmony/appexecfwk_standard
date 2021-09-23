@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-
+#include "appexecfwk_errors.h"
 #include "app_log_wrapper.h"
 #include "ipc_types.h"
 #include "message_parcel.h"
@@ -44,7 +44,7 @@ int ProviderConnectStub::OnRemoteRequest(
         case IAbilityConnection::ON_ABILITY_CONNECT_DONE: {
             if (element == nullptr) {
                 APP_LOGE("%{public}s failed, callback stub receive element is nullptr", __func__);
-                return ERR_INVALID_VALUE;
+                return ERR_APPEXECFWK_PARCEL_ERROR;
             }
             auto remoteObject = data.ReadParcelable<IRemoteObject>();
             auto resultCode = data.ReadInt32();
@@ -55,7 +55,7 @@ int ProviderConnectStub::OnRemoteRequest(
         case IAbilityConnection::ON_ABILITY_DISCONNECT_DONE: {
             if (element == nullptr) {
                 APP_LOGE("%{public}s failed, callback stub receive element is nullptr", __func__);
-                return ERR_INVALID_VALUE;
+                return ERR_APPEXECFWK_PARCEL_ERROR;
             }
             auto resultCode = data.ReadInt32();
             OnAbilityDisconnectDone(*element, resultCode);

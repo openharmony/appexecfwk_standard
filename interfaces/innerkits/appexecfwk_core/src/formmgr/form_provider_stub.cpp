@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+#include "appexecfwk_errors.h"
 #include "app_log_wrapper.h"
 #include "app_scheduler_interface.h"
 #include "errors.h"
@@ -59,7 +59,7 @@ int FormProviderStub::OnRemoteRequest(uint32_t code, MessageParcel &data, Messag
     std::u16string remoteDescriptor = data.ReadInterfaceToken();
     if (descriptor != remoteDescriptor) {
         APP_LOGE("%{public}s failed, local descriptor is not equal to remote", __func__);
-        return ERR_INVALID_STATE;
+        return ERR_APPEXECFWK_FORM_INVALID_PARAM;
     }
 
     auto itFunc = memberFuncMap_.find(code);
@@ -84,13 +84,13 @@ int FormProviderStub::HandleAcquireProviderFormInfo(MessageParcel &data, Message
     std::unique_ptr<Want> want(data.ReadParcelable<Want>());
     if (!want) {
         APP_LOGE("%{public}s, failed to ReadParcelable<FormReqInfo>", __func__);
-        return ERR_NULL_OBJECT;
+        return ERR_APPEXECFWK_PARCEL_ERROR;
     }
 
     sptr<IRemoteObject> client = data.ReadParcelable<IRemoteObject>();
     if (client == nullptr) {
         APP_LOGE("%{public}s, failed to ReadParcelable<IRemoteObject>", __func__);
-        return ERR_NULL_OBJECT;
+        return ERR_APPEXECFWK_PARCEL_ERROR;
     }
 
     int32_t result = AcquireProviderFormInfo(formId, *want, client);
@@ -109,13 +109,13 @@ int FormProviderStub::HandleNotifyFormDelete(MessageParcel &data, MessageParcel 
     std::unique_ptr<Want> want(data.ReadParcelable<Want>());
     if (!want) {
         APP_LOGE("%{public}s fail, ReadParcelable<FormReqInfo> failed", __func__);
-        return ERR_NULL_OBJECT;
+        return ERR_APPEXECFWK_PARCEL_ERROR;
     }
 
     sptr<IRemoteObject> client = data.ReadParcelable<IRemoteObject>();
     if (client == nullptr) {
         APP_LOGE("%{public}s, failed to ReadParcelable<IRemoteObject>", __func__);
-        return ERR_NULL_OBJECT;
+        return ERR_APPEXECFWK_PARCEL_ERROR;
     }
 
     int32_t result = NotifyFormDelete(formId, *want, client);
@@ -136,13 +136,13 @@ int FormProviderStub::HandleNotifyFormsDelete(MessageParcel &data, MessageParcel
         std::unique_ptr<Want> want(data.ReadParcelable<Want>());
         if (!want) {
             APP_LOGE("%{public}s fail, ReadParcelable<FormReqInfo> failed", __func__);
-            return ERR_NULL_OBJECT;
+            return ERR_APPEXECFWK_PARCEL_ERROR;
         }
 
         sptr<IRemoteObject> client = data.ReadParcelable<IRemoteObject>();
         if (client == nullptr) {
             APP_LOGE("%{public}s, failed to ReadParcelable<IRemoteObject>", __func__);
-            return ERR_NULL_OBJECT;
+            return ERR_APPEXECFWK_PARCEL_ERROR;
         }
 
         int32_t result = NotifyFormsDelete(formIds, *want, client);
@@ -165,13 +165,13 @@ int FormProviderStub::HandleNotifyFormUpdate(MessageParcel &data, MessageParcel 
     std::unique_ptr<Want> want(data.ReadParcelable<Want>());
     if (!want) {
         APP_LOGE("%{public}s, failed to ReadParcelable<Want>", __func__);
-        return ERR_NULL_OBJECT;
+        return ERR_APPEXECFWK_PARCEL_ERROR;
     }
 
     sptr<IRemoteObject> client = data.ReadParcelable<IRemoteObject>();
     if (client == nullptr) {
         APP_LOGE("%{public}s, failed to ReadParcelable<IRemoteObject>", __func__);
-        return ERR_NULL_OBJECT;
+        return ERR_APPEXECFWK_PARCEL_ERROR;
     }
 
     int32_t result = NotifyFormUpdate(formId, *want, client);
@@ -195,13 +195,13 @@ int FormProviderStub::HandleEventNotify(MessageParcel &data, MessageParcel &repl
         std::unique_ptr<Want> want(data.ReadParcelable<Want>());
         if (!want) {
             APP_LOGE("%{public}s, failed to ReadParcelable<Want>", __func__);
-            return ERR_NULL_OBJECT;
+            return ERR_APPEXECFWK_PARCEL_ERROR;
         }
 
         sptr<IRemoteObject> client = data.ReadParcelable<IRemoteObject>();
         if (client == nullptr) {
             APP_LOGE("%{public}s, failed to ReadParcelable<IRemoteObject>", __func__);
-            return ERR_NULL_OBJECT;
+            return ERR_APPEXECFWK_PARCEL_ERROR;
         }
 
         int32_t result = EventNotify(formIds, formVisibleType, *want, client);
@@ -225,13 +225,13 @@ int FormProviderStub::HandleNotifyFormCastTempForm(MessageParcel &data, MessageP
     std::unique_ptr<Want> want(data.ReadParcelable<Want>());
     if (!want) {
         APP_LOGE("%{public}s fail, ReadParcelable<Want> failed", __func__);
-        return ERR_NULL_OBJECT;
+        return ERR_APPEXECFWK_PARCEL_ERROR;
     }
 
     sptr<IRemoteObject> client = data.ReadParcelable<IRemoteObject>();
     if (client == nullptr) {
         APP_LOGE("%{public}s, failed to ReadParcelable<IRemoteObject>", __func__);
-        return ERR_NULL_OBJECT;
+        return ERR_APPEXECFWK_PARCEL_ERROR;
     }
 
     int32_t result = NotifyFormCastTempForm(formId, *want, client);
@@ -251,13 +251,13 @@ int FormProviderStub::HandleFireFormEvent(MessageParcel &data, MessageParcel &re
     std::unique_ptr<Want> want(data.ReadParcelable<Want>());
     if (!want) {
         APP_LOGE("%{public}s fail, ReadParcelable<FormReqInfo> failed", __func__);
-        return ERR_NULL_OBJECT;
+        return ERR_APPEXECFWK_PARCEL_ERROR;
     }
 
     sptr<IRemoteObject> client = data.ReadParcelable<IRemoteObject>();
     if (client == nullptr) {
         APP_LOGE("%{public}s, failed to ReadParcelable<IRemoteObject>", __func__);
-        return ERR_NULL_OBJECT;
+        return ERR_APPEXECFWK_PARCEL_ERROR;
     }
 
     int32_t result = FireFormEvent(formId, message, *want, client);

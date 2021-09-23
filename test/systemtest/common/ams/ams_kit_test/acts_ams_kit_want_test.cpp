@@ -106,7 +106,7 @@ std::map<std::string, int> ActsAmsKitWantTest::mapState = {
     {"OnStateChanged", AbilityLifecycleExecutor::LifecycleState::INACTIVE},
 };
 
-StressTestLevel ActsAmsKitWantTest::stLevel_{};
+StressTestLevel ActsAmsKitWantTest::stLevel_ {};
 Event ActsAmsKitWantTest::event = Event();
 sptr<IAppMgr> ActsAmsKitWantTest::appMs = nullptr;
 sptr<IAbilityManager> ActsAmsKitWantTest::abilityMs = nullptr;

@@ -194,7 +194,7 @@ HWTEST_F(SerialTaskDispatcherModuleTest, SerialTaskDispatcher_AsyncDispatchTest_
             int index = count.fetch_add(1);
             GTEST_LOG_(INFO) << "SerialTaskDispatcher_AsyncDispatchTest_002 task" + std::to_string(index) + "end";
         }));
-        wait += 1;
+        wait += 10;
     }
     EXPECT_TRUE(count.load() < total);
     auto time = std::chrono::milliseconds(wait + 1000);

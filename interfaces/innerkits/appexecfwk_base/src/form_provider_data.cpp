@@ -15,6 +15,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <cinttypes>
 
 #include "app_log_wrapper.h"
 #include "form_provider_data.h"
@@ -26,6 +27,7 @@ namespace AppExecFwk {
 const int IMAGE_DATA_STATE_REMOVED = -1;
 const int IMAGE_DATA_STATE_NO_OPERATION = 0;
 const int IMAGE_DATA_STATE_ADDED = 1;
+const std::string JSON_EMPTY_STRING = "{}";
 
 /**
  * @brief Constructor.
@@ -54,6 +56,9 @@ FormProviderData::FormProviderData(nlohmann::json &jsonData)
  */
 FormProviderData::FormProviderData(std::string jsonDataString)
 {
+    if(jsonDataString.empty()) {
+        jsonDataString = JSON_EMPTY_STRING;
+    }
     jsonFormProviderData_ = nlohmann::json::parse(jsonDataString);
 }
 
@@ -80,7 +85,9 @@ nlohmann::json FormProviderData::GetData() const
 std::string FormProviderData::GetDataString() const
 {
     APP_LOGI("%{public}s called", __func__);
-    return jsonFormProviderData_.empty() ? "" : jsonFormProviderData_.dump();
+    std::string dataStr = jsonFormProviderData_.empty() ? "" : jsonFormProviderData_.dump();
+    APP_LOGI("%{public}s, data: %{public}s", __func__, dataStr.c_str());
+    return dataStr;
 }
 
 /**
@@ -116,6 +123,9 @@ void FormProviderData::RemoveImageData(std::string picName)
 void FormProviderData::SetDataString(std::string &jsonDataString)
 {
     APP_LOGI("%{public}s called", __func__);
+    if(jsonDataString.empty()) {
+        jsonDataString = JSON_EMPTY_STRING;
+    }
     jsonFormProviderData_ = nlohmann::json::parse(jsonDataString);
 }
 /**
@@ -134,8 +144,8 @@ void FormProviderData::MergeData(nlohmann::json &addJsonData)
         return;
     }
 
-    for (auto &it : addJsonData.items()) {
-        jsonFormProviderData_[it.key()] = it.value();
+    for (auto && [key, value] : addJsonData.items()) {
+        jsonFormProviderData_[key] = value;
     }
 }
 
@@ -183,10 +193,6 @@ void FormProviderData::SetImageDataMap(std::map<std::string, std::pair<sptr<Ashm
 bool FormProviderData::ReadFromParcel(Parcel &parcel)
 {
     jsonFormProviderData_ = nlohmann::json::parse(Str16ToStr8(parcel.ReadString16()));
-    // MessageParcel* messageParcel = dynamic_cast<MessageParcel*>&parcel; // dynamic_cast need rtti
-    // if(messageParcel == nullptr) {
-    //     return true;
-    // }
 
     imageDataState_ = parcel.ReadInt32();
     switch (imageDataState_) {
@@ -223,14 +229,10 @@ bool FormProviderData::ReadFromParcel(Parcel &parcel)
  */ 
 bool FormProviderData::Marshalling(Parcel &parcel) const
 {
-    APP_LOGI("%{public}s called", __func__);
-    if (!parcel.WriteString16(Str8ToStr16(jsonFormProviderData_.empty() ? "" : jsonFormProviderData_.dump()))) {
+    APP_LOGI("%{public}s called, jsonFormProviderData_: %{public}s", __func__, jsonFormProviderData_.dump().c_str());
+    if (!parcel.WriteString16(Str8ToStr16(jsonFormProviderData_.empty() ? JSON_EMPTY_STRING : jsonFormProviderData_.dump()))) {
         return false;
     }
-    // MessageParcel* messageParcel = dynamic_cast<MessageParcel*>&parcel; // dynamic_cast need rtti
-    // if(messageParcel == nullptr) {
-    //     return true;
-    // }
 
     parcel.WriteInt32(imageDataState_);
     switch (imageDataState_) {
@@ -272,7 +274,8 @@ FormProviderData* FormProviderData::Unmarshalling(Parcel &parcel)
         delete formProviderData;
         formProviderData = nullptr;
     }
-
+    std::string str = formProviderData->GetDataString();
+    APP_LOGI("%{public}s, , provider data length: %{public}zu, provider data: %{public}s", __func__, str.length(), str.c_str());
     return formProviderData;
 }
 

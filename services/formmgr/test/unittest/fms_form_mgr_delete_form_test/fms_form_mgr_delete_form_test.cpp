@@ -104,8 +104,8 @@ void FmsFormMgrDeleteFormTest::SetUp()
     permDef.descriptionId = 1;
     permList.emplace_back(permDef);
     Permission::PermissionKit::AddDefPermissions(permList);
-    Permission::PermissionKit::AddUserGrantedReqPermissions(FORM_PROVIDER_BUNDLE_NAME, {PERMISSION_NAME_REQUIRE_FORM}, 
-    0);
+    Permission::PermissionKit::AddUserGrantedReqPermissions(FORM_PROVIDER_BUNDLE_NAME, 
+        {PERMISSION_NAME_REQUIRE_FORM}, 0);
     Permission::PermissionKit::GrantUserGrantedPermission(FORM_PROVIDER_BUNDLE_NAME, PERMISSION_NAME_REQUIRE_FORM, 0);
 }
 
@@ -232,9 +232,9 @@ HWTEST_F(FmsFormMgrDeleteFormTest, DeleteForm_003, TestSize.Level0)
 {
     GTEST_LOG_(INFO) << "fms_form_mgr_delete_form_test_003 start";
     // case when formId<=0
-    EXPECT_EQ(ERR_FORM_INVALID_PARAM, FormMgr::GetInstance().DeleteForm(0, token_));
+    EXPECT_EQ(ERR_APPEXECFWK_FORM_INVALID_PARAM, FormMgr::GetInstance().DeleteForm(0, token_));
     // case when token is nullptr
-    EXPECT_EQ(ERR_FORM_INVALID_PARAM, FormMgr::GetInstance().DeleteForm(123L, nullptr));
+    EXPECT_EQ(ERR_APPEXECFWK_FORM_INVALID_PARAM, FormMgr::GetInstance().DeleteForm(123L, nullptr));
     GTEST_LOG_(INFO) << "fms_form_mgr_delete_form_test_003 end";
 }
 
@@ -325,7 +325,7 @@ HWTEST_F(FmsFormMgrDeleteFormTest, DeleteForm_006, TestSize.Level0)
     FormItemInfo info;
     FormDataMgr::GetInstance().AllotFormHostRecord(info, token_, formId, callingUid);
 
-    EXPECT_EQ(ERR_NOT_EXIST_ID, FormMgr::GetInstance().DeleteForm(formId, token_));
+    EXPECT_EQ(ERR_APPEXECFWK_FORM_NOT_EXIST_ID, FormMgr::GetInstance().DeleteForm(formId, token_));
 
     FormDataMgr::GetInstance().DeleteFormRecord(formId);
     FormDbCache::GetInstance().DeleteFormInfo(formId);
@@ -362,7 +362,7 @@ HWTEST_F(FmsFormMgrDeleteFormTest, DeleteForm_007, TestSize.Level0)
     FormItemInfo info;
     FormDataMgr::GetInstance().AllotFormHostRecord(info, token_, formId, callingUid);
 
-    ASSERT_EQ(ERR_OPERATION_FORM_NOT_SELF, FormMgr::GetInstance().DeleteForm(formId, token_));
+    ASSERT_EQ(ERR_APPEXECFWK_FORM_OPERATION_NOT_SELF, FormMgr::GetInstance().DeleteForm(formId, token_));
 
     // Cache uid is not deleted yet.
     FormRecord formInfo;
@@ -415,7 +415,7 @@ HWTEST_F(FmsFormMgrDeleteFormTest, DeleteForm_008, TestSize.Level0)
     FormItemInfo info;
     FormDataMgr::GetInstance().AllotFormHostRecord(info, token_, formId, callingUid);
 
-    ASSERT_EQ(ERR_CODE_COMMON, FormMgr::GetInstance().DeleteForm(formId, token_));
+    ASSERT_EQ(ERR_APPEXECFWK_FORM_COMMON_CODE, FormMgr::GetInstance().DeleteForm(formId, token_));
 
     // Cache uid is not deleted yet.
     FormRecord formInfo;
@@ -441,7 +441,7 @@ HWTEST_F(FmsFormMgrDeleteFormTest, DeleteForm_008, TestSize.Level0)
     FormDBInfo formDBInfo1(formId, retFormRec);
     FormDbCache::GetInstance().SaveFormInfo(formDBInfo1);
 
-    EXPECT_EQ(ERR_CODE_COMMON, FormMgr::GetInstance().DeleteForm(formId, token_));
+    EXPECT_EQ(ERR_APPEXECFWK_FORM_COMMON_CODE, FormMgr::GetInstance().DeleteForm(formId, token_));
 
     // Cache uid is not deleted yet.
     ret = FormDataMgr::GetInstance().GetFormRecord(formId, formInfo);

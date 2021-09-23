@@ -24,8 +24,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-using IAbilityConnection = OHOS::AAFwk::IAbilityConnection;
-using IAbilityManager = OHOS::AAFwk::IAbilityManager;
 using Want = OHOS::AAFwk::Want;
 
 /**

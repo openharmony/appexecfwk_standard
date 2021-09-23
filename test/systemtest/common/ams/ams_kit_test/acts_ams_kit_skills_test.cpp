@@ -85,7 +85,7 @@ public:
     static std::shared_ptr<AppEventSubscriber> subscriber_;
 };
 
-StressTestLevel ActsAmsKitSkillsTest::stLevel_{};
+StressTestLevel ActsAmsKitSkillsTest::stLevel_ {};
 std::shared_ptr<ActsAmsKitSkillsTest::AppEventSubscriber> ActsAmsKitSkillsTest::subscriber_ = nullptr;
 Event ActsAmsKitSkillsTest::event = Event();
 Event ActsAmsKitSkillsTest::abilityEvent = Event();

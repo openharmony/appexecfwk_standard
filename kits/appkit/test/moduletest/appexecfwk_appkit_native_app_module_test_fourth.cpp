@@ -29,7 +29,8 @@ using namespace testing::ext;
 using namespace OHOS::AppExecFwk;
 using namespace OHOS;
 using namespace OHOS::AAFwk;
-
+const int TestProcessInfo = 9999;
+const int USleepTime = 50;
 class AppkitNativeModuleTestThird : public testing::Test {
 public:
     AppkitNativeModuleTestThird() : AppMgrObject_(nullptr), mockAppMgr(nullptr), mockHandler_(nullptr), runner_(nullptr)
@@ -70,14 +71,14 @@ void AppkitNativeModuleTestThird::TearDown(void)
     GTEST_LOG_(INFO) << "AppkitNativeModuleTestThird TearDown";
     AppLaunchData lanchdate;
     ApplicationInfo appinf;
-    ProcessInfo processinf("TestProcess", 9999);
+    ProcessInfo processinf("TestProcess", TestProcessInfo);
     appinf.name = "MockTestApplication";
     appinf.moduleSourceDirs.push_back("/hos/lib/libabilitydemo_native.z.so");
     lanchdate.SetApplicationInfo(appinf);
     lanchdate.SetProcessInfo(processinf);
     mockAppMgr->ScheduleLaunchApplication(lanchdate);
 
-    usleep(50);
+    usleep(USleepTime);
 
     mockAppMgr->ScheduleTerminateApplication();
 }
@@ -96,28 +97,28 @@ HWTEST_F(AppkitNativeModuleTestThird, App_CleanAbility_0100, Function | MediumTe
     GTEST_LOG_(INFO) << "App_CleanAbility_0100 start";
     OHOS::DelayedSingleton<SysMrgClient>::GetInstance()->RegisterSystemAbility(APP_MGR_SERVICE_ID, AppMgrObject_);
     runner_->Run();
-    usleep(50);
+    usleep(USleepTime);
 
     AppLaunchData lanchdate;
     ApplicationInfo appinf;
-    ProcessInfo processinf("TestProcess", 9999);
+    ProcessInfo processinf("TestProcess", TestProcessInfo);
     appinf.name = "MockTestApplication";
     appinf.moduleSourceDirs.push_back("/hos/lib/libabilitydemo_native.z.so");
     lanchdate.SetApplicationInfo(appinf);
     lanchdate.SetProcessInfo(processinf);
     mockAppMgr->ScheduleLaunchApplication(lanchdate);
 
-    usleep(50);
+    usleep(USleepTime);
 
     AbilityInfo abilityinf;
     sptr<IRemoteObject> token = new (std::nothrow) MockAbilityToken();
     mockAppMgr->ScheduleLaunchAbility(abilityinf, token);
 
-    usleep(50);
+    usleep(USleepTime);
 
     mockAppMgr->ScheduleCleanAbility(token);
 
-    usleep(50);
+    usleep(USleepTime);
 
     runner_->Stop();
     OHOS::DelayedSingleton<SysMrgClient>::GetInstance()->UnregisterSystemAbility(APP_MGR_SERVICE_ID);
@@ -138,12 +139,12 @@ HWTEST_F(AppkitNativeModuleTestThird, App_CleanAbility_0200, Function | MediumTe
     GTEST_LOG_(INFO) << "App_CleanAbility_0200 start";
     OHOS::DelayedSingleton<SysMrgClient>::GetInstance()->RegisterSystemAbility(APP_MGR_SERVICE_ID, AppMgrObject_);
     runner_->Run();
-    usleep(50);
+    usleep(USleepTime);
 
     sptr<IRemoteObject> token = new (std::nothrow) MockAbilityToken();
     mockAppMgr->ScheduleCleanAbility(token);
 
-    usleep(50);
+    usleep(USleepTime);
 
     runner_->Stop();
     OHOS::DelayedSingleton<SysMrgClient>::GetInstance()->UnregisterSystemAbility(APP_MGR_SERVICE_ID);
@@ -164,23 +165,23 @@ HWTEST_F(AppkitNativeModuleTestThird, App_CleanAbility_0300, Function | MediumTe
     GTEST_LOG_(INFO) << "App_CleanAbility_0300 start";
     OHOS::DelayedSingleton<SysMrgClient>::GetInstance()->RegisterSystemAbility(APP_MGR_SERVICE_ID, AppMgrObject_);
     runner_->Run();
-    usleep(50);
+    usleep(USleepTime);
 
     AppLaunchData lanchdate;
     ApplicationInfo appinf;
-    ProcessInfo processinf("TestProcess", 9999);
+    ProcessInfo processinf("TestProcess", TestProcessInfo);
     appinf.name = "MockTestApplication";
     appinf.moduleSourceDirs.push_back("/hos/lib/libabilitydemo_native.z.so");
     lanchdate.SetApplicationInfo(appinf);
     lanchdate.SetProcessInfo(processinf);
     mockAppMgr->ScheduleLaunchApplication(lanchdate);
 
-    usleep(50);
+    usleep(USleepTime);
 
     sptr<IRemoteObject> token = new (std::nothrow) MockAbilityToken();
     mockAppMgr->ScheduleCleanAbility(token);
 
-    usleep(50);
+    usleep(USleepTime);
 
     runner_->Stop();
     OHOS::DelayedSingleton<SysMrgClient>::GetInstance()->UnregisterSystemAbility(APP_MGR_SERVICE_ID);
@@ -201,28 +202,28 @@ HWTEST_F(AppkitNativeModuleTestThird, App_CleanAbility_0400, Function | MediumTe
     GTEST_LOG_(INFO) << "App_CleanAbility_0400 start";
     OHOS::DelayedSingleton<SysMrgClient>::GetInstance()->RegisterSystemAbility(APP_MGR_SERVICE_ID, AppMgrObject_);
     runner_->Run();
-    usleep(50);
+    usleep(USleepTime);
 
     AppLaunchData lanchdate;
     ApplicationInfo appinf;
-    ProcessInfo processinf("TestProcess", 9999);
+    ProcessInfo processinf("TestProcess", TestProcessInfo);
     appinf.name = "MockTestApplication";
     appinf.moduleSourceDirs.push_back("/hos/lib/libabilitydemo_native.z.so");
     lanchdate.SetApplicationInfo(appinf);
     lanchdate.SetProcessInfo(processinf);
     mockAppMgr->ScheduleLaunchApplication(lanchdate);
 
-    usleep(50);
+    usleep(USleepTime);
 
     AbilityInfo abilityinf;
     sptr<IRemoteObject> token = new (std::nothrow) MockAbilityToken();
     mockAppMgr->ScheduleLaunchAbility(abilityinf, token);
 
-    usleep(50);
+    usleep(USleepTime);
 
     mockAppMgr->ScheduleCleanAbility(nullptr);
 
-    usleep(50);
+    usleep(USleepTime);
 
     runner_->Stop();
     OHOS::DelayedSingleton<SysMrgClient>::GetInstance()->UnregisterSystemAbility(APP_MGR_SERVICE_ID);
@@ -243,28 +244,28 @@ HWTEST_F(AppkitNativeModuleTestThird, App_CleanAbility_0500, Function | MediumTe
     GTEST_LOG_(INFO) << "App_CleanAbility_0500 start";
     OHOS::DelayedSingleton<SysMrgClient>::GetInstance()->RegisterSystemAbility(APP_MGR_SERVICE_ID, AppMgrObject_);
     runner_->Run();
-    usleep(50);
+    usleep(USleepTime);
 
     AppLaunchData lanchdate;
     ApplicationInfo appinf;
-    ProcessInfo processinf("TestProcess", 9999);
+    ProcessInfo processinf("TestProcess", TestProcessInfo);
     appinf.name = "MockTestApplication";
     appinf.moduleSourceDirs.push_back("/hos/lib/libabilitydemo_native.z.so");
     lanchdate.SetApplicationInfo(appinf);
     lanchdate.SetProcessInfo(processinf);
     mockAppMgr->ScheduleLaunchApplication(lanchdate);
 
-    usleep(50);
+    usleep(USleepTime);
 
     AbilityInfo abilityinf;
     sptr<IRemoteObject> token = new (std::nothrow) MockAbilityToken();
     mockAppMgr->ScheduleLaunchAbility(abilityinf, token);
 
-    usleep(50);
+    usleep(USleepTime);
     sptr<IRemoteObject> tokenOhter = new (std::nothrow) MockAbilityToken();
     mockAppMgr->ScheduleCleanAbility(tokenOhter);
 
-    usleep(50);
+    usleep(USleepTime);
 
     runner_->Stop();
     OHOS::DelayedSingleton<SysMrgClient>::GetInstance()->UnregisterSystemAbility(APP_MGR_SERVICE_ID);
@@ -284,7 +285,7 @@ HWTEST_F(AppkitNativeModuleTestThird, App_ElementsCallbacks_0100, Function | Med
     GTEST_LOG_(INFO) << "App_ElementsCallbacks_0100 start";
     OHOS::DelayedSingleton<SysMrgClient>::GetInstance()->RegisterSystemAbility(APP_MGR_SERVICE_ID, AppMgrObject_);
     runner_->Run();
-    usleep(50);
+    usleep(USleepTime);
 
     AppLaunchData lanchdate;
     ApplicationInfo appinf;
@@ -295,20 +296,20 @@ HWTEST_F(AppkitNativeModuleTestThird, App_ElementsCallbacks_0100, Function | Med
     lanchdate.SetProcessInfo(processinf);
     mockAppMgr->ScheduleLaunchApplication(lanchdate);
 
-    usleep(50);
+    usleep(USleepTime);
 
     mockAppMgr->ScheduleShrinkMemory(10);
 
-    usleep(50);
+    usleep(USleepTime);
     OHOS::AppExecFwk::Configuration config("testConfig");
 
     mockAppMgr->ScheduleConfigurationUpdated(config);
 
-    usleep(50);
+    usleep(USleepTime);
 
     mockAppMgr->ScheduleTerminateApplication();
 
-    usleep(50);
+    usleep(USleepTime);
 
     runner_->Stop();
     OHOS::DelayedSingleton<SysMrgClient>::GetInstance()->UnregisterSystemAbility(APP_MGR_SERVICE_ID);
@@ -332,7 +333,7 @@ HWTEST_F(AppkitNativeModuleTestThird, App_AbilityLifecycleCallbacks_0100, Functi
     GTEST_LOG_(INFO) << "App_AbilityLifecycleCallbacks_0100 start";
     OHOS::DelayedSingleton<SysMrgClient>::GetInstance()->RegisterSystemAbility(APP_MGR_SERVICE_ID, AppMgrObject_);
     runner_->Run();
-    usleep(50);
+    usleep(USleepTime);
 
     AppLaunchData lanchdate;
     ApplicationInfo appinf;
@@ -343,7 +344,7 @@ HWTEST_F(AppkitNativeModuleTestThird, App_AbilityLifecycleCallbacks_0100, Functi
     lanchdate.SetProcessInfo(processinf);
     mockAppMgr->ScheduleLaunchApplication(lanchdate);
 
-    usleep(50);
+    usleep(USleepTime);
 
     runner_->Stop();
     OHOS::DelayedSingleton<SysMrgClient>::GetInstance()->UnregisterSystemAbility(APP_MGR_SERVICE_ID);

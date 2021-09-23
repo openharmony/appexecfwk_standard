@@ -38,32 +38,6 @@ FormDataMgr::~FormDataMgr()
 }
 
 /**
- * @brief Delete form js info by form record.
- * @return Returns all form records map.
- */
-std::map<int64_t, FormRecord>& FormDataMgr::GetAllFormRecord()
-{
-    return formRecords_;
-}
-
-/**
- * @brief Get all form client host record.
- * @return Returns all form client host record.
- */
-std::vector<FormHostRecord>& FormDataMgr::GetClientRecords()
-{
-    return clientRecords_;
-}
-
-/**
- * @brief Get all form host records.
- * @return Returns all form host records vector.
- */
-std::vector<FormHostRecord>& FormDataMgr::GetAllFormHostRecord()
-{
-    return clientRecords_;
-}
-/**
  * @brief Allot form info by item info.
  * @param formId The Id of the form.
  * @param formInfo Form item info.
@@ -103,7 +77,8 @@ FormRecord FormDataMgr::AllotFormRecord(const FormItemInfo &formInfo, const int 
  * @param formId The Id of the form.
  * @return Returns true if this function is successfully called; returns false otherwise.
  */
-bool FormDataMgr::DeleteFormRecord(const int64_t formId) {
+bool FormDataMgr::DeleteFormRecord(const int64_t formId) 
+{
     APP_LOGI("%{public}s, delete form info", __func__);
     std::lock_guard<std::mutex> lock(formRecordMutex_);
     auto iter = formRecords_.find(formId);
@@ -155,7 +130,8 @@ bool FormDataMgr::AllotFormHostRecord(const FormItemInfo &info, const sptr<IRemo
  * @return Returns true if this function is successfully called; returns false otherwise.
  */
 bool FormDataMgr::CreateHostRecord(const FormItemInfo &info, const sptr<IRemoteObject> &callerToken, 
-    const int callingUid, FormHostRecord& record) {
+    const int callingUid, FormHostRecord& record) 
+{
     if (callerToken == nullptr) {
         APP_LOGE("%{public}s, invalid param", __func__);
         return false;
@@ -211,7 +187,6 @@ void FormDataMgr::CreateFormInfo(const int64_t formId, const FormRecord &record,
     formInfo.abilityName = record.abilityName;
     formInfo.formName = record.formName;
     formInfo.formTempFlg = record.formTempFlg;
-    // formInfo.setInstantProvider(record.instantProvider);
 }
 /**
  * @brief Check temp form count is max.
@@ -221,8 +196,7 @@ int FormDataMgr::CheckTempEnoughForm() const
 {
     if (tempForms_.size() >= Constants::MAX_TEMP_FORMS) {
         APP_LOGW("%{public}s, already exist %{public}d temp forms in system", __func__, Constants::MAX_TEMP_FORMS);
-        // HiViewUtil.sendAddFormExceedLimitEvent();
-        return ERR_MAX_SYSTEM_TEMP_FORMS;
+        return ERR_APPEXECFWK_FORM_MAX_SYSTEM_TEMP_FORMS;
     }
     return ERR_OK;
 }
@@ -233,11 +207,11 @@ int FormDataMgr::CheckTempEnoughForm() const
  */
 int FormDataMgr::CheckEnoughForm(const int callingUid) const
 {
-     APP_LOGI("%{public}s, callingUid: %{public}d", __func__, callingUid);
+    APP_LOGI("%{public}s, callingUid: %{public}d", __func__, callingUid);
 
     if (formRecords_.size() - tempForms_.size() >= Constants::MAX_FORMS) {
         APP_LOGW("%{public}s, already exist %{public}d forms in system", __func__, Constants::MAX_FORMS);
-        return ERR_MAX_SYSTEM_FORMS;
+        return ERR_APPEXECFWK_FORM_MAX_SYSTEM_FORMS;
     }
 
     int callingUidFormCounts = 0;
@@ -246,10 +220,9 @@ int FormDataMgr::CheckEnoughForm(const int callingUid) const
         if (IsCallingUidValid(record.formUserUids) && !record.formTempFlg) {
             for (auto &userUid : record.formUserUids) {
                 if (userUid == callingUid) {
-                    if (++callingUidFormCounts >= Constants::MAX_RECORD_PER_APP) 
-                    {
+                    if (++callingUidFormCounts >= Constants::MAX_RECORD_PER_APP) {
                         APP_LOGW("%{public}s, already use %{public}d forms", __func__, Constants::MAX_RECORD_PER_APP);
-                        return ERR_MAX_RECORDS_PER_APP;
+                        return ERR_APPEXECFWK_FORM_MAX_FORMS_PER_CLIENT;
                     }
                 }
             }
@@ -268,7 +241,7 @@ bool FormDataMgr::DeleteTempForm(const int64_t formId)
     auto iter = std::find(tempForms_.begin(), tempForms_.end(), formId);
     if (iter == tempForms_.end()) {
         APP_LOGE("%{public}s, temp form is not exist", __func__);
-        return true;
+        return false;
     }
     tempForms_.erase(iter);
     return true;
@@ -346,8 +319,8 @@ bool FormDataMgr::DeleteFormUserUid(const int64_t formId, const int32_t uid)
     APP_LOGI("%{public}s, delete form user uid from form record", __func__);
     std::lock_guard<std::mutex> lock(formRecordMutex_);
     if (ExistFormRecord(formId)) {
-        auto iter = std::find(formRecords_.at(formId).formUserUids.begin(), formRecords_.at(formId).formUserUids.end(), 
-        uid);
+        auto iter = std::find(formRecords_.at(formId).formUserUids.begin(), 
+            formRecords_.at(formId).formUserUids.end(), uid);
         if (iter != formRecords_.at(formId).formUserUids.end()) {
             formRecords_.at(formId).formUserUids.erase(iter);
         }
@@ -405,7 +378,7 @@ bool FormDataMgr::GetFormRecord(const std::string &bundleName, std::vector<FormR
     APP_LOGI("%{public}s, get form record by bundleName", __func__);
     std::lock_guard<std::mutex> lock(formRecordMutex_);
     std::map<int64_t, FormRecord>::iterator itFormRecord;
-    for (itFormRecord = formRecords_.begin(); itFormRecord != formRecords_.end();itFormRecord++) {
+    for (itFormRecord = formRecords_.begin(); itFormRecord != formRecords_.end(); itFormRecord++) {
         if (bundleName == itFormRecord->second.bundleName) {
             formInfos.emplace_back(itFormRecord->second);
         }
@@ -495,7 +468,7 @@ void FormDataMgr::CleanHostRemovedForms(const std::vector<int64_t> &removedFormI
     std::vector<int64_t> matchedIds;
     std::lock_guard<std::mutex> lock(formHostRecordMutex_);
     std::vector<FormHostRecord>::iterator itHostRecord;
-    for (itHostRecord = clientRecords_.begin(); itHostRecord != clientRecords_.end();itHostRecord++) {
+    for (itHostRecord = clientRecords_.begin(); itHostRecord != clientRecords_.end(); itHostRecord++) {
         for (const int64_t& formId : removedFormIds) {
             if (itHostRecord->Contains(formId)) {
                 matchedIds.emplace_back(formId);
@@ -520,7 +493,7 @@ void FormDataMgr::HandleHostDied(const sptr<IRemoteObject> &remoteHost)
     {
         std::lock_guard<std::mutex> lock(formHostRecordMutex_);
         std::vector<FormHostRecord>::iterator itHostRecord;
-        for (itHostRecord = clientRecords_.begin(); itHostRecord != clientRecords_.end();) {
+        for (itHostRecord = clientRecords_.begin(); itHostRecord != clientRecords_.end(); ) {
             if (remoteHost == itHostRecord->GetClientStub()) {
                 HandleHostDiedForTempForms(*itHostRecord, recordTempForms);
                 APP_LOGI("find died client, remove it");
@@ -535,7 +508,7 @@ void FormDataMgr::HandleHostDied(const sptr<IRemoteObject> &remoteHost)
     {
         std::lock_guard<std::mutex> lock(formRecordMutex_);
         std::map<int64_t, FormRecord>::iterator itFormRecord;
-        for (itFormRecord = formRecords_.begin(); itFormRecord != formRecords_.end();) {
+        for (itFormRecord = formRecords_.begin(); itFormRecord != formRecords_.end(); ) {
             int64_t formId = itFormRecord->first;
             // if temp form, remove it
             if (std::find(recordTempForms.begin(), recordTempForms.end(), formId) != recordTempForms.end()) {
@@ -558,7 +531,7 @@ void FormDataMgr::HandleHostDiedForTempForms(const FormHostRecord &record, std::
 {
     std::lock_guard<std::mutex> lock(formTempMutex_);
     std::vector<int64_t>::iterator itForm;
-    for (itForm = tempForms_.begin(); itForm != tempForms_.end();) {
+    for (itForm = tempForms_.begin(); itForm != tempForms_.end(); ) {
         if (record.Contains(*itForm)) {
             recordTempForms.emplace_back(*itForm);
             itForm = tempForms_.erase(itForm);
@@ -590,6 +563,11 @@ bool FormDataMgr::IsEnableRefresh(int64_t formId)
  */
 int64_t FormDataMgr::GenerateFormId()
 {
+    // generate udidHash_
+    if (udidHash_ < 0) {
+        APP_LOGE("%{public}s fail, generateFormId no invalid udidHash_", __func__);
+        return ERR_APPEXECFWK_FORM_COMMON_CODE;
+    }
     return FormUtil::GenerateFormId(udidHash_);
 }
 /**
@@ -688,8 +666,10 @@ void FormDataMgr::SetCountTimerRefresh(const int64_t formId, const bool countTim
  * @param updatedForm Updated formnfo.
  * @return Returns true on success, false on failure.
  */
-bool FormDataMgr::GetUpdatedForm(const FormRecord &record, const std::vector<FormInfo> &targetForms, 
-FormInfo &updatedForm)
+bool FormDataMgr::GetUpdatedForm(
+    const FormRecord &record, 
+    const std::vector<FormInfo> &targetForms, 
+    FormInfo &updatedForm)
 {
     if (targetForms.empty()) {
         APP_LOGE("%{public}s error, targetForms is empty.", __func__);
@@ -728,8 +708,12 @@ void FormDataMgr::SetEnableUpdate(const int64_t formId, const bool enableUpdate)
  * @param updateAtHour Update at hour.
  * @param updateAtMin Update at minute.
  */
-void FormDataMgr::SetUpdateInfo(const int64_t formId, const bool enableUpdate, const long updateDuration, 
-const int updateAtHour, const int updateAtMin)
+void FormDataMgr::SetUpdateInfo(
+    const int64_t formId, 
+    const bool enableUpdate, 
+    const long updateDuration, 
+    const int updateAtHour, 
+    const int updateAtMin)
 {
     std::lock_guard<std::mutex> lock(formRecordMutex_);
     auto itFormRecord = formRecords_.find(formId);
@@ -771,12 +755,11 @@ void FormDataMgr::CleanRemovedFormRecords(const std::string &bundleName, std::se
     APP_LOGI("%{public}s, clean removed form records", __func__);
     std::lock_guard<std::mutex> lock(formRecordMutex_);
     std::map<int64_t, FormRecord>::iterator itFormRecord;
-    for (itFormRecord = formRecords_.begin(); itFormRecord != formRecords_.end();) {
+    for (itFormRecord = formRecords_.begin(); itFormRecord != formRecords_.end(); ) {
         auto itForm = std::find(removedForms.begin(), removedForms.end(), itFormRecord->first);
         if (itForm != removedForms.end()) {
             itFormRecord = formRecords_.erase(itFormRecord);
-        }
-        else {
+        } else {
             itFormRecord++;
         }
     }
@@ -793,12 +776,11 @@ void FormDataMgr::CleanRemovedTempFormRecords(const std::string &bundleName, std
     {
         std::lock_guard<std::mutex> lock(formRecordMutex_);
         std::map<int64_t, FormRecord>::iterator itFormRecord;
-        for (itFormRecord = formRecords_.begin(); itFormRecord != formRecords_.end();) {
+        for (itFormRecord = formRecords_.begin(); itFormRecord != formRecords_.end(); ) {
             if (itFormRecord->second.formTempFlg && bundleName == itFormRecord->second.bundleName) {
                 removedTempForms.emplace(itFormRecord->second.formId);
                 itFormRecord = formRecords_.erase(itFormRecord);
-            }
-            else {
+            } else {
                 itFormRecord++;
             }
         }
@@ -807,8 +789,8 @@ void FormDataMgr::CleanRemovedTempFormRecords(const std::string &bundleName, std
     if (removedTempForms.size() > 0) {
         std::lock_guard<std::mutex> lock(formTempMutex_);
         std::vector<int64_t>::iterator itTemp;
-        for(itTemp = tempForms_.begin();itTemp != tempForms_.end();) {
-            if(removedTempForms.find(*itTemp) != removedTempForms.end()) {
+        for (itTemp = tempForms_.begin();itTemp != tempForms_.end(); ) {
+            if (removedTempForms.find(*itTemp) != removedTempForms.end()) {
                 itTemp = tempForms_.erase(itTemp);
             } else {
                 itTemp++;
@@ -825,7 +807,7 @@ void FormDataMgr::GetReCreateFormRecordsByBundleName(const std::string &bundleNa
 {
     std::lock_guard<std::mutex> lock(formRecordMutex_);
     std::map<int64_t, FormRecord>::iterator itFormRecord;
-    for (itFormRecord = formRecords_.begin(); itFormRecord != formRecords_.end();itFormRecord++) {
+    for (itFormRecord = formRecords_.begin(); itFormRecord != formRecords_.end(); itFormRecord++) {
         if (bundleName == itFormRecord->second.bundleName) {
             reCreateForms.emplace(itFormRecord->second.formId);
         }
@@ -871,11 +853,27 @@ void FormDataMgr::UpdateHostNeedRefresh(const int64_t formId, const bool needRef
 {
     std::lock_guard<std::mutex> lock(formHostRecordMutex_);
     std::vector<FormHostRecord>::iterator itHostRecord;
-    for (itHostRecord = clientRecords_.begin(); itHostRecord != clientRecords_.end();itHostRecord++) {
+    for (itHostRecord = clientRecords_.begin(); itHostRecord != clientRecords_.end(); itHostRecord++) {
         if (itHostRecord->Contains(formId)) {
             itHostRecord->SetNeedRefresh(formId, needRefresh);
         }
     }
+}
+
+/**
+ * @brief Update form for host clients.
+ * @param formId The Id of the form.
+ * @param formProviderInfo FormProviderInfo object
+ */
+void FormDataMgr::UpdateFormProviderInfo(const int64_t formId, const FormProviderInfo &formProviderInfo)
+{
+    std::lock_guard<std::mutex> lock(formRecordMutex_);
+    auto itFormRecord = formRecords_.find(formId);
+    if (itFormRecord == formRecords_.end()) {
+        APP_LOGE("%{public}s, form info not find", __func__);
+        return;
+    }
+    itFormRecord->second.formProviderInfo = formProviderInfo;
 }
 /**
  * @brief Update form for host clients.
@@ -888,7 +886,7 @@ bool FormDataMgr::UpdateHostForm(const int64_t formId, const FormRecord &formRec
     bool isUpdated = false;
     std::lock_guard<std::mutex> lock(formHostRecordMutex_);
     std::vector<FormHostRecord>::iterator itHostRecord;
-    for (itHostRecord = clientRecords_.begin(); itHostRecord != clientRecords_.end();itHostRecord++) {
+    for (itHostRecord = clientRecords_.begin(); itHostRecord != clientRecords_.end(); itHostRecord++) {
         if (itHostRecord->IsEnableRefresh(formId)) {
             // update form
             itHostRecord->OnUpdate(formId, formRecord);
@@ -907,13 +905,16 @@ bool FormDataMgr::UpdateHostForm(const int64_t formId, const FormRecord &formRec
  * @param refreshForms Refresh forms
  * @return Returns ERR_OK on success, others on failure.
  */
-int32_t FormDataMgr::UpdateHostFormFlag(std::vector<int64_t> formIds, const sptr<IRemoteObject> &callerToken, 
-const bool flag, std::vector<int64_t> &refreshForms)
+int32_t FormDataMgr::UpdateHostFormFlag(
+    std::vector<int64_t> formIds, 
+    const sptr<IRemoteObject> &callerToken, 
+    const bool flag, 
+    std::vector<int64_t> &refreshForms)
 {
     APP_LOGI("%{public}s start, flag: %{public}d", __func__, flag);
     std::lock_guard<std::mutex> lock(formHostRecordMutex_);
     std::vector<FormHostRecord>::iterator itHostRecord;
-    for (itHostRecord = clientRecords_.begin(); itHostRecord != clientRecords_.end();itHostRecord++) {
+    for (itHostRecord = clientRecords_.begin(); itHostRecord != clientRecords_.end(); itHostRecord++) {
         if (callerToken == itHostRecord->GetClientStub()) {
             for (const int64_t formId : formIds) {
                 if (formId <= 0) {
@@ -967,7 +968,7 @@ const bool flag, std::vector<int64_t> &refreshForms)
         }
     }
     APP_LOGE("%{public}s, can't find target client", __func__);
-    return ERR_FORM_INVALID_PARAM;
+    return ERR_APPEXECFWK_FORM_INVALID_PARAM;
 }
 /**
  * @brief Find matched form id.
@@ -976,13 +977,16 @@ const bool flag, std::vector<int64_t> &refreshForms)
  */
 int64_t FormDataMgr::FindMatchedFormId(const int64_t formId)
 {
-    if ((formId & 0xffffffff00000000L) != 0) {
+    uint64_t unsignedFormId = static_cast<int64_t>(formId);
+    if ((unsignedFormId & 0xffffffff00000000L) != 0) {
         return formId;
     }
     std::lock_guard<std::mutex> lock(formRecordMutex_);
     std::map<int64_t, FormRecord>::iterator itFormRecord;
-    for (itFormRecord = formRecords_.begin(); itFormRecord != formRecords_.end();itFormRecord++) {
-        if ((itFormRecord->first & 0x00000000ffffffffL) == (formId & 0x00000000ffffffffL)) {
+    for (itFormRecord = formRecords_.begin(); itFormRecord != formRecords_.end(); itFormRecord++) {
+        uint64_t unsignedFormId = static_cast<int64_t>(formId);
+        uint64_t unsignedItFormRecordFirst = static_cast<int64_t>(itFormRecord->first);
+        if ((unsignedItFormRecordFirst & 0x00000000ffffffffL) == (unsignedFormId & 0x00000000ffffffffL)) {
             return itFormRecord->first;
         }
     }
@@ -997,7 +1001,7 @@ void FormDataMgr::ClearHostDataByUId(const int uId)
 {
     std::lock_guard<std::mutex> lock(formHostRecordMutex_);
     std::vector<FormHostRecord>::iterator itHostRecord;
-    for (itHostRecord = clientRecords_.begin(); itHostRecord != clientRecords_.end();) {
+    for (itHostRecord = clientRecords_.begin(); itHostRecord != clientRecords_.end(); ) {
         if (itHostRecord->GetCallerUid() == uId) {
             itHostRecord->CleanResource();
             itHostRecord = clientRecords_.erase(itHostRecord);
@@ -1012,21 +1016,27 @@ void FormDataMgr::ClearHostDataByUId(const int uId)
  * @param noHostTempFormsMap no host temp forms.
  * @param foundFormsMap Form Id list.
  */
-void FormDataMgr::GetNoHostTempForms(const int uid, std::map<FormIdKey, std::set<int64_t>> &noHostTempFormsMap, 
-std::map<int64_t, bool> &foundFormsMap)
+void FormDataMgr::GetNoHostTempForms(
+    const int uid, std::map<FormIdKey, 
+    std::set<int64_t>> &noHostTempFormsMap, 
+    std::map<int64_t, bool> &foundFormsMap)
 {
     std::lock_guard<std::mutex> lock(formRecordMutex_);
     std::map<int64_t, FormRecord>::iterator itFormRecord;
-    for (itFormRecord = formRecords_.begin(); itFormRecord != formRecords_.end();itFormRecord++) {
+    for (itFormRecord = formRecords_.begin(); itFormRecord != formRecords_.end(); itFormRecord++) {
         if (itFormRecord->second.formTempFlg) {
-            auto itUid = std::find(itFormRecord->second.formUserUids.begin(), itFormRecord->second.formUserUids.end(), 
-            uid);
+            auto itUid = std::find(itFormRecord->second.formUserUids.begin(), 
+                itFormRecord->second.formUserUids.end(), uid);
             if (itUid != itFormRecord->second.formUserUids.end()) {
                 itFormRecord->second.formUserUids.erase(itUid);
                 if (itFormRecord->second.formUserUids.empty()) {
                     FormIdKey formIdKey;
                     formIdKey.bundleName = itFormRecord->second.bundleName;
                     formIdKey.abilityName = itFormRecord->second.abilityName;
+                    formIdKey.moduleName = "";
+                    formIdKey.formName = "";
+                    formIdKey.specificationId = 0;
+                    formIdKey.orientation = 0;
                     auto itIdsSet = noHostTempFormsMap.find(formIdKey);
                     if (itIdsSet == noHostTempFormsMap.end()) {
                         std::set<int64_t> formIdsSet;
@@ -1079,7 +1089,8 @@ void FormDataMgr::ParseIntervalConfig(FormRecord &record, const int configDurati
  * @param record The form record.
  * @param info form item info.
  */
-void FormDataMgr::ParseAtTimerConfig(FormRecord record, const FormItemInfo &info) const {
+void FormDataMgr::ParseAtTimerConfig(FormRecord &record, const FormItemInfo &info) const 
+{
     record.isEnableUpdate = false;
     record.updateDuration = 0;
     std::string configAtTime = info.GetScheduledUpdateTime();
@@ -1103,7 +1114,7 @@ void FormDataMgr::ParseAtTimerConfig(FormRecord record, const FormItemInfo &info
     }    
     
     if (hour < Constants::MIN_TIME || hour > Constants::MAX_HOUR || min < Constants::MIN_TIME || min > 
-    Constants::MAX_MININUTE) {
+        Constants::MAX_MININUTE) {
         APP_LOGE("%{public}s, time is invalid", __func__);
         return;
     }

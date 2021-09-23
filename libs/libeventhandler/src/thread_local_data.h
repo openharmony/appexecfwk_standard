@@ -27,7 +27,7 @@ namespace AppExecFwk {
 /*
  * Tool class, used to save thread local data.
  */
-template <typename T>
+template<typename T>
 class ThreadLocalData {
 public:
     ThreadLocalData() = default;

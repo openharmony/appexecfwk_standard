@@ -273,6 +273,7 @@ struct Module {
     std::vector<Shortcut> shortcuts;
     std::vector<DefPermission> defPermissions;
     std::vector<ReqPermission> reqPermissions;
+    std::string mainAbility;
 };
 
 // config.json
@@ -1626,6 +1627,14 @@ void from_json(const nlohmann::json &jsonObject, Module &module)
         false,
         parseResult,
         ArrayType::OBJECT);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        BUNDLE_MODULE_PROFILE_KEY_MAIN_ABILITY,
+        module.mainAbility,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
 }
 
 void from_json(const nlohmann::json &jsonObject, ConfigJson &configJson)
@@ -1886,6 +1895,7 @@ bool TransformToInfo(const ProfileReader::ConfigJson &configJson, InnerModuleInf
     innerModuleInfo.reqCapabilities = configJson.module.reqCapabilities;
     innerModuleInfo.defPermissions = configJson.module.defPermissions;
     innerModuleInfo.reqPermissions = configJson.module.reqPermissions;
+    innerModuleInfo.mainAbility = configJson.module.mainAbility;
     return true;
 }
 

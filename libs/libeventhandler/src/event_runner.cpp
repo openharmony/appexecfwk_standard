@@ -248,8 +248,8 @@ private:
     static Avatar avatar_;
 };
 
-ThreadCollector::ThreadCollector() :
-    collectorLock_(), condition_(), reclaims_(), depositMap_(), threadLock_(), thread_(nullptr)
+ThreadCollector::ThreadCollector()
+    : collectorLock_(), condition_(), reclaims_(), depositMap_(), threadLock_(), thread_(nullptr)
 {
     // Thread collector is created, so enable avatar.
     avatarEnabled_ = true;
@@ -372,8 +372,8 @@ private:
 };
 }  // unnamed namespace
 
-EventInnerRunner::EventInnerRunner(const std::shared_ptr<EventRunner> &runner) :
-    queue_(nullptr), owner_(runner), logger_(nullptr), threadName_(""), threadId_()
+EventInnerRunner::EventInnerRunner(const std::shared_ptr<EventRunner> &runner)
+    : queue_(nullptr), owner_(runner), logger_(nullptr), threadName_(""), threadId_()
 {}
 
 std::shared_ptr<EventRunner> EventInnerRunner::GetCurrentEventRunner()

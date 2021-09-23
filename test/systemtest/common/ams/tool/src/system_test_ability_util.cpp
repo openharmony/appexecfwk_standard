@@ -533,6 +533,5 @@ sptr<IBundleMgr> STAbilityUtil::GetBundleMgrProxy()
     std::cout << "get bundle manager proxy success." << std::endl;
     return iface_cast<IBundleMgr>(remoteObject);
 }
-
 }  // namespace STABUtil
 }  // namespace OHOS

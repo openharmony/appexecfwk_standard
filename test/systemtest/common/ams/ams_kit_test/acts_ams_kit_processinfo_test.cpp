@@ -101,7 +101,7 @@ std::vector<std::string> ActsAmsKitProcessInfoTest::eventList = {
     g_EVENT_RESP_FIFTH,
 };
 
-StressTestLevel ActsAmsKitProcessInfoTest::stLevel_{};
+StressTestLevel ActsAmsKitProcessInfoTest::stLevel_ {};
 std::shared_ptr<ActsAmsKitProcessInfoTest::AppEventSubscriber> ActsAmsKitProcessInfoTest::subscriber_ = nullptr;
 
 Event ActsAmsKitProcessInfoTest::event = Event();

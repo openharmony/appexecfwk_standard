@@ -50,14 +50,15 @@ using namespace OHOS::STABUtil;
 using namespace testing::ext;
 
 using MAP_STR_STR = std::map<std::string, std::string>;
+namespace {
 static const string KIT_BUNDLE_NAME = "com.ohos.amsst.AppAppend";
 static const string KIT_HAP_NAME = "amsAbilityAppendTest";
 static const string FIRST_ABILITY_NAME = "MainAbility";
 static const string SECOND_ABILITY_NAME = "SecondAbility";
 static const string THIRD_ABILITY_NAME = "MainAbility";
 static constexpr int WAIT_TIME = 1;
-
 static string g_eventMessage = "";
+}
 class AmsAbilityAppendTest : public testing::Test {
 public:
     static void SetUpTestCase(void);
@@ -78,12 +79,12 @@ public:
         ~AppEventSubscriber(){};
     };
 
-    static sptr<IAbilityManager> g_abilityMs;
+    static sptr<IAbilityManager> abilityMgrService;
     static Event event;
 };
 
 Event AmsAbilityAppendTest::event = Event();
-sptr<IAbilityManager> AmsAbilityAppendTest::g_abilityMs = nullptr;
+sptr<IAbilityManager> AmsAbilityAppendTest::abilityMgrService = nullptr;
 
 void AmsAbilityAppendTest::AppEventSubscriber::OnReceiveEvent(const CommonEventData &data)
 {
@@ -140,18 +141,19 @@ void AmsAbilityAppendTest::TearDown(void)
 {
     STAbilityUtil::Uninstall(KIT_BUNDLE_NAME + "A");
     STAbilityUtil::Uninstall(KIT_BUNDLE_NAME + "B");
-    // sleep(2);
     STAbilityUtil::CleanMsg(event);
 }
 
 bool AmsAbilityAppendTest::SubscribeEvent()
 {
-    std::vector<std::string> eventList = {g_EVENT_RESP_FIRST_LIFECYCLE,
+    std::vector<std::string> eventList = {
+        g_EVENT_RESP_FIRST_LIFECYCLE,
         g_EVENT_RESP_SECOND_LIFECYCLE,
         g_EVENT_RESP_FIRSTB_LIFECYCLE,
         g_EVENT_RESP_FIRST,
         g_EVENT_RESP_SECOND,
-        g_EVENT_RESP_FIRSTB};
+        g_EVENT_RESP_FIRSTB
+    };
     MatchingSkills matchingSkills;
     for (const auto &e : eventList) {
         matchingSkills.AddEvent(e);
@@ -184,7 +186,7 @@ HWTEST_F(AmsAbilityAppendTest, AMS_Ability_Append_00100, Function | MediumTest |
     MAP_STR_STR params;
     Want want = STAbilityUtil::MakeWant("device", FIRST_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     // start first ability
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_A_CODE), 0);
@@ -212,7 +214,7 @@ HWTEST_F(AmsAbilityAppendTest, AMS_Ability_Append_00200, Function | MediumTest |
     MAP_STR_STR params;
     Want wantFirst = STAbilityUtil::MakeWant("device", FIRST_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     // start first ability
-    ErrCode eCode = STAbilityUtil::StartAbility(wantFirst, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(wantFirst, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_A_CODE), 0);
     EXPECT_EQ(TestWaitCompleted(event, "OnActive", MAIN_ABILITY_A_CODE), 0);
@@ -225,7 +227,7 @@ HWTEST_F(AmsAbilityAppendTest, AMS_Ability_Append_00200, Function | MediumTest |
     sleep(5);
     Want wantSecond = STAbilityUtil::MakeWant("device", THIRD_ABILITY_NAME, KIT_BUNDLE_NAME + "B", params);
     // start first ability
-    eCode = STAbilityUtil::StartAbility(wantSecond, g_abilityMs, WAIT_TIME);
+    eCode = STAbilityUtil::StartAbility(wantSecond, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_B_CODE), 0);
     EXPECT_EQ(TestWaitCompleted(event, "OnActive", MAIN_ABILITY_B_CODE), 0);
@@ -253,7 +255,7 @@ HWTEST_F(AmsAbilityAppendTest, AMS_Ability_Append_00300, Function | MediumTest |
     MAP_STR_STR params;
     Want want = STAbilityUtil::MakeWant("device", SECOND_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     // start first ability
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "onStart", SECOND_ABILITY_A_CODE), 0);
@@ -282,7 +284,7 @@ HWTEST_F(AmsAbilityAppendTest, AMS_Ability_Append_00400, Function | MediumTest |
     MAP_STR_STR params;
     Want want = STAbilityUtil::MakeWant("device", FIRST_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     // start first ability
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_A_CODE), 0);
@@ -310,7 +312,7 @@ HWTEST_F(AmsAbilityAppendTest, AMS_Ability_Append_00500, Function | MediumTest |
     MAP_STR_STR params;
     Want want = STAbilityUtil::MakeWant("device", FIRST_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     // start first ability
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_A_CODE), 0);
@@ -338,7 +340,7 @@ HWTEST_F(AmsAbilityAppendTest, AMS_Ability_Append_00600, Function | MediumTest |
     MAP_STR_STR params;
     Want want = STAbilityUtil::MakeWant("device", FIRST_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     // start first ability
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_A_CODE), 0);
@@ -369,7 +371,7 @@ HWTEST_F(AmsAbilityAppendTest, AMS_Ability_Append_00700, Function | MediumTest |
     MAP_STR_STR params;
     Want want = STAbilityUtil::MakeWant("device", FIRST_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     // start first ability
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_A_CODE), 0);
@@ -397,7 +399,7 @@ HWTEST_F(AmsAbilityAppendTest, AMS_Ability_Append_00800, Function | MediumTest |
     MAP_STR_STR params;
     Want want = STAbilityUtil::MakeWant("device", FIRST_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     // start first ability
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_A_CODE), 0);
@@ -425,7 +427,7 @@ HWTEST_F(AmsAbilityAppendTest, AMS_Ability_Append_00900, Function | MediumTest |
     MAP_STR_STR params;
     Want want = STAbilityUtil::MakeWant("device", FIRST_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
     // start first ability
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_A_CODE), 0);

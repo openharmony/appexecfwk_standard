@@ -178,26 +178,16 @@ HWTEST_F(FmsFormTimerMgrTest, Fms_FormTimerMgr_0007, Function | MediumTest | Lev
 }
 /**
  * @tc.number: Fms_FormTimerMgr_0008
- * @tc.name: TimerReceiver::OnReceiveEvent.
- * @tc.desc: Receive common event(COMMON_EVENT_TIME_CHANGED).
+ * @tc.name: HandleSystemTimeChanged.
+ * @tc.desc: Handle system time changed.
  */
 HWTEST_F(FmsFormTimerMgrTest, Fms_FormTimerMgr_0008, Function | MediumTest | Level1)
 {
     GTEST_LOG_(INFO) << "Fms_FormTimerMgr_0008 start";
     bool isAddOk5 = FormTimerMgr::GetInstance().AddFormTimer(PARAM_FORM_ID_VALUE_1,  11, 30);
     EXPECT_EQ(isAddOk5, true);
-
-    /* Publish */
-
-    // make a want
-    AAFwk::Want want;
-    want.SetAction(EventFwk::CommonEventSupport::COMMON_EVENT_TIME_CHANGED);
-    // make common event data
-    EventFwk::CommonEventData data;
-    data.SetWant(want);
-    // publish a common event
-    bool publishResult = EventFwk::CommonEventManager::PublishCommonEvent(data);
-    EXPECT_EQ(publishResult, true);
+    bool isAddOk6 = FormTimerMgr::GetInstance().HandleSystemTimeChanged();
+    EXPECT_EQ(isAddOk6, true);
 
     GTEST_LOG_(INFO) << "Fms_FormTimerMgr_0008 end";
 }
@@ -212,52 +202,31 @@ HWTEST_F(FmsFormTimerMgrTest, Fms_FormTimerMgr_0009, Function | MediumTest | Lev
     GTEST_LOG_(INFO) << "Fms_FormTimerMgr_0009 start";
     bool isAddOk5 = FormTimerMgr::GetInstance().AddFormTimer(PARAM_FORM_ID_VALUE_2,  11, 30);
     EXPECT_EQ(isAddOk5, true);
-
-    /* Publish */
-
-    // make a want
-    AAFwk::Want want;
-    want.SetAction(EventFwk::CommonEventSupport::COMMON_EVENT_TIMEZONE_CHANGED);
-    // make common event data
-    EventFwk::CommonEventData data;
-    data.SetWant(want);
-    // publish a common event
-    bool publishResult = EventFwk::CommonEventManager::PublishCommonEvent(data);
-    EXPECT_EQ(publishResult, true);
+    bool isAddOk6 = FormTimerMgr::GetInstance().HandleSystemTimeChanged();
+    EXPECT_EQ(isAddOk6, true);
     
     GTEST_LOG_(INFO) << "Fms_FormTimerMgr_0009 end";
 }
 /**
  * @tc.number: Fms_FormTimerMgr_0010
- * @tc.name: TimerReceiver::OnReceiveEvent.
- * @tc.desc: Receive common event(ACTION_UPDATEATTIMER - TYPE_RESET_LIMIT).
+ * @tc.name: HandleResetLimiter.
+ * @tc.desc: Handle reset limiter.
  */
 HWTEST_F(FmsFormTimerMgrTest, Fms_FormTimerMgr_0010, Function | MediumTest | Level1)
 {
     GTEST_LOG_(INFO) << "Fms_FormTimerMgr_0010 start";
-    bool isAddOk5 = FormTimerMgr::GetInstance().AddFormTimer(PARAM_FORM_ID_VALUE_3,  11, 30);
+    bool isAddOk5 = FormTimerMgr::GetInstance().AddFormTimer(PARAM_FORM_ID_VALUE_3,  16, 30);
     EXPECT_EQ(isAddOk5, true);
-
-    /* Publish */
-
-    // make a want
-    AAFwk::Want want;
-    want.SetAction(Constants::ACTION_UPDATEATTIMER);
-    want.SetParam(Constants::KEY_ACTION_TYPE, Constants::TYPE_RESET_LIMIT);
-    // make common event data
-    EventFwk::CommonEventData data;
-    data.SetWant(want);
-    // publish a common event
-    bool publishResult = EventFwk::CommonEventManager::PublishCommonEvent(data);
-    EXPECT_EQ(publishResult, true);
+    bool isAddOk6 = FormTimerMgr::GetInstance().HandleResetLimiter();
+    EXPECT_EQ(isAddOk6, true);
     
     GTEST_LOG_(INFO) << "Fms_FormTimerMgr_0010 end";
 }
 
 /**
  * @tc.number: Fms_FormTimerMgr_0011
- * @tc.name: TimerReceiver::OnReceiveEvent.
- * @tc.desc: Receive common event(ACTION_UPDATEATTIMER - TYPE_STATIC_UPDATE).
+ * @tc.name: OnUpdateAtTrigger.
+ * @tc.desc:handle attimer update.
  */
 HWTEST_F(FmsFormTimerMgrTest, Fms_FormTimerMgr_0011, Function | MediumTest | Level1)
 {
@@ -265,26 +234,15 @@ HWTEST_F(FmsFormTimerMgrTest, Fms_FormTimerMgr_0011, Function | MediumTest | Lev
     bool isAddOk5 = FormTimerMgr::GetInstance().AddFormTimer(PARAM_FORM_ID_VALUE_4,  11, 30);
     EXPECT_EQ(isAddOk5, true);
 
-    /* Publish */
-
-    // make a want
-    AAFwk::Want want;
-    want.SetAction(Constants::ACTION_UPDATEATTIMER);
-    want.SetParam(Constants::KEY_ACTION_TYPE, Constants::TYPE_STATIC_UPDATE);
-    want.SetParam(Constants::KEY_WAKEUP_TIME, 90L);
-    // make common event data
-    EventFwk::CommonEventData data;
-    data.SetWant(want);
-    // publish a common event
-    bool publishResult = EventFwk::CommonEventManager::PublishCommonEvent(data);
-    EXPECT_EQ(publishResult, true);
+    bool isAddOk6 = FormTimerMgr::GetInstance().OnUpdateAtTrigger(90L);
+    EXPECT_EQ(isAddOk6, true);
 
     GTEST_LOG_(INFO) << "Fms_FormTimerMgr_0011 end";
 }
 /**
  * @tc.number: Fms_FormTimerMgr_0012
- * @tc.name: TimerReceiver::OnReceiveEvent.
- * @tc.desc: Receive common event(ACTION_UPDATEATTIMER - TYPE_DYNAMIC_UPDATE).
+ * @tc.name: OnDynamicTimeTrigger.
+ * @tc.desc: handle dynamic update.
  */
 HWTEST_F(FmsFormTimerMgrTest, Fms_FormTimerMgr_0012, Function | MediumTest | Level1)
 {
@@ -292,19 +250,8 @@ HWTEST_F(FmsFormTimerMgrTest, Fms_FormTimerMgr_0012, Function | MediumTest | Lev
     bool isAddOk5 = FormTimerMgr::GetInstance().AddFormTimer(PARAM_FORM_ID_VALUE_5,  11, 30);
     EXPECT_EQ(isAddOk5, true);
 
-    /* Publish */
-
-    // make a want
-    AAFwk::Want want;
-    want.SetAction(Constants::ACTION_UPDATEATTIMER);
-    want.SetParam(Constants::KEY_ACTION_TYPE, Constants::TYPE_DYNAMIC_UPDATE);
-    want.SetParam(Constants::KEY_WAKEUP_TIME, 90L);
-    // make common event data
-    EventFwk::CommonEventData data;
-    data.SetWant(want);
-    // publish a common event
-    bool publishResult = EventFwk::CommonEventManager::PublishCommonEvent(data);
-    EXPECT_EQ(publishResult, true);
+    bool isAddOk6 = FormTimerMgr::GetInstance().OnDynamicTimeTrigger(90L);
+    EXPECT_EQ(isAddOk6, true);
     
     GTEST_LOG_(INFO) << "Fms_FormTimerMgr_0012 end";
 }
@@ -526,7 +473,7 @@ HWTEST_F(FmsFormTimerMgrTest, Fms_FormTimerMgr_0024, Function | MediumTest | Lev
     FormRefreshLimiter refreshLimiter;
     bool isAddOk = refreshLimiter.AddItem(PARAM_FORM_ID_VALUE_6);
     EXPECT_EQ(isAddOk, true);
-    for(int iIndex = 0; iIndex < Constants::LIMIT_COUNT; iIndex++){
+    for (int iIndex = 0; iIndex < Constants::LIMIT_COUNT; iIndex++) {
         refreshLimiter.Increase(PARAM_FORM_ID_VALUE_6);
     }   
 
@@ -548,7 +495,7 @@ HWTEST_F(FmsFormTimerMgrTest, Fms_FormTimerMgr_0025, Function | MediumTest | Lev
     FormRefreshLimiter refreshLimiter;
     bool isAddOk = refreshLimiter.AddItem(PARAM_FORM_ID_VALUE_6);
     EXPECT_EQ(isAddOk, true);
-    for(int iIndex = 0; iIndex < Constants::LIMIT_COUNT + 1; iIndex++) {
+    for (int iIndex = 0; iIndex < Constants::LIMIT_COUNT + 1; iIndex++) {
         refreshLimiter.Increase(PARAM_FORM_ID_VALUE_6);
     }   
 
@@ -570,7 +517,7 @@ HWTEST_F(FmsFormTimerMgrTest, Fms_FormTimerMgr_0026, Function | MediumTest | Lev
     FormRefreshLimiter refreshLimiter;
     bool isAddOk = refreshLimiter.AddItem(PARAM_FORM_ID_VALUE_6);
     EXPECT_EQ(isAddOk, true);
-    for(int iIndex = 0; iIndex < Constants::LIMIT_COUNT + 1; iIndex++) {
+    for (int iIndex = 0; iIndex < Constants::LIMIT_COUNT + 1; iIndex++) {
         refreshLimiter.Increase(PARAM_FORM_ID_VALUE_6);
     }   
 

@@ -737,9 +737,11 @@ sptr<IRemoteObject> ContextDeal::GetToken()
  */
 void ContextDeal::initResourceManager(const std::shared_ptr<Global::Resource::ResourceManager> &resourceManager)
 {
+    APP_LOGI("ContextDeal::initResourceManager. Start.");
     resourceManager_ = resourceManager;
+    APP_LOGI("ContextDeal::initResourceManager. End.");
 }
-
+    
 /**
  * @brief Obtains information about the caller of this ability.
  *
@@ -888,7 +890,6 @@ void ContextDeal::SetTheme(int themeId)
         return;
     }
 
-    // hapModInfo->themeId = themeId;
     APP_LOGI("ContextDeal::SetTheme end");
     return;
 }
@@ -947,7 +948,6 @@ int ContextDeal::GetThemeId()
 {
     auto hapModInfo = GetHapModuleInfo();
     if (hapModInfo != nullptr) {
-        // return hapModInfo->themeId;
         return -1;
     } else {
         APP_LOGE("ContextDeal::GetThemeId hapModInfo is nullptr");

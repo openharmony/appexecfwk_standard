@@ -24,6 +24,7 @@
 
 namespace OHOS {
 namespace AppExecFwk {
+const int FORM_DISCONNECT_DELAY_TIME = 100; // ms
 FormAmsHelper::FormAmsHelper(){}
 FormAmsHelper::~FormAmsHelper(){}
 
@@ -59,10 +60,10 @@ sptr<AAFwk::IAbilityManager> FormAmsHelper::GetAbilityManager()
  * @return Returns ERR_OK on success, others on failure.
  */
 ErrCode FormAmsHelper::ConnectServiceAbility(
-    const Want &want, const sptr<IAbilityConnection> &connect) 
+    const Want &want, const sptr<AAFwk::IAbilityConnection> &connect) 
 {
     APP_LOGI("%{public}s called.", __func__);
-    sptr<IAbilityManager> ams = GetAbilityManager();
+    sptr<AAFwk::IAbilityManager> ams = GetAbilityManager();
     if (ams == nullptr) {
         APP_LOGE("%{public}s:ability service not connect", __func__);
         return ERR_APPEXECFWK_FORM_BIND_PROVIDER_FAILED;
@@ -70,19 +71,41 @@ ErrCode FormAmsHelper::ConnectServiceAbility(
     return ams->ConnectAbility(want, connect, nullptr);
 }
 /**
- * @brief DisConnectAbility, disconnect session with service ability.
+ * @brief Disconnect ability, disconnect session with service ability.
  * @param want Special want for service type's ability.
  * @param connect Callback used to notify caller the result of connecting or disconnecting.
  * @return Returns ERR_OK on success, others on failure.
  */
-ErrCode FormAmsHelper::DisConnectServiceAbility(const sptr<IAbilityConnection> &connect)
-{    
-    sptr<IAbilityManager> ams = GetAbilityManager();
+ErrCode FormAmsHelper::DisConnectServiceAbility(const sptr<AAFwk::IAbilityConnection> &connect)
+{   APP_LOGI("%{public}s called.", __func__);
+    sptr<AAFwk::IAbilityManager> ams = GetAbilityManager();
     if (ams == nullptr) {
         APP_LOGE("%{public}s:ability service not connect", __func__);
         return ERR_APPEXECFWK_FORM_BIND_PROVIDER_FAILED;
     }
     return ams->DisconnectAbility(connect);
+}
+/**
+ * @brief Disconnect ability delay, disconnect session with service ability.
+ * @param want Special want for service type's ability.
+ * @param connect Callback used to notify caller the result of connecting or disconnecting.
+ * @return Returns ERR_OK on success, others on failure.
+ */
+ErrCode FormAmsHelper::DisConnectServiceAbilityDelay(const sptr<AAFwk::IAbilityConnection> &connect)
+{
+    if (eventHandler_ == nullptr) {
+        APP_LOGE("%{public}s fail, eventhandler invalidate", __func__);
+        return ERR_INVALID_OPERATION;
+    }
+    std::function<void()> disConnectAbilityFunc = std::bind(
+        &FormAmsHelper::DisConnectAbilityTask,
+        this,
+        connect);
+    if(!eventHandler_->PostTask(disConnectAbilityFunc, FORM_DISCONNECT_DELAY_TIME)) {
+        APP_LOGE("%{public}s, failed to disconnect ability", __func__);
+        return ERR_APPEXECFWK_FORM_BIND_PROVIDER_FAILED;
+    }
+    return ERR_OK;
 }
 /**
  * @brief Add the ability manager instance for debug.
@@ -91,6 +114,21 @@ ErrCode FormAmsHelper::DisConnectServiceAbility(const sptr<IAbilityConnection> &
 void FormAmsHelper::SetAbilityManager(const sptr<AAFwk::IAbilityManager> &abilityManager)
 {
     abilityManager_ = abilityManager;
+}
+
+/**
+ * @brief Disconnect ability task, disconnect session with service ability.
+ * @param want Special want for service type's ability.
+ * @param connect Callback used to notify caller the result of connecting or disconnecting.
+ */
+void FormAmsHelper::DisConnectAbilityTask(const sptr<AAFwk::IAbilityConnection> &connect)
+{    
+    sptr<AAFwk::IAbilityManager> ams = GetAbilityManager();
+    if (ams == nullptr) {
+        APP_LOGE("%{public}s, ability service not connect", __func__);
+        return;
+    }
+    ams->DisconnectAbility(connect);
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS

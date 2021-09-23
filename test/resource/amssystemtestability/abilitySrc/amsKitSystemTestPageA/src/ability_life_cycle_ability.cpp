@@ -21,6 +21,9 @@
 namespace OHOS {
 namespace AppExecFwk {
 using namespace OHOS::EventFwk;
+namespace {
+constexpr int loopCnt = 3;
+} // namespace
 
 AbilityLifeCycleAbility::~AbilityLifeCycleAbility()
 {
@@ -228,7 +231,7 @@ void AbilityLifeCycleAbility::TestStopAbility()
             TestUtils::PublishEvent(APP_ABILITY_CONTEXT_RESP_EVENT_NAME, ret, "TestStopAbility");
         } break;
         case CaseIndex::FOUR: {
-            for (int i = 0; i < 3; i++) {
+            for (int i = 0; i < loopCnt; i++) {
                 bool ret = BaseAbility::GetContext()->StopAbility(want_);
                 TestUtils::PublishEvent(APP_ABILITY_CONTEXT_RESP_EVENT_NAME, ret, "TestStopAbility");
             }

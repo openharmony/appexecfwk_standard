@@ -17,6 +17,9 @@
 
 namespace OHOS {
 namespace AppExecFwk {
+namespace {
+constexpr uint32_t timeoutAdd = 5000;
+}
 void AmsStAbilityR3::OnStart(const Want &want)
 {
     GetWantInfo(want);
@@ -88,7 +91,7 @@ void AmsStAbilityR3::OnBackground()
 {
     APP_LOGI("AmsStAbilityR3::OnBackground");
     Ability::OnBackground();
-    std::this_thread::sleep_for(std::chrono::milliseconds(STEventName::TERMINATE_TIMEOUT + 5000));
+    std::this_thread::sleep_for(std::chrono::milliseconds(STEventName::TERMINATE_TIMEOUT + timeoutAdd));
     std::string eventData = GetAbilityName() + STEventName::g_abilityStateOnBackground;
     pageAbilityEvent.PublishEvent(STEventName::g_eventName, pageAbilityEvent.GetOnBackgroundCount(), eventData);
 }

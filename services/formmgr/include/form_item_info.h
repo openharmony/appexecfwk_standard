@@ -231,22 +231,22 @@ private:
     
 private:
     int64_t formId_ = -1;
-    std::string packageName_;
-    std::string providerBundleName_;
-    std::string hostBundleName_;
-    std::string moduleName_;
-    std::string abilityName_;
-    std::string formName_;
-    int32_t specificationId_;
-    bool updateFlag_;
-    int32_t updateDuration_;
-    std::string scheduledUpdateTime_;
+    std::string packageName_ = "";
+    std::string providerBundleName_ = "";
+    std::string hostBundleName_ = "";
+    std::string moduleName_ = "";
+    std::string abilityName_ = "";
+    std::string formName_ = "";
+    int32_t specificationId_ = 0;
+    bool updateFlag_ = false;
+    int32_t updateDuration_ = 0;
+    std::string scheduledUpdateTime_ = "";
     std::vector<std::string> hapSourceDirs_;
-    bool temporaryFlag_;
-    bool formVisibleNotify_;
+    bool temporaryFlag_ = false;
+    bool formVisibleNotify_ = false;
 
-    std::string jsComponentName_;
-    std::string abilityModuleName_;
+    std::string jsComponentName_ = "";
+    std::string abilityModuleName_ = "";
     std::unordered_map<std::string, std::string> moduleInfoMap_;
 };
 } // namespace AppExecFwk

@@ -27,9 +27,9 @@ class TaskListener {
 public:
     virtual ~TaskListener(){};
     /**
-     *@brief Called when task stage changed.
-     *@param stage The stage
-     *@return void
+     * @brief Called when task stage changed.
+     * @param stage The stage
+     * @return void
      */
     virtual void OnChanged(const TaskStage &stage) = 0;
 };

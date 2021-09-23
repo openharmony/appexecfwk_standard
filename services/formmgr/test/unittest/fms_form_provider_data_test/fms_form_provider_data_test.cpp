@@ -31,7 +31,7 @@ using namespace OHOS;
 using namespace OHOS::AppExecFwk;
 
 namespace {
-const char* FORM_DB_DATA_BASE_FILE_DIR = "/data/formmgr";
+const std::string FORM_DB_DATA_BASE_FILE_DIR = "/data/formmgr";
 const int32_t four = 4;
 const int32_t ten = 10;
 const int32_t eleven = 11;
@@ -45,16 +45,15 @@ public:
     bool CreateJsonFileByJsonData1(const nlohmann::json &jsonData);
     bool CreateJsonFileByJsonData2(const nlohmann::json &jsonData);
     bool CreateMergeJsonFileByJsonData3(const nlohmann::json &jsonData);
-    // bool createJsonFileByStringData();
 
     nlohmann::json jsonData_;
 };
 void FmsFormProviderDataTest::SetUp()
 {
-    DIR *dirptr = opendir(FORM_DB_DATA_BASE_FILE_DIR);
+    DIR *dirptr = opendir(FORM_DB_DATA_BASE_FILE_DIR.c_str());
     if (dirptr == nullptr) {
         APP_LOGW("%{public}s, opendir is fail", __func__);
-        if (-1 == mkdir(FORM_DB_DATA_BASE_FILE_DIR, S_IRWXU)) {
+        if (-1 == mkdir(FORM_DB_DATA_BASE_FILE_DIR.c_str(), S_IRWXU)) {
             APP_LOGE("%{public}s, dir create fail", __func__);
             return;
         }
@@ -87,7 +86,7 @@ bool FmsFormProviderDataTest::CreateJsonFileByJsonData1(const nlohmann::json &js
     o.close();
 
     std::fstream f("/data/formmgr/ByJsonFile1.json");
-    if(f.good() == false) {
+    if (f.good() == false) {
         return false;
     }
 
@@ -103,7 +102,7 @@ bool FmsFormProviderDataTest::CreateJsonFileByJsonData2(const nlohmann::json &js
     o.close();
 
     std::fstream f("/data/formmgr/ByJsonFile2.json");
-    if(f.good() == false) {
+    if (f.good() == false) {
         return false;
     }
 
@@ -119,7 +118,7 @@ bool FmsFormProviderDataTest::CreateMergeJsonFileByJsonData3(const nlohmann::jso
     o.close();
 
     std::fstream f("/data/formmgr/ByJsonFile3.json");
-    if(f.good() == false) {
+    if (f.good() == false) {
         return false;
     }
 

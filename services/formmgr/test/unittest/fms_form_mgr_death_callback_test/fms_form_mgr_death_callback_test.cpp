@@ -111,8 +111,8 @@ void FmsFormMgrDeathCallbackTest::SetUp()
     permDef.descriptionId = 1;
     permList.emplace_back(permDef);
     Permission::PermissionKit::AddDefPermissions(permList);
-    Permission::PermissionKit::AddUserGrantedReqPermissions(FORM_PROVIDER_BUNDLE_NAME, {PERMISSION_NAME_REQUIRE_FORM}, 
-    0);
+    Permission::PermissionKit::AddUserGrantedReqPermissions(FORM_PROVIDER_BUNDLE_NAME, 
+        {PERMISSION_NAME_REQUIRE_FORM}, 0);
     Permission::PermissionKit::GrantUserGrantedPermission(FORM_PROVIDER_BUNDLE_NAME, PERMISSION_NAME_REQUIRE_FORM, 0);
 }
 
@@ -144,7 +144,7 @@ HWTEST_F(FmsFormMgrDeathCallbackTest, OnRemoteDied_001, TestSize.Level0)
     EXPECT_EQ(ERR_OK, FormMgr::GetInstance().AddForm(0L, want, token_, formJsInfo));
     token_->Wait();
 
-    std::shared_ptr<FormDeathCallback> deathCallback = std::make_shared<MockFormDeathCallback>();
+    std::shared_ptr<FormCallbackInterface> deathCallback = std::make_shared<MockFormDeathCallback>();
     FormMgr::GetInstance().RegisterDeathCallback(deathCallback);
     EXPECT_EQ(true, FormMgr::GetInstance().CheckIsDeathCallbackRegistered(deathCallback));
     FormMgr::GetInstance().GetDeathRecipient()->OnRemoteDied(formyMgrServ_->AsObject());
@@ -191,7 +191,7 @@ HWTEST_F(FmsFormMgrDeathCallbackTest, OnRemoteDied_002, TestSize.Level0)
     EXPECT_EQ(ERR_OK, FormMgr::GetInstance().AddForm(0L, want, token_, formJsInfo));
     token_->Wait();
 
-    std::shared_ptr<FormDeathCallback> deathCallback = std::make_shared<MockFormDeathCallback>();
+    std::shared_ptr<FormCallbackInterface> deathCallback = std::make_shared<MockFormDeathCallback>();
     FormMgr::GetInstance().RegisterDeathCallback(deathCallback);
     EXPECT_EQ(true, FormMgr::GetInstance().CheckIsDeathCallbackRegistered(deathCallback));
 

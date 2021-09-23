@@ -16,6 +16,7 @@
 #include <thread>
 #include "appexecfwk_errors.h"
 #include "app_log_wrapper.h"
+#include "form_errors.h"
 #include "form_mgr.h"
 #include "if_system_ability_manager.h"
 #include "ipc_skeleton.h"
@@ -43,8 +44,11 @@ FormMgr::~FormMgr()
  * @param formInfo Form info.
  * @return Returns ERR_OK on success, others on failure.
  */
-int FormMgr::AddForm(const int64_t formId, const Want &want, const sptr<IRemoteObject> &callerToken, 
-FormJsInfo &formInfo)
+int FormMgr::AddForm(
+    const int64_t formId, 
+    const Want &want, 
+    const sptr<IRemoteObject> &callerToken, 
+    FormJsInfo &formInfo)
 {
     APP_LOGI("%{public}s called.", __func__);
 
@@ -142,8 +146,10 @@ int FormMgr::RequestForm(const int64_t formId, const sptr<IRemoteObject> &caller
  * @param formVisibleType The form visible type, including FORM_VISIBLE and FORM_INVISIBLE.
  * @return Returns ERR_OK on success, others on failure.
  */
-int FormMgr::NotifyWhetherVisibleForms(const std::vector<int64_t> &formIds, const sptr<IRemoteObject> &callerToken, 
-const int32_t formVisibleType)
+int FormMgr::NotifyWhetherVisibleForms(
+    const std::vector<int64_t> &formIds, 
+    const sptr<IRemoteObject> &callerToken, 
+    const int32_t formVisibleType)
 {
     int errCode = Connect();
     if (errCode != ERR_OK) {
@@ -256,8 +262,10 @@ int FormMgr::SetNextRefreshTime(const int64_t formId, const int64_t nextTime)
  * @param updateType Next refresh time.
  * @return Returns ERR_OK on success, others on failure.
  */
-int FormMgr::LifecycleUpdate(const std::vector<int64_t> &formIds, const sptr<IRemoteObject> &callerToken, 
-const int32_t updateType)
+int FormMgr::LifecycleUpdate(
+    const std::vector<int64_t> &formIds, 
+    const sptr<IRemoteObject> &callerToken, 
+    const int32_t updateType)
 {
     int errCode = Connect();
     if (errCode != ERR_OK) {
@@ -288,6 +296,17 @@ void FormMgr::SetRecoverStatus(int recoverStatus)
     APP_LOGI("%{public}s called.", __func__);
 
     recoverStatus_ = recoverStatus;
+}
+
+/**
+ * @brief Get the error message content.
+ * 
+ * @param errCode Error code.
+ * @return Message content.
+ */
+std::string FormMgr::GetErrorMessage(int errCode)
+{
+    return FormErrors::GetInstance().GetErrorMessage(errCode);
 }
 
 /**
@@ -438,11 +457,11 @@ ErrCode FormMgr::Connect()
     deathRecipient_ = sptr<IRemoteObject::DeathRecipient>(new FormMgrDeathRecipient());
     if (deathRecipient_ == nullptr) {
         APP_LOGE("%{public}s :Failed to create FormMgrDeathRecipient!", __func__);
-        return ERR_NO_MEMORY;
+        return ERR_APPEXECFWK_FORM_COMMON_CODE;
     }
     if ((remoteObject->IsProxyObject()) && (!remoteObject->AddDeathRecipient(deathRecipient_))) {
         APP_LOGE("%{public}s :Add death recipient to FormMgrService failed.", __func__);
-        return ERR_APPEXECFWK_FORM_ADD_DEATH_RECIPIENT_FAILED;
+        return ERR_APPEXECFWK_FORM_COMMON_CODE;
     }
 
     remoteProxy_ = iface_cast<IFormMgr>(remoteObject);

@@ -24,7 +24,6 @@
 #include "hilog_wrapper.h"
 namespace OHOS {
 namespace STtools {
-
 class Event {
 public:
     Event();
@@ -43,7 +42,6 @@ private:
     std::vector<std::string> complete_message_;
     std::unordered_map<std::string, std::string> message_data_;
 };
-
 }  // namespace STtools
 }  // namespace OHOS
 #endif  // OHOS_SYSTEM_TEST_STEVENT_H

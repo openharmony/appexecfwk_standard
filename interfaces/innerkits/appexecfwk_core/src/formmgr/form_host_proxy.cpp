@@ -38,8 +38,11 @@ void FormHostProxy::OnAcquired(const FormJsInfo &formInfo)
         APP_LOGE("%{public}s, failed to write formInfo", __func__);
     }
  
-    error = Remote()->SendRequest(static_cast<uint32_t>(IFormHost::Message::FORM_HOST_ON_ACQUIRED), data, reply, 
-    option);
+    error = Remote()->SendRequest(
+        static_cast<uint32_t>(IFormHost::Message::FORM_HOST_ON_ACQUIRED), 
+        data, 
+        reply, 
+        option);
     if (error != ERR_OK) {
         APP_LOGE("%{public}s, failed to SendRequest: %{public}d", __func__, error);
     }
@@ -91,8 +94,11 @@ void  FormHostProxy::OnUninstall(const std::vector<int64_t> &formIds)
         APP_LOGE("%{public}s, failed to write formIds", __func__);
     }
 
-    error = Remote()->SendRequest(static_cast<uint32_t>(IFormHost::Message::FORM_HOST_ON_UNINSTALL), data, reply, 
-    option);
+    error = Remote()->SendRequest(
+        static_cast<uint32_t>(IFormHost::Message::FORM_HOST_ON_UNINSTALL), 
+        data, 
+        reply, 
+        option);
     if (error != ERR_OK) {
         APP_LOGE("%{public}s, failed to SendRequest: %{public}d", __func__, error);
     }
@@ -106,7 +112,7 @@ int  FormHostProxy::GetParcelableInfos(MessageParcel &reply, std::vector<T> &par
         std::unique_ptr<T> info(reply.ReadParcelable<T>());
         if (!info) {
             APP_LOGE("%{public}s, failed to read Parcelable infos", __func__);
-            return ERR_NULL_OBJECT;
+            return ERR_APPEXECFWK_PARCEL_ERROR;
         }
         parcelableInfos.emplace_back(*info);
     }

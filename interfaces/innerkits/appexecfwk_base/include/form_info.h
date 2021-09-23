@@ -21,7 +21,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 enum class FormsColorMode {
     AUTO_MODE = -1,
     DARK_MODE = 0,
@@ -68,7 +67,6 @@ struct FormInfo : public Parcelable {
     virtual bool Marshalling(Parcel &parcel) const override;
     static FormInfo *Unmarshalling(Parcel &parcel);
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_BASE_INCLUDE_FORM_H
