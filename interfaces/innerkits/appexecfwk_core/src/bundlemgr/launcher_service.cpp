@@ -22,7 +22,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 LauncherService::LauncherService()
 {
     init();
@@ -104,7 +103,7 @@ bool LauncherService::GetAbilityList(
     icon = appInfo.iconId;
 
     int64_t installTime = 0;
-    BundleFlag flags;
+    BundleFlag flags = BundleFlag::GET_BUNDLE_DEFAULT;
     flags = BundleFlag::GET_BUNDLE_WITH_ABILITIES;
     BundleInfo bundleInfo;
     if (!iBundleMgr->GetBundleInfo(bundleName, flags, bundleInfo)) {
@@ -162,7 +161,7 @@ bool LauncherService::GetAbilityInfo(const Want &want, const int userId, Launche
     icon = appInfo.iconId;
 
     int64_t installTime = 0;
-    BundleFlag flags;
+    BundleFlag flags = BundleFlag::GET_BUNDLE_DEFAULT;
     flags = BundleFlag::GET_BUNDLE_WITH_ABILITIES;
     BundleInfo bundleInfo;
     if (!iBundleMgr->GetBundleInfo(bundleName, flags, bundleInfo)) {

@@ -48,6 +48,7 @@ group("unittest") {
     "unittest/fms_form_host_record_test:unittest",
     "unittest/fms_form_mgr_add_form_test:unittest",
     "unittest/fms_form_mgr_cast_temp_form_test:unittest",
+    "unittest/fms_form_mgr_death_callback_test:unittest",
     "unittest/fms_form_mgr_delete_form_test:unittest",
     "unittest/fms_form_mgr_lifecycle_update_test:unittest",
     "unittest/fms_form_mgr_message_event_test:unittest",

@@ -23,7 +23,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class MockBundleMgrHost : public BundleMgrHost {
 public:
     MOCK_METHOD4(GetApplicationInfo,
@@ -87,11 +86,10 @@ public:
     MOCK_METHOD3(GetFormsInfoByModule,
         bool(const std::string &bundleName, const std::string &moduleName, std::vector<FormInfo> &formInfos));
     MOCK_METHOD2(GetShortcutInfos, bool(const std::string &bundleName, std::vector<ShortcutInfo> &shortcutInfos));
-    MOCK_METHOD2(GetModuleUsageRecords,
-        bool(const int32_t number, std::vector<ModuleUsageRecord> &moduleUsageRecords));
-    MOCK_METHOD3(NotifyActivityLifeStatus, bool(const std::string &bundleName, const std::string &abilityName, const int64_t launchTime));
+    MOCK_METHOD2(GetModuleUsageRecords, bool(const int32_t number, std::vector<ModuleUsageRecord> &moduleUsageRecords));
+    MOCK_METHOD3(NotifyActivityLifeStatus,
+        bool(const std::string &bundleName, const std::string &abilityName, const int64_t launchTime));
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 

@@ -21,17 +21,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-// void MockFormHostClient::AddForm(const Ability& slice, int64_t formId){
-    
-// }
-
-// void MockFormHostClient::RemoveForm(const Ability& slice, int64_t formId{
-    
-// }
-
-// bool MockFormHostClient::ContainsForm(int64_t formId){
-//     return false;
-// }
 
 /**
  * Request to give back a Form.
@@ -59,7 +48,6 @@ void MockFormHostClient::OnUpdate(const FormJsInfo &formInfo)
     APP_LOGD("MockFormHostClient OnUpdate");
     PostVoid();
 }
-
 
 /**
  * Form provider is uninstalled

@@ -32,14 +32,14 @@ tools_bm_mock_sources = [
   "${appexecfwk_path}/tools/test/mock/mock_bundle_mgr_host.cpp",
 ]
 
-ohos_moduletest("bundle_command_dump_module_test") {
+ohos_moduletest("bm_command_dump_module_test") {
   module_out_path = module_output_path
 
   sources = [
     "${aafwk_path}/tools/aa/src/shell_command.cpp",
     "${appexecfwk_path}/tools/bm/src/bundle_command.cpp",
     "${appexecfwk_path}/tools/bm/src/status_receiver_impl.cpp",
-    "bundle_command_dump_module_test.cpp",
+    "bm_command_dump_module_test.cpp",
   ]
   sources += tools_bm_mock_sources
 
@@ -72,14 +72,14 @@ ohos_moduletest("bundle_command_dump_module_test") {
   ]
 }
 
-ohos_moduletest("bundle_command_install_module_test") {
+ohos_moduletest("bm_command_install_module_test") {
   module_out_path = module_output_path
 
   sources = [
     "${aafwk_path}/tools/aa/src/shell_command.cpp",
     "${appexecfwk_path}/tools/bm/src/bundle_command.cpp",
     "${appexecfwk_path}/tools/bm/src/status_receiver_impl.cpp",
-    "bundle_command_install_module_test.cpp",
+    "bm_command_install_module_test.cpp",
   ]
   sources += tools_bm_mock_sources
 
@@ -112,14 +112,14 @@ ohos_moduletest("bundle_command_install_module_test") {
   ]
 }
 
-ohos_moduletest("bundle_command_uninstall_module_test") {
+ohos_moduletest("bm_command_uninstall_module_test") {
   module_out_path = module_output_path
 
   sources = [
     "${aafwk_path}/tools/aa/src/shell_command.cpp",
     "${appexecfwk_path}/tools/bm/src/bundle_command.cpp",
     "${appexecfwk_path}/tools/bm/src/status_receiver_impl.cpp",
-    "bundle_command_uninstall_module_test.cpp",
+    "bm_command_uninstall_module_test.cpp",
   ]
   sources += tools_bm_mock_sources
 
@@ -156,8 +156,8 @@ group("moduletest") {
   testonly = true
 
   deps = [
-    ":bundle_command_dump_module_test",
-    ":bundle_command_install_module_test",
-    ":bundle_command_uninstall_module_test",
+    ":bm_command_dump_module_test",
+    ":bm_command_install_module_test",
+    ":bm_command_uninstall_module_test",
   ]
 }

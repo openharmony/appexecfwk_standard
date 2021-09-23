@@ -24,7 +24,6 @@
 #include <unordered_map>
 
 #include "event_handler.h"
-#include "form_mgr_adapter.h"
 #include "form_mgr_stub.h"
 #include "form_provider_data.h"
 #include "iremote_object.h"
@@ -194,8 +193,6 @@ private:
 
     std::shared_ptr<EventRunner> runner_ = nullptr;
     std::shared_ptr<EventHandler> handler_ = nullptr;
-
-    std::unique_ptr<FormMgrAdapter> formMgrAdapter_ = nullptr;
     
     bool resetFlag = false;
 

@@ -56,12 +56,6 @@ void FormDbCache::Start()
     }
 }
 
-// void FormDbCache::Stop()
-// {
-//     APP_LOGI("stop");
-//     dataStorage_->Stop();
-// }
-
 /**
  * @brief Save or update form data to DbCache and DB.
  * @param formDBInfo Form data.
@@ -134,7 +128,7 @@ ErrCode FormDbCache::DeleteFormInfo(int64_t formId)
     if (dataStorage_->DeleteStorageFormInfo(std::to_string(formId)) == ERR_OK) {
         return ERR_OK;
     } else {
-        return ERR_APPEXECFWK_FORM_JSON_DELETE_FAIL;
+        return ERR_APPEXECFWK_FORM_COMMON_CODE;
     }
 }
 /**
@@ -147,7 +141,7 @@ ErrCode FormDbCache::DeleteFormInfoByBundleName(const std::string &bundleName, s
 {
     std::lock_guard<std::mutex> lock(formDBInfosMutex_);
     std::vector<FormDBInfo>::iterator itRecord;
-    for (itRecord = formDBInfos_.begin(); itRecord != formDBInfos_.end();) {
+    for (itRecord = formDBInfos_.begin(); itRecord != formDBInfos_.end(); ) {
         if (bundleName == itRecord->bundleName) {
             int64_t formId = itRecord->formId;            
             if (dataStorage_->DeleteStorageFormInfo(std::to_string(formId)) == ERR_OK) {
@@ -162,19 +156,6 @@ ErrCode FormDbCache::DeleteFormInfoByBundleName(const std::string &bundleName, s
     }
     return ERR_OK;
 }
-// bool FormDbCache::BatchDeleteForms(std::vector<int64_t> formIds)
-// {
-//     std::lock_guard<std::mutex> lock(formDBInfosMutex_);
-//     for (const auto& formId : formIds) {
-//         FormDBInfo tmpForm;
-//         tmpForm.formId_ = formId;
-//         auto iter = find(formDBInfos_.begin(), formDBInfos_.end(), tmpForm);
-//         if (iter != formDBInfos_.end()) {
-//             formDBInfos_.erase(iter);
-//         }
-//     }
-//     return dataStorage_->BatchDeleteForms(formIds);
-// }
 
 /**
  * @brief Get all form data from DbCache.
@@ -208,7 +189,7 @@ ErrCode FormDbCache::GetDBRecord(const int64_t formId, FormRecord &record) const
         }    
     }
     APP_LOGE("%{public}s, not find formId[%{public}" PRId64 "]", __func__, formId);
-    return ERR_APPEXECFWK_FORM_DBCACHE_FIND_FAIL;
+    return ERR_APPEXECFWK_FORM_NOT_EXIST_ID;
 }
 /**
  * @brief Get record from DB cache with formId
@@ -226,7 +207,7 @@ ErrCode FormDbCache::GetDBRecord(const int64_t formId, FormDBInfo &record) const
         }    
     }
     APP_LOGE("%{public}s, not find formId[%{public}" PRId64 "]", __func__, formId);
-    return ERR_APPEXECFWK_FORM_DBCACHE_FIND_FAIL;
+    return ERR_APPEXECFWK_FORM_NOT_EXIST_ID;
 }
 /**
  * @brief Use record save or update DB data and DB cache with formId
@@ -238,7 +219,6 @@ ErrCode FormDbCache::UpdateDBRecord(const int64_t formId, const FormRecord &reco
 {
     FormDBInfo formDBInfo(formId, record);
     return FormDbCache::GetInstance().SaveFormInfo(formDBInfo);
-    // FormBmsHelper::GetInstance().NotifyModuleNotRemovable(formDBInfo.bundleName, formDBInfo.moduleName);
 }
 /**
  * @brief Get no host db record.
@@ -247,8 +227,8 @@ ErrCode FormDbCache::UpdateDBRecord(const int64_t formId, const FormRecord &reco
  * @param foundFormsMap Form Id list.
  * @return Returns ERR_OK on success, others on failure.
  */
-ErrCode FormDbCache::GetNoHostDBForms(const int uid, std::map<FormIdKey, std::set<int64_t>> &noHostFormDBList, 
-std::map<int64_t, bool> &foundFormsMap)
+ErrCode FormDbCache::GetNoHostDBForms(const int uid, std::map<FormIdKey, 
+    std::set<int64_t>> &noHostFormDBList, std::map<int64_t, bool> &foundFormsMap)
 {
     std::lock_guard<std::mutex> lock(formDBInfosMutex_);
     for (FormDBInfo& dbInfo : formDBInfos_) {
@@ -258,6 +238,10 @@ std::map<int64_t, bool> &foundFormsMap)
                 FormIdKey formIdKey;
                 formIdKey.bundleName = dbInfo.bundleName;
                 formIdKey.abilityName = dbInfo.abilityName;
+                formIdKey.moduleName = "";
+                formIdKey.formName = "";
+                formIdKey.specificationId = 0;
+                formIdKey.orientation = 0;
                 auto itIdsSet = noHostFormDBList.find(formIdKey);
                 if (itIdsSet == noHostFormDBList.end()) {
                     std::set<int64_t> formIdsSet;

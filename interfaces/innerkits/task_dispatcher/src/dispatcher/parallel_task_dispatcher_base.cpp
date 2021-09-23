@@ -122,8 +122,7 @@ std::shared_ptr<Revocable> ParallelTaskDispatcherBase::DelayDispatch(
         return nullptr;
     }
     TracePointBeforePost(innerTask, true, DELAY_DISPATCHER_TAG);
-    std::function<void()> callback =
-        std::bind(&ParallelTaskDispatcherBase::InterceptedExecute, shared_from_this(), innerTask);
+    std::function < void()> callback = std::bind(&ParallelTaskDispatcherBase::InterceptedExecute, shared_from_this(), innerTask);
     bool executeFlag = executor_->DelayExecute(callback, delayMs);
     if (!executeFlag) {
         APP_LOGE("ParallelTaskDispatcherBase::DelayDispatch execute failed");

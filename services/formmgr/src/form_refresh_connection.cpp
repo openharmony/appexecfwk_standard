@@ -28,10 +28,12 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-FormRefreshConnection::FormRefreshConnection(const int64_t formId, const Want& want)
+FormRefreshConnection::FormRefreshConnection(const int64_t formId, const Want& want,
+    const std::string &bundleName, const std::string &abilityName)
     :formId_(formId),  
     want_(want)
 {
+    SetProviderKey(bundleName, abilityName);
 }
 /**
  * @brief OnAbilityConnectDone, AbilityMs notify caller ability the result of connect.
@@ -45,17 +47,15 @@ void FormRefreshConnection::OnAbilityConnectDone(
     const AppExecFwk::ElementName &element, const sptr<IRemoteObject> &remoteObject, int resultCode)
 {
     APP_LOGI("%{public}s called.", __func__);
-
     if (resultCode != ERR_OK) {
         APP_LOGE("%{public}s, abilityName:%{public}s, formId:%{public}" PRId64 ", resultCode:%{public}d", 
-           __func__, element.GetAbilityName().c_str(), formId_, resultCode);
+            __func__, element.GetAbilityName().c_str(), formId_, resultCode);
         return;
     }
     FormSupplyCallback::GetInstance()->AddConnection(this);
 
     if (want_.HasParameter(Constants::PARAM_MESSAGE_KEY)) {
         std::string message = want_.GetStringParam(Constants::PARAM_MESSAGE_KEY);
-        // FormTaskMgr::GetInstance()->FireFormEvent(formId, message, BuildDefaultWant(null, this), remoteObject);
     } else if (want_.HasParameter(Constants::RECREATE_FORM_KEY)) {
         Want cloneWant = Want(want_);
         cloneWant.RemoveParam(Constants::RECREATE_FORM_KEY);

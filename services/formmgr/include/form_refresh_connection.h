@@ -29,7 +29,8 @@ using Want = OHOS::AAFwk::Want;
  */
 class FormRefreshConnection : public FormAbilityConnection {
 public:
-    FormRefreshConnection(const int64_t formId, const Want &want);
+    FormRefreshConnection(const int64_t formId, const Want &want,
+        const std::string &bundleName, const std::string &abilityName);
     virtual ~FormRefreshConnection() = default;
 
     /**

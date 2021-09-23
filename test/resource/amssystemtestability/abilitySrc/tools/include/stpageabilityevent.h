@@ -27,7 +27,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 namespace STEventName {
 const std::string g_eventName = "resp_st_page_ability_callback";
 const std::string g_eventNameProcessMemory = "resp_st_process_memory_info";
@@ -129,8 +128,6 @@ private:
     std::string callBackPath_;
     std::string abilityStatus_;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
-
-#endif  //_AMS_ST_PAGE_ABILITY_EVENT_H_
+#endif  // _AMS_ST_PAGE_ABILITY_EVENT_H_

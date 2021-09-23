@@ -87,7 +87,8 @@ public:
     bool SubscribeEvent();
     void DoTestCase();
     void StopSelfAbility();
-
+    void caseIndexOne();
+    void caseIndexTwo();
 protected:
     virtual void Init(const std::shared_ptr<AbilityInfo> &abilityInfo,
         const std::shared_ptr<OHOSApplication> &application, std::shared_ptr<AbilityHandler> &handler,

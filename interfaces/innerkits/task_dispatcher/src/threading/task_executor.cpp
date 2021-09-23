@@ -94,7 +94,7 @@ std::shared_ptr<Task> TaskExecutor::GetTask(const std::shared_ptr<WorkerThread> 
     std::shared_ptr<Task> nullRunnable = nullptr;
     std::shared_ptr<Task> next = nullptr;
 
-    for (;;) {
+    for(;;) {
         if (terminated_.load() && pendingTasks_->Empty()) {
             APP_LOGI("TaskExecutor::GetTask end: loop thread %{public}s is terminated",
                 workerThread->GetThreadName().c_str());
@@ -204,7 +204,7 @@ bool TaskExecutor::EnsureConsumeStarted()
 
 void TaskExecutor::Consume()
 {
-    for (;;) {
+    for(;;) {
         if (terminated_.load() && delayTasks_->Empty()) {
             APP_LOGI("TaskExecutor::Consume delay task is empty");
             break;

@@ -35,7 +35,7 @@ namespace OHOS {
 namespace AppExecFwk {
 using namespace AAFwk;
 using namespace OHOS::EventFwk;
-
+namespace {
 constexpr size_t ARRAY_SIZE = 10000;
 constexpr int LARGE_STR_LEN = 65534;
 constexpr int SMALL_INT = 5;
@@ -46,6 +46,7 @@ constexpr int even = 2;
 constexpr int index_f = 0;
 constexpr int index_s = 1;
 constexpr int index_t = 2;
+}
 
 bool SecondAbility::CompareWantNoParams(const Want &source, const Want &target)
 {
@@ -1293,7 +1294,7 @@ void SecondAbility::WantRemoveEntityCase2(int code)
 void SecondAbility::WantRemoveEntityCase3(int code)
 {
     Want want;
-    std::vector<std::string> entities{"entity1", "entity2", "entity3"};
+    std::vector<std::string> entities {"entity1", "entity2", "entity3"};
     bool result = true;
     for (const auto &entity : entities) {
         want.AddEntity(entity);
@@ -1945,7 +1946,7 @@ void SecondAbility::WantParseUriCase23(int code)
     bool result = (want != nullptr);
     if (want != nullptr) {
         auto parsedValue = want->GetStringArrayParam(key);
-        result = result && (parsedValue == (std::vector<std::string>{"aa", "bb", "cc"}));
+        result = result && (parsedValue == (std::vector<std::string> {"aa", "bb", "cc"}));
         delete want;
     }
     TestUtils::PublishEvent(g_EVENT_RESP_SECOND, code, std::to_string(result));
@@ -5142,24 +5143,24 @@ void SecondAbility::WantOperationEqualsCase2(int code)
     OperationBuilder opBuilder;
     std::vector<std::string> vec = {"entities1", "entities2"};
     auto operation = opBuilder.WithAbilityName("abilityName")
-                         .WithBundleName("bundleName")
-                         .WithDeviceId("deviceId")
-                         .WithAction("action")
-                         .WithEntities(vec)
-                         .WithFlags(1)
-                         .WithUri(Uri("uri"))
-                         .build();
+        .WithBundleName("bundleName")
+        .WithDeviceId("deviceId")
+        .WithAction("action")
+        .WithEntities(vec)
+        .WithFlags(1)
+        .WithUri(Uri("uri"))
+        .build();
     Want wantOne;
     wantOne.SetOperation(*operation);
     OperationBuilder opBuilderTwo;
     auto operationTwo = opBuilderTwo.WithAbilityName("abilityName2")
-                            .WithBundleName("bundleName")
-                            .WithDeviceId("deviceId")
-                            .WithAction("action")
-                            .WithEntities(vec)
-                            .WithFlags(1)
-                            .WithUri(Uri("uri"))
-                            .build();
+        .WithBundleName("bundleName")
+        .WithDeviceId("deviceId")
+        .WithAction("action")
+        .WithEntities(vec)
+        .WithFlags(1)
+        .WithUri(Uri("uri"))
+        .build();
     Want wantTwo;
     wantTwo.SetOperation(*operationTwo);
     bool result = !wantOne.OperationEquals(wantTwo);
@@ -5171,18 +5172,18 @@ void SecondAbility::WantOperationEqualsCase3(int code)
 {
     OperationBuilder opBuilder;
     auto operation = opBuilder.WithAbilityName("abilityName")
-                         .WithBundleName("bundleName")
-                         .WithDeviceId("deviceId")
-                         .WithAction("action")
-                         .build();
+        .WithBundleName("bundleName")
+        .WithDeviceId("deviceId")
+        .WithAction("action")
+        .build();
     Want wantOne;
     wantOne.SetOperation(*operation);
     OperationBuilder opBuilderTwo;
     auto operationTwo = opBuilderTwo.WithAbilityName("abilityName")
-                            .WithBundleName("bundleName")
-                            .WithDeviceId("deviceId")
-                            .WithAction("action")
-                            .build();
+        .WithBundleName("bundleName")
+        .WithDeviceId("deviceId")
+        .WithAction("action")
+        .build();
     Want wantTwo;
     wantTwo.SetOperation(*operationTwo);
     bool result = wantOne.OperationEquals(wantTwo);
@@ -5194,10 +5195,10 @@ void SecondAbility::WantOperationEqualsCase4(int code)
 {
     OperationBuilder opBuilder;
     auto operation = opBuilder.WithAbilityName("abilityName" + std::to_string(pressureTimes - 1))
-                         .WithBundleName("bundleName")
-                         .WithDeviceId("deviceId")
-                         .WithAction("action")
-                         .build();
+        .WithBundleName("bundleName")
+        .WithDeviceId("deviceId")
+        .WithAction("action")
+        .build();
     Want wantOne;
     wantOne.SetOperation(*operation);
     Want wantTwo;
@@ -5206,10 +5207,10 @@ void SecondAbility::WantOperationEqualsCase4(int code)
     bool result = true;
     for (int i = 0; i < pressureTimes; i++) {
         operationTwo = opBuilderTwo.WithAbilityName("abilityName" + std::to_string(i))
-                           .WithBundleName("bundleName")
-                           .WithDeviceId("deviceId")
-                           .WithAction("action")
-                           .build();
+            .WithBundleName("bundleName")
+            .WithDeviceId("deviceId")
+            .WithAction("action")
+            .build();
         wantTwo.SetOperation(*operationTwo);
         if (i == pressureTimes - 1) {
             result = result && wantOne.OperationEquals(wantTwo);
@@ -5238,10 +5239,10 @@ void SecondAbility::WantCloneOperationCase2(int code)
 {
     OperationBuilder opBuilder;
     auto operation = opBuilder.WithAbilityName("abilityName")
-                         .WithBundleName("bundleName")
-                         .WithDeviceId("deviceId")
-                         .WithAction("action")
-                         .build();
+        .WithBundleName("bundleName")
+        .WithDeviceId("deviceId")
+        .WithAction("action")
+        .build();
     Want want;
     want.SetOperation(*operation);
     Want *wantClone = want.CloneOperation();

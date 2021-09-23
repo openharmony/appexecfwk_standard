@@ -67,15 +67,26 @@ public:
      * @param connectId The ability connection id.
      */
     void SetConnectId(long connectId);
-
-    // std::string GetProviderKey();
+    /**
+     * @brief Get the provider Key
+     * 
+     * @return The provider Key 
+     */
+    std::string GetProviderKey();
+    /**
+     * @brief Set the Provider Key
+     * 
+     * @param bundleName bundleName
+     * @param abilityName abilityName
+     */
+    void SetProviderKey(const std::string &bundleName, const std::string &abilityName);
     
 private:
-    int64_t formId_;
-    std::string deviceId_;
-    std::string bundleName_;
-    std::string abilityName_;
-    bool isFreeInstall_;
+    int64_t formId_ = 0;
+    std::string deviceId_ = "";
+    std::string bundleName_ = "";
+    std::string abilityName_ = "";
+    bool isFreeInstall_ = false;
     long connectId_ = 0;
 
     DISALLOW_COPY_AND_MOVE(FormAbilityConnection);

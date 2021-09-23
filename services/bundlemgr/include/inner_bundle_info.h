@@ -71,6 +71,7 @@ struct InnerModuleInfo {
     int32_t labelId = 0;
     std::string description;
     int32_t descriptionId = 0;
+    std::string mainAbility;
     bool isEntry;
     bool installationFree;
     MetaData metaData;
@@ -892,7 +893,7 @@ public:
 
     void SetProvisionId(const std::string &provisionId)
     {
-        baseBundleInfo_.appId = provisionId;
+        baseBundleInfo_.appId = baseBundleInfo_.name + Constants::FILE_UNDERLINE + provisionId;
     }
 
     std::string GetProvisionId() const

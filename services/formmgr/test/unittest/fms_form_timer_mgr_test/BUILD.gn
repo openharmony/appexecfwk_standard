@@ -27,6 +27,7 @@ ohos_unittest("FmsFormTimerMgrTest") {
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy/include",
     "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_base/include/",
     "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_core/include/formmgr/",
+    "//base/miscservices/time/interfaces/innerkits/include",
   ]
 
   configs = [
@@ -39,17 +40,21 @@ ohos_unittest("FmsFormTimerMgrTest") {
   }
   deps = [
     "${appexecfwk_path}/common:libappexecfwk_common",
-    "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base:appexecfwk_base",
-    "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core:appexecfwk_core",
     "${services_path}/formmgr:fms_target",
-    "//foundation/aafwk/standard/interfaces/innerkits/base:base",
-    "//foundation/aafwk/standard/interfaces/innerkits/want:want",
-    "//foundation/appexecfwk/standard/interfaces/innerkits/libeventhandler:libeventhandler",
+    "//base/miscservices/time/services:time_service",
+    "//base/notification/ans_standard/frameworks/wantagent:wantagent_innerkits",
+    "//base/notification/ces_standard/frameworks/common:libevent_common",
+    "//foundation/distributedschedule/dmsfwk/services/dtbschedmgr:distributedschedsvr",
     "//third_party/googletest:gmock_main",
     "//utils/native/base:utils",
   ]
 
   external_deps = [
+    "aafwk_standard:base",
+    "aafwk_standard:want",
+    "appexecfwk_standard:appexecfwk_base",
+    "appexecfwk_standard:appexecfwk_core",
+    "appexecfwk_standard:libeventhandler",
     "ces_standard:cesfwk_core",
     "ces_standard:cesfwk_innerkits",
     "hiviewdfx_hilog_native:libhilog",

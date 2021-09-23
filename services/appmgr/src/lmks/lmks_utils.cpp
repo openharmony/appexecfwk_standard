@@ -108,7 +108,7 @@ std::string LmksUtils::GetProcName(pid_t pid)
         return name;
     }
 
-    if (strlen(line) < PROC_LINE_MAX && strlen(line) != 0) {
+    if (strlen(line) + 1 <= PROC_LINE_MAX && strlen(line) != 0) {
         name = line;
     } else {
         HiLog::Error(LABEL, "cmdline no data");
@@ -160,7 +160,7 @@ int LmksUtils::GetProcSize(pid_t pid)
         return -1;
     }
 
-    if ((strlen(line) < PROC_LINE_MAX && strlen(line) != 0) && (sscanf_s(line, "%d %d ", &total, &rss) > 0)) {
+    if ((strlen(line) + 1 <= PROC_LINE_MAX && strlen(line) != 0) && (sscanf_s(line, "%d %d ", &total, &rss) > 0)) {
         HiLog::Info(LABEL, "pid %{public}d total %{public}d rss %{public}d", pid, total, rss);
     } else {
         HiLog::Error(LABEL, "strlen or sscanf_s err %{public}s", strerror(errno));

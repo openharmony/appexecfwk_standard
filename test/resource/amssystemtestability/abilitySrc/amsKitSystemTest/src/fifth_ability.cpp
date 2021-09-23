@@ -248,7 +248,7 @@ void FifthAbility::WantParamsSetParamCase9(int code)
     TestUtils::PublishEvent(g_EVENT_RESP_FIFTH, code, std::to_string(result));
 }
 
-template <typename T1, typename T2>
+template<typename T1, typename T2>
 static void SetArray(const InterfaceID &id, const std::vector<T1> &value, sptr<IArray> &ao)
 {
     typename std::vector<T1>::size_type size = value.size();
@@ -258,7 +258,7 @@ static void SetArray(const InterfaceID &id, const std::vector<T1> &value, sptr<I
     }
 }
 
-template <typename T1, typename T2, typename T3>
+template<typename T1, typename T2, typename T3>
 static void FillArray(IArray *ao, std::vector<T1> &array)
 {
     auto func = [&](IInterface *object) { array.push_back(T2::Unbox(T3::Query(object))); };

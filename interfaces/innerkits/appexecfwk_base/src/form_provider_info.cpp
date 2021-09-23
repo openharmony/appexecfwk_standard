@@ -20,7 +20,6 @@ namespace OHOS {
 namespace AppExecFwk {
 bool FormProviderInfo::ReadFromParcel(Parcel &parcel)
 {
-    formId_ = parcel.ReadInt64();
     auto bindingData = parcel.ReadParcelable<FormProviderData>();
     jsBindingData_ = *bindingData;
     return true;
@@ -38,9 +37,6 @@ FormProviderInfo *FormProviderInfo::Unmarshalling(Parcel &parcel)
 
 bool FormProviderInfo::Marshalling(Parcel &parcel) const
 {
-    if (!parcel.WriteInt64(formId_)) {
-        return false;
-    }
     if (!parcel.WriteParcelable(&jsBindingData_)) {
         return false;
     }

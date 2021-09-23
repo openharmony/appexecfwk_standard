@@ -260,7 +260,6 @@ ErrCode BundleManagerShellCommand::init()
 
     if (!bundleMgrProxy_) {
         bundleMgrProxy_ = GetBundleMgrProxy();
-
         if (bundleMgrProxy_) {
             if (!bundleInstallerProxy_) {
                 bundleInstallerProxy_ = bundleMgrProxy_->GetBundleInstaller();
@@ -808,6 +807,5 @@ int32_t BundleManagerShellCommand::UninstallOperation(
 
     return statusReceiver->GetResultCode();
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

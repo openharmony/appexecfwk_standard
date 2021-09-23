@@ -28,9 +28,11 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-FormDeleteConnection::FormDeleteConnection(const int64_t formId)
+FormDeleteConnection::FormDeleteConnection(const int64_t formId, const std::string &bundleName, 
+    const std::string &abilityName)
     :formId_(formId)
 {
+    SetProviderKey(bundleName, abilityName);
 }
 /**
  * @brief OnAbilityConnectDone, AbilityMs notify caller ability the result of connect.
