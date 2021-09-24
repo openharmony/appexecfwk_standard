@@ -23,7 +23,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class Configuration : public Parcelable {
 public:
     Configuration() = default;
@@ -65,7 +64,6 @@ public:
 private:
     std::string testInfostr_;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_OHOS_CONFIGURATION_H

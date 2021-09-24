@@ -23,7 +23,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class AppTaskInfo : public Parcelable {
 public:
     /**
@@ -110,7 +109,6 @@ private:
     pid_t pid_ = 0;
     int32_t appRecordId_ = 0;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_CORE_INCLUDE_APPMGR_APP_TASK_INFO_H

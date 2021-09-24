@@ -36,7 +36,7 @@ void AmsAbilityVisibleTestData::OnStart(const Want &want)
     pageAbilityEvent.PublishEvent(STEventName::g_eventName, pageAbilityEvent.GetOnStartCount(), eventData);
 }
 
-int AmsAbilityVisibleTestData::Insert(const Uri &uri, const ValuesBucket &value)
+int AmsAbilityVisibleTestData::Insert(const Uri &uri, const NativeRdb::ValuesBucket &value)
 {
     APP_LOGI("AmsAbilityVisibleTestData::Insert");
     int result = Ability::Insert(uri, value);
@@ -45,7 +45,7 @@ int AmsAbilityVisibleTestData::Insert(const Uri &uri, const ValuesBucket &value)
     return result;
 }
 
-int AmsAbilityVisibleTestData::Delete(const Uri &uri, const DataAbilityPredicates &predicates)
+int AmsAbilityVisibleTestData::Delete(const Uri &uri, const NativeRdb::DataAbilityPredicates &predicates)
 {
     APP_LOGI("AmsAbilityVisibleTestData::Delete");
     int result = Ability::Delete(uri, predicates);
@@ -55,7 +55,7 @@ int AmsAbilityVisibleTestData::Delete(const Uri &uri, const DataAbilityPredicate
 }
 
 int AmsAbilityVisibleTestData::Update(
-    const Uri &uri, const ValuesBucket &value, const DataAbilityPredicates &predicates)
+    const Uri &uri, const NativeRdb::ValuesBucket &value, const NativeRdb::DataAbilityPredicates &predicates)
 {
     APP_LOGI("AmsAbilityVisibleTestData::Update");
     int result = Ability::Update(uri, value, predicates);
@@ -64,11 +64,11 @@ int AmsAbilityVisibleTestData::Update(
     return result;
 }
 
-std::shared_ptr<ResultSet> AmsAbilityVisibleTestData::Query(
-    const Uri &uri, const std::vector<std::string> &columns, const DataAbilityPredicates &predicates)
+std::shared_ptr<NativeRdb::AbsSharedResultSet> AmsAbilityVisibleTestData::Query(
+    const Uri &uri, const std::vector<std::string> &columns, const NativeRdb::DataAbilityPredicates &predicates)
 {
     APP_LOGI("AmsAbilityVisibleTestData::Query");
-    std::shared_ptr<ResultSet> result = Ability::Query(uri, columns, predicates);
+    std::shared_ptr<NativeRdb::AbsSharedResultSet> result = Ability::Query(uri, columns, predicates);
     std::string eventData = GetAbilityName() + STEventName::g_abilityStateQuery;
     pageAbilityEvent.PublishEvent(STEventName::g_eventName, defenvntCode, eventData);
     return result;

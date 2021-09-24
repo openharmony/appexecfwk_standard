@@ -91,7 +91,7 @@ void AmsAbilityVisibleTestPageB2::OnActive()
         if (startAbilityType == "Data" || startAbilityType == "DataRelease") {
             Uri dataAbilityUri("dataability:///" + startBundleName + "." + startAbilityName);
             std::shared_ptr<DataAbilityHelper> helper = DataAbilityHelper::Creator(GetContext());
-            ValuesBucket bucket;
+            NativeRdb::ValuesBucket bucket;
             helper->Insert(dataAbilityUri, bucket);
             if (startAbilityType == "DataRelease") {
                 helper->Release();

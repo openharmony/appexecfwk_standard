@@ -26,7 +26,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class AppStateCallbackHost : public IRemoteStub<IAppStateCallback> {
 public:
     AppStateCallbackHost();
@@ -59,7 +58,6 @@ private:
 
     DISALLOW_COPY_AND_MOVE(AppStateCallbackHost);
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_CORE_INCLUDE_APPMGR_APP_STATE_CALLBACK_HOST_H

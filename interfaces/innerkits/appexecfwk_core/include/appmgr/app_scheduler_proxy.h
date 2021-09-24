@@ -126,7 +126,6 @@ private:
     bool WriteInterfaceToken(MessageParcel &data);
     static inline BrokerDelegator<AppSchedulerProxy> delegator_;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_CORE_INCLUDE_APPMGR_APP_SCHEDULER_CLIENT_H

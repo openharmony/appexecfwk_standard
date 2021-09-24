@@ -24,12 +24,10 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class MockAppScheduler : public AppSchedulerHost {
 public:
     MockAppScheduler(){};
     virtual ~MockAppScheduler(){};
-
     MOCK_METHOD0(ScheduleForegroundApplication, void());
     MOCK_METHOD0(ScheduleBackgroundApplication, void());
     MOCK_METHOD0(ScheduleTerminateApplication, void());

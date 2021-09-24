@@ -283,6 +283,5 @@ void LmksServer::ProcessMessage(int connectFd, LMKS_PACKET cmds, int len)
     // close connect fd.
     close(connectFd);
 }
-
 }  // namespace LMKS
 }  // namespace OHOS

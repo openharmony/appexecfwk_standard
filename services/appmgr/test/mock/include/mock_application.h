@@ -17,12 +17,10 @@
 
 #include "gmock/gmock.h"
 #include "semaphore_ex.h"
-
 #include "app_scheduler_host.h"
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class MockApplication : public AppSchedulerHost {
 public:
     MOCK_METHOD0(ScheduleForegroundApplication, void());
@@ -108,7 +106,6 @@ private:
     Profile profile_;
     //  Configuration configuration_;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_APPMGR_TEST_MOCK_APPLICATION_H

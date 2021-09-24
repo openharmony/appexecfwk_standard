@@ -280,6 +280,5 @@ void AppMgrService::GetAppFreezingTime(int &time)
     appMgrServiceInner_->GetAppFreezingTime(time);
     APP_LOGE("get app freeze time %{public}d ", time);
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

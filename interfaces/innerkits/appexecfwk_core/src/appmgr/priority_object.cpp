@@ -18,9 +18,7 @@
 #include "app_log_wrapper.h"
 
 namespace OHOS {
-
 namespace AppExecFwk {
-
 pid_t PriorityObject::GetPid() const
 {
     return pid_;
@@ -141,6 +139,5 @@ PriorityObject *PriorityObject::Unmarshalling(Parcel &parcel)
     }
     return priorityObject;
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

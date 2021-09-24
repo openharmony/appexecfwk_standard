@@ -479,14 +479,12 @@ bool ProcessOptimizer::UpdateAppOomAdj(const AppPtr &app)
         APP_LOGE("%{public}s(%{public}d) invalid priority object.", __func__, __LINE__);
         return false;
     }
-
     // special set launcher and systemui adj
     if (app->IsLauncherApp() || app->GetBundleName() == SYSTEM_UI_BUNDLE_NAME) {
         return SetAppOomAdj(app, APP_OOM_ADJ_SYSTEM);
     }
 
     auto state = app->GetState();
-
     if (state == ApplicationState::APP_STATE_FOREGROUND || state == ApplicationState::APP_STATE_CREATE ||
         state == ApplicationState::APP_STATE_READY) {
         return SetAppOomAdj(app, APP_OOM_ADJ_FOREGROUND);
@@ -494,6 +492,34 @@ bool ProcessOptimizer::UpdateAppOomAdj(const AppPtr &app)
 
     int oomAdj;
     int oomAdjMax;
+    if(!GetAppOomAdj(app,state,oomAdj, oomAdjMax)){
+        return false;
+    }
+
+    for (auto curApp : appLru_) {
+        if (curApp->GetState() != state) {
+            continue;
+        }
+        // adj of launcher and systemui is always APP_OOM_ADJ_SYSTEM
+        if (curApp->IsLauncherApp() || curApp->GetBundleName() == SYSTEM_UI_BUNDLE_NAME) {
+            continue;
+        }
+
+        SetAppOomAdj(curApp, oomAdj);
+        if (oomAdj < oomAdjMax) {
+            oomAdj += 1;
+        }
+    }
+    return true;
+}
+
+bool ProcessOptimizer::GetAppOomAdj(const AppPtr &app,ApplicationState state,int &oomAdj,int &oomAdjMax)
+{
+    auto priorityObject = app->GetPriorityObject();
+    if (!priorityObject) {
+        APP_LOGE("%{public}s(%{public}d) invalid priority object.", __func__, __LINE__);
+        return false;
+    }
 
     switch (state) {
         case ApplicationState::APP_STATE_BACKGROUND:
@@ -521,23 +547,6 @@ bool ProcessOptimizer::UpdateAppOomAdj(const AppPtr &app)
             oomAdjMax = APP_OOM_ADJ_UNKNOWN;
             break;
     }
-
-    for (auto curApp : appLru_) {
-        if (curApp->GetState() != state) {
-            continue;
-        }
-
-        // adj of launcher and systemui is always APP_OOM_ADJ_SYSTEM
-        if (curApp->IsLauncherApp() || curApp->GetBundleName() == SYSTEM_UI_BUNDLE_NAME) {
-            continue;
-        }
-
-        SetAppOomAdj(curApp, oomAdj);
-        if (oomAdj < oomAdjMax) {
-            oomAdj += 1;
-        }
-    }
-
     return true;
 }
 
@@ -568,7 +577,6 @@ bool ProcessOptimizer::UpdateAppSchedPolicy(const AppPtr &app)
             ret = true;
             break;
     }
-
     return ret;
 }
 

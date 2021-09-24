@@ -319,7 +319,7 @@ bool WorkerPool::IsRunning(int ctl)
     return ctl < CLOSING;
 }
 
-int WorkerPool::GetStateFromControl(int ctl)
+int WorkerPool::GetStateFromControl(unsigned int ctl)
 {
     return ctl & ~CAPACITY;
 }
@@ -345,7 +345,7 @@ int WorkerPool::CombineToControl(unsigned int state, unsigned int count)
 
 bool WorkerPool::CompareAndIncThreadNum(int expect)
 {
-    int ctl = control_.load();
+    unsigned int ctl = control_.load();
     int state = GetStateFromControl(ctl);
     return CompareAndSet(control_, ctl, CombineToControl(state, expect + 1));
 }
@@ -367,7 +367,7 @@ bool WorkerPool::CompareAndDecThreadNum(int expect)
 
 bool WorkerPool::CompareAndDecNum(int expectCount)
 {
-    int curr = control_.load();
+    unsigned int curr = control_.load();
     int state = GetStateFromControl(curr);
     int expectControl = CombineToControl(state, expectCount);
     return CompareAndDecThreadNum(expectControl);

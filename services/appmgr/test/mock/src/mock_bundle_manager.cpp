@@ -21,7 +21,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 bool BundleMgrProxy::QueryAbilityInfo(const AAFwk::Want &want, AbilityInfo &abilityInfo)
 {
     ElementName eleName = want.GetElement();
@@ -137,6 +136,5 @@ bool BundleMgrService::GetBundleGids(const std::string &bundleName, std::vector<
     gids.push_back(userGid3);
     return true;
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

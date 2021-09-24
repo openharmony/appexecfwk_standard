@@ -23,7 +23,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class Profile : public Parcelable {
 public:
     Profile() = default;
@@ -65,7 +64,6 @@ public:
 private:
     std::string profileName_;  // the name of the ability
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_CORE_INCLUDE_APPMGR_PROFILE_H
