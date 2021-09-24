@@ -351,26 +351,6 @@ ErrCode FormMgrService::Init()
  */
 bool FormMgrService::CheckFormPermission()
 {
-    // sptr<IBundleMgr> iBundleMgr = FormBmsHelper::GetInstance().GetBundleMgr();
-    // if (iBundleMgr == nullptr) {
-    //     APP_LOGE("%{public}s, failed to get IBundleMgr.", __func__);
-    //     return false;
-    // }
-
-    // int32_t uid = IPCSkeleton::GetCallingUid();
-    // if (!iBundleMgr->CheckIsSystemAppByUid(uid)) {
-    //     APP_LOGE("%{public}s fail, form is not system app. uid:%{public}d", __func__, uid);
-    //     return false;
-    // }
-
-    // std::string bundleName;
-    // bool result = iBundleMgr->GetBundleNameForUid(uid, bundleName);
-    // if (!result || bundleName.empty()) {
-    //     APP_LOGE("%{public}s failed, cannot get bundle name by uid:%{public}d", __func__, uid);
-    //     return false;
-    // }
-
-    // return CheckFormPermission(bundleName);
     return true;
 }
 
