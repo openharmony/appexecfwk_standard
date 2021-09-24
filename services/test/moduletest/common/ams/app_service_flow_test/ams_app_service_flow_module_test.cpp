@@ -34,11 +34,8 @@ using testing::SetArgReferee;
 namespace OHOS {
 namespace AppExecFwk {
 namespace {
-
 const uint32_t CYCLE_NUMBER = 10;
-
 }  // namespace
-
 struct TestApplicationPreRunningRecord {
     TestApplicationPreRunningRecord(
         const std::shared_ptr<AppRunningRecord> &appRecord, const sptr<MockAppScheduler> &mockAppScheduler)
@@ -64,7 +61,6 @@ struct TestApplicationPreRunningRecord {
 };
 
 pid_t TestApplicationPreRunningRecord::g_pid = 0;
-
 class AmsAppServiceFlowModuleTest : public testing::Test {
 public:
     static void SetUpTestCase();
@@ -78,7 +74,7 @@ protected:
         const std::string &appName, const AbilityState abilityState, const ApplicationState appState) const;
 
 protected:
-    std::shared_ptr<AppMgrServiceInner> serviceInner_;
+    std::shared_ptr<AppMgrServiceInner> serviceInner_ = nullptr;
     std::shared_ptr<AMSEventHandler> handler_ = nullptr;
 };
 
@@ -714,6 +710,5 @@ HWTEST_F(AmsAppServiceFlowModuleTest, ServiceFlow_ScreenOnAndOff_001, TestSize.L
     EXPECT_EQ(ApplicationState::APP_STATE_FOREGROUND, testAppA.appRecord_->GetState());
     APP_LOGI("AmsAppServiceFlowModuleTest ServiceFlow_ScreenOnAndOff_001 end");
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

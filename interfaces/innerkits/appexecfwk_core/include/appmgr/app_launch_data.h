@@ -26,7 +26,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class AppLaunchData : public Parcelable {
 public:
     /**
@@ -143,7 +142,6 @@ private:
     int32_t recordId_ = 0;
     int32_t uId_ = 0;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_CORE_APPMGR_INCLUDE_APP_LAUNCH_DATA_H

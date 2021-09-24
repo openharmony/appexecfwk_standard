@@ -29,7 +29,6 @@ bool CheckUid(const int32_t uid)
 {
     return uid >= 0 && uid < std::numeric_limits<int32_t>::max();
 }
-
 }  // namespace
 
 AppRunningManager::AppRunningManager()

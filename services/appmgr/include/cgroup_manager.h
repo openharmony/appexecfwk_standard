@@ -66,6 +66,7 @@ public:
 
 public:
     virtual bool Init();
+    virtual bool InitCheck();
     virtual bool IsInited() const;
     virtual bool SetThreadSchedPolicy(int tid, SchedPolicy schedPolicy);
     virtual bool SetProcessSchedPolicy(int pid, SchedPolicy schedPolicy);

@@ -21,7 +21,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 AppSchedulerHost::AppSchedulerHost()
 {
     memberFuncMap_[static_cast<uint32_t>(IAppScheduler::Message::SCHEDULE_FOREGROUND_APPLICATION_TRANSACTION)] =
@@ -164,6 +163,5 @@ int32_t AppSchedulerHost::HandleScheduleProcessSecurityExit(MessageParcel &data,
     ScheduleProcessSecurityExit();
     return NO_ERROR;
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

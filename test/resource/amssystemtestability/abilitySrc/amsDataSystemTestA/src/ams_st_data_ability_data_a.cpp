@@ -25,6 +25,7 @@
 
 namespace OHOS {
 namespace AppExecFwk {
+namespace {
 static const int ABILITY_DATA_A_CODE = 210;
 static const std::string OPERATOR_INSERT = "Insert";
 static const std::string OPERATOR_DELETE = "Delete";
@@ -38,6 +39,8 @@ static const int DEFAULT_UPDATE_RESULT = 3333;
 static const std::string ABILITY_TYPE_PAGE = "0";
 static const std::string ABILITY_TYPE_SERVICE = "1";
 static const std::string ABILITY_TYPE_DATA = "2";
+constexpr int charCnt = 5;
+}
 
 bool AmsStDataAbilityDataA::PublishEvent(const std::string &eventName, const int &code, const std::string &data)
 {
@@ -92,7 +95,7 @@ void AmsStDataAbilityDataA::OnStart(const Want &want)
     PublishEvent(abilityEventName, ABILITY_DATA_A_CODE, "OnStart");
 }
 
-int AmsStDataAbilityDataA::Insert(const Uri &uri, const ValuesBucket &value)
+int AmsStDataAbilityDataA::Insert(const Uri &uri, const NativeRdb::ValuesBucket &value)
 {
     APP_LOGI("AmsStDataAbilityDataA <<<<Insert>>>>");
     PublishEvent(abilityEventName, ABILITY_DATA_A_CODE, "Insert");
@@ -105,22 +108,22 @@ int AmsStDataAbilityDataA::Insert(const Uri &uri, const ValuesBucket &value)
     return DEFAULT_INSERT_RESULT;
 }
 
-int AmsStDataAbilityDataA::Delete(const Uri &uri, const DataAbilityPredicates &predicates)
+int AmsStDataAbilityDataA::Delete(const Uri &uri, const NativeRdb::DataAbilityPredicates &predicates)
 {
     APP_LOGI("AmsStDataAbilityDataA <<<<Delete>>>>");
     PublishEvent(abilityEventName, ABILITY_DATA_A_CODE, "Delete");
     return DEFAULT_DELETE_RESULT;
 }
 
-int AmsStDataAbilityDataA::Update(const Uri &uri, const ValuesBucket &value, const DataAbilityPredicates &predicates)
+int AmsStDataAbilityDataA::Update(const Uri &uri, const NativeRdb::ValuesBucket &value, const NativeRdb::DataAbilityPredicates &predicates)
 {
     APP_LOGI("AmsStDataAbilityDataA <<<<Update>>>>");
     PublishEvent(abilityEventName, ABILITY_DATA_A_CODE, "Update");
     return DEFAULT_UPDATE_RESULT;
 }
 
-std::shared_ptr<ResultSet> AmsStDataAbilityDataA::Query(
-    const Uri &uri, const std::vector<std::string> &columns, const DataAbilityPredicates &predicates)
+std::shared_ptr<NativeRdb::AbsSharedResultSet> AmsStDataAbilityDataA::Query(
+    const Uri &uri, const std::vector<std::string> &columns, const NativeRdb::DataAbilityPredicates &predicates)
 {
     subscriber_->vectorOperator_ = columns;
     APP_LOGI("AmsStDataAbilityDataA <<<<Query>>>>");
@@ -129,7 +132,9 @@ std::shared_ptr<ResultSet> AmsStDataAbilityDataA::Query(
     STtools::WaitCompleted(event, OPERATOR_QUERY, ABILITY_DATA_A_CODE);
     subscriber_->TestPost();
 
-    std::shared_ptr<ResultSet> resultValue = std::make_shared<ResultSet>(OPERATOR_QUERY);
+    std::shared_ptr<NativeRdb::AbsSharedResultSet> resultValue = std::make_shared<NativeRdb::AbsSharedResultSet>(OPERATOR_QUERY);
+    AppDataFwk::SharedBlock *pSharedBlock = resultValue->GetBlock();
+    pSharedBlock->PutString(0, 0, OPERATOR_QUERY.c_str(), OPERATOR_QUERY.size() + 1);
     return resultValue;
 }
 
@@ -137,7 +142,7 @@ std::vector<std::string> AmsStDataAbilityDataA::GetFileTypes(const Uri &uri, con
 {
     APP_LOGI("AmsStDataAbilityDataA <<<<GetFileTypes>>>>");
     PublishEvent(abilityEventName, ABILITY_DATA_A_CODE, "GetFileTypes");
-    std::vector<std::string> fileType{
+    std::vector<std::string> fileType {
         "filetypes",
     };
     return fileType;
@@ -161,8 +166,8 @@ int AmsStDataAbilityDataA::OpenFile(const Uri &uri, const std::string &mode)
 static void GetResult(std::shared_ptr<STtools::StOperator> child, std::shared_ptr<DataAbilityHelper> helper,
     Uri dataAbilityUri, string &result)
 {
-    AppExecFwk::DataAbilityPredicates predicates;
-    ValuesBucket bucket;
+    NativeRdb::DataAbilityPredicates predicates;
+    NativeRdb::ValuesBucket bucket;
     result = "failed";
     if (child->GetOperatorName() == OPERATOR_INSERT) {
         result = std::to_string(helper->Insert(dataAbilityUri, bucket));
@@ -172,8 +177,12 @@ static void GetResult(std::shared_ptr<STtools::StOperator> child, std::shared_pt
         result = std::to_string(helper->Update(dataAbilityUri, bucket, predicates));
     } else if (child->GetOperatorName() == OPERATOR_QUERY) {
         std::vector<std::string> columns = STtools::SerializationStOperatorToVector(*child);
-        std::shared_ptr<ResultSet> resultValue = helper->Query(dataAbilityUri, columns, predicates);
-        result = (resultValue != nullptr) ? (resultValue->testInf_) : "failed";
+        std::shared_ptr<NativeRdb::AbsSharedResultSet> resultValue = helper->Query(dataAbilityUri, columns, predicates);
+        result = "failed";
+        if (resultValue != nullptr) {
+            resultValue->GoToRow(0);
+            resultValue->GetString(0, result);
+        }
     } else if (child->GetOperatorName() == OPERATOR_GETFILETYPES) {
         std::vector<std::string> types = helper->GetFileTypes(dataAbilityUri, child->GetMessage());
         result = (types.size() > 0) ? types[0] : "failed";
@@ -187,9 +196,10 @@ static void GetResult(std::shared_ptr<STtools::StOperator> child, std::shared_pt
             return;
         }
         result = std::to_string(fd);
-        char str[5];
-        if (!feof(file))
-            fgets(str, 5, file);
+        char str[charCnt];
+        if (!feof(file)) {
+            fgets(str, charCnt, file);
+        }
         result = str;
         fclose(file);
     }
@@ -198,7 +208,7 @@ static void GetResult(std::shared_ptr<STtools::StOperator> child, std::shared_pt
 void DataTestDataAEventSubscriber::TestPost(const std::string funName)
 {
     APP_LOGI("DataTestDataAEventSubscriber::TestPost %{public}s", funName.c_str());
-    STtools::StOperator allOperator{};
+    STtools::StOperator allOperator {};
     STtools::DeserializationStOperatorFromVector(allOperator, vectorOperator_);
     for (auto child : allOperator.GetChildOperator()) {
         APP_LOGI("---------data--------targetBundle:%{public}s", child->GetBundleName().c_str());

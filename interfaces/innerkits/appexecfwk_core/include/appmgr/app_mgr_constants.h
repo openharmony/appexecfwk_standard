@@ -19,9 +19,7 @@
 namespace OHOS {
 namespace AppExecFwk {
 namespace Constants {
-
 const std::string APP_MGR_SERVICE_NAME = "AppMgrService";
-
 }  // namespace Constants
 
 enum class ApplicationState {
@@ -50,7 +48,6 @@ enum AppMgrResultCode {
     ERROR_SERVICE_NOT_READY,
     ERROR_SERVICE_NOT_CONNECTED,
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_CORE_INCLUDE_APPMGR_APP_MGR_CONSTANTS_H

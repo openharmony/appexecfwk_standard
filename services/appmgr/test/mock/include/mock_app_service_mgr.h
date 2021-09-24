@@ -17,14 +17,12 @@
 #define FOUNDATION_APPEXECFWK_SERVICES_APPMGR_TEST_MOCK_APP_SERVICE_MGR_H
 
 #include "iremote_object.h"
-
 #include "app_log_wrapper.h"
 #include "app_service_manager.h"
 #include "mock_app_mgr_service.h"
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class MockAppServiceMgr : public AppServiceManager {
 public:
     MockAppServiceMgr() = default;
@@ -36,7 +34,6 @@ public:
         return new MockAppMgrService();
     }
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_APPMGR_TEST_MOCK_APP_SERVICE_MGR_H

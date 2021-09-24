@@ -23,7 +23,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 AppMgrProxy::AppMgrProxy(const sptr<IRemoteObject> &impl) : IRemoteProxy<IAppMgr>(impl)
 {}
 
@@ -317,7 +316,6 @@ void AppMgrProxy::SetAppFreezingTime(int time)
         return;
     }
     APP_LOGD("end");
-
 }
 
 void AppMgrProxy::GetAppFreezingTime(int &time)
@@ -339,7 +337,7 @@ void AppMgrProxy::GetAppFreezingTime(int &time)
     APP_LOGE("get freeze time : %{public}d ", time);
 }
 
-template <typename T>
+template<typename T>
 int AppMgrProxy::GetParcelableInfos(MessageParcel &reply, std::vector<T> &parcelableInfos)
 {
     int32_t infoSize = reply.ReadInt32();
@@ -354,6 +352,5 @@ int AppMgrProxy::GetParcelableInfos(MessageParcel &reply, std::vector<T> &parcel
     APP_LOGD("get parcelable infos success");
     return NO_ERROR;
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

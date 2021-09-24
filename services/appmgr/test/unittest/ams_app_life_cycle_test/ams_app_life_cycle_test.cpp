@@ -198,7 +198,7 @@ std::shared_ptr<AppRunningRecord> AmsAppLifeCycleTest::CreateTestApplicationAndS
     auto appRecord =
         serviceInner_->GetOrCreateAppRunningRecord(token, appInfo, abilityInfo, "AmsAppLifeCycleTest", 0, result);
     EXPECT_NE(appRecord, nullptr);
-       appRecord->SetEventHandler(handler_);
+    appRecord->SetEventHandler(handler_);
     EXPECT_EQ(appRecord->GetRecordId(), result.appRecordId);
     appRecord->SetState(appState);
     return appRecord;
@@ -2026,6 +2026,5 @@ HWTEST_F(AmsAppLifeCycleTest, GetAbilityRunningRecordByAbilityToken_001, TestSiz
     auto abilityRecord2 = serviceInner_->GetAbilityRunningRecordByAbilityToken(token2);
     EXPECT_FALSE(abilityRecord2);
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
