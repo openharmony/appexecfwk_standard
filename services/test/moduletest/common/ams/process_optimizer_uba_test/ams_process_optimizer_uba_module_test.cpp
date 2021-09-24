@@ -21,6 +21,10 @@
 #include <gtest/gtest.h>
 #include "app_log_wrapper.h"
 
+using namespace testing::ext;
+namespace OHOS {
+namespace AppExecFwk {
+namespace {
 const std::string APP_RECORD_NAME = "App_Name_Z";
 // foreground process oom_adj
 constexpr int APP_OOM_ADJ_FOREGROUND = 0;
@@ -31,13 +35,8 @@ constexpr int APP_OOM_ADJ_SUSPEND_MIN = 600;
 
 static constexpr int APP_SUSPEND_TIMEOUT_DEFAULT = 100;
 static constexpr int APP_USLEEP = 200 * 1000;
-
-using namespace testing::ext;
-
-namespace OHOS {
-namespace AppExecFwk {
-
-class ProcessOptimizerModuleTest : public testing::Test {
+}  // namespace
+class AmsProcessOptimizerUbaModuleTest : public testing::Test {
 public:
     static void SetUpTestCase();
     static void TearDownTestCase();
@@ -50,7 +49,7 @@ public:
         std::make_unique<ProcessOptimizerUBA>(nullptr, nullptr, APP_SUSPEND_TIMEOUT_DEFAULT);
 };
 
-void ProcessOptimizerModuleTest::SuspendApplication(const std::shared_ptr<AppRunningRecord> &appRecord)
+void AmsProcessOptimizerUbaModuleTest::SuspendApplication(const std::shared_ptr<AppRunningRecord> &appRecord)
 {
     if (!appRecord) {
         APP_LOGE("app record is null");
@@ -65,7 +64,7 @@ void ProcessOptimizerModuleTest::SuspendApplication(const std::shared_ptr<AppRun
     processOptimizerUBA->OnAppStateChanged(appRecord, ApplicationState::APP_STATE_BACKGROUND);
 }
 
-void ProcessOptimizerModuleTest::ResumeApplication(const std::shared_ptr<AppRunningRecord> &appRecord)
+void AmsProcessOptimizerUbaModuleTest::ResumeApplication(const std::shared_ptr<AppRunningRecord> &appRecord)
 {
     if (!appRecord) {
         APP_LOGE("app record is null");
@@ -77,16 +76,16 @@ void ProcessOptimizerModuleTest::ResumeApplication(const std::shared_ptr<AppRunn
         appRecord->GetUid());
 }
 
-void ProcessOptimizerModuleTest::SetUpTestCase()
+void AmsProcessOptimizerUbaModuleTest::SetUpTestCase()
 {}
 
-void ProcessOptimizerModuleTest::TearDownTestCase()
+void AmsProcessOptimizerUbaModuleTest::TearDownTestCase()
 {}
 
-void ProcessOptimizerModuleTest::SetUp()
+void AmsProcessOptimizerUbaModuleTest::SetUp()
 {}
 
-void ProcessOptimizerModuleTest::TearDown()
+void AmsProcessOptimizerUbaModuleTest::TearDown()
 {}
 
 /*
@@ -96,9 +95,9 @@ void ProcessOptimizerModuleTest::TearDown()
  * FunctionPoints: add application
  * CaseDescription: Call the OnAppAdded function to add multiple application
  */
-HWTEST_F(ProcessOptimizerModuleTest, OnAppAdded_001, TestSize.Level1)
+HWTEST_F(AmsProcessOptimizerUbaModuleTest, OnAppAdded_001, TestSize.Level1)
 {
-    APP_LOGI("ProcessOptimizerModuleTest OnAppAdded_001 start");
+    APP_LOGI("AmsProcessOptimizerUbaModuleTest OnAppAdded_001 start");
 
     bool isSuccess = processOptimizerUBA->Init();
     EXPECT_TRUE(true == isSuccess);
@@ -125,7 +124,7 @@ HWTEST_F(ProcessOptimizerModuleTest, OnAppAdded_001, TestSize.Level1)
 
     oomAdj1 = priorityObject1->GetCurAdj();
 
-    APP_LOGI("ProcessOptimizerModuleTest OnAppAdded_001 end");
+    APP_LOGI("AmsProcessOptimizerUbaModuleTest OnAppAdded_001 end");
 }
 
 /*
@@ -135,9 +134,9 @@ HWTEST_F(ProcessOptimizerModuleTest, OnAppAdded_001, TestSize.Level1)
  * FunctionPoints: change application status
  * CaseDescription: Set a different state, check the value of adj
  */
-HWTEST_F(ProcessOptimizerModuleTest, OnAppStateChanged_001, TestSize.Level1)
+HWTEST_F(AmsProcessOptimizerUbaModuleTest, OnAppStateChanged_001, TestSize.Level1)
 {
-    APP_LOGI("ProcessOptimizerModuleTest OnAppStateChanged_001 start");
+    APP_LOGI("AmsProcessOptimizerUbaModuleTest OnAppStateChanged_001 start");
 
     bool isSuccess = processOptimizerUBA->Init();
     EXPECT_TRUE(true == isSuccess);
@@ -155,7 +154,7 @@ HWTEST_F(ProcessOptimizerModuleTest, OnAppStateChanged_001, TestSize.Level1)
     auto oomAdj = priorityObject->GetCurAdj();
     EXPECT_TRUE(oomAdj == APP_OOM_ADJ_FOREGROUND);
 
-    APP_LOGI("ProcessOptimizerModuleTest OnAppStateChanged_001 end");
+    APP_LOGI("AmsProcessOptimizerUbaModuleTest OnAppStateChanged_001 end");
 }
 
 /*
@@ -165,9 +164,9 @@ HWTEST_F(ProcessOptimizerModuleTest, OnAppStateChanged_001, TestSize.Level1)
  * FunctionPoints: change application status
  * CaseDescription: Set a different state, check the value of adj
  */
-HWTEST_F(ProcessOptimizerModuleTest, OnAppStateChanged_002, TestSize.Level1)
+HWTEST_F(AmsProcessOptimizerUbaModuleTest, OnAppStateChanged_002, TestSize.Level1)
 {
-    APP_LOGI("ProcessOptimizerModuleTest OnAppStateChanged_002 start");
+    APP_LOGI("AmsProcessOptimizerUbaModuleTest OnAppStateChanged_002 start");
 
     bool isSuccess = processOptimizerUBA->Init();
     EXPECT_TRUE(true == isSuccess);
@@ -186,7 +185,7 @@ HWTEST_F(ProcessOptimizerModuleTest, OnAppStateChanged_002, TestSize.Level1)
     auto oomAdj = priorityObject->GetCurAdj();
     EXPECT_TRUE(oomAdj == APP_OOM_ADJ_BACKGROUND_MIN);
 
-    APP_LOGI("ProcessOptimizerModuleTest OnAppStateChanged_002 end");
+    APP_LOGI("AmsProcessOptimizerUbaModuleTest OnAppStateChanged_002 end");
 }
 
 /*
@@ -198,14 +197,14 @@ HWTEST_F(ProcessOptimizerModuleTest, OnAppStateChanged_002, TestSize.Level1)
  function, make the app state suspended
                     2. Call the OnAppStateChanged function to remove the suspended state
  */
-HWTEST_F(ProcessOptimizerModuleTest, OnAppStateChanged_003, TestSize.Level1)
+HWTEST_F(AmsProcessOptimizerUbaModuleTest, OnAppStateChanged_003, TestSize.Level1)
 {
-    APP_LOGI("ProcessOptimizerModuleTest OnAppStateChanged_003 start");
+    APP_LOGI("AmsProcessOptimizerUbaModuleTest OnAppStateChanged_003 start");
 
     processOptimizerUBA->AppSuspended =
-        std::bind(&ProcessOptimizerModuleTest::SuspendApplication, this, std::placeholders::_1);
+        std::bind(&AmsProcessOptimizerUbaModuleTest::SuspendApplication, this, std::placeholders::_1);
     processOptimizerUBA->AppResumed =
-        std::bind(&ProcessOptimizerModuleTest::ResumeApplication, this, std::placeholders::_1);
+        std::bind(&AmsProcessOptimizerUbaModuleTest::ResumeApplication, this, std::placeholders::_1);
     bool isSuccess = processOptimizerUBA->Init();
     EXPECT_TRUE(true == isSuccess);
 
@@ -226,7 +225,7 @@ HWTEST_F(ProcessOptimizerModuleTest, OnAppStateChanged_003, TestSize.Level1)
     auto oomAdj = priorityObject->GetCurAdj();
     EXPECT_TRUE(oomAdj == APP_OOM_ADJ_SUSPEND_MIN);
 
-    GTEST_LOG_(INFO) << "ProcessOptimizerModuleTest OnAppStateChanged_003 oomAdj: " << oomAdj;
+    GTEST_LOG_(INFO) << "AmsProcessOptimizerUbaModuleTest OnAppStateChanged_003 oomAdj: " << oomAdj;
 
     auto appState = app->GetState();
     if (appState == ApplicationState::APP_STATE_SUSPENDED) {
@@ -236,7 +235,7 @@ HWTEST_F(ProcessOptimizerModuleTest, OnAppStateChanged_003, TestSize.Level1)
         EXPECT_TRUE(oomAdj == APP_OOM_ADJ_BACKGROUND_MIN);
     }
 
-    APP_LOGI("ProcessOptimizerModuleTest OnAppStateChanged_003 end");
+    APP_LOGI("AmsProcessOptimizerUbaModuleTest OnAppStateChanged_003 end");
 }
 
 /*
@@ -248,9 +247,9 @@ HWTEST_F(ProcessOptimizerModuleTest, OnAppStateChanged_003, TestSize.Level1)
  function
                     2. Calling the OnAppRemoved function will call the StopAppSuspendTimer function
  */
-HWTEST_F(ProcessOptimizerModuleTest, OnAppRemoved_001, TestSize.Level1)
+HWTEST_F(AmsProcessOptimizerUbaModuleTest, OnAppRemoved_001, TestSize.Level1)
 {
-    APP_LOGI("ProcessOptimizerModuleTest OnAppRemoved_001 start");
+    APP_LOGI("AmsProcessOptimizerUbaModuleTest OnAppRemoved_001 start");
 
     bool isSuccess = processOptimizerUBA->Init();
     EXPECT_TRUE(true == isSuccess);
@@ -274,7 +273,7 @@ HWTEST_F(ProcessOptimizerModuleTest, OnAppRemoved_001, TestSize.Level1)
 
     EXPECT_TRUE(oomAdj == APP_OOM_ADJ_BACKGROUND_MIN);
 
-    APP_LOGI("ProcessOptimizerModuleTest OnAppRemoved_001 end");
+    APP_LOGI("AmsProcessOptimizerUbaModuleTest OnAppRemoved_001 end");
 }
 
 }  // namespace AppExecFwk

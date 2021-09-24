@@ -1916,6 +1916,10 @@ bool TransformToInfo(
     abilityInfo.kind = ability.type;
     abilityInfo.srcPath = ability.srcPath;
     abilityInfo.srcLanguage = ability.srcLanguage;
+    std::transform(abilityInfo.srcLanguage.begin(), abilityInfo.srcLanguage.end(), abilityInfo.srcLanguage.begin(), ::tolower);
+    if (abilityInfo.srcLanguage != ProfileReader::BUNDLE_MODULE_PROFILE_KEY_JS) {
+        abilityInfo.isNativeAbility = true;
+    }
     auto iterType = std::find_if(std::begin(ProfileReader::ABILITY_TYPE_MAP),
         std::end(ProfileReader::ABILITY_TYPE_MAP),
         [&ability](const auto &item) { return item.first == ability.type; });
@@ -1967,6 +1971,7 @@ bool TransformToInfo(
     abilityInfo.minFormWidth = ability.form.minWidth;
     abilityInfo.defaultFormWidth = ability.form.defaultWidth;
     GetMetaData(abilityInfo.metaData, ability.metaData);
+    abilityInfo.formEnabled = ability.formEnabled;
     return true;
 }
 
@@ -2065,7 +2070,6 @@ bool TransformToInfo(ProfileReader::ConfigJson &configJson, InnerBundleInfo &inn
         }
         if (configJson.module.jses.empty()) {
             bundleInfo.isNativeApp = true;
-            abilityInfo.isNativeAbility = true;
         }
         innerBundleInfo.InsertAbilitiesInfo(keyName, abilityInfo);
     }

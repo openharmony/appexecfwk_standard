@@ -99,6 +99,11 @@ bool CommonTool::CopyTmpFileToSystemPath(const std::string &srcPath, const std::
 long CommonTool::GetFileBuildTime(const std::string &path)
 {
     long buildTime = 0;
+
+    if (!CheckFilePathISExist(path)) {
+        return buildTime;
+    }
+
     struct stat buf;
     FILE *file = fopen(path.c_str(), "r");
     if (file == nullptr) {

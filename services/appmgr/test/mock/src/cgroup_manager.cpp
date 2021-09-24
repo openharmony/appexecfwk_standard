@@ -27,9 +27,7 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 namespace {
-
 class ScopeGuard final {
 public:
     using Function = std::function<void()>;
@@ -55,7 +53,6 @@ private:
     Function fn_;
     bool dismissed_ = false;
 };
-
 }  // namespace
 
 CgroupManager::CgroupManager() : memoryEventControlFd_(-1)
@@ -155,6 +152,5 @@ bool CgroupManager::SetFreezerSubsystem(const int tid, const SchedPolicyFreezer 
     APP_LOGD("SetFreezerSubsystem start.");
     return true;
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

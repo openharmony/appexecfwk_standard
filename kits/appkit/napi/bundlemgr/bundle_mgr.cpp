@@ -961,7 +961,7 @@ static napi_value ParseInt(napi_env env, int &param, napi_value args)
     HILOG_INFO("param=%{public}d.", value);
     param = value;
     // create result code
-    napi_value result;
+    napi_value result = nullptr;
     napi_status status = napi_create_int32(env, NAPI_RETURN_ONE, &result);
     NAPI_ASSERT(env, status == napi_ok, "napi_create_int32 error!");
     return result;
@@ -3481,7 +3481,7 @@ napi_value RegisterAllPermissionsChanged(napi_env env, napi_callback_info info)
         std::vector<int32_t> uids;
         ParseInt32Array(env, uids, argv[ARGS_SIZE_ONE]);
         AsyncRegisterPermissions *asyncCallbackInfo =
-            new AsyncRegisterPermissions{.env = env, .asyncWork = nullptr, .uids = uids};
+            new (std::nothrow) AsyncRegisterPermissions{.env = env, .asyncWork = nullptr, .uids = uids};
         if (asyncCallbackInfo == nullptr) {
             return nullptr;
         }
@@ -3525,7 +3525,7 @@ napi_value RegisterAllPermissionsChanged(napi_env env, napi_callback_info info)
         return result;
     } else if (permissionEvent == ANY_PERMISSION_CHANGE && argc == ARGS_SIZE_TWO) {
         AsyncRegisterAllPermissions *asyncCallbackInfo =
-            new AsyncRegisterAllPermissions{.env = env, .asyncWork = nullptr};
+            new (std::nothrow) AsyncRegisterAllPermissions{.env = env, .asyncWork = nullptr};
         if (asyncCallbackInfo == nullptr) {
             return nullptr;
         }

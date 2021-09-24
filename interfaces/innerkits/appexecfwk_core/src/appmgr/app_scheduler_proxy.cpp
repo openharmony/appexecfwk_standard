@@ -269,6 +269,5 @@ void AppSchedulerProxy::ScheduleProcessSecurityExit()
         APP_LOGW("SendRequest is failed, error code: %{public}d", ret);
     }
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

@@ -19,7 +19,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 void AppLaunchData::SetApplicationInfo(const ApplicationInfo &info)
 {
     applicationInfo_ = info;
@@ -89,6 +88,5 @@ AppLaunchData *AppLaunchData::Unmarshalling(Parcel &parcel)
     }
     return appLaunchData;
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

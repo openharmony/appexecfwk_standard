@@ -19,7 +19,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 bool AppProcessData::Marshalling(Parcel &parcel) const
 {
     return (parcel.WriteString(appName) && parcel.WriteString(processName) &&
@@ -51,6 +50,5 @@ AppProcessData *AppProcessData::Unmarshalling(Parcel &parcel)
     }
     return appProcessData;
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

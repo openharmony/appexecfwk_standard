@@ -28,7 +28,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 AppMgrStub::AppMgrStub()
 {
     memberFuncMap_[static_cast<uint32_t>(IAppMgr::Message::AMS_APP_ATTACH_APPLICATION)] =
@@ -184,6 +183,5 @@ int32_t AppMgrStub::HandleGetAppFreezingTime(MessageParcel &data, MessageParcel 
     reply.WriteInt32(time);
     return NO_ERROR;
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

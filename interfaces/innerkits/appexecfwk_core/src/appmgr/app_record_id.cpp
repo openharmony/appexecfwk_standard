@@ -18,13 +18,11 @@
 #include "app_record_id.h"
 namespace OHOS {
 namespace AppExecFwk {
-
 int32_t AppRecordId::Create()
 {
     // Make it atomic to avoid multi app creating concurrently.
     static std::atomic_int id(0);
     return ++id;
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

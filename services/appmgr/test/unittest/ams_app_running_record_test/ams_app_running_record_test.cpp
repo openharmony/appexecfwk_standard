@@ -76,7 +76,6 @@ protected:
     {
         return mock_token_;
     }
-
 protected:
     std::shared_ptr<AbilityRunningRecord> testAbilityRecord_;
     sptr<IAppScheduler> client_;
@@ -1226,6 +1225,5 @@ HWTEST_F(AmsAppRunningRecordTest, OnAbilityStateChanged_001, TestSize.Level0)
     appRecord->OnAbilityStateChanged(abilityRecord, AbilityState::ABILITY_STATE_BACKGROUND);
     EXPECT_EQ(AbilityState::ABILITY_STATE_BACKGROUND, abilityRecord->GetState());
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

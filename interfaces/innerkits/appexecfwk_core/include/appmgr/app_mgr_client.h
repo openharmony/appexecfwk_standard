@@ -27,7 +27,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class AppServiceManager;
 
 class AppMgrClient {
@@ -173,7 +172,6 @@ private:
     std::unique_ptr<AppServiceManager> serviceManager_;
     sptr<IRemoteObject> remote_;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_CORE_INCLUDE_APP_MGR_CLIENT_H

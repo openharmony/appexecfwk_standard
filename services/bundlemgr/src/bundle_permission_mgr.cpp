@@ -26,8 +26,8 @@ namespace AppExecFwk {
 using namespace OHOS::Security;
 
 namespace {
-const std::string HOS_NORMAL_APP = "ohos_normal_app";
-const std::string HOS_SYSTEM_APP = "ohos_system_app";
+const std::string HOS_NORMAL_APP = "hos_normal_app";
+const std::string HOS_SYSTEM_APP = "hos_system_app";
 // convert the Permission::PermissionDef struct to
 // AppExecFwk::PermissionDef struct that can be used in IPC process
 bool ConvertPermissionDef(const Permission::PermissionDef &permDef, PermissionDef &permissionDef)

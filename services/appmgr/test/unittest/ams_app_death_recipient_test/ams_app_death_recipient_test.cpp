@@ -33,7 +33,6 @@ using testing::SetArgReferee;
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class AppDeathRecipientTest : public testing::Test {
 public:
     static void SetUpTestCase();
@@ -200,6 +199,5 @@ HWTEST_F(AppDeathRecipientTest, AppDeathRecipient_002, TestSize.Level1)
     EXPECT_EQ(0, static_cast<int>(appDeathRecipientObject_->appMgrServiceInner_.lock()->GetRecentAppList().size()));
     APP_LOGI("AppDeathRecipient_002 start");
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
