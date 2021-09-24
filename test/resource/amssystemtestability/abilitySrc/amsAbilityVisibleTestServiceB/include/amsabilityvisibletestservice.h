@@ -21,9 +21,13 @@
 #include <map>
 #include "ability_connect_callback_stub.h"
 #include "ability_connect_callback_proxy.h"
+#include "abs_shared_result_set.h"
 #include "ability_loader.h"
+#include "app_log_wrapper.h"
 #include "common_event.h"
 #include "common_event_manager.h"
+#include "data_ability_predicates.h"
+#include "values_bucket.h"
 
 namespace OHOS {
 namespace AppExecFwk {

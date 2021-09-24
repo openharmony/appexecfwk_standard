@@ -23,7 +23,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class AppStateCallbackProxy : public IRemoteProxy<IAppStateCallback> {
 public:
     explicit AppStateCallbackProxy(const sptr<IRemoteObject> &impl);
@@ -48,7 +47,6 @@ private:
     bool WriteInterfaceToken(MessageParcel &data);
     static inline BrokerDelegator<AppStateCallbackProxy> delegator_;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_CORE_INCLUDE_APPMGR_APP_STATE_CALLBACK_PROXY_H

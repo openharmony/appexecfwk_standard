@@ -1085,8 +1085,9 @@ bool BundleDataMgr::GenerateUidAndGid(InnerBundleInfo &info)
             APP_LOGI("the %{public}d app install", i);
             innerMap.emplace(i, info.GetBundleName());
             uid = i + baseUid;
-            info.SetUid(baseUid);
-            info.SetGid(baseUid);
+            APP_LOGI("the uid is %{public}d", uid);
+            info.SetUid(uid);
+            info.SetGid(uid);
             return true;
         }
     }
@@ -1121,8 +1122,10 @@ bool BundleDataMgr::RecycleUidAndGid(const InnerBundleInfo &info)
                 return (appUidMap_);
         }
     }();
+    std::lock_guard<std::mutex> lock(uidMapMutex_);
     for (auto &kv : innerMap) {
         if (kv.second == info.GetBundleName()) {
+            APP_LOGI("the recycle uid is %{public}d", kv.first);
             innerMap.erase(kv.first);
             return true;
         }
@@ -1198,10 +1201,13 @@ bool BundleDataMgr::RestoreUidAndGid()
         for (const auto &info : item.second) {
             uint32_t uid = info.second.GetUid();
             if ((uid < Constants::BASE_SYS_VEN_UID) && (uid >= Constants::BASE_SYS_UID)) {
+                std::lock_guard<std::mutex> lock(uidMapMutex_);
                 sysUidMap_[uid - Constants::BASE_SYS_UID] = info.second.GetBundleName();
             } else if ((uid >= Constants::BASE_SYS_VEN_UID) && (uid <= Constants::MAX_SYS_VEN_UID)) {
+                std::lock_guard<std::mutex> lock(uidMapMutex_);
                 sysVendorUidMap_[uid - Constants::BASE_SYS_VEN_UID] = info.second.GetBundleName();
             } else if (uid > Constants::MAX_SYS_VEN_UID) {
+                std::lock_guard<std::mutex> lock(uidMapMutex_);
                 appUidMap_[uid - Constants::BASE_APP_UID] = info.second.GetBundleName();
             }
         }
@@ -1620,7 +1626,8 @@ bool BundleDataMgr::UnregisterPermissionsChanged(const sptr<OnPermissionChangedC
     {
         std::lock_guard<std::mutex> lock(allPermissionsChangedLock_);
 
-        for (auto allPermissionsItem = allPermissionsCallbacks_.begin(); allPermissionsItem != allPermissionsCallbacks_.end();) {
+        for (auto allPermissionsItem = allPermissionsCallbacks_.begin();
+             allPermissionsItem != allPermissionsCallbacks_.end();) {
             if ((*allPermissionsItem)->AsObject() == callback->AsObject()) {
                 allPermissionsItem = allPermissionsCallbacks_.erase(allPermissionsItem);
                 APP_LOGI("unregister from all permissions callbacks success!");

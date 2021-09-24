@@ -62,6 +62,9 @@ ohos_shared_library("amsAbilityVisibleTestPageA") {
     "ces_standard:cesfwk_innerkits",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
+    "native_appdatamgr:native_appdatafwk",
+    "native_appdatamgr:native_dataability",
+    "native_appdatamgr:native_rdb",
   ]
   subsystem_name = "amssystemtestability"
 }

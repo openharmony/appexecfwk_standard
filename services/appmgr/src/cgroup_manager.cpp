@@ -142,6 +142,44 @@ bool CgroupManager::Init()
         return false;
     }
 
+    if(!InitCheck()){
+        return false;
+    }
+
+    if (!RegisterLowMemoryMonitor(
+        memoryEventFds_, memoryPressureFds_, memoryEventControlFd_, LOW_MEMORY_LEVEL_LOW, eventHandler)) {
+        return false;
+    }
+
+    ScopeGuard lowLevelListenerGuard(
+        [&]() { eventHandler->RemoveFileDescriptorListener(memoryEventFds_[LOW_MEMORY_LEVEL_LOW]); });
+
+    if (!RegisterLowMemoryMonitor(
+        memoryEventFds_, memoryPressureFds_, memoryEventControlFd_, LOW_MEMORY_LEVEL_MEDIUM, eventHandler)) {
+        return false;
+    }
+
+    ScopeGuard mediumLevelListenerGuard(
+        [&]() { eventHandler->RemoveFileDescriptorListener(memoryEventFds_[LOW_MEMORY_LEVEL_MEDIUM]); });
+
+    if (!RegisterLowMemoryMonitor(
+        memoryEventFds_, memoryPressureFds_, memoryEventControlFd_, LOW_MEMORY_LEVEL_CRITICAL, eventHandler)) {
+        return false;
+    }
+
+    ScopeGuard criticalLevelListenerGuard(
+        [&]() { eventHandler->RemoveFileDescriptorListener(memoryEventFds_[LOW_MEMORY_LEVEL_CRITICAL]); });
+
+    eventHandler_ = eventHandler;
+    lowLevelListenerGuard.Dismiss();
+    mediumLevelListenerGuard.Dismiss();
+    criticalLevelListenerGuard.Dismiss();
+
+    return true;
+}
+
+bool CgroupManager::InitCheck()
+{
     UniqueFd cpusetTasksFds[SCHED_POLICY_CPU_MAX];
     if (!InitCpusetTasksFds(cpusetTasksFds)) {
         return false;
@@ -171,37 +209,6 @@ bool CgroupManager::Init()
     if (!InitMemoryPressureFds(memoryPressureFds)) {
         return false;
     }
-
-    if (!RegisterLowMemoryMonitor(
-            memoryEventFds_, memoryPressureFds_, memoryEventControlFd_, LOW_MEMORY_LEVEL_LOW, eventHandler)) {
-        return false;
-    }
-
-    ScopeGuard lowLevelListenerGuard(
-        [&]() { eventHandler->RemoveFileDescriptorListener(memoryEventFds_[LOW_MEMORY_LEVEL_LOW]); });
-
-    if (!RegisterLowMemoryMonitor(
-            memoryEventFds_, memoryPressureFds_, memoryEventControlFd_, LOW_MEMORY_LEVEL_MEDIUM, eventHandler)) {
-        return false;
-    }
-
-    ScopeGuard mediumLevelListenerGuard(
-        [&]() { eventHandler->RemoveFileDescriptorListener(memoryEventFds_[LOW_MEMORY_LEVEL_MEDIUM]); });
-
-    if (!RegisterLowMemoryMonitor(
-            memoryEventFds_, memoryPressureFds_, memoryEventControlFd_, LOW_MEMORY_LEVEL_CRITICAL, eventHandler)) {
-        return false;
-    }
-
-    ScopeGuard criticalLevelListenerGuard(
-        [&]() { eventHandler->RemoveFileDescriptorListener(memoryEventFds_[LOW_MEMORY_LEVEL_CRITICAL]); });
-
-    eventHandler_ = eventHandler;
-
-    lowLevelListenerGuard.Dismiss();
-    mediumLevelListenerGuard.Dismiss();
-    criticalLevelListenerGuard.Dismiss();
-
     return true;
 }
 
@@ -531,6 +538,5 @@ bool CgroupManager::SetFreezerSubsystem(const int tid, const SchedPolicyFreezer 
 
     return true;
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

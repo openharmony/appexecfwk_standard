@@ -174,13 +174,11 @@ public:
     static sptr<IAbilityManager> abilityMs_;
     static STtools::Event event_;
     static std::shared_ptr<AppEventSubscriber> subscriber_;
-    static int *memTestValue_;
 };
 
 sptr<IAppMgr> AmsAbilityVisibleTest::appMs_ = nullptr;
 sptr<IAbilityManager> AmsAbilityVisibleTest::abilityMs_ = nullptr;
 STtools::Event AmsAbilityVisibleTest::event_ = STtools::Event();
-int *AmsAbilityVisibleTest::memTestValue_ = nullptr;
 std::shared_ptr<AmsAbilityVisibleTest::AppEventSubscriber> AmsAbilityVisibleTest::subscriber_ = nullptr;
 size_t AmsAbilityVisibleTest::AbilityConnectCallback::onAbilityConnectDoneCount = 0;
 int AmsAbilityVisibleTest::AbilityConnectCallback::resultConnectCode = 0;
@@ -217,10 +215,6 @@ void AmsAbilityVisibleTest::SetUp(void)
 void AmsAbilityVisibleTest::TearDown(void)
 {
     GTEST_LOG_(INFO) << "void AmsAbilityVisibleTest::TearDown(void)";
-    if (memTestValue_) {
-        delete[] memTestValue_;
-    }
-
     std::vector<std::string> bundleNames = GetBundleNames(bundleNameBase, bundleNameSuffix);
     STAbilityUtil::UninstallBundle(bundleNames);
 

@@ -34,13 +34,11 @@ using testing::InvokeWithoutArgs;
 using testing::Return;
 
 namespace {
-
 constexpr int COUNT = 1;
 }
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class TestAppSchedulerImpl : public AppSchedulerHost {
 public:
     void ScheduleForegroundApplication() override
@@ -66,7 +64,6 @@ public:
     void ScheduleProcessSecurityExit() override
     {}
 };
-
 class AppMgrServiceModuleTest : public testing::Test {
 public:
     static void SetUpTestCase();
@@ -75,9 +72,9 @@ public:
     void TearDown();
 
 protected:
-    inline static std::shared_ptr<MockAppMgrServiceInner> mockAppMgrServiceInner_;
-    inline static std::shared_ptr<AppMgrService> appMgrService_;
-    inline static sptr<IRemoteObject> testRemoteObject_;
+    inline static std::shared_ptr<MockAppMgrServiceInner> mockAppMgrServiceInner_{nullptr};
+    inline static std::shared_ptr<AppMgrService> appMgrService_{nullptr};
+    inline static sptr<IRemoteObject> testRemoteObject_{nullptr};
 };
 
 void AppMgrServiceModuleTest::SetUpTestCase()
@@ -483,6 +480,5 @@ HWTEST_F(AppMgrServiceModuleTest, GetAmsMgr_001, TestSize.Level1)
 
     EXPECT_TRUE(amsMgr);
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
