@@ -35,7 +35,6 @@ using testing::InvokeWithoutArgs;
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class AmsAppRunningRecordModuleTest : public testing::Test {
 public:
     static void SetUpTestCase();
@@ -118,7 +117,7 @@ protected:
         EXPECT_EQ(abilityName, abilityNameFromServ) << "fail, app record name is not equal!";
     }
 
-    std::unique_ptr<AppMgrServiceInner> service_;
+    std::unique_ptr<AppMgrServiceInner> service_{nullptr};
 
     sptr<MockAbilityToken> GetMockToken() const
     {
@@ -127,10 +126,20 @@ protected:
 
 private:
     std::vector<std::string> appName_ = {
-        "test_app_name1", "test_app_name2", "test_app_name3", "test_app_name4", "test_app_name5"};
+        "test_app_name1",
+        "test_app_name2",
+        "test_app_name3",
+        "test_app_name4",
+        "test_app_name5",
+    };
     std::vector<std::string> abilityName_ = {
-        "test_ability_name1", "test_ability_name2", "test_ability_name3", "test_ability_name4", "test_ability_name5"};
-    sptr<MockAbilityToken> mockToken_;
+        "test_ability_name1",
+        "test_ability_name2",
+        "test_ability_name3",
+        "test_ability_name4",
+        "test_ability_name5",
+    };
+    sptr<MockAbilityToken> mockToken_{nullptr};
 };
 
 void AmsAppRunningRecordModuleTest::SetUpTestCase()
@@ -171,7 +180,7 @@ HWTEST_F(AmsAppRunningRecordModuleTest, ApplicationStart_001, TestSize.Level0)
     RecordQueryResult result;
     auto record = service_->GetOrCreateAppRunningRecord(GetMockToken(), appInfo, abilityInfo, processName, 0, result);
     EXPECT_TRUE(record != nullptr) << ",create apprunningrecord fail!";
-    ASSERT_FALSE(result.appExists) << ",result is wrong!";
+    EXPECT_FALSE(result.appExists) << ",result is wrong!";
 
     // check apprunningrecord
     int32_t id = record->GetRecordId();
@@ -231,7 +240,7 @@ HWTEST_F(AmsAppRunningRecordModuleTest, MultiApplicationStart_002, TestSize.Leve
         auto record =
             service_->GetOrCreateAppRunningRecord(GetMockToken(), appInfo, abilityInfo, processName, 0, result);
         EXPECT_TRUE(record != nullptr) << "create apprunningrecord fail!";
-        ASSERT_FALSE(result.appExists) << "result is wrong!";
+        EXPECT_FALSE(result.appExists) << "result is wrong!";
 
         // check abilityrunningrecord & apprunningrecord
         int32_t id = record->GetRecordId();
@@ -274,7 +283,7 @@ HWTEST_F(AmsAppRunningRecordModuleTest, ScheduleTrimMemory_003, TestSize.Level1)
     RecordQueryResult result;
     auto record = service_->GetOrCreateAppRunningRecord(GetMockToken(), appInfo, abilityInfo, processName, 0, result);
     EXPECT_TRUE(record != nullptr) << "create apprunningrecord fail!";
-    ASSERT_FALSE(result.appExists) << "result is wrong!";
+    EXPECT_FALSE(result.appExists) << "result is wrong!";
 
     // LaunchApplication
     sptr<MockApplication> mockApplication(new MockApplication());
@@ -322,7 +331,7 @@ HWTEST_F(AmsAppRunningRecordModuleTest, LowMemoryWarning_004, TestSize.Level1)
     RecordQueryResult result;
     auto record = service_->GetOrCreateAppRunningRecord(GetMockToken(), appInfo, abilityInfo, processName, 0, result);
     EXPECT_TRUE(record != nullptr) << "create apprunningrecord fail!";
-    ASSERT_FALSE(result.appExists) << "result is wrong!";
+    EXPECT_FALSE(result.appExists) << "result is wrong!";
 
     // LaunchApplication
     sptr<MockApplication> mockApplication(new MockApplication());
@@ -472,6 +481,5 @@ HWTEST_F(AmsAppRunningRecordModuleTest, ApplicationStatusChange_006, TestSize.Le
     auto stateFromRec = record->GetState();
     EXPECT_EQ(stateFromRec, ApplicationState::APP_STATE_TERMINATED);
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

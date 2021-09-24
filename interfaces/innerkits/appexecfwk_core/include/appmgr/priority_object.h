@@ -23,9 +23,7 @@
 #include "parcel.h"
 
 namespace OHOS {
-
 namespace AppExecFwk {
-
 class PriorityObject : public Parcelable {
 public:
     PriorityObject() = default;
@@ -160,7 +158,6 @@ private:
     bool visibleStatus_ = false;
     bool perceptibleStatus_ = false;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 

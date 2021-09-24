@@ -94,13 +94,11 @@ public:
         AbilityState st = AbilityState::ABILITY_STATE_BEGIN;
         callback_->OnAbilityRequestDone(token, st);
     }
-
 private:
     Semaphore sem_;
     std::string data_;
     sptr<IAppStateCallback> callback_;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_COMMON_TEST_MOCK_MOCK_APP_MGR_SERVICE_H

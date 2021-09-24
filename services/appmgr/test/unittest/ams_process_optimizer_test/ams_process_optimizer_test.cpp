@@ -25,17 +25,17 @@
 #include <unistd.h>
 #include "lmks_client.h"
 
+namespace{
 constexpr int APP_OOM_ADJ_BACKGROUND_MIN = 400;
 constexpr int APP_OOM_ADJ_SUSPEND_MIN = 600;
 const std::string APP_RECORD_NAME = "App_Name_Z";
 static constexpr int APP_SUSPEND_TIMEOUT_DEFAULT = 100;
 static constexpr int APP_USLEEP = 200 * 1000;
-
 using namespace testing::ext;
+};
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class AmsProcessOptimizerTest : public testing::Test {
 public:
     static void SetUpTestCase();
@@ -901,6 +901,5 @@ HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_StopAppSuspendTimer_00
 
     APP_LOGD("AmsProcessOptimizerTest_StopAppSuspendTimer_001 end.");
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

@@ -28,11 +28,8 @@ using namespace OHOS::AppExecFwk;
 using OHOS::Semaphore;
 
 namespace {
-
 const uint32_t CYCLE_NUMBER = 10000;
-
 }
-
 enum class AmsInnerState {
     STATE_NO_OPERATION,
     STATE_ABILITY_LOADED,

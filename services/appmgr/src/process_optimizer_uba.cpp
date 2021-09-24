@@ -31,7 +31,7 @@ std::string ProcessOptimizerUBA::BaseAbilityAction::GetTimeString() const
 {
     std::time_t tmp = Clock::to_time_t(time_);
     char *pTime = std::ctime(&tmp);
-    return pTime == nullptr ? "" : std::string(pTime);
+    return (pTime == nullptr) ? "" : std::string(pTime);
 }
 
 const std::string &ProcessOptimizerUBA::BaseAbilityAction::GetName() const
@@ -288,7 +288,6 @@ void ProcessOptimizerUBA::CommitAbilityActions()
 {
     auto n = abilityActionCount_;
     abilityActionCount_ = 0;
-
     auto ubaService = GetUbaService();
     if (!ubaService) {
         APP_LOGE("%{public}s(%{pubic}d) uba is not available.", __func__, __LINE__);
@@ -302,59 +301,80 @@ void ProcessOptimizerUBA::CommitAbilityActions()
 
         auto startAbilityAction = std::get_if<StartAbilityAction>(&abilityAction);
         if (startAbilityAction) {
-            APP_LOGD("  [%{public}zu] %{public}s ability '%{public}s' starts '%{public}s'",
-                i,
-                startAbilityAction->GetTimeString().c_str(),
-                startAbilityAction->GetPreName().c_str(),
-                startAbilityAction->GetName().c_str());
-            // commit action
+            CommitStartAbilityAction(*startAbilityAction, i);
             continue;
         }
-
         auto connectAbilityAction = std::get_if<ConnectAbilityAction>(&abilityAction);
         if (connectAbilityAction) {
-            APP_LOGD("  [%{public}zu] %{public}s ability '%{public}s' connect to '%{public}s'",
-                i,
-                connectAbilityAction->GetTimeString().c_str(),
-                connectAbilityAction->GetName().c_str(),
-                connectAbilityAction->GetTargetName().c_str());
-            // commit action
+            CommitConnectAbilityAction(*connectAbilityAction, i);
             continue;
         }
-
         auto disconnectAbilityAction = std::get_if<DisconnectAbilityAction>(&abilityAction);
         if (disconnectAbilityAction) {
-            APP_LOGD("  [%{public}zu] %{public}s '%{public}s' ability disconnect with '%{public}s'",
-                i,
-                disconnectAbilityAction->GetTimeString().c_str(),
-                disconnectAbilityAction->GetName().c_str(),
-                disconnectAbilityAction->GetTargetName().c_str());
-            // commit action
+            CommitDisconnectAbilityAction(*disconnectAbilityAction, i);
             continue;
         }
-
         auto changedAbilityStateAction = std::get_if<ChangeAbilityStateAction>(&abilityAction);
         if (changedAbilityStateAction) {
-            APP_LOGD("  [%{public}zu] %{public}s ability '%{public}s' state changed from %{public}d to %{public}d.",
-                i,
-                changedAbilityStateAction->GetTimeString().c_str(),
-                changedAbilityStateAction->GetName().c_str(),
-                changedAbilityStateAction->GetOldState(),
-                changedAbilityStateAction->GetNewState());
-            // commit action
+            CommitChangedAbilityStateAction(*changedAbilityStateAction, i);
             continue;
         }
-
         auto removeAbilityAction = std::get_if<RemoveAbilityAction>(&abilityAction);
         if (removeAbilityAction) {
-            APP_LOGD("  [%{public}zu] %{public}s '%{public}s' removed.",
-                i,
-                removeAbilityAction->GetTimeString().c_str(),
-                removeAbilityAction->GetName().c_str());
-            // commit action
+            CommitRemoveAbilityAction(*removeAbilityAction, i);
             continue;
         }
     }
+}
+
+void ProcessOptimizerUBA::CommitStartAbilityAction(const StartAbilityAction& action, size_t index)
+{
+    APP_LOGD("  [%{public}zu] %{public}s ability '%{public}s' starts '%{public}s'",
+        index,
+        action.GetTimeString().c_str(),
+        action.GetPreName().c_str(),
+        action.GetName().c_str());
+    // commit action
+}
+
+void ProcessOptimizerUBA::CommitConnectAbilityAction(const ConnectAbilityAction& action, size_t index)
+{
+    APP_LOGD("  [%{public}zu] %{public}s ability '%{public}s' connect to '%{public}s'",
+        index,
+        action.GetTimeString().c_str(),
+        action.GetName().c_str(),
+        action.GetTargetName().c_str());
+    // commit action
+}
+
+void ProcessOptimizerUBA::CommitDisconnectAbilityAction(const DisconnectAbilityAction& action, size_t index)
+{
+    APP_LOGD("  [%{public}zu] %{public}s '%{public}s' ability disconnect with '%{public}s'",
+        index,
+        action.GetTimeString().c_str(),
+        action.GetName().c_str(),
+        action.GetTargetName().c_str());
+    // commit action
+}
+
+void ProcessOptimizerUBA::CommitChangedAbilityStateAction(const ChangeAbilityStateAction& action, size_t index)
+{
+    APP_LOGD("  [%{public}zu] %{public}s ability '%{public}s' state changed from %{public}d to %{public}d.",
+        index,
+        action.GetTimeString().c_str(),
+        action.GetName().c_str(),
+        action.GetOldState(),
+        action.GetNewState());
+    // commit action
+}
+
+void ProcessOptimizerUBA::CommitRemoveAbilityAction(const RemoveAbilityAction& action, size_t index)
+{
+    APP_LOGD("  [%{public}zu] %{public}s '%{public}s' removed.",
+        index,
+        action.GetTimeString().c_str(),
+        action.GetName().c_str());
+    // commit action
 }
 
 UbaServicePtr ProcessOptimizerUBA::GetUbaService()

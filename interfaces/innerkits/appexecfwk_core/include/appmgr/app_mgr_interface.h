@@ -28,7 +28,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class IAppMgr : public IRemoteBroker {
 public:
     DECLARE_INTERFACE_DESCRIPTOR(u"ohos.appexecfwk.AppMgr");
@@ -153,7 +152,6 @@ public:
         AMS_APP_GET_APP_FREEZING_TIME,
     };
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 

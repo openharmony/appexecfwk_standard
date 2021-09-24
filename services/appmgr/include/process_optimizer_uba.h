@@ -157,6 +157,11 @@ private:
     }
 
     void CommitAbilityActions();
+    void CommitStartAbilityAction(const StartAbilityAction& action, size_t index);
+    void CommitConnectAbilityAction(const ConnectAbilityAction& action, size_t index);
+    void CommitDisconnectAbilityAction(const DisconnectAbilityAction& action, size_t index);
+    void CommitChangedAbilityStateAction(const ChangeAbilityStateAction& action, size_t index);
+    void CommitRemoveAbilityAction(const RemoveAbilityAction& action, size_t index);
     UbaServicePtr GetUbaService();
 
 private:

@@ -22,7 +22,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class AmsMgrProxy : public IRemoteProxy<IAmsMgr> {
 public:
     explicit AmsMgrProxy(const sptr<IRemoteObject> &impl);
@@ -123,7 +122,6 @@ private:
 private:
     static inline BrokerDelegator<AmsMgrProxy> delegator_;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_CORE_INCLUDE_APPMGR_AMS_MGR_CLIENT_H

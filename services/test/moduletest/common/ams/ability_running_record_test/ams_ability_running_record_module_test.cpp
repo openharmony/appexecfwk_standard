@@ -27,10 +27,8 @@ using namespace testing::ext;
 namespace OHOS {
 namespace AppExecFwk {
 namespace {
-
 const std::string APP_RECORD_NAME = "App_Name_Z";
 const std::string ABILITY_RECORD_NAME = "Ability_Name_Z";
-
 // schedule phase
 const int NONE_SCHEDULED = 0;
 const int FOREGROUND_SCHEDULED = 1 << 0;
@@ -44,9 +42,7 @@ const int CLEAN_ABILITY_SCHEDULED = 1 << 7;
 const int PROFILE_CHANGED_SCHEDULED = 1 << 8;
 const int SCHEDULE_CONFIGURATION_UPDATED = 1 << 9;
 const int ABILITY_RUNNING_RECORD_NUM = 1000;
-
 }  // namespace
-
 class MockedSchedulerBase {
 public:
     MockedSchedulerBase()
@@ -427,6 +423,5 @@ HWTEST_F(AmsAbilityRunningRecordModuleTest, OperateAbilityRunningRecord_001, Tes
     }
     APP_LOGI("OperateAbilityRunningRecord_001 end");
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

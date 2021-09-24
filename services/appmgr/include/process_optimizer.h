@@ -76,6 +76,7 @@ protected:
 
 private:
     bool UpdateAppOomAdj(const AppPtr &app);
+    bool GetAppOomAdj(const AppPtr &app,ApplicationState state,int &oomAdj,int &oomAdjMax);
     bool UpdateAppSchedPolicy(const AppPtr &app);
     void StartAppSuspendTimer(const AppPtr &app);
     void StopAppSuspendTimer(const AppPtr &app);

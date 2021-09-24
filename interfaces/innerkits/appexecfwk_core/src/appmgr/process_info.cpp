@@ -19,7 +19,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 ProcessInfo::ProcessInfo(const std::string &name, const pid_t &pid) : processName_(name), pid_(pid)
 {}
 
@@ -61,6 +60,5 @@ bool ProcessInfo::Marshalling(Parcel &parcel) const
 {
     return (parcel.WriteString16(Str8ToStr16(processName_)) && parcel.WriteInt32(pid_));
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

@@ -24,7 +24,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class MockAppSpawnSocket : public AppSpawnSocket {
 public:
     MockAppSpawnSocket() = default;
@@ -34,7 +33,6 @@ public:
     MOCK_METHOD0(CloseAppSpawnConnection, void());
     MOCK_METHOD2(WriteMessage, ErrCode(const void *buf, const int32_t len));
     MOCK_METHOD2(ReadMessage, ErrCode(void *buf, int32_t len));
-
     ErrCode ReadImpl(void *buf, [[maybe_unused]] int32_t len)
     {
         if (buf == nullptr) {
@@ -56,7 +54,6 @@ public:
 private:
     int32_t expectPid_ = 0;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_APPMGR_TEST_UT_MOCK_APP_SPAWN_SOCKET_H

@@ -37,7 +37,6 @@ public:
 private:
     std::weak_ptr<AppMgrServiceInner> appMgr_;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_APPMGR_INCLUDE_APP_MGR_SERVICE_EVENT_HANDLER_H

@@ -24,7 +24,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 struct AppProcessData : public Parcelable {
     /**
      * @brief read this Sequenceable object from a Parcel.
@@ -54,7 +53,6 @@ struct AppProcessData : public Parcelable {
     pid_t pid = 0;
     int32_t uid = 0;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_CORE_INCLUDE_APPMGR_APP_PROCESS_DATA_H

@@ -25,7 +25,6 @@
 
 namespace OHOS {
 namespace LMKS {
-
 namespace {
 constexpr int PROC_PATH_MAX = 256;
 constexpr int PROC_LINE_MAX = 128;
@@ -108,7 +107,7 @@ std::string LmksUtils::GetProcName(pid_t pid)
         return name;
     }
 
-    if (strlen(line) + 1 <= PROC_LINE_MAX && strlen(line) != 0) {
+    if (strlen(line) + 1 <= PROC_LINE_MAX && strlen(line) != 0 && line[strlen(line)] == '\0') {
         name = line;
     } else {
         HiLog::Error(LABEL, "cmdline no data");

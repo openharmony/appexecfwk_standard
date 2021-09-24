@@ -28,16 +28,16 @@ namespace {
 const std::string currentAbilityName = "KitTestAbilityManagerSecond";
 const std::string topAbilityName = "KitTestAbilityManager";
 const std::string launchAbilityName = "LauncherAbility";
-const std::string bundleName = "com.ohos.amsst.AppKit";
-const std::string topProcessInfo = "com.ohos.amsst.AppKit";
+const std::string bundleName = "com.ohos.amsst.AppKitAbilityManagerFirst";
+const std::string topProcessInfo = "com.ohos.amsst.AppKitAbilityManagerFirst";
 const std::string currentProcessInfo = "com.ohos.amsst.AppKitAbilityManager";
 const std::string launchProcessInfo = "com.ix.launcher";
 bool isMoveMissionToTop = false;
 int moveMissionToTopCode = -1;
 bool isClearUpApplicationData = false;
 int clearUpApplicationDataCode = -1;
-int numTwo = 2;
-int numThree = 3;
+constexpr int numTwo = 2;
+constexpr int numThree = 3;
 }  // namespace
 
 bool KitTestAbilityManagerSecond::PublishEvent(const std::string &eventName, const int &code, const std::string &data)
@@ -112,8 +112,7 @@ void KitTestAbilityManagerSecond::ProcessStateNotEqual(
 
 void KitTestAbilityManagerSecond::GetAllStackInfo(MissionStackInfo &missionStackInfo, int stackID)
 {
-    StackInfo stackInfo;
-    stackInfo = AbilityManager::GetInstance().GetAllStackInfo();
+    StackInfo stackInfo = AbilityManager::GetInstance().GetAllStackInfo();
     for (const auto &stackInfo : stackInfo.missionStackInfos) {
         if (stackInfo.id == stackID) {
             missionStackInfo = stackInfo;
@@ -208,7 +207,7 @@ void KitTestAbilityManagerSecond::AbilityManagerGetAllStackInfoCase4(int code)
     GetAllStackInfo(missionStackInfo, 1);
     bool result = false;
     if (missionStackInfo.missionRecords.size() == 1) {
-        result = (missionStackInfo.missionRecords[0].abilityRecordInfos.size() == 2);
+        result = (missionStackInfo.missionRecords[0].abilityRecordInfos.size() == numTwo);
     }
     PublishEvent(g_respPageManagerAbilityST, code, std::to_string(result));
 }
@@ -230,9 +229,9 @@ void KitTestAbilityManagerSecond::AbilityManagerQueryRecentAbilityMissionInfoCas
 {
     APP_LOGI("KitTestAbilityManagerSecond::AbilityManagerQueryRecentAbilityMissionInfoCase1");
     std::vector<AbilityMissionInfo> info;
-    info = AbilityManager::GetInstance().QueryRecentAbilityMissionInfo(3, RECENT_WITH_EXCLUDED);
+    info = AbilityManager::GetInstance().QueryRecentAbilityMissionInfo(numThree, RECENT_WITH_EXCLUDED);
     bool result = false;
-    if (1 == info.size() && 2 == info[0].size) {
+    if (info.size() == 1 && info[0].size == numTwo) {
         if (info[0].baseAbility.GetBundleName() == bundleName) {
             result = true;
         }
@@ -244,9 +243,9 @@ void KitTestAbilityManagerSecond::AbilityManagerQueryRecentAbilityMissionInfoCas
 {
     APP_LOGI("KitTestAbilityManagerSecond::AbilityManagerQueryRecentAbilityMissionInfoCase2");
     std::vector<AbilityMissionInfo> info;
-    info = AbilityManager::GetInstance().QueryRecentAbilityMissionInfo(3, RECENT_WITH_EXCLUDED);
+    info = AbilityManager::GetInstance().QueryRecentAbilityMissionInfo(numThree, RECENT_WITH_EXCLUDED);
     bool result = false;
-    if (1 == info.size() && 2 == info[0].size) {
+    if (info.size() == 1 && info[0].size == numTwo) {
         result = true;
     }
     PublishEvent(g_respPageManagerAbilityST, code, std::to_string(result));
@@ -256,9 +255,9 @@ void KitTestAbilityManagerSecond::AbilityManagerQueryRecentAbilityMissionInfoCas
 {
     APP_LOGI("KitTestAbilityManagerSecond::AbilityManagerQueryRecentAbilityMissionInfoCase3");
     std::vector<AbilityMissionInfo> info;
-    info = AbilityManager::GetInstance().QueryRecentAbilityMissionInfo(3, RECENT_WITH_EXCLUDED);
+    info = AbilityManager::GetInstance().QueryRecentAbilityMissionInfo(numThree, RECENT_WITH_EXCLUDED);
     bool result = false;
-    if (1 == info.size() && 2 == info[0].size) {
+    if (info.size() == 1 && info[0].size == numTwo) {
         if (info[0].baseAbility.GetBundleName() == bundleName &&
             info[0].baseAbility.GetAbilityName() == topAbilityName) {
             result = true;
@@ -272,9 +271,9 @@ void KitTestAbilityManagerSecond::AbilityManagerQueryRunningAbilityMissionInfoCa
 {
     APP_LOGI("KitTestAbilityManagerSecond::AbilityManagerQueryRunningAbilityMissionInfoCase1");
     std::vector<AbilityMissionInfo> info;
-    info = AbilityManager::GetInstance().QueryRunningAbilityMissionInfo(3);
+    info = AbilityManager::GetInstance().QueryRunningAbilityMissionInfo(numThree);
     bool result = false;
-    if (1 == info.size() && 2 == info[0].size) {
+    if (info.size() == 1 && info[0].size == numTwo) {
         if (info[0].baseAbility.GetBundleName() == bundleName) {
             result = true;
         }
@@ -286,9 +285,9 @@ void KitTestAbilityManagerSecond::AbilityManagerQueryRunningAbilityMissionInfoCa
 {
     APP_LOGI("KitTestAbilityManagerSecond::AbilityManagerQueryRunningAbilityMissionInfoCase2");
     std::vector<AbilityMissionInfo> info;
-    info = AbilityManager::GetInstance().QueryRunningAbilityMissionInfo(3);
+    info = AbilityManager::GetInstance().QueryRunningAbilityMissionInfo(numThree);
     bool result = false;
-    if (1 == info.size() && 2 == info[0].size) {
+    if (info.size() == 1 && info[0].size == numTwo) {
         result = true;
     }
     PublishEvent(g_respPageManagerAbilityST, code, std::to_string(result));
@@ -298,9 +297,9 @@ void KitTestAbilityManagerSecond::AbilityManagerQueryRunningAbilityMissionInfoCa
 {
     APP_LOGI("KitTestAbilityManagerSecond::AbilityManagerQueryRunningAbilityMissionInfoCase3");
     std::vector<AbilityMissionInfo> info;
-    info = AbilityManager::GetInstance().QueryRunningAbilityMissionInfo(3);
+    info = AbilityManager::GetInstance().QueryRunningAbilityMissionInfo(numThree);
     bool result = false;
-    if (1 == info.size() && 2 == info[0].size) {
+    if (info.size() == 1 && info[0].size == numTwo) {
         if (info[0].baseAbility.GetBundleName() == bundleName &&
             info[0].baseAbility.GetAbilityName() == topAbilityName) {
             result = true;
@@ -354,7 +353,7 @@ void KitTestAbilityManagerSecond::OnActive()
 {
     APP_LOGI("KitTestAbilityManagerSecond::OnActive");
     Ability::OnActive();
-    if (true == isMoveMissionToTop) {
+    if (isMoveMissionToTop == true) {
         PublishEvent(g_respPageManagerAbilityST, moveMissionToTopCode, "1");
         isMoveMissionToTop = false;
         moveMissionToTopCode = -1;
@@ -380,10 +379,10 @@ void KitTestAbilityManagerSecond::OnBackground()
 {
     APP_LOGI("KitTestAbilityManagerSecond::OnBackground");
     Ability::OnBackground();
-    if (true == isMoveMissionToTop) {
+    if (isMoveMissionToTop == true) {
         std::vector<AbilityMissionInfo> info;
-        info = AbilityManager::GetInstance().QueryRecentAbilityMissionInfo(3, RECENT_WITH_EXCLUDED);
-        if (1 == info.size() && 2 == info[0].size) {
+        info = AbilityManager::GetInstance().QueryRecentAbilityMissionInfo(numThree, RECENT_WITH_EXCLUDED);
+        if (info.size() == 1 && info[0].size == numTwo) {
             GetAbilityManager()->MoveMissionToTop(info[0].id);
             APP_LOGI("GetAbilityManager()->MoveMissionToTop(info[0].id);%{public}d", static_cast<int>(info[0].id));
         }

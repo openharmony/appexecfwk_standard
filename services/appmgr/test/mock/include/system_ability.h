@@ -20,11 +20,9 @@
 #include "iremote_object.h"
 
 namespace OHOS {
-
 #define REGISTER_SYSTEM_ABILITY_BY_ID(a, b, c)
 #define REGISTER_SYSTEM_ABILITY(abilityClassName, abilityId, runOnCreate)
 #define DECLEAR_SYSTEM_ABILITY(className)
-
 static constexpr HiviewDFX::HiLogLabel LABEL = {LOG_CORE, 0xD001100, "MockSystemAbility"};
 
 class SystemAbility {

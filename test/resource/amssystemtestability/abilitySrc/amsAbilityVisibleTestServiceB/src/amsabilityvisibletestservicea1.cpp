@@ -116,7 +116,7 @@ sptr<IRemoteObject> AmsAbilityVisibleTestServiceA1::OnConnect(const Want &want)
         if (startAbilityType == "Data") {
             Uri dataAbilityUri("dataability:///" + startBundleName + "." + startAbilityName);
             std::shared_ptr<DataAbilityHelper> helper = DataAbilityHelper::Creator(GetContext());
-            ValuesBucket bucket;
+            NativeRdb::ValuesBucket bucket;
             helper->Insert(dataAbilityUri, bucket);
         }
     }

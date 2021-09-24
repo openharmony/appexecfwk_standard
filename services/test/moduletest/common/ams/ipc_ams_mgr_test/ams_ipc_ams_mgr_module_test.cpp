@@ -41,13 +41,9 @@ using testing::InvokeWithoutArgs;
 
 namespace OHOS {
 namespace AppExecFwk {
-
 namespace {
-
 const int32_t COUNT = 1000;
-
 }  // namespace
-
 class AmsIpcAmsmgrModuleTest : public testing::Test {
 public:
     static void SetUpTestCase();
@@ -69,11 +65,11 @@ public:
 
 protected:
     sptr<MockAbilityToken> mockToken_ = nullptr;
-    sptr<MockAbilityToken> token_;
-    std::unique_ptr<AppMgrClient> client_;
+    sptr<MockAbilityToken> token_{nullptr};
+    std::unique_ptr<AppMgrClient> client_{nullptr};
 
-    std::shared_ptr<MockAppMgrServiceInner> mockAppMgrServiceInner_;
-    std::shared_ptr<AMSEventHandler> amsEventHandler_;
+    std::shared_ptr<MockAppMgrServiceInner> mockAppMgrServiceInner_{nullptr};
+    std::shared_ptr<AMSEventHandler> amsEventHandler_{nullptr};
 };
 
 class MockMockAppMgrService : public MockAppMgrService {
@@ -422,6 +418,5 @@ HWTEST_F(AmsIpcAmsmgrModuleTest, ExcuteAmsmgrIPCInterface_007, TestSize.Level3)
     mockAppMgrServiceInner.reset();
     amsMgrScheduler.release();
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

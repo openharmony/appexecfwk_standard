@@ -27,7 +27,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 AppMgrClient::AppMgrClient()
 {
     SetServiceManager(std::make_unique<AppServiceManager>());
