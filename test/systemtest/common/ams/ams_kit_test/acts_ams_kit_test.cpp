@@ -52,6 +52,7 @@ using MAP_STR_STR = std::map<std::string, std::string>;
 static const std::string bundleName1 = "com.ohos.amsst.AppKitAbilityManager";
 static const std::string bundleName2 = "com.ohos.amsst.AppKit";
 static const std::string bundleName3 = "com.ohos.amsst.appN";
+static const std::string bundleName4 = "ccom.ohos.amsst.AppKitAbilityManagerFirst";
 
 static const std::string thirdAbilityName = "ThirdAbility";
 static const std::string sixthAbilityName = "SixthAbility";
@@ -110,7 +111,7 @@ Event ActsAmsKitTest::event = Event();
 Event ActsAmsKitTest::abilityEvent = Event();
 sptr<IAppMgr> ActsAmsKitTest::appMs = nullptr;
 sptr<IAbilityManager> ActsAmsKitTest::abilityMs = nullptr;
-StressTestLevel ActsAmsKitTest::stLevel_ {};
+StressTestLevel ActsAmsKitTest::stLevel_{};
 std::shared_ptr<ActsAmsKitTest::AppEventSubscriber> ActsAmsKitTest::subscriber_ = nullptr;
 
 void ActsAmsKitTest::AppEventSubscriber::OnReceiveEvent(const CommonEventData &data)
@@ -206,7 +207,7 @@ void ActsAmsKitTest::ShowDump()
  */
 HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_0100, Function | MediumTest | Level1)
 {
-    StartAbilityKitTest(abilityManagerName, bundleName2);
+    StartAbilityKitTest(abilityManagerName, bundleName4);
     int apiIndex = static_cast<int>(AbilityManagerApi::GetAllRunningProcesses);
     std::string eventData = "AbilityManagerApi_" + std::to_string(apiIndex) + "_0";
     bool result = false;
@@ -232,7 +233,7 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_0100, Function | MediumTest | L
  */
 HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_0200, Function | MediumTest | Level1)
 {
-    StartAbilityKitTest(abilityManagerName, bundleName2);
+    StartAbilityKitTest(abilityManagerName, bundleName4);
     int apiIndex = static_cast<int>(AbilityManagerApi::GetAllRunningProcesses);
     std::string eventData = "AbilityManagerApi_" + std::to_string(apiIndex) + "_1";
     bool result = false;
@@ -257,7 +258,7 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_0200, Function | MediumTest | L
  */
 HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_0300, Function | MediumTest | Level1)
 {
-    StartAbilityKitTest(abilityManagerName, bundleName2);
+    StartAbilityKitTest(abilityManagerName, bundleName4);
     int apiIndex = static_cast<int>(AbilityManagerApi::GetAllRunningProcesses);
     std::string eventData = "AbilityManagerApi_" + std::to_string(apiIndex) + "_2";
     bool result = false;
@@ -283,7 +284,7 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_0300, Function | MediumTest | L
  */
 HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_0400, Function | MediumTest | Level1)
 {
-    StartAbilityKitTest(abilityManagerName, bundleName2);
+    StartAbilityKitTest(abilityManagerName, bundleName4);
     int apiIndex = static_cast<int>(AbilityManagerApi::GetAllRunningProcesses);
     std::string eventData = "AbilityManagerApi_" + std::to_string(apiIndex) + "_3";
     bool result = false;
@@ -312,7 +313,7 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_0500, Function | MediumTest | L
 {
     bool result = false;
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
-        StartAbilityKitTest(abilityManagerName, bundleName2);
+        StartAbilityKitTest(abilityManagerName, bundleName4);
         int apiIndex = static_cast<int>(AbilityManagerApi::GetAllRunningProcesses);
         std::string eventData = "AbilityManagerApi_" + std::to_string(apiIndex) + "_4";
 
@@ -340,7 +341,7 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_0600, Function | MediumTest | L
 {
     bool result = false;
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
-        StartAbilityKitTest(abilityManagerName, bundleName2);
+        StartAbilityKitTest(abilityManagerName, bundleName4);
         int apiIndex = static_cast<int>(AbilityManagerApi::GetAllRunningProcesses);
         std::string eventData = "AbilityManagerApi_" + std::to_string(apiIndex) + "_5";
         STAbilityUtil::PublishEvent(g_requPageManagerAbilityST, ++amsKitSTCode, eventData);
@@ -367,7 +368,7 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_0700, Function | MediumTest | L
 {
     bool result = false;
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
-        StartAbilityKitTest(abilityManagerName, bundleName2);
+        StartAbilityKitTest(abilityManagerName, bundleName4);
         int apiIndex = static_cast<int>(AbilityManagerApi::GetAllRunningProcesses);
         std::string eventData = "AbilityManagerApi_" + std::to_string(apiIndex) + "_6";
         STAbilityUtil::PublishEvent(g_requPageManagerAbilityST, ++amsKitSTCode, eventData);
@@ -394,7 +395,7 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_0800, Function | MediumTest | L
 {
     bool result = false;
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
-        StartAbilityKitTest(abilityManagerName, bundleName2);
+        StartAbilityKitTest(abilityManagerName, bundleName4);
         int apiIndex = static_cast<int>(AbilityManagerApi::GetAllRunningProcesses);
         std::string eventData = "AbilityManagerApi_" + std::to_string(apiIndex) + "_7";
         STAbilityUtil::PublishEvent(g_requPageManagerAbilityST, ++amsKitSTCode, eventData);
@@ -420,7 +421,7 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_0800, Function | MediumTest | L
 HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_0900, Function | MediumTest | Level1)
 {
     bool result = false;
-    StartAbilityKitTest(abilityManagerName, bundleName2);
+    StartAbilityKitTest(abilityManagerName, bundleName4);
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         int apiIndex = static_cast<int>(AbilityManagerApi::GetAllRunningProcesses);
         std::string eventData = "AbilityManagerApi_" + std::to_string(apiIndex) + "_8";
@@ -448,7 +449,7 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_1000, Function | MediumTest | L
 {
     bool result = false;
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
-        StartAbilityKitTest(abilityManagerName, bundleName2);
+        StartAbilityKitTest(abilityManagerName, bundleName4);
         int apiIndex = static_cast<int>(AbilityManagerApi::GetAllRunningProcesses);
         std::string eventData = "AbilityManagerApi_" + std::to_string(apiIndex) + "_9";
         STAbilityUtil::PublishEvent(g_requPageManagerAbilityST, ++amsKitSTCode, eventData);
@@ -472,7 +473,7 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_1000, Function | MediumTest | L
  */
 HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_1100, Function | MediumTest | Level1)
 {
-    StartAbilityKitTest(abilityManagerName, bundleName2);
+    StartAbilityKitTest(abilityManagerName, bundleName4);
     int apiIndex = static_cast<int>(AbilityManagerApi::GetAllStackInfo);
     std::string eventData = "AbilityManagerApi_" + std::to_string(apiIndex) + "_0";
     bool result = false;
@@ -498,7 +499,7 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_1100, Function | MediumTest | L
  */
 HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_1200, Function | MediumTest | Level1)
 {
-    StartAbilityKitTest(abilityManagerName, bundleName2);
+    StartAbilityKitTest(abilityManagerName, bundleName4);
     int apiIndex = static_cast<int>(AbilityManagerApi::GetAllStackInfo);
     std::string eventData = "AbilityManagerApi_" + std::to_string(apiIndex) + "_1";
     bool result = false;
@@ -524,7 +525,7 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_1200, Function | MediumTest | L
  */
 HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_1300, Function | MediumTest | Level1)
 {
-    StartAbilityKitTest(abilityManagerName, bundleName2);
+    StartAbilityKitTest(abilityManagerName, bundleName4);
     int apiIndex = static_cast<int>(AbilityManagerApi::GetAllStackInfo);
     std::string eventData = "AbilityManagerApi_" + std::to_string(apiIndex) + "_2";
     bool result = false;
@@ -550,7 +551,7 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_1300, Function | MediumTest | L
  */
 HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_1400, Function | MediumTest | Level1)
 {
-    StartAbilityKitTest(abilityManagerName, bundleName2);
+    StartAbilityKitTest(abilityManagerName, bundleName4);
     int apiIndex = static_cast<int>(AbilityManagerApi::GetAllStackInfo);
     std::string eventData = "AbilityManagerApi_" + std::to_string(apiIndex) + "_3";
     bool result = false;
@@ -579,7 +580,7 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_1500, Function | MediumTest | L
 {
     bool result = false;
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
-        StartAbilityKitTest(abilityManagerName, bundleName2);
+        StartAbilityKitTest(abilityManagerName, bundleName4);
         int apiIndex = static_cast<int>(AbilityManagerApi::GetAllStackInfo);
         std::string eventData = "AbilityManagerApi_" + std::to_string(apiIndex) + "_4";
         STAbilityUtil::PublishEvent(g_requPageManagerAbilityST, ++amsKitSTCode, eventData);
@@ -606,7 +607,7 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_1600, Function | MediumTest | L
 {
     bool result = false;
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
-        StartAbilityKitTest(abilityManagerName, bundleName2);
+        StartAbilityKitTest(abilityManagerName, bundleName4);
         int apiIndex = static_cast<int>(AbilityManagerApi::GetAllStackInfo);
         std::string eventData = "AbilityManagerApi_" + std::to_string(apiIndex) + "_5";
         STAbilityUtil::PublishEvent(g_requPageManagerAbilityST, ++amsKitSTCode, eventData);
@@ -633,7 +634,7 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_1700, Function | MediumTest | L
 {
     bool result = false;
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
-        StartAbilityKitTest(abilityManagerName, bundleName2);
+        StartAbilityKitTest(abilityManagerName, bundleName4);
         int apiIndex = static_cast<int>(AbilityManagerApi::GetAllStackInfo);
         std::string eventData = "AbilityManagerApi_" + std::to_string(apiIndex) + "_6";
         STAbilityUtil::PublishEvent(g_requPageManagerAbilityST, ++amsKitSTCode, eventData);
@@ -659,7 +660,7 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_1700, Function | MediumTest | L
 HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_1800, Function | MediumTest | Level1)
 {
     bool result = false;
-    StartAbilityKitTest(abilityManagerName, bundleName2);
+    StartAbilityKitTest(abilityManagerName, bundleName4);
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         int apiIndex = static_cast<int>(AbilityManagerApi::GetAllStackInfo);
         std::string eventData = "AbilityManagerApi_" + std::to_string(apiIndex) + "_7";
@@ -687,7 +688,7 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_1900, Function | MediumTest | L
 {
     bool result = false;
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
-        StartAbilityKitTest(abilityManagerName, bundleName2);
+        StartAbilityKitTest(abilityManagerName, bundleName4);
         int apiIndex = static_cast<int>(AbilityManagerApi::GetAllStackInfo);
         std::string eventData = "AbilityManagerApi_" + std::to_string(apiIndex) + "_8";
         STAbilityUtil::PublishEvent(g_requPageManagerAbilityST, ++amsKitSTCode, eventData);
@@ -710,7 +711,7 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_1900, Function | MediumTest | L
  */
 HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_2000, Function | MediumTest | Level1)
 {
-    StartAbilityKitTest(abilityManagerName, bundleName2);
+    StartAbilityKitTest(abilityManagerName, bundleName4);
     int apiIndex = static_cast<int>(AbilityManagerApi::QueryRecentAbilityMissionInfo);
     std::string eventData = "AbilityManagerApi_" + std::to_string(apiIndex) + "_0";
     bool result = false;
@@ -735,7 +736,7 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_2000, Function | MediumTest | L
  */
 HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_2100, Function | MediumTest | Level1)
 {
-    StartAbilityKitTest(abilityManagerName, bundleName2);
+    StartAbilityKitTest(abilityManagerName, bundleName4);
     int apiIndex = static_cast<int>(AbilityManagerApi::QueryRecentAbilityMissionInfo);
     std::string eventData = "AbilityManagerApi_" + std::to_string(apiIndex) + "_1";
     bool result = false;
@@ -760,7 +761,7 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_2100, Function | MediumTest | L
  */
 HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_2200, Function | MediumTest | Level1)
 {
-    StartAbilityKitTest(abilityManagerName, bundleName2);
+    StartAbilityKitTest(abilityManagerName, bundleName4);
     int apiIndex = static_cast<int>(AbilityManagerApi::QueryRecentAbilityMissionInfo);
     std::string eventData = "AbilityManagerApi_" + std::to_string(apiIndex) + "_2";
     bool result = false;
@@ -785,7 +786,7 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_2200, Function | MediumTest | L
  */
 HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_2300, Function | MediumTest | Level1)
 {
-    StartAbilityKitTest(abilityManagerName, bundleName2);
+    StartAbilityKitTest(abilityManagerName, bundleName4);
     int apiIndex = static_cast<int>(AbilityManagerApi::QueryRecentAbilityMissionInfo);
     std::string eventData = "AbilityManagerApi_" + std::to_string(apiIndex) + "_3";
     bool result = false;
@@ -811,7 +812,7 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_2300, Function | MediumTest | L
  */
 HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_2400, Function | MediumTest | Level1)
 {
-    StartAbilityKitTest(abilityManagerName, bundleName2);
+    StartAbilityKitTest(abilityManagerName, bundleName4);
     int apiIndex = static_cast<int>(AbilityManagerApi::QueryRecentAbilityMissionInfo);
     std::string eventData = "AbilityManagerApi_" + std::to_string(apiIndex) + "_4";
     bool result = false;
@@ -837,7 +838,7 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_2400, Function | MediumTest | L
  */
 HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_2500, Function | MediumTest | Level1)
 {
-    StartAbilityKitTest(abilityManagerName, bundleName2);
+    StartAbilityKitTest(abilityManagerName, bundleName4);
     int apiIndex = static_cast<int>(AbilityManagerApi::QueryRecentAbilityMissionInfo);
     std::string eventData = "AbilityManagerApi_" + std::to_string(apiIndex) + "_5";
     bool result = false;
@@ -863,7 +864,7 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_2500, Function | MediumTest | L
  */
 HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_2600, Function | MediumTest | Level1)
 {
-    StartAbilityKitTest(abilityManagerName, bundleName2);
+    StartAbilityKitTest(abilityManagerName, bundleName4);
     int apiIndex = static_cast<int>(AbilityManagerApi::QueryRecentAbilityMissionInfo);
     std::string eventData = "AbilityManagerApi_" + std::to_string(apiIndex) + "_6";
     bool result = false;
@@ -891,7 +892,7 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_2600, Function | MediumTest | L
 HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_2700, Function | MediumTest | Level1)
 {
     bool result = false;
-    StartAbilityKitTest(abilityManagerName, bundleName2);
+    StartAbilityKitTest(abilityManagerName, bundleName4);
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         int apiIndex = static_cast<int>(AbilityManagerApi::QueryRecentAbilityMissionInfo);
         std::string eventData = "AbilityManagerApi_" + std::to_string(apiIndex) + "_7";
@@ -918,7 +919,7 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_2700, Function | MediumTest | L
 HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_2800, Function | MediumTest | Level1)
 {
     bool result = false;
-    StartAbilityKitTest(abilityManagerName, bundleName2);
+    StartAbilityKitTest(abilityManagerName, bundleName4);
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         int apiIndex = static_cast<int>(AbilityManagerApi::QueryRecentAbilityMissionInfo);
         std::string eventData = "AbilityManagerApi_" + std::to_string(apiIndex) + "_8";
@@ -945,7 +946,7 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_2800, Function | MediumTest | L
 HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_2900, Function | MediumTest | Level1)
 {
     bool result = false;
-    StartAbilityKitTest(abilityManagerName, bundleName2);
+    StartAbilityKitTest(abilityManagerName, bundleName4);
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         int apiIndex = static_cast<int>(AbilityManagerApi::QueryRecentAbilityMissionInfo);
         std::string eventData = "AbilityManagerApi_" + std::to_string(apiIndex) + "_9";
@@ -969,7 +970,7 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_2900, Function | MediumTest | L
  */
 HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_3000, Function | MediumTest | Level1)
 {
-    StartAbilityKitTest(abilityManagerName, bundleName2);
+    StartAbilityKitTest(abilityManagerName, bundleName4);
     int apiIndex = static_cast<int>(AbilityManagerApi::QueryRunningAbilityMissionInfo);
     std::string eventData = "AbilityManagerApi_" + std::to_string(apiIndex) + "_0";
     bool result = false;
@@ -994,7 +995,7 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_3000, Function | MediumTest | L
  */
 HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_3100, Function | MediumTest | Level1)
 {
-    StartAbilityKitTest(abilityManagerName, bundleName2);
+    StartAbilityKitTest(abilityManagerName, bundleName4);
     int apiIndex = static_cast<int>(AbilityManagerApi::QueryRunningAbilityMissionInfo);
     std::string eventData = "AbilityManagerApi_" + std::to_string(apiIndex) + "_1";
     bool result = false;
@@ -1019,7 +1020,7 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_3100, Function | MediumTest | L
  */
 HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_3200, Function | MediumTest | Level1)
 {
-    StartAbilityKitTest(abilityManagerName, bundleName2);
+    StartAbilityKitTest(abilityManagerName, bundleName4);
     int apiIndex = static_cast<int>(AbilityManagerApi::QueryRunningAbilityMissionInfo);
     std::string eventData = "AbilityManagerApi_" + std::to_string(apiIndex) + "_2";
     bool result = false;
@@ -1045,7 +1046,7 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_3200, Function | MediumTest | L
  */
 HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_3300, Function | MediumTest | Level1)
 {
-    StartAbilityKitTest(abilityManagerName, bundleName2);
+    StartAbilityKitTest(abilityManagerName, bundleName4);
     int apiIndex = static_cast<int>(AbilityManagerApi::QueryRunningAbilityMissionInfo);
     std::string eventData = "AbilityManagerApi_" + std::to_string(apiIndex) + "_3";
     bool result = false;
@@ -1073,7 +1074,7 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_3300, Function | MediumTest | L
 HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_3400, Function | MediumTest | Level1)
 {
     bool result = false;
-    StartAbilityKitTest(abilityManagerName, bundleName2);
+    StartAbilityKitTest(abilityManagerName, bundleName4);
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         int apiIndex = static_cast<int>(AbilityManagerApi::QueryRunningAbilityMissionInfo);
         std::string eventData = "AbilityManagerApi_" + std::to_string(apiIndex) + "_4";
@@ -1100,7 +1101,7 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_3400, Function | MediumTest | L
 HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_3500, Function | MediumTest | Level1)
 {
     bool result = false;
-    StartAbilityKitTest(abilityManagerName, bundleName2);
+    StartAbilityKitTest(abilityManagerName, bundleName4);
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         int apiIndex = static_cast<int>(AbilityManagerApi::QueryRunningAbilityMissionInfo);
         std::string eventData = "AbilityManagerApi_" + std::to_string(apiIndex) + "_5";
@@ -1127,7 +1128,7 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_3500, Function | MediumTest | L
 HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_3600, Function | MediumTest | Level1)
 {
     bool result = false;
-    StartAbilityKitTest(abilityManagerName, bundleName2);
+    StartAbilityKitTest(abilityManagerName, bundleName4);
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         int apiIndex = static_cast<int>(AbilityManagerApi::QueryRunningAbilityMissionInfo);
         std::string eventData = "AbilityManagerApi_" + std::to_string(apiIndex) + "_6";
@@ -1153,7 +1154,7 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_3600, Function | MediumTest | L
 HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_3700, Function | MediumTest | Level1)
 {
     bool result = false;
-    StartAbilityKitTest(abilityManagerName, bundleName2);
+    StartAbilityKitTest(abilityManagerName, bundleName4);
     for (int i = 1; i <= stLevel_.AMSLevel; i++) {
         int apiIndex = static_cast<int>(AbilityManagerApi::MoveMissionToTop);
         std::string eventData = "AbilityManagerApi_" + std::to_string(apiIndex) + "_0";
@@ -1180,7 +1181,7 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_3700, Function | MediumTest | L
  */
 HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_3800, Function | MediumTest | Level1)
 {
-    StartAbilityKitTest(abilityManagerName, bundleName2);
+    StartAbilityKitTest(abilityManagerName, bundleName4);
     int apiIndex = static_cast<int>(AbilityManagerApi::MoveMissionToTop);
     std::string eventData = "AbilityManagerApi_" + std::to_string(apiIndex) + "_1";
     bool result = false;
@@ -1205,7 +1206,7 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_3800, Function | MediumTest | L
  */
 HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_3900, Function | MediumTest | Level1)
 {
-    StartAbilityKitTest(abilityManagerName, bundleName2);
+    StartAbilityKitTest(abilityManagerName, bundleName4);
     int apiIndex = static_cast<int>(AbilityManagerApi::QueryRecentAbilityMissionInfo);
     std::string eventData = "AbilityManagerApi_" + std::to_string(apiIndex) + "_10";
     bool result = false;
@@ -1230,7 +1231,7 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_3900, Function | MediumTest | L
  */
 HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_4000, Function | MediumTest | Level1)
 {
-    StartAbilityKitTest(abilityManagerName, bundleName2);
+    StartAbilityKitTest(abilityManagerName, bundleName4);
     int apiIndex = static_cast<int>(AbilityManagerApi::QueryRecentAbilityMissionInfo);
     std::string eventData = "AbilityManagerApi_" + std::to_string(apiIndex) + "_11";
     bool result = false;
@@ -1255,7 +1256,7 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_4000, Function | MediumTest | L
  */
 HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_4100, Function | MediumTest | Level1)
 {
-    StartAbilityKitTest(abilityManagerName, bundleName2);
+    StartAbilityKitTest(abilityManagerName, bundleName4);
     int apiIndex = static_cast<int>(AbilityManagerApi::QueryRecentAbilityMissionInfo);
     std::string eventData = "AbilityManagerApi_" + std::to_string(apiIndex) + "_12";
     bool result = false;
@@ -1280,7 +1281,7 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_4100, Function | MediumTest | L
  */
 HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_4200, Function | MediumTest | Level1)
 {
-    StartAbilityKitTest(abilityManagerName, bundleName2);
+    StartAbilityKitTest(abilityManagerName, bundleName4);
     int apiIndex = static_cast<int>(AbilityManagerApi::QueryRecentAbilityMissionInfo);
     std::string eventData = "AbilityManagerApi_" + std::to_string(apiIndex) + "_13";
     bool result = false;
@@ -1305,7 +1306,7 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_4200, Function | MediumTest | L
  */
 HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_4300, Function | MediumTest | Level1)
 {
-    StartAbilityKitTest(abilityManagerName, bundleName2);
+    StartAbilityKitTest(abilityManagerName, bundleName4);
     int apiIndex = static_cast<int>(AbilityManagerApi::QueryRunningAbilityMissionInfo);
     std::string eventData = "AbilityManagerApi_" + std::to_string(apiIndex) + "_7";
     bool result = false;
@@ -1330,7 +1331,7 @@ HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_4300, Function | MediumTest | L
  */
 HWTEST_F(ActsAmsKitTest, AMS_Page_AbilityManager_4400, Function | MediumTest | Level1)
 {
-    StartAbilityKitTest(abilityManagerName, bundleName2);
+    StartAbilityKitTest(abilityManagerName, bundleName4);
     int apiIndex = static_cast<int>(AbilityManagerApi::QueryRunningAbilityMissionInfo);
     std::string eventData = "AbilityManagerApi_" + std::to_string(apiIndex) + "_8";
     bool result = false;

@@ -19,7 +19,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 const std::string &AppTaskInfo::GetName() const
 {
     return appName_;
@@ -82,6 +81,5 @@ AppTaskInfo *AppTaskInfo::Unmarshalling(Parcel &parcel)
     }
     return appTaskInfo;
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

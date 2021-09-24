@@ -17,7 +17,7 @@
 
 namespace OHOS {
 namespace AppExecFwk {
- 
+
 void AmsAbilityVisibleTestPageA4::OnStart(const Want &want)
 {
     GetWantInfo(want);
@@ -81,7 +81,7 @@ void AmsAbilityVisibleTestPageA4::OnActive()
         if (startAbilityType == "Data") {
             Uri dataAbilityUri("dataability:///" + startBundleName + "." + startAbilityName);
             std::shared_ptr<DataAbilityHelper> helper = DataAbilityHelper::Creator(GetContext());
-            ValuesBucket bucket;
+            NativeRdb::ValuesBucket bucket;
             helper->Insert(dataAbilityUri, bucket);
         }
     }

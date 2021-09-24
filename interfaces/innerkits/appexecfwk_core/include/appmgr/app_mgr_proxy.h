@@ -22,7 +22,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class AppMgrProxy : public IRemoteProxy<IAppMgr> {
 public:
     explicit AppMgrProxy(const sptr<IRemoteObject> &impl);
@@ -136,11 +135,10 @@ public:
 private:
     bool SendTransactCmd(IAppMgr::Message code, MessageParcel &data, MessageParcel &reply);
     bool WriteInterfaceToken(MessageParcel &data);
-    template <typename T>
+    template<typename T>
     int GetParcelableInfos(MessageParcel &reply, std::vector<T> &parcelableInfos);
     static inline BrokerDelegator<AppMgrProxy> delegator_;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_CORE_INCLUDE_APPMGR_APP_MGR_CLIENT_H

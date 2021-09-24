@@ -21,7 +21,10 @@
 #include <map>
 #include "ability_connect_callback_stub.h"
 #include "ability_connect_callback_proxy.h"
+#include "abs_shared_result_set.h"
 #include "ability_loader.h"
+#include "data_ability_predicates.h"
+#include "values_bucket.h"
 #include "common_event.h"
 #include "common_event_manager.h"
 
@@ -34,11 +37,12 @@ public:
 
 protected:
     virtual void OnStart(const Want &want) override;
-    virtual int Insert(const Uri &uri, const ValuesBucket &value) override;
-    virtual int Delete(const Uri &uri, const DataAbilityPredicates &predicates) override;
-    virtual int Update(const Uri &uri, const ValuesBucket &value, const DataAbilityPredicates &predicates) override;
-    virtual std::shared_ptr<ResultSet> Query(
-        const Uri &uri, const std::vector<std::string> &columns, const DataAbilityPredicates &predicates) override;
+    virtual int Insert(const Uri &uri, const NativeRdb::ValuesBucket &value) override;
+    virtual int Delete(const Uri &uri, const NativeRdb::DataAbilityPredicates &predicates) override;
+    virtual int Update(const Uri &uri, const NativeRdb::ValuesBucket &value,
+        const NativeRdb::DataAbilityPredicates &predicates) override;
+    virtual std::shared_ptr<NativeRdb::AbsSharedResultSet> Query(const Uri &uri,
+        const std::vector<std::string> &columns, const NativeRdb::DataAbilityPredicates &predicates) override;
     virtual std::vector<std::string> GetFileTypes(const Uri &uri, const std::string &mimeTypeFilter) override;
     virtual int OpenFile(const Uri &uri, const std::string &mode) override;
 

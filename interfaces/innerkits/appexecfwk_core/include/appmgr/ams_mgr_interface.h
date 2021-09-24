@@ -26,7 +26,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class IAmsMgr : public IRemoteBroker {
 public:
     DECLARE_INTERFACE_DESCRIPTOR(u"ohos.appexecfwk.IAmsMgr");
@@ -133,7 +132,6 @@ public:
         AMS_COMPEL_VERIFY_PERMISSION,
     };
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 

@@ -24,7 +24,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class ProcessInfo : public Parcelable {
 public:
     ProcessInfo() = default;
@@ -77,7 +76,6 @@ private:
     std::string processName_;
     pid_t pid_ = 0;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_CORE_INCLUDE_APPMGR_PROCESS_INFO_H

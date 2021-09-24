@@ -23,17 +23,13 @@
 #include <memory>
 #include "mock_app_scheduler.h"
 #include "inner_event.h"
-
 #include <gtest/gtest.h>
 
 using namespace testing::ext;
-
 namespace OHOS {
 namespace AppExecFwk {
-
 static bool eventHandlerFlag_ = false;
 class MockAMSEventHandler : public AMSEventHandler {
-
 public:
     MockAMSEventHandler(const std::shared_ptr<EventRunner> &runner, const std::shared_ptr<AppMgrServiceInner> &ams);
     virtual ~MockAMSEventHandler();
@@ -126,15 +122,10 @@ HWTEST_F(AMSEventHandlerTest, app_mgr_service_event_handler_test_001, TestSize.L
     if (!testAms) {
         APP_LOGI("app_mgr_service_event_handler_test : testAms is null");
     }
-
     EXPECT_FALSE(eventHandler_);
-
     // init
     eventHandler_ = std::make_shared<MockAMSEventHandler>(runner_, testAms);
-
     EXPECT_TRUE(eventHandler_);
-    // EXPECT_TRUE(eventHandler_->testAms_);
-
     APP_LOGI("app_mgr_service_event_handler_test end");
 }
 
@@ -171,6 +162,8 @@ HWTEST_F(AMSEventHandlerTest, app_mgr_service_event_handler_test_002, TestSize.L
 
     APP_LOGI("app_mgr_service_event_handler_test end");
 }
-
 }  // namespace AppExecFwk
+
+
+
 }  // namespace OHOS

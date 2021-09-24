@@ -32,13 +32,9 @@ using OHOS::sptr;
 using testing::_;
 using testing::Invoke;
 using testing::InvokeWithoutArgs;
-
 namespace {
-
 const int32_t COUNT = 10000;
-
 }  // namespace
-
 class AmsIpcAppmgrModuleTest : public testing::Test {
 public:
     static void SetUpTestCase();

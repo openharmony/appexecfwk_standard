@@ -25,7 +25,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class AppMgrStub : public IRemoteStub<IAppMgr> {
 public:
     AppMgrStub();
@@ -53,7 +52,6 @@ private:
 
     DISALLOW_COPY_AND_MOVE(AppMgrStub);
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_CORE_INCLUDE_APPMGR_APP_MGR_STUB_H

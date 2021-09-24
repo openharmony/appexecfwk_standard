@@ -24,7 +24,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 sptr<IRemoteObject> AppServiceManager::GetAppMgrService() const
 {
     sptr<ISystemAbilityManager> systemAbilityMgr = SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
@@ -33,6 +32,5 @@ sptr<IRemoteObject> AppServiceManager::GetAppMgrService() const
     }
     return systemAbilityMgr->GetSystemAbility(APP_MGR_SERVICE_ID);
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

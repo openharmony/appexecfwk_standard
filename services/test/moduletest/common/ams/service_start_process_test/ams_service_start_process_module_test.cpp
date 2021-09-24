@@ -26,9 +26,7 @@ using namespace testing::ext;
 using namespace OHOS::AppExecFwk;
 
 namespace {
-
 const int CYCLE_NUMBER = 10000;
-
 }  // namespace
 
 class AppMgrServiceInnerMock : public AppMgrServiceInner {

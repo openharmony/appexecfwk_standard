@@ -20,14 +20,12 @@
 #include <mutex>
 #include <string>
 #include <unordered_map>
-
 #include "if_system_ability_manager.h"
 #include "iremote_object.h"
 #include "singleton.h"
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class SysMrgClient {
     DECLARE_DELAYED_SINGLETON(SysMrgClient)
 public:

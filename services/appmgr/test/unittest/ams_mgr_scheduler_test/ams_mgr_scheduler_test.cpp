@@ -31,14 +31,12 @@ using testing::Return;
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class AmsMgrSchedulerTest : public testing::Test {
 public:
     static void SetUpTestCase();
     static void TearDownTestCase();
     void SetUp();
     void TearDown();
-
 public:
 protected:
     static const std::string GetTestAppName()
@@ -404,6 +402,5 @@ HWTEST_F(AmsMgrSchedulerTest, AmsMgrScheduler_010, TestSize.Level0)
 
     APP_LOGD("AmsMgrScheduler_010 end.");
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
