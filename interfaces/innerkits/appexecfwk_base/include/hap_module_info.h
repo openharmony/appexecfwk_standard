@@ -24,7 +24,7 @@
 namespace OHOS {
 namespace AppExecFwk {
 
-enum class ModuleColorMode{
+enum class ModuleColorMode {
     AUTO = -1,
     DARK,
     LIGHT,

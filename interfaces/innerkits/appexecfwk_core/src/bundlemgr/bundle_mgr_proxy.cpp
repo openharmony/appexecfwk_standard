@@ -1363,7 +1363,7 @@ bool BundleMgrProxy::NotifyActivityLifeStatus(
 
 }
 
-template <typename T>
+template<typename T>
 bool BundleMgrProxy::GetParcelableInfo(IBundleMgr::Message code, MessageParcel &data, T &parcelableInfo)
 {
     MessageParcel reply;
@@ -1386,7 +1386,7 @@ bool BundleMgrProxy::GetParcelableInfo(IBundleMgr::Message code, MessageParcel &
     return true;
 }
 
-template <typename T>
+template<typename T>
 bool BundleMgrProxy::GetParcelableInfos(IBundleMgr::Message code, MessageParcel &data, std::vector<T> &parcelableInfos)
 {
     MessageParcel reply;
