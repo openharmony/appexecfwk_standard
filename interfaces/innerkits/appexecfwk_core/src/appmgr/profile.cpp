@@ -21,7 +21,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 Profile::Profile(const std::string &name) : profileName_(name)
 {}
 
@@ -47,6 +46,5 @@ bool Profile::Marshalling(Parcel &parcel) const
 {
     return (parcel.WriteString16(Str8ToStr16(profileName_)));
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

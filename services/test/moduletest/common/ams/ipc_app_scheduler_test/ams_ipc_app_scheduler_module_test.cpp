@@ -31,11 +31,8 @@ using testing::Invoke;
 using testing::InvokeWithoutArgs;
 
 namespace {
-
 const int32_t COUNT = 10000;
-
 }  // namespace
-
 class AmsIpcAppSchedulerModuleTest : public testing::Test {
 public:
     static void SetUpTestCase();
@@ -265,7 +262,7 @@ HWTEST_F(AmsIpcAppSchedulerModuleTest, ExcuteApplicationIPCInterface_008, TestSi
         mockApplication->Wait();
 
         bool isEqual = mockApplication->CompareAppLaunchData(launchData);
-        ASSERT_EQ(true, isEqual) << "excute fail, index is " << i;
+        EXPECT_EQ(true, isEqual) << "excute fail, index is " << i;
     }
 }
 

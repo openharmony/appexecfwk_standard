@@ -409,6 +409,5 @@ HWTEST_F(AmsRecentAppListTest, PushAppFront_001, TestSize.Level1)
     serviceInner_->PushAppFront(appRecord->GetRecordId());
     EXPECT_NE(nullptr, serviceInner_->GetAppTaskInfoById(appRecord->GetRecordId()));
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

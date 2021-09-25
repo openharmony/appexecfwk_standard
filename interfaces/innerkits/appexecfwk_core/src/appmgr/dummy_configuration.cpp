@@ -21,7 +21,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 Configuration::Configuration(const std::string &name) : testInfostr_(name)
 {}
 
@@ -49,6 +48,5 @@ bool Configuration::Marshalling(Parcel &parcel) const
     }
     return true;
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

@@ -18,13 +18,11 @@
 
 #include "gmock/gmock.h"
 #include "app_log_wrapper.h"
-
 #include "semaphore_ex.h"
 #include "app_mgr_service_inner.h"
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class MockAppMgrServiceInner : public AppMgrServiceInner {
 public:
     MockAppMgrServiceInner() : lock_(0)
@@ -51,7 +49,6 @@ public:
     MOCK_CONST_METHOD0(QueryAppSpawnConnectionState, SpawnConnectionState());
     MOCK_CONST_METHOD2(AddAppDeathRecipient, void(const pid_t pid, const sptr<AppDeathRecipient> &appDeathRecipient));
     MOCK_METHOD1(KillProcessByAbilityToken, void(const sptr<IRemoteObject> &token));
-
     MOCK_METHOD5(AbilityBehaviorAnalysis,
         void(const sptr<IRemoteObject> &token, const sptr<IRemoteObject> &preToken, const int32_t visibility,
             const int32_t perceptibility, const int32_t connectionState));
@@ -67,7 +64,6 @@ public:
             currentCount_ = count_;
         }
     }
-
     // for mock function return int32_t
     int32_t Post4Int()
     {
@@ -101,7 +97,6 @@ private:
     int32_t count_ = 1;
     int32_t currentCount_ = 1;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_APPMGR_TEST_MOCK_APP_MGR_SERVICE_INNER_H

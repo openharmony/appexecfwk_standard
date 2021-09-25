@@ -20,9 +20,9 @@
 
 #include "app_log_wrapper.h"
 #include "data_ability_helper.h"
-#include "dummy_data_ability_predicates.h"
-#include "dummy_result_set.h"
-#include "dummy_values_bucket.h"
+#include "abs_shared_result_set.h"
+#include "data_ability_predicates.h"
+#include "values_bucket.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -178,8 +178,8 @@ void AmsStKitDataAbilityServiceA::GetWantInfo(const Want &want)
 static void GetResult(std::shared_ptr<STtools::StOperator> child, std::shared_ptr<DataAbilityHelper> helper,
     AmsStKitDataAbilityServiceA *mainAbility, Uri dataAbilityUri, string &result)
 {
-    AppExecFwk::DataAbilityPredicates predicates;
-    ValuesBucket bucket;
+    NativeRdb::DataAbilityPredicates predicates;
+    NativeRdb::ValuesBucket bucket;
     result = "failed";
     if (child->GetOperatorName() == OPERATOR_INSERT) {
         result = std::to_string(helper->Insert(dataAbilityUri, bucket));
@@ -189,8 +189,12 @@ static void GetResult(std::shared_ptr<STtools::StOperator> child, std::shared_pt
         result = std::to_string(helper->Update(dataAbilityUri, bucket, predicates));
     } else if (child->GetOperatorName() == OPERATOR_QUERY) {
         std::vector<std::string> columns = STtools::SerializationStOperatorToVector(*child);
-        std::shared_ptr<ResultSet> resultValue = helper->Query(dataAbilityUri, columns, predicates);
-        result = (resultValue != nullptr) ? (resultValue->testInf_) : "failed";
+        std::shared_ptr<NativeRdb::AbsSharedResultSet> resultValue = helper->Query(dataAbilityUri, columns, predicates);
+        result = "failed";
+        if (resultValue != nullptr) {
+            resultValue->GoToRow(0);
+            resultValue->GetString(0, result);
+        }
     } else if (child->GetOperatorName() == OPERATOR_GETFILETYPES) {
         std::vector<std::string> types = helper->GetFileTypes(dataAbilityUri, child->GetMessage());
         result = (types.size() > 0) ? types[0] : "failed";

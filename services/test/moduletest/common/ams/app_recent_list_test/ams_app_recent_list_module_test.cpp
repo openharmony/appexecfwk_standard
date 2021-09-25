@@ -36,14 +36,12 @@ using testing::SetArgReferee;
 namespace OHOS {
 namespace AppExecFwk {
 namespace {
-
 const int32_t INDEX_NUM_1 = 1;
 const int32_t INDEX_NUM_2 = 2;
 const int32_t INDEX_NUM_3 = 3;
 const int32_t INDEX_NUM_10 = 10;
 const std::string TEST_APP_NAME = "test_app_";
 const std::string TEST_ABILITY_NAME = "test_ability_";
-
 }  // namespace
 
 class AmsAppRecentListModuleTest : public testing::Test {
@@ -58,9 +56,9 @@ protected:
     const std::shared_ptr<AppRunningRecord> CreateAppRunningRecordByIndex(const int32_t index) const;
     void CreateAppRecentList(const int32_t appNum);
 
-    std::unique_ptr<AppMgrServiceInner> serviceInner_;
-    sptr<MockAbilityToken> mockToken_;
-    sptr<BundleMgrService> mockBundleMgr;
+    std::unique_ptr<AppMgrServiceInner> serviceInner_{nullptr};
+    sptr<MockAbilityToken> mockToken_{nullptr};
+    sptr<BundleMgrService> mockBundleMgr{nullptr};
 };
 
 void AmsAppRecentListModuleTest::SetUpTestCase()
@@ -331,6 +329,5 @@ HWTEST_F(AmsAppRecentListModuleTest, Clear_Recent_List_001, TestSize.Level0)
     EXPECT_TRUE(serviceInner_->GetRecentAppList().empty());
     APP_LOGI("Clear_Recent_List_002 end");
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

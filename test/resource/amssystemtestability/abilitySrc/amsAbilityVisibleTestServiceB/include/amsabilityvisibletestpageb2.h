@@ -20,8 +20,12 @@
 #include <thread>
 #include "ability_connect_callback_stub.h"
 #include "ability_connect_callback_proxy.h"
+#include "abs_shared_result_set.h"
 #include "ability_loader.h"
 #include "app_log_wrapper.h"
+#include "completed_callback.h"
+#include "data_ability_predicates.h"
+#include "values_bucket.h"
 #include "want_agent_helper.h"
 
 namespace OHOS {
@@ -29,6 +33,7 @@ namespace AppExecFwk {
 
 using AbilityConnectionStub = OHOS::AAFwk::AbilityConnectionStub;
 using Uri = OHOS::Uri;
+using CompletedCallback = OHOS::Notification::WantAgent::CompletedCallback;
 using namespace OHOS::Notification::WantAgent;
 
 class AbilityConnectCallback : public AbilityConnectionStub {

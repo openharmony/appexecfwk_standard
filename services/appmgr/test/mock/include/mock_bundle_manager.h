@@ -17,7 +17,6 @@
 #define OHOS_AAFWK_ABILITY_MOCK_BUNDLE_MANAGER_H
 
 #include <vector>
-
 #include "gmock/gmock.h"
 #include "ability_info.h"
 #include "application_info.h"
@@ -28,7 +27,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class BundleMgrProxy : public IRemoteProxy<IBundleMgr> {
 public:
     explicit BundleMgrProxy(const sptr<IRemoteObject> &impl) : IRemoteProxy<IBundleMgr>(impl)
@@ -50,7 +48,6 @@ public:
     MOCK_METHOD1(UnregisterPermissionsChanged, bool(const sptr<OnPermissionChangedCallback> &callback));
     bool QueryAbilityInfo(const AAFwk::Want &want, AbilityInfo &abilityInfo) override;
     bool QueryAbilityInfoByUri(const std::string &uri, AbilityInfo &abilityInfo) override;
-
     std::string GetAppType(const std::string &bundleName) override;
 
     virtual bool GetApplicationInfo(
@@ -100,19 +97,16 @@ public:
     {
         return "";
     };
-
     virtual bool GetBundleArchiveInfo(
         const std::string &hapFilePath, const BundleFlag flag, BundleInfo &bundleInfo) override
     {
         return true;
     };
     virtual bool GetHapModuleInfo(const AbilityInfo &abilityInfo, HapModuleInfo &hapModuleInfo) override;
-
     virtual bool GetLaunchWantForBundle(const std::string &bundleName, Want &want) override
     {
         return true;
     };
-
     virtual int CheckPublicKeys(const std::string &firstBundleName, const std::string &secondBundleName) override
     {
         return 0;
@@ -355,7 +349,8 @@ public:
     {
         return true;
     }
-    virtual bool GetModuleUsageRecords(const int32_t number, std::vector<ModuleUsageRecord> &moduleUsageRecords) override
+    virtual bool GetModuleUsageRecords(const int32_t number, 
+        std::vector<ModuleUsageRecord> &moduleUsageRecords) override
     {
         return true;
     }
@@ -365,7 +360,6 @@ public:
         return true;
     }
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 

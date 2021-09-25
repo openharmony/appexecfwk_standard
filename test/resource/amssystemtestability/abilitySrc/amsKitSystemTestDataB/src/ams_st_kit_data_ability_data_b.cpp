@@ -260,29 +260,29 @@ void AmsStKitDataAbilityDataB::OnBackground()
     PublishEvent(abilityEventName, ABILITY_DATA_CODE, "OnBackground");
 }
 
-int AmsStKitDataAbilityDataB::Insert(const Uri &uri, const ValuesBucket &value)
+int AmsStKitDataAbilityDataB::Insert(const Uri &uri, const NativeRdb::ValuesBucket &value)
 {
     APP_LOGI("AmsStKitDataAbilityDataB <<<<Insert>>>>");
     PublishEvent(abilityEventName, ABILITY_DATA_CODE, "Insert");
     return DEFAULT_INSERT_RESULT;
 }
 
-int AmsStKitDataAbilityDataB::Delete(const Uri &uri, const DataAbilityPredicates &predicates)
+int AmsStKitDataAbilityDataB::Delete(const Uri &uri, const NativeRdb::DataAbilityPredicates &predicates)
 {
     APP_LOGI("AmsStKitDataAbilityDataB <<<<Delete>>>>");
     PublishEvent(abilityEventName, ABILITY_DATA_CODE, "Delete");
     return DEFAULT_DELETE_RESULT;
 }
 
-int AmsStKitDataAbilityDataB::Update(const Uri &uri, const ValuesBucket &value, const DataAbilityPredicates &predicates)
+int AmsStKitDataAbilityDataB::Update(const Uri &uri, const NativeRdb::ValuesBucket &value, const NativeRdb::DataAbilityPredicates &predicates)
 {
     APP_LOGI("AmsStKitDataAbilityDataB <<<<Update>>>>");
     PublishEvent(abilityEventName, ABILITY_DATA_CODE, "Update");
     return DEFAULT_UPDATE_RESULT;
 }
 
-std::shared_ptr<ResultSet> AmsStKitDataAbilityDataB::Query(
-    const Uri &uri, const std::vector<std::string> &columns, const DataAbilityPredicates &predicates)
+std::shared_ptr<NativeRdb::AbsSharedResultSet> AmsStKitDataAbilityDataB::Query(
+    const Uri &uri, const std::vector<std::string> &columns, const NativeRdb::DataAbilityPredicates &predicates)
 {
     subscriber_->vectorOperator_ = columns;
     APP_LOGI("AmsStKitDataAbilityDataB <<<<Query>>>>");
@@ -291,7 +291,9 @@ std::shared_ptr<ResultSet> AmsStKitDataAbilityDataB::Query(
     STtools::WaitCompleted(event, OPERATOR_QUERY, ABILITY_DATA_CODE);
     subscriber_->TestPost();
 
-    std::shared_ptr<ResultSet> resultValue = std::make_shared<ResultSet>(OPERATOR_QUERY);
+    std::shared_ptr<NativeRdb::AbsSharedResultSet> resultValue = std::make_shared<NativeRdb::AbsSharedResultSet>(OPERATOR_QUERY);
+    AppDataFwk::SharedBlock *pSharedBlock = resultValue->GetBlock();
+    pSharedBlock->PutString(0, 0, OPERATOR_QUERY.c_str(), OPERATOR_QUERY.size() + 1);
     return resultValue;
 }
 
@@ -319,8 +321,8 @@ int AmsStKitDataAbilityDataB::OpenFile(const Uri &uri, const std::string &mode)
 static void GetResult(std::shared_ptr<STtools::StOperator> child, std::shared_ptr<DataAbilityHelper> helper,
     AmsStKitDataAbilityDataB *mainAbility, Uri dataAbilityUri, string &result)
 {
-    AppExecFwk::DataAbilityPredicates predicates;
-    ValuesBucket bucket;
+    NativeRdb::DataAbilityPredicates predicates;
+    NativeRdb::ValuesBucket bucket;
     result = "failed";
     if (child->GetOperatorName() == OPERATOR_INSERT) {
         result = std::to_string(helper->Insert(dataAbilityUri, bucket));
@@ -330,8 +332,12 @@ static void GetResult(std::shared_ptr<STtools::StOperator> child, std::shared_pt
         result = std::to_string(helper->Update(dataAbilityUri, bucket, predicates));
     } else if (child->GetOperatorName() == OPERATOR_QUERY) {
         std::vector<std::string> columns = STtools::SerializationStOperatorToVector(*child);
-        std::shared_ptr<ResultSet> resultValue = helper->Query(dataAbilityUri, columns, predicates);
-        result = (resultValue != nullptr) ? (resultValue->testInf_) : "failed";
+        std::shared_ptr<NativeRdb::AbsSharedResultSet> resultValue = helper->Query(dataAbilityUri, columns, predicates);
+        result = "failed";
+        if (resultValue != nullptr) {
+            resultValue->GoToRow(0);
+            resultValue->GetString(0, result);
+        }
     } else if (child->GetOperatorName() == OPERATOR_GETFILETYPES) {
         std::vector<std::string> types = helper->GetFileTypes(dataAbilityUri, child->GetMessage());
         result = (types.size() > 0) ? types[0] : "failed";

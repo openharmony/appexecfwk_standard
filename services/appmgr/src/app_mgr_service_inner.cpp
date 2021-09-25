@@ -386,7 +386,7 @@ bool AppMgrServiceInner::process_exist(pid_t &pid)
 
 bool AppMgrServiceInner::CheckALLProcessExist(std::list<pid_t> &pids)
 {
-    for (auto iter = pids.begin(); iter != pids.end();) {
+    for (auto iter = pids.begin(); iter != pids.end(); ) {
         if (!process_exist(*iter) && pids.size() != 0) {
             pids.erase(iter);
             if (pids.empty()) {

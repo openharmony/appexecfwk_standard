@@ -20,12 +20,13 @@
 
 #include "app_log_wrapper.h"
 #include "data_ability_helper.h"
-#include "dummy_data_ability_predicates.h"
-#include "dummy_result_set.h"
-#include "dummy_values_bucket.h"
+#include "abs_shared_result_set.h"
+#include "data_ability_predicates.h"
+#include "values_bucket.h"
 
 namespace OHOS {
 namespace AppExecFwk {
+namespace {
 static const int ABILITY_PAGE_A_CODE = 110;
 static const std::string OPERATOR_INSERT = "Insert";
 static const std::string OPERATOR_DELETE = "Delete";
@@ -33,6 +34,8 @@ static const std::string OPERATOR_UPDATE = "Update";
 static const std::string OPERATOR_QUERY = "Query";
 static const std::string OPERATOR_GETFILETYPES = "GetFileTypes";
 static const std::string OPERATOR_OPENFILE = "OpenFile";
+constexpr int charCnt = 5;
+}
 
 bool AmsStDataAbilityPageA::PublishEvent(const std::string &eventName, const int &code, const std::string &data)
 {
@@ -69,7 +72,7 @@ AmsStDataAbilityPageA::~AmsStDataAbilityPageA()
 
 void AmsStDataAbilityPageA::SubscribeEvent(const Want &want)
 {
-    Want mwant{want};
+    Want mwant {want};
     std::vector<std::string> eventList = {
         "event_data_test_action",
     };
@@ -132,7 +135,7 @@ void AmsStDataAbilityPageA::OnBackground()
 void AmsStDataAbilityPageA::GetWantInfo(const Want &want)
 {
     Want mWant(want);
-    STtools::StOperator allOperator{};
+    STtools::StOperator allOperator {};
     std::vector<std::string> vectorOperator = mWant.GetStringArrayParam("operator");
     STtools::DeserializationStOperatorFromVector(allOperator, vectorOperator);
 
@@ -148,8 +151,8 @@ void AmsStDataAbilityPageA::GetWantInfo(const Want &want)
 static void GetResult(std::shared_ptr<STtools::StOperator> child, std::shared_ptr<DataAbilityHelper> helper,
     Uri dataAbilityUri, string &result)
 {
-    AppExecFwk::DataAbilityPredicates predicates;
-    ValuesBucket bucket;
+    NativeRdb::DataAbilityPredicates predicates;
+    NativeRdb::ValuesBucket bucket;
     result = "failed";
     if (child->GetOperatorName() == OPERATOR_INSERT) {
         result = std::to_string(helper->Insert(dataAbilityUri, bucket));
@@ -159,8 +162,12 @@ static void GetResult(std::shared_ptr<STtools::StOperator> child, std::shared_pt
         result = std::to_string(helper->Update(dataAbilityUri, bucket, predicates));
     } else if (child->GetOperatorName() == OPERATOR_QUERY) {
         std::vector<std::string> columns = STtools::SerializationStOperatorToVector(*child);
-        std::shared_ptr<ResultSet> resultValue = helper->Query(dataAbilityUri, columns, predicates);
-        result = (resultValue != nullptr) ? (resultValue->testInf_) : "failed";
+        std::shared_ptr<NativeRdb::AbsSharedResultSet> resultValue = helper->Query(dataAbilityUri, columns, predicates);
+        result = "failed";
+        if (resultValue != nullptr) {
+            resultValue->GoToRow(0);
+            resultValue->GetString(0, result);
+        }
     } else if (child->GetOperatorName() == OPERATOR_GETFILETYPES) {
         std::vector<std::string> types = helper->GetFileTypes(dataAbilityUri, child->GetMessage());
         result = (types.size() > 0) ? types[0] : "failed";
@@ -176,9 +183,10 @@ static void GetResult(std::shared_ptr<STtools::StOperator> child, std::shared_pt
             return;
         }
         result = std::to_string(fd);
-        char str[5];
-        if (!feof(file))
-            fgets(str, 5, file);
+        char str[charCnt];
+        if (!feof(file)) {
+            fgets(str, charCnt, file);
+        }
         result = str;
         fclose(file);
     }
@@ -187,7 +195,7 @@ static void GetResult(std::shared_ptr<STtools::StOperator> child, std::shared_pt
 void DataTestPageAEventSubscriber::TestPost(const std::string funName)
 {
     APP_LOGI("DataTestPageAEventSubscriber::TestPost %{public}s", funName.c_str());
-    STtools::StOperator allOperator{};
+    STtools::StOperator allOperator {};
     STtools::DeserializationStOperatorFromVector(allOperator, vectorOperator_);
     for (auto child : allOperator.GetChildOperator()) {
         APP_LOGI("-----------------targetBundle:%{public}s", child->GetBundleName().c_str());
