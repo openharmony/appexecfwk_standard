@@ -39,7 +39,7 @@ static napi_value ParseBundleName(napi_env env, std::string &bundleName, napi_va
     size_t len = 0;
     napi_get_value_string_utf8(env, args, buf, BUFFER_LENGTH_MAX, &len);
     HILOG_INFO("bundleName= [%{public}s].", buf);
-    bundleName = std::string{ buf };
+    bundleName = std::string {buf};
     // create result code
     napi_value result;
     status = napi_create_int32(env, 1, &result);
@@ -75,7 +75,7 @@ napi_value NAPI_KillProcessesByBundleName(napi_env env, napi_callback_info info)
     }
     
     AsyncCallbackInfo *async_callback_info =
-        new AsyncCallbackInfo{ .env = env, .asyncWork = nullptr, .deferred = nullptr };
+        new AsyncCallbackInfo { .env = env, .asyncWork = nullptr, .deferred = nullptr };
     std::string bundleName;
     ParseBundleName(env, bundleName, argv[0]);
 

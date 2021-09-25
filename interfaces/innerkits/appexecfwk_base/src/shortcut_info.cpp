@@ -104,13 +104,15 @@ bool ShortcutInfo::Marshalling(Parcel &parcel) const
 
 void to_json(nlohmann::json &jsonObject, const ShortcutIntent &shortcutIntent)
 {
-    jsonObject = nlohmann::json{{JSON_KEY_BUNDLE_TARGET_BUNDLE, shortcutIntent.targetBundle},
+    jsonObject = nlohmann::json {
+        {JSON_KEY_BUNDLE_TARGET_BUNDLE, shortcutIntent.targetBundle},
         {JSON_KEY_BUNDLE_TARGET_CLASS, shortcutIntent.targetClass}};
 }
 
 void to_json(nlohmann::json &jsonObject, const ShortcutInfo &shortcutInfo)
 {
-    jsonObject = nlohmann::json{{JSON_KEY_BUNDLE_ID, shortcutInfo.id},
+    jsonObject = nlohmann::json {
+        {JSON_KEY_BUNDLE_ID, shortcutInfo.id},
         {JSON_KEY_BUNDLE_NAME, shortcutInfo.bundleName},
         {JSON_KEY_BUNDLE_HOST_ABILITY, shortcutInfo.hostAbility},
         {JSON_KEY_BUNDLE_ICON, shortcutInfo.icon},

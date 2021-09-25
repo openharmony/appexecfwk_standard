@@ -82,8 +82,8 @@ const nlohmann::json CONFIG_JSON = R"(
                     "icon": "$media:icon",
                     "intents": [
                       {
-                        "targetBundle": "com.huawei.hiworld.himusic",
-                        "targetClass": "com.huawei.hiworld.himusic.entry.MainAbility"
+                        "targetBundle": "com.demo.hiworld.himusic",
+                        "targetClass": "com.demo.hiworld.himusic.entry.MainAbility"
                       }
                     ]
                 }

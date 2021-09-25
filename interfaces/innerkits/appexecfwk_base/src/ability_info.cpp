@@ -332,7 +332,7 @@ void AbilityInfo::Dump(std::string prefix, int fd)
 
 void to_json(nlohmann::json &jsonObject, const Parameters &parameters)
 {
-    jsonObject = nlohmann::json{
+    jsonObject = nlohmann::json {
         {JSON_KEY_DESCRIPTION, parameters.description},
         {JSON_KEY_NAME, parameters.name},
         {JSON_KEY_TYPE, parameters.type}
@@ -341,7 +341,7 @@ void to_json(nlohmann::json &jsonObject, const Parameters &parameters)
 
 void to_json(nlohmann::json &jsonObject, const Results &results)
 {
-    jsonObject = nlohmann::json{
+    jsonObject = nlohmann::json {
         {JSON_KEY_DESCRIPTION, results.description},
         {JSON_KEY_NAME, results.name},
         {JSON_KEY_TYPE, results.type}
@@ -350,7 +350,7 @@ void to_json(nlohmann::json &jsonObject, const Results &results)
 
 void to_json(nlohmann::json &jsonObject, const CustomizeData &customizeData)
 {
-    jsonObject = nlohmann::json{
+    jsonObject = nlohmann::json {
         {JSON_KEY_NAME, customizeData.name},
         {JSON_KEY_META_VALUE, customizeData.value},
         {JSON_KEY_META_EXTRA, customizeData.extra}
@@ -359,7 +359,7 @@ void to_json(nlohmann::json &jsonObject, const CustomizeData &customizeData)
 
 void to_json(nlohmann::json &jsonObject, const MetaData &metaData)
 {
-    jsonObject = nlohmann::json{
+    jsonObject = nlohmann::json {
         {JSON_KEY_PARAMETERS, metaData.parameters},
         {JSON_KEY_RESULTS, metaData.results},
         {JSON_KEY_CUSTOMIZE_DATA, metaData.customizeData}
@@ -368,7 +368,8 @@ void to_json(nlohmann::json &jsonObject, const MetaData &metaData)
 
 void to_json(nlohmann::json &jsonObject, const AbilityInfo &abilityInfo)
 {
-    jsonObject = nlohmann::json{{JSON_KEY_NAME, abilityInfo.name},
+    jsonObject = nlohmann::json {
+        {JSON_KEY_NAME, abilityInfo.name},
         {JSON_KEY_LABEL, abilityInfo.label},
         {JSON_KEY_DESCRIPTION, abilityInfo.description},
         {JSON_KEY_ICON_PATH, abilityInfo.iconPath},

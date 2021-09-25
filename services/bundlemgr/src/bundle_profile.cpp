@@ -29,23 +29,42 @@ namespace ProfileReader {
 
 thread_local int32_t parseResult;
 const std::map<std::string, AbilityType> ABILITY_TYPE_MAP = {
-    {"page", AbilityType::PAGE}, {"service", AbilityType::SERVICE}, {"data", AbilityType::DATA}, {"form", AbilityType::FORM}};
+    {"page", AbilityType::PAGE},
+    {"service", AbilityType::SERVICE},
+    {"data", AbilityType::DATA},
+    {"form", AbilityType::FORM}
+};
 const std::map<std::string, DisplayOrientation> DISPLAY_ORIENTATION_MAP = {
     {"unspecified", DisplayOrientation::UNSPECIFIED},
     {"landscape", DisplayOrientation::LANDSCAPE},
     {"portrait", DisplayOrientation::PORTRAIT},
-    {"followrecent", DisplayOrientation::FOLLOWRECENT}};
+    {"followrecent", DisplayOrientation::FOLLOWRECENT}
+};
 const std::map<std::string, LaunchMode> LAUNCH_MODE_MAP = {
-    {"singleton", LaunchMode::SINGLETON}, {"singletop", LaunchMode::SINGLETOP}, {"standard", LaunchMode::STANDARD}};
-const std::map<std::string, int32_t> dimensionMap = {{"1*2", 1}, {"2*2", 2}, {"2*4", 3}, {"4*4", 4}};
-const std::map<std::string, FormType> formTypeMap = {{"JS", FormType::JS}, {"Java", FormType::JAVA}};
+    {"singleton", LaunchMode::SINGLETON},
+    {"singletop", LaunchMode::SINGLETOP},
+    {"standard", LaunchMode::STANDARD}
+};
+const std::map<std::string, int32_t> dimensionMap = {
+    {"1*2", 1},
+    {"2*2", 2},
+    {"2*4", 3},
+    {"4*4", 4}
+};
+const std::map<std::string, FormType> formTypeMap = {
+    {"JS", FormType::JS},
+    {"Java", FormType::JAVA}
+};
 const std::map<std::string, ModuleColorMode> moduleColorMode = {
     {"auto", ModuleColorMode::AUTO},
     {"dark", ModuleColorMode::DARK},
     {"light", ModuleColorMode::LIGHT},
 };
 const std::map<std::string, FormsColorMode> formColorModeMap = {
-    {"auto", FormsColorMode::AUTO_MODE}, {"dark", FormsColorMode::DARK_MODE}, {"light", FormsColorMode::LIGHT_MODE}};
+    {"auto", FormsColorMode::AUTO_MODE},
+    {"dark", FormsColorMode::DARK_MODE},
+    {"light", FormsColorMode::LIGHT_MODE}
+};
 
 struct Version {
     int32_t code = 0;
@@ -1916,8 +1935,10 @@ bool TransformToInfo(
     abilityInfo.kind = ability.type;
     abilityInfo.srcPath = ability.srcPath;
     abilityInfo.srcLanguage = ability.srcLanguage;
-    std::transform(abilityInfo.srcLanguage.begin(), abilityInfo.srcLanguage.end(), abilityInfo.srcLanguage.begin(), ::tolower);
-    if (abilityInfo.srcLanguage != ProfileReader::BUNDLE_MODULE_PROFILE_KEY_JS) {
+    std::transform(
+        abilityInfo.srcLanguage.begin(), abilityInfo.srcLanguage.end(), abilityInfo.srcLanguage.begin(), ::tolower);
+    if (abilityInfo.srcLanguage != ProfileReader::BUNDLE_MODULE_PROFILE_KEY_JS &&
+        abilityInfo.srcLanguage != ProfileReader::BUNDLE_MODULE_PROFILE_KEY_JS_TYPE_ETS) {
         abilityInfo.isNativeAbility = true;
     }
     auto iterType = std::find_if(std::begin(ProfileReader::ABILITY_TYPE_MAP),
@@ -1971,7 +1992,7 @@ bool TransformToInfo(
     abilityInfo.minFormWidth = ability.form.minWidth;
     abilityInfo.defaultFormWidth = ability.form.defaultWidth;
     GetMetaData(abilityInfo.metaData, ability.metaData);
-    abilityInfo.formEnabled = ability.formEnabled;
+    abilityInfo.formEnabled = ability.formsEnabled;
     return true;
 }
 

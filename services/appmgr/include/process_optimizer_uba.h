@@ -147,7 +147,7 @@ private:
         std::variant<std::monostate, StartAbilityAction, ConnectAbilityAction, DisconnectAbilityAction,
             ChangeAbilityStateAction, ChangeAbilityVisible, ChangeAbilityPerceptible, RemoveAbilityAction>;
 
-    template <typename T, typename... ARGS>
+    template<typename T, typename... ARGS>
     void RecordAbilityAction(ARGS... args)
     {
         abilityActionCache_[abilityActionCount_++].emplace<T>(args...);

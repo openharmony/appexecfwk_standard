@@ -51,7 +51,7 @@ bool ModuleInfo::Marshalling(Parcel &parcel) const
 
 void to_json(nlohmann::json &jsonObject, const ModuleInfo &moduleInfo)
 {
-    jsonObject = nlohmann::json{
+    jsonObject = nlohmann::json {
         {"moduleName", moduleInfo.moduleName},
         {"moduleSourceDir", moduleInfo.moduleSourceDir}
     };
