@@ -711,7 +711,7 @@ HWTEST_F(BmsCompatibleSystemTest, BMS_QueryAbilityInfoByUri_0200, Function | Med
 HWTEST_F(BmsCompatibleSystemTest, BMS_QueryAbilityInfoByUri_0300, Function | MediumTest | Level1)
 {
     GTEST_LOG_(INFO) << "START BMS_QueryAbilityInfoByUri_0300";
-    std::string abilityUri = "err://com.huawei.demo.weatherfa.UserADataAbility";
+    std::string abilityUri = "err://com.test.demo.weatherfa.UserADataAbility";
     AbilityInfo abilityInfo;
     sptr<IBundleMgr> bundleMgrProxy = GetBundleMgrProxy();
     if (!bundleMgrProxy) {

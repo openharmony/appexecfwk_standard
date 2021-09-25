@@ -63,8 +63,8 @@ private:
     DistributedKv::Status GetKvStore();
 
 private:
-    const DistributedKv::AppId appId_{Constants::APP_ID};
-    const DistributedKv::StoreId storeId_{Constants::STORE_ID};
+    const DistributedKv::AppId appId_ {Constants::APP_ID};
+    const DistributedKv::StoreId storeId_ {Constants::STORE_ID};
     bool KeyToDeviceAndName(const std::string &key, std::string &deviceId, std::string &bundleName) const;
     void DeviceAndNameToKey(const std::string &deviceId, const std::string &bundleName, std::string &key) const;
     DistributedKv::DistributedKvDataManager dataManager_;
