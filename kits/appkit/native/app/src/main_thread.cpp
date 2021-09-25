@@ -1226,7 +1226,7 @@ bool MainThread::ScanDir(const std::string &dirPath)
     }
     APP_LOGI("MainThread::ScanDir after opendir.");
     struct dirent *df = nullptr;
-    for (;;) {
+    for (; ; ) {
         APP_LOGI("MainThread::ScanDir before readdir.");
         df = readdir(dirp);
         APP_LOGI("MainThread::ScanDir after readdir.");

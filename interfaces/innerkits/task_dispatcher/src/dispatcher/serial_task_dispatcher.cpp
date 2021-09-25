@@ -108,7 +108,7 @@ std::shared_ptr<Revocable> SerialTaskDispatcher::DelayDispatch(const std::shared
     }
     TracePointBeforePost(innerTask, true, DELAY_DISPATCHER_TAG);
     // bind parameter to avoid deconstruct.
-    std::function < void()> callback = std::bind(&SerialTaskDispatcher::OnNewTaskIn, this, innerTask);
+    std::function<void()> callback = std::bind(&SerialTaskDispatcher::OnNewTaskIn, this, innerTask);
     bool executeFlag = executor_->DelayExecute(callback, delayMs);
     if (!executeFlag) {
         APP_LOGE("SerialTaskDispatcher::DelayDispatch execute failed");

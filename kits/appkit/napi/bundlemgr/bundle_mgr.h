@@ -36,7 +36,7 @@ struct AsyncAbilityInfoCallbackInfo {
     napi_deferred deferred;
     napi_ref callback = 0;
     OHOS::AAFwk::Want want;
-    OHOS::AppExecFwk::AbilityInfo abilityInfo;
+    std::vector<OHOS::AppExecFwk::AbilityInfo> abilityInfos;
     bool ret = false;
 };
 
@@ -202,7 +202,7 @@ extern napi_value g_classBundleInstaller;
 
 napi_value GetApplicationInfos(napi_env env, napi_callback_info info);
 napi_value GetApplicationInfo(napi_env env, napi_callback_info info);
-napi_value QueryAbilityInfo(napi_env env, napi_callback_info info);
+napi_value QueryAbilityInfos(napi_env env, napi_callback_info info);
 napi_value GetBundleInfos(napi_env env, napi_callback_info info);
 napi_value GetBundleInfo(napi_env env, napi_callback_info info);
 napi_value GetBundleArchiveInfo(napi_env env, napi_callback_info info);

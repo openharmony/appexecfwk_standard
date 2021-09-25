@@ -71,7 +71,7 @@ struct CustomizeData {
 struct MetaData {
     std::vector<Parameters> parameters;
     std::vector<Results> results;
-	std::vector<CustomizeData> customizeData;
+    std::vector<CustomizeData> customizeData;
 };
 
 struct AbilityInfo;

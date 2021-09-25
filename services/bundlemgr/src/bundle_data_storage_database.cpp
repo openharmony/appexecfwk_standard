@@ -246,7 +246,11 @@ Status BundleDataStorageDatabase::GetKvStore()
 {
     Status status;
     Options options = {
-        .createIfMissing = true, .encrypt = false, .autoSync = true, .kvStoreType = KvStoreType::SINGLE_VERSION};
+        .createIfMissing = true, 
+        .encrypt = false, 
+        .autoSync = true, 
+        .kvStoreType = KvStoreType::SINGLE_VERSION
+        };
 
     dataManager_.GetSingleKvStore(
         options, appId_, storeId_, [this, &status](Status paramStatus, std::unique_ptr<SingleKvStore> singleKvStore) {

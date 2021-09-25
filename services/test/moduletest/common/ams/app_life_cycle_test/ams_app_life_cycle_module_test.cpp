@@ -44,10 +44,12 @@ const int32_t INDEX_NUM_100 = 100;
 const int32_t INDEX_NUM_MAX = 100;
 const std::string TEST_APP_NAME = "test_app_";
 const std::string TEST_ABILITY_NAME = "test_ability_";
-#define CHECK_POINTER_IS_NULLPTR(object)    \
-    if (object == nullptr) {                \
-        return;                             \
-    }
+#define CHECK_POINTER_IS_NULLPTR(object) \
+    do {                                 \
+        if (object == nullptr) {         \
+            return;                      \
+        }                                \
+    } while (0)
 }  // namespace
 
 namespace OHOS {
