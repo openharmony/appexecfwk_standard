@@ -23,7 +23,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 AmsMgrProxy::AmsMgrProxy(const sptr<IRemoteObject> &impl) : IRemoteProxy<IAmsMgr>(impl)
 {}
 
@@ -291,6 +290,5 @@ int AmsMgrProxy::CompelVerifyPermission(const std::string &permission, int pid, 
     message = Str16ToStr8(reply.ReadString16());
     return reply.ReadInt32();
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

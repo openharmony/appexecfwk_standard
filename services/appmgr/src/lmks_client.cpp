@@ -31,7 +31,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 namespace {
 constexpr int LMKS_SOCKET_TIMEOUT = 3;
 

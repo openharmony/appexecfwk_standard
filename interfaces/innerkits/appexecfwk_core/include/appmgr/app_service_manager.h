@@ -20,7 +20,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class AppServiceManager {
 public:
     AppServiceManager() = default;
@@ -33,7 +32,6 @@ public:
      */
     virtual sptr<IRemoteObject> GetAppMgrService() const;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_CORE_INCLUDE_APP_SERVICE_MANAGER_H

@@ -28,7 +28,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 AmsMgrStub::AmsMgrStub()
 {
     memberFuncMap_[static_cast<uint32_t>(IAmsMgr::Message::AMS_LOAD_ABILITY)] = &AmsMgrStub::HandleLoadAbility;

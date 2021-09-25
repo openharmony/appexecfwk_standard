@@ -20,7 +20,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class MockAppSpawnClient : public AppSpawnClient {
 public:
     MockAppSpawnClient()
@@ -29,7 +28,6 @@ public:
     {}
     MOCK_METHOD2(StartProcess, ErrCode(const AppSpawnStartMsg &startMsg, pid_t &pid));
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_APPMGR_TEST_UT_MOCK_APP_SPAWN_CLIENT_H
