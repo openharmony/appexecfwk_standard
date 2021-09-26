@@ -21,7 +21,6 @@ using namespace OHOS::EventFwk;
 
 namespace OHOS {
 namespace AppExecFwk {
-
 AmsDfxStServiceAbilityA1::~AmsDfxStServiceAbilityA1()
 {}
 
