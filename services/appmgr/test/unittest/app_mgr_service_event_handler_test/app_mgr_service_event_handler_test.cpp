@@ -34,7 +34,7 @@ public:
     MockAMSEventHandler(const std::shared_ptr<EventRunner> &runner, const std::shared_ptr<AppMgrServiceInner> &ams);
     virtual ~MockAMSEventHandler();
 
-    virtual void ProcessEvent(const InnerEvent::Pointer &event) override
+    void ProcessEvent(const InnerEvent::Pointer &event) override
     {
         if (event->GetInnerEventId() == 10) {
             eventHandlerFlag_ = true;
@@ -163,7 +163,5 @@ HWTEST_F(AMSEventHandlerTest, app_mgr_service_event_handler_test_002, TestSize.L
     APP_LOGI("app_mgr_service_event_handler_test end");
 }
 }  // namespace AppExecFwk
-
-
 
 }  // namespace OHOS

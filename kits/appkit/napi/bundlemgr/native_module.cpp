@@ -90,7 +90,7 @@ static napi_value Init(napi_env env, napi_value exports)
         DECLARE_NAPI_FUNCTION("getBundleInfo", GetBundleInfo),
         DECLARE_NAPI_FUNCTION("getBundleArchiveInfo", GetBundleArchiveInfo),
         DECLARE_NAPI_FUNCTION("getPermissionDef", GetPermissionDef),
-        DECLARE_NAPI_FUNCTION("queryAbilityByWant", QueryAbilityInfo),
+        DECLARE_NAPI_FUNCTION("queryAbilityByWant", QueryAbilityInfos),
         DECLARE_NAPI_FUNCTION("getBundleInstaller", GetBundleInstaller),
         DECLARE_NAPI_FUNCTION("getFormsInfoByModule", GetFormsInfoByModule),
         DECLARE_NAPI_FUNCTION("getFormsInfo", GetFormsInfoByApp),

@@ -42,8 +42,8 @@ public:
     {
         dataMgr_ = dataMgr;
     }
-    ~BundlePermissionsChangedMonitor(){
-        if(!dataMgr_){
+    ~BundlePermissionsChangedMonitor() {
+        if(!dataMgr_) {
             dataMgr_.reset();
         }
     }
@@ -52,7 +52,7 @@ public:
         OHOS::AAFwk::Want want = data.GetWant();
         std::string action = want.GetAction();
         int32_t uid = data.GetCode();
-        if ( dataMgr_ != nullptr && uid >=0 ) {
+        if (dataMgr_ != nullptr && uid >=0) {
             dataMgr_->NotifyPermissionsChanged(uid);
         }
     }
