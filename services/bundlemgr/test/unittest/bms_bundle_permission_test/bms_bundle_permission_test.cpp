@@ -165,13 +165,15 @@ const DefPermission DEFPERMISSION_MUSIC = {
     .description = DEF_LABEL1,
     .descriptionId = 1
 };
-const DefPermission DEFPERMISSION_APP = {.name = DEFPERMISSION_NAME_APP,
+const DefPermission DEFPERMISSION_APP = {
+    .name = DEFPERMISSION_NAME_APP,
     .grantMode = "system_grant",
     .availableScope = {""},
     .label = DEF_LABEL1,
     .labelId = 1,
     .description = DEF_LABEL1,
-    .descriptionId = 1};
+    .descriptionId = 1
+};
 const DefPermission DEFPERMISSION_WECHAT = {
     .name = DEFPERMISSION_NAME_WECHAT,
     .grantMode = "system_grant",
@@ -417,10 +419,26 @@ void BmsBundlePermissionTest::MockDefPermissionBundleSystemGrant(InnerBundleInfo
     moduleInfo.moduleName = PACKAGE_NAME;
     moduleInfo.description = BUNDLE_DESCRIPTION;
 
-    AppExecFwk::Parameters parameters{"description", "name", "type"};
-    AppExecFwk::Results results{"description", "name", "type"};
-    AppExecFwk::CustomizeData customizeData{"name", "value", "extra"};
-    MetaData metaData{{parameters}, {results}, {customizeData}};
+    AppExecFwk::Parameters parameters {
+        "description", 
+        "name", 
+        "type"
+    };
+    AppExecFwk::Results results {
+        "description", 
+        "name", 
+        "type"
+    };
+    AppExecFwk::CustomizeData customizeData {
+        "name", 
+        "value", 
+        "extra"
+    };
+    MetaData metaData {
+        {parameters}, 
+        {results}, 
+        {customizeData}
+    };
     moduleInfo.metaData = metaData;
     innerbundleinfo.SetCurrentModulePackage(PACKAGE_NAME);
     innerbundleinfo.SetBaseApplicationInfo(appInfo);
@@ -461,10 +479,26 @@ void BmsBundlePermissionTest::MockUpdateDefPermissionBundleSystemGrant(InnerBund
     moduleInfo.moduleName = PACKAGE_NAME;
     moduleInfo.description = BUNDLE_DESCRIPTION;
 
-    AppExecFwk::Parameters parameters{"description", "name", "type"};
-    AppExecFwk::Results results{"description", "name", "type"};
-    AppExecFwk::CustomizeData customizeData{"name", "value", "extra"};
-    MetaData metaData{{parameters}, {results}, {customizeData}};
+    AppExecFwk::Parameters parameters {
+        "description", 
+        "name", 
+        "type"
+    };
+    AppExecFwk::Results results {
+        "description", 
+        "name", 
+        "type"
+    };
+    AppExecFwk::CustomizeData customizeData {
+        "name", 
+        "value", 
+        "extra"
+    };
+    MetaData metaData {
+        {parameters}, 
+        {results}, 
+        {customizeData}
+    };
     moduleInfo.metaData = metaData;
     innerbundleinfo.SetCurrentModulePackage(PACKAGE_NAME);
     innerbundleinfo.SetBaseApplicationInfo(appInfo);
@@ -505,10 +539,26 @@ void BmsBundlePermissionTest::MockDefPermissionBundleTestReqpermission(InnerBund
     moduleInfo.moduleName = PACKAGE_NAME;
     moduleInfo.description = BUNDLE_DESCRIPTION;
 
-    AppExecFwk::Parameters parameters{"description", "name", "type"};
-    AppExecFwk::Results results{"description", "name", "type"};
-    AppExecFwk::CustomizeData customizeData{"name", "value", "extra"};
-    MetaData metaData{{parameters}, {results}, {customizeData}};
+    AppExecFwk::Parameters parameters {
+        "description", 
+        "name", 
+        "type"
+    };
+    AppExecFwk::Results results {
+        "description", 
+        "name", 
+        "type"
+    };
+    AppExecFwk::CustomizeData customizeData {
+        "name", 
+        "value", 
+        "extra"
+    };
+    MetaData metaData {
+        {parameters}, 
+        {results}, 
+        {customizeData}
+    };
     moduleInfo.metaData = metaData;
     innerbundleinfo.SetCurrentModulePackage(PACKAGE_NAME);
     innerbundleinfo.SetBaseApplicationInfo(appInfo);
@@ -548,10 +598,26 @@ void BmsBundlePermissionTest::MockNoDefPermissionBundle(InnerBundleInfo &innerbu
     moduleInfo.moduleName = PACKAGE_NAME;
     moduleInfo.description = BUNDLE_DESCRIPTION;
 
-    AppExecFwk::Parameters parameters{"description", "name", "type"};
-    AppExecFwk::Results results{"description", "name", "type"};
-    AppExecFwk::CustomizeData customizeData{"name", "value", "extra"};
-    MetaData metaData{{parameters}, {results}, {customizeData}};
+    AppExecFwk::Parameters parameters {
+        "description", 
+        "name", 
+        "type"
+    };
+    AppExecFwk::Results results {
+        "description", 
+        "name", 
+        "type"
+    };
+    AppExecFwk::CustomizeData customizeData {
+        "name", 
+        "value", 
+        "extra"
+    };
+    MetaData metaData {
+        {parameters}, 
+        {results}, 
+        {customizeData}
+    };
     moduleInfo.metaData = metaData;
     innerbundleinfo.SetCurrentModulePackage(PACKAGE_NAME);
     innerbundleinfo.SetBaseApplicationInfo(appInfo);
@@ -592,10 +658,26 @@ void BmsBundlePermissionTest::MockNoAvailableScopeDefPermissionBundle(InnerBundl
     moduleInfo.moduleName = PACKAGE_NAME;
     moduleInfo.description = BUNDLE_DESCRIPTION;
 
-    AppExecFwk::Parameters parameters{"description", "name", "type"};
-    AppExecFwk::Results results{"description", "name", "type"};
-    AppExecFwk::CustomizeData customizeData{"name", "value", "extra"};
-    MetaData metaData{{parameters}, {results}, {customizeData}};
+    AppExecFwk::Parameters parameters {
+        "description", 
+        "name", 
+        "type"
+    };
+    AppExecFwk::Results results {
+        "description", 
+        "name", 
+        "type"
+    };
+    AppExecFwk::CustomizeData customizeData {
+        "name", 
+        "value", 
+        "extra"
+    };
+    MetaData metaData {
+        {parameters}, 
+        {results}, 
+        {customizeData}
+    };
     moduleInfo.metaData = metaData;
     innerbundleinfo.SetCurrentModulePackage(PACKAGE_NAME);
     innerbundleinfo.SetBaseApplicationInfo(appInfo);
@@ -641,10 +723,26 @@ void BmsBundlePermissionTest::MockDefPermissionBundleUserGrant(InnerBundleInfo &
     moduleInfo.moduleName = PACKAGE_NAME;
     moduleInfo.description = BUNDLE_DESCRIPTION;
 
-    AppExecFwk::Parameters parameters{"description", "name", "type"};
-    AppExecFwk::Results results{"description", "name", "type"};
-    AppExecFwk::CustomizeData customizeData{"name", "value", "extra"};
-    MetaData metaData{{parameters}, {results}, {customizeData}};
+    AppExecFwk::Parameters parameters {
+        "description", 
+        "name", 
+        "type"
+    };
+    AppExecFwk::Results results {
+        "description", 
+        "name", 
+        "type"
+    };
+    AppExecFwk::CustomizeData customizeData {
+        "name", 
+        "value", 
+        "extra"
+    };
+    MetaData metaData {
+        {parameters}, 
+        {results}, 
+        {customizeData}
+    };
     moduleInfo.metaData = metaData;
     innerbundleinfo.SetCurrentModulePackage(PACKAGE_NAME);
     innerbundleinfo.SetBaseApplicationInfo(appInfo);
@@ -686,10 +784,26 @@ void BmsBundlePermissionTest::MockSameDefPermissionNameBundleSystemGrant(InnerBu
     moduleInfo.moduleName = PACKAGE_NAME;
     moduleInfo.description = BUNDLE_DESCRIPTION;
 
-    AppExecFwk::Parameters parameters{"description", "name", "type"};
-    AppExecFwk::Results results{"description", "name", "type"};
-    AppExecFwk::CustomizeData customizeData{"name", "value", "extra"};
-    MetaData metaData{{parameters}, {results}, {customizeData}};
+    AppExecFwk::Parameters parameters {
+        "description", 
+        "name", 
+        "type"
+    };
+    AppExecFwk::Results results {
+        "description", 
+        "name", 
+        "type"
+    };
+    AppExecFwk::CustomizeData customizeData {
+        "name", 
+        "value", 
+        "extra"
+    };
+    MetaData metaData {
+        {parameters}, 
+        {results}, 
+        {customizeData}
+    };
     moduleInfo.metaData = metaData;
     innerbundleinfo.SetCurrentModulePackage(PACKAGE_NAME);
     innerbundleinfo.SetBaseApplicationInfo(appInfo);
@@ -730,10 +844,26 @@ void BmsBundlePermissionTest::MockDefPermissionBundleSame(InnerBundleInfo &inner
     moduleInfo.moduleName = PACKAGE_NAME;
     moduleInfo.description = BUNDLE_DESCRIPTION;
 
-    AppExecFwk::Parameters parameters{"description", "name", "type"};
-    AppExecFwk::Results results{"description", "name", "type"};
-    AppExecFwk::CustomizeData customizeData{"name", "value", "extra"};
-    MetaData metaData{{parameters}, {results}, {customizeData}};
+    AppExecFwk::Parameters parameters {
+        "description", 
+        "name", 
+        "type"
+    };
+    AppExecFwk::Results results {
+        "description", 
+        "name", 
+        "type"
+    };
+    AppExecFwk::CustomizeData customizeData {
+        "name", 
+        "value", 
+        "extra"
+    };
+    MetaData metaData {
+        {parameters}, 
+        {results}, 
+        {customizeData}
+    };
     moduleInfo.metaData = metaData;
     innerbundleinfo.SetCurrentModulePackage(PACKAGE_NAME);
     innerbundleinfo.SetBaseApplicationInfo(appInfo);
@@ -775,10 +905,26 @@ void BmsBundlePermissionTest::MockReqPermissionBundle(InnerBundleInfo &innerbund
     moduleInfo.moduleName = PACKAGE_NAME;
     moduleInfo.description = BUNDLE_DESCRIPTION;
 
-    AppExecFwk::Parameters parameters{"description", "name", "type"};
-    AppExecFwk::Results results{"description", "name", "type"};
-    AppExecFwk::CustomizeData customizeData{"name", "value", "extra"};
-    MetaData metaData{{parameters}, {results}, {customizeData}};
+    AppExecFwk::Parameters parameters {
+        "description", 
+        "name", 
+        "type"
+    };
+    AppExecFwk::Results results {
+        "description", 
+        "name", 
+        "type"
+    };
+    AppExecFwk::CustomizeData customizeData {
+        "name", 
+        "value", 
+        "extra"
+    };
+    MetaData metaData {
+        {parameters}, 
+        {results}, 
+        {customizeData}
+    };
     moduleInfo.metaData = metaData;
     innerbundleinfo.SetCurrentModulePackage(PACKAGE_NAME);
     innerbundleinfo.SetBaseApplicationInfo(appInfo);
@@ -819,10 +965,26 @@ void BmsBundlePermissionTest::MockOtherReqPermissionBundle(InnerBundleInfo &inne
     moduleInfo.moduleName = PACKAGE_NAME;
     moduleInfo.description = BUNDLE_DESCRIPTION;
 
-    AppExecFwk::Parameters parameters{"description", "name", "type"};
-    AppExecFwk::Results results{"description", "name", "type"};
-    AppExecFwk::CustomizeData customizeData{"name", "value", "extra"};
-    MetaData metaData{{parameters}, {results}, {customizeData}};
+    AppExecFwk::Parameters parameters {
+        "description", 
+        "name", 
+        "type"
+    };
+    AppExecFwk::Results results {
+        "description", 
+        "name", 
+        "type"
+    };
+    AppExecFwk::CustomizeData customizeData {
+        "name", 
+        "value", 
+        "extra"
+    };
+    MetaData metaData {
+        {parameters}, 
+        {results}, 
+        {customizeData}
+    };
     moduleInfo.metaData = metaData;
     innerbundleinfo.SetCurrentModulePackage(PACKAGE_NAME);
     innerbundleinfo.SetBaseApplicationInfo(appInfo);

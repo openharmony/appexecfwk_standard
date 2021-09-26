@@ -158,7 +158,7 @@ void AppMgrService::AttachApplication(const sptr<IRemoteObject> &app)
 
     pid_t pid = IPCSkeleton::GetCallingPid();
     AddAppDeathRecipient(pid);
-    std::function<void()> attachApplicationFunc =
+    std::function <void()> attachApplicationFunc =
         std::bind(&AppMgrServiceInner::AttachApplication, appMgrServiceInner_, pid, iface_cast<IAppScheduler>(app));
     handler_->PostTask(attachApplicationFunc, TASK_ATTACH_APPLICATION);
 }
@@ -168,7 +168,7 @@ void AppMgrService::ApplicationForegrounded(const int32_t recordId)
     if (!IsReady()) {
         return;
     }
-    std::function<void()> applicationForegroundedFunc =
+    std::function <void()> applicationForegroundedFunc =
         std::bind(&AppMgrServiceInner::ApplicationForegrounded, appMgrServiceInner_, recordId);
     handler_->PostTask(applicationForegroundedFunc, TASK_APPLICATION_FOREGROUNDED);
 }
@@ -178,7 +178,7 @@ void AppMgrService::ApplicationBackgrounded(const int32_t recordId)
     if (!IsReady()) {
         return;
     }
-    std::function<void()> applicationBackgroundedFunc =
+    std::function <void()> applicationBackgroundedFunc =
         std::bind(&AppMgrServiceInner::ApplicationBackgrounded, appMgrServiceInner_, recordId);
     handler_->PostTask(applicationBackgroundedFunc, TASK_APPLICATION_BACKGROUNDED);
 }
@@ -188,7 +188,7 @@ void AppMgrService::ApplicationTerminated(const int32_t recordId)
     if (!IsReady()) {
         return;
     }
-    std::function<void()> applicationTerminatedFunc =
+    std::function <void()> applicationTerminatedFunc =
         std::bind(&AppMgrServiceInner::ApplicationTerminated, appMgrServiceInner_, recordId);
     handler_->PostTask(applicationTerminatedFunc, TASK_APPLICATION_TERMINATED);
 }
@@ -198,7 +198,7 @@ void AppMgrService::AbilityCleaned(const sptr<IRemoteObject> &token)
     if (!IsReady()) {
         return;
     }
-    std::function<void()> abilityCleanedFunc =
+    std::function <void()> abilityCleanedFunc =
         std::bind(&AppMgrServiceInner::AbilityTerminated, appMgrServiceInner_, token);
     handler_->PostTask(abilityCleanedFunc, TASK_ABILITY_CLEANED);
 }
@@ -224,7 +224,7 @@ void AppMgrService::AddAppDeathRecipient(const pid_t pid) const
     sptr<AppDeathRecipient> appDeathRecipient = new AppDeathRecipient();
     appDeathRecipient->SetEventHandler(handler_);
     appDeathRecipient->SetAppMgrServiceInner(appMgrServiceInner_);
-    std::function<void()> addAppRecipientFunc =
+    std::function <void()> addAppRecipientFunc =
         std::bind(&AppMgrServiceInner::AddAppDeathRecipient, appMgrServiceInner_, pid, appDeathRecipient);
     handler_->PostTask(addAppRecipientFunc, TASK_ADD_APP_DEATH_RECIPIENT);
 }
@@ -241,7 +241,7 @@ int32_t AppMgrService::ClearUpApplicationData(const std::string &bundleName)
     }
     int32_t uid = IPCSkeleton::GetCallingUid();
     pid_t pid = IPCSkeleton::GetCallingPid();
-    std::function<void()> clearUpApplicationDataFunc =
+    std::function <void()> clearUpApplicationDataFunc =
         std::bind(&AppMgrServiceInner::ClearUpApplicationData, appMgrServiceInner_, bundleName, uid, pid);
     handler_->PostTask(clearUpApplicationDataFunc, TASK_CLEAR_UP_APPLICATION_DATA);
     return ERR_OK;

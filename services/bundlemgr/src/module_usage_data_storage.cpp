@@ -319,7 +319,11 @@ Status ModuleUsageRecordStorage::GetKvStore()
 {
     Status status;
     Options options = {
-        .createIfMissing = true, .encrypt = false, .autoSync = true, .kvStoreType = KvStoreType::SINGLE_VERSION};
+        .createIfMissing = true, 
+        .encrypt = false, 
+        .autoSync = true, 
+        .kvStoreType = KvStoreType::SINGLE_VERSION
+    };
 
     options.schema = SCHEMA_DEFINE;
     dataManager_.GetSingleKvStore(

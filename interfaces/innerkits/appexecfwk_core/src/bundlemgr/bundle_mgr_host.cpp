@@ -185,15 +185,15 @@ int BundleMgrHost::OnRemoteRequest(uint32_t code, MessageParcel &data, MessagePa
         case static_cast<uint32_t>(IBundleMgr::Message::UNREGISTER_PERMISSIONS_CHANGED):
             errCode = HandleUnregisterPermissionsChanged(data, reply);
             break;
-		case static_cast<uint32_t>(IBundleMgr::Message::GET_ALL_FORMS_INFO):
+        case static_cast<uint32_t>(IBundleMgr::Message::GET_ALL_FORMS_INFO):
 			errCode = HandleGetAllFormsInfo(data, reply);
-			break;
-		case static_cast<uint32_t>(IBundleMgr::Message::GET_FORMS_INFO_BY_APP):
+            break;
+        case static_cast<uint32_t>(IBundleMgr::Message::GET_FORMS_INFO_BY_APP):
 			errCode = HandleGetFormsInfoByApp(data, reply);
-			break;
-		case static_cast<uint32_t>(IBundleMgr::Message::GET_FORMS_INFO_BY_MODULE):
+            break;
+        case static_cast<uint32_t>(IBundleMgr::Message::GET_FORMS_INFO_BY_MODULE):
 			errCode = HandleGetFormsInfoByModule(data, reply);
-			break;
+            break;
         case static_cast<uint32_t>(IBundleMgr::Message::GET_SHORTCUT_INFO):
             errCode = HandleGetShortcutInfos(data, reply);
             break;
@@ -980,59 +980,59 @@ ErrCode BundleMgrHost::HandleGetBundleInstaller(Parcel &data, Parcel &reply)
 
 ErrCode BundleMgrHost::HandleGetAllFormsInfo(Parcel &data, Parcel &reply)
 {
-	std::vector<FormInfo> infos;
-	bool ret = GetAllFormsInfo(infos);
-	if (!reply.WriteBool(ret)) {
-		APP_LOGE("write failed");
-		return ERR_APPEXECFWK_PARCEL_ERROR;
-	}
+    std::vector<FormInfo> infos;
+    bool ret = GetAllFormsInfo(infos);
+    if (!reply.WriteBool(ret)) {
+        APP_LOGE("write failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
 
-	if (ret) {
-		if (!WriteParcelableVector(infos, reply)) {
-			APP_LOGE("write failed");
-			return ERR_APPEXECFWK_PARCEL_ERROR;
-		}
-	}
-	return ERR_OK;
+    if (ret) {
+        if (!WriteParcelableVector(infos, reply)) {
+	        APP_LOGE("write failed");
+	        return ERR_APPEXECFWK_PARCEL_ERROR;
+	    }
+    }
+    return ERR_OK;
 }
 
 ErrCode BundleMgrHost::HandleGetFormsInfoByApp(Parcel &data, Parcel &reply)
 {
-	std::string bundlename = data.ReadString();
-	std::vector<FormInfo> infos;
-	bool ret = GetFormsInfoByApp(bundlename, infos);
-	if (!reply.WriteBool(ret)) {
-		APP_LOGE("write failed");
-		return ERR_APPEXECFWK_PARCEL_ERROR;
-	}
+    std::string bundlename = data.ReadString();
+    std::vector<FormInfo> infos;
+    bool ret = GetFormsInfoByApp(bundlename, infos);
+    if (!reply.WriteBool(ret)) {
+        APP_LOGE("write failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
 
-	if (ret) {
-		if (!WriteParcelableVector(infos, reply)) {
-			APP_LOGE("write failed");
-			return ERR_APPEXECFWK_PARCEL_ERROR;
-		}
-	}
-	return ERR_OK;
+    if (ret) {
+        if (!WriteParcelableVector(infos, reply)) {
+	        APP_LOGE("write failed");
+	        return ERR_APPEXECFWK_PARCEL_ERROR;
+	    }
+    }
+    return ERR_OK;
 }
 
 ErrCode BundleMgrHost::HandleGetFormsInfoByModule(Parcel &data, Parcel &reply)
 {
-	std::string bundlename = data.ReadString();
-	std::string modulename = data.ReadString();
-	std::vector<FormInfo> infos;
-	bool ret = GetFormsInfoByModule(bundlename, modulename, infos);
-	if (!reply.WriteBool(ret)) {
-		APP_LOGE("write failed");
-		return ERR_APPEXECFWK_PARCEL_ERROR;
-	}
+    std::string bundlename = data.ReadString();
+    std::string modulename = data.ReadString();
+    std::vector<FormInfo> infos;
+    bool ret = GetFormsInfoByModule(bundlename, modulename, infos);
+    if (!reply.WriteBool(ret)) {
+        APP_LOGE("write failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
 
-	if (ret) {
-		if (!WriteParcelableVector(infos, reply)) {
-			APP_LOGE("write failed");
-			return ERR_APPEXECFWK_PARCEL_ERROR;
-		}
-	}
-	return ERR_OK;
+    if (ret) {
+        if (!WriteParcelableVector(infos, reply)) {
+	        APP_LOGE("write failed");
+	        return ERR_APPEXECFWK_PARCEL_ERROR;
+	    }
+    }
+    return ERR_OK;
 }
 
 ErrCode BundleMgrHost::HandleGetShortcutInfos(Parcel &data, Parcel &reply)
@@ -1091,7 +1091,7 @@ ErrCode BundleMgrHost::HandleNotifyActivityLifeStatus(Parcel &data, Parcel &repl
     return ERR_OK;
 }
 
-template <typename T>
+template<typename T>
 bool BundleMgrHost::WriteParcelableVector(std::vector<T> &parcelableVector, Parcel &reply)
 {
     if (!reply.WriteInt32(parcelableVector.size())) {

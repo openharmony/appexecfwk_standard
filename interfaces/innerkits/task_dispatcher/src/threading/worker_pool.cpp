@@ -239,7 +239,7 @@ bool WorkerPool::AddWorker(const std::shared_ptr<Delegate> &delegate, const std:
     std::unique_lock<std::mutex> mLock(poolLock_);
     std::shared_ptr<WorkerThread> newThread = nullptr;
 
-    for (;;) {
+    for(;;){
         unsigned int value = control_.load();
         int num = GetWorkingThreadNum(value);
         if (num >= thread_limit_) {
@@ -327,7 +327,7 @@ int WorkerPool::GetStateFromControl(unsigned int ctl)
 void WorkerPool::AdvanceStateTo(unsigned int target)
 {
     APP_LOGI("WorkerPool::AdvanceStateTo begin");
-    for (;;) {
+    for(;;){
         unsigned int current = control_.load();
         if ((current >= target) ||
             CompareAndSet(control_, current, CombineToControl(target, GetWorkingThreadNum(current)))) {
