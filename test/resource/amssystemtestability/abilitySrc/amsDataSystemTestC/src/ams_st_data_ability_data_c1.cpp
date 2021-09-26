@@ -102,6 +102,8 @@ int AmsStDataAbilityDataC1::Insert(const Uri &uri, const NativeRdb::ValuesBucket
         APP_LOGI("-------------------AmsStDataAbilityDataC1 <<<<Insert>>>> file == nullptr");
     } else {
         APP_LOGI("-------------------AmsStDataAbilityDataC1 <<<<Insert>>>> file != nullptr");
+        delete file;
+        file = nullptr;
     }
     return DEFAULT_INSERT_RESULT;
 }
@@ -132,7 +134,9 @@ std::shared_ptr<NativeRdb::AbsSharedResultSet> AmsStDataAbilityDataC1::Query(
 
     std::shared_ptr<NativeRdb::AbsSharedResultSet> resultValue = std::make_shared<NativeRdb::AbsSharedResultSet>(OPERATOR_QUERY);
     AppDataFwk::SharedBlock *pSharedBlock = resultValue->GetBlock();
-    pSharedBlock->PutString(0, 0, OPERATOR_QUERY.c_str(), OPERATOR_QUERY.size() + 1);
+    if (pSharedBlock) {
+        pSharedBlock->PutString(0, 0, OPERATOR_QUERY.c_str(), OPERATOR_QUERY.size() + 1);
+    }
     return resultValue;
 }
 

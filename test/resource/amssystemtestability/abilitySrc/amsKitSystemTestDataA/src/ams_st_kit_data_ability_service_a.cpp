@@ -176,7 +176,7 @@ void AmsStKitDataAbilityServiceA::GetWantInfo(const Want &want)
 }
 
 static void GetResult(std::shared_ptr<STtools::StOperator> child, std::shared_ptr<DataAbilityHelper> helper,
-    AmsStKitDataAbilityServiceA *mainAbility, Uri dataAbilityUri, string &result)
+    AmsStKitDataAbilityServiceA &mainAbility, Uri dataAbilityUri, string &result)
 {
     NativeRdb::DataAbilityPredicates predicates;
     NativeRdb::ValuesBucket bucket;
@@ -209,8 +209,9 @@ static void GetResult(std::shared_ptr<STtools::StOperator> child, std::shared_pt
         }
         result = std::to_string(fd);
         char str[charCnt];
-        if (!feof(file))
+        if (!feof(file)) {
             fgets(str, charCnt, file);
+        }
         result = str;
         fclose(file);
     } else if (child->GetOperatorName() == OPERATOR_GETTYPE) {
@@ -233,7 +234,7 @@ void KitTestServiceAEventSubscriber::TestPost(const std::string funName)
             std::string result;
             if (helper != nullptr) {
                 APP_LOGI("---------------------helper--------------------");
-                GetResult(child, helper, mainAbility_, dataAbilityUri, result);
+                GetResult(child, helper, *mainAbility_, dataAbilityUri, result);
             }
             mainAbility_->PublishEvent(abilityEventName, ABILITY_SERVICE_CODE, child->GetOperatorName() + " " + result);
         } else if (child->GetAbilityType() == "0") {
