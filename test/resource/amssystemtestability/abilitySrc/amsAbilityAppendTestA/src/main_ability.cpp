@@ -169,8 +169,8 @@ void MainAbility::GetPreferencesDirCase1(int code)
     bool result = true;
     string preferencesDir = GetPreferencesDir();
     result = !preferencesDir.empty();
-    result = result & (bool)preferencesDir.find(this->GetBundleName());
-    result = result & (bool)preferencesDir.find("com.ohos.amsst.AppAppendA/files/MainAbility/preferences");
+    result = result && (bool)preferencesDir.find(this->GetBundleName());
+    result = result && (bool)preferencesDir.find("com.ohos.amsst.AppAppendA/files/MainAbility/preferences");
 
     TestUtils::PublishEvent(g_EVENT_RESP_FIRST, code, std::to_string(result));
 }

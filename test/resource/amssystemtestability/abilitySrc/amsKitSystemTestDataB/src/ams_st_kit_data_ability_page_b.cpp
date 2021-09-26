@@ -150,7 +150,7 @@ void AmsStKitDataAbilityPageB::GetWantInfo(const Want &want)
 }
 
 static void GetResult(std::shared_ptr<STtools::StOperator> child, std::shared_ptr<DataAbilityHelper> helper,
-    AmsStKitDataAbilityPageB *mainAbility, Uri dataAbilityUri, string &result)
+    AmsStKitDataAbilityPageB &mainAbility, Uri dataAbilityUri, string &result)
 {
     NativeRdb::DataAbilityPredicates predicates;
     NativeRdb::ValuesBucket bucket;
@@ -209,7 +209,7 @@ void KitTestPageBEventSubscriber::TestPost(const std::string funName)
             std::string result;
             if (helper != nullptr) {
                 APP_LOGI("---------------------helper--------------------");
-                GetResult(child, helper, mainAbility_, dataAbilityUri, result);
+                GetResult(child, helper, *mainAbility_, dataAbilityUri, result);
             }
             mainAbility_->PublishEvent(abilityEventName, ABILITY_PAGE_CODE, child->GetOperatorName() + " " + result);
         } else if (child->GetAbilityType() == "0") {
