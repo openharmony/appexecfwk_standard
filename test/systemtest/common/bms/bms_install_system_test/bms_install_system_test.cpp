@@ -101,6 +101,7 @@ std::string StatusReceiverImpl::GetResultMsg() const
 class SubscriberTest : public CommonEventSubscriber {
 public:
     explicit SubscriberTest(const CommonEventSubscribeInfo &sp) : CommonEventSubscriber(sp){};
+    virtual ~SubscriberTest() = default;
     virtual void OnReceiveEvent(const CommonEventData &data) override;
     std::string GetSubscriberResultMsg() const;
 
