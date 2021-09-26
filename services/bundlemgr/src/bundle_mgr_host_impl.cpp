@@ -486,8 +486,8 @@ bool BundleMgrHostImpl::RequestPermissionFromUser(
     APP_LOGI("send Permissions Changed event");
     BundleInfo info;
     bool ret_getInfo = GetBundleInfo(bundleName, BundleFlag::GET_BUNDLE_DEFAULT, info);
-    APP_LOGI("ret_getInfo = %{public}d",ret_getInfo);
-    if ( ret && ret_getInfo) {
+    APP_LOGI("ret_getInfo = %{public}d", ret_getInfo);
+    if (ret && ret_getInfo) {
         Want want;
         want.SetAction("PERMISSIONS_CHANGED_EVENT");
         EventFwk::CommonEventData commonData;
@@ -516,7 +516,7 @@ bool BundleMgrHostImpl::RegisterPermissionsChanged(
         APP_LOGE("DataMgr is nullptr");
         return false;
     }
-    return dataMgr->RegisterPermissionsChanged(uids,callback);
+    return dataMgr->RegisterPermissionsChanged(uids, callback);
 }
 
 bool BundleMgrHostImpl::UnregisterPermissionsChanged(const sptr<OnPermissionChangedCallback> &callback)

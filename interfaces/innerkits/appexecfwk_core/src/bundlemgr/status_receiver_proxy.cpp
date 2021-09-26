@@ -85,7 +85,7 @@ const std::string MSG_ERR_UNINSTALL_KILLING_APP_ERROR = "[ERR_UNINSTALL_KILLING_
 const std::string MSG_ERR_UNINSTALL_SYSTEM_APP_ERROR = "[MSG_ERR_UNINSTALL_SYSTEM_APP_ERROR]";
 const std::string MSG_ERR_UNKNOWN = "[ERR_UNKNOWN]";
 
-const std::map<int32_t, struct ReceivedResult> MAP_RECEIVED_RESULTS{
+const std::map<int32_t, struct ReceivedResult> MAP_RECEIVED_RESULTS {
     {ERR_OK, {IStatusReceiver::SUCCESS, MSG_SUCCESS}},
     {ERR_APPEXECFWK_INSTALL_INTERNAL_ERROR,
         {IStatusReceiver::ERR_INSTALL_INTERNAL_ERROR, MSG_ERR_INSTALL_INTERNAL_ERROR}},

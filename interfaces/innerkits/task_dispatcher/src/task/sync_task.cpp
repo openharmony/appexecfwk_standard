@@ -20,7 +20,7 @@ namespace OHOS {
 namespace AppExecFwk {
 
 // Help to calculate hash code of object.
-template <typename T>
+template<typename T>
 inline size_t CalculateHashCode(const T &obj)
 {
     std::hash<T> calculateHashCode;

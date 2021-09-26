@@ -30,7 +30,7 @@ using namespace OHOS::AppExecFwk;
 using namespace OHOS::AppExecFwk::JsonConstants;
 
 namespace {
-const std::string NORMAL_BUNDLE_NAME{"com.example.test"};
+const std::string NORMAL_BUNDLE_NAME {"com.example.test"};
 }  // namespace
 
 class BmsBundleDataStorageDatabaseTest : public testing::Test {

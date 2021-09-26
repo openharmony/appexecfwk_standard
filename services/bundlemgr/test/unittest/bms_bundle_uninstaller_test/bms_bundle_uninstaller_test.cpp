@@ -296,11 +296,11 @@ void BmsBundleUninstallerTest::ClearBundleInfoInDb()
         return;
     }
     auto dataMgt = bundleMgrService_->GetDataMgr();
-    if(dataMgt == nullptr) {
+    if (dataMgt == nullptr) {
         return;
     }
     auto dataStorage = dataMgt->GetDataStorage();
-    if(dataStorage == nullptr) {
+    if (dataStorage == nullptr) {
         return;
     }
     InnerBundleInfo innerBundleInfo;
