@@ -703,7 +703,7 @@ int32_t InnerBundleInfo::FromJson(const nlohmann::json &jsonObject)
 		true,
 		ProfileReader::parseResult,
 		ArrayType::NOT_ARRAY);
-     GetValueIfFindKey<std::map<std::string, ShortcutInfo>>(jsonObject,
+    GetValueIfFindKey<std::map<std::string, ShortcutInfo>>(jsonObject,
         jsonObjectEnd,
         MODULE_SHORTCUT,
         shortcutInfos_,
@@ -1026,26 +1026,26 @@ void InnerBundleInfo::GetFormsInfoByModule(const std::string &moduleName, std::v
     for (const auto &data : formInfos_) {
         for (auto &form : data.second) {
             if (form.moduleName == moduleName) {
-			    formInfos.emplace_back(form);
+                formInfos.emplace_back(form);
             }
         }
-	}
+    }
 }
 
 void InnerBundleInfo::GetFormsInfoByApp(std::vector<FormInfo> &formInfos) const
 {
     for (const auto &data : formInfos_) {
         for (auto &form : data.second) {
-		    formInfos.emplace_back(form);
+            formInfos.emplace_back(form);
         }
-	}
+    }
 }
 
 void InnerBundleInfo::GetShortcutInfos(std::vector<ShortcutInfo> &shortcutInfos) const
 {
     for (const auto &shortcut : shortcutInfos_) {
         shortcutInfos.emplace_back(shortcut.second);
-	}
+    }
 }
 
 std::optional<InnerModuleInfo> InnerBundleInfo::GetInnerModuleInfoByModuleName(const std::string &moduleName) const

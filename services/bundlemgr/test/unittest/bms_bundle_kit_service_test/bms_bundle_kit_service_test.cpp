@@ -246,10 +246,26 @@ void BmsBundleKitServiceTest::MockInstallBundle(
     moduleInfo.description = BUNDLE_DESCRIPTION;
     moduleInfo.colorMode = COLOR_MODE;
 
-    AppExecFwk::Parameters parameters{"description", "name", "type"};
-    AppExecFwk::Results results{"description", "name", "type"};
-    AppExecFwk::CustomizeData customizeData{"name", "value", "extra"};
-    MetaData metaData{{parameters}, {results}, {customizeData}};
+    AppExecFwk::Parameters parameters {
+        "description", 
+        "name", 
+        "type"
+    };
+    AppExecFwk::Results results {
+        "description", 
+        "name", 
+        "type"
+    };
+    AppExecFwk::CustomizeData customizeData {
+        "name", 
+        "value", 
+        "extra"
+    };
+    MetaData metaData {
+        {parameters}, 
+        {results}, 
+        {customizeData}
+    };
     moduleInfo.metaData = metaData;
 
     FormInfo form = MockFormInfo(bundleName, moduleName, abilityName);
@@ -262,8 +278,15 @@ void BmsBundleKitServiceTest::MockInstallBundle(
     innerBundleInfo.SetUid((bundleName == BUNDLE_NAME_TEST) ? TEST_UID : DEMO_UID);
     // for launch ability
     if (bundleName == BUNDLE_NAME_TEST) {
-        AppExecFwk::SkillUri uri{URI_SCHEME, URI_HOST};
-        Skill skill{{ACTION}, {ENTITY}, {uri}};
+        AppExecFwk::SkillUri uri {
+            URI_SCHEME, 
+            URI_HOST
+        };
+        Skill skill {
+            {ACTION}, 
+            {ENTITY}, 
+            {uri}
+        };
         std::vector<Skill> skills;
         skills.emplace_back(skill);
         innerBundleInfo.SetMainAbility(keyName);
@@ -384,10 +407,26 @@ AbilityInfo BmsBundleKitServiceTest::MockAbilityInfo(
     abilityInfo.enabled = true;
     abilityInfo.supportPipMode = false;
     abilityInfo.targetAbility = TARGET_ABILITY;
-    AppExecFwk::Parameters parameters{"description", "name", "type"};
-    AppExecFwk::Results results{"description", "name", "type"};
-    AppExecFwk::CustomizeData customizeData{"name", "value", "extra"};
-    MetaData metaData{{parameters}, {results}, {customizeData}};
+    AppExecFwk::Parameters parameters {
+        "description", 
+        "name", 
+        "type"
+    };
+    AppExecFwk::Results results {
+        "description", 
+        "name", 
+        "type"
+    };
+    AppExecFwk::CustomizeData customizeData {
+        "name", 
+        "value", 
+        "extra"
+    };
+    MetaData metaData {
+        {parameters}, 
+        {results}, 
+        {customizeData}
+    };
     abilityInfo.metaData = metaData;
     return abilityInfo;
 }

@@ -751,8 +751,8 @@ bool BundleDataMgr::GetLaunchWantForBundle(const std::string &bundleName, Want &
 
 bool BundleDataMgr::CheckIsSystemAppByUid(const int uid) const
 {
-    int maxSysUid{Constants::MAX_SYS_UID};
-    int baseSysUid{Constants::ROOT_UID};
+    int maxSysUid {Constants::MAX_SYS_UID};
+    int baseSysUid {Constants::ROOT_UID};
     if (uid >= baseSysUid && uid <= maxSysUid) {
         return true;
     }
@@ -1267,7 +1267,7 @@ bool BundleDataMgr::NotifyBundleStatus(const std::string &bundleName, const std:
     want.SetElement(element);
     want.SetParam(Constants::UID, uid);
     APP_LOGI("want.SetParam uid %{public}d", uid);
-    EventFwk::CommonEventData commonData{want};
+    EventFwk::CommonEventData commonData {want};
     EventFwk::CommonEventManager::PublishCommonEvent(commonData);
     return true;
 }
@@ -1278,7 +1278,7 @@ std::mutex &BundleDataMgr::GetBundleMutex(const std::string &bundleName)
     auto it = bundleMutexMap_.find(bundleName);
     if (it == bundleMutexMap_.end()) {
         bundleMutex_.unlock_shared();
-        std::unique_lock lock{bundleMutex_};
+        std::unique_lock lock {bundleMutex_};
         return bundleMutexMap_[bundleName];
     }
     bundleMutex_.unlock_shared();

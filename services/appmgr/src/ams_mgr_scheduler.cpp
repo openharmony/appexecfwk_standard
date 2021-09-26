@@ -60,7 +60,7 @@ void AmsMgrScheduler::LoadAbility(const sptr<IRemoteObject> &token, const sptr<I
         return;
     }
     PerfProfile::GetInstance().SetAbilityLoadStartTime(GetTickCount());
-    std::function<void()> loadAbilityFunc =
+    std::function <void()> loadAbilityFunc =
         std::bind(&AppMgrServiceInner::LoadAbility, amsMgrServiceInner_, token, preToken, abilityInfo, appInfo);
 
     amsHandler_->PostTask(loadAbilityFunc, TASK_LOAD_ABILITY);
@@ -71,7 +71,7 @@ void AmsMgrScheduler::UpdateAbilityState(const sptr<IRemoteObject> &token, const
     if (!IsReady()) {
         return;
     }
-    std::function<void()> updateAbilityStateFunc =
+    std::function <void()> updateAbilityStateFunc =
         std::bind(&AppMgrServiceInner::UpdateAbilityState, amsMgrServiceInner_, token, state);
     amsHandler_->PostTask(updateAbilityStateFunc, TASK_UPDATE_ABILITY_STATE);
 }
@@ -81,7 +81,7 @@ void AmsMgrScheduler::TerminateAbility(const sptr<IRemoteObject> &token)
     if (!IsReady()) {
         return;
     }
-    std::function<void()> terminateAbilityFunc =
+    std::function <void()> terminateAbilityFunc =
         std::bind(&AppMgrServiceInner::TerminateAbility, amsMgrServiceInner_, token);
     amsHandler_->PostTask(terminateAbilityFunc, TASK_TERMINATE_ABILITY);
 }
@@ -91,7 +91,7 @@ void AmsMgrScheduler::RegisterAppStateCallback(const sptr<IAppStateCallback> &ca
     if (!IsReady()) {
         return;
     }
-    std::function<void()> registerAppStateCallbackFunc =
+    std::function <void()> registerAppStateCallbackFunc =
         std::bind(&AppMgrServiceInner::RegisterAppStateCallback, amsMgrServiceInner_, callback);
     amsHandler_->PostTask(registerAppStateCallbackFunc, TASK_REGISTER_APP_STATE_CALLBACK);
 }
@@ -101,7 +101,7 @@ void AmsMgrScheduler::Reset()
     if (!IsReady()) {
         return;
     }
-    std::function<void()> resetFunc = std::bind(&AppMgrServiceInner::StopAllProcess, amsMgrServiceInner_);
+    std::function <void()> resetFunc = std::bind(&AppMgrServiceInner::StopAllProcess, amsMgrServiceInner_);
     amsHandler_->PostTask(resetFunc, TASK_STOP_ALL_PROCESS);
 }
 
@@ -111,7 +111,7 @@ void AmsMgrScheduler::AbilityBehaviorAnalysis(const sptr<IRemoteObject> &token, 
     if (!IsReady()) {
         return;
     }
-    std::function<void()> abilityBehaviorAnalysisFunc = std::bind(&AppMgrServiceInner::AbilityBehaviorAnalysis,
+    std::function <void()> abilityBehaviorAnalysisFunc = std::bind(&AppMgrServiceInner::AbilityBehaviorAnalysis,
         amsMgrServiceInner_,
         token,
         preToken,
@@ -126,7 +126,7 @@ void AmsMgrScheduler::KillProcessByAbilityToken(const sptr<IRemoteObject> &token
     if (!IsReady()) {
         return;
     }
-    std::function<void()> killProcessByAbilityTokenFunc =
+    std::function <void()> killProcessByAbilityTokenFunc =
         std::bind(&AppMgrServiceInner::KillProcessByAbilityToken, amsMgrServiceInner_, token);
     amsHandler_->PostTask(killProcessByAbilityTokenFunc, TASK_KILL_PROCESS_BY_ABILITYTOKEN);
 }

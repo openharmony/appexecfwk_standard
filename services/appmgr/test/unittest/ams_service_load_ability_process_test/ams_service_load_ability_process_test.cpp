@@ -37,10 +37,13 @@ using testing::Return;
 using testing::SetArgReferee;
 namespace OHOS {
 namespace AppExecFwk {
-#define CHECK_POINTER_IS_NULLPTR(object)    \
-    if (object == nullptr) {                \
-        return;                             \
-    }
+#define CHECK_POINTER_IS_NULLPTR(object) \
+    do {                                 \
+        if (object == nullptr) {         \
+            return;                      \
+        }                                \
+    } while (0)
+
 class AmsServiceLoadAbilityProcessTest : public testing::Test {
 public:
     static void SetUpTestCase();

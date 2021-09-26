@@ -378,12 +378,12 @@ bool CgroupManager::RegisterLowMemoryMonitor(const int memoryEventFds[LOW_MEMORY
     static const char *levelName[] = {"low", "medium", "critical"};
 
     if (snprintf_s(buf,
-            sizeof(buf),
-            sizeof(buf) - 1,
-            "%d %d %s",
-            memoryEventFds[level],
-            memoryPressureFds[level],
-            levelName[level]) < 0) {
+        sizeof(buf),
+        sizeof(buf) - 1,
+        "%d %d %s",
+        memoryEventFds[level],
+        memoryPressureFds[level],
+        levelName[level]) < 0) {
         return false;
     }
 

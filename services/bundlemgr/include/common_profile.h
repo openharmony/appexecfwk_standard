@@ -221,6 +221,9 @@ const uint32_t VALUE_SEARCHBOX = 1 << 1;
 
 const std::string KEY_HOME_SCREEN = "homeScreen";
 const std::string KEY_SEARCHBOX = "searchbox";
+
+const std::string BUNDLE_MODULE_PROFILE_KEY_JS_TYPE_ETS = "ets";
+
 static std::map<std::string, uint32_t> formEntityMap;
 
 extern thread_local int32_t parseResult;

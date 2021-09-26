@@ -114,7 +114,7 @@ enum class ArrayType {
     NOT_ARRAY,
 };
 
-template <typename T, typename dataType>
+template<typename T, typename dataType>
 void CheckArrayType(
     const nlohmann::json &jsonObject, const std::string &key, dataType &data, ArrayType arrayType, int32_t &parseResult)
 {
@@ -167,7 +167,7 @@ void CheckArrayType(
     }
 }
 
-template <typename T, typename dataType>
+template<typename T, typename dataType>
 void GetValueIfFindKey(const nlohmann::json &jsonObject, const nlohmann::detail::iter_impl<const nlohmann::json> &end,
     const std::string &key, dataType &data, JsonType jsonType, bool isNecessary, int32_t &parseResult,
     ArrayType arrayType)
