@@ -23,7 +23,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 void ServiceAbilityA::OnStart(const Want &want)
 {
     APP_LOGI("ServiceAbilityA OnStart");

@@ -296,7 +296,9 @@ std::shared_ptr<NativeRdb::AbsSharedResultSet> AmsStKitDataAbilityDataA1::Query(
 
     std::shared_ptr<NativeRdb::AbsSharedResultSet> resultValue = std::make_shared<NativeRdb::AbsSharedResultSet>(OPERATOR_QUERY);
     AppDataFwk::SharedBlock *pSharedBlock = resultValue->GetBlock();
-    pSharedBlock->PutString(0, 0, OPERATOR_QUERY.c_str(), OPERATOR_QUERY.size() + 1);
+    if (pSharedBlock) {
+        pSharedBlock->PutString(0, 0, OPERATOR_QUERY.c_str(), OPERATOR_QUERY.size() + 1);
+    }
     return resultValue;
 }
 
@@ -337,7 +339,7 @@ void AmsStKitDataAbilityDataA1::TestLifeCycle()
 }
 
 static void GetResult(std::shared_ptr<STtools::StOperator> child, std::shared_ptr<DataAbilityHelper> helper,
-    AmsStKitDataAbilityDataA1 *mainAbility, Uri dataAbilityUri, string &result)
+    AmsStKitDataAbilityDataA1 &mainAbility, Uri dataAbilityUri, string &result)
 {
     NativeRdb::DataAbilityPredicates predicates;
     NativeRdb::ValuesBucket bucket;
@@ -379,10 +381,10 @@ static void GetResult(std::shared_ptr<STtools::StOperator> child, std::shared_pt
         result = helper->GetType(dataAbilityUri);
         result = (result != "") ? OPERATOR_GETTYPE : result;
     } else if (child->GetOperatorName() == OPERATOR_TEST_LIFECYCLE) {
-        mainAbility->TestLifeCycle();
+        mainAbility.TestLifeCycle();
         result = OPERATOR_TEST_LIFECYCLE;
     } else if (child->GetOperatorName() == OPERATOR_GET_LIFECYCLE_STATE) {
-        auto lifecycle = mainAbility->GetLifecycle();
+        auto lifecycle = mainAbility.GetLifecycle();
         auto state = lifecycle->GetLifecycleState();
         result = (state != LifeCycle::Event::UNDEFINED) ? OPERATOR_GET_LIFECYCLE_STATE : "UNDEFINED";
     }
@@ -399,7 +401,7 @@ void KitTestDataA1EventSubscriber::TestPost(const std::string funName)
             Uri dataAbilityUri("dataability:///" + child->GetBundleName() + "." + child->GetAbilityName());
             std::string result;
             if (helper != nullptr) {
-                GetResult(child, helper, mainAbility_, dataAbilityUri, result);
+                GetResult(child, helper, *mainAbility_, dataAbilityUri, result);
             }
             mainAbility_->PublishEvent(abilityEventName, ABILITY_DATA_CODE, child->GetOperatorName() + " " + result);
         } else if (child->GetAbilityType() == ABILITY_TYPE_PAGE) {

@@ -141,6 +141,5 @@ int TestAbilityConnectionStub::OnRemoteRequest(
         }
     }
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

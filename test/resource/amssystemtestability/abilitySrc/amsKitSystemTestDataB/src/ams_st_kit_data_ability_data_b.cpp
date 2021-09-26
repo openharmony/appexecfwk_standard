@@ -293,7 +293,9 @@ std::shared_ptr<NativeRdb::AbsSharedResultSet> AmsStKitDataAbilityDataB::Query(
 
     std::shared_ptr<NativeRdb::AbsSharedResultSet> resultValue = std::make_shared<NativeRdb::AbsSharedResultSet>(OPERATOR_QUERY);
     AppDataFwk::SharedBlock *pSharedBlock = resultValue->GetBlock();
-    pSharedBlock->PutString(0, 0, OPERATOR_QUERY.c_str(), OPERATOR_QUERY.size() + 1);
+    if (pSharedBlock) {
+        pSharedBlock->PutString(0, 0, OPERATOR_QUERY.c_str(), OPERATOR_QUERY.size() + 1);
+    }
     return resultValue;
 }
 
@@ -319,7 +321,7 @@ int AmsStKitDataAbilityDataB::OpenFile(const Uri &uri, const std::string &mode)
 }
 
 static void GetResult(std::shared_ptr<STtools::StOperator> child, std::shared_ptr<DataAbilityHelper> helper,
-    AmsStKitDataAbilityDataB *mainAbility, Uri dataAbilityUri, string &result)
+    AmsStKitDataAbilityDataB &mainAbility, Uri dataAbilityUri, string &result)
 {
     NativeRdb::DataAbilityPredicates predicates;
     NativeRdb::ValuesBucket bucket;
@@ -377,7 +379,7 @@ void KitTestDataBEventSubscriber::TestPost(const std::string funName)
             std::string result;
             if (helper != nullptr) {
                 APP_LOGI("---------------------helper--------------------");
-                GetResult(child, helper, mainAbility_, dataAbilityUri, result);
+                GetResult(child, helper, *mainAbility_, dataAbilityUri, result);
             }
             mainAbility_->PublishEvent(abilityEventName, ABILITY_DATA_CODE, child->GetOperatorName() + " " + result);
         } else if (child->GetAbilityType() == ABILITY_TYPE_PAGE) {

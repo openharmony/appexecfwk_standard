@@ -126,7 +126,9 @@ std::shared_ptr<NativeRdb::AbsSharedResultSet> AmsStDataAbilityDataB::Query(
 
     std::shared_ptr<NativeRdb::AbsSharedResultSet> resultValue = std::make_shared<NativeRdb::AbsSharedResultSet>(OPERATOR_QUERY);
     AppDataFwk::SharedBlock *pSharedBlock = resultValue->GetBlock();
-    pSharedBlock->PutString(0, 0, OPERATOR_QUERY.c_str(), OPERATOR_QUERY.size() + 1);
+    if (pSharedBlock) {
+        pSharedBlock->PutString(0, 0, OPERATOR_QUERY.c_str(), OPERATOR_QUERY.size() + 1);
+    }
     return resultValue;
 }
 
