@@ -1139,13 +1139,13 @@ void MainThread::LoadAbilityLibrary(const std::vector<std::string> &libraryPaths
     APP_LOGI("MainThread::LoadAbilityLibrary. size=%{public}d.", size);
     for (int index = 0; index < size; index++) {
         std::string libraryPath = libraryPaths[index];
-        APP_LOGI("Try to scanDir %{public}s", libraryPath.c_str());
+        APP_LOGI("MainThread::LoadAbilityLibrary Try to scanDir %{public}s", libraryPath.c_str());
         if (!ScanDir(libraryPath)) {
-            APP_LOGE("Fail to scanDir %{public}s", libraryPath.c_str());
+            APP_LOGE("MainThread::LoadAbilityLibrary scanDir %{public}s not exits", libraryPath.c_str());
         }
         libraryPath = libraryPath + "/libs";
         if (!ScanDir(libraryPath)) {
-            APP_LOGE("Fail to scanDir %{public}s", libraryPath.c_str());
+            APP_LOGE("MainThread::LoadAbilityLibrary scanDir %{public}s not exits", libraryPath.c_str());
         }
     }
 
@@ -1161,10 +1161,12 @@ void MainThread::LoadAbilityLibrary(const std::vector<std::string> &libraryPaths
             handleAbilityLib = dlopen(fileEntry.c_str(), RTLD_NOW | RTLD_GLOBAL);
             APP_LOGI("MainThread::LoadAbilityLibrary. End calling dlopen fileEntry.");
             if (handleAbilityLib == nullptr) {
-                APP_LOGE("Fail to dlopen %{public}s, [%{public}s]", fileEntry.c_str(), dlerror());
+                APP_LOGE("MainThread::LoadAbilityLibrary Fail to dlopen %{public}s, [%{public}s]",
+                    fileEntry.c_str(),
+                    dlerror());
                 exit(-1);
             } else {
-                APP_LOGI("Success to dlopen %{public}s", fileEntry.c_str());
+                APP_LOGI("MainThread::LoadAbilityLibrary Success to dlopen %{public}s", fileEntry.c_str());
             }
             handleAbilityLib_.emplace_back(handleAbilityLib);
         }
@@ -1226,7 +1228,7 @@ bool MainThread::ScanDir(const std::string &dirPath)
     }
     APP_LOGI("MainThread::ScanDir after opendir.");
     struct dirent *df = nullptr;
-    for (; ; ) {
+    for (;;) {
         APP_LOGI("MainThread::ScanDir before readdir.");
         df = readdir(dirp);
         APP_LOGI("MainThread::ScanDir after readdir.");
