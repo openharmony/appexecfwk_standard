@@ -419,7 +419,7 @@ enum class AddFunctionType { Add_String, Add_String_MatchType, Add_PatternMatche
         for (int index = 0; index < cycleCount; index++) {                                                       \
             ADDFUNCTION(skill, addFunction, normalPathAndType, (addFunctionType));                                \
         }                                                                                                        \
-        REMOVEFUNCTION(skill, removeFunction, normalPathAndType, (addFunctionType)) ;                             \
+        REMOVEFUNCTION(skill, removeFunction, normalPathAndType, (addFunctionType));                             \
         GETFUNCTION(skill, getFunction, 150, std::string(), code);                                                \
     } while (0);
 
