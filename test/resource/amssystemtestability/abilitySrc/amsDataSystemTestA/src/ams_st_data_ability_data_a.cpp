@@ -104,6 +104,8 @@ int AmsStDataAbilityDataA::Insert(const Uri &uri, const NativeRdb::ValuesBucket 
         APP_LOGI("-------------------AmsStDataAbilityDataA <<<<Insert>>>> file == nullptr");
     } else {
         APP_LOGI("-------------------AmsStDataAbilityDataA <<<<Insert>>>> file != nullptr");
+        delete file;
+        file = nullptr;
     }
     return DEFAULT_INSERT_RESULT;
 }
