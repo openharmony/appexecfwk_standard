@@ -99,12 +99,17 @@ int AmsStDataAbilityDataA::Insert(const Uri &uri, const NativeRdb::ValuesBucket 
 {
     APP_LOGI("AmsStDataAbilityDataA <<<<Insert>>>>");
     PublishEvent(abilityEventName, ABILITY_DATA_A_CODE, "Insert");
-    FILE *file = fdopen(fd, "r");
+    if (fd <= 0) {
+        APP_LOGI("-------------------AmsStDataAbilityDataA <<<<Insert>>>> file fd <= 0");
+        return DEFAULT_INSERT_RESULT;
+    }
+    int dupFd = dup(fd);
+    FILE *file = fdopen(dupFd, "r");
     if (file == nullptr) {
         APP_LOGI("-------------------AmsStDataAbilityDataA <<<<Insert>>>> file == nullptr");
     } else {
         APP_LOGI("-------------------AmsStDataAbilityDataA <<<<Insert>>>> file != nullptr");
-        delete file;
+        fclose(file);
         file = nullptr;
     }
     return DEFAULT_INSERT_RESULT;
@@ -135,7 +140,15 @@ std::shared_ptr<NativeRdb::AbsSharedResultSet> AmsStDataAbilityDataA::Query(
     subscriber_->TestPost();
 
     std::shared_ptr<NativeRdb::AbsSharedResultSet> resultValue = std::make_shared<NativeRdb::AbsSharedResultSet>(OPERATOR_QUERY);
+    if (resultValue == nullptr) {
+        APP_LOGE("AmsStDataAbilityDataA <<<<Query>>>> make_shared return nullptr");
+        return nullptr;
+    }
     AppDataFwk::SharedBlock *pSharedBlock = resultValue->GetBlock();
+    if (pSharedBlock == nullptr) {
+        APP_LOGE("AmsStDataAbilityDataA <<<<Query>>>> GetBlock return nullptr");
+        return nullptr;
+    }
     pSharedBlock->PutString(0, 0, OPERATOR_QUERY.c_str(), OPERATOR_QUERY.size() + 1);
     return resultValue;
 }
