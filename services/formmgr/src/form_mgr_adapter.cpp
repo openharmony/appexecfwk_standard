@@ -783,9 +783,13 @@ ErrCode FormMgrAdapter::AllotFormById(const FormItemInfo &info,
 int64_t FormMgrAdapter::PaddingUDIDHash(const int64_t formId) const
 {
     // Compatible with int form id.
-    uint64_t unsignedFormId = static_cast<int64_t>(formId);
+    uint64_t unsignedFormId = static_cast<uint64_t>(formId);
     if ((unsignedFormId & 0xffffffff00000000L) == 0) {
-        return FormDataMgr::GetInstance().GetUdidHash() | formId;
+        int64_t udidHash = FormDataMgr::GetInstance().GetUdidHash();
+        uint64_t unsignUdidHash  = static_cast<uint64_t>(udidHash);
+        uint64_t unsignUdidHashFormId = unsignUdidHash | unsignedFormId;
+        int64_t udidHashFormId = static_cast<int64_t>(unsignUdidHashFormId);
+        return udidHashFormId;
     }
     return formId;
 }
