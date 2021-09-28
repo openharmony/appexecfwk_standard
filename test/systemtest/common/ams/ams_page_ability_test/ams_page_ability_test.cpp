@@ -20,7 +20,7 @@
 #include "module_test_dump_util.h"
 #include "sa_mgr_client.h"
 #include "system_ability_definition.h"
-#include "system_test_ability_util.h"
+#include "st_ability_util.h"
 #include "common_event.h"
 #include "common_event_manager.h"
 #include "app_mgr_service.h"
@@ -36,35 +36,8 @@ using namespace OHOS::AppExecFwk;
 using namespace OHOS::MTUtil;
 using namespace OHOS::STABUtil;
 using namespace OHOS::EventFwk;
-namespace {
+
 typedef std::map<std::string, std::string> MAP_STR_STR;
-std::vector<std::string> bundleNameSuffix = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "M", "N", "O", "P"};
-std::vector<std::string> uninstallBundleNameSuffix = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "M", "N", "O"};
-std::string bundleNameBase = "com.ohos.amsst.app";
-std::string abilityNameBase = "AmsStAbility";
-std::string hapNameBase = "amsSystemTest";
-std::string launcherAbilityName = "LauncherAbility";
-std::string launcherBundleName = "com.ix.launcher";
-std::string systemUiBundle = "com.ohos.systemui";
-std::string terminatePageAbility = "requ_page_ability_terminate";
-std::string abilityEventName = "resp_st_page_ability_callback";
-std::string pidEventName = "resp_st_page_ability_pid_callback";
-const int amsStAbilityO1Code = 10;
-const int amsStAbilityP1Code = 11;
-static const std::string DUMP_STACK_LIST = "--stack-list";
-static const std::string DUMP_STACK = "--stack";
-static const std::string DUMP_MISSION = "--mission";
-static const std::string DUMP_TOP = "--top";
-static const std::string DUMP_ALL = "-a";
-static const std::string lifecycleStateUninitialized =
-    std::to_string(AbilityLifecycleExecutor::LifecycleState::UNINITIALIZED);
-static const std::string lifecycleStateActive = std::to_string(AbilityLifecycleExecutor::LifecycleState::ACTIVE);
-static const std::string lifecycleStateBackground =
-    std::to_string(AbilityLifecycleExecutor::LifecycleState::BACKGROUND);
-static const std::string lifecycleStateInactive = std::to_string(AbilityLifecycleExecutor::LifecycleState::INACTIVE);
-static const std::string lifecycleStateInitial = std::to_string(AbilityLifecycleExecutor::LifecycleState::INITIAL);
-constexpr int WAIT_TIME = 3 * 1000;
-constexpr int WAIT_LAUNCHER_OK = 5 * 1000;
 enum AbilityState_Test {
     INITIAL = 0,
     INACTIVE,
@@ -77,6 +50,34 @@ enum AbilityState_Test {
     TERMINATING,
     ALLSUM,
 };
+namespace {
+std::vector<std::string> bundleNameSuffix = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "M", "N", "O", "P"};
+std::vector<std::string> uninstallBundleNameSuffix = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "M", "N", "O"};
+static const std::string bundleNameBase = "com.ohos.amsst.app";
+static const std::string abilityNameBase = "AmsStAbility";
+static const std::string hapNameBase = "amsSystemTest";
+static const std::string launcherAbilityName = "com.ohos.launcher.MainAbility";
+static const std::string launcherBundleName = "com.ohos.launcher";
+static const std::string systemUiBundle = "com.ohos.systemui";
+static const std::string terminatePageAbility = "requ_page_ability_terminate";
+static const std::string abilityEventName = "resp_st_page_ability_callback";
+static const std::string pidEventName = "resp_st_page_ability_pid_callback";
+static const int amsStAbilityO1Code = 10;
+static const int amsStAbilityP1Code = 11;
+static constexpr int WAIT_TIME = 3 * 1000;
+static constexpr int WAIT_LAUNCHER_OK = 5 * 1000;
+static const std::string DUMP_STACK_LIST = "--stack-list";
+static const std::string DUMP_STACK = "--stack";
+static const std::string DUMP_MISSION = "--mission";
+static const std::string DUMP_TOP = "--top";
+static const std::string DUMP_ALL = "-a";
+static const std::string lifecycleStateUninitialized =
+    std::to_string(AbilityLifecycleExecutor::LifecycleState::UNINITIALIZED);
+static const std::string lifecycleStateActive = std::to_string(AbilityLifecycleExecutor::LifecycleState::ACTIVE);
+static const std::string lifecycleStateBackground =
+    std::to_string(AbilityLifecycleExecutor::LifecycleState::BACKGROUND);
+static const std::string lifecycleStateInactive = std::to_string(AbilityLifecycleExecutor::LifecycleState::INACTIVE);
+static const std::string lifecycleStateInitial = std::to_string(AbilityLifecycleExecutor::LifecycleState::INITIAL);
 static const std::vector<std::string> abilityStateVec = {
     "INITIAL",
     "INACTIVE",

@@ -12,44 +12,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-// #include <chrono>
-// #include <cstdio>
-// #include <condition_variable>
 #include <gtest/gtest.h>
-//#include <mutex>
-//#include <queue>
-//#include <set>
-//#include <thread>
-
 #include "ability_append_test_info.h"
-// #include "ability_lifecycle.h"
-// #include "ability_lifecycle_executor.h"
-// #include "ability_manager_errors.h"
-// #include "ability_manager_service.h"
-// #include "app_mgr_service.h"
 #include "common_event.h"
 #include "common_event_manager.h"
-//#include "event.h"
 #include "hilog_wrapper.h"
-// #include "module_test_dump_util.h"
-// #include "sa_mgr_client.h"
-// #include "semaphore_ex.h"
-// #include "skills.h"
 #include "stoperator.h"
-//#include "system_ability_definition.h"
-#include "system_test_ability_util.h"
-//#include "uri.h"
+#include "st_ability_util.h"
+
 namespace {
 using namespace OHOS;
 using namespace OHOS::AAFwk;
 using namespace OHOS::AppExecFwk;
 using namespace OHOS::EventFwk;
-//using namespace OHOS::MTUtil;
 using namespace OHOS::STtools;
 using namespace OHOS::STABUtil;
 using namespace testing::ext;
 
 using MAP_STR_STR = std::map<std::string, std::string>;
+namespace {
 static const string KIT_BUNDLE_NAME = "com.ohos.amsst.MissionStack";
 static const string KIT_HAP_NAME = "amsMissionStackTest";
 static const string KIT_BUNDLE_NAME_SUBSIDIARY = "com.ohos.amsst.MissionStackSubsidiary";
@@ -59,7 +40,7 @@ static const string SECOND_ABILITY_NAME = "SecondAbility";
 static const string THIRD_ABILITY_NAME = "ThirdAbility";
 static constexpr int WAIT_TIME = 1;
 static constexpr int WAIT_LAUNCHER_TIME = 5;
-
+}
 
 static string g_eventMessage = "";
 class AmsMissionStackTest : public testing::Test {
@@ -82,12 +63,12 @@ public:
         ~AppEventSubscriber(){};
     };
 
-    static sptr<IAbilityManager> g_abilityMs;
+    static sptr<IAbilityManager> abilityMgrService;
     static Event event;
 };
 
 Event AmsMissionStackTest::event = Event();
-sptr<IAbilityManager> AmsMissionStackTest::g_abilityMs = nullptr;
+sptr<IAbilityManager> AmsMissionStackTest::abilityMgrService = nullptr;
 
 void AmsMissionStackTest::AppEventSubscriber::OnReceiveEvent(const CommonEventData &data)
 {
@@ -106,7 +87,7 @@ void AmsMissionStackTest::AppEventSubscriber::OnReceiveEvent(const CommonEventDa
                data.GetWant().GetAction() == g_EVENT_RESP_THIRD  ||
                data.GetWant().GetAction() == g_EVENT_RESP_MAIN_SUBSIDIARY   ||
                data.GetWant().GetAction() == g_EVENT_RESP_SECOND_SUBSIDIARY
-               ) {
+        ) {
         g_eventMessage = data.GetData();
         TestCompleted(event, data.GetWant().GetAction(), data.GetCode());
         GTEST_LOG_(INFO) << "OnReceiveEvent: g_eventMessage=" << data.GetData();
@@ -195,7 +176,7 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_0100, Function | MediumTest | Lev
     MAP_STR_STR params;
     Want want = STAbilityUtil::MakeWant("device", MAIN_ABILITY_NAME, KIT_BUNDLE_NAME, params);
     // start first ability
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "OnStart", MAIN_ABILITY_CODE), 0);
@@ -230,7 +211,7 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_0200, Function | MediumTest | Lev
     MAP_STR_STR params;
     Want want = STAbilityUtil::MakeWant("device", MAIN_ABILITY_NAME, KIT_BUNDLE_NAME, params);
     // start first ability
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "OnStart", MAIN_ABILITY_CODE), 0);
@@ -240,7 +221,7 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_0200, Function | MediumTest | Lev
         g_EVENT_REQU_MAIN, CODE_, "MissionStack_" + std::to_string((int)MissionStackApi::LockMission) + "_1");
     EXPECT_EQ(TestWaitCompleted(event, g_EVENT_RESP_MAIN, CODE_), 0);
 
-    EXPECT_NE(TestWaitCompleted(event, "OnBackground", MAIN_ABILITY_CODE,WAIT_LAUNCHER_TIME), 0);
+    EXPECT_NE(TestWaitCompleted(event, "OnBackground", MAIN_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
 
     GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_MissionStack_0200 end";
 }
@@ -256,7 +237,7 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_0300, Function | MediumTest | Lev
     MAP_STR_STR params;
     Want want = STAbilityUtil::MakeWant("device", MAIN_ABILITY_NAME, KIT_BUNDLE_NAME, params);
     // start first ability
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "OnStart", MAIN_ABILITY_CODE), 0);
@@ -268,7 +249,7 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_0300, Function | MediumTest | Lev
     
     Want wantEntity;
     wantEntity.AddEntity(Want::FLAG_HOME_INTENT_FROM_SYSTEM);
-    STAbilityUtil::StartAbility(wantEntity, g_abilityMs);
+    STAbilityUtil::StartAbility(wantEntity, abilityMgrService);
 
     EXPECT_NE(TestWaitCompleted(event, "OnBackground", MAIN_ABILITY_CODE), 0);
 
@@ -283,7 +264,7 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_0300, Function | MediumTest | Lev
 HWTEST_F(AmsMissionStackTest, FWK_MissionStack_0400, Function | MediumTest | Level1)
 {
     GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_MissionStack_0400 start";
-    //GTEST_LOG_(INFO) << "需要使用JS环境测试";
+    // need js test environment
     GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_MissionStack_0400 end";
 }
 
@@ -298,7 +279,7 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_0500, Function | MediumTest | Lev
     MAP_STR_STR params;
     Want want = STAbilityUtil::MakeWant("device", THIRD_ABILITY_NAME, KIT_BUNDLE_NAME, params);
     // start third ability
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "OnStart", THIRD_ABILITY_CODE), 0);
@@ -324,7 +305,7 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_0600, Function | MediumTest | Lev
     MAP_STR_STR params;
     Want want = STAbilityUtil::MakeWant("device", MAIN_ABILITY_NAME, KIT_BUNDLE_NAME, params);
     // start third ability
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "OnStart", MAIN_ABILITY_CODE), 0);
@@ -350,7 +331,7 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_0700, Function | MediumTest | Lev
     MAP_STR_STR params;
     Want want = STAbilityUtil::MakeWant("device", MAIN_ABILITY_NAME, KIT_BUNDLE_NAME, params);
     // start first ability
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "OnStart", MAIN_ABILITY_CODE), 0);
@@ -362,10 +343,9 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_0700, Function | MediumTest | Lev
     
     Want wantEntity;
     wantEntity.AddEntity(Want::FLAG_HOME_INTENT_FROM_SYSTEM);
-    STAbilityUtil::StartAbility(wantEntity, g_abilityMs);
+    STAbilityUtil::StartAbility(wantEntity, abilityMgrService);
 
-    EXPECT_EQ(TestWaitCompleted(event, "OnBackground", MAIN_ABILITY_CODE,WAIT_LAUNCHER_TIME), 0);
-
+    EXPECT_EQ(TestWaitCompleted(event, "OnBackground", MAIN_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
     GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_MissionStack_0700 end";
 }
 
@@ -377,7 +357,7 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_0700, Function | MediumTest | Lev
 HWTEST_F(AmsMissionStackTest, FWK_MissionStack_0800, Function | MediumTest | Level1)
 {
     GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_MissionStack_0800 start";
-    //GTEST_LOG_(INFO) << "需要使用JS环境测试";
+    // need js test environment
     GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_MissionStack_0800 end";
 }
 
@@ -392,7 +372,7 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_0900, Function | MediumTest | Lev
     MAP_STR_STR params;
     Want want = STAbilityUtil::MakeWant("device", MAIN_ABILITY_NAME, KIT_BUNDLE_NAME, params);
     // start first ability
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "OnStart", MAIN_ABILITY_CODE), 0);
@@ -410,9 +390,7 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_0900, Function | MediumTest | Lev
         g_EVENT_REQU_SECOND, CODE_, "MissionStack_" + std::to_string((int)MissionStackApi::LockMission) + "_8");
     EXPECT_EQ(TestWaitCompleted(event, g_EVENT_RESP_SECOND, CODE_), 0);
     EXPECT_EQ(TestWaitCompleted(event, "OnStop", SECOND_ABILITY_CODE), 0);
-
     EXPECT_EQ(TestWaitCompleted(event, "OnActive", MAIN_ABILITY_CODE), 0);
-
     GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_MissionStack_0900 end";
 }
 
@@ -427,7 +405,7 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_1000, Function | MediumTest | Lev
     MAP_STR_STR params;
     Want want = STAbilityUtil::MakeWant("device", MAIN_ABILITY_NAME, KIT_BUNDLE_NAME, params);
     // start first ability
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "OnStart", MAIN_ABILITY_CODE), 0);
@@ -439,8 +417,6 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_1000, Function | MediumTest | Lev
     string appInfo = g_eventMessage;
 
     GTEST_LOG_(INFO) << "id=" << appInfo;
-    //EXPECT_EQ(appInfo, "1");
-
     GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_MissionStack_1000 end";
 }
 
@@ -452,7 +428,7 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_1000, Function | MediumTest | Lev
 HWTEST_F(AmsMissionStackTest, FWK_MissionStack_1100, Function | MediumTest | Level1)
 {
     GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_MissionStack_1100 start";
-    //GTEST_LOG_(INFO) << "需要使用JS环境测试";
+    // need js test environment
     GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_MissionStack_1100 end";
 }
 
@@ -467,7 +443,7 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_1200, Function | MediumTest | Lev
     MAP_STR_STR params;
     Want want = STAbilityUtil::MakeWant("device", MAIN_ABILITY_NAME, KIT_BUNDLE_NAME, params);
     // start first ability
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "OnStart", MAIN_ABILITY_CODE), 0);
@@ -477,7 +453,7 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_1200, Function | MediumTest | Lev
         g_EVENT_REQU_MAIN, CODE_, "MissionStack_" + std::to_string((int)MissionStackApi::LockMission) + "_11");
     EXPECT_EQ(TestWaitCompleted(event, g_EVENT_RESP_MAIN, CODE_), 0);
     
-    EXPECT_EQ(TestWaitCompleted(event, "OnBackground", MAIN_ABILITY_CODE,WAIT_LAUNCHER_TIME), 0);
+    EXPECT_EQ(TestWaitCompleted(event, "OnBackground", MAIN_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
 
     GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_MissionStack_1200 end";
 }
@@ -493,7 +469,7 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_1300, Function | MediumTest | Lev
     MAP_STR_STR params;
     Want want = STAbilityUtil::MakeWant("device", MAIN_ABILITY_NAME, KIT_BUNDLE_NAME, params);
     // start first ability
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "OnStart", MAIN_ABILITY_CODE), 0);
@@ -503,7 +479,7 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_1300, Function | MediumTest | Lev
         g_EVENT_REQU_MAIN, CODE_, "MissionStack_" + std::to_string((int)MissionStackApi::LockMission) + "_12");
     EXPECT_EQ(TestWaitCompleted(event, g_EVENT_RESP_MAIN, CODE_), 0);
     
-    EXPECT_EQ(TestWaitCompleted(event, "OnBackground", MAIN_ABILITY_CODE,WAIT_LAUNCHER_TIME), 0);
+    EXPECT_EQ(TestWaitCompleted(event, "OnBackground", MAIN_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
 
     GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_MissionStack_1300 end";
 }
@@ -519,7 +495,7 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_1400, Function | MediumTest | Lev
     MAP_STR_STR params;
     Want want = STAbilityUtil::MakeWant("device", MAIN_ABILITY_NAME, KIT_BUNDLE_NAME, params);
     // start first ability
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "OnStart", MAIN_ABILITY_CODE), 0);
@@ -536,7 +512,7 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_1400, Function | MediumTest | Lev
     STAbilityUtil::PublishEvent(
         g_EVENT_REQU_SECOND, CODE_, "MissionStack_" + std::to_string((int)MissionStackApi::LockMission) + "_13");
     EXPECT_EQ(TestWaitCompleted(event, g_EVENT_RESP_SECOND, CODE_), 0);
-    EXPECT_EQ(TestWaitCompleted(event, "OnBackground", SECOND_ABILITY_CODE,WAIT_LAUNCHER_TIME), 0);
+    EXPECT_EQ(TestWaitCompleted(event, "OnBackground", SECOND_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
 
     GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_MissionStack_1400 end";
 }
@@ -552,7 +528,7 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_1500, Function | MediumTest | Lev
     MAP_STR_STR params;
     Want want = STAbilityUtil::MakeWant("device", MAIN_ABILITY_NAME, KIT_BUNDLE_NAME, params);
     // start first ability
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "OnStart", MAIN_ABILITY_CODE), 0);
@@ -569,7 +545,7 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_1500, Function | MediumTest | Lev
     STAbilityUtil::PublishEvent(
         g_EVENT_REQU_SECOND, CODE_, "MissionStack_" + std::to_string((int)MissionStackApi::LockMission) + "_14");
     EXPECT_EQ(TestWaitCompleted(event, g_EVENT_RESP_SECOND, CODE_), 0);
-    EXPECT_NE(TestWaitCompleted(event, "OnBackground", SECOND_ABILITY_CODE,WAIT_LAUNCHER_TIME), 0);
+    EXPECT_NE(TestWaitCompleted(event, "OnBackground", SECOND_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
 
     GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_MissionStack_1500 end";
 }
@@ -585,14 +561,14 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_1600, Function | MediumTest | Lev
     MAP_STR_STR params;
     Want want = STAbilityUtil::MakeWant("device", MAIN_ABILITY_NAME, KIT_BUNDLE_NAME, params);
     // start first ability
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "OnStart", MAIN_ABILITY_CODE), 0);
     EXPECT_EQ(TestWaitCompleted(event, "OnActive", MAIN_ABILITY_CODE), 0);
     Want wantEntity;
     wantEntity.AddEntity(Want::FLAG_HOME_INTENT_FROM_SYSTEM);
-    STAbilityUtil::StartAbility(wantEntity, g_abilityMs);
+    STAbilityUtil::StartAbility(wantEntity, abilityMgrService);
     sleep(WAIT_LAUNCHER_TIME);
     STAbilityUtil::CleanMsg(event);
 
@@ -601,50 +577,54 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_1600, Function | MediumTest | Lev
     sleep(WAIT_LAUNCHER_TIME);
     want = STAbilityUtil::MakeWant("device", MAIN_ABILITY_NAME, KIT_BUNDLE_NAME_SUBSIDIARY, params);
     // start first ability
-    eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) <<"SUBSIDIARY:StartAbility:eCode=" << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "OnStart", MAIN_ABILITY_CODE_SUBSIDIARY), 0);
     EXPECT_EQ(TestWaitCompleted(event, "OnActive", MAIN_ABILITY_CODE_SUBSIDIARY), 0);
 
     STAbilityUtil::PublishEvent(
-        g_EVENT_REQU_MAIN_SUBSIDIARY, CODE_, "MissionStack_" + std::to_string((int)MissionStackApi::LockMission) + "_0");
+        g_EVENT_REQU_MAIN_SUBSIDIARY,
+        CODE_,
+        "MissionStack_" + std::to_string((int)MissionStackApi::LockMission) + "_0");
     EXPECT_EQ(TestWaitCompleted(event, g_EVENT_RESP_MAIN_SUBSIDIARY, CODE_), 0);
 
-    EXPECT_EQ(TestWaitCompleted(event, "OnBackground", MAIN_ABILITY_CODE,WAIT_LAUNCHER_TIME), 0);
-    EXPECT_EQ(TestWaitCompleted(event, "OnBackground", MAIN_ABILITY_CODE_SUBSIDIARY,WAIT_LAUNCHER_TIME), 0);
+    EXPECT_EQ(TestWaitCompleted(event, "OnBackground", MAIN_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
+    EXPECT_EQ(TestWaitCompleted(event, "OnBackground", MAIN_ABILITY_CODE_SUBSIDIARY, WAIT_LAUNCHER_TIME), 0);
     EXPECT_EQ(TestWaitCompleted(event, "OnStart", SECOND_ABILITY_CODE_SUBSIDIARY), 0);
     EXPECT_EQ(TestWaitCompleted(event, "OnActive", SECOND_ABILITY_CODE_SUBSIDIARY), 0);
 
     STAbilityUtil::PublishEvent(
-        g_EVENT_REQU_MAIN_SUBSIDIARY, CODE_, "MissionStack_" + std::to_string((int)MissionStackApi::LockMission) + "_1");
+        g_EVENT_REQU_MAIN_SUBSIDIARY,
+        CODE_,
+        "MissionStack_" + std::to_string((int)MissionStackApi::LockMission) + "_1");
     EXPECT_EQ(TestWaitCompleted(event, g_EVENT_RESP_MAIN_SUBSIDIARY, CODE_), 0);
-    EXPECT_EQ(TestWaitCompleted(event, "OnBackground", SECOND_ABILITY_CODE_SUBSIDIARY,WAIT_LAUNCHER_TIME), 0);
+    EXPECT_EQ(TestWaitCompleted(event, "OnBackground", SECOND_ABILITY_CODE_SUBSIDIARY, WAIT_LAUNCHER_TIME), 0);
 
     STAbilityUtil::Uninstall(KIT_BUNDLE_NAME_SUBSIDIARY);
     STAbilityUtil::CleanMsg(event);
     GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_MissionStack_1600 end";
 }
 
-// /**
-//  * @tc.number    : FWK_MissionStack_1700
-//  * @tc.name      : test MoveMissionToEnd in ability_context.h
-//  * @tc.desc      : Verify that the result of MoveMissionToEnd function is correct.
-//  */
+/**
+ * @tc.number    : FWK_MissionStack_1700
+ * @tc.name      : test MoveMissionToEnd in ability_context.h
+ * @tc.desc      : Verify that the result of MoveMissionToEnd function is correct.
+ */
 HWTEST_F(AmsMissionStackTest, FWK_MissionStack_1700, Function | MediumTest | Level1)
 {
     GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_MissionStack_1700 start";
     MAP_STR_STR params;
     Want want = STAbilityUtil::MakeWant("device", MAIN_ABILITY_NAME, KIT_BUNDLE_NAME, params);
     // start first ability
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "OnStart", MAIN_ABILITY_CODE), 0);
     EXPECT_EQ(TestWaitCompleted(event, "OnActive", MAIN_ABILITY_CODE), 0);
     Want wantEntity;
     wantEntity.AddEntity(Want::FLAG_HOME_INTENT_FROM_SYSTEM);
-    STAbilityUtil::StartAbility(wantEntity, g_abilityMs);
+    STAbilityUtil::StartAbility(wantEntity, abilityMgrService);
     sleep(WAIT_LAUNCHER_TIME);
     STAbilityUtil::CleanMsg(event);
 
@@ -653,25 +633,25 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_1700, Function | MediumTest | Lev
     sleep(WAIT_LAUNCHER_TIME);
     want = STAbilityUtil::MakeWant("device", MAIN_ABILITY_NAME, KIT_BUNDLE_NAME_SUBSIDIARY, params);
     // start first ability
-    eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) <<"SUBSIDIARY:StartAbility:eCode=" << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "OnStart", MAIN_ABILITY_CODE_SUBSIDIARY), 0);
     EXPECT_EQ(TestWaitCompleted(event, "OnActive", MAIN_ABILITY_CODE_SUBSIDIARY), 0);
 
-    STAbilityUtil::PublishEvent(
-        g_EVENT_REQU_MAIN_SUBSIDIARY, CODE_, "MissionStack_" + std::to_string((int)MissionStackApi::LockMission) + "_0");
+    STAbilityUtil::PublishEvent(g_EVENT_REQU_MAIN_SUBSIDIARY, CODE_,
+        "MissionStack_" + std::to_string((int)MissionStackApi::LockMission) + "_0");
     EXPECT_EQ(TestWaitCompleted(event, g_EVENT_RESP_MAIN_SUBSIDIARY, CODE_), 0);
 
-    EXPECT_EQ(TestWaitCompleted(event, "OnBackground", MAIN_ABILITY_CODE,WAIT_LAUNCHER_TIME), 0);
-    EXPECT_EQ(TestWaitCompleted(event, "OnBackground", MAIN_ABILITY_CODE_SUBSIDIARY,WAIT_LAUNCHER_TIME), 0);
+    EXPECT_EQ(TestWaitCompleted(event, "OnBackground", MAIN_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
+    EXPECT_EQ(TestWaitCompleted(event, "OnBackground", MAIN_ABILITY_CODE_SUBSIDIARY, WAIT_LAUNCHER_TIME), 0);
     EXPECT_EQ(TestWaitCompleted(event, "OnStart", SECOND_ABILITY_CODE_SUBSIDIARY), 0);
     EXPECT_EQ(TestWaitCompleted(event, "OnActive", SECOND_ABILITY_CODE_SUBSIDIARY), 0);
 
-    STAbilityUtil::PublishEvent(
-        g_EVENT_REQU_MAIN_SUBSIDIARY, CODE_, "MissionStack_" + std::to_string((int)MissionStackApi::LockMission) + "_2");
+    STAbilityUtil::PublishEvent(g_EVENT_REQU_MAIN_SUBSIDIARY, CODE_,
+        "MissionStack_" + std::to_string((int)MissionStackApi::LockMission) + "_2");
     EXPECT_EQ(TestWaitCompleted(event, g_EVENT_RESP_MAIN_SUBSIDIARY, CODE_), 0);
-    EXPECT_NE(TestWaitCompleted(event, "OnBackground", SECOND_ABILITY_CODE_SUBSIDIARY,WAIT_LAUNCHER_TIME), 0);
+    EXPECT_NE(TestWaitCompleted(event, "OnBackground", SECOND_ABILITY_CODE_SUBSIDIARY, WAIT_LAUNCHER_TIME), 0);
 
     STAbilityUtil::Uninstall(KIT_BUNDLE_NAME_SUBSIDIARY);
     STAbilityUtil::CleanMsg(event);
@@ -689,7 +669,7 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_1800, Function | MediumTest | Lev
     MAP_STR_STR params;
     Want want = STAbilityUtil::MakeWant("device", MAIN_ABILITY_NAME, KIT_BUNDLE_NAME, params);
     // start first ability
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
     EXPECT_EQ(TestWaitCompleted(event, "OnStart", MAIN_ABILITY_CODE), 0);
@@ -699,152 +679,8 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_1800, Function | MediumTest | Lev
         g_EVENT_REQU_MAIN, CODE_, "MissionStack_" + std::to_string((int)MissionStackApi::LockMission) + "_17");
     EXPECT_EQ(TestWaitCompleted(event, g_EVENT_RESP_MAIN, CODE_), 0);
     
-    EXPECT_NE(TestWaitCompleted(event, "OnBackground", MAIN_ABILITY_CODE,WAIT_LAUNCHER_TIME), 0);
+    EXPECT_NE(TestWaitCompleted(event, "OnBackground", MAIN_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
 
     GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_MissionStack_1800 end";
 }
-
-// /**
-//  * @tc.number    : FWK_SaveAbilityState_0100
-//  * @tc.name      : 
-//  * @tc.desc      : 
-//  */
-// HWTEST_F(AmsMissionStackTest, FWK_SaveAbilityState_0100, Function | MediumTest | Level1)
-// {
-//     GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_SaveAbilityState_0100 start";
-//     MAP_STR_STR params;
-//     Want want = STAbilityUtil::MakeWant("device", MAIN_ABILITY_NAME, KIT_BUNDLE_NAME, params);
-//     // start first ability
-//     ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
-//     GTEST_LOG_(INFO) << eCode;
-
-//     EXPECT_EQ(TestWaitCompleted(event, "OnStart", MAIN_ABILITY_CODE), 0);
-//     EXPECT_EQ(TestWaitCompleted(event, "OnActive", MAIN_ABILITY_CODE), 0);
-    
-//     Want wantEntity;
-//     wantEntity.AddEntity(Want::FLAG_HOME_INTENT_FROM_SYSTEM);
-//     STAbilityUtil::StartAbility(wantEntity, g_abilityMs);
-
-//     EXPECT_NE(TestWaitCompleted(event, "OnSaveAbilityState", MAIN_ABILITY_CODE), 0);
-//     GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_SaveAbilityState_0100 end";
-// }
-
-// /**
-//  * @tc.number    : FWK_SaveAbilityState_0200
-//  * @tc.name      : 
-//  * @tc.desc      : 
-//  */
-// HWTEST_F(AmsMissionStackTest, FWK_SaveAbilityState_0200, Function | MediumTest | Level1)
-// {
-//     GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_SaveAbilityState_0200 start";
-
-//     // 该case需要屏幕翻转事件
-//     GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_SaveAbilityState_0200 end";
-// }
-
-// /**
-//  * @tc.number    : FWK_SaveAbilityState_0300
-//  * @tc.name      : 
-//  * @tc.desc      : 
-//  */
-// HWTEST_F(AmsMissionStackTest, FWK_SaveAbilityState_0300, Function | MediumTest | Level1)
-// {
-//     GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_SaveAbilityState_0300 start";
-//     MAP_STR_STR params;
-//     Want want = STAbilityUtil::MakeWant("device", MAIN_ABILITY_NAME, KIT_BUNDLE_NAME, params);
-//     // start first ability
-//     ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
-//     GTEST_LOG_(INFO) << eCode;
-
-//     EXPECT_EQ(TestWaitCompleted(event, "OnStart", MAIN_ABILITY_CODE), 0);
-//     EXPECT_EQ(TestWaitCompleted(event, "OnActive", MAIN_ABILITY_CODE), 0);
-//     STAbilityUtil::CleanMsg(event);
-//     STAbilityUtil::PublishEvent(
-//         g_EVENT_REQU_MAIN, CODE_, "AbilityState_" + std::to_string((int)TestAbilityState::OnSaveAbilityState) + "_2");
-//     EXPECT_EQ(TestWaitCompleted(event, g_EVENT_RESP_MAIN, CODE_), 0);
-    
-//     EXPECT_EQ(TestWaitCompleted(event, "OnStart", SECOND_ABILITY_CODE), 0);
-//     EXPECT_EQ(TestWaitCompleted(event, "OnActive", SECOND_ABILITY_CODE), 0);
-
-//     EXPECT_NE(TestWaitCompleted(event, "OnSaveAbilityState", MAIN_ABILITY_CODE), 0);
-//     GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_SaveAbilityState_0300 end";
-// }
-
-// /**
-//  * @tc.number    : FWK_RestoreAbilityState_0100
-//  * @tc.name      : 
-//  * @tc.desc      : 
-//  */
-// HWTEST_F(AmsMissionStackTest, FWK_RestoreAbilityState_0100, Function | MediumTest | Level1)
-// {
-//     GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_RestoreAbilityState_0100 start";
-
-//     MAP_STR_STR params;
-//     Want want = STAbilityUtil::MakeWant("device", THIRD_ABILITY_NAME, KIT_BUNDLE_NAME, params);
-//     // start first ability
-//     ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
-//     GTEST_LOG_(INFO) << eCode;
-
-//     EXPECT_EQ(TestWaitCompleted(event, "OnStart", THIRD_ABILITY_CODE), 0);
-//     EXPECT_EQ(TestWaitCompleted(event, "OnActive", THIRD_ABILITY_CODE), 0);
-
-//     Want wantEntity;
-//     wantEntity.AddEntity(Want::FLAG_HOME_INTENT_FROM_SYSTEM);
-//     STAbilityUtil::StartAbility(wantEntity, g_abilityMs);
-
-//     sleep(WAIT_LAUNCHER_TIME);
-//     eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
-//     GTEST_LOG_(INFO) << eCode;
-//     EXPECT_EQ(TestWaitCompleted(event, "OnActive", THIRD_ABILITY_CODE), 0);
-
-//     EXPECT_NE(TestWaitCompleted(event, "OnRestoreAbilityState", THIRD_ABILITY_CODE), 0);
-
-//     GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_RestoreAbilityState_0100 end";
-// }
-
-// /**
-//  * @tc.number    : FWK_RestoreAbilityState_0200
-//  * @tc.name      : 
-//  * @tc.desc      : 
-//  */
-// HWTEST_F(AmsMissionStackTest, FWK_RestoreAbilityState_0200, Function | MediumTest | Level1)
-// {
-//     GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_RestoreAbilityState_0200 start";
-//     // 该case需要屏幕翻转事件
-//     GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_RestoreAbilityState_0200 end";
-// }
-
-// /**
-//  * @tc.number    : FWK_RestoreAbilityState_0300
-//  * @tc.name      : 
-//  * @tc.desc      : 
-//  */
-// HWTEST_F(AmsMissionStackTest, FWK_RestoreAbilityState_0300, Function | MediumTest | Level1)
-// {
-//     GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_RestoreAbilityState_0300 start";
-//     MAP_STR_STR params;
-//     Want want = STAbilityUtil::MakeWant("device", MAIN_ABILITY_NAME, KIT_BUNDLE_NAME, params);
-//     // start first ability
-//     ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
-//     GTEST_LOG_(INFO) << eCode;
-
-//     EXPECT_EQ(TestWaitCompleted(event, "OnStart", MAIN_ABILITY_CODE), 0);
-//     EXPECT_EQ(TestWaitCompleted(event, "OnActive", MAIN_ABILITY_CODE), 0);
-//     STAbilityUtil::CleanMsg(event);
-//     STAbilityUtil::PublishEvent(
-//         g_EVENT_REQU_MAIN, CODE_, "AbilityState_" + std::to_string((int)TestAbilityState::OnRestoreAbilityState) + "_2");
-//     EXPECT_EQ(TestWaitCompleted(event, g_EVENT_RESP_MAIN, CODE_), 0);
-    
-//     EXPECT_EQ(TestWaitCompleted(event, "OnStart", SECOND_ABILITY_CODE), 0);
-//     EXPECT_EQ(TestWaitCompleted(event, "OnActive", SECOND_ABILITY_CODE), 0);
-//     STAbilityUtil::PublishEvent(
-//         g_EVENT_REQU_SECOND, CODE_, "AbilityState_" + std::to_string((int)TestAbilityState::OnRestoreAbilityState) + "_2");
-//     EXPECT_EQ(TestWaitCompleted(event, g_EVENT_RESP_SECOND, CODE_), 0);
-//     EXPECT_EQ(TestWaitCompleted(event, "OnStop", SECOND_ABILITY_CODE), 0);
-
-//     EXPECT_NE(TestWaitCompleted(event, "OnRestoreAbilityState", MAIN_ABILITY_CODE), 0);
-
-//     GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_RestoreAbilityState_0300 end";
-// }
-
 }  // namespace

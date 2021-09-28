@@ -31,6 +31,7 @@
         {
             "name": "AmsStServiceAbilityE2",
             "icon": "$media:snowball",
+            "srcLanguage": "c++",
             "label": "AmsStServiceAbilityE2 Ability",
             "launchType": "standard",
             "orientation": "unspecified",

@@ -34,7 +34,7 @@
 #include "semaphore_ex.h"
 #include "stoperator.h"
 #include "system_ability_definition.h"
-#include "system_test_ability_util.h"
+#include "st_ability_util.h"
 #include "testConfigParser.h"
 #include "uri.h"
 namespace {
@@ -197,7 +197,6 @@ void ActsAmsKitDataTest::AppEventSubscriber::OnReceiveEvent(const CommonEventDat
     GTEST_LOG_(INFO) << "OnReceiveEvent: event=" << data.GetWant().GetAction();
     GTEST_LOG_(INFO) << "OnReceiveEvent: data=" << data.GetData();
     GTEST_LOG_(INFO) << "OnReceiveEvent: code=" << data.GetCode();
-
     std::string eventName = data.GetWant().GetAction();
     if (eventName.compare(ABILITY_EVENT_NAME) == 0) {
         std::string target = data.GetData();
@@ -205,7 +204,6 @@ void ActsAmsKitDataTest::AppEventSubscriber::OnReceiveEvent(const CommonEventDat
             ActsAmsKitDataTest::TestCompleted(event, target, data.GetCode());
             return;
         }
-
         if (PAGE_ABILITY_CODE == data.GetCode() / ABILITY_CODE_BASE) {  // page ability
             ActsAmsKitDataTest::TestCompleted(event, target, data.GetCode());
             return;

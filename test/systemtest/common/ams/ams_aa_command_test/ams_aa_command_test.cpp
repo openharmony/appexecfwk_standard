@@ -20,7 +20,7 @@
 #include "shell_command.h"
 #include "hilog_wrapper.h"
 #include "module_test_dump_util.h"
-#include "system_test_ability_util.h"
+#include "st_ability_util.h"
 #include <gtest/gtest.h>
 
 using namespace testing::ext;
@@ -35,7 +35,7 @@ namespace {
 static const std::string bundleName = "com.ohos.amsst.appA";
 static const std::string abilityName = "AmsStAbilityA1";
 constexpr int WAIT_LAUNCHER_OK = 5 * 1000;
-static std::string launcherBundleName = "com.ix.launcher";
+static std::string launcherBundleName = "com.ohos.launcher";
 std::string systemUiBundle = "com.ohos.systemui";
 std::string terminatePageAbility = "requ_page_ability_terminate";
 }  // namespace

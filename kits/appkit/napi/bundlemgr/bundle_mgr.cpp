@@ -85,7 +85,7 @@ std::map<napi_ref, OHOS::sptr<PermissionCallback>> anyPermissionsCallback;
 
 }  // namespace
 
-napi_value g_classBundleInstaller;
+napi_ref g_classBundleInstaller;
 
 static OHOS::sptr<OHOS::AppExecFwk::IBundleMgr> GetBundleMgr()
 {
@@ -1212,7 +1212,10 @@ static napi_value ParseWant(napi_env env, Want &want, napi_value args)
     NAPI_ASSERT(env, valueType == napi_string, "property type mismatch!");
     abilityName = GetStringFromNAPI(env, prop);
     HILOG_INFO("ParseWant abilityName=%{public}s.", abilityName.c_str());
-    want.SetElementName(deviceId, bundleName, abilityName);
+    ElementName elementName;
+    elementName.SetBundleName(bundleName);
+    elementName.SetDeviceID(deviceId);
+    want.SetElement(elementName);
 
     // create result code
     napi_value result;
@@ -2214,8 +2217,10 @@ napi_value GetBundleInstaller(napi_env env, napi_callback_info info)
                 napi_value callback = 0;
                 napi_value undefined = 0;
                 napi_value callResult = 0;
+                napi_value m_classBundleInstaller = nullptr;
+                napi_get_reference_value(env, g_classBundleInstaller, &m_classBundleInstaller);
                 napi_get_undefined(env, &undefined);
-                napi_new_instance(env, g_classBundleInstaller, 0, nullptr, &result[PARAM1]);
+                napi_new_instance(env, m_classBundleInstaller, 0, nullptr, &result[PARAM1]);
                 result[PARAM0] = GetCallbackErrorValue(env, CODE_SUCCESS);
                 napi_get_reference_value(env, asyncCallbackInfo->callback, &callback);
                 napi_call_function(env, undefined, callback, ARGS_SIZE_TWO, &result[PARAM0], &callResult);
@@ -2257,7 +2262,9 @@ napi_value GetBundleInstaller(napi_env env, napi_callback_info info)
                 HILOG_INFO("=================load=================");
                 AsyncGetBundleInstallerCallbackInfo *asyncCallbackInfo = (AsyncGetBundleInstallerCallbackInfo *)data;
                 napi_value result;
-                napi_new_instance(env, g_classBundleInstaller, 0, nullptr, &result);
+                napi_value m_classBundleInstaller = nullptr;
+                napi_get_reference_value(env, g_classBundleInstaller, &m_classBundleInstaller);
+                napi_new_instance(env, m_classBundleInstaller, 0, nullptr, &result);
                 napi_resolve_deferred(asyncCallbackInfo->env, asyncCallbackInfo->deferred, result);
                 napi_delete_async_work(env, asyncCallbackInfo->asyncWork);
                 delete asyncCallbackInfo;

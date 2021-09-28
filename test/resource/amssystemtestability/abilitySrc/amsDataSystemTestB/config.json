@@ -30,6 +30,7 @@
         "abilities": [{
             "name": "AmsStDataAbilityPageB",
             "icon": "$media:snowball",
+            "srcLanguage": "c++",
             "label": "PageB Ability",
             "launchType": "standard",
             "orientation": "unspecified",

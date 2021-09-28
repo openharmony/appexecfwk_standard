@@ -15,7 +15,7 @@
 #include <gtest/gtest.h>
 #include "ability_lifecycle_executor.h"
 #include "common_event_manager.h"
-#include "system_test_ability_util.h"
+#include "st_ability_util.h"
 #include "task_dispatcher_test_info.h"
 #include "testConfigParser.h"
 

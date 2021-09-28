@@ -30,6 +30,7 @@
         "abilities": [{
             "name": "AmsStAbilityH1",
             "icon": "$media:snowball",
+            "srcLanguage": "c++",
             "label": "AbilityH1 Ability",
             "launchType": "singletop",
             "orientation": "unspecified",
