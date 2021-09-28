@@ -977,15 +977,15 @@ int32_t FormDataMgr::UpdateHostFormFlag(
  */
 int64_t FormDataMgr::FindMatchedFormId(const int64_t formId)
 {
-    uint64_t unsignedFormId = static_cast<int64_t>(formId);
+    uint64_t unsignedFormId = static_cast<uint64_t>(formId);
     if ((unsignedFormId & 0xffffffff00000000L) != 0) {
         return formId;
     }
     std::lock_guard<std::mutex> lock(formRecordMutex_);
     std::map<int64_t, FormRecord>::iterator itFormRecord;
     for (itFormRecord = formRecords_.begin(); itFormRecord != formRecords_.end(); itFormRecord++) {
-        uint64_t unsignedFormId = static_cast<int64_t>(formId);
-        uint64_t unsignedItFormRecordFirst = static_cast<int64_t>(itFormRecord->first);
+        uint64_t unsignedFormId = static_cast<uint64_t>(formId);
+        uint64_t unsignedItFormRecordFirst = static_cast<uint64_t>(itFormRecord->first);
         if ((unsignedItFormRecordFirst & 0x00000000ffffffffL) == (unsignedFormId & 0x00000000ffffffffL)) {
             return itFormRecord->first;
         }
