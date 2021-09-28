@@ -30,6 +30,7 @@
         "abilities": [{
             "name": "AmsStDataAbilityDataC1",
             "icon": "$media:snowflakes",
+            "srcLanguage": "c++",
             "label": "PageB Ability",
             "launchType": "standard",
             "orientation": "unspecified",

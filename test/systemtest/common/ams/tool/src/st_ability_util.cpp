@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "system_test_ability_util.h"
+#include "st_ability_util.h"
 #include "status_receiver_host.h"
 #include "iservice_registry.h"
 namespace OHOS {
@@ -384,20 +384,6 @@ int STAbilityUtil::RemoveStack(
     return result;
 }
 
-class InstallToolStatusReceiver : public StatusReceiverHost {
-public:
-    InstallToolStatusReceiver();
-    virtual ~InstallToolStatusReceiver() override;
-    virtual void OnStatusNotify(const int progress) override;
-    virtual void OnFinished(const int32_t resultCode, const std::string &resultMsg) override;
-    static int TestWaitCompleted(Event &event, const std::string eventName, const int code, const int timeout = 10);
-    static void TestCompleted(Event &event, const std::string &eventName, const int code);
-    Event event_ = STtools::Event();
-
-private:
-    int iProgress_ = 0;
-    DISALLOW_COPY_AND_MOVE(InstallToolStatusReceiver);
-};
 InstallToolStatusReceiver::InstallToolStatusReceiver()
 {
     std::cout << "create status receiver instance" << std::endl;

@@ -27,11 +27,11 @@ using namespace OHOS::AAFwk;
 namespace {
 const std::string currentAbilityName = "KitTestAbilityManagerSecond";
 const std::string topAbilityName = "KitTestAbilityManager";
-const std::string launchAbilityName = "LauncherAbility";
+const std::string launchAbilityName = "com.ohos.launcher.MainAbility";
 const std::string bundleName = "com.ohos.amsst.AppKitAbilityManagerFirst";
 const std::string topProcessInfo = "com.ohos.amsst.AppKitAbilityManagerFirst";
 const std::string currentProcessInfo = "com.ohos.amsst.AppKitAbilityManager";
-const std::string launchProcessInfo = "com.ix.launcher";
+const std::string launchProcessInfo = "com.ohos.launcher";
 bool isMoveMissionToTop = false;
 int moveMissionToTopCode = -1;
 bool isClearUpApplicationData = false;

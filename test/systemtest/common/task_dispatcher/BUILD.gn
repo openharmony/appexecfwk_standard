@@ -42,8 +42,8 @@ ohos_systemtest("task_dispatcher_test") {
   sources = [
     "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/src/event.cpp",
     "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/src/module_test_dump_util.cpp",
+    "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/src/st_ability_util.cpp",
     "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/src/stoperator.cpp",
-    "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/src/system_test_ability_util.cpp",
     "src/task_dispatcher_test.cpp",
     "src/task_dispatcher_tools.cpp",
   ]

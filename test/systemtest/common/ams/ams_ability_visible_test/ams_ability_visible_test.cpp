@@ -24,7 +24,7 @@
 #include "ability_manager_errors.h"
 #include "app_mgr_service.h"
 #include "module_test_dump_util.h"
-#include "system_test_ability_util.h"
+#include "st_ability_util.h"
 #include "module_test_dump_util.h"
 #include "sa_mgr_client.h"
 #include "system_ability_definition.h"
@@ -45,8 +45,8 @@ std::vector<std::string> bundleNameSuffix = {"PageA", "ServiceB"};
 static const std::string bundleNameBase = "com.ohos.amsst.appAbilityVisible";
 static const std::string hapNameBase = "amsAbilityVisibleTest";
 static const std::string abilityNameBase = "AmsAbilityVisibleTest";
-static const std::string launcherBundle = "com.ix.launcher";
-static const std::string launcherAbility = "LauncherAbility";
+static const std::string launcherBundle = "com.ohos.launcher";
+static const std::string launcherAbility = "com.ohos.launcher.MainAbility";
 static const std::string systemUiBundle = "com.ohos.systemui";
 static const std::string terminateAbility = "requ_page_ability_terminate";
 static const std::string terminateAbilityCaller = "requ_page_ability_terminate_caller";

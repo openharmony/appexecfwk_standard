@@ -97,12 +97,17 @@ int AmsStDataAbilityDataC1::Insert(const Uri &uri, const NativeRdb::ValuesBucket
 {
     APP_LOGI("AmsStDataAbilityDataC1 <<<<Insert>>>>");
     PublishEvent(abilityEventName, ABILITY_DATA_C1_CODE, "Insert");
-    FILE *file = fdopen(fd, "r");
+    if (fd <= 0) {
+        APP_LOGI("-------------------AmsStDataAbilityDataC1 <<<<Insert>>>> file fd <= 0");
+        return DEFAULT_INSERT_RESULT;
+    }
+    int dupFd = dup(fd);
+    FILE *file = fdopen(dupFd, "r");
     if (file == nullptr) {
         APP_LOGI("-------------------AmsStDataAbilityDataC1 <<<<Insert>>>> file == nullptr");
     } else {
         APP_LOGI("-------------------AmsStDataAbilityDataC1 <<<<Insert>>>> file != nullptr");
-        delete file;
+        fclose(file);
         file = nullptr;
     }
     return DEFAULT_INSERT_RESULT;

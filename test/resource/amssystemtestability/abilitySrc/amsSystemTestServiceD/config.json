@@ -30,6 +30,7 @@
         "abilities": [{
             "name": "AmsStServiceAbilityD1",
             "icon": "$media:snowball",
+            "srcLanguage": "c++",
             "label": "AmsStServiceAbilityD1 Ability",
             "launchType": "standard",
             "orientation": "unspecified",

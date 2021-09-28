@@ -32,7 +32,7 @@
 #include "module_test_dump_util.h"
 #include "sa_mgr_client.h"
 #include "system_ability_definition.h"
-#include "system_test_ability_util.h"
+#include "st_ability_util.h"
 
 namespace {
 using namespace testing::ext;
@@ -1965,9 +1965,8 @@ HWTEST_F(AmsServiceAbilityTest, AMS_Service_Ability_2300, Function | MediumTest 
 /**
  * @tc.number    : AppSpawn_TEST_0100
  * @tc.name      : Check appspawn process information
- * @tc.desc      : The system rc is started, and based on root privileges, the AppSpawn process is created, and
- related
- * resources are loaded.
+ * @tc.desc      : The system rc is started, and based on root privileges, the AppSpawn process is created,
+ *                 and related resources are loaded.
  */
 HWTEST_F(AmsServiceAbilityTest, AppSpawn_TEST_0100, Function | MediumTest | Level1)
 {

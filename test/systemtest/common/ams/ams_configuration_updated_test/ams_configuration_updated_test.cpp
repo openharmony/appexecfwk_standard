@@ -21,7 +21,7 @@
 #include "common_event_manager.h"
 #include "hilog_wrapper.h"
 #include "stoperator.h"
-#include "system_test_ability_util.h"
+#include "st_ability_util.h"
 namespace {
 using namespace OHOS;
 using namespace OHOS::AAFwk;
@@ -32,6 +32,7 @@ using namespace OHOS::STABUtil;
 using namespace testing::ext;
 
 using MAP_STR_STR = std::map<std::string, std::string>;
+namespace {
 static const string KIT_BUNDLE_NAME = "com.ohos.amsst.ConfigurationUpdated";
 static const string KIT_HAP_NAME = "amsConfigurationUpdatedTest";
 static const string MAIN_ABILITY = "MainAbility";
@@ -46,6 +47,7 @@ static constexpr int WAIT_SETUP_TIME = 1;
 static constexpr int WAIT_TEARDOWN_TIME = 1;
 static string g_eventMessage = "";
 static string g_tempDataStr = "";
+}
 
 std::vector<std::string> eventList = {
     g_EVENT_RESP_MAIN_LIFECYCLE,
@@ -74,13 +76,13 @@ public:
         ~AppEventSubscriber(){};
     };
 
-    static sptr<IAbilityManager> g_abilityMs;
+    static sptr<IAbilityManager> abilityMgrService;
     static Event event;
     static std::shared_ptr<AppEventSubscriber> subscriber_;
 };
 
 Event AmsConfigurationUpdatedTest::event = Event();
-sptr<IAbilityManager> AmsConfigurationUpdatedTest::g_abilityMs = nullptr;
+sptr<IAbilityManager> AmsConfigurationUpdatedTest::abilityMgrService = nullptr;
 std::shared_ptr<AmsConfigurationUpdatedTest::AppEventSubscriber> AmsConfigurationUpdatedTest::subscriber_ = nullptr;
 
 void AmsConfigurationUpdatedTest::AppEventSubscriber::OnReceiveEvent(const CommonEventData &data)
@@ -157,15 +159,15 @@ HWTEST_F(AmsConfigurationUpdatedTest, AMS_UpdateConfiguration_0100, Function | M
     MAP_STR_STR params;
     Want want = STAbilityUtil::MakeWant("device", MAIN_ABILITY, KIT_BUNDLE_NAME, params);
     // start first ability
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << "\nStartAbility ====>> " << eCode;
 
     g_tempDataStr = "OnStartOnActive";
     EXPECT_EQ(TestWaitCompleted(event, "OnStartOnActive", MAIN_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
 
     DummyConfiguration mDummyConfiguration("orientation");
-    g_abilityMs->UpdateConfiguration(mDummyConfiguration);
-    g_abilityMs->UpdateConfiguration(mDummyConfiguration);
+    abilityMgrService->UpdateConfiguration(mDummyConfiguration);
+    abilityMgrService->UpdateConfiguration(mDummyConfiguration);
 
     g_tempDataStr = "UpdatedUpdated";
     EXPECT_EQ(TestWaitCompleted(event, "UpdatedUpdated", MAIN_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
@@ -186,15 +188,15 @@ HWTEST_F(AmsConfigurationUpdatedTest, AMS_UpdateConfiguration_0200, Function | M
     MAP_STR_STR params;
     Want want = STAbilityUtil::MakeWant("device", SECOND_ABILITY, KIT_BUNDLE_NAME, params);
     // start first ability
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << "\nStartAbility ====>> " << eCode;
 
     g_tempDataStr = "OnStartOnActive";
     EXPECT_EQ(TestWaitCompleted(event, "OnStartOnActive", SECOND_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
 
     DummyConfiguration mDummyConfiguration("locale");
-    g_abilityMs->UpdateConfiguration(mDummyConfiguration);
-    g_abilityMs->UpdateConfiguration(mDummyConfiguration);
+    abilityMgrService->UpdateConfiguration(mDummyConfiguration);
+    abilityMgrService->UpdateConfiguration(mDummyConfiguration);
 
     g_tempDataStr = "UpdatedUpdated";
     EXPECT_EQ(TestWaitCompleted(event, "UpdatedUpdated", SECOND_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
@@ -215,16 +217,16 @@ HWTEST_F(AmsConfigurationUpdatedTest, AMS_UpdateConfiguration_0300, Function | M
     MAP_STR_STR params;
     Want want = STAbilityUtil::MakeWant("device", THIRD_ABILITY, KIT_BUNDLE_NAME, params);
     // start first ability
-    g_abilityMs = nullptr;
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    abilityMgrService = nullptr;
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << "\nStartAbility ====>> " << eCode;
 
     g_tempDataStr = "OnStartOnActive";
     EXPECT_EQ(TestWaitCompleted(event, "OnStartOnActive", THIRD_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
 
     DummyConfiguration mDummyConfiguration("layout");
-    g_abilityMs->UpdateConfiguration(mDummyConfiguration);
-    g_abilityMs->UpdateConfiguration(mDummyConfiguration);
+    abilityMgrService->UpdateConfiguration(mDummyConfiguration);
+    abilityMgrService->UpdateConfiguration(mDummyConfiguration);
 
     g_tempDataStr = "UpdatedUpdated";
     EXPECT_EQ(TestWaitCompleted(event, "UpdatedUpdated", THIRD_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
@@ -245,15 +247,15 @@ HWTEST_F(AmsConfigurationUpdatedTest, AMS_UpdateConfiguration_0400, Function | M
     MAP_STR_STR params;
     Want want = STAbilityUtil::MakeWant("device", FOURTH_ABILITY, KIT_BUNDLE_NAME, params);
     // start first ability
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << "\nStartAbility ====>> " << eCode;
 
     g_tempDataStr = "OnStartOnActive";
     EXPECT_EQ(TestWaitCompleted(event, "OnStartOnActive", FOURTH_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
 
     DummyConfiguration mDummyConfiguration("density#fontSize#");
-    g_abilityMs->UpdateConfiguration(mDummyConfiguration);
-    g_abilityMs->UpdateConfiguration(mDummyConfiguration);
+    abilityMgrService->UpdateConfiguration(mDummyConfiguration);
+    abilityMgrService->UpdateConfiguration(mDummyConfiguration);
 
     g_tempDataStr = "UpdatedUpdated";
     EXPECT_EQ(TestWaitCompleted(event, "UpdatedUpdated", FOURTH_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
@@ -274,15 +276,15 @@ HWTEST_F(AmsConfigurationUpdatedTest, AMS_UpdateConfiguration_0500, Function | M
     MAP_STR_STR params;
     Want want = STAbilityUtil::MakeWant("device", FIFTH_ABILITY, KIT_BUNDLE_NAME, params);
     // start first ability
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << "\nStartAbility ====>> " << eCode;
 
     g_tempDataStr = "OnStartOnActive";
     EXPECT_EQ(TestWaitCompleted(event, "OnStartOnActive", FIFTH_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
 
     DummyConfiguration mDummyConfiguration("fontSize#density");
-    g_abilityMs->UpdateConfiguration(mDummyConfiguration);
-    g_abilityMs->UpdateConfiguration(mDummyConfiguration);
+    abilityMgrService->UpdateConfiguration(mDummyConfiguration);
+    abilityMgrService->UpdateConfiguration(mDummyConfiguration);
 
     g_tempDataStr = "UpdatedUpdated";
     EXPECT_EQ(TestWaitCompleted(event, "UpdatedUpdated", FIFTH_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
@@ -303,15 +305,15 @@ HWTEST_F(AmsConfigurationUpdatedTest, AMS_UpdateConfiguration_0600, Function | M
     MAP_STR_STR params;
     Want want = STAbilityUtil::MakeWant("device", MAIN_ABILITY, KIT_BUNDLE_NAME, params);
     // start first ability
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << "\nStartAbility ====>> " << eCode;
 
     g_tempDataStr = "OnStartOnActive";
     EXPECT_EQ(TestWaitCompleted(event, "OnStartOnActive", MAIN_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
 
     DummyConfiguration mDummyConfiguration("locale#layout#fontSize#density");
-    g_abilityMs->UpdateConfiguration(mDummyConfiguration);
-    g_abilityMs->UpdateConfiguration(mDummyConfiguration);
+    abilityMgrService->UpdateConfiguration(mDummyConfiguration);
+    abilityMgrService->UpdateConfiguration(mDummyConfiguration);
 
     g_tempDataStr = "OnInactiveOnBackgroundOnStop";
     EXPECT_EQ(TestWaitCompleted(event, "OnInactiveOnBackgroundOnStop", MAIN_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
@@ -337,15 +339,15 @@ HWTEST_F(AmsConfigurationUpdatedTest, AMS_UpdateConfiguration_0700, Function | M
     MAP_STR_STR params;
     Want want = STAbilityUtil::MakeWant("device", SECOND_ABILITY, KIT_BUNDLE_NAME, params);
     // start first ability
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << "\nStartAbility ====>> " << eCode;
 
     g_tempDataStr = "OnStartOnActive";
     EXPECT_EQ(TestWaitCompleted(event, "OnStartOnActive", SECOND_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
 
     DummyConfiguration mDummyConfiguration("layout#fontSize#density");
-    g_abilityMs->UpdateConfiguration(mDummyConfiguration);
-    g_abilityMs->UpdateConfiguration(mDummyConfiguration);
+    abilityMgrService->UpdateConfiguration(mDummyConfiguration);
+    abilityMgrService->UpdateConfiguration(mDummyConfiguration);
 
     g_tempDataStr = "OnInactiveOnBackgroundOnStop";
     EXPECT_EQ(TestWaitCompleted(event, "OnInactiveOnBackgroundOnStop", SECOND_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
@@ -371,14 +373,14 @@ HWTEST_F(AmsConfigurationUpdatedTest, AMS_UpdateConfiguration_0800, Function | M
     MAP_STR_STR params;
     Want want = STAbilityUtil::MakeWant("device", SIXTH_ABILITY, KIT_BUNDLE_NAME, params);
     // start first ability
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << "\nStartAbility ====>> " << eCode;
 
     g_tempDataStr = "OnStartOnActive";
     EXPECT_EQ(TestWaitCompleted(event, "OnStartOnActive", SIXTH_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
 
     DummyConfiguration mDummyConfiguration("orientation");
-    g_abilityMs->UpdateConfiguration(mDummyConfiguration);
+    abilityMgrService->UpdateConfiguration(mDummyConfiguration);
 
     g_tempDataStr = "OnInactiveOnBackgroundOnStop";
     EXPECT_EQ(TestWaitCompleted(event, "OnInactiveOnBackgroundOnStop", SIXTH_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
@@ -404,14 +406,14 @@ HWTEST_F(AmsConfigurationUpdatedTest, AMS_UpdateConfiguration_0900, Function | M
     MAP_STR_STR params;
     Want want = STAbilityUtil::MakeWant("device", SIXTH_ABILITY, KIT_BUNDLE_NAME, params);
     // start first ability
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << "\nStartAbility ====>> " << eCode;
 
     g_tempDataStr = "OnStartOnActive";
     EXPECT_EQ(TestWaitCompleted(event, "OnStartOnActive", SIXTH_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
 
     DummyConfiguration mDummyConfiguration("orientation#locale");
-    g_abilityMs->UpdateConfiguration(mDummyConfiguration);
+    abilityMgrService->UpdateConfiguration(mDummyConfiguration);
 
     g_tempDataStr = "OnInactiveOnBackgroundOnStop";
     EXPECT_EQ(TestWaitCompleted(event, "OnInactiveOnBackgroundOnStop", SIXTH_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
@@ -437,14 +439,14 @@ HWTEST_F(AmsConfigurationUpdatedTest, AMS_UpdateConfiguration_1000, Function | M
     MAP_STR_STR params;
     Want want = STAbilityUtil::MakeWant("device", SIXTH_ABILITY, KIT_BUNDLE_NAME, params);
     // start first ability
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << "\nStartAbility ====>> " << eCode;
 
     g_tempDataStr = "OnStartOnActive";
     EXPECT_EQ(TestWaitCompleted(event, "OnStartOnActive", SIXTH_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
 
     DummyConfiguration mDummyConfiguration("orientation#locale#layout");
-    g_abilityMs->UpdateConfiguration(mDummyConfiguration);
+    abilityMgrService->UpdateConfiguration(mDummyConfiguration);
 
     g_tempDataStr = "OnInactiveOnBackgroundOnStop";
     EXPECT_EQ(TestWaitCompleted(event, "OnInactiveOnBackgroundOnStop", SIXTH_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
@@ -470,14 +472,14 @@ HWTEST_F(AmsConfigurationUpdatedTest, AMS_UpdateConfiguration_1100, Function | M
     MAP_STR_STR params;
     Want want = STAbilityUtil::MakeWant("device", SIXTH_ABILITY, KIT_BUNDLE_NAME, params);
     // start first ability
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << "\nStartAbility ====>> " << eCode;
 
     g_tempDataStr = "OnStartOnActive";
     EXPECT_EQ(TestWaitCompleted(event, "OnStartOnActive", SIXTH_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
 
     DummyConfiguration mDummyConfiguration("orientation#locale#layout#fontSize");
-    g_abilityMs->UpdateConfiguration(mDummyConfiguration);
+    abilityMgrService->UpdateConfiguration(mDummyConfiguration);
 
     g_tempDataStr = "OnInactiveOnBackgroundOnStop";
     EXPECT_EQ(TestWaitCompleted(event, "OnInactiveOnBackgroundOnStop", SIXTH_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
@@ -503,14 +505,14 @@ HWTEST_F(AmsConfigurationUpdatedTest, AMS_UpdateConfiguration_1200, Function | M
     MAP_STR_STR params;
     Want want = STAbilityUtil::MakeWant("device", SIXTH_ABILITY, KIT_BUNDLE_NAME, params);
     // start first ability
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << "\nStartAbility ====>> " << eCode;
 
     g_tempDataStr = "OnStartOnActive";
     EXPECT_EQ(TestWaitCompleted(event, "OnStartOnActive", SIXTH_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
 
     DummyConfiguration mDummyConfiguration("orientation#locale#layout#fontSize#density");
-    g_abilityMs->UpdateConfiguration(mDummyConfiguration);
+    abilityMgrService->UpdateConfiguration(mDummyConfiguration);
 
     g_tempDataStr = "OnInactiveOnBackgroundOnStop";
     EXPECT_EQ(TestWaitCompleted(event, "OnInactiveOnBackgroundOnStop", SIXTH_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
@@ -536,7 +538,7 @@ HWTEST_F(AmsConfigurationUpdatedTest, AMS_UpdateConfiguration_1300, Function | M
     MAP_STR_STR params;
     Want want = STAbilityUtil::MakeWant("device", MAIN_ABILITY, KIT_BUNDLE_NAME, params);
     // start first ability
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << "\nStartAbility ====>> " << eCode;
 
     g_tempDataStr = "OnStartOnActive";
@@ -544,17 +546,17 @@ HWTEST_F(AmsConfigurationUpdatedTest, AMS_UpdateConfiguration_1300, Function | M
 
     Want wantEntity;
     wantEntity.AddEntity(Want::FLAG_HOME_INTENT_FROM_SYSTEM);
-    STAbilityUtil::StartAbility(wantEntity, g_abilityMs);
+    STAbilityUtil::StartAbility(wantEntity, abilityMgrService);
     GTEST_LOG_(INFO) << "====>Want::FLAG_HOME_INTENT_FROM_SYSTEM";
     DummyConfiguration mDummyConfiguration("orientation");
-    g_abilityMs->UpdateConfiguration(mDummyConfiguration);
-    g_abilityMs->UpdateConfiguration(mDummyConfiguration);
-    g_abilityMs->UpdateConfiguration(mDummyConfiguration);
-    g_abilityMs->UpdateConfiguration(mDummyConfiguration);
-    g_abilityMs->UpdateConfiguration(mDummyConfiguration);
+    abilityMgrService->UpdateConfiguration(mDummyConfiguration);
+    abilityMgrService->UpdateConfiguration(mDummyConfiguration);
+    abilityMgrService->UpdateConfiguration(mDummyConfiguration);
+    abilityMgrService->UpdateConfiguration(mDummyConfiguration);
+    abilityMgrService->UpdateConfiguration(mDummyConfiguration);
 
     want = STAbilityUtil::MakeWant("device", MAIN_ABILITY, KIT_BUNDLE_NAME, params);
-    eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << "\nStartAbility S ====>> " << eCode;
 
     g_tempDataStr = "OnInactiveOnBackgroundOnForegroundOnActive";
@@ -578,20 +580,19 @@ HWTEST_F(AmsConfigurationUpdatedTest, AMS_UpdateConfiguration_1400, Function | M
     MAP_STR_STR params;
     Want want = STAbilityUtil::MakeWant("device", MAIN_ABILITY, KIT_BUNDLE_NAME, params);
     // start first ability
-    ErrCode eCode = STAbilityUtil::StartAbility(want, g_abilityMs, WAIT_TIME);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << "\nStartAbility ====>> " << eCode;
 
     g_tempDataStr = "OnStartOnActive";
     EXPECT_EQ(TestWaitCompleted(event, "OnStartOnActive", MAIN_ABILITY_CODE), 0);
 
     DummyConfiguration mDummyConfiguration("orientation#locale");
-    g_abilityMs->UpdateConfiguration(mDummyConfiguration);
-    g_abilityMs->UpdateConfiguration(mDummyConfiguration);
+    abilityMgrService->UpdateConfiguration(mDummyConfiguration);
+    abilityMgrService->UpdateConfiguration(mDummyConfiguration);
 
     g_tempDataStr = "UpdatedUpdated";
     EXPECT_EQ(TestWaitCompleted(event, "UpdatedUpdated", MAIN_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
 
     GTEST_LOG_(INFO) << "\nAmsConfigurationUpdatedTest AMS_UpdateConfiguration_1400 end=========<";
 }
-
 }  // namespace

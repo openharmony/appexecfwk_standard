@@ -31,6 +31,7 @@
         {
             "name": "AmsStServiceAbilityC4",
             "icon": "$media:snowball",
+            "srcLanguage": "c++",
             "label": "AmsStServiceAbilityC4 Ability",
             "launchType": "standard",
             "orientation": "unspecified",
