@@ -942,7 +942,7 @@ ErrCode FormMgrAdapter::HandleEventNotify(const std::string &providerKey, const 
     size_t position = providerKey.find(Constants::NAME_DELIMITER);
     std::string bundleName = providerKey.substr(0, position);
     std::string abilityName = providerKey.substr(position + Constants::NAME_DELIMITER.size());
-    sptr<IAbilityConnection> formEventNotifyConnection = new FormEventNotifyConnection(formIdsByProvider, 
+    sptr<IAbilityConnection> formEventNotifyConnection = new FormEventNotifyConnection(formIdsByProvider,
         formVisibleType, bundleName, abilityName);
     Want connectWant;
     connectWant.AddFlags(Want::FLAG_ABILITY_FORM_ENABLED);
