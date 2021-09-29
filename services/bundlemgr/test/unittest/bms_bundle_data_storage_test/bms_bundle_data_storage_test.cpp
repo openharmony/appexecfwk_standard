@@ -289,37 +289,27 @@ void BmsBundleDataStorageTest::CheckBundleDeleted(const InnerBundleInfo &innerBu
 void BmsBundleDataStorageTest::CheckInvalidPropDeserialize(const nlohmann::json infoJson, const InfoType infoType) const
 {
     APP_LOGI("deserialize infoJson = %{public}s", infoJson.dump().c_str());
-    bool throwError = false;
     nlohmann::json innerBundleInfoJson;
     nlohmann::json bundleInfoJson = innerBundleInfoJson_.at(BASE_BUNDLE_INFO);
-    try {
-        switch (infoType) {
-            case InfoType::BUNDLE_INFO: {
-                bundleInfoJson = infoJson;
-                BundleInfo bundleInfo = infoJson;
-                break;
-            }
-            case InfoType::APPLICATION_INFO: {
-                bundleInfoJson["appInfo"] = infoJson;
-                ApplicationInfo applicationInfo = infoJson;
-                break;
-            }
-            case InfoType::ABILITY_INFO: {
-                bundleInfoJson["abilityInfos"].push_back(infoJson);
-                AbilityInfo abilityInfo = infoJson;
-                break;
-            }
-            default:
-                break;
-        }
-    } catch (nlohmann::detail::type_error exception) {
-        APP_LOGI("has a type_error: %{public}s", exception.what());
-        throwError = true;
-    }
 
-    EXPECT_TRUE(throwError);
-    if (!throwError) {
-        GTEST_LOG_(ERROR) << "not catch any type_error";
+    switch (infoType) {
+        case InfoType::BUNDLE_INFO: {
+            bundleInfoJson = infoJson;
+            BundleInfo bundleInfo = infoJson;
+            break;
+        }
+        case InfoType::APPLICATION_INFO: {
+            bundleInfoJson["appInfo"] = infoJson;
+            ApplicationInfo applicationInfo = infoJson;
+            break;
+        }
+        case InfoType::ABILITY_INFO: {
+            bundleInfoJson["abilityInfos"].push_back(infoJson);
+            AbilityInfo abilityInfo = infoJson;
+            break;
+        }
+        default:
+            break;
     }
 
     innerBundleInfoJson["baseBundleInfo"] = bundleInfoJson;

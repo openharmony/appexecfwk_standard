@@ -14,8 +14,6 @@
 import("//foundation/appexecfwk/standard/appexecfwk.gni")
 
 config("bms_module_test_config") {
-  cflags_cc = [ "-fexceptions" ]
-
   include_dirs = [
     "mock/include",
     "//foundation/aafwk/standard/interfaces/innerkits/want/include/ohos/aafwk/content/",
