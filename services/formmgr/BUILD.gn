@@ -22,7 +22,6 @@ config("formmgr_config") {
 
     #    "//base/miscservices/time/interfaces/innerkits/include",
   ]
-  cflags_cc = [ "-fexceptions" ]
 }
 
 group("fms_target") {
