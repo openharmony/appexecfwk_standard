@@ -30,7 +30,7 @@ using namespace OHOS::AppExecFwk;
 using namespace OHOS::AppExecFwk::JsonConstants;
 
 namespace {
-const std::string NORMAL_BUNDLE_NAME {"com.example.test"};
+const std::string NORMAL_BUNDLE_NAME{"com.example.test"};
 }  // namespace
 
 class BmsBundleDataStorageDatabaseTest : public testing::Test {
@@ -117,7 +117,9 @@ protected:
                     "visible": false,
                     "labelId": 1,
                     "descriptionId": 1,
-                    "iconId": 1
+                    "iconId": 1,
+                    "srcLanguage": "C++",
+                    "srcPath": ""
                 }
             },
             "baseApplicationInfo": {
@@ -344,37 +346,27 @@ void BmsBundleDataStorageDatabaseTest::CheckInvalidPropDeserialize(
     const nlohmann::json infoJson, const InfoType infoType) const
 {
     APP_LOGI("deserialize infoJson = %{public}s", infoJson.dump().c_str());
-    bool throwError = false;
     nlohmann::json innerBundleInfoJson;
     nlohmann::json bundleInfoJson = innerBundleInfoJson_.at(BASE_BUNDLE_INFO);
-    try {
-        switch (infoType) {
-            case InfoType::BUNDLE_INFO: {
-                bundleInfoJson = infoJson;
-                BundleInfo bundleInfo = infoJson;
-                break;
-            }
-            case InfoType::APPLICATION_INFO: {
-                bundleInfoJson["appInfo"] = infoJson;
-                ApplicationInfo applicationInfo = infoJson;
-                break;
-            }
-            case InfoType::ABILITY_INFO: {
-                bundleInfoJson["abilityInfos"].push_back(infoJson);
-                AbilityInfo abilityInfo = infoJson;
-                break;
-            }
-            default:
-                break;
-        }
-    } catch (nlohmann::detail::type_error exception) {
-        APP_LOGI("has a type_error: %{public}s", exception.what());
-        throwError = true;
-    }
 
-    EXPECT_TRUE(throwError);
-    if (!throwError) {
-        GTEST_LOG_(ERROR) << "not catch any type_error";
+    switch (infoType) {
+        case InfoType::BUNDLE_INFO: {
+            bundleInfoJson = infoJson;
+            BundleInfo bundleInfo = infoJson;
+            break;
+        }
+        case InfoType::APPLICATION_INFO: {
+            bundleInfoJson["appInfo"] = infoJson;
+            ApplicationInfo applicationInfo = infoJson;
+            break;
+        }
+        case InfoType::ABILITY_INFO: {
+            bundleInfoJson["abilityInfos"].push_back(infoJson);
+            AbilityInfo abilityInfo = infoJson;
+            break;
+        }
+        default:
+            break;
     }
 
     innerBundleInfoJson["baseBundleInfo"] = bundleInfoJson;
