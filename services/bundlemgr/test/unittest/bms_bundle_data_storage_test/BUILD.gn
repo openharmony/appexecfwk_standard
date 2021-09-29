@@ -22,8 +22,6 @@ config("private_config") {
     "${services_path}/bundlemgr/test/mock/include",
     "//third_party/json/include",
   ]
-
-  cflags_cc = [ "-fexceptions" ]
 }
 
 module_output_path = "appexecfwk_standard/bundlemgrservice"
