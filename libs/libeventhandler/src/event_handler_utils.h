@@ -40,11 +40,12 @@ inline const int32_t INFINITE_TIMEOUT = -1;
 // Help to convert time point into delay time from now.
 static inline int64_t TimePointToTimeOut(const InnerEvent::TimePoint &when)
 {
-    if (when <= InnerEvent::Clock::now()) {
+    InnerEvent::TimePoint now = InnerEvent::Clock::now();
+    if (when <= now) {
         return 0;
     }
 
-    auto duration = when - InnerEvent::Clock::now();
+    auto duration = when - now;
     return std::chrono::duration_cast<std::chrono::nanoseconds>(duration).count();
 }
 
