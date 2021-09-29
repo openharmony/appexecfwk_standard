@@ -72,7 +72,6 @@ config("test_config") {
   ]
 
   # enable exception
-  cflags_cc = [ "-fexceptions" ]
 
   configs = [ "//foundation/appexecfwk/standard/services/appmgr:appmgr_config" ]
 }
