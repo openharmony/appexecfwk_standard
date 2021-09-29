@@ -46,8 +46,6 @@ config("bundlemgr_parse_config") {
     "//third_party/zlib",
     "//utils/native/base/include",
   ]
-
-  cflags_cc = [ "-fexceptions" ]
 }
 
 bundlemgr_parser_common_config = [
