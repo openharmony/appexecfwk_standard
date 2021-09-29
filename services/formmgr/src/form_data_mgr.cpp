@@ -1089,7 +1089,7 @@ void FormDataMgr::ParseIntervalConfig(FormRecord &record, const int configDurati
  * @param record The form record.
  * @param info form item info.
  */
-void FormDataMgr::ParseAtTimerConfig(FormRecord &record, const FormItemInfo &info) const 
+void FormDataMgr::ParseAtTimerConfig(FormRecord &record, const FormItemInfo &info) const
 {
     record.isEnableUpdate = false;
     record.updateDuration = 0;
@@ -1099,7 +1099,7 @@ void FormDataMgr::ParseAtTimerConfig(FormRecord &record, const FormItemInfo &inf
         return;
     }
 
-    std::vector<std::string> temp = FormUtil::StringSplit(configAtTime, Constants::TIME_DELIMETER);   
+    std::vector<std::string> temp = FormUtil::StringSplit(configAtTime, Constants::TIME_DELIMETER);
     if (temp.size() != Constants::UPDATE_AT_CONFIG_COUNT) {
         APP_LOGE("%{public}s, invalid config", __func__);
         return;
@@ -1108,8 +1108,7 @@ void FormDataMgr::ParseAtTimerConfig(FormRecord &record, const FormItemInfo &inf
     int min = -1;
     hour = std::stoi(temp[0]);
     min = std::stoi(temp[1]);
-
-    if (hour < Constants::MIN_TIME || hour > Constants::MAX_HOUR || min < Constants::MIN_TIME || min > 
+    if (hour < Constants::MIN_TIME || hour > Constants::MAX_HOUR || min < Constants::MIN_TIME || min >
         Constants::MAX_MININUTE) {
         APP_LOGE("%{public}s, time is invalid", __func__);
         return;
