@@ -1106,13 +1106,9 @@ void FormDataMgr::ParseAtTimerConfig(FormRecord &record, const FormItemInfo &inf
     }
     int hour = -1;
     int min = -1;
-    try {
-        hour = std::stoi(temp[0]);
-        min = std::stoi(temp[1]);
-    } catch (const std::exception& e) {
-        APP_LOGE("%{public}s, failed to stoi.", __func__);
-    }    
-    
+    hour = std::stoi(temp[0]);
+    min = std::stoi(temp[1]);
+
     if (hour < Constants::MIN_TIME || hour > Constants::MAX_HOUR || min < Constants::MIN_TIME || min > 
         Constants::MAX_MININUTE) {
         APP_LOGE("%{public}s, time is invalid", __func__);

@@ -175,17 +175,11 @@ long FormUtil::GetMillisecondFromTm(struct tm &tmAtTime)
  */
 std::vector<std::string> FormUtil::StringSplit(const std::string &in, const std::string &delim)
 {
-    std::vector<std::string> vEmpty;
-    try {
-        std::regex reg { delim };
-        return std::vector<std::string> {
-            std::sregex_token_iterator(in.begin(), in.end(), reg, -1),
-            std::sregex_token_iterator()
-        };
-    } catch (const std::exception& e) {
-        APP_LOGE("%{public}s, failed to split string.", __func__);
-    }
-    return vEmpty;
+    std::regex reg { delim };
+    return std::vector<std::string> {
+        std::sregex_token_iterator(in.begin(), in.end(), reg, -1),
+        std::sregex_token_iterator()
+    };
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS
