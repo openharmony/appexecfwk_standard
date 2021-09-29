@@ -211,7 +211,6 @@ void FormSysEventReceiver::HandleBundleDataCleared(const std::string &bundleName
     for (int64_t formId : reCreateForms) {
         ReCreateForm(formId);
     }
-    
     // as form host data is cleared
     HandleFormHostDataCleared(uid);
 }
