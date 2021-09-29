@@ -40,7 +40,7 @@ const std::string KEY_BUNDLE_NAME = "bundleName";
  * @brief Receiver Constructor.
  * @param subscriberInfo Subscriber info.
  */
-FormSysEventReceiver::FormSysEventReceiver(const EventFwk::CommonEventSubscribeInfo &subscriberInfo) 
+FormSysEventReceiver::FormSysEventReceiver(const EventFwk::CommonEventSubscribeInfo &subscriberInfo)
     : EventFwk::CommonEventSubscriber(subscriberInfo)
 {}
 /**
@@ -104,7 +104,6 @@ void FormSysEventReceiver::HandleProviderUpdated(const std::string &bundleName)
 
     std::vector<int64_t> removedForms;
     std::vector<int64_t> updatedForms;
-    
     for (FormRecord& formRecord : formInfos) {
         APP_LOGI("%{public}s, provider update, formName:%{public}s", __func__, formRecord.formName.c_str());
         int64_t formId = formRecord.formId;
@@ -171,7 +170,7 @@ void FormSysEventReceiver::HandleProviderRemoved(const std::string &bundleName)
     }
 }
 
-bool FormSysEventReceiver::ProviderFormUpdated(const int64_t formId, 
+bool FormSysEventReceiver::ProviderFormUpdated(const int64_t formId,
     const FormRecord &formRecord, const std::vector<FormInfo> &targetForms)
 {
     APP_LOGI("%{public}s start", __func__);
