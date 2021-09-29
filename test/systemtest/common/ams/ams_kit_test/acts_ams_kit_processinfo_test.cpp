@@ -34,7 +34,7 @@
 #include "module_test_dump_util.h"
 #include "sa_mgr_client.h"
 #include "system_ability_definition.h"
-#include "system_test_ability_util.h"
+#include "st_ability_util.h"
 #include "kit_test_common_info.h"
 #include "testConfigParser.h"
 

@@ -30,6 +30,7 @@
         "abilities": [{
             "name": "MainAbility",
             "icon": "$media:snowball",
+            "srcLanguage": "c++",
             "label": "Main Ability",
             "launchType": "standard",
             "orientation": "unspecified",

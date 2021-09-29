@@ -2611,7 +2611,6 @@ HWTEST_F(ActsBmsKitSystemTest, GetHapModuleInfo_0500, Function | MediumTest | Le
         EXPECT_TRUE(queryResult);
         EXPECT_EQ(hapModuleInfo.name, "com.ohos.settings");
         EXPECT_EQ(hapModuleInfo.moduleName, "entry");
-        EXPECT_EQ(hapModuleInfo.label, "$string:app_name");
         CommonTool commonTool;
         EXPECT_EQ(commonTool.VectorToStr(hapModuleInfo.deviceTypes), "phone");
 

@@ -27,8 +27,8 @@ ohos_systemtest("ams_app_process_manage_test") {
   sources = [
     "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/src/event.cpp",
     "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/src/module_test_dump_util.cpp",
+    "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/src/st_ability_util.cpp",
     "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/src/stoperator.cpp",
-    "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/src/system_test_ability_util.cpp",
     "ams_app_process_manage_test.cpp",
   ]
 

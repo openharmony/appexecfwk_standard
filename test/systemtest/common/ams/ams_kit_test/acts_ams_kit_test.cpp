@@ -34,7 +34,7 @@
 #include "module_test_dump_util.h"
 #include "sa_mgr_client.h"
 #include "system_ability_definition.h"
-#include "system_test_ability_util.h"
+#include "st_ability_util.h"
 #include "kit_test_common_info.h"
 #include "testConfigParser.h"
 
@@ -60,7 +60,7 @@ static const std::string abilityManagerName = "KitTestAbilityManager";
 static const std::string abilityManagerSecondName = "KitTestAbilityManagerSecond";
 static const std::string terminatePageAbility = "requ_page_ability_terminate";
 static const std::string eventNameAbilityN1 = "resp_st_page_ability_callback";
-static const std::string launcherBundleName = "com.ix.launcher";
+static const std::string launcherBundleName = "com.ohos.launcher";
 static const std::string systemUiBundle = "com.ohos.systemui";
 constexpr int WAIT_TIME = 3 * 1000;
 constexpr int WAIT_LAUNCHER_OK = 5 * 1000;
@@ -111,7 +111,7 @@ Event ActsAmsKitTest::event = Event();
 Event ActsAmsKitTest::abilityEvent = Event();
 sptr<IAppMgr> ActsAmsKitTest::appMs = nullptr;
 sptr<IAbilityManager> ActsAmsKitTest::abilityMs = nullptr;
-StressTestLevel ActsAmsKitTest::stLevel_{};
+StressTestLevel ActsAmsKitTest::stLevel_ {};
 std::shared_ptr<ActsAmsKitTest::AppEventSubscriber> ActsAmsKitTest::subscriber_ = nullptr;
 
 void ActsAmsKitTest::AppEventSubscriber::OnReceiveEvent(const CommonEventData &data)
