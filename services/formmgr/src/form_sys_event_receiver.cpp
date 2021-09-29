@@ -40,7 +40,7 @@ const std::string KEY_BUNDLE_NAME = "bundleName";
  * @brief Receiver Constructor.
  * @param subscriberInfo Subscriber info.
  */
-FormSysEventReceiver::FormSysEventReceiver(const EventFwk::CommonEventSubscribeInfo &subscriberInfo) 
+FormSysEventReceiver::FormSysEventReceiver(const EventFwk::CommonEventSubscribeInfo &subscriberInfo)
     : EventFwk::CommonEventSubscriber(subscriberInfo)
 {}
 /**
@@ -53,7 +53,7 @@ void FormSysEventReceiver::OnReceiveEvent(const EventFwk::CommonEventData &event
     std::string action = want.GetAction();
     std::string bundleName = want.GetStringParam(KEY_BUNDLE_NAME);
     if (action.empty() || bundleName.empty()) {
-        APP_LOGE("%{public}s failed, invalid param, action: %{public}s, bundleName: %{public}s", 
+        APP_LOGE("%{public}s failed, invalid param, action: %{public}s, bundleName: %{public}s",
             __func__, action.c_str(), bundleName.c_str());
         return;
     }
@@ -104,7 +104,6 @@ void FormSysEventReceiver::HandleProviderUpdated(const std::string &bundleName)
 
     std::vector<int64_t> removedForms;
     std::vector<int64_t> updatedForms;
-    
     for (FormRecord& formRecord : formInfos) {
         APP_LOGI("%{public}s, provider update, formName:%{public}s", __func__, formRecord.formName.c_str());
         int64_t formId = formRecord.formId;
@@ -171,7 +170,7 @@ void FormSysEventReceiver::HandleProviderRemoved(const std::string &bundleName)
     }
 }
 
-bool FormSysEventReceiver::ProviderFormUpdated(const int64_t formId, 
+bool FormSysEventReceiver::ProviderFormUpdated(const int64_t formId,
     const FormRecord &formRecord, const std::vector<FormInfo> &targetForms)
 {
     APP_LOGI("%{public}s start", __func__);
@@ -190,7 +189,7 @@ bool FormSysEventReceiver::ProviderFormUpdated(const int64_t formId,
 
         FormBmsHelper::GetInstance().NotifyModuleNotRemovable(formRecord.bundleName, formRecord.moduleName);
         FormTimerCfg timerCfg;
-        GetTimerCfg(updatedForm.updateEnabled, updatedForm.updateDuration, 
+        GetTimerCfg(updatedForm.updateEnabled, updatedForm.updateDuration,
             updatedForm.scheduledUpateTime, timerCfg);
         HandleTimerUpdate(formId, formRecord, timerCfg);
         FormDataMgr::GetInstance().SetVersionUpgrade(formId, true);
@@ -211,14 +210,13 @@ void FormSysEventReceiver::HandleBundleDataCleared(const std::string &bundleName
     for (int64_t formId : reCreateForms) {
         ReCreateForm(formId);
     }
-    
     // as form host data is cleared
     HandleFormHostDataCleared(uid);
 }
 void FormSysEventReceiver::HandleFormHostDataCleared(const int uid)
 {
     APP_LOGD("%{public}s, uid:%{public}d", __func__, uid);
-    std::map<int64_t, bool> removedFormsMap;    
+    std::map<int64_t, bool> removedFormsMap;
     // clear formDBRecord
     ClearFormDBRecordData(uid, removedFormsMap);
 
@@ -268,7 +266,7 @@ void FormSysEventReceiver::ClearTempFormRecordData(const int uid, std::map<int64
         removedFormsMap.insert(foundFormsMap.begin(), foundFormsMap.end());
     }
 }
-void FormSysEventReceiver::BatchDeleteNoHostDBForms(const int uid, std::map<FormIdKey, 
+void FormSysEventReceiver::BatchDeleteNoHostDBForms(const int uid, std::map<FormIdKey,
     std::set<int64_t>> &noHostFormDbMap, std::map<int64_t, bool> &removedFormsMap)
 {
     std::set<FormIdKey> removableModuleSet;
@@ -280,7 +278,7 @@ void FormSysEventReceiver::BatchDeleteNoHostDBForms(const int uid, std::map<Form
         int result = FormProviderMgr::GetInstance().NotifyProviderFormsBatchDelete(bundleName, abilityName, formIds);
         if (result != ERR_OK) {
             APP_LOGE("%{public}s error, NotifyProviderFormsBatchDelete failed! bundleName:%{public}s,\
-            abilityName:%{public}s", 
+            abilityName:%{public}s",
                 __func__, bundleName.c_str(), abilityName.c_str());
             for (int64_t formId : formIds) {
                 FormDBInfo dbInfo;
@@ -320,7 +318,7 @@ void FormSysEventReceiver::BatchDeleteNoHostDBForms(const int uid, std::map<Form
  * @param noHostTempFormsMap no host temp forms.
  * @param foundFormsMap Form Id list.
  */
-void FormSysEventReceiver::BatchDeleteNoHostTempForms(const int uid, std::map<FormIdKey, 
+void FormSysEventReceiver::BatchDeleteNoHostTempForms(const int uid, std::map<FormIdKey,
     std::set<int64_t>> &noHostTempFormsMap, std::map<int64_t, bool> &foundFormsMap)
 {
     for (const auto &element : noHostTempFormsMap) {
@@ -331,7 +329,7 @@ void FormSysEventReceiver::BatchDeleteNoHostTempForms(const int uid, std::map<Fo
         int result = FormProviderMgr::GetInstance().NotifyProviderFormsBatchDelete(bundleName, abilityName, formIds);
         if (result != ERR_OK) {
             APP_LOGE("%{public}s error, NotifyProviderFormsBatchDelete failed! bundleName:%{public}s,\
-            abilityName:%{public}s", 
+            abilityName:%{public}s",
                 __func__, bundleName.c_str(), abilityName.c_str());
             for (int64_t formId : formIds) {
                 FormDataMgr::GetInstance().AddFormUserUid(formId, uid);
@@ -364,13 +362,13 @@ void FormSysEventReceiver::ReCreateForm(const int64_t formId)
     reCreateRecord.formTempFlg = record.formTempFlg;
     reCreateRecord.isInited = record.isInited;
     reCreateRecord.versionUpgrade = record.versionUpgrade;
-    
+
     Want want;
     FormUtil::CreateFormWant(reCreateRecord.formName, reCreateRecord.specification, reCreateRecord.formTempFlg, want);
     want.SetParam(Constants::RECREATE_FORM_KEY, true);
     FormProviderMgr::GetInstance().ConnectAmsForRefresh(formId, reCreateRecord, want, false);
 }
-void FormSysEventReceiver::GetTimerCfg(const bool updateEnabled, 
+void FormSysEventReceiver::GetTimerCfg(const bool updateEnabled,
     const int updateDuration, const std::string &configUpdateAt, FormTimerCfg& cfg)
 {
     APP_LOGI("%{public}s start", __func__);
@@ -399,22 +397,16 @@ void FormSysEventReceiver::GetTimerCfg(const bool updateEnabled,
         }
         APP_LOGI("%{public}s,update at timer updateAt:%{public}s", __func__, configUpdateAt.c_str());
 
-        std::vector<std::string> temp = FormUtil::StringSplit(configUpdateAt, Constants::TIME_DELIMETER);   
+        std::vector<std::string> temp = FormUtil::StringSplit(configUpdateAt, Constants::TIME_DELIMETER);
         if (temp.size() != Constants::UPDATE_AT_CONFIG_COUNT) {
             APP_LOGE("%{public}s, invalid config", __func__);
             return;
         }
         int hour = -1;
         int min = -1;
-        try {
-            hour = std::stoi(temp[0]);
-            min = std::stoi(temp[1]);
-        } catch (const std::exception& e) {
-            APP_LOGE("%{public}s, failed to stoi.", __func__);
-            return;
-        }    
-        
-        if (hour < Constants::MIN_TIME || hour > Constants::MAX_HOUR || min < Constants::MIN_TIME || min > 
+        hour = std::stoi(temp[0]);
+        min = std::stoi(temp[1]);
+        if (hour < Constants::MIN_TIME || hour > Constants::MAX_HOUR || min < Constants::MIN_TIME || min >
             Constants::MAX_MININUTE) {
             APP_LOGE("%{public}s, time is invalid", __func__);
             return;
@@ -427,7 +419,7 @@ void FormSysEventReceiver::GetTimerCfg(const bool updateEnabled,
     }
 }
 
-void FormSysEventReceiver::HandleTimerUpdate(const int64_t formId, 
+void FormSysEventReceiver::HandleTimerUpdate(const int64_t formId,
     const FormRecord &record, const FormTimerCfg &timerCfg)
 {
     // both disable
@@ -444,13 +436,13 @@ void FormSysEventReceiver::HandleTimerUpdate(const int64_t formId,
 
     // disable to enable
     if (!record.isEnableUpdate && timerCfg.enableUpdate) {
-        FormDataMgr::GetInstance().SetUpdateInfo(formId, true, 
+        FormDataMgr::GetInstance().SetUpdateInfo(formId, true,
             timerCfg.updateDuration, timerCfg.updateAtHour, timerCfg.updateAtMin);
         if (timerCfg.updateDuration > 0) {
             APP_LOGI("%{public}s, add interval timer:%{public}" PRId64 "", __func__, timerCfg.updateDuration);
             FormTimerMgr::GetInstance().AddFormTimer(formId, timerCfg.updateDuration);
         } else {
-            APP_LOGI("%{public}s, add at timer:%{public}d, %{public}d", __func__, 
+            APP_LOGI("%{public}s, add at timer:%{public}d, %{public}d", __func__,
                 timerCfg.updateAtHour, timerCfg.updateAtMin);
             FormTimerMgr::GetInstance().AddFormTimer(formId, timerCfg.updateAtHour, timerCfg.updateAtMin);
         }
@@ -486,7 +478,7 @@ void FormSysEventReceiver::HandleTimerUpdate(const int64_t formId,
         }
     }
 
-    FormDataMgr::GetInstance().SetUpdateInfo(formId, true, 
+    FormDataMgr::GetInstance().SetUpdateInfo(formId, true,
         timerCfg.updateDuration, timerCfg.updateAtHour, timerCfg.updateAtMin);
     FormTimerMgr::GetInstance().UpdateFormTimer(formId, type, timerCfg);
 }
