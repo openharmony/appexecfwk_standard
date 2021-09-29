@@ -190,7 +190,7 @@ bool FormSysEventReceiver::ProviderFormUpdated(const int64_t formId,
 
         FormBmsHelper::GetInstance().NotifyModuleNotRemovable(formRecord.bundleName, formRecord.moduleName);
         FormTimerCfg timerCfg;
-        GetTimerCfg(updatedForm.updateEnabled, updatedForm.updateDuration, 
+        GetTimerCfg(updatedForm.updateEnabled, updatedForm.updateDuration,
             updatedForm.scheduledUpateTime, timerCfg);
         HandleTimerUpdate(formId, formRecord, timerCfg);
         FormDataMgr::GetInstance().SetVersionUpgrade(formId, true);
@@ -444,7 +444,7 @@ void FormSysEventReceiver::HandleTimerUpdate(const int64_t formId,
             APP_LOGI("%{public}s, add interval timer:%{public}" PRId64 "", __func__, timerCfg.updateDuration);
             FormTimerMgr::GetInstance().AddFormTimer(formId, timerCfg.updateDuration);
         } else {
-            APP_LOGI("%{public}s, add at timer:%{public}d, %{public}d", __func__, 
+            APP_LOGI("%{public}s, add at timer:%{public}d, %{public}d", __func__,
                 timerCfg.updateAtHour, timerCfg.updateAtMin);
             FormTimerMgr::GetInstance().AddFormTimer(formId, timerCfg.updateAtHour, timerCfg.updateAtMin);
         }
