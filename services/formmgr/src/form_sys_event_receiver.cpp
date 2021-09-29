@@ -370,7 +370,7 @@ void FormSysEventReceiver::ReCreateForm(const int64_t formId)
     want.SetParam(Constants::RECREATE_FORM_KEY, true);
     FormProviderMgr::GetInstance().ConnectAmsForRefresh(formId, reCreateRecord, want, false);
 }
-void FormSysEventReceiver::GetTimerCfg(const bool updateEnabled, 
+void FormSysEventReceiver::GetTimerCfg(const bool updateEnabled,
     const int updateDuration, const std::string &configUpdateAt, FormTimerCfg& cfg)
 {
     APP_LOGI("%{public}s start", __func__);
@@ -399,7 +399,7 @@ void FormSysEventReceiver::GetTimerCfg(const bool updateEnabled,
         }
         APP_LOGI("%{public}s,update at timer updateAt:%{public}s", __func__, configUpdateAt.c_str());
 
-        std::vector<std::string> temp = FormUtil::StringSplit(configUpdateAt, Constants::TIME_DELIMETER);   
+        std::vector<std::string> temp = FormUtil::StringSplit(configUpdateAt, Constants::TIME_DELIMETER);
         if (temp.size() != Constants::UPDATE_AT_CONFIG_COUNT) {
             APP_LOGE("%{public}s, invalid config", __func__);
             return;
@@ -408,8 +408,7 @@ void FormSysEventReceiver::GetTimerCfg(const bool updateEnabled,
         int min = -1;
         hour = std::stoi(temp[0]);
         min = std::stoi(temp[1]);
-
-        if (hour < Constants::MIN_TIME || hour > Constants::MAX_HOUR || min < Constants::MIN_TIME || min > 
+        if (hour < Constants::MIN_TIME || hour > Constants::MAX_HOUR || min < Constants::MIN_TIME || min >
             Constants::MAX_MININUTE) {
             APP_LOGE("%{public}s, time is invalid", __func__);
             return;
