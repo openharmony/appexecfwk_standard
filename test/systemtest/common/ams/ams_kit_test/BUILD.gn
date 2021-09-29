@@ -27,8 +27,8 @@ ohos_systemtest("ams_kit_test") {
   sources = [
     "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/src/event.cpp",
     "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/src/module_test_dump_util.cpp",
+    "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/src/st_ability_util.cpp",
     "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/src/stoperator.cpp",
-    "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/src/system_test_ability_util.cpp",
     "acts_ams_kit_test.cpp",
   ]
   configs = [
@@ -70,8 +70,8 @@ ohos_systemtest("ams_kit_service_ability_test") {
   sources = [
     "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/src/event.cpp",
     "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/src/module_test_dump_util.cpp",
+    "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/src/st_ability_util.cpp",
     "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/src/stoperator.cpp",
-    "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/src/system_test_ability_util.cpp",
     "acts_ams_kit_service_ability_test.cpp",
   ]
   configs = [
@@ -113,8 +113,8 @@ ohos_systemtest("ams_kit_data_test") {
   sources = [
     "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/src/event.cpp",
     "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/src/module_test_dump_util.cpp",
+    "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/src/st_ability_util.cpp",
     "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/src/stoperator.cpp",
-    "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/src/system_test_ability_util.cpp",
     "acts_ams_kit_data_test.cpp",
   ]
   configs = [
@@ -160,8 +160,8 @@ ohos_systemtest("ams_kit_a_test") {
   sources = [
     "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/src/event.cpp",
     "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/src/module_test_dump_util.cpp",
+    "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/src/st_ability_util.cpp",
     "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/src/stoperator.cpp",
-    "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/src/system_test_ability_util.cpp",
     "acts_ams_kit_a_test.cpp",
   ]
   configs = [
@@ -205,8 +205,8 @@ ohos_systemtest("ams_kit_want_test") {
   sources = [
     "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/src/event.cpp",
     "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/src/module_test_dump_util.cpp",
+    "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/src/st_ability_util.cpp",
     "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/src/stoperator.cpp",
-    "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/src/system_test_ability_util.cpp",
     "acts_ams_kit_want_test.cpp",
   ]
   configs = [
@@ -249,8 +249,8 @@ ohos_systemtest("ams_kit_skills_test") {
   sources = [
     "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/src/event.cpp",
     "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/src/module_test_dump_util.cpp",
+    "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/src/st_ability_util.cpp",
     "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/src/stoperator.cpp",
-    "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/src/system_test_ability_util.cpp",
     "acts_ams_kit_skills_test.cpp",
   ]
   configs = [
@@ -293,8 +293,8 @@ ohos_systemtest("ams_kit_lifecycle_test") {
   sources = [
     "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/src/event.cpp",
     "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/src/module_test_dump_util.cpp",
+    "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/src/st_ability_util.cpp",
     "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/src/stoperator.cpp",
-    "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/src/system_test_ability_util.cpp",
     "acts_ams_kit_lifecycle_test.cpp",
   ]
   configs = [
@@ -337,8 +337,8 @@ ohos_systemtest("ams_kit_processinfo_test") {
   sources = [
     "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/src/event.cpp",
     "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/src/module_test_dump_util.cpp",
+    "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/src/st_ability_util.cpp",
     "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/src/stoperator.cpp",
-    "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/src/system_test_ability_util.cpp",
     "acts_ams_kit_processinfo_test.cpp",
   ]
   configs = [

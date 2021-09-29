@@ -28,6 +28,8 @@
 #include "system_ability_definition.h"
 #include "common_event.h"
 #include "common_event_manager.h"
+#include "status_receiver_host.h"
+#include "iservice_registry.h"
 #include <memory>
 #include <mutex>
 #include <cstdio>
@@ -327,6 +329,21 @@ private:
     static void PullOperatorFromVector(STtools::StOperator &ParentOperator, std::vector<std::string> &vectorOperator);
     static std::shared_ptr<STAbilityUtil> instance_;
     static std::mutex mutex_;
+};
+
+class InstallToolStatusReceiver : public AppExecFwk::StatusReceiverHost {
+public:
+    InstallToolStatusReceiver();
+    virtual ~InstallToolStatusReceiver() override;
+    virtual void OnStatusNotify(const int progress) override;
+    virtual void OnFinished(const int32_t resultCode, const std::string &resultMsg) override;
+    static int TestWaitCompleted(STtools::Event &event, const std::string eventName, const int code, const int timeout = 10);
+    static void TestCompleted(STtools::Event &event, const std::string &eventName, const int code);
+    STtools::Event event_ = STtools::Event();
+
+private:
+    int iProgress_ = 0;
+    DISALLOW_COPY_AND_MOVE(InstallToolStatusReceiver);
 };
 }  // namespace STABUtil
 }  // namespace OHOS

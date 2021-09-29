@@ -116,6 +116,7 @@ static napi_value Init(napi_env env, napi_value exports)
     };
     NAPI_CALL(env, napi_define_properties(env, exports, sizeof(desc) / sizeof(desc[0]), desc));
 
+    napi_value m_classBundleInstaller;
     napi_property_descriptor properties[] = {
         DECLARE_NAPI_FUNCTION("install", Install),
         DECLARE_NAPI_FUNCTION("uninstall", Uninstall),
@@ -128,7 +129,8 @@ static napi_value Init(napi_env env, napi_value exports)
             nullptr,
             sizeof(properties) / sizeof(*properties),
             properties,
-            &g_classBundleInstaller));
+            &m_classBundleInstaller));
+    napi_create_reference(env, m_classBundleInstaller, 1, &g_classBundleInstaller);
     HILOG_INFO("-----Init end------");
     return exports;
 }

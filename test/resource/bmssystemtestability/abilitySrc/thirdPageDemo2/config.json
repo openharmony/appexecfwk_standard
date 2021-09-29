@@ -29,6 +29,7 @@
         },
         "abilities": [{
             "name": "PageAbilityDemo",
+            "srcLanguage": "c++",
             "icon": "$media:snowball",
             "label": "bmsThirdBundle_A2 Ability",
             "launchType": "singleton",

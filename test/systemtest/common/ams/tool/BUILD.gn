@@ -30,8 +30,8 @@ ohos_shared_library("system_test_ability_util_lib") {
   sources = [
     "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/src/event.cpp",
     "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/src/module_test_dump_util.cpp",
+    "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/src/st_ability_util.cpp",
     "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/src/stoperator.cpp",
-    "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/src/system_test_ability_util.cpp",
   ]
 
   configs = [

@@ -31,6 +31,7 @@
             {
                 "name": "LifecycleCallbacksAbility",
                 "icon": "$media:snowball",
+                "srcLanguage": "c++",
                 "label": "LifecycleCallbacksAbility Ability",
                 "launchType": "standard",
                 "orientation": "unspecified",

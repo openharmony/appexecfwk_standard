@@ -22,7 +22,7 @@
 #include "ability_manager_errors.h"
 #include "app_mgr_service.h"
 #include "module_test_dump_util.h"
-#include "system_test_ability_util.h"
+#include "st_ability_util.h"
 #include "sa_mgr_client.h"
 #include "system_ability_definition.h"
 #include "common_event.h"
@@ -42,7 +42,7 @@ std::vector<std::string> bundleNameSuffix = {"A", "B", "C"};
 std::string bundleNameBase = "com.ohos.amsst.app";
 std::string hapNameBase = "amsSystemTest";
 std::string abilityNameBase = "AmsStAbility";
-std::string launcherBundle = "com.ix.launcher";
+std::string launcherBundle = "com.ohos.launcher";
 std::string systemUiBundle = "com.ohos.systemui";
 static const std::string DUMP_STACK_LIST = "--stack-list";
 static const std::string DUMP_STACK = "--stack";

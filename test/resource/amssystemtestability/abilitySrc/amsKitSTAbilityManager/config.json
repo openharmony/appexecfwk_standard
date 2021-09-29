@@ -30,6 +30,7 @@
         "abilities": [{
             "name": "KitTestAbilityManagerSecond",
             "icon": "$media:snowflakes",
+            "srcLanguage": "c++",
             "label": "Kittest Ability",
             "launchType": "singletop",
             "orientation": "unspecified",

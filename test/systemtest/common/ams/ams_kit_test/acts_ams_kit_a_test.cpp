@@ -37,7 +37,7 @@
 #include "skills.h"
 #include "stoperator.h"
 #include "system_ability_definition.h"
-#include "system_test_ability_util.h"
+#include "st_ability_util.h"
 #include "testConfigParser.h"
 #include "uri.h"
 namespace {
