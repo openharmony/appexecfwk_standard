@@ -97,6 +97,7 @@ ErrCode FormStorageMgr::LoadFormData(std::vector<InnerFormInfo> &innerFormInfos)
         if (sprintf_s(fileNamePath, FORM_DB_DATA_BASE_FILE_PATH_LEN, "%s/%s",
             FORM_DB_DATA_BASE_FILE_DIR, ptr->d_name) < 0) {
             APP_LOGE("%{public}s,strcat fileNamePath path fail", __func__);
+            closedir(dirptr);
             return ERR_APPEXECFWK_FORM_COMMON_CODE;
         }
         if (!LoadFormDataFile(fileNamePath, innerFormInfos)) {
