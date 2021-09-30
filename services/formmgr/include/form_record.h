@@ -49,7 +49,7 @@ public:
     bool formTempFlg = false;
     std::vector<int> formUserUids;
     bool formVisibleNotify = false;
-    int formVisibleNotifyState;
+    int formVisibleNotifyState = 0;
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS
