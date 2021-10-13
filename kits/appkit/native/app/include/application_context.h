@@ -191,6 +191,7 @@ public:
 protected:
     sptr<IRemoteObject> GetToken() override;
     std::shared_ptr<TaskDispatcherContext> taskDispatcherContext_ = nullptr;
+    std::mutex mutex_;
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS

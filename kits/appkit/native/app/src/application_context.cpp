@@ -21,9 +21,7 @@ namespace OHOS {
 namespace AppExecFwk {
 
 ApplicationContext::ApplicationContext()
-{
-    taskDispatcherContext_ = std::make_shared<TaskDispatcherContext>();
-}
+{}
 ApplicationContext::~ApplicationContext()
 {}
 
@@ -201,8 +199,16 @@ std::shared_ptr<TaskDispatcher> ApplicationContext::CreateParallelTaskDispatcher
 {
     APP_LOGI("ApplicationContext::CreateParallelTaskDispatcher begin");
     if (taskDispatcherContext_ == nullptr) {
-        APP_LOGE("ApplicationContext::CreateParallelTaskDispatcher taskDispatcherContext_ is nullptr");
-        return nullptr;
+        std::lock_guard<std::mutex> lock_l(mutex_);
+        if (taskDispatcherContext_ == nullptr) {
+            taskDispatcherContext_ = std::make_shared<TaskDispatcherContext>();
+            APP_LOGI("ApplicationContext::CreateParallelTaskDispatcher threadpool create");
+        }
+
+        if (taskDispatcherContext_ == nullptr) {
+            APP_LOGE("ApplicationContext::CreateParallelTaskDispatcher taskDispatcherContext_ is nullptr");
+            return nullptr;
+        }
     }
 
     std::shared_ptr<TaskDispatcher> task = taskDispatcherContext_->CreateParallelDispatcher(name, priority);
@@ -223,8 +229,16 @@ std::shared_ptr<TaskDispatcher> ApplicationContext::CreateSerialTaskDispatcher(
 {
     APP_LOGI("ApplicationContext::CreateSerialTaskDispatcher begin");
     if (taskDispatcherContext_ == nullptr) {
-        APP_LOGE("ApplicationContext::CreateSerialTaskDispatcher taskDispatcherContext_ is nullptr");
-        return nullptr;
+        std::lock_guard<std::mutex> lock_l(mutex_);
+        if (taskDispatcherContext_ == nullptr) {
+            taskDispatcherContext_ = std::make_shared<TaskDispatcherContext>();
+            APP_LOGI("ApplicationContext::CreateSerialTaskDispatcher threadpool create");
+        }
+
+        if (taskDispatcherContext_ == nullptr) {
+            APP_LOGE("ApplicationContext::CreateSerialTaskDispatcher taskDispatcherContext_ is nullptr");
+            return nullptr;
+        }
     }
 
     std::shared_ptr<TaskDispatcher> task = taskDispatcherContext_->CreateSerialDispatcher(name, priority);
@@ -243,8 +257,16 @@ std::shared_ptr<TaskDispatcher> ApplicationContext::GetGlobalTaskDispatcher(cons
 {
     APP_LOGI("ApplicationContext::GetGlobalTaskDispatcher begin");
     if (taskDispatcherContext_ == nullptr) {
-        APP_LOGE("ApplicationContext::GetGlobalTaskDispatcher taskDispatcherContext_ is nullptr");
-        return nullptr;
+        std::lock_guard<std::mutex> lock_l(mutex_);
+        if (taskDispatcherContext_ == nullptr) {
+            taskDispatcherContext_ = std::make_shared<TaskDispatcherContext>();
+            APP_LOGI("ApplicationContext::GetGlobalTaskDispatcher threadpool create");
+        }
+
+        if (taskDispatcherContext_ == nullptr) {
+            APP_LOGE("ApplicationContext::GetGlobalTaskDispatcher taskDispatcherContext_ is nullptr");
+            return nullptr;
+        }
     }
 
     std::shared_ptr<TaskDispatcher> task = taskDispatcherContext_->GetGlobalTaskDispatcher(priority);
