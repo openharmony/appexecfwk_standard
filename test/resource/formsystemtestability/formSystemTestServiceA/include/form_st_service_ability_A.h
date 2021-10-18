@@ -31,6 +31,7 @@ using AbilityConnectionProxy = OHOS::AAFwk::AbilityConnectionProxy;
 const std::string APP_A_RESP_EVENT_NAME = "resp_com_ohos_formst_service_app_a";
 const std::string APP_A_REQ_EVENT_NAME = "req_com_ohos_formst_service_app_a";
 const std::string COMMON_EVENT_TEST_ACTION1 = "usual.event.test1";
+const std::string COMMON_EVENT_ON_DELETE = "usual.event.ondelete";
 /**
  * Form event trigger result
  */

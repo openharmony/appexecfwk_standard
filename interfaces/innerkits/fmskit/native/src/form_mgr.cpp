@@ -222,6 +222,21 @@ int FormMgr::DumpFormInfoByFormId(const std::int64_t formId, std::string &formIn
     return remoteProxy_->DumpFormInfoByFormId(formId, formInfo);
 }
 /**
+ * @brief Dump form timer by form id.
+ * @param formId The id of the form.
+ * @param formInfo Form timer.
+ * @return Returns ERR_OK on success, others on failure.
+ */
+int FormMgr::DumpFormTimerByFormId(const std::int64_t formId, std::string &isTimingService)
+{
+    int errCode = Connect();
+    if (errCode != ERR_OK) {
+        return errCode;
+    }
+    
+    return remoteProxy_->DumpFormTimerByFormId(formId, isTimingService);
+}
+/**
  * @brief Process js message event.
  * @param formId Indicates the unique id of form.
  * @param want information passed to supplier.
@@ -239,9 +254,8 @@ int FormMgr::MessageEvent(const int64_t formId, const Want &want, const sptr<IRe
 }
 
 /**
- * @brief Set Next Refresh Time.
+ * @brief Set next refresh time.
  * @param formId The id of the form.
- * @param bundleName The bundle name of form provider.
  * @param nextTime Next refresh time.
  * @return Returns ERR_OK on success, others on failure.
  */

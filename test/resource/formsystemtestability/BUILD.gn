@@ -12,5 +12,23 @@
 # limitations under the License.
 
 group("fms_system_test_app") {
-  deps = [ "formSystemTestServiceA:formSystemTestServiceA" ]
+  deps = [
+    "fmsSystemPerformance:fmsSystemPerformance",
+    "fmsSystemStress:fmsSystemStress",
+    "fmsSystemTestHostCommonA:fmsSystemTestHostCommonA",
+    "fmsSystemTestHostCommonB:fmsSystemTestHostCommonB",
+    "fmsSystemTestHostNoPerm:fmsSystemTestHostNoPerm",
+    "fmsSystemTestHostNormal:fmsSystemTestHostNormal",
+    "fmsSystemTestHostNormalB:fmsSystemTestHostNormalB",
+    "fmsSystemTestHostNormalC:fmsSystemTestHostNormalC",
+    "fmsSystemTestHostNotSys:fmsSystemTestHostNotSys",
+    "fmsSystemTestSelfStarting/selfStartingTestHostA:selfStartingTestHostA",
+    "fmsSystemTestSelfStarting/selfStartingTestHostB:selfStartingTestHostB",
+    "fmsSystemTestUninstallApp:fmsSystemTestUninstallApp",
+    "formSystemTestServiceA:formSystemTestServiceA",
+    "formSystemTestServiceB:formSystemTestServiceB",
+    "formSystemTestServiceC:formSystemTestServiceC",
+    "formSystemTestServiceD:formSystemTestServiceD",
+    "formSystemTestServiceE:formSystemTestServiceE",
+  ]
 }

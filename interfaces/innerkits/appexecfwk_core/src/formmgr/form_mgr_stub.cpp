@@ -59,12 +59,18 @@ FormMgrStub::FormMgrStub()
         &FormMgrStub::HandleDumpFormInfoByBundleName;
     memberFuncMap_[static_cast<uint32_t>(IFormMgr::Message::FORM_MGR_FORM_INFOS_BY_ID)] =
         &FormMgrStub::HandleDumpFormInfoByFormId;
+    memberFuncMap_[static_cast<uint32_t>(IFormMgr::Message::FORM_MGR_FORM_TIMER_INFO_BY_ID)] =
+        &FormMgrStub::HandleDumpFormTimerByFormId;
     memberFuncMap_[static_cast<uint32_t>(IFormMgr::Message::FORM_MGR_SET_NEXT_REFRESH_TIME)] =
         &FormMgrStub::HandleSetNextRefreshTime;
     memberFuncMap_[static_cast<uint32_t>(IFormMgr::Message::FORM_MGR_LIFECYCLE_UPDATE)] =
         &FormMgrStub::HandleLifecycleUpdate;
     memberFuncMap_[static_cast<uint32_t>(IFormMgr::Message::FORM_MGR_MESSAGE_EVENT)] =
         &FormMgrStub::HandleMessageEvent;
+    memberFuncMap_[static_cast<uint32_t>(IFormMgr::Message::FORM_MGR_BATCH_ADD_FORM_RECORDS_ST)] =
+        &FormMgrStub::HandleBatchAddFormRecords;
+    memberFuncMap_[static_cast<uint32_t>(IFormMgr::Message::FORM_MGR_CLEAR_FORM_RECORDS_ST)] =
+        &FormMgrStub::HandleClearFormRecords;
 }
 
 FormMgrStub::~FormMgrStub()
@@ -354,6 +360,29 @@ int32_t FormMgrStub::HandleDumpFormInfoByFormId(MessageParcel &data, MessageParc
     return result;
 }
 /**
+ * @brief Handle DumpFormTimerByFormId message.
+ * @param data input param.
+ * @param reply output param.
+ * @return Returns ERR_OK on success, others on failure.
+ */
+int32_t FormMgrStub::HandleDumpFormTimerByFormId(MessageParcel &data, MessageParcel &reply)
+{
+    int64_t formId = data.ReadInt64();
+    std::string isTimingService;
+    int32_t result = DumpFormTimerByFormId(formId, isTimingService);
+    reply.WriteInt32(result);
+    if (result == ERR_OK) {
+        std::vector<std::string> dumpInfos;
+        SplitString(isTimingService, dumpInfos);
+        if (!reply.WriteStringVector(dumpInfos)) {
+            APP_LOGE("%{public}s, failed to WriteStringVector<dumpInfos>", __func__);
+            return ERR_APPEXECFWK_PARCEL_ERROR;
+        }
+    }
+    return result;
+}
+
+/**
  * @brief Handle DumpFormInfoByFormId message.
  * @param data input param.
  * @param reply output param.
@@ -378,6 +407,40 @@ int32_t FormMgrStub::HandleMessageEvent(MessageParcel &data, MessageParcel &repl
     }
     
     int32_t result = MessageEvent(formId, *want, client);
+    reply.WriteInt32(result);
+    return result;
+}
+
+/**
+ * @brief Handle BatchAddFormRecords message.
+ * @param data input param.
+ * @param reply output param.
+ * @return Returns ERR_OK on success, others on failure.
+ */
+int32_t FormMgrStub::HandleBatchAddFormRecords(MessageParcel &data, MessageParcel &reply)
+{
+    APP_LOGI("%{public}s called.", __func__);
+
+    std::unique_ptr<Want> want(data.ReadParcelable<Want>());
+    if (!want) {
+        APP_LOGE("%{public}s, failed to ReadParcelable<Want>", __func__);
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+
+    int32_t result = BatchAddFormRecords(*want);
+    reply.WriteInt32(result);
+    return result;
+}
+/**
+ * @brief Handle BatchDeleteFormRecords message.
+ * @param data input param.
+ * @param reply output param.
+ * @return Returns ERR_OK on success, others on failure.
+ */
+int32_t FormMgrStub::HandleClearFormRecords(MessageParcel &data, MessageParcel &reply)
+{
+    APP_LOGI("%{public}s called.", __func__);  
+    int32_t result = ClearFormRecords();
     reply.WriteInt32(result);
     return result;
 }

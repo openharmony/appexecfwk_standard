@@ -50,6 +50,7 @@ public:
     std::vector<int> formUserUids;
     bool formVisibleNotify = false;
     int formVisibleNotifyState = 0;
+    int userId = 0;
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS

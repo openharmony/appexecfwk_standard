@@ -337,7 +337,7 @@ void FormStServiceAbilityA::OnDelete(const int64_t formId)
     clock_gettime(CLOCK_REALTIME, &ts);
     long currentTime = ts.tv_sec * SEC_TO_MILLISEC + ts.tv_nsec / MILLISEC_TO_NANOSEC;
 
-    PublishEvent(COMMON_EVENT_TEST_ACTION1, FORM_EVENT_TRIGGER_RESULT::FORM_EVENT_TRIGGER_RESULT_OK, "OnDelete");
+    PublishEvent(COMMON_EVENT_ON_DELETE, FORM_EVENT_TRIGGER_RESULT::FORM_EVENT_TRIGGER_RESULT_OK, std::to_string(formId));
     APP_LOGI("%{public}s end, formId: %{public}lld, current time: %{public}ld", __func__, formId, currentTime);
 }
 

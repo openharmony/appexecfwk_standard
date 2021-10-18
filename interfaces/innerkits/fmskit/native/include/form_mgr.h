@@ -131,6 +131,13 @@ public:
      */
     int DumpFormInfoByFormId(const std::int64_t formId, std::string &formInfo);
     /**
+     * @brief Dump form timer by form id.
+     * @param formId The id of the form.
+     * @param formInfo Form timer.
+     * @return Returns ERR_OK on success, others on failure.
+     */
+    int DumpFormTimerByFormId(const std::int64_t formId, std::string &isTimingService);
+    /**
      * @brief Process js message event.
      * @param formId Indicates the unique id of form.
      * @param want information passed to supplier.
@@ -160,6 +167,13 @@ public:
      */
     void UnRegisterDeathCallback(const std::shared_ptr<FormCallbackInterface> &formDeathCallback);
 
+    /**
+     * @brief Set the next refresh time
+     * 
+     * @param formId The id of the form.
+     * @param nextTime Next refresh time
+     * @return Returns ERR_OK on success, others on failure.
+     */
     int SetNextRefreshTime(const int64_t formId, const int64_t nextTime);
 
     /**

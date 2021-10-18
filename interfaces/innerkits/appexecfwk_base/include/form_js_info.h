@@ -18,8 +18,8 @@
 
 
 #include <string>
-#include "parcel.h"
 #include "form_provider_data.h"
+#include "parcel.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -35,7 +35,7 @@ struct FormJsInfo : public Parcelable {
     bool formTempFlg = false;
     std::string jsFormCodePath;
     std::string formData;
-     FormProviderData formProviderData;
+    FormProviderData formProviderData;
 
     std::string htmlPath;
     std::string cssPath;

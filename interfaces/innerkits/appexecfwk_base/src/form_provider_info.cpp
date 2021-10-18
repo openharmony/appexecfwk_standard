@@ -27,12 +27,11 @@ bool FormProviderInfo::ReadFromParcel(Parcel &parcel)
 
 FormProviderInfo *FormProviderInfo::Unmarshalling(Parcel &parcel)
 {
-    FormProviderInfo *formProviderInfo = new (std::nothrow) FormProviderInfo();
+    std::unique_ptr<FormProviderInfo> formProviderInfo = std::make_unique<FormProviderInfo>();
     if (formProviderInfo && !formProviderInfo->ReadFromParcel(parcel)) {
-        delete formProviderInfo;
         formProviderInfo = nullptr;
     }
-    return formProviderInfo;
+    return formProviderInfo.release();
 }
 
 bool FormProviderInfo::Marshalling(Parcel &parcel) const
