@@ -89,12 +89,12 @@ public:
     static std::vector<std::string> eventList;
     static std::shared_ptr<FormEventSubscriber> subscriber;
 
-    void FmsAcquireForm2700(std::string);
+    void FmsAcquireForm2700(std::string strFormId);
     std::string FmsAcquireForm2900A();
     std::string FmsAcquireForm2900B();
     void FmsAcquireForm3000();
     std::string FmsAcquireForm3100(const std::string &bundleName, const std::string &abilityName);
-    void FmsAcquireForm2800(std::string);
+    void FmsAcquireForm2800(std::string strFormId);
     void FmsAcquireForm3200();
 
     void FmsAcquireFormDeleteA(const std::string &strFormId);
@@ -172,7 +172,7 @@ bool FmsAcquireFormTestBatch::SubscribeEvent()
  * @tc.desc: The single host can successfully create 256 different provider forms.
  */
 HWTEST_F(FmsAcquireFormTestBatch, FMS_acquireForm_2900, Function | MediumTest | Level1)
-{    
+{
     std::cout << "START FMS_acquireForm_2900" << std::endl;
     std::string bundleName = "com.ohos.form.manager.normal";
     std::string abilityName = "FormAbilityA";
@@ -200,7 +200,7 @@ HWTEST_F(FmsAcquireFormTestBatch, FMS_acquireForm_3000, Function | MediumTest | 
     sleep(1);
     std::cout << "START FMS_acquireForm_3000" << std::endl;
     std::cout << "FMS_acquireForm_3000, form size of the host A:" << normalFormsMaxA.size() << std::endl;
-    FmsAcquireForm3000();    
+    FmsAcquireForm3000();
     std::cout << "END FMS_acquireForm_3000" << std::endl;
 }
 
@@ -221,11 +221,11 @@ HWTEST_F(FmsAcquireFormTestBatch, FMS_acquireForm_2700, Function | MediumTest | 
     std::string strFormId = FmsAcquireFormTemp(bundleNameA, abilityNameA);
 
     sleep(1);
-    FmsAcquireForm2700(strFormId);    
+    FmsAcquireForm2700(strFormId);
     std::cout << "END FMS_acquireForm_2700" << std::endl;
 
     std::cout << "the host A, delete form start" << std::endl;
-    if(normalFormsMaxA.size() > 0) {
+    if (normalFormsMaxA.size() > 0) {
         for (int count = 0; count < normalFormsMaxA.size(); count++) {
             FmsAcquireFormDeleteA(normalFormsMaxA[count]);
         }
@@ -271,7 +271,7 @@ HWTEST_F(FmsAcquireFormTestBatch, FMS_acquireForm_3100, Function | MediumTest | 
     std::cout << "bundleName: " << bundleNameC << std::endl;
     std::cout << "abilityName: " << abilityNameC << std::endl;
     FMS_acquireFormBatchA(bundleNameC, abilityNameC, FORM_COUNT_111);
-    std::cout << "count:" << FORM_COUNT_111 << std::endl;    
+    std::cout << "count:" << FORM_COUNT_111 << std::endl;
     std::cout << "END add form to the host C" << std::endl;
 
     sleep(1);
@@ -308,7 +308,7 @@ HWTEST_F(FmsAcquireFormTestBatch, FMS_acquireForm_2800, Function | MediumTest | 
 /**
  * @tc.number: FMS_acquireForm_3200
  * @tc.name: FMS create form limit value (512) verification.
- * @tc.desc: Verify that 512 forms can be successfully created by creating forms with different users 
+ * @tc.desc: Verify that 512 forms can be successfully created by creating forms with different users
  *           (the number of single user forms is less than 256), and the 513rd form fails to be created.
  */
 HWTEST_F(FmsAcquireFormTestBatch, FMS_acquireForm_3200, Function | MediumTest | Level1)
@@ -322,7 +322,7 @@ HWTEST_F(FmsAcquireFormTestBatch, FMS_acquireForm_3200, Function | MediumTest | 
     std::cout << "END FMS_acquireForm_3200" << std::endl;
 
     std::cout << "dlete form start" << std::endl;
-    if(normalFormsMaxC.size() > 0) {
+    if (normalFormsMaxC.size() > 0) {
         for (int count = 0; count < normalFormsMaxC.size(); count++) {
             sleep(1);
             FmsAcquireFormDeleteC(normalFormsMaxC[count]);
@@ -379,7 +379,7 @@ HWTEST_F(FmsAcquireFormTestBatch, FMS_acquireForm_3400, Function | MediumTest | 
     std::cout << "bundleName: " << bundleNameA << std::endl;
     std::cout << "abilityName: " << abilityNameA << std::endl;
     FMS_acquireTempFormBatch(bundleNameA, abilityNameA, TEMP_FORM_COUNT_128);
-    std::cout << "FMS_acquireForm_3400, temp form size:" << TEMP_FORM_COUNT_128 << std::endl;    
+    std::cout << "FMS_acquireForm_3400, temp form size:" << TEMP_FORM_COUNT_128 << std::endl;
     std::cout << "END add temp form to the host A" << std::endl;
 
     sleep(1);
@@ -392,7 +392,7 @@ HWTEST_F(FmsAcquireFormTestBatch, FMS_acquireForm_3400, Function | MediumTest | 
     std::cout << "FMS_acquireForm_3400, temp form size:" << (TEMP_FORM_COUNT_128 - 1) << std::endl;
     sleep(1);
     std::string strFormId = FmsAcquireFormTemp(bundleNameB, abilityNameB);
-    std::cout << "FMS_acquireForm_3400, temp form size:" << TEMP_FORM_COUNT_128 << std::endl;    
+    std::cout << "FMS_acquireForm_3400, temp form size:" << TEMP_FORM_COUNT_128 << std::endl;
     std::cout << "END add temp form to the host B" << std::endl;
 
     sleep(1);
@@ -420,7 +420,7 @@ HWTEST_F(FmsAcquireFormTestBatch, FMS_acquireForm_3500, Function | MediumTest | 
     std::cout << "bundleName: " << bundleNameA << std::endl;
     std::cout << "abilityName: " << abilityNameA << std::endl;
     FMS_acquireTempFormBatch(bundleNameA, abilityNameA, TEMP_FORM_COUNT_128);
-    std::cout << "FMS_acquireForm_3500, temp form size:" << TEMP_FORM_COUNT_128 << std::endl;    
+    std::cout << "FMS_acquireForm_3500, temp form size:" << TEMP_FORM_COUNT_128 << std::endl;
     std::cout << "END add temp form to the host A" << std::endl;
     sleep(1);
     std::cout << "START add temp form to the host B" << std::endl;
@@ -475,7 +475,7 @@ std::string FmsAcquireFormTestBatch::FmsAcquireForm3100(const std::string &bundl
 }
 
 void FmsAcquireFormTestBatch::FmsAcquireForm2700(std::string strFormId)
-{    
+{
     std::cout << "START FmsAcquireForm2700, cast temp form" << std::endl;
     std::string bundleName = "com.ohos.form.manager.normal";
     std::string abilityName = "FormAbilityA";
@@ -520,7 +520,7 @@ void FmsAcquireFormTestBatch::FmsAcquireForm3200()
     std::cout << "END FmsAcquireForm3200" << std::endl;
 }
 void FmsAcquireFormTestBatch::FmsAcquireForm2800(std::string strFormId)
-{    
+{
     std::cout << "START FmsAcquireForm2800, cast temp form" << std::endl;
     std::string bundleName = "com.ohos.form.manager.normal";
     std::string abilityName = "FormAbilityA";
@@ -576,38 +576,6 @@ std::string FmsAcquireFormTestBatch::FmsAcquireForm2900A()
     std::cout << "END FmsAcquireForm2900A, Provider A" << std::endl;
     return strFormId;
 }
-// std::string FmsAcquireFormTestBatch::FmsAcquireForm2900B()
-// {
-//     std::cout << "START FmsAcquireForm2900B, Provider B" << std::endl;
-//     std::string bundleName = "com.ohos.form.manager.normal";
-//     std::string abilityName = "FormAbilityA";
-//     MAP_STR_STR params;
-//     Want want = SystemTestFormUtil::MakeWant("device", abilityName, bundleName, params);
-//     SystemTestFormUtil::StartAbility(want, abilityMs);
-//     EXPECT_EQ(SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_ABILITY_ONACTIVED, 0), 0);
-
-//     std::string eventData = FORM_EVENT_REQ_ACQUIRE_FORM_2900_1;
-//     SystemTestFormUtil::PublishEvent(FORM_EVENT_REQ_ACQUIRE_FORM_2900_1, EVENT_CODE_2910, eventData);
-
-//     EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_ACQUIRE_FORM_2900_1, EVENT_CODE_2910));
-//     std::string strFormId = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_ACQUIRE_FORM_2900_1, EVENT_CODE_2910);
-//     bool result = !strFormId.empty();
-//     EXPECT_TRUE(result);
-//     if (!result) {
-//         GTEST_LOG_(INFO) << "FmsAcquireForm2900B,  result:" << result;
-//     } else {
-//         GTEST_LOG_(INFO) << "FmsAcquireForm2900B,  formId:" << strFormId;
-//     }
-
-//     EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_ACQUIRE_FORM_2900_1, EVENT_CODE_2911));
-//     std::string data2 = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_ACQUIRE_FORM_2900_1, EVENT_CODE_2911);
-//     bool result2 = !data2.empty();
-//     EXPECT_TRUE(result2);
-//     GTEST_LOG_(INFO) << "FmsAcquireForm2900B,  result:" << result2;
-
-//     std::cout << "END FmsAcquireForm2900B, Provider B" << std::endl;
-//     return strFormId;
-// }
 void FmsAcquireFormTestBatch::FmsAcquireForm3000()
 {
     std::cout << "START FmsAcquireForm3000" << std::endl;
@@ -678,7 +646,8 @@ void FmsAcquireFormTestBatch::FMS_acquireFormBatchB(const std::string &bundleNam
  
     std::cout << "END FMS_acquireFormBatchB" << std::endl;
 }
-void FmsAcquireFormTestBatch::FMS_acquireTempFormBatch(const std::string &bundleName, const std::string &abilityName, const int count)
+void FmsAcquireFormTestBatch::FMS_acquireTempFormBatch(const std::string &bundleName, const std::string &abilityName,
+    const int count)
 {
     std::cout << "START FMS_acquireTempFormBatch" << std::endl;
     MAP_STR_STR params;
@@ -689,9 +658,9 @@ void FmsAcquireFormTestBatch::FMS_acquireTempFormBatch(const std::string &bundle
     std::string eventData = std::to_string(count);
     SystemTestFormUtil::PublishEvent(FORM_EVENT_REQ_ACQUIRE_TEMP_FORM_BATCH, EVENT_CODE_TEMP_BATCH, eventData);
 
-    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_ACQUIRE_TEMP_FORM_BATCH, 
+    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_ACQUIRE_TEMP_FORM_BATCH,
         EVENT_CODE_TEMP_BATCH));
-    std::string data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_ACQUIRE_TEMP_FORM_BATCH, 
+    std::string data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_ACQUIRE_TEMP_FORM_BATCH,
         EVENT_CODE_TEMP_BATCH);
     bool result = data == "true";
     EXPECT_TRUE(result);
@@ -748,7 +717,7 @@ bool FmsAcquireFormTestBatch::FmsAcquireFormTempForFailed(const std::string &bun
     std::string strFormId = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_ACQUIRE_FORM_TEMP, EVENT_CODE_TEMP);
     bool result = strFormId.empty();
     EXPECT_TRUE(result);
-     GTEST_LOG_(INFO) << "FmsAcquireFormTempForFailed,  result:" << result;
+    GTEST_LOG_(INFO) << "FmsAcquireFormTempForFailed,  result:" << result;
 
     std::cout << "END FmsAcquireFormTempForFailed, add temp form" << std::endl;
 

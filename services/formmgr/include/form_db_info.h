@@ -42,7 +42,7 @@ struct FormDBInfo {
 
     /**
      * @brief Constructors
-     * 
+     *
      */  
     FormDBInfo(const int64_t formIdTmp, const FormRecord &formRecord)
     {
@@ -151,7 +151,7 @@ public:
     }
     /**
      * @brief Destructor
-     * 
+     *
      */
     virtual ~InnerFormInfo(){};
     /**

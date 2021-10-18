@@ -439,7 +439,7 @@ int32_t FormMgrStub::HandleBatchAddFormRecords(MessageParcel &data, MessageParce
  */
 int32_t FormMgrStub::HandleClearFormRecords(MessageParcel &data, MessageParcel &reply)
 {
-    APP_LOGI("%{public}s called.", __func__);  
+    APP_LOGI("%{public}s called.", __func__);
     int32_t result = ClearFormRecords();
     reply.WriteInt32(result);
     return result;

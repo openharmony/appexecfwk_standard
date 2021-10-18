@@ -1197,6 +1197,5 @@ void FmsAcquireFormTest::FmsAcquireFormDeleteA(std::string strFormId)
 
     std::cout << "END FmsAcquireFormDeleteA end" << std::endl;
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

@@ -37,7 +37,7 @@ void FormAbilityC::AcquireFormCallback::OnAcquired(const int32_t result, const F
 void FormAbilityC::AcquireFormCallback::OnUpdate(const int32_t result, const FormJsInfo &formJsInfo) const
 {
     APP_LOGI("%{public}s called", __func__);
-    FormTestUtils::PublishEvent(this->caseName_, this->code_ + 1, formJsInfo.formData); 
+    FormTestUtils::PublishEvent(this->caseName_, this->code_ + 1, formJsInfo.formData);
 }
 
 void FormAbilityC::AcquireFormCallback::OnFormUninstall(const int64_t formId) const
@@ -112,7 +112,7 @@ void FormAbilityC::FMS_acquireForm_3200(std::string data)
 }
 void FormAbilityC::FMS_acquireFormBatch(std::string data)
 {
-    APP_LOGI("%{public}s called", __func__); 
+    APP_LOGI("%{public}s called", __func__);
     // Set Want info begin
     Want want;
     want.SetParam(Constants::PARAM_FORM_DIMENSION_KEY, FORM_DIMENSION_1);

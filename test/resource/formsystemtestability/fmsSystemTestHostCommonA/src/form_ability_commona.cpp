@@ -85,7 +85,7 @@ void FormAbilityCommonA::FMS_deleteForm(std::string data)
 }
 void FormAbilityCommonA::FMS_acquireForm_batch(std::string data)
 {
-    APP_LOGI("%{public}s called", __func__); 
+    APP_LOGI("%{public}s called", __func__);
     // Set Want info begin
     Want want;
     want.SetParam(Constants::PARAM_FORM_DIMENSION_KEY, FORM_DIMENSION_1);

@@ -793,7 +793,7 @@ bool FormTimerMgr::UpdateAtTimerAlarm()
 
 /**
  * @brief Clear update at timer resource.
- */ 
+ */
 void FormTimerMgr::ClearUpdateAtTimerResource()
 {
     APP_LOGI("%{public}s start", __func__);
