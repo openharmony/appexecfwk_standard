@@ -714,7 +714,7 @@ HWTEST_F(FmsDeleteFormTest, FMS_deleteForm_1200, Function | MediumTest | Level2)
         Want want = SystemTestFormUtil::MakeWant("device", abilityName, bundleName, params);
         SystemTestFormUtil::StartAbility(want, abilityManager);
         EXPECT_EQ(SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_ABILITY_ONACTIVED, 0), 0);
-        std::string eventData = (i/5 == 1 ? "true" : "false");// normal form or temp form
+        std::string eventData = (i/5 == 1 ? "true" : "false");
         SystemTestFormUtil::PublishEvent(FORM_EVENT_REQ_DELETE_FORM_1200, EVENT_CODE_1200, eventData);
         EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_DELETE_FORM_1200, EVENT_CODE_1200));
         formIds[i] = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_DELETE_FORM_1200, EVENT_CODE_1200);
@@ -899,11 +899,11 @@ void FmsDeleteFormTest::FMS_deleteForm_1400_A()
     std::string abilityName = "FormAbilityCommonA";
     MAP_STR_STR params;
 
-    for (int i=0; i<createFormCount; i++) {
+    for (int i = 0; i < createFormCount; i++) {
         Want want = SystemTestFormUtil::MakeWant("device", abilityName, bundleName, params);
         SystemTestFormUtil::StartAbility(want, abilityManager);
         EXPECT_EQ(SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_ABILITY_ONACTIVED, 0), 0);
-        std::string eventData = (i/5 == 1 ? "true" : "false");// normal form or temp form
+        std::string eventData = (i/5 == 1 ? "true" : "false");
         SystemTestFormUtil::PublishEvent(FORM_EVENT_REQ_ONE_NORMAL_FORM, EVENT_CODE_1400, eventData);
         EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_ONE_NORMAL_FORM, EVENT_CODE_100));
         formIds[i] = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_ONE_NORMAL_FORM, EVENT_CODE_100);
@@ -940,11 +940,11 @@ void FmsDeleteFormTest::FMS_deleteForm_1400_B()
     std::string abilityName = "FormAbilityDeleteForm";
     MAP_STR_STR params;
 
-    for (int i=0; i<createFormCount; i++) {
+    for (int i = 0; i < createFormCount; i++) {
         Want want = SystemTestFormUtil::MakeWant("device", abilityName, bundleName, params);
         SystemTestFormUtil::StartAbility(want, abilityManager);
         EXPECT_EQ(SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_ABILITY_ONACTIVED, 0), 0);
-        std::string eventData = (i/5 == 1 ? "true" : "false");// normal form or temp form
+        std::string eventData = (i/5 == 1 ? "true" : "false");
         SystemTestFormUtil::PublishEvent(FORM_EVENT_REQ_DELETE_FORM_1400, EVENT_CODE_1400, eventData);
         EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_DELETE_FORM_1400, EVENT_CODE_1400));
         formIds[i] = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_DELETE_FORM_1400, EVENT_CODE_1400);
@@ -955,7 +955,7 @@ void FmsDeleteFormTest::FMS_deleteForm_1400_B()
             GTEST_LOG_(INFO) << "FMS_deleteForm_1400[B],  result:" << result;
         }
     }
-    for (int i=0; i<createFormCount; i++) {
+    for (int i = 0; i < createFormCount; i++) {
         Want want = SystemTestFormUtil::MakeWant("device", abilityName, bundleName, params);
         SystemTestFormUtil::StartAbility(want, abilityManager);
         EXPECT_EQ(SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_ABILITY_ONACTIVED, 0), 0);
@@ -1156,8 +1156,10 @@ void FmsDeleteFormTest::FMS_acquireTempFormBatch(const std::string &bundleName, 
     std::string eventData = std::to_string(count);
     SystemTestFormUtil::PublishEvent(FORM_EVENT_REQ_ACQUIRE_TEMP_FORM_BATCH, EVENT_CODE_TEMP_BATCH, eventData);
 
-    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_ACQUIRE_TEMP_FORM_BATCH, EVENT_CODE_TEMP_BATCH));
-    std::string data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_ACQUIRE_TEMP_FORM_BATCH, EVENT_CODE_TEMP_BATCH);
+    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_ACQUIRE_TEMP_FORM_BATCH,
+        EVENT_CODE_TEMP_BATCH));
+    std::string data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_ACQUIRE_TEMP_FORM_BATCH,
+        EVENT_CODE_TEMP_BATCH);
     bool result = data == "true";
     EXPECT_TRUE(result);
     if (result) {

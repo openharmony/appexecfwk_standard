@@ -37,7 +37,7 @@ std::vector<std::string> eventList = {
     FORM_EVENT_REQ_ACQUIRE_FORM_2700, FORM_EVENT_REQ_ACQUIRE_FORM_2800, FORM_EVENT_REQ_ACQUIRE_FORM_2900,
     FORM_EVENT_REQ_ACQUIRE_FORM_2900_1, FORM_EVENT_REQ_ACQUIRE_FORM_3000, FORM_EVENT_REQ_ACQUIRE_FORM_3100,
     FORM_EVENT_REQ_ACQUIRE_FORM_BATCH, FORM_EVENT_REQ_ACQUIRE_TEMP_FORM_BATCH, FORM_EVENT_REQ_CLEAR_FORM_BATCH,
-    FORM_EVENT_REQ_ACQUIRE_FORM_BATCH_B, 
+    FORM_EVENT_REQ_ACQUIRE_FORM_BATCH_B,
 };
 void FormAbilityA::AcquireFormCallback::OnAcquired(const int32_t result, const FormJsInfo &formJsInfo) const
 {
@@ -685,7 +685,7 @@ void FormAbilityA::FMS_acquireForm_tempForm(std::string data)
 }
 void FormAbilityA::FMS_acquireFormBatch(std::string data)
 {
-    APP_LOGI("%{public}s called", __func__); 
+    APP_LOGI("%{public}s called", __func__);
     // Set Want info begin
     Want want;
     want.SetParam(Constants::PARAM_FORM_DIMENSION_KEY, FORM_DIMENSION_1);
@@ -710,7 +710,7 @@ void FormAbilityA::FMS_acquireFormBatch(std::string data)
 
 void FormAbilityA::FMS_acquireFormBatchB(std::string data)
 {
-    APP_LOGI("%{public}s called", __func__); 
+    APP_LOGI("%{public}s called", __func__);
     // Set Want info begin
     Want want;
     want.SetParam(Constants::PARAM_FORM_DIMENSION_KEY, FORM_DIMENSION_1);

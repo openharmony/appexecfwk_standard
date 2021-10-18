@@ -93,7 +93,6 @@ void FmsSelfStartingTest::FormEventSubscriber::OnReceiveEvent(const CommonEventD
 
 void FmsSelfStartingTest::SetUpTestCase()
 {
-    SystemTestFormUtil::InstallHaps(hapNameList);
     if (!SubscribeEvent()) {
         GTEST_LOG_(INFO) << "SubscribeEvent error";
     }
@@ -102,7 +101,6 @@ void FmsSelfStartingTest::SetUpTestCase()
 void FmsSelfStartingTest::TearDownTestCase()
 {
     GTEST_LOG_(INFO) << "UnSubscribeCommonEvent calld";
-    SystemTestFormUtil::UninstallBundle(bundleNameList);
     CommonEventManager::UnSubscribeCommonEvent(subscriber_);
 }
 

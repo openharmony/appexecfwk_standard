@@ -51,8 +51,8 @@ public:
      * @param formInfo Form info.
      * @return Returns ERR_OK on success, others on failure.
      */
-    int AddForm(const int64_t formId, const Want &want, const sptr<IRemoteObject> &callerToken, 
-    FormJsInfo &formInfo);
+    int AddForm(const int64_t formId, const Want &want, const sptr<IRemoteObject> &callerToken,
+        FormJsInfo &formInfo);
 
     /**
      * @brief Delete forms with formIds, send formIds to form manager service.
@@ -169,7 +169,7 @@ public:
 
     /**
      * @brief Set the next refresh time
-     * 
+     *
      * @param formId The id of the form.
      * @param nextTime Next refresh time
      * @return Returns ERR_OK on success, others on failure.

@@ -65,8 +65,6 @@ public:
     void FMS_acquireFormBatchB(std::string data);
     void FMS_acquireFormTempBatch(std::string data);
     void FMS_deleteFormBatch(std::string strFormId);
-
-
     std::shared_ptr<FormEventSubscriber> subscriber_;
 
     class AcquireFormCallback : public FormCallback {

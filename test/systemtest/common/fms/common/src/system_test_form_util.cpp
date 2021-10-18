@@ -571,9 +571,9 @@ int SystemTestFormUtil::BatchAddFormRecords(const AAFwk::Want &want)
     MessageParcel reply;
     MessageOption option;
     int error = remoteObject->SendRequest(
-        static_cast<uint32_t>(IFormMgr::Message::FORM_MGR_BATCH_ADD_FORM_RECORDS_ST), 
-        data, 
-        reply, 
+        static_cast <uint32_t>(IFormMgr::Message::FORM_MGR_BATCH_ADD_FORM_RECORDS_ST),
+        data,
+        reply,
         option);
     if (error != ERR_OK) {
         std::cout << "BatchAddFormRecords, failed to SendRequest." << std::endl;
@@ -603,9 +603,9 @@ int SystemTestFormUtil::ClearFormRecords()
     MessageParcel reply;
     MessageOption option;
     int error = remoteObject->SendRequest(
-        static_cast<uint32_t>(IFormMgr::Message::FORM_MGR_CLEAR_FORM_RECORDS_ST), 
-        data, 
-        reply, 
+        static_cast <uint32_t>(IFormMgr::Message::FORM_MGR_CLEAR_FORM_RECORDS_ST),
+        data,
+        reply,
         option);
     if (error != ERR_OK) {
         std::cout << "ClearFormRecords, failed to SendRequest." << std::endl;

@@ -481,17 +481,17 @@ ErrCode FormMgrAdapter::NotifyWhetherVisibleForms(const std::vector<int64_t> &fo
         matchedFormId = FormDataMgr::GetInstance().FindMatchedFormId(formId);
         FormRecord formRecord;
         // Update provider info to host
-        if(!UpdateProviderInfoToHost(matchedFormId, callerToken, formVisibleType, formRecord)) {
+        if (!UpdateProviderInfoToHost(matchedFormId, callerToken, formVisibleType, formRecord)) {
             continue;
         }
 
         // Check if the form provider is system app
-        if(!CheckIsSystemAppByBundleName(iBundleMgr, formRecord.bundleName)) {
+        if (!CheckIsSystemAppByBundleName(iBundleMgr, formRecord.bundleName)) {
             continue;
         }
 
         // Create eventMaps
-        if(!CreateHandleEventMap(matchedFormId, formRecord, eventMaps)) {
+        if (!CreateHandleEventMap(matchedFormId, formRecord, eventMaps)) {
             continue;
         }
     }
@@ -679,7 +679,7 @@ int FormMgrAdapter::DumpFormTimerByFormId(const std::int64_t formId, std::string
         isTimingService = "true";
     } else {
         isTimingService = "false";
-    }   
+    }
     return ERR_OK;
 }
 /**
@@ -1489,13 +1489,13 @@ int FormMgrAdapter::BatchAddFormRecords(const Want &want)
         
         formItemInfo.SetFormId(newFormId);
         // allot form host record
-        int callingUid = IPCSkeleton::GetCallingUid(); 
+        int callingUid = IPCSkeleton::GetCallingUid();
         // allot form record
         FormRecord formRecord = FormDataMgr::GetInstance().AllotFormRecord(formItemInfo, callingUid);
         APP_LOGI("%{public}s, batch add form, formId:" "%{public}" PRId64 ".", __func__, formRecord.formId);
 
         APP_LOGI("%{public}s, count: %{public}d", __func__, count + 1);
-    }    
+    }
     APP_LOGI("%{public}s end.", __func__);
     return ERR_OK;
 }
@@ -1548,7 +1548,7 @@ bool FormMgrAdapter::CreateHandleEventMap(const int64_t matchedFormId, const For
  */
 bool FormMgrAdapter::UpdateProviderInfoToHost(const int64_t matchedFormId, const sptr<IRemoteObject> &callerToken,
     const int32_t formVisibleType, FormRecord &formRecord)
-{    
+{
     if (!FormDataMgr::GetInstance().GetFormRecord(matchedFormId, formRecord)) {
         APP_LOGW("%{public}s fail, not exist such form, formId:%{public}" PRId64 ".", __func__, matchedFormId);
         return false;
@@ -1584,7 +1584,7 @@ bool FormMgrAdapter::UpdateProviderInfoToHost(const int64_t matchedFormId, const
  *        notify the form provider that the current form is visible.
  * 
  * @param bundleName BundleName
- * @return Returns true if the form provider is system app, false if not. 
+ * @return Returns true if the form provider is system app, false if not.
  */
 bool FormMgrAdapter::CheckIsSystemAppByBundleName(const sptr<IBundleMgr> &iBundleMgr, const std::string &bundleName)
 {
@@ -1592,7 +1592,7 @@ bool FormMgrAdapter::CheckIsSystemAppByBundleName(const sptr<IBundleMgr> &iBundl
     if (iBundleMgr->GetBundleInfo(bundleName, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo)) {
         APP_LOGD("%{public}s, get bundle uid success", __func__);
         if (!iBundleMgr->CheckIsSystemAppByUid(bundleInfo.uid)) {
-            APP_LOGW("%{public}s fail, form provider is not system app, bundleName: %{public}s", 
+            APP_LOGW("%{public}s fail, form provider is not system app, bundleName: %{public}s",
                 __func__, bundleName.c_str());
             return false;
         }

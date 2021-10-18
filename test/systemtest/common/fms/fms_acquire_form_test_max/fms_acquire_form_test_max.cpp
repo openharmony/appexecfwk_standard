@@ -88,12 +88,12 @@ public:
     static std::vector<std::string> eventList;
     static std::shared_ptr<FormEventSubscriber> subscriber;
 
-    void FmsAcquireForm2700(std::string);
+    void FmsAcquireForm2700(std::string strFormId);
     std::string FmsAcquireForm2900A();
     std::string FmsAcquireForm2900B();
     void FmsAcquireForm3000();
     std::string FmsAcquireForm3100(const std::string &bundleName, const std::string &abilityName);
-    void FmsAcquireForm2800(std::string);
+    void FmsAcquireForm2800(std::string strFormId);
     void FmsAcquireForm3200();
 
     void FmsAcquireFormDeleteA(const std::string &strFormId);
@@ -164,7 +164,7 @@ bool FmsAcquireFormTestMax::SubscribeEvent()
  * @tc.desc: The single host can successfully create 256 different provider forms.
  */
 HWTEST_F(FmsAcquireFormTestMax, FMS_acquireForm_2900, Function | MediumTest | Level1)
-{    
+{
     std::cout << "START FMS_acquireForm_2900" << std::endl;
     for (int count = 0; count < Constants::MAX_RECORD_PER_APP/2; count++) {
         sleep(7);
@@ -172,7 +172,7 @@ HWTEST_F(FmsAcquireFormTestMax, FMS_acquireForm_2900, Function | MediumTest | Le
         normalFormsMaxA.emplace_back(strFormId1);
         std::cout << "FMS_acquireForm_2900, form size of the host A:" << normalFormsMaxA.size() << std::endl;
         sleep(7);
-        std::string strFormId2 = FmsAcquireForm2900B();        
+        std::string strFormId2 = FmsAcquireForm2900B();
         normalFormsMaxA.emplace_back(strFormId2);
         std::cout << "FMS_acquireForm_2900, form size of the host A:" << normalFormsMaxA.size() << std::endl;
     }
@@ -210,7 +210,7 @@ HWTEST_F(FmsAcquireFormTestMax, FMS_acquireForm_2700, Function | MediumTest | Le
     std::string strFormId = FmsAcquireFormTemp(bundleNameA, abilityNameA);
 
     sleep(7);
-    FmsAcquireForm2700(strFormId);    
+    FmsAcquireForm2700(strFormId);
     std::cout << "END FMS_acquireForm_2700" << std::endl;
 
     std::cout << "the host A, dlete form start" << std::endl;
@@ -265,7 +265,7 @@ HWTEST_F(FmsAcquireFormTestMax, FMS_acquireForm_3100, Function | MediumTest | Le
     std::cout << "bundleName: " << bundleNameC << std::endl;
     std::cout << "abilityName: " << abilityNameC << std::endl;
     for (int count = 0; count < FORM_COUNT_112; count++) {
-        sleep(7);          
+        sleep(7);
         std::string strFormId = FmsAcquireForm3100(bundleNameC, abilityNameC);
         normalFormsMaxC.emplace_back(strFormId);
         std::cout << "add form count:" << count + 1 << std::endl;
@@ -295,7 +295,7 @@ HWTEST_F(FmsAcquireFormTestMax, FMS_acquireForm_2800, Function | MediumTest | Le
     std::string strFormId = FmsAcquireFormTemp(bundleNameA, abilityNameA);
 
     sleep(7);
-    FmsAcquireForm2800(strFormId);    
+    FmsAcquireForm2800(strFormId);
     std::cout << "END FMS_acquireForm_2800" << std::endl;
 }
 
@@ -342,7 +342,6 @@ HWTEST_F(FmsAcquireFormTestMax, FMS_acquireForm_3200, Function | MediumTest | Le
     }
     normalFormsMaxC.clear();
     std::cout << "the host C, dlete form end" << std::endl;
-
 }
 /**
  * @tc.number: FMS_acquireForm_3300
@@ -363,7 +362,7 @@ HWTEST_F(FmsAcquireFormTestMax, FMS_acquireForm_3300, Function | MediumTest | Le
         sleep(7);
         std::string strFormId = FmsAcquireFormTemp(bundleNameA, abilityNameA);
         tempFormsMaxA.emplace_back(strFormId);
-        std::cout << "FMS_acquireForm_3300, form size of the host A:" << tempFormsMaxA.size() << std::endl;        
+        std::cout << "FMS_acquireForm_3300, form size of the host A:" << tempFormsMaxA.size() << std::endl;
     }
     std::cout << "END add temp form to the host A" << std::endl;
 
@@ -397,7 +396,7 @@ HWTEST_F(FmsAcquireFormTestMax, FMS_acquireForm_3400, Function | MediumTest | Le
         sleep(7);
         std::string strFormId = FmsAcquireFormTemp(bundleNameA, abilityNameA);
         tempFormsMaxA.emplace_back(strFormId);
-        std::cout << "FMS_acquireForm_3400, temp form size of the host A:" << tempFormsMaxA.size() << std::endl;        
+        std::cout << "FMS_acquireForm_3400, temp form size of the host A:" << tempFormsMaxA.size() << std::endl;
     }
     std::cout << "END add temp form to the host A" << std::endl;
 
@@ -437,7 +436,7 @@ HWTEST_F(FmsAcquireFormTestMax, FMS_acquireForm_3500, Function | MediumTest | Le
     EXPECT_TRUE(result);
     if (result) {
         std::cout << "END add temp form to the host B, Failed to create the 257th temporary form." << std::endl;
-    }    
+    }
     std::cout << "END FMS_acquireForm_3500" << std::endl;
 
     std::cout << "the host A, dlete temp form start" << std::endl;
@@ -489,7 +488,7 @@ std::string FmsAcquireFormTestMax::FmsAcquireForm3100(const std::string &bundleN
 }
 
 void FmsAcquireFormTestMax::FmsAcquireForm2700(std::string strFormId)
-{    
+{
     std::cout << "START FmsAcquireForm2700, cast temp form" << std::endl;
     std::string bundleName = "com.ohos.form.manager.normal";
     std::string abilityName = "FormAbilityA";
@@ -534,7 +533,7 @@ void FmsAcquireFormTestMax::FmsAcquireForm3200()
     std::cout << "END FmsAcquireForm3200" << std::endl;
 }
 void FmsAcquireFormTestMax::FmsAcquireForm2800(std::string strFormId)
-{    
+{
     std::cout << "START FmsAcquireForm2800, cast temp form" << std::endl;
     std::string bundleName = "com.ohos.form.manager.normal";
     std::string abilityName = "FormAbilityA";

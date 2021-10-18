@@ -11,16 +11,6 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
  
-sleepSeconds=20
-
-echo "Install hap begin"
-chmod 644 /system/app/fmsSystemTestSelfStartingA-signed.hap
-bm install -p /system/app/fmsSystemTestSelfStartingA-signed.hap
-sleep 1
-chmod 644 /system/app/fmsSystemTestSelfStartingB-signed.hap
-bm install -p /system/app/fmsSystemTestSelfStartingB-signed.hap
-sleep 1
-echo "Install hap end"
 echo "acquire forms"
 ./FmsSelfStartingTest
 

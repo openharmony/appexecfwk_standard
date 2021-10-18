@@ -181,7 +181,7 @@ bool FormInfo::Marshalling(Parcel &parcel) const
 void to_json(nlohmann::json &jsonObject, const FormCustomizeData &customizeDatas)
 {
     jsonObject = nlohmann::json{
-        {JSON_KEY_NAME, customizeDatas.name}, 
+        {JSON_KEY_NAME, customizeDatas.name},
         {JSON_KEY_VALUE, customizeDatas.value}
         };
 }

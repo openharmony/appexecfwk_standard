@@ -431,7 +431,7 @@ private:
      *        notify the form provider that the current form is visible.
      * 
      * @param bundleName BundleName
-     * @return Returns true if the form provider is system app, false if not. 
+     * @return Returns true if the form provider is system app, false if not.
      */
     bool CheckIsSystemAppByBundleName(const sptr<IBundleMgr> &iBundleMgr, const std::string &bundleName);
     /**
