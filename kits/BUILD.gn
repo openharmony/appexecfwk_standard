@@ -132,6 +132,7 @@ ohos_shared_library("appkit_native") {
     "//foundation/appexecfwk/standard/interfaces/innerkits/task_dispatcher:appkit_dispatcher_td",
     "//foundation/distributedschedule/dmsfwk/interfaces/innerkits/uri:zuri",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
+    "//foundation/multimodalinput/input/frameworks/proxy:libmmi-client",
     "//utils/native/base:utils",
   ]
 
