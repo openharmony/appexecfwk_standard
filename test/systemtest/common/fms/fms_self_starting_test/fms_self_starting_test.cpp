@@ -28,24 +28,15 @@
 #include "context_deal.h"
 #include "form_event.h"
 #include "form_st_common_info.h"
-#include "system_test_form_util.h"
 #include "iservice_registry.h"
 #include "nlohmann/json.hpp"
 #include "system_ability_definition.h"
+#include "system_test_form_util.h"
 
 using OHOS::AAFwk::Want;
 using namespace testing::ext;
 using namespace std::chrono_literals;
 using namespace OHOS::STtools;
-
-namespace {
-std::vector<std::string> bundleNameList = {
-    "com.form.formsystemtestservicea"
-};
-std::vector<std::string> hapNameList = {
-    "ActsFormSystemTestServiceA"
-};
-}  // namespace
 
 namespace OHOS {
 namespace AppExecFwk {

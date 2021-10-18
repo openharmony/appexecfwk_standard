@@ -219,8 +219,7 @@ ErrCode FormMgrAdapter::HandleDeleteForm(const int64_t formId, const sptr<IRemot
 
     int callingUid = IPCSkeleton::GetCallingUid();
     bool isSelfDbFormId = (std::find(dbRecord.formUserUids.begin(), dbRecord.formUserUids.end(), callingUid) != 
-            dbRecord.formUserUids.end()) ? true : false;
-
+        dbRecord.formUserUids.end()) ? true : false;
     if (!isSelfDbFormId) {
         APP_LOGE("%{public}s, not self form:%{public}" PRId64 "", __func__, formId);
         return ERR_APPEXECFWK_FORM_OPERATION_NOT_SELF;
@@ -804,7 +803,7 @@ ErrCode FormMgrAdapter::AddExistFormRecord(const FormItemInfo &info, const sptr<
 
     // Add new form user uid.
     FormDataMgr::GetInstance().AddFormUserUid(formId, callingUid);
-    if(std::find(newRecord.formUserUids.begin(), newRecord.formUserUids.end(), callingUid) == 
+    if(std::find(newRecord.formUserUids.begin(), newRecord.formUserUids.end(), callingUid) ==
         newRecord.formUserUids.end()) {
         newRecord.formUserUids.emplace_back(callingUid);
     }
@@ -1462,8 +1461,7 @@ int FormMgrAdapter::BatchAddFormRecords(const Want &want)
         abilityName.c_str(),
         formCount);
     
-    for (int count = 0; count < formCount; count++) 
-    {
+    for (int count = 0; count < formCount; count++) {
         // get from comfig info
         FormItemInfo formItemInfo;
         int32_t errCode = GetFormConfigInfo(want, formItemInfo);

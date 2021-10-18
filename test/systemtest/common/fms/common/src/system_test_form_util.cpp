@@ -13,9 +13,9 @@
  * limitations under the License.
  */
 #include "system_test_form_util.h"
+#include "install_tool_status_receiver.h"
 #include "iservice_registry.h"
 #include "status_receiver_host.h"
-#include "install_tool_status_receiver.h"
 
 namespace OHOS {
 namespace STtools {
@@ -571,7 +571,7 @@ int SystemTestFormUtil::BatchAddFormRecords(const AAFwk::Want &want)
     MessageParcel reply;
     MessageOption option;
     int error = remoteObject->SendRequest(
-        static_cast <uint32_t>(IFormMgr::Message::FORM_MGR_BATCH_ADD_FORM_RECORDS_ST),
+        static_cast<uint32_t>(IFormMgr::Message::FORM_MGR_BATCH_ADD_FORM_RECORDS_ST),
         data,
         reply,
         option);
@@ -603,7 +603,7 @@ int SystemTestFormUtil::ClearFormRecords()
     MessageParcel reply;
     MessageOption option;
     int error = remoteObject->SendRequest(
-        static_cast <uint32_t>(IFormMgr::Message::FORM_MGR_CLEAR_FORM_RECORDS_ST),
+        static_cast<uint32_t>(IFormMgr::Message::FORM_MGR_CLEAR_FORM_RECORDS_ST),
         data,
         reply,
         option);

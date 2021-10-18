@@ -28,10 +28,10 @@
 #include "context_deal.h"
 #include "form_event.h"
 #include "form_st_common_info.h"
-#include "system_test_form_util.h"
 #include "iservice_registry.h"
 #include "nlohmann/json.hpp"
 #include "system_ability_definition.h"
+#include "system_test_form_util.h"
 
 using OHOS::AAFwk::Want;
 using namespace testing::ext;
@@ -131,7 +131,6 @@ void FmsAcquireFormTestBatch::FormEventSubscriber::OnReceiveEvent(const CommonEv
 
 void FmsAcquireFormTestBatch::SetUpTestCase()
 {
-    // SystemTestFormUtil::InstallHaps(hapNameList);
     if (!SubscribeEvent()) {
         GTEST_LOG_(INFO) << "SubscribeEvent error";
     }
@@ -139,7 +138,6 @@ void FmsAcquireFormTestBatch::SetUpTestCase()
 
 void FmsAcquireFormTestBatch::TearDownTestCase()
 {
-    // SystemTestFormUtil::UninstallBundle(bundleNameList);
     GTEST_LOG_(INFO) << "UnSubscribeCommonEvent calld";
     CommonEventManager::UnSubscribeCommonEvent(subscriber);
 }
