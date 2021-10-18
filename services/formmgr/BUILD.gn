@@ -108,7 +108,7 @@ ohos_shared_library("libfms") {
     "permission_standard:libpermissionsdk_standard",
     "power_manager_native:powermgr_client",
     "safwk:system_ability_fwk",
-    "samgr_L2:samgr_proxy",
+    "samgr_standard:samgr_proxy",
   ]
 
   subsystem_name = "appexecfwk"
