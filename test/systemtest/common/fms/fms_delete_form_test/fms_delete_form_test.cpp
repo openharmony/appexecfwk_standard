@@ -704,7 +704,7 @@ HWTEST_F(FmsDeleteFormTest, FMS_deleteForm_1200, Function | MediumTest | Level2)
         SystemTestFormUtil::StartAbility(want, abilityManager);
         EXPECT_EQ(SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_ABILITY_ONACTIVED, 0), 0);
         int tmp = 5;
-        std::string eventData = ((i/tmp == 1) ? "true" : "false");
+        std::string eventData = ((i / tmp == 1) ? "true" : "false");
         SystemTestFormUtil::PublishEvent(FORM_EVENT_REQ_DELETE_FORM_1200, EVENT_CODE_1200, eventData);
         EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_DELETE_FORM_1200, EVENT_CODE_1200));
         formIds[i] = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_DELETE_FORM_1200, EVENT_CODE_1200);
@@ -894,7 +894,7 @@ void FmsDeleteFormTest::FMS_deleteForm_1400_A()
         SystemTestFormUtil::StartAbility(want, abilityManager);
         EXPECT_EQ(SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_ABILITY_ONACTIVED, 0), 0);
         int tmp = 5;
-        std::string eventData = ((i/tmp == 1) ? "true" : "false");
+        std::string eventData = ((i / tmp == 1) ? "true" : "false");
         SystemTestFormUtil::PublishEvent(FORM_EVENT_REQ_ONE_NORMAL_FORM, EVENT_CODE_1400, eventData);
         EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_ONE_NORMAL_FORM, EVENT_CODE_100));
         formIds[i] = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_ONE_NORMAL_FORM, EVENT_CODE_100);
@@ -936,7 +936,7 @@ void FmsDeleteFormTest::FMS_deleteForm_1400_B()
         SystemTestFormUtil::StartAbility(want, abilityManager);
         EXPECT_EQ(SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_ABILITY_ONACTIVED, 0), 0);
         int tmp = 5;
-        std::string eventData = ((i/tmp == 1) ? "true" : "false");
+        std::string eventData = ((i / tmp == 1) ? "true" : "false");
         SystemTestFormUtil::PublishEvent(FORM_EVENT_REQ_DELETE_FORM_1400, EVENT_CODE_1400, eventData);
         EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_DELETE_FORM_1400, EVENT_CODE_1400));
         formIds[i] = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_DELETE_FORM_1400, EVENT_CODE_1400);
