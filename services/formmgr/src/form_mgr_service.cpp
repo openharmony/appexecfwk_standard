@@ -19,6 +19,8 @@
 
 #include "appexecfwk_errors.h"
 #include "app_log_wrapper.h"
+#include "common_event_manager.h"
+#include "common_event_support.h"
 #include "form_ams_helper.h"
 #include "form_bms_helper.h"
 #include "form_constants.h"
@@ -55,7 +57,10 @@ FormMgrService::FormMgrService()
 }
 
 FormMgrService::~FormMgrService()
-{}
+{
+    EventFwk::CommonEventManager::UnSubscribeCommonEvent(formSysEventReceiver_);
+    formSysEventReceiver_ = nullptr;
+}
 
 bool FormMgrService::IsReady() const
 {
@@ -259,6 +264,16 @@ int FormMgrService::DumpFormInfoByFormId(const std::int64_t formId, std::string 
     return FormMgrAdapter::GetInstance().DumpFormInfoByFormId(formId, formInfo);
 }
 /**
+ * @brief Dump form timer by form id.
+ * @param formId The id of the form.
+ * @param formInfo Form info.
+ * @return Returns ERR_OK on success, others on failure.
+ */
+int FormMgrService::DumpFormTimerByFormId(const std::int64_t formId, std::string &isTimingService)
+{
+    return FormMgrAdapter::GetInstance().DumpFormTimerByFormId(formId, isTimingService);
+}
+/**
  * @brief Process js message event.
  * @param formId Indicates the unique id of form.
  * @param want information passed to supplier.
@@ -275,6 +290,24 @@ int FormMgrService::MessageEvent(const int64_t formId, const Want &want, const s
     }
 
     return FormMgrAdapter::GetInstance().MessageEvent(formId, want, callerToken);
+}
+
+/**
+ * @brief Batch add forms to form records for st limit value test.
+ * @param want The want of the form to add.
+ * @return Returns forms count to add.
+ */
+int FormMgrService::BatchAddFormRecords(const Want &want)
+{
+    return FormMgrAdapter::GetInstance().BatchAddFormRecords(want);
+}
+/**
+ * @brief Clear form records for st limit value test.
+ * @return Returns forms count to delete.
+ */
+int FormMgrService::ClearFormRecords()
+{
+    return FormMgrAdapter::GetInstance().ClearFormRecords();
 }
 /**
  * @brief Start envent for the form manager service.
@@ -339,6 +372,17 @@ ErrCode FormMgrService::Init()
         return ERR_INVALID_OPERATION;
     }
 
+    if (formSysEventReceiver_ == nullptr) {
+        EventFwk::MatchingSkills matchingSkills;
+        matchingSkills.AddEvent(EventFwk::CommonEventSupport::COMMON_EVENT_PACKAGE_REMOVED);
+        matchingSkills.AddEvent(EventFwk::CommonEventSupport::COMMON_EVENT_ABILITY_UPDATED);
+        matchingSkills.AddEvent(EventFwk::CommonEventSupport::COMMON_EVENT_PACKAGE_DATA_CLEARED);
+
+        // init TimerReceiver
+        EventFwk::CommonEventSubscribeInfo subscribeInfo(matchingSkills);
+        formSysEventReceiver_ = std::make_shared<FormSysEventReceiver>(subscribeInfo);
+        EventFwk::CommonEventManager::SubscribeCommonEvent(formSysEventReceiver_);
+    }
     FormDbCache::GetInstance().Start();
 
     APP_LOGI("init success");
@@ -351,7 +395,26 @@ ErrCode FormMgrService::Init()
  */
 bool FormMgrService::CheckFormPermission()
 {
-    return true;
+    sptr<IBundleMgr> iBundleMgr = FormBmsHelper::GetInstance().GetBundleMgr();
+    if (iBundleMgr == nullptr) {
+        APP_LOGE("%{public}s, failed to get IBundleMgr.", __func__);
+        return false;
+    }
+
+    int32_t uid = IPCSkeleton::GetCallingUid();
+    if (!iBundleMgr->CheckIsSystemAppByUid(uid)) {
+        APP_LOGE("%{public}s fail, form is not system app. uid:%{public}d", __func__, uid);
+        return false;
+    }
+
+    std::string bundleName;
+    bool result = iBundleMgr->GetBundleNameForUid(uid, bundleName);
+    if (!result || bundleName.empty()) {
+        APP_LOGE("%{public}s failed, cannot get bundle name by uid:%{public}d", __func__, uid);
+        return false;
+    }
+
+    return CheckFormPermission(bundleName);
 }
 
 bool FormMgrService::CheckFormPermission(const std::string &bundleName) const

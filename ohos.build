@@ -86,6 +86,7 @@
         "//foundation/appexecfwk/standard/sa_profile:foundation.rc",
         "//foundation/appexecfwk/standard/test/resource/amssystemtestability/abilitySrc:ams_system_test_app",
         "//foundation/appexecfwk/standard/test/resource/bmssystemtestability/abilitySrc:bms_system_test_app",
+        "//foundation/appexecfwk/standard/test/resource/formsystemtestability:fms_system_test_app",
         "//foundation/appexecfwk/standard/kits/appkit/napi:napi_packages"
       ],
       "test_list": [

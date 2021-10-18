@@ -330,6 +330,11 @@ public:
      * @param formProviderInfo FormProviderInfo object
      */
     void UpdateFormProviderInfo(const int64_t formId, const FormProviderInfo &formProviderInfo);
+
+    /**
+    * @brief Clear form records for st limit value test.
+    */
+    void ClearFormRecords();
 private:
     /**
      * @brief Create form record.

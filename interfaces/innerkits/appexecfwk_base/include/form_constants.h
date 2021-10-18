@@ -101,6 +101,8 @@ namespace Constants {
     // the delimiter between bundleName and abilityName
     const std::string NAME_DELIMITER = "::";
 
+    const std::string PARAM_FORM_ADD_COUNT = "form.add.count";
+
     const size_t MAX_LAYOUT = 8;
     const std::map<int32_t, std::string> DIMENSION_MAP = {
         {1, "1*2"},

@@ -1,0 +1,80 @@
+# Copyright (c) 2021 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+import("//build/ohos.gni")
+import("//foundation/appexecfwk/standard/appexecfwk.gni")
+
+config("fmsSystemTestHostCommonBConfig") {
+  visibility = [ ":*" ]
+  include_dirs = [
+    "include",
+    "../tool/include",
+    "${appexecfwk_path}/test/systemtest/common/fms/common/include",
+    "${aafwk_path}/interfaces/innerkits/ability_manager/include",
+    "${aafwk_path}/interfaces/innerkits/want/include/ohos/aafwk/content",
+    "${aafwk_path}/services/abilitymgr/include",
+    "${appexecfwk_path}/common/log/include",
+    "${appexecfwk_path}/interfaces/innerkits/libeventhandler/include",
+    "${appexecfwk_path}/kits/appkit/native/app",
+    "${appexecfwk_path}/services/bundlemgr/include",
+    "//foundation/distributedschedule/dmsfwk/services/dtbschedmgr/include",
+    "//utils/system/safwk/native/include",
+    "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core/include/appmgr",
+    "//third_party/jsoncpp/include",
+    "//foundation/distributedschedule/safwk/services/safwk/include",
+  ]
+  defines = [
+    "APP_LOG_TAG = \"formManagerSystemTest\"",
+    "LOG_DOMAIN = 0xD002666",
+  ]
+}
+ohos_shared_library("fmsSystemTestHostCommonB") {
+  sources = [
+    "${appexecfwk_path}/test/systemtest/common/fms/common/src/form_event.cpp",
+    "${appexecfwk_path}/test/systemtest/common/fms/common/src/system_test_form_util.cpp",
+    "../tool/src/form_test_utils.cpp",
+    "src/form_ability_commonb.cpp",
+  ]
+  cflags = []
+  if (target_cpu == "arm") {
+    cflags += [ "-DBINDER_IPC_32BIT" ]
+  }
+  configs = [
+    ":fmsSystemTestHostCommonBConfig",
+    "${aafwk_path}/services/abilitymgr:abilityms_config",
+    "${appexecfwk_path}/services/appmgr:appmgr_config",
+  ]
+  deps = [
+    "${aafwk_path}/frameworks/kits/ability/native:abilitykit_native",
+    "${aafwk_path}/services/abilitymgr:abilityms",
+    "${appexecfwk_path}/common:libappexecfwk_common",
+    "${appexecfwk_path}/kits:appkit_native",
+    "${appexecfwk_path}/services/bundlemgr:libbms",
+    "//foundation/aafwk/standard/interfaces/innerkits/ability_manager:ability_manager",
+    "//foundation/distributedschedule/dmsfwk/interfaces/innerkits/uri:zuri",
+    "//third_party/jsoncpp:jsoncpp",
+    "//utils/native/base:utilsbase",
+  ]
+  external_deps = [
+    "aafwk_standard:base",
+    "aafwk_standard:want",
+    "appexecfwk_standard:appexecfwk_base",
+    "appexecfwk_standard:appexecfwk_core",
+    "ces_standard:cesfwk_core",
+    "ces_standard:cesfwk_innerkits",
+    "hiviewdfx_hilog_native:libhilog",
+    "ipc:ipc_core",
+    "safwk:system_ability_fwk",
+    "samgr_L2:samgr_proxy",
+  ]
+  subsystem_name = "formsystemtestability"
+}

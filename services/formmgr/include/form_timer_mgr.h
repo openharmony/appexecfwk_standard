@@ -134,7 +134,24 @@ public:
      * @return Returns true on success, false on failure.
      */
     bool OnDynamicTimeTrigger(long updateTime);
-
+    /**
+     * @brief Get interval timer task.
+     * @param formId The Id of the form.
+     * @return Returns true on success, false on failure.
+     */
+    bool GetIntervalTimer(const int64_t formId, FormTimer &formTimer);
+    /**
+     * @brief Get update at timer.
+     * @param formId The Id of the form.
+     * @return Returns true on success, false on failure.
+     */
+    bool GetUpdateAtTimer(const int64_t formId, UpdateAtItem &updateAtItem);
+    /**
+     * @brief Get dynamic refresh item.
+     * @param formId The Id of the form.
+     * @return Returns true on success, false on failure.
+     */  
+    bool GetDynamicItem(const int64_t formId, DynamicRefreshItem &dynamicItem);
 private:
     /**
      * @brief Add update at timer.
@@ -157,7 +174,6 @@ private:
      * @brief interval timer task timeout.
      */ 
     void OnIntervalTimeOut();
-
     /**
      * @brief Get remind tasks.
      * @param remindTasks Remind tasks.
@@ -312,7 +328,6 @@ private:
     std::map<int64_t, FormTimer> intervalTimerTasks_;
     std::list<UpdateAtItem> updateAtTimerTasks_;
     std::vector<DynamicRefreshItem> dynamicRefreshTasks_;
-    
     std::shared_ptr<TimerReceiver> timerReceiver_ = nullptr;
     OHOS::ThreadPool* taskExecutor_ = nullptr;
 
@@ -320,9 +335,6 @@ private:
     uint64_t updateAtTimerId_ = 0L;
     uint64_t dynamicAlarmTimerId_ = 0L;
     uint64_t limiterTimerId_= 0L;
-
-
-
 };
 
 }  // namespace AppExecFwk

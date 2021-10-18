@@ -30,21 +30,20 @@ bool FormJsInfo::ReadFromParcel(Parcel &parcel)
     formData = Str16ToStr8(parcel.ReadString16());
 
     auto bindingData = parcel.ReadParcelable<FormProviderData>();
+    formProviderData = *bindingData;
     if (nullptr == bindingData){
         return false;
     }
-    formProviderData = *bindingData;
     return true;
 }
 
 FormJsInfo *FormJsInfo::Unmarshalling(Parcel &parcel)
 {
-    FormJsInfo *formJsInfo = new (std::nothrow) FormJsInfo();
+    std::unique_ptr<FormJsInfo> formJsInfo = std::make_unique<FormJsInfo>();
     if (formJsInfo && !formJsInfo->ReadFromParcel(parcel)) {
-        delete formJsInfo;
         formJsInfo = nullptr;
     }
-    return formJsInfo;
+    return formJsInfo.release();
 }
 
 bool FormJsInfo::Marshalling(Parcel &parcel) const

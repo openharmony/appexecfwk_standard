@@ -1,0 +1,73 @@
+# Copyright (c) 2021 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import("//build/test.gni")
+import("//foundation/appexecfwk/standard/appexecfwk.gni")
+
+module_output_path = "appexecfwk_standard/formmanagerst"
+
+ohos_systemtest("FormUninstallAppTest") {
+  module_out_path = module_output_path
+  include_dirs = [
+    "${aafwk_path}/interfaces/innerkits/ability_manager/include",
+    "${appexecfwk_path}/test/systemtest/common/fms/common/include",
+    "//base/notification/ces_standard/test/systemtest/common/resource",
+    "//foundation/distributedschedule/safwk/services/safwk/include",
+  ]
+
+  sources = [
+    "${appexecfwk_path}/test/systemtest/common/fms/common/src/form_event.cpp",
+    "${appexecfwk_path}/test/systemtest/common/fms/common/src/system_test_form_util.cpp",
+    "fms_uninstall_app_test.cpp",
+  ]
+
+  cflags = []
+  if (target_cpu == "arm") {
+    cflags += [ "-DBINDER_IPC_32BIT" ]
+  }
+
+  configs = [
+    "${aafwk_path}/services/abilitymgr:abilityms_config",
+    "${appexecfwk_path}/services/appmgr:appmgr_config",
+  ]
+
+  deps = [
+    "${aafwk_path}/frameworks/kits/ability/native:abilitykit_native",
+    "${aafwk_path}/services/abilitymgr:abilityms",
+    "${appexecfwk_path}/common:libappexecfwk_common",
+    "//foundation/aafwk/standard/interfaces/innerkits/ability_manager:ability_manager",
+    "//foundation/appexecfwk/standard/interfaces/innerkits/libeventhandler:libeventhandler",
+    "//third_party/googletest:gtest_main",
+  ]
+
+  defines = [ "APP_LOG_TAG = \"formManagerUninstallAppTest\"" ]
+
+  external_deps = [
+    "aafwk_standard:base",
+    "aafwk_standard:want",
+    "appexecfwk_standard:appexecfwk_base",
+    "appexecfwk_standard:appexecfwk_core",
+    "ces_standard:cesfwk_core",
+    "ces_standard:cesfwk_innerkits",
+    "hiviewdfx_hilog_native:libhilog",
+    "ipc:ipc_core",
+    "safwk:system_ability_fwk",
+    "samgr_L2:samgr_proxy",
+  ]
+}
+
+group("systemtest") {
+  testonly = true
+
+  deps = [ ":FormUninstallAppTest" ]
+}

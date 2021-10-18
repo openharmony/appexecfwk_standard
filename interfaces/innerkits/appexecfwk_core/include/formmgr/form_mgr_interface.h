@@ -140,6 +140,13 @@ public:
      */
     virtual int DumpFormInfoByFormId(const std::int64_t formId, std::string &formInfo) = 0;
     /**
+     * @brief Dump form timer by form id.
+     * @param formId The id of the form.
+     * @param formInfo Form timer.
+     * @return Returns ERR_OK on success, others on failure.
+     */
+    virtual int DumpFormTimerByFormId(const std::int64_t formId, std::string &isTimingService) = 0;
+    /**
      * @brief Process js message event.
      * @param formId Indicates the unique id of form.
      * @param want information passed to supplier.
@@ -147,6 +154,18 @@ public:
      * @return Returns true if execute success, false otherwise.
      */
     virtual int MessageEvent(const int64_t formId, const Want &want, const sptr<IRemoteObject> &callerToken) = 0;
+
+    /**
+     * @brief Batch add forms to form records for st limit value test.
+     * @param want The want of the form to add.
+     * @return Returns ERR_OK on success, others on failure.
+     */
+    virtual int BatchAddFormRecords(const Want &want) = 0;
+    /**
+     * @brief Clear form records for st limit value test.
+     * @return Returns ERR_OK on success, others on failure.
+     */
+    virtual int ClearFormRecords() = 0;
 
     enum class Message {
         // ipc id 1-1000 for kit
@@ -170,7 +189,10 @@ public:
         FORM_MGR_STORAGE_FORM_INFOS,
         FORM_MGR_FORM_INFOS_BY_NAME,
         FORM_MGR_FORM_INFOS_BY_ID,
+        FORM_MGR_FORM_TIMER_INFO_BY_ID,
         FORM_MGR_MESSAGE_EVENT,
+        FORM_MGR_BATCH_ADD_FORM_RECORDS_ST,
+        FORM_MGR_CLEAR_FORM_RECORDS_ST,
     };
 };
 }  // namespace AppExecFwk

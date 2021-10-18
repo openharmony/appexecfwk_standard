@@ -1,0 +1,45 @@
+# Copyright (c) 2021 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import("//build/ohos.gni")
+import("//foundation/appexecfwk/standard/appexecfwk.gni")
+
+config("form_manager_test_config") {
+  defines = [
+    "APP_LOG_TAG = \"FormManagerTest\"",
+    "LOG_DOMAIN = 0xD00666F",
+  ]
+
+  configs = [
+    "${aafwk_path}/frameworks/kits/ability/native:ability_config",
+    "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base:appexecfwk_base_sdk_config",
+  ]
+}
+
+public_configs = [ ":form_manager_test_config" ]
+
+group("systemtest") {
+  testonly = true
+
+  deps = [
+    "fms_acquire_form_test:systemtest",
+    "fms_acquire_form_test_max:systemtest",
+    "fms_delete_form_test:systemtest",
+    "fms_fuzz_test:systemtest",
+    "fms_performance_test:systemtest",
+    "fms_release_form_test:systemtest",
+    "fms_self_starting_test:systemtest",
+    "fms_stress_test:systemtest",
+    "fms_uninstall_app_test:systemtest",
+  ]
+}

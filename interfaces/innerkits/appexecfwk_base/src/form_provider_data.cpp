@@ -13,9 +13,9 @@
  * limitations under the License.
  */
 
+#include <cinttypes>
 #include <fstream>
 #include <iostream>
-#include <cinttypes>
 
 #include "app_log_wrapper.h"
 #include "form_provider_data.h"
@@ -269,14 +269,11 @@ bool FormProviderData::Marshalling(Parcel &parcel) const
  */ 
 FormProviderData* FormProviderData::Unmarshalling(Parcel &parcel)
 {
-    FormProviderData *formProviderData = new (std::nothrow) FormProviderData();
+    std::unique_ptr<FormProviderData> formProviderData = std::make_unique<FormProviderData>();
     if (formProviderData && !formProviderData->ReadFromParcel(parcel)) {
-        delete formProviderData;
         formProviderData = nullptr;
     }
-    std::string str = formProviderData->GetDataString();
-    APP_LOGI("%{public}s, , provider data length: %{public}zu, provider data: %{public}s", __func__, str.length(), str.c_str());
-    return formProviderData;
+    return formProviderData.release();
 }
 
 /**

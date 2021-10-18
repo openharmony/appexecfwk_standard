@@ -617,6 +617,68 @@ void FormTimerMgr::SetIntervalEnableFlag(int64_t formId, bool flag)
     }
 }
 /**
+ * @brief Get interval timer task.
+ * @param formId The Id of the form.
+ * @return Returns true on success, false on failure.
+ */
+bool FormTimerMgr::GetIntervalTimer(const int64_t formId, FormTimer &formTimer)
+{
+    APP_LOGI("%{public}s start", __func__);
+    std::lock_guard<std::mutex> lock(intervalMutex_);
+    auto intervalTask = intervalTimerTasks_.find(formId);
+    if (intervalTask == intervalTimerTasks_.end()) {
+        APP_LOGI("%{public}s, interval timer not find", __func__);
+        return false;
+    }
+    formTimer = intervalTask->second;
+    APP_LOGI("%{public}s, get interval timer successfully", __func__);
+    return true;
+}
+/**
+ * @brief Get update at timer.
+ * @param formId The Id of the form.
+ * @return Returns true on success, false on failure.
+ */
+bool FormTimerMgr::GetUpdateAtTimer(const int64_t formId, UpdateAtItem &updateAtItem)
+{
+    APP_LOGI("%{public}s start", __func__);
+    {
+        std::lock_guard<std::mutex> lock(updateAtMutex_);        
+        std::list<UpdateAtItem>::iterator itItem;
+        for (itItem = updateAtTimerTasks_.begin(); itItem != updateAtTimerTasks_.end(); itItem++) {
+            if (itItem->refreshTask.formId == formId) {
+                updateAtItem.refreshTask = itItem->refreshTask;
+                updateAtItem.updateAtTime = itItem->updateAtTime;
+                APP_LOGI("%{public}s, get update at timer successfully", __func__);
+                return true;
+            }
+        }
+    }
+    APP_LOGI("%{public}s, update at timer not find", __func__);
+    return false;
+}
+/**
+ * @brief Get dynamic refresh item.
+ * @param formId The Id of the form.
+ * @return Returns true on success, false on failure.
+ */  
+bool FormTimerMgr::GetDynamicItem(const int64_t formId, DynamicRefreshItem &dynamicItem)
+{
+    APP_LOGI("%{public}s start", __func__);
+    std::lock_guard<std::mutex> lock(dynamicMutex_);       
+    std::vector<DynamicRefreshItem>::iterator itItem;
+    for (itItem = dynamicRefreshTasks_.begin(); itItem != dynamicRefreshTasks_.end();) {
+        if (itItem->formId == formId) {
+            dynamicItem.formId = itItem->formId;
+            dynamicItem.settedTime = itItem->settedTime;
+            APP_LOGI("%{public}s, get dynamic item successfully", __func__);
+            return true;
+        }        
+    }
+    APP_LOGI("%{public}s, dynamic item not find", __func__);
+    return false;
+}
+/**
  * @brief Delete interval timer task.
  * @param formId The Id of the form.
  * @return Returns true on success, false on failure.
