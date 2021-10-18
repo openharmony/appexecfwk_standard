@@ -28,10 +28,10 @@
 #include "context_deal.h"
 #include "form_event.h"
 #include "form_st_common_info.h"
-#include "system_test_form_util.h"
 #include "iservice_registry.h"
 #include "nlohmann/json.hpp"
 #include "system_ability_definition.h"
+#include "system_test_form_util.h"
 
 using OHOS::AAFwk::Want;
 using namespace testing::ext;
@@ -123,7 +123,6 @@ void FmsAcquireFormTestMax::FormEventSubscriber::OnReceiveEvent(const CommonEven
 
 void FmsAcquireFormTestMax::SetUpTestCase()
 {
-    // SystemTestFormUtil::InstallHaps(hapNameList);
     if (!SubscribeEvent()) {
         GTEST_LOG_(INFO) << "SubscribeEvent error";
     }
@@ -131,7 +130,6 @@ void FmsAcquireFormTestMax::SetUpTestCase()
 
 void FmsAcquireFormTestMax::TearDownTestCase()
 {
-    // SystemTestFormUtil::UninstallBundle(bundleNameList);
     GTEST_LOG_(INFO) << "UnSubscribeCommonEvent calld";
     CommonEventManager::UnSubscribeCommonEvent(subscriber);
 }
@@ -687,7 +685,7 @@ bool FmsAcquireFormTestMax::FmsAcquireFormTempForFailed(const std::string &bundl
     std::string strFormId = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_ACQUIRE_FORM_TEMP, EVENT_CODE_TEMP);
     bool result = strFormId.empty();
     EXPECT_TRUE(result);
-     GTEST_LOG_(INFO) << "FmsAcquireFormTempForFailed,  result:" << result;
+    GTEST_LOG_(INFO) << "FmsAcquireFormTempForFailed,  result:" << result;
 
     std::cout << "END FmsAcquireFormTempForFailed, add temp form" << std::endl;
 

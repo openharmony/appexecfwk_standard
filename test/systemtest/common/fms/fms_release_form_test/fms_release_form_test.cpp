@@ -28,24 +28,15 @@
 #include "context_deal.h"
 #include "form_event.h"
 #include "form_st_common_info.h"
-#include "system_test_form_util.h"
 #include "iservice_registry.h"
 #include "nlohmann/json.hpp"
 #include "system_ability_definition.h"
+#include "system_test_form_util.h"
 
 using OHOS::AAFwk::Want;
 using namespace testing::ext;
 using namespace std::chrono_literals;
 using namespace OHOS::STtools;
-
-namespace {
-std::vector<std::string> bundleNameList = {
-    "com.ohos.form.manager.notsystemapp",
-};
-std::vector<std::string> hapNameList = {
-    "fmsSystemTestHostNotSys-signed",
-};
-}  // namespace
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -114,7 +105,6 @@ void FmsReleaseFormTest::FormEventSubscriber::OnReceiveEvent(const CommonEventDa
 void FmsReleaseFormTest::SetUpTestCase()
 {
     std::cout << "START Install============" << std::endl;
-    SystemTestFormUtil::InstallHaps(hapNameList);
     if (!SubscribeEvent()) {
         GTEST_LOG_(INFO) << "SubscribeEvent error";
     }
@@ -123,7 +113,6 @@ void FmsReleaseFormTest::SetUpTestCase()
 void FmsReleaseFormTest::TearDownTestCase()
 {
     std::cout << "START Uninstall============" << std::endl;
-    SystemTestFormUtil::UninstallBundle(bundleNameList);
     CommonEventManager::UnSubscribeCommonEvent(subscriber);
 }
 

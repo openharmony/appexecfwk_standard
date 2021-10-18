@@ -21,11 +21,10 @@
 
 using namespace OHOS::EventFwk;
 
-constexpr int64_t SEC_TO_MILLISEC = 1000;
-constexpr int64_t MILLISEC_TO_NANOSEC = 1000000;
-
 namespace OHOS {
 namespace AppExecFwk {
+constexpr int64_t SEC_TO_MILLISEC = 1000;
+constexpr int64_t MILLISEC_TO_NANOSEC = 1000000;
 using AbilityConnectionProxy = OHOS::AAFwk::AbilityConnectionProxy;
 
 int FormStServiceAbilityB::AbilityConnectCallback::onAbilityConnectDoneCount = 0;
@@ -344,7 +343,8 @@ void FormStServiceAbilityB::OnDelete(const int64_t formId)
     long currentTime = ts.tv_sec * SEC_TO_MILLISEC + ts.tv_nsec / MILLISEC_TO_NANOSEC;
 
     PublishEvent(COMMON_EVENT_TEST_ACTION1, FORM_EVENT_TRIGGER_RESULT::FORM_EVENT_TRIGGER_RESULT_OK, "OnDelete");
-    APP_LOGI("%{public}s end, formId: %{public}s, current time: %{public}ld", __func__, std::to_string(formId).c_str(), currentTime);
+    APP_LOGI("%{public}s end, formId: %{public}s, current time: %{public}ld", __func__,
+        std::to_string(formId).c_str(), currentTime);
 }
 
 void FormStServiceAbilityB::OnCastTemptoNormal(const int64_t formId)
@@ -355,8 +355,10 @@ void FormStServiceAbilityB::OnCastTemptoNormal(const int64_t formId)
     clock_gettime(CLOCK_REALTIME, &ts);
     long currentTime = ts.tv_sec * SEC_TO_MILLISEC + ts.tv_nsec / MILLISEC_TO_NANOSEC;
 
-    PublishEvent(COMMON_EVENT_TEST_ACTION1, FORM_EVENT_TRIGGER_RESULT::FORM_EVENT_TRIGGER_RESULT_OK, "OnCastTemptoNormal");
-    APP_LOGI("%{public}s end, formId: %{public}s, current time: %{public}ld", __func__, std::to_string(formId).c_str(), currentTime);
+    PublishEvent(COMMON_EVENT_TEST_ACTION1, FORM_EVENT_TRIGGER_RESULT::FORM_EVENT_TRIGGER_RESULT_OK,
+        "OnCastTemptoNormal");
+    APP_LOGI("%{public}s end, formId: %{public}s, current time: %{public}ld", __func__,
+        std::to_string(formId).c_str(), currentTime);
 }
 
 void FormStServiceAbilityB::OnVisibilityChanged(const std::map<int64_t, int32_t> &formEventsMap)
@@ -367,7 +369,8 @@ void FormStServiceAbilityB::OnVisibilityChanged(const std::map<int64_t, int32_t>
     clock_gettime(CLOCK_REALTIME, &ts);
     long currentTime = ts.tv_sec * SEC_TO_MILLISEC + ts.tv_nsec / MILLISEC_TO_NANOSEC;
 
-    PublishEvent(COMMON_EVENT_TEST_ACTION1, FORM_EVENT_TRIGGER_RESULT::FORM_EVENT_TRIGGER_RESULT_OK, "OnVisibilityChanged");
+    PublishEvent(COMMON_EVENT_TEST_ACTION1, FORM_EVENT_TRIGGER_RESULT::FORM_EVENT_TRIGGER_RESULT_OK,
+        "OnVisibilityChanged");
     APP_LOGI("%{public}s end, current time: %{public}ld", __func__, currentTime);
 }
 

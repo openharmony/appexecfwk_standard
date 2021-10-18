@@ -21,11 +21,10 @@
 
 using namespace OHOS::EventFwk;
 
-constexpr int64_t SEC_TO_MILLISEC = 1000;
-constexpr int64_t MILLISEC_TO_NANOSEC = 1000000;
-
 namespace OHOS {
 namespace AppExecFwk {
+constexpr int64_t SEC_TO_MILLISEC = 1000;
+constexpr int64_t MILLISEC_TO_NANOSEC = 1000000;
 using AbilityConnectionProxy = OHOS::AAFwk::AbilityConnectionProxy;
 
 int FormStServiceAbilityD::AbilityConnectCallback::onAbilityConnectDoneCount = 0;
