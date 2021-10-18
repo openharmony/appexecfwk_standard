@@ -13,8 +13,6 @@
 
 group("fms_system_test_app") {
   deps = [
-    "fmsSystemPerformance:fmsSystemPerformance",
-    "fmsSystemStress:fmsSystemStress",
     "fmsSystemTestHostCommonA:fmsSystemTestHostCommonA",
     "fmsSystemTestHostCommonB:fmsSystemTestHostCommonB",
     "fmsSystemTestHostNoPerm:fmsSystemTestHostNoPerm",
@@ -24,7 +22,6 @@ group("fms_system_test_app") {
     "fmsSystemTestHostNotSys:fmsSystemTestHostNotSys",
     "fmsSystemTestSelfStarting/selfStartingTestHostA:selfStartingTestHostA",
     "fmsSystemTestSelfStarting/selfStartingTestHostB:selfStartingTestHostB",
-    "fmsSystemTestUninstallApp:fmsSystemTestUninstallApp",
     "formSystemTestServiceA:formSystemTestServiceA",
     "formSystemTestServiceB:formSystemTestServiceB",
     "formSystemTestServiceC:formSystemTestServiceC",
