@@ -803,7 +803,7 @@ ErrCode FormMgrAdapter::AddExistFormRecord(const FormItemInfo &info, const sptr<
 
     // Add new form user uid.
     FormDataMgr::GetInstance().AddFormUserUid(formId, callingUid);
-    if(std::find(newRecord.formUserUids.begin(), newRecord.formUserUids.end(), callingUid) ==
+    if (std::find(newRecord.formUserUids.begin(), newRecord.formUserUids.end(), callingUid) ==
         newRecord.formUserUids.end()) {
         newRecord.formUserUids.emplace_back(callingUid);
     }

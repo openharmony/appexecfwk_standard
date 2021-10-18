@@ -13,9 +13,9 @@
  * limitations under the License.
  */
 #include "system_test_form_util.h"
-#include "install_tool_status_receiver.h"
 #include "iservice_registry.h"
 #include "status_receiver_host.h"
+#include "install_tool_status_receiver.h"
 
 namespace OHOS {
 namespace STtools {

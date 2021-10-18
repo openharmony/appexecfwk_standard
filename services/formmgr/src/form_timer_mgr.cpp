@@ -665,9 +665,9 @@ bool FormTimerMgr::GetUpdateAtTimer(const int64_t formId, UpdateAtItem &updateAt
 bool FormTimerMgr::GetDynamicItem(const int64_t formId, DynamicRefreshItem &dynamicItem)
 {
     APP_LOGI("%{public}s start", __func__);
-    std::lock_guard<std::mutex> lock(dynamicMutex_);       
+    std::lock_guard<std::mutex> lock(dynamicMutex_);
     std::vector<DynamicRefreshItem>::iterator itItem;
-    for (itItem = dynamicRefreshTasks_.begin(); itItem != dynamicRefreshTasks_.end();) {
+    for (itItem = dynamicRefreshTasks_.begin(); itItem != dynamicRefreshTasks_.end(); ) {
         if (itItem->formId == formId) {
             dynamicItem.formId = itItem->formId;
             dynamicItem.settedTime = itItem->settedTime;
