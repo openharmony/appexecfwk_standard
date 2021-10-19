@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef _FORM_ABILITY_B_H_
-#define _FORM_ABILITY_B_H_
+#ifndef _FORM_ABILITY_C_H_
+#define _FORM_ABILITY_C_H_
 #include "ability_loader.h"
 #include "common_event.h"
 #include "common_event_manager.h"
@@ -87,4 +87,4 @@ public:
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS
-#endif  // _FORM_ABILITY_B_H_
+#endif  // _FORM_ABILITY_C_H_
