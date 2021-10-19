@@ -233,7 +233,7 @@ void FormAbilityB::FMS_acquireForm_tempForm(std::string data)
 
 void FormAbilityB::FMS_acquireFormBatch(std::string data)
 {
-    APP_LOGI("%{public}s called", __func__); 
+    APP_LOGI("%{public}s called", __func__);
     // Set Want info begin
     Want want;
     want.SetParam(Constants::PARAM_FORM_DIMENSION_KEY, FORM_DIMENSION_1);

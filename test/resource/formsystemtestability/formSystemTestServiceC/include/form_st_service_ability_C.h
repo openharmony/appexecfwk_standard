@@ -130,7 +130,7 @@ private:
     };
     class AppEventSubscriber : public EventFwk::CommonEventSubscriber {
     public:
-        AppEventSubscriber(const EventFwk::CommonEventSubscribeInfo &sp) : CommonEventSubscriber(sp){};
+        AppEventSubscriber(const EventFwk::CommonEventSubscribeInfo &sp) : CommonEventSubscriber(sp) {};
         ~AppEventSubscriber() = default;
         virtual void OnReceiveEvent(const EventFwk::CommonEventData &data) override;
 

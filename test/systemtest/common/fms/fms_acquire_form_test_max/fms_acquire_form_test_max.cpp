@@ -187,7 +187,7 @@ HWTEST_F(FmsAcquireFormTestMax, FMS_acquireForm_3000, Function | MediumTest | Le
     sleep(7);
     std::cout << "START FMS_acquireForm_3000" << std::endl;
     std::cout << "FMS_acquireForm_3000, form size of the host A:" << normalFormsMaxA.size() << std::endl;
-    FmsAcquireForm3000();    
+    FmsAcquireForm3000();
     std::cout << "END FMS_acquireForm_3000" << std::endl;
 }
 
@@ -407,7 +407,7 @@ HWTEST_F(FmsAcquireFormTestMax, FMS_acquireForm_3400, Function | MediumTest | Le
         sleep(7);
         std::string strFormId = FmsAcquireFormTemp(bundleNameB, abilityNameB);
         tempFormsMaxB.emplace_back(strFormId);
-        std::cout << "FMS_acquireForm_3400, temp form size of the host B:" << tempFormsMaxB.size() << std::endl;        
+        std::cout << "FMS_acquireForm_3400, temp form size of the host B:" << tempFormsMaxB.size() << std::endl;
     }
     std::cout << "END add temp form to the host B" << std::endl;
 
