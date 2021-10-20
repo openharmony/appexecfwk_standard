@@ -90,7 +90,7 @@ ohos_unittest("context_deal_interface_test") {
     "//foundation/appexecfwk/standard/interfaces/innerkits/libeventhandler:libeventhandler",
     "//foundation/appexecfwk/standard/kits:appkit_native",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
-    "//foundation/multimodalinput/input/interfaces/native/innerkits/event:mmi_event",
+    "//foundation/multimodalinput/input/frameworks/proxy:libmmi-client",
     "//third_party/googletest:gmock_main",
     "//third_party/googletest:gtest_main",
     "//utils/native/base:utils",
