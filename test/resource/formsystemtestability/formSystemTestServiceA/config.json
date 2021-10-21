@@ -1,56 +1,61 @@
 {
   "app": {
-    "bundleName": "com.provider.bundleName1",
-    "vendor": "ohos",
+    "bundleName": "com.form.formsystemtestservicea",
+    "vendor": "neusoft",
     "version": {
       "code": 1,
       "name": "1.0"
     },
     "apiVersion": {
-      "compatible": 3,
-      "target": 3
+      "compatible": 5,
+      "target": 5,
+      "releaseType": "Beta1"
     }
   },
-  "deviceConfig": {
-    "default": {
-    }
-  },
+  "deviceConfig": {},
   "module": {
-    "package": "com.provider.FormSystemTestServiceA.src",
-    "name": "moduleName11",
+    "package": "com.form.formsystemtestservicea",
+    "name": ".MyApplication",
     "deviceType": [
       "phone"
     ],
     "distro": {
       "deliveryWithInstall": true,
-      "moduleName": "moduleName11",
+      "moduleName": "formmodule001",
       "moduleType": "entry"
     },
     "abilities": [
       {
-        "name": "FormStServiceAbilityA",
-        "icon": "$media:snowball",
-        "label": "FormStServiceAbilityA Ability",
-        "launchType": "standard",
-        "orientation": "unspecified",
-        "type": "service",
+        "skills": [
+          {
+            "entities": [
+              "entity.system.home"
+            ],
+            "actions": [
+              "action.system.home"
+            ]
+          }
+        ],
         "visible": true,
+        "name": "FormStServiceAbilityA",
+        "icon": "$media:icon",
+        "description": "$string:mainability_description",
+        "label": "$string:entry_MainAbility",
+        "type": "service",
+        "launchType": "standard",
         "formsEnabled": true,
+        "srcLanguage": "c++",
         "forms": [
           {
-            "name": "formName111",
+            "name": "Form_Js001",
             "description": "form_description",
             "isDefault": true,
             "type": "JS",
             "colorMode": "auto",
             "supportDimensions":[ "1*2", "2*2" ],
             "defaultDimension": "1*2",
-            "landscapeLayouts": [""],
-            "portraitLayouts": [""],
             "updateEnabled": true,
-            "scheduledUpateTime": "0:0",
-            "updateDuration": 1,
-            "deepLink": "",
+            "scheduledUpdateTime": "10:30",
             "jsComponentName": "card",
             "formVisibleNotify" : true,
             "metaData": {
@@ -63,19 +68,15 @@
             }
           },
           {
-            "name": "formName112",
+            "name": "Form_Js002",
             "description": "form_description",
             "isDefault": true,
             "type": "JS",
             "colorMode": "auto",
             "supportDimensions":[ "1*2", "2*2" ],
             "defaultDimension": "1*2",
-            "landscapeLayouts": [""],
-            "portraitLayouts": [""],
             "updateEnabled": true,
-            "scheduledUpateTime": "10:30",
-            "updateDuration": 0,
-            "deepLink": "",
+            "updateDuration": 1,
             "jsComponentName": "card",
             "formVisibleNotify" : true,
             "metaData": {
@@ -90,22 +91,16 @@
         ]
       }
     ],
-    "defPermissions": [
-      {
-        "name": "com.permission.CAMERA",
-        "grantMode": "system_grant",
-        "availableScope": ["signature"],
-        "label": "CAMERA permission",
-        "description": "CAMERA permission in detail"
-      }
-    ],
     "js": [
       {
-        "name": "card",
         "pages": [
           "pages/index/index"
         ],
-        "type": "form"
+        "name": "default",
+        "window": {
+          "designWidth": 720,
+          "autoDesignWidth": true
+        }
       }
     ]
   }

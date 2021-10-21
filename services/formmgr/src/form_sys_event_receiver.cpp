@@ -35,7 +35,6 @@
 namespace OHOS {
 namespace AppExecFwk {
 const std::string KEY_UID = "uid";
-const std::string KEY_BUNDLE_NAME = "bundleName";
 /**
  * @brief Receiver Constructor.
  * @param subscriberInfo Subscriber info.
@@ -51,14 +50,14 @@ void FormSysEventReceiver::OnReceiveEvent(const EventFwk::CommonEventData &event
 {
     AAFwk::Want want = eventData.GetWant();
     std::string action = want.GetAction();
-    std::string bundleName = want.GetStringParam(KEY_BUNDLE_NAME);
+    std::string bundleName = want.GetElement().GetBundleName();
     if (action.empty() || bundleName.empty()) {
         APP_LOGE("%{public}s failed, invalid param, action: %{public}s, bundleName: %{public}s",
             __func__, action.c_str(), bundleName.c_str());
         return;
     }
     APP_LOGI("%{public}s, action:%{public}s.", __func__, action.c_str());
-    if (action == EventFwk::CommonEventSupport::COMMON_EVENT_ABILITY_REMOVED) {
+    if (action == EventFwk::CommonEventSupport::COMMON_EVENT_PACKAGE_REMOVED) {
         APP_LOGI("%{public}s, bundle removed, bundleName: %{public}s", __func__, bundleName.c_str());
         HandleProviderRemoved(bundleName);
     } else if (action == EventFwk::CommonEventSupport::COMMON_EVENT_ABILITY_UPDATED) {

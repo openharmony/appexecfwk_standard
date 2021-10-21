@@ -129,6 +129,13 @@ public:
      * @return Returns ERR_OK on success, others on failure.
      */
     int DumpFormInfoByFormId(const std::int64_t formId, std::string &formInfo) const;
+    /**
+     * @brief Dump form timer by form id.
+     * @param formId The id of the form.
+     * @param formInfo Form timer.
+     * @return Returns ERR_OK on success, others on failure.
+     */
+    int DumpFormTimerByFormId(const std::int64_t formId, std::string &isTimingService) const;
 
     /**
      * @brief set next refresh time.
@@ -178,6 +185,18 @@ public:
      * @return none.
      */
     void NotifyFormDelete(const int64_t formId, const Want &want, const sptr<IRemoteObject> &remoteObject);
+
+    /**
+     * @brief Batch add forms to form records for st limit value test.
+     * @param want The want of the form to add.
+     * @return Returns forms count to add.
+     */
+    int BatchAddFormRecords(const Want &want);
+    /**
+     * @brief Clear form records for st limit value test.
+     * @return Returns forms count to delete.
+     */
+    int ClearFormRecords();
 private:
     /**
      * @brief Get form configure info.
@@ -302,10 +321,11 @@ private:
      * @param record Form data.
      * @param formId The form id.
      * @param wantParams WantParams of the request.
+     * @param formInfo Form info for form host.
      * @return Returns ERR_OK on success, others on failure.
      */
     ErrCode AddExistFormRecord(const FormItemInfo &info, const sptr<IRemoteObject> &callerToken,
-        const FormRecord &record, const int64_t formId, const WantParams &wantParams);
+        const FormRecord &record, const int64_t formId, const WantParams &wantParams, FormJsInfo &formInfo);
 
     /**
      * @brief Add new form record.
@@ -393,6 +413,37 @@ private:
      * @return Returns true on success, others on failure.
      */    
     bool GetBundleName(std::string &bundleName);
+
+    /**
+     * @brief Update provider info to host
+     * 
+     * @param matchedFormId The Id of the form
+     * @param callerToken Caller ability token.
+     * @param formVisibleType The form visible type, including FORM_VISIBLE and FORM_INVISIBLE.
+     * @param formRecord Form storage information
+     * @return Returns true on success, false on failure.
+     */
+    bool UpdateProviderInfoToHost(const int64_t matchedFormId, const sptr<IRemoteObject> &callerToken,
+        const int32_t formVisibleType, FormRecord &formRecord);
+
+    /**
+     * @brief If the form provider is system app and the config item 'formVisibleNotify' is true,
+     *        notify the form provider that the current form is visible.
+     * 
+     * @param bundleName BundleName
+     * @return Returns true if the form provider is system app, false if not.
+     */
+    bool CheckIsSystemAppByBundleName(const sptr<IBundleMgr> &iBundleMgr, const std::string &bundleName);
+    /**
+     * @brief Create eventMaps for event notify.
+     * 
+     * @param matchedFormId The Id of the form
+     * @param formRecord Form storage information
+     * @param eventMaps eventMaps for event notify
+     * @return Returns true on success, false on failure.
+     */
+    bool CreateHandleEventMap(const int64_t matchedFormId, const FormRecord &formRecord,
+        std::map<std::string, std::vector<int64_t>> &eventMaps);
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS

@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef FORM_ST_SERVICE_ABILITY_A1_
-#define FORM_ST_SERVICE_ABILITY_A1_
+#ifndef FORM_ST_SERVICE_ABILITY_B_
+#define FORM_ST_SERVICE_ABILITY_B_
 #include <string>
 #include <map>
 #include "ability_connect_callback_stub.h"
@@ -22,19 +22,26 @@
 #include "ability_loader.h"
 #include "common_event.h"
 #include "common_event_manager.h"
-
 #include "form_provider_info.h"
 
 namespace OHOS {
 namespace AppExecFwk {
 using AbilityConnectionStub = OHOS::AAFwk::AbilityConnectionStub;
 using AbilityConnectionProxy = OHOS::AAFwk::AbilityConnectionProxy;
-const std::string APP_A1_RESP_EVENT_NAME = "resp_com_ohos_formst_service_app_a1";
-const std::string APP_A1_REQ_EVENT_NAME = "req_com_ohos_formst_service_app_a1";
+const std::string APP_A_RESP_EVENT_NAME = "resp_com_ohos_formst_service_app_b";
+const std::string APP_A_REQ_EVENT_NAME = "req_com_ohos_formst_service_app_b";
+const std::string COMMON_EVENT_TEST_ACTION1 = "usual.event.test1";
+/**
+ * Form event trigger result
+ */
+typedef enum {
+    FORM_EVENT_TRIGGER_RESULT_NG                    = 0,
+    FORM_EVENT_TRIGGER_RESULT_OK                    = 1,
+} FORM_EVENT_TRIGGER_RESULT;
 
-class FormStServiceAbilityA1 : public Ability {
+class FormStServiceAbilityB : public Ability {
 public:
-    ~FormStServiceAbilityA1();
+    ~FormStServiceAbilityB();
 
 protected:
     virtual void OnStart(const Want &want) override;
@@ -47,6 +54,11 @@ protected:
     virtual sptr<IRemoteObject> OnConnect(const Want &want) override;
     virtual void OnDisconnect(const Want &want) override;
     virtual FormProviderInfo OnCreate(const Want &want) override;
+    virtual void OnUpdate(const int64_t formId) override;
+    virtual void OnTriggerEvent(const int64_t formId, const std::string &message) override;
+    virtual void OnDelete(const int64_t formId) override;
+    virtual void OnCastTemptoNormal(const int64_t formId) override;
+    virtual void OnVisibilityChanged(const std::map<int64_t, int32_t> &formEventsMap) override;
 
 private:
     void Clear();
@@ -70,7 +82,7 @@ private:
     std::string nextTargetAbilityConn_ = {};
     std::string zombie_ = {};
 
-    typedef void (FormStServiceAbilityA1::*func)();
+    typedef void (FormStServiceAbilityB::*func)();
     static std::map<std::string, func> funcMap_;
     class AbilityConnectCallback;
     sptr<AbilityConnectCallback> stub_ = {};
@@ -96,7 +108,7 @@ private:
         {
             if (resultCode == 0) {
                 onAbilityConnectDoneCount++;
-                PublishEvent(APP_A1_RESP_EVENT_NAME, onAbilityConnectDoneCount, "OnAbilityConnectDone");
+                PublishEvent(APP_A_RESP_EVENT_NAME, onAbilityConnectDoneCount, "OnAbilityConnectDone");
             }
         }
 
@@ -110,7 +122,7 @@ private:
         {
             if (resultCode == 0) {
                 onAbilityConnectDoneCount--;
-                PublishEvent(APP_A1_RESP_EVENT_NAME, onAbilityConnectDoneCount, "OnAbilityDisconnectDone");
+                PublishEvent(APP_A_RESP_EVENT_NAME, onAbilityConnectDoneCount, "OnAbilityDisconnectDone");
             }
         }
 
@@ -118,13 +130,13 @@ private:
     };
     class AppEventSubscriber : public EventFwk::CommonEventSubscriber {
     public:
-        AppEventSubscriber(const EventFwk::CommonEventSubscribeInfo &sp) : CommonEventSubscriber(sp){};
+        AppEventSubscriber(const EventFwk::CommonEventSubscribeInfo &sp) : CommonEventSubscriber(sp) {};
         ~AppEventSubscriber() = default;
         virtual void OnReceiveEvent(const EventFwk::CommonEventData &data) override;
 
-        FormStServiceAbilityA1 *mainAbility_ = nullptr;
+        FormStServiceAbilityB *mainAbility_ = nullptr;
     };
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS
-#endif  // FORM_ST_SERVICE_ABILITY_A1_
+#endif  // FORM_ST_SERVICE_ABILITY_B_

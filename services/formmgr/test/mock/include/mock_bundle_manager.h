@@ -195,67 +195,7 @@ public:
     virtual bool GetShortcutInfos(const std::string &bundleName,std::vector<ShortcutInfo> &shortcut) override{
         return true;
     }
-    // /**
-    //  *  @brief Starts a shortcut based on the given shortcut ID and bundle name.
-    //  *  @param bundleName BundleName Indicates the bundle name of the application to which the shortcut belongs.
-    //  *  @param shortcutId Starts a shortcut based on the given shortcut ID and bundle name.
-    //  *  @return Returns true if StartShortcut get success
-    //  */
-    // virtual bool StartShortcut(const std::string &shortcutId, const std::string &bundleName) override{
-    //     return true;
-    // }
-    /**
-     *  @brief Disables specified home-screen shortcuts that are no longer used.
-     *  @param shortcutIds Indicates the list of shortcut IDs to be disabled.
-     *  @return Returns true if disableHomeShortcuts get success
-     */
-    // virtual bool DisableHomeShortcuts(std::vector<std::string> &shortcutIds) override{
-    //     return true;
-    // }
-    // /**
-    //  *  @brief Enables specified home-screen shortcuts.
-    //  *  @param shortcutIds Indicates the list of shortcut IDs to be enabled.
-    //  *  @return Returns true if enableHomeShortcuts? get success
-    //  */
-    // virtual bool EnableHomeShortcuts(std::vector<std::string> &shortcutIds) override{
-    //     return true;
-    // }
-    // /**
-    //  *  @brief Checks whether a shortcut can be added to the home screen where the application is located.
-    //  *  @return Returns true if a shortcut can be added to the home screen; returns false otherwise.
-    //  */
-    // virtual bool IsHomeShortcutSupportes() override{
-    //     return true;
-    // }
-    // /**
-    //  *  @brief Adds a home-screen shortcut that will be fixed on the home screen.
-    //  *  @param shortcutInfo Indicates the ShortcutInfo object containing information about the home-screen
-    //  *  shortcut to add. The id, label, and intent attributes of this parameter must be specified.
-    //  *  @return Returns true if the shortcut is successfully added; returns false otherwise.
-    //  */
-    // virtual bool AddHomeShortcut(ShortcutInfo &shortcutInfo) override{
-    //     return true;
-    // }
-    // /**
-    //  *  @brief Updates information about specified home-screen shortcuts that have been added.
-    //  *  @param shortcutInfos Updates information about specified home-screen shortcuts that have been added.
-    //  *  @return Returns true if the operation is successful; returns false otherwise.
-    //  */
-    // virtual bool UpdateShortcuts(std::vector<ShortcutInfo> &shortcutInfos) override{
-    //     return true;
-    // }
-    // /**
-    //  *  @brief  Checks whether a specified shortcut is available.
-    //  *  @param  shortcutId Indicates the ID of the shortcut to check.
-    //  *  @param  flag Indicates the type of the shortcut to check. Currently, only the home-screen shortcut
-    //  *  IBundleManager#QUERY_SHORTCUT_HOME is available.
-    //  *  @return Returns IBundleManager#SHORTCUT_EXISTENCE_EXISTS if the specified shortcut is available; returns
-    //  *  IBundleManager#SHORTCUT_EXISTENCE_NOT_EXISTS if it is not available;
-    //  *  returns IBundleManager.SHORTCUT_EXISTENCE_UNKNOW if an error occurs.
-    //  */
-    // virtual int IsShortcutExist(const std::string &shortcutId, const int &flag) override{
-    //     return 0;
-    // }
+
     /**
      * @brief Obtain the HAP module info of a specific ability.
      * @param abilityInfo Indicates the ability.
@@ -451,67 +391,6 @@ public:
     virtual bool GetShortcutInfos(const std::string &bundleName,std::vector<ShortcutInfo> &shortcut) override{
         return true;
     }
-    // /**
-    //  *  @brief Starts a shortcut based on the given shortcut ID and bundle name.
-    //  *  @param bundleName BundleName Indicates the bundle name of the application to which the shortcut belongs.
-    //  *  @param shortcutId Starts a shortcut based on the given shortcut ID and bundle name.
-    //  *  @return Returns true if StartShortcut get success
-    //  */
-    // virtual bool StartShortcut(const std::string &shortcutId, const std::string &bundleName) override{
-    //     return true;
-    // }
-    // /**
-    //  *  @brief Disables specified home-screen shortcuts that are no longer used.
-    //  *  @param shortcutIds Indicates the list of shortcut IDs to be disabled.
-    //  *  @return Returns true if disableHomeShortcuts get success
-    //  */
-    // virtual bool DisableHomeShortcuts(std::vector<std::string> &shortcutIds) override{
-    //     return true;
-    // }
-    // /**
-    //  *  @brief Enables specified home-screen shortcuts.
-    //  *  @param shortcutIds Indicates the list of shortcut IDs to be enabled.
-    //  *  @return Returns true if enableHomeShortcuts? get success
-    //  */
-    // virtual bool EnableHomeShortcuts(std::vector<std::string> &shortcutIds) override{
-    //     return true;
-    // }
-    /**
-     *  @brief Checks whether a shortcut can be added to the home screen where the application is located.
-     *  @return Returns true if a shortcut can be added to the home screen; returns false otherwise.
-     */
-    // virtual bool IsHomeShortcutSupportes() override{
-    //     return true;
-    // }
-    // /**
-    //  *  @brief Adds a home-screen shortcut that will be fixed on the home screen.
-    //  *  @param shortcutInfo Indicates the ShortcutInfo object containing information about the home-screen shortcut
-    //  *  to add. The id, label, and intent attributes of this parameter must be specified.
-    //  *  @return Returns true if the shortcut is successfully added; returns false otherwise.
-    //  */
-    // virtual bool AddHomeShortcut(ShortcutInfo &shortcutInfo) override{
-    //     return true;
-    // }
-    // /**
-    //  *  @brief Updates information about specified home-screen shortcuts that have been added.
-    //  *  @param shortcutInfos Updates information about specified home-screen shortcuts that have been added.
-    //  *  @return Returns true if the operation is successful; returns false otherwise.
-    //  */
-    // virtual bool UpdateShortcuts(std::vector<ShortcutInfo> &shortcutInfos) override{
-    //     return true;
-    // }
-    // /**
-    //  *  @brief  Checks whether a specified shortcut is available.
-    //  *  @param  shortcutId Indicates the ID of the shortcut to check.
-    //  *  @param  flag Indicates the type of the shortcut to check. Currently, only the home-screen shortcut
-    //  *  IBundleManager#QUERY_SHORTCUT_HOME is available.
-    //  *  @return Returns IBundleManager#SHORTCUT_EXISTENCE_EXISTS if the specified shortcut is available; returns
-    //  *  IBundleManager#SHORTCUT_EXISTENCE_NOT_EXISTS if it is not available; returns
-    //  *  IBundleManager.SHORTCUT_EXISTENCE_UNKNOW if an error occurs.
-    //  */
-    // virtual int IsShortcutExist(const std::string &shortcutId, const int &flag) override{
-    //     return 0;
-    // }
 
     virtual bool GetAllFormsInfo(std::vector<FormInfo> &formInfo) override;
     virtual bool GetFormsInfoByApp(const std::string &bundleName, std::vector<FormInfo> &formInfo) override;

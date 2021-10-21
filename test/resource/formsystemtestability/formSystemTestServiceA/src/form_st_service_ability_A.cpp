@@ -314,7 +314,8 @@ void FormStServiceAbilityA::OnUpdate(const int64_t formId)
     long currentTime = ts.tv_sec * SEC_TO_MILLISEC + ts.tv_nsec / MILLISEC_TO_NANOSEC;
 
     PublishEvent(COMMON_EVENT_TEST_ACTION1, FORM_EVENT_TRIGGER_RESULT::FORM_EVENT_TRIGGER_RESULT_OK, "OnUpdate");
-    APP_LOGI("%{public}s end, formId: %{public}lld, current time: %{public}ld", __func__, formId, currentTime);
+    APP_LOGI("%{public}s end, formId: %{public}s, current time: %{public}ld", __func__,
+        std::to_string(formId).c_str(), currentTime);
 }
 
 void FormStServiceAbilityA::OnTriggerEvent(const int64_t formId, const std::string &message)
@@ -326,7 +327,8 @@ void FormStServiceAbilityA::OnTriggerEvent(const int64_t formId, const std::stri
     long currentTime = ts.tv_sec * SEC_TO_MILLISEC + ts.tv_nsec / MILLISEC_TO_NANOSEC;
 
     PublishEvent(COMMON_EVENT_TEST_ACTION1, FORM_EVENT_TRIGGER_RESULT::FORM_EVENT_TRIGGER_RESULT_OK, "OnTriggerEvent");
-    APP_LOGI("%{public}s end, formId: %{public}lld, message: %{public}s,  current time: %{public}ld", __func__, formId, message.c_str(), currentTime);
+    APP_LOGI("%{public}s end, formId: %{public}s, message: %{public}s,  current time: %{public}ld", __func__,
+        std::to_string(formId).c_str(), message.c_str(), currentTime);
 }
 
 void FormStServiceAbilityA::OnDelete(const int64_t formId)
@@ -337,8 +339,10 @@ void FormStServiceAbilityA::OnDelete(const int64_t formId)
     clock_gettime(CLOCK_REALTIME, &ts);
     long currentTime = ts.tv_sec * SEC_TO_MILLISEC + ts.tv_nsec / MILLISEC_TO_NANOSEC;
 
-    PublishEvent(COMMON_EVENT_TEST_ACTION1, FORM_EVENT_TRIGGER_RESULT::FORM_EVENT_TRIGGER_RESULT_OK, "OnDelete");
-    APP_LOGI("%{public}s end, formId: %{public}lld, current time: %{public}ld", __func__, formId, currentTime);
+    PublishEvent(COMMON_EVENT_ON_DELETE, FORM_EVENT_TRIGGER_RESULT::FORM_EVENT_TRIGGER_RESULT_OK,
+        std::to_string(formId));
+    APP_LOGI("%{public}s end, formId: %{public}s, current time: %{public}ld", __func__,
+        std::to_string(formId).c_str(), currentTime);
 }
 
 void FormStServiceAbilityA::OnCastTemptoNormal(const int64_t formId)
@@ -350,7 +354,8 @@ void FormStServiceAbilityA::OnCastTemptoNormal(const int64_t formId)
     long currentTime = ts.tv_sec * SEC_TO_MILLISEC + ts.tv_nsec / MILLISEC_TO_NANOSEC;
 
     PublishEvent(COMMON_EVENT_TEST_ACTION1, FORM_EVENT_TRIGGER_RESULT::FORM_EVENT_TRIGGER_RESULT_OK, "OnCastTemptoNormal");
-    APP_LOGI("%{public}s end, formId: %{public}lld, current time: %{public}ld", __func__, formId, currentTime);
+    APP_LOGI("%{public}s end, formId: %{public}s, current time: %{public}ld", __func__,
+        std::to_string(formId).c_str(), currentTime);
 }
 
 void FormStServiceAbilityA::OnVisibilityChanged(const std::map<int64_t, int32_t> &formEventsMap)

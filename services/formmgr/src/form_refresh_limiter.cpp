@@ -26,14 +26,14 @@ namespace AppExecFwk {
  * @param formId The id of the form.
  * @return Returns true on success, false on failure.
  */
-bool FormRefreshLimiter::AddItem(const int64_t formId) 
+bool FormRefreshLimiter::AddItem(const int64_t formId)
 {
     APP_LOGI("%{public}s start", __func__);
     std::lock_guard<std::mutex> lock(limiterMutex_);
     auto info = limiterMap_.find(formId);
     if (info == limiterMap_.end()) {
         LimitInfo limitInfo;
-        std::pair<std::map<int64_t, LimitInfo>::iterator, bool> retVal = 
+        std::pair<std::map<int64_t, LimitInfo>::iterator, bool> retVal =
             limiterMap_.emplace(formId, limitInfo);
         APP_LOGI("%{public}s end", __func__);
         return retVal.second;
@@ -46,7 +46,7 @@ bool FormRefreshLimiter::AddItem(const int64_t formId)
  * @brief Delete form limit info by formId.
  * @param formId The form id.
  */
-void FormRefreshLimiter::DeleteItem(const int64_t formId) 
+void FormRefreshLimiter::DeleteItem(const int64_t formId)
 {
     APP_LOGI("%{public}s start", __func__);
     std::lock_guard<std::mutex> lock(limiterMutex_);
@@ -121,7 +121,7 @@ void FormRefreshLimiter::Increase(const int64_t formId)
     APP_LOGI("%{public}s start", __func__);
     std::lock_guard<std::mutex> lock(limiterMutex_);
     auto info = limiterMap_.find(formId);
-    if (info != limiterMap_.end()) {   
+    if (info != limiterMap_.end()) {
         info->second.refreshCount++;
         APP_LOGI("increase,formId:%{public}" PRId64 ", count:%{public}d", formId, info->second.refreshCount);
         if (info->second.refreshCount == Constants::LIMIT_COUNT && !info->second.isReported) {
@@ -140,7 +140,7 @@ void FormRefreshLimiter::MarkRemind(const int64_t formId)
     APP_LOGI("%{public}s start", __func__);
     std::lock_guard<std::mutex> lock(limiterMutex_);
     auto info = limiterMap_.find(formId);
-    if (info != limiterMap_.end()) {   
+    if (info != limiterMap_.end()) {
         if (info->second.refreshCount >= Constants::LIMIT_COUNT) {
             info->second.remindFlag = true;
         }

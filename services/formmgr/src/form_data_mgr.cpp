@@ -1084,6 +1084,7 @@ void FormDataMgr::ParseIntervalConfig(FormRecord &record, const int configDurati
     }
     APP_LOGI("%{public}s end", __func__);
 }
+
 /**
  * @brief Parse at time config.
  * @param record The form record.
@@ -1130,6 +1131,21 @@ bool FormDataMgr::IsFormCached(const FormRecord record)
         return false;
     }
     return FormCacheMgr::GetInstance().IsExist(record.formId);
+}
+
+/**
+ * @brief Clear form records for st limit value test.
+ */
+void FormDataMgr::ClearFormRecords()
+{
+    {
+        std::lock_guard<std::mutex> lock(formRecordMutex_);
+        formRecords_.clear();
+    }
+    {
+        std::lock_guard<std::mutex> lock(formTempMutex_);
+        tempForms_.clear();
+    }
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS
