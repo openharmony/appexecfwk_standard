@@ -461,6 +461,31 @@ int FormMgrProxy::DumpFormInfoByFormId(const std::int64_t formId, std::string &f
     return error;
 }
 /**
+ * @brief Dump timer info by form id.
+ * @param formId The id of the form.
+ * @param formInfo Form timer info.
+ * @return Returns ERR_OK on success, others on failure.
+ */
+int FormMgrProxy::DumpFormTimerByFormId(const std::int64_t formId, std::string &isTimingService)
+{
+    MessageParcel data;
+    if (!WriteInterfaceToken(data)) {
+        APP_LOGE("%{public}s, failed to write interface token", __func__);
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    if (!data.WriteInt64(formId)) {
+        APP_LOGE("%{public}s, failed to write formId", __func__);
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+
+    int error = GetStringInfo(IFormMgr::Message::FORM_MGR_FORM_TIMER_INFO_BY_ID, data, isTimingService);
+    if (error != ERR_OK) {
+        APP_LOGE("%{public}s, failed to GetStringInfo: %{public}d", __func__, error);          
+    }
+
+    return error;
+}
+/**
  * @brief Process js message event.
  * @param formId Indicates the unique id of form.
  * @param want information passed to supplier.
@@ -500,6 +525,26 @@ int FormMgrProxy::MessageEvent(const int64_t formId, const Want &want, const spt
         return ERR_APPEXECFWK_FORM_SEND_FMS_MSG;
     }
     return reply.ReadInt32();
+}
+
+/**
+ * @brief Batch add forms to form records for st limit value test.
+ * @param want The want of the form to add.
+ * @return Returns ERR_OK on success, others on failure.
+ */
+int FormMgrProxy::BatchAddFormRecords(const Want &want)
+{
+    // must not implement, just for st
+    return ERR_OK;
+}
+/**
+ * @brief Clear form records for st limit value test.
+ * @return Returns ERR_OK on success, others on failure.
+ */
+int FormMgrProxy::ClearFormRecords()
+{
+    // must not implement, just for st
+    return ERR_OK;
 }
 
 template<typename T>

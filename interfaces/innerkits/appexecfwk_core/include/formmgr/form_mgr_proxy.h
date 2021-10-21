@@ -133,6 +133,13 @@ public:
      */
     virtual int DumpFormInfoByFormId(const std::int64_t formId, std::string &formInfo) override;
     /**
+     * @brief Dump timer info by form id.
+     * @param formId The id of the form.
+     * @param formInfo Form timer info.
+     * @return Returns ERR_OK on success, others on failure.
+     */
+    virtual int DumpFormTimerByFormId(const std::int64_t formId, std::string &isTimingService) override;
+    /**
      * @brief Process js message event.
      * @param formId Indicates the unique id of form.
      * @param want information passed to supplier.
@@ -140,6 +147,18 @@ public:
      * @return Returns true if execute success, false otherwise.
      */
     virtual int MessageEvent(const int64_t formId, const Want &want, const sptr<IRemoteObject> &callerToken) override;
+
+    /**
+     * @brief Batch add forms to form records for st limit value test.
+     * @param want The want of the form to add.
+     * @return Returns ERR_OK on success, others on failure.
+     */
+    virtual int BatchAddFormRecords(const Want &want) override;
+    /**
+     * @brief Clear form records for st limit value test.
+     * @return Returns ERR_OK on success, others on failure.
+     */
+    virtual int ClearFormRecords() override;
 private:
     template<typename T>
     int GetParcelableInfos(MessageParcel &reply, std::vector<T> &parcelableInfos);

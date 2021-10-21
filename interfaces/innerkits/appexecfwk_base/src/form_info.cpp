@@ -120,13 +120,12 @@ bool FormInfo::ReadFromParcel(Parcel &parcel)
 
 FormInfo *FormInfo::Unmarshalling(Parcel &parcel)
 {
-    FormInfo *info = new FormInfo();
-    if (!info->ReadFromParcel(parcel)) {
+    std::unique_ptr<FormInfo> info = std::make_unique<FormInfo>();
+    if (info && !info->ReadFromParcel(parcel)) {
         APP_LOGW("read from parcel failed");
-        delete info;
         info = nullptr;
     }
-    return info;
+    return info.release();
 }
 
 bool FormInfo::Marshalling(Parcel &parcel) const
@@ -182,7 +181,7 @@ bool FormInfo::Marshalling(Parcel &parcel) const
 void to_json(nlohmann::json &jsonObject, const FormCustomizeData &customizeDatas)
 {
     jsonObject = nlohmann::json{
-        {JSON_KEY_NAME, customizeDatas.name}, 
+        {JSON_KEY_NAME, customizeDatas.name},
         {JSON_KEY_VALUE, customizeDatas.value}
         };
 }

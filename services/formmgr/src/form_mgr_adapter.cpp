@@ -219,8 +219,7 @@ ErrCode FormMgrAdapter::HandleDeleteForm(const int64_t formId, const sptr<IRemot
 
     int callingUid = IPCSkeleton::GetCallingUid();
     bool isSelfDbFormId = (std::find(dbRecord.formUserUids.begin(), dbRecord.formUserUids.end(), callingUid) != 
-            dbRecord.formUserUids.end()) ? true : false;
-
+        dbRecord.formUserUids.end()) ? true : false;
     if (!isSelfDbFormId) {
         APP_LOGE("%{public}s, not self form:%{public}" PRId64 "", __func__, formId);
         return ERR_APPEXECFWK_FORM_OPERATION_NOT_SELF;
@@ -480,62 +479,19 @@ ErrCode FormMgrAdapter::NotifyWhetherVisibleForms(const std::vector<int64_t> &fo
         }
         matchedFormId = FormDataMgr::GetInstance().FindMatchedFormId(formId);
         FormRecord formRecord;
-        if (!FormDataMgr::GetInstance().GetFormRecord(matchedFormId, formRecord)) {
-            APP_LOGW("%{public}s fail, not exist such form, formId:%{public}" PRId64 ".", __func__, matchedFormId);
+        // Update provider info to host
+        if (!UpdateProviderInfoToHost(matchedFormId, callerToken, formVisibleType, formRecord)) {
             continue;
         }
 
-        FormHostRecord formHostRecord;
-        bool hasFormHostRecord = FormDataMgr::GetInstance().GetMatchedHostClient(callerToken, formHostRecord);
-        if (!(hasFormHostRecord && formHostRecord.Contains(matchedFormId))) {
-            APP_LOGW("%{public}s fail, form is not belong to self, formId:%{public}" PRId64 ".", __func__, matchedFormId);
+        // Check if the form provider is system app
+        if (!CheckIsSystemAppByBundleName(iBundleMgr, formRecord.bundleName)) {
             continue;
         }
 
-        formRecord.formVisibleNotifyState = formVisibleType;
-        if (!FormDataMgr::GetInstance().UpdateFormRecord(matchedFormId, formRecord)) {
-            APP_LOGW("%{public}s fail, set formVisibleNotifyState error, formId:%{public}" PRId64 ".", 
-            __func__, matchedFormId);
+        // Create eventMaps
+        if (!CreateHandleEventMap(matchedFormId, formRecord, eventMaps)) {
             continue;
-        }
-
-        // If the form need refrsh flag is true and form visibleType is FORM_VISIBLE, refresh the form host.
-        if (formRecord.needRefresh && formVisibleType == Constants::FORM_VISIBLE) {
-            std::string cacheData;
-            // If the form has business cache, refresh the form host.
-            if (FormCacheMgr::GetInstance().GetData(matchedFormId, cacheData)) {
-                formRecord.formProviderInfo.SetFormDataString(cacheData);
-                formHostRecord.OnUpdate(matchedFormId, formRecord);
-            }
-        }
-
-        // If the form provider is system app and the config item 'formVisibleNotify' is true,
-        // notify the form provider that the current form is visible.
-        BundleInfo bundleInfo;
-        if (iBundleMgr->GetBundleInfo(formRecord.bundleName, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo)) {
-            APP_LOGD("%{public}s, get bundle uid success", __func__);
-            if (!iBundleMgr->CheckIsSystemAppByUid(bundleInfo.uid)) {
-                APP_LOGW("%{public}s fail, form provider is not system app, formId:%{public}" PRId64 ".", 
-                    __func__, matchedFormId);
-                continue;
-            }
-        } else {
-            APP_LOGW("%{public}s fail, can not get bundleInfo's uid", __func__);
-            continue;
-        }
-        if (!formRecord.formVisibleNotify) {
-            APP_LOGW("%{public}s fail, the config item 'formVisibleNotify' is false, formId:%{public}" PRId64 ".", 
-            __func__, matchedFormId);
-            continue;
-        }
-
-        std::string providerKey = formRecord.bundleName + Constants::NAME_DELIMITER + formRecord.abilityName;
-        auto iter = eventMaps.find(providerKey);
-        if (iter == eventMaps.end()) {
-            std::vector<int64_t> formEventsByProvider {matchedFormId};
-            eventMaps.insert(std::make_pair(providerKey, formEventsByProvider));
-        } else {
-            iter->second.emplace_back(matchedFormId);
         }
     }
 
@@ -568,7 +524,7 @@ int FormMgrAdapter::CastTempForm(const int64_t formId, const sptr<IRemoteObject>
     }
 
     FormHostRecord record;
-    bool hasHostRec = FormDataMgr::GetInstance().GetFormHostRecord(matchedFormId, record);
+    bool hasHostRec = FormDataMgr::GetInstance().GetMatchedHostClient(callerToken, record);
     if (!hasHostRec || !record.Contains(matchedFormId)) {
         APP_LOGE("%{public}s, not self form:%{public}" PRId64 "", __func__, matchedFormId);
         return ERR_APPEXECFWK_FORM_OPERATION_NOT_SELF;
@@ -702,6 +658,30 @@ int FormMgrAdapter::DumpFormInfoByFormId(const std::int64_t formId, std::string 
     return reply;
 }
 /**
+ * @brief Dump form timer by form id.
+ * @param formId The id of the form.
+ * @param formInfo Form timer.
+ * @return Returns ERR_OK on success, others on failure.
+ */
+int FormMgrAdapter::DumpFormTimerByFormId(const std::int64_t formId, std::string &isTimingService) const
+{
+    APP_LOGI("%{public}s called.", __func__);
+    FormTimer formTimer;
+    UpdateAtItem updateAtItem;
+    DynamicRefreshItem dynamicItem;
+    bool result_inter = FormTimerMgr::GetInstance().GetIntervalTimer(formId, formTimer);
+    bool result_update = FormTimerMgr::GetInstance().GetUpdateAtTimer(formId, updateAtItem);
+    bool result_dynamic = FormTimerMgr::GetInstance().GetDynamicItem(formId, dynamicItem);
+    APP_LOGI("%{public}s result_inter:%{public}d,result_update:%{public}d,result_dynamic:%{public}d",
+        __func__, result_inter, result_update, result_dynamic);
+    if (result_inter || result_update || result_dynamic) {
+        isTimingService = "true";
+    } else {
+        isTimingService = "false";
+    }
+    return ERR_OK;
+}
+/**
  * @brief Get form configure info.
  * @param want The want of the request.
  * @param formItemInfo Form configure info.
@@ -755,18 +735,20 @@ ErrCode FormMgrAdapter::AllotFormById(const FormItemInfo &info,
         return ERR_APPEXECFWK_FORM_COMMON_CODE;
     }
 
-    if (hasRecord && FormDataMgr::GetInstance().IsCallingUidValid(record.formUserUids)) {
+    if (hasRecord && (record.userId == DEFAULT_USER_ID
+        || FormDataMgr::GetInstance().IsCallingUidValid(record.formUserUids))) {
         if (!info.IsMatch(record)) {
             APP_LOGE("%{public}s, formId and item info not match:%{public}" PRId64 "", __func__, formId);
             return ERR_APPEXECFWK_FORM_CFG_NOT_MATCH_ID;
         }
-        return AddExistFormRecord(info, callerToken, record, formId, wantParams);
+        return AddExistFormRecord(info, callerToken, record, formId, wantParams, formInfo);
     }
 
     // find in db but not in cache
     FormRecord dbRecord;
     ErrCode getDbRet = FormDbCache::GetInstance().GetDBRecord(formId, dbRecord);
-    if (getDbRet == ERR_OK && FormDataMgr::GetInstance().IsCallingUidValid(dbRecord.formUserUids)) {
+    if (getDbRet == ERR_OK && (record.userId == DEFAULT_USER_ID
+        || FormDataMgr::GetInstance().IsCallingUidValid(dbRecord.formUserUids))) {
         return AddNewFormRecord(info, formId, callerToken, wantParams, formInfo);
     }
 
@@ -794,7 +776,8 @@ int64_t FormMgrAdapter::PaddingUDIDHash(const int64_t formId) const
     return formId;
 }
 ErrCode FormMgrAdapter::AddExistFormRecord(const FormItemInfo &info, const sptr<IRemoteObject> &callerToken,
-                                           const FormRecord &record, const int64_t formId, const WantParams &wantParams)
+                                           const FormRecord &record, const int64_t formId, const WantParams &wantParams,
+                                           FormJsInfo &formInfo)
 {
     APP_LOGI("%{public}s call, formId:%{public}" PRId64 "", __func__, formId);
     // allot form host record
@@ -820,10 +803,17 @@ ErrCode FormMgrAdapter::AddExistFormRecord(const FormItemInfo &info, const sptr<
 
     // Add new form user uid.
     FormDataMgr::GetInstance().AddFormUserUid(formId, callingUid);
-    if (std::find(newRecord.formUserUids.begin(), newRecord.formUserUids.end(), callingUid) == 
+    if (std::find(newRecord.formUserUids.begin(), newRecord.formUserUids.end(), callingUid) ==
         newRecord.formUserUids.end()) {
         newRecord.formUserUids.emplace_back(callingUid);
     }
+
+    // create form info for js
+    std::string cacheData;
+    if (FormCacheMgr::GetInstance().GetData(formId, cacheData)) {
+        formInfo.formData = cacheData;
+    }
+    FormDataMgr::GetInstance().CreateFormInfo(formId, record, formInfo);
 
     // start update timer
     if (ErrCode errorCode = AddFormTimer(newRecord); errorCode != ERR_OK) {
@@ -1030,7 +1020,8 @@ ErrCode FormMgrAdapter::GetBundleInfo(const AAFwk::Want &want, BundleInfo &bundl
     }
 
     for (const auto &abilityInfo : bundleInfo.abilityInfos) {        
-        if (abilityInfo.bundleName == bundleName && abilityInfo.moduleName == moduleName ) {
+        if (abilityInfo.bundleName == bundleName && abilityInfo.moduleName == moduleName
+            && abilityInfo.name == abilityName) {
             packageName = bundleName + moduleName;
             break;
         }
@@ -1451,5 +1442,165 @@ void FormMgrAdapter::NotifyFormDelete(const int64_t formId, const Want &want, co
         APP_LOGE("%{public}s fail, Failed to get acquire provider form info", __func__);
     }
 }
+
+/**
+ * @brief Batch add forms to form records for st limit value test.
+ * @param want The want of the form to add.
+ * @return Returns forms count to add.
+ */
+int FormMgrAdapter::BatchAddFormRecords(const Want &want)
+{
+    APP_LOGI("%{public}s called.", __func__);
+    ElementName elementName = want.GetElement();
+    std::string bundleName = elementName.GetBundleName();
+    std::string abilityName = elementName.GetAbilityName();
+    int formCount = want.GetIntParam(Constants::PARAM_FORM_ADD_COUNT, 0);
+    APP_LOGI("%{public}s, batch add form, bundleName: %{public}s, abilityName: %{public}s, count: %{public}d.",
+        __func__,
+        bundleName.c_str(),
+        abilityName.c_str(),
+        formCount);
+    
+    for (int count = 0; count < formCount; count++) {
+        // get from comfig info
+        FormItemInfo formItemInfo;
+        int32_t errCode = GetFormConfigInfo(want, formItemInfo);
+        if (errCode != ERR_OK) {
+            APP_LOGE("%{public}s fail, get form config info failed.", __func__);
+            return errCode;
+        }
+        if (!formItemInfo.IsValidItem()) {
+            APP_LOGE("%{public}s fail, input param itemInfo is invalid", __func__);
+            return ERR_APPEXECFWK_FORM_GET_INFO_FAILED;
+        }
+        if (!FormDataMgr::GetInstance().GenerateUdidHash()) {
+            APP_LOGE("%{public}s fail, generate udid hash failed", __func__);
+            return ERR_APPEXECFWK_FORM_COMMON_CODE;
+        }
+
+        // generate formId
+        int64_t newFormId = FormDataMgr::GetInstance().GenerateFormId();
+        if (newFormId < 0) {
+            APP_LOGE("%{public}s fail, generateFormId no invalid formId", __func__);
+            return ERR_APPEXECFWK_FORM_COMMON_CODE;
+        }
+        
+        formItemInfo.SetFormId(newFormId);
+        // allot form host record
+        int callingUid = IPCSkeleton::GetCallingUid();
+        // allot form record
+        FormRecord formRecord = FormDataMgr::GetInstance().AllotFormRecord(formItemInfo, callingUid);
+        APP_LOGI("%{public}s, batch add form, formId:" "%{public}" PRId64 ".", __func__, formRecord.formId);
+
+        APP_LOGI("%{public}s, count: %{public}d", __func__, count + 1);
+    }
+    APP_LOGI("%{public}s end.", __func__);
+    return ERR_OK;
+}
+/**
+ * @brief Clear form records for st limit value test.
+ * @return Returns forms count to delete.
+ */
+int FormMgrAdapter::ClearFormRecords()
+{
+    APP_LOGI("%{public}s called.", __func__);
+    FormDataMgr::GetInstance().ClearFormRecords();
+    APP_LOGI("%{public}s end.", __func__);
+    return ERR_OK;
+}
+/**
+ * @brief Create eventMaps for event notify.
+ * 
+ * @param matchedFormId The Id of the form
+ * @param formRecord Form storage information
+ * @param eventMaps eventMaps for event notify
+ * @return Returns true on success, false on failure.
+ */
+bool FormMgrAdapter::CreateHandleEventMap(const int64_t matchedFormId, const FormRecord &formRecord,
+    std::map<std::string, std::vector<int64_t>> &eventMaps)
+{
+    if (!formRecord.formVisibleNotify) {
+            APP_LOGW("%{public}s fail, the config item 'formVisibleNotify' is false, formId:%{public}" PRId64 ".", 
+                __func__, matchedFormId);
+            return false;
+    }
+
+    std::string providerKey = formRecord.bundleName + Constants::NAME_DELIMITER + formRecord.abilityName;
+    auto iter = eventMaps.find(providerKey);
+    if (iter == eventMaps.end()) {
+        std::vector<int64_t> formEventsByProvider {matchedFormId};
+        eventMaps.insert(std::make_pair(providerKey, formEventsByProvider));
+    } else {
+        iter->second.emplace_back(matchedFormId);
+    }
+    return true;
+}
+/**
+ * @brief Update provider info to host
+ * 
+ * @param matchedFormId The Id of the form
+ * @param callerToken Caller ability token.
+ * @param formVisibleType The form visible type, including FORM_VISIBLE and FORM_INVISIBLE.
+ * @param formRecord Form storage information
+ * @return Returns true on success, false on failure.
+ */
+bool FormMgrAdapter::UpdateProviderInfoToHost(const int64_t matchedFormId, const sptr<IRemoteObject> &callerToken,
+    const int32_t formVisibleType, FormRecord &formRecord)
+{
+    if (!FormDataMgr::GetInstance().GetFormRecord(matchedFormId, formRecord)) {
+        APP_LOGW("%{public}s fail, not exist such form, formId:%{public}" PRId64 ".", __func__, matchedFormId);
+        return false;
+    }
+
+    FormHostRecord formHostRecord;
+    bool hasFormHostRecord = FormDataMgr::GetInstance().GetMatchedHostClient(callerToken, formHostRecord);
+    if (!(hasFormHostRecord && formHostRecord.Contains(matchedFormId))) {
+        APP_LOGW("%{public}s fail, form is not belong to self, formId:%{public}" PRId64 ".", __func__, matchedFormId);
+        return false;
+    }
+
+    formRecord.formVisibleNotifyState = formVisibleType;
+    if (!FormDataMgr::GetInstance().UpdateFormRecord(matchedFormId, formRecord)) {
+        APP_LOGW("%{public}s fail, set formVisibleNotifyState error, formId:%{public}" PRId64 ".", 
+        __func__, matchedFormId);
+        return false;
+    }
+
+    // If the form need refrsh flag is true and form visibleType is FORM_VISIBLE, refresh the form host.
+    if (formRecord.needRefresh && formVisibleType == Constants::FORM_VISIBLE) {
+        std::string cacheData;
+        // If the form has business cache, refresh the form host.
+        if (FormCacheMgr::GetInstance().GetData(matchedFormId, cacheData)) {
+            formRecord.formProviderInfo.SetFormDataString(cacheData);
+            formHostRecord.OnUpdate(matchedFormId, formRecord);
+        }
+    }
+    return true;
+}
+/**
+ * @brief If the form provider is system app and the config item 'formVisibleNotify' is true,
+ *        notify the form provider that the current form is visible.
+ * 
+ * @param bundleName BundleName
+ * @return Returns true if the form provider is system app, false if not.
+ */
+bool FormMgrAdapter::CheckIsSystemAppByBundleName(const sptr<IBundleMgr> &iBundleMgr, const std::string &bundleName)
+{
+    BundleInfo bundleInfo;
+    if (iBundleMgr->GetBundleInfo(bundleName, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo)) {
+        APP_LOGD("%{public}s, get bundle uid success", __func__);
+        if (!iBundleMgr->CheckIsSystemAppByUid(bundleInfo.uid)) {
+            APP_LOGW("%{public}s fail, form provider is not system app, bundleName: %{public}s",
+                __func__, bundleName.c_str());
+            return false;
+        }
+    } else {
+        APP_LOGW("%{public}s fail, can not get bundleInfo's uid", __func__);
+        return false;
+    }
+
+    return true;
+}
+
 }  // namespace AppExecFwk
 }  // namespace OHOS

@@ -39,22 +39,10 @@ struct FormDBInfo {
     {
         formId = -1;
     }
+
     /**
      * @brief Constructors
-     * 
-     */  
-    FormDBInfo(const FormDBInfo &formDBInfo)
-    {
-        formId = formDBInfo.formId;
-        formName = formDBInfo.formName;
-        bundleName = formDBInfo.bundleName;
-        moduleName = formDBInfo.moduleName;
-        abilityName = formDBInfo.abilityName;
-        formUserUids = formDBInfo.formUserUids;
-    }
-    /**
-     * @brief Constructors
-     * 
+     *
      */  
     FormDBInfo(const int64_t formIdTmp, const FormRecord &formRecord)
     {
@@ -163,7 +151,7 @@ public:
     }
     /**
      * @brief Destructor
-     * 
+     *
      */
     virtual ~InnerFormInfo(){};
     /**

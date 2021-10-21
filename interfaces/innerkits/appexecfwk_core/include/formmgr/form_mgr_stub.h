@@ -129,12 +129,34 @@ private:
      */
     int32_t HandleDumpFormInfoByFormId(MessageParcel &data, MessageParcel &reply);
     /**
+     * @brief Handle DumpFormTimerByFormId message.
+     * @param data input param.
+     * @param reply output param.
+     * @return Returns ERR_OK on success, others on failure.
+     */
+    int32_t HandleDumpFormTimerByFormId(MessageParcel &data, MessageParcel &reply);
+    /**
      * @brief Handle DumpFormInfoByFormId message.
      * @param data input param.
      * @param reply output param.
      * @return Returns ERR_OK on success, others on failure.
      */
     int32_t HandleMessageEvent(MessageParcel &data, MessageParcel &reply);
+
+    /**
+     * @brief Handle BatchAddFormRecords message.
+     * @param data input param.
+     * @param reply output param.
+     * @return Returns ERR_OK on success, others on failure.
+     */
+    int32_t HandleBatchAddFormRecords(MessageParcel &data, MessageParcel &reply);
+    /**
+     * @brief Handle ClearFormRecords message.
+     * @param data input param.
+     * @param reply output param.
+     * @return Returns ERR_OK on success, others on failure.
+     */
+    int32_t HandleClearFormRecords(MessageParcel &data, MessageParcel &reply);
 
 private:
     using FormMgrFunc = int32_t (FormMgrStub::*)(MessageParcel &data, MessageParcel &reply);

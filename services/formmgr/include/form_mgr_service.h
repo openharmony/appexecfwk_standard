@@ -26,6 +26,7 @@
 #include "event_handler.h"
 #include "form_mgr_stub.h"
 #include "form_provider_data.h"
+#include "form_sys_event_receiver.h"
 #include "iremote_object.h"
 
 namespace OHOS {
@@ -153,7 +154,13 @@ public:
      * @return Returns ERR_OK on success, others on failure.
      */
     int DumpFormInfoByFormId(const std::int64_t formId, std::string &formInfo) override;
-
+    /**
+     * @brief Dump form timer by form id.
+     * @param formId The id of the form.
+     * @param formInfo Form info.
+     * @return Returns ERR_OK on success, others on failure.
+     */
+    int DumpFormTimerByFormId(const std::int64_t formId, std::string &isTimingService) override;
     /**
      * @brief Process js message event.
      * @param formId Indicates the unique id of form.
@@ -162,6 +169,18 @@ public:
      * @return Returns true if execute success, false otherwise.
      */
     int MessageEvent(const int64_t formId, const Want &want, const sptr<IRemoteObject> &callerToken) override;
+
+    /**
+     * @brief Batch add forms to form records for st limit value test.
+     * @param want The want of the form to add.
+     * @return Returns ERR_OK on success, others on failure.
+     */
+    int BatchAddFormRecords(const Want &want) override;
+    /**
+     * @brief Clear form records for st limit value test.
+     * @return Returns ERR_OK on success, others on failure.
+     */
+    int ClearFormRecords() override;
 
     /**
      * @brief Check whether if the form manager service is ready.
@@ -193,7 +212,8 @@ private:
 
     std::shared_ptr<EventRunner> runner_ = nullptr;
     std::shared_ptr<EventHandler> handler_ = nullptr;
-    
+    std::shared_ptr<FormSysEventReceiver> formSysEventReceiver_ = nullptr;
+
     bool resetFlag = false;
 
     mutable std::mutex instanceMutex_;
