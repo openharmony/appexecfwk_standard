@@ -61,6 +61,7 @@ ohos_systemtest("FmsSelfStartingTest") {
     "ces_standard:cesfwk_innerkits",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
+    "multimodalinput_base:libmmi-client",
     "safwk:system_ability_fwk",
     "samgr_L2:samgr_proxy",
   ]
