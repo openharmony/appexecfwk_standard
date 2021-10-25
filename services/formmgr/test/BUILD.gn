@@ -43,24 +43,8 @@ group("unittest") {
 
   deps = [
     "unittest/fms_form_cache_mgr_test:unittest",
-    "unittest/fms_form_data_mgr_test:unittest",
     "unittest/fms_form_db_record_test:unittest",
     "unittest/fms_form_host_record_test:unittest",
-    "unittest/fms_form_mgr_add_form_test:unittest",
-    "unittest/fms_form_mgr_cast_temp_form_test:unittest",
-    "unittest/fms_form_mgr_death_callback_test:unittest",
-    "unittest/fms_form_mgr_delete_form_test:unittest",
-    "unittest/fms_form_mgr_lifecycle_update_test:unittest",
-    "unittest/fms_form_mgr_message_event_test:unittest",
-    "unittest/fms_form_mgr_notify_invisible_forms_test:unittest",
-    "unittest/fms_form_mgr_notify_visible_forms_test:unittest",
-    "unittest/fms_form_mgr_release_form_test:unittest",
-    "unittest/fms_form_mgr_request_form_test:unittest",
-    "unittest/fms_form_mgr_update_form_test:unittest",
     "unittest/fms_form_provider_data_test:unittest",
-    "unittest/fms_form_provider_mgr_test:unittest",
-    "unittest/fms_form_set_next_refresh_test:unittest",
-    "unittest/fms_form_sys_event_receiver_test:unittest",
-    "unittest/fms_form_timer_mgr_test:unittest",
   ]
 }
