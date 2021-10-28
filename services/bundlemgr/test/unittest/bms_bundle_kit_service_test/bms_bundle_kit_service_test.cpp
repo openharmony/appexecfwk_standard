@@ -163,6 +163,8 @@ public:
         const std::string &bundleName, const uint32_t permissionSize, const ApplicationInfo &appInfo) const;
     void CheckAbilityInfo(
         const std::string &bundleName, const std::string &abilityName, const AbilityInfo &appInfo) const;
+    void CheckAbilityInfos(
+        const std::string &bundleName, const std::string &abilityName, const std::vector<AbilityInfo> &appInfo) const;
     void CheckCompatibleApplicationInfo(
         const std::string &bundleName, const uint32_t permissionSize, const CompatibleApplicationInfo &appInfo) const;
     void CheckCompatibleAbilityInfo(
@@ -247,23 +249,23 @@ void BmsBundleKitServiceTest::MockInstallBundle(
     moduleInfo.colorMode = COLOR_MODE;
 
     AppExecFwk::Parameters parameters {
-        "description", 
-        "name", 
+        "description",
+        "name",
         "type"
     };
     AppExecFwk::Results results {
-        "description", 
-        "name", 
+        "description",
+        "name",
         "type"
     };
     AppExecFwk::CustomizeData customizeData {
-        "name", 
-        "value", 
+        "name",
+        "value",
         "extra"
     };
     MetaData metaData {
-        {parameters}, 
-        {results}, 
+        {parameters},
+        {results},
         {customizeData}
     };
     moduleInfo.metaData = metaData;
@@ -279,12 +281,12 @@ void BmsBundleKitServiceTest::MockInstallBundle(
     // for launch ability
     if (bundleName == BUNDLE_NAME_TEST) {
         AppExecFwk::SkillUri uri {
-            URI_SCHEME, 
+            URI_SCHEME,
             URI_HOST
         };
         Skill skill {
-            {ACTION}, 
-            {ENTITY}, 
+            {ACTION},
+            {ENTITY},
             {uri}
         };
         std::vector<Skill> skills;
@@ -408,23 +410,23 @@ AbilityInfo BmsBundleKitServiceTest::MockAbilityInfo(
     abilityInfo.supportPipMode = false;
     abilityInfo.targetAbility = TARGET_ABILITY;
     AppExecFwk::Parameters parameters {
-        "description", 
-        "name", 
+        "description",
+        "name",
         "type"
     };
     AppExecFwk::Results results {
-        "description", 
-        "name", 
+        "description",
+        "name",
         "type"
     };
     AppExecFwk::CustomizeData customizeData {
-        "name", 
-        "value", 
+        "name",
+        "value",
         "extra"
     };
     MetaData metaData {
-        {parameters}, 
-        {results}, 
+        {parameters},
+        {results},
         {customizeData}
     };
     abilityInfo.metaData = metaData;
@@ -929,19 +931,6 @@ HWTEST_F(BmsBundleKitServiceTest, GetBundleInfos_0200, Function | SmallTest | Le
 }
 
 /**
- * @tc.number: GetBundleInfos_0300
- * @tc.name: test can not get the installed bundles's bundle info with no bundle
- * @tc.desc: 1.system run normally
- *           2.get all installed bundle info failed
- */
-HWTEST_F(BmsBundleKitServiceTest, GetBundleInfos_0300, Function | SmallTest | Level1)
-{
-    std::vector<BundleInfo> bundleInfos;
-    bool ret = GetBundleDataMgr()->GetBundleInfos(BundleFlag::GET_BUNDLE_WITH_ABILITIES, bundleInfos);
-    EXPECT_FALSE(ret);
-}
-
-/**
  * @tc.number: GetApplicationInfo_0100
  * @tc.name: test can get the appName's application info
  * @tc.desc: 1.system run normally
@@ -1086,20 +1075,6 @@ HWTEST_F(BmsBundleKitServiceTest, GetApplicationInfos_0200, Function | SmallTest
 
     MockUninstallBundle(BUNDLE_NAME_TEST);
     MockUninstallBundle(BUNDLE_NAME_DEMO);
-}
-
-/**
- * @tc.number: GetApplicationInfos_0300
- * @tc.name: test can not get the installed bundles's bundle info with no bundle
- * @tc.desc: 1.system run normally
- *           2.get all installed bundle info failed
- */
-HWTEST_F(BmsBundleKitServiceTest, GetApplicationInfos_0300, Function | SmallTest | Level1)
-{
-    std::vector<ApplicationInfo> appInfos;
-    bool ret = GetBundleDataMgr()->GetApplicationInfos(
-        ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMS, DEFAULT_USER_ID_TEST, appInfos);
-    EXPECT_FALSE(ret);
 }
 
 /**
@@ -1318,19 +1293,6 @@ HWTEST_F(BmsBundleKitServiceTest, GetBundleList_0100, Function | SmallTest | Lev
 }
 
 /**
- * @tc.number: GetBundleList_0200
- * @tc.name: test can get the no bundle names with no bundle installed
- * @tc.desc: 1.system run normally
- *           2.get installed bundle names failed
- */
-HWTEST_F(BmsBundleKitServiceTest, GetBundleList_0200, Function | SmallTest | Level1)
-{
-    std::vector<std::string> testResult;
-    bool testRet = GetBundleDataMgr()->GetBundleList(testResult);
-    EXPECT_FALSE(testRet);
-}
-
-/**
  * @tc.number: GetBundleNameForUid_0100
  * @tc.name: test can get the bundle names with bundle installed
  * @tc.desc: 1.system run normally
@@ -1536,31 +1498,6 @@ HWTEST_F(BmsBundleKitServiceTest, DUMP_0300, Function | SmallTest | Level1)
 }
 
 /**
- * @tc.number: DUMP_0400
- * @tc.name: Dump with no bundle in system
- * @tc.desc: 1.system run normally
- *           2.dump empty message with the dump command
- */
-HWTEST_F(BmsBundleKitServiceTest, DUMP_0400, Function | SmallTest | Level0)
-{
-    auto hostImpl = std::make_unique<BundleMgrHostImpl>();
-    std::string allBundleInfos;
-    bool infoRet = hostImpl->DumpInfos(DumpFlag::DUMP_ALL_BUNDLE_INFO, EMPTY_STRING, allBundleInfos);
-    EXPECT_FALSE(infoRet);
-    EXPECT_EQ(std::string::npos, allBundleInfos.find(BUNDLE_NAME_TEST));
-
-    std::string bundleInfo;
-    bool infoRet1 = hostImpl->DumpInfos(DumpFlag::DUMP_BUNDLE_INFO, BUNDLE_NAME_TEST, bundleInfo);
-    EXPECT_FALSE(infoRet1);
-    EXPECT_EQ(EMPTY_STRING, bundleInfo);
-
-    std::string emptyInfo;
-    bool emptyRet = hostImpl->DumpInfos(DumpFlag::DUMP_BUNDLE_INFO, EMPTY_STRING, emptyInfo);
-    EXPECT_FALSE(emptyRet);
-    EXPECT_EQ(EMPTY_STRING, emptyInfo);
-}
-
-/**
  * @tc.number: QueryAbilityInfoByUri_0100
  * @tc.name: test can get the ability info by uri
  * @tc.desc: 1.system run normally
@@ -1682,25 +1619,6 @@ HWTEST_F(BmsBundleKitServiceTest, QueryKeepAliveBundleInfos_0200, Function | Sma
 }
 
 /**
- * @tc.number: GetBundleArchiveInfo_0100
- * @tc.name: test can get the bundle archive info
- * @tc.desc: 1.system run normally
- *           2.get the bundle archive info successfully
- */
-HWTEST_F(BmsBundleKitServiceTest, GetBundleArchiveInfo_0100, Function | SmallTest | Level1)
-{
-    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
-
-    auto hostImpl = std::make_unique<BundleMgrHostImpl>();
-    BundleInfo testResult;
-    bool listRet = hostImpl->GetBundleArchiveInfo(HAP_FILE_PATH, BundleFlag::GET_BUNDLE_DEFAULT, testResult);
-    EXPECT_TRUE(listRet);
-    CheckBundleArchiveInfo(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_SIZE_ZERO, testResult);
-
-    MockUninstallBundle(BUNDLE_NAME_TEST);
-}
-
-/**
  * @tc.number: GetBundleArchiveInfo_0200
  * @tc.name: test can not get the bundle archive info by empty hap file path
  * @tc.desc: 1.system run normally
@@ -1732,25 +1650,6 @@ HWTEST_F(BmsBundleKitServiceTest, GetBundleArchiveInfo_0300, Function | SmallTes
     BundleInfo testResult;
     bool listRet = hostImpl->GetBundleArchiveInfo(ERROR_HAP_FILE_PATH, BundleFlag::GET_BUNDLE_DEFAULT, testResult);
     EXPECT_FALSE(listRet);
-
-    MockUninstallBundle(BUNDLE_NAME_TEST);
-}
-
-/**
- * @tc.number: GetBundleArchiveInfo_0400
- * @tc.name: test can get the bundle archive info
- * @tc.desc: 1.system run normally
- *           2.get the bundle archive info successfully for GET_BUNDLE_WITH_ABILITIES
- */
-HWTEST_F(BmsBundleKitServiceTest, GetBundleArchiveInfo_0400, Function | SmallTest | Level1)
-{
-    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
-
-    auto hostImpl = std::make_unique<BundleMgrHostImpl>();
-    BundleInfo testResult;
-    bool listRet = hostImpl->GetBundleArchiveInfo(HAP_FILE_PATH, BundleFlag::GET_BUNDLE_WITH_ABILITIES, testResult);
-    EXPECT_TRUE(listRet);
-    CheckBundleArchiveInfo(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_SIZE_ONE, testResult);
 
     MockUninstallBundle(BUNDLE_NAME_TEST);
 }
@@ -2884,45 +2783,6 @@ HWTEST_F(BmsBundleKitServiceTest, GetUsageRecords_0100, Function | SmallTest | L
     ModuleUsageRecordStorage moduleUsageRecordStorage;
     moduleUsageRecordStorage.DeleteUsageRecord(innerBundleInfo, 0);
     MockUninstallBundle(BUNDLE_NAME_TEST);
-}
-
-/**
- * @tc.number: GetUsageRecords_0200
- * @tc.name: test can get usage records by notify activity life status
- * @tc.desc: 1.no other ability have been activitied
- *           2.can get two bundle usage records
- */
-HWTEST_F(BmsBundleKitServiceTest, GetUsageRecords_0200, Function | SmallTest | Level1)
-{
-    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
-    MockInstallBundle(BUNDLE_NAME_DEMO, MODULE_NAME_DEMO, ABILITY_NAME_DEMO);
-    int64_t time =
-        std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-    auto ret = GetBundleDataMgr()->NotifyActivityLifeStatus(BUNDLE_NAME_TEST, ABILITY_NAME_TEST, time);
-    auto ret1 = GetBundleDataMgr()->NotifyActivityLifeStatus(BUNDLE_NAME_DEMO, ABILITY_NAME_DEMO, time);
-    EXPECT_TRUE(ret);
-    EXPECT_TRUE(ret1);
-    std::vector<ModuleUsageRecord> records;
-    auto result = GetBundleDataMgr()->GetUsageRecords(100, records);
-    EXPECT_TRUE(result);
-    size_t size = 2;
-    EXPECT_EQ(records.size(), size);
-    auto iter = std::find_if(records.begin(), records.end(), [](const auto &item) {
-        return (item.bundleName == BUNDLE_NAME_TEST && item.name == MODULE_NAME_TEST &&
-                item.abilityName == ABILITY_NAME_TEST);
-    });
-    EXPECT_NE(iter, records.end());
-    uint32_t count = 1;
-    EXPECT_EQ(iter->launchedCount, count);
-    InnerBundleInfo innerBundleInfo1;
-    InnerBundleInfo innerBundleInfo2;
-    MockInnerBundleInfo(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST, innerBundleInfo1);
-    MockInnerBundleInfo(BUNDLE_NAME_DEMO, ABILITY_NAME_DEMO, ABILITY_NAME_DEMO, innerBundleInfo2);
-    ModuleUsageRecordStorage moduleUsageRecordStorage;
-    moduleUsageRecordStorage.DeleteUsageRecord(innerBundleInfo1, 0);
-    moduleUsageRecordStorage.DeleteUsageRecord(innerBundleInfo2, 0);
-    MockUninstallBundle(BUNDLE_NAME_TEST);
-    MockUninstallBundle(BUNDLE_NAME_DEMO);
 }
 
 /**

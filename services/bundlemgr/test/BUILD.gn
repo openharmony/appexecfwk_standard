@@ -44,7 +44,6 @@ group("unittest") {
     "unittest/bms_bundle_parser_test:unittest",
     "unittest/bms_bundle_permission_test:unittest",
     "unittest/bms_bundle_uninstaller_test:unittest",
-    "unittest/bms_bundle_updater_test:unittest",
     "unittest/bms_data_mgr_test:unittest",
     "unittest/bms_install_daemon_test:unittest",
     "unittest/bms_service_bundle_scan_test:unittest",
