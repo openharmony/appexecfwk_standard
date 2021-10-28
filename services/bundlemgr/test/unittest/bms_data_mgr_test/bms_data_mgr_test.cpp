@@ -485,36 +485,6 @@ HWTEST_F(BmsDataMgrTest, UpdateInstallState_2000, Function | SmallTest | Level0)
 }
 
 /**
- * @tc.number: LoadDataFromPersistentStorage_0100
- * @tc.name: LoadDataFromPersistentStorage
- * @tc.desc: 1. NA
- *           2. load data from persistent storage
- */
-HWTEST_F(BmsDataMgrTest, LoadDataFromPersistentStorage_0100, Function | SmallTest | Level0)
-{
-    auto dataMgr = GetDataMgr();
-    EXPECT_NE(dataMgr, nullptr);
-    bool ret1 = dataMgr->LoadDataFromPersistentStorage();
-    EXPECT_FALSE(ret1);
-
-    InnerBundleInfo info;
-    BundleInfo bundleInfo;
-    bundleInfo.name = BUNDLE_NAME;
-    bundleInfo.applicationInfo.name = APP_NAME;
-    ApplicationInfo applicationInfo;
-    applicationInfo.name = BUNDLE_NAME;
-    info.SetBaseBundleInfo(bundleInfo);
-    info.SetBaseApplicationInfo(applicationInfo);
-
-    std::shared_ptr<IBundleDataStorage> dataStorage_ = std::make_shared<BundleDataStorageDatabase>();
-    dataStorage_->SaveStorageBundleInfo(Constants::CURRENT_DEVICE_ID, info);
-
-    bool ret2 = dataMgr->LoadDataFromPersistentStorage();
-    EXPECT_TRUE(ret2);
-    dataStorage_->DeleteStorageBundleInfo(Constants::CURRENT_DEVICE_ID, info);
-}
-
-/**
  * @tc.number: AddBundleInfo_0100
  * @tc.name: AddBundleInfo
  * @tc.desc: 1. add info to the data manager
