@@ -13,6 +13,8 @@
 
 group("fms_system_test_app") {
   deps = [
+    "fmsSystemPerformance:fmsSystemPerformance",
+    "fmsSystemStress:fmsSystemStress",
     "fmsSystemTestHostCommonA:fmsSystemTestHostCommonA",
     "fmsSystemTestHostCommonB:fmsSystemTestHostCommonB",
     "fmsSystemTestHostNoPerm:fmsSystemTestHostNoPerm",
