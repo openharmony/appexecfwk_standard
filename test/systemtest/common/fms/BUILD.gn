@@ -35,7 +35,10 @@ group("systemtest") {
     "fms_acquire_form_test:systemtest",
     "fms_acquire_form_test_max:systemtest",
     "fms_delete_form_test:systemtest",
+    "fms_fuzz_test:systemtest",
+    "fms_performance_test:systemtest",
     "fms_release_form_test:systemtest",
     "fms_self_starting_test:systemtest",
+    "fms_stress_test:systemtest",
   ]
 }
