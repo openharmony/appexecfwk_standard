@@ -409,33 +409,6 @@ void BmsBundleParserTest::CheckProfileShortcut(const nlohmann::json &checkedProf
 }
 
 /**
- * @tc.number: BmsBundleParser
- * Function: BundleParser
- * @tc.name: parse bundle package by config.json
- * @tc.desc: 1. system running normally
- *           2. test bundle package can be parse to InnerBundleInfo successfully
- */
-HWTEST_F(BmsBundleParserTest, TestParse_0100, Function | SmallTest | Level0)
-{
-    BundleParser bundleParser;
-    InnerBundleInfo innerBundleInfo;
-    pathStream_ << RESOURCE_ROOT_PATH << NEW_APP << INSTALL_FILE_SUFFIX;
-    ErrCode result = bundleParser.Parse(pathStream_.str(), innerBundleInfo);
-    BundleInfo bundleInfo = innerBundleInfo.GetBaseBundleInfo();
-    EXPECT_EQ(result, ERR_OK);
-    EXPECT_EQ(bundleInfo.name, "com.example.hiworld.himusic");
-    EXPECT_EQ(bundleInfo.label, "HiMusic");
-    EXPECT_EQ(bundleInfo.description, "");
-    EXPECT_EQ(bundleInfo.vendor, "example");
-    uint32_t versionCode = 2;
-    EXPECT_EQ(bundleInfo.versionCode, versionCode);
-    EXPECT_EQ(bundleInfo.versionName, "2.0");
-    EXPECT_EQ(bundleInfo.minSdkVersion, 0);
-    EXPECT_EQ(bundleInfo.maxSdkVersion, 0);
-    EXPECT_EQ(bundleInfo.mainEntry, "");
-}
-
-/**
  * @tc.number: TestParse_0200
  * @tc.name: parse bundle package by config.json
  * @tc.desc: 1. system running normally
@@ -448,50 +421,6 @@ HWTEST_F(BmsBundleParserTest, TestParse_0200, Function | SmallTest | Level0)
     pathStream_ << RESOURCE_ROOT_PATH << UNKOWN_PATH << INSTALL_FILE_SUFFIX;
     ErrCode result = bundleParser.Parse(pathStream_.str(), innerBundleInfo);
     EXPECT_EQ(result, ERR_APPEXECFWK_PARSE_UNEXPECTED);
-}
-
-/**
- * @tc.number: TestParse_0300
- * @tc.name: parse bundle package by config.json
- * @tc.desc: 1. system running normally
- *           2. test parse bundle failed when the file is a break zip
- */
-HWTEST_F(BmsBundleParserTest, TestParse_0300, Function | SmallTest | Level0)
-{
-    BundleParser bundleParser;
-    InnerBundleInfo innerBundleInfo;
-    pathStream_ << RESOURCE_ROOT_PATH << BREAK_ZIP << INSTALL_FILE_SUFFIX;
-    ErrCode result = bundleParser.Parse(pathStream_.str(), innerBundleInfo);
-    EXPECT_EQ(result, ERR_APPEXECFWK_PARSE_NO_PROFILE);
-}
-
-/**
- * @tc.number: TestParse_0400
- * @tc.name: parse bundle package by config.json
- * @tc.desc: 1. test parse bundle failed when the config.json is not exist in the zip
- */
-HWTEST_F(BmsBundleParserTest, TestParse_0400, Function | SmallTest | Level0)
-{
-    BundleParser bundleParser;
-    InnerBundleInfo innerBundleInfo;
-    pathStream_ << RESOURCE_ROOT_PATH << NO_PROFILE << INSTALL_FILE_SUFFIX;
-    ErrCode result = bundleParser.Parse(pathStream_.str(), innerBundleInfo);
-    EXPECT_EQ(result, ERR_APPEXECFWK_PARSE_NO_PROFILE);
-}
-
-/**
- * @tc.number: TestParse_0500
- * @tc.name: parse bundle package by config.json
- * @tc.desc: 1. system running normally
- *           2. test parse bundle failed when the config.json has format error
- */
-HWTEST_F(BmsBundleParserTest, TestParse_0500, Function | SmallTest | Level0)
-{
-    BundleParser bundleParser;
-    InnerBundleInfo innerBundleInfo;
-    pathStream_ << RESOURCE_ROOT_PATH << FORMAT_ERROR_PROFILE << INSTALL_FILE_SUFFIX;
-    ErrCode result = bundleParser.Parse(pathStream_.str(), innerBundleInfo);
-    EXPECT_EQ(result, ERR_APPEXECFWK_PARSE_PROFILE_MISSING_PROP);
 }
 
 /**
@@ -699,36 +628,6 @@ HWTEST_F(BmsBundleParserTest, TestParse_1300, Function | SmallTest | Level0)
     pathStream_ << RESOURCE_ROOT_PATH << EMPTY_CONFIG << INSTALL_FILE_SUFFIX;
     ErrCode result = bundleParser.Parse(pathStream_.str(), innerBundleInfo);
     EXPECT_EQ(result, ERR_APPEXECFWK_PARSE_UNEXPECTED);
-}
-
-/**
- * @tc.number: TestParse_1400
- * @tc.name: parse bundle package by config.json
- * @tc.desc: 1. system running normally
- *           2. test parse bundle failed when the config.json has format MISSING
- */
-HWTEST_F(BmsBundleParserTest, TestParse_1400, Function | SmallTest | Level0)
-{
-    BundleParser bundleParser;
-    InnerBundleInfo innerBundleInfo;
-    pathStream_ << RESOURCE_ROOT_PATH << FORMAT_MISSING_PROFILE << INSTALL_FILE_SUFFIX;
-    ErrCode result = bundleParser.Parse(pathStream_.str(), innerBundleInfo);
-    EXPECT_EQ(result, ERR_APPEXECFWK_PARSE_PROFILE_MISSING_PROP);
-}
-
-/**
- * @tc.number: TestParse_1500
- * @tc.name: parse bundle package by config.json
- * @tc.desc: 1. system running normally
- *           2. test parse bundle failed when the config.json is nothing json
- */
-HWTEST_F(BmsBundleParserTest, TestParse_1500, Function | SmallTest | Level0)
-{
-    BundleParser bundleParser;
-    InnerBundleInfo innerBundleInfo;
-    pathStream_ << RESOURCE_ROOT_PATH << NOTHING_CONFIG << INSTALL_FILE_SUFFIX;
-    ErrCode result = bundleParser.Parse(pathStream_.str(), innerBundleInfo);
-    EXPECT_EQ(result, ERR_APPEXECFWK_PARSE_BAD_PROFILE);
 }
 
 /**

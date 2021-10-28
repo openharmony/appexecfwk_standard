@@ -252,21 +252,6 @@ void BmsBundleInstallerTest::ClearBundleInfoInDb()
 }
 
 /**
- * @tc.number: SystemInstall_0100
- * @tc.name: test the right system bundle file can be installed
- * @tc.desc: 1.the system bundle file exists
- *           2.the system bundle can be installed successfully and can get the bundle info
- */
-HWTEST_F(BmsBundleInstallerTest, SystemInstall_0100, Function | SmallTest | Level0)
-{
-    std::string bundleFile = RESOURCE_ROOT_PATH + RIGHT_BUNDLE;
-    bool result = InstallSystemBundle(bundleFile);
-    EXPECT_TRUE(result) << "the bundle file install failed: " << bundleFile;
-    CheckFileExist();
-    ClearBundleInfoInDb();
-}
-
-/**
  * @tc.number: SystemInstall_0200
  * @tc.name: test the wrong system bundle file can't be installed
  * @tc.desc: 1.the system bundle file don't exists
@@ -350,71 +335,6 @@ HWTEST_F(BmsBundleInstallerTest, SystemInstall_0700, Function | SmallTest | Leve
 }
 
 /**
- * @tc.number: SystemUpdateData_0100
- * @tc.name: test the right bundle file can be installed and update its info to bms
- * @tc.desc: 1.the system bundle is available
- *           2.the right bundle can be installed and update its info to bms
- */
-HWTEST_F(BmsBundleInstallerTest, SystemUpdateData_0100, Function | SmallTest | Level0)
-{
-    ApplicationInfo info;
-    auto dataMgr = GetBundleDataMgr();
-    EXPECT_NE(dataMgr, nullptr);
-    bool result = dataMgr->GetApplicationInfo(BUNDLE_NAME, ApplicationFlag::GET_BASIC_APPLICATION_INFO, USERID, info);
-    EXPECT_FALSE(result);
-    std::string bundleFile = RESOURCE_ROOT_PATH + RIGHT_BUNDLE;
-    bool installResult = InstallSystemBundle(bundleFile);
-    EXPECT_TRUE(installResult);
-    result = dataMgr->GetApplicationInfo(BUNDLE_NAME, ApplicationFlag::GET_BASIC_APPLICATION_INFO, USERID, info);
-    EXPECT_TRUE(result);
-    EXPECT_EQ(info.name, BUNDLE_NAME);
-    ClearBundleInfoInDb();
-}
-
-/**
- * @tc.number: SystemUpdateData_0200
- * @tc.name: test the wrong bundle file can't be installed and its info will not updated to bms
- * @tc.desc: 1.the system bundle is wrong
- *           2.the wrong bundle can't be installed and its info will not updated to bms
- */
-HWTEST_F(BmsBundleInstallerTest, SystemUpdateData_0200, Function | SmallTest | Level0)
-{
-    ApplicationInfo info;
-    auto dataMgr = GetBundleDataMgr();
-    EXPECT_NE(dataMgr, nullptr);
-    bool result = dataMgr->GetApplicationInfo(BUNDLE_NAME, ApplicationFlag::GET_BASIC_APPLICATION_INFO, USERID, info);
-    EXPECT_FALSE(result);
-    std::string wrongBundleName = RESOURCE_ROOT_PATH + WRONG_BUNDLE_NAME;
-    bool installResult = InstallSystemBundle(wrongBundleName);
-    EXPECT_FALSE(installResult);
-    result = dataMgr->GetApplicationInfo(BUNDLE_NAME, ApplicationFlag::GET_BASIC_APPLICATION_INFO, USERID, info);
-    EXPECT_FALSE(result);
-}
-
-/**
- * @tc.number: SystemUpdateData_0300
- * @tc.name: test the already installed bundle can't be reinstalled and update its info to bms
- * @tc.desc: 1.the bundle is already installed
- *           2.the already installed  bundle can't be reinstalled and update its info to bms
- */
-HWTEST_F(BmsBundleInstallerTest, SystemUpdateData_0300, Function | SmallTest | Level0)
-{
-    auto dataMgr = GetBundleDataMgr();
-    EXPECT_NE(dataMgr, nullptr);
-    // prepare already install information.
-    std::string bundleFile = RESOURCE_ROOT_PATH + RIGHT_BUNDLE;
-    bool firstInstall = InstallSystemBundle(bundleFile);
-    EXPECT_TRUE(firstInstall);
-    ApplicationInfo info;
-    auto result = dataMgr->GetApplicationInfo(BUNDLE_NAME, ApplicationFlag::GET_BASIC_APPLICATION_INFO, USERID, info);
-    EXPECT_TRUE(result);
-    EXPECT_EQ(info.name, BUNDLE_NAME);
-    bool secondInstall = InstallSystemBundle(bundleFile);
-    EXPECT_FALSE(secondInstall);
-    ClearBundleInfoInDb();
-}
-
-/**
  * @tc.number: SystemUpdateData_0400
  * @tc.name: test the already installing bundle can't be reinstalled and update its info to bms
  * @tc.desc: 1.the bundle is already installing.
@@ -432,25 +352,6 @@ HWTEST_F(BmsBundleInstallerTest, SystemUpdateData_0400, Function | SmallTest | L
     EXPECT_FALSE(installResult);
     // reset the install state
     dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_FAIL);
-}
-
-/**
- * @tc.number: CreateInstallTask_0100
- * @tc.name: test the installer manager can create task
- * @tc.desc: 1.the bundle file exists
- *           2.the bundle can be installed successfully
- */
-HWTEST_F(BmsBundleInstallerTest, CreateInstallTask_0100, Function | SmallTest | Level0)
-{
-    CreateInstallerManager();
-    sptr<MockStatusReceiver> receiver = new (std::nothrow) MockStatusReceiver();
-    EXPECT_NE(receiver, nullptr);
-    InstallParam installParam;
-    std::string bundleFile = RESOURCE_ROOT_PATH + RIGHT_BUNDLE;
-    GetBundleInstallerManager()->CreateInstallTask(bundleFile, installParam, receiver);
-    ErrCode result = receiver->GetResultCode();
-    EXPECT_EQ(ERR_OK, result);
-    ClearBundleInfoInDb();
 }
 
 /**
@@ -472,29 +373,6 @@ HWTEST_F(BmsBundleInstallerTest, CreateInstallTask_0200, Function | SmallTest | 
 }
 
 /**
- * @tc.number: CreateUninstallTask_0100
- * @tc.name: test the installer manager can create task
- * @tc.desc: 1.the bundle file exists
- *           2.the bundle can be install and uninstalled successfully
- */
-HWTEST_F(BmsBundleInstallerTest, CreateUninstallTask_0100, Function | SmallTest | Level0)
-{
-    CreateInstallerManager();
-    sptr<MockStatusReceiver> receiver = new (std::nothrow) MockStatusReceiver();
-    EXPECT_NE(receiver, nullptr);
-    InstallParam installParam;
-    std::string bundleFile = RESOURCE_ROOT_PATH + RIGHT_BUNDLE;
-    GetBundleInstallerManager()->CreateInstallTask(bundleFile, installParam, receiver);
-    ErrCode result = receiver->GetResultCode();
-    EXPECT_EQ(ERR_OK, result);
-
-    sptr<MockStatusReceiver> unReceiver = new (std::nothrow) MockStatusReceiver();
-    GetBundleInstallerManager()->CreateUninstallTask(BUNDLE_NAME, installParam, unReceiver);
-    result = unReceiver->GetResultCode();
-    EXPECT_EQ(ERR_OK, result);
-}
-
-/**
  * @tc.number: CreateUninstallTask_0200
  * @tc.name: test the installer manager can not create task while bundle invalid
  * @tc.desc: 1.the invalid bundle file exists
@@ -510,21 +388,6 @@ HWTEST_F(BmsBundleInstallerTest, CreateUninstallTask_0200, Function | SmallTest 
     GetBundleInstallerManager()->CreateUninstallTask(bundleFile, installParam, receiver);
     ErrCode result = receiver->GetResultCode();
     EXPECT_NE(ERR_OK, result);
-}
-
-/**
- * @tc.number: ThirdPartyInstall_0100
- * @tc.name: test the right third party bundle file can be installed
- * @tc.desc: 1.the third party bundle file exists
- *           2.the third party bundle can be installed successfully and can get the bundle info
- */
-HWTEST_F(BmsBundleInstallerTest, ThirdPartyInstall_0100, Function | SmallTest | Level0)
-{
-    std::string bundleFile = RESOURCE_ROOT_PATH + RIGHT_BUNDLE;
-    ErrCode result = InstallThirdPartyBundle(bundleFile);
-    EXPECT_EQ(result, ERR_OK);
-    CheckFileExist();
-    ClearBundleInfoInDb();
 }
 
 /**
@@ -569,20 +432,6 @@ HWTEST_F(BmsBundleInstallerTest, ThirdPartyInstall_0400, Function | SmallTest | 
 }
 
 /**
- * @tc.number: ThirdPartyInstall_0500
- * @tc.name: test the error format bundle file can't be installed
- * @tc.desc: 1.the third party bundle format is error
- *           2.the third party bundle can't be installed and the result is fail
- */
-HWTEST_F(BmsBundleInstallerTest, ThirdPartyInstall_0500, Function | SmallTest | Level0)
-{
-    std::string errorFormat = RESOURCE_ROOT_PATH + FORMAT_ERROR_BUNDLE;
-    ErrCode result = InstallThirdPartyBundle(errorFormat);
-    EXPECT_EQ(result, ERR_APPEXECFWK_PARSE_NO_PROFILE);
-    CheckFileNonExist();
-}
-
-/**
  * @tc.number: ThirdPartyInstall_0600
  * @tc.name: test the bundle file with invalid path will cause the result of install failure
  * @tc.desc: 1.the bundle file has invalid path
@@ -594,42 +443,6 @@ HWTEST_F(BmsBundleInstallerTest, ThirdPartyInstall_0600, Function | SmallTest | 
     ErrCode result = InstallThirdPartyBundle(bundleFile);
     EXPECT_EQ(result, ERR_APPEXECFWK_INSTALL_FILE_PATH_INVALID);
     CheckFileNonExist();
-}
-
-/**
- * @tc.number: ThirdPartyInstall_0700
- * @tc.name: test the install will fail when installd service has error
- * @tc.desc: 1.the installd service has error
- *           2.the install result is fail
- */
-HWTEST_F(BmsBundleInstallerTest, ThirdPartyInstall_0700, Function | SmallTest | Level0)
-{
-    StopInstalldService();
-    std::string bundleFile = RESOURCE_ROOT_PATH + RIGHT_BUNDLE;
-    ErrCode result = InstallThirdPartyBundle(bundleFile);
-    EXPECT_EQ(result, ERR_APPEXECFWK_INSTALLD_GET_PROXY_ERROR);
-}
-
-/**
- * @tc.number: ThirdPartyUpdateData_0100
- * @tc.name: test the right bundle file can be installed and update its info to bms
- * @tc.desc: 1.the ThirdParty bundle is available
- *           2.the right bundle can be installed and update its info to bms
- */
-HWTEST_F(BmsBundleInstallerTest, ThirdPartyUpdateData_0100, Function | SmallTest | Level0)
-{
-    ApplicationInfo info;
-    auto dataMgr = GetBundleDataMgr();
-    EXPECT_NE(dataMgr, nullptr);
-    bool result = dataMgr->GetApplicationInfo(BUNDLE_NAME, ApplicationFlag::GET_BASIC_APPLICATION_INFO, USERID, info);
-    EXPECT_FALSE(result);
-    std::string bundleFile = RESOURCE_ROOT_PATH + RIGHT_BUNDLE;
-    ErrCode installResult = InstallThirdPartyBundle(bundleFile);
-    EXPECT_EQ(installResult, ERR_OK);
-    result = dataMgr->GetApplicationInfo(BUNDLE_NAME, ApplicationFlag::GET_BASIC_APPLICATION_INFO, USERID, info);
-    EXPECT_TRUE(result);
-    EXPECT_EQ(info.name, BUNDLE_NAME);
-    ClearBundleInfoInDb();
 }
 
 /**
@@ -650,70 +463,4 @@ HWTEST_F(BmsBundleInstallerTest, ThirdPartyUpdateData_0200, Function | SmallTest
     EXPECT_EQ(installResult, ERR_APPEXECFWK_INSTALL_INVALID_HAP_NAME);
     result = dataMgr->GetApplicationInfo(BUNDLE_NAME, ApplicationFlag::GET_BASIC_APPLICATION_INFO, USERID, info);
     EXPECT_FALSE(result);
-}
-
-/**
- * @tc.number: ThirdPartyUpdateData_0300
- * @tc.name: test the already installed bundle can't be reinstalled and update its info to bms
- * @tc.desc: 1.the bundle is already installed
- *           2.the already installed  bundle can't be reinstalled and update its info to bms
- */
-HWTEST_F(BmsBundleInstallerTest, ThirdPartyUpdateData_0300, Function | SmallTest | Level0)
-{
-    auto dataMgr = GetBundleDataMgr();
-    EXPECT_NE(dataMgr, nullptr);
-    // prepare already install information.
-    std::string bundleFile = RESOURCE_ROOT_PATH + RIGHT_BUNDLE;
-    ErrCode firstInstall = InstallThirdPartyBundle(bundleFile);
-    EXPECT_EQ(firstInstall, ERR_OK);
-    ApplicationInfo info;
-    auto result = dataMgr->GetApplicationInfo(BUNDLE_NAME, ApplicationFlag::GET_BASIC_APPLICATION_INFO, USERID, info);
-    EXPECT_TRUE(result);
-    EXPECT_EQ(info.name, BUNDLE_NAME);
-    ErrCode secondInstall = InstallThirdPartyBundle(bundleFile);
-    EXPECT_EQ(secondInstall, ERR_APPEXECFWK_INSTALL_ALREADY_EXIST);
-    ClearBundleInfoInDb();
-}
-
-/**
- * @tc.number: ThirdPartyUpdateData_0400
- * @tc.name: test the already installed bundle can be reinstalled and update its info to bms
- * @tc.desc: 1.the bundle is already installed
- *           2.the already installed  bundle can be reinstalled and update its info to bms
- */
-HWTEST_F(BmsBundleInstallerTest, ThirdPartyUpdateData_0400, Function | SmallTest | Level0)
-{
-    auto dataMgr = GetBundleDataMgr();
-    EXPECT_NE(dataMgr, nullptr);
-    // prepare already install information.
-    std::string bundleFile = RESOURCE_ROOT_PATH + RIGHT_BUNDLE;
-    ErrCode firstInstall = InstallThirdPartyBundle(bundleFile);
-    EXPECT_EQ(firstInstall, ERR_OK);
-    ApplicationInfo info;
-    auto result = dataMgr->GetApplicationInfo(BUNDLE_NAME, ApplicationFlag::GET_BASIC_APPLICATION_INFO, USERID, info);
-    EXPECT_TRUE(result);
-    EXPECT_EQ(info.name, BUNDLE_NAME);
-    ErrCode secondInstall = UpdateThirdPartyBundle(bundleFile);
-    EXPECT_EQ(secondInstall, ERR_OK);
-    ClearBundleInfoInDb();
-}
-
-/**
- * @tc.number: ThirdPartyUpdateData_0500
- * @tc.name: test the already installing bundle can't be reinstalled and update its info to bms
- * @tc.desc: 1.the bundle is already installing
- *           2.the already installing bundle can't be reinstalled and update its info to bms
- */
-HWTEST_F(BmsBundleInstallerTest, ThirdPartyUpdateData_0500, Function | SmallTest | Level0)
-{
-    // prepare already install information.
-    auto dataMgr = GetBundleDataMgr();
-    EXPECT_NE(dataMgr, nullptr);
-    dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_START);
-    // begin to  reinstall package
-    std::string bundleFile = RESOURCE_ROOT_PATH + RIGHT_BUNDLE;
-    ErrCode installResult = InstallThirdPartyBundle(bundleFile);
-    EXPECT_EQ(installResult, ERR_APPEXECFWK_INSTALL_STATE_ERROR);
-    // reset the install state
-    dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_FAIL);
 }
