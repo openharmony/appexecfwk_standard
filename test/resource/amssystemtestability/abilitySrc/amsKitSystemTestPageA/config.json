@@ -41,6 +41,7 @@
             {
                 "name": "AbilityContextAbility",
                 "icon": "$media:snowball",
+                "srcLanguage": "c++",
                 "label": "AbilityContextAbility Ability",
                 "launchType": "standard",
                 "orientation": "unspecified",
@@ -50,6 +51,7 @@
             {
                 "name": "AbilityAbility",
                 "icon": "$media:snowball",
+                "srcLanguage": "c++",
                 "label": "AbilityAbility Ability",
                 "launchType": "standard",
                 "orientation": "unspecified",
@@ -59,6 +61,7 @@
             {
                 "name": "AbilityLifeCycleAbility",
                 "icon": "$media:snowball",
+                "srcLanguage": "c++",
                 "label": "Lifecycle Callbacks Ability",
                 "launchType": "standard",
                 "orientation": "unspecified",
@@ -68,6 +71,7 @@
             {
                 "name": "LifeCycleObserverAbility",
                 "icon": "$media:snowball",
+                "srcLanguage": "c++",
                 "label": "Lifecycle Callbacks Ability",
                 "launchType": "standard",
                 "orientation": "unspecified",

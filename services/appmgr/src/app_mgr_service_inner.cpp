@@ -1106,6 +1106,16 @@ void AppMgrServiceInner::HandleAbilityAttachTimeOut(const sptr<IRemoteObject> &t
     appRunningManager_->HandleAbilityAttachTimeOut(token);
 }
 
+void AppMgrServiceInner::PrepareTerminate(const sptr<IRemoteObject> &token)
+{
+    APP_LOGI("%{public}s called", __func__);
+    if (!appRunningManager_) {
+        APP_LOGE("appRunningManager_ is nullptr");
+        return;
+    }
+    appRunningManager_->PrepareTerminate(token);
+}
+
 void AppMgrServiceInner::HandleTerminateApplicationTimeOut(const int64_t eventId)
 {
     APP_LOGI("%{public}s called", __func__);

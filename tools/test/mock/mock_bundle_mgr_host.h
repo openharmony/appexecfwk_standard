@@ -40,6 +40,7 @@ public:
     MOCK_METHOD2(GetBundleInfosByMetaData, bool(const std::string &metaData, std::vector<BundleInfo> &bundleInfos));
     MOCK_METHOD2(QueryAbilityInfo, bool(const Want &want, AbilityInfo &abilityInfo));
     MOCK_METHOD2(QueryAbilityInfos, bool(const Want &want, std::vector<AbilityInfo> &abilityInfos));
+    MOCK_METHOD2(QueryAbilityInfosForClone, bool(const Want &want, std::vector<AbilityInfo> &abilityInfos));
     MOCK_METHOD2(QueryAbilityInfoByUri, bool(const std::string &abilityUri, AbilityInfo &abilityInfo));
     MOCK_METHOD1(QueryKeepAliveBundleInfos, bool(std::vector<BundleInfo> &bundleInfos));
     MOCK_METHOD2(GetAbilityLabel, std::string(const std::string &bundleName, const std::string &className));

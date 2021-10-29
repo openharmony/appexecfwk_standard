@@ -43,6 +43,7 @@
         {
             "name": "SecondAbility",
             "icon": "$media:snowball",
+            "srcLanguage": "c++",
             "label": "SecondAbility label",
             "launchType": "standard",
             "configChanges": ["orientation","locale"],
@@ -53,6 +54,7 @@
         {
             "name": "ThirdAbility",
             "icon": "$media:snowball",
+            "srcLanguage": "c++",
             "label": "ThirdAbility label",
             "launchType": "standard",
             "configChanges": ["orientation","locale","layout"],
@@ -63,6 +65,7 @@
         {
             "name": "FourthAbility",
             "icon": "$media:snowball",
+            "srcLanguage": "c++",
             "label": "FourthAbility label",
             "launchType": "standard",
             "configChanges": ["orientation","locale","layout","fontSize"],
@@ -73,6 +76,7 @@
         {
             "name": "FifthAbility",
             "icon": "$media:snowball",
+            "srcLanguage": "c++",
             "label": "FifthAbility label",
             "launchType": "standard",
             "configChanges": ["orientation","locale","layout","fontSize","density"],
@@ -83,6 +87,7 @@
         {
             "name": "SixthAbility",
             "icon": "$media:snowball",
+            "srcLanguage": "c++",
             "label": "SixthAbility label",
             "launchType": "standard",
             "orientation": "unspecified",

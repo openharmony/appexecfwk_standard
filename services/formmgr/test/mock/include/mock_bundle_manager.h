@@ -398,7 +398,11 @@ public:
     std::vector<FormInfo> &formInfo) override;
     virtual bool QueryAbilityInfos(const Want &want, std::vector<AbilityInfo> &abilityInfos) override
     {
-         return true;
+        return true;
+    };
+    virtual bool QueryAbilityInfosForClone(const Want &want, std::vector<AbilityInfo> &abilityInfos) override
+    {
+        return true;
     };
     virtual bool GetModuleUsageRecords(
         const int32_t number, std::vector<ModuleUsageRecord> &moduleUsageRecords) override

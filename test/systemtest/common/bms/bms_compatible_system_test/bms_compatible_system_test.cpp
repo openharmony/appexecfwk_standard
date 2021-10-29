@@ -49,7 +49,6 @@ const int MIN_WIDTH = 100;
 const int DEFAULT_HEIGHT = 100;
 const int DEFAULT_WIDTH = 200;
 const int FORM_NUM = 3;
-
 }  // namespace
 using OHOS::AAFwk::Want;
 using namespace testing::ext;
@@ -228,9 +227,11 @@ static void CheckCompatibleApplicationInfo(
     EXPECT_EQ(compatibleApplicationInfo.name, bundleName);
     EXPECT_EQ(compatibleApplicationInfo.label, "$string:app_name");
     EXPECT_EQ(compatibleApplicationInfo.description, "$string:mainability_description");
-    EXPECT_EQ(compatibleApplicationInfo.moduleInfos[0].moduleName, "entry");
-    EXPECT_EQ(compatibleApplicationInfo.moduleInfos[0].moduleSourceDir,
-        "/data/accounts/account_0/applications/com.example.third1/com.example.third1");
+    if (!compatibleApplicationInfo.moduleInfos.empty()) {
+        EXPECT_EQ(compatibleApplicationInfo.moduleInfos[0].moduleName, "entry");
+        EXPECT_EQ(compatibleApplicationInfo.moduleInfos[0].moduleSourceDir,
+            "/data/accounts/account_0/applications/com.example.third1/com.example.third1");
+    }
     EXPECT_TRUE(compatibleApplicationInfo.enabled);
 }
 /**
@@ -725,6 +726,5 @@ HWTEST_F(BmsCompatibleSystemTest, BMS_QueryAbilityInfoByUri_0300, Function | Med
     EXPECT_EQ(abilityInfo.uri, "");
     GTEST_LOG_(INFO) << "END BMS_QueryAbilityInfoByUri_0300";
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

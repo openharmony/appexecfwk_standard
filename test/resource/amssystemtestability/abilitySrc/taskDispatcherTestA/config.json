@@ -42,6 +42,7 @@
         {
             "name": "SecondAbility",
             "icon": "$media:snowflakes",
+            "srcLanguage": "c++",
             "label": "Second Ability",
             "launchType": "singletop",
             "orientation": "unspecified",

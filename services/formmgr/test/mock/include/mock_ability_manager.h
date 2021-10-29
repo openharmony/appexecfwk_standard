@@ -487,7 +487,7 @@ public:
     {
         return 0;
     }
-    int MoveMissionToSplitScreenStack(const MissionOption &missionOption)
+    int MoveMissionToSplitScreenStack(const MissionOption &primary, const MissionOption &secondary)
     {
         return 0;
     }

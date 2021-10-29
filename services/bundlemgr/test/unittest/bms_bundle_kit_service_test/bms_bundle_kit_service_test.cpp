@@ -124,6 +124,8 @@ const std::string FORM_PORTRAIT_LAYOUTS1 = "port1";
 const std::string FORM_PORTRAIT_LAYOUTS2 = "port2";
 const std::string FORM_LANDSCAPE_LAYOUTS1 = "land1";
 const std::string FORM_LANDSCAPE_LAYOUTS2 = "land2";
+const std::string FORM_LAYOUT = "page/card/index";
+constexpr int32_t FORM_JS_WINDOW_DESIGNWIDTH = 720;
 const std::string SHORTCUT_TEST_ID = "shortcutTestId";
 const std::string SHORTCUT_DEMO_ID = "shortcutDemoId";
 const std::string SHORTCUT_HOST_ABILITY = "hostAbility";
@@ -342,6 +344,9 @@ FormInfo BmsBundleKitServiceTest::MockFormInfo(
     formInfo.scheduledUpateTime = FORM_SCHEDULED_UPDATE_TIME;
     formInfo.updateEnabled = true;
     formInfo.jsComponentName = FORM_JS_COMPONENT_NAME;
+    formInfo.layout = FORM_LAYOUT;
+    formInfo.window.autoDesignWidth = true;
+    formInfo.window.designWidth = FORM_JS_WINDOW_DESIGNWIDTH;
     for (auto &info : formInfo.customizeDatas) {
         info.name = FORM_CUSTOMIZE_DATAS_NAME;
         info.value = FORM_CUSTOMIZE_DATAS_VALUE;
@@ -545,6 +550,45 @@ void BmsBundleKitServiceTest::CheckAbilityInfo(
     }
 }
 
+void BmsBundleKitServiceTest::CheckAbilityInfos(
+    const std::string &bundleName, const std::string &abilityName, const std::vector<AbilityInfo> &abilityInfos) const
+{
+    for (auto abilityInfo : abilityInfos) {
+        EXPECT_EQ(abilityName, abilityInfo.name);
+        EXPECT_EQ(bundleName, abilityInfo.bundleName);
+        EXPECT_EQ(LABEL, abilityInfo.label);
+        EXPECT_EQ(DESCRIPTION, abilityInfo.description);
+        EXPECT_EQ(DEVICE_ID, abilityInfo.deviceId);
+        EXPECT_EQ(THEME, abilityInfo.theme);
+        EXPECT_EQ(ICON_PATH, abilityInfo.iconPath);
+        EXPECT_EQ(CODE_PATH, abilityInfo.codePath);
+        EXPECT_EQ(ORIENTATION, abilityInfo.orientation);
+        EXPECT_EQ(LAUNCH_MODE, abilityInfo.launchMode);
+        EXPECT_EQ(URI, abilityInfo.uri);
+        EXPECT_EQ(false, abilityInfo.supportPipMode);
+        EXPECT_EQ(TARGET_ABILITY, abilityInfo.targetAbility);
+        EXPECT_EQ(CONFIG_CHANGES, abilityInfo.configChanges);
+        EXPECT_EQ(FORM_ENTITY, abilityInfo.formEntity);
+        EXPECT_EQ(DEFAULT_FORM_HEIGHT, abilityInfo.defaultFormHeight);
+        EXPECT_EQ(DEFAULT_FORM_WIDTH, abilityInfo.defaultFormWidth);
+        for (auto &info : abilityInfo.metaData.customizeData) {
+            EXPECT_EQ(info.name, META_DATA_NAME);
+            EXPECT_EQ(info.value, META_DATA_VALUE);
+            EXPECT_EQ(info.extra, META_DATA_EXTRA);
+        }
+        for (auto &info : abilityInfo.metaData.parameters) {
+            EXPECT_EQ(info.description, META_DATA_DESCRIPTION);
+            EXPECT_EQ(info.name, META_DATA_NAME);
+            EXPECT_EQ(info.type, META_DATA_TYPE);
+        }
+        for (auto &info : abilityInfo.metaData.results) {
+            EXPECT_EQ(info.description, META_DATA_DESCRIPTION);
+            EXPECT_EQ(info.name, META_DATA_NAME);
+            EXPECT_EQ(info.type, META_DATA_TYPE);
+        }
+    }
+}
+
 void BmsBundleKitServiceTest::CheckCompatibleAbilityInfo(
     const std::string &bundleName, const std::string &abilityName, const CompatibleAbilityInfo &abilityInfo) const
 {
@@ -721,6 +765,9 @@ void BmsBundleKitServiceTest::CheckFormInfoTest(const std::vector<FormInfo> &for
             EXPECT_EQ(info.name, FORM_CUSTOMIZE_DATAS_NAME);
             EXPECT_EQ(info.value, FORM_CUSTOMIZE_DATAS_VALUE);
         }
+        EXPECT_EQ(formInfo.layout, FORM_LAYOUT);
+        EXPECT_EQ(formInfo.window.designWidth, FORM_JS_WINDOW_DESIGNWIDTH);
+        EXPECT_EQ(formInfo.window.autoDesignWidth, true);
     }
 }
 
@@ -747,6 +794,8 @@ void BmsBundleKitServiceTest::CheckFormInfoDemo(const std::vector<FormInfo> &for
         EXPECT_EQ(formInfo.scheduledUpateTime, FORM_SCHEDULED_UPDATE_TIME);
         EXPECT_EQ(formInfo.jsComponentName, FORM_JS_COMPONENT_NAME);
         EXPECT_EQ(formInfo.updateEnabled, true);
+        EXPECT_EQ(formInfo.layout, FORM_LAYOUT);
+        EXPECT_EQ(formInfo.window.designWidth, FORM_JS_WINDOW_DESIGNWIDTH);
         for (auto &info : formInfo.customizeDatas) {
             EXPECT_EQ(info.name, FORM_CUSTOMIZE_DATAS_NAME);
             EXPECT_EQ(info.value, FORM_CUSTOMIZE_DATAS_VALUE);
@@ -1191,6 +1240,116 @@ HWTEST_F(BmsBundleKitServiceTest, QueryAbilityInfo_0300, Function | SmallTest | 
     want.SetElementName(BUNDLE_NAME_TEST, ABILITY_NAME_TEST);
     AbilityInfo result;
     bool testRet = GetBundleDataMgr()->QueryAbilityInfo(want, result);
+    EXPECT_EQ(false, testRet);
+}
+
+/**
+ * @tc.number: QueryAbilityInfos_0100
+ * @tc.name: test can get the ability info of list by want
+ * @tc.desc: 1.system run normally
+ *           2.get ability info successfully
+ */
+HWTEST_F(BmsBundleKitServiceTest, QueryAbilityInfos_0100, Function | SmallTest | Level1)
+{
+    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
+    Want want;
+    want.SetElementName(BUNDLE_NAME_TEST, ABILITY_NAME_TEST);
+    std::vector<AbilityInfo> result;
+    bool testRet = GetBundleDataMgr()->QueryAbilityInfos(want, result);
+    EXPECT_EQ(true, testRet);
+    CheckAbilityInfos(BUNDLE_NAME_TEST, ABILITY_NAME_TEST, result);
+
+    MockUninstallBundle(BUNDLE_NAME_TEST);
+}
+
+/**
+ * @tc.number: QueryAbilityInfos_0200
+ * @tc.name: test can not get the ability info by want in which bundle name is wrong
+ * @tc.desc: 1.system run normally
+ *           2.get ability info failed
+ */
+HWTEST_F(BmsBundleKitServiceTest, QueryAbilityInfos_0200, Function | SmallTest | Level1)
+{
+    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
+
+    Want want;
+    want.SetElementName(BUNDLE_NAME_DEMO, ABILITY_NAME_TEST);
+    std::vector<AbilityInfo> result;
+    bool testRet = GetBundleDataMgr()->QueryAbilityInfos(want, result);
+    EXPECT_EQ(false, testRet);
+
+    MockUninstallBundle(BUNDLE_NAME_TEST);
+}
+
+/**
+ * @tc.number: QueryAbilityInfos_0300
+ * @tc.name: test can not get the ability info by want which bundle doesn't exist
+ * @tc.desc: 1.system run normally
+ *           2.get ability info failed
+ */
+HWTEST_F(BmsBundleKitServiceTest, QueryAbilityInfos_0300, Function | SmallTest | Level1)
+{
+    Want want;
+    want.SetElementName(BUNDLE_NAME_TEST, ABILITY_NAME_TEST);
+    std::vector<AbilityInfo> result;
+    bool testRet = GetBundleDataMgr()->QueryAbilityInfos(want, result);
+    EXPECT_EQ(false, testRet);
+}
+
+/**
+ * @tc.number: QueryAbilityInfosForClone_0100
+ * @tc.name: test can get the ability info of list by want
+ * @tc.desc: 1.system run normally
+ *           2.get ability info successfully
+ */
+HWTEST_F(BmsBundleKitServiceTest, QueryAbilityInfosForClone_0100, Function | SmallTest | Level1)
+{
+    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
+    Want want;
+    want.SetElementName(BUNDLE_NAME_TEST, ABILITY_NAME_TEST);
+    std::vector<AbilityInfo> result;
+    bool testRet = GetBundleDataMgr()->QueryAbilityInfosForClone(want, result);
+    EXPECT_EQ(true, testRet);
+    CheckAbilityInfos(BUNDLE_NAME_TEST, ABILITY_NAME_TEST, result);
+
+    MockUninstallBundle(BUNDLE_NAME_TEST);
+}
+
+/**
+ * @tc.number: QueryAbilityInfosForClone_0200
+ * @tc.name: test can not get the ability info by want in which element name is wrong
+ * @tc.desc: 1.system run normally
+ *           2.get ability info failed
+ */
+HWTEST_F(BmsBundleKitServiceTest, QueryAbilityInfosForClone_0200, Function | SmallTest | Level1)
+{
+    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
+
+    Want want;
+    want.SetElementName(BUNDLE_NAME_DEMO, ABILITY_NAME_TEST);
+    std::vector<AbilityInfo> result;
+    bool testRet = GetBundleDataMgr()->QueryAbilityInfosForClone(want, result);
+    EXPECT_EQ(false, testRet);
+
+    want.SetElementName(BUNDLE_NAME_TEST, ABILITY_NAME_DEMO);
+    testRet = GetBundleDataMgr()->QueryAbilityInfosForClone(want, result);
+    EXPECT_EQ(false, testRet);
+
+    MockUninstallBundle(BUNDLE_NAME_TEST);
+}
+
+/**
+ * @tc.number: QueryAbilityInfosForClone_0300
+ * @tc.name: test can not get the ability info by want which bundle doesn't exist
+ * @tc.desc: 1.system run normally
+ *           2.get ability info failed
+ */
+HWTEST_F(BmsBundleKitServiceTest, QueryAbilityInfosForClone_0300, Function | SmallTest | Level1)
+{
+    Want want;
+    want.SetElementName(BUNDLE_NAME_TEST, ABILITY_NAME_TEST);
+    std::vector<AbilityInfo> result;
+    bool testRet = GetBundleDataMgr()->QueryAbilityInfosForClone(want, result);
     EXPECT_EQ(false, testRet);
 }
 
@@ -2809,6 +2968,52 @@ HWTEST_F(BmsBundleKitServiceTest, GetUsageRecords_0300, Function | SmallTest | L
     EXPECT_NE(iter, records.end());
     uint32_t count = 2;
     EXPECT_EQ(iter->launchedCount, count);
+    InnerBundleInfo innerBundleInfo1;
+    MockInnerBundleInfo(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST, innerBundleInfo1);
+    ModuleUsageRecordStorage moduleUsageRecordStorage;
+    moduleUsageRecordStorage.DeleteUsageRecord(innerBundleInfo1, 0);
+    MockUninstallBundle(BUNDLE_NAME_TEST);
+}
+
+/**
+ * @tc.number: GetUsageRecords_0400
+ * @tc.name: test can't get usage records if maxNum is Less than 0.
+ * @tc.desc: 1.can't get usage records.
+ */
+HWTEST_F(BmsBundleKitServiceTest, GetUsageRecords_0400, Function | SmallTest | Level1)
+{
+    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
+    int64_t time =
+        std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+    auto ret = GetBundleDataMgr()->NotifyActivityLifeStatus(BUNDLE_NAME_TEST, ABILITY_NAME_TEST, time);
+    EXPECT_TRUE(ret);
+    std::vector<ModuleUsageRecord> records;
+    auto result = GetBundleDataMgr()->GetUsageRecords(-1, records);
+    EXPECT_FALSE(result);
+    EXPECT_EQ(records.size(), 0);
+    InnerBundleInfo innerBundleInfo1;
+    MockInnerBundleInfo(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST, innerBundleInfo1);
+    ModuleUsageRecordStorage moduleUsageRecordStorage;
+    moduleUsageRecordStorage.DeleteUsageRecord(innerBundleInfo1, 0);
+    MockUninstallBundle(BUNDLE_NAME_TEST);
+}
+
+/**
+ * @tc.number: GetUsageRecords_0500
+ * @tc.name: test can't get usage records if maxNum is more than 1000.
+ * @tc.desc: 1.can't get usage records.
+ */
+HWTEST_F(BmsBundleKitServiceTest, GetUsageRecords_0500, Function | SmallTest | Level1)
+{
+    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
+    int64_t time =
+        std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+    auto ret = GetBundleDataMgr()->NotifyActivityLifeStatus(BUNDLE_NAME_TEST, ABILITY_NAME_TEST, time);
+    EXPECT_TRUE(ret);
+    std::vector<ModuleUsageRecord> records;
+    auto result = GetBundleDataMgr()->GetUsageRecords(1001, records);
+    EXPECT_FALSE(result);
+    EXPECT_EQ(records.size(), 0);
     InnerBundleInfo innerBundleInfo1;
     MockInnerBundleInfo(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST, innerBundleInfo1);
     ModuleUsageRecordStorage moduleUsageRecordStorage;

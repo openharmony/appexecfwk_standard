@@ -196,6 +196,7 @@ const std::string BUNDLE_MODULE_PROFILE_FORMS_JS_COMPONENT_NAME = "jsComponentNa
 const std::string BUNDLE_MODULE_PROFILE_FORMS_VALUE = "value";
 const std::string BUNDLE_MODULE_PROFILE_FORMS_FORM_CONFIG_ABILITY = "formConfigAbility";
 const std::string BUNDLE_MODULE_PROFILE_FORMS_FORM_VISIBLE_NOTIFY = "formEnabled";
+const std::string BUNDLE_MODULE_PROFILE_FORMS_LAYOUT = "layout";
 // sub BUNDLE_MODULE_PROFILE_KEY_JS
 const std::string BUNDLE_MODULE_PROFILE_KEY_PAGES = "pages";
 const std::string BUNDLE_MODULE_PROFILE_KEY_WINDOW = "window";
@@ -218,6 +219,8 @@ const std::string BUNDLE_MODULE_PROFILE_KEY_TARGET_BUNDLE = "targetBundle";
 const uint32_t VALUE_HOME_SCREEN = 1 << 0;
 // 000010 represents supporting search box
 const uint32_t VALUE_SEARCHBOX = 1 << 1;
+const uint32_t MAX_USAGE_RECORD_SIZE = 1000;
+
 
 const std::string KEY_HOME_SCREEN = "homeScreen";
 const std::string KEY_SEARCHBOX = "searchbox";

@@ -104,6 +104,8 @@ public:
 
     virtual void AbilityAttachTimeOut(const sptr<IRemoteObject> &token) override;
 
+    virtual void PrepareTerminate(const sptr<IRemoteObject> &token) override;
+
     /**
      * Checks whether a specified permission has been granted to the process identified by pid and uid
      *

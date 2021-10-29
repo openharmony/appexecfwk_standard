@@ -800,6 +800,27 @@ std::optional<std::vector<AbilityInfo>> InnerBundleInfo::FindAbilityInfos(const 
     return std::nullopt;
 }
 
+std::optional<std::vector<AbilityInfo>> InnerBundleInfo::FindAbilityInfosForClone(
+    const std::string &bundleName, const std::string &abilityName) const
+{
+    std::vector<AbilityInfo> abilitys;
+
+    if (bundleName.empty()) {
+        return std::nullopt;
+    }
+
+    for (const auto &ability : baseAbilityInfos_) {
+        if ((ability.second.bundleName == bundleName && (ability.second.name == abilityName))) {
+            abilitys.emplace_back(ability.second);
+        }
+    }
+    if (!abilitys.empty()) {
+        return abilitys;
+    }
+
+    return std::nullopt;
+}
+
 bool InnerBundleInfo::AddModuleInfo(const InnerBundleInfo &newInfo)
 {
     if (newInfo.currentPackage_.empty()) {

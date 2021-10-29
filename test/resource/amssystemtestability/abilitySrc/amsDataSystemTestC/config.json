@@ -41,6 +41,7 @@
         {
             "name": "AmsStDataAbilityDataC2",
             "icon": "$media:snowflakes",
+            "srcLanguage": "c++",
             "label": "DataB Ability",
             "launchType": "standard",
             "orientation": "unspecified",

@@ -42,6 +42,7 @@
         {
             "name": "SecondAbility",
             "icon": "$media:snowball",
+            "srcLanguage": "c++",
             "label": "SecondAbility label",
             "launchType": "standard",
             "orientation": "unspecified",
@@ -51,6 +52,7 @@
         {
             "name": "ThirdAbility",
             "icon": "$media:snowball",
+            "srcLanguage": "c++",
             "label": "ThirdAbility label",
             "launchType": "singleton",
             "orientation": "unspecified",

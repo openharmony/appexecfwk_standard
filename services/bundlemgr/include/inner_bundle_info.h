@@ -114,7 +114,7 @@ enum class ArrayType {
     NOT_ARRAY,
 };
 
-template<typename T, typename dataType>
+template <typename T, typename dataType>
 void CheckArrayType(
     const nlohmann::json &jsonObject, const std::string &key, dataType &data, ArrayType arrayType, int32_t &parseResult)
 {
@@ -167,7 +167,7 @@ void CheckArrayType(
     }
 }
 
-template<typename T, typename dataType>
+template <typename T, typename dataType>
 void GetValueIfFindKey(const nlohmann::json &jsonObject, const nlohmann::detail::iter_impl<const nlohmann::json> &end,
     const std::string &key, dataType &data, JsonType jsonType, bool isNecessary, int32_t &parseResult,
     ArrayType arrayType)
@@ -297,11 +297,19 @@ public:
      */
     std::optional<AbilityInfo> FindAbilityInfo(const std::string &bundleName, const std::string &abilityName) const;
     /**
-     * @brief Find abilityInfo of list  by bundle name.
+     * @brief Find abilityInfo of list by bundle name.
      * @param bundleName Indicates the bundle name.
      * @return Returns the AbilityInfo of list if find it; returns null otherwise.
      */
     std::optional<std::vector<AbilityInfo>> FindAbilityInfos(const std::string &bundleName) const;
+    /**
+     * @brief Find abilityInfo of list for clone by bundle name and ability name.
+     * @param bundleName Indicates the bundle name.
+     * @param abilityName Indicates the ability name
+     * @return Returns the AbilityInfo of list if find it; returns null otherwise.
+     */
+    std::optional<std::vector<AbilityInfo>> FindAbilityInfosForClone(
+        const std::string &bundleName, const std::string &abilityName) const;
     /**
      * @brief Transform the InnerBundleInfo object to string.
      * @return Returns the string object
