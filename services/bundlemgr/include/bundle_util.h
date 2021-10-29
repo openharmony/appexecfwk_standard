@@ -49,7 +49,7 @@ public:
      * @param fileName Indicates the file path.
      * @return Returns true if the file size checked successfully; returns false otherwise.
      */
-    static bool CheckFileSize(const std::string &bundlePath, const int32_t fileSize);
+    static bool CheckFileSize(const std::string &bundlePath, const int64_t fileSize);
 };
 
 }  // namespace AppExecFwk

@@ -142,6 +142,17 @@ void AmsMgrScheduler::AbilityAttachTimeOut(const sptr<IRemoteObject> &token)
     APP_LOGI("AmsMgrScheduler AttachTimeOut end");
 }
 
+void AmsMgrScheduler::PrepareTerminate(const sptr<IRemoteObject> &token)
+{
+    APP_LOGI("AmsMgrScheduler PrepareTerminate begin");
+    if (!IsReady()) {
+        return;
+    }
+    auto task = [=]() { amsMgrServiceInner_->PrepareTerminate(token); };
+    amsHandler_->PostTask(task);
+    APP_LOGI("AmsMgrScheduler PrepareTerminate end");
+}
+
 int32_t AmsMgrScheduler::KillApplication(const std::string &bundleName)
 {
     if (!IsReady()) {

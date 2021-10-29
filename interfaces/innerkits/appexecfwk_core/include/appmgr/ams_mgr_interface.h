@@ -107,6 +107,8 @@ public:
 
     virtual void AbilityAttachTimeOut(const sptr<IRemoteObject> &token) = 0;
 
+    virtual void PrepareTerminate(const sptr<IRemoteObject> &token) = 0;
+
     /**
      * Checks whether a specified permission has been granted to the process identified by pid and uid
      *
@@ -130,6 +132,7 @@ public:
         AMS_KILL_APPLICATION,
         AMS_ABILITY_ATTACH_TIMEOUT,
         AMS_COMPEL_VERIFY_PERMISSION,
+        AMS_PREPARE_TERMINATE_ABILITY,
     };
 };
 }  // namespace AppExecFwk

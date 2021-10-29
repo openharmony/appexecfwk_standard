@@ -224,6 +224,19 @@ void AppMgrClient::AbilityAttachTimeOut(const sptr<IRemoteObject> &token)
     amsService->AbilityAttachTimeOut(token);
 }
 
+void AppMgrClient::PrepareTerminate(const sptr<IRemoteObject> &token)
+{
+    sptr<IAppMgr> service = iface_cast<IAppMgr>(remote_);
+    if (service == nullptr) {
+        return;
+    }
+    sptr<IAmsMgr> amsService = service->GetAmsMgr();
+    if (amsService == nullptr) {
+        return;
+    }
+    amsService->PrepareTerminate(token);
+}
+
 int AppMgrClient::CompelVerifyPermission(const std::string &permission, int pid, int uid, std::string &message)
 {
     sptr<IAppMgr> service = iface_cast<IAppMgr>(remote_);

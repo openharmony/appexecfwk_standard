@@ -53,16 +53,15 @@ const int TARGETVERSION = 3;
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class BundleStatusCallbackImpl : public BundleStatusCallbackHost {
 public:
     BundleStatusCallbackImpl();
     virtual ~BundleStatusCallbackImpl() override;
     virtual void OnBundleStateChanged(const uint8_t installType, const int32_t resultCode, const std::string &resultMsg,
         const std::string &bundleName) override;
-    virtual void OnBundleAdded(const std::string &bundleName, const int userId) override{};
-    virtual void OnBundleUpdated(const std::string &bundleName, const int userId) override{};
-    virtual void OnBundleRemoved(const std::string &bundleName, const int userId) override{};
+    virtual void OnBundleAdded(const std::string &bundleName, const int userId) override {};
+    virtual void OnBundleUpdated(const std::string &bundleName, const int userId) override {};
+    virtual void OnBundleRemoved(const std::string &bundleName, const int userId) override {};
 
 private:
     DISALLOW_COPY_AND_MOVE(BundleStatusCallbackImpl);
@@ -194,7 +193,6 @@ public:
     void CheckFileNonExist(const std::string &bundleName, const std::string &modulePackage) const;
     static StressTestLevel stLevel_;
 };
-
 StressTestLevel ActsBmsKitSystemTest::stLevel_{};
 
 void ActsBmsKitSystemTest::SetUpTestCase()
@@ -2429,11 +2427,8 @@ HWTEST_F(ActsBmsKitSystemTest, GetHapModuleInfo_0200, Function | MediumTest | Le
         std::string bundleFilePath = THIRD_BUNDLE_PATH + "bmsThirdBundle2.hap";
         std::string appName = BASE_BUNDLE_NAME + "1";
         Install(bundleFilePath, InstallFlag::NORMAL, resvec);
-
         CommonTool commonTool;
-        std::string installResult = commonTool.VectorToStr(resvec);
-        EXPECT_EQ(installResult, "Success") << "install fail!";
-
+        EXPECT_EQ(commonTool.VectorToStr(resvec), "Success") << "install fail!";
         AbilityInfo abilityInfo;
         abilityInfo.bundleName = appName;
         abilityInfo.package = BASE_BUNDLE_NAME + ".h1";
@@ -2462,8 +2457,7 @@ HWTEST_F(ActsBmsKitSystemTest, GetHapModuleInfo_0200, Function | MediumTest | Le
         }
         resvec.clear();
         Uninstall(appName, resvec);
-        std::string uninstallResult = commonTool.VectorToStr(resvec);
-        EXPECT_EQ(uninstallResult, "Success") << "uninstall fail!";
+        EXPECT_EQ(commonTool.VectorToStr(resvec), "Success") << "uninstall fail!";
 
         if (!queryResult) {
             APP_LOGI("GetHapModuleInfo_0200 failed - cycle count: %{public}d", i);
@@ -2471,7 +2465,6 @@ HWTEST_F(ActsBmsKitSystemTest, GetHapModuleInfo_0200, Function | MediumTest | Le
         }
         result = true;
     }
-
     if (result && stLevel_.BMSLevel > 1) {
         APP_LOGI("GetHapModuleInfo_0200 success - cycle count: %{public}d", stLevel_.BMSLevel);
     }
@@ -3080,7 +3073,6 @@ HWTEST_F(ActsBmsKitSystemTest, Callback_0700, Function | MediumTest | Level1)
         std::string firstAppName = BASE_BUNDLE_NAME + "1";
         std::string secondFilePath = THIRD_BUNDLE_PATH + "bmsThirdBundle7.hap";
         std::string secondAppName = BASE_BUNDLE_NAME + "2";
-
         CommonTool commonTool;
         sptr<BundleStatusCallbackImpl> firstBundleStatusCallback = (new (std::nothrow) BundleStatusCallbackImpl());
         EXPECT_NE(firstBundleStatusCallback, nullptr);
@@ -3092,37 +3084,28 @@ HWTEST_F(ActsBmsKitSystemTest, Callback_0700, Function | MediumTest | Level1)
         }
         bundleMgrProxy->RegisterBundleStatusCallback(firstBundleStatusCallback);
         Install(firstFilePath, InstallFlag::NORMAL, resvec);
-        std::string firstinstallResult = commonTool.VectorToStr(resvec);
-        EXPECT_EQ(firstinstallResult, "Success") << "install fail!";
-
+        EXPECT_EQ(commonTool.VectorToStr(resvec), "Success") << "install fail!";
         resvec.clear();
         sptr<BundleStatusCallbackImpl> secondBundleStatusCallback = (new (std::nothrow) BundleStatusCallbackImpl());
         EXPECT_NE(secondBundleStatusCallback, nullptr);
         secondBundleStatusCallback->SetBundleName(secondAppName);
         bundleMgrProxy->RegisterBundleStatusCallback(secondBundleStatusCallback);
         Install(secondFilePath, InstallFlag::NORMAL, resvec);
-        std::string secondinstallResult = commonTool.VectorToStr(resvec);
-        EXPECT_EQ(secondinstallResult, "Success") << "install fail!";
-
+        EXPECT_EQ(commonTool.VectorToStr(resvec), "Success") << "install fail!";
         bool clearResult = bundleMgrProxy->ClearBundleStatusCallback(firstBundleStatusCallback);
         EXPECT_TRUE(clearResult);
-
         std::vector<std::string> resvec2;
         Uninstall(firstAppName, resvec2);
-        std::string uninstallResult = commonTool.VectorToStr(resvec2);
-        EXPECT_EQ(uninstallResult, "Success") << "uninstall fail!";
+        EXPECT_EQ(commonTool.VectorToStr(resvec2), "Success") << "uninstall fail!";
         resvec2.clear();
         Uninstall(secondAppName, resvec2);
-        uninstallResult = commonTool.VectorToStr(resvec2);
-        EXPECT_EQ(uninstallResult, "Success") << "uninstall fail!";
-
+        EXPECT_EQ(commonTool.VectorToStr(resvec2), "Success") << "uninstall fail!";
         if (!clearResult) {
             APP_LOGI("Callback_0700 failed - cycle count: %{public}d", i);
             break;
         }
         result = true;
     }
-
     if (result && stLevel_.BMSLevel > 1) {
         APP_LOGI("Callback_0700 success - cycle count: %{public}d", stLevel_.BMSLevel);
     }
@@ -3151,7 +3134,6 @@ HWTEST_F(ActsBmsKitSystemTest, Callback_0800, Function | MediumTest | Level1)
         std::string firstAppName = BASE_BUNDLE_NAME + "1";
         std::string secondFilePath = THIRD_BUNDLE_PATH + "bmsThirdBundle7.hap";
         std::string secondAppName = BASE_BUNDLE_NAME + "2";
-
         CommonTool commonTool;
         sptr<BundleStatusCallbackImpl> firstBundleStatusCallback = (new (std::nothrow) BundleStatusCallbackImpl());
         EXPECT_NE(firstBundleStatusCallback, nullptr);
@@ -3165,7 +3147,6 @@ HWTEST_F(ActsBmsKitSystemTest, Callback_0800, Function | MediumTest | Level1)
         Install(firstFilePath, InstallFlag::NORMAL, resvec);
         std::string firstinstallResult = commonTool.VectorToStr(resvec);
         EXPECT_EQ(firstinstallResult, "Success") << "install fail!";
-
         resvec.clear();
         sptr<BundleStatusCallbackImpl> secondBundleStatusCallback = (new (std::nothrow) BundleStatusCallbackImpl());
         EXPECT_NE(secondBundleStatusCallback, nullptr);
@@ -3174,26 +3155,20 @@ HWTEST_F(ActsBmsKitSystemTest, Callback_0800, Function | MediumTest | Level1)
         Install(secondFilePath, InstallFlag::NORMAL, resvec);
         std::string secondinstallResult = commonTool.VectorToStr(resvec);
         EXPECT_EQ(secondinstallResult, "Success") << "install fail!";
-
         bool clearResult = bundleMgrProxy->ClearBundleStatusCallback(secondBundleStatusCallback);
         EXPECT_TRUE(clearResult);
-
         std::vector<std::string> resvec2;
         Uninstall(firstAppName, resvec2);
-        std::string uninstallResult = commonTool.VectorToStr(resvec2);
-        EXPECT_EQ(uninstallResult, "Success") << "uninstall fail!";
+        EXPECT_EQ(commonTool.VectorToStr(resvec2), "Success") << "uninstall fail!";
         resvec2.clear();
         Uninstall(secondAppName, resvec2);
-        uninstallResult = commonTool.VectorToStr(resvec2);
-        EXPECT_EQ(uninstallResult, "Success") << "uninstall fail!";
-
+        EXPECT_EQ(commonTool.VectorToStr(resvec2), "Success") << "uninstall fail!";
         if (!clearResult) {
             APP_LOGI("Callback_0800 failed - cycle count: %{public}d", i);
             break;
         }
         result = true;
     }
-
     if (result && stLevel_.BMSLevel > 1) {
         APP_LOGI("Callback_0800 success - cycle count: %{public}d", stLevel_.BMSLevel);
     }
@@ -3223,7 +3198,6 @@ HWTEST_F(ActsBmsKitSystemTest, Callback_0900, Function | MediumTest | Level1)
         std::string firstAppName = BASE_BUNDLE_NAME + "1";
         std::string secondFilePath = THIRD_BUNDLE_PATH + "bmsThirdBundle7.hap";
         std::string secondAppName = BASE_BUNDLE_NAME + "2";
-
         CommonTool commonTool;
         sptr<BundleStatusCallbackImpl> firstBundleStatusCallback = (new (std::nothrow) BundleStatusCallbackImpl());
         EXPECT_NE(firstBundleStatusCallback, nullptr);
@@ -3235,39 +3209,30 @@ HWTEST_F(ActsBmsKitSystemTest, Callback_0900, Function | MediumTest | Level1)
         }
         bundleMgrProxy->RegisterBundleStatusCallback(firstBundleStatusCallback);
         Install(firstFilePath, InstallFlag::NORMAL, resvec);
-        std::string firstinstallResult = commonTool.VectorToStr(resvec);
-        EXPECT_EQ(firstinstallResult, "Success") << "install fail!";
-
+        EXPECT_EQ(commonTool.VectorToStr(resvec), "Success") << "install fail!";
         resvec.clear();
         sptr<BundleStatusCallbackImpl> secondBundleStatusCallback = (new (std::nothrow) BundleStatusCallbackImpl());
         EXPECT_NE(secondBundleStatusCallback, nullptr);
         secondBundleStatusCallback->SetBundleName(secondAppName);
         bundleMgrProxy->RegisterBundleStatusCallback(secondBundleStatusCallback);
         Install(secondFilePath, InstallFlag::NORMAL, resvec);
-        std::string secondinstallResult = commonTool.VectorToStr(resvec);
-        EXPECT_EQ(secondinstallResult, "Success") << "install fail!";
-
+        EXPECT_EQ(commonTool.VectorToStr(resvec), "Success") << "install fail!";
         bool clearResult1 = bundleMgrProxy->ClearBundleStatusCallback(firstBundleStatusCallback);
         EXPECT_TRUE(clearResult1);
         bool clearResult2 = bundleMgrProxy->ClearBundleStatusCallback(secondBundleStatusCallback);
         EXPECT_TRUE(clearResult2);
-
         std::vector<std::string> resvec2;
         Uninstall(firstAppName, resvec2);
-        std::string uninstallResult = commonTool.VectorToStr(resvec2);
-        EXPECT_EQ(uninstallResult, "Success") << "uninstall fail!";
+        EXPECT_EQ(commonTool.VectorToStr(resvec2), "Success") << "uninstall fail!";
         resvec2.clear();
         Uninstall(secondAppName, resvec2);
-        uninstallResult = commonTool.VectorToStr(resvec2);
-        EXPECT_EQ(uninstallResult, "Success") << "uninstall fail!";
-
+        EXPECT_EQ(commonTool.VectorToStr(resvec2), "Success") << "uninstall fail!";
         if (!clearResult1 && !clearResult2) {
             APP_LOGI("Callback_0900 failed - cycle count: %{public}d", i);
             break;
         }
         result = true;
     }
-
     if (result && stLevel_.BMSLevel > 1) {
         APP_LOGI("Callback_0900 success - cycle count: %{public}d", stLevel_.BMSLevel);
     }
@@ -3296,9 +3261,9 @@ HWTEST_F(ActsBmsKitSystemTest, CleanBundleCacheFiles_0100, Function | MediumTest
         Install(bundleFilePath, InstallFlag::NORMAL, resvec);
         std::string installResult = commonTool.VectorToStr(resvec);
         EXPECT_EQ(installResult, "Success") << "install fail!";
-        std::this_thread::sleep_for(5000ms);
+        std::this_thread::sleep_for(3000ms);
         system("aa start -a PageAbilityDemo -b com.third.hiworld.example1");
-        std::this_thread::sleep_for(1000ms);
+        std::this_thread::sleep_for(3000ms);
         const std::string testCacheFileNamE1 = BUNDLE_DATA_ROOT_PATH + appName + "/cache/name1.txt";
         const std::string testCacheFileNamE2 = BUNDLE_DATA_ROOT_PATH + appName + "/cache/name2.txt";
         int name1Exist = access(testCacheFileNamE1.c_str(), F_OK);
@@ -3361,9 +3326,9 @@ HWTEST_F(ActsBmsKitSystemTest, CleanBundleCacheFiles_0200, Function | MediumTest
         Install(bundleFilePath, InstallFlag::NORMAL, resvec);
         std::string installResult = commonTool.VectorToStr(resvec);
         EXPECT_EQ(installResult, "Success") << "install fail!";
-        std::this_thread::sleep_for(5000ms);
+        std::this_thread::sleep_for(3000ms);
         system("aa start -a PageAbilityDemo -b com.third.hiworld.example2");
-        std::this_thread::sleep_for(1000ms);
+        std::this_thread::sleep_for(3000ms);
         const std::string testCacheDiR1 = BUNDLE_DATA_ROOT_PATH + appName + "/cache/testDir1";
         const std::string testCacheDiR2 = BUNDLE_DATA_ROOT_PATH + appName + "/cache/testDir2";
         int name1Exist = access(testCacheDiR1.c_str(), F_OK);
@@ -3425,9 +3390,9 @@ HWTEST_F(ActsBmsKitSystemTest, CleanBundleCacheFiles_0300, Function | MediumTest
         Install(bundleFilePath, InstallFlag::NORMAL, resvec);
         std::string installResult = commonTool.VectorToStr(resvec);
         EXPECT_EQ(installResult, "Success") << "install fail!";
-        std::this_thread::sleep_for(5000ms);
+        std::this_thread::sleep_for(3000ms);
         system("aa start -a PageAbilityDemo -b com.third.hiworld.example1");
-        std::this_thread::sleep_for(1000ms);
+        std::this_thread::sleep_for(3000ms);
         const std::string testCacheFileName = BUNDLE_DATA_ROOT_PATH + appName + "/cache/dir1/dir2/dir3/dir4/dir5/dir6";
         const std::string testCacheDir = BUNDLE_DATA_ROOT_PATH + appName + "/cache/dir1";
         int isExist = access(testCacheDir.c_str(), F_OK);
@@ -3480,14 +3445,13 @@ HWTEST_F(ActsBmsKitSystemTest, CleanBundleCacheFiles_0400, Function | MediumTest
         std::vector<std::string> resvec;
         std::string bundleFilePath = THIRD_BUNDLE_PATH + "bmsThirdBundle45.hap";
         std::string appName = BASE_BUNDLE_NAME + "1";
-
         CommonTool commonTool;
         Install(bundleFilePath, InstallFlag::NORMAL, resvec);
         std::string installResult = commonTool.VectorToStr(resvec);
         EXPECT_EQ(installResult, "Success") << "install fail!";
-        std::this_thread::sleep_for(5000ms);
+        std::this_thread::sleep_for(3000ms);
         system("aa start -a PageAbilityDemo -b com.third.hiworld.example1");
-        std::this_thread::sleep_for(1000ms);
+        std::this_thread::sleep_for(3000ms);
         const std::string testCacheFileNamE1 = BUNDLE_DATA_ROOT_PATH + appName + "/cache/testDir1/name1.txt";
         const std::string testCacheDir1 = BUNDLE_DATA_ROOT_PATH + appName + "/cache/testDir1";
         const std::string testCacheFileNamE2 = BUNDLE_DATA_ROOT_PATH + appName + "/cache/testDir2/name2.txt";
@@ -3510,19 +3474,15 @@ HWTEST_F(ActsBmsKitSystemTest, CleanBundleCacheFiles_0400, Function | MediumTest
         EXPECT_NE(name1Exist, 0) << "the cache test dir1 exists.";
         name2Exist = access(testCacheDir2.c_str(), F_OK);
         EXPECT_NE(name2Exist, 0) << "the cache test dir2 exists.";
-
         resvec.clear();
         Uninstall(appName, resvec);
-        std::string uninstallResult = commonTool.VectorToStr(resvec);
-        EXPECT_EQ(uninstallResult, "Success") << "uninstall fail!";
-
+        EXPECT_EQ(commonTool.VectorToStr(resvec), "Success") << "uninstall fail!";
         if (!cleanCacheResult) {
             APP_LOGI("CleanBundleCacheFiles_0400 failed - cycle count: %{public}d", i);
             break;
         }
         result = true;
     }
-
     if (result && stLevel_.BMSLevel > 1) {
         APP_LOGI("CleanBundleCacheFiles_0400 success - cycle count: %{public}d", stLevel_.BMSLevel);
     }
@@ -3982,11 +3942,8 @@ HWTEST_F(ActsBmsKitSystemTest, AbilityDump_0100, Function | MediumTest | Level0)
         std::string appName = BASE_BUNDLE_NAME + "1";
         std::string abilityName = "bmsThirdBundle_A1";
         Install(bundleFilePath, InstallFlag::NORMAL, resvec);
-
         CommonTool commonTool;
-        std::string installResult = commonTool.VectorToStr(resvec);
-        EXPECT_EQ(installResult, "Success") << "install fail!";
-
+        EXPECT_EQ(commonTool.VectorToStr(resvec), "Success") << "install fail!";
         Want want;
         ElementName name;
         name.SetAbilityName(abilityName);
@@ -4002,7 +3959,6 @@ HWTEST_F(ActsBmsKitSystemTest, AbilityDump_0100, Function | MediumTest | Level0)
         bool queryResult = bundleMgrProxy->QueryAbilityInfo(want, abilityInfo);
         EXPECT_EQ(abilityInfo.name, abilityName);
         EXPECT_TRUE(queryResult);
-
         std::string path = "/data/test/abilityInfo.txt";
         std::ofstream file(path);
         file.close();
@@ -4013,19 +3969,15 @@ HWTEST_F(ActsBmsKitSystemTest, AbilityDump_0100, Function | MediumTest | Level0)
         long length = lseek(fd, 0, SEEK_END);
         EXPECT_GT(length, 0);
         close(fd);
-
         resvec.clear();
         Uninstall(appName, resvec);
-        std::string uninstallResult = commonTool.VectorToStr(resvec);
-        EXPECT_EQ(uninstallResult, "Success") << "uninstall fail!";
-
+        EXPECT_EQ(commonTool.VectorToStr(resvec), "Success") << "uninstall fail!";
         if (!queryResult) {
             APP_LOGI("AbilityDump_0100 failed - cycle count: %{public}d", i);
             break;
         }
         result = true;
     }
-
     if (result && stLevel_.BMSLevel > 1) {
         APP_LOGI("AbilityDump_0100 success - cycle count: %{public}d", stLevel_.BMSLevel);
     }
@@ -4479,14 +4431,10 @@ HWTEST_F(ActsBmsKitSystemTest, ApplicationInfo_0100, Function | MediumTest | Lev
     bool result = false;
     for (int i = 1; i <= stLevel_.BMSLevel; i++) {
         std::vector<std::string> resvec;
-        std::string bundleFilePath = THIRD_BUNDLE_PATH + "bmsThirdBundle1.hap";
         std::string appName = BASE_BUNDLE_NAME + "1";
-        Install(bundleFilePath, InstallFlag::NORMAL, resvec);
-
+        Install(THIRD_BUNDLE_PATH + "bmsThirdBundle1.hap", InstallFlag::NORMAL, resvec);
         CommonTool commonTool;
-        std::string installResult = commonTool.VectorToStr(resvec);
-        EXPECT_EQ(installResult, "Success") << "install fail!";
-
+        EXPECT_EQ(commonTool.VectorToStr(resvec), "Success") << "install fail!";
         ApplicationInfo appInfo;
         int userId = Constants::DEFAULT_USERID;
         sptr<IBundleMgr> bundleMgrProxy = GetBundleMgrProxy();
@@ -4504,8 +4452,7 @@ HWTEST_F(ActsBmsKitSystemTest, ApplicationInfo_0100, Function | MediumTest | Lev
         file.close();
         int fd = open(path.c_str(), O_RDWR);
         EXPECT_NE(fd, -1) << "open file error";
-        std::string prefix = "[pAppInfo]";
-        pAppInfo->Dump(prefix, fd);
+        pAppInfo->Dump("[pAppInfo]", fd);
         long length = lseek(fd, 0, SEEK_END);
         lseek(fd, 0, SEEK_SET);
         std::string strAppInfo;
@@ -4516,19 +4463,15 @@ HWTEST_F(ActsBmsKitSystemTest, ApplicationInfo_0100, Function | MediumTest | Lev
         std::string cacheDir = BUNDLE_DATA_ROOT_PATH + appName + "/cache";
         EXPECT_TRUE(IsSubStr(strAppInfo, cacheDir));
         close(fd);
-
         resvec.clear();
         Uninstall(appName, resvec);
-        std::string uninstallResult = commonTool.VectorToStr(resvec);
-        EXPECT_EQ(uninstallResult, "Success") << "uninstall fail!";
-
+        EXPECT_EQ(commonTool.VectorToStr(resvec), "Success") << "uninstall fail!";
         if (retVal <= 0) {
             APP_LOGI("ApplicationInfo_0100 failed - cycle count: %{public}d", i);
             break;
         }
         result = true;
     }
-
     if (result && stLevel_.BMSLevel > 1) {
         APP_LOGI("ApplicationInfo_0100 success - cycle count: %{public}d", stLevel_.BMSLevel);
     }
@@ -4851,24 +4794,20 @@ HWTEST_F(ActsBmsKitSystemTest, GetBundlesForUid_0100, Function | MediumTest | Le
             APP_LOGE("bundle mgr proxy is nullptr.");
             EXPECT_EQ(bundleMgrProxy, nullptr);
         }
-        std::string installResult;
         CommonTool commonTool;
         for (int i = 6; i <= 8; i++) {
             std::vector<std::string> resvec;
             std::string hapFilePath = THIRD_BUNDLE_PATH + "bmsThirdBundle" + std::to_string(i) + ".hap";
-            std::cout << "begin install" << hapFilePath << std::endl;
             Install(hapFilePath, InstallFlag::NORMAL, resvec);
-            installResult = commonTool.VectorToStr(resvec);
-            EXPECT_EQ(installResult, "Success") << "install fail!";
+            EXPECT_EQ(commonTool.VectorToStr(resvec), "Success") << "install fail!";
         }
         bool ret;
         for (int i = 1; i <= 3; i++) {
             std::string appName = BASE_BUNDLE_NAME + std::to_string(i);
             BundleInfo bundleInfo;
             bundleMgrProxy->GetBundleInfo(appName, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo);
-            int uid = bundleInfo.uid;
             std::vector<std::string> bundleNames;
-            ret = bundleMgrProxy->GetBundlesForUid(uid, bundleNames);
+            ret = bundleMgrProxy->GetBundlesForUid(bundleInfo.uid, bundleNames);
             EXPECT_TRUE(ret);
             for (auto bundleName : bundleNames) {
                 EXPECT_EQ(bundleName, appName);
@@ -4878,8 +4817,7 @@ HWTEST_F(ActsBmsKitSystemTest, GetBundlesForUid_0100, Function | MediumTest | Le
             std::vector<std::string> resvec;
             std::string appName = BASE_BUNDLE_NAME + std::to_string(i);
             Uninstall(appName, resvec);
-            std::string uninstallResult = commonTool.VectorToStr(resvec);
-            EXPECT_EQ(uninstallResult, "Success") << "uninstall fail!";
+            EXPECT_EQ(commonTool.VectorToStr(resvec), "Success") << "uninstall fail!";
         }
         if (!ret) {
             APP_LOGI("GetBundlesForUid_0100 failed - cycle count: %{public}d", i);
@@ -4984,55 +4922,39 @@ HWTEST_F(ActsBmsKitSystemTest, GetNameForUid_0100, Function | MediumTest | Level
     bool result = false;
     for (int i = 1; i <= stLevel_.BMSLevel; i++) {
         CommonTool commonTool;
-        std::string installResult;
         std::vector<std::string> resvec;
-        std::string bundleFilePath1 = THIRD_BUNDLE_PATH + "bmsThirdBundle6.hap";
-        std::string bundleFilePath2 = THIRD_BUNDLE_PATH + "bmsThirdBundle7.hap";
-        std::string appName1 = BASE_BUNDLE_NAME + '1';
-        std::string appName2 = BASE_BUNDLE_NAME + '2';
-        std::string name1;
-        std::string name2;
-        Install(bundleFilePath1, InstallFlag::NORMAL, resvec);
-        installResult = commonTool.VectorToStr(resvec);
-        EXPECT_EQ(installResult, "Success") << "install fail!";
+        std::string name1, name2;
+        Install(THIRD_BUNDLE_PATH + "bmsThirdBundle6.hap", InstallFlag::NORMAL, resvec);
+        EXPECT_EQ(commonTool.VectorToStr(resvec), "Success") << "install fail!";
         resvec.clear();
         sptr<IBundleMgr> bundleMgrProxy = GetBundleMgrProxy();
         if (!bundleMgrProxy) {
             APP_LOGE("bundle mgr proxy is nullptr.");
             EXPECT_EQ(bundleMgrProxy, nullptr);
         }
-
         BundleInfo bundleInfo1;
-        bundleMgrProxy->GetBundleInfo(appName1, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo1);
-        int uid1 = bundleInfo1.uid;
-        bool ret = bundleMgrProxy->GetNameForUid(uid1, name1);
+        bundleMgrProxy->GetBundleInfo(BASE_BUNDLE_NAME + '1', BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo1);
+        bool ret = bundleMgrProxy->GetNameForUid(bundleInfo1.uid, name1);
         EXPECT_TRUE(ret);
-
-        Uninstall(appName1, resvec);
+        Uninstall(BASE_BUNDLE_NAME + '1', resvec);
         EXPECT_EQ(commonTool.VectorToStr(resvec), "Success") << "uninstall fail!";
         resvec.clear();
-        Install(bundleFilePath2, InstallFlag::NORMAL, resvec);
-        installResult = commonTool.VectorToStr(resvec);
-        EXPECT_EQ(installResult, "Success") << "install fail!";
+        Install(THIRD_BUNDLE_PATH + "bmsThirdBundle7.hap", InstallFlag::NORMAL, resvec);
+        EXPECT_EQ(commonTool.VectorToStr(resvec), "Success") << "install fail!";
         resvec.clear();
-
-        Install(bundleFilePath1, InstallFlag::NORMAL, resvec);
-        installResult = commonTool.VectorToStr(resvec);
-        EXPECT_EQ(installResult, "Success") << "install fail!";
-
+        Install(THIRD_BUNDLE_PATH + "bmsThirdBundle6.hap", InstallFlag::NORMAL, resvec);
+        EXPECT_EQ(commonTool.VectorToStr(resvec), "Success") << "install fail!";
         BundleInfo bundleInfo2;
-        bundleMgrProxy->GetBundleInfo(appName1, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo2);
-        int uid2 = bundleInfo2.uid;
-        ret = bundleMgrProxy->GetNameForUid(uid2, name2);
+        bundleMgrProxy->GetBundleInfo(BASE_BUNDLE_NAME + '1', BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo2);
+        ret = bundleMgrProxy->GetNameForUid(bundleInfo2.uid, name2);
         EXPECT_TRUE(ret);
-        EXPECT_NE(uid1, uid2);
+        EXPECT_NE(bundleInfo1.uid, bundleInfo2.uid);
         EXPECT_EQ(name1, name2);
         for (int i = 1; i <= 2; i++) {
             std::string appName = BASE_BUNDLE_NAME + std::to_string(i);
             std::vector<std::string> resvec2;
             Uninstall(appName, resvec2);
-            std::string uninstallResult = commonTool.VectorToStr(resvec2);
-            EXPECT_EQ(uninstallResult, "Success") << "uninstall fail!";
+            EXPECT_EQ(commonTool.VectorToStr(resvec2), "Success") << "uninstall fail!";
         }
         if (!ret) {
             APP_LOGI("GetNameForUid_0100 failed - cycle count: %{public}d", i);
@@ -5040,7 +4962,6 @@ HWTEST_F(ActsBmsKitSystemTest, GetNameForUid_0100, Function | MediumTest | Level
         }
         result = true;
     }
-
     if (result && stLevel_.BMSLevel > 1) {
         APP_LOGI("GetNameForUid_0100 success - cycle count: %{public}d", stLevel_.BMSLevel);
     }

@@ -59,7 +59,11 @@ public:
     };
     virtual bool QueryAbilityInfos(const Want &want, std::vector<AbilityInfo> &abilityInfos) override
     {
-         return true;
+        return true;
+    };
+    virtual bool QueryAbilityInfosForClone(const Want &want, std::vector<AbilityInfo> &abilityInfos) override
+    {
+        return true;
     };
     virtual bool GetBundleInfo(const std::string &bundleName, const BundleFlag flag, BundleInfo &bundleInfo) override
     {
@@ -224,7 +228,11 @@ public:
     };
     virtual bool QueryAbilityInfos(const Want &want, std::vector<AbilityInfo> &abilityInfos) override
     {
-         return true;
+        return true;
+    };
+    virtual bool QueryAbilityInfosForClone(const Want &want, std::vector<AbilityInfo> &abilityInfos) override
+    {
+        return true;
     };
     virtual bool GetBundleInfo(const std::string &bundleName, const BundleFlag flag, BundleInfo &bundleInfo) override;
     virtual bool GetBundleInfos(const BundleFlag flag, std::vector<BundleInfo> &bundleInfos) override
@@ -336,7 +344,7 @@ public:
     {
         return true;
     }
-	virtual bool GetFormsInfoByApp(const std::string &bundleName, std::vector<FormInfo> &formInfos) override
+    virtual bool GetFormsInfoByApp(const std::string &bundleName, std::vector<FormInfo> &formInfos) override
     {
         return true;
     }
@@ -349,8 +357,8 @@ public:
     {
         return true;
     }
-    virtual bool GetModuleUsageRecords(const int32_t number, 
-        std::vector<ModuleUsageRecord> &moduleUsageRecords) override
+    virtual bool GetModuleUsageRecords(
+        const int32_t number, std::vector<ModuleUsageRecord> &moduleUsageRecords) override
     {
         return true;
     }

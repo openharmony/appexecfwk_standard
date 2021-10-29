@@ -36,8 +36,9 @@ public:
     MOCK_METHOD1(KillApplication, int32_t(const std::string &bundleName));
     MOCK_METHOD0(IsReady, bool());
     MOCK_METHOD1(AbilityAttachTimeOut, void(const sptr<IRemoteObject> &token));
+    MOCK_METHOD1(PrepareTerminate, void(const sptr<IRemoteObject> &token));
     MOCK_METHOD4(CompelVerifyPermission, int(const std::string &permission, int pid, int uid, std::string &message));
-    MockAmsMgrScheduler() : AmsMgrStub(){};
+    MockAmsMgrScheduler() : AmsMgrStub() {};
     virtual ~MockAmsMgrScheduler(){};
     virtual void RegisterAppStateCallback(const sptr<IAppStateCallback> &callback) override
     {

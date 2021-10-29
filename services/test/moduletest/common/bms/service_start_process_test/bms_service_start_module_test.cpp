@@ -116,29 +116,19 @@ void BmsServiceStartModuleTest::CreateFile(const std::string &path) const
         APP_LOGE("CreateFile the length of path is too long");
         return;
     }
-
-    std::string realPath;
-    realPath.reserve(PATH_MAX);
-    realPath.resize(PATH_MAX - 1);
-
-    if (realpath(path.c_str(), &(realPath[0])) != nullptr) {
-        APP_LOGW("CreateFile-translate:%{public}s already exist path", realPath.c_str());
-        return;
-    }
-
     mode_t mode = 0666;
-    int fd = open(realPath.c_str(), O_RDWR | O_CREAT, mode);
+    int fd = open(path.c_str(), O_RDWR | O_CREAT, mode);
     if (fd == -1) {
-        APP_LOGE("CreateFile-open:%{public}s error", realPath.c_str());
+        APP_LOGE("CreateFile-open:%{public}s error", path.c_str());
         return;
     }
     if (close(fd) != 0) {
-        APP_LOGW("CreateFile-close:%{public}s error", realPath.c_str());
+        APP_LOGW("CreateFile-close:%{public}s error", path.c_str());
         return;
     }
 
-    if (access(realPath.c_str(), F_OK) != 0) {
-        APP_LOGE("CreateFile-checkFile:%{public}s not exist", realPath.c_str());
+    if (access(path.c_str(), F_OK) != 0) {
+        APP_LOGE("CreateFile-checkFile:%{public}s not exist", path.c_str());
     }
 }
 

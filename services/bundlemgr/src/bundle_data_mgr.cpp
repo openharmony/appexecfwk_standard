@@ -353,6 +353,49 @@ bool BundleDataMgr::QueryAbilityInfos(const Want &want, std::vector<AbilityInfo>
     return true;
 }
 
+bool BundleDataMgr::QueryAbilityInfosForClone(const Want &want, std::vector<AbilityInfo> &abilityInfo) const
+{
+    ElementName element = want.GetElement();
+    std::string abilityName = element.GetAbilityName();
+    std::string bundleName = element.GetBundleName();
+    APP_LOGI("bundle name:%{public}s, ability name:%{public}s", bundleName.c_str(), abilityName.c_str());
+
+    std::string keyName = bundleName + abilityName;
+    APP_LOGI("ability, name:%{public}s", keyName.c_str());
+    std::lock_guard<std::mutex> lock(bundleInfoMutex_);
+    if (bundleInfos_.empty()) {
+        APP_LOGI("bundleInfos_ is empty");
+        return false;
+    }
+    auto item = bundleInfos_.find(bundleName);
+    if (item == bundleInfos_.end()) {
+        APP_LOGI("bundle:%{public}s not find", bundleName.c_str());
+        return false;
+    }
+
+    auto infoWithIdItem = item->second.find(Constants::CURRENT_DEVICE_ID);
+    if (infoWithIdItem == item->second.end()) {
+        APP_LOGI("bundle:%{public}s device id not find", bundleName.c_str());
+        return false;
+    }
+    if (infoWithIdItem->second.IsDisabled()) {
+        APP_LOGI("app %{public}s is disabled", infoWithIdItem->second.GetBundleName().c_str());
+        return false;
+    }
+    auto ability = infoWithIdItem->second.FindAbilityInfosForClone(bundleName, abilityName);
+    if (!ability) {
+        APP_LOGE("ability:%{public}s not find", keyName.c_str());
+        return false;
+    }
+    abilityInfo = (*ability);
+    for (auto &ability : abilityInfo) {
+        infoWithIdItem->second.GetApplicationInfo(
+            ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMS, 0, ability.applicationInfo);
+    }
+
+    return true;
+}
+
 bool BundleDataMgr::QueryAbilityInfoByUri(const std::string &abilityUri, AbilityInfo &abilityInfo) const
 {
     APP_LOGI("abilityUri is %{public}s", abilityUri.c_str());
@@ -1136,6 +1179,10 @@ bool BundleDataMgr::RecycleUidAndGid(const InnerBundleInfo &info)
 bool BundleDataMgr::GetUsageRecords(const int32_t maxNum, std::vector<ModuleUsageRecord> &records)
 {
     APP_LOGI("GetUsageRecords, maxNum: %{public}d", maxNum);
+    if (maxNum <= 0 || maxNum > ProfileReader::MAX_USAGE_RECORD_SIZE) {
+        APP_LOGI("maxNum illegal");
+        return false;
+    }
     records.clear();
     std::vector<ModuleUsageRecord> usageRecords;
     bool result = usageRecordStorage_->QueryRecordByNum(maxNum, usageRecords, 0);
@@ -1420,6 +1467,9 @@ bool BundleDataMgr::GetFormsInfoByModule(
         return false;
     }
     innerBundleInfo->second.GetFormsInfoByModule(moduleName, formInfos);
+    if (formInfos.empty()) {
+        return false;
+    }
     APP_LOGE("module forminfo find success");
     return true;
 }

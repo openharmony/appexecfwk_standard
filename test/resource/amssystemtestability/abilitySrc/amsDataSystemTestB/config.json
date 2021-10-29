@@ -40,6 +40,7 @@
         {
             "name": "AmsStDataAbilityDataB",
             "icon": "$media:snowflakes",
+            "srcLanguage": "c++",
             "label": "DataB Ability",
             "launchType": "standard",
             "orientation": "unspecified",

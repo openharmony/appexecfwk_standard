@@ -152,7 +152,6 @@ bool AmsConfigurationUpdatedTest::SubscribeEvent()
  * @tc.desc      : Verify whether the results of the orientation function of the system configuration concerned by
  * capability are correct.
  */
-
 HWTEST_F(AmsConfigurationUpdatedTest, AMS_UpdateConfiguration_0100, Function | MediumTest | Level1)
 {
     GTEST_LOG_(INFO) << "==========>\nAmsConfigurationUpdatedTest AMS_UpdateConfiguration_0100 start";
