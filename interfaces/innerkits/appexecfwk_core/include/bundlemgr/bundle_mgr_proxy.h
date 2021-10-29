@@ -144,6 +144,13 @@ public:
      */
     virtual bool QueryAbilityInfos(const Want &want, std::vector<AbilityInfo> &abilityInfos) override;
     /**
+     * @brief Query the AbilityInfo of list for clone by the given Want.
+     * @param want Indicates the information of the ability.
+     * @param abilityInfos Indicates the obtained AbilityInfos object.
+     * @return Returns true if the AbilityInfos is successfully obtained; returns false otherwise.
+     */
+    virtual bool QueryAbilityInfosForClone(const Want &want, std::vector<AbilityInfo> &abilityInfos) override;
+    /**
      * @brief Query the AbilityInfo by ability.uri in config.json through the proxy object.
      * @param abilityUri Indicates the uri of the ability.
      * @param abilityInfo Indicates the obtained AbilityInfo object.

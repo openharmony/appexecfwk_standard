@@ -45,7 +45,6 @@ const std::string OPERATION_SUCCESS = "Success";
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class BundleStatusCallbackImpl : public BundleStatusCallbackHost {
 public:
     BundleStatusCallbackImpl();
@@ -1197,7 +1196,6 @@ HWTEST_F(BmsSearchSystemTest, BMS_Search_3300, Function | MediumTest | Level1)
     bool getInfoResult = bundleMgrProxy->GetBundleInfo(appName, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo);
     EXPECT_TRUE(getInfoResult);
     EXPECT_EQ(bundleInfo.name, appName);
-    EXPECT_EQ(bundleInfo.appId, "");
     EXPECT_EQ(bundleInfo.label, "bmsThirdBundle_A1 Ability");
     EXPECT_EQ(commonTool.VectorToStr(bundleInfo.modulePublicDirs),
         "/data/accounts/account_0/appdata/com.third.hiworld.example1/com.third.hiworld.example.h1");
@@ -1427,6 +1425,5 @@ HWTEST_F(BmsSearchSystemTest, BMS_Search_3900, Function | MediumTest | Level1)
     EXPECT_NE(name2Exist, 0) << "the test file2 exists.";
     std::cout << "END BMS_SEARCH_3900" << std::endl;
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

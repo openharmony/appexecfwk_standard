@@ -47,6 +47,8 @@ AmsMgrStub::AmsMgrStub()
         &AmsMgrStub::HandleAbilityAttachTimeOut;
     memberFuncMap_[static_cast<uint32_t>(IAmsMgr::Message::AMS_COMPEL_VERIFY_PERMISSION)] =
         &AmsMgrStub::HandleCompelVerifyPermission;
+    memberFuncMap_[static_cast<uint32_t>(IAmsMgr::Message::AMS_PREPARE_TERMINATE_ABILITY)] =
+        &AmsMgrStub::HandlePrepareTerminate;
 }
 
 AmsMgrStub::~AmsMgrStub()
@@ -167,6 +169,13 @@ int32_t AmsMgrStub::HandleCompelVerifyPermission(MessageParcel &data, MessagePar
     auto result = CompelVerifyPermission(permission, pid, uid, message);
     reply.WriteString16(Str8ToStr16(message));
     reply.WriteInt32(result);
+    return NO_ERROR;
+}
+
+int32_t AmsMgrStub::HandlePrepareTerminate(MessageParcel &data, MessageParcel &reply)
+{
+    sptr<IRemoteObject> token = data.ReadParcelable<IRemoteObject>();
+    PrepareTerminate(token);
     return NO_ERROR;
 }
 }  // namespace AppExecFwk

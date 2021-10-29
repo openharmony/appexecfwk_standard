@@ -261,6 +261,26 @@ void AppRunningManager::HandleAbilityAttachTimeOut(const sptr<IRemoteObject> &to
 
     appRecord->TerminateAbility(token, true);
 }
+
+void AppRunningManager::PrepareTerminate(const sptr<IRemoteObject> &token)
+{
+    APP_LOGI("%{public}s, called", __func__);
+    if (token == nullptr) {
+        APP_LOGE("%{public}s, token is nullptr", __func__);
+        return;
+    }
+
+    auto appRecord = GetAppRunningRecordByAbilityToken(token);
+    if (!appRecord) {
+        APP_LOGE("%{public}s, appRecord is nullptr", __func__);
+        return;
+    }
+
+    if (appRecord->IsLastAbilityRecord(token)) {
+        appRecord->SetTerminating();
+    }
+}
+
 void AppRunningManager::TerminateAbility(const sptr<IRemoteObject> &token)
 {
     APP_LOGI("%{public}s, called", __func__);

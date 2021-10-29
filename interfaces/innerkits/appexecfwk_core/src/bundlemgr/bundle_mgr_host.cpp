@@ -89,6 +89,9 @@ int BundleMgrHost::OnRemoteRequest(uint32_t code, MessageParcel &data, MessagePa
         case static_cast<uint32_t>(IBundleMgr::Message::QUERY_ABILITY_INFOS):
             errCode = HandleQueryAbilityInfos(data, reply);
             break;
+        case static_cast<uint32_t>(IBundleMgr::Message::QUERY_ABILITY_INFOS_FOR_CLONE):
+            errCode = HandleQueryAbilityInfosForClone(data, reply);
+            break;
         case static_cast<uint32_t>(IBundleMgr::Message::QUERY_ABILITY_INFO_BY_URI):
             errCode = HandleQueryAbilityInfoByUri(data, reply);
             break;
@@ -186,13 +189,13 @@ int BundleMgrHost::OnRemoteRequest(uint32_t code, MessageParcel &data, MessagePa
             errCode = HandleUnregisterPermissionsChanged(data, reply);
             break;
         case static_cast<uint32_t>(IBundleMgr::Message::GET_ALL_FORMS_INFO):
-			errCode = HandleGetAllFormsInfo(data, reply);
+            errCode = HandleGetAllFormsInfo(data, reply);
             break;
         case static_cast<uint32_t>(IBundleMgr::Message::GET_FORMS_INFO_BY_APP):
-			errCode = HandleGetFormsInfoByApp(data, reply);
+            errCode = HandleGetFormsInfoByApp(data, reply);
             break;
         case static_cast<uint32_t>(IBundleMgr::Message::GET_FORMS_INFO_BY_MODULE):
-			errCode = HandleGetFormsInfoByModule(data, reply);
+            errCode = HandleGetFormsInfoByModule(data, reply);
             break;
         case static_cast<uint32_t>(IBundleMgr::Message::GET_SHORTCUT_INFO):
             errCode = HandleGetShortcutInfos(data, reply);
@@ -451,6 +454,29 @@ ErrCode BundleMgrHost::HandleQueryAbilityInfos(Parcel &data, Parcel &reply)
 
     std::vector<AbilityInfo> abilityInfos;
     bool ret = QueryAbilityInfos(*want, abilityInfos);
+    if (!reply.WriteBool(ret)) {
+        APP_LOGE("write failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    if (ret) {
+        if (!WriteParcelableVector(abilityInfos, reply)) {
+            APP_LOGE("write failed");
+            return ERR_APPEXECFWK_PARCEL_ERROR;
+        }
+    }
+    return ERR_OK;
+}
+
+ErrCode BundleMgrHost::HandleQueryAbilityInfosForClone(Parcel &data, Parcel &reply)
+{
+    std::unique_ptr<Want> want(data.ReadParcelable<Want>());
+    if (!want) {
+        APP_LOGE("ReadParcelable<want> failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+
+    std::vector<AbilityInfo> abilityInfos;
+    bool ret = QueryAbilityInfosForClone(*want, abilityInfos);
     if (!reply.WriteBool(ret)) {
         APP_LOGE("write failed");
         return ERR_APPEXECFWK_PARCEL_ERROR;
@@ -989,9 +1015,9 @@ ErrCode BundleMgrHost::HandleGetAllFormsInfo(Parcel &data, Parcel &reply)
 
     if (ret) {
         if (!WriteParcelableVector(infos, reply)) {
-	        APP_LOGE("write failed");
-	        return ERR_APPEXECFWK_PARCEL_ERROR;
-	    }
+            APP_LOGE("write failed");
+            return ERR_APPEXECFWK_PARCEL_ERROR;
+        }
     }
     return ERR_OK;
 }
@@ -1008,9 +1034,9 @@ ErrCode BundleMgrHost::HandleGetFormsInfoByApp(Parcel &data, Parcel &reply)
 
     if (ret) {
         if (!WriteParcelableVector(infos, reply)) {
-	        APP_LOGE("write failed");
-	        return ERR_APPEXECFWK_PARCEL_ERROR;
-	    }
+            APP_LOGE("write failed");
+            return ERR_APPEXECFWK_PARCEL_ERROR;
+        }
     }
     return ERR_OK;
 }
@@ -1028,9 +1054,9 @@ ErrCode BundleMgrHost::HandleGetFormsInfoByModule(Parcel &data, Parcel &reply)
 
     if (ret) {
         if (!WriteParcelableVector(infos, reply)) {
-	        APP_LOGE("write failed");
-	        return ERR_APPEXECFWK_PARCEL_ERROR;
-	    }
+            APP_LOGE("write failed");
+            return ERR_APPEXECFWK_PARCEL_ERROR;
+        }
     }
     return ERR_OK;
 }

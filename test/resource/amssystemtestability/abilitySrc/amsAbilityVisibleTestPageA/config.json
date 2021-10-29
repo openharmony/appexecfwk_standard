@@ -40,6 +40,7 @@
         {
             "name": "AmsAbilityVisibleTestPageA2",
             "icon": "$media:snowball",
+            "srcLanguage": "c++",
             "label": "AmsAbilityVisibleTestPageA2 Ability",
             "launchType": "standard",
             "orientation": "unspecified",
@@ -49,6 +50,7 @@
         {
             "name": "AmsAbilityVisibleTestPageA3",
             "icon": "$media:snowball",
+            "srcLanguage": "c++",
             "label": "AmsAbilityVisibleTestPageA3 Ability",
             "launchType": "singleton",
             "orientation": "unspecified",
@@ -58,6 +60,7 @@
         {
             "name": "AmsAbilityVisibleTestPageA4",
             "icon": "$media:snowball",
+            "srcLanguage": "c++",
             "label": "AmsAbilityVisibleTestPageA4 Ability",
             "launchType": "standard",
             "orientation": "unspecified",

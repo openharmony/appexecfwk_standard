@@ -445,7 +445,7 @@ int FormMgrShellCommand::GetStringInfo(IFormMgr::Message code, MessageParcel &da
     std::vector<std::string> stringInfoList;
     if (!reply.ReadStringVector(&stringInfoList)) {
         APP_LOGE("%{public}s, failed to read string vector from reply", __func__);
-        return ERR_APPEXECFWK_PARCEL_ERROR;
+        return false;
     }
     if (stringInfoList.empty()) {
         APP_LOGI("%{public}s, No string info", __func__);

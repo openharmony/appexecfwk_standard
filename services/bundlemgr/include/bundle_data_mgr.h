@@ -132,6 +132,13 @@ public:
      */
     bool QueryAbilityInfos(const Want &want, std::vector<AbilityInfo> &abilityInfo) const;
     /**
+     * @brief Query a AbilityInfo of list for clone by the given Want.
+     * @param want Indicates the information of the ability.
+     * @param abilityInfo Indicates the obtained AbilityInfo of list.
+     * @return Returns true if the AbilityInfo is successfully obtained; returns false otherwise.
+     */
+    bool QueryAbilityInfosForClone(const Want &want, std::vector<AbilityInfo> &abilityInfo) const;
+    /**
      * @brief Query the AbilityInfo by ability.uri in config.json.
      * @param abilityUri Indicates the uri of the ability.
      * @param abilityInfo Indicates the obtained AbilityInfo object.

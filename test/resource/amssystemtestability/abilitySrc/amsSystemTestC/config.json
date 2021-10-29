@@ -40,6 +40,7 @@
         {
             "name": "AmsStAbilityC2",
             "icon": "$media:snowball",
+            "srcLanguage": "c++",
             "label": "AbilityC2 Ability",
             "launchType": "singletop",
             "orientation": "unspecified",
@@ -49,6 +50,7 @@
         {
             "name": "AmsStAbilityC3",
             "icon": "$media:snowball",
+            "srcLanguage": "c++",
             "label": "AbilityC3 Ability",
             "launchType": "singletop",
             "orientation": "unspecified",

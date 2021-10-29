@@ -175,6 +175,10 @@ int AmsStDataAbilityDataA::OpenFile(const Uri &uri, const std::string &mode)
     fd = fileno(fd1);
     APP_LOGI("--------------------------------AmsStDataAbilityDataA fd: %{public}d", fd);
     PublishEvent(abilityEventName, ABILITY_DATA_A_CODE, "OpenFile");
+    int result = fclose(fd1);
+    if (result != 0) {
+        APP_LOGI("--------------------------------AmsStDataAbilityDataA: close file failure");
+    }
     return fd;
 }
 

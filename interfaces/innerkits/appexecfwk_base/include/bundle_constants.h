@@ -115,7 +115,8 @@ const std::string STORE_ID = "installed_bundle_datas";
 const std::string ABILITY_USAGE_STORE_ID = "ability_usage_datas";
 
 // single max hap size
-constexpr int32_t MAX_HAP_SIZE = 50 * 1024 * 1024;
+constexpr int64_t ONE_GB = 1024 * 1024 * 1024;
+constexpr int64_t MAX_HAP_SIZE = ONE_GB * 4;  // 4GB
 
 const std::string UID = "uid";
 const int32_t MAX_LIMIT_SIZE = 4;

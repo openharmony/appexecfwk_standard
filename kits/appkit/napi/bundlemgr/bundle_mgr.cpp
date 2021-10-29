@@ -724,6 +724,16 @@ static void ConvertFormCustomizeData(napi_env env, napi_value objformInfo, const
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objformInfo, "value", nValue));
 }
 
+static void ConvertFormWindow(napi_env env, napi_value objWindowInfo, const FormWindow &formWindow)
+{
+    napi_value nDesignWidth;
+    NAPI_CALL_RETURN_VOID(env, napi_create_uint32(env, formWindow.designWidth, &nDesignWidth));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objWindowInfo, "designWidth", nDesignWidth));
+    napi_value nAutoDesignWidth;
+    NAPI_CALL_RETURN_VOID(env, napi_get_boolean(env, formWindow.autoDesignWidth, &nAutoDesignWidth));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objWindowInfo, "autoDesignWidth", nAutoDesignWidth));
+}
+
 static void ConvertFormInfo(napi_env env, napi_value objformInfo, const FormInfo &formInfo)
 {
     napi_value nName;
@@ -812,6 +822,18 @@ static void ConvertFormInfo(napi_env env, napi_value objformInfo, const FormInfo
         NAPI_CALL_RETURN_VOID(env, napi_set_element(env, nCustomizeDatas, idx, nCustomizeData));
     }
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objformInfo, "customizeDatas", nCustomizeDatas));
+
+    napi_value nLayout;
+    NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, formInfo.layout.c_str(), NAPI_AUTO_LENGTH, &nLayout));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objformInfo, "layout", nLayout));
+    HILOG_INFO("ConvertFormInfo layout=%{public}s.", formInfo.layout.c_str());
+
+    napi_value nWindow;
+    NAPI_CALL_RETURN_VOID(env, napi_create_object(env, &nWindow));
+    ConvertFormWindow(env, nWindow, formInfo.window);
+    HILOG_INFO("ConvertFormInfo window.designWidth=%{public}d.", formInfo.window.designWidth);
+    HILOG_INFO("ConvertFormInfo window.autoDesignWidth=%{public}d.", formInfo.window.autoDesignWidth);
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objformInfo, "window", nWindow));
 }
 
 static void ConvertShortcutIntent(napi_env env, napi_value objShortcutInfo, const ShortcutIntent &shortcutIntent)
@@ -1051,10 +1073,10 @@ napi_value GetApplicationInfos(napi_env env, napi_callback_info info)
     }
 
     AsyncApplicationInfosCallbackInfo *asyncCallbackInfo = new (std::nothrow) AsyncApplicationInfosCallbackInfo {
-        .env = env, 
-        .asyncWork = nullptr, 
-        .deferred = nullptr, 
-        .applicationFlag = applicationFlag, 
+        .env = env,
+        .asyncWork = nullptr,
+        .deferred = nullptr,
+        .applicationFlag = applicationFlag,
         .userId = userId
     };
     if (asyncCallbackInfo == nullptr) {
@@ -1246,9 +1268,9 @@ napi_value QueryAbilityInfos(napi_env env, napi_callback_info info)
     ParseInt(env, userId, argv[PARAM2]);
 
     AsyncAbilityInfoCallbackInfo *asyncCallbackInfo = new AsyncAbilityInfoCallbackInfo {
-        .env = env, 
-        .asyncWork = nullptr, 
-        .deferred = nullptr, 
+        .env = env,
+        .asyncWork = nullptr,
+        .deferred = nullptr,
         .want = want
     };
     if (asyncCallbackInfo == nullptr) {
@@ -1573,9 +1595,9 @@ napi_value GetBundleInfos(napi_env env, napi_callback_info info)
         bundleFlag = BundleFlag::GET_BUNDLE_DEFAULT;
     }
     AsyncBundleInfosCallbackInfo *asyncCallbackInfo = new (std::nothrow) AsyncBundleInfosCallbackInfo {
-        .env = env, 
-        .asyncWork = nullptr, 
-        .deferred = nullptr, 
+        .env = env,
+        .asyncWork = nullptr,
+        .deferred = nullptr,
         .bundleFlag = bundleFlag
     };
     if (asyncCallbackInfo == nullptr) {
@@ -1711,10 +1733,10 @@ napi_value GetBundleInfo(napi_env env, napi_callback_info info)
         bundleFlag = BundleFlag::GET_BUNDLE_DEFAULT;
     }
     AsyncBundleInfoCallbackInfo *asyncCallbackInfo = new (std::nothrow) AsyncBundleInfoCallbackInfo {
-        .env = env, 
-        .asyncWork = nullptr, 
-        .deferred = nullptr, 
-        .param = bundleName, 
+        .env = env,
+        .asyncWork = nullptr,
+        .deferred = nullptr,
+        .param = bundleName,
         .bundleFlag = bundleFlag
     };
     if (asyncCallbackInfo == nullptr) {
@@ -1851,10 +1873,10 @@ napi_value GetBundleArchiveInfo(napi_env env, napi_callback_info info)
         bundleFlag = BundleFlag::GET_BUNDLE_DEFAULT;
     }
     AsyncBundleInfoCallbackInfo *asyncCallbackInfo = new (std::nothrow) AsyncBundleInfoCallbackInfo {
-        .env = env, 
-        .asyncWork = nullptr, 
-        .deferred = nullptr, 
-        .param = hapFilePath, 
+        .env = env,
+        .asyncWork = nullptr,
+        .deferred = nullptr,
+        .param = hapFilePath,
         .bundleFlag = bundleFlag
     };
     if (asyncCallbackInfo == nullptr) {
@@ -2043,9 +2065,9 @@ napi_value GetPermissionDef(napi_env env, napi_callback_info info)
     std::string permissionName;
     ParseString(env, permissionName, argv[PARAM0]);
     AsyncPermissionDefCallbackInfo *asyncCallbackInfo = new (std::nothrow) AsyncPermissionDefCallbackInfo {
-        .env = env, 
-        .asyncWork = nullptr, 
-        .deferred = nullptr, 
+        .env = env,
+        .asyncWork = nullptr,
+        .deferred = nullptr,
         .permissionName = permissionName
     };
     if (asyncCallbackInfo == nullptr) {
@@ -2190,8 +2212,8 @@ napi_value GetBundleInstaller(napi_env env, napi_callback_info info)
 
     AsyncGetBundleInstallerCallbackInfo *asyncCallbackInfo =
         new AsyncGetBundleInstallerCallbackInfo {
-        .env = env, 
-        .asyncWork = nullptr, 
+        .env = env,
+        .asyncWork = nullptr,
         .deferred = nullptr
     };
     if (asyncCallbackInfo == nullptr) {
@@ -2800,8 +2822,8 @@ napi_value GetAllFormsInfo(napi_env env, napi_callback_info info)
     HILOG_INFO("ARGCSIZE is =%{public}zu.", argc);
 
     AsyncFormInfosCallbackInfo *asyncCallbackInfo = new AsyncFormInfosCallbackInfo {
-        .env = env, 
-        .asyncWork = nullptr, 
+        .env = env,
+        .asyncWork = nullptr,
         .deferred = nullptr
     };
     if (asyncCallbackInfo == nullptr) {
@@ -2930,10 +2952,10 @@ napi_value GetFormsInfoByModule(napi_env env, napi_callback_info info)
     ParseString(env, moduleName, argv[PARAM1]);
 
     AsyncFormInfosByModuleCallbackInfo *asyncCallbackInfo = new (std::nothrow) AsyncFormInfosByModuleCallbackInfo {
-        .env = env, 
-        .asyncWork = nullptr, 
-        .deferred = nullptr, 
-        .bundleName = bundleName, 
+        .env = env,
+        .asyncWork = nullptr,
+        .deferred = nullptr,
+        .bundleName = bundleName,
         .moduleName = moduleName
     };
     if (asyncCallbackInfo == nullptr) {
@@ -3061,9 +3083,9 @@ napi_value GetFormsInfoByApp(napi_env env, napi_callback_info info)
     ParseString(env, bundleName, argv[PARAM0]);
 
     AsyncFormInfosByAppCallbackInfo *asyncCallbackInfo = new (std::nothrow) AsyncFormInfosByAppCallbackInfo {
-        .env = env, 
-        .asyncWork = nullptr, 
-        .deferred = nullptr, 
+        .env = env,
+        .asyncWork = nullptr,
+        .deferred = nullptr,
         .bundleName = bundleName
     };
     if (asyncCallbackInfo == nullptr) {
@@ -3209,9 +3231,9 @@ napi_value GetShortcutInfos(napi_env env, napi_callback_info info)
     std::string bundleName;
     ParseString(env, bundleName, argv[PARAM0]);
     AsyncShortcutInfosCallbackInfo *asyncCallbackInfo = new (std::nothrow) AsyncShortcutInfosCallbackInfo {
-        .env = env, 
-        .asyncWork = nullptr, 
-        .deferred = nullptr, 
+        .env = env,
+        .asyncWork = nullptr,
+        .deferred = nullptr,
         .bundleName = bundleName
     };
     if (asyncCallbackInfo == nullptr) {
@@ -3357,9 +3379,9 @@ napi_value GetModuleUsageRecords(napi_env env, napi_callback_info info)
     int number;
     ParseInt(env, number, argv[PARAM0]);
     AsyncModuleUsageRecordsCallbackInfo *asyncCallbackInfo = new (std::nothrow) AsyncModuleUsageRecordsCallbackInfo {
-        .env = env, 
-        .asyncWork = nullptr, 
-        .deferred = nullptr, 
+        .env = env,
+        .asyncWork = nullptr,
+        .deferred = nullptr,
         .number = number
     };
     if (asyncCallbackInfo == nullptr) {
@@ -3535,7 +3557,7 @@ static bool InnerRegisterPermissionsChanged(napi_env env, const std::vector<int3
     }
 
     PermissionsKey permissonsKey {
-        .callback = callbackRef, 
+        .callback = callbackRef,
         .uids = uids
         };
 
@@ -3563,8 +3585,8 @@ napi_value RegisterAllPermissionsChanged(napi_env env, napi_callback_info info)
         std::vector<int32_t> uids;
         ParseInt32Array(env, uids, argv[ARGS_SIZE_ONE]);
         AsyncRegisterPermissions *asyncCallbackInfo = new (std::nothrow) AsyncRegisterPermissions {
-            .env = env, 
-            .asyncWork = nullptr, 
+            .env = env,
+            .asyncWork = nullptr,
             .uids = uids
         };
         if (asyncCallbackInfo == nullptr) {
@@ -3610,7 +3632,7 @@ napi_value RegisterAllPermissionsChanged(napi_env env, napi_callback_info info)
         return result;
     } else if (permissionEvent == ANY_PERMISSION_CHANGE && argc == ARGS_SIZE_TWO) {
         AsyncRegisterAllPermissions *asyncCallbackInfo = new (std::nothrow) AsyncRegisterAllPermissions {
-            .env = env, 
+            .env = env,
             .asyncWork = nullptr
         };
         if (asyncCallbackInfo == nullptr) {
@@ -3795,8 +3817,8 @@ napi_value UnregisterPermissionsChanged(napi_env env, napi_callback_info info)
         std::vector<int32_t> uids;
         ParseInt32Array(env, uids, argv[ARGS_SIZE_ONE]);
         AsyncUnregisterPermissions *asyncCallbackInfo = new AsyncUnregisterPermissions {
-            .env = env, 
-            .asyncWork = nullptr, 
+            .env = env,
+            .asyncWork = nullptr,
             .uids = uids
         };
         if (asyncCallbackInfo == nullptr) {
@@ -3884,10 +3906,10 @@ napi_value CheckPermission(napi_env env, napi_callback_info info)
     ParseString(env, permission, argv[PARAM1]);
 
     AsyncPermissionCallbackInfo *asyncCallbackInfo = new (std::nothrow) AsyncPermissionCallbackInfo {
-        .env = env, 
-        .asyncWork = nullptr, 
-        .deferred = nullptr, 
-        .bundleName = bundleName, 
+        .env = env,
+        .asyncWork = nullptr,
+        .deferred = nullptr,
+        .bundleName = bundleName,
         .permission = permission
     };
     if (asyncCallbackInfo == nullptr) {
