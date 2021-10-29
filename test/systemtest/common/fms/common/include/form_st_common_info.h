@@ -30,14 +30,19 @@ const bool FORM_TEMP_FORM_FLAG_TRUE = true;
 
 // provider ability
 const std::string FORM_PROVIDER_BUNDLE_NAME1 = "com.form.formsystemtestservicea";
-const std::string PARAM_PROVIDER_MODULE_NAME1 = "formmodule001";
-const std::string FORM_PROVIDER_ABILITY_NAME1 = "FormStServiceAbilityA";
-const std::string PARAM_FORM_NAME1 = "Form_Js001";
-
 const std::string FORM_PROVIDER_BUNDLE_NAME2 = "com.form.formsystemtestserviceb";
-const std::string PARAM_PROVIDER_MODULE_NAME2 = "formmodule001";
+const std::string FORM_PROVIDER_BUNDLE_NAME3 = "com.form.formsystemtestservicec";
+const std::string FORM_PROVIDER_BUNDLE_NAME4 = "com.form.formsystemtestserviced";
+const std::string FORM_PROVIDER_BUNDLE_NAME5 = "com.form.formsystemtestservicee";
+const std::string FORM_PROVIDER_ABILITY_NAME1 = "FormStServiceAbilityA";
 const std::string FORM_PROVIDER_ABILITY_NAME2 = "FormStServiceAbilityB";
-const std::string PARAM_FORM_NAME2 = "Form_Js001";
+const std::string FORM_PROVIDER_ABILITY_NAME3 = "FormStServiceAbilityC";
+const std::string FORM_PROVIDER_ABILITY_NAME4 = "FormStServiceAbilityD";
+const std::string FORM_PROVIDER_ABILITY_NAME5 = "FormStServiceAbilityE";
+const std::string PARAM_PROVIDER_MODULE_NAME1 = "formmodule001";
+const std::string PARAM_PROVIDER_MODULE_NAME2 = "formmodule001";
+const std::string PARAM_FORM_NAME1 = "Form_Js001";
+const std::string PARAM_FORM_NAME2 = "Form_Js002";
 
 // add Form
 const std::string FORM_EVENT_REQ_ACQUIRE_FORM_TEMP = "fms_req_acquireForm_temp";
