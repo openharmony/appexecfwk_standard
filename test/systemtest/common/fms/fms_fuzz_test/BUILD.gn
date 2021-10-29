@@ -23,7 +23,6 @@ ohos_systemtest("formManagerFuzzTest") {
     "${appexecfwk_path}/test/systemtest/common/fms/fms_fuzz_test/include",
     "//base/notification/ces_standard/test/systemtest/common/resource",
     "//foundation/distributedschedule/safwk/services/safwk/include",
-    "//third_party/json/single_include",
   ]
 
   sources = [
@@ -63,7 +62,7 @@ ohos_systemtest("formManagerFuzzTest") {
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
     "safwk:system_ability_fwk",
-    "samgr_L2:samgr_proxy",
+    "samgr_standard:samgr_proxy",
   ]
 }
 
