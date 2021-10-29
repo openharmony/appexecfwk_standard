@@ -23,7 +23,7 @@ ohos_systemtest("formManagerFuzzTest") {
     "${appexecfwk_path}/test/systemtest/common/fms/fms_fuzz_test/include",
     "//base/notification/ces_standard/test/systemtest/common/resource",
     "//foundation/distributedschedule/safwk/services/safwk/include",
-    "//third_party/json/single_include"
+    "//third_party/json/single_include",
   ]
 
   sources = [
