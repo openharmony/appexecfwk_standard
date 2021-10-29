@@ -26,7 +26,6 @@ group("systemtest") {
     "common/ams:systemtest",
     "common/bms:systemtest_bms",
     "common/ems:systemtest_ems",
-    "common/fms:systemtest",
     "common/task_dispatcher:systemtest_task",
   ]
 }

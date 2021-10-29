@@ -40,6 +40,7 @@
         {
             "name": "AmsStAbilityG2",
             "icon": "$media:snowball",
+            "srcLanguage": "c++",
             "label": "AbilityG2 Ability",
             "launchType": "singletop",
             "orientation": "unspecified",

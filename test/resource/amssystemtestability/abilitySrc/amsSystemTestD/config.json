@@ -40,6 +40,7 @@
         {
             "name": "AmsStAbilityD2",
             "icon": "$media:snowball",
+            "srcLanguage": "c++",
             "label": "AbilityD2 Ability",
             "launchType": "singleton",
             "orientation": "unspecified",

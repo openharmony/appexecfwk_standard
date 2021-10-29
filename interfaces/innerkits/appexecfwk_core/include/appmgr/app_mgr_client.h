@@ -153,6 +153,8 @@ public:
     virtual AppMgrResultCode GetAppFreezingTime(int &time);
     virtual void AbilityAttachTimeOut(const sptr<IRemoteObject> &token);
 
+    virtual void PrepareTerminate(const sptr<IRemoteObject> &token);
+
     /**
      * Checks whether a specified permission has been granted to the process identified by pid and uid
      *

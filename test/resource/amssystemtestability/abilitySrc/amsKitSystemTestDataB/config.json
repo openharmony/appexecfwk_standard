@@ -41,6 +41,7 @@
             {
                 "name": "AmsStKitDataAbilityServiceB",
                 "icon": "$media:snowball",
+                "srcLanguage": "c++",
                 "label": "ServiceB Ability",
                 "launchType": "standard",
                 "orientation": "unspecified",
@@ -50,6 +51,7 @@
             {
                 "name": "AmsStKitDataAbilityDataB",
                 "icon": "$media:snowflakes",
+                "srcLanguage": "c++",
                 "label": "DataB Ability",
                 "launchType": "standard",
                 "orientation": "unspecified",

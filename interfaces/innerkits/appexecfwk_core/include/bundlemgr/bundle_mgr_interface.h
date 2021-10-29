@@ -148,13 +148,20 @@ public:
      * @return Returns true if the AbilityInfo is successfully obtained; returns false otherwise.
      */
     virtual bool QueryAbilityInfo(const Want &want, AbilityInfo &abilityInfo) = 0;
-     /**
+    /**
      * @brief Query the AbilityInfo of list by the given Want.
      * @param want Indicates the information of the ability.
      * @param abilityInfos Indicates the obtained AbilityInfos object.
      * @return Returns true if the AbilityInfos is successfully obtained; returns false otherwise.
      */
     virtual bool QueryAbilityInfos(const Want &want, std::vector<AbilityInfo> &abilityInfos) = 0;
+    /**
+     * @brief Query the AbilityInfo of list for clone by the given Want.
+     * @param want Indicates the information of the ability.
+     * @param abilityInfos Indicates the obtained AbilityInfos object.
+     * @return Returns true if the AbilityInfos is successfully obtained; returns false otherwise.
+     */
+    virtual bool QueryAbilityInfosForClone(const Want &want, std::vector<AbilityInfo> &abilityInfos) = 0;
     /**
      * @brief Query the AbilityInfo by ability.uri in config.json.
      * @param abilityUri Indicates the uri of the ability.
@@ -437,6 +444,7 @@ public:
         GET_BUNDLE_INFOS_BY_METADATA,
         QUERY_ABILITY_INFO,
         QUERY_ABILITY_INFOS,
+        QUERY_ABILITY_INFOS_FOR_CLONE,
         QUERY_ABILITY_INFO_BY_URI,
         QUERY_KEEPALIVE_BUNDLE_INFOS,
         GET_ABILITY_LABEL,
@@ -470,7 +478,7 @@ public:
         GET_ALL_FORMS_INFO,
         GET_FORMS_INFO_BY_APP,
         GET_FORMS_INFO_BY_MODULE,
-		GET_MODULE_USAGE_RECORD,
+        GET_MODULE_USAGE_RECORD,
         GET_SHORTCUT_INFO,
         GET_BUNDLE_INSTALLER,
         NOTIFY_ACTIVITY_LIFE_STATUS,

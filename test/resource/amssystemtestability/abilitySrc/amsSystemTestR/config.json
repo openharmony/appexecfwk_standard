@@ -40,6 +40,7 @@
         {
             "name": "AmsStAbilityR2",
             "icon": "$media:snowball",
+            "srcLanguage": "c++",
             "label": "AbilityR2 Ability",
             "launchType": "standard",
             "orientation": "unspecified",
@@ -49,6 +50,7 @@
         {
             "name": "AmsStAbilityR3",
             "icon": "$media:snowball",
+            "srcLanguage": "c++",
             "label": "AbilityR3 Ability",
             "launchType": "singleton",
             "orientation": "unspecified",
@@ -58,6 +60,7 @@
         {
             "name": "AmsStAbilityR4",
             "icon": "$media:snowball",
+            "srcLanguage": "c++",
             "label": "AbilityR4 Ability",
             "launchType": "standard",
             "orientation": "unspecified",

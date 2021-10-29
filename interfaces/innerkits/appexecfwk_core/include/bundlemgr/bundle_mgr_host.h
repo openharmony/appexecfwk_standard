@@ -126,6 +126,13 @@ private:
      */
     ErrCode HandleQueryAbilityInfos(Parcel &data, Parcel &reply);
     /**
+     * @brief Handles the QueryAbilityInfosForClone function called from a IBundleMgr proxy object.
+     * @param data Indicates the data to be read.
+     * @param reply Indicates the reply to be sent;
+     * @return Returns ERR_OK if called successfully; returns error code otherwise.
+     */
+    ErrCode HandleQueryAbilityInfosForClone(Parcel &data, Parcel &reply);
+    /**
      * @brief Handles the QueryAbilityInfoByUri function called from a IBundleMgr proxy object.
      * @param data Indicates the data to be read.
      * @param reply Indicates the reply to be sent;
@@ -349,27 +356,27 @@ private:
      * @return Returns ERR_OK if called successfully; returns error code otherwise.
      */
     ErrCode HandleUnregisterPermissionsChanged(Parcel &data, Parcel &reply);
-	/**
+    /**
      * @brief Handles the GetAllFormsInfo function called from a IBundleMgr proxy object.
      * @param data Indicates the data to be read.
      * @param reply Indicates the reply to be sent;
      * @return Returns ERR_OK if called successfully; returns error code otherwise.
      */
-	ErrCode HandleGetAllFormsInfo(Parcel &data, Parcel &reply);
-	/**
+    ErrCode HandleGetAllFormsInfo(Parcel &data, Parcel &reply);
+    /**
      * @brief Handles the GetFormsInfoByApp function called from a IBundleMgr proxy object.
      * @param data Indicates the data to be read.
      * @param reply Indicates the reply to be sent;
      * @return Returns ERR_OK if called successfully; returns error code otherwise.
      */
-	ErrCode HandleGetFormsInfoByApp(Parcel &data, Parcel &reply);
-	/**
+    ErrCode HandleGetFormsInfoByApp(Parcel &data, Parcel &reply);
+    /**
      * @brief Handles the HandleGetFormsInfoByModule function called from a IBundleMgr proxy object.
      * @param data Indicates the data to be read.
      * @param reply Indicates the reply to be sent;
      * @return Returns ERR_OK if called successfully; returns error code otherwise.
      */
-	ErrCode HandleGetFormsInfoByModule(Parcel &data, Parcel &reply);
+    ErrCode HandleGetFormsInfoByModule(Parcel &data, Parcel &reply);
     /**
      * @brief Handles the HandleGetShortcutInfo function called from a IBundleMgr proxy object.
      * @param data Indicates the data to be read.

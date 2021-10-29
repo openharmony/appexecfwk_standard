@@ -123,6 +123,8 @@ public:
     void TerminateAbility(const sptr<IRemoteObject> &token);
     bool GetPidsByBundleName(const std::string &bundleName, std::list<pid_t> &pids);
 
+    void PrepareTerminate(const sptr<IRemoteObject> &token);
+
     std::shared_ptr<AppRunningRecord> GetTerminatingAppRunningRecord(const sptr<IRemoteObject> &abilityToken);
 
 private:

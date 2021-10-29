@@ -59,8 +59,11 @@ group("ams_system_test_app") {
     "amsSystemTestServiceF:amsSystemTestServiceF",
     "amsSystemTestServiceG:amsSystemTestServiceG",
     "amsSystemTestServiceH:amsSystemTestServiceH",
+    "fwkAbilityState:fwkAbilityState",
     "serviceAbilityA:serviceAbilityA",
     "taskDispatcherTestA:taskDispatcherTestA",
     "taskDispatcherTestB:taskDispatcherTestB",
+
+    # "launcherAbility:launcher_ability_native",
   ]
 }

@@ -153,12 +153,19 @@ struct FormsMetaData {
     std::vector<FormsCustomizeData> customizeData;
 };
 
+struct Window {
+    int32_t designWidth = 750;
+    bool autoDesignWidth = false;
+};
+
 struct Forms {
     std::string name;
     std::string description;
     int32_t descriptionId = 0;
     bool isDefault = false;
     std::string type;
+    std::string layout;
+    Window window;
     std::string colorMode = "auto";
     std::vector<std::string> supportDimensions;
     std::string defaultDimension;
@@ -240,11 +247,6 @@ struct Ability {
     bool supportPipMode = false;
     bool formsEnabled = false;
     std::vector<Forms> formses;
-};
-
-struct Window {
-    int32_t designWidth = 750;
-    bool autoDesignWidth = false;
 };
 
 struct Js {
@@ -876,6 +878,28 @@ void from_json(const nlohmann::json &jsonObject, FormsMetaData &formsMetaData)
         ArrayType::OBJECT);
 }
 
+void from_json(const nlohmann::json &jsonObject, Window &window)
+{
+    // these are not required fields.
+    const auto &jsonObjectEnd = jsonObject.end();
+    GetValueIfFindKey<int32_t>(jsonObject,
+        jsonObjectEnd,
+        BUNDLE_MODULE_PROFILE_KEY_DESIGN_WIDTH,
+        window.designWidth,
+        JsonType::NUMBER,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<bool>(jsonObject,
+        jsonObjectEnd,
+        BUNDLE_MODULE_PROFILE_KEY_AUTO_DESIGN_WIDTH,
+        window.autoDesignWidth,
+        JsonType::BOOLEAN,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+}
+
 void from_json(const nlohmann::json &jsonObject, Forms &forms)
 {
     // these are required fields.
@@ -902,6 +926,22 @@ void from_json(const nlohmann::json &jsonObject, Forms &forms)
         forms.type,
         JsonType::STRING,
         true,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        BUNDLE_MODULE_PROFILE_FORMS_LAYOUT,
+        forms.layout,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<Window>(jsonObject,
+        jsonObjectEnd,
+        BUNDLE_MODULE_PROFILE_KEY_WINDOW,
+        forms.window,
+        JsonType::OBJECT,
+        false,
         parseResult,
         ArrayType::NOT_ARRAY);
     GetValueIfFindKey<std::vector<std::string>>(jsonObject,
@@ -1344,28 +1384,6 @@ void from_json(const nlohmann::json &jsonObject, Ability &ability)
         ArrayType::OBJECT);
 }
 
-void from_json(const nlohmann::json &jsonObject, Window &window)
-{
-    // these are not required fields.
-    const auto &jsonObjectEnd = jsonObject.end();
-    GetValueIfFindKey<int32_t>(jsonObject,
-        jsonObjectEnd,
-        BUNDLE_MODULE_PROFILE_KEY_DESIGN_WIDTH,
-        window.designWidth,
-        JsonType::NUMBER,
-        false,
-        parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<bool>(jsonObject,
-        jsonObjectEnd,
-        BUNDLE_MODULE_PROFILE_KEY_AUTO_DESIGN_WIDTH,
-        window.autoDesignWidth,
-        JsonType::BOOLEAN,
-        false,
-        parseResult,
-        ArrayType::NOT_ARRAY);
-}
-
 void from_json(const nlohmann::json &jsonObject, Js &js)
 {
     // these are required fields.
@@ -1775,53 +1793,56 @@ uint32_t GetFormEntity(const std::vector<std::string> &formEntity)
     return formEntityInBinary;
 }
 
-bool ConvertFormInfo(FormInfo &forminfos, const ProfileReader::Forms &form)
+bool ConvertFormInfo(FormInfo &formInfo, const ProfileReader::Forms &form)
 {
-    forminfos.name = form.name;
-    forminfos.description = form.description;
-    forminfos.descriptionId = form.descriptionId;
-    forminfos.formConfigAbility = form.formConfigAbility;
-    forminfos.formVisibleNotify = form.formVisibleNotify;
-    forminfos.deepLink = form.deepLink;
-    forminfos.defaultFlag = form.isDefault;
+    formInfo.name = form.name;
+    formInfo.description = form.description;
+    formInfo.descriptionId = form.descriptionId;
+    formInfo.formConfigAbility = form.formConfigAbility;
+    formInfo.formVisibleNotify = form.formVisibleNotify;
+    formInfo.deepLink = form.deepLink;
+    formInfo.defaultFlag = form.isDefault;
     auto type = std::find_if(std::begin(ProfileReader::formTypeMap),
         std::end(ProfileReader::formTypeMap),
         [&form](const auto &item) { return item.first == form.type; });
     if (type != ProfileReader::formTypeMap.end()) {
-        forminfos.type = type->second;
+        formInfo.type = type->second;
     }
     auto colorMode = std::find_if(std::begin(ProfileReader::formColorModeMap),
         std::end(ProfileReader::formColorModeMap),
         [&form](const auto &item) { return item.first == form.colorMode; });
     if (colorMode != ProfileReader::formColorModeMap.end()) {
-        forminfos.colorMode = colorMode->second;
+        formInfo.colorMode = colorMode->second;
     }
-    forminfos.updateEnabled = form.updateEnabled;
-    forminfos.scheduledUpateTime = form.scheduledUpateTime;
-    forminfos.updateDuration = form.updateDuration;
-    forminfos.jsComponentName = form.jsComponentName;
+    formInfo.updateEnabled = form.updateEnabled;
+    formInfo.scheduledUpateTime = form.scheduledUpateTime;
+    formInfo.updateDuration = form.updateDuration;
+    formInfo.jsComponentName = form.jsComponentName;
     for (auto &data : form.metaData.customizeData) {
         FormCustomizeData customizeData;
         customizeData.name = data.name;
         customizeData.value = data.value;
-        forminfos.customizeDatas.emplace_back(customizeData);
+        formInfo.customizeDatas.emplace_back(customizeData);
     }
     for (const auto &dimensions : form.supportDimensions) {
         auto dimension = std::find_if(std::begin(ProfileReader::dimensionMap),
             std::end(ProfileReader::dimensionMap),
             [&dimensions](const auto &item) { return item.first == dimensions; });
         if (dimension != ProfileReader::dimensionMap.end()) {
-            forminfos.supportDimensions.emplace_back(dimension->second);
+            formInfo.supportDimensions.emplace_back(dimension->second);
         }
     }
     auto dimension = std::find_if(std::begin(ProfileReader::dimensionMap),
         std::end(ProfileReader::dimensionMap),
         [&form](const auto &item) { return item.first == form.defaultDimension; });
     if (dimension != ProfileReader::dimensionMap.end()) {
-        forminfos.defaultDimension = dimension->second;
+        formInfo.defaultDimension = dimension->second;
     }
-    forminfos.landscapeLayouts = form.landscapeLayouts;
-    forminfos.portraitLayouts = form.portraitLayouts;
+    formInfo.landscapeLayouts = form.landscapeLayouts;
+    formInfo.portraitLayouts = form.portraitLayouts;
+    formInfo.layout = form.layout;
+    formInfo.window.autoDesignWidth = form.window.autoDesignWidth;
+    formInfo.window.designWidth = form.window.designWidth;
     return true;
 }
 
