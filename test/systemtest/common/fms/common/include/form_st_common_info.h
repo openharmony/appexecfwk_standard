@@ -318,44 +318,6 @@ const std::string FORM_EVENT_RECV_SELF_STARTING_TEST_0200 = "fms_recv_selfStarti
 const std::string FORM_EVENT_REQ_SELF_STARTING_TEST_0300 = "fms_req_selfStartingTest_0300";
 const std::string FORM_EVENT_RECV_SELF_STARTING_TEST_0300 = "fms_recv_selfStartingTest_0300";
 
-// Uninstall App Test
-const std::string FORM_EVENT_REQ_UNINSTALL_TEST_0100 = "fms_req_uninstallTest_0100";
-const std::string FORM_EVENT_RECV_UNINSTALL_TEST_0100 = "fms_recv_uninstallTest_0100";
-const std::string FORM_EVENT_REQ_UNINSTALL_TEST_0200 = "fms_req_uninstallTest_0200";
-const std::string FORM_EVENT_RECV_UNINSTALL_TEST_0200 = "fms_recv_uninstallTest_0200";
-const std::string FORM_EVENT_REQ_UNINSTALL_TEST_0300 = "fms_req_uninstallTest_0300";
-const std::string FORM_EVENT_RECV_UNINSTALL_TEST_0300 = "fms_recv_uninstallTest_0300";
-const std::string FORM_EVENT_REQ_UNINSTALL_TEST_0400 = "fms_req_uninstallTest_0400";
-const std::string FORM_EVENT_RECV_UNINSTALL_TEST_0400 = "fms_recv_uninstallTest_0400";
-const std::string FORM_EVENT_REQ_UNINSTALL_TEST_0500 = "fms_req_uninstallTest_0500";
-const std::string FORM_EVENT_RECV_UNINSTALL_TEST_0500 = "fms_recv_uninstallTest_0500";
-const std::string FORM_EVENT_REQ_UNINSTALL_TEST_0600 = "fms_req_uninstallTest_0600";
-const std::string FORM_EVENT_RECV_UNINSTALL_TEST_0600 = "fms_recv_uninstallTest_0600";
-const std::string FORM_EVENT_REQ_UNINSTALL_TEST_0700 = "fms_req_uninstallTest_0700";
-const std::string FORM_EVENT_RECV_UNINSTALL_TEST_0700 = "fms_recv_uninstallTest_0700";
-const std::string FORM_EVENT_REQ_UNINSTALL_TEST_0800 = "fms_req_uninstallTest_0800";
-const std::string FORM_EVENT_RECV_UNINSTALL_TEST_0800 = "fms_recv_uninstallTest_0800";
-const std::string FORM_EVENT_REQ_UNINSTALL_TEST_0900 = "fms_req_uninstallTest_0900";
-const std::string FORM_EVENT_RECV_UNINSTALL_TEST_0900 = "fms_recv_uninstallTest_0900";
-const std::string FORM_EVENT_REQ_UNINSTALL_TEST_1000 = "fms_req_uninstallTest_1000";
-const std::string FORM_EVENT_RECV_UNINSTALL_TEST_1000 = "fms_recv_uninstallTest_1000";
-const std::string FORM_EVENT_REQ_UNINSTALL_TEST_1100 = "fms_req_uninstallTest_1100";
-const std::string FORM_EVENT_RECV_UNINSTALL_TEST_1100 = "fms_recv_uninstallTest_1100";
-const std::string FORM_EVENT_REQ_UNINSTALL_TEST_1200 = "fms_req_uninstallTest_1200";
-const std::string FORM_EVENT_RECV_UNINSTALL_TEST_1200 = "fms_recv_uninstallTest_1200";
-const std::string FORM_EVENT_REQ_UNINSTALL_TEST_1300 = "fms_req_uninstallTest_1300";
-const std::string FORM_EVENT_RECV_UNINSTALL_TEST_1300 = "fms_recv_uninstallTest_1300";
-const std::string FORM_EVENT_REQ_UNINSTALL_TEST_1400 = "fms_req_uninstallTest_1400";
-const std::string FORM_EVENT_RECV_UNINSTALL_TEST_1400 = "fms_recv_uninstallTest_1400";
-const std::string FORM_EVENT_REQ_UNINSTALL_TEST_1500 = "fms_req_uninstallTest_1500";
-const std::string FORM_EVENT_RECV_UNINSTALL_TEST_1500 = "fms_recv_uninstallTest_1500";
-const std::string FORM_EVENT_REQ_UNINSTALL_TEST_1600 = "fms_req_uninstallTest_1600";
-const std::string FORM_EVENT_RECV_UNINSTALL_TEST_1600 = "fms_recv_uninstallTest_1600";
-const std::string FORM_EVENT_REQ_UNINSTALL_TEST_1700 = "fms_req_uninstallTest_1700";
-const std::string FORM_EVENT_RECV_UNINSTALL_TEST_1700 = "fms_recv_uninstallTest_1700";
-const std::string FORM_EVENT_REQ_UNINSTALL_TEST_1800 = "fms_req_uninstallTest_1800";
-const std::string FORM_EVENT_RECV_UNINSTALL_TEST_1800 = "fms_recv_uninstallTest_1800";
-
 // common event data code
 const int EVENT_CODE_100 = 100;
 const int EVENT_CODE_101 = 101;
