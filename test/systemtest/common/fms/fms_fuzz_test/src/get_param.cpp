@@ -12,10 +12,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <chrono>
 #include <cfloat>
+#include <chrono>
+#include <climits>
 #include <functional>
-#include <limits.h>
 #include <random>
 
 #include "ability.h"
@@ -31,6 +31,7 @@ const int zero = 0;
 const int two = 2;
 const int CHAR_MIN = -128;
 const int CHAR_MAX = 127;
+const int STRING_MAX = 256;
 bool GetBoolParam()
 {
     bool param;
@@ -214,16 +215,10 @@ char32_t GetChar32Param()
 
 char *GetCharArryParam()
 {
-    static char param[256];
-    size_t len = 0;
+    static char param[STRING_MAX];
     string strparam = GetStringParam();
     if (!strparam.empty()) {
-        len = strparam.size() + 1;
-        if (len > sizeof(param)) {
-            len = sizeof(param) - 1;
-        }
-
-        int ret = strcpy_s(param, len, strparam.c_str());
+        int ret = strcpy_s(param, STRING_MAX, strparam.c_str());
         if (ret == 0) {
             return param;
         } else {
