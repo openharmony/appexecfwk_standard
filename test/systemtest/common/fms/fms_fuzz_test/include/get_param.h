@@ -48,7 +48,6 @@ int GetIntParam();
 double GetDoubleParam();
 float GetFloatParam();
 char GetCharParam();
-char *GetCharArryParam();
 std::string GetStringParam();
 std::map<int64_t, int32_t> GetS64S32MapParam();
 std::vector<bool> GetBoolVectorParam();
