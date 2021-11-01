@@ -35,6 +35,13 @@ const std::string formManagerAbilityKitName = "FormManagerAbility";
 // RegisterFormManagerAbility
 void FuzzTestManager::RegisterFormManagerAbility()
 {
+    RegisterFormManagerAbilityA();
+    RegisterFormManagerAbilityB();
+    RegisterFormManagerAbilityC();
+}
+
+void FuzzTestManager::RegisterFormManagerAbilityA()
+{
     callFunctionMap_[formManagerAbilityKitName + "ReleaseForm"] = []() {
         std::shared_ptr<AppExecFwk::Ability> formManagerAbility = GetParamAbility();
         formManagerAbility->ReleaseForm(GetS64Param(), GetBoolParam());
@@ -79,6 +86,10 @@ void FuzzTestManager::RegisterFormManagerAbility()
         std::shared_ptr<AppExecFwk::Ability> formManagerAbility = GetParamAbility();
         formManagerAbility->DisableUpdateForm(GetS64VectorParam());
     };
+}
+
+void FuzzTestManager::RegisterFormManagerAbilityB()
+{
     callFunctionMap_[formManagerAbilityKitName + "CheckFMSReady"] = []() {
         std::shared_ptr<AppExecFwk::Ability> formManagerAbility = GetParamAbility();
         formManagerAbility->CheckFMSReady();
@@ -101,7 +112,11 @@ void FuzzTestManager::RegisterFormManagerAbility()
         std::vector<OHOS::AppExecFwk::FormInfo> formInfos;
         formManagerAbility->GetFormsInfoByModule(bundleName, moduleName, formInfos);
     };
-        callFunctionMap_[formManagerAbilityKitName + "ProcessFormUpdate"] = []() {
+}
+
+void FuzzTestManager::RegisterFormManagerAbilityC()
+{
+    callFunctionMap_[formManagerAbilityKitName + "ProcessFormUpdate"] = []() {
         std::shared_ptr<AppExecFwk::Ability> formManagerAbility = GetParamAbility();
         formManagerAbility->ProcessFormUpdate(GetParamFormJsInfo());
     };
