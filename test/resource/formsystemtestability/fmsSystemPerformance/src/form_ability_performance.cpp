@@ -16,8 +16,8 @@
 #include <numeric>
 #include <sstream>
 
-#include "app_log_wrapper.h"
 #include "form_ability_performance.h"
+#include "app_log_wrapper.h"
 #include "form_st_common_info.h"
 #include "form_test_utils.h"
 

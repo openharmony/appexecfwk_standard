@@ -75,10 +75,10 @@ std::shared_ptr<OHOS::AppExecFwk::Ability::FormCallback> GetParamFormCallback();
 sptr<OHOS::AppExecFwk::Ability> GetParamSptrAbility();
 OHOS::AppExecFwk::FormProviderData GetParamFormProviderData();
 
-class FormManagerAbilityTest : public Ability {
+class GetParam : public Ability {
 public:
-    FormManagerAbilityTest();
-    ~FormManagerAbilityTest();
+    GetParam();
+    ~GetParam();
 
     bool ReleaseForm(const int64_t formId);
 

@@ -16,7 +16,7 @@ import("//foundation/appexecfwk/standard/appexecfwk.gni")
 
 module_output_path = "appexecfwk_standard/formmanagerst"
 
-ohos_systemtest("FormPerformanceTest") {
+ohos_systemtest("FmsPerformanceTest") {
   module_out_path = module_output_path
   include_dirs = [
     "${aafwk_path}/interfaces/innerkits/ability_manager/include",
@@ -50,7 +50,7 @@ ohos_systemtest("FormPerformanceTest") {
     "//third_party/googletest:gtest_main",
   ]
 
-  defines = [ "APP_LOG_TAG = \"formManagerPerformanceTest\"" ]
+  defines = [ "APP_LOG_TAG = \"FmsPerformanceTest\"" ]
 
   external_deps = [
     "aafwk_standard:base",
@@ -70,5 +70,5 @@ ohos_systemtest("FormPerformanceTest") {
 group("systemtest") {
   testonly = true
 
-  deps = [ ":FormPerformanceTest" ]
+  deps = [ ":FmsPerformanceTest" ]
 }
