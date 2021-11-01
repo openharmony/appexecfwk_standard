@@ -213,22 +213,6 @@ char32_t GetChar32Param()
     return param;
 }
 
-char *GetCharArryParam()
-{
-    static char param[STRING_MAX];
-    string strparam = GetStringParam();
-    if (!strparam.empty()) {
-        int ret = strcpy_s(param, STRING_MAX, strparam.c_str());
-        if (ret == 0) {
-            return param;
-        } else {
-            return nullptr;
-        }
-    } else {
-        return nullptr;
-    }
-}
-
 string GetStringParam()
 {
     string param = "";
