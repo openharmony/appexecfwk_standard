@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 #include <chrono>
-#include <float.h>
+#include <cfloat>
 #include <functional>
 #include <limits.h>
 #include <random>

@@ -15,7 +15,7 @@
 #define private public
 #define protected public
 
-#include <signal.h>
+#include <csignal>
 #include <unistd.h>
 
 #include "ability.h"

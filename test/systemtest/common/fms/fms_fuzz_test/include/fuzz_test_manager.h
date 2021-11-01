@@ -25,13 +25,13 @@ namespace OHOS {
 namespace AppExecFwk {
 class FuzzTestManager {
 public:
-    typedef std::shared_ptr<FuzzTestManager> Ptr;
+    using std::shared_ptr<FuzzTestManager> Ptr;
     ~FuzzTestManager()
     {}
     static Ptr GetInstance()
     {
         if (fuzzTestInstance == nullptr) {
-            fuzzTestInstance = std::shared_ptr<FuzzTestManager>(new FuzzTestManager);
+            fuzzTestInstance = std::shared_ptr<FuzzTestManager>(std::make_shared FuzzTestManager);
         }
         return fuzzTestInstance;
     }

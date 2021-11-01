@@ -15,7 +15,7 @@
 #ifndef GET_PARAM_H
 #define GET_PARAM_H
 #include <memory>
-#include <stdint.h>
+#include <cstdint>
 #include <string>
 #include <vector>
 
