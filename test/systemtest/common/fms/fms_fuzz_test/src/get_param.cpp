@@ -30,7 +30,7 @@ namespace AppExecFwk {
 const int zero = 0;
 const int two = 2;
 const int CHAR_MIN = -128;
-const int CHAR_MAX = 127; 
+const int CHAR_MAX = 127;
 bool GetBoolParam()
 {
     bool param;

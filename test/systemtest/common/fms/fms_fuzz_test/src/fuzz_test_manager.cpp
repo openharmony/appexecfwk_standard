@@ -29,11 +29,11 @@
 using namespace OHOS::AppExecFwk;
 namespace OHOS {
 namespace AppExecFwk {
-std::shared_ptr<FormManagerFuzzTest> FormManagerFuzzTest::fuzzTestInstance = nullptr;
+std::shared_ptr<FuzzTestManager> FuzzTestManager::fuzzTestInstance = nullptr;
 const std::string formManagerAbilityKitName = "FormManagerAbility";
 
 // RegisterFormManagerAbility
-void FormManagerFuzzTest::RegisterFormManagerAbility()
+void FuzzTestManager::RegisterFormManagerAbility()
 {
     callFunctionMap_[formManagerAbilityKitName + "ReleaseForm"] = []() {
         std::shared_ptr<AppExecFwk::Ability> formManagerAbility = GetParamAbility();
@@ -139,17 +139,17 @@ void FormManagerFuzzTest::RegisterFormManagerAbility()
     };
 }
 
-FormManagerFuzzTest::FormManagerFuzzTest()
+FuzzTestManager::FuzzTestManager()
 {
     RegisterFormManagerAbility();
 }
 
-void FormManagerFuzzTest::SetJsonFunction(std::string functionName)
+void FuzzTestManager::SetJsonFunction(std::string functionName)
 {
     remainderMap_.emplace(functionName, m_executionTimes);
 }
 
-void FormManagerFuzzTest::SetExecutionTimes(uint16_t executionTimes)
+void FuzzTestManager::SetExecutionTimes(uint16_t executionTimes)
 {
     m_executionTimes = executionTimes;
     for_each(remainderMap_.begin(), remainderMap_.end(),
@@ -168,7 +168,7 @@ void action(int a)
     std::cout << "Interrupt signal (" << a << ") received.\n";
 }
 
-void FormManagerFuzzTest::StartFuzzTest()
+void FuzzTestManager::StartFuzzTest()
 {
     std::cout << __func__ << std::endl;
     OHOS::FuzzTestConfigParser jsonParser;

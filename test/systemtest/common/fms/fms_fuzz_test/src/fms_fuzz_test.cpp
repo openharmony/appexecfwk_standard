@@ -27,7 +27,7 @@ using namespace testing::ext;
 
 namespace OHOS {
 namespace AppExecFwk {
-class FormFuzzTest : public testing::Test {
+class FmsFuzzTest : public testing::Test {
 public:
     static void SetUpTestCase();
     static void TearDownTestCase();
@@ -35,33 +35,33 @@ public:
     void TearDown();
 };
 
-void FormFuzzTest::SetUpTestCase()
+void FmsFuzzTest::SetUpTestCase()
 {
-    std::cout << "FormFuzzTest SetUpTestCase" << std::endl;
+    std::cout << "FmsFuzzTest SetUpTestCase" << std::endl;
 }
 
-void FormFuzzTest::TearDownTestCase()
+void FmsFuzzTest::TearDownTestCase()
 {
-    std::cout << "FormFuzzTest TearDownTestCase" << std::endl;
+    std::cout << "FmsFuzzTest TearDownTestCase" << std::endl;
 }
 
-void FormFuzzTest::SetUp()
+void FmsFuzzTest::SetUp()
 {
-    std::cout << "FormFuzzTest SetUp" << std::endl;
+    std::cout << "FmsFuzzTest SetUp" << std::endl;
 }
 
-void FormFuzzTest::TearDown()
+void FmsFuzzTest::TearDown()
 {
-    std::cout << "FormFuzzTest TearDown" << std::endl;
+    std::cout << "FmsFuzzTest TearDown" << std::endl;
 }
 
 /**
  * @tc.number: FMS_fuzztest_0100
  * @tc.name: form manager service stress test
  * @tc.desc: 1.under root,there is a config.json
- *           2../FormManagerFuzzTest; hilog > xxxx.log
+ *           2../FmsFuzzTest; hilog > xxxx.log
  */
-HWTEST_F(FormFuzzTest, FMS_fuzztest_0100, Function | MediumTest | Level1)
+HWTEST_F(FmsFuzzTest, FMS_fuzztest_0100, Function | MediumTest | Level1)
 {
     std::cout << "Begin FMS_fuzztest_0100" << std::endl;
 

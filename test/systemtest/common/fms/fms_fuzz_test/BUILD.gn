@@ -16,7 +16,7 @@ import("//foundation/appexecfwk/standard/appexecfwk.gni")
 
 module_output_path = "appexecfwk_standard/formmanagerst"
 
-ohos_systemtest("formManagerFuzzTest") {
+ohos_systemtest("fmsFuzzTest") {
   module_out_path = module_output_path
   include_dirs = [
     "${aafwk_path}/interfaces/innerkits/ability_manager/include",
@@ -50,7 +50,7 @@ ohos_systemtest("formManagerFuzzTest") {
     "//third_party/googletest:gtest_main",
   ]
 
-  defines = [ "APP_LOG_TAG = \"formManagerFuzzTest\"" ]
+  defines = [ "APP_LOG_TAG = \"fmsFuzzTest\"" ]
 
   external_deps = [
     "aafwk_standard:base",
@@ -69,5 +69,5 @@ ohos_systemtest("formManagerFuzzTest") {
 group("systemtest") {
   testonly = true
 
-  deps = [ ":formManagerFuzzTest" ]
+  deps = [ ":fmsFuzzTest" ]
 }

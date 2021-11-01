@@ -202,7 +202,6 @@ void FormAbilityStress::FMS_stressTest_0200_sub01(std::string form_id)
 
 void FormAbilityStress::FMS_stressTest_0200_sub02(std::string form_id)
 {
-    sleep(3);
     std::shared_ptr<StressFormCallback> callback =
     std::make_shared<StressFormCallback>(FORM_EVENT_RECV_STRESS_TEST_0200_02, EVENT_CODE_204);
     callback->ability_ = this;

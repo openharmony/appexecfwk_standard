@@ -48,7 +48,7 @@ static PerformanceLevel pLevel_;
 static int64_t totalTime = 0;
 const std::string TEST_RESULT_PATH = "./performance_test_result.txt";
 
-class FormPerformanceTest : public testing::Test {
+class FmsPerformanceTest : public testing::Test {
 public:
     static void SetUpTestCase();
     static void TearDownTestCase();
@@ -86,17 +86,17 @@ public:
     static std::shared_ptr<FormEventSubscriber> subscriber_;
 };
 
-std::vector<std::string> FormPerformanceTest::eventList = {
+std::vector<std::string> FmsPerformanceTest::eventList = {
     FORM_EVENT_ABILITY_ONACTIVED, FORM_EVENT_RECV_PERFORMANCE_TEST_0100, FORM_EVENT_RECV_PERFORMANCE_TEST_0200,
     FORM_EVENT_RECV_PERFORMANCE_TEST_0300, FORM_EVENT_RECV_PERFORMANCE_TEST_0400, FORM_EVENT_RECV_PERFORMANCE_TEST_0500,
     FORM_EVENT_RECV_PERFORMANCE_TEST_0600, FORM_EVENT_RECV_PERFORMANCE_TEST_0700, FORM_EVENT_RECV_PERFORMANCE_TEST_1300,
     FORM_EVENT_RECV_PERFORMANCE_TEST_1400, FORM_EVENT_RECV_PERFORMANCE_TEST_1500, FORM_EVENT_RECV_PERFORMANCE_TEST_1600,
 };
 
-FormEvent FormPerformanceTest::event = FormEvent();
-sptr<AAFwk::IAbilityManager> FormPerformanceTest::abilityMs = nullptr;
-std::shared_ptr<FormPerformanceTest::FormEventSubscriber> FormPerformanceTest::subscriber_ = nullptr;
-void FormPerformanceTest::FormEventSubscriber::OnReceiveEvent(const CommonEventData &data)
+FormEvent FmsPerformanceTest::event = FormEvent();
+sptr<AAFwk::IAbilityManager> FmsPerformanceTest::abilityMs = nullptr;
+std::shared_ptr<FmsPerformanceTest::FormEventSubscriber> FmsPerformanceTest::subscriber_ = nullptr;
+void FmsPerformanceTest::FormEventSubscriber::OnReceiveEvent(const CommonEventData &data)
 {
     GTEST_LOG_(INFO) << "OnReceiveEvent: event=" << data.GetWant().GetAction();
     GTEST_LOG_(INFO) << "OnReceiveEvent: data=" << data.GetData();
@@ -104,7 +104,7 @@ void FormPerformanceTest::FormEventSubscriber::OnReceiveEvent(const CommonEventD
     SystemTestFormUtil::Completed(event, data.GetWant().GetAction(), data.GetCode(), data.GetData());
 }
 
-bool FormPerformanceTest::SavePerformanceTestResult(const std::string &testcase, const int64_t &timeValue)
+bool FmsPerformanceTest::SavePerformanceTestResult(const std::string &testcase, const int64_t &timeValue)
 {
     std::ofstream o(TEST_RESULT_PATH, std::ios::app);
     o.close();
@@ -120,7 +120,7 @@ bool FormPerformanceTest::SavePerformanceTestResult(const std::string &testcase,
     return true;
 }
 
-void FormPerformanceTest::SetUpTestCase()
+void FmsPerformanceTest::SetUpTestCase()
 {
     if (!SubscribeEvent()) {
         GTEST_LOG_(INFO) << "SubscribeEvent error";
@@ -132,7 +132,7 @@ void FormPerformanceTest::SetUpTestCase()
               << "executionTimes : " << pLevel_.executionTimesLevel << std::endl;
 }
 
-void FormPerformanceTest::TearDownTestCase()
+void FmsPerformanceTest::TearDownTestCase()
 {
     GTEST_LOG_(INFO) << "UnSubscribeCommonEvent calld";
     CommonEventManager::UnSubscribeCommonEvent(subscriber_);
@@ -140,7 +140,7 @@ void FormPerformanceTest::TearDownTestCase()
     << "case execution Times : " << pLevel_.executionTimesLevel << std::endl;
 }
 
-void FormPerformanceTest::SetUp()
+void FmsPerformanceTest::SetUp()
 {
     std::ofstream o(TEST_RESULT_PATH);
     o.close();
@@ -153,7 +153,7 @@ void FormPerformanceTest::SetUp()
     f.close();
 }
 
-void FormPerformanceTest::TearDown()
+void FmsPerformanceTest::TearDown()
 {
     SystemTestFormUtil::CleanMsg(event);
 
@@ -167,7 +167,7 @@ void FormPerformanceTest::TearDown()
 
     f.close();
 }
-bool FormPerformanceTest::SubscribeEvent()
+bool FmsPerformanceTest::SubscribeEvent()
 {
     MatchingSkills matchingSkills;
     for (const auto &e : eventList) {
@@ -179,7 +179,7 @@ bool FormPerformanceTest::SubscribeEvent()
     return CommonEventManager::SubscribeCommonEvent(subscriber_);
 }
 
-void FormPerformanceTest::PerformanceTest_0100()
+void FmsPerformanceTest::PerformanceTest_0100()
 {
     struct timespec time1 = {0};
     struct timespec time2 = {0};
@@ -215,7 +215,7 @@ void FormPerformanceTest::PerformanceTest_0100()
         consuming = (time2.tv_sec * usecTimesA + time2.tv_nsec - (time1.tv_sec * usecTimesA + time1.tv_nsec))
             / usecTimesB;
         totalTime += consuming;
-        bool ret = FormPerformanceTest::SavePerformanceTestResult("FMS_performanceTest_0100", consuming);
+        bool ret = FmsPerformanceTest::SavePerformanceTestResult("FMS_performanceTest_0100", consuming);
         std::cout << "SavePerformanceTestResult: "<< ret << "consuming:" << consuming << std::endl;
         GTEST_LOG_(INFO) << "FMS_performanceTest_0100 AcquireForm,  result:" << result;
     }
@@ -223,7 +223,7 @@ void FormPerformanceTest::PerformanceTest_0100()
     SystemTestFormUtil::CleanMsg(event);
 }
 
-void FormPerformanceTest::PerformanceTest_0200()
+void FmsPerformanceTest::PerformanceTest_0200()
 {
     struct timespec time1 = {0};
     struct timespec time2 = {0};
@@ -254,7 +254,7 @@ void FormPerformanceTest::PerformanceTest_0200()
         consuming = (time2.tv_sec * usecTimesA + time2.tv_nsec - (time1.tv_sec * usecTimesA + time1.tv_nsec))
             / usecTimesB;
         totalTime += consuming;
-        bool ret = FormPerformanceTest::SavePerformanceTestResult("FMS_performanceTest_0200", consuming);
+        bool ret = FmsPerformanceTest::SavePerformanceTestResult("FMS_performanceTest_0200", consuming);
         std::cout << "SavePerformanceTestResult: "<< ret << "consuming:" << consuming << std::endl;
         GTEST_LOG_(INFO) << "FMS_performanceTest_0200 DeleteForm,  result:" << result;
     }
@@ -262,7 +262,7 @@ void FormPerformanceTest::PerformanceTest_0200()
     SystemTestFormUtil::CleanMsg(event);
 }
 
-void FormPerformanceTest::PerformanceTest_0300()
+void FmsPerformanceTest::PerformanceTest_0300()
 {
     struct timespec time1 = {0};
     struct timespec time2 = {0};
@@ -293,7 +293,7 @@ void FormPerformanceTest::PerformanceTest_0300()
         consuming = (time2.tv_sec * usecTimesA + time2.tv_nsec - (time1.tv_sec * usecTimesA + time1.tv_nsec))
             / usecTimesB;
         totalTime += consuming;
-        bool ret = FormPerformanceTest::SavePerformanceTestResult("FMS_performanceTest_0300", consuming);
+        bool ret = FmsPerformanceTest::SavePerformanceTestResult("FMS_performanceTest_0300", consuming);
         std::cout << "SavePerformanceTestResult: "<< ret << "consuming:" << consuming << std::endl;
         GTEST_LOG_(INFO) << "FMS_performanceTest_0300 ReleaseForm,  result:" << result;
     }
@@ -301,7 +301,7 @@ void FormPerformanceTest::PerformanceTest_0300()
     SystemTestFormUtil::CleanMsg(event);
 }
 
-void FormPerformanceTest::PerformanceTest_0400()
+void FmsPerformanceTest::PerformanceTest_0400()
 {
     struct timespec time1 = {0};
     struct timespec time2 = {0};
@@ -332,7 +332,7 @@ void FormPerformanceTest::PerformanceTest_0400()
         consuming = (time2.tv_sec * usecTimesA + time2.tv_nsec - (time1.tv_sec * usecTimesA + time1.tv_nsec))
             / usecTimesB;
         totalTime += consuming;
-        bool ret = FormPerformanceTest::SavePerformanceTestResult("FMS_performanceTest_0400", consuming);
+        bool ret = FmsPerformanceTest::SavePerformanceTestResult("FMS_performanceTest_0400", consuming);
         std::cout << "SavePerformanceTestResult: "<< ret << "consuming:" << consuming << std::endl;
         GTEST_LOG_(INFO) << "FMS_performanceTest_0400 CastTempForm,  result:" << result;
     }
@@ -340,7 +340,7 @@ void FormPerformanceTest::PerformanceTest_0400()
     SystemTestFormUtil::CleanMsg(event);
 }
 
-void FormPerformanceTest::PerformanceTest_0500()
+void FmsPerformanceTest::PerformanceTest_0500()
 {
     struct timespec time1 = {0};
     struct timespec time2 = {0};
@@ -371,7 +371,7 @@ void FormPerformanceTest::PerformanceTest_0500()
         consuming = (time2.tv_sec * usecTimesA + time2.tv_nsec - (time1.tv_sec * usecTimesA + time1.tv_nsec))
             / usecTimesB;
         totalTime += consuming;
-        bool ret = FormPerformanceTest::SavePerformanceTestResult("FMS_performanceTest_0500", consuming);
+        bool ret = FmsPerformanceTest::SavePerformanceTestResult("FMS_performanceTest_0500", consuming);
         std::cout << "SavePerformanceTestResult: "<< ret << "consuming:" << consuming << std::endl;
         GTEST_LOG_(INFO) << "FMS_performanceTest_0500 NotifyVisibleForms,  result:" << result;
     }
@@ -379,7 +379,7 @@ void FormPerformanceTest::PerformanceTest_0500()
     SystemTestFormUtil::CleanMsg(event);
 }
 
-void FormPerformanceTest::PerformanceTest_0600()
+void FmsPerformanceTest::PerformanceTest_0600()
 {
     struct timespec time1 = {0};
     struct timespec time2 = {0};
@@ -410,7 +410,7 @@ void FormPerformanceTest::PerformanceTest_0600()
         consuming = (time2.tv_sec * usecTimesA + time2.tv_nsec - (time1.tv_sec * usecTimesA + time1.tv_nsec))
             / usecTimesB;
         totalTime += consuming;
-        bool ret = FormPerformanceTest::SavePerformanceTestResult("FMS_performanceTest_0600", consuming);
+        bool ret = FmsPerformanceTest::SavePerformanceTestResult("FMS_performanceTest_0600", consuming);
         std::cout << "SavePerformanceTestResult: "<< ret << "consuming:" << consuming << std::endl;
         GTEST_LOG_(INFO) << "FMS_performanceTest_0600 NotifyInvisibleForms,  result:" << result;
     }
@@ -418,7 +418,7 @@ void FormPerformanceTest::PerformanceTest_0600()
     SystemTestFormUtil::CleanMsg(event);
 }
 
-void FormPerformanceTest::PerformanceTest_0700()
+void FmsPerformanceTest::PerformanceTest_0700()
 {
     struct timespec time1 = {0};
     struct timespec time2 = {0};
@@ -449,7 +449,7 @@ void FormPerformanceTest::PerformanceTest_0700()
         consuming = (time2.tv_sec * usecTimesA + time2.tv_nsec - (time1.tv_sec * usecTimesA + time1.tv_nsec))
             / usecTimesB;
         totalTime += consuming;
-        bool ret = FormPerformanceTest::SavePerformanceTestResult("FMS_performanceTest_0700", consuming);
+        bool ret = FmsPerformanceTest::SavePerformanceTestResult("FMS_performanceTest_0700", consuming);
         std::cout << "SavePerformanceTestResult: "<< ret << "consuming:" << consuming << std::endl;
         GTEST_LOG_(INFO) << "FMS_performanceTest_0700 RequestForm,  result:" << result;
     }
@@ -457,7 +457,7 @@ void FormPerformanceTest::PerformanceTest_0700()
     SystemTestFormUtil::CleanMsg(event);
 }
 
-void FormPerformanceTest::PerformanceTest_1300()
+void FmsPerformanceTest::PerformanceTest_1300()
 {
     struct timespec time1 = {0};
     struct timespec time2 = {0};
@@ -488,7 +488,7 @@ void FormPerformanceTest::PerformanceTest_1300()
         consuming = (time2.tv_sec * usecTimesA + time2.tv_nsec - (time1.tv_sec * usecTimesA + time1.tv_nsec))
             / usecTimesB;
         totalTime += consuming;
-        bool ret = FormPerformanceTest::SavePerformanceTestResult("FMS_performanceTest_1300", consuming);
+        bool ret = FmsPerformanceTest::SavePerformanceTestResult("FMS_performanceTest_1300", consuming);
         std::cout << "SavePerformanceTestResult: "<< ret << "consuming:" << consuming << std::endl;
         GTEST_LOG_(INFO) << "FMS_performanceTest_1300 RequestForm,  result:" << result;
     }
@@ -496,7 +496,7 @@ void FormPerformanceTest::PerformanceTest_1300()
     SystemTestFormUtil::CleanMsg(event);
 }
 
-void FormPerformanceTest::PerformanceTest_1400()
+void FmsPerformanceTest::PerformanceTest_1400()
 {
     struct timespec time1 = {0};
     struct timespec time2 = {0};
@@ -527,7 +527,7 @@ void FormPerformanceTest::PerformanceTest_1400()
         consuming = (time2.tv_sec * usecTimesA + time2.tv_nsec - (time1.tv_sec * usecTimesA + time1.tv_nsec))
             / usecTimesB;
         totalTime += consuming;
-        bool ret = FormPerformanceTest::SavePerformanceTestResult("FMS_performanceTest_1400", consuming);
+        bool ret = FmsPerformanceTest::SavePerformanceTestResult("FMS_performanceTest_1400", consuming);
         std::cout << "SavePerformanceTestResult: "<< ret << "consuming:" << consuming << std::endl;
         GTEST_LOG_(INFO) << "FMS_performanceTest_1400 RequestForm,  result:" << result;
     }
@@ -535,7 +535,7 @@ void FormPerformanceTest::PerformanceTest_1400()
     SystemTestFormUtil::CleanMsg(event);
 }
 
-void FormPerformanceTest::PerformanceTest_1500()
+void FmsPerformanceTest::PerformanceTest_1500()
 {
     struct timespec time1 = {0};
     struct timespec time2 = {0};
@@ -566,7 +566,7 @@ void FormPerformanceTest::PerformanceTest_1500()
         consuming = (time2.tv_sec * usecTimesA + time2.tv_nsec - (time1.tv_sec * usecTimesA + time1.tv_nsec))
             / usecTimesB;
         totalTime += consuming;
-        bool ret = FormPerformanceTest::SavePerformanceTestResult("FMS_performanceTest_1500", consuming);
+        bool ret = FmsPerformanceTest::SavePerformanceTestResult("FMS_performanceTest_1500", consuming);
         std::cout << "SavePerformanceTestResult: "<< ret << "consuming:" << consuming << std::endl;
         GTEST_LOG_(INFO) << "FMS_performanceTest_1500 RequestForm,  result:" << result;
     }
@@ -574,7 +574,7 @@ void FormPerformanceTest::PerformanceTest_1500()
     SystemTestFormUtil::CleanMsg(event);
 }
 
-void FormPerformanceTest::PerformanceTest_1600()
+void FmsPerformanceTest::PerformanceTest_1600()
 {
     struct timespec time1 = {0};
     struct timespec time2 = {0};
@@ -605,7 +605,7 @@ void FormPerformanceTest::PerformanceTest_1600()
         consuming = (time2.tv_sec * usecTimesA + time2.tv_nsec - (time1.tv_sec * usecTimesA + time1.tv_nsec))
             / usecTimesB;
         totalTime += consuming;
-        bool ret = FormPerformanceTest::SavePerformanceTestResult("FMS_performanceTest_1600", consuming);
+        bool ret = FmsPerformanceTest::SavePerformanceTestResult("FMS_performanceTest_1600", consuming);
         std::cout << "SavePerformanceTestResult: "<< ret << "consuming:" << consuming << std::endl;
         GTEST_LOG_(INFO) << "FMS_performanceTest_1600 RequestForm,  result:" << result;
     }
@@ -618,12 +618,12 @@ void FormPerformanceTest::PerformanceTest_1600()
  * @tc.name      : AcquireForm performance test
  * @tc.desc      : Test the time required to AcquireForm
  */
-HWTEST_F(FormPerformanceTest, FMS_performanceTest_0100, Function | MediumTest | Level3)
+HWTEST_F(FmsPerformanceTest, FMS_performanceTest_0100, Function | MediumTest | Level3)
 {
     std::cout << "START FMS_performanceTest_0100" << std::endl;
 
     for (int iExecutionTimes = 0; iExecutionTimes < pLevel_.executionTimesLevel; iExecutionTimes++) {
-        FormPerformanceTest::PerformanceTest_0100();
+        FmsPerformanceTest::PerformanceTest_0100();
         std::cout << "FMS_performanceTest_0100 ExecutionTimes:" << iExecutionTimes + 1 << std::endl;
     }
 
@@ -635,12 +635,12 @@ HWTEST_F(FormPerformanceTest, FMS_performanceTest_0100, Function | MediumTest | 
  * @tc.name      : CastTempForm performance test
  * @tc.desc      : Test the time required to CastTempForm
  */
-HWTEST_F(FormPerformanceTest, FMS_performanceTest_0400, Function | MediumTest | Level3)
+HWTEST_F(FmsPerformanceTest, FMS_performanceTest_0400, Function | MediumTest | Level3)
 {
     std::cout << "START FMS_performanceTest_0400" << std::endl;
 
     for (int iExecutionTimes = 0; iExecutionTimes < pLevel_.executionTimesLevel; iExecutionTimes++) {
-        FormPerformanceTest::PerformanceTest_0400();
+        FmsPerformanceTest::PerformanceTest_0400();
         std::cout << "FMS_performanceTest_0400 ExecutionTimes:" << iExecutionTimes + 1 << std::endl;
     }
 
@@ -652,12 +652,12 @@ HWTEST_F(FormPerformanceTest, FMS_performanceTest_0400, Function | MediumTest | 
  * @tc.name      : ReleaseForm performance test
  * @tc.desc      : Test the time required to ReleaseForm
  */
-HWTEST_F(FormPerformanceTest, FMS_performanceTest_0300, Function | MediumTest | Level3)
+HWTEST_F(FmsPerformanceTest, FMS_performanceTest_0300, Function | MediumTest | Level3)
 {
     std::cout << "START FMS_performanceTest_0300" << std::endl;
 
     for (int iExecutionTimes = 0; iExecutionTimes < pLevel_.executionTimesLevel; iExecutionTimes++) {
-        FormPerformanceTest::PerformanceTest_0300();
+        FmsPerformanceTest::PerformanceTest_0300();
         std::cout << "FMS_performanceTest_0300 ExecutionTimes:" << iExecutionTimes + 1 << std::endl;
     }
 
@@ -669,12 +669,12 @@ HWTEST_F(FormPerformanceTest, FMS_performanceTest_0300, Function | MediumTest | 
  * @tc.name      : DeleteForm performance test
  * @tc.desc      : Test the time required to DeleteForm
  */
-HWTEST_F(FormPerformanceTest, FMS_performanceTest_0200, Function | MediumTest | Level3)
+HWTEST_F(FmsPerformanceTest, FMS_performanceTest_0200, Function | MediumTest | Level3)
 {
     std::cout << "START FMS_performanceTest_0200" << std::endl;
 
     for (int iExecutionTimes = 0; iExecutionTimes < pLevel_.executionTimesLevel; iExecutionTimes++) {
-        FormPerformanceTest::PerformanceTest_0200();
+        FmsPerformanceTest::PerformanceTest_0200();
         std::cout << "FMS_performanceTest_0200 ExecutionTimes:" << iExecutionTimes + 1 << std::endl;
     }
 
@@ -686,12 +686,12 @@ HWTEST_F(FormPerformanceTest, FMS_performanceTest_0200, Function | MediumTest | 
  * @tc.name      : NotifyVisibleForms performance test
  * @tc.desc      : Test the time required to NotifyVisibleForms
  */
-HWTEST_F(FormPerformanceTest, FMS_performanceTest_0500, Function | MediumTest | Level3)
+HWTEST_F(FmsPerformanceTest, FMS_performanceTest_0500, Function | MediumTest | Level3)
 {
     std::cout << "START FMS_performanceTest_0500" << std::endl;
 
     for (int iExecutionTimes = 0; iExecutionTimes < pLevel_.executionTimesLevel; iExecutionTimes++) {
-        FormPerformanceTest::PerformanceTest_0500();
+        FmsPerformanceTest::PerformanceTest_0500();
         std::cout << "FMS_performanceTest_0500 ExecutionTimes:" << iExecutionTimes + 1 << std::endl;
     }
 
@@ -703,12 +703,12 @@ HWTEST_F(FormPerformanceTest, FMS_performanceTest_0500, Function | MediumTest | 
  * @tc.name      : NotifyInvisibleForms performance test
  * @tc.desc      : Test the time required to NotifyInvisibleForms
  */
-HWTEST_F(FormPerformanceTest, FMS_performanceTest_0600, Function | MediumTest | Level3)
+HWTEST_F(FmsPerformanceTest, FMS_performanceTest_0600, Function | MediumTest | Level3)
 {
     std::cout << "START FMS_performanceTest_0600" << std::endl;
 
     for (int iExecutionTimes = 0; iExecutionTimes < pLevel_.executionTimesLevel; iExecutionTimes++) {
-        FormPerformanceTest::PerformanceTest_0600();
+        FmsPerformanceTest::PerformanceTest_0600();
         std::cout << "FMS_performanceTest_0600 ExecutionTimes:" << iExecutionTimes + 1 << std::endl;
     }
 
@@ -720,12 +720,12 @@ HWTEST_F(FormPerformanceTest, FMS_performanceTest_0600, Function | MediumTest | 
  * @tc.name      : RequestForm performance test
  * @tc.desc      : Test the time required to RequestForm
  */
-HWTEST_F(FormPerformanceTest, FMS_performanceTest_0700, Function | MediumTest | Level3)
+HWTEST_F(FmsPerformanceTest, FMS_performanceTest_0700, Function | MediumTest | Level3)
 {
     std::cout << "START FMS_performanceTest_0700" << std::endl;
 
     for (int iExecutionTimes = 0; iExecutionTimes < pLevel_.executionTimesLevel; iExecutionTimes++) {
-        FormPerformanceTest::PerformanceTest_0700();
+        FmsPerformanceTest::PerformanceTest_0700();
         std::cout << "FMS_performanceTest_0700 ExecutionTimes:" << iExecutionTimes + 1 << std::endl;
     }
 
@@ -737,12 +737,12 @@ HWTEST_F(FormPerformanceTest, FMS_performanceTest_0700, Function | MediumTest | 
  * @tc.name      : GetAllFormsInfo performance test
  * @tc.desc      : Test the time required to GetAllFormsInfo
  */
-HWTEST_F(FormPerformanceTest, FMS_performanceTest_1300, Function | MediumTest | Level3)
+HWTEST_F(FmsPerformanceTest, FMS_performanceTest_1300, Function | MediumTest | Level3)
 {
     std::cout << "START FMS_performanceTest_1300" << std::endl;
 
     for (int iExecutionTimes = 0; iExecutionTimes < pLevel_.executionTimesLevel; iExecutionTimes++) {
-        FormPerformanceTest::PerformanceTest_1300();
+        FmsPerformanceTest::PerformanceTest_1300();
         std::cout << "FMS_performanceTest_1300 ExecutionTimes:" << iExecutionTimes + 1 << std::endl;
     }
 
@@ -754,12 +754,12 @@ HWTEST_F(FormPerformanceTest, FMS_performanceTest_1300, Function | MediumTest | 
  * @tc.name      : GetFormsInfoByApp performance test
  * @tc.desc      : Test the time required to GetFormsInfoByApp
  */
-HWTEST_F(FormPerformanceTest, FMS_performanceTest_1400, Function | MediumTest | Level3)
+HWTEST_F(FmsPerformanceTest, FMS_performanceTest_1400, Function | MediumTest | Level3)
 {
     std::cout << "START FMS_performanceTest_1400" << std::endl;
 
     for (int iExecutionTimes = 0; iExecutionTimes < pLevel_.executionTimesLevel; iExecutionTimes++) {
-        FormPerformanceTest::PerformanceTest_1400();
+        FmsPerformanceTest::PerformanceTest_1400();
         std::cout << "FMS_performanceTest_1400 ExecutionTimes:" << iExecutionTimes + 1 << std::endl;
     }
 
@@ -771,12 +771,12 @@ HWTEST_F(FormPerformanceTest, FMS_performanceTest_1400, Function | MediumTest | 
  * @tc.name      : GetFormsInfoByModule performance test
  * @tc.desc      : Test the time required to GetFormsInfoByModule
  */
-HWTEST_F(FormPerformanceTest, FMS_performanceTest_1500, Function | MediumTest | Level3)
+HWTEST_F(FmsPerformanceTest, FMS_performanceTest_1500, Function | MediumTest | Level3)
 {
     std::cout << "START FMS_performanceTest_1500" << std::endl;
 
     for (int iExecutionTimes = 0; iExecutionTimes < pLevel_.executionTimesLevel; iExecutionTimes++) {
-        FormPerformanceTest::PerformanceTest_1500();
+        FmsPerformanceTest::PerformanceTest_1500();
         std::cout << "FMS_performanceTest_1500 ExecutionTimes:" << iExecutionTimes + 1 << std::endl;
     }
 
@@ -788,12 +788,12 @@ HWTEST_F(FormPerformanceTest, FMS_performanceTest_1500, Function | MediumTest | 
  * @tc.name      : CheckFMSReady performance test
  * @tc.desc      : Test the time required to CheckFMSReady
  */
-HWTEST_F(FormPerformanceTest, FMS_performanceTest_1600, Function | MediumTest | Level3)
+HWTEST_F(FmsPerformanceTest, FMS_performanceTest_1600, Function | MediumTest | Level3)
 {
     std::cout << "START FMS_performanceTest_1600" << std::endl;
 
     for (int iExecutionTimes = 0; iExecutionTimes < pLevel_.executionTimesLevel; iExecutionTimes++) {
-        FormPerformanceTest::PerformanceTest_1600();
+        FmsPerformanceTest::PerformanceTest_1600();
         std::cout << "FMS_performanceTest_1600 ExecutionTimes:" << iExecutionTimes + 1 << std::endl;
     }
 

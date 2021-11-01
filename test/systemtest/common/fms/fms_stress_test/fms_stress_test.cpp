@@ -43,7 +43,7 @@ namespace OHOS {
 namespace AppExecFwk {
 static StressTestLevel stLevel_;
 static int g_iSuccessfulTimes = 0;
-class FormStressTest : public testing::Test {
+class FmsStressTest : public testing::Test {
 public:
     static void SetUpTestCase();
     static void TearDownTestCase();
@@ -76,7 +76,7 @@ public:
     static std::shared_ptr<FormEventSubscriber> subscriber_;
 };
 
-std::vector<std::string> FormStressTest::eventList = {
+std::vector<std::string> FmsStressTest::eventList = {
     FORM_EVENT_ABILITY_ONACTIVED, FORM_EVENT_RECV_STRESS_TEST_0100,
     FORM_EVENT_RECV_STRESS_TEST_0100_01, FORM_EVENT_RECV_STRESS_TEST_0200,
     FORM_EVENT_RECV_STRESS_TEST_0200_01, FORM_EVENT_RECV_STRESS_TEST_0200_02, FORM_EVENT_RECV_STRESS_TEST_0200_03,
@@ -89,10 +89,10 @@ std::vector<std::string> FormStressTest::eventList = {
     FORM_EVENT_RECV_STRESS_TEST_1800,
 };
 
-FormEvent FormStressTest::event = FormEvent();
-sptr<AAFwk::IAbilityManager> FormStressTest::abilityMs = nullptr;
-std::shared_ptr<FormStressTest::FormEventSubscriber> FormStressTest::subscriber_ = nullptr;
-void FormStressTest::FormEventSubscriber::OnReceiveEvent(const CommonEventData &data)
+FormEvent FmsStressTest::event = FormEvent();
+sptr<AAFwk::IAbilityManager> FmsStressTest::abilityMs = nullptr;
+std::shared_ptr<FmsStressTest::FormEventSubscriber> FmsStressTest::subscriber_ = nullptr;
+void FmsStressTest::FormEventSubscriber::OnReceiveEvent(const CommonEventData &data)
 {
     GTEST_LOG_(INFO) << "OnReceiveEvent: event=" << data.GetWant().GetAction();
     GTEST_LOG_(INFO) << "OnReceiveEvent: data=" << data.GetData();
@@ -100,7 +100,7 @@ void FormStressTest::FormEventSubscriber::OnReceiveEvent(const CommonEventData &
     SystemTestFormUtil::Completed(event, data.GetWant().GetAction(), data.GetCode(), data.GetData());
 }
 
-void FormStressTest::SetUpTestCase()
+void FmsStressTest::SetUpTestCase()
 {
     if (!SubscribeEvent()) {
         GTEST_LOG_(INFO) << "SubscribeEvent error";
@@ -112,7 +112,7 @@ void FormStressTest::SetUpTestCase()
         << "executionTimes : " << stLevel_.executionTimesLevel << ", time:" << stLevel_.sleepTime << std::endl;
 }
 
-void FormStressTest::TearDownTestCase()
+void FmsStressTest::TearDownTestCase()
 {
     GTEST_LOG_(INFO) << "UnSubscribeCommonEvent calld";
     CommonEventManager::UnSubscribeCommonEvent(subscriber_);
@@ -120,19 +120,19 @@ void FormStressTest::TearDownTestCase()
         << "case execution Times : " << stLevel_.executionTimesLevel << ", time:" << stLevel_.sleepTime << std::endl;
 }
 
-void FormStressTest::SetUp()
+void FmsStressTest::SetUp()
 {
     g_iSuccessfulTimes = 0;
 }
 
-void FormStressTest::TearDown()
+void FmsStressTest::TearDown()
 {
     std::cout << "========Stress test: "
               << "Current case Successful Times : " << g_iSuccessfulTimes++ << "=========" << std::endl;
     GTEST_LOG_(INFO) << "CleanMsg calld";
     SystemTestFormUtil::CleanMsg(event);
 }
-bool FormStressTest::SubscribeEvent()
+bool FmsStressTest::SubscribeEvent()
 {
     GTEST_LOG_(INFO) << "SubscribeEvent calld";
     MatchingSkills matchingSkills;
@@ -145,7 +145,7 @@ bool FormStressTest::SubscribeEvent()
     return CommonEventManager::SubscribeCommonEvent(subscriber_);
 }
 
-void FormStressTest::StressTest_0100()
+void FmsStressTest::StressTest_0100()
 {
     std::string bundleName = "com.ohos.form.manager.stress";
     std::string abilityName = "FormAbilityStress";
@@ -185,7 +185,7 @@ void FormStressTest::StressTest_0100()
     SystemTestFormUtil::CleanMsg(event);
 }
 
-void FormStressTest::StressTest_0200()
+void FmsStressTest::StressTest_0200()
 {
     std::string bundleName = "com.ohos.form.manager.stress";
     std::string abilityName = "FormAbilityStress";
@@ -244,7 +244,7 @@ void FormStressTest::StressTest_0200()
     SystemTestFormUtil::CleanMsg(event);
 }
 
-void FormStressTest::StressTest_0300()
+void FmsStressTest::StressTest_0300()
 {
     std::string bundleName = "com.ohos.form.manager.stress";
     std::string abilityName = "FormAbilityStress";
@@ -293,7 +293,7 @@ void FormStressTest::StressTest_0300()
     SystemTestFormUtil::CleanMsg(event);
 }
 
-void FormStressTest::StressTest_1100()
+void FmsStressTest::StressTest_1100()
 {
     std::string bundleName = "com.ohos.form.manager.stress";
     std::string abilityName = "FormAbilityStress";
@@ -355,7 +355,7 @@ void FormStressTest::StressTest_1100()
     SystemTestFormUtil::CleanMsg(event);
 }
 
-void FormStressTest::StressTest_1300()
+void FmsStressTest::StressTest_1300()
 {
     std::string bundleName = "com.ohos.form.manager.stress";
     std::string abilityName = "FormAbilityStress";
@@ -417,7 +417,7 @@ void FormStressTest::StressTest_1300()
     SystemTestFormUtil::CleanMsg(event);
 }
 
-void FormStressTest::StressTest_1700()
+void FmsStressTest::StressTest_1700()
 {
     std::string bundleName = "com.ohos.form.manager.stress";
     std::string abilityName = "FormAbilityStress";
@@ -461,7 +461,7 @@ void FormStressTest::StressTest_1700()
     SystemTestFormUtil::CleanMsg(event);
 }
 
-void FormStressTest::StressTest_1800()
+void FmsStressTest::StressTest_1800()
 {
     std::string bundleName = "com.ohos.form.manager.stress";
     std::string abilityName = "FormAbilityStress";
@@ -492,13 +492,13 @@ void FormStressTest::StressTest_1800()
  * @tc.name      : AcquireForm/DeleteForm stress test
  * @tc.desc      : AcquireForm successfully/DeleteForm successfully
  */
-HWTEST_F(FormStressTest, FMS_stressTest_0100, Function | MediumTest | Level2)
+HWTEST_F(FmsStressTest, FMS_stressTest_0100, Function | MediumTest | Level2)
 {
     std::cout << "START FMS_stressTest_0100" << std::endl;
 
     for (int iExecutionTimes = 0; iExecutionTimes < stLevel_.executionTimesLevel; iExecutionTimes++) {
         sleep(stLevel_.sleepTime);
-        FormStressTest::StressTest_0100();
+        FmsStressTest::StressTest_0100();
         std::cout << "FMS_stressTest_0100 ExecutionTimes:" << iExecutionTimes + 1 << std::endl;
     }
 
@@ -510,13 +510,13 @@ HWTEST_F(FormStressTest, FMS_stressTest_0100, Function | MediumTest | Level2)
  * @tc.name      : AcquireForm、ReleaseForm/DeleteForm stress test
  * @tc.desc      : AcquireForm successfully/ReleaseForm successfully/DeleteForm successfully
  */
-HWTEST_F(FormStressTest, FMS_stressTest_0200, Function | MediumTest | Level2)
+HWTEST_F(FmsStressTest, FMS_stressTest_0200, Function | MediumTest | Level2)
 {
     std::cout << "START FMS_stressTest_0200" << std::endl;
 
     for (int iExecutionTimes = 0; iExecutionTimes < stLevel_.executionTimesLevel; iExecutionTimes++) {
         sleep(stLevel_.sleepTime);
-        FormStressTest::StressTest_0200();
+        FmsStressTest::StressTest_0200();
         std::cout << "FMS_stressTest_0200 ExecutionTimes:" << iExecutionTimes + 1 << std::endl;
     }
 
@@ -528,13 +528,13 @@ HWTEST_F(FormStressTest, FMS_stressTest_0200, Function | MediumTest | Level2)
  * @tc.name      : AcquireForm/CastTempForm/DeleteForm stress test
  * @tc.desc      : AcquireForm successfully/CastTempForm successfully/DeleteForm successfully
  */
-HWTEST_F(FormStressTest, FMS_stressTest_0300, Function | MediumTest | Level2)
+HWTEST_F(FmsStressTest, FMS_stressTest_0300, Function | MediumTest | Level2)
 {
     std::cout << "START FMS_stressTest_0300" << std::endl;
 
     for (int iExecutionTimes = 0; iExecutionTimes < stLevel_.executionTimesLevel; iExecutionTimes++) {
         sleep(stLevel_.sleepTime);
-        FormStressTest::StressTest_0300();
+        FmsStressTest::StressTest_0300();
         std::cout << "FMS_stressTest_0300 ExecutionTimes:" << iExecutionTimes + 1 << std::endl;
     }
 
@@ -546,13 +546,13 @@ HWTEST_F(FormStressTest, FMS_stressTest_0300, Function | MediumTest | Level2)
  * @tc.name      : NotifyInvisibleForms/NotifyVisibleForms stress test
  * @tc.desc      : NotifyInvisibleForms successfully/NotifyVisibleForms successfully
  */
-HWTEST_F(FormStressTest, FMS_stressTest_1100, Function | MediumTest | Level2)
+HWTEST_F(FmsStressTest, FMS_stressTest_1100, Function | MediumTest | Level2)
 {
     std::cout << "START FMS_stressTest_1100" << std::endl;
 
     for (int iExecutionTimes = 0; iExecutionTimes < stLevel_.executionTimesLevel; iExecutionTimes++) {
         sleep(stLevel_.sleepTime);
-        FormStressTest::StressTest_1100();
+        FmsStressTest::StressTest_1100();
         std::cout << "FMS_stressTest_1100 ExecutionTimes:" << iExecutionTimes + 1 << std::endl;
     }
 
@@ -564,13 +564,13 @@ HWTEST_F(FormStressTest, FMS_stressTest_1100, Function | MediumTest | Level2)
  * @tc.name      : EnableUpdateForm/DisableUpdateForm stress test
  * @tc.desc      : EnableUpdateForm successfully/DisableUpdateForm successfully
  */
-HWTEST_F(FormStressTest, FMS_stressTest_1300, Function | MediumTest | Level2)
+HWTEST_F(FmsStressTest, FMS_stressTest_1300, Function | MediumTest | Level2)
 {
     std::cout << "START FMS_stressTest_1300" << std::endl;
 
     for (int iExecutionTimes = 0; iExecutionTimes < stLevel_.executionTimesLevel; iExecutionTimes++) {
         sleep(stLevel_.sleepTime);
-        FormStressTest::StressTest_1300();
+        FmsStressTest::StressTest_1300();
         std::cout << "FMS_stressTest_1300 ExecutionTimes:" << iExecutionTimes + 1 << std::endl;
     }
 
@@ -582,12 +582,12 @@ HWTEST_F(FormStressTest, FMS_stressTest_1300, Function | MediumTest | Level2)
  * @tc.name      : GetAllFormsInfo/GetFormsInfoByApp/GetFormsInfoByModule stress test
  * @tc.desc      : GetAllFormsInfo successfully/GetFormsInfoByApp successfully/GetFormsInfoByModule successfully
  */
-HWTEST_F(FormStressTest, FMS_stressTest_1700, Function | MediumTest | Level2)
+HWTEST_F(FmsStressTest, FMS_stressTest_1700, Function | MediumTest | Level2)
 {
     std::cout << "START FMS_stressTest_1700" << std::endl;
 
     for (int iExecutionTimes = 0; iExecutionTimes < stLevel_.executionTimesLevel; iExecutionTimes++) {
-        FormStressTest::StressTest_1700();
+        FmsStressTest::StressTest_1700();
         std::cout << "FMS_stressTest_1700 ExecutionTimes:" << iExecutionTimes + 1 << std::endl;
     }
 
@@ -599,12 +599,12 @@ HWTEST_F(FormStressTest, FMS_stressTest_1700, Function | MediumTest | Level2)
  * @tc.name      : CheckFMSReady stress test
  * @tc.desc      : CheckFMSReady successfully
  */
-HWTEST_F(FormStressTest, FMS_stressTest_1800, Function | MediumTest | Level2)
+HWTEST_F(FmsStressTest, FMS_stressTest_1800, Function | MediumTest | Level2)
 {
     std::cout << "START FMS_stressTest_1800" << std::endl;
 
     for (int iExecutionTimes = 0; iExecutionTimes < stLevel_.executionTimesLevel; iExecutionTimes++) {
-        FormStressTest::StressTest_1800();
+        FmsStressTest::StressTest_1800();
         std::cout << "FMS_stressTest_1800 ExecutionTimes:" << iExecutionTimes + 1 << std::endl;
     }
 
