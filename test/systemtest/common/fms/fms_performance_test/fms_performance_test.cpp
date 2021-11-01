@@ -43,6 +43,7 @@ using namespace OHOS::STtools;
 
 namespace OHOS {
 namespace AppExecFwk {
+const int FOUR = 4;
 static PerformanceLevel pLevel_;
 static int64_t totalTime = 0;
 const std::string TEST_RESULT_PATH = "./performance_test_result.txt";
@@ -74,7 +75,7 @@ public:
 
     class FormEventSubscriber : public CommonEventSubscriber {
     public:
-        explicit FormEventSubscriber(const CommonEventSubscribeInfo &sp) : CommonEventSubscriber(sp){};
+        explicit FormEventSubscriber(const CommonEventSubscribeInfo &sp) : CommonEventSubscriber(sp) {};
         virtual void OnReceiveEvent(const CommonEventData &data) override;
         ~FormEventSubscriber() = default;
     };
@@ -109,11 +110,11 @@ bool FormPerformanceTest::SavePerformanceTestResult(const std::string &testcase,
     o.close();
 
     std::fstream f(TEST_RESULT_PATH, std::ios::app);
-    if (f.good() == false) {
+    if (!f.good()) {
         return false;
     }
 
-    f << std::setw(4) << testcase << " consuming:" << timeValue << " ms" << std::endl;
+    f << std::setw(FOUR) << testcase << " consuming:" << timeValue << " ms" << std::endl;
 
     f.close();
     return true;
@@ -144,10 +145,10 @@ void FormPerformanceTest::SetUp()
     std::ofstream o(TEST_RESULT_PATH);
     o.close();
     std::fstream f(TEST_RESULT_PATH);
-    if (f.good() == false) {
+    if (!f.good()) {
         return;
     }
-    f << std::setw(4) << "total execution times:" << pLevel_.executionTimesLevel << std::endl;
+    f << std::setw(FOUR) << "total execution times:" << pLevel_.executionTimesLevel << std::endl;
 
     f.close();
 }
@@ -159,10 +160,10 @@ void FormPerformanceTest::TearDown()
     std::ofstream o(TEST_RESULT_PATH, std::ios::app);
     o.close();
     std::fstream f(TEST_RESULT_PATH, std::ios::app);
-    if (f.good() == false) {
+    if (!f.good()) {
         return;
     }
-    f << std::setw(4) << "total time:" << totalTime << " ms" << std::endl;
+    f << std::setw(FOUR) << "total time:" << totalTime << " ms" << std::endl;
 
     f.close();
 }
@@ -197,16 +198,16 @@ void FormPerformanceTest::PerformanceTest_0100()
 
     // AcquireForm
     std::string eventData = FORM_EVENT_REQ_PERFORMANCE_TEST_0100;
-    SystemTestFormUtil::PublishEvent(FORM_EVENT_REQ_PERFORMANCE_TEST_0100, 100, eventData);
+    SystemTestFormUtil::PublishEvent(FORM_EVENT_REQ_PERFORMANCE_TEST_0100, EVENT_CODE_100, eventData);
 
     // OnAcquired
-    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_PERFORMANCE_TEST_0100, 101));
-    std::string data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_PERFORMANCE_TEST_0100, 101);
+    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_PERFORMANCE_TEST_0100, EVENT_CODE_101));
+    std::string data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_PERFORMANCE_TEST_0100, EVENT_CODE_101);
     std::string formId = data;
 
     // OnUpdate
-    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_PERFORMANCE_TEST_0100, 102));
-    data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_PERFORMANCE_TEST_0100, 102);
+    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_PERFORMANCE_TEST_0100, EVENT_CODE_102));
+    data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_PERFORMANCE_TEST_0100, EVENT_CODE_102);
     bool result = data == "true";
     EXPECT_TRUE(result);
     if (result) {
@@ -215,7 +216,7 @@ void FormPerformanceTest::PerformanceTest_0100()
             / usecTimesB;
         totalTime += consuming;
         bool ret = FormPerformanceTest::SavePerformanceTestResult("FMS_performanceTest_0100", consuming);
-        std::cout << "SavePerformanceTestResult: "<< ret << "consuming:" << consuming << std::endl; 
+        std::cout << "SavePerformanceTestResult: "<< ret << "consuming:" << consuming << std::endl;
         GTEST_LOG_(INFO) << "FMS_performanceTest_0100 AcquireForm,  result:" << result;
     }
 
@@ -241,11 +242,11 @@ void FormPerformanceTest::PerformanceTest_0200()
 
     // DeleteForm
     std::string eventData = FORM_EVENT_REQ_PERFORMANCE_TEST_0100;
-    SystemTestFormUtil::PublishEvent(FORM_EVENT_RECV_PERFORMANCE_TEST_0200, 200, eventData);
+    SystemTestFormUtil::PublishEvent(FORM_EVENT_RECV_PERFORMANCE_TEST_0200, EVENT_CODE_200, eventData);
 
     // DeleteForm Result
-    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_PERFORMANCE_TEST_0200, 200));
-    std::string data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_PERFORMANCE_TEST_0200, 200);
+    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_PERFORMANCE_TEST_0200, EVENT_CODE_200));
+    std::string data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_PERFORMANCE_TEST_0200, EVENT_CODE_200);
     bool result = data == "true";
     EXPECT_TRUE(result);
     if (result) {
@@ -254,7 +255,7 @@ void FormPerformanceTest::PerformanceTest_0200()
             / usecTimesB;
         totalTime += consuming;
         bool ret = FormPerformanceTest::SavePerformanceTestResult("FMS_performanceTest_0200", consuming);
-        std::cout << "SavePerformanceTestResult: "<< ret << "consuming:" << consuming << std::endl; 
+        std::cout << "SavePerformanceTestResult: "<< ret << "consuming:" << consuming << std::endl;
         GTEST_LOG_(INFO) << "FMS_performanceTest_0200 DeleteForm,  result:" << result;
     }
 
@@ -280,11 +281,11 @@ void FormPerformanceTest::PerformanceTest_0300()
 
     // ReleaseForm
     std::string eventData = FORM_EVENT_RECV_PERFORMANCE_TEST_0300;
-    SystemTestFormUtil::PublishEvent(FORM_EVENT_RECV_PERFORMANCE_TEST_0300, 300, eventData);
+    SystemTestFormUtil::PublishEvent(FORM_EVENT_RECV_PERFORMANCE_TEST_0300, EVENT_CODE_300, eventData);
 
     // ReleaseForm Result
-    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_PERFORMANCE_TEST_0300, 300));
-    std::string data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_PERFORMANCE_TEST_0300, 300);
+    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_PERFORMANCE_TEST_0300, EVENT_CODE_300));
+    std::string data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_PERFORMANCE_TEST_0300, EVENT_CODE_300);
     bool result = data == "true";
     EXPECT_TRUE(result);
     if (result) {
@@ -293,7 +294,7 @@ void FormPerformanceTest::PerformanceTest_0300()
             / usecTimesB;
         totalTime += consuming;
         bool ret = FormPerformanceTest::SavePerformanceTestResult("FMS_performanceTest_0300", consuming);
-        std::cout << "SavePerformanceTestResult: "<< ret << "consuming:" << consuming << std::endl; 
+        std::cout << "SavePerformanceTestResult: "<< ret << "consuming:" << consuming << std::endl;
         GTEST_LOG_(INFO) << "FMS_performanceTest_0300 ReleaseForm,  result:" << result;
     }
 
@@ -319,11 +320,11 @@ void FormPerformanceTest::PerformanceTest_0400()
 
     // CastTempForm
     std::string eventData = FORM_EVENT_RECV_PERFORMANCE_TEST_0400;
-    SystemTestFormUtil::PublishEvent(FORM_EVENT_RECV_PERFORMANCE_TEST_0400, 400, eventData);
+    SystemTestFormUtil::PublishEvent(FORM_EVENT_RECV_PERFORMANCE_TEST_0400, EVENT_CODE_400, eventData);
 
     // CastTempForm Result
-    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_PERFORMANCE_TEST_0400, 400));
-    std::string data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_PERFORMANCE_TEST_0400, 400);
+    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_PERFORMANCE_TEST_0400, EVENT_CODE_400));
+    std::string data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_PERFORMANCE_TEST_0400, EVENT_CODE_400);
     bool result = data == "true";
     EXPECT_TRUE(result);
     if (result) {
@@ -332,7 +333,7 @@ void FormPerformanceTest::PerformanceTest_0400()
             / usecTimesB;
         totalTime += consuming;
         bool ret = FormPerformanceTest::SavePerformanceTestResult("FMS_performanceTest_0400", consuming);
-        std::cout << "SavePerformanceTestResult: "<< ret << "consuming:" << consuming << std::endl; 
+        std::cout << "SavePerformanceTestResult: "<< ret << "consuming:" << consuming << std::endl;
         GTEST_LOG_(INFO) << "FMS_performanceTest_0400 CastTempForm,  result:" << result;
     }
 
@@ -358,11 +359,11 @@ void FormPerformanceTest::PerformanceTest_0500()
 
     // NotifyVisibleForms
     std::string eventData = FORM_EVENT_RECV_PERFORMANCE_TEST_0500;
-    SystemTestFormUtil::PublishEvent(FORM_EVENT_RECV_PERFORMANCE_TEST_0500, 500, eventData);
+    SystemTestFormUtil::PublishEvent(FORM_EVENT_RECV_PERFORMANCE_TEST_0500, EVENT_CODE_500, eventData);
 
     // NotifyVisibleForms Result
-    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_PERFORMANCE_TEST_0500, 500));
-    std::string data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_PERFORMANCE_TEST_0500, 500);
+    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_PERFORMANCE_TEST_0500, EVENT_CODE_500));
+    std::string data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_PERFORMANCE_TEST_0500, EVENT_CODE_500);
     bool result = data == "true";
     EXPECT_TRUE(result);
     if (result) {
@@ -371,7 +372,7 @@ void FormPerformanceTest::PerformanceTest_0500()
             / usecTimesB;
         totalTime += consuming;
         bool ret = FormPerformanceTest::SavePerformanceTestResult("FMS_performanceTest_0500", consuming);
-        std::cout << "SavePerformanceTestResult: "<< ret << "consuming:" << consuming << std::endl; 
+        std::cout << "SavePerformanceTestResult: "<< ret << "consuming:" << consuming << std::endl;
         GTEST_LOG_(INFO) << "FMS_performanceTest_0500 NotifyVisibleForms,  result:" << result;
     }
 
@@ -397,11 +398,11 @@ void FormPerformanceTest::PerformanceTest_0600()
 
     // NotifyInvisibleForms
     std::string eventData = FORM_EVENT_RECV_PERFORMANCE_TEST_0600;
-    SystemTestFormUtil::PublishEvent(FORM_EVENT_RECV_PERFORMANCE_TEST_0600, 600, eventData);
+    SystemTestFormUtil::PublishEvent(FORM_EVENT_RECV_PERFORMANCE_TEST_0600, EVENT_CODE_600, eventData);
 
     // NotifyInvisibleForms Result
-    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_PERFORMANCE_TEST_0600, 600));
-    std::string data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_PERFORMANCE_TEST_0600, 600);
+    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_PERFORMANCE_TEST_0600, EVENT_CODE_600));
+    std::string data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_PERFORMANCE_TEST_0600, EVENT_CODE_600);
     bool result = data == "true";
     EXPECT_TRUE(result);
     if (result) {
@@ -410,7 +411,7 @@ void FormPerformanceTest::PerformanceTest_0600()
             / usecTimesB;
         totalTime += consuming;
         bool ret = FormPerformanceTest::SavePerformanceTestResult("FMS_performanceTest_0600", consuming);
-        std::cout << "SavePerformanceTestResult: "<< ret << "consuming:" << consuming << std::endl; 
+        std::cout << "SavePerformanceTestResult: "<< ret << "consuming:" << consuming << std::endl;
         GTEST_LOG_(INFO) << "FMS_performanceTest_0600 NotifyInvisibleForms,  result:" << result;
     }
 
@@ -436,11 +437,11 @@ void FormPerformanceTest::PerformanceTest_0700()
 
     // RequestForm
     std::string eventData = FORM_EVENT_RECV_PERFORMANCE_TEST_0700;
-    SystemTestFormUtil::PublishEvent(FORM_EVENT_RECV_PERFORMANCE_TEST_0700, 700, eventData);
+    SystemTestFormUtil::PublishEvent(FORM_EVENT_RECV_PERFORMANCE_TEST_0700, EVENT_CODE_700, eventData);
 
     // RequestForm Result
-    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_PERFORMANCE_TEST_0700, 700));
-    std::string data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_PERFORMANCE_TEST_0700, 700);
+    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_PERFORMANCE_TEST_0700, EVENT_CODE_700));
+    std::string data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_PERFORMANCE_TEST_0700, EVENT_CODE_700);
     bool result = data == "true";
     EXPECT_TRUE(result);
     if (result) {
@@ -449,7 +450,7 @@ void FormPerformanceTest::PerformanceTest_0700()
             / usecTimesB;
         totalTime += consuming;
         bool ret = FormPerformanceTest::SavePerformanceTestResult("FMS_performanceTest_0700", consuming);
-        std::cout << "SavePerformanceTestResult: "<< ret << "consuming:" << consuming << std::endl; 
+        std::cout << "SavePerformanceTestResult: "<< ret << "consuming:" << consuming << std::endl;
         GTEST_LOG_(INFO) << "FMS_performanceTest_0700 RequestForm,  result:" << result;
     }
 
@@ -475,11 +476,11 @@ void FormPerformanceTest::PerformanceTest_1300()
 
     // GetAllFormsInfo
     std::string eventData = FORM_EVENT_RECV_PERFORMANCE_TEST_1300;
-    SystemTestFormUtil::PublishEvent(FORM_EVENT_RECV_PERFORMANCE_TEST_1300, 1300, eventData);
+    SystemTestFormUtil::PublishEvent(FORM_EVENT_RECV_PERFORMANCE_TEST_1300, EVENT_CODE_1300, eventData);
 
     // GetAllFormsInfo Result
-    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_PERFORMANCE_TEST_1300, 1300));
-    std::string data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_PERFORMANCE_TEST_1300, 1300);
+    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_PERFORMANCE_TEST_1300, EVENT_CODE_1300));
+    std::string data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_PERFORMANCE_TEST_1300, EVENT_CODE_1300);
     bool result = data == "true";
     EXPECT_TRUE(result);
     if (result) {
@@ -488,7 +489,7 @@ void FormPerformanceTest::PerformanceTest_1300()
             / usecTimesB;
         totalTime += consuming;
         bool ret = FormPerformanceTest::SavePerformanceTestResult("FMS_performanceTest_1300", consuming);
-        std::cout << "SavePerformanceTestResult: "<< ret << "consuming:" << consuming << std::endl; 
+        std::cout << "SavePerformanceTestResult: "<< ret << "consuming:" << consuming << std::endl;
         GTEST_LOG_(INFO) << "FMS_performanceTest_1300 RequestForm,  result:" << result;
     }
 
@@ -514,11 +515,11 @@ void FormPerformanceTest::PerformanceTest_1400()
 
     // GetAllFormsInfo
     std::string eventData = FORM_EVENT_RECV_PERFORMANCE_TEST_1300;
-    SystemTestFormUtil::PublishEvent(FORM_EVENT_RECV_PERFORMANCE_TEST_1400, 1400, eventData);
+    SystemTestFormUtil::PublishEvent(FORM_EVENT_RECV_PERFORMANCE_TEST_1400, EVENT_CODE_1400, eventData);
 
     // GetAllFormsInfo Result
-    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_PERFORMANCE_TEST_1400, 1400));
-    std::string data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_PERFORMANCE_TEST_1400, 1400);
+    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_PERFORMANCE_TEST_1400, EVENT_CODE_1400));
+    std::string data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_PERFORMANCE_TEST_1400, EVENT_CODE_1400);
     bool result = data == "true";
     EXPECT_TRUE(result);
     if (result) {
@@ -527,7 +528,7 @@ void FormPerformanceTest::PerformanceTest_1400()
             / usecTimesB;
         totalTime += consuming;
         bool ret = FormPerformanceTest::SavePerformanceTestResult("FMS_performanceTest_1400", consuming);
-        std::cout << "SavePerformanceTestResult: "<< ret << "consuming:" << consuming << std::endl; 
+        std::cout << "SavePerformanceTestResult: "<< ret << "consuming:" << consuming << std::endl;
         GTEST_LOG_(INFO) << "FMS_performanceTest_1400 RequestForm,  result:" << result;
     }
 
@@ -553,11 +554,11 @@ void FormPerformanceTest::PerformanceTest_1500()
 
     // GetAllFormsInfo
     std::string eventData = FORM_EVENT_RECV_PERFORMANCE_TEST_1500;
-    SystemTestFormUtil::PublishEvent(FORM_EVENT_RECV_PERFORMANCE_TEST_1500, 1500, eventData);
+    SystemTestFormUtil::PublishEvent(FORM_EVENT_RECV_PERFORMANCE_TEST_1500, EVENT_CODE_1500, eventData);
 
     // GetAllFormsInfo Result
-    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_PERFORMANCE_TEST_1500, 1500));
-    std::string data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_PERFORMANCE_TEST_1500, 1500);
+    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_PERFORMANCE_TEST_1500, EVENT_CODE_1500));
+    std::string data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_PERFORMANCE_TEST_1500, EVENT_CODE_1500);
     bool result = data == "true";
     EXPECT_TRUE(result);
     if (result) {
@@ -566,7 +567,7 @@ void FormPerformanceTest::PerformanceTest_1500()
             / usecTimesB;
         totalTime += consuming;
         bool ret = FormPerformanceTest::SavePerformanceTestResult("FMS_performanceTest_1500", consuming);
-        std::cout << "SavePerformanceTestResult: "<< ret << "consuming:" << consuming << std::endl; 
+        std::cout << "SavePerformanceTestResult: "<< ret << "consuming:" << consuming << std::endl;
         GTEST_LOG_(INFO) << "FMS_performanceTest_1500 RequestForm,  result:" << result;
     }
 
@@ -592,11 +593,11 @@ void FormPerformanceTest::PerformanceTest_1600()
 
     // GetAllFormsInfo
     std::string eventData = FORM_EVENT_RECV_PERFORMANCE_TEST_1600;
-    SystemTestFormUtil::PublishEvent(FORM_EVENT_RECV_PERFORMANCE_TEST_1600, 1600, eventData);
+    SystemTestFormUtil::PublishEvent(FORM_EVENT_RECV_PERFORMANCE_TEST_1600, EVENT_CODE_1600, eventData);
 
     // GetAllFormsInfo Result
-    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_PERFORMANCE_TEST_1600, 1600));
-    std::string data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_PERFORMANCE_TEST_1600, 1600);
+    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_PERFORMANCE_TEST_1600, EVENT_CODE_1600));
+    std::string data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_PERFORMANCE_TEST_1600, EVENT_CODE_1600);
     bool result = data == "true";
     EXPECT_TRUE(result);
     if (result) {
@@ -605,7 +606,7 @@ void FormPerformanceTest::PerformanceTest_1600()
             / usecTimesB;
         totalTime += consuming;
         bool ret = FormPerformanceTest::SavePerformanceTestResult("FMS_performanceTest_1600", consuming);
-        std::cout << "SavePerformanceTestResult: "<< ret << "consuming:" << consuming << std::endl; 
+        std::cout << "SavePerformanceTestResult: "<< ret << "consuming:" << consuming << std::endl;
         GTEST_LOG_(INFO) << "FMS_performanceTest_1600 RequestForm,  result:" << result;
     }
 
@@ -798,6 +799,5 @@ HWTEST_F(FormPerformanceTest, FMS_performanceTest_1600, Function | MediumTest | 
 
     std::cout << "END FMS_performanceTest_1600" << std::endl;
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

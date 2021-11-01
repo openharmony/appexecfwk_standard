@@ -52,7 +52,7 @@ void FormFuzzTest::SetUp()
 
 void FormFuzzTest::TearDown()
 {
-    std::cout << "FormFuzzTest TearDown" << std::endl;  
+    std::cout << "FormFuzzTest TearDown" << std::endl;
 }
 
 /**

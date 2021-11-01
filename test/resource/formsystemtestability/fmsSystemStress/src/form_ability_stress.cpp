@@ -17,9 +17,9 @@
 #include <sstream>
 
 #include "app_log_wrapper.h"
-#include "form_ability_stress.h"
 #include "form_st_common_info.h"
 #include "form_test_utils.h"
+#include "form_ability_stress.h"
 
 namespace {
     using namespace OHOS::AAFwk;
@@ -28,11 +28,13 @@ namespace {
 
 namespace OHOS {
 namespace AppExecFwk {
+const int ONE = 1;
+const int TWO = 2;
 std::vector<std::string> eventList = {
     FORM_EVENT_REQ_STRESS_TEST_0100, FORM_EVENT_REQ_STRESS_TEST_0100_01, FORM_EVENT_REQ_STRESS_TEST_0200,
     FORM_EVENT_REQ_STRESS_TEST_0200_01, FORM_EVENT_REQ_STRESS_TEST_0200_02, FORM_EVENT_REQ_STRESS_TEST_0200_03,
     FORM_EVENT_REQ_STRESS_TEST_0300, FORM_EVENT_REQ_STRESS_TEST_0300_01, FORM_EVENT_REQ_STRESS_TEST_0300_02,
-    FORM_EVENT_REQ_STRESS_TEST_0400, FORM_EVENT_REQ_STRESS_TEST_0500, 
+    FORM_EVENT_REQ_STRESS_TEST_0400, FORM_EVENT_REQ_STRESS_TEST_0500,
     FORM_EVENT_REQ_STRESS_TEST_1100, FORM_EVENT_REQ_STRESS_TEST_1100_01, FORM_EVENT_REQ_STRESS_TEST_1100_02,
     FORM_EVENT_REQ_STRESS_TEST_1100_03, FORM_EVENT_REQ_STRESS_TEST_1300, FORM_EVENT_REQ_STRESS_TEST_1300_01,
     FORM_EVENT_REQ_STRESS_TEST_1300_02, FORM_EVENT_REQ_STRESS_TEST_1300_03,
@@ -58,26 +60,26 @@ void FormAbilityStress::StressFormCallback::OnAcquired(const int32_t result, con
     APP_LOGI("%{public}s caseName_: %{public}s, code_: %{public}d", __func__, this->caseName_.c_str(), this->code_);
 
     if (this->caseName_ == FORM_EVENT_RECV_STRESS_TEST_0100) {
-        FormTestUtils::PublishEvent(this->caseName_, 101, std::to_string(formJsInfo.formId));
+        FormTestUtils::PublishEvent(this->caseName_, EVENT_CODE_101, std::to_string(formJsInfo.formId));
     } else if (this->caseName_ == FORM_EVENT_RECV_STRESS_TEST_0200) {
-        FormTestUtils::PublishEvent(this->caseName_, 201, std::to_string(formJsInfo.formId));
+        FormTestUtils::PublishEvent(this->caseName_, EVENT_CODE_201, std::to_string(formJsInfo.formId));
     } else if (this->caseName_ == FORM_EVENT_RECV_STRESS_TEST_0200_02) {
-        FormTestUtils::PublishEvent(this->caseName_, 204, "true");
+        FormTestUtils::PublishEvent(this->caseName_, EVENT_CODE_204, "true");
         ability_->FMS_stressTest_0200_sub03(std::to_string(formJsInfo.formId));
     } else if (this->caseName_ == FORM_EVENT_RECV_STRESS_TEST_0300) {
-        FormTestUtils::PublishEvent(this->caseName_, 301, std::to_string(formJsInfo.formId));
+        FormTestUtils::PublishEvent(this->caseName_, EVENT_CODE_301, std::to_string(formJsInfo.formId));
     } else if (this->caseName_ == FORM_EVENT_RECV_STRESS_TEST_0400) {
-        FormTestUtils::PublishEvent(this->caseName_, 401, std::to_string(formJsInfo.formId));
+        FormTestUtils::PublishEvent(this->caseName_, EVENT_CODE_401, std::to_string(formJsInfo.formId));
     } else if (this->caseName_ == FORM_EVENT_RECV_STRESS_TEST_1100) {
-        FormTestUtils::PublishEvent(this->caseName_, 1101, std::to_string(formJsInfo.formId));
+        FormTestUtils::PublishEvent(this->caseName_, EVENT_CODE_1101, std::to_string(formJsInfo.formId));
     } else if (this->caseName_ == FORM_EVENT_RECV_STRESS_TEST_1300) {
-        FormTestUtils::PublishEvent(this->caseName_, 1301, std::to_string(formJsInfo.formId));
+        FormTestUtils::PublishEvent(this->caseName_, EVENT_CODE_1301, std::to_string(formJsInfo.formId));
     } else if (this->caseName_ == FORM_EVENT_RECV_STRESS_TEST_1700) {
-        FormTestUtils::PublishEvent(this->caseName_, 1701, std::to_string(formJsInfo.formId));
+        FormTestUtils::PublishEvent(this->caseName_, EVENT_CODE_1701, std::to_string(formJsInfo.formId));
     } else if (this->caseName_ == FORM_EVENT_RECV_STRESS_TEST_1800) {
-        FormTestUtils::PublishEvent(this->caseName_, 1801, std::to_string(formJsInfo.formId));
+        FormTestUtils::PublishEvent(this->caseName_, EVENT_CODE_1801, std::to_string(formJsInfo.formId));
     } else {
-        FormTestUtils::PublishEvent(this->caseName_, this->code_ + 1, std::to_string(formJsInfo.formId));       
+        FormTestUtils::PublishEvent(this->caseName_, this->code_ + ONE, std::to_string(formJsInfo.formId));
     }
 }
 
@@ -97,28 +99,28 @@ void FormAbilityStress::StressFormCallback::OnUpdate(const int32_t result, const
     APP_LOGI("%{public}s caseName_: %{public}s, code_: %{public}d", __func__, this->caseName_.c_str(), this->code_);
 
     if (this->caseName_ == FORM_EVENT_RECV_STRESS_TEST_0100) {
-        FormTestUtils::PublishEvent(this->caseName_, 102, "true");
+        FormTestUtils::PublishEvent(this->caseName_, EVENT_CODE_102, "true");
         ability_->FMS_stressTest_0100_sub01(std::to_string(formJsInfo.formId));
     } else if (this->caseName_ == FORM_EVENT_RECV_STRESS_TEST_0200) {
-        FormTestUtils::PublishEvent(this->caseName_, 202, "true");
+        FormTestUtils::PublishEvent(this->caseName_, EVENT_CODE_202, "true");
         ability_->FMS_stressTest_0200_sub01(std::to_string(formJsInfo.formId));
     } else if (this->caseName_ == FORM_EVENT_RECV_STRESS_TEST_0300) {
-        FormTestUtils::PublishEvent(this->caseName_, 302, "true");
+        FormTestUtils::PublishEvent(this->caseName_, EVENT_CODE_302, "true");
         ability_->FMS_stressTest_0300_sub01(std::to_string(formJsInfo.formId));
     } else if (this->caseName_ == FORM_EVENT_RECV_STRESS_TEST_0400) {
-        FormTestUtils::PublishEvent(this->caseName_, 402, "true");
+        FormTestUtils::PublishEvent(this->caseName_, EVENT_CODE_402, "true");
     } else if (this->caseName_ == FORM_EVENT_RECV_STRESS_TEST_1100) {
-        FormTestUtils::PublishEvent(this->caseName_, 1102, "true");
+        FormTestUtils::PublishEvent(this->caseName_, EVENT_CODE_1102, "true");
         ability_->FMS_stressTest_1100_sub01(std::to_string(formJsInfo.formId));
     } else if (this->caseName_ == FORM_EVENT_RECV_STRESS_TEST_1300) {
-        FormTestUtils::PublishEvent(this->caseName_, 1302, "true");
+        FormTestUtils::PublishEvent(this->caseName_, EVENT_CODE_1302, "true");
         ability_->FMS_stressTest_1300_sub01(std::to_string(formJsInfo.formId));
     } else if (this->caseName_ == FORM_EVENT_RECV_STRESS_TEST_1700) {
-        FormTestUtils::PublishEvent(this->caseName_, 1702, "true");
+        FormTestUtils::PublishEvent(this->caseName_, EVENT_CODE_1702, "true");
     } else if (this->caseName_ == FORM_EVENT_RECV_STRESS_TEST_1800) {
-        FormTestUtils::PublishEvent(this->caseName_, 1802, "true");
+        FormTestUtils::PublishEvent(this->caseName_, EVENT_CODE_1802, "true");
     } else {
-        FormTestUtils::PublishEvent(this->caseName_, this->code_ + 2, "true");        
+        FormTestUtils::PublishEvent(this->caseName_, this->code_ + TWO, "true");
     }
 }
 
@@ -129,8 +131,8 @@ void FormAbilityStress::StressFormCallback::OnFormUninstall(const int64_t formId
 
 void FormAbilityStress::FMS_stressTest_0100(std::string data)
 {
-    std::shared_ptr<StressFormCallback> callback = 
-    std::make_shared<StressFormCallback>(FORM_EVENT_RECV_STRESS_TEST_0100, 100);
+    std::shared_ptr<StressFormCallback> callback =
+    std::make_shared<StressFormCallback>(FORM_EVENT_RECV_STRESS_TEST_0100, EVENT_CODE_100);
     callback->ability_ = this;
     // Set Want info begin
     Want want;
@@ -145,26 +147,26 @@ void FormAbilityStress::FMS_stressTest_0100(std::string data)
         APP_LOGI("[FMS_stressTest_0100] AcquireForm end");
     } else {
         APP_LOGE("[FMS_stressTest_0100] AcquireForm error");
-        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_0100, 100, "false");
+        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_0100, EVENT_CODE_100, "false");
     }
 }
 
 void FormAbilityStress::FMS_stressTest_0100_sub01(std::string form_id)
 {
-    bool bResult = DeleteForm(atoll(form_id.c_str())); 
+    bool bResult = DeleteForm(atoll(form_id.c_str()));
     if (bResult) {
         APP_LOGI("[FMS_stressTest_0100] DeleteForm end");
-        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_0100_01, 103, "true");
+        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_0100_01, EVENT_CODE_103, "true");
     } else {
         APP_LOGE("[FMS_stressTest_0100] DeleteForm error");
-        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_0100_01, 103, "false");
+        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_0100_01, EVENT_CODE_103, "false");
     }
 }
 
 void FormAbilityStress::FMS_stressTest_0200(std::string data)
 {
-    std::shared_ptr<StressFormCallback> callback = 
-    std::make_shared<StressFormCallback>(FORM_EVENT_RECV_STRESS_TEST_0200, 200);
+    std::shared_ptr<StressFormCallback> callback =
+    std::make_shared<StressFormCallback>(FORM_EVENT_RECV_STRESS_TEST_0200, EVENT_CODE_200);
     callback->ability_ = this;
     // Set Want info begin
     Want want;
@@ -179,20 +181,20 @@ void FormAbilityStress::FMS_stressTest_0200(std::string data)
         APP_LOGI("[FMS_stressTest_0200] AcquireForm end");
     } else {
         APP_LOGE("[FMS_stressTest_0200] AcquireForm error");
-        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_0200, 200, "false");
+        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_0200, EVENT_CODE_200, "false");
     }
 }
 
 void FormAbilityStress::FMS_stressTest_0200_sub01(std::string form_id)
 {
     bool isReleaseCache = false;
-    bool bResult = ReleaseForm(atoll(form_id.c_str()), isReleaseCache); 
+    bool bResult = ReleaseForm(atoll(form_id.c_str()), isReleaseCache);
     if (bResult) {
         APP_LOGI("[FMS_stressTest_0200] ReleaseForm end");
-        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_0200_01, 203, "true");
+        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_0200_01, EVENT_CODE_203, "true");
     } else {
         APP_LOGE("[FMS_stressTest_0200] ReleaseForm error");
-        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_0200_01, 203, "false");
+        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_0200_01, EVENT_CODE_203, "false");
     }
 
     FormAbilityStress::FMS_stressTest_0200_sub02(form_id);
@@ -201,8 +203,8 @@ void FormAbilityStress::FMS_stressTest_0200_sub01(std::string form_id)
 void FormAbilityStress::FMS_stressTest_0200_sub02(std::string form_id)
 {
     sleep(3);
-    std::shared_ptr<StressFormCallback> callback = 
-    std::make_shared<StressFormCallback>(FORM_EVENT_RECV_STRESS_TEST_0200_02, 204);
+    std::shared_ptr<StressFormCallback> callback =
+    std::make_shared<StressFormCallback>(FORM_EVENT_RECV_STRESS_TEST_0200_02, EVENT_CODE_204);
     callback->ability_ = this;
     // Set Want info begin
     Want want;
@@ -217,26 +219,26 @@ void FormAbilityStress::FMS_stressTest_0200_sub02(std::string form_id)
         APP_LOGI("[FMS_stressTest_0200] AcquireForm sub02 end");
     } else {
         APP_LOGE("[FMS_stressTest_0200] AcquireForm sub02 error");
-        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_0200_02, 204, "false");
+        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_0200_02, EVENT_CODE_204, "false");
     }
 }
 
 void FormAbilityStress::FMS_stressTest_0200_sub03(std::string form_id)
 {
-    bool bResult = DeleteForm(atoll(form_id.c_str())); 
+    bool bResult = DeleteForm(atoll(form_id.c_str()));
     if (bResult) {
         APP_LOGI("[FMS_stressTest_0200] DeleteForm end");
-        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_0200_03, 205, "true");
+        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_0200_03, EVENT_CODE_205, "true");
     } else {
         APP_LOGE("[FMS_stressTest_0200] DeleteForm error");
-        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_0200_03, 205, "false");
+        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_0200_03, EVENT_CODE_205, "false");
     }
 }
 
 void FormAbilityStress::FMS_stressTest_0300(std::string data)
 {
-    std::shared_ptr<StressFormCallback> callback = 
-    std::make_shared<StressFormCallback>(FORM_EVENT_RECV_STRESS_TEST_0300, 300);
+    std::shared_ptr<StressFormCallback> callback =
+    std::make_shared<StressFormCallback>(FORM_EVENT_RECV_STRESS_TEST_0300, EVENT_CODE_300);
     callback->ability_ = this;
     // Set Want info begin
     Want want;
@@ -251,19 +253,19 @@ void FormAbilityStress::FMS_stressTest_0300(std::string data)
         APP_LOGI("[FMS_stressTest_0300] AcquireForm end");
     } else {
         APP_LOGE("[FMS_stressTest_0300] AcquireForm error");
-        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_0300, 300, "false");
+        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_0300, EVENT_CODE_300, "false");
     }
 }
 
 void FormAbilityStress::FMS_stressTest_0300_sub01(std::string form_id)
 {
-    bool bResult = CastTempForm(atoll(form_id.c_str())); 
+    bool bResult = CastTempForm(atoll(form_id.c_str()));
     if (bResult) {
         APP_LOGI("[FMS_stressTest_0300] CastTempForm end");
-        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_0300_01, 303, "true");
+        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_0300_01, EVENT_CODE_303, "true");
     } else {
         APP_LOGE("[FMS_stressTest_0300] CastTempForm error");
-        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_0300_01, 303, "false");
+        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_0300_01, EVENT_CODE_303, "false");
     }
 
     FormAbilityStress::FMS_stressTest_0300_sub02(form_id);
@@ -271,13 +273,13 @@ void FormAbilityStress::FMS_stressTest_0300_sub01(std::string form_id)
 
 void FormAbilityStress::FMS_stressTest_0300_sub02(std::string form_id)
 {
-    bool bResult = DeleteForm(atoll(form_id.c_str())); 
+    bool bResult = DeleteForm(atoll(form_id.c_str()));
     if (bResult) {
         APP_LOGI("[FMS_stressTest_0300] DeleteForm end");
-        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_0300_02, 304, "true");
+        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_0300_02, EVENT_CODE_304, "true");
     } else {
         APP_LOGE("[FMS_stressTest_0300] DeleteForm error");
-        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_0300_02, 304, "false");
+        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_0300_02, EVENT_CODE_304, "false");
     }
 }
 
@@ -303,8 +305,8 @@ void FormAbilityStress::FMS_stressTest_1000(std::string data)
 
 void FormAbilityStress::FMS_stressTest_1100(std::string data)
 {
-    std::shared_ptr<StressFormCallback> callback = 
-    std::make_shared<StressFormCallback>(FORM_EVENT_RECV_STRESS_TEST_1100, 1100);
+    std::shared_ptr<StressFormCallback> callback =
+    std::make_shared<StressFormCallback>(FORM_EVENT_RECV_STRESS_TEST_1100, EVENT_CODE_1100);
     callback->ability_ = this;
     // Set Want info begin
     Want want;
@@ -319,7 +321,7 @@ void FormAbilityStress::FMS_stressTest_1100(std::string data)
         APP_LOGI("[FMS_stressTest_1100] AcquireForm end");
     } else {
         APP_LOGE("[FMS_stressTest_1100] AcquireForm error");
-        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_1100, 1100, "false");
+        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_1100, EVENT_CODE_1100, "false");
     }
 }
 
@@ -327,13 +329,13 @@ void FormAbilityStress::FMS_stressTest_1100_sub01(std::string form_id)
 {
     std::vector<int64_t> formIds;
     formIds.push_back(atoll(form_id.c_str()));
-    bool bResult = NotifyInvisibleForms(formIds); 
+    bool bResult = NotifyInvisibleForms(formIds);
     if (bResult) {
         APP_LOGI("[FMS_stressTest_1100] NotifyInvisibleForms end");
-        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_1100_01, 1103, "true");
+        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_1100_01, EVENT_CODE_1103, "true");
     } else {
         APP_LOGE("[FMS_stressTest_1100] NotifyInvisibleForms error");
-        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_1100_01, 1103, "false");
+        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_1100_01, EVENT_CODE_1103, "false");
     }
 
     FormAbilityStress::FMS_stressTest_1100_sub02(form_id);
@@ -343,13 +345,13 @@ void FormAbilityStress::FMS_stressTest_1100_sub02(std::string form_id)
 {
     std::vector<int64_t> formIds;
     formIds.push_back(atoll(form_id.c_str()));
-    bool bResult = NotifyVisibleForms(formIds); 
+    bool bResult = NotifyVisibleForms(formIds);
     if (bResult) {
         APP_LOGI("[FMS_stressTest_1100] NotifyVisibleForms end");
-        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_1100_02, 1104, "true");
+        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_1100_02, EVENT_CODE_1104, "true");
     } else {
         APP_LOGE("[FMS_stressTest_1100] NotifyVisibleForms error");
-        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_1100_02, 1104, "false");
+        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_1100_02, EVENT_CODE_1104, "false");
     }
 
     FormAbilityStress::FMS_stressTest_1100_sub03(form_id);
@@ -357,13 +359,13 @@ void FormAbilityStress::FMS_stressTest_1100_sub02(std::string form_id)
 
 void FormAbilityStress::FMS_stressTest_1100_sub03(std::string form_id)
 {
-    bool bResult = DeleteForm(atoll(form_id.c_str())); 
+    bool bResult = DeleteForm(atoll(form_id.c_str()));
     if (bResult) {
         APP_LOGI("[FMS_stressTest_1100] DeleteForm end");
-        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_1100_03, 1105, "true");
+        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_1100_03, EVENT_CODE_1105, "true");
     } else {
         APP_LOGE("[FMS_stressTest_1100] DeleteForm error");
-        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_1100_03, 1105, "false");
+        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_1100_03, EVENT_CODE_1105, "false");
     }
 }
 
@@ -373,8 +375,8 @@ void FormAbilityStress::FMS_stressTest_1200(std::string data)
 
 void FormAbilityStress::FMS_stressTest_1300(std::string data)
 {
-    std::shared_ptr<StressFormCallback> callback = 
-    std::make_shared<StressFormCallback>(FORM_EVENT_RECV_STRESS_TEST_1300, 1300);
+    std::shared_ptr<StressFormCallback> callback =
+    std::make_shared<StressFormCallback>(FORM_EVENT_RECV_STRESS_TEST_1300, EVENT_CODE_1300);
     callback->ability_ = this;
     // Set Want info begin
     Want want;
@@ -389,7 +391,7 @@ void FormAbilityStress::FMS_stressTest_1300(std::string data)
         APP_LOGI("[FMS_stressTest_1300] AcquireForm end");
     } else {
         APP_LOGE("[FMS_stressTest_1300] AcquireForm error");
-        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_1300, 1300, "false");
+        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_1300, EVENT_CODE_1300, "false");
     }
 }
 
@@ -397,13 +399,13 @@ void FormAbilityStress::FMS_stressTest_1300_sub01(std::string form_id)
 {
     std::vector<int64_t> formIds;
     formIds.push_back(atoll(form_id.c_str()));
-    bool bResult = EnableUpdateForm(formIds); 
+    bool bResult = EnableUpdateForm(formIds);
     if (bResult) {
         APP_LOGI("[FMS_stressTest_1300] EnableUpdateForm end");
-        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_1300_01, 1303, "true");
+        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_1300_01, EVENT_CODE_1303, "true");
     } else {
         APP_LOGE("[FMS_stressTest_1300] EnableUpdateForm error");
-        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_1300_01, 1303, "false");
+        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_1300_01, EVENT_CODE_1303, "false");
     }
 
     FormAbilityStress::FMS_stressTest_1300_sub02(form_id);
@@ -413,13 +415,13 @@ void FormAbilityStress::FMS_stressTest_1300_sub02(std::string form_id)
 {
     std::vector<int64_t> formIds;
     formIds.push_back(atoll(form_id.c_str()));
-    bool bResult = DisableUpdateForm(formIds); 
+    bool bResult = DisableUpdateForm(formIds);
     if (bResult) {
         APP_LOGI("[FMS_stressTest_1300] DisableUpdateForm end");
-        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_1300_02, 1304, "true");
+        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_1300_02, EVENT_CODE_1304, "true");
     } else {
         APP_LOGE("[FMS_stressTest_1300] DisableUpdateForm error");
-        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_1300_02, 1304, "false");
+        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_1300_02, EVENT_CODE_1304, "false");
     }
 
     FormAbilityStress::FMS_stressTest_1300_sub03(form_id);
@@ -427,13 +429,13 @@ void FormAbilityStress::FMS_stressTest_1300_sub02(std::string form_id)
 
 void FormAbilityStress::FMS_stressTest_1300_sub03(std::string form_id)
 {
-    bool bResult = DeleteForm(atoll(form_id.c_str())); 
+    bool bResult = DeleteForm(atoll(form_id.c_str()));
     if (bResult) {
         APP_LOGI("[FMS_stressTest_1300] DeleteForm end");
-        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_1300_03, 1305, "true");
+        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_1300_03, EVENT_CODE_1305, "true");
     } else {
         APP_LOGE("[FMS_stressTest_1300] DeleteForm error");
-        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_1300_03, 1305, "false");
+        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_1300_03, EVENT_CODE_1305, "false");
     }
 }
 
@@ -452,13 +454,13 @@ void FormAbilityStress::FMS_stressTest_1600(std::string data)
 void FormAbilityStress::FMS_stressTest_1700(std::string data)
 {
     std::vector<FormInfo> formInfos;
-    bool bResult = GetAllFormsInfo(formInfos); 
+    bool bResult = GetAllFormsInfo(formInfos);
     if (bResult) {
         APP_LOGI("[FMS_stressTest_1700] GetAllFormsInfo end");
-        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_1700, 1700, "true");
+        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_1700, EVENT_CODE_1700, "true");
     } else {
         APP_LOGE("[FMS_stressTest_1700] GetAllFormsInfo error");
-        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_1700, 1700, "false");
+        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_1700, EVENT_CODE_1700, "false");
     }
 
     FormAbilityStress::FMS_stressTest_1700_sub01(data);
@@ -470,10 +472,10 @@ void FormAbilityStress::FMS_stressTest_1700_sub01(std::string data)
     bool bResult = GetFormsInfoByApp(g_bundleName, formInfos);
     if (bResult) {
         APP_LOGI("[FMS_stressTest_1700] GetFormsInfoByApp end");
-        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_1700_01, 1701, "true");
+        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_1700_01, EVENT_CODE_1701, "true");
     } else {
         APP_LOGE("[FMS_stressTest_1700] GetFormsInfoByApp error");
-        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_1700_01, 1701, "false");
+        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_1700_01, EVENT_CODE_1701, "false");
     }
 
     FormAbilityStress::FMS_stressTest_1700_sub02(data);
@@ -482,25 +484,25 @@ void FormAbilityStress::FMS_stressTest_1700_sub01(std::string data)
 void FormAbilityStress::FMS_stressTest_1700_sub02(std::string data)
 {
     std::vector<FormInfo> formInfos;
-    bool bResult = GetFormsInfoByModule(g_bundleName, g_moduleName, formInfos); 
+    bool bResult = GetFormsInfoByModule(g_bundleName, g_moduleName, formInfos);
     if (bResult) {
         APP_LOGI("[FMS_stressTest_1700] GetFormsInfoByModule end");
-        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_1700_02, 1702, "true");
+        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_1700_02, EVENT_CODE_1702, "true");
     } else {
         APP_LOGE("[FMS_stressTest_1700] GetFormsInfoByModule error");
-        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_1700_02, 1702, "false");
+        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_1700_02, EVENT_CODE_1702, "false");
     }
 }
 
 void FormAbilityStress::FMS_stressTest_1800(std::string data)
 {
-    bool bResult = CheckFMSReady(); 
+    bool bResult = CheckFMSReady();
     if (bResult) {
         APP_LOGI("[FMS_stressTest_1800] CheckFMSReady end");
-        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_1800, 1800, "true");
+        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_1800, EVENT_CODE_1800, "true");
     } else {
         APP_LOGE("[FMS_stressTest_1800] CheckFMSReady error");
-        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_1800, 1800, "false");
+        FormTestUtils::PublishEvent(FORM_EVENT_RECV_STRESS_TEST_1800, EVENT_CODE_1800, "false");
     }
 }
 
@@ -587,7 +589,7 @@ void FormAbilityStress::Init(const std::shared_ptr<AbilityInfo> &abilityInfo,
     memberFuncMap_[FORM_EVENT_REQ_STRESS_TEST_1800] = &FormAbilityStress::FMS_stressTest_1800;
 
     SubscribeEvent();
-} 
+}
 
 void FormAbilityStress::handleEvent(std::string action, std::string data)
 {
@@ -611,7 +613,7 @@ void FormAbilityStress::Clear()
 
 void FormEventSubscriber::OnReceiveEvent(const CommonEventData &data)
 {
-    APP_LOGI("FormEventSubscriber::OnReceiveEvent:event=%{public}s, code=%{public}d, data=%{public}s", 
+    APP_LOGI("FormEventSubscriber::OnReceiveEvent:event=%{public}s, code=%{public}d, data=%{public}s",
         data.GetWant().GetAction().c_str(), data.GetCode(), data.GetData().c_str());
     auto eventName = data.GetWant().GetAction();
     ability_->handleEvent(eventName, data.GetData());

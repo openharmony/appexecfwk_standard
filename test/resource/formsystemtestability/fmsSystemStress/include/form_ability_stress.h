@@ -15,12 +15,13 @@
 
 #ifndef _FORM_ABILITY_STRESS_H_
 #define _FORM_ABILITY_STRESS_H_
-#include "ability_loader.h"
-#include "common_event.h"
-#include "common_event_manager.h"
 #include <string>
 #include <unistd.h>
 #include <vector>
+#include "ability_loader.h"
+#include "common_event.h"
+#include "common_event_manager.h"
+
 
 using std::string;
 
@@ -70,8 +71,8 @@ public:
 
     std::shared_ptr<FormEventSubscriber> subscriber_;
 
-    class StressFormCallback : public FormCallback {     
-    public:   
+    class StressFormCallback : public FormCallback {
+    public:
         StressFormCallback(std::string name, int code):caseName_(name), code_(code) { }
         virtual ~StressFormCallback() = default;
         void OnAcquired(const int32_t result, const FormJsInfo &formJsInfo) const override;
@@ -102,7 +103,7 @@ private:
 class FormEventSubscriber : public EventFwk::CommonEventSubscriber {
 public:
     FormEventSubscriber(const EventFwk::CommonEventSubscribeInfo &sp) : CommonEventSubscriber(sp)
-    { 
+    {
         ability_ = nullptr;
     }
     ~FormEventSubscriber()

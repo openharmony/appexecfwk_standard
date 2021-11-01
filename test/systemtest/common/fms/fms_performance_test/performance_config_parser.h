@@ -23,12 +23,12 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-const std::string PERFORMANCE_CONFIG_FILE_PATH{"./fms_performance_config.json"};
+const std::string PERFORMANCE_CONFIG_FILE_PATH {"./fms_performance_config.json"};
 
-const std::string PERFORMANCE_EXECUTION_TIMES_KEY{"ExecutionTimes"};
+const std::string PERFORMANCE_EXECUTION_TIMES_KEY {"ExecutionTimes"};
 
 struct PerformanceLevel {
-    int32_t executionTimesLevel{1};
+    int32_t executionTimesLevel {1};
 };
 
 class PerformanceConfigParser {

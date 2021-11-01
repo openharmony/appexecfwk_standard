@@ -23,7 +23,6 @@
 #include "nlohmann/json.hpp"
 namespace OHOS {
 namespace AppExecFwk {
-
 class FormManagerFuzzTest {
 public:
     typedef std::shared_ptr<FormManagerFuzzTest> Ptr;
@@ -46,9 +45,9 @@ private:
     FormManagerFuzzTest(FormManagerFuzzTest &) = delete;
     FormManagerFuzzTest &operator=(const FormManagerFuzzTest &) = delete;
     static Ptr fuzzTestInstance;
-    uint16_t m_executionTimes{};
-    std::unordered_map<std::string, int> remainderMap_{};
-    std::unordered_map<std::string, std::function<void()>> callFunctionMap_{};
+    uint16_t m_executionTimes {};
+    std::unordered_map<std::string, int> remainderMap_ {};
+    std::unordered_map<std::string, std::function<void()>> callFunctionMap_ {};
 
     void RegisterFormManagerAbility();
 };
