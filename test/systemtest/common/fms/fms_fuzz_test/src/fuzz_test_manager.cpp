@@ -20,9 +20,9 @@
 
 #include "ability.h"
 #include "hilog_wrapper.h"
-#include "../include/fuzz_test_manager.h"
 #include "../include/fuzz_test_config_parser.h"
 #include "../include/get_param.h"
+#include "../include/fuzz_test_manager.h"
 
 #undef private
 #undef protected
@@ -152,7 +152,7 @@ void FormManagerFuzzTest::SetJsonFunction(std::string functionName)
 void FormManagerFuzzTest::SetExecutionTimes(uint16_t executionTimes)
 {
     m_executionTimes = executionTimes;
-    for_each(remainderMap_.begin(), remainderMap_.end(), 
+    for_each(remainderMap_.begin(), remainderMap_.end(),
         [executionTimes](std::unordered_map<std::string, int>::reference executionTimesTemp) {
         executionTimesTemp.second = executionTimes;
     });
@@ -194,7 +194,7 @@ void FormManagerFuzzTest::StartFuzzTest()
     }
 
     std::cout << remainderMap_.size() << "--------fuzz test start--------" << callFunctionMap_.size() << std::endl;
-    for (; remainderMap_.size() > 0; ) {
+    for (;remainderMap_.size() > 0;) {
         std::string functionName;
         int offset = GetRandomInt(0, index.size() - 1);
         functionName = index[offset];

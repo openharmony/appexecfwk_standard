@@ -21,16 +21,14 @@
 #include <vector>
 
 #include "nlohmann/json.hpp"
-
 namespace OHOS {
+const std::string FUZZ_TEST_CONFIG_FILE_PATH {"./config.json"};
 
-const std::string FUZZ_TEST_CONFIG_FILE_PATH{"./config.json"};
-
-const std::string FUZZ_TEST_MAIN_LOOP_KEY{"ExecutionTimes"};
+const std::string FUZZ_TEST_MAIN_LOOP_KEY {"ExecutionTimes"};
 
 struct FuzzTestData {
-    int32_t mainLoopFlag{0};
-    std::vector<std::string> methodVec{};
+    int32_t mainLoopFlag {0};
+    std::vector<std::string> methodVec {};
 };
 
 class FuzzTestConfigParser {
@@ -56,13 +54,12 @@ public:
             if (it->is_structured()) {
                 for (auto itm = it->begin(); itm != it->end(); ++itm) {
                     auto methodName = itm.key();
-
                     if (!(it->is_structured() && (it->size() != 0))) {
                         ftd.methodVec.push_back(className + methodName);
                         continue;
                     }
 
-                    std::string param{};
+                    std::string param {};
                     for (auto itp = itm->begin(); itp != itm->end(); ++itp) {
                         auto tp = itp.value();
                         param += tp;
@@ -73,7 +70,5 @@ public:
         }
     }
 };
-
 }  // namespace OHOS
-
 #endif  // FUZZ_CONFIG_PARSER_H

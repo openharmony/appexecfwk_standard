@@ -65,7 +65,7 @@ public:
 
     class FormEventSubscriber : public CommonEventSubscriber {
     public:
-        explicit FormEventSubscriber(const CommonEventSubscribeInfo &sp) : CommonEventSubscriber(sp){};
+        explicit FormEventSubscriber(const CommonEventSubscribeInfo &sp) : CommonEventSubscriber(sp) {};
         virtual void OnReceiveEvent(const CommonEventData &data) override;
         ~FormEventSubscriber() = default;
     };
@@ -81,7 +81,7 @@ std::vector<std::string> FormStressTest::eventList = {
     FORM_EVENT_RECV_STRESS_TEST_0100_01, FORM_EVENT_RECV_STRESS_TEST_0200,
     FORM_EVENT_RECV_STRESS_TEST_0200_01, FORM_EVENT_RECV_STRESS_TEST_0200_02, FORM_EVENT_RECV_STRESS_TEST_0200_03,
     FORM_EVENT_RECV_STRESS_TEST_0300, FORM_EVENT_RECV_STRESS_TEST_0300_01, FORM_EVENT_RECV_STRESS_TEST_0300_02,
-    FORM_EVENT_RECV_STRESS_TEST_0400, FORM_EVENT_RECV_STRESS_TEST_0500, 
+    FORM_EVENT_RECV_STRESS_TEST_0400, FORM_EVENT_RECV_STRESS_TEST_0500,
     FORM_EVENT_RECV_STRESS_TEST_1100, FORM_EVENT_RECV_STRESS_TEST_1100_01, FORM_EVENT_RECV_STRESS_TEST_1100_02,
     FORM_EVENT_RECV_STRESS_TEST_1100_03, FORM_EVENT_RECV_STRESS_TEST_1300, FORM_EVENT_RECV_STRESS_TEST_1300_01,
     FORM_EVENT_RECV_STRESS_TEST_1300_02, FORM_EVENT_RECV_STRESS_TEST_1300_03,
@@ -156,16 +156,16 @@ void FormStressTest::StressTest_0100()
 
     // AcquireForm
     std::string eventData = FORM_EVENT_REQ_STRESS_TEST_0100;
-    SystemTestFormUtil::PublishEvent(FORM_EVENT_REQ_STRESS_TEST_0100, 100, eventData);
+    SystemTestFormUtil::PublishEvent(FORM_EVENT_REQ_STRESS_TEST_0100, EVENT_CODE_100, eventData);
 
     // OnAcquired
-    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_STRESS_TEST_0100, 101));
-    std::string data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_STRESS_TEST_0100, 101);
+    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_STRESS_TEST_0100, EVENT_CODE_101));
+    std::string data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_STRESS_TEST_0100, EVENT_CODE_101);
     std::string formId = data;
 
     // OnUpdate
-    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_STRESS_TEST_0100, 102));
-    data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_STRESS_TEST_0100, 102);
+    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_STRESS_TEST_0100, EVENT_CODE_102));
+    data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_STRESS_TEST_0100, EVENT_CODE_102);
     bool result = data == "true";
     EXPECT_TRUE(result);
     if (result) {
@@ -173,8 +173,8 @@ void FormStressTest::StressTest_0100()
     }
 
     // DeleteForm Result
-    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_STRESS_TEST_0100_01, 103));
-    data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_STRESS_TEST_0100_01, 103);
+    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_STRESS_TEST_0100_01, EVENT_CODE_103));
+    data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_STRESS_TEST_0100_01, EVENT_CODE_103);
     result = data == "true";
     EXPECT_TRUE(result);
     if (result) {
@@ -196,17 +196,17 @@ void FormStressTest::StressTest_0200()
 
     // AcquireForm
     std::string eventData = FORM_EVENT_REQ_STRESS_TEST_0200;
-    SystemTestFormUtil::PublishEvent(FORM_EVENT_REQ_STRESS_TEST_0200, 200, eventData);
+    SystemTestFormUtil::PublishEvent(FORM_EVENT_REQ_STRESS_TEST_0200, EVENT_CODE_200, eventData);
 
     // OnAcquired
-    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_STRESS_TEST_0200, 201));
-    std::string data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_STRESS_TEST_0200, 201);
+    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_STRESS_TEST_0200, EVENT_CODE_201));
+    std::string data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_STRESS_TEST_0200, EVENT_CODE_201);
     std::string formId = data;
     GTEST_LOG_(INFO) << "FMS_stressTest_0200 AcquireForm,  formId:" << formId;
 
     // OnUpdate
-    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_STRESS_TEST_0200, 202));
-    data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_STRESS_TEST_0200, 202);
+    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_STRESS_TEST_0200, EVENT_CODE_202));
+    data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_STRESS_TEST_0200, EVENT_CODE_202);
     bool result = data == "true";
     EXPECT_TRUE(result);
     if (result) {
@@ -214,8 +214,8 @@ void FormStressTest::StressTest_0200()
     }
 
     // ReleaseForm Result
-    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_STRESS_TEST_0200_01, 203));
-    data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_STRESS_TEST_0200_01, 203);
+    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_STRESS_TEST_0200_01, EVENT_CODE_203));
+    data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_STRESS_TEST_0200_01, EVENT_CODE_203);
     result = data == "true";
     EXPECT_TRUE(result);
     if (result) {
@@ -223,8 +223,8 @@ void FormStressTest::StressTest_0200()
     }
 
     // OnAcquired
-    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_STRESS_TEST_0200_02, 204));
-    data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_STRESS_TEST_0200_02, 204);
+    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_STRESS_TEST_0200_02, EVENT_CODE_204));
+    data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_STRESS_TEST_0200_02, EVENT_CODE_204);
     result = data == "true";
     EXPECT_TRUE(result);
     if (result) {
@@ -232,8 +232,8 @@ void FormStressTest::StressTest_0200()
     }
 
     // DeleteForm Result
-    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_STRESS_TEST_0200_03, 205));
-    data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_STRESS_TEST_0200_03, 205);
+    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_STRESS_TEST_0200_03, EVENT_CODE_205));
+    data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_STRESS_TEST_0200_03, EVENT_CODE_205);
     result = data == "true";
     EXPECT_TRUE(result);
     if (result) {
@@ -255,16 +255,16 @@ void FormStressTest::StressTest_0300()
 
     // AcquireForm
     std::string eventData = FORM_EVENT_REQ_STRESS_TEST_0300;
-    SystemTestFormUtil::PublishEvent(FORM_EVENT_REQ_STRESS_TEST_0300, 300, eventData);
+    SystemTestFormUtil::PublishEvent(FORM_EVENT_REQ_STRESS_TEST_0300, EVENT_CODE_300, eventData);
 
     // OnAcquired
-    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_STRESS_TEST_0300, 301));
-    std::string data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_STRESS_TEST_0300, 301);
+    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_STRESS_TEST_0300, EVENT_CODE_301));
+    std::string data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_STRESS_TEST_0300, EVENT_CODE_301);
     std::string formId = data;
 
     // OnUpdate
-    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_STRESS_TEST_0300, 302));
-    data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_STRESS_TEST_0300, 302);
+    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_STRESS_TEST_0300, EVENT_CODE_302));
+    data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_STRESS_TEST_0300, EVENT_CODE_302);
     bool result = data == "true";
     EXPECT_TRUE(result);
     if (result) {
@@ -272,8 +272,8 @@ void FormStressTest::StressTest_0300()
     }
 
     // CastTempForm Result
-    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_STRESS_TEST_0300_01, 303));
-    data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_STRESS_TEST_0300_01, 303);
+    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_STRESS_TEST_0300_01, EVENT_CODE_303));
+    data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_STRESS_TEST_0300_01, EVENT_CODE_303);
     result = data == "true";
     EXPECT_TRUE(result);
     if (result) {
@@ -281,8 +281,8 @@ void FormStressTest::StressTest_0300()
     }
 
     // DeleteForm Result
-    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_STRESS_TEST_0300_02, 304));
-    data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_STRESS_TEST_0300_02, 304);
+    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_STRESS_TEST_0300_02, EVENT_CODE_304));
+    data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_STRESS_TEST_0300_02, EVENT_CODE_304);
     result = data == "true";
     EXPECT_TRUE(result);
     if (result) {
@@ -304,16 +304,16 @@ void FormStressTest::StressTest_1100()
 
     // AcquireForm
     std::string eventData = FORM_EVENT_REQ_STRESS_TEST_1100;
-    SystemTestFormUtil::PublishEvent(FORM_EVENT_REQ_STRESS_TEST_1100, 1100, eventData);
+    SystemTestFormUtil::PublishEvent(FORM_EVENT_REQ_STRESS_TEST_1100, EVENT_CODE_1100, eventData);
 
     // OnAcquired
-    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_STRESS_TEST_1100, 1101));
-    std::string data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_STRESS_TEST_1100, 1101);
+    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_STRESS_TEST_1100, EVENT_CODE_1101));
+    std::string data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_STRESS_TEST_1100, EVENT_CODE_1101);
     std::string formId = data;
 
     // OnUpdate
-    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_STRESS_TEST_1100, 1102));
-    data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_STRESS_TEST_1100, 1102);
+    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_STRESS_TEST_1100, EVENT_CODE_1102));
+    data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_STRESS_TEST_1100, EVENT_CODE_1102);
     bool result = data == "true";
     EXPECT_TRUE(result);
     if (result) {
@@ -321,8 +321,8 @@ void FormStressTest::StressTest_1100()
     }
 
     // NotifyInvisibleForms Result
-    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_STRESS_TEST_1100_01, 1103));
-    data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_STRESS_TEST_1100_01, 1103);
+    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_STRESS_TEST_1100_01, EVENT_CODE_1103));
+    data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_STRESS_TEST_1100_01, EVENT_CODE_1103);
     result = data == "true";
     EXPECT_TRUE(result);
     if (result) {
@@ -330,8 +330,8 @@ void FormStressTest::StressTest_1100()
     }
 
     // NotifyVisibleForms Result
-    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_STRESS_TEST_1100_02, 1104));
-    data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_STRESS_TEST_1100_02, 1104);
+    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_STRESS_TEST_1100_02, EVENT_CODE_1104));
+    data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_STRESS_TEST_1100_02, EVENT_CODE_1104);
     result = data == "true";
     EXPECT_TRUE(result);
     if (result) {
@@ -340,11 +340,11 @@ void FormStressTest::StressTest_1100()
 
     // DeleteForm
     eventData = formId;
-    SystemTestFormUtil::PublishEvent(FORM_EVENT_REQ_STRESS_TEST_1100_03, 1105, eventData);
+    SystemTestFormUtil::PublishEvent(FORM_EVENT_REQ_STRESS_TEST_1100_03, EVENT_CODE_1105, eventData);
 
     // DeleteForm Result
-    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_STRESS_TEST_1100_03, 1105));
-    data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_STRESS_TEST_1100_03, 1105);
+    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_STRESS_TEST_1100_03, EVENT_CODE_1105));
+    data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_STRESS_TEST_1100_03, EVENT_CODE_1105);
     result = data == "true";
     EXPECT_TRUE(result);
     if (result) {
@@ -366,16 +366,16 @@ void FormStressTest::StressTest_1300()
 
     // AcquireForm
     std::string eventData = FORM_EVENT_REQ_STRESS_TEST_1300;
-    SystemTestFormUtil::PublishEvent(FORM_EVENT_REQ_STRESS_TEST_1300, 1300, eventData);
+    SystemTestFormUtil::PublishEvent(FORM_EVENT_REQ_STRESS_TEST_1300, EVENT_CODE_1300, eventData);
 
     // OnAcquired
-    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_STRESS_TEST_1300, 1301));
-    std::string data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_STRESS_TEST_1300, 1301);
+    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_STRESS_TEST_1300, EVENT_CODE_1301));
+    std::string data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_STRESS_TEST_1300, EVENT_CODE_1301);
     std::string formId = data;
 
     // OnUpdate
-    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_STRESS_TEST_1300, 1302));
-    data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_STRESS_TEST_1300, 1302);
+    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_STRESS_TEST_1300, EVENT_CODE_1302));
+    data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_STRESS_TEST_1300, EVENT_CODE_1302);
     bool result = data == "true";
     EXPECT_TRUE(result);
     if (result) {
@@ -383,8 +383,8 @@ void FormStressTest::StressTest_1300()
     }
 
     // EnableUpdateForm Result
-    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_STRESS_TEST_1300_01, 1303));
-    data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_STRESS_TEST_1300_01, 1303);
+    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_STRESS_TEST_1300_01, EVENT_CODE_1303));
+    data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_STRESS_TEST_1300_01, EVENT_CODE_1303);
     result = data == "true";
     EXPECT_TRUE(result);
     if (result) {
@@ -392,8 +392,8 @@ void FormStressTest::StressTest_1300()
     }
 
     // DisableUpdateForm Result
-    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_STRESS_TEST_1300_02, 1304));
-    data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_STRESS_TEST_1300_02, 1304);
+    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_STRESS_TEST_1300_02, EVENT_CODE_1304));
+    data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_STRESS_TEST_1300_02, EVENT_CODE_1304);
     result = data == "true";
     EXPECT_TRUE(result);
     if (result) {
@@ -402,11 +402,11 @@ void FormStressTest::StressTest_1300()
 
     // DeleteForm
     eventData = formId;
-    SystemTestFormUtil::PublishEvent(FORM_EVENT_REQ_STRESS_TEST_1300_03, 1305, eventData);
+    SystemTestFormUtil::PublishEvent(FORM_EVENT_REQ_STRESS_TEST_1300_03, EVENT_CODE_1305, eventData);
 
     // DeleteForm Result
-    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_STRESS_TEST_1300_03, 1305));
-    data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_STRESS_TEST_1300_03, 1305);
+    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_STRESS_TEST_1300_03, EVENT_CODE_1305));
+    data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_STRESS_TEST_1300_03, EVENT_CODE_1305);
     result = data == "true";
     EXPECT_TRUE(result);
     if (result) {
@@ -428,11 +428,11 @@ void FormStressTest::StressTest_1700()
 
     // GetAllFormsInfo
     std::string eventData = FORM_EVENT_REQ_STRESS_TEST_1700;
-    SystemTestFormUtil::PublishEvent(FORM_EVENT_REQ_STRESS_TEST_1700, 1700, eventData);
+    SystemTestFormUtil::PublishEvent(FORM_EVENT_REQ_STRESS_TEST_1700, EVENT_CODE_1700, eventData);
 
     // GetAllFormsInfo Result
-    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_STRESS_TEST_1700, 1700));
-    std::string data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_STRESS_TEST_1700, 1700);
+    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_STRESS_TEST_1700, EVENT_CODE_1700));
+    std::string data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_STRESS_TEST_1700, EVENT_CODE_1700);
     bool result = data == "true";
     EXPECT_TRUE(result);
     if (result) {
@@ -440,8 +440,8 @@ void FormStressTest::StressTest_1700()
     }
 
     // GetFormsInfoByApp Result
-    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_STRESS_TEST_1700_01, 1701));
-    data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_STRESS_TEST_1700_01, 1701);
+    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_STRESS_TEST_1700_01, EVENT_CODE_1701));
+    data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_STRESS_TEST_1700_01, EVENT_CODE_1701);
     result = data == "true";
     EXPECT_TRUE(result);
     if (result) {
@@ -449,8 +449,8 @@ void FormStressTest::StressTest_1700()
     }
 
     // GetFormsInfoByModule Result
-    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_STRESS_TEST_1700_02, 1702));
-    data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_STRESS_TEST_1700_02, 1702);
+    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_STRESS_TEST_1700_02, EVENT_CODE_1702));
+    data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_STRESS_TEST_1700_02, EVENT_CODE_1702);
     result = data == "true";
     EXPECT_TRUE(result);
     if (result) {
@@ -472,11 +472,11 @@ void FormStressTest::StressTest_1800()
 
     // CheckFMSReady
     std::string eventData = FORM_EVENT_REQ_STRESS_TEST_1800;
-    SystemTestFormUtil::PublishEvent(FORM_EVENT_REQ_STRESS_TEST_1800, 1800, eventData);
+    SystemTestFormUtil::PublishEvent(FORM_EVENT_REQ_STRESS_TEST_1800, EVENT_CODE_1800, eventData);
 
     // CheckFMSReady Result
-    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_STRESS_TEST_1800, 1800));
-    std::string data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_STRESS_TEST_1800, 1800);
+    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_STRESS_TEST_1800, EVENT_CODE_1800));
+    std::string data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_STRESS_TEST_1800, EVENT_CODE_1800);
     bool result = data == "true";
     EXPECT_TRUE(result);
     if (result) {

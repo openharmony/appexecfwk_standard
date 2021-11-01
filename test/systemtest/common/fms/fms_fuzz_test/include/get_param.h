@@ -30,7 +30,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-//class TestDumper;
 bool GetBoolParam();
 uint8_t GetU8Param();
 unsigned int GetUIntParam();

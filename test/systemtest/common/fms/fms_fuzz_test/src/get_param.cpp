@@ -19,18 +19,22 @@
 #include <random>
 
 #include "ability.h"
-#include "../include/get_param.h"
 #include "values_bucket.h"
+#include "../include/get_param.h"
 
 using namespace std;
 using namespace OHOS::AppExecFwk;
 using Uri = OHOS::Uri;
 namespace OHOS {
 namespace AppExecFwk {
+const int zero = 0;
+const int two = 2;
+const int CHAR_MIN = -128;
+const int CHAR_MAX = 127; 
 bool GetBoolParam()
 {
     bool param;
-    if (GetIntParam() % 2 == 0) {
+    if (GetIntParam() % two == zero) {
         param = true;
     } else {
         param = false;
@@ -192,7 +196,7 @@ float GetFloatParam()
 char GetCharParam()
 {
     std::random_device rd;
-    static uniform_int_distribution<> u(-128, 127);
+    static uniform_int_distribution<> u(CHAR_MIN, CHAR_MAX);
     static default_random_engine e(rd());
     char param = u(e);
     return param;
@@ -221,13 +225,13 @@ char *GetCharArryParam()
 
         int ret = strcpy_s(param, len, strparam.c_str());
         if (ret == 0) {
-            return param;    
+            return param;
         } else {
             return nullptr;
         }
     } else {
         return nullptr;
-    }  
+    }
 }
 
 string GetStringParam()

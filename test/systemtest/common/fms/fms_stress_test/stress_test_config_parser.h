@@ -23,14 +23,14 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-const std::string STRESS_TEST_CONFIG_FILE_PATH{"./fms_stress_test_config.json"};
+const std::string STRESS_TEST_CONFIG_FILE_PATH {"./fms_stress_test_config.json"};
 
-const std::string STRESS_TEST_EXECUTION_TIMES_KEY{"ExecutionTimes"};
-const std::string STRESS_TEST_SLEEP_TIME_KEY{"SleepTime"};
+const std::string STRESS_TEST_EXECUTION_TIMES_KEY {"ExecutionTimes"};
+const std::string STRESS_TEST_SLEEP_TIME_KEY {"SleepTime"};
 
 struct StressTestLevel {
-    int32_t executionTimesLevel{1};
-    int32_t sleepTime{3};
+    int32_t executionTimesLevel {1};
+    int32_t sleepTime {3};
 };
 
 class StressTestConfigParser {
