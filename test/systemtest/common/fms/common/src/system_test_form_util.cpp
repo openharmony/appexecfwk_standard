@@ -334,7 +334,7 @@ int SystemTestFormUtil::RemoveStack(
 const std::string MSG_SUCCESS = "[SUCCESS]";
 void SystemTestFormUtil::Install(const std::string &bundleFilePath, const InstallFlag installFlag)
 {
-    std::string bundlePath = "/system/vendor/" + bundleFilePath + ".hap";
+    std::string bundlePath = "/data/vendor/" + bundleFilePath + ".hap";
     std::string installMsg = "";
     sptr<IBundleInstaller> installerProxy = GetInstallerProxy();
     if (!installerProxy) {

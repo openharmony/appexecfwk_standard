@@ -11,14 +11,11 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
  
-abilityName=$1
-bundleName=$2
-sleepSeconds=20
-MaxlinesInOneLoop=22000
-linesInOnLoop=5000
+ 
+sleepSeconds=10
 loop=1
-if [ -n "$3" ]; then
-    loopKey=$3
+if [ -n "$1" ]; then
+    loopKey=$1
     loop=$((10#${loopKey}))
 fi
 echo "loop times: ${loop}"
@@ -30,14 +27,10 @@ do
 
     echo "sleep ${sleepSeconds} seconds"
     sleep ${sleepSeconds}
-
-    echo "check whether the FMS restart"
-    /system/bin/aa start -d aa -a ${abilityName} -b ${bundleName};hilog -a ${MaxlinesInOneLoop} | tail -n ${linesInOnLoop}>>log_loop${loop}.txt
+    pgrep foundation
 
     if [ $? -eq 0 ]; then
         echo "loop ${i}: FMS restart succeed"
-        echo "clean host"
-        killall -9 ${bundleName}
     else
         echo "loop ${i}: FMS restart failed"
         exit
