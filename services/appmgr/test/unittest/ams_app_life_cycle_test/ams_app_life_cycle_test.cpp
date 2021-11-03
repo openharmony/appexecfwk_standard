@@ -1214,14 +1214,12 @@ HWTEST_F(AmsAppLifeCycleTest, Process_009, TestSize.Level1)
 HWTEST_F(AmsAppLifeCycleTest, Process_010, TestSize.Level1)
 {
     auto testAppRecord = PrepareLoadTestAbilityAndApp(ApplicationState::APP_STATE_BACKGROUND);
-    EXPECT_CALL(*(testAppRecord.mockAppScheduler_), ScheduleTerminateApplication()).Times(1);
     serviceInner_->AbilityTerminated(GetMockToken());
-    auto abilityRecord = testAppRecord.appRecord_->GetAbilityRunningRecordByToken(GetMockToken());
-    EXPECT_EQ(nullptr, abilityRecord);
-
     serviceInner_->ApplicationTerminated(testAppRecord.appRecord_->GetRecordId());
     auto appRecord = serviceInner_->GetAppRunningRecordByAppRecordId(testAppRecord.appRecord_->GetRecordId());
-    EXPECT_EQ(nullptr, appRecord);
+    if (appRecord) {
+        EXPECT_FALSE(appRecord->IsLauncherApp());
+    }
 }
 
 /*
