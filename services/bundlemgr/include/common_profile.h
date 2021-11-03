@@ -189,13 +189,13 @@ const std::string BUNDLE_MODULE_PROFILE_FORMS_DEFAULT_DIMENSION = "defaultDimens
 const std::string BUNDLE_MODULE_PROFILE_FORMS_LANDSCAPE_LAYOUTS = "landscapeLayouts";
 const std::string BUNDLE_MODULE_PROFILE_FORMS_PORTRAIT_LAYOUTS = "portraitLayouts";
 const std::string BUNDLE_MODULE_PROFILE_FORMS_UPDATEENABLED = "updateEnabled";
-const std::string BUNDLE_MODULE_PROFILE_FORMS_SCHEDULED_UPDATE_TIME = "scheduledUpateTime";
+const std::string BUNDLE_MODULE_PROFILE_FORMS_SCHEDULED_UPDATE_TIME = "scheduledUpdateTime";
 const std::string BUNDLE_MODULE_PROFILE_FORMS_UPDATE_DURATION = "updateDuration";
 const std::string BUNDLE_MODULE_PROFILE_FORMS_DEEP_LINK = "deepLink";
 const std::string BUNDLE_MODULE_PROFILE_FORMS_JS_COMPONENT_NAME = "jsComponentName";
 const std::string BUNDLE_MODULE_PROFILE_FORMS_VALUE = "value";
 const std::string BUNDLE_MODULE_PROFILE_FORMS_FORM_CONFIG_ABILITY = "formConfigAbility";
-const std::string BUNDLE_MODULE_PROFILE_FORMS_FORM_VISIBLE_NOTIFY = "formEnabled";
+const std::string BUNDLE_MODULE_PROFILE_FORMS_FORM_VISIBLE_NOTIFY = "formVisibleNotify";
 const std::string BUNDLE_MODULE_PROFILE_FORMS_LAYOUT = "layout";
 // sub BUNDLE_MODULE_PROFILE_KEY_JS
 const std::string BUNDLE_MODULE_PROFILE_KEY_PAGES = "pages";
