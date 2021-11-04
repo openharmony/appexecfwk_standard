@@ -83,6 +83,7 @@ struct App {
     std::string vendor;
     Version version;
     ApiVersion apiVersion;
+    bool debug = false;
 };
 
 struct ReqVersion {
@@ -403,6 +404,14 @@ void from_json(const nlohmann::json &jsonObject, App &app)
         BUNDLE_APP_PROFILE_KEY_VENDOR,
         app.vendor,
         JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<bool>(jsonObject,
+        jsonObjectEnd,
+        BUNDLE_APP_PROFILE_KEY_DEBUG,
+        app.debug,
+        JsonType::BOOLEAN,
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
@@ -1861,6 +1870,7 @@ bool TransformToInfo(const ProfileReader::ConfigJson &configJson, ApplicationInf
         applicationInfo.supportedModes = 0;
     }
     applicationInfo.process = configJson.deveicConfig.defaultDevice.process;
+    applicationInfo.debug = configJson.app.debug;
     applicationInfo.enabled = true;
     return true;
 }

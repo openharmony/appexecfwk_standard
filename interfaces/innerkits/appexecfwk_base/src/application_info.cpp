@@ -48,6 +48,7 @@ bool ApplicationInfo::ReadFromParcel(Parcel &parcel)
     isSystemApp = parcel.ReadBool();
     isLauncherApp = parcel.ReadBool();
     enabled = parcel.ReadBool();
+    debug = parcel.ReadBool();
     supportedModes = parcel.ReadInt32();
     labelId = parcel.ReadInt32();
     iconId = parcel.ReadInt32();
@@ -107,6 +108,7 @@ bool ApplicationInfo::Marshalling(Parcel &parcel) const
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, isSystemApp);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, isLauncherApp);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, enabled);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, debug);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, supportedModes);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, labelId);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, iconId);
@@ -173,6 +175,7 @@ void to_json(nlohmann::json &jsonObject, const ApplicationInfo &applicationInfo)
         {"isSystemApp", applicationInfo.isSystemApp},
         {"isLauncherApp", applicationInfo.isLauncherApp},
         {"enabled", applicationInfo.enabled},
+        {"debug", applicationInfo.debug},
         {"supportedModes", applicationInfo.supportedModes},
         {"process", applicationInfo.process},
         {"permissions", applicationInfo.permissions},
@@ -202,6 +205,7 @@ void from_json(const nlohmann::json &jsonObject, ApplicationInfo &applicationInf
     applicationInfo.isSystemApp = jsonObject.at("isSystemApp").get<bool>();
     applicationInfo.isLauncherApp = jsonObject.at("isLauncherApp").get<bool>();
     applicationInfo.enabled = jsonObject.at("enabled").get<bool>();
+    applicationInfo.debug = jsonObject.at("debug").get<bool>();
     applicationInfo.supportedModes = jsonObject.at("supportedModes").get<int>();
     applicationInfo.process = jsonObject.at("process").get<std::string>();
     applicationInfo.permissions = jsonObject.at("permissions").get<std::vector<std::string>>();
@@ -233,6 +237,7 @@ void ApplicationInfo::ConvertToCompatibleApplicationInfo(CompatibleApplicationIn
     compatibleApplicationInfo.moduleInfos = moduleInfos;
     compatibleApplicationInfo.supportedModes = supportedModes;
     compatibleApplicationInfo.enabled = enabled;
+    compatibleApplicationInfo.debug = debug;
 }
 
 }  // namespace AppExecFwk
