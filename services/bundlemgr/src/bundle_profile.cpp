@@ -1776,7 +1776,7 @@ bool CheckModuleInfosIsValid(ProfileReader::ConfigJson &configJson)
         APP_LOGE("module package invalid");
         return false;
     }
-    if (configJson.module.name.empty()) {
+    if (configJson.app.bundleName != Constants::OHOS_GLOBAL_SYSTEMRES && configJson.module.name.empty()) {
         APP_LOGE("module name invalid");
         return false;
     }

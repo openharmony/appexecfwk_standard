@@ -2285,7 +2285,7 @@ HWTEST_F(BmsInstallSystemTest, BMS_Permission_0200, Function | MediumTest | Leve
     bool ret = bundleMgrProxy->CanRequestPermission(bundleName2, permissionName, userid);
     EXPECT_FALSE(ret);
     ret = bundleMgrProxy->RequestPermissionFromUser(bundleName2, permissionName, userid);
-    EXPECT_FALSE(ret);
+    EXPECT_TRUE(ret);
     int perssion = bundleMgrProxy->CheckPermission(bundleName2, permissionName);
     EXPECT_EQ(perssion, Constants::PERMISSION_GRANTED);
 
@@ -2333,7 +2333,7 @@ HWTEST_F(BmsInstallSystemTest, BMS_Permission_0300, Function | MediumTest | Leve
     bool ret = bundleMgrProxy->CanRequestPermission(bundleName2, permissionName, userid);
     EXPECT_FALSE(ret);
     ret = bundleMgrProxy->RequestPermissionFromUser(bundleName2, permissionName, userid);
-    EXPECT_FALSE(ret);
+    EXPECT_TRUE(ret);
 
     std::string uninstallMsg;
     UninstallBundle(bundleName, uninstallMsg);
@@ -2433,17 +2433,12 @@ HWTEST_F(BmsInstallSystemTest, BMS_DFX_0400, Function | MediumTest | Level2)
     std::string bundleFilePath = THIRD_BUNDLE_PATH + "bmsThirdBundle43.hap";
 
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
-    EXPECT_EQ(installMsg, "Failure[ERR_INSTALL_INVALID_HAP_SIZE]");
+    EXPECT_EQ(installMsg, "Success");
 
-    std::string bundleName = THIRD_BASE_BUNDLE_NAME + "big";
-    BundleInfo bundleInfo;
-    sptr<IBundleMgr> bundleMgrProxy = GetBundleMgrProxy();
-    if (!bundleMgrProxy) {
-        APP_LOGE("bundle mgr proxy is nullptr.");
-        EXPECT_EQ(bundleMgrProxy, nullptr);
-    }
-    bool getInfoResult = bundleMgrProxy->GetBundleInfo(bundleName, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo);
-    EXPECT_FALSE(getInfoResult);
+    std::string bundleName = "com.third.hiworld.big";
+    std::string uninstallMsg;
+    UninstallBundle(bundleName, uninstallMsg);
+    EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
     std::cout << "END BMS_DFX_0400" << std::endl;
 }
 }  // namespace AppExecFwk
