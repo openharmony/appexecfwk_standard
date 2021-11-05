@@ -25,8 +25,7 @@ namespace OHOS {
 namespace AppExecFwk {
 using namespace AAFwk;
 
-class mock_ability_mgr_host
-{
+class mock_ability_mgr_host {
 public:
     mock_ability_mgr_host() {};
     ~mock_ability_mgr_host() {};
