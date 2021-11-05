@@ -44,6 +44,7 @@ const std::string BUNDLE_APP_PROFILE_KEY_BUNDLE_NAME = "bundleName";
 const std::string BUNDLE_APP_PROFILE_KEY_VENDOR = "vendor";
 const std::string BUNDLE_APP_PROFILE_KEY_VERSION = "version";
 const std::string BUNDLE_APP_PROFILE_KEY_API_VERSION = "apiVersion";
+const std::string BUNDLE_APP_PROFILE_KEY_DEBUG = "debug";
 // sub BUNDLE_APP_PROFILE_KEY_VERSION
 const std::string BUNDLE_APP_PROFILE_KEY_CODE = "code";
 // sub BUNDLE_APP_PROFILE_KEY_API_VERSION
@@ -219,7 +220,7 @@ const std::string BUNDLE_MODULE_PROFILE_KEY_TARGET_BUNDLE = "targetBundle";
 const uint32_t VALUE_HOME_SCREEN = 1 << 0;
 // 000010 represents supporting search box
 const uint32_t VALUE_SEARCHBOX = 1 << 1;
-const uint32_t MAX_USAGE_RECORD_SIZE = 1000;
+const int32_t MAX_USAGE_RECORD_SIZE = 1000;
 
 
 const std::string KEY_HOME_SCREEN = "homeScreen";
