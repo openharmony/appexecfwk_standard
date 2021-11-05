@@ -16,13 +16,20 @@
 #ifndef FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_TEST_MOCK_MOCK_APP_MGR_HOST_H
 #define FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_TEST_MOCK_MOCK_APP_MGR_HOST_H
 
-#include "ability_manager_interface.h"
 #include <iremote_object.h>
 #include <iremote_stub.h>
+
+#include "ability_manager_interface.h"
 
 namespace OHOS {
 namespace AppExecFwk {
 using namespace AAFwk;
+class mock_ability_mgr_host {
+public:
+    mock_ability_mgr_host() {};
+    ~mock_ability_mgr_host() {};
+};
+
 class MockAbilityMgrStub : public IRemoteStub<AAFwk::IAbilityManager> {
 public:
     using Uri = OHOS::Uri;
@@ -71,7 +78,7 @@ public:
     {
         return 0;
     }
-    virtual int AbilityTransitionDone(const sptr<IRemoteObject> &token, int state) override
+    virtual int AbilityTransitionDone(const sptr<IRemoteObject> &token, int state, const PacMap &saveData) override
     {
         return 0;
     }
@@ -278,7 +285,6 @@ public:
         return 0;
     }
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_TEST_MOCK_MOCK_APP_MGR_HOST_H

@@ -45,9 +45,10 @@ static constexpr int WAIT_TIME = 1;
 static constexpr int WAIT_LAUNCHER_TIME = 5;
 static constexpr int WAIT_SETUP_TIME = 1;
 static constexpr int WAIT_TEARDOWN_TIME = 1;
+static constexpr int WAIT_ONACTIVE_TIME = 2;
 static string g_eventMessage = "";
 static string g_tempDataStr = "";
-}
+}  // namespace
 
 std::vector<std::string> eventList = {
     g_EVENT_RESP_MAIN_LIFECYCLE,
@@ -164,6 +165,7 @@ HWTEST_F(AmsConfigurationUpdatedTest, AMS_UpdateConfiguration_0100, Function | M
     g_tempDataStr = "OnStartOnActive";
     EXPECT_EQ(TestWaitCompleted(event, "OnStartOnActive", MAIN_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
 
+    sleep(WAIT_ONACTIVE_TIME);
     DummyConfiguration mDummyConfiguration("orientation");
     abilityMgrService->UpdateConfiguration(mDummyConfiguration);
     abilityMgrService->UpdateConfiguration(mDummyConfiguration);
@@ -193,6 +195,7 @@ HWTEST_F(AmsConfigurationUpdatedTest, AMS_UpdateConfiguration_0200, Function | M
     g_tempDataStr = "OnStartOnActive";
     EXPECT_EQ(TestWaitCompleted(event, "OnStartOnActive", SECOND_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
 
+    sleep(WAIT_ONACTIVE_TIME);
     DummyConfiguration mDummyConfiguration("locale");
     abilityMgrService->UpdateConfiguration(mDummyConfiguration);
     abilityMgrService->UpdateConfiguration(mDummyConfiguration);
@@ -223,6 +226,7 @@ HWTEST_F(AmsConfigurationUpdatedTest, AMS_UpdateConfiguration_0300, Function | M
     g_tempDataStr = "OnStartOnActive";
     EXPECT_EQ(TestWaitCompleted(event, "OnStartOnActive", THIRD_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
 
+    sleep(WAIT_ONACTIVE_TIME);
     DummyConfiguration mDummyConfiguration("layout");
     abilityMgrService->UpdateConfiguration(mDummyConfiguration);
     abilityMgrService->UpdateConfiguration(mDummyConfiguration);
@@ -252,6 +256,7 @@ HWTEST_F(AmsConfigurationUpdatedTest, AMS_UpdateConfiguration_0400, Function | M
     g_tempDataStr = "OnStartOnActive";
     EXPECT_EQ(TestWaitCompleted(event, "OnStartOnActive", FOURTH_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
 
+    sleep(WAIT_ONACTIVE_TIME);
     DummyConfiguration mDummyConfiguration("density#fontSize#");
     abilityMgrService->UpdateConfiguration(mDummyConfiguration);
     abilityMgrService->UpdateConfiguration(mDummyConfiguration);
@@ -281,6 +286,7 @@ HWTEST_F(AmsConfigurationUpdatedTest, AMS_UpdateConfiguration_0500, Function | M
     g_tempDataStr = "OnStartOnActive";
     EXPECT_EQ(TestWaitCompleted(event, "OnStartOnActive", FIFTH_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
 
+    sleep(WAIT_ONACTIVE_TIME);
     DummyConfiguration mDummyConfiguration("fontSize#density");
     abilityMgrService->UpdateConfiguration(mDummyConfiguration);
     abilityMgrService->UpdateConfiguration(mDummyConfiguration);
@@ -310,6 +316,7 @@ HWTEST_F(AmsConfigurationUpdatedTest, AMS_UpdateConfiguration_0600, Function | M
     g_tempDataStr = "OnStartOnActive";
     EXPECT_EQ(TestWaitCompleted(event, "OnStartOnActive", MAIN_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
 
+    sleep(WAIT_ONACTIVE_TIME);
     DummyConfiguration mDummyConfiguration("locale#layout#fontSize#density");
     abilityMgrService->UpdateConfiguration(mDummyConfiguration);
     abilityMgrService->UpdateConfiguration(mDummyConfiguration);
@@ -344,6 +351,7 @@ HWTEST_F(AmsConfigurationUpdatedTest, AMS_UpdateConfiguration_0700, Function | M
     g_tempDataStr = "OnStartOnActive";
     EXPECT_EQ(TestWaitCompleted(event, "OnStartOnActive", SECOND_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
 
+    sleep(WAIT_ONACTIVE_TIME);
     DummyConfiguration mDummyConfiguration("layout#fontSize#density");
     abilityMgrService->UpdateConfiguration(mDummyConfiguration);
     abilityMgrService->UpdateConfiguration(mDummyConfiguration);
@@ -378,6 +386,7 @@ HWTEST_F(AmsConfigurationUpdatedTest, AMS_UpdateConfiguration_0800, Function | M
     g_tempDataStr = "OnStartOnActive";
     EXPECT_EQ(TestWaitCompleted(event, "OnStartOnActive", SIXTH_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
 
+    sleep(WAIT_ONACTIVE_TIME);
     DummyConfiguration mDummyConfiguration("orientation");
     abilityMgrService->UpdateConfiguration(mDummyConfiguration);
 
@@ -411,6 +420,7 @@ HWTEST_F(AmsConfigurationUpdatedTest, AMS_UpdateConfiguration_0900, Function | M
     g_tempDataStr = "OnStartOnActive";
     EXPECT_EQ(TestWaitCompleted(event, "OnStartOnActive", SIXTH_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
 
+    sleep(WAIT_ONACTIVE_TIME);
     DummyConfiguration mDummyConfiguration("orientation#locale");
     abilityMgrService->UpdateConfiguration(mDummyConfiguration);
 
@@ -444,6 +454,7 @@ HWTEST_F(AmsConfigurationUpdatedTest, AMS_UpdateConfiguration_1000, Function | M
     g_tempDataStr = "OnStartOnActive";
     EXPECT_EQ(TestWaitCompleted(event, "OnStartOnActive", SIXTH_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
 
+    sleep(WAIT_ONACTIVE_TIME);
     DummyConfiguration mDummyConfiguration("orientation#locale#layout");
     abilityMgrService->UpdateConfiguration(mDummyConfiguration);
 
@@ -477,6 +488,7 @@ HWTEST_F(AmsConfigurationUpdatedTest, AMS_UpdateConfiguration_1100, Function | M
     g_tempDataStr = "OnStartOnActive";
     EXPECT_EQ(TestWaitCompleted(event, "OnStartOnActive", SIXTH_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
 
+    sleep(WAIT_ONACTIVE_TIME);
     DummyConfiguration mDummyConfiguration("orientation#locale#layout#fontSize");
     abilityMgrService->UpdateConfiguration(mDummyConfiguration);
 
@@ -510,6 +522,7 @@ HWTEST_F(AmsConfigurationUpdatedTest, AMS_UpdateConfiguration_1200, Function | M
     g_tempDataStr = "OnStartOnActive";
     EXPECT_EQ(TestWaitCompleted(event, "OnStartOnActive", SIXTH_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
 
+    sleep(WAIT_ONACTIVE_TIME);
     DummyConfiguration mDummyConfiguration("orientation#locale#layout#fontSize#density");
     abilityMgrService->UpdateConfiguration(mDummyConfiguration);
 
@@ -524,48 +537,6 @@ HWTEST_F(AmsConfigurationUpdatedTest, AMS_UpdateConfiguration_1200, Function | M
     GTEST_LOG_(INFO) << "\nAmsConfigurationUpdatedTest AMS_UpdateConfiguration_1200 end=========<";
 }
 
-/**
- * @tc.number    : 1300
- * @tc.name      : AMS_UpdateConfiguration_1300
- * @tc.desc      : Verify whether the results of the orientation function of the system configuration concerned by
- * capability are correct.
- */
-
-HWTEST_F(AmsConfigurationUpdatedTest, AMS_UpdateConfiguration_1300, Function | MediumTest | Level1)
-{
-    GTEST_LOG_(INFO) << "==========>\nAmsConfigurationUpdatedTest AMS_UpdateConfiguration_1300 start";
-    MAP_STR_STR params;
-    Want want = STAbilityUtil::MakeWant("device", MAIN_ABILITY, KIT_BUNDLE_NAME, params);
-    // start first ability
-    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
-    GTEST_LOG_(INFO) << "\nStartAbility ====>> " << eCode;
-
-    g_tempDataStr = "OnStartOnActive";
-    EXPECT_EQ(TestWaitCompleted(event, "OnStartOnActive", MAIN_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
-
-    Want wantEntity;
-    wantEntity.AddEntity(Want::FLAG_HOME_INTENT_FROM_SYSTEM);
-    STAbilityUtil::StartAbility(wantEntity, abilityMgrService);
-    GTEST_LOG_(INFO) << "====>Want::FLAG_HOME_INTENT_FROM_SYSTEM";
-    DummyConfiguration mDummyConfiguration("orientation");
-    abilityMgrService->UpdateConfiguration(mDummyConfiguration);
-    abilityMgrService->UpdateConfiguration(mDummyConfiguration);
-    abilityMgrService->UpdateConfiguration(mDummyConfiguration);
-    abilityMgrService->UpdateConfiguration(mDummyConfiguration);
-    abilityMgrService->UpdateConfiguration(mDummyConfiguration);
-
-    want = STAbilityUtil::MakeWant("device", MAIN_ABILITY, KIT_BUNDLE_NAME, params);
-    eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
-    GTEST_LOG_(INFO) << "\nStartAbility S ====>> " << eCode;
-
-    g_tempDataStr = "OnInactiveOnBackgroundOnForegroundOnActive";
-    EXPECT_EQ(TestWaitCompleted(event, "OnInactiveOnBackgroundOnForegroundOnActive", MAIN_ABILITY_CODE), 0);
-
-    g_tempDataStr = "Updated";
-    EXPECT_EQ(TestWaitCompleted(event, "Updated", MAIN_ABILITY_CODE), 0);
-
-    GTEST_LOG_(INFO) << "\nAmsConfigurationUpdatedTest AMS_UpdateConfiguration_1300 end=========<";
-}
 /**
  * @tc.number    : 1400
  * @tc.name      : AMS_UpdateConfiguration_1400
@@ -585,6 +556,7 @@ HWTEST_F(AmsConfigurationUpdatedTest, AMS_UpdateConfiguration_1400, Function | M
     g_tempDataStr = "OnStartOnActive";
     EXPECT_EQ(TestWaitCompleted(event, "OnStartOnActive", MAIN_ABILITY_CODE), 0);
 
+    sleep(WAIT_ONACTIVE_TIME);
     DummyConfiguration mDummyConfiguration("orientation#locale");
     abilityMgrService->UpdateConfiguration(mDummyConfiguration);
     abilityMgrService->UpdateConfiguration(mDummyConfiguration);
