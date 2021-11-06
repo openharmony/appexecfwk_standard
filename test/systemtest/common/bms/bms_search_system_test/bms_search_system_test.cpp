@@ -41,6 +41,11 @@ const std::string ERROR_UNINSTALL_FAILED = "uninstall failed!";
 const std::string MSG_SUCCESS = "[SUCCESS]";
 const std::string OPERATION_FAILED = "Failure";
 const std::string OPERATION_SUCCESS = "Success";
+static constexpr int INDEX_TWO = 2;
+static constexpr int INDEX_THREE = 3;
+static constexpr int INDEX_SEVEN = 7;
+static constexpr int INDEX_EIGHT = 8;
+static constexpr int INDEX_NINE = 9;
 }  // namespace
 
 namespace OHOS {
@@ -731,7 +736,7 @@ HWTEST_F(BmsSearchSystemTest, BMS_Search_1500, Function | MediumTest | Level1)
         EXPECT_EQ(bundleMgrProxy, nullptr);
     }
     std::string installResult;
-    for (int i = 7; i < 9; i++) {
+    for (int i = INDEX_SEVEN; i < INDEX_NINE; i++) {
         std::vector<std::string> resvec;
         std::string hapFilePath = THIRD_BUNDLE_PATH + "bmsThirdBundle" + std::to_string(i) + ".hap";
         Install(hapFilePath, InstallFlag::NORMAL, resvec);
@@ -742,7 +747,7 @@ HWTEST_F(BmsSearchSystemTest, BMS_Search_1500, Function | MediumTest | Level1)
     std::vector<BundleInfo> bundleInfos;
     bool getInfoResult = bundleMgrProxy->GetBundleInfos(BundleFlag::GET_BUNDLE_DEFAULT, bundleInfos);
     EXPECT_TRUE(getInfoResult);
-    for (int i = 2; i <= 3; i++) {
+    for (int i = INDEX_TWO; i <= INDEX_THREE; i++) {
         std::string appName = BASE_BUNDLE_NAME + std::to_string(i);
         bool queryResult = QueryJsonFile(appName);
         EXPECT_TRUE(queryResult);
@@ -755,6 +760,15 @@ HWTEST_F(BmsSearchSystemTest, BMS_Search_1500, Function | MediumTest | Level1)
         }
         EXPECT_TRUE(isSubStrExist);
     }
+    std::vector<std::string> resvec;
+    std::string bundleName = BASE_BUNDLE_NAME + "2";
+    Uninstall(bundleName, resvec);
+    EXPECT_EQ(commonTool.VectorToStr(resvec), "Success");
+    resvec.clear();
+    bundleName = BASE_BUNDLE_NAME + "3";
+    Uninstall(bundleName, resvec);
+    EXPECT_EQ(commonTool.VectorToStr(resvec), "Success");
+    resvec.clear();
     std::cout << "END BMS_SEARCH_1500" << std::endl;
 }
 
@@ -794,9 +808,18 @@ HWTEST_F(BmsSearchSystemTest, BMS_Search_1700, Function | MediumTest | Level1)
         APP_LOGE("bundle mgr proxy is nullptr.");
         EXPECT_EQ(bundleMgrProxy, nullptr);
     }
-    std::string installResult;
+    CommonTool commonTool;
+    for (int i = INDEX_SEVEN; i < INDEX_NINE; i++) {
+        std::string installResult;
+        std::vector<std::string> resvec;
+        std::string hapFilePath = THIRD_BUNDLE_PATH + "bmsThirdBundle" + std::to_string(i) + ".hap";
+        Install(hapFilePath, InstallFlag::NORMAL, resvec);
+        installResult = commonTool.VectorToStr(resvec);
+        EXPECT_EQ(installResult, "Success") << "install fail!";
+        resvec.clear();
+    }
     int userId = Constants::DEFAULT_USERID;
-    for (int i = 7; i <= 8; i++) {
+    for (int i = INDEX_SEVEN; i <= INDEX_EIGHT; i++) {
         std::vector<std::string> resvec;
         std::string hapFilePath = THIRD_BUNDLE_PATH + "bmsThirdBundle" + std::to_string(i) + ".hap";
         std::string appName = BASE_BUNDLE_NAME + std::to_string(i - 5);
@@ -816,6 +839,13 @@ HWTEST_F(BmsSearchSystemTest, BMS_Search_1700, Function | MediumTest | Level1)
             }
         }
         EXPECT_TRUE(isSubStrExist);
+    }
+    for (int i = INDEX_TWO; i <= INDEX_THREE; i++) {
+        std::vector<std::string> resvec;
+        std::string appName = BASE_BUNDLE_NAME + std::to_string(i);
+        Uninstall(appName, resvec);
+        EXPECT_EQ(commonTool.VectorToStr(resvec), "Success") << "uninstall fail!";
+        resvec.clear();
     }
     std::cout << "END BMS_SEARCH_1700" << std::endl;
 }
@@ -906,13 +936,20 @@ HWTEST_F(BmsSearchSystemTest, BMS_Search_2100, Function | MediumTest | Level1)
     CommonTool commonTool;
     std::vector<std::string> resvec;
     sptr<IBundleMgr> bundleMgrProxy = GetBundleMgrProxy();
+    for (int i = INDEX_SEVEN; i < INDEX_NINE; i++) {
+        std::string installResult;
+        std::string hapFilePath = THIRD_BUNDLE_PATH + "bmsThirdBundle" + std::to_string(i) + ".hap";
+        Install(hapFilePath, InstallFlag::NORMAL, resvec);
+        installResult = commonTool.VectorToStr(resvec);
+        EXPECT_EQ(installResult, "Success") << "install fail!";
+        resvec.clear();
+    }
     std::string hapFilePath = THIRD_BUNDLE_PATH + "bmsThirdBundle7.hap";
     std::string firstBundleName = BASE_BUNDLE_NAME + "2";
 
     bool queryResult = QueryJsonFile(firstBundleName);
     EXPECT_TRUE(queryResult);
 
-    resvec.clear();
     std::string hapFilePath2 = THIRD_BUNDLE_PATH + "bmsThirdBundle8.hap";
     std::string secondBundleName = BASE_BUNDLE_NAME + "3";
 
@@ -920,7 +957,7 @@ HWTEST_F(BmsSearchSystemTest, BMS_Search_2100, Function | MediumTest | Level1)
     EXPECT_TRUE(queryResult);
 
     bundleMgrProxy->CheckPublicKeys(firstBundleName, secondBundleName);
-    for (int32_t i = 2; i <= 3; i++) {
+    for (int32_t i = INDEX_TWO; i <= INDEX_THREE; i++) {
         std::string bundleName = BASE_BUNDLE_NAME + std::to_string(i);
         std::vector<std::string> resvec;
         Uninstall(bundleName, resvec);
@@ -1341,7 +1378,7 @@ HWTEST_F(BmsSearchSystemTest, BMS_Search_3700, Function | MediumTest | Level1)
     EXPECT_EQ(secondinstallResult, "Success") << "install fail!";
 
     bundleMgrProxy->ClearBundleStatusCallback(firstBundleStatusCallback);
-    for (int32_t i = 2; i <= 3; i++) {
+    for (int32_t i = INDEX_TWO; i <= INDEX_THREE; i++) {
         std::string bundleName = BASE_BUNDLE_NAME + std::to_string(i);
         std::vector<std::string> resvec;
         Uninstall(bundleName, resvec);

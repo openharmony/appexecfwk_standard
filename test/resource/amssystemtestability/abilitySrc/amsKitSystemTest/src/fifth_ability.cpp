@@ -614,12 +614,17 @@ void FifthAbility::WantParamsMarshallingCase7(int code)
 {
     std::string key = "key";
     long value = 9999L;
+    std::string strValue = "9999";
     WantParams wParams;
     wParams.SetParam(key, Long::Box(value));
     Parcel in;
     wParams.Marshalling(in);
     WantParams *wantParamsOut = WantParams::Unmarshalling(in);
-    bool result = (Long::Unbox(ILong::Query(wantParamsOut->GetParam(key))) == value);
+    #ifdef WANT_PARAM_USE_LONG
+        bool result = (Long)::Unbox(ILong::Query(wantParamsOut->GetParam(key))) == value);
+    #else
+        bool result = (String::Unbox(IString::Query(wantParamsOut->GetParam(key))) == strValue);
+    #endif
     if (wantParamsOut) {
         delete wantParamsOut;
     }
@@ -816,6 +821,7 @@ void FifthAbility::WantParamsMarshallingCase16(int code)
 {
     std::string key = "key";
     std::vector<long> value = {100L, 200L, 300L, 400L};
+    std::vector<std::string> strValue = {"100", "200", "300", "400"};
 
     std::vector<long>::size_type size = value.size();
     sptr<IArray> ao = new Array(size, g_IID_ILong);
@@ -826,10 +832,17 @@ void FifthAbility::WantParamsMarshallingCase16(int code)
     Parcel in;
     wParams.Marshalling(in);
     WantParams *wantParamsOut = WantParams::Unmarshalling(in);
-    std::vector<long> getParamValue;
-    sptr<IArray> getParamAo = IArray::Query(wantParamsOut->GetParam(key));
-    FillArray<long, Long, ILong>(getParamAo, getParamValue);
-    bool result = (value == getParamValue);
+    #ifdef WANT_PARAM_USE_LONG
+        std::vector<long> getParamValue;
+        sptr<IArray> getParamAo = IArray::Query(wantParamsOut->GetParam(key));
+        FillArray<long, Long, ILong>(getParamAo, getParamValue);
+        bool result = (value == getParamValue);
+    #else
+        std::vector<std::string> getParamValue;
+        sptr<IArray> getParamAo = IArray::Query(wantParamsOut->GetParam(key));
+        FillArray<std::string, String, IString>(getParamAo, getParamValue);
+        bool result = (strValue == getParamValue);
+    #endif
     if (wantParamsOut) {
         delete wantParamsOut;
     }

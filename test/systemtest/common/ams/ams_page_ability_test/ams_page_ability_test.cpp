@@ -3626,7 +3626,7 @@ HWTEST_F(AmsPageAbilityTest, AMS_Page_Ability_7300, TestSize.Level1)
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName1 + abilityStateOnStop, abilityStateCountOne), 0);
     std::string callBackPact = "InitOnStartOnActiveOnInactiveOnBackgroundOnStop";
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName1 + callBackPact, eventCode), 0);
-    std::string abilityStatus = lifecycleStateUninitialized + lifecycleStateInactive + lifecycleStateActive +
+    std::string abilityStatus = lifecycleStateInitial + lifecycleStateInactive + lifecycleStateActive +
                                 lifecycleStateInactive + lifecycleStateBackground + lifecycleStateInitial;
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName1 + abilityStatus, eventCode), 0);
     GTEST_LOG_(INFO) << "AmsPageAbilityTest AMS_Page_Ability_7300 end";
@@ -3666,12 +3666,12 @@ HWTEST_F(AmsPageAbilityTest, AMS_Page_Ability_7400, TestSize.Level1)
 
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName1 + callBackPactN1, eventCode), 0);
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName2 + callBackPactN2, eventCode), 0);
-    std::string abilityStatusN1 = lifecycleStateUninitialized + lifecycleStateInactive + lifecycleStateActive +
+    std::string abilityStatusN1 = lifecycleStateInitial + lifecycleStateInactive + lifecycleStateActive +
                                   lifecycleStateInactive + lifecycleStateBackground + lifecycleStateInactive +
                                   lifecycleStateActive + lifecycleStateInactive + lifecycleStateBackground +
                                   lifecycleStateInitial;
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName1 + abilityStatusN1, eventCode), 0);
-    std::string abilityStatusN2 = lifecycleStateUninitialized + lifecycleStateInactive + lifecycleStateActive +
+    std::string abilityStatusN2 = lifecycleStateInitial + lifecycleStateInactive + lifecycleStateActive +
                                   lifecycleStateInactive + lifecycleStateBackground + lifecycleStateInitial;
     EXPECT_EQ(STAbilityUtil::WaitCompleted(event_, abilityName2 + abilityStatusN2, eventCode), 0);
     GTEST_LOG_(INFO) << "AmsPageAbilityTest AMS_Page_Ability_7400 end";
