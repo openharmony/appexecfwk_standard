@@ -40,6 +40,8 @@ static const string SECOND_ABILITY_NAME = "SecondAbility";
 static const string THIRD_ABILITY_NAME = "ThirdAbility";
 static constexpr int WAIT_TIME = 1;
 static constexpr int WAIT_LAUNCHER_TIME = 5;
+static const std::string LAUNCHER_ABILITY_NAME = "com.ohos.launcher.MainAbility";
+static const std::string LAUNCHER_BUNDLE_NAME = "com.ohos.launcher";
 }
 
 static string g_eventMessage = "";
@@ -193,6 +195,8 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_0100, Function | MediumTest | Lev
     STAbilityUtil::PublishEvent(
         g_EVENT_REQU_SECOND, CODE_, "MissionStack_" + std::to_string((int)MissionStackApi::LockMission) + "_0");
     EXPECT_EQ(TestWaitCompleted(event, g_EVENT_RESP_SECOND, CODE_), 0);
+
+    sleep(WAIT_LAUNCHER_TIME);
     EXPECT_EQ(TestWaitCompleted(event, "OnStop", SECOND_ABILITY_CODE), 0);
 
     EXPECT_EQ(TestWaitCompleted(event, "OnActive", MAIN_ABILITY_CODE), 0);
@@ -221,6 +225,7 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_0200, Function | MediumTest | Lev
         g_EVENT_REQU_MAIN, CODE_, "MissionStack_" + std::to_string((int)MissionStackApi::LockMission) + "_1");
     EXPECT_EQ(TestWaitCompleted(event, g_EVENT_RESP_MAIN, CODE_), 0);
 
+    sleep(WAIT_LAUNCHER_TIME);
     EXPECT_NE(TestWaitCompleted(event, "OnBackground", MAIN_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
 
     GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_MissionStack_0200 end";
@@ -247,10 +252,13 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_0300, Function | MediumTest | Lev
         g_EVENT_REQU_MAIN, CODE_, "MissionStack_" + std::to_string((int)MissionStackApi::LockMission) + "_2");
     EXPECT_EQ(TestWaitCompleted(event, g_EVENT_RESP_MAIN, CODE_), 0);
     
+    sleep(WAIT_LAUNCHER_TIME);
     Want wantEntity;
-    wantEntity.AddEntity(Want::FLAG_HOME_INTENT_FROM_SYSTEM);
+    wantEntity.SetElementName(LAUNCHER_BUNDLE_NAME, LAUNCHER_ABILITY_NAME);
+    //wantEntity.AddEntity(Want::FLAG_HOME_INTENT_FROM_SYSTEM);
     STAbilityUtil::StartAbility(wantEntity, abilityMgrService);
 
+    sleep(WAIT_LAUNCHER_TIME);
     EXPECT_NE(TestWaitCompleted(event, "OnBackground", MAIN_ABILITY_CODE), 0);
 
     GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_MissionStack_0300 end";
@@ -289,6 +297,7 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_0500, Function | MediumTest | Lev
         g_EVENT_REQU_THIRD, CODE_, "MissionStack_" + std::to_string((int)MissionStackApi::LockMission) + "_4");
     EXPECT_EQ(TestWaitCompleted(event, g_EVENT_RESP_THIRD, CODE_), 0);
     
+    sleep(WAIT_LAUNCHER_TIME);
     EXPECT_NE(TestWaitCompleted(event, "OnStart", SECOND_ABILITY_CODE), 0);
 
     GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_MissionStack_0500 end";
@@ -315,6 +324,7 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_0600, Function | MediumTest | Lev
         g_EVENT_REQU_MAIN, CODE_, "MissionStack_" + std::to_string((int)MissionStackApi::LockMission) + "_5");
     EXPECT_EQ(TestWaitCompleted(event, g_EVENT_RESP_MAIN, CODE_), 0);
     
+    sleep(WAIT_LAUNCHER_TIME);
     EXPECT_NE(TestWaitCompleted(event, "OnStart", THIRD_ABILITY_CODE), 0);
 
     GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_MissionStack_0600 end";
@@ -342,9 +352,11 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_0700, Function | MediumTest | Lev
     EXPECT_EQ(TestWaitCompleted(event, g_EVENT_RESP_MAIN, CODE_), 0);
     
     Want wantEntity;
-    wantEntity.AddEntity(Want::FLAG_HOME_INTENT_FROM_SYSTEM);
+    wantEntity.SetElementName(LAUNCHER_BUNDLE_NAME, LAUNCHER_ABILITY_NAME);
+    //wantEntity.AddEntity(Want::FLAG_HOME_INTENT_FROM_SYSTEM);
     STAbilityUtil::StartAbility(wantEntity, abilityMgrService);
 
+    sleep(WAIT_LAUNCHER_TIME);
     EXPECT_EQ(TestWaitCompleted(event, "OnBackground", MAIN_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
     GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_MissionStack_0700 end";
 }
@@ -380,6 +392,7 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_0900, Function | MediumTest | Lev
     STAbilityUtil::CleanMsg(event);
     STAbilityUtil::PublishEvent(
         g_EVENT_REQU_MAIN, CODE_, "MissionStack_" + std::to_string((int)MissionStackApi::LockMission) + "_8");
+    sleep(WAIT_LAUNCHER_TIME);
     EXPECT_EQ(TestWaitCompleted(event, g_EVENT_RESP_MAIN, CODE_), 0);
     EXPECT_EQ(TestWaitCompleted(event, "OnBackground", MAIN_ABILITY_CODE), 0);
 
@@ -388,6 +401,7 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_0900, Function | MediumTest | Lev
     STAbilityUtil::CleanMsg(event);
     STAbilityUtil::PublishEvent(
         g_EVENT_REQU_SECOND, CODE_, "MissionStack_" + std::to_string((int)MissionStackApi::LockMission) + "_8");
+    sleep(WAIT_LAUNCHER_TIME);
     EXPECT_EQ(TestWaitCompleted(event, g_EVENT_RESP_SECOND, CODE_), 0);
     EXPECT_EQ(TestWaitCompleted(event, "OnStop", SECOND_ABILITY_CODE), 0);
     EXPECT_EQ(TestWaitCompleted(event, "OnActive", MAIN_ABILITY_CODE), 0);
@@ -413,6 +427,7 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_1000, Function | MediumTest | Lev
     STAbilityUtil::CleanMsg(event);
     STAbilityUtil::PublishEvent(
         g_EVENT_REQU_MAIN, CODE_, "MissionStack_" + std::to_string((int)MissionStackApi::LockMission) + "_9");
+    sleep(WAIT_LAUNCHER_TIME);
     EXPECT_EQ(TestWaitCompleted(event, g_EVENT_RESP_MAIN, CODE_), 0);
     string appInfo = g_eventMessage;
 
@@ -451,8 +466,8 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_1200, Function | MediumTest | Lev
     STAbilityUtil::CleanMsg(event);
     STAbilityUtil::PublishEvent(
         g_EVENT_REQU_MAIN, CODE_, "MissionStack_" + std::to_string((int)MissionStackApi::LockMission) + "_11");
+    sleep(WAIT_LAUNCHER_TIME);
     EXPECT_EQ(TestWaitCompleted(event, g_EVENT_RESP_MAIN, CODE_), 0);
-    
     EXPECT_EQ(TestWaitCompleted(event, "OnBackground", MAIN_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
 
     GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_MissionStack_1200 end";
@@ -477,8 +492,8 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_1300, Function | MediumTest | Lev
     STAbilityUtil::CleanMsg(event);
     STAbilityUtil::PublishEvent(
         g_EVENT_REQU_MAIN, CODE_, "MissionStack_" + std::to_string((int)MissionStackApi::LockMission) + "_12");
+    sleep(WAIT_LAUNCHER_TIME);
     EXPECT_EQ(TestWaitCompleted(event, g_EVENT_RESP_MAIN, CODE_), 0);
-    
     EXPECT_EQ(TestWaitCompleted(event, "OnBackground", MAIN_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
 
     GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_MissionStack_1300 end";
@@ -503,6 +518,7 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_1400, Function | MediumTest | Lev
     STAbilityUtil::CleanMsg(event);
     STAbilityUtil::PublishEvent(
         g_EVENT_REQU_MAIN, CODE_, "MissionStack_" + std::to_string((int)MissionStackApi::LockMission) + "_13");
+    sleep(WAIT_LAUNCHER_TIME);
     EXPECT_EQ(TestWaitCompleted(event, g_EVENT_RESP_MAIN, CODE_), 0);
     EXPECT_EQ(TestWaitCompleted(event, "OnBackground", MAIN_ABILITY_CODE), 0);
 
@@ -511,6 +527,7 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_1400, Function | MediumTest | Lev
     STAbilityUtil::CleanMsg(event);
     STAbilityUtil::PublishEvent(
         g_EVENT_REQU_SECOND, CODE_, "MissionStack_" + std::to_string((int)MissionStackApi::LockMission) + "_13");
+    sleep(WAIT_LAUNCHER_TIME);
     EXPECT_EQ(TestWaitCompleted(event, g_EVENT_RESP_SECOND, CODE_), 0);
     EXPECT_EQ(TestWaitCompleted(event, "OnBackground", SECOND_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
 
@@ -536,6 +553,7 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_1500, Function | MediumTest | Lev
     STAbilityUtil::CleanMsg(event);
     STAbilityUtil::PublishEvent(
         g_EVENT_REQU_MAIN, CODE_, "MissionStack_" + std::to_string((int)MissionStackApi::LockMission) + "_14");
+    sleep(WAIT_LAUNCHER_TIME);
     EXPECT_EQ(TestWaitCompleted(event, g_EVENT_RESP_MAIN, CODE_), 0);
     EXPECT_EQ(TestWaitCompleted(event, "OnBackground", MAIN_ABILITY_CODE), 0);
 
@@ -544,6 +562,7 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_1500, Function | MediumTest | Lev
     STAbilityUtil::CleanMsg(event);
     STAbilityUtil::PublishEvent(
         g_EVENT_REQU_SECOND, CODE_, "MissionStack_" + std::to_string((int)MissionStackApi::LockMission) + "_14");
+    sleep(WAIT_LAUNCHER_TIME);
     EXPECT_EQ(TestWaitCompleted(event, g_EVENT_RESP_SECOND, CODE_), 0);
     EXPECT_NE(TestWaitCompleted(event, "OnBackground", SECOND_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
 
@@ -567,7 +586,8 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_1600, Function | MediumTest | Lev
     EXPECT_EQ(TestWaitCompleted(event, "OnStart", MAIN_ABILITY_CODE), 0);
     EXPECT_EQ(TestWaitCompleted(event, "OnActive", MAIN_ABILITY_CODE), 0);
     Want wantEntity;
-    wantEntity.AddEntity(Want::FLAG_HOME_INTENT_FROM_SYSTEM);
+    wantEntity.SetElementName(LAUNCHER_BUNDLE_NAME, LAUNCHER_ABILITY_NAME);
+    //wantEntity.AddEntity(Want::FLAG_HOME_INTENT_FROM_SYSTEM);
     STAbilityUtil::StartAbility(wantEntity, abilityMgrService);
     sleep(WAIT_LAUNCHER_TIME);
     STAbilityUtil::CleanMsg(event);
@@ -589,7 +609,8 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_1600, Function | MediumTest | Lev
         "MissionStack_" + std::to_string((int)MissionStackApi::LockMission) + "_0");
     EXPECT_EQ(TestWaitCompleted(event, g_EVENT_RESP_MAIN_SUBSIDIARY, CODE_), 0);
 
-    EXPECT_EQ(TestWaitCompleted(event, "OnBackground", MAIN_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
+    sleep(WAIT_LAUNCHER_TIME);
+
     EXPECT_EQ(TestWaitCompleted(event, "OnBackground", MAIN_ABILITY_CODE_SUBSIDIARY, WAIT_LAUNCHER_TIME), 0);
     EXPECT_EQ(TestWaitCompleted(event, "OnStart", SECOND_ABILITY_CODE_SUBSIDIARY), 0);
     EXPECT_EQ(TestWaitCompleted(event, "OnActive", SECOND_ABILITY_CODE_SUBSIDIARY), 0);
@@ -599,6 +620,8 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_1600, Function | MediumTest | Lev
         CODE_,
         "MissionStack_" + std::to_string((int)MissionStackApi::LockMission) + "_1");
     EXPECT_EQ(TestWaitCompleted(event, g_EVENT_RESP_MAIN_SUBSIDIARY, CODE_), 0);
+
+    sleep(WAIT_LAUNCHER_TIME);
     EXPECT_EQ(TestWaitCompleted(event, "OnBackground", SECOND_ABILITY_CODE_SUBSIDIARY, WAIT_LAUNCHER_TIME), 0);
 
     STAbilityUtil::Uninstall(KIT_BUNDLE_NAME_SUBSIDIARY);
@@ -623,7 +646,8 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_1700, Function | MediumTest | Lev
     EXPECT_EQ(TestWaitCompleted(event, "OnStart", MAIN_ABILITY_CODE), 0);
     EXPECT_EQ(TestWaitCompleted(event, "OnActive", MAIN_ABILITY_CODE), 0);
     Want wantEntity;
-    wantEntity.AddEntity(Want::FLAG_HOME_INTENT_FROM_SYSTEM);
+    wantEntity.SetElementName(LAUNCHER_BUNDLE_NAME, LAUNCHER_ABILITY_NAME);
+    //wantEntity.AddEntity(Want::FLAG_HOME_INTENT_FROM_SYSTEM);
     STAbilityUtil::StartAbility(wantEntity, abilityMgrService);
     sleep(WAIT_LAUNCHER_TIME);
     STAbilityUtil::CleanMsg(event);
@@ -643,7 +667,8 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_1700, Function | MediumTest | Lev
         "MissionStack_" + std::to_string((int)MissionStackApi::LockMission) + "_0");
     EXPECT_EQ(TestWaitCompleted(event, g_EVENT_RESP_MAIN_SUBSIDIARY, CODE_), 0);
 
-    EXPECT_EQ(TestWaitCompleted(event, "OnBackground", MAIN_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
+    sleep(WAIT_LAUNCHER_TIME);
+
     EXPECT_EQ(TestWaitCompleted(event, "OnBackground", MAIN_ABILITY_CODE_SUBSIDIARY, WAIT_LAUNCHER_TIME), 0);
     EXPECT_EQ(TestWaitCompleted(event, "OnStart", SECOND_ABILITY_CODE_SUBSIDIARY), 0);
     EXPECT_EQ(TestWaitCompleted(event, "OnActive", SECOND_ABILITY_CODE_SUBSIDIARY), 0);
@@ -651,7 +676,9 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_1700, Function | MediumTest | Lev
     STAbilityUtil::PublishEvent(g_EVENT_REQU_MAIN_SUBSIDIARY, CODE_,
         "MissionStack_" + std::to_string((int)MissionStackApi::LockMission) + "_2");
     EXPECT_EQ(TestWaitCompleted(event, g_EVENT_RESP_MAIN_SUBSIDIARY, CODE_), 0);
-    EXPECT_NE(TestWaitCompleted(event, "OnBackground", SECOND_ABILITY_CODE_SUBSIDIARY, WAIT_LAUNCHER_TIME), 0);
+
+    sleep(WAIT_LAUNCHER_TIME);
+    EXPECT_EQ(TestWaitCompleted(event, "OnBackground", SECOND_ABILITY_CODE_SUBSIDIARY, WAIT_LAUNCHER_TIME), 0);
 
     STAbilityUtil::Uninstall(KIT_BUNDLE_NAME_SUBSIDIARY);
     STAbilityUtil::CleanMsg(event);
@@ -677,6 +704,7 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_1800, Function | MediumTest | Lev
     STAbilityUtil::CleanMsg(event);
     STAbilityUtil::PublishEvent(
         g_EVENT_REQU_MAIN, CODE_, "MissionStack_" + std::to_string((int)MissionStackApi::LockMission) + "_17");
+    sleep(WAIT_LAUNCHER_TIME);
     EXPECT_EQ(TestWaitCompleted(event, g_EVENT_RESP_MAIN, CODE_), 0);
     
     EXPECT_NE(TestWaitCompleted(event, "OnBackground", MAIN_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
