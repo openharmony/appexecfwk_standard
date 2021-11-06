@@ -560,7 +560,6 @@ HWTEST_F(AmsConfigurationUpdatedTest, AMS_UpdateConfiguration_1300, Function | M
     const std::string LAUNCHER_ABILITY_NAME = "com.ohos.launcher.MainAbility";
     const std::string LAUNCHER_BUNDLE_NAME = "com.ohos.launcher";
     wantEntity.SetElementName(LAUNCHER_BUNDLE_NAME, LAUNCHER_ABILITY_NAME);
-    //wantEntity.AddEntity(Want::FLAG_HOME_INTENT_FROM_SYSTEM);
     STAbilityUtil::StartAbility(wantEntity, abilityMgrService);
     GTEST_LOG_(INFO) << "====>Want::FLAG_HOME_INTENT_FROM_SYSTEM";
 

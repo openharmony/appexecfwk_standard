@@ -60,7 +60,7 @@ public:
 
     class AppEventSubscriber : public CommonEventSubscriber {
     public:
-        explicit AppEventSubscriber(const CommonEventSubscribeInfo &sp) : CommonEventSubscriber(sp){};
+        explicit AppEventSubscriber(const CommonEventSubscribeInfo &sp) : CommonEventSubscriber(sp) {};
         virtual void OnReceiveEvent(const CommonEventData &data) override;
         ~AppEventSubscriber(){};
     };
@@ -255,7 +255,6 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_0300, Function | MediumTest | Lev
     sleep(WAIT_LAUNCHER_TIME);
     Want wantEntity;
     wantEntity.SetElementName(LAUNCHER_BUNDLE_NAME, LAUNCHER_ABILITY_NAME);
-    //wantEntity.AddEntity(Want::FLAG_HOME_INTENT_FROM_SYSTEM);
     STAbilityUtil::StartAbility(wantEntity, abilityMgrService);
 
     sleep(WAIT_LAUNCHER_TIME);
@@ -353,7 +352,6 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_0700, Function | MediumTest | Lev
     
     Want wantEntity;
     wantEntity.SetElementName(LAUNCHER_BUNDLE_NAME, LAUNCHER_ABILITY_NAME);
-    //wantEntity.AddEntity(Want::FLAG_HOME_INTENT_FROM_SYSTEM);
     STAbilityUtil::StartAbility(wantEntity, abilityMgrService);
 
     sleep(WAIT_LAUNCHER_TIME);
@@ -587,7 +585,6 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_1600, Function | MediumTest | Lev
     EXPECT_EQ(TestWaitCompleted(event, "OnActive", MAIN_ABILITY_CODE), 0);
     Want wantEntity;
     wantEntity.SetElementName(LAUNCHER_BUNDLE_NAME, LAUNCHER_ABILITY_NAME);
-    //wantEntity.AddEntity(Want::FLAG_HOME_INTENT_FROM_SYSTEM);
     STAbilityUtil::StartAbility(wantEntity, abilityMgrService);
     sleep(WAIT_LAUNCHER_TIME);
     STAbilityUtil::CleanMsg(event);
@@ -647,7 +644,6 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_1700, Function | MediumTest | Lev
     EXPECT_EQ(TestWaitCompleted(event, "OnActive", MAIN_ABILITY_CODE), 0);
     Want wantEntity;
     wantEntity.SetElementName(LAUNCHER_BUNDLE_NAME, LAUNCHER_ABILITY_NAME);
-    //wantEntity.AddEntity(Want::FLAG_HOME_INTENT_FROM_SYSTEM);
     STAbilityUtil::StartAbility(wantEntity, abilityMgrService);
     sleep(WAIT_LAUNCHER_TIME);
     STAbilityUtil::CleanMsg(event);
