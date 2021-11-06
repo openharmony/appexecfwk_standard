@@ -620,11 +620,11 @@ void FifthAbility::WantParamsMarshallingCase7(int code)
     Parcel in;
     wParams.Marshalling(in);
     WantParams *wantParamsOut = WantParams::Unmarshalling(in);
-    #ifdef WANT_PARAM_USE_LONG
-        bool result = (Long)::Unbox(ILong::Query(wantParamsOut->GetParam(key))) == value);
-    #else
-        bool result = (String::Unbox(IString::Query(wantParamsOut->GetParam(key))) == strValue);
-    #endif
+#ifdef WANT_PARAM_USE_LONG
+    bool result = (Long)::Unbox(ILong::Query(wantParamsOut->GetParam(key))) == value);
+#else
+    bool result = (String::Unbox(IString::Query(wantParamsOut->GetParam(key))) == strValue);
+#endif
     if (wantParamsOut) {
         delete wantParamsOut;
     }
@@ -832,17 +832,17 @@ void FifthAbility::WantParamsMarshallingCase16(int code)
     Parcel in;
     wParams.Marshalling(in);
     WantParams *wantParamsOut = WantParams::Unmarshalling(in);
-    #ifdef WANT_PARAM_USE_LONG
-        std::vector<long> getParamValue;
-        sptr<IArray> getParamAo = IArray::Query(wantParamsOut->GetParam(key));
-        FillArray<long, Long, ILong>(getParamAo, getParamValue);
-        bool result = (value == getParamValue);
-    #else
-        std::vector<std::string> getParamValue;
-        sptr<IArray> getParamAo = IArray::Query(wantParamsOut->GetParam(key));
-        FillArray<std::string, String, IString>(getParamAo, getParamValue);
-        bool result = (strValue == getParamValue);
-    #endif
+#ifdef WANT_PARAM_USE_LONG
+    std::vector<long> getParamValue;
+    sptr<IArray> getParamAo = IArray::Query(wantParamsOut->GetParam(key));
+    FillArray<long, Long, ILong>(getParamAo, getParamValue);
+    bool result = (value == getParamValue);
+#else
+    std::vector<std::string> getParamValue;
+    sptr<IArray> getParamAo = IArray::Query(wantParamsOut->GetParam(key));
+    FillArray<std::string, String, IString>(getParamAo, getParamValue);
+    bool result = (strValue == getParamValue);
+#endif
     if (wantParamsOut) {
         delete wantParamsOut;
     }
