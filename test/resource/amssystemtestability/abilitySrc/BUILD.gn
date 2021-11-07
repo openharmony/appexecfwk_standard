@@ -53,8 +53,7 @@ group("ams_system_test_app") {
     "amsSystemTestServiceA:amsSystemTestServiceA",
     "amsSystemTestServiceB:amsSystemTestServiceB",
     "amsSystemTestServiceC:amsSystemTestServiceC",
-
-    # "amsSystemTestServiceD:amsSystemTestServiceD",
+    "amsSystemTestServiceD:amsSystemTestServiceD",
     "amsSystemTestServiceE:amsSystemTestServiceE",
     "amsSystemTestServiceF:amsSystemTestServiceF",
     "amsSystemTestServiceG:amsSystemTestServiceG",
