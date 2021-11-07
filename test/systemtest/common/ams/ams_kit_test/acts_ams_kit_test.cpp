@@ -52,7 +52,7 @@ using MAP_STR_STR = std::map<std::string, std::string>;
 static const std::string bundleName1 = "com.ohos.amsst.AppKitAbilityManager";
 static const std::string bundleName2 = "com.ohos.amsst.AppKit";
 static const std::string bundleName3 = "com.ohos.amsst.appN";
-static const std::string bundleName4 = "ccom.ohos.amsst.AppKitAbilityManagerFirst";
+static const std::string bundleName4 = "com.ohos.amsst.AppKitAbilityManagerFirst";
 
 static const std::string thirdAbilityName = "ThirdAbility";
 static const std::string sixthAbilityName = "SixthAbility";
@@ -67,14 +67,12 @@ constexpr int WAIT_LAUNCHER_OK = 5 * 1000;
 constexpr int appFreezingTime = 60;
 
 std::vector<std::string> bundleNameList = {
-    bundleName1,
     bundleName2,
     bundleName3,
 };
 std::vector<std::string> hapNameList = {
     "amsKitSystemTest",
     "amsSystemTestN",
-    "amsKitSTAbilityManager",
 };
 static const std::string abilityNameBase = "AmsStAbilityN1";
 int amsKitSTCode = 0;
