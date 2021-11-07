@@ -45,7 +45,7 @@ static constexpr int WAIT_TIME = 1;
 static constexpr int WAIT_LAUNCHER_TIME = 5;
 static constexpr int WAIT_SETUP_TIME = 1;
 static constexpr int WAIT_TEARDOWN_TIME = 1;
-static constexpr int WAIT_ONACTIVE_TIME = 2;
+static constexpr int WAIT_ONACTIVE_TIME = 5;
 static string g_eventMessage = "";
 static string g_tempDataStr = "";
 }  // namespace
@@ -535,6 +535,51 @@ HWTEST_F(AmsConfigurationUpdatedTest, AMS_UpdateConfiguration_1200, Function | M
     EXPECT_NE(TestWaitCompleted(event, "OnConfigurationUpdated", SIXTH_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
 
     GTEST_LOG_(INFO) << "\nAmsConfigurationUpdatedTest AMS_UpdateConfiguration_1200 end=========<";
+}
+
+/**
+ * @tc.number    : 1300
+ * @tc.name      : AMS_UpdateConfiguration_1300
+ * @tc.desc      : Verify whether the results of the orientation function of the system configuration concerned by
+ * capability are correct.
+ */
+
+HWTEST_F(AmsConfigurationUpdatedTest, AMS_UpdateConfiguration_1300, Function | MediumTest | Level1)
+{
+    GTEST_LOG_(INFO) << "==========>\nAmsConfigurationUpdatedTest AMS_UpdateConfiguration_1300 start";
+    MAP_STR_STR params;
+    Want want = STAbilityUtil::MakeWant("device", MAIN_ABILITY, KIT_BUNDLE_NAME, params);
+    // start first ability
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
+    GTEST_LOG_(INFO) << "\nStartAbility ====>> " << eCode;
+
+    g_tempDataStr = "OnStartOnActive";
+    EXPECT_EQ(TestWaitCompleted(event, "OnStartOnActive", MAIN_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
+
+    Want wantEntity;
+    const std::string LAUNCHER_ABILITY_NAME = "com.ohos.launcher.MainAbility";
+    const std::string LAUNCHER_BUNDLE_NAME = "com.ohos.launcher";
+    wantEntity.SetElementName(LAUNCHER_BUNDLE_NAME, LAUNCHER_ABILITY_NAME);
+    STAbilityUtil::StartAbility(wantEntity, abilityMgrService);
+    GTEST_LOG_(INFO) << "====>Want::FLAG_HOME_INTENT_FROM_SYSTEM";
+
+    sleep(WAIT_ONACTIVE_TIME);
+    DummyConfiguration mDummyConfiguration("orientation");
+    abilityMgrService->UpdateConfiguration(mDummyConfiguration);
+
+    sleep(WAIT_ONACTIVE_TIME);
+    want = STAbilityUtil::MakeWant("device", MAIN_ABILITY, KIT_BUNDLE_NAME, params);
+    eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
+    GTEST_LOG_(INFO) << "\nStartAbility S ====>> " << eCode;
+
+    sleep(WAIT_ONACTIVE_TIME);
+    g_tempDataStr = "OnInactiveOnBackgroundOnForegroundOnActive";
+    EXPECT_EQ(TestWaitCompleted(event, "OnInactiveOnBackgroundOnForegroundOnActive", MAIN_ABILITY_CODE), 0);
+
+    g_tempDataStr = "Updated";
+    EXPECT_EQ(TestWaitCompleted(event, "Updated", MAIN_ABILITY_CODE), 0);
+
+    GTEST_LOG_(INFO) << "\nAmsConfigurationUpdatedTest AMS_UpdateConfiguration_1300 end=========<";
 }
 
 /**

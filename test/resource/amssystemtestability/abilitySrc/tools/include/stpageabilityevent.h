@@ -58,16 +58,18 @@ const std::vector<std::string> g_eventList = {
     "requ_page_ability_terminate_caller",
     "requ_page_ability_terminate_result",
 };
-static constexpr uint32_t LOAD_TIMEOUT = 500;          // ms
-static constexpr uint32_t ACTIVE_TIMEOUT = 5000;       // ms
-static constexpr uint32_t INACTIVE_TIMEOUT = 500;      // ms
-static constexpr uint32_t BACKGROUND_TIMEOUT = 10000;  // ms
-static constexpr uint32_t TERMINATE_TIMEOUT = 10000;   // ms
-static constexpr uint32_t CONNECT_TIMEOUT = 500;       // ms
-static constexpr uint32_t DISCONNECT_TIMEOUT = 500;    // ms
-static constexpr uint32_t COMMAND_TIMEOUT = 5000;      // ms
-static constexpr uint32_t SYSTEM_UI_TIMEOUT = 5000;    // ms
-static constexpr uint32_t RESTART_TIMEOUT = 5000;      // ms
+
+static constexpr uint32_t LOAD_TIMEOUT = 3000;            // ms
+static constexpr uint32_t ACTIVE_TIMEOUT = 5000;          // ms
+static constexpr uint32_t INACTIVE_TIMEOUT = 500;         // ms
+static constexpr uint32_t BACKGROUND_TIMEOUT = 10000;     // ms
+static constexpr uint32_t TERMINATE_TIMEOUT = 10000;      // ms
+static constexpr uint32_t CONNECT_TIMEOUT = 500;          // ms
+static constexpr uint32_t DISCONNECT_TIMEOUT = 500;       // ms
+static constexpr uint32_t COMMAND_TIMEOUT = 5000;         // ms
+static constexpr uint32_t SYSTEM_UI_TIMEOUT = 5000;       // ms
+static constexpr uint32_t RESTART_TIMEOUT = 5000;         // ms
+static constexpr uint32_t RESTART_ABILITY_TIMEOUT = 500;  // ms
 }  // namespace STEventName
 
 class STPageAbilityEventSubscriber : public EventFwk::CommonEventSubscriber {

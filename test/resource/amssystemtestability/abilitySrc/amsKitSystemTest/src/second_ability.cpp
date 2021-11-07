@@ -46,7 +46,8 @@ constexpr int even = 2;
 constexpr int index_f = 0;
 constexpr int index_s = 1;
 constexpr int index_t = 2;
-}
+std::string WANT_HEADER = "#Intent;";
+}  // namespace
 
 bool SecondAbility::CompareWantNoParams(const Want &source, const Want &target)
 {
@@ -616,7 +617,7 @@ void SecondAbility::WantGetUriCase1(int code)
 // set and get uri
 void SecondAbility::WantGetUriCase2(int code)
 {
-    std::string uriString = "#Want;action=action;end";
+    std::string uriString = WANT_HEADER + "action=action;end";
     Uri uri(uriString);
     Want want;
     want.SetUri(uriString);
@@ -627,7 +628,7 @@ void SecondAbility::WantGetUriCase2(int code)
 // set and get uri continuously
 void SecondAbility::WantGetUriCase3(int code)
 {
-    std::string uriString = "#Want;action=action;end";
+    std::string uriString = WANT_HEADER + "action=action;end";
     Uri uri(uriString);
     Want want;
     want.SetUri(uriString);
@@ -650,7 +651,7 @@ void SecondAbility::WantGetUriStringCase1(int code)
 // set property and get uri string
 void SecondAbility::WantGetUriStringCase2(int code)
 {
-    std::string uriString("#Want;action=action;end");
+    std::string uriString(WANT_HEADER + "action=action;end");
     Want want;
     want.SetAction(uriString);
     bool result = want.GetAction() == uriString;
@@ -660,7 +661,7 @@ void SecondAbility::WantGetUriStringCase2(int code)
 // set uri and get uri string
 void SecondAbility::WantGetUriStringCase3(int code)
 {
-    std::string uriString("#Want;action=action;end");
+    std::string uriString(WANT_HEADER + "action=action;end");
     Want want;
     want.SetUri(uriString);
     bool result = want.GetUriString() == uriString;
@@ -670,7 +671,7 @@ void SecondAbility::WantGetUriStringCase3(int code)
 // get uri string continuously
 void SecondAbility::WantGetUriStringCase4(int code)
 {
-    std::string uriString("#Want;action=action;end");
+    std::string uriString(WANT_HEADER + "action=action;end");
     Want want;
     want.SetUri(uriString);
     bool result = true;
@@ -1408,49 +1409,49 @@ void SecondAbility::WantRemoveFlagsCase5(int code)
 // parse uri that has only key, no equals sign and value
 void SecondAbility::WantParseUriCase1(int code)
 {
-    std::string uri = "#Want;action;end";
+    std::string uri = WANT_HEADER + "action;end";
     Want *want = Want::ParseUri(uri);
     bool result = (want == nullptr);
     if (want) {
         delete want;
     }
 
-    uri = "#Want;entity;end";
+    uri = WANT_HEADER + "entity;end";
     want = Want::ParseUri(uri);
     result = result && (want == nullptr);
     if (want) {
         delete want;
     }
 
-    uri = "#Want;device;end";
+    uri = WANT_HEADER + "device;end";
     want = Want::ParseUri(uri);
     result = result && (want == nullptr);
     if (want) {
         delete want;
     }
 
-    uri = "#Want;bundle;end";
+    uri = WANT_HEADER + "bundle;end";
     want = Want::ParseUri(uri);
     result = result && (want == nullptr);
     if (want) {
         delete want;
     }
 
-    uri = "#Want;ability;end";
+    uri = WANT_HEADER + "ability;end";
     want = Want::ParseUri(uri);
     result = result && (want == nullptr);
     if (want) {
         delete want;
     }
 
-    uri = "#Want;flag;end";
+    uri = WANT_HEADER + "flag;end";
     want = Want::ParseUri(uri);
     result = result && (want == nullptr);
     if (want) {
         delete want;
     }
 
-    uri = "#Want;param;end";
+    uri = WANT_HEADER + "param;end";
     want = Want::ParseUri(uri);
     result = result && (want == nullptr);
     if (want) {
@@ -1462,7 +1463,7 @@ void SecondAbility::WantParseUriCase1(int code)
 // parse string parameters
 void SecondAbility::WantParseUriCase2(int code)
 {
-    std::string head = "#Want;";
+    std::string head = WANT_HEADER + "";
     std::string end = ";end";
     std::string key = "keyString";
     std::string value = "valueString";
@@ -1511,7 +1512,7 @@ void SecondAbility::WantParseUriCase3(int code)
 void SecondAbility::WantParseUriCase4(int code)
 {
     unsigned int flag = 0X12345678;
-    std::string uri = "#Want;flag=0X12345678;end";
+    std::string uri = WANT_HEADER + "flag=0X12345678;end";
     Want *want = Want::ParseUri(uri);
     bool result = (want != nullptr);
     if (want != nullptr) {
@@ -1524,7 +1525,7 @@ void SecondAbility::WantParseUriCase4(int code)
 // parse flag that has no value
 void SecondAbility::WantParseUriCase5(int code)
 {
-    std::string uri = "#Want;flag=;end";
+    std::string uri = WANT_HEADER + "flag=;end";
     Want *want = Want::ParseUri(uri);
     bool result = (want != nullptr);
     if (want != nullptr) {
@@ -1534,7 +1535,7 @@ void SecondAbility::WantParseUriCase5(int code)
     TestUtils::PublishEvent(g_EVENT_RESP_SECOND, code, std::to_string(result));
 }
 
-// parse uri that has no head "#Want;"
+// parse uri that has no head WANT_HEADER + ""
 void SecondAbility::WantParseUriCase6(int code)
 {
     std::string uri = "action=want.action.VIEW;end";
@@ -1549,7 +1550,7 @@ void SecondAbility::WantParseUriCase6(int code)
 // parse uri that flag type is string
 void SecondAbility::WantParseUriCase7(int code)
 {
-    std::string uri = "#Want;action=want.action.VIEW;flag=\"123\";end";
+    std::string uri = WANT_HEADER + "action=want.action.VIEW;flag=\"123\";end";
     Want *want = Want::ParseUri(uri);
     bool result = (want == nullptr);
     if (want != nullptr) {
@@ -1562,7 +1563,7 @@ void SecondAbility::WantParseUriCase7(int code)
 void SecondAbility::WantParseUriCase8(int code)
 {
     std::string empty;
-    std::string uri = "#Want;action=;entity=;device=;bundle=;ability=;flag=;end";
+    std::string uri = WANT_HEADER + "action=;entity=;device=;bundle=;ability=;flag=;end";
     Want *want = Want::ParseUri(uri);
     bool result = (want != nullptr);
 
@@ -1705,7 +1706,7 @@ void SecondAbility::WantParseUriCase13(int code)
 void SecondAbility::WantParseUriCase14(int code)
 {
     // "="
-    std::string uri = "#Want;=;end";
+    std::string uri = WANT_HEADER + "=;end";
     Want *want = Want::ParseUri(uri);
     bool result = (want != nullptr);
     if (want) {
@@ -1713,7 +1714,7 @@ void SecondAbility::WantParseUriCase14(int code)
     }
 
     // "key="
-    uri = "#Want;abc=;end";
+    uri = WANT_HEADER + "abc=;end";
     want = Want::ParseUri(uri);
     result = result && (want != nullptr);
     if (want) {
@@ -1721,7 +1722,7 @@ void SecondAbility::WantParseUriCase14(int code)
     }
 
     // "=value"
-    uri = "#Want;=abc;end";
+    uri = WANT_HEADER + "=abc;end";
     want = Want::ParseUri(uri);
     result = result && (want != nullptr);
     if (want) {
@@ -1729,7 +1730,7 @@ void SecondAbility::WantParseUriCase14(int code)
     }
 
     // "param=value"
-    uri = "#Want;xxxx=yyy;end";
+    uri = WANT_HEADER + "xxxx=yyy;end";
     want = Want::ParseUri(uri);
     result = result && (want != nullptr);
     if (want) {
@@ -1737,7 +1738,7 @@ void SecondAbility::WantParseUriCase14(int code)
     }
 
     // empty string
-    uri = "#Want;;;;;;end";
+    uri = WANT_HEADER + ";;;;;end";
     want = Want::ParseUri(uri);
     result = result && (want != nullptr);
     if (want) {
@@ -1749,49 +1750,49 @@ void SecondAbility::WantParseUriCase14(int code)
 // parse uri that has only key and euqals sign, no value
 void SecondAbility::WantParseUriCase15(int code)
 {
-    std::string uri = "#Want;action=;end";
+    std::string uri = WANT_HEADER + "action=;end";
     Want *want = Want::ParseUri(uri);
     bool result = (want != nullptr);
     if (want) {
         delete want;
     }
 
-    uri = "#Want;entity=;end";
+    uri = WANT_HEADER + "entity=;end";
     want = Want::ParseUri(uri);
     result = result && (want != nullptr);
     if (want) {
         delete want;
     }
 
-    uri = "#Want;device=;end";
+    uri = WANT_HEADER + "device=;end";
     want = Want::ParseUri(uri);
     result = result && (want != nullptr);
     if (want) {
         delete want;
     }
 
-    uri = "#Want;bundle=;end";
+    uri = WANT_HEADER + "bundle=;end";
     want = Want::ParseUri(uri);
     result = result && (want != nullptr);
     if (want) {
         delete want;
     }
 
-    uri = "#Want;ability=;end";
+    uri = WANT_HEADER + "ability=;end";
     want = Want::ParseUri(uri);
     result = result && (want != nullptr);
     if (want) {
         delete want;
     }
 
-    uri = "#Want;flag=;end";
+    uri = WANT_HEADER + "flag=;end";
     want = Want::ParseUri(uri);
     result = result && (want != nullptr);
     if (want) {
         delete want;
     }
 
-    uri = "#Want;param=;end";
+    uri = WANT_HEADER + "param=;end";
     want = Want::ParseUri(uri);
     result = result && (want != nullptr);
     if (want) {
@@ -1803,7 +1804,7 @@ void SecondAbility::WantParseUriCase15(int code)
 // parse Boolean parameters
 void SecondAbility::WantParseUriCase16(int code)
 {
-    std::string head = "#Want;";
+    std::string head = WANT_HEADER + "";
     std::string end = ";end";
     std::string key = "keyBoolean";
     std::string value = "true";
@@ -1821,7 +1822,7 @@ void SecondAbility::WantParseUriCase16(int code)
 // parse Char parameters
 void SecondAbility::WantParseUriCase17(int code)
 {
-    std::string head = "#Want;";
+    std::string head = WANT_HEADER + "";
     std::string end = ";end";
     std::string key = "keyChar";
     AAFwk::zchar zcharValue = 'A';
@@ -1839,7 +1840,7 @@ void SecondAbility::WantParseUriCase17(int code)
 // parse Byte parameters
 void SecondAbility::WantParseUriCase18(int code)
 {
-    std::string head = "#Want;";
+    std::string head = WANT_HEADER + "";
     std::string end = ";end";
     std::string key = "keyByte";
     AAFwk::byte byteValue = 8;
@@ -1858,7 +1859,7 @@ void SecondAbility::WantParseUriCase18(int code)
 // parse Short parameters
 void SecondAbility::WantParseUriCase19(int code)
 {
-    std::string head = "#Want;";
+    std::string head = WANT_HEADER + "";
     std::string end = ";end";
     std::string key = "keyShort";
     short shortValue = 1;
@@ -1877,7 +1878,7 @@ void SecondAbility::WantParseUriCase19(int code)
 // parse Integer parameters
 void SecondAbility::WantParseUriCase20(int code)
 {
-    std::string head = "#Want;";
+    std::string head = WANT_HEADER + "";
     std::string end = ";end";
     std::string key = "keyInteger";
     int integerValue = 10;
@@ -1896,7 +1897,7 @@ void SecondAbility::WantParseUriCase20(int code)
 // parse Float parameters
 void SecondAbility::WantParseUriCase21(int code)
 {
-    std::string head = "#Want;";
+    std::string head = WANT_HEADER + "";
     std::string end = ";end";
     std::string key = "keyFloat";
     float floatValue = 1000.9f;
@@ -1916,7 +1917,7 @@ void SecondAbility::WantParseUriCase21(int code)
 // parse Double parameters
 void SecondAbility::WantParseUriCase22(int code)
 {
-    std::string head = "#Want;";
+    std::string head = WANT_HEADER + "";
     std::string end = ";end";
     std::string key = "keyDouble";
     double doubleValue = 10000.99;
@@ -1936,7 +1937,7 @@ void SecondAbility::WantParseUriCase22(int code)
 // parse Array parameters
 void SecondAbility::WantParseUriCase23(int code)
 {
-    std::string head = "#Want;";
+    std::string head = WANT_HEADER + "";
     std::string end = ";end";
     std::string key = "keyArray";
     std::string value = AAFwk::String::SIGNATURE + std::string("3{aa,bb,cc}");
@@ -2400,7 +2401,7 @@ void SecondAbility::WantSetUriCase1(int code)
 // set uri with property action
 void SecondAbility::WantSetUriCase2(int code)
 {
-    std::string uriString = "#Want;action=action;end";
+    std::string uriString = WANT_HEADER + "action=action;end";
     Uri uri(uriString);
     Want want;
     want.SetUri(uriString);
@@ -2424,7 +2425,7 @@ void SecondAbility::WantSetUriCase3(int code)
 // set uri continuously
 void SecondAbility::WantSetUriCase4(int code)
 {
-    std::string head = "#Want;";
+    std::string head = WANT_HEADER + "";
     std::string end = ";end";
     std::string propAction = "action=action";
     std::string uriString;
@@ -2468,7 +2469,7 @@ void SecondAbility::WantSetUriAndTypeCase2(int code)
 void SecondAbility::WantSetUriAndTypeCase3(int code)
 {
     std::string empty;
-    Uri uri("#Want;device=device;end");
+    Uri uri(WANT_HEADER + "device=device;end");
     std::string type = "type";
     Want want;
     want.SetUriAndType(uri, type);
@@ -2498,7 +2499,7 @@ void SecondAbility::WantSetUriAndTypeCase4(int code)
 // empty Want to uri
 void SecondAbility::WantToUriCase1(int code)
 {
-    std::string head = "#Want;";
+    std::string head = WANT_HEADER + "";
     std::string end = "end";
     std::string uriString = head + end;
     Want want;
@@ -2509,7 +2510,7 @@ void SecondAbility::WantToUriCase1(int code)
 // Want with action to uri
 void SecondAbility::WantToUriCase2(int code)
 {
-    std::string value = "#Want;action=\"\\b\\\";end";
+    std::string value = WANT_HEADER + "action=\"\\b\\\";end";
     Want want;
     want.SetAction(value);
     Want *newWant = nullptr;
@@ -2525,7 +2526,7 @@ void SecondAbility::WantToUriCase2(int code)
 // Want with entities to uri
 void SecondAbility::WantToUriCase3(int code)
 {
-    std::string value = "#Want;entity=\"\\b\\\";end";
+    std::string value = WANT_HEADER + "entity=\"\\b\\\";end";
     Want want;
     want.AddEntity(value);
     Want *newWant = nullptr;
@@ -2557,9 +2558,9 @@ void SecondAbility::WantToUriCase4(int code)
 // Want with ElementName to uri
 void SecondAbility::WantToUriCase5(int code)
 {
-    std::string device = "#Want;device=\"\\b\\\";end";
-    std::string bundle = "#Want;bundle=\"\\b\\\";end";
-    std::string ability = "#Want;ability=\"\\b\\\";end";
+    std::string device = WANT_HEADER + "device=\"\\b\\\";end";
+    std::string bundle = WANT_HEADER + "bundle=\"\\b\\\";end";
+    std::string ability = WANT_HEADER + "ability=\"\\b\\\";end";
     ElementName value(device, bundle, ability);
     Want want;
     want.SetElement(value);
@@ -2576,8 +2577,8 @@ void SecondAbility::WantToUriCase5(int code)
 // Want with string parameter to uri
 void SecondAbility::WantToUriCase6(int code)
 {
-    std::string key = std::to_string(String::SIGNATURE) + ".#Want;key=\"\\b\\\";end";
-    std::string value = "#Want;value=\"\\b\\\";end";
+    std::string key = std::to_string(String::SIGNATURE) + ".#Intent;key=\"\\b\\\";end";
+    std::string value = WANT_HEADER + "value=\"\\b\\\";end";
     Want want;
     want.SetParam(key, value);
     Want *newWant = nullptr;
@@ -2593,7 +2594,7 @@ void SecondAbility::WantToUriCase6(int code)
 // Want with bool parameter to uri
 void SecondAbility::WantToUriCase7(int code)
 {
-    std::string key = std::to_string(Boolean::SIGNATURE) + ".#Want;key=\"\\b\\\";end";
+    std::string key = std::to_string(Boolean::SIGNATURE) + ".#Intent;key=\"\\b\\\";end";
     bool value = true;
     Want want;
     want.SetParam(key, value);
@@ -2610,7 +2611,7 @@ void SecondAbility::WantToUriCase7(int code)
 // Want with char parameter to uri
 void SecondAbility::WantToUriCase8(int code)
 {
-    std::string key = std::to_string(Char::SIGNATURE) + ".#Want;key=\"\\b\\\";end";
+    std::string key = std::to_string(Char::SIGNATURE) + ".#Intent;key=\"\\b\\\";end";
     zchar value = '.';
     Want want;
     want.SetParam(key, value);
@@ -2627,7 +2628,7 @@ void SecondAbility::WantToUriCase8(int code)
 // Want with byte parameter to uri
 void SecondAbility::WantToUriCase9(int code)
 {
-    std::string key = std::to_string(Byte::SIGNATURE) + ".#Want;key=\"\\b\\\";end";
+    std::string key = std::to_string(Byte::SIGNATURE) + ".#Intent;key=\"\\b\\\";end";
     byte value = 9;
     Want want;
     want.SetParam(key, value);
@@ -2644,7 +2645,7 @@ void SecondAbility::WantToUriCase9(int code)
 // Want with short parameter to uri
 void SecondAbility::WantToUriCase10(int code)
 {
-    std::string key = std::to_string(Short::SIGNATURE) + ".#Want;key=\"\\b\\\";end";
+    std::string key = std::to_string(Short::SIGNATURE) + ".#Intent;key=\"\\b\\\";end";
     short value = 99;
     Want want;
     want.SetParam(key, value);
@@ -2661,7 +2662,7 @@ void SecondAbility::WantToUriCase10(int code)
 // Want with int parameter to uri
 void SecondAbility::WantToUriCase11(int code)
 {
-    std::string key = std::to_string(Integer::SIGNATURE) + ".#Want;key=\"\\b\\\";end";
+    std::string key = std::to_string(Integer::SIGNATURE) + ".#Intent;key=\"\\b\\\";end";
     int value = 999;
     Want want;
     want.SetParam(key, value);
@@ -2678,7 +2679,7 @@ void SecondAbility::WantToUriCase11(int code)
 // Want with long parameter to uri
 void SecondAbility::WantToUriCase12(int code)
 {
-    std::string key = std::to_string(Long::SIGNATURE) + ".#Want;key=\"\\b\\\";end";
+    std::string key = std::to_string(Long::SIGNATURE) + ".#Intent;key=\"\\b\\\";end";
     long value = 9999L;
     Want want;
     want.SetParam(key, value);
@@ -2695,7 +2696,7 @@ void SecondAbility::WantToUriCase12(int code)
 // Want with float parameter to uri
 void SecondAbility::WantToUriCase13(int code)
 {
-    std::string key = std::to_string(Float::SIGNATURE) + ".#Want;key=\"\\b\\\";end";
+    std::string key = std::to_string(Float::SIGNATURE) + ".#Intent;key=\"\\b\\\";end";
     float value = 9999.9f;
     Want want;
     want.SetParam(key, value);
@@ -2712,7 +2713,7 @@ void SecondAbility::WantToUriCase13(int code)
 // Want with double parameter to uri
 void SecondAbility::WantToUriCase14(int code)
 {
-    std::string key = std::to_string(Double::SIGNATURE) + ".#Want;key=\"\\b\\\";end";
+    std::string key = std::to_string(Double::SIGNATURE) + ".#Intent;key=\"\\b\\\";end";
     double value = 9999.9;
     Want want;
     want.SetParam(key, value);
@@ -2729,8 +2730,8 @@ void SecondAbility::WantToUriCase14(int code)
 // Want with string array parameter to uri
 void SecondAbility::WantToUriCase15(int code)
 {
-    std::string key = std::to_string(Array::SIGNATURE) + ".#Want;key=3{\"\\b\\\";end";
-    std::string value = std::to_string(String::SIGNATURE) + "3{#Want;value=\"\\b\\\";end";
+    std::string key = std::to_string(Array::SIGNATURE) + ".#Intent;key=3{\"\\b\\\";end";
+    std::string value = std::to_string(String::SIGNATURE) + "3{#Intent;value=\"\\b\\\";end";
     std::vector<std::string> arrayValue = {value, value, value};
     Want want;
     want.SetParam(key, arrayValue);
@@ -2747,7 +2748,7 @@ void SecondAbility::WantToUriCase15(int code)
 // Want with bool array parameter to uri
 void SecondAbility::WantToUriCase16(int code)
 {
-    std::string key = std::to_string(Array::SIGNATURE) + ".#Want;key=3{\"\\b\\\";end";
+    std::string key = std::to_string(Array::SIGNATURE) + ".#Intent;key=3{\"\\b\\\";end";
     std::vector<bool> arrayValue = {true, true, false};
     Want want;
     want.SetParam(key, arrayValue);
@@ -2764,7 +2765,7 @@ void SecondAbility::WantToUriCase16(int code)
 // Want with char array parameter to uri
 void SecondAbility::WantToUriCase17(int code)
 {
-    std::string key = std::to_string(Array::SIGNATURE) + ".#Want;key=3{\"\\b\\\";end";
+    std::string key = std::to_string(Array::SIGNATURE) + ".#Intent;key=3{\"\\b\\\";end";
     std::vector<zchar> arrayValue = {'.', '=', ';'};
     Want want;
     want.SetParam(key, arrayValue);
@@ -2781,7 +2782,7 @@ void SecondAbility::WantToUriCase17(int code)
 // Want with byte array parameter to uri
 void SecondAbility::WantToUriCase18(int code)
 {
-    std::string key = std::to_string(Array::SIGNATURE) + ".#Want;key=3{\"\\b\\\";end";
+    std::string key = std::to_string(Array::SIGNATURE) + ".#Intent;key=3{\"\\b\\\";end";
     std::vector<byte> arrayValue = {1, 2, 3};
     Want want;
     want.SetParam(key, arrayValue);
@@ -2798,7 +2799,7 @@ void SecondAbility::WantToUriCase18(int code)
 // Want with short array parameter to uri
 void SecondAbility::WantToUriCase19(int code)
 {
-    std::string key = std::to_string(Array::SIGNATURE) + ".#Want;key=3{\"\\b\\\";end";
+    std::string key = std::to_string(Array::SIGNATURE) + ".#Intent;key=3{\"\\b\\\";end";
     std::vector<short> arrayValue = {1, 2, 3};
     Want want;
     want.SetParam(key, arrayValue);
@@ -2815,7 +2816,7 @@ void SecondAbility::WantToUriCase19(int code)
 // Want with int array parameter to uri
 void SecondAbility::WantToUriCase20(int code)
 {
-    std::string key = std::to_string(Array::SIGNATURE) + ".#Want;key=3{\"\\b\\\";end";
+    std::string key = std::to_string(Array::SIGNATURE) + ".#Intent;key=3{\"\\b\\\";end";
     std::vector<int> arrayValue = {1, 2, 3};
     Want want;
     want.SetParam(key, arrayValue);
@@ -2832,7 +2833,7 @@ void SecondAbility::WantToUriCase20(int code)
 // Want with long array parameter to uri
 void SecondAbility::WantToUriCase21(int code)
 {
-    std::string key = std::to_string(Array::SIGNATURE) + ".#Want;key=3{\"\\b\\\";end";
+    std::string key = std::to_string(Array::SIGNATURE) + ".#Intent;key=3{\"\\b\\\";end";
     std::vector<long> arrayValue = {1l, 2l, 3l};
     Want want;
     want.SetParam(key, arrayValue);
@@ -2849,7 +2850,7 @@ void SecondAbility::WantToUriCase21(int code)
 // Want with float array parameter to uri
 void SecondAbility::WantToUriCase22(int code)
 {
-    std::string key = std::to_string(Array::SIGNATURE) + ".#Want;key=3{\"\\b\\\";end";
+    std::string key = std::to_string(Array::SIGNATURE) + ".#Intent;key=3{\"\\b\\\";end";
     std::vector<float> arrayValue = {1, 2, 3};
     Want want;
     want.SetParam(key, arrayValue);
@@ -2866,7 +2867,7 @@ void SecondAbility::WantToUriCase22(int code)
 // Want with double array parameter to uri
 void SecondAbility::WantToUriCase23(int code)
 {
-    std::string key = std::to_string(Array::SIGNATURE) + ".#Want;key=3{\"\\b\\\";end";
+    std::string key = std::to_string(Array::SIGNATURE) + ".#Intent;key=3{\"\\b\\\";end";
     std::vector<double> arrayValue = {1.1, 2.2, 3.3};
     Want want;
     want.SetParam(key, arrayValue);
@@ -5143,24 +5144,24 @@ void SecondAbility::WantOperationEqualsCase2(int code)
     OperationBuilder opBuilder;
     std::vector<std::string> vec = {"entities1", "entities2"};
     auto operation = opBuilder.WithAbilityName("abilityName")
-        .WithBundleName("bundleName")
-        .WithDeviceId("deviceId")
-        .WithAction("action")
-        .WithEntities(vec)
-        .WithFlags(1)
-        .WithUri(Uri("uri"))
-        .build();
+                        .WithBundleName("bundleName")
+                        .WithDeviceId("deviceId")
+                        .WithAction("action")
+                        .WithEntities(vec)
+                        .WithFlags(1)
+                        .WithUri(Uri("uri"))
+                        .build();
     Want wantOne;
     wantOne.SetOperation(*operation);
     OperationBuilder opBuilderTwo;
     auto operationTwo = opBuilderTwo.WithAbilityName("abilityName2")
-        .WithBundleName("bundleName")
-        .WithDeviceId("deviceId")
-        .WithAction("action")
-        .WithEntities(vec)
-        .WithFlags(1)
-        .WithUri(Uri("uri"))
-        .build();
+                        .WithBundleName("bundleName")
+                        .WithDeviceId("deviceId")
+                        .WithAction("action")
+                        .WithEntities(vec)
+                        .WithFlags(1)
+                        .WithUri(Uri("uri"))
+                        .build();
     Want wantTwo;
     wantTwo.SetOperation(*operationTwo);
     bool result = !wantOne.OperationEquals(wantTwo);
@@ -5172,18 +5173,18 @@ void SecondAbility::WantOperationEqualsCase3(int code)
 {
     OperationBuilder opBuilder;
     auto operation = opBuilder.WithAbilityName("abilityName")
-        .WithBundleName("bundleName")
-        .WithDeviceId("deviceId")
-        .WithAction("action")
-        .build();
+                        .WithBundleName("bundleName")
+                        .WithDeviceId("deviceId")
+                        .WithAction("action")
+                        .build();
     Want wantOne;
     wantOne.SetOperation(*operation);
     OperationBuilder opBuilderTwo;
     auto operationTwo = opBuilderTwo.WithAbilityName("abilityName")
-        .WithBundleName("bundleName")
-        .WithDeviceId("deviceId")
-        .WithAction("action")
-        .build();
+                            .WithBundleName("bundleName")
+                            .WithDeviceId("deviceId")
+                            .WithAction("action")
+                            .build();
     Want wantTwo;
     wantTwo.SetOperation(*operationTwo);
     bool result = wantOne.OperationEquals(wantTwo);
@@ -5195,10 +5196,10 @@ void SecondAbility::WantOperationEqualsCase4(int code)
 {
     OperationBuilder opBuilder;
     auto operation = opBuilder.WithAbilityName("abilityName" + std::to_string(pressureTimes - 1))
-        .WithBundleName("bundleName")
-        .WithDeviceId("deviceId")
-        .WithAction("action")
-        .build();
+                        .WithBundleName("bundleName")
+                        .WithDeviceId("deviceId")
+                        .WithAction("action")
+                        .build();
     Want wantOne;
     wantOne.SetOperation(*operation);
     Want wantTwo;
@@ -5207,10 +5208,10 @@ void SecondAbility::WantOperationEqualsCase4(int code)
     bool result = true;
     for (int i = 0; i < pressureTimes; i++) {
         operationTwo = opBuilderTwo.WithAbilityName("abilityName" + std::to_string(i))
-            .WithBundleName("bundleName")
-            .WithDeviceId("deviceId")
-            .WithAction("action")
-            .build();
+                        .WithBundleName("bundleName")
+                        .WithDeviceId("deviceId")
+                        .WithAction("action")
+                        .build();
         wantTwo.SetOperation(*operationTwo);
         if (i == pressureTimes - 1) {
             result = result && wantOne.OperationEquals(wantTwo);
@@ -5239,10 +5240,10 @@ void SecondAbility::WantCloneOperationCase2(int code)
 {
     OperationBuilder opBuilder;
     auto operation = opBuilder.WithAbilityName("abilityName")
-        .WithBundleName("bundleName")
-        .WithDeviceId("deviceId")
-        .WithAction("action")
-        .build();
+                        .WithBundleName("bundleName")
+                        .WithDeviceId("deviceId")
+                        .WithAction("action")
+                        .build();
     Want want;
     want.SetOperation(*operation);
     Want *wantClone = want.CloneOperation();
