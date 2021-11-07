@@ -22,9 +22,9 @@ namespace AppExecFwk {
 using namespace OHOS::EventFwk;
 namespace {
 constexpr int numZero = 0;
-constexpr int numOne = 0;
-constexpr int numTwo = 0;
-constexpr int numThree = 0;
+constexpr int numOne = 1;
+constexpr int numTwo = 2;
+constexpr int numThree = 3;
 }
 
 void MainAbility::Init(const std::shared_ptr<AbilityInfo> &abilityInfo,

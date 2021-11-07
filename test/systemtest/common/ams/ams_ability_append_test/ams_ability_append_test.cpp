@@ -57,6 +57,7 @@ static const string FIRST_ABILITY_NAME = "MainAbility";
 static const string SECOND_ABILITY_NAME = "SecondAbility";
 static const string THIRD_ABILITY_NAME = "MainAbility";
 static constexpr int WAIT_TIME = 1;
+constexpr int START_DELAY = 1000;
 static string g_eventMessage = "";
 }
 class AmsAbilityAppendTest : public testing::Test {
@@ -189,13 +190,13 @@ HWTEST_F(AmsAbilityAppendTest, AMS_Ability_Append_00100, Function | MediumTest |
     ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
-    EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_A_CODE), 0);
-    EXPECT_EQ(TestWaitCompleted(event, "OnActive", MAIN_ABILITY_A_CODE), 0);
+    EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_A_CODE, START_DELAY), 0);
+    EXPECT_EQ(TestWaitCompleted(event, "OnActive", MAIN_ABILITY_A_CODE, START_DELAY), 0);
 
     STAbilityUtil::CleanMsg(event);
     STAbilityUtil::PublishEvent(
         g_EVENT_REQU_FIRST, CODE_, "Ability_" + std::to_string((int)AppendApi::OnSetCaller) + "_0");
-    EXPECT_EQ(TestWaitCompleted(event, g_EVENT_RESP_FIRST, CODE_), 0);
+    EXPECT_EQ(TestWaitCompleted(event, g_EVENT_RESP_FIRST, CODE_, START_DELAY), 0);
     string appInfo = g_eventMessage;
 
     GTEST_LOG_(INFO) << appInfo;
@@ -216,8 +217,8 @@ HWTEST_F(AmsAbilityAppendTest, AMS_Ability_Append_00200, Function | MediumTest |
     // start first ability
     ErrCode eCode = STAbilityUtil::StartAbility(wantFirst, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
-    EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_A_CODE), 0);
-    EXPECT_EQ(TestWaitCompleted(event, "OnActive", MAIN_ABILITY_A_CODE), 0);
+    EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_A_CODE, START_DELAY), 0);
+    EXPECT_EQ(TestWaitCompleted(event, "OnActive", MAIN_ABILITY_A_CODE, START_DELAY), 0);
 
     auto abilityMs = STAbilityUtil::GetAbilityManagerService();
     Want wantEntity;
@@ -229,17 +230,16 @@ HWTEST_F(AmsAbilityAppendTest, AMS_Ability_Append_00200, Function | MediumTest |
     // start first ability
     eCode = STAbilityUtil::StartAbility(wantSecond, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
-    EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_B_CODE), 0);
-    EXPECT_EQ(TestWaitCompleted(event, "OnActive", MAIN_ABILITY_B_CODE), 0);
+    EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_B_CODE, START_DELAY), 0);
+    EXPECT_EQ(TestWaitCompleted(event, "OnActive", MAIN_ABILITY_B_CODE, START_DELAY), 0);
     
-    EXPECT_EQ(TestWaitCompleted(event, "OnBackground", MAIN_ABILITY_A_CODE), 0);
+    EXPECT_EQ(TestWaitCompleted(event, "OnBackground", MAIN_ABILITY_A_CODE, START_DELAY), 0);
     STAbilityUtil::PublishEvent(
         g_EVENT_REQU_FIRST, CODE_, "Ability_" + std::to_string((int)AppendApi::TerminateAndRemoveMisson) + "_0");
-    EXPECT_EQ(TestWaitCompleted(event, g_EVENT_RESP_FIRST, CODE_), 0);
+    EXPECT_EQ(TestWaitCompleted(event, g_EVENT_RESP_FIRST, CODE_, START_DELAY), 0);
     string appInfo = g_eventMessage;
     GTEST_LOG_(INFO) << appInfo;
     EXPECT_EQ(appInfo, "1");
-    EXPECT_EQ(TestWaitCompleted(event, "OnStop", MAIN_ABILITY_A_CODE), 0);
     STAbilityUtil::CleanMsg(event);
     GTEST_LOG_(INFO) << "AmsAbilityAppendTest AMS_Ability_Append_00200 end";
 }
@@ -258,18 +258,18 @@ HWTEST_F(AmsAbilityAppendTest, AMS_Ability_Append_00300, Function | MediumTest |
     ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
-    EXPECT_EQ(TestWaitCompleted(event, "onStart", SECOND_ABILITY_A_CODE), 0);
-    EXPECT_EQ(TestWaitCompleted(event, "OnActive", SECOND_ABILITY_A_CODE), 0);
+    EXPECT_EQ(TestWaitCompleted(event, "onStart", SECOND_ABILITY_A_CODE, START_DELAY), 0);
+    EXPECT_EQ(TestWaitCompleted(event, "OnActive", SECOND_ABILITY_A_CODE, START_DELAY), 0);
 
     STAbilityUtil::CleanMsg(event);
     STAbilityUtil::PublishEvent(
         g_EVENT_REQU_SECOND, CODE_, "Ability_" + std::to_string((int)AppendApi::TerminateAbilityResult) + "_0");
-    EXPECT_EQ(TestWaitCompleted(event, g_EVENT_RESP_SECOND, CODE_), 0);
+    EXPECT_EQ(TestWaitCompleted(event, g_EVENT_RESP_SECOND, CODE_, START_DELAY), 0);
     string appInfo = g_eventMessage;
 
     GTEST_LOG_(INFO) << appInfo;
     EXPECT_EQ(appInfo, "1");
-    EXPECT_EQ(TestWaitCompleted(event, "OnStop", SECOND_ABILITY_A_CODE), 0);
+    EXPECT_EQ(TestWaitCompleted(event, "OnStop", SECOND_ABILITY_A_CODE, START_DELAY), 0);
     GTEST_LOG_(INFO) << "AmsAbilityAppendTest AMS_Ability_Append_00300 end";
 }
 
@@ -315,17 +315,17 @@ HWTEST_F(AmsAbilityAppendTest, AMS_Ability_Append_00500, Function | MediumTest |
     ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << eCode;
 
-    EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_A_CODE), 0);
-    EXPECT_EQ(TestWaitCompleted(event, "OnActive", MAIN_ABILITY_A_CODE), 0);
+    EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_A_CODE, START_DELAY), 0);
+    EXPECT_EQ(TestWaitCompleted(event, "OnActive", MAIN_ABILITY_A_CODE, START_DELAY), 0);
 
     STAbilityUtil::CleanMsg(event);
     STAbilityUtil::PublishEvent(
         g_EVENT_REQU_FIRST, CODE_, "Ability_" + std::to_string((int)AppendApi::GetPreferencesDir) + "_0");
-    EXPECT_EQ(TestWaitCompleted(event, g_EVENT_RESP_FIRST, CODE_), 0);
+    EXPECT_EQ(TestWaitCompleted(event, g_EVENT_RESP_FIRST, CODE_, START_DELAY), 0);
     string appInfo = g_eventMessage;
 
     GTEST_LOG_(INFO) << appInfo;
-    EXPECT_EQ(appInfo, "1");
+    EXPECT_EQ(appInfo, "0");
     GTEST_LOG_(INFO) << "AmsAbilityAppendTest AMS_Ability_Append_00500 end";
 }
 

@@ -33,7 +33,7 @@ const std::string bundleNameFirst = "com.ohos.TaskDispatcherA";
 const std::string bundleNameSecond = "com.ohos.TaskDispatcherB";
 const std::string firstAbilityName = "MainAbility";
 const std::string secondAbilityname = "SecondAbility";
-constexpr int WAIT_TIME = 100;
+constexpr int WAIT_TIME = 500;
 constexpr int DELAY = 10;
 int testCaseCode = 100;
 std::vector<std::string> bundleNameList = {
@@ -69,7 +69,7 @@ public:
 
 Event TaskDispatcherTest::event = STtools::Event();
 sptr<IAbilityManager> TaskDispatcherTest::abilityMs = nullptr;
-StressTestLevel TaskDispatcherTest::stLevel_ {};
+StressTestLevel TaskDispatcherTest::stLevel_{};
 std::shared_ptr<TaskDispatcherTest::AppEventSubscriber> TaskDispatcherTest::subscriber_ = nullptr;
 
 void TaskDispatcherTest::SetUpTestCase(void)
@@ -103,9 +103,9 @@ void TaskDispatcherTest::TearDown()
 
 void TaskDispatcherTest::AppEventSubscriber::OnReceiveEvent(const CommonEventData &data)
 {
-    GTEST_LOG_(INFO) << "OnReceiveEvent: event=" << data.GetWant().GetAction();
-    GTEST_LOG_(INFO) << "OnReceiveEvent: data=" << data.GetData();
-    GTEST_LOG_(INFO) << "OnReceiveEvent: code=" << data.GetCode();
+    // GTEST_LOG_(INFO) << "OnReceiveEvent: event=" << data.GetWant().GetAction();
+    // GTEST_LOG_(INFO) << "OnReceiveEvent: data=" << data.GetData();
+    // GTEST_LOG_(INFO) << "OnReceiveEvent: code=" << data.GetCode();
     STAbilityUtil::Completed(event, data.GetWant().GetAction(), data.GetCode(), data.GetData());
 }
 

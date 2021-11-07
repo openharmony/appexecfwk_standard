@@ -52,18 +52,18 @@ constexpr int numZero = 0;
 constexpr int numOne = 1;
 constexpr int numTwo = 2;
 constexpr int numThree = 3;
-}
+}  // namespace
 
 bool Wait(const int task_num)
 {
-    APP_LOGI("-- -- -- -- -- --MainAbility::Wait");
+    // APP_LOGI("-- -- -- -- -- --MainAbility::Wait");
     std::unique_lock<std::mutex> ulock(cv_mutex);
     using namespace std::chrono_literals;
     bool result = cv.wait_for(ulock, 5000ms, [task_num] { return terminated_task_num == task_num; });
     if (result) {
         allDispatchers.clear();
     }
-    APP_LOGI("-- -- -- -- -- --MainAbility::Wait result:%{public}d", result);
+    // APP_LOGI("-- -- -- -- -- --MainAbility::Wait result:%{public}d", result);
     return result;
 }
 
@@ -74,14 +74,14 @@ void TestTask(const std::string task_id)
         terminated_task_num++;
         task_execution_sequence += task_id + delimiter;
     }
-    APP_LOGI("-- -- -- -- -- --MainAbility::TestTask: %{public}d %{public}s", terminated_task_num, task_id.c_str());
+    // APP_LOGI("-- -- -- -- -- --MainAbility::TestTask: %{public}d %{public}s", terminated_task_num, task_id.c_str());
     TestUtils::PublishEvent(g_EVENT_RESP_FIRST, terminated_task_num, task_execution_sequence);
     cv.notify_one();
 }
 
 void Reset()
 {
-    APP_LOGI("-- -- -- -- -- --MainAbility::Reset");
+    // APP_LOGI("-- -- -- -- -- --MainAbility::Reset");
     terminated_task_num = 0;
     task_execution_sequence = delimiter;
     allDispatchers.clear();
@@ -89,9 +89,9 @@ void Reset()
 
 bool IsAscend(const std::vector<size_t> &vec)
 {
-    APP_LOGI("-- -- -- -- -- --MainAbility::IsAscend begin");
+    // APP_LOGI("-- -- -- -- -- --MainAbility::IsAscend begin");
     auto pos = std::adjacent_find(std::begin(vec), std::end(vec), std::greater<size_t>());
-    APP_LOGI("-- -- -- -- -- --MainAbility::IsAscend end result : %{public}d", pos == std::end(vec));
+    // APP_LOGI("-- -- -- -- -- --MainAbility::IsAscend end result : %{public}d", pos == std::end(vec));
     return pos == std::end(vec);
 }
 
@@ -245,29 +245,31 @@ void setTaskIndex(std::string taskId, std::vector<size_t> &taskIndex)
 void GetTaskIndex(std::vector<size_t> &outerTaskIndex, std::vector<std::vector<size_t>> &innerTaskIndex,
     const int outerCnt = testTaskCount, const int innerCnt = testTaskCount)
 {
-    APP_LOGI("-- -- -- -- -- --MainAbility::GetTaskIndex begin");
+    // APP_LOGI("-- -- -- -- -- --MainAbility::GetTaskIndex begin");
     std::string outerTaskId;
     std::string innerTaskId;
     outerTaskIndex.resize(outerCnt);
-    APP_LOGI("-- -- -- -- -- --MainAbility::GetTaskIndex outersize : %{public}zu", outerTaskIndex.size());
+    // APP_LOGI("-- -- -- -- -- --MainAbility::GetTaskIndex outersize : %{public}zu", outerTaskIndex.size());
     innerTaskIndex.resize(outerCnt);
-    APP_LOGI("-- -- -- -- -- --MainAbility::GetTaskIndex innersize : %{public}zu", innerTaskIndex.size());
+    // APP_LOGI("-- -- -- -- -- --MainAbility::GetTaskIndex innersize : %{public}zu", innerTaskIndex.size());
     for (auto &inner : innerTaskIndex) {
         inner.resize(innerCnt);
-        APP_LOGI("-- -- -- -- -- --MainAbility::GetTaskIndex inner :%{public}zu", inner.size());
+        // APP_LOGI("-- -- -- -- -- --MainAbility::GetTaskIndex inner :%{public}zu", inner.size());
     }
     for (int i = 0; i < outerCnt; i++) {
         outerTaskId = delimiter + std::to_string(i) + delimiter;
         outerTaskIndex[i] = task_execution_sequence.find(outerTaskId);
-        APP_LOGI(
-            "-- -- -- -- -- --MainAbility::GetTaskIndex outerTaskIndex[%{public}d]:%{public}zu", i, outerTaskIndex[i]);
+        // APP_LOGI(
+        //     "-- -- -- -- -- --MainAbility::GetTaskIndex outerTaskIndex[%{public}d]:%{public}zu", i,
+        //     outerTaskIndex[i]);
         for (int j = 0; j < innerCnt; j++) {
             innerTaskId = delimiter + std::to_string(i) + innerDelimiter + std::to_string(j) + delimiter;
             innerTaskIndex[i][j] = task_execution_sequence.find(innerTaskId);
-            APP_LOGI("-- -- -- -- -- --MainAbility::GetTaskIndex innerTaskIndex[%{public}d][%{public}d]:%{public}zu",
-                i,
-                j,
-                innerTaskIndex[i][j]);
+            //     APP_LOGI("-- -- -- -- -- --MainAbility::GetTaskIndex
+            //     innerTaskIndex[%{public}d][%{public}d]:%{public}zu",
+            //         i,
+            //         j,
+            //         innerTaskIndex[i][j]);
         }
         std::string taskId = innerSyncBarrierId + std::to_string(i);
         setTaskIndex(taskId, innerTaskIndex[i]);
@@ -357,9 +359,9 @@ void MainAbility::SubscribeEvent()
 
 void FirstEventSubscriber::OnReceiveEvent(const CommonEventData &data)
 {
-    APP_LOGI("FirstEventSubscriber::OnReceiveEvent:event=%{public}s", data.GetWant().GetAction().c_str());
-    APP_LOGI("FirstEventSubscriber::OnReceiveEvent:data=%{public}s", data.GetData().c_str());
-    APP_LOGI("FirstEventSubscriber::OnReceiveEvent:code=%{public}d", data.GetCode());
+    // APP_LOGI("FirstEventSubscriber::OnReceiveEvent:event=%{public}s", data.GetWant().GetAction().c_str());
+    // APP_LOGI("FirstEventSubscriber::OnReceiveEvent:data=%{public}s", data.GetData().c_str());
+    // APP_LOGI("FirstEventSubscriber::OnReceiveEvent:code=%{public}d", data.GetCode());
     auto eventName = data.GetWant().GetAction();
     if (std::strcmp(eventName.c_str(), g_EVENT_REQU_FIRST.c_str()) == 0) {
         auto target = data.GetData();
@@ -385,7 +387,8 @@ void MainAbility::TestDispatcher(int apiIndex, int caseIndex, int code)
     }
 }
 
-void SetInnerTask(TaskList innerDispatcher, TestSetting innerSetting, std::string outerTaskId, int innerTaskSeq) {
+void SetInnerTask(TaskList &innerDispatcher, TestSetting innerSetting, std::string outerTaskId, int innerTaskSeq)
+{
     std::string innerTaskId = outerTaskId + innerDelimiter + std::to_string(innerTaskSeq);
     auto innerTask = std::make_shared<Runnable>([=]() { TestTask(innerTaskId); });
     innerDispatcher.addOperation(innerSetting.op);
@@ -398,7 +401,8 @@ void SetInnerTask(TaskList innerDispatcher, TestSetting innerSetting, std::strin
     innerDispatcher.addFunc(innerTask);
 }
 
-void SetInnerTaskOther(TaskList innerDispatcher, TestSetting innerSetting, int outerTaskSeq) {
+void SetInnerTaskOther(TaskList &innerDispatcher, TestSetting innerSetting, int outerTaskSeq)
+{
     if (innerSetting.sync_barrier) {
         std::string taskId = innerSyncBarrierId + std::to_string(outerTaskSeq);
         auto task = std::make_shared<Runnable>([=]() { TestTask(taskId); });
@@ -419,7 +423,8 @@ void SetInnerTaskOther(TaskList innerDispatcher, TestSetting innerSetting, int o
     }
 }
 
-void SetOuterTaskOther(TaskList outerDispatcher, TestSetting outerSetting) {
+void SetOuterTaskOther(TaskList &outerDispatcher, TestSetting outerSetting)
+{
     if (outerSetting.sync_barrier) {
         auto task = std::make_shared<Runnable>([=]() { TestTask(outerSyncBarrierId); });
         outerDispatcher.addOperation(TestOperation::SYNC_BARRIER).addFunc(task);
@@ -437,7 +442,8 @@ void SetOuterTaskOther(TaskList outerDispatcher, TestSetting outerSetting) {
     }
 }
 
-int CountTask(TestSetting outerSetting, TestSetting innerSetting) {
+int CountTask(TestSetting outerSetting, TestSetting innerSetting)
+{
     int taskCount = 0;
     taskCount = (innerSetting.op == TestOperation::APPLY) ? (innerSetting.apply * testTaskCount) : testTaskCount;
     if (innerSetting.sync_barrier) {
@@ -470,7 +476,7 @@ int MainAbility::Dispatch(TestSetting outerSetting, TestSetting innerSetting)
     std::string innerName = "innerDispatcher";
     std::string outerTaskId;
     auto context = GetContext();
-    TaskList outerDispatcher {outerSetting.dispatcher, context, outerName};
+    TaskList outerDispatcher{outerSetting.dispatcher, context, outerName};
     if (outerSetting.create_group) {
         outerDispatcher.addOperation(TestOperation::CREATE_GROUP);
     }
@@ -478,7 +484,7 @@ int MainAbility::Dispatch(TestSetting outerSetting, TestSetting innerSetting)
         outerTaskId = std::to_string(i);
         auto outerTask = std::make_shared<Runnable>([=]() {
             auto context = this->GetContext();
-            TaskList innerDispatcher {innerSetting.dispatcher, context, innerName + std::to_string(i)};
+            TaskList innerDispatcher{innerSetting.dispatcher, context, innerName + std::to_string(i)};
             if (innerSetting.create_group) {
                 innerDispatcher.addOperation(TestOperation::CREATE_GROUP);
             }
@@ -8988,7 +8994,7 @@ void MainAbility::HybridCase1(int code)
     APP_LOGI("-- -- -- -- -- --MainAbility::%{public}s", __FUNCTION__);
     Reset();
     auto context = GetContext();
-    TaskList globalDispatcher = TaskList {TestDispatcher::GLOBAL, context, "global"};
+    TaskList globalDispatcher = TaskList{TestDispatcher::GLOBAL, context, "global"};
     std::vector<TestOperation> operationList = {
         TestOperation::SYNC,
         TestOperation::ASYNC,
@@ -9018,7 +9024,7 @@ void MainAbility::HybridCase2(int code)
     APP_LOGI("-- -- -- -- -- --MainAbility::%{public}s", __FUNCTION__);
     Reset();
     auto context = GetContext();
-    TaskList parallelDispatcher = TaskList {TestDispatcher::PARALLEL, context, "parallel"};
+    TaskList parallelDispatcher = TaskList{TestDispatcher::PARALLEL, context, "parallel"};
     std::vector<TestOperation> operationList = {
         TestOperation::SYNC,
         TestOperation::ASYNC,
@@ -9052,7 +9058,7 @@ void MainAbility::HybridCase3(int code)
     APP_LOGI("-- -- -- -- -- --MainAbility::%{public}s", __FUNCTION__);
     Reset();
     auto context = GetContext();
-    TaskList serialDispatcher = TaskList {TestDispatcher::SERIAL, context, "serial"};
+    TaskList serialDispatcher = TaskList{TestDispatcher::SERIAL, context, "serial"};
     std::vector<TestOperation> operationList = {
         TestOperation::SYNC,
         TestOperation::ASYNC,
@@ -9079,7 +9085,7 @@ void MainAbility::HybridCase4(int code)
     APP_LOGI("-- -- -- -- -- --MainAbility::%{public}s", __FUNCTION__);
     Reset();
     auto context = GetContext();
-    TaskList mainDispatcher = TaskList {TestDispatcher::MAIN, context, "main"};
+    TaskList mainDispatcher = TaskList{TestDispatcher::MAIN, context, "main"};
     std::vector<TestOperation> operationList = {
         TestOperation::SYNC,
         TestOperation::ASYNC,
@@ -9106,12 +9112,12 @@ void MainAbility::HybridCase5(int code)
     APP_LOGI("-- -- -- -- -- --MainAbility::%{public}s", __FUNCTION__);
     Reset();
     auto context = GetContext();
-    TaskList globalDispatcher = TaskList {TestDispatcher::GLOBAL, context, "global"};
-    TaskList parallelDispatcher1 = TaskList {TestDispatcher::PARALLEL, context, "parallel1"};
-    TaskList parallelDispatcher2 = TaskList {TestDispatcher::PARALLEL, context, "parallel2"};
-    TaskList serialDispatcher1 = TaskList {TestDispatcher::SERIAL, context, "serial1"};
-    TaskList serialDispatcher2 = TaskList {TestDispatcher::SERIAL, context, "serial2"};
-    TaskList mainDispatcher = TaskList {TestDispatcher::MAIN, context, "main"};
+    TaskList globalDispatcher = TaskList{TestDispatcher::GLOBAL, context, "global"};
+    TaskList parallelDispatcher1 = TaskList{TestDispatcher::PARALLEL, context, "parallel1"};
+    TaskList parallelDispatcher2 = TaskList{TestDispatcher::PARALLEL, context, "parallel2"};
+    TaskList serialDispatcher1 = TaskList{TestDispatcher::SERIAL, context, "serial1"};
+    TaskList serialDispatcher2 = TaskList{TestDispatcher::SERIAL, context, "serial2"};
+    TaskList mainDispatcher = TaskList{TestDispatcher::MAIN, context, "main"};
     int taskId = 0;
     globalDispatcher.addOperation(TestOperation::SYNC)
         .addFunc(std::make_shared<Runnable>([=]() { TestTask(std::to_string(taskId)); }))
@@ -9152,12 +9158,12 @@ void MainAbility::HybridCase6(int code)
     APP_LOGI("-- -- -- -- -- --MainAbility::%{public}s", __FUNCTION__);
     Reset();
     auto context = GetContext();
-    TaskList globalDispatcher = TaskList {TestDispatcher::GLOBAL, context, "global"};
-    TaskList parallelDispatcher1 = TaskList {TestDispatcher::PARALLEL, context, "parallel1"};
-    TaskList parallelDispatcher2 = TaskList {TestDispatcher::PARALLEL, context, "parallel2"};
-    TaskList serialDispatcher1 = TaskList {TestDispatcher::SERIAL, context, "serial1"};
-    TaskList serialDispatcher2 = TaskList {TestDispatcher::SERIAL, context, "serial2"};
-    TaskList mainDispatcher = TaskList {TestDispatcher::MAIN, context, "main"};
+    TaskList globalDispatcher = TaskList{TestDispatcher::GLOBAL, context, "global"};
+    TaskList parallelDispatcher1 = TaskList{TestDispatcher::PARALLEL, context, "parallel1"};
+    TaskList parallelDispatcher2 = TaskList{TestDispatcher::PARALLEL, context, "parallel2"};
+    TaskList serialDispatcher1 = TaskList{TestDispatcher::SERIAL, context, "serial1"};
+    TaskList serialDispatcher2 = TaskList{TestDispatcher::SERIAL, context, "serial2"};
+    TaskList mainDispatcher = TaskList{TestDispatcher::MAIN, context, "main"};
     int taskId = 0;
     globalDispatcher.addOperation(TestOperation::ASYNC)
         .addFunc(std::make_shared<Runnable>([=]() { TestTask(std::to_string(taskId)); }))
@@ -9198,12 +9204,12 @@ void MainAbility::HybridCase7(int code)
     APP_LOGI("-- -- -- -- -- --MainAbility::%{public}s", __FUNCTION__);
     Reset();
     auto context = GetContext();
-    TaskList globalDispatcher = TaskList {TestDispatcher::GLOBAL, context, "global"};
-    TaskList parallelDispatcher1 = TaskList {TestDispatcher::PARALLEL, context, "parallel1"};
-    TaskList parallelDispatcher2 = TaskList {TestDispatcher::PARALLEL, context, "parallel2"};
-    TaskList serialDispatcher1 = TaskList {TestDispatcher::SERIAL, context, "serial1"};
-    TaskList serialDispatcher2 = TaskList {TestDispatcher::SERIAL, context, "serial2"};
-    TaskList mainDispatcher = TaskList {TestDispatcher::MAIN, context, "main"};
+    TaskList globalDispatcher = TaskList{TestDispatcher::GLOBAL, context, "global"};
+    TaskList parallelDispatcher1 = TaskList{TestDispatcher::PARALLEL, context, "parallel1"};
+    TaskList parallelDispatcher2 = TaskList{TestDispatcher::PARALLEL, context, "parallel2"};
+    TaskList serialDispatcher1 = TaskList{TestDispatcher::SERIAL, context, "serial1"};
+    TaskList serialDispatcher2 = TaskList{TestDispatcher::SERIAL, context, "serial2"};
+    TaskList mainDispatcher = TaskList{TestDispatcher::MAIN, context, "main"};
     int taskId = 0;
     const long delay = 10;
     globalDispatcher.addOperation(TestOperation::DELAY)
@@ -9251,12 +9257,12 @@ void MainAbility::HybridCase8(int code)
     APP_LOGI("-- -- -- -- -- --MainAbility::%{public}s", __FUNCTION__);
     Reset();
     auto context = GetContext();
-    TaskList globalDispatcher = TaskList {TestDispatcher::GLOBAL, context, "global"};
-    TaskList parallelDispatcher1 = TaskList {TestDispatcher::PARALLEL, context, "parallel1"};
-    TaskList parallelDispatcher2 = TaskList {TestDispatcher::PARALLEL, context, "parallel2"};
-    TaskList serialDispatcher1 = TaskList {TestDispatcher::SERIAL, context, "serial1"};
-    TaskList serialDispatcher2 = TaskList {TestDispatcher::SERIAL, context, "serial2"};
-    TaskList mainDispatcher = TaskList {TestDispatcher::MAIN, context, "main"};
+    TaskList globalDispatcher = TaskList{TestDispatcher::GLOBAL, context, "global"};
+    TaskList parallelDispatcher1 = TaskList{TestDispatcher::PARALLEL, context, "parallel1"};
+    TaskList parallelDispatcher2 = TaskList{TestDispatcher::PARALLEL, context, "parallel2"};
+    TaskList serialDispatcher1 = TaskList{TestDispatcher::SERIAL, context, "serial1"};
+    TaskList serialDispatcher2 = TaskList{TestDispatcher::SERIAL, context, "serial2"};
+    TaskList mainDispatcher = TaskList{TestDispatcher::MAIN, context, "main"};
     int taskId = 0;
     globalDispatcher.addOperation(TestOperation::CREATE_GROUP)
         .addOperation(TestOperation::ASYNC_GROUP)
@@ -9300,12 +9306,12 @@ void MainAbility::HybridCase9(int code)
     APP_LOGI("-- -- -- -- -- --MainAbility::%{public}s", __FUNCTION__);
     Reset();
     auto context = GetContext();
-    TaskList globalDispatcher = TaskList {TestDispatcher::GLOBAL, context, "global"};
-    TaskList parallelDispatcher1 = TaskList {TestDispatcher::PARALLEL, context, "parallel1"};
-    TaskList parallelDispatcher2 = TaskList {TestDispatcher::PARALLEL, context, "parallel2"};
-    TaskList serialDispatcher1 = TaskList {TestDispatcher::SERIAL, context, "serial1"};
-    TaskList serialDispatcher2 = TaskList {TestDispatcher::SERIAL, context, "serial2"};
-    TaskList mainDispatcher = TaskList {TestDispatcher::MAIN, context, "main"};
+    TaskList globalDispatcher = TaskList{TestDispatcher::GLOBAL, context, "global"};
+    TaskList parallelDispatcher1 = TaskList{TestDispatcher::PARALLEL, context, "parallel1"};
+    TaskList parallelDispatcher2 = TaskList{TestDispatcher::PARALLEL, context, "parallel2"};
+    TaskList serialDispatcher1 = TaskList{TestDispatcher::SERIAL, context, "serial1"};
+    TaskList serialDispatcher2 = TaskList{TestDispatcher::SERIAL, context, "serial2"};
+    TaskList mainDispatcher = TaskList{TestDispatcher::MAIN, context, "main"};
     int taskId = 0;
     globalDispatcher.addOperation(TestOperation::CREATE_GROUP)
         .addOperation(TestOperation::ASYNC_GROUP)
@@ -9349,12 +9355,12 @@ void MainAbility::HybridCase10(int code)
     APP_LOGI("-- -- -- -- -- --MainAbility::%{public}s", __FUNCTION__);
     Reset();
     auto context = GetContext();
-    TaskList globalDispatcher = TaskList {TestDispatcher::GLOBAL, context, "global"};
-    TaskList parallelDispatcher1 = TaskList {TestDispatcher::PARALLEL, context, "parallel1"};
-    TaskList parallelDispatcher2 = TaskList {TestDispatcher::PARALLEL, context, "parallel2"};
-    TaskList serialDispatcher1 = TaskList {TestDispatcher::SERIAL, context, "serial1"};
-    TaskList serialDispatcher2 = TaskList {TestDispatcher::SERIAL, context, "serial2"};
-    TaskList mainDispatcher = TaskList {TestDispatcher::MAIN, context, "main"};
+    TaskList globalDispatcher = TaskList{TestDispatcher::GLOBAL, context, "global"};
+    TaskList parallelDispatcher1 = TaskList{TestDispatcher::PARALLEL, context, "parallel1"};
+    TaskList parallelDispatcher2 = TaskList{TestDispatcher::PARALLEL, context, "parallel2"};
+    TaskList serialDispatcher1 = TaskList{TestDispatcher::SERIAL, context, "serial1"};
+    TaskList serialDispatcher2 = TaskList{TestDispatcher::SERIAL, context, "serial2"};
+    TaskList mainDispatcher = TaskList{TestDispatcher::MAIN, context, "main"};
     int taskId = 0;
     const long delay = 10;
     globalDispatcher.addOperation(TestOperation::CREATE_GROUP)
@@ -9402,12 +9408,12 @@ void MainAbility::HybridCase11(int code)
     APP_LOGI("-- -- -- -- -- --MainAbility::%{public}s", __FUNCTION__);
     Reset();
     auto context = GetContext();
-    TaskList globalDispatcher = TaskList {TestDispatcher::GLOBAL, context, "global"};
-    TaskList parallelDispatcher1 = TaskList {TestDispatcher::PARALLEL, context, "parallel1"};
-    TaskList parallelDispatcher2 = TaskList {TestDispatcher::PARALLEL, context, "parallel2"};
-    TaskList serialDispatcher1 = TaskList {TestDispatcher::SERIAL, context, "serial1"};
-    TaskList serialDispatcher2 = TaskList {TestDispatcher::SERIAL, context, "serial2"};
-    TaskList mainDispatcher = TaskList {TestDispatcher::MAIN, context, "main"};
+    TaskList globalDispatcher = TaskList{TestDispatcher::GLOBAL, context, "global"};
+    TaskList parallelDispatcher1 = TaskList{TestDispatcher::PARALLEL, context, "parallel1"};
+    TaskList parallelDispatcher2 = TaskList{TestDispatcher::PARALLEL, context, "parallel2"};
+    TaskList serialDispatcher1 = TaskList{TestDispatcher::SERIAL, context, "serial1"};
+    TaskList serialDispatcher2 = TaskList{TestDispatcher::SERIAL, context, "serial2"};
+    TaskList mainDispatcher = TaskList{TestDispatcher::MAIN, context, "main"};
     int taskId = 0;
     globalDispatcher.addOperation(TestOperation::CREATE_GROUP)
         .addOperation(TestOperation::ASYNC_GROUP)
@@ -9457,12 +9463,12 @@ void MainAbility::HybridCase12(int code)
     APP_LOGI("-- -- -- -- -- --MainAbility::%{public}s", __FUNCTION__);
     Reset();
     auto context = GetContext();
-    TaskList globalDispatcher = TaskList {TestDispatcher::GLOBAL, context, "global"};
-    TaskList parallelDispatcher1 = TaskList {TestDispatcher::PARALLEL, context, "parallel1"};
-    TaskList parallelDispatcher2 = TaskList {TestDispatcher::PARALLEL, context, "parallel2"};
-    TaskList serialDispatcher1 = TaskList {TestDispatcher::SERIAL, context, "serial1"};
-    TaskList serialDispatcher2 = TaskList {TestDispatcher::SERIAL, context, "serial2"};
-    TaskList mainDispatcher = TaskList {TestDispatcher::MAIN, context, "main"};
+    TaskList globalDispatcher = TaskList{TestDispatcher::GLOBAL, context, "global"};
+    TaskList parallelDispatcher1 = TaskList{TestDispatcher::PARALLEL, context, "parallel1"};
+    TaskList parallelDispatcher2 = TaskList{TestDispatcher::PARALLEL, context, "parallel2"};
+    TaskList serialDispatcher1 = TaskList{TestDispatcher::SERIAL, context, "serial1"};
+    TaskList serialDispatcher2 = TaskList{TestDispatcher::SERIAL, context, "serial2"};
+    TaskList mainDispatcher = TaskList{TestDispatcher::MAIN, context, "main"};
     int taskId = 0;
     int taskCount = 0;
     const int apply = 2;
@@ -9517,12 +9523,12 @@ void MainAbility::HybridCase13(int code)
     APP_LOGI("-- -- -- -- -- --MainAbility::%{public}s", __FUNCTION__);
     Reset();
     auto context = GetContext();
-    TaskList globalDispatcher = TaskList {TestDispatcher::GLOBAL, context, "global"};
-    TaskList parallelDispatcher1 = TaskList {TestDispatcher::PARALLEL, context, "parallel1"};
-    TaskList parallelDispatcher2 = TaskList {TestDispatcher::PARALLEL, context, "parallel2"};
-    TaskList serialDispatcher1 = TaskList {TestDispatcher::SERIAL, context, "serial1"};
-    TaskList serialDispatcher2 = TaskList {TestDispatcher::SERIAL, context, "serial2"};
-    TaskList mainDispatcher = TaskList {TestDispatcher::MAIN, context, "main"};
+    TaskList globalDispatcher = TaskList{TestDispatcher::GLOBAL, context, "global"};
+    TaskList parallelDispatcher1 = TaskList{TestDispatcher::PARALLEL, context, "parallel1"};
+    TaskList parallelDispatcher2 = TaskList{TestDispatcher::PARALLEL, context, "parallel2"};
+    TaskList serialDispatcher1 = TaskList{TestDispatcher::SERIAL, context, "serial1"};
+    TaskList serialDispatcher2 = TaskList{TestDispatcher::SERIAL, context, "serial2"};
+    TaskList mainDispatcher = TaskList{TestDispatcher::MAIN, context, "main"};
     int taskId = 0;
     int taskCount = 0;
     const int apply = 1;
@@ -9574,12 +9580,12 @@ void MainAbility::HybridCase14(int code)
     APP_LOGI("-- -- -- -- -- --MainAbility::%{public}s", __FUNCTION__);
     Reset();
     auto context = GetContext();
-    TaskList globalDispatcher = TaskList {TestDispatcher::GLOBAL, context, "global"};
-    TaskList parallelDispatcher1 = TaskList {TestDispatcher::PARALLEL, context, "parallel1"};
-    TaskList parallelDispatcher2 = TaskList {TestDispatcher::PARALLEL, context, "parallel2"};
-    TaskList serialDispatcher1 = TaskList {TestDispatcher::SERIAL, context, "serial1"};
-    TaskList serialDispatcher2 = TaskList {TestDispatcher::SERIAL, context, "serial2"};
-    TaskList mainDispatcher = TaskList {TestDispatcher::MAIN, context, "main"};
+    TaskList globalDispatcher = TaskList{TestDispatcher::GLOBAL, context, "global"};
+    TaskList parallelDispatcher1 = TaskList{TestDispatcher::PARALLEL, context, "parallel1"};
+    TaskList parallelDispatcher2 = TaskList{TestDispatcher::PARALLEL, context, "parallel2"};
+    TaskList serialDispatcher1 = TaskList{TestDispatcher::SERIAL, context, "serial1"};
+    TaskList serialDispatcher2 = TaskList{TestDispatcher::SERIAL, context, "serial2"};
+    TaskList mainDispatcher = TaskList{TestDispatcher::MAIN, context, "main"};
     int taskId = 0;
     int taskCount = 0;
     const int apply = 2;
@@ -9633,12 +9639,12 @@ void MainAbility::HybridCase15(int code)
     APP_LOGI("-- -- -- -- -- --MainAbility::%{public}s", __FUNCTION__);
     Reset();
     auto context = GetContext();
-    TaskList globalDispatcher = TaskList {TestDispatcher::GLOBAL, context, "global"};
-    TaskList parallelDispatcher1 = TaskList {TestDispatcher::PARALLEL, context, "parallel1"};
-    TaskList parallelDispatcher2 = TaskList {TestDispatcher::PARALLEL, context, "parallel2"};
-    TaskList serialDispatcher1 = TaskList {TestDispatcher::SERIAL, context, "serial1"};
-    TaskList serialDispatcher2 = TaskList {TestDispatcher::SERIAL, context, "serial2"};
-    TaskList mainDispatcher = TaskList {TestDispatcher::MAIN, context, "main"};
+    TaskList globalDispatcher = TaskList{TestDispatcher::GLOBAL, context, "global"};
+    TaskList parallelDispatcher1 = TaskList{TestDispatcher::PARALLEL, context, "parallel1"};
+    TaskList parallelDispatcher2 = TaskList{TestDispatcher::PARALLEL, context, "parallel2"};
+    TaskList serialDispatcher1 = TaskList{TestDispatcher::SERIAL, context, "serial1"};
+    TaskList serialDispatcher2 = TaskList{TestDispatcher::SERIAL, context, "serial2"};
+    TaskList mainDispatcher = TaskList{TestDispatcher::MAIN, context, "main"};
     int taskId = 0;
     int taskCount = 0;
     const int apply = 2;
@@ -9694,12 +9700,12 @@ void MainAbility::HybridCase16(int code)
     APP_LOGI("-- -- -- -- -- --MainAbility::%{public}s", __FUNCTION__);
     Reset();
     auto context = GetContext();
-    TaskList globalDispatcher = TaskList {TestDispatcher::GLOBAL, context, "global"};
-    TaskList parallelDispatcher1 = TaskList {TestDispatcher::PARALLEL, context, "parallel1"};
-    TaskList parallelDispatcher2 = TaskList {TestDispatcher::PARALLEL, context, "parallel2"};
-    TaskList serialDispatcher1 = TaskList {TestDispatcher::SERIAL, context, "serial1"};
-    TaskList serialDispatcher2 = TaskList {TestDispatcher::SERIAL, context, "serial2"};
-    TaskList mainDispatcher = TaskList {TestDispatcher::MAIN, context, "main"};
+    TaskList globalDispatcher = TaskList{TestDispatcher::GLOBAL, context, "global"};
+    TaskList parallelDispatcher1 = TaskList{TestDispatcher::PARALLEL, context, "parallel1"};
+    TaskList parallelDispatcher2 = TaskList{TestDispatcher::PARALLEL, context, "parallel2"};
+    TaskList serialDispatcher1 = TaskList{TestDispatcher::SERIAL, context, "serial1"};
+    TaskList serialDispatcher2 = TaskList{TestDispatcher::SERIAL, context, "serial2"};
+    TaskList mainDispatcher = TaskList{TestDispatcher::MAIN, context, "main"};
     int taskId = 0;
     int taskCount = 0;
     const int apply = 2;
@@ -9755,12 +9761,12 @@ void MainAbility::HybridCase17(int code)
     APP_LOGI("-- -- -- -- -- --MainAbility::%{public}s", __FUNCTION__);
     Reset();
     auto context = GetContext();
-    TaskList globalDispatcher = TaskList {TestDispatcher::GLOBAL, context, "global"};
-    TaskList parallelDispatcher1 = TaskList {TestDispatcher::PARALLEL, context, "parallel1"};
-    TaskList parallelDispatcher2 = TaskList {TestDispatcher::PARALLEL, context, "parallel2"};
-    TaskList serialDispatcher1 = TaskList {TestDispatcher::SERIAL, context, "serial1"};
-    TaskList serialDispatcher2 = TaskList {TestDispatcher::SERIAL, context, "serial2"};
-    TaskList mainDispatcher = TaskList {TestDispatcher::MAIN, context, "main"};
+    TaskList globalDispatcher = TaskList{TestDispatcher::GLOBAL, context, "global"};
+    TaskList parallelDispatcher1 = TaskList{TestDispatcher::PARALLEL, context, "parallel1"};
+    TaskList parallelDispatcher2 = TaskList{TestDispatcher::PARALLEL, context, "parallel2"};
+    TaskList serialDispatcher1 = TaskList{TestDispatcher::SERIAL, context, "serial1"};
+    TaskList serialDispatcher2 = TaskList{TestDispatcher::SERIAL, context, "serial2"};
+    TaskList mainDispatcher = TaskList{TestDispatcher::MAIN, context, "main"};
     int taskId = 0;
     int taskCount = 0;
     const int apply = 2;
@@ -9810,12 +9816,12 @@ void MainAbility::HybridCase18(int code)
     APP_LOGI("-- -- -- -- -- --MainAbility::%{public}s", __FUNCTION__);
     Reset();
     auto context = GetContext();
-    TaskList globalDispatcher = TaskList {TestDispatcher::GLOBAL, context, "global"};
-    TaskList parallelDispatcher1 = TaskList {TestDispatcher::PARALLEL, context, "parallel1"};
-    TaskList parallelDispatcher2 = TaskList {TestDispatcher::PARALLEL, context, "parallel2"};
-    TaskList serialDispatcher1 = TaskList {TestDispatcher::SERIAL, context, "serial1"};
-    TaskList serialDispatcher2 = TaskList {TestDispatcher::SERIAL, context, "serial2"};
-    TaskList mainDispatcher = TaskList {TestDispatcher::MAIN, context, "main"};
+    TaskList globalDispatcher = TaskList{TestDispatcher::GLOBAL, context, "global"};
+    TaskList parallelDispatcher1 = TaskList{TestDispatcher::PARALLEL, context, "parallel1"};
+    TaskList parallelDispatcher2 = TaskList{TestDispatcher::PARALLEL, context, "parallel2"};
+    TaskList serialDispatcher1 = TaskList{TestDispatcher::SERIAL, context, "serial1"};
+    TaskList serialDispatcher2 = TaskList{TestDispatcher::SERIAL, context, "serial2"};
+    TaskList mainDispatcher = TaskList{TestDispatcher::MAIN, context, "main"};
     int taskId = 0;
     int taskCount = 0;
     const int apply = 2;
@@ -9867,12 +9873,12 @@ void MainAbility::HybridCase19(int code)
     APP_LOGI("-- -- -- -- -- --MainAbility::%{public}s", __FUNCTION__);
     Reset();
     auto context = GetContext();
-    TaskList globalDispatcher = TaskList {TestDispatcher::GLOBAL, context, "global"};
-    TaskList parallelDispatcher1 = TaskList {TestDispatcher::PARALLEL, context, "parallel1"};
-    TaskList parallelDispatcher2 = TaskList {TestDispatcher::PARALLEL, context, "parallel2"};
-    TaskList serialDispatcher1 = TaskList {TestDispatcher::SERIAL, context, "serial1"};
-    TaskList serialDispatcher2 = TaskList {TestDispatcher::SERIAL, context, "serial2"};
-    TaskList mainDispatcher = TaskList {TestDispatcher::MAIN, context, "main"};
+    TaskList globalDispatcher = TaskList{TestDispatcher::GLOBAL, context, "global"};
+    TaskList parallelDispatcher1 = TaskList{TestDispatcher::PARALLEL, context, "parallel1"};
+    TaskList parallelDispatcher2 = TaskList{TestDispatcher::PARALLEL, context, "parallel2"};
+    TaskList serialDispatcher1 = TaskList{TestDispatcher::SERIAL, context, "serial1"};
+    TaskList serialDispatcher2 = TaskList{TestDispatcher::SERIAL, context, "serial2"};
+    TaskList mainDispatcher = TaskList{TestDispatcher::MAIN, context, "main"};
     int taskId = 0;
     int taskCount = 0;
     const int apply = 2;
@@ -9925,12 +9931,12 @@ void MainAbility::HybridCase20(int code)
     APP_LOGI("-- -- -- -- -- --MainAbility::%{public}s", __FUNCTION__);
     Reset();
     auto context = GetContext();
-    TaskList globalDispatcher = TaskList {TestDispatcher::GLOBAL, context, "global"};
-    TaskList parallelDispatcher1 = TaskList {TestDispatcher::PARALLEL, context, "parallel1"};
-    TaskList parallelDispatcher2 = TaskList {TestDispatcher::PARALLEL, context, "parallel2"};
-    TaskList serialDispatcher1 = TaskList {TestDispatcher::SERIAL, context, "serial1"};
-    TaskList serialDispatcher2 = TaskList {TestDispatcher::SERIAL, context, "serial2"};
-    TaskList mainDispatcher = TaskList {TestDispatcher::MAIN, context, "main"};
+    TaskList globalDispatcher = TaskList{TestDispatcher::GLOBAL, context, "global"};
+    TaskList parallelDispatcher1 = TaskList{TestDispatcher::PARALLEL, context, "parallel1"};
+    TaskList parallelDispatcher2 = TaskList{TestDispatcher::PARALLEL, context, "parallel2"};
+    TaskList serialDispatcher1 = TaskList{TestDispatcher::SERIAL, context, "serial1"};
+    TaskList serialDispatcher2 = TaskList{TestDispatcher::SERIAL, context, "serial2"};
+    TaskList mainDispatcher = TaskList{TestDispatcher::MAIN, context, "main"};
     int taskId = 0;
     int taskCount = 0;
     const int apply = 2;
@@ -9986,12 +9992,12 @@ void MainAbility::HybridCase21(int code)
     APP_LOGI("-- -- -- -- -- --MainAbility::%{public}s", __FUNCTION__);
     Reset();
     auto context = GetContext();
-    TaskList globalDispatcher = TaskList {TestDispatcher::GLOBAL, context, "global"};
-    TaskList parallelDispatcher1 = TaskList {TestDispatcher::PARALLEL, context, "parallel1"};
-    TaskList parallelDispatcher2 = TaskList {TestDispatcher::PARALLEL, context, "parallel2"};
-    TaskList serialDispatcher1 = TaskList {TestDispatcher::SERIAL, context, "serial1"};
-    TaskList serialDispatcher2 = TaskList {TestDispatcher::SERIAL, context, "serial2"};
-    TaskList mainDispatcher = TaskList {TestDispatcher::MAIN, context, "main"};
+    TaskList globalDispatcher = TaskList{TestDispatcher::GLOBAL, context, "global"};
+    TaskList parallelDispatcher1 = TaskList{TestDispatcher::PARALLEL, context, "parallel1"};
+    TaskList parallelDispatcher2 = TaskList{TestDispatcher::PARALLEL, context, "parallel2"};
+    TaskList serialDispatcher1 = TaskList{TestDispatcher::SERIAL, context, "serial1"};
+    TaskList serialDispatcher2 = TaskList{TestDispatcher::SERIAL, context, "serial2"};
+    TaskList mainDispatcher = TaskList{TestDispatcher::MAIN, context, "main"};
     int taskId = 0;
     int taskCount = 0;
     const int apply = 2;
@@ -10046,12 +10052,12 @@ void MainAbility::HybridCase22(int code)
     APP_LOGI("-- -- -- -- -- --MainAbility::%{public}s", __FUNCTION__);
     Reset();
     auto context = GetContext();
-    TaskList globalDispatcher = TaskList {TestDispatcher::GLOBAL, context, "global"};
-    TaskList parallelDispatcher1 = TaskList {TestDispatcher::PARALLEL, context, "parallel1"};
-    TaskList parallelDispatcher2 = TaskList {TestDispatcher::PARALLEL, context, "parallel2"};
-    TaskList serialDispatcher1 = TaskList {TestDispatcher::SERIAL, context, "serial1"};
-    TaskList serialDispatcher2 = TaskList {TestDispatcher::SERIAL, context, "serial2"};
-    TaskList mainDispatcher = TaskList {TestDispatcher::MAIN, context, "main"};
+    TaskList globalDispatcher = TaskList{TestDispatcher::GLOBAL, context, "global"};
+    TaskList parallelDispatcher1 = TaskList{TestDispatcher::PARALLEL, context, "parallel1"};
+    TaskList parallelDispatcher2 = TaskList{TestDispatcher::PARALLEL, context, "parallel2"};
+    TaskList serialDispatcher1 = TaskList{TestDispatcher::SERIAL, context, "serial1"};
+    TaskList serialDispatcher2 = TaskList{TestDispatcher::SERIAL, context, "serial2"};
+    TaskList mainDispatcher = TaskList{TestDispatcher::MAIN, context, "main"};
     int taskId = 0;
     int taskCount = 0;
     const int apply = 2;
@@ -10106,12 +10112,12 @@ void MainAbility::HybridCase23(int code)
     APP_LOGI("-- -- -- -- -- --MainAbility::%{public}s", __FUNCTION__);
     Reset();
     auto context = GetContext();
-    TaskList globalDispatcher = TaskList {TestDispatcher::GLOBAL, context, "global"};
-    TaskList parallelDispatcher1 = TaskList {TestDispatcher::PARALLEL, context, "parallel1"};
-    TaskList parallelDispatcher2 = TaskList {TestDispatcher::PARALLEL, context, "parallel2"};
-    TaskList serialDispatcher1 = TaskList {TestDispatcher::SERIAL, context, "serial1"};
-    TaskList serialDispatcher2 = TaskList {TestDispatcher::SERIAL, context, "serial2"};
-    TaskList mainDispatcher = TaskList {TestDispatcher::MAIN, context, "main"};
+    TaskList globalDispatcher = TaskList{TestDispatcher::GLOBAL, context, "global"};
+    TaskList parallelDispatcher1 = TaskList{TestDispatcher::PARALLEL, context, "parallel1"};
+    TaskList parallelDispatcher2 = TaskList{TestDispatcher::PARALLEL, context, "parallel2"};
+    TaskList serialDispatcher1 = TaskList{TestDispatcher::SERIAL, context, "serial1"};
+    TaskList serialDispatcher2 = TaskList{TestDispatcher::SERIAL, context, "serial2"};
+    TaskList mainDispatcher = TaskList{TestDispatcher::MAIN, context, "main"};
     int taskId = 0;
     int taskCount = 0;
     const int apply = 2;
@@ -10168,12 +10174,12 @@ void MainAbility::HybridCase24(int code)
     APP_LOGI("-- -- -- -- -- --MainAbility::%{public}s", __FUNCTION__);
     Reset();
     auto context = GetContext();
-    TaskList globalDispatcher = TaskList {TestDispatcher::GLOBAL, context, "global"};
-    TaskList parallelDispatcher1 = TaskList {TestDispatcher::PARALLEL, context, "parallel1"};
-    TaskList parallelDispatcher2 = TaskList {TestDispatcher::PARALLEL, context, "parallel2"};
-    TaskList serialDispatcher1 = TaskList {TestDispatcher::SERIAL, context, "serial1"};
-    TaskList serialDispatcher2 = TaskList {TestDispatcher::SERIAL, context, "serial2"};
-    TaskList mainDispatcher = TaskList {TestDispatcher::MAIN, context, "main"};
+    TaskList globalDispatcher = TaskList{TestDispatcher::GLOBAL, context, "global"};
+    TaskList parallelDispatcher1 = TaskList{TestDispatcher::PARALLEL, context, "parallel1"};
+    TaskList parallelDispatcher2 = TaskList{TestDispatcher::PARALLEL, context, "parallel2"};
+    TaskList serialDispatcher1 = TaskList{TestDispatcher::SERIAL, context, "serial1"};
+    TaskList serialDispatcher2 = TaskList{TestDispatcher::SERIAL, context, "serial2"};
+    TaskList mainDispatcher = TaskList{TestDispatcher::MAIN, context, "main"};
     int taskId = 0;
     int taskCount = 0;
     const long apply = 2;
@@ -10234,12 +10240,12 @@ void MainAbility::HybridCase25(int code)
     APP_LOGI("-- -- -- -- -- --MainAbility::%{public}s", __FUNCTION__);
     Reset();
     auto context = GetContext();
-    TaskList globalDispatcher = TaskList {TestDispatcher::GLOBAL, context, "global"};
-    TaskList parallelDispatcher1 = TaskList {TestDispatcher::PARALLEL, context, "parallel1"};
-    TaskList parallelDispatcher2 = TaskList {TestDispatcher::PARALLEL, context, "parallel2"};
-    TaskList serialDispatcher1 = TaskList {TestDispatcher::SERIAL, context, "serial1"};
-    TaskList serialDispatcher2 = TaskList {TestDispatcher::SERIAL, context, "serial2"};
-    TaskList mainDispatcher = TaskList {TestDispatcher::MAIN, context, "main"};
+    TaskList globalDispatcher = TaskList{TestDispatcher::GLOBAL, context, "global"};
+    TaskList parallelDispatcher1 = TaskList{TestDispatcher::PARALLEL, context, "parallel1"};
+    TaskList parallelDispatcher2 = TaskList{TestDispatcher::PARALLEL, context, "parallel2"};
+    TaskList serialDispatcher1 = TaskList{TestDispatcher::SERIAL, context, "serial1"};
+    TaskList serialDispatcher2 = TaskList{TestDispatcher::SERIAL, context, "serial2"};
+    TaskList mainDispatcher = TaskList{TestDispatcher::MAIN, context, "main"};
     int taskId = 0;
     int taskCount = 0;
     globalDispatcher.addOperation(TestOperation::ASYNC)
@@ -10291,12 +10297,12 @@ void MainAbility::HybridCase26(int code)
     APP_LOGI("-- -- -- -- -- --MainAbility::%{public}s", __FUNCTION__);
     Reset();
     auto context = GetContext();
-    TaskList globalDispatcher = TaskList {TestDispatcher::GLOBAL, context, "global"};
-    TaskList parallelDispatcher1 = TaskList {TestDispatcher::PARALLEL, context, "parallel1"};
-    TaskList parallelDispatcher2 = TaskList {TestDispatcher::PARALLEL, context, "parallel2"};
-    TaskList serialDispatcher1 = TaskList {TestDispatcher::SERIAL, context, "serial1"};
-    TaskList serialDispatcher2 = TaskList {TestDispatcher::SERIAL, context, "serial2"};
-    TaskList mainDispatcher = TaskList {TestDispatcher::MAIN, context, "main"};
+    TaskList globalDispatcher = TaskList{TestDispatcher::GLOBAL, context, "global"};
+    TaskList parallelDispatcher1 = TaskList{TestDispatcher::PARALLEL, context, "parallel1"};
+    TaskList parallelDispatcher2 = TaskList{TestDispatcher::PARALLEL, context, "parallel2"};
+    TaskList serialDispatcher1 = TaskList{TestDispatcher::SERIAL, context, "serial1"};
+    TaskList serialDispatcher2 = TaskList{TestDispatcher::SERIAL, context, "serial2"};
+    TaskList mainDispatcher = TaskList{TestDispatcher::MAIN, context, "main"};
     int taskId = 0;
     int taskCount = 0;
     const int apply = 2;
@@ -10316,7 +10322,7 @@ void MainAbility::HybridCase26(int code)
         .addApply(apply)
         .executedTask();
     taskId++;
-    taskCount++;
+    taskCount = taskCount + apply;
     serialDispatcher1.addOperation(TestOperation::ASYNC)
         .addFunc(std::make_shared<Runnable>([=]() { TestTask(std::to_string(taskId)); }))
         .executedTask();
@@ -10347,12 +10353,12 @@ void MainAbility::HybridCase27(int code)
     APP_LOGI("-- -- -- -- -- --MainAbility::%{public}s", __FUNCTION__);
     Reset();
     auto context = GetContext();
-    TaskList globalDispatcher = TaskList {TestDispatcher::GLOBAL, context, "global"};
-    TaskList parallelDispatcher1 = TaskList {TestDispatcher::PARALLEL, context, "parallel1"};
-    TaskList parallelDispatcher2 = TaskList {TestDispatcher::PARALLEL, context, "parallel2"};
-    TaskList serialDispatcher1 = TaskList {TestDispatcher::SERIAL, context, "serial1"};
-    TaskList serialDispatcher2 = TaskList {TestDispatcher::SERIAL, context, "serial2"};
-    TaskList mainDispatcher = TaskList {TestDispatcher::MAIN, context, "main"};
+    TaskList globalDispatcher = TaskList{TestDispatcher::GLOBAL, context, "global"};
+    TaskList parallelDispatcher1 = TaskList{TestDispatcher::PARALLEL, context, "parallel1"};
+    TaskList parallelDispatcher2 = TaskList{TestDispatcher::PARALLEL, context, "parallel2"};
+    TaskList serialDispatcher1 = TaskList{TestDispatcher::SERIAL, context, "serial1"};
+    TaskList serialDispatcher2 = TaskList{TestDispatcher::SERIAL, context, "serial2"};
+    TaskList mainDispatcher = TaskList{TestDispatcher::MAIN, context, "main"};
     int taskId = 0;
     int taskCount = 0;
     const int apply = 2;
@@ -10410,7 +10416,7 @@ void MainAbility::MultiAppCase1(int code)
     APP_LOGI("-- -- -- -- -- --MainAbility::%{public}s", __FUNCTION__);
     Reset();
     auto context = GetContext();
-    TaskList globalDispatcher = TaskList {TestDispatcher::GLOBAL, context, "global"};
+    TaskList globalDispatcher = TaskList{TestDispatcher::GLOBAL, context, "global"};
     std::vector<TestOperation> operationList = {
         TestOperation::ASYNC,
         TestOperation::ASYNC,
@@ -10442,7 +10448,7 @@ void MainAbility::MultiAppCase2(int code)
     APP_LOGI("-- -- -- -- -- --MainAbility::%{public}s", __FUNCTION__);
     Reset();
     auto context = GetContext();
-    TaskList parallelDispatcher = TaskList {TestDispatcher::PARALLEL, context, "parallel"};
+    TaskList parallelDispatcher = TaskList{TestDispatcher::PARALLEL, context, "parallel"};
     std::vector<TestOperation> operationList = {
         TestOperation::ASYNC,
         TestOperation::ASYNC,
@@ -10474,7 +10480,7 @@ void MainAbility::MultiAppCase3(int code)
     APP_LOGI("-- -- -- -- -- --MainAbility::%{public}s", __FUNCTION__);
     Reset();
     auto context = GetContext();
-    TaskList serialDispatcher = TaskList {TestDispatcher::SERIAL, context, "serial"};
+    TaskList serialDispatcher = TaskList{TestDispatcher::SERIAL, context, "serial"};
     std::vector<TestOperation> operationList = {
         TestOperation::ASYNC,
         TestOperation::ASYNC,
@@ -10506,7 +10512,7 @@ void MainAbility::MultiAppCase4(int code)
     APP_LOGI("-- -- -- -- -- --MainAbility::%{public}s", __FUNCTION__);
     Reset();
     auto context = GetContext();
-    TaskList mainDispatcher = TaskList {TestDispatcher::MAIN, context, "main"};
+    TaskList mainDispatcher = TaskList{TestDispatcher::MAIN, context, "main"};
     std::vector<TestOperation> operationList = {
         TestOperation::ASYNC,
         TestOperation::ASYNC,
@@ -10539,17 +10545,17 @@ void MainAbility::ExtraCase1(int code)
     Reset();
     auto context = GetContext();
     int taskId = 0;
-    TaskList globalDispatcher = TaskList {TestDispatcher::GLOBAL, context, "global"};
+    TaskList globalDispatcher = TaskList{TestDispatcher::GLOBAL, context, "global"};
     bool result = globalDispatcher.addOperation(TestOperation::SYNC)
-        .addFunc(std::make_shared<Runnable>([=]() {
-            std::string targetBundleName = "com.ohos.TaskDispatcherA";
-            std::string targetAbility = "SecondAbility";
-            Want want;
-            want.SetElementName(targetBundleName, targetAbility);
-            StartAbility(want);
-            TestTask(std::to_string(taskId));
-        }))
-        .executedTask();
+                      .addFunc(std::make_shared<Runnable>([=]() {
+                          std::string targetBundleName = "com.ohos.TaskDispatcherA";
+                          std::string targetAbility = "SecondAbility";
+                          Want want;
+                          want.SetElementName(targetBundleName, targetAbility);
+                          StartAbility(want);
+                          TestTask(std::to_string(taskId));
+                      }))
+                      .executedTask();
     taskId++;
     Wait(taskId);
     result = task_execution_sequence.size() > 1;
@@ -10562,7 +10568,7 @@ void MainAbility::FillInDispathcer()
     const int fullThreadNum = 32;
     const int waitTime = 2;
     auto context = GetContext();
-    TaskList parallelDispatcher = TaskList {TestDispatcher::PARALLEL, context, "parallel"};
+    TaskList parallelDispatcher = TaskList{TestDispatcher::PARALLEL, context, "parallel"};
     parallelDispatcher.setTaskPriority(AppExecFwk::TaskPriority::HIGH);
     parallelDispatcher.addOperation(TestOperation::ASYNC).addFunc(std::make_shared<Runnable>([=]() {
         sleep(waitTime - 1);
@@ -10580,9 +10586,9 @@ void MainAbility::PriorityCase1(int code)
     FillInDispathcer();
     Reset();
     auto context = GetContext();
-    TaskList globalDispatcherLow = TaskList {TestDispatcher::GLOBAL, context, "globalLow"};
-    TaskList globalDispatcherDefault = TaskList {TestDispatcher::GLOBAL, context, "globalDefault"};
-    TaskList globalDispatcherHigh = TaskList {TestDispatcher::GLOBAL, context, "globalHigh"};
+    TaskList globalDispatcherLow = TaskList{TestDispatcher::GLOBAL, context, "globalLow"};
+    TaskList globalDispatcherDefault = TaskList{TestDispatcher::GLOBAL, context, "globalDefault"};
+    TaskList globalDispatcherHigh = TaskList{TestDispatcher::GLOBAL, context, "globalHigh"};
     int taskId = 0;
     globalDispatcherLow.setTaskPriority(AppExecFwk::TaskPriority::LOW)
         .addOperation(TestOperation::ASYNC)
@@ -10607,7 +10613,8 @@ void MainAbility::PriorityCase1(int code)
     for (auto index : outerTaskIndex) {
         result = result && (index != std::string::npos);
     }
-    result = result && (outerTaskIndex[numZero] > outerTaskIndex[numOne]) && (outerTaskIndex[numOne] > outerTaskIndex[numTwo]);
+    result = result && (outerTaskIndex[numZero] > outerTaskIndex[numOne]) &&
+             (outerTaskIndex[numOne] > outerTaskIndex[numTwo]);
     TestUtils::PublishEvent(g_EVENT_RESP_FIRST, code, std::to_string(result));
 }
 void MainAbility::PriorityCase2(int code)
@@ -10616,9 +10623,9 @@ void MainAbility::PriorityCase2(int code)
     FillInDispathcer();
     Reset();
     auto context = GetContext();
-    TaskList parallelDispatcherLow = TaskList {TestDispatcher::PARALLEL, context, "parallelLow"};
-    TaskList parallelDispatcherDefault = TaskList {TestDispatcher::PARALLEL, context, "parallelDefault"};
-    TaskList parallelDispatcherHigh = TaskList {TestDispatcher::PARALLEL, context, "parallelHigh"};
+    TaskList parallelDispatcherLow = TaskList{TestDispatcher::PARALLEL, context, "parallelLow"};
+    TaskList parallelDispatcherDefault = TaskList{TestDispatcher::PARALLEL, context, "parallelDefault"};
+    TaskList parallelDispatcherHigh = TaskList{TestDispatcher::PARALLEL, context, "parallelHigh"};
     int taskId = 0;
     parallelDispatcherLow.setTaskPriority(AppExecFwk::TaskPriority::LOW)
         .addOperation(TestOperation::ASYNC)
@@ -10643,7 +10650,8 @@ void MainAbility::PriorityCase2(int code)
     for (auto index : outerTaskIndex) {
         result = result && (index != std::string::npos);
     }
-    result = result && (outerTaskIndex[numZero] > outerTaskIndex[numOne]) && (outerTaskIndex[numOne] > outerTaskIndex[numTwo]);
+    result = result && (outerTaskIndex[numZero] > outerTaskIndex[numOne]) &&
+             (outerTaskIndex[numOne] > outerTaskIndex[numTwo]);
     TestUtils::PublishEvent(g_EVENT_RESP_FIRST, code, std::to_string(result));
 }
 void MainAbility::PriorityCase3(int code)
@@ -10652,9 +10660,9 @@ void MainAbility::PriorityCase3(int code)
     FillInDispathcer();
     Reset();
     auto context = GetContext();
-    TaskList serialDispatcherLow = TaskList {TestDispatcher::SERIAL, context, "serialLow"};
-    TaskList serialDispatcherDefault = TaskList {TestDispatcher::SERIAL, context, "serialDefault"};
-    TaskList serialDispatcherHigh = TaskList {TestDispatcher::SERIAL, context, "serialHigh"};
+    TaskList serialDispatcherLow = TaskList{TestDispatcher::SERIAL, context, "serialLow"};
+    TaskList serialDispatcherDefault = TaskList{TestDispatcher::SERIAL, context, "serialDefault"};
+    TaskList serialDispatcherHigh = TaskList{TestDispatcher::SERIAL, context, "serialHigh"};
     int taskId = 0;
     serialDispatcherLow.setTaskPriority(AppExecFwk::TaskPriority::LOW)
         .addOperation(TestOperation::ASYNC)
@@ -10679,7 +10687,8 @@ void MainAbility::PriorityCase3(int code)
     for (auto index : outerTaskIndex) {
         result = result && (index != std::string::npos);
     }
-    result = result && (outerTaskIndex[numZero] > outerTaskIndex[numOne]) && (outerTaskIndex[numOne] > outerTaskIndex[numTwo]);
+    result = result && (outerTaskIndex[numZero] > outerTaskIndex[numOne]) &&
+             (outerTaskIndex[numOne] > outerTaskIndex[numTwo]);
     TestUtils::PublishEvent(g_EVENT_RESP_FIRST, code, std::to_string(result));
 }
 void MainAbility::PriorityCase4(int code)
@@ -10688,9 +10697,9 @@ void MainAbility::PriorityCase4(int code)
     FillInDispathcer();
     Reset();
     auto context = GetContext();
-    TaskList parallelDispatcherLow = TaskList {TestDispatcher::PARALLEL, context, "parallelLow"};
-    TaskList parallelDispatcherDefault = TaskList {TestDispatcher::PARALLEL, context, "parallelDefault"};
-    TaskList mainDispatcherHigh = TaskList {TestDispatcher::MAIN, context, "mainHigh"};
+    TaskList parallelDispatcherLow = TaskList{TestDispatcher::PARALLEL, context, "parallelLow"};
+    TaskList parallelDispatcherDefault = TaskList{TestDispatcher::PARALLEL, context, "parallelDefault"};
+    TaskList mainDispatcherHigh = TaskList{TestDispatcher::MAIN, context, "mainHigh"};
     int taskId = 0;
     parallelDispatcherLow.setTaskPriority(AppExecFwk::TaskPriority::LOW)
         .addOperation(TestOperation::ASYNC)
@@ -10714,7 +10723,8 @@ void MainAbility::PriorityCase4(int code)
     for (auto index : outerTaskIndex) {
         result = result && (index != std::string::npos);
     }
-    result = result && (outerTaskIndex[numZero] > outerTaskIndex[numOne]) && (outerTaskIndex[numOne] > outerTaskIndex[numTwo]);
+    result = result && (outerTaskIndex[numZero] > outerTaskIndex[numOne]) &&
+             (outerTaskIndex[numOne] > outerTaskIndex[numTwo]);
     TestUtils::PublishEvent(g_EVENT_RESP_FIRST, code, std::to_string(result));
 }
 void MainAbility::PriorityCase5(int code)
@@ -10723,9 +10733,9 @@ void MainAbility::PriorityCase5(int code)
     FillInDispathcer();
     Reset();
     auto context = GetContext();
-    TaskList globalDispatcherLow = TaskList {TestDispatcher::GLOBAL, context, "globallLow"};
-    TaskList parallelDispatcherDefault = TaskList {TestDispatcher::PARALLEL, context, "parallelDefault"};
-    TaskList globalDispatcherHigh = TaskList {TestDispatcher::GLOBAL, context, "globalHigh"};
+    TaskList globalDispatcherLow = TaskList{TestDispatcher::GLOBAL, context, "globallLow"};
+    TaskList parallelDispatcherDefault = TaskList{TestDispatcher::PARALLEL, context, "parallelDefault"};
+    TaskList globalDispatcherHigh = TaskList{TestDispatcher::GLOBAL, context, "globalHigh"};
     int taskId = 0;
     globalDispatcherLow.setTaskPriority(AppExecFwk::TaskPriority::LOW)
         .addOperation(TestOperation::ASYNC)
@@ -10750,7 +10760,8 @@ void MainAbility::PriorityCase5(int code)
     for (auto index : outerTaskIndex) {
         result = result && (index != std::string::npos);
     }
-    result = result && (outerTaskIndex[numZero] > outerTaskIndex[numOne]) && (outerTaskIndex[numOne] > outerTaskIndex[numTwo]);
+    result = result && (outerTaskIndex[numZero] > outerTaskIndex[numOne]) &&
+             (outerTaskIndex[numOne] > outerTaskIndex[numTwo]);
     TestUtils::PublishEvent(g_EVENT_RESP_FIRST, code, std::to_string(result));
 }
 void MainAbility::RevokeCase1(int code)
@@ -10759,13 +10770,13 @@ void MainAbility::RevokeCase1(int code)
     FillInDispathcer();
     Reset();
     auto context = GetContext();
-    TaskList parallelDispatcher = TaskList {TestDispatcher::GLOBAL, context, "parallel"};
+    TaskList parallelDispatcher = TaskList{TestDispatcher::GLOBAL, context, "parallel"};
     int taskId = 0;
     bool result = parallelDispatcher.addOperation(TestOperation::ASYNC)
-        .addFunc(std::make_shared<Runnable>([=]() { TestTask(std::to_string(taskId)); }))
-        .addOperation(TestOperation::REVOCABLE)
-        .addRevokeTask(1)
-        .executedTask();
+                      .addFunc(std::make_shared<Runnable>([=]() { TestTask(std::to_string(taskId)); }))
+                      .addOperation(TestOperation::REVOCABLE)
+                      .addRevokeTask(1)
+                      .executedTask();
     taskId++;
     result = !result || Wait(taskId);
     result = result || task_execution_sequence.size() > 1;
@@ -10777,11 +10788,11 @@ void MainAbility::RevokeCase2(int code)
     APP_LOGI("-- -- -- -- -- --MainAbility::%{public}s", __FUNCTION__);
     Reset();
     auto context = GetContext();
-    TaskList parallelDispatcher = TaskList {TestDispatcher::GLOBAL, context, "parallel"};
+    TaskList parallelDispatcher = TaskList{TestDispatcher::GLOBAL, context, "parallel"};
     int taskId = 0;
     bool result = parallelDispatcher.addOperation(TestOperation::ASYNC)
-        .addFunc(std::make_shared<Runnable>([=]() { TestTask(std::to_string(taskId)); }))
-        .executedTask();
+                      .addFunc(std::make_shared<Runnable>([=]() { TestTask(std::to_string(taskId)); }))
+                      .executedTask();
     taskId++;
     result = result && Wait(taskId);
     result = result && !parallelDispatcher.addOperation(TestOperation::REVOCABLE).addRevokeTask(1).executedTask();
@@ -10794,14 +10805,14 @@ void MainAbility::RevokeCase3(int code)
     APP_LOGI("-- -- -- -- -- --MainAbility::%{public}s", __FUNCTION__);
     Reset();
     auto context = GetContext();
-    TaskList parallelDispatcher = TaskList {TestDispatcher::GLOBAL, context, "parallel"};
+    TaskList parallelDispatcher = TaskList{TestDispatcher::GLOBAL, context, "parallel"};
     int taskId = 0;
     bool result = parallelDispatcher.addOperation(TestOperation::DELAY)
-        .addFunc(std::make_shared<Runnable>([=]() { TestTask(std::to_string(taskId)); }))
-        .addDelay(delayMs)
-        .addOperation(TestOperation::REVOCABLE)
-        .addRevokeTask(1)
-        .executedTask();
+                      .addFunc(std::make_shared<Runnable>([=]() { TestTask(std::to_string(taskId)); }))
+                      .addDelay(delayMs)
+                      .addOperation(TestOperation::REVOCABLE)
+                      .addRevokeTask(1)
+                      .executedTask();
     taskId++;
     result = !result || Wait(taskId);
     result = result || task_execution_sequence.size() > 1;
@@ -10813,12 +10824,12 @@ void MainAbility::RevokeCase4(int code)
     APP_LOGI("-- -- -- -- -- --MainAbility::%{public}s", __FUNCTION__);
     Reset();
     auto context = GetContext();
-    TaskList parallelDispatcher = TaskList {TestDispatcher::GLOBAL, context, "parallel"};
+    TaskList parallelDispatcher = TaskList{TestDispatcher::GLOBAL, context, "parallel"};
     int taskId = 0;
     bool result = parallelDispatcher.addOperation(TestOperation::DELAY)
-        .addFunc(std::make_shared<Runnable>([=]() { TestTask(std::to_string(taskId)); }))
-        .addDelay(delayMs)
-        .executedTask();
+                      .addFunc(std::make_shared<Runnable>([=]() { TestTask(std::to_string(taskId)); }))
+                      .addDelay(delayMs)
+                      .executedTask();
     taskId++;
     result = result && Wait(taskId);
     result = result && !parallelDispatcher.addOperation(TestOperation::REVOCABLE).addRevokeTask(1).executedTask();
@@ -10832,14 +10843,14 @@ void MainAbility::RevokeCase5(int code)
     FillInDispathcer();
     Reset();
     auto context = GetContext();
-    TaskList parallelDispatcher = TaskList {TestDispatcher::GLOBAL, context, "parallel"};
+    TaskList parallelDispatcher = TaskList{TestDispatcher::GLOBAL, context, "parallel"};
     int taskId = 0;
     bool result = parallelDispatcher.addOperation(TestOperation::CREATE_GROUP)
-        .addOperation(TestOperation::ASYNC_GROUP)
-        .addFunc(std::make_shared<Runnable>([=]() { TestTask(std::to_string(taskId)); }))
-        .addOperation(TestOperation::REVOCABLE)
-        .addRevokeTask(1)
-        .executedTask();
+                      .addOperation(TestOperation::ASYNC_GROUP)
+                      .addFunc(std::make_shared<Runnable>([=]() { TestTask(std::to_string(taskId)); }))
+                      .addOperation(TestOperation::REVOCABLE)
+                      .addRevokeTask(1)
+                      .executedTask();
     taskId++;
     result = !result || Wait(taskId);
     result = result || task_execution_sequence.size() > 1;
@@ -10851,12 +10862,12 @@ void MainAbility::RevokeCase6(int code)
     APP_LOGI("-- -- -- -- -- --MainAbility::%{public}s", __FUNCTION__);
     Reset();
     auto context = GetContext();
-    TaskList parallelDispatcher = TaskList {TestDispatcher::GLOBAL, context, "parallel"};
+    TaskList parallelDispatcher = TaskList{TestDispatcher::GLOBAL, context, "parallel"};
     int taskId = 0;
     bool result = parallelDispatcher.addOperation(TestOperation::CREATE_GROUP)
-        .addOperation(TestOperation::ASYNC_GROUP)
-        .addFunc(std::make_shared<Runnable>([=]() { TestTask(std::to_string(taskId)); }))
-        .executedTask();
+                      .addOperation(TestOperation::ASYNC_GROUP)
+                      .addFunc(std::make_shared<Runnable>([=]() { TestTask(std::to_string(taskId)); }))
+                      .executedTask();
     taskId++;
     result = result && Wait(taskId);
     result = result && !parallelDispatcher.addOperation(TestOperation::REVOCABLE).addRevokeTask(1).executedTask();
