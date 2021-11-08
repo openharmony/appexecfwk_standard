@@ -389,7 +389,7 @@ int MainAbility::Dispatch(TestSetting outerSetting, TestSetting innerSetting)
     std::string innerName = "innerDispatcher";
     std::string outerTaskId;
     auto context = GetContext();
-    TaskList outerDispatcher{outerSetting.dispatcher, context, outerName};
+    TaskList outerDispatcher {outerSetting.dispatcher, context, outerName};
     if (outerSetting.create_group) {
         outerDispatcher.addOperation(TestOperation::CREATE_GROUP);
     }
@@ -397,7 +397,7 @@ int MainAbility::Dispatch(TestSetting outerSetting, TestSetting innerSetting)
         outerTaskId = std::to_string(i);
         auto outerTask = std::make_shared<Runnable>([=]() {
             auto context = this->GetContext();
-            TaskList innerDispatcher{innerSetting.dispatcher, context, innerName + std::to_string(i)};
+            TaskList innerDispatcher {innerSetting.dispatcher, context, innerName + std::to_string(i)};
             if (innerSetting.create_group) {
                 innerDispatcher.addOperation(TestOperation::CREATE_GROUP);
             }
@@ -455,7 +455,7 @@ void MainAbility::MultiAppCase1(int code)
     APP_LOGI("-- -- -- -- -- --MainAbility::%{public}s", __FUNCTION__);
     Reset();
     auto context = GetContext();
-    TaskList globalDispatcher = TaskList{TestDispatcher::GLOBAL, context, "global"};
+    TaskList globalDispatcher = TaskList {TestDispatcher::GLOBAL, context, "global"};
     std::vector<TestOperation> operationList = {
         TestOperation::ASYNC,
         TestOperation::ASYNC,
@@ -487,7 +487,7 @@ void MainAbility::MultiAppCase2(int code)
     APP_LOGI("-- -- -- -- -- --MainAbility::%{public}s", __FUNCTION__);
     Reset();
     auto context = GetContext();
-    TaskList globalDispatcher = TaskList{TestDispatcher::PARALLEL, context, "parallel"};
+    TaskList globalDispatcher = TaskList {TestDispatcher::PARALLEL, context, "parallel"};
     std::vector<TestOperation> operationList = {
         TestOperation::ASYNC,
         TestOperation::ASYNC,
@@ -519,7 +519,7 @@ void MainAbility::MultiAppCase3(int code)
     APP_LOGI("-- -- -- -- -- --MainAbility::%{public}s", __FUNCTION__);
     Reset();
     auto context = GetContext();
-    TaskList globalDispatcher = TaskList{TestDispatcher::SERIAL, context, "serial"};
+    TaskList globalDispatcher = TaskList {TestDispatcher::SERIAL, context, "serial"};
     std::vector<TestOperation> operationList = {
         TestOperation::ASYNC,
         TestOperation::ASYNC,
@@ -551,7 +551,7 @@ void MainAbility::MultiAppCase4(int code)
     APP_LOGI("-- -- -- -- -- --MainAbility::%{public}s", __FUNCTION__);
     Reset();
     auto context = GetContext();
-    TaskList globalDispatcher = TaskList{TestDispatcher::MAIN, context, "main"};
+    TaskList globalDispatcher = TaskList {TestDispatcher::MAIN, context, "main"};
     std::vector<TestOperation> operationList = {
         TestOperation::ASYNC,
         TestOperation::ASYNC,
