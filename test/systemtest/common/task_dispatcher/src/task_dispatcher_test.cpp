@@ -33,7 +33,7 @@ const std::string bundleNameFirst = "com.ohos.TaskDispatcherA";
 const std::string bundleNameSecond = "com.ohos.TaskDispatcherB";
 const std::string firstAbilityName = "MainAbility";
 const std::string secondAbilityname = "SecondAbility";
-constexpr int WAIT_TIME = 100;
+constexpr int WAIT_TIME = 500;
 constexpr int DELAY = 10;
 int testCaseCode = 100;
 std::vector<std::string> bundleNameList = {
@@ -55,9 +55,9 @@ public:
     static bool SubscribeEvent();
     class AppEventSubscriber : public OHOS::EventFwk::CommonEventSubscriber {
     public:
-        explicit AppEventSubscriber(const OHOS::EventFwk::CommonEventSubscribeInfo &sp) : CommonEventSubscriber(sp){};
+        explicit AppEventSubscriber(const OHOS::EventFwk::CommonEventSubscribeInfo &sp) : CommonEventSubscriber(sp) {};
         virtual void OnReceiveEvent(const OHOS::EventFwk::CommonEventData &data) override;
-        ~AppEventSubscriber(){};
+        ~AppEventSubscriber() {};
     };
 
     void StartAbility(const std::string &abilityName, const std::string &bundleName);
@@ -103,9 +103,6 @@ void TaskDispatcherTest::TearDown()
 
 void TaskDispatcherTest::AppEventSubscriber::OnReceiveEvent(const CommonEventData &data)
 {
-    GTEST_LOG_(INFO) << "OnReceiveEvent: event=" << data.GetWant().GetAction();
-    GTEST_LOG_(INFO) << "OnReceiveEvent: data=" << data.GetData();
-    GTEST_LOG_(INFO) << "OnReceiveEvent: code=" << data.GetCode();
     STAbilityUtil::Completed(event, data.GetWant().GetAction(), data.GetCode(), data.GetData());
 }
 

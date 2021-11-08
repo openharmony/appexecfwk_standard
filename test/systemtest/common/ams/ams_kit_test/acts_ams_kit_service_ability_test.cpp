@@ -250,6 +250,7 @@ void ActsAmsKitServiceAbilityTest::SetUp(void)
 void ActsAmsKitServiceAbilityTest::TearDown(void)
 {
     STAbilityUtil::CleanMsg(event);
+    STAbilityUtil::KillBundleProcess(bundleNameList);
 }
 
 bool ActsAmsKitServiceAbilityTest::SubscribeEvent()
@@ -2472,7 +2473,7 @@ HWTEST_F(ActsAmsKitServiceAbilityTest, AMS_Service_AbilityContext_04800, Functio
             GTEST_LOG_(INFO) << "AMS_Service_AbilityContext_04800 : " << i;
             break;
         }
-
+        std::this_thread::sleep_for(std::chrono::milliseconds(WAIT_ABILITY_OK));
         // stop ability
         STAbilityUtil::StopServiceAbility(want);
 
