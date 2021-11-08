@@ -55,7 +55,7 @@ public:
     static bool SubscribeEvent();
     class AppEventSubscriber : public OHOS::EventFwk::CommonEventSubscriber {
     public:
-        explicit AppEventSubscriber(const OHOS::EventFwk::CommonEventSubscribeInfo &sp) : CommonEventSubscriber(sp){};
+        explicit AppEventSubscriber(const OHOS::EventFwk::CommonEventSubscribeInfo &sp) : CommonEventSubscriber(sp) {};
         virtual void OnReceiveEvent(const OHOS::EventFwk::CommonEventData &data) override;
         ~AppEventSubscriber(){};
     };
@@ -69,7 +69,7 @@ public:
 
 Event TaskDispatcherTest::event = STtools::Event();
 sptr<IAbilityManager> TaskDispatcherTest::abilityMs = nullptr;
-StressTestLevel TaskDispatcherTest::stLevel_{};
+StressTestLevel TaskDispatcherTest::stLevel_ {};
 std::shared_ptr<TaskDispatcherTest::AppEventSubscriber> TaskDispatcherTest::subscriber_ = nullptr;
 
 void TaskDispatcherTest::SetUpTestCase(void)
@@ -103,9 +103,6 @@ void TaskDispatcherTest::TearDown()
 
 void TaskDispatcherTest::AppEventSubscriber::OnReceiveEvent(const CommonEventData &data)
 {
-    // GTEST_LOG_(INFO) << "OnReceiveEvent: event=" << data.GetWant().GetAction();
-    // GTEST_LOG_(INFO) << "OnReceiveEvent: data=" << data.GetData();
-    // GTEST_LOG_(INFO) << "OnReceiveEvent: code=" << data.GetCode();
     STAbilityUtil::Completed(event, data.GetWant().GetAction(), data.GetCode(), data.GetData());
 }
 
