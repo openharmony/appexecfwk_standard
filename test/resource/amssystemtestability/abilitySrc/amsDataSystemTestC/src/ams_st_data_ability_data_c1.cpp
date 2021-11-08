@@ -155,7 +155,17 @@ std::vector<std::string> AmsStDataAbilityDataC1::GetFileTypes(const Uri &uri, co
 
 int AmsStDataAbilityDataC1::OpenFile(const Uri &uri, const std::string &mode)
 {
-    return 0;
+    APP_LOGI("AmsStDataAbilityDataC1 <<<<OpenFile>>>>");
+
+    FILE *fd1 = fopen("/system/vendor/test.txt", "r");
+    if (fd1 == nullptr) {
+        APP_LOGI("-------------------------------AmsStDataAbilityDataC1 <<<<OpenFile>>>> fdr == nullptr");
+        return -1;
+    }
+    fd = fileno(fd1);
+    APP_LOGI("--------------------------------AmsStDataAbilityDataC1 fd: %{public}d", fd);
+    PublishEvent(abilityEventName, ABILITY_DATA_C1_CODE, "OpenFile");
+    return fd;
 }
 
 static void GetResult(std::shared_ptr<STtools::StOperator> child, std::shared_ptr<DataAbilityHelper> helper,
@@ -173,7 +183,7 @@ static void GetResult(std::shared_ptr<STtools::StOperator> child, std::shared_pt
     } else if (child->GetOperatorName() == OPERATOR_QUERY) {
         std::vector<std::string> columns = STtools::SerializationStOperatorToVector(*child);
         std::shared_ptr<NativeRdb::AbsSharedResultSet> resultValue = helper->Query(dataAbilityUri, columns, predicates);
-        result = "failed";
+        result = OPERATOR_QUERY;
         if (resultValue != nullptr) {
             resultValue->GoToRow(0);
             resultValue->GetString(0, result);

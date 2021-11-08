@@ -52,18 +52,16 @@ constexpr int numZero = 0;
 constexpr int numOne = 1;
 constexpr int numTwo = 2;
 constexpr int numThree = 3;
-}
+}  // namespace
 
 bool Wait(const int task_num)
 {
-    APP_LOGI("-- -- -- -- -- --MainAbility::Wait");
     std::unique_lock<std::mutex> ulock(cv_mutex);
     using namespace std::chrono_literals;
     bool result = cv.wait_for(ulock, 5000ms, [task_num] { return terminated_task_num == task_num; });
     if (result) {
         allDispatchers.clear();
     }
-    APP_LOGI("-- -- -- -- -- --MainAbility::Wait result:%{public}d", result);
     return result;
 }
 
@@ -74,14 +72,12 @@ void TestTask(const std::string task_id)
         terminated_task_num++;
         task_execution_sequence += task_id + delimiter;
     }
-    APP_LOGI("-- -- -- -- -- --MainAbility::TestTask: %{public}d %{public}s", terminated_task_num, task_id.c_str());
     TestUtils::PublishEvent(g_EVENT_RESP_FIRST, terminated_task_num, task_execution_sequence);
     cv.notify_one();
 }
 
 void Reset()
 {
-    APP_LOGI("-- -- -- -- -- --MainAbility::Reset");
     terminated_task_num = 0;
     task_execution_sequence = delimiter;
     allDispatchers.clear();
@@ -89,9 +85,7 @@ void Reset()
 
 bool IsAscend(const std::vector<size_t> &vec)
 {
-    APP_LOGI("-- -- -- -- -- --MainAbility::IsAscend begin");
     auto pos = std::adjacent_find(std::begin(vec), std::end(vec), std::greater<size_t>());
-    APP_LOGI("-- -- -- -- -- --MainAbility::IsAscend end result : %{public}d", pos == std::end(vec));
     return pos == std::end(vec);
 }
 
@@ -245,29 +239,19 @@ void setTaskIndex(std::string taskId, std::vector<size_t> &taskIndex)
 void GetTaskIndex(std::vector<size_t> &outerTaskIndex, std::vector<std::vector<size_t>> &innerTaskIndex,
     const int outerCnt = testTaskCount, const int innerCnt = testTaskCount)
 {
-    APP_LOGI("-- -- -- -- -- --MainAbility::GetTaskIndex begin");
     std::string outerTaskId;
     std::string innerTaskId;
     outerTaskIndex.resize(outerCnt);
-    APP_LOGI("-- -- -- -- -- --MainAbility::GetTaskIndex outersize : %{public}zu", outerTaskIndex.size());
     innerTaskIndex.resize(outerCnt);
-    APP_LOGI("-- -- -- -- -- --MainAbility::GetTaskIndex innersize : %{public}zu", innerTaskIndex.size());
     for (auto &inner : innerTaskIndex) {
         inner.resize(innerCnt);
-        APP_LOGI("-- -- -- -- -- --MainAbility::GetTaskIndex inner :%{public}zu", inner.size());
     }
     for (int i = 0; i < outerCnt; i++) {
         outerTaskId = delimiter + std::to_string(i) + delimiter;
         outerTaskIndex[i] = task_execution_sequence.find(outerTaskId);
-        APP_LOGI(
-            "-- -- -- -- -- --MainAbility::GetTaskIndex outerTaskIndex[%{public}d]:%{public}zu", i, outerTaskIndex[i]);
         for (int j = 0; j < innerCnt; j++) {
             innerTaskId = delimiter + std::to_string(i) + innerDelimiter + std::to_string(j) + delimiter;
             innerTaskIndex[i][j] = task_execution_sequence.find(innerTaskId);
-            APP_LOGI("-- -- -- -- -- --MainAbility::GetTaskIndex innerTaskIndex[%{public}d][%{public}d]:%{public}zu",
-                i,
-                j,
-                innerTaskIndex[i][j]);
         }
         std::string taskId = innerSyncBarrierId + std::to_string(i);
         setTaskIndex(taskId, innerTaskIndex[i]);
@@ -357,9 +341,6 @@ void MainAbility::SubscribeEvent()
 
 void FirstEventSubscriber::OnReceiveEvent(const CommonEventData &data)
 {
-    APP_LOGI("FirstEventSubscriber::OnReceiveEvent:event=%{public}s", data.GetWant().GetAction().c_str());
-    APP_LOGI("FirstEventSubscriber::OnReceiveEvent:data=%{public}s", data.GetData().c_str());
-    APP_LOGI("FirstEventSubscriber::OnReceiveEvent:code=%{public}d", data.GetCode());
     auto eventName = data.GetWant().GetAction();
     if (std::strcmp(eventName.c_str(), g_EVENT_REQU_FIRST.c_str()) == 0) {
         auto target = data.GetData();
@@ -385,7 +366,8 @@ void MainAbility::TestDispatcher(int apiIndex, int caseIndex, int code)
     }
 }
 
-void SetInnerTask(TaskList innerDispatcher, TestSetting innerSetting, std::string outerTaskId, int innerTaskSeq) {
+void SetInnerTask(TaskList &innerDispatcher, TestSetting innerSetting, std::string outerTaskId, int innerTaskSeq)
+{
     std::string innerTaskId = outerTaskId + innerDelimiter + std::to_string(innerTaskSeq);
     auto innerTask = std::make_shared<Runnable>([=]() { TestTask(innerTaskId); });
     innerDispatcher.addOperation(innerSetting.op);
@@ -398,7 +380,8 @@ void SetInnerTask(TaskList innerDispatcher, TestSetting innerSetting, std::strin
     innerDispatcher.addFunc(innerTask);
 }
 
-void SetInnerTaskOther(TaskList innerDispatcher, TestSetting innerSetting, int outerTaskSeq) {
+void SetInnerTaskOther(TaskList &innerDispatcher, TestSetting innerSetting, int outerTaskSeq)
+{
     if (innerSetting.sync_barrier) {
         std::string taskId = innerSyncBarrierId + std::to_string(outerTaskSeq);
         auto task = std::make_shared<Runnable>([=]() { TestTask(taskId); });
@@ -419,7 +402,8 @@ void SetInnerTaskOther(TaskList innerDispatcher, TestSetting innerSetting, int o
     }
 }
 
-void SetOuterTaskOther(TaskList outerDispatcher, TestSetting outerSetting) {
+void SetOuterTaskOther(TaskList &outerDispatcher, TestSetting outerSetting)
+{
     if (outerSetting.sync_barrier) {
         auto task = std::make_shared<Runnable>([=]() { TestTask(outerSyncBarrierId); });
         outerDispatcher.addOperation(TestOperation::SYNC_BARRIER).addFunc(task);
@@ -437,7 +421,8 @@ void SetOuterTaskOther(TaskList outerDispatcher, TestSetting outerSetting) {
     }
 }
 
-int CountTask(TestSetting outerSetting, TestSetting innerSetting) {
+int CountTask(TestSetting outerSetting, TestSetting innerSetting)
+{
     int taskCount = 0;
     taskCount = (innerSetting.op == TestOperation::APPLY) ? (innerSetting.apply * testTaskCount) : testTaskCount;
     if (innerSetting.sync_barrier) {
@@ -10316,7 +10301,7 @@ void MainAbility::HybridCase26(int code)
         .addApply(apply)
         .executedTask();
     taskId++;
-    taskCount++;
+    taskCount = taskCount + apply;
     serialDispatcher1.addOperation(TestOperation::ASYNC)
         .addFunc(std::make_shared<Runnable>([=]() { TestTask(std::to_string(taskId)); }))
         .executedTask();
@@ -10607,7 +10592,8 @@ void MainAbility::PriorityCase1(int code)
     for (auto index : outerTaskIndex) {
         result = result && (index != std::string::npos);
     }
-    result = result && (outerTaskIndex[numZero] > outerTaskIndex[numOne]) && (outerTaskIndex[numOne] > outerTaskIndex[numTwo]);
+    result = result && (outerTaskIndex[numZero] > outerTaskIndex[numOne]) &&
+             (outerTaskIndex[numOne] > outerTaskIndex[numTwo]);
     TestUtils::PublishEvent(g_EVENT_RESP_FIRST, code, std::to_string(result));
 }
 void MainAbility::PriorityCase2(int code)
@@ -10643,7 +10629,8 @@ void MainAbility::PriorityCase2(int code)
     for (auto index : outerTaskIndex) {
         result = result && (index != std::string::npos);
     }
-    result = result && (outerTaskIndex[numZero] > outerTaskIndex[numOne]) && (outerTaskIndex[numOne] > outerTaskIndex[numTwo]);
+    result = result && (outerTaskIndex[numZero] > outerTaskIndex[numOne]) &&
+             (outerTaskIndex[numOne] > outerTaskIndex[numTwo]);
     TestUtils::PublishEvent(g_EVENT_RESP_FIRST, code, std::to_string(result));
 }
 void MainAbility::PriorityCase3(int code)
@@ -10679,7 +10666,8 @@ void MainAbility::PriorityCase3(int code)
     for (auto index : outerTaskIndex) {
         result = result && (index != std::string::npos);
     }
-    result = result && (outerTaskIndex[numZero] > outerTaskIndex[numOne]) && (outerTaskIndex[numOne] > outerTaskIndex[numTwo]);
+    result = result && (outerTaskIndex[numZero] > outerTaskIndex[numOne]) &&
+             (outerTaskIndex[numOne] > outerTaskIndex[numTwo]);
     TestUtils::PublishEvent(g_EVENT_RESP_FIRST, code, std::to_string(result));
 }
 void MainAbility::PriorityCase4(int code)
@@ -10714,7 +10702,8 @@ void MainAbility::PriorityCase4(int code)
     for (auto index : outerTaskIndex) {
         result = result && (index != std::string::npos);
     }
-    result = result && (outerTaskIndex[numZero] > outerTaskIndex[numOne]) && (outerTaskIndex[numOne] > outerTaskIndex[numTwo]);
+    result = result && (outerTaskIndex[numZero] > outerTaskIndex[numOne]) &&
+             (outerTaskIndex[numOne] > outerTaskIndex[numTwo]);
     TestUtils::PublishEvent(g_EVENT_RESP_FIRST, code, std::to_string(result));
 }
 void MainAbility::PriorityCase5(int code)
@@ -10750,7 +10739,8 @@ void MainAbility::PriorityCase5(int code)
     for (auto index : outerTaskIndex) {
         result = result && (index != std::string::npos);
     }
-    result = result && (outerTaskIndex[numZero] > outerTaskIndex[numOne]) && (outerTaskIndex[numOne] > outerTaskIndex[numTwo]);
+    result = result && (outerTaskIndex[numZero] > outerTaskIndex[numOne]) &&
+             (outerTaskIndex[numOne] > outerTaskIndex[numTwo]);
     TestUtils::PublishEvent(g_EVENT_RESP_FIRST, code, std::to_string(result));
 }
 void MainAbility::RevokeCase1(int code)

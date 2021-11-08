@@ -47,7 +47,7 @@ constexpr int numZero = 0;
 constexpr int numOne = 1;
 constexpr int numTwo = 2;
 constexpr int numThree = 3;
-}
+}  // namespace
 
 bool Wait(const int task_num)
 {
@@ -300,7 +300,8 @@ void MainAbility::TestDispatcher(int apiIndex, int caseIndex, int code)
     }
 }
 
-void SetInnerTask(TaskList innerDispatcher, TestSetting innerSetting, std::string outerTaskId, int innerTaskSeq) {
+void SetInnerTask(TaskList &innerDispatcher, TestSetting innerSetting, std::string outerTaskId, int innerTaskSeq)
+{
     std::string innerTaskId = outerTaskId + innerDelimiter + std::to_string(innerTaskSeq);
     auto innerTask = std::make_shared<Runnable>([=]() { TestTask(innerTaskId); });
     innerDispatcher.addOperation(innerSetting.op);
@@ -313,7 +314,8 @@ void SetInnerTask(TaskList innerDispatcher, TestSetting innerSetting, std::strin
     innerDispatcher.addFunc(innerTask);
 }
 
-void SetInnerTaskOther(TaskList innerDispatcher, TestSetting innerSetting, int outerTaskSeq) {
+void SetInnerTaskOther(TaskList &innerDispatcher, TestSetting innerSetting, int outerTaskSeq)
+{
     if (innerSetting.sync_barrier) {
         std::string taskId = innerSyncBarrierId + std::to_string(outerTaskSeq);
         auto task = std::make_shared<Runnable>([=]() { TestTask(taskId); });
@@ -334,7 +336,8 @@ void SetInnerTaskOther(TaskList innerDispatcher, TestSetting innerSetting, int o
     }
 }
 
-void SetOuterTaskOther(TaskList outerDispatcher, TestSetting outerSetting) {
+void SetOuterTaskOther(TaskList &outerDispatcher, TestSetting outerSetting)
+{
     if (outerSetting.sync_barrier) {
         auto task = std::make_shared<Runnable>([=]() { TestTask(outerSyncBarrierId); });
         outerDispatcher.addOperation(TestOperation::SYNC_BARRIER).addFunc(task);
@@ -352,7 +355,8 @@ void SetOuterTaskOther(TaskList outerDispatcher, TestSetting outerSetting) {
     }
 }
 
-int CountTask(TestSetting outerSetting, TestSetting innerSetting) {
+int CountTask(TestSetting outerSetting, TestSetting innerSetting)
+{
     int taskCount = 0;
     taskCount = (innerSetting.op == TestOperation::APPLY) ? (innerSetting.apply * testTaskCount) : testTaskCount;
     if (innerSetting.sync_barrier) {

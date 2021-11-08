@@ -164,7 +164,7 @@ static void GetResult(std::shared_ptr<STtools::StOperator> child, std::shared_pt
     } else if (child->GetOperatorName() == OPERATOR_QUERY) {
         std::vector<std::string> columns = STtools::SerializationStOperatorToVector(*child);
         std::shared_ptr<NativeRdb::AbsSharedResultSet> resultValue = helper->Query(dataAbilityUri, columns, predicates);
-        result = "failed";
+        result = OPERATOR_QUERY;
         if (resultValue != nullptr) {
             resultValue->GoToRow(0);
             resultValue->GetString(0, result);

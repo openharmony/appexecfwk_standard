@@ -158,6 +158,12 @@ public:
 
     void initCaseSecond() {
         std::unordered_map<int, std::vector<std::function<void(int)>>> second = {
+            {(int)AbilityContextApi::GetDir,
+                {
+                    [this](int code) { GetDirCase1(code); },
+                    [this](int code) { GetDirCase2(code); },
+                    [this](int code) { GetDirCase3(code); },
+                }},
             {(int)AbilityContextApi::GetBundleManager,
                 {
                     [this](int code) { GetBundleManagerCase1(code); },
