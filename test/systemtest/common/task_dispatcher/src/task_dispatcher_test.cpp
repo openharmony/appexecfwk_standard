@@ -57,7 +57,7 @@ public:
     public:
         explicit AppEventSubscriber(const OHOS::EventFwk::CommonEventSubscribeInfo &sp) : CommonEventSubscriber(sp) {};
         virtual void OnReceiveEvent(const OHOS::EventFwk::CommonEventData &data) override;
-        ~AppEventSubscriber(){};
+        ~AppEventSubscriber() {};
     };
 
     void StartAbility(const std::string &abilityName, const std::string &bundleName);

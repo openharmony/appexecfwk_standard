@@ -341,9 +341,6 @@ void MainAbility::SubscribeEvent()
 
 void FirstEventSubscriber::OnReceiveEvent(const CommonEventData &data)
 {
-    // APP_LOGI("FirstEventSubscriber::OnReceiveEvent:event=%{public}s", data.GetWant().GetAction().c_str());
-    // APP_LOGI("FirstEventSubscriber::OnReceiveEvent:data=%{public}s", data.GetData().c_str());
-    // APP_LOGI("FirstEventSubscriber::OnReceiveEvent:code=%{public}d", data.GetCode());
     auto eventName = data.GetWant().GetAction();
     if (std::strcmp(eventName.c_str(), g_EVENT_REQU_FIRST.c_str()) == 0) {
         auto target = data.GetData();
@@ -458,7 +455,7 @@ int MainAbility::Dispatch(TestSetting outerSetting, TestSetting innerSetting)
     std::string innerName = "innerDispatcher";
     std::string outerTaskId;
     auto context = GetContext();
-    TaskList outerDispatcher{outerSetting.dispatcher, context, outerName};
+    TaskList outerDispatcher {outerSetting.dispatcher, context, outerName};
     if (outerSetting.create_group) {
         outerDispatcher.addOperation(TestOperation::CREATE_GROUP);
     }
@@ -466,7 +463,7 @@ int MainAbility::Dispatch(TestSetting outerSetting, TestSetting innerSetting)
         outerTaskId = std::to_string(i);
         auto outerTask = std::make_shared<Runnable>([=]() {
             auto context = this->GetContext();
-            TaskList innerDispatcher{innerSetting.dispatcher, context, innerName + std::to_string(i)};
+            TaskList innerDispatcher {innerSetting.dispatcher, context, innerName + std::to_string(i)};
             if (innerSetting.create_group) {
                 innerDispatcher.addOperation(TestOperation::CREATE_GROUP);
             }
