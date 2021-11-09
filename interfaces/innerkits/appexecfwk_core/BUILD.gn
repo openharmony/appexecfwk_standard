@@ -63,6 +63,7 @@ ohos_shared_library("appexecfwk_core") {
     "src/appmgr/process_info.cpp",
     "src/appmgr/profile.cpp",
     "src/bundlemgr/bundle_installer_proxy.cpp",
+    "src/bundlemgr/bundle_mgr_client.cpp",
     "src/bundlemgr/bundle_mgr_host.cpp",
     "src/bundlemgr/bundle_mgr_proxy.cpp",
     "src/bundlemgr/bundle_monitor.cpp",
