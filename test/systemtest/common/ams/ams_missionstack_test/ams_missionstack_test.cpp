@@ -39,7 +39,7 @@ static const string MAIN_ABILITY_NAME = "MainAbility";
 static const string SECOND_ABILITY_NAME = "SecondAbility";
 static const string THIRD_ABILITY_NAME = "ThirdAbility";
 static constexpr int WAIT_TIME = 1;
-static constexpr int WAIT_LAUNCHER_TIME = 5;
+static constexpr int WAIT_LAUNCHER_TIME = 9;
 static const std::string LAUNCHER_ABILITY_NAME = "com.ohos.launcher.MainAbility";
 static const std::string LAUNCHER_BUNDLE_NAME = "com.ohos.launcher";
 }
