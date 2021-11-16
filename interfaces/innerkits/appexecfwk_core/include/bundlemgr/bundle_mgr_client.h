@@ -17,6 +17,7 @@
 #define FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_CORE_INCLUDE_BUNDLEMGR_BUNDLE_MGR_CLIENT_H
 
 #include "appexecfwk_errors.h"
+#include "bundle_info.h"
 #include "iremote_object.h"
 #include "singleton.h"
 
@@ -28,6 +29,7 @@ public:
     virtual ~BundleMgrClient();
 
     bool GetBundleNameForUid(const int uid, std::string &bundleName);
+    bool GetBundleInfo(const std::string &bundleName, const BundleFlag flag, BundleInfo &bundleInfo);
 
 private:
     ErrCode Connect();
