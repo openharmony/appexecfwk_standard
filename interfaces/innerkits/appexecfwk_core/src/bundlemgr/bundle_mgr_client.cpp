@@ -51,6 +51,25 @@ bool BundleMgrClient::GetBundleNameForUid(const int uid, std::string &bundleName
     return bundleMgrProxy->GetBundleNameForUid(uid, bundleName);
 }
 
+bool BundleMgrClient::GetBundleInfo(const std::string &bundleName, const BundleFlag flag, BundleInfo &bundleInfo)
+{
+    APP_LOGI("enter");
+
+    ErrCode result = Connect();
+    if (result != ERR_OK) {
+        APP_LOGE("failed to connect");
+        return false;
+    }
+
+    auto bundleMgrProxy = iface_cast<IBundleMgr>(remoteObject_);
+    if (bundleMgrProxy == nullptr) {
+        APP_LOGE("failed to get bundle mgr proxy");
+        return false;
+    }
+
+    return bundleMgrProxy->GetBundleInfo(bundleName, flag, bundleInfo);
+}
+
 ErrCode BundleMgrClient::Connect()
 {
     APP_LOGI("enter");
