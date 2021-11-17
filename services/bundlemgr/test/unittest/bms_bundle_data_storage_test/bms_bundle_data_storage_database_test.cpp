@@ -146,7 +146,8 @@ protected:
                 "permissions": [],
                 "process": "",
                 "signatureKey": "",
-                "supportedModes": 0
+                "supportedModes": 0,
+                "debug": false
             },
             "baseBundleInfo": {
                 "abilityInfos": [],
@@ -175,7 +176,8 @@ protected:
                     "permissions": [],
                     "process": "",
                     "signatureKey": "",
-                    "supportedModes": 0
+                    "supportedModes": 0,
+                    "debug": false
                 },
                 "compatibleVersion": 3,
                 "cpuAbi": "",
@@ -318,7 +320,8 @@ protected:
                 }
             },
             "uid": 10000,
-            "userId_": 0
+            "userId_": 0,
+            "canUninstall": true
         }
     )"_json;
 

@@ -37,6 +37,7 @@ const std::string USER_ID = "userId_";
 const std::string IS_KEEP_DATA = "isKeepData";
 const std::string APP_FEATURE = "appFeature";
 const std::string HAS_ENTRY = "hasEntry";
+const std::string CAN_UNINSTALL = "canUninstall";
 const std::string MODULE_PACKAGE = "modulePackage";
 const std::string MODULE_PATH = "modulePath";
 const std::string MODULE_NAME = "moduleName";
@@ -178,6 +179,7 @@ void InnerBundleInfo::ToJson(nlohmann::json &jsonObject) const
     jsonObject[HAS_ENTRY] = hasEntry_;
     jsonObject[MODULE_FORMS] = formInfos_;
     jsonObject[MODULE_SHORTCUT] = shortcutInfos_;
+    jsonObject[CAN_UNINSTALL] = canUninstall_;
 }
 
 void from_json(const nlohmann::json &jsonObject, InnerModuleInfo &info)
@@ -719,6 +721,14 @@ int32_t InnerBundleInfo::FromJson(const nlohmann::json &jsonObject)
         true,
         ProfileReader::parseResult,
         ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<bool>(jsonObject,
+        jsonObjectEnd,
+        CAN_UNINSTALL,
+        canUninstall_,
+        JsonType::BOOLEAN,
+        true,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
     int32_t ret = ProfileReader::parseResult;
     // need recover parse result to ERR_OK
     ProfileReader::parseResult = ERR_OK;
@@ -966,6 +976,7 @@ std::string InnerBundleInfo::ToString() const
     j[HAS_ENTRY] = hasEntry_;
     j[MODULE_FORMS] = formInfos_;
     j[MODULE_SHORTCUT] = shortcutInfos_;
+    j[CAN_UNINSTALL] = canUninstall_;
     return j.dump();
 }
 
