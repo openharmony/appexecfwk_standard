@@ -929,6 +929,16 @@ public:
         return hasEntry_;
     }
 
+    void SetAppCanUninstall(bool canUninstall)
+    {
+        canUninstall_ = canUninstall;
+    }
+
+    bool GetAppCanUninstall() const
+    {
+        return canUninstall_;
+    }
+
     bool SetAbilityEnabled(const std::string &bundleName, const std::string &abilityName, bool isEnabled)
     {
         for (auto &ability : baseAbilityInfos_) {
@@ -1027,6 +1037,7 @@ private:
     std::string mainAbility_;
     std::string appFeature_;
     bool hasEntry_ = false;
+    bool canUninstall_ = true;
     // only using for install or update progress, doesn't need to save to database
     std::string currentPackage_;
     std::string mainAbilityName_;

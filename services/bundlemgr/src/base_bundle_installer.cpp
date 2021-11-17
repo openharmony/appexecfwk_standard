@@ -173,10 +173,8 @@ ErrCode BaseBundleInstaller::ProcessBundleInstall(
 {
     APP_LOGI("ProcessBundleInstall bundlePath %{public}s", inBundlePath.c_str());
     if (installParam.userId == Constants::INVALID_USERID) {
-        APP_LOGE("invalid userId");
         return ERR_APPEXECFWK_INSTALL_PARAM_ERROR;
     }
-
     std::string bundlePath;
     ErrCode result = BundleUtil::CheckFilePath(inBundlePath, bundlePath);
     if (result != ERR_OK) {
@@ -184,19 +182,25 @@ ErrCode BaseBundleInstaller::ProcessBundleInstall(
         return result;
     }
     UpdateInstallerState(InstallerState::INSTALL_BUNDLE_CHECKED);
-
     Security::Verify::HapVerifyResult hapVerifyResult;
-    if (installParam.noCheckSignature == false) {
-        if (!BundleVerifyMgr::HapVerify(bundlePath, hapVerifyResult)) {
-            APP_LOGE("hap file verify failed");
-            return ERR_APPEXECFWK_INSTALL_NO_SIGNATURE_INFO;
-        }
+    if (!BundleVerifyMgr::HapVerify(bundlePath, hapVerifyResult) && installParam.noCheckSignature == false) {
+        APP_LOGE("hap file verify failed");
+        return ERR_APPEXECFWK_INSTALL_NO_SIGNATURE_INFO;
     }
-
     // parse the single bundle info to get the bundle name.
     InnerBundleInfo newInfo;
     modulePath_ = bundlePath;
     newInfo.SetAppType(appType);
+    if (appType == Constants::AppType::SYSTEM_APP) {
+        newInfo.SetAppCanUninstall(false);
+    }
+    auto provisionInfo = hapVerifyResult.GetProvisionInfo();
+    newInfo.SetProvisionId(provisionInfo.appId);
+    newInfo.SetAppFeature(provisionInfo.bundleInfo.appFeature);
+    APP_LOGD("provisionInfo appFeature is %{public}s", provisionInfo.bundleInfo.appFeature.c_str());
+    if (provisionInfo.bundleInfo.appFeature == Constants::HOS_SYSTEM_APP) {
+        newInfo.SetAppType(Constants::AppType::SYSTEM_APP);
+    }
     newInfo.SetUserId(installParam.userId);
     newInfo.SetIsKeepData(installParam.isKeepData);
     if (!ModifyInstallDirByHapType(newInfo)) {
@@ -208,21 +212,15 @@ ErrCode BaseBundleInstaller::ProcessBundleInstall(
         APP_LOGE("bundle parse failed %{public}d", result);
         return result;
     }
-    if (installParam.noCheckSignature == false) {
-        auto provisionInfo = hapVerifyResult.GetProvisionInfo();
-        newInfo.SetProvisionId(provisionInfo.appId);
-        newInfo.SetAppFeature(provisionInfo.bundleInfo.appFeature);
-    }
     UpdateInstallerState(InstallerState::INSTALL_PARSED);
-
     bundleName_ = newInfo.GetBundleName();
     modulePackage_ = newInfo.GetCurrentModulePackage();
     mainAbility_ = newInfo.GetMainAbilityName();
-    if (modulePackage_.empty()) {
-        APP_LOGE("get current package failed %{public}d", result);
-        return ERR_APPEXECFWK_INSTALL_PARAM_ERROR;
-    }
+    return ProcessBundleStatus(newInfo, uid, installParam.installFlag);
+}
 
+ErrCode BaseBundleInstaller::ProcessBundleStatus(InnerBundleInfo &newInfo, int32_t &uid, const InstallFlag &installFlag)
+{
     // try to get the bundle info to decide use install or update.
     InnerBundleInfo oldInfo;
     dataMgr_ = DelayedSingleton<BundleMgrService>::GetInstance()->GetDataMgr();
@@ -236,7 +234,7 @@ ErrCode BaseBundleInstaller::ProcessBundleInstall(
     if (isAppExist_) {
         APP_LOGI("app is exist");
         uid = oldInfo.GetUid();
-        bool isReplace = (installParam.installFlag == InstallFlag::REPLACE_EXISTING);
+        bool isReplace = (installFlag == InstallFlag::REPLACE_EXISTING);
         return ProcessBundleUpdateStatus(oldInfo, newInfo, isReplace);  // app exist, but module may not
     }
     return ProcessBundleInstallStatus(newInfo, uid);
@@ -268,7 +266,7 @@ ErrCode BaseBundleInstaller::ProcessBundleUninstall(
     }
     uid = oldInfo.GetUid();
     ScopeGuard enableGuard([&] { dataMgr_->EnableBundle(bundleName); });
-    if (oldInfo.GetAppType() == Constants::AppType::SYSTEM_APP) {
+    if (!oldInfo.GetAppCanUninstall()) {
         APP_LOGE("uninstall system app");
         return ERR_APPEXECFWK_UNINSTALL_SYSTEM_APP_ERROR;
     }
@@ -321,7 +319,7 @@ ErrCode BaseBundleInstaller::ProcessBundleUninstall(
     uid = oldInfo.GetUid();
     ScopeGuard enableGuard([&] { dataMgr_->EnableBundle(bundleName); });
 
-    if (oldInfo.GetAppType() == Constants::AppType::SYSTEM_APP) {
+    if (!oldInfo.GetAppCanUninstall()) {
         APP_LOGE("uninstall system app");
         return ERR_APPEXECFWK_UNINSTALL_SYSTEM_APP_ERROR;
     }
