@@ -52,10 +52,9 @@ public:
 
     /**
      * @description: Gets the {@link OHOSApplication} object
-     * @param bundleName the bundle name of the application.
      * @return Return {@link OHOSApplication} object which is registered by developer.
      */
-    OHOSApplication *GetApplicationByName(const std::string &bundleName = "OHOSApplication");
+    OHOSApplication *GetApplicationByName();
 
 private:
     ApplicationLoader() = default;
