@@ -186,17 +186,26 @@ ErrCode BaseBundleInstaller::ProcessBundleInstall(
     UpdateInstallerState(InstallerState::INSTALL_BUNDLE_CHECKED);
 
     Security::Verify::HapVerifyResult hapVerifyResult;
-    if (installParam.noCheckSignature == false) {
-        if (!BundleVerifyMgr::HapVerify(bundlePath, hapVerifyResult)) {
-            APP_LOGE("hap file verify failed");
-            return ERR_APPEXECFWK_INSTALL_NO_SIGNATURE_INFO;
-        }
+    if (!BundleVerifyMgr::HapVerify(bundlePath, hapVerifyResult) && installParam.noCheckSignature == false) {
+        APP_LOGE("hap file verify failed");
+        return ERR_APPEXECFWK_INSTALL_NO_SIGNATURE_INFO;
     }
 
     // parse the single bundle info to get the bundle name.
     InnerBundleInfo newInfo;
     modulePath_ = bundlePath;
     newInfo.SetAppType(appType);
+    if (appType == Constants::AppType::SYSTEM_APP) {
+        newInfo.SetAppCanUninstall(false);
+    }
+    auto provisionInfo = hapVerifyResult.GetProvisionInfo();
+    newInfo.SetProvisionId(provisionInfo.appId);
+    newInfo.SetAppFeature(provisionInfo.bundleInfo.appFeature);
+    APP_LOGD("appId is %{public}s", provisionInfo.appId.c_str());
+    APP_LOGD("provisionInfo appFeature is %{public}s", provisionInfo.bundleInfo.appFeature.c_str());
+    if (provisionInfo.bundleInfo.appFeature == Constants::HOS_SYSTEM_APP) {
+        newInfo.SetAppType(Constants::AppType::SYSTEM_APP);
+    }
     newInfo.SetUserId(installParam.userId);
     newInfo.SetIsKeepData(installParam.isKeepData);
     if (!ModifyInstallDirByHapType(newInfo)) {
@@ -208,11 +217,7 @@ ErrCode BaseBundleInstaller::ProcessBundleInstall(
         APP_LOGE("bundle parse failed %{public}d", result);
         return result;
     }
-    if (installParam.noCheckSignature == false) {
-        auto provisionInfo = hapVerifyResult.GetProvisionInfo();
-        newInfo.SetProvisionId(provisionInfo.appId);
-        newInfo.SetAppFeature(provisionInfo.bundleInfo.appFeature);
-    }
+
     UpdateInstallerState(InstallerState::INSTALL_PARSED);
 
     bundleName_ = newInfo.GetBundleName();
@@ -268,7 +273,7 @@ ErrCode BaseBundleInstaller::ProcessBundleUninstall(
     }
     uid = oldInfo.GetUid();
     ScopeGuard enableGuard([&] { dataMgr_->EnableBundle(bundleName); });
-    if (oldInfo.GetAppType() == Constants::AppType::SYSTEM_APP) {
+    if (!oldInfo.GetAppCanUninstall()) {
         APP_LOGE("uninstall system app");
         return ERR_APPEXECFWK_UNINSTALL_SYSTEM_APP_ERROR;
     }
@@ -321,7 +326,7 @@ ErrCode BaseBundleInstaller::ProcessBundleUninstall(
     uid = oldInfo.GetUid();
     ScopeGuard enableGuard([&] { dataMgr_->EnableBundle(bundleName); });
 
-    if (oldInfo.GetAppType() == Constants::AppType::SYSTEM_APP) {
+    if (!oldInfo.GetAppCanUninstall()) {
         APP_LOGE("uninstall system app");
         return ERR_APPEXECFWK_UNINSTALL_SYSTEM_APP_ERROR;
     }

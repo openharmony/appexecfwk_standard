@@ -206,7 +206,8 @@ protected:
                 "permissions": [],
                 "process": "",
                 "signatureKey": "",
-                "supportedModes": 0
+                "supportedModes": 0,
+                "debug": false
             },
             "baseBundleInfo": {
                 "abilityInfos": [],
@@ -235,7 +236,8 @@ protected:
                     "permissions": [],
                     "process": "",
                     "signatureKey": "",
-                    "supportedModes": 0
+                    "supportedModes": 0,
+                    "debug": false
                 },
                 "compatibleVersion": 6,
                 "cpuAbi": "",
@@ -374,77 +376,13 @@ protected:
                     "isEnables": false,
                     "isHomeShortcut": false,
                     "isStatic": false,
-                    "iconId": 1234,
-                    "labelId": 1234,
-                    "flags": 1234,
                     "label": "$string:mainability_description"
                 }
             },
             "uid": 2103,
-            "userId_": 0
+            "userId_": 0,
+            "canUninstall": true
         }
-        )"_json;
-    nlohmann::json bundleInfoJson_ = R"(
-        {
-                "abilityInfos": [],
-                "appId": "",
-                "applicationInfo": {
-                    "bundleName": "",
-                    "cacheDir": "",
-                    "codePath": "",
-                    "dataBaseDir": "",
-                    "dataDir": "",
-                    "description": "",
-                    "descriptionId": 0,
-                    "deviceId": "",
-                    "enabled": false,
-                    "entryDir": "",
-                    "flags": 0,
-                    "iconId": 0,
-                    "iconPath": "",
-                    "isLauncherApp": false,
-                    "isSystemApp": false,
-                    "label": "",
-                    "labelId": 0,
-                    "moduleInfos": [],
-                    "moduleSourceDirs": [],
-                    "name": "",
-                    "permissions": [],
-                    "process": "",
-                    "signatureKey": "",
-                    "supportedModes": 0
-                },
-                "compatibleVersion": 6,
-                "cpuAbi": "",
-                "defPermissions": [],
-                "description": "",
-                "entryModuleName": "",
-                "gid": 2103,
-                "hapModuleNames": [],
-                "installTime": 10631,
-                "isDifferentName": false,
-                "isKeepAlive": false,
-                "isNativeApp": false,
-                "jointUserId": "",
-                "label": "$string:app_name",
-                "mainEntry": "",
-                "maxSdkVersion": 0,
-                "minSdkVersion": 0,
-                "moduleDirs": [],
-                "moduleNames": [],
-                "modulePublicDirs": [],
-                "moduleResPaths": [],
-                "name": "com.ohos.launcher",
-                "releaseType": "Canary1",
-                "reqPermissions": [],
-                "seInfo": "",
-                "targetVersion": 6,
-                "uid": 2103,
-                "updateTime": 10635,
-                "vendor": "ohos",
-                "versionCode": 1,
-                "versionName": "1.0"
-            }
         )"_json;
     std::string deviceId_{};
 
@@ -456,7 +394,6 @@ private:
 BmsBundleInstallerModuleTest::BmsBundleInstallerModuleTest()
 {
     deviceId_ = Constants::CURRENT_DEVICE_ID;
-    innerBundleInfoJson_["baseBundleInfo"] = bundleInfoJson_;
 }
 
 BmsBundleInstallerModuleTest::~BmsBundleInstallerModuleTest()

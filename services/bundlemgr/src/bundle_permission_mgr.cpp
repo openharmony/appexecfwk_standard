@@ -26,8 +26,6 @@ namespace AppExecFwk {
 using namespace OHOS::Security;
 
 namespace {
-const std::string HOS_NORMAL_APP = "hos_normal_app";
-const std::string HOS_SYSTEM_APP = "hos_system_app";
 // convert the Permission::PermissionDef struct to
 // AppExecFwk::PermissionDef struct that can be used in IPC process
 bool ConvertPermissionDef(const Permission::PermissionDef &permDef, PermissionDef &permissionDef)
@@ -128,18 +126,18 @@ bool BundlePermissionMgr::CheckPermissionAuthorization(
         APP_LOGE("Get dataMgr shared_ptr nullptr");
         return false;
     }
-    if (appFeature == HOS_NORMAL_APP) {
+    if (appFeature == Constants::HOS_NORMAL_APP) {
         std::string provisionId;
         bool result = dataMgr->GetProvisionId(permissionDef.bundleName, provisionId);
         if (result && (provisionId == innerBundleInfo.GetProvisionId())) {
             APP_LOGI("provisionId is same");
             return true;
         }
-    } else if (appFeature == HOS_SYSTEM_APP) {
+    } else if (appFeature == Constants::HOS_SYSTEM_APP) {
         std::string oldAppFeature;
         bool result = dataMgr->GetAppFeature(permissionDef.bundleName, oldAppFeature);
         APP_LOGI("oldAppFeature %{public}s", oldAppFeature.c_str());
-        if (result && (oldAppFeature == HOS_SYSTEM_APP)) {
+        if (result && (oldAppFeature == Constants::HOS_SYSTEM_APP)) {
             APP_LOGI("appFeature is same");
             return true;
         }
