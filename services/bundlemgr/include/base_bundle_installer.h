@@ -240,6 +240,14 @@ private:
      * @return Returns ERR_OK if the module updating successfully; returns error code otherwise.
      */
     ErrCode ProcessModuleUpdate(InnerBundleInfo &newInfo, InnerBundleInfo &oldInfo);
+    /**
+     * @brief try to get the bundle info to decide use install or update.
+     * @param newInfo Indicates the InnerBundleInfo object parsed from the config.json in the HAP package.
+     * @param uid Indicates the uid of the application.
+     * @param installFlag Indicates install Flag.
+     * @return Returns ERR_OK if the bundle install successfully; returns error code otherwise.
+     */
+    ErrCode ProcessBundleStatus(InnerBundleInfo &newInfo, int32_t &uid, const InstallFlag &installFlag);
 
 private:
     InstallerState state_ = InstallerState::INSTALL_START;
