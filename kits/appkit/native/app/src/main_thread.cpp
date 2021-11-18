@@ -681,10 +681,8 @@ void MainThread::HandleLaunchApplication(const AppLaunchData &appLaunchData)
         return;
     }
 
-    // BMS should set the type (native or ace) of application
-    bool isNativeApp = true;
-    std::string appName = isNativeApp ? appInfo.name : aceApplicationName_;
-    application_ = std::shared_ptr<OHOSApplication>(ApplicationLoader::GetInstance().GetApplicationByName(appName));
+    // get application shared point
+    application_ = std::shared_ptr<OHOSApplication>(ApplicationLoader::GetInstance().GetApplicationByName());
     if (application_ == nullptr) {
         APP_LOGE("HandleLaunchApplication::application launch failed");
         return;
