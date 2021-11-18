@@ -129,8 +129,10 @@ const int MAX_DEVICETYPE_SIZE = 50;
 
 const std::string OHOS_GLOBAL_SYSTEMRES = "ohos.global.systemres";
 
-const std::string HOS_NORMAL_APP = "ohos_normal_app";
-const std::string HOS_SYSTEM_APP = "ohos_system_app";
+const std::string OHOS_NORMAL_APP = "ohos_normal_app";
+const std::string OHOS_SYSTEM_APP = "ohos_system_app";
+const std::string HOS_NORMAL_APP = "hos_normal_app";
+const std::string HOS_SYSTEM_APP = "hos_system_app";
 }  // namespace Constants
 }  // namespace AppExecFwk
 }  // namespace OHOS
