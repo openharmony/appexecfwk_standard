@@ -44,14 +44,13 @@ void ApplicationLoader::RegisterApplication(const std::string &bundleName, const
 
 /**
  * @description: Gets the {@link OHOSApplication} object
- * @param applicationName application name.
  * @return Return {@link OHOSApplication} object which is registered by developer.
  */
-OHOSApplication *ApplicationLoader::GetApplicationByName(const std::string &bundleName)
+OHOSApplication *ApplicationLoader::GetApplicationByName()
 {
     auto it = applications_.find("OHOSApplication");
     if (it == applications_.end()) {
-        APP_LOGE("ApplicationLoader::GetApplicationByName failed:%{public}s", bundleName.c_str());
+        APP_LOGE("ApplicationLoader::GetApplicationByName failed:OHOSApplication");
     } else {
         return it->second();
     }
