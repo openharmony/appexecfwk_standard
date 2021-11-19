@@ -167,6 +167,20 @@ public:
      */
     virtual int ClearFormRecords() = 0;
 
+    /**
+     * @brief  Add forms to storage for st .
+     * @param Want The Want of the form to add.
+     * @return Returns ERR_OK on success, others on failure.
+     */
+    virtual int DistributedDataAddForm(const Want &want) = 0;
+
+    /**
+     * @brief  Delete form form storage for st.
+     * @param formId The formId of the form to delete.
+     * @return Returns ERR_OK on success, others on failure.
+     */
+    virtual int DistributedDataDeleteForm(const std::string &formId) = 0;
+
     enum class Message {
         // ipc id 1-1000 for kit
         // ipc id 1001-2000 for DMS
@@ -193,6 +207,8 @@ public:
         FORM_MGR_MESSAGE_EVENT,
         FORM_MGR_BATCH_ADD_FORM_RECORDS_ST,
         FORM_MGR_CLEAR_FORM_RECORDS_ST,
+        FORM_MGR_DISTRIBUTED_DATA_ADD_FORM__ST,
+        FORM_MGR_DISTRIBUTED_DATA_DELETE_FORM__ST,
     };
 };
 }  // namespace AppExecFwk
