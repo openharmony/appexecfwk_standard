@@ -35,6 +35,7 @@ ohos_unittest("FmsFormDbRecordTest") {
 
     #"//foundation/distributedschedule/samgr/adapter/interfaces/innerkits/include/",
     "//foundation/appexecfwk/standard/interfaces/innerkits/libeventhandler/include",
+    "//foundation/distributeddatamgr/distributeddatamgr/interfaces/innerkits/distributeddata/include",
   ]
 
   configs = [

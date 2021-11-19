@@ -159,24 +159,24 @@ bool FmsSelfStartingTest::CompareA()
     for (int iCount = 0; iCount < ADD_FORM_A_NUMBER; iCount++) {
         int64_t formId = iCount + 1;
         InnerFormInfo innerFormInfo;
-        selfStartingParser.GetStorageFormInfoById(std::to_string(formId),innerFormInfo);
-        if(innerFormInfo.GetFormId() != formId){
+        selfStartingParser.GetStorageFormInfoById(std::to_string(formId), innerFormInfo);
+        if (innerFormInfo.GetFormId() != formId) {
             compare = false;
             break;
         }
-        if(innerFormInfo.GetModuleName() != PARAM_PROVIDER_MODULE_NAME1){
+        if (innerFormInfo.GetModuleName() != PARAM_PROVIDER_MODULE_NAME1) {
             compare = false;
             break;
         }
-        if(innerFormInfo.GetBundleName() != FORM_PROVIDER_BUNDLE_NAME1){
+        if (innerFormInfo.GetBundleName() != FORM_PROVIDER_BUNDLE_NAME1) {
             compare = false;
             break;
         }
-        if(innerFormInfo.GetAbilityName() != FORM_PROVIDER_ABILITY_NAME1){
+        if (innerFormInfo.GetAbilityName() != FORM_PROVIDER_ABILITY_NAME1) {
             compare = false;
             break;
         }
-        if(innerFormInfo.GetFormName() != PARAM_FORM_NAME1){
+        if (innerFormInfo.GetFormName() != PARAM_FORM_NAME1) {
             compare = false;
             break;
         }
@@ -190,24 +190,24 @@ bool FmsSelfStartingTest::CompareB()
     for (int iCount = ADD_FORM_A_NUMBER; iCount < ADD_FORM_LENGTH; iCount++) {
         int64_t formId = iCount + 1;
         InnerFormInfo innerFormInfo;
-        selfStartingParser.GetStorageFormInfoById(std::to_string(formId),innerFormInfo);
-        if(innerFormInfo.GetFormId() != formId){
+        selfStartingParser.GetStorageFormInfoById(std::to_string(formId), innerFormInfo);
+        if (innerFormInfo.GetFormId() != formId) {
             compare = false;
             break;
         }
-        if(innerFormInfo.GetModuleName() != PARAM_PROVIDER_MODULE_NAME2){
+        if (innerFormInfo.GetModuleName() != PARAM_PROVIDER_MODULE_NAME2) {
             compare = false;
             break;
         }
-        if(innerFormInfo.GetBundleName() != FORM_PROVIDER_BUNDLE_NAME2){
+        if (innerFormInfo.GetBundleName() != FORM_PROVIDER_BUNDLE_NAME2) {
             compare = false;
             break;
         }
-        if(innerFormInfo.GetAbilityName() != FORM_PROVIDER_ABILITY_NAME2){
+        if (innerFormInfo.GetAbilityName() != FORM_PROVIDER_ABILITY_NAME2) {
             compare = false;
             break;
         }
-        if(innerFormInfo.GetFormName() != PARAM_FORM_NAME2){
+        if (innerFormInfo.GetFormName() != PARAM_FORM_NAME2) {
             compare = false;
             break;
         }
@@ -272,15 +272,15 @@ HWTEST_F(FmsSelfStartingTest, FMS_Start_0300_03, Function | MediumTest | Level1)
 {
     std::cout << "START FMS_Start_0300_03" << std::endl;
 
-    if(selfStarting.compareStatus){
+    if (selfStarting.compareStatus) {
         std::ifstream opbefore("/data/formmgr/beforeKill.txt");
         std::ifstream opafter("/data/formmgr/afterKill.txt");
         std::string beforeKill;
         std::string afterKill;
-        while(!opbefore.eof()){
+        while (!opbefore.eof()) {
             beforeKill += opbefore.get();
         }
-        while(!opafter.eof()){
+        while (!opafter.eof()) {
             afterKill += opafter.get();
         }
         opbefore.close();
@@ -293,6 +293,5 @@ HWTEST_F(FmsSelfStartingTest, FMS_Start_0300_03, Function | MediumTest | Level1)
     }
     std::cout << "END FMS_Start_0300_03" << std::endl;
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
