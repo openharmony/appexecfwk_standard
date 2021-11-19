@@ -188,6 +188,19 @@ public:
      */
     bool IsReady() const;
 
+    /**
+     * @brief  Add forms to storage for st .
+     * @param Want The Want of the form to add.
+     * @return Returns ERR_OK on success, others on failure.
+     */
+    int DistributedDataAddForm(const Want &want) override;
+
+    /**
+     * @brief  Delete form form storage for st.
+     * @param formId The formId of the form to delete.
+     * @return Returns ERR_OK on success, others on failure.
+     */
+    int DistributedDataDeleteForm(const std::string &formId) override;
 private:
     /**
      * @brief initialization of form manager service.

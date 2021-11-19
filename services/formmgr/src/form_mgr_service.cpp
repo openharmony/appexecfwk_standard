@@ -83,7 +83,7 @@ bool FormMgrService::IsReady() const
  * @param formInfo Form info.
  * @return Returns ERR_OK on success, others on failure.
  */
-int FormMgrService::AddForm(const int64_t formId, const Want &want, 
+int FormMgrService::AddForm(const int64_t formId, const Want &want,
     const sptr<IRemoteObject> &callerToken, FormJsInfo &formInfo)
 {
     if (!CheckFormPermission()) {
@@ -410,6 +410,28 @@ bool FormMgrService::CheckFormPermission(const std::string &bundleName) const
             Constants::PERMISSION_REQUIRE_FORM.c_str(), bundleName.c_str(), result);
     }
     return result == PermissionState::PERMISSION_GRANTED;
+}
+
+/**
+ * @brief  Add forms to storage for st .
+ * @param Want The Want of the form to add.
+ * @return Returns ERR_OK on success, others on failure.
+ */
+int FormMgrService::DistributedDataAddForm(const Want &want)
+{
+    APP_LOGI("%{public}s called.", __func__);
+    return FormMgrAdapter::GetInstance().DistributedDataAddForm(want);
+}
+
+/**
+ * @brief  Delete form form storage for st.
+ * @param formId The formId of the form to delete.
+ * @return Returns ERR_OK on success, others on failure.
+ */
+int FormMgrService::DistributedDataDeleteForm(const std::string &formId)
+{
+    APP_LOGI("%{public}s called.", __func__);
+    return FormMgrAdapter::GetInstance().DistributedDataDeleteForm(formId);
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS
