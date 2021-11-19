@@ -28,9 +28,9 @@ ohos_systemtest("FmsSelfStartingTest") {
   ]
 
   sources = [
+    "${appexecfwk_path}/services/formmgr/include/form_db_info.h",
     "${appexecfwk_path}/test/systemtest/common/fms/common/src/form_event.cpp",
     "${appexecfwk_path}/test/systemtest/common/fms/common/src/system_test_form_util.cpp",
-    "${appexecfwk_path}/services/formmgr/include/form_db_info.h",
     "fms_self_starting_test.cpp",
   ]
 
@@ -51,8 +51,8 @@ ohos_systemtest("FmsSelfStartingTest") {
     "${appexecfwk_path}/services/formmgr:libfms",
     "//foundation/aafwk/standard/interfaces/innerkits/ability_manager:ability_manager",
     "//foundation/appexecfwk/standard/interfaces/innerkits/libeventhandler:libeventhandler",
-    "//foundation/distributedschedule/dmsfwk/services/dtbschedmgr:distributedschedsvr",
     "//foundation/distributeddatamgr/distributeddatamgr/interfaces/innerkits/distributeddata:distributeddata_inner",
+    "//foundation/distributedschedule/dmsfwk/services/dtbschedmgr:distributedschedsvr",
     "//third_party/googletest:gtest_main",
   ]
 

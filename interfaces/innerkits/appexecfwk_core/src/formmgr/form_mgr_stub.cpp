@@ -71,6 +71,10 @@ FormMgrStub::FormMgrStub()
         &FormMgrStub::HandleBatchAddFormRecords;
     memberFuncMap_[static_cast<uint32_t>(IFormMgr::Message::FORM_MGR_CLEAR_FORM_RECORDS_ST)] =
         &FormMgrStub::HandleClearFormRecords;
+    memberFuncMap_[static_cast<uint32_t>(IFormMgr::Message::FORM_MGR_DISTRIBUTED_DATA_ADD_FORM__ST)] =
+        &FormMgrStub::HandleDistributedDataAddForm;
+    memberFuncMap_[static_cast<uint32_t>(IFormMgr::Message::FORM_MGR_DISTRIBUTED_DATA_DELETE_FORM__ST)] =
+        &FormMgrStub::HandleDistributedDataDeleteForm;
 }
 
 FormMgrStub::~FormMgrStub()
@@ -431,6 +435,7 @@ int32_t FormMgrStub::HandleBatchAddFormRecords(MessageParcel &data, MessageParce
     reply.WriteInt32(result);
     return result;
 }
+
 /**
  * @brief Handle BatchDeleteFormRecords message.
  * @param data input param.
@@ -441,6 +446,48 @@ int32_t FormMgrStub::HandleClearFormRecords(MessageParcel &data, MessageParcel &
 {
     APP_LOGI("%{public}s called.", __func__);
     int32_t result = ClearFormRecords();
+    reply.WriteInt32(result);
+    return result;
+}
+
+/**
+ * @brief Handle DistributedDataAddForm message.
+ * @param data input param.
+ * @param reply output param.
+ * @return Returns ERR_OK on success, others on failure.
+ */
+int32_t FormMgrStub::HandleDistributedDataAddForm(MessageParcel &data, MessageParcel &reply)
+{
+    APP_LOGI("%{public}s called.", __func__);
+
+    std::unique_ptr<Want> want(data.ReadParcelable<Want>());
+    if (!want) {
+        APP_LOGE("%{public}s, failed to ReadParcelable<Want>", __func__);
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+
+    int32_t result = DistributedDataAddForm(*want);
+    reply.WriteInt32(result);
+    return result;
+}
+
+/**
+ * @brief Handle DistributedDataDeleteForm message.
+ * @param data input param.
+ * @param reply output param.
+ * @return Returns ERR_OK on success, others on failure.
+ */
+int32_t FormMgrStub::HandleDistributedDataDeleteForm(MessageParcel &data, MessageParcel &reply)
+{
+    APP_LOGI("%{public}s called.", __func__);
+
+    std::string formId = data.ReadString();
+    if (formId.empty()) {
+        APP_LOGE("%{public}s, failed to ReadParcelable<int64_t>", __func__);
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+
+    int32_t result = DistributedDataDeleteForm(formId);
     reply.WriteInt32(result);
     return result;
 }

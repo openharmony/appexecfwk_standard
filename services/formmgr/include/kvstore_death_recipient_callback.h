@@ -20,16 +20,13 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class KvStoreDeathRecipientCallback : public DistributedKv::KvStoreDeathRecipient {
 public:
     KvStoreDeathRecipientCallback();
     virtual ~KvStoreDeathRecipientCallback();
 
     virtual void OnRemoteDied() override;
-
 };
-
 } // namespace AppExecFwk
 } // namespace OHOS
 #endif // FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_KVSTORE_DEATH_RECIPIENT_CALLBACK_H
