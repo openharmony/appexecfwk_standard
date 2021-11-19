@@ -148,7 +148,6 @@ public:
         return status;
     }
 
-
     bool GetStorageFormInfoById(const std::string &formId, InnerFormInfo &innerFormInfo)
     {
         {
@@ -200,8 +199,6 @@ public:
     const int32_t MAX_TIMES = 600;              // 1min
     const int32_t SLEEP_INTERVAL = 100 * 1000;  // 100ms
 };
-
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 

@@ -662,9 +662,9 @@ int FormMgrProxy::DistributedDataAddForm(const Want &want)
     MessageOption option;
     int error = Remote()->SendRequest(
         static_cast<uint32_t>(IFormMgr::Message::FORM_MGR_DISTRIBUTED_DATA_ADD_FORM__ST),
-            data,
-            reply,
-            option);
+        data,
+        reply,
+        option);
     if (error != ERR_OK) {
         APP_LOGE("%{public}s, failed to SendRequest: %{public}d", __func__, error);
         return ERR_APPEXECFWK_FORM_SEND_FMS_MSG;
@@ -693,9 +693,9 @@ int FormMgrProxy::DistributedDataDeleteForm(const std::string &formId)
     MessageOption option;
     int error = Remote()->SendRequest(
         static_cast<uint32_t>(IFormMgr::Message::FORM_MGR_DISTRIBUTED_DATA_DELETE_FORM__ST),
-            data,
-            reply,
-            option);
+        data,
+        reply,
+        option);
     if (error != ERR_OK) {
         APP_LOGE("%{public}s, failed to SendRequest: %{public}d", __func__, error);
         return ERR_APPEXECFWK_FORM_SEND_FMS_MSG;
