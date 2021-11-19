@@ -126,18 +126,18 @@ bool BundlePermissionMgr::CheckPermissionAuthorization(
         APP_LOGE("Get dataMgr shared_ptr nullptr");
         return false;
     }
-    if (appFeature == Constants::HOS_NORMAL_APP) {
+    if (appFeature == Constants::HOS_NORMAL_APP || appFeature == Constants::OHOS_NORMAL_APP) {
         std::string provisionId;
         bool result = dataMgr->GetProvisionId(permissionDef.bundleName, provisionId);
         if (result && (provisionId == innerBundleInfo.GetProvisionId())) {
             APP_LOGI("provisionId is same");
             return true;
         }
-    } else if (appFeature == Constants::HOS_SYSTEM_APP) {
+    } else if (appFeature == Constants::HOS_SYSTEM_APP || appFeature == Constants::OHOS_SYSTEM_APP) {
         std::string oldAppFeature;
         bool result = dataMgr->GetAppFeature(permissionDef.bundleName, oldAppFeature);
         APP_LOGI("oldAppFeature %{public}s", oldAppFeature.c_str());
-        if (result && (oldAppFeature == Constants::HOS_SYSTEM_APP)) {
+        if (result && (oldAppFeature == Constants::HOS_SYSTEM_APP || oldAppFeature == Constants::OHOS_SYSTEM_APP)) {
             APP_LOGI("appFeature is same");
             return true;
         }

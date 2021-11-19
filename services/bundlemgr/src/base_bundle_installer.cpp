@@ -198,7 +198,8 @@ ErrCode BaseBundleInstaller::ProcessBundleInstall(
     newInfo.SetProvisionId(provisionInfo.appId);
     newInfo.SetAppFeature(provisionInfo.bundleInfo.appFeature);
     APP_LOGD("provisionInfo appFeature is %{public}s", provisionInfo.bundleInfo.appFeature.c_str());
-    if (provisionInfo.bundleInfo.appFeature == Constants::HOS_SYSTEM_APP) {
+    if (provisionInfo.bundleInfo.appFeature == Constants::HOS_SYSTEM_APP ||
+        provisionInfo.bundleInfo.appFeature == Constants::OHOS_SYSTEM_APP) {
         newInfo.SetAppType(Constants::AppType::SYSTEM_APP);
     }
     newInfo.SetUserId(installParam.userId);
