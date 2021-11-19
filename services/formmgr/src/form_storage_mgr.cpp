@@ -22,55 +22,70 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <stdio.h>
+#include <unistd.h>
 
 #include "securec.h"
 #include "app_log_wrapper.h"
 #include "form_storage_mgr.h"
+#include "kvstore_death_recipient_callback.h"
 #include "string_ex.h"
+#include "types.h"
 
 namespace OHOS {
 namespace AppExecFwk {
 namespace {
-const char* FORM_DB_DATA_BASE_FILE_DIR = "/data/formmgr";
-const int32_t FORM_DB_DATA_BASE_FILE_PATH_LEN = 255;
+const int32_t MAX_TIMES = 600;              // 1min
+const int32_t SLEEP_INTERVAL = 100 * 1000;  // 100ms
+}  // namespace
+
+FormStorageMgr::FormStorageMgr()
+{
+    APP_LOGI("instance:%{private}p is created", this);
+    TryTwice([this] { return GetKvStore(); });
+    RegisterKvStoreDeathListener();
 }
 
-/**
- * @brief Load form data from fileNamePath to innerFormInfos.
- * @param fileNamePath load file path.
- * @param innerFormInfos Save form data.
- * @return Returns true if the data is successfully loaded; returns false otherwise.
- */
-static bool LoadFormDataFile(const char* fileNamePath, std::vector<InnerFormInfo> &innerFormInfos)
+FormStorageMgr::~FormStorageMgr()
 {
-    bool ret = false;
-    std::ifstream i(fileNamePath);
-    if (!i.is_open()) {
-        APP_LOGE("%{public}s, failed to open file[%{public}s]", __func__, fileNamePath);
-        return false;
-    }
+    APP_LOGI("instance:%{private}p is destroyed", this);
+    dataManager_.CloseKvStore(appId_, std::move(kvStorePtr_));
+}
 
-    nlohmann::json jParse;
-    i.seekg(0, std::ios::end);
-    int len = static_cast<int>(i.tellg());
-    if (len != 0) {
-        i.seekg(0, std::ios::beg);
-        i >> jParse;
-        for (auto &it : jParse.items()) {
-            InnerFormInfo innerFormInfo;
-            if (innerFormInfo.FromJson(it.value())) {
-                innerFormInfos.emplace_back(innerFormInfo);
-            } else {
-                APP_LOGE("%{public}s, failed to parse json, formId[%{public}s]", __func__, it.key().c_str());
+void FormStorageMgr::SaveEntries(
+    const std::vector<DistributedKv::Entry> &allEntries, std::vector<InnerFormInfo> &innerFormInfos)
+{
+    for (const auto &item : allEntries) {
+        std::string formId;
+        InnerFormInfo innerFormInfo;
+
+        nlohmann::json jsonObject = nlohmann::json::parse(item.value.ToString(), nullptr, false);
+        if (jsonObject.is_discarded()) {
+            APP_LOGE("error key: %{private}s", item.key.ToString().c_str());
+            // it's an bad json, delete it
+            {
+                std::lock_guard<std::mutex> lock(kvStorePtrMutex_);
+                kvStorePtr_->Delete(item.key);
             }
+            continue;
         }
-        ret = true;
-    } else {
-        APP_LOGE("%{public}s, file[%{public}s] is empty", __func__, fileNamePath);
-        ret = false;
+        if (innerFormInfo.FromJson(jsonObject) != true) {
+            APP_LOGE("error key: %{private}s", item.key.ToString().c_str());
+            // it's an error value, delete it
+            {
+                std::lock_guard<std::mutex> lock(kvStorePtrMutex_);
+                kvStorePtr_->Delete(item.key);
+            }
+            continue;
+        }
+
+        if (std::find(innerFormInfos.begin(), innerFormInfos.end(), innerFormInfo) == innerFormInfos.end()) {
+            APP_LOGD("emplace FormInfos: %{public}s", formId.c_str());
+            std::map<std::string, InnerFormInfo> allDevicesInfos;
+            allDevicesInfos.emplace(formId, innerFormInfo);
+            innerFormInfos.emplace_back(innerFormInfo);
+        }
     }
-    i.close();
-    return ret;
+    APP_LOGD("SaveEntries end");
 }
 
 /**
@@ -78,35 +93,33 @@ static bool LoadFormDataFile(const char* fileNamePath, std::vector<InnerFormInfo
  * @param innerFormInfos Storage all form data.
  * @return Returns ERR_OK on success, others on failure.
  */
-ErrCode FormStorageMgr::LoadFormData(std::vector<InnerFormInfo> &innerFormInfos) const
+ErrCode FormStorageMgr::LoadFormData(std::vector<InnerFormInfo> &innerFormInfos)
 {
     APP_LOGI("%{public}s called.", __func__);
-    DIR *dirptr = opendir(FORM_DB_DATA_BASE_FILE_DIR);
-    if (dirptr == NULL) {
-        APP_LOGE("%{public}s, opendir failed, should no formmgr dir", __func__);
-        return ERR_APPEXECFWK_FORM_COMMON_CODE;
-    }
-
-    struct dirent *ptr;
-    while ((ptr = readdir(dirptr)) != NULL) {
-        APP_LOGI("%{public}s, readdir fileName[%{public}s]", __func__, ptr->d_name);
-        if ((strcmp(ptr->d_name, ".") == 0) || (strcmp(ptr->d_name, "..") == 0)) {
-            continue;
-        }
-        char fileNamePath[FORM_DB_DATA_BASE_FILE_PATH_LEN] = {0};
-        if (sprintf_s(fileNamePath, FORM_DB_DATA_BASE_FILE_PATH_LEN, "%s/%s",
-            FORM_DB_DATA_BASE_FILE_DIR, ptr->d_name) < 0) {
-            APP_LOGE("%{public}s,strcat fileNamePath path fail", __func__);
-            closedir(dirptr);
+    bool ret = ERR_OK;
+    {
+        std::lock_guard<std::mutex> lock(kvStorePtrMutex_);
+        if (!CheckKvStore()) {
+            APP_LOGE("kvStore is nullptr");
             return ERR_APPEXECFWK_FORM_COMMON_CODE;
         }
-        if (!LoadFormDataFile(fileNamePath, innerFormInfos)) {
-            APP_LOGE("%{public}s, LoadFormDataFile failed, file[%{public}s]", __func__, ptr->d_name);
-        }
     }
+    DistributedKv::Status status;
+    std::vector<DistributedKv::Entry> allEntries;
+    TryTwice([this, &status, &allEntries] {
+        status = GetEntries(allEntries);
+        return status;
+    });
+
+    if (status != DistributedKv::Status::SUCCESS) {
+        APP_LOGE("get entries error: %{public}d", status);
+        ret = ERR_APPEXECFWK_FORM_COMMON_CODE;
+    } else {
+        SaveEntries(allEntries, innerFormInfos);
+    }
+
     APP_LOGI("%{public}s, readdir over", __func__);
-    closedir(dirptr);
-    return ERR_OK;
+    return ret;
 }
 
 /**
@@ -114,45 +127,46 @@ ErrCode FormStorageMgr::LoadFormData(std::vector<InnerFormInfo> &innerFormInfos)
  * @param innerFormInfo Storage form data.
  * @return Returns ERR_OK on success, others on failure.
  */
-ErrCode FormStorageMgr::GetStorageFormInfoById(const std::string &formId, InnerFormInfo &innerFormInfo) const
+ErrCode FormStorageMgr::GetStorageFormInfoById(const std::string &formId, InnerFormInfo &innerFormInfo)
 {
     ErrCode ret = ERR_OK;
     APP_LOGD("%{public}s called, formId[%{public}s]", __func__, formId.c_str());
-    char fileNamePath[FORM_DB_DATA_BASE_FILE_PATH_LEN] = {0};
-    if (sprintf_s(fileNamePath, FORM_DB_DATA_BASE_FILE_PATH_LEN, "%s/%s.json",
-        FORM_DB_DATA_BASE_FILE_DIR, formId.c_str()) < 0) {
-        APP_LOGE("%{public}s,strcat fileNamePath path fail", __func__);
-        return ERR_APPEXECFWK_FORM_COMMON_CODE;
-    }
-    std::ifstream i(fileNamePath);
-    nlohmann::json jParse;
-    if (!i.is_open()) {
-        APP_LOGE("%{public}s, open failed, should no this file[%{public}s.json]", __func__, formId.c_str());
-        return ERR_APPEXECFWK_FORM_COMMON_CODE;
-    }
-    APP_LOGD("%{public}s, open success file[%{public}s.json]", __func__, formId.c_str());
-    i.seekg(0, std::ios::end);
-    int len = static_cast<int>(i.tellg());
-    if (len != 0) {
-        i.seekg(0, std::ios::beg);
-        i >> jParse;
-        auto it = jParse.find(formId);
-        if (it != jParse.end()) {
-            if (innerFormInfo.FromJson(it.value()) == false) {
-                APP_LOGE("%{public}s, fromJson parse failed formId[%{public}s]", __func__, it.key().c_str());
-                ret = ERR_APPEXECFWK_FORM_COMMON_CODE;
-            } else {
-                ret = ERR_OK;
-            }
-        } else {
-            APP_LOGE("%{public}s, not find formId[%{public}s]", __func__, formId.c_str());
-            ret = ERR_APPEXECFWK_FORM_COMMON_CODE;
+
+    {
+        std::lock_guard<std::mutex> lock(kvStorePtrMutex_);
+        if (!CheckKvStore()) {
+            APP_LOGE("kvStore is nullptr");
+            return ERR_APPEXECFWK_FORM_COMMON_CODE;
         }
-    } else {
-        APP_LOGE("%{public}s, file is empty formId[%{public}s]", __func__, formId.c_str());
-        ret = ERR_APPEXECFWK_FORM_COMMON_CODE;
     }
-    i.close();
+    
+    DistributedKv::Status status = DistributedKv::Status::ERROR;
+    std::vector<DistributedKv::Entry> allEntries;
+    DistributedKv::Key key(formId);
+    if (kvStorePtr_) {
+        // sync call GetEntries, the callback will be trigger at once
+        status = kvStorePtr_->GetEntries(key, allEntries);
+    }
+    
+    if (status != DistributedKv::Status::SUCCESS) {
+        APP_LOGE("get entries error: %{public}d", status);
+        ret = ERR_APPEXECFWK_FORM_COMMON_CODE;
+    } else {
+        if (allEntries.empty()) {
+            APP_LOGE("%{public}s not match any FormInfo", formId.c_str());
+            ret = ERR_APPEXECFWK_FORM_COMMON_CODE;
+        } else {
+            nlohmann::json jsonObject = nlohmann::json::parse(allEntries.front().value.ToString(), nullptr, false);
+            if (jsonObject.is_discarded()) {
+                APP_LOGE("error key: %{private}s", allEntries.front().key.ToString().c_str());
+                ret = ERR_APPEXECFWK_FORM_COMMON_CODE;
+            }
+            if (innerFormInfo.FromJson(jsonObject) != true) {
+                APP_LOGE("error key: %{private}s", allEntries.front().key.ToString().c_str());
+                ret = ERR_APPEXECFWK_FORM_COMMON_CODE;
+            }
+        }
+    }
 
     return ret;
 }
@@ -162,58 +176,35 @@ ErrCode FormStorageMgr::GetStorageFormInfoById(const std::string &formId, InnerF
  * @param innerFormInfo Indicates the InnerFormInfo object to be save.
  * @return Returns ERR_OK on success, others on failure.
  */
-ErrCode FormStorageMgr::SaveStorageFormInfo(const InnerFormInfo &innerFormInfo) const
+ErrCode FormStorageMgr::SaveStorageFormInfo(const InnerFormInfo &innerFormInfo)
 {
     APP_LOGI("%{public}s called, formId[%{public}" PRId64 "]", __func__, innerFormInfo.GetFormId());
     ErrCode ret = ERR_OK;
     std::string formId = std::to_string(innerFormInfo.GetFormId());
 
-    DIR *dirptr = opendir(FORM_DB_DATA_BASE_FILE_DIR);
-    if (dirptr == NULL) {
-        APP_LOGW("%{public}s, failed to open dir", __func__);
-        if (-1 == mkdir(FORM_DB_DATA_BASE_FILE_DIR, S_IRWXU)) {
-            APP_LOGE("%{public}s, failed to create dir", __func__);
+    {
+        std::lock_guard<std::mutex> lock(kvStorePtrMutex_);
+        if (!CheckKvStore()) {
+            APP_LOGE("kvStore is nullptr");
             return ERR_APPEXECFWK_FORM_COMMON_CODE;
         }
-    } else {
-        closedir(dirptr);
     }
-    char tmpFilePath[FORM_DB_DATA_BASE_FILE_PATH_LEN] = {0};
-    if (sprintf_s(tmpFilePath, FORM_DB_DATA_BASE_FILE_PATH_LEN, "%s/%s.json",
-        FORM_DB_DATA_BASE_FILE_DIR, formId.c_str()) < 0) {
-        APP_LOGE("%{public}s,strcat tmpFilePath path fail", __func__);
-        return ERR_APPEXECFWK_FORM_COMMON_CODE;
-    }
-    std::fstream f(tmpFilePath);
-    nlohmann::json jParse;
-    if (!f.is_open()) {
-        std::ofstream o(tmpFilePath); // if file not exist, should create file here
-        if (!o.is_open()) {
-            APP_LOGE("%{public}s, touch new file[%{public}s] failed", __func__, tmpFilePath);
-            return ERR_APPEXECFWK_FORM_COMMON_CODE;
+
+    DistributedKv::Key key(formId);
+    DistributedKv::Value value(innerFormInfo.ToString());
+    DistributedKv::Status status;
+    {
+        std::lock_guard<std::mutex> lock(kvStorePtrMutex_);
+        status = kvStorePtr_->Put(key, value);
+        if (status == DistributedKv::Status::IPC_ERROR) {
+            status = kvStorePtr_->Put(key, value);
+            APP_LOGW("distribute database ipc error and try to call again, result = %{public}d", status);
         }
-        o.close();
-        APP_LOGI("%{public}s, touch new file[%{public}s.json]", __func__, formId.c_str());
-        f.open(tmpFilePath);
     }
-    bool isExist = f.good();
-    if (isExist) {
-        nlohmann::json innerInfo;
-        innerFormInfo.ToJson(innerInfo);
-        f.seekg(0, std::ios::end);
-        int len = static_cast<int>(f.tellg());
-        if (len == 0) {
-            nlohmann::json formRoot;
-            formRoot[formId] = innerInfo;
-            f << formRoot << std::endl;
-        } else {
-            APP_LOGE("%{public}s, file[%{public}s.json] is not empty", __func__, formId.c_str());
-        }
-    } else {
-        APP_LOGE("%{public}s, touch new file[%{public}s] failed", __func__, formId.c_str());
+    if (status != DistributedKv::Status::SUCCESS) {
+        APP_LOGE("put innerFormInfo to kvStore error: %{public}d", status);
         ret = ERR_APPEXECFWK_FORM_COMMON_CODE;
     }
-    f.close();
     return ret;
 }
 
@@ -222,32 +213,18 @@ ErrCode FormStorageMgr::SaveStorageFormInfo(const InnerFormInfo &innerFormInfo) 
  * @param innerFormInfo Indicates the InnerFormInfo object to be Modify.
  * @return Returns ERR_OK on success, others on failure.
  */
-ErrCode FormStorageMgr::ModifyStorageFormInfo(const InnerFormInfo &innerFormInfo) const
+ErrCode FormStorageMgr::ModifyStorageFormInfo(const InnerFormInfo &innerFormInfo)
 {
     APP_LOGI("%{public}s called, formId[%{public}" PRId64 "]", __func__, innerFormInfo.GetFormId());
-    char fileNamePath[FORM_DB_DATA_BASE_FILE_PATH_LEN] = {0};
-    if (sprintf_s(fileNamePath, FORM_DB_DATA_BASE_FILE_PATH_LEN, "%s/%" PRId64 ".json",
-        FORM_DB_DATA_BASE_FILE_DIR, innerFormInfo.GetFormId()) < 0) {
-        APP_LOGE("%{public}s,strcat fileNamePath path fail", __func__);
-        return ERR_APPEXECFWK_FORM_COMMON_CODE;
-    }
 
-    std::ofstream o(fileNamePath, std::ios_base::trunc | std::ios_base::out);
-    if (!o.is_open()) {
-        APP_LOGE("%{public}s, open failed file[%{public}s]", __func__, fileNamePath);
-        return ERR_APPEXECFWK_FORM_COMMON_CODE;
-    }
-
-    nlohmann::json innerInfo;
-    innerFormInfo.ToJson(innerInfo);
-    nlohmann::json formRoot;
+    ErrCode ret = ERR_OK;
     std::string formId = std::to_string(innerFormInfo.GetFormId());
-
-    formRoot[formId] = innerInfo;
-    o << formRoot << std::endl;
-
-    o.close();
-    return ERR_OK;
+    ret = DeleteStorageFormInfo(formId);
+    if (ret == ERR_OK) {
+        SaveStorageFormInfo(innerFormInfo);
+    }
+    
+    return ret;
 }
 
 /**
@@ -255,22 +232,124 @@ ErrCode FormStorageMgr::ModifyStorageFormInfo(const InnerFormInfo &innerFormInfo
  * @param formId The form data Id.
  * @return Returns ERR_OK on success, others on failure.
  */
-ErrCode FormStorageMgr::DeleteStorageFormInfo(const std::string &formId) const
+ErrCode FormStorageMgr::DeleteStorageFormInfo(const std::string &formId)
 {
     APP_LOGI("%{public}s called, formId[%{public}s]", __func__, formId.c_str());
-    char fileNamePath[FORM_DB_DATA_BASE_FILE_PATH_LEN] = {0};
-    if (sprintf_s(fileNamePath, FORM_DB_DATA_BASE_FILE_PATH_LEN, "%s/%s.json",
-        FORM_DB_DATA_BASE_FILE_DIR, formId.c_str()) < 0) {
-        APP_LOGE("%{public}s,strcat fileNamePath path fail", __func__);
-        return ERR_APPEXECFWK_FORM_COMMON_CODE;
+
+    {
+        std::lock_guard<std::mutex> lock(kvStorePtrMutex_);
+        if (!CheckKvStore()) {
+            APP_LOGE("kvStore is nullptr");
+            return ERR_APPEXECFWK_FORM_COMMON_CODE;
+        }
+    }
+    DistributedKv::Key key(formId);
+    DistributedKv::Status status;
+
+    {
+        std::lock_guard<std::mutex> lock(kvStorePtrMutex_);
+        status = kvStorePtr_->Delete(key);
+        if (status == DistributedKv::Status::IPC_ERROR) {
+            status = kvStorePtr_->Delete(key);
+            APP_LOGW("distribute database ipc error and try to call again, result = %{public}d", status);
+        }
     }
 
-    if (std::remove(fileNamePath) != 0) {
-        APP_LOGE("%{public}s, delete failed file[%{public}s]", __func__, fileNamePath);
+    if (status != DistributedKv::Status::SUCCESS) {
+        APP_LOGE("delete key error: %{public}d", status);
         return ERR_APPEXECFWK_FORM_COMMON_CODE;
+    } else {
+        APP_LOGE("delete value to kvStore success");
     }
 
     return ERR_OK;
+}
+
+void FormStorageMgr::RegisterKvStoreDeathListener()
+{
+    APP_LOGI("register kvStore death listener");
+    std::shared_ptr<DistributedKv::KvStoreDeathRecipient> callback =
+    std::make_shared<KvStoreDeathRecipientCallback>();
+    dataManager_.RegisterKvStoreServiceDeathRecipient(callback);
+}
+
+bool FormStorageMgr::CheckKvStore()
+{
+    if (kvStorePtr_ != nullptr) {
+        return true;
+    }
+    int32_t tryTimes = MAX_TIMES;
+    while (tryTimes > 0) {
+        DistributedKv::Status status = GetKvStore();
+        if (status == DistributedKv::Status::SUCCESS && kvStorePtr_ != nullptr) {
+            return true;
+        }
+        APP_LOGD("CheckKvStore, Times: %{public}d", tryTimes);
+        usleep(SLEEP_INTERVAL);
+        tryTimes--;
+    }
+    return kvStorePtr_ != nullptr;
+}
+
+DistributedKv::Status FormStorageMgr::GetKvStore()
+{
+    DistributedKv::Status status;
+    DistributedKv::Options options = {
+        .createIfMissing = true,
+        .encrypt = false,
+        .autoSync = true,
+        .kvStoreType = DistributedKv::KvStoreType::SINGLE_VERSION
+        };
+
+    dataManager_.GetSingleKvStore(
+        options, appId_, storeId_, [this, &status](DistributedKv::Status paramStatus,
+            std::unique_ptr<DistributedKv::SingleKvStore> singleKvStore) {
+            status = paramStatus;
+            if (status != DistributedKv::Status::SUCCESS) {
+                APP_LOGE("return error: %{public}d", status);
+                return;
+            }
+            {
+                kvStorePtr_ = std::move(singleKvStore);
+            }
+            APP_LOGI("get kvStore success");
+        });
+
+    return status;
+}
+
+DistributedKv::Status FormStorageMgr::GetEntries(std::vector<DistributedKv::Entry> &allEntries)
+{
+    DistributedKv::Status status = DistributedKv::Status::ERROR;
+    // if prefix is empty, get all entries.
+    DistributedKv::Key key("");
+    if (kvStorePtr_) {
+        // sync call GetEntries, the callback will be trigger at once
+        status = kvStorePtr_->GetEntries(key, allEntries);
+    }
+    APP_LOGI("get all entries status: %{public}d", status);
+    return status;
+}
+
+void FormStorageMgr::TryTwice(const std::function<DistributedKv::Status()> &func)
+{
+    DistributedKv::Status status = func();
+    if (status == DistributedKv::Status::IPC_ERROR) {
+        status = func();
+        APP_LOGW("distribute database ipc error and try to call again, result = %{public}d", status);
+    }
+}
+
+bool FormStorageMgr::ResetKvStore()
+{
+    std::lock_guard<std::mutex> lock(kvStorePtrMutex_);
+    kvStorePtr_ = nullptr;
+    DistributedKv::Status status = GetKvStore();
+    if (status == DistributedKv::Status::SUCCESS && kvStorePtr_ != nullptr) {
+        return true;
+    }
+    APP_LOGW("failed");
+    return false;
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS

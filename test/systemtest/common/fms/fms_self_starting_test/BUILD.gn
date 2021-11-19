@@ -21,13 +21,16 @@ ohos_systemtest("FmsSelfStartingTest") {
   include_dirs = [
     "${aafwk_path}/interfaces/innerkits/ability_manager/include",
     "${appexecfwk_path}/test/systemtest/common/fms/common/include",
+    "${appexecfwk_path}/services/formmgr/include",
     "//base/notification/ces_standard/test/systemtest/common/resource",
     "//foundation/distributedschedule/safwk/services/safwk/include",
+    "//foundation/distributeddatamgr/distributeddatamgr/interfaces/innerkits/distributeddata/include",
   ]
 
   sources = [
     "${appexecfwk_path}/test/systemtest/common/fms/common/src/form_event.cpp",
     "${appexecfwk_path}/test/systemtest/common/fms/common/src/system_test_form_util.cpp",
+    "${appexecfwk_path}/services/formmgr/include/form_db_info.h",
     "fms_self_starting_test.cpp",
   ]
 
@@ -45,8 +48,11 @@ ohos_systemtest("FmsSelfStartingTest") {
     "${aafwk_path}/frameworks/kits/ability/native:abilitykit_native",
     "${aafwk_path}/services/abilitymgr:abilityms",
     "${appexecfwk_path}/common:libappexecfwk_common",
+    "${appexecfwk_path}/services/formmgr:libfms",
     "//foundation/aafwk/standard/interfaces/innerkits/ability_manager:ability_manager",
     "//foundation/appexecfwk/standard/interfaces/innerkits/libeventhandler:libeventhandler",
+    "//foundation/distributedschedule/dmsfwk/services/dtbschedmgr:distributedschedsvr",
+    "//foundation/distributeddatamgr/distributeddatamgr/interfaces/innerkits/distributeddata:distributeddata_inner",
     "//third_party/googletest:gtest_main",
   ]
 
