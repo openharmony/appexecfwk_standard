@@ -66,6 +66,7 @@ ohos_shared_library("libfms") {
     "src/form_task_mgr.cpp",
     "src/form_timer_mgr.cpp",
     "src/form_util.cpp",
+    "src/kvstore_death_recipient_callback.cpp",
   ]
 
   defines = [
@@ -87,6 +88,7 @@ ohos_shared_library("libfms") {
     "${libs_path}/libeventhandler:libeventhandler_target",
     "//base/miscservices/time/services:time_service",
     "//base/notification/ans_standard/frameworks/wantagent:wantagent_innerkits",
+    "//foundation/distributeddatamgr/distributeddatamgr/interfaces/innerkits/distributeddata:distributeddata_inner",
     "//foundation/distributedschedule/dmsfwk/services/dtbschedmgr:distributedschedsvr",
     "//utils/native/base:utils",
 
