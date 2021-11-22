@@ -18,8 +18,8 @@
     <systemability>
         <name>401</name>
         <libpath>/system/lib64/libbms.z.so</libpath>
-        <!--<depend></depend> --> <!-- Declare the name of system abilities which the system ability depends on, Note that one dependency uses 1 line. If there are dependencies, it needs to check if all those dependencies are available in service manager before starting the system ability. -->
-        <!--<depend-time-out></depend-time-out> --> <!-- Check all dependencies are available before the timeout period ended. The MAX_DEPENDENCY_TIMEOUT is 60s. -->
+        <depend>1301</depend>
+        <depend-time-out>60000</depend-time-out>
         <run-on-create>true</run-on-create>
         <distributed>false</distributed>
         <dump-level>1</dump-level>
