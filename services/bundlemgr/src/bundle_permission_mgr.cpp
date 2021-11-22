@@ -126,7 +126,7 @@ bool BundlePermissionMgr::CheckPermissionAuthorization(
         APP_LOGE("Get dataMgr shared_ptr nullptr");
         return false;
     }
-    if (appFeature == Constants::HOS_NORMAL_APP || appFeature == Constants::OHOS_NORMAL_APP) {
+    if (appFeature == Constants::HOS_NORMAL_APP) {
         std::string provisionId;
         bool result = dataMgr->GetProvisionId(permissionDef.bundleName, provisionId);
         if (result && (provisionId == innerBundleInfo.GetProvisionId())) {
