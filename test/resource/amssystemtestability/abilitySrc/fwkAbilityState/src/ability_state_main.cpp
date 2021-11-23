@@ -135,15 +135,24 @@ void FwkAbilityStateSecondSubscriber::OnReceiveEvent(const CommonEventData &data
 
 void FwkAbilityStateMain::Action(std::string action, int code)
 {
+    APP_LOGI("FwkAbilityStateMain::Action Called");
     if (mapAction_.find(action) != mapAction_.end()) {
         mapAction_[action](code);
     }
 }
 
+void FwkAbilityStateMain::DoCrash(std::string action, int code)
+{
+    APP_LOGI("FwkAbilityStateMain::DoCrash Called");
+    CrashMaker *pcCrashMaker = nullptr;
+    int a = pcCrashMaker->CrashTry();
+    APP_LOGI("FwkAbilityStateMain::DoCrash Process %{public}d", a);
+}
+
 void FwkAbilityStateMain::StartNextAbility(int code)
 {
     std::string targetBundle = "com.ohos.amsst.fwkAbilityState";
-    std::string targetAbility = "FwkAbilityStateAbilityB";
+    std::string targetAbility = "FwkAbilityStateSecond";
     Want want;
     want.SetElementName(targetBundle, targetAbility);
     StartAbility(want);
