@@ -86,7 +86,7 @@ public:
 };
 class CrashMaker {
 public:
-    int CrashTry() 
+    int CrashTry()
     {
         return this->crashData;
     };
