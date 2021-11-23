@@ -17,6 +17,7 @@
 #define FOUNDATION_APPEXECFWK_SERVICES_FORMMGR_INCLUDE_FORM_DB_CACHE_H
 
 #include <mutex>
+#include <set>
 #include <singleton.h>
 #include <vector>
 
@@ -111,8 +112,10 @@ public:
      * @return Returns match count.
      */
     int GetMatchCount(const std::string &bundleName, const std::string &moduleName);
+
+    std::shared_ptr<FormStorageMgr> GetDataStorage() const;
 private:
-    std::unique_ptr<FormStorageMgr> dataStorage_;
+    std::shared_ptr<FormStorageMgr> dataStorage_;
     mutable std::mutex formDBInfosMutex_;
     std::vector<FormDBInfo> formDBInfos_;
 };

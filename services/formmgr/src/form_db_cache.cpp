@@ -26,7 +26,7 @@ namespace AppExecFwk {
 FormDbCache::FormDbCache()
 {
     APP_LOGI("FormDbCache is created");
-    dataStorage_ = std::make_unique<FormStorageMgr>();
+    dataStorage_ = std::make_shared<FormStorageMgr>();
     formDBInfos_.clear();
 }
 
@@ -276,6 +276,11 @@ int FormDbCache::GetMatchCount(const std::string &bundleName, const std::string 
         }
     }
     return matchCount;
+}
+
+std::shared_ptr<FormStorageMgr> FormDbCache::GetDataStorage() const
+{
+    return dataStorage_;
 }
 } // namespace AppExecFwk
 } // namespace OHOS

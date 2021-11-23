@@ -16,6 +16,7 @@
 #ifndef FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_CORE_INCLUDE_FORMMGR_FORM_MGR_PROXY_H
 #define FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_CORE_INCLUDE_FORMMGR_FORM_MGR_PROXY_H
 
+#include "form_db_info.h"
 #include "form_mgr_interface.h"
 #include "iremote_proxy.h"
 
@@ -159,6 +160,20 @@ public:
      * @return Returns ERR_OK on success, others on failure.
      */
     virtual int ClearFormRecords() override;
+
+    /**
+     * @brief  Add forms to storage for st .
+     * @param Want The Want of the form to add.
+     * @return Returns ERR_OK on success, others on failure.
+     */
+    virtual int DistributedDataAddForm(const Want &want) override;
+
+    /**
+     * @brief  Delete form form storage for st.
+     * @param formId The formId of the form to delete.
+     * @return Returns ERR_OK on success, others on failure.
+     */
+    virtual int DistributedDataDeleteForm(const std::string &formId) override;
 private:
     template<typename T>
     int GetParcelableInfos(MessageParcel &reply, std::vector<T> &parcelableInfos);

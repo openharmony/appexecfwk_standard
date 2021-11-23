@@ -222,7 +222,7 @@ ErrCode FormProviderMgr::NotifyProviderFormDelete(const int64_t formId, const Fo
  * @param formIds form id list.
  * @return Returns ERR_OK on success, others on failure.
  */
-ErrCode FormProviderMgr::NotifyProviderFormsBatchDelete(const std::string &bundleName, 
+ErrCode FormProviderMgr::NotifyProviderFormsBatchDelete(const std::string &bundleName,
     const std::string &abilityName, const std::set<int64_t> &formIds)
 {
     if (abilityName.empty()) {
@@ -310,6 +310,8 @@ ErrCode FormProviderMgr::UpdateForm(const int64_t formId,
     if (jsonData.size() <= Constants::MAX_FORM_DATA_SIZE) {
         APP_LOGI("%{public}s, updateJsForm, data is less than 1k, cache data.", __func__);        
         FormCacheMgr::GetInstance().AddData(formId, jsonData);
+    } else {
+        FormCacheMgr::GetInstance().DeleteData(formId);
     }
 
     // the update form is successfully

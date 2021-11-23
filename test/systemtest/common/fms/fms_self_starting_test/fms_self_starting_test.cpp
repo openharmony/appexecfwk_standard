@@ -17,6 +17,8 @@
 #include <fstream>
 #include <future>
 #include <gtest/gtest.h>
+#include <iostream>
+#include <fstream>
 
 #include "ability_handler.h"
 #include "ability_info.h"
@@ -26,10 +28,16 @@
 #include "common_event.h"
 #include "common_event_manager.h"
 #include "context_deal.h"
+#include "distributed_kv_data_manager.h"
+#include "form_db_info.h"
+#include "form_data_mgr.h"
+#include "form_item_info.h"
+#include "form_storage_mgr.h"
 #include "form_event.h"
 #include "form_st_common_info.h"
 #include "iservice_registry.h"
 #include "nlohmann/json.hpp"
+#include "self_starting_test_config_parser.h"
 #include "system_ability_definition.h"
 #include "system_test_form_util.h"
 
@@ -40,18 +48,27 @@ using namespace OHOS::STtools;
 
 namespace OHOS {
 namespace AppExecFwk {
+static SelfStartingTestInfo selfStarting;
+static SelfStartingTestConfigParser selfStartingParser;
+const int ADD_FORM_A_NUMBER = 10;
+const int ADD_FORM_LENGTH = 20;
 class FmsSelfStartingTest : public testing::Test {
 public:
     static void SetUpTestCase();
     static void TearDownTestCase();
-
     static bool SubscribeEvent();
+
+    bool CompareA();
+    bool CompareB();
 
     void SetUp();
     void TearDown();
 
     void StartAbilityKitTest(const std::string &abilityName, const std::string &bundleName);
     void TerminateAbility(const std::string &eventName, const std::string &abilityName);
+    void ClearStorage();
+    bool CheckKvStore();
+    void TryTwice(const std::function<DistributedKv::Status()> &func);
   
     class FormEventSubscriber : public CommonEventSubscriber {
     public:
@@ -87,12 +104,141 @@ void FmsSelfStartingTest::SetUpTestCase()
     if (!SubscribeEvent()) {
         GTEST_LOG_(INFO) << "SubscribeEvent error";
     }
+    SelfStartingTestConfigParser selfStartingTcp;
+    selfStartingTcp.ParseForSelfStartingTest(FMS_TEST_CONFIG_FILE_PATH, selfStarting);
+    std::cout << "self starting test status : "
+        << "addFormStatus : " << selfStarting.addFormStatus <<
+            ", deleteFormStatus:" << selfStarting.deleteFormStatus <<
+            ", compareStatus:" << selfStarting.compareStatus << std::endl;
+    
+    if (selfStarting.addFormStatus) {
+        selfStartingParser.ClearStorage();
+        for (int iCount = 0; iCount < ADD_FORM_A_NUMBER; iCount++) {
+            Want want;
+            want.SetParam(Constants::PARAM_FORM_DIMENSION_KEY, FORM_DIMENSION_1);
+            want.SetParam(Constants::PARAM_FORM_NAME_KEY, PARAM_FORM_NAME1);
+            want.SetParam(Constants::PARAM_MODULE_NAME_KEY, PARAM_PROVIDER_MODULE_NAME1);
+            want.SetParam(Constants::PARAM_FORM_TEMPORARY_KEY, FORM_TEMP_FORM_FLAG_FALSE);
+            want.SetParam(Constants::PARAM_FORM_TEMPORARY_KEY, FORM_TEMP_FORM_FLAG_FALSE);
+            want.SetElementName(FORM_TEST_DEVICEID, FORM_PROVIDER_BUNDLE_NAME1, FORM_PROVIDER_ABILITY_NAME1);
+            APP_LOGI("%{public}s, formCount: %{public}d", __func__, iCount + 1);
+            want.SetParam(Constants::PARAM_FORM_ADD_COUNT, iCount + 1);
+            // Set Want info end
+            int errorCode = STtools::SystemTestFormUtil::DistributedDataAddForm(want);
+            if (errorCode != 0) {
+                GTEST_LOG_(INFO) << "add form failed, iCount:" << iCount << ", errorCode:" << errorCode;
+            }
+            sleep(1);
+        }
+    }
+
+    if (selfStarting.addFormStatus) {
+        for (int iCount = ADD_FORM_A_NUMBER; iCount < ADD_FORM_LENGTH; iCount++) {
+            Want want;
+            want.SetParam(Constants::PARAM_FORM_DIMENSION_KEY, FORM_DIMENSION_1);
+            want.SetParam(Constants::PARAM_FORM_NAME_KEY, PARAM_FORM_NAME2);
+            want.SetParam(Constants::PARAM_MODULE_NAME_KEY, PARAM_PROVIDER_MODULE_NAME2);
+            want.SetParam(Constants::PARAM_FORM_TEMPORARY_KEY, FORM_TEMP_FORM_FLAG_TRUE);
+            want.SetParam(Constants::PARAM_FORM_TEMPORARY_KEY, FORM_TEMP_FORM_FLAG_TRUE);
+            want.SetElementName(FORM_TEST_DEVICEID, FORM_PROVIDER_BUNDLE_NAME2, FORM_PROVIDER_ABILITY_NAME2);
+            APP_LOGI("%{public}s, formCount: %{public}d", __func__, iCount + 1);
+            want.SetParam(Constants::PARAM_FORM_ADD_COUNT, iCount + 1);
+            // Set Want info end
+            int errorCode = STtools::SystemTestFormUtil::DistributedDataAddForm(want);
+            if (errorCode != 0) {
+                GTEST_LOG_(INFO) << "add form failed, iCount:" << iCount << ", errorCode:" << errorCode;
+            }
+            sleep(1);
+        }
+    }
+}
+
+bool FmsSelfStartingTest::CompareA()
+{
+    bool compare = true;
+    for (int iCount = 0; iCount < ADD_FORM_A_NUMBER; iCount++) {
+        int64_t formId = iCount + 1;
+        InnerFormInfo innerFormInfo;
+        selfStartingParser.GetStorageFormInfoById(std::to_string(formId), innerFormInfo);
+        if (innerFormInfo.GetFormId() != formId) {
+            compare = false;
+            break;
+        }
+        if (innerFormInfo.GetModuleName() != PARAM_PROVIDER_MODULE_NAME1) {
+            compare = false;
+            break;
+        }
+        if (innerFormInfo.GetBundleName() != FORM_PROVIDER_BUNDLE_NAME1) {
+            compare = false;
+            break;
+        }
+        if (innerFormInfo.GetAbilityName() != FORM_PROVIDER_ABILITY_NAME1) {
+            compare = false;
+            break;
+        }
+        if (innerFormInfo.GetFormName() != PARAM_FORM_NAME1) {
+            compare = false;
+            break;
+        }
+    }
+    return compare;
+}
+
+bool FmsSelfStartingTest::CompareB()
+{
+    bool compare = true;
+    for (int iCount = ADD_FORM_A_NUMBER; iCount < ADD_FORM_LENGTH; iCount++) {
+        int64_t formId = iCount + 1;
+        InnerFormInfo innerFormInfo;
+        selfStartingParser.GetStorageFormInfoById(std::to_string(formId), innerFormInfo);
+        if (innerFormInfo.GetFormId() != formId) {
+            compare = false;
+            break;
+        }
+        if (innerFormInfo.GetModuleName() != PARAM_PROVIDER_MODULE_NAME2) {
+            compare = false;
+            break;
+        }
+        if (innerFormInfo.GetBundleName() != FORM_PROVIDER_BUNDLE_NAME2) {
+            compare = false;
+            break;
+        }
+        if (innerFormInfo.GetAbilityName() != FORM_PROVIDER_ABILITY_NAME2) {
+            compare = false;
+            break;
+        }
+        if (innerFormInfo.GetFormName() != PARAM_FORM_NAME2) {
+            compare = false;
+            break;
+        }
+    }
+    return compare;
 }
 
 void FmsSelfStartingTest::TearDownTestCase()
 {
     GTEST_LOG_(INFO) << "UnSubscribeCommonEvent calld";
     CommonEventManager::UnSubscribeCommonEvent(subscriber_);
+    if (selfStarting.deleteFormStatus) {
+        for (int iCount = 0; iCount < ADD_FORM_A_NUMBER; iCount++) {
+            int64_t formId = iCount + 1;
+            int errorCode = STtools::SystemTestFormUtil::DistributedDataDeleteForm(std::to_string(formId));
+            if (errorCode != 0) {
+                GTEST_LOG_(INFO) << "delete form failed, iCount:" << iCount << ", errorCode:" << errorCode;
+            }
+        }
+    }
+
+    if (selfStarting.deleteFormStatus) {
+        for (int iCount = ADD_FORM_A_NUMBER; iCount < ADD_FORM_LENGTH; iCount++) {
+            int64_t formId = iCount + 1;
+            int errorCode = STtools::SystemTestFormUtil::DistributedDataDeleteForm(std::to_string(formId));
+            if (errorCode != 0) {
+                GTEST_LOG_(INFO) << "delete form failed, iCount:" << ", errorCode:" << errorCode;
+            }
+        }
+        selfStartingParser.ClearStorage();
+    }
 }
 
 void FmsSelfStartingTest::SetUp()
@@ -118,87 +264,34 @@ bool FmsSelfStartingTest::SubscribeEvent()
 }
 
 /**
- * @tc.number: FMS_Start_0300_01
- * @tc.name: Host A add one form
- * @tc.desc:
- */
-HWTEST_F(FmsSelfStartingTest, FMS_Start_0300_01, Function | MediumTest | Level1)
-{
-    std::cout << "START FMS_Start_0300_01" << std::endl;
-
-    std::string bundleName = "com.ohos.form.manager.selfStartingA";
-    std::string abilityName = "FormAbilitySelfStartingA";
-    MAP_STR_STR params;
-    Want want = SystemTestFormUtil::MakeWant("device", abilityName, bundleName, params);
-    SystemTestFormUtil::StartAbility(want, abilityMs);
-    EXPECT_EQ(SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_ABILITY_ONACTIVED, 0), 0);
-
-    std::string eventData = FORM_EVENT_REQ_SELF_STARTING_TEST_0100;
-    SystemTestFormUtil::PublishEvent(FORM_EVENT_REQ_SELF_STARTING_TEST_0100, EVENT_CODE_100, eventData);
-    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_SELF_STARTING_TEST_0100, EVENT_CODE_100));
-    std::string data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_SELF_STARTING_TEST_0100, EVENT_CODE_100);
-    bool result = data == "true";
-    EXPECT_TRUE(result);
-    if (!result) {
-        GTEST_LOG_(INFO) << "FMS_Start_0300_01,  result:" << result;
-    }
-    std::cout << "END FMS_Start_0300_01" << std::endl;
-}
-
-/**
- * @tc.number: FMS_Start_0300_02
- * @tc.name: Host B add form one
- * @tc.desc:
- */
-HWTEST_F(FmsSelfStartingTest, FMS_Start_0300_02, Function | MediumTest | Level1)
-{
-    std::cout << "START FMS_Start_0300_02" << std::endl;
-    std::string bundleName = "com.ohos.form.manager.selfStartingB";
-    std::string abilityName = "FormAbilitySelfStartingB";
-    MAP_STR_STR params;
-    Want want = SystemTestFormUtil::MakeWant("device", abilityName, bundleName, params);
-    SystemTestFormUtil::StartAbility(want, abilityMs);
-    EXPECT_EQ(SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_ABILITY_ONACTIVED, 0), 0);
-
-    std::string eventData = FORM_EVENT_REQ_SELF_STARTING_TEST_0200;
-    GTEST_LOG_(INFO) << "FMS_Start_0300_02,  eventData:" << eventData;
-    SystemTestFormUtil::PublishEvent(FORM_EVENT_REQ_SELF_STARTING_TEST_0200, EVENT_CODE_200, eventData);
-    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_SELF_STARTING_TEST_0200, EVENT_CODE_200));
-    std::string data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_SELF_STARTING_TEST_0200, EVENT_CODE_200);
-    bool result = data == "true";
-    EXPECT_TRUE(result);
-    if (!result) {
-        GTEST_LOG_(INFO) << "FMS_Start_0300_02,  result:" << result;
-    }
-
-    std::cout << "END FMS_Start_0300_02" << std::endl;
-}
-
-/**
  * @tc.number: FMS_Start_0300_03
- * @tc.name: Host B add form two
+ * @tc.name: Form number 512
  * @tc.desc:
  */
 HWTEST_F(FmsSelfStartingTest, FMS_Start_0300_03, Function | MediumTest | Level1)
 {
     std::cout << "START FMS_Start_0300_03" << std::endl;
-    std::string bundleName = "com.ohos.form.manager.selfStartingB";
-    std::string abilityName = "FormAbilitySelfStartingB";
-    MAP_STR_STR params;
-    Want want = SystemTestFormUtil::MakeWant("device", abilityName, bundleName, params);
-    SystemTestFormUtil::StartAbility(want, abilityMs);
-    EXPECT_EQ(SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_ABILITY_ONACTIVED, 0), 0);
 
-    std::string eventData = FORM_EVENT_REQ_SELF_STARTING_TEST_0300;
-    GTEST_LOG_(INFO) << "FMS_Start_0300_03,  eventData:" << eventData;
-    SystemTestFormUtil::PublishEvent(FORM_EVENT_REQ_SELF_STARTING_TEST_0300, EVENT_CODE_300, eventData);
-    EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_SELF_STARTING_TEST_0300, EVENT_CODE_300));
-    std::string data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_SELF_STARTING_TEST_0300, EVENT_CODE_300);
-    bool result = data == "true";
-    EXPECT_TRUE(result);
-    if (!result) {
-        GTEST_LOG_(INFO) << "FMS_Start_0300_03,  result:" << result;
+    if (selfStarting.compareStatus) {
+        std::ifstream opbefore("/data/formmgr/beforeKill.txt");
+        std::ifstream opafter("/data/formmgr/afterKill.txt");
+        std::string beforeKill;
+        std::string afterKill;
+        while (!opbefore.eof()) {
+            beforeKill += opbefore.get();
+        }
+        while (!opafter.eof()) {
+            afterKill += opafter.get();
+        }
+        opbefore.close();
+        opafter.close();
+        EXPECT_TRUE(beforeKill != afterKill);
+ 
+        EXPECT_TRUE(CompareA());
+
+        EXPECT_TRUE(CompareB());
     }
+    std::cout << "END FMS_Start_0300_03" << std::endl;
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS
