@@ -48,7 +48,6 @@ public:
     void StartNextAbility(int code);
     void DoCrash(std::string action, int code);
 
-
 private:
     std::shared_ptr<FwkAbilityStateSecondSubscriber> subscriber_;
     std::string callback_seq;
@@ -86,12 +85,13 @@ public:
     ~FwkAbilityStateSecondSubscriber() = default;
 };
 class CrashMaker {
-    public:
-    int CrashTry() {
+public:
+    int CrashTry() 
+    {
         return this->crashData;
     };
 
-    private:
+private:
     int crashData = 0;
 };
 }  // namespace AppExecFwk
