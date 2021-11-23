@@ -149,6 +149,17 @@ public:
         formDBInfo_.abilityName = formRecord.abilityName;
         formDBInfo_.formUserUids = formRecord.formUserUids;
     }
+    std::string ToString() const
+    {
+        nlohmann::json j;
+        j["formId"] = formDBInfo_.formId;
+        j["formName"] = formDBInfo_.formName;
+        j["bundleName"] = formDBInfo_.bundleName;
+        j["moduleName"] = formDBInfo_.moduleName;
+        j["abilityName"] = formDBInfo_.abilityName;
+        j["formUserUids"] = formDBInfo_.formUserUids;
+        return j.dump();
+    }
     /**
      * @brief Destructor
      *

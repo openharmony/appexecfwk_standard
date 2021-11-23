@@ -13,11 +13,8 @@
  
  
 sleepSeconds=10
-loop=1
-if [ -n "$1" ]; then
-    loopKey=$1
-    loop=$((10#${loopKey}))
-fi
+loop=4
+
 echo "loop times: ${loop}"
 for i in $(seq 1 ${loop})
 do
@@ -27,7 +24,7 @@ do
 
     echo "sleep ${sleepSeconds} seconds"
     sleep ${sleepSeconds}
-    pgrep foundation
+    ps -e|grep FormMgrService
 
     if [ $? -eq 0 ]; then
         echo "loop ${i}: FMS restart succeed"

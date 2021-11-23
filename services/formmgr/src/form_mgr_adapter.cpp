@@ -45,6 +45,7 @@
 
 namespace OHOS {
 namespace AppExecFwk {
+const int HUNDRED = 100;
 FormMgrAdapter::FormMgrAdapter()
 {
 };
@@ -70,7 +71,7 @@ int FormMgrAdapter::AddForm(const int64_t formId, const Want &want,
     // check form count limit    
     bool tempFormFlag = want.GetBoolParam(Constants::PARAM_FORM_TEMPORARY_KEY, false);
     int callingUid = IPCSkeleton::GetCallingUid();
-    int checkCode;
+    int checkCode = 0;
     if (tempFormFlag) {
         if (formId > 0) {
             APP_LOGE("%{public}s fail, temp form id is invalid, formId:%{public}" PRId64 "", __func__, formId);
@@ -78,7 +79,9 @@ int FormMgrAdapter::AddForm(const int64_t formId, const Want &want,
         }
         checkCode = FormDataMgr::GetInstance().CheckTempEnoughForm();
     } else {
-        checkCode = FormDataMgr::GetInstance().CheckEnoughForm(callingUid);
+        if (formId == 0) {
+            checkCode = FormDataMgr::GetInstance().CheckEnoughForm(callingUid);
+        }
     }
     if (checkCode != 0) {
         APP_LOGE("%{public}s fail, too much forms in system", __func__);
@@ -1600,6 +1603,36 @@ bool FormMgrAdapter::CheckIsSystemAppByBundleName(const sptr<IBundleMgr> &iBundl
     }
 
     return true;
+}
+
+/**
+ * @brief  Add forms to storage for st .
+ * @param Want The Want of the form to add.
+ * @return Returns ERR_OK on success, others on failure.
+ */
+int FormMgrAdapter::DistributedDataAddForm(const Want &want)
+{
+    APP_LOGI("%{public}s called.", __func__);
+
+    FormDBInfo formDBInfo;
+    ElementName elementName = want.GetElement();
+    formDBInfo.formId = want.GetIntParam(Constants::PARAM_FORM_ADD_COUNT, 0);
+    formDBInfo.formName = want.GetStringParam(Constants::PARAM_FORM_NAME_KEY);
+    formDBInfo.bundleName = elementName.GetBundleName();
+    formDBInfo.moduleName = want.GetStringParam(Constants::PARAM_MODULE_NAME_KEY);
+    formDBInfo.abilityName = elementName.GetAbilityName();
+    formDBInfo.formUserUids.push_back(HUNDRED);
+    return FormDbCache::GetInstance().SaveFormInfo(formDBInfo);
+}
+
+/**
+ * @brief  Delete form form storage for st.
+ * @param formId The formId of the form to delete.
+ * @return Returns ERR_OK on success, others on failure.
+ */
+int FormMgrAdapter::DistributedDataDeleteForm(const std::string &formId)
+{
+    return FormDbCache::GetInstance().DeleteFormInfo(std::stoll(formId));
 }
 
 }  // namespace AppExecFwk
