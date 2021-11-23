@@ -36,7 +36,7 @@ std::string FwkAbilityState_Event_Requ_B = "requ_com_ohos_amsst_FwkAbilityStateB
 constexpr int onActive = 1;
 constexpr int onBackground = 2;
 constexpr int onStop = 3;
-constexpr int WAIT_TIME = 100;
+constexpr int WAIT_TIME = 500;
 constexpr int DELAY = 10;
 }
 class AmsAbilityStateTest : public testing::Test {
@@ -128,7 +128,7 @@ void AmsAbilityStateTest::StartAbility(const std::string &abilityName, const std
     Want want = STAbilityUtil::MakeWant("device", abilityName, bundleName, params);
     ErrCode result = STAbilityUtil::StartAbility(want, abilityMs, WAIT_TIME);
     GTEST_LOG_(INFO) << "AmsAbilityStateTest::StartAbility : " << result;
-    EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, bundleName, 0, DELAY));
+    EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, FwkAbilityState_Event_Resp_A, onActive, DELAY));
 }
 
 /**
@@ -170,12 +170,24 @@ HWTEST_F(AmsAbilityStateTest, FWK_SaveAbilityState_0200, Function | MediumTest |
     std::string data;
     DummyConfiguration configuration {"orientation#"};
     bool result = false;
+
     for (int i = 0; i < stLevel_.AMSLevel; i++) {
         abilityMs->UpdateConfiguration(configuration);
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, FwkAbilityState_Event_Resp_A, onBackground, DELAY));
+        data = STAbilityUtil::GetData(event, FwkAbilityState_Event_Resp_A, onBackground);
+        result = data.compare("OnInactiveOnSaveAbilityStateOnBackground") == 0;
+        EXPECT_TRUE(result);
+
         EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, FwkAbilityState_Event_Resp_A, onStop, DELAY));
         data = STAbilityUtil::GetData(event, FwkAbilityState_Event_Resp_A, onStop);
-        result = data.compare("OnInactiveOnSaveAbilityStateOnBackgroundOnStop") == 0;
+        result = data.compare("OnStop") == 0;
         EXPECT_TRUE(result);
+
+        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, FwkAbilityState_Event_Resp_A, onActive, DELAY));
+        data = STAbilityUtil::GetData(event, FwkAbilityState_Event_Resp_A, onActive);
+        result = data.compare("OnStartOnRestoreAbilityStateOnActive") == 0;
+        EXPECT_TRUE(result);
+
         if (!result && i > 0) {
             GTEST_LOG_(INFO) << "FWK_SaveAbilityState_0200 : " << i;
             break;
@@ -209,80 +221,32 @@ HWTEST_F(AmsAbilityStateTest, FWK_SaveAbilityState_0300, Function | MediumTest |
 
 /**
  * @tc.number    : FWK_RestoreAbilityState_0100
- * @tc.name      : onRestoreAbilityState called when restart after home event
- * @tc.desc      : onRestoreAbilityState called when restart after home event
+ * @tc.name      : onRestoreAbilityState called when restart after app crash
+ * @tc.desc      : onRestoreAbilityState called when restart after app crash
  */
 HWTEST_F(AmsAbilityStateTest, FWK_RestoreAbilityState_0100, Function | MediumTest | Level1)
 {
     StartAbility(firstAbilityName, bundleName);
     std::string data;
-    Want wantEntity;
-    wantEntity.AddEntity(Want::FLAG_HOME_INTENT_FROM_SYSTEM);
+    std::vector<std::string> bundleNameList = {
+        bundleName,
+    };
+    std::string crashEvent = "DoCrash";
     bool result = false;
+
     for (int i = 0; i < stLevel_.AMSLevel; i++) {
-        // home
-        STAbilityUtil::StartAbility(wantEntity, abilityMs);
-        // ability state BACKGROUND
-        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, FwkAbilityState_Event_Resp_A, onBackground, DELAY));
-        // restart ability
+        EXPECT_EQ(true, STAbilityUtil::PublishEvent(FwkAbilityState_Event_Requ_A, onActive, crashEvent));
+        GTEST_LOG_(INFO) << "FWK_RestoreAbilityState_0100 DOCRASH NOTIFY";
+        sleep(1);
+
         StartAbility(firstAbilityName, bundleName);
-        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, FwkAbilityState_Event_Resp_A, onActive, DELAY));
         data = STAbilityUtil::GetData(event, FwkAbilityState_Event_Resp_A, onActive);
-        result = data.compare("OnForegroundOnRestoreAbilityStateOnActive") == 0;
+        GTEST_LOG_(INFO) << "FWK_RestoreAbilityState_0100 data= : " << data;
+        result = data.compare("OnStartOnRestoreAbilityStateOnNewWantOnActive") == 0;
+
         EXPECT_TRUE(result);
         if (!result && i > 0) {
             GTEST_LOG_(INFO) << "FWK_RestoreAbilityState_0100 : " << i;
-            break;
-        }
-    }
-}
-
-/**
- * @tc.number    : FWK_RestoreAbilityState_0200
- * @tc.name      : onRestoreAbilityState called when system property changes
- * @tc.desc      : onRestoreAbilityState called when system property changes
- */
-HWTEST_F(AmsAbilityStateTest, FWK_RestoreAbilityState_0200, Function | MediumTest | Level1)
-{
-    StartAbility(firstAbilityName, bundleName);
-    std::string data;
-    DummyConfiguration configuration {"orientation#"};
-    bool result = false;
-    for (int i = 0; i < stLevel_.AMSLevel; i++) {
-        abilityMs->UpdateConfiguration(configuration);
-        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, FwkAbilityState_Event_Resp_A, onActive, DELAY));
-        data = STAbilityUtil::GetData(event, FwkAbilityState_Event_Resp_A, onActive);
-        result = data.compare("OnStartOnRestoreAbilityStateOnActive") == 0;
-        EXPECT_TRUE(result);
-        if (!result && i > 0) {
-            GTEST_LOG_(INFO) << "FWK_RestoreAbilityState_0200 : " << i;
-            break;
-        }
-    }
-}
-
-/**
- * @tc.number    : FWK_RestoreAbilityState_0300
- * @tc.name      : onRestoreAbilityState called when back event after start another ability
- * @tc.desc      : onRestoreAbilityState called when back event after start another ability
- */
-HWTEST_F(AmsAbilityStateTest, FWK_RestoreAbilityState_0300, Function | MediumTest | Level1)
-{
-    StartAbility(firstAbilityName, bundleName);
-    std::string eventData;
-    std::string resultData;
-    bool result = false;
-    for (int i = 0; i < stLevel_.AMSLevel; i++) {
-        eventData = "StartNextAbility";
-        STAbilityUtil::PublishEvent(FwkAbilityState_Event_Requ_A, onActive, eventData);
-        EXPECT_EQ(0, STAbilityUtil::WaitCompleted(event, FwkAbilityState_Event_Resp_A, onBackground, DELAY));
-        eventData = "TerminateSecond";
-        STAbilityUtil::PublishEvent(FwkAbilityState_Event_Requ_B, onStop, eventData);
-        resultData = STAbilityUtil::GetData(event, FwkAbilityState_Event_Resp_A, onActive);
-        result = resultData.compare("OnForegroundOnRestoreAbilityStateOnActive") == 0;
-        EXPECT_TRUE(result);
-        if (!result && i > 0) {
-            GTEST_LOG_(INFO) << "FWK_RestoreAbilityState_0300 : " << i;
             break;
         }
     }
