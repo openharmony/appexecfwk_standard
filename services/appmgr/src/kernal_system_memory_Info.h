@@ -20,6 +20,12 @@
 namespace OHOS {
 namespace AppExecFwk {
 namespace SystemEnv {
+class kernal_system_memory_Info {
+public:
+    kernal_system_memory_Info() = default;
+    ~kernal_system_memory_Info() = default;
+};
+
 class KernelSystemMemoryInfo {
 public:
     KernelSystemMemoryInfo() = default;
@@ -42,8 +48,6 @@ private:
     int64_t cached_ = 0;
     int64_t swapCached_ = 0;
 };
-
-void GetMemInfo(KernelSystemMemoryInfo &memInfo);
 }  // namespace SystemEnv
 }  // namespace AppExecFwk
 }  // namespace OHOS
