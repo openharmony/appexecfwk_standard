@@ -46,10 +46,12 @@ public:
 
     void Action(std::string action, int code);
     void StartNextAbility(int code);
+    void DoCrash(std::string action, int code);
 
 private:
     std::shared_ptr<FwkAbilityStateSecondSubscriber> subscriber_;
     std::string callback_seq;
+    std::string action;
     std::unordered_map<std::string, std::function<void(int)>> mapAction_;
     void SubscribeEvent();
 };
@@ -61,6 +63,7 @@ public:
     {
         mapAction_ = {
             {"StartNextAbility", [this](std::string action, int code) { Action(action, code); }},
+            {"DoCrash", [this](std::string action, int code) { DoCrash(action, code); }},
         };
         mainAbility = nullptr;
     }
@@ -70,11 +73,26 @@ public:
         mainAbility->Action(action, code);
     }
 
-    virtual void OnReceiveEvent(const EventFwk::CommonEventData &data);
+    void DoCrash(std::string action, int code)
+    {
+        mainAbility->DoCrash(action, code);
+    }
+
+    virtual void OnReceiveEvent(const EventFwk::CommonEventData &data) override;
 
     FwkAbilityStateMain *mainAbility;
     std::unordered_map<std::string, std::function<void(std::string, int)>> mapAction_;
     ~FwkAbilityStateSecondSubscriber() = default;
+};
+class CrashMaker {
+public:
+    int CrashTry()
+    {
+        return this->crashData;
+    };
+
+private:
+    int crashData = 0;
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS
