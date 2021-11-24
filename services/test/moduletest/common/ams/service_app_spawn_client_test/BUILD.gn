@@ -23,7 +23,10 @@ ohos_moduletest("AmsServiceAppSpawnClientModuleTest") {
       [ "//base/hiviewdfx/hilog/interfaces/native/innerkits/include" ]
   defines = [ "usleep(time) = MockSleep(time)" ]
 
-  sources = [ "ams_service_app_spawn_client_module_test.cpp" ]
+  sources = [
+    "//foundation/appexecfwk/standard/services/appmgr/src/system_environment_information.cpp",
+    "ams_service_app_spawn_client_module_test.cpp",
+  ]
 
   deps = [ "${services_path}/test/moduletest/common/ams:appmgr_mst_source" ]
 

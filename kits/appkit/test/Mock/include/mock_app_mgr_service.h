@@ -34,6 +34,7 @@ public:
     MOCK_METHOD2(UpdateAbilityState, void(const sptr<IRemoteObject> &token, const AbilityState state));
     MOCK_METHOD1(SetAppFreezingTime, void(int time));
     MOCK_METHOD1(GetAppFreezingTime, void(int &time));
+    MOCK_METHOD2(GetSystemMemoryAttr, void(SystemMemoryAttr &memoryInfo, std::string &strConfig));
 
     virtual void AttachApplication(const sptr<IRemoteObject> &app) override
     {

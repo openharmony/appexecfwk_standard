@@ -43,6 +43,7 @@ ohos_shared_library("appexecfwk_base") {
     "src/permission_def.cpp",
     "src/running_process_info.cpp",
     "src/shortcut_info.cpp",
+    "src/system_memory_attr.cpp",
   ]
 
   public_configs = [

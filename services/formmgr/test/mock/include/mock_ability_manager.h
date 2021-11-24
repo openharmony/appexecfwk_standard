@@ -544,6 +544,9 @@ public:
         return 0;
     }
 
+    virtual void GetSystemMemoryAttr(AppExecFwk::SystemMemoryAttr &memoryInfo)
+    {}
+
 private:
     Semaphore sem_;
 };

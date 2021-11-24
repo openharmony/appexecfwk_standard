@@ -16,6 +16,7 @@
 #include "app_mgr_service.h"
 
 #include <sys/types.h>
+#include <nlohmann/json.hpp>
 
 #include "datetime_ex.h"
 #include "ipc_skeleton.h"
@@ -25,6 +26,8 @@
 #include "app_log_wrapper.h"
 #include "app_mgr_constants.h"
 #include "perf_profile.h"
+
+#include "system_environment_information.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -279,6 +282,32 @@ void AppMgrService::GetAppFreezingTime(int &time)
     }
     appMgrServiceInner_->GetAppFreezingTime(time);
     APP_LOGE("get app freeze time %{public}d ", time);
+}
+
+/**
+ * Get system memory information.
+ * @param SystemMemoryAttr, memory information.
+ */
+void AppMgrService::GetSystemMemoryAttr(SystemMemoryAttr &memoryInfo, std::string &strConfig)
+{
+    SystemEnv::KernelSystemMemoryInfo systemMemInfo;
+    SystemEnv::GetMemInfo(systemMemInfo);
+    int memThreshold = 0;
+    nlohmann::json memJson = nlohmann::json::parse(strConfig);
+    if (!memJson.contains("memoryThreshold")) {
+        memThreshold = 20;
+        APP_LOGE("%{public}s, memThreshold = 20", __func__);
+    } else {
+        // memThreshold = std::stoi(memConfig.at("memorythreshold").get<std::string>());
+        memThreshold = memJson.at("memorythreshold").get<int>();
+        APP_LOGE("%{public}s, memThreshold = %{public}d", __func__, memThreshold);
+    }
+
+    memoryInfo.availSysMem_ = systemMemInfo.GetMemFree();
+    memoryInfo.totalSysMem_ = systemMemInfo.GetMemTotal();
+    memoryInfo.threshold_ = memThreshold;
+    memoryInfo.isSysInlowMem_ =
+        memoryInfo.availSysMem_ < static_cast<int64_t>((memoryInfo.totalSysMem_ * memoryInfo.threshold_ / 100.0));
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS
