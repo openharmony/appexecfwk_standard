@@ -80,7 +80,8 @@ int64_t KernelSystemMemoryInfo::GetSwapCached()
     return swapCached_;
 }
 
-static void RequestSystemMemoryInfo(std::map<std::string, std::string> &memInfo) {
+static void RequestSystemMemoryInfo(std::map<std::string, std::string> &memInfo)
+{
     std::regex rLabel("[\\w()]+");
     std::regex rData("\\d+");
     const int buffsize = 1024;
