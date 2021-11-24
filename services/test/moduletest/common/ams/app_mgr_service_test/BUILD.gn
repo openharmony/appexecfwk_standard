@@ -22,7 +22,10 @@ ohos_moduletest("AmsAppMgrServiceModuleTest") {
     "//base/hiviewdfx/hilog/interfaces/native/innerkits/include/hilog/",
     "//base/hiviewdfx/hilog/interfaces/native/innerkits/include",
   ]
-  sources = [ "ams_app_mgr_service_module_test.cpp" ]
+  sources = [
+    "//foundation/appexecfwk/standard/services/appmgr/src/system_environment_information.cpp",
+    "ams_app_mgr_service_module_test.cpp",
+  ]
 
   deps = [ "${services_path}/test/moduletest/common/ams:appmgr_mst_source" ]
 

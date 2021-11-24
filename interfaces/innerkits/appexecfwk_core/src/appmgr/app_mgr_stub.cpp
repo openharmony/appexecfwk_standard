@@ -53,6 +53,8 @@ AppMgrStub::AppMgrStub()
         &AppMgrStub::HandleSetAppFreezingTime;
     memberFuncMap_[static_cast<uint32_t>(IAppMgr::Message::AMS_APP_GET_APP_FREEZING_TIME)] =
         &AppMgrStub::HandleGetAppFreezingTime;
+    memberFuncMap_[static_cast<uint32_t>(IAppMgr::Message::AMS_APP_GET_SYSTEM_MEMORY_ATTR)] =
+        &AppMgrStub::HandleGetSystemMemoryAttr;
 }
 
 AppMgrStub::~AppMgrStub()
@@ -183,5 +185,19 @@ int32_t AppMgrStub::HandleGetAppFreezingTime(MessageParcel &data, MessageParcel 
     reply.WriteInt32(time);
     return NO_ERROR;
 }
+
+int32_t AppMgrStub::HandleGetSystemMemoryAttr(MessageParcel &data, MessageParcel &reply)
+{
+    SystemMemoryAttr memoryInfo;
+    std::string strConfig;
+    data.ReadString(strConfig);
+    GetSystemMemoryAttr(memoryInfo, strConfig);
+    if (reply.WriteParcelable(&memoryInfo)) {
+        APP_LOGE("want write failed.");
+        return ERR_INVALID_VALUE;
+    }
+    return NO_ERROR;
+}
+
 }  // namespace AppExecFwk
 }  // namespace OHOS

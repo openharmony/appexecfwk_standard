@@ -42,6 +42,7 @@ public:
     MOCK_METHOD1(GetAppFreezingTime, void(int &time));
     MOCK_METHOD1(SetAppFreezingTime, void(int time));
     MOCK_METHOD1(ClearUpApplicationData, int32_t(const std::string &bundleName));
+    MOCK_METHOD2(GetSystemMemoryAttr, void(SystemMemoryAttr &memoryInfo, std::string &strConfig));
 
     virtual void RegisterAppStateCallback(const sptr<IAppStateCallback> &callback)
     {

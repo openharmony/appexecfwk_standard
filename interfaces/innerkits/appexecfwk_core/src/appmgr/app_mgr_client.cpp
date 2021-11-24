@@ -24,6 +24,7 @@
 
 #include "app_mgr_interface.h"
 #include "app_service_manager.h"
+#include "app_log_wrapper.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -253,5 +254,21 @@ int AppMgrClient::CompelVerifyPermission(const std::string &permission, int pid,
     }
     return AppMgrResultCode::RESULT_OK;
 }
+
+/**
+ * Get system memory information.
+ * @param SystemMemoryAttr, memory information.
+ */
+void AppMgrClient::GetSystemMemoryAttr(SystemMemoryAttr &memoryInfo, std::string &strConfig)
+{
+    sptr<IAppMgr> service = iface_cast<IAppMgr>(remote_);
+    if (service == nullptr) {
+        APP_LOGE("service is nullptr");
+        return;
+    }
+
+    service->GetSystemMemoryAttr(memoryInfo, strConfig);
+}
+
 }  // namespace AppExecFwk
 }  // namespace OHOS

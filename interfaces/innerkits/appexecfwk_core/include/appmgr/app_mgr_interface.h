@@ -25,6 +25,7 @@
 #include "iapp_state_callback.h"
 #include "ams_mgr_interface.h"
 #include "running_process_info.h"
+#include "system_memory_attr.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -137,6 +138,12 @@ public:
      */
     virtual void GetAppFreezingTime(int &time) = 0;
 
+    /**
+     * Get system memory information.
+     * @param SystemMemoryAttr, memory information.
+     */
+    virtual void GetSystemMemoryAttr(SystemMemoryAttr &memoryInfo, std::string &strConfig) = 0;
+
     enum class Message {
         AMS_APP_ATTACH_APPLICATION = 0,
         AMS_APP_APPLICATION_FOREGROUNDED,
@@ -150,6 +157,7 @@ public:
         AMS_APP_GET_ALL_RUNNING_PROCESSES,
         AMS_APP_SET_APP_FREEZING_TIME,
         AMS_APP_GET_APP_FREEZING_TIME,
+        AMS_APP_GET_SYSTEM_MEMORY_ATTR,
     };
 };
 }  // namespace AppExecFwk
