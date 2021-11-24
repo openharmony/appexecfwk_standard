@@ -31,6 +31,8 @@
 
 namespace OHOS {
 namespace AppExecFwk {
+static const int experienceMemThreshold = 20;
+static const float percentage = 100.0;
 namespace {
 const std::string TASK_ATTACH_APPLICATION = "AttachApplicationTask";
 const std::string TASK_APPLICATION_FOREGROUNDED = "ApplicationForegroundedTask";
@@ -295,10 +297,9 @@ void AppMgrService::GetSystemMemoryAttr(SystemMemoryAttr &memoryInfo, std::strin
     int memThreshold = 0;
     nlohmann::json memJson = nlohmann::json::parse(strConfig);
     if (!memJson.contains("memoryThreshold")) {
-        memThreshold = 20;
-        APP_LOGE("%{public}s, memThreshold = 20", __func__);
+        memThreshold = experienceMemThreshold;
+        APP_LOGE("%{public}s, memThreshold = %{public}d", __func__, experienceMemThreshold);
     } else {
-        // memThreshold = std::stoi(memConfig.at("memorythreshold").get<std::string>());
         memThreshold = memJson.at("memorythreshold").get<int>();
         APP_LOGE("%{public}s, memThreshold = %{public}d", __func__, memThreshold);
     }
@@ -307,7 +308,7 @@ void AppMgrService::GetSystemMemoryAttr(SystemMemoryAttr &memoryInfo, std::strin
     memoryInfo.totalSysMem_ = systemMemInfo.GetMemTotal();
     memoryInfo.threshold_ = memThreshold;
     memoryInfo.isSysInlowMem_ =
-        memoryInfo.availSysMem_ < static_cast<int64_t>((memoryInfo.totalSysMem_ * memoryInfo.threshold_ / 100.0));
+        memoryInfo.availSysMem_ < static_cast<int64_t>((memoryInfo.totalSysMem_ * memoryInfo.threshold_ / percentage));
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS

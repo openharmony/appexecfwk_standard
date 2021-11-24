@@ -198,6 +198,5 @@ int32_t AppMgrStub::HandleGetSystemMemoryAttr(MessageParcel &data, MessageParcel
     }
     return NO_ERROR;
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

@@ -281,7 +281,7 @@ HWTEST_F(AmsIpcAppMgrInterfaceTest, GetSystemMemoryAttr_0100, TestSize.Level0)
     sptr<MockAppMgrService> mockAppMgr(new MockAppMgrService());
     sptr<IAppMgr> appMgrClient = iface_cast<IAppMgr>(mockAppMgr);
 
-    auto TestCall = [](OHOS::AppExecFwk::SystemMemoryAttr& mem, std::string &strConfig){
+    auto TestCall = [](OHOS::AppExecFwk::SystemMemoryAttr& mem, std::string &strConfig) {
         mem.availSysMem_ = 1;
         mem.isSysInlowMem_ = true;
         mem.threshold_ = 1;
