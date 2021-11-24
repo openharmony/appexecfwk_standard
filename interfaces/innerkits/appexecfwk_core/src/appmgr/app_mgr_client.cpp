@@ -269,6 +269,5 @@ void AppMgrClient::GetSystemMemoryAttr(SystemMemoryAttr &memoryInfo, std::string
 
     service->GetSystemMemoryAttr(memoryInfo, strConfig);
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

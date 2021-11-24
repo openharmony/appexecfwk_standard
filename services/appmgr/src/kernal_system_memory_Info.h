@@ -12,16 +12,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef FOUNDATION_APPEXECFWK_SERVICES_SYSTEM_ENVIRONMENT_INFORMATION_H
-#define FOUNDATION_APPEXECFWK_SERVICES_SYSTEM_ENVIRONMENT_INFORMATION_H
+#ifndef FOUNDATION_APPEXECFWK_SERVICES_KERNAL_SYSTEM_MEMORY_INFO_H
+#define FOUNDATION_APPEXECFWK_SERVICES_KERNAL_SYSTEM_MEMORY_INFO_H
 
-#include "kernal_system_memory_Info.h"
+#include <map>
 
 namespace OHOS {
 namespace AppExecFwk {
 namespace SystemEnv {
+class KernelSystemMemoryInfo {
+public:
+    KernelSystemMemoryInfo() = default;
+    ~KernelSystemMemoryInfo() = default;
+
+    void init(std::map<std::string, std::string> &memInfo);
+
+    int64_t GetMemTotal();
+    int64_t GetMemFree();
+    int64_t GetMemAvailable();
+    int64_t GetBuffers();
+    int64_t GetCached();
+    int64_t GetSwapCached();
+
+private:
+    int64_t memTotal_ = 0;
+    int64_t memFree_ = 0;
+    int64_t memAvailable_ = 0;
+    int64_t buffers_ = 0;
+    int64_t cached_ = 0;
+    int64_t swapCached_ = 0;
+};
+
 void GetMemInfo(KernelSystemMemoryInfo &memInfo);
 }  // namespace SystemEnv
 }  // namespace AppExecFwk
 }  // namespace OHOS
-#endif // FOUNDATION_APPEXECFWK_SERVICES_SYSTEM_ENVIRONMENT_INFORMATION_H
+#endif // FOUNDATION_APPEXECFWK_SERVICES_KERNAL_SYSTEM_MEMORY_INFO_H

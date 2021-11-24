@@ -28,10 +28,10 @@ bool SystemMemoryAttr::ReadFromParcel(Parcel &parcel)
     parcel.ReadInt64(threshold_);
     isSysInlowMem_ = parcel.ReadBool();
 
-    APP_LOGD("SystemMemoryAttr::ReadFromParcel %{public}lld %{public}lld %{public}lld %{public}s",
-        availSysMem_,
-        totalSysMem_,
-        threshold_,
+    APP_LOGD("SystemMemoryAttr::ReadFromParcel %{public}zu %{public}zu %{public}zu %{public}s",
+        static_cast<size_t>(availSysMem_),
+        static_cast<size_t>(totalSysMem_),
+        static_cast<size_t>(threshold_),
         (isSysInlowMem_ ? "true" : "false"));
 
     return true;
@@ -58,10 +58,10 @@ bool SystemMemoryAttr::Marshalling(Parcel &parcel) const
     parcel.WriteInt64(threshold_);
     parcel.WriteBool(isSysInlowMem_);
 
-    APP_LOGD("SystemMemoryAttr::Marshalling %{public}lld %{public}lld %{public}lld %{public}s",
-        availSysMem_,
-        totalSysMem_,
-        threshold_,
+    APP_LOGD("SystemMemoryAttr::Marshalling %{public}zu %{public}zu %{public}zu %{public}s",
+        static_cast<size_t>(availSysMem_),
+        static_cast<size_t>(totalSysMem_),
+        static_cast<size_t>(threshold_),
         (isSysInlowMem_ ? "true" : "false"));
 
     return true;

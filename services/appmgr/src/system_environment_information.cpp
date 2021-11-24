@@ -12,21 +12,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <iostream>
 #include <string>
+#include <memory>
 #include <regex>
 #include <map>
 
-#include "system_environment_information.h"
 #include "app_log_wrapper.h"
+#include "securec.h"
+#include "kernal_system_memory_Info.h"
+#include "system_environment_information.h"
 
 namespace OHOS {
 namespace AppExecFwk {
 namespace SystemEnv {
-void KernelSystemMemoryInfo::init(std::map<std::string, std::string>& memInfo)
+const int bytesKB = 1024;
+void KernelSystemMemoryInfo::init(std::map<std::string, std::string> &memInfo)
 {
     auto findData = [&] (const std::string& key) -> std::string {
         auto iter = memInfo.find(key);
@@ -39,12 +42,12 @@ void KernelSystemMemoryInfo::init(std::map<std::string, std::string>& memInfo)
         }
     };
 
-    memTotal_ = std::stoll(findData(std::string("MemTotal"))) * 1024;
-    memFree_ = std::stoll(findData(std::string("MemFree"))) * 1024;
-    memAvailable_ = std::stoll(findData(std::string("MemAvailable"))) * 1024;
-    buffers_ = std::stoll(findData(std::string("Buffers"))) * 1024;
-    cached_ = std::stoll(findData(std::string("Cached"))) * 1024;
-    swapCached_ = std::stoll(findData(std::string("SwapCached"))) * 1024;
+    memTotal_ = std::stoll(findData(std::string("MemTotal"))) * bytesKB;
+    memFree_ = std::stoll(findData(std::string("MemFree"))) * bytesKB;
+    memAvailable_ = std::stoll(findData(std::string("MemAvailable"))) * bytesKB;
+    buffers_ = std::stoll(findData(std::string("Buffers"))) * bytesKB;
+    cached_ = std::stoll(findData(std::string("Cached"))) * bytesKB;
+    swapCached_ = std::stoll(findData(std::string("SwapCached"))) * bytesKB;
 }
 
 int64_t KernelSystemMemoryInfo::GetMemTotal()
@@ -80,7 +83,8 @@ int64_t KernelSystemMemoryInfo::GetSwapCached()
 static void RequestSystemMemoryInfo(std::map<std::string, std::string> &memInfo) {
     std::regex rLabel("[\\w()]+");
     std::regex rData("\\d+");
-    char buff[1024] = {0};
+    const int buffsize = 1024;
+    char buff[buffsize] = {0};
 
     FILE *fp = popen("cat /proc/meminfo", "r");
     if (fp == nullptr) {
@@ -89,9 +93,8 @@ static void RequestSystemMemoryInfo(std::map<std::string, std::string> &memInfo)
     }
 
     while (fgets(buff, sizeof(buff), fp) != nullptr) {
-        /* code */
         std::string strbuf(buff);
-        memset(buff, 0x00, sizeof(buff));
+        memset_s(buff, sizeof(buff), 0x00, sizeof(buff));
         std::smatch sm;
         std::smatch smData;
         bool flag = false;
