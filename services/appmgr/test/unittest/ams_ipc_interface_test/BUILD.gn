@@ -42,6 +42,7 @@ ohos_unittest("AmsIpcAppMgrInterfaceTest") {
   }
   deps = [
     "${services_path}/appmgr/test:appmgr_test_source",
+    "//foundation/aafwk/standard/interfaces/innerkits/want:want",
     "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_core:appexecfwk_core",
   ]
 

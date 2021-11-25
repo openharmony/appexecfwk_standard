@@ -24,6 +24,8 @@
 #include "iremote_object.h"
 #include "errors.h"
 #include "mock_app_mgr_service_inner.h"
+#include"system_environment_information.h"
+#include "system_memory_attr.h"
 
 using namespace testing;
 using namespace testing::ext;
@@ -958,4 +960,31 @@ HWTEST_F(AmsServiceEventDriveTest, EventDrive_039, TestSize.Level1)
     EXPECT_EQ(SpawnConnectionState::STATE_NOT_CONNECT, appMgrService_->QueryServiceState().connectionState);
 
     APP_LOGI("ams_service_event_drive_test_039 end");
+}
+
+/*
+ * Feature: AppMgrService
+ * Function: Service
+ * SubFunction: GetSystemMemoryAttr
+ * FunctionPoints: AppMgrService event drive program model
+ * EnvConditions: Mobile that can run ohos test framework
+ * CaseDescription: Verify if QueryServiceState act normal after AppMgrService stopped
+ */
+HWTEST_F(AmsServiceEventDriveTest, GetSystemMemoryAttr_0100, TestSize.Level1)
+{
+    APP_LOGI("AppMgrService::GetSystemMemoryAttr_0100 start");
+    OHOS::AppExecFwk::SystemMemoryAttr memInfo;
+    std::string strConfig;
+
+    memInfo.availSysMem_ = -1;
+    memInfo.totalSysMem_ = -1;
+    memInfo.threshold_ = -1;
+
+    appMgrService_->GetSystemMemoryAttr(memInfo, strConfig);
+
+    EXPECT_NE(-1, memInfo.availSysMem_);
+    EXPECT_NE(-1, memInfo.totalSysMem_);
+    EXPECT_NE(-1, memInfo.threshold_);
+
+    APP_LOGI("AppMgrService::GetSystemMemoryAttr_0100 end");
 }

@@ -24,6 +24,7 @@
 #include "app_mgr_constants.h"
 #include "iapp_state_callback.h"
 #include "running_process_info.h"
+#include "system_memory_attr.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -166,6 +167,12 @@ public:
      * @return Returns ERR_OK on success, others on failure.
      */
     virtual int CompelVerifyPermission(const std::string &permission, int pid, int uid, std::string &message);
+
+    /**
+     * Get system memory information.
+     * @param SystemMemoryAttr, memory information.
+     */
+    virtual void GetSystemMemoryAttr(SystemMemoryAttr &memoryInfo, std::string &strConfig);
 
 private:
     void SetServiceManager(std::unique_ptr<AppServiceManager> serviceMgr);

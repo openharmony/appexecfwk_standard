@@ -21,7 +21,10 @@ ohos_moduletest("AmsServiceStartModuleTest") {
 
   include_dirs =
       [ "//base/hiviewdfx/hilog/interfaces/native/innerkits/include" ]
-  sources = [ "ams_service_start_process_module_test.cpp" ]
+  sources = [
+    "${services_path}/appmgr/src/system_environment_information.cpp",
+    "ams_service_start_process_module_test.cpp",
+  ]
 
   deps = [ "${services_path}/test/moduletest/common/ams:appmgr_mst_source" ]
 

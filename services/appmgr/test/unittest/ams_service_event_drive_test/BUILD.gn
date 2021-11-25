@@ -25,6 +25,8 @@ ohos_unittest("AmsServiceEventDriveTest") {
     "//utils/native/base/include",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy/include/",
     "//foundation/distributedschedule/samgr/adapter/interfaces/innerkits/include/",
+    "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_base/include",
+    "//foundation/appexecfwk/standard/services/appmgr/src",
   ]
 
   sources = [
@@ -37,6 +39,7 @@ ohos_unittest("AmsServiceEventDriveTest") {
     "${services_path}/appmgr/src/app_spawn_client.cpp",
     "${services_path}/appmgr/src/app_spawn_msg_wrapper.cpp",
     "${services_path}/appmgr/src/app_spawn_socket.cpp",
+    "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_base/src/system_memory_attr.cpp",
   ]
 
   sources += [ "ams_service_event_drive_test.cpp" ]
