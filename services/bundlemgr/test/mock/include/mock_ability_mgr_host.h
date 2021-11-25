@@ -287,6 +287,9 @@ public:
     {
         return 0;
     }
+
+    void GetSystemMemoryAttr(AppExecFwk::SystemMemoryAttr &memoryInfo) override
+    {}
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS

@@ -174,6 +174,12 @@ public:
      */
     virtual void GetAppFreezingTime(int &time) override;
 
+    /**
+     * Get system memory information.
+     * @param SystemMemoryAttr, memory information.
+     */
+    virtual void GetSystemMemoryAttr(SystemMemoryAttr &memoryInfo, std::string &strConfig) override;
+
 private:
     /**
      * Init, Initialize application services.

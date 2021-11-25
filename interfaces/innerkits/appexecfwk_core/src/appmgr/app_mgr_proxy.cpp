@@ -337,6 +337,38 @@ void AppMgrProxy::GetAppFreezingTime(int &time)
     APP_LOGE("get freeze time : %{public}d ", time);
 }
 
+/**
+ * Get system memory information.
+ * @param SystemMemoryAttr, memory information.
+ */
+void AppMgrProxy::GetSystemMemoryAttr(SystemMemoryAttr &memoryInfo, std::string &strConfig)
+{
+    MessageParcel data;
+    MessageParcel reply;
+    if (!WriteInterfaceToken(data)) {
+        APP_LOGE("WriteInterfaceToken faild");
+        return;
+    }
+
+    if (!data.WriteString(strConfig)) {
+        APP_LOGE("want write failed.");
+        return;
+    }
+
+    if (!SendTransactCmd(IAppMgr::Message::AMS_APP_GET_SYSTEM_MEMORY_ATTR, data, reply)) {
+        APP_LOGE("SendTransactCmd faild");
+        return;
+    }
+
+    std::shared_ptr<SystemMemoryAttr> remoteRetsult(reply.ReadParcelable<SystemMemoryAttr>());
+    if (remoteRetsult == nullptr) {
+        APP_LOGE("recv SystemMemoryAttr faild");
+        return;
+    }
+
+    memoryInfo = *remoteRetsult;
+}
+
 template<typename T>
 int AppMgrProxy::GetParcelableInfos(MessageParcel &reply, std::vector<T> &parcelableInfos)
 {
