@@ -228,6 +228,7 @@ ohos_unittest("context_deal_test") {
     "//foundation/aafwk/standard/frameworks/kits/ability/native/test/mock/include/mock_bundle_manager.cpp",
     "//foundation/aafwk/standard/frameworks/kits/ability/native/test/mock/include/sys_mgr_client_mock.cpp",
     "//foundation/appexecfwk/standard/kits/appkit/native/app/src/app_loader.cpp",
+    "mock/include/mock_ability_manager_client.cpp",
     "unittest/context_deal_test.cpp",
   ]
 
@@ -243,6 +244,7 @@ ohos_unittest("context_deal_test") {
     "//foundation/appexecfwk/standard/interfaces/innerkits/task_dispatcher:appkit_dispatcher_td",
     "//foundation/appexecfwk/standard/kits:appkit_native",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
+    "//third_party/googletest:gmock_main",
     "//third_party/googletest:gtest_main",
     "//utils/native/base:utils",
   ]

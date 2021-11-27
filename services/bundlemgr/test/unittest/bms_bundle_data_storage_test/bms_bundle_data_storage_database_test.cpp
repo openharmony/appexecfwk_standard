@@ -97,6 +97,7 @@ protected:
                             "description" : "$string:results_description"
                         }]
                     },
+                    "backgroundModes": 1,
                     "isLauncherAbility": true,
                     "isNativeAbility": false,
                     "supportPipMode" : false,
@@ -147,7 +148,9 @@ protected:
                 "process": "",
                 "signatureKey": "",
                 "supportedModes": 0,
-                "debug": false
+                "debug": false,
+                "unremovable": true,
+                "singleUser": true
             },
             "baseBundleInfo": {
                 "abilityInfos": [],
@@ -177,7 +180,9 @@ protected:
                     "process": "",
                     "signatureKey": "",
                     "supportedModes": 0,
-                    "debug": false
+                    "debug": false,
+                    "unremovable": true,
+                    "singleUser": true
                 },
                 "compatibleVersion": 3,
                 "cpuAbi": "",
@@ -208,7 +213,9 @@ protected:
                 "updateTime": 17921,
                 "vendor": "ohos",
                 "versionCode": 1,
-                "versionName": "1.0"
+                "versionName": "1.0",
+                "unremovable": true,
+                "singleUser": true
             },
             "baseDataDir": "/data/accounts/account_0/appdata/com.ohos.launcher",
             "bundleStatus": 1,

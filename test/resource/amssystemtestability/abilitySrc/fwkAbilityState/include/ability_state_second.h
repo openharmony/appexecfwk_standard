@@ -25,7 +25,7 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-class FwkAbilityStateMainSubscriber;
+class FwkAbilityStateSecondSubscriber;
 class FwkAbilityStateSecond : public Ability {
 public:
     FwkAbilityStateSecond()
@@ -47,14 +47,15 @@ public:
     void TerminateThis(int code);
 
 private:
-    std::shared_ptr<FwkAbilityStateMainSubscriber> subscriber_;
+    std::shared_ptr<FwkAbilityStateSecondSubscriber> subscriber_;
     std::unordered_map<std::string, std::function<void(int)>> mapAction_;
     void SubscribeEvent();
+    std::string callback_seq;
 };
 
-class FwkAbilityStateMainSubscriber : public EventFwk::CommonEventSubscriber {
+class FwkAbilityStateSecondSubscriber : public EventFwk::CommonEventSubscriber {
 public:
-    explicit FwkAbilityStateMainSubscriber(const EventFwk::CommonEventSubscribeInfo &sp)
+    explicit FwkAbilityStateSecondSubscriber(const EventFwk::CommonEventSubscribeInfo &sp)
         : CommonEventSubscriber(sp)
     {
         mapAction_ = {
@@ -72,7 +73,7 @@ public:
 
     FwkAbilityStateSecond *mainAbility;
     std::unordered_map<std::string, std::function<void(std::string, int)>> mapAction_;
-    ~FwkAbilityStateMainSubscriber() = default;
+    ~FwkAbilityStateSecondSubscriber() = default;
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS
