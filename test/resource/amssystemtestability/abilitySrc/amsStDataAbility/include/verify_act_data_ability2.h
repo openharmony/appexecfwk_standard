@@ -15,6 +15,8 @@
 #ifndef VERIFY_ACT_DATA_ABILITY2_H
 #define VERIFY_ACT_DATA_ABILITY2_H
 #include "ability.h"
+#include "rdb_helper.h"
+#include "rdb_open_callback.h"
 
 namespace OHOS {
 namespace NativeRdb {
@@ -40,6 +42,13 @@ public:
 
     std::vector<std::shared_ptr<NativeRdb::AbsSharedResultSet>> sharedList_;
 };
+
+class InsertTestOpenCallback2 : public NativeRdb::RdbOpenCallback {
+public:
+    int OnCreate(NativeRdb::RdbStore &rdbStore) override;
+    int OnUpgrade(NativeRdb::RdbStore &rdbStore, int oldVersion, int newVersion) override;
+    static const std::string CREATE_TABLE_TEST;
+};
 }  // namespace AppExecFwk
 }  // namespace OHOS
-#endif // VERIFY_ACT_DATA_ABILITY2_H
+#endif  // VERIFY_ACT_DATA_ABILITY2_H

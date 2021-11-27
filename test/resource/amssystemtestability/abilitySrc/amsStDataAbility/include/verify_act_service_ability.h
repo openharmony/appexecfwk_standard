@@ -34,5 +34,5 @@ public:
     std::string Split(std::string &str, std::string delim);
 };
 }  // namespace AppExecFwk
-}
-#endif // VERIFY_ACT_SERVICE_ABILITY_H
+}  // namespace OHOS
+#endif  // VERIFY_ACT_SERVICE_ABILITY_H

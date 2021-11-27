@@ -3567,7 +3567,7 @@ napi_value RegisterAllPermissionsChanged(napi_env env, napi_callback_info info)
         return result;
     } else if (permissionEvent == ANY_PERMISSION_CHANGE && argc == ARGS_SIZE_TWO) {
         AsyncRegisterAllPermissions *asyncCallbackInfo =
-            new (std::nothrow) AsyncRegisterAllPermissions{.env = env, .asyncWork = nullptr};
+            new (std::nothrow) AsyncRegisterAllPermissions {.env = env, .asyncWork = nullptr};
         if (asyncCallbackInfo == nullptr) {
             return nullptr;
         }

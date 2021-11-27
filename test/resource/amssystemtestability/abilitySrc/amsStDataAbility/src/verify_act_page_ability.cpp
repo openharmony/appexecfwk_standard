@@ -22,7 +22,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 void VerifyActPageAbility::OnStart(const Want &want)
 {
     APP_LOGI("----------VerifyActPageAbility::onStart begin----------");

@@ -21,9 +21,6 @@
 #include "ability_loader.h"
 #include "verify_act_data_ability.h"
 
-#include "rdb_helper.h"
-#include "rdb_open_callback.h"
-
 namespace OHOS {
 namespace AppExecFwk {
 namespace {
@@ -33,13 +30,6 @@ static const std::string DATABASE_FILE_NAME = "insert_test.db";
 static const std::string DATABASE_NAME = RDB_TEST_PATH + "insert_test.db";
 static const int defaultReturn = 1;
 }
-
-class InsertTestOpenCallback : public NativeRdb::RdbOpenCallback {
-public:
-    int OnCreate(NativeRdb::RdbStore &rdbStore) override;
-    int OnUpgrade(NativeRdb::RdbStore &rdbStore, int oldVersion, int newVersion) override;
-    static const std::string CREATE_TABLE_TEST;
-};
 
 const std::string InsertTestOpenCallback::CREATE_TABLE_TEST =
     std::string("CREATE TABLE IF NOT EXISTS test ") + std::string("(id INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -81,12 +71,15 @@ std::shared_ptr<NativeRdb::AbsSharedResultSet> VerifyActDataAbility::Query(
 
     int64_t id;
     NativeRdb::ValuesBucket values;
+    int idValue = 1;
+    int age = 18;
+    double salary = 100.5;
 
-    values.PutInt("id", 1);
+    values.PutInt("id", idValue);
     values.PutString("name", std::string("zhangsan"));
-    values.PutInt("age", 18);
-    values.PutDouble("salary", 100.5);
-    values.PutBlob("blobType", std::vector<uint8_t>{1, 2, 3});
+    values.PutInt("age", age);
+    values.PutDouble("salary", salary);
+    values.PutBlob("blobType", std::vector<uint8_t> {1, 2, 3});
 
     if (testStore == nullptr) {
         APP_LOGI("VerifyActDataAbility <<<<Query>>>> testStore is nullptr, data will be empty");
@@ -99,7 +92,7 @@ std::shared_ptr<NativeRdb::AbsSharedResultSet> VerifyActDataAbility::Query(
     }
 
     std::unique_ptr<NativeRdb::AbsSharedResultSet> rresultSet =
-        testStore->QuerySql("SELECT * FROM test WHERE name = ?", std::vector<std::string>{"zhangsan"});
+        testStore->QuerySql("SELECT * FROM test WHERE name = ?", std::vector<std::string> {"zhangsan"});
     if (rresultSet == nullptr) {
         APP_LOGE("VerifyActDataAbility <<<<Query>>>> rresultSet is nullptr");
         return nullptr;
