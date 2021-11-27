@@ -301,10 +301,10 @@ HWTEST_F(AppkitNativeModuleTestThird, App_ElementsCallbacks_0100, Function | Med
     mockAppMgr->ScheduleShrinkMemory(10);
 
     usleep(USleepTime);
-    OHOS::AppExecFwk::Configuration config("testConfig");
+    OHOS::AppExecFwk::Configuration config;
+    config.AddItem(GlobalConfigurationKey::SYSTEM_LANGUAGE, "ZH-HANS");
 
     mockAppMgr->ScheduleConfigurationUpdated(config);
-
     usleep(USleepTime);
 
     mockAppMgr->ScheduleTerminateApplication();

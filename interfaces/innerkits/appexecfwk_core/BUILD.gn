@@ -58,7 +58,7 @@ ohos_shared_library("appexecfwk_core") {
     "src/appmgr/app_state_callback_host.cpp",
     "src/appmgr/app_state_callback_proxy.cpp",
     "src/appmgr/app_task_info.cpp",
-    "src/appmgr/dummy_configuration.cpp",
+    "src/appmgr/configuration.cpp",
     "src/appmgr/priority_object.cpp",
     "src/appmgr/process_info.cpp",
     "src/appmgr/profile.cpp",

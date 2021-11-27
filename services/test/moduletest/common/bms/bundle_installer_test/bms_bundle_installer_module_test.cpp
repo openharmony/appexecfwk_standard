@@ -134,6 +134,7 @@ protected:
                     "configChanges": [
                         "locale"
                     ],
+                    "backgroundModes": 1,
                     "formEnabled": true,
                     "formEntity": 1,
                     "minFormHeight": 0,
@@ -207,7 +208,9 @@ protected:
                 "process": "",
                 "signatureKey": "",
                 "supportedModes": 0,
-                "debug": false
+                "debug": false,
+                "unremovable": true,
+                "singleUser": true
             },
             "baseBundleInfo": {
                 "abilityInfos": [],
@@ -237,7 +240,9 @@ protected:
                     "process": "",
                     "signatureKey": "",
                     "supportedModes": 0,
-                    "debug": false
+                    "debug": false,
+                    "unremovable": true,
+                    "singleUser": true
                 },
                 "compatibleVersion": 6,
                 "cpuAbi": "",
@@ -268,7 +273,9 @@ protected:
                 "updateTime": 10635,
                 "vendor": "ohos",
                 "versionCode": 1,
-                "versionName": "1.0"
+                "versionName": "1.0",
+                "unremovable": true,
+                "singleUser": true
             },
             "baseDataDir": "/data/accounts/account_0/appdata/com.ohos.launcher",
             "bundleStatus": 1,

@@ -32,6 +32,7 @@ group("ams_system_test_app") {
     "amsKitSystemTestService:amsKitSystemTestService",
     "amsMissionStackTest:amsMissionStackTest",
     "amsMissionStackTestSubsidiary:amsMissionStackTestSubsidiary",
+    "amsStDataAbility:amsStDataAbility",
     "amsSystemTestA:amsSystemTestA",
     "amsSystemTestB:amsSystemTestB",
     "amsSystemTestC:amsSystemTestC",

@@ -20,7 +20,7 @@
 #include "ability_info.h"
 #include "app_launch_data.h"
 #include "app_launch_data.h"
-#include "dummy_configuration.h"
+#include "configuration.h"
 
 namespace OHOS {
 namespace AppExecFwk {

@@ -23,10 +23,14 @@ using namespace OHOS::EventFwk;
 namespace {
 std::string FwkAbilityState_Event_Resp_A = "resp_com_ohos_amsst_FwkAbilityStateA";
 std::string FwkAbilityState_Event_Requ_A = "requ_com_ohos_amsst_FwkAbilityStateA";
+const std::string FwkAbilityState_SaveData_Int = "int_data_1";
 int OnStopCode = 3;
 int OnActiveCode = 1;
 int OnBackgroundCode = 2;
-}
+int OnRestoreCheckCode = 4;
+constexpr int iBlockTime = 12;
+const int iSaveData = 12345;
+}  // namespace
 
 FwkAbilityStateMain::~FwkAbilityStateMain()
 {
@@ -37,6 +41,8 @@ void FwkAbilityStateMain::OnStart(const Want &want)
 {
     APP_LOGI("FwkAbilityStateMain::onStart");
     SubscribeEvent();
+    bIsBlockRestore = want.HasParameter("StartType1");
+    bIsBlockSave = false;
     Ability::OnStart(want);
     callback_seq += "OnStart";
 }
@@ -90,17 +96,44 @@ void FwkAbilityStateMain::OnBackground()
     callback_seq = "";
 }
 
+void FwkAbilityStateMain::OnBlockProcess(bool &bIsBlockFlag)
+{
+    int i = iBlockTime;
+
+    if (bIsBlockFlag) {
+        while (i-- > 0) {
+            APP_LOGI("FwkAbilityStateMain::OnBlockProcess time left %{public}d", i);
+            sleep(1);
+        }
+        bIsBlockFlag = false;
+    }
+}
+
 void FwkAbilityStateMain::OnSaveAbilityState(PacMap &outState)
 {
     APP_LOGI("FwkAbilityStateMain::OnSaveAbilityState");
+    OnBlockProcess(bIsBlockSave);
+    outState.PutIntValue(FwkAbilityState_SaveData_Int, iSaveData);
     Ability::OnSaveAbilityState(outState);
     callback_seq += "OnSaveAbilityState";
 }
 
 void FwkAbilityStateMain::OnRestoreAbilityState(const PacMap &inState)
 {
+    int iGetSaveData;
+    PacMap tmpPacMap;
+
     APP_LOGI("FwkAbilityStateMain::OnRestoreAbilityState");
+    OnBlockProcess(bIsBlockRestore);
     Ability::OnRestoreAbilityState(inState);
+    tmpPacMap = (PacMap)inState;
+    iGetSaveData = tmpPacMap.GetIntValue(FwkAbilityState_SaveData_Int);
+    if (iSaveData != iGetSaveData) {
+        TestUtils::PublishEvent(FwkAbilityState_Event_Resp_A, OnRestoreCheckCode, "NotEqual");
+        APP_LOGI("FwkAbilityStateMain::restore not equal %{public}d", iGetSaveData);
+    } else {
+        APP_LOGI("FwkAbilityStateMain::restore equal %{public}d", iGetSaveData);
+    }
     callback_seq += "OnRestoreAbilityState";
 }
 
@@ -115,12 +148,12 @@ void FwkAbilityStateMain::SubscribeEvent()
     }
     CommonEventSubscribeInfo subscribeInfo(matchingSkills);
     subscribeInfo.SetPriority(1);
-    subscriber_ = std::make_shared<FwkAbilityStateSecondSubscriber>(subscribeInfo);
+    subscriber_ = std::make_shared<FwkAbilityStateMainSubscriber>(subscribeInfo);
     subscriber_->mainAbility = this;
     CommonEventManager::SubscribeCommonEvent(subscriber_);
 }
 
-void FwkAbilityStateSecondSubscriber::OnReceiveEvent(const CommonEventData &data)
+void FwkAbilityStateMainSubscriber::OnReceiveEvent(const CommonEventData &data)
 {
     auto eventName = data.GetWant().GetAction();
     if (strcmp(eventName.c_str(), FwkAbilityState_Event_Requ_A.c_str()) == 0) {
@@ -156,6 +189,12 @@ void FwkAbilityStateMain::StartNextAbility(int code)
     Want want;
     want.SetElementName(targetBundle, targetAbility);
     StartAbility(want);
+}
+
+void FwkAbilityStateMain::BlockAndStart(std::string action, int code)
+{
+    bIsBlockSave = true;
+    StartNextAbility(code);
 }
 
 REGISTER_AA(FwkAbilityStateMain);

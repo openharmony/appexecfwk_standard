@@ -21,6 +21,8 @@
 #include "napi/native_node_api.h"
 #include "bundle_mgr.h"
 
+namespace OHOS {
+namespace AppExecFwk {
 EXTERN_C_START
 /*
  * function for module exports
@@ -155,3 +157,5 @@ extern "C" __attribute__((constructor)) void RegisterModule(void)
 {
     napi_module_register(&_module);
 }
+}  // namespace AppExecFwk
+}  // namespace OHOS
