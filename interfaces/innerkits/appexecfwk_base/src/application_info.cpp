@@ -49,7 +49,6 @@ bool ApplicationInfo::ReadFromParcel(Parcel &parcel)
     isLauncherApp = parcel.ReadBool();
     enabled = parcel.ReadBool();
     debug = parcel.ReadBool();
-    unremovable = parcel.ReadBool();
     singleUser = parcel.ReadBool();
     supportedModes = parcel.ReadInt32();
     labelId = parcel.ReadInt32();
@@ -111,7 +110,6 @@ bool ApplicationInfo::Marshalling(Parcel &parcel) const
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, isLauncherApp);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, enabled);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, debug);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, unremovable);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, singleUser);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, supportedModes);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, labelId);
@@ -191,7 +189,6 @@ void to_json(nlohmann::json &jsonObject, const ApplicationInfo &applicationInfo)
         {"dataBaseDir", applicationInfo.dataBaseDir},
         {"cacheDir", applicationInfo.cacheDir},
         {"flags", applicationInfo.flags},
-        {"unremovable", applicationInfo.unremovable},
         {"singleUser", applicationInfo.singleUser}
     };
 }
@@ -210,7 +207,6 @@ void from_json(const nlohmann::json &jsonObject, ApplicationInfo &applicationInf
     applicationInfo.signatureKey = jsonObject.at("signatureKey").get<std::string>();
     applicationInfo.isSystemApp = jsonObject.at("isSystemApp").get<bool>();
     applicationInfo.isLauncherApp = jsonObject.at("isLauncherApp").get<bool>();
-    applicationInfo.unremovable = jsonObject.at("unremovable").get<bool>();
     applicationInfo.singleUser = jsonObject.at("singleUser").get<bool>();
     applicationInfo.enabled = jsonObject.at("enabled").get<bool>();
     applicationInfo.debug = jsonObject.at("debug").get<bool>();

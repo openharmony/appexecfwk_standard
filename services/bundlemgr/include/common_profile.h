@@ -45,7 +45,6 @@ const std::string BUNDLE_APP_PROFILE_KEY_VENDOR = "vendor";
 const std::string BUNDLE_APP_PROFILE_KEY_VERSION = "version";
 const std::string BUNDLE_APP_PROFILE_KEY_API_VERSION = "apiVersion";
 const std::string BUNDLE_APP_PROFILE_KEY_DEBUG = "debug";
-const std::string BUNDLE_APP_PROFILE_KEY_UNREMOVABLE = "unremovable";
 const std::string BUNDLE_APP_PROFILE_KEY_SINGLE_USER = "singleUser";
 // sub BUNDLE_APP_PROFILE_KEY_VERSION
 const std::string BUNDLE_APP_PROFILE_KEY_CODE = "code";

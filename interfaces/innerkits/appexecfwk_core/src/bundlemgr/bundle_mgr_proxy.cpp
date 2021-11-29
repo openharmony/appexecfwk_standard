@@ -1326,6 +1326,31 @@ bool BundleMgrProxy::GetShortcutInfos(const std::string &bundleName, std::vector
     return true;
 }
 
+bool BundleMgrProxy::GetAllCommonEventInfo(const std::string &eventKey, std::vector<CommonEventInfo> &commonEventInfos)
+{
+    if (eventKey.empty()) {
+        APP_LOGE("fail to GetAllCommonEventInfo due to eventKey empty");
+        return false;
+    }
+
+    MessageParcel data;
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        APP_LOGE("fail to GetAllCommonEventInfo due to write MessageParcel fail");
+        return false;
+    }
+
+    if (!data.WriteString(eventKey)) {
+        APP_LOGE("fail to GetAllCommonEventInfo due to write eventKey fail");
+        return false;
+    }
+
+    if (!GetParcelableInfos<CommonEventInfo>(IBundleMgr::Message::GET_ALL_COMMON_EVENT_INFO, data, commonEventInfos)) {
+        APP_LOGE("fail to GetAllCommonEventInfo from server");
+        return false;
+    }
+    return true;
+}
+
 bool BundleMgrProxy::GetModuleUsageRecords(const int32_t number, std::vector<ModuleUsageRecord> &moduleUsageRecords)
 {
     MessageParcel data;

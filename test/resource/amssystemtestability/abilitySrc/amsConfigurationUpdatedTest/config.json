@@ -39,60 +39,6 @@
             "visible": true,
             "skills": [
             ]
-        },
-        {
-            "name": "SecondAbility",
-            "icon": "$media:snowball",
-            "srcLanguage": "c++",
-            "label": "SecondAbility label",
-            "launchType": "standard",
-            "configChanges": ["orientation","locale"],
-            "orientation": "unspecified",
-            "type": "page",
-            "visible": true
-        },
-        {
-            "name": "ThirdAbility",
-            "icon": "$media:snowball",
-            "srcLanguage": "c++",
-            "label": "ThirdAbility label",
-            "launchType": "standard",
-            "configChanges": ["orientation","locale","layout"],
-            "orientation": "unspecified",
-            "type": "page",
-            "visible": true
-        },
-        {
-            "name": "FourthAbility",
-            "icon": "$media:snowball",
-            "srcLanguage": "c++",
-            "label": "FourthAbility label",
-            "launchType": "standard",
-            "configChanges": ["orientation","locale","layout","fontSize"],
-            "orientation": "unspecified",
-            "type": "page",
-            "visible": true
-        },
-        {
-            "name": "FifthAbility",
-            "icon": "$media:snowball",
-            "srcLanguage": "c++",
-            "label": "FifthAbility label",
-            "launchType": "standard",
-            "configChanges": ["orientation","locale","layout","fontSize","density"],
-            "orientation": "unspecified",
-            "type": "page",
-            "visible": true
-        },
-        {
-            "name": "SixthAbility",
-            "icon": "$media:snowball",
-            "srcLanguage": "c++",
-            "label": "SixthAbility label",
-            "launchType": "standard",
-            "orientation": "unspecified",
-            "type": "page",
-            "visible": true
         }]
     }
 }

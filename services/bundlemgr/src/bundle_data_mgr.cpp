@@ -1599,6 +1599,36 @@ bool BundleDataMgr::GetShortcutInfos(const std::string &bundleName, std::vector<
     return true;
 }
 
+bool BundleDataMgr::GetAllCommonEventInfo(const std::string &eventKey, std::vector<CommonEventInfo> &commonEventInfos) const
+{
+    if (eventKey.empty()) {
+        APP_LOGW("event key is empty");
+        return false;
+    }
+    std::lock_guard<std::mutex> lock(bundleInfoMutex_);
+    if (bundleInfos_.empty()) {
+        APP_LOGI("bundleInfos_ data is empty");
+        return false;
+    }
+    for (auto infoItem : bundleInfos_) {
+        auto innerBundleInfo = infoItem.second.find(Constants::CURRENT_DEVICE_ID);
+        if (innerBundleInfo == infoItem.second.end()) {
+            continue;
+        }
+        if (innerBundleInfo->second.IsDisabled()) {
+            APP_LOGI("app %{public}s is disabled", innerBundleInfo->second.GetBundleName().c_str());
+            continue;
+        }
+        innerBundleInfo->second.GetCommonEvents(eventKey, commonEventInfos);
+    }
+    if (commonEventInfos.size() == 0) {
+        APP_LOGE("commonEventInfos is empty");
+        return false;
+    }
+    APP_LOGE("commonEventInfos find success");
+    return true;
+}
+
 bool BundleDataMgr::RegisterAllPermissionsChanged(const sptr<OnPermissionChangedCallback> &callback)
 {
     if (!callback) {
