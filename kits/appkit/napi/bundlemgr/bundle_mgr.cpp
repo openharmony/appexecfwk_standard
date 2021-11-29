@@ -151,10 +151,6 @@ static void ConvertApplicationInfo(napi_env env, napi_value objAppInfo, const Ap
     NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, appInfo.process.c_str(), NAPI_AUTO_LENGTH, &nProcess));
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objAppInfo, "process", nProcess));
 
-    napi_value nUnremovable;
-    NAPI_CALL_RETURN_VOID(env, napi_get_boolean(env, appInfo.unremovable, &nUnremovable));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objAppInfo, "unremovable", nUnremovable));
-
     napi_value nSingleUser;
     NAPI_CALL_RETURN_VOID(env, napi_get_boolean(env, appInfo.singleUser, &nSingleUser));
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objAppInfo, "singleUser", nSingleUser));
@@ -600,11 +596,6 @@ static void ConvertBundleInfo(napi_env env, napi_value objBundleInfo, const Bund
     napi_value nName;
     NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, bundleInfo.name.c_str(), NAPI_AUTO_LENGTH, &nName));
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objBundleInfo, "name", nName));
-
-    napi_value nUnremovable;
-    NAPI_CALL_RETURN_VOID(env, napi_get_boolean(env, bundleInfo.unremovable, &nUnremovable));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objBundleInfo, "unremovable", nUnremovable));
-    HILOG_INFO("ConvertApplicationInfo unremovable=%{public}d.", bundleInfo.unremovable);
 
     napi_value nSingleUser;
     NAPI_CALL_RETURN_VOID(env, napi_get_boolean(env, bundleInfo.singleUser, &nSingleUser));

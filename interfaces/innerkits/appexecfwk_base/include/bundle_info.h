@@ -58,7 +58,6 @@ struct BundleInfo : public Parcelable {
     bool isKeepAlive = false;
     bool isNativeApp = false;
     bool isDifferentName = false;
-    bool unremovable = false;
     bool singleUser = false;
     int64_t installTime = 0;    // the installation time is the number of seconds elapsed since January 1,
                                 // 1970 00:00:00 UTC. The time will be recalculated if the application is reinstalled

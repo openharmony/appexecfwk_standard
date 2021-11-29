@@ -357,6 +357,10 @@ public:
     {
         return true;
     }
+    virtual bool GetAllCommonEventInfo(const std::string &eventKey, std::vector<CommonEventInfo> &commonEventInfos) override
+    {
+        return true;
+    }
     virtual bool GetModuleUsageRecords(
         const int32_t number, std::vector<ModuleUsageRecord> &moduleUsageRecords) override
     {
