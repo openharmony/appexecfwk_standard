@@ -76,6 +76,7 @@ const AbilityType ABILITY_TYPE = AbilityType::PAGE;
 const DisplayOrientation ORIENTATION = DisplayOrientation::PORTRAIT;
 const LaunchMode LAUNCH_MODE = LaunchMode::SINGLETON;
 const uint32_t FORM_ENTITY = 1;
+const uint32_t BACKGROUND_MODES = 1;
 const std::vector<std::string> CONFIG_CHANGES = {"locale"};
 const int DEFAULT_FORM_HEIGHT = 100;
 const int DEFAULT_FORM_WIDTH = 200;
@@ -226,6 +227,8 @@ void BmsBundleKitServiceTest::MockInstallBundle(
     appInfo.cacheDir = CACHE_DIR;
     appInfo.flags = APPLICATION_INFO_FLAGS;
     appInfo.enabled = true;
+    appInfo.unremovable = false;
+    appInfo.singleUser = true;
 
     BundleInfo bundleInfo;
     bundleInfo.name = bundleName;
@@ -240,6 +243,8 @@ void BmsBundleKitServiceTest::MockInstallBundle(
     bundleInfo.isKeepAlive = true;
     bundleInfo.isDifferentName = true;
     bundleInfo.jointUserId = BUNDLE_JOINT_USERID;
+    bundleInfo.unremovable = false;
+    bundleInfo.singleUser = true;
 
     InnerModuleInfo moduleInfo;
     ReqPermission reqPermission1 = {.name = "permission1"};
@@ -404,6 +409,7 @@ AbilityInfo BmsBundleKitServiceTest::MockAbilityInfo(
     abilityInfo.orientation = ORIENTATION;
     abilityInfo.launchMode = LAUNCH_MODE;
     abilityInfo.configChanges = {"locale"};
+    abilityInfo.backgroundModes = 1;
     abilityInfo.formEntity = 1;
     abilityInfo.defaultFormHeight = DEFAULT_FORM_HEIGHT;
     abilityInfo.defaultFormWidth = DEFAULT_FORM_WIDTH;
@@ -474,6 +480,9 @@ void BmsBundleKitServiceTest::CheckBundleInfo(const std::string &bundleName, con
     EXPECT_EQ(abilitySize, static_cast<uint32_t>(bundleInfo.abilityInfos.size()));
     EXPECT_EQ(true, bundleInfo.isDifferentName);
     EXPECT_EQ(BUNDLE_JOINT_USERID, bundleInfo.jointUserId);
+    EXPECT_FALSE(bundleInfo.unremovable);
+    EXPECT_TRUE(bundleInfo.isKeepAlive);
+    EXPECT_TRUE(bundleInfo.singleUser);
 }
 
 void BmsBundleKitServiceTest::CheckBundleArchiveInfo(const std::string &bundleName, const std::string &moduleName,
@@ -511,6 +520,8 @@ void BmsBundleKitServiceTest::CheckApplicationInfo(
     EXPECT_EQ(CODE_PATH, appInfo.codePath);
     EXPECT_EQ(permissionSize, static_cast<uint32_t>(appInfo.permissions.size()));
     EXPECT_EQ(APPLICATION_INFO_FLAGS, appInfo.flags);
+    EXPECT_TRUE(appInfo.singleUser);
+    EXPECT_FALSE(appInfo.unremovable);
 }
 
 void BmsBundleKitServiceTest::CheckAbilityInfo(
@@ -530,6 +541,7 @@ void BmsBundleKitServiceTest::CheckAbilityInfo(
     EXPECT_EQ(false, abilityInfo.supportPipMode);
     EXPECT_EQ(TARGET_ABILITY, abilityInfo.targetAbility);
     EXPECT_EQ(CONFIG_CHANGES, abilityInfo.configChanges);
+    EXPECT_EQ(BACKGROUND_MODES, abilityInfo.backgroundModes);
     EXPECT_EQ(FORM_ENTITY, abilityInfo.formEntity);
     EXPECT_EQ(DEFAULT_FORM_HEIGHT, abilityInfo.defaultFormHeight);
     EXPECT_EQ(DEFAULT_FORM_WIDTH, abilityInfo.defaultFormWidth);
@@ -568,6 +580,7 @@ void BmsBundleKitServiceTest::CheckAbilityInfos(
         EXPECT_EQ(false, abilityInfo.supportPipMode);
         EXPECT_EQ(TARGET_ABILITY, abilityInfo.targetAbility);
         EXPECT_EQ(CONFIG_CHANGES, abilityInfo.configChanges);
+        EXPECT_EQ(BACKGROUND_MODES, abilityInfo.backgroundModes);
         EXPECT_EQ(FORM_ENTITY, abilityInfo.formEntity);
         EXPECT_EQ(DEFAULT_FORM_HEIGHT, abilityInfo.defaultFormHeight);
         EXPECT_EQ(DEFAULT_FORM_WIDTH, abilityInfo.defaultFormWidth);

@@ -16,7 +16,7 @@
 #ifndef FOUNDATION_APPEXECFWK_OHOS_ELEMENTS_CALLBACK_H
 #define FOUNDATION_APPEXECFWK_OHOS_ELEMENTS_CALLBACK_H
 
-#include "dummy_configuration.h"
+#include "configuration.h"
 
 namespace OHOS {
 namespace AppExecFwk {

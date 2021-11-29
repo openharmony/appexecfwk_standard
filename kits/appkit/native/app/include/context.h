@@ -703,6 +703,14 @@ public:
      */
     virtual bool SetMissionInformation(const MissionInformation &missionInformation) = 0;
 
+    /**
+     * set lock screen white list
+     *
+     * @param isAllow  Whether to allow lock screen.
+     *
+     */
+    virtual void SetShowOnLockScreen(bool isAllow) = 0;
+
     friend DataAbilityHelper;
     friend ContinuationConnector;
 

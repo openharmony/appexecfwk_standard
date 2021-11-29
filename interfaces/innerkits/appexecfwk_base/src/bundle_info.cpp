@@ -48,6 +48,8 @@ bool BundleInfo::ReadFromParcel(Parcel &parcel)
     isKeepAlive = parcel.ReadBool();
     isNativeApp = parcel.ReadBool();
     isDifferentName = parcel.ReadBool();
+    unremovable = parcel.ReadBool();
+    singleUser = parcel.ReadBool();
     installTime = parcel.ReadInt64();
     updateTime = parcel.ReadInt64();
 
@@ -146,6 +148,8 @@ bool BundleInfo::Marshalling(Parcel &parcel) const
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, isKeepAlive);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, isNativeApp);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, isDifferentName);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, unremovable);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, singleUser);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int64, parcel, installTime);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int64, parcel, updateTime);
 
@@ -244,7 +248,9 @@ void to_json(nlohmann::json &jsonObject, const BundleInfo &bundleInfo)
         {"moduleNames", bundleInfo.moduleNames},
         {"modulePublicDirs", bundleInfo.modulePublicDirs},
         {"moduleDirs", bundleInfo.moduleDirs},
-        {"moduleResPaths", bundleInfo.moduleResPaths}
+        {"moduleResPaths", bundleInfo.moduleResPaths},
+        {"unremovable", bundleInfo.unremovable},
+        {"singleUser", bundleInfo.singleUser}
     };
 }
 
@@ -283,6 +289,8 @@ void from_json(const nlohmann::json &jsonObject, BundleInfo &bundleInfo)
     bundleInfo.modulePublicDirs = jsonObject.at("modulePublicDirs").get<std::vector<std::string>>();
     bundleInfo.moduleDirs = jsonObject.at("moduleDirs").get<std::vector<std::string>>();
     bundleInfo.moduleResPaths = jsonObject.at("moduleResPaths").get<std::vector<std::string>>();
+    bundleInfo.unremovable = jsonObject.at("unremovable").get<bool>();
+    bundleInfo.singleUser = jsonObject.at("singleUser").get<bool>();
 }
 
 }  // namespace AppExecFwk

@@ -1332,5 +1332,24 @@ bool ContextDeal::SetMissionInformation(const MissionInformation &missionInforma
     return false;
 }
 
+/**
+ * set lock screen white list
+ *
+ * @param isAllow Whether to allow lock screen.
+ *
+ */
+void ContextDeal::SetShowOnLockScreen(bool isAllow)
+{
+    auto abilityManagerClient = AAFwk::AbilityManagerClient::GetInstance();
+    if (abilityManagerClient == nullptr) {
+        APP_LOGE("ContextDeal::SetShowOnLockScreen abilityManagerClient is nullptr");
+        return;
+    }
+    ErrCode errval = abilityManagerClient->SetShowOnLockScreen(isAllow);
+    if (errval != ERR_OK) {
+        APP_LOGE("ContextDeal::SetShowOnLockScreen SetShowOnLockScreen retval is ERROR(%d)", errval);
+    }
+}
+
 }  // namespace AppExecFwk
 }  // namespace OHOS

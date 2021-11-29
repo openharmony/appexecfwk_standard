@@ -22,6 +22,7 @@
 #include "system_ability_definition.h"
 #include "sys_mgr_client.h"
 #include "mock_bundle_manager.h"
+#include "mock_ability_manager_client.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -322,5 +323,43 @@ HWTEST_F(ContextDealTest, AppExecFwk_ContextDeal_GetProcessName_0100, Function |
     context_->SetProcessInfo(processinfo);
     EXPECT_STREQ(name.c_str(), context_->GetProcessName().c_str());
 }
+
+/**
+ * @tc.number: AppExecFwk_ContextDeal_SetShowOnLockScreen_0100
+ * @tc.name: SetShowOnLockScreen
+ * @tc.desc: Verify that the SetShowOnLockScreen return value is correct.
+ */
+HWTEST_F(ContextDealTest, AppExecFwk_ContextDeal_SetShowOnLockScreen_0100, Function | MediumTest | Level1)
+{
+    auto abilityMgrClient = MockAbilityManagerClient::GetInstance();
+    auto returnGetFileTypes = [](bool isAwakenScreen) {
+        EXPECT_TRUE(isAwakenScreen);
+    };
+    EXPECT_CALL(*abilityMgrClient, SetShowOnLockScreen(testing::_))
+        .Times(1)
+        .WillOnce(testing::Invoke(returnGetFileTypes));
+
+    context_->SetShowOnLockScreen(true);
+}
+
+/**
+ * @tc.number: AppExecFwk_ContextDeal_SetShowOnLockScreen_0200
+ * @tc.name: SetShowOnLockScreen
+ * @tc.desc: Verify that the SetShowOnLockScreen return value is correct.
+ */
+HWTEST_F(ContextDealTest, AppExecFwk_ContextDeal_SetShowOnLockScreen_0200, Function | MediumTest | Level1)
+{
+    auto abilityMgrClient = MockAbilityManagerClient::GetInstance();
+    auto returnGetFileTypes = [](bool isAwakenScreen) {
+        EXPECT_FALSE(isAwakenScreen);
+    };
+    EXPECT_CALL(*abilityMgrClient, SetShowOnLockScreen(testing::_))
+        .Times(1)
+        .WillOnce(testing::Invoke(returnGetFileTypes));
+
+    context_->SetShowOnLockScreen(false);
+    testing::Mock::AllowLeak(abilityMgrClient.get());
+}
+
 }  // namespace AppExecFwk
 }  

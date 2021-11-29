@@ -25,6 +25,8 @@
 #include "bundle_mgr_interface.h"
 #include "application_info.h"
 
+namespace OHOS {
+namespace AppExecFwk {
 struct QueryParameter {
     int flags;
     std::string userId;
@@ -232,4 +234,6 @@ void CreateSignatureCompareResultObject(napi_env env, napi_value value);
 void CreateShortcutExistenceObject(napi_env env, napi_value value);
 void CreateQueryShortCutFlagObject(napi_env env, napi_value value);
 void CreateInstallErrorCodeObject(napi_env env, napi_value value);
+}  // namespace AppExecFwk
+}  // namespace OHOS
 #endif /* BUNDLE_MGR_H_ */

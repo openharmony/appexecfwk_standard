@@ -45,6 +45,8 @@ const std::string BUNDLE_APP_PROFILE_KEY_VENDOR = "vendor";
 const std::string BUNDLE_APP_PROFILE_KEY_VERSION = "version";
 const std::string BUNDLE_APP_PROFILE_KEY_API_VERSION = "apiVersion";
 const std::string BUNDLE_APP_PROFILE_KEY_DEBUG = "debug";
+const std::string BUNDLE_APP_PROFILE_KEY_UNREMOVABLE = "unremovable";
+const std::string BUNDLE_APP_PROFILE_KEY_SINGLE_USER = "singleUser";
 // sub BUNDLE_APP_PROFILE_KEY_VERSION
 const std::string BUNDLE_APP_PROFILE_KEY_CODE = "code";
 // sub BUNDLE_APP_PROFILE_KEY_API_VERSION
@@ -231,6 +233,45 @@ const std::string BUNDLE_MODULE_PROFILE_KEY_JS_TYPE_ETS = "ets";
 static std::map<std::string, uint32_t> formEntityMap;
 
 extern thread_local int32_t parseResult;
+
+// background modes
+// different bits in the binary represent different services
+// 0000001 represents data transmission services
+constexpr uint32_t VALUE_DATA_TRANSFER = 1 << 0;
+
+// 0000 0010 represents audio output service
+constexpr uint32_t VALUE_AUDIO_PLAYBACK = 1 << 1;
+
+// 0000 0100 represents audio input service
+constexpr uint32_t VALUE_AUDIO_RECORDING = 1 << 2;
+
+// 0000 1000 represents positioning navigation service
+constexpr uint32_t VALUE_LOCATION = 1 << 3;
+
+// 0001 0000 represents bluetooth scanning, connection, transmission service (wearing)
+constexpr uint32_t VALUE_BLUETOOTH_INTERACTION = 1 << 4;
+
+// 0010 0000 represents WiFi scanning, connection, transmission services (clone, multi-screen)
+constexpr uint32_t VALUE_MULTI_DEVICE_CONNECTION = 1 << 5;
+
+// 0010 0000 represents WiFi scanning, connection, transmission services (clone, multi-screen)
+constexpr uint32_t VALUE_WIFI_INTERACTION = 1 << 6;
+
+// 0100 0000 represents audio call,VOIP service
+constexpr uint32_t VALUE_VOIP = 1 << 7;
+
+// 1000 0000 represents task Keeping service
+constexpr uint32_t VALUE_TASK_KEEPING = 1 << 8;
+
+const std::string KEY_DATA_TRANSFER = "dataTransfer";
+const std::string KEY_AUDIO_PLAYBACK = "audioPlayback";
+const std::string KEY_AUDIO_RECORDING = "audioRecording";
+const std::string KEY_LOCATION = "location";
+const std::string KEY_BLUETOOTH_INTERACTION = "bluetoothInteraction";
+const std::string KEY_MULTI_DEVICE_CONNECTION = "multiDeviceConnection";
+const std::string KEY_WIFI_INTERACTION = "wifiInteraction";
+const std::string KEY_VOIP = "voip";
+const std::string KEY_TASK_KEEPING = "taskKeeping";
 
 }  // namespace ProfileReader
 }  // namespace AppExecFwk
