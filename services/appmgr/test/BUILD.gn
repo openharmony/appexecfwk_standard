@@ -50,7 +50,7 @@ ohos_source_set("appmgr_test_source") {
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core/src/appmgr/app_state_callback_host.cpp",
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core/src/appmgr/app_state_callback_proxy.cpp",
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core/src/appmgr/app_task_info.cpp",
-    "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core/src/appmgr/dummy_configuration.cpp",
+    "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core/src/appmgr/configuration.cpp",
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core/src/appmgr/process_info.cpp",
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core/src/appmgr/profile.cpp",
   ]

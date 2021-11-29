@@ -32,10 +32,12 @@ group("systemtest") {
   deps = [
     "ams_aa_command_test:systemtest",
     "ams_ability_append_test:systemtest",
+    "ams_ability_state_age_manual_test:systemtest",
     "ams_ability_state_test:systemtest",
     "ams_ability_visible_test:systemtest",
     "ams_app_process_manage_test:systemtest",
-    "ams_configuration_updated_test:systemtest",
+
+    #"ams_configuration_updated_test:systemtest",
     "ams_data_ability_test:systemtest",
     "ams_dfx_test:systemtest",
     "ams_kit_test:systemtest",

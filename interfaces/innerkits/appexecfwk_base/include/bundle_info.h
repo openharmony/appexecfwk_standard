@@ -27,7 +27,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 enum class BundleFlag {
     // get bundle info except abilityInfos
     GET_BUNDLE_DEFAULT = 0x00000000,
@@ -59,6 +58,8 @@ struct BundleInfo : public Parcelable {
     bool isKeepAlive = false;
     bool isNativeApp = false;
     bool isDifferentName = false;
+    bool unremovable = false;
+    bool singleUser = false;
     int64_t installTime = 0;    // the installation time is the number of seconds elapsed since January 1,
                                 // 1970 00:00:00 UTC. The time will be recalculated if the application is reinstalled
                                 // after being uninstalled.
@@ -80,7 +81,6 @@ struct BundleInfo : public Parcelable {
     virtual bool Marshalling(Parcel &parcel) const override;
     static BundleInfo *Unmarshalling(Parcel &parcel);
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_BASE_INCLUDE_BUNDLE_INFO_H

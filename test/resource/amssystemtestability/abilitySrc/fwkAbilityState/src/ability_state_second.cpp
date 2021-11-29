@@ -21,6 +21,8 @@ namespace OHOS {
 namespace AppExecFwk {
 using namespace OHOS::EventFwk;
 std::string FwkAbilityState_Event_Requ_B = "requ_com_ohos_amsst_FwkAbilityStateB";
+std::string FwkAbilityState_Event_Resp_B = "resp_com_ohos_amsst_FwkAbilityStateB";
+int OnActiveCode = 1;
 
 FwkAbilityStateSecond::~FwkAbilityStateSecond()
 {
@@ -32,6 +34,7 @@ void FwkAbilityStateSecond::OnStart(const Want &want)
     SubscribeEvent();
     APP_LOGI("FwkAbilityStateSecond::onStart");
     Ability::OnStart(want);
+    callback_seq += "OnStart";
 }
 
 void FwkAbilityStateSecond::OnForeground(const Want &want)
@@ -56,6 +59,9 @@ void FwkAbilityStateSecond::OnActive()
 {
     APP_LOGI("FwkAbilityStateSecond::OnActive");
     Ability::OnActive();
+    callback_seq += "OnActive";
+    TestUtils::PublishEvent(FwkAbilityState_Event_Resp_B, OnActiveCode, callback_seq);
+    callback_seq = "";
 }
 
 void FwkAbilityStateSecond::OnInactive()
@@ -94,12 +100,12 @@ void FwkAbilityStateSecond::SubscribeEvent()
     }
     CommonEventSubscribeInfo subscribeInfo(matchingSkills);
     subscribeInfo.SetPriority(1);
-    subscriber_ = std::make_shared<FwkAbilityStateMainSubscriber>(subscribeInfo);
+    subscriber_ = std::make_shared<FwkAbilityStateSecondSubscriber>(subscribeInfo);
     subscriber_->mainAbility = this;
     CommonEventManager::SubscribeCommonEvent(subscriber_);
 }
 
-void FwkAbilityStateMainSubscriber::OnReceiveEvent(const CommonEventData &data)
+void FwkAbilityStateSecondSubscriber::OnReceiveEvent(const CommonEventData &data)
 {
     auto eventName = data.GetWant().GetAction();
     if (strcmp(eventName.c_str(), FwkAbilityState_Event_Requ_B.c_str()) == 0) {

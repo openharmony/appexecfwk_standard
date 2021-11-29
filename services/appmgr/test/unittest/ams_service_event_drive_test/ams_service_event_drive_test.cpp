@@ -20,6 +20,7 @@
 #undef private
 #undef protected
 #include <gtest/gtest.h>
+#include <nlohmann/json.hpp>
 #include "app_log_wrapper.h"
 #include "iremote_object.h"
 #include "errors.h"
@@ -970,9 +971,37 @@ HWTEST_F(AmsServiceEventDriveTest, EventDrive_039, TestSize.Level1)
  * EnvConditions: Mobile that can run ohos test framework
  * CaseDescription: Verify if QueryServiceState act normal after AppMgrService stopped
  */
-HWTEST_F(AmsServiceEventDriveTest, GetSystemMemoryAttr_0100, TestSize.Level1)
+HWTEST_F(AmsServiceEventDriveTest, EventDrive_040, TestSize.Level1)
 {
-    APP_LOGI("AppMgrService::GetSystemMemoryAttr_0100 start");
+    APP_LOGI("AppMgrService::EventDrive_040 start 1");
+    OHOS::AppExecFwk::SystemMemoryAttr memInfo;
+    nlohmann::json memJson = { "memoryThreshold", 25 };
+    std::string strConfig = memJson.dump();
+
+    memInfo.availSysMem_ = -1;
+    memInfo.totalSysMem_ = -1;
+    memInfo.threshold_ = -1;
+
+    appMgrService_->GetSystemMemoryAttr(memInfo, strConfig);
+
+    EXPECT_NE(-1, memInfo.availSysMem_);
+    EXPECT_NE(-1, memInfo.totalSysMem_);
+    EXPECT_NE(-1, memInfo.threshold_);
+
+    APP_LOGI("AppMgrService::EventDrive_040 end");
+}
+
+/*
+ * Feature: AppMgrService
+ * Function: Service
+ * SubFunction: GetSystemMemoryAttr
+ * FunctionPoints: AppMgrService event drive program model
+ * EnvConditions: Mobile that can run ohos test framework
+ * CaseDescription: Verify if QueryServiceState act normal after AppMgrService stopped
+ */
+HWTEST_F(AmsServiceEventDriveTest, EventDrive_041, TestSize.Level1)
+{
+    APP_LOGI("AppMgrService::EventDrive_041 start");
     OHOS::AppExecFwk::SystemMemoryAttr memInfo;
     std::string strConfig;
 
@@ -986,5 +1015,5 @@ HWTEST_F(AmsServiceEventDriveTest, GetSystemMemoryAttr_0100, TestSize.Level1)
     EXPECT_NE(-1, memInfo.totalSysMem_);
     EXPECT_NE(-1, memInfo.threshold_);
 
-    APP_LOGI("AppMgrService::GetSystemMemoryAttr_0100 end");
+    APP_LOGI("AppMgrService::EventDrive_041 end");
 }

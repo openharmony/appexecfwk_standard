@@ -65,6 +65,17 @@ const std::map<std::string, FormsColorMode> formColorModeMap = {
     {"dark", FormsColorMode::DARK_MODE},
     {"light", FormsColorMode::LIGHT_MODE}
 };
+std::map<std::string, uint32_t> backgroundModeMap = {
+    {KEY_DATA_TRANSFER, VALUE_DATA_TRANSFER},
+    {KEY_AUDIO_PLAYBACK, VALUE_AUDIO_PLAYBACK},
+    {KEY_AUDIO_RECORDING, VALUE_AUDIO_RECORDING},
+    {KEY_LOCATION, VALUE_LOCATION},
+    {KEY_BLUETOOTH_INTERACTION, VALUE_BLUETOOTH_INTERACTION},
+    {KEY_MULTI_DEVICE_CONNECTION, VALUE_MULTI_DEVICE_CONNECTION},
+    {KEY_WIFI_INTERACTION, VALUE_WIFI_INTERACTION},
+    {KEY_VOIP, VALUE_VOIP},
+    {KEY_TASK_KEEPING, VALUE_TASK_KEEPING}
+};
 
 struct Version {
     int32_t code = 0;
@@ -84,6 +95,8 @@ struct App {
     Version version;
     ApiVersion apiVersion;
     bool debug = false;
+    bool unremovable = false;
+    bool singleUser = false;
 };
 
 struct ReqVersion {
@@ -366,51 +379,43 @@ void from_json(const nlohmann::json &jsonObject, App &app)
 {
     // these are required fields.
     const auto &jsonObjectEnd = jsonObject.end();
-    GetValueIfFindKey<std::string>(jsonObject,
-        jsonObjectEnd,
-        BUNDLE_APP_PROFILE_KEY_BUNDLE_NAME,
-        app.bundleName,
+    GetValueIfFindKey<std::string>(jsonObject, jsonObjectEnd, BUNDLE_APP_PROFILE_KEY_BUNDLE_NAME, app.bundleName,
         JsonType::STRING,
         true,
         parseResult,
         ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<std::string>(jsonObject,
-        jsonObjectEnd,
-        PROFILE_KEY_ORIGINAL_NAME,
-        app.originalName,
+    GetValueIfFindKey<std::string>(jsonObject, jsonObjectEnd, PROFILE_KEY_ORIGINAL_NAME, app.originalName,
         JsonType::STRING,
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<Version>(jsonObject,
-        jsonObjectEnd,
-        BUNDLE_APP_PROFILE_KEY_VERSION,
-        app.version,
+    GetValueIfFindKey<Version>(jsonObject, jsonObjectEnd, BUNDLE_APP_PROFILE_KEY_VERSION, app.version,
         JsonType::OBJECT,
         true,
         parseResult,
         ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<ApiVersion>(jsonObject,
-        jsonObjectEnd,
-        BUNDLE_APP_PROFILE_KEY_API_VERSION,
-        app.apiVersion,
+    GetValueIfFindKey<ApiVersion>(jsonObject, jsonObjectEnd, BUNDLE_APP_PROFILE_KEY_API_VERSION, app.apiVersion,
         JsonType::OBJECT,
         true,
         parseResult,
         ArrayType::NOT_ARRAY);
     // these are not required fields.
-    GetValueIfFindKey<std::string>(jsonObject,
-        jsonObjectEnd,
-        BUNDLE_APP_PROFILE_KEY_VENDOR,
-        app.vendor,
+    GetValueIfFindKey<std::string>(jsonObject, jsonObjectEnd, BUNDLE_APP_PROFILE_KEY_VENDOR, app.vendor,
         JsonType::STRING,
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<bool>(jsonObject,
-        jsonObjectEnd,
-        BUNDLE_APP_PROFILE_KEY_DEBUG,
-        app.debug,
+    GetValueIfFindKey<bool>(jsonObject, jsonObjectEnd, BUNDLE_APP_PROFILE_KEY_DEBUG, app.debug,
+        JsonType::BOOLEAN,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<bool>(jsonObject, jsonObjectEnd, BUNDLE_APP_PROFILE_KEY_UNREMOVABLE, app.unremovable,
+        JsonType::BOOLEAN,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<bool>(jsonObject, jsonObjectEnd, BUNDLE_APP_PROFILE_KEY_SINGLE_USER, app.singleUser,
         JsonType::BOOLEAN,
         false,
         parseResult,
@@ -1871,6 +1876,8 @@ bool TransformToInfo(const ProfileReader::ConfigJson &configJson, ApplicationInf
     }
     applicationInfo.process = configJson.deveicConfig.defaultDevice.process;
     applicationInfo.debug = configJson.app.debug;
+    applicationInfo.singleUser = configJson.app.singleUser;
+    applicationInfo.unremovable = configJson.app.unremovable;
     applicationInfo.enabled = true;
     return true;
 }
@@ -1892,6 +1899,8 @@ bool TransformToInfo(const ProfileReader::ConfigJson &configJson, BundleInfo &bu
     bundleInfo.targetVersion = configJson.app.apiVersion.target;
     bundleInfo.releaseType = configJson.app.apiVersion.releaseType;
     bundleInfo.isKeepAlive = configJson.deveicConfig.defaultDevice.keepAlive;
+    bundleInfo.unremovable = configJson.app.unremovable;
+    bundleInfo.singleUser = configJson.app.singleUser;
     if (configJson.module.abilities.size() > 0) {
         bundleInfo.label = configJson.module.abilities[0].label;
     }
@@ -1926,6 +1935,17 @@ void GetMetaData(MetaData &metaData, const ProfileReader::MetaData &profileMetaD
         customizeData.value = item.value;
         metaData.customizeData.emplace_back(customizeData);
     }
+}
+
+uint32_t GetBackgroundModes(const std::vector<std::string>& backgroundModes)
+{
+    uint32_t backgroundMode = 0;
+    for (const auto& item : backgroundModes) {
+        if (ProfileReader::backgroundModeMap.find(item) != ProfileReader::backgroundModeMap.end()) {
+            backgroundMode |= ProfileReader::backgroundModeMap[item];
+        }
+    }
+    return backgroundMode;
 }
 
 bool TransformToInfo(const ProfileReader::ConfigJson &configJson, InnerModuleInfo &innerModuleInfo)
@@ -2024,6 +2044,7 @@ bool TransformToInfo(
     abilityInfo.defaultFormWidth = ability.form.defaultWidth;
     GetMetaData(abilityInfo.metaData, ability.metaData);
     abilityInfo.formEnabled = ability.formsEnabled;
+    abilityInfo.backgroundModes = GetBackgroundModes(ability.backgroundModes);
     return true;
 }
 

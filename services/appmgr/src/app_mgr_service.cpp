@@ -295,20 +295,24 @@ void AppMgrService::GetSystemMemoryAttr(SystemMemoryAttr &memoryInfo, std::strin
     SystemEnv::KernelSystemMemoryInfo systemMemInfo;
     SystemEnv::GetMemInfo(systemMemInfo);
     int memThreshold = 0;
-    nlohmann::json memJson = nlohmann::json::parse(strConfig);
-    if (!memJson.contains("memoryThreshold")) {
+    nlohmann::json memJson = nlohmann::json::parse(strConfig, nullptr, false);
+    if (memJson.is_discarded()) {
         memThreshold = experienceMemThreshold;
-        APP_LOGE("%{public}s, memThreshold = %{public}d", __func__, experienceMemThreshold);
+        APP_LOGE("%{public}s, discarded memThreshold = %{public}d", __func__, experienceMemThreshold);
     } else {
-        memThreshold = memJson.at("memorythreshold").get<int>();
-        APP_LOGE("%{public}s, memThreshold = %{public}d", __func__, memThreshold);
+        if (!memJson.contains("memoryThreshold")) {
+            memThreshold = experienceMemThreshold;
+            APP_LOGE("%{public}s, memThreshold = %{public}d", __func__, experienceMemThreshold);
+        } else {
+            memThreshold = memJson.at("memorythreshold").get<int>();
+            APP_LOGI("%{public}s, memThreshold = %{public}d", __func__, memThreshold);
+        }
     }
 
     memoryInfo.availSysMem_ = systemMemInfo.GetMemFree();
     memoryInfo.totalSysMem_ = systemMemInfo.GetMemTotal();
-    memoryInfo.threshold_ = memThreshold;
-    memoryInfo.isSysInlowMem_ =
-        memoryInfo.availSysMem_ < static_cast<int64_t>((memoryInfo.totalSysMem_ * memoryInfo.threshold_ / percentage));
+    memoryInfo.threshold_ = static_cast<int64_t>(memoryInfo.totalSysMem_ * memThreshold / percentage);
+    memoryInfo.isSysInlowMem_ = memoryInfo.availSysMem_ < memoryInfo.threshold_;
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS

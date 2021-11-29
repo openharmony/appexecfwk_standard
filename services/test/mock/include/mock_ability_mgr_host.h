@@ -191,7 +191,7 @@ public:
         return 0;
     }
 
-    int UpdateConfiguration(const DummyConfiguration &config) override
+    int UpdateConfiguration(const Configuration &config) override
     {
         return 0;
     }
@@ -244,6 +244,10 @@ public:
     {}
 
     virtual int GetPendingRequestWant(const sptr<IWantSender> &target, std::shared_ptr<Want> &want) override
+    {
+        return 0;
+    }
+    virtual int SetShowOnLockScreen(bool isAllow) override
     {
         return 0;
     }

@@ -704,6 +704,14 @@ public:
     bool SetMissionInformation(const MissionInformation &missionInformation) override;
 
     /**
+     * set lock screen white list
+     *
+     * @param isAllow is it allow wake up screen.
+     *
+     */
+    void SetShowOnLockScreen(bool isAllow) override;
+
+    /**
      * @brief Set EventRunner for main thread.
      *
      * @param runner The EventRunner.

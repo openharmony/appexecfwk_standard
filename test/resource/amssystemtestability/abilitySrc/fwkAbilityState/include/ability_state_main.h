@@ -26,7 +26,7 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-class FwkAbilityStateSecondSubscriber;
+class FwkAbilityStateMainSubscriber;
 class FwkAbilityStateMain : public Ability {
 public:
     FwkAbilityStateMain()
@@ -47,23 +47,27 @@ public:
     void Action(std::string action, int code);
     void StartNextAbility(int code);
     void DoCrash(std::string action, int code);
+    void BlockAndStart(std::string action, int code);
+    void OnBlockProcess(bool &bIsBlockFlag);
 
 private:
-    std::shared_ptr<FwkAbilityStateSecondSubscriber> subscriber_;
+    std::shared_ptr<FwkAbilityStateMainSubscriber> subscriber_;
     std::string callback_seq;
     std::string action;
     std::unordered_map<std::string, std::function<void(int)>> mapAction_;
+    bool bIsBlockSave;
+    bool bIsBlockRestore;
     void SubscribeEvent();
 };
 
-class FwkAbilityStateSecondSubscriber : public EventFwk::CommonEventSubscriber {
+class FwkAbilityStateMainSubscriber : public EventFwk::CommonEventSubscriber {
 public:
-    explicit FwkAbilityStateSecondSubscriber(const EventFwk::CommonEventSubscribeInfo &sp)
-        : CommonEventSubscriber(sp)
+    explicit FwkAbilityStateMainSubscriber(const EventFwk::CommonEventSubscribeInfo &sp) : CommonEventSubscriber(sp)
     {
         mapAction_ = {
             {"StartNextAbility", [this](std::string action, int code) { Action(action, code); }},
             {"DoCrash", [this](std::string action, int code) { DoCrash(action, code); }},
+            {"BlockAndStart", [this](std::string action, int code) { BlockAndStart(action, code); }},
         };
         mainAbility = nullptr;
     }
@@ -78,11 +82,16 @@ public:
         mainAbility->DoCrash(action, code);
     }
 
+    void BlockAndStart(std::string action, int code)
+    {
+        mainAbility->BlockAndStart(action, code);
+    }
+
     virtual void OnReceiveEvent(const EventFwk::CommonEventData &data) override;
 
     FwkAbilityStateMain *mainAbility;
     std::unordered_map<std::string, std::function<void(std::string, int)>> mapAction_;
-    ~FwkAbilityStateSecondSubscriber() = default;
+    ~FwkAbilityStateMainSubscriber() = default;
 };
 class CrashMaker {
 public:

@@ -46,6 +46,8 @@ const nlohmann::json CONFIG_JSON = R"(
     {
         "app": {
             "bundleName": "com.example.hiworld.himusic",
+            "unremovable": true,
+            "singleUser": true,
             "vendor": "example",
             "version": {
                 "code": 2,
@@ -59,6 +61,7 @@ const nlohmann::json CONFIG_JSON = R"(
         },
         "deviceConfig": {
             "default": {
+                "keepAlive":true,
             }
         },
         "module": {
@@ -828,12 +831,12 @@ HWTEST_F(BmsBundleParserTest, TestParse_2400, Function | SmallTest | Level1)
             "jsComponentName": "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-",
             "deepLink": "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-",
             "metaData": {
-              "customizeData": [
-                {
-                  "name": "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-",
-                  "value": "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-"
-                }
-              ]
+                "customizeData": [
+                    {
+                        "name": "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-",
+                        "value": "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-"
+                    }
+                ]
             }
           }
         ],
@@ -861,18 +864,18 @@ HWTEST_F(BmsBundleParserTest, TestParse_2500, Function | SmallTest | Level1)
     errorFormsJson[BUNDLE_PROFILE_KEY_MODULE][BUNDLE_MODULE_PROFILE_KEY_ABILITIES] = R"(
         [{
         "skills": [
-          {
-            "entities": [
-              "entity.system.home",
-              "flag.home.intent.from.system"
-            ],
-            "actions": [
-              "action.system.home"
-            ]
-          }
+            {
+                "entities": [
+                "entity.system.home",
+                "flag.home.intent.from.system"
+                ],
+                "actions": [
+                    "action.system.home"
+                ]
+            }
         ],
         "forms": [{
-                 }],
+                }],
         "name": "com.example.napi_test_suite.MainAbility",
         "icon": "$media:icon",
         "description": "$string:mainability_description",

@@ -182,6 +182,7 @@ struct AbilityInfo : public Parcelable {
     int32_t minFormWidth = 0;
     int32_t defaultFormWidth = 0;
     MetaData metaData;
+    uint32_t backgroundModes = 0;
 
     // set when install
     std::string package;  // the "module.package" in config.json
@@ -204,7 +205,6 @@ struct AbilityInfo : public Parcelable {
     std::string originalClassName;
     std::string uriPermissionMode;
     std::string uriPermissionPath;
-    uint32_t backgroundModes = 0;
     uint32_t packageSize = 0;
     bool multiUserShared = false;
     bool grantPermission = false;

@@ -1109,5 +1109,22 @@ bool ContextContainer::SetMissionInformation(const MissionInformation &missionIn
     return (errval == ERR_OK) ? true : false;
 }
 
+/**
+ * set lock screen white list
+ *
+ * @param isAllow Whether to allow lock screen.
+ *
+ */
+void ContextContainer::SetShowOnLockScreen(bool isAllow)
+{
+    if (baseContext_ == nullptr) {
+        APP_LOGE("ContextContainer::SetShowOnLockScreen baseContext_ is nullptr");
+        return;
+    }
+
+    baseContext_->SetShowOnLockScreen(isAllow);
+    APP_LOGI("ContextContainer::SetShowOnLockScreen called end.");
+}
+
 }  // namespace AppExecFwk
 }  // namespace OHOS

@@ -301,15 +301,16 @@ HWTEST_F(AmsIpcAppSchedulerModuleTest, ExcuteApplicationIPCInterface_009, TestSi
 HWTEST_F(AmsIpcAppSchedulerModuleTest, ExcuteApplicationIPCInterface_010, TestSize.Level3)
 {
     OHOS::Semaphore sem(0);
-    Configuration testConfig("testConfig");
-
+    Configuration testConfig;
+    std::string val = "ZH-HANS";
+    testConfig.AddItem(OHOS::AAFwk::GlobalConfigurationKey::SYSTEM_LANGUAGE, val);
     for (int i = 0; i < COUNT; i++) {
         sptr<MockAppScheduler> mockAppScheduler(new MockAppScheduler());
         sptr<IAppScheduler> client = iface_cast<IAppScheduler>(mockAppScheduler);
         bool testResult = false;
 
         auto mockHandler = [&](const Configuration &config) {
-            testResult = (config.GetName() == testConfig.GetName());
+            testResult = (val == config.GetItem(OHOS::AAFwk::GlobalConfigurationKey::SYSTEM_LANGUAGE));
             sem.Post();
         };
 

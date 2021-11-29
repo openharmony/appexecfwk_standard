@@ -17,6 +17,8 @@
 #include "permission_callback.h"
 #include "hilog_wrapper.h"
 
+namespace OHOS {
+namespace AppExecFwk {
 namespace {
 constexpr size_t ARGS_SIZE_TWO = 2;
 }
@@ -98,3 +100,5 @@ void PermissionCallback::OnChanged(const int32_t uid)
     }
     HILOG_INFO("OnChanged, end");
 }
+}  // namespace AppExecFwk
+}  // namespace OHOS
