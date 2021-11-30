@@ -400,6 +400,13 @@ public:
      */
     bool GetShortcutInfos(const std::string &bundleName, std::vector<ShortcutInfo> &shortcutInfos) const;
     /**
+     * @brief Obtains the CommonEventInfo objects provided by a event key on the device.
+     * @param eventKey Indicates the event of the subscribe.
+     * @param commonEventInfos List of CommonEventInfo objects if obtained.
+     * @return Returns true if this function is successfully called; returns false otherwise.
+     */
+    bool GetAllCommonEventInfo(const std::string &eventKey, std::vector<CommonEventInfo> &commonEventInfos) const;
+    /**
      * @brief Notify a specified ability for activity.
      * @param bundleName Indicates the bundle name of the ability to activity.
      * @param abilityName Indicates the name of the ability to activity.

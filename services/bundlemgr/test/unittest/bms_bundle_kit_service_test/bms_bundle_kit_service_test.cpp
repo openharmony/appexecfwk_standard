@@ -135,6 +135,13 @@ const std::string SHORTCUT_LABEL = "shortcutLabel";
 const std::string SHORTCUT_DISABLE_MESSAGE = "shortcutDisableMessage";
 const std::string SHORTCUT_INTENTS_TARGET_BUNDLE = "targetBundle";
 const std::string SHORTCUT_INTENTS_TARGET_CLASS = "targetClass";
+const std::string COMMON_EVENT_NAME = ".MainAbililty";
+const std::string COMMON_EVENT_PERMISSION = "permission";
+const std::string COMMON_EVENT_DATA = "data";
+const std::string COMMON_EVENT_TYPE = "type";
+const std::string COMMON_EVENT_EVENT = "usual.event.PACKAGE_ADDED";
+const std::string COMMON_EVENT_EVENT_ERROR_KEY = "usual.event.PACKAGE_ADDED_D";
+const std::string COMMON_EVENT_EVENT_NOT_EXISTS_KEY = "usual.event.PACKAGE_REMOVED";
 const int FORMINFO_DESCRIPTIONID = 123;
 
 }  // namespace
@@ -157,6 +164,7 @@ public:
     FormInfo MockFormInfo(
         const std::string &bundleName, const std::string &module, const std::string &abilityName) const;
     ShortcutInfo MockShortcutInfo(const std::string &bundleName, const std::string &shortcutId) const;
+    CommonEventInfo MockCommonEventInfo(const std::string &bundleName, const int uid) const;
     void CheckBundleInfo(const std::string &bundleName, const std::string &moduleName, const uint32_t abilitySize,
         const BundleInfo &bundleInfo) const;
     void CheckBundleArchiveInfo(const std::string &bundleName, const std::string &moduleName,
@@ -184,6 +192,7 @@ public:
     void CheckFormInfoTest(const std::vector<FormInfo> &forms) const;
     void CheckFormInfoDemo(const std::vector<FormInfo> &forms) const;
     void CheckShortcutInfoTest(std::vector<ShortcutInfo> &shortcutInfos) const;
+    void CheckCommonEventInfoTest(std::vector<CommonEventInfo> &commonEventInfos) const;
     void CheckShortcutInfoDemo(std::vector<ShortcutInfo> &shortcutInfos) const;
 
 public:
@@ -227,7 +236,6 @@ void BmsBundleKitServiceTest::MockInstallBundle(
     appInfo.cacheDir = CACHE_DIR;
     appInfo.flags = APPLICATION_INFO_FLAGS;
     appInfo.enabled = true;
-    appInfo.unremovable = false;
     appInfo.singleUser = true;
 
     BundleInfo bundleInfo;
@@ -243,7 +251,6 @@ void BmsBundleKitServiceTest::MockInstallBundle(
     bundleInfo.isKeepAlive = true;
     bundleInfo.isDifferentName = true;
     bundleInfo.jointUserId = BUNDLE_JOINT_USERID;
-    bundleInfo.unremovable = false;
     bundleInfo.singleUser = true;
 
     InnerModuleInfo moduleInfo;
@@ -313,6 +320,9 @@ void BmsBundleKitServiceTest::MockInstallBundle(
         innerBundleInfo.InsertShortcutInfos(shortcutKey, shortcut);
     }
     innerBundleInfo.InsertFormInfos(keyName, formInfos);
+    std::string commonEventKey = bundleName + moduleName + abilityName;
+    CommonEventInfo eventInfo = MockCommonEventInfo(bundleName, innerBundleInfo.GetUid());
+    innerBundleInfo.InsertCommonEvents(commonEventKey, eventInfo);
     auto dataMgr = GetBundleDataMgr();
     EXPECT_NE(dataMgr, nullptr);
     bool startRet = dataMgr->UpdateBundleInstallState(bundleName, InstallState::INSTALL_START);
@@ -377,6 +387,20 @@ ShortcutInfo BmsBundleKitServiceTest::MockShortcutInfo(
         info.targetClass = SHORTCUT_INTENTS_TARGET_CLASS;
     }
     return shortcutInfos;
+}
+
+CommonEventInfo BmsBundleKitServiceTest::MockCommonEventInfo(
+    const std::string &bundleName, const int uid) const
+{
+    CommonEventInfo CommonEventInfo;
+    CommonEventInfo.name = COMMON_EVENT_NAME;
+    CommonEventInfo.bundleName = bundleName;
+    CommonEventInfo.uid = uid;
+    CommonEventInfo.permission = COMMON_EVENT_PERMISSION;
+    CommonEventInfo.data.emplace_back(COMMON_EVENT_DATA);
+    CommonEventInfo.type.emplace_back(COMMON_EVENT_TYPE);
+    CommonEventInfo.events.emplace_back(COMMON_EVENT_EVENT);
+    return CommonEventInfo;
 }
 
 void BmsBundleKitServiceTest::MockUninstallBundle(const std::string &bundleName) const
@@ -480,7 +504,6 @@ void BmsBundleKitServiceTest::CheckBundleInfo(const std::string &bundleName, con
     EXPECT_EQ(abilitySize, static_cast<uint32_t>(bundleInfo.abilityInfos.size()));
     EXPECT_EQ(true, bundleInfo.isDifferentName);
     EXPECT_EQ(BUNDLE_JOINT_USERID, bundleInfo.jointUserId);
-    EXPECT_FALSE(bundleInfo.unremovable);
     EXPECT_TRUE(bundleInfo.isKeepAlive);
     EXPECT_TRUE(bundleInfo.singleUser);
 }
@@ -521,7 +544,6 @@ void BmsBundleKitServiceTest::CheckApplicationInfo(
     EXPECT_EQ(permissionSize, static_cast<uint32_t>(appInfo.permissions.size()));
     EXPECT_EQ(APPLICATION_INFO_FLAGS, appInfo.flags);
     EXPECT_TRUE(appInfo.singleUser);
-    EXPECT_FALSE(appInfo.unremovable);
 }
 
 void BmsBundleKitServiceTest::CheckAbilityInfo(
@@ -831,6 +853,26 @@ void BmsBundleKitServiceTest::CheckShortcutInfoTest(std::vector<ShortcutInfo> &s
         for (auto &intent : shortcutInfo.intents) {
             EXPECT_EQ(intent.targetBundle, SHORTCUT_INTENTS_TARGET_BUNDLE);
             EXPECT_EQ(intent.targetClass, SHORTCUT_INTENTS_TARGET_CLASS);
+        }
+    }
+}
+
+void BmsBundleKitServiceTest::CheckCommonEventInfoTest(std::vector<CommonEventInfo> &commonEventInfos) const
+{
+    for (const auto &commonEventInfo : commonEventInfos) {
+
+        EXPECT_EQ(commonEventInfo.name, COMMON_EVENT_NAME);
+        EXPECT_EQ(commonEventInfo.bundleName, BUNDLE_NAME_TEST);
+        EXPECT_EQ(commonEventInfo.uid, TEST_UID);
+        EXPECT_EQ(commonEventInfo.permission, COMMON_EVENT_PERMISSION);
+        for (auto item : commonEventInfo.data) {
+            EXPECT_EQ(item, COMMON_EVENT_DATA);
+        }
+        for (auto item : commonEventInfo.type) {
+            EXPECT_EQ(item, COMMON_EVENT_TYPE);
+        }
+        for (auto item : commonEventInfo.events) {
+            EXPECT_EQ(item, COMMON_EVENT_EVENT);
         }
     }
 }
@@ -3212,4 +3254,74 @@ HWTEST_F(BmsBundleKitServiceTest, Application_0200, Function | SmallTest | Level
     CheckCompatibleApplicationInfo(BUNDLE_NAME_DEMO, PERMISSION_SIZE_ZERO, appInfo2);
     MockUninstallBundle(BUNDLE_NAME_TEST);
     MockUninstallBundle(BUNDLE_NAME_DEMO);
+}
+
+/**
+ * @tc.number: GetAllCommonEventInfo_0100
+ * @tc.name: test can get CommonEventInfo by event key
+ * @tc.desc: 1.can get CommonEventInfo
+ */
+HWTEST_F(BmsBundleKitServiceTest, GetAllCommonEventInfo_0100, Function | SmallTest | Level1)
+{
+    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
+    std::vector<CommonEventInfo> commonEventInfos;
+    auto result = GetBundleDataMgr()->GetAllCommonEventInfo(COMMON_EVENT_EVENT, commonEventInfos);
+    EXPECT_TRUE(result);
+    CheckCommonEventInfoTest(commonEventInfos);
+    MockUninstallBundle(BUNDLE_NAME_TEST);
+}
+
+/**
+ * @tc.number: GetAllCommonEventInfo_0200
+ * @tc.name: test can't get the commonEventInfo have no bundle
+ * @tc.desc: 1.have not get commonEventInfo by event key
+ *           2.can't get commonEventInfo
+ */
+HWTEST_F(BmsBundleKitServiceTest, GetAllCommonEventInfo_0200, Function | SmallTest | Level1)
+{
+    std::vector<CommonEventInfo> commonEventInfos;
+    GetBundleDataMgr()->GetAllCommonEventInfo(COMMON_EVENT_EVENT, commonEventInfos);
+    EXPECT_TRUE(commonEventInfos.empty());
+}
+
+/**
+ * @tc.number: GetAllCommonEventInfo_0300
+ * @tc.name: test can't get the commonEventInfo in app by empty event key
+ * @tc.desc: 1.have not get commonEventInfo by appName
+ */
+HWTEST_F(BmsBundleKitServiceTest, GetAllCommonEventInfo_0300, Function | SmallTest | Level1)
+{
+    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
+    std::vector<CommonEventInfo> commonEventInfos;
+    GetBundleDataMgr()->GetAllCommonEventInfo(EMPTY_STRING, commonEventInfos);
+    EXPECT_TRUE(commonEventInfos.empty());
+    MockUninstallBundle(BUNDLE_NAME_TEST);
+}
+
+/**
+ * @tc.number: GetAllCommonEventInfo_0400
+ * @tc.name: test can't get the commonEventInfo in app by error event key
+ * @tc.desc: 1.have not get commonEventInfo by appName
+ */
+HWTEST_F(BmsBundleKitServiceTest, GetAllCommonEventInfo_0400, Function | SmallTest | Level1)
+{
+    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
+    std::vector<CommonEventInfo> commonEventInfos;
+    GetBundleDataMgr()->GetAllCommonEventInfo(COMMON_EVENT_EVENT_ERROR_KEY, commonEventInfos);
+    EXPECT_TRUE(commonEventInfos.empty());
+    MockUninstallBundle(BUNDLE_NAME_TEST);
+}
+
+/**
+ * @tc.number: GetAllCommonEventInfo_0500
+ * @tc.name: test can't get the commonEventInfo in app by not exists event key
+ * @tc.desc: 1.have not get commonEventInfo by appName
+ */
+HWTEST_F(BmsBundleKitServiceTest, GetAllCommonEventInfo_0500, Function | SmallTest | Level1)
+{
+    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
+    std::vector<CommonEventInfo> commonEventInfos;
+    GetBundleDataMgr()->GetAllCommonEventInfo(COMMON_EVENT_EVENT_NOT_EXISTS_KEY, commonEventInfos);
+    EXPECT_TRUE(commonEventInfos.empty());
+    MockUninstallBundle(BUNDLE_NAME_TEST);
 }

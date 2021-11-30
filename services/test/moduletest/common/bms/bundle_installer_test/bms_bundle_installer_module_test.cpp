@@ -209,7 +209,6 @@ protected:
                 "signatureKey": "",
                 "supportedModes": 0,
                 "debug": false,
-                "unremovable": true,
                 "singleUser": true
             },
             "baseBundleInfo": {
@@ -241,7 +240,6 @@ protected:
                     "signatureKey": "",
                     "supportedModes": 0,
                     "debug": false,
-                    "unremovable": true,
                     "singleUser": true
                 },
                 "compatibleVersion": 6,
@@ -274,7 +272,6 @@ protected:
                 "vendor": "ohos",
                 "versionCode": 1,
                 "versionName": "1.0",
-                "unremovable": true,
                 "singleUser": true
             },
             "baseDataDir": "/data/accounts/account_0/appdata/com.ohos.launcher",
