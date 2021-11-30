@@ -21,7 +21,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 struct CommonEventInfo : public Parcelable {
     std::string name;
     std::string bundleName;
