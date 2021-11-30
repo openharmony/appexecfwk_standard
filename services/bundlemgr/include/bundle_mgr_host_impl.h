@@ -377,7 +377,8 @@ public:
      * @param commonEventInfos List of CommonEventInfo objects if obtained.
      * @return Returns true if this function is successfully called; returns false otherwise.
      */
-    virtual bool GetAllCommonEventInfo(const std::string &eventKey, std::vector<CommonEventInfo> &commonEventInfos) override;
+    virtual bool GetAllCommonEventInfo(const std::string &eventKey,
+        std::vector<CommonEventInfo> &commonEventInfos) override;
     /**
      * @brief Get module usage record list in descending order of lastLaunchTime.
      * @param maxNum the return size of the records, must be in range of 1 to 1000.

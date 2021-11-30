@@ -17,8 +17,8 @@
 
 #include <fcntl.h>
 #include <unistd.h>
-#include <errno.h>
-#include <string.h>
+#include <cerrno>
+#include <cstring>
 #include "json_serializer.h"
 #include "nlohmann/json.hpp"
 #include "string_ex.h"
@@ -98,7 +98,7 @@ bool CommonEventInfo::Marshalling(Parcel &parcel) const
 
 void to_json(nlohmann::json &jsonObject, const CommonEventInfo &commonEvent)
 {
-    jsonObject = nlohmann::json{
+    jsonObject = nlohmann::json {
         {JSON_KEY_NAME, commonEvent.name},
         {JSON_KEY_BUNDLE_NAME, commonEvent.bundleName},
         {JSON_KEY_UID, commonEvent.uid},

@@ -1599,7 +1599,8 @@ bool BundleDataMgr::GetShortcutInfos(const std::string &bundleName, std::vector<
     return true;
 }
 
-bool BundleDataMgr::GetAllCommonEventInfo(const std::string &eventKey, std::vector<CommonEventInfo> &commonEventInfos) const
+bool BundleDataMgr::GetAllCommonEventInfo(const std::string &eventKey,
+    std::vector<CommonEventInfo> &commonEventInfos) const
 {
     if (eventKey.empty()) {
         APP_LOGW("event key is empty");

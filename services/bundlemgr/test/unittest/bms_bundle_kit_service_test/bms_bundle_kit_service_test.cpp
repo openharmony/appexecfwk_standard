@@ -321,8 +321,7 @@ void BmsBundleKitServiceTest::MockInstallBundle(
     }
     innerBundleInfo.InsertFormInfos(keyName, formInfos);
     std::string commonEventKey = bundleName + moduleName + abilityName;
-    CommonEventInfo eventInfo;
-    eventInfo = MockCommonEventInfo(bundleName, innerBundleInfo.GetUid());
+    CommonEventInfo eventInfo = MockCommonEventInfo(bundleName, innerBundleInfo.GetUid());
     innerBundleInfo.InsertCommonEvents(commonEventKey, eventInfo);
     auto dataMgr = GetBundleDataMgr();
     EXPECT_NE(dataMgr, nullptr);

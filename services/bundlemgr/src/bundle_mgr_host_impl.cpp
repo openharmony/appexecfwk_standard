@@ -580,7 +580,8 @@ bool BundleMgrHostImpl::GetShortcutInfos(const std::string &bundleName, std::vec
     return dataMgr->GetShortcutInfos(bundleName, shortcutInfos);
 }
 
-bool BundleMgrHostImpl::GetAllCommonEventInfo(const std::string &eventKey, std::vector<CommonEventInfo> &commonEventInfos)
+bool BundleMgrHostImpl::GetAllCommonEventInfo(const std::string &eventKey,
+    std::vector<CommonEventInfo> &commonEventInfos)
 {
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
