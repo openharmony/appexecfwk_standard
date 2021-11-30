@@ -40,7 +40,7 @@ BundleDataStorageDatabase::BundleDataStorageDatabase()
 BundleDataStorageDatabase::~BundleDataStorageDatabase()
 {
     APP_LOGI("instance:%{private}p is destroyed", this);
-    dataManager_.CloseKvStore(appId_, std::move(kvStorePtr_));
+    dataManager_.CloseKvStore(appId_, kvStorePtr_);
 }
 
 bool BundleDataStorageDatabase::KeyToDeviceAndName(
@@ -244,7 +244,6 @@ bool BundleDataStorageDatabase::CheckKvStore()
 
 Status BundleDataStorageDatabase::GetKvStore()
 {
-    Status status;
     Options options = {
         .createIfMissing = true, 
         .encrypt = false, 
@@ -252,19 +251,12 @@ Status BundleDataStorageDatabase::GetKvStore()
         .kvStoreType = KvStoreType::SINGLE_VERSION
         };
 
-    dataManager_.GetSingleKvStore(
-        options, appId_, storeId_, [this, &status](Status paramStatus, std::unique_ptr<SingleKvStore> singleKvStore) {
-            status = paramStatus;
-            if (status != Status::SUCCESS) {
-                APP_LOGE("return error: %{public}d", status);
-                return;
-            }
-            {
-                kvStorePtr_ = std::move(singleKvStore);
-            }
-            APP_LOGI("get kvStore success");
-        });
-
+    Status status = dataManager_.GetSingleKvStore(options, appId_, storeId_, kvStorePtr_);
+    if (status != Status::SUCCESS) {
+        APP_LOGE("return error: %{public}d", status);
+    } else {
+        APP_LOGI("get kvStore success");
+    }
     return status;
 }
 

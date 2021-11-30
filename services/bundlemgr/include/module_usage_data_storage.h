@@ -67,7 +67,7 @@ private:
     const DistributedKv::AppId appId_ { Constants::APP_ID };
     const DistributedKv::StoreId storeId_ { Constants::ABILITY_USAGE_STORE_ID };
     DistributedKv::DistributedKvDataManager dataManager_;
-    std::unique_ptr<DistributedKv::SingleKvStore> kvStorePtr_;
+    std::shared_ptr<DistributedKv::SingleKvStore> kvStorePtr_;
     mutable std::mutex kvStorePtrMutex_;
     enum {
         DATABASE_KEY_INDEX_USER_ID = 0,
