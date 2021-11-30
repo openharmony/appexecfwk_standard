@@ -371,7 +371,15 @@ public:
      * @return Returns true if GetShortcutInfos successfully; returns false otherwise.
      */
     virtual bool GetShortcutInfos(const std::string &bundleName, std::vector<ShortcutInfo> &shortcutInfos) override;
-     /**
+    /**
+     * @brief Obtains the CommonEventInfo objects provided by a event key on the device.
+     * @param eventKey Indicates the event of the subscribe.
+     * @param commonEventInfos List of CommonEventInfo objects if obtained.
+     * @return Returns true if this function is successfully called; returns false otherwise.
+     */
+    virtual bool GetAllCommonEventInfo(const std::string &eventKey,
+        std::vector<CommonEventInfo> &commonEventInfos) override;
+    /**
      * @brief Get module usage record list in descending order of lastLaunchTime.
      * @param maxNum the return size of the records, must be in range of 1 to 1000.
      * @param moduleUsageRecords List of ModuleUsageRecord objects if obtained.

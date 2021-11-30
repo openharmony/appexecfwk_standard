@@ -192,7 +192,20 @@ public:
      *  @param form Indicates the callback a list to shortcutinfo.
      *  @return Returns true if shortcutinfo get success
      */
-    virtual bool GetShortcutInfos(const std::string &bundleName,std::vector<ShortcutInfo> &shortcut) override{
+    virtual bool GetShortcutInfos(const std::string &bundleName, std::vector<ShortcutInfo> &shortcut) override
+    {
+        return true;
+    }
+
+    /**
+     * @brief Obtains the CommonEventInfo objects provided by a event key on the device.
+     * @param eventKey Indicates the event of the subscribe.
+     * @param commonEventInfos List of CommonEventInfo objects if obtained.
+     * @return Returns true if this function is successfully called; returns false otherwise.
+     */
+    virtual bool GetAllCommonEventInfo(const std::string &eventKey,
+        std::vector<CommonEventInfo> &commonEventInfos) override
+    {
         return true;
     }
 
@@ -388,7 +401,20 @@ public:
      *  @param form Indicates the callback a list to shortcutinfo.
      *  @return Returns true if shortcutinfo get success
      */
-    virtual bool GetShortcutInfos(const std::string &bundleName,std::vector<ShortcutInfo> &shortcut) override{
+    virtual bool GetShortcutInfos(const std::string &bundleName, std::vector<ShortcutInfo> &shortcut) override
+    {
+        return true;
+    }
+
+    /**
+     * @brief Obtains the CommonEventInfo objects provided by a event key on the device.
+     * @param eventKey Indicates the event of the subscribe.
+     * @param commonEventInfos List of CommonEventInfo objects if obtained.
+     * @return Returns true if this function is successfully called; returns false otherwise.
+     */
+    virtual bool GetAllCommonEventInfo(const std::string &eventKey,
+        std::vector<CommonEventInfo> &commonEventInfos) override
+    {
         return true;
     }
 

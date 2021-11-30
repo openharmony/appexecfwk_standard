@@ -19,6 +19,7 @@
 #include "ability_info.h"
 #include "form_info.h"
 #include "shortcut_info.h"
+#include "common_event_info.h"
 #include "module_usage_record.h"
 #include "application_info.h"
 #include "bundle_info.h"
@@ -406,7 +407,14 @@ public:
      * @return Returns true if this function is successfully called; returns false otherwise.
      */
     virtual bool GetShortcutInfos(const std::string &bundleName, std::vector<ShortcutInfo> &shortcutInfos) = 0;
-     /**
+    /**
+     * @brief Obtains the CommonEventInfo objects provided by a event key on the device.
+     * @param eventKey Indicates the event of the subscribe.
+     * @param commonEventInfos List of CommonEventInfo objects if obtained.
+     * @return Returns true if this function is successfully called; returns false otherwise.
+     */
+    virtual bool GetAllCommonEventInfo(const std::string &eventKey, std::vector<CommonEventInfo> &commonEventInfos) = 0;
+    /**
      * @brief Get module usage record list in descending order of lastLaunchTime.
      * @param maxNum the return size of the records, must be in range of 1 to 1000.
      * @param moduleUsageRecords List of ModuleUsageRecord objects if obtained.
@@ -480,6 +488,7 @@ public:
         GET_FORMS_INFO_BY_MODULE,
         GET_MODULE_USAGE_RECORD,
         GET_SHORTCUT_INFO,
+        GET_ALL_COMMON_EVENT_INFO,
         GET_BUNDLE_INSTALLER,
         NOTIFY_ACTIVITY_LIFE_STATUS,
     };

@@ -46,7 +46,6 @@ const nlohmann::json CONFIG_JSON = R"(
     {
         "app": {
             "bundleName": "com.example.hiworld.himusic",
-            "unremovable": true,
             "singleUser": true,
             "vendor": "example",
             "version": {

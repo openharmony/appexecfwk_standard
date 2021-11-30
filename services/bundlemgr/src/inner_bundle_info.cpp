@@ -59,6 +59,7 @@ const std::string MODULE_ABILITY_KEYS = "abilityKeys";
 const std::string MODULE_SKILL_KEYS = "skillKeys";
 const std::string MODULE_FORMS = "formInfos";
 const std::string MODULE_SHORTCUT = "shortcutInfos";
+const std::string MODULE_COMMON_EVENT = "commonEvents";
 const std::string MODULE_MAIN_ABILITY = "mainAbility";
 
 }  // namespace
@@ -179,6 +180,7 @@ void InnerBundleInfo::ToJson(nlohmann::json &jsonObject) const
     jsonObject[HAS_ENTRY] = hasEntry_;
     jsonObject[MODULE_FORMS] = formInfos_;
     jsonObject[MODULE_SHORTCUT] = shortcutInfos_;
+    jsonObject[MODULE_COMMON_EVENT] = commonEvents_;
     jsonObject[CAN_UNINSTALL] = canUninstall_;
 }
 
@@ -713,6 +715,14 @@ int32_t InnerBundleInfo::FromJson(const nlohmann::json &jsonObject)
         true,
         ProfileReader::parseResult,
         ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::map<std::string, CommonEventInfo>>(jsonObject,
+        jsonObjectEnd,
+        MODULE_COMMON_EVENT,
+        commonEvents_,
+        JsonType::OBJECT,
+        true,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
     GetValueIfFindKey<bool>(jsonObject,
         jsonObjectEnd,
         HAS_ENTRY,
@@ -854,6 +864,7 @@ bool InnerBundleInfo::AddModuleInfo(const InnerBundleInfo &newInfo)
     AddModuleSkillInfo(newInfo.skillInfos_);
     AddModuleFormInfo(newInfo.formInfos_);
     AddModuleShortcutInfo(newInfo.shortcutInfos_);
+    AddModuleCommonEvent(newInfo.commonEvents_);
     return true;
 }
 
@@ -896,6 +907,13 @@ void InnerBundleInfo::UpdateModuleInfo(const InnerBundleInfo &newInfo)
             ++it;
         }
     }
+    for (auto it = commonEvents_.begin(); it != commonEvents_.end();) {
+        if (it->first.find(newInfo.currentPackage_) != std::string::npos) {
+            commonEvents_.erase(it++);
+        } else {
+            ++it;
+        }
+    }
     if (!hasEntry_ && newInfo.HasEntry()) {
         hasEntry_ = true;
     }
@@ -907,6 +925,7 @@ void InnerBundleInfo::UpdateModuleInfo(const InnerBundleInfo &newInfo)
     AddModuleSkillInfo(newInfo.skillInfos_);
     AddModuleFormInfo(newInfo.formInfos_);
     AddModuleShortcutInfo(newInfo.shortcutInfos_);
+    AddModuleCommonEvent(newInfo.commonEvents_);
 }
 
 void InnerBundleInfo::RemoveModuleInfo(const std::string &modulePackage)
@@ -953,6 +972,13 @@ void InnerBundleInfo::RemoveModuleInfo(const std::string &modulePackage)
             ++it;
         }
     }
+    for (auto it = commonEvents_.begin(); it != commonEvents_.end();) {
+        if (it->first.find(modulePackage) != std::string::npos) {
+            commonEvents_.erase(it++);
+        } else {
+            ++it;
+        }
+    }
 }
 
 std::string InnerBundleInfo::ToString() const
@@ -976,6 +1002,7 @@ std::string InnerBundleInfo::ToString() const
     j[HAS_ENTRY] = hasEntry_;
     j[MODULE_FORMS] = formInfos_;
     j[MODULE_SHORTCUT] = shortcutInfos_;
+    j[MODULE_COMMON_EVENT] = commonEvents_;
     j[CAN_UNINSTALL] = canUninstall_;
     return j.dump();
 }
@@ -1077,6 +1104,21 @@ void InnerBundleInfo::GetShortcutInfos(std::vector<ShortcutInfo> &shortcutInfos)
 {
     for (const auto &shortcut : shortcutInfos_) {
         shortcutInfos.emplace_back(shortcut.second);
+    }
+}
+
+void InnerBundleInfo::GetCommonEvents(const std::string &eventKey, std::vector<CommonEventInfo> &commonEvents) const
+{
+    CommonEventInfo item;
+    for (const auto &commonEvent : commonEvents_) {
+        for (const auto event : commonEvent.second.events) {
+            if (event == eventKey) {
+                item=commonEvent.second;
+                item.uid=GetUid();
+                commonEvents.emplace_back(item);
+                break;
+            }
+        }
     }
 }
 

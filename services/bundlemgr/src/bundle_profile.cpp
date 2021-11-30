@@ -95,7 +95,6 @@ struct App {
     Version version;
     ApiVersion apiVersion;
     bool debug = false;
-    bool unremovable = false;
     bool singleUser = false;
 };
 
@@ -406,11 +405,6 @@ void from_json(const nlohmann::json &jsonObject, App &app)
         parseResult,
         ArrayType::NOT_ARRAY);
     GetValueIfFindKey<bool>(jsonObject, jsonObjectEnd, BUNDLE_APP_PROFILE_KEY_DEBUG, app.debug,
-        JsonType::BOOLEAN,
-        false,
-        parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<bool>(jsonObject, jsonObjectEnd, BUNDLE_APP_PROFILE_KEY_UNREMOVABLE, app.unremovable,
         JsonType::BOOLEAN,
         false,
         parseResult,
@@ -1877,7 +1871,6 @@ bool TransformToInfo(const ProfileReader::ConfigJson &configJson, ApplicationInf
     applicationInfo.process = configJson.deveicConfig.defaultDevice.process;
     applicationInfo.debug = configJson.app.debug;
     applicationInfo.singleUser = configJson.app.singleUser;
-    applicationInfo.unremovable = configJson.app.unremovable;
     applicationInfo.enabled = true;
     return true;
 }
@@ -1899,7 +1892,6 @@ bool TransformToInfo(const ProfileReader::ConfigJson &configJson, BundleInfo &bu
     bundleInfo.targetVersion = configJson.app.apiVersion.target;
     bundleInfo.releaseType = configJson.app.apiVersion.releaseType;
     bundleInfo.isKeepAlive = configJson.deveicConfig.defaultDevice.keepAlive;
-    bundleInfo.unremovable = configJson.app.unremovable;
     bundleInfo.singleUser = configJson.app.singleUser;
     if (configJson.module.abilities.size() > 0) {
         bundleInfo.label = configJson.module.abilities[0].label;
@@ -2082,6 +2074,17 @@ bool TransformToInfo(ProfileReader::ConfigJson &configJson, InnerBundleInfo &inn
         }
         std::string shortcutkey = configJson.app.bundleName + configJson.module.package + info.shortcutId;
         innerBundleInfo.InsertShortcutInfos(shortcutkey, shortcutInfo);
+    }
+    for (const auto &info : configJson.module.commonEvents) {
+        CommonEventInfo commonEvent;
+        commonEvent.name = info.name;
+        commonEvent.bundleName = configJson.app.bundleName;
+        commonEvent.permission = info.permission;
+        commonEvent.data = info.data;
+        commonEvent.type = info.type;
+        commonEvent.events = info.events;
+        std::string commonEventKey = configJson.app.bundleName + configJson.module.package + info.name;
+        innerBundleInfo.InsertCommonEvents(commonEventKey, commonEvent);
     }
     bool find = false;
     for (const auto &ability : configJson.module.abilities) {

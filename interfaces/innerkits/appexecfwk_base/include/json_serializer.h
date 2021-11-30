@@ -20,6 +20,7 @@
 #include "bundle_info.h"
 #include "form_info.h"
 #include "shortcut_info.h"
+#include "common_event_info.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -48,7 +49,8 @@ void to_json(nlohmann::json &jsonObject, const FormInfo &formInfo);
 void from_json(const nlohmann::json &jsonObject, FormInfo &formInfo);
 void to_json(nlohmann::json &jsonObject, const ShortcutInfo &shortcutInfo);
 void from_json(const nlohmann::json &jsonObject, ShortcutInfo &shortcutInfo);
-
+void to_json(nlohmann::json &jsonObject, const CommonEventInfo &commonEvent);
+void from_json(const nlohmann::json &jsonObject, CommonEventInfo &commonEvent);
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_BASE_INCLUDE_JSON_SERIALIZER_H

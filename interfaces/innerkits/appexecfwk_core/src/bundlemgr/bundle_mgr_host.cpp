@@ -200,6 +200,9 @@ int BundleMgrHost::OnRemoteRequest(uint32_t code, MessageParcel &data, MessagePa
         case static_cast<uint32_t>(IBundleMgr::Message::GET_SHORTCUT_INFO):
             errCode = HandleGetShortcutInfos(data, reply);
             break;
+        case static_cast<uint32_t>(IBundleMgr::Message::GET_ALL_COMMON_EVENT_INFO):
+            errCode = HandleGetAllCommonEventInfo(data, reply);
+            break;
         case static_cast<uint32_t>(IBundleMgr::Message::GET_MODULE_USAGE_RECORD):
             errCode = HandleGetModuleUsageRecords(data, reply);
             break;
@@ -1066,6 +1069,25 @@ ErrCode BundleMgrHost::HandleGetShortcutInfos(Parcel &data, Parcel &reply)
     std::string bundlename = data.ReadString();
     std::vector<ShortcutInfo> infos;
     bool ret = GetShortcutInfos(bundlename, infos);
+    if (!reply.WriteBool(ret)) {
+        APP_LOGE("write failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+
+    if (ret) {
+        if (!WriteParcelableVector(infos, reply)) {
+            APP_LOGE("write failed");
+            return ERR_APPEXECFWK_PARCEL_ERROR;
+        }
+    }
+    return ERR_OK;
+}
+
+ErrCode BundleMgrHost::HandleGetAllCommonEventInfo(Parcel &data, Parcel &reply)
+{
+    std::string eventKey = data.ReadString();
+    std::vector<CommonEventInfo> infos;
+    bool ret = GetAllCommonEventInfo(eventKey, infos);
     if (!reply.WriteBool(ret)) {
         APP_LOGE("write failed");
         return ERR_APPEXECFWK_PARCEL_ERROR;

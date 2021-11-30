@@ -23,6 +23,7 @@
 #include "appexecfwk_errors.h"
 #include "ability_info.h"
 #include "form_info.h"
+#include "common_event_info.h"
 #include "bundle_info.h"
 #include "hap_module_info.h"
 #include "bundle_constants.h"
@@ -346,6 +347,17 @@ public:
     {
         for (const auto &forms : formInfos) {
             formInfos_.try_emplace(forms.first, forms.second);
+        }
+    }
+    /**
+     * @brief Add common events to old InnerBundleInfo object.
+     * @param commonEvents Indicates the Common Event object to be add.
+     * @return
+     */
+    void AddModuleCommonEvent(const std::map<std::string, CommonEventInfo> &commonEvents)
+    {
+        for (const auto &commonEvent : commonEvents) {
+            commonEvents_.try_emplace(commonEvent.first, commonEvent.second);
         }
     }
     /**
@@ -959,6 +971,15 @@ public:
         formInfos_.emplace(keyName, formInfos);
     }
     /**
+     * @brief Insert commonEvent.
+     * @param keyName Indicates object as key.
+     * @param commonEvents Indicates the common event object as value.
+     */
+    void InsertCommonEvents(const std::string &keyName, const CommonEventInfo &commonEvents)
+    {
+        commonEvents_.emplace(keyName, commonEvents);
+    }
+    /**
      * @brief Insert shortcutInfos.
      * @param keyName Indicates object as key.
      * @param shortcutInfos Indicates the shortcutInfos object as value.
@@ -1017,6 +1038,12 @@ public:
      * @param shortcutInfos List of ShortcutInfo objects if obtained.
      */
     void GetShortcutInfos(std::vector<ShortcutInfo> &shortcutInfos) const;
+    /**
+     * @brief Obtains the common event objects provided by a specified application on the device.
+     * @param commonEvents List of common event objects if obtained.
+     */
+    void GetCommonEvents(const std::string &eventKey, std::vector<CommonEventInfo> &commonEvents) const;
+
 
     std::optional<InnerModuleInfo> GetInnerModuleInfoByModuleName(const std::string &moduleName) const;
 
@@ -1043,6 +1070,7 @@ private:
     std::string mainAbilityName_;
 
     std::map<std::string, std::vector<FormInfo>> formInfos_;
+    std::map<std::string, CommonEventInfo> commonEvents_;
     std::map<std::string, AbilityInfo> baseAbilityInfos_;
     std::map<std::string, InnerModuleInfo> innerModuleInfos_;
     std::map<std::string, std::vector<Skill>> skillInfos_;
