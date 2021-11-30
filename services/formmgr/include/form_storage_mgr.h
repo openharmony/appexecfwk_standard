@@ -85,7 +85,7 @@ private:
     const DistributedKv::AppId appId_ {"form_storage"};
     const DistributedKv::StoreId storeId_ {"installed_form_datas"};
     DistributedKv::DistributedKvDataManager dataManager_;
-    std::unique_ptr<DistributedKv::SingleKvStore> kvStorePtr_;
+    std::shared_ptr<DistributedKv::SingleKvStore> kvStorePtr_;
     // std::shared_ptr<DataChangeListener> dataChangeListener_;
     mutable std::mutex kvStorePtrMutex_;
 };

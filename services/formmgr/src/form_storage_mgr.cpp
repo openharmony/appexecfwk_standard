@@ -48,7 +48,7 @@ FormStorageMgr::FormStorageMgr()
 FormStorageMgr::~FormStorageMgr()
 {
     APP_LOGI("instance:%{private}p is destroyed", this);
-    dataManager_.CloseKvStore(appId_, std::move(kvStorePtr_));
+    dataManager_.CloseKvStore(appId_, kvStorePtr_);
 }
 
 void FormStorageMgr::SaveEntries(
@@ -293,7 +293,6 @@ bool FormStorageMgr::CheckKvStore()
 
 DistributedKv::Status FormStorageMgr::GetKvStore()
 {
-    DistributedKv::Status status;
     DistributedKv::Options options = {
         .createIfMissing = true,
         .encrypt = false,
@@ -301,20 +300,12 @@ DistributedKv::Status FormStorageMgr::GetKvStore()
         .kvStoreType = DistributedKv::KvStoreType::SINGLE_VERSION
         };
 
-    dataManager_.GetSingleKvStore(
-        options, appId_, storeId_, [this, &status](DistributedKv::Status paramStatus,
-            std::unique_ptr<DistributedKv::SingleKvStore> singleKvStore) {
-            status = paramStatus;
-            if (status != DistributedKv::Status::SUCCESS) {
-                APP_LOGE("return error: %{public}d", status);
-                return;
-            }
-            {
-                kvStorePtr_ = std::move(singleKvStore);
-            }
-            APP_LOGI("get kvStore success");
-        });
-
+    DistributedKv::Status status = dataManager_.GetSingleKvStore(options, appId_, storeId_, kvStorePtr_);
+    if (status != DistributedKv::Status::SUCCESS) {
+        APP_LOGE("return error: %{public}d", status);
+    } else {
+        APP_LOGI("get kvStore success");
+    }
     return status;
 }
 
