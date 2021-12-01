@@ -233,6 +233,7 @@ void CreateModuleRemoveFlagObject(napi_env env, napi_value value);
 void CreateSignatureCompareResultObject(napi_env env, napi_value value);
 void CreateShortcutExistenceObject(napi_env env, napi_value value);
 void CreateQueryShortCutFlagObject(napi_env env, napi_value value);
+void CreateBundleFlagObject(napi_env env, napi_value value);
 void CreateInstallErrorCodeObject(napi_env env, napi_value value);
 }  // namespace AppExecFwk
 }  // namespace OHOS

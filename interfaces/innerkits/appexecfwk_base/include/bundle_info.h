@@ -32,6 +32,8 @@ enum class BundleFlag {
     GET_BUNDLE_DEFAULT = 0x00000000,
     // get bundle info include abilityInfos
     GET_BUNDLE_WITH_ABILITIES = 0x00000001,
+    // get application info include permission
+    GET_APPLICATION_INFO_WITH_PERMISSION = 0x00000008,
 };
 
 // configuration information about a bundle

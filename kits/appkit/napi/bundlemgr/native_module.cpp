@@ -77,6 +77,10 @@ static napi_value Init(napi_env env, napi_value exports)
     NAPI_CALL(env, napi_create_object(env, &nQueryShortCutFlag));
     CreateQueryShortCutFlagObject(env, nShortcutExistence);
 
+    napi_value nBundleFlag = nullptr;
+    NAPI_CALL(env, napi_create_object(env, &nBundleFlag));
+    CreateBundleFlagObject(env, nBundleFlag);
+
     napi_value nInstallErrorCode = nullptr;
     NAPI_CALL(env, napi_create_object(env, &nInstallErrorCode));
     CreateInstallErrorCodeObject(env, nInstallErrorCode);
@@ -114,6 +118,7 @@ static napi_value Init(napi_env env, napi_value exports)
         DECLARE_NAPI_PROPERTY("SignatureCompareResult", nSignatureCompareResult),
         DECLARE_NAPI_PROPERTY("ShortcutExistence", nShortcutExistence),
         DECLARE_NAPI_PROPERTY("QueryShortCutFlag", nQueryShortCutFlag),
+        DECLARE_NAPI_PROPERTY("BundleFlag", nBundleFlag),
         DECLARE_NAPI_PROPERTY("InstallErrorCode", nInstallErrorCode)
     };
     NAPI_CALL(env, napi_define_properties(env, exports, sizeof(desc) / sizeof(desc[0]), desc));
