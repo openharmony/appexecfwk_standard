@@ -4087,6 +4087,24 @@ void CreateQueryShortCutFlagObject(napi_env env, napi_value value)
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, value, "QUERY_SHORTCUT_HOME", nQueryShortCutHome));
 }
 
+void CreateBundleFlagObject(napi_env env, napi_value value)
+{
+    napi_value nDefault;
+    NAPI_CALL_RETURN_VOID(
+        env, napi_create_int32(env, static_cast<int32_t>(BundleFlag::GET_BUNDLE_DEFAULT), &nDefault));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, value, "GET_BUNDLE_DEFAULT", nDefault));
+    napi_value nWithAbilities;
+    NAPI_CALL_RETURN_VOID(
+        env, napi_create_int32(env, static_cast<int32_t>(BundleFlag::GET_BUNDLE_WITH_ABILITIES), &nWithAbilities));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, value, "GET_BUNDLE_WITH_ABILITIES", nWithAbilities));
+    napi_value nWithPermission;
+    NAPI_CALL_RETURN_VOID(
+        env, napi_create_int32(
+            env, static_cast<int32_t>(BundleFlag::GET_APPLICATION_INFO_WITH_PERMISSION), &nWithPermission));
+    NAPI_CALL_RETURN_VOID(
+        env, napi_set_named_property(env, value, "GET_APPLICATION_INFO_WITH_PERMISSION", nWithPermission));
+}
+
 void CreateInstallErrorCodeObject(napi_env env, napi_value value)
 {
     napi_value nSuccess;
