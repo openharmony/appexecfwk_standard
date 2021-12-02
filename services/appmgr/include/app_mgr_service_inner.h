@@ -181,12 +181,12 @@ public:
      * ClearUpApplicationData, clear the application data.
      *
      * @param bundleName, bundle name in Application record.
-     * @param uid, app uid in Application record.
-     * @param pid, app pid in Application record.
+     * @param callerUid, app uid in Application record.
+     * @param callerPid, app pid in Application record.
      *
      * @return
      */
-    virtual void ClearUpApplicationData(const std::string &bundleName, const int32_t uid, const pid_t pid);
+    virtual void ClearUpApplicationData(const std::string &bundleName, const int32_t callerUid, const pid_t callerPid);
 
     /**
      * IsBackgroundRunningRestricted, Checks whether the process of this application is forbidden

@@ -156,7 +156,7 @@ ErrCode AbilityManagerClient::GetRecentMissions(
     return ERR_OK;
 }
 
-ErrCode AbilityManagerClient::GetMissionSnapshot(const int32_t missionId, MissionSnapshotInfo &snapshot)
+ErrCode AbilityManagerClient::GetMissionSnapshot(const int32_t missionId, MissionSnapshot &snapshot)
 {
     return ERR_OK;
 }
