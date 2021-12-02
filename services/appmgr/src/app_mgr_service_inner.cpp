@@ -267,7 +267,8 @@ void AppMgrServiceInner::ClearUpApplicationData(const std::string &bundleName, i
     int32_t clearUid = bundleMgr_->GetUidByBundleName(bundleName, 0);
     if (bundleMgr_->CheckIsSystemAppByUid(callerUid) || callerUid == clearUid) {
         // request to clear user information permission.
-        int32_t result = Permission::PermissionKit::RemoveUserGrantedReqPermissions(bundleName, Constants::DEFAULT_USERID);
+        int32_t result =
+            Permission::PermissionKit::RemoveUserGrantedReqPermissions(bundleName, Constants::DEFAULT_USERID);
         if (result) {
             APP_LOGE("RemoveUserGrantedReqPermissions failed");
             return;
