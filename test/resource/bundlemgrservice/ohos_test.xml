@@ -14,52 +14,59 @@
  * limitations under the License.
  -->
 <configuration ver="2.0">
-  <target name="BmsBundleParserTest">
-    <depend resource="parse_bundle/." pushpath="/data/test/resource/bms/parse_bundle/" findpath="res" presetcmd=""/>
- 	<preparer>
-   	 <option name="push" value="parse_bundle/. -> /data/test/resource/bms/parse_bundle/" src="res" />
-    </preparer>
-  </target>
   <target name="BmsBundleInstallerTest">
-    <depend resource="test_bundle/." pushpath="/data/test/resource/bms/install_bundle/" findpath="res" presetcmd=""/>
-	<preparer>
-   	 <option name="push" value="test_bundle/. -> /data/test/resource/bms/install_bundle/" src="res" />
-    </preparer>
+    <depend resource="test_bundle/." pushpath="/data/test/" findpath="res" presetcmd=""/>
+    <preparer>
+      <option name="push" value="test_bundle/format_error_profile.hap -> /data/test/resource/bms/install_bundle/" src="res" />
+      <option name="push" value="test_bundle/right.hap -> /data/test/resource/bms/install_bundle/" src="res" />
+      <option name="push" value="test_bundle/nonfile.hap -> /data/test/resource/bms/install_bundle/" src="res" />
+	</preparer>
   </target>
   <target name="BmsBundleUninstallerTest">
-    <depend resource="test_bundle/." pushpath="/data/test/resource/bms/uninstall_bundle/" findpath="res" presetcmd=""/>
+    <depend resource="test_bundle/." pushpath="/data/test/" findpath="res" presetcmd=""/>
     <preparer>
-   	 <option name="push" value="test_bundle/. -> /data/test/resource/bms/uninstall_bundle/" src="res" />
-    </preparer>
+      <option name="push" value="test_bundle/right.hap -> /data/test/resource/bms/uninstall_bundle/" src="res" />
+      <option name="push" value="test_bundle/right1.hap -> /data/test/resource/bms/uninstall_bundle/" src="res" />
+	</preparer>
+  </target>
+  <target name="BmsBundleParserTest">
+    <depend resource="parse_bundle/." pushpath="/data/test/resource/bms/parse_bundle/" findpath="res" presetcmd=""/>
+    <preparer>
+   	  <option name="push" value="parse_bundle/break_zip.hap -> /data/test/resource/bms/parse_bundle/" src="res" />
+      <option name="push" value="parse_bundle/empty_config.hap -> /data/test/resource/bms/parse_bundle/" src="res" />
+      <option name="push" value="parse_bundle/format_error_profile.hap -> /data/test/resource/bms/parse_bundle/" src="res" />
+      <option name="push" value="parse_bundle/format_missing_profile.hap -> /data/test/resource/bms/parse_bundle/" src="res" />
+      <option name="push" value="parse_bundle/new.hap -> /data/test/resource/bms/parse_bundle/" src="res" />
+      <option name="push" value="parse_bundle/no_profile.hap -> /data/test/resource/bms/parse_bundle/" src="res" />
+      <option name="push" value="parse_bundle/nothing_config.hap -> /data/test/resource/bms/parse_bundle/" src="res" />
+	</preparer>
   </target>
   <target name="BmsBundleUpdaterTest">
-    <depend resource="test_bundle/." pushpath="/data/test/resource/bms/update_bundle/" findpath="res" presetcmd=""/>
+    <depend resource="test_bundle/." pushpath="/data/test/" findpath="res" presetcmd=""/>
     <preparer>
-   	 <option name="push" value="test_bundle/. -> /data/test/resource/bms/update_bundle/" src="res" />
-    </preparer>
-  </target>
-  <target name="BmsBundleVerifierTest">
-    <depend resource="test_bundle/." pushpath="/data/test/resource/bms/verify_bundle/" findpath="res" presetcmd=""/>
-    <preparer>
-   	 <option name="push" value="test_bundle/. -> /data/test/resource/bms/verify_bundle/" src="res" />
-    </preparer>
+      <option name="push" value="test_bundle/format_error_profile.hap -> /data/test/resource/bms/update_bundle/" src="res" />
+      <option name="push" value="test_bundle/version1.hap -> /data/test/resource/bms/update_bundle/" src="res" />
+      <option name="push" value="test_bundle/version2.hap -> /data/test/resource/bms/update_bundle/" src="res" />
+      <option name="push" value="test_bundle/version3.hap -> /data/test/resource/bms/update_bundle/" src="res" />
+	</preparer>
   </target>
   <target name="BmsInstallDaemonTest">
-    <depend resource="install_daemon/." pushpath="/data/test/resource/bms/install_daemon/" findpath="res" presetcmd=""/>
+    <depend resource="install_daemon/." pushpath="/data/test/" findpath="res" presetcmd=""/>
     <preparer>
-   	 <option name="push" value="install_daemon/. -> /data/test/resource/bms/install_daemon/" src="res" />
-    </preparer>
+   	  <option name="push" value="install_daemon/right.hap -> /data/test/resource/bms/install_daemon/" src="res" />
+	</preparer>
   </target>
   <target name="BmsBundleKitServiceTest">
-    <depend resource="bundle_kit/." pushpath="/data/test/resource/bms/bundle_kit/" findpath="res" presetcmd=""/>
+    <depend resource="bundle_kit/." pushpath="/data/test/" findpath="res" presetcmd=""/>
     <preparer>
-   	 <option name="push" value="bundle_kit/. -> /data/test/resource/bms/bundle_kit/" src="res" />
-    </preparer>
+	  <option name="push" value="bundle_kit/test.hap -> /data/test/resource/bms/bundle_kit/" src="res" />
+	</preparer>
   </target>
   <target name="BmsBundlePermissionTest">
-    <depend resource="permission_bundle/." pushpath="/data/test/resource/bms/bundle_permission/" findpath="res" presetcmd=""/>
- 	<preparer>
-   	 <option name="push" value="permission_bundle/. -> /data/test/resource/bms/bundle_permission/" src="res" />
-    </preparer>
+    <depend resource="permission_bundle/." pushpath="/data/test/" findpath="res" presetcmd=""/>
+    <preparer>
+	  <option name="push" value="permission_bundle/sign.hap -> /data/test/resource/bms/permission_bundle/" src="res" />
+	  <option name="push" value="permission_bundle/unsign.hap -> /data/test/resource/bms/permission_bundle/" src="res" />
+	</preparer>
   </target>
 </configuration>
