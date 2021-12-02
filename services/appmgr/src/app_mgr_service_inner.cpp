@@ -248,14 +248,14 @@ int32_t AppMgrServiceInner::KillApplication(const std::string &bundleName)
     return result;
 }
 
-void AppMgrServiceInner::ClearUpApplicationData(const std::string &bundleName, int32_t uid, pid_t pid)
+void AppMgrServiceInner::ClearUpApplicationData(const std::string &bundleName, int32_t callerUid, pid_t callerPid)
 {
-    if (pid <= 0) {
-        APP_LOGE("invalid pid:%{public}d", pid);
+    if (callerPid <= 0) {
+        APP_LOGE("invalid callerPid:%{public}d", callerPid);
         return;
     }
-    if (uid <= 0) {
-        APP_LOGE("invalid uid:%{public}d", uid);
+    if (callerUid <= 0) {
+        APP_LOGE("invalid callerUid:%{public}d", callerUid);
         return;
     }
     auto bundleMgr_ = remoteClientManager_->GetBundleManager();
@@ -264,40 +264,32 @@ void AppMgrServiceInner::ClearUpApplicationData(const std::string &bundleName, i
         return;
     }
     int32_t result = 0;
-    int32_t bmsUid = bundleMgr_->GetUidByBundleName(bundleName, 0);
-    if (bmsUid != uid) {
-        result = bundleMgr_->CheckPermission(bundleName, REQ_PERMISSION);
-        if (result) {
-            APP_LOGE("No permission to clear application data");
-            return;
-        }
-    } else {
-        result = bundleMgr_->CheckPermission(bundleName, REQ_PERMISSION);
-        if (result) {
-            APP_LOGE("No permission to clear application data");
-            return;
-        }
+    int32_t clearUid = bundleMgr_->GetUidByBundleName(bundleName, 0);
+    // 1.check permission
+    result = bundleMgr_->CheckPermission(bundleName, REQ_PERMISSION);
+    if (result) {
+        APP_LOGE("No permission to clear application data");
+        return;
+    }
+    if (bundleMgr_->CheckIsSystemAppByUid(callerUid) || callerUid == clearUid) {
         // request to clear user information permission.
         result = Permission::PermissionKit::RemoveUserGrantedReqPermissions(bundleName, Constants::DEFAULT_USERID);
         if (result) {
             APP_LOGE("RemoveUserGrantedReqPermissions failed");
             return;
         }
-    }
-    if (result) {
-        APP_LOGE("clear user information permission failed");
-    }
-    // 2.delete bundle side user data
-    if (!bundleMgr_->CleanBundleDataFiles(bundleName)) {
-        APP_LOGE("Delete bundle side user data is fail");
-        return;
-    }
-    // 3.kill application
-    // 4.revoke user rights
-    result = KillApplication(bundleName);
-    if (result < 0) {
-        APP_LOGE("Kill Application by bundle name is fail");
-        return;
+        // 2.delete bundle side user data
+        if (!bundleMgr_->CleanBundleDataFiles(bundleName)) {
+            APP_LOGE("Delete bundle side user data is fail");
+            return;
+        }
+        // 3.kill application
+        // 4.revoke user rights
+        result = KillApplication(bundleName);
+        if (result < 0) {
+            APP_LOGE("Kill Application by bundle name is fail");
+            return;
+        }
     }
 }
 

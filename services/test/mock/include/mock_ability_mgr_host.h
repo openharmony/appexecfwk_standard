@@ -116,7 +116,7 @@ public:
     {
         return 0;
     }
-    virtual int GetMissionSnapshot(const int32_t missionId, AAFwk::MissionSnapshotInfo &snapshot) override
+    virtual int GetMissionSnapshot(const int32_t missionId, AAFwk::MissionPixelMap &missionPixelMap) override
     {
         return 0;
     }
