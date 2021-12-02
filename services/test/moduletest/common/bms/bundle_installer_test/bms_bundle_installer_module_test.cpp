@@ -459,14 +459,11 @@ std::shared_ptr<SingleKvStore> BmsBundleInstallerModuleTest::GetKvStorePtr(Distr
     options.kvStoreType = KvStoreType::SINGLE_VERSION;
     AppId appId{Constants::APP_ID};
     StoreId storeId{Constants::STORE_ID};
-
     std::shared_ptr<SingleKvStore> kvStorePtr = nullptr;
     Status status = dataManager.GetSingleKvStore(options, appId, storeId, kvStorePtr);
-
     if (status != Status::SUCCESS) {
         APP_LOGE("BundleDataStorage::GetKvStore return error: %{public}d", status);
     }
-
     return kvStorePtr;
 }
 
