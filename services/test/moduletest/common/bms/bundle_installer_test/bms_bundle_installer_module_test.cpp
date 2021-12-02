@@ -97,12 +97,12 @@ public:
         return bms_->IsServiceReady();
     }
 
-    void SaveBundleDataToStorage(std::unique_ptr<SingleKvStore> &kvStorePtr, const std::string &bundleName,
+    void SaveBundleDataToStorage(std::shared_ptr<SingleKvStore> &kvStorePtr, const std::string &bundleName,
         const std::string &data, const std::string &deviceId);
     void DeleteBundleDataToStorage(
-        std::unique_ptr<SingleKvStore> &kvStorePtr, const std::string &bundleName, const std::string &deviceId);
+        std::shared_ptr<SingleKvStore> &kvStorePtr, const std::string &bundleName, const std::string &deviceId);
     void DeleteBundleDataToStorage();
-    std::unique_ptr<SingleKvStore> GetKvStorePtr(DistributedKvDataManager &dataManager);
+    std::shared_ptr<SingleKvStore> GetKvStorePtr(DistributedKvDataManager &dataManager);
     InnerBundleInfo CreateInnerBundleInfo(const std::string &bundleName);
     void CheckFileExist(const std::string &bundleName) const;
     void CheckFileExist(const std::string &bundleName, const std::string &modulePackage) const;
@@ -405,7 +405,7 @@ BmsBundleInstallerModuleTest::~BmsBundleInstallerModuleTest()
     bms_.reset();
 }
 
-void BmsBundleInstallerModuleTest::SaveBundleDataToStorage(std::unique_ptr<SingleKvStore> &kvStorePtr,
+void BmsBundleInstallerModuleTest::SaveBundleDataToStorage(std::shared_ptr<SingleKvStore> &kvStorePtr,
     const std::string &bundleName, const std::string &data, const std::string &deviceId)
 {
     Status status;
@@ -421,7 +421,7 @@ void BmsBundleInstallerModuleTest::SaveBundleDataToStorage(std::unique_ptr<Singl
 }
 
 void BmsBundleInstallerModuleTest::DeleteBundleDataToStorage(
-    std::unique_ptr<SingleKvStore> &kvStorePtr, const std::string &bundleName, const std::string &deviceId)
+    std::shared_ptr<SingleKvStore> &kvStorePtr, const std::string &bundleName, const std::string &deviceId)
 {
     Status status;
     std::string keyString = deviceId + "_" + bundleName;
@@ -447,7 +447,7 @@ void BmsBundleInstallerModuleTest::DeleteBundleDataToStorage()
     GTEST_LOG_(INFO) << "end";
 }
 
-std::unique_ptr<SingleKvStore> BmsBundleInstallerModuleTest::GetKvStorePtr(DistributedKvDataManager &dataManager)
+std::shared_ptr<SingleKvStore> BmsBundleInstallerModuleTest::GetKvStorePtr(DistributedKvDataManager &dataManager)
 {
     Options options;
     options.createIfMissing = true;
@@ -456,19 +456,11 @@ std::unique_ptr<SingleKvStore> BmsBundleInstallerModuleTest::GetKvStorePtr(Distr
     options.kvStoreType = KvStoreType::SINGLE_VERSION;
     AppId appId{Constants::APP_ID};
     StoreId storeId{Constants::STORE_ID};
-
-    Status status;
-    std::unique_ptr<SingleKvStore> kvStorePtr = nullptr;
-    dataManager.GetSingleKvStore(
-        options, appId, storeId, [&](Status paramStatus, std::unique_ptr<SingleKvStore> kvStore) {
-            status = paramStatus;
-            kvStorePtr = std::move(kvStore);
-        });
-
+    std::shared_ptr<SingleKvStore> kvStorePtr = nullptr;
+    Status status = dataManager.GetSingleKvStore(options, appId, storeId, kvStorePtr);
     if (status != Status::SUCCESS) {
         APP_LOGE("BundleDataStorage::GetKvStore return error: %{public}d", status);
     }
-
     return kvStorePtr;
 }
 
@@ -1450,7 +1442,7 @@ HWTEST_F(BmsBundleInstallerModuleTest, BundleDataStorage003, TestSize.Level3)
      */
     StartBundleMgrService();
     DistributedKvDataManager dataManager;
-    std::unique_ptr<SingleKvStore> kvStorePtr = GetKvStorePtr(dataManager);
+    std::shared_ptr<SingleKvStore> kvStorePtr = GetKvStorePtr(dataManager);
     if (!kvStorePtr) {
         EXPECT_TRUE(false) << "kvStorePtr is nullptr";
     }

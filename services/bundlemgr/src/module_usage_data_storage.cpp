@@ -54,7 +54,7 @@ ModuleUsageRecordStorage::ModuleUsageRecordStorage()
 ModuleUsageRecordStorage::~ModuleUsageRecordStorage()
 {
     APP_LOGI("usage instance is destroyed");
-    dataManager_.CloseKvStore(appId_, std::move(kvStorePtr_));
+    dataManager_.CloseKvStore(appId_, kvStorePtr_);
 }
 
 void ModuleUsageRecordStorage::RegisterKvStoreDeathListener()
@@ -317,7 +317,6 @@ bool ModuleUsageRecordStorage::QueryRecordByCondition(DataQuery &query, std::vec
 
 Status ModuleUsageRecordStorage::GetKvStore()
 {
-    Status status;
     Options options = {
         .createIfMissing = true, 
         .encrypt = false, 
@@ -326,19 +325,12 @@ Status ModuleUsageRecordStorage::GetKvStore()
     };
 
     options.schema = SCHEMA_DEFINE;
-    dataManager_.GetSingleKvStore(
-        options, appId_, storeId_, [this, &status](Status paramStatus, std::unique_ptr<SingleKvStore> singleKvStore) {
-            status = paramStatus;
-            if (status != Status::SUCCESS) {
-                APP_LOGE("usage get kvStore error: %{public}d", status);
-                return;
-            }
-            {
-                kvStorePtr_ = std::move(singleKvStore);
-            }
-            APP_LOGI("usage get kvStore success");
-        });
-
+    Status status = dataManager_.GetSingleKvStore(options, appId_, storeId_, kvStorePtr_);
+    if (status != Status::SUCCESS) {
+        APP_LOGE("usage get kvStore error: %{public}d", status);
+    } else {
+        APP_LOGI("usage get kvStore success");
+    }
     return status;
 }
 
