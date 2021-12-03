@@ -316,7 +316,8 @@ HWTEST_F(AmsAbilityStateTest, FWK_RestoreAbilityStateTimeout_0100, Function | Me
         MTDumpUtil::GetInstance()->GetAll("State", dumpInfo, vstrResult);
         EXPECT_TRUE(pos < vstrResult.end());
         GTEST_LOG_(INFO) << "FWK_RestoreAbilityStateTimeout_0100::POS2 : " << *pos;
-        EXPECT_EQ(*pos, "ACTIVATING");
+        result = (*pos).compare("ACTIVATING") == 0;
+        EXPECT_TRUE(result);
 
         if (!result && i > 0) {
             GTEST_LOG_(INFO) << "FWK_RestoreAbilityStateTimeout_0100 : " << i;
