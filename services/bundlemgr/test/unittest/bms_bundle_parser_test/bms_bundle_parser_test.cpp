@@ -60,7 +60,7 @@ const nlohmann::json CONFIG_JSON = R"(
         },
         "deviceConfig": {
             "default": {
-                "keepAlive":true,
+                "keepAlive":true
             }
         },
         "module": {
@@ -120,7 +120,7 @@ const nlohmann::json CONFIG_JSON = R"(
                         "portraitLayouts": [
                             "$layout:ability_form"
                         ],
-                        "layout": "pages/card/index",
+                        "src": "pages/card/index",
                         "window": {
                             "designWidth": 720,
                             "autoDesignWidth": true
