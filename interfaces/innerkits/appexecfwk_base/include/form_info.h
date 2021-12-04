@@ -39,7 +39,7 @@ struct FormCustomizeData {
 
 struct FormWindow {
     int32_t designWidth;
-    bool autoDesignWidth;
+    bool autoDesignWidth = false;
 };
 
 struct FormInfo : public Parcelable {
@@ -55,7 +55,7 @@ struct FormInfo : public Parcelable {
     std::string deepLink;
     std::string formConfigAbility;
     std::string scheduledUpateTime = "0:0";
-    std::string layout;
+    std::string src;
     FormWindow window;
     int32_t descriptionId = 0;
     int32_t updateDuration = 0;

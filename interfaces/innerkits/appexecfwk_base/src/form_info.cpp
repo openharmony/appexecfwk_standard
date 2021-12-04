@@ -55,6 +55,10 @@ const std::string JSON_KEY_FORM_VISIBLE_NOTIFY = "formVisibleNotify";
 const std::string JSON_KEY_RELATED_BUNDLE_NAME = "relatedBundleName";
 const std::string JSON_KEY_DEFAULT_FLAG = "defaultFlag";
 const std::string JSON_KEY_PORTRAIT_LAYOUTS = "portraitLayouts";
+const std::string JSON_KEY_SRC = "src";
+const std::string JSON_KEY_WINDOW = "window";
+const std::string JSON_KEY_DESIGN_WIDTH = "designWidth";
+const std::string JSON_KEY_AUTO_DESIGN_WIDTH = "autoDesignWidth";
 }  // namespace
 
 bool FormInfo::ReadFromParcel(Parcel &parcel)
@@ -71,6 +75,7 @@ bool FormInfo::ReadFromParcel(Parcel &parcel)
     relatedBundleName = Str16ToStr8(parcel.ReadString16());
     originalBundleName = Str16ToStr8(parcel.ReadString16());
     deepLink = Str16ToStr8(parcel.ReadString16());
+    src = Str16ToStr8(parcel.ReadString16());
     updateEnabled = parcel.ReadBool();
     defaultFlag = parcel.ReadBool();
     formVisibleNotify = parcel.ReadBool();
@@ -115,6 +120,9 @@ bool FormInfo::ReadFromParcel(Parcel &parcel)
         customizeData.value = customizeValue;
         customizeDatas.emplace_back(customizeData);
     }
+
+    window.designWidth = parcel.ReadInt32();
+    window.autoDesignWidth = parcel.ReadBool();
     return true;
 }
 
@@ -142,6 +150,7 @@ bool FormInfo::Marshalling(Parcel &parcel) const
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(relatedBundleName));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(originalBundleName));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(deepLink));
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(src));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, updateEnabled);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, defaultFlag);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, formVisibleNotify);
@@ -175,6 +184,9 @@ bool FormInfo::Marshalling(Parcel &parcel) const
         WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(customizeDatas[i].name));
         WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(customizeDatas[i].value));
     }
+
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, window.designWidth);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, window.autoDesignWidth);
     return true;
 }
 
@@ -184,6 +196,12 @@ void to_json(nlohmann::json &jsonObject, const FormCustomizeData &customizeDatas
         {JSON_KEY_NAME, customizeDatas.name},
         {JSON_KEY_VALUE, customizeDatas.value}
         };
+}
+
+void to_json(nlohmann::json &jsonObject, const FormWindow &formWindow)
+{
+    jsonObject[JSON_KEY_DESIGN_WIDTH] = formWindow.designWidth;
+    jsonObject[JSON_KEY_AUTO_DESIGN_WIDTH] = formWindow.autoDesignWidth;
 }
 
 void to_json(nlohmann::json &jsonObject, const FormInfo &formInfo)
@@ -198,6 +216,7 @@ void to_json(nlohmann::json &jsonObject, const FormInfo &formInfo)
         {JSON_KEY_RELATED_BUNDLE_NAME, formInfo.relatedBundleName},
         {JSON_KEY_JS_COMPONENT_NAME, formInfo.jsComponentName},
         {JSON_KEY_DEEP_LINK, formInfo.deepLink},
+        {JSON_KEY_SRC, formInfo.src},
         {JSON_KEY_FORMCONFIG_ABILITY, formInfo.formConfigAbility},
         {JSON_KEY_SCHEDULED_UPDATE_TIME, formInfo.scheduledUpateTime},
         {JSON_KEY_ORIGINAL_BUNDLE_NAME, formInfo.originalBundleName},
@@ -212,7 +231,8 @@ void to_json(nlohmann::json &jsonObject, const FormInfo &formInfo)
         {JSON_KEY_SUPPORT_DIMENSIONS, formInfo.supportDimensions},
         {JSON_KEY_CUSTOMIZE_DATA, formInfo.customizeDatas},
         {JSON_KEY_LANDSCAPE_LAYOUTS, formInfo.landscapeLayouts},
-        {JSON_KEY_PORTRAIT_LAYOUTS, formInfo.portraitLayouts}
+        {JSON_KEY_PORTRAIT_LAYOUTS, formInfo.portraitLayouts},
+        {JSON_KEY_WINDOW, formInfo.window}
         };
 }
 
@@ -220,6 +240,12 @@ void from_json(const nlohmann::json &jsonObject, FormCustomizeData &customizeDat
 {
     customizeDatas.name = jsonObject.at(JSON_KEY_NAME).get<std::string>();
     customizeDatas.value = jsonObject.at(JSON_KEY_VALUE).get<std::string>();
+}
+
+void from_json(const nlohmann::json &jsonObject, FormWindow &formWindow)
+{
+    formWindow.designWidth = jsonObject.at(JSON_KEY_DESIGN_WIDTH).get<int32_t>();
+    formWindow.autoDesignWidth = jsonObject.at(JSON_KEY_AUTO_DESIGN_WIDTH).get<bool>();
 }
 
 void from_json(const nlohmann::json &jsonObject, FormInfo &formInfo)
@@ -235,6 +261,7 @@ void from_json(const nlohmann::json &jsonObject, FormInfo &formInfo)
     formInfo.deepLink = jsonObject.at(JSON_KEY_DEEP_LINK).get<std::string>();
     formInfo.formConfigAbility = jsonObject.at(JSON_KEY_FORMCONFIG_ABILITY).get<std::string>();
     formInfo.scheduledUpateTime = jsonObject.at(JSON_KEY_SCHEDULED_UPDATE_TIME).get<std::string>();
+    formInfo.src = jsonObject.at(JSON_KEY_SRC).get<std::string>();
     formInfo.originalBundleName = jsonObject.at(JSON_KEY_ORIGINAL_BUNDLE_NAME).get<std::string>();
     formInfo.descriptionId = jsonObject.at(JSON_KEY_DESCRIPTION_ID).get<int32_t>();
     formInfo.updateDuration = jsonObject.at(JSON_KEY_UPDATE_DURATION).get<int32_t>();
@@ -248,6 +275,7 @@ void from_json(const nlohmann::json &jsonObject, FormInfo &formInfo)
     formInfo.customizeDatas = jsonObject.at(JSON_KEY_CUSTOMIZE_DATA).get<std::vector<FormCustomizeData>>();
     formInfo.landscapeLayouts = jsonObject.at(JSON_KEY_LANDSCAPE_LAYOUTS).get<std::vector<std::string>>();
     formInfo.portraitLayouts = jsonObject.at(JSON_KEY_PORTRAIT_LAYOUTS).get<std::vector<std::string>>();
+    formInfo.window = jsonObject.at(JSON_KEY_WINDOW).get<FormWindow>();
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS

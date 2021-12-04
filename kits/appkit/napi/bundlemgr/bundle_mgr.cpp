@@ -838,10 +838,10 @@ static void ConvertFormInfo(napi_env env, napi_value objformInfo, const FormInfo
     }
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objformInfo, "customizeDatas", nCustomizeDatas));
 
-    napi_value nLayout;
-    NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, formInfo.layout.c_str(), NAPI_AUTO_LENGTH, &nLayout));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objformInfo, "layout", nLayout));
-    HILOG_INFO("ConvertFormInfo layout=%{public}s.", formInfo.layout.c_str());
+    napi_value nSrc;
+    NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, formInfo.src.c_str(), NAPI_AUTO_LENGTH, &nSrc));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objformInfo, "src", nSrc));
+    HILOG_INFO("ConvertFormInfo src=%{public}s.", formInfo.src.c_str());
 
     napi_value nWindow;
     NAPI_CALL_RETURN_VOID(env, napi_create_object(env, &nWindow));

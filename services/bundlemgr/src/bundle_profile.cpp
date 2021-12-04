@@ -177,7 +177,7 @@ struct Forms {
     int32_t descriptionId = 0;
     bool isDefault = false;
     std::string type;
-    std::string layout;
+    std::string src;
     Window window;
     std::string colorMode = "auto";
     std::vector<std::string> supportDimensions;
@@ -938,8 +938,8 @@ void from_json(const nlohmann::json &jsonObject, Forms &forms)
         ArrayType::NOT_ARRAY);
     GetValueIfFindKey<std::string>(jsonObject,
         jsonObjectEnd,
-        BUNDLE_MODULE_PROFILE_FORMS_LAYOUT,
-        forms.layout,
+        BUNDLE_MODULE_PROFILE_FORMS_SRC,
+        forms.src,
         JsonType::STRING,
         false,
         parseResult,
@@ -1848,7 +1848,7 @@ bool ConvertFormInfo(FormInfo &formInfo, const ProfileReader::Forms &form)
     }
     formInfo.landscapeLayouts = form.landscapeLayouts;
     formInfo.portraitLayouts = form.portraitLayouts;
-    formInfo.layout = form.layout;
+    formInfo.src = form.src;
     formInfo.window.autoDesignWidth = form.window.autoDesignWidth;
     formInfo.window.designWidth = form.window.designWidth;
     return true;
