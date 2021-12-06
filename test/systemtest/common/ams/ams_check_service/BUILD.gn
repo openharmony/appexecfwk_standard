@@ -39,7 +39,7 @@ ohos_systemtest("ams_check_service") {
     "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/src/module_test_dump_util.cpp",
     "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/src/st_ability_util.cpp",
     "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/src/stoperator.cpp",
-    "ams_check_service.cpp",
+    "access_control_check.cpp",
   ]
 
   configs = [

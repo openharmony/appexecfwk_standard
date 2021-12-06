@@ -24,7 +24,7 @@ using namespace OHOS;
 using namespace OHOS::AppExecFwk;
 using namespace OHOS::AAFwk;
 using namespace testing::ext;
-class AmsCheckService : public testing::Test {
+class AccessControlCheck : public testing::Test {
 public:
     static void SetUpTestCase(void);
     static void TearDownTestCase(void);
@@ -35,20 +35,20 @@ public:
     static sptr<IAppMgr> appMs_;
 };
 
-sptr<IAbilityManager> AmsCheckService::abilityMs_ = nullptr;
-sptr<IAppMgr> AmsCheckService::appMs_ = nullptr;
+sptr<IAbilityManager> AccessControlCheck::abilityMs_ = nullptr;
+sptr<IAppMgr> AccessControlCheck::appMs_ = nullptr;
 
-void AmsCheckService::SetUpTestCase(void) {}
-void AmsCheckService::TearDownTestCase(void) {}
-void AmsCheckService::SetUp() {}
-void AmsCheckService::TearDown() {}
+void AccessControlCheck::SetUpTestCase(void) {}
+void AccessControlCheck::TearDownTestCase(void) {}
+void AccessControlCheck::SetUp() {}
+void AccessControlCheck::TearDown() {}
 
 /**
- * @tc.number    : AMS_Check_Service_0100
+ * @tc.number    : Access_Control_Check_0100
  * @tc.name      : check whether abilityManagerService is running
  * @tc.desc      : check whether abilityManagerService is running
  */
-HWTEST_F(AmsCheckService, AMS_Check_Service_0100, Function | MediumTest | Level0)
+HWTEST_F(AccessControlCheck, Access_Control_Check_0100, Function | MediumTest | Level0)
 {
     sptr<IRemoteObject> abilityMgrRemoteObj =
         OHOS::DelayedSingleton<SaMgrClient>::GetInstance()->GetSystemAbility(ABILITY_MGR_SERVICE_ID);
@@ -65,17 +65,15 @@ HWTEST_F(AmsCheckService, AMS_Check_Service_0100, Function | MediumTest | Level0
     }
     StackInfo stackInfo;
     EXPECT_TRUE(abilityManager->GetAllStackInfo(stackInfo) == ERR_OK);
-    EXPECT_TRUE(stackInfo.missionStackInfos.size() >= 2);
-    EXPECT_TRUE(stackInfo.missionStackInfos.at(0).id == LAUNCHER_MISSION_STACK_ID);
-    EXPECT_TRUE(stackInfo.missionStackInfos.at(1).id == DEFAULT_MISSION_STACK_ID);
+    EXPECT_TRUE(stackInfo.missionStackInfos.size() > 0);
 }
 
 /**
- * @tc.number    : AMS_Check_Service_0200
+ * @tc.number    : Access_Control_Check_0200
  * @tc.name      : check whether appManagerService is running
  * @tc.desc      : check whether appManagerService is running
  */
-HWTEST_F(AmsCheckService, AMS_Check_Service_0200, Function | MediumTest | Level0)
+HWTEST_F(AccessControlCheck, Access_Control_Check_0200, Function | MediumTest | Level0)
 {
     sptr<IRemoteObject> appMgrRemoteObj =
         OHOS::DelayedSingleton<SaMgrClient>::GetInstance()->GetSystemAbility(APP_MGR_SERVICE_ID);
