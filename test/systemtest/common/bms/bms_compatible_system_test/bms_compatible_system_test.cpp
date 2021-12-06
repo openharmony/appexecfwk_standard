@@ -973,6 +973,5 @@ HWTEST_F(BmsCompatibleSystemTest, BMS_GetAllCommonEventInfo_0600, Function | Med
     EXPECT_EQ(message, "Success") << "uninstall fail!";
     GTEST_LOG_(INFO) << "END BMS_GetAllCommonEventInfo_0400";
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
