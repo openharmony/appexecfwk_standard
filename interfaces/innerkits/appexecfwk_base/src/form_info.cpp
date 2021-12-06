@@ -60,7 +60,7 @@ const std::string JSON_KEY_WINDOW = "window";
 const std::string JSON_KEY_DESIGN_WIDTH = "designWidth";
 const std::string JSON_KEY_AUTO_DESIGN_WIDTH = "autoDesignWidth";
 
-bool ReadFromParcelCustomizeData(std::vector<FormCustomizeData> &customizeDatas,Parcel &parcel)
+bool ReadFromParcelCustomizeData(std::vector<FormCustomizeData> &customizeDatas, Parcel &parcel)
 {
     int32_t customizeDataSize;
     READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, customizeDataSize);
