@@ -76,5 +76,6 @@ group("systemtest_bms") {
     "bms_launcher_service_system_test:systemtest",
     "bms_search_system_test:systemtest",
     "bms_uninstall_system_test:systemtest",
+    "bms_check_service_test:systemtest",
   ]
 }
