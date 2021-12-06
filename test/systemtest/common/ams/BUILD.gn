@@ -45,5 +45,6 @@ group("systemtest") {
     "ams_power_test:systemtest",
     "ams_service_ability_test:systemtest",
     "tool:system_test_ability_util",
+    "ams_check_service:systemtest",
   ]
 }
