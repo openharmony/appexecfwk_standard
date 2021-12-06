@@ -143,19 +143,19 @@ protected:
                     "defaultFormWidth": 200,
                     "metaData": {
                         "customizeData": [{
-                            "name" : "string",
-                            "value" : "string",
-                            "extra" : "$string:customizeData_description"
+                            "name": "string",
+                            "value": "string",
+                            "extra": "$string:customizeData_description"
                         }],
                         "parameters": [{
-                            "name" : "string",
-                            "type" : "Float",
-                            "description" : "$string:parameters_description"
+                            "name": "string",
+                            "type": "Float",
+                            "description": "$string:parameters_description"
                         }],
                         "results": [{
-                            "name" : "string",
-                            "type" : "Float",
-                            "description" : "$string:results_description"
+                            "name": "string",
+                            "type": "Float",
+                            "description": "$string:results_description"
                         }]
                     },
                     "isLauncherAbility": true,

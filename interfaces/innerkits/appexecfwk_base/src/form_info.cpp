@@ -59,6 +59,21 @@ const std::string JSON_KEY_SRC = "src";
 const std::string JSON_KEY_WINDOW = "window";
 const std::string JSON_KEY_DESIGN_WIDTH = "designWidth";
 const std::string JSON_KEY_AUTO_DESIGN_WIDTH = "autoDesignWidth";
+
+bool ReadFromParcelCustomizeData(std::vector<FormCustomizeData> &customizeDatas,Parcel &parcel)
+{
+    int32_t customizeDataSize;
+    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, customizeDataSize);
+    for (auto i = 0; i < customizeDataSize; i++) {
+        FormCustomizeData customizeData;
+        std::string customizeName = Str16ToStr8(parcel.ReadString16());
+        std::string customizeValue = Str16ToStr8(parcel.ReadString16());
+        customizeData.name = customizeName;
+        customizeData.value = customizeValue;
+        customizeDatas.emplace_back(customizeData);
+    }
+    return true;
+}
 }  // namespace
 
 bool FormInfo::ReadFromParcel(Parcel &parcel)
@@ -110,17 +125,7 @@ bool FormInfo::ReadFromParcel(Parcel &parcel)
         portraitLayouts.emplace_back(Str16ToStr8(parcel.ReadString16()));
     }
 
-    int32_t customizeDataSize;
-    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, customizeDataSize);
-    for (auto i = 0; i < customizeDataSize; i++) {
-        FormCustomizeData customizeData;
-        std::string customizeName = Str16ToStr8(parcel.ReadString16());
-        std::string customizeValue = Str16ToStr8(parcel.ReadString16());
-        customizeData.name = customizeName;
-        customizeData.value = customizeValue;
-        customizeDatas.emplace_back(customizeData);
-    }
-
+    ReadFromParcelCustomizeData(customizeDatas, parcel);
     window.designWidth = parcel.ReadInt32();
     window.autoDesignWidth = parcel.ReadBool();
     return true;
