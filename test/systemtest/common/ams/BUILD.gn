@@ -36,6 +36,7 @@ group("systemtest") {
     "ams_ability_state_test:systemtest",
     "ams_ability_visible_test:systemtest",
     "ams_app_process_manage_test:systemtest",
+    "ams_check_service:systemtest",
     "ams_configuration_updated_test:systemtest",
     "ams_data_ability_test:systemtest",
     "ams_dfx_test:systemtest",
@@ -45,6 +46,5 @@ group("systemtest") {
     "ams_power_test:systemtest",
     "ams_service_ability_test:systemtest",
     "tool:system_test_ability_util",
-    "ams_check_service:systemtest",
   ]
 }
