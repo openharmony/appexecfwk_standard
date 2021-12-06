@@ -27,7 +27,6 @@
 using namespace testing::ext;
 namespace OHOS {
 namespace AppExecFwk {
-
 class BmsCheckServiceTest : public testing::Test {
 public:
     static void SetUpTestCase();
