@@ -34,8 +34,8 @@ public:
     {}
     virtual ~BundleMgrProxy()
     {}
-    MOCK_METHOD3(
-        CanRequestPermission, bool(const std::string &bundleName, const std::string &permissionName, const int userId));
+    MOCK_METHOD3(CanRequestPermission,
+        bool(const std::string &bundleName, const std::string &permissionName, const int userId));
     MOCK_METHOD3(RequestPermissionFromUser,
         bool(const std::string &bundleName, const std::string &permission, const int userId));
     MOCK_METHOD2(GetNameForUid, bool(const int uid, std::string &name));
@@ -160,7 +160,7 @@ public:
     {
         return true;
     }
-    virtual bool CleanBundleDataFiles(const std::string &bundleName) override
+    virtual bool CleanBundleDataFiles(const std::string &bundleName, const int userId) override
     {
         return true;
     }
@@ -185,7 +185,31 @@ public:
     {
         return nullptr;
     }
-
+    virtual bool GetBundleGidsByUid(const std::string &bundleName, const int &uid, std::vector<int> &gids) override
+    {
+        return true;
+    }
+    virtual bool QueryAbilityInfosByUri(const std::string &abilityUri, std::vector<AbilityInfo> &abilityInfos) override
+    {
+        return true;
+    }
+    virtual int CheckPermissionByUid(
+        const std::string &bundleName, const std::string &permission, const int userId) override
+    {
+        return true;
+    }
+    virtual bool RemoveClonedBundle(const std::string &bundleName, const int32_t uid) override
+    {
+        return true;
+    }
+    virtual bool BundleClone(const std::string &bundleName) override
+    {
+        return true;
+    }
+    virtual bool CheckBundleNameInAllowList(const std::string &bundleName) override
+    {
+        return true;
+    }
     /**
 	 *  @brief Obtains information about the shortcuts of the application.
      *  @param bundleName Indicates the name of the bundle to shortcut.
@@ -254,7 +278,7 @@ class BundleMgrService : public BundleMgrStub {
 public:
     MOCK_METHOD2(GetAppIdByBundleName, std::string(const std::string &bundleName, const int userId));
     MOCK_METHOD2(CheckPermission, int(const std::string &bundleName, const std::string &permission));
-    MOCK_METHOD1(CleanBundleDataFiles, bool(const std::string &bundleName));
+    MOCK_METHOD2(CleanBundleDataFiles, bool(const std::string &bundleName, const int userId));
     MOCK_METHOD3(
         CanRequestPermission, bool(const std::string &bundleName, const std::string &permissionName, const int userId));
     MOCK_METHOD3(RequestPermissionFromUser,
@@ -394,7 +418,31 @@ public:
     {
         return true;
     };
-
+    virtual bool GetBundleGidsByUid(const std::string &bundleName, const int &uid, std::vector<int> &gids) override
+    {
+        return true;
+    }
+    virtual bool QueryAbilityInfosByUri(const std::string &abilityUri, std::vector<AbilityInfo> &abilityInfos) override
+    {
+        return true;
+    }
+    virtual int CheckPermissionByUid(
+        const std::string &bundleName, const std::string &permission, const int userId) override
+    {
+        return true;
+    }
+    virtual bool RemoveClonedBundle(const std::string &bundleName, const int32_t uid) override
+    {
+        return true;
+    }
+    virtual bool BundleClone(const std::string &bundleName) override
+    {
+        return true;
+    }
+    virtual bool CheckBundleNameInAllowList(const std::string &bundleName) override
+    {
+        return true;
+    }
     /**
 	 *  @brief Obtains information about the shortcuts of the application.
      *  @param bundleName Indicates the name of the bundle to shortcut.
@@ -436,7 +484,7 @@ public:
         return true;
     }
     virtual bool NotifyActivityLifeStatus(
-        const std::string &bundleName, const std::string &abilityName, const int64_t launchTime) override
+        const std::string &bundleName, const std::string &abilityName, const int64_t launchTime, const int uid) override
     {
         return true;
     }

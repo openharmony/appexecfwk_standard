@@ -17,10 +17,19 @@
 #include "string_ex.h"
 #include "app_log_wrapper.h"
 #include "configuration.h"
-namespace {
+namespace ConfigurationInner {
     const std::string CONNECTION_SYMBOL {"#"};
     const std::string EMPTY_STRING {""};
+
+    /*
+     * This must be synchronized with the value in GlobalConfigurationKey
+     */
+    const std::vector<std::string> SystemConfigurationKeyStore {
+        OHOS::AAFwk::GlobalConfigurationKey::SYSTEM_LANGUAGE,
+        OHOS::AAFwk::GlobalConfigurationKey::SYSTEM_ORIENTATION,
+    };
 }
+
 namespace OHOS {
 namespace AppExecFwk {
 using json = nlohmann::json;
@@ -28,9 +37,8 @@ using json = nlohmann::json;
 Configuration::Configuration()
 {}
 
-Configuration::Configuration(const Configuration &other)
+Configuration::Configuration(const Configuration &other) : defaultDisplayId_(other.defaultDisplayId_)
 {
-    defaultDisplayId_ = other.defaultDisplayId_;
     configParameter_ = other.configParameter_;
 }
 
@@ -49,17 +57,25 @@ Configuration& Configuration::operator= (const Configuration &other)
 Configuration::~Configuration()
 {}
 
-void Configuration::MakeTheKey(std::string &getKey, int id, const std::string &param) const
+bool Configuration::MakeTheKey(std::string &getKey, int id, const std::string &param) const
 {
     if (param.empty()) {
-        return ;
+        return false;
+    }
+
+    if (std::find(ConfigurationInner::SystemConfigurationKeyStore.begin(),
+        ConfigurationInner::SystemConfigurationKeyStore.end(), param) ==
+        ConfigurationInner::SystemConfigurationKeyStore.end()) {
+        return false;
     }
 
     getKey.clear();
     getKey += std::to_string(id);
-    getKey += CONNECTION_SYMBOL;
+    getKey += ConfigurationInner::CONNECTION_SYMBOL;
     getKey += param;
     APP_LOGW(" getKey [%{public}s]", getKey.c_str());
+
+    return true;
 }
 
 bool Configuration::AddItem(int displayId, const std::string &key, const std::string &value)
@@ -69,7 +85,9 @@ bool Configuration::AddItem(int displayId, const std::string &key, const std::st
     }
 
     std::string getKey;
-    MakeTheKey(getKey, displayId, key);
+    if (!MakeTheKey(getKey, displayId, key)) {
+        return false;
+    }
 
     configParameter_[getKey] = value;
     return true;
@@ -78,18 +96,20 @@ bool Configuration::AddItem(int displayId, const std::string &key, const std::st
 std::string Configuration::GetItem(int displayId, const std::string &key) const
 {
     if (key.empty()) {
-        return EMPTY_STRING;
+        return ConfigurationInner::EMPTY_STRING;
     }
 
     std::string getKey;
-    MakeTheKey(getKey, displayId, key);
+    if (!MakeTheKey(getKey, displayId, key)) {
+        return ConfigurationInner::EMPTY_STRING;
+    }
 
     auto iter = configParameter_.find(getKey);
     if (iter != configParameter_.end()) {
         return iter->second;
     }
 
-    return EMPTY_STRING;
+    return ConfigurationInner::EMPTY_STRING;
 }
 
 int Configuration::GetItemSize() const
@@ -112,7 +132,7 @@ std::string Configuration::GetValue(const std::string &key) const
         return iter->second;
     }
 
-    return EMPTY_STRING;
+    return ConfigurationInner::EMPTY_STRING;
 }
 
 void Configuration::CompareDifferent(std::vector<std::string> &diffKeyV, const Configuration &other)
@@ -156,51 +176,26 @@ int Configuration::RemoveItem(int displayId, const std::string &key)
     }
 
     std::string getKey;
-    MakeTheKey(getKey, displayId, key);
+    if (!MakeTheKey(getKey, displayId, key)) {
+        return 0;
+    }
 
     return configParameter_.erase(getKey);
 }
 
 bool Configuration::AddItem(const std::string &key, const std::string &value)
 {
-    if (key.empty() || value.empty()) {
-        return false;
-    }
-
-    std::string getKey;
-    MakeTheKey(getKey, defaultDisplayId_, key);
-
-    configParameter_[getKey] = value;
-    return true;
+    return AddItem(defaultDisplayId_, key, value);
 }
 
 std::string Configuration::GetItem(const std::string &key) const
 {
-    if (key.empty()) {
-        return EMPTY_STRING;
-    }
-
-    std::string getKey;
-    MakeTheKey(getKey, defaultDisplayId_, key);
-
-    auto iter = configParameter_.find(getKey);
-    if (iter != configParameter_.end()) {
-        return iter->second;
-    }
-
-    return EMPTY_STRING;
+    return GetItem(defaultDisplayId_, key);
 }
 
 int Configuration::RemoveItem(const std::string &key)
 {
-    if (key.empty()) {
-        return 0;
-    }
-
-    std::string getKey;
-    MakeTheKey(getKey, defaultDisplayId_, key);
-
-    return configParameter_.erase(getKey);
+    return RemoveItem(defaultDisplayId_, key);
 }
 
 const std::string& Configuration::GetName() const

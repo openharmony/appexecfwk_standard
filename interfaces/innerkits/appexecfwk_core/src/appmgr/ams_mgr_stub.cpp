@@ -49,6 +49,8 @@ AmsMgrStub::AmsMgrStub()
         &AmsMgrStub::HandleCompelVerifyPermission;
     memberFuncMap_[static_cast<uint32_t>(IAmsMgr::Message::AMS_PREPARE_TERMINATE_ABILITY)] =
         &AmsMgrStub::HandlePrepareTerminate;
+    memberFuncMap_[static_cast<uint32_t>(IAmsMgr::Message::AMS_KILL_APPLICATION_BYUID)] =
+        &AmsMgrStub::HandleKillApplicationByUid;
 }
 
 AmsMgrStub::~AmsMgrStub()
@@ -149,6 +151,15 @@ ErrCode AmsMgrStub::HandleKillApplication(MessageParcel &data, MessageParcel &re
 {
     std::string bundleName = data.ReadString();
     int32_t result = KillApplication(bundleName);
+    reply.WriteInt32(result);
+    return NO_ERROR;
+}
+
+ErrCode AmsMgrStub::HandleKillApplicationByUid(MessageParcel &data, MessageParcel &reply)
+{
+    std::string bundleName = data.ReadString();
+    int uid = data.ReadInt32();
+    int32_t result = KillApplicationByUid(bundleName, uid);
     reply.WriteInt32(result);
     return NO_ERROR;
 }

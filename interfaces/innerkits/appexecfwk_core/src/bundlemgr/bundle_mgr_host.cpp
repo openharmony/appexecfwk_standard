@@ -80,6 +80,9 @@ int BundleMgrHost::OnRemoteRequest(uint32_t code, MessageParcel &data, MessagePa
         case static_cast<uint32_t>(IBundleMgr::Message::GET_BUNDLE_GIDS):
             errCode = HandleGetBundleGids(data, reply);
             break;
+        case static_cast<uint32_t>(IBundleMgr::Message::GET_BUNDLE_GIDS_BY_UID):
+            errCode = HandleGetBundleGidsByUid(data, reply);
+            break;
         case static_cast<uint32_t>(IBundleMgr::Message::GET_BUNDLE_INFOS_BY_METADATA):
             errCode = HandleGetBundleInfosByMetaData(data, reply);
             break;
@@ -94,6 +97,9 @@ int BundleMgrHost::OnRemoteRequest(uint32_t code, MessageParcel &data, MessagePa
             break;
         case static_cast<uint32_t>(IBundleMgr::Message::QUERY_ABILITY_INFO_BY_URI):
             errCode = HandleQueryAbilityInfoByUri(data, reply);
+            break;
+        case static_cast<uint32_t>(IBundleMgr::Message::QUERY_ABILITY_INFOS_BY_URI):
+            errCode = HandleQueryAbilityInfosByUri(data, reply);
             break;
         case static_cast<uint32_t>(IBundleMgr::Message::QUERY_KEEPALIVE_BUNDLE_INFOS):
             errCode = HandleQueryKeepAliveBundleInfos(data, reply);
@@ -118,6 +124,9 @@ int BundleMgrHost::OnRemoteRequest(uint32_t code, MessageParcel &data, MessagePa
             break;
         case static_cast<uint32_t>(IBundleMgr::Message::CHECK_PERMISSION):
             errCode = HandleCheckPermission(data, reply);
+            break;
+        case static_cast<uint32_t>(IBundleMgr::Message::CHECK_PERMISSION_BY_UID):
+            errCode = HandleCheckPermissionByUid(data, reply);
             break;
         case static_cast<uint32_t>(IBundleMgr::Message::GET_PERMISSION_DEF):
             errCode = HandleGetPermissionDef(data, reply);
@@ -209,6 +218,15 @@ int BundleMgrHost::OnRemoteRequest(uint32_t code, MessageParcel &data, MessagePa
         case static_cast<uint32_t>(IBundleMgr::Message::NOTIFY_ACTIVITY_LIFE_STATUS):
             errCode = HandleNotifyActivityLifeStatus(data, reply);
             break;
+        case static_cast<uint32_t>(IBundleMgr::Message::CHECK_BUNDLE_NAME_IN_ALLOWLIST):
+            errCode = HandleCheckBundleNameInAllowList(data, reply);
+            break;
+        case static_cast<uint32_t>(IBundleMgr::Message::BUNDLE_CLONE):
+            errCode = HandleBundleClone(data, reply);
+            break;
+        case static_cast<uint32_t>(IBundleMgr::Message::REMOVE_CLONED_BUNDLE):
+            errCode = HandleRemoveClonedBundle(data, reply);
+            break;
         default:
             return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
     }
@@ -219,11 +237,23 @@ int BundleMgrHost::OnRemoteRequest(uint32_t code, MessageParcel &data, MessagePa
 int BundleMgrHost::GetUidByBundleName(const std::string &bundleName, const int userId)
 {
     APP_LOGI("begin to get uid of %{public}s", bundleName.c_str());
-    BundleInfo bundleInfo;
+    std::vector<BundleInfo> bundleInfos;
     int uid = Constants::INVALID_UID;
-    bool ret = GetBundleInfo(bundleName, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo);
+    bool ret = GetBundleInfos(BundleFlag::GET_BUNDLE_DEFAULT, bundleInfos);
     if (ret) {
-        uid = bundleInfo.uid;
+        for (auto bundleInfo : bundleInfos) {
+            if (userId == Constants::C_UESRID) {
+                if (bundleInfo.name == bundleName && bundleInfo.applicationInfo.isCloned == true) {
+                    uid = bundleInfo.uid;
+                    break;
+                }
+            } else {
+                if (bundleInfo.name == bundleName && bundleInfo.applicationInfo.isCloned == false) {
+                    uid = bundleInfo.uid;
+                    break;
+                }
+            }
+        }
         APP_LOGD("get bundle uid success");
     } else {
         APP_LOGE("can not get bundleInfo's uid");
@@ -405,6 +435,26 @@ ErrCode BundleMgrHost::HandleGetBundleGids(Parcel &data, Parcel &reply)
     return ERR_OK;
 }
 
+ErrCode BundleMgrHost::HandleGetBundleGidsByUid(Parcel &data, Parcel &reply)
+{
+    std::string name = data.ReadString();
+    int uid = data.ReadInt32();
+
+    std::vector<int> gids;
+    bool ret = GetBundleGidsByUid(name, uid, gids);
+    if (!reply.WriteBool(ret)) {
+        APP_LOGE("write failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    if (ret) {
+        if (!reply.WriteInt32Vector(gids)) {
+            APP_LOGE("write failed");
+            return ERR_APPEXECFWK_PARCEL_ERROR;
+        }
+    }
+    return ERR_OK;
+}
+
 ErrCode BundleMgrHost::HandleGetBundleInfosByMetaData(Parcel &data, Parcel &reply)
 {
     std::string metaData = data.ReadString();
@@ -504,6 +554,24 @@ ErrCode BundleMgrHost::HandleQueryAbilityInfoByUri(Parcel &data, Parcel &reply)
     }
     if (ret) {
         if (!reply.WriteParcelable(&info)) {
+            APP_LOGE("write failed");
+            return ERR_APPEXECFWK_PARCEL_ERROR;
+        }
+    }
+    return ERR_OK;
+}
+
+ErrCode BundleMgrHost::HandleQueryAbilityInfosByUri(Parcel &data, Parcel &reply)
+{
+    std::string abilityUri = data.ReadString();
+    std::vector<AbilityInfo> abilityInfos;
+    bool ret = QueryAbilityInfosByUri(abilityUri, abilityInfos);
+    if (!reply.WriteBool(ret)) {
+        APP_LOGE("write failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    if (ret) {
+        if (!WriteParcelableVector(abilityInfos, reply)) {
             APP_LOGE("write failed");
             return ERR_APPEXECFWK_PARCEL_ERROR;
         }
@@ -647,6 +715,21 @@ ErrCode BundleMgrHost::HandleCheckPermission(Parcel &data, Parcel &reply)
     return ERR_OK;
 }
 
+ErrCode BundleMgrHost::HandleCheckPermissionByUid(Parcel &data, Parcel &reply)
+{
+    std::string bundleName = data.ReadString();
+    std::string permission = data.ReadString();
+    int userId = data.ReadInt32();
+
+    APP_LOGI("bundleName %{public}s, permission %{public}s", bundleName.c_str(), permission.c_str());
+    int ret = CheckPermissionByUid(bundleName, permission, userId);
+    if (!reply.WriteInt32(ret)) {
+        APP_LOGE("write failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    return ERR_OK;
+}
+
 ErrCode BundleMgrHost::HandleGetPermissionDef(Parcel &data, Parcel &reply)
 {
     std::string permissionName = data.ReadString();
@@ -763,8 +846,9 @@ ErrCode BundleMgrHost::HandleCleanBundleCacheFiles(Parcel &data, Parcel &reply)
 ErrCode BundleMgrHost::HandleCleanBundleDataFiles(Parcel &data, Parcel &reply)
 {
     std::string bundleName = data.ReadString();
+    int userId = data.ReadInt32();
 
-    bool ret = CleanBundleDataFiles(bundleName);
+    bool ret = CleanBundleDataFiles(bundleName, userId);
     if (!reply.WriteBool(ret)) {
         APP_LOGE("write failed");
         return ERR_APPEXECFWK_PARCEL_ERROR;
@@ -1126,12 +1210,13 @@ ErrCode BundleMgrHost::HandleNotifyActivityLifeStatus(Parcel &data, Parcel &repl
     std::string bundleName = data.ReadString();
     std::string abilityName = data.ReadString();
     int64_t launchTime = data.ReadInt64();
+    int32_t uid = data.ReadInt32();
     APP_LOGI("bundleName %{public}s, abilityName %{public}s, launchTime %{public}" PRId64,
         bundleName.c_str(),
         abilityName.c_str(),
         launchTime);
-        
-    bool ret = NotifyActivityLifeStatus(bundleName, abilityName, launchTime);
+
+    bool ret = NotifyActivityLifeStatus(bundleName, abilityName, launchTime, uid);
     if (!reply.WriteBool(ret)) {
         APP_LOGE("write failed");
         return ERR_APPEXECFWK_PARCEL_ERROR;
@@ -1139,7 +1224,44 @@ ErrCode BundleMgrHost::HandleNotifyActivityLifeStatus(Parcel &data, Parcel &repl
     return ERR_OK;
 }
 
-template<typename T>
+ErrCode BundleMgrHost::HandleCheckBundleNameInAllowList(Parcel &data, Parcel &reply)
+{
+    std::string bundleName = data.ReadString();
+    APP_LOGI("bundleName %{public}s," PRId64, bundleName.c_str());
+    bool ret = CheckBundleNameInAllowList(bundleName);
+    if (!reply.WriteBool(ret)) {
+        APP_LOGE("write failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    return ERR_OK;
+}
+
+ErrCode BundleMgrHost::HandleBundleClone(Parcel &data, Parcel &reply)
+{
+    std::string bundleName = data.ReadString();
+    APP_LOGI("bundleName %{public}s," PRId64, bundleName.c_str());
+    bool ret = BundleClone(bundleName);
+    if (!reply.WriteBool(ret)) {
+        APP_LOGE("write failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    return ERR_OK;
+}
+
+ErrCode BundleMgrHost::HandleRemoveClonedBundle(Parcel &data, Parcel &reply)
+{
+    std::string bundleName = data.ReadString();
+    int32_t uid = data.ReadInt32();
+    APP_LOGI("bundleName %{public}s," PRId64, bundleName.c_str());
+    bool ret = RemoveClonedBundle(bundleName, uid);
+    if (!reply.WriteBool(ret)) {
+        APP_LOGE("write failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    return ERR_OK;
+}
+
+template <typename T>
 bool BundleMgrHost::WriteParcelableVector(std::vector<T> &parcelableVector, Parcel &reply)
 {
     if (!reply.WriteInt32(parcelableVector.size())) {

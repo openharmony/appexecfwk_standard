@@ -195,7 +195,7 @@ std::shared_ptr<AppRunningRecord> AmsAbilityRunningRecordModuleTest::QueryAppRun
  * EnvConditions: NA
  * CaseDescription: Verify the function creating two same names of AbilityRunningRecord.
  */
-HWTEST_F(AmsAbilityRunningRecordModuleTest, AddAbilityRunningRecord_001, TestSize.Level0)
+HWTEST_F(AmsAbilityRunningRecordModuleTest, AddAbilityRunningRecord_001, TestSize.Level1)
 {
     APP_LOGI("AddAbilityRunningRecord_001 start");
     auto appRunningRecord = QueryAppRunningRecord();
@@ -220,7 +220,7 @@ HWTEST_F(AmsAbilityRunningRecordModuleTest, AddAbilityRunningRecord_001, TestSiz
  * EnvConditions: NA
  * CaseDescription: Verify the function creating more AbilityRunningRecords.
  */
-HWTEST_F(AmsAbilityRunningRecordModuleTest, AddAbilityRunningRecord_002, TestSize.Level0)
+HWTEST_F(AmsAbilityRunningRecordModuleTest, AddAbilityRunningRecord_002, TestSize.Level1)
 {
     APP_LOGI("AddAbilityRunningRecord_002 start");
     int i;
@@ -277,7 +277,7 @@ HWTEST_F(AmsAbilityRunningRecordModuleTest, UpdateAbilityRunningRecord_001, Test
  * EnvConditions: NA
  * CaseDescription: Verify the function updating an illegal state of AbilityRunningRecord.
  */
-HWTEST_F(AmsAbilityRunningRecordModuleTest, UpdateAbilityRunningRecord_002, TestSize.Level0)
+HWTEST_F(AmsAbilityRunningRecordModuleTest, UpdateAbilityRunningRecord_002, TestSize.Level1)
 {
     APP_LOGI("UpdateAbilityRunningRecord_002 start");
     int i;

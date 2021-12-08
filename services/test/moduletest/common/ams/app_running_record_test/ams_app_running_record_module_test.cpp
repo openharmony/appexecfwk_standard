@@ -168,17 +168,20 @@ void AmsAppRunningRecordModuleTest::TearDown()
  * CaseDescription: 1. start application
  *                  2. use Iapplication LaunchApplication and ScheduleForegroundRunning interface
  */
-HWTEST_F(AmsAppRunningRecordModuleTest, ApplicationStart_001, TestSize.Level0)
+HWTEST_F(AmsAppRunningRecordModuleTest, ApplicationStart_001, TestSize.Level1)
 {
     // init AppRunningRecord
     unsigned long index = 0L;
     auto abilityInfo = std::make_shared<AbilityInfo>();
     abilityInfo->name = GetTestAbilityName(index);
+    abilityInfo->applicationInfo.uid = 0;
     auto appInfo = std::make_shared<ApplicationInfo>();
     appInfo->name = GetTestAppName(index);
+    appInfo->uid = 0;
     std::string processName = GetTestAppName(index);
     RecordQueryResult result;
     auto record = service_->GetOrCreateAppRunningRecord(GetMockToken(), appInfo, abilityInfo, processName, 0, result);
+    record->SetUid(0);
     EXPECT_TRUE(record != nullptr) << ",create apprunningrecord fail!";
     EXPECT_FALSE(result.appExists) << ",result is wrong!";
 
@@ -204,6 +207,7 @@ HWTEST_F(AmsAppRunningRecordModuleTest, ApplicationStart_001, TestSize.Level0)
     auto newRecord =
         service_->GetOrCreateAppRunningRecord(GetMockToken(), appInfo, abilityInfo, processName, 0, newResult);
     EXPECT_TRUE(newRecord);
+    newRecord->SetUid(0);
     auto stateFromRec = newRecord->GetState();
     EXPECT_TRUE(newResult.appExists) << "fail, app is not exist!";
     EXPECT_EQ(stateFromRec, ApplicationState::APP_STATE_FOREGROUND);
@@ -233,12 +237,15 @@ HWTEST_F(AmsAppRunningRecordModuleTest, MultiApplicationStart_002, TestSize.Leve
         // init AppRunningRecord
         auto abilityInfo = std::make_shared<AbilityInfo>();
         abilityInfo->name = GetTestAbilityName(i);
+        abilityInfo->applicationInfo.uid = 0;
         std::string processName = GetTestAppName(i);
         auto appInfo = std::make_shared<ApplicationInfo>();
         appInfo->name = GetTestAppName(i);
+        appInfo->uid = 0;
         RecordQueryResult result;
         auto record =
             service_->GetOrCreateAppRunningRecord(GetMockToken(), appInfo, abilityInfo, processName, 0, result);
+        record->SetUid(0);
         EXPECT_TRUE(record != nullptr) << "create apprunningrecord fail!";
         EXPECT_FALSE(result.appExists) << "result is wrong!";
 

@@ -309,8 +309,8 @@ public:
      * @param abilityName Indicates the ability name
      * @return Returns the AbilityInfo of list if find it; returns null otherwise.
      */
-    std::optional<std::vector<AbilityInfo>> FindAbilityInfosForClone(
-        const std::string &bundleName, const std::string &abilityName) const;
+    void FindAbilityInfosForClone(
+        const std::string &bundleName, const std::string &abilityName, std::vector<AbilityInfo> &abilitys);
     /**
      * @brief Transform the InnerBundleInfo object to string.
      * @return Returns the string object
@@ -594,6 +594,27 @@ public:
         return std::nullopt;
     }
     /**
+     * @brief Find AbilityInfo object by Uri.
+     * @param abilityUri Indicates the ability uri.
+     * @return Returns the AbilityInfo object if find it; returns null otherwise.
+     */
+    void FindAbilityInfosByUri(const std::string &abilityUri, std::vector<AbilityInfo> &abilityInfos)
+    {
+        APP_LOGI("Uri is %{public}s", abilityUri.c_str());
+        for (auto &ability : baseAbilityInfos_) {
+            if (ability.second.uri.size() < Constants::DATA_ABILITY_URI_PREFIX.size()) {
+                continue;
+            }
+            auto configUri = ability.second.uri.substr(Constants::DATA_ABILITY_URI_PREFIX.size());
+            APP_LOGI("configUri is %{public}s", configUri.c_str());
+            if (configUri == abilityUri) {
+                GetApplicationInfo(ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMS, 0, ability.second.applicationInfo);
+                abilityInfos.emplace_back(ability.second);
+            }
+        }
+        return;
+    }
+    /**
      * @brief Get all ability names in application.
      * @return Returns ability names.
      */
@@ -689,6 +710,7 @@ public:
     {
         uid_ = uid;
         baseBundleInfo_.uid = uid;
+        baseApplicationInfo_.uid = uid;
     }
     /**
      * @brief Get application uid.
@@ -835,6 +857,42 @@ public:
         return baseBundleInfo_.isNativeApp;
     }
 
+    void SetApplicationInfoUid()
+    {
+        baseApplicationInfo_.uid = uid_;
+    }
+
+    int GetApplicationInfoUid() const
+    {
+        return baseApplicationInfo_.uid;
+    }
+
+    void SetIsCloned(bool isClone)
+    {
+        baseApplicationInfo_.isCloned = isClone;
+    }
+
+    bool GetisCloned() const
+    {
+        return baseApplicationInfo_.isCloned;
+    }
+
+    void SetNewBundleName(std::string bundlename)
+    {
+        std::string strUid = std::to_string(uid_);
+        newBundleName_ = bundlename + '#' + strUid;
+        APP_LOGI("set clone newBundleName_ %{public}s", newBundleName_.c_str());
+    }
+    
+    std::string GetDBKeyBundleName() const
+    {
+        if (baseApplicationInfo_.isCloned != true) {
+            return baseApplicationInfo_.bundleName;
+        }
+        return newBundleName_;
+    
+    }
+
     void SetIsLauncherApp(bool isLauncher)
     {
         baseApplicationInfo_.isLauncherApp = isLauncher;
@@ -891,6 +949,11 @@ public:
     bool IsDisabled() const
     {
         return (bundleStatus_ == BundleStatus::DISABLED);
+    }
+
+    bool IsEnabled() const
+    {
+        return (bundleStatus_ == BundleStatus::ENABLED);
     }
 
     void SetSeInfo(const std::string &seInfo)
@@ -1068,6 +1131,7 @@ private:
     // only using for install or update progress, doesn't need to save to database
     std::string currentPackage_;
     std::string mainAbilityName_;
+    std::string newBundleName_;
 
     std::map<std::string, std::vector<FormInfo>> formInfos_;
     std::map<std::string, CommonEventInfo> commonEvents_;

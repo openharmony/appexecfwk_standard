@@ -149,7 +149,10 @@ protected:
                 "signatureKey": "",
                 "supportedModes": 0,
                 "debug": false,
-                "singleUser": true
+                "singleUser": true,
+                "isCloned": true,
+                "uid": 10000,
+                "signatureKey": ""
             },
             "baseBundleInfo": {
                 "abilityInfos": [],
@@ -177,10 +180,12 @@ protected:
                     "name": "",
                     "permissions": [],
                     "process": "",
-                    "signatureKey": "",
                     "supportedModes": 0,
                     "debug": false,
-                    "singleUser": false
+                    "singleUser": false,
+                    "isCloned": false,
+                    "uid": -1,
+                    "signatureKey": ""
                 },
                 "compatibleVersion": 3,
                 "cpuAbi": "",
@@ -305,12 +310,7 @@ protected:
                                 "name": "originWidgetName",
                                 "value": "com.weather.testWidget"
                             }
-                        ],
-                        "src": "cards/card/index",
-                        "windows": {
-                            "designWidth": 720,
-                            "autoDesignWidth": true
-                        }
+                        ]
                     }
                 ]
             },
@@ -355,7 +355,8 @@ protected:
             },
             "uid": 10000,
             "userId_": 0,
-            "canUninstall": true
+            "canUninstall": true,
+            "newBundleName": "com.example.myapplication1#20010001"
         }
     )"_json;
 

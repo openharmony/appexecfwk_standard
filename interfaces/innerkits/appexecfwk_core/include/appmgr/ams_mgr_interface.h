@@ -105,6 +105,15 @@ public:
      */
     virtual int KillApplication(const std::string &bundleName) = 0;
 
+    /**
+     * KillApplicationByUid, call KillApplicationByUid() through proxy object, kill the application.
+     *
+     * @param  bundleName, bundle name in Application record.
+     * @param  userId, userId.
+     * @return ERR_OK, return back success, others fail.
+     */
+    virtual int KillApplicationByUid(const std::string &bundleName, const int uid) = 0;
+
     virtual void AbilityAttachTimeOut(const sptr<IRemoteObject> &token) = 0;
 
     virtual void PrepareTerminate(const sptr<IRemoteObject> &token) = 0;
@@ -133,6 +142,7 @@ public:
         AMS_ABILITY_ATTACH_TIMEOUT,
         AMS_COMPEL_VERIFY_PERMISSION,
         AMS_PREPARE_TERMINATE_ABILITY,
+        AMS_KILL_APPLICATION_BYUID,
     };
 };
 }  // namespace AppExecFwk

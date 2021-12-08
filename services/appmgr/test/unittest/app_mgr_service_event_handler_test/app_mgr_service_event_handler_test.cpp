@@ -163,5 +163,4 @@ HWTEST_F(AMSEventHandlerTest, app_mgr_service_event_handler_test_002, TestSize.L
     APP_LOGI("app_mgr_service_event_handler_test end");
 }
 }  // namespace AppExecFwk
-
 }  // namespace OHOS

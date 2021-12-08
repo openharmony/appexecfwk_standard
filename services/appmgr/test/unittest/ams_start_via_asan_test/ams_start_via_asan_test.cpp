@@ -19,9 +19,8 @@
 #include "app_log_wrapper.h"
 
 using namespace testing::ext;
-using namespace OHOS;
-using namespace OHOS::AppExecFwk;
-
+namespace OHOS {
+namespace AppExecFwk {
 class AmsStartViaAsanTest : public testing::Test {
 public:
     static void SetUpTestCase();
@@ -50,7 +49,7 @@ void AmsStartViaAsanTest::TearDown()
  * EnvConditions: NA
  * CaseDescription: Judge whether the wrap attribute exists in the environment.
  */
-HWTEST_F(AmsStartViaAsanTest, IsAsanVersion_001, TestSize.Level0)
+HWTEST_F(AmsStartViaAsanTest, IsAsanVersion_001, TestSize.Level1)
 {
     APP_LOGD("IsAsanVersion_001 start");
     std::string appName = "com.ohos.hiworld";
@@ -68,7 +67,7 @@ HWTEST_F(AmsStartViaAsanTest, IsAsanVersion_001, TestSize.Level0)
  * EnvConditions: NA
  * CaseDescription: Add the wrap attribute to the arg field of the AppSpawnStartMsg object
  */
-HWTEST_F(AmsStartViaAsanTest, GetAsanStartMsg_001, TestSize.Level0)
+HWTEST_F(AmsStartViaAsanTest, GetAsanStartMsg_001, TestSize.Level1)
 {
     APP_LOGD("GetAsanStartMsg_001 start");
     std::string appName = "com.ohos.hiworld";
@@ -77,3 +76,5 @@ HWTEST_F(AmsStartViaAsanTest, GetAsanStartMsg_001, TestSize.Level0)
     EXPECT_EQ(startMsg.arg, "wrap." + appName);
     APP_LOGD("GetAsanStartMsg_001 end");
 }
+}  // namespace AppExecFwk
+}  // namespace OHOS

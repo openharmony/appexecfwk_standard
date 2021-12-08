@@ -74,6 +74,7 @@ public:
     }
 
     MOCK_METHOD1(KillApplication, int(const std::string &appName));
+    MOCK_METHOD2(KillApplicationByUid, int(const std::string &, const int uid));
 
     virtual sptr<IAmsMgr> GetAmsMgr() override
     {
@@ -266,7 +267,6 @@ private:
     std::string data_;
     sptr<IAppStateCallback> callback_;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_KITS_APPKIT_TEST_MOCK_INCLUDE_MOCK_APP_MGR_SERVICE_H

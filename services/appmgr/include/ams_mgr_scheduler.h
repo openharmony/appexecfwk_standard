@@ -114,6 +114,15 @@ public:
      */
     virtual int32_t KillApplication(const std::string &bundleName) override;
 
+    /**
+     * KillApplicationByUid, call KillApplicationByUid() through proxy object, kill the application.
+     *
+     * @param  bundleName, bundle name in Application record.
+     * @param  uid, uid.
+     * @return ERR_OK, return back success, others fail.
+     */
+    virtual int KillApplicationByUid(const std::string &bundleName, const int uid) override;
+
     virtual void AbilityAttachTimeOut(const sptr<IRemoteObject> &token) override;
 
     virtual void PrepareTerminate(const sptr<IRemoteObject> &token) override;

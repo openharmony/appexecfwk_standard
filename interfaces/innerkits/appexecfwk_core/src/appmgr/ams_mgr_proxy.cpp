@@ -240,6 +240,37 @@ int32_t AmsMgrProxy::KillApplication(const std::string &bundleName)
     return reply.ReadInt32();
 }
 
+int32_t AmsMgrProxy::KillApplicationByUid(const std::string &bundleName, const int uid)
+{
+    APP_LOGD("start");
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option(MessageOption::TF_SYNC);
+    if (!WriteInterfaceToken(data)) {
+        return ERR_INVALID_DATA;
+    }
+    sptr<IRemoteObject> remote = Remote();
+    if (remote == nullptr) {
+        APP_LOGE("Remote() is NULL");
+        return ERR_NULL_OBJECT;
+    }
+    if (!data.WriteString(bundleName)) {
+        APP_LOGE("parcel WriteString failed");
+        return ERR_FLATTEN_OBJECT;
+    }
+    if (!data.WriteInt32(uid)) {
+        APP_LOGE("uid write failed.");
+        return ERR_FLATTEN_OBJECT;
+    }
+    int32_t ret =
+        remote->SendRequest(static_cast<uint32_t>(IAmsMgr::Message::AMS_KILL_APPLICATION_BYUID), data, reply, option);
+    if (ret != NO_ERROR) {
+        APP_LOGW("SendRequest is failed, error code: %{public}d", ret);
+        return ret;
+    }
+    return reply.ReadInt32();
+}
+
 void AmsMgrProxy::AbilityAttachTimeOut(const sptr<IRemoteObject> &token)
 {
     APP_LOGD("start");

@@ -88,7 +88,7 @@ void AppMgrServiceInner::LoadAbility(const sptr<IRemoteObject> &token, const spt
     } else {
         processName = abilityInfo->process;
     }
-    auto appRecord = GetAppRunningRecordByProcessName(appInfo->name, processName);
+    auto appRecord = GetAppRunningRecordByProcessName(appInfo->name, processName, abilityInfo->applicationInfo.uid);
     if (!appRecord) {
         RecordQueryResult result;
         int32_t defaultUid = 0;
@@ -102,7 +102,7 @@ void AppMgrServiceInner::LoadAbility(const sptr<IRemoteObject> &token, const spt
             auto abilityRecord = appRecord->GetAbilityRunningRecordByToken(token);
             abilityRecord->SetPreToken(preToken);
         }
-        StartProcess(abilityInfo->applicationName, processName, appRecord);
+        StartProcess(abilityInfo->applicationName, processName, appRecord, abilityInfo->applicationInfo.uid);
     } else {
         StartAbility(token, preToken, abilityInfo, appRecord);
     }
@@ -248,7 +248,89 @@ int32_t AppMgrServiceInner::KillApplication(const std::string &bundleName)
     return result;
 }
 
+int32_t AppMgrServiceInner::KillApplicationByUid(const std::string &bundleName, const int uid)
+{
+    if (!appRunningManager_) {
+        APP_LOGE("appRunningManager_ is nullptr");
+        return ERR_NO_INIT;
+    }
+    int result = ERR_OK;
+    int64_t startTime = SystemTimeMillis();
+    std::list<pid_t> pids;
+    if (remoteClientManager_ == nullptr) {
+        APP_LOGE("remoteClientManager_ fail");
+        return ERR_NO_INIT;
+    }
+    auto bundleMgr_ = remoteClientManager_->GetBundleManager();
+    if (bundleMgr_ == nullptr) {
+        APP_LOGE("GetBundleManager fail");
+        return ERR_NO_INIT;
+    }
+    APP_LOGI("uid value is %{public}d", uid);
+    if (!appRunningManager_->GetPidsByBundleNameByUid(bundleName, uid, pids)) {
+        APP_LOGI("The process corresponding to the package name did not start");
+        return result;
+    }
+    if (WaitForRemoteProcessExit(pids, startTime)) {
+        APP_LOGI("The remote process exited successfully ");
+        return result;
+    }
+    for (auto iter = pids.begin(); iter != pids.end(); ++iter) {
+        result = KillProcessByPid(*iter);
+        if (result < 0) {
+            APP_LOGE("KillApplication is fail bundleName: %{public}s pid: %{public}d", bundleName.c_str(), *iter);
+            return result;
+        }
+    }
+    return result;
+}
+
+int32_t AppMgrServiceInner::KillApplicationByUserId(const std::string &bundleName, const int userId)
+{
+    if (!appRunningManager_) {
+        APP_LOGE("appRunningManager_ is nullptr");
+        return ERR_NO_INIT;
+    }
+    int result = ERR_OK;
+    int64_t startTime = SystemTimeMillis();
+    std::list<pid_t> pids;
+    if (remoteClientManager_ == nullptr) {
+        APP_LOGE("remoteClientManager_ fail");
+        return ERR_NO_INIT;
+    }
+    auto bundleMgr_ = remoteClientManager_->GetBundleManager();
+    if (bundleMgr_ == nullptr) {
+        APP_LOGE("GetBundleManager fail");
+        return ERR_NO_INIT;
+    }
+    APP_LOGI("userId value is %{public}d", userId);
+    int uid = bundleMgr_->GetUidByBundleName(bundleName, userId);
+    APP_LOGI("uid value is %{public}d", uid);
+    if (!appRunningManager_->GetPidsByBundleNameByUid(bundleName, uid, pids)) {
+        APP_LOGI("The process corresponding to the package name did not start");
+        return result;
+    }
+    if (WaitForRemoteProcessExit(pids, startTime)) {
+        APP_LOGI("The remote process exited successfully ");
+        return result;
+    }
+    for (auto iter = pids.begin(); iter != pids.end(); ++iter) {
+        result = KillProcessByPid(*iter);
+        if (result < 0) {
+            APP_LOGE("KillApplication is fail bundleName: %{public}s pid: %{public}d", bundleName.c_str(), *iter);
+            return result;
+        }
+    }
+    return result;
+}
+
 void AppMgrServiceInner::ClearUpApplicationData(const std::string &bundleName, int32_t callerUid, pid_t callerPid)
+{
+    ClearUpApplicationDataByUserId(bundleName, callerUid, callerPid, Constants::DEFAULT_USERID);
+}
+
+void AppMgrServiceInner::ClearUpApplicationDataByUserId(const std::string &bundleName,
+    int32_t callerUid, pid_t callerPid, const int userId)
 {
     if (callerPid <= 0) {
         APP_LOGE("invalid callerPid:%{public}d", callerPid);
@@ -263,24 +345,29 @@ void AppMgrServiceInner::ClearUpApplicationData(const std::string &bundleName, i
         APP_LOGE("GetBundleManager fail");
         return;
     }
-
-    int32_t clearUid = bundleMgr_->GetUidByBundleName(bundleName, 0);
+    int32_t result = 0;
+    int32_t clearUid = bundleMgr_->GetUidByBundleName(bundleName, userId);
+    // 1.check permission
+    result = bundleMgr_->CheckPermissionByUid(bundleName, REQ_PERMISSION, userId);
+    if (result) {
+        APP_LOGE("No permission to clear application data");
+        return;
+    }
     if (bundleMgr_->CheckIsSystemAppByUid(callerUid) || callerUid == clearUid) {
         // request to clear user information permission.
-        int32_t result =
-            Permission::PermissionKit::RemoveUserGrantedReqPermissions(bundleName, Constants::DEFAULT_USERID);
+        result = Permission::PermissionKit::RemoveUserGrantedReqPermissions(bundleName, userId);
         if (result) {
             APP_LOGE("RemoveUserGrantedReqPermissions failed");
             return;
         }
         // 2.delete bundle side user data
-        if (!bundleMgr_->CleanBundleDataFiles(bundleName)) {
+        if (!bundleMgr_->CleanBundleDataFiles(bundleName, userId)) {
             APP_LOGE("Delete bundle side user data is fail");
             return;
         }
         // 3.kill application
         // 4.revoke user rights
-        result = KillApplication(bundleName);
+        result = KillApplicationByUserId(bundleName, userId);
         if (result < 0) {
             APP_LOGE("Kill Application by bundle name is fail");
             return;
@@ -401,9 +488,9 @@ std::shared_ptr<AppRunningRecord> AppMgrServiceInner::GetAppRunningRecordByAppNa
 }
 
 std::shared_ptr<AppRunningRecord> AppMgrServiceInner::GetAppRunningRecordByProcessName(
-    const std::string &appName, const std::string &processName) const
+    const std::string &appName, const std::string &processName, const int uid) const
 {
-    return appRunningManager_->GetAppRunningRecordByProcessName(appName, processName);
+    return appRunningManager_->GetAppRunningRecordByProcessName(appName, processName, uid);
 }
 
 std::shared_ptr<AppRunningRecord> AppMgrServiceInner::GetAppRunningRecordByPid(const pid_t pid) const
@@ -793,8 +880,8 @@ void AppMgrServiceInner::OnAbilityStateChanged(
     APP_LOGD("end");
 }
 
-void AppMgrServiceInner::StartProcess(
-    const std::string &appName, const std::string &processName, const std::shared_ptr<AppRunningRecord> &appRecord)
+void AppMgrServiceInner::StartProcess(const std::string &appName, const std::string &processName,
+    const std::shared_ptr<AppRunningRecord> &appRecord, const int uid)
 {
     if (!remoteClientManager_->GetSpawnClient() || !appRecord) {
         APP_LOGE("appSpawnClient or apprecord is null");
@@ -809,16 +896,25 @@ void AppMgrServiceInner::StartProcess(
 
     AppSpawnStartMsg startMsg;
     BundleInfo bundleInfo;
-    bool bundleMgrResult =
-        bundleMgr_->GetBundleInfo(appRecord->GetBundleName(), BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo);
+    std::vector<AppExecFwk::BundleInfo> bundleInfos;
+    bool bundleMgrResult = bundleMgr_->GetBundleInfos(AppExecFwk::BundleFlag::GET_BUNDLE_WITH_ABILITIES, bundleInfos);
     if (!bundleMgrResult) {
         APP_LOGE("GetBundleInfo is fail");
         return;
     }
-    startMsg.uid = bundleInfo.uid;
-    startMsg.gid = bundleInfo.gid;
+    std::string bundleName = appRecord->GetBundleName();
+    auto isExist = [&bundleName, &uid](const AppExecFwk::BundleInfo &bundleInfo) {
+        return bundleInfo.name == bundleName && bundleInfo.uid == uid;
+    };
+    auto bundleInfoIter = std::find_if(bundleInfos.begin(), bundleInfos.end(), isExist);
+    if (bundleInfoIter == bundleInfos.end()) {
+        APP_LOGE("Get target fail.");
+        return;
+    }
+    startMsg.uid = (*bundleInfoIter).uid;
+    startMsg.gid = (*bundleInfoIter).gid;
 
-    bundleMgrResult = bundleMgr_->GetBundleGids(appRecord->GetBundleName(), startMsg.gids);
+    bundleMgrResult = bundleMgr_->GetBundleGidsByUid(appRecord->GetBundleName(), uid, startMsg.gids);
     if (!bundleMgrResult) {
         APP_LOGE("GetBundleGids is fail");
         return;
@@ -1149,18 +1245,22 @@ int AppMgrServiceInner::CompelVerifyPermission(const std::string &permission, in
         message = ENUM_TO_STRING(PERMISSION_GRANTED);
         return ERR_OK;
     }
+    int userId = Constants::DEFAULT_USERID;
     auto appRecord = GetAppRunningRecordByPid(pid);
     if (!appRecord) {
         APP_LOGE("%{public}s app record is nullptr", __func__);
         return PERMISSION_NOT_GRANTED;
     }
     auto bundleName = appRecord->GetBundleName();
+    if (appRecord->GetCloneInfo()) {
+        userId = Constants::C_UESRID;
+    }
     auto bundleMgr = remoteClientManager_->GetBundleManager();
     if (bundleMgr == nullptr) {
         APP_LOGE("%{public}s GetBundleManager fail", __func__);
         return ERR_NO_INIT;
     }
-    auto bmsUid = bundleMgr->GetUidByBundleName(bundleName, 0);
+    auto bmsUid = bundleMgr->GetUidByBundleName(bundleName, userId);
     if (bmsUid == ROOT_UID || bmsUid == SYSTEM_UID) {
         APP_LOGI("uid is root or system, PERMISSION_GRANTED");
         message = ENUM_TO_STRING(PERMISSION_GRANTED);
@@ -1170,7 +1270,7 @@ int AppMgrServiceInner::CompelVerifyPermission(const std::string &permission, in
         APP_LOGI("check uid != bms uid, PERMISSION_NOT_GRANTED");
         return PERMISSION_NOT_GRANTED;
     }
-    auto result = bundleMgr->CheckPermission(bundleName, permission);
+    auto result = bundleMgr->CheckPermissionByUid(bundleName, permission, userId);
     if (result != PERMISSION_GRANTED) {
         return PERMISSION_NOT_GRANTED;
     }

@@ -61,6 +61,7 @@ const std::string MODULE_FORMS = "formInfos";
 const std::string MODULE_SHORTCUT = "shortcutInfos";
 const std::string MODULE_COMMON_EVENT = "commonEvents";
 const std::string MODULE_MAIN_ABILITY = "mainAbility";
+const std::string NEW_BUNDLE_NAME = "newBundleName";
 
 }  // namespace
 
@@ -180,6 +181,7 @@ void InnerBundleInfo::ToJson(nlohmann::json &jsonObject) const
     jsonObject[HAS_ENTRY] = hasEntry_;
     jsonObject[MODULE_FORMS] = formInfos_;
     jsonObject[MODULE_SHORTCUT] = shortcutInfos_;
+    jsonObject[NEW_BUNDLE_NAME] = newBundleName_;
     jsonObject[MODULE_COMMON_EVENT] = commonEvents_;
     jsonObject[CAN_UNINSTALL] = canUninstall_;
 }
@@ -731,6 +733,14 @@ int32_t InnerBundleInfo::FromJson(const nlohmann::json &jsonObject)
         true,
         ProfileReader::parseResult,
         ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        NEW_BUNDLE_NAME,
+        newBundleName_,
+        JsonType::STRING,
+        true,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
     GetValueIfFindKey<bool>(jsonObject,
         jsonObjectEnd,
         CAN_UNINSTALL,
@@ -820,25 +830,22 @@ std::optional<std::vector<AbilityInfo>> InnerBundleInfo::FindAbilityInfos(const 
     return std::nullopt;
 }
 
-std::optional<std::vector<AbilityInfo>> InnerBundleInfo::FindAbilityInfosForClone(
-    const std::string &bundleName, const std::string &abilityName) const
+void InnerBundleInfo::FindAbilityInfosForClone(
+    const std::string &bundleName, const std::string &abilityName, std::vector<AbilityInfo> &abilitys)
 {
-    std::vector<AbilityInfo> abilitys;
-
     if (bundleName.empty()) {
-        return std::nullopt;
+        return;
     }
 
-    for (const auto &ability : baseAbilityInfos_) {
+    for (auto &ability : baseAbilityInfos_) {
+        APP_LOGE("FindAbilityInfosForClonekey = %{public}s", ability.first.c_str());
         if ((ability.second.bundleName == bundleName && (ability.second.name == abilityName))) {
+            GetApplicationInfo(
+                ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMS, 0, ability.second.applicationInfo);
             abilitys.emplace_back(ability.second);
         }
     }
-    if (!abilitys.empty()) {
-        return abilitys;
-    }
-
-    return std::nullopt;
+    return;
 }
 
 bool InnerBundleInfo::AddModuleInfo(const InnerBundleInfo &newInfo)
@@ -1002,6 +1009,7 @@ std::string InnerBundleInfo::ToString() const
     j[HAS_ENTRY] = hasEntry_;
     j[MODULE_FORMS] = formInfos_;
     j[MODULE_SHORTCUT] = shortcutInfos_;
+    j[NEW_BUNDLE_NAME] = newBundleName_;
     j[MODULE_COMMON_EVENT] = commonEvents_;
     j[CAN_UNINSTALL] = canUninstall_;
     return j.dump();
@@ -1111,10 +1119,10 @@ void InnerBundleInfo::GetCommonEvents(const std::string &eventKey, std::vector<C
 {
     CommonEventInfo item;
     for (const auto &commonEvent : commonEvents_) {
-        for (const auto event : commonEvent.second.events) {
+        for (const auto &event : commonEvent.second.events) {
             if (event == eventKey) {
-                item=commonEvent.second;
-                item.uid=GetUid();
+                item = commonEvent.second;
+                item.uid = GetUid();
                 commonEvents.emplace_back(item);
                 break;
             }

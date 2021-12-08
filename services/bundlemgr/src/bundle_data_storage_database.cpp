@@ -160,7 +160,7 @@ bool BundleDataStorageDatabase::SaveStorageBundleInfo(
     }
 
     std::string keyOfData;
-    DeviceAndNameToKey(deviceId, innerBundleInfo.GetBundleName(), keyOfData);
+    DeviceAndNameToKey(deviceId, innerBundleInfo.GetDBKeyBundleName(), keyOfData);
     Key key(keyOfData);
     Value value(innerBundleInfo.ToString());
     Status status;
@@ -194,7 +194,7 @@ bool BundleDataStorageDatabase::DeleteStorageBundleInfo(
         }
     }
     std::string keyOfData;
-    DeviceAndNameToKey(deviceId, innerBundleInfo.GetBundleName(), keyOfData);
+    DeviceAndNameToKey(deviceId, innerBundleInfo.GetDBKeyBundleName(), keyOfData);
     Key key(keyOfData);
     Status status;
 
