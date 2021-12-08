@@ -152,7 +152,7 @@ void AmsCgroupManagerTest::TearDown()
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Verify the function Init can check the invalid eventHandler_
  */
-HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_Init_001, TestSize.Level0)
+HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_Init_001, TestSize.Level1)
 {
     APP_LOGD("AmsCgroupManager_Init_001 start.");
 
@@ -179,7 +179,7 @@ HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_Init_001, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: The verification function Init can check the failure of calling InitCpusetTasksFds
  */
-HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_Init_002, TestSize.Level0)
+HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_Init_002, TestSize.Level1)
 {
     APP_LOGD("AmsCgroupManager_Init_002 start.");
 
@@ -200,7 +200,7 @@ HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_Init_002, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: The verification function Init can check the failure of calling InitCpuctlTasksFds
  */
-HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_Init_003, TestSize.Level0)
+HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_Init_003, TestSize.Level1)
 {
     APP_LOGD("AmsCgroupManager_Init_003 start.");
 
@@ -220,7 +220,7 @@ HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_Init_003, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: The verification function Init can check the failure of calling InitFreezerTasksFds
  */
-HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_Init_004, TestSize.Level0)
+HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_Init_004, TestSize.Level1)
 {
     APP_LOGD("AmsCgroupManager_Init_004 start.");
 
@@ -241,7 +241,7 @@ HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_Init_004, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: The verification function Init can check that the initialization is successful
  */
-HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_Init_005, TestSize.Level0)
+HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_Init_005, TestSize.Level1)
 {
     APP_LOGD("AmsCgroupManager_Init_005 start.");
 
@@ -258,7 +258,7 @@ HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_Init_005, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Verify the function SetThreadSchedPolicy can check the invalid eventHandler_
  */
-HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_SetThreadSchedPolicy_001, TestSize.Level0)
+HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_SetThreadSchedPolicy_001, TestSize.Level1)
 {
     APP_LOGD("AmsCgroupManager_SetThreadSchedPolicy_001 start.");
 
@@ -279,7 +279,7 @@ HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_SetThreadSchedPolicy_001, TestSi
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Verify the function SetThreadSchedPolicy can check the invalid tid
  */
-HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_SetThreadSchedPolicy_002, TestSize.Level0)
+HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_SetThreadSchedPolicy_002, TestSize.Level1)
 {
     APP_LOGD("AmsCgroupManager_SetThreadSchedPolicy_002 start.");
 
@@ -299,7 +299,7 @@ HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_SetThreadSchedPolicy_002, TestSi
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Verify the function SetThreadSchedPolicy can check the invalid SchedPolicy
  */
-HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_SetThreadSchedPolicy_003, TestSize.Level0)
+HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_SetThreadSchedPolicy_003, TestSize.Level1)
 {
     APP_LOGD("AmsCgroupManager_SetThreadSchedPolicy_003 start.");
 
@@ -324,7 +324,7 @@ HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_SetThreadSchedPolicy_003, TestSi
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Verify the function SetThreadSchedPolicy can check the invalid freezerTasksFds_
  */
-HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_SetThreadSchedPolicy_004, TestSize.Level0)
+HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_SetThreadSchedPolicy_004, TestSize.Level1)
 {
     APP_LOGD("AmsCgroupManager_SetThreadSchedPolicy_004 start.");
 
@@ -348,7 +348,7 @@ HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_SetThreadSchedPolicy_004, TestSi
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Verify the function SetThreadSchedPolicy can check the invalid cpusetTasksFds_
  */
-HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_SetThreadSchedPolicy_005, TestSize.Level0)
+HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_SetThreadSchedPolicy_005, TestSize.Level1)
 {
     APP_LOGD("AmsCgroupManager_SetThreadSchedPolicy_005 start.");
 
@@ -372,7 +372,7 @@ HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_SetThreadSchedPolicy_005, TestSi
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Verify the function SetThreadSchedPolicy can check the invalid cpuctlTasksFds_
  */
-HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_SetThreadSchedPolicy_006, TestSize.Level0)
+HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_SetThreadSchedPolicy_006, TestSize.Level1)
 {
     APP_LOGD("AmsCgroupManager_SetThreadSchedPolicy_006 start.");
 
@@ -396,7 +396,7 @@ HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_SetThreadSchedPolicy_006, TestSi
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Verify the function SetThreadSchedPolicy can check the invalid freezerTasksFds_
  */
-HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_SetThreadSchedPolicy_007, TestSize.Level0)
+HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_SetThreadSchedPolicy_007, TestSize.Level1)
 {
     APP_LOGD("AmsCgroupManager_SetThreadSchedPolicy_007 start.");
 
@@ -420,7 +420,7 @@ HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_SetThreadSchedPolicy_007, TestSi
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Verify that the function SetThreadSchedPolicy can be executed successfully
  */
-HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_SetThreadSchedPolicy_008, TestSize.Level0)
+HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_SetThreadSchedPolicy_008, TestSize.Level1)
 {
     APP_LOGD("AmsCgroupManager_SetThreadSchedPolicy_008 start.");
 
@@ -457,7 +457,7 @@ HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_SetThreadSchedPolicy_008, TestSi
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Verify the function SetProcessSchedPolicy can check the invalid eventHandler_
  */
-HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_SetProcessSchedPolicy_001, TestSize.Level0)
+HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_SetProcessSchedPolicy_001, TestSize.Level1)
 {
     APP_LOGD("AmsCgroupManager_SetProcessSchedPolicy_001 start.");
 
@@ -478,7 +478,7 @@ HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_SetProcessSchedPolicy_001, TestS
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Verify the function SetProcessSchedPolicy can check the invalid pid
  */
-HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_SetProcessSchedPolicy_002, TestSize.Level0)
+HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_SetProcessSchedPolicy_002, TestSize.Level1)
 {
     APP_LOGD("AmsCgroupManager_SetProcessSchedPolicy_002 start.");
 
@@ -498,7 +498,7 @@ HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_SetProcessSchedPolicy_002, TestS
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Verify the function SetProcessSchedPolicy can check the invalid SchedPolicy
  */
-HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_SetProcessSchedPolicy_003, TestSize.Level0)
+HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_SetProcessSchedPolicy_003, TestSize.Level1)
 {
     APP_LOGD("AmsCgroupManager_SetProcessSchedPolicy_003 start.");
 
@@ -523,7 +523,7 @@ HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_SetProcessSchedPolicy_003, TestS
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Verify that the function SetProcessSchedPolicy can be executed successfully
  */
-HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_SetProcessSchedPolicy_004, TestSize.Level0)
+HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_SetProcessSchedPolicy_004, TestSize.Level1)
 {
     APP_LOGD("AmsCgroupManager_SetProcessSchedPolicy_004 start.");
 
@@ -547,7 +547,7 @@ HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_SetProcessSchedPolicy_004, TestS
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Verification function OnLowMemoryAlert in OnReadable returned level
  */
-HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_OnReadable_001, TestSize.Level0)
+HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_OnReadable_001, TestSize.Level1)
 {
     APP_LOGD("AmsCgroupManager_OnReadable_001 start.");
 
@@ -577,7 +577,7 @@ HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_OnReadable_001, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Verification function OnLowMemoryAlert in OnReadable returned level
  */
-HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_OnReadable_002, TestSize.Level0)
+HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_OnReadable_002, TestSize.Level1)
 {
     APP_LOGD("AmsCgroupManager_OnReadable_002 start ");
 
@@ -607,7 +607,7 @@ HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_OnReadable_002, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Verification function OnLowMemoryAlert in OnReadable returned level
  */
-HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_OnReadable_003, TestSize.Level0)
+HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_OnReadable_003, TestSize.Level1)
 {
     APP_LOGD("AmsCgroupManager_OnReadable_003 start.");
 
@@ -637,7 +637,7 @@ HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_OnReadable_003, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Verify the function RegisterLowMemoryMonitor can check the invalid memoryEventControlFd
  */
-HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_RegisterLowMemoryMonitor_001, TestSize.Level0)
+HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_RegisterLowMemoryMonitor_001, TestSize.Level1)
 {
     APP_LOGD("AmsCgroupManager_RegisterLowMemoryMonitor_001 start.");
 
@@ -663,7 +663,7 @@ HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_RegisterLowMemoryMonitor_001, Te
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription:  Verify that the function RegisterLowMemoryMonitor can be executed successfully
  */
-HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_RegisterLowMemoryMonitor_002, TestSize.Level0)
+HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_RegisterLowMemoryMonitor_002, TestSize.Level1)
 {
     APP_LOGD("AmsCgroupManager_RegisterLowMemoryMonitor_002 start.");
 
@@ -689,7 +689,7 @@ HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_RegisterLowMemoryMonitor_002, Te
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: The verification function InitCpusetTasksFds initialization memoryPressureFds failed
  */
-HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_InitCpusetTasksFds_001, TestSize.Level0)
+HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_InitCpusetTasksFds_001, TestSize.Level1)
 {
     APP_LOGD("AmsCgroupManager_InitCpusetTasksFds_001 start.");
 
@@ -711,7 +711,7 @@ HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_InitCpusetTasksFds_001, TestSize
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: The verification function InitCpusetTasksFds initialization memoryPressureFds successful
  */
-HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_InitCpusetTasksFds_002, TestSize.Level0)
+HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_InitCpusetTasksFds_002, TestSize.Level1)
 {
     APP_LOGD("AmsCgroupManager_InitCpusetTasksFds_002 start.");
 
@@ -729,7 +729,7 @@ HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_InitCpusetTasksFds_002, TestSize
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: The verification function InitCpuctlTasksFds initialization memoryPressureFds failed
  */
-HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_InitCpuctlTasksFds_001, TestSize.Level0)
+HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_InitCpuctlTasksFds_001, TestSize.Level1)
 {
     APP_LOGD("AmsCgroupManager_InitCpuctlTasksFds_001 start.");
 
@@ -751,7 +751,7 @@ HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_InitCpuctlTasksFds_001, TestSize
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: The verification function InitCpuctlTasksFds initialization memoryPressureFds successful
  */
-HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_InitCpuctlTasksFds_002, TestSize.Level0)
+HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_InitCpuctlTasksFds_002, TestSize.Level1)
 {
     APP_LOGD("AmsCgroupManager_InitCpuctlTasksFds_002 start.");
 
@@ -769,7 +769,7 @@ HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_InitCpuctlTasksFds_002, TestSize
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: The verification function InitFreezerTasksFds initialization memoryPressureFds failed
  */
-HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_InitFreezerTasksFds_001, TestSize.Level0)
+HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_InitFreezerTasksFds_001, TestSize.Level1)
 {
     APP_LOGD("AmsCgroupManager_InitFreezerTasksFds_001 start.");
 
@@ -791,7 +791,7 @@ HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_InitFreezerTasksFds_001, TestSiz
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: The verification function InitFreezerTasksFds initialization memoryPressureFds successful
  */
-HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_InitFreezerTasksFds_002, TestSize.Level0)
+HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_InitFreezerTasksFds_002, TestSize.Level1)
 {
     APP_LOGD("AmsCgroupManager_InitFreezerTasksFds_002 start.");
 
@@ -809,7 +809,7 @@ HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_InitFreezerTasksFds_002, TestSiz
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: The verification function InitMemoryEventControlFd initialization memoryPressureFds failed
  */
-HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_InitMemoryEventControlFd_001, TestSize.Level0)
+HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_InitMemoryEventControlFd_001, TestSize.Level1)
 {
     APP_LOGD("AmsCgroupManager_InitMemoryEventControlFd_001 start.");
 
@@ -836,7 +836,7 @@ HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_InitMemoryEventControlFd_001, Te
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: The verification function InitMemoryEventControlFd initialization memoryPressureFds successful
  */
-HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_InitMemoryEventControlFd_002, TestSize.Level0)
+HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_InitMemoryEventControlFd_002, TestSize.Level1)
 {
     APP_LOGD("AmsCgroupManager_InitMemoryEventControlFd_002 start.");
 
@@ -854,7 +854,7 @@ HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_InitMemoryEventControlFd_002, Te
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: The verification function InitMemoryEventFds initialization memoryPressureFds failed
  */
-HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_InitMemoryEventFds_001, TestSize.Level0)
+HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_InitMemoryEventFds_001, TestSize.Level1)
 {
     APP_LOGD("AmsCgroupManager_InitMemoryEventFds_001 start.");
 
@@ -881,7 +881,7 @@ HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_InitMemoryEventFds_001, TestSize
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: The verification function InitMemoryEventFds initialization memoryPressureFds successful
  */
-HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_InitMemoryEventFds_002, TestSize.Level0)
+HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_InitMemoryEventFds_002, TestSize.Level1)
 {
     APP_LOGD("AmsCgroupManager_InitMemoryEventFds_002 start.");
 
@@ -899,7 +899,7 @@ HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_InitMemoryEventFds_002, TestSize
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: The verification function InitMemoryPressureFds initialization memoryPressureFds failed
  */
-HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_InitMemoryPressureFds_001, TestSize.Level0)
+HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_InitMemoryPressureFds_001, TestSize.Level1)
 {
     APP_LOGD("AmsCgroupManager_InitMemoryPressureFds_001 start.");
 
@@ -926,7 +926,7 @@ HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_InitMemoryPressureFds_001, TestS
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Verify the function SetCpusetSubsystem can check the invalid cpusetTasksFds_
  */
-HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_SetCpusetSubsystem_001, TestSize.Level0)
+HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_SetCpusetSubsystem_001, TestSize.Level1)
 {
     APP_LOGD("AmsCgroupManager_SetCpusetSubsystem_001 start.");
 
@@ -950,7 +950,7 @@ HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_SetCpusetSubsystem_001, TestSize
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Verify that the function SetCpusetSubsystem can be called successfully
  */
-HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_SetCpusetSubsystem_002, TestSize.Level0)
+HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_SetCpusetSubsystem_002, TestSize.Level1)
 {
     APP_LOGD("AmsCgroupManager_SetCpusetSubsystem_002 start.");
 
@@ -974,7 +974,7 @@ HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_SetCpusetSubsystem_002, TestSize
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Verify the function SetCpuctlSubsystem can check the invalid cpuctlTasksFds_
  */
-HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_SetCpuctlSubsystem_001, TestSize.Level0)
+HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_SetCpuctlSubsystem_001, TestSize.Level1)
 {
     APP_LOGD("AmsCgroupManager_SetCpuctlSubsystem_001 start.");
 
@@ -998,7 +998,7 @@ HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_SetCpuctlSubsystem_001, TestSize
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Verify that the function SetCpuctlSubsystem can be called successfully
  */
-HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_SetCpuctlSubsystem_002, TestSize.Level0)
+HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_SetCpuctlSubsystem_002, TestSize.Level1)
 {
     APP_LOGD("AmsCgroupManager_SetCpuctlSubsystem_002 start.");
 
@@ -1023,7 +1023,7 @@ HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_SetCpuctlSubsystem_002, TestSize
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Verify the function SetFreezerSubsystem can check the invalid freezerTasksFds_
  */
-HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_SetFreezerSubsystem_001, TestSize.Level0)
+HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_SetFreezerSubsystem_001, TestSize.Level1)
 {
     APP_LOGD("AmsCgroupManager_SetFreezerSubsystem_001 start.");
 
@@ -1047,7 +1047,7 @@ HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_SetFreezerSubsystem_001, TestSiz
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Verify that the function SetFreezerSubsystem can be called successfully
  */
-HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_SetFreezerSubsystem_002, TestSize.Level0)
+HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_SetFreezerSubsystem_002, TestSize.Level1)
 {
     APP_LOGD("AmsCgroupManager_SetFreezerSubsystem_002 start.");
 

@@ -55,7 +55,7 @@ void AmsLmksClientTest::TearDown()
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Verify the function Open can check the invalid socket_
  */
-HWTEST_F(AmsLmksClientTest, AmsLmksClientTest_Open_001, TestSize.Level0)
+HWTEST_F(AmsLmksClientTest, AmsLmksClientTest_Open_001, TestSize.Level1)
 {
     APP_LOGD("AmsLmksClientTest_Open_001 start.");
 
@@ -74,7 +74,7 @@ HWTEST_F(AmsLmksClientTest, AmsLmksClientTest_Open_001, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: open socket success
  */
-HWTEST_F(AmsLmksClientTest, AmsLmksClientTest_Open_002, TestSize.Level0)
+HWTEST_F(AmsLmksClientTest, AmsLmksClientTest_Open_002, TestSize.Level1)
 {
     APP_LOGD("AmsLmksClientTest_Open_002 start.");
 
@@ -93,7 +93,7 @@ HWTEST_F(AmsLmksClientTest, AmsLmksClientTest_Open_002, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Verify the function Target can check the invalid targets
  */
-HWTEST_F(AmsLmksClientTest, AmsLmksClientTest_Target_001, TestSize.Level0)
+HWTEST_F(AmsLmksClientTest, AmsLmksClientTest_Target_001, TestSize.Level1)
 {
     APP_LOGD("AmsLmksClientTest_Target_001 start.");
 
@@ -113,7 +113,7 @@ HWTEST_F(AmsLmksClientTest, AmsLmksClientTest_Target_001, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Verify the function Target can check the invalid targets
  */
-HWTEST_F(AmsLmksClientTest, AmsLmksClientTest_Target_002, TestSize.Level0)
+HWTEST_F(AmsLmksClientTest, AmsLmksClientTest_Target_002, TestSize.Level1)
 {
     APP_LOGD("AmsLmksClientTest_Target_002 start.");
 
@@ -133,7 +133,7 @@ HWTEST_F(AmsLmksClientTest, AmsLmksClientTest_Target_002, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Verify the function Target can check the invalid targets
  */
-HWTEST_F(AmsLmksClientTest, AmsLmksClientTest_Target_003, TestSize.Level0)
+HWTEST_F(AmsLmksClientTest, AmsLmksClientTest_Target_003, TestSize.Level1)
 {
     APP_LOGD("AmsLmksClientTest_Target_003 start.");
 
@@ -153,7 +153,7 @@ HWTEST_F(AmsLmksClientTest, AmsLmksClientTest_Target_003, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Verify the function Target can check the invalid targets
  */
-HWTEST_F(AmsLmksClientTest, AmsLmksClientTest_Target_004, TestSize.Level0)
+HWTEST_F(AmsLmksClientTest, AmsLmksClientTest_Target_004, TestSize.Level1)
 {
     APP_LOGD("AmsLmksClientTest_Target_004 start.");
 
@@ -173,7 +173,7 @@ HWTEST_F(AmsLmksClientTest, AmsLmksClientTest_Target_004, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Verify that the function Target can be executed normally
  */
-HWTEST_F(AmsLmksClientTest, AmsLmksClientTest_Target_005, TestSize.Level0)
+HWTEST_F(AmsLmksClientTest, AmsLmksClientTest_Target_005, TestSize.Level1)
 {
     APP_LOGD("AmsLmksClientTest_Target_005 start.");
 
@@ -193,7 +193,7 @@ HWTEST_F(AmsLmksClientTest, AmsLmksClientTest_Target_005, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Verify the function ProcPrio can check the invalid pid
  */
-HWTEST_F(AmsLmksClientTest, AmsLmksClientTest_ProcPrio_001, TestSize.Level0)
+HWTEST_F(AmsLmksClientTest, AmsLmksClientTest_ProcPrio_001, TestSize.Level1)
 {
     APP_LOGD("AmsLmksClientTest_ProcPrio_001 start.");
 
@@ -214,7 +214,7 @@ HWTEST_F(AmsLmksClientTest, AmsLmksClientTest_ProcPrio_001, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Verify the function ProcPrio can check the invalid oomAdj
  */
-HWTEST_F(AmsLmksClientTest, AmsLmksClientTest_ProcPrio_002, TestSize.Level0)
+HWTEST_F(AmsLmksClientTest, AmsLmksClientTest_ProcPrio_002, TestSize.Level1)
 {
     APP_LOGD("AmsLmksClientTest_ProcPrio_002 start.");
 
@@ -235,7 +235,7 @@ HWTEST_F(AmsLmksClientTest, AmsLmksClientTest_ProcPrio_002, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Verify that the function ProcPrio can be executed normally
  */
-HWTEST_F(AmsLmksClientTest, AmsLmksClientTest_ProcPrio_003, TestSize.Level0)
+HWTEST_F(AmsLmksClientTest, AmsLmksClientTest_ProcPrio_003, TestSize.Level1)
 {
     APP_LOGD("AmsLmksClientTest_ProcPrio_003 start.");
 
@@ -256,7 +256,7 @@ HWTEST_F(AmsLmksClientTest, AmsLmksClientTest_ProcPrio_003, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Verify the function ProcRemove can check the invalid pid
  */
-HWTEST_F(AmsLmksClientTest, AmsLmksClientTest_ProcRemove_001, TestSize.Level0)
+HWTEST_F(AmsLmksClientTest, AmsLmksClientTest_ProcRemove_001, TestSize.Level1)
 {
     APP_LOGD("AmsLmksClientTest_ProcRemove_001 start.");
 
@@ -275,7 +275,7 @@ HWTEST_F(AmsLmksClientTest, AmsLmksClientTest_ProcRemove_001, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Verify the function ProcRemove success to remove process
  */
-HWTEST_F(AmsLmksClientTest, AmsLmksClientTest_ProcRemove_002, TestSize.Level0)
+HWTEST_F(AmsLmksClientTest, AmsLmksClientTest_ProcRemove_002, TestSize.Level1)
 {
     APP_LOGD("AmsLmksClientTest_ProcRemove_002 start.");
 
@@ -294,7 +294,7 @@ HWTEST_F(AmsLmksClientTest, AmsLmksClientTest_ProcRemove_002, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Verify the function Write can check the invalid buf
  */
-HWTEST_F(AmsLmksClientTest, AmsLmksClientTest_Write_001, TestSize.Level0)
+HWTEST_F(AmsLmksClientTest, AmsLmksClientTest_Write_001, TestSize.Level1)
 {
     APP_LOGD("AmsLmksClientTest_Write_001 start.");
 
@@ -314,7 +314,7 @@ HWTEST_F(AmsLmksClientTest, AmsLmksClientTest_Write_001, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Verify the function Write can check the invalid len
  */
-HWTEST_F(AmsLmksClientTest, AmsLmksClientTest_Write_002, TestSize.Level0)
+HWTEST_F(AmsLmksClientTest, AmsLmksClientTest_Write_002, TestSize.Level1)
 {
     APP_LOGD("AmsLmksClientTest_Write_002 start.");
 
@@ -334,7 +334,7 @@ HWTEST_F(AmsLmksClientTest, AmsLmksClientTest_Write_002, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Verify the function Read can check the invalid buf
  */
-HWTEST_F(AmsLmksClientTest, AmsLmksClientTest_Read_001, TestSize.Level0)
+HWTEST_F(AmsLmksClientTest, AmsLmksClientTest_Read_001, TestSize.Level1)
 {
     APP_LOGD("AmsLmksClientTest_Read_001 start.");
 
@@ -354,7 +354,7 @@ HWTEST_F(AmsLmksClientTest, AmsLmksClientTest_Read_001, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Verify the function Read can check the invalid len
  */
-HWTEST_F(AmsLmksClientTest, AmsLmksClientTest_Read_002, TestSize.Level0)
+HWTEST_F(AmsLmksClientTest, AmsLmksClientTest_Read_002, TestSize.Level1)
 {
     APP_LOGD("AmsLmksClientTest_Read_002 start.");
 
@@ -374,7 +374,7 @@ HWTEST_F(AmsLmksClientTest, AmsLmksClientTest_Read_002, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Check whether the close function closes the socket
  */
-HWTEST_F(AmsLmksClientTest, AmsLmksClientTest_Close_001, TestSize.Level0)
+HWTEST_F(AmsLmksClientTest, AmsLmksClientTest_Close_001, TestSize.Level1)
 {
     APP_LOGD("AmsLmksClientTest_Close_001 start.");
 

@@ -82,7 +82,7 @@ public:
     MOCK_METHOD0(IsSafeMode, bool());
     MOCK_METHOD2(CleanBundleCacheFiles,
         bool(const std::string &bundleName, const sptr<ICleanCacheCallback> &cleanCacheCallback));
-    MOCK_METHOD1(CleanBundleDataFiles, bool(const std::string &bundleName));
+    MOCK_METHOD2(CleanBundleDataFiles, bool(const std::string &bundleName, const int userId));
     MOCK_METHOD1(RegisterBundleStatusCallback, bool(const sptr<IBundleStatusCallback> &bundleStatusCallback));
     MOCK_METHOD1(ClearBundleStatusCallback, bool(const sptr<IBundleStatusCallback> &bundleStatusCallback));
     MOCK_METHOD0(UnregisterBundleStatusCallback, bool());

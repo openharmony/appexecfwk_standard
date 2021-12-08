@@ -53,6 +53,7 @@ ErrCode BundleManagerShellCommand::CreateCommandMap()
         {"install", std::bind(&BundleManagerShellCommand::RunAsInstallCommand, this)},
         {"uninstall", std::bind(&BundleManagerShellCommand::RunAsUninstallCommand, this)},
         {"dump", std::bind(&BundleManagerShellCommand::RunAsDumpCommand, this)},
+        {"clone", std::bind(&BundleManagerShellCommand::RunAsBundleCloneCommand, this)},
     };
 
     return OHOS::ERR_OK;
@@ -724,6 +725,110 @@ ErrCode BundleManagerShellCommand::RunAsDumpCommand()
     }
 
     return result;
+}
+
+ErrCode BundleManagerShellCommand::RunAsBundleCloneCommand()
+{
+    int result = OHOS::ERR_OK;
+    std::string dumpResults = "";
+  
+    int option = getopt_long(argc_, argv_, SHORT_OPTIONS.c_str(), LONG_OPTIONS, nullptr);
+
+    if (optind < 0 || optind > argc_) {
+        return OHOS::ERR_INVALID_VALUE;
+    }
+
+    for (int i = 0; i < argc_; i++) {
+        APP_LOGI("argv_[%{public}d]: %{public}s", i, argv_[i]);
+    }
+    
+    switch (option) {
+        case 'h': {
+            // 'bm clone -h'
+            // 'bm clone --help'
+            APP_LOGI("'bm clone %{public}s'", argv_[optind - 1]);
+
+            result = OHOS::ERR_INVALID_VALUE;
+            break;
+        }
+        case 'n': {
+            // 'bm clone -n xxx'
+            // 'bm clone --bundle-name xxx'
+            APP_LOGI("'bm clone %{public}s %{public}s'", argv_[optind - OFFSET_REQUIRED_ARGUMENT], optarg);
+            if (!bundleMgrProxy_) {
+                result = OHOS::ERR_NO_INIT;
+                break;
+            }
+
+            dumpResults += optarg;
+            bool cloneResult = bundleMgrProxy_->BundleClone(optarg);
+            if (!cloneResult) {
+                dumpResults += STRING_CLONE_BUNDLE_NG;
+            } else {
+                dumpResults += STRING_CLONE_BUNDLE_OK;
+            }
+            break;
+        }
+        case '?': {
+            switch (optopt) {
+                case 'n': {
+                    // 'bm clone -n' with no argument: bm clone -n
+                    // 'bm clone --bundle-name' with no argument: bm clone --bundle-name
+                    APP_LOGI("'bm clone -n' with no argument.");
+
+                    resultReceiver_.append("error: option ");
+                    resultReceiver_.append("requires a value.\n");
+                    result = OHOS::ERR_INVALID_VALUE;
+                    break;
+                }
+                case 0: {
+                    // 'bm clone' with an unknown option: bm clone --x
+                    // 'bm clone' with an unknown option: bm clone --xxx
+                    std::string unknownOption = "";
+                    std::string unknownOptionMsg = GetUnknownOptionMsg(unknownOption);
+
+                    APP_LOGI("'bm clone' with an unknown option.");
+
+                    resultReceiver_.append(unknownOptionMsg);
+                    result = OHOS::ERR_INVALID_VALUE;
+                    break;
+                }
+                default: {
+                    // 'bm clone' with an unknown option: bm clone -x
+                    // 'bm clone' with an unknown option: bm clone -xxx
+                    std::string unknownOption = "";
+                    std::string unknownOptionMsg = GetUnknownOptionMsg(unknownOption);
+
+                    APP_LOGI("'bm clone' with an unknown option.");
+
+                    resultReceiver_.append(unknownOptionMsg);
+                    result = OHOS::ERR_INVALID_VALUE;
+                    break;
+                }
+            }
+            break;
+        }
+        default: {
+            if (strcmp(argv_[optind], cmd_.c_str()) == 0) {
+                // 'bm clone' with no option: bm clone
+                // 'bm clone' with a wrong argument: bm clone xxx
+                APP_LOGI("'bm clone' %{public}s", HELP_MSG_NO_OPTION.c_str());
+
+                resultReceiver_.append(HELP_MSG_NO_OPTION + "\n");
+                result = OHOS::ERR_INVALID_VALUE;
+            }
+            break;
+        }
+    }
+
+    if (result != OHOS::ERR_OK) {
+        resultReceiver_.append(HELP_MSG_CLONE);
+    } else {
+        APP_LOGI("dumpResults: %{public}s", dumpResults.c_str());
+        resultReceiver_.append(dumpResults + "\n");
+    }
+
+    return OHOS::ERR_OK;
 }
 
 std::string BundleManagerShellCommand::DumpBundleList() const

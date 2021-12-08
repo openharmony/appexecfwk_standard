@@ -123,6 +123,7 @@ ohos_shared_library("libbms") {
   ]
 
   sources = [
+    "src/bundle_clone_mgr.cpp",
     "src/bundle_data_mgr.cpp",
     "src/bundle_data_storage.cpp",
     "src/bundle_data_storage_database.cpp",

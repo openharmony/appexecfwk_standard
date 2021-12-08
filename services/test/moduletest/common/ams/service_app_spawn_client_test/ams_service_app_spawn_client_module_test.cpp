@@ -50,7 +50,8 @@ int MockSleep([[maybe_unused]] uint32_t seconds)
 {
     return 0;
 }
-
+namespace OHOS {
+namespace AppExecFwk {
 class MockedAppSpawnSocket : public AppSpawnSocket {
 public:
     MockedAppSpawnSocket()
@@ -498,7 +499,7 @@ HWTEST_F(AmsServiceAppSpawnClientModuleTest, ConnectAppSpawnDaemon_010, TestSize
  * EnvConditions: mobile that can run ohos test framework
  * CaseDescription: Test if AppSpawnClient act normal when failed to connect daemon at first but reconnect successfully.
  */
-HWTEST_F(AmsServiceAppSpawnClientModuleTest, ReconnectAppSpawnDaemon_001, TestSize.Level0)
+HWTEST_F(AmsServiceAppSpawnClientModuleTest, ReconnectAppSpawnDaemon_001, TestSize.Level1)
 {
     APP_LOGI("ReconnectAppSpawnDaemon_001 start");
     std::shared_ptr<AppSpawnClient> appSpawnClient = std::make_shared<AppSpawnClient>();
@@ -533,7 +534,7 @@ HWTEST_F(AmsServiceAppSpawnClientModuleTest, ReconnectAppSpawnDaemon_001, TestSi
  * EnvConditions: mobile that can run ohos test framework
  * CaseDescription: Test if AppSpawnClient act normal when failed to connect daemon but the last reconnect successfully.
  */
-HWTEST_F(AmsServiceAppSpawnClientModuleTest, ReconnectAppSpawnDaemon_002, TestSize.Level0)
+HWTEST_F(AmsServiceAppSpawnClientModuleTest, ReconnectAppSpawnDaemon_002, TestSize.Level1)
 {
     APP_LOGI("ReconnectAppSpawnDaemon_002 start");
     std::shared_ptr<AppSpawnClient> appSpawnClient = std::make_shared<AppSpawnClient>();
@@ -570,7 +571,7 @@ HWTEST_F(AmsServiceAppSpawnClientModuleTest, ReconnectAppSpawnDaemon_002, TestSi
  * CaseDescription: Test if AppSpawnClient act normal when failed to connect daemon and still fail to reconnect
  *                  for the max times.
  */
-HWTEST_F(AmsServiceAppSpawnClientModuleTest, ReconnectAppSpawnDaemon_003, TestSize.Level0)
+HWTEST_F(AmsServiceAppSpawnClientModuleTest, ReconnectAppSpawnDaemon_003, TestSize.Level1)
 {
     APP_LOGI("ReconnectAppSpawnDaemon_003 start");
     std::shared_ptr<AppSpawnClient> appSpawnClient = std::make_shared<AppSpawnClient>();
@@ -601,7 +602,7 @@ HWTEST_F(AmsServiceAppSpawnClientModuleTest, ReconnectAppSpawnDaemon_003, TestSi
  * CaseDescription: Test if AppSpawnClient act normal when failed to start process for ReadMessage,
  *                  but the last is successful.
  */
-HWTEST_F(AmsServiceAppSpawnClientModuleTest, ReconnectAppSpawnDaemon_004, TestSize.Level0)
+HWTEST_F(AmsServiceAppSpawnClientModuleTest, ReconnectAppSpawnDaemon_004, TestSize.Level1)
 {
     APP_LOGI("ReconnectAppSpawnDaemon_004 start");
     std::shared_ptr<AppSpawnClient> appSpawnClient = std::make_shared<AppSpawnClient>();
@@ -642,7 +643,7 @@ HWTEST_F(AmsServiceAppSpawnClientModuleTest, ReconnectAppSpawnDaemon_004, TestSi
  * EnvConditions: mobile that can run ohos test framework
  * CaseDescription: Test if AppSpawnClient act normal when failed to connect daemon for ReadMessage.
  */
-HWTEST_F(AmsServiceAppSpawnClientModuleTest, ReconnectAppSpawnDaemon_005, TestSize.Level0)
+HWTEST_F(AmsServiceAppSpawnClientModuleTest, ReconnectAppSpawnDaemon_005, TestSize.Level1)
 {
     APP_LOGI("ReconnectAppSpawnDaemon_005 start");
     std::shared_ptr<AppSpawnClient> appSpawnClient = std::make_shared<AppSpawnClient>();
@@ -672,7 +673,7 @@ HWTEST_F(AmsServiceAppSpawnClientModuleTest, ReconnectAppSpawnDaemon_005, TestSi
  *                  ((CONNECT_RETRY_MAX_TIMES + 1) * (CONNECT_RETRY_MAX_TIMES + 1) - 1) times,
  *                  but the last is successful.
  */
-HWTEST_F(AmsServiceAppSpawnClientModuleTest, ReconnectAppSpawnDaemon_006, TestSize.Level0)
+HWTEST_F(AmsServiceAppSpawnClientModuleTest, ReconnectAppSpawnDaemon_006, TestSize.Level1)
 {
     APP_LOGI("ReconnectAppSpawnDaemon_006 start");
     std::shared_ptr<AppSpawnClient> appSpawnClient = std::make_shared<AppSpawnClient>();
@@ -699,3 +700,5 @@ HWTEST_F(AmsServiceAppSpawnClientModuleTest, ReconnectAppSpawnDaemon_006, TestSi
     EXPECT_EQ(SpawnConnectionState::STATE_NOT_CONNECT, appSpawnClient->QueryConnectionState());
     APP_LOGI("ReconnectAppSpawnDaemon_006 end");
 }
+}  // namespace AppExecFwk
+}  // namespace OHOS

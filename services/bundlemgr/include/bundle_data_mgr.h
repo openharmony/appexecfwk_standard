@@ -118,6 +118,18 @@ public:
      */
     bool GenerateUidAndGid(InnerBundleInfo &info);
     /**
+     * @brief Generate cloned uid by cloned bundle.
+     * @param info Indicates the InnerBundleInfo object.
+     * @return Returns true if this function is successfully called; returns false otherwise.
+     */
+    bool GenerateCloneUid(InnerBundleInfo &info);
+    /**
+     * @brief save the new cloned inner bundle info by cloned bundle.
+     * @param info Indicates the InnerBundleInfo object.
+     * @return Returns true if this function is successfully called; returns false otherwise.
+     */
+    bool SaveNewInfoToDB(const std::string &bundleName, InnerBundleInfo &info);
+    /**
      * @brief Query the AbilityInfo by the given Want.
      * @param want Indicates the information of the ability.
      * @param abilityInfo Indicates the obtained AbilityInfo object.
@@ -137,7 +149,7 @@ public:
      * @param abilityInfo Indicates the obtained AbilityInfo of list.
      * @return Returns true if the AbilityInfo is successfully obtained; returns false otherwise.
      */
-    bool QueryAbilityInfosForClone(const Want &want, std::vector<AbilityInfo> &abilityInfo) const;
+    bool QueryAbilityInfosForClone(const Want &want, std::vector<AbilityInfo> &abilityInfo);
     /**
      * @brief Query the AbilityInfo by ability.uri in config.json.
      * @param abilityUri Indicates the uri of the ability.
@@ -145,6 +157,13 @@ public:
      * @return Returns true if the AbilityInfo is successfully obtained; returns false otherwise.
      */
     bool QueryAbilityInfoByUri(const std::string &abilityUri, AbilityInfo &abilityInfo) const;
+    /**
+     * @brief Query the AbilityInfo by ability.uri in config.json.
+     * @param abilityUri Indicates the uri of the ability.
+     * @param abilityInfos Indicates the obtained AbilityInfos object.
+     * @return Returns true if the AbilityInfo is successfully obtained; returns false otherwise.
+     */
+    bool QueryAbilityInfosByUri(const std::string &abilityUri, std::vector<AbilityInfo> &abilityInfos);
     /**
      * @brief Obtains the ApplicationInfo based on a given bundle name.
      * @param appName Indicates the application bundle name to be queried.
@@ -216,6 +235,14 @@ public:
      * @return Returns true if the gids is successfully obtained; returns false otherwise.
      */
     bool GetBundleGids(const std::string &bundleName, std::vector<int> &gids) const;
+    /**
+     * @brief Obtains an array of all group IDs associated with the given bundle name and UID.
+     * @param bundleName Indicates the bundle name.
+     * @param uid Indicates the uid.
+     * @param gids Indicates the group IDs associated with the specified bundle.
+     * @return Returns true if the gids is successfully obtained; returns false otherwise.
+     */
+    bool GetBundleGidsByUid(const std::string &bundleName, const int &uid, std::vector<int> &gids) const;
     /**
      * @brief Obtains the BundleInfo of all keep-alive applications in the system.
      * @param bundleInfos Indicates all of the obtained BundleInfo objects.
@@ -411,10 +438,11 @@ public:
      * @param bundleName Indicates the bundle name of the ability to activity.
      * @param abilityName Indicates the name of the ability to activity.
      * @param launchTime Indicates the ability launchTime.
+     * @param uid Indicates the uid.
      * @return Returns true if this function is successfully called; returns false otherwise.
      */
     bool NotifyActivityLifeStatus(
-        const std::string &bundleName, const std::string &abilityName, const int64_t launchTime) const;
+        const std::string &bundleName, const std::string &abilityName, const int64_t launchTime, const int uid) const;
     /**
      * @brief Query ModuleUsageRecord objects ordered by lastLaunchTime desc
      * @param maxNum Indicates the max number ShortcutInfo objects to get.
@@ -471,6 +499,19 @@ public:
      */
     bool UpdateUsageRecordOnModuleRemoved(
         bool keepUsage, const int userId, const std::string &bundleName, const std::string &moduleName) const;
+    /**
+     * @brief Remove cloned bundle info.
+     * @param bundleName Indicates the bundle name of remove cloned bundle.
+     * @return Returns true if this function is successfully called; returns false otherwise.
+     */
+    bool RemoveClonedBundleInfo(const std::string &bundleName);
+    /**
+     * @brief Get cloned bundle's name.
+     * @param bundleName Indicates the bundle name of the ontology bundle name.
+     * @param newName Indicates the cloned name to be return.
+     * @return Returns true if this function is successfully called; returns false otherwise.
+     */
+    bool GetClonedBundleName(const std::string &bundleName, std::string &newName);
 
 private:
     /**

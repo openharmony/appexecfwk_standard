@@ -33,28 +33,14 @@
 #include "bundle_util.h"
 #include "bundle_permission_mgr.h"
 #include "bundle_verify_mgr.h"
+#include "bundle_clone_mgr.h"
+#include "scope_guard.h"
 
 namespace OHOS {
 namespace AppExecFwk {
 namespace {
 
-bool KillApplicationProcesses(const std::string &bundleName)
-{
-    APP_LOGI("kill running processes, app name is %{public}s", bundleName.c_str());
-    sptr<AAFwk::IAbilityManager> abilityMgrProxy =
-        iface_cast<AAFwk::IAbilityManager>(SystemAbilityHelper::GetSystemAbility(ABILITY_MGR_SERVICE_ID));
-    if (!abilityMgrProxy) {
-        APP_LOGE("fail to find the app mgr service to kill application");
-        return false;
-    }
-    if (abilityMgrProxy->KillProcess(bundleName) != 0) {
-        APP_LOGE("kill application process failed");
-        return false;
-    }
-    return true;
-}
-
-bool UninstallApplicationProcesses(const std::string &bundleName)
+bool UninstallApplicationProcesses(const std::string &bundleName, const int uid)
 {
     APP_LOGI("uninstall kill running processes, app name is %{public}s", bundleName.c_str());
     sptr<AAFwk::IAbilityManager> abilityMgrProxy =
@@ -63,35 +49,12 @@ bool UninstallApplicationProcesses(const std::string &bundleName)
         APP_LOGE("fail to find the app mgr service to kill application");
         return false;
     }
-    if (abilityMgrProxy->UninstallApp(bundleName) != 0) {
+    if (abilityMgrProxy->UninstallApp(bundleName, uid) != 0) {
         APP_LOGE("kill application process failed");
         return false;
     }
     return true;
 }
-
-class ScopeGuard final {
-public:
-    using Function = std::function<void()>;
-    explicit ScopeGuard(Function fn) : fn_(fn), dismissed_(false)
-    {}
-
-    ~ScopeGuard()
-    {
-        if (!dismissed_) {
-            fn_();
-        }
-    }
-
-    void Dismiss()
-    {
-        dismissed_ = true;
-    }
-
-private:
-    Function fn_;
-    bool dismissed_;
-};
 
 }  // namespace
 
@@ -129,7 +92,7 @@ ErrCode BaseBundleInstaller::InstallBundle(
 
 ErrCode BaseBundleInstaller::UninstallBundle(const std::string &bundleName, const InstallParam &installParam)
 {
-    APP_LOGD("begin to process %{public}s bundle uninstall", bundleName.c_str());
+    APP_LOGI("begin to process %{public}s bundle uninstall", bundleName.c_str());
     PerfProfile::GetInstance().SetBundleUninstallStartTime(GetTickCount());
 
     int32_t uid = Constants::INVALID_UID;
@@ -140,14 +103,14 @@ ErrCode BaseBundleInstaller::UninstallBundle(const std::string &bundleName, cons
     }
 
     PerfProfile::GetInstance().SetBundleUninstallEndTime(GetTickCount());
-    APP_LOGD("finish to process %{public}s bundle uninstall", bundleName.c_str());
+    APP_LOGI("finish to process %{public}s bundle uninstall", bundleName.c_str());
     return result;
 }
 
 ErrCode BaseBundleInstaller::UninstallBundle(
     const std::string &bundleName, const std::string &modulePackage, const InstallParam &installParam)
 {
-    APP_LOGD("begin to process %{public}s module in %{public}s uninstall", modulePackage.c_str(), bundleName.c_str());
+    APP_LOGI("begin to process %{public}s module in %{public}s uninstall", modulePackage.c_str(), bundleName.c_str());
     PerfProfile::GetInstance().SetBundleUninstallStartTime(GetTickCount());
 
     int32_t uid = Constants::INVALID_UID;
@@ -158,7 +121,7 @@ ErrCode BaseBundleInstaller::UninstallBundle(
     }
 
     PerfProfile::GetInstance().SetBundleUninstallEndTime(GetTickCount());
-    APP_LOGD("finish to process %{public}s module in %{public}s uninstall", modulePackage.c_str(), bundleName.c_str());
+    APP_LOGI("finish to process %{public}s module in %{public}s uninstall", modulePackage.c_str(), bundleName.c_str());
     return result;
 }
 
@@ -171,7 +134,6 @@ void BaseBundleInstaller::UpdateInstallerState(const InstallerState state)
 ErrCode BaseBundleInstaller::ProcessBundleInstall(
     const std::string &inBundlePath, const InstallParam &installParam, const Constants::AppType appType, int32_t &uid)
 {
-    APP_LOGI("ProcessBundleInstall bundlePath %{public}s", inBundlePath.c_str());
     if (installParam.userId == Constants::INVALID_USERID) {
         return ERR_APPEXECFWK_INSTALL_PARAM_ERROR;
     }
@@ -184,7 +146,6 @@ ErrCode BaseBundleInstaller::ProcessBundleInstall(
     UpdateInstallerState(InstallerState::INSTALL_BUNDLE_CHECKED);
     Security::Verify::HapVerifyResult hapVerifyResult;
     if (!BundleVerifyMgr::HapVerify(bundlePath, hapVerifyResult) && installParam.noCheckSignature == false) {
-        APP_LOGE("hap file verify failed");
         return ERR_APPEXECFWK_INSTALL_NO_SIGNATURE_INFO;
     }
     // parse the single bundle info to get the bundle name.
@@ -197,7 +158,7 @@ ErrCode BaseBundleInstaller::ProcessBundleInstall(
     auto provisionInfo = hapVerifyResult.GetProvisionInfo();
     newInfo.SetProvisionId(provisionInfo.appId);
     newInfo.SetAppFeature(provisionInfo.bundleInfo.appFeature);
-    APP_LOGD("provisionInfo appFeature is %{public}s", provisionInfo.bundleInfo.appFeature.c_str());
+    APP_LOGI("provisionInfo appFeature is %{public}s", provisionInfo.bundleInfo.appFeature.c_str());
     if (provisionInfo.bundleInfo.appFeature == Constants::HOS_SYSTEM_APP ||
         provisionInfo.bundleInfo.appFeature == Constants::OHOS_SYSTEM_APP) {
         newInfo.SetAppType(Constants::AppType::SYSTEM_APP);
@@ -212,6 +173,12 @@ ErrCode BaseBundleInstaller::ProcessBundleInstall(
     if (result != ERR_OK) {
         APP_LOGE("bundle parse failed %{public}d", result);
         return result;
+    }
+    if (installParam.noCheckSignature == false) {
+        auto provisionInfo = hapVerifyResult.GetProvisionInfo();
+        newInfo.SetProvisionId(provisionInfo.appId);
+        newInfo.SetAppFeature(provisionInfo.bundleInfo.appFeature);
+        APP_LOGE("appFeature is %{public}s", provisionInfo.bundleInfo.appFeature.c_str());
     }
     UpdateInstallerState(InstallerState::INSTALL_PARSED);
     bundleName_ = newInfo.GetBundleName();
@@ -252,8 +219,8 @@ ErrCode BaseBundleInstaller::ProcessBundleUninstall(
         APP_LOGE("invalid userId");
         return ERR_APPEXECFWK_UNINSTALL_PARAM_ERROR;
     }
-
     dataMgr_ = DelayedSingleton<BundleMgrService>::GetInstance()->GetDataMgr();
+    cloneMgr_ = DelayedSingleton<BundleMgrService>::GetInstance()->GetCloneMgr();
     if (!dataMgr_) {
         APP_LOGE("Get dataMgr shared_ptr nullptr");
         return ERR_APPEXECFWK_UNINSTALL_BUNDLE_MGR_SERVICE_ERROR;
@@ -265,31 +232,35 @@ ErrCode BaseBundleInstaller::ProcessBundleUninstall(
         APP_LOGE("uninstall bundle info missing");
         return ERR_APPEXECFWK_UNINSTALL_MISSING_INSTALLED_BUNDLE;
     }
-    uid = oldInfo.GetUid();
     ScopeGuard enableGuard([&] { dataMgr_->EnableBundle(bundleName); });
     if (!oldInfo.GetAppCanUninstall()) {
         APP_LOGE("uninstall system app");
         return ERR_APPEXECFWK_UNINSTALL_SYSTEM_APP_ERROR;
     }
-
+    uid = oldInfo.GetUid();
+    std::string cloneName;
+    if (dataMgr_->GetClonedBundleName(bundleName, cloneName)) {
+        APP_LOGI("GetClonedBundleName new name %{public}s ", cloneName.c_str());
+        cloneMgr_->RemoveClonedBundle(bundleName, cloneName);
+    }
     if (!dataMgr_->UpdateBundleInstallState(bundleName, InstallState::UNINSTALL_START)) {
         APP_LOGE("uninstall already start");
         return ERR_APPEXECFWK_INSTALL_BUNDLE_MGR_SERVICE_ERROR;
     }
 
     // kill the bundle process during uninstall.
-    if (!UninstallApplicationProcesses(oldInfo.GetApplicationName())) {
+    if (!UninstallApplicationProcesses(oldInfo.GetApplicationName(), uid)) {
         APP_LOGE("can not kill process");
         dataMgr_->UpdateBundleInstallState(bundleName, InstallState::INSTALL_SUCCESS);
         return ERR_APPEXECFWK_UNINSTALL_KILLING_APP_ERROR;
     }
+    
     enableGuard.Dismiss();
     ErrCode result = RemoveBundle(oldInfo);
     if (result != ERR_OK) {
         APP_LOGE("remove whole bundle failed");
         return result;
     }
-    APP_LOGD("finish to process %{public}s bundle uninstall", bundleName.c_str());
     return ERR_OK;
 }
 
@@ -306,6 +277,7 @@ ErrCode BaseBundleInstaller::ProcessBundleUninstall(
     }
 
     dataMgr_ = DelayedSingleton<BundleMgrService>::GetInstance()->GetDataMgr();
+    cloneMgr_ = DelayedSingleton<BundleMgrService>::GetInstance()->GetCloneMgr();
     if (!dataMgr_) {
         APP_LOGE("Get dataMgr shared_ptr nullptr");
         return ERR_APPEXECFWK_UNINSTALL_BUNDLE_MGR_SERVICE_ERROR;
@@ -337,7 +309,8 @@ ErrCode BaseBundleInstaller::ProcessBundleUninstall(
     }
     ScopeGuard stateGuard([&] { dataMgr_->UpdateBundleInstallState(bundleName, InstallState::INSTALL_SUCCESS); });
     // kill the bundle process during uninstall.
-    if (!UninstallApplicationProcesses(oldInfo.GetApplicationName())) {
+
+    if (!UninstallApplicationProcesses(oldInfo.GetApplicationName(), uid)) {
         APP_LOGE("can not kill process");
         return ERR_APPEXECFWK_UNINSTALL_KILLING_APP_ERROR;
     }
@@ -345,6 +318,11 @@ ErrCode BaseBundleInstaller::ProcessBundleUninstall(
     // if it is the only module in the bundle
     if (oldInfo.IsOnlyModule(modulePackage)) {
         APP_LOGI("%{public}s is only module", modulePackage.c_str());
+        std::string cloneName;
+        if (dataMgr_->GetClonedBundleName(bundleName, cloneName)) {
+            APP_LOGI("GetClonedBundleName new name %{public}s ", cloneName.c_str());
+            cloneMgr_->RemoveClonedBundle(bundleName, cloneName);
+        }
         enableGuard.Dismiss();
         stateGuard.Dismiss();
         return RemoveBundle(oldInfo);
@@ -507,7 +485,8 @@ ErrCode BaseBundleInstaller::ProcessModuleUpdate(InnerBundleInfo &newInfo, Inner
 {
     APP_LOGI("ProcessModuleUpdate %{public}s", newInfo.GetBundleName().c_str());
     // kill the bundle process during updating
-    if (!KillApplicationProcesses(oldInfo.GetApplicationName())) {
+    auto uid = oldInfo.GetUid();
+    if (!UninstallApplicationProcesses(oldInfo.GetApplicationName(), uid)) {
         APP_LOGE("fail to kill running application");
         return ERR_APPEXECFWK_INSTALL_INTERNAL_ERROR;
     }

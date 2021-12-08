@@ -22,9 +22,10 @@
 #include <gtest/gtest.h>
 #include "app_log_wrapper.h"
 
+using namespace testing;
 using namespace testing::ext;
-using namespace OHOS::AppExecFwk;
-
+namespace OHOS {
+namespace AppExecFwk {
 class AppMgrServiceInnerMock : public AppMgrServiceInner {
 public:
     virtual int32_t OpenAppSpawnConnection() override
@@ -32,7 +33,6 @@ public:
         return 0;
     }
 };
-
 class AmsServiceStartupTest : public testing::Test {
 public:
     static void SetUpTestCase();
@@ -61,7 +61,7 @@ void AmsServiceStartupTest::TearDown()
  * EnvConditions: Mobile that can run ohos test framework
  * CaseDescription: Verify if AppMgrService startup successfully
  */
-HWTEST_F(AmsServiceStartupTest, Startup_001, TestSize.Level0)
+HWTEST_F(AmsServiceStartupTest, Startup_001, TestSize.Level1)
 {
     APP_LOGI("ams_service_startup_001 start");
     std::shared_ptr<AppMgrService> appMgrService = std::make_shared<AppMgrService>();
@@ -83,7 +83,7 @@ HWTEST_F(AmsServiceStartupTest, Startup_001, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework
  * CaseDescription: Verify if start up repeatly system act normal
  */
-HWTEST_F(AmsServiceStartupTest, Startup_002, TestSize.Level0)
+HWTEST_F(AmsServiceStartupTest, Startup_002, TestSize.Level1)
 {
     APP_LOGI("ams_service_startup_002 start");
     std::shared_ptr<AppMgrService> appMgrService = std::make_shared<AppMgrService>();
@@ -107,7 +107,7 @@ HWTEST_F(AmsServiceStartupTest, Startup_002, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework
  * CaseDescription: Verify if stop without start system act normal
  */
-HWTEST_F(AmsServiceStartupTest, Startup_003, TestSize.Level0)
+HWTEST_F(AmsServiceStartupTest, Startup_003, TestSize.Level1)
 {
     APP_LOGI("ams_service_startup_003 start");
     std::shared_ptr<AppMgrService> appMgrService = std::make_shared<AppMgrService>();
@@ -127,7 +127,7 @@ HWTEST_F(AmsServiceStartupTest, Startup_003, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework
  * CaseDescription: Verify if stop repeatly system act normal
  */
-HWTEST_F(AmsServiceStartupTest, Startup_004, TestSize.Level0)
+HWTEST_F(AmsServiceStartupTest, Startup_004, TestSize.Level1)
 {
     APP_LOGI("ams_service_startup_004 start");
     std::shared_ptr<AppMgrService> appMgrService = std::make_shared<AppMgrService>();
@@ -151,7 +151,7 @@ HWTEST_F(AmsServiceStartupTest, Startup_004, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework
  * CaseDescription: Verify if start and stop repeatly system act normal
  */
-HWTEST_F(AmsServiceStartupTest, Startup_005, TestSize.Level0)
+HWTEST_F(AmsServiceStartupTest, Startup_005, TestSize.Level1)
 {
     APP_LOGI("ams_service_startup_005 start");
     std::shared_ptr<AppMgrService> appMgrService = std::make_shared<AppMgrService>();
@@ -168,3 +168,5 @@ HWTEST_F(AmsServiceStartupTest, Startup_005, TestSize.Level0)
     EXPECT_EQ(ServiceRunningState::STATE_NOT_START, appMgrService->QueryServiceState().serviceRunningState);
     APP_LOGI("ams_service_startup_005 end");
 }
+}  // namespace AppExecFwk
+}  // namespace OHOS

@@ -40,7 +40,7 @@ const int32_t INDEX_NUM_1 = 1;
 const int32_t INDEX_NUM_2 = 2;
 const int32_t INDEX_NUM_3 = 3;
 const int32_t INDEX_NUM_10 = 10;
-const std::string TEST_APP_NAME = "test_app_";
+const std::string TEST_APP_NAME = "com.ohos.test.helloworld";
 const std::string TEST_ABILITY_NAME = "test_ability_";
 }  // namespace
 
@@ -126,7 +126,7 @@ void AmsAppRecentListModuleTest::CreateAppRecentList(const int32_t appNum)
  * EnvConditions: AppRecentList is empty.
  * CaseDescription: Verity ams add app to AppRecentList failed when start a same process.
  */
-HWTEST_F(AmsAppRecentListModuleTest, Create_Recent_List_001, TestSize.Level0)
+HWTEST_F(AmsAppRecentListModuleTest, Create_Recent_List_001, TestSize.Level1)
 {
     APP_LOGI("Create_Recent_List_001 start");
     EXPECT_TRUE(serviceInner_->GetRecentAppList().empty());
@@ -157,7 +157,7 @@ HWTEST_F(AmsAppRecentListModuleTest, Create_Recent_List_001, TestSize.Level0)
  * EnvConditions: AppRecentList is empty.
  * CaseDescription: Verity ams can add app to AppRecentList success when start a new process success.
  */
-HWTEST_F(AmsAppRecentListModuleTest, Create_Recent_List_002, TestSize.Level0)
+HWTEST_F(AmsAppRecentListModuleTest, Create_Recent_List_002, TestSize.Level1)
 {
     APP_LOGI("Create_Recent_List_002 start");
     EXPECT_TRUE(serviceInner_->GetRecentAppList().empty());
@@ -190,7 +190,7 @@ HWTEST_F(AmsAppRecentListModuleTest, Create_Recent_List_002, TestSize.Level0)
  * EnvConditions: AppRecentList has application.
  * CaseDescription: Verity ams can remove app from AppRecentList when app terminated.
  */
-HWTEST_F(AmsAppRecentListModuleTest, Update_Recent_List_001, TestSize.Level0)
+HWTEST_F(AmsAppRecentListModuleTest, Update_Recent_List_001, TestSize.Level1)
 {
     APP_LOGI("Update_Recent_List_001 start");
     EXPECT_TRUE(serviceInner_->GetRecentAppList().empty());
@@ -216,7 +216,7 @@ HWTEST_F(AmsAppRecentListModuleTest, Update_Recent_List_001, TestSize.Level0)
  * EnvConditions: AppRecentList has application.
  * CaseDescription: Verity ams can remove app from AppRecentList when app died.
  */
-HWTEST_F(AmsAppRecentListModuleTest, Update_Recent_List_002, TestSize.Level0)
+HWTEST_F(AmsAppRecentListModuleTest, Update_Recent_List_002, TestSize.Level1)
 {
     APP_LOGI("Update_Recent_List_002 start");
     EXPECT_TRUE(serviceInner_->GetRecentAppList().empty());
@@ -242,7 +242,7 @@ HWTEST_F(AmsAppRecentListModuleTest, Update_Recent_List_002, TestSize.Level0)
  * EnvConditions: AppRecentList has application.
  * CaseDescription: Verity ams can remove app from AppRecentList when call remove app from RecentList.
  */
-HWTEST_F(AmsAppRecentListModuleTest, Remove_Recent_List_001, TestSize.Level0)
+HWTEST_F(AmsAppRecentListModuleTest, Remove_Recent_List_001, TestSize.Level1)
 {
     APP_LOGI("Remove_Recent_List_001 start");
     EXPECT_TRUE(serviceInner_->GetRecentAppList().empty());
@@ -272,7 +272,7 @@ HWTEST_F(AmsAppRecentListModuleTest, Remove_Recent_List_001, TestSize.Level0)
  * EnvConditions: AppRecentList has application.
  * CaseDescription: Verity ams can remove all app from AppRecentList.
  */
-HWTEST_F(AmsAppRecentListModuleTest, Remove_Recent_List_002, TestSize.Level0)
+HWTEST_F(AmsAppRecentListModuleTest, Remove_Recent_List_002, TestSize.Level1)
 {
     APP_LOGI("Remove_Recent_List_002 start");
     EXPECT_TRUE(serviceInner_->GetRecentAppList().empty());
@@ -302,7 +302,7 @@ HWTEST_F(AmsAppRecentListModuleTest, Remove_Recent_List_002, TestSize.Level0)
  * EnvConditions: AppRecentList has application.
  * CaseDescription: Verity ams can clear AppRecentList after removing some apps.
  */
-HWTEST_F(AmsAppRecentListModuleTest, Clear_Recent_List_001, TestSize.Level0)
+HWTEST_F(AmsAppRecentListModuleTest, Clear_Recent_List_001, TestSize.Level1)
 {
     APP_LOGI("Clear_Recent_List_002 start");
     EXPECT_TRUE(serviceInner_->GetRecentAppList().empty());

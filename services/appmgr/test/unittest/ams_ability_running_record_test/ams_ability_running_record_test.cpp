@@ -109,7 +109,7 @@ std::shared_ptr<AppRunningRecord> AmsAbilityRunningRecordTest::GetTestAppRunning
  * EnvConditions: NA
  * CaseDescription: Verify the function AddAbility can create AbilityRunningRecord add add to AppRunningRecord.
  */
-HWTEST_F(AmsAbilityRunningRecordTest, CreateAbilityRunningRecord_001, TestSize.Level0)
+HWTEST_F(AmsAbilityRunningRecordTest, CreateAbilityRunningRecord_001, TestSize.Level1)
 {
     APP_LOGD("CreateAbilityRunningRecord_001 start.");
     auto abilityInfo = std::make_shared<AbilityInfo>();
@@ -131,7 +131,7 @@ HWTEST_F(AmsAbilityRunningRecordTest, CreateAbilityRunningRecord_001, TestSize.L
  * EnvConditions: NA
  * CaseDescription: Verify the function AddAbility works but does not take effect using nullptr parameter.
  */
-HWTEST_F(AmsAbilityRunningRecordTest, CreateAbilityRunningRecord_002, TestSize.Level0)
+HWTEST_F(AmsAbilityRunningRecordTest, CreateAbilityRunningRecord_002, TestSize.Level1)
 {
     APP_LOGD("CreateAbilityRunningRecord_002 start.");
     auto appRunningRecord = GetTestAppRunningRecord();
@@ -149,7 +149,7 @@ HWTEST_F(AmsAbilityRunningRecordTest, CreateAbilityRunningRecord_002, TestSize.L
  * EnvConditions: NA
  * CaseDescription: Verify the function AddAbility does not take effect when abilityRunningRecord already exists.
  */
-HWTEST_F(AmsAbilityRunningRecordTest, CreateAbilityRunningRecord_003, TestSize.Level0)
+HWTEST_F(AmsAbilityRunningRecordTest, CreateAbilityRunningRecord_003, TestSize.Level1)
 {
     APP_LOGD("CreateAbilityRunningRecord_003 start.");
     auto abilityInfo = std::make_shared<AbilityInfo>();
@@ -174,7 +174,7 @@ HWTEST_F(AmsAbilityRunningRecordTest, CreateAbilityRunningRecord_003, TestSize.L
  * EnvConditions: NA
  * CaseDescription: Verify the function UpdateAbilityState can update the state of AbilityRunningRecord correctly.
  */
-HWTEST_F(AmsAbilityRunningRecordTest, UpdateAbilityRunningRecord_001, TestSize.Level0)
+HWTEST_F(AmsAbilityRunningRecordTest, UpdateAbilityRunningRecord_001, TestSize.Level1)
 {
     APP_LOGD("UpdateAbilityRunningRecord_001 start.");
     auto appRunningRecord = GetTestAppRunningRecord();
@@ -207,7 +207,7 @@ HWTEST_F(AmsAbilityRunningRecordTest, UpdateAbilityRunningRecord_001, TestSize.L
  * EnvConditions: NA
  * CaseDescription: Verify the function UpdateAbilityState works but does not take effect using incorrect value.
  */
-HWTEST_F(AmsAbilityRunningRecordTest, UpdateAbilityRunningRecord_002, TestSize.Level0)
+HWTEST_F(AmsAbilityRunningRecordTest, UpdateAbilityRunningRecord_002, TestSize.Level1)
 {
     APP_LOGD("UpdateAbilityRunningRecord_002 start.");
     auto appRunningRecord = GetTestAppRunningRecord();
@@ -233,7 +233,7 @@ HWTEST_F(AmsAbilityRunningRecordTest, UpdateAbilityRunningRecord_002, TestSize.L
  * EnvConditions: NA
  * CaseDescription: Verify the function UpdateAbilityState works but does not take effect using nullptr parameter.
  */
-HWTEST_F(AmsAbilityRunningRecordTest, UpdateAbilityRunningRecord_003, TestSize.Level0)
+HWTEST_F(AmsAbilityRunningRecordTest, UpdateAbilityRunningRecord_003, TestSize.Level1)
 {
     APP_LOGD("UpdateAbilityRunningRecord_003 start.");
     auto appRunningRecord = GetTestAppRunningRecord();
@@ -259,7 +259,7 @@ HWTEST_F(AmsAbilityRunningRecordTest, UpdateAbilityRunningRecord_003, TestSize.L
  * CaseDescription: Verify the function UpdateAbilityState cannot change the state of AbilityRunningRecord
  *                  that does not exist.
  */
-HWTEST_F(AmsAbilityRunningRecordTest, UpdateAbilityRunningRecord_004, TestSize.Level0)
+HWTEST_F(AmsAbilityRunningRecordTest, UpdateAbilityRunningRecord_004, TestSize.Level1)
 {
     APP_LOGD("UpdateAbilityRunningRecord_004 start.");
     auto appRunningRecord = GetTestAppRunningRecord();
@@ -290,7 +290,7 @@ HWTEST_F(AmsAbilityRunningRecordTest, UpdateAbilityRunningRecord_004, TestSize.L
  * CaseDescription: Verify if there is at least one state of AbilityRunningRecords is foreground,
  *                  the state of application should be changed to foreground.
  */
-HWTEST_F(AmsAbilityRunningRecordTest, UpdateAbilityRunningRecord_005, TestSize.Level0)
+HWTEST_F(AmsAbilityRunningRecordTest, UpdateAbilityRunningRecord_005, TestSize.Level1)
 {
     APP_LOGD("UpdateAbilityRunningRecord_005 start.");
     auto appRunningRecord = GetTestAppRunningRecord();
@@ -323,7 +323,7 @@ HWTEST_F(AmsAbilityRunningRecordTest, UpdateAbilityRunningRecord_005, TestSize.L
  * CaseDescription: Verify if all states of AbilityRunningRecords are background, the state of application should be
  *                  changed to background.
  */
-HWTEST_F(AmsAbilityRunningRecordTest, UpdateAbilityRunningRecord_006, TestSize.Level0)
+HWTEST_F(AmsAbilityRunningRecordTest, UpdateAbilityRunningRecord_006, TestSize.Level1)
 {
     APP_LOGD("UpdateAbilityRunningRecord_006 start.");
     auto appRunningRecord = GetTestAppRunningRecord();
@@ -360,7 +360,7 @@ HWTEST_F(AmsAbilityRunningRecordTest, UpdateAbilityRunningRecord_006, TestSize.L
  * CaseDescription: Verify if all states of AbilityRunningRecords are terminate, the state of application should be
  *                  changed to terminate.
  */
-HWTEST_F(AmsAbilityRunningRecordTest, UpdateAbilityRunningRecord_007, TestSize.Level0)
+HWTEST_F(AmsAbilityRunningRecordTest, UpdateAbilityRunningRecord_007, TestSize.Level1)
 {
     APP_LOGD("UpdateAbilityRunningRecord_007 start.");
     auto appRunningRecord = GetTestAppRunningRecord();
@@ -396,7 +396,7 @@ HWTEST_F(AmsAbilityRunningRecordTest, UpdateAbilityRunningRecord_007, TestSize.L
  * EnvConditions: NA
  * CaseDescription: Verify the function ClearAbility can delete AbilityRunningRecord.
  */
-HWTEST_F(AmsAbilityRunningRecordTest, DeleteAbilityRunningRecord_001, TestSize.Level0)
+HWTEST_F(AmsAbilityRunningRecordTest, DeleteAbilityRunningRecord_001, TestSize.Level1)
 {
     APP_LOGD("DeleteAbilityRunningRecord_001 start.");
     auto appRunningRecord = GetTestAppRunningRecord();
@@ -421,7 +421,7 @@ HWTEST_F(AmsAbilityRunningRecordTest, DeleteAbilityRunningRecord_001, TestSize.L
  * EnvConditions: NA
  * CaseDescription: Verify the function ClearAbility works but does not take effect using nullptr parameter.
  */
-HWTEST_F(AmsAbilityRunningRecordTest, DeleteAbilityRunningRecord_002, TestSize.Level0)
+HWTEST_F(AmsAbilityRunningRecordTest, DeleteAbilityRunningRecord_002, TestSize.Level1)
 {
     APP_LOGD("DeleteAbilityRunningRecord_002 start.");
     auto appRunningRecord = GetTestAppRunningRecord();
@@ -446,7 +446,7 @@ HWTEST_F(AmsAbilityRunningRecordTest, DeleteAbilityRunningRecord_002, TestSize.L
  * EnvConditions: NA
  * CaseDescription: Verify the function ClearAbility cannot delete AbilityRunningRecord that does not exist.
  */
-HWTEST_F(AmsAbilityRunningRecordTest, DeleteAbilityRunningRecord_003, TestSize.Level0)
+HWTEST_F(AmsAbilityRunningRecordTest, DeleteAbilityRunningRecord_003, TestSize.Level1)
 {
     APP_LOGD("DeleteAbilityRunningRecord_003 start.");
     auto appRunningRecord = GetTestAppRunningRecord();
@@ -482,7 +482,7 @@ HWTEST_F(AmsAbilityRunningRecordTest, DeleteAbilityRunningRecord_003, TestSize.L
  * EnvConditions: NA
  * CaseDescription: Verify the function IsSameState judge the exact state value.
  */
-HWTEST_F(AmsAbilityRunningRecordTest, IsSameState_001, TestSize.Level0)
+HWTEST_F(AmsAbilityRunningRecordTest, IsSameState_001, TestSize.Level1)
 {
     APP_LOGD("IsSameState_001 start.");
 
@@ -507,7 +507,7 @@ HWTEST_F(AmsAbilityRunningRecordTest, IsSameState_001, TestSize.Level0)
  * EnvConditions: NA
  * CaseDescription: Verify the function AddAbility can create AbilityRunningRecord add add to AppRunningRecord.
  */
-HWTEST_F(AmsAbilityRunningRecordTest, SetGetAbilityRecord_001, TestSize.Level0)
+HWTEST_F(AmsAbilityRunningRecordTest, SetGetAbilityRecord_001, TestSize.Level1)
 {
     APP_LOGD("SetGetAbilityRecord_001 start.");
 

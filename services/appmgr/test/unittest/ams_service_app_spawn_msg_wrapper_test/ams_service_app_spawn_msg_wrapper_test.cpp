@@ -20,8 +20,6 @@
 #include "app_spawn_msg_wrapper.h"
 
 using namespace testing::ext;
-using namespace OHOS;
-using namespace OHOS::AppExecFwk;
 
 // this function is only used to mock sleep method so ut can run without delay.
 int MockSleep([[maybe_unused]] uint32_t seconds)
@@ -29,6 +27,8 @@ int MockSleep([[maybe_unused]] uint32_t seconds)
     return 0;
 }
 
+namespace OHOS {
+namespace AppExecFwk {
 class AmsServiceAppSpawnMsgWrapperTest : public testing::Test {
 public:
     static void SetUpTestCase();
@@ -57,7 +57,7 @@ void AmsServiceAppSpawnMsgWrapperTest::TearDown()
  * EnvConditions: mobile that can run ohos test framework
  * CaseDescription: Verify the function AssembleMsg can check the invalid uid.
  */
-HWTEST(AmsServiceAppSpawnMsgWrapperTest, AppSpawnMsgWrapper_001, TestSize.Level0)
+HWTEST(AmsServiceAppSpawnMsgWrapperTest, AppSpawnMsgWrapper_001, TestSize.Level1)
 {
     APP_LOGI("ams_service_app_spawn_msg_wrapper_001 start");
 
@@ -77,7 +77,7 @@ HWTEST(AmsServiceAppSpawnMsgWrapperTest, AppSpawnMsgWrapper_001, TestSize.Level0
  * EnvConditions: mobile that can run ohos test framework
  * CaseDescription: Verify the function AssembleMsg can check the invalid gid.
  */
-HWTEST(AmsServiceAppSpawnMsgWrapperTest, AppSpawnMsgWrapper_002, TestSize.Level0)
+HWTEST(AmsServiceAppSpawnMsgWrapperTest, AppSpawnMsgWrapper_002, TestSize.Level1)
 {
     APP_LOGI("ams_service_app_spawn_msg_wrapper_002 start");
 
@@ -97,7 +97,7 @@ HWTEST(AmsServiceAppSpawnMsgWrapperTest, AppSpawnMsgWrapper_002, TestSize.Level0
  * EnvConditions: mobile that can run ohos test framework
  * CaseDescription: Verify the function AssembleMsg can check gid count which exceeds the max limit.
  */
-HWTEST(AmsServiceAppSpawnMsgWrapperTest, AppSpawnMsgWrapper_003, TestSize.Level0)
+HWTEST(AmsServiceAppSpawnMsgWrapperTest, AppSpawnMsgWrapper_003, TestSize.Level1)
 {
     APP_LOGI("ams_service_app_spawn_msg_wrapper_003 start");
 
@@ -201,7 +201,7 @@ HWTEST(AmsServiceAppSpawnMsgWrapperTest, AppSpawnMsgWrapper_003, TestSize.Level0
  * EnvConditions: mobile that can run ohos test framework
  * CaseDescription: Verify the function AssembleMsg can check the process name is empty.
  */
-HWTEST(AmsServiceAppSpawnMsgWrapperTest, AppSpawnMsgWrapper_004, TestSize.Level0)
+HWTEST(AmsServiceAppSpawnMsgWrapperTest, AppSpawnMsgWrapper_004, TestSize.Level1)
 {
     APP_LOGI("ams_service_app_spawn_msg_wrapper_004 start");
 
@@ -220,7 +220,7 @@ HWTEST(AmsServiceAppSpawnMsgWrapperTest, AppSpawnMsgWrapper_004, TestSize.Level0
  * EnvConditions: mobile that can run ohos test framework
  * CaseDescription: Verify the function AssembleMsg can check the process name exceeds the max length.
  */
-HWTEST(AmsServiceAppSpawnMsgWrapperTest, AppSpawnMsgWrapper_005, TestSize.Level0)
+HWTEST(AmsServiceAppSpawnMsgWrapperTest, AppSpawnMsgWrapper_005, TestSize.Level1)
 {
     APP_LOGI("ams_service_app_spawn_msg_wrapper_005 start");
 
@@ -246,7 +246,7 @@ HWTEST(AmsServiceAppSpawnMsgWrapperTest, AppSpawnMsgWrapper_005, TestSize.Level0
  * CaseDescription: Verify the function AssembleMsg can check the so path is empty.
  */
 
-HWTEST(AmsServiceAppSpawnMsgWrapperTest, AppSpawnMsgWrapper_006, TestSize.Level0)
+HWTEST(AmsServiceAppSpawnMsgWrapperTest, AppSpawnMsgWrapper_006, TestSize.Level1)
 {
     APP_LOGI("ams_service_app_spawn_msg_wrapper_006 start");
 
@@ -265,7 +265,7 @@ HWTEST(AmsServiceAppSpawnMsgWrapperTest, AppSpawnMsgWrapper_006, TestSize.Level0
  * EnvConditions: mobile that can run ohos test framework
  * CaseDescription: Verify the function AssembleMsg can check the so path exceeds the max length.
  */
-HWTEST(AmsServiceAppSpawnMsgWrapperTest, AppSpawnMsgWrapper_007, TestSize.Level0)
+HWTEST(AmsServiceAppSpawnMsgWrapperTest, AppSpawnMsgWrapper_007, TestSize.Level1)
 {
     APP_LOGI("ams_service_app_spawn_msg_wrapper_007 start");
 
@@ -290,7 +290,7 @@ HWTEST(AmsServiceAppSpawnMsgWrapperTest, AppSpawnMsgWrapper_007, TestSize.Level0
  * EnvConditions: mobile that can run ohos test framework
  * CaseDescription: Verify the function AssembleMsg check the valid message.
  */
-HWTEST(AmsServiceAppSpawnMsgWrapperTest, AppSpawnMsgWrapper_008, TestSize.Level0)
+HWTEST(AmsServiceAppSpawnMsgWrapperTest, AppSpawnMsgWrapper_008, TestSize.Level1)
 {
     APP_LOGI("ams_service_app_spawn_msg_wrapper_008 start");
 
@@ -309,7 +309,7 @@ HWTEST(AmsServiceAppSpawnMsgWrapperTest, AppSpawnMsgWrapper_008, TestSize.Level0
  * EnvConditions: mobile that can run ohos test framework
  * CaseDescription: Verify if check the message pass, the length and valid value is right.
  */
-HWTEST(AmsServiceAppSpawnMsgWrapperTest, AppSpawnMsgWrapper_009, TestSize.Level0)
+HWTEST(AmsServiceAppSpawnMsgWrapperTest, AppSpawnMsgWrapper_009, TestSize.Level1)
 {
     APP_LOGI("ams_service_app_spawn_msg_wrapper_009 start");
 
@@ -331,7 +331,7 @@ HWTEST(AmsServiceAppSpawnMsgWrapperTest, AppSpawnMsgWrapper_009, TestSize.Level0
  * EnvConditions: mobile that can run ohos test framework
  * CaseDescription: Verify if check the message fail, the length and valid value is right.
  */
-HWTEST(AmsServiceAppSpawnMsgWrapperTest, AppSpawnMsgWrapper_010, TestSize.Level0)
+HWTEST(AmsServiceAppSpawnMsgWrapperTest, AppSpawnMsgWrapper_010, TestSize.Level1)
 {
     APP_LOGI("ams_service_app_spawn_msg_wrapper_010 start");
 
@@ -344,3 +344,5 @@ HWTEST(AmsServiceAppSpawnMsgWrapperTest, AppSpawnMsgWrapper_010, TestSize.Level0
 
     APP_LOGI("ams_service_app_spawn_msg_wrapper_010 end");
 }
+}  // namespace AppExecFwk
+}  // namespace OHOS

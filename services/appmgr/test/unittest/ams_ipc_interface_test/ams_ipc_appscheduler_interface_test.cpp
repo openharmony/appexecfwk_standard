@@ -21,13 +21,13 @@
 #include "mock_application.h"
 
 using namespace testing::ext;
-using namespace OHOS::AppExecFwk;
 using OHOS::iface_cast;
 using OHOS::sptr;
 using testing::_;
 using testing::Invoke;
 using testing::InvokeWithoutArgs;
-
+namespace OHOS {
+namespace AppExecFwk {
 class AmsIpcAppSchedulerInterfaceTest : public testing::Test {
 public:
     static void SetUpTestCase();
@@ -65,7 +65,7 @@ void AmsIpcAppSchedulerInterfaceTest::TearDown()
  * EnvConditions: Application already running
  * CaseDescription: Test the interface ScheduleForegroundApplication of AppScheduler
  */
-HWTEST_F(AmsIpcAppSchedulerInterfaceTest, Interface_001, TestSize.Level0)
+HWTEST_F(AmsIpcAppSchedulerInterfaceTest, Interface_001, TestSize.Level1)
 {
     APP_LOGD("AppSchedulerInterfaceTest_001 start");
     sptr<MockApplication> mockApplication(new MockApplication());
@@ -87,7 +87,7 @@ HWTEST_F(AmsIpcAppSchedulerInterfaceTest, Interface_001, TestSize.Level0)
  * EnvConditions: Application already running
  * CaseDescription: Test the interface ScheduleBackgroundApplication of AppScheduler
  */
-HWTEST_F(AmsIpcAppSchedulerInterfaceTest, Interface_002, TestSize.Level0)
+HWTEST_F(AmsIpcAppSchedulerInterfaceTest, Interface_002, TestSize.Level1)
 {
     APP_LOGD("AppSchedulerInterfaceTest_002 start");
     sptr<MockApplication> mockApplication(new MockApplication());
@@ -109,7 +109,7 @@ HWTEST_F(AmsIpcAppSchedulerInterfaceTest, Interface_002, TestSize.Level0)
  * EnvConditions: Application already running
  * CaseDescription: Test the interface ScheduleTerminateApplication of AppScheduler
  */
-HWTEST_F(AmsIpcAppSchedulerInterfaceTest, Interface_003, TestSize.Level0)
+HWTEST_F(AmsIpcAppSchedulerInterfaceTest, Interface_003, TestSize.Level1)
 {
     APP_LOGD("AppSchedulerInterfaceTest_003 start");
     sptr<MockApplication> mockApplication(new MockApplication());
@@ -131,7 +131,7 @@ HWTEST_F(AmsIpcAppSchedulerInterfaceTest, Interface_003, TestSize.Level0)
  * EnvConditions: Application already running
  * CaseDescription: Test the interface ScheduleShrinkMemory of AppScheduler
  */
-HWTEST_F(AmsIpcAppSchedulerInterfaceTest, Interface_004, TestSize.Level0)
+HWTEST_F(AmsIpcAppSchedulerInterfaceTest, Interface_004, TestSize.Level1)
 {
     APP_LOGD("AppSchedulerInterfaceTest_004 start");
     sptr<MockApplication> mockApplication(new MockApplication());
@@ -157,7 +157,7 @@ HWTEST_F(AmsIpcAppSchedulerInterfaceTest, Interface_004, TestSize.Level0)
  * EnvConditions: Application already running
  * CaseDescription: Test the interface ScheduleLowMemory of AppScheduler
  */
-HWTEST_F(AmsIpcAppSchedulerInterfaceTest, Interface_005, TestSize.Level0)
+HWTEST_F(AmsIpcAppSchedulerInterfaceTest, Interface_005, TestSize.Level1)
 {
     APP_LOGD("AppSchedulerInterfaceTest_005 start");
     sptr<MockApplication> mockApplication(new MockApplication());
@@ -179,7 +179,7 @@ HWTEST_F(AmsIpcAppSchedulerInterfaceTest, Interface_005, TestSize.Level0)
  * EnvConditions: Application already running
  * CaseDescription: Test the interface ScheduleLaunchApplication of AppScheduler
  */
-HWTEST_F(AmsIpcAppSchedulerInterfaceTest, Interface_006, TestSize.Level0)
+HWTEST_F(AmsIpcAppSchedulerInterfaceTest, Interface_006, TestSize.Level1)
 {
     APP_LOGD("AppSchedulerInterfaceTest_006 start");
     sptr<MockApplication> mockApplication(new MockApplication());
@@ -217,7 +217,7 @@ HWTEST_F(AmsIpcAppSchedulerInterfaceTest, Interface_006, TestSize.Level0)
  * EnvConditions: Application already running
  * CaseDescription: Test the interface ScheduleLaunchAbility of AppScheduler
  */
-HWTEST_F(AmsIpcAppSchedulerInterfaceTest, Interface_007, TestSize.Level0)
+HWTEST_F(AmsIpcAppSchedulerInterfaceTest, Interface_007, TestSize.Level1)
 {
     APP_LOGD("AppSchedulerInterfaceTest_007 start");
     sptr<MockApplication> mockApplication(new MockApplication());
@@ -245,7 +245,7 @@ HWTEST_F(AmsIpcAppSchedulerInterfaceTest, Interface_007, TestSize.Level0)
  * EnvConditions: Application already running
  * CaseDescription: Test the interface ScheduleCleanAbility of AppScheduler
  */
-HWTEST_F(AmsIpcAppSchedulerInterfaceTest, Interface_008, TestSize.Level0)
+HWTEST_F(AmsIpcAppSchedulerInterfaceTest, Interface_008, TestSize.Level1)
 {
     APP_LOGD("AppSchedulerInterfaceTest_008 start");
     sptr<MockApplication> mockApplication(new MockApplication());
@@ -267,7 +267,7 @@ HWTEST_F(AmsIpcAppSchedulerInterfaceTest, Interface_008, TestSize.Level0)
  * EnvConditions: Application already running
  * CaseDescription: Test the interface ScheduleProfileChanged of AppScheduler
  */
-HWTEST_F(AmsIpcAppSchedulerInterfaceTest, Interface_009, TestSize.Level0)
+HWTEST_F(AmsIpcAppSchedulerInterfaceTest, Interface_009, TestSize.Level1)
 {
     APP_LOGD("AppSchedulerInterfaceTest_009 start");
     sptr<MockApplication> mockApplication(new MockApplication());
@@ -285,3 +285,5 @@ HWTEST_F(AmsIpcAppSchedulerInterfaceTest, Interface_009, TestSize.Level0)
     EXPECT_EQ(true, isEqual);
     APP_LOGD("AppSchedulerInterfaceTest_009 end");
 }
+}  // namespace AppExecFwk
+}  // namespace OHOS

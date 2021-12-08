@@ -24,6 +24,7 @@
 #include "bundle_parser.h"
 #include "installd_client.h"
 #include "bundle_permission_mgr.h"
+#include "bundle_clone_mgr.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -110,6 +111,16 @@ bool BundleMgrHostImpl::GetBundleGids(const std::string &bundleName, std::vector
     return dataMgr->GetBundleGids(bundleName, gids);
 }
 
+bool BundleMgrHostImpl::GetBundleGidsByUid(const std::string &bundleName, const int &uid, std::vector<int> &gids)
+{
+    auto dataMgr = GetDataMgrFromService();
+    if (dataMgr == nullptr) {
+        APP_LOGE("DataMgr is nullptr");
+        return false;
+    }
+    return dataMgr->GetBundleGidsByUid(bundleName, uid, gids);
+}
+
 bool BundleMgrHostImpl::CheckIsSystemAppByUid(const int uid)
 {
     auto dataMgr = GetDataMgrFromService();
@@ -168,6 +179,16 @@ bool BundleMgrHostImpl::QueryAbilityInfoByUri(const std::string &abilityUri, Abi
         return false;
     }
     return dataMgr->QueryAbilityInfoByUri(abilityUri, abilityInfo);
+}
+
+bool BundleMgrHostImpl::QueryAbilityInfosByUri(const std::string &abilityUri, std::vector<AbilityInfo> &abilityInfos)
+{
+    auto dataMgr = GetDataMgrFromService();
+    if (dataMgr == nullptr) {
+        APP_LOGE("DataMgr is nullptr");
+        return false;
+    }
+    return dataMgr->QueryAbilityInfosByUri(abilityUri, abilityInfos);
 }
 
 bool BundleMgrHostImpl::QueryKeepAliveBundleInfos(std::vector<BundleInfo> &bundleInfos)
@@ -253,6 +274,16 @@ int BundleMgrHostImpl::CheckPermission(const std::string &bundleName, const std:
     return BundlePermissionMgr::VerifyPermission(bundleName, permission, Constants::DEFAULT_USERID);
 }
 
+int BundleMgrHostImpl::CheckPermissionByUid(
+    const std::string &bundleName, const std::string &permission, const int userId)
+{
+    if (bundleName.empty() || permission.empty()) {
+        APP_LOGE("fail to CheckPermission due to params empty");
+        return Constants::PERMISSION_NOT_GRANTED;
+    }
+    return BundlePermissionMgr::VerifyPermission(bundleName, permission, userId);
+}
+
 bool BundleMgrHostImpl::GetPermissionDef(const std::string &permissionName, PermissionDef &permissionDef)
 {
     if (permissionName.empty()) {
@@ -308,21 +339,38 @@ bool BundleMgrHostImpl::CleanBundleCacheFiles(
     return true;
 }
 
-bool BundleMgrHostImpl::CleanBundleDataFiles(const std::string &bundleName)
+bool BundleMgrHostImpl::CleanBundleDataFiles(const std::string &bundleName, const int userId)
 {
     if (bundleName.empty()) {
         APP_LOGE("the  bundleName empty");
         return false;
     }
-    ApplicationInfo applicationInfo;
-    if (!GetApplicationInfo(bundleName, ApplicationFlag::GET_BASIC_APPLICATION_INFO, 0, applicationInfo)) {
+    std::vector<ApplicationInfo> appInfos;
+    if (!GetApplicationInfos(ApplicationFlag::GET_BASIC_APPLICATION_INFO, 0, appInfos)) {
         APP_LOGE("can not get application info of %{public}s", bundleName.c_str());
         return false;
     }
-    if (InstalldClient::GetInstance()->CleanBundleDataDir(applicationInfo.dataDir) != ERR_OK) {
-        return false;
+    bool result = false;
+    for (auto applicationInfo : appInfos) {
+        if (userId == Constants::C_UESRID) {
+            if (applicationInfo.bundleName == bundleName && applicationInfo.isCloned == true) {
+                result = true;
+                if (InstalldClient::GetInstance()->CleanBundleDataDir(applicationInfo.dataDir) != ERR_OK) {
+                    return false;
+                }
+                break;
+            }
+        } else {
+            if (applicationInfo.bundleName == bundleName && applicationInfo.isCloned == false) {
+                result = true;
+                if (InstalldClient::GetInstance()->CleanBundleDataDir(applicationInfo.dataDir) != ERR_OK) {
+                    return false;
+                }
+                break;
+            }
+        }
     }
-    return true;
+    return result;
 }
 
 bool BundleMgrHostImpl::RegisterBundleStatusCallback(const sptr<IBundleStatusCallback> &bundleStatusCallback)
@@ -602,15 +650,69 @@ bool BundleMgrHostImpl::GetModuleUsageRecords(const int32_t number, std::vector<
 }
 
 bool BundleMgrHostImpl::NotifyActivityLifeStatus(
-    const std::string &bundleName, const std::string &abilityName, const int64_t launchTime)
+    const std::string &bundleName, const std::string &abilityName, const int64_t launchTime, const int uid)
 {
     APP_LOGI("NotifyActivityLifeStatus begin");
-    std::thread([this, bundleName, abilityName, launchTime]() {
+    std::thread([this, bundleName, abilityName, launchTime, uid]() {
         auto dataMgr = GetDataMgrFromService();
-        dataMgr->NotifyActivityLifeStatus(bundleName, abilityName, launchTime);
+        dataMgr->NotifyActivityLifeStatus(bundleName, abilityName, launchTime, uid);
     }).detach();
     APP_LOGI("NotifyActivityLifeStatus end");
     return true;
+}
+
+bool BundleMgrHostImpl::RemoveClonedBundle(const std::string &bundleName, const int32_t uid)
+{
+    APP_LOGI("RemoveClonedBundle begin");
+    if (bundleName.empty()) {
+        APP_LOGI("remove cloned bundle failed");
+        return false;
+    }
+    auto cloneMgr = GetCloneMgrFromService();
+    if (cloneMgr == nullptr) {
+        APP_LOGE("cloneMgr is nullptr");
+        return false;
+    }
+    std::string struid = std::to_string(uid);
+    std::string newName = bundleName + "#" + struid;
+    return cloneMgr->RemoveClonedBundle(bundleName, newName);
+}
+
+bool BundleMgrHostImpl::BundleClone(const std::string &bundleName)
+{
+    APP_LOGI("bundle clone begin");
+    if (bundleName.empty()) {
+        APP_LOGI("bundle clone failed");
+        return false;
+    }
+    auto cloneMgr = GetCloneMgrFromService();
+    if (cloneMgr == nullptr) {
+        APP_LOGE("cloneMgr is nullptr");
+        return false;
+    }
+    auto result = cloneMgr->BundleClone(bundleName);
+    return result;
+}
+
+bool BundleMgrHostImpl::CheckBundleNameInAllowList(const std::string &bundleName)
+{
+    APP_LOGI("Check BundleName In AllowList begin");
+    if (bundleName.empty()) {
+        APP_LOGI("Check BundleName In AllowList failed");
+        return false;
+    }
+    auto cloneMgr = GetCloneMgrFromService();
+    if (cloneMgr == nullptr) {
+        APP_LOGE("cloneMgr is nullptr");
+        return false;
+    }
+    auto result = cloneMgr->CheckBundleNameInAllowList(bundleName);
+    return result;
+}
+
+const std::shared_ptr<BundleCloneMgr> BundleMgrHostImpl::GetCloneMgrFromService()
+{
+    return DelayedSingleton<BundleMgrService>::GetInstance()->GetCloneMgr();
 }
 
 const std::shared_ptr<BundleDataMgr> BundleMgrHostImpl::GetDataMgrFromService()

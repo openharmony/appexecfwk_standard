@@ -30,7 +30,8 @@ const std::string HELP_MSG = "usage: bm <command> <options>\n"
                              "  help         list available commands\n"
                              "  install      install a bundle with options\n"
                              "  uninstall    uninstall a bundle with options\n"
-                             "  dump         dump the bundle info\n";
+                             "  dump         dump the bundle info\n"
+                             "  clone        clone a bundle\n";
 
 const std::string HELP_MSG_INSTALL =
     "usage: bm install <options>\n"
@@ -53,6 +54,11 @@ const std::string HELP_MSG_DUMP = "usage: bm dump <options>\n"
                                   "  -i, --bundle-info                    list all bundles info in system\n"
                                   "  -n, --bundle-name <bundle-name>      list the bundle info by a bundle name\n";
 
+const std::string HELP_MSG_CLONE = "usage: bm clone <options>\n"
+                                   "options list:\n"
+                                   "  help         list available commands\n"
+                                   "  -n, --bundle-name <bundle-name>      list the bundle info by a bundle name\n";
+
 const std::string HELP_MSG_NO_BUNDLE_PATH_OPTION =
     "error: you must specify a bundle path with '-p' or '--bundle-path'.";
 
@@ -64,6 +70,9 @@ const std::string STRING_INSTALL_BUNDLE_NG = "error: failed to install bundle.";
 
 const std::string STRING_UNINSTALL_BUNDLE_OK = "uninstall bundle successfully.";
 const std::string STRING_UNINSTALL_BUNDLE_NG = "error: failed to uninstall bundle.";
+
+const std::string STRING_CLONE_BUNDLE_OK = "clone bundle successfully.";
+const std::string STRING_CLONE_BUNDLE_NG = "error: failed to clone bundle.";
 }  // namespace
 
 class BundleManagerShellCommand : public OHOS::AAFwk::ShellCommand {
@@ -84,6 +93,7 @@ private:
     ErrCode RunAsInstallCommand();
     ErrCode RunAsUninstallCommand();
     ErrCode RunAsDumpCommand();
+    ErrCode RunAsBundleCloneCommand();
 
     std::string DumpBundleList() const;
     std::string DumpBundleInfo() const;

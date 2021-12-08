@@ -15,10 +15,11 @@
 
 #include <gtest/gtest.h>
 #include <fstream>
-#include "ability_manager_client.h"
 #include <chrono>
+#include "ability_manager_client.h"
 #include "directory_ex.h"
 #include "bundle_data_mgr.h"
+#include "bundle_clone_mgr.h"
 #include "install_param.h"
 #include "bundle_mgr_service.h"
 #include "bundle_mgr_host.h"
@@ -96,6 +97,7 @@ const uint32_t ABILITY_SIZE_ONE = 1;
 const uint32_t PERMISSION_SIZE_ZERO = 0;
 const uint32_t PERMISSION_SIZE_TWO = 2;
 const uint32_t BUNDLE_NAMES_SIZE_ZERO = 0;
+const uint32_t RECORDS_SIZE_ZERO = 0;
 const uint32_t BUNDLE_NAMES_SIZE_ONE = 1;
 const std::string EMPTY_STRING = "";
 const int INVALID_UID = -1;
@@ -154,6 +156,7 @@ public:
     void SetUp();
     void TearDown();
     std::shared_ptr<BundleDataMgr> GetBundleDataMgr() const;
+    std::shared_ptr<BundleCloneMgr> GetBundleCloneMgr() const;
     void MockInnerBundleInfo(const std::string &bundleName, const std::string &moduleName,
         const std::string &abilityName, InnerBundleInfo &innerBundleInfo) const;
     void MockInstallBundle(
@@ -209,6 +212,7 @@ void BmsBundleKitServiceTest::TearDownTestCase()
 void BmsBundleKitServiceTest::SetUp()
 {
     bundleMgrService_->OnStart();
+    service_->Start();
 }
 
 void BmsBundleKitServiceTest::TearDown()
@@ -217,6 +221,11 @@ void BmsBundleKitServiceTest::TearDown()
 std::shared_ptr<BundleDataMgr> BmsBundleKitServiceTest::GetBundleDataMgr() const
 {
     return bundleMgrService_->GetDataMgr();
+}
+
+std::shared_ptr<BundleCloneMgr> BmsBundleKitServiceTest::GetBundleCloneMgr() const
+{
+    return bundleMgrService_->GetCloneMgr();
 }
 
 void BmsBundleKitServiceTest::MockInstallBundle(
@@ -236,6 +245,7 @@ void BmsBundleKitServiceTest::MockInstallBundle(
     appInfo.cacheDir = CACHE_DIR;
     appInfo.flags = APPLICATION_INFO_FLAGS;
     appInfo.enabled = true;
+    appInfo.isCloned = false;
     appInfo.singleUser = true;
 
     BundleInfo bundleInfo;
@@ -2107,7 +2117,7 @@ HWTEST_F(BmsBundleKitServiceTest, CleanBundleDataFiles_0100, Function | SmallTes
     CreateFileDir();
 
     auto hostImpl = std::make_unique<BundleMgrHostImpl>();
-    bool testRet = hostImpl->CleanBundleDataFiles(BUNDLE_NAME_TEST);
+    bool testRet = hostImpl->CleanBundleDataFiles(BUNDLE_NAME_TEST, 0);
     EXPECT_TRUE(testRet);
     CheckFileNonExist();
 
@@ -2127,7 +2137,7 @@ HWTEST_F(BmsBundleKitServiceTest, CleanBundleDataFiles_0200, Function | SmallTes
     CreateFileDir();
 
     auto hostImpl = std::make_unique<BundleMgrHostImpl>();
-    bool testRet = hostImpl->CleanBundleDataFiles("");
+    bool testRet = hostImpl->CleanBundleDataFiles("", 0);
     EXPECT_FALSE(testRet);
     CheckFileExist();
 
@@ -2147,7 +2157,7 @@ HWTEST_F(BmsBundleKitServiceTest, CleanBundleDataFiles_0300, Function | SmallTes
     CreateFileDir();
 
     auto hostImpl = std::make_unique<BundleMgrHostImpl>();
-    bool testRet = hostImpl->CleanBundleDataFiles(BUNDLE_NAME_DEMO);
+    bool testRet = hostImpl->CleanBundleDataFiles(BUNDLE_NAME_DEMO, 0);
     EXPECT_FALSE(testRet);
     CheckFileExist();
 
@@ -2980,7 +2990,7 @@ HWTEST_F(BmsBundleKitServiceTest, GetShortcutInfos_0500, Function | SmallTest | 
 HWTEST_F(BmsBundleKitServiceTest, GetUsageRecords_0100, Function | SmallTest | Level1)
 {
     MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
-    auto ret = GetBundleDataMgr()->NotifyActivityLifeStatus(BUNDLE_NAME_TEST, ABILITY_NAME_TEST, 1629094922);
+    auto ret = GetBundleDataMgr()->NotifyActivityLifeStatus(BUNDLE_NAME_TEST, ABILITY_NAME_TEST, 1629094922, 0);
     EXPECT_TRUE(ret);
     std::vector<ModuleUsageRecord> records;
     auto result = GetBundleDataMgr()->GetUsageRecords(100, records);
@@ -3009,8 +3019,8 @@ HWTEST_F(BmsBundleKitServiceTest, GetUsageRecords_0300, Function | SmallTest | L
     MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
     int64_t time =
         std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-    auto ret = GetBundleDataMgr()->NotifyActivityLifeStatus(BUNDLE_NAME_TEST, ABILITY_NAME_TEST, time);
-    auto ret1 = GetBundleDataMgr()->NotifyActivityLifeStatus(BUNDLE_NAME_TEST, ABILITY_NAME_TEST, time);
+    auto ret = GetBundleDataMgr()->NotifyActivityLifeStatus(BUNDLE_NAME_TEST, ABILITY_NAME_TEST, time, 0);
+    auto ret1 = GetBundleDataMgr()->NotifyActivityLifeStatus(BUNDLE_NAME_TEST, ABILITY_NAME_TEST, time, 0);
     EXPECT_TRUE(ret);
     EXPECT_TRUE(ret1);
     std::vector<ModuleUsageRecord> records;
@@ -3040,12 +3050,12 @@ HWTEST_F(BmsBundleKitServiceTest, GetUsageRecords_0400, Function | SmallTest | L
     MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
     int64_t time =
         std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-    auto ret = GetBundleDataMgr()->NotifyActivityLifeStatus(BUNDLE_NAME_TEST, ABILITY_NAME_TEST, time);
+    auto ret = GetBundleDataMgr()->NotifyActivityLifeStatus(BUNDLE_NAME_TEST, ABILITY_NAME_TEST, time, 0);
     EXPECT_TRUE(ret);
     std::vector<ModuleUsageRecord> records;
     auto result = GetBundleDataMgr()->GetUsageRecords(-1, records);
     EXPECT_FALSE(result);
-    EXPECT_EQ(records.size(), 0);
+    EXPECT_EQ(records.size(), RECORDS_SIZE_ZERO);
     InnerBundleInfo innerBundleInfo1;
     MockInnerBundleInfo(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST, innerBundleInfo1);
     ModuleUsageRecordStorage moduleUsageRecordStorage;
@@ -3063,7 +3073,7 @@ HWTEST_F(BmsBundleKitServiceTest, GetUsageRecords_0500, Function | SmallTest | L
     MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
     int64_t time =
         std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-    auto ret = GetBundleDataMgr()->NotifyActivityLifeStatus(BUNDLE_NAME_TEST, ABILITY_NAME_TEST, time);
+    auto ret = GetBundleDataMgr()->NotifyActivityLifeStatus(BUNDLE_NAME_TEST, ABILITY_NAME_TEST, time, 0);
     EXPECT_TRUE(ret);
     std::vector<ModuleUsageRecord> records;
     auto result = GetBundleDataMgr()->GetUsageRecords(1001, records);
@@ -3087,7 +3097,7 @@ HWTEST_F(BmsBundleKitServiceTest, NotifyActivityLifeStatus_0100, Function | Smal
     MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_DEMO, ABILITY_NAME_TEST);
     int64_t time =
         std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-    auto ret = GetBundleDataMgr()->NotifyActivityLifeStatus(BUNDLE_NAME_TEST, ABILITY_NAME_TEST, time);
+    auto ret = GetBundleDataMgr()->NotifyActivityLifeStatus(BUNDLE_NAME_TEST, ABILITY_NAME_TEST, time, 0);
     EXPECT_TRUE(ret);
     InnerBundleInfo innerBundleInfo;
     MockInnerBundleInfo(BUNDLE_NAME_TEST, MODULE_NAME_DEMO, ABILITY_NAME_TEST, innerBundleInfo);
@@ -3108,8 +3118,8 @@ HWTEST_F(BmsBundleKitServiceTest, NotifyActivityLifeStatus_0200, Function | Smal
     MockInstallBundle(BUNDLE_NAME_DEMO, MODULE_NAME_DEMO, ABILITY_NAME_DEMO);
     int64_t time =
         std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-    auto ret = GetBundleDataMgr()->NotifyActivityLifeStatus(BUNDLE_NAME_DEMO, ABILITY_NAME_DEMO, time);
-    auto ret1 = GetBundleDataMgr()->NotifyActivityLifeStatus(BUNDLE_NAME_TEST, ABILITY_NAME_TEST, time);
+    auto ret = GetBundleDataMgr()->NotifyActivityLifeStatus(BUNDLE_NAME_DEMO, ABILITY_NAME_DEMO, time, 0);
+    auto ret1 = GetBundleDataMgr()->NotifyActivityLifeStatus(BUNDLE_NAME_TEST, ABILITY_NAME_TEST, time, 0);
     EXPECT_TRUE(ret);
     EXPECT_TRUE(ret1);
     InnerBundleInfo innerBundleInfo1;
@@ -3133,7 +3143,7 @@ HWTEST_F(BmsBundleKitServiceTest, NotifyActivityLifeStatus_0300, Function | Smal
     MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
     int64_t time =
         std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-    auto ret = GetBundleDataMgr()->NotifyActivityLifeStatus(BUNDLE_NAME_DEMO, ABILITY_NAME_DEMO, time);
+    auto ret = GetBundleDataMgr()->NotifyActivityLifeStatus(BUNDLE_NAME_DEMO, ABILITY_NAME_DEMO, time, 0);
     EXPECT_FALSE(ret);
     InnerBundleInfo innerBundleInfo;
     MockInnerBundleInfo(BUNDLE_NAME_DEMO, MODULE_NAME_TEST, ABILITY_NAME_DEMO, innerBundleInfo);
@@ -3151,7 +3161,7 @@ HWTEST_F(BmsBundleKitServiceTest, NotifyActivityLifeStatus_0400, Function | Smal
 {
     int64_t time =
         std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-    auto ret = GetBundleDataMgr()->NotifyActivityLifeStatus(BUNDLE_NAME_DEMO, ABILITY_NAME_DEMO, time);
+    auto ret = GetBundleDataMgr()->NotifyActivityLifeStatus(BUNDLE_NAME_DEMO, ABILITY_NAME_DEMO, time, 0);
     InnerBundleInfo innerBundleInfo;
     MockInnerBundleInfo(BUNDLE_NAME_DEMO, MODULE_NAME_TEST, ABILITY_NAME_DEMO, innerBundleInfo);
     ModuleUsageRecordStorage moduleUsageRecordStorage;
@@ -3323,5 +3333,66 @@ HWTEST_F(BmsBundleKitServiceTest, GetAllCommonEventInfo_0500, Function | SmallTe
     std::vector<CommonEventInfo> commonEventInfos;
     GetBundleDataMgr()->GetAllCommonEventInfo(COMMON_EVENT_EVENT_NOT_EXISTS_KEY, commonEventInfos);
     EXPECT_TRUE(commonEventInfos.empty());
+    MockUninstallBundle(BUNDLE_NAME_TEST);
+}
+
+/**
+ * @tc.number: BundleClone_0100
+ * @tc.name: test the right bundle name can be cloned.
+ * @tc.desc: 1.the bundle name is right.
+ *           2.the bundle can be cloned success and can get bundle info success.
+ */
+HWTEST_F(BmsBundleKitServiceTest, BundleClone_0100, Function | SmallTest | Level1)
+{
+    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
+    auto result = GetBundleCloneMgr()->BundleClone(BUNDLE_NAME_TEST);
+    EXPECT_TRUE(result);
+    MockUninstallBundle(BUNDLE_NAME_TEST);
+}
+
+/**
+ * @tc.number: BundleClone_0200.
+ * @tc.name: test the error bundle name can't be cloned.
+ * @tc.desc: 1.the bundle name is error.
+ *           2.the bundle can't be cloned success.
+ */
+HWTEST_F(BmsBundleKitServiceTest, BundleClone_0200, Function | SmallTest | Level1)
+{
+    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
+    auto result = GetBundleCloneMgr()->BundleClone(BUNDLE_NAME_DEMO);
+    EXPECT_FALSE(result);
+    MockUninstallBundle(BUNDLE_NAME_TEST);
+}
+
+/**
+ * @tc.number: RemoveClonedBundle_0100.
+ * @tc.name: test the cloned bundle can be removed.
+ * @tc.desc: 1. the bundle is already cloned.
+ *           2. the cloned bundle can be removed successfully.
+ */
+HWTEST_F(BmsBundleKitServiceTest, RemoveClonedBundle_0100, Function | SmallTest | Level1)
+{
+    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
+    GetBundleCloneMgr()->BundleClone(BUNDLE_NAME_TEST);
+    std::string cloneName;
+    GetBundleDataMgr()->GetClonedBundleName(BUNDLE_NAME_TEST, cloneName);
+    auto result = GetBundleCloneMgr()->RemoveClonedBundle(BUNDLE_NAME_TEST, cloneName);
+    EXPECT_TRUE(result);
+    MockUninstallBundle(BUNDLE_NAME_TEST);
+}
+
+/**
+ * @tc.number: RemoveClonedBundle_0200.
+ * @tc.name: test the cloned bundle can't be removed when the bundle name is error.
+ * @tc.desc: 1. the bundle is already cloned.
+ *           2. the cloned bundle can't be removed successfully.
+ */
+HWTEST_F(BmsBundleKitServiceTest, RemoveClonedBundle_0200, Function | SmallTest | Level1)
+{
+    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
+    std::string cloneName;
+    GetBundleDataMgr()->GetClonedBundleName(BUNDLE_NAME_TEST, cloneName);
+    auto result = GetBundleCloneMgr()->RemoveClonedBundle(BUNDLE_NAME_TEST, cloneName);
+    EXPECT_FALSE(result);
     MockUninstallBundle(BUNDLE_NAME_TEST);
 }

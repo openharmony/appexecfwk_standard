@@ -21,7 +21,6 @@
 
 using namespace testing::ext;
 using namespace OHOS;
-using namespace OHOS::AppExecFwk;
 using testing::_;
 using testing::AtLeast;
 using testing::InSequence;
@@ -34,6 +33,8 @@ int MockSleep([[maybe_unused]] uint32_t seconds)
     return 0;
 }
 
+namespace OHOS {
+namespace AppExecFwk {
 class AmsServiceAppSpawnSocketTest : public testing::Test {
 public:
     static void SetUpTestCase();
@@ -62,7 +63,7 @@ void AmsServiceAppSpawnSocketTest::TearDown()
  * EnvConditions: mobile that can run ohos test framework
  * CaseDescription: Verify if create client socket fail, open connection error.
  */
-HWTEST(AmsServiceAppSpawnSocketTest, AppSpawnSocket_001, TestSize.Level0)
+HWTEST(AmsServiceAppSpawnSocketTest, AppSpawnSocket_001, TestSize.Level1)
 {
     APP_LOGI("ams_service_app_spawn_socket_001 start");
 
@@ -85,7 +86,7 @@ HWTEST(AmsServiceAppSpawnSocketTest, AppSpawnSocket_001, TestSize.Level0)
  * EnvConditions: mobile that can run ohos test framework
  * CaseDescription: Verify if connect socket client fail, open connection error.
  */
-HWTEST(AmsServiceAppSpawnSocketTest, AppSpawnSocket_002, TestSize.Level0)
+HWTEST(AmsServiceAppSpawnSocketTest, AppSpawnSocket_002, TestSize.Level1)
 {
     APP_LOGI("ams_service_app_spawn_socket_002 start");
 
@@ -109,7 +110,7 @@ HWTEST(AmsServiceAppSpawnSocketTest, AppSpawnSocket_002, TestSize.Level0)
  * EnvConditions: mobile that can run ohos test framework
  * CaseDescription: Verify the function OpenAppSpawnConnection open connection success.
  */
-HWTEST(AmsServiceAppSpawnSocketTest, AppSpawnSocket_003, TestSize.Level0)
+HWTEST(AmsServiceAppSpawnSocketTest, AppSpawnSocket_003, TestSize.Level1)
 {
     APP_LOGI("ams_service_app_spawn_socket_003 start");
 
@@ -133,7 +134,7 @@ HWTEST(AmsServiceAppSpawnSocketTest, AppSpawnSocket_003, TestSize.Level0)
  * EnvConditions: mobile that can run ohos test framework
  * CaseDescription: Verify the function ReadMessage can check the invalid buffer point.
  */
-HWTEST(AmsServiceAppSpawnSocketTest, AppSpawnSocket_004, TestSize.Level0)
+HWTEST(AmsServiceAppSpawnSocketTest, AppSpawnSocket_004, TestSize.Level1)
 {
     APP_LOGI("ams_service_app_spawn_socket_004 start");
 
@@ -157,7 +158,7 @@ HWTEST(AmsServiceAppSpawnSocketTest, AppSpawnSocket_004, TestSize.Level0)
  * EnvConditions: mobile that can run ohos test framework
  * CaseDescription: Verify the function ReadMessage can check the buffer length is 0.
  */
-HWTEST(AmsServiceAppSpawnSocketTest, AppSpawnSocket_005, TestSize.Level0)
+HWTEST(AmsServiceAppSpawnSocketTest, AppSpawnSocket_005, TestSize.Level1)
 {
     APP_LOGI("ams_service_app_spawn_socket_005 start");
 
@@ -181,7 +182,7 @@ HWTEST(AmsServiceAppSpawnSocketTest, AppSpawnSocket_005, TestSize.Level0)
  * EnvConditions: mobile that can run ohos test framework
  * CaseDescription: Verify the function ReadMessage can check the buffer length < 0.
  */
-HWTEST(AmsServiceAppSpawnSocketTest, AppSpawnSocket_006, TestSize.Level0)
+HWTEST(AmsServiceAppSpawnSocketTest, AppSpawnSocket_006, TestSize.Level1)
 {
     APP_LOGI("ams_service_app_spawn_socket_006 start");
 
@@ -205,7 +206,7 @@ HWTEST(AmsServiceAppSpawnSocketTest, AppSpawnSocket_006, TestSize.Level0)
  * EnvConditions: mobile that can run ohos test framework
  * CaseDescription: Verify the function ReadMessage can read the valid message.
  */
-HWTEST(AmsServiceAppSpawnSocketTest, AppSpawnSocket_007, TestSize.Level0)
+HWTEST(AmsServiceAppSpawnSocketTest, AppSpawnSocket_007, TestSize.Level1)
 {
     APP_LOGI("ams_service_app_spawn_socket_007 start");
 
@@ -230,7 +231,7 @@ HWTEST(AmsServiceAppSpawnSocketTest, AppSpawnSocket_007, TestSize.Level0)
  * EnvConditions: mobile that can run ohos test framework
  * CaseDescription: Verify the function ReadMessage can check the message length.
  */
-HWTEST(AmsServiceAppSpawnSocketTest, AppSpawnSocket_008, TestSize.Level0)
+HWTEST(AmsServiceAppSpawnSocketTest, AppSpawnSocket_008, TestSize.Level1)
 {
     APP_LOGI("ams_service_app_spawn_socket_008 start");
 
@@ -255,7 +256,7 @@ HWTEST(AmsServiceAppSpawnSocketTest, AppSpawnSocket_008, TestSize.Level0)
  * EnvConditions: mobile that can run ohos test framework
  * CaseDescription: Verify the function WriteMessage can check the invalid buffer point.
  */
-HWTEST(AmsServiceAppSpawnSocketTest, AppSpawnSocket_009, TestSize.Level0)
+HWTEST(AmsServiceAppSpawnSocketTest, AppSpawnSocket_009, TestSize.Level1)
 {
     APP_LOGI("ams_service_app_spawn_socket_009 start");
     std::shared_ptr<OHOS::AppSpawn::MockClientSocket> mockClientSocket =
@@ -278,7 +279,7 @@ HWTEST(AmsServiceAppSpawnSocketTest, AppSpawnSocket_009, TestSize.Level0)
  * EnvConditions: mobile that can run ohos test framework
  * CaseDescription: Verify the function WriteMessage can check the buffer length is 0.
  */
-HWTEST(AmsServiceAppSpawnSocketTest, AppSpawnSocket_010, TestSize.Level0)
+HWTEST(AmsServiceAppSpawnSocketTest, AppSpawnSocket_010, TestSize.Level1)
 {
     APP_LOGI("ams_service_app_spawn_socket_010 start");
 
@@ -302,7 +303,7 @@ HWTEST(AmsServiceAppSpawnSocketTest, AppSpawnSocket_010, TestSize.Level0)
  * EnvConditions: mobile that can run ohos test framework
  * CaseDescription: Verify the function WriteMessage can check the buffer length < 0.
  */
-HWTEST(AmsServiceAppSpawnSocketTest, AppSpawnSocket_011, TestSize.Level0)
+HWTEST(AmsServiceAppSpawnSocketTest, AppSpawnSocket_011, TestSize.Level1)
 {
     APP_LOGI("ams_service_app_spawn_socket_011 start");
 
@@ -326,7 +327,7 @@ HWTEST(AmsServiceAppSpawnSocketTest, AppSpawnSocket_011, TestSize.Level0)
  * EnvConditions: mobile that can run ohos test framework
  * CaseDescription: Verify the function WriteMessage can write valid message.
  */
-HWTEST(AmsServiceAppSpawnSocketTest, AppSpawnSocket_012, TestSize.Level0)
+HWTEST(AmsServiceAppSpawnSocketTest, AppSpawnSocket_012, TestSize.Level1)
 {
     APP_LOGI("ams_service_app_spawn_socket_012 start");
 
@@ -351,7 +352,7 @@ HWTEST(AmsServiceAppSpawnSocketTest, AppSpawnSocket_012, TestSize.Level0)
  * EnvConditions: mobile that can run ohos test framework
  * CaseDescription: Verify the function WriteMessage can check the message length.
  */
-HWTEST(AmsServiceAppSpawnSocketTest, AppSpawnSocket_013, TestSize.Level0)
+HWTEST(AmsServiceAppSpawnSocketTest, AppSpawnSocket_013, TestSize.Level1)
 {
     APP_LOGI("ams_service_app_spawn_socket_013 start");
 
@@ -367,3 +368,5 @@ HWTEST(AmsServiceAppSpawnSocketTest, AppSpawnSocket_013, TestSize.Level0)
 
     APP_LOGI("ams_service_app_spawn_socket_013 end");
 }
+}  // namespace AppExecFwk
+}  // namespace OHOS

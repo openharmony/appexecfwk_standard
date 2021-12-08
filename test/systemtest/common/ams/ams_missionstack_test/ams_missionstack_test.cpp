@@ -168,13 +168,13 @@ void AmsMissionStackTest::Reinstall(const std::string &hapName, const std::strin
 
 
 /**
- * @tc.number    : FWK_MissionStack_0100
+ * @tc.number    : ACTS_FWK_MissionStack_0100
  * @tc.name      : test LockMission in ability_context.h
  * @tc.desc      : Verify that the result of LockMission function is correct.
  */
-HWTEST_F(AmsMissionStackTest, FWK_MissionStack_0100, Function | MediumTest | Level1)
+HWTEST_F(AmsMissionStackTest, ACTS_FWK_MissionStack_0100, Function | MediumTest | Level1)
 {
-    GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_MissionStack_0100 start";
+    GTEST_LOG_(INFO) << "AmsMissionStackTest ACTS_FWK_MissionStack_0100 start";
     MAP_STR_STR params;
     Want want = STAbilityUtil::MakeWant("device", MAIN_ABILITY_NAME, KIT_BUNDLE_NAME, params);
     // start first ability
@@ -201,17 +201,17 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_0100, Function | MediumTest | Lev
 
     EXPECT_EQ(TestWaitCompleted(event, "OnActive", MAIN_ABILITY_CODE), 0);
 
-    GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_MissionStack_0100 end";
+    GTEST_LOG_(INFO) << "AmsMissionStackTest ACTS_FWK_MissionStack_0100 end";
 }
 
 /**
- * @tc.number    : FWK_MissionStack_0200
+ * @tc.number    : ACTS_FWK_MissionStack_0200
  * @tc.name      : test LockMission in ability_context.h
  * @tc.desc      : Verify that the result of LockMission function is correct.
  */
-HWTEST_F(AmsMissionStackTest, FWK_MissionStack_0200, Function | MediumTest | Level1)
+HWTEST_F(AmsMissionStackTest, ACTS_FWK_MissionStack_0200, Function | MediumTest | Level1)
 {
-    GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_MissionStack_0200 start";
+    GTEST_LOG_(INFO) << "AmsMissionStackTest ACTS_FWK_MissionStack_0200 start";
     MAP_STR_STR params;
     Want want = STAbilityUtil::MakeWant("device", MAIN_ABILITY_NAME, KIT_BUNDLE_NAME, params);
     // start first ability
@@ -228,17 +228,17 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_0200, Function | MediumTest | Lev
     sleep(WAIT_LAUNCHER_TIME);
     EXPECT_NE(TestWaitCompleted(event, "OnBackground", MAIN_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
 
-    GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_MissionStack_0200 end";
+    GTEST_LOG_(INFO) << "AmsMissionStackTest ACTS_FWK_MissionStack_0200 end";
 }
 
 /**
- * @tc.number    : FWK_MissionStack_0300
+ * @tc.number    : ACTS_FWK_MissionStack_0300
  * @tc.name      : test LockMission in ability_context.h
  * @tc.desc      : Verify that the result of LockMission function is correct.
  */
-HWTEST_F(AmsMissionStackTest, FWK_MissionStack_0300, Function | MediumTest | Level1)
+HWTEST_F(AmsMissionStackTest, ACTS_FWK_MissionStack_0300, Function | MediumTest | Level1)
 {
-    GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_MissionStack_0300 start";
+    GTEST_LOG_(INFO) << "AmsMissionStackTest ACTS_FWK_MissionStack_0300 start";
     MAP_STR_STR params;
     Want want = STAbilityUtil::MakeWant("device", MAIN_ABILITY_NAME, KIT_BUNDLE_NAME, params);
     // start first ability
@@ -260,29 +260,17 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_0300, Function | MediumTest | Lev
     sleep(WAIT_LAUNCHER_TIME);
     EXPECT_NE(TestWaitCompleted(event, "OnBackground", MAIN_ABILITY_CODE), 0);
 
-    GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_MissionStack_0300 end";
+    GTEST_LOG_(INFO) << "AmsMissionStackTest ACTS_FWK_MissionStack_0300 end";
 }
 
 /**
- * @tc.number    : FWK_MissionStack_0400
- * @tc.name      : 
- * @tc.desc      : 
- */
-HWTEST_F(AmsMissionStackTest, FWK_MissionStack_0400, Function | MediumTest | Level1)
-{
-    GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_MissionStack_0400 start";
-    // need js test environment
-    GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_MissionStack_0400 end";
-}
-
-/**
- * @tc.number    : FWK_MissionStack_0500
+ * @tc.number    : ACTS_FWK_MissionStack_0400
  * @tc.name      : test LockMission in ability_context.h
  * @tc.desc      : Verify that the result of LockMission function is correct.
  */
-HWTEST_F(AmsMissionStackTest, FWK_MissionStack_0500, Function | MediumTest | Level1)
+HWTEST_F(AmsMissionStackTest, ACTS_FWK_MissionStack_0400, Function | MediumTest | Level1)
 {
-    GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_MissionStack_0500 start";
+    GTEST_LOG_(INFO) << "AmsMissionStackTest ACTS_FWK_MissionStack_0400 start";
     MAP_STR_STR params;
     Want want = STAbilityUtil::MakeWant("device", THIRD_ABILITY_NAME, KIT_BUNDLE_NAME, params);
     // start third ability
@@ -299,17 +287,17 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_0500, Function | MediumTest | Lev
     sleep(WAIT_LAUNCHER_TIME);
     EXPECT_NE(TestWaitCompleted(event, "OnStart", SECOND_ABILITY_CODE), 0);
 
-    GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_MissionStack_0500 end";
+    GTEST_LOG_(INFO) << "AmsMissionStackTest ACTS_FWK_MissionStack_0400 end";
 }
 
 /**
- * @tc.number    : FWK_MissionStack_0600
+ * @tc.number    : ACTS_FWK_MissionStack_0500
  * @tc.name      : test LockMission in ability_context.h
  * @tc.desc      : Verify that the result of LockMission function is correct.
  */
-HWTEST_F(AmsMissionStackTest, FWK_MissionStack_0600, Function | MediumTest | Level1)
+HWTEST_F(AmsMissionStackTest, ACTS_FWK_MissionStack_0500, Function | MediumTest | Level1)
 {
-    GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_MissionStack_0600 start";
+    GTEST_LOG_(INFO) << "AmsMissionStackTest ACTS_FWK_MissionStack_0500 start";
     MAP_STR_STR params;
     Want want = STAbilityUtil::MakeWant("device", MAIN_ABILITY_NAME, KIT_BUNDLE_NAME, params);
     // start third ability
@@ -326,17 +314,17 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_0600, Function | MediumTest | Lev
     sleep(WAIT_LAUNCHER_TIME);
     EXPECT_NE(TestWaitCompleted(event, "OnStart", THIRD_ABILITY_CODE), 0);
 
-    GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_MissionStack_0600 end";
+    GTEST_LOG_(INFO) << "AmsMissionStackTest ACTS_FWK_MissionStack_0500 end";
 }
 
 /**
- * @tc.number    : FWK_MissionStack_0700
+ * @tc.number    : ACTS_FWK_MissionStack_0600
  * @tc.name      : test LockMission in ability_context.h
  * @tc.desc      : Verify that the result of LockMission function is correct.
  */
-HWTEST_F(AmsMissionStackTest, FWK_MissionStack_0700, Function | MediumTest | Level1)
+HWTEST_F(AmsMissionStackTest, ACTS_FWK_MissionStack_0600, Function | MediumTest | Level1)
 {
-    GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_MissionStack_0700 start";
+    GTEST_LOG_(INFO) << "AmsMissionStackTest ACTS_FWK_MissionStack_0600 start";
     MAP_STR_STR params;
     Want want = STAbilityUtil::MakeWant("device", MAIN_ABILITY_NAME, KIT_BUNDLE_NAME, params);
     // start first ability
@@ -356,29 +344,17 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_0700, Function | MediumTest | Lev
 
     sleep(WAIT_LAUNCHER_TIME);
     EXPECT_EQ(TestWaitCompleted(event, "OnBackground", MAIN_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
-    GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_MissionStack_0700 end";
+    GTEST_LOG_(INFO) << "AmsMissionStackTest ACTS_FWK_MissionStack_0600 end";
 }
 
 /**
- * @tc.number    : FWK_MissionStack_0800
- * @tc.name      : 
- * @tc.desc      : 
- */
-HWTEST_F(AmsMissionStackTest, FWK_MissionStack_0800, Function | MediumTest | Level1)
-{
-    GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_MissionStack_0800 start";
-    // need js test environment
-    GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_MissionStack_0800 end";
-}
-
-/**
- * @tc.number    : FWK_MissionStack_0900
+ * @tc.number    : ACTS_FWK_MissionStack_0700
  * @tc.name      : test LockMission in ability_context.h
  * @tc.desc      : Verify that the result of LockMission function is correct.
  */
-HWTEST_F(AmsMissionStackTest, FWK_MissionStack_0900, Function | MediumTest | Level1)
+HWTEST_F(AmsMissionStackTest, ACTS_FWK_MissionStack_0700, Function | MediumTest | Level1)
 {
-    GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_MissionStack_0900 start";
+    GTEST_LOG_(INFO) << "AmsMissionStackTest ACTS_FWK_MissionStack_0700 start";
     MAP_STR_STR params;
     Want want = STAbilityUtil::MakeWant("device", MAIN_ABILITY_NAME, KIT_BUNDLE_NAME, params);
     // start first ability
@@ -403,17 +379,17 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_0900, Function | MediumTest | Lev
     EXPECT_EQ(TestWaitCompleted(event, g_EVENT_RESP_SECOND, CODE_), 0);
     EXPECT_EQ(TestWaitCompleted(event, "OnStop", SECOND_ABILITY_CODE), 0);
     EXPECT_EQ(TestWaitCompleted(event, "OnActive", MAIN_ABILITY_CODE), 0);
-    GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_MissionStack_0900 end";
+    GTEST_LOG_(INFO) << "AmsMissionStackTest ACTS_FWK_MissionStack_0700 end";
 }
 
 /**
- * @tc.number    : FWK_MissionStack_1000
+ * @tc.number    : ACTS_FWK_MissionStack_0800
  * @tc.name      : test LockMission in ability_context.h
  * @tc.desc      : Verify that the result of LockMission function is correct.
  */
-HWTEST_F(AmsMissionStackTest, FWK_MissionStack_1000, Function | MediumTest | Level1)
+HWTEST_F(AmsMissionStackTest, ACTS_FWK_MissionStack_0800, Function | MediumTest | Level1)
 {
-    GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_MissionStack_1000 start";
+    GTEST_LOG_(INFO) << "AmsMissionStackTest ACTS_FWK_MissionStack_0800 start";
     MAP_STR_STR params;
     Want want = STAbilityUtil::MakeWant("device", MAIN_ABILITY_NAME, KIT_BUNDLE_NAME, params);
     // start first ability
@@ -430,29 +406,17 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_1000, Function | MediumTest | Lev
     string appInfo = g_eventMessage;
 
     GTEST_LOG_(INFO) << "id=" << appInfo;
-    GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_MissionStack_1000 end";
+    GTEST_LOG_(INFO) << "AmsMissionStackTest ACTS_FWK_MissionStack_0800 end";
 }
 
 /**
- * @tc.number    : FWK_MissionStack_1100
- * @tc.name      : 
- * @tc.desc      : 
- */
-HWTEST_F(AmsMissionStackTest, FWK_MissionStack_1100, Function | MediumTest | Level1)
-{
-    GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_MissionStack_1100 start";
-    // need js test environment
-    GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_MissionStack_1100 end";
-}
-
-/**
- * @tc.number    : FWK_MissionStack_1200
+ * @tc.number    : ACTS_FWK_MissionStack_0900
  * @tc.name      : test MoveMissionToEnd in ability_context.h
  * @tc.desc      : Verify that the result of MoveMissionToEnd function is correct.
  */
-HWTEST_F(AmsMissionStackTest, FWK_MissionStack_1200, Function | MediumTest | Level1)
+HWTEST_F(AmsMissionStackTest, ACTS_FWK_MissionStack_0900, Function | MediumTest | Level1)
 {
-    GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_MissionStack_1200 start";
+    GTEST_LOG_(INFO) << "AmsMissionStackTest ACTS_FWK_MissionStack_0900 start";
     MAP_STR_STR params;
     Want want = STAbilityUtil::MakeWant("device", MAIN_ABILITY_NAME, KIT_BUNDLE_NAME, params);
     // start first ability
@@ -468,17 +432,17 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_1200, Function | MediumTest | Lev
     EXPECT_EQ(TestWaitCompleted(event, g_EVENT_RESP_MAIN, CODE_), 0);
     EXPECT_EQ(TestWaitCompleted(event, "OnBackground", MAIN_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
 
-    GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_MissionStack_1200 end";
+    GTEST_LOG_(INFO) << "AmsMissionStackTest ACTS_FWK_MissionStack_0900 end";
 }
 
 /**
- * @tc.number    : FWK_MissionStack_1300
+ * @tc.number    : ACTS_FWK_MissionStack_1000
  * @tc.name      : test MoveMissionToEnd in ability_context.h
  * @tc.desc      : Verify that the result of MoveMissionToEnd function is correct.
  */
-HWTEST_F(AmsMissionStackTest, FWK_MissionStack_1300, Function | MediumTest | Level1)
+HWTEST_F(AmsMissionStackTest, ACTS_FWK_MissionStack_1000, Function | MediumTest | Level1)
 {
-    GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_MissionStack_1300 start";
+    GTEST_LOG_(INFO) << "AmsMissionStackTest ACTS_FWK_MissionStack_1000 start";
     MAP_STR_STR params;
     Want want = STAbilityUtil::MakeWant("device", MAIN_ABILITY_NAME, KIT_BUNDLE_NAME, params);
     // start first ability
@@ -494,17 +458,17 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_1300, Function | MediumTest | Lev
     EXPECT_EQ(TestWaitCompleted(event, g_EVENT_RESP_MAIN, CODE_), 0);
     EXPECT_EQ(TestWaitCompleted(event, "OnBackground", MAIN_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
 
-    GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_MissionStack_1300 end";
+    GTEST_LOG_(INFO) << "AmsMissionStackTest ACTS_FWK_MissionStack_1000 end";
 }
 
 /**
- * @tc.number    : FWK_MissionStack_1400
+ * @tc.number    : ACTS_FWK_MissionStack_1100
  * @tc.name      : test MoveMissionToEnd in ability_context.h
  * @tc.desc      : Verify that the result of MoveMissionToEnd function is correct.
  */
-HWTEST_F(AmsMissionStackTest, FWK_MissionStack_1400, Function | MediumTest | Level1)
+HWTEST_F(AmsMissionStackTest, ACTS_FWK_MissionStack_1100, Function | MediumTest | Level1)
 {
-    GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_MissionStack_1400 start";
+    GTEST_LOG_(INFO) << "AmsMissionStackTest ACTS_FWK_MissionStack_1100 start";
     MAP_STR_STR params;
     Want want = STAbilityUtil::MakeWant("device", MAIN_ABILITY_NAME, KIT_BUNDLE_NAME, params);
     // start first ability
@@ -529,17 +493,17 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_1400, Function | MediumTest | Lev
     EXPECT_EQ(TestWaitCompleted(event, g_EVENT_RESP_SECOND, CODE_), 0);
     EXPECT_EQ(TestWaitCompleted(event, "OnBackground", SECOND_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
 
-    GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_MissionStack_1400 end";
+    GTEST_LOG_(INFO) << "AmsMissionStackTest ACTS_FWK_MissionStack_1100 end";
 }
 
 /**
- * @tc.number    : FWK_MissionStack_1500
+ * @tc.number    : ACTS_FWK_MissionStack_1200
  * @tc.name      : test MoveMissionToEnd in ability_context.h
  * @tc.desc      : Verify that the result of MoveMissionToEnd function is correct.
  */
-HWTEST_F(AmsMissionStackTest, FWK_MissionStack_1500, Function | MediumTest | Level1)
+HWTEST_F(AmsMissionStackTest, ACTS_FWK_MissionStack_1200, Function | MediumTest | Level1)
 {
-    GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_MissionStack_1500 start";
+    GTEST_LOG_(INFO) << "AmsMissionStackTest ACTS_FWK_MissionStack_1200 start";
     MAP_STR_STR params;
     Want want = STAbilityUtil::MakeWant("device", MAIN_ABILITY_NAME, KIT_BUNDLE_NAME, params);
     // start first ability
@@ -564,17 +528,17 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_1500, Function | MediumTest | Lev
     EXPECT_EQ(TestWaitCompleted(event, g_EVENT_RESP_SECOND, CODE_), 0);
     EXPECT_NE(TestWaitCompleted(event, "OnBackground", SECOND_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
 
-    GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_MissionStack_1500 end";
+    GTEST_LOG_(INFO) << "AmsMissionStackTest ACTS_FWK_MissionStack_1200 end";
 }
 
 /**
- * @tc.number    : FWK_MissionStack_1600
+ * @tc.number    : ACTS_FWK_MissionStack_1300
  * @tc.name      : test MoveMissionToEnd in ability_context.h
  * @tc.desc      : Verify that the result of MoveMissionToEnd function is correct.
  */
-HWTEST_F(AmsMissionStackTest, FWK_MissionStack_1600, Function | MediumTest | Level1)
+HWTEST_F(AmsMissionStackTest, ACTS_FWK_MissionStack_1300, Function | MediumTest | Level1)
 {
-    GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_MissionStack_1600 start";
+    GTEST_LOG_(INFO) << "AmsMissionStackTest ACTS_FWK_MissionStack_1300 start";
     MAP_STR_STR params;
     Want want = STAbilityUtil::MakeWant("device", MAIN_ABILITY_NAME, KIT_BUNDLE_NAME, params);
     // start first ability
@@ -623,17 +587,17 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_1600, Function | MediumTest | Lev
 
     STAbilityUtil::Uninstall(KIT_BUNDLE_NAME_SUBSIDIARY);
     STAbilityUtil::CleanMsg(event);
-    GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_MissionStack_1600 end";
+    GTEST_LOG_(INFO) << "AmsMissionStackTest ACTS_FWK_MissionStack_1300 end";
 }
 
 /**
- * @tc.number    : FWK_MissionStack_1700
+ * @tc.number    : ACTS_FWK_MissionStack_1400
  * @tc.name      : test MoveMissionToEnd in ability_context.h
  * @tc.desc      : Verify that the result of MoveMissionToEnd function is correct.
  */
-HWTEST_F(AmsMissionStackTest, FWK_MissionStack_1700, Function | MediumTest | Level1)
+HWTEST_F(AmsMissionStackTest, ACTS_FWK_MissionStack_1400, Function | MediumTest | Level1)
 {
-    GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_MissionStack_1700 start";
+    GTEST_LOG_(INFO) << "AmsMissionStackTest ACTS_FWK_MissionStack_1400 start";
     MAP_STR_STR params;
     Want want = STAbilityUtil::MakeWant("device", MAIN_ABILITY_NAME, KIT_BUNDLE_NAME, params);
     // start first ability
@@ -678,17 +642,17 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_1700, Function | MediumTest | Lev
 
     STAbilityUtil::Uninstall(KIT_BUNDLE_NAME_SUBSIDIARY);
     STAbilityUtil::CleanMsg(event);
-    GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_MissionStack_1700 end";
+    GTEST_LOG_(INFO) << "AmsMissionStackTest ACTS_FWK_MissionStack_1400 end";
 }
 
 /**
- * @tc.number    : FWK_MissionStack_1800
+ * @tc.number    : ACTS_FWK_MissionStack_1500
  * @tc.name      : test MoveMissionToEnd in ability_context.h
  * @tc.desc      : Verify that the result of MoveMissionToEnd function is correct.
  */
-HWTEST_F(AmsMissionStackTest, FWK_MissionStack_1800, Function | MediumTest | Level1)
+HWTEST_F(AmsMissionStackTest, ACTS_FWK_MissionStack_1500, Function | MediumTest | Level1)
 {
-    GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_MissionStack_1800 start";
+    GTEST_LOG_(INFO) << "AmsMissionStackTest ACTS_FWK_MissionStack_1500 start";
     MAP_STR_STR params;
     Want want = STAbilityUtil::MakeWant("device", MAIN_ABILITY_NAME, KIT_BUNDLE_NAME, params);
     // start first ability
@@ -705,6 +669,6 @@ HWTEST_F(AmsMissionStackTest, FWK_MissionStack_1800, Function | MediumTest | Lev
     
     EXPECT_NE(TestWaitCompleted(event, "OnBackground", MAIN_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
 
-    GTEST_LOG_(INFO) << "AmsMissionStackTest FWK_MissionStack_1800 end";
+    GTEST_LOG_(INFO) << "AmsMissionStackTest ACTS_FWK_MissionStack_1500 end";
 }
 }  // namespace

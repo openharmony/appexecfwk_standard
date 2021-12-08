@@ -97,7 +97,7 @@ std::shared_ptr<AMSEventHandler> AmsMgrSchedulerTest::GetAmsEventHandler()
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Verify the function LoadAbility can works.
  */
-HWTEST_F(AmsMgrSchedulerTest, AmsMgrScheduler_001, TestSize.Level0)
+HWTEST_F(AmsMgrSchedulerTest, AmsMgrScheduler_001, TestSize.Level1)
 {
     APP_LOGD("AmsMgrScheduler_001 start.");
 
@@ -129,7 +129,7 @@ HWTEST_F(AmsMgrSchedulerTest, AmsMgrScheduler_001, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Verify the function LoadAbility can check appInfo and abilityInfo.
  */
-HWTEST_F(AmsMgrSchedulerTest, AmsMgrScheduler_002, TestSize.Level0)
+HWTEST_F(AmsMgrSchedulerTest, AmsMgrScheduler_002, TestSize.Level1)
 {
     APP_LOGD("AmsMgrScheduler_002 start.");
 
@@ -165,7 +165,7 @@ HWTEST_F(AmsMgrSchedulerTest, AmsMgrScheduler_002, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Verify the function UpdateAbilityState can works.
  */
-HWTEST_F(AmsMgrSchedulerTest, AmsMgrScheduler_003, TestSize.Level0)
+HWTEST_F(AmsMgrSchedulerTest, AmsMgrScheduler_003, TestSize.Level1)
 {
     APP_LOGD("AmsMgrScheduler_003 start.");
 
@@ -193,7 +193,7 @@ HWTEST_F(AmsMgrSchedulerTest, AmsMgrScheduler_003, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Verify the function TerminateAbility can works.
  */
-HWTEST_F(AmsMgrSchedulerTest, AmsMgrScheduler_004, TestSize.Level0)
+HWTEST_F(AmsMgrSchedulerTest, AmsMgrScheduler_004, TestSize.Level1)
 {
     APP_LOGD("AmsMgrScheduler_004 start.");
 
@@ -219,7 +219,7 @@ HWTEST_F(AmsMgrSchedulerTest, AmsMgrScheduler_004, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Verify the function RegisterAppStateCallback can works.
  */
-HWTEST_F(AmsMgrSchedulerTest, AmsMgrScheduler_005, TestSize.Level0)
+HWTEST_F(AmsMgrSchedulerTest, AmsMgrScheduler_005, TestSize.Level1)
 {
     APP_LOGD("AmsMgrScheduler_005 start.");
 
@@ -245,7 +245,7 @@ HWTEST_F(AmsMgrSchedulerTest, AmsMgrScheduler_005, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Verify the function Reset can works.
  */
-HWTEST_F(AmsMgrSchedulerTest, AmsMgrScheduler_006, TestSize.Level0)
+HWTEST_F(AmsMgrSchedulerTest, AmsMgrScheduler_006, TestSize.Level1)
 {
     APP_LOGD("AmsMgrScheduler_006 start.");
 
@@ -271,7 +271,7 @@ HWTEST_F(AmsMgrSchedulerTest, AmsMgrScheduler_006, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Verify the function IsReady can check params.
  */
-HWTEST_F(AmsMgrSchedulerTest, AmsMgrScheduler_007, TestSize.Level0)
+HWTEST_F(AmsMgrSchedulerTest, AmsMgrScheduler_007, TestSize.Level1)
 {
     APP_LOGD("AmsMgrScheduler_007 start.");
 
@@ -303,7 +303,7 @@ HWTEST_F(AmsMgrSchedulerTest, AmsMgrScheduler_007, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Kill apps by name
  */
-HWTEST_F(AmsMgrSchedulerTest, AmsMgrScheduler_008, TestSize.Level0)
+HWTEST_F(AmsMgrSchedulerTest, AmsMgrScheduler_008, TestSize.Level1)
 {
     APP_LOGD("AmsMgrScheduler_008 start.");
 
@@ -343,7 +343,7 @@ HWTEST_F(AmsMgrSchedulerTest, AmsMgrScheduler_008, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Optimize based on visibility and perception
  */
-HWTEST_F(AmsMgrSchedulerTest, AmsMgrScheduler_009, TestSize.Level0)
+HWTEST_F(AmsMgrSchedulerTest, AmsMgrScheduler_009, TestSize.Level1)
 {
     APP_LOGD("AmsMgrScheduler_009 start.");
 
@@ -381,7 +381,7 @@ HWTEST_F(AmsMgrSchedulerTest, AmsMgrScheduler_009, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Optimize based on visibility and perception
  */
-HWTEST_F(AmsMgrSchedulerTest, AmsMgrScheduler_010, TestSize.Level0)
+HWTEST_F(AmsMgrSchedulerTest, AmsMgrScheduler_010, TestSize.Level1)
 {
     APP_LOGD("AmsMgrScheduler_010 start.");
 

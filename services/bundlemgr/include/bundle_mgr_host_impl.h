@@ -18,6 +18,7 @@
 
 #include "bundle_mgr_host.h"
 #include "bundle_data_mgr.h"
+#include "bundle_clone_mgr.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -89,6 +90,14 @@ public:
      */
     virtual bool GetBundleGids(const std::string &bundleName, std::vector<int> &gids) override;
     /**
+     * @brief Obtains an array of all group IDs associated with the given bundle name and UID.
+     * @param bundleName Indicates the bundle name.
+     * @param uid Indicates the uid.
+     * @param gids Indicates the group IDs associated with the specified bundle.
+     * @return Returns true if the gids is successfully obtained; returns false otherwise.
+     */
+    virtual bool GetBundleGidsByUid(const std::string &bundleName, const int &uid, std::vector<int> &gids) override;
+    /**
      * @brief Check whether the app is system app by it's UID.
      * @param uid Indicates the uid.
      * @return Returns true if the bundle is a system application; returns false otherwise.
@@ -129,6 +138,14 @@ public:
      * @return Returns true if the AbilityInfo is successfully obtained; returns false otherwise.
      */
     virtual bool QueryAbilityInfoByUri(const std::string &abilityUri, AbilityInfo &abilityInfo) override;
+    /**
+     * @brief Query the AbilityInfo by ability.uri in config.json.
+     * @param abilityUri Indicates the uri of the ability.
+     * @param abilityInfos Indicates the obtained AbilityInfos object.
+     * @return Returns true if the AbilityInfo is successfully obtained; returns false otherwise.
+     */
+    virtual bool QueryAbilityInfosByUri(
+        const std::string &abilityUri, std::vector<AbilityInfo> &abilityInfos) override;
     /**
      * @brief Obtains the BundleInfo of all keep-alive applications in the system.
      * @param bundleInfos Indicates all of the obtained BundleInfo objects.
@@ -182,6 +199,15 @@ public:
      */
     virtual int CheckPermission(const std::string &bundleName, const std::string &permission) override;
     /**
+     * @brief Checks whether a specified bundle has been granted a specific permission.
+     * @param bundleName Indicates the name of the bundle to check.
+     * @param permission Indicates the permission to check.
+     * @param userId Indicates the user id.
+     * @return Returns 0 if the bundle has the permission; returns -1 otherwise.
+     */
+    virtual int CheckPermissionByUid(const std::string &bundleName,
+        const std::string &permission, const int userId) override;
+    /**
      * @brief Obtains detailed information about a specified permission.
      * @param permissionName Indicates the name of the ohos permission.
      * @param permissionDef Indicates the object containing detailed information about the given ohos permission.
@@ -230,9 +256,10 @@ public:
     /**
      * @brief Clears application running data of a specified application.
      * @param bundleName Indicates the bundle name of the application whose data is to be cleared.
+     * @param userId Indicates the user id.
      * @return Returns true if the data cleared successfully; returns false otherwise.
      */
-    virtual bool CleanBundleDataFiles(const std::string &bundleName) override;
+    virtual bool CleanBundleDataFiles(const std::string &bundleName, const int userId) override;
     /**
      * @brief Register the specific bundle status callback.
      * @param bundleStatusCallback Indicates the callback to be invoked for returning the bundle status changed result.
@@ -305,7 +332,8 @@ public:
      * @param permission Indicates the permission to check.
      * @param userId Indicates the user id.
      * @return Returns true if the current application does not have the permission and the user does not turn off
-     * further requests; returns false if the current application already has the permission, the permission is rejected
+     * further requests;
+     * returns false if the current application already has the permission, the permission is rejected
      * by the system, or the permission is denied by the user and the user has turned off further requests.
      */
     virtual bool CanRequestPermission(
@@ -385,18 +413,39 @@ public:
      * @param moduleUsageRecords List of ModuleUsageRecord objects if obtained.
      * @return Returns true if this function is successfully called; returns false otherwise.
      */
-    virtual bool GetModuleUsageRecords(const int32_t number, std::vector<ModuleUsageRecord> &moduleUsageRecords) override;
+    virtual bool GetModuleUsageRecords(const int32_t number,
+        std::vector<ModuleUsageRecord> &moduleUsageRecords) override;
     /**
      * @brief Notify a specified ability for activity.
      * @param bundleName Indicates the bundle name of the ability to activity.
      * @param abilityName Indicates the name of the ability to activity.
      * @param launchTime Indicates the ability launchTime.
+     * @param uid Indicates the uid.
      * @return Returns true if this function is successfully called; returns false otherwise.
      */
-    virtual bool NotifyActivityLifeStatus(
-        const std::string &bundleName, const std::string &abilityName, const int64_t launchTime) override;
-
+    virtual bool NotifyActivityLifeStatus(const std::string &bundleName,
+        const std::string &abilityName, const int64_t launchTime, const int uid) override;
+    /**
+     * @brief Remove cloned bundle.
+     * @param bundleName Indicates the bundle name of remove cloned bundle.
+     * @param uid Indicates the uid of remove cloned bundle.
+     * @return Returns true if this function is successfully called; returns false otherwise.
+     */
+    virtual bool RemoveClonedBundle(const std::string &bundleName, const int32_t uid) override;
+    /**
+     * @brief create bundle clone.
+     * @param bundleName Indicates the bundle name of create bundle clone.
+     * @return Returns true if this function is successfully called; returns false otherwise.
+     */
+    virtual bool BundleClone(const std::string &bundleName) override;
+    /**
+     * @brief Determine whether the application is in the allow list.
+     * @param bundleName Indicates the bundle Names.
+     * @return Returns true if bundle name in the allow list successfully; returns false otherwise.
+     */
+    virtual bool CheckBundleNameInAllowList(const std::string &bundleName) override;
 private:
+    const std::shared_ptr<BundleCloneMgr> GetCloneMgrFromService();
     const std::shared_ptr<BundleDataMgr> GetDataMgrFromService();
 };
 

@@ -204,9 +204,9 @@ protected:
                 "iconId": 16777218,
                 "iconPath": "$media:icon",
                 "isLauncherApp": true,
-                "isSystemApp": true,
-                "label": "$string:app_name",
-                "labelId": 16777216,
+                "isSystemApp": false,
+                "label": "Launcher",
+                "labelId": 0,
                 "moduleInfos": [],
                 "moduleSourceDirs": [],
                 "name": "com.ohos.launcher",
@@ -215,7 +215,10 @@ protected:
                 "signatureKey": "",
                 "supportedModes": 0,
                 "debug": false,
-                "singleUser": true
+                "singleUser": true,
+                "isCloned": true,
+                "uid": 10000,
+                "signatureKey": ""
             },
             "baseBundleInfo": {
                 "abilityInfos": [],
@@ -243,10 +246,12 @@ protected:
                     "name": "",
                     "permissions": [],
                     "process": "",
-                    "signatureKey": "",
                     "supportedModes": 0,
                     "debug": false,
-                    "singleUser": true
+                    "singleUser": false,
+                    "isCloned": false,
+                    "uid": -1,
+                    "signatureKey": ""
                 },
                 "compatibleVersion": 6,
                 "cpuAbi": "",
@@ -255,12 +260,12 @@ protected:
                 "entryModuleName": "",
                 "gid": 2103,
                 "hapModuleNames": [],
-                "installTime": 10631,
-                "isDifferentName": false,
+                "installTime": 17921,
                 "isKeepAlive": false,
                 "isNativeApp": false,
+                "isDifferentName":false,
                 "jointUserId": "",
-                "label": "$string:app_name",
+                "label": "Launcher",
                 "mainEntry": "",
                 "maxSdkVersion": 0,
                 "minSdkVersion": 0,
@@ -333,7 +338,7 @@ protected:
                     }
                 ]
             },
-            "formInfos": {
+             "formInfos": {
                 "com.ohos.launchercom.ohos.launchercom.ohos.launcher.MainAbility": [
                     {
                         "package": "com.ohos.launcher",
@@ -359,6 +364,11 @@ protected:
                         "supportDimensions": [
                             1
                         ],
+                        "src": "src/code",
+                        "window": {
+                            "designWidth": 750,
+                            "autoDesignWidth": false
+                        },
                         "landscapeLayouts": [],
                         "portraitLayouts": [],
                         "customizeData": [
@@ -366,12 +376,7 @@ protected:
                                 "name": "originWidgetName",
                                 "value": "com.weather.testWidget"
                             }
-                        ],
-                        "src": "cards/card/index",
-                        "windows": {
-                            "designWidth": 720,
-                            "autoDesignWidth": true
-                        }
+                        ]
                     }
                 ]
             },
@@ -416,7 +421,8 @@ protected:
             },
             "uid": 2103,
             "userId_": 0,
-            "canUninstall": true
+            "canUninstall": true,
+            "newBundleName": "com.example.myapplication1#20010001"
         }
         )"_json;
     std::string deviceId_{};

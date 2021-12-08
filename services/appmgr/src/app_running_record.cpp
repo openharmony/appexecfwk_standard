@@ -55,6 +55,11 @@ const std::string &AppRunningRecord::GetName() const
     return appInfo_->name;
 }
 
+bool AppRunningRecord::GetCloneInfo() const
+{
+    return appInfo_->isCloned;
+}
+
 const std::string &AppRunningRecord::GetProcessName() const
 {
     return processName_;
