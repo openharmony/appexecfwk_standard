@@ -742,7 +742,7 @@ void AppMgrServiceInner::UnsuspendApplication(const std::shared_ptr<AppRunningRe
         return;
     }
 
-    APP_LOGD("%{public}s : app name is %{public}s , Uid is %{public}d",
+    APP_LOGI("%{public}s : app name is %{public}s , Uid is %{public}d",
         __func__,
         appRecord->GetName().c_str(),
         appRecord->GetUid());
