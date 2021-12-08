@@ -142,21 +142,27 @@ protected:
                     "minFormWidth": 0,
                     "defaultFormWidth": 200,
                     "metaData": {
-                        "customizeData": [{
-                            "name" : "string",
-                            "value" : "string",
-                            "extra" : "$string:customizeData_description"
-                        }],
-                        "parameters": [{
-                            "name" : "string",
-                            "type" : "Float",
-                            "description" : "$string:parameters_description"
-                        }],
-                        "results": [{
-                            "name" : "string",
-                            "type" : "Float",
-                            "description" : "$string:results_description"
-                        }]
+                        "customizeData": [
+                            {
+                                "name": "string",
+                                "value": "string",
+                                "extra": "$string:customizeData_description"
+                            }
+                        ],
+                        "parameters": [
+                            {
+                                "name": "string",
+                                "type": "Float",
+                                "description": "$string:parameters_description"
+                            }
+                        ],
+                        "results": [
+                            {
+                                "name": "string",
+                                "type": "Float",
+                                "description": "$string:results_description"
+                            }
+                        ]
                     },
                     "isLauncherAbility": true,
                     "isNativeAbility": false,
@@ -360,7 +366,12 @@ protected:
                                 "name": "originWidgetName",
                                 "value": "com.weather.testWidget"
                             }
-                        ]
+                        ],
+                        "src": "cards/card/index",
+                        "windows": {
+                            "designWidth": 720,
+                            "autoDesignWidth": true
+                        }
                     }
                 ]
             },
@@ -381,6 +392,26 @@ protected:
                     "isHomeShortcut": false,
                     "isStatic": false,
                     "label": "$string:mainability_description"
+                }
+            },
+            "commonEvents": {
+                "com.example.myapplication1com.example.myapplication.h1id": {
+                    "name": ".MainAbility",
+                    "bundleName": "com.example.myapplication1",
+                    "permission": "permission_test",
+                    "uid": -1,
+                    "data": [
+                        "data_one",
+                        "data_two"
+                    ],
+                    "type": [
+                        "type_one",
+                        "typea_two"
+                    ],
+                    "events": [
+                        "events_one",
+                        "events_two"
+                    ]
                 }
             },
             "uid": 2103,
