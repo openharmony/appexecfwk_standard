@@ -125,7 +125,7 @@ const std::string FORM_PORTRAIT_LAYOUTS1 = "port1";
 const std::string FORM_PORTRAIT_LAYOUTS2 = "port2";
 const std::string FORM_LANDSCAPE_LAYOUTS1 = "land1";
 const std::string FORM_LANDSCAPE_LAYOUTS2 = "land2";
-const std::string FORM_LAYOUT = "page/card/index";
+const std::string FORM_SRC = "page/card/index";
 constexpr int32_t FORM_JS_WINDOW_DESIGNWIDTH = 720;
 const std::string SHORTCUT_TEST_ID = "shortcutTestId";
 const std::string SHORTCUT_DEMO_ID = "shortcutDemoId";
@@ -359,7 +359,7 @@ FormInfo BmsBundleKitServiceTest::MockFormInfo(
     formInfo.scheduledUpateTime = FORM_SCHEDULED_UPDATE_TIME;
     formInfo.updateEnabled = true;
     formInfo.jsComponentName = FORM_JS_COMPONENT_NAME;
-    formInfo.layout = FORM_LAYOUT;
+    formInfo.src = FORM_SRC;
     formInfo.window.autoDesignWidth = true;
     formInfo.window.designWidth = FORM_JS_WINDOW_DESIGNWIDTH;
     for (auto &info : formInfo.customizeDatas) {
@@ -800,7 +800,7 @@ void BmsBundleKitServiceTest::CheckFormInfoTest(const std::vector<FormInfo> &for
             EXPECT_EQ(info.name, FORM_CUSTOMIZE_DATAS_NAME);
             EXPECT_EQ(info.value, FORM_CUSTOMIZE_DATAS_VALUE);
         }
-        EXPECT_EQ(formInfo.layout, FORM_LAYOUT);
+        EXPECT_EQ(formInfo.src, FORM_SRC);
         EXPECT_EQ(formInfo.window.designWidth, FORM_JS_WINDOW_DESIGNWIDTH);
         EXPECT_EQ(formInfo.window.autoDesignWidth, true);
     }
@@ -829,7 +829,7 @@ void BmsBundleKitServiceTest::CheckFormInfoDemo(const std::vector<FormInfo> &for
         EXPECT_EQ(formInfo.scheduledUpateTime, FORM_SCHEDULED_UPDATE_TIME);
         EXPECT_EQ(formInfo.jsComponentName, FORM_JS_COMPONENT_NAME);
         EXPECT_EQ(formInfo.updateEnabled, true);
-        EXPECT_EQ(formInfo.layout, FORM_LAYOUT);
+        EXPECT_EQ(formInfo.src, FORM_SRC);
         EXPECT_EQ(formInfo.window.designWidth, FORM_JS_WINDOW_DESIGNWIDTH);
         for (auto &info : formInfo.customizeDatas) {
             EXPECT_EQ(info.name, FORM_CUSTOMIZE_DATAS_NAME);
