@@ -24,13 +24,10 @@
 #include "bundle_installer_interface.h"
 #include "bundle_mgr_interface.h"
 #include "bundle_mgr_proxy.h"
+#include "common_tool.h"
 #include "iservice_registry.h"
 #include "status_receiver_host.h"
 #include "system_ability_definition.h"
-#include "operation_builder.h"
-#include "common_tool.h"
-#include "launcher_ability_info.h"
-#include "launcher_service.h"
 
 namespace {
 const std::string THIRD_BUNDLE_PATH = "/data/test/bms_bundle/";
@@ -41,15 +38,11 @@ const std::string RESOURCE_ROOT_PATH = "/data/test/";
 const std::string MSG_SUCCESS = "[SUCCESS]";
 const std::string OPERATION_FAILED = "Failure";
 const std::string OPERATION_SUCCESS = "Success";
-const std::string BUNDLE_ADD = "Bundle Add Success";
-const std::string BUNDLE_UPDATE = "Bundle Update Success";
-const std::string BUNDLE_REMOVE = "Bundle Remove Success";
 const int MIN_HEIGHT = 50;
 const int MIN_WIDTH = 100;
 const int DEFAULT_HEIGHT = 100;
 const int DEFAULT_WIDTH = 200;
-const int FORM_NUM = 3;
-
+const uint32_t FORM_NUM = 3;
 }  // namespace
 using OHOS::AAFwk::Want;
 using namespace testing::ext;
@@ -228,14 +221,17 @@ static void CheckCompatibleApplicationInfo(
     EXPECT_EQ(compatibleApplicationInfo.name, bundleName);
     EXPECT_EQ(compatibleApplicationInfo.label, "$string:app_name");
     EXPECT_EQ(compatibleApplicationInfo.description, "$string:mainability_description");
-    EXPECT_EQ(compatibleApplicationInfo.moduleInfos[0].moduleName, "entry");
-    EXPECT_EQ(compatibleApplicationInfo.moduleInfos[0].moduleSourceDir,
-        "/data/accounts/account_0/applications/com.example.third1/com.example.third1");
+    if (!compatibleApplicationInfo.moduleInfos.empty()) {
+        EXPECT_EQ(compatibleApplicationInfo.moduleInfos[0].moduleName, "entry");
+        EXPECT_EQ(compatibleApplicationInfo.moduleInfos[0].moduleSourceDir,
+            "/data/accounts/account_0/applications/com.example.third1/com.example.third1");
+    }
     EXPECT_TRUE(compatibleApplicationInfo.enabled);
 }
+
 /**
  * @tc.number: BMS_ConvertToCompatible_0100
- * @tc.name: test test the interface of ConvertToCompatiableAbilityInfo
+ * @tc.name: test the interface of ConvertToCompatiableAbilityInfo
  * @tc.desc: 1.install a normal hap
  *           2.query ability info by want
  *           3.get the compatible ability info of the hap by ConvertToCompatiableAbilityInfo
@@ -273,7 +269,7 @@ HWTEST_F(BmsCompatibleSystemTest, BMS_ConvertToCompatible_0100, Function | Mediu
 }
 /**
  * @tc.number: BMS_ConvertToCompatible_0200
- * @tc.name: test test the interface of ConvertToCompatiableAbilityInfo
+ * @tc.name: test the interface of ConvertToCompatiableAbilityInfo
  * @tc.desc: 1.install a low version hap
  *           2.install a high version hap
  *           3.get the compatible ability info by ConvertToCompatiableAbilityInfo
@@ -314,7 +310,7 @@ HWTEST_F(BmsCompatibleSystemTest, BMS_ConvertToCompatible_0200, Function | Mediu
 }
 /**
  * @tc.number: BMS_ConvertToCompatible_0300
- * @tc.name: test test the interface of ConvertToCompatiableAbilityInfo
+ * @tc.name: test the interface of ConvertToCompatiableAbilityInfo
  * @tc.desc: 1.install a hap with two ability
  *           2.query the ability infos by want
  *           3.get the compatible ability info by ConvertToCompatiableAbilityInfo
@@ -341,7 +337,7 @@ HWTEST_F(BmsCompatibleSystemTest, BMS_ConvertToCompatible_0300, Function | Mediu
     std::vector<AbilityInfo> abilityInfos;
     bool result = bundleMgrProxy->QueryAbilityInfos(want, abilityInfos);
     EXPECT_TRUE(result);
-    for (int i = 0; i < abilityInfos.size(); i++) {
+    for (size_t i = 0; i < abilityInfos.size(); i++) {
         CompatibleAbilityInfo compatibleAbilityInfo;
         abilityInfos[i].ConvertToCompatiableAbilityInfo(compatibleAbilityInfo);
         EXPECT_EQ(compatibleAbilityInfo.name, abilityNames[i]);
@@ -385,7 +381,7 @@ HWTEST_F(BmsCompatibleSystemTest, BMS_ConvertToCompatible_0400, Function | Mediu
     CompatibleAbilityInfo compatibleAbilityInfo;
     bool result = bundleMgrProxy->QueryAbilityInfos(want, abilityInfos);
     EXPECT_TRUE(result);
-    for (int i = 0; i < abilityInfos.size(); i++) {
+    for (size_t i = 0; i < abilityInfos.size(); i++) {
         abilityInfos[i].ConvertToCompatiableAbilityInfo(compatibleAbilityInfo);
         EXPECT_EQ(compatibleAbilityInfo.name, abilityNames[i]);
     }
@@ -395,7 +391,7 @@ HWTEST_F(BmsCompatibleSystemTest, BMS_ConvertToCompatible_0400, Function | Mediu
 }
 /**
  * @tc.number: BMS_ConvertToCompatible_0500
- * @tc.name: test test the interface of ConvertToCompatiableAbilityInfo
+ * @tc.name: test the interface of ConvertToCompatiableAbilityInfo
  * @tc.desc: 1.install a normal hap with an ability
  *           2.get compatible ability info after uninstalling the hap
  */
@@ -432,7 +428,7 @@ HWTEST_F(BmsCompatibleSystemTest, BMS_ConvertToCompatible_0500, Function | Mediu
 }
 /**
  * @tc.number: BMS_ConvertToCompatible_0600
- * @tc.name: test test the interface of ConvertToCompatiableAbilityInfo
+ * @tc.name: test the interface of ConvertToCompatiableAbilityInfo
  * @tc.desc: get compatible ability info of invalid bundleName and abilityName
  */
 HWTEST_F(BmsCompatibleSystemTest, BMS_ConvertToCompatible_0600, Function | MediumTest | Level2)
@@ -460,7 +456,7 @@ HWTEST_F(BmsCompatibleSystemTest, BMS_ConvertToCompatible_0600, Function | Mediu
 }
 /**
  * @tc.number: BMS_ConvertToCompatible_0700
- * @tc.name: test test the interface of ConvertToCompatibleApplicationInfo
+ * @tc.name: test the interface of ConvertToCompatibleApplicationInfo
  * @tc.desc: 1.install a normal hap
  *           2.query application info by bundleName
  *           3.get the compatible application info of the hap by ConvertToCompatibleApplicationInfo
@@ -494,7 +490,7 @@ HWTEST_F(BmsCompatibleSystemTest, BMS_ConvertToCompatible_0700, Function | Mediu
 }
 /**
  * @tc.number: BMS_ConvertToCompatible_0800
- * @tc.name: test test the interface of ConvertToCompatibleApplicationInfo
+ * @tc.name: test the interface of ConvertToCompatibleApplicationInfo
  * @tc.desc: 1.install a normal hap with permission
  *           2.query application info by bundleName
  *           3.get the compatible application info of the hap by ConvertToCompatibleApplicationInfo
@@ -532,7 +528,7 @@ HWTEST_F(BmsCompatibleSystemTest, BMS_ConvertToCompatible_0800, Function | Mediu
 }
 /**
  * @tc.number: BMS_ConvertToCompatible_0900
- * @tc.name: test test the interface of ConvertToCompatibleApplicationInfo
+ * @tc.name: test the interface of ConvertToCompatibleApplicationInfo
  * @tc.desc: get the compatible application info of the system hap by ConvertToCompatibleApplicationInfo
  */
 HWTEST_F(BmsCompatibleSystemTest, BMS_ConvertToCompatible_0900, Function | MediumTest | Level1)
@@ -557,7 +553,7 @@ HWTEST_F(BmsCompatibleSystemTest, BMS_ConvertToCompatible_0900, Function | Mediu
 }
 /**
  * @tc.number: BMS_ConvertToCompatible_1000
- * @tc.name: test test the interface of ConvertToCompatibleApplicationInfo
+ * @tc.name: test the interface of ConvertToCompatibleApplicationInfo
  * @tc.desc: 1.install a low version hap
  *           2.install a high version hap
  *           3.get the compatible application info by ConvertToCompatibleApplicationInfo
@@ -595,7 +591,7 @@ HWTEST_F(BmsCompatibleSystemTest, BMS_ConvertToCompatible_1000, Function | Mediu
 }
 /**
  * @tc.number: BMS_ConvertToCompatible_1100
- * @tc.name: test test the interface of ConvertToCompatibleApplicationInfo
+ * @tc.name: test the interface of ConvertToCompatibleApplicationInfo
  * @tc.desc: 1.install a normal hap with an ability
  *           2.get compatible application info after uninstalling the hap
  */
@@ -627,7 +623,7 @@ HWTEST_F(BmsCompatibleSystemTest, BMS_ConvertToCompatible_1100, Function | Mediu
 }
 /**
  * @tc.number: BMS_ConvertToCompatible_1200
- * @tc.name: test test the interface of ConvertToCompatibleApplicationInfo
+ * @tc.name: test the interface of ConvertToCompatibleApplicationInfo
  * @tc.desc: get compatible application info of invalid bundleName
  */
 HWTEST_F(BmsCompatibleSystemTest, BMS_ConvertToCompatible_1200, Function | MediumTest | Level2)
@@ -651,7 +647,7 @@ HWTEST_F(BmsCompatibleSystemTest, BMS_ConvertToCompatible_1200, Function | Mediu
 }
 /**
  * @tc.number: BMS_QueryAbilityInfoByUri_0100
- * @tc.name: test test the interface of QueryAbilityInfoByUri
+ * @tc.name: test the interface of QueryAbilityInfoByUri
  * @tc.desc: 1.install a third hap with data ability
  *           2.get the ability info by the correct ability uri
  */
@@ -683,7 +679,7 @@ HWTEST_F(BmsCompatibleSystemTest, BMS_QueryAbilityInfoByUri_0100, Function | Med
 }
 /**
  * @tc.number: BMS_QueryAbilityInfoByUri_0200
- * @tc.name: test test the interface of QueryAbilityInfoByUri
+ * @tc.name: test the interface of QueryAbilityInfoByUri
  * @tc.desc: get the ability info by the invalid ability uri
  */
 HWTEST_F(BmsCompatibleSystemTest, BMS_QueryAbilityInfoByUri_0200, Function | MediumTest | Level1)
@@ -705,7 +701,7 @@ HWTEST_F(BmsCompatibleSystemTest, BMS_QueryAbilityInfoByUri_0200, Function | Med
 }
 /**
  * @tc.number: BMS_QueryAbilityInfoByUri_0300
- * @tc.name: test test the interface of QueryAbilityInfoByUri
+ * @tc.name: test the interface of QueryAbilityInfoByUri
  * @tc.desc: get the ability info by the ability uri with wrong form
  */
 HWTEST_F(BmsCompatibleSystemTest, BMS_QueryAbilityInfoByUri_0300, Function | MediumTest | Level1)
@@ -725,6 +721,5 @@ HWTEST_F(BmsCompatibleSystemTest, BMS_QueryAbilityInfoByUri_0300, Function | Med
     EXPECT_EQ(abilityInfo.uri, "");
     GTEST_LOG_(INFO) << "END BMS_QueryAbilityInfoByUri_0300";
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

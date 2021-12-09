@@ -47,7 +47,6 @@ const int32_t MAX_BUNDLE_NAME = 6;
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class StatusReceiverImpl : public StatusReceiverHost {
 public:
     StatusReceiverImpl();
@@ -1369,6 +1368,5 @@ HWTEST_F(BmsUninstallSystemTest, BMS_DFX_0500, Function | MediumTest | Level2)
     EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!";
     std::cout << "END BMS_DFX_0500" << std::endl;
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
