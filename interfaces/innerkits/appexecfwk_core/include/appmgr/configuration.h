@@ -162,7 +162,7 @@ private:
      * @param param The key of the item to access configura.
      *
      */
-    void MakeTheKey(std::string &getKey, int id, const std::string &param) const;
+    bool MakeTheKey(std::string &getKey, int id, const std::string &param) const;
 
     /**
      * @brief Get value by key.

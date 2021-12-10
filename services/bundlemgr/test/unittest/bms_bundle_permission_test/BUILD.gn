@@ -24,6 +24,7 @@ ohos_unittest("BmsBundlePermissionTest") {
     "${innerkits_path}/appexecfwk_base/src/ability_info.cpp",
     "${innerkits_path}/appexecfwk_base/src/application_info.cpp",
     "${innerkits_path}/appexecfwk_base/src/bundle_info.cpp",
+    "${services_path}/bundlemgr/src/bundle_clone_mgr.cpp",
     "${services_path}/bundlemgr/src/bundle_data_mgr.cpp",
     "${services_path}/bundlemgr/src/bundle_data_storage_database.cpp",
     "${services_path}/bundlemgr/src/bundle_mgr_host_impl.cpp",

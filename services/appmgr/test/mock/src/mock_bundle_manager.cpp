@@ -21,6 +21,11 @@
 
 namespace OHOS {
 namespace AppExecFwk {
+BundleMgrService::BundleMgrService()
+{
+    MakingPackageData();
+}
+
 bool BundleMgrProxy::QueryAbilityInfo(const AAFwk::Want &want, AbilityInfo &abilityInfo)
 {
     ElementName eleName = want.GetElement();
@@ -135,6 +140,89 @@ bool BundleMgrService::GetBundleGids(const std::string &bundleName, std::vector<
     gids.push_back(userGid2);
     gids.push_back(userGid3);
     return true;
+}
+
+bool BundleMgrService::GetBundleInfos(const BundleFlag flag, std::vector<BundleInfo> &bundleInfos)
+{
+    bundleInfos = bundleInfos_;
+    return true;
+}
+
+bool BundleMgrService::GetBundleGidsByUid(const std::string &bundleName, const int &uid, std::vector<int> &gids)
+{
+    return true;
+}
+
+void BundleMgrService::PushTestHelloIndexAbility(int index)
+{
+    AbilityInfo info;
+    info.name = "com.ohos.test.helloworld.MainAbility";
+    info.bundleName = COM_OHOS_HELLO + std::to_string(index);
+    info.applicationInfo.bundleName = COM_OHOS_HELLO + std::to_string(index);
+    info.applicationName = "helloworld";
+    info.applicationInfo.name = "helloworld";
+    info.process = "p1";
+    info.applicationInfo.uid = -1;
+    info.deviceId = "deviceId";
+    info.visible = true;
+
+    BundleInfo bundleInfo;
+    bundleInfo.name = COM_OHOS_HELLO + std::to_string(index);
+    bundleInfo.uid = info.applicationInfo.uid;
+    bundleInfo.abilityInfos.emplace_back(info);
+    bundleInfo.applicationInfo = info.applicationInfo;
+    bundleInfos_.emplace_back(bundleInfo);
+}
+
+void BundleMgrService::PushTestSpecialAbility()
+{
+    AbilityInfo info;
+    info.name = "com.ohos.test.helloworld.MainAbility";
+    info.bundleName = COM_OHOS_SPECIAL;
+    info.applicationInfo.bundleName = COM_OHOS_SPECIAL;
+    info.applicationName = "helloworld";
+    info.applicationInfo.name = "helloworld";
+    info.process = "p1";
+    info.applicationInfo.uid = -1;
+    info.deviceId = "deviceId";
+    info.visible = true;
+
+    BundleInfo bundleInfo;
+    bundleInfo.name = COM_OHOS_SPECIAL;
+    bundleInfo.uid = info.applicationInfo.uid;
+    bundleInfo.abilityInfos.emplace_back(info);
+    bundleInfo.applicationInfo = info.applicationInfo;
+    bundleInfos_.emplace_back(bundleInfo);
+}
+
+void BundleMgrService::PushTestHelloAbility()
+{
+    AbilityInfo info;
+    info.name = "com.ohos.test.helloworld.MainAbility";
+    info.bundleName = COM_OHOS_HELLO;
+    info.applicationInfo.bundleName = COM_OHOS_HELLO;
+    info.applicationName = "helloworld";
+    info.applicationInfo.name = "helloworld";
+    info.process = "p1";
+    info.applicationInfo.uid = -1;
+    info.deviceId = "deviceId";
+    info.visible = true;
+
+    BundleInfo bundleInfo;
+    bundleInfo.name = COM_OHOS_HELLO;
+    bundleInfo.uid = info.applicationInfo.uid;
+    bundleInfo.abilityInfos.emplace_back(info);
+    bundleInfo.applicationInfo = info.applicationInfo;
+    bundleInfos_.emplace_back(bundleInfo);
+}
+
+void BundleMgrService::MakingPackageData()
+{
+    PushTestSpecialAbility();
+    PushTestHelloAbility();
+    for (int i = 0; i<= APPLICATION_NUMHELLO; i++) {
+        PushTestHelloIndexAbility(i);
+    }
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS

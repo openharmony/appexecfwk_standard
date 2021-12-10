@@ -42,7 +42,7 @@ const int32_t ABILITY_NUM = 100;
 const int32_t APPLICATION_NUM = 100;
 const int32_t INDEX_NUM_100 = 100;
 const int32_t INDEX_NUM_MAX = 100;
-const std::string TEST_APP_NAME = "test_app_";
+const std::string TEST_APP_NAME = "com.ohos.test.helloworld";
 const std::string TEST_ABILITY_NAME = "test_ability_";
 #define CHECK_POINTER_IS_NULLPTR(object) \
     do {                                 \
@@ -145,6 +145,7 @@ std::shared_ptr<ApplicationInfo> AmsAppLifeCycleModuleTest::GetApplicationInfo(c
 {
     auto appInfo = std::make_shared<ApplicationInfo>();
     appInfo->name = appName;
+    appInfo->bundleName = appName;
     return appInfo;
 }
 
@@ -173,8 +174,8 @@ std::shared_ptr<AppRunningRecord> AmsAppLifeCycleModuleTest::StartProcessAndLoad
 
     serviceInner_->LoadAbility(token, nullptr, abilityInfo, appInfo);
 
-    std::shared_ptr<AppRunningRecord> record =
-        serviceInner_->GetAppRunningRecordByProcessName(appInfo->name, abilityInfo->process);
+    std::shared_ptr<AppRunningRecord> record = serviceInner_->GetAppRunningRecordByProcessName(
+        appInfo->name, abilityInfo->process, abilityInfo->applicationInfo.uid);
     if (record == nullptr) {
         EXPECT_TRUE(false);
     } else {
@@ -755,10 +756,10 @@ HWTEST_F(AmsAppLifeCycleModuleTest, StateChange_008, TestSize.Level2)
     pid_t pid_1 = 2048;
     sptr<IRemoteObject> token_0 = new (std::nothrow) MockAbilityToken();
     sptr<IRemoteObject> token_1 = new (std::nothrow) MockAbilityToken();
-    auto abilityInfo_0 = GetAbilityInfo("0", "MainAbility", "p1", "com.ohos.test.helloworld_0");
-    auto appInfo_0 = GetApplicationInfo("com.ohos.test.helloworld_0");
-    auto abilityInfo_1 = GetAbilityInfo("0", "MainAbility", "p1", "com.ohos.test.helloworld_1");
-    auto appInfo_1 = GetApplicationInfo("com.ohos.test.helloworld_1");
+    auto abilityInfo_0 = GetAbilityInfo("0", "MainAbility", "p1", "com.ohos.test.helloworld0");
+    auto appInfo_0 = GetApplicationInfo("com.ohos.test.helloworld0");
+    auto abilityInfo_1 = GetAbilityInfo("0", "MainAbility", "p1", "com.ohos.test.helloworld1");
+    auto appInfo_1 = GetApplicationInfo("com.ohos.test.helloworld1");
     sptr<MockAppScheduler> mockAppScheduler = new (std::nothrow) MockAppScheduler();
     TestProcessInfo testProcessInfo;
 
@@ -932,7 +933,7 @@ HWTEST_F(AmsAppLifeCycleModuleTest, StateChange_010, TestSize.Level3)
  * CaseDescription: 1.call getrecentapplist API to get current app list
  *                  2.call removeappfromrecentlist API to remove current app list
  */
-HWTEST_F(AmsAppLifeCycleModuleTest, StateChange_011, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleModuleTest, StateChange_011, TestSize.Level1)
 {
     EXPECT_TRUE(serviceInner_->GetRecentAppList().empty());
     CreateAppRecentList(INDEX_NUM_100);
@@ -957,7 +958,7 @@ HWTEST_F(AmsAppLifeCycleModuleTest, StateChange_011, TestSize.Level0)
  * CaseDescription: 1.call getrecentapplist API to get current app list
  *                  2.call clearrecentapplist API to clear current app list
  */
-HWTEST_F(AmsAppLifeCycleModuleTest, StateChange_012, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleModuleTest, StateChange_012, TestSize.Level1)
 {
     EXPECT_TRUE(serviceInner_->GetRecentAppList().empty());
     CreateAppRecentList(INDEX_NUM_100);
@@ -1008,7 +1009,7 @@ HWTEST_F(AmsAppLifeCycleModuleTest, StateChange_013, TestSize.Level3)
  * EnvConditions: system running normally
  * CaseDescription: GetOrCreateAppRunningRecord
  */
-HWTEST_F(AmsAppLifeCycleModuleTest, StateChange_014, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleModuleTest, StateChange_014, TestSize.Level1)
 {
 
     pid_t pid = 1000;
@@ -1035,7 +1036,7 @@ HWTEST_F(AmsAppLifeCycleModuleTest, StateChange_014, TestSize.Level0)
  * EnvConditions: system running normally
  * CaseDescription: OnAbilityRequestDone
  */
-HWTEST_F(AmsAppLifeCycleModuleTest, StateChange_015, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleModuleTest, StateChange_015, TestSize.Level1)
 {
     pid_t pid = 1000;
     sptr<IRemoteObject> token = GetAbilityToken();
@@ -1069,7 +1070,7 @@ HWTEST_F(AmsAppLifeCycleModuleTest, StateChange_015, TestSize.Level0)
  * EnvConditions: system running normally
  * CaseDescription: Ability record update(specify process mode)
  */
-HWTEST_F(AmsAppLifeCycleModuleTest, AbilityBehaviorAnalysis_01, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleModuleTest, AbilityBehaviorAnalysis_01, TestSize.Level1)
 {
     const int32_t formateVaule = 0;
     const int32_t visibility = 1;
@@ -1087,8 +1088,8 @@ HWTEST_F(AmsAppLifeCycleModuleTest, AbilityBehaviorAnalysis_01, TestSize.Level0)
 
     StartAppProcess(pid);
     serviceInner_->LoadAbility(token, nullptr, abilityInfo, appInfo);
-    std::shared_ptr<AppRunningRecord> record =
-        serviceInner_->GetAppRunningRecordByProcessName(appInfo->name, abilityInfo->process);
+    std::shared_ptr<AppRunningRecord> record = serviceInner_->GetAppRunningRecordByProcessName(
+        appInfo->name, abilityInfo->process, abilityInfo->applicationInfo.uid);
     if (record == nullptr) {
         EXPECT_TRUE(false);
     } else {
@@ -1122,7 +1123,7 @@ HWTEST_F(AmsAppLifeCycleModuleTest, AbilityBehaviorAnalysis_01, TestSize.Level0)
  * EnvConditions: system running normally
  * CaseDescription: Ability record update(specify process mode and assign visibility)
  */
-HWTEST_F(AmsAppLifeCycleModuleTest, AbilityBehaviorAnalysis_02, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleModuleTest, AbilityBehaviorAnalysis_02, TestSize.Level1)
 {
     const int32_t formateVaule = 0;
     const int32_t visibility = 1;
@@ -1140,8 +1141,8 @@ HWTEST_F(AmsAppLifeCycleModuleTest, AbilityBehaviorAnalysis_02, TestSize.Level0)
 
     StartAppProcess(pid);
     serviceInner_->LoadAbility(token, nullptr, abilityInfo, appInfo);
-    std::shared_ptr<AppRunningRecord> record =
-        serviceInner_->GetAppRunningRecordByProcessName(appInfo->name, abilityInfo->process);
+    std::shared_ptr<AppRunningRecord> record = serviceInner_->GetAppRunningRecordByProcessName(
+        appInfo->name, abilityInfo->process, abilityInfo->applicationInfo.uid);
     if (record == nullptr) {
         EXPECT_TRUE(false);
     } else {
@@ -1175,7 +1176,7 @@ HWTEST_F(AmsAppLifeCycleModuleTest, AbilityBehaviorAnalysis_02, TestSize.Level0)
  * EnvConditions: system running normally
  * CaseDescription: Ability record update(specify process mode and assign perceptibility)
  */
-HWTEST_F(AmsAppLifeCycleModuleTest, AbilityBehaviorAnalysis_03, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleModuleTest, AbilityBehaviorAnalysis_03, TestSize.Level1)
 {
     const int32_t formateVaule = 0;
     const int32_t visibility = 0;
@@ -1193,8 +1194,8 @@ HWTEST_F(AmsAppLifeCycleModuleTest, AbilityBehaviorAnalysis_03, TestSize.Level0)
 
     StartAppProcess(pid);
     serviceInner_->LoadAbility(token, nullptr, abilityInfo, appInfo);
-    std::shared_ptr<AppRunningRecord> record =
-        serviceInner_->GetAppRunningRecordByProcessName(appInfo->name, abilityInfo->process);
+    std::shared_ptr<AppRunningRecord> record = serviceInner_->GetAppRunningRecordByProcessName(
+        appInfo->name, abilityInfo->process, abilityInfo->applicationInfo.uid);
     if (record == nullptr) {
         EXPECT_TRUE(false);
     } else {
@@ -1228,7 +1229,7 @@ HWTEST_F(AmsAppLifeCycleModuleTest, AbilityBehaviorAnalysis_03, TestSize.Level0)
  * EnvConditions: system running normally
  * CaseDescription: Ability record update(specify process mode and assign connectionState)
  */
-HWTEST_F(AmsAppLifeCycleModuleTest, AbilityBehaviorAnalysis_04, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleModuleTest, AbilityBehaviorAnalysis_04, TestSize.Level1)
 {
     const int32_t formateVaule = 0;
     const int32_t visibility = 0;
@@ -1246,8 +1247,8 @@ HWTEST_F(AmsAppLifeCycleModuleTest, AbilityBehaviorAnalysis_04, TestSize.Level0)
 
     StartAppProcess(pid);
     serviceInner_->LoadAbility(token, nullptr, abilityInfo, appInfo);
-    std::shared_ptr<AppRunningRecord> record =
-        serviceInner_->GetAppRunningRecordByProcessName(appInfo->name, abilityInfo->process);
+    std::shared_ptr<AppRunningRecord> record = serviceInner_->GetAppRunningRecordByProcessName(
+        appInfo->name, abilityInfo->process, abilityInfo->applicationInfo.uid);
     if (record == nullptr) {
         EXPECT_TRUE(false);
     } else {
@@ -1281,7 +1282,7 @@ HWTEST_F(AmsAppLifeCycleModuleTest, AbilityBehaviorAnalysis_04, TestSize.Level0)
  * EnvConditions: system running normally
  * CaseDescription: Ability record update(specify process mode and assign proken)
  */
-HWTEST_F(AmsAppLifeCycleModuleTest, AbilityBehaviorAnalysis_05, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleModuleTest, AbilityBehaviorAnalysis_05, TestSize.Level1)
 {
     const int32_t formateVaule = 0;
     const int32_t visibility = 0;
@@ -1299,8 +1300,8 @@ HWTEST_F(AmsAppLifeCycleModuleTest, AbilityBehaviorAnalysis_05, TestSize.Level0)
 
     StartAppProcess(pid);
     serviceInner_->LoadAbility(token, nullptr, abilityInfo, appInfo);
-    std::shared_ptr<AppRunningRecord> record =
-        serviceInner_->GetAppRunningRecordByProcessName(appInfo->name, abilityInfo->process);
+    std::shared_ptr<AppRunningRecord> record = serviceInner_->GetAppRunningRecordByProcessName(
+        appInfo->name, abilityInfo->process, abilityInfo->applicationInfo.uid);
     if (record == nullptr) {
         EXPECT_TRUE(false);
     } else {
@@ -1335,7 +1336,7 @@ HWTEST_F(AmsAppLifeCycleModuleTest, AbilityBehaviorAnalysis_05, TestSize.Level0)
  * EnvConditions: system running normally
  * CaseDescription: Ability record update(specify process mode and assign bundleName)
  */
-HWTEST_F(AmsAppLifeCycleModuleTest, AbilityBehaviorAnalysis_06, TestSize.Level0)
+HWTEST_F(AmsAppLifeCycleModuleTest, AbilityBehaviorAnalysis_06, TestSize.Level1)
 {
     const int32_t formateVaule = 0;
     const int32_t visibility = 0;
@@ -1354,8 +1355,8 @@ HWTEST_F(AmsAppLifeCycleModuleTest, AbilityBehaviorAnalysis_06, TestSize.Level0)
 
     StartAppProcess(pid);
     serviceInner_->LoadAbility(token, nullptr, abilityInfo, appInfo);
-    std::shared_ptr<AppRunningRecord> record =
-        serviceInner_->GetAppRunningRecordByProcessName(appInfo->name, abilityInfo->process);
+    std::shared_ptr<AppRunningRecord> record = serviceInner_->GetAppRunningRecordByProcessName(
+        appInfo->name, abilityInfo->process, abilityInfo->applicationInfo.uid);
     if (record == nullptr) {
         EXPECT_TRUE(false);
     } else {

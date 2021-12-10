@@ -29,14 +29,14 @@
 #include "mock_ams_mgr_scheduler.h"
 
 using namespace testing::ext;
-using namespace OHOS;
-using namespace OHOS::AppExecFwk;
 using testing::_;
 using testing::Invoke;
 using testing::InvokeWithoutArgs;
 using testing::Return;
 using testing::SetArgReferee;
 
+namespace OHOS {
+namespace AppExecFwk {
 class AmsAppMgrClientTest : public testing::Test {
 public:
     static void SetUpTestCase();
@@ -74,7 +74,7 @@ void AmsAppMgrClientTest::TearDown()
  * EnvConditions: Mobile that can run ohos test framework
  * CaseDescription: Verify if AppMgrClient invoke LoadAbility works.
  */
-HWTEST_F(AmsAppMgrClientTest, AppMgrClient_001, TestSize.Level0)
+HWTEST_F(AmsAppMgrClientTest, AppMgrClient_001, TestSize.Level1)
 {
     APP_LOGI("ams_app_mgr_client_test_001 start");
     EXPECT_EQ(AppMgrResultCode::RESULT_OK, client_->ConnectAppMgrService());
@@ -102,7 +102,7 @@ HWTEST_F(AmsAppMgrClientTest, AppMgrClient_001, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework
  * CaseDescription: Verify if AppMgrClient invoke LoadAbility act normal without connect to service.
  */
-HWTEST_F(AmsAppMgrClientTest, AppMgrClient_002, TestSize.Level0)
+HWTEST_F(AmsAppMgrClientTest, AppMgrClient_002, TestSize.Level1)
 {
     APP_LOGI("ams_app_mgr_client_test_002 start");
     AbilityInfo abilityInfo;
@@ -120,7 +120,7 @@ HWTEST_F(AmsAppMgrClientTest, AppMgrClient_002, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework
  * CaseDescription: Verify if AppMgrClient invoke TerminateAbility works.
  */
-HWTEST_F(AmsAppMgrClientTest, AppMgrClient_003, TestSize.Level0)
+HWTEST_F(AmsAppMgrClientTest, AppMgrClient_003, TestSize.Level1)
 {
     APP_LOGI("ams_app_mgr_client_test_003 start");
     EXPECT_EQ(AppMgrResultCode::RESULT_OK, client_->ConnectAppMgrService());
@@ -143,7 +143,7 @@ HWTEST_F(AmsAppMgrClientTest, AppMgrClient_003, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework
  * CaseDescription: Verify if AppMgrClient invoke TerminateAbility act normal without connect to service.
  */
-HWTEST_F(AmsAppMgrClientTest, AppMgrClient_004, TestSize.Level0)
+HWTEST_F(AmsAppMgrClientTest, AppMgrClient_004, TestSize.Level1)
 {
     APP_LOGI("ams_app_mgr_client_test_004 start");
     EXPECT_EQ(AppMgrResultCode::ERROR_SERVICE_NOT_CONNECTED, client_->TerminateAbility(token_));
@@ -158,7 +158,7 @@ HWTEST_F(AmsAppMgrClientTest, AppMgrClient_004, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework
  * CaseDescription: Verify if AppMgrClient invoke UpdateAbilityState works.
  */
-HWTEST_F(AmsAppMgrClientTest, AppMgrClient_005, TestSize.Level0)
+HWTEST_F(AmsAppMgrClientTest, AppMgrClient_005, TestSize.Level1)
 {
     APP_LOGI("ams_app_mgr_client_test_005 start");
     EXPECT_EQ(AppMgrResultCode::RESULT_OK, client_->ConnectAppMgrService());
@@ -182,7 +182,7 @@ HWTEST_F(AmsAppMgrClientTest, AppMgrClient_005, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework
  * CaseDescription: Verify if AppMgrClient invoke UpdateAbilityState act normal without connect to service.
  */
-HWTEST_F(AmsAppMgrClientTest, AppMgrClient_006, TestSize.Level0)
+HWTEST_F(AmsAppMgrClientTest, AppMgrClient_006, TestSize.Level1)
 {
     APP_LOGI("ams_app_mgr_client_test_006 start");
     AbilityState state = AbilityState::ABILITY_STATE_BEGIN;
@@ -198,7 +198,7 @@ HWTEST_F(AmsAppMgrClientTest, AppMgrClient_006, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework
  * CaseDescription: Verify if AppMgrClient invoke RegisterAppStateCallback works.
  */
-HWTEST_F(AmsAppMgrClientTest, AppMgrClient_007, TestSize.Level0)
+HWTEST_F(AmsAppMgrClientTest, AppMgrClient_007, TestSize.Level1)
 {
     APP_LOGI("ams_app_mgr_client_test_007 start");
     EXPECT_EQ(AppMgrResultCode::RESULT_OK, client_->ConnectAppMgrService());
@@ -225,7 +225,7 @@ HWTEST_F(AmsAppMgrClientTest, AppMgrClient_007, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework
  * CaseDescription: Verify if AppMgrClient invoke RegisterAppStateCallback act normal without connect to service.
  */
-HWTEST_F(AmsAppMgrClientTest, AppMgrClient_008, TestSize.Level0)
+HWTEST_F(AmsAppMgrClientTest, AppMgrClient_008, TestSize.Level1)
 {
     APP_LOGI("ams_app_mgr_client_test_008 start");
     sptr<IAppStateCallback> callback;
@@ -241,7 +241,7 @@ HWTEST_F(AmsAppMgrClientTest, AppMgrClient_008, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework
  * CaseDescription: ability behavior notification
  */
-HWTEST_F(AmsAppMgrClientTest, AppMgrClient_009, TestSize.Level0)
+HWTEST_F(AmsAppMgrClientTest, AppMgrClient_009, TestSize.Level1)
 {
     APP_LOGI("ams_app_mgr_client_test_008 start");
     EXPECT_EQ(AppMgrResultCode::RESULT_OK, client_->ConnectAppMgrService());
@@ -268,7 +268,7 @@ HWTEST_F(AmsAppMgrClientTest, AppMgrClient_009, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework
  * CaseDescription: Notify app of death
  */
-HWTEST_F(AmsAppMgrClientTest, AppMgrClient_010, TestSize.Level0)
+HWTEST_F(AmsAppMgrClientTest, AppMgrClient_010, TestSize.Level1)
 {
     APP_LOGI("ams_app_mgr_client_test_008 start");
     EXPECT_EQ(AppMgrResultCode::RESULT_OK, client_->ConnectAppMgrService());
@@ -295,7 +295,7 @@ HWTEST_F(AmsAppMgrClientTest, AppMgrClient_010, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework
  * CaseDescription: Notify app of death
  */
-HWTEST_F(AmsAppMgrClientTest, AppMgrClient_011, TestSize.Level0)
+HWTEST_F(AmsAppMgrClientTest, AppMgrClient_011, TestSize.Level1)
 {
     APP_LOGI("ams_app_mgr_client_test_011 start");
     sptr<IRemoteObject> token;
@@ -321,7 +321,7 @@ HWTEST_F(AmsAppMgrClientTest, AppMgrClient_011, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework
  * CaseDescription: Notify app of death
  */
-HWTEST_F(AmsAppMgrClientTest, AppMgrClient_012, TestSize.Level0)
+HWTEST_F(AmsAppMgrClientTest, AppMgrClient_012, TestSize.Level1)
 {
     APP_LOGI("ams_app_mgr_client_test_012 start");
     sptr<IRemoteObject> token;
@@ -346,7 +346,7 @@ HWTEST_F(AmsAppMgrClientTest, AppMgrClient_012, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework
  * CaseDescription: Notify app of death
  */
-HWTEST_F(AmsAppMgrClientTest, AppMgrClient_013, TestSize.Level0)
+HWTEST_F(AmsAppMgrClientTest, AppMgrClient_013, TestSize.Level1)
 {
     APP_LOGI("ams_app_mgr_client_test_013 start");
     sptr<IRemoteObject> token;
@@ -362,3 +362,5 @@ HWTEST_F(AmsAppMgrClientTest, AppMgrClient_013, TestSize.Level0)
     EXPECT_EQ(AppMgrResultCode::ERROR_SERVICE_NOT_CONNECTED, client_->KillProcessByAbilityToken(token));
     APP_LOGI("ams_app_mgr_client_test_013 end");
 }
+}  // namespace AppExecFwk
+}  // namespace OHOS

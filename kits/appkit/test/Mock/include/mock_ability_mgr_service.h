@@ -26,6 +26,8 @@ class MockAbilityMgrService : public AbilityManagerStub {
 public:
     MOCK_METHOD2(StartAbility, int(const Want &want, int requestCode));
     MOCK_METHOD3(StartAbility, int(const Want &want, const sptr<IRemoteObject> &callerToken, int requestCode));
+    MOCK_METHOD4(StartAbility,
+        int(const Want &want, const sptr<IRemoteObject> &callerToken, int requestCode, int requestUid));
     MOCK_METHOD3(TerminateAbility, int(const sptr<IRemoteObject> &token, int resultCode, const Want *resultWant));
     MOCK_METHOD3(ConnectAbility,
         int(const Want &want, const sptr<IAbilityConnection> &connect, const sptr<IRemoteObject> &callerToken));
@@ -48,7 +50,7 @@ public:
     }
     MOCK_METHOD2(TerminateAbilityResult, int(const sptr<IRemoteObject> &, int startId));
     MOCK_METHOD2(TerminateAbilityByCaller, int(const sptr<IRemoteObject> &callerToken, int requestCode));
-    MOCK_METHOD1(StopServiceAbility, int(const Want &));
+    MOCK_METHOD2(StopServiceAbility, int(const Want &, const sptr<IRemoteObject> &callerToken));
     MOCK_METHOD1(GetAllStackInfo, int(StackInfo &stackInfo));
     MOCK_METHOD3(GetRecentMissions, int(const int32_t, const int32_t, std::vector<AbilityMissionInfo> &));
     MOCK_METHOD2(GetMissionSnapshot, int(const int32_t, MissionPixelMap &));
@@ -58,7 +60,7 @@ public:
 
     MOCK_METHOD1(MoveMissionToTop, int(int32_t));
     MOCK_METHOD1(KillProcess, int(const std::string &bundleName));
-    MOCK_METHOD1(UninstallApp, int(const std::string &bundleName));
+    MOCK_METHOD2(UninstallApp, int(const std::string &bundleName, const int userId));
     MOCK_METHOD1(TerminateAbilityByRecordId, int(const int64_t recordId));
 
     void Wait()

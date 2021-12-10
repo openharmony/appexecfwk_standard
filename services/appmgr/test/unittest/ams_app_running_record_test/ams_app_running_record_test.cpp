@@ -50,11 +50,11 @@ public:
 protected:
     static const std::string GetTestProcessName()
     {
-        return "test_app_name";
+        return "com.ohos.test.helloworld";
     }
     static const std::string GetTestAppName()
     {
-        return "test_app_name";
+        return "com.ohos.test.helloworld";
     }
     static const std::string GetTestAbilityName()
     {
@@ -157,7 +157,7 @@ std::shared_ptr<AppRunningRecord> AmsAppRunningRecordTest::StartLoadAbility(cons
  * EnvConditions: NA
  * CaseDescription: Call GetOrCreateAppRunningRecord to get result.
  */
-HWTEST_F(AmsAppRunningRecordTest, CreateAppRunningRecord_001, TestSize.Level0)
+HWTEST_F(AmsAppRunningRecordTest, CreateAppRunningRecord_001, TestSize.Level1)
 {
     auto abilityInfo = std::make_shared<AbilityInfo>();
     abilityInfo->name = GetTestAbilityName();
@@ -189,29 +189,33 @@ HWTEST_F(AmsAppRunningRecordTest, CreateAppRunningRecord_001, TestSize.Level0)
  * EnvConditions: NA
  * CaseDescription: Call GetOrCreateAppRunningRecord twice to create/get a AppRunningRecord.
  */
-HWTEST_F(AmsAppRunningRecordTest, CreateAppRunningRecord_002, TestSize.Level0)
+HWTEST_F(AmsAppRunningRecordTest, CreateAppRunningRecord_002, TestSize.Level1)
 {
     auto abilityInfo = std::make_shared<AbilityInfo>();
     abilityInfo->name = GetTestAbilityName();
     auto appInfo = std::make_shared<ApplicationInfo>();
     appInfo->name = GetTestAppName();
+    abilityInfo->applicationInfo.uid = 1010;
+    appInfo->uid = 1010;
     RecordQueryResult result;
+    RecordQueryResult result1;
     EXPECT_TRUE(service_ != nullptr);
     // Create
     sptr<IRemoteObject> token = GetMockToken();
     auto record =
         service_->GetOrCreateAppRunningRecord(token, appInfo, abilityInfo, GetTestProcessName(), GetTestUid(), result);
+    record->SetUid(1010);
     EXPECT_EQ(result.error, ERR_OK);
     // Get
-    record =
-        service_->GetOrCreateAppRunningRecord(token, appInfo, abilityInfo, GetTestProcessName(), GetTestUid(), result);
-    EXPECT_TRUE(record != nullptr);
-    EXPECT_EQ(result.error, ERR_OK);
-    EXPECT_EQ(record->GetName(), GetTestAppName());
-    EXPECT_EQ(record->GetProcessName(), GetTestProcessName());
+    auto record1 =
+        service_->GetOrCreateAppRunningRecord(token, appInfo, abilityInfo, GetTestProcessName(), GetTestUid(), result1);
+    EXPECT_TRUE(record1 != nullptr);
+    EXPECT_EQ(result1.error, ERR_OK);
+    EXPECT_EQ(record1->GetName(), GetTestAppName());
+    EXPECT_EQ(record1->GetProcessName(), GetTestProcessName());
     // Already exists
-    EXPECT_TRUE(result.appExists);
-    EXPECT_TRUE(result.abilityExists);
+    EXPECT_TRUE(result1.appExists);
+    EXPECT_TRUE(result1.abilityExists);
 }
 
 /*
@@ -222,31 +226,37 @@ HWTEST_F(AmsAppRunningRecordTest, CreateAppRunningRecord_002, TestSize.Level0)
  * EnvConditions: NA
  * CaseDescription: Call GetOrCreateAppRunningRecord twice which second call uses a different ability info.
  */
-HWTEST_F(AmsAppRunningRecordTest, CreateAppRunningRecord_003, TestSize.Level0)
+HWTEST_F(AmsAppRunningRecordTest, CreateAppRunningRecord_003, TestSize.Level1)
 {
     auto abilityInfo = std::make_shared<AbilityInfo>();
     abilityInfo->name = GetTestAbilityName();
     auto appInfo = std::make_shared<ApplicationInfo>();
     appInfo->name = GetTestAppName();
+    appInfo->bundleName = GetTestAppName();
+    abilityInfo->applicationInfo.uid = 1010;
+    appInfo->uid = 1010;
     RecordQueryResult result;
+    RecordQueryResult result1;
     EXPECT_TRUE(service_ != nullptr);
     auto record = service_->GetOrCreateAppRunningRecord(
         GetMockToken(), appInfo, abilityInfo, GetTestProcessName(), GetTestUid(), result);
+    record->SetUid(1010);
     EXPECT_EQ(result.error, ERR_OK);
 
     auto anotherAbilityInfo = std::make_shared<AbilityInfo>();
     anotherAbilityInfo->name = "Another_ability";
+    anotherAbilityInfo->applicationInfo.uid = 1010;
     sptr<IRemoteObject> anotherToken = new (std::nothrow) MockAbilityToken();
-    record = service_->GetOrCreateAppRunningRecord(
-        anotherToken, appInfo, anotherAbilityInfo, GetTestProcessName(), GetTestUid(), result);
-    EXPECT_EQ(result.error, ERR_OK);
-    EXPECT_EQ(record->GetName(), GetTestAppName());
-    EXPECT_EQ(record->GetProcessName(), GetTestProcessName());
-    EXPECT_TRUE(result.appExists);
-    EXPECT_FALSE(result.abilityExists);
-    EXPECT_TRUE(result.appRecordId > 0);
+    auto record1 = service_->GetOrCreateAppRunningRecord(
+        anotherToken, appInfo, anotherAbilityInfo, GetTestProcessName(), GetTestUid(), result1);
+    EXPECT_EQ(result1.error, ERR_OK);
+    EXPECT_EQ(record1->GetName(), GetTestAppName());
+    EXPECT_EQ(record1->GetProcessName(), GetTestProcessName());
+    EXPECT_TRUE(result1.appExists);
+    EXPECT_FALSE(result1.abilityExists);
+    EXPECT_TRUE(result1.appRecordId > 0);
 
-    auto abilityRecord = record->GetAbilityRunningRecordByToken(GetMockToken());
+    auto abilityRecord = record1->GetAbilityRunningRecordByToken(GetMockToken());
     EXPECT_TRUE(abilityRecord != nullptr);
 }
 
@@ -258,7 +268,7 @@ HWTEST_F(AmsAppRunningRecordTest, CreateAppRunningRecord_003, TestSize.Level0)
  * EnvConditions: NA
  * CaseDescription: Call GetOrCreateAppRunningRecord using uid -1.
  */
-HWTEST_F(AmsAppRunningRecordTest, CreateAppRunningRecord_004, TestSize.Level0)
+HWTEST_F(AmsAppRunningRecordTest, CreateAppRunningRecord_004, TestSize.Level1)
 {
     auto abilityInfo = std::make_shared<AbilityInfo>();
     abilityInfo->name = GetTestAbilityName();
@@ -281,7 +291,7 @@ HWTEST_F(AmsAppRunningRecordTest, CreateAppRunningRecord_004, TestSize.Level0)
  * EnvConditions: NA
  * CaseDescription: Call GetOrCreateAppRunningRecord using uid int32_max.
  */
-HWTEST_F(AmsAppRunningRecordTest, CreateAppRunningRecord_005, TestSize.Level0)
+HWTEST_F(AmsAppRunningRecordTest, CreateAppRunningRecord_005, TestSize.Level1)
 {
     auto abilityInfo = std::make_shared<AbilityInfo>();
     abilityInfo->name = GetTestAbilityName();
@@ -304,7 +314,7 @@ HWTEST_F(AmsAppRunningRecordTest, CreateAppRunningRecord_005, TestSize.Level0)
  * EnvConditions: NA
  * CaseDescription: Call GetOrCreateAppRunningRecord using empty appInfo.
  */
-HWTEST_F(AmsAppRunningRecordTest, CreateAppRunningRecord_006, TestSize.Level0)
+HWTEST_F(AmsAppRunningRecordTest, CreateAppRunningRecord_006, TestSize.Level1)
 {
     auto abilityInfo = std::make_shared<AbilityInfo>();
     abilityInfo->name = GetTestAbilityName();
@@ -327,7 +337,7 @@ HWTEST_F(AmsAppRunningRecordTest, CreateAppRunningRecord_006, TestSize.Level0)
  * EnvConditions: NA
  * CaseDescription: Call GetOrCreateAppRunningRecord using empty abilityInfo.
  */
-HWTEST_F(AmsAppRunningRecordTest, CreateAppRunningRecord_007, TestSize.Level0)
+HWTEST_F(AmsAppRunningRecordTest, CreateAppRunningRecord_007, TestSize.Level1)
 {
     auto appInfo = std::make_shared<ApplicationInfo>();
     appInfo->name = GetTestAppName();
@@ -348,7 +358,7 @@ HWTEST_F(AmsAppRunningRecordTest, CreateAppRunningRecord_007, TestSize.Level0)
  * EnvConditions: NA
  * CaseDescription: Call GetOrCreateAppRunningRecord using uid 0.
  */
-HWTEST_F(AmsAppRunningRecordTest, CreateAppRunningRecord_008, TestSize.Level0)
+HWTEST_F(AmsAppRunningRecordTest, CreateAppRunningRecord_008, TestSize.Level1)
 {
     auto abilityInfo = std::make_shared<AbilityInfo>();
     abilityInfo->name = GetTestAbilityName();
@@ -371,7 +381,7 @@ HWTEST_F(AmsAppRunningRecordTest, CreateAppRunningRecord_008, TestSize.Level0)
  * EnvConditions: NA
  * CaseDescription: Call GetOrCreateAppRunningRecord using uid (int32_max - 1).
  */
-HWTEST_F(AmsAppRunningRecordTest, CreateAppRunningRecord_009, TestSize.Level0)
+HWTEST_F(AmsAppRunningRecordTest, CreateAppRunningRecord_009, TestSize.Level1)
 {
     auto abilityInfo = std::make_shared<AbilityInfo>();
     abilityInfo->name = GetTestAbilityName();
@@ -394,7 +404,7 @@ HWTEST_F(AmsAppRunningRecordTest, CreateAppRunningRecord_009, TestSize.Level0)
  * EnvConditions: NA
  * CaseDescription: Create an AppRunningRecord and call LaunchApplication.
  */
-HWTEST_F(AmsAppRunningRecordTest, LaunchApplication_001, TestSize.Level0)
+HWTEST_F(AmsAppRunningRecordTest, LaunchApplication_001, TestSize.Level1)
 {
     auto record = GetTestAppRunningRecord();
     EXPECT_CALL(*mockAppSchedulerClient_, ScheduleLaunchApplication(_)).Times(1);
@@ -409,7 +419,7 @@ HWTEST_F(AmsAppRunningRecordTest, LaunchApplication_001, TestSize.Level0)
  * EnvConditions: NA
  * CaseDescription: Create an AppRunningRecord and call LaunchAbility which is exists.
  */
-HWTEST_F(AmsAppRunningRecordTest, LaunchAbility_001, TestSize.Level0)
+HWTEST_F(AmsAppRunningRecordTest, LaunchAbility_001, TestSize.Level1)
 {
     auto record = GetTestAppRunningRecord();
     EXPECT_TRUE(record);
@@ -428,7 +438,7 @@ HWTEST_F(AmsAppRunningRecordTest, LaunchAbility_001, TestSize.Level0)
  * EnvConditions: NA
  * CaseDescription: Create an AppRunningRecord and call LaunchAbility which is not exists.
  */
-HWTEST_F(AmsAppRunningRecordTest, LaunchAbility_002, TestSize.Level0)
+HWTEST_F(AmsAppRunningRecordTest, LaunchAbility_002, TestSize.Level1)
 {
     auto abilityInfo = std::make_shared<AbilityInfo>();
     abilityInfo->name = GetTestAbilityName();
@@ -451,7 +461,7 @@ HWTEST_F(AmsAppRunningRecordTest, LaunchAbility_002, TestSize.Level0)
  * EnvConditions: NA
  * CaseDescription: Create an AppRunningRecord and call ScheduleTerminate.
  */
-HWTEST_F(AmsAppRunningRecordTest, ScheduleTerminate_001, TestSize.Level0)
+HWTEST_F(AmsAppRunningRecordTest, ScheduleTerminate_001, TestSize.Level1)
 {
     auto record = GetTestAppRunningRecord();
     EXPECT_CALL(*mockAppSchedulerClient_, ScheduleTerminateApplication()).Times(1);
@@ -466,7 +476,7 @@ HWTEST_F(AmsAppRunningRecordTest, ScheduleTerminate_001, TestSize.Level0)
  * EnvConditions: NA
  * CaseDescription: Create an AppRunningRecord and call ScheduleForegroundRunning.
  */
-HWTEST_F(AmsAppRunningRecordTest, ScheduleForegroundRunning_001, TestSize.Level0)
+HWTEST_F(AmsAppRunningRecordTest, ScheduleForegroundRunning_001, TestSize.Level1)
 {
     auto record = GetTestAppRunningRecord();
     EXPECT_CALL(*mockAppSchedulerClient_, ScheduleForegroundApplication()).Times(1);
@@ -481,7 +491,7 @@ HWTEST_F(AmsAppRunningRecordTest, ScheduleForegroundRunning_001, TestSize.Level0
  * EnvConditions: NA
  * CaseDescription: Create an AppRunningRecord and call ScheduleBackgroundRunning.
  */
-HWTEST_F(AmsAppRunningRecordTest, ScheduleBackgroundRunning_001, TestSize.Level0)
+HWTEST_F(AmsAppRunningRecordTest, ScheduleBackgroundRunning_001, TestSize.Level1)
 {
     auto record = GetTestAppRunningRecord();
     EXPECT_CALL(*mockAppSchedulerClient_, ScheduleBackgroundApplication()).Times(1);
@@ -496,7 +506,7 @@ HWTEST_F(AmsAppRunningRecordTest, ScheduleBackgroundRunning_001, TestSize.Level0
  * EnvConditions: NA
  * CaseDescription: Create an AppRunningRecord and call ScheduleTrimMemory.
  */
-HWTEST_F(AmsAppRunningRecordTest, ScheduleTrimMemory_001, TestSize.Level0)
+HWTEST_F(AmsAppRunningRecordTest, ScheduleTrimMemory_001, TestSize.Level1)
 {
     auto record = GetTestAppRunningRecord();
     EXPECT_CALL(*mockAppSchedulerClient_, ScheduleShrinkMemory(_)).Times(1);
@@ -512,7 +522,7 @@ HWTEST_F(AmsAppRunningRecordTest, ScheduleTrimMemory_001, TestSize.Level0)
  * EnvConditions: NA
  * CaseDescription: Create an AppRunningRecord and call LowMemoryWarning.
  */
-HWTEST_F(AmsAppRunningRecordTest, LowMemoryWarning_001, TestSize.Level0)
+HWTEST_F(AmsAppRunningRecordTest, LowMemoryWarning_001, TestSize.Level1)
 {
     auto record = GetTestAppRunningRecord();
     EXPECT_CALL(*mockAppSchedulerClient_, ScheduleLowMemory()).Times(1);
@@ -527,7 +537,7 @@ HWTEST_F(AmsAppRunningRecordTest, LowMemoryWarning_001, TestSize.Level0)
  * EnvConditions: NA
  * CaseDescription: Create an AppRunningRecord and call SetState in a for-each cycle.
  */
-HWTEST_F(AmsAppRunningRecordTest, UpdateAppRunningRecord_001, TestSize.Level0)
+HWTEST_F(AmsAppRunningRecordTest, UpdateAppRunningRecord_001, TestSize.Level1)
 {
     auto record = GetTestAppRunningRecord();
     for (ApplicationState state = ApplicationState::APP_STATE_BEGIN; state < ApplicationState::APP_STATE_END;
@@ -545,7 +555,7 @@ HWTEST_F(AmsAppRunningRecordTest, UpdateAppRunningRecord_001, TestSize.Level0)
  * EnvConditions: NA
  * CaseDescription: Create an AppRunningRecord and call SetState using arg |APP_STATE_END|.
  */
-HWTEST_F(AmsAppRunningRecordTest, UpdateAppRunningRecord_002, TestSize.Level0)
+HWTEST_F(AmsAppRunningRecordTest, UpdateAppRunningRecord_002, TestSize.Level1)
 {
     auto record = GetTestAppRunningRecord();
     record->SetState(ApplicationState::APP_STATE_END);
@@ -560,7 +570,7 @@ HWTEST_F(AmsAppRunningRecordTest, UpdateAppRunningRecord_002, TestSize.Level0)
  * EnvConditions: NA
  * CaseDescription: Create an AppRunningRecord and call AppMgrService::ApplicationTerminated passing exists |RecordId|.
  */
-HWTEST_F(AmsAppRunningRecordTest, DeleteAppRunningRecord_001, TestSize.Level0)
+HWTEST_F(AmsAppRunningRecordTest, DeleteAppRunningRecord_001, TestSize.Level1)
 {
     auto abilityInfo = std::make_shared<AbilityInfo>();
     abilityInfo->name = GetTestAbilityName();
@@ -586,7 +596,7 @@ HWTEST_F(AmsAppRunningRecordTest, DeleteAppRunningRecord_001, TestSize.Level0)
  * EnvConditions: NA
  * CaseDescription: Test server received normal pid attachApplication request.
  */
-HWTEST_F(AmsAppRunningRecordTest, AttachApplication_001, TestSize.Level0)
+HWTEST_F(AmsAppRunningRecordTest, AttachApplication_001, TestSize.Level1)
 {
     APP_LOGI("AmsAppRunningRecordTest AttachApplication_001 start");
     auto abilityInfo = std::make_shared<AbilityInfo>();
@@ -595,6 +605,7 @@ HWTEST_F(AmsAppRunningRecordTest, AttachApplication_001, TestSize.Level0)
     abilityInfo->process = GetTestAppName();
     auto appInfo = std::make_shared<ApplicationInfo>();
     appInfo->name = GetTestAppName();
+    appInfo->bundleName = GetTestAppName();
     sptr<IRemoteObject> token = GetMockToken();
 
     const pid_t newPid = 1234;
@@ -616,7 +627,7 @@ HWTEST_F(AmsAppRunningRecordTest, AttachApplication_001, TestSize.Level0)
  * EnvConditions: NA
  * CaseDescription: Test server received invalid pid attachApplication request.
  */
-HWTEST_F(AmsAppRunningRecordTest, AttachApplication_002, TestSize.Level0)
+HWTEST_F(AmsAppRunningRecordTest, AttachApplication_002, TestSize.Level1)
 {
     APP_LOGI("AmsAppRunningRecordTest AttachApplication_002 start");
     auto abilityInfo = std::make_shared<AbilityInfo>();
@@ -625,6 +636,7 @@ HWTEST_F(AmsAppRunningRecordTest, AttachApplication_002, TestSize.Level0)
     abilityInfo->process = GetTestAppName();
     auto appInfo = std::make_shared<ApplicationInfo>();
     appInfo->name = GetTestAppName();
+    appInfo->bundleName = GetTestAppName();
     sptr<IRemoteObject> token = GetMockToken();
     EXPECT_TRUE(service_ != nullptr);
     const pid_t newPid = 1234;
@@ -645,7 +657,7 @@ HWTEST_F(AmsAppRunningRecordTest, AttachApplication_002, TestSize.Level0)
  * EnvConditions: NA
  * CaseDescription: Test server received non-exist pid attachApplication request.
  */
-HWTEST_F(AmsAppRunningRecordTest, AttachApplication_003, TestSize.Level0)
+HWTEST_F(AmsAppRunningRecordTest, AttachApplication_003, TestSize.Level1)
 {
     APP_LOGI("AmsAppRunningRecordTest AttachApplication_003 start");
     auto abilityInfo = std::make_shared<AbilityInfo>();
@@ -654,6 +666,7 @@ HWTEST_F(AmsAppRunningRecordTest, AttachApplication_003, TestSize.Level0)
     abilityInfo->process = GetTestAppName();
     auto appInfo = std::make_shared<ApplicationInfo>();
     appInfo->name = GetTestAppName();
+    appInfo->bundleName = GetTestAppName();
     sptr<IRemoteObject> token = GetMockToken();
     EXPECT_TRUE(service_ != nullptr);
     const pid_t newPid = 1234;
@@ -674,7 +687,7 @@ HWTEST_F(AmsAppRunningRecordTest, AttachApplication_003, TestSize.Level0)
  * EnvConditions: NA
  * CaseDescription: Test server received null appClient attachApplication request.
  */
-HWTEST_F(AmsAppRunningRecordTest, AttachApplication_004, TestSize.Level0)
+HWTEST_F(AmsAppRunningRecordTest, AttachApplication_004, TestSize.Level1)
 {
     APP_LOGI("AmsAppRunningRecordTest AttachApplication_004 start");
     auto abilityInfo = std::make_shared<AbilityInfo>();
@@ -684,6 +697,7 @@ HWTEST_F(AmsAppRunningRecordTest, AttachApplication_004, TestSize.Level0)
 
     auto appInfo = std::make_shared<ApplicationInfo>();
     appInfo->name = GetTestAppName();
+    appInfo->bundleName = GetTestAppName();
     sptr<IRemoteObject> token = GetMockToken();
     EXPECT_TRUE(service_ != nullptr);
     const pid_t newPid = 1234;
@@ -701,7 +715,7 @@ HWTEST_F(AmsAppRunningRecordTest, AttachApplication_004, TestSize.Level0)
  * EnvConditions: NA
  * CaseDescription: Test server received multiple same attachApplication request.
  */
-HWTEST_F(AmsAppRunningRecordTest, AttachApplication_005, TestSize.Level0)
+HWTEST_F(AmsAppRunningRecordTest, AttachApplication_005, TestSize.Level1)
 {
     APP_LOGI("AmsAppRunningRecordTest AttachApplication_005 start");
     auto abilityInfo = std::make_shared<AbilityInfo>();
@@ -711,6 +725,7 @@ HWTEST_F(AmsAppRunningRecordTest, AttachApplication_005, TestSize.Level0)
 
     auto appInfo = std::make_shared<ApplicationInfo>();
     appInfo->name = GetTestAppName();
+    appInfo->bundleName = GetTestAppName();
 
     sptr<IRemoteObject> token = GetMockToken();
     const pid_t newPid = 1234;
@@ -737,7 +752,7 @@ HWTEST_F(AmsAppRunningRecordTest, AttachApplication_005, TestSize.Level0)
  * EnvConditions: NA
  * CaseDescription: Test server received attachApplication request after multiple loadAbility.
  */
-HWTEST_F(AmsAppRunningRecordTest, AttachApplication_006, TestSize.Level0)
+HWTEST_F(AmsAppRunningRecordTest, AttachApplication_006, TestSize.Level1)
 {
     APP_LOGI("AmsAppRunningRecordTest AttachApplication_006 start");
     auto abilityInfo = std::make_shared<AbilityInfo>();
@@ -757,6 +772,7 @@ HWTEST_F(AmsAppRunningRecordTest, AttachApplication_006, TestSize.Level0)
 
     auto appInfo = std::make_shared<ApplicationInfo>();
     appInfo->name = GetTestAppName();
+    appInfo->bundleName = GetTestAppName();
 
     sptr<IRemoteObject> token = GetMockToken();
     const uint32_t EXPECT_RECORD_SIZE = 3;
@@ -787,7 +803,7 @@ HWTEST_F(AmsAppRunningRecordTest, AttachApplication_006, TestSize.Level0)
  * EnvConditions: NA
  * CaseDescription: Test normal case of LaunchAbility after LaunchApplication.
  */
-HWTEST_F(AmsAppRunningRecordTest, LaunchAbilityForApp_001, TestSize.Level0)
+HWTEST_F(AmsAppRunningRecordTest, LaunchAbilityForApp_001, TestSize.Level1)
 {
     APP_LOGI("AmsAppRunningRecordTest LaunchAbilityForApp_001 start");
     auto abilityInfo = std::make_shared<AbilityInfo>();
@@ -822,7 +838,7 @@ HWTEST_F(AmsAppRunningRecordTest, LaunchAbilityForApp_001, TestSize.Level0)
  * EnvConditions: NA
  * CaseDescription: Test normal case of multiple LaunchAbility after LaunchApplication.
  */
-HWTEST_F(AmsAppRunningRecordTest, LaunchAbilityForApp_002, TestSize.Level0)
+HWTEST_F(AmsAppRunningRecordTest, LaunchAbilityForApp_002, TestSize.Level1)
 {
     APP_LOGI("AmsAppRunningRecordTest LaunchAbilityForApp_002 start");
     auto abilityInfo = std::make_shared<AbilityInfo>();
@@ -868,7 +884,7 @@ HWTEST_F(AmsAppRunningRecordTest, LaunchAbilityForApp_002, TestSize.Level0)
  * EnvConditions: NA
  * CaseDescription: Test abnormal case of LaunchApplication with wrong state.
  */
-HWTEST_F(AmsAppRunningRecordTest, LaunchAbilityForApp_003, TestSize.Level0)
+HWTEST_F(AmsAppRunningRecordTest, LaunchAbilityForApp_003, TestSize.Level1)
 {
     APP_LOGI("AmsAppRunningRecordTest LaunchAbilityForApp_003 start");
     auto abilityInfo = std::make_shared<AbilityInfo>();
@@ -902,7 +918,7 @@ HWTEST_F(AmsAppRunningRecordTest, LaunchAbilityForApp_003, TestSize.Level0)
  * EnvConditions: NA
  * CaseDescription: Test normal case of LoadAbility after LaunchAbility and LaunchApplication.
  */
-HWTEST_F(AmsAppRunningRecordTest, LaunchAbilityForApp_004, TestSize.Level0)
+HWTEST_F(AmsAppRunningRecordTest, LaunchAbilityForApp_004, TestSize.Level1)
 {
     APP_LOGI("AmsAppRunningRecordTest LaunchAbilityForApp_004 start");
     auto abilityInfo = std::make_shared<AbilityInfo>();
@@ -935,7 +951,7 @@ HWTEST_F(AmsAppRunningRecordTest, LaunchAbilityForApp_004, TestSize.Level0)
     EXPECT_EQ(record->GetState(), ApplicationState::APP_STATE_READY);
 
     EXPECT_CALL(*mockAppSchedulerClient_, ScheduleLaunchApplication(_)).Times(0);
-    EXPECT_CALL(*mockAppSchedulerClient_, ScheduleLaunchAbility(_, _)).Times(1);
+    EXPECT_CALL(*mockAppSchedulerClient_, ScheduleLaunchAbility(_, _)).Times(0);
     sptr<IRemoteObject> token2 = new (std::nothrow) MockAbilityToken();
     service_->LoadAbility(token2, nullptr, abilityInfo2, appInfo);
     APP_LOGI("AmsAppRunningRecordTest LaunchAbilityForApp_004 end");
@@ -949,7 +965,7 @@ HWTEST_F(AmsAppRunningRecordTest, LaunchAbilityForApp_004, TestSize.Level0)
  * EnvConditions: NA
  * CaseDescription: Test normal case of multiple LaunchAbility with wrong state after LaunchApplication.
  */
-HWTEST_F(AmsAppRunningRecordTest, LaunchAbilityForApp_005, TestSize.Level0)
+HWTEST_F(AmsAppRunningRecordTest, LaunchAbilityForApp_005, TestSize.Level1)
 {
     APP_LOGI("AmsAppRunningRecordTest LaunchAbilityForApp_005 start");
     auto abilityInfo = std::make_shared<AbilityInfo>();
@@ -994,7 +1010,7 @@ HWTEST_F(AmsAppRunningRecordTest, LaunchAbilityForApp_005, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework
  * CaseDescription: Verify the function AddAbility can check the invalid token param.
  */
-HWTEST_F(AmsAppRunningRecordTest, AddAbility_001, TestSize.Level0)
+HWTEST_F(AmsAppRunningRecordTest, AddAbility_001, TestSize.Level1)
 {
     auto appRecord = GetTestAppRunningRecord();
     EXPECT_TRUE(appRecord);
@@ -1014,7 +1030,7 @@ HWTEST_F(AmsAppRunningRecordTest, AddAbility_001, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework
  * CaseDescription: Verify the function AddAbility can check the invalid abilityInfo param.
  */
-HWTEST_F(AmsAppRunningRecordTest, AddAbility_002, TestSize.Level0)
+HWTEST_F(AmsAppRunningRecordTest, AddAbility_002, TestSize.Level1)
 {
     auto appRecord = GetTestAppRunningRecord();
     EXPECT_TRUE(appRecord);
@@ -1030,7 +1046,7 @@ HWTEST_F(AmsAppRunningRecordTest, AddAbility_002, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework
  * CaseDescription: Verify the function AddAbility can check the AbilityRecord which already existed.
  */
-HWTEST_F(AmsAppRunningRecordTest, AddAbility_003, TestSize.Level0)
+HWTEST_F(AmsAppRunningRecordTest, AddAbility_003, TestSize.Level1)
 {
     auto appRecord = GetTestAppRunningRecord();
     EXPECT_TRUE(appRecord);
@@ -1051,7 +1067,7 @@ HWTEST_F(AmsAppRunningRecordTest, AddAbility_003, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework
  * CaseDescription: Verify the function TerminateAbility can check the token which not added.
  */
-HWTEST_F(AmsAppRunningRecordTest, TerminateAbility_001, TestSize.Level0)
+HWTEST_F(AmsAppRunningRecordTest, TerminateAbility_001, TestSize.Level1)
 {
     APP_LOGI("AmsAppRunningRecordTest TerminateAbility_001 start");
 
@@ -1070,7 +1086,7 @@ HWTEST_F(AmsAppRunningRecordTest, TerminateAbility_001, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework
  * CaseDescription: Verify the function TerminateAbility can check the state not in background.
  */
-HWTEST_F(AmsAppRunningRecordTest, TerminateAbility_002, TestSize.Level0)
+HWTEST_F(AmsAppRunningRecordTest, TerminateAbility_002, TestSize.Level1)
 {
     APP_LOGI("AmsAppRunningRecordTest TerminateAbility_002 start");
 
@@ -1092,7 +1108,7 @@ HWTEST_F(AmsAppRunningRecordTest, TerminateAbility_002, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework
  * CaseDescription: Verify the function AbilityTerminated can check the token is nullptr.
  */
-HWTEST_F(AmsAppRunningRecordTest, AbilityTerminated_001, TestSize.Level0)
+HWTEST_F(AmsAppRunningRecordTest, AbilityTerminated_001, TestSize.Level1)
 {
     APP_LOGI("AmsAppRunningRecordTest AbilityTerminated_001 start");
 
@@ -1111,7 +1127,7 @@ HWTEST_F(AmsAppRunningRecordTest, AbilityTerminated_001, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework
  * CaseDescription: Verify the function GetAbilityRunningRecord return nullptr when the ability doesn't added.
  */
-HWTEST_F(AmsAppRunningRecordTest, GetAbilityRunningRecord_001, TestSize.Level0)
+HWTEST_F(AmsAppRunningRecordTest, GetAbilityRunningRecord_001, TestSize.Level1)
 {
     APP_LOGI("AmsAppRunningRecordTest GetAbilityRunningRecord_001 start");
 
@@ -1133,7 +1149,7 @@ HWTEST_F(AmsAppRunningRecordTest, GetAbilityRunningRecord_001, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework
  * CaseDescription: Verify the function GetAbilityRunningRecordByToken can check token is nullptr.
  */
-HWTEST_F(AmsAppRunningRecordTest, GetAbilityRunningRecordByToken_001, TestSize.Level0)
+HWTEST_F(AmsAppRunningRecordTest, GetAbilityRunningRecordByToken_001, TestSize.Level1)
 {
     APP_LOGI("AmsAppRunningRecordTest GetAbilityRunningRecordByToken_001 start");
 
@@ -1151,7 +1167,7 @@ HWTEST_F(AmsAppRunningRecordTest, GetAbilityRunningRecordByToken_001, TestSize.L
  * CaseDescription: Verify the function GetAbilityRunningRecordByToken can check token is nullptr.
  */
 
-HWTEST_F(AmsAppRunningRecordTest, SetUid_GetUid_001, TestSize.Level0)
+HWTEST_F(AmsAppRunningRecordTest, SetUid_GetUid_001, TestSize.Level1)
 {
     auto abilityInfo = std::make_shared<AbilityInfo>();
     abilityInfo->name = GetTestAbilityName();
@@ -1181,7 +1197,7 @@ HWTEST_F(AmsAppRunningRecordTest, SetUid_GetUid_001, TestSize.Level0)
  * CaseDescription: Record and optimize the current app status
  */
 
-HWTEST_F(AmsAppRunningRecordTest, OptimizerAbilityStateChanged_001, TestSize.Level0)
+HWTEST_F(AmsAppRunningRecordTest, OptimizerAbilityStateChanged_001, TestSize.Level1)
 {}
 
 /*
@@ -1193,7 +1209,7 @@ HWTEST_F(AmsAppRunningRecordTest, OptimizerAbilityStateChanged_001, TestSize.Lev
  * CaseDescription: Notify ability when the status of the app changes
  */
 
-HWTEST_F(AmsAppRunningRecordTest, OnAbilityStateChanged_001, TestSize.Level0)
+HWTEST_F(AmsAppRunningRecordTest, OnAbilityStateChanged_001, TestSize.Level1)
 {
     auto appRecord = GetTestAppRunningRecord();
     EXPECT_TRUE(appRecord);

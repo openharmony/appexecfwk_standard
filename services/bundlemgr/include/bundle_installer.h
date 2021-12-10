@@ -82,7 +82,6 @@ private:
     const int64_t installerId_ = 0;
     const std::weak_ptr<EventHandler> handler_;
     const sptr<IStatusReceiver> statusReceiver_;
-
     DISALLOW_COPY_AND_MOVE(BundleInstaller);
 };
 

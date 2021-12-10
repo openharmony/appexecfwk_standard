@@ -63,11 +63,12 @@ public:
      *
      * @param appName, the application name.
      * @param processName, the process name.
+     * @param uid, the process uid.
      *
      * @return process record.
      */
     std::shared_ptr<AppRunningRecord> GetAppRunningRecordByProcessName(
-        const std::string &appName, const std::string &processName);
+        const std::string &appName, const std::string &processName, const int uid);
 
     /**
      * GetAppRunningRecordByPid, Get process record by application pid.
@@ -122,6 +123,7 @@ public:
     std::shared_ptr<AppRunningRecord> GetAppRunningRecord(const int64_t eventId);
     void TerminateAbility(const sptr<IRemoteObject> &token);
     bool GetPidsByBundleName(const std::string &bundleName, std::list<pid_t> &pids);
+    bool GetPidsByBundleNameByUid(const std::string &bundleName, const int uid, std::list<pid_t> &pids);
 
     void PrepareTerminate(const sptr<IRemoteObject> &token);
 

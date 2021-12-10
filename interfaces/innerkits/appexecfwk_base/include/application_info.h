@@ -90,7 +90,9 @@ struct ApplicationInfo : public Parcelable {
     std::string cacheDir;
     int flags = 0;
     bool enabled = false;
-    
+    // Clone the required elements
+    bool isCloned = false;
+    int uid = -1;
     //  element that does not exist for a while
     std::string entryModuleName;
     std::string icon;

@@ -30,25 +30,27 @@ namespace OHOS {
 namespace AppExecFwk {
 AmsMgrStub::AmsMgrStub()
 {
-    memberFuncMap_[static_cast<uint32_t>(IAmsMgr::Message::AMS_LOAD_ABILITY)] = &AmsMgrStub::HandleLoadAbility;
-    memberFuncMap_[static_cast<uint32_t>(IAmsMgr::Message::AMS_TERMINATE_ABILITY)] =
+    memberFuncMap_[static_cast<uint32_t>(IAmsMgr::Message::LOAD_ABILITY)] = &AmsMgrStub::HandleLoadAbility;
+    memberFuncMap_[static_cast<uint32_t>(IAmsMgr::Message::TERMINATE_ABILITY)] =
         &AmsMgrStub::HandleTerminateAbility;
-    memberFuncMap_[static_cast<uint32_t>(IAmsMgr::Message::AMS_UPDATE_ABILITY_STATE)] =
+    memberFuncMap_[static_cast<uint32_t>(IAmsMgr::Message::UPDATE_ABILITY_STATE)] =
         &AmsMgrStub::HandleUpdateAbilityState;
-    memberFuncMap_[static_cast<uint32_t>(IAmsMgr::Message::AMS_REGISTER_APP_STATE_CALLBACK)] =
+    memberFuncMap_[static_cast<uint32_t>(IAmsMgr::Message::REGISTER_APP_STATE_CALLBACK)] =
         &AmsMgrStub::HandleRegisterAppStateCallback;
-    memberFuncMap_[static_cast<uint32_t>(IAmsMgr::Message::AMS_RESET)] = &AmsMgrStub::HandleReset;
-    memberFuncMap_[static_cast<uint32_t>(IAmsMgr::Message::AMS_ABILITY_BEHAVIOR_ANALYSIS)] =
+    memberFuncMap_[static_cast<uint32_t>(IAmsMgr::Message::RESET)] = &AmsMgrStub::HandleReset;
+    memberFuncMap_[static_cast<uint32_t>(IAmsMgr::Message::ABILITY_BEHAVIOR_ANALYSIS)] =
         &AmsMgrStub::HandleAbilityBehaviorAnalysis;
-    memberFuncMap_[static_cast<uint32_t>(IAmsMgr::Message::AMS_KILL_PEOCESS_BY_ABILITY_TOKEN)] =
+    memberFuncMap_[static_cast<uint32_t>(IAmsMgr::Message::KILL_PEOCESS_BY_ABILITY_TOKEN)] =
         &AmsMgrStub::HandleKillProcessByAbilityToken;
-    memberFuncMap_[static_cast<uint32_t>(IAmsMgr::Message::AMS_KILL_APPLICATION)] = &AmsMgrStub::HandleKillApplication;
-    memberFuncMap_[static_cast<uint32_t>(IAmsMgr::Message::AMS_ABILITY_ATTACH_TIMEOUT)] =
+    memberFuncMap_[static_cast<uint32_t>(IAmsMgr::Message::KILL_APPLICATION)] = &AmsMgrStub::HandleKillApplication;
+    memberFuncMap_[static_cast<uint32_t>(IAmsMgr::Message::ABILITY_ATTACH_TIMEOUT)] =
         &AmsMgrStub::HandleAbilityAttachTimeOut;
-    memberFuncMap_[static_cast<uint32_t>(IAmsMgr::Message::AMS_COMPEL_VERIFY_PERMISSION)] =
+    memberFuncMap_[static_cast<uint32_t>(IAmsMgr::Message::COMPEL_VERIFY_PERMISSION)] =
         &AmsMgrStub::HandleCompelVerifyPermission;
-    memberFuncMap_[static_cast<uint32_t>(IAmsMgr::Message::AMS_PREPARE_TERMINATE_ABILITY)] =
+    memberFuncMap_[static_cast<uint32_t>(IAmsMgr::Message::PREPARE_TERMINATE_ABILITY)] =
         &AmsMgrStub::HandlePrepareTerminate;
+    memberFuncMap_[static_cast<uint32_t>(IAmsMgr::Message::KILL_APPLICATION_BYUID)] =
+        &AmsMgrStub::HandleKillApplicationByUid;
 }
 
 AmsMgrStub::~AmsMgrStub()
@@ -149,6 +151,15 @@ ErrCode AmsMgrStub::HandleKillApplication(MessageParcel &data, MessageParcel &re
 {
     std::string bundleName = data.ReadString();
     int32_t result = KillApplication(bundleName);
+    reply.WriteInt32(result);
+    return NO_ERROR;
+}
+
+ErrCode AmsMgrStub::HandleKillApplicationByUid(MessageParcel &data, MessageParcel &reply)
+{
+    std::string bundleName = data.ReadString();
+    int uid = data.ReadInt32();
+    int32_t result = KillApplicationByUid(bundleName, uid);
     reply.WriteInt32(result);
     return NO_ERROR;
 }

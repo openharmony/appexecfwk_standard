@@ -105,15 +105,15 @@ const std::shared_ptr<AbilityInfo> AppDeathRecipientTest::GetAbilityInfoByIndex(
 {
     std::shared_ptr<AbilityInfo> abilityInfo = std::make_shared<AbilityInfo>();
     abilityInfo->name = "AppDeathRecipientTest_ability" + std::to_string(index);
-    abilityInfo->applicationName = "AppDeathRecipientTest" + std::to_string(index);
+    abilityInfo->applicationName = "com.ohos.test.helloworld" + std::to_string(index);
     return abilityInfo;
 }
 
 const std::shared_ptr<ApplicationInfo> AppDeathRecipientTest::GetApplicationByIndex(const int32_t index) const
 {
     std::shared_ptr<ApplicationInfo> appInfo = std::make_shared<ApplicationInfo>();
-    appInfo->name = "AppDeathRecipientTest" + std::to_string(index);
-    appInfo->bundleName = "AppDeathRecipientTest" + std::to_string(index);
+    appInfo->name = "com.ohos.test.helloworld" + std::to_string(index);
+    appInfo->bundleName = "com.ohos.test.helloworld" + std::to_string(index);
     return appInfo;
 }
 
@@ -179,8 +179,8 @@ HWTEST_F(AppDeathRecipientTest, AppDeathRecipient_001, TestSize.Level1)
  */
 HWTEST_F(AppDeathRecipientTest, AppDeathRecipient_002, TestSize.Level1)
 {
-    pid_t pid1 = 1024;
-    pid_t pid2 = 1025;
+    pid_t pid1 = 24;
+    pid_t pid2 = 25;
 
     sptr<IRemoteObject> appOne = GetApp(pid1, 1);
 

@@ -36,6 +36,7 @@ public:
     MOCK_METHOD2(CheckPermission, int32_t(const int32_t recordId, const std::string &permission));
     MOCK_METHOD1(AbilityCleaned, void(const sptr<IRemoteObject> &token));
     MOCK_METHOD1(KillApplication, int32_t(const std::string &appName));
+    MOCK_METHOD2(KillApplicationByUid, int(const std::string &, const int uid));
     MOCK_METHOD1(IsBackgroundRunningRestricted, int(const std::string &bundleName));
     MOCK_METHOD1(GetAllRunningProcesses, int(std::vector<RunningProcessInfo> &info));
     MOCK_METHOD0(GetAmsMgr, sptr<IAmsMgr>());

@@ -77,15 +77,15 @@ const std::shared_ptr<AbilityInfo> AmsRecentAppListTest::GetAbilityInfoByIndex(c
 {
     std::shared_ptr<AbilityInfo> abilityInfo = std::make_shared<AbilityInfo>();
     abilityInfo->name = "test_ability" + std::to_string(index);
-    abilityInfo->applicationName = "test_app" + std::to_string(index);
+    abilityInfo->applicationName = "com.ohos.test.helloworld" + std::to_string(index);
     return abilityInfo;
 }
 
 const std::shared_ptr<ApplicationInfo> AmsRecentAppListTest::GetApplicationByIndex(const int32_t index) const
 {
     std::shared_ptr<ApplicationInfo> appInfo = std::make_shared<ApplicationInfo>();
-    appInfo->name = "test_app" + std::to_string(index);
-    appInfo->bundleName = "test_app" + std::to_string(index);
+    appInfo->name = "com.ohos.test.helloworld" + std::to_string(index);
+    appInfo->bundleName = "com.ohos.test.helloworld" + std::to_string(index);
     return appInfo;
 }
 

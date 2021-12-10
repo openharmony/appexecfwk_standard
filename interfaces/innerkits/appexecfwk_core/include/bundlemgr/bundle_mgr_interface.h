@@ -124,6 +124,14 @@ public:
      */
     virtual bool GetBundleGids(const std::string &bundleName, std::vector<int> &gids) = 0;
     /**
+     * @brief Obtains an array of all group IDs associated with the given bundle name and UID.
+     * @param bundleName Indicates the bundle name.
+     * @param uid Indicates the uid.
+     * @param gids Indicates the group IDs associated with the specified bundle.
+     * @return Returns true if the gids is successfully obtained; returns false otherwise.
+     */
+    virtual bool GetBundleGidsByUid(const std::string &bundleName, const int &uid, std::vector<int> &gids) = 0;
+    /**
      * @brief Obtains the type of a specified application based on the given bundle name.
      * @param bundleName Indicates the bundle name.
      * @return Returns "system" if the bundle is a system application; returns "third-party" otherwise.
@@ -170,6 +178,13 @@ public:
      * @return Returns true if the AbilityInfo is successfully obtained; returns false otherwise.
      */
     virtual bool QueryAbilityInfoByUri(const std::string &abilityUri, AbilityInfo &abilityInfo) = 0;
+    /**
+     * @brief Query the AbilityInfo by ability.uri in config.json.
+     * @param abilityUri Indicates the uri of the ability.
+     * @param abilityInfos Indicates the obtained AbilityInfos object.
+     * @return Returns true if the AbilityInfo is successfully obtained; returns false otherwise.
+     */
+    virtual bool QueryAbilityInfosByUri(const std::string &abilityUri, std::vector<AbilityInfo> &abilityInfos) = 0;
     /**
      * @brief Obtains the BundleInfo of all keep-alive applications in the system.
      * @param bundleInfos Indicates all of the obtained BundleInfo objects.
@@ -223,6 +238,15 @@ public:
      */
     virtual int CheckPermission(const std::string &bundleName, const std::string &permission) = 0;
     /**
+     * @brief Checks whether a specified bundle has been granted a specific permission.
+     * @param bundleName Indicates the name of the bundle to check.
+     * @param permission Indicates the permission to check.
+     * @param userId Indicates the user id.
+     * @return Returns 0 if the bundle has the permission; returns -1 otherwise.
+     */
+    virtual int CheckPermissionByUid(
+        const std::string &bundleName, const std::string &permission, const int userId) = 0;
+    /**
      * @brief Obtains detailed information about a specified permission.
      * @param permissionName Indicates the name of the ohos permission.
      * @param permissionDef Indicates the object containing detailed information about the given ohos permission.
@@ -271,9 +295,10 @@ public:
     /**
      * @brief Clears application running data of a specified application.
      * @param bundleName Indicates the bundle name of the application whose data is to be cleared.
+     * @param userId Indicates the user id.
      * @return Returns true if the data cleared successfully; returns false otherwise.
      */
-    virtual bool CleanBundleDataFiles(const std::string &bundleName) = 0;
+    virtual bool CleanBundleDataFiles(const std::string &bundleName, const int userId) = 0;
     /**
      * @brief Register the specific bundle status callback.
      * @param bundleStatusCallback Indicates the callback to be invoked for returning the bundle status changed result.
@@ -431,11 +456,30 @@ public:
      * @param bundleName Indicates the bundle name of the ability to activity.
      * @param abilityName Indicates the name of the ability to activity.
      * @param launchTime Indicates the ability launchTime.
+     * @param uid Indicates the uid.
      * @return Returns true if this function is successfully called; returns false otherwise.
      */
     virtual bool NotifyActivityLifeStatus(
-        const std::string &bundleName, const std::string &abilityName, const int64_t launchTime) = 0;
-
+        const std::string &bundleName, const std::string &abilityName, const int64_t launchTime, const int uid) = 0;
+    /**
+     * @brief Remove cloned bundle.
+     * @param bundleName Indicates the bundle name of remove cloned bundle.
+     * @param uid Indicates the uid of remove cloned bundle.
+     * @return Returns true if this function is successfully called; returns false otherwise.
+     */
+    virtual bool RemoveClonedBundle(const std::string &bundleName, const int32_t uid) = 0;
+    /**
+     * @brief create bundle clone.
+     * @param bundleName Indicates the bundle name of create bundle clone.
+     * @return Returns true if this function is successfully called; returns false otherwise.
+     */
+    virtual bool BundleClone(const std::string &bundleName) = 0;
+     /**
+     * @brief Determine whether the application is in the allow list.
+     * @param bundleName Indicates the bundle Names.
+     * @return Returns true if bundle name in the allow list successfully; returns false otherwise.
+     */
+    virtual bool CheckBundleNameInAllowList(const std::string &bundleName) = 0;
     enum class Message {
         GET_APPLICATION_INFO,
         GET_APPLICATION_INFOS,
@@ -447,6 +491,7 @@ public:
         GET_BUNDLES_FOR_UID,
         GET_NAME_FOR_UID,
         GET_BUNDLE_GIDS,
+        GET_BUNDLE_GIDS_BY_UID,
         GET_APP_TYPE,
         CHECK_IS_SYSTEM_APP_BY_UID,
         GET_BUNDLE_INFOS_BY_METADATA,
@@ -454,6 +499,7 @@ public:
         QUERY_ABILITY_INFOS,
         QUERY_ABILITY_INFOS_FOR_CLONE,
         QUERY_ABILITY_INFO_BY_URI,
+        QUERY_ABILITY_INFOS_BY_URI,
         QUERY_KEEPALIVE_BUNDLE_INFOS,
         GET_ABILITY_LABEL,
         GET_BUNDLE_ARCHIVE_INFO,
@@ -461,6 +507,7 @@ public:
         GET_LAUNCH_WANT_FOR_BUNDLE,
         CHECK_PUBLICKEYS,
         CHECK_PERMISSION,
+        CHECK_PERMISSION_BY_UID,
         GET_PERMISSION_DEF,
         GET_ALL_PERMISSION_GROUP_DEFS,
         GET_APPS_GRANTED_PERMISSIONS,
@@ -491,6 +538,9 @@ public:
         GET_ALL_COMMON_EVENT_INFO,
         GET_BUNDLE_INSTALLER,
         NOTIFY_ACTIVITY_LIFE_STATUS,
+        REMOVE_CLONED_BUNDLE,
+        BUNDLE_CLONE,
+        CHECK_BUNDLE_NAME_IN_ALLOWLIST
     };
 };
 

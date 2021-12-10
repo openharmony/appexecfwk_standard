@@ -25,7 +25,7 @@
 #include "mock_app_mgr_service.h"
 
 using namespace testing::ext;
-using namespace OHOS::AppExecFwk;
+
 using OHOS::iface_cast;
 using OHOS::sptr;
 using testing::_;
@@ -33,6 +33,8 @@ using testing::Invoke;
 using testing::InvokeWithoutArgs;
 using testing::Return;
 
+namespace OHOS {
+namespace AppExecFwk {
 class AmsIpcAppMgrInterfaceTest : public testing::Test {
 public:
     static void SetUpTestCase();
@@ -60,7 +62,7 @@ void AmsIpcAppMgrInterfaceTest::TearDown()
  * FunctionPoints: interface
  * CaseDescription: test interface of AttachApplication
  */
-HWTEST_F(AmsIpcAppMgrInterfaceTest, Interface_001, TestSize.Level0)
+HWTEST_F(AmsIpcAppMgrInterfaceTest, Interface_001, TestSize.Level1)
 {
     APP_LOGD("AppMgrIpcInterfaceTest_AppMgr_001 start");
     sptr<MockAppMgrService> mockAppMgr(new MockAppMgrService());
@@ -81,7 +83,7 @@ HWTEST_F(AmsIpcAppMgrInterfaceTest, Interface_001, TestSize.Level0)
  * FunctionPoints: interface
  * CaseDescription: test interface of ApplicationForegrounded
  */
-HWTEST_F(AmsIpcAppMgrInterfaceTest, Interface_002, TestSize.Level0)
+HWTEST_F(AmsIpcAppMgrInterfaceTest, Interface_002, TestSize.Level1)
 {
     APP_LOGD("AppMgrIpcInterfaceTest_AppMgr_002 start");
     sptr<MockAppMgrService> mockAppMgr(new MockAppMgrService());
@@ -102,7 +104,7 @@ HWTEST_F(AmsIpcAppMgrInterfaceTest, Interface_002, TestSize.Level0)
  * FunctionPoints: interface
  * CaseDescription: test interface of ApplicationBackgrounded
  */
-HWTEST_F(AmsIpcAppMgrInterfaceTest, Interface_003, TestSize.Level0)
+HWTEST_F(AmsIpcAppMgrInterfaceTest, Interface_003, TestSize.Level1)
 {
     APP_LOGD("AppMgrIpcInterfaceTest_AppMgr_003 start");
     sptr<MockAppMgrService> mockAppMgr(new MockAppMgrService());
@@ -123,7 +125,7 @@ HWTEST_F(AmsIpcAppMgrInterfaceTest, Interface_003, TestSize.Level0)
  * FunctionPoints: interface
  * CaseDescription: test interface of ApplicationTerminated
  */
-HWTEST_F(AmsIpcAppMgrInterfaceTest, Interface_004, TestSize.Level0)
+HWTEST_F(AmsIpcAppMgrInterfaceTest, Interface_004, TestSize.Level1)
 {
     APP_LOGD("AppMgrIpcInterfaceTest_AppMgr_004 start");
     sptr<MockAppMgrService> mockAppMgr(new MockAppMgrService());
@@ -144,7 +146,7 @@ HWTEST_F(AmsIpcAppMgrInterfaceTest, Interface_004, TestSize.Level0)
  * FunctionPoints: interface
  * CaseDescription: test interface of CheckPermission
  */
-HWTEST_F(AmsIpcAppMgrInterfaceTest, Interface_005, TestSize.Level0)
+HWTEST_F(AmsIpcAppMgrInterfaceTest, Interface_005, TestSize.Level1)
 {
     APP_LOGD("AppMgrIpcInterfaceTest_AppMgr_005 start");
     sptr<MockAppMgrService> mockAppMgr(new MockAppMgrService());
@@ -173,7 +175,7 @@ HWTEST_F(AmsIpcAppMgrInterfaceTest, Interface_005, TestSize.Level0)
  * FunctionPoints: interface
  * CaseDescription: test IPC can transact data
  */
-HWTEST_F(AmsIpcAppMgrInterfaceTest, Interface_006, TestSize.Level0)
+HWTEST_F(AmsIpcAppMgrInterfaceTest, Interface_006, TestSize.Level1)
 {
     APP_LOGD("AppMgrIpcInterfaceTest_AppMgr_006 start");
     sptr<MockAppMgrService> mockAppMgr(new MockAppMgrService());
@@ -196,7 +198,7 @@ HWTEST_F(AmsIpcAppMgrInterfaceTest, Interface_006, TestSize.Level0)
  * FunctionPoints: KillApplication interface
  * CaseDescription: test IPC can transact data
  */
-HWTEST_F(AmsIpcAppMgrInterfaceTest, ClearUpApplicationData_008, TestSize.Level0)
+HWTEST_F(AmsIpcAppMgrInterfaceTest, ClearUpApplicationData_008, TestSize.Level1)
 {
     APP_LOGD("ClearUpApplicationData_008 start");
 
@@ -217,7 +219,7 @@ HWTEST_F(AmsIpcAppMgrInterfaceTest, ClearUpApplicationData_008, TestSize.Level0)
  * FunctionPoints: Check background operation
  * CaseDescription: test IPC can transact data
  */
-HWTEST_F(AmsIpcAppMgrInterfaceTest, IsBackgroundRunningRestricted_009, TestSize.Level0)
+HWTEST_F(AmsIpcAppMgrInterfaceTest, IsBackgroundRunningRestricted_009, TestSize.Level1)
 {
     APP_LOGD("IsBackgroundRunningRestricted_009 start");
 
@@ -244,7 +246,7 @@ HWTEST_F(AmsIpcAppMgrInterfaceTest, IsBackgroundRunningRestricted_009, TestSize.
  * FunctionPoints: KillApplication interface
  * CaseDescription: test IPC can transact data
  */
-HWTEST_F(AmsIpcAppMgrInterfaceTest, GetAllRunningProcesses_010, TestSize.Level0)
+HWTEST_F(AmsIpcAppMgrInterfaceTest, GetAllRunningProcesses_010, TestSize.Level1)
 {
     APP_LOGD("GetAllRunningProcesses_009 start");
 
@@ -272,7 +274,7 @@ HWTEST_F(AmsIpcAppMgrInterfaceTest, GetAllRunningProcesses_010, TestSize.Level0)
  * FunctionPoints: KillApplication interface
  * CaseDescription: test IPC can transact data
  */
-HWTEST_F(AmsIpcAppMgrInterfaceTest, GetSystemMemoryAttr_0100, TestSize.Level0)
+HWTEST_F(AmsIpcAppMgrInterfaceTest, GetSystemMemoryAttr_0100, TestSize.Level1)
 {
     APP_LOGD("GetSystemMemoryAttr_0100 start");
 
@@ -299,3 +301,5 @@ HWTEST_F(AmsIpcAppMgrInterfaceTest, GetSystemMemoryAttr_0100, TestSize.Level0)
 
     APP_LOGD("GetSystemMemoryAttr_0100 end");
 }
+}  // namespace AppExecFwk
+}  // namespace OHOS

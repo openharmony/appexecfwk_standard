@@ -122,6 +122,8 @@ TestApplicationPreRecord AmsWorkFlowTest::CreateTestApplicationRecord(const std:
     RecordQueryResult result;
     AbilityInfo abilityInfo = CreateAbilityInfo(ability, app);
     ApplicationInfo appInfo = CreateApplication(app);
+    abilityInfo.applicationInfo.uid = 0;
+    appInfo.uid = 0;
 
     auto appRecord = serviceInner_->GetOrCreateAppRunningRecord(token,
         std::make_shared<ApplicationInfo>(appInfo),
@@ -151,7 +153,7 @@ TestApplicationPreRecord AmsWorkFlowTest::CreateTestApplicationRecord(const std:
  * FunctionPoints: BackKey
  * CaseDescription: when only one ability on foreground, previous is another app, simulate press back key
  */
-HWTEST_F(AmsWorkFlowTest, BackKey_001, TestSize.Level0)
+HWTEST_F(AmsWorkFlowTest, BackKey_001, TestSize.Level1)
 {
     APP_LOGI("AmsWorkFlowTest BackKey_001 start");
     sptr<IRemoteObject> tokenA = new MockAbilityToken();
@@ -182,7 +184,7 @@ HWTEST_F(AmsWorkFlowTest, BackKey_001, TestSize.Level0)
  * FunctionPoints: BackKey
  * CaseDescription: when only one ability on foreground, previous ability in same app, simulate press back key
  */
-HWTEST_F(AmsWorkFlowTest, BackKey_002, TestSize.Level0)
+HWTEST_F(AmsWorkFlowTest, BackKey_002, TestSize.Level1)
 {
     APP_LOGI("AmsWorkFlowTest BackKey_002 start");
     sptr<IRemoteObject> tokenA = new MockAbilityToken();
@@ -209,7 +211,7 @@ HWTEST_F(AmsWorkFlowTest, BackKey_002, TestSize.Level0)
  * FunctionPoints: BackKey
  * CaseDescription: when two ability on foreground, previous ability in another app, simulate press back key
  */
-HWTEST_F(AmsWorkFlowTest, BackKey_003, TestSize.Level0)
+HWTEST_F(AmsWorkFlowTest, BackKey_003, TestSize.Level1)
 {
     APP_LOGI("AmsWorkFlowTest BackKey_003 start");
     sptr<IRemoteObject> tokenA = new MockAbilityToken();
@@ -245,7 +247,7 @@ HWTEST_F(AmsWorkFlowTest, BackKey_003, TestSize.Level0)
  * FunctionPoints: BackKey
  * CaseDescription: when two ability on foreground, previous is 2 ability in another app, simulate press back key
  */
-HWTEST_F(AmsWorkFlowTest, BackKey_004, TestSize.Level0)
+HWTEST_F(AmsWorkFlowTest, BackKey_004, TestSize.Level1)
 {
     APP_LOGI("AmsWorkFlowTest BackKey_004 start");
     sptr<IRemoteObject> tokenA = new MockAbilityToken();
@@ -286,7 +288,7 @@ HWTEST_F(AmsWorkFlowTest, BackKey_004, TestSize.Level0)
  * FunctionPoints: BackKey
  * CaseDescription: when only one ability on foreground, previous is another app, simulate press back key and exit app
  */
-HWTEST_F(AmsWorkFlowTest, BackKey_005, TestSize.Level0)
+HWTEST_F(AmsWorkFlowTest, BackKey_005, TestSize.Level1)
 {
     APP_LOGI("AmsWorkFlowTest BackKey_005 start");
     sptr<IRemoteObject> tokenA = new MockAbilityToken();
@@ -322,7 +324,7 @@ HWTEST_F(AmsWorkFlowTest, BackKey_005, TestSize.Level0)
  * FunctionPoints: BackKey
  * CaseDescription: when two ability on foreground, previous is another app, simulate press back key and exit
  */
-HWTEST_F(AmsWorkFlowTest, BackKey_006, TestSize.Level0)
+HWTEST_F(AmsWorkFlowTest, BackKey_006, TestSize.Level1)
 {
     APP_LOGI("AmsWorkFlowTest BackKey_006 start");
     sptr<IRemoteObject> tokenA = new MockAbilityToken();
@@ -366,7 +368,7 @@ HWTEST_F(AmsWorkFlowTest, BackKey_006, TestSize.Level0)
  * CaseDescription: when two ability on foreground, previous is 2 abiltiy in another app,
  *                  simulate press back key and exit
  */
-HWTEST_F(AmsWorkFlowTest, BackKey_007, TestSize.Level0)
+HWTEST_F(AmsWorkFlowTest, BackKey_007, TestSize.Level1)
 {
     APP_LOGI("AmsWorkFlowTest BackKey_007 start");
     sptr<IRemoteObject> tokenA = new MockAbilityToken();
@@ -414,7 +416,7 @@ HWTEST_F(AmsWorkFlowTest, BackKey_007, TestSize.Level0)
  * FunctionPoints: ScreenOff
  * CaseDescription: when only one ability on foreground, simulate screenoff
  */
-HWTEST_F(AmsWorkFlowTest, ScreenOff_001, TestSize.Level0)
+HWTEST_F(AmsWorkFlowTest, ScreenOff_001, TestSize.Level1)
 {
     APP_LOGI("AmsWorkFlowTest ScreenOff_001 start");
     sptr<IRemoteObject> tokenA = new MockAbilityToken();
@@ -437,7 +439,7 @@ HWTEST_F(AmsWorkFlowTest, ScreenOff_001, TestSize.Level0)
  * FunctionPoints: ScreenOff
  * CaseDescription: when multiple ability on foreground, simulate screenoff
  */
-HWTEST_F(AmsWorkFlowTest, ScreenOff_002, TestSize.Level0)
+HWTEST_F(AmsWorkFlowTest, ScreenOff_002, TestSize.Level1)
 {
     APP_LOGI("AmsWorkFlowTest ScreenOff_002 start");
     sptr<IRemoteObject> tokenA = new MockAbilityToken();
@@ -465,7 +467,7 @@ HWTEST_F(AmsWorkFlowTest, ScreenOff_002, TestSize.Level0)
  * FunctionPoints: ScreenOff
  * CaseDescription: when one ability on foreground, another ability in same app is background, simulate screenoff
  */
-HWTEST_F(AmsWorkFlowTest, ScreenOff_003, TestSize.Level0)
+HWTEST_F(AmsWorkFlowTest, ScreenOff_003, TestSize.Level1)
 {
     APP_LOGI("AmsWorkFlowTest ScreenOff_003 start");
     sptr<IRemoteObject> tokenA = new MockAbilityToken();
@@ -492,7 +494,7 @@ HWTEST_F(AmsWorkFlowTest, ScreenOff_003, TestSize.Level0)
  * FunctionPoints: ScreenOff
  * CaseDescription: when only one ability on foreground, simulate screenoff and exit
  */
-HWTEST_F(AmsWorkFlowTest, ScreenOff_004, TestSize.Level0)
+HWTEST_F(AmsWorkFlowTest, ScreenOff_004, TestSize.Level1)
 {
     APP_LOGI("AmsWorkFlowTest ScreenOff_004 start");
     sptr<IRemoteObject> tokenA = new MockAbilityToken();
@@ -520,7 +522,7 @@ HWTEST_F(AmsWorkFlowTest, ScreenOff_004, TestSize.Level0)
  * FunctionPoints: ScreenOff
  * CaseDescription: when multiple ability on foreground, simulate screenoff and exit
  */
-HWTEST_F(AmsWorkFlowTest, ScreenOff_005, TestSize.Level0)
+HWTEST_F(AmsWorkFlowTest, ScreenOff_005, TestSize.Level1)
 {
     APP_LOGI("AmsWorkFlowTest ScreenOff_005 start");
     sptr<IRemoteObject> tokenA = new MockAbilityToken();
@@ -556,7 +558,7 @@ HWTEST_F(AmsWorkFlowTest, ScreenOff_005, TestSize.Level0)
  * CaseDescription: when one ability on foreground, another ability in same app is background,
  *                  simulate screenoff and exit
  */
-HWTEST_F(AmsWorkFlowTest, ScreenOff_006, TestSize.Level0)
+HWTEST_F(AmsWorkFlowTest, ScreenOff_006, TestSize.Level1)
 {
     APP_LOGI("AmsWorkFlowTest ScreenOff_006 start");
     sptr<IRemoteObject> tokenA = new MockAbilityToken();
@@ -590,7 +592,7 @@ HWTEST_F(AmsWorkFlowTest, ScreenOff_006, TestSize.Level0)
  * FunctionPoints: ScreenOn
  * CaseDescription: when only one ability on background, simulate screen on
  */
-HWTEST_F(AmsWorkFlowTest, ScreenOn_001, TestSize.Level0)
+HWTEST_F(AmsWorkFlowTest, ScreenOn_001, TestSize.Level1)
 {
     APP_LOGI("AmsWorkFlowTest ScreenOn_001 start");
     sptr<IRemoteObject> tokenA = new MockAbilityToken();
@@ -613,7 +615,7 @@ HWTEST_F(AmsWorkFlowTest, ScreenOn_001, TestSize.Level0)
  * FunctionPoints: ScreenOn
  * CaseDescription: when multiple abilities on backgroud, previous is one ability, simulate screen on
  */
-HWTEST_F(AmsWorkFlowTest, ScreenOn_002, TestSize.Level0)
+HWTEST_F(AmsWorkFlowTest, ScreenOn_002, TestSize.Level1)
 {
     APP_LOGI("AmsWorkFlowTest ScreenOn_002 start");
     sptr<IRemoteObject> tokenA = new MockAbilityToken();
@@ -640,7 +642,7 @@ HWTEST_F(AmsWorkFlowTest, ScreenOn_002, TestSize.Level0)
  * FunctionPoints: ScreenOn
  * CaseDescription: when multiple abilities on backgroud, all abilities are previous, simulate screen on
  */
-HWTEST_F(AmsWorkFlowTest, ScreenOn_003, TestSize.Level0)
+HWTEST_F(AmsWorkFlowTest, ScreenOn_003, TestSize.Level1)
 {
     APP_LOGI("AmsWorkFlowTest ScreenOn_003 start");
     sptr<IRemoteObject> tokenA = new MockAbilityToken();
@@ -668,7 +670,7 @@ HWTEST_F(AmsWorkFlowTest, ScreenOn_003, TestSize.Level0)
  * FunctionPoints: ChangeAbility
  * CaseDescription: when one ability on foreground, request to load another ability of the same Application
  */
-HWTEST_F(AmsWorkFlowTest, ChangeAbility_001, TestSize.Level0)
+HWTEST_F(AmsWorkFlowTest, ChangeAbility_001, TestSize.Level1)
 {
     APP_LOGD("AmsWorkFlowTest ChangeAbility_001 start");
     sptr<IRemoteObject> tokenA = new MockAbilityToken();
@@ -701,7 +703,7 @@ HWTEST_F(AmsWorkFlowTest, ChangeAbility_001, TestSize.Level0)
  * FunctionPoints: ChangeAbility
  * CaseDescription: when two ability on foreground, request to load another ability of the same Application
  */
-HWTEST_F(AmsWorkFlowTest, ChangeAbility_002, TestSize.Level0)
+HWTEST_F(AmsWorkFlowTest, ChangeAbility_002, TestSize.Level1)
 {
     APP_LOGD("AmsWorkFlowTest ChangeAbility_001 start");
     sptr<IRemoteObject> tokenA = new MockAbilityToken();
@@ -742,7 +744,7 @@ HWTEST_F(AmsWorkFlowTest, ChangeAbility_002, TestSize.Level0)
  * FunctionPoints: ChangeAbility
  * CaseDescription: when one ability on foreground, request to load another ability of the another Application
  */
-HWTEST_F(AmsWorkFlowTest, ChangeAbility_003, TestSize.Level0)
+HWTEST_F(AmsWorkFlowTest, ChangeAbility_003, TestSize.Level1)
 {
     APP_LOGD("AmsWorkFlowTest ChangeAbility_001 start");
     sptr<IRemoteObject> tokenA = new MockAbilityToken();
@@ -786,7 +788,7 @@ HWTEST_F(AmsWorkFlowTest, ChangeAbility_003, TestSize.Level0)
  * FunctionPoints: ChangeAbility
  * CaseDescription: when two ability on foreground, request to load another ability of the another Application
  */
-HWTEST_F(AmsWorkFlowTest, ChangeAbility_004, TestSize.Level0)
+HWTEST_F(AmsWorkFlowTest, ChangeAbility_004, TestSize.Level1)
 {
     APP_LOGD("AmsWorkFlowTest ChangeAbility_004 start");
     sptr<IRemoteObject> tokenA = new MockAbilityToken();
@@ -840,7 +842,7 @@ HWTEST_F(AmsWorkFlowTest, ChangeAbility_004, TestSize.Level0)
  * FunctionPoints: ChangeAbility
  * CaseDescription: when a application on background, request to load another ability of the same Application
  */
-HWTEST_F(AmsWorkFlowTest, ChangeAbility_005, TestSize.Level0)
+HWTEST_F(AmsWorkFlowTest, ChangeAbility_005, TestSize.Level1)
 {
     APP_LOGD("AmsWorkFlowTest ChangeAbility_004 start");
     sptr<IRemoteObject> tokenA = new MockAbilityToken();

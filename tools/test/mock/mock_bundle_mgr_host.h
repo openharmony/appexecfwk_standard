@@ -59,7 +59,7 @@ public:
     MOCK_METHOD0(IsSafeMode, bool());
     MOCK_METHOD2(CleanBundleCacheFiles,
         bool(const std::string &bundleName, const sptr<ICleanCacheCallback> &cleanCacheCallback));
-    MOCK_METHOD1(CleanBundleDataFiles, bool(const std::string &bundleName));
+    MOCK_METHOD2(CleanBundleDataFiles, bool(const std::string &bundleName, const int userId));
     MOCK_METHOD1(RegisterBundleStatusCallback, bool(const sptr<IBundleStatusCallback> &bundleStatusCallback));
     MOCK_METHOD1(ClearBundleStatusCallback, bool(const sptr<IBundleStatusCallback> &bundleStatusCallback));
     MOCK_METHOD0(UnregisterBundleStatusCallback, bool());
@@ -69,8 +69,8 @@ public:
     MOCK_METHOD1(IsApplicationEnabled, bool(const std::string &bundleName));
     MOCK_METHOD2(SetApplicationEnabled, bool(const std::string &bundleName, bool isEnable));
     MOCK_METHOD0(GetBundleInstaller, sptr<IBundleInstaller>());
-    MOCK_METHOD3(
-        CanRequestPermission, bool(const std::string &bundleName, const std::string &permissionName, const int userId));
+    MOCK_METHOD3(CanRequestPermission,
+        bool(const std::string &bundleName, const std::string &permissionName, const int userId));
     MOCK_METHOD3(RequestPermissionFromUser,
         bool(const std::string &bundleName, const std::string &permission, const int userId));
     MOCK_METHOD2(GetNameForUid, bool(const int uid, std::string &name));
@@ -89,9 +89,17 @@ public:
     MOCK_METHOD2(GetShortcutInfos, bool(const std::string &bundleName, std::vector<ShortcutInfo> &shortcutInfos));
     MOCK_METHOD2(GetAllCommonEventInfo,
         bool(const std::string &eventKey, std::vector<CommonEventInfo> &commonEventInfos));
-    MOCK_METHOD2(GetModuleUsageRecords, bool(const int32_t number, std::vector<ModuleUsageRecord> &moduleUsageRecords));
-    MOCK_METHOD3(NotifyActivityLifeStatus,
-        bool(const std::string &bundleName, const std::string &abilityName, const int64_t launchTime));
+    MOCK_METHOD2(GetModuleUsageRecords,
+        bool(const int32_t number, std::vector<ModuleUsageRecord> &moduleUsageRecords));
+    MOCK_METHOD4(NotifyActivityLifeStatus,
+        bool(const std::string &bundleName, const std::string &abilityName, const int64_t launchTime, const int uid));
+    MOCK_METHOD1(CheckBundleNameInAllowList, bool(const std::string &bundleName));
+    MOCK_METHOD3(GetBundleGidsByUid, bool(const std::string &bundleName, const int &uid, std::vector<int> &gids));
+    MOCK_METHOD2(RemoveClonedBundle, bool(const std::string &bundleName, const int32_t uid));
+    MOCK_METHOD1(BundleClone, bool(const std::string &bundleName));
+    MOCK_METHOD2(QueryAbilityInfosByUri, bool(const std::string &abilityUri, std::vector<AbilityInfo> &abilityInfos));
+    MOCK_METHOD3(CheckPermissionByUid,
+        int(const std::string &bundleName, const std::string &permission, const int userId));
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS

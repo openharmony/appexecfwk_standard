@@ -48,7 +48,7 @@ void AmsAppStateCallBackTest::TearDown()
  * EnvConditions: Mobile that can run ohos test framework
  * CaseDescription: Verify if Onreceived works when app state changed.
  */
-HWTEST_F(AmsAppStateCallBackTest, OnRemoteRequest_001, TestSize.Level0)
+HWTEST_F(AmsAppStateCallBackTest, OnRemoteRequest_001, TestSize.Level1)
 {
     sptr<AppStateCallbackHost> host(new AppStateCallbackHost());
     MessageParcel data;
@@ -71,7 +71,7 @@ HWTEST_F(AmsAppStateCallBackTest, OnRemoteRequest_001, TestSize.Level0)
  * EnvConditions: Mobile that can run ohos test framework
  * CaseDescription: Verify if Onreceived works when ability request done.
  */
-HWTEST_F(AmsAppStateCallBackTest, OnRemoteRequest_002, TestSize.Level0)
+HWTEST_F(AmsAppStateCallBackTest, OnRemoteRequest_002, TestSize.Level1)
 {
     sptr<AppStateCallbackHost> host(new AppStateCallbackHost());
     MessageParcel data;
@@ -95,7 +95,7 @@ HWTEST_F(AmsAppStateCallBackTest, OnRemoteRequest_002, TestSize.Level0)
 * CaseDescription: 1. Verify process data can write to parcel.
             2. verify process data can read from parcel.
 */
-HWTEST_F(AmsAppStateCallBackTest, AppProcessData_001, TestSize.Level0)
+HWTEST_F(AmsAppStateCallBackTest, AppProcessData_001, TestSize.Level1)
 {
     Parcel data;
     AppProcessData processData;

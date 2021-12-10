@@ -105,6 +105,15 @@ public:
      */
     virtual int KillApplication(const std::string &bundleName) = 0;
 
+    /**
+     * KillApplicationByUid, call KillApplicationByUid() through proxy object, kill the application.
+     *
+     * @param  bundleName, bundle name in Application record.
+     * @param  userId, userId.
+     * @return ERR_OK, return back success, others fail.
+     */
+    virtual int KillApplicationByUid(const std::string &bundleName, const int uid) = 0;
+
     virtual void AbilityAttachTimeOut(const sptr<IRemoteObject> &token) = 0;
 
     virtual void PrepareTerminate(const sptr<IRemoteObject> &token) = 0;
@@ -122,17 +131,18 @@ public:
     virtual int CompelVerifyPermission(const std::string &permission, int pid, int uid, std::string &message) = 0;
 
     enum class Message {
-        AMS_LOAD_ABILITY = 0,
-        AMS_TERMINATE_ABILITY,
-        AMS_UPDATE_ABILITY_STATE,
-        AMS_REGISTER_APP_STATE_CALLBACK,
-        AMS_RESET,
-        AMS_ABILITY_BEHAVIOR_ANALYSIS,
-        AMS_KILL_PEOCESS_BY_ABILITY_TOKEN,
-        AMS_KILL_APPLICATION,
-        AMS_ABILITY_ATTACH_TIMEOUT,
-        AMS_COMPEL_VERIFY_PERMISSION,
-        AMS_PREPARE_TERMINATE_ABILITY,
+        LOAD_ABILITY = 0,
+        TERMINATE_ABILITY,
+        UPDATE_ABILITY_STATE,
+        REGISTER_APP_STATE_CALLBACK,
+        RESET,
+        ABILITY_BEHAVIOR_ANALYSIS,
+        KILL_PEOCESS_BY_ABILITY_TOKEN,
+        KILL_APPLICATION,
+        ABILITY_ATTACH_TIMEOUT,
+        COMPEL_VERIFY_PERMISSION,
+        PREPARE_TERMINATE_ABILITY,
+        KILL_APPLICATION_BYUID,
     };
 };
 }  // namespace AppExecFwk

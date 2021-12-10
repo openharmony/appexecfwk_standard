@@ -2114,9 +2114,9 @@ bool TransformToInfo(ProfileReader::ConfigJson &configJson, InnerBundleInfo &inn
         innerBundleInfo.InsertFormInfos(keyName, formInfos);
         if (!find) {
             for (const auto &skill : ability.skills) {
-                if (std::find(skill.actions.begin(), skill.actions.end(), Constants::INTENT_ACTION_HOME) !=
+                if (std::find(skill.actions.begin(), skill.actions.end(), Constants::ACTION_HOME) !=
                         skill.actions.end() &&
-                    std::find(skill.entities.begin(), skill.entities.end(), Constants::INTENT_ENTITY_HOME) !=
+                    std::find(skill.entities.begin(), skill.entities.end(), Constants::ENTITY_HOME) !=
                         skill.entities.end() &&
                     (find == false)) {
                     innerBundleInfo.SetMainAbility(keyName);

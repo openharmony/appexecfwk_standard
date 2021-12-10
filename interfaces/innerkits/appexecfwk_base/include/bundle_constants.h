@@ -70,6 +70,7 @@ constexpr unsigned int INSTALLD_UMASK = 0000;
 constexpr int32_t INVALID_UID = -1;
 constexpr int32_t INVALID_GID = -1;
 constexpr int32_t ROOT_UID = 0;
+constexpr int32_t C_UESRID = 200; // clone bundle userId.
 constexpr int32_t BMS_UID = 1000;
 constexpr int32_t BMS_GID = 1000;
 constexpr int32_t BASE_SYS_UID = 2100;
@@ -78,6 +79,7 @@ constexpr int32_t BASE_SYS_VEN_UID = 5000;
 constexpr int32_t MAX_SYS_VEN_UID = 5999;
 constexpr int32_t BASE_APP_UID = 10000;
 constexpr int32_t MAX_APP_UID = 65535;
+constexpr int32_t U_VALUE = 100000;
 const std::string PROFILE_KEY_UID_SIZE = "size";
 const std::string PROFILE_KEY_UID_AND_GID = "uid_and_gid";
 
@@ -90,8 +92,8 @@ enum class AppType {
     THIRD_PARTY_APP,
 };
 
-const std::string INTENT_ACTION_HOME = "action.system.home";
-const std::string INTENT_ENTITY_HOME = "entity.system.home";
+const std::string ACTION_HOME = "action.system.home";
+const std::string ENTITY_HOME = "entity.system.home";
 const std::string FLAG_HOME_INTENT_FROM_SYSTEM = "flag.home.intent.from.system";
 
 // the ability file folder name.
