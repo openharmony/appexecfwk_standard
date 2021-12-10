@@ -119,7 +119,9 @@ TestApplicationPreRunningRecord AmsAppServiceFlowModuleTest::TestCreateApplicati
 
     appInfo.name = appName;
     appInfo.bundleName = appName;  // specify process condition
+    appInfo.uid = 0;
     abilityInfo.name = abilityName;
+    abilityInfo.applicationInfo.uid = 0;
     sptr<IRemoteObject> token = new (std::nothrow) MockAbilityToken();
     auto appRecord = serviceInner_->GetOrCreateAppRunningRecord(token,
         std::make_shared<ApplicationInfo>(appInfo),
@@ -129,6 +131,7 @@ TestApplicationPreRunningRecord AmsAppServiceFlowModuleTest::TestCreateApplicati
         result);
 
     EXPECT_TRUE(appRecord);
+    appRecord->SetUid(0);
     appRecord->SetEventHandler(handler_);
 
     if (!result.appExists && appRecord) {
@@ -150,7 +153,7 @@ TestApplicationPreRunningRecord AmsAppServiceFlowModuleTest::TestCreateApplicati
  * FunctionPoints: BackKey
  * CaseDescription: when two abilities on foreground, previous ability in another app, simulate press back key.
  */
-HWTEST_F(AmsAppServiceFlowModuleTest, ServiceFlow_BackKey_001, TestSize.Level0)
+HWTEST_F(AmsAppServiceFlowModuleTest, ServiceFlow_BackKey_001, TestSize.Level1)
 {
     APP_LOGI("AmsAppServiceFlowModuleTest ServiceFlow_BackKey_001 start");
     TestApplicationPreRunningRecord testAppA = TestCreateApplicationRecordAndSetState(
@@ -193,7 +196,7 @@ HWTEST_F(AmsAppServiceFlowModuleTest, ServiceFlow_BackKey_001, TestSize.Level0)
  * FunctionPoints: BackKey
  * CaseDescription: when two abilities on foreground, previous ability in another app, simulate press back key twice.
  */
-HWTEST_F(AmsAppServiceFlowModuleTest, ServiceFlow_BackKey_002, TestSize.Level0)
+HWTEST_F(AmsAppServiceFlowModuleTest, ServiceFlow_BackKey_002, TestSize.Level1)
 {
     APP_LOGI("AmsAppServiceFlowModuleTest ServiceFlow_BackKey_002 start");
     TestApplicationPreRunningRecord testAppA = TestCreateApplicationRecordAndSetState(
@@ -236,7 +239,7 @@ HWTEST_F(AmsAppServiceFlowModuleTest, ServiceFlow_BackKey_002, TestSize.Level0)
  * FunctionPoints: BackKey
  * CaseDescription: app have three abilities , previous ability in same app, simulate press back key.
  */
-HWTEST_F(AmsAppServiceFlowModuleTest, ServiceFlow_BackKey_003, TestSize.Level0)
+HWTEST_F(AmsAppServiceFlowModuleTest, ServiceFlow_BackKey_003, TestSize.Level1)
 {
     APP_LOGI("AmsAppServiceFlowModuleTest ServiceFlow_BackKey_003 start");
     TestApplicationPreRunningRecord testAppA = TestCreateApplicationRecordAndSetState(
@@ -268,7 +271,7 @@ HWTEST_F(AmsAppServiceFlowModuleTest, ServiceFlow_BackKey_003, TestSize.Level0)
  * FunctionPoints: BackKey
  * CaseDescription:app with two abilities on foreground, previous ability in another app, simulate press back and exit.
  */
-HWTEST_F(AmsAppServiceFlowModuleTest, ServiceFlow_BackKey_004, TestSize.Level0)
+HWTEST_F(AmsAppServiceFlowModuleTest, ServiceFlow_BackKey_004, TestSize.Level1)
 {
     APP_LOGI("AmsAppServiceFlowModuleTest ServiceFlow_BackKey_004 start");
     TestApplicationPreRunningRecord testAppA = TestCreateApplicationRecordAndSetState(
@@ -326,7 +329,7 @@ HWTEST_F(AmsAppServiceFlowModuleTest, ServiceFlow_BackKey_004, TestSize.Level0)
  * CaseDescription: Three applications,only one on foreground, previous ability in another app,
                     simulate press back key twice.
  */
-HWTEST_F(AmsAppServiceFlowModuleTest, ServiceFlow_BackKey_005, TestSize.Level0)
+HWTEST_F(AmsAppServiceFlowModuleTest, ServiceFlow_BackKey_005, TestSize.Level1)
 {
     APP_LOGI("AmsAppServiceFlowModuleTest ServiceFlow_BackKey_005 start");
     TestApplicationPreRunningRecord testAppA = TestCreateApplicationRecordAndSetState(
@@ -378,7 +381,7 @@ HWTEST_F(AmsAppServiceFlowModuleTest, ServiceFlow_BackKey_005, TestSize.Level0)
  * FunctionPoints: ScreenOff
  * CaseDescription: when two applications with two abilities on foreground, simulate press screenoff key.
  */
-HWTEST_F(AmsAppServiceFlowModuleTest, ServiceFlow_ScreenOff_001, TestSize.Level0)
+HWTEST_F(AmsAppServiceFlowModuleTest, ServiceFlow_ScreenOff_001, TestSize.Level1)
 {
     APP_LOGI("AmsAppServiceFlowModuleTest ServiceFlow_ScreenOff_001 start");
     TestApplicationPreRunningRecord testAppA = TestCreateApplicationRecordAndSetState(
@@ -418,7 +421,7 @@ HWTEST_F(AmsAppServiceFlowModuleTest, ServiceFlow_ScreenOff_001, TestSize.Level0
  * FunctionPoints: ScreenOff
  * CaseDescription: when two applications with two abilities on foreground, simulate press screenoff key.
  */
-HWTEST_F(AmsAppServiceFlowModuleTest, ServiceFlow_ScreenOff_002, TestSize.Level0)
+HWTEST_F(AmsAppServiceFlowModuleTest, ServiceFlow_ScreenOff_002, TestSize.Level1)
 {
     APP_LOGI("AmsAppServiceFlowModuleTest ServiceFlow_ScreenOff_002 start");
     TestApplicationPreRunningRecord testAppA = TestCreateApplicationRecordAndSetState(
@@ -461,7 +464,7 @@ HWTEST_F(AmsAppServiceFlowModuleTest, ServiceFlow_ScreenOff_002, TestSize.Level0
  * FunctionPoints: ScreenOff
  * CaseDescription: when two applications with two abilities on foreground, simulate press screenoff key.
  */
-HWTEST_F(AmsAppServiceFlowModuleTest, ServiceFlow_ScreenOff_003, TestSize.Level0)
+HWTEST_F(AmsAppServiceFlowModuleTest, ServiceFlow_ScreenOff_003, TestSize.Level1)
 {
     APP_LOGI("AmsAppServiceFlowModuleTest ServiceFlow_ScreenOff_003 start");
     TestApplicationPreRunningRecord testAppA = TestCreateApplicationRecordAndSetState(
@@ -507,7 +510,7 @@ HWTEST_F(AmsAppServiceFlowModuleTest, ServiceFlow_ScreenOff_003, TestSize.Level0
  * FunctionPoints: ScreenOff
  * CaseDescription: when two applications with two abilities on foreground, simulate press screenoff key.
  */
-HWTEST_F(AmsAppServiceFlowModuleTest, ServiceFlow_ScreenOff_004, TestSize.Level0)
+HWTEST_F(AmsAppServiceFlowModuleTest, ServiceFlow_ScreenOff_004, TestSize.Level1)
 {
     APP_LOGI("AmsAppServiceFlowModuleTest ServiceFlow_ScreenOff_004 start");
     TestApplicationPreRunningRecord testAppA = TestCreateApplicationRecordAndSetState(
@@ -554,7 +557,7 @@ HWTEST_F(AmsAppServiceFlowModuleTest, ServiceFlow_ScreenOff_004, TestSize.Level0
  * FunctionPoints: ScreenOn
  * CaseDescription: when an application with three abilities on foreground, simulate press screenon key.
  */
-HWTEST_F(AmsAppServiceFlowModuleTest, ServiceFlow_ScreenOn_001, TestSize.Level0)
+HWTEST_F(AmsAppServiceFlowModuleTest, ServiceFlow_ScreenOn_001, TestSize.Level1)
 {
     APP_LOGI("AmsAppServiceFlowModuleTest ServiceFlow_ScreenOn_001 start");
     TestApplicationPreRunningRecord testAppA = TestCreateApplicationRecordAndSetState(
@@ -588,7 +591,7 @@ HWTEST_F(AmsAppServiceFlowModuleTest, ServiceFlow_ScreenOn_001, TestSize.Level0)
  * FunctionPoints: ScreenOn
  * CaseDescription: when an application with three abilities on foreground, simulate press screenon key.
  */
-HWTEST_F(AmsAppServiceFlowModuleTest, ServiceFlow_ScreenOn_002, TestSize.Level0)
+HWTEST_F(AmsAppServiceFlowModuleTest, ServiceFlow_ScreenOn_002, TestSize.Level1)
 {
     APP_LOGI("AmsAppServiceFlowModuleTest ServiceFlow_ScreenOn_002 start");
     TestApplicationPreRunningRecord testAppA = TestCreateApplicationRecordAndSetState(
@@ -624,7 +627,7 @@ HWTEST_F(AmsAppServiceFlowModuleTest, ServiceFlow_ScreenOn_002, TestSize.Level0)
  * FunctionPoints: ScreenOn
  * CaseDescription: when an application with two abilities on foreground, simulate press screenon key.
  */
-HWTEST_F(AmsAppServiceFlowModuleTest, ServiceFlow_ScreenOn_003, TestSize.Level0)
+HWTEST_F(AmsAppServiceFlowModuleTest, ServiceFlow_ScreenOn_003, TestSize.Level1)
 {
     APP_LOGI("AmsAppServiceFlowModuleTest ServiceFlow_ScreenOn_003 start");
     TestApplicationPreRunningRecord testAppA = TestCreateApplicationRecordAndSetState(
@@ -667,7 +670,7 @@ HWTEST_F(AmsAppServiceFlowModuleTest, ServiceFlow_ScreenOn_003, TestSize.Level0)
  * FunctionPoints: ScreenOn
  * CaseDescription: an application with two abilities on foreground, simulate press screenon and screenoff 1000 times.
  */
-HWTEST_F(AmsAppServiceFlowModuleTest, ServiceFlow_ScreenOnAndOff_001, TestSize.Level0)
+HWTEST_F(AmsAppServiceFlowModuleTest, ServiceFlow_ScreenOnAndOff_001, TestSize.Level1)
 {
     APP_LOGI("AmsAppServiceFlowModuleTest ServiceFlow_ScreenOnAndOff_001 start");
     TestApplicationPreRunningRecord testAppA = TestCreateApplicationRecordAndSetState(

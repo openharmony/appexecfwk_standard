@@ -67,8 +67,9 @@ void MainAbility::OnConfigurationUpdated(const Configuration &configuration)
 {
     APP_LOGI("MainAbility::OnConfigurationUpdated====<");
     Ability::OnConfigurationUpdated(configuration);
-    callbackUpdated += "Updated";  // UpdatedUpdated
+    callbackUpdated += "Updated";
     TestUtils::PublishEvent(g_EVENT_RESP_MAIN_LIFECYCLE, MAIN_ABILITY_CODE, callbackUpdated);
+    callbackUpdated = "";
 }
 
 void MainAbility::OnInactive()

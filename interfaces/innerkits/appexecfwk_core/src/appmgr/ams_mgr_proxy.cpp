@@ -59,7 +59,7 @@ void AmsMgrProxy::LoadAbility(const sptr<IRemoteObject> &token, const sptr<IRemo
         APP_LOGE("Remote() is NULL");
         return;
     }
-    int32_t ret = remote->SendRequest(static_cast<uint32_t>(IAmsMgr::Message::AMS_LOAD_ABILITY), data, reply, option);
+    int32_t ret = remote->SendRequest(static_cast<uint32_t>(IAmsMgr::Message::LOAD_ABILITY), data, reply, option);
     if (ret != NO_ERROR) {
         APP_LOGW("SendRequest is failed, error code: %{public}d", ret);
     }
@@ -82,7 +82,7 @@ void AmsMgrProxy::TerminateAbility(const sptr<IRemoteObject> &token)
         return;
     }
     int32_t ret =
-        remote->SendRequest(static_cast<uint32_t>(IAmsMgr::Message::AMS_TERMINATE_ABILITY), data, reply, option);
+        remote->SendRequest(static_cast<uint32_t>(IAmsMgr::Message::TERMINATE_ABILITY), data, reply, option);
     if (ret != NO_ERROR) {
         APP_LOGW("SendRequest is failed, error code: %{public}d", ret);
     }
@@ -106,7 +106,7 @@ void AmsMgrProxy::UpdateAbilityState(const sptr<IRemoteObject> &token, const Abi
         return;
     }
     int32_t ret =
-        remote->SendRequest(static_cast<uint32_t>(IAmsMgr::Message::AMS_UPDATE_ABILITY_STATE), data, reply, option);
+        remote->SendRequest(static_cast<uint32_t>(IAmsMgr::Message::UPDATE_ABILITY_STATE), data, reply, option);
     if (ret != NO_ERROR) {
         APP_LOGW("SendRequest is failed, error code: %{public}d", ret);
     }
@@ -134,7 +134,7 @@ void AmsMgrProxy::RegisterAppStateCallback(const sptr<IAppStateCallback> &callba
         return;
     }
     int32_t ret = remote->SendRequest(
-        static_cast<uint32_t>(IAmsMgr::Message::AMS_REGISTER_APP_STATE_CALLBACK), data, reply, option);
+        static_cast<uint32_t>(IAmsMgr::Message::REGISTER_APP_STATE_CALLBACK), data, reply, option);
     if (ret != NO_ERROR) {
         APP_LOGW("SendRequest is failed, error code: %{public}d", ret);
     }
@@ -155,7 +155,7 @@ void AmsMgrProxy::Reset()
         APP_LOGE("Remote() is NULL");
         return;
     }
-    int32_t ret = remote->SendRequest(static_cast<uint32_t>(IAmsMgr::Message::AMS_RESET), data, reply, option);
+    int32_t ret = remote->SendRequest(static_cast<uint32_t>(IAmsMgr::Message::RESET), data, reply, option);
     if (ret != NO_ERROR) {
         APP_LOGW("SendRequest is failed, error code: %{public}d", ret);
     }
@@ -183,7 +183,7 @@ void AmsMgrProxy::AbilityBehaviorAnalysis(const sptr<IRemoteObject> &token, cons
         return;
     }
     int32_t ret =
-        remote->SendRequest(static_cast<uint32_t>(IAmsMgr::Message::AMS_TERMINATE_ABILITY), data, reply, option);
+        remote->SendRequest(static_cast<uint32_t>(IAmsMgr::Message::TERMINATE_ABILITY), data, reply, option);
     if (ret != NO_ERROR) {
         APP_LOGW("SendRequest is failed, error code: %{public}d", ret);
     }
@@ -206,7 +206,7 @@ void AmsMgrProxy::KillProcessByAbilityToken(const sptr<IRemoteObject> &token)
         return;
     }
     int32_t ret =
-        remote->SendRequest(static_cast<uint32_t>(IAmsMgr::Message::AMS_TERMINATE_ABILITY), data, reply, option);
+        remote->SendRequest(static_cast<uint32_t>(IAmsMgr::Message::TERMINATE_ABILITY), data, reply, option);
     if (ret != NO_ERROR) {
         APP_LOGW("SendRequest is failed, error code: %{public}d", ret);
     }
@@ -232,7 +232,38 @@ int32_t AmsMgrProxy::KillApplication(const std::string &bundleName)
         return ERR_FLATTEN_OBJECT;
     }
     int32_t ret =
-        remote->SendRequest(static_cast<uint32_t>(IAmsMgr::Message::AMS_KILL_APPLICATION), data, reply, option);
+        remote->SendRequest(static_cast<uint32_t>(IAmsMgr::Message::KILL_APPLICATION), data, reply, option);
+    if (ret != NO_ERROR) {
+        APP_LOGW("SendRequest is failed, error code: %{public}d", ret);
+        return ret;
+    }
+    return reply.ReadInt32();
+}
+
+int32_t AmsMgrProxy::KillApplicationByUid(const std::string &bundleName, const int uid)
+{
+    APP_LOGD("start");
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option(MessageOption::TF_SYNC);
+    if (!WriteInterfaceToken(data)) {
+        return ERR_INVALID_DATA;
+    }
+    sptr<IRemoteObject> remote = Remote();
+    if (remote == nullptr) {
+        APP_LOGE("Remote() is NULL");
+        return ERR_NULL_OBJECT;
+    }
+    if (!data.WriteString(bundleName)) {
+        APP_LOGE("parcel WriteString failed");
+        return ERR_FLATTEN_OBJECT;
+    }
+    if (!data.WriteInt32(uid)) {
+        APP_LOGE("uid write failed.");
+        return ERR_FLATTEN_OBJECT;
+    }
+    int32_t ret =
+        remote->SendRequest(static_cast<uint32_t>(IAmsMgr::Message::KILL_APPLICATION_BYUID), data, reply, option);
     if (ret != NO_ERROR) {
         APP_LOGW("SendRequest is failed, error code: %{public}d", ret);
         return ret;
@@ -256,7 +287,7 @@ void AmsMgrProxy::AbilityAttachTimeOut(const sptr<IRemoteObject> &token)
         return;
     }
     int32_t ret =
-        remote->SendRequest(static_cast<uint32_t>(IAmsMgr::Message::AMS_ABILITY_ATTACH_TIMEOUT), data, reply, option);
+        remote->SendRequest(static_cast<uint32_t>(IAmsMgr::Message::ABILITY_ATTACH_TIMEOUT), data, reply, option);
     if (ret != NO_ERROR) {
         APP_LOGW("SendRequest is failed, error code: %{public}d", ret);
     }
@@ -279,7 +310,7 @@ void AmsMgrProxy::PrepareTerminate(const sptr<IRemoteObject> &token)
         return;
     }
     int32_t ret =
-        remote->SendRequest(static_cast<uint32_t>(IAmsMgr::Message::AMS_PREPARE_TERMINATE_ABILITY),
+        remote->SendRequest(static_cast<uint32_t>(IAmsMgr::Message::PREPARE_TERMINATE_ABILITY),
             data, reply, option);
     if (ret != NO_ERROR) {
         APP_LOGW("SendRequest is failed, error code: %{public}d", ret);
@@ -306,7 +337,7 @@ int AmsMgrProxy::CompelVerifyPermission(const std::string &permission, int pid, 
         return ERR_NULL_OBJECT;
     }
     auto ret =
-        remote->SendRequest(static_cast<uint32_t>(IAmsMgr::Message::AMS_COMPEL_VERIFY_PERMISSION), data, reply, option);
+        remote->SendRequest(static_cast<uint32_t>(IAmsMgr::Message::COMPEL_VERIFY_PERMISSION), data, reply, option);
     if (ret != NO_ERROR) {
         APP_LOGW("SendRequest is failed, error code: %{public}d", ret);
         return ERR_INVALID_DATA;

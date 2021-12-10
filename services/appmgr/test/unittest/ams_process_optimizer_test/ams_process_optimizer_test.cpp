@@ -61,7 +61,7 @@ void AmsProcessOptimizerTest::TearDown()
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Verify the function Init can check the invalid suspendTimeout
  */
-HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_Init_001, TestSize.Level0)
+HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_Init_001, TestSize.Level1)
 {
     APP_LOGD("AmsProcessOptimizerTest_Init_001 start.");
 
@@ -82,7 +82,7 @@ HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_Init_001, TestSize.Lev
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Verify the function Init can check the invalid eventHandler_
  */
-HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_Init_002, TestSize.Level0)
+HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_Init_002, TestSize.Level1)
 {
     APP_LOGD("AmsProcessOptimizerTest_Init_002 start.");
 
@@ -105,7 +105,7 @@ HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_Init_002, TestSize.Lev
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Verify that the function Init can be executed normally and initialize
  */
-HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_Init_003, TestSize.Level0)
+HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_Init_003, TestSize.Level1)
 {
     APP_LOGD("AmsProcessOptimizerTest_Init_003 start.");
 
@@ -125,7 +125,7 @@ HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_Init_003, TestSize.Lev
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Verify the function OnAppAdded can check the invalid app
  */
-HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_OnAppAdded_001, TestSize.Level0)
+HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_OnAppAdded_001, TestSize.Level1)
 {
     APP_LOGD("AmsProcessOptimizerTest_OnAppAdded_001 start.");
 
@@ -146,7 +146,7 @@ HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_OnAppAdded_001, TestSi
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Verify that the function OnAppAdded adds app to appLru_
  */
-HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_OnAppAdded_002, TestSize.Level0)
+HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_OnAppAdded_002, TestSize.Level1)
 {
     APP_LOGD("AmsProcessOptimizerTest_OnAppAdded_002 start.");
 
@@ -172,7 +172,7 @@ HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_OnAppAdded_002, TestSi
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Verify the function OnAppRemoved can check the invalid app
  */
-HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_OnAppRemoved_001, TestSize.Level0)
+HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_OnAppRemoved_001, TestSize.Level1)
 {
     APP_LOGD("AmsProcessOptimizerTest_OnAppRemoved_001 start.");
 
@@ -199,7 +199,7 @@ HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_OnAppRemoved_001, Test
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Verify whether the function OnAppRemoved removes the app in appLru_
  */
-HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_OnAppRemoved_002, TestSize.Level0)
+HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_OnAppRemoved_002, TestSize.Level1)
 {
     APP_LOGD("AmsProcessOptimizerTest_OnAppRemoved_002 start.");
 
@@ -226,7 +226,7 @@ HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_OnAppRemoved_002, Test
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Verify whether the function OnAppStateChanged moves app2 in appLru_ to the head
  */
-HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_OnAppStateChanged_001, TestSize.Level0)
+HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_OnAppStateChanged_001, TestSize.Level1)
 {
     APP_LOGD("AmsProcessOptimizerTest_OnAppStateChanged_001 start.");
 
@@ -262,7 +262,7 @@ HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_OnAppStateChanged_001,
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Verify the function SetAppOomAdj can check the invalid app
  */
-HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_SetAppOomAdj_001, TestSize.Level0)
+HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_SetAppOomAdj_001, TestSize.Level1)
 {
     APP_LOGD("AmsProcessOptimizerTest_SetAppOomAdj_001 start.");
 
@@ -282,7 +282,7 @@ HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_SetAppOomAdj_001, Test
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Verify the function SetAppOomAdj can check the invalid oomAdj
  */
-HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_SetAppOomAdj_002, TestSize.Level0)
+HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_SetAppOomAdj_002, TestSize.Level1)
 {
     APP_LOGD("AmsProcessOptimizerTest_SetAppOomAdj_002 start.");
 
@@ -307,7 +307,7 @@ HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_SetAppOomAdj_002, Test
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Verify the function SetAppOomAdj can check the invalid lmksClient_
  */
-HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_SetAppOomAdj_003, TestSize.Level0)
+HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_SetAppOomAdj_003, TestSize.Level1)
 {
     APP_LOGD("AmsProcessOptimizerTest_SetAppOomAdj_003 start.");
 
@@ -331,7 +331,7 @@ HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_SetAppOomAdj_003, Test
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Oom adj has no change in the verification function SetAppOomAdj
  */
-HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_SetAppOomAdj_004, TestSize.Level0)
+HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_SetAppOomAdj_004, TestSize.Level1)
 {
     APP_LOGD("AmsProcessOptimizerTest_SetAppOomAdj_004 start.");
 
@@ -359,7 +359,7 @@ HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_SetAppOomAdj_004, Test
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Verify that the function SetAppOomAdj is executed normally
  */
-HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_SetAppOomAdj_005, TestSize.Level0)
+HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_SetAppOomAdj_005, TestSize.Level1)
 {
     APP_LOGD("AmsProcessOptimizerTest_SetAppOomAdj_005 start.");
 
@@ -384,7 +384,7 @@ HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_SetAppOomAdj_005, Test
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Verify the function SetAppSchedPolicy can check the invalid app
  */
-HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_SetAppSchedPolicy_001, TestSize.Level0)
+HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_SetAppSchedPolicy_001, TestSize.Level1)
 {
     APP_LOGD("AmsProcessOptimizerTest_SetAppSchedPolicy_001 start.");
 
@@ -409,7 +409,7 @@ HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_SetAppSchedPolicy_001,
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Check whether the incoming SchedPolicy is the same as before
  */
-HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_SetAppSchedPolicy_002, TestSize.Level0)
+HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_SetAppSchedPolicy_002, TestSize.Level1)
 {
     APP_LOGD("AmsProcessOptimizerTest_SetAppSchedPolicy_002 start.");
 
@@ -435,7 +435,7 @@ HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_SetAppSchedPolicy_002,
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Check whether the incoming SchedPolicy is equal to CgroupManager::SCHED_POLICY_FREEZED
  */
-HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_SetAppSchedPolicy_003, TestSize.Level0)
+HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_SetAppSchedPolicy_003, TestSize.Level1)
 {
     APP_LOGD("AmsProcessOptimizerTest_SetAppSchedPolicy_003 start.");
 
@@ -459,7 +459,7 @@ HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_SetAppSchedPolicy_003,
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Check whether the old SchedPolicy is equal to CgroupManager::SCHED_POLICY_FREEZED
  */
-HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_SetAppSchedPolicy_004, TestSize.Level0)
+HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_SetAppSchedPolicy_004, TestSize.Level1)
 {
     APP_LOGD("AmsProcessOptimizerTest_SetAppSchedPolicy_004 start.");
 
@@ -486,7 +486,7 @@ HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_SetAppSchedPolicy_004,
  * CaseDescription: Check whether the OnLowMemoryAlert function will remove the app in appLru_ when the pid is less than
  * zero
  */
-HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_OnLowMemoryAlert_001, TestSize.Level0)
+HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_OnLowMemoryAlert_001, TestSize.Level1)
 {
     APP_LOGD("AmsProcessOptimizerTest_OnLowMemoryAlert_001 start.");
 
@@ -515,7 +515,7 @@ HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_OnLowMemoryAlert_001, 
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Verify the function UpdateAppOomAdj can check the invalid app
  */
-HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_UpdateAppOomAdj_001, TestSize.Level0)
+HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_UpdateAppOomAdj_001, TestSize.Level1)
 {
     APP_LOGD("AmsProcessOptimizerTest_UpdateAppOomAdj_001 start.");
 
@@ -534,7 +534,7 @@ HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_UpdateAppOomAdj_001, T
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Verify the function UpdateAppOomAdj can check the invalid state
  */
-HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_UpdateAppOomAdj_002, TestSize.Level0)
+HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_UpdateAppOomAdj_002, TestSize.Level1)
 {
     APP_LOGD("AmsProcessOptimizerTest_UpdateAppOomAdj_002 start.");
 
@@ -561,7 +561,7 @@ HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_UpdateAppOomAdj_002, T
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Verify the function UpdateAppOomAdj can check the invalid state
  */
-HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_UpdateAppOomAdj_003, TestSize.Level0)
+HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_UpdateAppOomAdj_003, TestSize.Level1)
 {
     APP_LOGD("AmsProcessOptimizerTest_UpdateAppOomAdj_003 start.");
 
@@ -588,7 +588,7 @@ HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_UpdateAppOomAdj_003, T
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Verify the function UpdateAppOomAdj can check the invalid state
  */
-HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_UpdateAppOomAdj_004, TestSize.Level0)
+HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_UpdateAppOomAdj_004, TestSize.Level1)
 {
     APP_LOGD("AmsProcessOptimizerTest_UpdateAppOomAdj_004 start.");
 
@@ -615,7 +615,7 @@ HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_UpdateAppOomAdj_004, T
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Check the execution of the UpdateAppOomAdj function when the state is normal
  */
-HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_UpdateAppOomAdj_005, TestSize.Level0)
+HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_UpdateAppOomAdj_005, TestSize.Level1)
 {
     APP_LOGD("AmsProcessOptimizerTest_UpdateAppOomAdj_005 start.");
 
@@ -644,7 +644,7 @@ HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_UpdateAppOomAdj_005, T
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Check the execution of the UpdateAppOomAdj function when the state is normal
  */
-HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_UpdateAppOomAdj_006, TestSize.Level0)
+HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_UpdateAppOomAdj_006, TestSize.Level1)
 {
     APP_LOGD("AmsProcessOptimizerTest_UpdateAppOomAdj_006 start.");
 
@@ -673,7 +673,7 @@ HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_UpdateAppOomAdj_006, T
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Verify the function UpdateAppSchedPolicy can check the invalid app
  */
-HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_UpdateAppSchedPolicy_001, TestSize.Level0)
+HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_UpdateAppSchedPolicy_001, TestSize.Level1)
 {
     APP_LOGD("AmsProcessOptimizerTest_UpdateAppSchedPolicy_001 start.");
 
@@ -693,7 +693,7 @@ HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_UpdateAppSchedPolicy_0
  * CaseDescription: Check whether the case ApplicationState::APP_STATE_CREATE in the switch case can be executed
  * correctly
  */
-HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_UpdateAppSchedPolicy_002, TestSize.Level0)
+HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_UpdateAppSchedPolicy_002, TestSize.Level1)
 {
     APP_LOGD("AmsProcessOptimizerTest_UpdateAppSchedPolicy_002 start.");
 
@@ -719,7 +719,7 @@ HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_UpdateAppSchedPolicy_0
  * CaseDescription: Check whether the case ApplicationState::APP_STATE_READY in the switch case can be executed
  * correctly
  */
-HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_UpdateAppSchedPolicy_003, TestSize.Level0)
+HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_UpdateAppSchedPolicy_003, TestSize.Level1)
 {
     APP_LOGD("AmsProcessOptimizerTest_UpdateAppSchedPolicy_003 start.");
 
@@ -745,7 +745,7 @@ HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_UpdateAppSchedPolicy_0
  * CaseDescription: Check whether the case ApplicationState::APP_STATE_FOREGROUND in the switch case can be executed
  * correctly
  */
-HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_UpdateAppSchedPolicy_004, TestSize.Level0)
+HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_UpdateAppSchedPolicy_004, TestSize.Level1)
 {
     APP_LOGD("AmsProcessOptimizerTest_UpdateAppSchedPolicy_004 start.");
 
@@ -771,7 +771,7 @@ HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_UpdateAppSchedPolicy_0
  * CaseDescription: Check whether the case ApplicationState::APP_STATE_BACKGROUND in the switch case can be executed
  * correctly
  */
-HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_UpdateAppSchedPolicy_005, TestSize.Level0)
+HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_UpdateAppSchedPolicy_005, TestSize.Level1)
 {
     APP_LOGD("AmsProcessOptimizerTest_UpdateAppSchedPolicy_005 start.");
 
@@ -797,7 +797,7 @@ HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_UpdateAppSchedPolicy_0
  * CaseDescription: Check whether the case ApplicationState::APP_STATE_SUSPENDED in the switch case can be executed
  * correctly
  */
-HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_UpdateAppSchedPolicy_006, TestSize.Level0)
+HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_UpdateAppSchedPolicy_006, TestSize.Level1)
 {
     APP_LOGD("AmsProcessOptimizerTest_UpdateAppSchedPolicy_006 start.");
 
@@ -822,7 +822,7 @@ HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_UpdateAppSchedPolicy_0
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Check whether the default in switch case can be executed correctly
  */
-HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_UpdateAppSchedPolicy_007, TestSize.Level0)
+HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_UpdateAppSchedPolicy_007, TestSize.Level1)
 {
     APP_LOGD("AmsProcessOptimizerTest_UpdateAppSchedPolicy_007 start.");
 
@@ -847,7 +847,7 @@ HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_UpdateAppSchedPolicy_0
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Verify that the function StartAppSuspendTimer can work normally.
  */
-HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_StartAppSuspendTimer_001, TestSize.Level0)
+HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_StartAppSuspendTimer_001, TestSize.Level1)
 {
     APP_LOGD("AmsProcessOptimizerTest_StartAppSuspendTimer_001 start.");
 
@@ -879,7 +879,7 @@ HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_StartAppSuspendTimer_0
  * EnvConditions: Mobile that can run ohos test framework.
  * CaseDescription: Verify that the function StopAppSuspendTimer can work normally.
  */
-HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_StopAppSuspendTimer_001, TestSize.Level0)
+HWTEST_F(AmsProcessOptimizerTest, AmsProcessOptimizerTest_StopAppSuspendTimer_001, TestSize.Level1)
 {
     APP_LOGD("AmsProcessOptimizerTest_StopAppSuspendTimer_001 start.");
 

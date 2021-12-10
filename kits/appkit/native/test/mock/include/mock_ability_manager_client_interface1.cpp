@@ -145,7 +145,7 @@ ErrCode AbilityManagerClient::GetAllStackInfo(StackInfo &stackInfo)
     return ERR_OK;
 }
 
-ErrCode AbilityManagerClient::StopServiceAbility(const Want &want)
+ErrCode AbilityManagerClient::StopServiceAbility(const Want &want, const sptr<IRemoteObject> &callerToken)
 {
     return ERR_OK;
 }

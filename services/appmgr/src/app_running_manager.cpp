@@ -58,7 +58,7 @@ std::shared_ptr<AppRunningRecord> AppRunningManager::GetOrCreateAppRunningRecord
         return nullptr;
     }
 
-    auto record = GetAppRunningRecordByProcessName(appInfo->name, processName);
+    auto record = GetAppRunningRecordByProcessName(appInfo->name, processName, abilityInfo->applicationInfo.uid);
     if (!record) {
         APP_LOGI("no app record, create");
         auto recordId = AppRecordId::Create();
@@ -88,13 +88,13 @@ std::shared_ptr<AppRunningRecord> AppRunningManager::GetAppRunningRecordByAppNam
 }
 
 std::shared_ptr<AppRunningRecord> AppRunningManager::GetAppRunningRecordByProcessName(
-    const std::string &appName, const std::string &processName)
+    const std::string &appName, const std::string &processName, const int uid)
 {
     std::lock_guard<std::recursive_mutex> guard(lock_);
     auto iter = std::find_if(
-        appRunningRecordMap_.begin(), appRunningRecordMap_.end(), [&appName, &processName](const auto &pair) {
+        appRunningRecordMap_.begin(), appRunningRecordMap_.end(), [&appName, &processName, &uid](const auto &pair) {
             return ((pair.second->GetName() == appName) && (pair.second->GetProcessName() == processName) &&
-                    !(pair.second->IsTerminating()));
+                    (pair.second->GetUid() == uid) && !(pair.second->IsTerminating()));
         });
     return ((iter == appRunningRecordMap_.end()) ? nullptr : iter->second);
 }
@@ -126,7 +126,24 @@ bool AppRunningManager::GetPidsByBundleName(const std::string &bundleName, std::
     std::lock_guard<std::recursive_mutex> guard(lock_);
     for (const auto &item : appRunningRecordMap_) {
         const auto &appRecord = item.second;
-        if (appRecord && appRecord->GetBundleName() == bundleName) {
+        if (appRecord && appRecord->GetBundleName() == bundleName && appRecord->GetCloneInfo() == false) {
+            pid_t pid = appRecord->GetPriorityObject()->GetPid();
+            if (pid > 0) {
+                pids.push_back(pid);
+                appRecord->ScheduleProcessSecurityExit();
+            }
+        }
+    }
+
+    return (pids.empty() ? false : true);
+}
+
+bool AppRunningManager::GetPidsByBundleNameByUid(const std::string &bundleName, const int uid, std::list<pid_t> &pids)
+{
+    std::lock_guard<std::recursive_mutex> guard(lock_);
+    for (const auto &item : appRunningRecordMap_) {
+        const auto &appRecord = item.second;
+        if (appRecord && appRecord->GetBundleName() == bundleName && appRecord->GetUid() == uid) {
             pid_t pid = appRecord->GetPriorityObject()->GetPid();
             if (pid > 0) {
                 pids.push_back(pid);

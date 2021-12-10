@@ -27,6 +27,11 @@
 
 namespace OHOS {
 namespace AppExecFwk {
+namespace {
+const std::string COM_OHOS_HELLO = "com.ohos.test.helloworld";
+const int32_t APPLICATION_NUMHELLO = 100;
+const std::string COM_OHOS_SPECIAL = "com.ohos.test.special";
+}  // namespace
 class BundleMgrProxy : public IRemoteProxy<IBundleMgr> {
 public:
     explicit BundleMgrProxy(const sptr<IRemoteObject> &impl) : IRemoteProxy<IBundleMgr>(impl)
@@ -46,6 +51,11 @@ public:
     MOCK_METHOD2(RegisterPermissionsChanged,
         bool(const std::vector<int> &uids, const sptr<OnPermissionChangedCallback> &callback));
     MOCK_METHOD1(UnregisterPermissionsChanged, bool(const sptr<OnPermissionChangedCallback> &callback));
+    MOCK_METHOD2(QueryAbilityInfosByUri, bool(const std::string &abilityUri, std::vector<AbilityInfo> &abilityInfos));
+    MOCK_METHOD2(RemoveClonedBundle, bool(const std::string &bundleName, const int32_t uid));
+    MOCK_METHOD1(BundleClone, bool(const std::string &bundleName));
+    MOCK_METHOD3(GetBundleGidsByUid, bool(const std::string &bundleName, const int &uid, std::vector<int> &gids));
+    MOCK_METHOD1(CheckBundleNameInAllowList, bool(const std::string &bundleName));
     bool QueryAbilityInfo(const AAFwk::Want &want, AbilityInfo &abilityInfo) override;
     bool QueryAbilityInfoByUri(const std::string &uri, AbilityInfo &abilityInfo) override;
     std::string GetAppType(const std::string &bundleName) override;
@@ -151,7 +161,7 @@ public:
     {
         return true;
     };
-    virtual bool CleanBundleDataFiles(const std::string &bundleName) override
+    virtual bool CleanBundleDataFiles(const std::string &bundleName, const int userId) override
     {
         return true;
     };
@@ -181,10 +191,16 @@ public:
     {
         return true;
     }
-    virtual bool NotifyActivityLifeStatus(
-        const std::string &bundleName, const std::string &abilityName, const int64_t launchTime) override
+    virtual bool NotifyActivityLifeStatus(const std::string &bundleName,
+        const std::string &abilityName, const int64_t launchTime, const int uid) override
     {
         return true;
+    }
+
+    virtual int CheckPermissionByUid(
+        const std::string &bundleName, const std::string &permission, const int userId) override
+    {
+        return 0;
     }
 };
 
@@ -200,9 +216,9 @@ public:
     MOCK_METHOD2(GetUidByBundleName, int(const std::string &bundleName, const int userId));
     MOCK_METHOD2(GetAppIdByBundleName, std::string(const std::string &bundleName, const int userId));
     MOCK_METHOD2(CheckPermission, int(const std::string &bundleName, const std::string &permission));
-    MOCK_METHOD1(CleanBundleDataFiles, bool(const std::string &bundleName));
-    MOCK_METHOD3(
-        CanRequestPermission, bool(const std::string &bundleName, const std::string &permissionName, const int userId));
+    MOCK_METHOD2(CleanBundleDataFiles, bool(const std::string &bundleName, const int userId));
+    MOCK_METHOD3(CanRequestPermission,
+        bool(const std::string &bundleName, const std::string &permissionName, const int userId));
     MOCK_METHOD3(RequestPermissionFromUser,
         bool(const std::string &bundleName, const std::string &permission, const int userId));
     MOCK_METHOD2(GetNameForUid, bool(const int uid, std::string &name));
@@ -214,6 +230,12 @@ public:
     MOCK_METHOD2(RegisterPermissionsChanged,
         bool(const std::vector<int> &uids, const sptr<OnPermissionChangedCallback> &callback));
     MOCK_METHOD1(UnregisterPermissionsChanged, bool(const sptr<OnPermissionChangedCallback> &callback));
+    MOCK_METHOD2(QueryAbilityInfosByUri, bool(const std::string &abilityUri, std::vector<AbilityInfo> &abilityInfos));
+    MOCK_METHOD2(RemoveClonedBundle, bool(const std::string &bundleName, const int32_t uid));
+    MOCK_METHOD1(BundleClone, bool(const std::string &bundleName));
+    MOCK_METHOD1(CheckBundleNameInAllowList, bool(const std::string &bundleName));
+    MOCK_METHOD3(CheckPermissionByUid,
+        int(const std::string &bundleName, const std::string &permission, const int userId));
     bool QueryAbilityInfo(const AAFwk::Want &want, AbilityInfo &abilityInfo) override;
     bool QueryAbilityInfoByUri(const std::string &uri, AbilityInfo &abilityInfo) override;
 
@@ -235,10 +257,8 @@ public:
         return true;
     };
     virtual bool GetBundleInfo(const std::string &bundleName, const BundleFlag flag, BundleInfo &bundleInfo) override;
-    virtual bool GetBundleInfos(const BundleFlag flag, std::vector<BundleInfo> &bundleInfos) override
-    {
-        return true;
-    };
+    virtual bool GetBundleInfos(const BundleFlag flag, std::vector<BundleInfo> &bundleInfos) override;
+    virtual bool GetBundleGidsByUid(const std::string &bundleName, const int &uid, std::vector<int> &gids) override;
 
     virtual bool GetBundleNameForUid(const int uid, std::string &bundleName) override
     {
@@ -368,10 +388,18 @@ public:
         return true;
     }
     virtual bool NotifyActivityLifeStatus(
-        const std::string &bundleName, const std::string &abilityName, const int64_t launchTime) override
+        const std::string &bundleName, const std::string &abilityName, const int64_t launchTime, const int uid) override
     {
         return true;
     }
+    BundleMgrService();
+    virtual ~BundleMgrService() {}
+    void MakingPackageData();
+    void PushTestHelloIndexAbility(int index);
+    void PushTestSpecialAbility();
+    void PushTestHelloAbility();
+private:
+    std::vector<BundleInfo> bundleInfos_;
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS

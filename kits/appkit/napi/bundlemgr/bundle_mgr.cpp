@@ -143,6 +143,10 @@ static void ConvertApplicationInfo(napi_env env, napi_value objAppInfo, const Ap
     NAPI_CALL_RETURN_VOID(env, napi_get_boolean(env, appInfo.isSystemApp, &nIsSystemApp));
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objAppInfo, "systemApp", nIsSystemApp));
 
+    napi_value nisCloned;
+    NAPI_CALL_RETURN_VOID(env, napi_get_boolean(env, appInfo.isCloned, &nisCloned));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objAppInfo, "isCloned", nisCloned));
+
     napi_value nSupportedModes;
     NAPI_CALL_RETURN_VOID(env, napi_create_int32(env, appInfo.supportedModes, &nSupportedModes));
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objAppInfo, "supportedModes", nSupportedModes));
@@ -1538,6 +1542,7 @@ napi_value GetApplicationInfo(napi_env env, napi_callback_info info)
                 asyncCallbackInfo = nullptr;
             }
         }
+        HILOG_INFO("GetApplicationInfo return promise");
         return promise;
     }
 }

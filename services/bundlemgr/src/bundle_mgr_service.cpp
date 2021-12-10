@@ -51,6 +51,9 @@ BundleMgrService::~BundleMgrService()
     if (dataMgr_) {
         dataMgr_.reset();
     }
+    if (cloneMgr_) {
+        cloneMgr_.reset();
+    }
     if (perChangeSub_) {
         perChangeSub_.reset();
     }
@@ -59,7 +62,7 @@ BundleMgrService::~BundleMgrService()
 
 void BundleMgrService::OnStart()
 {
-    APP_LOGD("start is triggered");
+    APP_LOGI("start is triggered");
     if (!Init()) {
         APP_LOGE("init fail");
         return;
@@ -118,7 +121,7 @@ bool BundleMgrService::Init()
             return false;
         }
     }
-    APP_LOGD("create runner success");
+    APP_LOGI("create runner success");
 
     if (!handler_) {
         handler_ = std::make_shared<BMSEventHandler>(runner_);
@@ -127,7 +130,7 @@ bool BundleMgrService::Init()
             return false;
         }
     }
-    APP_LOGD("create handler success");
+    APP_LOGI("create handler success");
 
     if (!installer_) {
         installer_ = new (std::nothrow) BundleInstallerHost();
@@ -136,19 +139,24 @@ bool BundleMgrService::Init()
             return false;
         }
     }
-    APP_LOGD("create installer host success");
+    APP_LOGI("create installer host success");
 
     if (!dataMgr_) {
         APP_LOGI("Create BundledataMgr");
         dataMgr_ = std::make_shared<BundleDataMgr>();
     }
-    APP_LOGD("create dataManager success");
+    APP_LOGI("create dataManager success");
 
     if (!(dataMgr_->LoadDataFromPersistentStorage())) {
         APP_LOGW("load data from persistent storage fail");
         handler_->SendEvent(BMSEventHandler::BUNDLE_SCAN_START);
         needToScan_ = true;
     }
+    if (!cloneMgr_) {
+        APP_LOGI("Create BundleCloneMgr");
+        cloneMgr_ = std::make_shared<BundleCloneMgr>();
+    }
+    APP_LOGI("create BundleCloneMgr success");
     if (!perChangeSub_) {
         EventFwk::MatchingSkills matchingSkills;
         matchingSkills.AddEvent("PERMISSIONS_CHANGED_EVENT");
@@ -169,6 +177,11 @@ sptr<IBundleInstaller> BundleMgrService::GetBundleInstaller() const
 const std::shared_ptr<BundleDataMgr> BundleMgrService::GetDataMgr() const
 {
     return dataMgr_;
+}
+
+const std::shared_ptr<BundleCloneMgr> BundleMgrService::GetCloneMgr() const
+{
+    return cloneMgr_;
 }
 
 void BundleMgrService::SelfClean()

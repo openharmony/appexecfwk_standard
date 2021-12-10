@@ -74,6 +74,13 @@ public:
     const std::string &GetName() const;
 
     /**
+     * @brief Obtains the app clone info.
+     *
+     * @return Returns the app isCloned.
+     */
+    bool GetCloneInfo() const;
+
+    /**
      * @brief Obtains the process name.
      *
      * @return Returns the process name.

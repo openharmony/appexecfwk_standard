@@ -23,7 +23,7 @@
 #include "appexecfwk_errors.h"
 #include "inner_bundle_info.h"
 #include "install_param.h"
-#include "bundle_data_mgr.h"
+#include "bundle_clone_mgr.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -252,6 +252,7 @@ private:
 private:
     InstallerState state_ = InstallerState::INSTALL_START;
     std::shared_ptr<BundleDataMgr> dataMgr_ = nullptr;  // this pointer will get when public functions called
+    std::shared_ptr<BundleCloneMgr> cloneMgr_ = nullptr;
     std::string bundleName_;
     std::string moduleTmpDir_;
     std::string modulePath_;

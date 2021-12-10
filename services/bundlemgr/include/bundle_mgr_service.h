@@ -20,8 +20,8 @@
 
 #include "singleton.h"
 #include "system_ability.h"
-
 #include "bundle_data_mgr.h"
+#include "bundle_clone_mgr.h"
 #include "bundle_installer_host.h"
 #include "bundle_mgr_host_impl.h"
 #include "bundle_mgr_service_event_handler.h"
@@ -54,6 +54,10 @@ public:
      * @brief Get a shared pointer to the BundleDataMgr object.
      * @return Returns the pointer of BundleDataMgr object.
      */
+    const std::shared_ptr<BundleCloneMgr> GetCloneMgr() const;
+
+
+
     const std::shared_ptr<BundleDataMgr> GetDataMgr() const;
     /**
      * @brief Get a IBundleInstaller object for IPC
@@ -80,6 +84,7 @@ private:
     std::shared_ptr<EventRunner> runner_;
     std::shared_ptr<BMSEventHandler> handler_;
     std::shared_ptr<BundleDataMgr> dataMgr_;
+    std::shared_ptr<BundleCloneMgr> cloneMgr_;
     sptr<BundleMgrHostImpl> host_;
     sptr<BundleInstallerHost> installer_;
     std::shared_ptr<BundlePermissionsChangedMonitor> perChangeSub_;

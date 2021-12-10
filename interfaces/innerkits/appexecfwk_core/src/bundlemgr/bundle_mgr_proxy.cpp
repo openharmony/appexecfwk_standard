@@ -147,11 +147,23 @@ bool BundleMgrProxy::GetBundleInfos(const BundleFlag flag, std::vector<BundleInf
 int BundleMgrProxy::GetUidByBundleName(const std::string &bundleName, const int userId)
 {
     APP_LOGI("begin to get uid of %{public}s", bundleName.c_str());
-    BundleInfo bundleInfo;
+    std::vector<BundleInfo> bundleInfos;
     int uid = Constants::INVALID_UID;
-    bool ret = GetBundleInfo(bundleName, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo);
+    bool ret = GetBundleInfos(BundleFlag::GET_BUNDLE_DEFAULT, bundleInfos);
     if (ret) {
-        uid = bundleInfo.uid;
+        for (auto bundleInfo : bundleInfos) {
+            if (userId == Constants::C_UESRID) {
+                if (bundleInfo.name == bundleName && bundleInfo.applicationInfo.isCloned == true) {
+                    uid = bundleInfo.uid;
+                    break;
+                }
+            } else {
+                if (bundleInfo.name == bundleName && bundleInfo.applicationInfo.isCloned == false) {
+                    uid = bundleInfo.uid;
+                    break;
+                }
+            }
+        }
         APP_LOGD("get bundle uid success");
     } else {
         APP_LOGE("can not get bundleInfo's uid");
@@ -284,6 +296,39 @@ bool BundleMgrProxy::GetBundleGids(const std::string &bundleName, std::vector<in
     return true;
 }
 
+bool BundleMgrProxy::GetBundleGidsByUid(const std::string &bundleName, const int &uid, std::vector<int> &gids)
+{
+    APP_LOGI("begin to GetBundleGidsByUid of %{public}s", bundleName.c_str());
+    MessageParcel data;
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        APP_LOGE("fail to GetBundleGidsByUid due to write InterfaceToken fail");
+        return false;
+    }
+    if (!data.WriteString(bundleName)) {
+        APP_LOGE("fail to GetBundleGidsByUid due to write bundleName fail");
+        return false;
+    }
+    if (!data.WriteInt32(uid)) {
+        APP_LOGE("fail to GetBundleGidsByUid due to write uid fail");
+        return false;
+    }
+
+    MessageParcel reply;
+    if (!SendTransactCmd(IBundleMgr::Message::GET_BUNDLE_GIDS_BY_UID, data, reply)) {
+        APP_LOGE("fail to GetBundleGidsByUid from server");
+        return false;
+    }
+    if (!reply.ReadBool()) {
+        APP_LOGE("reply result false");
+        return false;
+    }
+    if (!reply.ReadInt32Vector(&gids)) {
+        APP_LOGE("fail to GetBundleGidsByUid from reply");
+        return false;
+    }
+    return true;
+}
+
 std::string BundleMgrProxy::GetAppType(const std::string &bundleName)
 {
     APP_LOGI("begin to GetAppType of %{public}s", bundleName.c_str());
@@ -390,16 +435,16 @@ bool BundleMgrProxy::QueryAbilityInfosForClone(const Want &want, std::vector<Abi
 {
     MessageParcel data;
     if (!data.WriteInterfaceToken(GetDescriptor())) {
-        APP_LOGE("fail to QueryAbilityInfo due to write MessageParcel fail");
+        APP_LOGE("fail to QueryAbilityInfosForClone due to write MessageParcel fail");
         return false;
     }
     if (!data.WriteParcelable(&want)) {
-        APP_LOGE("fail to QueryAbilityInfo due to write want fail");
+        APP_LOGE("fail to QueryAbilityInfosForClone due to write want fail");
         return false;
     }
 
     if (!GetParcelableInfos<AbilityInfo>(IBundleMgr::Message::QUERY_ABILITY_INFOS_FOR_CLONE, data, abilityInfos)) {
-        APP_LOGE("fail to QueryAbilityInfos from server");
+        APP_LOGE("fail to QueryAbilityInfosForClone from server");
         return false;
     }
     return true;
@@ -419,6 +464,25 @@ bool BundleMgrProxy::QueryAbilityInfoByUri(const std::string &abilityUri, Abilit
 
     if (!GetParcelableInfo<AbilityInfo>(IBundleMgr::Message::QUERY_ABILITY_INFO_BY_URI, data, abilityInfo)) {
         APP_LOGE("fail to QueryAbilityInfoByUri from server");
+        return false;
+    }
+    return true;
+}
+
+bool BundleMgrProxy::QueryAbilityInfosByUri(const std::string &abilityUri, std::vector<AbilityInfo> &abilityInfos)
+{
+    MessageParcel data;
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        APP_LOGE("fail to QueryAbilityInfosByUri due to write MessageParcel fail");
+        return false;
+    }
+    if (!data.WriteString(abilityUri)) {
+        APP_LOGE("fail to QueryAbilityInfosByUri due to write abilityUri fail");
+        return false;
+    }
+
+    if (!GetParcelableInfos<AbilityInfo>(IBundleMgr::Message::QUERY_ABILITY_INFOS_BY_URI, data, abilityInfos)) {
+        APP_LOGE("fail to QueryAbilityInfosByUri from server");
         return false;
     }
     return true;
@@ -611,6 +675,40 @@ int BundleMgrProxy::CheckPermission(const std::string &bundleName, const std::st
     return reply.ReadInt32();
 }
 
+int BundleMgrProxy::CheckPermissionByUid(const std::string &bundleName, const std::string &permission, const int userId)
+{
+    APP_LOGI("begin to CheckPublicKeys of %{public}s and %{public}s", bundleName.c_str(), permission.c_str());
+    if (bundleName.empty() || permission.empty()) {
+        APP_LOGE("fail to CheckPermissionByUid due to params empty");
+        return Constants::PERMISSION_NOT_GRANTED;
+    }
+
+    MessageParcel data;
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        APP_LOGE("fail to CheckPermissionByUid due to write InterfaceToken fail");
+        return Constants::PERMISSION_NOT_GRANTED;
+    }
+    if (!data.WriteString(bundleName)) {
+        APP_LOGE("fail to CheckPermissionByUid due to write bundleName fail");
+        return Constants::PERMISSION_NOT_GRANTED;
+    }
+    if (!data.WriteString(permission)) {
+        APP_LOGE("fail to CheckPermissionByUid due to write permission fail");
+        return Constants::PERMISSION_NOT_GRANTED;
+    }
+    if (!data.WriteInt32(userId)) {
+        APP_LOGE("fail to CheckPermissionByUid due to write userId fail");
+        return Constants::PERMISSION_NOT_GRANTED;
+    }
+
+    MessageParcel reply;
+    if (!SendTransactCmd(IBundleMgr::Message::CHECK_PERMISSION_BY_UID, data, reply)) {
+        APP_LOGE("fail to CheckPermissionByUid from server");
+        return Constants::PERMISSION_NOT_GRANTED;
+    }
+    return reply.ReadInt32();
+}
+
 bool BundleMgrProxy::GetPermissionDef(const std::string &permissionName, PermissionDef &permissionDef)
 {
     APP_LOGI("begin to GetPermissionDef of %{public}s", permissionName.c_str());
@@ -778,7 +876,7 @@ bool BundleMgrProxy::CleanBundleCacheFiles(
     return reply.ReadBool();
 }
 
-bool BundleMgrProxy::CleanBundleDataFiles(const std::string &bundleName)
+bool BundleMgrProxy::CleanBundleDataFiles(const std::string &bundleName, const int userId)
 {
     APP_LOGI("begin to CleanBundleDataFiles of %{public}s", bundleName.c_str());
     if (bundleName.empty()) {
@@ -793,6 +891,10 @@ bool BundleMgrProxy::CleanBundleDataFiles(const std::string &bundleName)
     }
     if (!data.WriteString(bundleName)) {
         APP_LOGE("fail to CleanBundleDataFiles due to write hapFilePath fail");
+        return false;
+    }
+    if (!data.WriteInt32(userId)) {
+        APP_LOGE("fail to CleanBundleDataFiles due to write userId fail");
         return false;
     }
 
@@ -1364,7 +1466,8 @@ bool BundleMgrProxy::GetModuleUsageRecords(const int32_t number, std::vector<Mod
         return false;
     }
 
-    if (!GetParcelableInfos<ModuleUsageRecord>(IBundleMgr::Message::GET_MODULE_USAGE_RECORD, data, moduleUsageRecords)) {
+    if (!GetParcelableInfos<ModuleUsageRecord>(
+            IBundleMgr::Message::GET_MODULE_USAGE_RECORD, data, moduleUsageRecords)) {
         APP_LOGE("fail to GetModuleUsageRecords from server");
         return false;
     }
@@ -1372,7 +1475,7 @@ bool BundleMgrProxy::GetModuleUsageRecords(const int32_t number, std::vector<Mod
 }
 
 bool BundleMgrProxy::NotifyActivityLifeStatus(
-    const std::string &bundleName, const std::string &abilityName, const int64_t launchTime)
+    const std::string &bundleName, const std::string &abilityName, const int64_t launchTime, const int uid)
 {
     APP_LOGI("begin to NotifyActivityLifeStatus of %{public}s", abilityName.c_str());
     if (bundleName.empty() || abilityName.empty()) {
@@ -1397,6 +1500,10 @@ bool BundleMgrProxy::NotifyActivityLifeStatus(
         APP_LOGE("fail to NotifyActivityLifeStatus due to write launchTime fail");
         return false;
     }
+    if (!data.WriteInt32(uid)) {
+        APP_LOGE("fail to NotifyActivityLifeStatus due to write uid fail");
+        return false;
+    }
 
     MessageParcel reply;
     if (!SendTransactCmd(IBundleMgr::Message::NOTIFY_ACTIVITY_LIFE_STATUS, data, reply)) {
@@ -1404,10 +1511,85 @@ bool BundleMgrProxy::NotifyActivityLifeStatus(
         return false;
     }
     return reply.ReadBool();
-
 }
 
-template<typename T>
+bool BundleMgrProxy::CheckBundleNameInAllowList(const std::string &bundleName)
+{
+    APP_LOGI("begin to Check BundleName In AllowList");
+    if (bundleName.empty()) {
+        APP_LOGE("fail to Check BundleName In AllowList due to params empty");
+        return false;
+    }
+    MessageParcel data;
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        APP_LOGE("fail to Check BundleName In AllowList due to write MessageParcel fail");
+        return false;
+    }
+    if (!data.WriteString(bundleName)) {
+        APP_LOGE("fail to Check BundleName In AllowList due to write bundleName fail");
+        return false;
+    }
+    MessageParcel reply;
+    if (!SendTransactCmd(IBundleMgr::Message::BUNDLE_CLONE, data, reply)) {
+        APP_LOGE("fail to Check BundleName In AllowList from server");
+        return false;
+    }
+    return reply.ReadBool();
+}
+
+bool BundleMgrProxy::BundleClone(const std::string &bundleName)
+{
+    APP_LOGI("begin to bundle clone");
+    if (bundleName.empty()) {
+        APP_LOGE("fail to bundle clone due to params empty");
+        return false;
+    }
+    MessageParcel data;
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        APP_LOGE("fail to bundle clone due to write MessageParcel fail");
+        return false;
+    }
+    if (!data.WriteString(bundleName)) {
+        APP_LOGE("fail to bundle clone due to write bundleName fail");
+        return false;
+    }
+    MessageParcel reply;
+    if (!SendTransactCmd(IBundleMgr::Message::BUNDLE_CLONE, data, reply)) {
+        APP_LOGE("fail to bundle clone from server");
+        return false;
+    }
+    return reply.ReadBool();
+}
+
+bool BundleMgrProxy::RemoveClonedBundle(const std::string &bundleName, const int32_t uid)
+{
+    APP_LOGI("begin to remove cloned bundle");
+    if (bundleName.empty()) {
+        APP_LOGE("fail to remove cloned bundle due to params empty");
+        return false;
+    }
+    MessageParcel data;
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        APP_LOGE("fail to remove cloned bundle due to write MessageParcel fail");
+        return false;
+    }
+    if (!data.WriteString(bundleName)) {
+        APP_LOGE("fail to remove cloned bundle due to write bundleName fail");
+        return false;
+    }
+    if (!data.WriteInt32(uid)) {
+        APP_LOGE("fail to  remove cloned bundle due to write uid fail");
+        return false;
+    }
+    MessageParcel reply;
+    if (!SendTransactCmd(IBundleMgr::Message::REMOVE_CLONED_BUNDLE, data, reply)) {
+        APP_LOGE("fail to remove cloned bundle from server");
+        return false;
+    }
+    return reply.ReadBool();
+}
+
+template <typename T>
 bool BundleMgrProxy::GetParcelableInfo(IBundleMgr::Message code, MessageParcel &data, T &parcelableInfo)
 {
     MessageParcel reply;
@@ -1426,11 +1608,10 @@ bool BundleMgrProxy::GetParcelableInfo(IBundleMgr::Message code, MessageParcel &
         return false;
     }
     parcelableInfo = *info;
-    APP_LOGD("get parcelable info success");
     return true;
 }
 
-template<typename T>
+template <typename T>
 bool BundleMgrProxy::GetParcelableInfos(IBundleMgr::Message code, MessageParcel &data, std::vector<T> &parcelableInfos)
 {
     MessageParcel reply;
@@ -1452,7 +1633,6 @@ bool BundleMgrProxy::GetParcelableInfos(IBundleMgr::Message code, MessageParcel 
         }
         parcelableInfos.emplace_back(*info);
     }
-    APP_LOGD("get parcelable infos success");
     return true;
 }
 

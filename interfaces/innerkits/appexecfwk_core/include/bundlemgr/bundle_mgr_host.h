@@ -105,6 +105,13 @@ private:
      */
     ErrCode HandleGetBundleGids(Parcel &data, Parcel &reply);
     /**
+     * @brief Handles the GetBundleGidsByUid function called from a IBundleMgr proxy object.
+     * @param data Indicates the data to be read.
+     * @param reply Indicates the reply to be sent;
+     * @return Returns ERR_OK if called successfully; returns error code otherwise.
+     */
+    ErrCode HandleGetBundleGidsByUid(Parcel &data, Parcel &reply);
+    /**
      * @brief Handles the GetBundleInfosByMetaData function called from a IBundleMgr proxy object.
      * @param data Indicates the data to be read.
      * @param reply Indicates the reply to be sent;
@@ -139,6 +146,13 @@ private:
      * @return Returns ERR_OK if called successfully; returns error code otherwise.
      */
     ErrCode HandleQueryAbilityInfoByUri(Parcel &data, Parcel &reply);
+    /**
+     * @brief Handles the QueryAbilityInfoByUri function called from a IBundleMgr proxy object.
+     * @param data Indicates the data to be read.
+     * @param reply Indicates the reply to be sent;
+     * @return Returns ERR_OK if called successfully; returns error code otherwise.
+     */
+    ErrCode HandleQueryAbilityInfosByUri(Parcel &data, Parcel &reply);
     /**
      * @brief Handles the QueryKeepAliveBundleInfos function called from a IBundleMgr proxy object.
      * @param data Indicates the data to be read.
@@ -195,6 +209,13 @@ private:
      * @return Returns ERR_OK if called successfully; returns error code otherwise.
      */
     ErrCode HandleCheckPermission(Parcel &data, Parcel &reply);
+    /**
+     * @brief Handles the CheckPermissionByUid function called from a IBundleMgr proxy object.
+     * @param data Indicates the data to be read.
+     * @param reply Indicates the reply to be sent;
+     * @return Returns ERR_OK if called successfully; returns error code otherwise.
+     */
+    ErrCode HandleCheckPermissionByUid(Parcel &data, Parcel &reply);
     /**
      * @brief Handles the GetPermissionDef function called from a IBundleMgr proxy object.
      * @param data Indicates the data to be read.
@@ -405,6 +426,26 @@ private:
      * @return Returns ERR_OK if called successfully; returns error code otherwise.
      */
     ErrCode HandleNotifyActivityLifeStatus(Parcel &data, Parcel &reply);
+    /**
+     * @brief Handles the HandleNotifyActivityLifeStatus function called from a IBundleMgr proxy object.
+     * @param data Indicates the data to be read.
+     * @param reply Indicates the reply to be sent;
+     * @return Returns ERR_OK if called successfully; returns error code otherwise.
+     */
+    ErrCode HandleRemoveClonedBundle(Parcel &data, Parcel &reply);
+    /**
+     * @brief Handles the HandleNotifyActivityLifeStatus function called from a IBundleMgr proxy object.
+     * @param data Indicates the data to be read.
+     * @param reply Indicates the reply to be sent;
+     * @return Returns ERR_OK if called successfully; returns error code otherwise.
+     */
+    ErrCode HandleBundleClone(Parcel &data, Parcel &reply);
+    /**
+     * @brief Determine whether the application is in the allow list.
+     * @param bundleName Indicates the bundle Names.
+     * @return Returns true if bundle name in the allow list successfully; returns false otherwise.
+     */
+    ErrCode HandleCheckBundleNameInAllowList(Parcel &data, Parcel &reply);
 private:
     /**
      * @brief Write a parcelabe vector objects to the proxy node.

@@ -178,6 +178,15 @@ public:
     virtual int32_t KillApplication(const std::string &bundleName);
 
     /**
+     * KillApplicationByUid, call KillApplicationByUid() through proxy object, kill the application.
+     *
+     * @param  bundleName, bundle name in Application record.
+     * @param  uid, uid.
+     * @return ERR_OK, return back success, others fail.
+     */
+    virtual int32_t KillApplicationByUid(const std::string &bundleName, const int uid);
+
+    /**
      * ClearUpApplicationData, clear the application data.
      *
      * @param bundleName, bundle name in Application record.
@@ -300,11 +309,12 @@ public:
      *
      * @param appName, the application name.
      * @param processName, the process name.
+     * @param uid, the process uid.
      *
      * @return process record.
      */
     std::shared_ptr<AppRunningRecord> GetAppRunningRecordByProcessName(
-        const std::string &appName, const std::string &processName) const;
+        const std::string &appName, const std::string &processName, const int uid) const;
 
     /**
      * GetAppRunningRecordByPid, Get process record by application pid.
@@ -528,11 +538,13 @@ private:
      * @param appName, the app name.
      * @param processName, the process name.
      * @param appRecord, the app information.
+     * @param uid, the process uid.
      *
      * @return
      */
     void StartProcess(
-        const std::string &appName, const std::string &processName, const std::shared_ptr<AppRunningRecord> &appRecord);
+        const std::string &appName, const std::string &processName, const std::shared_ptr<AppRunningRecord> &appRecord,
+        const int uid);
 
     /**
      * PushAppFront, Adjust the latest application record to the top level.
@@ -631,6 +643,21 @@ private:
     void SetBundleManager(sptr<IBundleMgr> bundleManager);
 
     void HandleTerminateApplicationTimeOut(const int64_t eventId);
+    int32_t KillApplicationByUserId(const std::string &bundleName, const int userId);
+
+private:
+    /**
+     * ClearUpApplicationData, clear the application data.
+     *
+     * @param bundleName, bundle name in Application record.
+     * @param uid, app uid in Application record.
+     * @param pid, app pid in Application record.
+     * @param userId, userId.
+     *
+     * @return
+     */
+    void ClearUpApplicationDataByUserId(const std::string &bundleName,
+        int32_t callerUid, pid_t callerPid, const int userId);
 
 private:
     std::vector<const sptr<IAppStateCallback>> appStateCallbacks_;

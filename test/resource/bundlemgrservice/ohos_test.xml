@@ -69,4 +69,17 @@
 	  <option name="push" value="permission_bundle/unsign.hap -> /data/test/resource/bms/permission_bundle/" src="res" />
 	</preparer>
   </target>
+  <target name="BmsBundleCloneTest">
+    <depend resource="clone_file/." pushpath="/data/clonefile" findpath="res" presetcmd=""/>
+    <depend resource="bundle_clone/." pushpath="/data/" findpath="res" presetcmd=""/>
+ 	<preparer>
+   	 <option name="push" value="clone_file/BundleNameAllowList.json -> /data/clonefile" src="res" />
+   	 <option name="push" value="clone_file/CloneAppName.json-> /data/clonefile" src="res" />
+   	 <option name="push" value="bundle_clone/bmsDemoBundle.hap -> /data/" src="res" />
+   	 <option name="push" value="bundle_clone/bmsThirdBundleTest1.hap -> /data/" src="res" />
+   	 <option name="push" value="bundle_clone/bmsThirdBundleTest2.hap -> /data/" src="res" />
+   	 <option name="push" value="bundle_clone/bmsThirdBundleTest3.hap -> /data/" src="res" />
+   	 <option name="push" value="bundle_clone/bmsThirdBundleTest4.hap -> /data/" src="res" />
+    </preparer>
+  </target>
 </configuration>
