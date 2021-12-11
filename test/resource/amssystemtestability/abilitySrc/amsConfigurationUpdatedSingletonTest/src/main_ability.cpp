@@ -41,7 +41,7 @@ void MainAbility::OnStart(const Want &want)
     SubscribeEvent();
     Ability::OnStart(want);
     callbackSeq += "OnStart";
-    TestUtils::PublishEvent(g_EVENT_RESP_MAIN_LIFECYCLE, MAIN_ABILITY_CODE, "OnStart");
+    TestUtils::PublishEvent(g_EVENT_RESP_MAIN_LIFECYCLE, THIRD_ABILITY_CODE, "OnStart");
 }
 
 void MainAbility::OnStop()
@@ -50,7 +50,7 @@ void MainAbility::OnStop()
     Ability::OnStop();
     CommonEventManager::UnSubscribeCommonEvent(subscriber_);
     callbackSeq += "OnStop";  // OnInactiveOnBackgroundOnStop
-    TestUtils::PublishEvent(g_EVENT_RESP_MAIN_LIFECYCLE, MAIN_ABILITY_CODE, callbackSeq);
+    TestUtils::PublishEvent(g_EVENT_RESP_MAIN_LIFECYCLE, THIRD_ABILITY_CODE, callbackSeq);
     callbackSeq = "";
 }
 
@@ -59,7 +59,7 @@ void MainAbility::OnActive()
     APP_LOGI("MainAbility::OnActive====<");
     Ability::OnActive();
     callbackSeq += "OnActive";  // OnStartOnActive
-    TestUtils::PublishEvent(g_EVENT_RESP_MAIN_LIFECYCLE, MAIN_ABILITY_CODE, callbackSeq);
+    TestUtils::PublishEvent(g_EVENT_RESP_MAIN_LIFECYCLE, THIRD_ABILITY_CODE, callbackSeq);
     callbackSeq = "";
 }
 
@@ -68,7 +68,7 @@ void MainAbility::OnConfigurationUpdated(const Configuration &configuration)
     APP_LOGI("MainAbility::OnConfigurationUpdated====<");
     Ability::OnConfigurationUpdated(configuration);
     callbackUpdated += "Updated";
-    TestUtils::PublishEvent(g_EVENT_RESP_MAIN_LIFECYCLE, MAIN_ABILITY_CODE, callbackUpdated);
+    TestUtils::PublishEvent(g_EVENT_RESP_MAIN_LIFECYCLE, THIRD_ABILITY_CODE, callbackUpdated);
     callbackUpdated = "";
 }
 
@@ -77,7 +77,7 @@ void MainAbility::OnInactive()
     APP_LOGI("MainAbility::OnInactive");
     Ability::OnInactive();
     callbackSeq += "OnInactive";
-    TestUtils::PublishEvent(g_EVENT_RESP_MAIN_LIFECYCLE, MAIN_ABILITY_CODE, "OnInactive");
+    TestUtils::PublishEvent(g_EVENT_RESP_MAIN_LIFECYCLE, THIRD_ABILITY_CODE, "OnInactive");
 }
 
 void MainAbility::OnBackground()
@@ -85,7 +85,7 @@ void MainAbility::OnBackground()
     APP_LOGI("MainAbility::OnBackground");
     Ability::OnBackground();
     callbackSeq += "OnBackground";
-    TestUtils::PublishEvent(g_EVENT_RESP_MAIN_LIFECYCLE, MAIN_ABILITY_CODE, "OnBackground");
+    TestUtils::PublishEvent(g_EVENT_RESP_MAIN_LIFECYCLE, THIRD_ABILITY_CODE, "OnBackground");
 }
 
 void MainAbility::OnForeground(const Want &want)
@@ -93,7 +93,7 @@ void MainAbility::OnForeground(const Want &want)
     APP_LOGI("MainAbility::OnForeground");
     Ability::OnForeground(want);
     callbackSeq += "OnForeground";
-    TestUtils::PublishEvent(g_EVENT_RESP_MAIN_LIFECYCLE, MAIN_ABILITY_CODE, "OnForeground");
+    TestUtils::PublishEvent(g_EVENT_RESP_MAIN_LIFECYCLE, THIRD_ABILITY_CODE, "OnForeground");
 }
 
 void MainAbility::SubscribeEvent()
@@ -118,25 +118,16 @@ void MainAbilityEventSubscriber::OnReceiveEvent(const CommonEventData &data)
     APP_LOGI("MainAbilityEventSubscriber::OnReceiveEvent:data=%{public}s", data.GetData().c_str());
     APP_LOGI("MainAbilityEventSubscriber::OnReceiveEvent:code=%{public}d", data.GetCode());
     auto eventName = data.GetWant().GetAction();
-    if (strcmp(eventName.c_str(), g_EVENT_REQU_MAIN.c_str()) == 0) {
-        auto target = data.GetData();
-        if (mapTestFunc_.find(target) != mapTestFunc_.end()) {
-            mapTestFunc_[target](target, data.GetCode());
-        } else {
-            APP_LOGI("OnReceiveEvent: CommonEventData error(%{public}s)", target.c_str());
-        }
-    }
 }
 
-void MainAbility::StartNext(std::string action, int code)
+void MainAbility::TestAbility(int apiIndex, int caseIndex, int code)
 {
-    std::string targetBundle = "com.ohos.amsst.ConfigurationUpdated";
-    std::string targetAbility = "SecondAbility";
-    Want want;
-
-    APP_LOGI("MainAbility::StartNext");
-    want.SetElementName(targetBundle, targetAbility);
-    StartAbility(want);
+    APP_LOGI("MainAbility::TestAbility");
+    if (mapCase_.find(apiIndex) != mapCase_.end()) {
+        if (caseIndex < (int)mapCase_[apiIndex].size()) {
+            mapCase_[apiIndex][caseIndex](code);
+        }
+    }
 }
 
 REGISTER_AA(MainAbility)

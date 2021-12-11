@@ -28,7 +28,7 @@ class MainAbilityEventSubscriber;
 class MainAbility : public Ability {
 public:
     void SubscribeEvent();
-    void StartNext(std::string action, int code);
+    void TestAbility(int apiIndex, int caseIndex, int code);
 
     MainAbility()
     {
@@ -57,21 +57,19 @@ class MainAbilityEventSubscriber : public EventFwk::CommonEventSubscriber {
 public:
     explicit MainAbilityEventSubscriber(const EventFwk::CommonEventSubscribeInfo &sp) : CommonEventSubscriber(sp)
     {
-        mapTestFunc_ = {
-            {"StartNextAbility", [this](std::string action, int code) { StartNext(action, code); }},
-        };
+        mapTestFunc_ = {};
         mainAbility = nullptr;
     }
 
-    void StartNext(std::string action, int code)
+    void TestAbility(int apiIndex, int caseIndex, int code)
     {
-        mainAbility->StartNext(action, code);
+        mainAbility->TestAbility(apiIndex, caseIndex, code);
     }
 
     virtual void OnReceiveEvent(const EventFwk::CommonEventData &data);
 
     MainAbility *mainAbility;
-    std::unordered_map<std::string, std::function<void(std::string, int)>> mapTestFunc_;
+    std::unordered_map<std::string, std::function<void(int, int, int)>> mapTestFunc_;
     ~MainAbilityEventSubscriber() = default;
 };
 }  // namespace AppExecFwk

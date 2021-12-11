@@ -135,8 +135,8 @@ const std::string SHORTCUT_HOST_ABILITY = "hostAbility";
 const std::string SHORTCUT_ICON = "/data/test/bms_bundle";
 const std::string SHORTCUT_LABEL = "shortcutLabel";
 const std::string SHORTCUT_DISABLE_MESSAGE = "shortcutDisableMessage";
-const std::string SHORTCUT_INTENTS_TARGET_BUNDLE = "targetBundle";
-const std::string SHORTCUT_INTENTS_TARGET_CLASS = "targetClass";
+const std::string SHORTCUT_WANTS_TARGET_BUNDLE = "targetBundle";
+const std::string SHORTCUT_WANTS_TARGET_CLASS = "targetClass";
 const std::string COMMON_EVENT_NAME = ".MainAbililty";
 const std::string COMMON_EVENT_PERMISSION = "permission";
 const std::string COMMON_EVENT_DATA = "data";
@@ -246,7 +246,6 @@ void BmsBundleKitServiceTest::MockInstallBundle(
     appInfo.flags = APPLICATION_INFO_FLAGS;
     appInfo.enabled = true;
     appInfo.isCloned = false;
-    appInfo.singleUser = true;
 
     BundleInfo bundleInfo;
     bundleInfo.name = bundleName;
@@ -393,8 +392,8 @@ ShortcutInfo BmsBundleKitServiceTest::MockShortcutInfo(
     shortcutInfos.isHomeShortcut = true;
     shortcutInfos.isEnables = true;
     for (auto &info : shortcutInfos.intents) {
-        info.targetBundle = SHORTCUT_INTENTS_TARGET_BUNDLE;
-        info.targetClass = SHORTCUT_INTENTS_TARGET_CLASS;
+        info.targetBundle = SHORTCUT_WANTS_TARGET_BUNDLE;
+        info.targetClass = SHORTCUT_WANTS_TARGET_CLASS;
     }
     return shortcutInfos;
 }
@@ -553,7 +552,6 @@ void BmsBundleKitServiceTest::CheckApplicationInfo(
     EXPECT_EQ(CODE_PATH, appInfo.codePath);
     EXPECT_EQ(permissionSize, static_cast<uint32_t>(appInfo.permissions.size()));
     EXPECT_EQ(APPLICATION_INFO_FLAGS, appInfo.flags);
-    EXPECT_TRUE(appInfo.singleUser);
 }
 
 void BmsBundleKitServiceTest::CheckAbilityInfo(
@@ -860,9 +858,9 @@ void BmsBundleKitServiceTest::CheckShortcutInfoTest(std::vector<ShortcutInfo> &s
         EXPECT_EQ(shortcutInfo.isStatic, true);
         EXPECT_EQ(shortcutInfo.isHomeShortcut, true);
         EXPECT_EQ(shortcutInfo.isEnables, true);
-        for (auto &intent : shortcutInfo.intents) {
-            EXPECT_EQ(intent.targetBundle, SHORTCUT_INTENTS_TARGET_BUNDLE);
-            EXPECT_EQ(intent.targetClass, SHORTCUT_INTENTS_TARGET_CLASS);
+        for (auto &want : shortcutInfo.intents) {
+            EXPECT_EQ(want.targetBundle, SHORTCUT_WANTS_TARGET_BUNDLE);
+            EXPECT_EQ(want.targetClass, SHORTCUT_WANTS_TARGET_CLASS);
         }
     }
 }
@@ -899,9 +897,9 @@ void BmsBundleKitServiceTest::CheckShortcutInfoDemo(std::vector<ShortcutInfo> &s
         EXPECT_EQ(shortcutInfo.isStatic, true);
         EXPECT_EQ(shortcutInfo.isHomeShortcut, true);
         EXPECT_EQ(shortcutInfo.isEnables, true);
-        for (auto &intent : shortcutInfo.intents) {
-            EXPECT_EQ(intent.targetBundle, SHORTCUT_INTENTS_TARGET_BUNDLE);
-            EXPECT_EQ(intent.targetClass, SHORTCUT_INTENTS_TARGET_CLASS);
+        for (auto &want : shortcutInfo.intents) {
+            EXPECT_EQ(want.targetBundle, SHORTCUT_WANTS_TARGET_BUNDLE);
+            EXPECT_EQ(want.targetClass, SHORTCUT_WANTS_TARGET_CLASS);
         }
     }
 }
@@ -3090,7 +3088,7 @@ HWTEST_F(BmsBundleKitServiceTest, GetUsageRecords_0500, Function | SmallTest | L
  * @tc.number: NotifyActivityLifeStatus_0100
  * @tc.name: test can called notify activity life status
  * @tc.desc: 1. have called notify activity life status
- *           2. called notify activity life
+ *           2. called notify life
  */
 HWTEST_F(BmsBundleKitServiceTest, NotifyActivityLifeStatus_0100, Function | SmallTest | Level1)
 {
@@ -3110,7 +3108,7 @@ HWTEST_F(BmsBundleKitServiceTest, NotifyActivityLifeStatus_0100, Function | Smal
  * @tc.number: NotifyActivityLifeStatus_0200
  * @tc.name: test can called notify activity life status
  * @tc.desc: 1. have two bundle to called notify activity life status
- *           2. notify activity life
+ *           2. called notify life
  */
 HWTEST_F(BmsBundleKitServiceTest, NotifyActivityLifeStatus_0200, Function | SmallTest | Level1)
 {

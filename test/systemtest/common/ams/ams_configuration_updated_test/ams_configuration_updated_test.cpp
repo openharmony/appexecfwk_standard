@@ -35,15 +35,25 @@ using namespace testing::ext;
 using MAP_STR_STR = std::map<std::string, std::string>;
 namespace {
 static const string KIT_BUNDLE_NAME = "com.ohos.amsst.ConfigurationUpdated";
+static const string KIT_SECOND_BUNDLE_NAME = "com.ohos.amsst.ConfigurationUpdatedSingleton";
 static const string KIT_HAP_NAME = "amsConfigurationUpdatedTest";
+static const string KIT_SECOND_HAP_NAME = "amsConfigurationUpdatedSingletonTest";
 static const string MAIN_ABILITY = "MainAbility";
+static const string SECOND_ABILITY = "SecondAbility";
 static constexpr int WAIT_TIME = 1;
 static constexpr int WAIT_LAUNCHER_TIME = 5;
 static constexpr int WAIT_SETUP_TIME = 1;
 static constexpr int WAIT_TEARDOWN_TIME = 1;
-static constexpr int WAIT_ONACTIVE_TIME = 5;
+static constexpr int WAIT_ONACTIVE_TIME = 1;
+static constexpr int WAIT_ONUPDATE_TIME = 3;
+static constexpr unsigned int MAIN_ABILITY_CALLED_FLAG = 0x1;
+static constexpr unsigned int SECOND_ABILITY_CALLED_FLAG = 0x2;
+static constexpr unsigned int THIRD_ABILITY_CALLED_FLAG = 0x4;
+static constexpr unsigned int ALL_ABILITY_CALLED_FLAG = 0x7;
+static unsigned int g_uiAbilityCalledFlag = 0;
 static string g_eventMessage = "";
 static string g_tempDataStr = "";
+std::string ConfigurationUpdate_Event_Resp_A = "resp_com_ohos_amsst_ConfigurationUpdateB";
 }  // namespace
 
 std::vector<std::string> eventList = {
@@ -82,6 +92,22 @@ void AmsConfigurationUpdatedTest::AppEventSubscriber::OnReceiveEvent(const Commo
     GTEST_LOG_(INFO) << "\nOnReceiveEvent: event====>" << data.GetWant().GetAction();
     GTEST_LOG_(INFO) << "\nOnReceiveEvent: data=====>" << data.GetData();
     GTEST_LOG_(INFO) << "\nOnReceiveEvent: code=====>" << data.GetCode();
+    if (data.GetData() == "Updated") {
+        switch (data.GetCode()) {
+            case MAIN_ABILITY_CODE:
+                g_uiAbilityCalledFlag |= MAIN_ABILITY_CALLED_FLAG;
+                break;
+            case SECOND_ABILITY_CODE:
+                g_uiAbilityCalledFlag |= SECOND_ABILITY_CALLED_FLAG;
+                break;
+            case THIRD_ABILITY_CODE:
+                g_uiAbilityCalledFlag |= THIRD_ABILITY_CALLED_FLAG;
+                break;
+
+            default:
+                break;
+        }
+    }
     if (find(eventList.begin(), eventList.end(), data.GetWant().GetAction()) != eventList.end()) {
         TestCompleted(event, data.GetData(), data.GetCode());
     }
@@ -116,12 +142,16 @@ void AmsConfigurationUpdatedTest::SetUp(void)
 {
     STAbilityUtil::Install(KIT_HAP_NAME);
     sleep(WAIT_SETUP_TIME);
+    STAbilityUtil::Install(KIT_SECOND_HAP_NAME);
+    sleep(WAIT_SETUP_TIME);
     STAbilityUtil::CleanMsg(event);
 }
 
 void AmsConfigurationUpdatedTest::TearDown(void)
 {
     STAbilityUtil::Uninstall(KIT_BUNDLE_NAME);
+    sleep(WAIT_TEARDOWN_TIME);
+    STAbilityUtil::Uninstall(KIT_SECOND_BUNDLE_NAME);
     sleep(WAIT_TEARDOWN_TIME);
     STAbilityUtil::CleanMsg(event);
 }
@@ -276,5 +306,89 @@ HWTEST_F(AmsConfigurationUpdatedTest, AMS_UpdateConfiguration_0400, Function | M
     EXPECT_NE(TestWaitCompleted(event, "Updated", MAIN_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
 
     GTEST_LOG_(INFO) << "\nAmsConfigurationUpdatedTest AMS_UpdateConfiguration_0400 end=========<";
+}
+
+/**
+ * @tc.number    : 0500
+ * @tc.name      : AMS_UpdateConfiguration_0500
+ * @tc.desc      : Verify whether the results of the orientation, locale, layout,fontSize function of the system
+ * configuration concerned by capability are correct.
+ */
+
+HWTEST_F(AmsConfigurationUpdatedTest, AMS_UpdateConfiguration_0500, Function | MediumTest | Level1)
+{
+    GTEST_LOG_(INFO) << "==========>\nAmsConfigurationUpdatedTest AMS_UpdateConfiguration_0500 start";
+    MAP_STR_STR params;
+
+    Want want = STAbilityUtil::MakeWant("device", MAIN_ABILITY, KIT_BUNDLE_NAME, params);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
+    GTEST_LOG_(INFO) << "\nStartAbility ====>> " << eCode;
+    EXPECT_EQ(TestWaitCompleted(event, "OnStartOnActive", MAIN_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
+
+    STAbilityUtil::PublishEvent(g_EVENT_REQU_MAIN, MAIN_ABILITY_CODE, "StartNextAbility");
+    EXPECT_EQ(TestWaitCompleted(event, "OnStartOnActive", SECOND_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
+
+    Want want2 = STAbilityUtil::MakeWant("device", MAIN_ABILITY, KIT_SECOND_BUNDLE_NAME, params);
+    eCode = STAbilityUtil::StartAbility(want2, abilityMgrService, WAIT_TIME);
+    GTEST_LOG_(INFO) << "\nStartSecondApp,ThirdAbility ====>> " << eCode;
+    EXPECT_EQ(TestWaitCompleted(event, "OnStartOnActive", THIRD_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
+    sleep(WAIT_ONACTIVE_TIME);
+
+    AppExecFwk::Configuration configuration;
+    configuration.AddItem(GlobalConfigurationKey::SYSTEM_LANGUAGE, "ZH-HANS");
+    abilityMgrService->UpdateConfiguration(configuration);
+    sleep(WAIT_ONUPDATE_TIME);
+    STAbilityUtil::CleanMsg(event);
+    g_uiAbilityCalledFlag = 0;
+    AppExecFwk::Configuration configuration2;
+    configuration2.AddItem(GlobalConfigurationKey::SYSTEM_LANGUAGE, "fr_FR");
+    abilityMgrService->UpdateConfiguration(configuration2);
+    sleep(WAIT_ONUPDATE_TIME);
+    EXPECT_EQ(g_uiAbilityCalledFlag, ALL_ABILITY_CALLED_FLAG);
+    GTEST_LOG_(INFO) << "AMS_UpdateConfiguration_0500 g_uiAbilityCalledFlag = " << g_uiAbilityCalledFlag;
+
+    GTEST_LOG_(INFO) << "\nAmsConfigurationUpdatedTest AMS_UpdateConfiguration_0500 end=========<";
+}
+
+/**
+ * @tc.number    : 0600
+ * @tc.name      : AMS_UpdateConfiguration_0600
+ * @tc.desc      : Verify whether the results of the orientation, locale, layout,fontSize function of the system
+ * configuration concerned by capability are correct.
+ */
+
+HWTEST_F(AmsConfigurationUpdatedTest, AMS_UpdateConfiguration_0600, Function | MediumTest | Level1)
+{
+    GTEST_LOG_(INFO) << "==========>\nAmsConfigurationUpdatedTest AMS_UpdateConfiguration_0600 start";
+    MAP_STR_STR params;
+
+    Want want = STAbilityUtil::MakeWant("device", MAIN_ABILITY, KIT_BUNDLE_NAME, params);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
+    GTEST_LOG_(INFO) << "\nStartAbility ====>> " << eCode;
+    EXPECT_EQ(TestWaitCompleted(event, "OnStartOnActive", MAIN_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
+
+    STAbilityUtil::PublishEvent(g_EVENT_REQU_MAIN, MAIN_ABILITY_CODE, "StartNextAbility");
+    EXPECT_EQ(TestWaitCompleted(event, "OnStartOnActive", SECOND_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
+
+    Want want2 = STAbilityUtil::MakeWant("device", MAIN_ABILITY, KIT_SECOND_BUNDLE_NAME, params);
+    eCode = STAbilityUtil::StartAbility(want2, abilityMgrService, WAIT_TIME);
+    GTEST_LOG_(INFO) << "\nStartSecondAbility ====>> " << eCode;
+    EXPECT_EQ(TestWaitCompleted(event, "OnStartOnActive", THIRD_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
+    sleep(WAIT_ONACTIVE_TIME);
+
+    AppExecFwk::Configuration configuration;
+    configuration.AddItem(GlobalConfigurationKey::SYSTEM_ORIENTATION, "vertical");
+    abilityMgrService->UpdateConfiguration(configuration);
+    sleep(WAIT_ONUPDATE_TIME);
+    STAbilityUtil::CleanMsg(event);
+    g_uiAbilityCalledFlag = 0;
+    AppExecFwk::Configuration configuration2;
+    configuration2.AddItem(GlobalConfigurationKey::SYSTEM_ORIENTATION, "horizontal");
+    abilityMgrService->UpdateConfiguration(configuration2);
+    sleep(WAIT_ONUPDATE_TIME);
+    EXPECT_EQ(g_uiAbilityCalledFlag, ALL_ABILITY_CALLED_FLAG);
+    GTEST_LOG_(INFO) << "AMS_UpdateConfiguration_0600 g_uiAbilityCalledFlag = " << g_uiAbilityCalledFlag;
+
+    GTEST_LOG_(INFO) << "\nAmsConfigurationUpdatedTest AMS_UpdateConfiguration_0600 end=========<";
 }
 }  // namespace
