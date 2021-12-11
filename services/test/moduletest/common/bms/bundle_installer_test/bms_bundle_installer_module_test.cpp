@@ -215,8 +215,7 @@ protected:
                 "signatureKey": "",
                 "supportedModes": 0,
                 "debug": false,
-                "singleUser": true,
-                "isCloned": true,
+                "isCloned": false,
                 "uid": 10000,
                 "signatureKey": ""
             },
@@ -248,7 +247,6 @@ protected:
                     "process": "",
                     "supportedModes": 0,
                     "debug": false,
-                    "singleUser": false,
                     "isCloned": false,
                     "uid": -1,
                     "signatureKey": ""
@@ -338,7 +336,7 @@ protected:
                     }
                 ]
             },
-             "formInfos": {
+            "formInfos": {
                 "com.ohos.launchercom.ohos.launchercom.ohos.launcher.MainAbility": [
                     {
                         "package": "com.ohos.launcher",

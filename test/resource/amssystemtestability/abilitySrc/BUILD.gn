@@ -17,6 +17,7 @@ group("ams_system_test_app") {
     "amsAbilityAppendTestB:amsAbilityAppendTestB",
     "amsAbilityVisibleTestPageA:amsAbilityVisibleTestPageA",
     "amsAbilityVisibleTestServiceB:amsAbilityVisibleTestServiceB",
+    "amsConfigurationUpdatedSingletonTest:amsConfigurationUpdatedSingletonTest",
     "amsConfigurationUpdatedTest:amsConfigurationUpdatedTest",
     "amsDataSystemTestA:amsDataSystemTestA",
     "amsDataSystemTestB:amsDataSystemTestB",

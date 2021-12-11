@@ -875,7 +875,7 @@ bool InnerBundleInfo::AddModuleInfo(const InnerBundleInfo &newInfo)
     return true;
 }
 
-void InnerBundleInfo::UpdateVersionInfo(const InnerBundleInfo &newInfo)
+void InnerBundleInfo::UpdateAppInfo(const InnerBundleInfo &newInfo)
 {
     if (baseBundleInfo_.versionCode == newInfo.GetVersionCode()) {
         APP_LOGE("old version equals to new version");
@@ -889,6 +889,10 @@ void InnerBundleInfo::UpdateVersionInfo(const InnerBundleInfo &newInfo)
     baseBundleInfo_.compatibleVersion = newInfo.GetBaseBundleInfo().compatibleVersion;
     baseBundleInfo_.targetVersion = newInfo.GetBaseBundleInfo().targetVersion;
     baseBundleInfo_.releaseType = newInfo.GetBaseBundleInfo().releaseType;
+    baseBundleInfo_.singleUser = newInfo.GetBaseBundleInfo().singleUser;
+    baseBundleInfo_.isKeepAlive = newInfo.GetBaseBundleInfo().isKeepAlive;
+    baseApplicationInfo_.process = newInfo.GetBaseApplicationInfo().process;
+    baseApplicationInfo_.debug = newInfo.GetBaseApplicationInfo().debug;
 }
 
 void InnerBundleInfo::UpdateModuleInfo(const InnerBundleInfo &newInfo)
