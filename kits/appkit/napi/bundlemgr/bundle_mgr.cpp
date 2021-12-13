@@ -155,10 +155,6 @@ static void ConvertApplicationInfo(napi_env env, napi_value objAppInfo, const Ap
     NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, appInfo.process.c_str(), NAPI_AUTO_LENGTH, &nProcess));
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objAppInfo, "process", nProcess));
 
-    napi_value nSingleUser;
-    NAPI_CALL_RETURN_VOID(env, napi_get_boolean(env, appInfo.singleUser, &nSingleUser));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objAppInfo, "singleUser", nSingleUser));
-
     if (CheckIsSystemApp()) {
         napi_value nEntryDir;
         NAPI_CALL_RETURN_VOID(
@@ -3642,6 +3638,27 @@ static bool InnerUnregisterAnyPermissionsChanged(napi_env env, napi_ref callback
     return false;
 }
 
+static bool InnerUnregisterAnyPermissionsChanged(napi_env env)
+{
+    HILOG_INFO("InnerUnregisterAnyPermissionsChanged");
+    auto iBundleMgr = GetBundleMgr();
+    if (!iBundleMgr) {
+        HILOG_ERROR("can not get iBundleMgr");
+        return false;
+    }
+    std::lock_guard<std::mutex> lock(anyPermissionsCallbackMutex);
+    for (auto it = std::begin(anyPermissionsCallback); it != std::end(anyPermissionsCallback);) {
+        auto ret = iBundleMgr->UnregisterPermissionsChanged(it->second);
+        if (!ret) {
+            HILOG_ERROR("UnregisterPermissionsChanged call error");
+            return false;
+        }
+        it = anyPermissionsCallback.erase(it);
+    }
+    HILOG_INFO("InnerUnregisterAnyPermissionsChanged end");
+    return true;
+}
+
 static bool InnerUnregisterPermissionsChanged(napi_env env, const std::vector<int32_t> &uids, napi_ref callbackRef)
 {
     HILOG_INFO("InnerUnregisterPermissionsChanged");
@@ -3670,10 +3687,250 @@ static bool InnerUnregisterPermissionsChanged(napi_env env, const std::vector<in
             permissionsCallback.erase(item.first);
             return true;
         }
-        HILOG_INFO("can not find value in permissionsCallback");
     }
     HILOG_INFO("InnerUnregisterPermissionsChanged end");
     return false;
+}
+
+static bool InnerUnregisterPermissionsChanged(napi_env env, const std::vector<int32_t> &uids)
+{
+    HILOG_INFO("InnerUnregisterPermissionsChanged");
+    auto iBundleMgr = GetBundleMgr();
+    if (!iBundleMgr) {
+        HILOG_ERROR("can not get iBundleMgr");
+        return false;
+    }
+    std::lock_guard<std::mutex> lock(permissionsCallbackMutex);
+    for (auto it = std::begin(permissionsCallback); it != std::end(permissionsCallback);) {
+        if (uids == it->first.uids) {
+            HILOG_INFO("find value in permissionsCallback");
+            auto ret = iBundleMgr->UnregisterPermissionsChanged(it->second);
+            if (!ret) {
+                HILOG_ERROR("InnerUnregisterPermissionsChanged call error");
+                return false;
+            }
+            HILOG_INFO("call UnregisterPermissionsChanged success = %{public}zu.", permissionsCallback.size());
+            it = permissionsCallback.erase(it);
+        } else {
+            ++it;
+        }
+    }
+    HILOG_INFO("InnerUnregisterPermissionsChanged end");
+    return true;
+}
+
+napi_value UnregisterPermissions(napi_env env, napi_value arg)
+{
+    AsyncUnregisterPermissions *asyncCallbackInfo = new (std::nothrow) AsyncUnregisterPermissions {.env = env,
+        .asyncWork = nullptr,
+    };
+    if (asyncCallbackInfo == nullptr) {
+        return nullptr;
+    }
+    HILOG_INFO("UnregisterAnyPermissionsChanged asyncCallback.");
+    napi_valuetype valuetype = napi_undefined;
+    napi_typeof(env, arg, &valuetype);
+    NAPI_ASSERT(env, valuetype == napi_function, "Wrong argument type. Function expected.");
+    NAPI_CALL(env, napi_create_reference(env, arg, NAPI_RETURN_ONE, &asyncCallbackInfo->callback));
+    napi_value resourceName;
+    napi_create_string_latin1(env, "NAPI_UnreegisterAnyPermissionsChanged", NAPI_AUTO_LENGTH, &resourceName);
+    napi_create_async_work(env,
+        nullptr,
+        resourceName,
+        [](napi_env env, void *data) {
+            AsyncUnregisterPermissions *asyncCallbackInfo = (AsyncUnregisterPermissions *)data;
+            asyncCallbackInfo->ret = InnerUnregisterAnyPermissionsChanged(env, asyncCallbackInfo->callback);
+        },
+        [](napi_env env, napi_status status, void *data) {
+            AsyncUnregisterPermissions *asyncCallbackInfo = (AsyncUnregisterPermissions *)data;
+            napi_value result[ARGS_SIZE_ONE] = {0};
+            napi_value callback = 0;
+            napi_value undefined = 0;
+            napi_value callResult = 0;
+            result[PARAM0] = GetCallbackErrorValue(env, asyncCallbackInfo->ret ? CODE_SUCCESS : CODE_FAILED);
+            napi_get_reference_value(env, asyncCallbackInfo->callback, &callback);
+            napi_call_function(env, undefined, callback, ARGS_SIZE_ONE, &result[PARAM0], &callResult);
+            if (asyncCallbackInfo->callback != nullptr) {
+                napi_delete_reference(env, asyncCallbackInfo->callback);
+            }
+            napi_delete_async_work(env, asyncCallbackInfo->asyncWork);
+            delete asyncCallbackInfo;
+            asyncCallbackInfo = nullptr;
+        },
+        (void *)asyncCallbackInfo,
+        &asyncCallbackInfo->asyncWork);
+    NAPI_CALL(env, napi_queue_async_work(env, asyncCallbackInfo->asyncWork));
+
+    napi_value ret = nullptr;
+    NAPI_CALL(env, napi_get_null(env, &ret));
+    if (ret == nullptr) {
+        if (asyncCallbackInfo != nullptr) {
+            delete asyncCallbackInfo;
+            asyncCallbackInfo = nullptr;
+        }
+    }
+    napi_value result;
+    NAPI_CALL(env, napi_create_int32(env, NAPI_RETURN_ONE, &result));
+    return result;
+}
+
+napi_value UnregisterPermissions(napi_env env)
+{
+    AsyncUnregisterPermissions *asyncCallbackInfo = new (std::nothrow) AsyncUnregisterPermissions {
+        .env = env,
+        .asyncWork = nullptr,
+    };
+    if (asyncCallbackInfo == nullptr) {
+        return nullptr;
+    }
+    HILOG_INFO("UnregisterAnyPermissionsChanged asyncCallback.");
+    napi_value resourceName;
+    napi_create_string_latin1(env, "NAPI_UnreegisterAnyPermissionsChanged", NAPI_AUTO_LENGTH, &resourceName);
+    napi_create_async_work(env,
+        nullptr,
+        resourceName,
+        [](napi_env env, void *data) {
+            AsyncUnregisterPermissions *asyncCallbackInfo = (AsyncUnregisterPermissions *)data;
+            asyncCallbackInfo->ret = InnerUnregisterAnyPermissionsChanged(env);
+        },
+        [](napi_env env, napi_status status, void *data) {
+            AsyncUnregisterPermissions *asyncCallbackInfo = (AsyncUnregisterPermissions *)data;
+            napi_value result[ARGS_SIZE_ONE] = {0};
+            napi_value callback = 0;
+            napi_value undefined = 0;
+            napi_value callResult = 0;
+            result[PARAM0] = GetCallbackErrorValue(env, asyncCallbackInfo->ret ? CODE_SUCCESS : CODE_FAILED);
+            napi_get_reference_value(env, asyncCallbackInfo->callback, &callback);
+            napi_call_function(env, undefined, callback, ARGS_SIZE_ONE, &result[PARAM0], &callResult);
+            if (asyncCallbackInfo->callback != nullptr) {
+                napi_delete_reference(env, asyncCallbackInfo->callback);
+            }
+            napi_delete_async_work(env, asyncCallbackInfo->asyncWork);
+            delete asyncCallbackInfo;
+            asyncCallbackInfo = nullptr;
+        },
+        (void *)asyncCallbackInfo,
+        &asyncCallbackInfo->asyncWork);
+    NAPI_CALL(env, napi_queue_async_work(env, asyncCallbackInfo->asyncWork));
+
+    napi_value ret = nullptr;
+    NAPI_CALL(env, napi_get_null(env, &ret));
+    if (ret == nullptr) {
+        if (asyncCallbackInfo != nullptr) {
+            delete asyncCallbackInfo;
+            asyncCallbackInfo = nullptr;
+        }
+    }
+    napi_value result;
+    NAPI_CALL(env, napi_create_int32(env, NAPI_RETURN_ONE, &result));
+    return result;
+}
+
+napi_value UnregisterAnyPermissions(napi_env env, napi_value *argv)
+{
+    std::vector<int32_t> uids;
+    ParseInt32Array(env, uids, argv[ARGS_SIZE_ONE]);
+    AsyncUnregisterPermissions *asyncCallbackInfo =
+        new AsyncUnregisterPermissions {.env = env, .asyncWork = nullptr, .uids = uids};
+    if (asyncCallbackInfo == nullptr) {
+        return nullptr;
+    }
+    HILOG_INFO("UnregisterPermissionsChanged asyncCallback.");
+    napi_valuetype valuetype = napi_undefined;
+    napi_typeof(env, argv[ARGS_SIZE_TWO], &valuetype);
+    NAPI_ASSERT(env, valuetype == napi_function, "Wrong argument type. Function expected.");
+    NAPI_CALL(env, napi_create_reference(env, argv[ARGS_SIZE_TWO], NAPI_RETURN_ONE, &asyncCallbackInfo->callback));
+    napi_value resourceName;
+    napi_create_string_latin1(env, "NAPI_UnreegisterPermissionsChanged", NAPI_AUTO_LENGTH, &resourceName);
+    napi_create_async_work(env, nullptr, resourceName,
+        [](napi_env env, void *data) {
+            AsyncUnregisterPermissions *asyncCallbackInfo = (AsyncUnregisterPermissions *)data;
+            asyncCallbackInfo->ret =
+                InnerUnregisterPermissionsChanged(env, asyncCallbackInfo->uids, asyncCallbackInfo->callback);
+        },
+        [](napi_env env, napi_status status, void *data) {
+            AsyncUnregisterPermissions *asyncCallbackInfo = (AsyncUnregisterPermissions *)data;
+            napi_value result[ARGS_SIZE_ONE] = {0};
+            napi_value callback = 0;
+            napi_value undefined = 0;
+            napi_value callResult = 0;
+            result[PARAM0] = GetCallbackErrorValue(env, asyncCallbackInfo->ret ? CODE_SUCCESS : CODE_FAILED);
+            napi_get_reference_value(env, asyncCallbackInfo->callback, &callback);
+            napi_call_function(env, undefined, callback, ARGS_SIZE_ONE, &result[PARAM0], &callResult);
+            if (asyncCallbackInfo->callback != nullptr) {
+                napi_delete_reference(env, asyncCallbackInfo->callback);
+            }
+            napi_delete_async_work(env, asyncCallbackInfo->asyncWork);
+            delete asyncCallbackInfo;
+            asyncCallbackInfo = nullptr;
+        },
+        (void *)asyncCallbackInfo,
+        &asyncCallbackInfo->asyncWork);
+    NAPI_CALL(env, napi_queue_async_work(env, asyncCallbackInfo->asyncWork));
+
+    napi_value ret = nullptr;
+    NAPI_CALL(env, napi_get_null(env, &ret));
+    if (ret == nullptr) {
+        if (asyncCallbackInfo != nullptr) {
+            delete asyncCallbackInfo;
+            asyncCallbackInfo = nullptr;
+        }
+    }
+    napi_value result;
+    NAPI_CALL(env, napi_create_int32(env, NAPI_RETURN_ONE, &result));
+    return result;
+}
+
+napi_value UnregisterAnyPermissions(napi_env env, napi_value arg)
+{
+    std::vector<int32_t> uids;
+    ParseInt32Array(env, uids, arg);
+    AsyncUnregisterPermissions *asyncCallbackInfo =
+        new AsyncUnregisterPermissions {.env = env, .asyncWork = nullptr, .uids = uids};
+    if (asyncCallbackInfo == nullptr) {
+        return nullptr;
+    }
+    HILOG_INFO("UnregisterPermissionsChanged asyncCallback.");
+    napi_value resourceName;
+    napi_create_string_latin1(env, "NAPI_UnreegisterPermissionsChanged", NAPI_AUTO_LENGTH, &resourceName);
+    napi_create_async_work(env,
+        nullptr,
+        resourceName,
+        [](napi_env env, void *data) {
+            AsyncUnregisterPermissions *asyncCallbackInfo = (AsyncUnregisterPermissions *)data;
+            asyncCallbackInfo->ret = InnerUnregisterPermissionsChanged(env, asyncCallbackInfo->uids);
+        },
+        [](napi_env env, napi_status status, void *data) {
+            AsyncUnregisterPermissions *asyncCallbackInfo = (AsyncUnregisterPermissions *)data;
+            napi_value result[ARGS_SIZE_ONE] = {0};
+            napi_value callback = 0;
+            napi_value undefined = 0;
+            napi_value callResult = 0;
+            result[PARAM0] = GetCallbackErrorValue(env, asyncCallbackInfo->ret ? CODE_SUCCESS : CODE_FAILED);
+            napi_get_reference_value(env, asyncCallbackInfo->callback, &callback);
+            napi_call_function(env, undefined, callback, ARGS_SIZE_ONE, &result[PARAM0], &callResult);
+            if (asyncCallbackInfo->callback != nullptr) {
+                napi_delete_reference(env, asyncCallbackInfo->callback);
+            }
+            napi_delete_async_work(env, asyncCallbackInfo->asyncWork);
+            delete asyncCallbackInfo;
+            asyncCallbackInfo = nullptr;
+        },
+        (void *)asyncCallbackInfo,
+        &asyncCallbackInfo->asyncWork);
+    NAPI_CALL(env, napi_queue_async_work(env, asyncCallbackInfo->asyncWork));
+
+    napi_value ret = nullptr;
+    NAPI_CALL(env, napi_get_null(env, &ret));
+    if (ret == nullptr) {
+        if (asyncCallbackInfo != nullptr) {
+            delete asyncCallbackInfo;
+            asyncCallbackInfo = nullptr;
+        }
+    }
+    napi_value result;
+    NAPI_CALL(env, napi_create_int32(env, NAPI_RETURN_ONE, &result));
+    return result;
 }
 
 napi_value UnregisterPermissionsChanged(napi_env env, napi_callback_info info)
@@ -3687,114 +3944,18 @@ napi_value UnregisterPermissionsChanged(napi_env env, napi_callback_info info)
     std::string permissionEvent;
     ParseString(env, permissionEvent, argv[PARAM0]);
 
-    if (permissionEvent == ANY_PERMISSION_CHANGE && argc == ARGS_SIZE_TWO) {
-        AsyncUnregisterPermissions *asyncCallbackInfo = new (std::nothrow) AsyncUnregisterPermissions {
-            .env = env,
-            .asyncWork = nullptr,
-        };
-        if (asyncCallbackInfo == nullptr) {
-            return nullptr;
+    if (permissionEvent == ANY_PERMISSION_CHANGE) {
+        if (argc == ARGS_SIZE_TWO) {
+            UnregisterPermissions(env, argv[PARAM1]);
+        } else if (argc == ARGS_SIZE_ONE) {
+            UnregisterPermissions(env);
         }
-        HILOG_INFO("UnregisterAnyPermissionsChanged asyncCallback.");
-        napi_valuetype valuetype = napi_undefined;
-        napi_typeof(env, argv[ARGS_SIZE_ONE], &valuetype);
-        NAPI_ASSERT(env, valuetype == napi_function, "Wrong argument type. Function expected.");
-        NAPI_CALL(env, napi_create_reference(env, argv[ARGS_SIZE_ONE], NAPI_RETURN_ONE, &asyncCallbackInfo->callback));
-        napi_value resourceName;
-        napi_create_string_latin1(env, "NAPI_UnreegisterAnyPermissionsChanged", NAPI_AUTO_LENGTH, &resourceName);
-        napi_create_async_work(env,
-            nullptr,
-            resourceName,
-            [](napi_env env, void *data) {
-                AsyncUnregisterPermissions *asyncCallbackInfo = (AsyncUnregisterPermissions *)data;
-                asyncCallbackInfo->ret = InnerUnregisterAnyPermissionsChanged(env, asyncCallbackInfo->callback);
-            },
-            [](napi_env env, napi_status status, void *data) {
-                AsyncUnregisterPermissions *asyncCallbackInfo = (AsyncUnregisterPermissions *)data;
-                napi_value result[ARGS_SIZE_ONE] = {0};
-                napi_value callback = 0;
-                napi_value undefined = 0;
-                napi_value callResult = 0;
-                result[PARAM0] = GetCallbackErrorValue(env, asyncCallbackInfo->ret ? CODE_SUCCESS : CODE_FAILED);
-                napi_get_reference_value(env, asyncCallbackInfo->callback, &callback);
-                napi_call_function(env, undefined, callback, ARGS_SIZE_ONE, &result[PARAM0], &callResult);
-                if (asyncCallbackInfo->callback != nullptr) {
-                    napi_delete_reference(env, asyncCallbackInfo->callback);
-                }
-                napi_delete_async_work(env, asyncCallbackInfo->asyncWork);
-                delete asyncCallbackInfo;
-                asyncCallbackInfo = nullptr;
-            },
-            (void *)asyncCallbackInfo,
-            &asyncCallbackInfo->asyncWork);
-        NAPI_CALL(env, napi_queue_async_work(env, asyncCallbackInfo->asyncWork));
-
-        napi_value ret = nullptr;
-        NAPI_CALL(env, napi_get_null(env, &ret));
-        if (ret == nullptr) {
-            if (asyncCallbackInfo != nullptr) {
-                delete asyncCallbackInfo;
-                asyncCallbackInfo = nullptr;
-            }
+    } else if (permissionEvent == PERMISSION_CHANGE) {
+        if (argc == ARGS_SIZE_THREE) {
+            UnregisterAnyPermissions(env, argv);
+        } else if (argc == ARGS_SIZE_TWO) {
+            UnregisterAnyPermissions(env, argv[PARAM1]);
         }
-        napi_value result;
-        NAPI_CALL(env, napi_create_int32(env, NAPI_RETURN_ONE, &result));
-        return result;
-    } else if (permissionEvent == PERMISSION_CHANGE && argc == ARGS_SIZE_THREE) {
-        std::vector<int32_t> uids;
-        ParseInt32Array(env, uids, argv[ARGS_SIZE_ONE]);
-        AsyncUnregisterPermissions *asyncCallbackInfo =
-            new AsyncUnregisterPermissions {.env = env, .asyncWork = nullptr, .uids = uids};
-        if (asyncCallbackInfo == nullptr) {
-            return nullptr;
-        }
-        HILOG_INFO("UnregisterPermissionsChanged asyncCallback.");
-        napi_valuetype valuetype = napi_undefined;
-        napi_typeof(env, argv[ARGS_SIZE_TWO], &valuetype);
-        NAPI_ASSERT(env, valuetype == napi_function, "Wrong argument type. Function expected.");
-        NAPI_CALL(env, napi_create_reference(env, argv[ARGS_SIZE_TWO], NAPI_RETURN_ONE, &asyncCallbackInfo->callback));
-        napi_value resourceName;
-        napi_create_string_latin1(env, "NAPI_UnreegisterPermissionsChanged", NAPI_AUTO_LENGTH, &resourceName);
-        napi_create_async_work(env,
-            nullptr,
-            resourceName,
-            [](napi_env env, void *data) {
-                AsyncUnregisterPermissions *asyncCallbackInfo = (AsyncUnregisterPermissions *)data;
-                asyncCallbackInfo->ret =
-                    InnerUnregisterPermissionsChanged(env, asyncCallbackInfo->uids, asyncCallbackInfo->callback);
-            },
-            [](napi_env env, napi_status status, void *data) {
-                AsyncUnregisterPermissions *asyncCallbackInfo = (AsyncUnregisterPermissions *)data;
-                napi_value result[ARGS_SIZE_ONE] = {0};
-                napi_value callback = 0;
-                napi_value undefined = 0;
-                napi_value callResult = 0;
-                result[PARAM0] = GetCallbackErrorValue(env, asyncCallbackInfo->ret ? CODE_SUCCESS : CODE_FAILED);
-                napi_get_reference_value(env, asyncCallbackInfo->callback, &callback);
-                napi_call_function(env, undefined, callback, ARGS_SIZE_ONE, &result[PARAM0], &callResult);
-                if (asyncCallbackInfo->callback != nullptr) {
-                    napi_delete_reference(env, asyncCallbackInfo->callback);
-                }
-                napi_delete_async_work(env, asyncCallbackInfo->asyncWork);
-                delete asyncCallbackInfo;
-                asyncCallbackInfo = nullptr;
-            },
-            (void *)asyncCallbackInfo,
-            &asyncCallbackInfo->asyncWork);
-        NAPI_CALL(env, napi_queue_async_work(env, asyncCallbackInfo->asyncWork));
-
-        napi_value ret = nullptr;
-        NAPI_CALL(env, napi_get_null(env, &ret));
-        if (ret == nullptr) {
-            if (asyncCallbackInfo != nullptr) {
-                delete asyncCallbackInfo;
-                asyncCallbackInfo = nullptr;
-            }
-        }
-
-        napi_value result;
-        NAPI_CALL(env, napi_create_int32(env, NAPI_RETURN_ONE, &result));
-        return result;
     }
     napi_value result;
     NAPI_CALL(env, napi_create_int32(env, NAPI_RETURN_ZERO, &result));

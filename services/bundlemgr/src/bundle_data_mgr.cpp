@@ -199,7 +199,7 @@ bool BundleDataMgr::AddNewModuleInfo(
                 .count();
         APP_LOGI("the bundle update time is %{public}" PRId64, time);
         oldInfo.SetBundleUpdateTime(time);
-        oldInfo.UpdateVersionInfo(newInfo);
+        oldInfo.UpdateAppInfo(newInfo);
         oldInfo.AddModuleInfo(newInfo);
         oldInfo.SetBundleStatus(InnerBundleInfo::BundleStatus::ENABLED);
         if (dataStorage_->DeleteStorageBundleInfo(Constants::CURRENT_DEVICE_ID, oldInfo)) {
@@ -268,7 +268,7 @@ bool BundleDataMgr::UpdateInnerBundleInfo(
                 .count();
         APP_LOGI("the bundle update time is %{public}" PRId64, time);
         oldInfo.SetBundleUpdateTime(time);
-        oldInfo.UpdateVersionInfo(newInfo);
+        oldInfo.UpdateAppInfo(newInfo);
         oldInfo.UpdateModuleInfo(newInfo);
         oldInfo.SetBundleStatus(InnerBundleInfo::BundleStatus::ENABLED);
         if (dataStorage_->DeleteStorageBundleInfo(Constants::CURRENT_DEVICE_ID, oldInfo)) {

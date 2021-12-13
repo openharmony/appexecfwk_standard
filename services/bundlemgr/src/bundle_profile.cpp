@@ -269,7 +269,7 @@ struct Js {
     std::string type = "normal";
 };
 
-struct Intent {
+struct Want {
     std::string targetClass;
     std::string targetBundle;
 };
@@ -286,7 +286,7 @@ struct Shortcut {
     std::string shortcutId;
     std::string label;
     std::string icon;
-    std::vector<Intent> intents;
+    std::vector<Want> wants;
 };
 
 // config.json module
@@ -1431,14 +1431,14 @@ void from_json(const nlohmann::json &jsonObject, Js &js)
         ArrayType::NOT_ARRAY);
 }
 
-void from_json(const nlohmann::json &jsonObject, Intent &intents)
+void from_json(const nlohmann::json &jsonObject, Want &wants)
 {
     // these are not required fields.
     const auto &jsonObjectEnd = jsonObject.end();
     GetValueIfFindKey<std::string>(jsonObject,
         jsonObjectEnd,
         BUNDLE_MODULE_PROFILE_KEY_TARGET_CLASS,
-        intents.targetClass,
+        wants.targetClass,
         JsonType::STRING,
         false,
         parseResult,
@@ -1446,7 +1446,7 @@ void from_json(const nlohmann::json &jsonObject, Intent &intents)
     GetValueIfFindKey<std::string>(jsonObject,
         jsonObjectEnd,
         BUNDLE_MODULE_PROFILE_KEY_TARGET_BUNDLE,
-        intents.targetBundle,
+        wants.targetBundle,
         JsonType::STRING,
         false,
         parseResult,
@@ -1529,10 +1529,10 @@ void from_json(const nlohmann::json &jsonObject, Shortcut &shortcut)
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<std::vector<Intent>>(jsonObject,
+    GetValueIfFindKey<std::vector<Want>>(jsonObject,
         jsonObjectEnd,
-        BUNDLE_MODULE_PROFILE_KEY_SHORTCUT_INTENTS,
-        shortcut.intents,
+        BUNDLE_MODULE_PROFILE_KEY_SHORTCUT_WANTS,
+        shortcut.wants,
         JsonType::ARRAY,
         false,
         parseResult,
@@ -1870,7 +1870,6 @@ bool TransformToInfo(const ProfileReader::ConfigJson &configJson, ApplicationInf
     }
     applicationInfo.process = configJson.deveicConfig.defaultDevice.process;
     applicationInfo.debug = configJson.app.debug;
-    applicationInfo.singleUser = configJson.app.singleUser;
     applicationInfo.enabled = true;
     return true;
 }
@@ -2053,10 +2052,14 @@ bool TransformToInfo(ProfileReader::ConfigJson &configJson, InnerBundleInfo &inn
     }
     ApplicationInfo applicationInfo;
     TransformToInfo(configJson, applicationInfo);
-    applicationInfo.isSystemApp = (innerBundleInfo.GetAppType() == Constants::AppType::SYSTEM_APP) ? true : false;
 
     BundleInfo bundleInfo;
     TransformToInfo(configJson, bundleInfo);
+    if (innerBundleInfo.GetAppType() == Constants::AppType::SYSTEM_APP) {
+        applicationInfo.isSystemApp = true;
+    } else {
+        bundleInfo.singleUser = false;
+    }
 
     InnerModuleInfo innerModuleInfo;
     TransformToInfo(configJson, innerModuleInfo);
@@ -2066,10 +2069,10 @@ bool TransformToInfo(ProfileReader::ConfigJson &configJson, InnerBundleInfo &inn
         shortcutInfo.bundleName = configJson.app.bundleName;
         shortcutInfo.icon = info.icon;
         shortcutInfo.label = info.label;
-        for (const auto &intent : info.intents) {
+        for (const auto &want : info.wants) {
             ShortcutIntent shortcutIntent;
-            shortcutIntent.targetBundle = intent.targetBundle;
-            shortcutIntent.targetClass = intent.targetClass;
+            shortcutIntent.targetBundle = want.targetBundle;
+            shortcutIntent.targetClass = want.targetClass;
             shortcutInfo.intents.emplace_back(shortcutIntent);
         }
         std::string shortcutkey = configJson.app.bundleName + configJson.module.package + info.shortcutId;
