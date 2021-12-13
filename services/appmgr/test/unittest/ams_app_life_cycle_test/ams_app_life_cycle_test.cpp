@@ -289,6 +289,65 @@ std::shared_ptr<AbilityRunningRecord> AmsAppLifeCycleTest::AddNewAbility(
 
 /*
  * Feature: AMS
+ * Function: AppLifeCycle::GetOrCreateAppRunningRecord
+ * SubFunction: bundleMgr CheckPermission
+ * FunctionPoints: UnsuspendApplication
+ * CaseDescription: Check if there is background operation permission
+ */
+HWTEST_F(AmsAppLifeCycleTest, RemoveAppFromRecentList_001, TestSize.Level1)
+{
+    RecordQueryResult result;
+    sptr<MockAppScheduler> mockAppScheduler = new MockAppScheduler();
+    sptr<IAppScheduler> client = iface_cast<IAppScheduler>(mockAppScheduler.GetRefPtr());
+
+    auto abilityInfo = GetAbilityInfoByIndex("0");
+    auto appInfo = GetApplication();
+    sptr<IRemoteObject> token = GetMockToken();
+    auto appRecord = StartProcessAndLoadAbility(token, nullptr, abilityInfo, appInfo, 100);
+    appRecord->SetApplicationClient(client);
+
+    EXPECT_TRUE(appRecord);
+    int size = serviceInner_->GetRecentAppList().size();
+    EXPECT_EQ(size, 1);
+    EXPECT_FALSE(result.appExists);
+
+    auto abilityInfo2 = std::make_shared<AbilityInfo>();
+    abilityInfo2->name = "test_ability_1";
+    abilityInfo2->applicationName = "com.ohos.test.special";
+    abilityInfo2->process = "com.ohos.test.special";
+    abilityInfo->applicationInfo.uid = 101;
+
+    auto appInfo2 = std::make_shared<ApplicationInfo>();
+    appInfo2->name = "com.ohos.test.special";
+    appInfo2->bundleName = "com.ohos.test.special";
+    appInfo->uid = 101;
+    sptr<IRemoteObject> token2 = GetMockToken();
+
+    auto appRecord2 = StartProcessAndLoadAbility(token2, nullptr, abilityInfo2, appInfo2, 101);
+    appRecord2->SetApplicationClient(client);
+    EXPECT_TRUE(appRecord2);
+    size = serviceInner_->GetRecentAppList().size();
+    EXPECT_EQ(size, 2);
+    EXPECT_FALSE(result.appExists);
+
+    // remove the first
+    EXPECT_CALL(*mockAppScheduler, ScheduleProcessSecurityExit()).Times(1);
+    serviceInner_->RemoveAppFromRecentList(appRecord->GetName(), appRecord->GetName());
+    sleep(1);
+    size = serviceInner_->GetRecentAppList().size();
+    EXPECT_EQ(size, 1);
+
+    EXPECT_CALL(*mockAppScheduler, ScheduleProcessSecurityExit()).Times(1);
+    serviceInner_->RemoveAppFromRecentList(appRecord2->GetName(), appRecord2->GetName());
+    sleep(3);
+    
+    auto list = serviceInner_->GetRecentAppList();
+    size = list.size();
+    EXPECT_EQ(size, 0);
+}
+
+/*
+ * Feature: AMS
  * Function: AppLifeCycle
  * SubFunction: Init
  * FunctionPoints: Init
@@ -1965,62 +2024,6 @@ HWTEST_F(AmsAppLifeCycleTest, GetAppRunningRecordByProcessName_001, TestSize.Lev
 
     appRecord->SetState(ApplicationState::APP_STATE_FOREGROUND);
     EXPECT_EQ(ApplicationState::APP_STATE_FOREGROUND, appRecordProc->GetState());
-}
-
-/*
- * Feature: AMS
- * Function: AppLifeCycle::GetOrCreateAppRunningRecord
- * SubFunction: bundleMgr CheckPermission
- * FunctionPoints: UnsuspendApplication
- * CaseDescription: Check if there is background operation permission
- */
-HWTEST_F(AmsAppLifeCycleTest, RemoveAppFromRecentList_001, TestSize.Level1)
-{
-    RecordQueryResult result;
-    sptr<MockAppScheduler> mockAppScheduler = new MockAppScheduler();
-    sptr<IAppScheduler> client = iface_cast<IAppScheduler>(mockAppScheduler.GetRefPtr());
-
-    auto abilityInfo = GetAbilityInfoByIndex("0");
-    auto appInfo = GetApplication();
-    sptr<IRemoteObject> token = GetMockToken();
-    auto appRecord = StartProcessAndLoadAbility(token, nullptr, abilityInfo, appInfo, 100);
-    appRecord->SetApplicationClient(client);
-
-    EXPECT_TRUE(appRecord);
-    int size = serviceInner_->GetRecentAppList().size();
-    EXPECT_EQ(size, 1);
-    EXPECT_FALSE(result.appExists);
-
-    auto abilityInfo2 = std::make_shared<AbilityInfo>();
-    abilityInfo2->name = "test_ability_1";
-    abilityInfo2->applicationName = "com.ohos.test.special";
-    abilityInfo2->process = "com.ohos.test.special";
-    abilityInfo->applicationInfo.uid = 101;
-
-    auto appInfo2 = std::make_shared<ApplicationInfo>();
-    appInfo2->name = "com.ohos.test.special";
-    appInfo2->bundleName = "com.ohos.test.special";
-    appInfo->uid = 101;
-    sptr<IRemoteObject> token2 = GetMockToken();
-
-    auto appRecord2 = StartProcessAndLoadAbility(token2, nullptr, abilityInfo2, appInfo2, 101);
-    appRecord2->SetApplicationClient(client);
-    EXPECT_TRUE(appRecord2);
-    size = serviceInner_->GetRecentAppList().size();
-    EXPECT_EQ(size, 2);
-    EXPECT_FALSE(result.appExists);
-
-    // remove the first
-    EXPECT_CALL(*mockAppScheduler, ScheduleProcessSecurityExit()).Times(1);
-    serviceInner_->RemoveAppFromRecentList(appRecord->GetName(), appRecord->GetName());
-
-    size = serviceInner_->GetRecentAppList().size();
-    EXPECT_EQ(size, 1);
-
-    EXPECT_CALL(*mockAppScheduler, ScheduleProcessSecurityExit()).Times(1);
-    serviceInner_->RemoveAppFromRecentList(appRecord2->GetName(), appRecord2->GetName());
-    size = serviceInner_->GetRecentAppList().size();
-    EXPECT_EQ(size, 0);
 }
 
 /*
