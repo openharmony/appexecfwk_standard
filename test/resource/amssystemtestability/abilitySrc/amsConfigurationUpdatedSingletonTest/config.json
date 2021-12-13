@@ -1,6 +1,6 @@
 {
     "app":{
-        "bundleName": "com.ohos.amsst.ConfigurationUpdated",
+        "bundleName": "com.ohos.amsst.ConfigurationUpdatedSingleton",
         "vendor": "ix",
         "version": {
             "code": 1,
@@ -16,7 +16,7 @@
         }
     },
     "module": {
-        "package":"com.ohos.ConfigurationUpdated.src",
+        "package":"com.ohos.ConfigurationUpdatedSingleton.src",
         "name":"MainAbility",
         "deviceType": [
             "tv",
@@ -32,26 +32,13 @@
             "icon": "$media:snowball",
             "srcLanguage": "c++",
             "label": "MainAbility label",
-            "launchType": "standard",
+            "launchType": "singleton",
             "configChanges": ["orientation"],
             "orientation": "unspecified",
             "type": "page",
             "visible": true,
             "skills": [
             ]
-        },
-        {
-            "name": "SecondAbility",
-            "icon": "$media:snowball",
-            "srcLanguage": "c++",
-            "label": "SecondAbility label",
-            "launchType": "standard",
-            "configChanges": ["orientation"],
-            "orientation": "unspecified",
-            "type": "page",
-            "visible": true,
-            "skills": [
-            ] 
         }]
     }
 }

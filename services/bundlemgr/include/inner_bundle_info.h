@@ -271,7 +271,7 @@ public:
      * @param newInfo Indicates the new InnerBundleInfo object.
      * @return
      */
-    void UpdateVersionInfo(const InnerBundleInfo &newInfo);
+    void UpdateAppInfo(const InnerBundleInfo &newInfo);
     /**
      * @brief Remove module info from InnerBundleInfo object.
      * @param modulePackage Indicates the module package to be remove.
@@ -883,14 +883,13 @@ public:
         newBundleName_ = bundlename + '#' + strUid;
         APP_LOGI("set clone newBundleName_ %{public}s", newBundleName_.c_str());
     }
-    
+
     std::string GetDBKeyBundleName() const
     {
-        if (baseApplicationInfo_.isCloned != true) {
+        if (!baseApplicationInfo_.isCloned) {
             return baseApplicationInfo_.bundleName;
         }
         return newBundleName_;
-    
     }
 
     void SetIsLauncherApp(bool isLauncher)
@@ -981,7 +980,7 @@ public:
 
     std::string GetProvisionId() const
     {
-        return baseBundleInfo_.appId;
+        return baseBundleInfo_.appId.substr(baseBundleInfo_.name.size() + 1);
     }
 
     void SetAppFeature(const std::string &appFeature)

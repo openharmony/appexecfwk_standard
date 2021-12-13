@@ -12,10 +12,10 @@
 # limitations under the License.
 import("//build/ohos.gni")
 import("//foundation/appexecfwk/standard/appexecfwk.gni")
-SUBDEMOSYSTEM_DIR = "${appexecfwk_path}/test/resource/amssystemtestability/abilitySrc/amsConfigurationUpdatedTest"
+SUBDEMOSYSTEM_DIR = "${appexecfwk_path}/test/resource/amssystemtestability/abilitySrc/amsConfigurationUpdatedSingletonTest"
 SUBST_TOOLS_DIR =
     "${appexecfwk_path}/test/resource/amssystemtestability/abilitySrc/tools"
-config("amsConfigurationUpdatedTestConfig") {
+config("amsConfigurationUpdatedSingletonTestConfig") {
   visibility = [ ":*" ]
   include_dirs = [
     "${SUBDEMOSYSTEM_DIR}/include",
@@ -31,7 +31,7 @@ config("amsConfigurationUpdatedTestConfig") {
     "${SUBST_TOOLS_DIR}/include",
   ]
   defines = [
-    "APP_LOG_TAG = \"amsConfigurationUpdatedTest\"",
+    "APP_LOG_TAG = \"amsConfigurationUpdatedSingletonTest\"",
     "LOG_DOMAIN = 0xD002200",
   ]
   cflags = []
@@ -39,13 +39,12 @@ config("amsConfigurationUpdatedTestConfig") {
     cflags += [ "-DBINDER_IPC_32BIT" ]
   }
 }
-ohos_shared_library("amsConfigurationUpdatedTest") {
+ohos_shared_library("amsConfigurationUpdatedSingletonTest") {
   sources = [
     "${SUBDEMOSYSTEM_DIR}/src/main_ability.cpp",
-    "${SUBDEMOSYSTEM_DIR}/src/second_ability.cpp",
     "${SUBDEMOSYSTEM_DIR}/src/test_utils.cpp",
   ]
-  configs = [ ":amsConfigurationUpdatedTestConfig" ]
+  configs = [ ":amsConfigurationUpdatedSingletonTestConfig" ]
   deps = [
     "${aafwk_path}/frameworks/kits/ability/native:abilitykit_native",
     "${aafwk_path}/frameworks/kits/ability/native:dummy_classes",

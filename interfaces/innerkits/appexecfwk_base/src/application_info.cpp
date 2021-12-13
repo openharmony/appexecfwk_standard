@@ -50,7 +50,6 @@ bool ApplicationInfo::ReadFromParcel(Parcel &parcel)
     isLauncherApp = parcel.ReadBool();
     enabled = parcel.ReadBool();
     debug = parcel.ReadBool();
-    singleUser = parcel.ReadBool();
     supportedModes = parcel.ReadInt32();
     labelId = parcel.ReadInt32();
     iconId = parcel.ReadInt32();
@@ -113,7 +112,6 @@ bool ApplicationInfo::Marshalling(Parcel &parcel) const
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, isLauncherApp);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, enabled);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, debug);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, singleUser);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, supportedModes);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, labelId);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, iconId);
@@ -194,8 +192,7 @@ void to_json(nlohmann::json &jsonObject, const ApplicationInfo &applicationInfo)
         {"dataBaseDir", applicationInfo.dataBaseDir},
         {"cacheDir", applicationInfo.cacheDir},
         {"flags", applicationInfo.flags},
-        {"uid", applicationInfo.uid},
-        {"singleUser", applicationInfo.singleUser}
+        {"uid", applicationInfo.uid}
     };
 }
 
@@ -214,7 +211,6 @@ void from_json(const nlohmann::json &jsonObject, ApplicationInfo &applicationInf
     applicationInfo.isSystemApp = jsonObject.at("isSystemApp").get<bool>();
     applicationInfo.isCloned = jsonObject.at("isCloned").get<bool>();
     applicationInfo.isLauncherApp = jsonObject.at("isLauncherApp").get<bool>();
-    applicationInfo.singleUser = jsonObject.at("singleUser").get<bool>();
     applicationInfo.enabled = jsonObject.at("enabled").get<bool>();
     applicationInfo.debug = jsonObject.at("debug").get<bool>();
     applicationInfo.supportedModes = jsonObject.at("supportedModes").get<int>();
