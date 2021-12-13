@@ -3721,8 +3721,7 @@ static bool InnerUnregisterPermissionsChanged(napi_env env, const std::vector<in
 
 napi_value UnregisterPermissions(napi_env env, napi_value arg)
 {
-    AsyncUnregisterPermissions *asyncCallbackInfo = new (std::nothrow) AsyncUnregisterPermissions {
-        .env = env,
+    AsyncUnregisterPermissions *asyncCallbackInfo = new (std::nothrow) AsyncUnregisterPermissions {.env = env,
         .asyncWork = nullptr,
     };
     if (asyncCallbackInfo == nullptr) {
@@ -3843,9 +3842,7 @@ napi_value UnregisterAnyPermissions(napi_env env, napi_value *argv)
     NAPI_CALL(env, napi_create_reference(env, argv[ARGS_SIZE_TWO], NAPI_RETURN_ONE, &asyncCallbackInfo->callback));
     napi_value resourceName;
     napi_create_string_latin1(env, "NAPI_UnreegisterPermissionsChanged", NAPI_AUTO_LENGTH, &resourceName);
-    napi_create_async_work(env,
-        nullptr,
-        resourceName,
+    napi_create_async_work(env, nullptr, resourceName,
         [](napi_env env, void *data) {
             AsyncUnregisterPermissions *asyncCallbackInfo = (AsyncUnregisterPermissions *)data;
             asyncCallbackInfo->ret =
