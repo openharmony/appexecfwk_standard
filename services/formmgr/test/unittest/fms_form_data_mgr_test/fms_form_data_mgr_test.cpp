@@ -59,7 +59,7 @@ void FmsFormDataMgrTest::SetUp(void)
 
 void FmsFormDataMgrTest::TearDown(void)
 {
-    while(!formDataMgr_.formRecords_.empty()) {
+    while (!formDataMgr_.formRecords_.empty()) {
         formDataMgr_.formRecords_.erase(formDataMgr_.formRecords_.begin());
     }
     if (!formDataMgr_.clientRecords_.empty()) {
