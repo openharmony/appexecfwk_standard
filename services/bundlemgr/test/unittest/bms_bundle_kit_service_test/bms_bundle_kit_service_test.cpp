@@ -51,6 +51,7 @@ const std::string BUNDLE_VERSION_NAME = "1.0.0.1";
 const std::string BUNDLE_MAIN_ABILITY = "com.example.bundlekit.test.entry";
 const int32_t BUNDLE_MAX_SDK_VERSION = 0;
 const int32_t BUNDLE_MIN_SDK_VERSION = 0;
+const uint32_t RECORD_SIZE = 0;
 const std::string BUNDLE_JOINT_USERID = "3";
 const uint32_t BUNDLE_VERSION_CODE = 1001;
 const std::string BUNDLE_NAME_TEST1 = "com.example.bundlekit.test1";
@@ -197,6 +198,10 @@ public:
     void CheckShortcutInfoTest(std::vector<ShortcutInfo> &shortcutInfos) const;
     void CheckCommonEventInfoTest(std::vector<CommonEventInfo> &commonEventInfos) const;
     void CheckShortcutInfoDemo(std::vector<ShortcutInfo> &shortcutInfos) const;
+    void AddBundleInfo(const std::string &bundleName, BundleInfo &bundleInfo) const;
+    void AddApplicationInfo(const std::string &bundleName, ApplicationInfo &appInfo) const;
+    void AddInnerBundleInfoByTest(const std::string &bundleName, const std::string &moduleName,
+        const std::string &abilityName, InnerBundleInfo &innerBundleInfo) const;
 
 public:
     std::shared_ptr<BundleMgrService> bundleMgrService_ = DelayedSingleton<BundleMgrService>::GetInstance();
@@ -228,26 +233,8 @@ std::shared_ptr<BundleCloneMgr> BmsBundleKitServiceTest::GetBundleCloneMgr() con
     return bundleMgrService_->GetCloneMgr();
 }
 
-void BmsBundleKitServiceTest::MockInstallBundle(
-    const std::string &bundleName, const std::string &moduleName, const std::string &abilityName) const
+void BmsBundleKitServiceTest::AddBundleInfo(const std::string &bundleName, BundleInfo &bundleInfo) const
 {
-    InnerBundleInfo innerBundleInfo;
-    ApplicationInfo appInfo;
-    appInfo.bundleName = bundleName;
-    appInfo.name = bundleName;
-    appInfo.deviceId = DEVICE_ID;
-    appInfo.process = PROCESS_TEST;
-    appInfo.label = BUNDLE_LABEL;
-    appInfo.description = BUNDLE_DESCRIPTION;
-    appInfo.codePath = CODE_PATH;
-    appInfo.dataDir = FILES_DIR;
-    appInfo.dataBaseDir = DATA_BASE_DIR;
-    appInfo.cacheDir = CACHE_DIR;
-    appInfo.flags = APPLICATION_INFO_FLAGS;
-    appInfo.enabled = true;
-    appInfo.isCloned = false;
-
-    BundleInfo bundleInfo;
     bundleInfo.name = bundleName;
     bundleInfo.label = BUNDLE_LABEL;
     bundleInfo.description = BUNDLE_DESCRIPTION;
@@ -261,62 +248,39 @@ void BmsBundleKitServiceTest::MockInstallBundle(
     bundleInfo.isDifferentName = true;
     bundleInfo.jointUserId = BUNDLE_JOINT_USERID;
     bundleInfo.singleUser = true;
+}
 
-    InnerModuleInfo moduleInfo;
-    ReqPermission reqPermission1 = {.name = "permission1"};
-    ReqPermission reqPermission2 = {.name = "permission1"};
-    moduleInfo.reqPermissions = {reqPermission1, reqPermission2};
-    moduleInfo.modulePackage = PACKAGE_NAME;
-    moduleInfo.moduleName = moduleName;
-    moduleInfo.description = BUNDLE_DESCRIPTION;
-    moduleInfo.colorMode = COLOR_MODE;
+void BmsBundleKitServiceTest::AddApplicationInfo(const std::string &bundleName, ApplicationInfo &appInfo) const
+{
+    appInfo.bundleName = bundleName;
+    appInfo.name = bundleName;
+    appInfo.deviceId = DEVICE_ID;
+    appInfo.process = PROCESS_TEST;
+    appInfo.label = BUNDLE_LABEL;
+    appInfo.description = BUNDLE_DESCRIPTION;
+    appInfo.codePath = CODE_PATH;
+    appInfo.dataDir = FILES_DIR;
+    appInfo.dataBaseDir = DATA_BASE_DIR;
+    appInfo.cacheDir = CACHE_DIR;
+    appInfo.flags = APPLICATION_INFO_FLAGS;
+    appInfo.enabled = true;
+    appInfo.isCloned = false;
+}
 
-    AppExecFwk::Parameters parameters {
-        "description",
-        "name",
-        "type"
-    };
-    AppExecFwk::Results results {
-        "description",
-        "name",
-        "type"
-    };
-    AppExecFwk::CustomizeData customizeData {
-        "name",
-        "value",
-        "extra"
-    };
-    MetaData metaData {
-        {parameters},
-        {results},
-        {customizeData}
-    };
-    moduleInfo.metaData = metaData;
-
-    FormInfo form = MockFormInfo(bundleName, moduleName, abilityName);
-    AbilityInfo abilityInfo = MockAbilityInfo(bundleName, moduleName, abilityName);
-    innerBundleInfo.SetBaseApplicationInfo(appInfo);
-    innerBundleInfo.SetBaseBundleInfo(bundleInfo);
-    innerBundleInfo.InsertInnerModuleInfo(moduleName, moduleInfo);
+void BmsBundleKitServiceTest::AddInnerBundleInfoByTest(const std::string &bundleName,
+    const std::string &moduleName, const std::string &abilityName, InnerBundleInfo &innerBundleInfo) const
+{
     std::string keyName = bundleName + moduleName + abilityName;
-    innerBundleInfo.InsertAbilitiesInfo(keyName, abilityInfo);
     innerBundleInfo.SetUid((bundleName == BUNDLE_NAME_TEST) ? TEST_UID : DEMO_UID);
-    // for launch ability
     if (bundleName == BUNDLE_NAME_TEST) {
-        AppExecFwk::SkillUri uri {
-            URI_SCHEME,
-            URI_HOST
-        };
-        Skill skill {
-            {ACTION},
-            {ENTITY},
-            {uri}
-        };
+        AppExecFwk::SkillUri uri {URI_SCHEME, URI_HOST};
+        Skill skill {{ACTION}, {ENTITY}, {uri}};
         std::vector<Skill> skills;
         skills.emplace_back(skill);
         innerBundleInfo.SetMainAbility(keyName);
         innerBundleInfo.InsertSkillInfo(keyName, skills);
     }
+    FormInfo form = MockFormInfo(bundleName, moduleName, abilityName);
     std::vector<FormInfo> formInfos;
     formInfos.emplace_back(form);
     if (bundleName == BUNDLE_NAME_TEST) {
@@ -332,8 +296,41 @@ void BmsBundleKitServiceTest::MockInstallBundle(
     std::string commonEventKey = bundleName + moduleName + abilityName;
     CommonEventInfo eventInfo = MockCommonEventInfo(bundleName, innerBundleInfo.GetUid());
     innerBundleInfo.InsertCommonEvents(commonEventKey, eventInfo);
+}
+
+void BmsBundleKitServiceTest::MockInstallBundle(
+    const std::string &bundleName, const std::string &moduleName, const std::string &abilityName) const
+{
+    InnerBundleInfo innerBundleInfo;
+    ApplicationInfo appInfo;
+    AddApplicationInfo(bundleName, appInfo);
+    BundleInfo bundleInfo;
+    AddBundleInfo(bundleName, bundleInfo);
+
+    InnerModuleInfo moduleInfo;
+    ReqPermission reqPermission1 = {.name = "permission1"};
+    ReqPermission reqPermission2 = {.name = "permission1"};
+    moduleInfo.reqPermissions = {reqPermission1, reqPermission2};
+    moduleInfo.modulePackage = PACKAGE_NAME;
+    moduleInfo.moduleName = moduleName;
+    moduleInfo.description = BUNDLE_DESCRIPTION;
+    moduleInfo.colorMode = COLOR_MODE;
+
+    AppExecFwk::Parameters parameters {"description", "name", "type"};
+    AppExecFwk::Results results {"description", "name", "type"};
+    AppExecFwk::CustomizeData customizeData {"name", "value", "extra"};
+    MetaData metaData {{parameters}, {results}, {customizeData}};
+    moduleInfo.metaData = metaData;
+
+    std::string keyName = bundleName + moduleName + abilityName;
+    AbilityInfo abilityInfo = MockAbilityInfo(bundleName, moduleName, abilityName);
+    innerBundleInfo.SetBaseApplicationInfo(appInfo);
+    innerBundleInfo.SetBaseBundleInfo(bundleInfo);
+    innerBundleInfo.InsertAbilitiesInfo(keyName, abilityInfo);
+    innerBundleInfo.InsertInnerModuleInfo(moduleName, moduleInfo);
     auto dataMgr = GetBundleDataMgr();
     EXPECT_NE(dataMgr, nullptr);
+    AddInnerBundleInfoByTest(bundleName, moduleName, abilityName, innerBundleInfo);
     bool startRet = dataMgr->UpdateBundleInstallState(bundleName, InstallState::INSTALL_START);
     bool finishRet = dataMgr->UpdateBundleInstallState(bundleName, InstallState::INSTALL_SUCCESS);
     bool addRet = dataMgr->AddInnerBundleInfo(bundleName, innerBundleInfo);
@@ -3076,7 +3073,7 @@ HWTEST_F(BmsBundleKitServiceTest, GetUsageRecords_0500, Function | SmallTest | L
     std::vector<ModuleUsageRecord> records;
     auto result = GetBundleDataMgr()->GetUsageRecords(1001, records);
     EXPECT_FALSE(result);
-    EXPECT_EQ(records.size(), 0);
+    EXPECT_EQ(records.size(), RECORD_SIZE);
     InnerBundleInfo innerBundleInfo1;
     MockInnerBundleInfo(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST, innerBundleInfo1);
     ModuleUsageRecordStorage moduleUsageRecordStorage;
