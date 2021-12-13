@@ -58,7 +58,18 @@ void FmsFormDataMgrTest::SetUp(void)
 }
 
 void FmsFormDataMgrTest::TearDown(void)
-{}
+{
+    while (!formDataMgr_.formRecords_.empty()) {
+        formDataMgr_.formRecords_.erase(formDataMgr_.formRecords_.begin());
+    }
+    if (!formDataMgr_.clientRecords_.empty()) {
+        formDataMgr_.clientRecords_.erase(formDataMgr_.clientRecords_.begin(), formDataMgr_.clientRecords_.end());
+    }
+    if (!formDataMgr_.tempForms_.empty()) {
+        formDataMgr_.tempForms_.erase(formDataMgr_.tempForms_.begin(), formDataMgr_.tempForms_.end());
+    }
+    formDataMgr_.udidHash_ = 0;
+}
 
 void FmsFormDataMgrTest::InitFormItemInfo(int64_t formId, FormItemInfo &form_item_info)
 {
@@ -458,7 +469,6 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_CheckTempEnoughForm_002, TestSiz
 {
     GTEST_LOG_(INFO) << "FmsFormDataMgrTest_CheckTempEnoughForm_002 start";
 
-
     for (int index = 0; index < Constants::MAX_TEMP_FORMS; index++) {
         formDataMgr_.tempForms_.emplace_back(index);
     }
@@ -551,7 +561,7 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_DeleteTempForm_001, TestSize.Lev
     GTEST_LOG_(INFO) << "FmsFormDataMgrTest_DeleteTempForm_001 start";
 
     int64_t formId = 1;
-    EXPECT_EQ(true, formDataMgr_.DeleteTempForm(formId));
+    EXPECT_EQ(false, formDataMgr_.DeleteTempForm(formId));
 
     GTEST_LOG_(INFO) << "FmsFormDataMgrTest_DeleteTempForm_001 end";
 }
