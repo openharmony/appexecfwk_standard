@@ -41,6 +41,8 @@ const std::string TASK_APPLICATION_TERMINATED = "ApplicationTerminatedTask";
 const std::string TASK_ABILITY_CLEANED = "AbilityCleanedTask";
 const std::string TASK_ADD_APP_DEATH_RECIPIENT = "AddAppRecipientTask";
 const std::string TASK_CLEAR_UP_APPLICATION_DATA = "ClearUpApplicationDataTask";
+const std::string TASK_STARTUP_RESIDENT_PROCESS = "StartupResidentProcess";
+const std::string TASK_ADD_ABILITY_STAGE_DONE = "AddAbilityStageDone";
 }  // namespace
 
 REGISTER_SYSTEM_ABILITY_BY_ID(AppMgrService, APP_MGR_SERVICE_ID, true);
@@ -234,6 +236,17 @@ void AppMgrService::AddAppDeathRecipient(const pid_t pid) const
     handler_->PostTask(addAppRecipientFunc, TASK_ADD_APP_DEATH_RECIPIENT);
 }
 
+void AppMgrService::StartupResidentProcess()
+{
+    if (!IsReady()) {
+        return;
+    }
+
+    std::function <void()> startupResidentProcess =
+        std::bind(&AppMgrServiceInner::LoadResidentProcess, appMgrServiceInner_);
+    handler_->PostTask(startupResidentProcess, TASK_STARTUP_RESIDENT_PROCESS);
+}
+
 sptr<IAmsMgr> AppMgrService::GetAmsMgr()
 {
     return amsMgrScheduler_;
@@ -313,6 +326,16 @@ void AppMgrService::GetSystemMemoryAttr(SystemMemoryAttr &memoryInfo, std::strin
     memoryInfo.totalSysMem_ = systemMemInfo.GetMemTotal();
     memoryInfo.threshold_ = static_cast<int64_t>(memoryInfo.totalSysMem_ * memThreshold / percentage);
     memoryInfo.isSysInlowMem_ = memoryInfo.availSysMem_ < memoryInfo.threshold_;
+}
+
+void AppMgrService::AddAbilityStageDone(const int32_t recordId)
+{
+    if (!IsReady()) {
+        return;
+    }
+    std::function <void()> addAbilityStageDone =
+        std::bind(&AppMgrServiceInner::AddAbilityStageDone, appMgrServiceInner_, recordId);
+    handler_->PostTask(addAbilityStageDone, TASK_ADD_ABILITY_STAGE_DONE);
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS

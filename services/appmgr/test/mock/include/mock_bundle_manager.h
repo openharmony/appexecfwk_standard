@@ -101,10 +101,22 @@ public:
     };
     virtual bool GetBundleInfosByMetaData(const std::string &metaData, std::vector<BundleInfo> &bundleInfos) override
     {
+
         return true;
     };
     virtual bool QueryKeepAliveBundleInfos(std::vector<BundleInfo> &bundleInfos) override
     {
+        GTEST_LOG_(INFO) << "QueryKeepAliveBundleInfos()";
+        ApplicationInfo info;
+        info.name = "KeepAliveApp";
+        info.bundleName = "KeepAliveApplication";
+        info.uid = 2100;
+
+        BundleInfo bundleInfo;
+        bundleInfo.applicationInfo = info;
+
+        bundleInfos.push_back(bundleInfo);
+        GTEST_LOG_(INFO) << "bundleInfos size : "<<bundleInfos.size();
         return true;
     };
     virtual std::string GetAbilityLabel(const std::string &bundleName, const std::string &className) override
@@ -269,10 +281,6 @@ public:
     {
         return true;
     };
-    virtual bool QueryKeepAliveBundleInfos(std::vector<BundleInfo> &bundleInfos) override
-    {
-        return true;
-    };
     virtual std::string GetAbilityLabel(const std::string &bundleName, const std::string &className) override
     {
         return "";
@@ -392,12 +400,28 @@ public:
     {
         return true;
     }
+    virtual bool QueryKeepAliveBundleInfos(std::vector<BundleInfo> &bundleInfos) override
+    {
+        GTEST_LOG_(INFO) << "QueryKeepAliveBundleInfos()";
+        ApplicationInfo info;
+        info.name = "KeepAliveApp";
+        info.bundleName = "KeepAliveApplication";
+        info.uid = 2100;
+
+        BundleInfo bundleInfo;
+        bundleInfo.applicationInfo = info;
+
+        bundleInfos.push_back(bundleInfo);
+        GTEST_LOG_(INFO) << "bundleInfos size : "<<bundleInfos.size();
+        return true;
+    };
     BundleMgrService();
     virtual ~BundleMgrService() {}
     void MakingPackageData();
     void PushTestHelloIndexAbility(int index);
     void PushTestSpecialAbility();
     void PushTestHelloAbility();
+    void MakingResidentProcData();
 private:
     std::vector<BundleInfo> bundleInfos_;
 };

@@ -369,6 +369,43 @@ void AppMgrProxy::GetSystemMemoryAttr(SystemMemoryAttr &memoryInfo, std::string 
     memoryInfo = *remoteRetsult;
 }
 
+void AppMgrProxy::AddAbilityStageDone(const int32_t recordId)
+{
+    MessageParcel data;
+    MessageParcel reply;
+    if (!WriteInterfaceToken(data)) {
+        APP_LOGE("WriteInterfaceToken faild");
+        return;
+    }
+
+    if (!data.WriteInt32(recordId)) {
+        APP_LOGE("want write failed.");
+        return;
+    }
+
+    if (!SendTransactCmd(IAppMgr::Message::AMS_APP_ADD_ABILITY_STAGE_INFO_DONE, data, reply)) {
+        APP_LOGE("SendTransactCmd faild");
+        return;
+    }
+    return;
+}
+
+void AppMgrProxy::StartupResidentProcess()
+{
+    MessageParcel data;
+    MessageParcel reply;
+    if (!WriteInterfaceToken(data)) {
+        APP_LOGE("WriteInterfaceToken faild");
+        return;
+    }
+
+    if (!SendTransactCmd(IAppMgr::Message::AMS_STARTUP_RESIDENT_PROCESS, data, reply)) {
+        APP_LOGE("SendTransactCmd faild");
+        return;
+    }
+    return;
+}
+
 template<typename T>
 int AppMgrProxy::GetParcelableInfos(MessageParcel &reply, std::vector<T> &parcelableInfos)
 {

@@ -138,6 +138,17 @@ public:
      */
     virtual void GetSystemMemoryAttr(SystemMemoryAttr &memoryInfo, std::string &strConfig) override;
 
+    /**
+     * Notify that the ability stage has been updated
+     * @param recordId, the app record.
+     */
+    virtual void AddAbilityStageDone(const int32_t recordId) override;
+
+    /**
+     * Start a resident process
+     */
+    virtual void StartupResidentProcess() override;
+
 private:
     bool SendTransactCmd(IAppMgr::Message code, MessageParcel &data, MessageParcel &reply);
     bool WriteInterfaceToken(MessageParcel &data);

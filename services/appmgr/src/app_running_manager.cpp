@@ -40,6 +40,9 @@ std::shared_ptr<AppRunningRecord> AppRunningManager::GetOrCreateAppRunningRecord
     const std::shared_ptr<ApplicationInfo> &appInfo, const std::shared_ptr<AbilityInfo> &abilityInfo,
     const std::string &processName, const int32_t uid, RecordQueryResult &result)
 {
+    APP_LOGI("GetOrCreateAppRunningRecord processName : %{public}s | uid : %{public}d",
+        processName.c_str(), uid);
+
     std::lock_guard<std::recursive_mutex> guard(lock_);
     result.Reset();
     if (!token || !appInfo || !abilityInfo) {
@@ -58,7 +61,7 @@ std::shared_ptr<AppRunningRecord> AppRunningManager::GetOrCreateAppRunningRecord
         return nullptr;
     }
 
-    auto record = GetAppRunningRecordByProcessName(appInfo->name, processName, abilityInfo->applicationInfo.uid);
+    auto record = GetAppRunningRecordByProcessName(appInfo->name, processName, appInfo->uid);
     if (!record) {
         APP_LOGI("no app record, create");
         auto recordId = AppRecordId::Create();
@@ -78,6 +81,32 @@ std::shared_ptr<AppRunningRecord> AppRunningManager::GetOrCreateAppRunningRecord
     return record;
 }
 
+std::shared_ptr<AppRunningRecord> AppRunningManager::GetOrCreateAppRunningRecord(
+    const ApplicationInfo &appInfo, bool &appExist)
+{
+    if (appInfo.bundleName.empty() || !CheckUid(appInfo.uid)) {
+        APP_LOGE("processName error");
+        return nullptr;
+    }
+
+    auto processName = appInfo.process.empty() ? appInfo.bundleName : appInfo.process;
+    APP_LOGI("processName = [%{public}s]", processName.c_str());
+    auto record = GetAppRunningRecordByProcessName(appInfo.name, processName, appInfo.uid);
+    if (!record) {
+        APP_LOGI("no app record, create");
+        auto recordId = AppRecordId::Create();
+        auto app = std::make_shared<ApplicationInfo>(appInfo);
+        APP_LOGI("app is create : [%{public}d]", app != nullptr);
+        record = std::make_shared<AppRunningRecord>(app, recordId, processName);
+        record->SetUid(appInfo.uid);
+        appRunningRecordMap_.emplace(recordId, record);
+        appExist = false;
+    } else {
+        appExist = true;
+    }
+    return record;
+}
+
 std::shared_ptr<AppRunningRecord> AppRunningManager::GetAppRunningRecordByAppName(const std::string &appName)
 {
     std::lock_guard<std::recursive_mutex> guard(lock_);
@@ -90,12 +119,15 @@ std::shared_ptr<AppRunningRecord> AppRunningManager::GetAppRunningRecordByAppNam
 std::shared_ptr<AppRunningRecord> AppRunningManager::GetAppRunningRecordByProcessName(
     const std::string &appName, const std::string &processName, const int uid)
 {
+    APP_LOGI("GetAppRunningRecordByProcessName appName : %{public}s | processName : %{public}s | uid : %{public}d",
+        appName.c_str(), processName.c_str(), uid);
     std::lock_guard<std::recursive_mutex> guard(lock_);
     auto iter = std::find_if(
         appRunningRecordMap_.begin(), appRunningRecordMap_.end(), [&appName, &processName, &uid](const auto &pair) {
             return ((pair.second->GetName() == appName) && (pair.second->GetProcessName() == processName) &&
                     (pair.second->GetUid() == uid) && !(pair.second->IsTerminating()));
         });
+    APP_LOGI("find result : %{public}d", iter != appRunningRecordMap_.end());
     return ((iter == appRunningRecordMap_.end()) ? nullptr : iter->second);
 }
 
@@ -312,7 +344,7 @@ void AppRunningManager::TerminateAbility(const sptr<IRemoteObject> &token)
         return;
     }
 
-    if (appRecord->IsLastAbilityRecord(token)) {
+    if (appRecord->IsLastAbilityRecord(token) && !appRecord->IsKeepAliveApp()) {
         appRecord->SetTerminating();
     }
 

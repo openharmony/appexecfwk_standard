@@ -184,6 +184,17 @@ public:
      */
     virtual void GetSystemMemoryAttr(SystemMemoryAttr &memoryInfo, std::string &strConfig);
 
+    /**
+     * Notify that the ability stage has been updated
+     * @param recordId, the app record.
+     */
+    virtual void AddAbilityStageDone(const int32_t recordId);
+
+    /**
+     * Start a resident process
+     */
+    virtual void StartupResidentProcess();
+
 private:
     void SetServiceManager(std::unique_ptr<AppServiceManager> serviceMgr);
 

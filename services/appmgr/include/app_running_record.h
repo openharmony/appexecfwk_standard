@@ -33,12 +33,13 @@
 #include "profile.h"
 #include "priority_object.h"
 #include "app_lifecycle_deal.h"
+#include "app_resident_process_info.h"
 
 namespace OHOS {
 namespace AppExecFwk {
 class AbilityRunningRecord;
 class AppMgrServiceInner;
-
+const int RESTART_RESIDENT_PROCESS_MAX_TIMES = 5;
 class AppRunningRecord : public std::enable_shared_from_this<AppRunningRecord> {
 public:
     AppRunningRecord(
@@ -213,6 +214,20 @@ public:
     void LaunchApplication();
 
     /**
+     * AddAbilityStage, Notify application to ability stage.
+     *
+     * @return
+     */
+    void AddAbilityStage();
+
+    /**
+     * AddAbilityStage Result returned.
+     *
+     * @return
+     */
+    void AddAbilityStageDone();
+
+    /**
      * LaunchAbility, Notify application to launch ability.
      *
      * @param ability, the ability record.
@@ -361,6 +376,15 @@ public:
 
     bool IsTerminating();
 
+    inline bool IsKeepAliveApp() const {return isKeepAliveApp;}
+
+    // Please use with caution, it may affect the ability to start.
+    inline void SetKeepAliveAppState() {isKeepAliveApp = true;}
+
+    bool CanRestartResidentProc();
+
+    void insertAbilityStageInfo(std::vector<HapModuleInfo> moduleInfos);
+
 private:
     // drive application state changes when ability state changes.
     /**
@@ -405,6 +429,7 @@ private:
     void SendEvent(uint32_t msg, int64_t timeOut);
 
 private:
+    bool isKeepAliveApp = false; // Only resident processes can be set to true, please choose carefully
     ApplicationState curState_ = ApplicationState::APP_STATE_CREATE;  // current state of this process
 
     std::shared_ptr<ApplicationInfo> appInfo_;  // the application's info of this process
@@ -416,6 +441,7 @@ private:
     // List of abilities running in the process
     std::map<const sptr<IRemoteObject>, std::shared_ptr<AbilityRunningRecord>> abilities_;
     std::map<const sptr<IRemoteObject>, std::shared_ptr<AbilityRunningRecord>> terminateAbilitys_;
+    std::map<int32_t, std::vector<HapModuleInfo>> abilityStage_;
     std::list<const sptr<IRemoteObject>> foregroundingAbilityTokens_;
     std::weak_ptr<AppMgrServiceInner> appMgrServiceInner_;
     sptr<AppDeathRecipient> appDeathRecipient_;
@@ -423,6 +449,7 @@ private:
     std::shared_ptr<AppLifeCycleDeal> appLifeCycleDeal_;
     std::shared_ptr<AMSEventHandler> eventHandler_;
     bool isTerminating = false;
+    int restartCount_ = RESTART_RESIDENT_PROCESS_MAX_TIMES;
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS
