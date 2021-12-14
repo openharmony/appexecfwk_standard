@@ -19,7 +19,7 @@
 #include "iremote_broker.h"
 #include "ability_info.h"
 #include "app_launch_data.h"
-#include "app_launch_data.h"
+#include "app_resident_process_info.h"
 #include "configuration.h"
 
 namespace OHOS {
@@ -81,6 +81,16 @@ public:
     virtual void ScheduleLaunchApplication(const AppLaunchData &) = 0;
 
     /**
+     * ScheduleAbilityStageInfo, call ScheduleAbilityStageInfo() through proxy project,
+     * Notify application to launch application.
+     *
+     * @param The app data value.
+     *
+     * @return
+     */
+    virtual void ScheduleAbilityStageInfo(const AppResidentProcessInfo &) = 0;
+
+    /**
      * ScheduleLaunchAbility, call ScheduleLaunchAbility() through proxy project,
      * Notify application to launch ability.
      *
@@ -136,6 +146,7 @@ public:
         SCHEDULE_PROFILE_CHANGED_TRANSACTION,
         SCHEDULE_CONFIGURATION_UPDATED,
         SCHEDULE_PROCESS_SECURITY_EXIT_TRANSACTION,
+        SCHEDULE_ABILITY_STAGE_INFO,
     };
 };
 }  // namespace AppExecFwk

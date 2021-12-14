@@ -237,6 +237,7 @@ public:
         const std::shared_ptr<ApplicationInfo> &appInfo, const std::shared_ptr<AbilityInfo> &abilityInfo,
         const std::string &processName, const int32_t uid, RecordQueryResult &result);
 
+    std::shared_ptr<AppRunningRecord> GetOrCreateAppRunningRecord(const ApplicationInfo &appInfo, bool &appExist);
     /**
      * OnStop, Application management service stopped.
      *
@@ -286,6 +287,13 @@ public:
      * @return
      */
     void LaunchApplication(const std::shared_ptr<AppRunningRecord> &appRecord);
+
+    /**
+     * Notice of AddAbilityStageInfo()
+     *
+     * @param recordId, the application record.
+     */
+    virtual void AddAbilityStageDone(const int32_t recordId);
 
     /**
      * GetRecordMap, Get all the ability information in the application record.
@@ -469,7 +477,22 @@ public:
      */
     void OnAppStateChanged(const std::shared_ptr<AppRunningRecord> &appRecord, const ApplicationState state);
 
+    /**
+     * Start empty process 
+     */
+    void LoadResidentProcess();
+
+    void StartResidentProcess(const std::vector<BundleInfo> &v);
+
+    bool CheckRemoteClient();
+
 private:
+
+    void StartEmptyResidentProcess(const std::string &appName, const std::string &processName,
+        const std::shared_ptr<AppRunningRecord> &appRecord, const int uid);
+
+    void RestartResidentProcess(std::shared_ptr<AppRunningRecord> appRecord);
+
     /**
      * StartAbility, load the ability that needed to be started(Start on the basis of the original process).
      *  Start on a new boot process
@@ -643,6 +666,9 @@ private:
     void SetBundleManager(sptr<IBundleMgr> bundleManager);
 
     void HandleTerminateApplicationTimeOut(const int64_t eventId);
+    
+    void HandleAddAbilityStageTimeOut(const int64_t eventId);
+
     int32_t KillApplicationByUserId(const std::string &bundleName, const int userId);
 
 private:

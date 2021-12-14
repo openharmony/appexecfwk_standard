@@ -55,6 +55,10 @@ AppMgrStub::AppMgrStub()
         &AppMgrStub::HandleGetAppFreezingTime;
     memberFuncMap_[static_cast<uint32_t>(IAppMgr::Message::AMS_APP_GET_SYSTEM_MEMORY_ATTR)] =
         &AppMgrStub::HandleGetSystemMemoryAttr;
+    memberFuncMap_[static_cast<uint32_t>(IAppMgr::Message::AMS_APP_ADD_ABILITY_STAGE_INFO_DONE)] =
+        &AppMgrStub::HandleAddAbilityStageDone;
+    memberFuncMap_[static_cast<uint32_t>(IAppMgr::Message::AMS_STARTUP_RESIDENT_PROCESS)] =
+        &AppMgrStub::HandleStartupResidentProcess;
 }
 
 AppMgrStub::~AppMgrStub()
@@ -196,6 +200,19 @@ int32_t AppMgrStub::HandleGetSystemMemoryAttr(MessageParcel &data, MessageParcel
         APP_LOGE("want write failed.");
         return ERR_INVALID_VALUE;
     }
+    return NO_ERROR;
+}
+
+int32_t AppMgrStub::HandleAddAbilityStageDone(MessageParcel &data, MessageParcel &reply)
+{
+    int32_t recordId = data.ReadInt32();
+    AddAbilityStageDone(recordId);
+    return NO_ERROR;
+}
+
+int32_t AppMgrStub::HandleStartupResidentProcess(MessageParcel &data, MessageParcel &reply)
+{
+    StartupResidentProcess();
     return NO_ERROR;
 }
 }  // namespace AppExecFwk

@@ -31,9 +31,10 @@ public:
 
     static constexpr uint32_t TERMINATE_ABILITY_TIMEOUT_MSG = 0;
     static constexpr uint32_t TERMINATE_APPLICATION_TIMEOUT_MSG = 1;
+    static constexpr uint32_t ADD_ABILITY_STAGE_INFO_TIMEOUT_MSG = 2;
     static constexpr uint32_t TERMINATE_ABILITY_TIMEOUT = 500;
     static constexpr uint32_t TERMINATE_APPLICATION_TIMEOUT = 500;
-
+    static constexpr uint32_t ADD_ABILITY_STAGE_INFO_TIMEOUT = 3000; // ms
 private:
     std::weak_ptr<AppMgrServiceInner> appMgr_;
 };

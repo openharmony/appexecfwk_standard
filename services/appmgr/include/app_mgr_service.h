@@ -180,6 +180,16 @@ public:
      */
     virtual void GetSystemMemoryAttr(SystemMemoryAttr &memoryInfo, std::string &strConfig) override;
 
+    /**
+     * Notify that the ability stage has been updated
+     * @param recordId, the app record.
+     */
+    virtual void AddAbilityStageDone(const int32_t recordId) override;
+
+    /**
+     * Start all resident process
+     */
+    virtual void StartupResidentProcess() override;
 private:
     /**
      * Init, Initialize application services.

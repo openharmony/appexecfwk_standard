@@ -144,6 +144,17 @@ public:
      */
     virtual void GetSystemMemoryAttr(SystemMemoryAttr &memoryInfo, std::string &strConfig) = 0;
 
+    /**
+     * Notify that the ability stage has been updated
+     * @param recordId, the app record.
+     */
+    virtual void AddAbilityStageDone(const int32_t recordId) = 0;
+
+    /**
+     * Start a resident process
+     */
+    virtual void StartupResidentProcess() = 0;
+
     enum class Message {
         AMS_APP_ATTACH_APPLICATION = 0,
         AMS_APP_APPLICATION_FOREGROUNDED,
@@ -158,6 +169,8 @@ public:
         AMS_APP_SET_APP_FREEZING_TIME,
         AMS_APP_GET_APP_FREEZING_TIME,
         AMS_APP_GET_SYSTEM_MEMORY_ATTR,
+        AMS_APP_ADD_ABILITY_STAGE_INFO_DONE,
+        AMS_STARTUP_RESIDENT_PROCESS,
     };
 };
 }  // namespace AppExecFwk

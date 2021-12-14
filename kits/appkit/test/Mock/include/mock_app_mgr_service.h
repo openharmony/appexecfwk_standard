@@ -35,6 +35,8 @@ public:
     MOCK_METHOD1(SetAppFreezingTime, void(int time));
     MOCK_METHOD1(GetAppFreezingTime, void(int &time));
     MOCK_METHOD2(GetSystemMemoryAttr, void(SystemMemoryAttr &memoryInfo, std::string &strConfig));
+    MOCK_METHOD1(AddAbilityStageDone, void(const int32_t recordId));
+    MOCK_METHOD0(StartupResidentProcess, void());
 
     virtual void AttachApplication(const sptr<IRemoteObject> &app) override
     {

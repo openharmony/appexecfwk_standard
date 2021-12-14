@@ -173,8 +173,26 @@ void AppRunningRecord::LaunchApplication()
     launchData.SetProcessInfo(processInfo);
     launchData.SetRecordId(appRecordId_);
     launchData.SetUId(uid_);
+
     APP_LOGI("ScheduleLaunchApplication app:%{public}s", GetName().c_str());
     appLifeCycleDeal_->LaunchApplication(launchData);
+}
+
+void AppRunningRecord::AddAbilityStage()
+{
+    AppResidentProcessInfo residentInfo;
+    residentInfo.isKeepAliveApp_ = true;
+    auto iter = abilityStage_.find(appRecordId_);
+    if (iter != abilityStage_.end()) {
+        residentInfo.abilityStage_ = iter->second;
+    }
+    SendEvent(AMSEventHandler::ADD_ABILITY_STAGE_INFO_TIMEOUT_MSG, AMSEventHandler::ADD_ABILITY_STAGE_INFO_TIMEOUT);
+    appLifeCycleDeal_->AddAbilityStageInfo(residentInfo);
+}
+
+void AppRunningRecord::AddAbilityStageDone()
+{
+    eventHandler_->RemoveEvent(AMSEventHandler::TERMINATE_ABILITY_TIMEOUT_MSG, appRecordId_);
 }
 
 void AppRunningRecord::LaunchAbility(const std::shared_ptr<AbilityRunningRecord> &ability)
@@ -433,7 +451,10 @@ void AppRunningRecord::AbilityTerminated(const sptr<IRemoteObject> &token)
 
     eventHandler_->RemoveEvent(AMSEventHandler::TERMINATE_ABILITY_TIMEOUT_MSG, abilityRecord->GetEventId());
     terminateAbilitys_.erase(token);
-    if (abilities_.empty()) {
+
+    // The resident process won't let him die
+    // It’s important not to let the process die
+    if (abilities_.empty() && !isKeepAliveApp) {
         ScheduleTerminate();
     }
 }
@@ -533,6 +554,24 @@ void AppRunningRecord::SetTerminating()
 bool AppRunningRecord::IsTerminating()
 {
     return isTerminating;
+}
+
+bool AppRunningRecord::CanRestartResidentProc()
+{
+    if (restartCount_ > 0) {
+        --restartCount_;
+        return true;
+    }
+    return false;
+}
+
+void AppRunningRecord::insertAbilityStageInfo(std::vector<HapModuleInfo> moduleInfos)
+{
+    if (moduleInfos.empty()) {
+        return;
+    }
+
+    abilityStage_.emplace(appRecordId_, moduleInfos);
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS

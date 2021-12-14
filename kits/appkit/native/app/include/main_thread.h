@@ -153,6 +153,13 @@ public:
     void ScheduleLaunchApplication(const AppLaunchData &data) override;
 
     /**
+     * Notify application to launch ability stage.
+     *
+     * @param The resident process data value.
+     */
+    void ScheduleAbilityStageInfo(const AppResidentProcessInfo &residentProcessInfo) override;
+
+    /**
      *
      * @brief launch the application.
      *
@@ -235,6 +242,15 @@ private:
      *
      */
     void HandleLaunchApplication(const AppLaunchData &appLaunchData);
+
+    /**
+     *
+     * @brief Launch the application.
+     *
+     * @param appLaunchData The launchdata of the application witch launced.
+     *
+     */
+    void HandleAbilityStageInfo(const AppResidentProcessInfo &residentProcessInfo);
 
     /**
      *

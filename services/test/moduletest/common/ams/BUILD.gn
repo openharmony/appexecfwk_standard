@@ -37,6 +37,7 @@ ohos_source_set("appmgr_mst_source") {
     "${services_path}/appmgr/src/process_optimizer_uba.cpp",
     "${services_path}/appmgr/src/remote_client_manager.cpp",
     "${services_path}/appmgr/test/mock/src/mock_bundle_manager.cpp",
+    #"//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_core/src/appmgr/app_resident_process_info.cpp",
   ]
 
   defines = [ "APP_LOG_TAG = \"AppMgrService\"" ]

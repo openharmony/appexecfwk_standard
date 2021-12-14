@@ -62,6 +62,7 @@ ohos_shared_library("appexecfwk_core") {
     "src/appmgr/priority_object.cpp",
     "src/appmgr/process_info.cpp",
     "src/appmgr/profile.cpp",
+    "src/appmgr/app_resident_process_info.cpp",
     "src/bundlemgr/bundle_installer_proxy.cpp",
     "src/bundlemgr/bundle_mgr_client.cpp",
     "src/bundlemgr/bundle_mgr_host.cpp",
