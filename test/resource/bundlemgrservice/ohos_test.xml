@@ -58,7 +58,10 @@
   </target>
   <target name="BmsBundleKitServiceTest">
     <depend resource="bundle_kit/." pushpath="/data/test/" findpath="res" presetcmd=""/>
+    <depend resource="clone_file/." pushpath="/data/clonefile" findpath="res" presetcmd=""/>
     <preparer>
+   	<option name="push" value="clone_file/CloneAppName.json-> /data/clonefile" src="res" />
+    <option name="push" value="clone_file/BundleNameAllowList.json -> /data/clonefile" src="res" />
 	  <option name="push" value="bundle_kit/test.hap -> /data/test/resource/bms/bundle_kit/" src="res" />
 	</preparer>
   </target>
