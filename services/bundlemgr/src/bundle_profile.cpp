@@ -1869,6 +1869,9 @@ bool TransformToInfo(const ProfileReader::ConfigJson &configJson, ApplicationInf
         applicationInfo.supportedModes = 0;
     }
     applicationInfo.process = configJson.deveicConfig.defaultDevice.process;
+    if (applicationInfo.process.empty()) {
+        applicationInfo.process = configJson.app.bundleName;
+    }
     applicationInfo.debug = configJson.app.debug;
     applicationInfo.enabled = true;
     return true;
@@ -2010,6 +2013,9 @@ bool TransformToInfo(
         abilityInfo.permissions.emplace_back(permission);
     }
     abilityInfo.process = (ability.process.empty()) ? configJson.deveicConfig.defaultDevice.process : ability.process;
+    if (abilityInfo.process.empty()) {
+        abilityInfo.process = configJson.app.bundleName;
+    }
     abilityInfo.theme = ability.theme;
     abilityInfo.deviceTypes = configJson.module.deviceType;
     abilityInfo.deviceCapabilities = ability.deviceCapability;
@@ -2059,6 +2065,7 @@ bool TransformToInfo(ProfileReader::ConfigJson &configJson, InnerBundleInfo &inn
         applicationInfo.isSystemApp = true;
     } else {
         bundleInfo.singleUser = false;
+        bundleInfo.isKeepAlive = false;
     }
 
     InnerModuleInfo innerModuleInfo;
