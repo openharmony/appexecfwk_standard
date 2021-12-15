@@ -29,7 +29,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class BundleMgrService : public SystemAbility {
     DECLARE_DELAYED_SINGLETON(BundleMgrService);
     DECLEAR_SYSTEM_ABILITY(BundleMgrService);

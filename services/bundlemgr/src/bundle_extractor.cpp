@@ -20,7 +20,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 BundleExtractor::BundleExtractor(const std::string &source) : BaseExtractor(source)
 {
     APP_LOGI("BundleExtractor is created");
@@ -35,6 +34,5 @@ bool BundleExtractor::ExtractProfile(std::ostream &dest) const
 {
     return ExtractByName(Constants::BUNDLE_PROFILE_NAME, dest);
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

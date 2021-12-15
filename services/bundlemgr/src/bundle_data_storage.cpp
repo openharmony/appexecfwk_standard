@@ -25,7 +25,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 bool BundleDataStorage::KeyToDeviceAndName(const std::string &key, std::string &deviceId, std::string &bundleName) const
 {
     bool ret = false;
@@ -96,7 +95,6 @@ bool BundleDataStorage::SaveStorageBundleInfo(const std::string &deviceId, const
     std::string appName = innerBundleInfo.GetApplicationName();
     std::fstream f(Constants::BUNDLE_DATA_BASE_FILE);
     bool isExist = f.good();
-
     if (isExist) {
         nlohmann::json innerInfo;
         innerBundleInfo.ToJson(innerInfo);
@@ -188,6 +186,5 @@ bool BundleDataStorage::DeleteStorageBundleInfo(const std::string &deviceId, con
     o.close();
     return ret;
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

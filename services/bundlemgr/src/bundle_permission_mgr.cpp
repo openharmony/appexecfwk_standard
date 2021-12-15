@@ -22,7 +22,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 using namespace OHOS::Security;
 
 namespace {

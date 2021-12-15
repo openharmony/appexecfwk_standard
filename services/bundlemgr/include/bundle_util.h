@@ -22,7 +22,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class BundleUtil {
 public:
     /**
@@ -51,7 +50,6 @@ public:
      */
     static bool CheckFileSize(const std::string &bundlePath, const int64_t fileSize);
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_BUNDLE_UTIL_H

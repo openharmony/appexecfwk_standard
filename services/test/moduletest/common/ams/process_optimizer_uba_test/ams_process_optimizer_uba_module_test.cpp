@@ -275,6 +275,5 @@ HWTEST_F(AmsProcessOptimizerUbaModuleTest, OnAppRemoved_001, TestSize.Level1)
 
     APP_LOGI("AmsProcessOptimizerUbaModuleTest OnAppRemoved_001 end");
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

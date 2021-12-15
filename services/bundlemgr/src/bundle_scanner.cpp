@@ -29,7 +29,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 BundleScanner::BundleScanner()
 {
     APP_LOGI("BundleScanner instance is created");
@@ -91,6 +90,5 @@ bool BundleScanner::ScanImpl(const std::string &dirPath)
     }
     return true;
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
