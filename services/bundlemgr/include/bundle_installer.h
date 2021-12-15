@@ -27,7 +27,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class BundleInstaller : public BaseBundleInstaller {
 public:
     BundleInstaller(const int64_t installerId, const std::shared_ptr<EventHandler> &handler,

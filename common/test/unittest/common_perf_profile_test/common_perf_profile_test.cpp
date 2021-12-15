@@ -21,7 +21,6 @@ using namespace testing::ext;
 using namespace OHOS::AppExecFwk;
 
 namespace {
-
 const int64_t INVALID_TIME = -1;
 
 const int64_t BMS_LOAD_INIT_START_TIME = 0;
@@ -71,7 +70,6 @@ const int64_t APP_FORK_INIT_START_TIME = 0;
 const int64_t APP_FORK_SET_START_TIME = 50;
 const int64_t APP_FORK_INIT_END_TIME = 0;
 const int64_t APP_FORK_SET_END_TIME = 100;
-
 }  // namespace
 
 class CommonPerfProfileTest : public testing::Test {

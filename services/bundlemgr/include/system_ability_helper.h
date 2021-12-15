@@ -22,7 +22,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class SystemAbilityHelper {
 public:
     /**
@@ -45,7 +44,6 @@ public:
      */
     static bool RemoveSystemAbility(const int32_t systemAbilityId);
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_SYSTEM_ABILITY_HELPER_H

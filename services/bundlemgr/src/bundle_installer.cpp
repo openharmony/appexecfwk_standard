@@ -75,6 +75,5 @@ void BundleInstaller::SendRemoveEvent() const
         APP_LOGE("fail to remove %{public}" PRId64 " installer due to handler is expired", installerId_);
     }
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

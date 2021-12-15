@@ -23,7 +23,6 @@
 namespace OHOS {
 namespace AppExecFwk {
 namespace ProfileReader {
-
 // common tag
 const std::string PROFILE_KEY_NAME = "name";
 const std::string PROFILE_KEY_ORIGINAL_NAME = "originalName";

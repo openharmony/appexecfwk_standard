@@ -20,7 +20,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 PerfProfile::PerfProfile()
 {
     APP_LOGD("create");
@@ -306,6 +305,5 @@ void PerfProfile::Dump() const
         APP_LOGI("end\n");
     }
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

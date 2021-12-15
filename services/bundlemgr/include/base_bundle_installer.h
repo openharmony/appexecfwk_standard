@@ -27,7 +27,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class BaseBundleInstaller {
 public:
     BaseBundleInstaller();
