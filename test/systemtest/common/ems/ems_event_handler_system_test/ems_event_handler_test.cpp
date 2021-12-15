@@ -1942,7 +1942,6 @@ HWTEST_F(EmsEventHandlerTest, HasEventWithParam003, TestSize.Level1)
  */
 HWTEST_F(EmsEventHandlerTest, HasEventWithParam004, TestSize.Level1)
 {
-
     auto handler = std::make_shared<EventHandler>(nullptr);
     auto event = InnerEvent::Get(EVENT_PARAM_FOUR);
 

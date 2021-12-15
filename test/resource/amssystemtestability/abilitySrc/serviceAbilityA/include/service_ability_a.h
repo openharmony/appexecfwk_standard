@@ -26,7 +26,6 @@
 using Want = OHOS::AAFwk::Want;
 namespace OHOS {
 namespace AppExecFwk {
-
 class ServiceAbilityA : public Ability {
 protected:
     virtual void OnStart(const Want &want);

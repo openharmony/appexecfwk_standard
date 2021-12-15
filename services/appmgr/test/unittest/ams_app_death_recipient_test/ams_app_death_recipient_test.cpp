@@ -86,7 +86,6 @@ void AppDeathRecipientTest::TearDownTestCase()
 
 void AppDeathRecipientTest::SetUp()
 {
-
     auto runner = EventRunner::Create("AppDeathRecipientTest");
     appMgrServiceInner_ = std::make_shared<AppMgrServiceInner>();
 

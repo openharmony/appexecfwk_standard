@@ -17,7 +17,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 void AmsAbilityVisibleTestPageA3::OnStart(const Want &want)
 {
     GetWantInfo(want);

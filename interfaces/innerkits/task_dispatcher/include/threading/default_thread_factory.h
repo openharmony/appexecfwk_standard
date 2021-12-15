@@ -23,7 +23,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 /**
  *  DefaultThreadFactory is a default thread producer.
  *
@@ -38,7 +37,6 @@ public:
 private:
     std::atomic_int index_;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif

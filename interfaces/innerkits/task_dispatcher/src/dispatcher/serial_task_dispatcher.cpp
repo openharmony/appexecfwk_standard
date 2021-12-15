@@ -18,7 +18,6 @@
 #include "appexecfwk_errors.h"
 namespace OHOS {
 namespace AppExecFwk {
-
 std::string SerialTaskDispatcher::DISPATCHER_TAG = "SerialTaskDispatcher";
 std::string SerialTaskDispatcher::ASYNC_DISPATCHER_TAG = DISPATCHER_TAG + "::asyncDispatch";
 std::string SerialTaskDispatcher::SYNC_DISPATCHER_TAG = DISPATCHER_TAG + "::syncDispatch";

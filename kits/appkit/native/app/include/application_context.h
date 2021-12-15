@@ -20,7 +20,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class TaskDispatcherContext;
 class ApplicationContext : public ContextContainer, public std::enable_shared_from_this<ApplicationContext> {
 public:

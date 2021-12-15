@@ -24,7 +24,6 @@
 #include "appexecfwk_errors.h"
 namespace OHOS {
 namespace AppExecFwk {
-
 template<typename T>
 using IteratableTask = std::function<void(T)>;
 
@@ -192,7 +191,6 @@ public:
      */
     virtual ErrCode ApplyDispatch(const std::shared_ptr<IteratableTask<long>> &task, long iterations) = 0;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 

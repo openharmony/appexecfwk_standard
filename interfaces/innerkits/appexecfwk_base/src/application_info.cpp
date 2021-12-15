@@ -29,7 +29,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 bool ApplicationInfo::ReadFromParcel(Parcel &parcel)
 {
     name = Str16ToStr8(parcel.ReadString16());
@@ -247,6 +246,5 @@ void ApplicationInfo::ConvertToCompatibleApplicationInfo(CompatibleApplicationIn
     compatibleApplicationInfo.enabled = enabled;
     compatibleApplicationInfo.debug = debug;
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

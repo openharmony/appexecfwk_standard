@@ -28,9 +28,7 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 namespace {
-
 const std::string JSON_KEY_BUNDLE_ID = "id";
 const std::string JSON_KEY_BUNDLE_NAME = "bundleName";
 const std::string JSON_KEY_BUNDLE_HOST_ABILITY = "hostAbility";
@@ -43,7 +41,6 @@ const std::string JSON_KEY_BUNDLE_IS_ENABLES = "isEnables";
 const std::string JSON_KEY_BUNDLE_INTENTS = "intents";
 const std::string JSON_KEY_BUNDLE_TARGET_BUNDLE = "targetBundle";
 const std::string JSON_KEY_BUNDLE_TARGET_CLASS = "targetClass";
-
 }  // namespace
 
 bool ShortcutInfo::ReadFromParcel(Parcel &parcel)
@@ -143,6 +140,5 @@ void from_json(const nlohmann::json &jsonObject, ShortcutInfo &shortcutInfo)
     shortcutInfo.isEnables = jsonObject.at(JSON_KEY_BUNDLE_IS_ENABLES).get<bool>();
     shortcutInfo.intents = jsonObject.at(JSON_KEY_BUNDLE_INTENTS).get<std::vector<ShortcutIntent>>();
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

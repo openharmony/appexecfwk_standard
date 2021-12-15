@@ -125,6 +125,5 @@ void GroupImpl::DrainNotifications()
     }
     APP_LOGI("GroupImpl::DrainNotifications end");
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

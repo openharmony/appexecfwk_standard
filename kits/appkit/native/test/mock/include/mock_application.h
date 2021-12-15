@@ -21,7 +21,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class OHOSApplication;
 class MockApplication : public OHOSApplication {
 public:

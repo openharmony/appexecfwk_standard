@@ -26,7 +26,6 @@
 namespace OHOS {
 namespace AppExecFwk {
 namespace {
-
 constexpr uint32_t MAX_FILE_NAME = 256;
 constexpr uint32_t UNZIP_BUFFER_SIZE = 1024;
 constexpr uint32_t UNZIP_BUF_IN_LEN = 160 * UNZIP_BUFFER_SIZE;   // in  buffer length: 160KB
@@ -37,7 +36,6 @@ constexpr uint32_t EOCD_SIGNATURE = 0x06054b50;
 constexpr uint32_t DATA_DESC_SIGNATURE = 0x08074b50;
 constexpr uint32_t FLAG_DATA_DESC = 0x8;
 constexpr size_t FILE_READ_COUNT = 1;
-
 }  // namespace
 
 ZipEntry::ZipEntry(const CentralDirEntry &centralEntry)
@@ -578,6 +576,5 @@ bool ZipFile::ExtractFile(const std::string &file, std::ostream &dest) const
 
     return ret;
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

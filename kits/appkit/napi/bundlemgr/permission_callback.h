@@ -37,7 +37,6 @@ public:
     virtual ~PermissionCallback();
     virtual void OnChanged(const int32_t uid) override;
 
-
 private:
     napi_env env_;
     napi_ref callback_;

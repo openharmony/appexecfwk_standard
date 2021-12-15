@@ -747,7 +747,6 @@ private:
     std::shared_ptr<EventRunner> mainEventRunner_;
     std::shared_ptr<HapModuleInfo> hapModuleInfoLocal_ = nullptr;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_OHOS_CONTEXT_DEAL_H

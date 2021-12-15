@@ -22,7 +22,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 void ElementName::SetElementDeviceID(ElementName *element, const char *deviceId)
 {
     if (element == nullptr) {
@@ -110,6 +109,5 @@ bool ElementName::Marshalling(Parcel &parcel) const
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(deviceId_));
     return true;
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

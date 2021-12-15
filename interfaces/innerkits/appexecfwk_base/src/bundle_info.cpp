@@ -23,7 +23,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 bool BundleInfo::ReadFromParcel(Parcel &parcel)
 {
     name = Str16ToStr8(parcel.ReadString16());
@@ -288,6 +287,5 @@ void from_json(const nlohmann::json &jsonObject, BundleInfo &bundleInfo)
     bundleInfo.moduleResPaths = jsonObject.at("moduleResPaths").get<std::vector<std::string>>();
     bundleInfo.singleUser = jsonObject.at("singleUser").get<bool>();
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

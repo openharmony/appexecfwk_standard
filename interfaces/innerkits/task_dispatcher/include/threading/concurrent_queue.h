@@ -23,7 +23,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 template<typename T>
 class ConcurrentQueue {
 public:
@@ -103,7 +102,6 @@ private:
     std::condition_variable empty_;
     std::deque<T> queue_;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 

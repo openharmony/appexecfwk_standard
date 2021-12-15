@@ -74,7 +74,6 @@ void PageAbilityDemo::OnBackground()
 
 void PageAbilityDemo::CreateFile(const std::string &path) const
 {
-
     std::ofstream file(path);
     file.close();
 

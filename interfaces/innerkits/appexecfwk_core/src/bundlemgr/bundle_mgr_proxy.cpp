@@ -25,7 +25,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 BundleMgrProxy::BundleMgrProxy(const sptr<IRemoteObject> &impl) : IRemoteProxy<IBundleMgr>(impl)
 {
     APP_LOGI("create bundle mgr proxy instance");

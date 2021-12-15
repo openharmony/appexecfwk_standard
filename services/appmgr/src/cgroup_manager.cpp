@@ -97,7 +97,6 @@ int WriteValue(int fd, int v, bool newLine = true)
 
     return WriteValue(fd, str);
 }
-
 }  // namespace
 
 CgroupManager::CgroupManager()

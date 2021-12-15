@@ -179,7 +179,6 @@ public:
 private:
     std::map<int64_t, bool> forms_;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_OHOS_FORM_HOST_CLIENT_H

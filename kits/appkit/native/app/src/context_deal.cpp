@@ -29,7 +29,6 @@
 #define MODE 0771
 namespace OHOS {
 namespace AppExecFwk {
-
 const std::string ContextDeal::CONTEXT_DEAL_FILE_SEPARATOR("/");
 const std::string ContextDeal::CONTEXT_DEAL_CODE_CACHE("code_cache");
 const std::string ContextDeal::CONTEXT_DEAL_Files("files");
@@ -1350,6 +1349,5 @@ void ContextDeal::SetShowOnLockScreen(bool isAllow)
         APP_LOGE("ContextDeal::SetShowOnLockScreen SetShowOnLockScreen retval is ERROR(%d)", errval);
     }
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

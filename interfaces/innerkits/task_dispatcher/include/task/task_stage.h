@@ -53,7 +53,6 @@ public:
 private:
     int index_;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif

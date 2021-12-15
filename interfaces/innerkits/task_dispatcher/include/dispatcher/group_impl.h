@@ -27,7 +27,6 @@ namespace AppExecFwk {
  *  A group used to associated with tasks.
  */
 class GroupImpl : public Group {
-
 public:
     GroupImpl();
     ~GroupImpl() = default;
@@ -70,7 +69,6 @@ private:
      */
     void DrainNotifications();
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif

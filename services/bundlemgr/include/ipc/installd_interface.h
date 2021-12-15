@@ -25,7 +25,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class IInstalld : public IRemoteBroker {
 public:
     DECLARE_INTERFACE_DESCRIPTOR(u"ohos.appexecfwk.Installd");
@@ -111,7 +110,6 @@ public:
         CLEAN_BUNDLE_DATA_DIR,
     };
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_IPC_INSTALLD_INTERFACE_H

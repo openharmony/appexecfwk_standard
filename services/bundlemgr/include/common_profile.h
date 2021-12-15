@@ -23,7 +23,6 @@
 namespace OHOS {
 namespace AppExecFwk {
 namespace ProfileReader {
-
 // common tag
 const std::string PROFILE_KEY_NAME = "name";
 const std::string PROFILE_KEY_ORIGINAL_NAME = "originalName";
@@ -271,7 +270,6 @@ const std::string KEY_MULTI_DEVICE_CONNECTION = "multiDeviceConnection";
 const std::string KEY_WIFI_INTERACTION = "wifiInteraction";
 const std::string KEY_VOIP = "voip";
 const std::string KEY_TASK_KEEPING = "taskKeeping";
-
 }  // namespace ProfileReader
 }  // namespace AppExecFwk
 }  // namespace OHOS

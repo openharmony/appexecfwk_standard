@@ -27,12 +27,10 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 /**
  *  SyncTask is the synchronized task which provide synchronized method.
  */
 class SyncTask final : public Task {
-
 public:
     SyncTask(const std::shared_ptr<Runnable> &runnable, TaskPriority priority,
         const std::shared_ptr<BaseTaskDispatcher> &baseTaskDispatcher);
@@ -46,7 +44,6 @@ private:
     std::mutex mutex_;
     std::condition_variable condition_variable_;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif

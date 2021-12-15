@@ -59,7 +59,6 @@ private:
     std::mutex saMutex_;
     std::unordered_map<int32_t, sptr<IRemoteObject>> servicesMap_;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // OHOS_OS_AAFWK_SYS_MRG_CLIENT_H

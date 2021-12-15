@@ -30,7 +30,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 /**
  *  Dispatcher for serial thread model.
  */
@@ -118,7 +117,6 @@ private:
     std::shared_ptr<TaskExecutor> executor_;
     std::mutex mutex_;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 

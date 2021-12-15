@@ -51,7 +51,6 @@ void ContextDealTest::TearDownTestCase(void)
 
 void ContextDealTest::SetUp(void)
 {
-
     OHOS::sptr<OHOS::IRemoteObject> bundleObject = new (std::nothrow) BundleMgrService();
     OHOS::DelayedSingleton<SysMrgClient>::GetInstance()->RegisterSystemAbility(
         OHOS::BUNDLE_MGR_SERVICE_SYS_ABILITY_ID, bundleObject);
@@ -360,6 +359,5 @@ HWTEST_F(ContextDealTest, AppExecFwk_ContextDeal_SetShowOnLockScreen_0200, Funct
     context_->SetShowOnLockScreen(false);
     testing::Mock::AllowLeak(abilityMgrClient.get());
 }
-
 }  // namespace AppExecFwk
 }  

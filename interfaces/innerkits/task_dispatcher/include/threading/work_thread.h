@@ -25,7 +25,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class WorkerThread;
 /**
  *  Interface for a work delegate.
@@ -106,7 +105,6 @@ private:
     std::shared_ptr<Delegate> delegate_;
     std::shared_ptr<ThreadFactory> factory_;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif

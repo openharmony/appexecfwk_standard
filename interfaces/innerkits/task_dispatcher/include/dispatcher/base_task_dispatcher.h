@@ -181,7 +181,6 @@ protected:
 private:
     static std::atomic<int> SEQUENCE_;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 

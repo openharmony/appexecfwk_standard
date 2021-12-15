@@ -22,7 +22,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class Thread {
 public:
     Thread() : thread_name_("Thread_0"), thread_(){};
@@ -52,7 +51,6 @@ public:
      */
     virtual std::shared_ptr<Thread> Create() = 0;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif

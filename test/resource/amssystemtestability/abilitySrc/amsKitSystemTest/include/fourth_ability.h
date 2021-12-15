@@ -778,7 +778,6 @@ public:
 private:
     std::unordered_map<std::string, std::function<void(int, int, int)>> mapTestFunc_;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // _THIRD_ABILITY_H_

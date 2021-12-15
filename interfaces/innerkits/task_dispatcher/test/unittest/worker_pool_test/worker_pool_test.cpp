@@ -218,6 +218,5 @@ HWTEST(WorkerPoolTest, AppExecFwk_WorkerPool_GetWorkerThreadsInfo_0100, Function
 
     GTEST_LOG_(INFO) << "AppExecFwk_WorkerPool_GetWorkerThreadsInfo_0100 end";
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

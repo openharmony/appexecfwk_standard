@@ -60,7 +60,6 @@ using namespace testing::ext;
 
 namespace OHOS {
 namespace AppExecFwk {
-
 static int LOW_MEMORY_LEVEL = -1;
 
 class AmsCgroupManagerTest : public testing::Test {
@@ -1063,6 +1062,5 @@ HWTEST_F(AmsCgroupManagerTest, AmsCgroupManager_SetFreezerSubsystem_002, TestSiz
 
     APP_LOGD("AmsCgroupManager_SetFreezerSubsystem_002 end.");
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

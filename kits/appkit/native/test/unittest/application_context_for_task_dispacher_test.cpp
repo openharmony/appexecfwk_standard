@@ -98,6 +98,5 @@ HWTEST_F(ApplicationContextForTaskDispatcherTest, AppExecFwk_ApplicationContext_
     EXPECT_TRUE((nullptr != appcontext->GetGlobalTaskDispatcher(high)));
     GTEST_LOG_(INFO) << "AppExecFwk_ApplicationContext_GetGlobalTaskDispatcher_0100 end";
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

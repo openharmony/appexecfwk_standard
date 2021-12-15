@@ -18,7 +18,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 // initial static member object
 AppLogLevel AppLogWrapper::level_ = AppLogLevel::DEBUG;
 
@@ -39,6 +38,5 @@ std::string AppLogWrapper::GetBriefFileName(const char *str)
     }
     return fullPath.substr(pos + 1);
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

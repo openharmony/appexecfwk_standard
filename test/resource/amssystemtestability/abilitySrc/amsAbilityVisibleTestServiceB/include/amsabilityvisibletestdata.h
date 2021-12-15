@@ -30,7 +30,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class AmsAbilityVisibleTestData : public Ability {
 public:
     ~AmsAbilityVisibleTestData();

@@ -38,7 +38,6 @@ public:
 private:
     DISALLOW_COPY_AND_MOVE(TestAbilityConnectionStub);
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // OHOS_AAFWK_ABILITY_CONNECT_CALLBACK_STUB_H

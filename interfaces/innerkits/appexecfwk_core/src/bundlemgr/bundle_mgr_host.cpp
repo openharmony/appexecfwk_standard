@@ -26,7 +26,6 @@
 namespace OHOS {
 namespace AppExecFwk {
 namespace {
-
 const int32_t LIMIT_PARCEL_SIZE = 1024;
 
 void SplitString(const std::string &source, std::vector<std::string> &strings)
@@ -41,7 +40,6 @@ void SplitString(const std::string &source, std::vector<std::string> &strings)
         strings.emplace_back(source.substr(start, LIMIT_PARCEL_SIZE));
     }
 }
-
 }  // namespace
 
 int BundleMgrHost::OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option)

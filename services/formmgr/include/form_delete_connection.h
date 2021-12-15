@@ -21,7 +21,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 /**
  * @class FormDeleteConnection
  * Form Delete Connection Stub.
@@ -44,7 +43,6 @@ private:
     int64_t formId_;
     DISALLOW_COPY_AND_MOVE(FormDeleteConnection);
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 

@@ -124,7 +124,6 @@ void BarrierHandler::OnTaskDone(std::shared_ptr<Task> &task)
                              it++) {
                             executor_->Execute(*it);
                         }
-
                     } else if (nextPair->barrier_ != nullptr) {
                         APP_LOGI("Barrier.onTaskDone execute barrier task after barrier done.");
                         executor_->Execute(nextPair->barrier_);
@@ -175,6 +174,5 @@ std::set<std::shared_ptr<Task>> BarrierHandler::CreateTaskSet(std::shared_ptr<Ta
     taskSet.insert(firstTask);
     return taskSet;
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

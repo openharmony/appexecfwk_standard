@@ -22,7 +22,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class PerfProfile : public Singleton<PerfProfile> {
     DECLARE_SINGLETON(PerfProfile);
 
@@ -119,7 +118,6 @@ private:
 
     bool enableProfile_ = true;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_COMMON_INCLUDE_PERF_PROFILE_H

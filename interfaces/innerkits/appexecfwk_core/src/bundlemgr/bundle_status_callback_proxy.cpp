@@ -25,7 +25,6 @@
 namespace OHOS {
 namespace AppExecFwk {
 namespace {
-
 std::string TransformResult(ErrCode resultCode)
 {
     switch (resultCode) {
@@ -125,7 +124,6 @@ std::string TransformResult(ErrCode resultCode)
             return "";
     }
 }
-
 }  // namespace
 
 BundleStatusCallbackProxy::BundleStatusCallbackProxy(const sptr<IRemoteObject> &object)
@@ -177,6 +175,5 @@ void BundleStatusCallbackProxy::OnBundleStateChanged(
         APP_LOGW("fail to call OnBundleStateChanged, for transact is failed, error code is: %{public}d", ret);
     }
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

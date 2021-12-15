@@ -16,7 +16,6 @@
 #include "app_log_wrapper.h"
 namespace OHOS {
 namespace AppExecFwk {
-
 /**
  * @brief Constructs the object.
  * @param runnable The user task wrapped in.
@@ -213,6 +212,5 @@ bool Task::operator==(std::shared_ptr<Task> &rec) const
            this->revocable_ == rec->revocable_ && this->runnable_ == rec->runnable_ &&
            this->baseTaskDispatcher_ == rec->baseTaskDispatcher_;
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

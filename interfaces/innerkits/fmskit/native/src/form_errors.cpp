@@ -134,6 +134,5 @@ void FormErrors::InitErrorMessageMap()
         },
     };
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

@@ -22,9 +22,7 @@
 #include "parcel.h"
 
 namespace OHOS {
-
 namespace AppExecFwk {
-
 enum class AppProcessState {
     APP_STATE_BEGIN = 0,
     APP_STATE_CREATE = APP_STATE_BEGIN,
@@ -59,7 +57,6 @@ struct RunningProcessInfo : public Parcelable {
     virtual bool Marshalling(Parcel &parcel) const override;
     static RunningProcessInfo *Unmarshalling(Parcel &parcel);
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 
