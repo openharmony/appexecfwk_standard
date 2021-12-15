@@ -35,10 +35,8 @@ typedef struct {
 
 namespace OHOS {
 namespace AppExecFwk {
-
 struct ApplicationInfo;
 class ApplicationEnvImpl : public NoCopyable {
-
 public:
     /**
      * @brief Gets an instance of the applicationenvimpl class
@@ -105,7 +103,6 @@ private:
 
     static ApplicationEnvImpl instance_;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // OHOS_APPLICATION_ENV_IMPL_H

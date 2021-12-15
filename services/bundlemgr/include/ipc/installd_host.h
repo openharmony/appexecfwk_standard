@@ -24,7 +24,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class InstalldHost : public IRemoteStub<IInstalld> {
 public:
     InstalldHost();
@@ -105,7 +104,6 @@ private:
      */
     bool HandleCleanBundleDataDir(MessageParcel &data, MessageParcel &reply);
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_IPC_INSTALLD_HOST_H

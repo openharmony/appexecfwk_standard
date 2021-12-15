@@ -25,7 +25,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class BarrierHandler : public TaskExecuteInterceptor {
 public:
     BarrierHandler(const std::shared_ptr<TaskExecutor> &executor);
@@ -84,7 +83,6 @@ private:
     std::shared_ptr<TaskExecutor> executor_;
     std::deque<std::shared_ptr<BarrierPair>> barrierQueue_;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 

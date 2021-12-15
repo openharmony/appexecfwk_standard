@@ -23,7 +23,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 BundleInstallerProxy::BundleInstallerProxy(const sptr<IRemoteObject> &object) : IRemoteProxy<IBundleInstaller>(object)
 {
     APP_LOGI("create bundle installer proxy instance");
@@ -164,6 +163,5 @@ bool BundleInstallerProxy::Uninstall(const std::string &bundleName, const std::s
     }
     return true;
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

@@ -21,7 +21,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class MockElementsCallback : public ElementsCallback {
 public:
     MockElementsCallback() = default;

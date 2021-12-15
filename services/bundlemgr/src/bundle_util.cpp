@@ -26,7 +26,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 ErrCode BundleUtil::CheckFilePath(const std::string &bundlePath, std::string &realPath)
 {
     if (!CheckFileName(bundlePath)) {
@@ -94,6 +93,5 @@ bool BundleUtil::CheckFileSize(const std::string &bundlePath, const int64_t file
     }
     return true;
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

@@ -27,7 +27,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class BundleMgrHost : public IRemoteStub<IBundleMgr> {
 public:
     BundleMgrHost() = default;

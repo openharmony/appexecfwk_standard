@@ -19,7 +19,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 SystemBundleInstaller::SystemBundleInstaller(const std::string &filePath) : filePath_(filePath)
 {
     APP_LOGI("system bundle installer instance is created");
@@ -41,6 +40,5 @@ bool SystemBundleInstaller::InstallSystemBundle(Constants::AppType appType)
     }
     return true;
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

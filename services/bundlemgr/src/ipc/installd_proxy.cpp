@@ -23,7 +23,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 InstalldProxy::InstalldProxy(const sptr<IRemoteObject> &object) : IRemoteProxy<IInstalld>(object)
 {
     APP_LOGI("installd proxy instance is created");
@@ -241,6 +240,5 @@ bool InstalldProxy::TransactInstalldCmd(IInstalld::Message code, MessageParcel &
     }
     return true;
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

@@ -30,7 +30,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 using Want = OHOS::AAFwk::Want;
 using AbilityStartSetting = AAFwk::AbilityStartSetting;
 // Request permissions for user

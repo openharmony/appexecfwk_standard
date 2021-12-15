@@ -22,7 +22,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class BundleStatusCallbackProxy : public IRemoteProxy<IBundleStatusCallback> {
 public:
     explicit BundleStatusCallbackProxy(const sptr<IRemoteObject> &object);
@@ -61,7 +60,6 @@ public:
 private:
     static inline BrokerDelegator<BundleStatusCallbackProxy> delegator_;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 

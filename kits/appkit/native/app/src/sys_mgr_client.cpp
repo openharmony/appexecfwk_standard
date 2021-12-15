@@ -23,7 +23,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 SysMrgClient::SysMrgClient() : abilityManager_(nullptr)
 {}
 
@@ -73,6 +72,5 @@ void SysMrgClient::RegisterSystemAbility(
  */
 void SysMrgClient::UnregisterSystemAbility(const int32_t systemAbilityId)
 {}
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

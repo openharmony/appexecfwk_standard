@@ -23,7 +23,7 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-    
+ 
 struct LauncherAbilityInfo {
 public:
     std::string name;  // ability name, only the main class name
@@ -34,7 +34,6 @@ public:
     int32_t userid;
     int64_t installTime;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_LAUNCHER_ABILITYINFO_H

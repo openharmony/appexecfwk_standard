@@ -122,7 +122,6 @@ private:
     ConcurrentQueue<std::shared_ptr<TaskListener>> taskListeners_;
     std::shared_ptr<BaseTaskDispatcher> baseTaskDispatcher_;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 

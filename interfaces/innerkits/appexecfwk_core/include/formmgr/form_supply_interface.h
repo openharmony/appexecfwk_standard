@@ -60,7 +60,6 @@ public:
         TRANSACTION_EVENT_HANDLE,
     };
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 

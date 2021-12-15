@@ -22,7 +22,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 InstalldHost::InstalldHost()
 {
     APP_LOGI("installd host instance is created");
@@ -205,6 +204,5 @@ bool InstalldHost::HandleCleanBundleDataDir(MessageParcel &data, MessageParcel &
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, reply, result);
     return true;
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

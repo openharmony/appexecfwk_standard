@@ -22,7 +22,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 using namespace OHOS::Security;
 
 namespace {
@@ -79,7 +78,6 @@ bool ConvertPermissionDef(
     permDef.descriptionId = defPermission.descriptionId;
     return true;
 }
-
 }  // namespace
 
 bool BundlePermissionMgr::InitPermissions()
@@ -348,6 +346,5 @@ int BundlePermissionMgr::RemoveSystemGrantedReqPermissions(const std::string &bu
     APP_LOGI("RemoveSystemGrantedReqPermissions bundleName %{public}s", bundleName.c_str());
     return Permission::PermissionKit::RemoveSystemGrantedReqPermissions(bundleName);
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

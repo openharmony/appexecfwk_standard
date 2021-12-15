@@ -27,12 +27,10 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 using namespace OHOS;
 using namespace OHOS::AAFwk;
 using namespace OHOS::AppExecFwk;
 namespace {
-
 constexpr size_t CALLBACK_SIZE = 1;
 constexpr size_t ARGS_SIZE_ONE = 1;
 constexpr size_t ARGS_SIZE_TWO = 2;
@@ -84,7 +82,6 @@ struct PermissionsKey {
 
 std::map<PermissionsKey, OHOS::sptr<PermissionCallback>> permissionsCallback;
 std::map<napi_ref, OHOS::sptr<PermissionCallback>> anyPermissionsCallback;
-
 }  // namespace
 
 napi_ref g_classBundleInstaller;
@@ -1258,7 +1255,6 @@ static napi_value ParseWant(napi_env env, Want &want, napi_value args)
  */
 napi_value QueryAbilityInfos(napi_env env, napi_callback_info info)
 {
-
     HILOG_INFO("QueryAbilityInfos called");
     size_t argc = ARGS_SIZE_FOUR;
     napi_value argv[ARGS_SIZE_FOUR] = {nullptr};

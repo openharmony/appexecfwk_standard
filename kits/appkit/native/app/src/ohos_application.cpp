@@ -23,7 +23,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 REGISTER_APPLICATION(OHOSApplication, OHOSApplication)
 
 OHOSApplication::OHOSApplication()
@@ -390,6 +389,5 @@ void OHOSApplication::OnAbilitySaveState(const PacMap &outState)
 {
     DispatchAbilitySavedState(outState);
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

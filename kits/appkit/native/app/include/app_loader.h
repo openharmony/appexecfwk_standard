@@ -81,7 +81,6 @@ private:
         ApplicationLoader::GetInstance().RegisterApplication(                                 \
             #bundleName, []()->OHOSApplication * { return new (std::nothrow) className; });   \
     }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_OHOS_APPLICATION_LOADER_H

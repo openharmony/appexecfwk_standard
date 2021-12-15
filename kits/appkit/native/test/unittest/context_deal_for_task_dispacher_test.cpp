@@ -200,7 +200,5 @@ HWTEST_F(ContextDealForTaskDispatcherTest, AppExecFwk_ContextDeal_GetGlobalTaskD
     EXPECT_TRUE((nullptr == contextdeal->GetGlobalTaskDispatcher(high)));
     GTEST_LOG_(INFO) << "AppExecFwk_ContextDeal_GetGlobalTaskDispatcher_0200 end";
 }
-
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

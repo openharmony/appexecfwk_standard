@@ -23,7 +23,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 bool ModuleInfo::ReadFromParcel(Parcel &parcel)
 {
     moduleName = Str16ToStr8(parcel.ReadString16());
@@ -62,6 +61,5 @@ void from_json(const nlohmann::json &jsonObject, ModuleInfo &moduleInfo)
     moduleInfo.moduleName = jsonObject.at("moduleName").get<std::string>();
     moduleInfo.moduleSourceDir = jsonObject.at("moduleSourceDir").get<std::string>();
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

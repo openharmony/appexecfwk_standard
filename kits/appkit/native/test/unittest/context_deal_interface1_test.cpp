@@ -507,6 +507,5 @@ HWTEST_F(
     EXPECT_EQ(testValue, AAFwk::MockAbilityManagerClient::GetInstance()->GetRemoveMissionsValue());
     GTEST_LOG_(INFO) << "AppExecFwk_ContextDeal_TerminateAndRemoveMission_0300 end";
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

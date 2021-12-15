@@ -24,7 +24,6 @@ const int INMOCKAPPLICATION_THREE = 9998;
 
 namespace OHOS {
 namespace AppExecFwk {
-
 REGISTER_APPLICATION("MockTestApplication", MockApplication)
 
 MockApplication::MockApplication()
@@ -188,6 +187,5 @@ void MockModuleLifecycleCallbacks::OnAbilitySaveState(const PacMap &outState)
 {
     GTEST_LOG_(INFO) << "MockModuleLifecycleCallbacks::OnAbilitySaveState called";
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

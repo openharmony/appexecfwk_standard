@@ -69,13 +69,11 @@ private:
     int terminateAbilityValue_;
     int removeMissions_;
 };
-
 }  // namespace AAFwk
 }  // namespace OHOS
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class MockIBundleMgr : public IRemoteStub<IBundleMgr> {
 public:
     MockIBundleMgr(){};
@@ -310,7 +308,6 @@ public:
         return sptr<IBundleMgr>(new (std::nothrow) MockIBundleMgr());
     };
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 

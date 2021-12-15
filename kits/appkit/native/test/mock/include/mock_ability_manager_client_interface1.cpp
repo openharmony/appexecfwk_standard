@@ -264,6 +264,5 @@ void MockAbilityManagerClient::ChangeRemoveMissionsValue()
 {
     ++removeMissions_;
 }
-
 }  // namespace AAFwk
 }  // namespace OHOS

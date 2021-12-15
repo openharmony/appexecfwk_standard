@@ -19,7 +19,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 /**
  *  Listen to events of task execution.
  */
@@ -33,7 +32,6 @@ public:
      */
     virtual void OnChanged(const TaskStage &stage) = 0;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif

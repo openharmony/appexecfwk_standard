@@ -28,7 +28,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 using AbilityConnectionStub = OHOS::AAFwk::AbilityConnectionStub;
 using Uri = OHOS::Uri;
 

@@ -65,7 +65,6 @@ private:
     static const std::string SYNC_DISPATCHER_BARRIER_TAG;
     std::shared_ptr<BarrierHandler> barrierHandler_ = nullptr;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif

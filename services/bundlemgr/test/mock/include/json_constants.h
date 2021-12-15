@@ -21,7 +21,6 @@
 namespace OHOS {
 namespace AppExecFwk {
 namespace JsonConstants {
-
 const nlohmann::json NOT_STRING_TYPE = R"(
         {
             "number": 234,
@@ -65,7 +64,6 @@ const nlohmann::json NOT_ARRAY_TYPE = R"(
             "object": {}
         }
     )"_json;
-
 }  // namespace JsonConstants
 }  // namespace AppExecFwk
 }  // namespace OHOS

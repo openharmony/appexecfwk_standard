@@ -17,7 +17,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 /**
  * Defines a group, which stands for a set of tasks semantically.
  * <p>Multiple tasks can be associated with a group so that they can be considered as a whole.
@@ -29,7 +28,6 @@ namespace AppExecFwk {
  * @since 1
  */
 class Group {};
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif

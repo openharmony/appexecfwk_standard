@@ -20,7 +20,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class ContextContainer : public Context {
 public:
     ContextContainer() = default;
@@ -553,7 +552,6 @@ public:
 private:
     std::shared_ptr<Context> baseContext_;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_OHOS_CONTEXT_CONTAINER_H

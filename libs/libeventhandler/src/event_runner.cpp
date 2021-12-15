@@ -385,7 +385,6 @@ std::shared_ptr<EventRunner> EventInnerRunner::GetCurrentEventRunner()
 ThreadLocalData<std::weak_ptr<EventRunner>> EventInnerRunner::currentEventRunner;
 
 namespace {
-
 volatile bool ThreadCollector::avatarEnabled_ = false;
 
 /*
@@ -394,7 +393,6 @@ volatile bool ThreadCollector::avatarEnabled_ = false;
  * so instance of 'ThreadCollector::Avatar' MUST defined after 'currentEventRunner'.
  */
 ThreadCollector::Avatar ThreadCollector::avatar_;
-
 }  // unnamed namespace
 
 std::shared_ptr<EventRunner> EventRunner::mainRunner_;

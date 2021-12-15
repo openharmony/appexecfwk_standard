@@ -25,7 +25,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class InstalldOperator {
 public:
     /**
@@ -117,7 +116,6 @@ public:
      */
     static bool MkOwnerDir(const std::string &path, bool isReadByOthers, const int uid, const int gid);
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_INSTALLD_OPERATOR_H

@@ -17,7 +17,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 TaskDispatcherContext::TaskDispatcherContext()
 {
     globalDispatchers_.resize(PRIORITY_COUNT);

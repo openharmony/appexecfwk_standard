@@ -29,7 +29,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 FormTimerMgr::FormTimerMgr()
 {
     Init();

@@ -22,7 +22,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 using OHOS::AAFwk::AbilityManagerClient;
 using OHOS::AAFwk::AbilityMissionInfo;
 using OHOS::AAFwk::RECENT_IGNORE_UNAVAILABLE;
@@ -111,7 +110,6 @@ public:
      */
     int KillProcessesByBundleName(const std::string &bundleName);
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // ABILITY_MANAGER_H

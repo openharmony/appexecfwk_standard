@@ -24,7 +24,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 BaseExtractor::BaseExtractor(const std::string &source) : sourceFile_(source), zipFile_(source)
 {
     APP_LOGI("BaseExtractor instance is created");
@@ -90,6 +89,5 @@ bool BaseExtractor::GetZipFileNames(std::vector<std::string> &fileNames)
     }
     return true;
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

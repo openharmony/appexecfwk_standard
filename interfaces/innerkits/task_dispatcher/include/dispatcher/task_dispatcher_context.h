@@ -155,7 +155,6 @@ private:
 private:
     int MapPriorityIndex(TaskPriority priority) const;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif

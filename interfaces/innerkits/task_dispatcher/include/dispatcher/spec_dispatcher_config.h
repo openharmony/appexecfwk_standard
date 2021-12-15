@@ -46,7 +46,6 @@ private:
     std::string name_;
     TaskPriority priority_;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 

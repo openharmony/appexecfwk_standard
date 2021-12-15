@@ -20,7 +20,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class ElementsCallback {
 public:
     ElementsCallback() = default;

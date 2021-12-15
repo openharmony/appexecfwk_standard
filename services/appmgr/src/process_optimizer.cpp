@@ -22,7 +22,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 using namespace std::placeholders;
 
 namespace {
@@ -725,6 +724,5 @@ void ProcessOptimizer::GetAppFreezingTime(int &time)
     APP_LOGE("%{public}s  current freez time:[%{public}d]", __func__, time);
     return;
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

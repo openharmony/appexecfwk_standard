@@ -27,7 +27,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class EventRunner;
 class SpecTaskDispatcher : public BaseTaskDispatcher, public std::enable_shared_from_this<SpecTaskDispatcher> {
 public:
@@ -80,7 +79,6 @@ private:
 
     std::shared_ptr<TaskDispatcherHandler> handler_;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif

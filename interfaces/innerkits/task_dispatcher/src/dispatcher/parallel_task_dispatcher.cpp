@@ -83,6 +83,5 @@ ErrCode ParallelTaskDispatcher::AsyncDispatchBarrier(const std::shared_ptr<Runna
     APP_LOGI("ParallelTaskDispatcher::AsyncDispatchBarrier end");
     return ERR_OK;
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
