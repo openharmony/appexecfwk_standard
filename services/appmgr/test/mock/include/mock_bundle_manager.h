@@ -101,16 +101,16 @@ public:
     };
     virtual bool GetBundleInfosByMetaData(const std::string &metaData, std::vector<BundleInfo> &bundleInfos) override
     {
-
         return true;
     };
     virtual bool QueryKeepAliveBundleInfos(std::vector<BundleInfo> &bundleInfos) override
     {
+        int appUid = 2100;
         GTEST_LOG_(INFO) << "QueryKeepAliveBundleInfos()";
         ApplicationInfo info;
         info.name = "KeepAliveApp";
         info.bundleName = "KeepAliveApplication";
-        info.uid = 2100;
+        info.uid = appUid;
 
         BundleInfo bundleInfo;
         bundleInfo.applicationInfo = info;
@@ -402,11 +402,12 @@ public:
     }
     virtual bool QueryKeepAliveBundleInfos(std::vector<BundleInfo> &bundleInfos) override
     {
+        int appUid = 2100;
         GTEST_LOG_(INFO) << "QueryKeepAliveBundleInfos()";
         ApplicationInfo info;
         info.name = "KeepAliveApp";
         info.bundleName = "KeepAliveApplication";
-        info.uid = 2100;
+        info.uid = appUid;
 
         BundleInfo bundleInfo;
         bundleInfo.applicationInfo = info;

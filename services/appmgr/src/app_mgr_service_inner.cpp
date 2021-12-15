@@ -103,7 +103,7 @@ void AppMgrServiceInner::LoadAbility(const sptr<IRemoteObject> &token, const spt
             appRecord->GetBundleName().c_str());
         StartProcess(abilityInfo->applicationName, processName, appRecord, abilityInfo->applicationInfo.uid);
     } else {
-        APP_LOGI("LoadAbility StartAbility appname [%{public}s]  | bundename [%{public}s]", appRecord->GetName().c_str(),
+        APP_LOGI("LoadAbility StartAbility appname [%{public}s] | bundename [%{public}s]", appRecord->GetName().c_str(),
             appRecord->GetBundleName().c_str());
         StartAbility(token, preToken, abilityInfo, appRecord);
     }
@@ -369,18 +369,10 @@ void AppMgrServiceInner::ClearUpApplicationDataByUserId(const std::string &bundl
         APP_LOGE("GetBundleManager fail");
         return;
     }
-
-    int32_t result = 0;
     int32_t clearUid = bundleMgr_->GetUidByBundleName(bundleName, userId);
-    // 1.check permission
-    result = bundleMgr_->CheckPermissionByUid(bundleName, REQ_PERMISSION, userId);
-    if (result) {
-        APP_LOGE("No permission to clear application data");
-        return;
-    }
     if (bundleMgr_->CheckIsSystemAppByUid(callerUid) || callerUid == clearUid) {
         // request to clear user information permission.
-        result = Permission::PermissionKit::RemoveUserGrantedReqPermissions(bundleName, userId);
+        int32_t result = Permission::PermissionKit::RemoveUserGrantedReqPermissions(bundleName, userId);
         if (result) {
             APP_LOGE("RemoveUserGrantedReqPermissions failed");
             return;
@@ -1048,7 +1040,6 @@ void AppMgrServiceInner::ClearRecentAppList()
 void AppMgrServiceInner::OnRemoteDied(const wptr<IRemoteObject> &remote)
 {
     auto appRecord = appRunningManager_->OnRemoteDied(remote);
-    
     if (appRecord) {
         for (const auto &item : appRecord->GetAbilities()) {
             const auto &abilityRecord = item.second;
@@ -1381,7 +1372,6 @@ void AppMgrServiceInner::StartResidentProcess(const std::vector<BundleInfo> &inf
     }
 
     // Later, when distinguishing here, there is a process with ability and time and space.
-
     std::shared_ptr<AppRunningRecord> appRecord(nullptr);
     auto CheckProcessIsExist = [&appRecord, innerService = shared_from_this()](const BundleInfo &iter) {
         bool appExist = false;
@@ -1391,7 +1381,6 @@ void AppMgrServiceInner::StartResidentProcess(const std::vector<BundleInfo> &inf
     };
 
     for (auto &iter : infos) {
-
         if (!CheckProcessIsExist(iter) && appRecord) {
             APP_LOGI("start bundle [%{public}s]", iter.applicationInfo.bundleName.c_str());
             // todo Should it be time-consuming, should it be made asynchronous?

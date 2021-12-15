@@ -50,7 +50,6 @@ private:
     int32_t HandleAddAbilityStageDone(MessageParcel &data, MessageParcel &reply);
     int32_t HandleStartupResidentProcess(MessageParcel &data, MessageParcel &reply);
 
-
     using AppMgrFunc = int32_t (AppMgrStub::*)(MessageParcel &data, MessageParcel &reply);
     std::map<uint32_t, AppMgrFunc> memberFuncMap_;
 

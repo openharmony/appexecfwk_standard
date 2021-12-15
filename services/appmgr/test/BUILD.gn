@@ -45,6 +45,7 @@ ohos_source_set("appmgr_test_source") {
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core/src/appmgr/app_mgr_stub.cpp",
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core/src/appmgr/app_process_data.cpp",
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core/src/appmgr/app_record_id.cpp",
+    "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core/src/appmgr/app_resident_process_info.cpp",
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core/src/appmgr/app_scheduler_host.cpp",
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core/src/appmgr/app_scheduler_proxy.cpp",
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core/src/appmgr/app_state_callback_host.cpp",
@@ -53,7 +54,6 @@ ohos_source_set("appmgr_test_source") {
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core/src/appmgr/configuration.cpp",
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core/src/appmgr/process_info.cpp",
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core/src/appmgr/profile.cpp",
-    "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core/src/appmgr/app_resident_process_info.cpp",
   ]
 
   include_dirs = [

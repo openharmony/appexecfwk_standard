@@ -1384,7 +1384,7 @@ HWTEST_F(AmsAppLifeCycleModuleTest, AbilityBehaviorAnalysis_06, TestSize.Level1)
 }
 
 /*
- * Feature: Ams
+ * Feature: AbilityMgr
  * Function: LoadResidentProcess
  * SubFunction: NA
  * FunctionPoints: NA
@@ -1412,7 +1412,7 @@ HWTEST_F(AmsAppLifeCycleModuleTest, LoadResidentProcess_01, TestSize.Level1)
 }
 
 /*
- * Feature: Ams
+ * Feature: AbilityMgr
  * Function: StartResidentProcess
  * SubFunction: NA
  * FunctionPoints: NA

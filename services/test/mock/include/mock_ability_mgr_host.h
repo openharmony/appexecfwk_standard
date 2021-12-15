@@ -301,7 +301,6 @@ public:
     {
         return 0;
     }
-
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS

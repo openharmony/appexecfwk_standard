@@ -47,7 +47,6 @@ struct AppResidentProcessInfo : public Parcelable {
     // This information should be needed right now
     bool isKeepAliveApp_ = false;
     std::vector<HapModuleInfo> abilityStage_;
-
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS

@@ -30,34 +30,34 @@ namespace OHOS {
 namespace AppExecFwk {
 AppMgrStub::AppMgrStub()
 {
-    memberFuncMap_[static_cast<uint32_t>(IAppMgr::Message::AMS_APP_ATTACH_APPLICATION)] =
+    memberFuncMap_[static_cast<uint32_t>(IAppMgr::Message::APP_ATTACH_APPLICATION)] =
         &AppMgrStub::HandleAttachApplication;
-    memberFuncMap_[static_cast<uint32_t>(IAppMgr::Message::AMS_APP_APPLICATION_FOREGROUNDED)] =
+    memberFuncMap_[static_cast<uint32_t>(IAppMgr::Message::APP_APPLICATION_FOREGROUNDED)] =
         &AppMgrStub::HandleApplicationForegrounded;
-    memberFuncMap_[static_cast<uint32_t>(IAppMgr::Message::AMS_APP_APPLICATION_BACKGROUNDED)] =
+    memberFuncMap_[static_cast<uint32_t>(IAppMgr::Message::APP_APPLICATION_BACKGROUNDED)] =
         &AppMgrStub::HandleApplicationBackgrounded;
-    memberFuncMap_[static_cast<uint32_t>(IAppMgr::Message::AMS_APP_APPLICATION_TERMINATED)] =
+    memberFuncMap_[static_cast<uint32_t>(IAppMgr::Message::APP_APPLICATION_TERMINATED)] =
         &AppMgrStub::HandleApplicationTerminated;
-    memberFuncMap_[static_cast<uint32_t>(IAppMgr::Message::AMS_APP_CHECK_PERMISSION)] =
+    memberFuncMap_[static_cast<uint32_t>(IAppMgr::Message::APP_CHECK_PERMISSION)] =
         &AppMgrStub::HandleCheckPermission;
-    memberFuncMap_[static_cast<uint32_t>(IAppMgr::Message::AMS_APP_ABILITY_CLEANED)] =
+    memberFuncMap_[static_cast<uint32_t>(IAppMgr::Message::APP_ABILITY_CLEANED)] =
         &AppMgrStub::HandleAbilityCleaned;
-    memberFuncMap_[static_cast<uint32_t>(IAppMgr::Message::AMS_APP_GET_MGR_INSTANCE)] = &AppMgrStub::HandleGetAmsMgr;
-    memberFuncMap_[static_cast<uint32_t>(IAppMgr::Message::AMS_APP_CLEAR_UP_APPLICATION_DATA)] =
+    memberFuncMap_[static_cast<uint32_t>(IAppMgr::Message::APP_GET_MGR_INSTANCE)] = &AppMgrStub::HandleGetAmsMgr;
+    memberFuncMap_[static_cast<uint32_t>(IAppMgr::Message::APP_CLEAR_UP_APPLICATION_DATA)] =
         &AppMgrStub::HandleClearUpApplicationData;
-    memberFuncMap_[static_cast<uint32_t>(IAppMgr::Message::AMS_APP_IS_BACKGROUND_RUNNING_RESTRICTED)] =
+    memberFuncMap_[static_cast<uint32_t>(IAppMgr::Message::APP_IS_BACKGROUND_RUNNING_RESTRICTED)] =
         &AppMgrStub::HandleIsBackgroundRunningRestricted;
-    memberFuncMap_[static_cast<uint32_t>(IAppMgr::Message::AMS_APP_GET_ALL_RUNNING_PROCESSES)] =
+    memberFuncMap_[static_cast<uint32_t>(IAppMgr::Message::APP_GET_ALL_RUNNING_PROCESSES)] =
         &AppMgrStub::HandleGetAllRunningProcesses;
-    memberFuncMap_[static_cast<uint32_t>(IAppMgr::Message::AMS_APP_SET_APP_FREEZING_TIME)] =
+    memberFuncMap_[static_cast<uint32_t>(IAppMgr::Message::APP_SET_APP_FREEZING_TIME)] =
         &AppMgrStub::HandleSetAppFreezingTime;
-    memberFuncMap_[static_cast<uint32_t>(IAppMgr::Message::AMS_APP_GET_APP_FREEZING_TIME)] =
+    memberFuncMap_[static_cast<uint32_t>(IAppMgr::Message::APP_GET_APP_FREEZING_TIME)] =
         &AppMgrStub::HandleGetAppFreezingTime;
-    memberFuncMap_[static_cast<uint32_t>(IAppMgr::Message::AMS_APP_GET_SYSTEM_MEMORY_ATTR)] =
+    memberFuncMap_[static_cast<uint32_t>(IAppMgr::Message::APP_GET_SYSTEM_MEMORY_ATTR)] =
         &AppMgrStub::HandleGetSystemMemoryAttr;
-    memberFuncMap_[static_cast<uint32_t>(IAppMgr::Message::AMS_APP_ADD_ABILITY_STAGE_INFO_DONE)] =
+    memberFuncMap_[static_cast<uint32_t>(IAppMgr::Message::APP_ADD_ABILITY_STAGE_INFO_DONE)] =
         &AppMgrStub::HandleAddAbilityStageDone;
-    memberFuncMap_[static_cast<uint32_t>(IAppMgr::Message::AMS_STARTUP_RESIDENT_PROCESS)] =
+    memberFuncMap_[static_cast<uint32_t>(IAppMgr::Message::STARTUP_RESIDENT_PROCESS)] =
         &AppMgrStub::HandleStartupResidentProcess;
 }
 
@@ -132,11 +132,11 @@ int32_t AppMgrStub::HandleGetAmsMgr(MessageParcel &data, MessageParcel &reply)
     int32_t result = NO_ERROR;
     sptr<IAmsMgr> amsMgr = GetAmsMgr();
     if (!amsMgr) {
-        APP_LOGE("ams instance is nullptr");
+        APP_LOGE("abilitymgr instance is nullptr");
         result = ERR_NO_INIT;
     } else {
         if (!reply.WriteParcelable(amsMgr->AsObject())) {
-            APP_LOGE("failed to reply ams instance to client, for write parcel error");
+            APP_LOGE("failed to reply abilitymgr instance to client, for write parcel error");
             result = ERR_APPEXECFWK_PARCEL_ERROR;
         }
     }

@@ -376,12 +376,12 @@ public:
 
     bool IsTerminating();
 
-    inline bool IsKeepAliveApp() const {return isKeepAliveApp;}
+    bool IsKeepAliveApp() const;
 
     // Please use with caution, it may affect the ability to start.
-    inline void SetKeepAliveAppState() {isKeepAliveApp = true;}
+    void SetKeepAliveAppState();
 
-    bool CanRestartResidentProc();
+bool CanRestartResidentProc();
 
     void insertAbilityStageInfo(std::vector<HapModuleInfo> moduleInfos);
 
