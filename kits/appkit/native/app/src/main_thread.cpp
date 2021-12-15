@@ -152,7 +152,7 @@ bool MainThread::ConnectToAppMgr()
     APP_LOGI("MainThread::ConnectToAppMgr start");
     auto object = OHOS::DelayedSingleton<SysMrgClient>::GetInstance()->GetSystemAbility(APP_MGR_SERVICE_ID);
     if (object == nullptr) {
-        APP_LOGE("failed to get bundle manager service");
+        APP_LOGE("failed to get app manager service");
         return false;
     }
     deathRecipient_ = new (std::nothrow) AppMgrDeathRecipient();
@@ -337,6 +337,16 @@ void MainThread::ScheduleLaunchApplication(const AppLaunchData &data)
         APP_LOGE("MainThread::ScheduleLaunchApplication PostTask task failed");
     }
     APP_LOGI("MainThread::scheduleLaunchApplication end.");
+}
+
+void MainThread::ScheduleAbilityStageInfo(const AppResidentProcessInfo &residentProcessInfo)
+{
+    APP_LOGI("MainThread::ScheduleAbilityStageInfo start");
+    auto task = [appThread = this, residentProcessInfo]() { appThread->HandleAbilityStageInfo(residentProcessInfo);};
+    if (!mainHandler_->PostTask(task)) {
+        APP_LOGE("MainThread::ScheduleAbilityStageInfo PostTask task failed");
+    }
+    APP_LOGI("MainThread::ScheduleAbilityStageInfo end.");
 }
 
 /**
@@ -725,6 +735,9 @@ void MainThread::HandleLaunchApplication(const AppLaunchData &appLaunchData)
 
     APP_LOGI("MainThread::handleLaunchApplication called end.");
 }
+
+void MainThread::HandleAbilityStageInfo(const AppResidentProcessInfo &residentProcessInfo)
+{}
 
 /**
  *

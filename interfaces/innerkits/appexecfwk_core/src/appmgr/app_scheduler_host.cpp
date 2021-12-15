@@ -45,6 +45,8 @@ AppSchedulerHost::AppSchedulerHost()
         &AppSchedulerHost::HandleScheduleConfigurationUpdated;
     memberFuncMap_[static_cast<uint32_t>(IAppScheduler::Message::SCHEDULE_PROCESS_SECURITY_EXIT_TRANSACTION)] =
         &AppSchedulerHost::HandleScheduleProcessSecurityExit;
+    memberFuncMap_[static_cast<uint32_t>(IAppScheduler::Message::SCHEDULE_ABILITY_STAGE_INFO)] =
+        &AppSchedulerHost::HandleScheduleAbilityStageInfo;
 }
 
 AppSchedulerHost::~AppSchedulerHost()
@@ -125,12 +127,25 @@ int32_t AppSchedulerHost::HandleScheduleCleanAbility(MessageParcel &data, Messag
 int32_t AppSchedulerHost::HandleScheduleLaunchApplication(MessageParcel &data, MessageParcel &reply)
 {
     std::unique_ptr<AppLaunchData> launchData(data.ReadParcelable<AppLaunchData>());
+    
     if (!launchData) {
         APP_LOGE("ReadParcelable<launchData> failed");
         return ERR_APPEXECFWK_PARCEL_ERROR;
     }
 
     ScheduleLaunchApplication(*launchData);
+    return NO_ERROR;
+}
+
+int32_t AppSchedulerHost::HandleScheduleAbilityStageInfo(MessageParcel &data, MessageParcel &reply)
+{
+    std::unique_ptr<AppResidentProcessInfo> appResidentProcessInfo(data.ReadParcelable<AppResidentProcessInfo>());
+    if (!appResidentProcessInfo) {
+        APP_LOGE("ReadParcelable<launchData> failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+
+    ScheduleAbilityStageInfo(*appResidentProcessInfo);
     return NO_ERROR;
 }
 

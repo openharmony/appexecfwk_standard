@@ -81,12 +81,12 @@ protected:
         const std::shared_ptr<AppRunningRecord> &appRecord, const std::string &index) const;
     std::shared_ptr<AbilityRunningRecord> AddNewAbility(
         const std::shared_ptr<AppRunningRecord> &appRecord, const std::string &index, const int uid) const;
-
 protected:
     std::shared_ptr<AppMgrServiceInner> serviceInner_;
     sptr<MockAbilityToken> mock_token_ = nullptr;
     sptr<BundleMgrService> mockBundleMgr = nullptr;
     std::shared_ptr<AMSEventHandler> handler_ = nullptr;
+    sptr<MockAppStateCallback> mockAppStateCallbackStub_ = nullptr;
 };
 
 void AmsAppLifeCycleTest::SetUpTestCase()
@@ -1850,9 +1850,7 @@ HWTEST_F(AmsAppLifeCycleTest, ClearUpApplicationData_001, TestSize.Level1)
     EXPECT_CALL(*mockBundleMgr, GetUidByBundleName(_, _)).Times(0);
     serviceInner_->ClearUpApplicationData(appRecord->GetBundleName(), -1, NEW_PID);
 
-    EXPECT_CALL(*mockBundleMgr, GetUidByBundleName(_, _)).Times(2).WillOnce(Return(101));
-    EXPECT_CALL(*mockBundleMgr, CheckPermissionByUid(_, _, _)).Times(1);
-    EXPECT_CALL(*mockBundleMgr, CleanBundleDataFiles(_, _)).Times(1).WillOnce(Return(1));
+    EXPECT_CALL(*mockBundleMgr, GetUidByBundleName(_, _)).Times(1).WillOnce(Return(101));
 
     sptr<MockAppScheduler> mockAppScheduler = new MockAppScheduler();
     sptr<IAppScheduler> client = iface_cast<IAppScheduler>(mockAppScheduler.GetRefPtr());
@@ -1879,10 +1877,7 @@ HWTEST_F(AmsAppLifeCycleTest, ClearUpApplicationData_002, TestSize.Level1)
     if (pid > 0) {
         auto appRecord = StartProcessAndLoadAbility(token, nullptr, abilityInfo, appInfo, pid);
 
-        EXPECT_CALL(*mockBundleMgr, GetUidByBundleName(_, _)).Times(2).WillOnce(Return(101));
-        EXPECT_CALL(*mockBundleMgr, CheckPermissionByUid(_, _, _)).Times(1);
-        EXPECT_CALL(*mockBundleMgr, CleanBundleDataFiles(_, _)).Times(1).WillOnce(Return(true));
-
+        EXPECT_CALL(*mockBundleMgr, GetUidByBundleName(_, _)).Times(1).WillOnce(Return(101));
         appRecord->SetUid(101);
         sptr<MockAppScheduler> mockAppScheduler = new MockAppScheduler();
         sptr<IAppScheduler> client = iface_cast<IAppScheduler>(mockAppScheduler.GetRefPtr());
@@ -2052,6 +2047,99 @@ HWTEST_F(AmsAppLifeCycleTest, GetAbilityRunningRecordByAbilityToken_001, TestSiz
     sptr<IRemoteObject> token2 = new MockAbilityToken();
     auto abilityRecord2 = serviceInner_->GetAbilityRunningRecordByAbilityToken(token2);
     EXPECT_FALSE(abilityRecord2);
+}
+
+/*
+ * Feature: AMS
+ * Function: AppLifeCycle::LoadResidentProcess
+ * SubFunction: NA
+ * FunctionPoints: NA
+ * CaseDescription: NA
+ */
+HWTEST_F(AmsAppLifeCycleTest, LoadResidentProcess_001, TestSize.Level1)
+{
+    std::string appName = "KeepAliveApp";
+    std::string proc = "KeepAliveApplication";
+    int uid = 2100;
+    int pid = 120;
+
+    auto appRecord = serviceInner_->GetAppRunningRecordByProcessName(appName, proc, uid);
+    EXPECT_FALSE(appRecord);
+
+    MockAppSpawnClient *mockClientPtrT = new (std::nothrow) MockAppSpawnClient();
+    EXPECT_TRUE(mockClientPtrT);
+    EXPECT_CALL(*mockClientPtrT, StartProcess(_, _)).Times(1).WillOnce(DoAll(SetArgReferee<1>(pid), Return(ERR_OK)));
+
+    serviceInner_->SetAppSpawnClient(std::unique_ptr<MockAppSpawnClient>(mockClientPtrT));
+
+    serviceInner_->LoadResidentProcess();
+    appRecord = serviceInner_->GetAppRunningRecordByProcessName(appName, proc, uid);
+    EXPECT_TRUE(appRecord);
+}
+
+/*
+ * Feature: AMS
+ * Function: AppLifeCycle::LoadResidentProcess
+ * SubFunction: NA
+ * FunctionPoints: NA
+ * CaseDescription: NA
+ */
+HWTEST_F(AmsAppLifeCycleTest, LoadResidentProcess_002, TestSize.Level1)
+{
+    std::string appName = "KeepAliveApp";
+    std::string proc = "KeepAliveApplication";
+    int uid = 2100;
+
+    auto appRecord = serviceInner_->GetAppRunningRecordByProcessName(appName, proc, uid);
+    EXPECT_FALSE(appRecord);
+
+    serviceInner_->LoadResidentProcess();
+    appRecord = serviceInner_->GetAppRunningRecordByProcessName(appName, proc, uid);
+    EXPECT_FALSE(appRecord);
+}
+
+/*
+ * Feature: AMS
+ * Function: AppLifeCycle::StartResidentProcess
+ * SubFunction: NA
+ * FunctionPoints: NA
+ * CaseDescription: NA
+ */
+HWTEST_F(AmsAppLifeCycleTest, StartResidentProcess_001, TestSize.Level1)
+{
+    pid_t pid = 123;
+    sptr<IRemoteObject> token = GetMockToken();
+    std::string appName = "KeepAliveApp";
+    std::string proc = "KeepAliveApplication";
+    int uid = 2100;
+
+    std::vector<BundleInfo> infos;
+    BundleInfo info;
+    info.name = proc;
+    info.uid = uid;
+
+    ApplicationInfo appInfo;
+    appInfo.name = "KeepAliveApp";
+    appInfo.bundleName = "KeepAliveApplication";
+    appInfo.uid = 2100;
+    info.applicationInfo = appInfo;
+    infos.push_back(info);
+
+    auto appRecord = serviceInner_->GetAppRunningRecordByProcessName(appName, proc, uid);
+    EXPECT_FALSE(appRecord);
+
+    MockAppSpawnClient *mockClientPtrT = new (std::nothrow) MockAppSpawnClient();
+    EXPECT_TRUE(mockClientPtrT);
+    EXPECT_CALL(*mockClientPtrT, StartProcess(_, _)).Times(1).WillOnce(DoAll(SetArgReferee<1>(pid), Return(ERR_OK)));
+
+    serviceInner_->SetAppSpawnClient(std::unique_ptr<MockAppSpawnClient>(mockClientPtrT));
+
+    serviceInner_->StartResidentProcess(infos);
+
+    appRecord = serviceInner_->GetAppRunningRecordByProcessName(appName, proc, uid);
+    EXPECT_TRUE(appRecord);
+    pid_t newPid = appRecord->GetPriorityObject()->GetPid();
+    EXPECT_TRUE(newPid == pid);
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS

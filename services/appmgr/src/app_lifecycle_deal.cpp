@@ -26,7 +26,15 @@ AppLifeCycleDeal::~AppLifeCycleDeal()
 
 void AppLifeCycleDeal::LaunchApplication(const AppLaunchData &launchData_)
 {
+    APP_LOGI("AppLifeCycleDeal ScheduleLaunchApplication");
     appThread_->ScheduleLaunchApplication(launchData_);
+}
+
+void AppLifeCycleDeal::AddAbilityStageInfo(const AppResidentProcessInfo &residentProcessInfo)
+{
+    if (appThread_) {
+        appThread_->ScheduleAbilityStageInfo(residentProcessInfo);
+    }
 }
 
 void AppLifeCycleDeal::LaunchAbility(const std::shared_ptr<AbilityRunningRecord> &ability)

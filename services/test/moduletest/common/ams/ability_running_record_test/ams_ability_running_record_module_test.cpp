@@ -121,6 +121,10 @@ public:
     {
         return abilityLaunchTime;
     }
+
+    void ScheduleAbilityStageInfo(const AppResidentProcessInfo &) override
+    {}
+
     void Reset() override
     {
         MockedSchedulerBase::Reset();

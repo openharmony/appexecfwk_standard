@@ -63,6 +63,8 @@ public:
     {}
     void ScheduleProcessSecurityExit() override
     {}
+    void ScheduleAbilityStageInfo(const AppResidentProcessInfo &) override
+    {}
 };
 class AppMgrServiceModuleTest : public testing::Test {
 public:
@@ -72,9 +74,9 @@ public:
     void TearDown();
 
 protected:
-    inline static std::shared_ptr<MockAppMgrServiceInner> mockAppMgrServiceInner_{nullptr};
-    inline static std::shared_ptr<AppMgrService> appMgrService_{nullptr};
-    inline static sptr<IRemoteObject> testRemoteObject_{nullptr};
+    inline static std::shared_ptr<MockAppMgrServiceInner> mockAppMgrServiceInner_ {nullptr};
+    inline static std::shared_ptr<AppMgrService> appMgrService_ {nullptr};
+    inline static sptr<IRemoteObject> testRemoteObject_ {nullptr};
 };
 
 void AppMgrServiceModuleTest::SetUpTestCase()

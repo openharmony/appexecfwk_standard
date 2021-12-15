@@ -79,6 +79,13 @@ public:
     virtual void ScheduleLaunchApplication(const AppLaunchData &) override;
 
     /**
+     * Notify application to launch ability stage.
+     *
+     * @param The resident process data value.
+     */
+    virtual void ScheduleAbilityStageInfo(const AppResidentProcessInfo &residentProcessInfo) override;
+
+    /**
      * ScheduleLaunchAbility, call ScheduleLaunchAbility() through proxy project,
      * Notify application to launch ability.
      *
