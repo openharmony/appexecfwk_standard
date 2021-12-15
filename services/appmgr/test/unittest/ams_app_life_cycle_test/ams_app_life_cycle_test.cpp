@@ -1851,7 +1851,6 @@ HWTEST_F(AmsAppLifeCycleTest, ClearUpApplicationData_001, TestSize.Level1)
     serviceInner_->ClearUpApplicationData(appRecord->GetBundleName(), -1, NEW_PID);
 
     EXPECT_CALL(*mockBundleMgr, GetUidByBundleName(_, _)).Times(1).WillOnce(Return(101));
-    EXPECT_CALL(*mockBundleMgr, CheckPermissionByUid(_, _, _)).Times(1);
 
     sptr<MockAppScheduler> mockAppScheduler = new MockAppScheduler();
     sptr<IAppScheduler> client = iface_cast<IAppScheduler>(mockAppScheduler.GetRefPtr());
@@ -1879,7 +1878,6 @@ HWTEST_F(AmsAppLifeCycleTest, ClearUpApplicationData_002, TestSize.Level1)
         auto appRecord = StartProcessAndLoadAbility(token, nullptr, abilityInfo, appInfo, pid);
 
         EXPECT_CALL(*mockBundleMgr, GetUidByBundleName(_, _)).Times(1).WillOnce(Return(101));
-        EXPECT_CALL(*mockBundleMgr, CheckPermissionByUid(_, _, _)).Times(1);
         appRecord->SetUid(101);
         sptr<MockAppScheduler> mockAppScheduler = new MockAppScheduler();
         sptr<IAppScheduler> client = iface_cast<IAppScheduler>(mockAppScheduler.GetRefPtr());

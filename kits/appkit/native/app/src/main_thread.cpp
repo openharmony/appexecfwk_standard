@@ -737,9 +737,7 @@ void MainThread::HandleLaunchApplication(const AppLaunchData &appLaunchData)
 }
 
 void MainThread::HandleAbilityStageInfo(const AppResidentProcessInfo &residentProcessInfo)
-{
-
-}
+{}
 
 /**
  *

@@ -228,9 +228,10 @@ void BundleMgrService::MakingPackageData()
 
 void BundleMgrService::MakingResidentProcData()
 {
+    int appUid = 2100;
     GTEST_LOG_(INFO) << "MakingResidentProcData()";
     BundleInfo bundleInfo;
-    bundleInfo.uid = 2100;
+    bundleInfo.uid = appUid;
     bundleInfo.name = "KeepAliveApplication";
 
     bundleInfos_.emplace_back(bundleInfo);

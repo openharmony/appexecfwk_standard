@@ -565,6 +565,16 @@ bool AppRunningRecord::CanRestartResidentProc()
     return false;
 }
 
+bool AppRunningRecord::IsKeepAliveApp() const
+{
+    return isKeepAliveApp;
+}
+
+void AppRunningRecord::SetKeepAliveAppState()
+{
+    isKeepAliveApp = true;
+}
+
 void AppRunningRecord::insertAbilityStageInfo(std::vector<HapModuleInfo> moduleInfos)
 {
     if (moduleInfos.empty()) {

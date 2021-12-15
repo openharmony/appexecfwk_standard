@@ -478,7 +478,7 @@ public:
     void OnAppStateChanged(const std::shared_ptr<AppRunningRecord> &appRecord, const ApplicationState state);
 
     /**
-     * Start empty process 
+     * Start empty process
      */
     void LoadResidentProcess();
 
