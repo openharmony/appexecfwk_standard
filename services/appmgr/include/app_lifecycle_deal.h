@@ -18,6 +18,7 @@
 
 #include "app_scheduler_proxy.h"
 #include "app_launch_data.h"
+#include "app_resident_process_info.h"
 #include "ability_running_record.h"
 
 namespace OHOS {
@@ -36,6 +37,16 @@ public:
      * @return
      */
     void LaunchApplication(const AppLaunchData &launchData_);
+
+    /**
+     * AddAbilityStageInfo, call ScheduleAbilityStageInfo() through proxy project,
+     * Notify application to launch application.
+     *
+     * @param The app data value.
+     *
+     * @return
+     */
+    void AddAbilityStageInfo(const AppResidentProcessInfo &residentProcessInfo);
 
     /**
      * LaunchAbility, call ScheduleLaunchAbility() through proxy project,

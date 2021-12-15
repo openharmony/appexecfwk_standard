@@ -51,7 +51,7 @@ void AppMgrProxy::AttachApplication(const sptr<IRemoteObject> &obj)
         return;
     }
     int32_t ret =
-        remote->SendRequest(static_cast<uint32_t>(IAppMgr::Message::AMS_APP_ATTACH_APPLICATION), data, reply, option);
+        remote->SendRequest(static_cast<uint32_t>(IAppMgr::Message::APP_ATTACH_APPLICATION), data, reply, option);
     if (ret != NO_ERROR) {
         APP_LOGW("SendRequest is failed, error code: %{public}d", ret);
     }
@@ -74,7 +74,7 @@ void AppMgrProxy::ApplicationForegrounded(const int32_t recordId)
         return;
     }
     int32_t ret = remote->SendRequest(
-        static_cast<uint32_t>(IAppMgr::Message::AMS_APP_APPLICATION_FOREGROUNDED), data, reply, option);
+        static_cast<uint32_t>(IAppMgr::Message::APP_APPLICATION_FOREGROUNDED), data, reply, option);
     if (ret != NO_ERROR) {
         APP_LOGW("SendRequest is failed, error code: %{public}d", ret);
     }
@@ -97,7 +97,7 @@ void AppMgrProxy::ApplicationBackgrounded(const int32_t recordId)
         return;
     }
     int32_t ret = remote->SendRequest(
-        static_cast<uint32_t>(IAppMgr::Message::AMS_APP_APPLICATION_BACKGROUNDED), data, reply, option);
+        static_cast<uint32_t>(IAppMgr::Message::APP_APPLICATION_BACKGROUNDED), data, reply, option);
     if (ret != NO_ERROR) {
         APP_LOGW("SendRequest is failed, error code: %{public}d", ret);
     }
@@ -120,7 +120,7 @@ void AppMgrProxy::ApplicationTerminated(const int32_t recordId)
         return;
     }
     int32_t ret = remote->SendRequest(
-        static_cast<uint32_t>(IAppMgr::Message::AMS_APP_APPLICATION_TERMINATED), data, reply, option);
+        static_cast<uint32_t>(IAppMgr::Message::APP_APPLICATION_TERMINATED), data, reply, option);
     if (ret != NO_ERROR) {
         APP_LOGW("SendRequest is failed, error code: %{public}d", ret);
     }
@@ -145,7 +145,7 @@ int32_t AppMgrProxy::CheckPermission(const int32_t recordId, const std::string &
         return ERR_PERMISSION_DENIED;
     }
     int32_t ret =
-        remote->SendRequest(static_cast<uint32_t>(IAppMgr::Message::AMS_APP_CHECK_PERMISSION), data, reply, option);
+        remote->SendRequest(static_cast<uint32_t>(IAppMgr::Message::APP_CHECK_PERMISSION), data, reply, option);
     if (ret != NO_ERROR) {
         APP_LOGE("SendRequest is failed, error code: %{public}d", ret);
         return ERR_PERMISSION_DENIED;
@@ -170,7 +170,7 @@ void AppMgrProxy::AbilityCleaned(const sptr<IRemoteObject> &token)
         return;
     }
     int32_t ret =
-        remote->SendRequest(static_cast<uint32_t>(IAppMgr::Message::AMS_APP_ABILITY_CLEANED), data, reply, option);
+        remote->SendRequest(static_cast<uint32_t>(IAppMgr::Message::APP_ABILITY_CLEANED), data, reply, option);
     if (ret != NO_ERROR) {
         APP_LOGW("SendRequest is failed, error code: %{public}d", ret);
     }
@@ -185,7 +185,7 @@ sptr<IAmsMgr> AppMgrProxy::GetAmsMgr()
     if (!WriteInterfaceToken(data)) {
         return nullptr;
     }
-    if (!SendTransactCmd(IAppMgr::Message::AMS_APP_GET_MGR_INSTANCE, data, reply)) {
+    if (!SendTransactCmd(IAppMgr::Message::APP_GET_MGR_INSTANCE, data, reply)) {
         return nullptr;
     }
     sptr<IRemoteObject> object = reply.ReadParcelable<IRemoteObject>();
@@ -217,7 +217,7 @@ int32_t AppMgrProxy::ClearUpApplicationData(const std::string &bundleName)
         return ERR_FLATTEN_OBJECT;
     }
     int32_t ret = remote->SendRequest(
-        static_cast<uint32_t>(IAppMgr::Message::AMS_APP_CLEAR_UP_APPLICATION_DATA), data, reply, option);
+        static_cast<uint32_t>(IAppMgr::Message::APP_CLEAR_UP_APPLICATION_DATA), data, reply, option);
     if (ret != NO_ERROR) {
         APP_LOGW("SendRequest is failed, error code: %{public}d", ret);
         return ret;
@@ -245,7 +245,7 @@ int32_t AppMgrProxy::IsBackgroundRunningRestricted(const std::string &bundleName
         return ERR_FLATTEN_OBJECT;
     }
     int32_t ret = remote->SendRequest(
-        static_cast<uint32_t>(IAppMgr::Message::AMS_APP_IS_BACKGROUND_RUNNING_RESTRICTED), data, reply, option);
+        static_cast<uint32_t>(IAppMgr::Message::APP_IS_BACKGROUND_RUNNING_RESTRICTED), data, reply, option);
     if (ret != NO_ERROR) {
         APP_LOGW("SendRequest is failed, error code: %{public}d", ret);
         return ret;
@@ -268,7 +268,7 @@ int32_t AppMgrProxy::GetAllRunningProcesses(std::vector<RunningProcessInfo> &inf
         APP_LOGE("Remote() is NULL");
         return ERR_NULL_OBJECT;
     }
-    if (!SendTransactCmd(IAppMgr::Message::AMS_APP_GET_ALL_RUNNING_PROCESSES, data, reply)) {
+    if (!SendTransactCmd(IAppMgr::Message::APP_GET_ALL_RUNNING_PROCESSES, data, reply)) {
         return ERR_NULL_OBJECT;
     }
     auto error = GetParcelableInfos<RunningProcessInfo>(reply, info);
@@ -311,7 +311,7 @@ void AppMgrProxy::SetAppFreezingTime(int time)
         APP_LOGE("parcel WriteInt32 failed");
         return;
     }
-    if (!SendTransactCmd(IAppMgr::Message::AMS_APP_SET_APP_FREEZING_TIME, data, reply)) {
+    if (!SendTransactCmd(IAppMgr::Message::APP_SET_APP_FREEZING_TIME, data, reply)) {
         APP_LOGE("SendTransactCmd faild");
         return;
     }
@@ -329,7 +329,7 @@ void AppMgrProxy::GetAppFreezingTime(int &time)
         return;
     }
 
-    if (!SendTransactCmd(IAppMgr::Message::AMS_APP_GET_APP_FREEZING_TIME, data, reply)) {
+    if (!SendTransactCmd(IAppMgr::Message::APP_GET_APP_FREEZING_TIME, data, reply)) {
         APP_LOGE("SendTransactCmd faild");
         return;
     }
@@ -355,7 +355,7 @@ void AppMgrProxy::GetSystemMemoryAttr(SystemMemoryAttr &memoryInfo, std::string 
         return;
     }
 
-    if (!SendTransactCmd(IAppMgr::Message::AMS_APP_GET_SYSTEM_MEMORY_ATTR, data, reply)) {
+    if (!SendTransactCmd(IAppMgr::Message::APP_GET_SYSTEM_MEMORY_ATTR, data, reply)) {
         APP_LOGE("SendTransactCmd faild");
         return;
     }
@@ -367,6 +367,43 @@ void AppMgrProxy::GetSystemMemoryAttr(SystemMemoryAttr &memoryInfo, std::string 
     }
 
     memoryInfo = *remoteRetsult;
+}
+
+void AppMgrProxy::AddAbilityStageDone(const int32_t recordId)
+{
+    MessageParcel data;
+    MessageParcel reply;
+    if (!WriteInterfaceToken(data)) {
+        APP_LOGE("WriteInterfaceToken faild");
+        return;
+    }
+
+    if (!data.WriteInt32(recordId)) {
+        APP_LOGE("want write failed.");
+        return;
+    }
+
+    if (!SendTransactCmd(IAppMgr::Message::APP_ADD_ABILITY_STAGE_INFO_DONE, data, reply)) {
+        APP_LOGE("SendTransactCmd faild");
+        return;
+    }
+    return;
+}
+
+void AppMgrProxy::StartupResidentProcess()
+{
+    MessageParcel data;
+    MessageParcel reply;
+    if (!WriteInterfaceToken(data)) {
+        APP_LOGE("WriteInterfaceToken faild");
+        return;
+    }
+
+    if (!SendTransactCmd(IAppMgr::Message::STARTUP_RESIDENT_PROCESS, data, reply)) {
+        APP_LOGE("SendTransactCmd faild");
+        return;
+    }
+    return;
 }
 
 template<typename T>

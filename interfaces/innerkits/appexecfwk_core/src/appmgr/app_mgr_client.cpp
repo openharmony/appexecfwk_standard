@@ -285,5 +285,27 @@ void AppMgrClient::GetSystemMemoryAttr(SystemMemoryAttr &memoryInfo, std::string
 
     service->GetSystemMemoryAttr(memoryInfo, strConfig);
 }
+
+void AppMgrClient::AddAbilityStageDone(const int32_t recordId)
+{
+    sptr<IAppMgr> service = iface_cast<IAppMgr>(remote_);
+    if (service == nullptr) {
+        APP_LOGE("service is nullptr");
+        return;
+    }
+
+    service->AddAbilityStageDone(recordId);
+}
+
+void AppMgrClient::StartupResidentProcess()
+{
+    sptr<IAppMgr> service = iface_cast<IAppMgr>(remote_);
+    if (service == nullptr) {
+        APP_LOGE("service is nullptr");
+        return;
+    }
+
+    service->StartupResidentProcess();
+}
 }  // namespace AppExecFwk
 }  // namespace OHOS

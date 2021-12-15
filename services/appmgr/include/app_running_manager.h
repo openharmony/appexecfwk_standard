@@ -48,7 +48,9 @@ public:
     std::shared_ptr<AppRunningRecord> GetOrCreateAppRunningRecord(const sptr<IRemoteObject> &token,
         const std::shared_ptr<ApplicationInfo> &appInfo, const std::shared_ptr<AbilityInfo> &abilityInfo,
         const std::string &processName, const int32_t uid, RecordQueryResult &result);
-
+    
+    std::shared_ptr<AppRunningRecord> GetOrCreateAppRunningRecord(const ApplicationInfo &appInfo, bool &appExist);
+    
     /**
      * GetAppRunningRecordByAppName, Get process record by application name.
      *

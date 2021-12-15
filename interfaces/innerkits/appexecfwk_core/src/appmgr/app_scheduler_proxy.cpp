@@ -189,13 +189,18 @@ void AppSchedulerProxy::ScheduleCleanAbility(const sptr<IRemoteObject> &token)
 
 void AppSchedulerProxy::ScheduleLaunchApplication(const AppLaunchData &launchData)
 {
+    APP_LOGI("AppSchedulerProxy ScheduleLaunchApplication start");
     MessageParcel data;
     MessageParcel reply;
     MessageOption option(MessageOption::TF_SYNC);
     if (!WriteInterfaceToken(data)) {
         return;
     }
-    data.WriteParcelable(&launchData);
+
+    if (!data.WriteParcelable(&launchData)) {
+        return ;
+    }
+
     sptr<IRemoteObject> remote = Remote();
     if (remote == nullptr) {
         APP_LOGE("Remote() is NULL");
@@ -206,6 +211,35 @@ void AppSchedulerProxy::ScheduleLaunchApplication(const AppLaunchData &launchDat
     if (ret != NO_ERROR) {
         APP_LOGW("SendRequest is failed, error code: %{public}d", ret);
     }
+
+    APP_LOGI("AppSchedulerProxy ScheduleLaunchApplication end");
+}
+
+void AppSchedulerProxy::ScheduleAbilityStageInfo(const AppResidentProcessInfo &residentProcessInfo)
+{
+    APP_LOGI("AppSchedulerProxy ScheduleAbilityStageInfo start");
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option(MessageOption::TF_SYNC);
+    if (!WriteInterfaceToken(data)) {
+        return;
+    }
+
+    if (!data.WriteParcelable(&residentProcessInfo)) {
+        return ;
+    }
+
+    sptr<IRemoteObject> remote = Remote();
+    if (remote == nullptr) {
+        APP_LOGE("Remote() is NULL");
+        return;
+    }
+    int32_t ret = remote->SendRequest(
+        static_cast<uint32_t>(IAppScheduler::Message::SCHEDULE_ABILITY_STAGE_INFO), data, reply, option);
+    if (ret != NO_ERROR) {
+        APP_LOGW("SendRequest is failed, error code: %{public}d", ret);
+    }
+    APP_LOGI("AppSchedulerProxy ScheduleAbilityStageInfo end");
 }
 
 void AppSchedulerProxy::ScheduleProfileChanged(const Profile &profile)

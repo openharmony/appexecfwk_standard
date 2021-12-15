@@ -220,9 +220,21 @@ void BundleMgrService::MakingPackageData()
 {
     PushTestSpecialAbility();
     PushTestHelloAbility();
+    MakingResidentProcData();
     for (int i = 0; i<= APPLICATION_NUMHELLO; i++) {
         PushTestHelloIndexAbility(i);
     }
+}
+
+void BundleMgrService::MakingResidentProcData()
+{
+    int appUid = 2100;
+    GTEST_LOG_(INFO) << "MakingResidentProcData()";
+    BundleInfo bundleInfo;
+    bundleInfo.uid = appUid;
+    bundleInfo.name = "KeepAliveApplication";
+
+    bundleInfos_.emplace_back(bundleInfo);
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS
