@@ -130,12 +130,15 @@ public:
     void PrepareTerminate(const sptr<IRemoteObject> &token);
 
     std::shared_ptr<AppRunningRecord> GetTerminatingAppRunningRecord(const sptr<IRemoteObject> &abilityToken);
-
+    bool CanRestartResidentProcCount(const std::string &processName);
+    bool InitRestartResidentProcRecord(const std::string &processName);
+    std::shared_ptr<AppRunningRecord> GetAppRunningRecordByBundleName(const std::string &bundleName);
 private:
     std::shared_ptr<AbilityRunningRecord> GetAbilityRunningRecord(const int64_t eventId);
 
 private:
     std::map<const int32_t, const std::shared_ptr<AppRunningRecord>> appRunningRecordMap_;
+    std::map<const std::string, int> processRestartRecord_;
     std::recursive_mutex lock_;
 };
 }  // namespace AppExecFwk
