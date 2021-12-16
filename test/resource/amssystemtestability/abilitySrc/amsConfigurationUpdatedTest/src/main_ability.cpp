@@ -84,7 +84,7 @@ void MainAbility::OnConfigurationUpdated(const Configuration &configuration)
     std::string orientationValue;
 
     APP_LOGI("MainAbility::OnConfigurationUpdated====<");
-    Ability::OnConfigurationUpdated(configuration); 
+    Ability::OnConfigurationUpdated(configuration);
     OnBlockProcess(bIsBlockUpdate);
     languageValue = configuration.GetItem(GlobalConfigurationKey::SYSTEM_LANGUAGE);
     orientationValue = configuration.GetItem(GlobalConfigurationKey::SYSTEM_ORIENTATION);
@@ -92,7 +92,7 @@ void MainAbility::OnConfigurationUpdated(const Configuration &configuration)
     TestUtils::PublishEvent(g_EVENT_RESP_MAIN_LIFECYCLE, MAIN_ABILITY_CODE, orientationValue);
     callbackUpdated += "Updated";
     TestUtils::PublishEvent(g_EVENT_RESP_MAIN_LIFECYCLE, MAIN_ABILITY_CODE, callbackUpdated);
-    callbackUpdated = ""; 
+    callbackUpdated = "";
 }
 
 void MainAbility::OnInactive()

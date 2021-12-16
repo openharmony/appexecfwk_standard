@@ -76,7 +76,7 @@ void MainAbility::OnConfigurationUpdated(const Configuration &configuration)
     TestUtils::PublishEvent(g_EVENT_RESP_MAIN_LIFECYCLE, THIRD_ABILITY_CODE, orientationValue);
     callbackUpdated += "Updated";
     TestUtils::PublishEvent(g_EVENT_RESP_MAIN_LIFECYCLE, THIRD_ABILITY_CODE, callbackUpdated);
-    callbackUpdated = ""; 
+    callbackUpdated = "";
 }
 
 void MainAbility::OnInactive()

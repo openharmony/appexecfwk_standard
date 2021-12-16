@@ -61,8 +61,10 @@ public:
     explicit MainAbilityEventSubscriber(const EventFwk::CommonEventSubscribeInfo &sp) : CommonEventSubscriber(sp)
     {
         mapTestFunc_ = {
-            {"StartNextAbility", [this](std::string action, int code) { StartNext(action, code); }},
-            {"StartNextAbilityWithBlockFlag", [this](std::string action, int code) { StartNextWithBlock(action, code); }},
+            {"StartNextAbility",
+             [this](std::string action, int code) { StartNext(action, code); }},
+            {"StartNextAbilityWithBlockFlag",
+             [this](std::string action, int code) { StartNextWithBlock(action, code); }},
         };
         mainAbility = nullptr;
     }
