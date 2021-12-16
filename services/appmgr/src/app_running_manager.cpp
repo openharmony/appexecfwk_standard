@@ -362,7 +362,7 @@ bool AppRunningManager::CanRestartResidentProcCount(const std::string &processNa
 
     auto iter = processRestartRecord_.find(processName);
     if (iter != processRestartRecord_.end()) {
-        if(iter->second > 0) {
+        if (iter->second > 0) {
             APP_LOGI("restart count processName : [%{public}s] | num : [%{public}d]",
                 processName.c_str(), iter->second);
             processRestartRecord_[processName] = --(iter->second);
