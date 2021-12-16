@@ -21,6 +21,7 @@ namespace OHOS {
 namespace AppExecFwk {
 using namespace OHOS::EventFwk;
 using namespace OHOS::AAFwk;
+constexpr int iBlockTime = 5;
 
 void MainAbility::Init(const std::shared_ptr<AbilityInfo> &abilityInfo,
     const std::shared_ptr<OHOSApplication> &application, std::shared_ptr<AbilityHandler> &handler,
@@ -40,6 +41,7 @@ void MainAbility::OnStart(const Want &want)
     APP_LOGI("MainAbility::OnStart");
     SubscribeEvent();
     Ability::OnStart(want);
+    bIsBlockUpdate = false;
     callbackSeq += "OnStart";
     TestUtils::PublishEvent(g_EVENT_RESP_MAIN_LIFECYCLE, MAIN_ABILITY_CODE, "OnStart");
 }
@@ -63,13 +65,34 @@ void MainAbility::OnActive()
     callbackSeq = "";
 }
 
+void MainAbility::OnBlockProcess(bool &bIsBlockFlag)
+{
+    int i = iBlockTime;
+
+    if (bIsBlockFlag) {
+        while (i-- > 0) {
+            APP_LOGI("MainAbility::OnBlockProcess time left %{public}d", i);
+            sleep(1);
+        }
+        bIsBlockFlag = false;
+    }
+}
+
 void MainAbility::OnConfigurationUpdated(const Configuration &configuration)
 {
+    std::string languageValue;
+    std::string orientationValue;
+
     APP_LOGI("MainAbility::OnConfigurationUpdated====<");
-    Ability::OnConfigurationUpdated(configuration);
+    Ability::OnConfigurationUpdated(configuration); 
+    OnBlockProcess(bIsBlockUpdate);
+    languageValue = configuration.GetItem(GlobalConfigurationKey::SYSTEM_LANGUAGE);
+    orientationValue = configuration.GetItem(GlobalConfigurationKey::SYSTEM_ORIENTATION);
+    TestUtils::PublishEvent(g_EVENT_RESP_MAIN_LIFECYCLE, MAIN_ABILITY_CODE, languageValue);
+    TestUtils::PublishEvent(g_EVENT_RESP_MAIN_LIFECYCLE, MAIN_ABILITY_CODE, orientationValue);
     callbackUpdated += "Updated";
     TestUtils::PublishEvent(g_EVENT_RESP_MAIN_LIFECYCLE, MAIN_ABILITY_CODE, callbackUpdated);
-    callbackUpdated = "";
+    callbackUpdated = ""; 
 }
 
 void MainAbility::OnInactive()
@@ -137,6 +160,12 @@ void MainAbility::StartNext(std::string action, int code)
     APP_LOGI("MainAbility::StartNext");
     want.SetElementName(targetBundle, targetAbility);
     StartAbility(want);
+}
+
+void MainAbility::StartNextWithBlock(std::string action, int code)
+{
+    bIsBlockUpdate = true;
+    StartNext(action, code);
 }
 
 REGISTER_AA(MainAbility)
