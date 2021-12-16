@@ -29,6 +29,8 @@ class MainAbility : public Ability {
 public:
     void SubscribeEvent();
     void StartNext(std::string action, int code);
+    void StartNextWithBlock(std::string action, int code);
+    void OnBlockProcess(bool &bIsBlockFlag);
 
     MainAbility()
     {
@@ -52,6 +54,7 @@ protected:
     std::shared_ptr<MainAbilityEventSubscriber> subscriber_;
     std::string callbackSeq;
     std::string callbackUpdated;
+    bool bIsBlockUpdate;
 };
 class MainAbilityEventSubscriber : public EventFwk::CommonEventSubscriber {
 public:
@@ -59,6 +62,7 @@ public:
     {
         mapTestFunc_ = {
             {"StartNextAbility", [this](std::string action, int code) { StartNext(action, code); }},
+            {"StartNextAbilityWithBlockFlag", [this](std::string action, int code) { StartNextWithBlock(action, code); }},
         };
         mainAbility = nullptr;
     }
@@ -66,6 +70,11 @@ public:
     void StartNext(std::string action, int code)
     {
         mainAbility->StartNext(action, code);
+    }
+
+    void StartNextWithBlock(std::string action, int code)
+    {
+        mainAbility->StartNextWithBlock(action, code);
     }
 
     virtual void OnReceiveEvent(const EventFwk::CommonEventData &data);
