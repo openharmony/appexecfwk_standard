@@ -29,6 +29,8 @@ bool CheckUid(const int32_t uid)
 {
     return uid >= 0 && uid < std::numeric_limits<int32_t>::max();
 }
+
+const int RESTART_RESIDENT_PROCESS_MAX_TIMES = 15;
 }  // namespace
 
 AppRunningManager::AppRunningManager()
@@ -349,6 +351,51 @@ void AppRunningManager::TerminateAbility(const sptr<IRemoteObject> &token)
     }
 
     appRecord->TerminateAbility(token, false);
+}
+
+bool AppRunningManager::CanRestartResidentProcCount(const std::string &processName)
+{
+    if (processName.empty()) {
+        APP_LOGE("processName is empty!");
+        return false;
+    }
+
+    auto iter = processRestartRecord_.find(processName);
+    if (iter != processRestartRecord_.end()) {
+        if(iter->second > 0) {
+            APP_LOGI("restart count processName : [%{public}s] | num : [%{public}d]",
+                processName.c_str(), iter->second);
+            processRestartRecord_[processName] = --(iter->second);
+            return true;
+        }
+    }
+    return false;
+}
+
+bool AppRunningManager::InitRestartResidentProcRecord(const std::string &processName)
+{
+    if (processName.empty()) {
+        APP_LOGE("processName is empty!");
+        return false;
+    }
+
+    // Not counting the number of connection attempts of app spwan,
+    // the number of restart attempts of a resident process is set to 15
+    auto pair = processRestartRecord_.insert(std::make_pair(processName, RESTART_RESIDENT_PROCESS_MAX_TIMES));
+    return pair.second;
+}
+
+std::shared_ptr<AppRunningRecord> AppRunningManager::GetAppRunningRecordByBundleName(const std::string &bundleName)
+{
+    APP_LOGI("%{public}s, kill bundle : [%{public}s]", __func__, bundleName.c_str());
+    std::lock_guard<std::recursive_mutex> guard(lock_);
+    for (const auto &item : appRunningRecordMap_) {
+        const auto &appRecord = item.second;
+        if (appRecord && appRecord->GetBundleName() == bundleName) {
+            return appRecord;
+        }
+    }
+    return nullptr;
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS
