@@ -304,6 +304,10 @@ public:
     {
         return 0;
     }
+    int ClearUpApplicationData(const std::string &bundleName) override
+    {
+        return 0;
+    }
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS

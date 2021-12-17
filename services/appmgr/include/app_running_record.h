@@ -39,7 +39,6 @@ namespace OHOS {
 namespace AppExecFwk {
 class AbilityRunningRecord;
 class AppMgrServiceInner;
-const int RESTART_RESIDENT_PROCESS_MAX_TIMES = 5;
 class AppRunningRecord : public std::enable_shared_from_this<AppRunningRecord> {
 public:
     AppRunningRecord(
@@ -381,8 +380,6 @@ public:
     // Please use with caution, it may affect the ability to start.
     void SetKeepAliveAppState();
 
-bool CanRestartResidentProc();
-
     void insertAbilityStageInfo(std::vector<HapModuleInfo> moduleInfos);
 
 private:
@@ -449,7 +446,6 @@ private:
     std::shared_ptr<AppLifeCycleDeal> appLifeCycleDeal_;
     std::shared_ptr<AMSEventHandler> eventHandler_;
     bool isTerminating = false;
-    int restartCount_ = RESTART_RESIDENT_PROCESS_MAX_TIMES;
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS

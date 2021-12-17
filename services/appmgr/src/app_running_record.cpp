@@ -556,15 +556,6 @@ bool AppRunningRecord::IsTerminating()
     return isTerminating;
 }
 
-bool AppRunningRecord::CanRestartResidentProc()
-{
-    if (restartCount_ > 0) {
-        --restartCount_;
-        return true;
-    }
-    return false;
-}
-
 bool AppRunningRecord::IsKeepAliveApp() const
 {
     return isKeepAliveApp;
