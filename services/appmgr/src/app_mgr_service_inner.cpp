@@ -226,10 +226,7 @@ void AppMgrServiceInner::ApplicationTerminated(const int32_t recordId)
         APP_LOGE("get app record failed");
         return;
     }
-    // Maybe can't get in here
-    if (appRecord->IsKeepAliveApp()) {
-        return;
-    }
+
     if (appRecord->GetState() != ApplicationState::APP_STATE_BACKGROUND) {
         APP_LOGE("current state is not background");
         return;
@@ -250,6 +247,13 @@ int32_t AppMgrServiceInner::KillApplication(const std::string &bundleName)
         APP_LOGE("appRunningManager_ is nullptr");
         return ERR_NO_INIT;
     }
+
+    // All means can not kill the resident process
+    auto appRecord = appRunningManager_->GetAppRunningRecordByBundleName(bundleName);
+    if (appRecord && appRecord->IsKeepAliveApp()) {
+        return ERR_INVALID_VALUE;
+    }
+
     int result = ERR_OK;
     int64_t startTime = SystemTimeMillis();
     std::list<pid_t> pids;
@@ -424,12 +428,6 @@ int32_t AppMgrServiceInner::GetAllRunningProcesses(std::vector<RunningProcessInf
 
 int32_t AppMgrServiceInner::KillProcessByPid(const pid_t pid) const
 {
-    // All means can not kill the resident process
-    auto appRecord = GetAppRunningRecordByPid(pid);
-    if (appRecord && appRecord->IsKeepAliveApp()) {
-        return 0;
-    }
-
     int32_t ret = -1;
     if (pid > 0) {
         APP_LOGI("kill pid %{public}d", pid);
@@ -694,12 +692,6 @@ void AppMgrServiceInner::KillProcessByAbilityToken(const sptr<IRemoteObject> &to
     auto appRecord = GetAppRunningRecordByAbilityToken(token);
     if (!appRecord) {
         APP_LOGE("app record is not exist for ability token");
-        return;
-    }
-
-    // befor exec ScheduleProcessSecurityExit return
-    // The resident process won't let him die
-    if (appRecord->IsKeepAliveApp()) {
         return;
     }
 
@@ -988,11 +980,6 @@ void AppMgrServiceInner::RemoveAppFromRecentList(const std::string &appName, con
     auto appRecord = GetAppRunningRecordByPid(appTaskInfo->GetPid());
     if (!appRecord) {
         appProcessManager_->RemoveAppFromRecentList(appTaskInfo);
-        return;
-    }
-
-    // Do not delete resident processes, berfor exec ScheduleProcessSecurityExit
-    if (appRecord->IsKeepAliveApp()) {
         return;
     }
 
@@ -1406,12 +1393,13 @@ void AppMgrServiceInner::StartEmptyResidentProcess(const std::string &appName, c
     StartProcess(appName, processName, appRecord, uid);
 
     // If it is empty, the startup failed
-    if (!appRecord) {
+    if (!appRecord || !appRunningManager_) {
         APP_LOGE("start process [%{public}s] failed!", processName.c_str());
         return;
     }
     appRecord->SetKeepAliveAppState();
     appRecord->SetEventHandler(eventHandler_);
+    appRunningManager_->InitRestartResidentProcRecord(appRecord->GetProcessName());
     APP_LOGI("StartEmptyResidentProcess oK pid : [%{public}d], ", appRecord->GetPriorityObject()->GetPid());
 }
 
@@ -1436,24 +1424,23 @@ bool AppMgrServiceInner::CheckRemoteClient()
 
 void AppMgrServiceInner::RestartResidentProcess(std::shared_ptr<AppRunningRecord> appRecord)
 {
-    if (!CheckRemoteClient() || !appRecord) {
+    if (!CheckRemoteClient() || !appRecord || !appRunningManager_) {
         APP_LOGE("%{public}s failed!", __func__);
         return;
     }
 
-    if (!appRecord->CanRestartResidentProc()) {
-        APP_LOGE("%{public}s no restart times!", appRecord->GetBundleName().c_str());
+    if (!appRunningManager_->CanRestartResidentProcCount(appRecord->GetProcessName())) {
+        APP_LOGE("%{public}s no restart times!", appRecord->GetProcessName().c_str());
         return ;
     }
 
     auto bundleMgr = remoteClientManager_->GetBundleManager();
-    std::vector<BundleInfo> infos;
     BundleInfo bundleInfo;
     if (!bundleMgr->GetBundleInfo(appRecord->GetBundleName(), BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo)) {
         APP_LOGE("%{public}s GetBundleInfo fail", __func__);
         return;
     }
-
+    std::vector<BundleInfo> infos;
     infos.emplace_back(bundleInfo);
     StartResidentProcess(infos);
 }
