@@ -20,8 +20,7 @@
 namespace OHOS {
 namespace AppExecFwk {
 using namespace OHOS::EventFwk;
-namespace
-{
+namespace {
 constexpr int numZero = 0;
 constexpr int numOne = 1;
 constexpr int numTwo = 2;
