@@ -608,7 +608,7 @@ int FormMgrAdapter::DumpStorageFormInfos(std::string &formInfos) const
     FormDbCache::GetInstance().GetAllFormInfo(formDBInfos);
     if (formDBInfos.size() > 0) {
         std::sort(formDBInfos.begin(), formDBInfos.end(), 
-        [] (FormDBInfo &formDBInfoA, FormDBInfo &formDBInfoB) -> bool {
+            [] (FormDBInfo &formDBInfoA, FormDBInfo &formDBInfoB) -> bool {
             return formDBInfoA.formId < formDBInfoB.formId;
         });
         FormDumpMgr::GetInstance().DumpStorageFormInfos(formDBInfos, formInfos);

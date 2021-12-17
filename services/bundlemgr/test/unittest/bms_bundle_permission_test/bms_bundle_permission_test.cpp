@@ -1005,14 +1005,14 @@ bool BmsBundlePermissionTest::ConvertPermissionDef(
     permDef.availableScope = [&defPermission]() -> int {
         uint flag = 0;
         if (std::find(defPermission.availableScope.begin(),
-                defPermission.availableScope.end(),
-                ProfileReader::BUNDLE_MODULE_PROFILE_KEY_DEF_PERMISSIONS_AVAILABLESCOPE_SIGNATURE) !=
+            defPermission.availableScope.end(),
+            ProfileReader::BUNDLE_MODULE_PROFILE_KEY_DEF_PERMISSIONS_AVAILABLESCOPE_SIGNATURE) !=
             defPermission.availableScope.end()) {
             flag |= Permission::AvailableScope::AVAILABLE_SCOPE_SIGNATURE;
         }
         if (std::find(defPermission.availableScope.begin(),
-                defPermission.availableScope.end(),
-                ProfileReader::BUNDLE_MODULE_PROFILE_KEY_DEF_PERMISSIONS_AVAILABLESCOPE_RESTRICTED) !=
+            defPermission.availableScope.end(),
+            ProfileReader::BUNDLE_MODULE_PROFILE_KEY_DEF_PERMISSIONS_AVAILABLESCOPE_RESTRICTED) !=
             defPermission.availableScope.end()) {
             flag |= Permission::AvailableScope::AVAILABLE_SCOPE_RESTRICTED;
         }

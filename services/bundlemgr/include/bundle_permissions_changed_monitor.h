@@ -42,7 +42,8 @@ public:
     {
         dataMgr_ = dataMgr;
     }
-    ~BundlePermissionsChangedMonitor() {
+    ~BundlePermissionsChangedMonitor()
+    {
         if(!dataMgr_) {
             dataMgr_.reset();
         }

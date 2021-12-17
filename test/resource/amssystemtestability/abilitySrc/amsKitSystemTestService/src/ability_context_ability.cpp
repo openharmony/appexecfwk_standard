@@ -130,7 +130,8 @@ void AbilityContextAbility::OnDisconnect(const Want &want)
         APP_ABILITY_CONTEXT_RESP_EVENT_NAME, AbilityLifecycleExecutor::LifecycleState::BACKGROUND, "OnDisconnect");
 }
 
-void AbilityContextAbility::ConnectCaseIndexOne() {
+void AbilityContextAbility::ConnectCaseIndexOne()
+{
     stub_ = new (std::nothrow) AbilityContextConnectCallback();
     connCallback_ = new (std::nothrow) AbilityConnectionProxy(stub_);
     bool ret = BaseAbility::GetContext()->ConnectAbility(want_, connCallback_);
@@ -139,7 +140,8 @@ void AbilityContextAbility::ConnectCaseIndexOne() {
     BaseAbility::GetContext()->DisconnectAbility(connCallback_);
 }
 
-void AbilityContextAbility::ConnectCaseIndexTwo() {
+void AbilityContextAbility::ConnectCaseIndexTwo()
+{
     stub_ = new (std::nothrow) AbilityContextConnectCallback();
     connCallback_ = new (std::nothrow) AbilityConnectionProxy(stub_);
     MAP_STR_STR params;
@@ -231,7 +233,8 @@ void AbilityContextAbility::TestStopAbility()
     }
 }
 
-void AbilityContextAbility::DisconnectCaseIndexOne() {
+void AbilityContextAbility::DisconnectCaseIndexOne()
+{
     stub_ = new (std::nothrow) AbilityContextConnectCallback();
     connCallback_ = new (std::nothrow) AbilityConnectionProxy(stub_);
     bool ret = BaseAbility::GetContext()->ConnectAbility(want_, connCallback_);
@@ -239,7 +242,8 @@ void AbilityContextAbility::DisconnectCaseIndexOne() {
     BaseAbility::GetContext()->DisconnectAbility(connCallback_);
 }
 
-void AbilityContextAbility::DisconnectCaseIndexTwo() {
+void AbilityContextAbility::DisconnectCaseIndexTwo()
+{
     MAP_STR_STR params;
     Want want =
         TestUtils::MakeWant("", "LifecycleCallbacksAbility", "com.ohos.amsst.service.AppKit", params);

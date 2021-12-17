@@ -36,8 +36,7 @@ std::string FormErrors::GetErrorMessage(int errCode)
 {
     if(errorMessageMap_.find(errCode) != errorMessageMap_.end()) {
         return errorMessageMap_[errCode];
-    }
-    else {
+    } else {
         return errorMessageMap_[ERR_APPEXECFWK_FORM_COMMON_CODE];
     }
 }
