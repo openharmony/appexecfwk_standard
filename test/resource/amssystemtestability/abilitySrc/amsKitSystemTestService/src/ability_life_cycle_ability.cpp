@@ -422,7 +422,8 @@ void AbilityLifeCycleAbility::TestLifeCycleGetLifecycle()
     }
 }
 
-void AbilityLifeCycleAbility::GetLifecycleStateCaseOne() {
+void AbilityLifeCycleAbility::GetLifecycleStateCaseOne()
+{
     auto lifecycle = GetLifecycle();
     TestUtils::PublishEvent(APP_ABILITY_LIFE_CYCLE_RESP_EVENT_NAME,
         lifecycle->GetLifecycleState(),

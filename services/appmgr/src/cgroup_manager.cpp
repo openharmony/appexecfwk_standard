@@ -141,7 +141,7 @@ bool CgroupManager::Init()
         return false;
     }
 
-    if(!InitCheck()){
+    if (!InitCheck()) {
         return false;
     }
 

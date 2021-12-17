@@ -172,31 +172,31 @@ ErrCode InstalldHostImpl::CreateModuleDataDir(
 
     for (auto &abilityDir : abilityDirs) {
         if (!InstalldOperator::MkOwnerDir(
-                createDir + abilityDir + Constants::PATH_SEPARATOR + Constants::DATA_DIR,
-                true,  
-                uid, 
-                gid)) {
+            createDir + abilityDir + Constants::PATH_SEPARATOR + Constants::DATA_DIR,
+            true,  
+            uid, 
+            gid)) {
             return ERR_APPEXECFWK_INSTALLD_CREATE_DIR_FAILED;
         }
         if (!InstalldOperator::MkOwnerDir(
-                createDir + abilityDir + Constants::PATH_SEPARATOR + Constants::CACHE_DIR,
-                true, 
-                uid,  
-                gid)) {
+            createDir + abilityDir + Constants::PATH_SEPARATOR + Constants::CACHE_DIR,
+            true, 
+            uid,  
+            gid)) {
             return ERR_APPEXECFWK_INSTALLD_CREATE_DIR_FAILED;
         }
         if (!InstalldOperator::MkOwnerDir(
-                createDir + abilityDir + Constants::PATH_SEPARATOR + Constants::DATA_BASE_DIR, 
-                true, 
-                uid, 
-                gid)) {
+            createDir + abilityDir + Constants::PATH_SEPARATOR + Constants::DATA_BASE_DIR, 
+            true, 
+            uid, 
+            gid)) {
             return ERR_APPEXECFWK_INSTALLD_CREATE_DIR_FAILED;
         }
         if (!InstalldOperator::MkOwnerDir(
-                createDir + abilityDir + Constants::PATH_SEPARATOR + Constants::SHARED_PREFERENCE_DIR,
-                true,
-                uid,
-                gid)) {
+            createDir + abilityDir + Constants::PATH_SEPARATOR + Constants::SHARED_PREFERENCE_DIR,
+            true,
+            uid,
+            gid)) {
             return ERR_APPEXECFWK_INSTALLD_CREATE_DIR_FAILED;
         }
     }

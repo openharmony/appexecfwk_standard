@@ -1185,8 +1185,8 @@ bool BundleDataMgr::ClearBundleStatusCallback(const sptr<IBundleStatusCallback> 
     APP_LOGI("ClearBundleStatusCallback %{public}s", bundleStatusCallback->GetBundleName().c_str());
     std::lock_guard<std::mutex> lock(callbackMutex_);
     callbackList_.erase(std::remove_if(callbackList_.begin(),
-                            callbackList_.end(),
-                            [&](const sptr<IBundleStatusCallback> &callback) {
+        callbackList_.end(),
+        [&](const sptr<IBundleStatusCallback> &callback) {
                                 return callback->AsObject() == bundleStatusCallback->AsObject();
                             }),
         callbackList_.end());

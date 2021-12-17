@@ -306,7 +306,7 @@ int32_t FormMgrShellCommand::ExecuteQuery(const std::string &bundleName, const i
 
     if (result == OHOS::ERR_OK) {
         resultReceiver_ = STRING_QUERY_FORM_INFO_OK + "\n" + resultReceiver_;
-    } else if(result == OHOS::ERR_APPEXECFWK_FORM_NOT_EXIST_ID){
+    } else if (result == OHOS::ERR_APPEXECFWK_FORM_NOT_EXIST_ID) {
         resultReceiver_ = STRING_QUERY_FORM_INFO_OK + "\n";
         resultReceiver_.append(GetMessageFromCode(result));
     } else {
@@ -411,7 +411,7 @@ int32_t FormMgrShellCommand::QueryFormInfoByFormId(const std::int64_t formId)
     int result = GetStringInfo(IFormMgr::Message::FORM_MGR_FORM_INFOS_BY_ID, data, formInfo);
     if (result == ERR_OK) {
         resultReceiver_ = formInfo;
-    }  else if(result == OHOS::ERR_APPEXECFWK_FORM_NOT_EXIST_ID) {
+    } else if (result == OHOS::ERR_APPEXECFWK_FORM_NOT_EXIST_ID) {
         APP_LOGW("'fm query' no form info.");
     } else {
         APP_LOGE("'fm query' failed to query form info.");

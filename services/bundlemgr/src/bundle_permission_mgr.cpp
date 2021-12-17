@@ -297,7 +297,7 @@ bool BundlePermissionMgr::CheckCallingPermission(const std::string &permissionNa
             "get app bundleName %{public}s and permissionName %{public}s", bundleName.c_str(), permissionName.c_str());
         ApplicationInfo appInfo;
         bool ret = dataMgr->GetApplicationInfo(bundleName, ApplicationFlag::GET_BASIC_APPLICATION_INFO,
-                                            Constants::DEFAULT_USERID, appInfo);
+            Constants::DEFAULT_USERID, appInfo);
         if (ret && appInfo.isLauncherApp && (permissionName == Constants::PERMISSION_INSTALL_BUNDLE)) {
             APP_LOGE("launcher app %{public}s pass through", bundleName.c_str());
             return true;
