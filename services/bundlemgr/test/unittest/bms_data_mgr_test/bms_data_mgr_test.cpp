@@ -30,7 +30,6 @@ using OHOS::Parcel;
 using OHOS::AAFwk::Want;
 
 namespace {
-
 const std::string BUNDLE_NAME = "com.example.l3jsdemo";
 const std::string APP_NAME = "com.example.l3jsdemo";
 const std::string ABILITY_NAME = "com.example.l3jsdemo.MainAbility";
@@ -48,7 +47,6 @@ const std::string RESOURCE_PATH = "/data/accounts/account_/com.example.l3jsdemo"
 const std::string LIB_PATH = "/data/accounts/account_/com.example.l3jsdemo";
 const bool VISIBLE = true;
 const int32_t USERID = 0;
-
 }  // namespace
 
 class BmsDataMgrTest : public testing::Test {

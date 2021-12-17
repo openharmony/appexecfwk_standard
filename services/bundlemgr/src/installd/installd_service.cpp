@@ -30,7 +30,6 @@ using namespace std::chrono_literals;
 
 namespace OHOS {
 namespace AppExecFwk {
-
 InstalldService::InstalldService()
 {
     APP_LOGI("installd service instance is created");
@@ -122,6 +121,5 @@ void InstalldService::Stop()
     isReady_ = false;
     APP_LOGI("installd service stop successfully");
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

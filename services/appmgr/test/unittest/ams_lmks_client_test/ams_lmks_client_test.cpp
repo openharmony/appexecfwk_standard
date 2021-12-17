@@ -29,7 +29,6 @@ using namespace testing::ext;
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class AmsLmksClientTest : public testing::Test {
 public:
     static void SetUpTestCase();
@@ -384,6 +383,5 @@ HWTEST_F(AmsLmksClientTest, AmsLmksClientTest_Close_001, TestSize.Level1)
 
     APP_LOGD("AmsLmksClientTest_Close_001 end.");
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

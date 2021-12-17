@@ -25,7 +25,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 enum class ApplicationFlag {
     // get the basic ApplicationInfo
     GET_BASIC_APPLICATION_INFO = 0x00000000,
@@ -107,7 +106,6 @@ struct ApplicationInfo : public Parcelable {
     void Dump(std::string prefix, int fd);
     void ConvertToCompatibleApplicationInfo(CompatibleApplicationInfo& compatibleApplicationInfo) const;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_BASE_INCLUDE_APPLICATION_INFO_H

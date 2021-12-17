@@ -31,7 +31,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 InstalldHostImpl::InstalldHostImpl()
 {
     APP_LOGI("installd service instance is created");
@@ -228,6 +227,5 @@ ErrCode InstalldHostImpl::CleanBundleDataDir(const std::string &dataDir)
     }
     return ERR_OK;
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

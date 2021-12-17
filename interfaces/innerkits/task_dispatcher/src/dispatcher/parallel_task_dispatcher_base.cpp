@@ -179,6 +179,5 @@ std::shared_ptr<TaskExecuteInterceptor> ParallelTaskDispatcherBase::GetIntercept
 {
     return nullptr;
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

@@ -21,7 +21,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 #ifndef LOG_DOMAIN
 #define LOG_DOMAIN 0xD001100
 #endif
@@ -68,7 +67,6 @@ private:
 #define APP_LOGW(fmt, ...) PRINT_LOG(WARN, Warn, fmt, ##__VA_ARGS__)
 #define APP_LOGE(fmt, ...) PRINT_LOG(ERROR, Error, fmt, ##__VA_ARGS__)
 #define APP_LOGF(fmt, ...) PRINT_LOG(FATAL, Fatal, fmt, ##__VA_ARGS__)
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_LIBS_LOG_INCLUDE_APP_LOG_WRAPPER_H

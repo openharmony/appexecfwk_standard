@@ -20,14 +20,12 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class BundleStatusCallbackDeathRecipient : public IRemoteObject::DeathRecipient {
 public:
     BundleStatusCallbackDeathRecipient();
     ~BundleStatusCallbackDeathRecipient();
     virtual void OnRemoteDied(const wptr<IRemoteObject> &object) override;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 

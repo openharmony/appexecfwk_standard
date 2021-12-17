@@ -17,12 +17,10 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 MockHandler::MockHandler(const std::shared_ptr<EventRunner> &runner) : EventHandler(runner)
 {}
 
 void MockHandler::ProcessEvent([[maybe_unused]] const InnerEvent::Pointer &event)
 {}
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

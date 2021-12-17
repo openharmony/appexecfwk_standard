@@ -45,7 +45,6 @@ public:
         return EventHandler::PostSyncTask(*(runnable.get()), EventQueue::Priority::HIGH);
     }
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 

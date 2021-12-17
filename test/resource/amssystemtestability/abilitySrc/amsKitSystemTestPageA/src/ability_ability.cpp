@@ -728,7 +728,6 @@ void AbilityAbility::caseIndexTwo() {
     TestUtils::PublishEvent(APP_ABILITY_RESP_EVENT_NAME, ret, "TestAbilityDisconnectAbility");
     sleep(1);
     DisconnectAbility(connCallback_);
-
 }
 
 void AbilityAbility::TestAbilityDisconnectAbility()

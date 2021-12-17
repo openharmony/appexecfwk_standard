@@ -84,6 +84,5 @@ std::shared_ptr<Thread> WorkerThread::GetThread(void)
 {
     return thread_;
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

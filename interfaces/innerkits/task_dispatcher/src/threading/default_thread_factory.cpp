@@ -17,7 +17,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 DefaultThreadFactory::DefaultThreadFactory() : index_(1)
 {}
 
@@ -35,6 +34,5 @@ std::shared_ptr<Thread> DefaultThreadFactory::Create()
 
     return pThread;
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

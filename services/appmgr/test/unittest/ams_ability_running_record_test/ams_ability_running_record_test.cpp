@@ -531,6 +531,5 @@ HWTEST_F(AmsAbilityRunningRecordTest, SetGetAbilityRecord_001, TestSize.Level1)
 
     APP_LOGD("SetGetAbilityRecord_001 end.");
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

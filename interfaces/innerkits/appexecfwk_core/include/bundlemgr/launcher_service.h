@@ -35,7 +35,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class LauncherService {
 public:
     using Want = OHOS::AAFwk::Want;

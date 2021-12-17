@@ -24,7 +24,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 ErrCode BundleParser::Parse(const std::string &pathName, InnerBundleInfo &innerBundleInfo) const
 {
     APP_LOGI("parse from %{public}s", pathName.c_str());
@@ -43,6 +42,5 @@ ErrCode BundleParser::Parse(const std::string &pathName, InnerBundleInfo &innerB
     BundleProfile bundleProfile;
     return bundleProfile.TransformTo(outStream, innerBundleInfo);
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

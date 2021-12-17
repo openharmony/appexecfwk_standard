@@ -20,9 +20,7 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 using Runnable = std::function<void()>;
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif

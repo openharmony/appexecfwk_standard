@@ -170,7 +170,6 @@ bool TaskExecutor::DelayExecute(const Runnable &task, long delayMs)
 
 void TaskExecutor::TerminateConsumer()
 {
-
     std::unique_lock<std::mutex> lock(dataMutex_);
     terminated_.store(true);
     pendingTasks_->Stop();

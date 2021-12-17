@@ -21,7 +21,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class MockModuleLifecycleCallbacks : public AbilityLifecycleCallbacks {
 public:
     MockModuleLifecycleCallbacks() = default;
@@ -64,7 +63,6 @@ private:
     int level_ = 0;
     std::shared_ptr<Configuration> config_ = nullptr;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_KITS_APPKIT_TEST_MOCK_APPLICATION_H

@@ -25,7 +25,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 int32_t CommonTool::ExcuteCmd(const std::string &cmd, std::vector<std::string> &resvec, const int32_t size)
 {
     if (size <= 0) {
@@ -183,6 +182,5 @@ bool CommonTool::StartExecutable(const std::string &serviceName, const std::stri
     }
     return true;
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

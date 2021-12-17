@@ -204,6 +204,5 @@ HWTEST(GroupImplTest, AppExecFwk_GroupImpl_AddNotification_003, TestSize.Level0)
     EXPECT_FALSE(result);
     GTEST_LOG_(INFO) << name << " end";
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

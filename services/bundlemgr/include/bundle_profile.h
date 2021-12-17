@@ -21,7 +21,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class BundleProfile {
 public:
     /**
@@ -32,7 +31,6 @@ public:
      */
     ErrCode TransformTo(const std::ostringstream &source, InnerBundleInfo &innerBundleInfo) const;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_BUNDLE_PROFILE_H

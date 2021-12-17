@@ -18,12 +18,10 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class Revocable {
 public:
     virtual bool Revoke() = 0;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif

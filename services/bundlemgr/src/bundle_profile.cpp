@@ -26,7 +26,6 @@
 namespace OHOS {
 namespace AppExecFwk {
 namespace ProfileReader {
-
 thread_local int32_t parseResult;
 const std::map<std::string, AbilityType> ABILITY_TYPE_MAP = {
     {"page", AbilityType::PAGE},
@@ -1715,11 +1714,9 @@ void from_json(const nlohmann::json &jsonObject, ConfigJson &configJson)
         ArrayType::NOT_ARRAY);
     APP_LOGI("read tag from config.json");
 }
-
 }  // namespace ProfileReader
 
 namespace {
-
 bool CheckBundleNameIsValid(const std::string &bundleName)
 {
     if (bundleName.empty()) {

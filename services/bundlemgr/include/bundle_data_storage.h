@@ -23,7 +23,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class BundleDataStorage : public IBundleDataStorage {
 public:
     /**
@@ -52,7 +51,6 @@ private:
     bool KeyToDeviceAndName(const std::string &key, std::string &deviceId, std::string &bundleName) const;
     void DeviceAndNameToKey(const std::string &deviceId, const std::string &bundleName, std::string &key) const;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_BUNDLE_DATA_STORAGE_H

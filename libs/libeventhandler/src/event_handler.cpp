@@ -22,7 +22,6 @@ DEFINE_HILOG_LABEL("EventHandler");
 
 namespace OHOS {
 namespace AppExecFwk {
-
 static constexpr int DATETIME_STRING_LENGTH = 80;
 
 ThreadLocalData<std::weak_ptr<EventHandler>> EventHandler::currentEventHandler;

@@ -60,6 +60,5 @@ protected:
         HiviewDFX::HiLog::Debug(LABEL, "Mock SystemAbility Destructor called");
     }
 };
-
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_APPMGR_TEST_MOCK_SYSTEM_ABILITY_H

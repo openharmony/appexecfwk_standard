@@ -142,7 +142,6 @@ public:
 
     virtual RState GetThemeById(uint32_t id, std::map<std::string, std::string> &outValue)
     {
-
         auto iter = ThemeById_.find(id);
         if (iter == ThemeById_.end()) {
             return ERROR;
@@ -279,7 +278,6 @@ std::shared_ptr<ResourceManager2> CreateResourceManager2()
     }
     return ResourceManagerTestInstance::instance;
 }
-
 }  // namespace Resource
 }  // namespace Global
 }  // namespace OHOS

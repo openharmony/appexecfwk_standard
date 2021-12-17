@@ -18,7 +18,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 /**
  * @brief Sets L1 information about the runtime environment of the application to which the
  *        ability belongs, including the bundle name, source code path, and data path.
@@ -74,6 +73,5 @@ const std::string &ApplicationEnvImpl::GetDataPath() const
 {
     return dataPath_;
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

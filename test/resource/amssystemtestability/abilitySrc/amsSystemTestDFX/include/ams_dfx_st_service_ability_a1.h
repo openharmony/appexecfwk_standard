@@ -27,7 +27,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class AmsDfxStServiceAbilityA1 : public Ability {
 public:
     ~AmsDfxStServiceAbilityA1();

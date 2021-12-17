@@ -23,7 +23,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 enum class AbilityType {
     UNKNOWN = 0,
     PAGE,
@@ -217,7 +216,6 @@ struct AbilityInfo : public Parcelable {
     void Dump(std::string prefix, int fd);
     void ConvertToCompatiableAbilityInfo(CompatibleAbilityInfo& compatibleAbilityInfo) const;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_BASE_INCLUDE_ABILITY_INFO_H

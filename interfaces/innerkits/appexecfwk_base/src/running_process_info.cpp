@@ -23,9 +23,7 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 namespace {
-
 const std::string JSON_KEY_PROCESSNAME = "processName";
 const std::string JSON_KEY_PID = "pid";
 const std::string JSON_KEY_STATE = "state";
@@ -65,6 +63,5 @@ bool RunningProcessInfo::Marshalling(Parcel &parcel) const
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, static_cast<int32_t>(state_));
     return true;
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

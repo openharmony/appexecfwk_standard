@@ -22,7 +22,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 CleanCacheCallbackProxy::CleanCacheCallbackProxy(const sptr<IRemoteObject> &object)
     : IRemoteProxy<ICleanCacheCallback>(object)
 {
@@ -58,6 +57,5 @@ void CleanCacheCallbackProxy::OnCleanCacheFinished(bool succeeded)
         APP_LOGW("fail to call OnCleanCacheFinished​, for transact is failed, error code is: %{public}d", ret);
     }
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

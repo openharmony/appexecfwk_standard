@@ -27,7 +27,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class SysMrgClient {
     DECLARE_DELAYED_SINGLETON(SysMrgClient)
 public:
@@ -61,7 +60,6 @@ private:
     std::mutex saMutex_;
     std::unordered_map<int32_t, sptr<IRemoteObject>> servicesMap_;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // OHOS_AAFWK_SYS_MRG_CLIENT_H

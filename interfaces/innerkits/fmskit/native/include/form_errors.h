@@ -46,9 +46,7 @@ private:
     void InitErrorMessageMap();
 
 private:
-    std::map<ErrCode, std::string> errorMessageMap_;
-
-    
+    std::map<ErrCode, std::string> errorMessageMap_;   
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS

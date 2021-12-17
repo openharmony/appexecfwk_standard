@@ -19,7 +19,6 @@
 #include "task.h"
 namespace OHOS {
 namespace AppExecFwk {
-
 /**
  * Interface for handling post a task.
  *
@@ -50,7 +49,6 @@ public:
      */
     virtual bool Dispatch(const std::shared_ptr<Runnable> &runnable, long delayMs) = 0;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 

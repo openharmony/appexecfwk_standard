@@ -23,7 +23,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class MockAppStateCallback : public AppStateCallbackHost {
 public:
     MockAppStateCallback()
@@ -34,7 +33,6 @@ public:
     MOCK_METHOD1(OnAppStateChanged, void(const AppProcessData &));
     MOCK_METHOD2(OnAbilityRequestDone, void(const sptr<IRemoteObject> &, const AbilityState));
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_COMMON_TEST_MOCK_IAPP_STATE_CALLBACK_H
