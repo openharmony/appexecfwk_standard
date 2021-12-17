@@ -20,7 +20,6 @@
 namespace OHOS {
 namespace AppExecFwk {
 namespace {
-
 const std::string IS_SUPPORT_BACKUP = "isSupportBackup";
 const std::string APP_TYPE = "appType";
 const std::string UID = "uid";

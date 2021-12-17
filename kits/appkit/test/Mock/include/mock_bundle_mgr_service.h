@@ -133,7 +133,6 @@ public:
 private:
     Semaphore sem_;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_KITS_APPKIT_TEST_MOCK_BUNDLE_MGR_SERVICE_H

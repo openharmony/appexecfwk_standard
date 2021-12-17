@@ -22,7 +22,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 BundleInstaller::BundleInstaller(const int64_t installerId, const std::shared_ptr<EventHandler> &handler,
     const sptr<IStatusReceiver> &statusReceiver)
     : installerId_(installerId), handler_(handler), statusReceiver_(statusReceiver)
@@ -75,6 +74,5 @@ void BundleInstaller::SendRemoveEvent() const
         APP_LOGE("fail to remove %{public}" PRId64 " installer due to handler is expired", installerId_);
     }
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

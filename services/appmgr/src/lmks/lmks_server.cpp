@@ -26,7 +26,6 @@
 
 namespace OHOS {
 namespace LMKS {
-
 namespace {
 #ifdef __MUSL__
 const std::string LMKS_SOCKET_NAME = "/dev/unix/socket/lmks";

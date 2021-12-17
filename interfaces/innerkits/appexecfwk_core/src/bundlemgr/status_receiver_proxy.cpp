@@ -27,7 +27,6 @@
 namespace OHOS {
 namespace AppExecFwk {
 namespace {
-
 // struct for transform internal error code/message to result which open to developer
 struct ReceivedResult {
     int32_t clientCode = -1;
@@ -174,7 +173,6 @@ const std::map<int32_t, struct ReceivedResult> MAP_RECEIVED_RESULTS {
     {ERR_APPEXECFWK_UNINSTALL_INVALID_NAME,
         {IStatusReceiver::ERR_UNINSTALL_INVALID_NAME, MSG_ERR_UNINSTALL_INVALID_NAME}},
 };
-
 }  // namespace
 
 StatusReceiverProxy::StatusReceiverProxy(const sptr<IRemoteObject> &object) : IRemoteProxy<IStatusReceiver>(object)
@@ -256,6 +254,5 @@ void StatusReceiverProxy::TransformResult(const int32_t resultCode)
     }
     APP_LOGD("result transformed is %{public}d, %{public}s", resultCode_, resultMsg_.c_str());
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

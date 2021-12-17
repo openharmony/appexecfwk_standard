@@ -29,7 +29,6 @@
 namespace OHOS {
 namespace AppExecFwk {
 class CgroupManager : public FileDescriptorListener, public std::enable_shared_from_this<CgroupManager> {
-
     DECLARE_DELAYED_SINGLETON(CgroupManager)
 public:
     enum SchedPolicy {

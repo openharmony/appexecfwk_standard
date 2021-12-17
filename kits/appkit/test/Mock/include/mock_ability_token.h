@@ -24,7 +24,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class IAbilityToken : public IRemoteBroker {
 public:
     DECLARE_INTERFACE_DESCRIPTOR(u"ohos.appexecfwk.AbilityToken");
@@ -56,7 +55,6 @@ private:
 };
 
 DECLARE_INTERFACE_DESCRIPTOR(u"IAbilityToken");
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_KITS_APPKIT_TEST_MOCK_INCLUDE_MOCK_ABILITY_TOKEN_H

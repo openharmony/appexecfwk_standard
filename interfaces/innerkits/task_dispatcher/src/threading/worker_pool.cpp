@@ -71,7 +71,6 @@ bool WorkerPool::CheckConfigParams(const std::shared_ptr<WorkerPoolConfig> &conf
 
     int maxThreadCount = config->GetMaxThreadCount();
     int coreThreadCount = config->GetCoreThreadCount();
-
     if (!CheckThreadCount(maxThreadCount, coreThreadCount)) {
         APP_LOGE("WorkerPool::CheckConfigParams parameters are illegal, maxThreadCount %{public}d is less than "
                  "coreThreadCount %{public}d",

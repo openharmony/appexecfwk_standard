@@ -21,7 +21,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class CommonTool {
 public:
     int32_t ExcuteCmd(const std::string &cmd, std::vector<std::string> &resvec, const int size);
@@ -34,7 +33,6 @@ public:
     std::string VectorToStr(const std::vector<std::string> &strVector);
     bool StartExecutable(const std::string &serviceName, const std::string &args);
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_TEST_MODULETEST_COMMON_TOOL_H

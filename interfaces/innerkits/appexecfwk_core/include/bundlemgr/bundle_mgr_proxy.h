@@ -27,7 +27,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class BundleMgrProxy : public IRemoteProxy<IBundleMgr> {
 public:
     explicit BundleMgrProxy(const sptr<IRemoteObject> &impl);

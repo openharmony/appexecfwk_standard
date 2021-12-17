@@ -29,9 +29,7 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 namespace {
-
 const std::string JSON_KEY_PACKAGE = "package";
 const std::string JSON_KEY_NAME = "name";
 const std::string JSON_KEY_BUNDLE_NAME = "bundleName";
@@ -549,6 +547,5 @@ void AbilityInfo::ConvertToCompatiableAbilityInfo(CompatibleAbilityInfo& compati
     compatibleAbilityInfo.descriptionId = descriptionId;
     compatibleAbilityInfo.enabled = enabled;
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

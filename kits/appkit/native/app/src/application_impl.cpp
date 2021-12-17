@@ -189,6 +189,5 @@ int ApplicationImpl::GetRecordId() const
 {
     return recordId_;
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

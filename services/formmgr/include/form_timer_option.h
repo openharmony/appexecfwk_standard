@@ -74,7 +74,6 @@ void FormTimerOption::SetWantAgent(std::shared_ptr<OHOS::Notification::WantAgent
 {
     this->wantAgent = _wantAgent;
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 

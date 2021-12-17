@@ -279,6 +279,5 @@ bool LmksClient::Read(void *buf, size_t len)
 
     return false;
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

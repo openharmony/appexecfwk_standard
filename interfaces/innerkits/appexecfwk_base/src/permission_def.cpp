@@ -23,7 +23,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 bool PermissionDef::ReadFromParcel(Parcel &parcel)
 {
     permissionName = Str16ToStr8(parcel.ReadString16());
@@ -60,6 +59,5 @@ bool PermissionDef::Marshalling(Parcel &parcel) const
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, descriptionId);
     return true;
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

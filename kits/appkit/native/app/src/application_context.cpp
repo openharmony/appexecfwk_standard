@@ -19,7 +19,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 ApplicationContext::ApplicationContext()
 {}
 ApplicationContext::~ApplicationContext()
@@ -273,6 +272,5 @@ std::shared_ptr<TaskDispatcher> ApplicationContext::GetGlobalTaskDispatcher(cons
     APP_LOGI("ApplicationContext::GetGlobalTaskDispatcher end");
     return task;
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

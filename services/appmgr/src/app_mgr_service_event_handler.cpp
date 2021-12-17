@@ -20,7 +20,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 AMSEventHandler::AMSEventHandler(
     const std::shared_ptr<EventRunner> &runner, const std::weak_ptr<AppMgrServiceInner> &appMgr)
     : EventHandler(runner), appMgr_(appMgr)

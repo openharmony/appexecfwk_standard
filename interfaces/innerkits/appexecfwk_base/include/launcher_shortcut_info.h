@@ -19,8 +19,7 @@
 #include "shortcut_info.h"
 
 namespace OHOS {
-namespace AppExecFwk {
-    
+namespace AppExecFwk {    
 struct LauncherShortcutInfo {
     std::string icon;
     std::vector<ShortcutIntent> intents;
@@ -28,7 +27,6 @@ struct LauncherShortcutInfo {
     std::string bundleName;
     std::string label;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_LAUNCHER_SHORTCUT_INFO_H

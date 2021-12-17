@@ -18,7 +18,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 /**
  * @brief Get the token witch is set to the AbilityRecordMgr.
  *
@@ -157,6 +156,5 @@ std::vector<sptr<IRemoteObject>> AbilityRecordMgr::GetAllTokens()
     }
     return tokens;
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

@@ -23,7 +23,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class BundleInstallerProxy : public IRemoteProxy<IBundleInstaller> {
 public:
     explicit BundleInstallerProxy(const sptr<IRemoteObject> &object);
@@ -62,7 +61,6 @@ public:
 private:
     static inline BrokerDelegator<BundleInstallerProxy> delegator_;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_CORE_INCLUDE_BUNDLEMGR_BUNDLE_INSTALLER_PROXY_H

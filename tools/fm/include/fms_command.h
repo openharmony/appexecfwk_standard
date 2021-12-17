@@ -132,7 +132,6 @@ private:
 private:
     sptr<IRemoteObject> remoteObject_;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 

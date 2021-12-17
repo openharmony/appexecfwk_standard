@@ -427,7 +427,6 @@ int FormMgrAdapter::RequestForm(const int64_t formId, const sptr<IRemoteObject> 
     }
 
     int64_t matchedFormId = FormDataMgr::GetInstance().FindMatchedFormId(formId);
-
     if (!FormDataMgr::GetInstance().ExistFormRecord(matchedFormId)) {
         APP_LOGE("%{public}s fail, not exist such formId:%{public}" PRId64 ".", __func__, matchedFormId);
         return ERR_APPEXECFWK_FORM_NOT_EXIST_ID;
@@ -1634,6 +1633,5 @@ int FormMgrAdapter::DistributedDataDeleteForm(const std::string &formId)
 {
     return FormDbCache::GetInstance().DeleteFormInfo(std::stoll(formId));
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

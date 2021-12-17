@@ -18,7 +18,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 /**
  * @description: Gets the ApplicationLoader object to application register
  * @param None

@@ -336,7 +336,6 @@ private:
     uint64_t dynamicAlarmTimerId_ = 0L;
     uint64_t limiterTimerId_= 0L;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 

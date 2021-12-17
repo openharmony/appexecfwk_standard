@@ -22,7 +22,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 #define READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(type, parcel, data)         \
     do {                                                                 \
         if (!(parcel).Read##type(data)) {                                \
@@ -38,7 +37,6 @@ namespace AppExecFwk {
             return false;                                                 \
         }                                                                 \
     } while (0)
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 

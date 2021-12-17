@@ -25,7 +25,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 AppStateCallbackHost::AppStateCallbackHost()
 {
     memberFuncMap_[static_cast<uint32_t>(IAppStateCallback::Message::TRANSACT_ON_APP_STATE_CHANGED)] =
@@ -89,6 +88,5 @@ int32_t AppStateCallbackHost::HandleOnAbilityRequestDone(MessageParcel &data, Me
     OnAbilityRequestDone(obj, static_cast<AbilityState>(state));
     return NO_ERROR;
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

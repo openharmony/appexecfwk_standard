@@ -33,7 +33,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 struct Distro {
     bool deliveryWithInstall;
     std::string moduleName;

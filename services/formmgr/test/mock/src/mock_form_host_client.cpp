@@ -21,7 +21,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 /**
  * Request to give back a Form.
  *

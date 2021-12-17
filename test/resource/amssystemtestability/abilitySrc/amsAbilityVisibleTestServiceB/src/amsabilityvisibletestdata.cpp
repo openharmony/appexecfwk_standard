@@ -21,7 +21,6 @@ using namespace OHOS::EventFwk;
 
 namespace OHOS {
 namespace AppExecFwk {
-
 const static int defenvntCode = 1;
 
 AmsAbilityVisibleTestData::~AmsAbilityVisibleTestData()

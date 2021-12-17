@@ -21,7 +21,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 AbilityManager &AbilityManager::GetInstance()
 {
     static AbilityManager abilityManager;
@@ -130,6 +129,5 @@ int AbilityManager::KillProcessesByBundleName(const std::string &bundleName)
     }
     return ERR_OK;
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

@@ -142,7 +142,6 @@ struct FormTimerCfg {
     int updateAtHour = -1;
     int updateAtMin = -1;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif // FOUNDATION_APPEXECFWK_SERVICES_FORMMGR_INCLUDE_FORM_TIMER_TASK_H

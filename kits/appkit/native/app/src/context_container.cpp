@@ -21,7 +21,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 /**
  * Attaches a Context object to the current ability.
  * Generally, this method is called after Ability is loaded to provide the application context for the current ability.
@@ -1125,6 +1124,5 @@ void ContextContainer::SetShowOnLockScreen(bool isAllow)
     baseContext_->SetShowOnLockScreen(isAllow);
     APP_LOGI("ContextContainer::SetShowOnLockScreen called end.");
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

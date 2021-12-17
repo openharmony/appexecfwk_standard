@@ -21,7 +21,6 @@
 #include <gtest/gtest.h>
 namespace OHOS {
 namespace AppExecFwk {
-
 using Want = OHOS::AAFwk::Want;
 
 class MockAbilityLifecycleCallbacks : public AbilityLifecycleCallbacks {
@@ -106,7 +105,6 @@ public:
         GTEST_LOG_(INFO) << "MockAbilityLifecycleCallbacks::OnAbilityStop called";
     }
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_OHOS_MOCK_ABILITY_LIFECYCLE_CALLBACK_H

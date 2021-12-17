@@ -25,7 +25,6 @@ public:
     virtual ~TaskExecuteInterceptor(){};
     virtual ErrCode Intercept(std::shared_ptr<Task> &task) = 0;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif

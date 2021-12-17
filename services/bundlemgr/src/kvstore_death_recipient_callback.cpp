@@ -25,10 +25,8 @@ using namespace OHOS::DistributedKv;
 namespace OHOS {
 namespace AppExecFwk {
 namespace {
-
 const int32_t CHECK_TIMES = 300;
 const int32_t CHECK_INTERVAL = 100000;  // 100ms
-
 }  // namespace
 
 KvStoreDeathRecipientCallback::KvStoreDeathRecipientCallback()
@@ -72,6 +70,5 @@ void KvStoreDeathRecipientCallback::OnRemoteDied()
 
     APP_LOGI("OnRemoteDied, register data change listener end");
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
