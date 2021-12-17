@@ -45,14 +45,13 @@ static constexpr int WAIT_LAUNCHER_TIME = 5;
 static constexpr int WAIT_SETUP_TIME = 1;
 static constexpr int WAIT_TEARDOWN_TIME = 1;
 static constexpr int WAIT_ONACTIVE_TIME = 1;
-static constexpr int WAIT_ONUPDATE_TIME = 3;
-static constexpr unsigned int MAIN_ABILITY_CALLED_FLAG = 0x1;
-static constexpr unsigned int SECOND_ABILITY_CALLED_FLAG = 0x2;
-static constexpr unsigned int THIRD_ABILITY_CALLED_FLAG = 0x4;
-static constexpr unsigned int ALL_ABILITY_CALLED_FLAG = 0x7;
-static unsigned int g_uiAbilityCalledFlag = 0;
+static constexpr int WAIT_BLOCKUPDATE_TIME = 7;
+static constexpr int TEST_TIMES = 10;
 static string g_eventMessage = "";
 static string g_tempDataStr = "";
+static int g_mainAbilityUpdateTimes = 0;
+static int g_secondAbilityUpdateTimes = 0;
+static int g_thirdAbilityUpdateTimes = 0;
 std::string ConfigurationUpdate_Event_Resp_A = "resp_com_ohos_amsst_ConfigurationUpdateB";
 }  // namespace
 
@@ -70,6 +69,7 @@ public:
     static bool SubscribeEvent();
     static int TestWaitCompleted(Event &event, const std::string &eventName, const int code, const int timeout = 10);
     static void TestCompleted(Event &event, const std::string &eventName, const int code);
+    void SetDefaultConfig();
 
     class AppEventSubscriber : public CommonEventSubscriber {
     public:
@@ -95,15 +95,14 @@ void AmsConfigurationUpdatedTest::AppEventSubscriber::OnReceiveEvent(const Commo
     if (data.GetData() == "Updated") {
         switch (data.GetCode()) {
             case MAIN_ABILITY_CODE:
-                g_uiAbilityCalledFlag |= MAIN_ABILITY_CALLED_FLAG;
+                g_mainAbilityUpdateTimes++;
                 break;
             case SECOND_ABILITY_CODE:
-                g_uiAbilityCalledFlag |= SECOND_ABILITY_CALLED_FLAG;
+                g_secondAbilityUpdateTimes++;
                 break;
             case THIRD_ABILITY_CODE:
-                g_uiAbilityCalledFlag |= THIRD_ABILITY_CALLED_FLAG;
+                g_thirdAbilityUpdateTimes++;
                 break;
-
             default:
                 break;
         }
@@ -168,6 +167,20 @@ bool AmsConfigurationUpdatedTest::SubscribeEvent()
     return CommonEventManager::SubscribeCommonEvent(subscriber_);
 }
 
+void AmsConfigurationUpdatedTest::SetDefaultConfig()
+{
+    AppExecFwk::Configuration configuration;
+    configuration.AddItem(GlobalConfigurationKey::SYSTEM_LANGUAGE, "ZH-HANS");
+    abilityMgrService->UpdateConfiguration(configuration);
+    (void)TestWaitCompleted(event, "Updated", MAIN_ABILITY_CODE, WAIT_LAUNCHER_TIME);
+
+    AppExecFwk::Configuration configuration2;
+    configuration2.AddItem(GlobalConfigurationKey::SYSTEM_ORIENTATION, "vertical");
+    abilityMgrService->UpdateConfiguration(configuration2);
+    (void)TestWaitCompleted(event, "Updated", MAIN_ABILITY_CODE, WAIT_LAUNCHER_TIME);
+    STAbilityUtil::CleanMsg(event);
+}
+
 /**
  * @tc.number    : 0100
  * @tc.name      : AMS_UpdateConfiguration_0100
@@ -178,26 +191,20 @@ HWTEST_F(AmsConfigurationUpdatedTest, AMS_UpdateConfiguration_0100, Function | M
 {
     GTEST_LOG_(INFO) << "==========>\nAmsConfigurationUpdatedTest AMS_UpdateConfiguration_0100 start";
     MAP_STR_STR params;
+
     Want want = STAbilityUtil::MakeWant("device", MAIN_ABILITY, KIT_BUNDLE_NAME, params);
     ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << "\nStartAbility ====>> " << eCode;
-
     g_tempDataStr = "OnStartOnActive";
     EXPECT_EQ(TestWaitCompleted(event, "OnStartOnActive", MAIN_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
-
     sleep(WAIT_ONACTIVE_TIME);
+    SetDefaultConfig();
 
     AppExecFwk::Configuration configuration;
-    configuration.AddItem(GlobalConfigurationKey::SYSTEM_LANGUAGE, "ZH-HANS");
+    configuration.AddItem(GlobalConfigurationKey::SYSTEM_LANGUAGE, "fr_FR");
     abilityMgrService->UpdateConfiguration(configuration);
-    (void)TestWaitCompleted(event, "Updated", MAIN_ABILITY_CODE, WAIT_LAUNCHER_TIME);
-    STAbilityUtil::CleanMsg(event);
-
-    AppExecFwk::Configuration configuration2;
-    configuration2.AddItem(GlobalConfigurationKey::SYSTEM_LANGUAGE, "fr_FR");
-    abilityMgrService->UpdateConfiguration(configuration2);
     g_tempDataStr = "Updated";
-    EXPECT_EQ(TestWaitCompleted(event, "Updated", MAIN_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
+    EXPECT_EQ(TestWaitCompleted(event, "fr_FR", MAIN_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
 
     GTEST_LOG_(INFO) << "\nAmsConfigurationUpdatedTest AMS_UpdateConfiguration_0100 end=========<";
 }
@@ -213,26 +220,19 @@ HWTEST_F(AmsConfigurationUpdatedTest, AMS_UpdateConfiguration_0200, Function | M
 {
     GTEST_LOG_(INFO) << "==========>\nAmsConfigurationUpdatedTest AMS_UpdateConfiguration_0200 start";
     MAP_STR_STR params;
+
     Want want = STAbilityUtil::MakeWant("device", MAIN_ABILITY, KIT_BUNDLE_NAME, params);
     ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << "\nStartAbility ====>> " << eCode;
 
     g_tempDataStr = "OnStartOnActive";
     EXPECT_EQ(TestWaitCompleted(event, "OnStartOnActive", MAIN_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
-
     sleep(WAIT_ONACTIVE_TIME);
+    SetDefaultConfig();
 
     AppExecFwk::Configuration configuration;
     configuration.AddItem(GlobalConfigurationKey::SYSTEM_LANGUAGE, "ZH-HANS");
     abilityMgrService->UpdateConfiguration(configuration);
-    (void)TestWaitCompleted(event, "Updated", MAIN_ABILITY_CODE, WAIT_LAUNCHER_TIME);
-    STAbilityUtil::CleanMsg(event);
-
-    AppExecFwk::Configuration configuration2;
-    configuration2.AddItem(GlobalConfigurationKey::SYSTEM_LANGUAGE, "ZH-HANS");
-    abilityMgrService->UpdateConfiguration(configuration2);
-
-    g_tempDataStr = "Updated";
     EXPECT_NE(TestWaitCompleted(event, "Updated", MAIN_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
 
     GTEST_LOG_(INFO) << "\nAmsConfigurationUpdatedTest AMS_UpdateConfiguration_0200 end=========<";
@@ -249,6 +249,7 @@ HWTEST_F(AmsConfigurationUpdatedTest, AMS_UpdateConfiguration_0300, Function | M
 {
     GTEST_LOG_(INFO) << "==========>\nAmsConfigurationUpdatedTest AMS_UpdateConfiguration_0300 start";
     MAP_STR_STR params;
+
     Want want = STAbilityUtil::MakeWant("device", MAIN_ABILITY, KIT_BUNDLE_NAME, params);
     ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << "\nStartAbility ====>> " << eCode;
@@ -256,19 +257,12 @@ HWTEST_F(AmsConfigurationUpdatedTest, AMS_UpdateConfiguration_0300, Function | M
     g_tempDataStr = "OnStartOnActive";
     EXPECT_EQ(TestWaitCompleted(event, "OnStartOnActive", MAIN_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
     sleep(WAIT_ONACTIVE_TIME);
+    SetDefaultConfig();
 
     AppExecFwk::Configuration configuration;
-    configuration.AddItem(GlobalConfigurationKey::SYSTEM_ORIENTATION, "vertical");
+    configuration.AddItem(GlobalConfigurationKey::SYSTEM_ORIENTATION, "horizontal");
     abilityMgrService->UpdateConfiguration(configuration);
-    (void)TestWaitCompleted(event, "Updated", MAIN_ABILITY_CODE, WAIT_LAUNCHER_TIME);
-    STAbilityUtil::CleanMsg(event);
-
-    AppExecFwk::Configuration configuration2;
-    configuration2.AddItem(GlobalConfigurationKey::SYSTEM_ORIENTATION, "horizontal");
-    abilityMgrService->UpdateConfiguration(configuration2);
-
-    g_tempDataStr = "Updated";
-    EXPECT_EQ(TestWaitCompleted(event, "Updated", MAIN_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
+    EXPECT_EQ(TestWaitCompleted(event, "horizontal", MAIN_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
 
     GTEST_LOG_(INFO) << "\nAmsConfigurationUpdatedTest AMS_UpdateConfiguration_0300 end=========<";
 }
@@ -284,6 +278,7 @@ HWTEST_F(AmsConfigurationUpdatedTest, AMS_UpdateConfiguration_0400, Function | M
 {
     GTEST_LOG_(INFO) << "==========>\nAmsConfigurationUpdatedTest AMS_UpdateConfiguration_0400 start";
     MAP_STR_STR params;
+
     Want want = STAbilityUtil::MakeWant("device", MAIN_ABILITY, KIT_BUNDLE_NAME, params);
     ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << "\nStartAbility ====>> " << eCode;
@@ -291,16 +286,11 @@ HWTEST_F(AmsConfigurationUpdatedTest, AMS_UpdateConfiguration_0400, Function | M
     g_tempDataStr = "OnStartOnActive";
     EXPECT_EQ(TestWaitCompleted(event, "OnStartOnActive", MAIN_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
     sleep(WAIT_ONACTIVE_TIME);
+    SetDefaultConfig();
 
     AppExecFwk::Configuration configuration;
     configuration.AddItem(GlobalConfigurationKey::SYSTEM_ORIENTATION, "vertical");
     abilityMgrService->UpdateConfiguration(configuration);
-    (void)TestWaitCompleted(event, "Updated", MAIN_ABILITY_CODE, WAIT_LAUNCHER_TIME);
-    STAbilityUtil::CleanMsg(event);
-
-    AppExecFwk::Configuration configuration2;
-    configuration2.AddItem(GlobalConfigurationKey::SYSTEM_ORIENTATION, "vertical");
-    abilityMgrService->UpdateConfiguration(configuration2);
 
     g_tempDataStr = "Updated";
     EXPECT_NE(TestWaitCompleted(event, "Updated", MAIN_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
@@ -324,7 +314,7 @@ HWTEST_F(AmsConfigurationUpdatedTest, AMS_UpdateConfiguration_0500, Function | M
     ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << "\nStartAbility ====>> " << eCode;
     EXPECT_EQ(TestWaitCompleted(event, "OnStartOnActive", MAIN_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
-
+    SetDefaultConfig();
     STAbilityUtil::PublishEvent(g_EVENT_REQU_MAIN, MAIN_ABILITY_CODE, "StartNextAbility");
     EXPECT_EQ(TestWaitCompleted(event, "OnStartOnActive", SECOND_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
 
@@ -335,17 +325,11 @@ HWTEST_F(AmsConfigurationUpdatedTest, AMS_UpdateConfiguration_0500, Function | M
     sleep(WAIT_ONACTIVE_TIME);
 
     AppExecFwk::Configuration configuration;
-    configuration.AddItem(GlobalConfigurationKey::SYSTEM_LANGUAGE, "ZH-HANS");
+    configuration.AddItem(GlobalConfigurationKey::SYSTEM_LANGUAGE, "fr_FR");
     abilityMgrService->UpdateConfiguration(configuration);
-    sleep(WAIT_ONUPDATE_TIME);
-    STAbilityUtil::CleanMsg(event);
-    g_uiAbilityCalledFlag = 0;
-    AppExecFwk::Configuration configuration2;
-    configuration2.AddItem(GlobalConfigurationKey::SYSTEM_LANGUAGE, "fr_FR");
-    abilityMgrService->UpdateConfiguration(configuration2);
-    sleep(WAIT_ONUPDATE_TIME);
-    EXPECT_EQ(g_uiAbilityCalledFlag, ALL_ABILITY_CALLED_FLAG);
-    GTEST_LOG_(INFO) << "AMS_UpdateConfiguration_0500 g_uiAbilityCalledFlag = " << g_uiAbilityCalledFlag;
+    EXPECT_EQ(TestWaitCompleted(event, "fr_FR", MAIN_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
+    EXPECT_EQ(TestWaitCompleted(event, "fr_FR", SECOND_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
+    EXPECT_EQ(TestWaitCompleted(event, "fr_FR", THIRD_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
 
     GTEST_LOG_(INFO) << "\nAmsConfigurationUpdatedTest AMS_UpdateConfiguration_0500 end=========<";
 }
@@ -366,6 +350,7 @@ HWTEST_F(AmsConfigurationUpdatedTest, AMS_UpdateConfiguration_0600, Function | M
     ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
     GTEST_LOG_(INFO) << "\nStartAbility ====>> " << eCode;
     EXPECT_EQ(TestWaitCompleted(event, "OnStartOnActive", MAIN_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
+    SetDefaultConfig();
 
     STAbilityUtil::PublishEvent(g_EVENT_REQU_MAIN, MAIN_ABILITY_CODE, "StartNextAbility");
     EXPECT_EQ(TestWaitCompleted(event, "OnStartOnActive", SECOND_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
@@ -377,18 +362,200 @@ HWTEST_F(AmsConfigurationUpdatedTest, AMS_UpdateConfiguration_0600, Function | M
     sleep(WAIT_ONACTIVE_TIME);
 
     AppExecFwk::Configuration configuration;
-    configuration.AddItem(GlobalConfigurationKey::SYSTEM_ORIENTATION, "vertical");
+    configuration.AddItem(GlobalConfigurationKey::SYSTEM_ORIENTATION, "horizontal");
     abilityMgrService->UpdateConfiguration(configuration);
-    sleep(WAIT_ONUPDATE_TIME);
-    STAbilityUtil::CleanMsg(event);
-    g_uiAbilityCalledFlag = 0;
-    AppExecFwk::Configuration configuration2;
-    configuration2.AddItem(GlobalConfigurationKey::SYSTEM_ORIENTATION, "horizontal");
-    abilityMgrService->UpdateConfiguration(configuration2);
-    sleep(WAIT_ONUPDATE_TIME);
-    EXPECT_EQ(g_uiAbilityCalledFlag, ALL_ABILITY_CALLED_FLAG);
-    GTEST_LOG_(INFO) << "AMS_UpdateConfiguration_0600 g_uiAbilityCalledFlag = " << g_uiAbilityCalledFlag;
+    EXPECT_EQ(TestWaitCompleted(event, "horizontal", MAIN_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
+    EXPECT_EQ(TestWaitCompleted(event, "horizontal", SECOND_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
+    EXPECT_EQ(TestWaitCompleted(event, "horizontal", THIRD_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
 
     GTEST_LOG_(INFO) << "\nAmsConfigurationUpdatedTest AMS_UpdateConfiguration_0600 end=========<";
+}
+
+/**
+ * @tc.number    : 0700
+ * @tc.name      : AMS_UpdateConfiguration_0700
+ * @tc.desc      : Verify whether the results of the orientation, locale, layout,fontSize function of the system
+ * configuration concerned by capability are correct.
+ */
+
+HWTEST_F(AmsConfigurationUpdatedTest, AMS_UpdateConfiguration_0700, Function | MediumTest | Level1)
+{
+    GTEST_LOG_(INFO) << "==========>\nAmsConfigurationUpdatedTest AMS_UpdateConfiguration_0700 start";
+    MAP_STR_STR params;
+
+    Want want = STAbilityUtil::MakeWant("device", MAIN_ABILITY, KIT_BUNDLE_NAME, params);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
+    GTEST_LOG_(INFO) << "\nStartAbility ====>> " << eCode;
+    EXPECT_EQ(TestWaitCompleted(event, "OnStartOnActive", MAIN_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
+    SetDefaultConfig();
+
+    STAbilityUtil::PublishEvent(g_EVENT_REQU_MAIN, MAIN_ABILITY_CODE, "StartNextAbilityWithBlockFlag");
+    EXPECT_EQ(TestWaitCompleted(event, "OnStartOnActive", SECOND_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
+
+    Want want2 = STAbilityUtil::MakeWant("device", MAIN_ABILITY, KIT_SECOND_BUNDLE_NAME, params);
+    eCode = STAbilityUtil::StartAbility(want2, abilityMgrService, WAIT_TIME);
+    GTEST_LOG_(INFO) << "\nStartSecondApp,ThirdAbility ====>> " << eCode;
+    EXPECT_EQ(TestWaitCompleted(event, "OnStartOnActive", THIRD_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
+    sleep(WAIT_ONACTIVE_TIME);
+
+    AppExecFwk::Configuration configuration;
+    configuration.AddItem(GlobalConfigurationKey::SYSTEM_LANGUAGE, "fr_FR");
+    GTEST_LOG_(INFO) << "\nUpdateConfiguration First Time ====>> ";
+    abilityMgrService->UpdateConfiguration(configuration);
+    AppExecFwk::Configuration configuration2;
+    configuration2.AddItem(GlobalConfigurationKey::SYSTEM_LANGUAGE, "en_US");
+    GTEST_LOG_(INFO) << "\nUpdateConfiguration Second Time ====>> ";
+    abilityMgrService->UpdateConfiguration(configuration2);
+
+    EXPECT_EQ(TestWaitCompleted(event, "fr_FR", THIRD_ABILITY_CODE, WAIT_BLOCKUPDATE_TIME), 0);
+    EXPECT_EQ(TestWaitCompleted(event, "fr_FR", SECOND_ABILITY_CODE, WAIT_BLOCKUPDATE_TIME), 0);
+    EXPECT_EQ(TestWaitCompleted(event, "fr_FR", MAIN_ABILITY_CODE, WAIT_BLOCKUPDATE_TIME), 0);
+
+    EXPECT_EQ(TestWaitCompleted(event, "en_US", THIRD_ABILITY_CODE, WAIT_BLOCKUPDATE_TIME), 0);
+    EXPECT_EQ(TestWaitCompleted(event, "en_US", SECOND_ABILITY_CODE, WAIT_BLOCKUPDATE_TIME), 0);
+    EXPECT_EQ(TestWaitCompleted(event, "en_US", MAIN_ABILITY_CODE, WAIT_BLOCKUPDATE_TIME), 0);
+
+    GTEST_LOG_(INFO) << "\nAmsConfigurationUpdatedTest AMS_UpdateConfiguration_0700 end=========<";
+}
+
+/**
+ * @tc.number    : 0800
+ * @tc.name      : AMS_UpdateConfiguration_0800
+ * @tc.desc      : Verify whether the results of the orientation, locale, layout,fontSize function of the system
+ * configuration concerned by capability are correct.
+ */
+
+HWTEST_F(AmsConfigurationUpdatedTest, AMS_UpdateConfiguration_0800, Function | MediumTest | Level1)
+{
+    GTEST_LOG_(INFO) << "==========>\nAmsConfigurationUpdatedTest AMS_UpdateConfiguration_0800 start";
+    MAP_STR_STR params;
+
+    Want want = STAbilityUtil::MakeWant("device", MAIN_ABILITY, KIT_BUNDLE_NAME, params);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
+    GTEST_LOG_(INFO) << "\nStartAbility ====>> " << eCode;
+    EXPECT_EQ(TestWaitCompleted(event, "OnStartOnActive", MAIN_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
+    SetDefaultConfig();
+
+    STAbilityUtil::PublishEvent(g_EVENT_REQU_MAIN, MAIN_ABILITY_CODE, "StartNextAbilityWithBlockFlag");
+    EXPECT_EQ(TestWaitCompleted(event, "OnStartOnActive", SECOND_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
+
+    Want want2 = STAbilityUtil::MakeWant("device", MAIN_ABILITY, KIT_SECOND_BUNDLE_NAME, params);
+    eCode = STAbilityUtil::StartAbility(want2, abilityMgrService, WAIT_TIME);
+    GTEST_LOG_(INFO) << "\nStartSecondApp,ThirdAbility ====>> " << eCode;
+    EXPECT_EQ(TestWaitCompleted(event, "OnStartOnActive", THIRD_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
+    sleep(WAIT_ONACTIVE_TIME);
+
+    AppExecFwk::Configuration configuration;
+    configuration.AddItem(GlobalConfigurationKey::SYSTEM_ORIENTATION, "horizontal");
+    GTEST_LOG_(INFO) << "\nUpdateConfiguration First Time ====>> ";
+    abilityMgrService->UpdateConfiguration(configuration);
+    AppExecFwk::Configuration configuration2;
+    configuration2.AddItem(GlobalConfigurationKey::SYSTEM_ORIENTATION, "vertical");
+    GTEST_LOG_(INFO) << "\nUpdateConfiguration Second Time ====>> ";
+    abilityMgrService->UpdateConfiguration(configuration2);
+
+    EXPECT_EQ(TestWaitCompleted(event, "horizontal", THIRD_ABILITY_CODE, WAIT_BLOCKUPDATE_TIME), 0);
+    EXPECT_EQ(TestWaitCompleted(event, "horizontal", SECOND_ABILITY_CODE, WAIT_BLOCKUPDATE_TIME), 0);
+    EXPECT_EQ(TestWaitCompleted(event, "horizontal", MAIN_ABILITY_CODE, WAIT_BLOCKUPDATE_TIME), 0);
+
+    EXPECT_EQ(TestWaitCompleted(event, "vertical", THIRD_ABILITY_CODE, WAIT_BLOCKUPDATE_TIME), 0);
+    EXPECT_EQ(TestWaitCompleted(event, "vertical", SECOND_ABILITY_CODE, WAIT_BLOCKUPDATE_TIME), 0);
+    EXPECT_EQ(TestWaitCompleted(event, "vertical", MAIN_ABILITY_CODE, WAIT_BLOCKUPDATE_TIME), 0);
+
+    GTEST_LOG_(INFO) << "\nAmsConfigurationUpdatedTest AMS_UpdateConfiguration_0800 end=========<";
+}
+
+/**
+ * @tc.number    : 0900
+ * @tc.name      : AMS_UpdateConfiguration_0900
+ * @tc.desc      : Verify whether the results of the orientation, locale, layout,fontSize function of the system
+ * configuration concerned by capability are correct.
+ */
+
+HWTEST_F(AmsConfigurationUpdatedTest, AMS_UpdateConfiguration_0900, Function | MediumTest | Level1)
+{
+    GTEST_LOG_(INFO) << "==========>\nAmsConfigurationUpdatedTest AMS_UpdateConfiguration_0900 start";
+    MAP_STR_STR params;
+
+    Want want = STAbilityUtil::MakeWant("device", MAIN_ABILITY, KIT_BUNDLE_NAME, params);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
+    GTEST_LOG_(INFO) << "\nStartAbility ====>> " << eCode;
+    EXPECT_EQ(TestWaitCompleted(event, "OnStartOnActive", MAIN_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
+    SetDefaultConfig();
+
+    STAbilityUtil::PublishEvent(g_EVENT_REQU_MAIN, MAIN_ABILITY_CODE, "StartNextAbility");
+    EXPECT_EQ(TestWaitCompleted(event, "OnStartOnActive", SECOND_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
+
+    Want want2 = STAbilityUtil::MakeWant("device", MAIN_ABILITY, KIT_SECOND_BUNDLE_NAME, params);
+    eCode = STAbilityUtil::StartAbility(want2, abilityMgrService, WAIT_TIME);
+    GTEST_LOG_(INFO) << "\nStartSecondApp,ThirdAbility ====>> " << eCode;
+    EXPECT_EQ(TestWaitCompleted(event, "OnStartOnActive", THIRD_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
+    sleep(WAIT_ONACTIVE_TIME);
+
+    g_mainAbilityUpdateTimes = 0;
+    g_secondAbilityUpdateTimes = 0;
+    g_thirdAbilityUpdateTimes = 0;
+    AppExecFwk::Configuration configuration;
+    configuration.AddItem(GlobalConfigurationKey::SYSTEM_LANGUAGE, "fr_FR");
+    AppExecFwk::Configuration configuration2;
+    configuration2.AddItem(GlobalConfigurationKey::SYSTEM_LANGUAGE, "en_US");
+    for (int iLoop = 0; iLoop < TEST_TIMES / 2; iLoop++) {
+        abilityMgrService->UpdateConfiguration(configuration);
+        abilityMgrService->UpdateConfiguration(configuration2);
+    }
+    sleep(WAIT_LAUNCHER_TIME);
+
+    EXPECT_EQ(g_mainAbilityUpdateTimes, TEST_TIMES);
+    EXPECT_EQ(g_secondAbilityUpdateTimes, TEST_TIMES);
+    EXPECT_EQ(g_thirdAbilityUpdateTimes, TEST_TIMES);
+
+    GTEST_LOG_(INFO) << "\nAmsConfigurationUpdatedTest AMS_UpdateConfiguration_0900 end=========<";
+}
+
+/**
+ * @tc.number    : 1000
+ * @tc.name      : AMS_UpdateConfiguration_1000
+ * @tc.desc      : Verify whether the results of the orientation, locale, layout,fontSize function of the system
+ * configuration concerned by capability are correct.
+ */
+
+HWTEST_F(AmsConfigurationUpdatedTest, AMS_UpdateConfiguration_1000, Function | MediumTest | Level1)
+{
+    GTEST_LOG_(INFO) << "==========>\nAmsConfigurationUpdatedTest AMS_UpdateConfiguration_1000 start";
+    MAP_STR_STR params;
+
+    Want want = STAbilityUtil::MakeWant("device", MAIN_ABILITY, KIT_BUNDLE_NAME, params);
+    ErrCode eCode = STAbilityUtil::StartAbility(want, abilityMgrService, WAIT_TIME);
+    GTEST_LOG_(INFO) << "\nStartAbility ====>> " << eCode;
+    EXPECT_EQ(TestWaitCompleted(event, "OnStartOnActive", MAIN_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
+    SetDefaultConfig();
+
+    STAbilityUtil::PublishEvent(g_EVENT_REQU_MAIN, MAIN_ABILITY_CODE, "StartNextAbility");
+    EXPECT_EQ(TestWaitCompleted(event, "OnStartOnActive", SECOND_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
+
+    Want want2 = STAbilityUtil::MakeWant("device", MAIN_ABILITY, KIT_SECOND_BUNDLE_NAME, params);
+    eCode = STAbilityUtil::StartAbility(want2, abilityMgrService, WAIT_TIME);
+    GTEST_LOG_(INFO) << "\nStartSecondApp,ThirdAbility ====>> " << eCode;
+    EXPECT_EQ(TestWaitCompleted(event, "OnStartOnActive", THIRD_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
+    sleep(WAIT_ONACTIVE_TIME);
+
+    g_mainAbilityUpdateTimes = 0;
+    g_secondAbilityUpdateTimes = 0;
+    g_thirdAbilityUpdateTimes = 0;
+    AppExecFwk::Configuration configuration;
+    configuration.AddItem(GlobalConfigurationKey::SYSTEM_ORIENTATION, "horizontal");
+    AppExecFwk::Configuration configuration2;
+    configuration2.AddItem(GlobalConfigurationKey::SYSTEM_ORIENTATION, "vertical");
+    for (int iLoop = 0; iLoop < TEST_TIMES / 2; iLoop++) {
+        abilityMgrService->UpdateConfiguration(configuration);
+        abilityMgrService->UpdateConfiguration(configuration2);
+    }
+    sleep(WAIT_LAUNCHER_TIME);
+
+    EXPECT_EQ(g_mainAbilityUpdateTimes, TEST_TIMES);
+    EXPECT_EQ(g_secondAbilityUpdateTimes, TEST_TIMES);
+    EXPECT_EQ(g_thirdAbilityUpdateTimes, TEST_TIMES);
+
+    GTEST_LOG_(INFO) << "\nAmsConfigurationUpdatedTest AMS_UpdateConfiguration_1000 end=========<";
 }
 }  // namespace

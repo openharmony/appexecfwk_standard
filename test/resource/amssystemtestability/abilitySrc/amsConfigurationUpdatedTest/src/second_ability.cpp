@@ -65,8 +65,16 @@ void SecondAbility::OnActive()
 
 void SecondAbility::OnConfigurationUpdated(const Configuration &configuration)
 {
+    std::string languageValue;
+    std::string orientationValue;
+
     APP_LOGI("SecondAbility::OnConfigurationUpdated====<");
     Ability::OnConfigurationUpdated(configuration);
+
+    languageValue = configuration.GetItem(GlobalConfigurationKey::SYSTEM_LANGUAGE);
+    orientationValue = configuration.GetItem(GlobalConfigurationKey::SYSTEM_ORIENTATION);
+    TestUtils::PublishEvent(g_EVENT_RESP_MAIN_LIFECYCLE, SECOND_ABILITY_CODE, languageValue);
+    TestUtils::PublishEvent(g_EVENT_RESP_MAIN_LIFECYCLE, SECOND_ABILITY_CODE, orientationValue);
     callbackUpdated += "Updated";
     TestUtils::PublishEvent(g_EVENT_RESP_MAIN_LIFECYCLE, SECOND_ABILITY_CODE, callbackUpdated);
     callbackUpdated = "";
