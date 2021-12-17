@@ -120,7 +120,8 @@ public:
         initCaseThird();
     }
 
-    void initCaseFirst() {
+    void initCaseFirst()
+    {
         std::unordered_map<int, std::vector<std::function<void(int)>>> first = {
             {(int)AbilityContextApi::GetApplicationInfo,
                 {
@@ -156,7 +157,8 @@ public:
         mapCase_.insert(first.begin(), first.end());
     }
 
-    void initCaseSecond() {
+    void initCaseSecond()
+    {
         std::unordered_map<int, std::vector<std::function<void(int)>>> second = {
             {(int)AbilityContextApi::GetDir,
                 {
@@ -204,7 +206,8 @@ public:
         mapCase_.insert(second.begin(), second.end());
     }
 
-    void initCaseThird() {
+    void initCaseThird()
+    {
         std::unordered_map<int, std::vector<std::function<void(int)>>> third = {
             {(int)AbilityContextApi::GetAbilityManager,
                 {

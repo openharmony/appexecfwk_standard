@@ -77,7 +77,8 @@ ErrCode FormAmsHelper::ConnectServiceAbility(
  * @return Returns ERR_OK on success, others on failure.
  */
 ErrCode FormAmsHelper::DisConnectServiceAbility(const sptr<AAFwk::IAbilityConnection> &connect)
-{   APP_LOGI("%{public}s called.", __func__);
+{
+    APP_LOGI("%{public}s called.", __func__);
     sptr<AAFwk::IAbilityManager> ams = GetAbilityManager();
     if (ams == nullptr) {
         APP_LOGE("%{public}s:ability service not connect", __func__);

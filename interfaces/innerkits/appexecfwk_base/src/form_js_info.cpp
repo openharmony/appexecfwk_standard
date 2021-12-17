@@ -31,7 +31,7 @@ bool FormJsInfo::ReadFromParcel(Parcel &parcel)
 
     auto bindingData = parcel.ReadParcelable<FormProviderData>();
     formProviderData = *bindingData;
-    if (nullptr == bindingData){
+    if (nullptr == bindingData) {
         return false;
     }
     return true;
