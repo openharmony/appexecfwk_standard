@@ -52,9 +52,11 @@ struct AsyncBundleInfoCallbackInfo {
     napi_deferred deferred;
     napi_ref callback = 0;
     std::string param;
-    OHOS::AppExecFwk::BundleFlag bundleFlag;
+    int32_t flags = 0;
     OHOS::AppExecFwk::BundleInfo bundleInfo;
     bool ret = false;
+    int32_t err = 0;
+    std::string message;
 };
 
 struct AsyncApplicationInfoCallbackInfo {
@@ -63,8 +65,8 @@ struct AsyncApplicationInfoCallbackInfo {
     napi_deferred deferred;
     napi_ref callback = 0;
     std::string bundleName;
-    OHOS::AppExecFwk::ApplicationFlag applicationFlag;
-    int userId;
+    int32_t flags = 0;
+    int32_t userId;
     OHOS::AppExecFwk::ApplicationInfo appInfo;
     bool ret = false;
     int32_t err = 0;
@@ -96,7 +98,7 @@ struct AsyncBundleInfosCallbackInfo {
     napi_async_work asyncWork;
     napi_deferred deferred;
     napi_ref callback = 0;
-    OHOS::AppExecFwk::BundleFlag bundleFlag;
+    int32_t flags = 0;
     std::vector<OHOS::AppExecFwk::BundleInfo> bundleInfos;
     bool ret = false;
     int32_t err = 0;
@@ -108,8 +110,8 @@ struct AsyncApplicationInfosCallbackInfo {
     napi_async_work asyncWork;
     napi_deferred deferred;
     napi_ref callback = 0;
-    OHOS::AppExecFwk::ApplicationFlag applicationFlag;
-    int userId;
+    int32_t flags = 0;
+    int32_t userId = 0;
     std::vector<OHOS::AppExecFwk::ApplicationInfo> appInfos;
     bool ret = false;
     int32_t err = 0;

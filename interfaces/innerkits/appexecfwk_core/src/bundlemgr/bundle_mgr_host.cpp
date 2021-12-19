@@ -433,6 +433,7 @@ ErrCode BundleMgrHost::HandleGetBundleInfos(Parcel &data, Parcel &reply)
     BundleFlag flag = static_cast<BundleFlag>(data.ReadInt32());
 
     std::vector<BundleInfo> infos;
+    reply.SetDataCapacity(Constants::MAX_CAPACITY_BUNDLES);
     bool ret = GetBundleInfos(flag, infos);
     if (!reply.WriteBool(ret)) {
         APP_LOGE("write failed");
@@ -452,6 +453,7 @@ ErrCode BundleMgrHost::HandleGetBundleInfosWithIntFlags(Parcel &data, Parcel &re
     int flags = data.ReadInt32();
 
     std::vector<BundleInfo> infos;
+    reply.SetDataCapacity(Constants::MAX_CAPACITY_BUNDLES);
     bool ret = GetBundleInfos(flags, infos);
     if (!reply.WriteBool(ret)) {
         APP_LOGE("write failed");

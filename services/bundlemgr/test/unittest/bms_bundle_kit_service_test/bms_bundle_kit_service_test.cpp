@@ -98,6 +98,7 @@ const uint32_t ABILITY_SIZE_ZERO = 0;
 const uint32_t ABILITY_SIZE_ONE = 1;
 const uint32_t PERMISSION_SIZE_ZERO = 0;
 const uint32_t PERMISSION_SIZE_TWO = 2;
+const uint32_t META_DATA_SIZE_ONE = 1;
 const uint32_t BUNDLE_NAMES_SIZE_ZERO = 0;
 const uint32_t BUNDLE_NAMES_SIZE_ONE = 1;
 const std::string EMPTY_STRING = "";
@@ -446,6 +447,7 @@ AbilityInfo BmsBundleKitServiceTest::MockAbilityInfo(
         {customizeData}
     };
     abilityInfo.metaData = metaData;
+    abilityInfo.permissions = {"abilityPerm001", "abilityPerm002"};
     return abilityInfo;
 }
 
@@ -584,6 +586,11 @@ void BmsBundleKitServiceTest::CheckAbilityInfos(const std::string &bundleName, c
                 EXPECT_EQ(info.value, META_DATA_VALUE);
                 EXPECT_EQ(info.extra, META_DATA_EXTRA);
             }
+        }
+        if ((flags & GET_ABILITY_INFO_WITH_PERMISSION) != GET_ABILITY_INFO_WITH_PERMISSION) {
+            EXPECT_EQ(0, abilityInfo.permissions.size());
+        } else {
+            EXPECT_EQ(PERMISSION_SIZE_TWO, abilityInfo.permissions.size());
         }
     }
 }
@@ -859,6 +866,14 @@ HWTEST_F(BmsBundleKitServiceTest, GetBundleInfo_0100, Function | SmallTest | Lev
         GetBundleDataMgr()->GetBundleInfo(BUNDLE_NAME_DEMO, BundleFlag::GET_BUNDLE_WITH_ABILITIES, demoResult);
     EXPECT_TRUE(demoRet);
     CheckBundleInfo(BUNDLE_NAME_DEMO, MODULE_NAME_DEMO, ABILITY_SIZE_ONE, demoResult);
+    EXPECT_EQ(PERMISSION_SIZE_ZERO, demoResult.reqPermissions.size());
+
+    BundleInfo bundleInfo;
+    bool ret =GetBundleDataMgr()->GetBundleInfo(
+        BUNDLE_NAME_DEMO, GET_BUNDLE_WITH_ABILITIES | GET_BUNDLE_WITH_REQUESTED_PERMISSION, bundleInfo);
+    EXPECT_TRUE(ret);
+    CheckBundleInfo(BUNDLE_NAME_DEMO, MODULE_NAME_DEMO, ABILITY_SIZE_ONE, bundleInfo);
+    EXPECT_EQ(PERMISSION_SIZE_TWO, bundleInfo.reqPermissions.size());
 
     MockUninstallBundle(BUNDLE_NAME_TEST);
     MockUninstallBundle(BUNDLE_NAME_DEMO);
@@ -1084,6 +1099,28 @@ HWTEST_F(BmsBundleKitServiceTest, GetApplicationInfo_0500, Function | SmallTest 
 }
 
 /**
+ * @tc.number: GetApplicationInfo_0600
+ * @tc.name: test can parceable application info(permissions and metaData)
+ * @tc.desc: 1.system run normally
+ *           2.get application info successfully
+ */
+HWTEST_F(BmsBundleKitServiceTest, GetApplicationInfo_0600, Function | SmallTest | Level1)
+{
+    MockInstallBundle(BUNDLE_NAME_DEMO, MODULE_NAME_DEMO, ABILITY_NAME_DEMO);
+    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
+
+    ApplicationInfo testResult;
+    bool testRet = GetBundleDataMgr()->GetApplicationInfo(BUNDLE_NAME_TEST,
+        GET_APPLICATION_INFO_WITH_PERMS | GET_APPLICATION_INFO_WITH_METADATA, DEFAULT_USER_ID_TEST, testResult);
+    EXPECT_TRUE(testRet);
+    EXPECT_EQ(PERMISSION_SIZE_TWO, testResult.permissions.size());
+    EXPECT_EQ(META_DATA_SIZE_ONE, testResult.metaData.size());
+
+    MockUninstallBundle(BUNDLE_NAME_TEST);
+    MockUninstallBundle(BUNDLE_NAME_DEMO);
+}
+
+/**
  * @tc.number: GetApplicationInfos_0100
  * @tc.name: test can get the installed bundles's application info with basic info flag
  * @tc.desc: 1.system run normally
@@ -1268,8 +1305,15 @@ HWTEST_F(BmsBundleKitServiceTest, QueryAbilityInfos_0100, Function | SmallTest |
     bool testRet = GetBundleDataMgr()->QueryAbilityInfos(want, flags, 0, result);
     EXPECT_EQ(true, testRet);
     CheckAbilityInfos(BUNDLE_NAME_TEST, ABILITY_NAME_TEST, flags, result);
+    result.clear();
 
     flags = GET_ABILITY_INFO_WITH_METADATA;
+    testRet = GetBundleDataMgr()->QueryAbilityInfos(want, flags, 0, result);
+    EXPECT_EQ(true, testRet);
+    CheckAbilityInfos(BUNDLE_NAME_TEST, ABILITY_NAME_TEST, flags, result);
+    result.clear();
+
+    flags = GET_ABILITY_INFO_WITH_PERMISSION | GET_ABILITY_INFO_WITH_METADATA;
     testRet = GetBundleDataMgr()->QueryAbilityInfos(want, flags, 0, result);
     EXPECT_EQ(true, testRet);
     CheckAbilityInfos(BUNDLE_NAME_TEST, ABILITY_NAME_TEST, flags, result);
@@ -1325,7 +1369,8 @@ HWTEST_F(BmsBundleKitServiceTest, QueryAbilityInfosForClone_0100, Function | Sma
     std::vector<AbilityInfo> result;
     bool testRet = GetBundleDataMgr()->QueryAbilityInfosForClone(want, result);
     EXPECT_EQ(true, testRet);
-    CheckAbilityInfos(BUNDLE_NAME_TEST, ABILITY_NAME_TEST, GET_ABILITY_INFO_WITH_METADATA, result);
+    CheckAbilityInfos(BUNDLE_NAME_TEST, ABILITY_NAME_TEST,
+        GET_ABILITY_INFO_WITH_PERMISSION | GET_ABILITY_INFO_WITH_METADATA, result);
 
     MockUninstallBundle(BUNDLE_NAME_TEST);
 }
@@ -2817,12 +2862,19 @@ HWTEST_F(BmsBundleKitServiceTest, GetAllFormInfo_0100, Function | SmallTest | Le
     auto result = GetBundleDataMgr()->GetAllFormsInfo(formInfos);
     EXPECT_EQ(result, true);
     EXPECT_FALSE(formInfos.empty());
-    CheckFormInfoTest(formInfos);
+    for (const auto &info : formInfos) {
+        if (info.bundleName == BUNDLE_NAME_TEST) {
+            std::vector<FormInfo> formInfo;
+            formInfo.emplace_back(info);
+            CheckFormInfoTest(formInfo);
+            break;
+        }
+    }
     MockUninstallBundle(BUNDLE_NAME_TEST);
 }
 
 /**
- * @tc.number: GetAllFormInfo_0100
+ * @tc.number: GetAllFormInfo_0200
  * @tc.name: test can get all the formInfo
  * @tc.desc: 1.system run normally
  *           2.get forms by all the bundle
@@ -2836,11 +2888,11 @@ HWTEST_F(BmsBundleKitServiceTest, GetAllFormInfo_0200, Function | SmallTest | Le
     EXPECT_FALSE(formInfos.empty());
     EXPECT_EQ(result, true);
     for (const auto &info : formInfos) {
-        if (info.bundleName != BUNDLE_NAME_TEST) {
+        if (info.bundleName == MODULE_NAME_DEMO) {
             std::vector<FormInfo> formInfo1;
             formInfo1.emplace_back(info);
             CheckFormInfoDemo(formInfo1);
-        } else {
+        } else if (info.bundleName == MODULE_NAME_TEST){
             std::vector<FormInfo> formInfo2;
             formInfo2.emplace_back(info);
             CheckFormInfoTest(formInfo2);
@@ -2860,7 +2912,7 @@ HWTEST_F(BmsBundleKitServiceTest, GetAllFormInfo_0300, Function | SmallTest | Le
 {
     std::vector<FormInfo> formInfos;
     GetBundleDataMgr()->GetAllFormsInfo(formInfos);
-    EXPECT_TRUE(formInfos.empty());
+    EXPECT_FALSE(formInfos.empty());
 }
 
 /**
