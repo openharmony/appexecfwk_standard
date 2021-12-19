@@ -371,7 +371,7 @@ ErrCode BundleManagerShellCommand::init()
         }
     }
 
-    if (!bundleMgrProxy_ || !bundleInstallerProxy_) {
+    if (!bundleMgrProxy_ || !bundleInstallerProxy_ || !bundleInstallerProxy_->AsObject()) {
         result = OHOS::ERR_INVALID_VALUE;
     }
 
@@ -1336,13 +1336,9 @@ int32_t BundleManagerShellCommand::InstallOperation(const std::vector<std::strin
     }
 
     sptr<StatusReceiverImpl> statusReceiver(new StatusReceiverImpl());
-    auto installerProxy = GetInstallerProxy();
-    if ((installerProxy == nullptr) || (installerProxy->AsObject() == nullptr)) {
-        return IStatusReceiver::ERR_FAILED_GET_INSTALLER_PROXY;
-    }
     sptr<BundleDeathRecipient> recipient(new BundleDeathRecipient(statusReceiver));
-    installerProxy->AsObject()->AddDeathRecipient(recipient);
-    installerProxy->Install(realPathVec, installParam, statusReceiver);
+    bundleInstallerProxy_->AsObject()->AddDeathRecipient(recipient);
+    bundleInstallerProxy_->Install(realPathVec, installParam, statusReceiver);
     return statusReceiver->GetResultCode();
 }
 
@@ -1354,16 +1350,12 @@ int32_t BundleManagerShellCommand::UninstallOperation(
     APP_LOGD("bundleName: %{public}s", bundleName.c_str());
     APP_LOGD("moduleName: %{public}s", moduleName.c_str());
 
-    auto installerProxy = GetInstallerProxy();
-    if ((installerProxy == nullptr) || (installerProxy->AsObject() == nullptr)) {
-        return IStatusReceiver::ERR_FAILED_GET_INSTALLER_PROXY;
-    }
     sptr<BundleDeathRecipient> recipient(new BundleDeathRecipient(statusReceiver));
-    installerProxy->AsObject()->AddDeathRecipient(recipient);
+    bundleInstallerProxy_->AsObject()->AddDeathRecipient(recipient);
     if (moduleName.size() != 0) {
-        installerProxy->Uninstall(bundleName, moduleName, installParam, statusReceiver);
+        bundleInstallerProxy_->Uninstall(bundleName, moduleName, installParam, statusReceiver);
     } else {
-        installerProxy->Uninstall(bundleName, installParam, statusReceiver);
+        bundleInstallerProxy_->Uninstall(bundleName, installParam, statusReceiver);
     }
 
     return statusReceiver->GetResultCode();

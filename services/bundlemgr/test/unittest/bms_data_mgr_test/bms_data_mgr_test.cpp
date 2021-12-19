@@ -534,6 +534,7 @@ HWTEST_F(BmsDataMgrTest, AddBundleInfo_0200, Function | SmallTest | Level0)
     applicationInfo1.deviceId = DEVICE_ID;
     info1.SetBaseBundleInfo(bundleInfo1);
     info1.SetBaseApplicationInfo(applicationInfo1);
+    info1.SetApplicationEnabled(true);
 
     InnerBundleInfo info2;
     BundleInfo bundleInfo2;
@@ -545,6 +546,7 @@ HWTEST_F(BmsDataMgrTest, AddBundleInfo_0200, Function | SmallTest | Level0)
     applicationInfo2.deviceId = DEVICE_ID;
     info2.SetBaseBundleInfo(bundleInfo2);
     info2.SetBaseApplicationInfo(applicationInfo2);
+    info2.SetApplicationEnabled(true);
     auto dataMgr = GetDataMgr();
     EXPECT_NE(dataMgr, nullptr);
     bool ret1 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_START);
@@ -791,6 +793,8 @@ HWTEST_F(BmsDataMgrTest, QueryAbilityInfo_0100, Function | SmallTest | Level0)
     info1.SetBaseBundleInfo(bundleInfo1);
     info1.SetBaseApplicationInfo(applicationInfo1);
     info1.InsertAbilitiesInfo(BUNDLE_NAME + PACKAGE_NAME + ABILITY_NAME, abilityInfo);
+    info1.SetApplicationEnabled(true);
+    info1.SetAbilityEnabled(BUNDLE_NAME, ABILITY_NAME, true);
     auto dataMgr = GetDataMgr();
     EXPECT_NE(dataMgr, nullptr);
     bool ret1 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_START);
@@ -916,6 +920,7 @@ HWTEST_F(BmsDataMgrTest, GetApplicationInfo_0100, Function | SmallTest | Level0)
     info1.SetBaseApplicationInfo(applicationInfo1);
     auto dataMgr = GetDataMgr();
     EXPECT_NE(dataMgr, nullptr);
+    info1.SetApplicationEnabled(true);
     bool ret1 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_START);
     bool ret2 = dataMgr->AddInnerBundleInfo(BUNDLE_NAME, info1);
 

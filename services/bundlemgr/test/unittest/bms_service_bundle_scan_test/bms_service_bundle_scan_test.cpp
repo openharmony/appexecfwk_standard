@@ -203,7 +203,7 @@ HWTEST_F(BmsServiceBundleScanTest, BundleScan_0300, Function | SmallTest | Level
 * @tc.number: BundleScan_0400
 * @tc.name:  Scan
 * @tc.desc: 1. scan dir exist, 3 illegal file exist
-*           2. verify scan result file number is 0
+*           2. verify scan result file number is 3
 */
 HWTEST_F(BmsServiceBundleScanTest, BundleScan_0400, Function | SmallTest | Level0)
 {
@@ -216,7 +216,7 @@ HWTEST_F(BmsServiceBundleScanTest, BundleScan_0400, Function | SmallTest | Level
     CreateFile(TEST_FILE_NAME_6);
 
     int number = static_cast<int>(TriggerScan());
-    EXPECT_EQ(0, number);
+    EXPECT_EQ(3, number);
 
     DeleteFile(TEST_FILE_NAME_4);
     DeleteFile(TEST_FILE_NAME_5);
@@ -226,7 +226,7 @@ HWTEST_F(BmsServiceBundleScanTest, BundleScan_0400, Function | SmallTest | Level
 * @tc.number: BundleScan_0500
 * @tc.name:  Scan
 * @tc.desc: 1. scan dir exist, 3 illegal and 3 legal file exist
-*           2. verify scan result file number is 3 and file name correct
+*           2. verify scan result file number is 6 and file name correct
 */
 HWTEST_F(BmsServiceBundleScanTest, BundleScan_0500, Function | SmallTest | Level0)
 {
@@ -245,7 +245,7 @@ HWTEST_F(BmsServiceBundleScanTest, BundleScan_0500, Function | SmallTest | Level
     CreateFile(TEST_FILE_NAME_6);
 
     int number = static_cast<int>(TriggerScan());
-    EXPECT_EQ(3, number);
+    EXPECT_EQ(6, number);
 
     EXPECT_TRUE(IsScanResultContain(TEST_FILE_NAME_1));
     EXPECT_TRUE(IsScanResultContain(TEST_FILE_NAME_2));
