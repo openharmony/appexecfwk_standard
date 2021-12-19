@@ -19,13 +19,14 @@
 #include <cstring>
 #include <ostream>
 
+#include "app_log_wrapper.h"
 #include "securec.h"
 #include "zlib.h"
-#include "app_log_wrapper.h"
 
 namespace OHOS {
 namespace AppExecFwk {
 namespace {
+
 constexpr uint32_t MAX_FILE_NAME = 256;
 constexpr uint32_t UNZIP_BUFFER_SIZE = 1024;
 constexpr uint32_t UNZIP_BUF_IN_LEN = 160 * UNZIP_BUFFER_SIZE;   // in  buffer length: 160KB
@@ -36,6 +37,7 @@ constexpr uint32_t EOCD_SIGNATURE = 0x06054b50;
 constexpr uint32_t DATA_DESC_SIGNATURE = 0x08074b50;
 constexpr uint32_t FLAG_DATA_DESC = 0x8;
 constexpr size_t FILE_READ_COUNT = 1;
+constexpr uint8_t INFLATE_ERROR_TIMES = 5;
 }  // namespace
 
 ZipEntry::ZipEntry(const CentralDirEntry &centralEntry)
@@ -464,14 +466,10 @@ bool ZipFile::UnzipWithInflated(const ZipEntry &zipEntry, const uint16_t extraSi
     APP_LOGD("unzip with inflated");
 
     z_stream zstream;
-    if (!SeekToEntryStart(zipEntry, extraSize)) {
-        APP_LOGE("seek to entry start failed");
+    if (!SeekToEntryStart(zipEntry, extraSize) || !InitZStream(zstream)) {
         return false;
     }
-    if (!InitZStream(zstream)) {
-        APP_LOGE("init zstream failed");
-        return false;
-    }
+
     BytePtr bufIn = zstream.next_in;
     BytePtr bufOut = zstream.next_out;
 
@@ -479,7 +477,7 @@ bool ZipFile::UnzipWithInflated(const ZipEntry &zipEntry, const uint16_t extraSi
     int32_t zlibErr = Z_OK;
     uint32_t remainCompressedSize = zipEntry.compressedSize;
     size_t inflateLen = 0;
-    uint32_t crc = 0;
+    uint8_t errorTimes = 0;
     while ((remainCompressedSize > 0) || (zstream.avail_in > 0)) {
         if (!ReadZStream(bufIn, zstream, remainCompressedSize)) {
             ret = false;
@@ -496,15 +494,17 @@ bool ZipFile::UnzipWithInflated(const ZipEntry &zipEntry, const uint16_t extraSi
         inflateLen = UNZIP_BUF_OUT_LEN - zstream.avail_out;
         if (inflateLen > 0) {
             dest.write((const char *)bufOut, inflateLen);
-            crc = crc32(crc, bufOut, inflateLen);
             zstream.next_out = bufOut;
             zstream.avail_out = UNZIP_BUF_OUT_LEN;
+            errorTimes = 0;
+        } else {
+            errorTimes++;
         }
-    }
-
-    if (crc != zipEntry.crc) {
-        APP_LOGE("unzip inflate crc check");
-        ret = false;
+        if (errorTimes >= INFLATE_ERROR_TIMES) {
+            APP_LOGE("unzip inflated data is abnormal!");
+            ret = false;
+            break;
+        }
     }
 
     // free all dynamically allocated data structures except the next_in and next_out for this stream.
@@ -576,5 +576,6 @@ bool ZipFile::ExtractFile(const std::string &file, std::ostream &dest) const
 
     return ret;
 }
+
 }  // namespace AppExecFwk
 }  // namespace OHOS

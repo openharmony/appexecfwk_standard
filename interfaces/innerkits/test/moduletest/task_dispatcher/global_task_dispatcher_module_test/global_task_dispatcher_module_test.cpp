@@ -15,6 +15,7 @@
 
 // redefine private and protected since testcase need to invoke and test private function
 #include <gtest/gtest.h>
+
 #include "app_log_wrapper.h"
 #include "base_task_dispatcher.h"
 #include "task_dispatcher.h"

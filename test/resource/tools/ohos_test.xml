@@ -15,21 +15,24 @@
  -->
 <configuration ver="2.0">
   <target name="bm_command_dump_system_test">
-    <depend resource="bm/." pushpath="/data/test/resource/bm/" findpath="res" presetcmd="" />
-	  <preparer>
-   	  <option name="push" value="bm/. -> /data/test/resource/bm/" src="res" />
+   <preparer>
+     <option name="push" value="bm/pageAbilityBundleForInstall.hap -> /data/test/resource/bm/" src="res" />
+     <option name="push" value="bm/pageAbilityBundleForInstallNoSignature.hap -> /data/test/resource/bm/" src="res" />
+     <option name="push" value="bm/pageAbilityBundleForUninstall.hap -> /data/test/resource/bm/" src="res" />
     </preparer>
   </target>
   <target name="bm_command_install_system_test">
-    <depend resource="bm/." pushpath="/data/test/resource/bm/" findpath="res" presetcmd="" />
-	  <preparer>
-   	  <option name="push" value="bm/. -> /data/test/resource/bm/" src="res" />
+   <preparer>
+     <option name="push" value="bm/pageAbilityBundleForInstall.hap -> /data/test/resource/bm/" src="res" />
+     <option name="push" value="bm/pageAbilityBundleForInstallNoSignature.hap -> /data/test/resource/bm/" src="res" />
+     <option name="push" value="bm/pageAbilityBundleForUninstall.hap -> /data/test/resource/bm/" src="res" />
     </preparer>
   </target>
   <target name="bm_command_uninstall_system_test">
-    <depend resource="bm/." pushpath="/data/test/resource/bm/" findpath="res" presetcmd="" />
-	  <preparer>
-   	  <option name="push" value="bm/. -> /data/test/resource/bm/" src="res" />
+    <preparer>
+     <option name="push" value="bm/pageAbilityBundleForInstall.hap -> /data/test/resource/bm/" src="res" />
+     <option name="push" value="bm/pageAbilityBundleForInstallNoSignature.hap -> /data/test/resource/bm/" src="res" />
+     <option name="push" value="bm/pageAbilityBundleForUninstall.hap -> /data/test/resource/bm/" src="res" />
     </preparer>
   </target>
 </configuration>

@@ -24,6 +24,7 @@
 
 namespace OHOS {
 namespace AppExecFwk {
+
 class InstalldProxy : public IRemoteProxy<IInstalld> {
 public:
     explicit InstalldProxy(const sptr<IRemoteObject> &object);
@@ -35,24 +36,12 @@ public:
      */
     virtual ErrCode CreateBundleDir(const std::string &bundlePath) override;
     /**
-     * @brief Remove a bundle code directory through a proxy object.
-     * @param bundleDir Indicates the bundle code directory path that to be removed.
-     * @return Returns ERR_OK if the bundle directory removed successfully; returns error code otherwise.
-     */
-    virtual ErrCode RemoveBundleDir(const std::string &bundlePath) override;
-    /**
      * @brief Extract the files of a HAP module to the code directory through a proxy object.
      * @param srcModulePath Indicates the HAP file path.
      * @param targetPath Indicates the code directory path that the HAP to be extracted to.
      * @return Returns ERR_OK if the HAP file extracted successfully; returns error code otherwise.
      */
     virtual ErrCode ExtractModuleFiles(const std::string &srcModulePath, const std::string &targetPath) override;
-    /**
-     * @brief Remove the module directory through a proxy object.
-     * @param moduleDir Indicates the module directory to be removed.
-     * @return Returns ERR_OK if the module directory removed successfully; returns error code otherwise.
-     */
-    virtual ErrCode RemoveModuleDir(const std::string &moduleDir) override;
     /**
      * @brief Rename the module directory from temporaily path to the real path through a proxy object.
      * @param oldPath Indicates the old path name.
@@ -69,12 +58,6 @@ public:
      */
     virtual ErrCode CreateBundleDataDir(const std::string &bundleDir, const int uid, const int gid) override;
     /**
-     * @brief Remove a bundle data directory through a proxy object.
-     * @param bundleDir Indicates the bundle data directory path that to be removed.
-     * @return Returns ERR_OK if the bundle data directory removed successfully; returns error code otherwise.
-     */
-    virtual ErrCode RemoveBundleDataDir(const std::string &bundleDataDir) override;
-    /**
      * @brief Create a module and it's abilities data directory through a proxy object.
      * @param bundleDir Indicates the module data directory path that to be created.
      * @param abilityDirs Indicates the abilities data directory name that to be created.
@@ -85,11 +68,11 @@ public:
     virtual ErrCode CreateModuleDataDir(const std::string &ModuleDir, const std::vector<std::string> &abilityDirs,
         const int uid, const int gid) override;
     /**
-     * @brief Remove a module data directory through a proxy object.
-     * @param bundleDir Indicates the module data directory path that to be removed.
-     * @return Returns ERR_OK if the module data directory removed successfully; returns error code otherwise.
+     * @brief Remove a directory through a proxy object.
+     * @param dir Indicates the directory path that to be removed.
+     * @return Returns ERR_OK if the  directory removed successfully; returns error code otherwise.
      */
-    virtual ErrCode RemoveModuleDataDir(const std::string &moduleDataDir) override;
+    virtual ErrCode RemoveDir(const std::string &dir) override;
     /**
      * @brief Clean all files in a bundle data directory through a proxy object.
      * @param bundleDir Indicates the data directory path that to be cleaned.
@@ -98,9 +81,11 @@ public:
     virtual ErrCode CleanBundleDataDir(const std::string &bundlePath) override;
 
 private:
-    bool TransactInstalldCmd(IInstalld::Message code, MessageParcel &data, MessageParcel &reply);
+    ErrCode TransactInstalldCmd(uint32_t code, MessageParcel &data, MessageParcel &reply,
+        MessageOption &option);
     static inline BrokerDelegator<InstalldProxy> delegator_;
 };
+
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_IPC_INSTALLD_PROXY_H

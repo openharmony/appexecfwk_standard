@@ -26,6 +26,7 @@ config("tools_bm_config") {
     "${appexecfwk_path}/interfaces/innerkits/libeventhandler/include",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy/include",
     "//foundation/distributedschedule/dmsfwk/services/dtbschedmgr/include",
+    "//foundation/appexecfwk/standard/kits/appkit/napi/bundlemgr",
     "//utils/native/base/include",
     "include",
   ]
@@ -39,6 +40,7 @@ ohos_source_set("tools_bm_source_set") {
     "src/bundle_command.cpp",
     "src/main.cpp",
     "src/status_receiver_impl.cpp",
+    "${appexecfwk_path}/kits/appkit/napi/bundlemgr/bundle_death_recipient.cpp",
   ]
 
   public_configs = [

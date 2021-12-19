@@ -20,6 +20,7 @@
 
 namespace OHOS {
 namespace AppExecFwk {
+
 class SystemBundleInstaller : public BaseBundleInstaller {
 public:
     SystemBundleInstaller(const std::string &filePath);
@@ -36,6 +37,7 @@ private:
 
     DISALLOW_COPY_AND_MOVE(SystemBundleInstaller);
 };
+
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_SYSTEM_BUNDLE_INSTALLER_H

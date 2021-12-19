@@ -22,6 +22,7 @@
 
 namespace OHOS {
 namespace AppExecFwk {
+
 class BundleMgrService;
 
 class BundleScanner {
@@ -46,6 +47,7 @@ private:
 private:
     std::list<std::string> entries_;
 };
+
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_BUNDLE_SCANNER_H

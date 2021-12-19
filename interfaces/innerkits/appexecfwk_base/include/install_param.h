@@ -22,6 +22,7 @@
 
 namespace OHOS {
 namespace AppExecFwk {
+
 enum class InstallFlag {
     NORMAL = 0,
     // Allow to replace the existing bundle when the new version isn't lower than the old one.
@@ -43,12 +44,15 @@ struct InstallParam : public Parcelable {
     // is keep user data while uninstall.
     bool isKeepData = false;
     bool noCheckSignature = false;
+    bool needSavePreInstallInfo = false;
+    bool isPreInstallApp = false;
 
     // the parcel object function is not const.
     bool ReadFromParcel(Parcel &parcel);
     virtual bool Marshalling(Parcel &parcel) const override;
     static InstallParam *Unmarshalling(Parcel &parcel);
 };
+
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_INSTALL_PARAM_H

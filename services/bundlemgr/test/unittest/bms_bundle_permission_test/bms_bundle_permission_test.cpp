@@ -13,17 +13,17 @@
  * limitations under the License.
  */
 
-#include <sstream>
 #include <fstream>
-#include <string>
 #include <gtest/gtest.h>
+#include <string>
+#include <sstream>
 
-#include "bundle_permission_mgr.h"
-#include "inner_bundle_info.h"
 #include "bundle_info.h"
 #include "bundle_installer_host.h"
 #include "bundle_mgr_service.h"
+#include "bundle_permission_mgr.h"
 #include "bundle_verify_mgr.h"
+#include "inner_bundle_info.h"
 #include "permission_def.h"
 #include "permission/permission_kit.h"
 
@@ -34,6 +34,7 @@ using namespace OHOS::AppExecFwk;
 using namespace OHOS::Security;
 
 namespace {
+
 const std::string BUNDLE_LABEL = "Hello, OHOS";
 const std::string PROCESS_TEST = "test.process";
 const std::string BUNDLE_DESCRIPTION = "example helloworld";
@@ -340,6 +341,7 @@ const ReqPermission REQPERMISSION4 = {
         .when = "when"
     }
 };
+
 }  // namespace
 class BmsBundlePermissionTest : public testing::Test {
 public:
@@ -417,24 +419,12 @@ void BmsBundlePermissionTest::MockDefPermissionBundleSystemGrant(InnerBundleInfo
     moduleInfo.moduleName = PACKAGE_NAME;
     moduleInfo.description = BUNDLE_DESCRIPTION;
 
-    AppExecFwk::Parameters parameters {
-        "description",
-        "name",
-        "type"
-    };
-    AppExecFwk::Results results {
-        "description",
-        "name",
-        "type"
-    };
     AppExecFwk::CustomizeData customizeData {
         "name",
         "value",
         "extra"
     };
     MetaData metaData {
-        {parameters},
-        {results},
         {customizeData}
     };
     moduleInfo.metaData = metaData;
@@ -477,24 +467,12 @@ void BmsBundlePermissionTest::MockUpdateDefPermissionBundleSystemGrant(InnerBund
     moduleInfo.moduleName = PACKAGE_NAME;
     moduleInfo.description = BUNDLE_DESCRIPTION;
 
-    AppExecFwk::Parameters parameters {
-        "description",
-        "name",
-        "type"
-    };
-    AppExecFwk::Results results {
-        "description",
-        "name",
-        "type"
-    };
     AppExecFwk::CustomizeData customizeData {
         "name",
         "value",
         "extra"
     };
     MetaData metaData {
-        {parameters},
-        {results},
         {customizeData}
     };
     moduleInfo.metaData = metaData;
@@ -537,24 +515,12 @@ void BmsBundlePermissionTest::MockDefPermissionBundleTestReqpermission(InnerBund
     moduleInfo.moduleName = PACKAGE_NAME;
     moduleInfo.description = BUNDLE_DESCRIPTION;
 
-    AppExecFwk::Parameters parameters {
-        "description",
-        "name",
-        "type"
-    };
-    AppExecFwk::Results results {
-        "description",
-        "name",
-        "type"
-    };
     AppExecFwk::CustomizeData customizeData {
         "name",
         "value",
         "extra"
     };
     MetaData metaData {
-        {parameters},
-        {results},
         {customizeData}
     };
     moduleInfo.metaData = metaData;
@@ -596,24 +562,12 @@ void BmsBundlePermissionTest::MockNoDefPermissionBundle(InnerBundleInfo &innerbu
     moduleInfo.moduleName = PACKAGE_NAME;
     moduleInfo.description = BUNDLE_DESCRIPTION;
 
-    AppExecFwk::Parameters parameters {
-        "description",
-        "name",
-        "type"
-    };
-    AppExecFwk::Results results {
-        "description",
-        "name",
-        "type"
-    };
     AppExecFwk::CustomizeData customizeData {
         "name",
         "value",
         "extra"
     };
     MetaData metaData {
-        {parameters},
-        {results},
         {customizeData}
     };
     moduleInfo.metaData = metaData;
@@ -656,24 +610,12 @@ void BmsBundlePermissionTest::MockNoAvailableScopeDefPermissionBundle(InnerBundl
     moduleInfo.moduleName = PACKAGE_NAME;
     moduleInfo.description = BUNDLE_DESCRIPTION;
 
-    AppExecFwk::Parameters parameters {
-        "description",
-        "name",
-        "type"
-    };
-    AppExecFwk::Results results {
-        "description",
-        "name",
-        "type"
-    };
     AppExecFwk::CustomizeData customizeData {
         "name",
         "value",
         "extra"
     };
     MetaData metaData {
-        {parameters},
-        {results},
         {customizeData}
     };
     moduleInfo.metaData = metaData;
@@ -721,24 +663,12 @@ void BmsBundlePermissionTest::MockDefPermissionBundleUserGrant(InnerBundleInfo &
     moduleInfo.moduleName = PACKAGE_NAME;
     moduleInfo.description = BUNDLE_DESCRIPTION;
 
-    AppExecFwk::Parameters parameters {
-        "description",
-        "name",
-        "type"
-    };
-    AppExecFwk::Results results {
-        "description",
-        "name",
-        "type"
-    };
     AppExecFwk::CustomizeData customizeData {
         "name",
         "value",
         "extra"
     };
     MetaData metaData {
-        {parameters},
-        {results},
         {customizeData}
     };
     moduleInfo.metaData = metaData;
@@ -782,24 +712,12 @@ void BmsBundlePermissionTest::MockSameDefPermissionNameBundleSystemGrant(InnerBu
     moduleInfo.moduleName = PACKAGE_NAME;
     moduleInfo.description = BUNDLE_DESCRIPTION;
 
-    AppExecFwk::Parameters parameters {
-        "description",
-        "name",
-        "type"
-    };
-    AppExecFwk::Results results {
-        "description",
-        "name",
-        "type"
-    };
     AppExecFwk::CustomizeData customizeData {
         "name",
         "value",
         "extra"
     };
     MetaData metaData {
-        {parameters},
-        {results},
         {customizeData}
     };
     moduleInfo.metaData = metaData;
@@ -842,24 +760,12 @@ void BmsBundlePermissionTest::MockDefPermissionBundleSame(InnerBundleInfo &inner
     moduleInfo.moduleName = PACKAGE_NAME;
     moduleInfo.description = BUNDLE_DESCRIPTION;
 
-    AppExecFwk::Parameters parameters {
-        "description",
-        "name",
-        "type"
-    };
-    AppExecFwk::Results results {
-        "description",
-        "name",
-        "type"
-    };
     AppExecFwk::CustomizeData customizeData {
         "name",
         "value",
         "extra"
     };
     MetaData metaData {
-        {parameters},
-        {results},
         {customizeData}
     };
     moduleInfo.metaData = metaData;
@@ -903,24 +809,12 @@ void BmsBundlePermissionTest::MockReqPermissionBundle(InnerBundleInfo &innerbund
     moduleInfo.moduleName = PACKAGE_NAME;
     moduleInfo.description = BUNDLE_DESCRIPTION;
 
-    AppExecFwk::Parameters parameters {
-        "description",
-        "name",
-        "type"
-    };
-    AppExecFwk::Results results {
-        "description",
-        "name",
-        "type"
-    };
     AppExecFwk::CustomizeData customizeData {
         "name",
         "value",
         "extra"
     };
     MetaData metaData {
-        {parameters},
-        {results},
         {customizeData}
     };
     moduleInfo.metaData = metaData;
@@ -963,24 +857,12 @@ void BmsBundlePermissionTest::MockOtherReqPermissionBundle(InnerBundleInfo &inne
     moduleInfo.moduleName = PACKAGE_NAME;
     moduleInfo.description = BUNDLE_DESCRIPTION;
 
-    AppExecFwk::Parameters parameters {
-        "description",
-        "name",
-        "type"
-    };
-    AppExecFwk::Results results {
-        "description",
-        "name",
-        "type"
-    };
     AppExecFwk::CustomizeData customizeData {
         "name",
         "value",
         "extra"
     };
     MetaData metaData {
-        {parameters},
-        {results},
         {customizeData}
     };
     moduleInfo.metaData = metaData;

@@ -23,6 +23,7 @@
 namespace OHOS {
 namespace AppExecFwk {
 namespace ProfileReader {
+
 // common tag
 const std::string PROFILE_KEY_NAME = "name";
 const std::string PROFILE_KEY_ORIGINAL_NAME = "originalName";
@@ -43,8 +44,7 @@ const std::string BUNDLE_APP_PROFILE_KEY_BUNDLE_NAME = "bundleName";
 const std::string BUNDLE_APP_PROFILE_KEY_VENDOR = "vendor";
 const std::string BUNDLE_APP_PROFILE_KEY_VERSION = "version";
 const std::string BUNDLE_APP_PROFILE_KEY_API_VERSION = "apiVersion";
-const std::string BUNDLE_APP_PROFILE_KEY_DEBUG = "debug";
-const std::string BUNDLE_APP_PROFILE_KEY_SINGLE_USER = "singleUser";
+const std::string BUNDLE_APP_PROFILE_KEY_REMOVABLE = "removable";
 // sub BUNDLE_APP_PROFILE_KEY_VERSION
 const std::string BUNDLE_APP_PROFILE_KEY_CODE = "code";
 // sub BUNDLE_APP_PROFILE_KEY_API_VERSION
@@ -68,6 +68,7 @@ const std::string BUNDLE_DEVICE_CONFIG_PROFILE_KEY_KEEP_ALIVE = "keepAlive";
 const std::string BUNDLE_DEVICE_CONFIG_PROFILE_KEY_ARK = "ark";
 const std::string BUNDLE_DEVICE_CONFIG_PROFILE_KEY_DIRECT_LAUNCH = "directLaunch";
 const std::string BUNDLE_DEVICE_CONFIG_PROFILE_KEY_SUPPORT_BACKUP = "supportBackup";
+const std::string BUNDLE_DEVICE_CONFIG_PROFILE_KEY_DEBUG = "debug";
 const std::string BUNDLE_DEVICE_CONFIG_PROFILE_KEY_COMPRESS_NATIVE_LIBS = "compressNativeLibs";
 const std::string BUNDLE_DEVICE_CONFIG_PROFILE_KEY_NETWORK = "network";
 const std::string BUNDLE_DEVICE_CONFIG_PROFILE_KEY_REQ_VERSION = "reqVersion";
@@ -121,6 +122,7 @@ const std::string BUNDLE_MODULE_PROFILE_KEY_REQ_PERMISSIONS_WHEN_INUSE = "inuse"
 const std::string BUNDLE_MODULE_PROFILE_KEY_REQ_PERMISSIONS_WHEN_ALWAYS = "always";
 const std::string BUNDLE_MODULE_PROFILE_KEY_CUSTOMIZE_DATA = "customizeData";
 const std::string BUNDLE_MODULE_PROFILE_KEY_MAIN_ABILITY = "mainAbility";
+const std::string BUNDLE_MODULE_PROFILE_KEY_SRC_PATH = "srcPath";
 // sub BUNDLE_MODULE_PROFILE_KEY_DISTRO
 const std::string BUNDLE_MODULE_PROFILE_KEY_DELIVERY_WITH_INSTALL = "deliveryWithInstall";
 const std::string BUNDLE_MODULE_PROFILE_KEY_MODULE_NAME = "moduleName";
@@ -135,13 +137,12 @@ const std::string BUNDLE_MODULE_PROFILE_KEY_SCHEME = "scheme";
 const std::string BUNDLE_MODULE_PROFILE_KEY_HOST = "host";
 const std::string BUNDLE_MODULE_PROFILE_KEY_PORT = "port";
 const std::string BUNDLE_MODULE_PROFILE_KEY_PATH = "path";
+const std::string BUNDLE_MODULE_PROFILE_KEY_PATHSTARTWITH = "pathStartWith";
+const std::string BUNDLE_MODULE_PROFILE_KEY_PATHREGX = "pathRegx";
 const std::string BUNDLE_MODULE_PROFILE_KEY_TYPE = "type";
 // sub BUNDLE_MODULE_PROFILE_KEY_META_DATA
-const std::string BUNDLE_MODULE_META_KEY_NAME = "name";
-const std::string BUNDLE_MODULE_META_KEY_DESCRIPTION = "description";
-const std::string BUNDLE_MODULE_META_KEY_PARAMETERS = "parameters";
-const std::string BUNDLE_MODULE_META_KEY_RESULTS = "results";
 const std::string BUNDLE_MODULE_META_KEY_CUSTOMIZE_DATA = "customizeData";
+const std::string BUNDLE_MODULE_META_KEY_NAME = "name";
 const std::string BUNDLE_MODULE_META_KEY_VALUE = "value";
 const std::string BUNDLE_MODULE_META_KEY_EXTRA = "extra";
 // sub BUNDLE_MODULE_PROFILE_KEY_DISTRO_TYPE
@@ -212,11 +213,14 @@ const std::string BUNDLE_MODULE_PROFILE_KEY_DESIGN_WIDTH = "designWidth";
 const std::string BUNDLE_MODULE_PROFILE_KEY_AUTO_DESIGN_WIDTH = "autoDesignWidth";
 // sub BUNDLE_MODULE_PROFILE_KEY_SHORTCUTS
 const std::string BUNDLE_MODULE_PROFILE_KEY_SHORTCUT_ID = "shortcutId";
-const std::string BUNDLE_MODULE_PROFILE_KEY_SHORTCUT_WANTS = "intents";
-// sub BUNDLE_MODULE_PROFILE_KEY_SHORTCUT_WANTS
+const std::string BUNDLE_MODULE_PROFILE_KEY_SHORTCUT_INTENTS = "intents";
+// sub BUNDLE_MODULE_PROFILE_KEY_SHORTCUT_INTENTS
 const std::string BUNDLE_MODULE_PROFILE_KEY_TARGET_CLASS = "targetClass";
 const std::string BUNDLE_MODULE_PROFILE_KEY_TARGET_BUNDLE = "targetBundle";
-
+// sub BUNDLE_INSTALL_MARK
+const std::string BUNDLE_INSTALL_MARK_BUNDLE = "installMarkBundle";
+const std::string BUNDLE_INSTALL_MARK_PACKAGE = "installMarkPackage";
+const std::string BUNDLE_INSTALL_MARK_STATUS = "installMarkStatus";
 const uint32_t VALUE_HOME_SCREEN = 1 << 0;
 // 000010 represents supporting search box
 const uint32_t VALUE_SEARCHBOX = 1 << 1;

@@ -46,18 +46,12 @@ public:
     {
         return 0;
     }
-    virtual int StartAbility(const AAFwk::Want &want, const AAFwk::AbilityStartSetting &abilityStartSetting,
-        const sptr<IRemoteObject> &callerToken, int requestCode = -1) override
-    {
-        return 0;
-    }
-    virtual int StartAbility(
-        const Want &want, const sptr<IRemoteObject> &callerToken, int requestCode, int requestUid) override
-    {
-        return 0;
-    }
     virtual int TerminateAbility(
         const sptr<IRemoteObject> &token, int resultCode, const AAFwk::Want *resultWant = nullptr) override
+    {
+        return 0;
+    }
+    virtual int MinimizeAbility(const sptr<IRemoteObject> &token) override
     {
         return 0;
     }
@@ -114,7 +108,7 @@ public:
     {
         return 0;
     }
-    virtual int StopServiceAbility(const AAFwk::Want &want, const sptr<IRemoteObject> &callerToken) override
+    virtual int StopServiceAbility(const AAFwk::Want &want) override
     {
         return 0;
     }
@@ -127,7 +121,7 @@ public:
     {
         return 0;
     }
-    virtual int GetMissionSnapshot(const int32_t missionId, AAFwk::MissionPixelMap &missionPixelMap) override
+    virtual int GetMissionSnapshot(const int32_t missionId, AAFwk::MissionSnapshotInfo &snapshot) override
     {
         return 0;
     }
@@ -147,7 +141,7 @@ public:
     {
         return 0;
     }
-    virtual int UninstallApp(const std::string &bundleName, const int userId) override
+    virtual int UninstallApp(const std::string &bundleName) override
     {
         return 0;
     }
@@ -206,7 +200,7 @@ public:
         return 0;
     }
 
-    int UpdateConfiguration(const Configuration &config) override
+    int UpdateConfiguration(const AppExecFwk::Configuration &config) override
     {
         return 0;
     }
@@ -264,6 +258,8 @@ public:
     {
         return 0;
     }
+    virtual void GetSystemMemoryAttr(AppExecFwk::SystemMemoryAttr &memoryInfo) override
+    {}
     int MoveMissionToFloatingStack(const MissionOption &missionOption) override
     {
         return 0;
@@ -292,19 +288,20 @@ public:
     {
         return 0;
     }
+    int StartAbility(const Want &want, const AbilityStartSetting &abilityStartSetting,
+        const sptr<IRemoteObject> &callerToken, int requestCode = 0) override
+    {
+        return 0;
+    }
     int ChangeFocusAbility(const sptr<IRemoteObject> &lostFocusToken, const sptr<IRemoteObject> &getFocusToken) override
     {
         return 0;
     }
-
-    void GetSystemMemoryAttr(AppExecFwk::SystemMemoryAttr &memoryInfo) override
-    {}
-
-    int GetWantSenderInfo(const sptr<IWantSender> &target, std::shared_ptr<WantSenderInfo> &info) override
+    int StartContinuation(const Want &want, const sptr<IRemoteObject> &abilityToken) override
     {
         return 0;
     }
-    int ClearUpApplicationData(const std::string &bundleName) override
+    int NotifyContinuationResult(const sptr<IRemoteObject> &abilityToken, const int32_t result) override
     {
         return 0;
     }

@@ -19,17 +19,17 @@
 #include "bundle_command.h"
 #undef private
 #include "bundle_constants.h"
-#include "mock_bundle_mgr_host.h"
-#include "mock_bundle_installer_host.h"
-#include "iremote_object.h"
-#include "iremote_broker.h"
 #include "bundle_installer_interface.h"
+#include "iremote_broker.h"
+#include "iremote_object.h"
+#include "mock_bundle_installer_host.h"
+#include "mock_bundle_mgr_host.h"
 
 using namespace testing::ext;
-using namespace OHOS;
 using namespace OHOS::AAFwk;
 using namespace OHOS::AppExecFwk;
 
+namespace OHOS {
 class BmCommandDumpTest : public ::testing::Test {
 public:
     static void SetUpTestCase();
@@ -360,3 +360,48 @@ HWTEST_F(BmCommandDumpTest, Bm_Command_Dump_1200, Function | MediumTest | Level1
 
     EXPECT_EQ(cmd.ExecCommand(), STRING_BUNDLE_NAME + "\n");
 }
+
+/**
+ * @tc.number: Bm_Command_Dump_1300
+ * @tc.name: ExecCommand
+ * @tc.desc: Verify the "bm dump -s" command.
+ * @tc.require: AR000GJUII
+ */
+HWTEST_F(BmCommandDumpTest, Bm_Command_Dump_1300, Function | MediumTest | Level1)
+{
+    char *argv[] = {
+        (char *)TOOL_NAME.c_str(),
+        (char *)cmd_.c_str(),
+        (char *)"-s",
+        (char *)"",
+    };
+    int argc = sizeof(argv) / sizeof(argv[0]) - 1;
+    BundleManagerShellCommand cmd(argc, argv);
+    // set the mock objects
+    SetMockObjects(cmd);
+    EXPECT_EQ(cmd.ExecCommand(), HELP_MSG_NO_BUNDLE_NAME_OPTION + "\n" + HELP_MSG_DUMP);
+}
+
+/**
+ * @tc.number: Bm_Command_Dump_1400
+ * @tc.name: ExecCommand
+ * @tc.desc: Verify the "bm dump -n <bundle-name> -s" command.
+ * @tc.require: AR000GJUII
+ */
+HWTEST_F(BmCommandDumpTest, Bm_Command_Dump_1400, Function | MediumTest | Level1)
+{
+    char *argv[] = {
+        (char *)TOOL_NAME.c_str(),
+        (char *)cmd_.c_str(),
+        (char *)"-n",
+        (char *)STRING_BUNDLE_NAME.c_str(),
+        (char *)"-s",
+        (char *)"",
+    };
+    int argc = sizeof(argv) / sizeof(argv[0]) - 1;
+    BundleManagerShellCommand cmd(argc, argv);
+    // set the mock objects
+    SetMockObjects(cmd);
+    EXPECT_EQ(cmd.ExecCommand(), STRING_BUNDLE_NAME + "\n");
+}
+} // namespace OHOS

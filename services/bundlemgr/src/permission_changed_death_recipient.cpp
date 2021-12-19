@@ -22,11 +22,13 @@
 
 namespace OHOS {
 namespace AppExecFwk {
+
 void PermissionChangedDeathRecipient::OnRemoteDied(const wptr<IRemoteObject>& object)
 {
     APP_LOGI("permission changed callback died, remove the callback");
     sptr<OnPermissionChangedCallback> callback = iface_cast<OnPermissionChangedCallback>(object.promote());
     DelayedSingleton<BundleMgrService>::GetInstance()->GetDataMgr()->UnregisterPermissionsChanged(callback);
 }
+
 } // namespace AppExecFwk
 } // namespace OHOS

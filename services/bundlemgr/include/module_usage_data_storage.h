@@ -77,6 +77,7 @@ private:
         DATABASE_KEY_INDEX_MAX_LENGTH,
     };
 };
+
 } // namespace AppExecFwk
 } // namespace OHOS
 #endif // FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_MODULE_USAGE_DATA_STORAGE_H

@@ -22,6 +22,7 @@
 
 namespace OHOS {
 namespace AppExecFwk {
+
 class BaseExtractor {
 public:
     explicit BaseExtractor(const std::string &source);
@@ -63,6 +64,7 @@ protected:
     ZipFile zipFile_;
     bool initial_ = false;
 };
+
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_BASE_EXTRACTOR_H

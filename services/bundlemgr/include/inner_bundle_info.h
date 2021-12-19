@@ -18,18 +18,17 @@
 
 #include "nocopyable.h"
 #include "permission/permission_kit.h"
-#include "app_log_wrapper.h"
 
-#include "appexecfwk_errors.h"
 #include "ability_info.h"
-#include "form_info.h"
-#include "common_event_info.h"
-#include "bundle_info.h"
-#include "hap_module_info.h"
 #include "bundle_constants.h"
-#include "json_serializer.h"
+#include "bundle_info.h"
+#include "common_event_info.h"
 #include "common_profile.h"
+#include "form_info.h"
+#include "hap_module_info.h"
+#include "json_util.h"
 #include "shortcut_info.h"
+#include "want.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -72,6 +71,7 @@ struct InnerModuleInfo {
     std::string description;
     int32_t descriptionId = 0;
     std::string mainAbility;
+    std::string srcPath;
     bool isEntry;
     bool installationFree;
     MetaData metaData;
@@ -89,148 +89,41 @@ struct SkillUri {
     std::string host;
     std::string port;
     std::string path;
+    std::string pathStartWith;
+    std::string pathRegx;
     std::string type;
 };
 
 struct Skill {
+public:
     std::vector<std::string> actions;
     std::vector<std::string> entities;
     std::vector<SkillUri> uris;
+    bool Match(const OHOS::AAFwk::Want &want) const;
+private:
+    bool MatchAction(const std::string &action) const;
+    bool MatchEntities(const std::vector<std::string> &paramEntities) const;
+    bool MatchUriAndType(const std::string &uriString, const std::string &type) const;
+    bool MatchUri(const std::string &uriString, const SkillUri &skillUri) const;
+    bool MatchType(const std::string &type, const std::string &skillUriType) const;
 };
 
-enum class JsonType {
-    NULLABLE,
-    BOOLEAN,
-    NUMBER,
-    OBJECT,
-    ARRAY,
-    STRING,
+enum InstallExceptionStatus : int32_t {
+    INSTALL_START = 1,
+    INSTALL_FINISH,
+    UPDATING_EXISTED_START,
+    UPDATING_NEW_START,
+    UPDATING_FINISH,
+    UNINSTALL_BUNDLE_START,
+    UNINSTALL_PACKAGE_START,
+    UNKNOWN_STATUS,
 };
 
-enum class ArrayType {
-    NUMBER,
-    OBJECT,
-    STRING,
-    NOT_ARRAY,
+struct InstallMark {
+    std::string bundleName;
+    std::string packageName;
+    int32_t status = InstallExceptionStatus::UNKNOWN_STATUS;
 };
-
-template <typename T, typename dataType>
-void CheckArrayType(
-    const nlohmann::json &jsonObject, const std::string &key, dataType &data, ArrayType arrayType, int32_t &parseResult)
-{
-    auto arrays = jsonObject.at(key);
-    if (arrays.empty()) {
-        APP_LOGI("array is empty");
-        return;
-    }
-    switch (arrayType) {
-        case ArrayType::STRING:
-            for (const auto &array : arrays) {
-                if (!array.is_string()) {
-                    APP_LOGE("array %{public}s is not string type", key.c_str());
-                    parseResult = ERR_APPEXECFWK_PARSE_PROFILE_PROP_TYPE_ERROR;
-                }
-            }
-            if (parseResult == ERR_OK) {
-                data = jsonObject.at(key).get<T>();
-            }
-            break;
-        case ArrayType::OBJECT:
-            for (const auto &array : arrays) {
-                if (!array.is_object()) {
-                    APP_LOGE("array %{public}s is not object type", key.c_str());
-                    parseResult = ERR_APPEXECFWK_PARSE_PROFILE_PROP_TYPE_ERROR;
-                    break;
-                }
-            }
-            if (parseResult == ERR_OK) {
-                data = jsonObject.at(key).get<T>();
-            }
-            break;
-        case ArrayType::NUMBER:
-            for (const auto &array : arrays) {
-                if (!array.is_number()) {
-                    APP_LOGE("array %{public}s is not number type", key.c_str());
-                    parseResult = ERR_APPEXECFWK_PARSE_PROFILE_PROP_TYPE_ERROR;
-                }
-            }
-            if (parseResult == ERR_OK) {
-                data = jsonObject.at(key).get<T>();
-            }
-            break;
-        case ArrayType::NOT_ARRAY:
-            APP_LOGE("array %{public}s is not string type", key.c_str());
-            break;
-        default:
-            APP_LOGE("array %{public}s type error", key.c_str());
-            break;
-    }
-}
-
-template <typename T, typename dataType>
-void GetValueIfFindKey(const nlohmann::json &jsonObject, const nlohmann::detail::iter_impl<const nlohmann::json> &end,
-    const std::string &key, dataType &data, JsonType jsonType, bool isNecessary, int32_t &parseResult,
-    ArrayType arrayType)
-{
-    if (parseResult) {
-        return;
-    }
-    if (jsonObject.find(key) != end) {
-        switch (jsonType) {
-            case JsonType::BOOLEAN:
-                if (!jsonObject.at(key).is_boolean()) {
-                    APP_LOGE("type is error %{public}s is not boolean", key.c_str());
-                    parseResult = ERR_APPEXECFWK_PARSE_PROFILE_PROP_TYPE_ERROR;
-                    break;
-                }
-                data = jsonObject.at(key).get<T>();
-                break;
-            case JsonType::NUMBER:
-                if (!jsonObject.at(key).is_number()) {
-                    APP_LOGE("type is error %{public}s is not number", key.c_str());
-                    parseResult = ERR_APPEXECFWK_PARSE_PROFILE_PROP_TYPE_ERROR;
-                    break;
-                }
-                data = jsonObject.at(key).get<T>();
-                break;
-            case JsonType::OBJECT:
-                if (!jsonObject.at(key).is_object()) {
-                    APP_LOGE("type is error %{public}s is not object", key.c_str());
-                    parseResult = ERR_APPEXECFWK_PARSE_PROFILE_PROP_TYPE_ERROR;
-                    break;
-                }
-                data = jsonObject.at(key).get<T>();
-                break;
-            case JsonType::ARRAY:
-                if (!jsonObject.at(key).is_array()) {
-                    APP_LOGE("type is error %{public}s is not array", key.c_str());
-                    parseResult = ERR_APPEXECFWK_PARSE_PROFILE_PROP_TYPE_ERROR;
-                    break;
-                }
-                CheckArrayType<T>(jsonObject, key, data, arrayType, parseResult);
-                break;
-            case JsonType::STRING:
-                if (!jsonObject.at(key).is_string()) {
-                    APP_LOGE("type is error %{public}s is not string", key.c_str());
-                    parseResult = ERR_APPEXECFWK_PARSE_PROFILE_PROP_TYPE_ERROR;
-                    break;
-                }
-                data = jsonObject.at(key).get<T>();
-                break;
-            case JsonType::NULLABLE:
-                APP_LOGE("type is error %{public}s is nullable", key.c_str());
-                break;
-            default:
-                APP_LOGE("type is error %{public}s is not jsonType", key.c_str());
-                parseResult = ERR_APPEXECFWK_PARSE_PROFILE_PROP_TYPE_ERROR;
-        }
-        return;
-    }
-    if (isNecessary) {
-        APP_LOGE("profile prop %{public}s is mission", key.c_str());
-        parseResult = ERR_APPEXECFWK_PARSE_PROFILE_MISSING_PROP;
-    }
-}
 
 class InnerBundleInfo {
 public:
@@ -270,7 +163,13 @@ public:
      * @param newInfo Indicates the new InnerBundleInfo object.
      * @return
      */
-    void UpdateAppInfo(const InnerBundleInfo &newInfo);
+    void UpdateVersionInfo(const InnerBundleInfo &newInfo);
+    /**
+     * @brief Update common hap info to old InnerBundleInfo object.
+     * @param newInfo Indicates the new InnerBundleInfo object.
+     * @return
+     */
+    void updateCommonHapInfo(const InnerBundleInfo &newInfo);
     /**
      * @brief Remove module info from InnerBundleInfo object.
      * @param modulePackage Indicates the module package to be remove.
@@ -646,6 +545,65 @@ public:
         return baseBundleInfo_.versionCode;
     }
     /**
+     * @brief Get version name in application.
+     * @return Returns version name.
+     */
+    std::string GetVersionName() const
+    {
+        return baseBundleInfo_.versionName;
+    }
+    /**
+     * @brief Get vendor in application.
+     * @return Returns vendor.
+     */
+    std::string GetVendor() const
+    {
+        return baseBundleInfo_.vendor;
+    }
+    /**
+     * @brief Get comparible version in application.
+     * @return Returns comparible version.
+     */
+    uint32_t GetCompatibleVersion() const
+    {
+        return baseBundleInfo_.compatibleVersion;
+    }
+    /**
+     * @brief Get target version in application.
+     * @return Returns target version.
+     */
+    uint32_t GetTargetVersion() const
+    {
+        return baseBundleInfo_.targetVersion;
+    }
+    /**
+     * @brief Get release type in application.
+     * @return Returns release type.
+     */
+    std::string GetReleaseType() const
+    {
+        return baseBundleInfo_.releaseType;
+    }
+    /**
+     * @brief Get install mark in application.
+     * @return Returns install mark.
+     */
+    void SetInstallMark(const std::string &bundleName, const std::string &packageName,
+        const InstallExceptionStatus &status)
+    {
+        mark_.bundleName = bundleName;
+        mark_.packageName = packageName;
+        mark_.status = status;
+    }
+    /**
+     * @brief Get install mark in application.
+     * @return Returns install mark.
+     */
+    InstallMark GetInstallMark() const
+    {
+        return mark_;
+    }
+    /**
      * @brief Get signature key in application.
      * @return Returns signature key.
      */
@@ -751,6 +709,11 @@ public:
     void SetAppType(Constants::AppType appType)
     {
         appType_ = appType;
+        if (appType_ == Constants::AppType::SYSTEM_APP) {
+            baseApplicationInfo_.isSystemApp = true;
+        } else {
+            baseApplicationInfo_.isSystemApp = false;
+        }
     }
     /**
      * @brief Get application user id.
@@ -1065,18 +1028,18 @@ public:
     }
     /**
      * @brief Obtains configuration information about an application.
-     * @param flag Indicates the flag used to specify information contained
+     * @param flags Indicates the flag used to specify information contained
      *             in the ApplicationInfo object that will be returned.
      * @param userId Indicates the user ID.
      * @param appInfo Indicates the obtained ApplicationInfo object.
      */
-    void GetApplicationInfo(const ApplicationFlag flag, const int userId, ApplicationInfo &appInfo) const;
+    void GetApplicationInfo(int32_t flags, const int userId, ApplicationInfo &appInfo) const;
     /**
      * @brief Obtains configuration information about an bundle.
-     * @param flag Indicates the flag used to specify information contained in the BundleInfo that will be returned.
+     * @param flags Indicates the flag used to specify information contained in the BundleInfo that will be returned.
      * @param bundleInfos Indicates all of the obtained BundleInfo objects.
      */
-    void GetBundleInfo(const BundleFlag flag, BundleInfo &bundleInfo) const;
+    void GetBundleInfo(int32_t flags, BundleInfo &bundleInfo) const;
     /**
      * @brief Check if special metadata is in the application.
      * @param metaData Indicates the special metaData.
@@ -1109,7 +1072,78 @@ public:
     std::optional<InnerModuleInfo> GetInnerModuleInfoByModuleName(const std::string &moduleName) const;
 
     void GetModuleNames(std::vector<std::string> &moduleNames) const;
+    /**
+     * @brief Obtains all abilityInfos.
+     */
+    const std::map<std::string, AbilityInfo> &GetInnerAbilityInfos() const
+    {
+        return baseAbilityInfos_;
+    }
+    /**
+     * @brief Obtains all skillInfos.
+     */
+    const std::map<std::string, std::vector<Skill>> &GetInnerSkillInfos() const
+    {
+        return skillInfos_;
+    }
+    /**
+     * @brief Set removable to indicate the bundle is removable or not.
+     * @param removable Indicates the removable to set.
+     */
+    void SetRemovable(bool removable)
+    {
+        baseApplicationInfo_.removable = removable;
+        baseBundleInfo_.applicationInfo.removable = removable;
+    }
+    /**
+     * @brief Get the bundle is whether removable.
+     * @return Return whether the bundle is removable.
+     */
+    bool IsRemovable() const
+    {
+        return baseApplicationInfo_.removable;
+    }
+    /**
+     * @brief Set removable to indicate the bundle is removable or not.
+     * @param removable Indicates the removable to set.
+     */
+    void SetIsPreInstallApp(bool isPreInstallApp)
+    {
+        isPreInstallApp_ = isPreInstallApp;
+    }
+    /**
+     * @brief Get the bundle is whether isPreInstallApp.
+     * @return Return whether the bundle is isPreInstallApp.
+     */
+    bool IsPreInstallApp() const
+    {
+        return isPreInstallApp_;
+    }
+    /**
+     * @brief Set hasConfigureRemovable to indicate the bundle has configure removable or not.
+     * @param hasConfigureRemovable Indicates the hasConfigureRemovable to set.
+     */
+    void SetHasConfigureRemovable(bool hasConfigureRemovable)
+    {
+        hasConfigureRemovable_ = hasConfigureRemovable;
+    }
+    /**
+     * @brief Get the bundle is whether has configure removable.
+     * @return Return whether the bundle has configure removable.
+     */
+    bool HasConfigureRemovable() const
+    {
+        return hasConfigureRemovable_;
+    }
 
+    std::vector<std::string> GetModuleNameVec()
+    {
+        std::vector<std::string> moduleVec;
+        for (const auto &it : innerModuleInfos_) {
+            moduleVec.emplace_back(it.first);
+        }
+        return moduleVec;
+    }
 private:
     // using for get
     bool isSupportBackup_ = false;
@@ -1126,10 +1160,13 @@ private:
     std::string appFeature_;
     bool hasEntry_ = false;
     bool canUninstall_ = true;
+    bool isPreInstallApp_ = false;
+    bool hasConfigureRemovable_ = false;
     // only using for install or update progress, doesn't need to save to database
     std::string currentPackage_;
     std::string mainAbilityName_;
     std::string newBundleName_;
+    InstallMark mark_;
 
     std::map<std::string, std::vector<FormInfo>> formInfos_;
     std::map<std::string, CommonEventInfo> commonEvents_;
@@ -1145,6 +1182,8 @@ void from_json(const nlohmann::json &jsonObject, Skill &skill);
 void from_json(const nlohmann::json &jsonObject, Distro &distro);
 void from_json(const nlohmann::json &jsonObject, ReqPermission &ReqPermission);
 void from_json(const nlohmann::json &jsonObject, DefPermission &DefPermission);
+void from_json(const nlohmann::json &jsonObject, InstallMark &installMark);
+
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_INNER_BUNDLE_INFO_H

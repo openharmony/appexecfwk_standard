@@ -16,6 +16,7 @@
 #ifndef FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_BASE_INCLUDE_APPLICATION_INFO_H
 #define FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_BASE_INCLUDE_APPLICATION_INFO_H
 
+#include <map>
 #include <string>
 #include <vector>
 
@@ -25,16 +26,31 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-enum class ApplicationFlag {
-    // get the basic ApplicationInfo
+
+enum ApplicationFlag {
     GET_BASIC_APPLICATION_INFO = 0x00000000,
-    // get the ApplicationInfo with permission specified
     GET_APPLICATION_INFO_WITH_PERMS = 0x00000008,
+    GET_APPLICATION_INFO_WITH_METADATA = 0x00000040,
+};
+
+struct CustomizeData : public Parcelable {
+    std::string name;
+    std::string value;
+    std::string extra;
+    CustomizeData() = default;
+    CustomizeData(std::string paramName, std::string paramValue, std::string paramExtra);
+    bool ReadFromParcel(Parcel &parcel);
+    virtual bool Marshalling(Parcel &parcel) const override;
+    static CustomizeData *Unmarshalling(Parcel &parcel);
+};
+
+struct MetaData {
+    std::vector<CustomizeData> customizeData;
 };
 
 struct ApplicationInfo;
 
-struct CompatibleApplicationInfo : public Parcelable {    
+struct CompatibleApplicationInfo : public Parcelable {
     // items set when installing.
     std::string name; // application name.
     std::string icon; // application icon resource index.
@@ -92,6 +108,8 @@ struct ApplicationInfo : public Parcelable {
     // Clone the required elements
     bool isCloned = false;
     int uid = -1;
+    bool removable = true;
+
     //  element that does not exist for a while
     std::string entryModuleName;
     std::string icon;
@@ -99,13 +117,16 @@ struct ApplicationInfo : public Parcelable {
     bool isCompressNativeLibs = true;
     bool debug = false;
     bool systemApp = false;
+    std::map<std::string, std::vector<CustomizeData>> metaData;
 
     bool ReadFromParcel(Parcel &parcel);
+    bool ReadMetaDataFromParcel(Parcel &parcel);
     virtual bool Marshalling(Parcel &parcel) const override;
     static ApplicationInfo *Unmarshalling(Parcel &parcel);
     void Dump(std::string prefix, int fd);
     void ConvertToCompatibleApplicationInfo(CompatibleApplicationInfo& compatibleApplicationInfo) const;
 };
+
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_BASE_INCLUDE_APPLICATION_INFO_H

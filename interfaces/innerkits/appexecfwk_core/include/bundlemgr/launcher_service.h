@@ -35,7 +35,8 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-class LauncherService {
+
+class LauncherService : public virtual RefBase {
 public:
     using Want = OHOS::AAFwk::Want;
 
@@ -99,7 +100,14 @@ public:
      * @param launcherShortcutInfo List of LauncherShortcutInfo objects if obtained.
      * @return Returns true if the function is successfully called; returns false otherwise.
      */
-    virtual bool GetShortcutInfos(const std::string &bundleName, std::vector<LauncherShortcutInfo> &launcherShortcutInfo);
+    virtual bool GetShortcutInfos(const std::string &bundleName, std::vector<ShortcutInfo> &shortcutInfo);
+    /**
+     * @brief Obtains information about the launcher ability of all application that appears on launcher.
+     * @param userId Indicates the id for the user.
+     * @param launcherAbilityInfo Indicates the obtained LauncherAbilityInfo object.
+     * @return Returns true if the function is successfully called; returns false otherwise.
+     */
+    virtual bool GetAllLauncherAbilityInfos(int32_t userId, std::vector<LauncherAbilityInfo> &launcherAbilityInfos);
 
 private:
     void init();
@@ -109,6 +117,7 @@ private:
 
     DISALLOW_COPY_AND_MOVE(LauncherService);
 };
+
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_LAUNCHER_SERVICE_H

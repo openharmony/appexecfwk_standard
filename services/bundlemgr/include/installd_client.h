@@ -28,6 +28,7 @@
 
 namespace OHOS {
 namespace AppExecFwk {
+
 class InstalldClient : public DelayedSingleton<InstalldClient> {
 public:
     /**
@@ -37,30 +38,12 @@ public:
      */
     ErrCode CreateBundleDir(const std::string &bundleDir);
     /**
-     * @brief Remove a bundle code directory.
-     * @param bundleDir Indicates the bundle code directory path that to be removed.
-     * @return Returns ERR_OK if the bundle directory removed successfully; returns error code otherwise.
-     */
-    ErrCode RemoveBundleDir(const std::string &bundleDir);
-    /**
-     * @brief Remove a bundle data directory.
-     * @param bundleDir Indicates the bundle data directory path that to be removed.
-     * @return Returns ERR_OK if the bundle data directory removed successfully; returns error code otherwise.
-     */
-    ErrCode RemoveBundleDataDir(const std::string &bundleDataDir);
-    /**
      * @brief Extract the files of a HAP module to the code directory.
      * @param srcModulePath Indicates the HAP file path.
      * @param targetPath Indicates the code directory path that the HAP to be extracted to.
      * @return Returns ERR_OK if the HAP file extracted successfully; returns error code otherwise.
      */
     ErrCode ExtractModuleFiles(const std::string &srcModulePath, const std::string &targetPath);
-    /**
-     * @brief Remove a module directory.
-     * @param moduleDir Indicates the module directory to be removed.
-     * @return Returns ERR_OK if the module directory removed successfully; returns error code otherwise.
-     */
-    ErrCode RemoveModuleDir(const std::string &moduleDir);
     /**
      * @brief Rename the module directory from temporaily path to the real path.
      * @param oldPath Indicates the old path name.
@@ -87,11 +70,11 @@ public:
     ErrCode CreateModuleDataDir(
         const std::string &ModuleDir, const std::vector<std::string> &abilityDirs, const int uid, const int gid);
     /**
-     * @brief Remove a module data directory.
-     * @param bundleDir Indicates the module data directory path that to be removed.
-     * @return Returns ERR_OK if the module data directory removed successfully; returns error code otherwise.
+     * @brief Remove a directory.
+     * @param dir Indicates the directory path that to be removed.
+     * @return Returns ERR_OK if the  directory removed successfully; returns error code otherwise.
      */
-    ErrCode RemoveModuleDataDir(const std::string &moduleDataDir);
+    ErrCode RemoveDir(const std::string &dir);
     /**
      * @brief Clean all files in a bundle data directory.
      * @param bundleDir Indicates the data directory path that to be cleaned.
@@ -111,11 +94,21 @@ private:
      */
     bool GetInstalldProxy();
 
+    template<typename F, typename... Args>
+    ErrCode CallService(F func, Args&&... args)
+    {
+        if (!GetInstalldProxy()) {
+            return ERR_APPEXECFWK_INSTALLD_GET_PROXY_ERROR;
+        }
+        return (installdProxy_->*func)(std::forward<Args>(args)...);
+    }
+
 private:
     std::mutex mutex_;
     sptr<IInstalld> installdProxy_;
     sptr<IRemoteObject::DeathRecipient> recipient_;
 };
+
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_INSTALLD_CLIENT_H

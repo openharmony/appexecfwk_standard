@@ -24,14 +24,11 @@
 
 namespace OHOS {
 namespace AppExecFwk {
+
 /*
  * form_json and to_json is global static overload method, which need callback by json library,
  * and can not rename this function, so don't named according UpperCamelCase style
  */
-void to_json(nlohmann::json &jsonObject, const Parameters &parameters);
-void from_json(const nlohmann::json &jsonObject, Parameters &parameters);
-void to_json(nlohmann::json &jsonObject, const Results &results);
-void from_json(const nlohmann::json &jsonObject, Results &results);
 void to_json(nlohmann::json &jsonObject, const CustomizeData &customizeData);
 void from_json(const nlohmann::json &jsonObject, CustomizeData &customizeData);
 void to_json(nlohmann::json &jsonObject, const MetaData &metaData);
@@ -50,6 +47,8 @@ void to_json(nlohmann::json &jsonObject, const ShortcutInfo &shortcutInfo);
 void from_json(const nlohmann::json &jsonObject, ShortcutInfo &shortcutInfo);
 void to_json(nlohmann::json &jsonObject, const CommonEventInfo &commonEvent);
 void from_json(const nlohmann::json &jsonObject, CommonEventInfo &commonEvent);
+void to_json(nlohmann::json &jsonObject, const HapModuleInfo &hapModuleInfo);
+void from_json(const nlohmann::json &jsonObject, HapModuleInfo &hapModuleInfo);
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_BASE_INCLUDE_JSON_SERIALIZER_H

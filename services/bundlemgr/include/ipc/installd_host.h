@@ -24,6 +24,7 @@
 
 namespace OHOS {
 namespace AppExecFwk {
+
 class InstalldHost : public IRemoteStub<IInstalld> {
 public:
     InstalldHost();
@@ -41,13 +42,6 @@ private:
      */
     bool HandleCreateBundleDir(MessageParcel &data, MessageParcel &reply);
     /**
-     * @brief Handles the RemoveBundleDir function called from a IInstalld proxy object.
-     * @param data Indicates the data to be read.
-     * @param reply Indicates the reply to be sent;
-     * @return Returns true if called successfully; returns false otherwise.
-     */
-    bool HandleRemoveBundleDir(MessageParcel &data, MessageParcel &reply);
-    /**
      * @brief Handles the ExtractModuleFiles function called from a IInstalld proxy object.
      * @param data Indicates the data to be read.
      * @param reply Indicates the reply to be sent;
@@ -62,26 +56,12 @@ private:
      */
     bool HandleRenameModuleDir(MessageParcel &data, MessageParcel &reply);
     /**
-     * @brief Handles the RemoveModuleDir function called from a IInstalld proxy object.
-     * @param data Indicates the data to be read.
-     * @param reply Indicates the reply to be sent;
-     * @return Returns true if called successfully; returns false otherwise.
-     */
-    bool HandleRemoveModuleDir(MessageParcel &data, MessageParcel &reply);
-    /**
      * @brief Handles the CreateBundleDataDir function called from a IInstalld proxy object.
      * @param data Indicates the data to be read.
      * @param reply Indicates the reply to be sent;
      * @return Returns true if called successfully; returns false otherwise.
      */
     bool HandleCreateBundleDataDir(MessageParcel &data, MessageParcel &reply);
-    /**
-     * @brief Handles the RemoveBundleDataDir function called from a IInstalld proxy object.
-     * @param data Indicates the data to be read.
-     * @param reply Indicates the reply to be sent;
-     * @return Returns true if called successfully; returns false otherwise.
-     */
-    bool HandleRemoveBundleDataDir(MessageParcel &data, MessageParcel &reply);
     /**
      * @brief Handles the CreateModuleDataDir function called from a IInstalld proxy object.
      * @param data Indicates the data to be read.
@@ -90,12 +70,12 @@ private:
      */
     bool HandleCreateModuleDataDir(MessageParcel &data, MessageParcel &reply);
     /**
-     * @brief Handles the RemoveModuleDataDir function called from a IInstalld proxy object.
+     * @brief Handles the RemoveDir function called from a IInstalld proxy object.
      * @param data Indicates the data to be read.
      * @param reply Indicates the reply to be sent;
      * @return Returns true if called successfully; returns false otherwise.
      */
-    bool HandleRemoveModuleDataDir(MessageParcel &data, MessageParcel &reply);
+    bool HandleRemoveDir(MessageParcel &data, MessageParcel &reply);
     /**
      * @brief Handles the CleanBundleDataDir function called from a IInstalld proxy object.
      * @param data Indicates the data to be read.
@@ -103,7 +83,15 @@ private:
      * @return Returns true if called successfully; returns false otherwise.
      */
     bool HandleCleanBundleDataDir(MessageParcel &data, MessageParcel &reply);
+    /**
+     * @brief Init private hash map funcMap_.
+     */
+    void init();
+
+    using InstalldFunc = bool (InstalldHost::*)(MessageParcel &, MessageParcel &);
+    std::unordered_map<uint32_t, InstalldFunc> funcMap_;
 };
+
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_IPC_INSTALLD_HOST_H

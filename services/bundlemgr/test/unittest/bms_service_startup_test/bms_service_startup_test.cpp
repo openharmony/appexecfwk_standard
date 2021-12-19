@@ -14,6 +14,7 @@
  */
 
 #include <gtest/gtest.h>
+
 #include <fstream>
 
 #include "app_log_wrapper.h"
