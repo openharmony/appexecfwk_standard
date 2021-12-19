@@ -37,6 +37,7 @@ struct PermissionDef : public Parcelable {
     virtual bool Marshalling(Parcel &parcel) const override;
     static PermissionDef *Unmarshalling(Parcel &parcel);
 };
+
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_BASE_INCLUDE_PERMISSION_DEF_H

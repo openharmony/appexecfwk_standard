@@ -22,6 +22,7 @@
 
 namespace OHOS {
 namespace AppExecFwk {
+
 class StatusReceiverProxy : public IRemoteProxy<IStatusReceiver> {
 public:
     explicit StatusReceiverProxy(const sptr<IRemoteObject> &object);
@@ -47,6 +48,7 @@ private:
     std::string resultMsg_;
     static inline BrokerDelegator<StatusReceiverProxy> delegator_;
 };
+
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_CORE_INCLUDE_BUNDLEMGR_STATUS_RECEIVER_PROXY_H

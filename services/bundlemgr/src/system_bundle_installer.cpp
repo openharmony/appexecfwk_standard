@@ -19,6 +19,7 @@
 
 namespace OHOS {
 namespace AppExecFwk {
+
 SystemBundleInstaller::SystemBundleInstaller(const std::string &filePath) : filePath_(filePath)
 {
     APP_LOGI("system bundle installer instance is created");
@@ -33,6 +34,10 @@ bool SystemBundleInstaller::InstallSystemBundle(Constants::AppType appType)
 {
     InstallParam installParam;
     installParam.userId = Constants::DEFAULT_USERID;
+    installParam.isPreInstallApp = true;
+    if (appType == Constants::AppType::SYSTEM_APP) {
+        installParam.needSavePreInstallInfo = true;
+    }
     ErrCode result = InstallBundle(filePath_, installParam, appType);
     if (result != ERR_OK) {
         APP_LOGE("install system bundle fail, error: %{public}d", result);
@@ -40,5 +45,6 @@ bool SystemBundleInstaller::InstallSystemBundle(Constants::AppType appType)
     }
     return true;
 }
+
 }  // namespace AppExecFwk
 }  // namespace OHOS

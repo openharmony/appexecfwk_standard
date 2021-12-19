@@ -17,11 +17,13 @@
 #define FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_BUNDLE_UTIL_H
 
 #include <string>
+#include <vector>
 
 #include "appexecfwk_errors.h"
 
 namespace OHOS {
 namespace AppExecFwk {
+
 class BundleUtil {
 public:
     /**
@@ -30,6 +32,13 @@ public:
      * @return Returns ERR_OK if the file checked successfully; returns error code otherwise.
      */
     static ErrCode CheckFilePath(const std::string &bundlePath, std::string &realPath);
+    /**
+     * @brief Check whether an array of files are valid HAP files.
+     * @param bundlePaths Indicates the HAP file paths.
+     * @param realPaths Indicates the real paths of HAP files.
+     * @return Returns ERR_OK if the file checked successfully; returns error code otherwise.
+     */
+    static ErrCode CheckFilePath(const std::vector<std::string> &bundlePaths, std::vector<std::string> &realPaths);
     /**
      * @brief Check whether a file is the specific type file.
      * @param fileName Indicates the file path.
@@ -49,7 +58,22 @@ public:
      * @return Returns true if the file size checked successfully; returns false otherwise.
      */
     static bool CheckFileSize(const std::string &bundlePath, const int64_t fileSize);
+    /**
+     * @brief Check whether the disk path memory is available for installing the hap.
+     * @param bundlePath Indicates the file path.
+     * @param diskPath Indicates disk path in the system.
+     * @return Returns true if the file size checked successfully; returns false otherwise.
+     */
+    static bool CheckSystemSize(const std::string &bundlePath, const std::string &diskPath);
+    /**
+     * @brief to obtain the hap paths of the input bundle path.
+     * @param currentBundlePath Indicates the current bundle path.
+     * @param hapFileList Indicates the hap paths.
+     * @return Returns true if the hap path obtained successfully; returns false otherwise.
+     */
+    static bool GetHapFilesFromBundlePath(const std::string& currentBundlePath, std::vector<std::string>& hapFileList);
 };
+
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_BUNDLE_UTIL_H

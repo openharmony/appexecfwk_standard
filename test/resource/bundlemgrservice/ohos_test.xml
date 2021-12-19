@@ -14,75 +14,163 @@
  * limitations under the License.
  -->
 <configuration ver="2.0">
-  <target name="BmsBundleInstallerTest">
-    <depend resource="test_bundle/." pushpath="/data/test/" findpath="res" presetcmd=""/>
-    <preparer>
-      <option name="push" value="test_bundle/format_error_profile.hap -> /data/test/resource/bms/install_bundle/" src="res" />
-      <option name="push" value="test_bundle/right.hap -> /data/test/resource/bms/install_bundle/" src="res" />
-      <option name="push" value="test_bundle/nonfile.hap -> /data/test/resource/bms/install_bundle/" src="res" />
-	</preparer>
-  </target>
-  <target name="BmsBundleUninstallerTest">
-    <depend resource="test_bundle/." pushpath="/data/test/" findpath="res" presetcmd=""/>
-    <preparer>
-      <option name="push" value="test_bundle/right.hap -> /data/test/resource/bms/uninstall_bundle/" src="res" />
-      <option name="push" value="test_bundle/right1.hap -> /data/test/resource/bms/uninstall_bundle/" src="res" />
-	</preparer>
-  </target>
   <target name="BmsBundleParserTest">
-    <depend resource="parse_bundle/." pushpath="/data/test/resource/bms/parse_bundle/" findpath="res" presetcmd=""/>
-    <preparer>
-   	  <option name="push" value="parse_bundle/break_zip.hap -> /data/test/resource/bms/parse_bundle/" src="res" />
+  <preparer>
+      <option name="push" value="parse_bundle/break_zip.hap -> /data/test/resource/bms/parse_bundle/" src="res" />
       <option name="push" value="parse_bundle/empty_config.hap -> /data/test/resource/bms/parse_bundle/" src="res" />
-      <option name="push" value="parse_bundle/format_error_profile.hap -> /data/test/resource/bms/parse_bundle/" src="res" />
-      <option name="push" value="parse_bundle/format_missing_profile.hap -> /data/test/resource/bms/parse_bundle/" src="res" />
+      <option name="push" value="parse_bundle/format_error_profile.hap -> /data/test/resource/bms/parse_bundle/"
+              src="res" />
+      <option name="push" value="parse_bundle/format_missing_profile.hap -> /data/test/resource/bms/parse_bundle/"
+              src="res" />
       <option name="push" value="parse_bundle/new.hap -> /data/test/resource/bms/parse_bundle/" src="res" />
       <option name="push" value="parse_bundle/no_profile.hap -> /data/test/resource/bms/parse_bundle/" src="res" />
       <option name="push" value="parse_bundle/nothing_config.hap -> /data/test/resource/bms/parse_bundle/" src="res" />
-	</preparer>
+    </preparer>
+  </target>
+  <target name="BmsBundleInstallerTest">
+    <preparer>
+      <option name="push" value="test_bundle/error_bundle_profile.hap -> /data/test/resource/bms/install_bundle/"
+              src="res"/>
+      <option name="push" value="test_bundle/first_right.hap -> /data/test/resource/bms/install_bundle/" src="res"/>
+      <option name="push" value="test_bundle/fifth_right.hap -> /data/test/resource/bms/install_bundle/" src="res"/>
+      <option name="push" value="test_bundle/format_error_profile.hap -> /data/test/resource/bms/install_bundle/"
+              src="res"/>
+      <option name="push" value="test_bundle/fourth_right.hap -> /data/test/resource/bms/install_bundle/" src="res"/>
+      <option name="push" value="test_bundle/nofile.hap -> /data/test/resource/bms/install_bundle/" src="res"/>
+      <option name="push" value="test_bundle/right.hap -> /data/test/resource/bms/install_bundle/" src="res"/>
+      <option name="push" value="test_bundle/right1.hap -> /data/test/resource/bms/install_bundle/" src="res"/>
+      <option name="push" value="test_bundle/second_right.hap -> /data/test/resource/bms/install_bundle/" src="res"/>
+      <option name="push" value="test_bundle/seventh_right.hap -> /data/test/resource/bms/install_bundle/" src="res"/>
+      <option name="push" value="test_bundle/sixth_right.hap -> /data/test/resource/bms/install_bundle/" src="res"/>
+      <option name="push" value="test_bundle/third_right.hap -> /data/test/resource/bms/install_bundle/" src="res"/>
+      <option name="push" value="test_bundle/version1.hap -> /data/test/resource/bms/install_bundle/" src="res"/>
+      <option name="push" value="test_bundle/version2.hap -> /data/test/resource/bms/install_bundle/" src="res"/>
+      <option name="push" value="test_bundle/version3.hap -> /data/test/resource/bms/install_bundle/" src="res"/>
+      <option name="push" value="test_bundle/wrong_bundle_name.ha -> /data/test/resource/bms/install_bundle/"
+              src="res"/>
+      <option name="push" value="test_bundle/wrong_bundle_name_sign.hap -> /data/test/resource/bms/install_bundle/"
+              src="res"/>
+    </preparer>
+  </target>
+  <target name="BmsBundleUninstallerTest">
+    <preparer>
+      <option name="push" value="test_bundle/error_bundle_profile.hap -> /data/test/resource/bms/install_bundle/"
+              src="res"/>
+      <option name="push" value="test_bundle/first_right.hap -> /data/test/resource/bms/install_bundle/" src="res"/>
+      <option name="push" value="test_bundle/fifth_right.hap -> /data/test/resource/bms/install_bundle/" src="res"/>
+      <option name="push" value="test_bundle/format_error_profile.hap -> /data/test/resource/bms/install_bundle/"
+              src="res"/>
+      <option name="push" value="test_bundle/fourth_right.hap -> /data/test/resource/bms/install_bundle/" src="res"/>
+      <option name="push" value="test_bundle/nofile.hap -> /data/test/resource/bms/install_bundle/" src="res"/>
+      <option name="push" value="test_bundle/right.hap -> /data/test/resource/bms/install_bundle/" src="res"/>
+      <option name="push" value="test_bundle/right1.hap -> /data/test/resource/bms/install_bundle/" src="res"/>
+      <option name="push" value="test_bundle/second_right.hap -> /data/test/resource/bms/install_bundle/" src="res"/>
+      <option name="push" value="test_bundle/seventh_right.hap -> /data/test/resource/bms/install_bundle/" src="res"/>
+      <option name="push" value="test_bundle/sixth_right.hap -> /data/test/resource/bms/install_bundle/" src="res"/>
+      <option name="push" value="test_bundle/third_right.hap -> /data/test/resource/bms/install_bundle/" src="res"/>
+      <option name="push" value="test_bundle/version1.hap -> /data/test/resource/bms/install_bundle/" src="res"/>
+      <option name="push" value="test_bundle/version2.hap -> /data/test/resource/bms/install_bundle/" src="res"/>
+      <option name="push" value="test_bundle/version3.hap -> /data/test/resource/bms/install_bundle/" src="res"/>
+      <option name="push" value="test_bundle/wrong_bundle_name.ha -> /data/test/resource/bms/install_bundle/"
+              src="res"/>
+      <option name="push" value="test_bundle/wrong_bundle_name_sign.hap -> /data/test/resource/bms/install_bundle/"
+              src="res"/>
+    </preparer>
   </target>
   <target name="BmsBundleUpdaterTest">
-    <depend resource="test_bundle/." pushpath="/data/test/" findpath="res" presetcmd=""/>
     <preparer>
-      <option name="push" value="test_bundle/format_error_profile.hap -> /data/test/resource/bms/update_bundle/" src="res" />
-      <option name="push" value="test_bundle/version1.hap -> /data/test/resource/bms/update_bundle/" src="res" />
-      <option name="push" value="test_bundle/version2.hap -> /data/test/resource/bms/update_bundle/" src="res" />
-      <option name="push" value="test_bundle/version3.hap -> /data/test/resource/bms/update_bundle/" src="res" />
-	</preparer>
+      <option name="push" value="test_bundle/error_bundle_profile.hap -> /data/test/resource/bms/install_bundle/"
+              src="res"/>
+      <option name="push" value="test_bundle/first_right.hap -> /data/test/resource/bms/install_bundle/" src="res"/>
+      <option name="push" value="test_bundle/fifth_right.hap -> /data/test/resource/bms/install_bundle/" src="res"/>
+      <option name="push" value="test_bundle/format_error_profile.hap -> /data/test/resource/bms/update_bundle/"
+              src="res"/>
+      <option name="push" value="test_bundle/fourth_right.hap -> /data/test/resource/bms/install_bundle/" src="res"/>
+      <option name="push" value="test_bundle/nofile.hap -> /data/test/resource/bms/install_bundle/" src="res"/>
+      <option name="push" value="test_bundle/right.hap -> /data/test/resource/bms/install_bundle/" src="res"/>
+      <option name="push" value="test_bundle/right1.hap -> /data/test/resource/bms/install_bundle/" src="res"/>
+      <option name="push" value="test_bundle/second_right.hap -> /data/test/resource/bms/install_bundle/" src="res"/>
+      <option name="push" value="test_bundle/seventh_right.hap -> /data/test/resource/bms/install_bundle/" src="res"/>
+      <option name="push" value="test_bundle/sixth_right.hap -> /data/test/resource/bms/install_bundle/" src="res"/>
+      <option name="push" value="test_bundle/third_right.hap -> /data/test/resource/bms/install_bundle/" src="res"/>
+      <option name="push" value="test_bundle/version1.hap -> /data/test/resource/bms/update_bundle/" src="res"/>
+      <option name="push" value="test_bundle/version2.hap -> /data/test/resource/bms/update_bundle/" src="res"/>
+      <option name="push" value="test_bundle/version3.hap -> /data/test/resource/bms/update_bundle/" src="res"/>
+      <option name="push" value="test_bundle/wrong_bundle_name.ha -> /data/test/resource/bms/install_bundle/"
+              src="res"/>
+      <option name="push" value="test_bundle/wrong_bundle_name_sign.hap -> /data/test/resource/bms/install_bundle/"
+              src="res"/>
+    </preparer>
+  </target>
+  <target name="BmsBundleVerifierTest">
+    <preparer>
+      <option name="push" value="test_bundle/error_bundle_profile.hap -> /data/test/resource/bms/install_bundle/"
+              src="res"/>
+      <option name="push" value="test_bundle/first_right.hap -> /data/test/resource/bms/install_bundle/" src="res"/>
+      <option name="push" value="test_bundle/fifth_right.hap -> /data/test/resource/bms/install_bundle/" src="res"/>
+      <option name="push" value="test_bundle/format_error_profile.hap -> /data/test/resource/bms/install_bundle/"
+              src="res"/>
+      <option name="push" value="test_bundle/fourth_right.hap -> /data/test/resource/bms/install_bundle/" src="res"/>
+      <option name="push" value="test_bundle/nofile.hap -> /data/test/resource/bms/install_bundle/" src="res"/>
+      <option name="push" value="test_bundle/right.hap -> /data/test/resource/bms/install_bundle/" src="res"/>
+      <option name="push" value="test_bundle/right1.hap -> /data/test/resource/bms/install_bundle/" src="res"/>
+      <option name="push" value="test_bundle/second_right.hap -> /data/test/resource/bms/install_bundle/" src="res"/>
+      <option name="push" value="test_bundle/seventh_right.hap -> /data/test/resource/bms/install_bundle/" src="res"/>
+      <option name="push" value="test_bundle/sixth_right.hap -> /data/test/resource/bms/install_bundle/" src="res"/>
+      <option name="push" value="test_bundle/third_right.hap -> /data/test/resource/bms/install_bundle/" src="res"/>
+      <option name="push" value="test_bundle/version1.hap -> /data/test/resource/bms/install_bundle/" src="res"/>
+      <option name="push" value="test_bundle/version2.hap -> /data/test/resource/bms/install_bundle/" src="res"/>
+      <option name="push" value="test_bundle/version3.hap -> /data/test/resource/bms/install_bundle/" src="res"/>
+      <option name="push" value="test_bundle/wrong_bundle_name.ha -> /data/test/resource/bms/install_bundle/"
+              src="res"/>
+      <option name="push" value="test_bundle/wrong_bundle_name_sign.hap -> /data/test/resource/bms/install_bundle/"
+              src="res"/>
+    </preparer>
+  </target>
+  <target name="BmsMultipleBundleInstallerTest">
+    <preparer>
+      <option name="push" value="test_bundle/error_bundle_profile.hap -> /data/test/resource/bms/install_bundle/"
+              src="res"/>
+      <option name="push" value="test_bundle/first_right.hap -> /data/test/resource/bms/install_bundle/" src="res"/>
+      <option name="push" value="test_bundle/fifth_right.hap -> /data/test/resource/bms/install_bundle/" src="res"/>
+      <option name="push" value="test_bundle/format_error_profile.hap -> /data/test/resource/bms/install_bundle/"
+              src="res"/>
+      <option name="push" value="test_bundle/fourth_right.hap -> /data/test/resource/bms/install_bundle/" src="res"/>
+      <option name="push" value="test_bundle/nofile.hap -> /data/test/resource/bms/install_bundle/" src="res"/>
+      <option name="push" value="test_bundle/right.hap -> /data/test/resource/bms/install_bundle/" src="res"/>
+      <option name="push" value="test_bundle/right1.hap -> /data/test/resource/bms/install_bundle/" src="res"/>
+      <option name="push" value="test_bundle/second_right.hap -> /data/test/resource/bms/install_bundle/" src="res"/>
+      <option name="push" value="test_bundle/seventh_right.hap -> /data/test/resource/bms/install_bundle/" src="res"/>
+      <option name="push" value="test_bundle/sixth_right.hap -> /data/test/resource/bms/install_bundle/" src="res"/>
+      <option name="push" value="test_bundle/third_right.hap -> /data/test/resource/bms/install_bundle/" src="res"/>
+      <option name="push" value="test_bundle/twelfth_right.hap -> /data/test/resource/bms/install_bundle/" src="res"/>
+      <option name="push" value="test_bundle/version1.hap -> /data/test/resource/bms/install_bundle/" src="res"/>
+      <option name="push" value="test_bundle/version2.hap -> /data/test/resource/bms/install_bundle/" src="res"/>
+      <option name="push" value="test_bundle/version3.hap -> /data/test/resource/bms/install_bundle/" src="res"/>
+      <option name="push" value="test_bundle/wrong_bundle_name.ha -> /data/test/resource/bms/install_bundle/"
+              src="res"/>
+      <option name="push" value="test_bundle/wrong_bundle_name_sign.hap -> /data/test/resource/bms/install_bundle/"
+              src="res"/>
+      <option name="push" value="test_bundle/first_right.hap -> /data/test/resource/bms/install_bundle/test/"
+              src="res"/>
+      <option name="push" value="test_bundle/second_right.hap -> /data/test/resource/bms/install_bundle/test/"
+              src="res"/>
+    </preparer>
   </target>
   <target name="BmsInstallDaemonTest">
-    <depend resource="install_daemon/." pushpath="/data/test/" findpath="res" presetcmd=""/>
     <preparer>
-   	  <option name="push" value="install_daemon/right.hap -> /data/test/resource/bms/install_daemon/" src="res" />
-	</preparer>
+     <option name="push" value="install_daemon/right.hap -> /data/test/resource/bms/install_daemon/" src="res" />
+    </preparer>
   </target>
   <target name="BmsBundleKitServiceTest">
-    <depend resource="bundle_kit/." pushpath="/data/test/" findpath="res" presetcmd=""/>
-    <depend resource="clone_file/." pushpath="/data/clonefile" findpath="res" presetcmd=""/>
     <preparer>
-   	<option name="push" value="clone_file/CloneAppName.json-> /data/clonefile" src="res" />
-    <option name="push" value="clone_file/BundleNameAllowList.json -> /data/clonefile" src="res" />
-	  <option name="push" value="bundle_kit/test.hap -> /data/test/resource/bms/bundle_kit/" src="res" />
-	</preparer>
+     <option name="push" value="bundle_kit/test.hap -> /data/test/resource/bms/bundle_kit/" src="res" />
+    </preparer>
   </target>
   <target name="BmsBundlePermissionTest">
-    <depend resource="permission_bundle/." pushpath="/data/test/" findpath="res" presetcmd=""/>
-    <preparer>
-	  <option name="push" value="permission_bundle/sign.hap -> /data/test/resource/bms/permission_bundle/" src="res" />
-	  <option name="push" value="permission_bundle/unsign.hap -> /data/test/resource/bms/permission_bundle/" src="res" />
-	</preparer>
-  </target>
-  <target name="BmsBundleCloneTest">
-    <depend resource="clone_file/." pushpath="/data/clonefile" findpath="res" presetcmd=""/>
-    <depend resource="bundle_clone/." pushpath="/data/" findpath="res" presetcmd=""/>
- 	<preparer>
-   	 <option name="push" value="clone_file/BundleNameAllowList.json -> /data/clonefile" src="res" />
-   	 <option name="push" value="clone_file/CloneAppName.json-> /data/clonefile" src="res" />
-   	 <option name="push" value="bundle_clone/bmsDemoBundle.hap -> /data/" src="res" />
-   	 <option name="push" value="bundle_clone/bmsThirdBundleTest1.hap -> /data/" src="res" />
-   	 <option name="push" value="bundle_clone/bmsThirdBundleTest2.hap -> /data/" src="res" />
-   	 <option name="push" value="bundle_clone/bmsThirdBundleTest3.hap -> /data/" src="res" />
-   	 <option name="push" value="bundle_clone/bmsThirdBundleTest4.hap -> /data/" src="res" />
+  <preparer>
+     <option name="push" value="permission_bundle/sign.hap -> /data/test/resource/bms/bundle_permission/" src="res" />
+     <option name="push" value="permission_bundle/unsign.hap -> /data/test/resource/bms/bundle_permission/" src="res" />
     </preparer>
   </target>
 </configuration>

@@ -33,10 +33,12 @@
 
 namespace OHOS {
 namespace AppExecFwk {
+
 enum class DumpFlag {
     DUMP_BUNDLE_LIST = 1,  // corresponse to option "-bundle-list"
     DUMP_ALL_BUNDLE_INFO,  // corresponse to option "-bundle"
     DUMP_BUNDLE_INFO,      // corresponse to option "-bundle [name]"
+    DUMP_SHORTCUT_INFO,    // corresponse to option "-bundle [name] -shortcut-info"
 };
 
 class IBundleMgr : public IRemoteBroker {
@@ -56,6 +58,20 @@ public:
     virtual bool GetApplicationInfo(
         const std::string &appName, const ApplicationFlag flag, const int userId, ApplicationInfo &appInfo) = 0;
     /**
+     * @brief Obtains the ApplicationInfo based on a given bundle name.
+     * @param appName Indicates the application bundle name to be queried.
+     * @param flags Indicates the flag used to specify information contained
+     *             in the ApplicationInfo object that will be returned.
+     * @param userId Indicates the user ID.
+     * @param appInfo Indicates the obtained ApplicationInfo object.
+     * @return Returns true if the application is successfully obtained; returns false otherwise.
+     */
+    virtual bool GetApplicationInfo(
+        const std::string &appName, int32_t flags, int32_t userId, ApplicationInfo &appInfo)
+    {
+        return false;
+    }
+    /**
      * @brief Obtains information about all installed applications of a specified user.
      * @param flag Indicates the flag used to specify information contained
      *             in the ApplicationInfo objects that will be returned.
@@ -66,6 +82,19 @@ public:
     virtual bool GetApplicationInfos(
         const ApplicationFlag flag, const int userId, std::vector<ApplicationInfo> &appInfos) = 0;
     /**
+     * @brief Obtains information about all installed applications of a specified user.
+     * @param flags Indicates the flag used to specify information contained
+     *             in the ApplicationInfo objects that will be returned.
+     * @param userId Indicates the user ID.
+     * @param appInfos Indicates all of the obtained ApplicationInfo objects.
+     * @return Returns true if the application is successfully obtained; returns false otherwise.
+     */
+    virtual bool GetApplicationInfos(
+        int32_t flags, int32_t userId, std::vector<ApplicationInfo> &appInfos)
+    {
+        return false;
+    }
+    /**
      * @brief Obtains the BundleInfo based on a given bundle name.
      * @param bundleName Indicates the application bundle name to be queried.
      * @param flag Indicates the information contained in the BundleInfo object to be returned.
@@ -74,12 +103,33 @@ public:
      */
     virtual bool GetBundleInfo(const std::string &bundleName, const BundleFlag flag, BundleInfo &bundleInfo) = 0;
     /**
+     * @brief Obtains the BundleInfo based on a given bundle name.
+     * @param bundleName Indicates the application bundle name to be queried.
+     * @param flags Indicates the information contained in the BundleInfo object to be returned.
+     * @param bundleInfo Indicates the obtained BundleInfo object.
+     * @return Returns true if the BundleInfo is successfully obtained; returns false otherwise.
+     */
+    virtual bool GetBundleInfo(const std::string &bundleName, int32_t flags, BundleInfo &bundleInfo)
+    {
+        return false;
+    }
+    /**
      * @brief Obtains BundleInfo of all bundles available in the system.
      * @param flag Indicates the flag used to specify information contained in the BundleInfo that will be returned.
      * @param bundleInfos Indicates all of the obtained BundleInfo objects.
      * @return Returns true if the BundleInfos is successfully obtained; returns false otherwise.
      */
     virtual bool GetBundleInfos(const BundleFlag flag, std::vector<BundleInfo> &bundleInfos) = 0;
+    /**
+     * @brief Obtains BundleInfo of all bundles available in the system.
+     * @param flags Indicates the flag used to specify information contained in the BundleInfo that will be returned.
+     * @param bundleInfos Indicates all of the obtained BundleInfo objects.
+     * @return Returns true if the BundleInfos is successfully obtained; returns false otherwise.
+     */
+    virtual bool GetBundleInfos(int32_t flags, std::vector<BundleInfo> &bundleInfos)
+    {
+        return false;
+    }
     /**
      * @brief Obtains the application UID based on the given bundle name and user ID.
      * @param bundleName Indicates the bundle name of the application.
@@ -157,6 +207,18 @@ public:
      */
     virtual bool QueryAbilityInfo(const Want &want, AbilityInfo &abilityInfo) = 0;
     /**
+     * @brief Query the AbilityInfo by the given Want.
+     * @param want Indicates the information of the ability.
+     * @param flags Indicates the information contained in the AbilityInfo object to be returned.
+     * @param userId Indicates the user ID.
+     * @param abilityInfo Indicates the obtained AbilityInfo object.
+     * @return Returns true if the AbilityInfo is successfully obtained; returns false otherwise.
+     */
+    virtual bool QueryAbilityInfo(const Want &want, int32_t flags, int32_t userId, AbilityInfo &abilityInfo)
+    {
+        return false;
+    }
+    /**
      * @brief Query the AbilityInfo of list by the given Want.
      * @param want Indicates the information of the ability.
      * @param abilityInfos Indicates the obtained AbilityInfos object.
@@ -164,12 +226,35 @@ public:
      */
     virtual bool QueryAbilityInfos(const Want &want, std::vector<AbilityInfo> &abilityInfos) = 0;
     /**
+     * @brief Query the AbilityInfo of list by the given Want.
+     * @param want Indicates the information of the ability.
+     * @param flags Indicates the information contained in the AbilityInfo object to be returned.
+     * @param userId Indicates the user ID.
+     * @param abilityInfos Indicates the obtained AbilityInfos object.
+     * @return Returns true if the AbilityInfos is successfully obtained; returns false otherwise.
+     */
+    virtual bool QueryAbilityInfos(
+        const Want &want, int32_t flags, int32_t userId, std::vector<AbilityInfo> &abilityInfos)
+    {
+        return false;
+    }
+    /**
      * @brief Query the AbilityInfo of list for clone by the given Want.
      * @param want Indicates the information of the ability.
      * @param abilityInfos Indicates the obtained AbilityInfos object.
      * @return Returns true if the AbilityInfos is successfully obtained; returns false otherwise.
      */
     virtual bool QueryAbilityInfosForClone(const Want &want, std::vector<AbilityInfo> &abilityInfos) = 0;
+    /**
+     * @brief Query the AllAbilityInfos of list by the given userId.
+     * @param userId Indicates the information of the user.
+     * @param abilityInfos Indicates the obtained AbilityInfos object.
+     * @return Returns true if the AbilityInfos is successfully obtained; returns false otherwise.
+     */
+    virtual bool QueryAllAbilityInfos(int32_t userId, std::vector<AbilityInfo> &abilityInfos)
+    {
+        return false;
+    }
     /**
      * @brief Query the AbilityInfo by ability.uri in config.json.
      * @param abilityUri Indicates the uri of the ability.
@@ -206,6 +291,18 @@ public:
      */
     virtual bool GetBundleArchiveInfo(
         const std::string &hapFilePath, const BundleFlag flag, BundleInfo &bundleInfo) = 0;
+    /**
+     * @brief Obtains information about an application bundle contained in an ohos Ability Package (HAP).
+     * @param hapFilePath Indicates the absolute file path of the HAP.
+     * @param flags Indicates the information contained in the BundleInfo object to be returned.
+     * @param bundleInfo Indicates the obtained BundleInfo object.
+     * @return Returns true if the BundleInfo is successfully obtained; returns false otherwise.
+     */
+    virtual bool GetBundleArchiveInfo(
+        const std::string &hapFilePath, int32_t flags, BundleInfo &bundleInfo)
+    {
+        return false;
+    }
     /**
      * @brief Obtain the HAP module info of a specific ability.
      * @param abilityInfo Indicates the ability.
@@ -480,7 +577,7 @@ public:
      */
     virtual bool CheckBundleNameInAllowList(const std::string &bundleName) = 0;
     enum class Message {
-        GET_APPLICATION_INFO,
+        GET_APPLICATION_INFO = 0,
         GET_APPLICATION_INFOS,
         GET_BUNDLE_INFO,
         GET_BUNDLE_INFOS,
@@ -539,7 +636,15 @@ public:
         NOTIFY_ACTIVITY_LIFE_STATUS,
         REMOVE_CLONED_BUNDLE,
         BUNDLE_CLONE,
-        CHECK_BUNDLE_NAME_IN_ALLOWLIST
+        CHECK_BUNDLE_NAME_IN_ALLOWLIST,
+        QUERY_ABILITY_INFO_MUTI_PARAM,
+        QUERY_ABILITY_INFOS_MUTI_PARAM,
+        QUERY_ALL_ABILITY_INFOS,
+        GET_APPLICATION_INFO_WITH_INT_FLAGS,
+        GET_APPLICATION_INFOS_WITH_INT_FLAGS,
+        GET_BUNDLE_INFO_WITH_INT_FLAGS,
+        GET_BUNDLE_INFOS_WITH_INT_FLAGS,
+        GET_BUNDLE_ARCHIVE_INFO_WITH_INT_FLAGS,
     };
 };
 

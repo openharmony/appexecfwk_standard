@@ -14,8 +14,9 @@
  */
 
 #include <gtest/gtest.h>
-#include <cstdlib>
+
 #include <climits>
+#include <cstdlib>
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -30,6 +31,7 @@ using namespace OHOS::AppExecFwk;
 using OHOS::DelayedSingleton;
 
 namespace {
+
 const std::string TEST_DIR = "/data/test/resource";
 const std::string BUNDLE_FILENAME_1 = "app1.hap";
 const std::string BUNDLE_FILENAME_2 = "app2.hap";
@@ -37,6 +39,7 @@ const std::string BUNDLE_FILENAME_3 = "app3.hap";
 const std::string BUNDLE_FILENAME_4 = "app1.ha";
 const std::string BUNDLE_FILENAME_5 = "app2..ap";
 const std::string BUNDLE_FILENAME_6 = "app3";
+
 }  // namespace
 
 class BmsServiceBundleScanTest : public testing::Test {

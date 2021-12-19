@@ -34,10 +34,12 @@
 #include "module_usage_data_storage.h"
 #include "on_permission_changed_callback_interface.h"
 #include "common_event_manager.h"
+#include "preinstall_data_storage.h"
 
 namespace OHOS {
 namespace AppExecFwk {
-enum class NotifyType { INSTALL, UPDATE, UNINSTALL_BUNDLE, UNINSTALL_MODULE };
+
+enum class NotifyType { INSTALL, UPDATE, UNINSTALL_BUNDLE, UNINSTALL_MODULE, ABILITY_ENABLE, APPLICATION_ENABLE };
 
 enum class InstallState {
     INSTALL_START = 1,
@@ -49,6 +51,7 @@ enum class InstallState {
     UPDATING_START,
     UPDATING_SUCCESS,
     UPDATING_FAIL,
+    ROLL_BACK,
 };
 
 class BundleDataMgr {
@@ -131,17 +134,22 @@ public:
     /**
      * @brief Query the AbilityInfo by the given Want.
      * @param want Indicates the information of the ability.
+     * @param flags Indicates the information contained in the AbilityInfo object to be returned.
+     * @param userId Indicates the user ID.
      * @param abilityInfo Indicates the obtained AbilityInfo object.
      * @return Returns true if the AbilityInfo is successfully obtained; returns false otherwise.
      */
-    bool QueryAbilityInfo(const Want &want, AbilityInfo &abilityInfo) const;
+    bool QueryAbilityInfo(const Want &want, int32_t flags, int32_t userId, AbilityInfo &abilityInfo) const;
     /**
      * @brief Query a AbilityInfo of list by the given Want.
      * @param want Indicates the information of the ability.
-     * @param abilityInfo Indicates the obtained AbilityInfo of list.
+     * @param flags Indicates the information contained in the AbilityInfo object to be returned.
+     * @param userId Indicates the user ID.
+     * @param abilityInfos Indicates the obtained AbilityInfo of list.
      * @return Returns true if the AbilityInfo is successfully obtained; returns false otherwise.
      */
-    bool QueryAbilityInfos(const Want &want, std::vector<AbilityInfo> &abilityInfo) const;
+    bool QueryAbilityInfos(
+        const Want &want, int32_t flags, int32_t userId, std::vector<AbilityInfo> &abilityInfos) const;
     /**
      * @brief Query a AbilityInfo of list for clone by the given Want.
      * @param want Indicates the information of the ability.
@@ -149,6 +157,13 @@ public:
      * @return Returns true if the AbilityInfo is successfully obtained; returns false otherwise.
      */
     bool QueryAbilityInfosForClone(const Want &want, std::vector<AbilityInfo> &abilityInfo);
+    /**
+     * @brief Query a AbilityInfo of list by the given userId.
+     * @param userId Indicates the id of the user.
+     * @param abilityInfo Indicates the obtained AbilityInfo of list.
+     * @return Returns true if the AbilityInfo is successfully obtained; returns false otherwise.
+     */
+    bool QueryAllAbilityInfos(uint32_t userId, std::vector<AbilityInfo> &abilityInfos) const;
     /**
      * @brief Query the AbilityInfo by ability.uri in config.json.
      * @param abilityUri Indicates the uri of the ability.
@@ -166,39 +181,39 @@ public:
     /**
      * @brief Obtains the ApplicationInfo based on a given bundle name.
      * @param appName Indicates the application bundle name to be queried.
-     * @param flag Indicates the flag used to specify information contained
+     * @param flags Indicates the flag used to specify information contained
      *             in the ApplicationInfo object that will be returned.
      * @param userId Indicates the user ID.
      * @param appInfo Indicates the obtained ApplicationInfo object.
      * @return Returns true if the application is successfully obtained; returns false otherwise.
      */
     bool GetApplicationInfo(
-        const std::string &appName, const ApplicationFlag flag, const int userId, ApplicationInfo &appInfo) const;
+        const std::string &appName, int32_t flags, const int userId, ApplicationInfo &appInfo) const;
     /**
      * @brief Obtains information about all installed applications of a specified user.
-     * @param flag Indicates the flag used to specify information contained
+     * @param flags Indicates the flag used to specify information contained
      *             in the ApplicationInfo objects that will be returned.
      * @param userId Indicates the user ID.
      * @param appInfos Indicates all of the obtained ApplicationInfo objects.
      * @return Returns true if the application is successfully obtained; returns false otherwise.
      */
     bool GetApplicationInfos(
-        const ApplicationFlag flag, const int userId, std::vector<ApplicationInfo> &appInfos) const;
+        int32_t flags, const int userId, std::vector<ApplicationInfo> &appInfos) const;
     /**
      * @brief Obtains BundleInfo of all bundles available in the system.
-     * @param flag Indicates the flag used to specify information contained in the BundleInfo that will be returned.
+     * @param flags Indicates the flag used to specify information contained in the BundleInfo that will be returned.
      * @param bundleInfos Indicates all of the obtained BundleInfo objects.
      * @return Returns true if the BundleInfos is successfully obtained; returns false otherwise.
      */
-    bool GetBundleInfos(const BundleFlag flag, std::vector<BundleInfo> &bundleInfos) const;
+    bool GetBundleInfos(int32_t flags, std::vector<BundleInfo> &bundleInfos) const;
     /**
      * @brief Obtains the BundleInfo based on a given bundle name.
      * @param bundleName Indicates the application bundle name to be queried.
-     * @param flag Indicates the information contained in the BundleInfo object to be returned.
+     * @param flags Indicates the information contained in the BundleInfo object to be returned.
      * @param bundleInfo Indicates the obtained BundleInfo object.
      * @return Returns true if the BundleInfo is successfully obtained; returns false otherwise.
      */
-    bool GetBundleInfo(const std::string &bundleName, const BundleFlag flag, BundleInfo &bundleInfo) const;
+    bool GetBundleInfo(const std::string &bundleName, int32_t flags, BundleInfo &bundleInfo) const;
     /**
      * @brief Obtains the BundleInfo of application bundles based on the specified metaData.
      * @param metaData Indicates the metadata to get in the bundle.
@@ -511,6 +526,27 @@ public:
      * @return Returns true if this function is successfully called; returns false otherwise.
      */
     bool GetClonedBundleName(const std::string &bundleName, std::string &newName);
+    /**
+     * @brief Obtains the PreInstallBundleInfo objects provided by bundleName.
+     * @param bundleName Indicates the bundle name of the application.
+     * @param preInstallBundleInfo Indicates information about the PreInstallBundleInfo.
+     * @return Returns true if this function is successfully called; returns false otherwise.
+     */
+    bool GetPreInstallBundleInfo(const std::string &bundleName, PreInstallBundleInfo &preInstallBundleInfo);
+    /**
+     * @brief Save new PreInstallBundleInfo.
+     * @param bundleName Indicates the bundle name.
+     * @param preInstallBundleInfo Indicates the PreInstallBundleInfo object to be save.
+     * @return Returns true if this function is successfully called; returns false otherwise.
+     */
+    bool SavePreInstallBundleInfo(const std::string &bundleName, const PreInstallBundleInfo &preInstallBundleInfo);
+    /**
+     * @brief Save installation mark to datebase storage.
+     * @param info Indicates the innerBundleInfo of the bundle which needs to save installation mark.
+     * @param isAppExisted Indicates whether the application exists in the database storage or not.
+     * @return Returns true if this function is successfully called; returns false otherwise.
+     */
+    bool SaveInstallMark(const InnerBundleInfo &info, bool isAppExisted) const;
 
 private:
     /**
@@ -555,7 +591,20 @@ private:
      * @return Returns true if this function is successfully called; returns false otherwise.
      */
     bool RecycleUidAndGid(const InnerBundleInfo &info);
-
+    /**
+     * @brief Implicit query abilityInfos by the given Want.
+     * @param want Indicates the information of the ability.
+     * @param flags Indicates the information contained in the AbilityInfo object to be returned.
+     * @param userId Indicates the user ID.
+     * @param abilityInfos Indicates the obtained AbilityInfo of list.
+     * @return Returns true if the AbilityInfo is successfully obtained; returns false otherwise.
+     */
+    bool ImplicitQueryAbilityInfos(
+        const Want &want, int32_t flags, int32_t userId, std::vector<AbilityInfo> &abilityInfos) const;
+    void GetMatchAbilityInfos(
+        const Want &want, int32_t flags, const InnerBundleInfo &info, std::vector<AbilityInfo> &abilityInfos) const;
+    bool ExplicitQueryAbilityInfo(const std::string &bundleName, const std::string &abilityName,
+        int32_t flags, int32_t userId, AbilityInfo &abilityInfo) const;
 private:
     mutable std::mutex bundleInfoMutex_;
     mutable std::mutex stateMutex_;
@@ -583,6 +632,7 @@ private:
     std::multimap<InstallState, InstallState> transferStates_;
     std::shared_ptr<IBundleDataStorage> dataStorage_;
     std::shared_ptr<ModuleUsageRecordStorage> usageRecordStorage_;
+    std::shared_ptr<PreInstallDataStorage> preInstallDataStorage_;
     std::set<sptr<OnPermissionChangedCallback>> allPermissionsCallbacks_;
     // map<uid, callback>.
     std::map<int32_t, std::set<sptr<OnPermissionChangedCallback>>> permissionsCallbacks_;

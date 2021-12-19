@@ -13,17 +13,18 @@
  * limitations under the License.
  */
 
-#ifndef BUNDLE_MGR_H_
-#define BUNDLE_MGR_H_
+#ifndef BUNDLE_MGR_H
+#define BUNDLE_MGR_H
 #include <vector>
 
 #include "napi/native_common.h"
 #include "napi/native_node_api.h"
 
+#include "application_info.h"
+#include "bundle_mgr_interface.h"
+#include "cleancache_callback.h"
 #include "hilog_wrapper.h"
 #include "ohos/aafwk/content/want.h"
-#include "bundle_mgr_interface.h"
-#include "application_info.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -38,8 +39,11 @@ struct AsyncAbilityInfoCallbackInfo {
     napi_deferred deferred;
     napi_ref callback = 0;
     OHOS::AAFwk::Want want;
+    int32_t flags = 0;
+    int32_t userId = 0;
     std::vector<OHOS::AppExecFwk::AbilityInfo> abilityInfos;
     bool ret = false;
+    int32_t err = 0;
 };
 
 struct AsyncBundleInfoCallbackInfo {
@@ -63,6 +67,8 @@ struct AsyncApplicationInfoCallbackInfo {
     int userId;
     OHOS::AppExecFwk::ApplicationInfo appInfo;
     bool ret = false;
+    int32_t err = 0;
+    std::string message;
 };
 
 struct AsyncPermissionDefCallbackInfo {
@@ -93,6 +99,8 @@ struct AsyncBundleInfosCallbackInfo {
     OHOS::AppExecFwk::BundleFlag bundleFlag;
     std::vector<OHOS::AppExecFwk::BundleInfo> bundleInfos;
     bool ret = false;
+    int32_t err = 0;
+    std::string message;
 };
 
 struct AsyncApplicationInfosCallbackInfo {
@@ -104,6 +112,8 @@ struct AsyncApplicationInfosCallbackInfo {
     int userId;
     std::vector<OHOS::AppExecFwk::ApplicationInfo> appInfos;
     bool ret = false;
+    int32_t err = 0;
+    std::string message;
 };
 
 struct InstallResult {
@@ -117,9 +127,11 @@ struct AsyncInstallCallbackInfo {
     napi_deferred deferred;
     napi_ref callback = 0;
     std::vector<std::string> hapFiles;
+    std::string bundleName;
     std::string param;
     OHOS::AppExecFwk::InstallParam installParam;
     InstallResult installResult;
+    int32_t errCode = 0;
 };
 
 struct AsyncGetBundleInstallerCallbackInfo {
@@ -167,6 +179,19 @@ struct AsyncShortcutInfosCallbackInfo {
     std::string bundleName;
     std::vector<OHOS::AppExecFwk::ShortcutInfo> shortcutInfos;
     bool ret = false;
+    int32_t err = 0;
+    std::string message;
+};
+
+struct AsyncLaunchWantForBundleCallbackInfo {
+    napi_env env;
+    napi_async_work asyncWork;
+    napi_deferred deferred;
+    napi_ref callback = 0;
+    std::string bundleName;
+    OHOS::AAFwk::Want want;
+    bool ret = false;
+    int32_t err = 0;
 };
 
 struct AsyncModuleUsageRecordsCallbackInfo {
@@ -200,6 +225,34 @@ struct AsyncUnregisterPermissions {
     bool ret = false;
 };
 
+struct AsyncHandleBundleContext {
+    napi_env env = nullptr;
+    napi_async_work asyncWork = nullptr;
+    napi_deferred deferred = nullptr;
+    napi_ref callbackRef = 0;
+    napi_ref handleCallback = nullptr;
+    OHOS::sptr<CleanCacheCallback> cleanCacheCallback;
+    std::string bundleName;
+    std::string className;
+    int32_t labelId;
+    int32_t iconId;
+    bool ret = false;
+    int32_t err = 0;
+};
+
+struct EnabledInfo {
+    napi_env env = nullptr;
+    napi_async_work asyncWork = nullptr;
+    napi_deferred deferred = nullptr;
+    napi_ref callbackRef = 0;
+    std::string bundleName;
+    OHOS::AppExecFwk::AbilityInfo abilityInfo;
+    bool isEnable = false;
+    bool result = false;
+    int32_t errCode = 0;
+    std::string errMssage;
+};
+
 extern napi_ref g_classBundleInstaller;
 
 napi_value GetApplicationInfos(napi_env env, napi_callback_info info);
@@ -208,9 +261,11 @@ napi_value QueryAbilityInfos(napi_env env, napi_callback_info info);
 napi_value GetBundleInfos(napi_env env, napi_callback_info info);
 napi_value GetBundleInfo(napi_env env, napi_callback_info info);
 napi_value GetBundleArchiveInfo(napi_env env, napi_callback_info info);
+napi_value GetLaunchWantForBundle(napi_env env, napi_callback_info info);
 napi_value GetPermissionDef(napi_env env, napi_callback_info info);
 napi_value GetBundleInstaller(napi_env env, napi_callback_info info);
 napi_value Install(napi_env env, napi_callback_info info);
+napi_value Recover(napi_env env, napi_callback_info info);
 napi_value Uninstall(napi_env env, napi_callback_info info);
 napi_value BundleInstallerConstructor(napi_env env, napi_callback_info info);
 napi_value GetAllFormsInfo(napi_env env, napi_callback_info info);
@@ -221,6 +276,10 @@ napi_value GetModuleUsageRecords(napi_env env, napi_callback_info info);
 napi_value RegisterAllPermissionsChanged(napi_env env, napi_callback_info info);
 napi_value UnregisterPermissionsChanged(napi_env env, napi_callback_info info);
 napi_value CheckPermission(napi_env env, napi_callback_info info);
+napi_value ClearBundleCache(napi_env env, napi_callback_info info);
+napi_value SetApplicationEnabled(napi_env env, napi_callback_info info);
+napi_value SetAbilityEnabled(napi_env env, napi_callback_info info);
+bool UnwrapAbilityInfo(napi_env env, napi_value param, OHOS::AppExecFwk::AbilityInfo& abilityInfo);
 void CreateAbilityTypeObject(napi_env env, napi_value value);
 void CreateAbilitySubTypeObject(napi_env env, napi_value value);
 void CreateDisplayOrientationObject(napi_env env, napi_value value);

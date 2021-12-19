@@ -17,6 +17,7 @@
 #define FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_BASE_BUNDLE_INSTALLER_H
 
 #include <string>
+#include <map>
 
 #include "nocopyable.h"
 
@@ -24,6 +25,8 @@
 #include "inner_bundle_info.h"
 #include "install_param.h"
 #include "bundle_clone_mgr.h"
+#include "bundle_data_mgr.h"
+#include "bundle_verify_mgr.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -36,13 +39,14 @@ protected:
     enum class InstallerState {
         INSTALL_START,
         INSTALL_BUNDLE_CHECKED = 5,
-        INSTALL_PARSED = 10,
-        INSTALL_SIGNATURE_CHECKED = 15,
+        INSTALL_SIGNATURE_CHECKED = 10,
+        INSTALL_PARSED = 15,
         INSTALL_PERMS_REQ = 20,
+        INSTALL_VERSION_AND_BUNDLENAME_CHECKED = 30,
         INSTALL_CREATDIR = 40,
         INSTALL_EXTRACTED = 60,
-        INSTALL_RENAMED = 80,
-        INSTALL_INFO_SAVED = 90,
+        INSTALL_INFO_SAVED = 80,
+        INSTALL_RENAMED = 90,
         INSTALL_SUCCESS = 100,
         INSTALL_FAILED,
     };
@@ -57,6 +61,16 @@ protected:
      */
     ErrCode InstallBundle(
         const std::string &bundlePath, const InstallParam &installParam, const Constants::AppType appType);
+    /**
+     * @brief The main function for system and normal bundle install.
+     * @param bundlePaths Indicates the paths for storing the HAP file sof the application
+     *                   to install or update.
+     * @param installParam Indicates the install parameters.
+     * @param appType Indicates the application type.
+     * @return Returns ERR_OK if the application install successfully; returns error code otherwise.
+     */
+    ErrCode InstallBundle(const std::vector<std::string> &bundlePaths, const InstallParam &installParam,
+        const Constants::AppType appType);
     /**
      * @brief The main function for uninstall a bundle.
      * @param bundleName Indicates the bundle name of the application to uninstall.
@@ -97,6 +111,13 @@ protected:
     {
         state_ = state;
     }
+    /**
+     * @brief The main function for bundle install by bundleName.
+     * @param bundleName Indicates the bundleName of the application to install.
+     * @param installParam Indicates the install parameters.
+     * @return Returns ERR_OK if the application install successfully; returns error code otherwise.
+     */
+    ErrCode Recover(const std::string &bundleName, const InstallParam &installParam);
 
 private:
     /**
@@ -108,8 +129,11 @@ private:
      * @param uid Indicates the uid of the application.
      * @return Returns ERR_OK if the bundle install successfully; returns error code otherwise.
      */
-    ErrCode ProcessBundleInstall(const std::string &bundlePath, const InstallParam &installParam,
+    ErrCode ProcessBundleInstall(const std::vector<std::string> &bundlePaths, const InstallParam &installParam,
         const Constants::AppType appType, int32_t &uid);
+
+    ErrCode InnerProcessBundleInstall(std::unordered_map<std::string, InnerBundleInfo> &newInfos,
+        InnerBundleInfo &oldInfo, const InstallParam &installParam, int32_t &uid);
     /**
      * @brief The real procedure function for uninstall a bundle.
      * @param bundleName Indicates the bundle name of the application to uninstall.
@@ -160,21 +184,21 @@ private:
      * @param info Indicates the InnerBundleInfo object of a bundle.
      * @return Returns ERR_OK if the bundle extract and renamed successfully; returns error code otherwise.
      */
-    ErrCode ExtractModuleAndRename(InnerBundleInfo &info);
+    ErrCode ExtractModule(InnerBundleInfo &info, const std::string &modulePath);
     /**
      * @brief Remove the code and data directories of a bundle.
      * @param info Indicates the InnerBundleInfo object of a bundle.
      * @param isUninstall Indicates that whether the remove is in an uninstall process.
      * @return Returns ERR_OK if the bundle directories removed successfully; returns error code otherwise.
      */
-    ErrCode RemoveBundleAndDataDir(InnerBundleInfo &info, bool isUninstall) const;
+    ErrCode RemoveBundleAndDataDir(const InnerBundleInfo &info, bool isUninstall) const;
     /**
      * @brief Remove the code and data directories of a module in a bundle.
      * @param info Indicates the InnerBundleInfo object of a bundle.
      * @param modulePackage Indicates the module to be removed.
      * @return Returns ERR_OK if the bundle directories removed successfully; returns error code otherwise.
      */
-    ErrCode RemoveModuleAndDataDir(InnerBundleInfo &info, const std::string &modulePackage) const;
+    ErrCode RemoveModuleAndDataDir(const InnerBundleInfo &info, const std::string &modulePackage) const;
     /**
      * @brief Parse the bundle config.json file.
      * @param bundleFilePath Indicates the HAP file path.
@@ -187,13 +211,13 @@ private:
      * @param info Indicates the InnerBundleInfo object of a bundle under installing.
      * @return Returns ERR_OK if the module directory removed successfully; returns error code otherwise.
      */
-    ErrCode RemoveModuleDir(InnerBundleInfo &info) const;
+    ErrCode RemoveModuleDir(const std::string &modulePath) const;
     /**
      * @brief Extract files of the current installing module package.
      * @param info Indicates the InnerBundleInfo object of a bundle under installing.
      * @return Returns ERR_OK if the module files extraced successfully; returns error code otherwise.
      */
-    ErrCode ExtractModuleFiles(InnerBundleInfo &info);
+    ErrCode ExtractModuleFiles(const InnerBundleInfo &info, const std::string &modulePath);
     /**
      * @brief Create the data directories of current installing module package.
      * @param info Indicates the InnerBundleInfo object of a bundle under installing.
@@ -205,19 +229,21 @@ private:
      * @param info Indicates the InnerBundleInfo object of a bundle under installing.
      * @return Returns ERR_OK if the module directory removed successfully; returns error code otherwise.
      */
-    ErrCode RemoveModuleDataDir(InnerBundleInfo &info) const;
+    ErrCode RemoveModuleDataDir(const InnerBundleInfo &info) const;
+
+    ErrCode RemoveModuleAndDataDir(const std::string &moduleDir, const std::string &bundleDataDir) const;
     /**
      * @brief Rename the directory of current installing module package.
      * @param info Indicates the InnerBundleInfo object of a bundle under installing.
      * @return Returns ERR_OK if the module directory renamed successfully; returns error code otherwise.
      */
-    ErrCode RenameModuleDir(InnerBundleInfo &info) const;
+    ErrCode RenameModuleDir(const InnerBundleInfo &info) const;
     /**
      * @brief Modify the install directory path for different install type.
      * @param info Indicates the InnerBundleInfo object of a bundle under installing.
      * @return Returns true if the path set successfully; returns false otherwise.
      */
-    bool ModifyInstallDirByHapType(InnerBundleInfo &info);
+    ErrCode ModifyInstallDirByHapType(const InstallParam &installParam, const Constants::AppType appType);
     /**
      * @brief Update the bundle paths in the InnerBundleInfo object.
      * @param info Indicates the InnerBundleInfo object of a bundle under installing.
@@ -238,7 +264,7 @@ private:
      * @param oldInfo Indicates the exist InnerBundleInfo object get from the database.
      * @return Returns ERR_OK if the module updating successfully; returns error code otherwise.
      */
-    ErrCode ProcessModuleUpdate(InnerBundleInfo &newInfo, InnerBundleInfo &oldInfo);
+    ErrCode ProcessModuleUpdate(InnerBundleInfo &newInfo, InnerBundleInfo &oldInfo, bool isReplace);
     /**
      * @brief try to get the bundle info to decide use install or update.
      * @param newInfo Indicates the InnerBundleInfo object parsed from the config.json in the HAP package.
@@ -247,7 +273,99 @@ private:
      * @return Returns ERR_OK if the bundle install successfully; returns error code otherwise.
      */
     ErrCode ProcessBundleStatus(InnerBundleInfo &newInfo, int32_t &uid, const InstallFlag &installFlag);
-
+    /**
+     * @brief The real procedure for bundle install by bundleName.
+     * @param bundleName Indicates the bundleName the application to install.
+     * @param installParam Indicates the install parameters.
+     * @param uid Indicates the uid of the application.
+     * @return Returns ERR_OK if the bundle install successfully; returns error code otherwise.
+     */
+    ErrCode ProcessRecover(
+        const std::string &bundleName, const InstallParam &installParam, int32_t &uid);
+    /**
+     * @brief Check signature info of multiple haps.
+     * @param bundlePaths Indicates the file paths of all HAP packages.
+     * @param installParam Indicates the install parameters.
+     * @param hapVerifyRes Indicates the signature info.
+     * @return Returns ERR_OK if the every hap has signature info and all haps have same signature info.
+     */
+    ErrCode CheckMultipleHapsSignInfo(const std::vector<std::string> &bundlePaths, const InstallParam &installParam,
+        std::vector<Security::Verify::HapVerifyResult> &hapVerifyRes) const;
+    /**
+     * @brief To parse hap files and to obtain innerBundleInfo of each hap.
+     * @param bundlePaths Indicates the file paths of all HAP packages.
+     * @param installParam Indicates the install parameters.
+     * @param appType Indicates the app type of the hap.
+     * @param hapVerifyRes Indicates all signature info of all haps.
+     * @param infos Indicates the innerBundleinfo of each hap.
+     * @return Returns ERR_OK if each hap is parsed successfully; returns error code otherwise.
+     */
+    ErrCode ParseHapFiles(const std::vector<std::string> &bundlePaths, const InstallParam &installParam,
+        const Constants::AppType appType, std::vector<Security::Verify::HapVerifyResult> &hapVerifyRes,
+        std::unordered_map<std::string, InnerBundleInfo> &infos);
+    /**
+     * @brief To check the version code and bundleName in all haps.
+     * @param infos .Indicates all innerBundleInfo for all haps need to be installed.
+     * @return Returns ERR_OK if haps checking successfully; returns error code otherwise.
+     */
+    ErrCode CheckAppLabelInfo(const std::unordered_map<std::string, InnerBundleInfo> &infos);
+    /**
+     * @brief To roll back when the installation is failed.
+     * @param infos .Indicates the innerBundleInfo needs to be roll back.
+     * @param oldInfo Indicates the original innerBundleInfo of the bundle.
+     * @return Returns ERR_OK if roll back successfully; returns error code otherwise.
+     */
+    void RollBack(const InnerBundleInfo &info, InnerBundleInfo &oldInfo);
+    /**
+     * @brief To check the version code and bundleName in all haps.
+     * @param newInfos .Indicates all innerBundleInfo for all haps need to be rolled back.
+     * @param oldInfo Indicates the original innerBundleInfo of the bundle.
+     * @return Returns ERR_OK if roll back successfully; returns error code otherwise.
+     */
+    void RollBack(const std::unordered_map<std::string, InnerBundleInfo> &newInfos, InnerBundleInfo &oldInfo);
+    /**
+     * @brief To remove innerBundleInfo or moduleInfo of the corresponding haps.
+     * @param bundleName Indicates the bundle name of the bundle which needs to be removed innerBundleInfo or
+     *                   moudleInfo.
+     * @param packageName Indicates the package name of the hap which needs to be removed the moduleInfo.
+     * @return Returns ERR_OK if the removing is successful; returns error code otherwise.
+     */
+    void RemoveInfo(const std::string &bundleName, const std::string &packageName);
+    /**
+     * @brief To roll back the moduleInfo of the corresponding haps.
+     * @param bundleName Indicates the bundle name of the bundle which needs to be rolled back the moudleInfo.
+     * @param oldInfo Indicates the original innerBundleInfo of the bundle.
+     * @return Returns ERR_OK if the rollback is successful; returns error code otherwise.
+     */
+    void RollBackMoudleInfo(const std::string &bundleName, InnerBundleInfo &oldInfo);
+    /**
+     * @brief To obtain the innerBundleInfo of the corresponding hap.
+     * @param info Indicates the innerBundleInfo obtained.
+     * @param isAppExist Indicates if the innerBundleInfo is existed or not.
+     * @return Returns ERR_OK if the innerBundleInfo is obtained successfully; returns error code otherwise.
+     */
+    bool GetInnerBundleInfo(InnerBundleInfo &info, bool &isAppExist);
+    /**
+     * @brief To check whether the version code is compatible or not.
+     * @param oldInfo Indicates the original innerBundleInfo of the bundle.
+     * @param newInfo Indicates the innerBundleInfo of the hap needs to be installed or updated.
+     * @return Returns ERR_OK if version code is checked successfully; returns error code otherwise.
+     */
+    ErrCode CheckVersionCompatibility(const InnerBundleInfo &oldInfo);
+    /**
+     * @brief To uninstall lower version feature haps.
+     * @param info Indicates the innerBundleInfo of the bundle.
+     * @param packageVec Indicates the array of package names of the high version entry or feature hap.
+     * @return Returns ERR_OK if uninstall successfully; returns error code otherwise.
+     */
+    ErrCode UninstallLowerVersionFeature(const std::vector<std::string> &packageVec);
+    /**
+     * @brief Check whether the disk path memory is available for installing the hap.
+     * @param bundlePath Indicates the file path.
+     * @param appType Indicates the bundle type of the application.
+     * @return Returns ERR_OK if system memory is adequate; returns error code otherwise.
+     */
+    ErrCode CheckSystemSize(const std::string &bundlePath, const Constants::AppType appType) const;
 private:
     InstallerState state_ = InstallerState::INSTALL_START;
     std::shared_ptr<BundleDataMgr> dataMgr_ = nullptr;  // this pointer will get when public functions called
@@ -259,11 +377,34 @@ private:
     std::string baseDataPath_;
     std::string modulePackage_;
     std::string mainAbility_;
+    // key is package name, value is boolean
+    std::unordered_map<std::string, bool> installedModules_;
     bool isAppExist_ = false;
+    bool isContainEntry_ = false;
+    uint32_t versionCode_ = 0;
+    // value is packageName for uninstalling
+    bool isFeatureNeedUninstall_ = false;
+    std::vector<std::string> uninstallModuleVec_;
 
     DISALLOW_COPY_AND_MOVE(BaseBundleInstaller);
-};
 
+#define CHECK_RESULT_WITHOUT_ROLLBACK(errcode, errmsg)                             \
+    do {                                                                           \
+        if (errcode != ERR_OK) {                                                   \
+            APP_LOGE(errmsg, errcode);                                             \
+            return errcode;                                                        \
+        }                                                                          \
+    } while (0)
+
+#define CHECK_RESULT_WITH_ROLLBACK(errcode, errmsg, newInfos, oldInfo)             \
+    do {                                                                           \
+        if (errcode != ERR_OK) {                                                   \
+            APP_LOGE(errmsg, errcode);                                             \
+            RollBack(newInfos, oldInfo);                                           \
+            return errcode;                                                        \
+        }                                                                          \
+    } while (0)
+};
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_BASE_BUNDLE_INSTALLER_H

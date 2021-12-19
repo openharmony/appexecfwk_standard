@@ -20,9 +20,9 @@
 #include <unistd.h>
 
 #include "app_log_wrapper.h"
+#include "bundle_extractor.h"
 #include "bundle_mgr_service.h"
 #include "bundle_parser.h"
-#include "bundle_extractor.h"
 #include "bundle_scanner.h"
 
 using namespace testing::ext;
@@ -34,7 +34,7 @@ const std::string TEST_DIR = "bundle_scan_module_test";
 const std::string BUNDLE_FILENAME_NORMAL = "t11.hap";
 const std::string BUNDLE_FILENAME_ABNORMAL = "t11.rpk";
 const string RESOURCE_ROOT_PATH = "/hos/test/bms_bundle/";
-const int CYCLE_NUMBER = 1000;
+const int CYCLE_NUMBER = 10;
 }  // namespace
 
 class BmsServiceStartModuleTest : public testing::Test {

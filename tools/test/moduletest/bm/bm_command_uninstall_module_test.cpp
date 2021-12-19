@@ -19,11 +19,11 @@
 #include "bundle_command.h"
 #undef private
 #include "bundle_constants.h"
-#include "mock_bundle_mgr_host.h"
-#include "mock_bundle_installer_host.h"
-#include "iremote_object.h"
-#include "iremote_broker.h"
 #include "bundle_installer_interface.h"
+#include "iremote_broker.h"
+#include "iremote_object.h"
+#include "mock_bundle_installer_host.h"
+#include "mock_bundle_mgr_host.h"
 
 using namespace testing::ext;
 using namespace OHOS;

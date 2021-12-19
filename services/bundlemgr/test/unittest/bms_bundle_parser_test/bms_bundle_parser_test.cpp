@@ -18,12 +18,12 @@
 #include <gtest/gtest.h>
 
 #include "app_log_wrapper.h"
-#include "common_profile.h"
-#include "json_constants.h"
-#include "bundle_extractor.h"
 #include "bundle_constants.h"
+#include "bundle_extractor.h"
 #include "bundle_parser.h"
 #include "bundle_profile.h"
+#include "common_profile.h"
+#include "json_constants.h"
 
 using namespace testing::ext;
 using namespace OHOS;
@@ -32,6 +32,7 @@ using namespace OHOS::AppExecFwk::Constants;
 using namespace OHOS::AppExecFwk::ProfileReader;
 
 namespace {
+
 const std::string RESOURCE_ROOT_PATH = "/data/test/resource/bms/parse_bundle/";
 const std::string NEW_APP = "new";
 const std::string BREAK_ZIP = "break_zip";
@@ -45,7 +46,6 @@ const nlohmann::json CONFIG_JSON = R"(
     {
         "app": {
             "bundleName": "com.example.hiworld.himusic",
-            "singleUser": true,
             "vendor": "example",
             "version": {
                 "code": 2,
@@ -197,6 +197,7 @@ const nlohmann::json CONFIG_JSON = R"(
         }
     }
 )"_json;
+
 }  // namespace
 
 class BmsBundleParserTest : public testing::Test {
@@ -328,8 +329,8 @@ void BmsBundleParserTest::GetProfileTypeErrorProps(nlohmann::json &typeErrorProp
     typeErrorProps[BUNDLE_MODULE_PROFILE_KEY_AUTO_DESIGN_WIDTH] = JsonConstants::NOT_BOOL_TYPE;
     // BUNDLE_MODULE_PROFILE_KEY_SHORTCUTS
     typeErrorProps[BUNDLE_MODULE_PROFILE_KEY_SHORTCUT_ID] = JsonConstants::NOT_STRING_TYPE;
-    typeErrorProps[BUNDLE_MODULE_PROFILE_KEY_SHORTCUT_WANTS] = JsonConstants::NOT_STRING_TYPE;
-    // BUNDLE_MODULE_PROFILE_KEY_SHORTCUT_WANTS
+    typeErrorProps[BUNDLE_MODULE_PROFILE_KEY_SHORTCUT_INTENTS] = JsonConstants::NOT_STRING_TYPE;
+    // BUNDLE_MODULE_PROFILE_KEY_SHORTCUT_INTENTS
     typeErrorProps[BUNDLE_MODULE_PROFILE_KEY_TARGET_CLASS] = JsonConstants::NOT_STRING_TYPE;
     typeErrorProps[BUNDLE_MODULE_PROFILE_KEY_TARGET_BUNDLE] = JsonConstants::NOT_STRING_TYPE;
 }
@@ -533,8 +534,8 @@ HWTEST_F(BmsBundleParserTest, TestParse_0800, Function | SmallTest | Level0)
         BUNDLE_MODULE_PROFILE_KEY_DESIGN_WIDTH,
         BUNDLE_MODULE_PROFILE_KEY_AUTO_DESIGN_WIDTH,
         // sub BUNDLE_MODULE_PROFILE_KEY_SHORTCUTS
-        BUNDLE_MODULE_PROFILE_KEY_SHORTCUT_WANTS,
-        // sub BUNDLE_MODULE_PROFILE_KEY_SHORTCUT_WANTS
+        BUNDLE_MODULE_PROFILE_KEY_SHORTCUT_INTENTS,
+        // sub BUNDLE_MODULE_PROFILE_KEY_SHORTCUT_INTENTS
         BUNDLE_MODULE_PROFILE_KEY_TARGET_CLASS,
         BUNDLE_MODULE_PROFILE_KEY_TARGET_BUNDLE,
     };
@@ -828,12 +829,12 @@ HWTEST_F(BmsBundleParserTest, TestParse_2400, Function | SmallTest | Level1)
             "jsComponentName": "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-",
             "deepLink": "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-",
             "metaData": {
-                "customizeData": [
-                    {
-                        "name": "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-",
-                        "value": "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-"
-                    }
-                ]
+              "customizeData": [
+                {
+                  "name": "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-",
+                  "value": "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-"
+                }
+              ]
             }
           }
         ],
@@ -861,18 +862,18 @@ HWTEST_F(BmsBundleParserTest, TestParse_2500, Function | SmallTest | Level1)
     errorFormsJson[BUNDLE_PROFILE_KEY_MODULE][BUNDLE_MODULE_PROFILE_KEY_ABILITIES] = R"(
         [{
         "skills": [
-            {
-                "entities": [
-                "entity.system.home",
-                "flag.home.intent.from.system"
-                ],
-                "actions": [
-                    "action.system.home"
-                ]
-            }
+          {
+            "entities": [
+              "entity.system.home",
+              "flag.home.intent.from.system"
+            ],
+            "actions": [
+              "action.system.home"
+            ]
+          }
         ],
         "forms": [{
-                }],
+                 }],
         "name": "com.example.napi_test_suite.MainAbility",
         "icon": "$media:icon",
         "description": "$string:mainability_description",

@@ -21,8 +21,6 @@
 #include "nocopyable.h"
 #include "status_receiver_host.h"
 
-namespace OHOS {
-namespace AppExecFwk {
 class InstallerCallback : public OHOS::AppExecFwk::StatusReceiverHost {
 public:
     InstallerCallback() = default;
@@ -38,6 +36,5 @@ private:
     std::promise<std::string> resultMsgSignal_;
     DISALLOW_COPY_AND_MOVE(InstallerCallback);
 };
-}  // namespace AppExecFwk
-}  // namespace OHOS
+
 #endif  // INSTALLER_CALLBACK_H

@@ -15,8 +15,6 @@
 
 #include "installer_callback.h"
 
-namespace OHOS {
-namespace AppExecFwk {
 void InstallerCallback::OnFinished(const int32_t resultCode, [[maybe_unused]] const std::string &resultMsg)
 {
     resultCodeSignal_.set_value(resultCode);
@@ -41,5 +39,3 @@ std::string InstallerCallback::GetResultMsg()
     future.wait();
     return future.get();
 }
-}  // namespace AppExecFwk
-}  // namespace OHOS

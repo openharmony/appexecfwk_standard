@@ -24,6 +24,7 @@
 
 namespace OHOS {
 namespace AppExecFwk {
+
 using ZipPos = ZPOS64_T;
 using CentralDirEntry = struct CentralDirEntry;
 using LocalHeader = struct LocalHeader;
@@ -297,6 +298,7 @@ private:
     ZipPos fileLength_ = 0;
     bool isOpen_ = false;
 };
+
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_ZIP_FILE_H

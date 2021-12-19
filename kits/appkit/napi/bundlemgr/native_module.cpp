@@ -17,9 +17,9 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "bundle_mgr.h"
 #include "napi/native_api.h"
 #include "napi/native_node_api.h"
-#include "bundle_mgr.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -95,6 +95,7 @@ static napi_value Init(napi_env env, napi_value exports)
         DECLARE_NAPI_FUNCTION("getBundleInfos", GetBundleInfos),
         DECLARE_NAPI_FUNCTION("getBundleInfo", GetBundleInfo),
         DECLARE_NAPI_FUNCTION("getBundleArchiveInfo", GetBundleArchiveInfo),
+        DECLARE_NAPI_FUNCTION("getLaunchWantForBundle", GetLaunchWantForBundle),
         DECLARE_NAPI_FUNCTION("getPermissionDef", GetPermissionDef),
         DECLARE_NAPI_FUNCTION("queryAbilityByWant", QueryAbilityInfos),
         DECLARE_NAPI_FUNCTION("getBundleInstaller", GetBundleInstaller),
@@ -106,6 +107,9 @@ static napi_value Init(napi_env env, napi_value exports)
         DECLARE_NAPI_FUNCTION("on", RegisterAllPermissionsChanged),
         DECLARE_NAPI_FUNCTION("off", UnregisterPermissionsChanged),
         DECLARE_NAPI_FUNCTION("checkPermission", CheckPermission),
+        DECLARE_NAPI_FUNCTION("cleanBundleCacheFiles", ClearBundleCache),
+        DECLARE_NAPI_FUNCTION("setApplicationEnabled", SetApplicationEnabled),
+        DECLARE_NAPI_FUNCTION("setAbilityEnabled", SetAbilityEnabled),
         DECLARE_NAPI_PROPERTY("AbilityType", nAbilityType),
         DECLARE_NAPI_PROPERTY("AbilitySubType", nAbilitySubType),
         DECLARE_NAPI_PROPERTY("DisplayOrientation", nDisplayOrientation),
@@ -126,6 +130,7 @@ static napi_value Init(napi_env env, napi_value exports)
     napi_value m_classBundleInstaller;
     napi_property_descriptor properties[] = {
         DECLARE_NAPI_FUNCTION("install", Install),
+        DECLARE_NAPI_FUNCTION("recover", Recover),
         DECLARE_NAPI_FUNCTION("uninstall", Uninstall),
     };
     NAPI_CALL(env,

@@ -19,12 +19,13 @@
 #include "parcel.h"
 #include "string_ex.h"
 
-#include "appexecfwk_errors.h"
 #include "app_log_wrapper.h"
+#include "appexecfwk_errors.h"
 
 namespace OHOS {
 namespace AppExecFwk {
 namespace {
+
 std::string TransformResult(ErrCode resultCode)
 {
     switch (resultCode) {
@@ -42,8 +43,8 @@ std::string TransformResult(ErrCode resultCode)
             return "ERR_APPEXECFWK_INSTALL_VERIFICATION_FAILED";
         case ERR_APPEXECFWK_INSTALL_NO_SIGNATURE_INFO:
             return "ERR_APPEXECFWK_INSTALL_NO_SIGNATURE_INFO";
-        case ERR_APPEXECFWK_INSTALL_UPDATE_INCOMPATIBLE:
-            return "ERR_APPEXECFWK_INSTALL_UPDATE_INCOMPATIBLE";
+        case ERR_APPEXECFWK_INSTALL_SIGN_INFO_INCONSISTENT:
+            return "ERR_APPEXECFWK_INSTALL_SIGN_INFO_INCONSISTENT";
         case ERR_APPEXECFWK_INSTALL_PARAM_ERROR:
             return "ERR_APPEXECFWK_INSTALL_PARAM_ERROR";
         case ERR_APPEXECFWK_INSTALL_PERMISSION_DENIED:
@@ -68,6 +69,22 @@ std::string TransformResult(ErrCode resultCode)
             return "ERR_APPEXECFWK_INSTALL_BUNDLE_MGR_SERVICE_ERROR";
         case ERR_APPEXECFWK_INSTALL_ALREADY_EXIST:
             return "ERR_APPEXECFWK_INSTALL_ALREADY_EXIST";
+        case ERR_APPEXECFWK_INSTALL_BUNDLENAME_NOT_SAME:
+            return "ERR_APPEXECFWK_INSTALL_BUNDLENAME_NOT_SAME";
+        case ERR_APPEXECFWK_INSTALL_VERSIONCODE_NOT_SAME:
+            return "ERR_APPEXECFWK_INSTALL_VERSIONCODE_NOT_SAME";
+        case ERR_APPEXECFWK_INSTALL_VERSIONNAME_NOT_SAME:
+            return "ERR_APPEXECFWK_INSTALL_VERSIONNAME_NOT_SAME";
+        case ERR_APPEXECFWK_INSTALL_VENDOR_NOT_SAME:
+            return "ERR_APPEXECFWK_INSTALL_VENDOR_NOT_SAME";
+        case ERR_APPEXECFWK_INSTALL_RELEASETYPE_TARGET_NOT_SAME:
+            return "ERR_APPEXECFWK_INSTALL_RELEASETYPE_TARGET_NOT_SAME";
+        case ERR_APPEXECFWK_INSTALL_RELEASETYPE_COMPATIBLE_NOT_SAME:
+            return "ERR_APPEXECFWK_INSTALL_RELEASETYPE_COMPATIBLE_NOT_SAME";
+        case ERR_APPEXECFWK_INSTALL_VERSION_NOT_COMPATIBLE:
+            return "ERR_APPEXECFWK_INSTALL_VERSION_NOT_COMPATIBLE";
+        case ERR_APPEXECFWK_INSTALL_INVALID_NUMBER_OF_ENTRY_HAP:
+            return "ERR_APPEXECFWK_INSTALL_INVALID_NUMBER_OF_ENTRY_HAP";
         case ERR_APPEXECFWK_PARSE_UNEXPECTED:
             return "ERR_APPEXECFWK_PARSE_UNEXPECTED";
         case ERR_APPEXECFWK_PARSE_MISSING_BUNDLE:
@@ -120,10 +137,15 @@ std::string TransformResult(ErrCode resultCode)
             return "ERR_APPEXECFWK_UNINSTALL_MISSING_INSTALLED_BUNDLE";
         case ERR_APPEXECFWK_UNINSTALL_MISSING_INSTALLED_MODULE:
             return "ERR_APPEXECFWK_UNINSTALL_MISSING_INSTALLED_MODULE";
+        case ERR_APPEXECFWK_RECOVER_GET_BUNDLEPATH_ERROR:
+            return "ERR_APPEXECFWK_RECOVER_GET_BUNDLEPATH_ERROR";
+        case ERR_APPEXECFWK_RECOVER_INVALID_BUNDLE_NAME:
+            return "ERR_APPEXECFWK_RECOVER_INVALID_BUNDLE_NAME";
         default:
             return "";
     }
 }
+
 }  // namespace
 
 BundleStatusCallbackProxy::BundleStatusCallbackProxy(const sptr<IRemoteObject> &object)
@@ -175,5 +197,6 @@ void BundleStatusCallbackProxy::OnBundleStateChanged(
         APP_LOGW("fail to call OnBundleStateChanged, for transact is failed, error code is: %{public}d", ret);
     }
 }
+
 }  // namespace AppExecFwk
 }  // namespace OHOS

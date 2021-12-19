@@ -12,13 +12,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <uv.h>
-#include "napi/native_common.h"
 #include "permission_callback.h"
-#include "hilog_wrapper.h"
 
-namespace OHOS {
-namespace AppExecFwk {
+#include <uv.h>
+
+#include "hilog_wrapper.h"
+#include "napi/native_common.h"
+
 namespace {
 constexpr size_t ARGS_SIZE_TWO = 2;
 }
@@ -100,5 +100,3 @@ void PermissionCallback::OnChanged(const int32_t uid)
     }
     HILOG_INFO("OnChanged, end");
 }
-}  // namespace AppExecFwk
-}  // namespace OHOS

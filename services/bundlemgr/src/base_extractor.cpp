@@ -15,15 +15,16 @@
 
 #include "base_extractor.h"
 
-#include <fstream>
 #include <dirent.h>
+#include <fstream>
 
-#include "string_ex.h"
 #include "app_log_wrapper.h"
 #include "bundle_constants.h"
+#include "string_ex.h"
 
 namespace OHOS {
 namespace AppExecFwk {
+
 BaseExtractor::BaseExtractor(const std::string &source) : sourceFile_(source), zipFile_(source)
 {
     APP_LOGI("BaseExtractor instance is created");
@@ -89,5 +90,6 @@ bool BaseExtractor::GetZipFileNames(std::vector<std::string> &fileNames)
     }
     return true;
 }
+
 }  // namespace AppExecFwk
 }  // namespace OHOS

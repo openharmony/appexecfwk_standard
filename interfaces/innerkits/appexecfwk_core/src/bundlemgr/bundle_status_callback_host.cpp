@@ -22,6 +22,7 @@
 
 namespace OHOS {
 namespace AppExecFwk {
+
 BundleStatusCallbackHost::BundleStatusCallbackHost()
 {
     APP_LOGI("create bundle status callback host instance");
@@ -50,5 +51,6 @@ int BundleStatusCallbackHost::OnRemoteRequest(
     }
     return NO_ERROR;
 }
+
 }  // namespace AppExecFwk
 }  // namespace OHOS

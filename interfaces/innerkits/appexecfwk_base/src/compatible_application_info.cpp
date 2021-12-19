@@ -15,17 +15,17 @@
 
 #include "application_info.h"
 
-#include <fcntl.h>
-#include <unistd.h>
 #include <cerrno>
+#include <fcntl.h>
 #include <string>
+#include <unistd.h>
 
-#include "nlohmann/json.hpp"
-#include "string_ex.h"
 #include "app_log_wrapper.h"
 #include "bundle_constants.h"
-#include "parcel_macro.h"
 #include "json_serializer.h"
+#include "nlohmann/json.hpp"
+#include "parcel_macro.h"
+#include "string_ex.h"
 
 namespace OHOS {
 namespace AppExecFwk {

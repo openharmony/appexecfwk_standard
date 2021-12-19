@@ -21,6 +21,7 @@
 
 namespace OHOS {
 namespace AppExecFwk {
+
 class InstalldHostImpl : public InstalldHost {
 public:
     InstalldHostImpl();
@@ -31,12 +32,6 @@ public:
      * @return Returns ERR_OK if the bundle directory created successfully; returns error code otherwise.
      */
     virtual ErrCode CreateBundleDir(const std::string &bundleDir) override;
-    /**
-     * @brief Remove a bundle code directory.
-     * @param bundleDir Indicates the bundle code directory path that to be removed.
-     * @return Returns ERR_OK if the bundle directory removed successfully; returns error code otherwise.
-     */
-    virtual ErrCode RemoveBundleDir(const std::string &bundleDir) override;
     /**
      * @brief Extract the files of a HAP module to the code directory.
      * @param srcModulePath Indicates the HAP file path.
@@ -52,25 +47,13 @@ public:
      */
     virtual ErrCode RenameModuleDir(const std::string &oldPath, const std::string &newPath) override;
     /**
-     * @brief Remove the module directory.
-     * @param moduleDir Indicates the module directory to be removed.
-     * @return Returns ERR_OK if the module directory removed successfully; returns error code otherwise.
-     */
-    virtual ErrCode RemoveModuleDir(const std::string &moduleDir) override;
-    /**
      * @brief Create a bundle data directory.
-     * @param bundleDir Indicates the bundle data directory path that to be created.
+     * @param bundleDataDir Indicates the bundle data directory path that to be created.
      * @param uid Indicates uid to be set to the directory.
      * @param gid Indicates gid to be set to the directory.
      * @return Returns ERR_OK if the bundle data directory created successfully; returns error code otherwise.
      */
-    virtual ErrCode CreateBundleDataDir(const std::string &bundleDir, const int uid, const int gid) override;
-    /**
-     * @brief Remove a bundle data directory.
-     * @param bundleDir Indicates the bundle data directory path that to be removed.
-     * @return Returns ERR_OK if the bundle data directory removed successfully; returns error code otherwise.
-     */
-    virtual ErrCode RemoveBundleDataDir(const std::string &bundleDataDir) override;
+    virtual ErrCode CreateBundleDataDir(const std::string &bundleDataDir, const int uid, const int gid) override;
     /**
      * @brief Create a module and it's abilities data directory.
      * @param bundleDir Indicates the module data directory path that to be created.
@@ -82,11 +65,11 @@ public:
     virtual ErrCode CreateModuleDataDir(const std::string &ModuleDir, const std::vector<std::string> &abilityDirs,
         const int uid, const int gid) override;
     /**
-     * @brief Remove a module data directory.
-     * @param bundleDir Indicates the module data directory path that to be removed.
-     * @return Returns ERR_OK if the module data directory removed successfully; returns error code otherwise.
+     * @brief Remove a directory.
+     * @param dir Indicates the directory path that to be removed.
+     * @return Returns ERR_OK if the  directory removed successfully; returns error code otherwise.
      */
-    virtual ErrCode RemoveModuleDataDir(const std::string &moduleDataDir) override;
+    virtual ErrCode RemoveDir(const std::string &dir) override;
     /**
      * @brief Clean all files in a bundle data directory.
      * @param bundleDir Indicates the data directory path that to be cleaned.
@@ -94,6 +77,7 @@ public:
      */
     virtual ErrCode CleanBundleDataDir(const std::string &bundleDir) override;
 };
+
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_INSTALLD_HOST_IMPL_H

@@ -19,11 +19,12 @@
 #include "parcel.h"
 #include "string_ex.h"
 
-#include "appexecfwk_errors.h"
 #include "app_log_wrapper.h"
+#include "appexecfwk_errors.h"
 
 namespace OHOS {
 namespace AppExecFwk {
+
 OnPermissionChangedCallbackProxy::OnPermissionChangedCallbackProxy(const sptr<IRemoteObject> &object)
     : IRemoteProxy<OnPermissionChangedCallback>(object)
 {
@@ -59,5 +60,6 @@ void OnPermissionChangedCallbackProxy::OnChanged(const int32_t uid)
         APP_LOGW("fail to call OnChanged, for transact is failed, error code is: %{public}d", ret);
     }
 }
+
 }  // namespace AppExecFwk
 }  // namespace OHOS

@@ -14,22 +14,22 @@
  */
 
 #include <chrono>
-#include <thread>
 #include <fstream>
-#include <sys/stat.h>
-#include <unistd.h>
 #include <gtest/gtest.h>
+#include <sys/stat.h>
+#include <thread>
+#include <unistd.h>
 
-#include "directory_ex.h"
 #include "appexecfwk_errors.h"
 #include "bundle_info.h"
 #include "bundle_installer_host.h"
 #include "bundle_mgr_service.h"
 #include "bundle_data_storage_database.h"
+#include "directory_ex.h"
 #include "installd/installd_service.h"
 #include "installd_client.h"
-#include "mock_status_receiver.h"
 #include "install_param.h"
+#include "mock_status_receiver.h"
 #include "system_bundle_installer.h"
 
 using namespace testing::ext;
@@ -38,6 +38,7 @@ using namespace OHOS;
 using namespace OHOS::AppExecFwk;
 
 namespace {
+
 const std::string BUNDLE_NAME = "com.example.l3jsdemo";
 const std::string MODULE_PACKAGE = "com.example.l3jsdemo";
 const std::string MODULE_PACKAGE1 = "com.example.l3jsdemo1";
@@ -54,6 +55,7 @@ const std::string MODULE_CODE_DIR1 = "/data/accounts/account_0/applications/com.
 const std::string ROOT_DIR = "/data/accounts";
 const std::string DB_FILE_PATH = "/data/bundlemgr";
 const int32_t ROOT_UID = 0;
+
 }  // namespace
 
 class BmsBundleUninstallerTest : public testing::Test {
@@ -323,6 +325,7 @@ void BmsBundleUninstallerTest::DeleteInstallFiles()
  * @tc.name: test the empty bundle name will return fail
  * @tc.desc: 1. the bundle name is empty
  *           2. the empty bundle name will return fail
+ * @tc.require: AR000GHLL7
  */
 HWTEST_F(BmsBundleUninstallerTest, Bundle_Uninstall_0200, Function | SmallTest | Level0)
 {
@@ -335,6 +338,7 @@ HWTEST_F(BmsBundleUninstallerTest, Bundle_Uninstall_0200, Function | SmallTest |
  * @tc.name: test the error bundle name will return fail
  * @tc.desc: 1. the bundle name is error
  *           2. the error bundle name will return fail
+ * @tc.require: AR000GHLL7
  */
 HWTEST_F(BmsBundleUninstallerTest, Bundle_Uninstall_0300, Function | SmallTest | Level0)
 {
@@ -347,6 +351,7 @@ HWTEST_F(BmsBundleUninstallerTest, Bundle_Uninstall_0300, Function | SmallTest |
  * @tc.name: test the installed Module can be uninstalled
  * @tc.desc: 1. the Module name is empty
  *           2. the empty Module name will return fail
+ * @tc.require: AR000GHQ9D
  */
 HWTEST_F(BmsBundleUninstallerTest, Module_Uninstall_0200, Function | SmallTest | Level0)
 {
@@ -359,6 +364,7 @@ HWTEST_F(BmsBundleUninstallerTest, Module_Uninstall_0200, Function | SmallTest |
  * @tc.name: test the error Module name will return fail.
  * @tc.desc: 1. the Module name is error.
  *           2. the error Module name will return fail.
+ * @tc.require: AR000GHQ9D
  */
 HWTEST_F(BmsBundleUninstallerTest, Module_Uninstall_0300, Function | SmallTest | Level0)
 {

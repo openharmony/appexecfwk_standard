@@ -21,6 +21,7 @@
 namespace OHOS {
 namespace AppExecFwk {
 namespace Constants {
+
 const std::string EMPTY_STRING = "";
 const std::string BUNDLE_PROFILE_NAME = "config.json";
 const std::string INSTALL_FILE_SUFFIX = ".hap";
@@ -28,7 +29,9 @@ const std::string PATH_SEPARATOR = "/";
 const std::string FILE_UNDERLINE = "_";
 const std::string ILLEGAL_PATH_FIELD = "../";
 const char DOT_SUFFIX = '.';
+const char FILE_SEPARATOR_CHAR = '/';
 const std::string CURRENT_DEVICE_ID = "PHONE-001";
+const std::string PRE_INSTALL_DEVICE_ID = "PRE-" + CURRENT_DEVICE_ID;
 const std::string BUNDLE_DATA_BASE_DIR = "/data/bundlemgr";
 const std::string BUNDLE_DATA_BASE_FILE = BUNDLE_DATA_BASE_DIR + "/bmsdb.json";
 const std::string SYSTEM_APP_SCAN_PATH = "/system/app";
@@ -91,8 +94,8 @@ enum class AppType {
     THIRD_PARTY_APP,
 };
 
-const std::string ACTION_HOME = "action.system.home";
-const std::string ENTITY_HOME = "entity.system.home";
+const std::string INTENT_ACTION_HOME = "action.system.home";
+const std::string INTENT_ENTITY_HOME = "entity.system.home";
 const std::string FLAG_HOME_INTENT_FROM_SYSTEM = "flag.home.intent.from.system";
 
 // the ability file folder name.
@@ -110,10 +113,14 @@ constexpr uint8_t MAX_MODULE_ABILITIES_READPERMISSION = 255;
 constexpr uint8_t MAX_MODULE_ABILITIES_WRITEPERMISSION = 255;
 constexpr uint8_t MAX_MODULE_SHORTCUTID = 63;
 constexpr uint8_t MAX_MODULE_LABEL = 63;
+// max number of haps under one direction
+constexpr uint8_t MAX_HAP_NUMBER = 128;
+
 // distributed database
 const std::string APP_ID = "bundle_manager_service";
 const std::string STORE_ID = "installed_bundle_datas";
 const std::string ABILITY_USAGE_STORE_ID = "ability_usage_datas";
+const std::string PRE_INSTALL_DATA_STORE_ID = "preinstall_usage_datas";
 
 // single max hap size
 constexpr int64_t ONE_GB = 1024 * 1024 * 1024;
@@ -130,10 +137,10 @@ const int MAX_DEVICETYPE_SIZE = 50;
 
 const std::string OHOS_GLOBAL_SYSTEMRES = "ohos.global.systemres";
 
-
-const std::string OHOS_SYSTEM_APP = "ohos_system_app";
+// appFeature
 const std::string HOS_NORMAL_APP = "hos_normal_app";
 const std::string HOS_SYSTEM_APP = "hos_system_app";
+const std::string OHOS_SYSTEM_APP = "ohos_system_app";
 }  // namespace Constants
 }  // namespace AppExecFwk
 }  // namespace OHOS

@@ -23,6 +23,7 @@
 
 namespace OHOS {
 namespace AppExecFwk {
+
 class InstalldService {
 public:
     InstalldService();
@@ -65,6 +66,7 @@ private:
 
     DISALLOW_COPY_AND_MOVE(InstalldService);
 };
+
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_INSTALLD_SERVICE_H

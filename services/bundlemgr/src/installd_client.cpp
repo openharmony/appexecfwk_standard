@@ -23,85 +23,76 @@
 
 namespace OHOS {
 namespace AppExecFwk {
+
 ErrCode InstalldClient::CreateBundleDir(const std::string &bundleDir)
 {
-    if (!GetInstalldProxy()) {
-        return ERR_APPEXECFWK_INSTALLD_GET_PROXY_ERROR;
+    if (bundleDir.empty()) {
+        APP_LOGE("bundle dir is empty");
+        return ERR_APPEXECFWK_INSTALLD_PARAM_ERROR;
     }
-    return installdProxy_->CreateBundleDir(bundleDir);
-}
 
-ErrCode InstalldClient::RemoveBundleDir(const std::string &bundleDir)
-{
-    if (!GetInstalldProxy()) {
-        return ERR_APPEXECFWK_INSTALLD_GET_PROXY_ERROR;
-    }
-    return installdProxy_->RemoveBundleDir(bundleDir);
-}
-
-ErrCode InstalldClient::RemoveBundleDataDir(const std::string &bundleDataDir)
-{
-    if (!GetInstalldProxy()) {
-        return ERR_APPEXECFWK_INSTALLD_GET_PROXY_ERROR;
-    }
-    return installdProxy_->RemoveBundleDir(bundleDataDir);
+    return CallService(&IInstalld::CreateBundleDir, bundleDir);
 }
 
 ErrCode InstalldClient::ExtractModuleFiles(const std::string &srcModulePath, const std::string &targetPath)
 {
-    if (!GetInstalldProxy()) {
-        return ERR_APPEXECFWK_INSTALLD_GET_PROXY_ERROR;
+    if (srcModulePath.empty() || targetPath.empty()) {
+        APP_LOGE("src module path or target path is empty");
+        return ERR_APPEXECFWK_INSTALLD_PARAM_ERROR;
     }
-    return installdProxy_->ExtractModuleFiles(srcModulePath, targetPath);
-}
 
-ErrCode InstalldClient::RemoveModuleDir(const std::string &moduleDir)
-{
-    if (!GetInstalldProxy()) {
-        return ERR_APPEXECFWK_INSTALLD_GET_PROXY_ERROR;
-    }
-    return installdProxy_->RemoveModuleDir(moduleDir);
+    return CallService(&IInstalld::ExtractModuleFiles, srcModulePath, targetPath);
 }
 
 ErrCode InstalldClient::RenameModuleDir(const std::string &oldPath, const std::string &newPath)
 {
-    if (!GetInstalldProxy()) {
-        return ERR_APPEXECFWK_INSTALLD_GET_PROXY_ERROR;
+    if (oldPath.empty() || newPath.empty()) {
+        APP_LOGE("rename path is empty");
+        return ERR_APPEXECFWK_INSTALLD_PARAM_ERROR;
     }
-    return installdProxy_->RenameModuleDir(oldPath, newPath);
+
+    return CallService(&IInstalld::RenameModuleDir, oldPath, newPath);
 }
 
 ErrCode InstalldClient::CreateBundleDataDir(const std::string &bundleDir, const int uid, const int gid)
 {
-    if (!GetInstalldProxy()) {
-        return ERR_APPEXECFWK_INSTALLD_GET_PROXY_ERROR;
+    if (bundleDir.empty() || uid < 0 || gid < 0) {
+        APP_LOGE("params are invalid");
+        return ERR_APPEXECFWK_INSTALLD_PARAM_ERROR;
     }
-    return installdProxy_->CreateBundleDataDir(bundleDir, uid, gid);
+
+    return CallService(&IInstalld::CreateBundleDataDir, bundleDir, uid, gid);
 }
 
 ErrCode InstalldClient::CreateModuleDataDir(
     const std::string &ModuleDir, const std::vector<std::string> &abilityDirs, const int uid, const int gid)
 {
-    if (!GetInstalldProxy()) {
-        return ERR_APPEXECFWK_INSTALLD_GET_PROXY_ERROR;
+    if (ModuleDir.empty() || uid < 0 || gid < 0) {
+        APP_LOGE("params are invalid");
+        return ERR_APPEXECFWK_INSTALLD_PARAM_ERROR;
     }
-    return installdProxy_->CreateModuleDataDir(ModuleDir, abilityDirs, uid, gid);
+
+    return CallService(&IInstalld::CreateModuleDataDir, ModuleDir, abilityDirs, uid, gid);
 }
 
-ErrCode InstalldClient::RemoveModuleDataDir(const std::string &moduleDataDir)
+ErrCode InstalldClient::RemoveDir(const std::string &dir)
 {
-    if (!GetInstalldProxy()) {
-        return ERR_APPEXECFWK_INSTALLD_GET_PROXY_ERROR;
+    if (dir.empty()) {
+        APP_LOGE("dir removed is empty");
+        return ERR_APPEXECFWK_INSTALLD_PARAM_ERROR;
     }
-    return installdProxy_->RemoveModuleDataDir(moduleDataDir);
+
+    return CallService(&IInstalld::RemoveDir, dir);
 }
 
 ErrCode InstalldClient::CleanBundleDataDir(const std::string &bundleDir)
 {
-    if (!GetInstalldProxy()) {
-        return ERR_APPEXECFWK_INSTALLD_GET_PROXY_ERROR;
+    if (bundleDir.empty()) {
+        APP_LOGE("bundle dir is empty");
+        return ERR_APPEXECFWK_INSTALLD_PARAM_ERROR;
     }
-    return installdProxy_->CleanBundleDataDir(bundleDir);
+
+    return CallService(&IInstalld::CleanBundleDataDir, bundleDir);
 }
 
 void InstalldClient::ResetInstalldProxy()
@@ -131,5 +122,6 @@ bool InstalldClient::GetInstalldProxy()
     }
     return true;
 }
+
 }  // namespace AppExecFwk
 }  // namespace OHOS

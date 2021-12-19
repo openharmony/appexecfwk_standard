@@ -22,6 +22,7 @@
 
 namespace OHOS {
 namespace AppExecFwk {
+
 class BundleExtractor : public BaseExtractor {
 public:
     explicit BundleExtractor(const std::string &source);
@@ -33,6 +34,7 @@ public:
      */
     virtual bool ExtractProfile(std::ostream &dest) const override;
 };
+
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_BUNDLE_EXTRACTOR_H

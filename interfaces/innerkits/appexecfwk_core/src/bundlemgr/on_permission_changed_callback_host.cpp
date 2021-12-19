@@ -22,6 +22,7 @@
 
 namespace OHOS {
 namespace AppExecFwk {
+
 OnPermissionChangedCallbackHost::OnPermissionChangedCallbackHost()
 {
     APP_LOGI("create on permission changed host instance");
@@ -47,5 +48,6 @@ int OnPermissionChangedCallbackHost::OnRemoteRequest(
     }
     return NO_ERROR;
 }
+
 }  // namespace AppExecFwk
 }  // namespace OHOS

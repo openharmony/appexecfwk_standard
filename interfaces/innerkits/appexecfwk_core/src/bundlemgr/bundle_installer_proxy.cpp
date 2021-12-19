@@ -23,6 +23,7 @@
 
 namespace OHOS {
 namespace AppExecFwk {
+
 BundleInstallerProxy::BundleInstallerProxy(const sptr<IRemoteObject> &object) : IRemoteProxy<IBundleInstaller>(object)
 {
     APP_LOGI("create bundle installer proxy instance");
@@ -40,39 +41,63 @@ bool BundleInstallerProxy::Install(
     MessageParcel reply;
     MessageOption option(MessageOption::TF_SYNC);
 
-    if (!data.WriteInterfaceToken(GetDescriptor())) {
-        APP_LOGE("fail to dump due to write MessageParcel fail");
-        return false;
-    }
-    if (!data.WriteString16(Str8ToStr16(bundlePath))) {
-        APP_LOGE("fail to install, for write parcel bundle path failed");
-        return false;
-    }
-    if (!data.WriteParcelable(&installParam)) {
-        APP_LOGE("fail to install, for write parcel install param failed");
-        return false;
-    }
+    PARCEL_WRITE_INTERFACE_TOKEN(data, GetDescriptor());
+    PARCEL_WRITE(data, String16, Str8ToStr16(bundlePath));
+    PARCEL_WRITE(data, Parcelable, &installParam);
+
     if (!statusReceiver) {
         APP_LOGE("fail to install, for statusReceiver is nullptr");
         return false;
     }
-    if (!data.WriteParcelable(statusReceiver->AsObject())) {
-        APP_LOGE("fail to install, for write parcel status receiver failed");
-        return false;
-    }
+    PARCEL_WRITE(data, Parcelable, statusReceiver->AsObject());
 
-    sptr<IRemoteObject> remote = Remote();
-    if (!remote) {
-        APP_LOGE("fail to install, for Remote() is nullptr");
-        return false;
-    }
+    return SendInstallRequest(static_cast<int32_t>(IBundleInstaller::Message::INSTALL), data, reply, option);
+}
 
-    int32_t ret = remote->SendRequest(static_cast<int32_t>(IBundleInstaller::Message::INSTALL), data, reply, option);
-    if (ret != NO_ERROR) {
-        APP_LOGE("fail to install, for transact is failed and error code is: %{public}d", ret);
+bool BundleInstallerProxy::Install(const std::vector<std::string> &bundleFilePaths, const InstallParam &installParam,
+    const sptr<IStatusReceiver> &statusReceiver)
+{
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option(MessageOption::TF_SYNC);
+
+    PARCEL_WRITE_INTERFACE_TOKEN(data, GetDescriptor());
+    int32_t size = bundleFilePaths.size();
+    PARCEL_WRITE(data, Int32, size);
+    for (int i = 0; i < size; ++i) {
+        PARCEL_WRITE(data, String16, Str8ToStr16(bundleFilePaths[i]));
+    }
+    PARCEL_WRITE(data, Parcelable, &installParam);
+
+    if (!statusReceiver) {
+        APP_LOGE("fail to install, for statusReceiver is nullptr");
         return false;
     }
-    return true;
+    PARCEL_WRITE(data, Parcelable, statusReceiver->AsObject());
+
+    return SendInstallRequest(static_cast<int32_t>(IBundleInstaller::Message::INSTALL_MULTIPLE_HAPS), data, reply,
+        option);
+}
+
+bool BundleInstallerProxy::Recover(const std::string &bundleName,
+    const InstallParam &installParam, const sptr<IStatusReceiver> &statusReceiver)
+{
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option(MessageOption::TF_SYNC);
+
+    PARCEL_WRITE_INTERFACE_TOKEN(data, GetDescriptor());
+    PARCEL_WRITE(data, String16, Str8ToStr16(bundleName));
+    PARCEL_WRITE(data, Parcelable, &installParam);
+
+    if (!statusReceiver) {
+        APP_LOGE("fail to install, for statusReceiver is nullptr");
+        return false;
+    }
+    PARCEL_WRITE(data, Parcelable, statusReceiver->AsObject());
+
+    return SendInstallRequest(static_cast<int32_t>(IBundleInstaller::Message::RECOVER), data, reply,
+        option);
 }
 
 bool BundleInstallerProxy::Uninstall(
@@ -82,39 +107,16 @@ bool BundleInstallerProxy::Uninstall(
     MessageParcel reply;
     MessageOption option(MessageOption::TF_SYNC);
 
-    if (!data.WriteInterfaceToken(GetDescriptor())) {
-        APP_LOGE("fail to dump due to write MessageParcel fail");
-        return false;
-    }
-    if (!data.WriteString16(Str8ToStr16(bundleName))) {
-        APP_LOGE("fail to uninstall, for write parcel bundle name failed");
-        return false;
-    }
-    if (!data.WriteParcelable(&installParam)) {
-        APP_LOGE("fail to install, for write parcel install param failed");
-        return false;
-    }
+    PARCEL_WRITE_INTERFACE_TOKEN(data, GetDescriptor());
+    PARCEL_WRITE(data, String16, Str8ToStr16(bundleName));
+    PARCEL_WRITE(data, Parcelable, &installParam);
     if (!statusReceiver) {
         APP_LOGE("fail to uninstall, for statusReceiver is nullptr");
         return false;
     }
-    if (!data.WriteParcelable(statusReceiver->AsObject())) {
-        APP_LOGE("fail to uninstall, for write parcel status receiver failed");
-        return false;
-    }
+    PARCEL_WRITE(data, Parcelable, statusReceiver->AsObject());
 
-    sptr<IRemoteObject> remote = Remote();
-    if (!remote) {
-        APP_LOGE("fail to uninstall, for Remote() is nullptr");
-        return false;
-    }
-
-    int32_t ret = remote->SendRequest(static_cast<int32_t>(IBundleInstaller::Message::UNINSTALL), data, reply, option);
-    if (ret != NO_ERROR) {
-        APP_LOGE("fail to uninstall, for transact is failed and error code is: %{public}d", ret);
-        return false;
-    }
-    return true;
+    return SendInstallRequest(static_cast<int32_t>(IBundleInstaller::Message::UNINSTALL), data, reply, option);
 }
 
 bool BundleInstallerProxy::Uninstall(const std::string &bundleName, const std::string &modulePackage,
@@ -124,41 +126,31 @@ bool BundleInstallerProxy::Uninstall(const std::string &bundleName, const std::s
     MessageParcel reply;
     MessageOption option(MessageOption::TF_SYNC);
 
-    if (!data.WriteInterfaceToken(GetDescriptor())) {
-        APP_LOGE("fail to dump due to write MessageParcel fail");
-        return false;
-    }
-    if (!data.WriteString16(Str8ToStr16(bundleName))) {
-        APP_LOGE("fail to uninstall, for write parcel bundle name failed");
-        return false;
-    }
-    if (!data.WriteString16(Str8ToStr16(modulePackage))) {
-        APP_LOGE("fail to uninstall, for write parcel module package failed");
-        return false;
-    }
-    if (!data.WriteParcelable(&installParam)) {
-        APP_LOGE("fail to install, for write parcel install param failed");
-        return false;
-    }
+    PARCEL_WRITE_INTERFACE_TOKEN(data, GetDescriptor());
+    PARCEL_WRITE(data, String16, Str8ToStr16(bundleName));
+    PARCEL_WRITE(data, String16, Str8ToStr16(modulePackage));
+    PARCEL_WRITE(data, Parcelable, &installParam);
     if (!statusReceiver) {
         APP_LOGE("fail to uninstall, for statusReceiver is nullptr");
         return false;
     }
-    if (!data.WriteParcelable(statusReceiver->AsObject())) {
-        APP_LOGE("fail to uninstall, for write parcel status receiver failed");
-        return false;
-    }
+    PARCEL_WRITE(data, Parcelable, statusReceiver->AsObject());
 
+    return SendInstallRequest(static_cast<int32_t>(IBundleInstaller::Message::UNINSTALL_MODULE), data, reply, option);
+}
+
+bool BundleInstallerProxy::SendInstallRequest(const int32_t& code, MessageParcel& data, MessageParcel& reply,
+    MessageOption& option)
+{
     sptr<IRemoteObject> remote = Remote();
     if (!remote) {
         APP_LOGE("fail to uninstall, for Remote() is nullptr");
         return false;
     }
 
-    int32_t ret =
-        remote->SendRequest(static_cast<int32_t>(IBundleInstaller::Message::UNINSTALL_MODULE), data, reply, option);
+    int32_t ret = remote->SendRequest(code, data, reply, option);
     if (ret != NO_ERROR) {
-        APP_LOGE("fail to uninstall, for transact is failed and error code is: %{public}d", ret);
+        APP_LOGE("fail to sendRequest, for transact is failed and error code is: %{public}d", ret);
         return false;
     }
     return true;

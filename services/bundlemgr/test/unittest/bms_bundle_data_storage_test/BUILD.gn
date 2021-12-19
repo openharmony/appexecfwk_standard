@@ -27,6 +27,7 @@ config("private_config") {
 module_output_path = "appexecfwk_standard/bundlemgrservice"
 
 ohos_unittest("BmsBundleDataStorageTest") {
+  use_exceptions = true
   module_out_path = module_output_path
 
   sources = [
@@ -35,6 +36,7 @@ ohos_unittest("BmsBundleDataStorageTest") {
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base/src/bundle_info.cpp",
     "${services_path}/bundlemgr/src/bundle_data_storage.cpp",
     "${services_path}/bundlemgr/src/inner_bundle_info.cpp",
+    "${services_path}/bundlemgr/src/pre_install_bundle_info.cpp",
   ]
 
   sources += [ "bms_bundle_data_storage_test.cpp" ]
@@ -62,6 +64,7 @@ ohos_unittest("BmsBundleDataStorageTest") {
 }
 
 ohos_unittest("BmsBundleDataStorageDatabaseTest") {
+  use_exceptions = true
   module_out_path = module_output_path
 
   sources = [
