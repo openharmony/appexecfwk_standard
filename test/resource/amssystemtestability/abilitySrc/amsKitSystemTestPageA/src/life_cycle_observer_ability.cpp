@@ -279,7 +279,8 @@ void LifeCycleObserverAbility::TestConnectAbility()
             connCallback_ = new (std::nothrow) AbilityConnectionProxy(stub_);
             bool ret = BaseAbility::GetContext()->ConnectAbility(want_, connCallback_);
             TestUtils::PublishEvent(APP_LIFE_CYCLE_OBSERVER_RESP_EVENT_NAME, ret, "TestConnectAbility");
-        } break;
+            break;
+        }
         case CaseIndex::TWO: {
             stub_ = new (std::nothrow) LifeCycleObserverConnectCallback();
             connCallback_ = new (std::nothrow) AbilityConnectionProxy(stub_);
@@ -288,7 +289,8 @@ void LifeCycleObserverAbility::TestConnectAbility()
                 TestUtils::MakeWant("", "LifecycleCallbacksAbility", "com.ohos.amsst.service.AppKit", params);
             bool ret = BaseAbility::GetContext()->ConnectAbility(want, connCallback_);
             TestUtils::PublishEvent(APP_LIFE_CYCLE_OBSERVER_RESP_EVENT_NAME, ret, "TestConnectAbility");
-        } break;
+            break;
+        }
         case CaseIndex::THREE: {
             stub_ = new (std::nothrow) LifeCycleObserverConnectCallback();
             connCallback_ = new (std::nothrow) AbilityConnectionProxy(stub_);
@@ -296,7 +298,8 @@ void LifeCycleObserverAbility::TestConnectAbility()
             Want want = TestUtils::MakeWant("", "AmsStServiceAbilityA1", "com.ohos.amsst.service.appA", params);
             bool ret = BaseAbility::GetContext()->ConnectAbility(want, connCallback_);
             TestUtils::PublishEvent(APP_LIFE_CYCLE_OBSERVER_RESP_EVENT_NAME, ret, "TestConnectAbility");
-        } break;
+            break;
+        }
         case CaseIndex::FOUR: {
             for (int i = 0; i < (int)CaseIndex::THREE; i++) {
                 stub_ = new (std::nothrow) LifeCycleObserverConnectCallback();
@@ -304,13 +307,15 @@ void LifeCycleObserverAbility::TestConnectAbility()
                 bool ret = BaseAbility::GetContext()->ConnectAbility(want_, connCallback_);
                 TestUtils::PublishEvent(APP_LIFE_CYCLE_OBSERVER_RESP_EVENT_NAME, ret, "TestConnectAbility");
             }
-        } break;
+            break;
+        }
         case CaseIndex::FIVE: {
             sptr<LifeCycleObserverConnectCallback> stub(new (std::nothrow) LifeCycleObserverConnectCallback());
             sptr<AbilityConnectionProxy> connCallback(new (std::nothrow) AbilityConnectionProxy(stub));
             bool ret = BaseAbility::GetContext()->ConnectAbility(want_, connCallback);
             TestUtils::PublishEvent(APP_LIFE_CYCLE_OBSERVER_RESP_EVENT_NAME, ret, "TestConnectAbility");
-        } break;
+            break;
+        }
         default:
             break;
     }
