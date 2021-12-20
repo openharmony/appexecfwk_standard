@@ -1187,8 +1187,8 @@ bool BundleDataMgr::ClearBundleStatusCallback(const sptr<IBundleStatusCallback> 
     callbackList_.erase(std::remove_if(callbackList_.begin(),
         callbackList_.end(),
         [&](const sptr<IBundleStatusCallback> &callback) {
-                                return callback->AsObject() == bundleStatusCallback->AsObject();
-                            }),
+            return callback->AsObject() == bundleStatusCallback->AsObject();
+        }),
         callbackList_.end());
     return true;
 }

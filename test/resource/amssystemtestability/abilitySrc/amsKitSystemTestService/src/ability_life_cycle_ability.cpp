@@ -178,7 +178,8 @@ void AbilityLifeCycleAbility::TestConnectAbility()
             connCallback_ = new (std::nothrow) AbilityConnectionProxy(stub_);
             bool ret = BaseAbility::GetContext()->ConnectAbility(want_, connCallback_);
             TestUtils::PublishEvent(APP_ABILITY_LIFE_CYCLE_RESP_EVENT_NAME, ret, "TestConnectAbility");
-        } break;
+            break;
+        }
         case CaseIndex::TWO: {
             stub_ = new (std::nothrow) AbilityLifeCycleConnectCallback();
             connCallback_ = new (std::nothrow) AbilityConnectionProxy(stub_);
@@ -187,7 +188,8 @@ void AbilityLifeCycleAbility::TestConnectAbility()
                 TestUtils::MakeWant("", "LifecycleCallbacksAbility", "com.ohos.amsst.service.AppKit", params);
             bool ret = BaseAbility::GetContext()->ConnectAbility(want, connCallback_);
             TestUtils::PublishEvent(APP_ABILITY_LIFE_CYCLE_RESP_EVENT_NAME, ret, "TestConnectAbility");
-        } break;
+            break;
+        }
         case CaseIndex::THREE: {
             stub_ = new (std::nothrow) AbilityLifeCycleConnectCallback();
             connCallback_ = new (std::nothrow) AbilityConnectionProxy(stub_);
@@ -195,7 +197,8 @@ void AbilityLifeCycleAbility::TestConnectAbility()
             Want want = TestUtils::MakeWant("", "AmsStServiceAbilityA1", "com.ohos.amsst.service.appA", params);
             bool ret = BaseAbility::GetContext()->ConnectAbility(want, connCallback_);
             TestUtils::PublishEvent(APP_ABILITY_LIFE_CYCLE_RESP_EVENT_NAME, ret, "TestConnectAbility");
-        } break;
+            break;
+        }
         case CaseIndex::FOUR: {
             for (int i = 0; i < (int)CaseIndex::THREE; i++) {
                 stub_ = new (std::nothrow) AbilityLifeCycleConnectCallback();
@@ -203,13 +206,15 @@ void AbilityLifeCycleAbility::TestConnectAbility()
                 bool ret = BaseAbility::GetContext()->ConnectAbility(want_, connCallback_);
                 TestUtils::PublishEvent(APP_ABILITY_LIFE_CYCLE_RESP_EVENT_NAME, ret, "TestConnectAbility");
             }
-        } break;
+            break;
+        }
         case CaseIndex::FIVE: {
             sptr<AbilityLifeCycleConnectCallback> stub(new (std::nothrow) AbilityLifeCycleConnectCallback());
             sptr<AbilityConnectionProxy> connCallback(new (std::nothrow) AbilityConnectionProxy(stub));
             bool ret = BaseAbility::GetContext()->ConnectAbility(want_, connCallback);
             TestUtils::PublishEvent(APP_ABILITY_LIFE_CYCLE_RESP_EVENT_NAME, ret, "TestConnectAbility");
-        } break;
+            break;
+        }
         default:
             break;
     }
@@ -221,33 +226,38 @@ void AbilityLifeCycleAbility::TestStopAbility()
         case CaseIndex::ONE: {
             bool ret = BaseAbility::GetContext()->StopAbility(want_);
             TestUtils::PublishEvent(APP_ABILITY_LIFE_CYCLE_RESP_EVENT_NAME, ret, "TestStopAbility");
-        } break;
+            break;
+        }
         case CaseIndex::TWO: {
             MAP_STR_STR params;
             Want want =
                 TestUtils::MakeWant("", "LifecycleCallbacksAbility", "com.ohos.amsst.service.AppKit", params);
             bool ret = BaseAbility::GetContext()->StopAbility(want);
             TestUtils::PublishEvent(APP_ABILITY_LIFE_CYCLE_RESP_EVENT_NAME, ret, "TestStopAbility");
-        } break;
+            break;
+        }
         case CaseIndex::THREE: {
             MAP_STR_STR params;
             Want want = TestUtils::MakeWant("", "AmsStServiceAbilityA1", "com.ohos.amsst.service.appA", params);
             bool ret = BaseAbility::GetContext()->StopAbility(want);
             TestUtils::PublishEvent(APP_ABILITY_LIFE_CYCLE_RESP_EVENT_NAME, ret, "TestStopAbility");
-        } break;
+            break;
+        }
         case CaseIndex::FOUR: {
             for (int i = 0; i < loopCnt; i++) {
                 bool ret = BaseAbility::GetContext()->StopAbility(want_);
                 TestUtils::PublishEvent(APP_ABILITY_LIFE_CYCLE_RESP_EVENT_NAME, ret, "TestStopAbility");
             }
-        } break;
+            break;
+        }
         case CaseIndex::FIVE: {
             MAP_STR_STR params;
             Want want =
                 TestUtils::MakeWant("", "LifecycleCallbacksAbility", "com.ohos.amsst.service.AppKitx", params);
             bool ret = BaseAbility::GetContext()->StopAbility(want);
             TestUtils::PublishEvent(APP_ABILITY_LIFE_CYCLE_RESP_EVENT_NAME, ret, "TestStopAbility");
-        } break;
+            break;
+        }
         default:
             break;
     }
@@ -262,7 +272,8 @@ void AbilityLifeCycleAbility::TestDisconnectAbility()
             bool ret = BaseAbility::GetContext()->ConnectAbility(want_, connCallback_);
             TestUtils::PublishEvent(APP_ABILITY_LIFE_CYCLE_RESP_EVENT_NAME, ret, "TestDisconnectAbility");
             BaseAbility::GetContext()->DisconnectAbility(connCallback_);
-        } break;
+            break;
+        }
         case CaseIndex::TWO: {
             MAP_STR_STR params;
             Want want =
@@ -272,7 +283,8 @@ void AbilityLifeCycleAbility::TestDisconnectAbility()
             bool ret = BaseAbility::GetContext()->ConnectAbility(want, connCallback_);
             TestUtils::PublishEvent(APP_ABILITY_LIFE_CYCLE_RESP_EVENT_NAME, ret, "TestDisconnectAbility");
             BaseAbility::GetContext()->DisconnectAbility(connCallback_);
-        } break;
+            break;
+        }
         case CaseIndex::THREE: {
             MAP_STR_STR params;
             Want want = TestUtils::MakeWant("", "AmsStServiceAbilityA1", "com.ohos.amsst.service.appA", params);
@@ -281,7 +293,8 @@ void AbilityLifeCycleAbility::TestDisconnectAbility()
             bool ret = BaseAbility::GetContext()->ConnectAbility(want, connCallback_);
             TestUtils::PublishEvent(APP_ABILITY_LIFE_CYCLE_RESP_EVENT_NAME, ret, "TestDisconnectAbility");
             BaseAbility::GetContext()->DisconnectAbility(connCallback_);
-        } break;
+            break;
+        }
         case CaseIndex::FOUR: {
             for (int i = 0; i < (int)CaseIndex::THREE; i++) {
                 stub_ = new (std::nothrow) AbilityLifeCycleConnectCallback();
@@ -290,7 +303,8 @@ void AbilityLifeCycleAbility::TestDisconnectAbility()
                 TestUtils::PublishEvent(APP_ABILITY_LIFE_CYCLE_RESP_EVENT_NAME, ret, "TestDisconnectAbility");
                 BaseAbility::GetContext()->DisconnectAbility(connCallback_);
             }
-        } break;
+            break;
+        }
         case CaseIndex::FIVE: {
             MAP_STR_STR params;
             Want want =
@@ -300,7 +314,8 @@ void AbilityLifeCycleAbility::TestDisconnectAbility()
             bool ret = BaseAbility::GetContext()->ConnectAbility(want, connCallback_);
             TestUtils::PublishEvent(APP_ABILITY_LIFE_CYCLE_RESP_EVENT_NAME, ret, "TestDisconnectAbility");
             BaseAbility::GetContext()->DisconnectAbility(connCallback_);
-        } break;
+            break;
+        }
         default:
             break;
     }
@@ -312,33 +327,38 @@ void AbilityLifeCycleAbility::TestStartAbility()
         case CaseIndex::ONE: {
             BaseAbility::GetContext()->StartAbility(want_, 0);
             TestUtils::PublishEvent(APP_ABILITY_LIFE_CYCLE_RESP_EVENT_NAME, 1, "TestStartAbility");
-        } break;
+            break;
+        }
         case CaseIndex::TWO: {
             MAP_STR_STR params;
             Want want =
                 TestUtils::MakeWant("", "LifecycleCallbacksAbility", "com.ohos.amsst.service.AppKit", params);
             BaseAbility::GetContext()->StartAbility(want, 0);
             TestUtils::PublishEvent(APP_ABILITY_LIFE_CYCLE_RESP_EVENT_NAME, 1, "TestStartAbility");
-        } break;
+            break;
+        }
         case CaseIndex::THREE: {
             MAP_STR_STR params;
             Want want = TestUtils::MakeWant("", "AmsStServiceAbilityA1", "com.ohos.amsst.service.appA", params);
             BaseAbility::GetContext()->StartAbility(want, 0);
             TestUtils::PublishEvent(APP_ABILITY_LIFE_CYCLE_RESP_EVENT_NAME, 1, "TestStartAbility");
-        } break;
+            break;
+        }
         case CaseIndex::FOUR: {
             for (int i = 0; i < (int)CaseIndex::THREE; i++) {
                 BaseAbility::GetContext()->StartAbility(want_, 0);
                 TestUtils::PublishEvent(APP_ABILITY_LIFE_CYCLE_RESP_EVENT_NAME, 1, "TestStartAbility");
             }
-        } break;
+            break;
+        }
         case CaseIndex::FIVE: {
             MAP_STR_STR params;
             Want want =
                 TestUtils::MakeWant("", "LifecycleCallbacksAbility", "com.ohos.amsst.service.AppKitx", params);
             BaseAbility::GetContext()->StartAbility(want, 0);
             TestUtils::PublishEvent(APP_ABILITY_LIFE_CYCLE_RESP_EVENT_NAME, 1, "TestStartAbility");
-        } break;
+            break;
+        }
         default:
             break;
     }
@@ -350,7 +370,8 @@ void AbilityLifeCycleAbility::TestTerminateAbility()
         case CaseIndex::ONE: {
             BaseAbility::GetContext()->TerminateAbility();
             TestUtils::PublishEvent(APP_ABILITY_LIFE_CYCLE_RESP_EVENT_NAME, 1, "TestTerminateAbility");
-        } break;
+            break;
+        }
         case CaseIndex::TWO: {
             MAP_STR_STR params;
             Want want =
@@ -358,20 +379,23 @@ void AbilityLifeCycleAbility::TestTerminateAbility()
             BaseAbility::GetContext()->StartAbility(want, 0);
             BaseAbility::GetContext()->TerminateAbility();
             TestUtils::PublishEvent(APP_ABILITY_LIFE_CYCLE_RESP_EVENT_NAME, 1, "TestTerminateAbility");
-        } break;
+            break;
+        }
         case CaseIndex::THREE: {
             MAP_STR_STR params;
             Want want = TestUtils::MakeWant("", "AmsStServiceAbilityA1", "com.ohos.amsst.service.appA", params);
             BaseAbility::GetContext()->StartAbility(want, 0);
             BaseAbility::GetContext()->TerminateAbility();
             TestUtils::PublishEvent(APP_ABILITY_LIFE_CYCLE_RESP_EVENT_NAME, 1, "TestTerminateAbility");
-        } break;
+            break;
+        }
         case CaseIndex::FOUR: {
             for (int i = 0; i < (int)CaseIndex::THREE; i++) {
                 BaseAbility::GetContext()->TerminateAbility();
                 TestUtils::PublishEvent(APP_ABILITY_LIFE_CYCLE_RESP_EVENT_NAME, 1, "TestTerminateAbility");
             }
-        } break;
+            break;
+        }
         case CaseIndex::FIVE: {
             MAP_STR_STR params;
             Want want =
@@ -379,7 +403,8 @@ void AbilityLifeCycleAbility::TestTerminateAbility()
             BaseAbility::GetContext()->StartAbility(want, 0);
             BaseAbility::GetContext()->TerminateAbility();
             TestUtils::PublishEvent(APP_ABILITY_LIFE_CYCLE_RESP_EVENT_NAME, 1, "TestTerminateAbility");
-        } break;
+            break;
+        }
         default:
             break;
     }
@@ -391,32 +416,38 @@ void AbilityLifeCycleAbility::TestLifeCycleGetLifecycle()
         case CaseIndex::ONE: {
             auto lifecycle = GetLifecycle();
             TestUtils::PublishEvent(APP_ABILITY_LIFE_CYCLE_RESP_EVENT_NAME, 1, "TestLifeCycleGetLifecycle");
-        } break;
+            break;
+        }
         case CaseIndex::TWO: {
             for (int i = 0; i < (int)CaseIndex::HANDRED; i++) {
                 auto lifecycle = GetLifecycle();
             }
             TestUtils::PublishEvent(APP_ABILITY_LIFE_CYCLE_RESP_EVENT_NAME, 1, "TestLifeCycleGetLifecycle");
-        } break;
+            break;
+        }
         case CaseIndex::THREE: {
             auto lifecycle = GetLifecycle();
             TestUtils::PublishEvent(APP_ABILITY_LIFE_CYCLE_RESP_EVENT_NAME, 1, "TestLifeCycleGetLifecycle");
-        } break;
+            break;
+        }
         case CaseIndex::FOUR: {
             auto lifecycle = GetLifecycle();
             lifecycle->AddObserver(nullptr);
             TestUtils::PublishEvent(APP_ABILITY_LIFE_CYCLE_RESP_EVENT_NAME, 1, "TestLifeCycleGetLifecycle");
-        } break;
+            break;
+        }
         case CaseIndex::FIVE: {
             auto lifecycle = GetLifecycle();
             lifecycle->DispatchLifecycle(LifeCycle::Event::ON_ACTIVE);
             TestUtils::PublishEvent(APP_ABILITY_LIFE_CYCLE_RESP_EVENT_NAME, 1, "TestLifeCycleGetLifecycle");
-        } break;
+            break;
+        }
         case CaseIndex::SIX: {
             auto lifecycle = GetLifecycle();
             lifecycle->RemoveObserver(nullptr);
             TestUtils::PublishEvent(APP_ABILITY_LIFE_CYCLE_RESP_EVENT_NAME, 1, "TestLifeCycleGetLifecycle");
-        } break;
+            break;
+        }
         default:
             break;
     }
@@ -435,7 +466,8 @@ void AbilityLifeCycleAbility::TestLifeCycleGetLifecycleState()
     switch ((CaseIndex)AbilityLifeCycleAbility::sequenceNumber_) {
         case CaseIndex::ONE: {
             GetLifecycleStateCaseOne();
-        } break;
+            break;
+        }
         case CaseIndex::TWO: {
             auto lifecycle = GetLifecycle();
             for (int i = 0; i < (int)CaseIndex::HANDRED; i++) {
@@ -443,41 +475,47 @@ void AbilityLifeCycleAbility::TestLifeCycleGetLifecycleState()
                     lifecycle->GetLifecycleState(),
                     "TestLifeCycleGetLifecycleState");
             }
-        } break;
+            break;
+        }
         case CaseIndex::THREE: {
             auto lifecycle = GetLifecycle();
             TestUtils::PublishEvent(APP_ABILITY_LIFE_CYCLE_RESP_EVENT_NAME,
                 lifecycle->GetLifecycleState(),
                 "TestLifeCycleGetLifecycleState");
-        } break;
+            break;
+        }
         case CaseIndex::FOUR: {
             auto lifecycle = GetLifecycle();
             lifecycle->AddObserver(nullptr);
             TestUtils::PublishEvent(APP_ABILITY_LIFE_CYCLE_RESP_EVENT_NAME,
                 lifecycle->GetLifecycleState(),
                 "TestLifeCycleGetLifecycleState");
-        } break;
+            break;
+        }
         case CaseIndex::FIVE: {
             auto lifecycle = GetLifecycle();
             lifecycle->DispatchLifecycle(LifeCycle::Event::ON_ACTIVE);
             TestUtils::PublishEvent(APP_ABILITY_LIFE_CYCLE_RESP_EVENT_NAME,
                 lifecycle->GetLifecycleState(),
                 "TestLifeCycleGetLifecycleState");
-        } break;
+            break;
+        }
         case CaseIndex::SIX: {
             auto lifecycle = GetLifecycle();
             lifecycle->RemoveObserver(nullptr);
             TestUtils::PublishEvent(APP_ABILITY_LIFE_CYCLE_RESP_EVENT_NAME,
                 lifecycle->GetLifecycleState(),
                 "TestLifeCycleGetLifecycleState");
-        } break;
+            break;
+        }
         case CaseIndex::SEVEN: {
             auto lifecycle = GetLifecycle();
             lifecycle->RemoveObserver(nullptr);
             TestUtils::PublishEvent(APP_ABILITY_LIFE_CYCLE_RESP_EVENT_NAME,
                 lifecycle->GetLifecycleState(),
                 "TestLifeCycleGetLifecycleState");
-        } break;
+            break;
+        }
         default:
             break;
     }
@@ -532,7 +570,8 @@ void AbilityLifeCycleAbility::TestLifeCycleAddObserver()
                 std::make_shared<AbilityLifecycleLifecycleObserver>();
             lifecycle->AddObserver(lifecycleObserver);
             TestUtils::PublishEvent(APP_ABILITY_LIFE_CYCLE_RESP_EVENT_NAME, 1, "TestLifeCycleAddObserver");
-        } break;
+            break;
+        }
         case CaseIndex::TWO: {
             auto lifecycle = GetLifecycle();
             std::shared_ptr<AbilityLifecycleLifecycleObserver> lifecycleObserver =
@@ -541,7 +580,8 @@ void AbilityLifeCycleAbility::TestLifeCycleAddObserver()
                 lifecycle->AddObserver(lifecycleObserver);
             }
             TestUtils::PublishEvent(APP_ABILITY_LIFE_CYCLE_RESP_EVENT_NAME, 1, "TestLifeCycleAddObserver");
-        } break;
+            break;
+        }
         case CaseIndex::THREE: {
             auto lifecycle = GetLifecycle();
             for (int i = 0; i < (int)CaseIndex::ONE; i++) {
@@ -550,7 +590,8 @@ void AbilityLifeCycleAbility::TestLifeCycleAddObserver()
                 lifecycle->AddObserver(lifecycleObserver);
             }
             TestUtils::PublishEvent(APP_ABILITY_LIFE_CYCLE_RESP_EVENT_NAME, 1, "TestLifeCycleAddObserver");
-        } break;
+            break;
+        }
         case CaseIndex::FOUR: {
             auto lifecycle = GetLifecycle();
             for (int i = 0; i < (int)CaseIndex::ONE; i++) {
@@ -560,7 +601,8 @@ void AbilityLifeCycleAbility::TestLifeCycleAddObserver()
                 lifecycle->RemoveObserver(lifecycleObserver);
             }
             TestUtils::PublishEvent(APP_ABILITY_LIFE_CYCLE_RESP_EVENT_NAME, 1, "TestLifeCycleAddObserver");
-        } break;
+            break;
+        }
         case CaseIndex::FIVE: {
             auto lifecycle = GetLifecycle();
             for (int i = 0; i < (int)CaseIndex::HANDRED; i++) {
@@ -568,7 +610,8 @@ void AbilityLifeCycleAbility::TestLifeCycleAddObserver()
                 lifecycle->RemoveObserver(nullptr);
             }
             TestUtils::PublishEvent(APP_ABILITY_LIFE_CYCLE_RESP_EVENT_NAME, 1, "TestLifeCycleAddObserver");
-        } break;
+            break;
+        }
         default:
             break;
     }
@@ -584,7 +627,8 @@ void AbilityLifeCycleAbility::TestLifeCycleDispatchLifecycleOne()
             lifecycle->AddObserver(lifecycleObserver);
             lifecycle->DispatchLifecycle(LifeCycle::Event::ON_ACTIVE);
             TestUtils::PublishEvent(APP_ABILITY_LIFE_CYCLE_RESP_EVENT_NAME, 1, "TestLifeCycleDispatchLifecycle");
-        } break;
+            break;
+        }
         case CaseIndex::TWO: {
             auto lifecycle = GetLifecycle();
             std::shared_ptr<AbilityLifecycleLifecycleObserver> lifecycleObserver =
@@ -592,7 +636,8 @@ void AbilityLifeCycleAbility::TestLifeCycleDispatchLifecycleOne()
             lifecycle->AddObserver(lifecycleObserver);
             lifecycle->DispatchLifecycle(LifeCycle::Event::ON_BACKGROUND);
             TestUtils::PublishEvent(APP_ABILITY_LIFE_CYCLE_RESP_EVENT_NAME, 1, "TestLifeCycleDispatchLifecycle");
-        } break;
+            break;
+        }
         case CaseIndex::THREE: {
             auto lifecycle = GetLifecycle();
             std::shared_ptr<AbilityLifecycleLifecycleObserver> lifecycleObserver =
@@ -600,7 +645,8 @@ void AbilityLifeCycleAbility::TestLifeCycleDispatchLifecycleOne()
             lifecycle->AddObserver(lifecycleObserver);
             lifecycle->DispatchLifecycle(LifeCycle::Event::ON_FOREGROUND);
             TestUtils::PublishEvent(APP_ABILITY_LIFE_CYCLE_RESP_EVENT_NAME, 1, "TestLifeCycleDispatchLifecycle");
-        } break;
+            break;
+        }
         case CaseIndex::FOUR: {
             auto lifecycle = GetLifecycle();
             std::shared_ptr<AbilityLifecycleLifecycleObserver> lifecycleObserver =
@@ -608,7 +654,8 @@ void AbilityLifeCycleAbility::TestLifeCycleDispatchLifecycleOne()
             lifecycle->AddObserver(lifecycleObserver);
             lifecycle->DispatchLifecycle(LifeCycle::Event::ON_INACTIVE);
             TestUtils::PublishEvent(APP_ABILITY_LIFE_CYCLE_RESP_EVENT_NAME, 1, "TestLifeCycleDispatchLifecycle");
-        } break;
+            break;
+        }
         default:
             break;
     }
@@ -624,7 +671,8 @@ void AbilityLifeCycleAbility::TestLifeCycleDispatchLifecycleTwo()
             lifecycle->AddObserver(lifecycleObserver);
             lifecycle->DispatchLifecycle(LifeCycle::Event::ON_START);
             TestUtils::PublishEvent(APP_ABILITY_LIFE_CYCLE_RESP_EVENT_NAME, 1, "TestLifeCycleDispatchLifecycle");
-        } break;
+            break;
+        }
         case CaseIndex::SIX: {
             auto lifecycle = GetLifecycle();
             std::shared_ptr<AbilityLifecycleLifecycleObserver> lifecycleObserver =
@@ -632,7 +680,8 @@ void AbilityLifeCycleAbility::TestLifeCycleDispatchLifecycleTwo()
             lifecycle->AddObserver(lifecycleObserver);
             lifecycle->DispatchLifecycle(LifeCycle::Event::ON_STOP);
             TestUtils::PublishEvent(APP_ABILITY_LIFE_CYCLE_RESP_EVENT_NAME, 1, "TestLifeCycleDispatchLifecycle");
-        } break;
+            break;
+        }
         case CaseIndex::SEVEN: {
             auto lifecycle = GetLifecycle();
             std::shared_ptr<AbilityLifecycleLifecycleObserver> lifecycleObserver =
@@ -640,7 +689,8 @@ void AbilityLifeCycleAbility::TestLifeCycleDispatchLifecycleTwo()
             lifecycle->AddObserver(lifecycleObserver);
             lifecycle->DispatchLifecycle(LifeCycle::Event::UNDEFINED);
             TestUtils::PublishEvent(APP_ABILITY_LIFE_CYCLE_RESP_EVENT_NAME, 1, "TestLifeCycleDispatchLifecycle");
-        } break;
+            break;
+        }
         case CaseIndex::EIGHT: {
             auto lifecycle = GetLifecycle();
             std::shared_ptr<AbilityLifecycleLifecycleObserver> lifecycleObserver =
@@ -648,7 +698,8 @@ void AbilityLifeCycleAbility::TestLifeCycleDispatchLifecycleTwo()
             lifecycle->AddObserver(lifecycleObserver);
             lifecycle->DispatchLifecycle(LifeCycle::Event::ON_ACTIVE);
             TestUtils::PublishEvent(APP_ABILITY_LIFE_CYCLE_RESP_EVENT_NAME, 1, "TestLifeCycleDispatchLifecycle");
-        } break;
+            break;
+        }
         case CaseIndex::NINE: {
             auto lifecycle = GetLifecycle();
             std::shared_ptr<AbilityLifecycleLifecycleObserver> lifecycleObserver =
@@ -656,7 +707,8 @@ void AbilityLifeCycleAbility::TestLifeCycleDispatchLifecycleTwo()
             lifecycle->AddObserver(lifecycleObserver);
             lifecycle->DispatchLifecycle(LifeCycle::Event::UNDEFINED);
             TestUtils::PublishEvent(APP_ABILITY_LIFE_CYCLE_RESP_EVENT_NAME, 1, "TestLifeCycleDispatchLifecycle");
-        } break;
+            break;
+        }
         default:
             break;
     }
@@ -677,7 +729,8 @@ void AbilityLifeCycleAbility::TestLifeCycleRemoveObserver()
                 std::make_shared<AbilityLifecycleLifecycleObserver>();
             lifecycle->RemoveObserver(lifecycleObserver);
             TestUtils::PublishEvent(APP_ABILITY_LIFE_CYCLE_RESP_EVENT_NAME, 1, "TestLifeCycleRemoveObserver");
-        } break;
+            break;
+        }
         case CaseIndex::TWO: {
             auto lifecycle = GetLifecycle();
             std::shared_ptr<AbilityLifecycleLifecycleObserver> lifecycleObserver =
@@ -686,7 +739,8 @@ void AbilityLifeCycleAbility::TestLifeCycleRemoveObserver()
                 lifecycle->RemoveObserver(lifecycleObserver);
             }
             TestUtils::PublishEvent(APP_ABILITY_LIFE_CYCLE_RESP_EVENT_NAME, 1, "TestLifeCycleRemoveObserver");
-        } break;
+            break;
+        }
         case CaseIndex::THREE: {
             auto lifecycle = GetLifecycle();
             for (int i = 0; i < (int)CaseIndex::HANDRED; i++) {
@@ -695,7 +749,8 @@ void AbilityLifeCycleAbility::TestLifeCycleRemoveObserver()
                 lifecycle->RemoveObserver(lifecycleObserver);
             }
             TestUtils::PublishEvent(APP_ABILITY_LIFE_CYCLE_RESP_EVENT_NAME, 1, "TestLifeCycleRemoveObserver");
-        } break;
+            break;
+        }
         case CaseIndex::FOUR: {
             auto lifecycle = GetLifecycle();
             for (int i = 0; i < (int)CaseIndex::HANDRED; i++) {
@@ -705,14 +760,16 @@ void AbilityLifeCycleAbility::TestLifeCycleRemoveObserver()
                 lifecycle->RemoveObserver(lifecycleObserver);
             }
             TestUtils::PublishEvent(APP_ABILITY_LIFE_CYCLE_RESP_EVENT_NAME, 1, "TestLifeCycleRemoveObserver");
-        } break;
+            break;
+        }
         case CaseIndex::FIVE: {
             auto lifecycle = GetLifecycle();
             for (int i = 0; i < (int)CaseIndex::HANDRED; i++) {
                 lifecycle->RemoveObserver(nullptr);
             }
             TestUtils::PublishEvent(APP_ABILITY_LIFE_CYCLE_RESP_EVENT_NAME, 1, "TestLifeCycleRemoveObserver");
-        } break;
+            break;
+        }
         default:
             break;
     }
