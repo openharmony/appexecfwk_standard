@@ -44,6 +44,7 @@ const std::string BUNDLE_APP_PROFILE_KEY_BUNDLE_NAME = "bundleName";
 const std::string BUNDLE_APP_PROFILE_KEY_VENDOR = "vendor";
 const std::string BUNDLE_APP_PROFILE_KEY_VERSION = "version";
 const std::string BUNDLE_APP_PROFILE_KEY_API_VERSION = "apiVersion";
+const std::string BUNDLE_APP_PROFILE_KEY_SINGLE_USER = "singleUser";
 const std::string BUNDLE_APP_PROFILE_KEY_REMOVABLE = "removable";
 // sub BUNDLE_APP_PROFILE_KEY_VERSION
 const std::string BUNDLE_APP_PROFILE_KEY_CODE = "code";
@@ -213,8 +214,8 @@ const std::string BUNDLE_MODULE_PROFILE_KEY_DESIGN_WIDTH = "designWidth";
 const std::string BUNDLE_MODULE_PROFILE_KEY_AUTO_DESIGN_WIDTH = "autoDesignWidth";
 // sub BUNDLE_MODULE_PROFILE_KEY_SHORTCUTS
 const std::string BUNDLE_MODULE_PROFILE_KEY_SHORTCUT_ID = "shortcutId";
-const std::string BUNDLE_MODULE_PROFILE_KEY_SHORTCUT_INTENTS = "intents";
-// sub BUNDLE_MODULE_PROFILE_KEY_SHORTCUT_INTENTS
+const std::string BUNDLE_MODULE_PROFILE_KEY_SHORTCUT_WANTS = "intents";
+// sub BUNDLE_MODULE_PROFILE_KEY_SHORTCUT_WANTS
 const std::string BUNDLE_MODULE_PROFILE_KEY_TARGET_CLASS = "targetClass";
 const std::string BUNDLE_MODULE_PROFILE_KEY_TARGET_BUNDLE = "targetBundle";
 // sub BUNDLE_INSTALL_MARK

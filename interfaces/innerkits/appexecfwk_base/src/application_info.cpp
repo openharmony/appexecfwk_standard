@@ -107,6 +107,7 @@ bool ApplicationInfo::ReadFromParcel(Parcel &parcel)
     dataBaseDir = Str16ToStr8(parcel.ReadString16());
     cacheDir = Str16ToStr8(parcel.ReadString16());
     isSystemApp = parcel.ReadBool();
+    isCloned = parcel.ReadBool();
     isLauncherApp = parcel.ReadBool();
     enabled = parcel.ReadBool();
     debug = parcel.ReadBool();
@@ -116,6 +117,7 @@ bool ApplicationInfo::ReadFromParcel(Parcel &parcel)
     iconId = parcel.ReadInt32();
     descriptionId = parcel.ReadInt32();
     flags = parcel.ReadInt32();
+    uid = parcel.ReadInt32();
 
     int32_t permissionsSize;
     READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, permissionsSize);
@@ -191,6 +193,7 @@ bool ApplicationInfo::Marshalling(Parcel &parcel) const
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(dataBaseDir));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(cacheDir));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, isSystemApp);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, isCloned);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, isLauncherApp);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, enabled);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, debug);
@@ -200,6 +203,7 @@ bool ApplicationInfo::Marshalling(Parcel &parcel) const
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, iconId);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, descriptionId);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, flags);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, uid);
 
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, permissions.size());
     for (auto &permission : permissions) {
@@ -268,6 +272,7 @@ void to_json(nlohmann::json &jsonObject, const ApplicationInfo &applicationInfo)
         {APPLICATION_DEVICE_ID, applicationInfo.deviceId},
         {APPLICATION_SIGNATURE_KEY, applicationInfo.signatureKey},
         {APPLICATION_IS_SYSTEM_APP, applicationInfo.isSystemApp},
+        {"isCloned", applicationInfo.isCloned},
         {APPLICATION_IS_LAUNCHER_APP, applicationInfo.isLauncherApp},
         {APPLICATION_ENABLED, applicationInfo.enabled},
         {APPLICATION_DEBUG, applicationInfo.debug},
@@ -282,7 +287,8 @@ void to_json(nlohmann::json &jsonObject, const ApplicationInfo &applicationInfo)
         {APPLICATION_DATA_DIR, applicationInfo.dataDir},
         {APPLICATION_DATA_BASE_DIR, applicationInfo.dataBaseDir},
         {APPLICATION_CACHE_DIR, applicationInfo.cacheDir},
-        {APPLICATION_FLAGS, applicationInfo.flags}
+        {APPLICATION_FLAGS, applicationInfo.flags},
+        {"uid", applicationInfo.uid}
     };
 }
 
@@ -374,6 +380,14 @@ void from_json(const nlohmann::json &jsonObject, ApplicationInfo &applicationInf
         jsonObjectEnd,
         APPLICATION_IS_SYSTEM_APP,
         applicationInfo.isSystemApp,
+        JsonType::BOOLEAN,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<bool>(jsonObject,
+        jsonObjectEnd,
+        "isCloned",
+        applicationInfo.isCloned,
         JsonType::BOOLEAN,
         false,
         parseResult,
@@ -503,6 +517,14 @@ void from_json(const nlohmann::json &jsonObject, ApplicationInfo &applicationInf
         jsonObjectEnd,
         APPLICATION_FLAGS,
         applicationInfo.flags,
+        JsonType::NUMBER,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<int>(jsonObject,
+        jsonObjectEnd,
+        "uid",
+        applicationInfo.uid,
         JsonType::NUMBER,
         false,
         parseResult,

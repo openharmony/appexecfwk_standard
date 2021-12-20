@@ -81,6 +81,7 @@ bool BundleInfo::ReadFromParcel(Parcel &parcel)
     isKeepAlive = parcel.ReadBool();
     isNativeApp = parcel.ReadBool();
     isDifferentName = parcel.ReadBool();
+    singleUser = parcel.ReadBool();
     installTime = parcel.ReadInt64();
     updateTime = parcel.ReadInt64();
 
@@ -179,6 +180,7 @@ bool BundleInfo::Marshalling(Parcel &parcel) const
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, isKeepAlive);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, isNativeApp);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, isDifferentName);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, singleUser);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int64, parcel, installTime);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int64, parcel, updateTime);
 
@@ -277,7 +279,8 @@ void to_json(nlohmann::json &jsonObject, const BundleInfo &bundleInfo)
         {BUNDLE_INFO_MODULE_NAMES, bundleInfo.moduleNames},
         {BUNDLE_INFO_MODULE_PUBLIC_DIRS, bundleInfo.modulePublicDirs},
         {BUNDLE_INFO_MODULE_DIRS, bundleInfo.moduleDirs},
-        {BUNDLE_INFO_MODULE_RES_PATHS, bundleInfo.moduleResPaths}
+        {BUNDLE_INFO_MODULE_RES_PATHS, bundleInfo.moduleResPaths},
+        {"singleUser", bundleInfo.singleUser}
     };
 }
 
@@ -549,6 +552,14 @@ void from_json(const nlohmann::json &jsonObject, BundleInfo &bundleInfo)
         false,
         parseResult,
         ArrayType::STRING);
+    GetValueIfFindKey<bool>(jsonObject,
+        jsonObjectEnd,
+        "singleUser",
+        bundleInfo.singleUser,
+        JsonType::BOOLEAN,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
 }
 
 }  // namespace AppExecFwk

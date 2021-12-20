@@ -68,6 +68,7 @@ const std::string JSON_KEY_MIN_FORM_HEIGHT = "minFormHeight";
 const std::string JSON_KEY_DEFAULT_FORM_HEIGHT = "defaultFormHeight";
 const std::string JSON_KEY_MIN_FORM_WIDTH = "minFormWidth";
 const std::string JSON_KEY_DEFAULT_FORM_WIDTH = "defaultFormWidth";
+const std::string JSON_KEY_BACKGROUND_MODES = "backgroundModes";
 const std::string JSON_KEY_CUSTOMIZE_DATA = "customizeData";
 const std::string JSON_KEY_META_DATA = "metaData";
 const std::string JSON_KEY_META_VALUE = "value";
@@ -121,6 +122,7 @@ bool AbilityInfo::ReadFromParcel(Parcel &parcel)
     defaultFormHeight = parcel.ReadInt32();
     minFormWidth = parcel.ReadInt32();
     defaultFormWidth = parcel.ReadInt32();
+    backgroundModes = parcel.ReadInt32();
     labelId = parcel.ReadInt32();
     descriptionId = parcel.ReadInt32();
     iconId = parcel.ReadInt32();
@@ -223,6 +225,7 @@ bool AbilityInfo::Marshalling(Parcel &parcel) const
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, formEntity);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, minFormHeight);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, defaultFormHeight);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, backgroundModes);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, minFormWidth);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, defaultFormWidth);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, labelId);
@@ -322,6 +325,7 @@ void to_json(nlohmann::json &jsonObject, const AbilityInfo &abilityInfo)
         {JSON_KEY_FORM_ENTITY, abilityInfo.formEntity},
         {JSON_KEY_MIN_FORM_HEIGHT, abilityInfo.minFormHeight},
         {JSON_KEY_DEFAULT_FORM_HEIGHT, abilityInfo.defaultFormHeight},
+        {JSON_KEY_BACKGROUND_MODES, abilityInfo.backgroundModes},
         {JSON_KEY_MIN_FORM_WIDTH, abilityInfo.minFormWidth},
         {JSON_KEY_DEFAULT_FORM_WIDTH, abilityInfo.defaultFormWidth},
         {JSON_KEY_LABEL_ID, abilityInfo.labelId},
@@ -412,6 +416,14 @@ void from_json(const nlohmann::json &jsonObject, AbilityInfo &abilityInfo)
         JSON_KEY_LABEL,
         abilityInfo.label,
         JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<bool>(jsonObject,
+        jsonObjectEnd,
+        JSON_KEY_BACKGROUND_MODES,
+        abilityInfo.backgroundModes,
+        JsonType::BOOLEAN,
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
