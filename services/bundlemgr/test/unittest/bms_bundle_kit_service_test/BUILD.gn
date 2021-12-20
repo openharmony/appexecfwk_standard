@@ -28,6 +28,7 @@ ohos_unittest("BmsBundleKitServiceTest") {
     "${innerkits_path}/appexecfwk_base/src/bundle_info.cpp",
     "${innerkits_path}/appexecfwk_base/src/compatible_ability_info.cpp",
     "${innerkits_path}/appexecfwk_base/src/compatible_application_info.cpp",
+    "${services_path}/bundlemgr/src/bundle_clone_mgr.cpp",
     "${services_path}/bundlemgr/src/bundle_data_mgr.cpp",
     "${services_path}/bundlemgr/src/bundle_data_storage_database.cpp",
     "${services_path}/bundlemgr/src/bundle_mgr_host_impl.cpp",
@@ -85,8 +86,7 @@ ohos_unittest("BmsBundleKitServiceTest") {
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
   ]
-  resource_config_file =
-    "//foundation/appexecfwk/standard/test/resource/bundlemgrservice/ohos_test.xml"
+  resource_config_file = "//foundation/appexecfwk/standard/test/resource/bundlemgrservice/ohos_test.xml"
 }
 
 group("unittest") {

@@ -37,6 +37,7 @@ ohos_moduletest("BmsBundleUninstallerModuleTest") {
   ]
 
   sources = [
+    "${services_path}/bundlemgr/src/bundle_clone_mgr.cpp",
     "${services_path}/bundlemgr/src/bundle_data_mgr.cpp",
     "${services_path}/bundlemgr/src/bundle_data_storage_database.cpp",
     "${services_path}/bundlemgr/src/bundle_mgr_host_impl.cpp",
@@ -86,8 +87,7 @@ ohos_moduletest("BmsBundleUninstallerModuleTest") {
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
   ]
-  resource_config_file =
-    "//foundation/appexecfwk/standard/test/resource/mstbundlemgrservice/ohos_test.xml"
+  resource_config_file = "//foundation/appexecfwk/standard/test/resource/mstbundlemgrservice/ohos_test.xml"
 }
 
 group("moduletest") {
