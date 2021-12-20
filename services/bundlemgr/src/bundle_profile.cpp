@@ -1461,7 +1461,7 @@ void from_json(const nlohmann::json &jsonObject, Shortcut &shortcut)
         ArrayType::NOT_ARRAY);
     GetValueIfFindKey<std::vector<Intent>>(jsonObject,
         jsonObjectEnd,
-        BUNDLE_MODULE_PROFILE_KEY_SHORTCUT_INTENTS,
+        BUNDLE_MODULE_PROFILE_KEY_SHORTCUT_WANTS,
         shortcut.intents,
         JsonType::ARRAY,
         false,

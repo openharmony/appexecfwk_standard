@@ -53,8 +53,7 @@ ohos_unittest("BmsBundleParserTest") {
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
   ]
-  resource_config_file =
-    "//foundation/appexecfwk/standard/test/resource/bundlemgrservice/ohos_test.xml"
+  resource_config_file = "//foundation/appexecfwk/standard/test/resource/bundlemgrservice/ohos_test.xml"
 }
 
 group("unittest") {

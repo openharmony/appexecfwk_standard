@@ -37,10 +37,10 @@ config("tools_bm_config") {
 ohos_source_set("tools_bm_source_set") {
   sources = [
     "${aafwk_path}/tools/aa/src/shell_command.cpp",
+    "${appexecfwk_path}/kits/appkit/napi/bundlemgr/bundle_death_recipient.cpp",
     "src/bundle_command.cpp",
     "src/main.cpp",
     "src/status_receiver_impl.cpp",
-    "${appexecfwk_path}/kits/appkit/napi/bundlemgr/bundle_death_recipient.cpp",
   ]
 
   public_configs = [
