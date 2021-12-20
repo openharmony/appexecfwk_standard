@@ -87,6 +87,7 @@ protected:
                             "extra" : "$string:customizeData_description"
                         }]
                     },
+                    "backgroundModes": 1,
                     "isLauncherAbility": true,
                     "isNativeAbility": false,
                     "supportPipMode" : false,
@@ -139,7 +140,10 @@ protected:
                 "process": "",
                 "signatureKey": "",
                 "supportedModes": 0,
-                "debug": true
+                "debug": true,
+                "isCloned": true,
+                "uid": 10000,
+                "signatureKey": ""
             },
             "baseBundleInfo": {
                 "abilityInfos": [],
@@ -170,7 +174,10 @@ protected:
                     "process": "",
                     "signatureKey": "",
                     "supportedModes": 0,
-                    "debug": true
+                    "debug": true,
+                    "isCloned": true,
+                    "uid": 10000,
+                    "signatureKey": ""
                 },
                 "compatibleVersion": 3,
                 "cpuAbi": "",
@@ -201,7 +208,8 @@ protected:
                 "updateTime": 17921,
                 "vendor": "ohos",
                 "versionCode": 1,
-                "versionName": "1.0"
+                "versionName": "1.0",
+                "singleUser": true
             },
             "baseDataDir": "/data/accounts/account_0/appdata/com.ohos.launcher",
             "bundleStatus": 1,
@@ -311,9 +319,31 @@ protected:
                     "label": "$string:mainability_description"
                 }
             },
+            "commonEvents": {
+                "com.example.myapplication1com.example.myapplication.h1id": {
+                    "name": ".MainAbility",
+                    "bundleName": "com.example.myapplication1",
+                    "permission": "permission_test",
+                    "uid": -1,
+                    "data": [
+                        "data_one",
+                        "data_two"
+                    ],
+                    "type": [
+                        "type_one",
+                        "typea_two"
+                    ],
+                    "events": [
+                        "events_one",
+                        "events_two"
+                    ]
+                }
+            },
             "uid": 10000,
             "userId_": 0,
-            "isPreInstallApp": true
+            "isPreInstallApp": true,
+            "canUninstall": true,
+            "newBundleName": "com.example.myapplication1#20010001"
         }
     )"_json;
 

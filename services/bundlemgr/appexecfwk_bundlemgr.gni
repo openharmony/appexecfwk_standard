@@ -32,11 +32,11 @@ bundle_install_sources = [
   "${services_path}/bundlemgr/src/bundle_util.cpp",
   "${services_path}/bundlemgr/src/bundle_verify_mgr.cpp",
   "${services_path}/bundlemgr/src/inner_bundle_info.cpp",
-  "${services_path}/bundlemgr/src/pre_install_bundle_info.cpp",
   "${services_path}/bundlemgr/src/installd_client.cpp",
   "${services_path}/bundlemgr/src/installd_death_recipient.cpp",
   "${services_path}/bundlemgr/src/ipc/installd_host.cpp",
   "${services_path}/bundlemgr/src/ipc/installd_proxy.cpp",
+  "${services_path}/bundlemgr/src/pre_install_bundle_info.cpp",
   "${services_path}/bundlemgr/src/system_bundle_installer.cpp",
 ]
 

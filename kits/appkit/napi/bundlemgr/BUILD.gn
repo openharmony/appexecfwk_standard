@@ -24,12 +24,12 @@ ohos_shared_library("bundle") {
   ]
 
   sources = [
+    "bundle_death_recipient.cpp",
     "bundle_mgr.cpp",
+    "cleancache_callback.cpp",
     "installer_callback.cpp",
     "native_module.cpp",
     "permission_callback.cpp",
-    "cleancache_callback.cpp",
-    "bundle_death_recipient.cpp",
   ]
 
   deps = [

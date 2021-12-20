@@ -1476,7 +1476,7 @@ HWTEST_F(BmsSearchSystemTest, BMS_Search_3900, Function | MediumTest | Level1)
     EXPECT_EQ(name1Exist, 0) << "the test file1 exists.";
     int name2Exist = access(testCacheFileNamE2.c_str(), F_OK);
     EXPECT_EQ(name2Exist, 0) << "the test file2 exists.";
-    bundleMgrProxy->CleanBundleDataFiles(appName);
+    bundleMgrProxy->CleanBundleDataFiles(appName, 0);
     name1Exist = access(testCacheFileNamE1.c_str(), F_OK);
     EXPECT_NE(name1Exist, 0) << "the test file1 exists.";
     name2Exist = access(testCacheFileNamE2.c_str(), F_OK);

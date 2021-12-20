@@ -23,6 +23,8 @@
 #include "nocopyable.h"
 #include "on_permission_changed_callback_host.h"
 
+namespace OHOS {
+namespace AppExecFwk {
 struct CallbackInfo {
     napi_env env;
     napi_ref callback = 0;
@@ -41,5 +43,6 @@ private:
     napi_ref callback_;
     DISALLOW_COPY_AND_MOVE(PermissionCallback);
 };
-
+}  // namespace AppExecFwk
+}  // namespace OHOS
 #endif  // PERMISSION_CALLBACK_H
