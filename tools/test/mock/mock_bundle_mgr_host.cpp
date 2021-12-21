@@ -38,7 +38,7 @@ bool MockBundleMgrHost::CleanBundleCacheFiles(const std::string &bundleName,
     return true;
 }
 
-bool MockBundleMgrHost::CleanBundleDataFiles(const std::string &bundleName)
+bool MockBundleMgrHost::CleanBundleDataFiles(const std::string &bundleName, const int userId)
 {
     APP_LOGD("enter");
     APP_LOGD("bundleName: %{public}s", bundleName.c_str());
