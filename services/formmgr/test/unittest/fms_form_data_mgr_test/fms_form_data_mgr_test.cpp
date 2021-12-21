@@ -2105,7 +2105,7 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_UpdateHostFormFlag_007, TestSize
     InitFormItemInfo(formId, formItemInfo);
     FormRecord record = formDataMgr_.CreateFormRecord(formItemInfo, callingUid);
     // needRefresh:true
-    record.needRefresh = true; 
+    record.needRefresh = true;
     formDataMgr_.formRecords_.emplace(formId, record);
 
     EXPECT_EQ(ERR_OK, formDataMgr_.UpdateHostFormFlag(formIds, token_, flag, refreshForms));
