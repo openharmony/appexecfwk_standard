@@ -16,12 +16,13 @@
 #include "bundle_status_callback_death_recipient.h"
 
 #include "app_log_wrapper.h"
-#include "singleton.h"
 #include "bundle_mgr_service.h"
 #include "bundle_status_callback_interface.h"
+#include "singleton.h"
 
 namespace OHOS {
 namespace AppExecFwk {
+
 BundleStatusCallbackDeathRecipient::BundleStatusCallbackDeathRecipient()
 {
     APP_LOGI("create BundleStatusCallbackDeathRecipient instance");
@@ -48,5 +49,6 @@ void BundleStatusCallbackDeathRecipient::OnRemoteDied(const wptr<IRemoteObject> 
     }
     dataMgr->ClearBundleStatusCallback(callback);
 }
+
 }  // namespace AppExecFwk
 }  // namespace OHOS

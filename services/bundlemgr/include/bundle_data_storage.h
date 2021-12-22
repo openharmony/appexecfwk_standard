@@ -18,11 +18,12 @@
 
 #include <map>
 
-#include "inner_bundle_info.h"
 #include "bundle_data_storage_interface.h"
+#include "inner_bundle_info.h"
 
 namespace OHOS {
 namespace AppExecFwk {
+
 class BundleDataStorage : public IBundleDataStorage {
 public:
     /**

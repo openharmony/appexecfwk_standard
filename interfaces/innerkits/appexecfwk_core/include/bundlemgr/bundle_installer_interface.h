@@ -16,11 +16,14 @@
 #ifndef FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_CORE_INCLUDE_BUNDLEMGR_BUNDLE_INSTALLER_INTERFACE_H
 #define FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_CORE_INCLUDE_BUNDLEMGR_BUNDLE_INSTALLER_INTERFACE_H
 
+#include <vector>
+
 #include "status_receiver_interface.h"
 #include "install_param.h"
 
 namespace OHOS {
 namespace AppExecFwk {
+
 class IBundleInstaller : public IRemoteBroker {
 public:
     DECLARE_INTERFACE_DESCRIPTOR(u"ohos.appexecfwk.BundleInstaller");
@@ -34,6 +37,27 @@ public:
      * @return Returns true if this function is successfully called; returns false otherwise.
      */
     virtual bool Install(const std::string &bundleFilePath, const InstallParam &installParam,
+        const sptr<IStatusReceiver> &statusReceiver) = 0;
+    /**
+     * @brief Installs an application by bundleName, the final result will be notified from the statusReceiver object.
+     * @param bundleName Indicates the bundleName of the application to install.
+     * @param installParam Indicates the install parameters.
+     * @param statusReceiver Indicates the callback object that using for notifing the install result.
+     * @return Returns true if this function is successfully called; returns false otherwise.
+     */
+    virtual bool Recover(const std::string &bundleName, const InstallParam &installParam,
+        const sptr<IStatusReceiver> &statusReceiver) = 0;
+
+    /**
+     * @brief Installs multiple haps, the final result will be notified from the statusReceiver object.
+     * @attention Notice that the bundleFilePath should be an string vector of absolute paths.
+     * @param bundleFilePaths Indicates the paths for storing the ohos Ability Packages (HAP) of the application
+     *                       to install or update.
+     * @param installParam Indicates the install parameters.
+     * @param statusReceiver Indicates the callback object that using for notifing the install result.
+     * @return Returns true if this function is successfully called; returns false otherwise.
+     */
+    virtual bool Install(const std::vector<std::string> &bundleFilePaths, const InstallParam &installParam,
         const sptr<IStatusReceiver> &statusReceiver) = 0;
 
     /**
@@ -58,11 +82,32 @@ public:
         const InstallParam &installParam, const sptr<IStatusReceiver> &statusReceiver) = 0;
 
     enum class Message {
-        INSTALL,
+        INSTALL = 0,
+        INSTALL_MULTIPLE_HAPS,
         UNINSTALL,
         UNINSTALL_MODULE,
+        RECOVER,
     };
 };
+
+#define PARCEL_WRITE_INTERFACE_TOKEN(parcel, token)                                 \
+    do {                                                                            \
+        bool ret = parcel.WriteInterfaceToken((token));                             \
+        if (!ret) {                                                                 \
+            APP_LOGE("fail to write interface token into the parcel!");             \
+            return false;                                                           \
+        }                                                                           \
+    } while (0)
+
+#define PARCEL_WRITE(parcel, type, value)                                           \
+    do {                                                                            \
+        bool ret = parcel.Write##type((value));                                     \
+        if (!ret) {                                                                 \
+            APP_LOGE("fail to write parameter into the parcel!");                   \
+            return false;                                                           \
+        }                                                                           \
+    } while (0)
+
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_CORE_INCLUDE_BUNDLEMGR_BUNDLE_INSTALLER_INTERFACE_H

@@ -19,6 +19,7 @@ import(
 module_output_path = "appexecfwk_standard/bundlemgrservice"
 
 ohos_unittest("BmsBundleInstallerTest") {
+  use_exceptions = true
   module_out_path = module_output_path
   include_dirs = [ "//third_party/jsoncpp/include" ]
   sources = [
@@ -36,6 +37,7 @@ ohos_unittest("BmsBundleInstallerTest") {
     "${services_path}/bundlemgr/src/kvstore_death_recipient_callback.cpp",
     "${services_path}/bundlemgr/src/module_usage_data_storage.cpp",
     "${services_path}/bundlemgr/src/permission_changed_death_recipient.cpp",
+    "${services_path}/bundlemgr/src/preinstall_data_storage.cpp",
   ]
 
   sources += [
@@ -76,10 +78,79 @@ ohos_unittest("BmsBundleInstallerTest") {
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
   ]
+
+  resource_config_file = "//foundation/appexecfwk/standard/test/resource/bundlemgrservice/ohos_test.xml"
+}
+
+ohos_unittest("BmsMultipleBundleInstallerTest") {
+  use_exceptions = true
+  module_out_path = module_output_path
+  include_dirs = [ "//third_party/jsoncpp/include" ]
+  sources = [
+    "${services_path}/bundlemgr/src/bundle_clone_mgr.cpp",
+    "${services_path}/bundlemgr/src/bundle_data_mgr.cpp",
+    "${services_path}/bundlemgr/src/bundle_data_storage_database.cpp",
+    "${services_path}/bundlemgr/src/bundle_mgr_host_impl.cpp",
+    "${services_path}/bundlemgr/src/bundle_mgr_service.cpp",
+    "${services_path}/bundlemgr/src/bundle_mgr_service_event_handler.cpp",
+    "${services_path}/bundlemgr/src/bundle_scanner.cpp",
+    "${services_path}/bundlemgr/src/bundle_status_callback_death_recipient.cpp",
+    "${services_path}/bundlemgr/src/installd/installd_host_impl.cpp",
+    "${services_path}/bundlemgr/src/installd/installd_operator.cpp",
+    "${services_path}/bundlemgr/src/installd/installd_service.cpp",
+    "${services_path}/bundlemgr/src/kvstore_death_recipient_callback.cpp",
+    "${services_path}/bundlemgr/src/module_usage_data_storage.cpp",
+    "${services_path}/bundlemgr/src/permission_changed_death_recipient.cpp",
+    "${services_path}/bundlemgr/src/preinstall_data_storage.cpp",
+  ]
+
+  sources += [
+    "${services_path}/bundlemgr/test/mock/src/mock_status_receiver.cpp",
+    "${services_path}/bundlemgr/test/mock/src/system_ability_helper.cpp",
+  ]
+
+  sources += bundle_install_sources
+
+  sources += [ "bms_multiple_installer_test.cpp" ]
+
+  configs = [
+    "${libs_path}/libeventhandler:libeventhandler_config",
+    "${services_path}/bundlemgr/test:bundlemgr_test_config",
+  ]
+  cflags = []
+  if (target_cpu == "arm") {
+    cflags += [ "-DBINDER_IPC_32BIT" ]
+  }
+  deps = [
+    "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core:appexecfwk_core",
+    "${libs_path}/libeventhandler:libeventhandler_target",
+    "//base/security/appverify/interfaces/innerkits/appverify:libhapverify",
+    "//base/security/permission/interfaces/innerkits/permission_standard/permissionsdk:libpermissionsdk_standard",
+    "//foundation/aafwk/standard/interfaces/innerkits/base:base",
+    "//foundation/aafwk/standard/interfaces/innerkits/want:want",
+    "//foundation/distributeddatamgr/distributeddatamgr/interfaces/innerkits/distributeddata:distributeddata_inner",
+    "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
+    "//third_party/googletest:gtest_main",
+    "//third_party/jsoncpp:jsoncpp",
+    "//utils/native/base:utils",
+  ]
+
+  deps += bundle_install_deps
+
+  external_deps = [
+    "ces_standard:cesfwk_innerkits",
+    "hiviewdfx_hilog_native:libhilog",
+    "ipc:ipc_core",
+  ]
+
+  resource_config_file = "//foundation/appexecfwk/standard/test/resource/bundlemgrservice/ohos_test.xml"
 }
 
 group("unittest") {
   testonly = true
 
-  deps = [ ":BmsBundleInstallerTest" ]
+  deps = [
+    ":BmsBundleInstallerTest",
+    ":BmsMultipleBundleInstallerTest",
+  ]
 }

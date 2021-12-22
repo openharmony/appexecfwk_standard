@@ -113,7 +113,7 @@ CleanCacheCallBackImpl::~CleanCacheCallBackImpl()
 void CleanCacheCallBackImpl::OnCleanCacheFinished(bool succeeded)
 {
     APP_LOGI("BMS_Kit_St OnCleanCacheFinished results are %{public}d", succeeded);
-    resultSucceededSignal_.set_value(succeeded);
+    resultSucceededSignal_.set_value(!succeeded);
 }
 
 bool CleanCacheCallBackImpl::GetSucceededResult() const
@@ -3266,6 +3266,8 @@ HWTEST_F(ActsBmsKitSystemTest, CleanBundleCacheFiles_0100, Function | MediumTest
         std::this_thread::sleep_for(3000ms);
         const std::string testCacheFileNamE1 = BUNDLE_DATA_ROOT_PATH + appName + "/cache/name1.txt";
         const std::string testCacheFileNamE2 = BUNDLE_DATA_ROOT_PATH + appName + "/cache/name2.txt";
+        CreateDir(testCacheFileNamE1);
+        CreateDir(testCacheFileNamE2);
         int name1Exist = access(testCacheFileNamE1.c_str(), F_OK);
         EXPECT_EQ(name1Exist, 0);
         int name2Exist = access(testCacheFileNamE2.c_str(), F_OK);
@@ -3331,6 +3333,8 @@ HWTEST_F(ActsBmsKitSystemTest, CleanBundleCacheFiles_0200, Function | MediumTest
         std::this_thread::sleep_for(3000ms);
         const std::string testCacheDiR1 = BUNDLE_DATA_ROOT_PATH + appName + "/cache/testDir1";
         const std::string testCacheDiR2 = BUNDLE_DATA_ROOT_PATH + appName + "/cache/testDir2";
+        CreateDir(testCacheDiR1);
+        CreateDir(testCacheDiR2);
         int name1Exist = access(testCacheDiR1.c_str(), F_OK);
         EXPECT_EQ(name1Exist, 0);
         int name2Exist = access(testCacheDiR2.c_str(), F_OK);
@@ -3395,6 +3399,7 @@ HWTEST_F(ActsBmsKitSystemTest, CleanBundleCacheFiles_0300, Function | MediumTest
         std::this_thread::sleep_for(3000ms);
         const std::string testCacheFileName = BUNDLE_DATA_ROOT_PATH + appName + "/cache/dir1/dir2/dir3/dir4/dir5/dir6";
         const std::string testCacheDir = BUNDLE_DATA_ROOT_PATH + appName + "/cache/dir1";
+        CreateDir(testCacheDir);
         int isExist = access(testCacheDir.c_str(), F_OK);
         EXPECT_EQ(isExist, 0);
         sptr<CleanCacheCallBackImpl> bundleCleanCacheCallback = (new (std::nothrow) CleanCacheCallBackImpl());
@@ -3456,6 +3461,8 @@ HWTEST_F(ActsBmsKitSystemTest, CleanBundleCacheFiles_0400, Function | MediumTest
         const std::string testCacheDir1 = BUNDLE_DATA_ROOT_PATH + appName + "/cache/testDir1";
         const std::string testCacheFileNamE2 = BUNDLE_DATA_ROOT_PATH + appName + "/cache/testDir2/name2.txt";
         const std::string testCacheDir2 = BUNDLE_DATA_ROOT_PATH + appName + "/cache/testDir2";
+        CreateDir(testCacheDir1);
+        CreateDir(testCacheDir2);
         int name1Exist = access(testCacheDir1.c_str(), F_OK);
         EXPECT_EQ(name1Exist, 0);
         int name2Exist = access(testCacheDir2.c_str(), F_OK);
@@ -3754,6 +3761,7 @@ HWTEST_F(ActsBmsKitSystemTest, QueryAbilityInfo_0200, Function | MediumTest | Le
 
         Want want;
         ElementName name;
+        name.SetBundleName("xxx");
         want.SetElement(name);
 
         AbilityInfo abilityInfo;

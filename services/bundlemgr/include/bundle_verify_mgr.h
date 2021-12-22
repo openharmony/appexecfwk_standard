@@ -20,10 +20,12 @@
 
 namespace OHOS {
 namespace AppExecFwk {
+
 class BundleVerifyMgr {
 public:
     static bool HapVerify(const std::string &filePath, Security::Verify::HapVerifyResult &hapVerifyResult);
 };
+
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_BUNDLE_VERIFY_MGR_H

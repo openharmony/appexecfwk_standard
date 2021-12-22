@@ -22,6 +22,7 @@
 
 namespace OHOS {
 namespace AppExecFwk {
+
 // stores module information about an application
 struct ModuleInfo : public Parcelable {
     std::string moduleName;  // the "name" in module part in config.json
@@ -31,6 +32,7 @@ struct ModuleInfo : public Parcelable {
     virtual bool Marshalling(Parcel &parcel) const override;
     static ModuleInfo *Unmarshalling(Parcel &parcel);
 };
+
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_BASE_INCLUDE_MODULE_INFO_H

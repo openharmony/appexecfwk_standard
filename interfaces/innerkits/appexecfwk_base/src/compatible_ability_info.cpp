@@ -268,6 +268,7 @@ void CompatibleAbilityInfo::ConvertToAbilityInfo(AbilityInfo& abilityInfo) const
     abilityInfo.descriptionId = descriptionId;
     abilityInfo.enabled = enabled;
     abilityInfo.originalBundleName = bundleName;
+
 }
 } // namespace AppExecFwk
 } // namespace OHOS

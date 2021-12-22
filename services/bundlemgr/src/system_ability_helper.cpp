@@ -15,14 +15,15 @@
 
 #include "system_ability_helper.h"
 
-#include "string_ex.h"
-#include "if_system_ability_manager.h"
-#include "iservice_registry.h"
-#include "ipc_skeleton.h"
 #include "app_log_wrapper.h"
+#include "if_system_ability_manager.h"
+#include "ipc_skeleton.h"
+#include "iservice_registry.h"
+#include "string_ex.h"
 
 namespace OHOS {
 namespace AppExecFwk {
+
 sptr<IRemoteObject> SystemAbilityHelper::GetSystemAbility(const int32_t systemAbilityId)
 {
     sptr<ISystemAbilityManager> systemAbilityMgr = SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
@@ -52,5 +53,6 @@ bool SystemAbilityHelper::RemoveSystemAbility(const int32_t systemAbilityId)
     APP_LOGE("fail to remove %{public}d from system ability manager", systemAbilityId);
     return false;
 }
+
 }  // namespace AppExecFwk
 }  // namespace OHOS

@@ -16,19 +16,19 @@
 #include "installd/installd_operator.h"
 
 #include <cstdio>
+#include <dirent.h>
 #include <fstream>
 #include <map>
 #include <sstream>
-#include <dirent.h>
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
 
-#include "directory_ex.h"
 #include "app_log_wrapper.h"
 #include "bundle_constants.h"
 #include "bundle_extractor.h"
+#include "directory_ex.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -133,6 +133,9 @@ bool InstalldOperator::RenameDir(const std::string &oldPath, const std::string &
         APP_LOGE("oldpath error");
         return false;
     }
+    if (access(oldPath.c_str(), F_OK) != 0 && access(newPath.c_str(), F_OK) == 0) {
+        return true;
+    }
     std::string realOldPath;
     realOldPath.reserve(PATH_MAX);
     realOldPath.resize(PATH_MAX - 1);
@@ -140,6 +143,7 @@ bool InstalldOperator::RenameDir(const std::string &oldPath, const std::string &
         APP_LOGE("realOldPath %{public}s", realOldPath.c_str());
         return false;
     }
+
     if (!(IsValideCodePath(realOldPath) && IsValideCodePath(newPath))) {
         APP_LOGE("IsValideCodePath failed");
         return false;
@@ -235,5 +239,6 @@ bool InstalldOperator::MkOwnerDir(const std::string &path, bool isReadByOthers, 
     }
     return ChangeFileAttr(path, uid, gid);
 }
+
 }  // namespace AppExecFwk
 }  // namespace OHOS

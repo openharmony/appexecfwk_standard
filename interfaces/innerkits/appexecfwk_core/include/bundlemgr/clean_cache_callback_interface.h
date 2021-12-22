@@ -20,6 +20,7 @@
 
 namespace OHOS {
 namespace AppExecFwk {
+
 class ICleanCacheCallback : public IRemoteBroker {
 public:
     DECLARE_INTERFACE_DESCRIPTOR(u"ohos.appexecfwk.CleanCacheCallback");
@@ -34,6 +35,7 @@ public:
         ON_CLEAN_CACHE_CALLBACK,
     };
 };
+
 }  // namespace AppExecFwk
 }  // namespace OHOS
 

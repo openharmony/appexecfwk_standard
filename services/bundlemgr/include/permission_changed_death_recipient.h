@@ -22,10 +22,13 @@
 
 namespace OHOS {
 namespace AppExecFwk {
+
 class PermissionChangedDeathRecipient : public IRemoteObject::DeathRecipient {
+
 public:
     virtual void OnRemoteDied(const wptr<IRemoteObject>& object) override;
 };
+
 } // namespace AppExecFwk
 } // namespace OHOS
 #endif // FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_PERMISSION_CHANGED_DEATH_RECIPIENT_H

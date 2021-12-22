@@ -15,13 +15,14 @@
 
 #include "bundle_permission_mgr.h"
 
-#include "ipc_skeleton.h"
 #include "app_log_wrapper.h"
 #include "bundle_constants.h"
 #include "bundle_mgr_service.h"
+#include "ipc_skeleton.h"
 
 namespace OHOS {
 namespace AppExecFwk {
+
 using namespace OHOS::Security;
 
 namespace {
@@ -78,6 +79,7 @@ bool ConvertPermissionDef(
     permDef.descriptionId = defPermission.descriptionId;
     return true;
 }
+
 }  // namespace
 
 bool BundlePermissionMgr::InitPermissions()
@@ -291,15 +293,15 @@ bool BundlePermissionMgr::CheckCallingPermission(const std::string &permissionNa
         APP_LOGE("cannot get bundle name by uid %{public}d", uid);
         return false;
     }
-    // now if the application is Launcher, pass it through for installing permission
+    // now if the application is system app, pass it through for installing permission
     {
-        APP_LOGI(
+        APP_LOGD(
             "get app bundleName %{public}s and permissionName %{public}s", bundleName.c_str(), permissionName.c_str());
         ApplicationInfo appInfo;
         bool ret = dataMgr->GetApplicationInfo(bundleName, ApplicationFlag::GET_BASIC_APPLICATION_INFO,
             Constants::DEFAULT_USERID, appInfo);
-        if (ret && appInfo.isLauncherApp && (permissionName == Constants::PERMISSION_INSTALL_BUNDLE)) {
-            APP_LOGE("launcher app %{public}s pass through", bundleName.c_str());
+        if (ret && appInfo.isSystemApp && (permissionName == Constants::PERMISSION_INSTALL_BUNDLE)) {
+            APP_LOGD("system app %{public}s pass through", bundleName.c_str());
             return true;
         }
     }
@@ -346,5 +348,6 @@ int BundlePermissionMgr::RemoveSystemGrantedReqPermissions(const std::string &bu
     APP_LOGI("RemoveSystemGrantedReqPermissions bundleName %{public}s", bundleName.c_str());
     return Permission::PermissionKit::RemoveSystemGrantedReqPermissions(bundleName);
 }
+
 }  // namespace AppExecFwk
 }  // namespace OHOS

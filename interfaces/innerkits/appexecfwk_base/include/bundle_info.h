@@ -27,13 +27,16 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-enum class BundleFlag {
+
+enum BundleFlag {
     // get bundle info except abilityInfos
     GET_BUNDLE_DEFAULT = 0x00000000,
     // get bundle info include abilityInfos
     GET_BUNDLE_WITH_ABILITIES = 0x00000001,
     // get application info include permission
     GET_APPLICATION_INFO_WITH_PERMISSION = 0x00000008,
+    // get bundle info include request permissions
+    GET_BUNDLE_WITH_REQUESTED_PERMISSION = 0x00000010,
 };
 
 // configuration information about a bundle
@@ -50,8 +53,8 @@ struct BundleInfo : public Parcelable {
     std::string mainEntry;       // entry is path of ability main executable file
     std::string cpuAbi;
     std::string appId;
-    int compatibleVersion = 0;
-    int targetVersion = 0;
+    uint32_t compatibleVersion = 0;
+    uint32_t targetVersion = 0;
     std::string releaseType;
     int uid = -1;
     int gid = -1;
@@ -82,6 +85,7 @@ struct BundleInfo : public Parcelable {
     virtual bool Marshalling(Parcel &parcel) const override;
     static BundleInfo *Unmarshalling(Parcel &parcel);
 };
+
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_BASE_INCLUDE_BUNDLE_INFO_H

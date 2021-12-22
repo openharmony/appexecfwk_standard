@@ -23,6 +23,7 @@
 
 namespace OHOS {
 namespace AppExecFwk {
+
 class BundleParser {
 public:
     /**
@@ -33,6 +34,7 @@ public:
      */
     ErrCode Parse(const std::string &pathName, InnerBundleInfo &innerBundleInfo) const;
 };
+
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_BUNDLE_PARSER_H

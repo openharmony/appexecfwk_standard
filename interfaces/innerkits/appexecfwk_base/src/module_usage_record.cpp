@@ -17,12 +17,13 @@
 
 #include "string_ex.h"
 
-#include "app_log_wrapper.h"
+#include "json_util.h"
 #include "nlohmann/json.hpp"
 #include "parcel_macro.h"
 
 namespace OHOS {
 namespace AppExecFwk {
+
 bool ModuleUsageRecord::ReadFromParcel(Parcel &parcel)
 {
     name = Str16ToStr8(parcel.ReadString16());
@@ -89,12 +90,42 @@ bool ModuleUsageRecord::FromJsonString(const std::string &jsonString)
         APP_LOGE("failed to parse module usage record: %{public}s.", jsonString.c_str());
         return false;
     }
-    this->launchedCount = jsonObject.at(UsageRecordKey::LAUNCHED_COUNT).get<uint32_t>();
-    this->lastLaunchTime = jsonObject.at(UsageRecordKey::LAST_LAUNCH_TIME).get<int64_t>();
-    this->removed = jsonObject.at(UsageRecordKey::IS_REMOVED).get<bool>();
-    this->abilityName = jsonObject.at(UsageRecordKey::ABILITY_NAME).get<std::string>();
 
-    return true;
+    const auto &jsonObjectEnd = jsonObject.end();
+    int32_t parseResult = ERR_OK;
+    GetValueIfFindKey<uint32_t>(jsonObject,
+        jsonObjectEnd,
+        UsageRecordKey::LAUNCHED_COUNT,
+        launchedCount,
+        JsonType::NUMBER,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<int64_t>(jsonObject,
+        jsonObjectEnd,
+        UsageRecordKey::LAST_LAUNCH_TIME,
+        lastLaunchTime,
+        JsonType::NUMBER,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<bool>(jsonObject,
+        jsonObjectEnd,
+        UsageRecordKey::IS_REMOVED,
+        removed,
+        JsonType::BOOLEAN,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        UsageRecordKey::ABILITY_NAME,
+        abilityName,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    return parseResult == ERR_OK;
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS

@@ -15,24 +15,25 @@
 
 #include "bundle_data_mgr.h"
 
-#include <cinttypes>
 #include <chrono>
-#include <fstream>
+#include <cinttypes>
 
-#include "nlohmann/json.hpp"
 #include "app_log_wrapper.h"
-#include "ipc_skeleton.h"
-#include "permission/permission_kit.h"
 #include "bundle_constants.h"
 #include "bundle_data_storage_database.h"
-#include "json_serializer.h"
+#include "bundle_status_callback_death_recipient.h"
 #include "common_event_manager.h"
 #include "common_event_support.h"
-#include "bundle_status_callback_death_recipient.h"
+#include "json_serializer.h"
+#include "nlohmann/json.hpp"
+#include "permission/permission_kit.h"
 #include "permission_changed_death_recipient.h"
 
 namespace OHOS {
 namespace AppExecFwk {
+namespace {
+constexpr std::string_view ABILTY_NAME = "abilityName";
+}
 
 BundleDataMgr::BundleDataMgr()
 {
@@ -41,6 +42,7 @@ BundleDataMgr::BundleDataMgr()
     usageRecordStorage_ = std::make_shared<ModuleUsageRecordStorage>();
     // register distributed data process death listener.
     usageRecordStorage_->RegisterKvStoreDeathListener();
+    preInstallDataStorage_ = std::make_shared<PreInstallDataStorage>();
     APP_LOGI("BundleDataMgr instance is created");
 }
 
@@ -83,7 +85,7 @@ bool BundleDataMgr::UpdateBundleInstallState(const std::string &bundleName, cons
     if (item == installStates_.end()) {
         if (state == InstallState::INSTALL_START) {
             installStates_.emplace(bundleName, state);
-            APP_LOGI("update result:success, state:INSTALL_START");
+            APP_LOGD("update result:success, state:INSTALL_START");
             return true;
         }
         APP_LOGW("update result:fail, reason:incorrect state");
@@ -93,7 +95,7 @@ bool BundleDataMgr::UpdateBundleInstallState(const std::string &bundleName, cons
     auto stateRange = transferStates_.equal_range(state);
     for (auto previousState = stateRange.first; previousState != stateRange.second; ++previousState) {
         if (item->second == previousState->second) {
-            APP_LOGI("update result:success, current:%{public}d, state:%{public}d", previousState->second, state);
+            APP_LOGD("update result:success, current:%{public}d, state:%{public}d", previousState->second, state);
             if (IsDeleteDataState(state)) {
                 installStates_.erase(item);
                 DeleteBundleInfo(bundleName, state);
@@ -109,7 +111,7 @@ bool BundleDataMgr::UpdateBundleInstallState(const std::string &bundleName, cons
 
 bool BundleDataMgr::AddInnerBundleInfo(const std::string &bundleName, InnerBundleInfo &info)
 {
-    APP_LOGI("to save info:%{public}s", info.GetBundleName().c_str());
+    APP_LOGD("to save info:%{public}s", info.GetBundleName().c_str());
     if (bundleName.empty()) {
         APP_LOGW("save info fail, empty bundle name");
         return false;
@@ -127,12 +129,12 @@ bool BundleDataMgr::AddInnerBundleInfo(const std::string &bundleName, InnerBundl
         APP_LOGE("save info fail, app:%{public}s is not installed", bundleName.c_str());
         return false;
     }
-    if (statusItem->second == InstallState::INSTALL_SUCCESS) {
-        APP_LOGI("save bundle:%{public}s info", bundleName.c_str());
+    if (statusItem->second == InstallState::INSTALL_START) {
+        APP_LOGD("save bundle:%{public}s info", bundleName.c_str());
         int64_t time =
             std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch())
                 .count();
-        APP_LOGI("the bundle install time is %{public}" PRId64, time);
+        APP_LOGD("the bundle install time is %{public}" PRId64, time);
         info.SetBundleInstallTime(time);
         if (dataStorage_->SaveStorageBundleInfo(Constants::CURRENT_DEVICE_ID, info)) {
             APP_LOGI("write storage success bundle:%{public}s", bundleName.c_str());
@@ -179,7 +181,7 @@ bool BundleDataMgr::SaveNewInfoToDB(const std::string &bundleName, InnerBundleIn
 bool BundleDataMgr::AddNewModuleInfo(
     const std::string &bundleName, const InnerBundleInfo &newInfo, InnerBundleInfo &oldInfo)
 {
-    APP_LOGI("add new module info:%{public}s", bundleName.c_str());
+    APP_LOGD("add new module info module name %{public}s ", newInfo.GetCurrentModulePackage().c_str());
     std::lock_guard<std::mutex> lock(bundleInfoMutex_);
     auto infoItem = bundleInfos_.find(bundleName);
     if (infoItem == bundleInfos_.end()) {
@@ -193,13 +195,14 @@ bool BundleDataMgr::AddNewModuleInfo(
         return false;
     }
     if (statusItem->second == InstallState::UPDATING_SUCCESS) {
-        APP_LOGI("save bundle:%{public}s info", bundleName.c_str());
+        APP_LOGD("save bundle:%{public}s info", bundleName.c_str());
         int64_t time =
             std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch())
                 .count();
-        APP_LOGI("the bundle update time is %{public}" PRId64, time);
+        APP_LOGD("the bundle update time is %{public}" PRId64, time);
         oldInfo.SetBundleUpdateTime(time);
-        oldInfo.UpdateAppInfo(newInfo);
+        oldInfo.UpdateVersionInfo(newInfo);
+        oldInfo.updateCommonHapInfo(newInfo);
         oldInfo.AddModuleInfo(newInfo);
         oldInfo.SetBundleStatus(InnerBundleInfo::BundleStatus::ENABLED);
         if (dataStorage_->DeleteStorageBundleInfo(Constants::CURRENT_DEVICE_ID, oldInfo)) {
@@ -216,7 +219,7 @@ bool BundleDataMgr::AddNewModuleInfo(
 bool BundleDataMgr::RemoveModuleInfo(
     const std::string &bundleName, const std::string &modulePackage, InnerBundleInfo &oldInfo)
 {
-    APP_LOGI("remove module info:%{public}s/%{public}s", bundleName.c_str(), modulePackage.c_str());
+    APP_LOGD("remove module info:%{public}s/%{public}s", bundleName.c_str(), modulePackage.c_str());
     std::lock_guard<std::mutex> lock(bundleInfoMutex_);
     auto infoItem = bundleInfos_.find(bundleName);
     if (infoItem == bundleInfos_.end()) {
@@ -229,8 +232,8 @@ bool BundleDataMgr::RemoveModuleInfo(
         APP_LOGE("save info fail, app:%{public}s is not updated", bundleName.c_str());
         return false;
     }
-    if (statusItem->second == InstallState::UNINSTALL_START) {
-        APP_LOGI("save bundle:%{public}s info", bundleName.c_str());
+    if (statusItem->second == InstallState::UNINSTALL_START || statusItem->second == InstallState::ROLL_BACK) {
+        APP_LOGD("save bundle:%{public}s info", bundleName.c_str());
         oldInfo.RemoveModuleInfo(modulePackage);
         oldInfo.SetBundleStatus(InnerBundleInfo::BundleStatus::ENABLED);
         if (dataStorage_->DeleteStorageBundleInfo(Constants::CURRENT_DEVICE_ID, oldInfo)) {
@@ -240,7 +243,7 @@ bool BundleDataMgr::RemoveModuleInfo(
                 return true;
             }
         }
-        APP_LOGI("after delete modulePackage:%{public}s info", modulePackage.c_str());
+        APP_LOGD("after delete modulePackage:%{public}s info", modulePackage.c_str());
     }
     return true;
 }
@@ -248,7 +251,7 @@ bool BundleDataMgr::RemoveModuleInfo(
 bool BundleDataMgr::UpdateInnerBundleInfo(
     const std::string &bundleName, const InnerBundleInfo &newInfo, InnerBundleInfo &oldInfo)
 {
-    APP_LOGI("update module info:%{public}s", bundleName.c_str());
+    APP_LOGD("update module info:%{public}s", bundleName.c_str());
     std::lock_guard<std::mutex> lock(bundleInfoMutex_);
     auto infoItem = bundleInfos_.find(bundleName);
     if (infoItem == bundleInfos_.end()) {
@@ -261,15 +264,20 @@ bool BundleDataMgr::UpdateInnerBundleInfo(
         APP_LOGE("save info fail, app:%{public}s is not updated", bundleName.c_str());
         return false;
     }
-    if (statusItem->second == InstallState::UPDATING_SUCCESS) {
-        APP_LOGI("save bundle:%{public}s info", bundleName.c_str());
+    if (statusItem->second == InstallState::UPDATING_SUCCESS || statusItem->second == InstallState::ROLL_BACK) {
+        APP_LOGD("save bundle:%{public}s info", bundleName.c_str());
         int64_t time =
             std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch())
                 .count();
-        APP_LOGI("the bundle update time is %{public}" PRId64, time);
+        APP_LOGD("the bundle update time is %{public}" PRId64, time);
         oldInfo.SetBundleUpdateTime(time);
-        oldInfo.UpdateAppInfo(newInfo);
+        oldInfo.UpdateVersionInfo(newInfo);
+        oldInfo.updateCommonHapInfo(newInfo);
         oldInfo.UpdateModuleInfo(newInfo);
+        oldInfo.SetRemovable(newInfo.IsRemovable());
+        oldInfo.SetAppType(newInfo.GetAppType());
+        oldInfo.SetAppFeature(newInfo.GetAppFeature());
+        oldInfo.SetIsPreInstallApp(newInfo.IsPreInstallApp());
         oldInfo.SetBundleStatus(InnerBundleInfo::BundleStatus::ENABLED);
         if (dataStorage_->DeleteStorageBundleInfo(Constants::CURRENT_DEVICE_ID, oldInfo)) {
             if (dataStorage_->SaveStorageBundleInfo(Constants::CURRENT_DEVICE_ID, oldInfo)) {
@@ -282,7 +290,7 @@ bool BundleDataMgr::UpdateInnerBundleInfo(
     return false;
 }
 
-bool BundleDataMgr::QueryAbilityInfo(const Want &want, AbilityInfo &abilityInfo) const
+bool BundleDataMgr::QueryAbilityInfo(const Want &want, int32_t flags, int32_t userId, AbilityInfo &abilityInfo) const
 {
     // for launcher
     if (want.HasEntity(Want::FLAG_HOME_INTENT_FROM_SYSTEM)) {
@@ -293,7 +301,7 @@ bool BundleDataMgr::QueryAbilityInfo(const Want &want, AbilityInfo &abilityInfo)
                     APP_LOGI("find launcher app %{public}s", info.second.GetBundleName().c_str());
                     info.second.GetMainAbilityInfo(abilityInfo);
                     info.second.GetApplicationInfo(
-                        ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMS, 0, abilityInfo.applicationInfo);
+                        ApplicationFlag::GET_BASIC_APPLICATION_INFO, 0, abilityInfo.applicationInfo);
                     return true;
                 }
             }
@@ -302,87 +310,107 @@ bool BundleDataMgr::QueryAbilityInfo(const Want &want, AbilityInfo &abilityInfo)
     }
 
     ElementName element = want.GetElement();
-    std::string abilityName = element.GetAbilityName();
     std::string bundleName = element.GetBundleName();
-    APP_LOGI("bundle name:%{public}s, ability name:%{public}s", bundleName.c_str(), abilityName.c_str());
-    if (bundleName.empty() || abilityName.empty()) {
-        APP_LOGW("Want error, bundleName or abilityName empty");
+    std::string abilityName = element.GetAbilityName();
+    APP_LOGD("bundle name:%{public}s, ability name:%{public}s", bundleName.c_str(), abilityName.c_str());
+    // explicit query
+    if (!bundleName.empty() && !abilityName.empty()) {
+        bool ret = ExplicitQueryAbilityInfo(bundleName, abilityName, flags, userId, abilityInfo);
+        if (ret == false) {
+            APP_LOGE("explicit queryAbilityInfo error");
+            return false;
+        }
+        return true;
+    }
+    std::vector<AbilityInfo> abilityInfos;
+    bool ret = ImplicitQueryAbilityInfos(want, flags, userId, abilityInfos);
+    if (ret == false) {
+        APP_LOGE("implicit queryAbilityInfos error");
         return false;
     }
-
-    std::string keyName = bundleName + abilityName;
-    APP_LOGI("ability, name:%{public}s", keyName.c_str());
-    std::lock_guard<std::mutex> lock(bundleInfoMutex_);
-    if (bundleInfos_.empty()) {
-        APP_LOGI("bundleInfos_ is empty");
+    if (abilityInfos.size() == 0) {
+        APP_LOGE("no matching abilityInfo");
         return false;
     }
-    auto item = bundleInfos_.find(bundleName);
-    if (item == bundleInfos_.end()) {
-        APP_LOGI("bundle:%{public}s not find", bundleName.c_str());
-        return false;
-    }
-
-    auto infoWithIdItem = item->second.find(Constants::CURRENT_DEVICE_ID);
-    if (infoWithIdItem == item->second.end()) {
-        APP_LOGI("bundle:%{public}s device id not find", bundleName.c_str());
-        return false;
-    }
-    if (infoWithIdItem->second.IsDisabled()) {
-        APP_LOGI("app %{public}s is disabled", infoWithIdItem->second.GetBundleName().c_str());
-        return false;
-    }
-    auto ability = infoWithIdItem->second.FindAbilityInfo(bundleName, abilityName);
-    if (!ability) {
-        APP_LOGE("ability:%{public}s not find", keyName.c_str());
-        return false;
-    }
-    abilityInfo = (*ability);
-    infoWithIdItem->second.GetApplicationInfo(
-        ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMS, 0, abilityInfo.applicationInfo);
+    abilityInfo = abilityInfos[0];
     return true;
 }
 
-bool BundleDataMgr::QueryAbilityInfos(const Want &want, std::vector<AbilityInfo> &abilityInfo) const
+bool BundleDataMgr::QueryAbilityInfos(
+    const Want &want, int32_t flags, int32_t userId, std::vector<AbilityInfo> &abilityInfos) const
 {
     ElementName element = want.GetElement();
-    std::string abilityName = element.GetAbilityName();
     std::string bundleName = element.GetBundleName();
-    APP_LOGI("bundle name:%{public}s, ability name:%{public}s", bundleName.c_str(), abilityName.c_str());
+    std::string abilityName = element.GetAbilityName();
+    APP_LOGD("bundle name:%{public}s, ability name:%{public}s", bundleName.c_str(), abilityName.c_str());
+    // explicit query
+    if (!bundleName.empty() && !abilityName.empty()) {
+        AbilityInfo abilityInfo;
+        bool ret = ExplicitQueryAbilityInfo(bundleName, abilityName, flags, userId, abilityInfo);
+        if (ret == false) {
+            APP_LOGE("explicit queryAbilityInfo error");
+            return false;
+        }
+        abilityInfos.emplace_back(abilityInfo);
+        return true;
+    }
+    // implicit query
+    bool ret = ImplicitQueryAbilityInfos(want, flags, userId, abilityInfos);
+    if (ret == false) {
+        APP_LOGE("implicit queryAbilityInfos error");
+        return false;
+    }
+    if (abilityInfos.size() == 0) {
+        APP_LOGE("no matching abilityInfo");
+        return false;
+    }
+    return true;
+}
 
-    std::string keyName = bundleName + abilityName;
-    APP_LOGI("ability, name:%{public}s", keyName.c_str());
+bool BundleDataMgr::ExplicitQueryAbilityInfo(const std::string &bundleName, const std::string &abilityName,
+    int32_t flags, int32_t userId, AbilityInfo &abilityInfo) const
+{
+    APP_LOGD("bundleName:%{public}s, abilityName:%{public}s", bundleName.c_str(), abilityName.c_str());
+    APP_LOGD("flags:%{public}d, userId:%{public}d", flags, userId);
     std::lock_guard<std::mutex> lock(bundleInfoMutex_);
     if (bundleInfos_.empty()) {
-        APP_LOGI("bundleInfos_ is empty");
+        APP_LOGE("bundleInfos_ is empty");
         return false;
     }
     auto item = bundleInfos_.find(bundleName);
     if (item == bundleInfos_.end()) {
-        APP_LOGI("bundle:%{public}s not find", bundleName.c_str());
+        APP_LOGE("bundle:%{public}s not find", bundleName.c_str());
         return false;
     }
-
     auto infoWithIdItem = item->second.find(Constants::CURRENT_DEVICE_ID);
     if (infoWithIdItem == item->second.end()) {
-        APP_LOGI("bundle:%{public}s device id not find", bundleName.c_str());
+        APP_LOGE("bundle:%{public}s device id not find", bundleName.c_str());
         return false;
     }
     if (infoWithIdItem->second.IsDisabled()) {
-        APP_LOGI("app %{public}s is disabled", infoWithIdItem->second.GetBundleName().c_str());
+        APP_LOGE("app %{public}s is disabled", infoWithIdItem->second.GetBundleName().c_str());
         return false;
     }
-    auto ability = infoWithIdItem->second.FindAbilityInfos(bundleName);
-    if (!ability) {
-        APP_LOGE("ability:%{public}s not find", keyName.c_str());
+    if (!infoWithIdItem->second.GetApplicationEnabled()) {
+        APP_LOGE("bundle: %{public}s is disabled", infoWithIdItem->second.GetBundleName().c_str());
         return false;
+    }
+    auto ability = infoWithIdItem->second.FindAbilityInfo(bundleName, abilityName);
+    if (!ability || !ability->enabled) {
+        APP_LOGE("ability not found or disabled");
+        return false;
+    }
+    if ((static_cast<uint32_t>(flags) & GET_ABILITY_INFO_WITH_PERMISSION) != GET_ABILITY_INFO_WITH_PERMISSION) {
+        ability->permissions.clear();
+    }
+    if ((static_cast<uint32_t>(flags) & GET_ABILITY_INFO_WITH_METADATA) != GET_ABILITY_INFO_WITH_METADATA) {
+        ability->metaData.customizeData.clear();
     }
     abilityInfo = (*ability);
-    for (auto &ability : abilityInfo) {
+    if ((static_cast<uint32_t>(flags) & GET_ABILITY_INFO_WITH_APPLICATION) == GET_ABILITY_INFO_WITH_APPLICATION) {
         infoWithIdItem->second.GetApplicationInfo(
-            ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMS, 0, ability.applicationInfo);
+            ApplicationFlag::GET_BASIC_APPLICATION_INFO, 0, abilityInfo.applicationInfo);
     }
-
     return true;
 }
 
@@ -439,8 +467,115 @@ bool BundleDataMgr::QueryAbilityInfosForClone(const Want &want, std::vector<Abil
     return true;
 }
 
+bool BundleDataMgr::ImplicitQueryAbilityInfos(
+    const Want &want, int32_t flags, int32_t userId, std::vector<AbilityInfo> &abilityInfos) const
+{
+    APP_LOGD("action:%{public}s, uri:%{public}s, type:%{public}s",
+        want.GetAction().c_str(), want.GetUriString().c_str(), want.GetType().c_str());
+    APP_LOGD("flags:%{public}d, userId:%{public}d", flags, userId);
+    std::lock_guard<std::mutex> lock(bundleInfoMutex_);
+    if (bundleInfos_.empty()) {
+        APP_LOGE("bundleInfos_ is empty");
+        return false;
+    }
+    std::string bundleName = want.GetElement().GetBundleName();
+    // query in current bundleName
+    if (!bundleName.empty()) {
+        auto item = bundleInfos_.find(bundleName);
+        if (item == bundleInfos_.end()) {
+            APP_LOGE("no bundleName %{public}s found", bundleName.c_str());
+            return false;
+        }
+        auto infoWithIdItem = item->second.find(Constants::CURRENT_DEVICE_ID);
+        if (infoWithIdItem != item->second.end()) {
+            GetMatchAbilityInfos(want, flags, infoWithIdItem->second, abilityInfos);
+        }
+        return true;
+    }
+    // query all
+    for (const auto &item : bundleInfos_) {
+        auto infoWithIdItem = item.second.find(Constants::CURRENT_DEVICE_ID);
+        if (infoWithIdItem != item.second.end()) {
+            GetMatchAbilityInfos(want, flags, infoWithIdItem->second, abilityInfos);
+        }
+    }
+    return true;
+}
+
+void BundleDataMgr::GetMatchAbilityInfos(
+    const Want &want, int32_t flags, const InnerBundleInfo &info, std::vector<AbilityInfo> &abilityInfos) const
+{
+    if (!info.GetApplicationEnabled() || info.IsDisabled()) {
+        APP_LOGE("bundleName: %{public}s is disabled", info.GetBundleName().c_str());
+        return;
+    }
+    std::map<std::string, std::vector<Skill>> skillInfos = info.GetInnerSkillInfos();
+    for (const auto &abilityInfoPair : info.GetInnerAbilityInfos()) {
+        auto skillsPair = skillInfos.find(abilityInfoPair.first);
+        if (skillsPair == skillInfos.end()) {
+            continue;
+        }
+        for (const Skill &skill : skillsPair->second) {
+            if (skill.Match(want)) {
+                AbilityInfo abilityinfo = abilityInfoPair.second;
+                if (!abilityinfo.enabled) {
+                    APP_LOGE("abilityinfo: %{public}s is disabled", abilityinfo.name.c_str());
+                    continue;
+                }
+                if ((static_cast<uint32_t>(flags) & GET_ABILITY_INFO_WITH_APPLICATION) ==
+                    GET_ABILITY_INFO_WITH_APPLICATION) {
+                    info.GetApplicationInfo(
+                        ApplicationFlag::GET_BASIC_APPLICATION_INFO, 0, abilityinfo.applicationInfo);
+                }
+                if ((static_cast<uint32_t>(flags) & GET_ABILITY_INFO_WITH_PERMISSION) !=
+                    GET_ABILITY_INFO_WITH_PERMISSION) {
+                    abilityinfo.permissions.clear();
+                }
+                if ((static_cast<uint32_t>(flags) & GET_ABILITY_INFO_WITH_METADATA) != GET_ABILITY_INFO_WITH_METADATA) {
+                    abilityinfo.metaData.customizeData.clear();
+                }
+                abilityInfos.emplace_back(abilityinfo);
+                break;
+            }
+        }
+    }
+}
+
+bool BundleDataMgr::QueryAllAbilityInfos(uint32_t userId, std::vector<AbilityInfo> &abilityInfos) const
+{
+    std::lock_guard<std::mutex> lock(bundleInfoMutex_);
+    for (const auto& bundle : bundleInfos_) {
+        std::string bundleName = bundle.first;
+        std::map<std::string, InnerBundleInfo> infoWithId = bundle.second;
+        auto infoWithIdItem = infoWithId.find(Constants::CURRENT_DEVICE_ID);
+        if (infoWithIdItem == infoWithId.end()) {
+            APP_LOGW("bundle:%{public}s device id not find", bundleName.c_str());
+            continue;
+        }
+        if (infoWithIdItem->second.IsDisabled()) {
+            APP_LOGW("app %{public}s is disabled", infoWithIdItem->second.GetBundleName().c_str());
+            continue;
+        }
+
+        // get ability in InnerBundleInfo
+        auto itemAbilities = infoWithIdItem->second.FindAbilityInfos(bundleName);
+        if (itemAbilities == std::nullopt) {
+            continue;
+        }
+
+        for (auto& ability : (*itemAbilities)) {
+            infoWithIdItem->second.GetApplicationInfo(
+                ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMS, 0,
+                ability.applicationInfo);
+            abilityInfos.emplace_back(ability);
+        }
+    }
+    return true;
+}
+
 bool BundleDataMgr::QueryAbilityInfoByUri(const std::string &abilityUri, AbilityInfo &abilityInfo) const
 {
+    APP_LOGD("abilityUri is %{public}s", abilityUri.c_str());
     if (abilityUri.empty()) {
         return false;
     }
@@ -449,6 +584,7 @@ bool BundleDataMgr::QueryAbilityInfoByUri(const std::string &abilityUri, Ability
     }
     std::lock_guard<std::mutex> lock(bundleInfoMutex_);
     if (bundleInfos_.empty()) {
+        APP_LOGE("bundleInfos_ data is empty");
         return false;
     }
     std::string noPpefixUri = abilityUri.substr(Constants::DATA_ABILITY_URI_PREFIX.size());
@@ -471,9 +607,11 @@ bool BundleDataMgr::QueryAbilityInfoByUri(const std::string &abilityUri, Ability
     for (const auto &item : bundleInfos_) {
         auto infoWithIdItem = item.second.find(deviceId);
         if (infoWithIdItem == item.second.end()) {
+            APP_LOGE("bundle device id:%{public}s not find", deviceId.c_str());
             return false;
         }
         if (infoWithIdItem->second.IsDisabled()) {
+            APP_LOGE("app %{public}s is disabled", infoWithIdItem->second.GetBundleName().c_str());
             continue;
         }
         auto ability = infoWithIdItem->second.FindAbilityInfoByUri(uri);
@@ -482,11 +620,7 @@ bool BundleDataMgr::QueryAbilityInfoByUri(const std::string &abilityUri, Ability
         }
         abilityInfo = (*ability);
         infoWithIdItem->second.GetApplicationInfo(
-            ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMS, 0, abilityInfo.applicationInfo);
-
-        if (abilityInfo.applicationInfo.isCloned == true) {
-            continue;
-        }
+            ApplicationFlag::GET_BASIC_APPLICATION_INFO, 0, abilityInfo.applicationInfo);
         return true;
     }
     return false;
@@ -543,116 +677,116 @@ bool BundleDataMgr::QueryAbilityInfosByUri(const std::string &abilityUri, std::v
 }
 
 bool BundleDataMgr::GetApplicationInfo(
-    const std::string &appName, const ApplicationFlag flag, const int userId, ApplicationInfo &appInfo) const
+    const std::string &appName, int32_t flags, const int userId, ApplicationInfo &appInfo) const
 {
-    APP_LOGI("GetApplicationInfo %{public}s", appName.c_str());
+    APP_LOGD("GetApplicationInfo %{public}s", appName.c_str());
     if (appName.empty()) {
         return false;
     }
     std::lock_guard<std::mutex> lock(bundleInfoMutex_);
     if (bundleInfos_.empty()) {
-        APP_LOGI("bundleInfos_ data is empty");
+        APP_LOGE("bundleInfos_ data is empty");
         return false;
     }
-    APP_LOGI("GetApplicationInfo %{public}s", appName.c_str());
-    int callingUid = IPCSkeleton::GetCallingUid();
-    auto infoItem = bundleInfos_.find(appName + "#" + std::to_string(callingUid));
+    APP_LOGD("GetApplicationInfo %{public}s", appName.c_str());
+    auto infoItem = bundleInfos_.find(appName);
     if (infoItem == bundleInfos_.end()) {
-        infoItem = bundleInfos_.find(appName);
-        if (infoItem == bundleInfos_.end()) {
-            return false;
-        }
+        return false;
     }
-    APP_LOGI("GetApplicationInfo %{public}s", infoItem->first.c_str());
+    APP_LOGD("GetApplicationInfo %{public}s", infoItem->first.c_str());
     auto bundleInfo = infoItem->second.find(Constants::CURRENT_DEVICE_ID);
     if (bundleInfo == infoItem->second.end()) {
         return false;
     }
     if (bundleInfo->second.IsDisabled()) {
-        APP_LOGI("app %{public}s is disabled", bundleInfo->second.GetBundleName().c_str());
+        APP_LOGE("app %{public}s is disabled", bundleInfo->second.GetBundleName().c_str());
         return false;
     }
-    bundleInfo->second.GetApplicationInfo(flag, userId, appInfo);
+    if (!bundleInfo->second.GetApplicationEnabled()) {
+        APP_LOGE("bundleName: %{public}s is disabled", bundleInfo->second.GetBundleName().c_str());
+        return false;
+    }
+    bundleInfo->second.GetApplicationInfo(flags, userId, appInfo);
     return true;
 }
 
 bool BundleDataMgr::GetApplicationInfos(
-    const ApplicationFlag flag, const int userId, std::vector<ApplicationInfo> &appInfos) const
+    int32_t flags, const int userId, std::vector<ApplicationInfo> &appInfos) const
 {
     std::lock_guard<std::mutex> lock(bundleInfoMutex_);
     if (bundleInfos_.empty()) {
-        APP_LOGI("bundleInfos_ data is empty");
+        APP_LOGE("bundleInfos_ data is empty");
         return false;
     }
     bool find = false;
     for (const auto &item : bundleInfos_) {
         for (const auto &info : item.second) {
-            if (info.second.IsDisabled()) {
-                APP_LOGI("app %{public}s is disabled", info.second.GetBundleName().c_str());
+            if (info.second.IsDisabled() || !info.second.GetApplicationEnabled()) {
+                APP_LOGE("app %{public}s is disabled", info.second.GetBundleName().c_str());
                 continue;
             }
             ApplicationInfo appInfo;
-            info.second.GetApplicationInfo(flag, userId, appInfo);
+            info.second.GetApplicationInfo(flags, userId, appInfo);
             appInfos.emplace_back(appInfo);
             find = true;
         }
     }
-    APP_LOGI("get installed bundles success");
+    APP_LOGD("get installed bundles success");
     return find;
 }
 
-bool BundleDataMgr::GetBundleInfo(const std::string &bundleName, const BundleFlag flag, BundleInfo &bundleInfo) const
+bool BundleDataMgr::GetBundleInfo(const std::string &bundleName, int32_t flags, BundleInfo &bundleInfo) const
 {
     if (bundleName.empty()) {
-        APP_LOGW("bundle name is empty");
+        APP_LOGE("bundle name is empty");
         return false;
     }
 
     std::lock_guard<std::mutex> lock(bundleInfoMutex_);
     if (bundleInfos_.empty()) {
-        APP_LOGI("bundleInfos_ data is empty");
+        APP_LOGE("bundleInfos_ data is empty");
         return false;
     }
-    APP_LOGI("GetBundleInfo %{public}s", bundleName.c_str());
-    int callingUid = IPCSkeleton::GetCallingUid();
-    auto infoItem = bundleInfos_.find(bundleName + "#" + std::to_string(callingUid));
+    APP_LOGD("GetBundleInfo %{public}s", bundleName.c_str());
+    auto infoItem = bundleInfos_.find(bundleName);
     if (infoItem == bundleInfos_.end()) {
-        infoItem = bundleInfos_.find(bundleName);
-        if (infoItem == bundleInfos_.end()) {
-            return false;
-        }
+        return false;
     }
-    APP_LOGI("GetBundleInfo %{public}s", infoItem->first.c_str());
+    APP_LOGD("GetBundleInfo %{public}s", infoItem->first.c_str());
     auto innerBundleInfo = infoItem->second.find(Constants::CURRENT_DEVICE_ID);
     if (innerBundleInfo == infoItem->second.end()) {
         return false;
     }
     if (innerBundleInfo->second.IsDisabled()) {
-        APP_LOGI("app %{public}s is disabled", innerBundleInfo->second.GetBundleName().c_str());
+        APP_LOGE("app %{public}s is disabled", innerBundleInfo->second.GetBundleName().c_str());
         return false;
     }
-    innerBundleInfo->second.GetBundleInfo(flag, bundleInfo);
-    APP_LOGI("bundle:%{public}s device id find success", bundleName.c_str());
+    if (!innerBundleInfo->second.GetApplicationEnabled()) {
+        APP_LOGE("bundleName %{public}s is disabled", innerBundleInfo->second.GetBundleName().c_str());
+        return false;
+    }
+    innerBundleInfo->second.GetBundleInfo(flags, bundleInfo);
+    APP_LOGD("bundle:%{public}s device id find success", bundleName.c_str());
     return true;
 }
 
 bool BundleDataMgr::GetBundleInfosByMetaData(const std::string &metaData, std::vector<BundleInfo> &bundleInfos) const
 {
     if (metaData.empty()) {
-        APP_LOGW("bundle name is empty");
+        APP_LOGE("bundle name is empty");
         return false;
     }
 
     std::lock_guard<std::mutex> lock(bundleInfoMutex_);
     if (bundleInfos_.empty()) {
-        APP_LOGI("bundleInfos_ data is empty");
+        APP_LOGE("bundleInfos_ data is empty");
         return false;
     }
     bool find = false;
     for (const auto &item : bundleInfos_) {
         for (const auto &info : item.second) {
             if (info.second.IsDisabled()) {
-                APP_LOGI("app %{public}s is disabled", info.second.GetBundleName().c_str());
+                APP_LOGW("app %{public}s is disabled", info.second.GetBundleName().c_str());
                 continue;
             }
             if (info.second.CheckSpecialMetaData(metaData)) {
@@ -670,7 +804,7 @@ bool BundleDataMgr::GetBundleList(std::vector<std::string> &bundleNames) const
 {
     std::lock_guard<std::mutex> lock(bundleInfoMutex_);
     if (bundleInfos_.empty()) {
-        APP_LOGI("bundleInfos_ data is empty");
+        APP_LOGE("bundleInfos_ data is empty");
         return false;
     }
     bool find = false;
@@ -678,15 +812,15 @@ bool BundleDataMgr::GetBundleList(std::vector<std::string> &bundleNames) const
         bundleNames.emplace_back(item.first);
         find = true;
     }
-    APP_LOGI("get installed bundles success");
+    APP_LOGD("get installed bundles success");
     return find;
 }
 
-bool BundleDataMgr::GetBundleInfos(const BundleFlag flag, std::vector<BundleInfo> &bundleInfos) const
+bool BundleDataMgr::GetBundleInfos(int32_t flags, std::vector<BundleInfo> &bundleInfos) const
 {
     std::lock_guard<std::mutex> lock(bundleInfoMutex_);
     if (bundleInfos_.empty()) {
-        APP_LOGI("bundleInfos_ data is empty");
+        APP_LOGE("bundleInfos_ data is empty");
         return false;
     }
     bool find = false;
@@ -694,19 +828,23 @@ bool BundleDataMgr::GetBundleInfos(const BundleFlag flag, std::vector<BundleInfo
         std::map<std::string, InnerBundleInfo> infoWithId = item.second;
         auto infoWithIdItem = infoWithId.find(Constants::CURRENT_DEVICE_ID);
         if (infoWithIdItem == infoWithId.end()) {
-            APP_LOGI("current device id bundle not find");
+            APP_LOGW("current device id bundle not find");
             continue;
         }
         if (infoWithIdItem->second.IsDisabled()) {
-            APP_LOGI("app %{public}s is disabled", infoWithIdItem->second.GetBundleName().c_str());
+            APP_LOGW("app %{public}s is disabled", infoWithIdItem->second.GetBundleName().c_str());
+            continue;
+        }
+        if (!infoWithIdItem->second.GetApplicationEnabled()) {
+            APP_LOGW("bundleName: %{public}s is disabled", infoWithIdItem->second.GetBundleName().c_str());
             continue;
         }
         BundleInfo bundleInfo;
-        infoWithIdItem->second.GetBundleInfo(flag, bundleInfo);
+        infoWithIdItem->second.GetBundleInfo(flags, bundleInfo);
         bundleInfos.emplace_back(bundleInfo);
         find = true;
     }
-    APP_LOGI("get installed bundle infos success");
+    APP_LOGD("get installed bundle infos success");
     return find;
 }
 
@@ -714,13 +852,13 @@ bool BundleDataMgr::GetBundleNameForUid(const int uid, std::string &bundleName) 
 {
     std::lock_guard<std::mutex> lock(bundleInfoMutex_);
     if (bundleInfos_.empty()) {
-        APP_LOGI("bundleInfos_ data is empty");
+        APP_LOGE("bundleInfos_ data is empty");
         return false;
     }
     for (const auto &item : bundleInfos_) {
         for (const auto &info : item.second) {
             if (info.second.IsDisabled()) {
-                APP_LOGI("app %{public}s is disabled", info.second.GetBundleName().c_str());
+                APP_LOGW("app %{public}s is disabled", info.second.GetBundleName().c_str());
                 continue;
             }
             if (info.second.GetUid() == uid) {
@@ -736,7 +874,7 @@ bool BundleDataMgr::GetBundlesForUid(const int uid, std::vector<std::string> &bu
 {
     std::lock_guard<std::mutex> lock(bundleInfoMutex_);
     if (bundleInfos_.empty()) {
-        APP_LOGI("bundleInfos_ data is empty");
+        APP_LOGE("bundleInfos_ data is empty");
         return false;
     }
     for (const auto &item : bundleInfos_) {
@@ -754,7 +892,7 @@ bool BundleDataMgr::GetNameForUid(const int uid, std::string &name) const
 {
     std::lock_guard<std::mutex> lock(bundleInfoMutex_);
     if (bundleInfos_.empty()) {
-        APP_LOGI("bundleInfos_ data is empty");
+        APP_LOGE("bundleInfos_ data is empty");
         return false;
     }
     for (const auto &item : bundleInfos_) {
@@ -782,13 +920,13 @@ bool BundleDataMgr::QueryKeepAliveBundleInfos(std::vector<BundleInfo> &bundleInf
 {
     std::lock_guard<std::mutex> lock(bundleInfoMutex_);
     if (bundleInfos_.empty()) {
-        APP_LOGI("bundleInfos_ data is empty");
+        APP_LOGE("bundleInfos_ data is empty");
         return false;
     }
     for (const auto &item : bundleInfos_) {
         for (const auto &info : item.second) {
             if (info.second.IsDisabled()) {
-                APP_LOGI("app %{public}s is disabled", info.second.GetBundleName().c_str());
+                APP_LOGW("app %{public}s is disabled", info.second.GetBundleName().c_str());
                 continue;
             }
             if (info.second.GetIsKeepAlive()) {
@@ -805,10 +943,10 @@ std::string BundleDataMgr::GetAbilityLabel(const std::string &bundleName, const 
 {
     std::lock_guard<std::mutex> lock(bundleInfoMutex_);
     if (bundleInfos_.empty()) {
-        APP_LOGI("bundleInfos_ data is empty");
+        APP_LOGW("bundleInfos_ data is empty");
         return Constants::EMPTY_STRING;
     }
-    APP_LOGI("GetAbilityLabel %{public}s", bundleName.c_str());
+    APP_LOGD("GetAbilityLabel %{public}s", bundleName.c_str());
     auto infoItem = bundleInfos_.find(bundleName);
     if (infoItem == bundleInfos_.end()) {
         return Constants::EMPTY_STRING;
@@ -818,7 +956,7 @@ std::string BundleDataMgr::GetAbilityLabel(const std::string &bundleName, const 
         return Constants::EMPTY_STRING;
     }
     if (innerBundleInfo->second.IsDisabled()) {
-        APP_LOGI("app %{public}s is disabled", innerBundleInfo->second.GetBundleName().c_str());
+        APP_LOGW("app %{public}s is disabled", innerBundleInfo->second.GetBundleName().c_str());
         return Constants::EMPTY_STRING;
     }
     auto ability = innerBundleInfo->second.FindAbilityInfo(bundleName, className);
@@ -832,10 +970,10 @@ bool BundleDataMgr::GetHapModuleInfo(const AbilityInfo &abilityInfo, HapModuleIn
 {
     std::lock_guard<std::mutex> lock(bundleInfoMutex_);
     if (bundleInfos_.empty()) {
-        APP_LOGI("bundleInfos_ data is empty");
+        APP_LOGE("bundleInfos_ data is empty");
         return false;
     }
-    APP_LOGI("GetHapModuleInfo %{public}s", abilityInfo.bundleName.c_str());
+    APP_LOGD("GetHapModuleInfo %{public}s", abilityInfo.bundleName.c_str());
     auto infoItem = bundleInfos_.find(abilityInfo.bundleName);
     if (infoItem == bundleInfos_.end()) {
         return false;
@@ -845,7 +983,7 @@ bool BundleDataMgr::GetHapModuleInfo(const AbilityInfo &abilityInfo, HapModuleIn
         return false;
     }
     if (innerBundleInfo->second.IsDisabled()) {
-        APP_LOGI("app %{public}s is disabled", innerBundleInfo->second.GetBundleName().c_str());
+        APP_LOGE("app %{public}s is disabled", innerBundleInfo->second.GetBundleName().c_str());
         return false;
     }
     auto module = innerBundleInfo->second.FindHapModuleInfo(abilityInfo.package);
@@ -861,10 +999,10 @@ bool BundleDataMgr::GetLaunchWantForBundle(const std::string &bundleName, Want &
 {
     std::lock_guard<std::mutex> lock(bundleInfoMutex_);
     if (bundleInfos_.empty()) {
-        APP_LOGI("bundleInfos_ data is empty");
+        APP_LOGE("bundleInfos_ data is empty");
         return false;
     }
-    APP_LOGI("GetLaunchWantForBundle %{public}s", bundleName.c_str());
+    APP_LOGD("GetLaunchWantForBundle %{public}s", bundleName.c_str());
     auto infoItem = bundleInfos_.find(bundleName);
     if (infoItem == bundleInfos_.end()) {
         return false;
@@ -874,27 +1012,21 @@ bool BundleDataMgr::GetLaunchWantForBundle(const std::string &bundleName, Want &
         return false;
     }
     if (innerBundleInfo->second.IsDisabled()) {
-        APP_LOGI("app %{public}s is disabled", innerBundleInfo->second.GetBundleName().c_str());
+        APP_LOGE("app %{public}s is disabled", innerBundleInfo->second.GetBundleName().c_str());
         return false;
     }
-    std::string mainAbility = innerBundleInfo->second.GetMainAbility();
+    if (!innerBundleInfo->second.GetApplicationEnabled()) {
+        APP_LOGE("bundleName: %{public}s is disabled", innerBundleInfo->second.GetBundleName().c_str());
+        return false;
+    }
+    std::string mainAbility = innerBundleInfo->second.GetMainAbilityName();
     if (mainAbility.empty()) {
         APP_LOGE("no main ability in the bundle %{public}s", bundleName.c_str());
         return false;
     }
-    auto skills = innerBundleInfo->second.FindSkills(mainAbility);
-    if (!skills || (*skills).empty()) {
-        APP_LOGE("no skills of %{public}s", mainAbility.c_str());
-        return false;
-    }
-
     want.SetElementName(Constants::CURRENT_DEVICE_ID, bundleName, mainAbility);
-    want.SetAction((*skills)[0].actions[0]);
-    for (auto &skill : (*skills)) {
-        for (auto &entity : skill.entities) {
-            want.AddEntity(entity);
-        }
-    }
+    want.SetAction(Constants::INTENT_ACTION_HOME);
+    want.AddEntity(Constants::INTENT_ENTITY_HOME);
     return true;
 }
 
@@ -913,14 +1045,22 @@ void BundleDataMgr::InitStateTransferMap()
     transferStates_.emplace(InstallState::INSTALL_SUCCESS, InstallState::INSTALL_START);
     transferStates_.emplace(InstallState::INSTALL_FAIL, InstallState::INSTALL_START);
     transferStates_.emplace(InstallState::UNINSTALL_START, InstallState::INSTALL_SUCCESS);
+    transferStates_.emplace(InstallState::UNINSTALL_START, InstallState::INSTALL_START);
+    transferStates_.emplace(InstallState::UNINSTALL_START, InstallState::UPDATING_SUCCESS);
     transferStates_.emplace(InstallState::UNINSTALL_FAIL, InstallState::UNINSTALL_START);
     transferStates_.emplace(InstallState::UNINSTALL_SUCCESS, InstallState::UNINSTALL_START);
     transferStates_.emplace(InstallState::UPDATING_START, InstallState::INSTALL_SUCCESS);
     transferStates_.emplace(InstallState::UPDATING_SUCCESS, InstallState::UPDATING_START);
     transferStates_.emplace(InstallState::UPDATING_FAIL, InstallState::UPDATING_START);
+    transferStates_.emplace(InstallState::UPDATING_FAIL, InstallState::INSTALL_START);
+    transferStates_.emplace(InstallState::UPDATING_START, InstallState::INSTALL_START);
     transferStates_.emplace(InstallState::INSTALL_SUCCESS, InstallState::UPDATING_START);
     transferStates_.emplace(InstallState::INSTALL_SUCCESS, InstallState::UPDATING_SUCCESS);
     transferStates_.emplace(InstallState::INSTALL_SUCCESS, InstallState::UNINSTALL_START);
+    transferStates_.emplace(InstallState::UPDATING_START, InstallState::UPDATING_SUCCESS);
+    transferStates_.emplace(InstallState::ROLL_BACK, InstallState::UPDATING_START);
+    transferStates_.emplace(InstallState::ROLL_BACK, InstallState::UPDATING_SUCCESS);
+    transferStates_.emplace(InstallState::INSTALL_SUCCESS, InstallState::ROLL_BACK);
 }
 
 bool BundleDataMgr::IsDeleteDataState(const InstallState state) const
@@ -947,7 +1087,7 @@ void BundleDataMgr::DeleteBundleInfo(const std::string &bundleName, const Instal
     std::lock_guard<std::mutex> lock(bundleInfoMutex_);
     auto infoItem = bundleInfos_.find(bundleName);
     if (infoItem != bundleInfos_.end()) {
-        APP_LOGI("del bundle name:%{public}s", bundleName.c_str());
+        APP_LOGD("del bundle name:%{public}s", bundleName.c_str());
         const InnerBundleInfo &innerBundleInfo = infoItem->second[Constants::CURRENT_DEVICE_ID];
         RecycleUidAndGid(innerBundleInfo);
         bool ret = dataStorage_->DeleteStorageBundleInfo(Constants::CURRENT_DEVICE_ID, innerBundleInfo);
@@ -957,7 +1097,7 @@ void BundleDataMgr::DeleteBundleInfo(const std::string &bundleName, const Instal
         // only delete self-device bundle
         infoItem->second.erase(Constants::CURRENT_DEVICE_ID);
         if (infoItem->second.empty()) {
-            APP_LOGI("now only store current device installed info, delete all");
+            APP_LOGD("now only store current device installed info, delete all");
             bundleInfos_.erase(bundleName);
         }
     }
@@ -988,7 +1128,7 @@ bool BundleDataMgr::IsAppOrAbilityInstalled(const std::string &bundleName) const
 bool BundleDataMgr::GetInnerBundleInfo(
     const std::string &bundleName, const std::string &deviceId, InnerBundleInfo &info)
 {
-    APP_LOGI("GetInnerBundleInfo %{public}s", bundleName.c_str());
+    APP_LOGD("GetInnerBundleInfo %{public}s", bundleName.c_str());
     if (bundleName.empty() || deviceId.empty()) {
         APP_LOGE("bundleName or deviceId empty");
         return false;
@@ -1012,7 +1152,7 @@ bool BundleDataMgr::GetInnerBundleInfo(
 
 bool BundleDataMgr::DisableBundle(const std::string &bundleName)
 {
-    APP_LOGI("DisableBundle %{public}s", bundleName.c_str());
+    APP_LOGD("DisableBundle %{public}s", bundleName.c_str());
     if (bundleName.empty()) {
         APP_LOGE("bundleName empty");
         return false;
@@ -1035,7 +1175,7 @@ bool BundleDataMgr::DisableBundle(const std::string &bundleName)
 
 bool BundleDataMgr::EnableBundle(const std::string &bundleName)
 {
-    APP_LOGI("EnableBundle %{public}s", bundleName.c_str());
+    APP_LOGD("EnableBundle %{public}s", bundleName.c_str());
     if (bundleName.empty()) {
         APP_LOGE("bundleName empty");
         return false;
@@ -1058,7 +1198,7 @@ bool BundleDataMgr::EnableBundle(const std::string &bundleName)
 
 bool BundleDataMgr::IsApplicationEnabled(const std::string &bundleName) const
 {
-    APP_LOGI("IsApplicationEnabled %{public}s", bundleName.c_str());
+    APP_LOGD("IsApplicationEnabled %{public}s", bundleName.c_str());
     if (bundleName.empty()) {
         APP_LOGE("bundleName empty");
         return false;
@@ -1080,12 +1220,11 @@ bool BundleDataMgr::IsApplicationEnabled(const std::string &bundleName) const
 
 bool BundleDataMgr::SetApplicationEnabled(const std::string &bundleName, bool isEnable)
 {
-    APP_LOGI("SetApplicationEnabled %{public}s", bundleName.c_str());
+    APP_LOGD("SetApplicationEnabled %{public}s", bundleName.c_str());
     if (bundleName.empty()) {
         APP_LOGE("bundleName empty");
         return false;
     }
-
     std::lock_guard<std::mutex> lock(bundleInfoMutex_);
     auto infoItem = bundleInfos_.find(bundleName);
     if (infoItem == bundleInfos_.end()) {
@@ -1097,19 +1236,26 @@ bool BundleDataMgr::SetApplicationEnabled(const std::string &bundleName, bool is
         APP_LOGE("bundle:%{public}s device id not find", bundleName.c_str());
         return false;
     }
-    infoWithIdItem->second.SetApplicationEnabled(isEnable);
-    return true;
+    InnerBundleInfo newInfo = infoWithIdItem->second;
+    newInfo.SetApplicationEnabled(isEnable);
+    if (dataStorage_->SaveStorageBundleInfo(Constants::CURRENT_DEVICE_ID, newInfo)) {
+        infoWithIdItem->second.SetApplicationEnabled(isEnable);
+        return true;
+    } else {
+        APP_LOGE("bundle:%{private}s SetApplicationEnabled failed", bundleName.c_str());
+        return false;
+    }
 }
 
 bool BundleDataMgr::IsAbilityEnabled(const AbilityInfo &abilityInfo) const
 {
-    APP_LOGI("IsAbilityEnabled %{public}s", abilityInfo.name.c_str());
+    APP_LOGD("IsAbilityEnabled %{public}s", abilityInfo.name.c_str());
     std::lock_guard<std::mutex> lock(bundleInfoMutex_);
     if (bundleInfos_.empty()) {
-        APP_LOGI("bundleInfos_ data is empty");
+        APP_LOGE("bundleInfos_ data is empty");
         return false;
     }
-    APP_LOGI("IsAbilityEnabled %{public}s", abilityInfo.bundleName.c_str());
+    APP_LOGD("IsAbilityEnabled %{public}s", abilityInfo.bundleName.c_str());
     auto infoItem = bundleInfos_.find(abilityInfo.bundleName);
     if (infoItem == bundleInfos_.end()) {
         return false;
@@ -1127,13 +1273,13 @@ bool BundleDataMgr::IsAbilityEnabled(const AbilityInfo &abilityInfo) const
 
 bool BundleDataMgr::SetAbilityEnabled(const AbilityInfo &abilityInfo, bool isEnabled)
 {
-    APP_LOGI("IsAbilityEnabled %{public}s", abilityInfo.name.c_str());
+    APP_LOGD("IsAbilityEnabled %{public}s", abilityInfo.name.c_str());
     std::lock_guard<std::mutex> lock(bundleInfoMutex_);
     if (bundleInfos_.empty()) {
-        APP_LOGI("bundleInfos_ data is empty");
+        APP_LOGE("bundleInfos_ data is empty");
         return false;
     }
-    APP_LOGI("IsAbilityEnabled %{public}s", abilityInfo.bundleName.c_str());
+    APP_LOGD("IsAbilityEnabled %{public}s", abilityInfo.bundleName.c_str());
     auto infoItem = bundleInfos_.find(abilityInfo.bundleName);
     if (infoItem == bundleInfos_.end()) {
         return false;
@@ -1142,17 +1288,23 @@ bool BundleDataMgr::SetAbilityEnabled(const AbilityInfo &abilityInfo, bool isEna
     if (innerBundleInfo == infoItem->second.end()) {
         return false;
     }
-    return innerBundleInfo->second.SetAbilityEnabled(abilityInfo.bundleName, abilityInfo.name, isEnabled);
+    InnerBundleInfo newInfo = innerBundleInfo->second;
+    newInfo.SetAbilityEnabled(abilityInfo.bundleName, abilityInfo.name, isEnabled);
+    if (dataStorage_->SaveStorageBundleInfo(Constants::CURRENT_DEVICE_ID, newInfo)) {
+        return innerBundleInfo->second.SetAbilityEnabled(abilityInfo.bundleName, abilityInfo.name, isEnabled);
+    }
+    APP_LOGD("dataStorage SetAbilityEnabled %{public}s failed", abilityInfo.bundleName.c_str());
+    return false;
 }
 
 std::string BundleDataMgr::GetAbilityIcon(const std::string &bundleName, const std::string &className) const
 {
     std::lock_guard<std::mutex> lock(bundleInfoMutex_);
     if (bundleInfos_.empty()) {
-        APP_LOGI("bundleInfos_ data is empty");
+        APP_LOGW("bundleInfos_ data is empty");
         return Constants::EMPTY_STRING;
     }
-    APP_LOGI("GetAbilityIcon %{public}s", bundleName.c_str());
+    APP_LOGD("GetAbilityIcon %{public}s", bundleName.c_str());
     auto infoItem = bundleInfos_.find(bundleName);
     if (infoItem == bundleInfos_.end()) {
         return Constants::EMPTY_STRING;
@@ -1170,7 +1322,7 @@ std::string BundleDataMgr::GetAbilityIcon(const std::string &bundleName, const s
 
 bool BundleDataMgr::RegisterBundleStatusCallback(const sptr<IBundleStatusCallback> &bundleStatusCallback)
 {
-    APP_LOGI("RegisterBundleStatusCallback %{public}s", bundleStatusCallback->GetBundleName().c_str());
+    APP_LOGD("RegisterBundleStatusCallback %{public}s", bundleStatusCallback->GetBundleName().c_str());
     std::lock_guard<std::mutex> lock(callbackMutex_);
     callbackList_.emplace_back(bundleStatusCallback);
     if (bundleStatusCallback->AsObject() != nullptr) {
@@ -1182,7 +1334,7 @@ bool BundleDataMgr::RegisterBundleStatusCallback(const sptr<IBundleStatusCallbac
 
 bool BundleDataMgr::ClearBundleStatusCallback(const sptr<IBundleStatusCallback> &bundleStatusCallback)
 {
-    APP_LOGI("ClearBundleStatusCallback %{public}s", bundleStatusCallback->GetBundleName().c_str());
+    APP_LOGD("ClearBundleStatusCallback %{public}s", bundleStatusCallback->GetBundleName().c_str());
     std::lock_guard<std::mutex> lock(callbackMutex_);
     callbackList_.erase(std::remove_if(callbackList_.begin(),
         callbackList_.end(),
@@ -1221,21 +1373,11 @@ bool BundleDataMgr::GenerateUidAndGid(InnerBundleInfo &info)
         }
     }();
     std::lock_guard<std::mutex> lock(uidMapMutex_);
-    int userId = info.GetUserId();
-    if (!info.GetisCloned()) {
-        userId = userId * Constants::U_VALUE;
-    }
-    if (info.GetisCloned()) {
-        userId = Constants::C_UESRID * Constants::U_VALUE;
-        info.SetUserId(Constants::C_UESRID);
-    }
-    
-    APP_LOGI("the userId is %{public}d", userId);
     if (innerMap.empty()) {
         APP_LOGI("first app install");
         innerMap.emplace(0, info.GetBundleName());
-        info.SetUid(baseUid + userId);
-        info.SetGid(baseUid + userId);
+        info.SetUid(baseUid);
+        info.SetGid(baseUid);
         return true;
     }
     int uid = 0;
@@ -1243,7 +1385,7 @@ bool BundleDataMgr::GenerateUidAndGid(InnerBundleInfo &info)
         if (innerMap.find(i) == innerMap.end()) {
             APP_LOGI("the %{public}d app install", i);
             innerMap.emplace(i, info.GetBundleName());
-            uid = i + baseUid + userId;
+            uid = i + baseUid;
             APP_LOGI("the uid is %{public}d", uid);
             info.SetUid(uid);
             info.SetGid(uid);
@@ -1259,8 +1401,8 @@ bool BundleDataMgr::GenerateUidAndGid(InnerBundleInfo &info)
     }
 
     innerMap.emplace((innerMap.rbegin()->first + 1), info.GetBundleName());
-    uid = innerMap.rbegin()->first + baseUid + userId;
-    APP_LOGI("the uid is %{public}d", uid);
+    uid = innerMap.rbegin()->first + baseUid;
+    APP_LOGD("the uid is %{public}d", uid);
     info.SetUid(uid);
     info.SetGid(uid);
     return true;
@@ -1274,96 +1416,66 @@ bool BundleDataMgr::GenerateCloneUid(InnerBundleInfo &info)
 
 bool BundleDataMgr::RecycleUidAndGid(const InnerBundleInfo &info)
 {
-    int key;
-    if (info.GetisCloned()) {
-        std::map<int, std::string> &innerMap = [&]() -> decltype(auto) {
-            switch (info.GetAppType()) {
-                case Constants::AppType::SYSTEM_APP:
-                    key = info.GetUid() - Constants::C_UESRID * Constants::U_VALUE - Constants::BASE_SYS_UID;
-                    return (sysUidMap_);
-                case Constants::AppType::THIRD_SYSTEM_APP:
-                    key = info.GetUid() - Constants::C_UESRID * Constants::U_VALUE - Constants::BASE_SYS_VEN_UID;
-                    return (sysVendorUidMap_);
-                case Constants::AppType::THIRD_PARTY_APP:
-                    key = info.GetUid() - Constants::C_UESRID * Constants::U_VALUE- Constants::BASE_APP_UID;
-                    return (appUidMap_);
-                default:
-                    return (appUidMap_);
-            }
-            return (appUidMap_);
-        }();
-
-        std::lock_guard<std::mutex> lock(uidMapMutex_);
-        auto iter = innerMap.find(key);
-        if (iter != std::end(innerMap)) {
-            innerMap.erase(iter);
-        } else {
-            return false;
-        }
-        return true;
-    }
     std::map<int, std::string> &innerMap = [&]() -> decltype(auto) {
         switch (info.GetAppType()) {
             case Constants::AppType::SYSTEM_APP:
-                key = info.GetUid() - Constants::BASE_SYS_UID;
                 return (sysUidMap_);
             case Constants::AppType::THIRD_SYSTEM_APP:
-                key = info.GetUid() - Constants::BASE_SYS_VEN_UID;
                 return (sysVendorUidMap_);
             case Constants::AppType::THIRD_PARTY_APP:
-                key = info.GetUid() - Constants::BASE_APP_UID;
                 return (appUidMap_);
             default:
+                APP_LOGE("app type error");
                 return (appUidMap_);
         }
     }();
-
     std::lock_guard<std::mutex> lock(uidMapMutex_);
-    auto iter = innerMap.find(key);
-    if (iter != std::end(innerMap)) {
-        innerMap.erase(iter);
-    } else {
-        return false;
+    for (auto &kv : innerMap) {
+        if (kv.second == info.GetBundleName()) {
+            APP_LOGI("the recycle uid is %{public}d", kv.first);
+            innerMap.erase(kv.first);
+            return true;
+        }
     }
     return true;
 }
 
 bool BundleDataMgr::GetUsageRecords(const int32_t maxNum, std::vector<ModuleUsageRecord> &records)
 {
-    APP_LOGI("GetUsageRecords, maxNum: %{public}d", maxNum);
-    if (maxNum <= 0 || maxNum > ProfileReader::MAX_USAGE_RECORD_SIZE) {
-        APP_LOGI("maxNum illegal");
+    APP_LOGD("GetUsageRecords, maxNum: %{public}d", maxNum);
+    if ((maxNum <= 0) || (maxNum > ProfileReader::MAX_USAGE_RECORD_SIZE)) {
+        APP_LOGE("maxNum illegal");
         return false;
     }
     records.clear();
     std::vector<ModuleUsageRecord> usageRecords;
     bool result = usageRecordStorage_->QueryRecordByNum(maxNum, usageRecords, 0);
     if (!result) {
-        APP_LOGI("GetUsageRecords error");
+        APP_LOGE("GetUsageRecords error");
         return false;
     }
     for (ModuleUsageRecord &item : usageRecords) {
-        APP_LOGI("GetUsageRecords item:%{public}s,%{public}s,%{public}s",
+        APP_LOGD("GetUsageRecords item:%{public}s,%{public}s,%{public}s",
             item.bundleName.c_str(),
             item.name.c_str(),
             item.abilityName.c_str());
 
         std::lock_guard<std::mutex> lock(bundleInfoMutex_);
         if (bundleInfos_.empty()) {
-            APP_LOGI("bundleInfos_ data is empty");
+            APP_LOGW("bundleInfos_ data is empty");
             break;
         }
         auto infoItem = bundleInfos_.find(item.bundleName);
         if (infoItem == bundleInfos_.end()) {
             continue;
         }
-        APP_LOGI("GetUsageRecords %{public}s", infoItem->first.c_str());
+        APP_LOGD("GetUsageRecords %{public}s", infoItem->first.c_str());
         auto bundleInfo = infoItem->second.find(Constants::CURRENT_DEVICE_ID);
         if (bundleInfo == infoItem->second.end()) {
             continue;
         }
         if (bundleInfo->second.IsDisabled()) {
-            APP_LOGI("app %{public}s is disabled", bundleInfo->second.GetBundleName().c_str());
+            APP_LOGW("app %{public}s is disabled", bundleInfo->second.GetBundleName().c_str());
             continue;
         }
         auto innerModuleInfo = bundleInfo->second.GetInnerModuleInfoByModuleName(item.name);
@@ -1377,11 +1489,11 @@ bool BundleDataMgr::GetUsageRecords(const int32_t maxNum, std::vector<ModuleUsag
         item.appLabelId = appInfo.labelId;
         auto ability = bundleInfo->second.FindAbilityInfo(item.bundleName, item.abilityName);
         if (!ability) {
-            APP_LOGE("ability:%{public}s not find", item.abilityName.c_str());
+            APP_LOGW("ability:%{public}s not find", item.abilityName.c_str());
             continue;
         }
         if (ability->type != AbilityType::PAGE) {
-            APP_LOGE("ability:%{public}s type is not PAGE", item.abilityName.c_str());
+            APP_LOGW("ability:%{public}s type is not PAGE", item.abilityName.c_str());
             continue;
         }
         item.abilityName = ability->name;
@@ -1414,15 +1526,11 @@ bool BundleDataMgr::RestoreUidAndGid()
     return true;
 }
 
-bool BundleDataMgr::NotifyBundleStatus(const std::string &bundleName, const std::string &modulePackage,
-    const std::string &mainAbility, const ErrCode resultCode, const NotifyType type, const int32_t &uid)
+bool BundleDataMgr::NotifyBundleStatus(const std::string& bundleName, const std::string& modulePackage,
+    const std::string& abilityName, const ErrCode resultCode, const NotifyType type, const int32_t& uid)
 {
-    APP_LOGI("notify type %{public}d with %{public}d for %{public}s-%{public}s in %{public}s",
-        type,
-        resultCode,
-        modulePackage.c_str(),
-        mainAbility.c_str(),
-        bundleName.c_str());
+    APP_LOGD("notify type %{public}d with %{public}d for %{public}s-%{public}s in %{public}s", type, resultCode,
+        modulePackage.c_str(), abilityName.c_str(), bundleName.c_str());
     uint8_t installType = [&]() -> uint8_t {
         if ((type == NotifyType::UNINSTALL_BUNDLE) || (type == NotifyType::UNINSTALL_MODULE)) {
             return static_cast<uint8_t>(InstallType::UNINSTALL_CALLBACK);
@@ -1431,7 +1539,7 @@ bool BundleDataMgr::NotifyBundleStatus(const std::string &bundleName, const std:
     }();
     {
         std::lock_guard<std::mutex> lock(callbackMutex_);
-        for (const auto &callback : callbackList_) {
+        for (const auto& callback : callbackList_) {
             if (callback->GetBundleName() == bundleName) {
                 // if the msg needed, it could convert in the proxy node
                 callback->OnBundleStateChanged(installType, resultCode, Constants::EMPTY_STRING, bundleName);
@@ -1452,21 +1560,25 @@ bool BundleDataMgr::NotifyBundleStatus(const std::string &bundleName, const std:
                 return EventFwk::CommonEventSupport::COMMON_EVENT_PACKAGE_REMOVED;
             case NotifyType::UPDATE:
                 return EventFwk::CommonEventSupport::COMMON_EVENT_PACKAGE_CHANGED;
+            case NotifyType::ABILITY_ENABLE:
+                return EventFwk::CommonEventSupport::COMMON_EVENT_PACKAGE_CHANGED;
+            case NotifyType::APPLICATION_ENABLE:
+                return EventFwk::CommonEventSupport::COMMON_EVENT_PACKAGE_CHANGED;
             default:
                 APP_LOGE("event type error");
                 return EventFwk::CommonEventSupport::COMMON_EVENT_PACKAGE_CHANGED;
         }
     }();
-    APP_LOGI("will send event data %{public}s", eventData.c_str());
+    APP_LOGD("will send event data %{public}s", eventData.c_str());
     Want want;
     want.SetAction(eventData);
     ElementName element;
     element.SetBundleName(bundleName);
-    element.SetAbilityName(mainAbility);
+    element.SetAbilityName(abilityName);
     want.SetElement(element);
     want.SetParam(Constants::UID, uid);
-    APP_LOGI("want.SetParam uid %{public}d", uid);
-    EventFwk::CommonEventData commonData {want};
+    want.SetParam(ABILTY_NAME.data(), abilityName);
+    EventFwk::CommonEventData commonData { want };
     EventFwk::CommonEventManager::PublishCommonEvent(commonData);
     return true;
 }
@@ -1486,7 +1598,7 @@ std::mutex &BundleDataMgr::GetBundleMutex(const std::string &bundleName)
 
 bool BundleDataMgr::GetProvisionId(const std::string &bundleName, std::string &provisionId) const
 {
-    APP_LOGI("GetProvisionId %{public}s", bundleName.c_str());
+    APP_LOGD("GetProvisionId %{public}s", bundleName.c_str());
     if (bundleName.empty()) {
         APP_LOGE("bundleName empty");
         return false;
@@ -1508,7 +1620,7 @@ bool BundleDataMgr::GetProvisionId(const std::string &bundleName, std::string &p
 
 bool BundleDataMgr::GetAppFeature(const std::string &bundleName, std::string &appFeature) const
 {
-    APP_LOGI("GetAppFeature %{public}s", bundleName.c_str());
+    APP_LOGD("GetAppFeature %{public}s", bundleName.c_str());
     if (bundleName.empty()) {
         APP_LOGE("bundleName empty");
         return false;
@@ -1530,13 +1642,13 @@ bool BundleDataMgr::GetAppFeature(const std::string &bundleName, std::string &ap
 
 void BundleDataMgr::SetAllInstallFlag(bool flag)
 {
-    APP_LOGI("SetAllInstallFlag %{public}d", flag);
+    APP_LOGD("SetAllInstallFlag %{public}d", flag);
     allInstallFlag_ = flag;
 }
 
 int BundleDataMgr::CheckPublicKeys(const std::string &firstBundleName, const std::string &secondBundleName) const
 {
-    APP_LOGI("CheckPublicKeys %{public}s and %{public}s", firstBundleName.c_str(), secondBundleName.c_str());
+    APP_LOGD("CheckPublicKeys %{public}s and %{public}s", firstBundleName.c_str(), secondBundleName.c_str());
     if (firstBundleName.empty() || secondBundleName.empty()) {
         APP_LOGE("bundleName empty");
         return Constants::SIGNATURE_UNKNOWN_BUNDLE;
@@ -1576,14 +1688,14 @@ bool BundleDataMgr::GetAllFormsInfo(std::vector<FormInfo> &formInfos) const
 {
     std::lock_guard<std::mutex> lock(bundleInfoMutex_);
     if (bundleInfos_.empty()) {
-        APP_LOGI("bundleInfos_ data is empty");
+        APP_LOGE("bundleInfos_ data is empty");
         return false;
     }
     auto result = false;
     for (const auto &item : bundleInfos_) {
         for (const auto &info : item.second) {
             if (info.second.IsDisabled()) {
-                APP_LOGI("app %{public}s is disabled", info.second.GetBundleName().c_str());
+                APP_LOGW("app %{public}s is disabled", info.second.GetBundleName().c_str());
                 continue;
             }
             info.second.GetFormsInfoByApp(formInfos);
@@ -1603,7 +1715,7 @@ bool BundleDataMgr::GetFormsInfoByModule(
     }
     std::lock_guard<std::mutex> lock(bundleInfoMutex_);
     if (bundleInfos_.empty()) {
-        APP_LOGI("bundleInfos_ data is empty");
+        APP_LOGE("bundleInfos_ data is empty");
         return false;
     }
     auto infoItem = bundleInfos_.find(bundleName);
@@ -1615,7 +1727,7 @@ bool BundleDataMgr::GetFormsInfoByModule(
         return false;
     }
     if (innerBundleInfo->second.IsDisabled()) {
-        APP_LOGI("app %{public}s is disabled", innerBundleInfo->second.GetBundleName().c_str());
+        APP_LOGE("app %{public}s is disabled", innerBundleInfo->second.GetBundleName().c_str());
         return false;
     }
     innerBundleInfo->second.GetFormsInfoByModule(moduleName, formInfos);
@@ -1634,7 +1746,7 @@ bool BundleDataMgr::GetFormsInfoByApp(const std::string &bundleName, std::vector
     }
     std::lock_guard<std::mutex> lock(bundleInfoMutex_);
     if (bundleInfos_.empty()) {
-        APP_LOGI("bundleInfos_ data is empty");
+        APP_LOGE("bundleInfos_ data is empty");
         return false;
     }
     auto infoItem = bundleInfos_.find(bundleName);
@@ -1646,7 +1758,7 @@ bool BundleDataMgr::GetFormsInfoByApp(const std::string &bundleName, std::vector
         return false;
     }
     if (innerBundleInfo->second.IsDisabled()) {
-        APP_LOGI("app %{public}s is disabled", innerBundleInfo->second.GetBundleName().c_str());
+        APP_LOGE("app %{public}s is disabled", innerBundleInfo->second.GetBundleName().c_str());
         return false;
     }
     innerBundleInfo->second.GetFormsInfoByApp(formInfos);
@@ -1714,20 +1826,20 @@ bool BundleDataMgr::UpdateUsageRecordOnBundleRemoved(
 {
     std::lock_guard<std::mutex> lock(bundleInfoMutex_);
     if (bundleInfos_.empty()) {
-        APP_LOGI("bundleInfos_ data is empty");
+        APP_LOGE("bundleInfos_ data is empty");
         return false;
     }
     auto infoItem = bundleInfos_.find(bundleName);
     if (infoItem == bundleInfos_.end()) {
         return false;
     }
-    APP_LOGI("UpdateUsageRecordOnBundleRemoved %{public}s", infoItem->first.c_str());
+    APP_LOGD("UpdateUsageRecordOnBundleRemoved %{public}s", infoItem->first.c_str());
     auto bundleInfo = infoItem->second.find(Constants::CURRENT_DEVICE_ID);
     if (bundleInfo == infoItem->second.end()) {
         return false;
     }
     if (bundleInfo->second.IsDisabled()) {
-        APP_LOGI("app %{public}s is disabled", bundleInfo->second.GetBundleName().c_str());
+        APP_LOGE("app %{public}s is disabled", bundleInfo->second.GetBundleName().c_str());
         return false;
     }
     std::vector<std::string> moduleNames;
@@ -1743,7 +1855,7 @@ bool BundleDataMgr::GetShortcutInfos(const std::string &bundleName, std::vector<
     }
     std::lock_guard<std::mutex> lock(bundleInfoMutex_);
     if (bundleInfos_.empty()) {
-        APP_LOGI("bundleInfos_ data is empty");
+        APP_LOGE("bundleInfos_ data is empty");
         return false;
     }
     auto infoItem = bundleInfos_.find(bundleName);
@@ -1755,11 +1867,17 @@ bool BundleDataMgr::GetShortcutInfos(const std::string &bundleName, std::vector<
         return false;
     }
     if (innerBundleInfo->second.IsDisabled()) {
-        APP_LOGI("app %{public}s is disabled", innerBundleInfo->second.GetBundleName().c_str());
+        APP_LOGE("app %{public}s is disabled", innerBundleInfo->second.GetBundleName().c_str());
+        return false;
+    }
+    if (!innerBundleInfo->second.GetApplicationEnabled()) {
+        APP_LOGE("bundle %{public}s is disabled", innerBundleInfo->second.GetBundleName().c_str());
         return false;
     }
     innerBundleInfo->second.GetShortcutInfos(shortcutInfos);
-    APP_LOGE("shortcutInfo find success");
+    if (shortcutInfos.size() == 0) {
+        return false;
+    }
     return true;
 }
 
@@ -1811,7 +1929,7 @@ bool BundleDataMgr::RegisterAllPermissionsChanged(const sptr<OnPermissionChanged
     if (it == allPermissionsCallbacks_.end()) {
         allPermissionsCallbacks_.emplace(callback);
     }
-    APP_LOGI("all permissions callbacks size = %{public}zu", allPermissionsCallbacks_.size());
+    APP_LOGD("all permissions callbacks size = %{public}zu", allPermissionsCallbacks_.size());
     return AddDeathRecipient(callback);
 }
 
@@ -1835,11 +1953,11 @@ bool BundleDataMgr::RegisterPermissionsChanged(
             permissionsCallbacks_[uid].emplace(callback);
         }
     }
-    APP_LOGI("specified permissions callbacks size = %{public}zu", permissionsCallbacks_.size());
+    APP_LOGD("specified permissions callbacks size = %{public}zu", permissionsCallbacks_.size());
 
     for (const auto &item1 : permissionsCallbacks_) {
-        APP_LOGI("item1->first = %{public}d", item1.first);
-        APP_LOGI("item1->second.size() = %{public}zu", item1.second.size());
+        APP_LOGD("item1->first = %{public}d", item1.first);
+        APP_LOGD("item1->second.size() = %{public}zu", item1.second.size());
     }
     return AddDeathRecipient(callback);
 }
@@ -1890,8 +2008,8 @@ bool BundleDataMgr::UnregisterPermissionsChanged(const sptr<OnPermissionChangedC
                 if ((*it)->AsObject() == callback->AsObject()) {
                     it = mapIter->second.erase(it);
                     APP_LOGI("unregister from specific permissions callbacks success!");
-                    APP_LOGI("mapIter->first = %{public}d", (*mapIter).first);
-                    APP_LOGI("*mapIter.second.size() = %{public}zu", (*mapIter).second.size());
+                    APP_LOGD("mapIter->first = %{public}d", (*mapIter).first);
+                    APP_LOGD("*mapIter.second.size() = %{public}zu", (*mapIter).second.size());
                     ret = true;
                 } else {
                     it++;
@@ -1905,8 +2023,8 @@ bool BundleDataMgr::UnregisterPermissionsChanged(const sptr<OnPermissionChangedC
         }
     }
     for (const auto &item1 : permissionsCallbacks_) {
-        APP_LOGI("item1->first = %{public}d", item1.first);
-        APP_LOGI("item1->second.size() = %{public}zu", item1.second.size());
+        APP_LOGD("item1->first = %{public}d", item1.first);
+        APP_LOGD("item1->second.size() = %{public}zu", item1.second.size());
     }
     return ret;
 }
@@ -1916,7 +2034,7 @@ bool BundleDataMgr::NotifyPermissionsChanged(int32_t uid)
         APP_LOGE("uid(%{private}d) is invalid", uid);
         return false;
     }
-    APP_LOGI("notify permission changed, uid = %{public}d", uid);
+    APP_LOGD("notify permission changed, uid = %{public}d", uid);
     // for all permissions callback.
     {
         std::lock_guard<std::mutex> lock(allPermissionsChangedLock_);
@@ -1927,16 +2045,16 @@ bool BundleDataMgr::NotifyPermissionsChanged(int32_t uid)
             }
 
             allPermissionItem->OnChanged(uid);
-            APP_LOGI("all permissions changed callback");
+            APP_LOGD("all permissions changed callback");
         }
     }
     // for uid permissions callback.
     {
         std::lock_guard<std::mutex> lock(permissionsChangedLock_);
-        APP_LOGI("specified permissions callbacks size = %{public}zu", permissionsCallbacks_.size());
+        APP_LOGD("specified permissions callbacks size = %{public}zu", permissionsCallbacks_.size());
         for (const auto &item1 : permissionsCallbacks_) {
-            APP_LOGI("item1->first = %{public}d", item1.first);
-            APP_LOGI("item1->second.size() = %{public}zu", item1.second.size());
+            APP_LOGD("item1->first = %{public}d", item1.first);
+            APP_LOGD("item1->second.size() = %{public}zu", item1.second.size());
         }
         auto callbackItem = permissionsCallbacks_.find(uid);
         if (callbackItem != permissionsCallbacks_.end()) {
@@ -1947,7 +2065,7 @@ bool BundleDataMgr::NotifyPermissionsChanged(int32_t uid)
                     return false;
                 }
                 item->OnChanged(uid);
-                APP_LOGI("specified permissions changed callback");
+                APP_LOGD("specified permissions changed callback");
             }
         }
     }
@@ -1994,5 +2112,61 @@ bool BundleDataMgr::GetClonedBundleName(const std::string &bundleName, std::stri
     APP_LOGI("GetCloneBundleName finish");
 }
 
+bool BundleDataMgr::SavePreInstallBundleInfo(
+    const std::string &bundleName, const PreInstallBundleInfo &preInstallBundleInfo)
+{
+    if (!preInstallDataStorage_) {
+        return false;
+    }
+
+    if (preInstallDataStorage_->SavePreInstallStorageBundleInfo(
+        Constants::PRE_INSTALL_DEVICE_ID, preInstallBundleInfo)) {
+        APP_LOGD("write storage success bundle:%{public}s", bundleName.c_str());
+        return true;
+    }
+
+    return false;
+}
+
+bool BundleDataMgr::GetPreInstallBundleInfo(
+    const std::string &bundleName, PreInstallBundleInfo &preInstallBundleInfo)
+{
+    if (bundleName.empty()) {
+        APP_LOGE("bundleName or deviceId empty");
+        return false;
+    }
+
+    if (!preInstallDataStorage_) {
+        return false;
+    }
+
+    if (preInstallDataStorage_->GetPreInstallStorageBundleInfo(
+        Constants::PRE_INSTALL_DEVICE_ID, preInstallBundleInfo)) {
+        APP_LOGD("get storage success bundle:%{public}s", bundleName.c_str());
+        return true;
+    }
+
+    return false;
+}
+
+bool BundleDataMgr::SaveInstallMark(const InnerBundleInfo &info, bool isAppExisted) const
+{
+    APP_LOGD("write install mark to storage with bundle:%{public}s", info.GetBundleName().c_str());
+    if (!isAppExisted) {
+        if (dataStorage_->SaveStorageBundleInfo(Constants::CURRENT_DEVICE_ID, info)) {
+            APP_LOGD("save install mark successfully");
+            return true;
+        }
+        APP_LOGE("save install mark failed!");
+        return false;
+    }
+    if (dataStorage_->DeleteStorageBundleInfo(Constants::CURRENT_DEVICE_ID, info) &&
+        dataStorage_->SaveStorageBundleInfo(Constants::CURRENT_DEVICE_ID, info)) {
+        APP_LOGD("save install mark successfully");
+        return true;
+    }
+    APP_LOGE("save install mark failed!");
+    return false;
+}
 }  // namespace AppExecFwk
 }  // namespace OHOS

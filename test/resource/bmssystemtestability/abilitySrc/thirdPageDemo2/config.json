@@ -36,7 +36,7 @@
             "orientation": "unspecified",
             "type": "page",
             "visible": true,
-			"skills": [
+            "skills": [
                 {
                     "actions": [
                         "ohos.aafwk.content.Want.ACTION_HOME"
@@ -48,7 +48,7 @@
                 }
             ]
             },
-			{
+            {
                 "name": "bmsThirdBundle_A2",
                 "icon": "$media:snowball",
                 "label": "bmsThirdBundle_A2 Ability",

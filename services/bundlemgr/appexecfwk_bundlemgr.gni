@@ -24,6 +24,7 @@ install_daemon_sources = [
 
 bundle_install_sources = [
   "${services_path}/bundlemgr/src/base_bundle_installer.cpp",
+  "${services_path}/bundlemgr/src/bundle_exception_handler.cpp",
   "${services_path}/bundlemgr/src/bundle_installer.cpp",
   "${services_path}/bundlemgr/src/bundle_installer_host.cpp",
   "${services_path}/bundlemgr/src/bundle_installer_manager.cpp",
@@ -35,6 +36,7 @@ bundle_install_sources = [
   "${services_path}/bundlemgr/src/installd_death_recipient.cpp",
   "${services_path}/bundlemgr/src/ipc/installd_host.cpp",
   "${services_path}/bundlemgr/src/ipc/installd_proxy.cpp",
+  "${services_path}/bundlemgr/src/pre_install_bundle_info.cpp",
   "${services_path}/bundlemgr/src/system_bundle_installer.cpp",
 ]
 
@@ -45,5 +47,6 @@ bundle_install_deps = [
 ]
 
 bundle_install_external_deps = [
+  "aafwk_standard:want",
   #"communication:ipc_core",
 ]

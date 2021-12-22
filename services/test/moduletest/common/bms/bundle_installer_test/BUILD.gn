@@ -19,6 +19,7 @@ import(
 module_output_path = "appexecfwk_standard/mstbundlemgrservice"
 
 ohos_moduletest("BmsBundleInstallerModuleTest") {
+  use_exceptions = true
   module_out_path = module_output_path
 
   configs = [
@@ -51,6 +52,7 @@ ohos_moduletest("BmsBundleInstallerModuleTest") {
     "${services_path}/bundlemgr/src/kvstore_death_recipient_callback.cpp",
     "${services_path}/bundlemgr/src/module_usage_data_storage.cpp",
     "${services_path}/bundlemgr/src/permission_changed_death_recipient.cpp",
+    "${services_path}/bundlemgr/src/preinstall_data_storage.cpp",
   ]
 
   sources += bundle_install_sources
@@ -89,6 +91,7 @@ ohos_moduletest("BmsBundleInstallerModuleTest") {
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
   ]
+  resource_config_file = "//foundation/appexecfwk/standard/test/resource/mstbundlemgrservice/ohos_test.xml"
 }
 
 group("moduletest") {

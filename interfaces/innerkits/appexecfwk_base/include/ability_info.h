@@ -23,12 +23,34 @@
 
 namespace OHOS {
 namespace AppExecFwk {
+
+enum AbilityInfoFlag {
+    GET_ABILITY_INFO_DEFAULT = 0x00000000,
+    GET_ABILITY_INFO_WITH_PERMISSION = 0x00000002,
+    GET_ABILITY_INFO_WITH_APPLICATION = 0x00000004,
+    GET_ABILITY_INFO_WITH_METADATA = 0x00000020,
+};
+
 enum class AbilityType {
     UNKNOWN = 0,
     PAGE,
     SERVICE,
     DATA,
     FORM,
+    EXTENSION,
+};
+
+enum class BackgroundMode {
+    DEFAULT = 0,
+    DATA_TRANSFER = 1 << 0,
+    AUDIO_PLAYBACK = 1 << 1,
+    AUDIO_RECORDING = 1 << 2,
+    LOCATION = 1 << 3,
+    BLUETOOTH_INTERACTION = 1 << 4,
+    MULTI_DEVICE_CONNECTION = 1 << 5,
+    WIFI_INTERACTION = 1 << 6,
+    VOIP = 1 << 7,
+    TASK_KEEPING = 1 << 8,
 };
 
 enum class AbilitySubType {
@@ -47,30 +69,6 @@ enum class LaunchMode {
     SINGLETON = 0,
     STANDARD,  // support more than one instance
     SINGLETOP,
-};
-
-struct Parameters {
-    std::string description;
-    std::string name;
-    std::string type;
-};
-
-struct Results {
-    std::string description;
-    std::string name;
-    std::string type;
-};
-
-struct CustomizeData {
-    std::string name;
-    std::string value;
-    std::string extra;
-};
-
-struct MetaData {
-    std::vector<Parameters> parameters;
-    std::vector<Results> results;
-    std::vector<CustomizeData> customizeData;
 };
 
 struct AbilityInfo;
@@ -153,6 +151,7 @@ struct AbilityInfo : public Parcelable {
     int32_t iconId;
     std::string theme;
     bool visible = false;
+    bool isHomeAbility = false;
     std::string kind;  // ability category
     AbilityType type = AbilityType::UNKNOWN;
     DisplayOrientation orientation = DisplayOrientation::UNSPECIFIED;
@@ -181,7 +180,6 @@ struct AbilityInfo : public Parcelable {
     int32_t minFormWidth = 0;
     int32_t defaultFormWidth = 0;
     MetaData metaData;
-    uint32_t backgroundModes = 0;
 
     // set when install
     std::string package;  // the "module.package" in config.json
@@ -204,6 +202,7 @@ struct AbilityInfo : public Parcelable {
     std::string originalClassName;
     std::string uriPermissionMode;
     std::string uriPermissionPath;
+    uint32_t backgroundModes = 0;
     uint32_t packageSize = 0;
     bool multiUserShared = false;
     bool grantPermission = false;
@@ -216,6 +215,7 @@ struct AbilityInfo : public Parcelable {
     void Dump(std::string prefix, int fd);
     void ConvertToCompatiableAbilityInfo(CompatibleAbilityInfo& compatibleAbilityInfo) const;
 };
+
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_BASE_INCLUDE_ABILITY_INFO_H

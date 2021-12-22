@@ -26,7 +26,9 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-class BundleDataStorageDatabase : public IBundleDataStorage {
+
+class BundleDataStorageDatabase :
+    public IBundleDataStorage, public std::enable_shared_from_this<BundleDataStorageDatabase> {
 public:
     BundleDataStorageDatabase();
     ~BundleDataStorageDatabase();
@@ -52,10 +54,9 @@ public:
     virtual bool DeleteStorageBundleInfo(const std::string &deviceId, const InnerBundleInfo &innerBundleInfo);
     void RegisterKvStoreDeathListener();
     bool ResetKvStore();
-
 private:
     void SaveEntries(const std::vector<DistributedKv::Entry> &allEntries,
-        std::map<std::string, std::map<std::string, InnerBundleInfo>> &infos) const;
+        std::map<std::string, std::map<std::string, InnerBundleInfo>> &infos);
     DistributedKv::Status GetEntries(std::vector<DistributedKv::Entry> &allEntries) const;
     void TryTwice(const std::function<DistributedKv::Status()> &func) const;
     bool CheckKvStore();
@@ -71,6 +72,7 @@ private:
     // std::shared_ptr<DataChangeListener> dataChangeListener_;
     mutable std::mutex kvStorePtrMutex_;
 };
+
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_BUNDLE_DATA_STORAGE_DATABASE_H

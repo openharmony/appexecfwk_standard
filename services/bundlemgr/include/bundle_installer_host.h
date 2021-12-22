@@ -27,6 +27,7 @@
 
 namespace OHOS {
 namespace AppExecFwk {
+
 class BundleInstallerHost : public IRemoteStub<IBundleInstaller> {
 public:
     BundleInstallerHost();
@@ -45,6 +46,26 @@ public:
      * @return Returns true if this function is successfully called; returns false otherwise.
      */
     virtual bool Install(const std::string &bundleFilePath, const InstallParam &installParam,
+        const sptr<IStatusReceiver> &statusReceiver) override;
+    /**
+     * @brief Installs an application by bundleName, the final result will be notified from the statusReceiver object.
+     * @param bundleName Indicates the bundleName of the application to install.
+     * @param installParam Indicates the install parameters.
+     * @param statusReceiver Indicates the callback object that using for notifing the install result.
+     * @return Returns true if this function is successfully called; returns false otherwise.
+     */
+    virtual bool Recover(const std::string &bundleName, const InstallParam &installParam,
+        const sptr<IStatusReceiver> &statusReceiver) override;
+    /**
+     * @brief Installs multiple haps, the final result will be notified from the statusReceiver object.
+     * @attention Notice that the bundleFilePath should be an string vector of absolute paths.
+     * @param bundleFilePaths Indicates the paths for storing the ohos Ability Packages (HAP) of the application
+     *                       to install or update.
+     * @param installParam Indicates the install parameters.
+     * @param statusReceiver Indicates the callback object that using for notifing the install result.
+     * @return Returns true if this function is successfully called; returns false otherwise.
+     */
+    virtual bool Install(const std::vector<std::string> &bundleFilePaths, const InstallParam &installParam,
         const sptr<IStatusReceiver> &statusReceiver) override;
     /**
      * @brief Uninstalls an application, the result will be notified from the statusReceiver object.
@@ -75,6 +96,19 @@ private:
      */
     void HandleInstallMessage(Parcel &data);
     /**
+     * @brief Handles the Install by bundleName function called from a IBundleInstaller proxy object.
+     * @param data Indicates the data to be read.
+     * @return
+     */
+    void HandleRecoverMessage(Parcel &data);
+    /**
+     * @brief Handles the Install multiple haps function called from a IBundleInstaller proxy object.
+     * @param data Indicates the data to be read.
+     * @param reply Indicates the reply to be sent;
+     * @return
+     */
+    void HandleInstallMultipleHapsMessage(Parcel &data);
+    /**
      * @brief Handles the Uninstall bundle function called from a IBundleInstaller proxy object.
      * @param data Indicates the data to be read.
      * @param reply Indicates the reply to be sent;
@@ -100,6 +134,7 @@ private:
 
     DISALLOW_COPY_AND_MOVE(BundleInstallerHost);
 };
+
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_BUNDLE_INSTALLER_HOST_H

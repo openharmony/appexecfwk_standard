@@ -15,11 +15,14 @@
 
 #include "inner_bundle_info.h"
 
+#include <regex>
+
 #include "common_profile.h"
 
 namespace OHOS {
 namespace AppExecFwk {
 namespace {
+
 const std::string IS_SUPPORT_BACKUP = "isSupportBackup";
 const std::string APP_TYPE = "appType";
 const std::string UID = "uid";
@@ -31,6 +34,7 @@ const std::string BASE_BUNDLE_INFO = "baseBundleInfo";
 const std::string BASE_ABILITY_INFO = "baseAbilityInfos";
 const std::string INNER_MODULE_INFO = "innerModuleInfos";
 const std::string MAIN_ABILITY = "mainAbility";
+const std::string MAIN_ABILITY_NAME = "mainAbilityName";
 const std::string SKILL_INFOS = "skillInfos";
 const std::string USER_ID = "userId_";
 const std::string IS_KEEP_DATA = "isKeepData";
@@ -61,8 +65,190 @@ const std::string MODULE_SHORTCUT = "shortcutInfos";
 const std::string MODULE_COMMON_EVENT = "commonEvents";
 const std::string MODULE_MAIN_ABILITY = "mainAbility";
 const std::string NEW_BUNDLE_NAME = "newBundleName";
-
+const std::string MODULE_SRC_PATH = "srcPath";
+const std::string SCHEME_SEPARATOR = "://";
+const std::string PORT_SEPARATOR = ":";
+const std::string PATH_SEPARATOR = "/";
+const std::string IS_PREINSTALL_APP = "isPreInstallApp";
+const std::string INSTALL_MARK = "installMark";
+const char WILDCARD = '*';
+const std::string TYPE_WILDCARD = "*/*";
 }  // namespace
+
+bool Skill::Match(const OHOS::AAFwk::Want &want) const
+{
+    bool matchAction = MatchAction(want.GetAction());
+    if (!matchAction) {
+        APP_LOGD("Action does not match");
+        return false;
+    }
+    bool matchEntities = MatchEntities(want.GetEntities());
+    if (!matchEntities) {
+        APP_LOGD("Entities does not match");
+        return false;
+    }
+    bool matchUriAndType = MatchUriAndType(want.GetUriString(), want.GetType());
+    if (!matchUriAndType) {
+        APP_LOGD("Uri or Type does not match");
+        return false;
+    }
+    return true;
+}
+
+bool Skill::MatchAction(const std::string &action) const
+{
+    // config actions empty, no match
+    if (actions.empty()) {
+        return false;
+    }
+    // config actions not empty, param empty, match
+    if (action.empty()) {
+        return true;
+    }
+    // config actions not empty, param not empty, if config actions contains param action, match
+    return std::find(actions.cbegin(), actions.cend(), action) != actions.cend();
+}
+
+bool Skill::MatchEntities(const std::vector<std::string> &paramEntities) const
+{
+    // param entities empty, match
+    if (paramEntities.empty()) {
+        return true;
+    }
+    // config entities empty, param entities not empty, not match
+    if (entities.empty()) {
+        return false;
+    }
+    // config entities not empty, param entities not empty, if every param entity in config entities, match
+    std::vector<std::string>::size_type size = paramEntities.size();
+    for (std::vector<std::string>::size_type i = 0; i < size; i++) {
+        bool ret = std::find(entities.cbegin(), entities.cend(), paramEntities[i]) == entities.cend();
+        if (ret) {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool Skill::MatchUriAndType(const std::string &uriString, const std::string &type) const
+{
+    if (uriString.empty() && type.empty()) {
+        // case1 : param uri empty, param type empty
+        if (uris.empty()) {
+            return true;
+        }
+        for (const SkillUri &skillUri : uris) {
+            if (skillUri.scheme.empty() && skillUri.type.empty()) {
+                return true;
+            }
+        }
+        return false;
+    }
+    if (uris.empty()) {
+        return false;
+    }
+    if (!uriString.empty() && type.empty()) {
+        // case2 : param uri not empty, param type empty
+        for (const SkillUri &skillUri : uris) {
+            if (MatchUri(uriString, skillUri) && skillUri.type.empty()) {
+                return true;
+            }
+        }
+        return false;
+    } else if (uriString.empty() && !type.empty()) {
+        // case3 : param uri empty, param type not empty
+        for (const SkillUri &skillUri : uris) {
+            if (skillUri.scheme.empty() && MatchType(type, skillUri.type)) {
+                return true;
+            }
+        }
+        return false;
+    } else {
+        // case4 : param uri not empty, param type not empty
+        for (const SkillUri &skillUri : uris) {
+            if (MatchUri(uriString, skillUri) && MatchType(type, skillUri.type)) {
+                return true;
+            }
+        }
+        return false;
+    }
+}
+
+bool Skill::MatchUri(const std::string &uriString, const SkillUri &skillUri) const
+{
+    if (skillUri.scheme.empty()) {
+        return uriString.empty();
+    }
+    if (skillUri.host.empty()) {
+        return uriString == skillUri.scheme;
+    }
+    std::string skillUriString;
+    skillUriString.append(skillUri.scheme).append(SCHEME_SEPARATOR).append(skillUri.host);
+    if (!skillUri.port.empty()) {
+        skillUriString.append(PORT_SEPARATOR).append(skillUri.port);
+    }
+    if (skillUri.path.empty() && skillUri.pathStartWith.empty() && skillUri.pathRegx.empty()) {
+        return uriString == skillUriString;
+    }
+    skillUriString.append(PATH_SEPARATOR);
+    // if one of path, pathStartWith, pathRegex match, then match
+    if (!skillUri.path.empty()) {
+        // path match
+        std::string pathUri(skillUriString);
+        pathUri.append(skillUri.path);
+        if (uriString == pathUri) {
+            return true;
+        }
+    }
+    if (!skillUri.pathStartWith.empty()) {
+        // pathStartWith match
+        std::string pathStartWithUri(skillUriString);
+        pathStartWithUri.append(skillUri.pathStartWith);
+        if (uriString.find(pathStartWithUri) == 0) {
+            return true;
+        }
+    }
+    if (!skillUri.pathRegx.empty()) {
+        // pathRegex match
+        std::string pathRegxUri(skillUriString);
+        pathRegxUri.append(skillUri.pathRegx);
+        try {
+            std::regex regex(pathRegxUri);
+            if (regex_match(uriString, regex)) {
+                return true;
+            }
+        } catch(...) {
+            APP_LOGE("regex error");
+        }
+    }
+    return false;
+}
+
+bool Skill::MatchType(const std::string &type, const std::string &skillUriType) const
+{
+    // type is not empty
+    if (skillUriType.empty()) {
+        return false;
+    }
+    if (type == TYPE_WILDCARD || skillUriType == TYPE_WILDCARD) {
+        // param is */* or config is */*
+        return true;
+    }
+    bool paramTypeRegex = type.back() == WILDCARD;
+    if (paramTypeRegex) {
+        // param is string/*
+        std::string prefix = type.substr(0, type.length() - 1);
+        return skillUriType.find(prefix) == 0;
+    }
+    bool typeRegex = skillUriType.back() == WILDCARD;
+    if (typeRegex) {
+        // config is string/*
+        std::string prefix = skillUriType.substr(0, skillUriType.length() - 1);
+        return type.find(prefix) == 0;
+    } else {
+        return type == skillUriType;
+    }
+}
 
 InnerBundleInfo::InnerBundleInfo()
 {
@@ -136,7 +322,8 @@ void to_json(nlohmann::json &jsonObject, const InnerModuleInfo &info)
         {MODULE_DEF_PERMS, info.defPermissions},
         {MODULE_ABILITY_KEYS, info.abilityKeys},
         {MODULE_SKILL_KEYS, info.skillKeys},
-        {MODULE_MAIN_ABILITY, info.mainAbility}
+        {MODULE_MAIN_ABILITY, info.mainAbility},
+        {MODULE_SRC_PATH, info.srcPath}
     };
 }
 
@@ -147,6 +334,8 @@ void to_json(nlohmann::json &jsonObject, const SkillUri &uri)
         {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_HOST, uri.host},
         {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_PORT, uri.port},
         {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_PATH, uri.path},
+        {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_PATHSTARTWITH, uri.pathStartWith},
+        {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_PATHREGX, uri.pathRegx},
         {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_TYPE, uri.type}
     };
 }
@@ -157,6 +346,15 @@ void to_json(nlohmann::json &jsonObject, const Skill &skill)
         {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_ACTIONS, skill.actions},
         {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_ENTITIES, skill.entities},
         {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_URIS, skill.uris}
+    };
+}
+
+void to_json(nlohmann::json &jsonObject, const InstallMark &installMark)
+{
+    jsonObject = nlohmann::json {
+        {ProfileReader::BUNDLE_INSTALL_MARK_BUNDLE, installMark.bundleName},
+        {ProfileReader::BUNDLE_INSTALL_MARK_PACKAGE, installMark.packageName},
+        {ProfileReader::BUNDLE_INSTALL_MARK_STATUS, installMark.status}
     };
 }
 
@@ -176,6 +374,7 @@ void InnerBundleInfo::ToJson(nlohmann::json &jsonObject) const
     jsonObject[IS_KEEP_DATA] = isKeepData_;
     jsonObject[USER_ID] = userId_;
     jsonObject[MAIN_ABILITY] = mainAbility_;
+    jsonObject[MAIN_ABILITY_NAME] = mainAbilityName_;
     jsonObject[APP_FEATURE] = appFeature_;
     jsonObject[HAS_ENTRY] = hasEntry_;
     jsonObject[MODULE_FORMS] = formInfos_;
@@ -183,6 +382,8 @@ void InnerBundleInfo::ToJson(nlohmann::json &jsonObject) const
     jsonObject[NEW_BUNDLE_NAME] = newBundleName_;
     jsonObject[MODULE_COMMON_EVENT] = commonEvents_;
     jsonObject[CAN_UNINSTALL] = canUninstall_;
+    jsonObject[IS_PREINSTALL_APP] = isPreInstallApp_;
+    jsonObject[INSTALL_MARK] = mark_;
 }
 
 void from_json(const nlohmann::json &jsonObject, InnerModuleInfo &info)
@@ -301,6 +502,14 @@ void from_json(const nlohmann::json &jsonObject, InnerModuleInfo &info)
         false,
         ProfileReader::parseResult,
         ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        MODULE_SRC_PATH,
+        info.srcPath,
+        JsonType::STRING,
+        false,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
     GetValueIfFindKey<bool>(jsonObject,
         jsonObjectEnd,
         MODULE_DESCRIPTION_INSTALLATION_FREE,
@@ -360,7 +569,7 @@ void from_json(const nlohmann::json &jsonObject, SkillUri &uri)
         ProfileReader::BUNDLE_MODULE_PROFILE_KEY_SCHEME,
         uri.scheme,
         JsonType::STRING,
-        true,
+        false,
         ProfileReader::parseResult,
         ArrayType::NOT_ARRAY);
     // these are not required fields.
@@ -384,6 +593,22 @@ void from_json(const nlohmann::json &jsonObject, SkillUri &uri)
         jsonObjectEnd,
         ProfileReader::BUNDLE_MODULE_PROFILE_KEY_PATH,
         uri.path,
+        JsonType::STRING,
+        false,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        ProfileReader::BUNDLE_MODULE_PROFILE_KEY_PATHSTARTWITH,
+        uri.pathStartWith,
+        JsonType::STRING,
+        false,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        ProfileReader::BUNDLE_MODULE_PROFILE_KEY_PATHREGX,
+        uri.pathRegx,
         JsonType::STRING,
         false,
         ProfileReader::parseResult,
@@ -577,6 +802,35 @@ void from_json(const nlohmann::json &jsonObject, DefPermission &defPermission)
         ArrayType::NOT_ARRAY);
 }
 
+void from_json(const nlohmann::json &jsonObject, InstallMark &installMark)
+{
+    const auto &jsonObjectEnd = jsonObject.end();
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        ProfileReader::BUNDLE_INSTALL_MARK_BUNDLE,
+        installMark.bundleName,
+        JsonType::STRING,
+        false,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        ProfileReader::BUNDLE_INSTALL_MARK_PACKAGE,
+        installMark.packageName,
+        JsonType::STRING,
+        false,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<int32_t>(jsonObject,
+        jsonObjectEnd,
+        ProfileReader::BUNDLE_INSTALL_MARK_STATUS,
+        installMark.status,
+        JsonType::NUMBER,
+        false,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
+}
+
 int32_t InnerBundleInfo::FromJson(const nlohmann::json &jsonObject)
 {
     const auto &jsonObjectEnd = jsonObject.end();
@@ -694,6 +948,14 @@ int32_t InnerBundleInfo::FromJson(const nlohmann::json &jsonObject)
         ArrayType::NOT_ARRAY);
     GetValueIfFindKey<std::string>(jsonObject,
         jsonObjectEnd,
+        MAIN_ABILITY_NAME,
+        mainAbilityName_,
+        JsonType::STRING,
+        false,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
         APP_FEATURE,
         appFeature_,
         JsonType::STRING,
@@ -701,13 +963,13 @@ int32_t InnerBundleInfo::FromJson(const nlohmann::json &jsonObject)
         ProfileReader::parseResult,
         ArrayType::NOT_ARRAY);
     GetValueIfFindKey<std::map<std::string, std::vector<FormInfo>>>(jsonObject,
-		jsonObjectEnd,
-		MODULE_FORMS,
-		formInfos_,
-		JsonType::OBJECT,
-		true,
-		ProfileReader::parseResult,
-		ArrayType::NOT_ARRAY);
+        jsonObjectEnd,
+        MODULE_FORMS,
+        formInfos_,
+        JsonType::OBJECT,
+        true,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
     GetValueIfFindKey<std::map<std::string, ShortcutInfo>>(jsonObject,
         jsonObjectEnd,
         MODULE_SHORTCUT,
@@ -748,6 +1010,22 @@ int32_t InnerBundleInfo::FromJson(const nlohmann::json &jsonObject)
         true,
         ProfileReader::parseResult,
         ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<bool>(jsonObject,
+        jsonObjectEnd,
+        IS_PREINSTALL_APP,
+        isPreInstallApp_,
+        JsonType::BOOLEAN,
+        false,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<InstallMark>(jsonObject,
+        jsonObjectEnd,
+        INSTALL_MARK,
+        mark_,
+        JsonType::OBJECT,
+        false,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
     int32_t ret = ProfileReader::parseResult;
     // need recover parse result to ERR_OK
     ProfileReader::parseResult = ERR_OK;
@@ -782,6 +1060,7 @@ std::optional<HapModuleInfo> InnerBundleInfo::FindHapModuleInfo(const std::strin
     hapInfo.reqCapabilities = it->second.reqCapabilities;
     hapInfo.colorMode = it->second.colorMode;
     hapInfo.mainAbility = it->second.mainAbility;
+    hapInfo.srcPath = it->second.srcPath;
     bool first = false;
     for (auto &ability : baseAbilityInfos_) {
         if (ability.first.find(modulePackage) != std::string::npos) {
@@ -874,24 +1153,32 @@ bool InnerBundleInfo::AddModuleInfo(const InnerBundleInfo &newInfo)
     return true;
 }
 
-void InnerBundleInfo::UpdateAppInfo(const InnerBundleInfo &newInfo)
+void InnerBundleInfo::UpdateVersionInfo(const InnerBundleInfo &newInfo)
 {
-    if (baseBundleInfo_.versionCode == newInfo.GetVersionCode()) {
-        APP_LOGE("old version equals to new version");
+    if (baseBundleInfo_.versionCode > newInfo.GetVersionCode()) {
+        APP_LOGE("old version larger than new version");
         return;
     }
-    baseBundleInfo_.versionCode = newInfo.GetVersionCode();
     baseBundleInfo_.vendor = newInfo.GetBaseBundleInfo().vendor;
-    baseBundleInfo_.versionName = newInfo.GetBaseBundleInfo().versionName;
     baseBundleInfo_.minSdkVersion = newInfo.GetBaseBundleInfo().minSdkVersion;
     baseBundleInfo_.maxSdkVersion = newInfo.GetBaseBundleInfo().maxSdkVersion;
+    // version
+    baseBundleInfo_.versionCode = newInfo.GetVersionCode();
+    baseBundleInfo_.versionName = newInfo.GetBaseBundleInfo().versionName;
+    // apiversion
     baseBundleInfo_.compatibleVersion = newInfo.GetBaseBundleInfo().compatibleVersion;
     baseBundleInfo_.targetVersion = newInfo.GetBaseBundleInfo().targetVersion;
     baseBundleInfo_.releaseType = newInfo.GetBaseBundleInfo().releaseType;
-    baseBundleInfo_.singleUser = newInfo.GetBaseBundleInfo().singleUser;
-    baseBundleInfo_.isKeepAlive = newInfo.GetBaseBundleInfo().isKeepAlive;
-    baseApplicationInfo_.process = newInfo.GetBaseApplicationInfo().process;
-    baseApplicationInfo_.debug = newInfo.GetBaseApplicationInfo().debug;
+}
+
+void InnerBundleInfo::updateCommonHapInfo(const InnerBundleInfo &newInfo)
+{
+    if (newInfo.currentPackage_.empty()) {
+        APP_LOGE("no package in new info");
+        return;
+    }
+    SetIsKeepData(newInfo.GetIsKeepData());
+    SetIsSupportBackup(newInfo.GetIsSupportBackup());
 }
 
 void InnerBundleInfo::UpdateModuleInfo(const InnerBundleInfo &newInfo)
@@ -946,6 +1233,8 @@ void InnerBundleInfo::RemoveModuleInfo(const std::string &modulePackage)
     }
     if (mainAbility_.find(modulePackage) != std::string::npos) {
         mainAbility_.clear();
+        hasEntry_ = false;
+        mainAbilityName_.clear();
     }
     for (auto it = innerModuleInfos_.begin(); it != innerModuleInfos_.end();) {
         if (it->first == modulePackage) {
@@ -1008,6 +1297,7 @@ std::string InnerBundleInfo::ToString() const
     j[IS_KEEP_DATA] = isKeepData_;
     j[USER_ID] = userId_;
     j[MAIN_ABILITY] = mainAbility_;
+    j[MAIN_ABILITY_NAME] = mainAbilityName_;
     j[APP_FEATURE] = appFeature_;
     j[HAS_ENTRY] = hasEntry_;
     j[MODULE_FORMS] = formInfos_;
@@ -1015,10 +1305,12 @@ std::string InnerBundleInfo::ToString() const
     j[NEW_BUNDLE_NAME] = newBundleName_;
     j[MODULE_COMMON_EVENT] = commonEvents_;
     j[CAN_UNINSTALL] = canUninstall_;
+    j[IS_PREINSTALL_APP] = isPreInstallApp_;
+    j[INSTALL_MARK] = mark_;
     return j.dump();
 }
 
-void InnerBundleInfo::GetApplicationInfo(const ApplicationFlag flag, const int userId, ApplicationInfo &appInfo) const
+void InnerBundleInfo::GetApplicationInfo(int32_t flags, const int userId, ApplicationInfo &appInfo) const
 {
     appInfo = baseApplicationInfo_;
     for (const auto &info : innerModuleInfos_) {
@@ -1030,28 +1322,35 @@ void InnerBundleInfo::GetApplicationInfo(const ApplicationFlag flag, const int u
         if (info.second.isEntry) {
             appInfo.entryDir = info.second.modulePath;
         }
-        if (flag == ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMS) {
+        if ((static_cast<uint32_t>(flags) & GET_APPLICATION_INFO_WITH_PERMS) == GET_APPLICATION_INFO_WITH_PERMS) {
             std::transform(info.second.reqPermissions.begin(),
                 info.second.reqPermissions.end(),
                 std::back_inserter(appInfo.permissions),
                 [](const auto &p) { return p.name; });
         }
+        if ((static_cast<uint32_t>(flags) & GET_APPLICATION_INFO_WITH_METADATA) == GET_APPLICATION_INFO_WITH_METADATA
+            && info.second.metaData.customizeData.size() > 0) {
+            appInfo.metaData[info.second.moduleName] = info.second.metaData.customizeData;
+        }
     }
 }
 
-void InnerBundleInfo::GetBundleInfo(const BundleFlag flag, BundleInfo &bundleInfo) const
+void InnerBundleInfo::GetBundleInfo(int32_t flags, BundleInfo &bundleInfo) const
 {
     bundleInfo = baseBundleInfo_;
-    GetApplicationInfo(ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMS, 0, bundleInfo.applicationInfo);
+    GetApplicationInfo(ApplicationFlag::GET_BASIC_APPLICATION_INFO, 0, bundleInfo.applicationInfo);
     for (const auto &info : innerModuleInfos_) {
-        std::transform(info.second.reqPermissions.begin(),
-            info.second.reqPermissions.end(),
-            std::back_inserter(bundleInfo.reqPermissions),
-            [](const auto &p) { return p.name; });
-        std::transform(info.second.defPermissions.begin(),
-            info.second.defPermissions.end(),
-            std::back_inserter(bundleInfo.defPermissions),
-            [](const auto &p) { return p.name; });
+        if ((static_cast<uint32_t>(flags) & GET_BUNDLE_WITH_REQUESTED_PERMISSION)
+            == GET_BUNDLE_WITH_REQUESTED_PERMISSION) {
+            std::transform(info.second.reqPermissions.begin(),
+                info.second.reqPermissions.end(),
+                std::back_inserter(bundleInfo.reqPermissions),
+                [](const auto &p) { return p.name; });
+            std::transform(info.second.defPermissions.begin(),
+                info.second.defPermissions.end(),
+                std::back_inserter(bundleInfo.defPermissions),
+                [](const auto &p) { return p.name; });
+        }
         bundleInfo.hapModuleNames.emplace_back(info.second.modulePackage);
         auto hapmoduleinfo = FindHapModuleInfo(info.second.modulePackage);
         if (hapmoduleinfo) {
@@ -1068,14 +1367,15 @@ void InnerBundleInfo::GetBundleInfo(const BundleFlag flag, BundleInfo &bundleInf
             bundleInfo.entryModuleName = info.second.moduleName;
         }
     }
-    if (flag == BundleFlag::GET_BUNDLE_WITH_ABILITIES) {
-        std::transform(baseAbilityInfos_.begin(),
-            baseAbilityInfos_.end(),
-            std::back_inserter(bundleInfo.abilityInfos),
-            [this](auto m) {
-                GetApplicationInfo(ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMS, 0, m.second.applicationInfo);
-                return m.second;
-            });
+    if ((static_cast<uint32_t>(flags) & GET_BUNDLE_WITH_ABILITIES) == GET_BUNDLE_WITH_ABILITIES) {
+        for (auto &ability : baseAbilityInfos_) {
+            if (!ability.second.enabled) {
+                continue;
+            }
+            AbilityInfo abilityInfo = ability.second;
+            GetApplicationInfo(ApplicationFlag::GET_BASIC_APPLICATION_INFO, 0, abilityInfo.applicationInfo);
+            bundleInfo.abilityInfos.emplace_back(abilityInfo);
+        }
     }
 }
 

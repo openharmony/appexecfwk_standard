@@ -21,6 +21,7 @@
 
 namespace OHOS {
 namespace AppExecFwk {
+
 CleanCacheCallbackHost::CleanCacheCallbackHost()
 {
     APP_LOGI("create clean cache callback host instance");
@@ -46,5 +47,6 @@ int CleanCacheCallbackHost::OnRemoteRequest(
     }
     return NO_ERROR;
 }
+
 }  // namespace AppExecFwk
 }  // namespace OHOS

@@ -19,6 +19,7 @@ import(
 module_output_path = "appexecfwk_standard/bundlemgrservice"
 
 ohos_unittest("BmsBundleKitServiceTest") {
+  use_exceptions = true
   module_out_path = module_output_path
   include_dirs = [ "//third_party/jsoncpp/include" ]
   sources = [
@@ -41,6 +42,7 @@ ohos_unittest("BmsBundleKitServiceTest") {
     "${services_path}/bundlemgr/src/kvstore_death_recipient_callback.cpp",
     "${services_path}/bundlemgr/src/module_usage_data_storage.cpp",
     "${services_path}/bundlemgr/src/permission_changed_death_recipient.cpp",
+    "${services_path}/bundlemgr/src/preinstall_data_storage.cpp",
   ]
 
   sources += [
@@ -84,6 +86,7 @@ ohos_unittest("BmsBundleKitServiceTest") {
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
   ]
+  resource_config_file = "//foundation/appexecfwk/standard/test/resource/bundlemgrservice/ohos_test.xml"
 }
 
 group("unittest") {

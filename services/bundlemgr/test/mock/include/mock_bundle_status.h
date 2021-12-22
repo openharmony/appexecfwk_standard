@@ -24,6 +24,7 @@
 
 namespace OHOS {
 namespace AppExecFwk {
+
 class MockBundleStatus : public IBundleStatusCallback {
 public:
     MockBundleStatus() = default;
@@ -42,6 +43,7 @@ private:
 
     DISALLOW_COPY_AND_MOVE(MockBundleStatus);
 };
+
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_TEST_MOCK_INCLUDE_MOCK_BUNDLE_STATUS_H

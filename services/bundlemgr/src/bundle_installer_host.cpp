@@ -26,8 +26,10 @@
 namespace OHOS {
 namespace AppExecFwk {
 namespace {
+
 const std::string INSTALL_THREAD = "install_thread";
 const std::string GET_MANAGER_FAIL = "fail to get bundle installer manager";
+
 }  // namespace
 
 BundleInstallerHost::BundleInstallerHost()
@@ -56,7 +58,7 @@ bool BundleInstallerHost::Init()
 int BundleInstallerHost::OnRemoteRequest(
     uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option)
 {
-    APP_LOGI("bundle installer host onReceived message, the message code is %{public}u", code);
+    APP_LOGD("bundle installer host onReceived message, the message code is %{public}u", code);
     std::u16string descripter = GetDescriptor();
     std::u16string remoteDescripter = data.ReadInterfaceToken();
     if (descripter != remoteDescripter) {
@@ -68,11 +70,17 @@ int BundleInstallerHost::OnRemoteRequest(
         case static_cast<uint32_t>(IBundleInstaller::Message::INSTALL):
             HandleInstallMessage(data);
             break;
+        case static_cast<uint32_t>(IBundleInstaller::Message::INSTALL_MULTIPLE_HAPS):
+            HandleInstallMultipleHapsMessage(data);
+            break;
         case static_cast<uint32_t>(IBundleInstaller::Message::UNINSTALL):
             HandleUninstallMessage(data);
             break;
         case static_cast<uint32_t>(IBundleInstaller::Message::UNINSTALL_MODULE):
             HandleUninstallModuleMessage(data);
+            break;
+        case static_cast<uint32_t>(IBundleInstaller::Message::RECOVER):
+            HandleRecoverMessage(data);
             break;
         default:
             return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
@@ -94,6 +102,47 @@ void BundleInstallerHost::HandleInstallMessage(Parcel &data)
 
     Install(bundlePath, *installParam, statusReceiver);
     APP_LOGD("handle install message finished");
+}
+
+
+void BundleInstallerHost::HandleRecoverMessage(Parcel &data)
+{
+    APP_LOGD("handle install message by bundleName");
+    std::string bundleName = Str16ToStr8(data.ReadString16());
+    std::unique_ptr<InstallParam> installParam(data.ReadParcelable<InstallParam>());
+    if (!installParam) {
+        APP_LOGE("ReadParcelable<InstallParam> failed");
+        return;
+    }
+    sptr<IRemoteObject> object = data.ReadParcelable<IRemoteObject>();
+    sptr<IStatusReceiver> statusReceiver = iface_cast<IStatusReceiver>(object);
+
+    Recover(bundleName, *installParam, statusReceiver);
+    APP_LOGD("handle install message by bundleName finished");
+}
+
+void BundleInstallerHost::HandleInstallMultipleHapsMessage(Parcel &data)
+{
+    APP_LOGD("handle install multiple haps message");
+    int32_t size = data.ReadInt32();
+    std::vector<std::string> pathVec;
+    for (int i = 0; i < size; ++i) {
+        pathVec.emplace_back(Str16ToStr8(data.ReadString16()));
+    }
+    if (size == 0 || pathVec.empty()) {
+        APP_LOGE("inputted bundlepath vector is empty");
+        return;
+    }
+    std::unique_ptr<InstallParam> installParam(data.ReadParcelable<InstallParam>());
+    if (!installParam) {
+        APP_LOGE("ReadParcelable<InstallParam> failed");
+        return;
+    }
+    sptr<IRemoteObject> object = data.ReadParcelable<IRemoteObject>();
+    sptr<IStatusReceiver> statusReceiver = iface_cast<IStatusReceiver>(object);
+
+    Install(pathVec, *installParam, statusReceiver);
+    APP_LOGD("handle install multiple haps finished");
 }
 
 void BundleInstallerHost::HandleUninstallMessage(Parcel &data)
@@ -141,7 +190,41 @@ bool BundleInstallerHost::Install(
         statusReceiver->OnFinished(ERR_APPEXECFWK_INSTALL_PERMISSION_DENIED, "");
         return false;
     }
+
     manager_->CreateInstallTask(bundleFilePath, installParam, statusReceiver);
+    return true;
+}
+
+bool BundleInstallerHost::Install(const std::vector<std::string> &bundleFilePaths, const InstallParam &installParam,
+    const sptr<IStatusReceiver> &statusReceiver)
+{
+    if (!CheckBundleInstallerManager(statusReceiver)) {
+        APP_LOGE("statusReceiver invalid");
+        return false;
+    }
+    if (!BundlePermissionMgr::CheckCallingPermission(Constants::PERMISSION_INSTALL_BUNDLE)) {
+        APP_LOGE("install permission denied");
+        statusReceiver->OnFinished(ERR_APPEXECFWK_INSTALL_PERMISSION_DENIED, "");
+        return false;
+    }
+
+    manager_->CreateInstallTask(bundleFilePaths, installParam, statusReceiver);
+    return true;
+}
+
+bool BundleInstallerHost::Recover(
+    const std::string &bundleName, const InstallParam &installParam, const sptr<IStatusReceiver> &statusReceiver)
+{
+    if (!CheckBundleInstallerManager(statusReceiver)) {
+        APP_LOGE("statusReceiver invalid");
+        return false;
+    }
+    if (!BundlePermissionMgr::CheckCallingPermission(Constants::PERMISSION_INSTALL_BUNDLE)) {
+        APP_LOGE("install permission denied");
+        statusReceiver->OnFinished(ERR_APPEXECFWK_INSTALL_PERMISSION_DENIED, "");
+        return false;
+    }
+    manager_->CreateRecoverTask(bundleName, installParam, statusReceiver);
     return true;
 }
 
@@ -190,5 +273,6 @@ bool BundleInstallerHost::CheckBundleInstallerManager(const sptr<IStatusReceiver
     }
     return true;
 }
+
 }  // namespace AppExecFwk
 }  // namespace OHOS

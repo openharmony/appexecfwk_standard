@@ -19,17 +19,31 @@
 #include "appexecfwk_errors.h"
 #include "bundle_constants.h"
 #include "parcel_macro.h"
+#include "string_ex.h"
 
 namespace OHOS {
 namespace AppExecFwk {
+
 InstalldHost::InstalldHost()
 {
+    init();
     APP_LOGI("installd host instance is created");
 }
 
 InstalldHost::~InstalldHost()
 {
     APP_LOGI("installd host instance is destroyed");
+}
+
+void InstalldHost::init()
+{
+    funcMap_.emplace(IInstalld::Message::CREATE_BUNDLE_DIR, &InstalldHost::HandleCreateBundleDir);
+    funcMap_.emplace(IInstalld::Message::EXTRACT_MODULE_FILES, &InstalldHost::HandleExtractModuleFiles);
+    funcMap_.emplace(IInstalld::Message::RENAME_MODULE_DIR, &InstalldHost::HandleRenameModuleDir);
+    funcMap_.emplace(IInstalld::Message::CREATE_BUNDLE_DATA_DIR, &InstalldHost::HandleCreateBundleDataDir);
+    funcMap_.emplace(IInstalld::Message::CREATE_MODULE_DATA_DIR, &InstalldHost::HandleCreateModuleDataDir);
+    funcMap_.emplace(IInstalld::Message::CLEAN_BUNDLE_DATA_DIR, &InstalldHost::HandleCleanBundleDataDir);
+    funcMap_.emplace(IInstalld::Message::REMOVE_DIR, &InstalldHost::HandleRemoveDir);
 }
 
 int InstalldHost::OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option)
@@ -42,96 +56,31 @@ int InstalldHost::OnRemoteRequest(uint32_t code, MessageParcel &data, MessagePar
         APP_LOGE("installd host fail to write reply message due to the reply is nullptr");
         return OHOS::ERR_APPEXECFWK_PARCEL_ERROR;
     }
-    switch (code) {
-        case static_cast<uint32_t>(IInstalld::Message::CREATE_BUNDLE_DIR): {
-            if (!HandleCreateBundleDir(data, reply)) {
-                return OHOS::ERR_APPEXECFWK_PARCEL_ERROR;
-            }
-            break;
-        }
-        case static_cast<uint32_t>(IInstalld::Message::REMOVE_BUNDLE_DIR): {
-            if (!HandleRemoveBundleDir(data, reply)) {
-                return OHOS::ERR_APPEXECFWK_PARCEL_ERROR;
-            }
-            break;
-        }
-        case static_cast<uint32_t>(IInstalld::Message::EXTRACT_MODULE_FILES): {
-            if (!HandleExtractModuleFiles(data, reply)) {
-                return OHOS::ERR_APPEXECFWK_PARCEL_ERROR;
-            }
-            break;
-        }
-        case static_cast<uint32_t>(IInstalld::Message::REMOVE_MODULE_DIR): {
-            if (!HandleRemoveModuleDir(data, reply)) {
-                return OHOS::ERR_APPEXECFWK_PARCEL_ERROR;
-            }
-            break;
-        }
-        case static_cast<uint32_t>(IInstalld::Message::RENAME_MODULE_DIR): {
-            if (!HandleRenameModuleDir(data, reply)) {
-                return OHOS::ERR_APPEXECFWK_PARCEL_ERROR;
-            }
-            break;
-        }
-        case static_cast<uint32_t>(IInstalld::Message::CREATE_BUNDLE_DATA_DIR): {
-            if (!HandleCreateBundleDataDir(data, reply)) {
-                return OHOS::ERR_APPEXECFWK_PARCEL_ERROR;
-            }
-            break;
-        }
-        case static_cast<uint32_t>(IInstalld::Message::REMOVE_BUNDLE_DATA_DIR): {
-            if (!HandleRemoveBundleDataDir(data, reply)) {
-                return OHOS::ERR_APPEXECFWK_PARCEL_ERROR;
-            }
-            break;
-        }
-        case static_cast<uint32_t>(IInstalld::Message::CREATE_MODULE_DATA_DIR): {
-            if (!HandleCreateModuleDataDir(data, reply)) {
-                return OHOS::ERR_APPEXECFWK_PARCEL_ERROR;
-            }
-            break;
-        }
-        case static_cast<uint32_t>(IInstalld::Message::REMOVE_MODULE_DATA_DIR): {
-            if (!HandleRemoveModuleDataDir(data, reply)) {
-                return OHOS::ERR_APPEXECFWK_PARCEL_ERROR;
-            }
-            break;
-        }
-        case static_cast<uint32_t>(IInstalld::Message::CLEAN_BUNDLE_DATA_DIR): {
-            if (!HandleCleanBundleDataDir(data, reply)) {
-                return OHOS::ERR_APPEXECFWK_PARCEL_ERROR;
-            }
-            break;
-        }
-        default:
-            APP_LOGW("installd host receives unknown code, code = %{public}d", code);
-            return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
+    bool result = true;
+    APP_LOGD("funcMap_ size is %{public}d", static_cast<int32_t>(funcMap_.size()));
+    if (funcMap_.find(code) != funcMap_.end() && funcMap_[code] != nullptr) {
+        result = (this->*funcMap_[code])(data, reply);
+    } else {
+        APP_LOGW("installd host receives unknown code, code = %{public}d", code);
+        return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
     }
     APP_LOGD("installd host finish to process message from client");
-    return NO_ERROR;
+    return result ? NO_ERROR : OHOS::ERR_APPEXECFWK_PARCEL_ERROR;
 }
 
 bool InstalldHost::HandleCreateBundleDir(MessageParcel &data, MessageParcel &reply)
 {
-    std::string bundleDir = data.ReadString();
+    std::string bundleDir = Str16ToStr8(data.ReadString16());
     APP_LOGI("bundleName %{public}s", bundleDir.c_str());
     ErrCode result = CreateBundleDir(bundleDir);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, reply, result);
     return true;
 }
 
-bool InstalldHost::HandleRemoveBundleDir(MessageParcel &data, MessageParcel &reply)
-{
-    std::string bundleDir = data.ReadString();
-    ErrCode result = RemoveBundleDir(bundleDir);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, reply, result);
-    return true;
-}
-
 bool InstalldHost::HandleExtractModuleFiles(MessageParcel &data, MessageParcel &reply)
 {
-    std::string srcModulePath = data.ReadString();
-    std::string targetPath = data.ReadString();
+    std::string srcModulePath = Str16ToStr8(data.ReadString16());
+    std::string targetPath = Str16ToStr8(data.ReadString16());
     APP_LOGI("extract module %{public}s", targetPath.c_str());
     ErrCode result = ExtractModuleFiles(srcModulePath, targetPath);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, reply, result);
@@ -140,26 +89,17 @@ bool InstalldHost::HandleExtractModuleFiles(MessageParcel &data, MessageParcel &
 
 bool InstalldHost::HandleRenameModuleDir(MessageParcel &data, MessageParcel &reply)
 {
-    std::string oldPath = data.ReadString();
-    std::string newPath = data.ReadString();
+    std::string oldPath = Str16ToStr8(data.ReadString16());
+    std::string newPath = Str16ToStr8(data.ReadString16());
     APP_LOGI("rename moduleDir %{public}s", oldPath.c_str());
     ErrCode result = RenameModuleDir(oldPath, newPath);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, reply, result);
     return true;
 }
 
-bool InstalldHost::HandleRemoveModuleDir(MessageParcel &data, MessageParcel &reply)
-{
-    std::string moduleDir = data.ReadString();
-    APP_LOGI("remove moduleDir %{public}s", moduleDir.c_str());
-    ErrCode result = RemoveModuleDir(moduleDir);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, reply, result);
-    return true;
-}
-
 bool InstalldHost::HandleCreateBundleDataDir(MessageParcel &data, MessageParcel &reply)
 {
-    std::string bundleDir = data.ReadString();
+    std::string bundleDir = Str16ToStr8(data.ReadString16());
     int uid = data.ReadInt32();
     int gid = data.ReadInt32();
     ErrCode result = CreateBundleDataDir(bundleDir, uid, gid);
@@ -167,17 +107,9 @@ bool InstalldHost::HandleCreateBundleDataDir(MessageParcel &data, MessageParcel 
     return true;
 }
 
-bool InstalldHost::HandleRemoveBundleDataDir(MessageParcel &data, MessageParcel &reply)
-{
-    std::string bundleDataDir = data.ReadString();
-    ErrCode result = RemoveBundleDataDir(bundleDataDir);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, reply, result);
-    return true;
-}
-
 bool InstalldHost::HandleCreateModuleDataDir(MessageParcel &data, MessageParcel &reply)
 {
-    std::string bundleDir = data.ReadString();
+    std::string bundleDir = Str16ToStr8(data.ReadString16());
     std::vector<std::string> abilityDirs;
     if (!data.ReadStringVector(&abilityDirs)) {
         return false;
@@ -189,17 +121,17 @@ bool InstalldHost::HandleCreateModuleDataDir(MessageParcel &data, MessageParcel 
     return true;
 }
 
-bool InstalldHost::HandleRemoveModuleDataDir(MessageParcel &data, MessageParcel &reply)
+bool InstalldHost::HandleRemoveDir(MessageParcel &data, MessageParcel &reply)
 {
-    std::string bundleDataDir = data.ReadString();
-    ErrCode result = RemoveBundleDataDir(bundleDataDir);
+    std::string removedDir = Str16ToStr8(data.ReadString16());
+    ErrCode result = RemoveDir(removedDir);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, reply, result);
     return true;
 }
 
 bool InstalldHost::HandleCleanBundleDataDir(MessageParcel &data, MessageParcel &reply)
 {
-    std::string bundleDir = data.ReadString();
+    std::string bundleDir = Str16ToStr8(data.ReadString16());
     ErrCode result = CleanBundleDataDir(bundleDir);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, reply, result);
     return true;

@@ -15,18 +15,20 @@
 
 #include "bundle_profile.h"
 
-#include <sstream>
 #include <fstream>
+#include <sstream>
 
-#include "permission/permission_kit.h"
 #include "app_log_wrapper.h"
 #include "bundle_constants.h"
 #include "common_profile.h"
+#include "permission/permission_kit.h"
 
 namespace OHOS {
 namespace AppExecFwk {
 namespace ProfileReader {
+
 thread_local int32_t parseResult;
+thread_local bool g_hasConfigureRemovable = false;
 const std::map<std::string, AbilityType> ABILITY_TYPE_MAP = {
     {"page", AbilityType::PAGE},
     {"service", AbilityType::SERVICE},
@@ -64,17 +66,6 @@ const std::map<std::string, FormsColorMode> formColorModeMap = {
     {"dark", FormsColorMode::DARK_MODE},
     {"light", FormsColorMode::LIGHT_MODE}
 };
-std::map<std::string, uint32_t> backgroundModeMap = {
-    {KEY_DATA_TRANSFER, VALUE_DATA_TRANSFER},
-    {KEY_AUDIO_PLAYBACK, VALUE_AUDIO_PLAYBACK},
-    {KEY_AUDIO_RECORDING, VALUE_AUDIO_RECORDING},
-    {KEY_LOCATION, VALUE_LOCATION},
-    {KEY_BLUETOOTH_INTERACTION, VALUE_BLUETOOTH_INTERACTION},
-    {KEY_MULTI_DEVICE_CONNECTION, VALUE_MULTI_DEVICE_CONNECTION},
-    {KEY_WIFI_INTERACTION, VALUE_WIFI_INTERACTION},
-    {KEY_VOIP, VALUE_VOIP},
-    {KEY_TASK_KEEPING, VALUE_TASK_KEEPING}
-};
 
 struct Version {
     int32_t code = 0;
@@ -91,10 +82,9 @@ struct App {
     std::string bundleName;
     std::string originalName;
     std::string vendor;
+    bool removable = true;
     Version version;
     ApiVersion apiVersion;
-    bool debug = false;
-    bool singleUser = false;
 };
 
 struct ReqVersion {
@@ -135,6 +125,7 @@ struct Device {
     bool supportBackup = false;
     bool compressNativeLibs = true;
     Network network;
+    bool debug = false;
 };
 // config.json  deviceConfig
 struct DeviceConfig {
@@ -193,18 +184,6 @@ struct Forms {
     FormsMetaData metaData;
 };
 
-struct Parameters {
-    std::string description;
-    std::string name;
-    std::string type;
-};
-
-struct Results {
-    std::string description;
-    std::string name;
-    std::string type;
-};
-
 struct CustomizeData {
     std::string name;
     std::string value;
@@ -212,8 +191,6 @@ struct CustomizeData {
 };
 
 struct MetaData {
-    std::vector<Parameters> parameters;
-    std::vector<Results> results;
     std::vector<CustomizeData> customizeData;
 };
 
@@ -268,7 +245,7 @@ struct Js {
     std::string type = "normal";
 };
 
-struct Want {
+struct Intent {
     std::string targetClass;
     std::string targetBundle;
 };
@@ -285,7 +262,9 @@ struct Shortcut {
     std::string shortcutId;
     std::string label;
     std::string icon;
-    std::vector<Want> wants;
+    int32_t iconId;
+    int32_t labelId;
+    std::vector<Intent> intents;
 };
 
 // config.json module
@@ -307,6 +286,7 @@ struct Module {
     std::vector<DefPermission> defPermissions;
     std::vector<ReqPermission> reqPermissions;
     std::string mainAbility;
+    std::string srcPath;
 };
 
 // config.json
@@ -377,42 +357,63 @@ void from_json(const nlohmann::json &jsonObject, App &app)
 {
     // these are required fields.
     const auto &jsonObjectEnd = jsonObject.end();
-    GetValueIfFindKey<std::string>(jsonObject, jsonObjectEnd, BUNDLE_APP_PROFILE_KEY_BUNDLE_NAME, app.bundleName,
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        BUNDLE_APP_PROFILE_KEY_BUNDLE_NAME,
+        app.bundleName,
         JsonType::STRING,
         true,
         parseResult,
         ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<std::string>(jsonObject, jsonObjectEnd, PROFILE_KEY_ORIGINAL_NAME, app.originalName,
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        PROFILE_KEY_ORIGINAL_NAME,
+        app.originalName,
         JsonType::STRING,
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<Version>(jsonObject, jsonObjectEnd, BUNDLE_APP_PROFILE_KEY_VERSION, app.version,
+    GetValueIfFindKey<Version>(jsonObject,
+        jsonObjectEnd,
+        BUNDLE_APP_PROFILE_KEY_VERSION,
+        app.version,
         JsonType::OBJECT,
         true,
         parseResult,
         ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<ApiVersion>(jsonObject, jsonObjectEnd, BUNDLE_APP_PROFILE_KEY_API_VERSION, app.apiVersion,
+    GetValueIfFindKey<ApiVersion>(jsonObject,
+        jsonObjectEnd,
+        BUNDLE_APP_PROFILE_KEY_API_VERSION,
+        app.apiVersion,
         JsonType::OBJECT,
         true,
         parseResult,
         ArrayType::NOT_ARRAY);
     // these are not required fields.
-    GetValueIfFindKey<std::string>(jsonObject, jsonObjectEnd, BUNDLE_APP_PROFILE_KEY_VENDOR, app.vendor,
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        BUNDLE_APP_PROFILE_KEY_VENDOR,
+        app.vendor,
         JsonType::STRING,
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<bool>(jsonObject, jsonObjectEnd, BUNDLE_APP_PROFILE_KEY_DEBUG, app.debug,
+    if (parseResult) {
+        return;
+    }
+    GetValueIfFindKey<bool>(jsonObject,
+        jsonObjectEnd,
+        BUNDLE_APP_PROFILE_KEY_REMOVABLE,
+        app.removable,
         JsonType::BOOLEAN,
-        false,
+        true,
         parseResult,
         ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<bool>(jsonObject, jsonObjectEnd, BUNDLE_APP_PROFILE_KEY_SINGLE_USER, app.singleUser,
-        JsonType::BOOLEAN,
-        false,
-        parseResult,
-        ArrayType::NOT_ARRAY);
+    if (parseResult != ERR_APPEXECFWK_PARSE_PROFILE_MISSING_PROP) {
+        g_hasConfigureRemovable = true;
+    } else {
+        parseResult = ERR_OK;
+    }
 }
 
 void from_json(const nlohmann::json &jsonObject, ReqVersion &reqVersion)
@@ -594,6 +595,14 @@ void from_json(const nlohmann::json &jsonObject, Device &device)
         ArrayType::NOT_ARRAY);
     GetValueIfFindKey<bool>(jsonObject,
         jsonObjectEnd,
+        BUNDLE_DEVICE_CONFIG_PROFILE_KEY_DEBUG,
+        device.debug,
+        JsonType::BOOLEAN,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<bool>(jsonObject,
+        jsonObjectEnd,
         BUNDLE_DEVICE_CONFIG_PROFILE_KEY_COMPRESS_NATIVE_LIBS,
         device.compressNativeLibs,
         JsonType::BOOLEAN,
@@ -757,68 +766,6 @@ void from_json(const nlohmann::json &jsonObject, CustomizeData &customizeData)
         ArrayType::NOT_ARRAY);
 }
 
-void from_json(const nlohmann::json &jsonObject, Parameters &parameters)
-{
-    // these are required fields.
-    const auto &jsonObjectEnd = jsonObject.end();
-    GetValueIfFindKey<std::string>(jsonObject,
-        jsonObjectEnd,
-        BUNDLE_MODULE_PROFILE_KEY_TYPE,
-        parameters.type,
-        JsonType::STRING,
-        true,
-        parseResult,
-        ArrayType::NOT_ARRAY);
-    // these are not required fields.
-    GetValueIfFindKey<std::string>(jsonObject,
-        jsonObjectEnd,
-        PROFILE_KEY_DESCRIPTION,
-        parameters.description,
-        JsonType::STRING,
-        false,
-        parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<std::string>(jsonObject,
-        jsonObjectEnd,
-        PROFILE_KEY_NAME,
-        parameters.name,
-        JsonType::STRING,
-        false,
-        parseResult,
-        ArrayType::NOT_ARRAY);
-}
-
-void from_json(const nlohmann::json &jsonObject, Results &results)
-{
-    // these are required fields.
-    const auto &jsonObjectEnd = jsonObject.end();
-    GetValueIfFindKey<std::string>(jsonObject,
-        jsonObjectEnd,
-        BUNDLE_MODULE_PROFILE_KEY_TYPE,
-        results.type,
-        JsonType::STRING,
-        true,
-        parseResult,
-        ArrayType::NOT_ARRAY);
-    // these are not required fields.
-    GetValueIfFindKey<std::string>(jsonObject,
-        jsonObjectEnd,
-        PROFILE_KEY_DESCRIPTION,
-        results.description,
-        JsonType::STRING,
-        false,
-        parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<std::string>(jsonObject,
-        jsonObjectEnd,
-        PROFILE_KEY_NAME,
-        results.name,
-        JsonType::STRING,
-        false,
-        parseResult,
-        ArrayType::NOT_ARRAY);
-}
-
 void from_json(const nlohmann::json &jsonObject, MetaData &metaData)
 {
     // these are not required fields.
@@ -827,22 +774,6 @@ void from_json(const nlohmann::json &jsonObject, MetaData &metaData)
         jsonObjectEnd,
         BUNDLE_MODULE_META_KEY_CUSTOMIZE_DATA,
         metaData.customizeData,
-        JsonType::ARRAY,
-        false,
-        parseResult,
-        ArrayType::OBJECT);
-    GetValueIfFindKey<std::vector<Parameters>>(jsonObject,
-        jsonObjectEnd,
-        BUNDLE_MODULE_META_KEY_PARAMETERS,
-        metaData.parameters,
-        JsonType::ARRAY,
-        false,
-        parseResult,
-        ArrayType::OBJECT);
-    GetValueIfFindKey<std::vector<Results>>(jsonObject,
-        jsonObjectEnd,
-        BUNDLE_MODULE_META_KEY_RESULTS,
-        metaData.results,
         JsonType::ARRAY,
         false,
         parseResult,
@@ -1124,7 +1055,6 @@ void from_json(const nlohmann::json &jsonObject, Ability &ability)
         true,
         parseResult,
         ArrayType::NOT_ARRAY);
-    // these are not required fields.
     GetValueIfFindKey<std::string>(jsonObject,
         jsonObjectEnd,
         PROFILE_KEY_SRCPATH,
@@ -1133,6 +1063,7 @@ void from_json(const nlohmann::json &jsonObject, Ability &ability)
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
+    // these are not required fields.
     GetValueIfFindKey<std::string>(jsonObject,
         jsonObjectEnd,
         PROFILE_KEY_SRCLANGUAGE,
@@ -1430,14 +1361,14 @@ void from_json(const nlohmann::json &jsonObject, Js &js)
         ArrayType::NOT_ARRAY);
 }
 
-void from_json(const nlohmann::json &jsonObject, Want &wants)
+void from_json(const nlohmann::json &jsonObject, Intent &intents)
 {
     // these are not required fields.
     const auto &jsonObjectEnd = jsonObject.end();
     GetValueIfFindKey<std::string>(jsonObject,
         jsonObjectEnd,
         BUNDLE_MODULE_PROFILE_KEY_TARGET_CLASS,
-        wants.targetClass,
+        intents.targetClass,
         JsonType::STRING,
         false,
         parseResult,
@@ -1445,7 +1376,7 @@ void from_json(const nlohmann::json &jsonObject, Want &wants)
     GetValueIfFindKey<std::string>(jsonObject,
         jsonObjectEnd,
         BUNDLE_MODULE_PROFILE_KEY_TARGET_BUNDLE,
-        wants.targetBundle,
+        intents.targetBundle,
         JsonType::STRING,
         false,
         parseResult,
@@ -1528,14 +1459,32 @@ void from_json(const nlohmann::json &jsonObject, Shortcut &shortcut)
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<std::vector<Want>>(jsonObject,
+    GetValueIfFindKey<std::vector<Intent>>(jsonObject,
         jsonObjectEnd,
         BUNDLE_MODULE_PROFILE_KEY_SHORTCUT_WANTS,
-        shortcut.wants,
+        shortcut.intents,
         JsonType::ARRAY,
         false,
         parseResult,
         ArrayType::OBJECT);
+    // get label id
+    GetValueIfFindKey<int32_t>(jsonObject,
+         jsonObjectEnd,
+         PROFILE_KEY_LABEL_ID,
+         shortcut.labelId,
+         JsonType::NUMBER,
+         false,
+         parseResult,
+         ArrayType::NOT_ARRAY);
+    // get icon id
+    GetValueIfFindKey<int32_t>(jsonObject,
+         jsonObjectEnd,
+         BUNDLE_MODULE_PROFILE_KEY_ICON_ID,
+         shortcut.iconId,
+         JsonType::NUMBER,
+         false,
+         parseResult,
+         ArrayType::NOT_ARRAY);
 }
 
 void from_json(const nlohmann::json &jsonObject, Module &module)
@@ -1679,6 +1628,14 @@ void from_json(const nlohmann::json &jsonObject, Module &module)
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        BUNDLE_MODULE_PROFILE_KEY_SRC_PATH,
+        module.srcPath,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
 }
 
 void from_json(const nlohmann::json &jsonObject, ConfigJson &configJson)
@@ -1714,9 +1671,11 @@ void from_json(const nlohmann::json &jsonObject, ConfigJson &configJson)
         ArrayType::NOT_ARRAY);
     APP_LOGI("read tag from config.json");
 }
+
 }  // namespace ProfileReader
 
 namespace {
+
 bool CheckBundleNameIsValid(const std::string &bundleName)
 {
     if (bundleName.empty()) {
@@ -1866,11 +1825,9 @@ bool TransformToInfo(const ProfileReader::ConfigJson &configJson, ApplicationInf
         applicationInfo.supportedModes = 0;
     }
     applicationInfo.process = configJson.deveicConfig.defaultDevice.process;
-    if (applicationInfo.process.empty()) {
-        applicationInfo.process = configJson.app.bundleName;
-    }
-    applicationInfo.debug = configJson.app.debug;
+    applicationInfo.debug = configJson.deveicConfig.defaultDevice.debug;
     applicationInfo.enabled = true;
+    applicationInfo.removable = configJson.app.removable;
     return true;
 }
 
@@ -1891,7 +1848,6 @@ bool TransformToInfo(const ProfileReader::ConfigJson &configJson, BundleInfo &bu
     bundleInfo.targetVersion = configJson.app.apiVersion.target;
     bundleInfo.releaseType = configJson.app.apiVersion.releaseType;
     bundleInfo.isKeepAlive = configJson.deveicConfig.defaultDevice.keepAlive;
-    bundleInfo.singleUser = configJson.app.singleUser;
     if (configJson.module.abilities.size() > 0) {
         bundleInfo.label = configJson.module.abilities[0].label;
     }
@@ -1905,20 +1861,6 @@ bool TransformToInfo(const ProfileReader::ConfigJson &configJson, BundleInfo &bu
 
 void GetMetaData(MetaData &metaData, const ProfileReader::MetaData &profileMetaData)
 {
-    for (const auto &item : profileMetaData.parameters) {
-        Parameters parameter;
-        parameter.description = item.description;
-        parameter.name = item.name;
-        parameter.type = item.type;
-        metaData.parameters.emplace_back(parameter);
-    }
-    for (const auto &item : profileMetaData.results) {
-        Results result;
-        result.description = item.description;
-        result.name = item.name;
-        result.type = item.type;
-        metaData.results.emplace_back(result);
-    }
     for (const auto &item : profileMetaData.customizeData) {
         CustomizeData customizeData;
         customizeData.name = item.name;
@@ -1926,17 +1868,6 @@ void GetMetaData(MetaData &metaData, const ProfileReader::MetaData &profileMetaD
         customizeData.value = item.value;
         metaData.customizeData.emplace_back(customizeData);
     }
-}
-
-uint32_t GetBackgroundModes(const std::vector<std::string>& backgroundModes)
-{
-    uint32_t backgroundMode = 0;
-    for (const auto& item : backgroundModes) {
-        if (ProfileReader::backgroundModeMap.find(item) != ProfileReader::backgroundModeMap.end()) {
-            backgroundMode |= ProfileReader::backgroundModeMap[item];
-        }
-    }
-    return backgroundMode;
 }
 
 bool TransformToInfo(const ProfileReader::ConfigJson &configJson, InnerModuleInfo &innerModuleInfo)
@@ -1957,6 +1888,7 @@ bool TransformToInfo(const ProfileReader::ConfigJson &configJson, InnerModuleInf
     innerModuleInfo.defPermissions = configJson.module.defPermissions;
     innerModuleInfo.reqPermissions = configJson.module.reqPermissions;
     innerModuleInfo.mainAbility = configJson.module.mainAbility;
+    innerModuleInfo.srcPath = configJson.module.srcPath;
     return true;
 }
 
@@ -1977,6 +1909,19 @@ bool TransformToInfo(
     abilityInfo.kind = ability.type;
     abilityInfo.srcPath = ability.srcPath;
     abilityInfo.srcLanguage = ability.srcLanguage;
+
+    // parse isHomeAbility
+    for (const auto &skill : ability.skills) {
+        if (std::find(skill.actions.begin(), skill.actions.end(), Constants::INTENT_ACTION_HOME) !=
+            skill.actions.end() &&
+            std::find(skill.entities.begin(), skill.entities.end(), Constants::INTENT_ENTITY_HOME) !=
+            skill.entities.end()) {
+            abilityInfo.isHomeAbility = true;
+        } else {
+            abilityInfo.isHomeAbility = false;
+        }
+    }
+
     std::transform(
         abilityInfo.srcLanguage.begin(), abilityInfo.srcLanguage.end(), abilityInfo.srcLanguage.begin(), ::tolower);
     if (abilityInfo.srcLanguage != ProfileReader::BUNDLE_MODULE_PROFILE_KEY_JS &&
@@ -2010,9 +1955,6 @@ bool TransformToInfo(
         abilityInfo.permissions.emplace_back(permission);
     }
     abilityInfo.process = (ability.process.empty()) ? configJson.deveicConfig.defaultDevice.process : ability.process;
-    if (abilityInfo.process.empty()) {
-        abilityInfo.process = configJson.app.bundleName;
-    }
     abilityInfo.theme = ability.theme;
     abilityInfo.deviceTypes = configJson.module.deviceType;
     abilityInfo.deviceCapabilities = ability.deviceCapability;
@@ -2038,7 +1980,6 @@ bool TransformToInfo(
     abilityInfo.defaultFormWidth = ability.form.defaultWidth;
     GetMetaData(abilityInfo.metaData, ability.metaData);
     abilityInfo.formEnabled = ability.formsEnabled;
-    abilityInfo.backgroundModes = GetBackgroundModes(ability.backgroundModes);
     return true;
 }
 
@@ -2055,15 +1996,12 @@ bool TransformToInfo(ProfileReader::ConfigJson &configJson, InnerBundleInfo &inn
     }
     ApplicationInfo applicationInfo;
     TransformToInfo(configJson, applicationInfo);
-
+    applicationInfo.isSystemApp = (innerBundleInfo.GetAppType() == Constants::AppType::SYSTEM_APP) ? true : false;
+    innerBundleInfo.SetHasConfigureRemovable(ProfileReader::g_hasConfigureRemovable);
+    ProfileReader::g_hasConfigureRemovable = false;
     BundleInfo bundleInfo;
+    bundleInfo.applicationInfo.removable = applicationInfo.removable;
     TransformToInfo(configJson, bundleInfo);
-    if (innerBundleInfo.GetAppType() == Constants::AppType::SYSTEM_APP) {
-        applicationInfo.isSystemApp = true;
-    } else {
-        bundleInfo.singleUser = false;
-        bundleInfo.isKeepAlive = false;
-    }
 
     InnerModuleInfo innerModuleInfo;
     TransformToInfo(configJson, innerModuleInfo);
@@ -2073,25 +2011,16 @@ bool TransformToInfo(ProfileReader::ConfigJson &configJson, InnerBundleInfo &inn
         shortcutInfo.bundleName = configJson.app.bundleName;
         shortcutInfo.icon = info.icon;
         shortcutInfo.label = info.label;
-        for (const auto &want : info.wants) {
+        shortcutInfo.iconId = info.iconId;
+        shortcutInfo.labelId = info.labelId;
+        for (const auto &intent : info.intents) {
             ShortcutIntent shortcutIntent;
-            shortcutIntent.targetBundle = want.targetBundle;
-            shortcutIntent.targetClass = want.targetClass;
+            shortcutIntent.targetBundle = intent.targetBundle;
+            shortcutIntent.targetClass = intent.targetClass;
             shortcutInfo.intents.emplace_back(shortcutIntent);
         }
         std::string shortcutkey = configJson.app.bundleName + configJson.module.package + info.shortcutId;
         innerBundleInfo.InsertShortcutInfos(shortcutkey, shortcutInfo);
-    }
-    for (const auto &info : configJson.module.commonEvents) {
-        CommonEventInfo commonEvent;
-        commonEvent.name = info.name;
-        commonEvent.bundleName = configJson.app.bundleName;
-        commonEvent.permission = info.permission;
-        commonEvent.data = info.data;
-        commonEvent.type = info.type;
-        commonEvent.events = info.events;
-        std::string commonEventKey = configJson.app.bundleName + configJson.module.package + info.name;
-        innerBundleInfo.InsertCommonEvents(commonEventKey, commonEvent);
     }
     bool find = false;
     for (const auto &ability : configJson.module.abilities) {
@@ -2121,9 +2050,9 @@ bool TransformToInfo(ProfileReader::ConfigJson &configJson, InnerBundleInfo &inn
         innerBundleInfo.InsertFormInfos(keyName, formInfos);
         if (!find) {
             for (const auto &skill : ability.skills) {
-                if (std::find(skill.actions.begin(), skill.actions.end(), Constants::ACTION_HOME) !=
+                if (std::find(skill.actions.begin(), skill.actions.end(), Constants::INTENT_ACTION_HOME) !=
                         skill.actions.end() &&
-                    std::find(skill.entities.begin(), skill.entities.end(), Constants::ENTITY_HOME) !=
+                    std::find(skill.entities.begin(), skill.entities.end(), Constants::INTENT_ENTITY_HOME) !=
                         skill.entities.end() &&
                     (find == false)) {
                     innerBundleInfo.SetMainAbility(keyName);
@@ -2186,6 +2115,7 @@ ErrCode BundleProfile::TransformTo(const std::ostringstream &source, InnerBundle
         int32_t ret = ProfileReader::parseResult;
         // need recover parse result to ERR_OK
         ProfileReader::parseResult = ERR_OK;
+        ProfileReader::g_hasConfigureRemovable = false;
         return ret;
     }
     if (!TransformToInfo(configJson, innerBundleInfo)) {

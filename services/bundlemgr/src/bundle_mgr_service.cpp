@@ -15,15 +15,16 @@
 
 #include "bundle_mgr_service.h"
 
-#include "datetime_ex.h"
 #include "app_log_wrapper.h"
+#include "bundle_constants.h"
+#include "datetime_ex.h"
 #include "perf_profile.h"
 #include "system_ability_definition.h"
-#include "bundle_constants.h"
 #include "system_ability_helper.h"
 
 namespace OHOS {
 namespace AppExecFwk {
+
 const bool REGISTER_RESULT =
     SystemAbility::MakeAndRegisterAbility(DelayedSingleton<BundleMgrService>::GetInstance().get());
 
@@ -61,7 +62,7 @@ BundleMgrService::~BundleMgrService()
 
 void BundleMgrService::OnStart()
 {
-    APP_LOGI("start is triggered");
+    APP_LOGD("start is triggered");
     if (!Init()) {
         APP_LOGE("init fail");
         return;
@@ -120,7 +121,7 @@ bool BundleMgrService::Init()
             return false;
         }
     }
-    APP_LOGI("create runner success");
+    APP_LOGD("create runner success");
 
     if (!handler_) {
         handler_ = std::make_shared<BMSEventHandler>(runner_);
@@ -129,7 +130,7 @@ bool BundleMgrService::Init()
             return false;
         }
     }
-    APP_LOGI("create handler success");
+    APP_LOGD("create handler success");
 
     if (!installer_) {
         installer_ = new (std::nothrow) BundleInstallerHost();
@@ -138,13 +139,13 @@ bool BundleMgrService::Init()
             return false;
         }
     }
-    APP_LOGI("create installer host success");
+    APP_LOGD("create installer host success");
 
     if (!dataMgr_) {
         APP_LOGI("Create BundledataMgr");
         dataMgr_ = std::make_shared<BundleDataMgr>();
     }
-    APP_LOGI("create dataManager success");
+    APP_LOGD("create dataManager success");
 
     if (!(dataMgr_->LoadDataFromPersistentStorage())) {
         APP_LOGW("load data from persistent storage fail");

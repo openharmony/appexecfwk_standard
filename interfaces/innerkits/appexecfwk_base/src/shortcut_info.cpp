@@ -14,17 +14,16 @@
  */
 #include "shortcut_info.h"
 
-#include <fcntl.h>
-#include <unistd.h>
 #include <errno.h>
+#include <fcntl.h>
 #include <string.h>
+#include <unistd.h>
 
-#include "json_serializer.h"
-#include "nlohmann/json.hpp"
-#include "string_ex.h"
-#include "parcel_macro.h"
-#include "app_log_wrapper.h"
 #include "bundle_constants.h"
+#include "json_util.h"
+#include "nlohmann/json.hpp"
+#include "parcel_macro.h"
+#include "string_ex.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -41,6 +40,8 @@ const std::string JSON_KEY_BUNDLE_IS_ENABLES = "isEnables";
 const std::string JSON_KEY_BUNDLE_INTENTS = "intents";
 const std::string JSON_KEY_BUNDLE_TARGET_BUNDLE = "targetBundle";
 const std::string JSON_KEY_BUNDLE_TARGET_CLASS = "targetClass";
+const std::string JSON_KEY_ICON_ID = "iconId";
+const std::string JSON_KEY_LABEL_ID = "labelId";
 }  // namespace
 
 bool ShortcutInfo::ReadFromParcel(Parcel &parcel)
@@ -50,6 +51,8 @@ bool ShortcutInfo::ReadFromParcel(Parcel &parcel)
     hostAbility = Str16ToStr8(parcel.ReadString16());
     icon = Str16ToStr8(parcel.ReadString16());
     label = Str16ToStr8(parcel.ReadString16());
+    iconId = parcel.ReadInt32();
+    labelId = parcel.ReadInt32();
     disableMessage = Str16ToStr8(parcel.ReadString16());
     isStatic = parcel.ReadBool();
     isHomeShortcut = parcel.ReadBool();
@@ -85,6 +88,8 @@ bool ShortcutInfo::Marshalling(Parcel &parcel) const
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(hostAbility));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(icon));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(label));
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, iconId);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, labelId);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(disableMessage));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, isStatic);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, isHomeShortcut);
@@ -118,27 +123,135 @@ void to_json(nlohmann::json &jsonObject, const ShortcutInfo &shortcutInfo)
         {JSON_KEY_BUNDLE_IS_STATIC, shortcutInfo.isStatic},
         {JSON_KEY_BUNDLE_IS_HOME_SHORTCUT, shortcutInfo.isHomeShortcut},
         {JSON_KEY_BUNDLE_IS_ENABLES, shortcutInfo.isEnables},
-        {JSON_KEY_BUNDLE_INTENTS, shortcutInfo.intents}};
+        {JSON_KEY_BUNDLE_INTENTS, shortcutInfo.intents},
+        {JSON_KEY_ICON_ID, shortcutInfo.iconId},
+        {JSON_KEY_LABEL_ID, shortcutInfo.labelId},
+  };
 }
 
 void from_json(const nlohmann::json &jsonObject, ShortcutIntent &shortcutIntent)
 {
-    shortcutIntent.targetBundle = jsonObject.at(JSON_KEY_BUNDLE_TARGET_BUNDLE).get<std::string>();
-    shortcutIntent.targetClass = jsonObject.at(JSON_KEY_BUNDLE_TARGET_CLASS).get<std::string>();
+    const auto &jsonObjectEnd = jsonObject.end();
+    int32_t parseResult = ERR_OK;
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        JSON_KEY_BUNDLE_TARGET_BUNDLE,
+        shortcutIntent.targetBundle,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        JSON_KEY_BUNDLE_TARGET_CLASS,
+        shortcutIntent.targetClass,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
 }
 
 void from_json(const nlohmann::json &jsonObject, ShortcutInfo &shortcutInfo)
 {
-    shortcutInfo.id = jsonObject.at(JSON_KEY_BUNDLE_ID).get<std::string>();
-    shortcutInfo.bundleName = jsonObject.at(JSON_KEY_BUNDLE_NAME).get<std::string>();
-    shortcutInfo.hostAbility = jsonObject.at(JSON_KEY_BUNDLE_HOST_ABILITY).get<std::string>();
-    shortcutInfo.icon = jsonObject.at(JSON_KEY_BUNDLE_ICON).get<std::string>();
-    shortcutInfo.label = jsonObject.at(JSON_KEY_BUNDLE_LABEL).get<std::string>();
-    shortcutInfo.disableMessage = jsonObject.at(JSON_KEY_BUNDLE_DISABLE_MESSAGE).get<std::string>();
-    shortcutInfo.isStatic = jsonObject.at(JSON_KEY_BUNDLE_IS_STATIC).get<bool>();
-    shortcutInfo.isHomeShortcut = jsonObject.at(JSON_KEY_BUNDLE_IS_HOME_SHORTCUT).get<bool>();
-    shortcutInfo.isEnables = jsonObject.at(JSON_KEY_BUNDLE_IS_ENABLES).get<bool>();
-    shortcutInfo.intents = jsonObject.at(JSON_KEY_BUNDLE_INTENTS).get<std::vector<ShortcutIntent>>();
+    const auto &jsonObjectEnd = jsonObject.end();
+    int32_t parseResult = ERR_OK;
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        JSON_KEY_BUNDLE_ID,
+        shortcutInfo.id,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        JSON_KEY_BUNDLE_NAME,
+        shortcutInfo.bundleName,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        JSON_KEY_BUNDLE_HOST_ABILITY,
+        shortcutInfo.hostAbility,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        JSON_KEY_BUNDLE_ICON,
+        shortcutInfo.icon,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        JSON_KEY_BUNDLE_LABEL,
+        shortcutInfo.label,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        JSON_KEY_BUNDLE_DISABLE_MESSAGE,
+        shortcutInfo.disableMessage,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<bool>(jsonObject,
+        jsonObjectEnd,
+        JSON_KEY_BUNDLE_IS_STATIC,
+        shortcutInfo.isStatic,
+        JsonType::BOOLEAN,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<bool>(jsonObject,
+        jsonObjectEnd,
+        JSON_KEY_BUNDLE_IS_HOME_SHORTCUT,
+        shortcutInfo.isHomeShortcut,
+        JsonType::BOOLEAN,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<bool>(jsonObject,
+        jsonObjectEnd,
+        JSON_KEY_BUNDLE_IS_ENABLES,
+        shortcutInfo.isEnables,
+        JsonType::BOOLEAN,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::vector<ShortcutIntent>>(jsonObject,
+        jsonObjectEnd,
+        JSON_KEY_BUNDLE_INTENTS,
+        shortcutInfo.intents,
+        JsonType::ARRAY,
+        false,
+        parseResult,
+        ArrayType::OBJECT);
+    GetValueIfFindKey<int32_t>(jsonObject,
+        jsonObjectEnd,
+        JSON_KEY_ICON_ID,
+        shortcutInfo.iconId,
+        JsonType::NUMBER,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<int32_t>(jsonObject,
+        jsonObjectEnd,
+        JSON_KEY_LABEL_ID,
+        shortcutInfo.labelId,
+        JsonType::NUMBER,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
 }
+
 }  // namespace AppExecFwk
 }  // namespace OHOS

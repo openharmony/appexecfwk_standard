@@ -16,7 +16,9 @@
 #include "bundle_data_storage_database.h"
 
 #include <unistd.h>
+
 #include "app_log_wrapper.h"
+#include "bundle_exception_handler.h"
 #include "kvstore_death_recipient_callback.h"
 
 using namespace OHOS::DistributedKv;
@@ -24,8 +26,10 @@ using namespace OHOS::DistributedKv;
 namespace OHOS {
 namespace AppExecFwk {
 namespace {
+
 const int32_t MAX_TIMES = 600;              // 1min
 const int32_t SLEEP_INTERVAL = 100 * 1000;  // 100ms
+
 }  // namespace
 
 BundleDataStorageDatabase::BundleDataStorageDatabase()
@@ -64,7 +68,7 @@ void BundleDataStorageDatabase::DeviceAndNameToKey(
 }
 
 void BundleDataStorageDatabase::SaveEntries(
-    const std::vector<Entry> &allEntries, std::map<std::string, std::map<std::string, InnerBundleInfo>> &infos) const
+    const std::vector<Entry> &allEntries, std::map<std::string, std::map<std::string, InnerBundleInfo>> &infos)
 {
     for (const auto &item : allEntries) {
         std::string bundleName;
@@ -99,7 +103,12 @@ void BundleDataStorageDatabase::SaveEntries(
             }
             continue;
         }
-
+        bool isBundleValid = true;
+        auto handler = std::make_shared<BundleExceptionHandler>(shared_from_this());
+        handler->HandleInvalidBundle(innerBundleInfo, isBundleValid);
+        if (!isBundleValid) {
+            continue;
+        }
         auto allDevicesInfosIter = infos.find(bundleName);
         if (allDevicesInfosIter != infos.end()) {
             APP_LOGD("already have bundle: %{public}s", bundleName.c_str());
@@ -158,7 +167,7 @@ bool BundleDataStorageDatabase::SaveStorageBundleInfo(
     }
 
     std::string keyOfData;
-    DeviceAndNameToKey(deviceId, innerBundleInfo.GetDBKeyBundleName(), keyOfData);
+    DeviceAndNameToKey(deviceId, innerBundleInfo.GetBundleName(), keyOfData);
     Key key(keyOfData);
     Value value(innerBundleInfo.ToString());
     Status status;
@@ -174,9 +183,9 @@ bool BundleDataStorageDatabase::SaveStorageBundleInfo(
         const std::string interfaceName = "kvStorePtr::Put()";
         APP_LOGE("put valLocalAbilityManager::InitializeSaProfilesue to kvStore error: %{public}d", status);
         return false;
-    } else {
-        APP_LOGE("put value to kvStore success");
     }
+
+    APP_LOGI("put value to kvStore success");
     return true;
 }
 
@@ -192,7 +201,7 @@ bool BundleDataStorageDatabase::DeleteStorageBundleInfo(
         }
     }
     std::string keyOfData;
-    DeviceAndNameToKey(deviceId, innerBundleInfo.GetDBKeyBundleName(), keyOfData);
+    DeviceAndNameToKey(deviceId, innerBundleInfo.GetBundleName(), keyOfData);
     Key key(keyOfData);
     Status status;
 
@@ -210,7 +219,7 @@ bool BundleDataStorageDatabase::DeleteStorageBundleInfo(
         APP_LOGE("delete key error: %{public}d", status);
         return false;
     } else {
-        APP_LOGE("delete value to kvStore success");
+        APP_LOGI("delete value to kvStore success");
     }
     return true;
 }
@@ -292,6 +301,5 @@ bool BundleDataStorageDatabase::ResetKvStore()
     APP_LOGW("failed");
     return false;
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

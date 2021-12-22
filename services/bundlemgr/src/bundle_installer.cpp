@@ -22,6 +22,7 @@
 
 namespace OHOS {
 namespace AppExecFwk {
+
 BundleInstaller::BundleInstaller(const int64_t installerId, const std::shared_ptr<EventHandler> &handler,
     const sptr<IStatusReceiver> &statusReceiver)
     : installerId_(installerId), handler_(handler), statusReceiver_(statusReceiver)
@@ -37,6 +38,20 @@ BundleInstaller::~BundleInstaller()
 void BundleInstaller::Install(const std::string &bundleFilePath, const InstallParam &installParam)
 {
     auto resultCode = InstallBundle(bundleFilePath, installParam, Constants::AppType::THIRD_PARTY_APP);
+    statusReceiver_->OnFinished(resultCode, "");
+    SendRemoveEvent();
+}
+
+void BundleInstaller::Recover(const std::string &bundleName, const InstallParam &installParam)
+{
+    auto resultCode = BaseBundleInstaller::Recover(bundleName, installParam);
+    statusReceiver_->OnFinished(resultCode, "");
+    SendRemoveEvent();
+}
+
+void BundleInstaller::Install(const std::vector<std::string> &bundleFilePaths, const InstallParam &installParam)
+{
+    auto resultCode = InstallBundle(bundleFilePaths, installParam, Constants::AppType::THIRD_PARTY_APP);
     statusReceiver_->OnFinished(resultCode, "");
     SendRemoveEvent();
 }
@@ -74,5 +89,6 @@ void BundleInstaller::SendRemoveEvent() const
         APP_LOGE("fail to remove %{public}" PRId64 " installer due to handler is expired", installerId_);
     }
 }
+
 }  // namespace AppExecFwk
 }  // namespace OHOS

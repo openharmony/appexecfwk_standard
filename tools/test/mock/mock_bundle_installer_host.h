@@ -25,20 +25,28 @@ namespace OHOS {
 namespace AppExecFwk {
 namespace {
 const std::string MSG_SUCCESS = "[SUCCESS]";
-const std::string STRING_BUNDLE_PATH = "path";
+const std::string STRING_BUNDLE_PATH = "/data/test/bundle_test/testdemo.hap";
+const std::string STRING_OTHER_BUNDLE_PATH = "/data/test/bundle_test/othertestdemo.hap";
+const std::string STRING_BUNDLE_INSTALL_PATH1 = "../../test/bundle_test1/";
+const std::string STRING_BUNDLE_INSTALL_PATH2 = "../../test/bundle_test2/";
 const std::string STRING_BUNDLE_NAME = "name";
 const std::string STRING_MODULE_NAME = "module";
+const std::string STRING_ABILITY_NAME = "ability";
 }  // namespace
 
 class MockBundleInstallerHost : public BundleInstallerHost {
 public:
     bool Install(const std::string &bundleFilePath, const InstallParam &installParam,
         const sptr<IStatusReceiver> &statusReceiver);
-
+    bool Install(const std::vector<std::string> &bundleFilePath, const InstallParam &installParam,
+        const sptr<IStatusReceiver> &statusReceiver);
     bool Uninstall(
         const std::string &bundleName, const InstallParam &installParam, const sptr<IStatusReceiver> &statusReceiver);
 
     bool Uninstall(const std::string &bundleName, const std::string &modulePackage, const InstallParam &installParam,
+        const sptr<IStatusReceiver> &statusReceiver);
+
+    bool Recover(const std::string &bundleName, const InstallParam &installParam,
         const sptr<IStatusReceiver> &statusReceiver);
 };
 }  // namespace AppExecFwk

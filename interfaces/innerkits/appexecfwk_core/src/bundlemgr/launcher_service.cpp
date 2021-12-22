@@ -15,9 +15,9 @@
 
 #include "launcher_service.h"
 
-#include "matching_skills.h"
-#include "common_event_support.h"
 #include "common_event_subscribe_info.h"
+#include "common_event_support.h"
+#include "matching_skills.h"
 #include "operation_builder.h"
 
 namespace OHOS {
@@ -93,41 +93,69 @@ bool LauncherService::GetAbilityList(
         return false;
     }
 
-    std::string icon = "";
-    ApplicationInfo appInfo;
-    ApplicationFlag flag = ApplicationFlag::GET_BASIC_APPLICATION_INFO;
-    if (!iBundleMgr->GetApplicationInfo(bundleName, flag, Constants::DEFAULT_USERID, appInfo)) {
-        APP_LOGE("Get application info failed");
-        return false;
-    }
-    icon = appInfo.iconId;
-
-    int64_t installTime = 0;
     BundleFlag flags = BundleFlag::GET_BUNDLE_DEFAULT;
-    flags = BundleFlag::GET_BUNDLE_WITH_ABILITIES;
     BundleInfo bundleInfo;
     if (!iBundleMgr->GetBundleInfo(bundleName, flags, bundleInfo)) {
         APP_LOGE("Get bundle info failed");
         return false;
     }
-    installTime = bundleInfo.installTime;
 
     for (auto &ability : abilityInfo) {
+        if (!ability.isHomeAbility || ability.bundleName != bundleName || !ability.enabled) {
+            continue;
+        }
         LauncherAbilityInfo info;
-        info.name = ability.name;
         info.applicationInfo = ability.applicationInfo;
-        info.label = ability.label;
+        info.labelId = ability.labelId;
+        info.iconId = ability.iconId;
         ElementName elementName;
         elementName.SetBundleName(ability.bundleName);
         elementName.SetAbilityName(ability.name);
         elementName.SetDeviceID(ability.deviceId);
-        info.elementname = elementName;
-        info.icon = icon;
-        info.userid = userId;
-        info.installTime = installTime;
+        info.elementName = elementName;
+        info.userId = userId;
+        info.installTime = bundleInfo.installTime;
         launcherAbilityInfos.emplace_back(info);
     }
 
+    return true;
+}
+
+bool LauncherService::GetAllLauncherAbilityInfos(int32_t userId, std::vector<LauncherAbilityInfo> &launcherAbilityInfos)
+{
+    auto iBundleMgr = GetBundleMgr();
+    if (!iBundleMgr) {
+        APP_LOGE("can not get iBundleMgr");
+        return false;
+    }
+    std::vector<AbilityInfo> abilityInfos;
+    if (!iBundleMgr->QueryAllAbilityInfos(userId, abilityInfos)) {
+        return false;
+    }
+
+    for (const auto& ability : abilityInfos) {
+        if (!ability.isHomeAbility || ability.applicationInfo.isLauncherApp || !ability.enabled) {
+            continue;
+        }
+        LauncherAbilityInfo info;
+        BundleInfo bundleInfo;
+        info.applicationInfo = ability.applicationInfo;
+        info.labelId = ability.labelId;
+        info.iconId = ability.iconId;
+        info.userId = userId;
+        ElementName elementName;
+        elementName.SetBundleName(ability.bundleName);
+        elementName.SetAbilityName(ability.name);
+        elementName.SetDeviceID(ability.deviceId);
+        info.elementName = elementName;
+        BundleFlag flags = BundleFlag::GET_BUNDLE_DEFAULT;
+        if (!iBundleMgr->GetBundleInfo(ability.bundleName, flags, bundleInfo)) {
+            APP_LOGE("Get bundle info failed");
+            return false;
+        }
+        info.installTime = bundleInfo.installTime;
+        launcherAbilityInfos.emplace_back(info);
+    }
     return true;
 }
 
@@ -149,16 +177,19 @@ bool LauncherService::GetAbilityInfo(const Want &want, const int userId, Launche
         APP_LOGE("Query AbilityInfo failed");
         return false;
     }
-
+    if (!abilityInfo.enabled) {
+        APP_LOGE("Query AbilityInfo is disabled");
+        return false;
+    }
     std::string bundleName = element.GetBundleName();
-    std::string icon = "";
+    int32_t iconId;
     ApplicationInfo appInfo;
     ApplicationFlag flag = ApplicationFlag::GET_BASIC_APPLICATION_INFO;
     if (!iBundleMgr->GetApplicationInfo(bundleName, flag, Constants::DEFAULT_USERID, appInfo)) {
         APP_LOGE("Get application info failed");
         return false;
     }
-    icon = appInfo.iconId;
+    iconId = appInfo.iconId;
 
     int64_t installTime = 0;
     BundleFlag flags = BundleFlag::GET_BUNDLE_DEFAULT;
@@ -171,16 +202,15 @@ bool LauncherService::GetAbilityInfo(const Want &want, const int userId, Launche
     installTime = bundleInfo.installTime;
 
     LauncherAbilityInfo info;
-    info.name = abilityInfo.name;
     info.applicationInfo = abilityInfo.applicationInfo;
-    info.label = abilityInfo.label;
+    info.labelId = abilityInfo.labelId;
     ElementName elementName;
     elementName.SetBundleName(abilityInfo.bundleName);
     elementName.SetAbilityName(abilityInfo.name);
     elementName.SetDeviceID(abilityInfo.deviceId);
-    info.elementname = elementName;
-    info.icon = icon;
-    info.userid = userId;
+    info.elementName = elementName;
+    info.iconId = iconId;
+    info.userId = userId;
     info.installTime = installTime;
     launcherAbilityInfo = info;
 
@@ -238,7 +268,7 @@ bool LauncherService::IsAbilityEnabled(const AbilityInfo &abilityInfo)
 }
 
 bool LauncherService::GetShortcutInfos(
-    const std::string &bundleName, std::vector<LauncherShortcutInfo> &launcherShortcutInfo)
+    const std::string &bundleName, std::vector<ShortcutInfo> &shortcutInfos)
 {
     APP_LOGI("GetShortcutInfos called");
     if (bundleName.empty()) {
@@ -263,16 +293,11 @@ bool LauncherService::GetShortcutInfos(
 
     for (ShortcutInfo shortcutInfo : infos) {
         if (bundleName == shortcutInfo.bundleName) {
-            LauncherShortcutInfo launchershortcutinfo;
-            launchershortcutinfo.bundleName = shortcutInfo.bundleName;
-            launchershortcutinfo.icon = shortcutInfo.icon;
-            launchershortcutinfo.intents = shortcutInfo.intents;
-            launchershortcutinfo.label = shortcutInfo.label;
-            launchershortcutinfo.shortcutid = shortcutInfo.id;
-            launcherShortcutInfo.emplace_back(launchershortcutinfo);
+            shortcutInfos.emplace_back(shortcutInfo);
         }
     }
     return true;
 }
+
 }  // namespace AppExecFwk
 }  // namespace OHOS

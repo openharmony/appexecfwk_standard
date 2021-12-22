@@ -27,6 +27,7 @@ using namespace OHOS::AppExecFwk;
 using namespace OHOS;
 
 namespace {
+
 const std::string BUNDLE_FILE = "/data/test/resource/bms/install_daemon/right.hap";
 const std::string SYSTEM_DIR = "/sys/com.example.l3jsdemo";
 const std::string TEMP_DIR = "/data/accounts/account_0/applications/com.example.l3jsdemo/temp";
@@ -37,6 +38,7 @@ const std::string ROOT_DIR = "/data/accounts";
 const int32_t ROOT_UID = 0;
 const int32_t UID = 1000;
 const int32_t GID = 1000;
+
 }  // namespace
 
 class BmsInstallDaemonTest : public testing::Test {
@@ -122,7 +124,7 @@ int BmsInstallDaemonTest::RemoveBundleDir(const std::string &bundleDir) const
     if (!service_->IsServiceReady()) {
         service_->Start();
     }
-    return InstalldClient::GetInstance()->RemoveBundleDir(bundleDir);
+    return InstalldClient::GetInstance()->RemoveDir(bundleDir);
 }
 
 int BmsInstallDaemonTest::RemoveBundleDataDir(const std::string &bundleDataDir) const
@@ -130,7 +132,7 @@ int BmsInstallDaemonTest::RemoveBundleDataDir(const std::string &bundleDataDir) 
     if (!service_->IsServiceReady()) {
         service_->Start();
     }
-    return InstalldClient::GetInstance()->RemoveBundleDataDir(bundleDataDir);
+    return InstalldClient::GetInstance()->RemoveDir(bundleDataDir);
 }
 
 int BmsInstallDaemonTest::CleanBundleDataDir(const std::string &bundleDataDir) const
@@ -176,10 +178,11 @@ bool BmsInstallDaemonTest::CheckBundleDataDirExist() const
 }
 
 /**
-* @tc.number: Startup_0100
-* @tc.name: test the start function of the installd service when service is not ready
-* @tc.desc: 1. the service is not initialized
-*           2. the non initialized installd service can be started
+ * @tc.number: Startup_0100
+ * @tc.name: test the start function of the installd service when service is not ready
+ * @tc.desc: 1. the service is not initialized
+ *           2. the non initialized installd service can be started
+ * @tc.require: AR000GJ4KK
 */
 HWTEST_F(BmsInstallDaemonTest, Startup_0100, Function | SmallTest | Level0)
 {
@@ -193,10 +196,11 @@ HWTEST_F(BmsInstallDaemonTest, Startup_0100, Function | SmallTest | Level0)
 }
 
 /**
-* @tc.number: Startup_0200
-* @tc.name: test the stop function of the installd service when service is ready
-* @tc.desc: 1. the service is already initialized
-*           2. the initialized installd service can be stopped
+ * @tc.number: Startup_0200
+ * @tc.name: test the stop function of the installd service when service is ready
+ * @tc.desc: 1. the service is already initialized
+ *           2. the initialized installd service can be stopped
+ * @tc.require: AR000GJ4KK
 */
 HWTEST_F(BmsInstallDaemonTest, Startup_0200, Function | SmallTest | Level0)
 {
@@ -211,10 +215,11 @@ HWTEST_F(BmsInstallDaemonTest, Startup_0200, Function | SmallTest | Level0)
 }
 
 /**
-* @tc.number: Startup_0300
-* @tc.name: test the restart function of the installd service
-* @tc.desc: 1. the service is already initialized
-*           2. the stopped installd service can be restarted
+ * @tc.number: Startup_0300
+ * @tc.name: test the restart function of the installd service
+ * @tc.desc: 1. the service is already initialized
+ *           2. the stopped installd service can be restarted
+ * @tc.require: AR000GJ4KK
 */
 HWTEST_F(BmsInstallDaemonTest, Startup_0300, Function | SmallTest | Level0)
 {
@@ -232,10 +237,11 @@ HWTEST_F(BmsInstallDaemonTest, Startup_0300, Function | SmallTest | Level0)
 }
 
 /**
-* @tc.number: Startup_0400
-* @tc.name: test the restart function of the installd service which is already initialized
-* @tc.desc: 1. the service is already initialized
-*           2. the recall start function will not affect the initialized installd service
+ * @tc.number: Startup_0400
+ * @tc.name: test the restart function of the installd service which is already initialized
+ * @tc.desc: 1. the service is already initialized
+ *           2. the recall start function will not affect the initialized installd service
+ * @tc.require: AR000GJ4KK
 */
 HWTEST_F(BmsInstallDaemonTest, Startup_0400, Function | SmallTest | Level0)
 {
@@ -250,10 +256,11 @@ HWTEST_F(BmsInstallDaemonTest, Startup_0400, Function | SmallTest | Level0)
 }
 
 /**
-* @tc.number: Communication_0100
-* @tc.name: test the communication of the installd service and installd client
-* @tc.desc: 1. the service is already initialized
-*           2. the installd client can send msg to the service and receive the right result
+ * @tc.number: Communication_0100
+ * @tc.name: test the communication of the installd service and installd client
+ * @tc.desc: 1. the service is already initialized
+ *           2. the installd client can send msg to the service and receive the right result
+ * @tc.require: AR000GJ4KK
 */
 HWTEST_F(BmsInstallDaemonTest, Communication_0100, Function | SmallTest | Level0)
 {
@@ -262,10 +269,11 @@ HWTEST_F(BmsInstallDaemonTest, Communication_0100, Function | SmallTest | Level0
 }
 
 /**
-* @tc.number: Communication_0200
-* @tc.name: test the communication of the installd service and installd client
-* @tc.desc: 1. the service is not initialized
-*           2. the installd client can't send msg to the service and receive the error result
+ * @tc.number: Communication_0200
+ * @tc.name: test the communication of the installd service and installd client
+ * @tc.desc: 1. the service is not initialized
+ *           2. the installd client can't send msg to the service and receive the error result
+ * @tc.require: AR000GJ4KK
 */
 HWTEST_F(BmsInstallDaemonTest, Communication_0200, Function | SmallTest | Level0)
 {
@@ -279,10 +287,11 @@ HWTEST_F(BmsInstallDaemonTest, Communication_0200, Function | SmallTest | Level0
 }
 
 /**
-* @tc.number: Communication_0300
-* @tc.name: test the communication of the installd service and installd client
-* @tc.desc: 1. the service is already initialized
-*           2. the installd client can send msg to the service and receive the right result
+ * @tc.number: Communication_0300
+ * @tc.name: test the communication of the installd service and installd client
+ * @tc.desc: 1. the service is already initialized
+ *           2. the installd client can send msg to the service and receive the right result
+ * @tc.require: AR000GJ4KK
 */
 HWTEST_F(BmsInstallDaemonTest, Communication_0300, Function | SmallTest | Level0)
 {
@@ -291,10 +300,11 @@ HWTEST_F(BmsInstallDaemonTest, Communication_0300, Function | SmallTest | Level0
 }
 
 /**
-* @tc.number: Communication_0400
-* @tc.name: test the communication of the installd service and installd client
-* @tc.desc: 1. the service is not initialized
-*           2. the installd client can't send msg to the service and receive the error result
+ * @tc.number: Communication_0400
+ * @tc.name: test the communication of the installd service and installd client
+ * @tc.desc: 1. the service is not initialized
+ *           2. the installd client can't send msg to the service and receive the error result
+ * @tc.require: AR000GJ4KK
 */
 HWTEST_F(BmsInstallDaemonTest, Communication_0400, Function | SmallTest | Level0)
 {
@@ -308,10 +318,11 @@ HWTEST_F(BmsInstallDaemonTest, Communication_0400, Function | SmallTest | Level0
 }
 
 /**
-* @tc.number:BundleDir_0100
-* @tc.name: test the create and remove bundle dir function of installd service
-* @tc.desc: 1. the service is already initialized
-*           2. the bundle dir of the right code dir can be created and removed
+ * @tc.number:BundleDir_0100
+ * @tc.name: test the create and remove bundle dir function of installd service
+ * @tc.desc: 1. the service is already initialized
+ *           2. the bundle dir of the right code dir can be created and removed
+ * @tc.require: AR000GJ4KK
 */
 HWTEST_F(BmsInstallDaemonTest, BundleDir_0100, Function | SmallTest | Level0)
 {
@@ -326,10 +337,11 @@ HWTEST_F(BmsInstallDaemonTest, BundleDir_0100, Function | SmallTest | Level0)
 }
 
 /**
-* @tc.number: BundleDir_0200
-* @tc.name: test the create and remove bundle dir function of installd service
-* @tc.desc: 1. the service is already initialized and the code dir is illegal
-*           2. the bundle dir of the illegal code dir can't be created
+ * @tc.number: BundleDir_0200
+ * @tc.name: test the create and remove bundle dir function of installd service
+ * @tc.desc: 1. the service is already initialized and the code dir is illegal
+ *           2. the bundle dir of the illegal code dir can't be create
+ * @tc.require: AR000GJ4KK
 */
 HWTEST_F(BmsInstallDaemonTest, BundleDir_0200, Function | SmallTest | Level0)
 {
@@ -340,10 +352,11 @@ HWTEST_F(BmsInstallDaemonTest, BundleDir_0200, Function | SmallTest | Level0)
 }
 
 /**
-* @tc.number: BundleDir_0300
-* @tc.name: test the create and remove bundle dir function of installd service
-* @tc.desc: 1. the service is already initialized and the code dir is system dir
-*           2. the bundle dir of the system dir can't be created
+ * @tc.number: BundleDir_0300
+ * @tc.name: test the create and remove bundle dir function of installd service
+ * @tc.desc: 1. the service is already initialized and the code dir is system dir
+            2. the bundle dir of the system dir can't be created
+ * @tc.require: AR000GJ4KK
 */
 HWTEST_F(BmsInstallDaemonTest, BundleDir_0300, Function | SmallTest | Level0)
 {
@@ -354,10 +367,11 @@ HWTEST_F(BmsInstallDaemonTest, BundleDir_0300, Function | SmallTest | Level0)
 }
 
 /**
-* @tc.number: BundleDataDir_0100
-* @tc.name: test the create and remove bundle data dir function of installd service
-* @tc.desc: 1. the service is already initialized and the code dir is system dir
-*           2. the bundle data dir of the right code dir can be created and removed
+ * @tc.number: BundleDataDir_0100
+ * @tc.name: test the create and remove bundle data dir function of installd service
+ * @tc.desc: 1. the service is already initialized and the code dir is system dir
+ *           2. the bundle data dir of the right code dir can be created and removed
+ * @tc.require: AR000GJ4KK
 */
 HWTEST_F(BmsInstallDaemonTest, BundleDataDir_0100, Function | SmallTest | Level0)
 {
@@ -372,10 +386,11 @@ HWTEST_F(BmsInstallDaemonTest, BundleDataDir_0100, Function | SmallTest | Level0
 }
 
 /**
-* @tc.number: BundleDataDir_0200
-* @tc.name: test the create and clean bundle data dir function of installd service
-* @tc.desc: 1. the service is already initialized
-*           2. the bundle data dir of the right code dir can be created and clean
+ * @tc.number: BundleDataDir_0200
+ * @tc.name: test the create and clean bundle data dir function of installd service
+ * @tc.desc: 1. the service is already initialized
+ *           2. the bundle data dir of the right code dir can be created and clean
+ * @tc.require: AR000GJ4KK
 */
 HWTEST_F(BmsInstallDaemonTest, BundleDataDir_0200, Function | SmallTest | Level0)
 {
@@ -390,10 +405,11 @@ HWTEST_F(BmsInstallDaemonTest, BundleDataDir_0200, Function | SmallTest | Level0
 }
 
 /**
-* @tc.number: BundleDataDir_0300
-* @tc.name: test the create and remove bundle data dir function of installd service
-* @tc.desc: 1. the service is already initialized and the code dir is illegal
-*           2. the bundle data dir of the illegal code dir can't be created
+ * @tc.number: BundleDataDir_0300
+ * @tc.name: test the create and remove bundle data dir function of installd service
+ * @tc.desc: 1. the service is already initialized and the code dir is illegal
+ *           2. the bundle data dir of the illegal code dir can't be created
+ * @tc.require: AR000GJ4KK
 */
 HWTEST_F(BmsInstallDaemonTest, BundleDataDir_0300, Function | SmallTest | Level0)
 {
@@ -404,10 +420,11 @@ HWTEST_F(BmsInstallDaemonTest, BundleDataDir_0300, Function | SmallTest | Level0
 }
 
 /**
-* @tc.number: BundleDataDir_0400
-* @tc.name: test the create and remove bundle data dir function of installd service
-* @tc.desc: 1. the service is already initialized and the uid is illegal
-*           2. the bundle data dir of the illegal uid can't be created
+ * @tc.number: BundleDataDir_0400
+ * @tc.name: test the create and remove bundle data dir function of installd service
+ * @tc.desc: 1. the service is already initialized and the uid is illegal
+ *           2. the bundle data dir of the illegal uid can't be created
+ * @tc.require: AR000GJ4KK
 */
 HWTEST_F(BmsInstallDaemonTest, BundleDataDir_0400, Function | SmallTest | Level0)
 {
@@ -418,10 +435,11 @@ HWTEST_F(BmsInstallDaemonTest, BundleDataDir_0400, Function | SmallTest | Level0
 }
 
 /**
-* @tc.number: BundleDataDir_0500
-* @tc.name: test the create and remove bundle data dir function of installd service
-* @tc.desc: 1. the service is already initialized and the gid is illegal
-*           2. the bundle data dir of the illegal gid can't be created
+ * @tc.number: BundleDataDir_0500
+ * @tc.name: test the create and remove bundle data dir function of installd service
+ * @tc.desc: 1. the service is already initialized and the gid is illegal
+ *           2. the bundle data dir of the illegal gid can't be created
+ * @tc.require: AR000GJ4KK
 */
 HWTEST_F(BmsInstallDaemonTest, BundleDataDir_0500, Function | SmallTest | Level0)
 {
@@ -432,10 +450,11 @@ HWTEST_F(BmsInstallDaemonTest, BundleDataDir_0500, Function | SmallTest | Level0
 }
 
 /**
-* @tc.number: BundleDataDir_0500
-* @tc.name: test the create and remove bundle data dir function of installd service
-* @tc.desc: 1. the service is already initialized and the code dir is system dir
-*           2. the bundle data dir of the system dir can't be created
+ * @tc.number: BundleDataDir_0500
+ * @tc.name: test the create and remove bundle data dir function of installd service
+ * @tc.desc: 1. the service is already initialized and the code dir is system dir
+ *           2. the bundle data dir of the system dir can't be created
+ * @tc.require: AR000GJ4KK
 */
 HWTEST_F(BmsInstallDaemonTest, BundleDataDir_0600, Function | SmallTest | Level0)
 {
@@ -446,10 +465,30 @@ HWTEST_F(BmsInstallDaemonTest, BundleDataDir_0600, Function | SmallTest | Level0
 }
 
 /**
-* @tc.number: ExtractBundleFile_0200
-* @tc.name: test the ExtractBundleFile function of installd service
-* @tc.desc: 1. the bundle file is illegal
-*           2. the bundle file can't be extracted and the extracted file does not exists
+ * @tc.number: ExtractBundleFile_0100
+ * @tc.name: test the ExtractBundleFile function of installd service with flag system bundle
+ * @tc.desc: 1. the bundle file is available and the target dir exists
+ *           2. the origin file exists and the extracted file exists
+ * @tc.require: AR000GJ4KK
+*/
+HWTEST_F(BmsInstallDaemonTest, ExtractBundleFile_0100, Function | SmallTest | Level0)
+{
+    CreateBundleDir(BUNDLE_CODE_DIR);
+    bool dirExist = CheckBundleDirExist();
+    EXPECT_TRUE(dirExist);
+    auto bundleFile = BUNDLE_FILE;
+    int result = ExtractModuleFiles(bundleFile, TEMP_DIR);
+    EXPECT_EQ(result, 0);
+    int result1 = RenameModuleDir(TEMP_DIR, MODULE_DIR);
+    EXPECT_EQ(result1, 0);
+}
+
+/**
+ * @tc.number: ExtractBundleFile_0200
+ * @tc.name: test the ExtractBundleFile function of installd service
+ * @tc.desc: 1. the bundle file is illegal
+ *           2. the bundle file can't be extracted and the extracted file does not exists
+ * @tc.require: AR000GJ4KK
 */
 HWTEST_F(BmsInstallDaemonTest, ExtractBundleFile_0200, Function | SmallTest | Level0)
 {
@@ -461,10 +500,11 @@ HWTEST_F(BmsInstallDaemonTest, ExtractBundleFile_0200, Function | SmallTest | Le
 }
 
 /**
-* @tc.number: ExtractBundleFile_0300
-* @tc.name: test the ExtractBundleFile function of installd service
-* @tc.desc: 1. the temp dir does not exist
-*           2. the bundle file can't be extracted and the extracted file does not exists
+ * @tc.number: ExtractBundleFile_0300
+ * @tc.name: test the ExtractBundleFile function of installd service
+ * @tc.desc: 1. the temp dir does not exist
+ *           2. the bundle file can't be extracted and the extracted file does not exists
+ * @tc.require: AR000GJ4KK
 */
 HWTEST_F(BmsInstallDaemonTest, ExtractBundleFile_0300, Function | SmallTest | Level0)
 {
@@ -474,4 +514,42 @@ HWTEST_F(BmsInstallDaemonTest, ExtractBundleFile_0300, Function | SmallTest | Le
     auto bundleFile = BUNDLE_FILE;
     int result = ExtractModuleFiles(bundleFile, "");
     EXPECT_EQ(result, ERR_APPEXECFWK_INSTALLD_PARAM_ERROR);
+}
+
+/**
+ * @tc.number: ExtractBundleFile_0400
+ * @tc.name: test the ExtractBundleFile function of installd service
+ * @tc.desc: 1. the old path does not exist
+ *           2. the bundle file can't be extracted and the extracted file does not exists
+ * @tc.require: AR000GJ4KK
+*/
+HWTEST_F(BmsInstallDaemonTest, ExtractBundleFile_0400, Function | SmallTest | Level0)
+{
+    CreateBundleDir(BUNDLE_CODE_DIR);
+    bool dirExist = CheckBundleDirExist();
+    EXPECT_TRUE(dirExist);
+    auto bundleFile = BUNDLE_FILE;
+    int result = ExtractModuleFiles(bundleFile, TEMP_DIR);
+    EXPECT_EQ(result, 0);
+    int result1 = RenameModuleDir("", MODULE_DIR);
+    EXPECT_EQ(result1, ERR_APPEXECFWK_INSTALLD_PARAM_ERROR);
+}
+
+/**
+ * @tc.number: ExtractBundleFile_0500
+ * @tc.name: test the ExtractBundleFile function of installd service
+ * @tc.desc: 1. the new path does not exist
+ *           2. the bundle file can't be extracted and the extracted file does not exists
+ * @tc.require: AR000GJ4KK
+*/
+HWTEST_F(BmsInstallDaemonTest, ExtractBundleFile_0500, Function | SmallTest | Level0)
+{
+    CreateBundleDir(BUNDLE_CODE_DIR);
+    bool dirExist = CheckBundleDirExist();
+    EXPECT_TRUE(dirExist);
+    auto bundleFile = BUNDLE_FILE;
+    int result = ExtractModuleFiles(bundleFile, TEMP_DIR);
+    EXPECT_EQ(result, 0);
+    int result1 = RenameModuleDir(TEMP_DIR, "");
+    EXPECT_EQ(result1, ERR_APPEXECFWK_INSTALLD_PARAM_ERROR);
 }

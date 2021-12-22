@@ -16,19 +16,20 @@
 #include "bundle_scanner.h"
 
 #include <cstddef>
-#include <string>
 #include <dirent.h>
+#include <string>
 
-#include "datetime_ex.h"
-#include "string_ex.h"
 #include "app_log_wrapper.h"
-#include "perf_profile.h"
-#include "bundle_util.h"
 #include "bundle_constants.h"
 #include "bundle_mgr_service.h"
+#include "bundle_util.h"
+#include "datetime_ex.h"
+#include "perf_profile.h"
+#include "string_ex.h"
 
 namespace OHOS {
 namespace AppExecFwk {
+
 BundleScanner::BundleScanner()
 {
     APP_LOGI("BundleScanner instance is created");
@@ -79,10 +80,7 @@ bool BundleScanner::ScanImpl(const std::string &dirPath)
         if (currentName.compare(".") == 0 || currentName.compare("..") == 0) {
             continue;
         }
-
-        if (BundleUtil::CheckFileType(currentName, Constants::INSTALL_FILE_SUFFIX)) {
-            entries_.push_back(dirPath + Constants::PATH_SEPARATOR + currentName);
-        }
+        entries_.push_back(dirPath + Constants::PATH_SEPARATOR + currentName);
     }
 
     if (closedir(dirp) == -1) {
@@ -90,5 +88,6 @@ bool BundleScanner::ScanImpl(const std::string &dirPath)
     }
     return true;
 }
+
 }  // namespace AppExecFwk
 }  // namespace OHOS

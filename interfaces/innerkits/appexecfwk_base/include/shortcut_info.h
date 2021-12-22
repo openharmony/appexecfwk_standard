@@ -21,6 +21,7 @@
 
 namespace OHOS {
 namespace AppExecFwk {
+
 struct ShortcutIntent {
     std::string targetBundle;
     std::string targetClass;
@@ -30,6 +31,8 @@ struct ShortcutInfo : public Parcelable {
     std::string id;
     std::string bundleName;
     std::string hostAbility;
+    int32_t iconId;
+    int32_t labelId;
     std::string icon;
     std::string label;
     std::string disableMessage;
@@ -42,6 +45,7 @@ struct ShortcutInfo : public Parcelable {
     virtual bool Marshalling(Parcel &parcel) const override;
     static ShortcutInfo *Unmarshalling(Parcel &parcel);
 };
+
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_BASE_INCLUDE_SHORTCUT_INFO_H

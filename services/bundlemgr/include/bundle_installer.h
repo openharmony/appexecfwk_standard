@@ -18,6 +18,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "nocopyable.h"
 
@@ -27,6 +28,7 @@
 
 namespace OHOS {
 namespace AppExecFwk {
+
 class BundleInstaller : public BaseBundleInstaller {
 public:
     BundleInstaller(const int64_t installerId, const std::shared_ptr<EventHandler> &handler,
@@ -47,6 +49,20 @@ public:
      * @return
      */
     void Install(const std::string &bundleFilePath, const InstallParam &installParam);
+    /**
+     * @brief Install a bundle by bundleName.
+     * @param bundleName Indicates the bundleName of the bundle to install.
+     * @param installParam Indicates the install parameters.
+     * @return
+     */
+    void Recover(const std::string &bundleName, const InstallParam &installParam);
+    /**
+     * @brief Install a bundle using this installer object.
+     * @param bundleFilePaths Indicates the paths for storing the HAP of the bundle to install or update.
+     * @param installParam Indicates the install parameters.
+     * @return
+     */
+    void Install(const std::vector<std::string> &bundleFilePaths, const InstallParam &installParam);
     /**
      * @brief Uninstall a bundle using this installer object.
      * @param bundleName Indicates the bundle name of the application to uninstall.
@@ -81,6 +97,7 @@ private:
     const int64_t installerId_ = 0;
     const std::weak_ptr<EventHandler> handler_;
     const sptr<IStatusReceiver> statusReceiver_;
+
     DISALLOW_COPY_AND_MOVE(BundleInstaller);
 };
 

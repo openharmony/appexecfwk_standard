@@ -22,6 +22,7 @@
 
 namespace OHOS {
 namespace AppExecFwk {
+
 class OnPermissionChangedCallbackProxy : public IRemoteProxy<OnPermissionChangedCallback> {
 public:
     explicit OnPermissionChangedCallbackProxy(const sptr<IRemoteObject> &object);
@@ -35,6 +36,7 @@ public:
 private:
     static inline BrokerDelegator<OnPermissionChangedCallbackProxy> delegator_;
 };
+
 }  // namespace AppExecFwk
 }  // namespace OHOS
 

@@ -20,9 +20,9 @@
 #include <unistd.h>
 
 #include "app_log_wrapper.h"
+#include "bundle_extractor.h"
 #include "bundle_mgr_service.h"
 #include "bundle_parser.h"
-#include "bundle_extractor.h"
 #include "bundle_scanner.h"
 
 using namespace testing::ext;
@@ -34,7 +34,7 @@ const std::string TEST_DIR = "bundle_scan_module_test";
 const std::string BUNDLE_FILENAME_NORMAL = "t11.hap";
 const std::string BUNDLE_FILENAME_ABNORMAL = "t11.rpk";
 const string RESOURCE_ROOT_PATH = "/hos/test/bms_bundle/";
-const int CYCLE_NUMBER = 1000;
+const int CYCLE_NUMBER = 10;
 }  // namespace
 
 class BmsServiceStartModuleTest : public testing::Test {
@@ -300,10 +300,10 @@ HWTEST_F(BmsServiceStartModuleTest, TestBundleScan_0100, Function | MediumTest |
     CreateFile(testFileNameAbnormal);
 
     int number = static_cast<int>(TriggerScan());
-    EXPECT_EQ(1, number);
+    EXPECT_EQ(2, number);
 
     EXPECT_TRUE(IsScanResultContain(testFileNameNormal));
-    EXPECT_FALSE(IsScanResultContain(testFileNameAbnormal));
+    EXPECT_TRUE(IsScanResultContain(testFileNameAbnormal));
 
     DeleteFile(testFileNameNormal);
     DeleteFile(testFileNameAbnormal);
@@ -313,7 +313,7 @@ HWTEST_F(BmsServiceStartModuleTest, TestBundleScan_0100, Function | MediumTest |
 /**
  * @tc.number: TestBundleScan_0200
  * @tc.name: Parse bundle package by config.json
- * @tc.desc: scan 1000 normal bundles and 1000 abnormal bundles
+ * @tc.desc: scan 10 normal bundles and 10 abnormal bundles
  */
 HWTEST_F(BmsServiceStartModuleTest, TestBundleScan_0200, Function | MediumTest | Level2)
 {
@@ -328,13 +328,13 @@ HWTEST_F(BmsServiceStartModuleTest, TestBundleScan_0200, Function | MediumTest |
     }
 
     int number = static_cast<int>(TriggerScan());
-    EXPECT_EQ(CYCLE_NUMBER, number);
+    EXPECT_EQ(CYCLE_NUMBER * 2, number);
 
     for (i = 0; i < CYCLE_NUMBER; i++) {
         const std::string testFileNameNormal = TEST_DIR + "/" + std::to_string(i) + BUNDLE_FILENAME_NORMAL;
         const std::string testFileNameAbnormal = TEST_DIR + "/" + std::to_string(i) + BUNDLE_FILENAME_ABNORMAL;
         EXPECT_TRUE(IsScanResultContain(testFileNameNormal));
-        EXPECT_FALSE(IsScanResultContain(testFileNameAbnormal));
+        EXPECT_TRUE(IsScanResultContain(testFileNameAbnormal));
         DeleteFile(testFileNameNormal);
         DeleteFile(testFileNameAbnormal);
     }

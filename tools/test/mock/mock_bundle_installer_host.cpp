@@ -16,14 +16,29 @@
 #include "mock_bundle_installer_host.h"
 
 using namespace OHOS::AAFwk;
-using namespace OHOS::AppExecFwk;
-
+namespace OHOS {
+namespace AppExecFwk {
 bool MockBundleInstallerHost::Install(
     const std::string &bundleFilePath, const InstallParam &installParam, const sptr<IStatusReceiver> &statusReceiver)
 {
     APP_LOGI("enter");
 
     APP_LOGI("bundleFilePath: %{public}s", bundleFilePath.c_str());
+    APP_LOGI("installParam.installFlag: %{public}d", installParam.installFlag);
+
+    statusReceiver->OnFinished(OHOS::ERR_OK, MSG_SUCCESS);
+
+    return true;
+}
+
+bool MockBundleInstallerHost::Install(const std::vector<std::string> &bundleFilePath, const InstallParam &installParam,
+    const sptr<IStatusReceiver> &statusReceiver)
+{
+    APP_LOGI("enter");
+
+    for_each(bundleFilePath.begin(), bundleFilePath.end(), [](const auto &path)->decltype(auto) {
+        APP_LOGI("bundleFilePath: %{public}s", path.c_str());
+    });
     APP_LOGI("installParam.installFlag: %{public}d", installParam.installFlag);
 
     statusReceiver->OnFinished(OHOS::ERR_OK, MSG_SUCCESS);
@@ -57,3 +72,15 @@ bool MockBundleInstallerHost::Uninstall(const std::string &bundleName, const std
 
     return true;
 }
+
+bool MockBundleInstallerHost::Recover(const std::string &bundleName, const InstallParam &installParam,
+    const sptr<IStatusReceiver> &statusReceiver)
+{
+    APP_LOGD("enter");
+    APP_LOGD("bundleName: %{public}s", bundleName.c_str());
+    APP_LOGD("installParam.installFlag: %{public}d", installParam.installFlag);
+    statusReceiver->OnFinished(OHOS::ERR_OK, MSG_SUCCESS);
+    return true;
+}
+} // namespace AppExecFwk
+} // namespace OHOS

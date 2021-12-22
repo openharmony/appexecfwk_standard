@@ -20,9 +20,15 @@
 #include "app_log_wrapper.h"
 #include "bundle_constants.h"
 #include "parcel_macro.h"
+#include "string_ex.h"
 
 namespace OHOS {
 namespace AppExecFwk {
+
+namespace {
+constexpr int32_t WAIT_TIME = 3000;
+}
+
 InstalldProxy::InstalldProxy(const sptr<IRemoteObject> &object) : IRemoteProxy<IInstalld>(object)
 {
     APP_LOGI("installd proxy instance is created");
@@ -36,209 +42,102 @@ InstalldProxy::~InstalldProxy()
 ErrCode InstalldProxy::CreateBundleDir(const std::string &bundleDir)
 {
     MessageParcel data;
-    MessageParcel reply;
-    if (!data.WriteInterfaceToken(GetDescriptor())) {
-        APP_LOGE("fail to send cmd to service due to data.WriteInterfaceToken(GetDescriptor())");
-        return false;
-    }
-    if (!data.WriteString(bundleDir)) {
-        return ERR_APPEXECFWK_INSTALL_INSTALLD_SERVICE_ERROR;
-    }
-    if (!TransactInstalldCmd(IInstalld::Message::CREATE_BUNDLE_DIR, data, reply)) {
-        return false;
-    }
-    return reply.ReadInt32();
-}
+    INSTALLD_PARCEL_WRITE_INTERFACE_TOKEN(data, (GetDescriptor()));
+    INSTALLD_PARCEL_WRITE(data, String16, Str8ToStr16(bundleDir));
 
-ErrCode InstalldProxy::RemoveBundleDir(const std::string &bundleDir)
-{
-    MessageParcel data;
     MessageParcel reply;
-    if (!data.WriteInterfaceToken(GetDescriptor())) {
-        APP_LOGE("fail to send cmd to service due to data.WriteInterfaceToken(GetDescriptor())");
-        return false;
-    }
-    if (!data.WriteString(bundleDir)) {
-        return ERR_APPEXECFWK_INSTALL_INSTALLD_SERVICE_ERROR;
-    }
-    if (!TransactInstalldCmd(IInstalld::Message::REMOVE_BUNDLE_DIR, data, reply)) {
-        return false;
-    }
-    return reply.ReadInt32();
+    MessageOption option;
+    return TransactInstalldCmd(IInstalld::Message::CREATE_BUNDLE_DIR, data, reply, option);
 }
 
 ErrCode InstalldProxy::ExtractModuleFiles(const std::string &srcModulePath, const std::string &targetPath)
 {
     MessageParcel data;
-    MessageParcel reply;
-    if (!data.WriteInterfaceToken(GetDescriptor())) {
-        APP_LOGE("fail to send cmd to service due to data.WriteInterfaceToken(GetDescriptor())");
-        return false;
-    }
-    if (!data.WriteString(srcModulePath)) {
-        return ERR_APPEXECFWK_INSTALL_INSTALLD_SERVICE_ERROR;
-    }
-    if (!data.WriteString(targetPath)) {
-        return ERR_APPEXECFWK_INSTALL_INSTALLD_SERVICE_ERROR;
-    }
-    if (!TransactInstalldCmd(IInstalld::Message::EXTRACT_MODULE_FILES, data, reply)) {
-        return false;
-    }
-    return reply.ReadInt32();
-}
+    INSTALLD_PARCEL_WRITE_INTERFACE_TOKEN(data, (GetDescriptor()));
+    INSTALLD_PARCEL_WRITE(data, String16, Str8ToStr16(srcModulePath));
+    INSTALLD_PARCEL_WRITE(data, String16, Str8ToStr16(targetPath));
 
-ErrCode InstalldProxy::RemoveModuleDir(const std::string &moduleDir)
-{
-    MessageParcel data;
     MessageParcel reply;
-    if (!data.WriteInterfaceToken(GetDescriptor())) {
-        APP_LOGE("fail to send cmd to service due to data.WriteInterfaceToken(GetDescriptor())");
-        return false;
-    }
-    if (!data.WriteString(moduleDir)) {
-        return ERR_APPEXECFWK_INSTALL_INSTALLD_SERVICE_ERROR;
-    }
-    if (!TransactInstalldCmd(IInstalld::Message::REMOVE_MODULE_DIR, data, reply)) {
-        return false;
-    }
-    return reply.ReadInt32();
+    MessageOption option;
+    return TransactInstalldCmd(IInstalld::Message::EXTRACT_MODULE_FILES, data, reply, option);
 }
 
 ErrCode InstalldProxy::RenameModuleDir(const std::string &oldPath, const std::string &newPath)
 {
     MessageParcel data;
+    INSTALLD_PARCEL_WRITE_INTERFACE_TOKEN(data, (GetDescriptor()));
+    INSTALLD_PARCEL_WRITE(data, String16, Str8ToStr16(oldPath));
+    INSTALLD_PARCEL_WRITE(data, String16, Str8ToStr16(newPath));
+
     MessageParcel reply;
-    if (!data.WriteInterfaceToken(GetDescriptor())) {
-        APP_LOGE("fail to send cmd to service due to data.WriteInterfaceToken(GetDescriptor())");
-        return false;
-    }
-    if (!data.WriteString(oldPath)) {
-        return ERR_APPEXECFWK_INSTALL_INSTALLD_SERVICE_ERROR;
-    }
-    if (!data.WriteString(newPath)) {
-        return ERR_APPEXECFWK_INSTALL_INSTALLD_SERVICE_ERROR;
-    }
-    if (!TransactInstalldCmd(IInstalld::Message::RENAME_MODULE_DIR, data, reply)) {
-        return ERR_APPEXECFWK_INSTALL_INSTALLD_SERVICE_ERROR;
-    }
-    return reply.ReadInt32();
+    MessageOption option;
+    return TransactInstalldCmd(IInstalld::Message::RENAME_MODULE_DIR, data, reply, option);
 }
 
 ErrCode InstalldProxy::CreateBundleDataDir(const std::string &bundleDir, const int uid, const int gid)
 {
     MessageParcel data;
-    MessageParcel reply;
-    if (!data.WriteInterfaceToken(GetDescriptor())) {
-        APP_LOGE("fail to send cmd to service due to data.WriteInterfaceToken(GetDescriptor())");
-        return ERR_APPEXECFWK_INSTALL_INSTALLD_SERVICE_ERROR;
-    }
-    if (!data.WriteString(bundleDir)) {
-        return ERR_APPEXECFWK_INSTALL_INSTALLD_SERVICE_ERROR;
-    }
-    if (!data.WriteInt32(uid)) {
-        return ERR_APPEXECFWK_INSTALL_INSTALLD_SERVICE_ERROR;
-    }
-    if (!data.WriteInt32(gid)) {
-        return ERR_APPEXECFWK_INSTALL_INSTALLD_SERVICE_ERROR;
-    }
-    if (!TransactInstalldCmd(IInstalld::Message::CREATE_BUNDLE_DATA_DIR, data, reply)) {
-        return ERR_APPEXECFWK_INSTALL_INSTALLD_SERVICE_ERROR;
-    }
-    return reply.ReadInt32();
-}
+    INSTALLD_PARCEL_WRITE_INTERFACE_TOKEN(data, (GetDescriptor()));
+    INSTALLD_PARCEL_WRITE(data, String16, Str8ToStr16(bundleDir));
+    INSTALLD_PARCEL_WRITE(data, Int32, uid);
+    INSTALLD_PARCEL_WRITE(data, Int32, gid);
 
-ErrCode InstalldProxy::RemoveBundleDataDir(const std::string &bundleDataPath)
-{
-    MessageParcel data;
     MessageParcel reply;
-    if (!data.WriteInterfaceToken(GetDescriptor())) {
-        APP_LOGE("fail to send cmd to service due to data.WriteInterfaceToken(GetDescriptor())");
-        return false;
-    }
-    if (!data.WriteString(bundleDataPath)) {
-        return ERR_APPEXECFWK_INSTALL_INSTALLD_SERVICE_ERROR;
-    }
-    if (!TransactInstalldCmd(IInstalld::Message::REMOVE_BUNDLE_DATA_DIR, data, reply)) {
-        return false;
-    }
-    return reply.ReadInt32();
+    MessageOption option;
+    return TransactInstalldCmd(IInstalld::Message::CREATE_BUNDLE_DATA_DIR, data, reply, option);
 }
 
 ErrCode InstalldProxy::CreateModuleDataDir(
     const std::string &ModuleDir, const std::vector<std::string> &abilityDirs, const int uid, const int gid)
 {
     MessageParcel data;
+    INSTALLD_PARCEL_WRITE_INTERFACE_TOKEN(data, (GetDescriptor()));
+    INSTALLD_PARCEL_WRITE(data, String16, Str8ToStr16(ModuleDir));
+    INSTALLD_PARCEL_WRITE(data, StringVector, abilityDirs);
+    INSTALLD_PARCEL_WRITE(data, Int32, uid);
+    INSTALLD_PARCEL_WRITE(data, Int32, gid);
+
     MessageParcel reply;
-    if (!data.WriteInterfaceToken(GetDescriptor())) {
-        APP_LOGE("fail to send cmd to service due to data.WriteInterfaceToken(GetDescriptor())");
-        return ERR_APPEXECFWK_INSTALL_INSTALLD_SERVICE_ERROR;
-    }
-    if (!data.WriteString(ModuleDir)) {
-        return ERR_APPEXECFWK_INSTALL_INSTALLD_SERVICE_ERROR;
-    }
-    if (!data.WriteStringVector(abilityDirs)) {
-        return ERR_APPEXECFWK_INSTALL_INSTALLD_SERVICE_ERROR;
-    }
-    if (!data.WriteInt32(uid)) {
-        return ERR_APPEXECFWK_INSTALL_INSTALLD_SERVICE_ERROR;
-    }
-    if (!data.WriteInt32(gid)) {
-        return ERR_APPEXECFWK_INSTALL_INSTALLD_SERVICE_ERROR;
-    }
-    if (!TransactInstalldCmd(IInstalld::Message::CREATE_MODULE_DATA_DIR, data, reply)) {
-        return ERR_APPEXECFWK_INSTALL_INSTALLD_SERVICE_ERROR;
-    }
-    return reply.ReadInt32();
+    MessageOption option;
+    return TransactInstalldCmd(IInstalld::Message::CREATE_MODULE_DATA_DIR, data, reply, option);
 }
 
-ErrCode InstalldProxy::RemoveModuleDataDir(const std::string &moduleDataDir)
+ErrCode InstalldProxy::RemoveDir(const std::string &dir)
 {
     MessageParcel data;
+    INSTALLD_PARCEL_WRITE_INTERFACE_TOKEN(data, (GetDescriptor()));
+    INSTALLD_PARCEL_WRITE(data, String16, Str8ToStr16(dir));
+
     MessageParcel reply;
-    if (!data.WriteInterfaceToken(GetDescriptor())) {
-        APP_LOGE("fail to send cmd to service due to data.WriteInterfaceToken(GetDescriptor())");
-        return false;
-    }
-    if (!data.WriteString(moduleDataDir)) {
-        return ERR_APPEXECFWK_INSTALL_INSTALLD_SERVICE_ERROR;
-    }
-    if (!TransactInstalldCmd(IInstalld::Message::REMOVE_MODULE_DATA_DIR, data, reply)) {
-        return false;
-    }
-    return reply.ReadInt32();
+    MessageOption option(MessageOption::TF_SYNC);
+    return TransactInstalldCmd(IInstalld::Message::REMOVE_DIR, data, reply, option);
 }
 
 ErrCode InstalldProxy::CleanBundleDataDir(const std::string &bundleDir)
 {
     MessageParcel data;
+    INSTALLD_PARCEL_WRITE_INTERFACE_TOKEN(data, (GetDescriptor()));
+    INSTALLD_PARCEL_WRITE(data, String16, Str8ToStr16(bundleDir));
+
     MessageParcel reply;
-    if (!data.WriteInterfaceToken(GetDescriptor())) {
-        APP_LOGE("fail to send cmd to service due to data.WriteInterfaceToken(GetDescriptor())");
-        return false;
-    }
-    if (!data.WriteString(bundleDir)) {
+    MessageOption option(MessageOption::TF_SYNC, WAIT_TIME);
+    return TransactInstalldCmd(IInstalld::Message::CLEAN_BUNDLE_DATA_DIR, data, reply, option);
+}
+
+ErrCode InstalldProxy::TransactInstalldCmd(uint32_t code, MessageParcel &data, MessageParcel &reply,
+    MessageOption &option)
+{
+    sptr<IRemoteObject> remote = Remote();
+    if (remote == nullptr) {
+        APP_LOGE("fail to send %{public}d cmd to service due to remote object is null", code);
         return ERR_APPEXECFWK_INSTALL_INSTALLD_SERVICE_ERROR;
     }
-    if (!TransactInstalldCmd(IInstalld::Message::CLEAN_BUNDLE_DATA_DIR, data, reply)) {
+
+    if (remote->SendRequest(code, data, reply, option) != OHOS::NO_ERROR) {
+        APP_LOGE("fail to send %{public}d request to service due to transact error", code);
         return ERR_APPEXECFWK_INSTALL_INSTALLD_SERVICE_ERROR;
     }
     return reply.ReadInt32();
-}
-
-bool InstalldProxy::TransactInstalldCmd(IInstalld::Message code, MessageParcel &data, MessageParcel &reply)
-{
-    sptr<IRemoteObject> remote = Remote();
-    MessageOption option(MessageOption::TF_SYNC);
-    if (remote == nullptr) {
-        APP_LOGE("fail to send %{public}d cmd to service due to remote object is null", code);
-        return false;
-    }
-    int32_t result = remote->SendRequest(static_cast<uint32_t>(code), data, reply, option);
-    if (result != OHOS::NO_ERROR) {
-        APP_LOGE("fail to send %{public}d cmd to service due to transact error", code);
-        return false;
-    }
-    return true;
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS
