@@ -23,7 +23,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 ErrCode InstalldClient::CreateBundleDir(const std::string &bundleDir)
 {
     if (bundleDir.empty()) {
@@ -122,6 +121,5 @@ bool InstalldClient::GetInstalldProxy()
     }
     return true;
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

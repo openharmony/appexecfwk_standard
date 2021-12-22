@@ -23,7 +23,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 sptr<IRemoteObject> SystemAbilityHelper::GetSystemAbility(const int32_t systemAbilityId)
 {
     sptr<ISystemAbilityManager> systemAbilityMgr = SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
@@ -53,6 +52,5 @@ bool SystemAbilityHelper::RemoveSystemAbility(const int32_t systemAbilityId)
     APP_LOGE("fail to remove %{public}d from system ability manager", systemAbilityId);
     return false;
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

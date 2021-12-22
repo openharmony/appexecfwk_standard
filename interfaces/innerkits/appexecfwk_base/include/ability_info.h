@@ -23,7 +23,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 enum AbilityInfoFlag {
     GET_ABILITY_INFO_DEFAULT = 0x00000000,
     GET_ABILITY_INFO_WITH_PERMISSION = 0x00000002,
@@ -215,7 +214,6 @@ struct AbilityInfo : public Parcelable {
     void Dump(std::string prefix, int fd);
     void ConvertToCompatiableAbilityInfo(CompatibleAbilityInfo& compatibleAbilityInfo) const;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_BASE_INCLUDE_ABILITY_INFO_H
