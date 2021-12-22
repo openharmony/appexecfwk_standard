@@ -514,6 +514,10 @@ void BundleDataMgr::GetMatchAbilityInfos(
         APP_LOGE("bundleName: %{public}s is disabled", info.GetBundleName().c_str());
         return;
     }
+    if (((static_cast<uint32_t>(flags) & GET_ABILITY_INFO_SYSTEMAPP_ONLY) == GET_ABILITY_INFO_SYSTEMAPP_ONLY) &&
+        !info.IsSystemApp()) {
+        return;
+    }
     std::map<std::string, std::vector<Skill>> skillInfos = info.GetInnerSkillInfos();
     for (const auto &abilityInfoPair : info.GetInnerAbilityInfos()) {
         auto skillsPair = skillInfos.find(abilityInfoPair.first);

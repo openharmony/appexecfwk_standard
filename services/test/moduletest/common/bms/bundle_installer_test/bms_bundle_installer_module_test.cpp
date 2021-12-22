@@ -38,6 +38,7 @@ using namespace OHOS;
 using OHOS::DelayedSingleton;
 using OHOS::AAFwk::Want;
 
+namespace OHOS {
 namespace {
 const std::string BUNDLE_TMPPATH = "/data/test/bms_bundle/";
 const std::string SYSTEM_BUNDLE_PATH = "/system/app/";
@@ -180,7 +181,6 @@ protected:
                     "descriptionId": 1,
                     "iconId": 1,
                     "srcLanguage": "C++",
-                    "isHomeAbility": true,
                     "srcPath": ""
                 }
             },
@@ -1550,3 +1550,4 @@ HWTEST_F(BmsBundleInstallerModuleTest, BundleDataStorage003, TestSize.Level3)
     StoreId storeId{Constants::STORE_ID};
     dataManager.CloseKvStore(appId, storeId);
 }
+} // OHOS
