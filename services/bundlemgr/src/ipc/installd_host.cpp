@@ -23,7 +23,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 InstalldHost::InstalldHost()
 {
     init();
