@@ -1137,6 +1137,15 @@ public:
         return hasConfigureRemovable_;
     }
 
+    /** 
+     * @brief Get whether the bundle is a system app.
+     * @return Return whether the bundle is a system app.
+     */
+    bool IsSystemApp() const
+    {
+        return baseApplicationInfo_.isSystemApp;
+    }
+
     std::vector<std::string> GetModuleNameVec()
     {
         std::vector<std::string> moduleVec;
