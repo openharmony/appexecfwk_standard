@@ -17,15 +17,16 @@
 
 #include <cinttypes>
 
+#include "app_log_wrapper.h"
+#include "bundle_constants.h"
 #include "datetime_ex.h"
 #include "ipc_types.h"
 #include "string_ex.h"
-#include "app_log_wrapper.h"
-#include "bundle_constants.h"
 
 namespace OHOS {
 namespace AppExecFwk {
 namespace {
+
 const int32_t LIMIT_PARCEL_SIZE = 1024;
 
 void SplitString(const std::string &source, std::vector<std::string> &strings)
@@ -40,6 +41,7 @@ void SplitString(const std::string &source, std::vector<std::string> &strings)
         strings.emplace_back(source.substr(start, LIMIT_PARCEL_SIZE));
     }
 }
+
 }  // namespace
 
 int BundleMgrHost::OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option)
@@ -57,14 +59,26 @@ int BundleMgrHost::OnRemoteRequest(uint32_t code, MessageParcel &data, MessagePa
         case static_cast<uint32_t>(IBundleMgr::Message::GET_APPLICATION_INFO):
             errCode = HandleGetApplicationInfo(data, reply);
             break;
+        case static_cast<uint32_t>(IBundleMgr::Message::GET_APPLICATION_INFO_WITH_INT_FLAGS):
+            errCode = HandleGetApplicationInfoWithIntFlags(data, reply);
+            break;
         case static_cast<uint32_t>(IBundleMgr::Message::GET_APPLICATION_INFOS):
             errCode = HandleGetApplicationInfos(data, reply);
+            break;
+        case static_cast<uint32_t>(IBundleMgr::Message::GET_APPLICATION_INFOS_WITH_INT_FLAGS):
+            errCode = HandleGetApplicationInfosWithIntFlags(data, reply);
             break;
         case static_cast<uint32_t>(IBundleMgr::Message::GET_BUNDLE_INFO):
             errCode = HandleGetBundleInfo(data, reply);
             break;
+        case static_cast<uint32_t>(IBundleMgr::Message::GET_BUNDLE_INFO_WITH_INT_FLAGS):
+            errCode = HandleGetBundleInfoWithIntFlags(data, reply);
+            break;
         case static_cast<uint32_t>(IBundleMgr::Message::GET_BUNDLE_INFOS):
             errCode = HandleGetBundleInfos(data, reply);
+            break;
+        case static_cast<uint32_t>(IBundleMgr::Message::GET_BUNDLE_INFOS_WITH_INT_FLAGS):
+            errCode = HandleGetBundleInfosWithIntFlags(data, reply);
             break;
         case static_cast<uint32_t>(IBundleMgr::Message::GET_BUNDLE_NAME_FOR_UID):
             errCode = HandleGetBundleNameForUid(data, reply);
@@ -87,11 +101,20 @@ int BundleMgrHost::OnRemoteRequest(uint32_t code, MessageParcel &data, MessagePa
         case static_cast<uint32_t>(IBundleMgr::Message::QUERY_ABILITY_INFO):
             errCode = HandleQueryAbilityInfo(data, reply);
             break;
+        case static_cast<uint32_t>(IBundleMgr::Message::QUERY_ABILITY_INFO_MUTI_PARAM):
+            errCode = HandleQueryAbilityInfoMutiparam(data, reply);
+            break;
         case static_cast<uint32_t>(IBundleMgr::Message::QUERY_ABILITY_INFOS):
             errCode = HandleQueryAbilityInfos(data, reply);
             break;
+        case static_cast<uint32_t>(IBundleMgr::Message::QUERY_ABILITY_INFOS_MUTI_PARAM):
+            errCode = HandleQueryAbilityInfosMutiparam(data, reply);
+            break;
         case static_cast<uint32_t>(IBundleMgr::Message::QUERY_ABILITY_INFOS_FOR_CLONE):
             errCode = HandleQueryAbilityInfosForClone(data, reply);
+            break;
+        case static_cast<uint32_t>(IBundleMgr::Message::QUERY_ALL_ABILITY_INFOS):
+            errCode = HandleQueryAllAbilityInfos(data, reply);
             break;
         case static_cast<uint32_t>(IBundleMgr::Message::QUERY_ABILITY_INFO_BY_URI):
             errCode = HandleQueryAbilityInfoByUri(data, reply);
@@ -110,6 +133,9 @@ int BundleMgrHost::OnRemoteRequest(uint32_t code, MessageParcel &data, MessagePa
             break;
         case static_cast<uint32_t>(IBundleMgr::Message::GET_BUNDLE_ARCHIVE_INFO):
             errCode = HandleGetBundleArchiveInfo(data, reply);
+            break;
+        case static_cast<uint32_t>(IBundleMgr::Message::GET_BUNDLE_ARCHIVE_INFO_WITH_INT_FLAGS):
+            errCode = HandleGetBundleArchiveInfoWithIntFlags(data, reply);
             break;
         case static_cast<uint32_t>(IBundleMgr::Message::GET_HAP_MODULE_INFO):
             errCode = HandleGetHapModuleInfo(data, reply);
@@ -302,12 +328,53 @@ ErrCode BundleMgrHost::HandleGetApplicationInfo(Parcel &data, Parcel &reply)
     return ERR_OK;
 }
 
+ErrCode BundleMgrHost::HandleGetApplicationInfoWithIntFlags(Parcel &data, Parcel &reply)
+{
+    std::string name = data.ReadString();
+    int flags = data.ReadInt32();
+    int userId = data.ReadInt32();
+    APP_LOGD("name %{public}s, flags %{public}d, userId %{public}d", name.c_str(), flags, userId);
+
+    ApplicationInfo info;
+    bool ret = GetApplicationInfo(name, flags, userId, info);
+    if (!reply.WriteBool(ret)) {
+        APP_LOGE("write failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    if (ret) {
+        if (!reply.WriteParcelable(&info)) {
+            APP_LOGE("write failed");
+            return ERR_APPEXECFWK_PARCEL_ERROR;
+        }
+    }
+    return ERR_OK;
+}
+
 ErrCode BundleMgrHost::HandleGetApplicationInfos(Parcel &data, Parcel &reply)
 {
     ApplicationFlag flag = static_cast<ApplicationFlag>(data.ReadInt32());
     int userId = data.ReadInt32();
     std::vector<ApplicationInfo> infos;
     bool ret = GetApplicationInfos(flag, userId, infos);
+    if (!reply.WriteBool(ret)) {
+        APP_LOGE("write failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    if (ret) {
+        if (!WriteParcelableVector(infos, reply)) {
+            APP_LOGE("write failed");
+            return ERR_APPEXECFWK_PARCEL_ERROR;
+        }
+    }
+    return ERR_OK;
+}
+
+ErrCode BundleMgrHost::HandleGetApplicationInfosWithIntFlags(Parcel &data, Parcel &reply)
+{
+    int flags = data.ReadInt32();
+    int userId = data.ReadInt32();
+    std::vector<ApplicationInfo> infos;
+    bool ret = GetApplicationInfos(flags, userId, infos);
     if (!reply.WriteBool(ret)) {
         APP_LOGE("write failed");
         return ERR_APPEXECFWK_PARCEL_ERROR;
@@ -341,12 +408,53 @@ ErrCode BundleMgrHost::HandleGetBundleInfo(Parcel &data, Parcel &reply)
     return ERR_OK;
 }
 
+ErrCode BundleMgrHost::HandleGetBundleInfoWithIntFlags(Parcel &data, Parcel &reply)
+{
+    std::string name = data.ReadString();
+    int flags = data.ReadInt32();
+    APP_LOGD("name %{public}s, flags %{public}d", name.c_str(), flags);
+    BundleInfo info;
+    bool ret = GetBundleInfo(name, flags, info);
+    if (!reply.WriteBool(ret)) {
+        APP_LOGE("write failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    if (ret) {
+        if (!reply.WriteParcelable(&info)) {
+            APP_LOGE("write failed");
+            return ERR_APPEXECFWK_PARCEL_ERROR;
+        }
+    }
+    return ERR_OK;
+}
+
 ErrCode BundleMgrHost::HandleGetBundleInfos(Parcel &data, Parcel &reply)
 {
     BundleFlag flag = static_cast<BundleFlag>(data.ReadInt32());
 
     std::vector<BundleInfo> infos;
+    reply.SetDataCapacity(Constants::MAX_CAPACITY_BUNDLES);
     bool ret = GetBundleInfos(flag, infos);
+    if (!reply.WriteBool(ret)) {
+        APP_LOGE("write failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    if (ret) {
+        if (!WriteParcelableVector(infos, reply)) {
+            APP_LOGE("write failed");
+            return ERR_APPEXECFWK_PARCEL_ERROR;
+        }
+    }
+    return ERR_OK;
+}
+
+ErrCode BundleMgrHost::HandleGetBundleInfosWithIntFlags(Parcel &data, Parcel &reply)
+{
+    int flags = data.ReadInt32();
+
+    std::vector<BundleInfo> infos;
+    reply.SetDataCapacity(Constants::MAX_CAPACITY_BUNDLES);
+    bool ret = GetBundleInfos(flags, infos);
     if (!reply.WriteBool(ret)) {
         APP_LOGE("write failed");
         return ERR_APPEXECFWK_PARCEL_ERROR;
@@ -495,6 +603,30 @@ ErrCode BundleMgrHost::HandleQueryAbilityInfo(Parcel &data, Parcel &reply)
     return ERR_OK;
 }
 
+ErrCode BundleMgrHost::HandleQueryAbilityInfoMutiparam(Parcel &data, Parcel &reply)
+{
+    std::unique_ptr<Want> want(data.ReadParcelable<Want>());
+    if (!want) {
+        APP_LOGE("ReadParcelable<want> failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    int32_t flags = data.ReadInt32();
+    int32_t userId = data.ReadInt32();
+    AbilityInfo info;
+    bool ret = QueryAbilityInfo(*want, flags, userId, info);
+    if (!reply.WriteBool(ret)) {
+        APP_LOGE("write failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    if (ret) {
+        if (!reply.WriteParcelable(&info)) {
+            APP_LOGE("write failed");
+            return ERR_APPEXECFWK_PARCEL_ERROR;
+        }
+    }
+    return ERR_OK;
+}
+
 ErrCode BundleMgrHost::HandleQueryAbilityInfos(Parcel &data, Parcel &reply)
 {
     std::unique_ptr<Want> want(data.ReadParcelable<Want>());
@@ -505,6 +637,48 @@ ErrCode BundleMgrHost::HandleQueryAbilityInfos(Parcel &data, Parcel &reply)
 
     std::vector<AbilityInfo> abilityInfos;
     bool ret = QueryAbilityInfos(*want, abilityInfos);
+    if (!reply.WriteBool(ret)) {
+        APP_LOGE("write failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    if (ret) {
+        if (!WriteParcelableVector(abilityInfos, reply)) {
+            APP_LOGE("write failed");
+            return ERR_APPEXECFWK_PARCEL_ERROR;
+        }
+    }
+    return ERR_OK;
+}
+
+ErrCode BundleMgrHost::HandleQueryAbilityInfosMutiparam(Parcel &data, Parcel &reply)
+{
+    std::unique_ptr<Want> want(data.ReadParcelable<Want>());
+    if (!want) {
+        APP_LOGE("ReadParcelable<want> failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    int32_t flags = data.ReadInt32();
+    int32_t userId = data.ReadInt32();
+    std::vector<AbilityInfo> abilityInfos;
+    bool ret = QueryAbilityInfos(*want, flags, userId, abilityInfos);
+    if (!reply.WriteBool(ret)) {
+        APP_LOGE("write failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    if (ret) {
+        if (!WriteParcelableVector(abilityInfos, reply)) {
+            APP_LOGE("write failed");
+            return ERR_APPEXECFWK_PARCEL_ERROR;
+        }
+    }
+    return ERR_OK;
+}
+
+ErrCode BundleMgrHost::HandleQueryAllAbilityInfos(Parcel &data, Parcel &reply)
+{
+    int32_t userId = data.ReadInt32();
+    std::vector<AbilityInfo> abilityInfos;
+    bool ret = QueryAllAbilityInfos(userId, abilityInfos);
     if (!reply.WriteBool(ret)) {
         APP_LOGE("write failed");
         return ERR_APPEXECFWK_PARCEL_ERROR;
@@ -624,10 +798,31 @@ ErrCode BundleMgrHost::HandleGetBundleArchiveInfo(Parcel &data, Parcel &reply)
 {
     std::string hapFilePath = data.ReadString();
     BundleFlag flag = static_cast<BundleFlag>(data.ReadInt32());
-    APP_LOGI("name %{public}s, flag %{public}d", hapFilePath.c_str(), flag);
+    APP_LOGD("hapFilePath %{public}s, flag %{public}d", hapFilePath.c_str(), flag);
 
     BundleInfo info;
     bool ret = GetBundleArchiveInfo(hapFilePath, flag, info);
+    if (!reply.WriteBool(ret)) {
+        APP_LOGE("write failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    if (ret) {
+        if (!reply.WriteParcelable(&info)) {
+            APP_LOGE("write failed");
+            return ERR_APPEXECFWK_PARCEL_ERROR;
+        }
+    }
+    return ERR_OK;
+}
+
+ErrCode BundleMgrHost::HandleGetBundleArchiveInfoWithIntFlags(Parcel &data, Parcel &reply)
+{
+    std::string hapFilePath = data.ReadString();
+    int32_t flags = data.ReadInt32();
+    APP_LOGD("hapFilePath %{public}s, flagS %{public}d", hapFilePath.c_str(), flags);
+
+    BundleInfo info;
+    bool ret = GetBundleArchiveInfo(hapFilePath, flags, info);
     if (!reply.WriteBool(ret)) {
         APP_LOGE("write failed");
         return ERR_APPEXECFWK_PARCEL_ERROR;

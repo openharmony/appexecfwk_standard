@@ -17,6 +17,7 @@
 
 namespace OHOS {
 namespace AppExecFwk {
+
 void MockBundleStatus::OnBundleStateChanged(
     const uint8_t installType, const int32_t resultCode, const std::string &resultMsg, const std::string &bundleName)
 {
@@ -38,5 +39,6 @@ int32_t MockBundleStatus::GetResultCode()
         return future.get();
     }
 }
+
 }  // namespace AppExecFwk
 }  // namespace OHOS

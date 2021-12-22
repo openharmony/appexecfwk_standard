@@ -16,20 +16,21 @@
 #include "installd/installd_service.h"
 
 #include <chrono>
-#include <thread>
-#include <sys/stat.h>
-#include <string.h>
 #include <errno.h>
+#include <string.h>
+#include <sys/stat.h>
+#include <thread>
 
 #include "app_log_wrapper.h"
+#include "bundle_constants.h"
 #include "system_ability_definition.h"
 #include "system_ability_helper.h"
-#include "bundle_constants.h"
 
 using namespace std::chrono_literals;
 
 namespace OHOS {
 namespace AppExecFwk {
+
 InstalldService::InstalldService()
 {
     APP_LOGI("installd service instance is created");
@@ -121,5 +122,6 @@ void InstalldService::Stop()
     isReady_ = false;
     APP_LOGI("installd service stop successfully");
 }
+
 }  // namespace AppExecFwk
 }  // namespace OHOS

@@ -17,10 +17,12 @@ import("//foundation/appexecfwk/standard/appexecfwk.gni")
 module_output_path = "appexecfwk_standard/mstbundlemgrservice"
 
 ohos_moduletest("BmsBundleParserModuleTest") {
+  use_exceptions = true
   module_out_path = module_output_path
 
   sources = [
     "${services_path}/bundlemgr/src/inner_bundle_info.cpp",
+    "${services_path}/bundlemgr/src/pre_install_bundle_info.cpp",
     "bms_bundle_parser_module_test.cpp",
   ]
 
@@ -43,6 +45,7 @@ ohos_moduletest("BmsBundleParserModuleTest") {
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
   ]
+  resource_config_file = "//foundation/appexecfwk/standard/test/resource/mstbundlemgrservice/ohos_test.xml"
 }
 
 group("moduletest") {

@@ -43,6 +43,7 @@ ohos_systemtest("BmsSearchSystemTest") {
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
   ]
+  resource_config_file = "//foundation/appexecfwk/standard/test/resource/bundlemgrsst/ohos_test.xml"
 }
 
 group("systemtest") {

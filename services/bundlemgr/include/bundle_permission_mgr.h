@@ -22,6 +22,7 @@
 
 namespace OHOS {
 namespace AppExecFwk {
+
 class BundlePermissionMgr {
 public:
     /**
@@ -154,6 +155,7 @@ private:
      */
     static int RemoveSystemGrantedReqPermissions(const std::string &bundleName);
 };
+
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_BUNDLE_PERMISSION_MGR_H

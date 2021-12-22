@@ -27,6 +27,7 @@
 
 namespace OHOS {
 namespace AppExecFwk {
+
 class BundleMgrHost : public IRemoteStub<IBundleMgr> {
 public:
     BundleMgrHost() = default;
@@ -55,12 +56,26 @@ private:
      */
     ErrCode HandleGetApplicationInfo(Parcel &data, Parcel &reply);
     /**
+     * @brief Handles the GetApplicationInfo function called from a IBundleMgr proxy object.
+     * @param data Indicates the data to be read.
+     * @param reply Indicates the reply to be sent;
+     * @return Returns ERR_OK if called successfully; returns error code otherwise.
+     */
+    ErrCode HandleGetApplicationInfoWithIntFlags(Parcel &data, Parcel &reply);
+    /**
      * @brief Handles the GetApplicationInfos function called from a IBundleMgr proxy object.
      * @param data Indicates the data to be read.
      * @param reply Indicates the reply to be sent;
      * @return Returns ERR_OK if called successfully; returns error code otherwise.
      */
     ErrCode HandleGetApplicationInfos(Parcel &data, Parcel &reply);
+    /**
+     * @brief Handles the GetApplicationInfos function called from a IBundleMgr proxy object.
+     * @param data Indicates the data to be read.
+     * @param reply Indicates the reply to be sent;
+     * @return Returns ERR_OK if called successfully; returns error code otherwise.
+     */
+    ErrCode HandleGetApplicationInfosWithIntFlags(Parcel &data, Parcel &reply);
     /**
      * @brief Handles the GetBundleInfo function called from a IBundleMgr proxy object.
      * @param data Indicates the data to be read.
@@ -69,12 +84,26 @@ private:
      */
     ErrCode HandleGetBundleInfo(Parcel &data, Parcel &reply);
     /**
+     * @brief Handles the GetBundleInfo function called from a IBundleMgr proxy object.
+     * @param data Indicates the data to be read.
+     * @param reply Indicates the reply to be sent;
+     * @return Returns ERR_OK if called successfully; returns error code otherwise.
+     */
+    ErrCode HandleGetBundleInfoWithIntFlags(Parcel &data, Parcel &reply);
+    /**
      * @brief Handles the GetBundleInfos function called from a IBundleMgr proxy object.
      * @param data Indicates the data to be read.
      * @param reply Indicates the reply to be sent;
      * @return Returns ERR_OK if called successfully; returns error code otherwise.
      */
     ErrCode HandleGetBundleInfos(Parcel &data, Parcel &reply);
+    /**
+     * @brief Handles the GetBundleInfos function called from a IBundleMgr proxy object.
+     * @param data Indicates the data to be read.
+     * @param reply Indicates the reply to be sent;
+     * @return Returns ERR_OK if called successfully; returns error code otherwise.
+     */
+    ErrCode HandleGetBundleInfosWithIntFlags(Parcel &data, Parcel &reply);
     /**
      * @brief Handles the GetBundleNameForUid function called from a IBundleMgr proxy object.
      * @param data Indicates the data to be read.
@@ -125,6 +154,13 @@ private:
      */
     ErrCode HandleQueryAbilityInfo(Parcel &data, Parcel &reply);
     /**
+     * @brief Handles the QueryAbilityInfo function called from a IBundleMgr proxy object.
+     * @param data Indicates the data to be read.
+     * @param reply Indicates the reply to be sent;
+     * @return Returns ERR_OK if called successfully; returns error code otherwise.
+     */
+    ErrCode HandleQueryAbilityInfoMutiparam(Parcel &data, Parcel &reply);
+    /**
      * @brief Handles the QueryAbilityInfos function called from a IBundleMgr proxy object.
      * @param data Indicates the data to be read.
      * @param reply Indicates the reply to be sent;
@@ -153,6 +189,20 @@ private:
      */
     ErrCode HandleQueryAbilityInfosByUri(Parcel &data, Parcel &reply);
     /**
+     * @brief Handles the QueryAbilityInfos function called from a IBundleMgr proxy object.
+     * @param data Indicates the data to be read.
+     * @param reply Indicates the reply to be sent;
+     * @return Returns ERR_OK if called successfully; returns error code otherwise.
+     */
+    ErrCode HandleQueryAbilityInfosMutiparam(Parcel &data, Parcel &reply);
+    /**
+     * @brief Handles the HandleQueryAllAbilityInfos function called from a IBundleMgr proxy object.
+     * @param data Indicates the data to be read.
+     * @param reply Indicates the reply to be sent;
+     * @return Returns ERR_OK if called successfully; returns error code otherwise.
+     */
+    ErrCode HandleQueryAllAbilityInfos(Parcel &data, Parcel &reply);
+    /**
      * @brief Handles the QueryKeepAliveBundleInfos function called from a IBundleMgr proxy object.
      * @param data Indicates the data to be read.
      * @param reply Indicates the reply to be sent;
@@ -180,6 +230,13 @@ private:
      * @return Returns ERR_OK if called successfully; returns error code otherwise.
      */
     ErrCode HandleGetBundleArchiveInfo(Parcel &data, Parcel &reply);
+    /**
+     * @brief Handles the GetBundleArchiveInfo function called from a IBundleMgr proxy object.
+     * @param data Indicates the data to be read.
+     * @param reply Indicates the reply to be sent;
+     * @return Returns ERR_OK if called successfully; returns error code otherwise.
+     */
+    ErrCode HandleGetBundleArchiveInfoWithIntFlags(Parcel &data, Parcel &reply);
     /**
      * @brief Handles the GetHapModuleInfo function called from a IBundleMgr proxy object.
      * @param data Indicates the data to be read.

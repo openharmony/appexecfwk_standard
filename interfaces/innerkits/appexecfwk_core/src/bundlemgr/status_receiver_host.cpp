@@ -22,6 +22,7 @@
 
 namespace OHOS {
 namespace AppExecFwk {
+
 StatusReceiverHost::StatusReceiverHost()
 {
     APP_LOGI("create status receiver host instance");
@@ -52,5 +53,6 @@ int StatusReceiverHost::OnRemoteRequest(uint32_t code, MessageParcel &data, Mess
     }
     return NO_ERROR;
 }
+
 }  // namespace AppExecFwk
 }  // namespace OHOS

@@ -20,6 +20,7 @@
 
 namespace OHOS {
 namespace AppExecFwk {
+
 class OnPermissionChangedCallback : public IRemoteBroker {
 public:
     DECLARE_INTERFACE_DESCRIPTOR(u"ohos.appexecfwk.OnPermissionChangedCallback");
@@ -33,6 +34,7 @@ public:
         ON_CHANGED,
     };
 };
+
 }  // namespace AppExecFwk
 }  // namespace OHOS
 

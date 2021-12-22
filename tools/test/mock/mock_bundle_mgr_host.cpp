@@ -16,18 +16,49 @@
 #include "mock_bundle_mgr_host.h"
 
 using namespace OHOS::AAFwk;
-using namespace OHOS::AppExecFwk;
-
+namespace OHOS {
+namespace AppExecFwk {
 bool MockBundleMgrHost::DumpInfos(const DumpFlag flag, const std::string &bundleName, std::string &result)
 {
-    APP_LOGI("enter");
-
-    APP_LOGI("flag: %{public}d", flag);
-    APP_LOGI("bundleName: %{public}s", bundleName.c_str());
-
+    APP_LOGD("enter");
+    APP_LOGD("flag: %{public}d", flag);
+    APP_LOGD("bundleName: %{public}s", bundleName.c_str());
     if (bundleName.size() > 0) {
         result = bundleName + "\n";
     }
-
     return true;
 }
+
+bool MockBundleMgrHost::CleanBundleCacheFiles(const std::string &bundleName,
+    const sptr<ICleanCacheCallback> &cleanCacheCallback)
+{
+    APP_LOGD("enter");
+    APP_LOGD("bundleName: %{public}s", bundleName.c_str());
+    cleanCacheCallback->OnCleanCacheFinished(0);
+    return true;
+}
+
+bool MockBundleMgrHost::CleanBundleDataFiles(const std::string &bundleName, const int userId)
+{
+    APP_LOGD("enter");
+    APP_LOGD("bundleName: %{public}s", bundleName.c_str());
+    return true;
+}
+
+bool MockBundleMgrHost::SetApplicationEnabled(const std::string &bundleName, bool isEnable)
+{
+    APP_LOGD("enter");
+    APP_LOGD("bundleName: %{public}s", bundleName.c_str());
+    APP_LOGD("isEnable: %{public}d", isEnable);
+    return true;
+}
+
+bool MockBundleMgrHost::SetAbilityEnabled(const AbilityInfo &abilityInfo, bool isEnable)
+{
+    APP_LOGD("enter");
+    APP_LOGD("abilityName: %{public}s", abilityInfo.name.c_str());
+    APP_LOGD("isEnable: %{public}d", isEnable);
+    return true;
+}
+}  // namespace AppExecFwk
+}  // namespace OHOS

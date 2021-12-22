@@ -22,6 +22,7 @@
 
 namespace OHOS {
 namespace AppExecFwk {
+
 class InstalldDeathRecipient : public IRemoteObject::DeathRecipient {
 public:
     /**
@@ -30,6 +31,7 @@ public:
      */
     virtual void OnRemoteDied([[maybe_unused]] const wptr<IRemoteObject> &remote) override;
 };
+
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_INSTALLD_DEATH_RECIPIENT_H

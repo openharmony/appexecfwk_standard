@@ -312,7 +312,7 @@ bool BundleCloneMgr::RemoveClonedBundle(const std::string &oldName, const std::s
         APP_LOGE("can not kill process");
         return false;
     }
-    auto result = InstalldClient::GetInstance()->RemoveBundleDataDir(newcloneInfo_.GetBaseDataDir());
+    auto result = InstalldClient::GetInstance()->RemoveDir(newcloneInfo_.GetBaseDataDir());
     if (result != ERR_OK) {
         APP_LOGE("fail to remove bundle data dir, error is %{public}d", result);
         return false;

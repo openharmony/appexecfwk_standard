@@ -26,15 +26,18 @@
 #include "common_tool.h"
 #include "iservice_registry.h"
 #include "nlohmann/json.hpp"
-#include "system_ability_definition.h"
 #include "status_receiver_host.h"
+#include "system_ability_definition.h"
 
 using OHOS::AAFwk::Want;
 using namespace testing::ext;
 
 namespace {
 const std::string THIRD_BUNDLE_PATH = "/data/test/bms_bundle/";
+const std::string SYSTEM_BUNDLE_PATH = "/system/app/";
+const std::string VENDOR_BUNDLE_PATH = "/system/vendor/";
 const std::string BASE_BUNDLE_NAME = "com.third.hiworld.example";
+const std::string SYSTEM_BASE_BUNDLE_NAME = "com.system.hiworld.example";
 const std::string BUNDLE_DATA_ROOT_PATH = "/data/accounts/account_0/appdata/";
 const std::string ERROR_INSTALL_FAILED = "install failed!";
 const std::string ERROR_UNINSTALL_FAILED = "uninstall failed!";
@@ -110,7 +113,7 @@ CleanCacheCallBackImpl::~CleanCacheCallBackImpl()
 void CleanCacheCallBackImpl::OnCleanCacheFinished(bool succeeded)
 {
     APP_LOGI("Bms_Search_St OnCleanCacheFinished results are %{public}d", succeeded);
-    resultSucceededSignal_.set_value(succeeded);
+    resultSucceededSignal_.set_value(!succeeded);
 }
 
 bool CleanCacheCallBackImpl::GetSucceededResult() const
@@ -883,16 +886,25 @@ HWTEST_F(BmsSearchSystemTest, BMS_Search_1900, Function | MediumTest | Level1)
 {
     std::cout << "START BMS_SEARCH_1900" << std::endl;
     std::string bundleName = "com.system.hiworld.examples1";
+    std::string bundleFilePath = SYSTEM_BUNDLE_PATH + "bmsSystemBundle1.hap";
+    std::vector<std::string> resvec;
+    CommonTool commonTool;
+    Install(bundleFilePath, InstallFlag::NORMAL, resvec);
+    EXPECT_EQ(commonTool.VectorToStr(resvec), "Success") << "install fail!";
+
     sptr<IBundleMgr> bundleMgrProxy = GetBundleMgrProxy();
     if (!bundleMgrProxy) {
         APP_LOGE("bundle mgr proxy is nullptr.");
         EXPECT_EQ(bundleMgrProxy, nullptr);
     }
-
     int userId = Constants::DEFAULT_USERID;
     int uid = bundleMgrProxy->GetUidByBundleName(bundleName, userId);
     EXPECT_GE(uid, Constants::BASE_SYS_UID);
     EXPECT_LE(uid, Constants::MAX_SYS_UID);
+
+    resvec.clear();
+    Uninstall(bundleName, resvec);
+    EXPECT_EQ(commonTool.VectorToStr(resvec), "Success") << "uninstall fail!";
     std::cout << "END BMS_SEARCH_1900" << std::endl;
 }
 
@@ -906,7 +918,13 @@ HWTEST_F(BmsSearchSystemTest, BMS_Search_1900, Function | MediumTest | Level1)
 HWTEST_F(BmsSearchSystemTest, BMS_Search_2000, Function | MediumTest | Level1)
 {
     std::cout << "START BMS_SEARCH_2000" << std::endl;
+    std::string bundleFilePath = VENDOR_BUNDLE_PATH + "bmsVendorBundle3.hap";
     std::string bundleName = "com.vendor.hiworld.examplev3";
+    CommonTool commonTool;
+    std::vector<std::string> resvec;
+    Install(bundleFilePath, InstallFlag::NORMAL, resvec);
+    EXPECT_EQ(commonTool.VectorToStr(resvec), "Success") << "install fail!";
+
     sptr<IBundleMgr> bundleMgrProxy = GetBundleMgrProxy();
     if (!bundleMgrProxy) {
         APP_LOGE("bundle mgr proxy is nullptr.");
@@ -918,8 +936,11 @@ HWTEST_F(BmsSearchSystemTest, BMS_Search_2000, Function | MediumTest | Level1)
 
     int userId = Constants::DEFAULT_USERID;
     int uid = bundleMgrProxy->GetUidByBundleName(bundleName, userId);
-    EXPECT_GE(uid, Constants::BASE_SYS_VEN_UID);
-    EXPECT_LE(uid, Constants::MAX_SYS_VEN_UID);
+    EXPECT_GE(uid, Constants::BASE_APP_UID);
+    EXPECT_LE(uid, Constants::MAX_APP_UID);
+
+    Uninstall(bundleName, resvec);
+    EXPECT_EQ(commonTool.VectorToStr(resvec), "Success") << "uninstall fail!";
     std::cout << "END BMS_SEARCH_2000" << std::endl;
 }
 

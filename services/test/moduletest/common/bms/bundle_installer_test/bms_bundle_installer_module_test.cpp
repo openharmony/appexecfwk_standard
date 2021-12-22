@@ -40,6 +40,7 @@ using OHOS::AAFwk::Want;
 
 namespace {
 const std::string BUNDLE_TMPPATH = "/data/test/bms_bundle/";
+const std::string SYSTEM_BUNDLE_PATH = "/system/app/";
 const std::string THIRD_BUNDLE_NAME = "com.third.hiworld.example";
 const std::string SYSTEM_BUNDLE_NAME = "com.system.hiworld.example";
 const std::string BUNDLE_CODE_PATH = "/data/accounts/account_0/applications/";
@@ -134,7 +135,6 @@ protected:
                     "configChanges": [
                         "locale"
                     ],
-                    "backgroundModes": 1,
                     "formEnabled": true,
                     "formEntity": 1,
                     "minFormHeight": 0,
@@ -142,27 +142,21 @@ protected:
                     "minFormWidth": 0,
                     "defaultFormWidth": 200,
                     "metaData": {
-                        "customizeData": [
-                            {
-                                "name": "string",
-                                "value": "string",
-                                "extra": "$string:customizeData_description"
-                            }
-                        ],
-                        "parameters": [
-                            {
-                                "name": "string",
-                                "type": "Float",
-                                "description": "$string:parameters_description"
-                            }
-                        ],
-                        "results": [
-                            {
-                                "name": "string",
-                                "type": "Float",
-                                "description": "$string:results_description"
-                            }
-                        ]
+                        "customizeData": [{
+                            "name" : "string",
+                            "value" : "string",
+                            "extra" : "$string:customizeData_description"
+                        }],
+                        "parameters": [{
+                            "name" : "string",
+                            "type" : "Float",
+                            "description" : "$string:parameters_description"
+                        }],
+                        "results": [{
+                            "name" : "string",
+                            "type" : "Float",
+                            "description" : "$string:results_description"
+                        }]
                     },
                     "isLauncherAbility": true,
                     "isNativeAbility": false,
@@ -186,6 +180,7 @@ protected:
                     "descriptionId": 1,
                     "iconId": 1,
                     "srcLanguage": "C++",
+                    "isHomeAbility": true,
                     "srcPath": ""
                 }
             },
@@ -199,6 +194,7 @@ protected:
                 "descriptionId": 16777217,
                 "deviceId": "PHONE-001",
                 "enabled": true,
+                "removable": true,
                 "entryDir": "",
                 "flags": 0,
                 "iconId": 16777218,
@@ -214,10 +210,7 @@ protected:
                 "process": "",
                 "signatureKey": "",
                 "supportedModes": 0,
-                "debug": false,
-                "isCloned": false,
-                "uid": 10000,
-                "signatureKey": ""
+                "debug": true
             },
             "baseBundleInfo": {
                 "abilityInfos": [],
@@ -232,6 +225,7 @@ protected:
                     "descriptionId": 0,
                     "deviceId": "",
                     "enabled": false,
+                    "removable": true,
                     "entryDir": "",
                     "flags": 0,
                     "iconId": 0,
@@ -245,18 +239,16 @@ protected:
                     "name": "",
                     "permissions": [],
                     "process": "",
+                    "signatureKey": "",
                     "supportedModes": 0,
-                    "debug": false,
-                    "isCloned": false,
-                    "uid": -1,
-                    "signatureKey": ""
+                    "debug": true
                 },
-                "compatibleVersion": 6,
+                "compatibleVersion": 3,
                 "cpuAbi": "",
                 "defPermissions": [],
                 "description": "",
                 "entryModuleName": "",
-                "gid": 2103,
+                "gid": 10000,
                 "hapModuleNames": [],
                 "installTime": 17921,
                 "isKeepAlive": false,
@@ -272,20 +264,19 @@ protected:
                 "modulePublicDirs": [],
                 "moduleResPaths": [],
                 "name": "com.ohos.launcher",
-                "releaseType": "Canary1",
+                "releaseType": "Release",
                 "reqPermissions": [],
                 "seInfo": "",
-                "targetVersion": 6,
-                "uid": 2103,
-                "updateTime": 10635,
+                "targetVersion": 3,
+                "uid": 10000,
+                "updateTime": 17921,
                 "vendor": "ohos",
                 "versionCode": 1,
-                "versionName": "1.0",
-                "singleUser": true
+                "versionName": "1.0"
             },
             "baseDataDir": "/data/accounts/account_0/appdata/com.ohos.launcher",
             "bundleStatus": 1,
-            "gid": 2103,
+            "gid": 10000,
             "hasEntry": true,
             "innerModuleInfos": {
                 "com.ohos.launcher": {
@@ -315,7 +306,8 @@ protected:
                     "colorMode": -1,
                     "skillKeys": [
                         "com.ohos.launchercom.ohos.launchercom.ohos.launcher.MainAbility"
-                    ]
+                    ],
+                    "srcPath": ""
                 }
             },
             "isKeepData": false,
@@ -362,11 +354,6 @@ protected:
                         "supportDimensions": [
                             1
                         ],
-                        "src": "src/code",
-                        "window": {
-                            "designWidth": 750,
-                            "autoDesignWidth": false
-                        },
                         "landscapeLayouts": [],
                         "portraitLayouts": [],
                         "customizeData": [
@@ -397,32 +384,11 @@ protected:
                     "label": "$string:mainability_description"
                 }
             },
-            "commonEvents": {
-                "com.example.myapplication1com.example.myapplication.h1id": {
-                    "name": ".MainAbility",
-                    "bundleName": "com.example.myapplication1",
-                    "permission": "permission_test",
-                    "uid": -1,
-                    "data": [
-                        "data_one",
-                        "data_two"
-                    ],
-                    "type": [
-                        "type_one",
-                        "typea_two"
-                    ],
-                    "events": [
-                        "events_one",
-                        "events_two"
-                    ]
-                }
-            },
-            "uid": 2103,
+            "uid": 10000,
             "userId_": 0,
-            "canUninstall": true,
-            "newBundleName": "com.example.myapplication1#20010001"
+            "isPreInstallApp": true
         }
-        )"_json;
+    )"_json;
     std::string deviceId_{};
 
 private:
@@ -589,6 +555,16 @@ void BmsBundleInstallerModuleTest::TearDown()
  */
 HWTEST_F(BmsBundleInstallerModuleTest, SystemAppInstall_0100, Function | MediumTest | Level1)
 {
+    auto installer = DelayedSingleton<BundleMgrService>::GetInstance()->GetBundleInstaller();
+    EXPECT_NE(installer, nullptr);
+    OHOS::sptr<MockStatusReceiver> receiver = new (std::nothrow) MockStatusReceiver();
+    EXPECT_NE(receiver, nullptr);
+    InstallParam installParam;
+    installParam.installFlag = InstallFlag::NORMAL;
+    std::string bundleFilePath = SYSTEM_BUNDLE_PATH + "bmsSystemBundle1" + Constants::INSTALL_FILE_SUFFIX;
+    installer->Install(bundleFilePath, installParam, receiver);
+    EXPECT_EQ(receiver->GetResultCode(), ERR_OK) << "install fail!" << bundleFilePath;
+
     std::string bundleName = SYSTEM_BUNDLE_NAME + "s1";
     std::shared_ptr<BundleDataMgr> dataMgr = GetBundleDataMgr();
     EXPECT_NE(dataMgr, nullptr);
@@ -599,10 +575,16 @@ HWTEST_F(BmsBundleInstallerModuleTest, SystemAppInstall_0100, Function | MediumT
         std::this_thread::sleep_for(50ms);
         ret = dataMgr->GetBundleInfo(bundleName, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo);
         checkCount++;
-    } while (!ret && (checkCount < 100));
+    } while (!ret && (checkCount < 10));
 
     CheckFileExist(bundleName);
     EXPECT_FALSE((bundleInfo.name).empty());
+
+    OHOS::sptr<MockStatusReceiver> recUninstall = new (std::nothrow) MockStatusReceiver();
+    EXPECT_NE(recUninstall, nullptr);
+    installParam.userId = Constants::DEFAULT_USERID;
+    installer->Uninstall(bundleName, installParam, recUninstall);
+    EXPECT_EQ(recUninstall->GetResultCode(), ERR_OK) << "uninstall fail!" << bundleName;
 }
 
 /**
@@ -613,6 +595,22 @@ HWTEST_F(BmsBundleInstallerModuleTest, SystemAppInstall_0100, Function | MediumT
  */
 HWTEST_F(BmsBundleInstallerModuleTest, SystemAppInstall_0200, Function | MediumTest | Level1)
 {
+    auto installer = DelayedSingleton<BundleMgrService>::GetInstance()->GetBundleInstaller();
+    EXPECT_NE(installer, nullptr);
+    OHOS::sptr<MockStatusReceiver> receiver = new (std::nothrow) MockStatusReceiver();
+    EXPECT_NE(receiver, nullptr);
+    OHOS::sptr<MockStatusReceiver> receiver2 = new (std::nothrow) MockStatusReceiver();
+    EXPECT_NE(receiver2, nullptr);
+    InstallParam installParam;
+    installParam.installFlag = InstallFlag::NORMAL;
+    std::string bundleFilePath = SYSTEM_BUNDLE_PATH + "bmsSystemBundle1" + Constants::INSTALL_FILE_SUFFIX;
+    installer->Install(bundleFilePath, installParam, receiver);
+    EXPECT_EQ(receiver->GetResultCode(), ERR_OK) << "install fail!" << bundleFilePath;
+
+    bundleFilePath = SYSTEM_BUNDLE_PATH + "bmsSystemBundle2" + Constants::INSTALL_FILE_SUFFIX;
+    installer->Install(bundleFilePath, installParam, receiver2);
+    EXPECT_EQ(receiver2->GetResultCode(), ERR_OK) << "install fail!" << bundleFilePath;
+
     int bundleNum = 2;
     std::shared_ptr<BundleDataMgr> dataMgr = GetBundleDataMgr();
     EXPECT_NE(dataMgr, nullptr);
@@ -627,9 +625,15 @@ HWTEST_F(BmsBundleInstallerModuleTest, SystemAppInstall_0200, Function | MediumT
             std::this_thread::sleep_for(50ms);
             ret = dataMgr->GetBundleInfo(bundleName, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo);
             checkCount++;
-        } while (!ret && (checkCount < 100));
+        } while (!ret && (checkCount < 10));
         CheckFileExist(bundleName);
         EXPECT_FALSE((bundleInfo.name).empty());
+
+        OHOS::sptr<MockStatusReceiver> recUninstall = new (std::nothrow) MockStatusReceiver();
+        EXPECT_NE(recUninstall, nullptr);
+        installParam.userId = Constants::DEFAULT_USERID;
+        installer->Uninstall(bundleName, installParam, recUninstall);
+        EXPECT_EQ(recUninstall->GetResultCode(), ERR_OK) << "uninstall fail!" << bundleName;
     }
 }
 
@@ -642,6 +646,16 @@ HWTEST_F(BmsBundleInstallerModuleTest, SystemAppInstall_0200, Function | MediumT
  */
 HWTEST_F(BmsBundleInstallerModuleTest, SystemAppInstall_0300, Function | MediumTest | Level2)
 {
+    auto installer = DelayedSingleton<BundleMgrService>::GetInstance()->GetBundleInstaller();
+    EXPECT_NE(installer, nullptr);
+    OHOS::sptr<MockStatusReceiver> receiver = new (std::nothrow) MockStatusReceiver();
+    EXPECT_NE(receiver, nullptr);
+    InstallParam installParam;
+    installParam.installFlag = InstallFlag::NORMAL;
+    std::string bundleFilePath = SYSTEM_BUNDLE_PATH + "bmsSystemBundle2" + Constants::INSTALL_FILE_SUFFIX;
+    installer->Install(bundleFilePath, installParam, receiver);
+    EXPECT_EQ(receiver->GetResultCode(), ERR_OK) << "install fail!" << bundleFilePath;
+
     std::string norBundleName = SYSTEM_BUNDLE_NAME + "s2";
     std::shared_ptr<BundleDataMgr> dataMgr = GetBundleDataMgr();
     EXPECT_NE(dataMgr, nullptr);
@@ -652,9 +666,15 @@ HWTEST_F(BmsBundleInstallerModuleTest, SystemAppInstall_0300, Function | MediumT
         std::this_thread::sleep_for(50ms);
         ret = dataMgr->GetBundleInfo(norBundleName, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo);
         checkCount++;
-    } while (!ret && (checkCount < 100));
+    } while (!ret && (checkCount < 10));
     CheckFileExist(norBundleName);
     EXPECT_FALSE((bundleInfo.name).empty());
+
+    OHOS::sptr<MockStatusReceiver> recUninstall = new (std::nothrow) MockStatusReceiver();
+    EXPECT_NE(recUninstall, nullptr);
+    installParam.userId = Constants::DEFAULT_USERID;
+    installer->Uninstall(norBundleName, installParam, recUninstall);
+    EXPECT_EQ(recUninstall->GetResultCode(), ERR_OK) << "uninstall fail!" << norBundleName;
 
     int bundleNum = 5;
     for (int i = 3; i < bundleNum; i++) {
@@ -686,7 +706,7 @@ HWTEST_F(BmsBundleInstallerModuleTest, SystemAppInstall_0400, Function | MediumT
         std::this_thread::sleep_for(1ms);
         ret = dataMgr->GetBundleInfo(bundleName, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo);
         checkCount++;
-    } while (!ret && (checkCount < 100));
+    } while (!ret && (checkCount < 10));
 
     EXPECT_TRUE((bundleInfo.name).empty());
 }
@@ -710,7 +730,7 @@ HWTEST_F(BmsBundleInstallerModuleTest, SystemAppInstall_0500, Function | MediumT
         std::this_thread::sleep_for(1ms);
         ret = dataMgr->GetBundleInfo(bundleName, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo);
         checkCount++;
-    } while (!ret && (checkCount < 100));
+    } while (!ret && (checkCount < 10));
 
     EXPECT_TRUE((bundleInfo.name).empty());
 }

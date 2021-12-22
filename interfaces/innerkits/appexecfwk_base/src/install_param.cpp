@@ -23,6 +23,7 @@
 
 namespace OHOS {
 namespace AppExecFwk {
+
 bool InstallParam::ReadFromParcel(Parcel &parcel)
 {
     int32_t flagData;
@@ -59,5 +60,6 @@ bool InstallParam::Marshalling(Parcel &parcel) const
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, noCheckSignature);
     return true;
 }
+
 }  // namespace AppExecFwk
 }  // namespace OHOS

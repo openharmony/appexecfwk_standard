@@ -19,12 +19,13 @@
 #include "parcel.h"
 #include "string_ex.h"
 
-#include "appexecfwk_errors.h"
 #include "app_log_wrapper.h"
+#include "appexecfwk_errors.h"
 #include "bundle_constants.h"
 
 namespace OHOS {
 namespace AppExecFwk {
+
 BundleMgrProxy::BundleMgrProxy(const sptr<IRemoteObject> &impl) : IRemoteProxy<IBundleMgr>(impl)
 {
     APP_LOGI("create bundle mgr proxy instance");
@@ -38,7 +39,7 @@ BundleMgrProxy::~BundleMgrProxy()
 bool BundleMgrProxy::GetApplicationInfo(
     const std::string &appName, const ApplicationFlag flag, const int userId, ApplicationInfo &appInfo)
 {
-    APP_LOGI("begin to GetApplicationInfo of %{public}s", appName.c_str());
+    APP_LOGD("begin to GetApplicationInfo of %{public}s", appName.c_str());
     if (appName.empty()) {
         APP_LOGE("fail to GetApplicationInfo due to params empty");
         return false;
@@ -63,6 +64,40 @@ bool BundleMgrProxy::GetApplicationInfo(
     }
 
     if (!GetParcelableInfo<ApplicationInfo>(IBundleMgr::Message::GET_APPLICATION_INFO, data, appInfo)) {
+        APP_LOGE("fail to GetApplicationInfo from server");
+        return false;
+    }
+    return true;
+}
+
+bool BundleMgrProxy::GetApplicationInfo(
+    const std::string &appName, int32_t flags, int32_t userId, ApplicationInfo &appInfo)
+{
+    APP_LOGD("begin to GetApplicationInfo of %{public}s", appName.c_str());
+    if (appName.empty()) {
+        APP_LOGE("fail to GetApplicationInfo due to params empty");
+        return false;
+    }
+
+    MessageParcel data;
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        APP_LOGE("fail to GetApplicationInfo due to write MessageParcel fail");
+        return false;
+    }
+    if (!data.WriteString(appName)) {
+        APP_LOGE("fail to GetApplicationInfo due to write appName fail");
+        return false;
+    }
+    if (!data.WriteInt32(flags)) {
+        APP_LOGE("fail to GetApplicationInfo due to write flag fail");
+        return false;
+    }
+    if (!data.WriteInt32(userId)) {
+        APP_LOGE("fail to GetApplicationInfo due to write userId fail");
+        return false;
+    }
+
+    if (!GetParcelableInfo<ApplicationInfo>(IBundleMgr::Message::GET_APPLICATION_INFO_WITH_INT_FLAGS, data, appInfo)) {
         APP_LOGE("fail to GetApplicationInfo from server");
         return false;
     }
@@ -94,9 +129,35 @@ bool BundleMgrProxy::GetApplicationInfos(
     return true;
 }
 
+bool BundleMgrProxy::GetApplicationInfos(
+    int32_t flags, int32_t userId, std::vector<ApplicationInfo> &appInfos)
+{
+    APP_LOGD("begin to get GetApplicationInfos of specific userId id %{private}d", userId);
+    MessageParcel data;
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        APP_LOGE("fail to GetApplicationInfo due to write MessageParcel fail");
+        return false;
+    }
+    if (!data.WriteInt32(flags)) {
+        APP_LOGE("fail to GetApplicationInfo due to write flag fail");
+        return false;
+    }
+    if (!data.WriteInt32(userId)) {
+        APP_LOGE("fail to GetApplicationInfos due to write userId error");
+        return false;
+    }
+
+    if (!GetParcelableInfos<ApplicationInfo>(IBundleMgr::Message::GET_APPLICATION_INFOS_WITH_INT_FLAGS,
+        data, appInfos)) {
+        APP_LOGE("fail to GetApplicationInfos from server");
+        return false;
+    }
+    return true;
+}
+
 bool BundleMgrProxy::GetBundleInfo(const std::string &bundleName, const BundleFlag flag, BundleInfo &bundleInfo)
 {
-    APP_LOGI("begin to get bundle info of %{public}s", bundleName.c_str());
+    APP_LOGD("begin to get bundle info of %{public}s", bundleName.c_str());
     if (bundleName.empty()) {
         APP_LOGE("fail to GetBundleInfo due to params empty");
         return false;
@@ -123,6 +184,35 @@ bool BundleMgrProxy::GetBundleInfo(const std::string &bundleName, const BundleFl
     return true;
 }
 
+bool BundleMgrProxy::GetBundleInfo(const std::string &bundleName, int32_t flags, BundleInfo &bundleInfo)
+{
+    APP_LOGD("begin to get bundle info of %{public}s", bundleName.c_str());
+    if (bundleName.empty()) {
+        APP_LOGE("fail to GetBundleInfo due to params empty");
+        return false;
+    }
+
+    MessageParcel data;
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        APP_LOGE("fail to GetBundleInfo due to write InterfaceToken fail");
+        return false;
+    }
+    if (!data.WriteString(bundleName)) {
+        APP_LOGE("fail to GetBundleInfo due to write bundleName fail");
+        return false;
+    }
+    if (!data.WriteInt32(flags)) {
+        APP_LOGE("fail to GetBundleInfo due to write flag fail");
+        return false;
+    }
+
+    if (!GetParcelableInfo<BundleInfo>(IBundleMgr::Message::GET_BUNDLE_INFO_WITH_INT_FLAGS, data, bundleInfo)) {
+        APP_LOGE("fail to GetBundleInfo from server");
+        return false;
+    }
+    return true;
+}
+
 bool BundleMgrProxy::GetBundleInfos(const BundleFlag flag, std::vector<BundleInfo> &bundleInfos)
 {
     APP_LOGD("begin to get bundle infos");
@@ -137,6 +227,26 @@ bool BundleMgrProxy::GetBundleInfos(const BundleFlag flag, std::vector<BundleInf
     }
 
     if (!GetParcelableInfos<BundleInfo>(IBundleMgr::Message::GET_BUNDLE_INFOS, data, bundleInfos)) {
+        APP_LOGE("fail to GetBundleInfos from server");
+        return false;
+    }
+    return true;
+}
+
+bool BundleMgrProxy::GetBundleInfos(int32_t flags, std::vector<BundleInfo> &bundleInfos)
+{
+    APP_LOGD("begin to get bundle infos");
+    MessageParcel data;
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        APP_LOGE("fail to GetBundleInfos due to write InterfaceToken fail");
+        return false;
+    }
+    if (!data.WriteInt32(flags)) {
+        APP_LOGE("fail to GetBundleInfos due to write flag fail");
+        return false;
+    }
+
+    if (!GetParcelableInfos<BundleInfo>(IBundleMgr::Message::GET_BUNDLE_INFOS_WITH_INT_FLAGS, data, bundleInfos)) {
         APP_LOGE("fail to GetBundleInfos from server");
         return false;
     }
@@ -411,7 +521,100 @@ bool BundleMgrProxy::QueryAbilityInfo(const Want &want, AbilityInfo &abilityInfo
     return true;
 }
 
+bool BundleMgrProxy::QueryAbilityInfo(const Want &want, int32_t flags, int32_t userId, AbilityInfo &abilityInfo)
+{
+    MessageParcel data;
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        APP_LOGE("fail to QueryAbilityInfo mutiparam due to write MessageParcel fail");
+        return false;
+    }
+    if (!data.WriteParcelable(&want)) {
+        APP_LOGE("fail to QueryAbilityInfo mutiparam due to write want fail");
+        return false;
+    }
+    if (!data.WriteInt32(flags)) {
+        APP_LOGE("fail to QueryAbilityInfo mutiparam due to write flags fail");
+        return false;
+    }
+    if (!data.WriteInt32(userId)) {
+        APP_LOGE("fail to QueryAbilityInfo mutiparam due to write userId error");
+        return false;
+    }
+
+    if (!GetParcelableInfo<AbilityInfo>(IBundleMgr::Message::QUERY_ABILITY_INFO_MUTI_PARAM, data, abilityInfo)) {
+        APP_LOGE("fail to query ability info mutiparam from server");
+        return false;
+    }
+    return true;
+}
+
 bool BundleMgrProxy::QueryAbilityInfos(const Want &want, std::vector<AbilityInfo> &abilityInfos)
+{
+    MessageParcel data;
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        APP_LOGE("fail to QueryAbilityInfos due to write MessageParcel fail");
+        return false;
+    }
+    if (!data.WriteParcelable(&want)) {
+        APP_LOGE("fail to QueryAbilityInfos due to write want fail");
+        return false;
+    }
+
+    if (!GetParcelableInfos<AbilityInfo>(IBundleMgr::Message::QUERY_ABILITY_INFOS, data, abilityInfos)) {
+        APP_LOGE("fail to QueryAbilityInfos from server");
+        return false;
+    }
+    return true;
+}
+
+bool BundleMgrProxy::QueryAbilityInfos(
+    const Want &want, int32_t flags, int32_t userId, std::vector<AbilityInfo> &abilityInfos)
+{
+    MessageParcel data;
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        APP_LOGE("fail to QueryAbilityInfos mutiparam due to write MessageParcel fail");
+        return false;
+    }
+    if (!data.WriteParcelable(&want)) {
+        APP_LOGE("fail to QueryAbilityInfos mutiparam due to write want fail");
+        return false;
+    }
+    if (!data.WriteInt32(flags)) {
+        APP_LOGE("fail to QueryAbilityInfos mutiparam due to write flags fail");
+        return false;
+    }
+    if (!data.WriteInt32(userId)) {
+        APP_LOGE("fail to QueryAbilityInfos mutiparam due to write userId error");
+        return false;
+    }
+
+    if (!GetParcelableInfos<AbilityInfo>(IBundleMgr::Message::QUERY_ABILITY_INFOS_MUTI_PARAM, data, abilityInfos)) {
+        APP_LOGE("fail to QueryAbilityInfos mutiparam from server");
+        return false;
+    }
+    return true;
+}
+
+bool BundleMgrProxy::QueryAllAbilityInfos(int32_t userId, std::vector<AbilityInfo> &abilityInfos)
+{
+    MessageParcel data;
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        APP_LOGE("fail to QueryAbilityInfo due to write MessageParcel fail");
+        return false;
+    }
+    if (!data.WriteInt32(userId)) {
+        APP_LOGE("fail to QueryAbilityInfo due to write want fail");
+        return false;
+    }
+
+    if (!GetParcelableInfos<AbilityInfo>(IBundleMgr::Message::QUERY_ALL_ABILITY_INFOS, data, abilityInfos)) {
+        APP_LOGE("fail to QueryAbilityInfos from server");
+        return false;
+    }
+    return true;
+}
+
+bool BundleMgrProxy::QueryAbilityInfosForClone(const Want &want, std::vector<AbilityInfo> &abilityInfos)
 {
     MessageParcel data;
     if (!data.WriteInterfaceToken(GetDescriptor())) {
@@ -423,27 +626,8 @@ bool BundleMgrProxy::QueryAbilityInfos(const Want &want, std::vector<AbilityInfo
         return false;
     }
 
-    if (!GetParcelableInfos<AbilityInfo>(IBundleMgr::Message::QUERY_ABILITY_INFOS, data, abilityInfos)) {
-        APP_LOGE("fail to QueryAbilityInfos from server");
-        return false;
-    }
-    return true;
-}
-
-bool BundleMgrProxy::QueryAbilityInfosForClone(const Want &want, std::vector<AbilityInfo> &abilityInfos)
-{
-    MessageParcel data;
-    if (!data.WriteInterfaceToken(GetDescriptor())) {
-        APP_LOGE("fail to QueryAbilityInfosForClone due to write MessageParcel fail");
-        return false;
-    }
-    if (!data.WriteParcelable(&want)) {
-        APP_LOGE("fail to QueryAbilityInfosForClone due to write want fail");
-        return false;
-    }
-
     if (!GetParcelableInfos<AbilityInfo>(IBundleMgr::Message::QUERY_ABILITY_INFOS_FOR_CLONE, data, abilityInfos)) {
-        APP_LOGE("fail to QueryAbilityInfosForClone from server");
+        APP_LOGE("fail to QueryAbilityInfos from server");
         return false;
     }
     return true;
@@ -536,7 +720,7 @@ std::string BundleMgrProxy::GetAbilityLabel(const std::string &bundleName, const
 
 bool BundleMgrProxy::GetBundleArchiveInfo(const std::string &hapFilePath, const BundleFlag flag, BundleInfo &bundleInfo)
 {
-    APP_LOGI("begin to GetBundleArchiveInfo of %{public}s", hapFilePath.c_str());
+    APP_LOGD("begin to GetBundleArchiveInfo of %{public}s", hapFilePath.c_str());
     if (hapFilePath.empty()) {
         APP_LOGE("fail to GetBundleArchiveInfo due to params empty");
         return false;
@@ -557,6 +741,35 @@ bool BundleMgrProxy::GetBundleArchiveInfo(const std::string &hapFilePath, const 
     }
 
     if (!GetParcelableInfo<BundleInfo>(IBundleMgr::Message::GET_BUNDLE_ARCHIVE_INFO, data, bundleInfo)) {
+        APP_LOGE("fail to GetBundleArchiveInfo from server");
+        return false;
+    }
+    return true;
+}
+
+bool BundleMgrProxy::GetBundleArchiveInfo(const std::string &hapFilePath, int32_t flags, BundleInfo &bundleInfo)
+{
+    APP_LOGD("begin to GetBundleArchiveInfo with int flags of %{public}s", hapFilePath.c_str());
+    if (hapFilePath.empty()) {
+        APP_LOGE("fail to GetBundleArchiveInfo due to params empty");
+        return false;
+    }
+
+    MessageParcel data;
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        APP_LOGE("fail to GetBundleArchiveInfo due to write InterfaceToken fail");
+        return false;
+    }
+    if (!data.WriteString(hapFilePath)) {
+        APP_LOGE("fail to GetBundleArchiveInfo due to write hapFilePath fail");
+        return false;
+    }
+    if (!data.WriteInt32(flags)) {
+        APP_LOGE("fail to GetBundleArchiveInfo due to write flags fail");
+        return false;
+    }
+
+    if (!GetParcelableInfo<BundleInfo>(IBundleMgr::Message::GET_BUNDLE_ARCHIVE_INFO_WITH_INT_FLAGS, data, bundleInfo)) {
         APP_LOGE("fail to GetBundleArchiveInfo from server");
         return false;
     }
@@ -1588,7 +1801,7 @@ bool BundleMgrProxy::RemoveClonedBundle(const std::string &bundleName, const int
     return reply.ReadBool();
 }
 
-template <typename T>
+template<typename T>
 bool BundleMgrProxy::GetParcelableInfo(IBundleMgr::Message code, MessageParcel &data, T &parcelableInfo)
 {
     MessageParcel reply;
@@ -1607,10 +1820,11 @@ bool BundleMgrProxy::GetParcelableInfo(IBundleMgr::Message code, MessageParcel &
         return false;
     }
     parcelableInfo = *info;
+    APP_LOGD("get parcelable info success");
     return true;
 }
 
-template <typename T>
+template<typename T>
 bool BundleMgrProxy::GetParcelableInfos(IBundleMgr::Message code, MessageParcel &data, std::vector<T> &parcelableInfos)
 {
     MessageParcel reply;
@@ -1632,6 +1846,7 @@ bool BundleMgrProxy::GetParcelableInfos(IBundleMgr::Message code, MessageParcel 
         }
         parcelableInfos.emplace_back(*info);
     }
+    APP_LOGD("get parcelable infos success");
     return true;
 }
 

@@ -23,6 +23,7 @@
 
 namespace OHOS {
 namespace AppExecFwk {
+
 class StatusReceiverHost : public IRemoteStub<IStatusReceiver> {
 public:
     StatusReceiverHost();
@@ -33,6 +34,7 @@ public:
 private:
     DISALLOW_COPY_AND_MOVE(StatusReceiverHost);
 };
+
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_CORE_INCLUDE_BUNDLEMGR_STATUS_RECEIVER_HOST_H

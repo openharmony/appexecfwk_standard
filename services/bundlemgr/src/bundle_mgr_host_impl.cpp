@@ -15,16 +15,17 @@
 
 #include "bundle_mgr_host_impl.h"
 
+#include <dirent.h>
 #include <future>
 
-#include "json_serializer.h"
 #include "app_log_wrapper.h"
 #include "bundle_mgr_service.h"
-#include "bundle_util.h"
 #include "bundle_parser.h"
-#include "installd_client.h"
 #include "bundle_permission_mgr.h"
-#include "bundle_clone_mgr.h"
+#include "bundle_util.h"
+#include "directory_ex.h"
+#include "installd_client.h"
+#include "json_serializer.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -32,43 +33,65 @@ namespace AppExecFwk {
 bool BundleMgrHostImpl::GetApplicationInfo(
     const std::string &appName, const ApplicationFlag flag, const int userId, ApplicationInfo &appInfo)
 {
+    return GetApplicationInfo(appName, static_cast<int32_t>(flag), userId, appInfo);
+}
+
+bool BundleMgrHostImpl::GetApplicationInfo(
+    const std::string &appName, int32_t flags, int32_t userId, ApplicationInfo &appInfo)
+{
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
         APP_LOGE("DataMgr is nullptr");
         return false;
     }
-    return dataMgr->GetApplicationInfo(appName, flag, userId, appInfo);
+    return dataMgr->GetApplicationInfo(appName, flags, userId, appInfo);
 }
 
 bool BundleMgrHostImpl::GetApplicationInfos(
     const ApplicationFlag flag, const int userId, std::vector<ApplicationInfo> &appInfos)
 {
+    return GetApplicationInfos(static_cast<int32_t>(flag), userId, appInfos);
+}
+
+bool BundleMgrHostImpl::GetApplicationInfos(
+    int32_t flags, int32_t userId, std::vector<ApplicationInfo> &appInfos)
+{
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
         APP_LOGE("DataMgr is nullptr");
         return false;
     }
-    return dataMgr->GetApplicationInfos(flag, userId, appInfos);
+    return dataMgr->GetApplicationInfos(flags, userId, appInfos);
 }
 
 bool BundleMgrHostImpl::GetBundleInfo(const std::string &bundleName, const BundleFlag flag, BundleInfo &bundleInfo)
 {
-    auto dataMgr = GetDataMgrFromService();
-    if (dataMgr == nullptr) {
-        APP_LOGE("DataMgr is nullptr");
-        return false;
-    }
-    return dataMgr->GetBundleInfo(bundleName, flag, bundleInfo);
+    return GetBundleInfo(bundleName, static_cast<int32_t>(flag), bundleInfo);
 }
 
-bool BundleMgrHostImpl::GetBundleInfos(const BundleFlag flag, std::vector<BundleInfo> &bundleInfos)
+bool BundleMgrHostImpl::GetBundleInfo(const std::string &bundleName, int32_t flags, BundleInfo &bundleInfo)
 {
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
         APP_LOGE("DataMgr is nullptr");
         return false;
     }
-    return dataMgr->GetBundleInfos(flag, bundleInfos);
+    return dataMgr->GetBundleInfo(bundleName, flags, bundleInfo);
+}
+
+bool BundleMgrHostImpl::GetBundleInfos(const BundleFlag flag, std::vector<BundleInfo> &bundleInfos)
+{
+    return GetBundleInfos(static_cast<int32_t>(flag), bundleInfos);
+}
+
+bool BundleMgrHostImpl::GetBundleInfos(int32_t flags, std::vector<BundleInfo> &bundleInfos)
+{
+    auto dataMgr = GetDataMgrFromService();
+    if (dataMgr == nullptr) {
+        APP_LOGE("DataMgr is nullptr");
+        return false;
+    }
+    return dataMgr->GetBundleInfos(flags, bundleInfos);
 }
 
 bool BundleMgrHostImpl::GetBundleNameForUid(const int uid, std::string &bundleName)
@@ -143,22 +166,33 @@ bool BundleMgrHostImpl::GetBundleInfosByMetaData(const std::string &metaData, st
 
 bool BundleMgrHostImpl::QueryAbilityInfo(const Want &want, AbilityInfo &abilityInfo)
 {
-    auto dataMgr = GetDataMgrFromService();
-    if (dataMgr == nullptr) {
-        APP_LOGE("DataMgr is nullptr");
-        return false;
-    }
-    return dataMgr->QueryAbilityInfo(want, abilityInfo);
+    return QueryAbilityInfo(want, GET_ABILITY_INFO_WITH_APPLICATION, 0, abilityInfo);
 }
 
-bool BundleMgrHostImpl::QueryAbilityInfos(const Want &want, std::vector<AbilityInfo> &abilityInfos)
+bool BundleMgrHostImpl::QueryAbilityInfo(const Want &want, int32_t flags, int32_t userId, AbilityInfo &abilityInfo)
 {
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
         APP_LOGE("DataMgr is nullptr");
         return false;
     }
-    return dataMgr->QueryAbilityInfos(want, abilityInfos);
+    return dataMgr->QueryAbilityInfo(want, flags, userId, abilityInfo);
+}
+
+bool BundleMgrHostImpl::QueryAbilityInfos(const Want &want, std::vector<AbilityInfo> &abilityInfos)
+{
+    return QueryAbilityInfos(want, GET_ABILITY_INFO_WITH_APPLICATION, 0, abilityInfos);
+}
+
+bool BundleMgrHostImpl::QueryAbilityInfos(
+    const Want &want, int32_t flags, int32_t userId, std::vector<AbilityInfo> &abilityInfos)
+{
+    auto dataMgr = GetDataMgrFromService();
+    if (dataMgr == nullptr) {
+        APP_LOGE("DataMgr is nullptr");
+        return false;
+    }
+    return dataMgr->QueryAbilityInfos(want, flags, userId, abilityInfos);
 }
 
 bool BundleMgrHostImpl::QueryAbilityInfosForClone(const Want &want, std::vector<AbilityInfo> &abilityInfos)
@@ -169,6 +203,16 @@ bool BundleMgrHostImpl::QueryAbilityInfosForClone(const Want &want, std::vector<
         return false;
     }
     return dataMgr->QueryAbilityInfosForClone(want, abilityInfos);
+}
+
+bool BundleMgrHostImpl::QueryAllAbilityInfos(int32_t userId, std::vector<AbilityInfo> &abilityInfos)
+{
+    auto dataMgr = GetDataMgrFromService();
+    if (dataMgr == nullptr) {
+        APP_LOGE("DataMgr is nullptr");
+        return false;
+    }
+    return dataMgr->QueryAllAbilityInfos(userId, abilityInfos);
 }
 
 bool BundleMgrHostImpl::QueryAbilityInfoByUri(const std::string &abilityUri, AbilityInfo &abilityInfo)
@@ -214,6 +258,12 @@ std::string BundleMgrHostImpl::GetAbilityLabel(const std::string &bundleName, co
 bool BundleMgrHostImpl::GetBundleArchiveInfo(
     const std::string &hapFilePath, const BundleFlag flag, BundleInfo &bundleInfo)
 {
+    return GetBundleArchiveInfo(hapFilePath, static_cast<int32_t>(flag), bundleInfo);
+}
+
+bool BundleMgrHostImpl::GetBundleArchiveInfo(
+    const std::string &hapFilePath, int32_t flags, BundleInfo &bundleInfo)
+{
     std::string realPath;
     auto ret = BundleUtil::CheckFilePath(hapFilePath, realPath);
     if (ret != ERR_OK) {
@@ -227,7 +277,7 @@ bool BundleMgrHostImpl::GetBundleArchiveInfo(
         APP_LOGE("parse bundle info failed, error: %{public}d", ret);
         return false;
     }
-    info.GetBundleInfo(flag, bundleInfo);
+    info.GetBundleInfo(flags, bundleInfo);
     return true;
 }
 
@@ -319,10 +369,36 @@ bool BundleMgrHostImpl::IsSafeMode()
     return true;
 }
 
+bool BundleMgrHostImpl::TraverseCacheDirectory(const std::string& rootDir, std::vector<std::string>& cacheDirs)
+{
+    DIR* dir = opendir(rootDir.c_str());
+    struct dirent *ptr = nullptr;
+    if (dir == nullptr) {
+        return false;
+    }
+    while ((ptr = readdir(dir)) != NULL) {
+        if (strcmp(ptr->d_name, ".") == 0 || strcmp(ptr->d_name, "..") == 0) {
+            continue;
+        }
+        if (ptr->d_type == DT_DIR && strcmp(ptr->d_name, "cache") == 0) {
+            std::string currentDir = OHOS::IncludeTrailingPathDelimiter(rootDir) + std::string(ptr->d_name);
+            cacheDirs.emplace_back(currentDir);
+            continue;
+        }
+        if (ptr->d_type == DT_DIR) {
+            std::string currentDir = OHOS::IncludeTrailingPathDelimiter(rootDir) + std::string(ptr->d_name);
+            TraverseCacheDirectory(currentDir, cacheDirs);
+        }
+    }
+    closedir(dir);
+
+    return true;
+}
+
 bool BundleMgrHostImpl::CleanBundleCacheFiles(
     const std::string &bundleName, const sptr<ICleanCacheCallback> &cleanCacheCallback)
 {
-    if (!cleanCacheCallback || bundleName.empty()) {
+    if (bundleName.empty() || !cleanCacheCallback) {
         APP_LOGE("the cleanCacheCallback is nullptr or bundleName empty");
         return false;
     }
@@ -331,11 +407,22 @@ bool BundleMgrHostImpl::CleanBundleCacheFiles(
         APP_LOGE("can not get application info of %{public}s", bundleName.c_str());
         return false;
     }
-    auto cacheDir = applicationInfo.cacheDir;
-    std::thread([cacheDir, cleanCacheCallback]() {
-        auto ret = InstalldClient::GetInstance()->CleanBundleDataDir(cacheDir);
-        cleanCacheCallback->OnCleanCacheFinished((ret == ERR_OK) ? true : false);
-    }).detach();
+    std::string rootDir = applicationInfo.dataDir;
+    auto cleanCache = [this, rootDir, cleanCacheCallback]() {
+        std::vector<std::string> caches;
+        bool result = this->TraverseCacheDirectory(rootDir, caches);
+        bool error = false;
+        if (result) {
+            for (const auto& cache : caches) {
+                error = InstalldClient::GetInstance()->CleanBundleDataDir(cache);
+                if (error) {
+                    break;
+                }
+            }
+        }
+        cleanCacheCallback->OnCleanCacheFinished(error);
+    };
+    handler_->PostTask(cleanCache);
     return true;
 }
 
@@ -440,6 +527,7 @@ bool BundleMgrHostImpl::DumpInfos(const DumpFlag flag, const std::string &bundle
                     result.append(info.name);
                     result.append(":\n");
                     nlohmann::json jsonObject = info;
+                    jsonObject["hapModuleInfos"] = info.hapModuleInfos;
                     result.append(jsonObject.dump(Constants::DUMP_INDENT));
                     result.append("\n");
                 }
@@ -454,9 +542,27 @@ bool BundleMgrHostImpl::DumpInfos(const DumpFlag flag, const std::string &bundle
                 result.append(bundleName);
                 result.append(":\n");
                 nlohmann::json jsonObject = bundleInfo;
+                jsonObject["hapModuleInfos"] = bundleInfo.hapModuleInfos;
                 result.append(jsonObject.dump(Constants::DUMP_INDENT));
                 result.append("\n");
                 APP_LOGI("get %{public}s bundle info success", bundleName.c_str());
+            }
+            break;
+        }
+        case DumpFlag::DUMP_SHORTCUT_INFO: {
+            std::vector<ShortcutInfo> shortcutInfos;
+            ret = GetShortcutInfos(bundleName, shortcutInfos);
+            if (ret) {
+                result.append("shortcuts");
+                result.append(":\n");
+                for (const auto &info : shortcutInfos) {
+                    result.append("\"shortcut\"");
+                    result.append(":\n");
+                    nlohmann::json jsonObject = info;
+                    result.append(jsonObject.dump(Constants::DUMP_INDENT));
+                    result.append("\n");
+                }
+                APP_LOGI("get %{public}s shortcut info success", bundleName.c_str());
             }
             break;
         }
@@ -484,7 +590,17 @@ bool BundleMgrHostImpl::SetApplicationEnabled(const std::string &bundleName, boo
         APP_LOGE("DataMgr is nullptr");
         return false;
     }
-    return dataMgr->SetApplicationEnabled(bundleName, isEnable);
+    bool result = dataMgr->SetApplicationEnabled(bundleName, isEnable);
+    if (result) {
+        int32_t uid = Constants::INVALID_UID;
+        dataMgr->NotifyBundleStatus(bundleName,
+                                    Constants::EMPTY_STRING,
+                                    Constants::EMPTY_STRING,
+                                    ERR_OK,
+                                    NotifyType::APPLICATION_ENABLE,
+                                    uid);
+    }
+    return result;
 }
 
 bool BundleMgrHostImpl::IsAbilityEnabled(const AbilityInfo &abilityInfo)
@@ -504,7 +620,17 @@ bool BundleMgrHostImpl::SetAbilityEnabled(const AbilityInfo &abilityInfo, bool i
         APP_LOGE("DataMgr is nullptr");
         return false;
     }
-    return dataMgr->SetAbilityEnabled(abilityInfo, isEnabled);
+    bool result = dataMgr->SetAbilityEnabled(abilityInfo, isEnabled);
+    if (result) {
+        int32_t uid = Constants::INVALID_UID;
+        dataMgr->NotifyBundleStatus(abilityInfo.bundleName,
+                                    Constants::EMPTY_STRING,
+                                    abilityInfo.name,
+                                    ERR_OK,
+                                    NotifyType::APPLICATION_ENABLE,
+                                    uid);
+    }
+    return result;
 }
 
 std::string BundleMgrHostImpl::GetAbilityIcon(const std::string &bundleName, const std::string &className)

@@ -21,8 +21,8 @@
 #include "permission/permission_kit.h"
 #include "string_ex.h"
 
-#include "app_log_wrapper.h"
 #include "bundle_util.h"
+#include "json_util.h"
 #include "kvstore_death_recipient_callback.h"
 #include "nlohmann/json.hpp"
 
@@ -100,7 +100,22 @@ void ModuleUsageRecordStorage::UpdateUsageRecord(const std::string &jsonString, 
         APP_LOGE("failed to parse existing usage record: %{private}s.", jsonString.c_str());
         return;
     }
-    uint32_t launchedCount = jsonObject.at(UsageRecordKey::LAUNCHED_COUNT).get<int32_t>();
+
+    const auto &jsonObjectEnd = jsonObject.end();
+    int32_t parseResult = ERR_OK;
+    uint32_t launchedCount;
+    GetValueIfFindKey<uint32_t>(jsonObject,
+        jsonObjectEnd,
+        UsageRecordKey::LAUNCHED_COUNT,
+        launchedCount,
+        JsonType::NUMBER,
+        true,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    if (parseResult != ERR_OK) {
+        APP_LOGE("parsing failed: %{public}d.", parseResult);
+        return;
+    }
     data.launchedCount = launchedCount + 1;
     APP_LOGD("launchedCount = %{public}d", data.launchedCount);
     return;

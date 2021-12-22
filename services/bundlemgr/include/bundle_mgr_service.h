@@ -20,6 +20,7 @@
 
 #include "singleton.h"
 #include "system_ability.h"
+
 #include "bundle_data_mgr.h"
 #include "bundle_clone_mgr.h"
 #include "bundle_installer_host.h"
@@ -29,6 +30,7 @@
 
 namespace OHOS {
 namespace AppExecFwk {
+
 class BundleMgrService : public SystemAbility {
     DECLARE_DELAYED_SINGLETON(BundleMgrService);
     DECLEAR_SYSTEM_ABILITY(BundleMgrService);
@@ -54,8 +56,6 @@ public:
      * @return Returns the pointer of BundleDataMgr object.
      */
     const std::shared_ptr<BundleCloneMgr> GetCloneMgr() const;
-
-
 
     const std::shared_ptr<BundleDataMgr> GetDataMgr() const;
     /**

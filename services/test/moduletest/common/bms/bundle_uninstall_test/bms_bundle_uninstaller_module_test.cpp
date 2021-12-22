@@ -13,12 +13,12 @@
  * limitations under the License.
  */
 
-#include <future>
 #include <fstream>
+#include <future>
 #include <gtest/gtest.h>
 
-#include "directory_ex.h"
 #include "bundle_mgr_service.h"
+#include "directory_ex.h"
 #include "installd/installd_service.h"
 #include "installd_client.h"
 #include "mock_status_receiver.h"

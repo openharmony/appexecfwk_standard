@@ -198,9 +198,7 @@ protected:
                     },
                     "isEntry": true,
                     "metaData": {
-                        "customizeData": [],
-                        "parameters": [],
-                        "results": []
+                        "customizeData": []
                     },
                     "moduleDataDir": "/data/accounts/account_0/appdata/com.ohos.launcher/com.ohos.launcher",
                     "moduleName": ".MyApplication",

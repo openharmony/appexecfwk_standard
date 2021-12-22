@@ -13,17 +13,17 @@
  * limitations under the License.
  */
 
-#include <gtest/gtest.h>
 #include <fstream>
+#include <gtest/gtest.h>
 
 #include "app_log_wrapper.h"
-#include "json_constants.h"
-#include "json_serializer.h"
-#include "nlohmann/json.hpp"
 #include "ability_info.h"
 #include "bundle_constants.h"
 #include "bundle_info.h"
 #include "inner_bundle_info.h"
+#include "json_constants.h"
+#include "json_serializer.h"
+#include "nlohmann/json.hpp"
 
 using namespace testing::ext;
 using namespace OHOS::AppExecFwk;
@@ -85,16 +85,6 @@ protected:
                             "name" : "string",
                             "value" : "string",
                             "extra" : "$string:customizeData_description"
-                        }],
-                        "parameters": [{
-                            "name" : "string",
-                            "type" : "Float",
-                            "description" : "$string:parameters_description"
-                        }],
-                        "results": [{
-                            "name" : "string",
-                            "type" : "Float",
-                            "description" : "$string:results_description"
                         }]
                     },
                     "backgroundModes": 1,
@@ -120,6 +110,7 @@ protected:
                     "descriptionId": 1,
                     "iconId": 1,
                     "srcLanguage": "C++",
+                    "isHomeAbility": true,
                     "srcPath": ""
                 }
             },
@@ -133,6 +124,7 @@ protected:
                 "descriptionId": 16777217,
                 "deviceId": "PHONE-001",
                 "enabled": true,
+                "removable": true,
                 "entryDir": "",
                 "flags": 0,
                 "iconId": 16777218,
@@ -148,7 +140,7 @@ protected:
                 "process": "",
                 "signatureKey": "",
                 "supportedModes": 0,
-                "debug": false,
+                "debug": true,
                 "isCloned": true,
                 "uid": 10000,
                 "signatureKey": ""
@@ -166,6 +158,7 @@ protected:
                     "descriptionId": 0,
                     "deviceId": "",
                     "enabled": false,
+                    "removable": true,
                     "entryDir": "",
                     "flags": 0,
                     "iconId": 0,
@@ -179,10 +172,11 @@ protected:
                     "name": "",
                     "permissions": [],
                     "process": "",
+                    "signatureKey": "",
                     "supportedModes": 0,
-                    "debug": false,
-                    "isCloned": false,
-                    "uid": -1,
+                    "debug": true,
+                    "isCloned": true,
+                    "uid": 10000,
                     "signatureKey": ""
                 },
                 "compatibleVersion": 3,
@@ -235,9 +229,7 @@ protected:
                     },
                     "isEntry": true,
                     "metaData": {
-                        "customizeData": [],
-                        "parameters": [],
-                        "results": []
+                        "customizeData": []
                     },
                     "moduleDataDir": "/data/accounts/account_0/appdata/com.ohos.launcher/com.ohos.launcher",
                     "moduleName": ".MyApplication",
@@ -249,7 +241,8 @@ protected:
                     "colorMode": -1,
                     "skillKeys": [
                         "com.ohos.launchercom.ohos.launchercom.ohos.launcher.MainAbility"
-                    ]
+                    ],
+                    "srcPath": ""
                 }
             },
             "isKeepData": false,
@@ -296,11 +289,6 @@ protected:
                         "supportDimensions": [
                             1
                         ],
-                        "src": "src/code",
-                        "window": {
-                            "designWidth": 750,
-                            "autoDesignWidth": false
-                        },
                         "landscapeLayouts": [],
                         "portraitLayouts": [],
                         "customizeData": [
@@ -353,6 +341,7 @@ protected:
             },
             "uid": 10000,
             "userId_": 0,
+            "isPreInstallApp": true,
             "canUninstall": true,
             "newBundleName": "com.example.myapplication1#20010001"
         }
@@ -427,6 +416,7 @@ void BmsBundleDataStorageDatabaseTest::TearDown()
  * @tc.name: save bundle installation information to persist storage
  * @tc.desc: 1.system running normally
  *           2.successfully serialize and deserialize all right props in BundleInfo
+ * @tc.require: AR000GJUIR
  */
 HWTEST_F(BmsBundleDataStorageDatabaseTest, BundleInfoJsonSerializer_0100, Function | SmallTest | Level1)
 {
@@ -444,6 +434,7 @@ HWTEST_F(BmsBundleDataStorageDatabaseTest, BundleInfoJsonSerializer_0100, Functi
  * @tc.name: save bundle installation information to persist storage
  * @tc.desc: 1.system running normally
  *           2.test can catch deserialize error for type error for name prop in BundleInfo
+ * @tc.require: AR000GJUIR
  */
 HWTEST_F(BmsBundleDataStorageDatabaseTest, BundleInfoJsonSerializer_0200, Function | SmallTest | Level1)
 {
@@ -471,6 +462,7 @@ HWTEST_F(BmsBundleDataStorageDatabaseTest, BundleInfoJsonSerializer_0200, Functi
  * @tc.name: save bundle installation information to persist storage
  * @tc.desc: 1.system running normally
  *           2.successfully serialize and deserialize all right props in AbilityInfo
+ * @tc.require: AR000GJUIR
  */
 HWTEST_F(BmsBundleDataStorageDatabaseTest, AbilityInfoJsonSerializer_0100, Function | SmallTest | Level1)
 {
@@ -487,6 +479,7 @@ HWTEST_F(BmsBundleDataStorageDatabaseTest, AbilityInfoJsonSerializer_0100, Funct
  * @tc.name: save bundle installation information to persist storage
  * @tc.desc: 1.system running normally
  *           2.test can catch deserialize error for type error for name prop in AbilityInfo
+ * @tc.require: AR000GJUIR
  */
 HWTEST_F(BmsBundleDataStorageDatabaseTest, AbilityInfoJsonSerializer_0200, Function | SmallTest | Level1)
 {
@@ -523,6 +516,7 @@ HWTEST_F(BmsBundleDataStorageDatabaseTest, AbilityInfoJsonSerializer_0200, Funct
  * @tc.name: save bundle installation information to persist storage
  * @tc.desc: 1.system running normally
  *           2.successfully serialize and deserialize all right props in ApplicationInfo
+ * @tc.require: AR000GJUIR
  */
 HWTEST_F(BmsBundleDataStorageDatabaseTest, ApplicationInfoJsonSerializer_0100, Function | SmallTest | Level1)
 {
@@ -540,6 +534,7 @@ HWTEST_F(BmsBundleDataStorageDatabaseTest, ApplicationInfoJsonSerializer_0100, F
  * @tc.name: save bundle installation information to persist storage
  * @tc.desc: 1.system running normally
  *           2.test can catch deserialize error for type error for name prop in ApplicationInfo
+ * @tc.require: AR000GJUIR
  */
 HWTEST_F(BmsBundleDataStorageDatabaseTest, ApplicationInfoJsonSerializer_0200, Function | SmallTest | Level1)
 {
@@ -565,6 +560,7 @@ HWTEST_F(BmsBundleDataStorageDatabaseTest, ApplicationInfoJsonSerializer_0200, F
  * @tc.name: save bundle installation information to persist storage
  * @tc.desc: 1.system running normally
  *           2.successfully serialize and deserialize all right props in ModuleInfo
+ * @tc.require: AR000GJUIR
  */
 HWTEST_F(BmsBundleDataStorageDatabaseTest, ModuleInfoJsonSerializer_0100, Function | SmallTest | Level1)
 {
@@ -582,6 +578,7 @@ HWTEST_F(BmsBundleDataStorageDatabaseTest, ModuleInfoJsonSerializer_0100, Functi
  * @tc.name: save bundle installation information to persist storage
  * @tc.desc: 1.system running normally and no saved any bundle data
  *           2.successfully save a new bundle installation information for the first time
+ * @tc.require: AR000GJUIR
  */
 HWTEST_F(BmsBundleDataStorageDatabaseTest, SaveData_0100, Function | SmallTest | Level0)
 {

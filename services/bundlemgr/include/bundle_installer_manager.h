@@ -30,6 +30,7 @@
 
 namespace OHOS {
 namespace AppExecFwk {
+
 class BundleInstallerManager : public EventHandler {
 public:
     explicit BundleInstallerManager(const std::shared_ptr<EventRunner> &runner);
@@ -48,6 +49,24 @@ public:
      * @return
      */
     void CreateInstallTask(const std::string &bundleFilePath, const InstallParam &installParam,
+        const sptr<IStatusReceiver> &statusReceiver);
+    /**
+     * @brief Create a bundle installer object for installing a bundle by bundleName.
+     * @param bundleFilePath Indicates the path for storing the HAP of the bundle to install or update.
+     * @param installParam Indicates the install parameters.
+     * @param statusReceiver Indicates the callback object that using for notifing the install result.
+     * @return
+     */
+    void CreateRecoverTask(const std::string &bundleName, const InstallParam &installParam,
+        const sptr<IStatusReceiver> &statusReceiver);
+    /**
+     * @brief Create a bundle installer object for installing multiple haps of a bundle.
+     * @param bundleFilePaths Indicates the paths for storing the HAPs of the bundle to install or update.
+     * @param installParam Indicates the install parameters.
+     * @param statusReceiver Indicates the callback object that using for notifing the install result.
+     * @return
+     */
+    void CreateInstallTask(const std::vector<std::string> &bundleFilePaths, const InstallParam &installParam,
         const sptr<IStatusReceiver> &statusReceiver);
     /**
      * @brief Create a bundle installer object for uninstalling an bundle.
@@ -97,6 +116,7 @@ private:
 
     DISALLOW_COPY_AND_MOVE(BundleInstallerManager);
 };
+
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_BUNDLE_INSTALLER_MANAGER_H

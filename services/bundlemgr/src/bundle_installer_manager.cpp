@@ -24,7 +24,9 @@
 namespace OHOS {
 namespace AppExecFwk {
 namespace {
+
 const std::string ADD_INSTALLER_FAIL = "fail to add installer in bundle installer manager";
+
 }
 
 BundleInstallerManager::BundleInstallerManager(const std::shared_ptr<EventRunner> &runner) : EventHandler(runner)
@@ -42,7 +44,7 @@ BundleInstallerManager::~BundleInstallerManager()
 
 void BundleInstallerManager::ProcessEvent(const InnerEvent::Pointer &event)
 {
-    APP_LOGI("process event : %{public}u", event->GetInnerEventId());
+    APP_LOGD("process event : %{public}u", event->GetInnerEventId());
     switch (event->GetInnerEventId()) {
         case REMOVE_BUNDLE_INSTALLER:
             RemoveInstaller(event->GetParam());
@@ -61,6 +63,30 @@ void BundleInstallerManager::CreateInstallTask(
         return;
     }
     auto task = [installer, bundleFilePath, installParam] { installer->Install(bundleFilePath, installParam); };
+    installersPool_.AddTask(task);
+}
+
+void BundleInstallerManager::CreateRecoverTask(
+    const std::string &bundleName, const InstallParam &installParam, const sptr<IStatusReceiver> &statusReceiver)
+{
+    auto installer = CreateInstaller(statusReceiver);
+    if (!installer) {
+        APP_LOGE("create installer failed");
+        return;
+    }
+    auto task = [installer, bundleName, installParam] { installer->Recover(bundleName, installParam); };
+    installersPool_.AddTask(task);
+}
+
+void BundleInstallerManager::CreateInstallTask(const std::vector<std::string> &bundleFilePaths,
+    const InstallParam &installParam, const sptr<IStatusReceiver> &statusReceiver)
+{
+    auto installer = CreateInstaller(statusReceiver);
+    if (!installer) {
+        APP_LOGE("create installer failed");
+        return;
+    }
+    auto task = [installer, bundleFilePaths, installParam] { installer->Install(bundleFilePaths, installParam); };
     installersPool_.AddTask(task);
 }
 
@@ -116,10 +142,12 @@ std::shared_ptr<BundleInstaller> BundleInstallerManager::CreateInstaller(const s
 
 void BundleInstallerManager::RemoveInstaller(const int64_t installerId)
 {
+    APP_LOGD("start to remove installer the specific %{public}" PRId64 " installer", installerId);
     std::lock_guard<std::mutex> lock(mutex_);
     if (installers_.erase(installerId) > 0) {
         APP_LOGD("erase the specific %{public}" PRId64 " installer", installerId);
     }
 }
+
 }  // namespace AppExecFwk
 }  // namespace OHOS
