@@ -40,8 +40,8 @@ using namespace OHOS;
 using namespace OHOS::AppExecFwk;
 using OHOS::AAFwk::Want;
 
+namespace OHOS {
 namespace {
-
 const std::string BUNDLE_NAME_TEST = "com.example.bundlekit.test";
 const std::string MODULE_NAME_TEST = "com.example.bundlekit.test.entry";
 const std::string ABILITY_NAME_TEST1 = ".Reading1";
@@ -3354,7 +3354,9 @@ HWTEST_F(BmsBundleKitServiceTest, Application_0200, Function | SmallTest | Level
 HWTEST_F(BmsBundleKitServiceTest, AllAbility_001, Function | SmallTest | Level1)
 {
     std::vector<AbilityInfo> abilityInfos;
-    bool testRet1 = GetBundleDataMgr()->QueryAllAbilityInfos(DEFAULT_USER_ID_TEST, abilityInfos);
+    Want want1;
+    want1.SetElementName(BUNDLE_NAME_DEMO, ABILITY_NAME_DEMO);
+    bool testRet1 = GetBundleDataMgr()->QueryLauncherAbilityInfos(want1, DEFAULT_USER_ID_TEST, abilityInfos);
     EXPECT_TRUE(testRet1);
 }
 
@@ -3870,4 +3872,5 @@ HWTEST_F(BmsBundleKitServiceTest, SkillMatch_UriAndType_009, Function | SmallTes
     want.SetUri(URI_PATH_001);
     bool ret = skill.Match(want);
     EXPECT_EQ(true, ret);
+}
 }

@@ -1910,18 +1910,6 @@ bool TransformToInfo(
     abilityInfo.srcPath = ability.srcPath;
     abilityInfo.srcLanguage = ability.srcLanguage;
 
-    // parse isHomeAbility
-    for (const auto &skill : ability.skills) {
-        if (std::find(skill.actions.begin(), skill.actions.end(), Constants::INTENT_ACTION_HOME) !=
-            skill.actions.end() &&
-            std::find(skill.entities.begin(), skill.entities.end(), Constants::INTENT_ENTITY_HOME) !=
-            skill.entities.end()) {
-            abilityInfo.isHomeAbility = true;
-        } else {
-            abilityInfo.isHomeAbility = false;
-        }
-    }
-
     std::transform(
         abilityInfo.srcLanguage.begin(), abilityInfo.srcLanguage.end(), abilityInfo.srcLanguage.begin(), ::tolower);
     if (abilityInfo.srcLanguage != ProfileReader::BUNDLE_MODULE_PROFILE_KEY_JS &&

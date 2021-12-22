@@ -150,7 +150,6 @@ struct AbilityInfo : public Parcelable {
     int32_t iconId;
     std::string theme;
     bool visible = false;
-    bool isHomeAbility = false;
     std::string kind;  // ability category
     AbilityType type = AbilityType::UNKNOWN;
     DisplayOrientation orientation = DisplayOrientation::UNSPECIFIED;

@@ -157,13 +157,25 @@ public:
      * @return Returns true if the AbilityInfo is successfully obtained; returns false otherwise.
      */
     bool QueryAbilityInfosForClone(const Want &want, std::vector<AbilityInfo> &abilityInfo);
+ /**
+     * @brief Query all match launcher ability infos by given wants.
+     * @param want Indicates the match infomation for abilities.
+     * @param info Indicates the bundleInfo.
+     * @param abilityInfo Indicates the obtained AbilityInfo of list.
+     * @return Returns true if the AbilityInfo is successfully obtained; returns false otherwise.
+     */
+    void GetMatchLauncherAbilityInfos(
+        const Want& want, const InnerBundleInfo& info, std::vector<AbilityInfo>& abilityInfos) const;
     /**
      * @brief Query a AbilityInfo of list by the given userId.
+     * @param want Indicates the match infomation for abilities.
+     * @param flags Indicates weather to get application Info.
      * @param userId Indicates the id of the user.
      * @param abilityInfo Indicates the obtained AbilityInfo of list.
      * @return Returns true if the AbilityInfo is successfully obtained; returns false otherwise.
      */
-    bool QueryAllAbilityInfos(uint32_t userId, std::vector<AbilityInfo> &abilityInfos) const;
+    bool QueryLauncherAbilityInfos(
+        const Want& want, uint32_t userId, std::vector<AbilityInfo>& abilityInfos) const;
     /**
      * @brief Query the AbilityInfo by ability.uri in config.json.
      * @param abilityUri Indicates the uri of the ability.
