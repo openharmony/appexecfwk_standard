@@ -219,7 +219,8 @@ public:
      * @param abilityInfos Indicates the obtained AbilityInfos object.
      * @return Returns true if the AbilityInfos is successfully obtained; returns false otherwise.
      */
-    virtual bool QueryAllAbilityInfos(int32_t userId, std::vector<AbilityInfo> &abilityInfos) override;
+    virtual bool QueryAllAbilityInfos(
+        const Want &want, int32_t userId, std::vector<AbilityInfo> &abilityInfos) override;
     /**
      * @brief Query the AbilityInfo by ability.uri in config.json through the proxy object.
      * @param abilityUri Indicates the uri of the ability.

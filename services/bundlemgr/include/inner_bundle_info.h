@@ -100,6 +100,7 @@ public:
     std::vector<std::string> entities;
     std::vector<SkillUri> uris;
     bool Match(const OHOS::AAFwk::Want &want) const;
+    bool MatchLauncher(const OHOS::AAFwk::Want &want) const;
 private:
     bool MatchAction(const std::string &action) const;
     bool MatchEntities(const std::vector<std::string> &paramEntities) const;
