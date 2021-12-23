@@ -73,6 +73,7 @@ HWTEST_F(FmsFormDbRecordTest, FmsFormDbRecordTest_002, TestSize.Level0) // save 
     GTEST_LOG_(INFO) << "FmsFormDbRecordTest_002 start";
     InitFormRecord();
     EXPECT_EQ(ERR_OK, FormDbCache::GetInstance().UpdateDBRecord(0, formRecord_));
+    FormDbCache::GetInstance().DeleteFormInfo(0);
     GTEST_LOG_(INFO) << "FmsFormDbRecordTest_002 end";
 }
 
@@ -82,6 +83,7 @@ HWTEST_F(FmsFormDbRecordTest, FmsFormDbRecordTest_003, TestSize.Level0) // save 
     InitFormRecord();
     formRecord_.formUserUids.emplace_back(0);
     EXPECT_EQ(ERR_OK, FormDbCache::GetInstance().UpdateDBRecord(1, formRecord_));
+    FormDbCache::GetInstance().DeleteFormInfo(1);
     GTEST_LOG_(INFO) << "FmsFormDbRecordTest_003 end";
 }
 
@@ -91,6 +93,7 @@ HWTEST_F(FmsFormDbRecordTest, FmsFormDbRecordTest_004, TestSize.Level0) // modif
     InitFormRecord();
     formRecord_.formUserUids.emplace_back(2);
     EXPECT_EQ(ERR_OK, FormDbCache::GetInstance().UpdateDBRecord(1, formRecord_));
+    FormDbCache::GetInstance().DeleteFormInfo(1);
     GTEST_LOG_(INFO) << "FmsFormDbRecordTest_004 end";
 }
 
@@ -100,12 +103,18 @@ HWTEST_F(FmsFormDbRecordTest, FmsFormDbRecordTest_005, TestSize.Level0) // modif
     InitFormRecord();
     formRecord_.formUserUids.emplace_back(2);
     EXPECT_EQ(ERR_OK, FormDbCache::GetInstance().UpdateDBRecord(0, formRecord_));
+    FormDbCache::GetInstance().DeleteFormInfo(0);
     GTEST_LOG_(INFO) << "FmsFormDbRecordTest_005 end";
 }
 
 HWTEST_F(FmsFormDbRecordTest, FmsFormDbRecordTest_006, TestSize.Level0) // GetAllDBRecord
 {
     GTEST_LOG_(INFO) << "FmsFormDbRecordTest_006 start";
+    InitFormRecord();
+    formRecord_.formUserUids.emplace_back(2);
+    FormDbCache::GetInstance().UpdateDBRecord(1, formRecord_);
+    FormDbCache::GetInstance().UpdateDBRecord(0, formRecord_);
+
     FormRecord record;
     EXPECT_EQ(ERR_OK, FormDbCache::GetInstance().GetDBRecord(0, record));
 
@@ -127,69 +136,52 @@ HWTEST_F(FmsFormDbRecordTest, FmsFormDbRecordTest_006, TestSize.Level0) // GetAl
     for (unsigned int j = 0; j < record.formUserUids.size(); j++){
         GTEST_LOG_(INFO) << "FmsFormDbRecordTest_006 formUserUids:" << record.formUserUids[j];
     }
+    FormDbCache::GetInstance().DeleteFormInfo(0);
+    FormDbCache::GetInstance().DeleteFormInfo(1);
 
     GTEST_LOG_(INFO) << "FmsFormDbRecordTest_006 end";
 }
 
-HWTEST_F(FmsFormDbRecordTest, FmsFormDbRecordTest_007, TestSize.Level0) // save for next load: formId 0, callIds[1]
+HWTEST_F(FmsFormDbRecordTest, FmsFormDbRecordTest_007, TestSize.Level0) // GetAllDBRecord
 {
     GTEST_LOG_(INFO) << "FmsFormDbRecordTest_007 start";
 
     InitFormRecord();
-    EXPECT_EQ(ERR_OK, FormDbCache::GetInstance().UpdateDBRecord(0, formRecord_));
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
-
-    GTEST_LOG_(INFO) << "FmsFormDbRecordTest_007 end";
-}
-
-HWTEST_F(FmsFormDbRecordTest, FmsFormDbRecordTest_008, TestSize.Level0) // save for next load: formId 1, callIds[1,0]
-{
-    GTEST_LOG_(INFO) << "FmsFormDbRecordTest_008 start";
-
-    InitFormRecord();
+    FormDbCache::GetInstance().UpdateDBRecord(0, formRecord_);
     formRecord_.formUserUids.emplace_back(0);
-    EXPECT_EQ(ERR_OK, FormDbCache::GetInstance().UpdateDBRecord(1, formRecord_));
-    GTEST_LOG_(INFO) << "FmsFormDbRecordTest_008 end";
-}
-
-HWTEST_F(FmsFormDbRecordTest, FmsFormDbRecordTest_009, TestSize.Level0) // GetAllDBRecord
-{
-    GTEST_LOG_(INFO) << "FmsFormDbRecordTest_009 start";
+    FormDbCache::GetInstance().UpdateDBRecord(1, formRecord_);
 
     FormRecord record;
     EXPECT_EQ(ERR_OK, FormDbCache::GetInstance().GetDBRecord(0, record));
-    GTEST_LOG_(INFO) << "FmsFormDbRecordTest_009 formName: " << record.formName;
-    GTEST_LOG_(INFO) << "FmsFormDbRecordTest_009 bundleName:" << record.bundleName;
-    GTEST_LOG_(INFO) << "FmsFormDbRecordTest_009 moduleName:" << record.moduleName;
-    GTEST_LOG_(INFO) << "FmsFormDbRecordTest_009 abilityName:" << record.abilityName;
+    GTEST_LOG_(INFO) << "FmsFormDbRecordTest_007 formName: " << record.formName;
+    GTEST_LOG_(INFO) << "FmsFormDbRecordTest_007 bundleName:" << record.bundleName;
+    GTEST_LOG_(INFO) << "FmsFormDbRecordTest_007 moduleName:" << record.moduleName;
+    GTEST_LOG_(INFO) << "FmsFormDbRecordTest_007 abilityName:" << record.abilityName;
     for (unsigned int j = 0; j < record.formUserUids.size(); j++){
-        GTEST_LOG_(INFO) << "FmsFormDbRecordTest_009 formUserUids:" << record.formUserUids[j];
+        GTEST_LOG_(INFO) << "FmsFormDbRecordTest_007 formUserUids:" << record.formUserUids[j];
     }
 
-    GTEST_LOG_(INFO) << "FmsFormDbRecordTest_009 -------------------";
+    GTEST_LOG_(INFO) << "FmsFormDbRecordTest_007 -------------------";
 
     EXPECT_EQ(ERR_OK, FormDbCache::GetInstance().GetDBRecord(1, record));
-    GTEST_LOG_(INFO) << "FmsFormDbRecordTest_009 formName: " << record.formName;
-    GTEST_LOG_(INFO) << "FmsFormDbRecordTest_009 bundleName:" << record.bundleName;
-    GTEST_LOG_(INFO) << "FmsFormDbRecordTest_009 moduleName:" << record.moduleName;
-    GTEST_LOG_(INFO) << "FmsFormDbRecordTest_009 abilityName:" << record.abilityName;
+    GTEST_LOG_(INFO) << "FmsFormDbRecordTest_007 formName: " << record.formName;
+    GTEST_LOG_(INFO) << "FmsFormDbRecordTest_007 bundleName:" << record.bundleName;
+    GTEST_LOG_(INFO) << "FmsFormDbRecordTest_007 moduleName:" << record.moduleName;
+    GTEST_LOG_(INFO) << "FmsFormDbRecordTest_007 abilityName:" << record.abilityName;
     for (unsigned int j = 0; j < record.formUserUids.size(); j++){
-        GTEST_LOG_(INFO) << "FmsFormDbRecordTest_009 formUserUids:" << record.formUserUids[j];
+        GTEST_LOG_(INFO) << "FmsFormDbRecordTest_007 formUserUids:" << record.formUserUids[j];
     }
-    GTEST_LOG_(INFO) << "FmsFormDbRecordTest_009 end";
+    FormDbCache::GetInstance().DeleteFormInfo(0);
+    FormDbCache::GetInstance().DeleteFormInfo(1);
+    GTEST_LOG_(INFO) << "FmsFormDbRecordTest_007 end";
 }
 
-HWTEST_F(FmsFormDbRecordTest, FmsFormDbRecordTest_010, TestSize.Level0) // DeleteDbRecord(1)
+HWTEST_F(FmsFormDbRecordTest, FmsFormDbRecordTest_008, TestSize.Level0) // DeleteDbRecord(1)
 {
-    GTEST_LOG_(INFO) << "FmsFormDbRecordTest_010 start";
-    EXPECT_EQ(ERR_OK, FormDbCache::GetInstance().DeleteFormInfo(1));
-    GTEST_LOG_(INFO) << "FmsFormDbRecordTest_010 end";
-}
-
-HWTEST_F(FmsFormDbRecordTest, FmsFormDbRecordTest_011, TestSize.Level0) // DeleteDbRecord not exist
-{
-    GTEST_LOG_(INFO) << "FmsFormDbRecordTest_011 start";
-    EXPECT_EQ(ERR_APPEXECFWK_FORM_COMMON_CODE, FormDbCache::GetInstance().DeleteFormInfo(2));
-    GTEST_LOG_(INFO) << "FmsFormDbRecordTest_011 end";
+    GTEST_LOG_(INFO) << "FmsFormDbRecordTest_008 start";
+    InitFormRecord();
+    FormDbCache::GetInstance().UpdateDBRecord(2, formRecord_);
+    EXPECT_EQ(ERR_OK, FormDbCache::GetInstance().DeleteFormInfo(2));
+    GTEST_LOG_(INFO) << "FmsFormDbRecordTest_008 end";
 }
 }
