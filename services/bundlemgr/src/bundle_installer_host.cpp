@@ -127,7 +127,10 @@ void BundleInstallerHost::HandleInstallMultipleHapsMessage(Parcel &data)
     int32_t size = data.ReadInt32();
     std::vector<std::string> pathVec;
     for (int i = 0; i < size; ++i) {
-        pathVec.emplace_back(Str16ToStr8(data.ReadString16()));
+        std::string path(Str16ToStr8(data.ReadString16()));
+        if (std::find(pathVec.begin(), pathVec.end(), path) == pathVec.end()) {
+            pathVec.emplace_back(path);
+        }
     }
     if (size == 0 || pathVec.empty()) {
         APP_LOGE("inputted bundlepath vector is empty");
