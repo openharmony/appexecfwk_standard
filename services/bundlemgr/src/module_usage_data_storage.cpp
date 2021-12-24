@@ -334,8 +334,8 @@ Status ModuleUsageRecordStorage::GetKvStore()
 {
     Options options = {
         .createIfMissing = true, 
-        .encrypt = false, 
-        .autoSync = true, 
+        .encrypt = false,
+        .autoSync = true,
         .kvStoreType = KvStoreType::SINGLE_VERSION
     };
 

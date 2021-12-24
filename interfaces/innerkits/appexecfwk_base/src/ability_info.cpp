@@ -28,9 +28,7 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 namespace {
-
 const std::string JSON_KEY_PACKAGE = "package";
 const std::string JSON_KEY_NAME = "name";
 const std::string JSON_KEY_BUNDLE_NAME = "bundleName";
@@ -79,8 +77,6 @@ const std::string JSON_KEY_ICON_ID = "iconId";
 const std::string JSON_KEY_FORM_ENABLED = "formEnabled";
 const std::string JSON_KEY_SRC_PATH = "srcPath";
 const std::string JSON_KEY_SRC_LANGUAGE = "srcLanguage";
-const std::string JSON_KEY_IS_HOME_ABILITY = "isHomeAbility";
-
 }  // namespace
 
 bool AbilityInfo::ReadFromParcel(Parcel &parcel)
@@ -174,7 +170,6 @@ bool AbilityInfo::ReadFromParcel(Parcel &parcel)
         return false;
     }
     applicationInfo = *appInfo;
-    isHomeAbility = parcel.ReadBool();
     return true;
 }
 
@@ -257,7 +252,6 @@ bool AbilityInfo::Marshalling(Parcel &parcel) const
     }
 
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Parcelable, parcel, &applicationInfo);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, isHomeAbility);
     return true;
 }
 
@@ -351,7 +345,6 @@ void to_json(nlohmann::json &jsonObject, const AbilityInfo &abilityInfo)
         {JSON_KEY_LIB_PATH, abilityInfo.libPath},
         {JSON_KEY_META_DATA, abilityInfo.metaData},
         {JSON_KEY_FORM_ENABLED, abilityInfo.formEnabled},
-        {JSON_KEY_IS_HOME_ABILITY, abilityInfo.isHomeAbility},
     };
 }
 
@@ -755,14 +748,6 @@ void from_json(const nlohmann::json &jsonObject, AbilityInfo &abilityInfo)
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<bool>(jsonObject,
-        jsonObjectEnd,
-        JSON_KEY_IS_HOME_ABILITY,
-        abilityInfo.isHomeAbility,
-        JsonType::BOOLEAN,
-        false,
-        parseResult,
-        ArrayType::NOT_ARRAY);
 }
 
 void AbilityInfo::ConvertToCompatiableAbilityInfo(CompatibleAbilityInfo& compatibleAbilityInfo) const
@@ -818,6 +803,5 @@ void AbilityInfo::ConvertToCompatiableAbilityInfo(CompatibleAbilityInfo& compati
     compatibleAbilityInfo.descriptionId = descriptionId;
     compatibleAbilityInfo.enabled = enabled;
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

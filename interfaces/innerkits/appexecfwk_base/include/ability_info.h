@@ -23,12 +23,12 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 enum AbilityInfoFlag {
     GET_ABILITY_INFO_DEFAULT = 0x00000000,
     GET_ABILITY_INFO_WITH_PERMISSION = 0x00000002,
     GET_ABILITY_INFO_WITH_APPLICATION = 0x00000004,
     GET_ABILITY_INFO_WITH_METADATA = 0x00000020,
+    GET_ABILITY_INFO_SYSTEMAPP_ONLY = 0x00000080,
 };
 
 enum class AbilityType {
@@ -151,7 +151,6 @@ struct AbilityInfo : public Parcelable {
     int32_t iconId;
     std::string theme;
     bool visible = false;
-    bool isHomeAbility = false;
     std::string kind;  // ability category
     AbilityType type = AbilityType::UNKNOWN;
     DisplayOrientation orientation = DisplayOrientation::UNSPECIFIED;
@@ -215,7 +214,6 @@ struct AbilityInfo : public Parcelable {
     void Dump(std::string prefix, int fd);
     void ConvertToCompatiableAbilityInfo(CompatibleAbilityInfo& compatibleAbilityInfo) const;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_BASE_INCLUDE_ABILITY_INFO_H

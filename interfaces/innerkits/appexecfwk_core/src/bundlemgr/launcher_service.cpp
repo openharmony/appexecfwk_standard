@@ -73,7 +73,7 @@ bool LauncherService::GetAbilityList(
 {
     APP_LOGI("GetAbilityList called");
     auto iBundleMgr = GetBundleMgr();
-    if (!iBundleMgr) {
+    if (!iBundleMgr || bundleName.empty()) {
         APP_LOGE("can not get iBundleMgr");
         return false;
     }
@@ -81,14 +81,13 @@ bool LauncherService::GetAbilityList(
     std::vector<std::string> entities;
     entities.push_back(Want::ENTITY_HOME);
     Want want;
-    OHOS::AAFwk::OperationBuilder opBuilder;
-    auto operation = opBuilder.WithAction(Want::ACTION_HOME).WithEntities(entities).build();
-    want.SetOperation(*operation);
+    want.SetAction(Want::ACTION_HOME);
+    want.AddEntity(Want::ENTITY_HOME);
     ElementName elementName;
     elementName.SetBundleName(bundleName);
     want.SetElement(elementName);
-    std::vector<AbilityInfo> abilityInfo;
-    if (!iBundleMgr->QueryAbilityInfos(want, abilityInfo)) {
+    std::vector<AbilityInfo> abilityInfos;
+    if (!iBundleMgr->QueryAllAbilityInfos(want, userId, abilityInfos)) {
         APP_LOGE("Query ability info failed");
         return false;
     }
@@ -100,8 +99,8 @@ bool LauncherService::GetAbilityList(
         return false;
     }
 
-    for (auto &ability : abilityInfo) {
-        if (!ability.isHomeAbility || ability.bundleName != bundleName || !ability.enabled) {
+    for (auto &ability : abilityInfos) {
+        if (ability.bundleName != bundleName || !ability.enabled) {
             continue;
         }
         LauncherAbilityInfo info;
@@ -128,13 +127,19 @@ bool LauncherService::GetAllLauncherAbilityInfos(int32_t userId, std::vector<Lau
         APP_LOGE("can not get iBundleMgr");
         return false;
     }
+
+    Want want;
+    want.SetAction(Want::ACTION_HOME);
+    want.AddEntity(Want::ENTITY_HOME);
+
     std::vector<AbilityInfo> abilityInfos;
-    if (!iBundleMgr->QueryAllAbilityInfos(userId, abilityInfos)) {
+    if (!iBundleMgr->QueryAllAbilityInfos(want, userId, abilityInfos)) {
+        APP_LOGE("Query ability info failed");
         return false;
     }
 
     for (const auto& ability : abilityInfos) {
-        if (!ability.isHomeAbility || ability.applicationInfo.isLauncherApp || !ability.enabled) {
+        if (ability.applicationInfo.isLauncherApp || !ability.enabled) {
             continue;
         }
         LauncherAbilityInfo info;
