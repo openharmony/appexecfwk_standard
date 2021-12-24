@@ -551,6 +551,5 @@ void ApplicationInfo::ConvertToCompatibleApplicationInfo(CompatibleApplicationIn
     compatibleApplicationInfo.enabled = enabled;
     compatibleApplicationInfo.debug = debug;
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

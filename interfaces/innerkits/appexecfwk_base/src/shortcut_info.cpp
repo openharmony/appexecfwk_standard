@@ -252,6 +252,5 @@ void from_json(const nlohmann::json &jsonObject, ShortcutInfo &shortcutInfo)
         parseResult,
         ArrayType::NOT_ARRAY);
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

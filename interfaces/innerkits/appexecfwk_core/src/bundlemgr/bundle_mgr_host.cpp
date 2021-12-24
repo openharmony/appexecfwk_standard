@@ -676,9 +676,14 @@ ErrCode BundleMgrHost::HandleQueryAbilityInfosMutiparam(Parcel &data, Parcel &re
 
 ErrCode BundleMgrHost::HandleQueryAllAbilityInfos(Parcel &data, Parcel &reply)
 {
+    std::unique_ptr<Want> want(data.ReadParcelable<Want>());
+    if (!want) {
+        APP_LOGE("ReadParcelable<want> failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
     int32_t userId = data.ReadInt32();
     std::vector<AbilityInfo> abilityInfos;
-    bool ret = QueryAllAbilityInfos(userId, abilityInfos);
+    bool ret = QueryAllAbilityInfos(*want, userId, abilityInfos);
     if (!reply.WriteBool(ret)) {
         APP_LOGE("write failed");
         return ERR_APPEXECFWK_PARCEL_ERROR;

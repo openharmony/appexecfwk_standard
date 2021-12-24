@@ -95,6 +95,21 @@ bool Skill::Match(const OHOS::AAFwk::Want &want) const
     return true;
 }
 
+bool Skill::MatchLauncher(const OHOS::AAFwk::Want &want) const
+{
+    bool matchAction = MatchAction(want.GetAction());
+    if (!matchAction) {
+        APP_LOGD("Action does not match");
+        return false;
+    }
+    bool matchEntities = MatchEntities(want.GetEntities());
+    if (!matchEntities) {
+        APP_LOGD("Entities does not match");
+        return false;
+    }
+    return true;
+}
+
 bool Skill::MatchAction(const std::string &action) const
 {
     // config actions empty, no match

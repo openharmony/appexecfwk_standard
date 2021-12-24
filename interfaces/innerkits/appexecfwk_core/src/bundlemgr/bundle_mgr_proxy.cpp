@@ -595,11 +595,15 @@ bool BundleMgrProxy::QueryAbilityInfos(
     return true;
 }
 
-bool BundleMgrProxy::QueryAllAbilityInfos(int32_t userId, std::vector<AbilityInfo> &abilityInfos)
+bool BundleMgrProxy::QueryAllAbilityInfos(const Want &want, int32_t userId, std::vector<AbilityInfo> &abilityInfos)
 {
     MessageParcel data;
     if (!data.WriteInterfaceToken(GetDescriptor())) {
         APP_LOGE("fail to QueryAbilityInfo due to write MessageParcel fail");
+        return false;
+    }
+    if (!data.WriteParcelable(&want)) {
+        APP_LOGE("fail to QueryAbilityInfos mutiparam due to write want fail");
         return false;
     }
     if (!data.WriteInt32(userId)) {

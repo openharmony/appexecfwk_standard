@@ -24,7 +24,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 /*
  * form_json and to_json is global static overload method, which need callback by json library,
  * and can not rename this function, so don't named according UpperCamelCase style

@@ -33,7 +33,6 @@
 namespace OHOS {
 namespace AppExecFwk {
 namespace {}  // namespace
-
 bool InstalldOperator::IsExistFile(const std::string &path)
 {
     if (path.empty()) {
@@ -239,6 +238,5 @@ bool InstalldOperator::MkOwnerDir(const std::string &path, bool isReadByOthers, 
     }
     return ChangeFileAttr(path, uid, gid);
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

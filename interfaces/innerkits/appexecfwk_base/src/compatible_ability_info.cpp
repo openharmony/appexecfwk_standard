@@ -26,7 +26,6 @@
 namespace OHOS {
 namespace AppExecFwk {
 using namespace Constants;
-
 bool CompatibleAbilityInfo::ReadFromParcel(Parcel& parcel)
 {
     APP_LOGD("CompatibleAbilityInfo::ReadFromParcel called");
@@ -268,7 +267,6 @@ void CompatibleAbilityInfo::ConvertToAbilityInfo(AbilityInfo& abilityInfo) const
     abilityInfo.descriptionId = descriptionId;
     abilityInfo.enabled = enabled;
     abilityInfo.originalBundleName = bundleName;
-
 }
 } // namespace AppExecFwk
 } // namespace OHOS
