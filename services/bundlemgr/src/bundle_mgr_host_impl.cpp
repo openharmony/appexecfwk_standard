@@ -205,14 +205,14 @@ bool BundleMgrHostImpl::QueryAbilityInfosForClone(const Want &want, std::vector<
     return dataMgr->QueryAbilityInfosForClone(want, abilityInfos);
 }
 
-bool BundleMgrHostImpl::QueryAllAbilityInfos(int32_t userId, std::vector<AbilityInfo> &abilityInfos)
+bool BundleMgrHostImpl::QueryAllAbilityInfos(const Want &want, int32_t userId, std::vector<AbilityInfo> &abilityInfos)
 {
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
         APP_LOGE("DataMgr is nullptr");
         return false;
     }
-    return dataMgr->QueryAllAbilityInfos(userId, abilityInfos);
+    return dataMgr->QueryLauncherAbilityInfos(want, userId, abilityInfos);
 }
 
 bool BundleMgrHostImpl::QueryAbilityInfoByUri(const std::string &abilityUri, AbilityInfo &abilityInfo)

@@ -21,7 +21,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class InstalldHostImpl : public InstalldHost {
 public:
     InstalldHostImpl();
@@ -77,7 +76,6 @@ public:
      */
     virtual ErrCode CleanBundleDataDir(const std::string &bundleDir) override;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_INSTALLD_HOST_IMPL_H

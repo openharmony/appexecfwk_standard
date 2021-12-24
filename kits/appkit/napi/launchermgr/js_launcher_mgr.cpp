@@ -13,17 +13,21 @@
  * limitations under the License.
  */
 
-#ifndef FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_BUNDLE_VERIFY_MGR_H
-#define FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_BUNDLE_VERIFY_MGR_H
-
-#include "interfaces/hap_verify.h"
+#include "js_launcher_mgr.h"
+#include "hilog_wrapper.h"
 
 namespace OHOS {
 namespace AppExecFwk {
-class BundleVerifyMgr {
-public:
-    static bool HapVerify(const std::string &filePath, Security::Verify::HapVerifyResult &hapVerifyResult);
-};
+JSLauncherMgr::JSLauncherMgr()
+{
+    launcherService_ = new LauncherService();
+}
+
+JSLauncherMgr::~JSLauncherMgr(){}
+
+OHOS::sptr<LauncherService> JSLauncherMgr::GetLauncherService()
+{
+    return DelayedSingleton<JSLauncherMgr>::GetInstance()->launcherService_;
+}
 }  // namespace AppExecFwk
 }  // namespace OHOS
-#endif  // FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_BUNDLE_VERIFY_MGR_H

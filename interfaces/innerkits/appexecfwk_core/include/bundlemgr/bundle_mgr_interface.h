@@ -251,7 +251,7 @@ public:
      * @param abilityInfos Indicates the obtained AbilityInfos object.
      * @return Returns true if the AbilityInfos is successfully obtained; returns false otherwise.
      */
-    virtual bool QueryAllAbilityInfos(int32_t userId, std::vector<AbilityInfo> &abilityInfos)
+    virtual bool QueryAllAbilityInfos(const Want &want, int32_t userId, std::vector<AbilityInfo> &abilityInfos)
     {
         return false;
     }
