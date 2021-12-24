@@ -64,7 +64,6 @@ ohos_unittest("FmsFormMgrNotifyInvisibleFormsTest") {
     "//base/security/permission/interfaces/innerkits/permission_standard/permissionsdk:libpermissionsdk_standard",
 
     #"${libs_path}/libeventhandler:libeventhandler_target",
-    #"//base/startup/appspawn_standard:appspawn_socket_client",
     "//foundation/aafwk/standard/interfaces/innerkits/base:base",
     "//foundation/aafwk/standard/interfaces/innerkits/want:want",
     "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",

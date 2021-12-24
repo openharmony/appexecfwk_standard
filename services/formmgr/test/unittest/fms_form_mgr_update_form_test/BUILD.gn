@@ -61,7 +61,6 @@ ohos_unittest("FmsFormMgrUpdateFormTest") {
     "${libs_path}/libeventhandler:libeventhandler_target",
     "${services_path}/formmgr:fms_target",
     "//base/security/permission/interfaces/innerkits/permission_standard/permissionsdk:libpermissionsdk_standard",
-    "//base/startup/appspawn_standard:appspawn_socket_client",
     "//foundation/aafwk/standard/interfaces/innerkits/base:base",
     "//foundation/aafwk/standard/interfaces/innerkits/want:want",
 
@@ -74,6 +73,7 @@ ohos_unittest("FmsFormMgrUpdateFormTest") {
   ]
 
   external_deps = [
+    "appspawn:appspawn_socket_client",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
   ]

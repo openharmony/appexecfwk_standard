@@ -63,7 +63,6 @@ ohos_unittest("FmsFormSetNextRefreshTest") {
     "//base/security/permission/interfaces/innerkits/permission_standard/permissionsdk:libpermissionsdk_standard",
 
     #"${libs_path}/libeventhandler:libeventhandler_target",
-    #"//base/startup/appspawn_standard:appspawn_socket_client",
     "//foundation/aafwk/standard/interfaces/innerkits/base:base",
     "//foundation/aafwk/standard/interfaces/innerkits/want:want",
     "//foundation/distributedschedule/dmsfwk/services/dtbschedmgr:distributedschedsvr",
@@ -74,6 +73,7 @@ ohos_unittest("FmsFormSetNextRefreshTest") {
   ]
 
   external_deps = [
+    "appspawn:appspawn_socket_client",
     "ces_standard:cesfwk_core",
     "ces_standard:cesfwk_innerkits",
     "hiviewdfx_hilog_native:libhilog",
