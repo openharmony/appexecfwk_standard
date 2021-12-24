@@ -110,7 +110,6 @@ protected:
                     "descriptionId": 1,
                     "iconId": 1,
                     "srcLanguage": "C++",
-                    "isHomeAbility": true,
                     "srcPath": ""
                 }
             },

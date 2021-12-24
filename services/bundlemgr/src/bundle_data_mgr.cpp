@@ -470,6 +470,11 @@ bool BundleDataMgr::QueryAbilityInfosForClone(const Want &want, std::vector<Abil
 bool BundleDataMgr::ImplicitQueryAbilityInfos(
     const Want &want, int32_t flags, int32_t userId, std::vector<AbilityInfo> &abilityInfos) const
 {
+    if (want.GetAction().empty() && want.GetEntities().empty()
+        && want.GetUriString().empty() && want.GetType().empty()) {
+        APP_LOGE("param invalid");
+        return false;
+    }
     APP_LOGD("action:%{public}s, uri:%{public}s, type:%{public}s",
         want.GetAction().c_str(), want.GetUriString().c_str(), want.GetType().c_str());
     APP_LOGD("flags:%{public}d, userId:%{public}d", flags, userId);
@@ -509,6 +514,10 @@ void BundleDataMgr::GetMatchAbilityInfos(
         APP_LOGE("bundleName: %{public}s is disabled", info.GetBundleName().c_str());
         return;
     }
+    if (((static_cast<uint32_t>(flags) & GET_ABILITY_INFO_SYSTEMAPP_ONLY) == GET_ABILITY_INFO_SYSTEMAPP_ONLY) &&
+        !info.IsSystemApp()) {
+        return;
+    }
     std::map<std::string, std::vector<Skill>> skillInfos = info.GetInnerSkillInfos();
     for (const auto &abilityInfoPair : info.GetInnerAbilityInfos()) {
         auto skillsPair = skillInfos.find(abilityInfoPair.first);
@@ -541,36 +550,63 @@ void BundleDataMgr::GetMatchAbilityInfos(
     }
 }
 
-bool BundleDataMgr::QueryAllAbilityInfos(uint32_t userId, std::vector<AbilityInfo> &abilityInfos) const
+void BundleDataMgr::GetMatchLauncherAbilityInfos(
+    const Want& want, const InnerBundleInfo& info, std::vector<AbilityInfo>& abilityInfos) const
 {
-    std::lock_guard<std::mutex> lock(bundleInfoMutex_);
-    for (const auto& bundle : bundleInfos_) {
-        std::string bundleName = bundle.first;
-        std::map<std::string, InnerBundleInfo> infoWithId = bundle.second;
-        auto infoWithIdItem = infoWithId.find(Constants::CURRENT_DEVICE_ID);
-        if (infoWithIdItem == infoWithId.end()) {
-            APP_LOGW("bundle:%{public}s device id not find", bundleName.c_str());
+    std::map<std::string, std::vector<Skill>> skillInfos = info.GetInnerSkillInfos();
+    for (const auto& abilityInfoPair : info.GetInnerAbilityInfos()) {
+        auto skillsPair = skillInfos.find(abilityInfoPair.first);
+        if (skillsPair == skillInfos.end()) {
             continue;
         }
-        if (infoWithIdItem->second.IsDisabled()) {
-            APP_LOGW("app %{public}s is disabled", infoWithIdItem->second.GetBundleName().c_str());
-            continue;
-        }
-
-        // get ability in InnerBundleInfo
-        auto itemAbilities = infoWithIdItem->second.FindAbilityInfos(bundleName);
-        if (itemAbilities == std::nullopt) {
-            continue;
-        }
-
-        for (auto& ability : (*itemAbilities)) {
-            infoWithIdItem->second.GetApplicationInfo(
-                ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMS, 0,
-                ability.applicationInfo);
-            abilityInfos.emplace_back(ability);
+        for (const Skill& skill : skillsPair->second) {
+            if (skill.MatchLauncher(want)) {
+                AbilityInfo abilityinfo = abilityInfoPair.second;
+                info.GetApplicationInfo(ApplicationFlag::GET_BASIC_APPLICATION_INFO, 0, abilityinfo.applicationInfo);
+                abilityInfos.emplace_back(abilityinfo);
+                break;
+            }
         }
     }
-    return true;
+}
+
+bool BundleDataMgr::QueryLauncherAbilityInfos(
+    const Want& want, uint32_t userId, std::vector<AbilityInfo>& abilityInfos) const
+{
+    std::lock_guard<std::mutex> lock(bundleInfoMutex_);
+    if (bundleInfos_.empty()) {
+        APP_LOGE("bundleInfos_ is empty");
+        return false;
+    }
+
+    ElementName element = want.GetElement();
+    std::string bundleName = element.GetBundleName();
+    if (bundleName.empty()) {
+        // query all launcher ability
+        for (const auto &item : bundleInfos_) {
+            auto infoWithIdItem = item.second.find(Constants::CURRENT_DEVICE_ID);
+            if (infoWithIdItem->second.IsDisabled()) {
+                APP_LOGI("app %{public}s is disabled", infoWithIdItem->second.GetBundleName().c_str());
+                continue;
+            }
+            if (infoWithIdItem != item.second.end()) {
+                GetMatchLauncherAbilityInfos(want, infoWithIdItem->second, abilityInfos);
+            }
+        }
+        return true;
+    } else {
+        // query definite abilitys by bundle name
+        auto item = bundleInfos_.find(bundleName);
+        if (item == bundleInfos_.end()) {
+            APP_LOGE("no bundleName %{public}s found", bundleName.c_str());
+            return false;
+        }
+        auto infoWithIdItem = item->second.find(Constants::CURRENT_DEVICE_ID);
+        if (infoWithIdItem != item->second.end()) {
+            GetMatchLauncherAbilityInfos(want, infoWithIdItem->second, abilityInfos);
+        }
+        return true;
+    }
 }
 
 bool BundleDataMgr::QueryAbilityInfoByUri(const std::string &abilityUri, AbilityInfo &abilityInfo) const
