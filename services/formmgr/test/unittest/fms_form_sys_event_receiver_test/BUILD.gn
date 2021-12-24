@@ -63,7 +63,6 @@ ohos_unittest("FmsFormSysEventReceiverTest") {
     "//base/miscservices/time/services:time_service",
     "//base/notification/ans_standard/frameworks/wantagent:wantagent_innerkits",
     "//base/security/permission/interfaces/innerkits/permission_standard/permissionsdk:libpermissionsdk_standard",
-    "//base/startup/appspawn_standard:appspawn_socket_client",
     "//foundation/aafwk/standard/interfaces/innerkits/base:base",
     "//foundation/aafwk/standard/interfaces/innerkits/want:want",
 
@@ -77,6 +76,7 @@ ohos_unittest("FmsFormSysEventReceiverTest") {
   ]
 
   external_deps = [
+    "appspawn:appspawn_socket_client",
     "ces_standard:cesfwk_core",
     "ces_standard:cesfwk_innerkits",
     "hiviewdfx_hilog_native:libhilog",
