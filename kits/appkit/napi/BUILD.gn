@@ -17,5 +17,6 @@ group("napi_packages") {
   deps = [
     "//foundation/appexecfwk/standard/kits/appkit/napi/appMgr:napi_app_mgr",
     "//foundation/appexecfwk/standard/kits/appkit/napi/bundlemgr:bundle",
+    "//foundation/appexecfwk/standard/kits/appkit/napi/launchermgr:innerbundlemanager",
   ]
 }
