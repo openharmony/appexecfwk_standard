@@ -26,7 +26,13 @@
 #include "nocopyable.h"
 
 namespace OHOS {
+namespace HiviewDFX {
+class HiTraceId;
+}
+
 namespace AppExecFwk {
+using HiTraceId = OHOS::HiviewDFX::HiTraceId;
+
 class EventHandler;
 
 const std::string LINE_SEPARATOR = "\n";
@@ -425,6 +431,21 @@ private:
         smartPtrTypeId_ = CalculateSmartPtrTypeId(object);
     }
 
+    /**
+     * if event has trace id ,return trace id, else create span id,
+     * store it in event and return.
+     *
+     * @return return hiTrace Id.
+     */
+    const std::shared_ptr<HiTraceId> GetOrCreateTraceId();
+
+    /**
+     * return trace id.
+     *
+     * @return return hiTrace Id.
+     */
+    const std::shared_ptr<HiTraceId> GetTraceId();
+
     /*
      * Calculate the type id for different smart pointers.
      */
@@ -499,6 +520,9 @@ private:
 
     // Used for synchronized event.
     std::shared_ptr<Waiter> waiter_;
+
+    // use to store hitrace Id
+    std::shared_ptr<HiTraceId> hiTraceId_;
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS

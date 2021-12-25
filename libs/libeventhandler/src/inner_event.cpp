@@ -204,6 +204,11 @@ void InnerEvent::ClearEvent()
             smartPtrTypeId_ = 0;
         }
     }
+
+    if (hiTraceId_) {
+        hiTraceId_.reset();
+    }
+
     // Clear owner
     owner_.reset();
 }
@@ -222,6 +227,26 @@ const std::shared_ptr<InnerEvent::Waiter> &InnerEvent::CreateWaiter()
 bool InnerEvent::HasWaiter() const
 {
     return (waiter_ != nullptr);
+}
+
+const std::shared_ptr<HiTraceId> InnerEvent::GetOrCreateTraceId()
+{
+    if (hiTraceId_) {
+        return hiTraceId_;
+    }
+
+    auto traceId = HiTrace::GetId();
+    if (!traceId.IsValid()) {
+        return nullptr;
+    }
+
+    hiTraceId_ = std::make_shared<HiTraceId>(HiTrace::CreateSpan());
+    return hiTraceId_;
+}
+
+const std::shared_ptr<HiTraceId> InnerEvent::GetTraceId()
+{
+    return hiTraceId_;
 }
 
 std::string InnerEvent::Dump()
