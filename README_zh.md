@@ -632,17 +632,9 @@ function OnReceiveEvent(err, data) {
 
 ```
 bundle.queryAbilityByWant({
-    want: {
-        action: "action.system.home",
-        entities: ["entity.system.home"],
-        elementName: {
-            deviceId: "0",
-            bundleName: "com.example.myapplicationInstall",
-            abilityName: "com.example.myapplication.MainAbility",
-        },
-    }
-},  1, 0,
-}).then((data) => {
+    bundleName: "com.example.myapplicationInstall",
+    abilityName: "com.example.myapplication.MainAbility",
+}, 0x00000002 | 0x00000004 | 0x00000020, 0).then((data) => {
     console.info("name:" + data.name);
     console.info("label:" + data.label);
     console.info("description:" + data.description);
@@ -746,19 +738,10 @@ bundle.queryAbilityByWant({
 * 示例
 
 ```
-bundle.queryAbilityByWant(
-    {
-        want: {
-            action: "action.system.home",
-            entities: ["entity.system.home"],
-            elementName: {
-                deviceId: "0",
-                bundleName: "com.example.myapplicationInstall",
-                abilityName: "com.example.myapplication.MainAbility",
-            },
-        }
-    }, 1, 0,
-    }, OnReceiveEvent);
+bundle.queryAbilityByWant({
+    bundleName: "com.example.myapplicationInstall",
+    abilityName: "com.example.myapplication.MainAbility",
+}, 0x00000002 | 0x00000004 | 0x00000020, 0, OnReceiveEvent);
 
 function OnReceiveEvent(err, data) {
     console.info("name:" + data.name);
