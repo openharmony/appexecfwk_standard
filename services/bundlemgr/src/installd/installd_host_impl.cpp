@@ -69,12 +69,12 @@ ErrCode InstalldHostImpl::ExtractModuleFiles(const std::string &srcModulePath, c
     }
     if (!InstalldOperator::MkRecursiveDir(targetPath, true)) {
         APP_LOGE("create target dir %{public}s failed", targetPath.c_str());
-        return ERR_APPEXECFWK_INSTALLD_EXTRACT_FILES_FAILED;
+        return ERR_APPEXECFWK_INSTALLD_CREATE_DIR_FAILED;
     }
     if (!InstalldOperator::ExtractFiles(srcModulePath, targetPath)) {
         APP_LOGE("extract %{public}s to %{public}s failed", srcModulePath.c_str(), targetPath.c_str());
         InstalldOperator::DeleteDir(targetPath);
-        return ERR_APPEXECFWK_INSTALLD_EXTRACT_FILES_FAILED;
+        return ERR_APPEXECFWK_INSTALL_DISK_MEM_INSUFFICIENT;
     }
     return ERR_OK;
 }
