@@ -69,6 +69,13 @@ bool EventHandler::SendEvent(InnerEvent::Pointer &event, int64_t delayTime, Prio
     }
 
     event->SetOwner(shared_from_this());
+    // get traceId from event, if HiTrace::begin has been called, would get a valid trace id.
+    auto traceId = event->GetOrCreateTraceId();
+    // if traceId is valid, out put trace information
+    if (AllowHiTraceOutPut(traceId, event->HasWaiter())) {
+        HiTracePointerOutPut(traceId, event, "Send", HiTraceTracepointType::HITRACE_TP_CS);
+    }
+
     eventRunner_->GetEventQueue()->Insert(event, priority);
     return true;
 }
@@ -104,6 +111,10 @@ bool EventHandler::SendSyncEvent(InnerEvent::Pointer &event, Priority priority)
         DistributeEvent(event);
         return true;
     }
+
+    // get traceId from event, if HiTrace::begin has been called, would get a valid trace id.
+    auto spanId = event->GetOrCreateTraceId();
+
     // Create waiter, used to block.
     auto waiter = event->CreateWaiter();
     // Send this event as normal one.
@@ -112,6 +123,10 @@ bool EventHandler::SendSyncEvent(InnerEvent::Pointer &event, Priority priority)
     }
     // Wait until event is processed(recycled).
     waiter->Wait();
+
+    if ((spanId) && (spanId->IsValid())) {
+        HiTrace::Tracepoint(HiTraceTracepointType::HITRACE_TP_CR, *spanId, "event is processed");
+    }
 
     return true;
 }
@@ -231,6 +246,15 @@ void EventHandler::DistributeEvent(const InnerEvent::Pointer &event)
     std::weak_ptr<EventHandler> oldHandler = currentEventHandler;
     // Save current event handler into thread local data.
     currentEventHandler = shared_from_this();
+
+    auto spanId = event->GetTraceId();
+    auto traceId = HiTrace::GetId();
+    bool allowTraceOutPut = AllowHiTraceOutPut(spanId, event->HasWaiter());
+    if (allowTraceOutPut) {
+        HiTrace::SetId(*spanId);
+        HiTracePointerOutPut(spanId, event, "Receive", HiTraceTracepointType::HITRACE_TP_SR);
+    }
+
     if (event->HasTask()) {
         // Call task callback directly if contains a task.
         (event->GetTaskCallback())();
@@ -238,6 +262,15 @@ void EventHandler::DistributeEvent(const InnerEvent::Pointer &event)
         // Otherwise let developers to handle it.
         ProcessEvent(event);
     }
+
+    if (allowTraceOutPut) {
+        HiTrace::Tracepoint(HiTraceTracepointType::HITRACE_TP_SS, *spanId, "Event Distribute over");
+        HiTrace::ClearId();
+        if (traceId.IsValid()) {
+            HiTrace::SetId(traceId);
+        }
+    }
+
     // Restore current event handler.
     if (oldHandler.expired()) {
         currentEventHandler = nullptr;

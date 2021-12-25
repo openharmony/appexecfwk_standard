@@ -12,20 +12,39 @@
 # limitations under the License.
 
 import("//build/ohos.gni")
+import("//build/ohos/ace/ace.gni")
 import("//foundation/appexecfwk/standard/appexecfwk.gni")
 
-config("libeventhandler_config") {
-  include_dirs = [
-    "${appexecfwk_path}/interfaces/innerkits/libeventhandler/include",
-    "//utils/native/base/include",
-    "src",
-    "//base/hiviewdfx/interfaces/innerkits/libhilog/include",
-    "//base/hiviewdfx/interfaces/innerkits/libhitrace/include",
-  ]
+config("native_module_config") {
+  include_dirs = [ "include" ]
 }
 
-group("libeventhandler_target") {
-  deps = [
-    "${appexecfwk_path}/interfaces/innerkits/libeventhandler:libeventhandler",
+ohos_shared_library("emitter") {
+  include_dirs = [
+    "${innerkits_path}/libeventhandler/include",
+    "//third_party/node/src",
+    "//third_party/libuv/include",
   ]
+
+  configs = [ ":native_module_config" ]
+
+  sources = [
+    "src/events_emitter.cpp",
+    "src/init.cpp",
+  ]
+
+  deps = [
+    "${innerkits_path}/libeventhandler:libeventhandler",
+    "//third_party/libuv:uv_static",
+  ]
+
+  external_deps = [
+    "hiviewdfx_hilog_native:libhilog",
+    "ipc:ipc_core",
+    "napi:ace_napi",
+  ]
+
+  relative_install_dir = "module"
+  subsystem_name = "appexecfwk"
+  part_name = "appexecfwk_standard"
 }
