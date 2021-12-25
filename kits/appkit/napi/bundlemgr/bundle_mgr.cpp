@@ -74,9 +74,7 @@ enum class InstallErrorCode {
     STATUS_RECOVER_FAILURE_INVALID = 0x0D,
     STATUS_ABILITY_NOT_FOUND = 0x40,
     STATUS_BMS_SERVICE_ERROR = 0x41,
-    STATUS_BMS_SERVICE_DIED = 0x42,
-    STATUS_FAILED_GET_INSTALLER_PROXY = 0X43,
-    STATUS_FAILED_INSUFFICIENT_DISK_MEMORY = 0X44,
+    STATUS_FAILED_NO_SPACE_LEFT = 0X42,
 };
 
 const std::string PERMISSION_CHANGE = "permissionChange";
@@ -2333,22 +2331,8 @@ static bool ParseInstallParam(napi_env env, InstallParam &installParam, napi_val
         HILOG_ERROR("args type incorrect!");
         return false;
     }
-    HILOG_INFO("-----ParseInstallParam type-----");
-    napi_value installProp = nullptr;
-    status = napi_get_named_property(env, args, "param", &installProp);
-    if (status != napi_ok) {
-        HILOG_ERROR("cannot find property param");
-        return false;
-    }
-    napi_typeof(env, installProp, &valueType);
-    if (valueType != napi_object) {
-        HILOG_ERROR("param type incorrect!");
-        return false;
-    }
-    HILOG_INFO("-----ParseInstallParam InstallParam-----");
-
     napi_value property = nullptr;
-    status = napi_get_named_property(env, installProp, "userId", &property);
+    status = napi_get_named_property(env, args, "userId", &property);
     if (status != napi_ok) {
         HILOG_ERROR("cannot find property userId");
         return false;
@@ -2364,7 +2348,7 @@ static bool ParseInstallParam(napi_env env, InstallParam &installParam, napi_val
     HILOG_INFO("ParseInstallParam userId=%{public}d.", installParam.userId);
 
     property = nullptr;
-    status = napi_get_named_property(env, installProp, "installFlag", &property);
+    status = napi_get_named_property(env, args, "installFlag", &property);
     if (status != napi_ok) {
         HILOG_ERROR("cannot find property installFlag");
         return false;
@@ -2380,7 +2364,7 @@ static bool ParseInstallParam(napi_env env, InstallParam &installParam, napi_val
     HILOG_INFO("ParseInstallParam installFlag=%{public}d.", installParam.installFlag);
 
     property = nullptr;
-    status = napi_get_named_property(env, installProp, "isKeepData", &property);
+    status = napi_get_named_property(env, args, "isKeepData", &property);
     if (status != napi_ok) {
         HILOG_ERROR("cannot find property isKeepData");
         return false;
@@ -2494,16 +2478,13 @@ static void ConvertInstallResult(InstallResult &installResult)
             installResult.resultMsg = "STATUS_RECOVER_FAILURE_INVALID";
             break;
         case static_cast<int32_t>(IStatusReceiver::ERR_FAILED_SERVICE_DIED):
-            installResult.resultCode = static_cast<int32_t>(InstallErrorCode::STATUS_BMS_SERVICE_DIED);
-            installResult.resultMsg = "STATUS_BMS_SERVICE_DIED";
-            break;
         case static_cast<int32_t>(IStatusReceiver::ERR_FAILED_GET_INSTALLER_PROXY):
-            installResult.resultCode = static_cast<int32_t>(InstallErrorCode::STATUS_FAILED_GET_INSTALLER_PROXY);
-            installResult.resultMsg = "STATUS_FAILED_GET_INSTALLER_PROXY";
+            installResult.resultCode = static_cast<int32_t>(InstallErrorCode::STATUS_BMS_SERVICE_ERROR);
+            installResult.resultMsg = "STATUS_BMS_SERVICE_ERROR";
             break;
         case static_cast<int32_t>(IStatusReceiver::ERR_INSTALL_DISK_MEM_INSUFFICIENT):
-            installResult.resultCode = static_cast<int32_t>(InstallErrorCode::STATUS_FAILED_INSUFFICIENT_DISK_MEMORY);
-            installResult.resultMsg = "STATUS_FAILED_INSUFFICIENT_DISK_MEMORY";
+            installResult.resultCode = static_cast<int32_t>(InstallErrorCode::STATUS_FAILED_NO_SPACE_LEFT);
+            installResult.resultMsg = "STATUS_FAILED_NO_SPACE_LEFT";
             break;
         default:
             installResult.resultCode = static_cast<int32_t>(InstallErrorCode::STATUS_BMS_SERVICE_ERROR);
@@ -2547,7 +2528,10 @@ napi_value Install(napi_env env, napi_callback_info info)
         HILOG_INFO("Install asyncCallback.");
         napi_valuetype valuetype = napi_undefined;
         NAPI_CALL(env, napi_typeof(env, argv[ARGS_SIZE_TWO], &valuetype));
-        NAPI_ASSERT(env, valuetype == napi_function, "Wrong argument type. Function expected.");
+        if (valuetype != napi_function) {
+            HILOG_ERROR("Wrong argument type. Function expected.");
+            return nullptr;
+        }
         napi_create_reference(env, argv[ARGS_SIZE_TWO], NAPI_RETURN_ONE, &asyncCallbackInfo->callback);
 
         napi_value resourceName;
