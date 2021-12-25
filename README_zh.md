@@ -833,10 +833,9 @@ function OnReceiveEvent(err, data) {
 ```
 bundle.getBundleInstaller().then((data) => {
     data.install(['/data/test.hap'], {
-        param: {
             userId: 0,
+            installFlag: 1,
             isKeepData: false
-        }
     }, OnReceiveinstallEvent);
 
     function OnReceiveinstallEvent(err, data) {
@@ -873,10 +872,9 @@ bundle.getBundleInstaller().then((data) => {
 ```
 bundle.getBundleInstaller().then((data) => {
     data.uninstall('com.example.myapplication', {
-        param: {
             userId: 0,
+            installFlag: 1,
             isKeepData: false
-        }
     }, OnReceiveinstallEvent);
 
     function OnReceiveinstallEvent(err, data) {
