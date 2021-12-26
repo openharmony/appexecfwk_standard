@@ -2,6 +2,31 @@
   "aosp_java_api_allowlist": "//foundation/appexecfwk/adapter/appexecfwk-java-aosp-apis.txt",
   "aosp_cxx_api_allowlist": "//foundation/appexecfwk/adapter/appexecfwk_cxx_api_allowlist.txt",
   "parts": {
+    "eventhandler": {
+      "inner_kits": [
+        {
+          "header": {
+            "header_base": "//foundation/appexecfwk/standard/interfaces/innerkits/libeventhandler/include",
+            "header_files": [
+              "event_handler_errors.h",
+              "event_handler.h",
+              "event_queue.h",
+              "event_runner.h",
+              "inner_event.h",
+              "file_descriptor_listener.h",
+              "native_implement_eventhandler.h"
+            ]
+          },
+          "name": "//foundation/appexecfwk/standard/interfaces/innerkits/libeventhandler:libeventhandler"
+        }
+      ],
+      "module_list": [
+        "//foundation/appexecfwk/standard/interfaces/innerkits/libeventhandler:libeventhandler"
+      ],
+      "test_list": [
+        "//foundation/appexecfwk/standard/libs/libeventhandler/test:unittest"
+      ]
+    },
     "appexecfwk_standard": {
       "inner_kits": [
         {
@@ -100,7 +125,6 @@
         "//foundation/appexecfwk/standard/tools/test:moduletest",
         "//foundation/appexecfwk/standard/tools/test:systemtest",
         "//foundation/appexecfwk/standard/tools/test:unittest",
-        "//foundation/appexecfwk/standard/libs/libeventhandler/test:unittest",
         "//foundation/appexecfwk/standard/libs/test:moduletest",
         "//foundation/appexecfwk/standard/interfaces/innerkits/task_dispatcher/test:unittest",
         "//foundation/appexecfwk/standard/interfaces/innerkits/test:moduletest"
