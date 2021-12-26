@@ -22,6 +22,7 @@
 #include <string>
 
 #include "hilog/log.h"
+#include "hitrace/trace.h"
 #include "inner_event.h"
 
 #define DEFINE_HILOG_LABEL(name) static constexpr OHOS::HiviewDFX::HiLogLabel LOG_LABEL = {LOG_CORE, LOG_DOMAIN, name}
@@ -61,6 +62,31 @@ static inline int32_t NanosecondsToTimeout(int64_t nanoseconds)
     }
 
     return (milliseconds > INT32_MAX) ? INT32_MAX : static_cast<int32_t>(milliseconds);
+}
+
+using HiTrace = OHOS::HiviewDFX::HiTrace;
+
+static inline bool AllowHiTraceOutPut(const std::shared_ptr<HiTraceId>& traceId, bool isSyncEvent)
+{
+    if ((!traceId) || (!traceId->IsValid())) {
+        return false;
+    }
+    if ((!isSyncEvent) && (!traceId->IsFlagEnabled(HITRACE_FLAG_INCLUDE_ASYNC))) {
+        return false;
+    }
+    return true;
+}
+
+static inline void HiTracePointerOutPut(const std::shared_ptr<HiTraceId>& spanId,
+    const InnerEvent::Pointer& event, const char* action, HiTraceTracepointType type)
+{
+    if (!event->HasTask()) {
+        HiTrace::Tracepoint(type, *spanId, "%s event, event id: %d", action, event->GetInnerEventId());
+    } else if (!event->GetTaskName().empty()) {
+        HiTrace::Tracepoint(type, *spanId, "%s task with name, name: %s", action, event->GetTaskName().c_str());
+    } else {
+        HiTrace::Tracepoint(type, *spanId, "%s UnNamed Task", action);
+    }
 }
 
 static inline char *GetLastErr()

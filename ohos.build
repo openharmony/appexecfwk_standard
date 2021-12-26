@@ -65,6 +65,15 @@
         },
         {
           "header": {
+            "header_base": "//foundation/appexecfwk/standard/interfaces/innerkits/napi/eventhandler/include",
+            "header_files": [
+              "events_emitter.h"
+            ]
+          },
+          "name": "//foundation/appexecfwk/standard/interfaces/innerkits/napi/eventhandler:emitter"
+        },
+        {
+          "header": {
             "header_base": "//foundation/appexecfwk/standard/interfaces/innerkits/fmskit/native/include",
             "header_files": [
               "form_callback_interface.h",
