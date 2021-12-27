@@ -35,10 +35,10 @@ ohos_unittest("AmsServiceAppSpawnSocketTest") {
   deps = [
     "${libs_path}/libeventhandler:libeventhandler_target",
     "${services_path}/appmgr/test:appmgr_test_source",
-    "//base/startup/appspawn_standard:appspawn_socket_client",
   ]
 
   external_deps = [
+    "appspawn:appspawn_socket_client",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
   ]

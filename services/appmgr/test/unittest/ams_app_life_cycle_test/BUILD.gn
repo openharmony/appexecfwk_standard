@@ -54,7 +54,6 @@ ohos_unittest("AmsAppLifeCycleTest") {
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core:appexecfwk_core",
     "${libs_path}/libeventhandler:libeventhandler_target",
     "${services_path}/appmgr/test:appmgr_test_source",
-    "//base/startup/appspawn_standard:appspawn_socket_client",
     "//foundation/aafwk/standard/interfaces/innerkits/base:base",
     "//foundation/aafwk/standard/interfaces/innerkits/want:want",
     "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_base:appexecfwk_base",
@@ -63,6 +62,7 @@ ohos_unittest("AmsAppLifeCycleTest") {
   ]
 
   external_deps = [
+    "appspawn:appspawn_socket_client",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
   ]

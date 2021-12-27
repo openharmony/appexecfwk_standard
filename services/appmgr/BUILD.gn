@@ -17,7 +17,7 @@ import("//foundation/appexecfwk/standard/appexecfwk.gni")
 config("appmgr_config") {
   include_dirs = [
     "include",
-    "${appspawn_path}/include",
+    "${appspawn_path}/interfaces/innerkits/include",
     "//utils/system/safwk/native/include",
     "//base/notification/ces_standard/frameworks/core/include",
     "//base/notification/ces_standard/interfaces/innerkits/native/include",
@@ -115,7 +115,6 @@ ohos_shared_library("libams") {
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core:appexecfwk_core",
     "${libs_path}/libeventhandler:libeventhandler_target",
     "//base/security/permission/interfaces/innerkits/permission_standard/permissionsdk:libpermissionsdk_standard",
-    "//base/startup/appspawn_standard:appspawn_socket_client",
     "//foundation/aafwk/standard/interfaces/innerkits/base:base",
     "//foundation/aafwk/standard/interfaces/innerkits/want:want",
     "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
@@ -124,6 +123,7 @@ ohos_shared_library("libams") {
   ]
 
   external_deps = [
+    "appspawn:appspawn_socket_client",
     "ces_standard:cesfwk_core",
     "ces_standard:cesfwk_innerkits",
     "hiviewdfx_hilog_native:libhilog",
