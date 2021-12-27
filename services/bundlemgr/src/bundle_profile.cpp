@@ -66,6 +66,17 @@ const std::map<std::string, FormsColorMode> formColorModeMap = {
     {"dark", FormsColorMode::DARK_MODE},
     {"light", FormsColorMode::LIGHT_MODE}
 };
+std::map<std::string, uint32_t> backgroundModeMap = {
+    {KEY_DATA_TRANSFER, VALUE_DATA_TRANSFER},
+    {KEY_AUDIO_PLAYBACK, VALUE_AUDIO_PLAYBACK},
+    {KEY_AUDIO_RECORDING, VALUE_AUDIO_RECORDING},
+    {KEY_LOCATION, VALUE_LOCATION},
+    {KEY_BLUETOOTH_INTERACTION, VALUE_BLUETOOTH_INTERACTION},
+    {KEY_MULTI_DEVICE_CONNECTION, VALUE_MULTI_DEVICE_CONNECTION},
+    {KEY_WIFI_INTERACTION, VALUE_WIFI_INTERACTION},
+    {KEY_VOIP, VALUE_VOIP},
+    {KEY_TASK_KEEPING, VALUE_TASK_KEEPING}
+};
 
 struct Version {
     int32_t code = 0;
@@ -85,6 +96,7 @@ struct App {
     bool removable = true;
     Version version;
     ApiVersion apiVersion;
+    bool singleUser = false;
 };
 
 struct ReqVersion {
@@ -395,6 +407,14 @@ void from_json(const nlohmann::json &jsonObject, App &app)
         BUNDLE_APP_PROFILE_KEY_VENDOR,
         app.vendor,
         JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<bool>(jsonObject,
+        jsonObjectEnd,
+        BUNDLE_APP_PROFILE_KEY_SINGLE_USER,
+        app.singleUser,
+        JsonType::BOOLEAN,
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
@@ -1828,6 +1848,7 @@ bool TransformToInfo(const ProfileReader::ConfigJson &configJson, ApplicationInf
     applicationInfo.debug = configJson.deveicConfig.defaultDevice.debug;
     applicationInfo.enabled = true;
     applicationInfo.removable = configJson.app.removable;
+    applicationInfo.singleUser = configJson.app.singleUser;
     return true;
 }
 
@@ -1848,6 +1869,7 @@ bool TransformToInfo(const ProfileReader::ConfigJson &configJson, BundleInfo &bu
     bundleInfo.targetVersion = configJson.app.apiVersion.target;
     bundleInfo.releaseType = configJson.app.apiVersion.releaseType;
     bundleInfo.isKeepAlive = configJson.deveicConfig.defaultDevice.keepAlive;
+    bundleInfo.singleUser = configJson.app.singleUser;
     if (configJson.module.abilities.size() > 0) {
         bundleInfo.label = configJson.module.abilities[0].label;
     }
@@ -1868,6 +1890,17 @@ void GetMetaData(MetaData &metaData, const ProfileReader::MetaData &profileMetaD
         customizeData.value = item.value;
         metaData.customizeData.emplace_back(customizeData);
     }
+}
+
+uint32_t GetBackgroundModes(const std::vector<std::string>& backgroundModes)
+{
+    uint32_t backgroundMode = 0;
+    for (const auto& item : backgroundModes) {
+        if (ProfileReader::backgroundModeMap.find(item) != ProfileReader::backgroundModeMap.end()) {
+            backgroundMode |= ProfileReader::backgroundModeMap[item];
+        }
+    }
+    return backgroundMode;
 }
 
 bool TransformToInfo(const ProfileReader::ConfigJson &configJson, InnerModuleInfo &innerModuleInfo)
@@ -1968,6 +2001,7 @@ bool TransformToInfo(
     abilityInfo.defaultFormWidth = ability.form.defaultWidth;
     GetMetaData(abilityInfo.metaData, ability.metaData);
     abilityInfo.formEnabled = ability.formsEnabled;
+    abilityInfo.backgroundModes = GetBackgroundModes(ability.backgroundModes);
     return true;
 }
 

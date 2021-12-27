@@ -111,6 +111,7 @@ bool ApplicationInfo::ReadFromParcel(Parcel &parcel)
     isLauncherApp = parcel.ReadBool();
     enabled = parcel.ReadBool();
     debug = parcel.ReadBool();
+    singleUser = parcel.ReadBool();
     removable = parcel.ReadBool();
     supportedModes = parcel.ReadInt32();
     labelId = parcel.ReadInt32();
@@ -197,6 +198,7 @@ bool ApplicationInfo::Marshalling(Parcel &parcel) const
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, isLauncherApp);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, enabled);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, debug);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, singleUser);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, removable);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, supportedModes);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, labelId);
@@ -276,6 +278,7 @@ void to_json(nlohmann::json &jsonObject, const ApplicationInfo &applicationInfo)
         {APPLICATION_IS_LAUNCHER_APP, applicationInfo.isLauncherApp},
         {APPLICATION_ENABLED, applicationInfo.enabled},
         {APPLICATION_DEBUG, applicationInfo.debug},
+        {"singleUser", applicationInfo.singleUser},
         {APPLICATION_REMOVABLE, applicationInfo.removable},
         {APPLICATION_SUPPORTED_MODES, applicationInfo.supportedModes},
         {APPLICATION_PROCESS, applicationInfo.process},
@@ -412,6 +415,14 @@ void from_json(const nlohmann::json &jsonObject, ApplicationInfo &applicationInf
         jsonObjectEnd,
         APPLICATION_DEBUG,
         applicationInfo.debug,
+        JsonType::BOOLEAN,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<bool>(jsonObject,
+        jsonObjectEnd,
+        "singleUser",
+        applicationInfo.singleUser,
         JsonType::BOOLEAN,
         false,
         parseResult,
