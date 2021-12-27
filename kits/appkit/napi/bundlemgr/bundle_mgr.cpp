@@ -80,8 +80,8 @@ enum class InstallErrorCode {
 const std::string PERMISSION_CHANGE = "permissionChange";
 const std::string ANY_PERMISSION_CHANGE = "anyPermissionChange";
 
-std::mutex g_permissionsCallbackMutex;
-std::mutex g_anyPermissionsCallbackMutex;
+thread_local std::mutex g_permissionsCallbackMutex;
+thread_local std::mutex g_anyPermissionsCallbackMutex;
 
 struct PermissionsKey {
     napi_ref callback = 0;
@@ -92,12 +92,12 @@ struct PermissionsKey {
     }
 };
 
-std::map<PermissionsKey, OHOS::sptr<PermissionCallback>> g_permissionsCallback;
-std::map<napi_ref, OHOS::sptr<PermissionCallback>> g_anyPermissionsCallback;
+thread_local std::map<PermissionsKey, OHOS::sptr<PermissionCallback>> g_permissionsCallback;
+thread_local std::map<napi_ref, OHOS::sptr<PermissionCallback>> g_anyPermissionsCallback;
 
 }  // namespace
 
-napi_ref g_classBundleInstaller;
+napi_ref thread_local g_classBundleInstaller;
 
 static OHOS::sptr<OHOS::AppExecFwk::IBundleMgr> GetBundleMgr()
 {
