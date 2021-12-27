@@ -255,7 +255,7 @@ struct EnabledInfo {
     std::string errMssage;
 };
 
-extern napi_ref g_classBundleInstaller;
+extern thread_local napi_ref g_classBundleInstaller;
 
 napi_value GetApplicationInfos(napi_env env, napi_callback_info info);
 napi_value GetApplicationInfo(napi_env env, napi_callback_info info);
