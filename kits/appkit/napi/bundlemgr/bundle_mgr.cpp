@@ -3748,12 +3748,10 @@ napi_value RegisterAllPermissionsChanged(napi_env env, napi_callback_info info)
             env,
             nullptr,
             resourceName,
-            [](napi_env env, void *data) {
-                AsyncRegisterPermissions *asyncCallbackInfo = (AsyncRegisterPermissions *)data;
-                InnerRegisterPermissionsChanged(env, asyncCallbackInfo->uids, asyncCallbackInfo->callback);
-            },
+            [](napi_env env, void *data) {},
             [](napi_env env, napi_status status, void *data) {
                 AsyncRegisterPermissions *asyncCallbackInfo = (AsyncRegisterPermissions *)data;
+                InnerRegisterPermissionsChanged(env, asyncCallbackInfo->uids, asyncCallbackInfo->callback);
                 napi_delete_async_work(env, asyncCallbackInfo->asyncWork);
                 delete asyncCallbackInfo;
                 asyncCallbackInfo = nullptr;
@@ -3793,12 +3791,10 @@ napi_value RegisterAllPermissionsChanged(napi_env env, napi_callback_info info)
             env,
             nullptr,
             resourceName,
-            [](napi_env env, void *data) {
-                AsyncRegisterAllPermissions *asyncCallbackInfo = (AsyncRegisterAllPermissions *)data;
-                InnerRegisterAllPermissionsChanged(env, asyncCallbackInfo->callback);
-            },
+            [](napi_env env, void *data) {},
             [](napi_env env, napi_status status, void *data) {
                 AsyncRegisterAllPermissions *asyncCallbackInfo = (AsyncRegisterAllPermissions *)data;
+                InnerRegisterAllPermissionsChanged(env, asyncCallbackInfo->callback);
                 napi_delete_async_work(env, asyncCallbackInfo->asyncWork);
                 delete asyncCallbackInfo;
                 asyncCallbackInfo = nullptr;
@@ -3922,12 +3918,10 @@ napi_value UnregisterPermissionsChanged(napi_env env, napi_callback_info info)
             env,
             nullptr,
             resourceName,
-            [](napi_env env, void *data) {
-                AsyncUnregisterPermissions *asyncCallbackInfo = (AsyncUnregisterPermissions *)data;
-                asyncCallbackInfo->ret = InnerUnregisterAnyPermissionsChanged(env, asyncCallbackInfo->callback);
-            },
+            [](napi_env env, void *data) {},
             [](napi_env env, napi_status status, void *data) {
                 AsyncUnregisterPermissions *asyncCallbackInfo = (AsyncUnregisterPermissions *)data;
+                asyncCallbackInfo->ret = InnerUnregisterAnyPermissionsChanged(env, asyncCallbackInfo->callback);
                 napi_value result[ARGS_SIZE_ONE] = {0};
                 napi_value callback = 0;
                 napi_value undefined = 0;
@@ -3979,13 +3973,11 @@ napi_value UnregisterPermissionsChanged(napi_env env, napi_callback_info info)
             env,
             nullptr,
             resourceName,
-            [](napi_env env, void *data) {
+            [](napi_env env, void *data) {},
+            [](napi_env env, napi_status status, void *data) {
                 AsyncUnregisterPermissions *asyncCallbackInfo = (AsyncUnregisterPermissions *)data;
                 asyncCallbackInfo->ret =
                     InnerUnregisterPermissionsChanged(env, asyncCallbackInfo->uids, asyncCallbackInfo->callback);
-            },
-            [](napi_env env, napi_status status, void *data) {
-                AsyncUnregisterPermissions *asyncCallbackInfo = (AsyncUnregisterPermissions *)data;
                 napi_value result[ARGS_SIZE_ONE] = {0};
                 napi_value callback = 0;
                 napi_value undefined = 0;
