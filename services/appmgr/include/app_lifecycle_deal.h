@@ -131,7 +131,7 @@ public:
     sptr<IAppScheduler> GetApplicationClient() const;
 
 private:
-    sptr<IAppScheduler> appThread_;
+    sptr<IAppScheduler> appThread_ = nullptr;
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS
