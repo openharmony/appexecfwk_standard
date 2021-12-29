@@ -115,6 +115,7 @@ struct ApplicationInfo : public Parcelable {
     std::string cpuAbi;
     bool isCompressNativeLibs = true;
     bool debug = false;
+    bool singleUser = false;
     bool systemApp = false;
     std::map<std::string, std::vector<CustomizeData>> metaData;
 
