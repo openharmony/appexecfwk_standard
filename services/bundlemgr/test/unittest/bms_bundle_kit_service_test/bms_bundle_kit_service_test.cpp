@@ -3063,13 +3063,13 @@ HWTEST_F(BmsBundleKitServiceTest, GetShortcutInfos_0500, Function | SmallTest | 
 
 /**
  * @tc.number: GetUsageRecords_0100
- * @tc.name: test can get usage records by notify activity life status
+ * @tc.name: test can get usage records by notify ability life status
  * @tc.desc: 1.can get usage records
  */
 HWTEST_F(BmsBundleKitServiceTest, GetUsageRecords_0100, Function | SmallTest | Level1)
 {
     MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
-    auto ret = GetBundleDataMgr()->NotifyActivityLifeStatus(BUNDLE_NAME_TEST, ABILITY_NAME_TEST, 1629094922, 0);
+    auto ret = GetBundleDataMgr()->NotifyAbilityLifeStatus(BUNDLE_NAME_TEST, ABILITY_NAME_TEST, 1629094922, 0);
     EXPECT_TRUE(ret);
     std::vector<ModuleUsageRecord> records;
     auto result = GetBundleDataMgr()->GetUsageRecords(100, records);
@@ -3090,16 +3090,16 @@ HWTEST_F(BmsBundleKitServiceTest, GetUsageRecords_0100, Function | SmallTest | L
 
 /**
  * @tc.number: GetUsageRecords_0300
- * @tc.name: test can get usage records by notify activity life status
- * @tc.desc: 1.can get usage records called two notify activity
+ * @tc.name: test can get usage records by notify ability life status
+ * @tc.desc: 1.can get usage records called two notify ability
  */
 HWTEST_F(BmsBundleKitServiceTest, GetUsageRecords_0300, Function | SmallTest | Level1)
 {
     MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
     int64_t time =
         std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-    auto ret = GetBundleDataMgr()->NotifyActivityLifeStatus(BUNDLE_NAME_TEST, ABILITY_NAME_TEST, time, 0);
-    auto ret1 = GetBundleDataMgr()->NotifyActivityLifeStatus(BUNDLE_NAME_TEST, ABILITY_NAME_TEST, time, 0);
+    auto ret = GetBundleDataMgr()->NotifyAbilityLifeStatus(BUNDLE_NAME_TEST, ABILITY_NAME_TEST, time, 0);
+    auto ret1 = GetBundleDataMgr()->NotifyAbilityLifeStatus(BUNDLE_NAME_TEST, ABILITY_NAME_TEST, time, 0);
     EXPECT_TRUE(ret);
     EXPECT_TRUE(ret1);
     std::vector<ModuleUsageRecord> records;
@@ -3129,7 +3129,7 @@ HWTEST_F(BmsBundleKitServiceTest, GetUsageRecords_0400, Function | SmallTest | L
     MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
     int64_t time =
         std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-    auto ret = GetBundleDataMgr()->NotifyActivityLifeStatus(BUNDLE_NAME_TEST, ABILITY_NAME_TEST, time, 0);
+    auto ret = GetBundleDataMgr()->NotifyAbilityLifeStatus(BUNDLE_NAME_TEST, ABILITY_NAME_TEST, time, 0);
     EXPECT_TRUE(ret);
     std::vector<ModuleUsageRecord> records;
     auto result = GetBundleDataMgr()->GetUsageRecords(-1, records);
@@ -3152,7 +3152,7 @@ HWTEST_F(BmsBundleKitServiceTest, GetUsageRecords_0500, Function | SmallTest | L
     MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
     int64_t time =
         std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-    auto ret = GetBundleDataMgr()->NotifyActivityLifeStatus(BUNDLE_NAME_TEST, ABILITY_NAME_TEST, time, 0);
+    auto ret = GetBundleDataMgr()->NotifyAbilityLifeStatus(BUNDLE_NAME_TEST, ABILITY_NAME_TEST, time, 0);
     EXPECT_TRUE(ret);
     std::vector<ModuleUsageRecord> records;
     auto result = GetBundleDataMgr()->GetUsageRecords(1001, records);
@@ -3166,17 +3166,17 @@ HWTEST_F(BmsBundleKitServiceTest, GetUsageRecords_0500, Function | SmallTest | L
 }
 
 /**
- * @tc.number: NotifyActivityLifeStatus_0100
- * @tc.name: test can called notify activity life status
- * @tc.desc: 1. have called notify activity life status
- *           2. called notify activity life
+ * @tc.number: NotifyAbilityLifeStatus_0100
+ * @tc.name: test can called notify ability life status
+ * @tc.desc: 1. have called notify ability life status
+ *           2. called notify ability life
  */
-HWTEST_F(BmsBundleKitServiceTest, NotifyActivityLifeStatus_0100, Function | SmallTest | Level1)
+HWTEST_F(BmsBundleKitServiceTest, NotifyAbilityLifeStatus_0100, Function | SmallTest | Level1)
 {
     MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_DEMO, ABILITY_NAME_TEST);
     int64_t time =
         std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-    auto ret = GetBundleDataMgr()->NotifyActivityLifeStatus(BUNDLE_NAME_TEST, ABILITY_NAME_TEST, time, 0);
+    auto ret = GetBundleDataMgr()->NotifyAbilityLifeStatus(BUNDLE_NAME_TEST, ABILITY_NAME_TEST, time, 0);
     EXPECT_TRUE(ret);
     InnerBundleInfo innerBundleInfo;
     MockInnerBundleInfo(BUNDLE_NAME_TEST, MODULE_NAME_DEMO, ABILITY_NAME_TEST, innerBundleInfo);
@@ -3186,19 +3186,19 @@ HWTEST_F(BmsBundleKitServiceTest, NotifyActivityLifeStatus_0100, Function | Smal
 }
 
 /**
- * @tc.number: NotifyActivityLifeStatus_0200
- * @tc.name: test can called notify activity life status
- * @tc.desc: 1. have two bundle to called notify activity life status
- *           2. notify activity life
+ * @tc.number: NotifyAbilityLifeStatus_0200
+ * @tc.name: test can called notify ability life status
+ * @tc.desc: 1. have two bundle to called notify ability life status
+ *           2. notify ability life
  */
-HWTEST_F(BmsBundleKitServiceTest, NotifyActivityLifeStatus_0200, Function | SmallTest | Level1)
+HWTEST_F(BmsBundleKitServiceTest, NotifyAbilityLifeStatus_0200, Function | SmallTest | Level1)
 {
     MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
     MockInstallBundle(BUNDLE_NAME_DEMO, MODULE_NAME_DEMO, ABILITY_NAME_DEMO);
     int64_t time =
         std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-    auto ret = GetBundleDataMgr()->NotifyActivityLifeStatus(BUNDLE_NAME_DEMO, ABILITY_NAME_DEMO, time, 0);
-    auto ret1 = GetBundleDataMgr()->NotifyActivityLifeStatus(BUNDLE_NAME_TEST, ABILITY_NAME_TEST, time, 0);
+    auto ret = GetBundleDataMgr()->NotifyAbilityLifeStatus(BUNDLE_NAME_DEMO, ABILITY_NAME_DEMO, time, 0);
+    auto ret1 = GetBundleDataMgr()->NotifyAbilityLifeStatus(BUNDLE_NAME_TEST, ABILITY_NAME_TEST, time, 0);
     EXPECT_TRUE(ret);
     EXPECT_TRUE(ret1);
     InnerBundleInfo innerBundleInfo1;
@@ -3213,16 +3213,16 @@ HWTEST_F(BmsBundleKitServiceTest, NotifyActivityLifeStatus_0200, Function | Smal
 }
 
 /**
- * @tc.number: NotifyActivityLifeStatus_0300
- * @tc.name: test can't called notify activity life status by error bundleName
- * @tc.desc: 1. can't to called notify activity life status
+ * @tc.number: NotifyAbilityLifeStatus_0300
+ * @tc.name: test can't called notify ability life status by error bundleName
+ * @tc.desc: 1. can't to called notify ability life status
  */
-HWTEST_F(BmsBundleKitServiceTest, NotifyActivityLifeStatus_0300, Function | SmallTest | Level1)
+HWTEST_F(BmsBundleKitServiceTest, NotifyAbilityLifeStatus_0300, Function | SmallTest | Level1)
 {
     MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
     int64_t time =
         std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-    auto ret = GetBundleDataMgr()->NotifyActivityLifeStatus(BUNDLE_NAME_DEMO, ABILITY_NAME_DEMO, time, 0);
+    auto ret = GetBundleDataMgr()->NotifyAbilityLifeStatus(BUNDLE_NAME_DEMO, ABILITY_NAME_DEMO, time, 0);
     EXPECT_FALSE(ret);
     InnerBundleInfo innerBundleInfo;
     MockInnerBundleInfo(BUNDLE_NAME_DEMO, MODULE_NAME_TEST, ABILITY_NAME_DEMO, innerBundleInfo);
@@ -3232,15 +3232,15 @@ HWTEST_F(BmsBundleKitServiceTest, NotifyActivityLifeStatus_0300, Function | Smal
 }
 
 /**
- * @tc.number: NotifyActivityLifeStatus_0400
- * @tc.name: test can't called notify activity life status by null bundleName
- * @tc.desc: 1. can't to called notify activity life status
+ * @tc.number: NotifyAbilityLifeStatus_0400
+ * @tc.name: test can't called notify ability life status by null bundleName
+ * @tc.desc: 1. can't to called notify ability life status
  */
-HWTEST_F(BmsBundleKitServiceTest, NotifyActivityLifeStatus_0400, Function | SmallTest | Level1)
+HWTEST_F(BmsBundleKitServiceTest, NotifyAbilityLifeStatus_0400, Function | SmallTest | Level1)
 {
     int64_t time =
         std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-    auto ret = GetBundleDataMgr()->NotifyActivityLifeStatus(BUNDLE_NAME_DEMO, ABILITY_NAME_DEMO, time, 0);
+    auto ret = GetBundleDataMgr()->NotifyAbilityLifeStatus(BUNDLE_NAME_DEMO, ABILITY_NAME_DEMO, time, 0);
     InnerBundleInfo innerBundleInfo;
     MockInnerBundleInfo(BUNDLE_NAME_DEMO, MODULE_NAME_TEST, ABILITY_NAME_DEMO, innerBundleInfo);
     ModuleUsageRecordStorage moduleUsageRecordStorage;

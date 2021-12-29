@@ -483,7 +483,7 @@ public:
     {
         return true;
     }
-    virtual bool NotifyActivityLifeStatus(
+    virtual bool NotifyAbilityLifeStatus(
         const std::string &bundleName, const std::string &abilityName, const int64_t launchTime, const int uid) override
     {
         return true;

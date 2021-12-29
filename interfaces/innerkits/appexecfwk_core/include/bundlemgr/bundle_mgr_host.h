@@ -476,21 +476,21 @@ private:
      */
     ErrCode HandleGetModuleUsageRecords(Parcel &data, Parcel &reply);
     /**
-     * @brief Handles the HandleNotifyActivityLifeStatus function called from a IBundleMgr proxy object.
+     * @brief Handles the HandleNotifyAbilityLifeStatus function called from a IBundleMgr proxy object.
      * @param data Indicates the data to be read.
      * @param reply Indicates the reply to be sent;
      * @return Returns ERR_OK if called successfully; returns error code otherwise.
      */
-    ErrCode HandleNotifyActivityLifeStatus(Parcel &data, Parcel &reply);
+    ErrCode HandleNotifyAbilityLifeStatus(Parcel &data, Parcel &reply);
     /**
-     * @brief Handles the HandleNotifyActivityLifeStatus function called from a IBundleMgr proxy object.
+     * @brief Handles the HandleRemoveClonedBundle function called from a IBundleMgr proxy object.
      * @param data Indicates the data to be read.
      * @param reply Indicates the reply to be sent;
      * @return Returns ERR_OK if called successfully; returns error code otherwise.
      */
     ErrCode HandleRemoveClonedBundle(Parcel &data, Parcel &reply);
     /**
-     * @brief Handles the HandleNotifyActivityLifeStatus function called from a IBundleMgr proxy object.
+     * @brief Handles the HandleBundleClone function called from a IBundleMgr proxy object.
      * @param data Indicates the data to be read.
      * @param reply Indicates the reply to be sent;
      * @return Returns ERR_OK if called successfully; returns error code otherwise.
