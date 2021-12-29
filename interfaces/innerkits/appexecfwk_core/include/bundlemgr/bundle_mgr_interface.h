@@ -548,14 +548,14 @@ public:
      */
     virtual sptr<IBundleInstaller> GetBundleInstaller() = 0;
     /**
-     * @brief Notify a specified ability for activity.
-     * @param bundleName Indicates the bundle name of the ability to activity.
-     * @param abilityName Indicates the name of the ability to activity.
+     * @brief Notify a specified ability for ability.
+     * @param bundleName Indicates the bundle name of the ability to ability.
+     * @param abilityName Indicates the name of the ability to ability.
      * @param launchTime Indicates the ability launchTime.
      * @param uid Indicates the uid.
      * @return Returns true if this function is successfully called; returns false otherwise.
      */
-    virtual bool NotifyActivityLifeStatus(
+    virtual bool NotifyAbilityLifeStatus(
         const std::string &bundleName, const std::string &abilityName, const int64_t launchTime, const int uid) = 0;
     /**
      * @brief Remove cloned bundle.
@@ -633,7 +633,7 @@ public:
         GET_SHORTCUT_INFO,
         GET_ALL_COMMON_EVENT_INFO,
         GET_BUNDLE_INSTALLER,
-        NOTIFY_ACTIVITY_LIFE_STATUS,
+        NOTIFY_ABILITY_LIFE_STATUS,
         REMOVE_CLONED_BUNDLE,
         BUNDLE_CLONE,
         CHECK_BUNDLE_NAME_IN_ALLOWLIST,
