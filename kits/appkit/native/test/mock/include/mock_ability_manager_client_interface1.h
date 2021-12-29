@@ -291,7 +291,7 @@ public:
     {
         return true;
     }
-    bool NotifyActivityLifeStatus(
+    bool NotifyAbilityLifeStatus(
         const std::string &bundleName, const std::string &abilityName, const int64_t launchTime)
     {
         return true;

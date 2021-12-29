@@ -239,8 +239,8 @@ int BundleMgrHost::OnRemoteRequest(uint32_t code, MessageParcel &data, MessagePa
         case static_cast<uint32_t>(IBundleMgr::Message::GET_MODULE_USAGE_RECORD):
             errCode = HandleGetModuleUsageRecords(data, reply);
             break;
-        case static_cast<uint32_t>(IBundleMgr::Message::NOTIFY_ACTIVITY_LIFE_STATUS):
-            errCode = HandleNotifyActivityLifeStatus(data, reply);
+        case static_cast<uint32_t>(IBundleMgr::Message::NOTIFY_ABILITY_LIFE_STATUS):
+            errCode = HandleNotifyAbilityLifeStatus(data, reply);
             break;
         case static_cast<uint32_t>(IBundleMgr::Message::CHECK_BUNDLE_NAME_IN_ALLOWLIST):
             errCode = HandleCheckBundleNameInAllowList(data, reply);
@@ -1403,7 +1403,7 @@ ErrCode BundleMgrHost::HandleGetModuleUsageRecords(Parcel &data, Parcel &reply)
     return ERR_OK;
 }
 
-ErrCode BundleMgrHost::HandleNotifyActivityLifeStatus(Parcel &data, Parcel &reply)
+ErrCode BundleMgrHost::HandleNotifyAbilityLifeStatus(Parcel &data, Parcel &reply)
 {
     std::string bundleName = data.ReadString();
     std::string abilityName = data.ReadString();
@@ -1414,7 +1414,7 @@ ErrCode BundleMgrHost::HandleNotifyActivityLifeStatus(Parcel &data, Parcel &repl
         abilityName.c_str(),
         launchTime);
 
-    bool ret = NotifyActivityLifeStatus(bundleName, abilityName, launchTime, uid);
+    bool ret = NotifyAbilityLifeStatus(bundleName, abilityName, launchTime, uid);
     if (!reply.WriteBool(ret)) {
         APP_LOGE("write failed");
         return ERR_APPEXECFWK_PARCEL_ERROR;

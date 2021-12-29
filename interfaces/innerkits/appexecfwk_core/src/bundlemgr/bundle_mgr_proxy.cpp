@@ -1690,40 +1690,40 @@ bool BundleMgrProxy::GetModuleUsageRecords(const int32_t number, std::vector<Mod
     return true;
 }
 
-bool BundleMgrProxy::NotifyActivityLifeStatus(
+bool BundleMgrProxy::NotifyAbilityLifeStatus(
     const std::string &bundleName, const std::string &abilityName, const int64_t launchTime, const int uid)
 {
-    APP_LOGI("begin to NotifyActivityLifeStatus of %{public}s", abilityName.c_str());
+    APP_LOGI("begin to NotifyAbilityLifeStatus of %{public}s", abilityName.c_str());
     if (bundleName.empty() || abilityName.empty()) {
-        APP_LOGE("fail to NotifyActivityLifeStatus due to params empty");
+        APP_LOGE("fail to NotifyAbilityLifeStatus due to params empty");
         return false;
     }
 
     MessageParcel data;
     if (!data.WriteInterfaceToken(GetDescriptor())) {
-        APP_LOGE("fail to NotifyActivityLifeStatus due to write InterfaceToken fail");
+        APP_LOGE("fail to NotifyAbilityLifeStatus due to write InterfaceToken fail");
         return false;
     }
     if (!data.WriteString(bundleName)) {
-        APP_LOGE("fail to NotifyActivityLifeStatus due to write bundleName fail");
+        APP_LOGE("fail to NotifyAbilityLifeStatus due to write bundleName fail");
         return false;
     }
     if (!data.WriteString(abilityName)) {
-        APP_LOGE("fail to NotifyActivityLifeStatus due to write abilityName fail");
+        APP_LOGE("fail to NotifyAbilityLifeStatus due to write abilityName fail");
         return false;
     }
     if (!data.WriteInt64(launchTime)) {
-        APP_LOGE("fail to NotifyActivityLifeStatus due to write launchTime fail");
+        APP_LOGE("fail to NotifyAbilityLifeStatus due to write launchTime fail");
         return false;
     }
     if (!data.WriteInt32(uid)) {
-        APP_LOGE("fail to NotifyActivityLifeStatus due to write uid fail");
+        APP_LOGE("fail to NotifyAbilityLifeStatus due to write uid fail");
         return false;
     }
 
     MessageParcel reply;
-    if (!SendTransactCmd(IBundleMgr::Message::NOTIFY_ACTIVITY_LIFE_STATUS, data, reply)) {
-        APP_LOGE("fail to NotifyActivityLifeStatus from server");
+    if (!SendTransactCmd(IBundleMgr::Message::NOTIFY_ABILITY_LIFE_STATUS, data, reply)) {
+        APP_LOGE("fail to NotifyAbilityLifeStatus from server");
         return false;
     }
     return reply.ReadBool();
