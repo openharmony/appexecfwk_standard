@@ -37,12 +37,12 @@ void AppRunningRecord::SetApplicationClient(const sptr<IAppScheduler> &thread)
 
 std::string AppRunningRecord::GetBundleName() const
 {
-    return appInfo_->bundleName;
+    return appInfo_ ? appInfo_->bundleName : "";
 }
 
 bool AppRunningRecord::IsLauncherApp() const
 {
-    return appInfo_->isLauncherApp;
+    return appInfo_ ? appInfo_->isLauncherApp : false;
 }
 
 int32_t AppRunningRecord::GetRecordId() const
@@ -52,12 +52,12 @@ int32_t AppRunningRecord::GetRecordId() const
 
 const std::string &AppRunningRecord::GetName() const
 {
-    return appInfo_->name;
+    return appInfo_ ? appInfo_->name : "";
 }
 
 bool AppRunningRecord::GetCloneInfo() const
 {
-    return appInfo_->isCloned;
+    return appInfo_ ? appInfo_->isCloned : false;
 }
 
 const std::string &AppRunningRecord::GetProcessName() const
@@ -163,6 +163,10 @@ void AppRunningRecord::ScheduleAppCrash([[maybe_unused]] const std::string &desc
 
 void AppRunningRecord::LaunchApplication()
 {
+    if (appLifeCycleDeal_ == nullptr) {
+        APP_LOGE("appLifeCycleDeal_ is null");
+        return;
+    }
     if (!appInfo_ || !appLifeCycleDeal_->GetApplicationClient()) {
         APP_LOGE("appInfo or appThread is null");
         return;
@@ -180,6 +184,10 @@ void AppRunningRecord::LaunchApplication()
 
 void AppRunningRecord::AddAbilityStage()
 {
+    if (appLifeCycleDeal_ == nullptr) {
+        APP_LOGE("appLifeCycleDeal_ is null");
+        return;
+    }
     AppResidentProcessInfo residentInfo;
     residentInfo.isKeepAliveApp_ = true;
     auto iter = abilityStage_.find(appRecordId_);
@@ -192,11 +200,19 @@ void AppRunningRecord::AddAbilityStage()
 
 void AppRunningRecord::AddAbilityStageDone()
 {
+    if (!eventHandler_) {
+        APP_LOGE("eventHandler_ is nullptr");
+        return;
+    }
     eventHandler_->RemoveEvent(AMSEventHandler::TERMINATE_ABILITY_TIMEOUT_MSG, appRecordId_);
 }
 
 void AppRunningRecord::LaunchAbility(const std::shared_ptr<AbilityRunningRecord> &ability)
 {
+    if (appLifeCycleDeal_ == nullptr) {
+        APP_LOGE("appLifeCycleDeal_ is null");
+        return;
+    }
     if (!ability || !ability->GetToken()) {
         APP_LOGE("null abilityRecord or abilityToken");
         return;
@@ -222,32 +238,44 @@ void AppRunningRecord::LaunchPendingAbilities()
 void AppRunningRecord::ScheduleTerminate()
 {
     SendEvent(AMSEventHandler::TERMINATE_APPLICATION_TIMEOUT_MSG, AMSEventHandler::TERMINATE_APPLICATION_TIMEOUT);
-    appLifeCycleDeal_->ScheduleTerminate();
+    if (appLifeCycleDeal_) {
+        appLifeCycleDeal_->ScheduleTerminate();
+    }
 }
 
 void AppRunningRecord::ScheduleForegroundRunning()
 {
-    appLifeCycleDeal_->ScheduleForegroundRunning();
+    if (appLifeCycleDeal_) {
+        appLifeCycleDeal_->ScheduleForegroundRunning();
+    }
 }
 
 void AppRunningRecord::ScheduleBackgroundRunning()
 {
-    appLifeCycleDeal_->ScheduleBackgroundRunning();
+    if (appLifeCycleDeal_) {
+        appLifeCycleDeal_->ScheduleBackgroundRunning();
+    }
 }
 
 void AppRunningRecord::ScheduleProcessSecurityExit()
 {
-    appLifeCycleDeal_->ScheduleProcessSecurityExit();
+    if (appLifeCycleDeal_) {
+        appLifeCycleDeal_->ScheduleProcessSecurityExit();
+    }
 }
 
 void AppRunningRecord::ScheduleTrimMemory()
 {
-    appLifeCycleDeal_->ScheduleTrimMemory(priorityObject_->GetTimeLevel());
+    if (appLifeCycleDeal_ && priorityObject_) {
+        appLifeCycleDeal_->ScheduleTrimMemory(priorityObject_->GetTimeLevel());
+    }
 }
 
 void AppRunningRecord::LowMemoryWarning()
 {
-    appLifeCycleDeal_->LowMemoryWarning();
+    if (appLifeCycleDeal_) {
+        appLifeCycleDeal_->LowMemoryWarning();
+    }
 }
 
 void AppRunningRecord::OnAbilityStateChanged(
@@ -425,7 +453,11 @@ void AppRunningRecord::TerminateAbility(const sptr<IRemoteObject> &token, const 
     }
 
     OptimizerAbilityStateChanged(abilityRecord, AbilityState::ABILITY_STATE_TERMINATED);
-    appLifeCycleDeal_->ScheduleCleanAbility(token);
+    if (appLifeCycleDeal_) {
+        appLifeCycleDeal_->ScheduleCleanAbility(token);
+    } else {
+        APP_LOGE("appLifeCycleDeal_ is null");
+    }
 
     APP_LOGD("AppRunningRecord::TerminateAbility end");
 }
@@ -461,6 +493,10 @@ void AppRunningRecord::AbilityTerminated(const sptr<IRemoteObject> &token)
 
 void AppRunningRecord::RegisterAppDeathRecipient() const
 {
+    if (appLifeCycleDeal_ == nullptr) {
+        APP_LOGE("appLifeCycleDeal_ is null");
+        return;
+    }
     if (!appLifeCycleDeal_->GetApplicationClient()) {
         APP_LOGE("appThread is null");
         return;
@@ -473,6 +509,10 @@ void AppRunningRecord::RegisterAppDeathRecipient() const
 
 void AppRunningRecord::RemoveAppDeathRecipient() const
 {
+    if (appLifeCycleDeal_ == nullptr) {
+        APP_LOGE("appLifeCycleDeal_ is null");
+        return;
+    }
     if (!appLifeCycleDeal_->GetApplicationClient()) {
         APP_LOGE("appThread is null");
         return;
