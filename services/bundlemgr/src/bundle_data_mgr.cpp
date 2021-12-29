@@ -1802,7 +1802,7 @@ bool BundleDataMgr::GetFormsInfoByApp(const std::string &bundleName, std::vector
     return true;
 }
 
-bool BundleDataMgr::NotifyActivityLifeStatus(
+bool BundleDataMgr::NotifyAbilityLifeStatus(
     const std::string &bundleName, const std::string &abilityName, const int64_t launchTime, const int uid) const
 {
     if (bundleName.empty() || abilityName.empty()) {

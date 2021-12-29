@@ -460,14 +460,14 @@ public:
      */
     bool GetAllCommonEventInfo(const std::string &eventKey, std::vector<CommonEventInfo> &commonEventInfos) const;
     /**
-     * @brief Notify a specified ability for activity.
-     * @param bundleName Indicates the bundle name of the ability to activity.
-     * @param abilityName Indicates the name of the ability to activity.
+     * @brief Notify a specified ability for ability.
+     * @param bundleName Indicates the bundle name of the ability to ability.
+     * @param abilityName Indicates the name of the ability to ability.
      * @param launchTime Indicates the ability launchTime.
      * @param uid Indicates the uid.
      * @return Returns true if this function is successfully called; returns false otherwise.
      */
-    bool NotifyActivityLifeStatus(
+    bool NotifyAbilityLifeStatus(
         const std::string &bundleName, const std::string &abilityName, const int64_t launchTime, const int uid) const;
     /**
      * @brief Query ModuleUsageRecord objects ordered by lastLaunchTime desc
