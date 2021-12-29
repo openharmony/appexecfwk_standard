@@ -775,15 +775,15 @@ bool BundleMgrHostImpl::GetModuleUsageRecords(const int32_t number, std::vector<
     return dataMgr->GetUsageRecords(number, moduleUsageRecords);
 }
 
-bool BundleMgrHostImpl::NotifyActivityLifeStatus(
+bool BundleMgrHostImpl::NotifyAbilityLifeStatus(
     const std::string &bundleName, const std::string &abilityName, const int64_t launchTime, const int uid)
 {
-    APP_LOGI("NotifyActivityLifeStatus begin");
+    APP_LOGI("NotifyAbilityLifeStatus begin");
     std::thread([this, bundleName, abilityName, launchTime, uid]() {
         auto dataMgr = GetDataMgrFromService();
-        dataMgr->NotifyActivityLifeStatus(bundleName, abilityName, launchTime, uid);
+        dataMgr->NotifyAbilityLifeStatus(bundleName, abilityName, launchTime, uid);
     }).detach();
-    APP_LOGI("NotifyActivityLifeStatus end");
+    APP_LOGI("NotifyAbilityLifeStatus end");
     return true;
 }
 
