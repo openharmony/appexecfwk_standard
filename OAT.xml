@@ -61,7 +61,7 @@ Note:If the text contains special characters, please escape them according to th
         </policylist>
         <filefilterlist>
             <filefilter name="defaultFilter" desc="Files not to check">
-                <filteritem type="filename" name="*.hap|*.rpk" desc="valid and invalid bundle files for tests"/>
+                <filteritem type="filename" name="*.hap|*.rpk|*.ha" desc="valid and invalid bundle files for tests"/>
                 <filteritem type="filepath" name="figures/.*" desc="Self-developed image"/>
             </filefilter>
         </filefilterlist>
