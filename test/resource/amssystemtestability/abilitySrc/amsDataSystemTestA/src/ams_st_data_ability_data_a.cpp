@@ -17,7 +17,6 @@
 #include <condition_variable>
 #include <fstream>
 #include <mutex>
-#include <stdio.h>
 
 #include "app_log_wrapper.h"
 #include "data_ability_helper.h"
