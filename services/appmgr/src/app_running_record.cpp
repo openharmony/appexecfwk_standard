@@ -25,7 +25,11 @@ int64_t AppRunningRecord::appEventId_ = 0;
 AppRunningRecord::AppRunningRecord(
     const std::shared_ptr<ApplicationInfo> &info, const int32_t recordId, const std::string &processName)
     : appInfo_(info), appRecordId_(recordId), processName_(processName)
-{}
+{
+    if (appInfo_) {
+        appName_ = appInfo_->name;
+    }
+}
 
 void AppRunningRecord::SetApplicationClient(const sptr<IAppScheduler> &thread)
 {
@@ -52,7 +56,7 @@ int32_t AppRunningRecord::GetRecordId() const
 
 const std::string &AppRunningRecord::GetName() const
 {
-    return appInfo_ ? appInfo_->name : "";
+    return appName_;
 }
 
 bool AppRunningRecord::GetCloneInfo() const
