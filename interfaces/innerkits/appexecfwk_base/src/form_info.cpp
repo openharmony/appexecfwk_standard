@@ -17,8 +17,8 @@
 
 #include <fcntl.h>
 #include <unistd.h>
-#include <errno.h>
-#include <string.h>
+#include <cerrno>
+#include <cstring>
 #include "json_serializer.h"
 #include "nlohmann/json.hpp"
 #include "string_ex.h"

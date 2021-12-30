@@ -12,7 +12,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#pragma once
+#ifndef _ABILITY_MANAGER_SERVICE_EVENT_H_
+#define _ABILITY_MANAGER_SERVICE_EVENT_H_
+
 #include <string>
 #include <vector>
 #include <condition_variable>
@@ -38,3 +40,4 @@ int WaitCompleted(Event &event, const std::string &eventName, const int code, co
 void Completed(Event &event, const std::string &eventName, const int code);
 void CleanMsg(Event &event);
 }  // namespace STtools
+#endif  // _ABILITY_MANAGER_SERVICE_EVENT_H_
