@@ -431,6 +431,7 @@ private:
 
     std::shared_ptr<ApplicationInfo> appInfo_ = nullptr;  // the application's info of this process
     int32_t appRecordId_ = 0;
+    std::string appName_;
     std::string processName_;  // the name of this process
     int32_t uid_ = 0;
     static int64_t appEventId_;
