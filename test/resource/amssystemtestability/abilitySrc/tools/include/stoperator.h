@@ -12,7 +12,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#pragma once
+#ifndef _ABILITY_MANAGER_SERVICE_ST_OPERATOR_H_
+#define _ABILITY_MANAGER_SERVICE_ST_OPERATOR_H_
+
 #include <string>
 #include <memory>
 #include <vector>
@@ -55,3 +57,5 @@ public:
     std::vector<std::shared_ptr<StOperator>> PopChildOperator();
 };
 }  // namespace STtools
+#endif  // _ABILITY_MANAGER_SERVICE_ST_OPERATOR_H_
+

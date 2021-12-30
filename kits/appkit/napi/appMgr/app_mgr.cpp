@@ -79,7 +79,7 @@ napi_value NAPI_KillProcessesByBundleName(napi_env env, napi_callback_info info)
     std::string bundleName;
     ParseBundleName(env, bundleName, argv[0]);
 
-    if (argc >= 2) {
+    if (argc >= argcNum) {
         async_callback_info->bundleName = bundleName;
         napi_create_reference(env, argv[1], 1, &async_callback_info->callback[0]);
 
