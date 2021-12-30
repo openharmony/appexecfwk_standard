@@ -124,11 +124,11 @@ public:
         char bufPs[BUFFER_SIZE];
         FILE *ptr;
         if (!cmd.empty() && (ptr = popen(cmd.c_str(), "r")) != NULL) {
-            while (fgets(bufPs, BUFFER_SIZE, ptr) != NULL) {
+            while (fgets(bufPs, BUFFER_SIZE, ptr) != nullptr) {
                 result.append(bufPs);
             }
             pclose(ptr);
-            ptr = NULL;
+            ptr = nullptr;
         }
     }
 
