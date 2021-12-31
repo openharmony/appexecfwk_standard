@@ -617,6 +617,8 @@ private:
         const Want &want, int32_t flags, const InnerBundleInfo &info, std::vector<AbilityInfo> &abilityInfos) const;
     bool ExplicitQueryAbilityInfo(const std::string &bundleName, const std::string &abilityName,
         int32_t flags, int32_t userId, AbilityInfo &abilityInfo) const;
+    bool GetInnerBundleInfoWithFlags(
+        const std::string &bundleName, const int32_t flags, const std::string &deviceId, InnerBundleInfo &info) const;
 private:
     mutable std::mutex bundleInfoMutex_;
     mutable std::mutex stateMutex_;
