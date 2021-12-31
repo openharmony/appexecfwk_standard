@@ -47,7 +47,7 @@ void ProviderConnectProxy::OnAbilityConnectDone(
         return;
     }
 
-    if (!data.WriteParcelable(remoteObject)) {
+    if (!data.WriteRemoteObject(remoteObject)) {
         APP_LOGE("%{public}s, failed to write remote object ", __func__);
         return;
     }

@@ -150,29 +150,29 @@ public:
      * @brief Get dynamic refresh item.
      * @param formId The Id of the form.
      * @return Returns true on success, false on failure.
-     */  
+     */
     bool GetDynamicItem(const int64_t formId, DynamicRefreshItem &dynamicItem);
 private:
     /**
      * @brief Add update at timer.
      * @param task Update time task.
      * @return Returns true on success, false on failure.
-     */    
+     */
     bool AddUpdateAtTimer(const FormTimer &task);
     /**
      * @brief Add update at timer item.
      * @param task Update at timer item.
-     */ 
+     */
     void AddUpdateAtItem(const UpdateAtItem &atItem);
     /**
      * @brief Add update interval timer task.
      * @param task Update interval timer task.
      * @return Returns true on success, false on failure.
-     */ 
+     */
     bool AddIntervalTimer(const FormTimer &task);
     /**
      * @brief interval timer task timeout.
-     */ 
+     */
     void OnIntervalTimeOut();
     /**
      * @brief Get remind tasks.

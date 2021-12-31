@@ -15,8 +15,8 @@
 
 #include <cinttypes>
 
-#include "appexecfwk_errors.h"
 #include "app_log_wrapper.h"
+#include "appexecfwk_errors.h"
 #include "bundle_info.h"
 #include "common_event_manager.h"
 #include "common_event_support.h"
@@ -27,9 +27,9 @@
 #include "form_db_cache.h"
 #include "form_db_info.h"
 #include "form_provider_mgr.h"
+#include "form_sys_event_receiver.h"
 #include "form_timer_mgr.h"
 #include "form_util.h"
-#include "form_sys_event_receiver.h"
 #include "want.h"
 
 namespace OHOS {

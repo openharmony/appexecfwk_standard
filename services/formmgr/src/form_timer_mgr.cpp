@@ -13,17 +13,19 @@
  * limitations under the License.
  */
 
+#include "form_timer_mgr.h"
+
 #include <cinttypes>
+
 #include "ability_context.h"
-#include "appexecfwk_errors.h"
 #include "app_log_wrapper.h"
+#include "appexecfwk_errors.h"
 #include "common_event_manager.h"
 #include "common_event_support.h"
 #include "form_constants.h"
 #include "form_provider_mgr.h"
 #include "form_refresh_limiter.h"
 #include "form_timer_option.h"
-#include "form_timer_mgr.h"
 #include "form_util.h"
 #include "want.h"
 
@@ -642,7 +644,7 @@ bool FormTimerMgr::GetUpdateAtTimer(const int64_t formId, UpdateAtItem &updateAt
 {
     APP_LOGI("%{public}s start", __func__);
     {
-        std::lock_guard<std::mutex> lock(updateAtMutex_);        
+        std::lock_guard<std::mutex> lock(updateAtMutex_);
         std::list<UpdateAtItem>::iterator itItem;
         for (itItem = updateAtTimerTasks_.begin(); itItem != updateAtTimerTasks_.end(); itItem++) {
             if (itItem->refreshTask.formId == formId) {
@@ -660,7 +662,7 @@ bool FormTimerMgr::GetUpdateAtTimer(const int64_t formId, UpdateAtItem &updateAt
  * @brief Get dynamic refresh item.
  * @param formId The Id of the form.
  * @return Returns true on success, false on failure.
- */  
+ */
 bool FormTimerMgr::GetDynamicItem(const int64_t formId, DynamicRefreshItem &dynamicItem)
 {
     APP_LOGI("%{public}s start", __func__);
@@ -672,7 +674,7 @@ bool FormTimerMgr::GetDynamicItem(const int64_t formId, DynamicRefreshItem &dyna
             dynamicItem.settedTime = itItem->settedTime;
             APP_LOGI("%{public}s, get dynamic item successfully", __func__);
             return true;
-        }        
+        }
     }
     APP_LOGI("%{public}s, dynamic item not find", __func__);
     return false;
@@ -802,7 +804,7 @@ void FormTimerMgr::ClearUpdateAtTimerResource()
 /**
  * @brief Update limiter task alarm.
  * @return Returns true on success, false on failure.
- */ 
+ */
 bool FormTimerMgr::UpdateLimiterAlarm()
 {
     APP_LOGI("%{public}s start", __func__);  
@@ -811,7 +813,7 @@ bool FormTimerMgr::UpdateLimiterAlarm()
 }
 /**
  * @brief Clear limiter timer resource.
- */ 
+ */
 void FormTimerMgr::ClearLimiterTimerResource()
 {
     APP_LOGI("%{public}s start", __func__);
@@ -822,7 +824,7 @@ void FormTimerMgr::ClearLimiterTimerResource()
 /**
  * @brief Update dynamic refresh task alarm.
  * @return Returns true on success, false on failure.
- */ 
+ */
 bool FormTimerMgr::UpdateDynamicAlarm()
 {
     APP_LOGI("%{public}s start", __func__);
@@ -834,7 +836,7 @@ bool FormTimerMgr::UpdateDynamicAlarm()
 
 /**
  * @brief Clear dynamic refresh resource.
- */ 
+ */
 void FormTimerMgr::ClearDynamicResource()
 {
     APP_LOGI("%{public}s start", __func__);

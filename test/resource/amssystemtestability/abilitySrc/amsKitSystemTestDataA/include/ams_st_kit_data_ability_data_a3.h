@@ -41,6 +41,7 @@ public:
     void SubscribeEvent(const Want &want);
     bool PublishEvent(const std::string &eventName, const int &code, const std::string &data);
     STtools::Event event;
+    FILE *fd1 = nullptr;
     void TestLifeCycle();
     ~AmsStKitDataAbilityDataA3();
 

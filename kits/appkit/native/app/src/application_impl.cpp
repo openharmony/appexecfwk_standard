@@ -14,8 +14,9 @@
  */
 
 #include "application_impl.h"
-#include "ohos_application.h"
+
 #include "app_log_wrapper.h"
+#include "ohos_application.h"
 
 namespace OHOS {
 namespace AppExecFwk {

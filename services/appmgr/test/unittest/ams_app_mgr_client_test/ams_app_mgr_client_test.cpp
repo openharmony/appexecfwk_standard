@@ -21,12 +21,12 @@
 #include "application_info.h"
 #include "app_log_wrapper.h"
 #include "iapp_state_callback.h"
-#include "running_process_info.h"
 #include "mock_ability_token.h"
+#include "mock_ams_mgr_scheduler.h"
 #include "mock_app_mgr_service.h"
 #include "mock_app_service_mgr.h"
 #include "mock_iapp_state_callback.h"
-#include "mock_ams_mgr_scheduler.h"
+#include "running_process_info.h"
 
 using namespace testing::ext;
 using testing::_;

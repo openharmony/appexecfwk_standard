@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 #include <chrono>
-#include <cstdio>
 #include <condition_variable>
+#include <cstdio>
 #include <gtest/gtest.h>
 #include <mutex>
 #include <set>

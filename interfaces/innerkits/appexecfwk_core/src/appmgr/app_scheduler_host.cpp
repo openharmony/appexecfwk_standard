@@ -14,10 +14,11 @@
  */
 
 #include "app_scheduler_host.h"
-#include "ipc_types.h"
 #include "ability_info.h"
-#include "appexecfwk_errors.h"
 #include "app_log_wrapper.h"
+#include "appexecfwk_errors.h"
+#include "bytrace.h"
+#include "ipc_types.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -76,36 +77,42 @@ int AppSchedulerHost::OnRemoteRequest(uint32_t code, MessageParcel &data, Messag
 
 int32_t AppSchedulerHost::HandleScheduleForegroundApplication(MessageParcel &data, MessageParcel &reply)
 {
+    BYTRACE(BYTRACE_TAG_APP);
     ScheduleForegroundApplication();
     return NO_ERROR;
 }
 
 int32_t AppSchedulerHost::HandleScheduleBackgroundApplication(MessageParcel &data, MessageParcel &reply)
 {
+    BYTRACE(BYTRACE_TAG_APP);
     ScheduleBackgroundApplication();
     return NO_ERROR;
 }
 
 int32_t AppSchedulerHost::HandleScheduleTerminateApplication(MessageParcel &data, MessageParcel &reply)
 {
+    BYTRACE(BYTRACE_TAG_APP);
     ScheduleTerminateApplication();
     return NO_ERROR;
 }
 
 int32_t AppSchedulerHost::HandleScheduleLowMemory(MessageParcel &data, MessageParcel &reply)
 {
+    BYTRACE(BYTRACE_TAG_APP);
     ScheduleLowMemory();
     return NO_ERROR;
 }
 
 int32_t AppSchedulerHost::HandleScheduleShrinkMemory(MessageParcel &data, MessageParcel &reply)
 {
+    BYTRACE(BYTRACE_TAG_APP);
     ScheduleShrinkMemory(data.ReadInt32());
     return NO_ERROR;
 }
 
 int32_t AppSchedulerHost::HandleScheduleLaunchAbility(MessageParcel &data, MessageParcel &reply)
 {
+    BYTRACE(BYTRACE_TAG_APP);
     std::unique_ptr<AbilityInfo> abilityInfo(data.ReadParcelable<AbilityInfo>());
     if (!abilityInfo) {
         APP_LOGE("ReadParcelable<AbilityInfo> failed");
@@ -119,6 +126,7 @@ int32_t AppSchedulerHost::HandleScheduleLaunchAbility(MessageParcel &data, Messa
 
 int32_t AppSchedulerHost::HandleScheduleCleanAbility(MessageParcel &data, MessageParcel &reply)
 {
+    BYTRACE(BYTRACE_TAG_APP);
     sptr<IRemoteObject> token = data.ReadParcelable<IRemoteObject>();
     ScheduleCleanAbility(token);
     return NO_ERROR;
@@ -126,6 +134,7 @@ int32_t AppSchedulerHost::HandleScheduleCleanAbility(MessageParcel &data, Messag
 
 int32_t AppSchedulerHost::HandleScheduleLaunchApplication(MessageParcel &data, MessageParcel &reply)
 {
+    BYTRACE(BYTRACE_TAG_APP);
     std::unique_ptr<AppLaunchData> launchData(data.ReadParcelable<AppLaunchData>());
     
     if (!launchData) {
@@ -139,6 +148,7 @@ int32_t AppSchedulerHost::HandleScheduleLaunchApplication(MessageParcel &data, M
 
 int32_t AppSchedulerHost::HandleScheduleAbilityStageInfo(MessageParcel &data, MessageParcel &reply)
 {
+    BYTRACE(BYTRACE_TAG_APP);
     std::unique_ptr<AppResidentProcessInfo> appResidentProcessInfo(data.ReadParcelable<AppResidentProcessInfo>());
     if (!appResidentProcessInfo) {
         APP_LOGE("ReadParcelable<launchData> failed");
@@ -151,6 +161,7 @@ int32_t AppSchedulerHost::HandleScheduleAbilityStageInfo(MessageParcel &data, Me
 
 int32_t AppSchedulerHost::HandleScheduleProfileChanged(MessageParcel &data, MessageParcel &reply)
 {
+    BYTRACE(BYTRACE_TAG_APP);
     std::unique_ptr<Profile> profile(data.ReadParcelable<Profile>());
     if (!profile) {
         APP_LOGE("ReadParcelable<Profile> failed");
@@ -163,6 +174,7 @@ int32_t AppSchedulerHost::HandleScheduleProfileChanged(MessageParcel &data, Mess
 
 int32_t AppSchedulerHost::HandleScheduleConfigurationUpdated(MessageParcel &data, MessageParcel &reply)
 {
+    BYTRACE(BYTRACE_TAG_APP);
     std::unique_ptr<Configuration> configuration(data.ReadParcelable<Configuration>());
     if (!configuration) {
         APP_LOGE("ReadParcelable<Configuration> failed");
@@ -175,6 +187,7 @@ int32_t AppSchedulerHost::HandleScheduleConfigurationUpdated(MessageParcel &data
 
 int32_t AppSchedulerHost::HandleScheduleProcessSecurityExit(MessageParcel &data, MessageParcel &reply)
 {
+    BYTRACE(BYTRACE_TAG_APP);
     ScheduleProcessSecurityExit();
     return NO_ERROR;
 }

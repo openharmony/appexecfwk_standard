@@ -66,6 +66,11 @@ void DataTestDataAEventSubscriber::OnReceiveEvent(const CommonEventData &data)
 
 AmsStDataAbilityDataA::~AmsStDataAbilityDataA()
 {
+    if (file != nullptr) {
+        fclose(file);
+        file = nullptr;
+        fd = -1;
+    }
     CommonEventManager::UnSubscribeCommonEvent(subscriber_);
 }
 
@@ -99,15 +104,15 @@ int AmsStDataAbilityDataA::Insert(const Uri &uri, const NativeRdb::ValuesBucket 
     APP_LOGI("AmsStDataAbilityDataA <<<<Insert>>>>");
     PublishEvent(abilityEventName, ABILITY_DATA_A_CODE, "Insert");
     if (fd <= 0) {
-        APP_LOGI("-------------------AmsStDataAbilityDataA <<<<Insert>>>> file fd <= 0");
+        APP_LOGI("AmsStDataAbilityDataA <<<<Insert>>>> file fd <= 0");
         return DEFAULT_INSERT_RESULT;
     }
     int dupFd = dup(fd);
     FILE *file = fdopen(dupFd, "r");
     if (file == nullptr) {
-        APP_LOGI("-------------------AmsStDataAbilityDataA <<<<Insert>>>> file == nullptr");
+        APP_LOGI("AmsStDataAbilityDataA <<<<Insert>>>> file == nullptr");
     } else {
-        APP_LOGI("-------------------AmsStDataAbilityDataA <<<<Insert>>>> file != nullptr");
+        APP_LOGI("AmsStDataAbilityDataA <<<<Insert>>>> file != nullptr");
         fclose(file);
         file = nullptr;
     }
@@ -166,13 +171,18 @@ int AmsStDataAbilityDataA::OpenFile(const Uri &uri, const std::string &mode)
 {
     APP_LOGI("AmsStDataAbilityDataA <<<<OpenFile>>>>");
 
-    FILE *fd1 = fopen("/system/vendor/test.txt", "r");
-    if (fd1 == nullptr) {
-        APP_LOGI("-------------------------------AmsStDataAbilityDataA <<<<OpenFile>>>> fdr == nullptr");
+    if (file != nullptr) {
+        fclose(file);
+        file = nullptr;
+        fd = -1;
+    }
+    file = fopen("/system/vendor/test.txt", "r");
+    if (file == nullptr) {
+        APP_LOGI("AmsStDataAbilityDataA <<<<OpenFile>>>> fdr == nullptr");
         return -1;
     }
-    fd = fileno(fd1);
-    APP_LOGI("--------------------------------AmsStDataAbilityDataA fd: %{public}d", fd);
+    fd = fileno(file);
+    APP_LOGI("AmsStDataAbilityDataA fd: %{public}d", fd);
     PublishEvent(abilityEventName, ABILITY_DATA_A_CODE, "OpenFile");
     return fd;
 }

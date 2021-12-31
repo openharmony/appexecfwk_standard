@@ -79,7 +79,7 @@ public:
 
         std::string caseName_ = "";
         int code_ = 0;
-        FormAbilityA *ability_;
+        FormAbilityA *ability_ = nullptr;
     };
 protected:
     virtual void Init(const std::shared_ptr<AbilityInfo> &abilityInfo,

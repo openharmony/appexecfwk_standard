@@ -13,11 +13,12 @@
  * limitations under the License.
  */
 #include "context_container.h"
-#include "app_log_wrapper.h"
+
+#include "ability_manager_client.h"
 #include "ability_manager_errors.h"
+#include "app_log_wrapper.h"
 #include "application_context.h"
 #include "bundle_constants.h"
-#include "ability_manager_client.h"
 
 namespace OHOS {
 namespace AppExecFwk {

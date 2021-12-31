@@ -379,10 +379,10 @@ int FormMgrProxy::CastTempForm(const int64_t formId, const sptr<IRemoteObject> &
     MessageOption option;
     int error = Remote()->SendRequest(
         static_cast<uint32_t>(
-            IFormMgr::Message::FORM_MGR_CAST_TEMP_FORM), 
-            data, 
-            reply, 
-            option);
+            IFormMgr::Message::FORM_MGR_CAST_TEMP_FORM),
+        data,
+        reply,
+        option);
     if (error != ERR_OK) {
         APP_LOGE("%{public}s, failed to SendRequest: %{public}d", __func__, error);
         return ERR_APPEXECFWK_FORM_SEND_FMS_MSG;
@@ -455,7 +455,7 @@ int FormMgrProxy::DumpFormInfoByFormId(const std::int64_t formId, std::string &f
 
     int error = GetStringInfo(IFormMgr::Message::FORM_MGR_FORM_INFOS_BY_ID, data, formInfo);
     if (error != ERR_OK) {
-        APP_LOGE("%{public}s, failed to GetStringInfo: %{public}d", __func__, error);          
+        APP_LOGE("%{public}s, failed to GetStringInfo: %{public}d", __func__, error);
     }
 
     return error;
@@ -480,7 +480,7 @@ int FormMgrProxy::DumpFormTimerByFormId(const std::int64_t formId, std::string &
 
     int error = GetStringInfo(IFormMgr::Message::FORM_MGR_FORM_TIMER_INFO_BY_ID, data, isTimingService);
     if (error != ERR_OK) {
-        APP_LOGE("%{public}s, failed to GetStringInfo: %{public}d", __func__, error);          
+        APP_LOGE("%{public}s, failed to GetStringInfo: %{public}d", __func__, error);
     }
 
     return error;
@@ -512,13 +512,13 @@ int FormMgrProxy::MessageEvent(const int64_t formId, const Want &want, const spt
         APP_LOGE("%{public}s, failed to write callerToken", __func__);
         return ERR_APPEXECFWK_PARCEL_ERROR;
     }
-    
+
     MessageParcel reply;
     MessageOption option;
     int error = Remote()->SendRequest(
-        static_cast<uint32_t>(IFormMgr::Message::FORM_MGR_MESSAGE_EVENT), 
-        data, 
-        reply, 
+        static_cast<uint32_t>(IFormMgr::Message::FORM_MGR_MESSAGE_EVENT),
+        data,
+        reply,
         option);
     if (error != ERR_OK) {
         APP_LOGE("%{public}s, failed to SendRequest: %{public}d", __func__, error);
@@ -636,7 +636,7 @@ int FormMgrProxy::SendTransactCmd(IFormMgr::Message code, MessageParcel &data, M
     int32_t result = remote->SendRequest(static_cast<uint32_t>(code), data, reply, option);
     if (result != ERR_OK) {
         APP_LOGE("%{public}s, failed to SendRequest: %{public}d, cmd: %{public}d", __func__, result, code);
-        return ERR_APPEXECFWK_FORM_SEND_FMS_MSG; 
+        return ERR_APPEXECFWK_FORM_SEND_FMS_MSG;
     }
     return ERR_OK;
 }

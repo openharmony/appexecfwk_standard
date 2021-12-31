@@ -18,11 +18,18 @@
 
 #include <string>
 #include <list>
+#include <memory>
+
 #include "application_context.h"
 #include "ability_lifecycle_callbacks.h"
+#include "ability_runtime/context/context.h"
+#include "ability_stage.h"
 #include "element_callback.h"
 
 namespace OHOS {
+namespace AbilityRuntime {
+class Runtime;
+} // namespace AbilityRuntime
 namespace AppExecFwk {
 class ElementsCallback;
 class ApplicationImpl;
@@ -33,7 +40,7 @@ class OHOSApplication : public ApplicationContext,
                         public std::enable_shared_from_this<OHOSApplication> {
 public:
     OHOSApplication();
-    virtual ~OHOSApplication() = default;
+    virtual ~OHOSApplication();
 
     /**
      * @brief dump OHOSApplication info
@@ -41,6 +48,20 @@ public:
      * @param extra dump OHOSApplication info
      */
     void DumpApplication();
+
+    /**
+     * @brief Set Runtime
+     *
+     * @param runtime Runtime instance.
+     */
+    void SetRuntime(std::unique_ptr<AbilityRuntime::Runtime>&& runtime);
+
+    /**
+     * @brief Set ApplicationContext
+     *
+     * @param context ApplicationContext instance.
+     */
+    void SetApplicationContext(const std::shared_ptr<AbilityRuntime::Context> &abilityRuntimeContext);
 
     /**
      *
@@ -194,10 +215,43 @@ public:
      */
     virtual void OnTerminate();
 
+    /**
+     * @brief add the ability stage when a hap first load
+     *
+     * @param abilityRecord
+     * @return abilityStage context
+     */
+    std::shared_ptr<AbilityRuntime::Context> AddAbilityStage(
+        const std::shared_ptr<AbilityLocalRecord> &abilityRecord);
+
+    /**
+     * @brief remove the ability stage when all of the abilities in the hap have been removed
+     *
+     * @param abilityInfo
+     */
+    void CleanAbilityStage(const sptr<IRemoteObject> &token, const std::shared_ptr<AbilityInfo> &abilityInfo);
+
+    /**
+     * @brief return the application context
+     *
+     * @param context
+     */
+    std::shared_ptr<AbilityRuntime::Context> GetAppContext() const;
+
+    /**
+     * @brief return the application runtime
+     *
+     * @param runtime
+     */
+    const std::unique_ptr<AbilityRuntime::Runtime>& GetRuntime();
+
 private:
     std::list<std::shared_ptr<AbilityLifecycleCallbacks>> abilityLifecycleCallbacks_;
     std::list<std::shared_ptr<ElementsCallback>> elementsCallbacks_;
     std::shared_ptr<AbilityRecordMgr> abilityRecordMgr_ = nullptr;
+    std::shared_ptr<AbilityRuntime::Context> abilityRuntimeContext_ = nullptr;
+    std::unordered_map<std::string, std::shared_ptr<AbilityRuntime::AbilityStage>> abilityStages_;
+    std::unique_ptr<AbilityRuntime::Runtime> runtime_;
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS

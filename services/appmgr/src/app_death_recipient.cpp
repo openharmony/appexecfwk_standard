@@ -42,7 +42,7 @@ void AppDeathRecipient::OnRemoteDied(const wptr<IRemoteObject> &remote)
         return;
     }
 
-    std::function <void()> onRemoteDiedFunc = std::bind(&AppMgrServiceInner::OnRemoteDied, serviceInner, remote);
+    std::function<void()> onRemoteDiedFunc = std::bind(&AppMgrServiceInner::OnRemoteDied, serviceInner, remote);
     handler->PostTask(onRemoteDiedFunc, TASK_ON_REMOTE_DIED);
 }
 

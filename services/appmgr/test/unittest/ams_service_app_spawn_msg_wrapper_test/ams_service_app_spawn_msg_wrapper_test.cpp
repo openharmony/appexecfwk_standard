@@ -15,9 +15,9 @@
 
 #include <gtest/gtest.h>
 
-#include "securec.h"
 #include "app_log_wrapper.h"
 #include "app_spawn_msg_wrapper.h"
+#include "securec.h"
 
 using namespace testing::ext;
 

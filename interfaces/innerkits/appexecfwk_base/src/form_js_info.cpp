@@ -30,10 +30,10 @@ bool FormJsInfo::ReadFromParcel(Parcel &parcel)
     formData = Str16ToStr8(parcel.ReadString16());
 
     auto bindingData = parcel.ReadParcelable<FormProviderData>();
-    formProviderData = *bindingData;
-    if (nullptr == bindingData) {
+    if (nullptr == bindingData){
         return false;
     }
+    formProviderData = *bindingData;
     return true;
 }
 

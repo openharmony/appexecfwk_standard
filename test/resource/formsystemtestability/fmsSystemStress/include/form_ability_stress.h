@@ -81,7 +81,7 @@ public:
 
         std::string caseName_ = "";
         int code_ = 0;
-        FormAbilityStress *ability_;
+        FormAbilityStress *ability_ = nullptr;
     };
 protected:
     virtual void Init(const std::shared_ptr<AbilityInfo> &abilityInfo,

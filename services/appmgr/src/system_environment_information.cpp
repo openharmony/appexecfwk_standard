@@ -12,24 +12,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#include "system_environment_information.h"
+
 #include <cstdio>
 #include <cstdlib>
 #include <iostream>
-#include <string>
+#include <map>
 #include <memory>
 #include <regex>
-#include <map>
+#include <string>
 
 #include "app_log_wrapper.h"
+#include "kernel_system_memory_info.h"
 #include "securec.h"
-#include "kernal_system_memory_Info.h"
-#include "system_environment_information.h"
 
 namespace OHOS {
 namespace AppExecFwk {
 namespace SystemEnv {
-const int bytesKB = 1024;
-void KernelSystemMemoryInfo::init(std::map<std::string, std::string> &memInfo)
+namespace {
+static const int BYTES_KB = 1024;
+}
+void KernelSystemMemoryInfo::Init(std::map<std::string, std::string> &memInfo)
 {
     auto findData = [&] (const std::string& key) -> std::string {
         auto iter = memInfo.find(key);
@@ -42,40 +45,40 @@ void KernelSystemMemoryInfo::init(std::map<std::string, std::string> &memInfo)
         }
     };
 
-    memTotal_ = std::stoll(findData(std::string("MemTotal"))) * bytesKB;
-    memFree_ = std::stoll(findData(std::string("MemFree"))) * bytesKB;
-    memAvailable_ = std::stoll(findData(std::string("MemAvailable"))) * bytesKB;
-    buffers_ = std::stoll(findData(std::string("Buffers"))) * bytesKB;
-    cached_ = std::stoll(findData(std::string("Cached"))) * bytesKB;
-    swapCached_ = std::stoll(findData(std::string("SwapCached"))) * bytesKB;
+    memTotal_ = std::stoll(findData(std::string("MemTotal"))) * BYTES_KB;
+    memFree_ = std::stoll(findData(std::string("MemFree"))) * BYTES_KB;
+    memAvailable_ = std::stoll(findData(std::string("MemAvailable"))) * BYTES_KB;
+    buffers_ = std::stoll(findData(std::string("Buffers"))) * BYTES_KB;
+    cached_ = std::stoll(findData(std::string("Cached"))) * BYTES_KB;
+    swapCached_ = std::stoll(findData(std::string("SwapCached"))) * BYTES_KB;
 }
 
-int64_t KernelSystemMemoryInfo::GetMemTotal()
+int64_t KernelSystemMemoryInfo::GetMemTotal() const
 {
     return memTotal_;
 }
 
-int64_t KernelSystemMemoryInfo::GetMemFree()
+int64_t KernelSystemMemoryInfo::GetMemFree() const
 {
     return memFree_;
 }
 
-int64_t KernelSystemMemoryInfo::GetMemAvailable()
+int64_t KernelSystemMemoryInfo::GetMemAvailable() const
 {
     return memAvailable_;
 }
 
-int64_t KernelSystemMemoryInfo::GetBuffers()
+int64_t KernelSystemMemoryInfo::GetBuffers() const
 {
     return buffers_;
 }
 
-int64_t KernelSystemMemoryInfo::GetCached()
+int64_t KernelSystemMemoryInfo::GetCached() const
 {
     return cached_;
 }
 
-int64_t KernelSystemMemoryInfo::GetSwapCached()
+int64_t KernelSystemMemoryInfo::GetSwapCached() const
 {
     return swapCached_;
 }
@@ -123,7 +126,7 @@ void GetMemInfo(KernelSystemMemoryInfo &memInfo)
 {
     std::map<std::string, std::string> memListInfo;
     RequestSystemMemoryInfo(memListInfo);
-    memInfo.init(memListInfo);
+    memInfo.Init(memListInfo);
 }
 }  // namespace SystemEnv
 }  // namespace AppExecFwk

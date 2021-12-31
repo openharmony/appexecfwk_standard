@@ -13,10 +13,12 @@
  * limitations under the License.
  */
 
-#include <nlohmann/json.hpp>
-#include "string_ex.h"
-#include "app_log_wrapper.h"
 #include "configuration.h"
+
+#include <nlohmann/json.hpp>
+
+#include "app_log_wrapper.h"
+#include "string_ex.h"
 namespace ConfigurationInner {
     const std::string CONNECTION_SYMBOL {"#"};
     const std::string EMPTY_STRING {""};
@@ -138,7 +140,7 @@ std::string Configuration::GetValue(const std::string &key) const
 void Configuration::CompareDifferent(std::vector<std::string> &diffKeyV, const Configuration &other)
 {
     if (other.GetItemSize() == 0) {
-        return ;
+        return;
     }
 
     diffKeyV.clear();

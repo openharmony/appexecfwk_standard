@@ -17,8 +17,8 @@
 #include <dirent.h>
 #include <fstream>
 #include <gtest/gtest.h>
-#include <thread>
 #include <string>
+#include <thread>
 
 #include "app_log_wrapper.h"
 #define private public

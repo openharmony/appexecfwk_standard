@@ -98,15 +98,15 @@ int AmsStDataAbilityDataC1::Insert(const Uri &uri, const NativeRdb::ValuesBucket
     APP_LOGI("AmsStDataAbilityDataC1 <<<<Insert>>>>");
     PublishEvent(abilityEventName, ABILITY_DATA_C1_CODE, "Insert");
     if (fd <= 0) {
-        APP_LOGI("-------------------AmsStDataAbilityDataC1 <<<<Insert>>>> file fd <= 0");
+        APP_LOGI("AmsStDataAbilityDataC1 <<<<Insert>>>> file fd <= 0");
         return DEFAULT_INSERT_RESULT;
     }
     int dupFd = dup(fd);
     FILE *file = fdopen(dupFd, "r");
     if (file == nullptr) {
-        APP_LOGI("-------------------AmsStDataAbilityDataC1 <<<<Insert>>>> file == nullptr");
+        APP_LOGI("AmsStDataAbilityDataC1 <<<<Insert>>>> file == nullptr");
     } else {
-        APP_LOGI("-------------------AmsStDataAbilityDataC1 <<<<Insert>>>> file != nullptr");
+        APP_LOGI("AmsStDataAbilityDataC1 <<<<Insert>>>> file != nullptr");
         fclose(file);
         file = nullptr;
     }
@@ -159,11 +159,11 @@ int AmsStDataAbilityDataC1::OpenFile(const Uri &uri, const std::string &mode)
 
     FILE *fd1 = fopen("/system/vendor/test.txt", "r");
     if (fd1 == nullptr) {
-        APP_LOGI("-------------------------------AmsStDataAbilityDataC1 <<<<OpenFile>>>> fdr == nullptr");
+        APP_LOGI("AmsStDataAbilityDataC1 <<<<OpenFile>>>> fdr == nullptr");
         return -1;
     }
     fd = fileno(fd1);
-    APP_LOGI("--------------------------------AmsStDataAbilityDataC1 fd: %{public}d", fd);
+    APP_LOGI("AmsStDataAbilityDataC1 fd: %{public}d", fd);
     PublishEvent(abilityEventName, ABILITY_DATA_C1_CODE, "OpenFile");
     return fd;
 }

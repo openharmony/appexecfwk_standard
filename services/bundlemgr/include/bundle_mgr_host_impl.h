@@ -338,7 +338,7 @@ public:
      * @param userId Indicates the user id.
      * @return Returns true if the data cleared successfully; returns false otherwise.
      */
-    virtual bool CleanBundleDataFiles(const std::string &bundleName, const int userId) override;
+    virtual bool CleanBundleDataFiles(const std::string &bundleName, const int userId = 0) override;
     /**
      * @brief Register the specific bundle status callback.
      * @param bundleStatusCallback Indicates the callback to be invoked for returning the bundle status changed result.

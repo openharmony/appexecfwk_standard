@@ -241,7 +241,7 @@ bool FormStServiceAbilityD::PublishEvent(const std::string &eventName, const int
 sptr<IRemoteObject> FormStServiceAbilityD::OnConnect(const Want &want)
 {
     APP_LOGI("FormStServiceAbilityD::OnConnect");
-    
+
     sptr<FormProviderClient> formProviderClient = new (std::nothrow) FormProviderClient();
     std::shared_ptr<Ability> thisAbility = this->shared_from_this();
     formProviderClient->SetOwner(thisAbility);
@@ -320,7 +320,7 @@ void FormStServiceAbilityD::OnUpdate(const int64_t formId)
 void FormStServiceAbilityD::OnTriggerEvent(const int64_t formId, const std::string &message)
 {
     APP_LOGI("%{public}s start", __func__);
-    
+
     struct timespec ts;
     clock_gettime(CLOCK_REALTIME, &ts);
     long currentTime = ts.tv_sec * SEC_TO_MILLISEC + ts.tv_nsec / MILLISEC_TO_NANOSEC;
