@@ -1382,9 +1382,15 @@ void InnerBundleInfo::GetBundleInfo(int32_t flags, BundleInfo &bundleInfo) const
             bundleInfo.entryModuleName = info.second.moduleName;
         }
     }
-    if ((static_cast<uint32_t>(flags) & GET_BUNDLE_WITH_ABILITIES) == GET_BUNDLE_WITH_ABILITIES) {
+    GetBundleWithAbilities(flags, bundleInfo);
+}
+
+void InnerBundleInfo::GetBundleWithAbilities(int32_t flags, BundleInfo &bundleInfo) const
+{
+    if (static_cast<uint32_t>(flags) & GET_BUNDLE_WITH_ABILITIES) {
         for (auto &ability : baseAbilityInfos_) {
-            if (!ability.second.enabled) {
+            if (!(static_cast<uint32_t>(flags) & GET_ABILITY_INFO_WITH_DISABLE)
+                && !ability.second.enabled) {
                 continue;
             }
             AbilityInfo abilityInfo = ability.second;

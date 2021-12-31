@@ -1155,6 +1155,8 @@ public:
         return moduleVec;
     }
 private:
+    void GetBundleWithAbilities(int32_t flags, BundleInfo &bundleInfo) const;
+
     // using for get
     bool isSupportBackup_ = false;
     bool isKeepData_ = false;
