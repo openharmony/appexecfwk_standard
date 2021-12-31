@@ -27,8 +27,8 @@
 #include "event_handler.h"
 #include "event_handler_utils.h"
 #include "event_inner_runner.h"
-#include "thread_local_data.h"
 #include "singleton.h"
+#include "thread_local_data.h"
 
 DEFINE_HILOG_LABEL("EventRunner");
 

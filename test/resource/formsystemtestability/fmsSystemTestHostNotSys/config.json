@@ -47,7 +47,7 @@
                 }
             ]
         }],
-        "defPermissions": [  
+        "defPermissions": [
           {
             "name": "ohos.permission.REQUIRE_FORM",
             "grantMode": "system_grant",

@@ -16,8 +16,8 @@
 #include "sys_mgr_client.h"
 #include "hilog_wrapper.h"
 #include "if_system_ability_manager.h"
-#include "iservice_registry.h"
 #include "ipc_skeleton.h"
+#include "iservice_registry.h"
 #include "string_ex.h"
 
 namespace OHOS {

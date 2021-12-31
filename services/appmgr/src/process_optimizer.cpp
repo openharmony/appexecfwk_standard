@@ -69,7 +69,7 @@ constexpr int LMKS_OOM_ADJ_LOW = 800;
 constexpr int LMKS_OOM_ADJ_MEDIUM = 600;
 // pressure level critical
 constexpr int LMKS_OOM_ADJ_CRITICAL = 0;
-constexpr int MemoryLevel[] = {LMKS_OOM_ADJ_LOW, LMKS_OOM_ADJ_MEDIUM, LMKS_OOM_ADJ_CRITICAL};
+constexpr int G_MEMORY_LEVEL[] = {LMKS_OOM_ADJ_LOW, LMKS_OOM_ADJ_MEDIUM, LMKS_OOM_ADJ_CRITICAL};
 }  // namespace
 
 ProcessOptimizer::ProcessOptimizer(const LmksClientPtr &lmksClient, int suspendTimeout)
@@ -441,7 +441,7 @@ void ProcessOptimizer::OnLowMemoryAlert(const CgroupManager::LowMemoryLevel leve
     std::list<AppPtr>::iterator iter = appLru_.begin();
     while (iter != appLru_.end()) {
         auto priorityObject = (*iter)->GetPriorityObject();
-        if (priorityObject != nullptr && priorityObject->GetCurAdj() >= MemoryLevel[level]) {
+        if (priorityObject != nullptr && priorityObject->GetCurAdj() >= G_MEMORY_LEVEL[level]) {
             auto pid = priorityObject->GetPid();
             if (pid <= 0) {
                 APP_LOGE("pid %{public}d invalid", pid);

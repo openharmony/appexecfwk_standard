@@ -16,12 +16,12 @@
 #include "lmks_utils.h"
 
 #include <csignal>
-#include <sys/stat.h>
 #include <fcntl.h>
+#include <sys/stat.h>
 #include <unistd.h>
 
-#include "securec.h"
 #include "hilog/log.h"
+#include "securec.h"
 
 namespace OHOS {
 namespace LMKS {

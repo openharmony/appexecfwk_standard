@@ -17,10 +17,10 @@
 #define private public
 #include "task_dispatcher_context.h"
 #undef private
+#include "default_worker_pool_config.h"
+#include "task.h"
 #include "task_priority.h"
 #include "task_executor.h"
-#include "task.h"
-#include "default_worker_pool_config.h"
 
 using namespace testing;
 using namespace testing::ext;

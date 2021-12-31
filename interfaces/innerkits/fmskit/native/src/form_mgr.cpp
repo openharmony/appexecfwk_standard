@@ -13,11 +13,13 @@
  * limitations under the License.
  */
 
-#include <thread>
-#include "appexecfwk_errors.h"
-#include "app_log_wrapper.h"
-#include "form_errors.h"
 #include "form_mgr.h"
+
+#include <thread>
+
+#include "app_log_wrapper.h"
+#include "appexecfwk_errors.h"
+#include "form_errors.h"
 #include "if_system_ability_manager.h"
 #include "ipc_skeleton.h"
 #include "iservice_registry.h"
@@ -218,7 +220,7 @@ int FormMgr::DumpFormInfoByFormId(const std::int64_t formId, std::string &formIn
     if (errCode != ERR_OK) {
         return errCode;
     }
-    
+
     return remoteProxy_->DumpFormInfoByFormId(formId, formInfo);
 }
 /**
@@ -233,7 +235,7 @@ int FormMgr::DumpFormTimerByFormId(const std::int64_t formId, std::string &isTim
     if (errCode != ERR_OK) {
         return errCode;
     }
-    
+
     return remoteProxy_->DumpFormTimerByFormId(formId, isTimingService);
 }
 /**
@@ -249,7 +251,7 @@ int FormMgr::MessageEvent(const int64_t formId, const Want &want, const sptr<IRe
     if (errCode != ERR_OK) {
         return errCode;
     }
-    
+
     return remoteProxy_->MessageEvent(formId, want, callerToken);
 }
 
@@ -265,7 +267,7 @@ int FormMgr::SetNextRefreshTime(const int64_t formId, const int64_t nextTime)
     if (errCode != ERR_OK) {
         return errCode;
     }
-  
+
     return remoteProxy_->SetNextRefreshTime(formId, nextTime);
 }
 
@@ -526,7 +528,7 @@ void FormMgr::SetFormMgrService(sptr<IFormMgr> formMgrService)
 int FormMgr::DistributedDataAddForm(const Want &want)
 {
     APP_LOGI("%{public}s called.", __func__);
-    
+
     int errCode = Connect();
     if (errCode != ERR_OK) {
         return errCode;
@@ -543,7 +545,7 @@ int FormMgr::DistributedDataAddForm(const Want &want)
 int FormMgr::DistributedDataDeleteForm(const std::string &formId)
 {
     APP_LOGI("%{public}s called.", __func__);
-    
+
     int errCode = Connect();
     if (errCode != ERR_OK) {
         return errCode;

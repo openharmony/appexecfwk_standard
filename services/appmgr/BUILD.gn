@@ -128,6 +128,7 @@ ohos_shared_library("libams") {
     "ces_standard:cesfwk_innerkits",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
+    "bytrace_standard:bytrace_core",
   ]
 
   subsystem_name = "appexecfwk"

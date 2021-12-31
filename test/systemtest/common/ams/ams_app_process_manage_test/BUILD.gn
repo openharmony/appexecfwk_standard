@@ -58,6 +58,8 @@ ohos_systemtest("ams_app_process_manage_test") {
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
   ]
+  resource_config_file =
+    "//foundation/appexecfwk/standard/test/resource/mstbundlemgrservice/ohos_test.xml"
 }
 
 group("systemtest") {

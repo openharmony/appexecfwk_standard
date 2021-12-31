@@ -14,8 +14,9 @@
  */
 
 #include "process_info.h"
-#include "string_ex.h"
+
 #include "app_log_wrapper.h"
+#include "string_ex.h"
 
 namespace OHOS {
 namespace AppExecFwk {

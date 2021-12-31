@@ -189,6 +189,10 @@ void AmsStKitDataAbilityDataA2::Init(const std::shared_ptr<AbilityInfo> &ability
 
 AmsStKitDataAbilityDataA2::~AmsStKitDataAbilityDataA2()
 {
+    if (fd1 != nullptr) {
+        fclose(fd1);
+        fd1 = nullptr;
+    }
     CommonEventManager::UnSubscribeCommonEvent(subscriber_);
 }
 
@@ -310,7 +314,11 @@ std::vector<std::string> AmsStKitDataAbilityDataA2::GetFileTypes(const Uri &uri,
 int AmsStKitDataAbilityDataA2::OpenFile(const Uri &uri, const std::string &mode)
 {
     APP_LOGI("AmsStKitDataAbilityDataA2 <<<<OpenFile>>>>");
-    FILE *fd1 = fopen("/system/vendor/test.txt", "r");
+    if (fd1 != nullptr) {
+        fclose(fd1);
+        fd1 = nullptr;
+    }
+    fd1 = fopen("/system/vendor/test.txt", "r");
     if (fd1 == nullptr)
         return -1;
     int fd = fileno(fd1);

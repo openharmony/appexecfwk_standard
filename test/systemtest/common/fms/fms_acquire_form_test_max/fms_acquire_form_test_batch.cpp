@@ -76,7 +76,7 @@ public:
 
     void StartAbilityKitTest(const std::string &abilityName, const std::string &bundleName);
     void TerminateAbility(const std::string &eventName, const std::string &abilityName);
-  
+
     class FormEventSubscriber : public CommonEventSubscriber {
     public:
         explicit FormEventSubscriber(const CommonEventSubscribeInfo &sp) : CommonEventSubscriber(sp) {};
@@ -182,7 +182,7 @@ HWTEST_F(FmsAcquireFormTestBatch, FMS_acquireForm_2900, Function | MediumTest | 
     FMS_acquireFormBatchB(bundleName, abilityName, countB);
     int count = Constants::MAX_RECORD_PER_APP - 1;
     std::cout << "FMS_acquireForm_2900, form size of the host A:" << count << std::endl;
-    
+
     sleep(1);
     std::string strFormId = FmsAcquireForm2900A();
     normalFormsMaxA.emplace_back(strFormId);
@@ -641,7 +641,7 @@ void FmsAcquireFormTestBatch::FMS_acquireFormBatchB(const std::string &bundleNam
     } else {
         GTEST_LOG_(INFO) << "FMS_acquireFormBatchB,  result:" << result;
     }
- 
+
     std::cout << "END FMS_acquireFormBatchB" << std::endl;
 }
 void FmsAcquireFormTestBatch::FMS_acquireTempFormBatch(const std::string &bundleName, const std::string &abilityName,
@@ -667,7 +667,7 @@ void FmsAcquireFormTestBatch::FMS_acquireTempFormBatch(const std::string &bundle
     } else {
         GTEST_LOG_(INFO) << "FMS_acquireTempFormBatch,  result:" << result;
     }
-   
+
     std::cout << "END FMS_acquireTempFormBatch" << std::endl;
 }
 

@@ -61,6 +61,10 @@ public:
     {
         return 0;
     }
+    virtual int MinimizeAbility(const sptr<IRemoteObject> &token) override
+    {
+        return 0;
+    }
     virtual int ConnectAbility(const AAFwk::Want &want, const sptr<AAFwk::IAbilityConnection> &connect,
         const sptr<IRemoteObject> &callerToken) override
     {
@@ -305,6 +309,14 @@ public:
         return 0;
     }
     int ClearUpApplicationData(const std::string &bundleName) override
+    {
+        return 0;
+    }
+    int StartContinuation(const Want &want, const sptr<IRemoteObject> &abilityToken) override
+    {
+        return 0;
+    }
+    int NotifyContinuationResult(const sptr<IRemoteObject> &abilityToken, const int32_t result) override
     {
         return 0;
     }

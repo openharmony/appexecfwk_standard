@@ -42,7 +42,6 @@ class FormMgr final : public DelayedRefSingleton<FormMgr> {
     DECLARE_DELAYED_REF_SINGLETON(FormMgr)
 public:
     DISALLOW_COPY_AND_MOVE(FormMgr);
-    
     /**
      * @brief Add form with want, send want to form manager service.
      * @param formId The Id of the forms to add.
@@ -61,7 +60,7 @@ public:
      * @return Returns ERR_OK on success, others on failure.
      */
     int DeleteForm(const int64_t formId, const sptr<IRemoteObject> &callerToken);
-    
+
     /**
      * @brief Release forms with formIds, send formIds to form manager service.
      * @param formId The Id of the forms to release.
@@ -162,7 +161,7 @@ public:
 
     /**
      * @brief UnRegister death callback.
-     * 
+     *
      * @param formDeathCallback The death callback.
      */
     void UnRegisterDeathCallback(const std::shared_ptr<FormCallbackInterface> &formDeathCallback);
@@ -183,8 +182,8 @@ public:
      * @param updateType Next refresh time.
      * @return Returns ERR_OK on success, others on failure.
      */
-    int LifecycleUpdate(const std::vector<int64_t> &formIds, const sptr<IRemoteObject> &callerToken, 
-    const int32_t updateType);
+    int LifecycleUpdate(const std::vector<int64_t> &formIds, const sptr<IRemoteObject> &callerToken,
+                        const int32_t updateType);
 
     /**
      * @brief Set fms recoverStatus.
@@ -213,7 +212,7 @@ public:
 
     /**
      * @brief Get the error message content.
-     * 
+     *
      * @param errCode Error code.
      * @return Message content.
      */

@@ -15,13 +15,13 @@
 
 #include <gtest/gtest.h>
 #include "main_thread.h"
-#include "sys_mgr_client.h"
-#include "system_ability_definition.h"
+#include "mock_ability_mgr_service.h"
+#include "mock_ability_token.h"
 #include "mock_app_mgr_service.h"
 #include "mock_app_thread.h"
-#include "mock_ability_token.h"
-#include "mock_ability_mgr_service.h"
 #include "mock_bundle_mgr_service.h"
+#include "sys_mgr_client.h"
+#include "system_ability_definition.h"
 
 namespace OHOS {
 namespace AppExecFwk {

@@ -17,8 +17,8 @@
 #include <singleton.h>
 
 #include "application_context.h"
-#include "event_runner.h"
 #include "context_deal.h"
+#include "event_runner.h"
 
 
 namespace OHOS {

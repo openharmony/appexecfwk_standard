@@ -12,13 +12,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#include "form_mgr_service.h"
+
 #include <functional>
 #include <memory>
 #include <string>
 #include <unistd.h>
 
-#include "appexecfwk_errors.h"
 #include "app_log_wrapper.h"
+#include "appexecfwk_errors.h"
 #include "common_event_manager.h"
 #include "common_event_support.h"
 #include "form_ams_helper.h"
@@ -26,14 +29,13 @@
 #include "form_constants.h"
 #include "form_data_mgr.h"
 #include "form_db_cache.h"
-#include "form_mgr_service.h"
 #include "form_mgr_adapter.h"
 #include "form_task_mgr.h"
 #include "form_timer_mgr.h"
 #include "ipc_skeleton.h"
 #include "iservice_registry.h"
-#include "permission/permission_kit.h"
 #include "permission/permission.h"
+#include "permission/permission_kit.h"
 #include "string_ex.h"
 #include "system_ability_definition.h"
 
@@ -366,7 +368,7 @@ ErrCode FormMgrService::Init()
     FormAmsHelper::GetInstance().SetEventHandler(handler_);
     /* Publish service maybe failed, so we need call this function at the last,
      * so it can't affect the TDD test program */
-    bool ret = Publish(DelayedSingleton<FormMgrService>::GetInstance().get());   
+    bool ret = Publish(DelayedSingleton<FormMgrService>::GetInstance().get());
     if (!ret) {
         APP_LOGE("%{public}s fail, FormMgrService::Init Publish failed!", __func__);
         return ERR_INVALID_OPERATION;
@@ -406,7 +408,7 @@ bool FormMgrService::CheckFormPermission(const std::string &bundleName) const
     }
     int result = PermissionKit::VerifyPermission(bundleName, Constants::PERMISSION_REQUIRE_FORM, 0);
     if (result != PermissionState::PERMISSION_GRANTED) {
-        APP_LOGW("permission = %{public}s, bundleName = %{public}s, result = %{public}d", 
+        APP_LOGW("permission = %{public}s, bundleName = %{public}s, result = %{public}d",
             Constants::PERMISSION_REQUIRE_FORM.c_str(), bundleName.c_str(), result);
     }
     return result == PermissionState::PERMISSION_GRANTED;

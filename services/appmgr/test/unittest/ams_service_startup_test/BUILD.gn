@@ -60,6 +60,7 @@ ohos_unittest("AmsServiceStartupTest") {
     "appspawn:appspawn_socket_client",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
+    "bytrace_standard:bytrace_core",
   ]
 }
 

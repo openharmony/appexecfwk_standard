@@ -173,7 +173,7 @@ public:
     {
         return true;
     };
-    virtual bool CleanBundleDataFiles(const std::string &bundleName, const int userId) override
+    virtual bool CleanBundleDataFiles(const std::string &bundleName, const int userId = 0) override
     {
         return true;
     };

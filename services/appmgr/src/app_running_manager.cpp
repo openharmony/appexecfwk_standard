@@ -15,12 +15,12 @@
 
 #include "app_running_manager.h"
 
-#include "iremote_object.h"
 #include "datetime_ex.h"
+#include "iremote_object.h"
 
 #include "app_log_wrapper.h"
-#include "perf_profile.h"
 #include "appexecfwk_errors.h"
+#include "perf_profile.h"
 
 namespace OHOS {
 namespace AppExecFwk {

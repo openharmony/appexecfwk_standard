@@ -161,6 +161,7 @@ FormRecord FormDataMgr::CreateFormRecord(const FormItemInfo &formInfo, const int
     newRecord.formTempFlg = formInfo.IsTemporaryForm();
     newRecord.formVisibleNotify = formInfo.IsFormVisibleNotify();
     newRecord.jsFormCodePath = formInfo.GetHapSourceByModuleName(newRecord.moduleName);
+    newRecord.formVisibleNotifyState = 0;
     if (newRecord.isEnableUpdate) {
         ParseUpdateConfig(newRecord, formInfo);
     }

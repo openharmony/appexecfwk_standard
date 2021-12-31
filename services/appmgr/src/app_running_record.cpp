@@ -18,6 +18,7 @@
 #include "ability_running_record.h"
 #include "app_log_wrapper.h"
 #include "app_mgr_service_inner.h"
+#include "bytrace.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -173,7 +174,6 @@ void AppRunningRecord::LaunchApplication()
     launchData.SetProcessInfo(processInfo);
     launchData.SetRecordId(appRecordId_);
     launchData.SetUId(uid_);
-
     APP_LOGI("ScheduleLaunchApplication app:%{public}s", GetName().c_str());
     appLifeCycleDeal_->LaunchApplication(launchData);
 }
@@ -318,6 +318,7 @@ void AppRunningRecord::UpdateAbilityState(const sptr<IRemoteObject> &token, cons
 
 void AppRunningRecord::AbilityForeground(const std::shared_ptr<AbilityRunningRecord> &ability)
 {
+    BYTRACE(BYTRACE_TAG_APP);
     if (!ability) {
         APP_LOGE("ability is null");
         return;
@@ -350,6 +351,7 @@ void AppRunningRecord::AbilityForeground(const std::shared_ptr<AbilityRunningRec
 
 void AppRunningRecord::AbilityBackground(const std::shared_ptr<AbilityRunningRecord> &ability)
 {
+    BYTRACE(BYTRACE_TAG_APP);
     if (!ability) {
         APP_LOGE("ability is null");
         return;

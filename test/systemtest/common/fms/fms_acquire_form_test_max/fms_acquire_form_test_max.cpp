@@ -75,7 +75,7 @@ public:
 
     void StartAbilityKitTest(const std::string &abilityName, const std::string &bundleName);
     void TerminateAbility(const std::string &eventName, const std::string &abilityName);
-  
+
     class FormEventSubscriber : public CommonEventSubscriber {
     public:
         explicit FormEventSubscriber(const CommonEventSubscribeInfo &sp) : CommonEventSubscriber(sp) {};
@@ -174,7 +174,7 @@ HWTEST_F(FmsAcquireFormTestMax, FMS_acquireForm_2900, Function | MediumTest | Le
         normalFormsMaxA.emplace_back(strFormId2);
         std::cout << "FMS_acquireForm_2900, form size of the host A:" << normalFormsMaxA.size() << std::endl;
     }
-    
+
     std::cout << "END FMS_acquireForm_2900" << std::endl;
 }
 /**
@@ -256,7 +256,7 @@ HWTEST_F(FmsAcquireFormTestMax, FMS_acquireForm_3100, Function | MediumTest | Le
         std::cout << "add form count:" << count + 1 << std::endl;
     }
     std::cout << "END add form to the host B" << std::endl;
-    
+
     std::cout << "START add form to the host C" << std::endl;
     std::string bundleNameC = "com.ohos.form.manager.normalc";
     std::string abilityNameC = "FormAbilityC";
@@ -429,7 +429,7 @@ HWTEST_F(FmsAcquireFormTestMax, FMS_acquireForm_3500, Function | MediumTest | Le
     std::string abilityNameB = "FormAbilityB";
     std::cout << "bundleName: " << bundleNameB << std::endl;
     std::cout << "abilityName: " << abilityNameB << std::endl;
-    
+
     bool result = FmsAcquireFormTempForFailed(bundleNameB, abilityNameB);
     EXPECT_TRUE(result);
     if (result) {

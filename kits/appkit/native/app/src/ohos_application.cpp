@@ -14,11 +14,14 @@
  */
 
 #include "ohos_application.h"
-#include "application_impl.h"
+
 #include "ability_record_mgr.h"
 #include "app_loader.h"
 #include "app_log_wrapper.h"
+#include "application_impl.h"
+#include "context_impl.h"
 #include "iservice_registry.h"
+#include "runtime.h"
 #include "system_ability_definition.h"
 
 namespace OHOS {
@@ -30,6 +33,8 @@ OHOSApplication::OHOSApplication()
     abilityLifecycleCallbacks_.clear();
     elementsCallbacks_.clear();
 }
+
+OHOSApplication::~OHOSApplication() = default;
 
 /**
  *
@@ -110,6 +115,38 @@ void OHOSApplication::DumpApplication()
 }
 
 /**
+ * @brief Set Runtime
+ *
+ * @param runtime Runtime instance.
+ */
+void OHOSApplication::SetRuntime(std::unique_ptr<AbilityRuntime::Runtime>&& runtime)
+{
+    APP_LOGI("OHOSApplication::SetRuntime begin");
+    if (runtime == nullptr) {
+        APP_LOGE("OHOSApplication::SetRuntime failed, runtime is empty");
+        return;
+    }
+    runtime_ = std::move(runtime);
+    APP_LOGI("OHOSApplication::SetRuntime end");
+}
+
+/**
+ * @brief Set ApplicationContext
+ *
+ * @param abilityRuntimeContext ApplicationContext instance.
+ */
+void OHOSApplication::SetApplicationContext(const std::shared_ptr<AbilityRuntime::Context> &abilityRuntimeContext)
+{
+    APP_LOGI("OHOSApplication::SetApplicationContext begin");
+    if (abilityRuntimeContext == nullptr) {
+        APP_LOGE("OHOSApplication::SetApplicationContext failed, context is empty");
+        return;
+    }
+    abilityRuntimeContext_ = abilityRuntimeContext;
+    APP_LOGI("OHOSApplication::SetApplicationContext end");
+}
+
+/**
  *
  * @brief Set the abilityRecordMgr to the OHOSApplication.
  *
@@ -125,7 +162,7 @@ void OHOSApplication::SetAbilityRecordMgr(const std::shared_ptr<AbilityRecordMgr
     abilityRecordMgr_ = abilityRecordMgr;
     APP_LOGI("OHOSApplication::SetAbilityRecordMgr. End");
 }
-    
+
 /**
  *
  * Register AbilityLifecycleCallbacks with OHOSApplication
@@ -388,6 +425,79 @@ void OHOSApplication::OnTerminate()
 void OHOSApplication::OnAbilitySaveState(const PacMap &outState)
 {
     DispatchAbilitySavedState(outState);
+}
+
+std::shared_ptr<AbilityRuntime::Context> OHOSApplication::AddAbilityStage(
+    const std::shared_ptr<AbilityLocalRecord> &abilityRecord)
+{
+    if (abilityRecord == nullptr) {
+        APP_LOGE("AddAbilityStage:abilityRecord is nullptr");
+        return nullptr;
+    }
+    const std::shared_ptr<AbilityInfo> &abilityInfo = abilityRecord->GetAbilityInfo();
+    if (abilityInfo == nullptr) {
+        APP_LOGE("AddAbilityStage:abilityInfo is nullptr");
+        return nullptr;
+    }
+    std::string moduleName = abilityInfo->moduleName;
+    std::shared_ptr<AbilityRuntime::AbilityStage> abilityStage;
+    auto iterator = abilityStages_.find(moduleName);
+    if (iterator == abilityStages_.end()) {
+        std::shared_ptr<AbilityRuntime::ContextImpl> stageContext = std::make_shared<AbilityRuntime::ContextImpl>();
+        stageContext->SetParentContext(abilityRuntimeContext_);
+        stageContext->InitHapModuleInfo(abilityInfo);
+        std::shared_ptr<AppExecFwk::HapModuleInfo> hapModuleInfo = stageContext->GetHapModuleInfo();
+        if (hapModuleInfo == nullptr) {
+            APP_LOGE("AddAbilityStage:hapModuleInfo is nullptr");
+            return nullptr;
+        }
+        abilityStage = AbilityRuntime::AbilityStage::Create(runtime_, *hapModuleInfo);
+        abilityStage->Init(stageContext);
+        abilityStage->OnCreate();
+        abilityStages_[moduleName] = abilityStage;
+    } else {
+        abilityStage = iterator->second;
+    }
+    const sptr<IRemoteObject> &token = abilityRecord->GetToken();
+    if (token == nullptr) {
+        APP_LOGE("AddAbilityStage:token is null");
+        return nullptr;
+    }
+    abilityStage->AddAbility(token, abilityRecord);
+    return abilityStage->GetContext();
+}
+
+void OHOSApplication::CleanAbilityStage(const sptr<IRemoteObject> &token,
+    const std::shared_ptr<AbilityInfo> &abilityInfo)
+{
+    if (abilityInfo == nullptr) {
+        APP_LOGE("CleanAbilityStage:abilityInfo is nullptr");
+        return;
+    }
+    if (token == nullptr) {
+        APP_LOGE("CleanAbilityStage:token is nullptr");
+        return;
+    }
+    std::string moduleName = abilityInfo->moduleName;
+    auto iterator = abilityStages_.find(moduleName);
+    if (iterator != abilityStages_.end()) {
+        auto abilityStage = iterator->second;
+        abilityStage->RemoveAbility(token);
+        if (!abilityStage->ContainsAbility()) {
+            abilityStage->OnDestory();
+            abilityStages_.erase(moduleName);
+        }
+    }
+}
+
+std::shared_ptr<AbilityRuntime::Context> OHOSApplication::GetAppContext() const
+{
+    return abilityRuntimeContext_;
+}
+
+const std::unique_ptr<AbilityRuntime::Runtime>& OHOSApplication::GetRuntime()
+{
+    return runtime_;
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS

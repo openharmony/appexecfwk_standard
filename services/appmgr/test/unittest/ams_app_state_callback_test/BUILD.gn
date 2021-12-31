@@ -44,6 +44,7 @@ ohos_unittest("AmsAppStateCallbackTest") {
   external_deps = [
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
+    "bytrace_standard:bytrace_core",
   ]
 }
 

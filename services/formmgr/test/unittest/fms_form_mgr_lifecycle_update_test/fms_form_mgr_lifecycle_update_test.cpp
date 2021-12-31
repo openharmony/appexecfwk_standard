@@ -14,23 +14,24 @@
  */
 
 #include <gtest/gtest.h>
+
 #include "form_bms_helper.h"
 #include "form_db_cache.h"
 #include "form_host_interface.h"
 #define private public
+#include "form_data_mgr.h"
 #include "form_mgr.h"
 #include "form_mgr_service.h"
-#include "form_data_mgr.h"
 #undef private
 #include "if_system_ability_manager.h"
 #include "inner_bundle_info.h"
 #include "ipc_skeleton.h"
 #include "iservice_registry.h"
 
-#include "permission/permission.h"
-#include "permission/permission_kit.h"
 #include "mock_bundle_manager.h"
 #include "mock_form_host_client.h"
+#include "permission/permission.h"
+#include "permission/permission_kit.h"
 
 using namespace testing::ext;
 using namespace OHOS;

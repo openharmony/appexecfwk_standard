@@ -20,10 +20,9 @@
 #undef private
 #undef protected
 #include <gtest/gtest.h>
-#include <nlohmann/json.hpp>
 #include "app_log_wrapper.h"
-#include "iremote_object.h"
 #include "errors.h"
+#include "iremote_object.h"
 #include "mock_app_mgr_service_inner.h"
 #include"system_environment_information.h"
 #include "system_memory_attr.h"

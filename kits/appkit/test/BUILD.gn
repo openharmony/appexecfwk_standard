@@ -78,6 +78,7 @@ ohos_moduletest("appexecfwk_appkit_native_app_module_test_first") {
   external_deps = [
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
+    "bytrace_standard:bytrace_core",
   ]
 }
 
@@ -117,6 +118,7 @@ ohos_moduletest("appexecfwk_appkit_native_app_module_test_second") {
   external_deps = [
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
+    "bytrace_standard:bytrace_core",
   ]
 }
 
@@ -156,6 +158,7 @@ ohos_moduletest("appexecfwk_appkit_native_app_module_test_third") {
   external_deps = [
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
+    "bytrace_standard:bytrace_core",
   ]
 }
 
@@ -195,6 +198,7 @@ ohos_moduletest("appexecfwk_appkit_native_app_module_test_fourth") {
   external_deps = [
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
+    "bytrace_standard:bytrace_core",
   ]
 }
 

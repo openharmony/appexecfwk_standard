@@ -18,14 +18,14 @@
 #include "app_mgr_service_inner.h"
 #undef private
 
-#include <gtest/gtest.h>
 #include <gmock/gmock.h>
+#include <gtest/gtest.h>
 
-#include "semaphore_ex.h"
 #include "app_scheduler_host.h"
 #include "app_scheduler_proxy.h"
 #include "mock_app_mgr_service_inner.h"
 #include "mock_app_spawn_socket.h"
+#include "semaphore_ex.h"
 
 using namespace testing::ext;
 using testing::_;

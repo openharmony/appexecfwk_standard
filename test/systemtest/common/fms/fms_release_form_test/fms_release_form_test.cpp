@@ -52,7 +52,7 @@ public:
 
     void StartAbilityKitTest(const std::string &abilityName, const std::string &bundleName);
     void TerminateAbility(const std::string &eventName, const std::string &abilityName);
-  
+
     class FormEventSubscriber : public CommonEventSubscriber {
     public:
         explicit FormEventSubscriber(const CommonEventSubscribeInfo &sp) : CommonEventSubscriber(sp) {};
@@ -296,7 +296,7 @@ HWTEST_F(FmsReleaseFormTest, FMS_releaseForm_0500, Function | MediumTest | Level
     SystemTestFormUtil::PublishEvent(FORM_EVENT_REQ_ONE_NORMAL_FORM, EVENT_CODE_100, eventData);
     EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_ONE_NORMAL_FORM, EVENT_CODE_100));
     std::string data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_ONE_NORMAL_FORM, EVENT_CODE_100);
-    
+
     GTEST_LOG_(INFO) << "FMS_releaseForm_0500,  data:[" << data << "]" << std::endl;
     if (data != "") {
         std::string bundleName2 = "com.ohos.form.manager.normal";
@@ -571,7 +571,7 @@ HWTEST_F(FmsReleaseFormTest, FMS_releaseForm_1100, Function | MediumTest | Level
 HWTEST_F(FmsReleaseFormTest, FMS_releaseForm_1200, Function | MediumTest | Level1)
 {
     std::cout << "============START FMS_releaseForm_1200" << std::endl;
-    
+
     std::string bundleName = "com.ohos.form.manager.normal";
     std::string abilityName = "FormAbilityReleaseForm";
     MAP_STR_STR params;
@@ -610,7 +610,7 @@ HWTEST_F(FmsReleaseFormTest, FMS_releaseForm_1200, Function | MediumTest | Level
 HWTEST_F(FmsReleaseFormTest, FMS_releaseForm_1300, Function | MediumTest | Level2)
 {
     std::cout << "============START FMS_releaseForm_1300" << std::endl;
-    
+
     std::string bundleName = "com.ohos.form.manager.normal";
     std::string abilityName = "FormAbilityReleaseForm";
     MAP_STR_STR params;
@@ -696,7 +696,7 @@ HWTEST_F(FmsReleaseFormTest, FMS_releaseForm_1000, Function | MediumTest | Level
     SystemTestFormUtil::PublishEvent(FORM_EVENT_REQ_ONE_NORMAL_FORM, EVENT_CODE_100, eventData);
     EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_ONE_NORMAL_FORM, EVENT_CODE_100));
     std::string formOne = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_ONE_NORMAL_FORM, EVENT_CODE_100);
-    
+
     GTEST_LOG_(INFO) << "FMS_releaseForm_1000,  formOne:[" << formOne << "]" << std::endl;
     if (formOne != "") {
         std::string bundleName2 = "com.ohos.form.manager.normal";

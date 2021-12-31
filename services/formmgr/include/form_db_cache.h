@@ -103,7 +103,7 @@ public:
      * @param foundFormsMap Form Id list.
      * @return Returns ERR_OK on success, others on failure.
      */
-    ErrCode GetNoHostDBForms(const int uid, std::map<FormIdKey, std::set<int64_t>> &noHostFormDBList, 
+    ErrCode GetNoHostDBForms(const int uid, std::map<FormIdKey, std::set<int64_t>> &noHostFormDBList,
     std::map<int64_t, bool> &foundFormsMap);
     /**
      * @brief Get match count by bundleName and moduleName.

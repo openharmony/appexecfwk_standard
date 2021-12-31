@@ -22,9 +22,9 @@
 #include "if_system_ability_manager.h"
 #include "ipc_skeleton.h"
 
+#include "app_log_wrapper.h"
 #include "app_mgr_interface.h"
 #include "app_service_manager.h"
-#include "app_log_wrapper.h"
 
 namespace OHOS {
 namespace AppExecFwk {

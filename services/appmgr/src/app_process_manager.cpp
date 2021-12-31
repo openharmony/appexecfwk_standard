@@ -14,6 +14,7 @@
  */
 
 #include "app_process_manager.h"
+
 #include <csignal>
 
 #include "app_log_wrapper.h"

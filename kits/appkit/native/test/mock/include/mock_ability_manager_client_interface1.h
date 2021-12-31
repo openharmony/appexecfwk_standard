@@ -18,14 +18,14 @@
 
 #include <mutex>
 
+#include "ability_connect_callback_interface.h"
+#include "ability_context.h"
+#include "ability_manager_client.h"
+#include "ability_manager_errors.h"
+#include "ability_manager_interface.h"
+#include "ability_scheduler_interface.h"
 #include "iremote_object.h"
 #include "iremote_stub.h"
-#include "ability_connect_callback_interface.h"
-#include "ability_manager_errors.h"
-#include "ability_scheduler_interface.h"
-#include "ability_manager_interface.h"
-#include "ability_manager_client.h"
-#include "ability_context.h"
 #include "want.h"
 
 namespace OHOS {
@@ -199,7 +199,7 @@ public:
     {
         return true;
     };
-    virtual bool CleanBundleDataFiles(const std::string &bundleName)
+    virtual bool CleanBundleDataFiles(const std::string &bundleName, const int userId = 0)
     {
         return true;
     };
