@@ -86,11 +86,11 @@ ohos_source_set("appmgr_test_source") {
   ]
 
   external_deps = [
+    "bytrace_standard:bytrace_core",
     "ces_standard:cesfwk_core",
     "ces_standard:cesfwk_innerkits",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
-    "bytrace_standard:bytrace_core",
   ]
 }
 

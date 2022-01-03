@@ -14,7 +14,5 @@
 import("//build/ohos.gni")
 
 group("napi_packages") {
-  deps = [
-    "${innerkits_path}/napi/eventhandler:emitter",
-  ]
+  deps = [ "${innerkits_path}/napi/eventhandler:emitter" ]
 }
