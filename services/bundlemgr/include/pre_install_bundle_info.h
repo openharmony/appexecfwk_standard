@@ -71,10 +71,27 @@ public:
     {
         bundlePath_ = bundlePath;
     }
+    /**
+     * @brief Get AppType.
+     * @return Returns the AppType.
+     */
+    Constants::AppType GetAppType() const
+    {
+        return appType_;
+    }
+    /**
+     * @brief Set AppType.
+     * @param appType Indicates the AppType to be set.
+     */
+    void SetAppType(Constants::AppType appType)
+    {
+        appType_ = appType;
+    }
 
 private:
     std::string bundleName_;
     std::string bundlePath_;
+    Constants::AppType appType_ = Constants::AppType::SYSTEM_APP;
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS

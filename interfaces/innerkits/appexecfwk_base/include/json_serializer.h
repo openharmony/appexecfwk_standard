@@ -18,6 +18,7 @@
 
 #include "nlohmann/json.hpp"
 #include "bundle_info.h"
+#include "bundle_user_info.h"
 #include "form_info.h"
 #include "shortcut_info.h"
 #include "common_event_info.h"
@@ -48,6 +49,8 @@ void to_json(nlohmann::json &jsonObject, const CommonEventInfo &commonEvent);
 void from_json(const nlohmann::json &jsonObject, CommonEventInfo &commonEvent);
 void to_json(nlohmann::json &jsonObject, const HapModuleInfo &hapModuleInfo);
 void from_json(const nlohmann::json &jsonObject, HapModuleInfo &hapModuleInfo);
+void to_json(nlohmann::json& jsonObject, const BundleUserInfo& bundleUserInfo);
+void from_json(const nlohmann::json& jsonObject, BundleUserInfo& bundleUserInfo);
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_BASE_INCLUDE_JSON_SERIALIZER_H

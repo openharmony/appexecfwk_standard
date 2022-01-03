@@ -22,12 +22,14 @@ namespace AppExecFwk {
 namespace {
 const std::string BUNDLE_NAME = "bundleName";
 const std::string BUNDLE_PATH = "bundlePath";
+const std::string APP_TYPE = "appType";
 }  // namespace
 
 void PreInstallBundleInfo::ToJson(nlohmann::json &jsonObject) const
 {
     jsonObject[BUNDLE_NAME] = bundleName_;
     jsonObject[BUNDLE_PATH] = bundlePath_;
+    jsonObject[APP_TYPE] = appType_;
 }
 
 int32_t PreInstallBundleInfo::FromJson(const nlohmann::json &jsonObject)
@@ -49,6 +51,14 @@ int32_t PreInstallBundleInfo::FromJson(const nlohmann::json &jsonObject)
         true,
         ProfileReader::parseResult,
         ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<Constants::AppType>(jsonObject,
+        jsonObjectEnd,
+        APP_TYPE,
+        appType_,
+        JsonType::NUMBER,
+        false,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
     int32_t ret = ProfileReader::parseResult;
     // need recover parse result to ERR_OK
     ProfileReader::parseResult = ERR_OK;
@@ -60,6 +70,7 @@ std::string PreInstallBundleInfo::ToString() const
     nlohmann::json j;
     j[BUNDLE_NAME] = bundleName_;
     j[BUNDLE_PATH] = bundlePath_;
+    j[APP_TYPE] = appType_;
     return j.dump();
 }
 }  // namespace AppExecFwk

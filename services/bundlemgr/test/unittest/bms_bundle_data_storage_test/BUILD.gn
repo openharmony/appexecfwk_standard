@@ -34,8 +34,10 @@ ohos_unittest("BmsBundleDataStorageTest") {
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base/src/ability_info.cpp",
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base/src/application_info.cpp",
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base/src/bundle_info.cpp",
+    "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base/src/bundle_user_info.cpp",
     "${services_path}/bundlemgr/src/bundle_data_storage.cpp",
     "${services_path}/bundlemgr/src/inner_bundle_info.cpp",
+    "${services_path}/bundlemgr/src/inner_bundle_user_info.cpp",
     "${services_path}/bundlemgr/src/pre_install_bundle_info.cpp",
   ]
 
@@ -71,7 +73,9 @@ ohos_unittest("BmsBundleDataStorageDatabaseTest") {
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base/src/ability_info.cpp",
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base/src/application_info.cpp",
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base/src/bundle_info.cpp",
+    "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base/src/bundle_user_info.cpp",
     "${services_path}/bundlemgr/src/inner_bundle_info.cpp",
+    "${services_path}/bundlemgr/src/inner_bundle_user_info.cpp",
   ]
 
   sources += [ "bms_bundle_data_storage_database_test.cpp" ]

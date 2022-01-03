@@ -33,6 +33,11 @@ struct QueryParameter {
     std::string userId;
 };
 
+struct BundleOptions {
+    int32_t userId = Constants::UNSPECIFIED_USERID;
+    std::string networkId;
+};
+
 struct AsyncAbilityInfoCallbackInfo {
     napi_env env;
     napi_async_work asyncWork;
@@ -57,6 +62,7 @@ struct AsyncBundleInfoCallbackInfo {
     bool ret = false;
     int32_t err = 0;
     std::string message;
+    BundleOptions bundleOptions;
 };
 
 struct AsyncApplicationInfoCallbackInfo {
@@ -103,6 +109,7 @@ struct AsyncBundleInfosCallbackInfo {
     bool ret = false;
     int32_t err = 0;
     std::string message;
+    int32_t userId = Constants::UNSPECIFIED_USERID;
 };
 
 struct AsyncApplicationInfosCallbackInfo {

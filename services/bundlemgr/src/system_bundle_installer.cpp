@@ -30,12 +30,13 @@ SystemBundleInstaller::~SystemBundleInstaller()
     APP_LOGI("system bundle installer instance is destroyed");
 }
 
-bool SystemBundleInstaller::InstallSystemBundle(Constants::AppType appType)
+bool SystemBundleInstaller::InstallSystemBundle(Constants::AppType appType, int32_t userId)
 {
     InstallParam installParam;
-    installParam.userId = Constants::DEFAULT_USERID;
+    installParam.userId = userId;
     installParam.isPreInstallApp = true;
-    if (appType == Constants::AppType::SYSTEM_APP) {
+    if (appType == Constants::AppType::SYSTEM_APP
+        || appType == Constants::AppType::THIRD_SYSTEM_APP) {
         installParam.needSavePreInstallInfo = true;
     }
     ErrCode result = InstallBundle(filePath_, installParam, appType);

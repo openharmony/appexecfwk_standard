@@ -21,7 +21,10 @@ module_output_path = "appexecfwk_standard/bundlemgrservice"
 ohos_unittest("BmsInstallDaemonTest") {
   use_exceptions = true
   module_out_path = module_output_path
-  include_dirs = [ "//third_party/jsoncpp/include" ]
+  include_dirs = [
+    "//third_party/jsoncpp/include",
+    "//base/startup/syspara_lite/interfaces/innerkits/native/syspara/include",
+  ]
   sources = [
     "${services_path}/bundlemgr/src/installd_death_recipient.cpp",
     "${services_path}/bundlemgr/test/mock/src/system_ability_helper.cpp",
@@ -41,6 +44,7 @@ ohos_unittest("BmsInstallDaemonTest") {
     "${innerkits_path}/appexecfwk_core:appexecfwk_core",
     "${services_path}/bundlemgr:bundle_parser",
     "${services_path}/bundlemgr:parser_common",
+    "//base/startup/syspara_lite/interfaces/innerkits/native/syspara:syspara",
     "//third_party/googletest:gtest_main",
     "//third_party/jsoncpp:jsoncpp",
   ]

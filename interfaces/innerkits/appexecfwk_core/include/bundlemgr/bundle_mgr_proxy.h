@@ -79,31 +79,39 @@ public:
      * @param bundleName Indicates the application bundle name to be queried.
      * @param flag Indicates the information contained in the BundleInfo object to be returned.
      * @param bundleInfo Indicates the obtained BundleInfo object.
+     * @param userId Indicates the user ID.
      * @return Returns true if the BundleInfo is successfully obtained; returns false otherwise.
      */
-    virtual bool GetBundleInfo(const std::string &bundleName, const BundleFlag flag, BundleInfo &bundleInfo) override;
+    virtual bool GetBundleInfo(const std::string &bundleName, const BundleFlag flag,
+        BundleInfo &bundleInfo, int32_t userId = Constants::UNSPECIFIED_USERID) override;
     /**
      * @brief Obtains the BundleInfo based on a given bundle name through the proxy object.
      * @param bundleName Indicates the application bundle name to be queried.
      * @param flags Indicates the information contained in the BundleInfo object to be returned.
      * @param bundleInfo Indicates the obtained BundleInfo object.
+     * @param userId Indicates the user ID.
      * @return Returns true if the BundleInfo is successfully obtained; returns false otherwise.
      */
-    virtual bool GetBundleInfo(const std::string &bundleName, int32_t flags, BundleInfo &bundleInfo) override;
+    virtual bool GetBundleInfo(const std::string &bundleName, int32_t flags,
+        BundleInfo &bundleInfo, int32_t userId = Constants::UNSPECIFIED_USERID) override;
     /**
      * @brief Obtains BundleInfo of all bundles available in the system through the proxy object.
      * @param flag Indicates the flag used to specify information contained in the BundleInfo that will be returned.
      * @param bundleInfos Indicates all of the obtained BundleInfo objects.
+     * @param userId Indicates the user ID.
      * @return Returns true if the BundleInfos is successfully obtained; returns false otherwise.
      */
-    virtual bool GetBundleInfos(const BundleFlag flag, std::vector<BundleInfo> &bundleInfos) override;
+    virtual bool GetBundleInfos(const BundleFlag flag, std::vector<BundleInfo> &bundleInfos,
+        int32_t userId = Constants::UNSPECIFIED_USERID) override;
     /**
      * @brief Obtains BundleInfo of all bundles available in the system through the proxy object.
      * @param flags Indicates the flag used to specify information contained in the BundleInfo that will be returned.
      * @param bundleInfos Indicates all of the obtained BundleInfo objects.
+     * @param userId Indicates the user ID.
      * @return Returns true if the BundleInfos is successfully obtained; returns false otherwise.
      */
-    virtual bool GetBundleInfos(int32_t flags, std::vector<BundleInfo> &bundleInfos) override;
+    virtual bool GetBundleInfos(int32_t flags, std::vector<BundleInfo> &bundleInfos,
+        int32_t userId = Constants::UNSPECIFIED_USERID) override;
     /**
      * @brief Obtains the application UID based on the given bundle name and user ID through the proxy object.
      * @param bundleName Indicates the bundle name of the application.
@@ -382,10 +390,12 @@ public:
      * @brief Dump the bundle informations with specific flags through the proxy object.
      * @param flag Indicates the information contained in the dump result.
      * @param bundleName Indicates the bundle name if needed.
+     * @param userId Indicates the user ID.
      * @param result Indicates the dump information result.
      * @return Returns true if the dump result is successfully obtained; returns false otherwise.
      */
-    virtual bool DumpInfos(const DumpFlag flag, const std::string &bundleName, std::string &result) override;
+    virtual bool DumpInfos(
+        const DumpFlag flag, const std::string &bundleName, int32_t userId, std::string &result) override;
     /**
      * @brief Checks whether a specified application is enabled through the proxy object.
      * @param bundleName Indicates the bundle name of the application.
@@ -426,6 +436,11 @@ public:
      * @return Returns a pointer to IBundleInstaller class if exist; returns nullptr otherwise.
      */
     virtual sptr<IBundleInstaller> GetBundleInstaller() override;
+    /**
+     * @brief Obtains the interface used to create or delete user.
+     * @return Returns a pointer to IBundleUserMgr class if exist; returns nullptr otherwise.
+     */
+    virtual sptr<IBundleUserMgr> GetBundleUserMgr() override;
     /**
      * @brief Confirms with the permission management module to check whether a request prompt is required for granting
      * a certain permission.

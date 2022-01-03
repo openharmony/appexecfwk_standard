@@ -38,6 +38,7 @@ ohos_source_set("appmgr_test_source") {
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base/src/ability_info.cpp",
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base/src/application_info.cpp",
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base/src/bundle_info.cpp",
+    "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base/src/bundle_user_info.cpp",
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base/src/element_name.cpp",
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base/src/running_process_info.cpp",
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core/src/appmgr/app_launch_data.cpp",

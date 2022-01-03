@@ -72,6 +72,28 @@ public:
      * @return Returns true if the hap path obtained successfully; returns false otherwise.
      */
     static bool GetHapFilesFromBundlePath(const std::string& currentBundlePath, std::vector<std::string>& hapFileList);
+    /**
+     * @brief to obtain the current time.
+     * @return Returns current time.
+     */
+    static int64_t GetCurrentTime();
+    /**
+     * @brief key combination of deviceId and bundleName.
+     * @param deviceId Indicates the deviceId.
+     * @param bundleName Indicates the bundle name.
+     * @param key Indicates the key.
+     */
+    static void DeviceAndNameToKey(
+        const std::string &deviceId, const std::string &bundleName, std::string &key);
+    /**
+     * @brief The key is parsed into deviceId and bundleName.
+     * @param key Indicates the key.
+     * @param deviceId Indicates the deviceId.
+     * @param bundleName Indicates the bundle name.
+     * @return Returns result.
+     */
+    static bool KeyToDeviceAndName(
+        const std::string &key, std::string &deviceId, std::string &bundleName);
 };
 
 }  // namespace AppExecFwk

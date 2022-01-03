@@ -20,6 +20,7 @@
 #include <map>
 #include <memory>
 #include <sstream>
+#include <string>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -28,6 +29,7 @@
 #include "bundle_constants.h"
 #include "directory_ex.h"
 #include "installd/installd_operator.h"
+#include "parameters.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -54,6 +56,22 @@ ErrCode InstalldHostImpl::CreateBundleDir(const std::string &bundleDir)
     }
     if (!InstalldOperator::MkRecursiveDir(bundleDir, true)) {
         APP_LOGE("create bundle dir %{public}s failed", bundleDir.c_str());
+        return ERR_APPEXECFWK_INSTALLD_CREATE_DIR_FAILED;
+    }
+
+    auto bundleName = strrchr(bundleDir.c_str(), Constants::FILE_SEPARATOR_CHAR);
+    if (!bundleName) {
+        APP_LOGE("Calling the function CreateBundleDir with invalid bundleName");
+        return ERR_APPEXECFWK_INSTALLD_PARAM_ERROR;
+    }
+
+    std::string newBundleDir = Constants::BUNDLE_CODE_DIR + bundleName;
+    if (InstalldOperator::IsExistDir(newBundleDir)) {
+        APP_LOGW("new bundle dir: %{public}s is exist", newBundleDir.c_str());
+        OHOS::ForceRemoveDirectory(newBundleDir);
+    }
+    if (!InstalldOperator::MkRecursiveDir(newBundleDir, true)) {
+        APP_LOGE("create new bundle dir %{public}s failed", newBundleDir.c_str());
         return ERR_APPEXECFWK_INSTALLD_CREATE_DIR_FAILED;
     }
     return ERR_OK;
@@ -93,37 +111,110 @@ ErrCode InstalldHostImpl::RenameModuleDir(const std::string &oldPath, const std:
     return ERR_OK;
 }
 
-ErrCode InstalldHostImpl::CreateBundleDataDir(const std::string &bundleDataDir, const int uid, const int gid)
+ErrCode InstalldHostImpl::CreateBundleDataDir(const std::string &bundleDataDir,
+    const int userid, const int uid, const int gid, bool onlyOneUser)
 {
     if (bundleDataDir.empty() || uid < 0 || gid < 0) {
         APP_LOGE("Calling the function CreateBundleDataDir with invalid param");
         return ERR_APPEXECFWK_INSTALLD_PARAM_ERROR;
     }
-    std::string createDir;
-    if (bundleDataDir.back() != Constants::PATH_SEPARATOR[0]) {
-        createDir = bundleDataDir + Constants::PATH_SEPARATOR;
-    } else {
-        createDir = bundleDataDir;
+
+    if (onlyOneUser) {
+        std::string createDir;
+        if (bundleDataDir.back() != Constants::PATH_SEPARATOR[0]) {
+            createDir = bundleDataDir + Constants::PATH_SEPARATOR;
+        } else {
+            createDir = bundleDataDir;
+        }
+
+        if (!InstalldOperator::MkOwnerDir(createDir + Constants::DATA_DIR, true, uid, gid)) {
+            APP_LOGE("CreateBundleDataDir MkOwnerDir DATA_DIR failed");
+            return ERR_APPEXECFWK_INSTALLD_CREATE_DIR_FAILED;
+        }
+
+        if (!InstalldOperator::MkOwnerDir(createDir + Constants::DATA_BASE_DIR, true, uid, gid)) {
+            APP_LOGE("CreateBundleDataDir MkOwnerDir DATA_BASE_DIR failed");
+            return ERR_APPEXECFWK_INSTALLD_CREATE_DIR_FAILED;
+        }
+
+        if (!InstalldOperator::MkOwnerDir(createDir + Constants::CACHE_DIR, true, uid, gid)) {
+            APP_LOGE("CreateBundleDataDir MkOwnerDir CACHE_DIR failed");
+            return ERR_APPEXECFWK_INSTALLD_CREATE_DIR_FAILED;
+        }
+
+        if (!InstalldOperator::MkOwnerDir(createDir + Constants::SHARED_PREFERENCE_DIR, true, uid, gid)) {
+            APP_LOGE("CreateBundleDataDir MkOwnerDir SHARED_PREFERENCE_DIR failed");
+            return ERR_APPEXECFWK_INSTALLD_CREATE_DIR_FAILED;
+        }
     }
 
-    if (!InstalldOperator::MkOwnerDir(createDir + Constants::DATA_DIR, true, uid, gid)) {
-        APP_LOGE("CreateBundleDataDir MkOwnerDir DATA_DIR failed");
-        return ERR_APPEXECFWK_INSTALLD_CREATE_DIR_FAILED;
+    std::string bundleName = strrchr(bundleDataDir.c_str(), Constants::FILE_SEPARATOR_CHAR);
+    if (CreateNewBundleDataDir(bundleName, userid, uid, gid) != ERR_OK) {
+        APP_LOGE("CreateNewBundleDataDir MkOwnerDir failed");
     }
+    return ERR_OK;
+}
 
-    if (!InstalldOperator::MkOwnerDir(createDir + Constants::DATA_BASE_DIR, true, uid, gid)) {
-        APP_LOGE("CreateBundleDataDir MkOwnerDir DATA_BASE_DIR failed");
-        return ERR_APPEXECFWK_INSTALLD_CREATE_DIR_FAILED;
+ErrCode InstalldHostImpl::CreateNewBundleDataDir(
+    const std::string &bundleName, const int userid, const int uid, const int gid) const
+{
+    if (bundleName.empty() || userid < 0 || uid < 0 || gid < 0) {
+        APP_LOGE("Calling the function CreateBundleDataDir with invalid param");
+        return ERR_APPEXECFWK_INSTALLD_PARAM_ERROR;
     }
-
-    if (!InstalldOperator::MkOwnerDir(createDir + Constants::CACHE_DIR, true, uid, gid)) {
-        APP_LOGE("CreateBundleDataDir MkOwnerDir CACHE_DIR failed");
-        return ERR_APPEXECFWK_INSTALLD_CREATE_DIR_FAILED;
+    for (const auto el : Constants::BUNDLE_EL) {
+        std::string bundleDataDir = GetBundleDataDir(el, userid) + Constants::BASE + bundleName;
+        if (!InstalldOperator::MkOwnerDir(bundleDataDir, S_IRWXU, uid, gid)) {
+            APP_LOGE("CreateBundledatadir MkOwnerDir failed");
+            return ERR_APPEXECFWK_INSTALLD_CREATE_DIR_FAILED;
+        }
+        if (el == Constants::BUNDLE_EL[1]) {
+            for (const auto dir : Constants::BUNDLE_DATA_DIR) {
+                if (!InstalldOperator::MkOwnerDir(bundleDataDir + dir, S_IRWXU, uid, gid)) {
+                    APP_LOGE("CreateBundledatadir MkOwnerDir el2 failed");
+                    return ERR_APPEXECFWK_INSTALLD_CREATE_DIR_FAILED;
+                }
+            }
+        }
     }
+    for (const auto el : Constants::DATABASE_EL) {
+        std::string databaseDir = GetBundleDataDir(el, userid) + Constants::DATABASE + bundleName;
+        if (!InstalldOperator::MkOwnerDir(databaseDir, S_IRWXU, uid, gid)) {
+            APP_LOGE("CreateBundle databaseDir MkOwnerDir failed");
+            return ERR_APPEXECFWK_INSTALLD_CREATE_DIR_FAILED;
+        }
+    }
+    if (system::GetBoolParameter(Constants::DISTRIBUTED_FILE_PROPERTY, false)) {
+        std::string distributedfile = Constants::DISTRIBUTED_FILE;
+        distributedfile = distributedfile.replace(distributedfile.find("%"), 1, std::to_string(userid));
+        if (!InstalldOperator::MkOwnerDir(distributedfile + bundleName, S_IRWXU, uid, gid)) {
+            APP_LOGE("CreateBundle distributedfile MkOwnerDir failed");
+            return ERR_APPEXECFWK_INSTALLD_CREATE_DIR_FAILED;
+        }
+    }
+    return ERR_OK;
+}
 
-    if (!InstalldOperator::MkOwnerDir(createDir + Constants::SHARED_PREFERENCE_DIR, true, uid, gid)) {
-        APP_LOGE("CreateBundleDataDir MkOwnerDir SHARED_PREFERENCE_DIR failed");
-        return ERR_APPEXECFWK_INSTALLD_CREATE_DIR_FAILED;
+ErrCode InstalldHostImpl::RemoveBundleDataDir(const std::string &bundleName, const int userid)
+{
+    APP_LOGD("InstalldHostImpl::RemoveBundleDataDir bundleName:%{public}s", bundleName.c_str());
+    if (bundleName.empty() || userid < 0) {
+        APP_LOGE("Calling the function CreateBundleDataDir with invalid param");
+        return ERR_APPEXECFWK_INSTALLD_PARAM_ERROR;
+    }
+    for (const auto el : Constants::BUNDLE_EL) {
+        std::string bundleDataDir = GetBundleDataDir(el, userid) + Constants::BASE + bundleName;
+        if (!InstalldOperator::DeleteDir(bundleDataDir)) {
+            APP_LOGE("remove dir %{public}s failed", bundleDataDir.c_str());
+            return ERR_APPEXECFWK_INSTALLD_REMOVE_DIR_FAILED;
+        }
+    }
+    for (const auto el : Constants::DATABASE_EL) {
+        std::string databaseDir = GetBundleDataDir(el, userid) + Constants::DATABASE + bundleName;
+        if (!InstalldOperator::DeleteDir(databaseDir)) {
+            APP_LOGE("remove dir %{public}s failed", databaseDir.c_str());
+            return ERR_APPEXECFWK_INSTALLD_REMOVE_DIR_FAILED;
+        }
     }
     return ERR_OK;
 }
@@ -169,7 +260,23 @@ ErrCode InstalldHostImpl::CreateModuleDataDir(
             return ERR_APPEXECFWK_INSTALLD_CREATE_DIR_FAILED;
         }
     }
+    return ERR_OK;
+}
 
+ErrCode InstalldHostImpl::RemoveModuleDataDir(const std::string &ModuleDir, const int userid)
+{
+    APP_LOGD("InstalldHostImpl::RemoveModuleDataDir ModuleDir:%{public}s", ModuleDir.c_str());
+    if (ModuleDir.empty() || userid < 0) {
+        APP_LOGE("Calling the function CreateModuleDataDir with invalid param");
+        return ERR_APPEXECFWK_INSTALLD_PARAM_ERROR;
+    }
+
+    for (const auto el : Constants::BUNDLE_EL) {
+        std::string moduleDataDir = GetBundleDataDir(el, userid) + Constants::BASE + ModuleDir;
+        if (!InstalldOperator::DeleteDir(moduleDataDir)) {
+            APP_LOGE("remove dir %{public}s failed", moduleDataDir.c_str());
+        }
+    }
     return ERR_OK;
 }
 
@@ -198,6 +305,15 @@ ErrCode InstalldHostImpl::CleanBundleDataDir(const std::string &dataDir)
         return ERR_APPEXECFWK_INSTALLD_CLEAN_DIR_FAILED;
     }
     return ERR_OK;
+}
+
+std::string InstalldHostImpl::GetBundleDataDir(const std::string &el, const int userid) const
+{
+    std::string dataDir = Constants::BUNDLE_APP_DATA_BASE_DIR +
+                          el +
+                          Constants::FILE_SEPARATOR_CHAR +
+                          std::to_string(userid);
+    return dataDir;
 }
 
 }  // namespace AppExecFwk
