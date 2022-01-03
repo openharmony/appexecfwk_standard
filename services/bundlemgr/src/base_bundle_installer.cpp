@@ -54,7 +54,6 @@ bool UninstallApplicationProcesses(const std::string &bundleName, const int uid)
     }
     return true;
 }
-
 }  // namespace
 
 BaseBundleInstaller::BaseBundleInstaller()
@@ -83,7 +82,7 @@ ErrCode BaseBundleInstaller::InstallBundle(
 
     int32_t uid = Constants::INVALID_UID;
     ErrCode result = ProcessBundleInstall(bundlePaths, installParam, appType, uid);
-    if (dataMgr_ && !bundleName_.empty()) {
+    if (dataMgr_ && !bundleName_.empty() && needNotifyBundleStatus_) {
         dataMgr_->NotifyBundleStatus(bundleName_,
             Constants::EMPTY_STRING,
             mainAbility_,
@@ -126,7 +125,7 @@ ErrCode BaseBundleInstaller::UninstallBundle(const std::string &bundleName, cons
 
     int32_t uid = Constants::INVALID_UID;
     ErrCode result = ProcessBundleUninstall(bundleName, installParam, uid);
-    if (dataMgr_) {
+    if (dataMgr_ && needNotifyBundleStatus_) {
         dataMgr_->NotifyBundleStatus(
             bundleName, Constants::EMPTY_STRING, Constants::EMPTY_STRING, result, NotifyType::UNINSTALL_BUNDLE, uid);
     }
@@ -144,7 +143,7 @@ ErrCode BaseBundleInstaller::UninstallBundle(
 
     int32_t uid = Constants::INVALID_UID;
     ErrCode result = ProcessBundleUninstall(bundleName, modulePackage, installParam, uid);
-    if (dataMgr_) {
+    if (dataMgr_ && needNotifyBundleStatus_) {
         dataMgr_->NotifyBundleStatus(
             bundleName, modulePackage, Constants::EMPTY_STRING, result, NotifyType::UNINSTALL_MODULE, uid);
     }
@@ -172,10 +171,35 @@ ErrCode BaseBundleInstaller::InnerProcessBundleInstall(std::unordered_map<std::s
     }
     ErrCode result = ERR_OK;
     if (isAppExist_) {
+        hasInstalledInUser_ = oldInfo.HasInnerBundleUserInfo(userId_);
+        if (!hasInstalledInUser_) {
+            APP_LOGD("new userInfo with bundleName %{public}s and userId %{public}d",
+                bundleName_.c_str(), userId_);
+            InnerBundleUserInfo newInnerBundleUserInfo;
+            newInnerBundleUserInfo.bundleUserInfo.userId = userId_;
+            newInnerBundleUserInfo.bundleName = bundleName_;
+            oldInfo.AddInnerBundleUserInfo(newInnerBundleUserInfo);
+            result = CreateBundleUserData(oldInfo, false);
+            if (result != ERR_OK) {
+                return result;
+            }
+        }
+
         // to guaruntee that the hap version can be compatible.
-        if ((result = CheckVersionCompatibility(oldInfo)) != ERR_OK) {
+        result = CheckVersionCompatibility(oldInfo);
+        if (result != ERR_OK) {
+            if (!hasInstalledInUser_ && result == ERR_APPEXECFWK_INSTALL_VERSION_DOWNGRADE) {
+                APP_LOGD("The app has been installed under another user and has a larger version.");
+                for (auto &info : newInfos) {
+                    info.second.SetOnlyCreateBundleUser(true);
+                }
+                return ERR_OK;
+            }
+
+            APP_LOGE("The app has been installed and update lower version bundle.");
             return result;
         }
+
         for (auto &info : newInfos) {
             std::string packageName = info.second.GetCurrentModulePackage();
             if (oldInfo.FindModule(packageName)) {
@@ -183,6 +207,7 @@ ErrCode BaseBundleInstaller::InnerProcessBundleInstall(std::unordered_map<std::s
             }
         }
     }
+
     auto it = newInfos.begin();
     if (!isAppExist_) {
         APP_LOGI("app is not exist");
@@ -191,12 +216,19 @@ ErrCode BaseBundleInstaller::InnerProcessBundleInstall(std::unordered_map<std::s
             PreInstallBundleInfo preInstallBundleInfo;
             preInstallBundleInfo.SetBundleName(bundleName_);
             preInstallBundleInfo.SetBundlePath(modulePath_);
+            preInstallBundleInfo.SetAppType(it->second.GetAppType());
             dataMgr_->SavePreInstallBundleInfo(bundleName_, preInstallBundleInfo);
         }
+
+        InnerBundleUserInfo newInnerBundleUserInfo;
+        newInnerBundleUserInfo.bundleUserInfo.userId = userId_;
+        newInnerBundleUserInfo.bundleName = bundleName_;
+        it->second.AddInnerBundleUserInfo(newInnerBundleUserInfo);
         result = ProcessBundleInstallStatus(it->second, uid);
         if (result != ERR_OK) {
             return result;
         }
+
         it++;
     }
 
@@ -205,17 +237,26 @@ ErrCode BaseBundleInstaller::InnerProcessBundleInstall(std::unordered_map<std::s
     if (!GetInnerBundleInfo(bundleInfo, isBundleExist) || !isBundleExist) {
         return ERR_APPEXECFWK_INSTALL_BUNDLE_MGR_SERVICE_ERROR;
     }
+
+    InnerBundleUserInfo innerBundleUserInfo;
+    if (!bundleInfo.GetInnerBundleUserInfo(userId_, innerBundleUserInfo)) {
+        APP_LOGE("oldInfo do not have user");
+        return ERR_APPEXECFWK_USER_NOT_EXIST;
+    }
+
     // update haps
     for (; it != newInfos.end(); ++it) {
         modulePath_ = it->first;
         InnerBundleInfo &newInfo = it->second;
-        uid = oldInfo.GetUid();
+        newInfo.AddInnerBundleUserInfo(innerBundleUserInfo);
         bool isReplace = (installParam.installFlag == InstallFlag::REPLACE_EXISTING);
         // app exist, but module may not
         if ((result = ProcessBundleUpdateStatus(bundleInfo, newInfo, isReplace)) != ERR_OK) {
             break;
         }
     }
+
+    uid = bundleInfo.GetUid(userId_);
     mainAbility_ = bundleInfo.GetMainAbility();
     return result;
 }
@@ -224,8 +265,22 @@ ErrCode BaseBundleInstaller::ProcessBundleInstall(const std::vector<std::string>
     const InstallParam &installParam, const Constants::AppType appType, int32_t &uid)
 {
     APP_LOGD("ProcessBundleInstall bundlePath install");
-    if (installParam.userId == Constants::INVALID_USERID) {
+    userId_ = GetUserId(installParam);
+    if (userId_ == Constants::INVALID_USERID) {
         return ERR_APPEXECFWK_INSTALL_PARAM_ERROR;
+    }
+
+    if (!dataMgr_) {
+        dataMgr_ = DelayedSingleton<BundleMgrService>::GetInstance()->GetDataMgr();
+        if (!dataMgr_) {
+            APP_LOGE("Get dataMgr shared_ptr nullptr");
+            return ERR_APPEXECFWK_UNINSTALL_BUNDLE_MGR_SERVICE_ERROR;
+        }
+    }
+
+    if (!dataMgr_->HasUserId(userId_)) {
+        APP_LOGE("The user %{public}d does not exist when install.", userId_);
+        return ERR_APPEXECFWK_USER_NOT_EXIST;
     }
 
     std::vector<std::string> bundlePaths;
@@ -267,7 +322,7 @@ ErrCode BaseBundleInstaller::ProcessBundleInstall(const std::vector<std::string>
 
     // rename for all temp dirs
     for (const auto &info : newInfos) {
-        if ((result = RenameModuleDir(info.second)) != ERR_OK) {
+        if (!info.second.IsOnlyCreateBundleUser() && (result = RenameModuleDir(info.second)) != ERR_OK) {
             break;
         }
     }
@@ -309,8 +364,8 @@ void BaseBundleInstaller::RollBack(const InnerBundleInfo &info, InnerBundleInfo 
         RollBackMoudleInfo(bundleName_, oldInfo);
     } else {
         auto modulePackage = info.GetCurrentModulePackage();
-        RemoveModuleAndDataDir(info.GetModuleDir(modulePackage),
-            info.GetModuleDataDir(modulePackage));
+        RemoveModuleDir(info.GetModuleDir(modulePackage));
+        RemoveModuleDataDir(info, modulePackage);
         // remove module info
         RemoveInfo(bundleName_, modulePackage);
     }
@@ -355,9 +410,10 @@ ErrCode BaseBundleInstaller::ProcessBundleUninstall(
         APP_LOGE("uninstall bundle name empty");
         return ERR_APPEXECFWK_UNINSTALL_INVALID_NAME;
     }
-    if (installParam.userId == Constants::INVALID_USERID) {
-        APP_LOGE("invalid userId");
-        return ERR_APPEXECFWK_UNINSTALL_PARAM_ERROR;
+
+    userId_ = GetUserId(installParam);
+    if (userId_ == Constants::INVALID_USERID) {
+        return ERR_APPEXECFWK_INSTALL_PARAM_ERROR;
     }
 
     dataMgr_ = DelayedSingleton<BundleMgrService>::GetInstance()->GetDataMgr();
@@ -365,6 +421,7 @@ ErrCode BaseBundleInstaller::ProcessBundleUninstall(
         APP_LOGE("Get dataMgr shared_ptr nullptr");
         return ERR_APPEXECFWK_UNINSTALL_BUNDLE_MGR_SERVICE_ERROR;
     }
+
     auto &mtx = dataMgr_->GetBundleMutex(bundleName);
     std::lock_guard lock {mtx};
     InnerBundleInfo oldInfo;
@@ -372,17 +429,33 @@ ErrCode BaseBundleInstaller::ProcessBundleUninstall(
         APP_LOGE("uninstall bundle info missing");
         return ERR_APPEXECFWK_UNINSTALL_MISSING_INSTALLED_BUNDLE;
     }
+
     ScopeGuard enableGuard([&] { dataMgr_->EnableBundle(bundleName); });
-    if (oldInfo.GetBaseApplicationInfo().isSystemApp && !oldInfo.IsRemovable()) {
+    InnerBundleUserInfo curInnerBundleUserInfo;
+    if (!oldInfo.GetInnerBundleUserInfo(userId_, curInnerBundleUserInfo)) {
+        APP_LOGE("bundle(%{public}s) get user(%{public}d) failed when uninstall.",
+            oldInfo.GetBundleName().c_str(), userId_);
+        return ERR_APPEXECFWK_USER_NOT_EXIST;
+    }
+
+    uid = curInnerBundleUserInfo.uid;
+    oldInfo.SetIsKeepData(installParam.isKeepData);
+    if (!installParam.forceExecuted && oldInfo.GetBaseApplicationInfo().isSystemApp && !oldInfo.IsRemovable()) {
         APP_LOGE("uninstall system app");
         return ERR_APPEXECFWK_UNINSTALL_SYSTEM_APP_ERROR;
     }
-    uid = oldInfo.GetUid();
+
     std::string cloneName;
     if (dataMgr_->GetClonedBundleName(bundleName, cloneName)) {
         APP_LOGI("GetClonedBundleName new name %{public}s ", cloneName.c_str());
         cloneMgr_->RemoveClonedBundle(bundleName, cloneName);
     }
+
+    if (oldInfo.GetInnerBundleUserInfos().size() > 1) {
+        APP_LOGD("only delete userinfo %{public}d", userId_);
+        return RemoveBundleUserData(oldInfo);
+    }
+
     if (!dataMgr_->UpdateBundleInstallState(bundleName, InstallState::UNINSTALL_START)) {
         APP_LOGE("uninstall already start");
         return ERR_APPEXECFWK_INSTALL_BUNDLE_MGR_SERVICE_ERROR;
@@ -418,9 +491,10 @@ ErrCode BaseBundleInstaller::ProcessBundleUninstall(
         APP_LOGE("uninstall bundle name or module name empty");
         return ERR_APPEXECFWK_UNINSTALL_INVALID_NAME;
     }
-    if (installParam.userId == Constants::INVALID_USERID) {
-        APP_LOGE("invalid userId");
-        return ERR_APPEXECFWK_UNINSTALL_PARAM_ERROR;
+
+    userId_ = GetUserId(installParam);
+    if (userId_ == Constants::INVALID_USERID) {
+        return ERR_APPEXECFWK_INSTALL_PARAM_ERROR;
     }
 
     dataMgr_ = DelayedSingleton<BundleMgrService>::GetInstance()->GetDataMgr();
@@ -429,6 +503,7 @@ ErrCode BaseBundleInstaller::ProcessBundleUninstall(
         APP_LOGE("Get dataMgr shared_ptr nullptr");
         return ERR_APPEXECFWK_UNINSTALL_BUNDLE_MGR_SERVICE_ERROR;
     }
+
     auto &mtx = dataMgr_->GetBundleMutex(bundleName);
     std::lock_guard lock {mtx};
     InnerBundleInfo oldInfo;
@@ -436,10 +511,18 @@ ErrCode BaseBundleInstaller::ProcessBundleUninstall(
         APP_LOGE("uninstall bundle info missing");
         return ERR_APPEXECFWK_UNINSTALL_MISSING_INSTALLED_BUNDLE;
     }
-    uid = oldInfo.GetUid();
-    ScopeGuard enableGuard([&] { dataMgr_->EnableBundle(bundleName); });
 
-    if (oldInfo.GetBaseApplicationInfo().isSystemApp && !oldInfo.IsRemovable()) {
+    ScopeGuard enableGuard([&] { dataMgr_->EnableBundle(bundleName); });
+    InnerBundleUserInfo curInnerBundleUserInfo;
+    if (!oldInfo.GetInnerBundleUserInfo(userId_, curInnerBundleUserInfo)) {
+        APP_LOGE("bundle(%{public}s) get user(%{public}d) failed when uninstall.",
+            oldInfo.GetBundleName().c_str(), userId_);
+        return ERR_APPEXECFWK_USER_NOT_EXIST;
+    }
+
+    uid = curInnerBundleUserInfo.uid;
+    oldInfo.SetIsKeepData(installParam.isKeepData);
+    if (!installParam.forceExecuted && oldInfo.GetBaseApplicationInfo().isSystemApp && !oldInfo.IsRemovable()) {
         APP_LOGE("uninstall system app");
         return ERR_APPEXECFWK_UNINSTALL_SYSTEM_APP_ERROR;
     }
@@ -466,6 +549,8 @@ ErrCode BaseBundleInstaller::ProcessBundleUninstall(
         APP_LOGE("save install mark failed");
         return ERR_APPEXECFWK_INSTALL_INTERNAL_ERROR;
     }
+
+    bool onlyInstallInUser = oldInfo.GetInnerBundleUserInfos().size() == 1;
     // if it is the only module in the bundle
     if (oldInfo.IsOnlyModule(modulePackage)) {
         APP_LOGI("%{public}s is only module", modulePackage.c_str());
@@ -476,10 +561,20 @@ ErrCode BaseBundleInstaller::ProcessBundleUninstall(
         }
         enableGuard.Dismiss();
         stateGuard.Dismiss();
-        return RemoveBundle(oldInfo);
+        if (onlyInstallInUser) {
+            return RemoveBundle(oldInfo);
+        }
+
+        return RemoveBundleUserData(oldInfo);
     }
 
-    ErrCode result = RemoveModuleAndDataDir(oldInfo, modulePackage);
+    ErrCode result = ERR_OK;
+    if (onlyInstallInUser) {
+        result = RemoveModuleAndDataDir(oldInfo, modulePackage);
+    } else {
+        result = RemoveHapModuleDataDir(oldInfo, modulePackage);
+    }
+
     if (result != ERR_OK) {
         APP_LOGE("remove module dir failed");
         return result;
@@ -503,22 +598,41 @@ ErrCode BaseBundleInstaller::ProcessRecover(
         return ERR_APPEXECFWK_UNINSTALL_BUNDLE_MGR_SERVICE_ERROR;
     }
 
+    userId_ = GetUserId(installParam);
+    if (userId_ == Constants::INVALID_USERID) {
+        return ERR_APPEXECFWK_INSTALL_PARAM_ERROR;
+    }
+
+    if (!dataMgr_->HasUserId(userId_)) {
+        APP_LOGE("The user %{public}d does not exist when install.", userId_);
+        return ERR_APPEXECFWK_USER_NOT_EXIST;
+    }
+
     {
         auto &mtx = dataMgr_->GetBundleMutex(bundleName);
         std::lock_guard lock {mtx};
         InnerBundleInfo oldInfo;
         bool isAppExist = dataMgr_->GetInnerBundleInfo(bundleName, Constants::CURRENT_DEVICE_ID, oldInfo);
         if (isAppExist) {
-            APP_LOGE("App is exist when recover.");
             dataMgr_->EnableBundle(bundleName);
-            return ERR_APPEXECFWK_INSTALL_ALREADY_EXIST;
+            if (oldInfo.HasInnerBundleUserInfo(userId_)) {
+                APP_LOGE("App is exist in user(%{public}d) when recover.", userId_);
+                return ERR_APPEXECFWK_INSTALL_ALREADY_EXIST;
+            }
+
+            InnerBundleUserInfo curInnerBundleUserInfo;
+            curInnerBundleUserInfo.bundleUserInfo.userId = userId_;
+            curInnerBundleUserInfo.bundleName = bundleName;
+            oldInfo.AddInnerBundleUserInfo(curInnerBundleUserInfo);
+            return CreateBundleUserData(oldInfo, true);
         }
     }
 
     PreInstallBundleInfo preInstallBundleInfo;
     preInstallBundleInfo.SetBundleName(bundleName);
     if (!dataMgr_->GetPreInstallBundleInfo(bundleName, preInstallBundleInfo)
-        || preInstallBundleInfo.GetBundlePath().empty()) {
+        || preInstallBundleInfo.GetBundlePath().empty()
+        || preInstallBundleInfo.GetAppType() != Constants::AppType::SYSTEM_APP) {
         APP_LOGE("Get PreInstallBundleInfo faile, bundleName: %{public}s.", bundleName.c_str());
         return ERR_APPEXECFWK_RECOVER_GET_BUNDLEPATH_ERROR;
     }
@@ -545,7 +659,7 @@ ErrCode BaseBundleInstaller::RemoveBundle(InnerBundleInfo &info)
         APP_LOGE("delete inner info failed");
         return ERR_APPEXECFWK_INSTALL_BUNDLE_MGR_SERVICE_ERROR;
     }
-    BundlePermissionMgr::UninstallPermissions(info);
+    BundlePermissionMgr::UninstallPermissions(info, userId_, false);
     return ERR_OK;
 }
 
@@ -569,7 +683,7 @@ ErrCode BaseBundleInstaller::ProcessBundleInstallStatus(InnerBundleInfo &info, i
         APP_LOGE("create bundle and data dir failed");
         return result;
     }
-    uid = info.GetUid();
+
     ScopeGuard bundleGuard([&] { RemoveBundleAndDataDir(info, false); });
     std::string modulePath = info.GetAppCodePath() + Constants::PATH_SEPARATOR + modulePackage_;
     result = ExtractModule(info, modulePath);
@@ -585,16 +699,19 @@ ErrCode BaseBundleInstaller::ProcessBundleInstallStatus(InnerBundleInfo &info, i
     }
 
     info.SetInstallMark(bundleName_, modulePackage_, InstallExceptionStatus::INSTALL_FINISH);
+    uid = info.GetUid(userId_);
+    info.SetBundleInstallTime(BundleUtil::GetCurrentTime(), userId_);
     if (!dataMgr_->AddInnerBundleInfo(bundleName_, info)) {
         APP_LOGE("add bundle %{public}s info failed", bundleName_.c_str());
         dataMgr_->UpdateBundleInstallState(bundleName_, InstallState::UNINSTALL_START);
         dataMgr_->UpdateBundleInstallState(bundleName_, InstallState::UNINSTALL_SUCCESS);
         return ERR_APPEXECFWK_INSTALL_BUNDLE_MGR_SERVICE_ERROR;
     }
+
     stateGuard.Dismiss();
     bundleGuard.Dismiss();
 
-    BundlePermissionMgr::InstallPermissions(info);
+    BundlePermissionMgr::InstallPermissions(info, userId_, false);
     APP_LOGD("finish to call processBundleInstallStatus");
     return ERR_OK;
 }
@@ -641,18 +758,20 @@ ErrCode BaseBundleInstaller::ProcessBundleUpdateStatus(
         return result;
     }
 
-    BundlePermissionMgr::UpdatePermissions(newInfo);
+    BundlePermissionMgr::UpdatePermissions(newInfo, userId_, newInfo.IsOnlyCreateBundleUser());
     APP_LOGD("finish to call ProcessBundleUpdateStatus");
     return ERR_OK;
 }
 
 ErrCode BaseBundleInstaller::ProcessNewModuleInstall(InnerBundleInfo &newInfo, InnerBundleInfo &oldInfo)
 {
-    APP_LOGD("ProcessNewModuleInstall %{public}s", newInfo.GetBundleName().c_str());
+    APP_LOGD("ProcessNewModuleInstall %{public}s, userId: %{public}d.",
+        newInfo.GetBundleName().c_str(), userId_);
     if (newInfo.HasEntry() && oldInfo.HasEntry()) {
         APP_LOGE("install more than one entry module");
         return ERR_APPEXECFWK_INSTALL_ENTRY_ALREADY_EXIST;
     }
+
     oldInfo.SetInstallMark(bundleName_, modulePackage_, InstallExceptionStatus::UPDATING_NEW_START);
     if (!dataMgr_->SaveInstallMark(oldInfo, true)) {
         APP_LOGE("save install mark failed");
@@ -670,17 +789,21 @@ ErrCode BaseBundleInstaller::ProcessNewModuleInstall(InnerBundleInfo &newInfo, I
         APP_LOGE("create module data dir failed");
         return result;
     }
-    ScopeGuard moduleDataGuard([&] { RemoveModuleDataDir(newInfo); });
+    ScopeGuard moduleDataGuard([&] { RemoveModuleDataDir(newInfo, modulePackage_); });
     if (!dataMgr_->UpdateBundleInstallState(bundleName_, InstallState::UPDATING_SUCCESS)) {
         APP_LOGE("new moduleupdate state failed");
         return ERR_APPEXECFWK_INSTALL_BUNDLE_MGR_SERVICE_ERROR;
     }
+
     oldInfo.SetInstallMark(bundleName_, modulePackage_, InstallExceptionStatus::INSTALL_FINISH);
+
+    oldInfo.SetBundleUpdateTime(BundleUtil::GetCurrentTime(), userId_);
     if (!dataMgr_->AddNewModuleInfo(bundleName_, newInfo, oldInfo)) {
         APP_LOGE(
             "add module %{public}s to innerBundleInfo %{public}s failed", modulePackage_.c_str(), bundleName_.c_str());
         return ERR_APPEXECFWK_INSTALL_BUNDLE_MGR_SERVICE_ERROR;
     }
+
     moduleGuard.Dismiss();
     moduleDataGuard.Dismiss();
     return ERR_OK;
@@ -688,15 +811,22 @@ ErrCode BaseBundleInstaller::ProcessNewModuleInstall(InnerBundleInfo &newInfo, I
 
 ErrCode BaseBundleInstaller::ProcessModuleUpdate(InnerBundleInfo &newInfo, InnerBundleInfo &oldInfo, bool isReplace)
 {
-    APP_LOGD("ProcessModuleUpdate %{public}s", newInfo.GetBundleName().c_str());
+    APP_LOGD("ProcessModuleUpdate %{public}s userId: %{public}d.",
+        newInfo.GetBundleName().c_str(), userId_);
     if (!isReplace && versionCode_ == oldInfo.GetVersionCode()) {
-        APP_LOGE("fail to install already existing bundle using normal flag");
-        return ERR_APPEXECFWK_INSTALL_ALREADY_EXIST;
+        if (hasInstalledInUser_) {
+            APP_LOGE("fail to install already existing bundle using normal flag");
+            return ERR_APPEXECFWK_INSTALL_ALREADY_EXIST;
+        }
+
+        // app versionCode equals to the old and do not need to update module
+        // and only need to update userInfo
+        newInfo.SetOnlyCreateBundleUser(true);
+        return ERR_OK;
     }
 
     // kill the bundle process during updating
-    auto uid = oldInfo.GetUid();
-    if (!UninstallApplicationProcesses(oldInfo.GetApplicationName(), uid)) {
+    if (!UninstallApplicationProcesses(oldInfo.GetApplicationName(), oldInfo.GetUid(userId_))) {
         APP_LOGE("fail to kill running application");
         return ERR_APPEXECFWK_INSTALL_INTERNAL_ERROR;
     }
@@ -715,8 +845,11 @@ ErrCode BaseBundleInstaller::ProcessModuleUpdate(InnerBundleInfo &newInfo, Inner
         APP_LOGE("old module update state failed");
         return ERR_APPEXECFWK_INSTALL_BUNDLE_MGR_SERVICE_ERROR;
     }
+
     newInfo.RestoreModuleInfo(oldInfo);
     oldInfo.SetInstallMark(bundleName_, modulePackage_, InstallExceptionStatus::UPDATING_FINISH);
+
+    oldInfo.SetBundleUpdateTime(BundleUtil::GetCurrentTime(), userId_);
     if (!dataMgr_->UpdateInnerBundleInfo(bundleName_, newInfo, oldInfo)) {
         APP_LOGE("update innerBundleInfo %{public}s failed", bundleName_.c_str());
         return ERR_APPEXECFWK_INSTALL_BUNDLE_MGR_SERVICE_ERROR;
@@ -726,28 +859,62 @@ ErrCode BaseBundleInstaller::ProcessModuleUpdate(InnerBundleInfo &newInfo, Inner
 
 ErrCode BaseBundleInstaller::CreateBundleAndDataDir(InnerBundleInfo &info) const
 {
+    ErrCode result = CreateBundleCodeDir(info);
+    if (result != ERR_OK) {
+        APP_LOGE("fail to create bundle code dir, error is %{public}d", result);
+        return result;
+    }
+    ScopeGuard codePathGuard([&] { InstalldClient::GetInstance()->RemoveDir(info.GetAppCodePath()); });
+    result = CreateBundleDataDir(info);
+    if (result != ERR_OK) {
+        APP_LOGE("fail to create bundle data dir, error is %{public}d", result);
+        return result;
+    }
+    codePathGuard.Dismiss();
+    return ERR_OK;
+}
+
+ErrCode BaseBundleInstaller::CreateBundleCodeDir(InnerBundleInfo &info) const
+{
     auto appCodePath = baseCodePath_ + Constants::PATH_SEPARATOR + bundleName_;
-    auto appDataPath = baseDataPath_ + Constants::PATH_SEPARATOR + bundleName_;
     APP_LOGD("create bundle dir %{public}s", appCodePath.c_str());
     ErrCode result = InstalldClient::GetInstance()->CreateBundleDir(appCodePath);
     if (result != ERR_OK) {
         APP_LOGE("fail to create bundle dir, error is %{public}d", result);
         return result;
     }
-    info.SetAppCodePath(appCodePath);
 
-    if (!dataMgr_->GenerateUidAndGid(info)) {
+    info.SetAppCodePath(appCodePath);
+    return ERR_OK;
+}
+
+ErrCode BaseBundleInstaller::CreateBundleDataDir(InnerBundleInfo &info, bool onlyOneUser) const
+{
+    InnerBundleUserInfo newInnerBundleUserInfo;
+    if (!info.GetInnerBundleUserInfo(userId_, newInnerBundleUserInfo)) {
+        APP_LOGE("bundle(%{public}s) get user(%{public}d) failed.",
+            info.GetBundleName().c_str(), userId_);
+        return ERR_APPEXECFWK_USER_NOT_EXIST;
+    }
+
+    if (!dataMgr_->GenerateUidAndGid(newInnerBundleUserInfo)) {
         APP_LOGE("fail to gererate uid and gid");
-        InstalldClient::GetInstance()->RemoveDir(appCodePath);
         return ERR_APPEXECFWK_INSTALL_GENERATE_UID_ERROR;
     }
-    result = InstalldClient::GetInstance()->CreateBundleDataDir(appDataPath, info.GetUid(), info.GetGid());
+
+    auto appDataPath = baseDataPath_ + Constants::PATH_SEPARATOR + info.GetBundleName();
+    auto result = InstalldClient::GetInstance()->CreateBundleDataDir(appDataPath, userId_,
+        newInnerBundleUserInfo.uid, newInnerBundleUserInfo.uid, onlyOneUser);
     if (result != ERR_OK) {
         APP_LOGE("fail to create bundle data dir, error is %{public}d", result);
-        InstalldClient::GetInstance()->RemoveDir(appCodePath);
         return result;
     }
-    UpdateBundlePaths(info, appDataPath);
+
+    if (onlyOneUser) {
+        UpdateBundlePaths(info, appDataPath);
+    }
+
+    info.AddInnerBundleUserInfo(newInnerBundleUserInfo);
     return ERR_OK;
 }
 
@@ -767,7 +934,7 @@ ErrCode BaseBundleInstaller::ExtractModule(InnerBundleInfo &info, const std::str
 ErrCode BaseBundleInstaller::RemoveBundleAndDataDir(const InnerBundleInfo &info, bool isUninstall) const
 {
     // remove bundle dir
-    auto result = InstalldClient::GetInstance()->RemoveDir(info.GetAppCodePath());
+    auto result = RemoveBundleCodeDir(info);
     if (result != ERR_OK) {
         APP_LOGE("fail to remove bundle dir %{public}s, error is %{public}d", info.GetAppCodePath().c_str(), result);
         return result;
@@ -780,44 +947,51 @@ ErrCode BaseBundleInstaller::RemoveBundleAndDataDir(const InnerBundleInfo &info,
                 info.GetBaseDataDir().c_str(), result);
             return result;
         }
+
+        result = RemoveBundleDataDir(info);
+        if (result != ERR_OK) {
+            APP_LOGE("fail to remove newbundleName: %{public}s, error is %{public}d",
+                info.GetBundleName().c_str(), result);
+        }
     }
     return ERR_OK;
+}
+
+ErrCode BaseBundleInstaller::RemoveBundleCodeDir(const InnerBundleInfo &info) const
+{
+    return InstalldClient::GetInstance()->RemoveDir(info.GetAppCodePath());
+}
+
+ErrCode BaseBundleInstaller::RemoveBundleDataDir(const InnerBundleInfo &info) const
+{
+    dataMgr_->DeleteUidAndUserId(info.GetUid(userId_));
+    ErrCode result =
+        InstalldClient::GetInstance()->RemoveBundleDataDir(info.GetBundleName(), userId_);
+    if (result != ERR_OK) {
+        APP_LOGE("fail to remove bundleName: %{public}s, error is %{public}d",
+            info.GetBundleName().c_str(), result);
+    }
+    return result;
 }
 
 ErrCode BaseBundleInstaller::RemoveModuleAndDataDir(const InnerBundleInfo &info, const std::string &modulePackage) const
 {
     auto moduleDir = info.GetModuleDir(modulePackage);
-    auto result = InstalldClient::GetInstance()->RemoveDir(moduleDir);
+    auto result = RemoveModuleDir(moduleDir);
     if (result != ERR_OK) {
         APP_LOGE("fail to remove module dir, error is %{public}d", result);
         return result;
     }
 
     if (!info.GetIsKeepData()) {
-        auto moduleDataDir = info.GetModuleDataDir(modulePackage);
-        result = InstalldClient::GetInstance()->RemoveDir(moduleDataDir);
+        result = RemoveModuleDataDir(info, modulePackage);
         if (result != ERR_OK) {
             APP_LOGE("fail to remove bundle data dir, error is %{public}d", result);
             return result;
         }
+        RemoveHapModuleDataDir(info, modulePackage);
     }
     return ERR_OK;
-}
-
-ErrCode BaseBundleInstaller::RemoveModuleAndDataDir(const std::string &moduleDir,
-    const std::string &bundleDataDir) const
-{
-    auto result = InstalldClient::GetInstance()->RemoveDir(moduleDir);
-    if (result != ERR_OK) {
-        APP_LOGE("fail to remove module dir, error is %{public}d", result);
-        return result;
-    }
-
-    result = InstalldClient::GetInstance()->RemoveDir(bundleDataDir);
-    if (result != ERR_OK) {
-        APP_LOGE("fail to remove bundle data dir, error is %{public}d", result);
-    }
-    return result;
 }
 
 ErrCode BaseBundleInstaller::RemoveModuleDir(const std::string &modulePath) const
@@ -826,9 +1000,28 @@ ErrCode BaseBundleInstaller::RemoveModuleDir(const std::string &modulePath) cons
     return InstalldClient::GetInstance()->RemoveDir(modulePath);
 }
 
-ErrCode BaseBundleInstaller::RemoveModuleDataDir(const InnerBundleInfo &info) const
+ErrCode BaseBundleInstaller::RemoveModuleDataDir(const InnerBundleInfo &info, const std::string &modulePackage) const
 {
-    return InstalldClient::GetInstance()->RemoveDir(info.GetModuleDataDir(modulePackage_));
+    return InstalldClient::GetInstance()->RemoveDir(info.GetModuleDataDir(modulePackage));
+}
+
+ErrCode BaseBundleInstaller::RemoveHapModuleDataDir(const InnerBundleInfo &info, const std::string &modulePackage) const
+{
+    APP_LOGD("RemoveHapModuleDataDir bundleName: %{public}s  modulePackage: %{public}s",
+             info.GetBundleName().c_str(),
+             modulePackage.c_str());
+    auto hapModuleInfo = info.FindHapModuleInfo(modulePackage);
+    if (!hapModuleInfo) {
+        APP_LOGE("fail to findHapModule info modulePackage: %{public}s", modulePackage.c_str());
+        return ERR_NO_INIT;
+    }
+    std::string moduleDataDir = info.GetBundleName() + Constants::PATH_SEPARATOR + (*hapModuleInfo).moduleName;
+    APP_LOGD("RemoveHapModuleDataDir moduleDataDir: %{public}s", moduleDataDir.c_str());
+    auto result = InstalldClient::GetInstance()->RemoveModuleDataDir(moduleDataDir, userId_);
+    if (result != ERR_OK) {
+        APP_LOGE("fail to remove HapModuleData dir, error is %{public}d", result);
+    }
+    return result;
 }
 
 ErrCode BaseBundleInstaller::ParseBundleInfo(const std::string &bundleFilePath, InnerBundleInfo &info) const
@@ -868,12 +1061,20 @@ ErrCode BaseBundleInstaller::RenameModuleDir(const InnerBundleInfo &info) const
 ErrCode BaseBundleInstaller::CreateModuleDataDir(InnerBundleInfo &info) const
 {
     auto moduleDataDir = info.GetBaseDataDir() + Constants::PATH_SEPARATOR + modulePackage_;
+    InnerBundleUserInfo curInnerBundleUserInfo;
+    if (!info.GetInnerBundleUserInfo(userId_, curInnerBundleUserInfo)) {
+        APP_LOGE("bundle(%{public}s) get user(%{public}d) failed.",
+            info.GetBundleName().c_str(), userId_);
+        return ERR_APPEXECFWK_USER_NOT_EXIST;
+    }
+
     auto result = InstalldClient::GetInstance()->CreateModuleDataDir(
-        moduleDataDir, info.GetAbilityNames(), info.GetUid(), info.GetGid());
+        moduleDataDir, info.GetAbilityNames(), curInnerBundleUserInfo.uid, curInnerBundleUserInfo.uid);
     if (result != ERR_OK) {
         APP_LOGE("create module data dir failed, error is %{public}d", result);
         return result;
     }
+
     info.AddModuleDataDir(moduleDataDir);
     return ERR_OK;
 }
@@ -882,7 +1083,7 @@ ErrCode BaseBundleInstaller::ModifyInstallDirByHapType(const InstallParam &insta
     const Constants::AppType appType)
 {
     auto internalPath = Constants::PATH_SEPARATOR + Constants::USER_ACCOUNT_DIR + Constants::FILE_UNDERLINE +
-                        std::to_string(installParam.userId) + Constants::PATH_SEPARATOR;
+                        std::to_string(userId_) + Constants::PATH_SEPARATOR;
     switch (appType) {
         case Constants::AppType::SYSTEM_APP:
             baseCodePath_ = Constants::SYSTEM_APP_INSTALL_PATH + internalPath + Constants::APP_CODE_DIR;
@@ -963,7 +1164,6 @@ ErrCode BaseBundleInstaller::ParseHapFiles(const std::vector<std::string> &bundl
         newInfo.SetUserId(installParam.userId);
         newInfo.SetIsKeepData(installParam.isKeepData);
         newInfo.SetIsPreInstallApp(installParam.isPreInstallApp);
-
         result = ParseBundleInfo(bundlePaths[i], newInfo);
         if (result != ERR_OK) {
             APP_LOGE("bundle parse failed %{public}d", result);
@@ -1114,8 +1314,7 @@ ErrCode BaseBundleInstaller::UninstallLowerVersionFeature(const std::vector<std:
     }
 
     // kill the bundle process during uninstall.
-    auto uid = info.GetUid();
-    if (!UninstallApplicationProcesses(info.GetApplicationName(), uid)) {
+    if (!UninstallApplicationProcesses(info.GetApplicationName(), info.GetUid(userId_))) {
         APP_LOGE("can not kill process");
         return ERR_APPEXECFWK_UNINSTALL_KILLING_APP_ERROR;
     }
@@ -1154,6 +1353,89 @@ ErrCode BaseBundleInstaller::CheckSystemSize(const std::string &bundlePath, cons
     }
     APP_LOGE("install failed due to insufficient disk memory");
     return ERR_APPEXECFWK_INSTALL_DISK_MEM_INSUFFICIENT;
+}
+
+int32_t BaseBundleInstaller::GetUserId(const InstallParam& installParam) const
+{
+    int32_t userId = installParam.userId;
+    int32_t curUserId = DelayedSingleton<BundleMgrService>::GetInstance()->GetCurrentUserId();
+    if (userId == Constants::UNSPECIFIED_USERID) {
+        userId = curUserId;
+    }
+
+    if (userId != curUserId) {
+        needNotifyBundleStatus_ = false;
+    }
+
+    APP_LOGD("BundleInstaller GetUserId, now userId is %{public}d  needNotifyBundleStatus: %{public}d",
+        userId, needNotifyBundleStatus_);
+    return userId;
+}
+
+ErrCode BaseBundleInstaller::CreateBundleUserData(
+    InnerBundleInfo &innerBundleInfo, bool needResetInstallState)
+{
+    APP_LOGD("CreateNewUserData %{public}s userId: %{public}d.",
+        innerBundleInfo.GetBundleName().c_str(), userId_);
+    if (!innerBundleInfo.HasInnerBundleUserInfo(userId_)) {
+        return ERR_APPEXECFWK_USER_NOT_EXIST;
+    }
+
+    ErrCode result = CreateBundleDataDir(innerBundleInfo, false);
+    if (result != ERR_OK) {
+        return result;
+    }
+
+    innerBundleInfo.SetBundleInstallTime(BundleUtil::GetCurrentTime(), userId_);
+    return UpdateUserInfoToDb(innerBundleInfo, needResetInstallState);
+}
+
+ErrCode BaseBundleInstaller::UpdateUserInfoToDb(
+    InnerBundleInfo &innerBundleInfo, bool needResetInstallState)
+{
+    APP_LOGD("update user(%{public}d) in bundle(%{public}s) to Db start.",
+        userId_, innerBundleInfo.GetBundleName().c_str());
+    if (!dataMgr_->UpdateBundleInstallState(innerBundleInfo.GetBundleName(), InstallState::USER_CHANGE)) {
+        APP_LOGE("update bundleinfo when user change failed.");
+        return ERR_APPEXECFWK_INSTALL_BUNDLE_MGR_SERVICE_ERROR;
+    }
+
+    ScopeGuard stateGuard([&] {
+        dataMgr_->UpdateBundleInstallState(innerBundleInfo.GetBundleName(), InstallState::INSTALL_SUCCESS);
+    });
+    auto newBundleInfo = innerBundleInfo;
+    if (!dataMgr_->UpdateInnerBundleInfo(innerBundleInfo.GetBundleName(), newBundleInfo, innerBundleInfo)) {
+        APP_LOGE("update bundle user info to db failed %{public}s when createNewUser",
+            innerBundleInfo.GetBundleName().c_str());
+        return ERR_APPEXECFWK_INSTALL_BUNDLE_MGR_SERVICE_ERROR;
+    }
+
+    if (!needResetInstallState) {
+        stateGuard.Dismiss();
+    }
+
+    APP_LOGD("update user(%{public}d) in bundle(%{public}s) to Db end.",
+        userId_, innerBundleInfo.GetBundleName().c_str());
+    return ERR_OK;
+}
+
+ErrCode BaseBundleInstaller::RemoveBundleUserData(InnerBundleInfo &innerBundleInfo)
+{
+    auto bundleName = innerBundleInfo.GetBundleName();
+    APP_LOGD("remove user(%{public}d) in bundle(%{public}s).", userId_, bundleName.c_str());
+    if (!innerBundleInfo.HasInnerBundleUserInfo(userId_)) {
+        return ERR_APPEXECFWK_USER_NOT_EXIST;
+    }
+
+    ErrCode result = RemoveBundleDataDir(innerBundleInfo);
+    if (result != ERR_OK) {
+        APP_LOGE("remove user data directory failed.");
+        return result;
+    }
+
+    innerBundleInfo.RemoveInnerBundleUserInfo(userId_);
+    BundlePermissionMgr::UninstallPermissions(innerBundleInfo, userId_, true);
+    return UpdateUserInfoToDb(innerBundleInfo, true);
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS

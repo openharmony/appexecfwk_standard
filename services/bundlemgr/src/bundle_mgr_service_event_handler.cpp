@@ -40,11 +40,7 @@ void BMSEventHandler::ProcessEvent(const InnerEvent::Pointer &event)
 {
     switch (event->GetInnerEventId()) {
         case BUNDLE_SCAN_START: {
-            auto future = std::async(std::launch::async, [this] {
-                ProcessSystemBundleInstall(Constants::AppType::SYSTEM_APP);
-                ProcessSystemBundleInstall(Constants::AppType::THIRD_SYSTEM_APP);
-            });
-            future.get();
+            OnStartScanning();
             SetAllInstallFlag();
             break;
         }
@@ -58,7 +54,16 @@ void BMSEventHandler::ProcessEvent(const InnerEvent::Pointer &event)
     }
 }
 
-void BMSEventHandler::ProcessSystemBundleInstall(Constants::AppType appType) const
+void BMSEventHandler::OnStartScanning(int32_t userId)
+{
+    auto future = std::async(std::launch::async, [this, userId] {
+        ProcessSystemBundleInstall(Constants::AppType::SYSTEM_APP, userId);
+        ProcessSystemBundleInstall(Constants::AppType::THIRD_SYSTEM_APP, userId);
+    });
+    future.get();
+}
+
+void BMSEventHandler::ProcessSystemBundleInstall(Constants::AppType appType, int32_t userId) const
 {
     APP_LOGI("scan thread start");
     auto scanner = std::make_unique<BundleScanner>();
@@ -68,12 +73,12 @@ void BMSEventHandler::ProcessSystemBundleInstall(Constants::AppType appType) con
     }
     std::string scanDir = (appType == Constants::AppType::SYSTEM_APP) ? Constants::SYSTEM_APP_SCAN_PATH
                                                                       : Constants::THIRD_SYSTEM_APP_SCAN_PATH;
-    APP_LOGI("scanDir %{public}s", scanDir.c_str());
+    APP_LOGI("scanDir: %{public}s and userId: %{public}d", scanDir.c_str(), userId);
     std::list<std::string> bundleList = scanner->Scan(scanDir);
     for (const auto &item : bundleList) {
         SystemBundleInstaller installer(item);
         APP_LOGI("scan item %{public}s", item.c_str());
-        if (!installer.InstallSystemBundle(appType)) {
+        if (!installer.InstallSystemBundle(appType, userId)) {
             APP_LOGW("Install System app:%{public}s error", item.c_str());
         }
     }

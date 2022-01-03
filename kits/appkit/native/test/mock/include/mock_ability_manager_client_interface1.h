@@ -89,11 +89,13 @@ public:
     {
         return true;
     };
-    virtual bool GetBundleInfo(const std::string &bundleName, const BundleFlag flag, BundleInfo &bundleInfo)
+    virtual bool GetBundleInfo(
+        const std::string &bundleName, const BundleFlag flag, BundleInfo &bundleInfo, int32_t userId)
     {
         return true;
     };
-    virtual bool GetBundleInfos(const BundleFlag flag, std::vector<BundleInfo> &bundleInfos)
+    virtual bool GetBundleInfos(
+        const BundleFlag flag, std::vector<BundleInfo> &bundleInfos, int32_t userId)
     {
         return true;
     };
@@ -215,7 +217,8 @@ public:
     {
         return true;
     };
-    virtual bool DumpInfos(const DumpFlag flag, const std::string &bundleName, std::string &result)
+    virtual bool DumpInfos(
+        const DumpFlag flag, const std::string &bundleName, int32_t userId, std::string &result)
     {
         return true;
     };
@@ -295,6 +298,10 @@ public:
         const std::string &bundleName, const std::string &abilityName, const int64_t launchTime)
     {
         return true;
+    }
+    virtual sptr<IBundleUserMgr> GetBundleUserMgr() override
+    {
+        return nullptr;
     }
 };
 

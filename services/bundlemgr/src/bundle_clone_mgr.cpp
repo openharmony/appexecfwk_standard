@@ -224,8 +224,10 @@ ErrCode BundleCloneMgr::CreateBundleAndDataDir(InnerBundleInfo &info) const
     APP_LOGE("CreateBundleAndDataDir start");
     auto cloneCodePath = cloneInfo_.GetAppCodePath();
     APP_LOGI("clone create bundle dir %{public}s", cloneCodePath.c_str());
-
-    if (!dataMgr_->GenerateUidAndGid(info)) {
+    InnerBundleUserInfo newInnerBundleUserInfo;
+    newInnerBundleUserInfo.bundleUserInfo.userId = Constants::DEFAULT_USERID;
+    newInnerBundleUserInfo.bundleName = bundleName_;
+    if (!dataMgr_->GenerateUidAndGid(newInnerBundleUserInfo)) {
         APP_LOGE("clone fail to gererate uid and gid");
         return ERR_APPEXECFWK_INSTALL_GENERATE_UID_ERROR;
     }
@@ -240,7 +242,9 @@ ErrCode BundleCloneMgr::CreateBundleAndDataDir(InnerBundleInfo &info) const
     std::string Newbundlename = info.GetDBKeyBundleName();
     APP_LOGI("clone Newbundlename %{public}s", Newbundlename.c_str());
     auto cloneDataPath = baseDataPath_ + Constants::PATH_SEPARATOR + Newbundlename;
-    ErrCode result = InstalldClient::GetInstance()->CreateBundleDataDir(cloneDataPath, info.GetUid(), info.GetGid());
+    ErrCode result = InstalldClient::GetInstance()->CreateBundleDataDir(
+        cloneDataPath, newInnerBundleUserInfo.bundleUserInfo.userId,
+        newInnerBundleUserInfo.uid, newInnerBundleUserInfo.uid, true);
     if (result != ERR_OK) {
         APP_LOGE("clone fail to create bundle data dir, error is %{public}d", result);
         return result;

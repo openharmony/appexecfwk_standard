@@ -74,17 +74,32 @@ ErrCode InstalldProxy::RenameModuleDir(const std::string &oldPath, const std::st
     return TransactInstalldCmd(IInstalld::Message::RENAME_MODULE_DIR, data, reply, option);
 }
 
-ErrCode InstalldProxy::CreateBundleDataDir(const std::string &bundleDir, const int uid, const int gid)
+ErrCode InstalldProxy::CreateBundleDataDir(const std::string &bundleDir,
+    const int userid, const int uid, const int gid, bool onlyOneUser)
 {
     MessageParcel data;
     INSTALLD_PARCEL_WRITE_INTERFACE_TOKEN(data, (GetDescriptor()));
     INSTALLD_PARCEL_WRITE(data, String16, Str8ToStr16(bundleDir));
+    INSTALLD_PARCEL_WRITE(data, Int32, userid);
     INSTALLD_PARCEL_WRITE(data, Int32, uid);
     INSTALLD_PARCEL_WRITE(data, Int32, gid);
+    INSTALLD_PARCEL_WRITE(data, Bool, onlyOneUser);
 
     MessageParcel reply;
     MessageOption option;
     return TransactInstalldCmd(IInstalld::Message::CREATE_BUNDLE_DATA_DIR, data, reply, option);
+}
+
+ErrCode InstalldProxy::RemoveBundleDataDir(const std::string &bundleName, const int userid)
+{
+    MessageParcel data;
+    INSTALLD_PARCEL_WRITE_INTERFACE_TOKEN(data, (GetDescriptor()));
+    INSTALLD_PARCEL_WRITE(data, String16, Str8ToStr16(bundleName));
+    INSTALLD_PARCEL_WRITE(data, Int32, userid);
+
+    MessageParcel reply;
+    MessageOption option;
+    return TransactInstalldCmd(IInstalld::Message::REMOVE_BUNDLE_DATA_DIR, data, reply, option);
 }
 
 ErrCode InstalldProxy::CreateModuleDataDir(
@@ -100,6 +115,18 @@ ErrCode InstalldProxy::CreateModuleDataDir(
     MessageParcel reply;
     MessageOption option;
     return TransactInstalldCmd(IInstalld::Message::CREATE_MODULE_DATA_DIR, data, reply, option);
+}
+
+ErrCode InstalldProxy::RemoveModuleDataDir(const std::string &ModuleName, const int userid)
+{
+    MessageParcel data;
+    INSTALLD_PARCEL_WRITE_INTERFACE_TOKEN(data, (GetDescriptor()));
+    INSTALLD_PARCEL_WRITE(data, String16, Str8ToStr16(ModuleName));
+    INSTALLD_PARCEL_WRITE(data, Int32, userid);
+
+    MessageParcel reply;
+    MessageOption option;
+    return TransactInstalldCmd(IInstalld::Message::REMOVE_MODULE_DATA_DIR, data, reply, option);
 }
 
 ErrCode InstalldProxy::RemoveDir(const std::string &dir)

@@ -40,7 +40,9 @@ void InstalldHost::init()
     funcMap_.emplace(IInstalld::Message::EXTRACT_MODULE_FILES, &InstalldHost::HandleExtractModuleFiles);
     funcMap_.emplace(IInstalld::Message::RENAME_MODULE_DIR, &InstalldHost::HandleRenameModuleDir);
     funcMap_.emplace(IInstalld::Message::CREATE_BUNDLE_DATA_DIR, &InstalldHost::HandleCreateBundleDataDir);
+    funcMap_.emplace(IInstalld::Message::REMOVE_BUNDLE_DATA_DIR, &InstalldHost::HandleRemoveBundleDataDir);
     funcMap_.emplace(IInstalld::Message::CREATE_MODULE_DATA_DIR, &InstalldHost::HandleCreateModuleDataDir);
+    funcMap_.emplace(IInstalld::Message::REMOVE_MODULE_DATA_DIR, &InstalldHost::HandleRemoveModuleDataDir);
     funcMap_.emplace(IInstalld::Message::CLEAN_BUNDLE_DATA_DIR, &InstalldHost::HandleCleanBundleDataDir);
     funcMap_.emplace(IInstalld::Message::REMOVE_DIR, &InstalldHost::HandleRemoveDir);
 }
@@ -99,9 +101,11 @@ bool InstalldHost::HandleRenameModuleDir(MessageParcel &data, MessageParcel &rep
 bool InstalldHost::HandleCreateBundleDataDir(MessageParcel &data, MessageParcel &reply)
 {
     std::string bundleDir = Str16ToStr8(data.ReadString16());
+    int userid = data.ReadInt32();
     int uid = data.ReadInt32();
     int gid = data.ReadInt32();
-    ErrCode result = CreateBundleDataDir(bundleDir, uid, gid);
+    bool onlyOneUser = data.ReadBool();
+    ErrCode result = CreateBundleDataDir(bundleDir, userid, uid, gid, onlyOneUser);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, reply, result);
     return true;
 }
@@ -116,6 +120,24 @@ bool InstalldHost::HandleCreateModuleDataDir(MessageParcel &data, MessageParcel 
     int uid = data.ReadInt32();
     int gid = data.ReadInt32();
     ErrCode result = CreateModuleDataDir(bundleDir, abilityDirs, uid, gid);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, reply, result);
+    return true;
+}
+
+bool InstalldHost::HandleRemoveBundleDataDir(MessageParcel &data, MessageParcel &reply)
+{
+    std::string bundleName = Str16ToStr8(data.ReadString16());
+    int userid = data.ReadInt32();
+    ErrCode result = RemoveBundleDataDir(bundleName, userid);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, reply, result);
+    return true;
+}
+
+bool InstalldHost::HandleRemoveModuleDataDir(MessageParcel &data, MessageParcel &reply)
+{
+    std::string moduleNmae = Str16ToStr8(data.ReadString16());
+    int userid = data.ReadInt32();
+    ErrCode result = RemoveModuleDataDir(moduleNmae, userid);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, reply, result);
     return true;
 }

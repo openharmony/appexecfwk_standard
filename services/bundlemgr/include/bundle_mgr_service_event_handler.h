@@ -45,14 +45,22 @@ private:
     /**
      * @brief Install system and system vendor bundles.
      * @param appType Indicates the bundle type.
+     * @param userId Indicates userId.
      * @return
      */
-    void ProcessSystemBundleInstall(Constants::AppType appType) const;
+    void ProcessSystemBundleInstall(
+        Constants::AppType appType, int32_t userId = Constants::UNSPECIFIED_USERID) const;
     /**
      * @brief Set the flag indicates that all system and vendor applications installed.
      * @return
      */
     void SetAllInstallFlag() const;
+    /**
+     * @brief start scan.
+     * @param userId Indicates the userId.
+     * @return
+     */
+    void OnStartScanning(int32_t userId = Constants::UNSPECIFIED_USERID);
 };
 
 }  // namespace AppExecFwk

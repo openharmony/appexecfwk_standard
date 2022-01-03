@@ -52,11 +52,21 @@ public:
     /**
      * @brief Create a bundle data directory through a proxy object.
      * @param bundleDir Indicates the bundle data directory path that to be created.
+     * @param userid Indicates userid to be set to the directory.
      * @param uid Indicates uid to be set to the directory.
      * @param gid Indicates gid to be set to the directory.
+     * @param onlyOneUser Indicates is only one user or not.
      * @return Returns ERR_OK if the bundle data directory created successfully; returns error code otherwise.
      */
-    virtual ErrCode CreateBundleDataDir(const std::string &bundleDir, const int uid, const int gid) override;
+    virtual ErrCode CreateBundleDataDir(const std::string &bundleDir, const int userid,
+        const int uid, const int gid, bool onlyOneUser = true) override;
+    /**
+     * @brief Remove a bundle data directory through a proxy object.
+     * @param bundleDir Indicates the bundle data directory path that to be created.
+     * @param userid Indicates userid to be set to the directory.
+     * @return Returns ERR_OK if the bundle data directory created successfully; returns error code otherwise.
+     */
+    virtual ErrCode RemoveBundleDataDir(const std::string &bundleDir, const int userid) override;
     /**
      * @brief Create a module and it's abilities data directory through a proxy object.
      * @param bundleDir Indicates the module data directory path that to be created.
@@ -67,6 +77,13 @@ public:
      */
     virtual ErrCode CreateModuleDataDir(const std::string &ModuleDir, const std::vector<std::string> &abilityDirs,
         const int uid, const int gid) override;
+    /**
+     * @brief Remove a module data directory through a proxy object.
+     * @param ModuleDir Indicates the module data directory path that to be created.
+     * @param userid Indicates userid to be set to the directory.
+     * @return Returns ERR_OK if the data directories created successfully; returns error code otherwise.
+     */
+    virtual ErrCode RemoveModuleDataDir(const std::string &ModuleDir, const int userid) override;
     /**
      * @brief Remove a directory through a proxy object.
      * @param dir Indicates the directory path that to be removed.

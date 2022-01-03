@@ -44,12 +44,22 @@ public:
      */
     bool GetPreInstallStorageBundleInfo(
         const std::string &deviceId, PreInstallBundleInfo &preInstallBundleInfo);
+    /**
+     * @brief Obtains the PreInstallBundleInfo objects provided by bundleName.
+     * @param deviceId Indicates the bundle name of the application.
+     * @param preInstallBundleInfos Indicates information about the PreInstallBundleInfo.
+     * @return Returns true if this function is successfully called; returns false otherwise.
+     */
+    bool LoadAllPreInstallBundleInfos(std::vector<PreInstallBundleInfo> &preInstallBundleInfos);
 
 private:
     void TryTwice(const std::function<DistributedKv::Status()>& func) const;
     bool CheckKvStore();
     DistributedKv::Status GetKvStore();
     bool ResetKvStore();
+    DistributedKv::Status GetEntries(std::vector<DistributedKv::Entry> &allEntries) const;
+    void SaveEntries(const std::vector<DistributedKv::Entry> &allEntries,
+        std::vector<PreInstallBundleInfo> &preInstallBundleInfos);
 
 private:
     const DistributedKv::AppId appId_ { Constants::APP_ID };

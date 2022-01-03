@@ -523,6 +523,11 @@ HWTEST_F(BmsDataMgrTest, AddBundleInfo_0100, Function | SmallTest | Level0)
  */
 HWTEST_F(BmsDataMgrTest, AddBundleInfo_0200, Function | SmallTest | Level0)
 {
+    InnerBundleUserInfo innerBundleUserInfo;
+    innerBundleUserInfo.bundleName = BUNDLE_NAME;
+    innerBundleUserInfo.bundleUserInfo.enabled = true;
+    innerBundleUserInfo.bundleUserInfo.userId = USERID;
+
     InnerBundleInfo info1;
     BundleInfo bundleInfo1;
     bundleInfo1.name = BUNDLE_NAME;
@@ -534,7 +539,7 @@ HWTEST_F(BmsDataMgrTest, AddBundleInfo_0200, Function | SmallTest | Level0)
     applicationInfo1.deviceId = DEVICE_ID;
     info1.SetBaseBundleInfo(bundleInfo1);
     info1.SetBaseApplicationInfo(applicationInfo1);
-    info1.SetApplicationEnabled(true);
+    info1.AddInnerBundleUserInfo(innerBundleUserInfo);
 
     InnerBundleInfo info2;
     BundleInfo bundleInfo2;
@@ -546,7 +551,8 @@ HWTEST_F(BmsDataMgrTest, AddBundleInfo_0200, Function | SmallTest | Level0)
     applicationInfo2.deviceId = DEVICE_ID;
     info2.SetBaseBundleInfo(bundleInfo2);
     info2.SetBaseApplicationInfo(applicationInfo2);
-    info2.SetApplicationEnabled(true);
+    info2.AddInnerBundleUserInfo(innerBundleUserInfo);
+
     auto dataMgr = GetDataMgr();
     EXPECT_NE(dataMgr, nullptr);
     bool ret1 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_START);
@@ -698,11 +704,14 @@ HWTEST_F(BmsDataMgrTest, GenerateUidAndGid_0100, Function | SmallTest | Level0)
     info.SetBaseBundleInfo(bundleInfo);
     info.SetBaseApplicationInfo(applicationInfo);
     info.SetAppType(Constants::AppType::SYSTEM_APP);
+    InnerBundleUserInfo innerBundleUserInfo;
+    innerBundleUserInfo.bundleUserInfo.userId = 0;
+    innerBundleUserInfo.bundleName = BUNDLE_NAME;
     auto dataMgr = GetDataMgr();
     EXPECT_NE(dataMgr, nullptr);
     bool ret1 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_START);
     bool ret2 = dataMgr->AddInnerBundleInfo(BUNDLE_NAME, info);
-    bool ret3 = dataMgr->GenerateUidAndGid(info);
+    bool ret3 = dataMgr->GenerateUidAndGid(innerBundleUserInfo);
     EXPECT_TRUE(ret1);
     EXPECT_TRUE(ret2);
     EXPECT_TRUE(ret3);
@@ -726,6 +735,9 @@ HWTEST_F(BmsDataMgrTest, GenerateUidAndGid_0200, Function | SmallTest | Level0)
     applicationInfo.name = BUNDLE_NAME;
     applicationInfo.deviceId = DEVICE_ID;
     applicationInfo.bundleName = BUNDLE_NAME;
+    InnerBundleUserInfo innerBundleUserInfo;
+    innerBundleUserInfo.bundleUserInfo.userId = 0;
+    innerBundleUserInfo.bundleName = BUNDLE_NAME;
     info.SetBaseBundleInfo(bundleInfo);
     info.SetBaseApplicationInfo(applicationInfo);
     info.SetAppType(Constants::AppType::THIRD_SYSTEM_APP);
@@ -733,7 +745,7 @@ HWTEST_F(BmsDataMgrTest, GenerateUidAndGid_0200, Function | SmallTest | Level0)
     EXPECT_NE(dataMgr, nullptr);
     bool ret1 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_START);
     bool ret2 = dataMgr->AddInnerBundleInfo(BUNDLE_NAME, info);
-    bool ret3 = dataMgr->GenerateUidAndGid(info);
+    bool ret3 = dataMgr->GenerateUidAndGid(innerBundleUserInfo);
     EXPECT_TRUE(ret1);
     EXPECT_TRUE(ret2);
     EXPECT_TRUE(ret3);
@@ -757,6 +769,9 @@ HWTEST_F(BmsDataMgrTest, GenerateUidAndGid_0300, Function | SmallTest | Level0)
     applicationInfo.name = BUNDLE_NAME;
     applicationInfo.deviceId = DEVICE_ID;
     applicationInfo.bundleName = BUNDLE_NAME;
+    InnerBundleUserInfo innerBundleUserInfo;
+    innerBundleUserInfo.bundleUserInfo.userId = 0;
+    innerBundleUserInfo.bundleName = BUNDLE_NAME;
     info.SetBaseBundleInfo(bundleInfo);
     info.SetBaseApplicationInfo(applicationInfo);
     info.SetAppType(Constants::AppType::THIRD_PARTY_APP);
@@ -764,7 +779,7 @@ HWTEST_F(BmsDataMgrTest, GenerateUidAndGid_0300, Function | SmallTest | Level0)
     EXPECT_NE(dataMgr, nullptr);
     bool ret1 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_START);
     bool ret2 = dataMgr->AddInnerBundleInfo(BUNDLE_NAME, info);
-    bool ret3 = dataMgr->GenerateUidAndGid(info);
+    bool ret3 = dataMgr->GenerateUidAndGid(innerBundleUserInfo);
     EXPECT_TRUE(ret1);
     EXPECT_TRUE(ret2);
     EXPECT_TRUE(ret3);
@@ -779,6 +794,11 @@ HWTEST_F(BmsDataMgrTest, GenerateUidAndGid_0300, Function | SmallTest | Level0)
  */
 HWTEST_F(BmsDataMgrTest, QueryAbilityInfo_0100, Function | SmallTest | Level0)
 {
+    InnerBundleUserInfo innerBundleUserInfo;
+    innerBundleUserInfo.bundleName = BUNDLE_NAME;
+    innerBundleUserInfo.bundleUserInfo.enabled = true;
+    innerBundleUserInfo.bundleUserInfo.userId = USERID;
+
     InnerBundleInfo info1;
     BundleInfo bundleInfo1;
     bundleInfo1.name = BUNDLE_NAME;
@@ -793,7 +813,7 @@ HWTEST_F(BmsDataMgrTest, QueryAbilityInfo_0100, Function | SmallTest | Level0)
     info1.SetBaseBundleInfo(bundleInfo1);
     info1.SetBaseApplicationInfo(applicationInfo1);
     info1.InsertAbilitiesInfo(BUNDLE_NAME + PACKAGE_NAME + ABILITY_NAME, abilityInfo);
-    info1.SetApplicationEnabled(true);
+    info1.AddInnerBundleUserInfo(innerBundleUserInfo);
     info1.SetAbilityEnabled(BUNDLE_NAME, ABILITY_NAME, true);
     auto dataMgr = GetDataMgr();
     EXPECT_NE(dataMgr, nullptr);
@@ -908,6 +928,11 @@ HWTEST_F(BmsDataMgrTest, QueryAbilityInfo_0300, Function | SmallTest | Level0)
  */
 HWTEST_F(BmsDataMgrTest, GetApplicationInfo_0100, Function | SmallTest | Level0)
 {
+    InnerBundleUserInfo innerBundleUserInfo;
+    innerBundleUserInfo.bundleName = BUNDLE_NAME;
+    innerBundleUserInfo.bundleUserInfo.enabled = true;
+    innerBundleUserInfo.bundleUserInfo.userId = USERID;
+
     InnerBundleInfo info1;
     BundleInfo bundleInfo1;
     bundleInfo1.name = BUNDLE_NAME;
@@ -918,9 +943,10 @@ HWTEST_F(BmsDataMgrTest, GetApplicationInfo_0100, Function | SmallTest | Level0)
     applicationInfo1.bundleName = BUNDLE_NAME;
     info1.SetBaseBundleInfo(bundleInfo1);
     info1.SetBaseApplicationInfo(applicationInfo1);
+    info1.AddInnerBundleUserInfo(innerBundleUserInfo);
+
     auto dataMgr = GetDataMgr();
     EXPECT_NE(dataMgr, nullptr);
-    info1.SetApplicationEnabled(true);
     bool ret1 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_START);
     bool ret2 = dataMgr->AddInnerBundleInfo(BUNDLE_NAME, info1);
 

@@ -338,7 +338,18 @@ void BmsBundleKitServiceTest::AddInnerBundleInfoByTest(const std::string &bundle
 void BmsBundleKitServiceTest::MockInstallBundle(
     const std::string &bundleName, const std::string &moduleName, const std::string &abilityName) const
 {
+    auto dataMgr = GetBundleDataMgr();
+    EXPECT_NE(dataMgr, nullptr);
+
+    InnerBundleUserInfo innerBundleUserInfo;
+    innerBundleUserInfo.bundleName = bundleName;
+    innerBundleUserInfo.bundleUserInfo.enabled = true;
+    innerBundleUserInfo.bundleUserInfo.userId = Constants::DEFAULT_USERID;
+    dataMgr->GenerateUidAndGid(innerBundleUserInfo);
+
     InnerBundleInfo innerBundleInfo;
+    innerBundleInfo.AddInnerBundleUserInfo(innerBundleUserInfo);
+
     ApplicationInfo appInfo;
     AddApplicationInfo(bundleName, appInfo);
     BundleInfo bundleInfo;
@@ -363,8 +374,7 @@ void BmsBundleKitServiceTest::MockInstallBundle(
     innerBundleInfo.SetBaseBundleInfo(bundleInfo);
     innerBundleInfo.InsertAbilitiesInfo(keyName, abilityInfo);
     innerBundleInfo.InsertInnerModuleInfo(moduleName, moduleInfo);
-    auto dataMgr = GetBundleDataMgr();
-    EXPECT_NE(dataMgr, nullptr);
+
     AddInnerBundleInfoByTest(bundleName, moduleName, abilityName, innerBundleInfo);
     bool startRet = dataMgr->UpdateBundleInstallState(bundleName, InstallState::INSTALL_START);
     bool addRet = dataMgr->AddInnerBundleInfo(bundleName, innerBundleInfo);
@@ -1589,11 +1599,9 @@ HWTEST_F(BmsBundleKitServiceTest, GetBundleList_0100, Function | SmallTest | Lev
 HWTEST_F(BmsBundleKitServiceTest, GetBundleNameForUid_0100, Function | SmallTest | Level1)
 {
     MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
-
     std::string testResult;
     bool testRet = GetBundleDataMgr()->GetBundleNameForUid(TEST_UID, testResult);
-    EXPECT_TRUE(testRet);
-    EXPECT_EQ(BUNDLE_NAME_TEST, testResult);
+    EXPECT_FALSE(testRet);
 
     MockUninstallBundle(BUNDLE_NAME_TEST);
 }
@@ -1609,7 +1617,6 @@ HWTEST_F(BmsBundleKitServiceTest, GetBundleNameForUid_0200, Function | SmallTest
     std::string testResult;
     bool testRet = GetBundleDataMgr()->GetBundleNameForUid(TEST_UID, testResult);
     EXPECT_FALSE(testRet);
-    EXPECT_NE(BUNDLE_NAME_TEST, testResult);
 }
 
 /**
@@ -1663,7 +1670,7 @@ HWTEST_F(BmsBundleKitServiceTest, CheckIsSystemAppByUid_0100, Function | SmallTe
     MockInstallBundle(BUNDLE_NAME_DEMO, MODULE_NAME_DEMO, ABILITY_NAME_DEMO);
 
     bool testRet = GetBundleDataMgr()->CheckIsSystemAppByUid(TEST_UID);
-    EXPECT_TRUE(testRet);
+    EXPECT_FALSE(testRet);
 
     testRet = GetBundleDataMgr()->CheckIsSystemAppByUid(DEMO_UID);
     EXPECT_FALSE(testRet);
@@ -1700,21 +1707,24 @@ HWTEST_F(BmsBundleKitServiceTest, DUMP_0100, Function | SmallTest | Level1)
 
     auto hostImpl = std::make_unique<BundleMgrHostImpl>();
     std::string allInfoResult;
-    bool allInfoRet = hostImpl->DumpInfos(DumpFlag::DUMP_ALL_BUNDLE_INFO, EMPTY_STRING, allInfoResult);
+    bool allInfoRet = hostImpl->DumpInfos(
+        DumpFlag::DUMP_ALL_BUNDLE_INFO, EMPTY_STRING, Constants::DEFAULT_USERID, allInfoResult);
     EXPECT_TRUE(allInfoRet);
     EXPECT_NE(std::string::npos, allInfoResult.find(BUNDLE_NAME_TEST));
     EXPECT_NE(std::string::npos, allInfoResult.find(MODULE_NAME_TEST));
     EXPECT_NE(std::string::npos, allInfoResult.find(ABILITY_NAME_TEST));
 
     std::string infoResult;
-    bool infoRet = hostImpl->DumpInfos(DumpFlag::DUMP_BUNDLE_INFO, BUNDLE_NAME_TEST, infoResult);
+    bool infoRet = hostImpl->DumpInfos(
+        DumpFlag::DUMP_BUNDLE_INFO, BUNDLE_NAME_TEST, Constants::DEFAULT_USERID, infoResult);
     EXPECT_TRUE(infoRet);
     EXPECT_NE(std::string::npos, infoResult.find(BUNDLE_NAME_TEST));
     EXPECT_NE(std::string::npos, infoResult.find(MODULE_NAME_TEST));
     EXPECT_NE(std::string::npos, infoResult.find(ABILITY_NAME_TEST));
 
     std::string bundleNames;
-    bool listRet = hostImpl->DumpInfos(DumpFlag::DUMP_BUNDLE_LIST, EMPTY_STRING, bundleNames);
+    bool listRet = hostImpl->DumpInfos(
+        DumpFlag::DUMP_BUNDLE_LIST, EMPTY_STRING, Constants::DEFAULT_USERID, bundleNames);
     EXPECT_TRUE(listRet);
     EXPECT_NE(std::string::npos, bundleNames.find(BUNDLE_NAME_TEST));
 
@@ -1722,7 +1732,8 @@ HWTEST_F(BmsBundleKitServiceTest, DUMP_0100, Function | SmallTest | Level1)
     MockInstallBundle(BUNDLE_NAME_DEMO, MODULE_NAME_TEST, ABILITY_NAME_DEMO);
 
     std::string names;
-    bool namesRet = hostImpl->DumpInfos(DumpFlag::DUMP_BUNDLE_LIST, EMPTY_STRING, names);
+    bool namesRet = hostImpl->DumpInfos(
+        DumpFlag::DUMP_BUNDLE_LIST, EMPTY_STRING, Constants::DEFAULT_USERID, names);
     EXPECT_TRUE(namesRet);
     EXPECT_NE(std::string::npos, names.find(BUNDLE_NAME_DEMO));
 
@@ -1741,7 +1752,8 @@ HWTEST_F(BmsBundleKitServiceTest, DUMP_0200, Function | SmallTest | Level0)
 
     auto hostImpl = std::make_unique<BundleMgrHostImpl>();
     std::string emptyResult;
-    bool emptyRet = hostImpl->DumpInfos(DumpFlag::DUMP_BUNDLE_INFO, EMPTY_STRING, emptyResult);
+    bool emptyRet = hostImpl->DumpInfos(
+        DumpFlag::DUMP_BUNDLE_INFO, EMPTY_STRING, Constants::DEFAULT_USERID, emptyResult);
     EXPECT_FALSE(emptyRet);
 
     MockUninstallBundle(BUNDLE_NAME_TEST);
@@ -1760,13 +1772,15 @@ HWTEST_F(BmsBundleKitServiceTest, DUMP_0300, Function | SmallTest | Level1)
 
     auto hostImpl = std::make_unique<BundleMgrHostImpl>();
     std::string bundleNames;
-    bool listRet = hostImpl->DumpInfos(DumpFlag::DUMP_BUNDLE_LIST, EMPTY_STRING, bundleNames);
+    bool listRet = hostImpl->DumpInfos(
+        DumpFlag::DUMP_BUNDLE_LIST, EMPTY_STRING, Constants::DEFAULT_USERID, bundleNames);
     EXPECT_TRUE(listRet);
     EXPECT_NE(std::string::npos, bundleNames.find(BUNDLE_NAME_DEMO));
     EXPECT_NE(std::string::npos, bundleNames.find(BUNDLE_NAME_TEST));
 
     std::string allBundleInfos;
-    bool allInfoRet = hostImpl->DumpInfos(DumpFlag::DUMP_ALL_BUNDLE_INFO, EMPTY_STRING, allBundleInfos);
+    bool allInfoRet = hostImpl->DumpInfos(
+        DumpFlag::DUMP_ALL_BUNDLE_INFO, EMPTY_STRING, Constants::DEFAULT_USERID, allBundleInfos);
     EXPECT_TRUE(allInfoRet);
     EXPECT_NE(std::string::npos, allBundleInfos.find(BUNDLE_NAME_TEST));
     EXPECT_NE(std::string::npos, allBundleInfos.find(BUNDLE_NAME_DEMO));
@@ -1776,7 +1790,8 @@ HWTEST_F(BmsBundleKitServiceTest, DUMP_0300, Function | SmallTest | Level1)
     EXPECT_NE(std::string::npos, allBundleInfos.find(ABILITY_NAME_DEMO));
 
     std::string bundleInfo;
-    bool infoRet = hostImpl->DumpInfos(DumpFlag::DUMP_BUNDLE_INFO, BUNDLE_NAME_TEST, bundleInfo);
+    bool infoRet = hostImpl->DumpInfos(
+        DumpFlag::DUMP_BUNDLE_INFO, BUNDLE_NAME_TEST, Constants::DEFAULT_USERID, bundleInfo);
     EXPECT_TRUE(infoRet);
     EXPECT_NE(std::string::npos, allBundleInfos.find(BUNDLE_NAME_TEST));
     EXPECT_NE(std::string::npos, allBundleInfos.find(BUNDLE_NAME_DEMO));
@@ -2520,8 +2535,8 @@ HWTEST_F(BmsBundleKitServiceTest, GetNameForUid_0100, Function | SmallTest | Lev
 
     std::string testResult;
     bool testRet = GetBundleDataMgr()->GetNameForUid(TEST_UID, testResult);
-    EXPECT_TRUE(testRet);
-    EXPECT_EQ(BUNDLE_NAME_TEST, testResult);
+    EXPECT_FALSE(testRet);
+    EXPECT_NE(BUNDLE_NAME_TEST, testResult);
 
     MockUninstallBundle(BUNDLE_NAME_TEST);
 }
@@ -2981,7 +2996,7 @@ HWTEST_F(BmsBundleKitServiceTest, GetAllFormInfo_0300, Function | SmallTest | Le
 {
     std::vector<FormInfo> formInfos;
     GetBundleDataMgr()->GetAllFormsInfo(formInfos);
-    EXPECT_FALSE(formInfos.empty());
+    EXPECT_TRUE(formInfos.empty());
 }
 
 /**
