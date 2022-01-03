@@ -15,11 +15,11 @@ import("//ark/ts2abc/ts2panda/ts2abc_config.gni")
 import("//build/ohos.gni")
 
 ts2abc_gen_abc("gen_ability_stage_abc") {
-    src_js = rebase_path("ability_stage.js")
-    dst_file = rebase_path(target_out_dir + "/ability_stage.abc")
-    in_puts = [ "ability_stage.js" ]
-    out_puts = [ target_out_dir + "/ability_stage.abc" ]
-    extra_args = [ "--module" ]
+  src_js = rebase_path("ability_stage.js")
+  dst_file = rebase_path(target_out_dir + "/ability_stage.abc")
+  in_puts = [ "ability_stage.js" ]
+  out_puts = [ target_out_dir + "/ability_stage.abc" ]
+  extra_args = [ "--module" ]
 }
 
 gen_js_obj("ability_stage_js") {
@@ -28,22 +28,23 @@ gen_js_obj("ability_stage_js") {
 }
 
 gen_js_obj("ability_stage_abc") {
-  input = get_label_info(":gen_ability_stage_abc", "target_out_dir") + "/ability_stage.abc"
+  input = get_label_info(":gen_ability_stage_abc", "target_out_dir") +
+          "/ability_stage.abc"
   output = target_out_dir + "/ability_stage_abc.o"
   dep = ":gen_ability_stage_abc"
 }
 
 ohos_shared_library("abilitystage_napi") {
-    sources = [ "ability_stage_module.cpp" ]
+  sources = [ "ability_stage_module.cpp" ]
 
-    deps = [
-        ":ability_stage_abc",
-        ":ability_stage_js",
-    ]
+  deps = [
+    ":ability_stage_abc",
+    ":ability_stage_js",
+  ]
 
-    external_deps = [ "napi:ace_napi" ]
+  external_deps = [ "napi:ace_napi" ]
 
-    relative_install_dir = "module/application"
-    subsystem_name = "appexecfwk"
-    part_name = "appexecfwk_standard"
+  relative_install_dir = "module/application"
+  subsystem_name = "appexecfwk"
+  part_name = "appexecfwk_standard"
 }

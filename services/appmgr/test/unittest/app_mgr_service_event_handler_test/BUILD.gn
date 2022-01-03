@@ -63,9 +63,9 @@ ohos_unittest("AMSEventHandlerTest") {
 
   external_deps = [
     "appspawn:appspawn_socket_client",
+    "bytrace_standard:bytrace_core",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
-    "bytrace_standard:bytrace_core",
   ]
 }
 

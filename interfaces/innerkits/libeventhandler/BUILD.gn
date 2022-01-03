@@ -33,8 +33,8 @@ ohos_shared_library("libeventhandler") {
   public_configs = [ ":public_libeventhandler_config" ]
 
   external_deps = [
-    "hiviewdfx_hilog_native:libhilog",
     "hitrace_native:libhitrace",
+    "hiviewdfx_hilog_native:libhilog",
   ]
   subsystem_name = "appexecfwk"
   part_name = "eventhandler"

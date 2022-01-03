@@ -119,44 +119,44 @@ ohos_shared_library("appkit_native") {
     "$SUBSYSTEM_DIR/kits/appkit/native/app/src/context_container.cpp",
 
     #"$SUBSYSTEM_DIR/kits/appkit/native/app/main.cpp",
+    "$SUBSYSTEM_DIR/kits/appkit/native/ability_runtime/app/ability_stage.cpp",
+    "$SUBSYSTEM_DIR/kits/appkit/native/ability_runtime/app/js_ability_stage.cpp",
     "$SUBSYSTEM_DIR/kits/appkit/native/app/src/context_deal.cpp",
     "$SUBSYSTEM_DIR/kits/appkit/native/app/src/main_thread.cpp",
     "$SUBSYSTEM_DIR/kits/appkit/native/app/src/ohos_application.cpp",
     "$SUBSYSTEM_DIR/kits/appkit/native/app/src/sys_mgr_client.cpp",
-    "$SUBSYSTEM_DIR/kits/appkit/native/ability_runtime/app/ability_stage.cpp",
-    "$SUBSYSTEM_DIR/kits/appkit/native/ability_runtime/app/js_ability_stage.cpp",
   ]
   cflags = []
   if (target_cpu == "arm") {
     cflags += [ "-DBINDER_IPC_32BIT" ]
   }
   deps = [
-    "$SUBSYSTEM_DIR/kits:app_context",
     "$SUBSYSTEM_DIR/common:libappexecfwk_common",
     "$SUBSYSTEM_DIR/interfaces/innerkits/appexecfwk_base:appexecfwk_base",
     "$SUBSYSTEM_DIR/interfaces/innerkits/appexecfwk_core:appexecfwk_core",
+    "$SUBSYSTEM_DIR/kits:app_context",
     "//foundation/aafwk/standard/frameworks/kits/ability/native:abilitykit_native",
-    "//foundation/aafwk/standard/interfaces/innerkits/want:want",
     "//foundation/aafwk/standard/interfaces/innerkits/ability_manager:ability_manager",
+    "//foundation/aafwk/standard/interfaces/innerkits/want:want",
     "//foundation/appexecfwk/standard/interfaces/innerkits/libeventhandler:libeventhandler",
     "//foundation/appexecfwk/standard/interfaces/innerkits/task_dispatcher:appkit_dispatcher_td",
     "//foundation/distributedschedule/dmsfwk/interfaces/innerkits/uri:zuri",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
     "//foundation/multimodalinput/input/frameworks/proxy:libmmi-client",
-    "//utils/native/base:utils",
     "//third_party/icu/icu4c:shared_icuuc",
+    "//utils/native/base:utils",
   ]
 
   public_deps = [
-    "//base/global/resmgr_standard/frameworks/resmgr:global_resmgr",
     "//base/global/i18n_standard/frameworks/intl:intl_util",
+    "//base/global/resmgr_standard/frameworks/resmgr:global_resmgr",
   ]
   external_deps = [
     "aafwk_standard:runtime",
+    "bytrace_standard:bytrace_core",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
     "napi:ace_napi",
-    "bytrace_standard:bytrace_core",
   ]
 
   part_name = "appexecfwk_standard"
@@ -192,20 +192,21 @@ ohos_shared_library("app_context") {
     "$SUBSYSTEM_DIR/common:libappexecfwk_common",
     "$SUBSYSTEM_DIR/interfaces/innerkits/appexecfwk_base:appexecfwk_base",
     "$SUBSYSTEM_DIR/interfaces/innerkits/appexecfwk_core:appexecfwk_core",
-   # "//foundation/aafwk/standard/frameworks/kits/ability/native:abilitykit_native",
+
+    # "//foundation/aafwk/standard/frameworks/kits/ability/native:abilitykit_native",
     "//foundation/aafwk/standard/interfaces/innerkits/ability_manager:ability_manager",
     "//foundation/appexecfwk/standard/interfaces/innerkits/libeventhandler:libeventhandler",
     "//foundation/appexecfwk/standard/interfaces/innerkits/task_dispatcher:appkit_dispatcher_td",
     "//foundation/distributedschedule/dmsfwk/interfaces/innerkits/uri:zuri",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
     "//foundation/multimodalinput/input/frameworks/proxy:libmmi-client",
-    "//utils/native/base:utils",
     "//third_party/icu/icu4c:shared_icuuc",
+    "//utils/native/base:utils",
   ]
 
   public_deps = [
-    "//base/global/resmgr_standard/frameworks/resmgr:global_resmgr",
     "//base/global/i18n_standard/frameworks/intl:intl_util",
+    "//base/global/resmgr_standard/frameworks/resmgr:global_resmgr",
   ]
 
   external_deps = [
