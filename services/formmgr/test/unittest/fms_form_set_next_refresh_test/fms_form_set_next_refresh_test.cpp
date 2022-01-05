@@ -14,18 +14,18 @@
  */
 
 #include <gtest/gtest.h>
-#include <thread>
 #include <string>
+#include <thread>
 
 #include "app_log_wrapper.h"
 #include "appexecfwk_errors.h"
 #define private public
 #include "form_bms_helper.h"
 #include "form_constants.h"
-#include "form_timer_mgr.h"
-#include "form_mgr_service.h"
-#include "form_mgr_adapter.h"
 #include "form_data_mgr.h"
+#include "form_mgr_adapter.h"
+#include "form_mgr_service.h"
+#include "form_timer_mgr.h"
 #undef private
 #include "mock_bundle_manager.h"
 

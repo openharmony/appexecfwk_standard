@@ -69,7 +69,7 @@ public:
     void ClearStorage();
     bool CheckKvStore();
     void TryTwice(const std::function<DistributedKv::Status()> &func);
-  
+
     class FormEventSubscriber : public CommonEventSubscriber {
     public:
         explicit FormEventSubscriber(const CommonEventSubscribeInfo &sp) : CommonEventSubscriber(sp) {};
@@ -110,7 +110,7 @@ void FmsSelfStartingTest::SetUpTestCase()
         << "addFormStatus : " << selfStarting.addFormStatus <<
             ", deleteFormStatus:" << selfStarting.deleteFormStatus <<
             ", compareStatus:" << selfStarting.compareStatus << std::endl;
-    
+
     if (selfStarting.addFormStatus) {
         selfStartingParser.ClearStorage();
         for (int iCount = 0; iCount < ADD_FORM_A_NUMBER; iCount++) {
@@ -286,7 +286,7 @@ HWTEST_F(FmsSelfStartingTest, FMS_Start_0300_03, Function | MediumTest | Level1)
         opbefore.close();
         opafter.close();
         EXPECT_TRUE(beforeKill != afterKill);
- 
+
         EXPECT_TRUE(CompareA());
 
         EXPECT_TRUE(CompareB());

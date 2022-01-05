@@ -15,9 +15,9 @@
 
 #include "app_state_callback_host.h"
 
-#include "appexecfwk_errors.h"
 #include "app_log_wrapper.h"
-
+#include "appexecfwk_errors.h"
+#include "bytrace.h"
 #include "ipc_types.h"
 #include "iremote_object.h"
 
@@ -71,6 +71,7 @@ void AppStateCallbackHost::OnAppStateChanged(const AppProcessData &)
 
 int32_t AppStateCallbackHost::HandleOnAppStateChanged(MessageParcel &data, MessageParcel &reply)
 {
+    BYTRACE(BYTRACE_TAG_APP);
     std::unique_ptr<AppProcessData> processData(data.ReadParcelable<AppProcessData>());
     if (!processData) {
         APP_LOGE("ReadParcelable<AppProcessData> failed");
@@ -83,6 +84,7 @@ int32_t AppStateCallbackHost::HandleOnAppStateChanged(MessageParcel &data, Messa
 
 int32_t AppStateCallbackHost::HandleOnAbilityRequestDone(MessageParcel &data, MessageParcel &reply)
 {
+    BYTRACE(BYTRACE_TAG_APP);
     sptr<IRemoteObject> obj = data.ReadParcelable<IRemoteObject>();
     int32_t state = data.ReadInt32();
     OnAbilityRequestDone(obj, static_cast<AbilityState>(state));

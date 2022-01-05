@@ -39,7 +39,6 @@ bool FormProviderInfo::Marshalling(Parcel &parcel) const
     if (!parcel.WriteParcelable(&jsBindingData_)) {
         return false;
     }
-   
     return true;
 }
 void FormProviderInfo::SetFormDataString(std::string &dataString)
@@ -49,7 +48,7 @@ void FormProviderInfo::SetFormDataString(std::string &dataString)
 /**
  * @brief Merge new data to FormProviderData.
  * @param addJsonData data to merge to FormProviderData
- */   
+ */
 void FormProviderInfo::MergeData(nlohmann::json &addJsonData)
 {
     jsBindingData_.MergeData(addJsonData);

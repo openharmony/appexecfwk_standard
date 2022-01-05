@@ -14,15 +14,15 @@
  */
 
 #include "app_mgr_service_inner.h"
-#include <unistd.h>
-#include <gtest/gtest.h>
-#include "iremote_object.h"
-#include "refbase.h"
 #include "app_launch_data.h"
 #include "app_log_wrapper.h"
+#include <gtest/gtest.h>
+#include "iremote_object.h"
 #include "mock_ability_token.h"
 #include "mock_app_scheduler.h"
 #include "mock_app_spawn_client.h"
+#include "refbase.h"
+#include <unistd.h>
 
 using namespace testing::ext;
 using testing::_;

@@ -22,6 +22,7 @@ ABILITY_INNERKITS_PATH = "//foundation/aafwk/standard/interfaces/innerkits"
 config("module_private_config") {
   visibility = [ ":*" ]
   include_dirs = [
+    "//foundation/appexecfwk/standard/kits/appkit/native/ability_runtime/context",
     "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_core/include/appmgr",
     "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_core/include/bundlemgr",
     "//foundation/aafwk/standard/interfaces/innerkits/want/include/ohos/aafwk_L2/content",
@@ -108,7 +109,9 @@ ohos_unittest("application_test") {
     "../app/src/ohos_application.cpp",
     "//foundation/appexecfwk/standard/kits/appkit/native/app/src/app_loader.cpp",
     "//foundation/appexecfwk/standard/kits/appkit/native/app/src/application_context.cpp",
+    "unittest/ability_stage_test.cpp",
     "unittest/application_test.cpp",
+    "unittest/context_impl_test.cpp",
   ]
 
   configs = [ ":module_private_config" ]
@@ -124,6 +127,8 @@ ohos_unittest("application_test") {
     "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_core:appexecfwk_core",
     "//foundation/appexecfwk/standard/interfaces/innerkits/libeventhandler:libeventhandler",
     "//foundation/appexecfwk/standard/interfaces/innerkits/task_dispatcher:appkit_dispatcher_td",
+    "//foundation/appexecfwk/standard/kits:app_context",
+    "//foundation/appexecfwk/standard/kits:appkit_native",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
     "//third_party/googletest:gtest_main",
     "//utils/native/base:utils",
@@ -132,6 +137,7 @@ ohos_unittest("application_test") {
   ]
 
   external_deps = [
+    "aafwk_standard:runtime",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
   ]
@@ -164,6 +170,7 @@ ohos_unittest("context_container_test") {
   ]
 
   external_deps = [
+    "aafwk_standard:runtime",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
   ]
@@ -250,6 +257,7 @@ ohos_unittest("context_deal_test") {
   ]
 
   external_deps = [
+    "aafwk_standard:runtime",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
   ]
@@ -285,6 +293,7 @@ ohos_unittest("application_impl_test") {
   ]
 
   external_deps = [
+    "aafwk_standard:runtime",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
   ]

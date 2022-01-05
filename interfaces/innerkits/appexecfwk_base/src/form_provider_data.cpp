@@ -266,7 +266,7 @@ bool FormProviderData::Marshalling(Parcel &parcel) const
  * @brief Unmarshals this {@code FormProviderData} object from a {@link ohos.utils.Parcel} object.
  * @param parcel Indicates the {@code Parcel} object for unmarshalling.
  * @return FormProviderData.
- */ 
+ */
 FormProviderData* FormProviderData::Unmarshalling(Parcel &parcel)
 {
     std::unique_ptr<FormProviderData> formProviderData = std::make_unique<FormProviderData>();
@@ -278,7 +278,7 @@ FormProviderData* FormProviderData::Unmarshalling(Parcel &parcel)
 
 /**
  * @brief Clear imageDataMap, rawImageBytesMap_, imageDataState_ and jsonFormProviderData_.
- */    
+ */
 void FormProviderData::ClearData()
 {
     jsonFormProviderData_.clear();

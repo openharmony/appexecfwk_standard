@@ -25,20 +25,20 @@
 #include "form_host_interface.h"
 #include "form_mgr.h"
 #undef private
+#include "form_bms_helper.h"
 #include "form_mgr_service.h"
 #include "form_refresh_limiter.h"
 #include "form_sys_event_receiver.h"
 #include "if_system_ability_manager.h"
 #include "inner_bundle_info.h"
 #include "ipc_skeleton.h"
-#include "form_bms_helper.h"
 #include "iservice_registry.h"
 
 #include "mock_ability_manager.h"
 #include "mock_bundle_manager.h"
 #include "mock_form_host_client.h"
-#include "permission/permission_kit.h"
 #include "permission/permission.h"
+#include "permission/permission_kit.h"
 #include "running_process_info.h"
 #include "system_ability_definition.h"
 

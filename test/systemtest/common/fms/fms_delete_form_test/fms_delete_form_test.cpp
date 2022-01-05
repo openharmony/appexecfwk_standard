@@ -52,7 +52,7 @@ public:
 
     void StartAbilityKitTest(const std::string &abilityName, const std::string &bundleName);
     void TerminateAbility(const std::string &eventName, const std::string &abilityName);
-  
+
     class FormEventSubscriber : public CommonEventSubscriber {
     public:
         explicit FormEventSubscriber(const CommonEventSubscribeInfo &sp) : CommonEventSubscriber(sp) {};
@@ -356,7 +356,7 @@ HWTEST_F(FmsDeleteFormTest, FMS_deleteForm_0500, Function | MediumTest | Level1)
     SystemTestFormUtil::PublishEvent(FORM_EVENT_REQ_ONE_NORMAL_FORM, EVENT_CODE_100, eventData);
     EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_ONE_NORMAL_FORM, EVENT_CODE_100));
     std::string data = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_ONE_NORMAL_FORM, EVENT_CODE_100);
-    
+
     GTEST_LOG_(INFO) << "FMS_deleteForm_0500,  data:[" << data << "]" << std::endl;
     bool result1 = data != "";
     EXPECT_TRUE(result1);
@@ -642,7 +642,7 @@ HWTEST_F(FmsDeleteFormTest, FMS_deleteForm_1100, Function | MediumTest | Level1)
     SystemTestFormUtil::PublishEvent(FORM_EVENT_REQ_ONE_NORMAL_FORM, EVENT_CODE_100, eventData);
     EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_ONE_NORMAL_FORM, EVENT_CODE_100));
     std::string formOne = SystemTestFormUtil::GetData(event, FORM_EVENT_RECV_ONE_NORMAL_FORM, EVENT_CODE_100);
-    
+
     GTEST_LOG_(INFO) << "FMS_deleteForm_1100,  formOne:[" << formOne << "]" << std::endl;
     if (formOne != "") {
         std::string bundleName2 = "com.ohos.form.manager.normal";

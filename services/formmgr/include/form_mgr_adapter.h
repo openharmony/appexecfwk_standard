@@ -425,12 +425,12 @@ private:
      * @brief get bundleName.
      * @param bundleName for output.
      * @return Returns true on success, others on failure.
-     */    
+     */
     bool GetBundleName(std::string &bundleName);
 
     /**
      * @brief Update provider info to host
-     * 
+     *
      * @param matchedFormId The Id of the form
      * @param callerToken Caller ability token.
      * @param formVisibleType The form visible type, including FORM_VISIBLE and FORM_INVISIBLE.
@@ -443,14 +443,14 @@ private:
     /**
      * @brief If the form provider is system app and the config item 'formVisibleNotify' is true,
      *        notify the form provider that the current form is visible.
-     * 
+     *
      * @param bundleName BundleName
      * @return Returns true if the form provider is system app, false if not.
      */
     bool CheckIsSystemAppByBundleName(const sptr<IBundleMgr> &iBundleMgr, const std::string &bundleName);
     /**
      * @brief Create eventMaps for event notify.
-     * 
+     *
      * @param matchedFormId The Id of the form
      * @param formRecord Form storage information
      * @param eventMaps eventMaps for event notify

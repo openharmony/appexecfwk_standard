@@ -15,7 +15,7 @@
 #ifndef FOUNDATION_APPEXECFWK_SERVICES_SYSTEM_ENVIRONMENT_INFORMATION_H
 #define FOUNDATION_APPEXECFWK_SERVICES_SYSTEM_ENVIRONMENT_INFORMATION_H
 
-#include "kernal_system_memory_Info.h"
+#include "kernel_system_memory_info.h"
 
 namespace OHOS {
 namespace AppExecFwk {

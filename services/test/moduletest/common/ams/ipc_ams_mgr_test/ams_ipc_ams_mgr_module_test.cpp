@@ -18,19 +18,18 @@
 #define private public
 #include "app_mgr_client.h"
 #undef private
+#include "ams_mgr_scheduler.h"
+#include "app_mgr_proxy.h"
+#include "app_mgr_service_event_handler.h"
+#include "app_record_id.h"
+#include "app_scheduler_proxy.h"
 #include "mock_ability_token.h"
 #include "mock_application.h"
 #include "mock_iapp_state_callback.h"
-#include "iremote_object.h"
-#include "app_record_id.h"
-#include "ams_mgr_proxy.h"
 #include "mock_app_mgr_service.h"
-#include "mock_app_service_mgr.h"
 #include "mock_app_mgr_service_inner.h"
-#include "app_mgr_service_event_handler.h"
-#include "ams_mgr_scheduler.h"
-#include "app_mgr_proxy.h"
-#include "app_scheduler_proxy.h"
+#include "mock_app_service_mgr.h"
+#include "iremote_object.h"
 
 using namespace testing::ext;
 using OHOS::iface_cast;

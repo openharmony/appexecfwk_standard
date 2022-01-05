@@ -15,8 +15,8 @@
 
 #ifndef AMS_SERVICE_ABILITY_TEST_DEF_H_
 #define AMS_SERVICE_ABILITY_TEST_DEF_H_
-#include <string>
 #include <map>
+#include <string>
 
 namespace OHOS {
 namespace AppExecFwk {

@@ -32,6 +32,7 @@ namespace OHOS {
 namespace AppExecFwk {
 using namespace OHOS::Global;
 enum class MainThreadState { INIT, ATTACH, READY, RUNNING };
+struct BundleInfo;
 class ContextDeal;
 // class Global::Resource::ResourceManager;
 class AppMgrDeathRecipient : public IRemoteObject::DeathRecipient {
@@ -453,7 +454,7 @@ private:
         Profile &appProfile);
     bool CheckForHandleLaunchApplication(const AppLaunchData &appLaunchData);
     bool InitResourceManager(std::shared_ptr<Global::Resource::ResourceManager> &resourceManager,
-        std::shared_ptr<ContextDeal> &contextDeal, ApplicationInfo &appInfo);
+        std::shared_ptr<ContextDeal> &contextDeal, ApplicationInfo &appInfo, BundleInfo& bundleInfo);
     std::vector<std::string> fileEntries_;
     std::vector<void *> handleAbilityLib_;  // the handler of ACE Library.
 #endif                                      // ABILITY_LIBRARY_LOADER

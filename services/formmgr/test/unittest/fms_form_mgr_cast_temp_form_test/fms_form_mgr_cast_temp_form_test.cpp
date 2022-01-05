@@ -14,6 +14,7 @@
  */
 
 #include <gtest/gtest.h>
+
 #include "form_ams_helper.h"
 #include "form_bms_helper.h"
 #include "form_data_mgr.h"

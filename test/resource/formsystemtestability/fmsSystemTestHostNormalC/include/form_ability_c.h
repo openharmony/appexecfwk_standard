@@ -29,7 +29,7 @@ public:
     void handleEvent(std::string action, std::string data);
 
     void FMS_deleteFormCommon(std::string strFormId);
-    
+
     void FMS_acquireForm_3100(std::string data);
     void FMS_acquireForm_3200(std::string data);
 
@@ -50,7 +50,7 @@ public:
 
         std::string caseName_ = "";
         int code_ = 0;
-        FormAbilityC *ability_;
+        FormAbilityC *ability_ = nullptr;
     };
 protected:
     virtual void Init(const std::shared_ptr<AbilityInfo> &abilityInfo,

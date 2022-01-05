@@ -678,7 +678,7 @@ sptr<IRemoteObject> SystemTestFormUtil::GetFmsService()
         return nullptr;
     }
     sptr<IRemoteObject> remoteObject = systemManager->GetSystemAbility(FORM_MGR_SERVICE_ID);
-    
+
     std::cout << "SendTransactCmd end." << std::endl;
     return remoteObject;
 }

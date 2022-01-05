@@ -17,8 +17,9 @@
 #include <gtest/gtest.h>
 #include <string>
 #include <thread>
-#include "appexecfwk_errors.h"
+
 #include "app_log_wrapper.h"
+#include "appexecfwk_errors.h"
 #define private public
 #include "form_data_mgr.h"
 #undef private

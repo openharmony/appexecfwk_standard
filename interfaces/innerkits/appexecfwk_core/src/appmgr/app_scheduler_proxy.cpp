@@ -15,10 +15,9 @@
 
 #include "app_scheduler_proxy.h"
 
-#include "iremote_object.h"
-#include "ipc_types.h"
-
 #include "app_log_wrapper.h"
+#include "ipc_types.h"
+#include "iremote_object.h"
 
 namespace OHOS {
 namespace AppExecFwk {

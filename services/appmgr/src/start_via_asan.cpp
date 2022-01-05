@@ -14,8 +14,9 @@
  */
 
 #include "start_via_asan.h"
-#include "properties.h"
+
 #include "app_log_wrapper.h"
+#include "properties.h"
 
 namespace OHOS {
 namespace AppExecFwk {

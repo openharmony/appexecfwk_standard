@@ -35,6 +35,7 @@ config("appkit_public_config") {
   visibility = [ ":*" ]
   include_dirs = [
     "//base/global/resmgr_standard/interfaces/innerkits/include",
+    "//base/global/i18n_standard/frameworks/intl/include",
     "//third_party/icu/icu4c/source/common",
   ]
 }
@@ -50,6 +51,8 @@ ohos_executable("appexec") {
     "//foundation/aafwk/standard/interfaces/innerkits/base/include",
     "//foundation/aafwk/standard/interfaces/innerkits/ability_manager/include",
     "//foundation/aafwk/standard/services/abilitymgr/include",
+    "//foundation/appexecfwk/standard/kits/appkit/native/ability_runtime/app",
+    "//foundation/appexecfwk/standard/kits/appkit/native/ability_runtime/context",
     "//foundation/appexecfwk/standard/kits/appkit/native/app/include",
     "//foundation/communication/ipc/interfaces/innerkits/ipc_core/include",
     "//utils/native/base/include",
@@ -85,6 +88,9 @@ ohos_shared_library("appkit_native") {
     "$SUBSYSTEM_DIR/interfaces/innerkits/appexecfwk_core/include/appmgr",
     "$SUBSYSTEM_DIR/interfaces/innerkits/libeventhandler/include",
     "$SUBSYSTEM_DIR/kits/appkit/native/app/include",
+    "$SUBSYSTEM_DIR/kits/appkit/native/ability_runtime/app",
+    "$SUBSYSTEM_DIR/kits/appkit/native/ability_runtime/context",
+    "$SUBSYSTEM_DIR/kits/appkit/native",
     "//foundation/aafwk/standard/frameworks/kits/ability/native/include",
     "//foundation/aafwk/standard/interfaces/innerkits/ability_manager/include",
     "//foundation/aafwk/standard/services/abilitymgr/include",
@@ -113,6 +119,8 @@ ohos_shared_library("appkit_native") {
     "$SUBSYSTEM_DIR/kits/appkit/native/app/src/context_container.cpp",
 
     #"$SUBSYSTEM_DIR/kits/appkit/native/app/main.cpp",
+    "$SUBSYSTEM_DIR/kits/appkit/native/ability_runtime/app/ability_stage.cpp",
+    "$SUBSYSTEM_DIR/kits/appkit/native/ability_runtime/app/js_ability_stage.cpp",
     "$SUBSYSTEM_DIR/kits/appkit/native/app/src/context_deal.cpp",
     "$SUBSYSTEM_DIR/kits/appkit/native/app/src/main_thread.cpp",
     "$SUBSYSTEM_DIR/kits/appkit/native/app/src/ohos_application.cpp",
@@ -126,21 +134,86 @@ ohos_shared_library("appkit_native") {
     "$SUBSYSTEM_DIR/common:libappexecfwk_common",
     "$SUBSYSTEM_DIR/interfaces/innerkits/appexecfwk_base:appexecfwk_base",
     "$SUBSYSTEM_DIR/interfaces/innerkits/appexecfwk_core:appexecfwk_core",
+    "$SUBSYSTEM_DIR/kits:app_context",
     "//foundation/aafwk/standard/frameworks/kits/ability/native:abilitykit_native",
+    "//foundation/aafwk/standard/interfaces/innerkits/ability_manager:ability_manager",
+    "//foundation/aafwk/standard/interfaces/innerkits/want:want",
+    "//foundation/appexecfwk/standard/interfaces/innerkits/libeventhandler:libeventhandler",
+    "//foundation/appexecfwk/standard/interfaces/innerkits/task_dispatcher:appkit_dispatcher_td",
+    "//foundation/distributedschedule/dmsfwk/interfaces/innerkits/uri:zuri",
+    "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
+    "//foundation/multimodalinput/input/frameworks/proxy:libmmi-client",
+    "//third_party/icu/icu4c:shared_icuuc",
+    "//utils/native/base:utils",
+  ]
+
+  public_deps = [
+    "//base/global/i18n_standard/frameworks/intl:intl_util",
+    "//base/global/resmgr_standard/frameworks/resmgr:global_resmgr",
+  ]
+  external_deps = [
+    "aafwk_standard:runtime",
+    "bytrace_standard:bytrace_core",
+    "hiviewdfx_hilog_native:libhilog",
+    "ipc:ipc_core",
+    "napi:ace_napi",
+  ]
+
+  part_name = "appexecfwk_standard"
+}
+
+# build so
+ohos_shared_library("app_context") {
+  include_dirs = [
+    "$SUBSYSTEM_DIR/kits/appkit/native/app/include",
+    "$SUBSYSTEM_DIR/kits/appkit/native/ability_runtime/context",
+    "$SUBSYSTEM_DIR/interfaces/innerkits/appexecfwk_core/include/bundlemgr",
+    "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy/include",
+    "//foundation/communication/ipc/interfaces/innerkits/ipc_core/include",
+    "//utils/system/safwk/native/include",
+  ]
+
+  configs = [ ":appkit_config" ]
+
+  public_configs = [ ":appkit_public_config" ]
+
+  sources = [
+    "$SUBSYSTEM_DIR/kits/appkit/native/ability_runtime/context/context_impl.cpp",
+    "$SUBSYSTEM_DIR/kits/appkit/native/ability_runtime/context/js_context_utils.cpp",
+    "$SUBSYSTEM_DIR/kits/appkit/native/ability_runtime/context/js_hap_module_info_utils.cpp",
+    "$SUBSYSTEM_DIR/kits/appkit/native/ability_runtime/context/js_resource_manager_utils.cpp",
+    "$SUBSYSTEM_DIR/kits/appkit/native/app/src/sys_mgr_client.cpp",
+  ]
+  cflags = []
+  if (target_cpu == "arm") {
+    cflags += [ "-DBINDER_IPC_32BIT" ]
+  }
+  deps = [
+    "$SUBSYSTEM_DIR/common:libappexecfwk_common",
+    "$SUBSYSTEM_DIR/interfaces/innerkits/appexecfwk_base:appexecfwk_base",
+    "$SUBSYSTEM_DIR/interfaces/innerkits/appexecfwk_core:appexecfwk_core",
+
+    # "//foundation/aafwk/standard/frameworks/kits/ability/native:abilitykit_native",
     "//foundation/aafwk/standard/interfaces/innerkits/ability_manager:ability_manager",
     "//foundation/appexecfwk/standard/interfaces/innerkits/libeventhandler:libeventhandler",
     "//foundation/appexecfwk/standard/interfaces/innerkits/task_dispatcher:appkit_dispatcher_td",
     "//foundation/distributedschedule/dmsfwk/interfaces/innerkits/uri:zuri",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
     "//foundation/multimodalinput/input/frameworks/proxy:libmmi-client",
+    "//third_party/icu/icu4c:shared_icuuc",
     "//utils/native/base:utils",
   ]
 
-  public_deps =
-      [ "//base/global/resmgr_standard/frameworks/resmgr:global_resmgr" ]
+  public_deps = [
+    "//base/global/i18n_standard/frameworks/intl:intl_util",
+    "//base/global/resmgr_standard/frameworks/resmgr:global_resmgr",
+  ]
+
   external_deps = [
+    "aafwk_standard:runtime",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
+    "napi:ace_napi",
   ]
 
   part_name = "appexecfwk_standard"

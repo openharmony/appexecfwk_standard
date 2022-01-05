@@ -17,9 +17,9 @@
 
 #include <map>
 
-#include "system_ability_definition.h"
 #include "app_log_wrapper.h"
 #include "mock_ability_mgr_host.h"
+#include "system_ability_definition.h"
 
 namespace OHOS {
 namespace AppExecFwk {

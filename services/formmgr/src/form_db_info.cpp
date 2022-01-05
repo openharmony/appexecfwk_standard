@@ -13,17 +13,19 @@
  * limitations under the License.
  */
 
-#include "app_log_wrapper.h"
 #include "form_db_info.h"
+
+#include "json_util.h"
+
 namespace OHOS {
 namespace AppExecFwk {
 namespace {
-const std::string FORM_ID = "formId";
-const std::string FORM_NAME = "formName";
-const std::string BUNDLE_NAME = "bundleName";
-const std::string MODULE_NAME = "moduleName";
-const std::string ABILITY_NAME = "abilityName";
-const std::string FORM_USER_UIDS = "formUserUids";
+const std::string INNER_FORM_INFO_FORM_ID = "formId";
+const std::string INNER_FORM_INFO_FORM_NAME = "formName";
+const std::string INNER_FORM_INFO_BUNDLE_NAME = "bundleName";
+const std::string INNER_FORM_INFO_MODULE_NAME = "moduleName";
+const std::string INNER_FORM_INFO_ABILITY_NAME = "abilityName";
+const std::string INNER_FORM_INFO_FORM_USER_UIDS = "formUserUids";
 }
 
 /**
@@ -33,12 +35,12 @@ const std::string FORM_USER_UIDS = "formUserUids";
  */
 void InnerFormInfo::ToJson(nlohmann::json &jsonObject) const
 {
-    jsonObject[FORM_ID] = formDBInfo_.formId;
-    jsonObject[FORM_NAME] = formDBInfo_.formName;
-    jsonObject[BUNDLE_NAME] = formDBInfo_.bundleName;
-    jsonObject[MODULE_NAME] = formDBInfo_.moduleName;
-    jsonObject[ABILITY_NAME] = formDBInfo_.abilityName;
-    jsonObject[FORM_USER_UIDS] = formDBInfo_.formUserUids;
+    jsonObject[INNER_FORM_INFO_FORM_ID] = formDBInfo_.formId;
+    jsonObject[INNER_FORM_INFO_FORM_NAME] = formDBInfo_.formName;
+    jsonObject[INNER_FORM_INFO_BUNDLE_NAME] = formDBInfo_.bundleName;
+    jsonObject[INNER_FORM_INFO_MODULE_NAME] = formDBInfo_.moduleName;
+    jsonObject[INNER_FORM_INFO_ABILITY_NAME] = formDBInfo_.abilityName;
+    jsonObject[INNER_FORM_INFO_FORM_USER_UIDS] = formDBInfo_.formUserUids;
 }
 
 /**
@@ -48,14 +50,57 @@ void InnerFormInfo::ToJson(nlohmann::json &jsonObject) const
  */
 bool InnerFormInfo::FromJson(const nlohmann::json &jsonObject)
 {
-        formDBInfo_.formId = jsonObject.at(FORM_ID).get<int64_t>();
-        formDBInfo_.formName = jsonObject.at(FORM_NAME).get<std::string>();
-        formDBInfo_.bundleName = jsonObject.at(BUNDLE_NAME).get<std::string>();
-        formDBInfo_.moduleName = jsonObject.at(MODULE_NAME).get<std::string>();
-        formDBInfo_.abilityName = jsonObject.at(ABILITY_NAME).get<std::string>();
-        formDBInfo_.formUserUids = jsonObject.at(FORM_USER_UIDS).get<std::vector<int32_t>>();
-
-    return true;
+    const auto &jsonObjectEnd = jsonObject.end();
+    int32_t parseResult = ERR_OK;
+    GetValueIfFindKey<int64_t>(jsonObject,
+        jsonObjectEnd,
+        INNER_FORM_INFO_FORM_ID,
+        formDBInfo_.formId,
+        JsonType::NUMBER,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        INNER_FORM_INFO_FORM_NAME,
+        formDBInfo_.formName,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        INNER_FORM_INFO_BUNDLE_NAME,
+        formDBInfo_.bundleName,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        INNER_FORM_INFO_MODULE_NAME,
+        formDBInfo_.moduleName,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        INNER_FORM_INFO_ABILITY_NAME,
+        formDBInfo_.abilityName,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::vector<int32_t>>(jsonObject,
+        jsonObjectEnd,
+        INNER_FORM_INFO_FORM_USER_UIDS,
+        formDBInfo_.formUserUids,
+        JsonType::ARRAY,
+        false,
+        parseResult,
+        ArrayType::NUMBER);
+    return parseResult == ERR_OK;
 }
 
 void InnerFormInfo::AddUserUid(const int callingUid)
@@ -63,7 +108,7 @@ void InnerFormInfo::AddUserUid(const int callingUid)
     auto iter = std::find(formDBInfo_.formUserUids.begin(), formDBInfo_.formUserUids.end(), callingUid);
     if (iter == formDBInfo_.formUserUids.end()) {
         formDBInfo_.formUserUids.push_back(callingUid);
-    }    
+    }
 }
 
 bool InnerFormInfo::DeleteUserUid(const int callingUid)

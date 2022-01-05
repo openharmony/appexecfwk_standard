@@ -14,13 +14,13 @@
  */
 #include <gtest/gtest.h>
 
-#include "semaphore_ex.h"
-#include "app_scheduler_proxy.h"
 #include "app_scheduler_host.h"
+#include "app_scheduler_proxy.h"
+#include "semaphore_ex.h"
 
 #include "mock_ability_token.h"
-#include "mock_application.h"
 #include "mock_app_scheduler.h"
+#include "mock_application.h"
 
 using namespace testing::ext;
 using namespace OHOS::AppExecFwk;

@@ -14,12 +14,12 @@
  */
 
 #include "ams_mgr_proxy.h"
-#include "string_ex.h"
 #include "ipc_types.h"
 #include "iremote_object.h"
+#include "string_ex.h"
 
-#include "appexecfwk_errors.h"
 #include "app_log_wrapper.h"
+#include "appexecfwk_errors.h"
 
 namespace OHOS {
 namespace AppExecFwk {

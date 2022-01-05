@@ -46,7 +46,7 @@ int ProviderConnectStub::OnRemoteRequest(
                 APP_LOGE("%{public}s failed, callback stub receive element is nullptr", __func__);
                 return ERR_APPEXECFWK_PARCEL_ERROR;
             }
-            auto remoteObject = data.ReadParcelable<IRemoteObject>();
+            auto remoteObject = data.ReadRemoteObject();
             auto resultCode = data.ReadInt32();
             OnAbilityConnectDone(*element, remoteObject, resultCode);
             delete element;

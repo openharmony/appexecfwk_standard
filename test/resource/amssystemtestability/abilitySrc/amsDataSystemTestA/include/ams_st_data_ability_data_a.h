@@ -38,7 +38,8 @@ public:
     void SubscribeEvent(const Want &want);
     bool PublishEvent(const std::string &eventName, const int &code, const std::string &data);
     STtools::Event event;
-    int fd;
+    FILE *file = nullptr;
+    int fd = -1;
     ~AmsStDataAbilityDataA();
 
 protected:

@@ -17,11 +17,11 @@
 #define private public
 #include "sync_task.h"
 #undef private
+#include "app_log_wrapper.h"
+#include "default_worker_pool_config.h"
+#include "task.h"
 #include "task_priority.h"
 #include "task_executor.h"
-#include "task.h"
-#include "default_worker_pool_config.h"
-#include "app_log_wrapper.h"
 
 using namespace testing;
 using namespace testing::ext;

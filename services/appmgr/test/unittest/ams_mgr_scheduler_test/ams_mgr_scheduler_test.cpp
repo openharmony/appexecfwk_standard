@@ -20,9 +20,9 @@
 #undef private
 
 #include "app_log_wrapper.h"
-#include "mock_app_mgr_service_inner.h"
-#include "mock_ability_token.h"
 #include "app_state_callback_host.h"
+#include "mock_ability_token.h"
+#include "mock_app_mgr_service_inner.h"
 
 using namespace testing;
 using namespace testing::ext;

@@ -15,8 +15,8 @@
 
 #include "app_mgr_service.h"
 
-#include <sys/types.h>
 #include <nlohmann/json.hpp>
+#include <sys/types.h>
 
 #include "datetime_ex.h"
 #include "ipc_skeleton.h"
@@ -31,9 +31,9 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-static const int experienceMemThreshold = 20;
-static const float percentage = 100.0;
 namespace {
+static const int EXPERIENCE_MEM_THRESHOLD = 20;
+static const float PERCENTAGE = 100.0;
 const std::string TASK_ATTACH_APPLICATION = "AttachApplicationTask";
 const std::string TASK_APPLICATION_FOREGROUNDED = "ApplicationForegroundedTask";
 const std::string TASK_APPLICATION_BACKGROUNDED = "ApplicationBackgroundedTask";
@@ -165,7 +165,7 @@ void AppMgrService::AttachApplication(const sptr<IRemoteObject> &app)
 
     pid_t pid = IPCSkeleton::GetCallingPid();
     AddAppDeathRecipient(pid);
-    std::function <void()> attachApplicationFunc =
+    std::function<void()> attachApplicationFunc =
         std::bind(&AppMgrServiceInner::AttachApplication, appMgrServiceInner_, pid, iface_cast<IAppScheduler>(app));
     handler_->PostTask(attachApplicationFunc, TASK_ATTACH_APPLICATION);
 }
@@ -175,7 +175,7 @@ void AppMgrService::ApplicationForegrounded(const int32_t recordId)
     if (!IsReady()) {
         return;
     }
-    std::function <void()> applicationForegroundedFunc =
+    std::function<void()> applicationForegroundedFunc =
         std::bind(&AppMgrServiceInner::ApplicationForegrounded, appMgrServiceInner_, recordId);
     handler_->PostTask(applicationForegroundedFunc, TASK_APPLICATION_FOREGROUNDED);
 }
@@ -185,7 +185,7 @@ void AppMgrService::ApplicationBackgrounded(const int32_t recordId)
     if (!IsReady()) {
         return;
     }
-    std::function <void()> applicationBackgroundedFunc =
+    std::function<void()> applicationBackgroundedFunc =
         std::bind(&AppMgrServiceInner::ApplicationBackgrounded, appMgrServiceInner_, recordId);
     handler_->PostTask(applicationBackgroundedFunc, TASK_APPLICATION_BACKGROUNDED);
 }
@@ -195,7 +195,7 @@ void AppMgrService::ApplicationTerminated(const int32_t recordId)
     if (!IsReady()) {
         return;
     }
-    std::function <void()> applicationTerminatedFunc =
+    std::function<void()> applicationTerminatedFunc =
         std::bind(&AppMgrServiceInner::ApplicationTerminated, appMgrServiceInner_, recordId);
     handler_->PostTask(applicationTerminatedFunc, TASK_APPLICATION_TERMINATED);
 }
@@ -205,7 +205,7 @@ void AppMgrService::AbilityCleaned(const sptr<IRemoteObject> &token)
     if (!IsReady()) {
         return;
     }
-    std::function <void()> abilityCleanedFunc =
+    std::function<void()> abilityCleanedFunc =
         std::bind(&AppMgrServiceInner::AbilityTerminated, appMgrServiceInner_, token);
     handler_->PostTask(abilityCleanedFunc, TASK_ABILITY_CLEANED);
 }
@@ -231,7 +231,7 @@ void AppMgrService::AddAppDeathRecipient(const pid_t pid) const
     sptr<AppDeathRecipient> appDeathRecipient = new AppDeathRecipient();
     appDeathRecipient->SetEventHandler(handler_);
     appDeathRecipient->SetAppMgrServiceInner(appMgrServiceInner_);
-    std::function <void()> addAppRecipientFunc =
+    std::function<void()> addAppRecipientFunc =
         std::bind(&AppMgrServiceInner::AddAppDeathRecipient, appMgrServiceInner_, pid, appDeathRecipient);
     handler_->PostTask(addAppRecipientFunc, TASK_ADD_APP_DEATH_RECIPIENT);
 }
@@ -259,7 +259,7 @@ int32_t AppMgrService::ClearUpApplicationData(const std::string &bundleName)
     }
     int32_t uid = IPCSkeleton::GetCallingUid();
     pid_t pid = IPCSkeleton::GetCallingPid();
-    std::function <void()> clearUpApplicationDataFunc =
+    std::function<void()> clearUpApplicationDataFunc =
         std::bind(&AppMgrServiceInner::ClearUpApplicationData, appMgrServiceInner_, bundleName, uid, pid);
     handler_->PostTask(clearUpApplicationDataFunc, TASK_CLEAR_UP_APPLICATION_DATA);
     return ERR_OK;
@@ -310,12 +310,12 @@ void AppMgrService::GetSystemMemoryAttr(SystemMemoryAttr &memoryInfo, std::strin
     int memThreshold = 0;
     nlohmann::json memJson = nlohmann::json::parse(strConfig, nullptr, false);
     if (memJson.is_discarded()) {
-        memThreshold = experienceMemThreshold;
-        APP_LOGE("%{public}s, discarded memThreshold = %{public}d", __func__, experienceMemThreshold);
+        memThreshold = EXPERIENCE_MEM_THRESHOLD;
+        APP_LOGE("%{public}s, discarded memThreshold = %{public}d", __func__, EXPERIENCE_MEM_THRESHOLD);
     } else {
         if (!memJson.contains("memoryThreshold")) {
-            memThreshold = experienceMemThreshold;
-            APP_LOGE("%{public}s, memThreshold = %{public}d", __func__, experienceMemThreshold);
+            memThreshold = EXPERIENCE_MEM_THRESHOLD;
+            APP_LOGE("%{public}s, memThreshold = %{public}d", __func__, EXPERIENCE_MEM_THRESHOLD);
         } else {
             memThreshold = memJson.at("memorythreshold").get<int>();
             APP_LOGI("%{public}s, memThreshold = %{public}d", __func__, memThreshold);
@@ -324,7 +324,7 @@ void AppMgrService::GetSystemMemoryAttr(SystemMemoryAttr &memoryInfo, std::strin
 
     memoryInfo.availSysMem_ = systemMemInfo.GetMemFree();
     memoryInfo.totalSysMem_ = systemMemInfo.GetMemTotal();
-    memoryInfo.threshold_ = static_cast<int64_t>(memoryInfo.totalSysMem_ * memThreshold / percentage);
+    memoryInfo.threshold_ = static_cast<int64_t>(memoryInfo.totalSysMem_ * memThreshold / PERCENTAGE);
     memoryInfo.isSysInlowMem_ = memoryInfo.availSysMem_ < memoryInfo.threshold_;
 }
 

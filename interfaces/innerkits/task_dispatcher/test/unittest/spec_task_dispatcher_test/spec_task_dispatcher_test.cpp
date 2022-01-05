@@ -16,15 +16,17 @@
 #define private public
 #undef private
 #include "spec_task_dispatcher.h"
+
+#include "event_runner.h"
+#include "runnable.h"
+#include "serial_task_dispatcher.h"
+#include "task_dispatcher.h"
+#include "task_dispatcher_context.h"
+
+#include <gtest/gtest.h>
+#include <string>
 #include <thread>
 #include <unistd.h>
-#include <string>
-#include <gtest/gtest.h>
-#include "task_dispatcher_context.h"
-#include "task_dispatcher.h"
-#include "serial_task_dispatcher.h"
-#include "runnable.h"
-#include "event_runner.h"
 
 using namespace testing;
 using namespace testing::ext;
