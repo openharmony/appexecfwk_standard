@@ -59,7 +59,7 @@ public:
 
         std::string caseName_ = "";
         int code_ = 0;
-        FormAbilityPerformance *ability_;
+        FormAbilityPerformance *ability_ = nullptr;
     };
 protected:
     virtual void Init(const std::shared_ptr<AbilityInfo> &abilityInfo,

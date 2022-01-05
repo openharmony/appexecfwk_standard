@@ -19,9 +19,10 @@
 #include "app_mgr_service.h"
 #undef private
 #undef protected
-#include <gtest/gtest.h>
-#include "semaphore_ex.h"
 #include "app_log_wrapper.h"
+#include "semaphore_ex.h"
+
+#include <gtest/gtest.h>
 
 using namespace testing::ext;
 using namespace OHOS::AppExecFwk;

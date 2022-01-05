@@ -686,6 +686,16 @@ private:
         int32_t callerUid, pid_t callerPid, const int userId);
 
 private:
+    /**
+     * Notify application status.
+     *
+     * @param bundleName Indicates the name of the bundle.
+     * @param eventData Indicates the event defined by CommonEventSupport
+     *
+     * @return
+     */
+    void NotifyAppStatus(const std::string &bundleName, const std::string &eventData);
+
     std::vector<const sptr<IAppStateCallback>> appStateCallbacks_;
     std::shared_ptr<AppProcessManager> appProcessManager_;
     std::shared_ptr<RemoteClientManager> remoteClientManager_;

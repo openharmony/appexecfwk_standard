@@ -16,8 +16,8 @@
 #include "ability_manager.h"
 #include "app_log_wrapper.h"
 #include "singleton.h"
-#include "system_ability_definition.h"
 #include "sys_mgr_client.h"
+#include "system_ability_definition.h"
 
 namespace OHOS {
 namespace AppExecFwk {

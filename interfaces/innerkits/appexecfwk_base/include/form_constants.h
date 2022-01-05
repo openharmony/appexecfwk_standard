@@ -94,7 +94,7 @@ namespace Constants {
     const std::string PARAM_FORM_MANAGER_SERVICE_BUNDLENAME_KEY = "form_manager_service_bundlename";
 
     // PROVIDER_FLAG false:ProviderFormInfo is null;true: ProviderFormInfo not null
-    const std::string PROVIDER_FLAG = "provider_flag";    
+    const std::string PROVIDER_FLAG = "provider_flag";
     const std::string FORM_CONNECT_ID = "form_connect_id";
     const std::string FORM_SUPPLY_INFO = "form_supply_info";
 

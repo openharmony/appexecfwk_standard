@@ -67,7 +67,7 @@ public:
 
     void StartAbilityKitTest(const std::string &abilityName, const std::string &bundleName);
     void TerminateAbility(const std::string &eventName, const std::string &abilityName);
-  
+
     class FormEventSubscriber : public CommonEventSubscriber {
     public:
         explicit FormEventSubscriber(const CommonEventSubscribeInfo &sp) : CommonEventSubscriber(sp) {};
@@ -290,7 +290,7 @@ HWTEST_F(FmsAcquireFormTest, FMS_acquireForm_1500, Function | MediumTest | Level
 
     sleep(1);
     FmsAcquireFormCatched1500(strFormId);
-    
+
     sleep(1);
     FmsAcquireFormDeleteA(strFormId);
     std::cout << "END FMS_acquireForm_1500" << std::endl;
@@ -837,7 +837,7 @@ void FmsAcquireFormTest::FmsAcquireFormCatched1500(std::string strFormId)
     } else {
         GTEST_LOG_(INFO) << "FMS_acquireForm_1500,  formId:" << strFormId2;
     }
-  
+
     GTEST_LOG_(INFO) << "FMS_acquireForm_1500,  add catched form end";
     // wait delete form
     EXPECT_EQ(0, SystemTestFormUtil::WaitCompleted(event, FORM_EVENT_RECV_DELETE_FORM_COMMON, EVENT_CODE_999));

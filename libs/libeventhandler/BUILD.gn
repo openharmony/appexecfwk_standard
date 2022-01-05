@@ -20,6 +20,7 @@ config("libeventhandler_config") {
     "//utils/native/base/include",
     "src",
     "//base/hiviewdfx/interfaces/innerkits/libhilog/include",
+    "//base/hiviewdfx/interfaces/innerkits/libhitrace/include",
   ]
 }
 

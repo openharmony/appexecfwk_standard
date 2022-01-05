@@ -14,19 +14,28 @@
  */
 
 #include "main_thread.h"
+
 #include <new>
-#include "ohos_application.h"
-#include "app_loader.h"
-#include "application_env_impl.h"
+
+#include "ability_loader.h"
 #include "ability_thread.h"
-#include "task_handler_client.h"
+#include "app_loader.h"
+#include "app_log_wrapper.h"
+#include "application_env_impl.h"
+#include "bytrace.h"
 #include "context_deal.h"
+#include "context_impl.h"
 #include "if_system_ability_manager.h"
 #include "iservice_registry.h"
+#include "js_runtime.h"
+#include "locale_config.h"
+#include "ohos_application.h"
 #include "resource_manager.h"
+#include "runtime.h"
+#include "service_extension.h"
 #include "sys_mgr_client.h"
 #include "system_ability_definition.h"
-#include "app_log_wrapper.h"
+#include "task_handler_client.h"
 
 #if defined(ABILITY_LIBRARY_LOADER) || defined(APPLICATION_LIBRARY_LOADER)
 #include <dirent.h>
@@ -35,6 +44,10 @@
 
 namespace OHOS {
 namespace AppExecFwk {
+namespace {
+constexpr int TARGET_VERSION_THRESHOLDS = 8;
+}
+
 #define ACEABILITY_LIBRARY_LOADER
 #ifdef ABILITY_LIBRARY_LOADER
 #endif
@@ -371,6 +384,17 @@ void MainThread::ScheduleLaunchAbility(const AbilityInfo &info, const sptr<IRemo
     sptr<IRemoteObject> abilityToken = token;
     std::shared_ptr<AbilityLocalRecord> abilityRecord = std::make_shared<AbilityLocalRecord>(abilityInfo, abilityToken);
 
+    std::shared_ptr<ContextDeal> contextDeal = std::make_shared<ContextDeal>();
+    sptr<IBundleMgr> bundleMgr = contextDeal->GetBundleManager();
+    if (bundleMgr == nullptr) {
+        APP_LOGE("MainThread::ScheduleLaunchAbility GetBundleManager is nullptr");
+    } else {
+        BundleInfo bundleInfo;
+        bundleMgr->GetBundleInfo(abilityInfo->bundleName, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo);
+        abilityRecord->SetTargetVersion(bundleInfo.targetVersion);
+        APP_LOGI("MainThread::ScheduleLaunchAbility targetVersion:%{public}d", bundleInfo.targetVersion);
+    }
+
     auto task = [appThread = this, abilityRecord]() { appThread->HandleLaunchAbility(abilityRecord); };
     if (!mainHandler_->PostTask(task)) {
         APP_LOGE("MainThread::ScheduleLaunchAbility PostTask task failed");
@@ -536,6 +560,7 @@ void MainThread::HandleTerminateApplicationLocal()
  */
 void MainThread::HandleProcessSecurityExit()
 {
+    BYTRACE(BYTRACE_TAG_APP);
     APP_LOGI("MainThread::HandleProcessSecurityExit called start.");
     if (abilityRecordMgr_ == nullptr) {
         APP_LOGE("MainThread::HandleProcessSecurityExit abilityRecordMgr_ is null");
@@ -614,22 +639,8 @@ bool MainThread::CheckForHandleLaunchApplication(const AppLaunchData &appLaunchD
 }
 
 bool MainThread::InitResourceManager(std::shared_ptr<Global::Resource::ResourceManager> &resourceManager,
-    std::shared_ptr<ContextDeal> &contextDeal, ApplicationInfo &appInfo)
+    std::shared_ptr<ContextDeal> &contextDeal, ApplicationInfo &appInfo, BundleInfo& bundleInfo)
 {
-    APP_LOGI("MainThread::InitResourceManager. Start calling GetBundleManager.");
-    sptr<IBundleMgr> bundleMgr = contextDeal->GetBundleManager();
-    if (bundleMgr == nullptr) {
-        APP_LOGE("MainThread::handleLaunchApplication GetBundleManager is nullptr");
-        return false;
-    }
-    APP_LOGI("MainThread::handleLaunchApplication. End calling GetBundleManager.");
-
-    BundleInfo bundleInfo;
-    APP_LOGI("MainThread::handleLaunchApplication length: %{public}zu, bundleName: %{public}s",
-        appInfo.bundleName.length(),
-        appInfo.bundleName.c_str());
-    bundleMgr->GetBundleInfo(appInfo.bundleName, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo);
-
     APP_LOGI("MainThread::handleLaunchApplication moduleResPaths count: %{public}zu start",
         bundleInfo.moduleResPaths.size());
     for (auto moduleResPath : bundleInfo.moduleResPaths) {
@@ -648,7 +659,9 @@ bool MainThread::InitResourceManager(std::shared_ptr<Global::Resource::ResourceM
     APP_LOGI("MainThread::handleLaunchApplication before Resource::CreateResConfig.");
     std::unique_ptr<Global::Resource::ResConfig> resConfig(Global::Resource::CreateResConfig());
     APP_LOGI("MainThread::handleLaunchApplication after Resource::CreateResConfig.");
-    resConfig->SetLocaleInfo("zh", "Hans", "CN");
+    UErrorCode status = U_ZERO_ERROR;
+    icu::Locale locale = icu::Locale::forLanguageTag(Global::I18n::LocaleConfig::GetSystemLanguage(), status);
+    resConfig->SetLocaleInfo(locale);
     const icu::Locale *localeInfo = resConfig->GetLocaleInfo();
     if (localeInfo != nullptr) {
         APP_LOGI("MainThread::handleLaunchApplication language: %{public}s, script: %{public}s, region: %{public}s,",
@@ -673,6 +686,7 @@ bool MainThread::InitResourceManager(std::shared_ptr<Global::Resource::ResourceM
  */
 void MainThread::HandleLaunchApplication(const AppLaunchData &appLaunchData)
 {
+    BYTRACE(BYTRACE_TAG_APP);
     APP_LOGI("MainThread::handleLaunchApplication called start.");
     if (!CheckForHandleLaunchApplication(appLaunchData)) {
         APP_LOGE("MainThread::handleLaunchApplication CheckForHandleLaunchApplication failed");
@@ -705,15 +719,63 @@ void MainThread::HandleLaunchApplication(const AppLaunchData &appLaunchData)
         return;
     }
 
-    if (!InitResourceManager(resourceManager, contextDeal, appInfo)) {
+    APP_LOGI("MainThread::handleLaunchApplication. Start calling GetBundleManager.");
+    sptr<IBundleMgr> bundleMgr = contextDeal->GetBundleManager();
+    if (bundleMgr == nullptr) {
+        APP_LOGE("MainThread::handleLaunchApplication GetBundleManager is nullptr");
+        return;
+    }
+    APP_LOGI("MainThread::handleLaunchApplication. End calling GetBundleManager.");
+
+    BundleInfo bundleInfo;
+    APP_LOGI("MainThread::handleLaunchApplication length: %{public}zu, bundleName: %{public}s",
+        appInfo.bundleName.length(), appInfo.bundleName.c_str());
+    bundleMgr->GetBundleInfo(appInfo.bundleName, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo);
+
+    if (!InitResourceManager(resourceManager, contextDeal, appInfo, bundleInfo)) {
         APP_LOGE("MainThread::handleLaunchApplication InitResourceManager failed");
         return;
+    }
+
+    if (bundleInfo.compatibleVersion >= TARGET_VERSION_THRESHOLDS) {
+        // Create runtime
+        AbilityRuntime::Runtime::Options options;
+        options.codePath = appInfo.codePath;
+        auto runtime = AbilityRuntime::Runtime::Create(options);
+        if (!runtime) {
+            APP_LOGE("OHOSApplication::OHOSApplication: Failed to create runtime");
+            return;
+        }
+
+        if (runtime->GetLanguage() == AbilityRuntime::Runtime::Language::JS) {
+            std::unique_ptr<std::function<void()>> idleTask = std::make_unique<std::function<void()>>();
+            *idleTask = [&jsRuntime = static_cast<AbilityRuntime::JsRuntime&>(*runtime), &idleTask = *idleTask]() {
+                jsRuntime.GetNativeEngine().Loop(LOOP_NOWAIT);
+                EventHandler::Current()->PostIdleTask(idleTask);
+            };
+            mainHandler_->PostIdleTask(*idleTask.release());
+        }
+
+        application_->SetRuntime(std::move(runtime));
+        AbilityLoader::GetInstance().RegisterAbility("Ability", [application = application_]() {
+            return Ability::Create(application->GetRuntime());
+        });
+        AbilityLoader::GetInstance().RegisterExtension("ServiceExtension", [application = application_]() {
+            return AbilityRuntime::ServiceExtension::Create(application->GetRuntime());
+        });
     }
 
     contextDeal->initResourceManager(resourceManager);
     contextDeal->SetApplicationContext(application_);
     application_->AttachBaseContext(contextDeal);
     application_->SetAbilityRecordMgr(abilityRecordMgr_);
+
+    // create contextImpl
+    std::shared_ptr<AbilityRuntime::ContextImpl> contextImpl = std::make_shared<AbilityRuntime::ContextImpl>();
+    contextImpl->SetResourceManager(resourceManager);
+    contextImpl->SetApplicationInfo(std::make_shared<ApplicationInfo>(appInfo));
+    contextImpl->InitAppContext();
+    application_->SetApplicationContext(contextImpl);
 
     applicationImpl_->SetRecordId(appLaunchData.GetRecordId());
     applicationImpl_->SetApplication(application_);
@@ -748,6 +810,7 @@ void MainThread::HandleAbilityStageInfo(const AppResidentProcessInfo &residentPr
  */
 void MainThread::HandleLaunchAbility(const std::shared_ptr<AbilityLocalRecord> &abilityRecord)
 {
+    BYTRACE(BYTRACE_TAG_APP);
     APP_LOGI("MainThread::handleLaunchAbility called start.");
 
     if (applicationImpl_ == nullptr) {
@@ -785,13 +848,14 @@ void MainThread::HandleLaunchAbility(const std::shared_ptr<AbilityLocalRecord> &
     }
 
     mainThreadState_ = MainThreadState::RUNNING;
+    std::shared_ptr<AbilityRuntime::Context> stageContext = application_->AddAbilityStage(abilityRecord);
 #ifdef APP_ABILITY_USE_TWO_RUNNER
     APP_LOGI("MainThread::handleLaunchAbility. Start calling AbilityThreadMain start.");
-    AbilityThread::AbilityThreadMain(application_, abilityRecord);
+    AbilityThread::AbilityThreadMain(application_, abilityRecord, stageContext);
     APP_LOGI("MainThread::handleLaunchAbility. Start calling AbilityThreadMain end.");
 #else
     APP_LOGI("MainThread::handleLaunchAbility. Start calling 2 AbilityThreadMain start.");
-    AbilityThread::AbilityThreadMain(application_, abilityRecord, mainHandler_->GetEventRunner());
+    AbilityThread::AbilityThreadMain(application_, abilityRecord, mainHandler_->GetEventRunner(), stageContext);
     APP_LOGI("MainThread::handleLaunchAbility. Start calling 2 AbilityThreadMain end.");
 #endif
     APP_LOGI("MainThread::handleLaunchAbility called end.");
@@ -830,7 +894,6 @@ void MainThread::HandleCleanAbilityLocal(const sptr<IRemoteObject> &token)
     APP_LOGI("MainThread::HandleCleanAbilityLocal ability name: %{public}s", abilityInfo->name.c_str());
 
     abilityRecordMgr_->RemoveAbilityRecord(token);
-
 #ifdef APP_ABILITY_USE_TWO_RUNNER
     std::shared_ptr<EventRunner> runner = record->GetEventRunner();
 
@@ -856,6 +919,7 @@ void MainThread::HandleCleanAbilityLocal(const sptr<IRemoteObject> &token)
  */
 void MainThread::HandleCleanAbility(const sptr<IRemoteObject> &token)
 {
+    BYTRACE(BYTRACE_TAG_APP);
     APP_LOGI("MainThread::handleCleanAbility called start.");
     if (!IsApplicationReady()) {
         APP_LOGE("MainThread::handleCleanAbility not init OHOSApplication, should launch application first");
@@ -880,7 +944,6 @@ void MainThread::HandleCleanAbility(const sptr<IRemoteObject> &token)
     APP_LOGI("MainThread::handleCleanAbility ability name: %{public}s", abilityInfo->name.c_str());
 
     abilityRecordMgr_->RemoveAbilityRecord(token);
-
 #ifdef APP_ABILITY_USE_TWO_RUNNER
     std::shared_ptr<EventRunner> runner = record->GetEventRunner();
 
@@ -907,6 +970,7 @@ void MainThread::HandleCleanAbility(const sptr<IRemoteObject> &token)
  */
 void MainThread::HandleForegroundApplication()
 {
+    BYTRACE(BYTRACE_TAG_APP);
     APP_LOGI("MainThread::handleForegroundApplication called start.");
     if ((application_ == nullptr) || (appMgr_ == nullptr)) {
         APP_LOGE("MainThread::handleForegroundApplication error!");
@@ -931,6 +995,7 @@ void MainThread::HandleForegroundApplication()
  */
 void MainThread::HandleBackgroundApplication()
 {
+    BYTRACE(BYTRACE_TAG_APP);
     APP_LOGI("MainThread::handleBackgroundApplication called start.");
 
     if ((application_ == nullptr) || (appMgr_ == nullptr)) {
@@ -956,6 +1021,7 @@ void MainThread::HandleBackgroundApplication()
  */
 void MainThread::HandleTerminateApplication()
 {
+    BYTRACE(BYTRACE_TAG_APP);
     APP_LOGI("MainThread::handleTerminateApplication called start.");
     if ((application_ == nullptr) || (appMgr_ == nullptr)) {
         APP_LOGE("MainThread::handleTerminateApplication error!");
@@ -1009,6 +1075,7 @@ void MainThread::HandleTerminateApplication()
  */
 void MainThread::HandleShrinkMemory(const int level)
 {
+    BYTRACE(BYTRACE_TAG_APP);
     APP_LOGI("MainThread::HandleShrinkMemory called start.");
 
     if (applicationImpl_ == nullptr) {
@@ -1029,6 +1096,7 @@ void MainThread::HandleShrinkMemory(const int level)
  */
 void MainThread::HandleConfigurationUpdated(const Configuration &config)
 {
+    BYTRACE(BYTRACE_TAG_APP);
     APP_LOGI("MainThread::HandleConfigurationUpdated called start.");
 
     if (applicationImpl_ == nullptr) {

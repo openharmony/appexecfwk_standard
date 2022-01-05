@@ -35,7 +35,10 @@ ohos_unittest("LibEventHandlerEventQueueTest") {
 
   deps = [ "//third_party/googletest:gtest_main" ]
 
-  external_deps = [ "hiviewdfx_hilog_native:libhilog" ]
+  external_deps = [
+    "hitrace_native:libhitrace",
+    "hiviewdfx_hilog_native:libhilog",
+  ]
 }
 
 ohos_unittest("LibEventHandlerEventTest") {
@@ -49,7 +52,10 @@ ohos_unittest("LibEventHandlerEventTest") {
 
   deps = [ "//third_party/googletest:gtest_main" ]
 
-  external_deps = [ "hiviewdfx_hilog_native:libhilog" ]
+  external_deps = [
+    "hitrace_native:libhitrace",
+    "hiviewdfx_hilog_native:libhilog",
+  ]
 }
 
 ohos_unittest("LibEventHandlerEventRunnerTest") {
@@ -63,7 +69,27 @@ ohos_unittest("LibEventHandlerEventRunnerTest") {
 
   deps = [ "//third_party/googletest:gtest_main" ]
 
-  external_deps = [ "hiviewdfx_hilog_native:libhilog" ]
+  external_deps = [
+    "hitrace_native:libhitrace",
+    "hiviewdfx_hilog_native:libhilog",
+  ]
+}
+
+ohos_unittest("LibEventHandlerTraceTest") {
+  module_out_path = module_output_path
+
+  sources = lib_event_handler_sources
+
+  sources += [ "unittest/lib_event_handler_trace_test.cpp" ]
+
+  configs = [ ":libeventhandler_test_private_config" ]
+
+  deps = [ "//third_party/googletest:gtest_main" ]
+
+  external_deps = [
+    "hitrace_native:libhitrace",
+    "hiviewdfx_hilog_native:libhilog",
+  ]
 }
 
 group("unittest") {
@@ -73,5 +99,6 @@ group("unittest") {
     ":LibEventHandlerEventQueueTest",
     ":LibEventHandlerEventRunnerTest",
     ":LibEventHandlerEventTest",
+    ":LibEventHandlerTraceTest",
   ]
 }

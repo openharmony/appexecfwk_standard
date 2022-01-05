@@ -12,9 +12,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#include <cinttypes>
 #include <getopt.h>
 #include <unistd.h>
-#include <cinttypes>
 
 #include "appexecfwk_errors.h"
 #include "app_log_wrapper.h"

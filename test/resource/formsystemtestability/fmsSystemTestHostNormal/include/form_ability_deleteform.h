@@ -63,7 +63,7 @@ public:
         void OnAcquired(const int32_t result, const FormJsInfo &formJsInfo) const override;
         void OnUpdate(const int32_t result, const FormJsInfo &formJsInfo) const override;
         void OnFormUninstall(const int64_t formId) const override;
-        FormAbilityDeleteForm *ability_;
+        FormAbilityDeleteForm *ability_ = nullptr;
         std::string caseName_;
     };
 protected:

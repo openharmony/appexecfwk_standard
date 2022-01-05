@@ -20,10 +20,11 @@
 #include "iremote_object.h"
 
 #include "ability_info.h"
-#include "appexecfwk_errors.h"
 #include "app_log_wrapper.h"
 #include "app_mgr_proxy.h"
 #include "app_scheduler_interface.h"
+#include "appexecfwk_errors.h"
+#include "bytrace.h"
 #include "iapp_state_callback.h"
 
 namespace OHOS {
@@ -88,6 +89,7 @@ int AppMgrStub::OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParce
 
 int32_t AppMgrStub::HandleAttachApplication(MessageParcel &data, MessageParcel &reply)
 {
+    BYTRACE(BYTRACE_TAG_APP);
     sptr<IRemoteObject> client = data.ReadParcelable<IRemoteObject>();
     AttachApplication(client);
     return NO_ERROR;
@@ -95,24 +97,28 @@ int32_t AppMgrStub::HandleAttachApplication(MessageParcel &data, MessageParcel &
 
 int32_t AppMgrStub::HandleApplicationForegrounded(MessageParcel &data, MessageParcel &reply)
 {
+    BYTRACE(BYTRACE_TAG_APP);
     ApplicationForegrounded(data.ReadInt32());
     return NO_ERROR;
 }
 
 int32_t AppMgrStub::HandleApplicationBackgrounded(MessageParcel &data, MessageParcel &reply)
 {
+    BYTRACE(BYTRACE_TAG_APP);
     ApplicationBackgrounded(data.ReadInt32());
     return NO_ERROR;
 }
 
 int32_t AppMgrStub::HandleApplicationTerminated(MessageParcel &data, MessageParcel &reply)
 {
+    BYTRACE(BYTRACE_TAG_APP);
     ApplicationTerminated(data.ReadInt32());
     return NO_ERROR;
 }
 
 int32_t AppMgrStub::HandleCheckPermission(MessageParcel &data, MessageParcel &reply)
 {
+    BYTRACE(BYTRACE_TAG_APP);
     int32_t recordId = data.ReadInt32();
     std::string permission = data.ReadString();
     int32_t result = CheckPermission(recordId, permission);
@@ -122,6 +128,7 @@ int32_t AppMgrStub::HandleCheckPermission(MessageParcel &data, MessageParcel &re
 
 int32_t AppMgrStub::HandleAbilityCleaned(MessageParcel &data, MessageParcel &reply)
 {
+    BYTRACE(BYTRACE_TAG_APP);
     sptr<IRemoteObject> token = data.ReadParcelable<IRemoteObject>();
     AbilityCleaned(token);
     return NO_ERROR;
@@ -129,6 +136,7 @@ int32_t AppMgrStub::HandleAbilityCleaned(MessageParcel &data, MessageParcel &rep
 
 int32_t AppMgrStub::HandleGetAmsMgr(MessageParcel &data, MessageParcel &reply)
 {
+    BYTRACE(BYTRACE_TAG_APP);
     int32_t result = NO_ERROR;
     sptr<IAmsMgr> amsMgr = GetAmsMgr();
     if (!amsMgr) {
@@ -146,6 +154,7 @@ int32_t AppMgrStub::HandleGetAmsMgr(MessageParcel &data, MessageParcel &reply)
 
 int32_t AppMgrStub::HandleClearUpApplicationData(MessageParcel &data, MessageParcel &reply)
 {
+    BYTRACE(BYTRACE_TAG_APP);
     std::string bundleName = data.ReadString();
     int32_t result = ClearUpApplicationData(bundleName);
     reply.WriteInt32(result);
@@ -154,6 +163,7 @@ int32_t AppMgrStub::HandleClearUpApplicationData(MessageParcel &data, MessagePar
 
 int32_t AppMgrStub::HandleIsBackgroundRunningRestricted(MessageParcel &data, MessageParcel &reply)
 {
+    BYTRACE(BYTRACE_TAG_APP);
     std::string bundleName = data.ReadString();
     int32_t result = IsBackgroundRunningRestricted(bundleName);
     reply.WriteInt32(result);
@@ -162,6 +172,7 @@ int32_t AppMgrStub::HandleIsBackgroundRunningRestricted(MessageParcel &data, Mes
 
 int32_t AppMgrStub::HandleGetAllRunningProcesses(MessageParcel &data, MessageParcel &reply)
 {
+    BYTRACE(BYTRACE_TAG_APP);
     std::vector<RunningProcessInfo> info;
     auto result = GetAllRunningProcesses(info);
     reply.WriteInt32(info.size());
@@ -178,12 +189,14 @@ int32_t AppMgrStub::HandleGetAllRunningProcesses(MessageParcel &data, MessagePar
 
 int32_t AppMgrStub::HandleSetAppFreezingTime(MessageParcel &data, MessageParcel &reply)
 {
+    BYTRACE(BYTRACE_TAG_APP);
     SetAppFreezingTime(data.ReadInt32());
     return NO_ERROR;
 }
 
 int32_t AppMgrStub::HandleGetAppFreezingTime(MessageParcel &data, MessageParcel &reply)
 {
+    BYTRACE(BYTRACE_TAG_APP);
     int time = 0;
     GetAppFreezingTime(time);
     reply.WriteInt32(time);
@@ -192,6 +205,7 @@ int32_t AppMgrStub::HandleGetAppFreezingTime(MessageParcel &data, MessageParcel 
 
 int32_t AppMgrStub::HandleGetSystemMemoryAttr(MessageParcel &data, MessageParcel &reply)
 {
+    BYTRACE(BYTRACE_TAG_APP);
     SystemMemoryAttr memoryInfo;
     std::string strConfig;
     data.ReadString(strConfig);
@@ -205,6 +219,7 @@ int32_t AppMgrStub::HandleGetSystemMemoryAttr(MessageParcel &data, MessageParcel
 
 int32_t AppMgrStub::HandleAddAbilityStageDone(MessageParcel &data, MessageParcel &reply)
 {
+    BYTRACE(BYTRACE_TAG_APP);
     int32_t recordId = data.ReadInt32();
     AddAbilityStageDone(recordId);
     return NO_ERROR;
@@ -212,6 +227,7 @@ int32_t AppMgrStub::HandleAddAbilityStageDone(MessageParcel &data, MessageParcel
 
 int32_t AppMgrStub::HandleStartupResidentProcess(MessageParcel &data, MessageParcel &reply)
 {
+    BYTRACE(BYTRACE_TAG_APP);
     StartupResidentProcess();
     return NO_ERROR;
 }

@@ -409,7 +409,7 @@ int32_t FormMgrStub::HandleMessageEvent(MessageParcel &data, MessageParcel &repl
         APP_LOGE("%{public}s, failed to ReadParcelable<IRemoteObject>", __func__);
         return ERR_APPEXECFWK_PARCEL_ERROR;
     }
-    
+
     int32_t result = MessageEvent(formId, *want, client);
     reply.WriteInt32(result);
     return result;

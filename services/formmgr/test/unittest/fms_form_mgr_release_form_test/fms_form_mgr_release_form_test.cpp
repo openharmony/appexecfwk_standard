@@ -30,10 +30,10 @@
 #include "ipc_skeleton.h"
 #include "iservice_registry.h"
 #include "mock_bundle_manager.h"
-#include "mock_form_token.h"
 #include "mock_form_host_client.h"
-#include "permission/permission_kit.h"
+#include "mock_form_token.h"
 #include "permission/permission.h"
+#include "permission/permission_kit.h"
 #include "running_process_info.h"
 #include "system_ability_definition.h"
 

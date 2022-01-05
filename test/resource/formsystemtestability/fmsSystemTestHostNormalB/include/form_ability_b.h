@@ -29,7 +29,7 @@ public:
     void handleEvent(std::string action, std::string data);
 
     void FMS_deleteFormCommon(std::string strFormId);
-    
+
     void FMS_acquireForm_1400(std::string data);
     void FMS_acquireForm_1500(std::string data);
     void FMS_acquireForm_1800_2(std::string data);
@@ -39,7 +39,7 @@ public:
     void FMS_acquireForm_tempForm(std::string data);
     void FMS_acquireFormBatch(std::string data);
     void FMS_acquireFormTempBatch(std::string data);
-    
+
     std::shared_ptr<FormEventSubscriber> subscriber_;
 
     class AcquireFormCallback : public FormCallback {
@@ -54,7 +54,7 @@ public:
 
         std::string caseName_ = "";
         int code_ = 0;
-        FormAbilityB *ability_;
+        FormAbilityB *ability_ = nullptr;
     };
 protected:
     virtual void Init(const std::shared_ptr<AbilityInfo> &abilityInfo,

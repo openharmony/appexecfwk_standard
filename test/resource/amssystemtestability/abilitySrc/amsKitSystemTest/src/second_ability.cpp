@@ -14,22 +14,21 @@
  */
 
 #include "second_ability.h"
-#include "ohos/aafwk/base/base_types.h"
 #include "app_log_wrapper.h"
-#include "uri.h"
-#include "ohos/aafwk/content/operation_builder.h"
-#include "test_utils.h"
 #include "ohos/aafwk/base/array_wrapper.h"
+#include "ohos/aafwk/base/base_types.h"
 #include "ohos/aafwk/base/bool_wrapper.h"
-#include "ohos/aafwk/base/zchar_wrapper.h"
 #include "ohos/aafwk/base/byte_wrapper.h"
-#include "ohos/aafwk/base/short_wrapper.h"
+#include "ohos/aafwk/base/double_wrapper.h"
+#include "ohos/aafwk/base/float_wrapper.h"
 #include "ohos/aafwk/base/int_wrapper.h"
 #include "ohos/aafwk/base/long_wrapper.h"
-#include "ohos/aafwk/base/float_wrapper.h"
-#include "ohos/aafwk/base/double_wrapper.h"
+#include "ohos/aafwk/base/short_wrapper.h"
 #include "ohos/aafwk/base/string_wrapper.h"
 #include "ohos/aafwk/base/zchar_wrapper.h"
+#include "ohos/aafwk/content/operation_builder.h"
+#include "test_utils.h"
+#include "uri.h"
 
 namespace OHOS {
 namespace AppExecFwk {

@@ -20,10 +20,11 @@
 #include "iremote_object.h"
 
 #include "ability_info.h"
-#include "appexecfwk_errors.h"
 #include "app_log_wrapper.h"
 #include "app_mgr_proxy.h"
 #include "app_scheduler_interface.h"
+#include "appexecfwk_errors.h"
+#include "bytrace.h"
 #include "iapp_state_callback.h"
 
 namespace OHOS {
@@ -80,6 +81,7 @@ int AmsMgrStub::OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParce
 
 ErrCode AmsMgrStub::HandleLoadAbility(MessageParcel &data, MessageParcel &reply)
 {
+    BYTRACE(BYTRACE_TAG_APP);
     sptr<IRemoteObject> token = data.ReadParcelable<IRemoteObject>();
     sptr<IRemoteObject> preToke = data.ReadParcelable<IRemoteObject>();
     std::shared_ptr<AbilityInfo> abilityInfo(data.ReadParcelable<AbilityInfo>());
@@ -100,6 +102,7 @@ ErrCode AmsMgrStub::HandleLoadAbility(MessageParcel &data, MessageParcel &reply)
 
 ErrCode AmsMgrStub::HandleTerminateAbility(MessageParcel &data, MessageParcel &reply)
 {
+    BYTRACE(BYTRACE_TAG_APP);
     sptr<IRemoteObject> token = data.ReadParcelable<IRemoteObject>();
     TerminateAbility(token);
     return NO_ERROR;
@@ -107,6 +110,7 @@ ErrCode AmsMgrStub::HandleTerminateAbility(MessageParcel &data, MessageParcel &r
 
 ErrCode AmsMgrStub::HandleUpdateAbilityState(MessageParcel &data, MessageParcel &reply)
 {
+    BYTRACE(BYTRACE_TAG_APP);
     sptr<IRemoteObject> token = data.ReadParcelable<IRemoteObject>();
     int32_t state = data.ReadInt32();
     UpdateAbilityState(token, static_cast<AbilityState>(state));
@@ -115,6 +119,7 @@ ErrCode AmsMgrStub::HandleUpdateAbilityState(MessageParcel &data, MessageParcel 
 
 ErrCode AmsMgrStub::HandleRegisterAppStateCallback(MessageParcel &data, MessageParcel &reply)
 {
+    BYTRACE(BYTRACE_TAG_APP);
     sptr<IRemoteObject> obj = data.ReadParcelable<IRemoteObject>();
     sptr<IAppStateCallback> callback = iface_cast<IAppStateCallback>(obj);
     RegisterAppStateCallback(callback);
@@ -123,12 +128,14 @@ ErrCode AmsMgrStub::HandleRegisterAppStateCallback(MessageParcel &data, MessageP
 
 ErrCode AmsMgrStub::HandleReset(MessageParcel &data, MessageParcel &reply)
 {
+    BYTRACE(BYTRACE_TAG_APP);
     Reset();
     return NO_ERROR;
 }
 
 ErrCode AmsMgrStub::HandleAbilityBehaviorAnalysis(MessageParcel &data, MessageParcel &reply)
 {
+    BYTRACE(BYTRACE_TAG_APP);
     sptr<IRemoteObject> token = data.ReadParcelable<IRemoteObject>();
     sptr<IRemoteObject> preToke = data.ReadParcelable<IRemoteObject>();
     int32_t visibility = data.ReadInt32();
@@ -141,6 +148,7 @@ ErrCode AmsMgrStub::HandleAbilityBehaviorAnalysis(MessageParcel &data, MessagePa
 
 ErrCode AmsMgrStub::HandleKillProcessByAbilityToken(MessageParcel &data, MessageParcel &reply)
 {
+    BYTRACE(BYTRACE_TAG_APP);
     sptr<IRemoteObject> token = data.ReadParcelable<IRemoteObject>();
 
     KillProcessByAbilityToken(token);
@@ -149,6 +157,7 @@ ErrCode AmsMgrStub::HandleKillProcessByAbilityToken(MessageParcel &data, Message
 
 ErrCode AmsMgrStub::HandleKillApplication(MessageParcel &data, MessageParcel &reply)
 {
+    BYTRACE(BYTRACE_TAG_APP);
     std::string bundleName = data.ReadString();
     int32_t result = KillApplication(bundleName);
     reply.WriteInt32(result);
@@ -157,6 +166,7 @@ ErrCode AmsMgrStub::HandleKillApplication(MessageParcel &data, MessageParcel &re
 
 ErrCode AmsMgrStub::HandleKillApplicationByUid(MessageParcel &data, MessageParcel &reply)
 {
+    BYTRACE(BYTRACE_TAG_APP);
     std::string bundleName = data.ReadString();
     int uid = data.ReadInt32();
     int32_t result = KillApplicationByUid(bundleName, uid);
@@ -166,6 +176,7 @@ ErrCode AmsMgrStub::HandleKillApplicationByUid(MessageParcel &data, MessageParce
 
 int32_t AmsMgrStub::HandleAbilityAttachTimeOut(MessageParcel &data, MessageParcel &reply)
 {
+    BYTRACE(BYTRACE_TAG_APP);
     sptr<IRemoteObject> token = data.ReadParcelable<IRemoteObject>();
     AbilityAttachTimeOut(token);
     return NO_ERROR;
@@ -173,6 +184,7 @@ int32_t AmsMgrStub::HandleAbilityAttachTimeOut(MessageParcel &data, MessageParce
 
 int32_t AmsMgrStub::HandleCompelVerifyPermission(MessageParcel &data, MessageParcel &reply)
 {
+    BYTRACE(BYTRACE_TAG_APP);
     auto permission = Str16ToStr8(data.ReadString16());
     auto pid = data.ReadInt32();
     auto uid = data.ReadInt32();

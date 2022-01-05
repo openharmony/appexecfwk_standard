@@ -15,12 +15,12 @@
 
 #include "app_service_manager.h"
 
+#include "if_system_ability_manager.h"
 #include "ipc_skeleton.h"
 #include "system_ability_definition.h"
-#include "if_system_ability_manager.h"
 
-#include "iservice_registry.h"
 #include "app_mgr_constants.h"
+#include "iservice_registry.h"
 
 namespace OHOS {
 namespace AppExecFwk {

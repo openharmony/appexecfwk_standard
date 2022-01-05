@@ -15,11 +15,11 @@
 
 #include <cstdio>
 
-#include "if_system_ability_manager.h"
-#include "system_ability_definition.h"
-#include "iservice_registry.h"
-#include "ipc_skeleton.h"
 #include "app_mgr_interface.h"
+#include "if_system_ability_manager.h"
+#include "ipc_skeleton.h"
+#include "iservice_registry.h"
+#include "system_ability_definition.h"
 
 using namespace OHOS;
 using namespace OHOS::AppExecFwk;

@@ -42,7 +42,7 @@ public:
 
         std::string caseName_ = "";
         int code_ = 0;
-        FormAbilitySelfStartingA *ability_;
+        FormAbilitySelfStartingA *ability_ = nullptr;
     };
 protected:
     virtual void Init(const std::shared_ptr<AbilityInfo> &abilityInfo,

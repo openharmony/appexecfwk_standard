@@ -13,15 +13,15 @@
  * limitations under the License.
  */
 
-#include <singleton.h>
-#include <gtest/gtest.h>
 #include "gmock/gmock.h"
+#include <gtest/gtest.h>
+#include <singleton.h>
 
-#include "context_deal.h"
-#include "ohos_application.h"
 #include "ability_handler.h"
 #include "ability_info.h"
 #include "ability.h"
+#include "context_deal.h"
+#include "ohos_application.h"
 
 #include "mock_ability_manager_client_interface1.h"
 #include "mock_resourceManager_interface1.h"

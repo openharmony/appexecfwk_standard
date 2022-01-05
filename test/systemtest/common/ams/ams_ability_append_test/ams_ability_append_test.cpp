@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 #include <chrono>
-#include <cstdio>
 #include <condition_variable>
+#include <cstdio>
 #include <gtest/gtest.h>
 #include <mutex>
 #include <queue>
@@ -232,7 +232,7 @@ HWTEST_F(AmsAbilityAppendTest, AMS_Ability_Append_00200, Function | MediumTest |
     GTEST_LOG_(INFO) << eCode;
     EXPECT_EQ(TestWaitCompleted(event, "onStart", MAIN_ABILITY_B_CODE, START_DELAY), 0);
     EXPECT_EQ(TestWaitCompleted(event, "OnActive", MAIN_ABILITY_B_CODE, START_DELAY), 0);
-    
+
     EXPECT_EQ(TestWaitCompleted(event, "OnBackground", MAIN_ABILITY_A_CODE, START_DELAY), 0);
     STAbilityUtil::PublishEvent(
         g_EVENT_REQU_FIRST, CODE_, "Ability_" + std::to_string((int)AppendApi::TerminateAndRemoveMisson) + "_0");

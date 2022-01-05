@@ -14,8 +14,9 @@
  */
 
 #include "native_interface_eventhandler.h"
-#include "native_implement_eventhandler.h"
 #include "hilog/log.h"
+#include "native_implement_eventhandler.h"
+
 #include <cstdint>
 
 using OHOS::ErrCode;

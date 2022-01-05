@@ -16,13 +16,13 @@
 #include "lmks_server.h"
 
 #include <sys/socket.h>
-#include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/types.h>
 #include <thread>
 #include <unistd.h>
 
-#include "securec.h"
 #include "hilog/log.h"
+#include "securec.h"
 
 namespace OHOS {
 namespace LMKS {

@@ -321,7 +321,7 @@ public:
      * @param noHostTempFormsMap no host temp forms.
      * @param foundFormsMap Form Id list.
      */
-    void GetNoHostTempForms(const int uid, std::map<FormIdKey, std::set<int64_t>> &noHostTempFormsMap, 
+    void GetNoHostTempForms(const int uid, std::map<FormIdKey, std::set<int64_t>> &noHostTempFormsMap,
         std::map<int64_t, bool> &foundFormsMap);
 
     /**

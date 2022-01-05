@@ -33,8 +33,8 @@ struct FormDBInfo {
 
     /**
      * @brief Constructors
-     * 
-     */  
+     *
+     */
     FormDBInfo()
     {
         formId = -1;
@@ -43,7 +43,7 @@ struct FormDBInfo {
     /**
      * @brief Constructors
      *
-     */  
+     */
     FormDBInfo(const int64_t formIdTmp, const FormRecord &formRecord)
     {
         formId = formIdTmp;
@@ -125,7 +125,7 @@ public:
     }
     /**
      * @brief Constructors
-     * 
+     *
      */
     InnerFormInfo(const InnerFormInfo &innerFormInfo)
     {
@@ -138,8 +138,8 @@ public:
     }
      /**
      * @brief Constructors
-     * 
-     */   
+     *
+     */
     InnerFormInfo(const int64_t formId, const FormRecord &formRecord)
     {
         formDBInfo_.formId = formId;

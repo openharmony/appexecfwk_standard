@@ -41,7 +41,7 @@ struct FormJsInfo : public Parcelable {
     std::string cssPath;
     std::string jsPath;
     std::string fileReousePath;
-    
+
     bool ReadFromParcel(Parcel &parcel);
     virtual bool Marshalling(Parcel &parcel) const override;
     static FormJsInfo *Unmarshalling(Parcel &parcel);

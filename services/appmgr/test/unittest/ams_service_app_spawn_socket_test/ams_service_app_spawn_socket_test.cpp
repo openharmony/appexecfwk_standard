@@ -13,11 +13,12 @@
  * limitations under the License.
  */
 
-#include "app_spawn_socket.h"
 #include <gtest/gtest.h>
-#include "securec.h"
+
 #include "app_log_wrapper.h"
+#include "app_spawn_socket.h"
 #include "mock_client_socket.h"
+#include "securec.h"
 
 using namespace testing::ext;
 using namespace OHOS;

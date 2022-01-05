@@ -86,7 +86,9 @@ ohos_source_set("appmgr_mst_source") {
 
   external_deps = [
     "appspawn:appspawn_socket_client",
+    "bytrace_standard:bytrace_core",
     "ces_standard:cesfwk_core",
+    "ces_standard:cesfwk_innerkits",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
   ]

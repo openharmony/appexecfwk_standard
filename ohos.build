@@ -90,11 +90,20 @@
         },
         {
           "header": {
+            "header_base": "//foundation/appexecfwk/standard/interfaces/innerkits/napi/eventhandler/include",
+            "header_files": [
+              "events_emitter.h"
+            ]
+          },
+          "name": "//foundation/appexecfwk/standard/interfaces/innerkits/napi/eventhandler:emitter"
+        },
+        {
+          "header": {
             "header_base": "//foundation/appexecfwk/standard/interfaces/innerkits/fmskit/native/include",
             "header_files": [
               "form_callback_interface.h",
               "form_host_client.h",
-              "form_mgr.h"             
+              "form_mgr.h"
             ]
           },
           "name": "//foundation/appexecfwk/standard/interfaces/innerkits/fmskit:fmskit_native"
@@ -105,7 +114,8 @@
         "//foundation/appexecfwk/standard/services:services_target",
         "//foundation/appexecfwk/standard/tools:tools_target",
         "//foundation/appexecfwk/standard/interfaces/innerkits:innerkits_target",
-        "//foundation/appexecfwk/standard/kits:appkit_native",        
+        "//foundation/appexecfwk/standard/kits:app_context",
+        "//foundation/appexecfwk/standard/kits:appkit_native",
         "//foundation/appexecfwk/standard/kits:appexec",
         "//foundation/appexecfwk/standard/sa_profile:appexecfwk_sa_profile",
         "//foundation/appexecfwk/standard/sa_profile:foundation.rc",

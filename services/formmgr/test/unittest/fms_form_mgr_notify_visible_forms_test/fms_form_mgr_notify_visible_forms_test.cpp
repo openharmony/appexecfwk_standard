@@ -22,16 +22,16 @@
 #define private public
 #include "form_bms_helper.h"
 #include "form_constants.h"
-#include "form_mgr_service.h"
-#include "form_mgr_adapter.h"
 #include "form_data_mgr.h"
 #include "form_mgr.h"
+#include "form_mgr_service.h"
+#include "form_mgr_adapter.h"
 #undef private
-#include "mock_form_host_client.h"
 #include "mock_bundle_manager.h"
+#include "mock_form_host_client.h"
+#include "permission/permission.h"
 #include "permission/permission_def.h"
 #include "permission/permission_kit.h"
-#include "permission/permission.h"
 
 using namespace testing::ext;
 using namespace OHOS;

@@ -19,8 +19,8 @@
 #include <atomic>
 #include <mutex>
 
-#include "nocopyable.h"
 #include "io_waiter.h"
+#include "nocopyable.h"
 
 namespace OHOS {
 namespace AppExecFwk {

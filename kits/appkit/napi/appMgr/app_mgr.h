@@ -16,12 +16,12 @@
 #ifndef APP_MGR_H
 #define APP_MGR_H
 
-#include "napi/native_common.h"
 #include <js_native_api.h>
-#include "napi/native_node_api.h"
 
-#include "hilog_wrapper.h"
 #include "ability_manager_interface.h"
+#include "hilog_wrapper.h"
+#include "napi/native_common.h"
+#include "napi/native_node_api.h"
 
 struct AsyncCallbackInfo {
     napi_env env;

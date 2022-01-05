@@ -14,16 +14,16 @@
  */
 
 #include "context_deal.h"
-#include "file_ex.h"
-#include "directory_ex.h"
-#include "iservice_registry.h"
-#include "app_log_wrapper.h"
-#include "ability_manager_interface.h"
 #include "ability_manager_client.h"
-#include "system_ability_definition.h"
-#include "sys_mgr_client.h"
-#include "spec_task_dispatcher.h"
+#include "ability_manager_interface.h"
+#include "app_log_wrapper.h"
 #include "application_context.h"
+#include "directory_ex.h"
+#include "file_ex.h"
+#include "iservice_registry.h"
+#include "spec_task_dispatcher.h"
+#include "sys_mgr_client.h"
+#include "system_ability_definition.h"
 #include "task_dispatcher_context.h"
 
 #define MODE 0771

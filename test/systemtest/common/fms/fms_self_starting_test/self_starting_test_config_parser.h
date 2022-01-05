@@ -58,7 +58,7 @@ public:
             jsonObj.at(STRESS_TEST_COMPARE_TIME_KEY).get_to(selfStarting.compareStatus);
         }
     }
-        
+
     void ClearStorage()
     {
         {
@@ -159,7 +159,7 @@ public:
         }
         bool ret = true;
         APP_LOGD("%{public}s called, formId[%{public}s]", __func__, formId.c_str());
-    
+
         DistributedKv::Status status = DistributedKv::Status::ERROR;
         std::vector<DistributedKv::Entry> allEntries;
         DistributedKv::Key key(formId);
@@ -167,7 +167,7 @@ public:
             // sync call GetEntries, the callback will be trigger at once
             status = kvStorePtr_->GetEntries(key, allEntries);
         }
-    
+
         if (status != DistributedKv::Status::SUCCESS) {
             APP_LOGE("get entries error: %{public}d", status);
             ret = false;

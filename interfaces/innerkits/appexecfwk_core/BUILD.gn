@@ -114,6 +114,7 @@ ohos_shared_library("appexecfwk_core") {
   ]
 
   external_deps = [
+    "bytrace_standard:bytrace_core",
     "ces_standard:cesfwk_core",
     "ces_standard:cesfwk_innerkits",
     "hiviewdfx_hilog_native:libhilog",

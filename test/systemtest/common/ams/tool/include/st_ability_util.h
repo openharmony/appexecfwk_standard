@@ -337,7 +337,8 @@ public:
     virtual ~InstallToolStatusReceiver() override;
     virtual void OnStatusNotify(const int progress) override;
     virtual void OnFinished(const int32_t resultCode, const std::string &resultMsg) override;
-    static int TestWaitCompleted(STtools::Event &event, const std::string eventName, const int code, const int timeout = 10);
+    static int TestWaitCompleted(STtools::Event &event, const std::string eventName, const int code,
+        const int timeout = 10);
     static void TestCompleted(STtools::Event &event, const std::string &eventName, const int code);
     STtools::Event event_ = STtools::Event();
 

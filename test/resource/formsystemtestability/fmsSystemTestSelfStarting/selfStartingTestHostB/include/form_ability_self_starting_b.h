@@ -27,7 +27,7 @@ public:
     ~FormAbilitySelfStartingB();
     void SubscribeEvent();
     void handleEvent(std::string action, std::string data);
-    
+
     void FMS_Start_0300_02(std::string data);
     void FMS_Start_0300_03(std::string data);
 
@@ -43,7 +43,7 @@ public:
 
         std::string caseName_ = "";
         int code_ = 0;
-        FormAbilitySelfStartingB *ability_;
+        FormAbilitySelfStartingB *ability_ = nullptr;
     };
 protected:
     virtual void Init(const std::shared_ptr<AbilityInfo> &abilityInfo,

@@ -15,21 +15,24 @@
 
 #include "app_mgr_service_inner.h"
 
-#include <sys/stat.h>
-#include <securec.h>
 #include <csignal>
+#include <securec.h>
+#include <sys/stat.h>
 
 #include "app_log_wrapper.h"
-#include "perf_profile.h"
 #include "datetime_ex.h"
+#include "perf_profile.h"
 
-#include "iservice_registry.h"
-#include "system_ability_definition.h"
-#include "iremote_object.h"
-#include "common_event.h"
-#include "bundle_constants.h"
 #include "app_process_data.h"
+#include "bundle_constants.h"
+#include "bytrace.h"
+#include "common_event.h"
+#include "common_event_manager.h"
+#include "common_event_support.h"
+#include "iremote_object.h"
+#include "iservice_registry.h"
 #include "permission/permission_kit.h"
+#include "system_ability_definition.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -69,6 +72,7 @@ AppMgrServiceInner::~AppMgrServiceInner()
 void AppMgrServiceInner::LoadAbility(const sptr<IRemoteObject> &token, const sptr<IRemoteObject> &preToken,
     const std::shared_ptr<AbilityInfo> &abilityInfo, const std::shared_ptr<ApplicationInfo> &appInfo)
 {
+    BYTRACE(BYTRACE_TAG_APP);
     if (!token || !abilityInfo || !appInfo) {
         APP_LOGE("param error");
         return;
@@ -114,6 +118,7 @@ void AppMgrServiceInner::LoadAbility(const sptr<IRemoteObject> &token, const spt
 
 void AppMgrServiceInner::AttachApplication(const pid_t pid, const sptr<IAppScheduler> &app)
 {
+    BYTRACE(BYTRACE_TAG_APP);
     if (pid <= 0) {
         APP_LOGE("invalid pid:%{public}d", pid);
         return;
@@ -171,6 +176,7 @@ void AppMgrServiceInner::AddAbilityStageDone(const int32_t recordId)
 
 void AppMgrServiceInner::ApplicationForegrounded(const int32_t recordId)
 {
+    BYTRACE(BYTRACE_TAG_APP);
     auto appRecord = GetAppRunningRecordByAppRecordId(recordId);
     if (!appRecord) {
         APP_LOGE("get app record failed");
@@ -198,6 +204,7 @@ void AppMgrServiceInner::ApplicationForegrounded(const int32_t recordId)
 
 void AppMgrServiceInner::ApplicationBackgrounded(const int32_t recordId)
 {
+    BYTRACE(BYTRACE_TAG_APP);
     auto appRecord = GetAppRunningRecordByAppRecordId(recordId);
     if (!appRecord) {
         APP_LOGE("get app record failed");
@@ -221,12 +228,12 @@ void AppMgrServiceInner::ApplicationBackgrounded(const int32_t recordId)
 
 void AppMgrServiceInner::ApplicationTerminated(const int32_t recordId)
 {
+    BYTRACE(BYTRACE_TAG_APP);
     auto appRecord = GetAppRunningRecordByAppRecordId(recordId);
     if (!appRecord) {
         APP_LOGE("get app record failed");
         return;
     }
-
     if (appRecord->GetState() != ApplicationState::APP_STATE_BACKGROUND) {
         APP_LOGE("current state is not background");
         return;
@@ -257,13 +264,13 @@ int32_t AppMgrServiceInner::KillApplication(const std::string &bundleName)
     int result = ERR_OK;
     int64_t startTime = SystemTimeMillis();
     std::list<pid_t> pids;
-
     if (!appRunningManager_->GetPidsByBundleName(bundleName, pids)) {
         APP_LOGI("The process corresponding to the package name did not start");
         return result;
     }
     if (WaitForRemoteProcessExit(pids, startTime)) {
         APP_LOGI("The remote process exited successfully ");
+        NotifyAppStatus(bundleName, EventFwk::CommonEventSupport::COMMON_EVENT_PACKAGE_RESTARTED);
         return result;
     }
     for (auto iter = pids.begin(); iter != pids.end(); ++iter) {
@@ -273,6 +280,7 @@ int32_t AppMgrServiceInner::KillApplication(const std::string &bundleName)
             return result;
         }
     }
+    NotifyAppStatus(bundleName, EventFwk::CommonEventSupport::COMMON_EVENT_PACKAGE_RESTARTED);
     return result;
 }
 
@@ -354,6 +362,7 @@ int32_t AppMgrServiceInner::KillApplicationByUserId(const std::string &bundleNam
 
 void AppMgrServiceInner::ClearUpApplicationData(const std::string &bundleName, int32_t callerUid, pid_t callerPid)
 {
+    BYTRACE(BYTRACE_TAG_APP);
     ClearUpApplicationDataByUserId(bundleName, callerUid, callerPid, Constants::DEFAULT_USERID);
 }
 
@@ -373,10 +382,12 @@ void AppMgrServiceInner::ClearUpApplicationDataByUserId(const std::string &bundl
         APP_LOGE("GetBundleManager fail");
         return;
     }
+
     int32_t clearUid = bundleMgr_->GetUidByBundleName(bundleName, userId);
     if (bundleMgr_->CheckIsSystemAppByUid(callerUid) || callerUid == clearUid) {
         // request to clear user information permission.
-        int32_t result = Permission::PermissionKit::RemoveUserGrantedReqPermissions(bundleName, userId);
+        int32_t result =
+            Permission::PermissionKit::RemoveUserGrantedReqPermissions(bundleName, userId);
         if (result) {
             APP_LOGE("RemoveUserGrantedReqPermissions failed");
             return;
@@ -393,6 +404,7 @@ void AppMgrServiceInner::ClearUpApplicationDataByUserId(const std::string &bundl
             APP_LOGE("Kill Application by bundle name is fail");
             return;
         }
+        NotifyAppStatus(bundleName, EventFwk::CommonEventSupport::COMMON_EVENT_PACKAGE_DATA_CLEARED);
     }
 }
 
@@ -523,6 +535,7 @@ std::shared_ptr<AppRunningRecord> AppMgrServiceInner::GetOrCreateAppRunningRecor
     const std::shared_ptr<ApplicationInfo> &appInfo, const std::shared_ptr<AbilityInfo> &abilityInfo,
     const std::string &processName, const int32_t uid, RecordQueryResult &result)
 {
+    BYTRACE(BYTRACE_TAG_APP);
     return appRunningManager_->GetOrCreateAppRunningRecord(token, appInfo, abilityInfo, processName, uid, result);
 }
 
@@ -534,6 +547,7 @@ std::shared_ptr<AppRunningRecord> AppMgrServiceInner::GetOrCreateAppRunningRecor
 
 void AppMgrServiceInner::TerminateAbility(const sptr<IRemoteObject> &token)
 {
+    BYTRACE(BYTRACE_TAG_APP);
     APP_LOGD("AppMgrServiceInner::TerminateAbility begin");
     if (!token) {
         APP_LOGE("AppMgrServiceInner::TerminateAbility token is null!");
@@ -557,6 +571,7 @@ void AppMgrServiceInner::TerminateAbility(const sptr<IRemoteObject> &token)
 
 void AppMgrServiceInner::UpdateAbilityState(const sptr<IRemoteObject> &token, const AbilityState state)
 {
+    BYTRACE(BYTRACE_TAG_APP);
     if (!token) {
         APP_LOGE("token is null!");
         return;
@@ -634,6 +649,7 @@ void AppMgrServiceInner::SetBundleManager(sptr<IBundleMgr> bundleManager)
 
 void AppMgrServiceInner::RegisterAppStateCallback(const sptr<IAppStateCallback> &callback)
 {
+    BYTRACE(BYTRACE_TAG_APP);
     if (callback != nullptr) {
         appStateCallbacks_.push_back(callback);
     }
@@ -641,6 +657,7 @@ void AppMgrServiceInner::RegisterAppStateCallback(const sptr<IAppStateCallback> 
 
 void AppMgrServiceInner::StopAllProcess()
 {
+    BYTRACE(BYTRACE_TAG_APP);
     ClearRecentAppList();
     appRunningManager_->ClearAppRunningRecordMap();
 }
@@ -650,6 +667,7 @@ void AppMgrServiceInner::AbilityBehaviorAnalysis(const sptr<IRemoteObject> &toke
     const int32_t perceptibility,   // 0:false,1:true
     const int32_t connectionState)  // 0:false,1:true
 {
+    BYTRACE(BYTRACE_TAG_APP);
     if (!token) {
         APP_LOGE("token is null");
         return;
@@ -685,6 +703,7 @@ void AppMgrServiceInner::AbilityBehaviorAnalysis(const sptr<IRemoteObject> &toke
 
 void AppMgrServiceInner::KillProcessByAbilityToken(const sptr<IRemoteObject> &token)
 {
+    BYTRACE(BYTRACE_TAG_APP);
     if (!token) {
         APP_LOGE("token is null");
         return;
@@ -694,7 +713,6 @@ void AppMgrServiceInner::KillProcessByAbilityToken(const sptr<IRemoteObject> &to
         APP_LOGE("app record is not exist for ability token");
         return;
     }
-
     std::list<pid_t> pids;
     pid_t pid = appRecord->GetPriorityObject()->GetPid();
     if (pid > 0) {
@@ -713,6 +731,7 @@ void AppMgrServiceInner::KillProcessByAbilityToken(const sptr<IRemoteObject> &to
 void AppMgrServiceInner::StartAbility(const sptr<IRemoteObject> &token, const sptr<IRemoteObject> &preToken,
     const std::shared_ptr<AbilityInfo> &abilityInfo, const std::shared_ptr<AppRunningRecord> &appRecord)
 {
+    BYTRACE(BYTRACE_TAG_APP);
     APP_LOGI("already create appRecord, just start ability");
     if (!appRecord) {
         APP_LOGE("appRecord is null");
@@ -844,6 +863,7 @@ std::shared_ptr<AbilityRunningRecord> AppMgrServiceInner::GetAbilityRunningRecor
 
 void AppMgrServiceInner::AbilityTerminated(const sptr<IRemoteObject> &token)
 {
+    BYTRACE(BYTRACE_TAG_APP);
     APP_LOGD("begin");
     if (!token) {
         APP_LOGE("token is null!");
@@ -911,6 +931,7 @@ void AppMgrServiceInner::OnAbilityStateChanged(
 void AppMgrServiceInner::StartProcess(const std::string &appName, const std::string &processName,
     const std::shared_ptr<AppRunningRecord> &appRecord, const int uid)
 {
+    BYTRACE(BYTRACE_TAG_APP);
     if (!remoteClientManager_->GetSpawnClient() || !appRecord) {
         APP_LOGE("appSpawnClient or apprecord is null");
         return;
@@ -982,7 +1003,6 @@ void AppMgrServiceInner::RemoveAppFromRecentList(const std::string &appName, con
         appProcessManager_->RemoveAppFromRecentList(appTaskInfo);
         return;
     }
-
     startTime = SystemTimeMillis();
     pids.push_back(appTaskInfo->GetPid());
     appRecord->ScheduleProcessSecurityExit();
@@ -1008,7 +1028,6 @@ void AppMgrServiceInner::ClearRecentAppList()
     if (GetAllPids(pids)) {
         return;
     }
-
     startTime = SystemTimeMillis();
     if (WaitForRemoteProcessExit(pids, startTime)) {
         appProcessManager_->ClearRecentAppList();
@@ -1074,6 +1093,7 @@ const std::shared_ptr<AppTaskInfo> AppMgrServiceInner::GetAppTaskInfoById(const 
 
 void AppMgrServiceInner::AddAppDeathRecipient(const pid_t pid, const sptr<AppDeathRecipient> &appDeathRecipient) const
 {
+    BYTRACE(BYTRACE_TAG_APP);
     std::shared_ptr<AppRunningRecord> appRecord = GetAppRunningRecordByPid(pid);
     if (appRecord) {
         appRecord->SetAppDeathRecipient(appDeathRecipient);
@@ -1228,6 +1248,7 @@ void AppMgrServiceInner::SetEventHandler(const std::shared_ptr<AMSEventHandler> 
 
 void AppMgrServiceInner::HandleAbilityAttachTimeOut(const sptr<IRemoteObject> &token)
 {
+    BYTRACE(BYTRACE_TAG_APP);
     APP_LOGI("%{public}s called", __func__);
     if (!appRunningManager_) {
         APP_LOGE("appRunningManager_ is nullptr");
@@ -1443,6 +1464,20 @@ void AppMgrServiceInner::RestartResidentProcess(std::shared_ptr<AppRunningRecord
     std::vector<BundleInfo> infos;
     infos.emplace_back(bundleInfo);
     StartResidentProcess(infos);
+}
+
+void AppMgrServiceInner::NotifyAppStatus(const std::string &bundleName, const std::string &eventData)
+{
+    APP_LOGI("%{public}s called, bundle name is %{public}s, event is %{public}s",
+        __func__, bundleName.c_str(), eventData.c_str());
+    Want want;
+    want.SetAction(eventData);
+    ElementName element;
+    element.SetBundleName(bundleName);
+    want.SetElement(element);
+    want.SetParam(Constants::USER_ID, 0);
+    EventFwk::CommonEventData commonData {want};
+    EventFwk::CommonEventManager::PublishCommonEvent(commonData);
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS
