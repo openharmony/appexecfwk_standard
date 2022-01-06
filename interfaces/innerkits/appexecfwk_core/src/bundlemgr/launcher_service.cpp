@@ -94,7 +94,7 @@ bool LauncherService::GetAbilityList(
 
     BundleFlag flags = BundleFlag::GET_BUNDLE_DEFAULT;
     BundleInfo bundleInfo;
-    if (!iBundleMgr->GetBundleInfo(bundleName, flags, bundleInfo)) {
+    if (!iBundleMgr->GetBundleInfo(bundleName, flags, bundleInfo, userId)) {
         APP_LOGE("Get bundle info failed");
         return false;
     }
@@ -154,7 +154,7 @@ bool LauncherService::GetAllLauncherAbilityInfos(int32_t userId, std::vector<Lau
         elementName.SetDeviceID(ability.deviceId);
         info.elementName = elementName;
         BundleFlag flags = BundleFlag::GET_BUNDLE_DEFAULT;
-        if (!iBundleMgr->GetBundleInfo(ability.bundleName, flags, bundleInfo)) {
+        if (!iBundleMgr->GetBundleInfo(ability.bundleName, flags, bundleInfo, userId)) {
             APP_LOGE("Get bundle info failed");
             return false;
         }
@@ -190,7 +190,7 @@ bool LauncherService::GetAbilityInfo(const Want &want, const int userId, Launche
     int32_t iconId;
     ApplicationInfo appInfo;
     ApplicationFlag flag = ApplicationFlag::GET_BASIC_APPLICATION_INFO;
-    if (!iBundleMgr->GetApplicationInfo(bundleName, flag, Constants::DEFAULT_USERID, appInfo)) {
+    if (!iBundleMgr->GetApplicationInfo(bundleName, flag, userId, appInfo)) {
         APP_LOGE("Get application info failed");
         return false;
     }
@@ -200,7 +200,7 @@ bool LauncherService::GetAbilityInfo(const Want &want, const int userId, Launche
     BundleFlag flags = BundleFlag::GET_BUNDLE_DEFAULT;
     flags = BundleFlag::GET_BUNDLE_WITH_ABILITIES;
     BundleInfo bundleInfo;
-    if (!iBundleMgr->GetBundleInfo(bundleName, flags, bundleInfo)) {
+    if (!iBundleMgr->GetBundleInfo(bundleName, flags, bundleInfo, userId)) {
         APP_LOGE("Get bundle info failed");
         return false;
     }

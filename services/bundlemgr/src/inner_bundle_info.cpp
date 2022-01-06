@@ -37,7 +37,6 @@ const std::string MAIN_ABILITY = "mainAbility";
 const std::string MAIN_ABILITY_NAME = "mainAbilityName";
 const std::string SKILL_INFOS = "skillInfos";
 const std::string USER_ID = "userId_";
-const std::string IS_KEEP_DATA = "isKeepData";
 const std::string APP_FEATURE = "appFeature";
 const std::string HAS_ENTRY = "hasEntry";
 const std::string CAN_UNINSTALL = "canUninstall";
@@ -73,6 +72,12 @@ const std::string IS_PREINSTALL_APP = "isPreInstallApp";
 const std::string INSTALL_MARK = "installMark";
 const char WILDCARD = '*';
 const std::string TYPE_WILDCARD = "*/*";
+const std::string INNER_BUNDLE_USER_INFOS = "innerBundleUserInfos";
+
+const std::string NameAndUserIdToKey(const std::string &bundleName, int32_t userId)
+{
+    return bundleName + Constants::FILE_UNDERLINE + std::to_string(userId);
+}
 }  // namespace
 
 bool Skill::Match(const OHOS::AAFwk::Want &want) const
@@ -377,8 +382,6 @@ void InnerBundleInfo::ToJson(nlohmann::json &jsonObject) const
 {
     jsonObject[IS_SUPPORT_BACKUP] = isSupportBackup_;
     jsonObject[APP_TYPE] = appType_;
-    jsonObject[UID] = uid_;
-    jsonObject[GID] = gid_;
     jsonObject[BASE_DATA_DIR] = baseDataDir_;
     jsonObject[BUNDLE_STATUS] = bundleStatus_;
     jsonObject[BASE_APPLICATION_INFO] = baseApplicationInfo_;
@@ -386,7 +389,6 @@ void InnerBundleInfo::ToJson(nlohmann::json &jsonObject) const
     jsonObject[BASE_ABILITY_INFO] = baseAbilityInfos_;
     jsonObject[INNER_MODULE_INFO] = innerModuleInfos_;
     jsonObject[SKILL_INFOS] = skillInfos_;
-    jsonObject[IS_KEEP_DATA] = isKeepData_;
     jsonObject[USER_ID] = userId_;
     jsonObject[MAIN_ABILITY] = mainAbility_;
     jsonObject[MAIN_ABILITY_NAME] = mainAbilityName_;
@@ -399,6 +401,7 @@ void InnerBundleInfo::ToJson(nlohmann::json &jsonObject) const
     jsonObject[CAN_UNINSTALL] = canUninstall_;
     jsonObject[IS_PREINSTALL_APP] = isPreInstallApp_;
     jsonObject[INSTALL_MARK] = mark_;
+    jsonObject[INNER_BUNDLE_USER_INFOS] = innerBundleUserInfos_;
 }
 
 void from_json(const nlohmann::json &jsonObject, InnerModuleInfo &info)
@@ -870,7 +873,7 @@ int32_t InnerBundleInfo::FromJson(const nlohmann::json &jsonObject)
         UID,
         uid_,
         JsonType::NUMBER,
-        true,
+        false,
         ProfileReader::parseResult,
         ArrayType::NOT_ARRAY);
     GetValueIfFindKey<int>(jsonObject,
@@ -878,7 +881,7 @@ int32_t InnerBundleInfo::FromJson(const nlohmann::json &jsonObject)
         GID,
         gid_,
         JsonType::NUMBER,
-        true,
+        false,
         ProfileReader::parseResult,
         ArrayType::NOT_ARRAY);
     GetValueIfFindKey<std::string>(jsonObject,
@@ -934,14 +937,6 @@ int32_t InnerBundleInfo::FromJson(const nlohmann::json &jsonObject)
         SKILL_INFOS,
         skillInfos_,
         JsonType::OBJECT,
-        true,
-        ProfileReader::parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<bool>(jsonObject,
-        jsonObjectEnd,
-        IS_KEEP_DATA,
-        isKeepData_,
-        JsonType::BOOLEAN,
         true,
         ProfileReader::parseResult,
         ArrayType::NOT_ARRAY);
@@ -1041,10 +1036,40 @@ int32_t InnerBundleInfo::FromJson(const nlohmann::json &jsonObject)
         false,
         ProfileReader::parseResult,
         ArrayType::NOT_ARRAY);
+    int32_t isOldVersion = ERR_OK;
+    GetValueIfFindKey<std::map<std::string, InnerBundleUserInfo>>(jsonObject,
+        jsonObjectEnd,
+        INNER_BUNDLE_USER_INFOS,
+        innerBundleUserInfos_,
+        JsonType::OBJECT,
+        true,
+        isOldVersion,
+        ArrayType::NOT_ARRAY);
     int32_t ret = ProfileReader::parseResult;
     // need recover parse result to ERR_OK
     ProfileReader::parseResult = ERR_OK;
+    if (ret == ERR_OK && isOldVersion == ERR_APPEXECFWK_PARSE_PROFILE_MISSING_PROP) {
+        // To be compatible with the old database,
+        // if the old data does not have bundleUserInfos,
+        // the default user information needs to be constructed.
+        BuildDefaultUserInfo();
+    }
     return ret;
+}
+
+void InnerBundleInfo::BuildDefaultUserInfo()
+{
+    APP_LOGD("BuildDefaultUserInfo: bundleName: %{public}s.",
+        baseApplicationInfo_.bundleName.c_str());
+    InnerBundleUserInfo defaultInnerBundleUserInfo;
+    defaultInnerBundleUserInfo.bundleUserInfo.userId = GetUserId();
+    defaultInnerBundleUserInfo.uid = uid_;
+    defaultInnerBundleUserInfo.gids.emplace_back(gid_);
+    defaultInnerBundleUserInfo.installTime = baseBundleInfo_.installTime;
+    defaultInnerBundleUserInfo.updateTime = baseBundleInfo_.updateTime;
+    defaultInnerBundleUserInfo.bundleName = baseApplicationInfo_.bundleName;
+    defaultInnerBundleUserInfo.bundleUserInfo.enabled = baseApplicationInfo_.enabled;
+    AddInnerBundleUserInfo(defaultInnerBundleUserInfo);
 }
 
 std::optional<std::vector<Skill>> InnerBundleInfo::FindSkills(const std::string &keyName) const
@@ -1060,7 +1085,7 @@ std::optional<std::vector<Skill>> InnerBundleInfo::FindSkills(const std::string 
     return std::optional<std::vector<Skill>> {skills};
 }
 
-std::optional<HapModuleInfo> InnerBundleInfo::FindHapModuleInfo(const std::string &modulePackage) const
+std::optional<HapModuleInfo> InnerBundleInfo::FindHapModuleInfo(const std::string &modulePackage, int32_t userId) const
 {
     auto it = innerModuleInfos_.find(modulePackage);
     if (it == innerModuleInfos_.end()) {
@@ -1086,24 +1111,28 @@ std::optional<HapModuleInfo> InnerBundleInfo::FindHapModuleInfo(const std::strin
                 first = true;
             }
             auto &abilityInfo = hapInfo.abilityInfos.emplace_back(ability.second);
-            GetApplicationInfo(ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMS, 0, abilityInfo.applicationInfo);
+            GetApplicationInfo(ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMS, userId, abilityInfo.applicationInfo);
         }
     }
     return hapInfo;
 }
 
 std::optional<AbilityInfo> InnerBundleInfo::FindAbilityInfo(
-    const std::string &bundleName, const std::string &abilityName) const
+    const std::string &bundleName, const std::string &abilityName, int32_t userId) const
 {
     for (const auto &ability : baseAbilityInfos_) {
-        if ((ability.second.bundleName == bundleName) && (ability.second.name == abilityName)) {
-            return ability.second;
+        auto abilityInfo = ability.second;
+        if ((abilityInfo.bundleName == bundleName) && (abilityInfo.name == abilityName)) {
+            GetApplicationInfo(
+                ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMS, userId, abilityInfo.applicationInfo);
+            return abilityInfo;
         }
     }
     return std::nullopt;
 }
 
-std::optional<std::vector<AbilityInfo>> InnerBundleInfo::FindAbilityInfos(const std::string &bundleName) const
+std::optional<std::vector<AbilityInfo>> InnerBundleInfo::FindAbilityInfos(
+    const std::string &bundleName, int32_t userId) const
 {
     std::vector<AbilityInfo> abilitys;
 
@@ -1112,8 +1141,11 @@ std::optional<std::vector<AbilityInfo>> InnerBundleInfo::FindAbilityInfos(const 
     }
 
     for (const auto &ability : baseAbilityInfos_) {
-        if ((ability.second.bundleName == bundleName)) {
-            abilitys.emplace_back(ability.second);
+        auto abilityInfo = ability.second;
+        if ((abilityInfo.bundleName == bundleName)) {
+            GetApplicationInfo(
+                ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMS, userId, abilityInfo.applicationInfo);
+            abilitys.emplace_back(abilityInfo);
         }
     }
     if (!abilitys.empty()) {
@@ -1123,8 +1155,8 @@ std::optional<std::vector<AbilityInfo>> InnerBundleInfo::FindAbilityInfos(const 
     return std::nullopt;
 }
 
-void InnerBundleInfo::FindAbilityInfosForClone(
-    const std::string &bundleName, const std::string &abilityName, std::vector<AbilityInfo> &abilitys)
+void InnerBundleInfo::FindAbilityInfosForClone(const std::string &bundleName,
+    const std::string &abilityName, int32_t userId, std::vector<AbilityInfo> &abilitys)
 {
     if (bundleName.empty()) {
         return;
@@ -1132,10 +1164,11 @@ void InnerBundleInfo::FindAbilityInfosForClone(
 
     for (auto &ability : baseAbilityInfos_) {
         APP_LOGE("FindAbilityInfosForClonekey = %{public}s", ability.first.c_str());
-        if ((ability.second.bundleName == bundleName && (ability.second.name == abilityName))) {
+        auto abilityInfo = ability.second;
+        if ((abilityInfo.bundleName == bundleName && (abilityInfo.name == abilityName))) {
             GetApplicationInfo(
-                ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMS, 0, ability.second.applicationInfo);
-            abilitys.emplace_back(ability.second);
+                ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMS, userId, abilityInfo.applicationInfo);
+            abilitys.emplace_back(abilityInfo);
         }
     }
     return;
@@ -1309,7 +1342,6 @@ std::string InnerBundleInfo::ToString() const
     j[BASE_ABILITY_INFO] = baseAbilityInfos_;
     j[INNER_MODULE_INFO] = innerModuleInfos_;
     j[SKILL_INFOS] = skillInfos_;
-    j[IS_KEEP_DATA] = isKeepData_;
     j[USER_ID] = userId_;
     j[MAIN_ABILITY] = mainAbility_;
     j[MAIN_ABILITY_NAME] = mainAbilityName_;
@@ -1322,12 +1354,21 @@ std::string InnerBundleInfo::ToString() const
     j[CAN_UNINSTALL] = canUninstall_;
     j[IS_PREINSTALL_APP] = isPreInstallApp_;
     j[INSTALL_MARK] = mark_;
+    j[INNER_BUNDLE_USER_INFOS] = innerBundleUserInfos_;
     return j.dump();
 }
 
-void InnerBundleInfo::GetApplicationInfo(int32_t flags, const int userId, ApplicationInfo &appInfo) const
+void InnerBundleInfo::GetApplicationInfo(int32_t flags, int32_t userId, ApplicationInfo &appInfo) const
 {
+    InnerBundleUserInfo innerBundleUserInfo;
+    if (!GetInnerBundleUserInfo(userId, innerBundleUserInfo)) {
+        APP_LOGE("can not find userId %{public}d when get applicationInfo", userId);
+        return;
+    }
+
     appInfo = baseApplicationInfo_;
+    appInfo.enabled = innerBundleUserInfo.bundleUserInfo.enabled;
+    appInfo.uid = innerBundleUserInfo.uid;
     for (const auto &info : innerModuleInfos_) {
         ModuleInfo moduleInfo;
         moduleInfo.moduleName = info.second.moduleName;
@@ -1350,10 +1391,23 @@ void InnerBundleInfo::GetApplicationInfo(int32_t flags, const int userId, Applic
     }
 }
 
-void InnerBundleInfo::GetBundleInfo(int32_t flags, BundleInfo &bundleInfo) const
+void InnerBundleInfo::GetBundleInfo(int32_t flags, BundleInfo &bundleInfo, int32_t userId) const
 {
+    InnerBundleUserInfo innerBundleUserInfo;
+    if (!GetInnerBundleUserInfo(userId, innerBundleUserInfo)) {
+        APP_LOGE("can not find userId %{public}d when GetBundleInfo", userId);
+        return;
+    }
+
     bundleInfo = baseBundleInfo_;
-    GetApplicationInfo(ApplicationFlag::GET_BASIC_APPLICATION_INFO, 0, bundleInfo.applicationInfo);
+    bundleInfo.uid = innerBundleUserInfo.uid;
+    if (!innerBundleUserInfo.gids.empty()) {
+        bundleInfo.gid = innerBundleUserInfo.gids[0];
+    }
+
+    bundleInfo.installTime = innerBundleUserInfo.installTime;
+    bundleInfo.updateTime = innerBundleUserInfo.updateTime;
+    GetApplicationInfo(ApplicationFlag::GET_BASIC_APPLICATION_INFO, userId, bundleInfo.applicationInfo);
     for (const auto &info : innerModuleInfos_) {
         if ((static_cast<uint32_t>(flags) & GET_BUNDLE_WITH_REQUESTED_PERMISSION)
             == GET_BUNDLE_WITH_REQUESTED_PERMISSION) {
@@ -1367,7 +1421,7 @@ void InnerBundleInfo::GetBundleInfo(int32_t flags, BundleInfo &bundleInfo) const
                 [](const auto &p) { return p.name; });
         }
         bundleInfo.hapModuleNames.emplace_back(info.second.modulePackage);
-        auto hapmoduleinfo = FindHapModuleInfo(info.second.modulePackage);
+        auto hapmoduleinfo = FindHapModuleInfo(info.second.modulePackage, userId);
         if (hapmoduleinfo) {
             bundleInfo.hapModuleInfos.emplace_back(*hapmoduleinfo);
             bundleInfo.moduleNames.emplace_back(info.second.moduleName);
@@ -1382,10 +1436,10 @@ void InnerBundleInfo::GetBundleInfo(int32_t flags, BundleInfo &bundleInfo) const
             bundleInfo.entryModuleName = info.second.moduleName;
         }
     }
-    GetBundleWithAbilities(flags, bundleInfo);
+    GetBundleWithAbilities(flags, bundleInfo, userId);
 }
 
-void InnerBundleInfo::GetBundleWithAbilities(int32_t flags, BundleInfo &bundleInfo) const
+void InnerBundleInfo::GetBundleWithAbilities(int32_t flags, BundleInfo &bundleInfo, int32_t userId) const
 {
     if (static_cast<uint32_t>(flags) & GET_BUNDLE_WITH_ABILITIES) {
         for (auto &ability : baseAbilityInfos_) {
@@ -1394,7 +1448,7 @@ void InnerBundleInfo::GetBundleWithAbilities(int32_t flags, BundleInfo &bundleIn
                 continue;
             }
             AbilityInfo abilityInfo = ability.second;
-            GetApplicationInfo(ApplicationFlag::GET_BASIC_APPLICATION_INFO, 0, abilityInfo.applicationInfo);
+            GetApplicationInfo(ApplicationFlag::GET_BASIC_APPLICATION_INFO, userId, abilityInfo.applicationInfo);
             bundleInfo.abilityInfos.emplace_back(abilityInfo);
         }
     }
@@ -1471,5 +1525,84 @@ void InnerBundleInfo::GetModuleNames(std::vector<std::string> &moduleNames) cons
     }
 }
 
+void InnerBundleInfo::RemoveInnerBundleUserInfo(int32_t userId)
+{
+    auto& key = NameAndUserIdToKey(GetBundleName(), userId);
+    auto infoItem = innerBundleUserInfos_.find(key);
+    if (infoItem == innerBundleUserInfos_.end()) {
+        return;
+    }
+
+    innerBundleUserInfos_.erase(key);
+}
+
+void InnerBundleInfo::AddInnerBundleUserInfo(
+    const InnerBundleUserInfo& innerBundleUserInfo)
+{
+    auto& key = NameAndUserIdToKey(
+        GetBundleName(), innerBundleUserInfo.bundleUserInfo.userId);
+    auto infoItem = innerBundleUserInfos_.find(key);
+    if (infoItem == innerBundleUserInfos_.end()) {
+        innerBundleUserInfos_.emplace(key, innerBundleUserInfo);
+        return;
+    }
+
+    innerBundleUserInfos_[key] = innerBundleUserInfo;
+}
+
+bool InnerBundleInfo::GetInnerBundleUserInfo(
+    int32_t userId, InnerBundleUserInfo& innerBundleUserInfo) const
+{
+    auto& key = NameAndUserIdToKey(GetBundleName(), userId);
+    auto infoItem = innerBundleUserInfos_.find(key);
+    if (infoItem == innerBundleUserInfos_.end()) {
+        APP_LOGD("no this user %{public}s", key.c_str());
+        return false;
+    }
+
+    innerBundleUserInfo = infoItem->second;
+    return true;
+}
+
+bool InnerBundleInfo::HasInnerBundleUserInfo(int32_t userId) const
+{
+    auto& key = NameAndUserIdToKey(GetBundleName(), userId);
+    auto infoItem = innerBundleUserInfos_.find(key);
+    return infoItem != innerBundleUserInfos_.end();
+}
+
+void InnerBundleInfo::SetBundleInstallTime(const int64_t time, int32_t userId)
+{
+    auto& key = NameAndUserIdToKey(GetBundleName(), userId);
+    auto infoItem = innerBundleUserInfos_.find(key);
+    if (infoItem == innerBundleUserInfos_.end()) {
+        return;
+    }
+
+    infoItem->second.installTime = time;
+    infoItem->second.updateTime = time;
+}
+
+void InnerBundleInfo::SetBundleUpdateTime(const int64_t time, int32_t userId)
+{
+    auto& key = NameAndUserIdToKey(GetBundleName(), userId);
+    auto infoItem = innerBundleUserInfos_.find(key);
+    if (infoItem == innerBundleUserInfos_.end()) {
+        return;
+    }
+
+    infoItem->second.updateTime = time;
+}
+
+void InnerBundleInfo::SetApplicationEnabled(bool enabled, int32_t userId)
+{
+    auto& key = NameAndUserIdToKey(GetBundleName(), userId);
+    auto infoItem = innerBundleUserInfos_.find(key);
+    if (infoItem == innerBundleUserInfos_.end()) {
+        return;
+    }
+
+    infoItem->second.bundleUserInfo.enabled = enabled;
+}
 }  // namespace AppExecFwk
 }  // namespace OHOS

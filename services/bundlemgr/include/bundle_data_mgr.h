@@ -19,21 +19,22 @@
 #include <map>
 #include <memory>
 #include <mutex>
-#include <string>
-#include <shared_mutex>
 #include <set>
+#include <shared_mutex>
+#include <string>
 
 #include "ohos/aafwk/content/want.h"
 
 #include "ability_info.h"
 #include "application_info.h"
-#include "inner_bundle_info.h"
-#include "bundle_status_callback_interface.h"
 #include "bundle_data_storage_interface.h"
-#include "module_usage_record.h"
-#include "module_usage_data_storage.h"
-#include "on_permission_changed_callback_interface.h"
+#include "bundle_status_callback_interface.h"
 #include "common_event_manager.h"
+#include "inner_bundle_info.h"
+#include "inner_bundle_user_info.h"
+#include "module_usage_data_storage.h"
+#include "module_usage_record.h"
+#include "on_permission_changed_callback_interface.h"
 #include "preinstall_data_storage.h"
 
 namespace OHOS {
@@ -52,6 +53,7 @@ enum class InstallState {
     UPDATING_SUCCESS,
     UPDATING_FAIL,
     ROLL_BACK,
+    USER_CHANGE,
 };
 
 class BundleDataMgr {
@@ -115,10 +117,10 @@ public:
     bool GetInnerBundleInfo(const std::string &bundleName, const std::string &deviceId, InnerBundleInfo &info);
     /**
      * @brief Generate UID and GID for a bundle.
-     * @param info Indicates the InnerBundleInfo object.
+     * @param innerBundleUserInfo Indicates the InnerBundleUserInfo object.
      * @return Returns true if this function is successfully called; returns false otherwise.
      */
-    bool GenerateUidAndGid(InnerBundleInfo &info);
+    bool GenerateUidAndGid(InnerBundleUserInfo &innerBundleUserInfo);
     /**
      * @brief Generate cloned uid by cloned bundle.
      * @param info Indicates the InnerBundleInfo object.
@@ -162,10 +164,11 @@ public:
      * @param want Indicates the match infomation for abilities.
      * @param info Indicates the bundleInfo.
      * @param abilityInfo Indicates the obtained AbilityInfo of list.
+     * @param userId Indicates the user ID.
      * @return Returns true if the AbilityInfo is successfully obtained; returns false otherwise.
      */
-    void GetMatchLauncherAbilityInfos(
-        const Want& want, const InnerBundleInfo& info, std::vector<AbilityInfo>& abilityInfos) const;
+    void GetMatchLauncherAbilityInfos(const Want& want, const InnerBundleInfo& info,
+        std::vector<AbilityInfo>& abilityInfos, int32_t userId = Constants::UNSPECIFIED_USERID) const;
     /**
      * @brief Query a AbilityInfo of list by the given userId.
      * @param want Indicates the match infomation for abilities.
@@ -215,17 +218,21 @@ public:
      * @brief Obtains BundleInfo of all bundles available in the system.
      * @param flags Indicates the flag used to specify information contained in the BundleInfo that will be returned.
      * @param bundleInfos Indicates all of the obtained BundleInfo objects.
+     * @param userId Indicates the user ID.
      * @return Returns true if the BundleInfos is successfully obtained; returns false otherwise.
      */
-    bool GetBundleInfos(int32_t flags, std::vector<BundleInfo> &bundleInfos) const;
+    bool GetBundleInfos(int32_t flags,
+        std::vector<BundleInfo> &bundleInfos, int32_t userId = Constants::UNSPECIFIED_USERID) const;
     /**
      * @brief Obtains the BundleInfo based on a given bundle name.
      * @param bundleName Indicates the application bundle name to be queried.
      * @param flags Indicates the information contained in the BundleInfo object to be returned.
      * @param bundleInfo Indicates the obtained BundleInfo object.
+     * @param userId Indicates the user ID.
      * @return Returns true if the BundleInfo is successfully obtained; returns false otherwise.
      */
-    bool GetBundleInfo(const std::string &bundleName, int32_t flags, BundleInfo &bundleInfo) const;
+    bool GetBundleInfo(const std::string &bundleName, int32_t flags, BundleInfo &bundleInfo,
+        int32_t userId = Constants::UNSPECIFIED_USERID) const;
     /**
      * @brief Obtains the BundleInfo of application bundles based on the specified metaData.
      * @param metaData Indicates the metadata to get in the bundle.
@@ -305,9 +312,11 @@ public:
     /**
      * @brief Obtains all bundle names installed.
      * @param bundleNames Indicates the bundle Names.
+     * @param userId Indicates the userId.
      * @return Returns true if have bundle installed; returns false otherwise.
      */
-    bool GetBundleList(std::vector<std::string> &bundleNames) const;
+    bool GetBundleList(
+        std::vector<std::string> &bundleNames, int32_t userId = Constants::UNSPECIFIED_USERID) const;
     /**
      * @brief Set the bundle status disable.
      * @param bundleName Indicates the bundle name.
@@ -553,13 +562,49 @@ public:
      */
     bool SavePreInstallBundleInfo(const std::string &bundleName, const PreInstallBundleInfo &preInstallBundleInfo);
     /**
+     * @brief Obtains the PreInstallBundleInfo objects provided by bundleName.
+     * @param bundleName Indicates the bundle name of the application.
+     * @param preInstallBundleInfo Indicates information about the PreInstallBundleInfo.
+     * @return Returns true if this function is successfully called; returns false otherwise.
+     */
+    bool LoadAllPreInstallBundleInfos(std::vector<PreInstallBundleInfo> &preInstallBundleInfos);
+    /**
      * @brief Save installation mark to datebase storage.
      * @param info Indicates the innerBundleInfo of the bundle which needs to save installation mark.
      * @param isAppExisted Indicates whether the application exists in the database storage or not.
      * @return Returns true if this function is successfully called; returns false otherwise.
      */
     bool SaveInstallMark(const InnerBundleInfo &info, bool isAppExisted) const;
-
+    /**
+     * @brief GetInnerBundleUserInfosByUserId.
+     * @param bundleName Indicates the application bundle name to be queried.
+     * @param userId Indicates the user ID.
+     * @param innerBundleUserInfos Indicates the obtained ApplicationInfo object.
+     * @return Returns true if the application is successfully obtained; returns false otherwise.
+     */
+    bool GetInnerBundleUserInfosByUserId(
+        const std::string &bundleName, int32_t userId, std::vector<InnerBundleUserInfo> &innerBundleUserInfos) const;
+    /**
+     * @brief save all created users.
+     * @param userId Indicates the user ID.
+     */
+    void AddUserId(int32_t userId);
+    /**
+     * @brief remove userId.
+     * @param userId Indicates the user ID.
+     */
+    void RemoveUserId(int32_t userId);
+    /**
+     * @brief query users.
+     * @param userId Indicates the user ID.
+     * @return Returns true when query user success; returns false otherwise.
+     */
+    bool HasUserId(int32_t userId) const;
+    /**
+     * @brief delete uid and userId in uidAndUserIdMap.
+     * @param userId Indicates the user ID.
+     */
+    void DeleteUidAndUserId(int32_t uid);
 private:
     /**
      * @brief Init transferStates.
@@ -600,9 +645,8 @@ private:
     /**
      * @brief Recycle uid and gid .
      * @param info Indicates the InnerBundleInfo object.
-     * @return Returns true if this function is successfully called; returns false otherwise.
      */
-    bool RecycleUidAndGid(const InnerBundleInfo &info);
+    void RecycleUidAndGid(const InnerBundleInfo &info);
     /**
      * @brief Implicit query abilityInfos by the given Want.
      * @param want Indicates the information of the ability.
@@ -617,23 +661,34 @@ private:
         const Want &want, int32_t flags, const InnerBundleInfo &info, std::vector<AbilityInfo> &abilityInfos) const;
     bool ExplicitQueryAbilityInfo(const std::string &bundleName, const std::string &abilityName,
         int32_t flags, int32_t userId, AbilityInfo &abilityInfo) const;
-    bool GetInnerBundleInfoWithFlags(
-        const std::string &bundleName, const int32_t flags, const std::string &deviceId, InnerBundleInfo &info) const;
+    bool GetInnerBundleInfoWithFlags(const std::string &bundleName, const int32_t flags,
+        const std::string &deviceId, InnerBundleInfo &info, int32_t userId = Constants::UNSPECIFIED_USERID) const;
+    int32_t GetUserId(int32_t userId = Constants::UNSPECIFIED_USERID) const;
+    bool GenerateBundleId(const std::string &bundleName, int32_t &bundleId);
+    void AddUidAndUserId(int32_t uid, int32_t userId);
+    int32_t GetUserIdByUid(int32_t uid) const;
 private:
     mutable std::mutex bundleInfoMutex_;
     mutable std::mutex stateMutex_;
-    mutable std::mutex uidMapMutex_;
+    mutable std::mutex bundleIdMapMutex_;
     mutable std::mutex callbackMutex_;
     mutable std::shared_mutex bundleMutex_;
     mutable std::mutex allPermissionsChangedLock_;
     mutable std::mutex permissionsChangedLock_;
+    mutable std::mutex uidAndUserIdMapMutex_;
+    mutable std::mutex multiUserIdSetMutex_;
     bool allInstallFlag_ = false;
     // using for locking by bundleName
     std::unordered_map<std::string, std::mutex> bundleMutexMap_;
-    // using for generating uid and gid
-    std::map<int, std::string> sysUidMap_;
-    std::map<int, std::string> sysVendorUidMap_;
-    std::map<int, std::string> appUidMap_;
+    // using for generating bundleId
+    // key:bundleId
+    // value:bundleName
+    std::map<int32_t, std::string> bundleIdMap_;
+    // Typically, uids are unique,
+    // and uid = userId * 100000 + bundleId % 100000
+    std::map<int32_t, int32_t> uidAndUserIdMap_;
+    // save all created users.
+    std::set<int32_t> multiUserIdsSet_;
     // use vector because these functions using for IPC, the bundleName may duplicate
     std::vector<sptr<IBundleStatusCallback>> callbackList_;
     // all installed bundles

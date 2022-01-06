@@ -155,7 +155,8 @@ bool BundleMgrProxy::GetApplicationInfos(
     return true;
 }
 
-bool BundleMgrProxy::GetBundleInfo(const std::string &bundleName, const BundleFlag flag, BundleInfo &bundleInfo)
+bool BundleMgrProxy::GetBundleInfo(
+    const std::string &bundleName, const BundleFlag flag, BundleInfo &bundleInfo, int32_t userId)
 {
     APP_LOGD("begin to get bundle info of %{public}s", bundleName.c_str());
     if (bundleName.empty()) {
@@ -174,6 +175,10 @@ bool BundleMgrProxy::GetBundleInfo(const std::string &bundleName, const BundleFl
     }
     if (!data.WriteInt32(static_cast<int>(flag))) {
         APP_LOGE("fail to GetBundleInfo due to write flag fail");
+        return false;
+    }
+    if (!data.WriteInt32(static_cast<int>(userId))) {
+        APP_LOGE("fail to GetBundleInfo due to write userId fail");
         return false;
     }
 
@@ -184,7 +189,8 @@ bool BundleMgrProxy::GetBundleInfo(const std::string &bundleName, const BundleFl
     return true;
 }
 
-bool BundleMgrProxy::GetBundleInfo(const std::string &bundleName, int32_t flags, BundleInfo &bundleInfo)
+bool BundleMgrProxy::GetBundleInfo(
+    const std::string &bundleName, int32_t flags, BundleInfo &bundleInfo, int32_t userId)
 {
     APP_LOGD("begin to get bundle info of %{public}s", bundleName.c_str());
     if (bundleName.empty()) {
@@ -205,6 +211,10 @@ bool BundleMgrProxy::GetBundleInfo(const std::string &bundleName, int32_t flags,
         APP_LOGE("fail to GetBundleInfo due to write flag fail");
         return false;
     }
+    if (!data.WriteInt32(static_cast<int>(userId))) {
+        APP_LOGE("fail to GetBundleInfo due to write userId fail");
+        return false;
+    }
 
     if (!GetParcelableInfo<BundleInfo>(IBundleMgr::Message::GET_BUNDLE_INFO_WITH_INT_FLAGS, data, bundleInfo)) {
         APP_LOGE("fail to GetBundleInfo from server");
@@ -213,7 +223,8 @@ bool BundleMgrProxy::GetBundleInfo(const std::string &bundleName, int32_t flags,
     return true;
 }
 
-bool BundleMgrProxy::GetBundleInfos(const BundleFlag flag, std::vector<BundleInfo> &bundleInfos)
+bool BundleMgrProxy::GetBundleInfos(
+    const BundleFlag flag, std::vector<BundleInfo> &bundleInfos, int32_t userId)
 {
     APP_LOGD("begin to get bundle infos");
     MessageParcel data;
@@ -225,6 +236,10 @@ bool BundleMgrProxy::GetBundleInfos(const BundleFlag flag, std::vector<BundleInf
         APP_LOGE("fail to GetBundleInfos due to write flag fail");
         return false;
     }
+    if (!data.WriteInt32(static_cast<int>(userId))) {
+        APP_LOGE("fail to GetBundleInfo due to write userId fail");
+        return false;
+    }
 
     if (!GetParcelableInfos<BundleInfo>(IBundleMgr::Message::GET_BUNDLE_INFOS, data, bundleInfos)) {
         APP_LOGE("fail to GetBundleInfos from server");
@@ -233,7 +248,8 @@ bool BundleMgrProxy::GetBundleInfos(const BundleFlag flag, std::vector<BundleInf
     return true;
 }
 
-bool BundleMgrProxy::GetBundleInfos(int32_t flags, std::vector<BundleInfo> &bundleInfos)
+bool BundleMgrProxy::GetBundleInfos(
+    int32_t flags, std::vector<BundleInfo> &bundleInfos, int32_t userId)
 {
     APP_LOGD("begin to get bundle infos");
     MessageParcel data;
@@ -243,6 +259,10 @@ bool BundleMgrProxy::GetBundleInfos(int32_t flags, std::vector<BundleInfo> &bund
     }
     if (!data.WriteInt32(flags)) {
         APP_LOGE("fail to GetBundleInfos due to write flag fail");
+        return false;
+    }
+    if (!data.WriteInt32(static_cast<int>(userId))) {
+        APP_LOGE("fail to GetBundleInfo due to write userId fail");
         return false;
     }
 
@@ -258,7 +278,7 @@ int BundleMgrProxy::GetUidByBundleName(const std::string &bundleName, const int 
     APP_LOGI("begin to get uid of %{public}s", bundleName.c_str());
     std::vector<BundleInfo> bundleInfos;
     int uid = Constants::INVALID_UID;
-    bool ret = GetBundleInfos(BundleFlag::GET_BUNDLE_DEFAULT, bundleInfos);
+    bool ret = GetBundleInfos(BundleFlag::GET_BUNDLE_DEFAULT, bundleInfos, userId);
     if (ret) {
         for (auto bundleInfo : bundleInfos) {
             if (userId == Constants::C_UESRID) {
@@ -285,7 +305,7 @@ std::string BundleMgrProxy::GetAppIdByBundleName(const std::string &bundleName, 
     APP_LOGI("begin to get appId of %{public}s", bundleName.c_str());
     BundleInfo bundleInfo;
     std::string appId = Constants::EMPTY_STRING;
-    bool ret = GetBundleInfo(bundleName, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo);
+    bool ret = GetBundleInfo(bundleName, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo, userId);
     if (ret) {
         appId = bundleInfo.appId;
         APP_LOGD("get bundle appId success");
@@ -1195,7 +1215,8 @@ bool BundleMgrProxy::UnregisterBundleStatusCallback()
     return reply.ReadBool();
 }
 
-bool BundleMgrProxy::DumpInfos(const DumpFlag flag, const std::string &bundleName, std::string &result)
+bool BundleMgrProxy::DumpInfos(
+    const DumpFlag flag, const std::string &bundleName, int32_t userId, std::string &result)
 {
     APP_LOGD("begin to dump");
     MessageParcel data;
@@ -1209,6 +1230,10 @@ bool BundleMgrProxy::DumpInfos(const DumpFlag flag, const std::string &bundleNam
     }
     if (!data.WriteString(bundleName)) {
         APP_LOGE("fail to dump due to write bundleName fail");
+        return false;
+    }
+    if (!data.WriteInt32(static_cast<int>(userId))) {
+        APP_LOGE("fail to dump due to write userId fail");
         return false;
     }
 
@@ -1395,6 +1420,27 @@ sptr<IBundleInstaller> BundleMgrProxy::GetBundleInstaller()
 
     APP_LOGD("get bundle installer success");
     return installer;
+}
+
+sptr<IBundleUserMgr> BundleMgrProxy::GetBundleUserMgr()
+{
+    MessageParcel data;
+    MessageParcel reply;
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        APP_LOGE("fail to get bundle user mgr due to write InterfaceToken fail");
+        return nullptr;
+    }
+    if (!SendTransactCmd(IBundleMgr::Message::GET_BUNDLE_USER_MGR, data, reply)) {
+        return nullptr;
+    }
+
+    sptr<IRemoteObject> object = reply.ReadParcelable<IRemoteObject>();
+    sptr<IBundleUserMgr> bundleUserMgr = iface_cast<IBundleUserMgr>(object);
+    if (!bundleUserMgr) {
+        APP_LOGE("bundleUserMgr is nullptr");
+    }
+
+    return bundleUserMgr;
 }
 
 bool BundleMgrProxy::CanRequestPermission(

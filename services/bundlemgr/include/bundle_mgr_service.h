@@ -21,12 +21,14 @@
 #include "singleton.h"
 #include "system_ability.h"
 
-#include "bundle_data_mgr.h"
 #include "bundle_clone_mgr.h"
+#include "bundle_constants.h"
+#include "bundle_data_mgr.h"
 #include "bundle_installer_host.h"
 #include "bundle_mgr_host_impl.h"
 #include "bundle_mgr_service_event_handler.h"
 #include "bundle_permissions_changed_monitor.h"
+#include "bundle_user_mgr_host_impl.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -63,6 +65,16 @@ public:
      * @return Returns the pointer of IBundleInstaller object.
      */
     sptr<IBundleInstaller> GetBundleInstaller() const;
+    /**
+     * @brief Get a IBundleUserMgr object for IPC
+     * @return Returns the pointer of IBundleUserMgr object.
+     */
+    sptr<BundleUserMgrHostImpl> GetBundleUserMgr() const;
+    /**
+     * @brief Get Current UserId
+     * @return Returns Current UserId.
+     */
+    int32_t GetCurrentUserId();
 
 private:
     /**
@@ -86,7 +98,9 @@ private:
     std::shared_ptr<BundleCloneMgr> cloneMgr_;
     sptr<BundleMgrHostImpl> host_;
     sptr<BundleInstallerHost> installer_;
+    sptr<BundleUserMgrHostImpl> userMgrHost_;
     std::shared_ptr<BundlePermissionsChangedMonitor> perChangeSub_;
+    int32_t currentUserId_ = Constants::DEFAULT_USERID;
 
     DISALLOW_COPY_AND_MOVE(BundleMgrService);
 };

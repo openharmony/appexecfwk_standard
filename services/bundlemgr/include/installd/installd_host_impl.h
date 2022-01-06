@@ -48,11 +48,22 @@ public:
     /**
      * @brief Create a bundle data directory.
      * @param bundleDataDir Indicates the bundle data directory path that to be created.
+     * @param userid Indicates userid to be set to the directory.
      * @param uid Indicates uid to be set to the directory.
      * @param gid Indicates gid to be set to the directory.
+     * @param onlyOneUser Indicates is only one user or not.
      * @return Returns ERR_OK if the bundle data directory created successfully; returns error code otherwise.
      */
-    virtual ErrCode CreateBundleDataDir(const std::string &bundleDataDir, const int uid, const int gid) override;
+    virtual ErrCode CreateBundleDataDir(const std::string &bundleDataDir, const int userid,
+        const int uid, const int gid, bool onlyOneUser = true) override;
+    /**
+     * @brief Remove a bundle data directory.
+     * @param bundleName Indicates the bundleName data directory path that to be created.
+     * @param userid Indicates userid to be set to the directory.
+     * @return Returns ERR_OK if the bundle data directory created successfully; returns error code otherwise.
+     */
+    virtual ErrCode RemoveBundleDataDir(
+        const std::string &bundleName, const int userid) override;
     /**
      * @brief Create a module and it's abilities data directory.
      * @param bundleDir Indicates the module data directory path that to be created.
@@ -63,6 +74,13 @@ public:
      */
     virtual ErrCode CreateModuleDataDir(const std::string &ModuleDir, const std::vector<std::string> &abilityDirs,
         const int uid, const int gid) override;
+    /**
+     * @brief Remove a module data directory.
+     * @param ModuleDir Indicates the module data directory path that to be created.
+     * @param userid Indicates userid to be set to the directory.
+     * @return Returns ERR_OK if the data directories created successfully; returns error code otherwise.
+     */
+    virtual ErrCode RemoveModuleDataDir(const std::string &ModuleDir, const int userid) override;
     /**
      * @brief Remove a directory.
      * @param dir Indicates the directory path that to be removed.
@@ -75,6 +93,9 @@ public:
      * @return Returns ERR_OK if the data directory cleaned successfully; returns error code otherwise.
      */
     virtual ErrCode CleanBundleDataDir(const std::string &bundleDir) override;
+private:
+    std::string GetBundleDataDir(const std::string &el, const int userid) const;
+    ErrCode CreateNewBundleDataDir(const std::string &bundleName, const int userid, const int uid, const int gid) const;
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS

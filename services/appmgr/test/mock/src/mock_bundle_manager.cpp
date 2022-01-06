@@ -123,7 +123,8 @@ bool BundleMgrProxy::GetHapModuleInfo(const AbilityInfo &abilityInfo, HapModuleI
     return true;
 }
 
-bool BundleMgrService::GetBundleInfo(const std::string &bundleName, const BundleFlag flag, BundleInfo &bundleInfo)
+bool BundleMgrService::GetBundleInfo(
+    const std::string &bundleName, const BundleFlag flag, BundleInfo &bundleInfo, int32_t userId)
 {
     int32_t userUid = 10001;
     int32_t userGid = 10001;
@@ -142,13 +143,15 @@ bool BundleMgrService::GetBundleGids(const std::string &bundleName, std::vector<
     return true;
 }
 
-bool BundleMgrService::GetBundleInfos(const BundleFlag flag, std::vector<BundleInfo> &bundleInfos)
+bool BundleMgrService::GetBundleInfos(
+    const BundleFlag flag, std::vector<BundleInfo> &bundleInfos, int32_t userId)
 {
     bundleInfos = bundleInfos_;
     return true;
 }
 
-bool BundleMgrService::GetBundleGidsByUid(const std::string &bundleName, const int &uid, std::vector<int> &gids)
+bool BundleMgrService::GetBundleGidsByUid(
+    const std::string &bundleName, const int &uid, std::vector<int> &gids)
 {
     return true;
 }

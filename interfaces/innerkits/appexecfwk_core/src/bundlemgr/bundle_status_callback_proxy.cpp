@@ -145,6 +145,12 @@ std::string TransformResult(ErrCode resultCode)
             return "ERR_APPEXECFWK_RECOVER_GET_BUNDLEPATH_ERROR";
         case ERR_APPEXECFWK_RECOVER_INVALID_BUNDLE_NAME:
             return "ERR_APPEXECFWK_RECOVER_INVALID_BUNDLE_NAME";
+        case ERR_APPEXECFWK_USER_NOT_EXIST:
+            return "ERR_APPEXECFWK_USER_NOT_EXIST";
+        case ERR_APPEXECFWK_USER_CREATE_FALIED:
+            return "ERR_APPEXECFWK_USER_CREATE_FALIED";
+        case ERR_APPEXECFWK_USER_REMOVE_FALIED:
+            return "ERR_APPEXECFWK_USER_REMOVE_FALIED";
         default:
             return "";
     }

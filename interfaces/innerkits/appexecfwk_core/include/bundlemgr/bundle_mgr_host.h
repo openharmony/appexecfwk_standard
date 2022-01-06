@@ -364,6 +364,13 @@ private:
      */
     ErrCode HandleGetBundleInstaller(Parcel &data, Parcel &reply);
     /**
+     * @brief Handles the GetBundleUserMgr function called from a IBundleMgr proxy object.
+     * @param data Indicates the data to be read.
+     * @param reply Indicates the reply to be sent;
+     * @return Returns ERR_OK if called successfully; returns error code otherwise.
+     */
+    ErrCode HandleGetBundleUserMgr(Parcel &data, Parcel &reply);
+    /**
      * @brief Handles the IsApplicationEnabled function called from a IBundleMgr proxy object.
      * @param data Indicates the data to be read.
      * @param reply Indicates the reply to be sent;

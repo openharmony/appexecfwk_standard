@@ -16,17 +16,17 @@
 #ifndef FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_BASE_BUNDLE_INSTALLER_H
 #define FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_BASE_BUNDLE_INSTALLER_H
 
-#include <string>
 #include <map>
+#include <string>
 
 #include "nocopyable.h"
 
 #include "appexecfwk_errors.h"
-#include "inner_bundle_info.h"
-#include "install_param.h"
 #include "bundle_clone_mgr.h"
 #include "bundle_data_mgr.h"
 #include "bundle_verify_mgr.h"
+#include "inner_bundle_info.h"
+#include "install_param.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -225,14 +225,6 @@ private:
      */
     ErrCode CreateModuleDataDir(InnerBundleInfo &info) const;
     /**
-     * @brief Remove the data directories of current installing module package.
-     * @param info Indicates the InnerBundleInfo object of a bundle under installing.
-     * @return Returns ERR_OK if the module directory removed successfully; returns error code otherwise.
-     */
-    ErrCode RemoveModuleDataDir(const InnerBundleInfo &info) const;
-
-    ErrCode RemoveModuleAndDataDir(const std::string &moduleDir, const std::string &bundleDataDir) const;
-    /**
      * @brief Rename the directory of current installing module package.
      * @param info Indicates the InnerBundleInfo object of a bundle under installing.
      * @return Returns ERR_OK if the module directory renamed successfully; returns error code otherwise.
@@ -366,7 +358,42 @@ private:
      * @return Returns ERR_OK if system memory is adequate; returns error code otherwise.
      */
     ErrCode CheckSystemSize(const std::string &bundlePath, const Constants::AppType appType) const;
+    /**
+     * @brief To get userId.
+     * @param installParam Indicates the installParam of the bundle.
+     * @return Returns userId.
+     */
+    int32_t GetUserId(const InstallParam& installParam) const;
+    /**
+     * @brief Remove bundle user data.
+     * @param innerBundleInfo Indicates the innerBundleInfo of the bundle.
+     * @return Returns BundleUserMgr.
+     */
+    ErrCode RemoveBundleUserData(InnerBundleInfo &innerBundleInfo);
+    /**
+     * @brief Create bundle user data.
+     * @param innerBundleInfo Indicates the bundle type of the application.
+     * @param needResetInstallState Indicates need update InstallState or not.
+     * @return Returns ERR_OK if result is ok; returns error code otherwise.
+     */
+    ErrCode CreateBundleUserData(
+        InnerBundleInfo &innerBundleInfo, bool needResetInstallState = true);
+    /**
+     * @brief Update UserInfo to Db.
+     * @param innerBundleInfo Indicates the bundle type of the application.
+     * @param needResetInstallState Indicates need update InstallState or not.
+     * @return Returns ERR_OK if result is ok; returns error code otherwise.
+     */
+    ErrCode UpdateUserInfoToDb(
+        InnerBundleInfo &innerBundleInfo, bool needResetInstallState = true);
 private:
+    ErrCode CreateBundleCodeDir(InnerBundleInfo &info) const;
+    ErrCode CreateBundleDataDir(InnerBundleInfo &info, bool onlyOneUser = true) const;
+    ErrCode RemoveModuleDataDir(const InnerBundleInfo &info, const std::string &modulePackage) const;
+    ErrCode RemoveHapModuleDataDir(const InnerBundleInfo &info, const std::string &modulePackage) const;
+    ErrCode RemoveBundleCodeDir(const InnerBundleInfo &info) const;
+    ErrCode RemoveBundleDataDir(const InnerBundleInfo &info) const;
+
     InstallerState state_ = InstallerState::INSTALL_START;
     std::shared_ptr<BundleDataMgr> dataMgr_ = nullptr;  // this pointer will get when public functions called
     std::shared_ptr<BundleCloneMgr> cloneMgr_ = nullptr;
@@ -385,6 +412,10 @@ private:
     // value is packageName for uninstalling
     bool isFeatureNeedUninstall_ = false;
     std::vector<std::string> uninstallModuleVec_;
+
+    int32_t userId_ = Constants::INVALID_USERID;
+    bool hasInstalledInUser_ = false;
+    mutable bool needNotifyBundleStatus_ = true;
 
     DISALLOW_COPY_AND_MOVE(BaseBundleInstaller);
 
