@@ -970,6 +970,7 @@ HWTEST_F(AmsServiceEventDriveTest, EventDrive_039, TestSize.Level1)
  * EnvConditions: Mobile that can run ohos test framework
  * CaseDescription: Verify if QueryServiceState act normal after AppMgrService stopped
  */
+/*
 HWTEST_F(AmsServiceEventDriveTest, EventDrive_040, TestSize.Level1)
 {
     APP_LOGI("AppMgrService::EventDrive_040 start 1");
@@ -989,6 +990,7 @@ HWTEST_F(AmsServiceEventDriveTest, EventDrive_040, TestSize.Level1)
 
     APP_LOGI("AppMgrService::EventDrive_040 end");
 }
+*/
 
 /*
  * Feature: AppMgrService

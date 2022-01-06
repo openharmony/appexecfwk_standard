@@ -52,7 +52,7 @@ public:
         return 0;
     }
     virtual int StartAbility(
-        const Want &want, const sptr<IRemoteObject> &callerToken, int requestCode, int requestUid) override
+        const Want &want, const sptr<IRemoteObject> &callerToken, int requestCode, int requestUid)
     {
         return 0;
     }
@@ -118,7 +118,7 @@ public:
     {
         return 0;
     }
-    virtual int StopServiceAbility(const AAFwk::Want &want, const sptr<IRemoteObject> &callerToken) override
+    virtual int StopServiceAbility(const AAFwk::Want &want, const sptr<IRemoteObject> &callerToken)
     {
         return 0;
     }
@@ -151,7 +151,7 @@ public:
     {
         return 0;
     }
-    virtual int UninstallApp(const std::string &bundleName, const int userId) override
+    virtual int UninstallApp(const std::string &bundleName) override
     {
         return 0;
     }

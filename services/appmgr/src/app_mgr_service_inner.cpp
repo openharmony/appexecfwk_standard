@@ -928,7 +928,7 @@ void AppMgrServiceInner::OnAppStateChanged(
     if (state == ApplicationState::APP_STATE_FOREGROUND || state == ApplicationState::APP_STATE_BACKGROUND) {
         AppStateData data = WrapAppStateData(appRecord, state);
         APP_LOGD("OnForegroundApplicationChanged, size:%{public}d, name:%{public}s, uid:%{public}d, state:%{public}d",
-            appStateObservers_.size(), data.bundleName.c_str(), data.uid, data.state);
+            (int32_t)appStateObservers_.size(), data.bundleName.c_str(), data.uid, data.state);
         std::lock_guard<std::recursive_mutex> lockNotify(observerLock_);
         for (const auto &observer : appStateObservers_) {
             if (observer != nullptr) {
@@ -1012,7 +1012,7 @@ void AppMgrServiceInner::OnProcessCreated(const std::shared_ptr<AppRunningRecord
     }
     ProcessData data = WrapProcessData(appRecord);
     APP_LOGD("OnProcessCreated, bundle:%{public}s, pid:%{public}d, uid:%{public}d, size:%{public}d",
-        data.bundleName.c_str(), data.uid, data.pid, appStateObservers_.size());
+        data.bundleName.c_str(), data.uid, data.pid, (int32_t)appStateObservers_.size());
     std::lock_guard<std::recursive_mutex> lockNotify(observerLock_);
     for (const auto &observer : appStateObservers_) {
         if (observer != nullptr) {
@@ -1031,7 +1031,7 @@ void AppMgrServiceInner::OnProcessDied(const std::shared_ptr<AppRunningRecord> &
     }
     ProcessData data = WrapProcessData(appRecord);
     APP_LOGD("OnProcessDied, bundle:%{public}s, pid:%{public}d, uid:%{public}d, size:%{public}d",
-        data.bundleName.c_str(), data.uid, data.pid, appStateObservers_.size());
+        data.bundleName.c_str(), data.uid, data.pid, (int32_t)appStateObservers_.size());
     std::lock_guard<std::recursive_mutex> lockNotify(observerLock_);
     for (const auto &observer : appStateObservers_) {
         if (observer != nullptr) {
@@ -1611,7 +1611,7 @@ int32_t AppMgrServiceInner::RegisterApplicationStateObserver(const sptr<IApplica
         return ERR_INVALID_VALUE;
     }
     appStateObservers_.push_back(observer);
-    APP_LOGI("%{public}s appStateObservers_ size:%{public}d", __func__, appStateObservers_.size());
+    APP_LOGI("%{public}s appStateObservers_ size:%{public}d", __func__, (int32_t)appStateObservers_.size());
     AddObserverDeathRecipient(observer);
     return ERR_OK;
 }
@@ -1628,7 +1628,7 @@ int32_t AppMgrServiceInner::UnregisterApplicationStateObserver(const sptr<IAppli
     for (it = appStateObservers_.begin(); it != appStateObservers_.end(); it++) {
         if ((*it)->AsObject() == observer->AsObject()) {
             appStateObservers_.erase(it);
-            APP_LOGI("%{public}s appStateObservers_ size:%{public}d", __func__, appStateObservers_.size());
+            APP_LOGI("%{public}s appStateObservers_ size:%{public}d", __func__, (int32_t)appStateObservers_.size());
             RemoveObserverDeathRecipient(observer);
             return ERR_OK;
         }
@@ -1643,7 +1643,7 @@ bool AppMgrServiceInner::ObserverExist(const sptr<IApplicationStateObserver> &ob
         APP_LOGE("Observer nullptr");
         return false;
     }
-    for (int i = 0; i < appStateObservers_.size(); i++) {
+    for (int i = 0; i < (int)appStateObservers_.size(); i++) {
         if (appStateObservers_[i]->AsObject() == observer->AsObject()) {
             return true;
         }

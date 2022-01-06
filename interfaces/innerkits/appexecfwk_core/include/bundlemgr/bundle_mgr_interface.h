@@ -568,7 +568,7 @@ public:
      * @return Returns true if this function is successfully called; returns false otherwise.
      */
     virtual bool NotifyAbilityLifeStatus(
-        const std::string &bundleName, const std::string &abilityName, const int64_t launchTime, const int uid) = 0;
+        const std::string &bundleName, const std::string &abilityName, const int64_t launchTime, const int uid = 0) = 0;
     /**
      * @brief Remove cloned bundle.
      * @param bundleName Indicates the bundle name of remove cloned bundle.
