@@ -24,10 +24,8 @@
 
 using namespace testing::ext;
 using namespace OHOS::AppExecFwk;
-using namespace OHOS;
-
+namespace OHOS {
 namespace {
-
 const std::string BUNDLE_FILE = "/data/test/resource/bms/install_daemon/right.hap";
 const std::string SYSTEM_DIR = "/sys/com.example.l3jsdemo";
 const std::string TEMP_DIR = "/data/accounts/account_0/applications/com.example.l3jsdemo/temp";
@@ -39,7 +37,6 @@ const int32_t ROOT_UID = 0;
 const int32_t USERID = 0;
 const int32_t UID = 1000;
 const int32_t GID = 1000;
-
 }  // namespace
 
 class BmsInstallDaemonTest : public testing::Test {
@@ -61,6 +58,7 @@ public:
     int RenameModuleDir(const std::string &oldPath, const std::string &newPath) const;
     bool CheckBundleDirExist() const;
     bool CheckBundleDataDirExist() const;
+    bool GetBundleStats(const std::string &bundleName, const int32_t userId, std::vector<int64_t> &bundleStats) const;
 
 private:
     std::shared_ptr<InstalldService> service_ = std::make_shared<InstalldService>();
@@ -177,6 +175,15 @@ bool BmsInstallDaemonTest::CheckBundleDataDirExist() const
         return true;
     }
     return false;
+}
+
+bool BmsInstallDaemonTest::GetBundleStats(const std::string &bundleName, const int32_t userId,
+    std::vector<int64_t> &bundleStats) const
+{
+    if (!service_->IsServiceReady()) {
+        service_->Start();
+    }
+    return InstalldClient::GetInstance()->GetBundleStats(bundleName, userId, bundleStats);
 }
 
 /**
@@ -555,3 +562,35 @@ HWTEST_F(BmsInstallDaemonTest, ExtractBundleFile_0500, Function | SmallTest | Le
     int result1 = RenameModuleDir(TEMP_DIR, "");
     EXPECT_EQ(result1, ERR_APPEXECFWK_INSTALLD_PARAM_ERROR);
 }
+
+/**
+ * @tc.number: GetBundleStats_0100
+ * @tc.name: test the GetBundleStats function of installd service
+ * @tc.desc: 1. the bundle does not exist
+ * @tc.require: AR000GK0AH
+*/
+HWTEST_F(BmsInstallDaemonTest, GetBundleStats_0100, Function | SmallTest | Level0)
+{
+    std::vector<int64_t> stats;
+    bool result = GetBundleStats("wrong_bundleName", 0, stats);
+    EXPECT_EQ(result, false);
+}
+
+/**
+ * @tc.number: GetBundleStats_0200
+ * @tc.name: test the GetBundleStats function of installd service
+ * @tc.desc: 1. the bundle exists
+ * @tc.require: SR000GJ3BJ
+*/
+HWTEST_F(BmsInstallDaemonTest, GetBundleStats_0200, Function | SmallTest | Level0)
+{
+    std::vector<int64_t> stats;
+    bool result = GetBundleStats("com.ohos.settings", 0, stats);
+    EXPECT_EQ(result, false); // distributed data dircctory does not exit
+    EXPECT_NE(stats[0], -1);
+    EXPECT_NE(stats[1], -1);
+    EXPECT_EQ(stats[2], -1);
+    EXPECT_NE(stats[3], -1);
+    EXPECT_NE(stats[4], -1);
+}
+} // OHOS

@@ -151,6 +151,26 @@ ErrCode InstalldProxy::CleanBundleDataDir(const std::string &bundleDir)
     return TransactInstalldCmd(IInstalld::Message::CLEAN_BUNDLE_DATA_DIR, data, reply, option);
 }
 
+ErrCode InstalldProxy::GetBundleStats(
+    const std::string &bundleName, const int32_t userId, std::vector<int64_t> &bundleStats)
+{
+    MessageParcel data;
+    INSTALLD_PARCEL_WRITE_INTERFACE_TOKEN(data, (GetDescriptor()));
+    INSTALLD_PARCEL_WRITE(data, String16, Str8ToStr16(bundleName));
+    INSTALLD_PARCEL_WRITE(data, Int32, userId);
+    MessageParcel reply;
+    MessageOption option(MessageOption::TF_SYNC);
+    auto ret = TransactInstalldCmd(IInstalld::Message::GET_BUNDLE_STATS, data, reply, option);
+    if (ret == ERR_OK) {
+        if (reply.ReadInt64Vector(&bundleStats)) {
+            return ERR_OK;
+        } else {
+            return ERR_APPEXECFWK_PARCEL_ERROR;
+        }
+    }
+    return ret;
+}
+
 ErrCode InstalldProxy::TransactInstalldCmd(uint32_t code, MessageParcel &data, MessageParcel &reply,
     MessageOption &option)
 {
