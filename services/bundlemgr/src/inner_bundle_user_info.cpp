@@ -60,7 +60,7 @@ void from_json(const nlohmann::json& jsonObject, InnerBundleUserInfo& innerBundl
         false,
         parseResult,
         ArrayType::NUMBER);
-    GetValueIfFindKey<int32_t>(jsonObject,
+    GetValueIfFindKey<uint32_t>(jsonObject,
         jsonObjectEnd,
         INNER_BUNDLE_USER_INFO_ACCESS_TOKEN_ID,
         innerBundleUserInfo.accessTokenId,

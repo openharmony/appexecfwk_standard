@@ -63,6 +63,7 @@ struct CompatibleApplicationInfo : public Parcelable {
     uint32_t iconId = 0;
     uint32_t labelId = 0;
     uint32_t descriptionId = 0;
+    uint32_t accessTokenId = 0;
 
     bool systemApp = false;
 
@@ -89,6 +90,7 @@ struct ApplicationInfo : public Parcelable {
     int32_t labelId = 0;
     int32_t iconId = 0;
     int32_t descriptionId = 0;
+    uint32_t accessTokenId = 0;
     std::string deviceId;      // should auto-get self device id.
     std::string signatureKey;  // the public key info of this application.
     bool isSystemApp = false;

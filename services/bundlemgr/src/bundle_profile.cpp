@@ -297,6 +297,8 @@ struct Module {
     std::vector<Shortcut> shortcuts;
     std::vector<DefPermission> defPermissions;
     std::vector<ReqPermission> reqPermissions;
+    std::vector<DefinePermission> definePermissions;
+    std::vector<RequestPermission> requestPermissions;
     std::string mainAbility;
     std::string srcPath;
 };
@@ -1640,6 +1642,22 @@ void from_json(const nlohmann::json &jsonObject, Module &module)
         false,
         parseResult,
         ArrayType::OBJECT);
+    GetValueIfFindKey<std::vector<DefinePermission>>(jsonObject,
+        jsonObjectEnd,
+        BUNDLE_MODULE_PROFILE_KEY_DEFINE_PERMISSIONS,
+        module.definePermissions,
+        JsonType::ARRAY,
+        false,
+        parseResult,
+        ArrayType::OBJECT);
+    GetValueIfFindKey<std::vector<RequestPermission>>(jsonObject,
+        jsonObjectEnd,
+        BUNDLE_MODULE_PROFILE_KEY_REQUEST_PERMISSIONS,
+        module.requestPermissions,
+        JsonType::ARRAY,
+        false,
+        parseResult,
+        ArrayType::OBJECT);
     GetValueIfFindKey<std::string>(jsonObject,
         jsonObjectEnd,
         BUNDLE_MODULE_PROFILE_KEY_MAIN_ABILITY,
@@ -1920,6 +1938,8 @@ bool TransformToInfo(const ProfileReader::ConfigJson &configJson, InnerModuleInf
     innerModuleInfo.reqCapabilities = configJson.module.reqCapabilities;
     innerModuleInfo.defPermissions = configJson.module.defPermissions;
     innerModuleInfo.reqPermissions = configJson.module.reqPermissions;
+    innerModuleInfo.definePermissions = configJson.module.definePermissions;
+    innerModuleInfo.requestPermissions = configJson.module.requestPermissions;
     innerModuleInfo.mainAbility = configJson.module.mainAbility;
     innerModuleInfo.srcPath = configJson.module.srcPath;
     return true;

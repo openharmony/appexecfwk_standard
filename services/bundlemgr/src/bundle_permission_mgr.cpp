@@ -22,13 +22,13 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 using namespace OHOS::Security;
-
 namespace {
+const uint32_t DEFAULT_ACCESSTOKENID = 100;
+}
 // convert the Permission::PermissionDef struct to
 // AppExecFwk::PermissionDef struct that can be used in IPC process
-bool ConvertPermissionDef(const Permission::PermissionDef &permDef, PermissionDef &permissionDef)
+bool BundlePermissionMgr::ConvertPermissionDef(const Permission::PermissionDef &permDef, PermissionDef &permissionDef)
 {
     permissionDef.permissionName = permDef.permissionName;
     permissionDef.bundleName = permDef.bundleName;
@@ -42,7 +42,7 @@ bool ConvertPermissionDef(const Permission::PermissionDef &permDef, PermissionDe
 }
 
 // Convert from the struct DefPermission that parsed from config.json
-bool ConvertPermissionDef(
+bool BundlePermissionMgr::ConvertPermissionDef(
     Permission::PermissionDef &permDef, const DefPermission &defPermission, const std::string &bundleName)
 {
     permDef.permissionName = defPermission.name;
@@ -80,7 +80,21 @@ bool ConvertPermissionDef(
     return true;
 }
 
-}  // namespace
+uint32_t BundlePermissionMgr::CreateTokenId(
+    const InnerBundleInfo &innerBundleInfo, const std::string bundleName, const int32_t userId)
+{
+    return DEFAULT_ACCESSTOKENID;
+}
+
+int32_t BundlePermissionMgr::DeleteTokenId(const uint32_t tokenId)
+{
+    return 0;
+}
+
+int32_t BundlePermissionMgr::GrantedRequestPermissions(const InnerBundleInfo &innerBundleInfo, const int32_t userId)
+{
+    return 0;
+}
 
 bool BundlePermissionMgr::InitPermissions()
 {

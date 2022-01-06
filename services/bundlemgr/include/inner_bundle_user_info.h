@@ -25,7 +25,7 @@ struct InnerBundleUserInfo {
     BundleUserInfo bundleUserInfo;
     int32_t uid = Constants::INVALID_UID;
     std::vector<int32_t> gids;
-    int32_t accessTokenId = Constants::INVALID_ACCESS_TOKEN_ID;
+    uint32_t accessTokenId = 0;
     std::string bundleName;
 
     // The time(unix time) will be recalculated
