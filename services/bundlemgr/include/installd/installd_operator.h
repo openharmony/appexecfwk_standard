@@ -124,6 +124,26 @@ public:
      * @return Returns true if directory made successfully; returns false otherwise.
      */
     static bool MkOwnerDir(const std::string &path,  int mode, const int uid, const int gid);
+    /**
+     * @brief Get disk usage for dir.
+     * @param dir Indicates the directory.
+     * @param size Indicates the disk size.
+     * @return Returns true if successfully; returns false otherwise.
+     */
+    static bool GetDiskUsage(const std::string &dir, int64_t &size);
+    /**
+     * @brief Traverse all cache directories.
+     * @param currentPath Indicates the current path.
+     * @param cacheDirs Indicates the cache directories.
+     * @return Returns true if successfully; returns false otherwise.
+     */
+    static bool TraverseCacheDirectory(const std::string &currentPath, std::vector<std::string> &cacheDirs);
+    /**
+     * @brief Get disk usage from path.
+     * @param path Indicates the current path.
+     * @return Returns disk size.
+     */
+    static int64_t GetDiskUsageFromPath(const std::vector<std::string> &path);
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS

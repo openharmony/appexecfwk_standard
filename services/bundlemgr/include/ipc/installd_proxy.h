@@ -96,7 +96,15 @@ public:
      * @return Returns ERR_OK if the data directory cleaned successfully; returns error code otherwise.
      */
     virtual ErrCode CleanBundleDataDir(const std::string &bundlePath) override;
-
+    /**
+     * @brief Get bundle Stats.
+     * @param bundleName Indicates the bundle name.
+     * @param userId Indicates the user Id.
+     * @param bundleStats Indicates the bundle Stats.
+     * @return Returns ERR_OK if get stats successfully; returns error code otherwise.
+     */
+    virtual ErrCode GetBundleStats(
+        const std::string &bundleName, const int32_t userId, std::vector<int64_t> &bundleStats) override;
 private:
     ErrCode TransactInstalldCmd(uint32_t code, MessageParcel &data, MessageParcel &reply,
         MessageOption &option);
