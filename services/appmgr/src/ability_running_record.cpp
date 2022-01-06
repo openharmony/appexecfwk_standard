@@ -110,5 +110,15 @@ int64_t AbilityRunningRecord::GetEventId() const
 {
     return eventId_;
 }
+
+void AbilityRunningRecord::SetTerminating()
+{
+    isTerminating_ = true;
+}
+
+bool AbilityRunningRecord::IsTerminating() const
+{
+    return isTerminating_;
+}
 }  // namespace AppExecFwk
 }  // namespace OHOS

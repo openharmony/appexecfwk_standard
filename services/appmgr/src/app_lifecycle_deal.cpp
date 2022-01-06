@@ -27,7 +27,9 @@ AppLifeCycleDeal::~AppLifeCycleDeal()
 void AppLifeCycleDeal::LaunchApplication(const AppLaunchData &launchData_)
 {
     APP_LOGI("AppLifeCycleDeal ScheduleLaunchApplication");
-    appThread_->ScheduleLaunchApplication(launchData_);
+    if (appThread_) {
+        appThread_->ScheduleLaunchApplication(launchData_);
+    }
 }
 
 void AppLifeCycleDeal::AddAbilityStageInfo(const AppResidentProcessInfo &residentProcessInfo)
@@ -39,7 +41,9 @@ void AppLifeCycleDeal::AddAbilityStageInfo(const AppResidentProcessInfo &residen
 
 void AppLifeCycleDeal::LaunchAbility(const std::shared_ptr<AbilityRunningRecord> &ability)
 {
-    appThread_->ScheduleLaunchAbility(*(ability->GetAbilityInfo()), ability->GetToken());
+    if (appThread_) {
+        appThread_->ScheduleLaunchAbility(*(ability->GetAbilityInfo()), ability->GetToken());
+    }
 }
 
 void AppLifeCycleDeal::ScheduleTerminate()

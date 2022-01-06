@@ -26,7 +26,11 @@ int64_t AppRunningRecord::appEventId_ = 0;
 AppRunningRecord::AppRunningRecord(
     const std::shared_ptr<ApplicationInfo> &info, const int32_t recordId, const std::string &processName)
     : appInfo_(info), appRecordId_(recordId), processName_(processName)
-{}
+{
+    if (appInfo_) {
+        appName_ = appInfo_->name;
+    }
+}
 
 void AppRunningRecord::SetApplicationClient(const sptr<IAppScheduler> &thread)
 {
@@ -38,12 +42,12 @@ void AppRunningRecord::SetApplicationClient(const sptr<IAppScheduler> &thread)
 
 std::string AppRunningRecord::GetBundleName() const
 {
-    return appInfo_->bundleName;
+    return appInfo_ ? appInfo_->bundleName : "";
 }
 
 bool AppRunningRecord::IsLauncherApp() const
 {
-    return appInfo_->isLauncherApp;
+    return appInfo_ ? appInfo_->isLauncherApp : false;
 }
 
 int32_t AppRunningRecord::GetRecordId() const
@@ -53,7 +57,7 @@ int32_t AppRunningRecord::GetRecordId() const
 
 const std::string &AppRunningRecord::GetName() const
 {
-    return appInfo_->name;
+    return appName_;
 }
 
 bool AppRunningRecord::GetCloneInfo() const
@@ -119,7 +123,7 @@ std::shared_ptr<AbilityRunningRecord> AppRunningRecord::AddAbility(
 std::shared_ptr<AbilityRunningRecord> AppRunningRecord::GetAbilityRunningRecord(const std::string &abilityName) const
 {
     const auto &iter = std::find_if(abilities_.begin(), abilities_.end(), [&abilityName](const auto &pair) {
-        return pair.second->GetName() == abilityName;
+        return pair.second->GetName() == abilityName && !(pair.second->IsTerminating());
     });
     return ((iter == abilities_.end()) ? nullptr : iter->second);
 }
@@ -164,6 +168,10 @@ void AppRunningRecord::ScheduleAppCrash([[maybe_unused]] const std::string &desc
 
 void AppRunningRecord::LaunchApplication()
 {
+    if (appLifeCycleDeal_ == nullptr) {
+        APP_LOGE("appLifeCycleDeal_ is null");
+        return;
+    }
     if (!appInfo_ || !appLifeCycleDeal_->GetApplicationClient()) {
         APP_LOGE("appInfo or appThread is null");
         return;
@@ -197,6 +205,10 @@ void AppRunningRecord::AddAbilityStageDone()
 
 void AppRunningRecord::LaunchAbility(const std::shared_ptr<AbilityRunningRecord> &ability)
 {
+    if (appLifeCycleDeal_ == nullptr) {
+        APP_LOGE("appLifeCycleDeal_ is null");
+        return;
+    }
     if (!ability || !ability->GetToken()) {
         APP_LOGE("null abilityRecord or abilityToken");
         return;
@@ -222,32 +234,44 @@ void AppRunningRecord::LaunchPendingAbilities()
 void AppRunningRecord::ScheduleTerminate()
 {
     SendEvent(AMSEventHandler::TERMINATE_APPLICATION_TIMEOUT_MSG, AMSEventHandler::TERMINATE_APPLICATION_TIMEOUT);
-    appLifeCycleDeal_->ScheduleTerminate();
+    if (appLifeCycleDeal_) {
+        appLifeCycleDeal_->ScheduleTerminate();
+    }
 }
 
 void AppRunningRecord::ScheduleForegroundRunning()
 {
-    appLifeCycleDeal_->ScheduleForegroundRunning();
+    if (appLifeCycleDeal_) {
+        appLifeCycleDeal_->ScheduleForegroundRunning();
+    }
 }
 
 void AppRunningRecord::ScheduleBackgroundRunning()
 {
-    appLifeCycleDeal_->ScheduleBackgroundRunning();
+    if (appLifeCycleDeal_) {
+        appLifeCycleDeal_->ScheduleBackgroundRunning();
+    }
 }
 
 void AppRunningRecord::ScheduleProcessSecurityExit()
 {
-    appLifeCycleDeal_->ScheduleProcessSecurityExit();
+    if (appLifeCycleDeal_) {
+        appLifeCycleDeal_->ScheduleProcessSecurityExit();
+    }
 }
 
 void AppRunningRecord::ScheduleTrimMemory()
 {
-    appLifeCycleDeal_->ScheduleTrimMemory(priorityObject_->GetTimeLevel());
+    if (appLifeCycleDeal_ && priorityObject_) {
+        appLifeCycleDeal_->ScheduleTrimMemory(priorityObject_->GetTimeLevel());
+    }
 }
 
 void AppRunningRecord::LowMemoryWarning()
 {
-    appLifeCycleDeal_->LowMemoryWarning();
+    if (appLifeCycleDeal_) {
+        appLifeCycleDeal_->LowMemoryWarning();
+    }
 }
 
 void AppRunningRecord::OnAbilityStateChanged(
@@ -263,6 +287,32 @@ void AppRunningRecord::OnAbilityStateChanged(
     auto serviceInner = appMgrServiceInner_.lock();
     if (serviceInner) {
         serviceInner->OnAbilityStateChanged(ability, state);
+    }
+}
+
+void AppRunningRecord::StateChangedNotifyObserver(
+    const std::shared_ptr<AbilityRunningRecord> &ability, const int32_t state, bool isAbility)
+{
+    if (!ability) {
+        APP_LOGE("ability is null");
+        return;
+    }
+    AbilityStateData abilityStateData;
+    abilityStateData.bundleName = GetBundleName();
+    abilityStateData.abilityName = ability->GetName();
+    abilityStateData.pid = GetPriorityObject()->GetPid();
+    abilityStateData.abilityState = state;
+    abilityStateData.uid = GetUid();
+    abilityStateData.token = ability->GetToken();
+
+    if (isAbility && ability->GetAbilityInfo() != nullptr &&
+        ability->GetAbilityInfo()->type == AbilityType::EXTENSION) {
+        APP_LOGI("extension type, not notify any more.");
+        return;
+    }
+    auto serviceInner = appMgrServiceInner_.lock();
+    if (serviceInner) {
+        serviceInner->StateChangedNotifyObserver(abilityStateData, isAbility);
     }
 }
 
@@ -340,6 +390,7 @@ void AppRunningRecord::AbilityForeground(const std::shared_ptr<AbilityRunningRec
     } else if (curState_ == ApplicationState::APP_STATE_FOREGROUND) {
         // Just change ability to foreground if current application state is foreground.
         OnAbilityStateChanged(ability, AbilityState::ABILITY_STATE_FOREGROUND);
+        StateChangedNotifyObserver(ability, static_cast<int32_t>(AbilityState::ABILITY_STATE_FOREGROUND), true);
         auto serviceInner = appMgrServiceInner_.lock();
         if (serviceInner) {
             serviceInner->OnAppStateChanged(shared_from_this(), curState_);
@@ -363,6 +414,7 @@ void AppRunningRecord::AbilityBackground(const std::shared_ptr<AbilityRunningRec
 
     // First change ability to backgrounded.
     OnAbilityStateChanged(ability, AbilityState::ABILITY_STATE_BACKGROUND);
+    StateChangedNotifyObserver(ability, static_cast<int32_t>(AbilityState::ABILITY_STATE_BACKGROUND), true);
     if (curState_ == ApplicationState::APP_STATE_FOREGROUND) {
         int32_t foregroundSize = 0;
         for (const auto &item : abilities_) {
@@ -398,6 +450,7 @@ void AppRunningRecord::PopForegroundingAbilityTokens()
         const auto &token = foregroundingAbilityTokens_.front();
         auto ability = GetAbilityRunningRecordByToken(token);
         OnAbilityStateChanged(ability, AbilityState::ABILITY_STATE_FOREGROUND);
+        StateChangedNotifyObserver(ability, static_cast<int32_t>(AbilityState::ABILITY_STATE_FOREGROUND), true);
         foregroundingAbilityTokens_.pop_front();
     }
 }
@@ -427,7 +480,12 @@ void AppRunningRecord::TerminateAbility(const sptr<IRemoteObject> &token, const 
     }
 
     OptimizerAbilityStateChanged(abilityRecord, AbilityState::ABILITY_STATE_TERMINATED);
-    appLifeCycleDeal_->ScheduleCleanAbility(token);
+    StateChangedNotifyObserver(abilityRecord, static_cast<int32_t>(AbilityState::ABILITY_STATE_TERMINATED), true);
+    if (appLifeCycleDeal_) {
+        appLifeCycleDeal_->ScheduleCleanAbility(token);
+    } else {
+        APP_LOGE("appLifeCycleDeal_ is null");
+    }
 
     APP_LOGD("AppRunningRecord::TerminateAbility end");
 }
@@ -463,6 +521,10 @@ void AppRunningRecord::AbilityTerminated(const sptr<IRemoteObject> &token)
 
 void AppRunningRecord::RegisterAppDeathRecipient() const
 {
+    if (appLifeCycleDeal_ == nullptr) {
+        APP_LOGE("appLifeCycleDeal_ is null");
+        return;
+    }
     if (!appLifeCycleDeal_->GetApplicationClient()) {
         APP_LOGE("appThread is null");
         return;
@@ -475,6 +537,10 @@ void AppRunningRecord::RegisterAppDeathRecipient() const
 
 void AppRunningRecord::RemoveAppDeathRecipient() const
 {
+    if (appLifeCycleDeal_ == nullptr) {
+        APP_LOGE("appLifeCycleDeal_ is null");
+        return;
+    }
     if (!appLifeCycleDeal_->GetApplicationClient()) {
         APP_LOGE("appThread is null");
         return;

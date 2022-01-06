@@ -15,6 +15,7 @@
 
 #include "service_extension_context.h"
 
+#include "ability_connection.h"
 #include "ability_manager_client.h"
 #include "hilog_wrapper.h"
 
@@ -32,29 +33,37 @@ void ServiceExtensionContext::StartAbility(const AAFwk::Want &want) const
     }
 }
 
-bool ServiceExtensionContext::ConnectAbility(const AAFwk::Want &want, const sptr<AAFwk::IAbilityConnection> &conn)
+void ServiceExtensionContext::StartAbility(const AAFwk::Want &want, const AAFwk::StartOptions &startOptions) const
 {
-    HILOG_INFO("%{public}s begin.", __func__);
-
-    ErrCode ret = AAFwk::AbilityManagerClient::GetInstance()->ConnectAbility(want, conn, token_);
-    HILOG_INFO("%{public}s end ConnectAbility, ret=%{public}d", __func__, ret);
-    bool value = ((ret == ERR_OK) ? true : false);
-    if (!value) {
-        HILOG_ERROR("ServiceContext::ConnectAbility ErrorCode = %{public}d", ret);
+    HILOG_DEBUG("%{public}s begin.", __func__);
+    ErrCode err = AAFwk::AbilityManagerClient::GetInstance()->StartAbility(want, startOptions, token_,
+        ILLEGAL_REQUEST_CODE);
+    HILOG_DEBUG("%{public}s. End calling ams->StartAbility. ret=%{public}d", __func__, err);
+    if (err != ERR_OK) {
+        HILOG_ERROR("ServiceContext::StartAbility is failed %{public}d", err);
     }
-    HILOG_INFO("%{public}s end.", __func__);
-    return value;
 }
 
-void ServiceExtensionContext::DisconnectAbility(const sptr<AAFwk::IAbilityConnection> &conn)
+bool ServiceExtensionContext::ConnectAbility(
+    const AAFwk::Want &want, const std::shared_ptr<AbilityConnectCallback> &connectCallback) const
 {
     HILOG_INFO("%{public}s begin.", __func__);
-    ErrCode ret = AAFwk::AbilityManagerClient::GetInstance()->DisconnectAbility(conn);
-    HILOG_INFO("%{public}s end ams->DisconnectAbility, ret=%{public}d", __func__, ret);
+    ErrCode ret =
+        ConnectionManager::GetInstance().ConnectAbility(token_, want, connectCallback);
+    HILOG_INFO("ServiceExtensionContext::ConnectAbility ErrorCode = %{public}d", ret);
+    return ret == ERR_OK;
+}
+
+void ServiceExtensionContext::DisconnectAbility(
+    const AAFwk::Want &want, const std::shared_ptr<AbilityConnectCallback> &connectCallback) const
+{
+    HILOG_INFO("%{public}s begin.", __func__);
+    ErrCode ret =
+        ConnectionManager::GetInstance().DisconnectAbility(token_, want.GetElement(), connectCallback);
     if (ret != ERR_OK) {
-        HILOG_ERROR("ServiceContext::DisconnectAbility error");
+        HILOG_ERROR("%{public}s end ams->DisconnectAbility error, ret=%{public}d", __func__, ret);
     }
-    HILOG_INFO("ServiceContext::DisconnectAbility end");
+    HILOG_INFO("%{public}s end ams->DisconnectAbility", __func__);
 }
 
 void ServiceExtensionContext::TerminateAbility()

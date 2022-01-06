@@ -113,6 +113,30 @@ void AmsMgrProxy::UpdateAbilityState(const sptr<IRemoteObject> &token, const Abi
     APP_LOGD("end");
 }
 
+void AmsMgrProxy::UpdateExtensionState(const sptr<IRemoteObject> &token, const ExtensionState state)
+{
+    APP_LOGD("UpdateExtensionState start");
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option(MessageOption::TF_SYNC);
+    if (!WriteInterfaceToken(data)) {
+        return;
+    }
+    data.WriteParcelable(token.GetRefPtr());
+    data.WriteInt32(static_cast<int32_t>(state));
+    sptr<IRemoteObject> remote = Remote();
+    if (remote == nullptr) {
+        APP_LOGE("Remote() is NULL");
+        return;
+    }
+    int32_t ret =
+        remote->SendRequest(static_cast<uint32_t>(IAmsMgr::Message::UPDATE_EXTENSION_STATE), data, reply, option);
+    if (ret != NO_ERROR) {
+        APP_LOGW("SendRequest is failed, error code: %{public}d", ret);
+    }
+    APP_LOGD("end");
+}
+
 void AmsMgrProxy::RegisterAppStateCallback(const sptr<IAppStateCallback> &callback)
 {
     APP_LOGD("start");

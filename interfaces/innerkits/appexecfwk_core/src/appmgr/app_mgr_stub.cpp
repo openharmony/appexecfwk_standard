@@ -60,6 +60,12 @@ AppMgrStub::AppMgrStub()
         &AppMgrStub::HandleAddAbilityStageDone;
     memberFuncMap_[static_cast<uint32_t>(IAppMgr::Message::STARTUP_RESIDENT_PROCESS)] =
         &AppMgrStub::HandleStartupResidentProcess;
+    memberFuncMap_[static_cast<uint32_t>(IAppMgr::Message::REGISTER_APPLICATION_STATE_OBSERVER)] =
+        &AppMgrStub::HandleRegisterApplicationStateObserver;
+    memberFuncMap_[static_cast<uint32_t>(IAppMgr::Message::UNREGISTER_APPLICATION_STATE_OBSERVER)] =
+        &AppMgrStub::HandleUnregisterApplicationStateObserver;
+    memberFuncMap_[static_cast<uint32_t>(IAppMgr::Message::GET_FOREGROUND_APPLICATIONS)] =
+        &AppMgrStub::HandleGetForegroundApplications;
 }
 
 AppMgrStub::~AppMgrStub()
@@ -229,6 +235,54 @@ int32_t AppMgrStub::HandleStartupResidentProcess(MessageParcel &data, MessagePar
 {
     BYTRACE(BYTRACE_TAG_APP);
     StartupResidentProcess();
+    return NO_ERROR;
+}
+
+int32_t AppMgrStub::HandleRegisterApplicationStateObserver(MessageParcel &data, MessageParcel &reply)
+{
+    auto callback = iface_cast<AppExecFwk::IApplicationStateObserver>(data.ReadParcelable<IRemoteObject>());
+    int32_t result = RegisterApplicationStateObserver(callback);
+    reply.WriteInt32(result);
+    return NO_ERROR;
+}
+
+int32_t AppMgrStub::HandleUnregisterApplicationStateObserver(MessageParcel &data, MessageParcel &reply)
+{
+    auto callback = iface_cast<AppExecFwk::IApplicationStateObserver>(data.ReadParcelable<IRemoteObject>());
+    int32_t result = UnregisterApplicationStateObserver(callback);
+    reply.WriteInt32(result);
+    return NO_ERROR;
+}
+
+
+int32_t AppMgrStub::HandleGetForegroundApplications(MessageParcel &data, MessageParcel &reply)
+{
+    std::vector<AppStateData> appStateDatas;
+    int32_t result = GetForegroundApplications(appStateDatas);
+    reply.WriteInt32(appStateDatas.size());
+    for (auto &it : appStateDatas) {
+        if (!reply.WriteParcelable(&it)) {
+            return ERR_INVALID_VALUE;
+        }
+    }
+    if (!reply.WriteInt32(result)) {
+        return ERR_INVALID_VALUE;
+    }
+    return result;
+}
+
+int32_t AppMgrStub::RegisterApplicationStateObserver(const sptr<IApplicationStateObserver> &observer)
+{
+    return NO_ERROR;
+}
+
+int32_t AppMgrStub::UnregisterApplicationStateObserver(const sptr<IApplicationStateObserver> &observer)
+{
+    return NO_ERROR;
+}
+
+int32_t AppMgrStub::GetForegroundApplications(std::vector<AppStateData> &list)
+{
     return NO_ERROR;
 }
 }  // namespace AppExecFwk

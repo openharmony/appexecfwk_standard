@@ -82,6 +82,7 @@ ohos_source_set("appmgr_test_source") {
     "//foundation/aafwk/standard/interfaces/innerkits/base:base",
     "//foundation/aafwk/standard/interfaces/innerkits/want:want",
     "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_base:appexecfwk_base",
+    "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_core:appexecfwk_core",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
   ]
 

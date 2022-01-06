@@ -26,6 +26,7 @@
 #include "ams_mgr_interface.h"
 #include "running_process_info.h"
 #include "system_memory_attr.h"
+#include "iapplication_state_observer.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -155,6 +156,27 @@ public:
      */
     virtual void StartupResidentProcess() = 0;
 
+    /**
+     * Register application or process state observer.
+     * @param observer, ability token.
+     * @return Returns ERR_OK on success, others on failure.
+     */
+    virtual int32_t RegisterApplicationStateObserver(const sptr<IApplicationStateObserver> &observer) = 0;
+
+    /**
+     * Unregister application or process state observer.
+     * @param observer, ability token.
+     * @return Returns ERR_OK on success, others on failure.
+     */
+    virtual int32_t UnregisterApplicationStateObserver(const sptr<IApplicationStateObserver> &observer) = 0;
+
+    /**
+     * Get foreground applications.
+     * @param list, foreground apps.
+     * @return Returns ERR_OK on success, others on failure.
+     */
+    virtual int32_t GetForegroundApplications(std::vector<AppStateData> &list) = 0;
+
     enum class Message {
         APP_ATTACH_APPLICATION = 0,
         APP_APPLICATION_FOREGROUNDED,
@@ -171,6 +193,9 @@ public:
         APP_GET_SYSTEM_MEMORY_ATTR,
         APP_ADD_ABILITY_STAGE_INFO_DONE,
         STARTUP_RESIDENT_PROCESS,
+        REGISTER_APPLICATION_STATE_OBSERVER,
+        UNREGISTER_APPLICATION_STATE_OBSERVER,
+        GET_FOREGROUND_APPLICATIONS,
     };
 };
 }  // namespace AppExecFwk

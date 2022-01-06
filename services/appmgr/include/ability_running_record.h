@@ -145,6 +145,18 @@ public:
      */
     int32_t GetConnectionState() const;
 
+    /**
+     * @brief Set the Terminating object.
+     */
+    void SetTerminating();
+
+    /**
+     * @brief Whether the ability is terminating.
+     *
+     * @return Returns whether the ability is terminating.
+     */
+    bool IsTerminating() const;
+
     void SetEventId(const int64_t eventId);
     int64_t GetEventId() const;
 
@@ -154,6 +166,7 @@ private:
     int32_t perceptibility_ = 0;
     int32_t connectionState_ = 0;
     int64_t eventId_ = 0;
+    bool isTerminating_ = false;
     AbilityState state_ = AbilityState::ABILITY_STATE_BEGIN;
     std::shared_ptr<AbilityInfo> info_;
     sptr<IRemoteObject> token_;

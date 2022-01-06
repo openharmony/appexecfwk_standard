@@ -36,6 +36,8 @@ AmsMgrStub::AmsMgrStub()
         &AmsMgrStub::HandleTerminateAbility;
     memberFuncMap_[static_cast<uint32_t>(IAmsMgr::Message::UPDATE_ABILITY_STATE)] =
         &AmsMgrStub::HandleUpdateAbilityState;
+    memberFuncMap_[static_cast<uint32_t>(IAmsMgr::Message::UPDATE_EXTENSION_STATE)] =
+        &AmsMgrStub::HandleUpdateExtensionState;
     memberFuncMap_[static_cast<uint32_t>(IAmsMgr::Message::REGISTER_APP_STATE_CALLBACK)] =
         &AmsMgrStub::HandleRegisterAppStateCallback;
     memberFuncMap_[static_cast<uint32_t>(IAmsMgr::Message::RESET)] = &AmsMgrStub::HandleReset;
@@ -114,6 +116,14 @@ ErrCode AmsMgrStub::HandleUpdateAbilityState(MessageParcel &data, MessageParcel 
     sptr<IRemoteObject> token = data.ReadParcelable<IRemoteObject>();
     int32_t state = data.ReadInt32();
     UpdateAbilityState(token, static_cast<AbilityState>(state));
+    return NO_ERROR;
+}
+
+ErrCode AmsMgrStub::HandleUpdateExtensionState(MessageParcel &data, MessageParcel &reply)
+{
+    sptr<IRemoteObject> token = data.ReadParcelable<IRemoteObject>();
+    int32_t state = data.ReadInt32();
+    UpdateExtensionState(token, static_cast<ExtensionState>(state));
     return NO_ERROR;
 }
 
@@ -201,5 +211,8 @@ int32_t AmsMgrStub::HandlePrepareTerminate(MessageParcel &data, MessageParcel &r
     PrepareTerminate(token);
     return NO_ERROR;
 }
+
+void AmsMgrStub::UpdateExtensionState(const sptr<IRemoteObject> &token, const ExtensionState state)
+{}
 }  // namespace AppExecFwk
 }  // namespace OHOS

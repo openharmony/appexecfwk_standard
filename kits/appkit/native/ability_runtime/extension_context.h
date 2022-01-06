@@ -37,6 +37,13 @@ public:
      */
     void SetToken(const sptr<IRemoteObject> &token);
 
+    /**
+     * @brief Get the token witch the app launched.
+     *
+     * @return token The token which the is launched by app.
+     */
+    sptr<IRemoteObject> GetToken() const;
+
 protected:
     sptr<IRemoteObject> token_;
 private:

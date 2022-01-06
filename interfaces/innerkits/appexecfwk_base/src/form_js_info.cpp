@@ -29,6 +29,15 @@ bool FormJsInfo::ReadFromParcel(Parcel &parcel)
     jsFormCodePath = Str16ToStr8(parcel.ReadString16());
     formData = Str16ToStr8(parcel.ReadString16());
 
+    formSrc = Str16ToStr8(parcel.ReadString16());
+    formWindow.designWidth = parcel.ReadInt32();
+    formWindow.autoDesignWidth = parcel.ReadBool();
+
+    versionCode = parcel.ReadUint32();
+    versionName = Str16ToStr8(parcel.ReadString16());
+    compatibleVersion = parcel.ReadUint32();
+    icon = Str16ToStr8(parcel.ReadString16());
+
     auto bindingData = parcel.ReadParcelable<FormProviderData>();
     if (nullptr == bindingData){
         return false;
@@ -77,6 +86,35 @@ bool FormJsInfo::Marshalling(Parcel &parcel) const
 
     // write formData
     if (!parcel.WriteString16(Str8ToStr16(formData))) {
+        return false;
+    }
+
+    // write formSrc
+    if (!parcel.WriteString16(Str8ToStr16(formSrc))) {
+        return false;
+    }
+
+    // write formWindow
+    if (!parcel.WriteInt32(formWindow.designWidth)) {
+        return false;
+    }
+    if (!parcel.WriteBool(formWindow.autoDesignWidth)) {
+        return false;
+    }
+
+    // write version
+    if (!parcel.WriteUint32(versionCode)) {
+        return false;
+    }
+    if (!parcel.WriteString16(Str8ToStr16(versionName))) {
+        return false;
+    }
+    if (!parcel.WriteUint32(compatibleVersion)) {
+        return false;
+    }
+
+    // write icon
+    if (!parcel.WriteString16(Str8ToStr16(icon))) {
         return false;
     }
 

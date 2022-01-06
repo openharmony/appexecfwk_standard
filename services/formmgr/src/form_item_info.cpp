@@ -366,5 +366,102 @@ void FormItemInfo::SetFormVisibleNotify(bool isFormVisibleNotify)
 {
     formVisibleNotify_ = isFormVisibleNotify;
 }
+/**
+ * @brief Get formSrc_.
+ * @return formSrc_.
+ */
+std::string FormItemInfo::GetFormSrc() const
+{
+    return formSrc_;
+}
+/**
+ * @brief Set value of formSrc_.
+ * @param formSrc form src.
+ */
+void FormItemInfo::SetFormSrc(const std::string &formSrc)
+{
+    formSrc_ = formSrc;
+}
+/**
+ * @brief Get formWindow_.
+ * @return formWindow_.
+ */
+FormWindow FormItemInfo::GetFormWindow() const
+{
+    return formWindow_;
+}
+/**
+ * @brief Set value of formWindow_.
+ * @param formWindow form window.
+ */
+void FormItemInfo::SetFormWindow(const FormWindow &formWindow)
+{
+    formWindow_.autoDesignWidth = formWindow.autoDesignWidth;
+    formWindow_.designWidth = formWindow.designWidth;
+}
+/**
+ * @brief Get versionCode_.
+ * @return versionCode_.
+ */
+uint32_t FormItemInfo::GetVersionCode() const
+{
+    return versionCode_;
+}
+/**
+ * @brief Set value of versionCode_.
+ * @param versionCode bundle version code.
+ */
+void FormItemInfo::SetVersionCode(const uint32_t versionCode)
+{
+    versionCode_ = versionCode;
+}
+/**
+ * @brief Get versionName_.
+ * @return versionName_.
+ */
+std::string FormItemInfo::GetVersionName() const
+{
+    return versionName_;
+}
+/**
+ * @brief Set value of versionName_.
+ * @param versionName bundle version name.
+ */
+void FormItemInfo::SetVersionName(const std::string &versionName)
+{
+    versionName_ = versionName;
+}
+/**
+ * @brief Get compatibleVersion_.
+ * @return compatibleVersion_.
+ */
+uint32_t FormItemInfo::GetCompatibleVersion() const
+{
+    return compatibleVersion_;
+}
+/**
+ * @brief Set value of compatibleVersion_.
+ * @param compatibleVersion bundle version name.
+ */
+void FormItemInfo::SetCompatibleVersion(const uint32_t &compatibleVersion)
+{
+    compatibleVersion_ = compatibleVersion;
+}
+/**
+ * @brief Get icon_.
+ * @return icon_.
+ */
+std::string FormItemInfo::GetIcon() const
+{
+    return icon_;
+}
+/**
+ * @brief Set value of icon_.
+ * @param icon bundle version name.
+ */
+void FormItemInfo::SetIcon(const std::string &icon)
+{
+    icon_ = icon;
+}
 }  // namespace AppExecFwk
 }  // namespace OHOS

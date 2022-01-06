@@ -337,5 +337,35 @@ void AppMgrService::AddAbilityStageDone(const int32_t recordId)
         std::bind(&AppMgrServiceInner::AddAbilityStageDone, appMgrServiceInner_, recordId);
     handler_->PostTask(addAbilityStageDone, TASK_ADD_ABILITY_STAGE_DONE);
 }
+
+int32_t AppMgrService::RegisterApplicationStateObserver(const sptr<IApplicationStateObserver> &observer)
+{
+    APP_LOGI("%{public}s begin", __func__);
+    if (!IsReady()) {
+        APP_LOGE("%{public}s begin, not ready", __func__);
+        return ERR_INVALID_OPERATION;
+    }
+    return appMgrServiceInner_->RegisterApplicationStateObserver(observer);
+}
+
+int32_t AppMgrService::UnregisterApplicationStateObserver(const sptr<IApplicationStateObserver> &observer)
+{
+    APP_LOGI("%{public}s begin", __func__);
+    if (!IsReady()) {
+        APP_LOGE("%{public}s begin, not ready", __func__);
+        return ERR_INVALID_OPERATION;
+    }
+    return appMgrServiceInner_->UnregisterApplicationStateObserver(observer);
+}
+
+int32_t AppMgrService::GetForegroundApplications(std::vector<AppStateData> &list)
+{
+    APP_LOGI("%{public}s begin", __func__);
+    if (!IsReady()) {
+        APP_LOGE("%{public}s begin, not ready", __func__);
+        return ERR_INVALID_OPERATION;
+    }
+    return appMgrServiceInner_->GetForegroundApplications(list);
+}
 }  // namespace AppExecFwk
 }  // namespace OHOS

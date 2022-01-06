@@ -161,6 +161,13 @@ FormRecord FormDataMgr::CreateFormRecord(const FormItemInfo &formInfo, const int
     newRecord.formTempFlg = formInfo.IsTemporaryForm();
     newRecord.formVisibleNotify = formInfo.IsFormVisibleNotify();
     newRecord.jsFormCodePath = formInfo.GetHapSourceByModuleName(newRecord.moduleName);
+    newRecord.formSrc = formInfo.GetFormSrc();
+    newRecord.formWindow = formInfo.GetFormWindow();
+    newRecord.versionName = formInfo.GetVersionName();
+    newRecord.versionCode = formInfo.GetVersionCode();
+    newRecord.compatibleVersion = formInfo.GetCompatibleVersion();
+    newRecord.icon = formInfo.GetIcon();
+
     newRecord.formVisibleNotifyState = 0;
     if (newRecord.isEnableUpdate) {
         ParseUpdateConfig(newRecord, formInfo);
@@ -188,6 +195,12 @@ void FormDataMgr::CreateFormInfo(const int64_t formId, const FormRecord &record,
     formInfo.abilityName = record.abilityName;
     formInfo.formName = record.formName;
     formInfo.formTempFlg = record.formTempFlg;
+    formInfo.formSrc = record.formSrc;
+    formInfo.formWindow = record.formWindow;
+    formInfo.versionCode = record.versionCode;
+    formInfo.versionName = record.versionName;
+    formInfo.compatibleVersion = record.compatibleVersion;
+    formInfo.icon = record.icon;
 }
 /**
  * @brief Check temp form count is max.

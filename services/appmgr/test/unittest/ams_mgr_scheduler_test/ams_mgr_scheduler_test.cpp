@@ -23,6 +23,7 @@
 #include "app_state_callback_host.h"
 #include "mock_ability_token.h"
 #include "mock_app_mgr_service_inner.h"
+#include "application_state_observer_stub.h"
 
 using namespace testing;
 using namespace testing::ext;
@@ -401,6 +402,46 @@ HWTEST_F(AmsMgrSchedulerTest, AmsMgrScheduler_010, TestSize.Level1)
     amsMgrScheduler->AbilityBehaviorAnalysis(token, preToken, visibility, perceptibility, connectionState);
 
     APP_LOGD("AmsMgrScheduler_010 end.");
+}
+
+/*
+ * Feature: AMS
+ * Function: IPC
+ * SubFunction: appmgr interface
+ * FunctionPoints: KillApplication interface
+ * CaseDescription: test IPC can transact data
+ */
+HWTEST_F(AmsMgrSchedulerTest, RegisterApplicationStateObserver_001, TestSize.Level0)
+{
+    APP_LOGD("RegisterApplicationStateObserver_001 start");
+    sptr<IApplicationStateObserver> observer = new ApplicationStateObserverStub();
+    auto mockAppMgrServiceInner = std::make_shared<MockAppMgrServiceInner>();
+    mockAppMgrServiceInner->RegisterApplicationStateObserver(observer);
+    int32_t err = mockAppMgrServiceInner->RegisterApplicationStateObserver(observer);
+    // repeat register return ERR_INVALID_VALUE
+    EXPECT_EQ(ERR_INVALID_VALUE, err);
+    APP_LOGD("RegisterApplicationStateObserver_001 end");
+}
+
+/*
+ * Feature: AMS
+ * Function: IPC
+ * SubFunction: appmgr interface
+ * FunctionPoints: KillApplication interface
+ * CaseDescription: test IPC can transact data
+ */
+HWTEST_F(AmsMgrSchedulerTest, UnregisterApplicationStateObserver_001, TestSize.Level0)
+{
+    APP_LOGD("UnregisterApplicationStateObserver_001 start");
+    sptr<IApplicationStateObserver> observer = new ApplicationStateObserverStub();
+    auto mockAppMgrServiceInner = std::make_shared<MockAppMgrServiceInner>();
+    int32_t err1 = mockAppMgrServiceInner->UnregisterApplicationStateObserver(observer);
+    // unregister not exist return ERR_INVALID_VALUE
+    EXPECT_EQ(ERR_INVALID_VALUE, err1);
+    int32_t err2 = mockAppMgrServiceInner->UnregisterApplicationStateObserver(nullptr);
+    // unregister null return ERR_INVALID_VALUE
+    EXPECT_EQ(ERR_INVALID_VALUE, err2);
+    APP_LOGD("UnregisterApplicationStateObserver_001 end");
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS

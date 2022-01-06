@@ -151,12 +151,12 @@ public:
 
 private:
     bool WriteImageDataToParcel(Parcel &parcel, std::string picName, char *data) const;
-    
+
 private:
     nlohmann::json jsonFormProviderData_;
     std::map<std::string, std::pair<sptr<Ashmem>, int32_t>> imageDataMap_;
     std::map<std::string, char *> rawImageBytesMap_;
-    int32_t imageDataState_;
+    int32_t imageDataState_ = 0;
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS
