@@ -59,12 +59,13 @@ const std::string JSON_KEY_SRC = "src";
 const std::string JSON_KEY_WINDOW = "window";
 const std::string JSON_KEY_DESIGN_WIDTH = "designWidth";
 const std::string JSON_KEY_AUTO_DESIGN_WIDTH = "autoDesignWidth";
+}  // namespace
 
-bool ReadFromParcelCustomizeData(std::vector<FormCustomizeData> &customizeDatas, Parcel &parcel)
+bool FormInfo::ReadCustomizeData(Parcel &parcel)
 {
-    int32_t customizeDataSize;
+    int32_t customizeDataSize = 0;
     READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, customizeDataSize);
-    for (auto i = 0; i < customizeDataSize; i++) {
+    for (auto i = 0; i < customizeDataSize; ++i) {
         FormCustomizeData customizeData;
         std::string customizeName = Str16ToStr8(parcel.ReadString16());
         std::string customizeValue = Str16ToStr8(parcel.ReadString16());
@@ -74,7 +75,6 @@ bool ReadFromParcelCustomizeData(std::vector<FormCustomizeData> &customizeDatas,
     }
     return true;
 }
-}  // namespace
 
 bool FormInfo::ReadFromParcel(Parcel &parcel)
 {

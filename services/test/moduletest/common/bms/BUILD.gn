@@ -34,9 +34,9 @@ group("moduletest") {
   testonly = true
 
   deps = [
-    "bundle_installer_test:moduletest",
-    "bundle_parser_test:moduletest",
-    "bundle_uninstall_test:moduletest",
-    "service_start_process_test:moduletest",
+    #"bundle_installer_test:moduletest",
+    #"bundle_parser_test:moduletest",
+    #"bundle_uninstall_test:moduletest",
+    #"service_start_process_test:moduletest",
   ]
 }

@@ -122,7 +122,7 @@ private:
         sptr<JSApplicationStateObserver> observer = nullptr;
         napi_get_value_int64(reinterpret_cast<napi_env>(&engine),
             reinterpret_cast<napi_value>(info.argv[INDEX_ZERO]), &observerId);
-        HILOG_INFO("OnUnregisterApplicationStateObserver observer:%{public}lld", observerId);
+        HILOG_INFO("OnUnregisterApplicationStateObserver observer:%{public}d", (int32_t)observerId);
         auto item = observerIds_.find(observerId);
         if (item != observerIds_.end()) {
             // match id
