@@ -64,34 +64,47 @@ bool BundleMgrHostImpl::GetApplicationInfos(
     return dataMgr->GetApplicationInfos(flags, userId, appInfos);
 }
 
-bool BundleMgrHostImpl::GetBundleInfo(const std::string &bundleName, const BundleFlag flag, BundleInfo &bundleInfo)
+bool BundleMgrHostImpl::GetBundleInfo(
+    const std::string &bundleName, const BundleFlag flag, BundleInfo &bundleInfo, int32_t userId)
 {
-    return GetBundleInfo(bundleName, static_cast<int32_t>(flag), bundleInfo);
+    return GetBundleInfo(bundleName, static_cast<int32_t>(flag), bundleInfo, userId);
 }
 
-bool BundleMgrHostImpl::GetBundleInfo(const std::string &bundleName, int32_t flags, BundleInfo &bundleInfo)
+bool BundleMgrHostImpl::GetBundleInfo(
+    const std::string &bundleName, int32_t flags, BundleInfo &bundleInfo, int32_t userId)
 {
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
         APP_LOGE("DataMgr is nullptr");
         return false;
     }
-    return dataMgr->GetBundleInfo(bundleName, flags, bundleInfo);
+    return dataMgr->GetBundleInfo(bundleName, flags, bundleInfo, userId);
 }
 
-bool BundleMgrHostImpl::GetBundleInfos(const BundleFlag flag, std::vector<BundleInfo> &bundleInfos)
-{
-    return GetBundleInfos(static_cast<int32_t>(flag), bundleInfos);
-}
-
-bool BundleMgrHostImpl::GetBundleInfos(int32_t flags, std::vector<BundleInfo> &bundleInfos)
+bool BundleMgrHostImpl::GetBundleUserInfos(
+    const std::string &bundleName, int32_t userId, std::vector<InnerBundleUserInfo> &innerBundleUserInfo)
 {
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
         APP_LOGE("DataMgr is nullptr");
         return false;
     }
-    return dataMgr->GetBundleInfos(flags, bundleInfos);
+    return dataMgr->GetInnerBundleUserInfosByUserId(bundleName, userId, innerBundleUserInfo);
+}
+
+bool BundleMgrHostImpl::GetBundleInfos(const BundleFlag flag, std::vector<BundleInfo> &bundleInfos, int32_t userId)
+{
+    return GetBundleInfos(static_cast<int32_t>(flag), bundleInfos, userId);
+}
+
+bool BundleMgrHostImpl::GetBundleInfos(int32_t flags, std::vector<BundleInfo> &bundleInfos, int32_t userId)
+{
+    auto dataMgr = GetDataMgrFromService();
+    if (dataMgr == nullptr) {
+        APP_LOGE("DataMgr is nullptr");
+        return false;
+    }
+    return dataMgr->GetBundleInfos(flags, bundleInfos, userId);
 }
 
 bool BundleMgrHostImpl::GetBundleNameForUid(const int uid, std::string &bundleName)
@@ -166,7 +179,7 @@ bool BundleMgrHostImpl::GetBundleInfosByMetaData(const std::string &metaData, st
 
 bool BundleMgrHostImpl::QueryAbilityInfo(const Want &want, AbilityInfo &abilityInfo)
 {
-    return QueryAbilityInfo(want, GET_ABILITY_INFO_WITH_APPLICATION, 0, abilityInfo);
+    return QueryAbilityInfo(want, GET_ABILITY_INFO_WITH_APPLICATION, Constants::UNSPECIFIED_USERID, abilityInfo);
 }
 
 bool BundleMgrHostImpl::QueryAbilityInfo(const Want &want, int32_t flags, int32_t userId, AbilityInfo &abilityInfo)
@@ -498,7 +511,8 @@ bool BundleMgrHostImpl::UnregisterBundleStatusCallback()
     return dataMgr->UnregisterBundleStatusCallback();
 }
 
-bool BundleMgrHostImpl::DumpInfos(const DumpFlag flag, const std::string &bundleName, std::string &result)
+bool BundleMgrHostImpl::DumpInfos(
+    const DumpFlag flag, const std::string &bundleName, int32_t userId, std::string &result)
 {
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
@@ -509,7 +523,7 @@ bool BundleMgrHostImpl::DumpInfos(const DumpFlag flag, const std::string &bundle
     switch (flag) {
         case DumpFlag::DUMP_BUNDLE_LIST: {
             std::vector<std::string> bundleNames;
-            ret = dataMgr->GetBundleList(bundleNames);
+            ret = dataMgr->GetBundleList(bundleNames, userId);
             if (ret) {
                 for (const auto &name : bundleNames) {
                     result.append(name);
@@ -521,13 +535,20 @@ bool BundleMgrHostImpl::DumpInfos(const DumpFlag flag, const std::string &bundle
         }
         case DumpFlag::DUMP_ALL_BUNDLE_INFO: {
             std::vector<BundleInfo> bundleInfos;
-            ret = GetBundleInfos(BundleFlag::GET_BUNDLE_WITH_ABILITIES, bundleInfos);
+            ret = GetBundleInfos(
+                BundleFlag::GET_BUNDLE_WITH_ABILITIES, bundleInfos, userId);
             if (ret) {
                 for (const auto &info : bundleInfos) {
+                    std::vector<InnerBundleUserInfo> innerBundleUserInfos;
+                    if (!GetBundleUserInfos(info.name, userId, innerBundleUserInfos)) {
+                        APP_LOGI("get all userInfo in bundle(%{public}s) failed", info.name.c_str());
+                    }
+
                     result.append(info.name);
                     result.append(":\n");
                     nlohmann::json jsonObject = info;
                     jsonObject["hapModuleInfos"] = info.hapModuleInfos;
+                    jsonObject["innerBundleUserInfos"] = innerBundleUserInfos;
                     result.append(jsonObject.dump(Constants::DUMP_INDENT));
                     result.append("\n");
                 }
@@ -537,12 +558,19 @@ bool BundleMgrHostImpl::DumpInfos(const DumpFlag flag, const std::string &bundle
         }
         case DumpFlag::DUMP_BUNDLE_INFO: {
             BundleInfo bundleInfo;
-            ret = GetBundleInfo(bundleName, BundleFlag::GET_BUNDLE_WITH_ABILITIES, bundleInfo);
+            ret = GetBundleInfo(
+                bundleName, BundleFlag::GET_BUNDLE_WITH_ABILITIES, bundleInfo, userId);
+            std::vector<InnerBundleUserInfo> innerBundleUserInfos;
+            if (!GetBundleUserInfos(bundleName, userId, innerBundleUserInfos)) {
+                APP_LOGI("get all userInfo in bundle(%{public}s) failed", bundleName.c_str());
+            }
+
             if (ret) {
                 result.append(bundleName);
                 result.append(":\n");
                 nlohmann::json jsonObject = bundleInfo;
                 jsonObject["hapModuleInfos"] = bundleInfo.hapModuleInfos;
+                jsonObject["innerBundleUserInfos"] = innerBundleUserInfos;
                 result.append(jsonObject.dump(Constants::DUMP_INDENT));
                 result.append("\n");
                 APP_LOGI("get %{public}s bundle info success", bundleName.c_str());
@@ -646,6 +674,11 @@ std::string BundleMgrHostImpl::GetAbilityIcon(const std::string &bundleName, con
 sptr<IBundleInstaller> BundleMgrHostImpl::GetBundleInstaller()
 {
     return DelayedSingleton<BundleMgrService>::GetInstance()->GetBundleInstaller();
+}
+
+sptr<IBundleUserMgr> BundleMgrHostImpl::GetBundleUserMgr()
+{
+    return DelayedSingleton<BundleMgrService>::GetInstance()->GetBundleUserMgr();
 }
 
 bool BundleMgrHostImpl::CanRequestPermission(

@@ -182,7 +182,6 @@ protected:
             },
             "baseDataDir": "/data/accounts/account_0/appdata/com.ohos.launcher",
             "bundleStatus": 1,
-            "gid": 10000,
             "hasEntry": true,
             "innerModuleInfos": {
                 "com.ohos.launcher": {
@@ -212,7 +211,6 @@ protected:
                     ]
                 }
             },
-            "isKeepData": false,
             "isSupportBackup": false,
             "mainAbility": "com.ohos.launchercom.ohos.launchercom.ohos.launcher.MainAbility",
             "skillInfos": {
@@ -230,8 +228,26 @@ protected:
                     }
                 ]
             },
-            "uid": 10000,
-            "userId_": 0
+            "userId_": 0,
+            "innerBundleUserInfos": {
+                "com.example.myapplication1_0": {
+                    "accessTokenId":-1,
+                    "bundleName":"com.example.myapplication1_0",
+                    "bundleUserInfo": {
+                        "enabled":true,
+                        "enabledAbilities":[
+
+                        ],
+                        "userId":0
+                    },
+                    "gids":[
+                        10000
+                    ],
+                    "installTime":17921,
+                    "uid":10000,
+                    "updateTime":17921
+                }
+            }
         }
     )"_json;
 

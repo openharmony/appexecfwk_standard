@@ -147,8 +147,18 @@ bool BundleMgrService::Init()
     }
     APP_LOGD("create dataManager success");
 
+    if (userMgrHost_ == nullptr) {
+        userMgrHost_ = new (std::nothrow) BundleUserMgrHostImpl();
+        if (!userMgrHost_) {
+            APP_LOGE("create userMgrHost instance fail");
+            return false;
+        }
+    }
+    APP_LOGD("create userMgrHost success");
+
     if (!(dataMgr_->LoadDataFromPersistentStorage())) {
         APP_LOGW("load data from persistent storage fail");
+        dataMgr_->AddUserId(currentUserId_);
         handler_->SendEvent(BMSEventHandler::BUNDLE_SCAN_START);
         needToScan_ = true;
     }
@@ -197,5 +207,14 @@ void BundleMgrService::SelfClean()
     }
 }
 
+sptr<BundleUserMgrHostImpl> BundleMgrService::GetBundleUserMgr() const
+{
+    return userMgrHost_;
+}
+
+int32_t BundleMgrService::GetCurrentUserId()
+{
+    return currentUserId_;
+}
 }  // namespace AppExecFwk
 }  // namespace OHOS

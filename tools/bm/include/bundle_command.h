@@ -144,10 +144,10 @@ private:
     ErrCode RunAsDisableCommand();
     ErrCode RunAsRecoverCommand();
 
-    std::string DumpBundleList() const;
-    std::string DumpBundleInfo(const std::string &bundleName) const;
-    std::string DumpBundleInfos() const;
-    std::string DumpShortcutInfos(const std::string &bundleName) const;
+    std::string DumpBundleList(int32_t userId) const;
+    std::string DumpBundleInfo(const std::string &bundleName, int32_t userId) const;
+    std::string DumpBundleInfos(int32_t userId) const;
+    std::string DumpShortcutInfos(const std::string &bundleName, int32_t userId) const;
 
     int32_t InstallOperation(const std::vector<std::string> &bundlePaths, InstallParam &installParam) const;
     int32_t UninstallOperation(const std::string &bundleName, const std::string &moduleName,
