@@ -70,11 +70,6 @@ public:
      * @return Returns the pointer of IBundleUserMgr object.
      */
     sptr<BundleUserMgrHostImpl> GetBundleUserMgr() const;
-    /**
-     * @brief Get Current UserId
-     * @return Returns Current UserId.
-     */
-    int32_t GetCurrentUserId();
 
 private:
     /**
@@ -100,7 +95,6 @@ private:
     sptr<BundleInstallerHost> installer_;
     sptr<BundleUserMgrHostImpl> userMgrHost_;
     std::shared_ptr<BundlePermissionsChangedMonitor> perChangeSub_;
-    int32_t currentUserId_ = Constants::DEFAULT_USERID;
 
     DISALLOW_COPY_AND_MOVE(BundleMgrService);
 };

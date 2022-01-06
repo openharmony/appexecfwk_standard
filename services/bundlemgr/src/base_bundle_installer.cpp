@@ -169,8 +169,22 @@ ErrCode BaseBundleInstaller::InnerProcessBundleInstall(std::unordered_map<std::s
     if (!GetInnerBundleInfo(oldInfo, isAppExist_)) {
         return ERR_APPEXECFWK_INSTALL_BUNDLE_MGR_SERVICE_ERROR;
     }
+
+    if (!isAppExist_ && installParam.needSavePreInstallInfo) {
+        PreInstallBundleInfo preInstallBundleInfo;
+        preInstallBundleInfo.SetBundleName(bundleName_);
+        preInstallBundleInfo.SetBundlePath(newInfos.begin()->first);
+        preInstallBundleInfo.SetAppType(newInfos.begin()->second.GetAppType());
+        dataMgr_->SavePreInstallBundleInfo(bundleName_, preInstallBundleInfo);
+    }
+
     ErrCode result = ERR_OK;
     if (isAppExist_) {
+        if (oldInfo.IsSingleUser()) {
+            APP_LOGE("singleUser app(%{public}s) does not supported upgrade.", bundleName_.c_str());
+            return ERR_APPEXECFWK_INSTALL_BUNDLE_MGR_SERVICE_ERROR;
+        }
+
         hasInstalledInUser_ = oldInfo.HasInnerBundleUserInfo(userId_);
         if (!hasInstalledInUser_) {
             APP_LOGD("new userInfo with bundleName %{public}s and userId %{public}d",
@@ -188,14 +202,6 @@ ErrCode BaseBundleInstaller::InnerProcessBundleInstall(std::unordered_map<std::s
         // to guaruntee that the hap version can be compatible.
         result = CheckVersionCompatibility(oldInfo);
         if (result != ERR_OK) {
-            if (!hasInstalledInUser_ && result == ERR_APPEXECFWK_INSTALL_VERSION_DOWNGRADE) {
-                APP_LOGD("The app has been installed under another user and has a larger version.");
-                for (auto &info : newInfos) {
-                    info.second.SetOnlyCreateBundleUser(true);
-                }
-                return ERR_OK;
-            }
-
             APP_LOGE("The app has been installed and update lower version bundle.");
             return result;
         }
@@ -211,20 +217,19 @@ ErrCode BaseBundleInstaller::InnerProcessBundleInstall(std::unordered_map<std::s
     auto it = newInfos.begin();
     if (!isAppExist_) {
         APP_LOGI("app is not exist");
-        modulePath_ = it->first;
-        if (installParam.needSavePreInstallInfo) {
-            PreInstallBundleInfo preInstallBundleInfo;
-            preInstallBundleInfo.SetBundleName(bundleName_);
-            preInstallBundleInfo.SetBundlePath(modulePath_);
-            preInstallBundleInfo.SetAppType(it->second.GetAppType());
-            dataMgr_->SavePreInstallBundleInfo(bundleName_, preInstallBundleInfo);
+        InnerBundleInfo &newInfo = it->second;
+        if (newInfo.IsSingleUser() &&
+            (dataMgr_->GetUserIdByCallingUid() != Constants::DEFAULT_USERID)) {
+            APP_LOGE("singleUser app(%{public}s) must be installed in user 0.", bundleName_.c_str());
+            return ERR_APPEXECFWK_INSTALL_BUNDLE_MGR_SERVICE_ERROR;
         }
 
+        modulePath_ = it->first;
         InnerBundleUserInfo newInnerBundleUserInfo;
         newInnerBundleUserInfo.bundleUserInfo.userId = userId_;
         newInnerBundleUserInfo.bundleName = bundleName_;
-        it->second.AddInnerBundleUserInfo(newInnerBundleUserInfo);
-        result = ProcessBundleInstallStatus(it->second, uid);
+        newInfo.AddInnerBundleUserInfo(newInnerBundleUserInfo);
+        result = ProcessBundleInstallStatus(newInfo, uid);
         if (result != ERR_OK) {
             return result;
         }
@@ -265,17 +270,17 @@ ErrCode BaseBundleInstaller::ProcessBundleInstall(const std::vector<std::string>
     const InstallParam &installParam, const Constants::AppType appType, int32_t &uid)
 {
     APP_LOGD("ProcessBundleInstall bundlePath install");
-    userId_ = GetUserId(installParam);
-    if (userId_ == Constants::INVALID_USERID) {
-        return ERR_APPEXECFWK_INSTALL_PARAM_ERROR;
-    }
-
     if (!dataMgr_) {
         dataMgr_ = DelayedSingleton<BundleMgrService>::GetInstance()->GetDataMgr();
         if (!dataMgr_) {
             APP_LOGE("Get dataMgr shared_ptr nullptr");
             return ERR_APPEXECFWK_UNINSTALL_BUNDLE_MGR_SERVICE_ERROR;
         }
+    }
+
+    userId_ = GetUserId(installParam);
+    if (userId_ == Constants::INVALID_USERID) {
+        return ERR_APPEXECFWK_INSTALL_PARAM_ERROR;
     }
 
     if (!dataMgr_->HasUserId(userId_)) {
@@ -411,15 +416,15 @@ ErrCode BaseBundleInstaller::ProcessBundleUninstall(
         return ERR_APPEXECFWK_UNINSTALL_INVALID_NAME;
     }
 
-    userId_ = GetUserId(installParam);
-    if (userId_ == Constants::INVALID_USERID) {
-        return ERR_APPEXECFWK_INSTALL_PARAM_ERROR;
-    }
-
     dataMgr_ = DelayedSingleton<BundleMgrService>::GetInstance()->GetDataMgr();
     if (!dataMgr_) {
         APP_LOGE("Get dataMgr shared_ptr nullptr");
         return ERR_APPEXECFWK_UNINSTALL_BUNDLE_MGR_SERVICE_ERROR;
+    }
+
+    userId_ = GetUserId(installParam);
+    if (userId_ == Constants::INVALID_USERID) {
+        return ERR_APPEXECFWK_INSTALL_PARAM_ERROR;
     }
 
     auto &mtx = dataMgr_->GetBundleMutex(bundleName);
@@ -492,16 +497,16 @@ ErrCode BaseBundleInstaller::ProcessBundleUninstall(
         return ERR_APPEXECFWK_UNINSTALL_INVALID_NAME;
     }
 
-    userId_ = GetUserId(installParam);
-    if (userId_ == Constants::INVALID_USERID) {
-        return ERR_APPEXECFWK_INSTALL_PARAM_ERROR;
-    }
-
     dataMgr_ = DelayedSingleton<BundleMgrService>::GetInstance()->GetDataMgr();
     cloneMgr_ = DelayedSingleton<BundleMgrService>::GetInstance()->GetCloneMgr();
     if (!dataMgr_) {
         APP_LOGE("Get dataMgr shared_ptr nullptr");
         return ERR_APPEXECFWK_UNINSTALL_BUNDLE_MGR_SERVICE_ERROR;
+    }
+
+    userId_ = GetUserId(installParam);
+    if (userId_ == Constants::INVALID_USERID) {
+        return ERR_APPEXECFWK_INSTALL_PARAM_ERROR;
     }
 
     auto &mtx = dataMgr_->GetBundleMutex(bundleName);
@@ -746,6 +751,7 @@ ErrCode BaseBundleInstaller::ProcessBundleUpdateStatus(
         APP_LOGE("the signature of the new bundle is not the same as old one");
         return ERR_APPEXECFWK_INSTALL_SIGN_INFO_INCONSISTENT;
     }
+
     // now there are two cases for updating:
     // 1. bundle exist, hap exist, update hap
     // 2. bundle exist, install new hap
@@ -964,7 +970,6 @@ ErrCode BaseBundleInstaller::RemoveBundleCodeDir(const InnerBundleInfo &info) co
 
 ErrCode BaseBundleInstaller::RemoveBundleDataDir(const InnerBundleInfo &info) const
 {
-    dataMgr_->DeleteUidAndUserId(info.GetUid(userId_));
     ErrCode result =
         InstalldClient::GetInstance()->RemoveBundleDataDir(info.GetBundleName(), userId_);
     if (result != ERR_OK) {
@@ -1358,12 +1363,12 @@ ErrCode BaseBundleInstaller::CheckSystemSize(const std::string &bundlePath, cons
 int32_t BaseBundleInstaller::GetUserId(const InstallParam& installParam) const
 {
     int32_t userId = installParam.userId;
-    int32_t curUserId = DelayedSingleton<BundleMgrService>::GetInstance()->GetCurrentUserId();
+    int32_t callingUserId = dataMgr_->GetUserIdByCallingUid();
     if (userId == Constants::UNSPECIFIED_USERID) {
-        userId = curUserId;
+        userId = callingUserId;
     }
 
-    if (userId != curUserId) {
+    if (userId != callingUserId) {
         needNotifyBundleStatus_ = false;
     }
 

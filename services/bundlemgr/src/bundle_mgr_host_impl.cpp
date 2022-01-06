@@ -194,7 +194,8 @@ bool BundleMgrHostImpl::QueryAbilityInfo(const Want &want, int32_t flags, int32_
 
 bool BundleMgrHostImpl::QueryAbilityInfos(const Want &want, std::vector<AbilityInfo> &abilityInfos)
 {
-    return QueryAbilityInfos(want, GET_ABILITY_INFO_WITH_APPLICATION, 0, abilityInfos);
+    return QueryAbilityInfos(
+        want, GET_ABILITY_INFO_WITH_APPLICATION, Constants::UNSPECIFIED_USERID, abilityInfos);
 }
 
 bool BundleMgrHostImpl::QueryAbilityInfos(
@@ -416,7 +417,8 @@ bool BundleMgrHostImpl::CleanBundleCacheFiles(
         return false;
     }
     ApplicationInfo applicationInfo;
-    if (!GetApplicationInfo(bundleName, ApplicationFlag::GET_BASIC_APPLICATION_INFO, 0, applicationInfo)) {
+    if (!GetApplicationInfo(bundleName, ApplicationFlag::GET_BASIC_APPLICATION_INFO,
+        Constants::UNSPECIFIED_USERID, applicationInfo)) {
         APP_LOGE("can not get application info of %{public}s", bundleName.c_str());
         return false;
     }
@@ -446,7 +448,8 @@ bool BundleMgrHostImpl::CleanBundleDataFiles(const std::string &bundleName, cons
         return false;
     }
     std::vector<ApplicationInfo> appInfos;
-    if (!GetApplicationInfos(ApplicationFlag::GET_BASIC_APPLICATION_INFO, 0, appInfos)) {
+    if (!GetApplicationInfos(
+        ApplicationFlag::GET_BASIC_APPLICATION_INFO, Constants::UNSPECIFIED_USERID, appInfos)) {
         APP_LOGE("can not get application info of %{public}s", bundleName.c_str());
         return false;
     }
