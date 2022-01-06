@@ -33,7 +33,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 InstalldHostImpl::InstalldHostImpl()
 {
     APP_LOGI("installd service instance is created");
@@ -316,5 +315,64 @@ std::string InstalldHostImpl::GetBundleDataDir(const std::string &el, const int 
     return dataDir;
 }
 
+ErrCode InstalldHostImpl::GetBundleStats(
+    const std::string &bundleName, const int32_t userId, std::vector<int64_t> &bundleStats)
+{
+    APP_LOGD("InstalldHostImpl::GetBundleStats start");
+    if (bundleName.empty()) {
+        APP_LOGE("Calling the function GetBundleStats with invalid param");
+        return ERR_APPEXECFWK_INSTALLD_PARAM_ERROR;
+    }
+    // index 0 : bundle data size
+    std::string path = Constants::BUNDLE_CODE_DIR + Constants::FILE_SEPARATOR_CHAR + bundleName;
+    int64_t fileSize = 0;
+    if (!InstalldOperator::GetDiskUsage(path, fileSize)) {
+        fileSize = Constants::INVALID_FILE_SIZE;
+    }
+    bundleStats.push_back(fileSize);
+
+    // index 1 : local bundle data size
+    std::vector<std::string> bundlePath;
+    for (auto &el : Constants::BUNDLE_EL) {
+        std::string filePath = Constants::BUNDLE_APP_DATA_BASE_DIR + el + Constants::FILE_SEPARATOR_CHAR +
+            std::to_string(userId) + Constants::FILE_SEPARATOR_CHAR + Constants::BASE + bundleName;
+        bundlePath.push_back(filePath);
+    }
+    std::vector<std::string> cachePath;
+    for (auto &st : bundlePath) {
+        InstalldOperator::TraverseCacheDirectory(st, cachePath);
+    }
+    int64_t bundleLocalSize = InstalldOperator::GetDiskUsageFromPath(bundlePath);
+    int64_t cacheSize = InstalldOperator::GetDiskUsageFromPath(cachePath);
+    if ((bundleLocalSize != Constants::INVALID_FILE_SIZE) && (cacheSize != Constants::INVALID_FILE_SIZE)) {
+        bundleLocalSize -= cacheSize;
+    }
+    bundleStats.push_back(bundleLocalSize);
+
+    // index 2 : distributed data size
+    std::string distributedfilePath = Constants::DISTRIBUTED_FILE;
+    distributedfilePath = distributedfilePath.replace(distributedfilePath.find("%"), 1, std::to_string(userId)) +
+        bundleName;
+    int64_t distributedFileSize = 0;
+    if (!InstalldOperator::GetDiskUsage(distributedfilePath, distributedFileSize)) {
+        distributedFileSize = Constants::INVALID_FILE_SIZE;
+    }
+    bundleStats.push_back(distributedFileSize);
+
+    // index 3 : database size
+    std::vector<std::string> dataBasePath;
+    for (auto &el : Constants::DATABASE_EL) {
+        std::string filePath = Constants::BUNDLE_APP_DATA_BASE_DIR + el + Constants::FILE_SEPARATOR_CHAR +
+            std::to_string(userId) + Constants::FILE_SEPARATOR_CHAR + Constants::DATABASE + bundleName;
+        dataBasePath.push_back(filePath);
+    }
+    int64_t databaseFileSize = InstalldOperator::GetDiskUsageFromPath(dataBasePath);
+    bundleStats.push_back(databaseFileSize);
+
+    // index 4 : cache size
+    bundleStats.push_back(cacheSize);
+    APP_LOGD("InstalldHostImpl::GetBundleStats end");
+    return ERR_OK;
+}
 }  // namespace AppExecFwk
 }  // namespace OHOS

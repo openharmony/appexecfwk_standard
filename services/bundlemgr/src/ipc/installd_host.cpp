@@ -45,6 +45,7 @@ void InstalldHost::init()
     funcMap_.emplace(IInstalld::Message::REMOVE_MODULE_DATA_DIR, &InstalldHost::HandleRemoveModuleDataDir);
     funcMap_.emplace(IInstalld::Message::CLEAN_BUNDLE_DATA_DIR, &InstalldHost::HandleCleanBundleDataDir);
     funcMap_.emplace(IInstalld::Message::REMOVE_DIR, &InstalldHost::HandleRemoveDir);
+    funcMap_.emplace(IInstalld::Message::GET_BUNDLE_STATS, &InstalldHost::HandleGetBundleStats);
 }
 
 int InstalldHost::OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option)
@@ -155,6 +156,20 @@ bool InstalldHost::HandleCleanBundleDataDir(MessageParcel &data, MessageParcel &
     std::string bundleDir = Str16ToStr8(data.ReadString16());
     ErrCode result = CleanBundleDataDir(bundleDir);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, reply, result);
+    return true;
+}
+
+bool InstalldHost::HandleGetBundleStats(MessageParcel &data, MessageParcel &reply)
+{
+    std::string bundleName = Str16ToStr8(data.ReadString16());
+    int32_t userId = data.ReadInt32();
+    std::vector<int64_t> bundleStats;
+    ErrCode result = GetBundleStats(bundleName, userId, bundleStats);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, reply, result);
+    if (!reply.WriteInt64Vector(bundleStats)) {
+        APP_LOGE("HandleGetBundleStats write failed");
+        return false;
+    }
     return true;
 }
 }  // namespace AppExecFwk

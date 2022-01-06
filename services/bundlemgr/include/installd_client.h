@@ -101,6 +101,15 @@ public:
      */
     ErrCode CleanBundleDataDir(const std::string &bundleDir);
     /**
+     * @brief Get bundle Stats.
+     * @param bundleName Indicates the bundle name.
+     * @param userId Indicates the user Id.
+     * @param bundleStats Indicates the bundle Stats.
+     * @return Returns ERR_OK if get stats successfully; returns error code otherwise.
+     */
+    ErrCode GetBundleStats(const std::string &bundleName, const int32_t userId, std::vector<int64_t> &bundleStats);
+
+    /**
      * @brief Reset the installd proxy object when installd service died.
      * @return
      */
