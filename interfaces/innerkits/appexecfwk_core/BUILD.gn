@@ -44,6 +44,7 @@ ohos_shared_library("appexecfwk_core") {
   ]
 
   sources = [
+    "src/appmgr/ability_state_data.cpp",
     "src/appmgr/ams_mgr_proxy.cpp",
     "src/appmgr/ams_mgr_stub.cpp",
     "src/appmgr/app_launch_data.cpp",
@@ -58,9 +59,13 @@ ohos_shared_library("appexecfwk_core") {
     "src/appmgr/app_service_manager.cpp",
     "src/appmgr/app_state_callback_host.cpp",
     "src/appmgr/app_state_callback_proxy.cpp",
+    "src/appmgr/app_state_data.cpp",
     "src/appmgr/app_task_info.cpp",
     "src/appmgr/configuration.cpp",
+    "src/appmgr/application_state_observer_proxy.cpp",
+    "src/appmgr/application_state_observer_stub.cpp",
     "src/appmgr/priority_object.cpp",
+    "src/appmgr/process_data.cpp",
     "src/appmgr/process_info.cpp",
     "src/appmgr/profile.cpp",
     "src/bundlemgr/bundle_installer_proxy.cpp",

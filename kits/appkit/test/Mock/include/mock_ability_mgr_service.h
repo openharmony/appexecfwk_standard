@@ -36,7 +36,7 @@ public:
     MOCK_METHOD2(ReleaseDataAbility, int(sptr<IAbilityScheduler>, const sptr<IRemoteObject> &));
     MOCK_METHOD2(AddWindowInfo, void(const sptr<IRemoteObject> &token, int32_t windowToken));
     MOCK_METHOD2(AttachAbilityThread, int(const sptr<IAbilityScheduler> &scheduler, const sptr<IRemoteObject> &token));
-    MOCK_METHOD3(AbilityTransitionDone, int(const sptr<IRemoteObject> &token, int state, const PacMap &));
+    MOCK_METHOD3(AbilityTransitionDone, int(const sptr<IRemoteObject> &token, int state, const PacMap &saveData));
     MOCK_METHOD2(
         ScheduleConnectAbilityDone, int(const sptr<IRemoteObject> &token, const sptr<IRemoteObject> &remoteObject));
     MOCK_METHOD1(ScheduleDisconnectAbilityDone, int(const sptr<IRemoteObject> &token));
@@ -62,6 +62,17 @@ public:
     MOCK_METHOD1(KillProcess, int(const std::string &bundleName));
     MOCK_METHOD2(UninstallApp, int(const std::string &bundleName, const int userId));
     MOCK_METHOD1(TerminateAbilityByRecordId, int(const int64_t recordId));
+
+    MOCK_METHOD1(LockMissionForCleanup, int(int32_t missionId));
+    MOCK_METHOD1(UnlockMissionForCleanup, int(int32_t missionId));
+    MOCK_METHOD1(RegisterMissionListener, int(const sptr<IMissionListener> &listener));
+    MOCK_METHOD1(UnRegisterMissionListener, int(const sptr<IMissionListener> &listener));
+    MOCK_METHOD3(
+        GetMissionInfos, int(const std::string& deviceId, int32_t numMax, std::vector<MissionInfo> &missionInfos));
+    MOCK_METHOD3(GetMissionInfo, int(const std::string& deviceId, int32_t missionId, MissionInfo &missionInfo));
+    MOCK_METHOD1(CleanMission, int(int32_t missionId));
+    MOCK_METHOD0(CleanAllMissions, int());
+    MOCK_METHOD1(MoveMissionToFront, int(int32_t missionId));
 
     void Wait()
     {

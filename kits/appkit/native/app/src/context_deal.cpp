@@ -740,7 +740,7 @@ void ContextDeal::initResourceManager(const std::shared_ptr<Global::Resource::Re
     resourceManager_ = resourceManager;
     APP_LOGI("ContextDeal::initResourceManager. End.");
 }
-    
+
 /**
  * @brief Obtains information about the caller of this ability.
  *
@@ -1108,6 +1108,16 @@ void ContextDeal::SetLifeCycleStateInfo(const AAFwk::LifeCycleStateInfo &info)
 int ContextDeal::GetMissionId()
 {
     return lifeCycleStateInfo_.missionId;
+}
+
+/**
+ * @brief Obtains the lifecycle state info.
+ *
+ * @return Returns the lifecycle state info.
+ */
+AAFwk::LifeCycleStateInfo ContextDeal::GetLifeCycleStateInfo() const
+{
+    return lifeCycleStateInfo_;
 }
 
 /**

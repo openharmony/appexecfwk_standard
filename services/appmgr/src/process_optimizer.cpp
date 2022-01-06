@@ -431,7 +431,10 @@ void ProcessOptimizer::OnLowMemoryAlert(const CgroupManager::LowMemoryLevel leve
     APP_LOGI("OnLowMemoryAlert level %{public}d", level);
     // Find the oldest background app.
     for (auto it(appLru_.rbegin()); it != appLru_.rend(); ++it) {
-        if ((*it)->GetState() == ApplicationState::APP_STATE_BACKGROUND) {
+        auto appRecord = (*it);
+        if (appRecord && appRecord->GetState() == ApplicationState::APP_STATE_BACKGROUND) {
+            APP_LOGI("OnLowMemoryAlert bundle:%{public}s, level:%{public}d",
+                appRecord->GetBundleName().c_str(), level);
             AppLowMemoryAlert(*it, level);
             break;
         }
@@ -440,7 +443,11 @@ void ProcessOptimizer::OnLowMemoryAlert(const CgroupManager::LowMemoryLevel leve
     // send pid which will be killed.
     std::list<AppPtr>::iterator iter = appLru_.begin();
     while (iter != appLru_.end()) {
-        auto priorityObject = (*iter)->GetPriorityObject();
+        auto appRecord = (*iter);
+        if (!appRecord) {
+            continue;
+        }
+        auto priorityObject = appRecord->GetPriorityObject();
         if (priorityObject != nullptr && priorityObject->GetCurAdj() >= G_MEMORY_LEVEL[level]) {
             auto pid = priorityObject->GetPid();
             if (pid <= 0) {
@@ -449,13 +456,12 @@ void ProcessOptimizer::OnLowMemoryAlert(const CgroupManager::LowMemoryLevel leve
                 continue;
             }
 
-            if (lmksClient_->ProcRemove(priorityObject->GetPid()) != ERR_OK) {
-                APP_LOGE("failed to remove pid (%{publid}d) from lmks.", priorityObject->GetPid());
-            } else {
-                APP_LOGE("success to remove pid (%{publid}d) from lmks.", priorityObject->GetPid());
+            APP_LOGI("remove pid (%{publid}d) from lmks, bundle:%{public}s", pid, appRecord->GetBundleName().c_str());
+            if (lmksClient_->ProcRemove(pid) == ERR_OK) {
                 iter = appLru_.erase(iter);
                 continue;
             }
+            APP_LOGE("remove error, pid:%{publid}d, bundle:%{public}s", pid, appRecord->GetBundleName().c_str());
         }
         iter++;
     }

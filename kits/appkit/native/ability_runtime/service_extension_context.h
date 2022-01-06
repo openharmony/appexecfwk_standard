@@ -18,8 +18,10 @@
 
 #include "extension_context.h"
 
-#include "ability_connect_callback_interface.h"
+#include "ability_connect_callback.h"
 #include "ability_info.h"
+#include "connection_manager.h"
+#include "start_options.h"
 #include "want.h"
 
 namespace OHOS {
@@ -44,6 +46,8 @@ public:
      */
     void StartAbility(const AAFwk::Want &want) const;
 
+    void StartAbility(const AAFwk::Want &want, const AAFwk::StartOptions &startOptions) const;
+
     /**
      * @brief Connects the current ability to an ability using the AbilityInfo.AbilityType.SERVICE template.
      *
@@ -53,7 +57,8 @@ public:
      *
      * @return True means success and false means failure
      */
-    bool ConnectAbility(const AAFwk::Want &want, const sptr<AAFwk::IAbilityConnection> &conn);
+    bool ConnectAbility(
+        const AAFwk::Want &want, const std::shared_ptr<AbilityConnectCallback> &connectCallback) const;
 
     /**
      * @brief Disconnects the current ability from an ability
@@ -61,7 +66,8 @@ public:
      * @param conn Indicates the IAbilityConnection callback object passed by connectAbility after the connection
      *              is set up. The IAbilityConnection object uniquely identifies a connection between two abilities.
      */
-    void DisconnectAbility(const sptr<AAFwk::IAbilityConnection> &conn);
+    void DisconnectAbility(
+        const AAFwk::Want &want, const std::shared_ptr<AbilityConnectCallback> &connectCallback) const;
 
     /**
      * @brief Destroys the current ability.

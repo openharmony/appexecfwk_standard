@@ -24,6 +24,7 @@
 #include "iremote_object.h"
 
 #include "ability_running_record.h"
+#include "ability_state_data.h"
 #include "application_info.h"
 #include "app_death_recipient.h"
 #include "app_launch_data.h"
@@ -382,6 +383,14 @@ public:
 
     void insertAbilityStageInfo(std::vector<HapModuleInfo> moduleInfos);
 
+    /**
+     * Notify observers when state change.
+     *
+     * @param ability, ability or extension record.
+     * @param state, ability or extension state.
+     */
+    void StateChangedNotifyObserver(const std::shared_ptr<AbilityRunningRecord> &ability, int32_t state, bool isAbility);
+
 private:
     // drive application state changes when ability state changes.
     /**
@@ -429,8 +438,9 @@ private:
     bool isKeepAliveApp = false; // Only resident processes can be set to true, please choose carefully
     ApplicationState curState_ = ApplicationState::APP_STATE_CREATE;  // current state of this process
 
-    std::shared_ptr<ApplicationInfo> appInfo_;  // the application's info of this process
+    std::shared_ptr<ApplicationInfo> appInfo_ = nullptr;  // the application's info of this process
     int32_t appRecordId_ = 0;
+    std::string appName_;
     std::string processName_;  // the name of this process
     int32_t uid_ = 0;
     static int64_t appEventId_;
@@ -441,10 +451,10 @@ private:
     std::map<int32_t, std::vector<HapModuleInfo>> abilityStage_;
     std::list<const sptr<IRemoteObject>> foregroundingAbilityTokens_;
     std::weak_ptr<AppMgrServiceInner> appMgrServiceInner_;
-    sptr<AppDeathRecipient> appDeathRecipient_;
-    std::shared_ptr<PriorityObject> priorityObject_;
-    std::shared_ptr<AppLifeCycleDeal> appLifeCycleDeal_;
-    std::shared_ptr<AMSEventHandler> eventHandler_;
+    sptr<AppDeathRecipient> appDeathRecipient_ = nullptr;
+    std::shared_ptr<PriorityObject> priorityObject_ = nullptr;
+    std::shared_ptr<AppLifeCycleDeal> appLifeCycleDeal_ = nullptr;
+    std::shared_ptr<AMSEventHandler> eventHandler_ = nullptr;
     bool isTerminating = false;
 };
 }  // namespace AppExecFwk

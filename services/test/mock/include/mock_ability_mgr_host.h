@@ -317,6 +317,53 @@ public:
     {
         return 0;
     }
+
+    virtual int LockMissionForCleanup(int32_t missionId) override
+    {
+        return 0;
+    }
+
+    virtual int UnlockMissionForCleanup(int32_t missionId) override
+    {
+        return 0;
+    }
+
+    virtual int RegisterMissionListener(const sptr<IMissionListener> &listener) override
+    {
+        return 0;
+    }
+
+    virtual int UnRegisterMissionListener(const sptr<IMissionListener> &listener) override
+    {
+        return 0;
+    }
+
+    virtual int GetMissionInfos(const std::string& deviceId, int32_t numMax,
+        std::vector<MissionInfo> &missionInfos) override
+    {
+        return 0;
+    }
+
+    virtual int GetMissionInfo(const std::string& deviceId, int32_t missionId,
+        MissionInfo &missionInfo) override
+    {
+        return 0;
+    }
+
+    virtual int CleanMission(int32_t missionId) override
+    {
+        return 0;
+    }
+
+    virtual int CleanAllMissions() override
+    {
+        return 0;
+    }
+
+    virtual int MoveMissionToFront(int32_t missionId) override
+    {
+        return 0;
+    }
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS

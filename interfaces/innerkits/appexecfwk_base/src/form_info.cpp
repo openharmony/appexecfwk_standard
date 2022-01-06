@@ -15,17 +15,17 @@
 
 #include "form_info.h"
 
+#include <errno.h>
 #include <fcntl.h>
+#include <string.h>
 #include <unistd.h>
-#include <cerrno>
-#include <cstring>
+
+#include "app_log_wrapper.h"
+#include "bundle_constants.h"
 #include "json_serializer.h"
 #include "nlohmann/json.hpp"
-#include "string_ex.h"
 #include "parcel_macro.h"
-#include "app_log_wrapper.h"
-#include "nlohmann/json.hpp"
-#include "bundle_constants.h"
+#include "string_ex.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -125,7 +125,10 @@ bool FormInfo::ReadFromParcel(Parcel &parcel)
         portraitLayouts.emplace_back(Str16ToStr8(parcel.ReadString16()));
     }
 
-    ReadFromParcelCustomizeData(customizeDatas, parcel);
+    if (!ReadCustomizeData(parcel)) {
+        return false;
+    }
+
     window.designWidth = parcel.ReadInt32();
     window.autoDesignWidth = parcel.ReadBool();
     return true;
@@ -200,7 +203,7 @@ void to_json(nlohmann::json &jsonObject, const FormCustomizeData &customizeDatas
     jsonObject = nlohmann::json{
         {JSON_KEY_NAME, customizeDatas.name},
         {JSON_KEY_VALUE, customizeDatas.value}
-        };
+    };
 }
 
 void to_json(nlohmann::json &jsonObject, const FormWindow &formWindow)
