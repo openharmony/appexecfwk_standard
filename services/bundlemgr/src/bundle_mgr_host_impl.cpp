@@ -559,7 +559,8 @@ bool BundleMgrHostImpl::DumpInfos(
         case DumpFlag::DUMP_BUNDLE_INFO: {
             BundleInfo bundleInfo;
             ret = GetBundleInfo(
-                bundleName, BundleFlag::GET_BUNDLE_WITH_ABILITIES, bundleInfo, userId);
+                bundleName, BundleFlag::GET_BUNDLE_WITH_ABILITIES | BundleFlag::GET_APPLICATION_INFO_WITH_PERMISSION,
+                bundleInfo, userId);
             std::vector<InnerBundleUserInfo> innerBundleUserInfos;
             if (!GetBundleUserInfos(bundleName, userId, innerBundleUserInfos)) {
                 APP_LOGI("get all userInfo in bundle(%{public}s) failed", bundleName.c_str());

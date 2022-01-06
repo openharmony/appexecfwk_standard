@@ -50,12 +50,30 @@ struct DefPermission {
     int32_t descriptionId;
 };
 
+struct DefinePermission {
+    std::string name;
+    std::string grantMode;
+    std::string availableLevel;
+    bool provisionEnable;
+    bool distributedSceneEnable = false;
+    std::string label;
+    int32_t labelId;
+    std::string description;
+    int32_t descriptionId;
+};
+
 struct UsedScene {
     std::vector<std::string> ability;
     std::string when;
 };
 
 struct ReqPermission {
+    std::string name;
+    std::string reason;
+    UsedScene usedScene;
+};
+
+struct RequestPermission {
     std::string name;
     std::string reason;
     UsedScene usedScene;
@@ -81,6 +99,8 @@ struct InnerModuleInfo {
     std::vector<std::string> reqCapabilities;
     std::vector<ReqPermission> reqPermissions;
     std::vector<DefPermission> defPermissions;
+    std::vector<RequestPermission> requestPermissions;
+    std::vector<DefinePermission> definePermissions;
     std::vector<std::string> abilityKeys;
     std::vector<std::string> skillKeys;
 };
@@ -815,6 +835,15 @@ public:
         return defPermissions;
     }
 
+    std::vector<DefinePermission> GetDefinePermissions() const
+    {
+        std::vector<DefinePermission> definePermissions;
+        if (innerModuleInfos_.count(currentPackage_) == 1) {
+            definePermissions = innerModuleInfos_.at(currentPackage_).definePermissions;
+        }
+        return definePermissions;
+    }
+
     std::vector<ReqPermission> GetReqPermissions() const
     {
         std::vector<ReqPermission> reqPermissions;
@@ -822,6 +851,15 @@ public:
             reqPermissions = innerModuleInfos_.at(currentPackage_).reqPermissions;
         }
         return reqPermissions;
+    }
+
+    std::vector<RequestPermission> GetRequestPermissions() const
+    {
+        std::vector<RequestPermission> requestPermissions;
+        if (innerModuleInfos_.count(currentPackage_) == 1) {
+            requestPermissions = innerModuleInfos_.at(currentPackage_).requestPermissions;
+        }
+        return requestPermissions;
     }
 
     bool FindModule(std::string modulePackage) const
@@ -1241,6 +1279,17 @@ public:
         }
         return moduleVec;
     }
+
+    uint32_t GetAccessTokenId(const int32_t userId) const
+    {
+        InnerBundleUserInfo userInfo;
+        if (GetInnerBundleUserInfo(userId, userInfo)) {
+            return userInfo.accessTokenId;
+        }
+        return 0;
+    }
+
+    void SetAccessTokenId(uint32_t accessToken, const int32_t userId);
 private:
     void GetBundleWithAbilities(
         int32_t flags, BundleInfo &bundleInfo, int32_t userId = Constants::UNSPECIFIED_USERID) const;
@@ -1288,6 +1337,8 @@ void from_json(const nlohmann::json &jsonObject, Skill &skill);
 void from_json(const nlohmann::json &jsonObject, Distro &distro);
 void from_json(const nlohmann::json &jsonObject, ReqPermission &ReqPermission);
 void from_json(const nlohmann::json &jsonObject, DefPermission &DefPermission);
+void from_json(const nlohmann::json &jsonObject, RequestPermission &requestPermission);
+void from_json(const nlohmann::json &jsonObject, DefinePermission &definePermission);
 void from_json(const nlohmann::json &jsonObject, InstallMark &installMark);
 
 }  // namespace AppExecFwk

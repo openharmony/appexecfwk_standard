@@ -59,5 +59,46 @@ bool PermissionDef::Marshalling(Parcel &parcel) const
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, descriptionId);
     return true;
 }
+
+bool PermissionDefine::ReadFromParcel(Parcel &parcel)
+{
+    permissionName = Str16ToStr8(parcel.ReadString16());
+    bundleName = Str16ToStr8(parcel.ReadString16());
+    label = Str16ToStr8(parcel.ReadString16());
+    description = Str16ToStr8(parcel.ReadString16());
+    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, availableLevel);
+    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, provisionEnable);
+    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, distributedSceneEnable);
+    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, grantMode);
+    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, labelId);
+    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, descriptionId);
+    return true;
+}
+
+PermissionDefine *PermissionDefine::Unmarshalling(Parcel &parcel)
+{
+    PermissionDefine *info = new (std::nothrow) PermissionDefine();
+    if (info && !info->ReadFromParcel(parcel)) {
+        APP_LOGW("read from parcel failed");
+        delete info;
+        info = nullptr;
+    }
+    return info;
+}
+
+bool PermissionDefine::Marshalling(Parcel &parcel) const
+{
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(permissionName));
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(bundleName));
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(label));
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(description));
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, availableLevel);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, provisionEnable);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, distributedSceneEnable);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, grantMode);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, labelId);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, descriptionId);
+    return true;
+}
 }  // namespace AppExecFwk
 }  // namespace OHOS

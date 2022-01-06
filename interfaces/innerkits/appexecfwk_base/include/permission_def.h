@@ -37,6 +37,23 @@ struct PermissionDef : public Parcelable {
     virtual bool Marshalling(Parcel &parcel) const override;
     static PermissionDef *Unmarshalling(Parcel &parcel);
 };
+
+struct PermissionDefine : public Parcelable {
+    std::string permissionName;
+    std::string bundleName;
+    int grantMode = 0;
+    int availableLevel = 1;
+    bool provisionEnable = true;
+    bool distributedSceneEnable = false;
+    std::string label;
+    int labelId = 0;
+    std::string description;
+    int descriptionId = 0;
+
+    bool ReadFromParcel(Parcel &parcel);
+    virtual bool Marshalling(Parcel &parcel) const override;
+    static PermissionDefine *Unmarshalling(Parcel &parcel);
+};
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_BASE_INCLUDE_PERMISSION_DEF_H
