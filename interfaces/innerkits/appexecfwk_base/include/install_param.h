@@ -45,6 +45,8 @@ struct InstallParam : public Parcelable {
     bool noCheckSignature = false;
     bool needSavePreInstallInfo = false;
     bool isPreInstallApp = false;
+    // should force uninstall when delete userinfo.
+    bool forceExecuted  = false;
 
     // the parcel object function is not const.
     bool ReadFromParcel(Parcel &parcel);

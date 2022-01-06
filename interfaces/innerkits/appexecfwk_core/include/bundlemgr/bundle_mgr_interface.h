@@ -17,19 +17,21 @@
 #define FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_CORE_INCLUDE_BUNDLEMGR_BUNDLE_MGR_INTERFACE_H
 
 #include "ability_info.h"
-#include "form_info.h"
-#include "shortcut_info.h"
-#include "common_event_info.h"
-#include "module_usage_record.h"
 #include "application_info.h"
+#include "bundle_constants.h"
 #include "bundle_info.h"
-#include "hap_module_info.h"
-#include "permission_def.h"
 #include "bundle_installer_interface.h"
 #include "bundle_status_callback_interface.h"
+#include "bundle_user_mgr_interface.h"
 #include "clean_cache_callback_interface.h"
+#include "common_event_info.h"
+#include "form_info.h"
+#include "hap_module_info.h"
+#include "module_usage_record.h"
 #include "on_permission_changed_callback_interface.h"
 #include "ohos/aafwk/content/want.h"
+#include "permission_def.h"
+#include "shortcut_info.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -99,17 +101,21 @@ public:
      * @param bundleName Indicates the application bundle name to be queried.
      * @param flag Indicates the information contained in the BundleInfo object to be returned.
      * @param bundleInfo Indicates the obtained BundleInfo object.
+     * @param userId Indicates the user ID.
      * @return Returns true if the BundleInfo is successfully obtained; returns false otherwise.
      */
-    virtual bool GetBundleInfo(const std::string &bundleName, const BundleFlag flag, BundleInfo &bundleInfo) = 0;
+    virtual bool GetBundleInfo(const std::string &bundleName, const BundleFlag flag,
+        BundleInfo &bundleInfo, int32_t userId = Constants::UNSPECIFIED_USERID) = 0;
     /**
      * @brief Obtains the BundleInfo based on a given bundle name.
      * @param bundleName Indicates the application bundle name to be queried.
      * @param flags Indicates the information contained in the BundleInfo object to be returned.
      * @param bundleInfo Indicates the obtained BundleInfo object.
+     * @param userId Indicates the user ID.
      * @return Returns true if the BundleInfo is successfully obtained; returns false otherwise.
      */
-    virtual bool GetBundleInfo(const std::string &bundleName, int32_t flags, BundleInfo &bundleInfo)
+    virtual bool GetBundleInfo(const std::string &bundleName, int32_t flags,
+        BundleInfo &bundleInfo, int32_t userId = Constants::UNSPECIFIED_USERID)
     {
         return false;
     }
@@ -117,16 +123,20 @@ public:
      * @brief Obtains BundleInfo of all bundles available in the system.
      * @param flag Indicates the flag used to specify information contained in the BundleInfo that will be returned.
      * @param bundleInfos Indicates all of the obtained BundleInfo objects.
+     * @param userId Indicates the user ID.
      * @return Returns true if the BundleInfos is successfully obtained; returns false otherwise.
      */
-    virtual bool GetBundleInfos(const BundleFlag flag, std::vector<BundleInfo> &bundleInfos) = 0;
+    virtual bool GetBundleInfos(const BundleFlag flag,
+        std::vector<BundleInfo> &bundleInfos, int32_t userId = Constants::UNSPECIFIED_USERID) = 0;
     /**
      * @brief Obtains BundleInfo of all bundles available in the system.
      * @param flags Indicates the flag used to specify information contained in the BundleInfo that will be returned.
      * @param bundleInfos Indicates all of the obtained BundleInfo objects.
+     * @param userId Indicates the user ID.
      * @return Returns true if the BundleInfos is successfully obtained; returns false otherwise.
      */
-    virtual bool GetBundleInfos(int32_t flags, std::vector<BundleInfo> &bundleInfos)
+    virtual bool GetBundleInfos(int32_t flags,
+        std::vector<BundleInfo> &bundleInfos, int32_t userId = Constants::UNSPECIFIED_USERID)
     {
         return false;
     }
@@ -416,10 +426,12 @@ public:
      * @brief Dump the bundle informations with specific flags.
      * @param flag Indicates the information contained in the dump result.
      * @param bundleName Indicates the bundle name if needed.
+     * @param userId Indicates the user ID.
      * @param result Indicates the dump information result.
      * @return Returns true if the dump result is successfully obtained; returns false otherwise.
      */
-    virtual bool DumpInfos(const DumpFlag flag, const std::string &bundleName, std::string &result) = 0;
+    virtual bool DumpInfos(
+        const DumpFlag flag, const std::string &bundleName, int32_t userId, std::string &result) = 0;
     /**
      * @brief Checks whether a specified application is enabled.
      * @param bundleName Indicates the bundle name of the application.
@@ -576,6 +588,11 @@ public:
      * @return Returns true if bundle name in the allow list successfully; returns false otherwise.
      */
     virtual bool CheckBundleNameInAllowList(const std::string &bundleName) = 0;
+	/**
+     * @brief Obtains the interface used to create or delete user.
+     * @return Returns a pointer to IBundleUserMgr class if exist; returns nullptr otherwise.
+     */
+    virtual sptr<IBundleUserMgr> GetBundleUserMgr() = 0;
     enum class Message {
         GET_APPLICATION_INFO = 0,
         GET_APPLICATION_INFOS,
@@ -645,6 +662,7 @@ public:
         GET_BUNDLE_INFO_WITH_INT_FLAGS,
         GET_BUNDLE_INFOS_WITH_INT_FLAGS,
         GET_BUNDLE_ARCHIVE_INFO_WITH_INT_FLAGS,
+        GET_BUNDLE_USER_MGR
     };
 };
 

@@ -31,11 +31,13 @@ public:
     {
         return false;
     }
-    virtual bool GetBundleInfo(const std::string &bundleName, const BundleFlag flag, BundleInfo &bundleInfo) override
+    virtual bool GetBundleInfo(
+        const std::string &bundleName, const BundleFlag flag, BundleInfo &bundleInfo, int32_t userId) override
     {
         return false;
     }
-    virtual bool GetBundleInfos(const BundleFlag flag, std::vector<BundleInfo> &bundleInfos) override
+    virtual bool GetBundleInfos(
+        const BundleFlag flag, std::vector<BundleInfo> &bundleInfos, int32_t userId) override
     {
         return false;
     }
@@ -60,6 +62,10 @@ public:
     virtual bool CheckIsSystemAppByUid(const int uid) override
     {
         return false;
+    }
+    virtual sptr<IBundleUserMgr> GetBundleUserMgr() override
+    {
+        return nullptr;
     }
     MOCK_METHOD2(GetBundleInfosByMetaData, bool(const std::string &metaData, std::vector<BundleInfo> &bundleInfos));
     MOCK_METHOD2(QueryAbilityInfo, bool(const Want &want, AbilityInfo &abilityInfo));
@@ -87,7 +93,8 @@ public:
     MOCK_METHOD1(RegisterBundleStatusCallback, bool(const sptr<IBundleStatusCallback> &bundleStatusCallback));
     MOCK_METHOD1(ClearBundleStatusCallback, bool(const sptr<IBundleStatusCallback> &bundleStatusCallback));
     MOCK_METHOD0(UnregisterBundleStatusCallback, bool());
-    virtual bool DumpInfos(const DumpFlag flag, const std::string &bundleName, std::string &result) override
+    virtual bool DumpInfos(
+        const DumpFlag flag, const std::string &bundleName, int32_t userId, std::string &result) override
     {
         return false;
     }

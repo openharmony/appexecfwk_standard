@@ -115,6 +115,15 @@ public:
      * @return Returns true if directory made successfully; returns false otherwise.
      */
     static bool MkOwnerDir(const std::string &path, bool isReadByOthers, const int uid, const int gid);
+    /**
+     * @brief Make a directory and change the owner and group ID of it.
+     * @param path Indicates the directory path to be made.
+     * @param mode Indicates the directory mode.
+     * @param uid Indicates the uid.
+     * @param uid Indicates the gid.
+     * @return Returns true if directory made successfully; returns false otherwise.
+     */
+    static bool MkOwnerDir(const std::string &path,  int mode, const int uid, const int gid);
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS

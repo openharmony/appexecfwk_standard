@@ -15,6 +15,7 @@
 
 #include "bundle_util.h"
 
+#include <chrono>
 #include <cinttypes>
 #include <dirent.h>
 #include <sys/stat.h>
@@ -28,6 +29,9 @@
 
 namespace OHOS {
 namespace AppExecFwk {
+namespace {
+const std::string::size_type EXPECT_SPLIT_SIZE = 2;
+}
 
 ErrCode BundleUtil::CheckFilePath(const std::string &bundlePath, std::string &realPath)
 {
@@ -194,6 +198,41 @@ bool BundleUtil::GetHapFilesFromBundlePath(const std::string& currentBundlePath,
     }
     closedir(dir);
     return true;
+}
+
+int64_t BundleUtil::GetCurrentTime()
+{
+    int64_t time =
+        std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch())
+        .count();
+    APP_LOGD("the current time is %{public}" PRId64, time);
+    return time;
+}
+
+void BundleUtil::DeviceAndNameToKey(
+    const std::string &deviceId, const std::string &bundleName, std::string &key)
+{
+    key.append(deviceId);
+    key.append(Constants::FILE_UNDERLINE);
+    key.append(bundleName);
+    APP_LOGD("bundleName = %{public}s", bundleName.c_str());
+}
+
+bool BundleUtil::KeyToDeviceAndName(
+    const std::string &key, std::string &deviceId, std::string &bundleName)
+{
+    bool ret = false;
+    std::vector<std::string> splitStrs;
+    OHOS::SplitStr(key, Constants::FILE_UNDERLINE, splitStrs);
+    // the expect split size should be 2.
+    // key rule is <deviceId>_<bundleName>
+    if (splitStrs.size() == EXPECT_SPLIT_SIZE) {
+        deviceId = splitStrs[0];
+        bundleName = splitStrs[1];
+        ret = true;
+    }
+    APP_LOGD("bundleName = %{public}s", bundleName.c_str());
+    return ret;
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS

@@ -16,6 +16,7 @@
 #ifndef FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_BUNDLE_PERMISSION_MGR_H
 #define FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_BUNDLE_PERMISSION_MGR_H
 
+#include "bundle_constants.h"
 #include "inner_bundle_info.h"
 #include "permission_def.h"
 #include "permission/permission_kit.h"
@@ -32,27 +33,38 @@ public:
     /**
      * @brief Handle the permissions in installation progress.
      * @param innerBundleInfo Indicates the current installing inner bundle information.
+     * @param userId Indicates the userId of the bundle.
+     * @param onlyOneUser Indicates is the only one user.
      * @return Returns true if the permissions install successfully; returns false otherwise.
      */
-    static bool InstallPermissions(const InnerBundleInfo &innerBundleInfo);
+    static bool InstallPermissions(
+        const InnerBundleInfo &innerBundleInfo, int32_t userId = Constants::DEFAULT_USERID, bool onlyOneUser = true);
     /**
      * @brief Handle the permissions in updating progress.
      * @param innerBundleInfo Indicates the current installing inner bundle information.
+     * @param userId Indicates the userId of the bundle.
+     * @param onlyOneUser Indicates is the only one user.
      * @return Returns true if the permissions updating successfully; returns false otherwise.
      */
-    static bool UpdatePermissions(const InnerBundleInfo &innerBundleInfo);
+    static bool UpdatePermissions(
+        const InnerBundleInfo &innerBundleInfo, int32_t userId = Constants::DEFAULT_USERID, bool onlyOneUser = true);
     /**
      * @brief Handle the permissions in uninstall progress.
      * @param innerBundleInfo Indicates the current installing inner bundle information.
+     * @param userId Indicates the userId of the bundle.
+     * @param onlyOneUser Indicates is the only one user.
      * @return Returns true if the permissions uninstall successfully; returns false otherwise.
      */
-    static bool UninstallPermissions(const InnerBundleInfo &innerBundleInfo);
+    static bool UninstallPermissions(
+        const InnerBundleInfo &innerBundleInfo, int32_t userId = Constants::DEFAULT_USERID, bool onlyOneUser = true);
     /**
      * @brief Check the permission whether granted for calling process.
      * @param permissionName Indicates the permission name.
+     * @param userId Indicates the userId of the bundle.
      * @return Returns true if the permissions has been granted; returns false otherwise.
      */
-    static bool CheckCallingPermission(const std::string &permissionName);
+    static bool CheckCallingPermission(
+        const std::string &permissionName, int32_t userId = Constants::DEFAULT_USERID);
     /**
      * @brief Verify whether a specified bundle has been granted a specific permission.
      * @param bundleName Indicates the name of the bundle to check.
@@ -100,9 +112,12 @@ private:
     /**
      * @brief Add and grant the reqPermissions to permission kit.
      * @param innerBundleInfo Indicates the current installing inner bundle information.
+     * @param userId Indicates the userId of the bundle.
+     * @param onlyOneUser Indicates is the only one user.
      * @return Returns 0 if the reqPermissions add and grant successfully; returns -1 otherwise.
      */
-    static int AddAndGrantedReqPermissions(const InnerBundleInfo &innerBundleInfo);
+    static int AddAndGrantedReqPermissions(const InnerBundleInfo &innerBundleInfo,
+        int32_t userId = Constants::DEFAULT_USERID, bool onlyOneUser = true);
     /**
      * @brief Grant a reqPermission from permission kit.
      * @param bundleName Indicates the name of the bundle.

@@ -75,6 +75,8 @@ ohos_shared_library("appexecfwk_core") {
     "src/bundlemgr/bundle_monitor.cpp",
     "src/bundlemgr/bundle_status_callback_host.cpp",
     "src/bundlemgr/bundle_status_callback_proxy.cpp",
+    "src/bundlemgr/bundle_user_mgr_host.cpp",
+    "src/bundlemgr/bundle_user_mgr_proxy.cpp",
     "src/bundlemgr/clean_cache_callback_host.cpp",
     "src/bundlemgr/clean_cache_callback_proxy.cpp",
     "src/bundlemgr/launcher_service.cpp",
