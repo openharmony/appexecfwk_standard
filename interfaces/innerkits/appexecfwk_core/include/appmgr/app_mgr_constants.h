@@ -44,6 +44,14 @@ enum class AbilityState {
     ABILITY_STATE_END,
 };
 
+enum class ExtensionState {
+    EXTENSION_STATE_CREATE = 0,
+    EXTENSION_STATE_READY,
+    EXTENSION_STATE_CONNECTED,
+    EXTENSION_STATE_DISCONNECTED,
+    EXTENSION_STATE_TERMINATED,
+};
+
 enum AppMgrResultCode {
     RESULT_OK = 0,
     ERROR_SERVICE_NOT_READY,

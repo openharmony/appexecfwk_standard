@@ -33,6 +33,7 @@
 #include "app_spawn_client.h"
 #include "app_task_info.h"
 #include "iapp_state_callback.h"
+#include "iapplication_state_observer.h"
 #include "app_process_manager.h"
 #include "remote_client_manager.h"
 #include "app_running_manager.h"
@@ -84,6 +85,24 @@ public:
      * @return
      */
     virtual void UpdateAbilityState(const sptr<IRemoteObject> &token, const AbilityState state);
+
+    /**
+     * UpdateExtensionState, call UpdateExtensionState() through the proxy object, update the extension status.
+     *
+     * @param token, the unique identification to update the extension.
+     * @param state, extension status that needs to be updated.
+     */
+    virtual void UpdateExtensionState(const sptr<IRemoteObject> &token, const ExtensionState state);
+
+    /**
+     * StateChangedNotifyObserver, Call ability state change.
+     *
+     * @param ability, the ability info.
+     * @param state, the ability state.
+     *
+     * @return
+     */
+    void StateChangedNotifyObserver(const AbilityStateData abilityStateData, bool isAbility);
 
     /**
      * RegisterAppStateCallback, register the callback.
@@ -486,6 +505,27 @@ public:
 
     bool CheckRemoteClient();
 
+    /**
+     * Register application or process state observer.
+     * @param observer, ability token.
+     * @return Returns ERR_OK on success, others on failure.
+     */
+    int32_t RegisterApplicationStateObserver(const sptr<IApplicationStateObserver> &observer);
+
+    /**
+     * Unregister application or process state observer.
+     * @param observer, ability token.
+     * @return Returns ERR_OK on success, others on failure.
+     */
+    int32_t UnregisterApplicationStateObserver(const sptr<IApplicationStateObserver> &observer);
+
+    /**
+     * Get Foreground Applications.
+     *
+     * @return Foreground Applications.
+     */
+    int32_t GetForegroundApplications(std::vector<AppStateData> &list);
+
 private:
 
     void StartEmptyResidentProcess(const std::string &appName, const std::string &processName,
@@ -671,6 +711,28 @@ private:
 
     int32_t KillApplicationByUserId(const std::string &bundleName, const int userId);
 
+    AppProcessData WrapAppProcessData(const std::shared_ptr<AppRunningRecord> &appRecord,
+        const ApplicationState state);
+
+    AppStateData WrapAppStateData(const std::shared_ptr<AppRunningRecord> &appRecord,
+        const ApplicationState state);
+
+    ProcessData WrapProcessData(const std::shared_ptr<AppRunningRecord> &appRecord);
+
+    void AddObserverDeathRecipient(const sptr<IApplicationStateObserver> &observer);
+
+    void RemoveObserverDeathRecipient(const sptr<IApplicationStateObserver> &observer);
+
+    void OnObserverDied(const wptr<IRemoteObject> &remote);
+
+    void HandleObserverDiedTask(const sptr<IRemoteObject> &observer);
+
+    bool ObserverExist(const sptr<IApplicationStateObserver> &observer);
+
+    void OnProcessCreated(const std::shared_ptr<AppRunningRecord> &appRecord);
+
+    void OnProcessDied(const std::shared_ptr<AppRunningRecord> &appRecord);
+
 private:
     /**
      * ClearUpApplicationData, clear the application data.
@@ -696,6 +758,10 @@ private:
      */
     void NotifyAppStatus(const std::string &bundleName, const std::string &eventData);
 
+    const std::string TASK_ON_CALLBACK_DIED = "OnCallbackDiedTask";
+    std::vector<sptr<IApplicationStateObserver>> appStateObservers_;
+    std::map<sptr<IRemoteObject>, sptr<IRemoteObject::DeathRecipient>> recipientMap_;
+    std::recursive_mutex observerLock_;
     std::vector<const sptr<IAppStateCallback>> appStateCallbacks_;
     std::shared_ptr<AppProcessManager> appProcessManager_;
     std::shared_ptr<RemoteClientManager> remoteClientManager_;

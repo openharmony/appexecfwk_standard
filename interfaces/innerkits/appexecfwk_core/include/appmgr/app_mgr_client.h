@@ -65,6 +65,15 @@ public:
     virtual AppMgrResultCode UpdateAbilityState(const sptr<IRemoteObject> &token, const AbilityState state);
 
     /**
+     * UpdateExtensionState, call UpdateExtensionState() through the proxy object, update the extension status.
+     *
+     * @param token, the unique identification to update the extension.
+     * @param state, extension status that needs to be updated.
+     * @return
+     */
+    virtual AppMgrResultCode UpdateExtensionState(const sptr<IRemoteObject> &token, const ExtensionState state);
+
+    /**
      * Register Application state callback.
      *
      * @param callback IAppStateCallback

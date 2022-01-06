@@ -18,6 +18,7 @@
 
 #include <vector>
 #include "form_provider_info.h"
+#include "form_info.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -51,6 +52,12 @@ public:
     bool formVisibleNotify = false;
     int formVisibleNotifyState = 0;
     int userId = 0;
+    std::string formSrc = "";
+    FormWindow formWindow;
+    uint32_t versionCode = 0;
+    std::string versionName = "";
+    uint32_t compatibleVersion = 0;
+    std::string icon = "";
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS

@@ -27,5 +27,10 @@ void ExtensionContext::SetToken(const sptr<IRemoteObject> &token)
     }
     token_ = token;
 }
+
+sptr<IRemoteObject> ExtensionContext::GetToken() const
+{
+    return token_;
+}
 }  // namespace AbilityRuntime
 }  // namespace OHOS

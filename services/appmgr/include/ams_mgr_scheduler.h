@@ -70,6 +70,15 @@ public:
     virtual void UpdateAbilityState(const sptr<IRemoteObject> &token, const AbilityState state) override;
 
     /**
+     * UpdateExtensionState, call UpdateExtensionState() through the proxy object, update the extension status.
+     *
+     * @param token, the unique identification to update the extension.
+     * @param state, extension status that needs to be updated.
+     * @return
+     */
+    virtual void UpdateExtensionState(const sptr<IRemoteObject> &token, const ExtensionState state) override;
+
+    /**
      * RegisterAppStateCallback, call RegisterAppStateCallback() through the proxy object, register the callback.
      *
      * @param callback, Ams register the callback.

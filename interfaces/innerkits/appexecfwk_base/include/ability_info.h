@@ -208,6 +208,9 @@ struct AbilityInfo : public Parcelable {
     bool grantPermission = false;
     bool directLaunch = true;
     AbilitySubType subType = AbilitySubType::UNSPECIFIED;
+    // new version fields
+    std::string srcEntrance;
+    std::vector<Metadata> metadata;
 
     bool ReadFromParcel(Parcel &parcel);
     virtual bool Marshalling(Parcel &parcel) const override;

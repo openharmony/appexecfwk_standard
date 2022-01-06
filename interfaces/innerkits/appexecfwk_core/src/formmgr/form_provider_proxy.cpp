@@ -337,9 +337,9 @@ int FormProviderProxy::FireFormEvent(
     MessageParcel reply;
     MessageOption option;
     int error = Remote()->SendRequest(
-        static_cast<uint32_t>(IFormProvider::Message::FORM_PROVIDER_NOTIFY_FORM_DELETE), 
-        data, 
-        reply, 
+        static_cast<uint32_t>(IFormProvider::Message::FORM_PROVIDER_EVENT_MESSAGE),
+        data,
+        reply,
         option);
     if (error != ERR_OK) {
         APP_LOGE("%{public}s, failed to SendRequest: %{public}d", __func__, error);

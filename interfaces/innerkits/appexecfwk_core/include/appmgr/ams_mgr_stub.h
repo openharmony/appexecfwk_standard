@@ -33,10 +33,19 @@ public:
     virtual int OnRemoteRequest(
         uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option) override;
 
+    /**
+     * UpdateExtensionState, call UpdateExtensionState() through the proxy object, update the extension status.
+     *
+     * @param token, the unique identification to update the extension.
+     * @param state, extension status that needs to be updated.
+     * @return
+     */
+    virtual void UpdateExtensionState(const sptr<IRemoteObject> &token, const ExtensionState state) override;
 private:
     int32_t HandleLoadAbility(MessageParcel &data, MessageParcel &reply);
     int32_t HandleTerminateAbility(MessageParcel &data, MessageParcel &reply);
     int32_t HandleUpdateAbilityState(MessageParcel &data, MessageParcel &reply);
+    int32_t HandleUpdateExtensionState(MessageParcel &data, MessageParcel &reply);
     int32_t HandleRegisterAppStateCallback(MessageParcel &data, MessageParcel &reply);
     int32_t HandleReset(MessageParcel &data, MessageParcel &reply);
     int32_t HandleAbilityBehaviorAnalysis(MessageParcel &data, MessageParcel &reply);

@@ -31,6 +31,7 @@ namespace {
 const std::string TASK_LOAD_ABILITY = "LoadAbilityTask";
 const std::string TASK_TERMINATE_ABILITY = "TerminateAbilityTask";
 const std::string TASK_UPDATE_ABILITY_STATE = "UpdateAbilityStateTask";
+const std::string TASK_UPDATE_EXTENSION_STATE = "UpdateExtensionStateTask";
 const std::string TASK_REGISTER_APP_STATE_CALLBACK = "RegisterAppStateCallbackTask";
 const std::string TASK_STOP_ALL_PROCESS = "StopAllProcessTask";
 const std::string TASK_ABILITY_BEHAVIOR_ANALYSIS = "AbilityBehaviorAnalysisTask";
@@ -74,6 +75,16 @@ void AmsMgrScheduler::UpdateAbilityState(const sptr<IRemoteObject> &token, const
     std::function<void()> updateAbilityStateFunc =
         std::bind(&AppMgrServiceInner::UpdateAbilityState, amsMgrServiceInner_, token, state);
     amsHandler_->PostTask(updateAbilityStateFunc, TASK_UPDATE_ABILITY_STATE);
+}
+
+void AmsMgrScheduler::UpdateExtensionState(const sptr<IRemoteObject> &token, const ExtensionState state)
+{
+    if (!IsReady()) {
+        return;
+    }
+    std::function<void()> updateExtensionStateFunc =
+        std::bind(&AppMgrServiceInner::UpdateExtensionState, amsMgrServiceInner_, token, state);
+    amsHandler_->PostTask(updateExtensionStateFunc, TASK_UPDATE_EXTENSION_STATE);
 }
 
 void AmsMgrScheduler::TerminateAbility(const sptr<IRemoteObject> &token)

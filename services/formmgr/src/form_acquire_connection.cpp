@@ -51,7 +51,7 @@ void FormAcquireConnection::OnAbilityConnectDone(
     APP_LOGI("%{public}s called.", __func__);
 
     if (resultCode != ERR_OK) {
-        APP_LOGE("%{public}s, abilityName:%{public}s, formId:%{public}" PRId64 ", resultCode:%{public}d", 
+        APP_LOGE("%{public}s, abilityName:%{public}s, formId:%{public}" PRId64 ", resultCode:%{public}d",
            __func__, element.GetAbilityName().c_str(), formId_, resultCode);
         return;
     }
@@ -59,6 +59,7 @@ void FormAcquireConnection::OnAbilityConnectDone(
     Want want;
     want.SetParams(wantParams_);
     FormUtil::CreateFormWant(info_.GetFormName(), info_.GetSpecificationId(), info_.IsTemporaryForm(), want);
+    want.SetElementName(info_.GetProviderBundleName(), info_.GetAbilityName());
     if (want.GetBoolParam(Constants::RECREATE_FORM_KEY, false)) {
         want.SetParam(Constants::ACQUIRE_TYPE, Constants::ACQUIRE_TYPE_RECREATE_FORM);
     } else {

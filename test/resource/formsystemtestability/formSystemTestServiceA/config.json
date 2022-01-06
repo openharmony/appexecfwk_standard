@@ -48,6 +48,11 @@
         "forms": [
           {
             "name": "Form_Js001",
+            "src": "pages/card/index",
+            "window": {
+              "designWidth": 720,
+              "autoDesignWidth": true
+            },
             "description": "form_description",
             "isDefault": true,
             "type": "JS",

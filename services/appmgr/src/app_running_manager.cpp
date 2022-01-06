@@ -306,6 +306,11 @@ void AppRunningManager::HandleAbilityAttachTimeOut(const sptr<IRemoteObject> &to
         return;
     }
 
+    std::shared_ptr<AbilityRunningRecord> abilityRecord = appRecord->GetAbilityRunningRecordByToken(token);
+    if (abilityRecord) {
+        abilityRecord->SetTerminating();
+    }
+
     if (appRecord->IsLastAbilityRecord(token)) {
         appRecord->SetTerminating();
     }
@@ -396,6 +401,23 @@ std::shared_ptr<AppRunningRecord> AppRunningManager::GetAppRunningRecordByBundle
         }
     }
     return nullptr;
+}
+
+void AppRunningManager::GetForegroundApplications(std::vector<AppStateData> &list)
+{
+    APP_LOGI("%{public}s, begin.", __func__);
+    std::lock_guard<std::recursive_mutex> guard(lock_);
+    for (const auto &item : appRunningRecordMap_) {
+        const auto &appRecord = item.second;
+        if (appRecord && appRecord->GetState() == ApplicationState::APP_STATE_FOREGROUND) {
+            AppStateData appData;
+            appData.bundleName = appRecord->GetBundleName();
+            appData.uid = appRecord->GetUid();
+            appData.state = static_cast<int32_t>(ApplicationState::APP_STATE_FOREGROUND);
+            list.push_back(appData);
+            APP_LOGI("%{public}s, bundleName:%{public}s", __func__, appData.bundleName.c_str());
+        }
+    }
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS

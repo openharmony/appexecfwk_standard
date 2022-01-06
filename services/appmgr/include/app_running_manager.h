@@ -25,6 +25,7 @@
 #include "app_running_record.h"
 #include "ability_info.h"
 #include "application_info.h"
+#include "app_state_data.h"
 #include "record_query_result.h"
 
 namespace OHOS {
@@ -119,6 +120,13 @@ public:
      * @return
      */
     void ClearAppRunningRecordMap();
+
+    /**
+     * Get Foreground Applications.
+     *
+     * @return Foreground Applications.
+     */
+    void GetForegroundApplications(std::vector<AppStateData> &list);
 
     void HandleTerminateTimeOut(int64_t eventId);
     void HandleAbilityAttachTimeOut(const sptr<IRemoteObject> &token);

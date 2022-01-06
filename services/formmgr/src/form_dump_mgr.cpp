@@ -134,6 +134,13 @@ void FormDumpMgr::DumpFormInfo(const FormRecord &formRecordInfo, std::string &fo
     formInfo += "    formTempFlg [" + std::to_string(formRecordInfo.formTempFlg) + "]";
     formInfo += "    formVisibleNotify [" + std::to_string(formRecordInfo.formVisibleNotify) + "]";
     formInfo += "    formVisibleNotifyState [" + std::to_string(formRecordInfo.formVisibleNotifyState) + "]";
+    formInfo += "    formSrc [" + formRecordInfo.formSrc + "]";
+    formInfo += "    designWidth [" + std::to_string(formRecordInfo.formWindow.designWidth) + "]";
+    formInfo += "    autoDesignWidth [" + std::to_string(formRecordInfo.formWindow.autoDesignWidth) + "]";
+    formInfo += "    versionCode [" + std::to_string(formRecordInfo.versionCode) + "]";
+    formInfo += "    versionName [" + formRecordInfo.versionName + "]";
+    formInfo += "    compatibleVersion [" + std::to_string(formRecordInfo.compatibleVersion) + "]";
+    formInfo += "    icon [" + formRecordInfo.icon + "]";
 
     if (formRecordInfo.hapSourceDirs.size() > 0) {
         formInfo += "    hapSourceDirs [";
