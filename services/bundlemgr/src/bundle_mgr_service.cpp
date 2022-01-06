@@ -158,7 +158,7 @@ bool BundleMgrService::Init()
 
     if (!(dataMgr_->LoadDataFromPersistentStorage())) {
         APP_LOGW("load data from persistent storage fail");
-        dataMgr_->AddUserId(currentUserId_);
+        dataMgr_->AddUserId(Constants::DEFAULT_USERID);
         handler_->SendEvent(BMSEventHandler::BUNDLE_SCAN_START);
         needToScan_ = true;
     }
@@ -210,11 +210,6 @@ void BundleMgrService::SelfClean()
 sptr<BundleUserMgrHostImpl> BundleMgrService::GetBundleUserMgr() const
 {
     return userMgrHost_;
-}
-
-int32_t BundleMgrService::GetCurrentUserId()
-{
-    return currentUserId_;
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS
