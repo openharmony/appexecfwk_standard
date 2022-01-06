@@ -421,5 +421,80 @@ int AppMgrProxy::GetParcelableInfos(MessageParcel &reply, std::vector<T> &parcel
     APP_LOGD("get parcelable infos success");
     return NO_ERROR;
 }
+
+int AppMgrProxy::RegisterApplicationStateObserver(
+    const sptr<IApplicationStateObserver> &observer)
+{
+    APP_LOGD("RegisterApplicationStateObserver start");
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option;
+    if (!WriteInterfaceToken(data)) {
+        return ERR_FLATTEN_OBJECT;
+    }
+    if (!data.WriteParcelable(observer->AsObject())) {
+        APP_LOGE("observer write failed.");
+        return ERR_FLATTEN_OBJECT;
+    }
+
+    auto error = Remote()->SendRequest(static_cast<uint32_t>(IAppMgr::Message::REGISTER_APPLICATION_STATE_OBSERVER),
+        data, reply, option);
+    if (error != NO_ERROR) {
+        APP_LOGE("Send request error: %{public}d", error);
+        return error;
+    }
+    return reply.ReadInt32();
+}
+
+int AppMgrProxy::UnregisterApplicationStateObserver(
+    const sptr<IApplicationStateObserver> &observer)
+{
+    APP_LOGD("UnregisterApplicationStateObserver start");
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option;
+    if (!WriteInterfaceToken(data)) {
+        return ERR_FLATTEN_OBJECT;
+    }
+    if (!data.WriteParcelable(observer->AsObject())) {
+        APP_LOGE("observer write failed.");
+        return ERR_FLATTEN_OBJECT;
+    }
+
+    auto error = Remote()->SendRequest(static_cast<uint32_t>(IAppMgr::Message::UNREGISTER_APPLICATION_STATE_OBSERVER),
+        data, reply, option);
+    if (error != NO_ERROR) {
+        APP_LOGE("Send request error: %{public}d", error);
+        return error;
+    }
+    return reply.ReadInt32();
+}
+
+int AppMgrProxy::GetForegroundApplications(std::vector<AppStateData> &list)
+{
+    APP_LOGD("GetForegroundApplications start");
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option;
+    if (!WriteInterfaceToken(data)) {
+        return ERR_FLATTEN_OBJECT;
+    }
+    auto error = Remote()->SendRequest(static_cast<uint32_t>(IAppMgr::Message::GET_FOREGROUND_APPLICATIONS),
+        data, reply, option);
+    if (error != NO_ERROR) {
+        APP_LOGE("GetForegroundApplications fail, error: %{public}d", error);
+        return error;
+    }
+    int32_t infoSize = reply.ReadInt32();
+    for (int32_t i = 0; i < infoSize; i++) {
+        std::unique_ptr<AppStateData> info(reply.ReadParcelable<AppStateData>());
+        if (!info) {
+            APP_LOGE("Read Parcelable infos failed.");
+            return ERR_INVALID_VALUE;
+        }
+        list.emplace_back(*info);
+    }
+    return reply.ReadInt32();
+}
 }  // namespace AppExecFwk
 }  // namespace OHOS

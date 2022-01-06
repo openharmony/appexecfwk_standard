@@ -38,7 +38,7 @@ struct FormCustomizeData {
 };
 
 struct FormWindow {
-    int32_t designWidth;
+    int32_t designWidth = 0;
     bool autoDesignWidth = false;
 };
 
@@ -73,6 +73,9 @@ struct FormInfo : public Parcelable {
     bool ReadFromParcel(Parcel &parcel);
     virtual bool Marshalling(Parcel &parcel) const override;
     static FormInfo *Unmarshalling(Parcel &parcel);
+
+private:
+    bool ReadCustomizeData(Parcel &parcel);
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS

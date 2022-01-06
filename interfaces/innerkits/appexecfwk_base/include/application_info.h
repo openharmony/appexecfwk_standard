@@ -33,6 +33,12 @@ enum ApplicationFlag {
     GET_APPLICATION_INFO_WITH_DISABLE = 0x00000200,
 };
 
+struct Metadata {
+    std::string name;
+    std::string value;
+    std::string resource;
+};
+
 struct CustomizeData : public Parcelable {
     std::string name;
     std::string value;

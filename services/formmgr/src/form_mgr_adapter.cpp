@@ -394,12 +394,6 @@ int FormMgrAdapter::UpdateForm(const int64_t formId,
         return ERR_APPEXECFWK_FORM_NOT_EXIST_ID;
     }
 
-    // check then form under current user
-    if (!FormDataMgr::GetInstance().IsCallingUidValid(formRecord.formUserUids)) {
-        APP_LOGE("%{public}s error, not under current user, formId:%{public}" PRId64 ".", __func__, matchedFormId);
-        return ERR_APPEXECFWK_FORM_NOT_EXIST_ID;
-    }
-
     // check bundleName match
     if (formRecord.bundleName.compare(bundleName) != 0) {
         APP_LOGE("%{public}s error, not match bundleName:%{public}s.", __func__, bundleName.c_str());
@@ -1144,10 +1138,14 @@ bool FormMgrAdapter::IsDimensionValid(const FormInfo &formInfo, int dimensionId)
  * @param formInfo Form info.
  * @param itemInfo Form configure info.
  */
-ErrCode FormMgrAdapter::CreateFormItemInfo(const BundleInfo &bundleInfo, 
+ErrCode FormMgrAdapter::CreateFormItemInfo(const BundleInfo &bundleInfo,
     const FormInfo &formInfo, FormItemInfo &itemInfo)
 {
     itemInfo.SetProviderBundleName(bundleInfo.name);
+    itemInfo.SetVersionCode(bundleInfo.versionCode);
+    itemInfo.SetVersionName(bundleInfo.versionName);
+    itemInfo.SetCompatibleVersion(bundleInfo.compatibleVersion);
+
     sptr<IBundleMgr> iBundleMgr = FormBmsHelper::GetInstance().GetBundleMgr();
     if (iBundleMgr == nullptr) {
         APP_LOGE("GetFormInfo, failed to get IBundleMgr.");
@@ -1159,6 +1157,9 @@ ErrCode FormMgrAdapter::CreateFormItemInfo(const BundleInfo &bundleInfo,
         return ERR_APPEXECFWK_FORM_GET_INFO_FAILED;
     }
     itemInfo.SetHostBundleName(hostBundleName);
+    std::string icon = iBundleMgr->GetAbilityIcon(bundleInfo.name, formInfo.abilityName);
+    itemInfo.SetIcon(icon);
+
     itemInfo.SetAbilityName(formInfo.abilityName);
     itemInfo.SetModuleName(formInfo.moduleName); // formInfo.moduleName: bundleMagr do not set
     itemInfo.SetFormName(formInfo.name);
@@ -1167,6 +1168,8 @@ ErrCode FormMgrAdapter::CreateFormItemInfo(const BundleInfo &bundleInfo,
     itemInfo.SetScheduledUpdateTime(formInfo.scheduledUpateTime);
     itemInfo.SetJsComponentName(formInfo.jsComponentName);
     itemInfo.SetFormVisibleNotify(formInfo.formVisibleNotify);
+    itemInfo.SetFormSrc(formInfo.src);
+    itemInfo.SetFormWindow(formInfo.window);
 
     for (const auto &abilityInfo : bundleInfo.abilityInfos) {
         if (abilityInfo.name == formInfo.abilityName) {
@@ -1176,7 +1179,7 @@ ErrCode FormMgrAdapter::CreateFormItemInfo(const BundleInfo &bundleInfo,
 
     APP_LOGI("%{public}s moduleInfos size: %{public}zu", __func__, bundleInfo.applicationInfo.moduleInfos.size());
     for (const auto &item : bundleInfo.applicationInfo.moduleInfos) {
-        APP_LOGI("%{public}s moduleInfos,  moduleName: %{public}s, moduleSourceDir: %{public}s", __func__, 
+        APP_LOGI("%{public}s moduleInfos,  moduleName: %{public}s, moduleSourceDir: %{public}s", __func__,
             item.moduleName.c_str(), item.moduleSourceDir.c_str());
         if (formInfo.moduleName == item.moduleName) {
             itemInfo.AddHapSourceDirs(item.moduleSourceDir);

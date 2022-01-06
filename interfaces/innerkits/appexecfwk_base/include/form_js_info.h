@@ -19,6 +19,7 @@
 
 #include <string>
 #include "form_provider_data.h"
+#include "form_info.h"
 #include "parcel.h"
 
 namespace OHOS {
@@ -41,6 +42,12 @@ struct FormJsInfo : public Parcelable {
     std::string cssPath;
     std::string jsPath;
     std::string fileReousePath;
+    std::string formSrc;
+    FormWindow formWindow;
+    uint32_t versionCode = 0;
+    std::string versionName;
+    uint32_t compatibleVersion = 0;
+    std::string icon;
 
     bool ReadFromParcel(Parcel &parcel);
     virtual bool Marshalling(Parcel &parcel) const override;

@@ -23,6 +23,7 @@
 #include "app_record_id.h"
 #include "mock_application.h"
 #include "mock_app_mgr_service.h"
+#include "application_state_observer_stub.h"
 
 using namespace testing::ext;
 
@@ -266,7 +267,6 @@ HWTEST_F(AmsIpcAppMgrInterfaceTest, GetAllRunningProcesses_010, TestSize.Level1)
     APP_LOGD("GetAllRunningProcesses_009 end");
 }
 
-
 /*
  * Feature: AMS
  * Function: IPC
@@ -300,6 +300,54 @@ HWTEST_F(AmsIpcAppMgrInterfaceTest, GetSystemMemoryAttr_0100, TestSize.Level1)
     EXPECT_TRUE(memInfo.isSysInlowMem_);
 
     APP_LOGD("GetSystemMemoryAttr_0100 end");
+}
+
+/*
+ * Feature: AMS
+ * Function: IPC
+ * SubFunction: appmgr interface
+ * FunctionPoints: KillApplication interface
+ * CaseDescription: test IPC can transact data
+ */
+HWTEST_F(AmsIpcAppMgrInterfaceTest, RegisterApplicationStateObserver_001, TestSize.Level0)
+{
+    APP_LOGD("RegisterApplicationStateObserver_001 start");
+
+    sptr<IApplicationStateObserver> observer = new ApplicationStateObserverStub();
+    sptr<MockAppMgrService> mockAppMgr(new MockAppMgrService());
+    sptr<IAppMgr> appMgrClient = iface_cast<IAppMgr>(mockAppMgr);
+
+    EXPECT_CALL(*mockAppMgr, RegisterApplicationStateObserver(_)).Times(1).WillOnce(Return(OHOS::NO_ERROR));
+
+    int32_t err = appMgrClient->RegisterApplicationStateObserver(observer);
+
+    EXPECT_EQ(OHOS::NO_ERROR, err);
+
+    APP_LOGD("RegisterApplicationStateObserver_001 end");
+}
+
+/*
+ * Feature: AMS
+ * Function: IPC
+ * SubFunction: appmgr interface
+ * FunctionPoints: KillApplication interface
+ * CaseDescription: test IPC can transact data
+ */
+HWTEST_F(AmsIpcAppMgrInterfaceTest, UnregisterApplicationStateObserver_001, TestSize.Level0)
+{
+    APP_LOGD("UnregisterApplicationStateObserver_001 start");
+
+    sptr<IApplicationStateObserver> observer = new ApplicationStateObserverStub();
+    sptr<MockAppMgrService> mockAppMgr(new MockAppMgrService());
+    sptr<IAppMgr> appMgrClient = iface_cast<IAppMgr>(mockAppMgr);
+
+    EXPECT_CALL(*mockAppMgr, UnregisterApplicationStateObserver(_)).Times(1).WillOnce(Return(OHOS::NO_ERROR));
+
+    int32_t err = appMgrClient->UnregisterApplicationStateObserver(observer);
+
+    EXPECT_EQ(OHOS::NO_ERROR, err);
+
+    APP_LOGD("UnregisterApplicationStateObserver_001 end");
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS

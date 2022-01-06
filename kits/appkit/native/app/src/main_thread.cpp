@@ -25,6 +25,7 @@
 #include "bytrace.h"
 #include "context_deal.h"
 #include "context_impl.h"
+#include "form_extension.h"
 #include "if_system_ability_manager.h"
 #include "iservice_registry.h"
 #include "js_runtime.h"
@@ -391,8 +392,8 @@ void MainThread::ScheduleLaunchAbility(const AbilityInfo &info, const sptr<IRemo
     } else {
         BundleInfo bundleInfo;
         bundleMgr->GetBundleInfo(abilityInfo->bundleName, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo);
-        abilityRecord->SetTargetVersion(bundleInfo.targetVersion);
-        APP_LOGI("MainThread::ScheduleLaunchAbility targetVersion:%{public}d", bundleInfo.targetVersion);
+        abilityRecord->SetCompatibleVersion(bundleInfo.compatibleVersion);
+        APP_LOGI("MainThread::ScheduleLaunchAbility compatibleVersion:%{public}d", bundleInfo.compatibleVersion);
     }
 
     auto task = [appThread = this, abilityRecord]() { appThread->HandleLaunchAbility(abilityRecord); };
@@ -741,19 +742,11 @@ void MainThread::HandleLaunchApplication(const AppLaunchData &appLaunchData)
         // Create runtime
         AbilityRuntime::Runtime::Options options;
         options.codePath = appInfo.codePath;
+        options.eventRunner = mainHandler_->GetEventRunner();
         auto runtime = AbilityRuntime::Runtime::Create(options);
         if (!runtime) {
             APP_LOGE("OHOSApplication::OHOSApplication: Failed to create runtime");
             return;
-        }
-
-        if (runtime->GetLanguage() == AbilityRuntime::Runtime::Language::JS) {
-            std::unique_ptr<std::function<void()>> idleTask = std::make_unique<std::function<void()>>();
-            *idleTask = [&jsRuntime = static_cast<AbilityRuntime::JsRuntime&>(*runtime), &idleTask = *idleTask]() {
-                jsRuntime.GetNativeEngine().Loop(LOOP_NOWAIT);
-                EventHandler::Current()->PostIdleTask(idleTask);
-            };
-            mainHandler_->PostIdleTask(*idleTask.release());
         }
 
         application_->SetRuntime(std::move(runtime));
@@ -762,6 +755,9 @@ void MainThread::HandleLaunchApplication(const AppLaunchData &appLaunchData)
         });
         AbilityLoader::GetInstance().RegisterExtension("ServiceExtension", [application = application_]() {
             return AbilityRuntime::ServiceExtension::Create(application->GetRuntime());
+        });
+        AbilityLoader::GetInstance().RegisterExtension("FormExtension", [application = application_]() {
+            return AbilityRuntime::FormExtension::Create(application->GetRuntime());
         });
     }
 

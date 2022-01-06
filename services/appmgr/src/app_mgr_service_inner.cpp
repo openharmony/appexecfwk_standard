@@ -20,6 +20,7 @@
 #include <sys/stat.h>
 
 #include "app_log_wrapper.h"
+#include "application_state_observer_stub.h"
 #include "datetime_ex.h"
 #include "perf_profile.h"
 
@@ -244,6 +245,7 @@ void AppMgrServiceInner::ApplicationTerminated(const int32_t recordId)
     OnAppStateChanged(appRecord, ApplicationState::APP_STATE_TERMINATED);
     appRunningManager_->RemoveAppRunningRecordById(recordId);
     RemoveAppFromRecentListById(recordId);
+    OnProcessDied(appRecord);
 
     APP_LOGI("application is terminated");
 }
@@ -603,6 +605,25 @@ void AppMgrServiceInner::UpdateAbilityState(const sptr<IRemoteObject> &token, co
     APP_LOGD("end");
 }
 
+void AppMgrServiceInner::UpdateExtensionState(const sptr<IRemoteObject> &token, const ExtensionState state)
+{
+    if (!token) {
+        APP_LOGE("token is null!");
+        return;
+    }
+    auto appRecord = GetAppRunningRecordByAbilityToken(token);
+    if (!appRecord) {
+        APP_LOGE("app is not exist!");
+        return;
+    }
+    auto abilityRecord = appRecord->GetAbilityRunningRecordByToken(token);
+    if (!abilityRecord) {
+        APP_LOGE("can not find ability record!");
+        return;
+    }
+    appRecord->StateChangedNotifyObserver(abilityRecord, static_cast<int32_t>(state), false);
+}
+
 void AppMgrServiceInner::OnStop()
 {
     appRunningManager_->ClearAppRunningRecordMap();
@@ -900,16 +921,53 @@ void AppMgrServiceInner::OnAppStateChanged(
 
     for (const auto &callback : appStateCallbacks_) {
         if (callback != nullptr) {
-            AppProcessData processData;
-            processData.appName = appRecord->GetName();
-            processData.processName = appRecord->GetProcessName();
-            processData.pid = appRecord->GetPriorityObject()->GetPid();
-            processData.appState = state;
-            processData.uid = appRecord->GetUid();
-            callback->OnAppStateChanged(processData);
+            callback->OnAppStateChanged(WrapAppProcessData(appRecord, state));
+        }
+    }
+
+    if (state == ApplicationState::APP_STATE_FOREGROUND || state == ApplicationState::APP_STATE_BACKGROUND) {
+        AppStateData data = WrapAppStateData(appRecord, state);
+        APP_LOGD("OnForegroundApplicationChanged, size:%{public}d, name:%{public}s, uid:%{public}d, state:%{public}d",
+            (int32_t)appStateObservers_.size(), data.bundleName.c_str(), data.uid, data.state);
+        std::lock_guard<std::recursive_mutex> lockNotify(observerLock_);
+        for (const auto &observer : appStateObservers_) {
+            if (observer != nullptr) {
+                observer->OnForegroundApplicationChanged(data);
+            }
         }
     }
     APP_LOGD("end");
+}
+
+AppProcessData AppMgrServiceInner::WrapAppProcessData(const std::shared_ptr<AppRunningRecord> &appRecord,
+    const ApplicationState state)
+{
+    AppProcessData processData;
+    processData.appName = appRecord->GetName();
+    processData.processName = appRecord->GetProcessName();
+    processData.pid = appRecord->GetPriorityObject()->GetPid();
+    processData.appState = state;
+    processData.uid = appRecord->GetUid();
+    return processData;
+}
+
+AppStateData AppMgrServiceInner::WrapAppStateData(const std::shared_ptr<AppRunningRecord> &appRecord,
+    const ApplicationState state)
+{
+    AppStateData appStateData;
+    appStateData.bundleName = appRecord->GetBundleName();
+    appStateData.state = static_cast<int32_t>(state);
+    appStateData.uid = appRecord->GetUid();
+    return appStateData;
+}
+
+ProcessData AppMgrServiceInner::WrapProcessData(const std::shared_ptr<AppRunningRecord> &appRecord)
+{
+    ProcessData processData;
+    processData.bundleName = appRecord->GetBundleName();
+    processData.pid = appRecord->GetPriorityObject()->GetPid();
+    processData.uid = appRecord->GetUid();
+    return processData;
 }
 
 void AppMgrServiceInner::OnAbilityStateChanged(
@@ -923,6 +981,61 @@ void AppMgrServiceInner::OnAbilityStateChanged(
     for (const auto &callback : appStateCallbacks_) {
         if (callback != nullptr) {
             callback->OnAbilityRequestDone(ability->GetToken(), state);
+        }
+    }
+    APP_LOGD("end");
+}
+
+void AppMgrServiceInner::StateChangedNotifyObserver(const AbilityStateData abilityStateData, bool isAbility)
+{
+    std::lock_guard<std::recursive_mutex> lockNotify(observerLock_);
+    APP_LOGD("bundle:%{public}s, ability:%{public}s, state:%{public}d, pid:%{public}d, uid:%{public}d",
+        abilityStateData.bundleName.c_str(), abilityStateData.abilityName.c_str(),
+        abilityStateData.abilityState, abilityStateData.pid, abilityStateData.uid);
+    for (const auto &observer : appStateObservers_) {
+        if (observer != nullptr) {
+            if (isAbility) {
+                observer->OnAbilityStateChanged(abilityStateData);
+            } else {
+                observer->OnExtensionStateChanged(abilityStateData);
+            }
+        }
+    }
+}
+
+void AppMgrServiceInner::OnProcessCreated(const std::shared_ptr<AppRunningRecord> &appRecord)
+{
+    APP_LOGD("OnProcessCreated begin.");
+    if (!appRecord) {
+        APP_LOGE("app record is null");
+        return;
+    }
+    ProcessData data = WrapProcessData(appRecord);
+    APP_LOGD("OnProcessCreated, bundle:%{public}s, pid:%{public}d, uid:%{public}d, size:%{public}d",
+        data.bundleName.c_str(), data.uid, data.pid, (int32_t)appStateObservers_.size());
+    std::lock_guard<std::recursive_mutex> lockNotify(observerLock_);
+    for (const auto &observer : appStateObservers_) {
+        if (observer != nullptr) {
+            observer->OnProcessCreated(data);
+        }
+    }
+    APP_LOGD("end");
+}
+
+void AppMgrServiceInner::OnProcessDied(const std::shared_ptr<AppRunningRecord> &appRecord)
+{
+    APP_LOGD("OnProcessDied begin.");
+    if (!appRecord) {
+        APP_LOGE("app record is null");
+        return;
+    }
+    ProcessData data = WrapProcessData(appRecord);
+    APP_LOGD("OnProcessDied, bundle:%{public}s, pid:%{public}d, uid:%{public}d, size:%{public}d",
+        data.bundleName.c_str(), data.uid, data.pid, (int32_t)appStateObservers_.size());
+    std::lock_guard<std::recursive_mutex> lockNotify(observerLock_);
+    for (const auto &observer : appStateObservers_) {
+        if (observer != nullptr) {
+            observer->OnProcessDied(data);
         }
     }
     APP_LOGD("end");
@@ -987,6 +1100,7 @@ void AppMgrServiceInner::StartProcess(const std::string &appName, const std::str
     appRecord->SetAppMgrServiceInner(weak_from_this());
     OnAppStateChanged(appRecord, ApplicationState::APP_STATE_CREATE);
     AddAppToRecentList(appName, appRecord->GetProcessName(), pid, appRecord->GetRecordId());
+    OnProcessCreated(appRecord);
     PerfProfile::GetInstance().SetAppForkEndTime(GetTickCount());
 }
 
@@ -1050,9 +1164,12 @@ void AppMgrServiceInner::OnRemoteDied(const wptr<IRemoteObject> &remote)
         for (const auto &item : appRecord->GetAbilities()) {
             const auto &abilityRecord = item.second;
             OptimizerAbilityStateChanged(abilityRecord, AbilityState::ABILITY_STATE_TERMINATED);
+            appRecord->StateChangedNotifyObserver(abilityRecord,
+                static_cast<int32_t>(AbilityState::ABILITY_STATE_TERMINATED), true);
         }
         OptimizerAppStateChanged(appRecord, ApplicationState::APP_STATE_TERMINATED);
         RemoveAppFromRecentListById(appRecord->GetRecordId());
+        OnProcessDied(appRecord);
     }
 
     if (appRecord && appRecord->IsKeepAliveApp()) {
@@ -1293,6 +1410,7 @@ void AppMgrServiceInner::HandleTerminateApplicationTimeOut(const int64_t eventId
     }
     appRunningManager_->RemoveAppRunningRecordById(appRecord->GetRecordId());
     RemoveAppFromRecentListById(appRecord->GetRecordId());
+    OnProcessDied(appRecord);
 }
 
 void AppMgrServiceInner::HandleAddAbilityStageTimeOut(const int64_t eventId)
@@ -1478,6 +1596,125 @@ void AppMgrServiceInner::NotifyAppStatus(const std::string &bundleName, const st
     want.SetParam(Constants::USER_ID, 0);
     EventFwk::CommonEventData commonData {want};
     EventFwk::CommonEventManager::PublishCommonEvent(commonData);
+}
+
+int32_t AppMgrServiceInner::RegisterApplicationStateObserver(const sptr<IApplicationStateObserver> &observer)
+{
+    APP_LOGI("%{public}s begin", __func__);
+    std::lock_guard<std::recursive_mutex> lockRegister(observerLock_);
+    if (observer == nullptr) {
+        APP_LOGE("Observer nullptr");
+        return ERR_INVALID_VALUE;
+    }
+    if (ObserverExist(observer)) {
+        APP_LOGE("Observer exist.");
+        return ERR_INVALID_VALUE;
+    }
+    appStateObservers_.push_back(observer);
+    APP_LOGI("%{public}s appStateObservers_ size:%{public}d", __func__, (int32_t)appStateObservers_.size());
+    AddObserverDeathRecipient(observer);
+    return ERR_OK;
+}
+
+int32_t AppMgrServiceInner::UnregisterApplicationStateObserver(const sptr<IApplicationStateObserver> &observer)
+{
+    APP_LOGI("%{public}s begin", __func__);
+    std::lock_guard<std::recursive_mutex> lockUnregister(observerLock_);
+    if (observer == nullptr) {
+        APP_LOGE("Observer nullptr");
+        return ERR_INVALID_VALUE;
+    }
+    std::vector<sptr<IApplicationStateObserver>>::iterator it;
+    for (it = appStateObservers_.begin(); it != appStateObservers_.end(); it++) {
+        if ((*it)->AsObject() == observer->AsObject()) {
+            appStateObservers_.erase(it);
+            APP_LOGI("%{public}s appStateObservers_ size:%{public}d", __func__, (int32_t)appStateObservers_.size());
+            RemoveObserverDeathRecipient(observer);
+            return ERR_OK;
+        }
+    }
+    APP_LOGE("Observer not exist.");
+    return ERR_INVALID_VALUE;
+}
+
+bool AppMgrServiceInner::ObserverExist(const sptr<IApplicationStateObserver> &observer)
+{
+    if (observer == nullptr) {
+        APP_LOGE("Observer nullptr");
+        return false;
+    }
+    for (int i = 0; i < (int)appStateObservers_.size(); i++) {
+        if (appStateObservers_[i]->AsObject() == observer->AsObject()) {
+            return true;
+        }
+    }
+    return false;
+}
+
+void AppMgrServiceInner::AddObserverDeathRecipient(const sptr<IApplicationStateObserver> &observer)
+{
+    APP_LOGI("%{public}s begin", __func__);
+    if (observer == nullptr || observer->AsObject() == nullptr) {
+        APP_LOGE("observer nullptr.");
+        return;
+    }
+    auto it = recipientMap_.find(observer->AsObject());
+    if (it != recipientMap_.end()) {
+        APP_LOGE("This death recipient has been added.");
+        return;
+    } else {
+        sptr<IRemoteObject::DeathRecipient> deathRecipient = new ApplicationStateObserverRecipient(
+            std::bind(&AppMgrServiceInner::OnObserverDied, this, std::placeholders::_1));
+        observer->AsObject()->AddDeathRecipient(deathRecipient);
+        recipientMap_.emplace(observer->AsObject(), deathRecipient);
+    }
+}
+
+void AppMgrServiceInner::RemoveObserverDeathRecipient(const sptr<IApplicationStateObserver> &observer)
+{
+    APP_LOGI("%{public}s begin", __func__);
+    if (observer == nullptr || observer->AsObject() == nullptr) {
+        APP_LOGE("observer nullptr.");
+        return;
+    }
+    auto it = recipientMap_.find(observer->AsObject());
+    if (it != recipientMap_.end()) {
+        it->first->RemoveDeathRecipient(it->second);
+        recipientMap_.erase(it);
+        return;
+    }
+}
+
+void AppMgrServiceInner::OnObserverDied(const wptr<IRemoteObject> &remote)
+{
+    APP_LOGI("%{public}s begin", __func__);
+    auto object = remote.promote();
+    if (object == nullptr) {
+        APP_LOGE("observer nullptr.");
+        return;
+    }
+    if (eventHandler_) {
+        auto task = [object, appManager = this]() {appManager->HandleObserverDiedTask(object);};
+        eventHandler_->PostTask(task, TASK_ON_CALLBACK_DIED);
+    }
+}
+
+void AppMgrServiceInner::HandleObserverDiedTask(const sptr<IRemoteObject> &observer)
+{
+    APP_LOGI("Handle call back died task.");
+    if (observer == nullptr) {
+        APP_LOGE("observer nullptr.");
+        return;
+    }
+    sptr<IApplicationStateObserver> object = iface_cast<IApplicationStateObserver>(observer);
+    UnregisterApplicationStateObserver(object);
+}
+
+int32_t AppMgrServiceInner::GetForegroundApplications(std::vector<AppStateData> &list)
+{
+    APP_LOGI("%{public}s, begin.", __func__);
+    appRunningManager_->GetForegroundApplications(list);
+    return ERR_OK;
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS

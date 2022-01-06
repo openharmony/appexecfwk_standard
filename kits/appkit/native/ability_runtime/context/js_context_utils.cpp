@@ -82,7 +82,7 @@ NativeValue* JsBaseContext::OnCreateBundleContext(NativeEngine& engine, NativeCa
     }
 
     std::string bundleName;
-    if (!ConvertFormJsValue(engine, info.argv[0], bundleName)) {
+    if (!ConvertFromJsValue(engine, info.argv[0], bundleName)) {
         HILOG_ERROR("Parse bundleName failed");
         return engine.CreateUndefined();
     }

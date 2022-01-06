@@ -77,6 +77,11 @@ const std::string JSON_KEY_ICON_ID = "iconId";
 const std::string JSON_KEY_FORM_ENABLED = "formEnabled";
 const std::string JSON_KEY_SRC_PATH = "srcPath";
 const std::string JSON_KEY_SRC_LANGUAGE = "srcLanguage";
+const std::string META_DATA = "metadata";
+const std::string META_DATA_NAME = "name";
+const std::string META_DATA_VALUE = "value";
+const std::string META_DATA_RESOURCE = "resource";
+const std::string SRC_ENTRANCE = "srcEntrance";
 }  // namespace
 
 bool AbilityInfo::ReadFromParcel(Parcel &parcel)
@@ -298,6 +303,15 @@ void to_json(nlohmann::json &jsonObject, const MetaData &metaData)
     };
 }
 
+void to_json(nlohmann::json &jsonObject, const Metadata &metadata)
+{
+    jsonObject = nlohmann::json {
+        {META_DATA_NAME, metadata.name},
+        {META_DATA_VALUE, metadata.value},
+        {META_DATA_RESOURCE, metadata.resource}
+    };
+}
+
 void to_json(nlohmann::json &jsonObject, const AbilityInfo &abilityInfo)
 {
     jsonObject = nlohmann::json {
@@ -345,6 +359,8 @@ void to_json(nlohmann::json &jsonObject, const AbilityInfo &abilityInfo)
         {JSON_KEY_LIB_PATH, abilityInfo.libPath},
         {JSON_KEY_META_DATA, abilityInfo.metaData},
         {JSON_KEY_FORM_ENABLED, abilityInfo.formEnabled},
+        {SRC_ENTRANCE, abilityInfo.srcEntrance},
+        {META_DATA, abilityInfo.metadata}
     };
 }
 
@@ -390,6 +406,39 @@ void from_json(const nlohmann::json &jsonObject, MetaData &metaData)
         false,
         parseResult,
         ArrayType::OBJECT);
+}
+
+void from_json(const nlohmann::json &jsonObject, Metadata &metadata)
+{
+    const auto &jsonObjectEnd = jsonObject.end();
+    int32_t parseResult = ERR_OK;
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        META_DATA_NAME,
+        metadata.name,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        META_DATA_VALUE,
+        metadata.value,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        META_DATA_RESOURCE,
+        metadata.resource,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    if (parseResult != ERR_OK) {
+        APP_LOGE("read Ability Metadata from database error, error code : %{public}d", parseResult);
+    }
 }
 
 void from_json(const nlohmann::json &jsonObject, AbilityInfo &abilityInfo)
@@ -748,6 +797,25 @@ void from_json(const nlohmann::json &jsonObject, AbilityInfo &abilityInfo)
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        SRC_ENTRANCE,
+        abilityInfo.srcEntrance,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::vector<Metadata>>(jsonObject,
+        jsonObjectEnd,
+        META_DATA,
+        abilityInfo.metadata,
+        JsonType::ARRAY,
+        false,
+        parseResult,
+        ArrayType::OBJECT);
+    if (parseResult != ERR_OK) {
+        APP_LOGE("read Ability from database error, error code : %{public}d", parseResult);
+    }
 }
 
 void AbilityInfo::ConvertToCompatiableAbilityInfo(CompatibleAbilityInfo& compatibleAbilityInfo) const

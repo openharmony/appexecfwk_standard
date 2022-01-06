@@ -17,6 +17,8 @@ appexecfwk_headers = {
     "appmgr/iapp_state_callback.h",
     "appmgr/app_state_callback_host.h",
     "appmgr/app_mgr_constants.h",
+    "appmgr/iapplication_state_observer.h",
+    "appmgr/application_state_observer_stub.h",
     "bundlemgr/bundle_installer_interface.h",
     "bundlemgr/bundle_mgr_interface.h",
     "bundlemgr/bundle_status_callback_interface.h",

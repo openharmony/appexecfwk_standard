@@ -211,7 +211,7 @@ public:
         return true;
     }
     virtual bool NotifyAbilityLifeStatus(const std::string &bundleName,
-        const std::string &abilityName, const int64_t launchTime, const int uid) override
+        const std::string &abilityName, const int64_t launchTime, const int uid = 0) override
     {
         return true;
     }
@@ -410,7 +410,7 @@ public:
         return true;
     }
     virtual bool NotifyAbilityLifeStatus(
-        const std::string &bundleName, const std::string &abilityName, const int64_t launchTime, const int uid) override
+        const std::string &bundleName, const std::string &abilityName, const int64_t launchTime, const int uid = 0) override
     {
         return true;
     }

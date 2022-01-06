@@ -33,6 +33,27 @@ public:
     virtual int OnRemoteRequest(
         uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option) override;
 
+    /**
+     * Register application or process state observer.
+     * @param observer, ability token.
+     * @return Returns ERR_OK on success, others on failure.
+     */
+    virtual int32_t RegisterApplicationStateObserver(const sptr<IApplicationStateObserver> &observer) override;
+
+    /**
+     * Unregister application or process state observer.
+     * @param observer, ability token.
+     * @return Returns ERR_OK on success, others on failure.
+     */
+    virtual int32_t UnregisterApplicationStateObserver(const sptr<IApplicationStateObserver> &observer) override;
+
+    /**
+     * Get foreground applications.
+     * @param list, foreground apps.
+     * @return Returns ERR_OK on success, others on failure.
+     */
+    virtual int32_t GetForegroundApplications(std::vector<AppStateData> &list) override;
+
 private:
     int32_t HandleAttachApplication(MessageParcel &data, MessageParcel &reply);
     int32_t HandleApplicationForegrounded(MessageParcel &data, MessageParcel &reply);
@@ -49,6 +70,9 @@ private:
     int32_t HandleGetSystemMemoryAttr(MessageParcel &data, MessageParcel &reply);
     int32_t HandleAddAbilityStageDone(MessageParcel &data, MessageParcel &reply);
     int32_t HandleStartupResidentProcess(MessageParcel &data, MessageParcel &reply);
+    int32_t HandleRegisterApplicationStateObserver(MessageParcel &data, MessageParcel &reply);
+    int32_t HandleUnregisterApplicationStateObserver(MessageParcel &data, MessageParcel &reply);
+    int32_t HandleGetForegroundApplications(MessageParcel &data, MessageParcel &reply);
 
     using AppMgrFunc = int32_t (AppMgrStub::*)(MessageParcel &data, MessageParcel &reply);
     std::map<uint32_t, AppMgrFunc> memberFuncMap_;

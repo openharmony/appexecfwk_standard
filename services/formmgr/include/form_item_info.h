@@ -21,6 +21,7 @@
 #include <vector>
 #include <unordered_map>
 #include "form_record.h"
+#include "form_info.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -220,6 +221,67 @@ public:
      * @param isFormVisibleNotify visible notify or not.
      */
     void SetFormVisibleNotify(bool isFormVisibleNotify);
+    /**
+     * @brief Get formSrc_.
+     * @return formSrc_.
+     */
+    std::string GetFormSrc() const;
+    /**
+     * @brief Set value of formSrc_.
+     * @param formSrc form src.
+     */
+    void SetFormSrc(const std::string &formSrc);
+    /**
+     * @brief Get formWindow_.
+     * @return formWindow_.
+     */
+    FormWindow GetFormWindow() const;
+    /**
+     * @brief Set value of formWindow_.
+     * @param formWindow form window.
+     */
+    void SetFormWindow(const FormWindow &formWindow);
+    /**
+     * @brief Get versionCode_.
+     * @return versionCode_.
+     */
+    uint32_t GetVersionCode() const;
+    /**
+     * @brief Set value of versionCode_.
+     * @param versionCode bundle version code.
+     */
+    void SetVersionCode(const uint32_t versionCode);
+    /**
+     * @brief Get versionName_.
+     * @return versionName_.
+     */
+    std::string GetVersionName() const;
+    /**
+     * @brief Set value of versionName_.
+     * @param versionName bundle version name.
+     */
+    void SetVersionName(const std::string &versionName);
+    /**
+     * @brief Get compatibleVersion_.
+     * @return compatibleVersion_.
+     */
+    uint32_t GetCompatibleVersion() const;
+    /**
+     * @brief Set value of compatibleVersion_.
+     * @param compatibleVersion API compatible version.
+     */
+    void SetCompatibleVersion(const uint32_t &compatibleVersion);
+    /**
+     * @brief Get icon_.
+     * @return icon_.
+     */
+    std::string GetIcon() const;
+    /**
+     * @brief Set value of icon_.
+     * @param icon ability icon.
+     */
+    void SetIcon(const std::string &icon);
+
 private:
     /**
      * @brief Equal or not.
@@ -228,7 +290,7 @@ private:
      * @return Equal or not
      */
     bool IsEqual(const std::string &left, const std::string &right);
-    
+
 private:
     int64_t formId_ = -1;
     std::string packageName_ = "";
@@ -244,6 +306,12 @@ private:
     std::vector<std::string> hapSourceDirs_;
     bool temporaryFlag_ = false;
     bool formVisibleNotify_ = false;
+    std::string formSrc_ = "";
+    FormWindow formWindow_;
+    uint32_t versionCode_ = 0;
+    std::string versionName_ = "";
+    uint32_t compatibleVersion_ = 0;
+    std::string icon_ = "";
 
     std::string jsComponentName_ = "";
     std::string abilityModuleName_ = "";

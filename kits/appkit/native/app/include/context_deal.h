@@ -718,6 +718,13 @@ public:
      */
     void SetRunner(const std::shared_ptr<EventRunner> &runner);
 
+    /**
+     * @brief Obtains the lifecycle state info.
+     *
+     * @return Returns the lifecycle state info.
+     */
+    AAFwk::LifeCycleStateInfo GetLifeCycleStateInfo() const;
+
 public:
     static const std::string CONTEXT_DEAL_FILE_SEPARATOR;
     static const std::string CONTEXT_DEAL_CODE_CACHE;

@@ -46,6 +46,8 @@ public:
     MOCK_METHOD2(GetSystemMemoryAttr, void(SystemMemoryAttr &memoryInfo, std::string &strConfig));
     MOCK_METHOD0(StartupResidentProcess, void());
     MOCK_METHOD1(AddAbilityStageDone, void(const int32_t recordId));
+    MOCK_METHOD1(RegisterApplicationStateObserver, int32_t(const sptr<IApplicationStateObserver> &observer));
+    MOCK_METHOD1(UnregisterApplicationStateObserver, int32_t(const sptr<IApplicationStateObserver> &observer));
 
     virtual void RegisterAppStateCallback(const sptr<IAppStateCallback> &callback)
     {
