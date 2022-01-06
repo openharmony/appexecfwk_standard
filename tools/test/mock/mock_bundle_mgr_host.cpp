@@ -18,7 +18,8 @@
 using namespace OHOS::AAFwk;
 namespace OHOS {
 namespace AppExecFwk {
-bool MockBundleMgrHost::DumpInfos(const DumpFlag flag, const std::string &bundleName, std::string &result)
+bool MockBundleMgrHost::DumpInfos(
+    const DumpFlag flag, const std::string &bundleName, int32_t userId, std::string &result)
 {
     APP_LOGD("enter");
     APP_LOGD("flag: %{public}d", flag);

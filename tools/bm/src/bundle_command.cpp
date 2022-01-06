@@ -15,6 +15,7 @@
 #include "bundle_command.h"
 
 #include <chrono>
+#include <cstring>
 #include <future>
 #include <getopt.h>
 #include <unistd.h>
@@ -36,7 +37,7 @@ namespace {
 const std::string BUNDLE_NAME_EMPTY = "";
 const int32_t INDEX_OFFSET = 2;
 const int32_t MAX_WAITING_TIME = 3000;
-const std::string SHORT_OPTIONS = "hp:rfn:m:a:cd";
+const std::string SHORT_OPTIONS = "hp:rfn:m:a:cdu:";
 const struct option LONG_OPTIONS[] = {
     {"help", no_argument, nullptr, 'h'},
     {"bundle-path", required_argument, nullptr, 'p'},
@@ -48,16 +49,18 @@ const struct option LONG_OPTIONS[] = {
     {"bundle-info", no_argument, nullptr, 'i'},
     {"cache", no_argument, nullptr, 'c'},
     {"data", no_argument, nullptr, 'd'},
+    {"user-id", required_argument, nullptr, 'u'},
     {nullptr, 0, nullptr, 0},
 };
 
-const std::string SHORT_OPTIONS_DUMP = "hn:ais";
+const std::string SHORT_OPTIONS_DUMP = "hn:aisu:";
 const struct option LONG_OPTIONS_DUMP[] = {
     {"help", no_argument, nullptr, 'h'},
     {"bundle-name", required_argument, nullptr, 'n'},
     {"all", no_argument, nullptr, 'a'},
     {"bundle-info", no_argument, nullptr, 'i'},
     {"shortcut-info", no_argument, nullptr, 's'},
+    {"user-id", required_argument, nullptr, 'u'},
     {nullptr, 0, nullptr, 0},
 };
 }  // namespace
@@ -431,6 +434,7 @@ ErrCode BundleManagerShellCommand::RunAsInstallCommand()
     int counter = 0;
     std::vector<std::string> bundlePath;
     int index = 0;
+    int32_t userId = Constants::UNSPECIFIED_USERID;
     while (true) {
         counter++;
         option = getopt_long(argc_, argv_, SHORT_OPTIONS.c_str(), LONG_OPTIONS, nullptr);
@@ -510,6 +514,13 @@ ErrCode BundleManagerShellCommand::RunAsInstallCommand()
                 noCheckSignature = true;
                 break;
             }
+            case 'u': {
+                // 'bm install -p <bundle-file-path> -u userId'
+                // 'bm install --bundle-path <bundle-file-path> --user-id userId'
+                APP_LOGD("'bm install %{public}s %{public}s'", argv_[optind - OFFSET_REQUIRED_ARGUMENT], optarg);
+                userId = std::stoi(optarg);
+                break;
+            }
             default: {
                 result = OHOS::ERR_INVALID_VALUE;
                 break;
@@ -520,7 +531,8 @@ ErrCode BundleManagerShellCommand::RunAsInstallCommand()
     for (; index < argc_ && index >= INDEX_OFFSET; ++index) {
         if (argList_[index - INDEX_OFFSET] == "-r" || argList_[index - INDEX_OFFSET] == "-f" ||
             argList_[index - INDEX_OFFSET] == "--force" || argList_[index - INDEX_OFFSET] == "--replace" ||
-            argList_[index - INDEX_OFFSET] == "-p" || argList_[index - INDEX_OFFSET] == "--bundle-path") {
+            argList_[index - INDEX_OFFSET] == "-p" || argList_[index - INDEX_OFFSET] == "--bundle-path" ||
+            argList_[index - INDEX_OFFSET] == "-u" || argList_[index - INDEX_OFFSET] == "--user-id") {
             break;
         }
         if (GetBundlePath(argList_[index - INDEX_OFFSET], bundlePath) != OHOS::ERR_OK) {
@@ -550,7 +562,7 @@ ErrCode BundleManagerShellCommand::RunAsInstallCommand()
         InstallParam installParam;
         installParam.installFlag = installFlag;
         installParam.noCheckSignature = noCheckSignature;
-        installParam.userId = 0;
+        installParam.userId = userId;
         int32_t installResult = InstallOperation(bundlePath, installParam);
         if (installResult == OHOS::ERR_OK) {
             resultReceiver_ = STRING_INSTALL_BUNDLE_OK + "\n";
@@ -570,7 +582,7 @@ ErrCode BundleManagerShellCommand::GetBundlePath(const std::string& param,
         return OHOS::ERR_INVALID_VALUE;
     }
     if (param == "-f" || param == "--force" || param == "-r" || param == "--replace" || param == "-p" ||
-        param == "--bundle-path") {
+        param == "--bundle-path" || param == "-u" || param == "--user-id") {
         return OHOS::ERR_INVALID_VALUE;
     }
     bundlePaths.emplace_back(param);
@@ -584,6 +596,7 @@ ErrCode BundleManagerShellCommand::RunAsUninstallCommand()
     int counter = 0;
     std::string bundleName = "";
     std::string moduleName = "";
+    int32_t userId = Constants::UNSPECIFIED_USERID;
     while (true) {
         counter++;
         option = getopt_long(argc_, argv_, SHORT_OPTIONS.c_str(), LONG_OPTIONS, nullptr);
@@ -625,6 +638,13 @@ ErrCode BundleManagerShellCommand::RunAsUninstallCommand()
                     result = OHOS::ERR_INVALID_VALUE;
                     break;
                 }
+                case 'u': {
+                    // 'bm uninstall -n <bundleName> -u userId'
+                    // 'bm uninstall --bundle-name <bundleName> --user-id userId'
+                    APP_LOGD("'bm uninstall %{public}s %{public}s'", argv_[optind - OFFSET_REQUIRED_ARGUMENT], optarg);
+                    userId = std::stoi(optarg);
+                    break;
+                }
                 default: {
                     // 'bm uninstall' with an unknown option: bm uninstall -x
                     // 'bm uninstall' with an unknown option: bm uninstall -xxx
@@ -661,6 +681,13 @@ ErrCode BundleManagerShellCommand::RunAsUninstallCommand()
                 moduleName = optarg;
                 break;
             }
+            case 'u': {
+                // 'bm uninstall -n <bundleName> -u userId'
+                // 'bm uninstall --bundle-name <bundleName> --user-id userId'
+                APP_LOGD("'bm uninstall %{public}s %{public}s'", argv_[optind - OFFSET_REQUIRED_ARGUMENT], optarg);
+                userId = std::stoi(optarg);
+                break;
+            }
             default: {
                 result = OHOS::ERR_INVALID_VALUE;
                 break;
@@ -681,7 +708,7 @@ ErrCode BundleManagerShellCommand::RunAsUninstallCommand()
         resultReceiver_.append(HELP_MSG_UNINSTALL);
     } else {
         InstallParam installParam;
-        installParam.userId = 0;
+        installParam.userId = userId;
         int32_t uninstallResult = UninstallOperation(bundleName, moduleName, installParam);
         if (uninstallResult == OHOS::ERR_OK) {
             resultReceiver_ = STRING_UNINSTALL_BUNDLE_OK + "\n";
@@ -705,6 +732,7 @@ ErrCode BundleManagerShellCommand::RunAsDumpCommand()
     bool bundleDumpInfos = false;
     bool bundleDumpInfo = false;
     bool bundleDumpShortcut = false;
+    int32_t userId = Constants::UNSPECIFIED_USERID;
     while (true) {
         counter++;
         option = getopt_long(argc_, argv_, SHORT_OPTIONS_DUMP.c_str(), LONG_OPTIONS_DUMP, nullptr);
@@ -786,6 +814,13 @@ ErrCode BundleManagerShellCommand::RunAsDumpCommand()
                 bundleDumpShortcut = true;
                 break;
             }
+            case 'u': {
+                // 'bm dump -n <bundleName> -u userId'
+                // 'bm dump --bundle-name <bundleName> --user-id userId'
+                APP_LOGD("'bm dump %{public}s %{public}s'", argv_[optind - OFFSET_REQUIRED_ARGUMENT], optarg);
+                userId = std::stoi(optarg);
+                break;
+            }
             default: {
                 result = OHOS::ERR_INVALID_VALUE;
                 break;
@@ -805,13 +840,13 @@ ErrCode BundleManagerShellCommand::RunAsDumpCommand()
     } else {
         APP_LOGD("dumpResults: %{public}s", dumpResults.c_str());
         if (bundleDumpShortcut) {
-            dumpResults = DumpShortcutInfos(bundleName);
+            dumpResults = DumpShortcutInfos(bundleName, userId);
         } else if (bundleDumpAll) {
-            dumpResults = DumpBundleList();
+            dumpResults = DumpBundleList(userId);
         } else if (bundleDumpInfos) {
-            dumpResults = DumpBundleInfos();
+            dumpResults = DumpBundleInfos(userId);
         } else if (bundleDumpInfo) {
-            dumpResults = DumpBundleInfo(bundleName);
+            dumpResults = DumpBundleInfo(bundleName, userId);
         }
         resultReceiver_.append(dumpResults);
     }
@@ -1180,6 +1215,7 @@ ErrCode BundleManagerShellCommand::RunAsRecoverCommand()
     int option = -1;
     int counter = 0;
     std::string bundleName = "";
+    int32_t userId = Constants::UNSPECIFIED_USERID;
     while (true) {
         counter++;
         option = getopt_long(argc_, argv_, SHORT_OPTIONS.c_str(), LONG_OPTIONS, nullptr);
@@ -1238,6 +1274,13 @@ ErrCode BundleManagerShellCommand::RunAsRecoverCommand()
                 bundleName = optarg;
                 break;
             }
+            case 'u': {
+                // 'bm recover -n <bundleName> -u userId'
+                // 'bm recover --bundle-name <bundleName> --user-id userId'
+                APP_LOGD("'bm recover %{public}s %{public}s'", argv_[optind - OFFSET_REQUIRED_ARGUMENT], optarg);
+                userId = std::stoi(optarg);
+                break;
+            }
             default: {
                 result = OHOS::ERR_INVALID_VALUE;
                 break;
@@ -1256,7 +1299,7 @@ ErrCode BundleManagerShellCommand::RunAsRecoverCommand()
         resultReceiver_.append(HELP_MSG_RECOVER);
     } else {
         InstallParam installParam;
-        installParam.userId = 0;
+        installParam.userId = userId;
         int32_t recoverResult = RecoverOperation(bundleName, installParam);
         if (recoverResult ==  OHOS::ERR_OK) {
             resultReceiver_ = STRING_RECOVER_BUNDLE_OK + "\n";
@@ -1268,40 +1311,44 @@ ErrCode BundleManagerShellCommand::RunAsRecoverCommand()
     return result;
 }
 
-std::string BundleManagerShellCommand::DumpBundleList() const
+std::string BundleManagerShellCommand::DumpBundleList(int32_t userId) const
 {
     std::string dumpResults;
-    bool dumpRet = bundleMgrProxy_->DumpInfos(DumpFlag::DUMP_BUNDLE_LIST, BUNDLE_NAME_EMPTY, dumpResults);
+    bool dumpRet = bundleMgrProxy_->DumpInfos(
+        DumpFlag::DUMP_BUNDLE_LIST, BUNDLE_NAME_EMPTY, userId, dumpResults);
     if (!dumpRet) {
         APP_LOGE("failed to dump bundle list.");
     }
     return dumpResults;
 }
 
-std::string BundleManagerShellCommand::DumpBundleInfos() const
+std::string BundleManagerShellCommand::DumpBundleInfos(int32_t userId) const
 {
     std::string dumpResults;
-    bool dumpRet = bundleMgrProxy_->DumpInfos(DumpFlag::DUMP_ALL_BUNDLE_INFO, BUNDLE_NAME_EMPTY, dumpResults);
+    bool dumpRet = bundleMgrProxy_->DumpInfos(
+        DumpFlag::DUMP_ALL_BUNDLE_INFO, BUNDLE_NAME_EMPTY, userId, dumpResults);
     if (!dumpRet) {
         APP_LOGE("failed to dump bundle infos.");
     }
     return dumpResults;
 }
 
-std::string BundleManagerShellCommand::DumpBundleInfo(const std::string &bundleName) const
+std::string BundleManagerShellCommand::DumpBundleInfo(const std::string &bundleName, int32_t userId) const
 {
     std::string dumpResults;
-    bool dumpRet = bundleMgrProxy_->DumpInfos(DumpFlag::DUMP_BUNDLE_INFO, bundleName, dumpResults);
+    bool dumpRet = bundleMgrProxy_->DumpInfos(
+        DumpFlag::DUMP_BUNDLE_INFO, bundleName, userId, dumpResults);
     if (!dumpRet) {
         APP_LOGE("failed to dump bundle info.");
     }
     return dumpResults;
 }
 
-std::string BundleManagerShellCommand::DumpShortcutInfos(const std::string &bundleName) const
+std::string BundleManagerShellCommand::DumpShortcutInfos(const std::string &bundleName, int32_t userId) const
 {
     std::string dumpResults;
-    bool dumpRet = bundleMgrProxy_->DumpInfos(DumpFlag::DUMP_SHORTCUT_INFO, bundleName, dumpResults);
+    bool dumpRet = bundleMgrProxy_->DumpInfos(
+        DumpFlag::DUMP_SHORTCUT_INFO, bundleName, userId, dumpResults);
     if (!dumpRet) {
         APP_LOGE("failed to dump shortcut infos.");
     }

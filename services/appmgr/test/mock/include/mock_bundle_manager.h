@@ -75,11 +75,13 @@ public:
     {
         return true;
     };
-    virtual bool GetBundleInfo(const std::string &bundleName, const BundleFlag flag, BundleInfo &bundleInfo) override
+    virtual bool GetBundleInfo(
+        const std::string &bundleName, const BundleFlag flag, BundleInfo &bundleInfo, int32_t userId) override
     {
         return true;
     };
-    virtual bool GetBundleInfos(const BundleFlag flag, std::vector<BundleInfo> &bundleInfos) override
+    virtual bool GetBundleInfos(
+        const BundleFlag flag, std::vector<BundleInfo> &bundleInfos, int32_t userId) override
     {
         return true;
     };
@@ -190,7 +192,8 @@ public:
     {
         return true;
     };
-    virtual bool DumpInfos(const DumpFlag flag, const std::string &bundleName, std::string &result) override
+    virtual bool DumpInfos(
+        const DumpFlag flag, const std::string &bundleName, int32_t userId, std::string &result) override
     {
         return true;
     };
@@ -198,6 +201,10 @@ public:
     {
         return nullptr;
     };
+    virtual sptr<IBundleUserMgr> GetBundleUserMgr() override
+    {
+        return nullptr;
+    }
     virtual bool GetModuleUsageRecords(
         const int32_t number, std::vector<ModuleUsageRecord> &moduleUsageRecords) override
     {
@@ -268,10 +275,12 @@ public:
     {
         return true;
     };
-    virtual bool GetBundleInfo(const std::string &bundleName, const BundleFlag flag, BundleInfo &bundleInfo) override;
-    virtual bool GetBundleInfos(const BundleFlag flag, std::vector<BundleInfo> &bundleInfos) override;
-    virtual bool GetBundleGidsByUid(const std::string &bundleName, const int &uid, std::vector<int> &gids) override;
-
+    virtual bool GetBundleInfo(
+        const std::string &bundleName, const BundleFlag flag, BundleInfo &bundleInfo, int32_t userId) override;
+    virtual bool GetBundleInfos(
+        const BundleFlag flag, std::vector<BundleInfo> &bundleInfos, int32_t userId) override;
+    bool GetBundleGidsByUid(
+        const std::string &bundleName, const int &uid, std::vector<int> &gids) override;
     virtual bool GetBundleNameForUid(const int uid, std::string &bundleName) override
     {
         return true;
@@ -348,7 +357,8 @@ public:
     {
         return true;
     };
-    virtual bool DumpInfos(const DumpFlag flag, const std::string &bundleName, std::string &result) override
+    virtual bool DumpInfos(
+        const DumpFlag flag, const std::string &bundleName, int32_t userId, std::string &result) override
     {
         return true;
     };
@@ -356,6 +366,10 @@ public:
     {
         return nullptr;
     };
+    virtual sptr<IBundleUserMgr> GetBundleUserMgr() override
+    {
+        return nullptr;
+    }
     virtual bool IsApplicationEnabled(const std::string &bundleName) override
     {
         return true;

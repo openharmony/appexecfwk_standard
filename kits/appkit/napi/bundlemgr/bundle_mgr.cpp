@@ -46,6 +46,7 @@ constexpr int32_t DEFAULT_INT32 = 0;
 constexpr int32_t PARAM0 = 0;
 constexpr int32_t PARAM1 = 1;
 constexpr int32_t PARAM2 = 2;
+constexpr int32_t PARAM3 = 3;
 constexpr int32_t NAPI_RETURN_FAILED = -1;
 constexpr int32_t NAPI_RETURN_ZERO = 0;
 constexpr int32_t NAPI_RETURN_ONE = 1;
@@ -75,6 +76,10 @@ enum class InstallErrorCode {
     STATUS_ABILITY_NOT_FOUND = 0x40,
     STATUS_BMS_SERVICE_ERROR = 0x41,
     STATUS_FAILED_NO_SPACE_LEFT = 0X42,
+    STATUS_USER_NOT_EXIST = 0X50,
+    STATUS_USER_FAILURE_INVALID = 0X51,
+    STATUS_USER_CREATE_FALIED = 0X52,
+    STATUS_USER_REMOVE_FALIED = 0X53,
 };
 
 const std::string PERMISSION_CHANGE = "permissionChange";
@@ -1190,6 +1195,30 @@ static bool InnerQueryAbilityInfos(napi_env env, const Want &want,
     return iBundleMgr->QueryAbilityInfos(want, flags, userId, abilityInfos);
 }
 
+static bool ParseBundleOptions(napi_env env, BundleOptions &bundleOptions, napi_value args)
+{
+    HILOG_DEBUG("begin to parse bundleOptions");
+    napi_status status;
+    napi_valuetype valueType;
+    NAPI_CALL(env, napi_typeof(env, args, &valueType));
+    if (valueType != napi_object) {
+        HILOG_ERROR("args not object type");
+        return false;
+    }
+
+    napi_value prop = nullptr;
+    status = napi_get_named_property(env, args, "userId", &prop);
+    napi_typeof(env, prop, &valueType);
+    if (valueType == napi_number) {
+        napi_get_value_int32(env, prop, &bundleOptions.userId);
+    }
+
+    prop = nullptr;
+    status = napi_get_named_property(env, args, "networkId", &prop);
+    bundleOptions.networkId = GetStringFromNAPI(env, prop);
+    return true;
+}
+
 static bool ParseWant(napi_env env, Want &want, napi_value args)
 {
     HILOG_DEBUG("begin to parse want");
@@ -1543,14 +1572,14 @@ napi_value GetApplicationInfo(napi_env env, napi_callback_info info)
 }
 
 static bool InnerGetBundleInfos(
-    napi_env env, int32_t flags, std::vector<OHOS::AppExecFwk::BundleInfo> &bundleInfos)
+    napi_env env, int32_t flags, int32_t userId, std::vector<OHOS::AppExecFwk::BundleInfo> &bundleInfos)
 {
     auto iBundleMgr = GetBundleMgr();
     if (!iBundleMgr) {
         HILOG_ERROR("can not get iBundleMgr");
         return false;
     }
-    return iBundleMgr->GetBundleInfos(flags, bundleInfos);
+    return iBundleMgr->GetBundleInfos(flags, bundleInfos, userId);
 }
 
 static void ProcessBundleInfos(
@@ -1582,8 +1611,8 @@ static void ProcessBundleInfos(
 napi_value GetBundleInfos(napi_env env, napi_callback_info info)
 {
     HILOG_DEBUG("NAPI GetBundleInfos called");
-    size_t argc = ARGS_SIZE_TWO;
-    napi_value argv[ARGS_SIZE_TWO] = {0};
+    size_t argc = ARGS_SIZE_THREE;
+    napi_value argv[ARGS_SIZE_THREE] = {0};
     napi_value thisArg = nullptr;
     void *data = nullptr;
     NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, &thisArg, &data));
@@ -1595,7 +1624,12 @@ napi_value GetBundleInfos(napi_env env, napi_callback_info info)
         napi_typeof(env, argv[i], &valueType);
         if ((i == PARAM0) && (valueType == napi_number)) {
             ParseInt(env, asyncCallbackInfo->flags, argv[i]);
+        } else if ((i == PARAM1) && (valueType == napi_number)) {
+            ParseInt(env, asyncCallbackInfo->userId, argv[i]);
         } else if ((i == PARAM1) && (valueType == napi_function)) {
+            napi_create_reference(env, argv[i], NAPI_RETURN_ONE, &asyncCallbackInfo->callback);
+            break;
+        } else if ((i == PARAM2) && (valueType == napi_function)) {
             napi_create_reference(env, argv[i], NAPI_RETURN_ONE, &asyncCallbackInfo->callback);
             break;
         } else {
@@ -1619,8 +1653,8 @@ napi_value GetBundleInfos(napi_env env, napi_callback_info info)
         [](napi_env env, void* data) {
             AsyncBundleInfosCallbackInfo* asyncCallbackInfo = (AsyncBundleInfosCallbackInfo*)data;
             if (!asyncCallbackInfo->err) {
-                asyncCallbackInfo->ret =
-                    InnerGetBundleInfos(env, asyncCallbackInfo->flags, asyncCallbackInfo->bundleInfos);
+                asyncCallbackInfo->ret = InnerGetBundleInfos(
+                    env, asyncCallbackInfo->flags, asyncCallbackInfo->userId, asyncCallbackInfo->bundleInfos);
             }
         },
         [](napi_env env, napi_status status, void* data) {
@@ -1662,14 +1696,14 @@ napi_value GetBundleInfos(napi_env env, napi_callback_info info)
 }
 
 static bool InnerGetBundleInfo(
-    napi_env env, const std::string &bundleName, int32_t flags, BundleInfo &bundleInfo)
+    napi_env env, const std::string &bundleName, int32_t flags, BundleOptions bundleOptions, BundleInfo &bundleInfo)
 {
     auto iBundleMgr = GetBundleMgr();
     if (!iBundleMgr) {
         HILOG_ERROR("can not get iBundleMgr");
         return false;
     }
-    bool ret = iBundleMgr->GetBundleInfo(bundleName, flags, bundleInfo);
+    bool ret = iBundleMgr->GetBundleInfo(bundleName, flags, bundleInfo, bundleOptions.userId);
     if (!ret) {
         HILOG_INFO("-----bundleInfo is not find-----");
     }
@@ -1681,8 +1715,8 @@ static bool InnerGetBundleInfo(
 napi_value GetBundleInfo(napi_env env, napi_callback_info info)
 {
     HILOG_DEBUG("NAPI GetBundleInfo called");
-    size_t argc = ARGS_SIZE_THREE;
-    napi_value argv[ARGS_SIZE_THREE] = {nullptr};
+    size_t argc = ARGS_SIZE_FOUR;
+    napi_value argv[ARGS_SIZE_FOUR] = {nullptr};
     napi_value thisArg = nullptr;
     void *data = nullptr;
     NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, &thisArg, &data));
@@ -1697,6 +1731,14 @@ napi_value GetBundleInfo(napi_env env, napi_callback_info info)
         } else if ((i == PARAM1) && valueType == napi_number) {
             ParseInt(env, asyncCallbackInfo->flags, argv[i]);
         } else if ((i == PARAM2) && (valueType == napi_function)) {
+            napi_create_reference(env, argv[i], NAPI_RETURN_ONE, &asyncCallbackInfo->callback);
+            break;
+        } else if ((i == PARAM2) && (valueType == napi_object)) {
+            bool ret = ParseBundleOptions(env, asyncCallbackInfo->bundleOptions, argv[i]);
+            if (!ret) {
+                asyncCallbackInfo->err = PARAM_TYPE_ERROR;
+            }
+        } else if ((i == PARAM3) && (valueType == napi_function)) {
             napi_create_reference(env, argv[i], NAPI_RETURN_ONE, &asyncCallbackInfo->callback);
             break;
         } else {
@@ -1720,8 +1762,8 @@ napi_value GetBundleInfo(napi_env env, napi_callback_info info)
         [](napi_env env, void* data) {
             AsyncBundleInfoCallbackInfo* asyncCallbackInfo = (AsyncBundleInfoCallbackInfo*)data;
             if (!asyncCallbackInfo->err) {
-                asyncCallbackInfo->ret = InnerGetBundleInfo(asyncCallbackInfo->env,
-                    asyncCallbackInfo->param, asyncCallbackInfo->flags, asyncCallbackInfo->bundleInfo);
+                asyncCallbackInfo->ret = InnerGetBundleInfo(asyncCallbackInfo->env, asyncCallbackInfo->param,
+                    asyncCallbackInfo->flags, asyncCallbackInfo->bundleOptions, asyncCallbackInfo->bundleInfo);
             }
         },
         [](napi_env env, napi_status status, void* data) {
@@ -2485,6 +2527,18 @@ static void ConvertInstallResult(InstallResult &installResult)
         case static_cast<int32_t>(IStatusReceiver::ERR_INSTALL_DISK_MEM_INSUFFICIENT):
             installResult.resultCode = static_cast<int32_t>(InstallErrorCode::STATUS_FAILED_NO_SPACE_LEFT);
             installResult.resultMsg = "STATUS_FAILED_NO_SPACE_LEFT";
+            break;
+        case static_cast<int32_t>(IStatusReceiver::ERR_USER_NOT_EXIST):
+            installResult.resultCode = static_cast<int32_t>(InstallErrorCode::STATUS_USER_NOT_EXIST);
+            installResult.resultMsg = "STATUS_USER_NOT_EXIST";
+            break;
+        case static_cast<int32_t>(IStatusReceiver::ERR_USER_CREATE_FALIED):
+            installResult.resultCode = static_cast<int32_t>(InstallErrorCode::STATUS_USER_CREATE_FALIED);
+            installResult.resultMsg = "STATUS_USER_CREATE_FALIED";
+            break;
+        case static_cast<int32_t>(IStatusReceiver::ERR_USER_REMOVE_FALIED):
+            installResult.resultCode = static_cast<int32_t>(InstallErrorCode::STATUS_USER_REMOVE_FALIED);
+            installResult.resultMsg = "STATUS_USER_REMOVE_FALIED";
             break;
         default:
             installResult.resultCode = static_cast<int32_t>(InstallErrorCode::STATUS_BMS_SERVICE_ERROR);

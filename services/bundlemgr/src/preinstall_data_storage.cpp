@@ -17,6 +17,7 @@
 
 #include <unistd.h>
 #include "app_log_wrapper.h"
+#include "bundle_util.h"
 
 using namespace OHOS::DistributedKv;
 
@@ -25,15 +26,6 @@ namespace AppExecFwk {
 namespace {
 const int32_t MAX_TIMES = 600;             // 1 min
 const int32_t SLEEP_INTERVAL = 100 * 1000;  // 100ms
-
-void DeviceAndNameToKey(
-    const std::string &deviceId, const std::string &bundleName, std::string &key)
-{
-    key.append(deviceId);
-    key.append(Constants::FILE_UNDERLINE);
-    key.append(bundleName);
-    APP_LOGD("bundleName = %{public}s", bundleName.c_str());
-}
 }  // namespace
 
 PreInstallDataStorage::PreInstallDataStorage()
@@ -105,6 +97,96 @@ bool PreInstallDataStorage::ResetKvStore()
     return false;
 }
 
+void PreInstallDataStorage::SaveEntries(
+    const std::vector<Entry> &allEntries, std::vector<PreInstallBundleInfo> &preInstallBundleInfos)
+{
+    APP_LOGD("PreInstall SaveEntries start.");
+    for (const auto &item : allEntries) {
+        std::string bundleName;
+        std::string deviceId;
+        PreInstallBundleInfo preInstallBundleInfo;
+        if (!BundleUtil::KeyToDeviceAndName(item.key.ToString(), deviceId, bundleName)) {
+            APP_LOGE("SaveEntries error key: %{public}s", item.key.ToString().c_str());
+            // it's an error key, delete it
+            {
+                std::lock_guard<std::mutex> lock(kvStorePtrMutex_);
+                kvStorePtr_->Delete(item.key);
+            }
+            continue;
+        }
+
+        nlohmann::json jsonObject = nlohmann::json::parse(item.value.ToString(), nullptr, false);
+        if (jsonObject.is_discarded()) {
+            APP_LOGE("jsonObject is discarded error key: %{public}s", item.key.ToString().c_str());
+            // it's an bad json, delete it
+            {
+                std::lock_guard<std::mutex> lock(kvStorePtrMutex_);
+                kvStorePtr_->Delete(item.key);
+            }
+            continue;
+        }
+
+        if (preInstallBundleInfo.FromJson(jsonObject) != ERR_OK) {
+            APP_LOGE("error key: %{private}s", item.key.ToString().c_str());
+            // it's an error value, delete it
+            {
+                std::lock_guard<std::mutex> lock(kvStorePtrMutex_);
+                kvStorePtr_->Delete(item.key);
+            }
+            continue;
+        }
+
+        preInstallBundleInfos.emplace_back(preInstallBundleInfo);
+    }
+    APP_LOGD("PreInstall SaveEntries end");
+}
+
+bool PreInstallDataStorage::LoadAllPreInstallBundleInfos(
+    std::vector<PreInstallBundleInfo> &preInstallBundleInfos)
+{
+    APP_LOGI("load all preInstallBundleInfo data to vector start.");
+    {
+        std::lock_guard<std::mutex> lock(kvStorePtrMutex_);
+        if (!CheckKvStore()) {
+            APP_LOGE("kvStore is nullptr");
+            return false;
+        }
+    }
+
+    Status status;
+    std::vector<Entry> allEntries;
+    TryTwice([this, &status, &allEntries] {
+        status = GetEntries(allEntries);
+        return status;
+    });
+
+    if (status != Status::SUCCESS) {
+        APP_LOGE("get entries error: %{public}d", status);
+        // KEY_NOT_FOUND means no data in database, no need to report.
+        if (status != Status::KEY_NOT_FOUND) {
+            const std::string interfaceName = "KvStoreSnapshot::GetEntries()";
+        }
+        return false;
+    }
+
+    SaveEntries(allEntries, preInstallBundleInfos);
+    return true;
+}
+
+Status PreInstallDataStorage::GetEntries(std::vector<Entry> &allEntries) const
+{
+    Status status = Status::ERROR;
+    Key token;
+    // if prefix is empty, get all entries.
+    Key allEntryKeyPrefix("");
+    if (kvStorePtr_) {
+        // sync call GetEntries, the callback will be trigger at once
+        status = kvStorePtr_->GetEntries(allEntryKeyPrefix, allEntries);
+    }
+    APP_LOGI("get all entries status: %{public}d", status);
+    return status;
+}
+
 bool PreInstallDataStorage::SavePreInstallStorageBundleInfo(
     const std::string &deviceId, const PreInstallBundleInfo &preInstallBundleInfo)
 {
@@ -118,7 +200,7 @@ bool PreInstallDataStorage::SavePreInstallStorageBundleInfo(
     }
 
     std::string keyOfData;
-    DeviceAndNameToKey(deviceId, preInstallBundleInfo.GetBundleName(), keyOfData);
+    BundleUtil::DeviceAndNameToKey(deviceId, preInstallBundleInfo.GetBundleName(), keyOfData);
     Key key(keyOfData);
     Value value(preInstallBundleInfo.ToString());
     APP_LOGI("save PreInstallStorageBundleInfo, key: %{public}s value: %{public}s.",
@@ -154,7 +236,7 @@ bool PreInstallDataStorage::GetPreInstallStorageBundleInfo(
         }
     }
     std::string keyOfData;
-    DeviceAndNameToKey(deviceId, preInstallBundleInfo.GetBundleName(), keyOfData);
+    BundleUtil::DeviceAndNameToKey(deviceId, preInstallBundleInfo.GetBundleName(), keyOfData);
     APP_LOGI("Get PreInstall bundle data when key is: %{public}s ", keyOfData.c_str());
     Key key(keyOfData);
     Value value;

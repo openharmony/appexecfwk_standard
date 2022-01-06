@@ -25,7 +25,10 @@ module_output_path = "appexecfwk_standard/bundlemgrservice"
 ohos_unittest("BmsBundleUninstallerTest") {
   use_exceptions = true
   module_out_path = module_output_path
-  include_dirs = [ "//third_party/jsoncpp/include" ]
+  include_dirs = [
+    "//third_party/jsoncpp/include",
+    "//base/startup/syspara_lite/interfaces/innerkits/native/syspara/include",
+  ]
   sources = [
     "${services_path}/bundlemgr/src/bundle_clone_mgr.cpp",
     "${services_path}/bundlemgr/src/bundle_data_mgr.cpp",
@@ -35,6 +38,7 @@ ohos_unittest("BmsBundleUninstallerTest") {
     "${services_path}/bundlemgr/src/bundle_mgr_service_event_handler.cpp",
     "${services_path}/bundlemgr/src/bundle_scanner.cpp",
     "${services_path}/bundlemgr/src/bundle_status_callback_death_recipient.cpp",
+    "${services_path}/bundlemgr/src/bundle_user_mgr_host_impl.cpp",
     "${services_path}/bundlemgr/src/installd/installd_host_impl.cpp",
     "${services_path}/bundlemgr/src/installd/installd_operator.cpp",
     "${services_path}/bundlemgr/src/installd/installd_service.cpp",
@@ -67,6 +71,7 @@ ohos_unittest("BmsBundleUninstallerTest") {
     "${libs_path}/libeventhandler:libeventhandler_target",
     "//base/security/appverify/interfaces/innerkits/appverify:libhapverify",
     "//base/security/permission/interfaces/innerkits/permission_standard/permissionsdk:libpermissionsdk_standard",
+    "//base/startup/syspara_lite/interfaces/innerkits/native/syspara:syspara",
     "//foundation/aafwk/standard/interfaces/innerkits/base:base",
     "//foundation/aafwk/standard/interfaces/innerkits/want:want",
     "//foundation/distributeddatamgr/distributeddatamgr/interfaces/innerkits/distributeddata:distributeddata_inner",

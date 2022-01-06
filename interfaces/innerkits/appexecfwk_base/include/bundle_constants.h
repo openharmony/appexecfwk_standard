@@ -17,6 +17,7 @@
 #define FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_BASE_INCLUDE_BUNDLE_CONSTANTS_H
 
 #include <string>
+#include <vector>
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -51,6 +52,22 @@ const std::string SHARED_PREFERENCE_DIR = "sharedPreference";
 const std::string TMP_SUFFIX = "_tmp";
 const std::string ASSETS_DIR = "assets";
 const std::string RESOURCES_INDEX = "resources.index";
+const std::string BUNDLE_CODE_DIR = "/data/app/el1/bundle";
+const std::string BUNDLE_APP_DATA_BASE_DIR = "/data/app/";
+const std::string BASE = "/base/";
+const std::string DATABASE = "/database/";
+const std::string DISTRIBUTED_FILE = "/mnt/hmdfs/%/device_view/local/data/";
+const std::string DISTRIBUTED_FILE_PROPERTY = "const.distributedfile_property.enabled";
+const std::vector<std::string> BUNDLE_EL = {"el1", "el2", "el3", "el4"};
+const std::vector<std::string> DATABASE_EL = {"el1", "el2"};
+const std::vector<std::string> BUNDLE_DATA_DIR = {
+    "/temp",
+    "/files",
+    "/private",
+    "/private/caches",
+    "/private/storage",
+    "/haps"
+};
 
 const std::string BMS_SERVICE_NAME = "BundleMgrService";
 const std::string INSTALLD_SERVICE_NAME = "installd";
@@ -58,6 +75,7 @@ const std::string SYSTEM_APP = "system";
 const std::string THIRD_PARTY_APP = "third-party";
 constexpr int DEFAULT_USERID = 0;
 constexpr int INVALID_USERID = -1;
+constexpr int UNSPECIFIED_USERID = -2;
 constexpr int PATH_MAX_SIZE = 256;
 constexpr int SIGNATURE_MATCHED = 0;
 constexpr int SIGNATURE_NOT_MATCHED = 1;
@@ -70,6 +88,8 @@ constexpr unsigned int INSTALLD_UMASK = 0000;
 // uid and gid
 constexpr int32_t INVALID_UID = -1;
 constexpr int32_t INVALID_GID = -1;
+constexpr int32_t INVALID_BUNDLEID = -1;
+constexpr int32_t INVALID_ACCESS_TOKEN_ID = -1;
 constexpr int32_t ROOT_UID = 0;
 constexpr int32_t C_UESRID = 200; // clone bundle userId.
 constexpr int32_t BMS_UID = 1000;
@@ -79,6 +99,7 @@ constexpr int32_t MAX_SYS_UID = 2899;
 constexpr int32_t BASE_SYS_VEN_UID = 5000;
 constexpr int32_t MAX_SYS_VEN_UID = 5999;
 constexpr int32_t BASE_APP_UID = 10000;
+constexpr int32_t BASE_USER_RANGE = 100000;
 constexpr int32_t MAX_APP_UID = 65535;
 constexpr int32_t U_VALUE = 100000;
 const std::string PROFILE_KEY_UID_SIZE = "size";

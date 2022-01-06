@@ -29,8 +29,14 @@ public:
         bool(const std::string &appName, const ApplicationFlag flag, const int userId, ApplicationInfo &appInfo));
     MOCK_METHOD3(GetApplicationInfos,
         bool(const ApplicationFlag flag, const int userId, std::vector<ApplicationInfo> &appInfos));
-    MOCK_METHOD3(GetBundleInfo, bool(const std::string &bundleName, const BundleFlag flag, BundleInfo &bundleInfo));
-    MOCK_METHOD2(GetBundleInfos, bool(const BundleFlag flag, std::vector<BundleInfo> &bundleInfos));
+    MOCK_METHOD4(GetBundleInfo,
+        bool(const std::string &bundleName, const BundleFlag flag, BundleInfo &bundleInfo, int32_t userId));
+    MOCK_METHOD4(GetBundleInfo,
+        bool(const std::string &bundleName, int32_t flag, BundleInfo &bundleInfo, int32_t userId));
+    MOCK_METHOD3(GetBundleInfos,
+        bool(const BundleFlag flag, std::vector<BundleInfo> &bundleInfos, int32_t userId));
+    MOCK_METHOD3(GetBundleInfos,
+        bool(int32_t flag, std::vector<BundleInfo> &bundleInfos, int32_t userId));
     MOCK_METHOD2(GetUidByBundleName, int(const std::string &bundleName, const int userId));
     MOCK_METHOD2(GetAppIdByBundleName, std::string(const std::string &bundleName, const int userId));
     MOCK_METHOD2(GetBundleNameForUid, bool(const int uid, std::string &bundleName));
@@ -65,7 +71,8 @@ public:
     MOCK_METHOD1(ClearBundleStatusCallback, bool(const sptr<IBundleStatusCallback> &bundleStatusCallback));
     MOCK_METHOD0(UnregisterBundleStatusCallback, bool());
 
-    bool DumpInfos(const DumpFlag flag, const std::string &bundleName, std::string &result);
+    bool DumpInfos(
+        const DumpFlag flag, const std::string &bundleName, int32_t userId, std::string &result);
 
     MOCK_METHOD1(IsApplicationEnabled, bool(const std::string &bundleName));
 
@@ -73,6 +80,7 @@ public:
     bool SetAbilityEnabled(const AbilityInfo &abilityInfo, bool isEnable);
 
     MOCK_METHOD0(GetBundleInstaller, sptr<IBundleInstaller>());
+    MOCK_METHOD0(GetBundleUserMgr, sptr<IBundleUserMgr>());
     MOCK_METHOD3(CanRequestPermission,
         bool(const std::string &bundleName, const std::string &permissionName, const int userId));
     MOCK_METHOD3(RequestPermissionFromUser,

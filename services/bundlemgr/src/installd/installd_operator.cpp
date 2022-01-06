@@ -238,5 +238,17 @@ bool InstalldOperator::MkOwnerDir(const std::string &path, bool isReadByOthers, 
     }
     return ChangeFileAttr(path, uid, gid);
 }
+
+bool InstalldOperator::MkOwnerDir(const std::string &path, int mode, const int uid, const int gid)
+{
+    if (!OHOS::ForceCreateDirectory(path)) {
+        APP_LOGE("mkdir failed");
+        return false;
+    }
+    if (!OHOS::ChangeModeDirectory(path, mode)) {
+        return false;
+    }
+    return ChangeFileAttr(path, uid, gid);
+}
 }  // namespace AppExecFwk
 }  // namespace OHOS

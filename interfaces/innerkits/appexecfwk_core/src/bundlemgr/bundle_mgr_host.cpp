@@ -251,6 +251,9 @@ int BundleMgrHost::OnRemoteRequest(uint32_t code, MessageParcel &data, MessagePa
         case static_cast<uint32_t>(IBundleMgr::Message::REMOVE_CLONED_BUNDLE):
             errCode = HandleRemoveClonedBundle(data, reply);
             break;
+        case static_cast<uint32_t>(IBundleMgr::Message::GET_BUNDLE_USER_MGR):
+            errCode = HandleGetBundleUserMgr(data, reply);
+            break;
         default:
             return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
     }
@@ -263,7 +266,7 @@ int BundleMgrHost::GetUidByBundleName(const std::string &bundleName, const int u
     APP_LOGI("begin to get uid of %{public}s", bundleName.c_str());
     std::vector<BundleInfo> bundleInfos;
     int uid = Constants::INVALID_UID;
-    bool ret = GetBundleInfos(BundleFlag::GET_BUNDLE_DEFAULT, bundleInfos);
+    bool ret = GetBundleInfos(BundleFlag::GET_BUNDLE_DEFAULT, bundleInfos, userId);
     if (ret) {
         for (auto bundleInfo : bundleInfos) {
             if (userId == Constants::C_UESRID) {
@@ -290,7 +293,7 @@ std::string BundleMgrHost::GetAppIdByBundleName([[maybe_unused]] const std::stri
     APP_LOGI("begin to get appId of %{public}s", bundleName.c_str());
     BundleInfo bundleInfo;
     std::string appId = Constants::EMPTY_STRING;
-    bool ret = GetBundleInfo(bundleName, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo);
+    bool ret = GetBundleInfo(bundleName, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo, userId);
     if (ret) {
         appId = bundleInfo.appId;
         APP_LOGD("get bundle appId success");
@@ -392,9 +395,10 @@ ErrCode BundleMgrHost::HandleGetBundleInfo(Parcel &data, Parcel &reply)
 {
     std::string name = data.ReadString();
     BundleFlag flag = static_cast<BundleFlag>(data.ReadInt32());
+    int userId = data.ReadInt32();
     APP_LOGI("name %{public}s, flag %{public}d", name.c_str(), flag);
     BundleInfo info;
-    bool ret = GetBundleInfo(name, flag, info);
+    bool ret = GetBundleInfo(name, flag, info, userId);
     if (!reply.WriteBool(ret)) {
         APP_LOGE("write failed");
         return ERR_APPEXECFWK_PARCEL_ERROR;
@@ -412,9 +416,10 @@ ErrCode BundleMgrHost::HandleGetBundleInfoWithIntFlags(Parcel &data, Parcel &rep
 {
     std::string name = data.ReadString();
     int flags = data.ReadInt32();
+    int userId = data.ReadInt32();
     APP_LOGD("name %{public}s, flags %{public}d", name.c_str(), flags);
     BundleInfo info;
-    bool ret = GetBundleInfo(name, flags, info);
+    bool ret = GetBundleInfo(name, flags, info, userId);
     if (!reply.WriteBool(ret)) {
         APP_LOGE("write failed");
         return ERR_APPEXECFWK_PARCEL_ERROR;
@@ -431,10 +436,11 @@ ErrCode BundleMgrHost::HandleGetBundleInfoWithIntFlags(Parcel &data, Parcel &rep
 ErrCode BundleMgrHost::HandleGetBundleInfos(Parcel &data, Parcel &reply)
 {
     BundleFlag flag = static_cast<BundleFlag>(data.ReadInt32());
+    int userId = data.ReadInt32();
 
     std::vector<BundleInfo> infos;
     reply.SetDataCapacity(Constants::MAX_CAPACITY_BUNDLES);
-    bool ret = GetBundleInfos(flag, infos);
+    bool ret = GetBundleInfos(flag, infos, userId);
     if (!reply.WriteBool(ret)) {
         APP_LOGE("write failed");
         return ERR_APPEXECFWK_PARCEL_ERROR;
@@ -451,10 +457,11 @@ ErrCode BundleMgrHost::HandleGetBundleInfos(Parcel &data, Parcel &reply)
 ErrCode BundleMgrHost::HandleGetBundleInfosWithIntFlags(Parcel &data, Parcel &reply)
 {
     int flags = data.ReadInt32();
+    int userId = data.ReadInt32();
 
     std::vector<BundleInfo> infos;
     reply.SetDataCapacity(Constants::MAX_CAPACITY_BUNDLES);
-    bool ret = GetBundleInfos(flags, infos);
+    bool ret = GetBundleInfos(flags, infos, userId);
     if (!reply.WriteBool(ret)) {
         APP_LOGE("write failed");
         return ERR_APPEXECFWK_PARCEL_ERROR;
@@ -1101,9 +1108,10 @@ ErrCode BundleMgrHost::HandleDumpInfos(Parcel &data, Parcel &reply)
 {
     DumpFlag flag = static_cast<DumpFlag>(data.ReadInt32());
     std::string bundleName = data.ReadString();
+    int32_t userId = data.ReadInt32();
 
     std::string result;
-    bool ret = DumpInfos(flag, bundleName, result);
+    bool ret = DumpInfos(flag, bundleName, userId, result);
     if (!reply.WriteBool(ret)) {
         APP_LOGE("write failed");
         return ERR_APPEXECFWK_PARCEL_ERROR;
@@ -1283,6 +1291,21 @@ ErrCode BundleMgrHost::HandleGetBundleInstaller(Parcel &data, Parcel &reply)
     }
 
     if (!reply.WriteParcelable(installer->AsObject())) {
+        APP_LOGE("failed to reply bundle installer to client, for write parcel error");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    return ERR_OK;
+}
+
+ErrCode BundleMgrHost::HandleGetBundleUserMgr(Parcel &data, Parcel &reply)
+{
+    sptr<IBundleUserMgr> bundleUserMgr = GetBundleUserMgr();
+    if (!bundleUserMgr) {
+        APP_LOGE("bundle installer is nullptr");
+        return ERR_APPEXECFWK_INSTALL_HOST_INSTALLER_FAILED;
+    }
+
+    if (!reply.WriteParcelable(bundleUserMgr->AsObject())) {
         APP_LOGE("failed to reply bundle installer to client, for write parcel error");
         return ERR_APPEXECFWK_PARCEL_ERROR;
     }

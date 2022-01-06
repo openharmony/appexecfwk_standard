@@ -21,11 +21,15 @@ module_output_path = "appexecfwk_standard/bundlemgrservice"
 ohos_unittest("BmsBundleKitServiceTest") {
   use_exceptions = true
   module_out_path = module_output_path
-  include_dirs = [ "//third_party/jsoncpp/include" ]
+  include_dirs = [
+    "//third_party/jsoncpp/include",
+    "//base/startup/syspara_lite/interfaces/innerkits/native/syspara/include",
+  ]
   sources = [
     "${innerkits_path}/appexecfwk_base/src/ability_info.cpp",
     "${innerkits_path}/appexecfwk_base/src/application_info.cpp",
     "${innerkits_path}/appexecfwk_base/src/bundle_info.cpp",
+    "${innerkits_path}/appexecfwk_base/src/bundle_user_info.cpp",
     "${innerkits_path}/appexecfwk_base/src/compatible_ability_info.cpp",
     "${innerkits_path}/appexecfwk_base/src/compatible_application_info.cpp",
     "${services_path}/bundlemgr/src/bundle_clone_mgr.cpp",
@@ -36,6 +40,7 @@ ohos_unittest("BmsBundleKitServiceTest") {
     "${services_path}/bundlemgr/src/bundle_mgr_service_event_handler.cpp",
     "${services_path}/bundlemgr/src/bundle_scanner.cpp",
     "${services_path}/bundlemgr/src/bundle_status_callback_death_recipient.cpp",
+    "${services_path}/bundlemgr/src/bundle_user_mgr_host_impl.cpp",
     "${services_path}/bundlemgr/src/installd/installd_host_impl.cpp",
     "${services_path}/bundlemgr/src/installd/installd_operator.cpp",
     "${services_path}/bundlemgr/src/installd/installd_service.cpp",
@@ -69,6 +74,7 @@ ohos_unittest("BmsBundleKitServiceTest") {
     "${libs_path}/libeventhandler:libeventhandler_target",
     "//base/security/appverify/interfaces/innerkits/appverify:libhapverify",
     "//base/security/permission/interfaces/innerkits/permission_standard/permissionsdk:libpermissionsdk_standard",
+    "//base/startup/syspara_lite/interfaces/innerkits/native/syspara:syspara",
     "//foundation/aafwk/standard/interfaces/innerkits/ability_manager:ability_manager",
     "//foundation/aafwk/standard/interfaces/innerkits/base:base",
     "//foundation/aafwk/standard/interfaces/innerkits/want:want",

@@ -26,6 +26,7 @@
 #include "common_profile.h"
 #include "form_info.h"
 #include "hap_module_info.h"
+#include "inner_bundle_user_info.h"
 #include "json_util.h"
 #include "shortcut_info.h"
 #include "want.h"
@@ -180,9 +181,11 @@ public:
     /**
      * @brief Find hap module info by module package.
      * @param modulePackage Indicates the module package.
+     * @param userId Indicates the user ID.
      * @return Returns the HapModuleInfo object if find it; returns null otherwise.
      */
-    std::optional<HapModuleInfo> FindHapModuleInfo(const std::string &modulePackage) const;
+    std::optional<HapModuleInfo> FindHapModuleInfo(
+        const std::string &modulePackage, int32_t userId = Constants::UNSPECIFIED_USERID) const;
     /**
      * @brief Find skills by keyName.
      * @param keyName Indicates the keyName.
@@ -193,23 +196,28 @@ public:
      * @brief Find abilityInfo by bundle name and ability name.
      * @param bundleName Indicates the bundle name.
      * @param abilityName Indicates the ability name
+     * @param userId Indicates the user ID.
      * @return Returns the AbilityInfo object if find it; returns null otherwise.
      */
-    std::optional<AbilityInfo> FindAbilityInfo(const std::string &bundleName, const std::string &abilityName) const;
+    std::optional<AbilityInfo> FindAbilityInfo(const std::string &bundleName,
+        const std::string &abilityName, int32_t userId = Constants::UNSPECIFIED_USERID) const;
     /**
      * @brief Find abilityInfo of list by bundle name.
      * @param bundleName Indicates the bundle name.
+     * @param userId Indicates the user ID.
      * @return Returns the AbilityInfo of list if find it; returns null otherwise.
      */
-    std::optional<std::vector<AbilityInfo>> FindAbilityInfos(const std::string &bundleName) const;
+    std::optional<std::vector<AbilityInfo>> FindAbilityInfos(
+        const std::string &bundleName, int32_t userId = Constants::UNSPECIFIED_USERID) const;
     /**
      * @brief Find abilityInfo of list for clone by bundle name and ability name.
      * @param bundleName Indicates the bundle name.
      * @param abilityName Indicates the ability name
+     * @param userId Indicates the user ID.
      * @return Returns the AbilityInfo of list if find it; returns null otherwise.
      */
-    void FindAbilityInfosForClone(
-        const std::string &bundleName, const std::string &abilityName, std::vector<AbilityInfo> &abilitys);
+    void FindAbilityInfosForClone(const std::string &bundleName,
+        const std::string &abilityName, int32_t userId, std::vector<AbilityInfo> &abilitys);
     /**
      * @brief Transform the InnerBundleInfo object to string.
      * @return Returns the string object
@@ -309,37 +317,45 @@ public:
     /**
      * @brief Set bundle install time.
      * @param time Indicates the install time to set.
+     * @param userId Indicates the user ID.
      * @return
      */
-    void SetBundleInstallTime(const int64_t time)
-    {
-        baseBundleInfo_.installTime = time;
-        baseBundleInfo_.updateTime = time;
-    }
+    void SetBundleInstallTime(
+        const int64_t time, int32_t userId = Constants::UNSPECIFIED_USERID);
     /**
      * @brief Get bundle install time.
+     * @param userId Indicates the user ID.
      * @return Return the bundle install time.
      */
-    int64_t GetBundleInstallTime() const
+    int64_t GetBundleInstallTime(int32_t userId = Constants::UNSPECIFIED_USERID) const
     {
-        return baseBundleInfo_.installTime;
+        InnerBundleUserInfo innerBundleUserInfo;
+        if (!GetInnerBundleUserInfo(userId, innerBundleUserInfo)) {
+            APP_LOGE("can not find userId %{public}d when GetBundleInstallTime", userId);
+            return -1;
+        }
+        return innerBundleUserInfo.installTime;
     }
     /**
      * @brief Set bundle update time.
      * @param time Indicates the update time to set.
+     * @param userId Indicates the user ID.
      * @return
      */
-    void SetBundleUpdateTime(const int64_t time)
-    {
-        baseBundleInfo_.updateTime = time;
-    }
+    void SetBundleUpdateTime(const int64_t time, int32_t userId = Constants::UNSPECIFIED_USERID);
     /**
      * @brief Get bundle update time.
+     * @param userId Indicates the user ID.
      * @return Return the bundle update time.
      */
-    int64_t GetBundleUpdateTime() const
+    int64_t GetBundleUpdateTime(int32_t userId = Constants::UNSPECIFIED_USERID) const
     {
-        return baseBundleInfo_.updateTime;
+        InnerBundleUserInfo innerBundleUserInfo;
+        if (!GetInnerBundleUserInfo(userId, innerBundleUserInfo)) {
+            APP_LOGE("can not find userId %{public}d when GetBundleUpdateTime", userId);
+            return -1;
+        }
+        return innerBundleUserInfo.updateTime;
     }
     /**
      * @brief Set whether the application supports backup.
@@ -361,7 +377,7 @@ public:
      * @brief Get bundle name.
      * @return Return bundle name
      */
-    std::string GetBundleName() const
+    const std::string GetBundleName() const
     {
         return baseApplicationInfo_.bundleName;
     }
@@ -415,25 +431,30 @@ public:
     }
     /**
      * @brief Get application enabled.
+     * @param userId Indicates the user ID.
      * @return Return whether the application is enabled.
      */
-    bool GetApplicationEnabled() const
+    bool GetApplicationEnabled(int32_t userId = Constants::UNSPECIFIED_USERID) const
     {
-        return baseApplicationInfo_.enabled;
+        InnerBundleUserInfo innerBundleUserInfo;
+        if (!GetInnerBundleUserInfo(userId, innerBundleUserInfo)) {
+            APP_LOGE("can not find userId %{public}d when GetApplicationEnabled", userId);
+            return false;
+        }
+
+        return innerBundleUserInfo.bundleUserInfo.enabled;
     }
     /**
      * @brief Set application enabled.
+     * @param userId Indicates the user ID.
      * @return Return whether the application is enabled.
      */
-    void SetApplicationEnabled(bool enabled)
-    {
-        baseApplicationInfo_.enabled = enabled;
-    }
+    void SetApplicationEnabled(bool enabled, int32_t userId = Constants::UNSPECIFIED_USERID);
     /**
      * @brief Get application code path.
      * @return Return the string object.
      */
-    std::string GetAppCodePath() const
+    const std::string GetAppCodePath() const
     {
         return baseApplicationInfo_.codePath;
     }
@@ -441,7 +462,7 @@ public:
      * @brief Set application code path.
      * @param codePath Indicates the code path to be set.
      */
-    void SetAppCodePath(std::string codePath)
+    void SetAppCodePath(const std::string codePath)
     {
         baseApplicationInfo_.codePath = codePath;
     }
@@ -475,19 +496,25 @@ public:
     /**
      * @brief Find AbilityInfo object by Uri.
      * @param abilityUri Indicates the ability uri.
+     * @param userId Indicates the user ID.
      * @return Returns the AbilityInfo object if find it; returns null otherwise.
      */
-    std::optional<AbilityInfo> FindAbilityInfoByUri(const std::string &abilityUri) const
+    std::optional<AbilityInfo> FindAbilityInfoByUri(
+        const std::string &abilityUri, int32_t userId = Constants::UNSPECIFIED_USERID) const
     {
         APP_LOGI("Uri is %{public}s", abilityUri.c_str());
         for (const auto &ability : baseAbilityInfos_) {
-            if (ability.second.uri.size() < Constants::DATA_ABILITY_URI_PREFIX.size()) {
+            auto abilityInfo = ability.second;
+            if (abilityInfo.uri.size() < Constants::DATA_ABILITY_URI_PREFIX.size()) {
                 continue;
             }
-            auto configUri = ability.second.uri.substr(Constants::DATA_ABILITY_URI_PREFIX.size());
+
+            auto configUri = abilityInfo.uri.substr(Constants::DATA_ABILITY_URI_PREFIX.size());
             APP_LOGI("configUri is %{public}s", configUri.c_str());
             if (configUri == abilityUri) {
-                return ability.second;
+                GetApplicationInfo(
+                    ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMS, userId, abilityInfo.applicationInfo);
+                return abilityInfo;
             }
         }
         return std::nullopt;
@@ -495,20 +522,25 @@ public:
     /**
      * @brief Find AbilityInfo object by Uri.
      * @param abilityUri Indicates the ability uri.
+     * @param userId Indicates the user ID.
      * @return Returns the AbilityInfo object if find it; returns null otherwise.
      */
-    void FindAbilityInfosByUri(const std::string &abilityUri, std::vector<AbilityInfo> &abilityInfos)
+    void FindAbilityInfosByUri(const std::string &abilityUri,
+        std::vector<AbilityInfo> &abilityInfos,  int32_t userId = Constants::UNSPECIFIED_USERID)
     {
         APP_LOGI("Uri is %{public}s", abilityUri.c_str());
         for (auto &ability : baseAbilityInfos_) {
-            if (ability.second.uri.size() < Constants::DATA_ABILITY_URI_PREFIX.size()) {
+            auto abilityInfo = ability.second;
+            if (abilityInfo.uri.size() < Constants::DATA_ABILITY_URI_PREFIX.size()) {
                 continue;
             }
-            auto configUri = ability.second.uri.substr(Constants::DATA_ABILITY_URI_PREFIX.size());
+
+            auto configUri = abilityInfo.uri.substr(Constants::DATA_ABILITY_URI_PREFIX.size());
             APP_LOGI("configUri is %{public}s", configUri.c_str());
             if (configUri == abilityUri) {
-                GetApplicationInfo(ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMS, 0, ability.second.applicationInfo);
-                abilityInfos.emplace_back(ability.second);
+                GetApplicationInfo(
+                    ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMS, userId, abilityInfo.applicationInfo);
+                abilityInfos.emplace_back(abilityInfo);
             }
         }
         return;
@@ -608,7 +640,7 @@ public:
      * @brief Get signature key in application.
      * @return Returns signature key.
      */
-    std::string GetSignatureKey() const
+    const std::string GetSignatureKey() const
     {
         return baseApplicationInfo_.signatureKey;
     }
@@ -616,7 +648,7 @@ public:
      * @brief Set application base data dir.
      * @param baseDataDir Indicates the dir to be set.
      */
-    void SetBaseDataDir(std::string baseDataDir)
+    void SetBaseDataDir(const std::string &baseDataDir)
     {
         baseDataDir_ = baseDataDir;
     }
@@ -664,37 +696,44 @@ public:
      * @brief Set application uid.
      * @param uid Indicates the uid to be set.
      */
-    void SetUid(int uid)
-    {
-        uid_ = uid;
-        baseBundleInfo_.uid = uid;
-        baseApplicationInfo_.uid = uid;
-    }
+    void SetUid(int uid) {}
     /**
      * @brief Get application uid.
+     * @param userId Indicates the user ID.
      * @return Returns the uid.
      */
-    int GetUid() const
+    int GetUid(int32_t userId = Constants::UNSPECIFIED_USERID) const
     {
-        return uid_;
+        InnerBundleUserInfo innerBundleUserInfo;
+        if (!GetInnerBundleUserInfo(userId, innerBundleUserInfo)) {
+            return Constants::INVALID_UID;
+        }
+
+        return innerBundleUserInfo.uid;
     }
     /**
      * @brief Get application gid.
+     * @param userId Indicates the user ID.
      * @return Returns the gid.
      */
-    int GetGid() const
+    int GetGid(int32_t userId = Constants::UNSPECIFIED_USERID) const
     {
-        return gid_;
+        InnerBundleUserInfo innerBundleUserInfo;
+        if (!GetInnerBundleUserInfo(userId, innerBundleUserInfo)) {
+            return Constants::INVALID_GID;
+        }
+
+        if (innerBundleUserInfo.gids.empty()) {
+            return Constants::INVALID_GID;
+        }
+
+        return innerBundleUserInfo.gids[0];
     }
     /**
      * @brief Set application gid.
      * @param gid Indicates the gid to be set.
      */
-    void SetGid(int gid)
-    {
-        gid_ = gid;
-        baseBundleInfo_.gid = gid;
-    }
+    void SetGid(int gid) {}
     /**
      * @brief Get application AppType.
      * @return Returns the AppType.
@@ -1034,13 +1073,14 @@ public:
      * @param userId Indicates the user ID.
      * @param appInfo Indicates the obtained ApplicationInfo object.
      */
-    void GetApplicationInfo(int32_t flags, const int userId, ApplicationInfo &appInfo) const;
+    void GetApplicationInfo(int32_t flags, int32_t userId, ApplicationInfo &appInfo) const;
     /**
      * @brief Obtains configuration information about an bundle.
      * @param flags Indicates the flag used to specify information contained in the BundleInfo that will be returned.
      * @param bundleInfos Indicates all of the obtained BundleInfo objects.
+     * @param userId Indicates the user ID.
      */
-    void GetBundleInfo(int32_t flags, BundleInfo &bundleInfo) const;
+    void GetBundleInfo(int32_t flags, BundleInfo &bundleInfo, int32_t userId = Constants::UNSPECIFIED_USERID) const;
     /**
      * @brief Check if special metadata is in the application.
      * @param metaData Indicates the special metaData.
@@ -1145,6 +1185,53 @@ public:
     {
         return baseApplicationInfo_.isSystemApp;
     }
+    /**
+     * @brief Get all InnerBundleUserInfo.
+     * @return Return about all userinfo under the app.
+     */
+    const std::map<std::string, InnerBundleUserInfo>& GetInnerBundleUserInfos() const
+    {
+        return innerBundleUserInfos_;
+    }
+    /**
+     * @brief Set userId to remove userinfo.
+     * @param userId Indicates the userId to set.
+     */
+    void RemoveInnerBundleUserInfo(int32_t userId);
+    /**
+     * @brief Set userId to add userinfo.
+     * @param userId Indicates the userInfo to set.
+     */
+    void AddInnerBundleUserInfo(const InnerBundleUserInfo& userInfo);
+    /**
+     * @brief Set userId to add userinfo.
+     * @param userId Indicates the userInfo to set.
+     * @param userInfo Indicates the userInfo to get.
+     * @return Return whether the user information is obtained successfully.
+     */
+    bool GetInnerBundleUserInfo(int32_t userId, InnerBundleUserInfo& userInfo) const;
+    /**
+     * @brief  Check whether the user exists.
+     * @param userId Indicates the userInfo to set.
+     * @return Return whether the user exists..
+     */
+    bool HasInnerBundleUserInfo(int32_t userId) const;
+    /**
+     * @brief  Check whether onlyCreateBundleUser.
+     * @return Return onlyCreateBundleUser.
+     */
+    bool IsOnlyCreateBundleUser() const
+    {
+        return onlyCreateBundleUser_;
+    }
+    /**
+     * @brief Set onlyCreateBundleUser.
+     * @param onlyCreateBundleUser Indicates the onlyCreateBundleUser.
+     */
+    void SetOnlyCreateBundleUser(bool onlyCreateBundleUser)
+    {
+        onlyCreateBundleUser_ = onlyCreateBundleUser;
+    }
 
     std::vector<std::string> GetModuleNameVec()
     {
@@ -1155,7 +1242,9 @@ public:
         return moduleVec;
     }
 private:
-    void GetBundleWithAbilities(int32_t flags, BundleInfo &bundleInfo) const;
+    void GetBundleWithAbilities(
+        int32_t flags, BundleInfo &bundleInfo, int32_t userId = Constants::UNSPECIFIED_USERID) const;
+    void BuildDefaultUserInfo();
 
     // using for get
     bool isSupportBackup_ = false;
@@ -1173,12 +1262,16 @@ private:
     bool hasEntry_ = false;
     bool canUninstall_ = true;
     bool isPreInstallApp_ = false;
-    bool hasConfigureRemovable_ = false;
+    InstallMark mark_;
+
     // only using for install or update progress, doesn't need to save to database
     std::string currentPackage_;
     std::string mainAbilityName_;
     std::string newBundleName_;
-    InstallMark mark_;
+    bool hasConfigureRemovable_ = false;
+    // Auxiliary property, which is used when the application
+    // has been installed when the user is created.
+    bool onlyCreateBundleUser_ = false;
 
     std::map<std::string, std::vector<FormInfo>> formInfos_;
     std::map<std::string, CommonEventInfo> commonEvents_;
@@ -1186,6 +1279,7 @@ private:
     std::map<std::string, InnerModuleInfo> innerModuleInfos_;
     std::map<std::string, std::vector<Skill>> skillInfos_;
     std::map<std::string, ShortcutInfo> shortcutInfos_;
+    std::map<std::string, InnerBundleUserInfo> innerBundleUserInfos_;
 };
 
 void from_json(const nlohmann::json &jsonObject, InnerModuleInfo &info);

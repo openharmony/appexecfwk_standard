@@ -145,7 +145,8 @@ bool BundlePermissionMgr::CheckPermissionAuthorization(
     return false;
 }
 
-int BundlePermissionMgr::AddAndGrantedReqPermissions(const InnerBundleInfo &innerBundleInfo)
+int BundlePermissionMgr::AddAndGrantedReqPermissions(
+    const InnerBundleInfo &innerBundleInfo, int32_t userId, bool onlyOneUser)
 {
     auto reqPermissions = innerBundleInfo.GetReqPermissions();
     std::vector<std::string> userPermList;
@@ -171,6 +172,7 @@ int BundlePermissionMgr::AddAndGrantedReqPermissions(const InnerBundleInfo &inne
             continue;
         }
     }
+
     std::string bundleName = innerBundleInfo.GetBundleName();
     APP_LOGI("add permission %{public}s %{public}zu  %{public}zu  %{public}zu",
         bundleName.c_str(),
@@ -178,61 +180,78 @@ int BundlePermissionMgr::AddAndGrantedReqPermissions(const InnerBundleInfo &inne
         systemPermList.size(),
         grantPermList.size());
     if (!userPermList.empty()) {
-        auto ret = AddUserGrantedReqPermissions(bundleName, userPermList, Constants::DEFAULT_USERID);
+        auto ret = AddUserGrantedReqPermissions(bundleName, userPermList, userId);
         if (ret != Permission::RET_SUCCESS) {
             APP_LOGE("AddUserGrantedReqPermissions failed");
         }
     }
-    if (!systemPermList.empty()) {
-        auto ret = AddSystemGrantedReqPermissions(bundleName, systemPermList);
-        if (ret != Permission::RET_SUCCESS) {
-            APP_LOGE("AddUserGrantedReqPermissions failed");
+
+    if (onlyOneUser) {
+        if (!systemPermList.empty()) {
+            auto ret = AddSystemGrantedReqPermissions(bundleName, systemPermList);
+            if (ret != Permission::RET_SUCCESS) {
+                APP_LOGE("AddSystemGrantedReqPermissions failed");
+            }
+        }
+
+        for (const auto &perm : grantPermList) {
+            auto ret = GrantReqPermissions(bundleName, perm);
+            if (ret != Permission::RET_SUCCESS) {
+                APP_LOGE("GrantReqPermissions failed");
+            }
         }
     }
-    for (const auto &perm : grantPermList) {
-        auto ret = GrantReqPermissions(bundleName, perm);
-        if (ret != Permission::RET_SUCCESS) {
-            APP_LOGE("GrantReqPermissions failed");
-        }
-    }
+
     return Permission::RET_SUCCESS;
 }
 
-bool BundlePermissionMgr::InstallPermissions(const InnerBundleInfo &innerBundleInfo)
+bool BundlePermissionMgr::InstallPermissions(
+    const InnerBundleInfo &innerBundleInfo, int32_t userId, bool onlyOneUser)
 {
-    int ret = AddDefPermissions(innerBundleInfo);
-    if (ret != Permission::RET_SUCCESS) {
-        APP_LOGE("AddDefPermissions ret %{public}d", ret);
+    int ret = Permission::RET_SUCCESS;
+    if (onlyOneUser) {
+        ret = AddDefPermissions(innerBundleInfo);
+        if (ret != Permission::RET_SUCCESS) {
+            APP_LOGE("AddDefPermissions ret %{public}d", ret);
+        }
     }
-    ret = AddAndGrantedReqPermissions(innerBundleInfo);
+
+    ret = AddAndGrantedReqPermissions(innerBundleInfo, userId, onlyOneUser);
     if (ret != Permission::RET_SUCCESS) {
-        APP_LOGE("AddUserGrantedReqPermissions ret %{public}d", ret);
+        APP_LOGE("AddAndGrantedReqPermissions ret %{public}d", ret);
     }
     return true;
 }
 
-bool BundlePermissionMgr::UpdatePermissions(const InnerBundleInfo &innerBundleInfo)
+bool BundlePermissionMgr::UpdatePermissions(
+    const InnerBundleInfo &innerBundleInfo, int32_t userId, bool onlyOneUser)
 {
     // at current time the update permissions process is same as installation process.
-    return InstallPermissions(innerBundleInfo);
+    return InstallPermissions(innerBundleInfo, userId, onlyOneUser);
 }
 
-bool BundlePermissionMgr::UninstallPermissions(const InnerBundleInfo &innerBundleInfo)
+bool BundlePermissionMgr::UninstallPermissions(
+    const InnerBundleInfo &innerBundleInfo, int32_t userId, bool onlyOneUser)
 {
+    int ret = Permission::RET_SUCCESS;
     auto bundleName = innerBundleInfo.GetBundleName();
-    auto ret = RemoveDefPermissions(bundleName);
-    if (ret != Permission::RET_SUCCESS) {
-        APP_LOGE("RemoveDefPermissions ret %{public}d", ret);
+    if (onlyOneUser) {
+        ret = RemoveDefPermissions(bundleName);
+        if (ret != Permission::RET_SUCCESS) {
+            APP_LOGE("RemoveDefPermissions ret %{public}d", ret);
+        }
+
+        ret = RemoveSystemGrantedReqPermissions(bundleName);
+        if (ret != Permission::RET_SUCCESS) {
+            APP_LOGE("RemoveSystemGrantedReqPermissions ret %{public}d", ret);
+        }
     }
-    int userId = innerBundleInfo.GetUserId();
+
     ret = RemoveUserGrantedReqPermissions(bundleName, userId);
     if (ret != Permission::RET_SUCCESS) {
         APP_LOGE("RemoveUserGrantedReqPermissions ret %{public}d", ret);
     }
-    ret = RemoveSystemGrantedReqPermissions(bundleName);
-    if (ret != Permission::RET_SUCCESS) {
-        APP_LOGE("RemoveSystemGrantedReqPermissions ret %{public}d", ret);
-    }
+
     return true;
 }
 
@@ -275,7 +294,7 @@ bool BundlePermissionMgr::GetPermissionDef(const std::string &permissionName, Pe
     return ConvertPermissionDef(permDef, permissionDef);
 }
 
-bool BundlePermissionMgr::CheckCallingPermission(const std::string &permissionName)
+bool BundlePermissionMgr::CheckCallingPermission(const std::string &permissionName, int32_t userId)
 {
     int32_t uid = IPCSkeleton::GetCallingUid();
     if (uid >= Constants::ROOT_UID && uid < Constants::BASE_SYS_UID) {
@@ -298,14 +317,14 @@ bool BundlePermissionMgr::CheckCallingPermission(const std::string &permissionNa
         APP_LOGD(
             "get app bundleName %{public}s and permissionName %{public}s", bundleName.c_str(), permissionName.c_str());
         ApplicationInfo appInfo;
-        bool ret = dataMgr->GetApplicationInfo(bundleName, ApplicationFlag::GET_BASIC_APPLICATION_INFO,
-            Constants::DEFAULT_USERID, appInfo);
+        bool ret = dataMgr->GetApplicationInfo(
+            bundleName, ApplicationFlag::GET_BASIC_APPLICATION_INFO, userId, appInfo);
         if (ret && appInfo.isSystemApp && (permissionName == Constants::PERMISSION_INSTALL_BUNDLE)) {
             APP_LOGD("system app %{public}s pass through", bundleName.c_str());
             return true;
         }
     }
-    int ret = VerifyPermission(bundleName, permissionName, Constants::DEFAULT_USERID);
+    int ret = VerifyPermission(bundleName, permissionName, userId);
     APP_LOGI("permission = %{public}s, uid = %{public}d, ret = %{public}d", permissionName.c_str(), uid, ret);
     return ret == Permission::PermissionState::PERMISSION_GRANTED;
 }
