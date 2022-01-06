@@ -32,7 +32,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-namespace {}  // namespace
 bool InstalldOperator::IsExistFile(const std::string &path)
 {
     if (path.empty()) {
@@ -249,6 +248,104 @@ bool InstalldOperator::MkOwnerDir(const std::string &path, int mode, const int u
         return false;
     }
     return ChangeFileAttr(path, uid, gid);
+}
+
+bool InstalldOperator::GetDiskUsage(const std::string &dir, int64_t &size)
+{
+    if (dir.empty() || (dir.size() > Constants::PATH_MAX_SIZE)) {
+        APP_LOGE("GetDiskUsage dir path invaild");
+        return false;
+    }
+    std::string filePath = "";
+    if (!PathToRealPath(dir, filePath)) {
+        APP_LOGE("file is not real path, file path: %{public}s", dir.c_str());
+        return false;
+    }
+    DIR *dirPtr = opendir(filePath.c_str());
+    if (dirPtr == nullptr) {
+        APP_LOGE("GetDiskUsage open file dir:%{private}s is failure", filePath.c_str());
+        return false;
+    }
+    if (filePath.back() != Constants::FILE_SEPARATOR_CHAR) {
+        filePath.push_back(Constants::FILE_SEPARATOR_CHAR);
+    }
+    struct dirent *entry = nullptr;
+    while ((entry = readdir(dirPtr)) != nullptr) {
+        if ((strcmp(entry->d_name, ".") == 0) || (strcmp(entry->d_name, "..") == 0)) {
+            continue;
+        }
+        std::string path = filePath + entry->d_name;
+        std::string realPath = "";
+        if (!PathToRealPath(path, realPath)) {
+            APP_LOGE("file is not real path");
+            closedir(dirPtr);
+            return false;
+        }
+        struct stat fileInfo = {0};
+        if (stat(realPath.c_str(), &fileInfo) != 0) {
+            APP_LOGE("call stat error");
+            closedir(dirPtr);
+            return false;
+        }
+        size += fileInfo.st_size;
+        if (entry->d_type == DT_DIR) {
+            GetDiskUsage(realPath, size);
+        }
+    }
+    closedir(dirPtr);
+    return true;
+}
+
+bool InstalldOperator::TraverseCacheDirectory(const std::string &currentPath, std::vector<std::string> &cacheDirs)
+{
+    if (currentPath.empty() || (currentPath.size() > Constants::PATH_MAX_SIZE)) {
+        APP_LOGE("TraverseCacheDirectory current path invaild");
+        return false;
+    }
+    std::string filePath = "";
+    if (!PathToRealPath(currentPath, filePath)) {
+        APP_LOGE("file is not real path, file path: %{public}s", currentPath.c_str());
+        return false;
+    }
+    DIR* dir = opendir(filePath.c_str());
+    if (dir == nullptr) {
+        return false;
+    }
+    if (filePath.back() != Constants::FILE_SEPARATOR_CHAR) {
+        filePath.push_back(Constants::FILE_SEPARATOR_CHAR);
+    }
+    struct dirent *ptr = nullptr;
+    while ((ptr = readdir(dir)) != NULL) {
+        if (strcmp(ptr->d_name, ".") == 0 || strcmp(ptr->d_name, "..") == 0) {
+            continue;
+        }
+        if (ptr->d_type == DT_DIR && strcmp(ptr->d_name, Constants::CACHE_DIR.c_str()) == 0) {
+            std::string currentDir = filePath + std::string(ptr->d_name);
+            cacheDirs.emplace_back(currentDir);
+            continue;
+        }
+        if (ptr->d_type == DT_DIR) {
+            std::string currentDir = filePath + std::string(ptr->d_name);
+            TraverseCacheDirectory(currentDir, cacheDirs);
+        }
+    }
+    closedir(dir);
+    return true;
+}
+
+int64_t InstalldOperator::GetDiskUsageFromPath(const std::vector<std::string> &path)
+{
+    int64_t fileSize = 0;
+    for (auto &st : path) {
+        int64_t size = 0;
+        if (GetDiskUsage(st, size)) {
+            fileSize += size;
+        } else {
+            fileSize = Constants::INVALID_FILE_SIZE;
+            break;
+        }
+    }
+    return fileSize;
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS
