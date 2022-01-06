@@ -96,7 +96,15 @@ public:
      * @return Returns ERR_OK if the data directory cleaned successfully; returns error code otherwise.
      */
     virtual ErrCode CleanBundleDataDir(const std::string &bundleDir) = 0;
-
+    /**
+     * @brief Get bundle Stats.
+     * @param bundleName Indicates the bundle name.
+     * @param userId Indicates the user Id.
+     * @param bundleStats Indicates the bundle Stats.
+     * @return Returns ERR_OK if get stats successfully; returns error code otherwise.
+     */
+    virtual ErrCode GetBundleStats(
+        const std::string &bundleName, const int32_t userId, std::vector<int64_t> &bundleStats) = 0;
 protected:
     enum Message : uint32_t {
         CREATE_BUNDLE_DIR = 1,
@@ -108,6 +116,7 @@ protected:
         REMOVE_BUNDLE_DATA_DIR,
         REMOVE_MODULE_DATA_DIR,
         REMOVE_DIR,
+        GET_BUNDLE_STATS,
     };
 };
 

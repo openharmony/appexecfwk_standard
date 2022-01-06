@@ -116,6 +116,17 @@ ErrCode InstalldClient::CleanBundleDataDir(const std::string &bundleDir)
     return CallService(&IInstalld::CleanBundleDataDir, bundleDir);
 }
 
+ErrCode InstalldClient::GetBundleStats(
+    const std::string &bundleName, const int32_t userId, std::vector<int64_t> &bundleStats)
+{
+    if (bundleName.empty()) {
+        APP_LOGE("bundleName is empty");
+        return ERR_APPEXECFWK_INSTALLD_PARAM_ERROR;
+    }
+
+    return CallService(&IInstalld::GetBundleStats, bundleName, userId, bundleStats);
+}
+
 void InstalldClient::ResetInstalldProxy()
 {
     if ((installdProxy_ != nullptr) && (installdProxy_->AsObject() != nullptr)) {
