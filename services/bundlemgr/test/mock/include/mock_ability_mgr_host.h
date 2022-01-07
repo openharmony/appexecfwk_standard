@@ -312,11 +312,11 @@ public:
     {
         return 0;
     }
-    int StartContinuation(const Want &want, const sptr<IRemoteObject> &abilityToken) override
+    int StartContinuation(const Want &want, const sptr<IRemoteObject> &abilityToken, int32_t status) override
     {
         return 0;
     }
-    int NotifyContinuationResult(const sptr<IRemoteObject> &abilityToken, const int32_t result) override
+    int NotifyContinuationResult(int32_t missionId, const int32_t result) override
     {
         return 0;
     }
@@ -328,6 +328,17 @@ public:
     {
         return 0;
     }
+    int ContinueMission(const std::string &srcDeviceId, const std::string &dstDeviceId,
+        int32_t missionId, const sptr<IRemoteObject> &callBack, AAFwk::WantParams &wantParams) override
+    {
+        return 0;
+    }
+    int ContinueAbility(const std::string &deviceId, int32_t missionId) override
+    {
+        return 0;
+    }
+    void NotifyCompleteContinuation(const std::string &deviceId, int32_t sessionId, bool isSuccess) override
+    {}
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS
