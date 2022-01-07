@@ -15,6 +15,8 @@
 
 #include "module_profile.h"
 
+#include <sstream>
+
 #include "app_log_wrapper.h"
 #include "bundle_constants.h"
 #include "common_profile.h"
