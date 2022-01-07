@@ -454,7 +454,7 @@ bool AppMgrServiceInner::WaitForRemoteProcessExit(std::list<pid_t> &pids, const 
 {
     int64_t delayTime = SystemTimeMillis() - startTime;
     while (delayTime < KILL_PROCESS_TIMEOUT_MICRO_SECONDS) {
-        if (CheckALLProcessExist(pids)) {
+        if (CheckAllProcessExist(pids)) {
             return true;
         }
         usleep(KILL_PROCESS_DELAYTIME_MICRO_SECONDS);
@@ -493,17 +493,17 @@ bool AppMgrServiceInner::process_exist(pid_t &pid)
     return false;
 }
 
-bool AppMgrServiceInner::CheckALLProcessExist(std::list<pid_t> &pids)
+bool AppMgrServiceInner::CheckAllProcessExist(std::list<pid_t> &pids)
 {
     for (auto iter = pids.begin(); iter != pids.end(); ) {
-        if (!process_exist(*iter) && pids.size() != 0) {
-            pids.erase(iter);
-            if (pids.empty()) {
-                return true;
-            }
+        if (!process_exist(*iter)) {
+            iter = pids.erase(iter);
         } else {
             iter++;
         }
+    }
+    if (pids.empty()) {
+        return true;
     }
     return false;
 }
