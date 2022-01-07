@@ -647,13 +647,13 @@ private:
     bool process_exist(pid_t &pid);
 
     /**
-     * CheckALLProcessExist, Determine whether all processes exist .
+     * CheckAllProcessExist, Determine whether all processes exist .
      *
      * @param pids, process number collection to exit.
      *
      * @return true, Returns that a process exists and all other processes do not exist.
      */
-    bool CheckALLProcessExist(std::list<pid_t> &pids);
+    bool CheckAllProcessExist(std::list<pid_t> &pids);
 
     /**
      * SystemTimeMillis, Get system time.
