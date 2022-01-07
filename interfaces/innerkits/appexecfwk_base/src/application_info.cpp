@@ -38,6 +38,7 @@ const std::string APPLICATION_ICON_PATH = "iconPath";
 const std::string APPLICATION_LABEL = "label";
 const std::string APPLICATION_LABEL_ID = "labelId";
 const std::string APPLICATION_DESCRIPTION_ID = "descriptionId";
+const std::string APPLICATION_ACCESSTOKEN_ID = "accessTokenId";
 const std::string APPLICATION_ICON_ID = "iconId";
 const std::string APPLICATION_DEVICE_ID = "deviceId";
 const std::string APPLICATION_SIGNATURE_KEY = "signatureKey";
@@ -117,6 +118,7 @@ bool ApplicationInfo::ReadFromParcel(Parcel &parcel)
     labelId = parcel.ReadInt32();
     iconId = parcel.ReadInt32();
     descriptionId = parcel.ReadInt32();
+    accessTokenId = parcel.ReadUint32();
     flags = parcel.ReadInt32();
     uid = parcel.ReadInt32();
 
@@ -204,6 +206,7 @@ bool ApplicationInfo::Marshalling(Parcel &parcel) const
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, labelId);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, iconId);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, descriptionId);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Uint32, parcel, accessTokenId);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, flags);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, uid);
 
@@ -270,6 +273,7 @@ void to_json(nlohmann::json &jsonObject, const ApplicationInfo &applicationInfo)
         {APPLICATION_LABEL, applicationInfo.label},
         {APPLICATION_LABEL_ID, applicationInfo.labelId},
         {APPLICATION_DESCRIPTION_ID, applicationInfo.descriptionId},
+        {APPLICATION_ACCESSTOKEN_ID, applicationInfo.accessTokenId},
         {APPLICATION_ICON_ID, applicationInfo.iconId},
         {APPLICATION_DEVICE_ID, applicationInfo.deviceId},
         {APPLICATION_SIGNATURE_KEY, applicationInfo.signatureKey},
@@ -351,6 +355,14 @@ void from_json(const nlohmann::json &jsonObject, ApplicationInfo &applicationInf
         jsonObjectEnd,
         APPLICATION_DESCRIPTION_ID,
         applicationInfo.descriptionId,
+        JsonType::NUMBER,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<uint32_t>(jsonObject,
+        jsonObjectEnd,
+        APPLICATION_ACCESSTOKEN_ID,
+        applicationInfo.accessTokenId,
         JsonType::NUMBER,
         false,
         parseResult,
@@ -556,6 +568,7 @@ void ApplicationInfo::ConvertToCompatibleApplicationInfo(CompatibleApplicationIn
     compatibleApplicationInfo.iconId = iconId;
     compatibleApplicationInfo.labelId = labelId;
     compatibleApplicationInfo.descriptionId = descriptionId;
+    compatibleApplicationInfo.accessTokenId = accessTokenId;
     compatibleApplicationInfo.permissions = permissions;
     compatibleApplicationInfo.moduleInfos = moduleInfos;
     compatibleApplicationInfo.supportedModes = supportedModes;
