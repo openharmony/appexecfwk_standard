@@ -102,6 +102,13 @@ public:
     static bool RequestPermissionFromUser(
         const std::string &bundleName, const std::string &permissionName, const int userId);
 
+    static uint32_t CreateTokenId(
+        const InnerBundleInfo &innerBundleInfo, const std::string bundleName, const int32_t userId);
+
+    static int32_t DeleteTokenId(const uint32_t tokenId);
+
+    static int32_t GrantedRequestPermissions(const InnerBundleInfo &innerBundleInfo, const int32_t userId);
+
 private:
     /**
      * @brief Add the defPermissions to permission kit.
@@ -168,6 +175,11 @@ private:
      * @return Returns 0 if the reqPermissions removed successfully; returns -1 otherwise.
      */
     static int RemoveSystemGrantedReqPermissions(const std::string &bundleName);
+
+    static bool ConvertPermissionDef(const Security::Permission::PermissionDef &permDef, PermissionDef &permissionDef);
+    static bool ConvertPermissionDef(
+        Security::Permission::PermissionDef &permDef, const DefPermission &defPermission,
+        const std::string &bundleName);
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS
