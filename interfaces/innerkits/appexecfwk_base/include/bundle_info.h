@@ -23,6 +23,7 @@
 
 #include "ability_info.h"
 #include "application_info.h"
+#include "extension_info.h"
 #include "hap_module_info.h"
 
 namespace OHOS {
@@ -80,6 +81,9 @@ struct BundleInfo : public Parcelable {
     std::vector<std::string> modulePublicDirs;  // the public paths of all modules of the application.
     std::vector<std::string> moduleDirs;        // the paths of all modules of the application.
     std::vector<std::string> moduleResPaths;    // the paths of all resources paths.
+    // new version fields
+    std::vector<ExtensionInfo> extensionInfos;
+    std::vector<int32_t> reqPermissionStates;
 
     bool ReadFromParcel(Parcel &parcel);
     virtual bool Marshalling(Parcel &parcel) const override;

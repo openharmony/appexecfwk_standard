@@ -58,11 +58,14 @@ public:
      * @return Returns true if the file names obtained successfully; returns false otherwise.
      */
     bool GetZipFileNames(std::vector<std::string> &fileNames);
+    bool isNewVersion() const;
 
 protected:
     const std::string sourceFile_;
     ZipFile zipFile_;
     bool initial_ = false;
+private:
+    bool isNewVersion_ = true;
 };
 
 }  // namespace AppExecFwk

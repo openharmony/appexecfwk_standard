@@ -3869,7 +3869,7 @@ HWTEST_F(BmsBundleKitServiceTest, SkillMatch_UriAndType_008, Function | SmallTes
 /**
  * @tc.number: skill match rules
  * @tc.name: uri and type match test: want uri not empty, type empty; skill uri not empty, type empty
- *           uri pathRegx match.
+ *           uri pathRegex match.
  * @tc.desc: expect true
  * @tc.require: AR000GHO3B
  */
@@ -3881,7 +3881,7 @@ HWTEST_F(BmsBundleKitServiceTest, SkillMatch_UriAndType_009, Function | SmallTes
     skillUri.scheme = SCHEME_001;
     skillUri.host = HOST_001;
     skillUri.port = PORT_001;
-    skillUri.pathRegx = PATH_REGEX_001;
+    skillUri.pathRegex = PATH_REGEX_001;
     skill.uris.emplace_back(skillUri);
     Want want;
     want.SetUri(URI_PATH_001);

@@ -21,6 +21,7 @@
 #include "bundle_constants.h"
 #include "bundle_extractor.h"
 #include "bundle_profile.h"
+#include "module_profile.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -40,6 +41,14 @@ ErrCode BundleParser::Parse(const std::string &pathName, InnerBundleInfo &innerB
         return ERR_APPEXECFWK_PARSE_NO_PROFILE;
     }
 
+    if (bundleExtractor.isNewVersion()) {
+        APP_LOGD("module.json transform to InnerBundleInfo");
+        innerBundleInfo.SetIsNewVersion(true);
+        ModuleProfile moduleProfile;
+        return moduleProfile.TransformTo(outStream, innerBundleInfo);
+    }
+    APP_LOGD("config.json transform to InnerBundleInfo");
+    innerBundleInfo.SetIsNewVersion(false);
     BundleProfile bundleProfile;
     return bundleProfile.TransformTo(outStream, innerBundleInfo);
 }

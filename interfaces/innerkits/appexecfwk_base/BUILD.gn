@@ -34,6 +34,7 @@ ohos_shared_library("appexecfwk_base") {
     "src/compatible_ability_info.cpp",
     "src/compatible_application_info.cpp",
     "src/element_name.cpp",
+    "src/extension_info.cpp",
     "src/form_info.cpp",
     "src/form_js_info.cpp",
     "src/form_provider_data.cpp",
