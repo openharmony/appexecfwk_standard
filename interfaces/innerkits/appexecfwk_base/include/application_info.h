@@ -127,6 +127,19 @@ struct ApplicationInfo : public Parcelable {
     bool singleUser = false;
     bool systemApp = false;
     std::map<std::string, std::vector<CustomizeData>> metaData;
+    // new version fields
+    std::vector<Metadata> metadata;
+    std::string vendor;
+    int32_t versionCode = 0;
+    std::string versionName;
+    int32_t minCompatibleVersionCode = 0;
+    int32_t apiCompatibleVersion = 0;
+    int32_t apiTargetVersion = 0;
+    std::string apiReleaseType;
+    bool distributedNotificationEnabled = false;
+    std::string entityType;
+    bool keepAlive = false;
+    bool clearUserData = true;
 
     bool ReadFromParcel(Parcel &parcel);
     bool ReadMetaDataFromParcel(Parcel &parcel);

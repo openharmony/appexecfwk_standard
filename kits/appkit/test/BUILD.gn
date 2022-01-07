@@ -209,10 +209,10 @@ group("moduletest") {
   deps = []
 
   deps += [
-    ":appexecfwk_appkit_native_app_module_test_first",
-    ":appexecfwk_appkit_native_app_module_test_fourth",
-    ":appexecfwk_appkit_native_app_module_test_second",
-    ":appexecfwk_appkit_native_app_module_test_third",
+    # ":appexecfwk_appkit_native_app_module_test_first",
+    # ":appexecfwk_appkit_native_app_module_test_fourth",
+    # ":appexecfwk_appkit_native_app_module_test_second",
+    # ":appexecfwk_appkit_native_app_module_test_third",
   ]
 }
 ###############################################################################

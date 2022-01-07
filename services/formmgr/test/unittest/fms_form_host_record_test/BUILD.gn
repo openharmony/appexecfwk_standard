@@ -79,5 +79,7 @@ ohos_unittest("FmsFormHostRecordTest") {
 group("unittest") {
   testonly = true
 
-  deps = [ ":FmsFormHostRecordTest" ]
+  deps = [
+    # ":FmsFormHostRecordTest"
+  ]
 }
