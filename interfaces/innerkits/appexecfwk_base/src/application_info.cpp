@@ -58,6 +58,18 @@ const std::string APPLICATION_DATA_DIR = "dataDir";
 const std::string APPLICATION_DATA_BASE_DIR = "dataBaseDir";
 const std::string APPLICATION_CACHE_DIR = "cacheDir";
 const std::string APPLICATION_FLAGS = "flags";
+const std::string APPLICATION_VENDOR = "vendor";
+const std::string APPLICATION_VERSION_CODE = "versionCode";
+const std::string APPLICATION_VERSION_NAME = "versionName";
+const std::string APPLICATION_MIN_COMPATIBLE_VERSION_CODE = "minCompatibleVersionCode";
+const std::string APPLICATION_API_COMPATIBLE_VERSION = "apiCompatibleVersion";
+const std::string APPLICATION_API_TARGET_VERSION = "apiTargetVersion";
+const std::string APPLICATION_API_RELEASETYPE = "apiReleaseType";
+const std::string APPLICATION_DISTRIBUTED_NOTIFICATION_ENABLED = "distributedNotificationEnabled";
+const std::string APPLICATION_ENTITY_TYPE = "entityType";
+const std::string APPLICATION_KEEP_ALIVE = "keepAlive";
+const std::string APPLICATION_SINGLE_USER = "singleUser";
+const std::string APPLICATION_CLEAR_USER_DATA = "clearUserData";
 }
 
 CustomizeData::CustomizeData(std::string paramName, std::string paramValue, std::string paramExtra)
@@ -282,7 +294,6 @@ void to_json(nlohmann::json &jsonObject, const ApplicationInfo &applicationInfo)
         {APPLICATION_IS_LAUNCHER_APP, applicationInfo.isLauncherApp},
         {APPLICATION_ENABLED, applicationInfo.enabled},
         {APPLICATION_DEBUG, applicationInfo.debug},
-        {"singleUser", applicationInfo.singleUser},
         {APPLICATION_REMOVABLE, applicationInfo.removable},
         {APPLICATION_SUPPORTED_MODES, applicationInfo.supportedModes},
         {APPLICATION_PROCESS, applicationInfo.process},
@@ -295,7 +306,19 @@ void to_json(nlohmann::json &jsonObject, const ApplicationInfo &applicationInfo)
         {APPLICATION_DATA_BASE_DIR, applicationInfo.dataBaseDir},
         {APPLICATION_CACHE_DIR, applicationInfo.cacheDir},
         {APPLICATION_FLAGS, applicationInfo.flags},
-        {"uid", applicationInfo.uid}
+        {"uid", applicationInfo.uid},
+        {APPLICATION_VENDOR, applicationInfo.vendor},
+        {APPLICATION_VERSION_CODE, applicationInfo.versionCode},
+        {APPLICATION_VERSION_NAME, applicationInfo.versionName},
+        {APPLICATION_MIN_COMPATIBLE_VERSION_CODE, applicationInfo.minCompatibleVersionCode},
+        {APPLICATION_API_COMPATIBLE_VERSION, applicationInfo.apiCompatibleVersion},
+        {APPLICATION_API_TARGET_VERSION, applicationInfo.apiTargetVersion},
+        {APPLICATION_API_RELEASETYPE, applicationInfo.apiReleaseType},
+        {APPLICATION_DISTRIBUTED_NOTIFICATION_ENABLED, applicationInfo.distributedNotificationEnabled},
+        {APPLICATION_ENTITY_TYPE, applicationInfo.entityType},
+        {APPLICATION_KEEP_ALIVE, applicationInfo.keepAlive},
+        {APPLICATION_SINGLE_USER, applicationInfo.singleUser},
+        {APPLICATION_CLEAR_USER_DATA, applicationInfo.clearUserData}
     };
 }
 
@@ -431,14 +454,6 @@ void from_json(const nlohmann::json &jsonObject, ApplicationInfo &applicationInf
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<bool>(jsonObject,
-        jsonObjectEnd,
-        "singleUser",
-        applicationInfo.singleUser,
-        JsonType::BOOLEAN,
-        false,
-        parseResult,
-        ArrayType::NOT_ARRAY);
     // To be compatible with the data of the old image.
     // if the app is a system app and is not configured with removable,
     // the application cannot be uninstalled.
@@ -552,6 +567,105 @@ void from_json(const nlohmann::json &jsonObject, ApplicationInfo &applicationInf
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        APPLICATION_VENDOR,
+        applicationInfo.vendor,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<int32_t>(jsonObject,
+        jsonObjectEnd,
+        APPLICATION_VERSION_CODE,
+        applicationInfo.versionCode,
+        JsonType::NUMBER,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        APPLICATION_VERSION_NAME,
+        applicationInfo.versionName,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<int32_t>(jsonObject,
+        jsonObjectEnd,
+        APPLICATION_MIN_COMPATIBLE_VERSION_CODE,
+        applicationInfo.minCompatibleVersionCode,
+        JsonType::NUMBER,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<int32_t>(jsonObject,
+        jsonObjectEnd,
+        APPLICATION_API_COMPATIBLE_VERSION,
+        applicationInfo.apiCompatibleVersion,
+        JsonType::NUMBER,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<int32_t>(jsonObject,
+        jsonObjectEnd,
+        APPLICATION_API_TARGET_VERSION,
+        applicationInfo.apiTargetVersion,
+        JsonType::NUMBER,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        APPLICATION_API_RELEASETYPE,
+        applicationInfo.apiReleaseType,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<bool>(jsonObject,
+        jsonObjectEnd,
+        APPLICATION_DISTRIBUTED_NOTIFICATION_ENABLED,
+        applicationInfo.distributedNotificationEnabled,
+        JsonType::BOOLEAN,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        APPLICATION_ENTITY_TYPE,
+        applicationInfo.entityType,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<bool>(jsonObject,
+        jsonObjectEnd,
+        APPLICATION_KEEP_ALIVE,
+        applicationInfo.keepAlive,
+        JsonType::BOOLEAN,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<bool>(jsonObject,
+        jsonObjectEnd,
+        APPLICATION_SINGLE_USER,
+        applicationInfo.singleUser,
+        JsonType::BOOLEAN,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<bool>(jsonObject,
+        jsonObjectEnd,
+        APPLICATION_CLEAR_USER_DATA,
+        applicationInfo.clearUserData,
+        JsonType::BOOLEAN,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    if (parseResult != ERR_OK) {
+        APP_LOGE("read ApplicationInfo from database error, error code : %{public}d", parseResult);
+    }
 }
 
 void ApplicationInfo::ConvertToCompatibleApplicationInfo(CompatibleApplicationInfo& compatibleApplicationInfo) const

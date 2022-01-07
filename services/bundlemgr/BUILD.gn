@@ -75,9 +75,11 @@ ohos_source_set("bundle_parser") {
     "include/bundle_extractor.h",
     "include/bundle_parser.h",
     "include/bundle_profile.h",
+    "include/module_profile.h",
     "src/bundle_extractor.cpp",
     "src/bundle_parser.cpp",
     "src/bundle_profile.cpp",
+    "src/module_profile.cpp",
   ]
 
   public_configs = bundlemgr_parser_common_config

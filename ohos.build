@@ -124,6 +124,21 @@
         "//foundation/appexecfwk/standard/test/resource/formsystemtestability:fms_system_test_app",
         "//foundation/appexecfwk/standard/kits/appkit/napi:napi_packages"
       ],
+      "test_list": [
+        "//foundation/appexecfwk/standard/kits/appkit/native/test:unittest",
+        "//foundation/appexecfwk/standard/kits/appkit/test:moduletest",
+        "//foundation/appexecfwk/standard/services/test:moduletest",
+        "//foundation/appexecfwk/standard/services/bundlemgr/test:unittest",
+        "//foundation/appexecfwk/standard/services/appmgr/test:unittest",
+        "//foundation/appexecfwk/standard/services/formmgr/test:unittest",
+        "//foundation/appexecfwk/standard/test/systemtest:systemtest",
+        "//foundation/appexecfwk/standard/tools/test:moduletest",
+        "//foundation/appexecfwk/standard/tools/test:systemtest",
+        "//foundation/appexecfwk/standard/tools/test:unittest",
+        "//foundation/appexecfwk/standard/libs/test:moduletest",
+        "//foundation/appexecfwk/standard/interfaces/innerkits/task_dispatcher/test:unittest",
+        "//foundation/appexecfwk/standard/interfaces/innerkits/test:moduletest"
+      ],
       "variants": [
         "phone",
         "ivi"

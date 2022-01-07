@@ -24,6 +24,7 @@
 #include "bundle_info.h"
 #include "common_event_info.h"
 #include "common_profile.h"
+#include "extension_info.h"
 #include "form_info.h"
 #include "hap_module_info.h"
 #include "inner_bundle_user_info.h"
@@ -50,18 +51,6 @@ struct DefPermission {
     int32_t descriptionId;
 };
 
-struct DefinePermission {
-    std::string name;
-    std::string grantMode;
-    std::string availableLevel;
-    bool provisionEnable;
-    bool distributedSceneEnable = false;
-    std::string label;
-    int32_t labelId;
-    std::string description;
-    int32_t descriptionId;
-};
-
 struct UsedScene {
     std::vector<std::string> ability;
     std::string when;
@@ -73,10 +62,28 @@ struct ReqPermission {
     UsedScene usedScene;
 };
 
+struct RequestPermissionUsedScene {
+    std::vector<std::string> abilities;
+    std::string when;
+};
+
 struct RequestPermission {
     std::string name;
     std::string reason;
-    UsedScene usedScene;
+    int32_t reasonId = 0;
+    RequestPermissionUsedScene usedScene;
+};
+
+struct DefinePermission {
+    std::string name;
+    std::string grantMode;
+    std::string availableLevel;
+    bool provisionEnable = true;
+    bool distributedSceneEnable = false;
+    std::string label;
+    int32_t labelId = 0;
+    std::string description;
+    int32_t descriptionId = 0;
 };
 
 struct InnerModuleInfo {
@@ -99,10 +106,19 @@ struct InnerModuleInfo {
     std::vector<std::string> reqCapabilities;
     std::vector<ReqPermission> reqPermissions;
     std::vector<DefPermission> defPermissions;
-    std::vector<RequestPermission> requestPermissions;
-    std::vector<DefinePermission> definePermissions;
     std::vector<std::string> abilityKeys;
     std::vector<std::string> skillKeys;
+    // new version fields
+    std::string process;
+    std::vector<std::string> deviceTypes;
+    std::string virtualMachine;
+    std::string uiSyntax;
+    std::string pages;
+    std::vector<Metadata> metadata;
+    std::vector<RequestPermission> requestPermissions;
+    std::vector<DefinePermission> definePermissions;
+    std::vector<std::string> extensionKeys;
+    std::vector<std::string> extensionSkillKeys;
 };
 
 struct SkillUri {
@@ -111,7 +127,7 @@ struct SkillUri {
     std::string port;
     std::string path;
     std::string pathStartWith;
-    std::string pathRegx;
+    std::string pathRegex;
     std::string type;
 };
 
@@ -496,22 +512,40 @@ public:
         innerModuleInfos_.try_emplace(modulePackage, innerModuleInfo);
     }
     /**
-     * @brief Insert baseAbilityInfos.
-     * @param keyName Indicates the key.
-     * @param abilityInfo Indicates the AbilityInfo object as value.
+     * @brief Insert AbilityInfo.
+     * @param key bundleName.moduleName.abilityName
+     * @param abilityInfo value.
      */
-    void InsertAbilitiesInfo(const std::string &keyName, const AbilityInfo &abilityInfo)
+    void InsertAbilitiesInfo(const std::string &key, const AbilityInfo &abilityInfo)
     {
-        baseAbilityInfos_.emplace(keyName, abilityInfo);
+        baseAbilityInfos_.emplace(key, abilityInfo);
     }
     /**
-     * @brief Insert skillInfos.
-     * @param keyName Indicates the abilityName as key.
-     * @param abilityInfo Indicates the Skills object as value.
+     * @brief Insert ExtensionInfo.
+     * @param key bundleName.moduleName.extensionName
+     * @param extensionInfo value.
      */
-    void InsertSkillInfo(const std::string &abilityName, const std::vector<Skill> &skills)
+    void InsertExtensionInfo(const std::string &key, const ExtensionInfo &extensionInfo)
     {
-        skillInfos_.emplace(abilityName, skills);
+        baseExtensionInfos_.emplace(key, extensionInfo);
+    }
+    /**
+     * @brief Insert ability skillInfos.
+     * @param key bundleName.moduleName.abilityName
+     * @param skills ability skills.
+     */
+    void InsertSkillInfo(const std::string &key, const std::vector<Skill> &skills)
+    {
+        skillInfos_.emplace(key, skills);
+    }
+    /**
+     * @brief Insert extension skillInfos.
+     * @param key bundleName.moduleName.extensionName
+     * @param skills extension skills.
+     */
+    void InsertExtensionSkillInfo(const std::string &key, const std::vector<Skill> &skills)
+    {
+        extensionSkillInfos_.emplace(key, skills);
     }
     /**
      * @brief Find AbilityInfo object by Uri.
@@ -1290,6 +1324,17 @@ public:
     }
 
     void SetAccessTokenId(uint32_t accessToken, const int32_t userId);
+
+    void SetIsNewVersion(bool flag)
+    {
+        isNewVersion_ = flag;
+    }
+
+    bool GetIsNewVersion() const
+    {
+        return isNewVersion_;
+    }
+
 private:
     void GetBundleWithAbilities(
         int32_t flags, BundleInfo &bundleInfo, int32_t userId = Constants::UNSPECIFIED_USERID) const;
@@ -1329,6 +1374,10 @@ private:
     std::map<std::string, std::vector<Skill>> skillInfos_;
     std::map<std::string, ShortcutInfo> shortcutInfos_;
     std::map<std::string, InnerBundleUserInfo> innerBundleUserInfos_;
+    // new version fields
+    bool isNewVersion_ = true;
+    std::map<std::string, ExtensionInfo> baseExtensionInfos_;
+    std::map<std::string, std::vector<Skill>> extensionSkillInfos_;
 };
 
 void from_json(const nlohmann::json &jsonObject, InnerModuleInfo &info);
@@ -1337,10 +1386,9 @@ void from_json(const nlohmann::json &jsonObject, Skill &skill);
 void from_json(const nlohmann::json &jsonObject, Distro &distro);
 void from_json(const nlohmann::json &jsonObject, ReqPermission &ReqPermission);
 void from_json(const nlohmann::json &jsonObject, DefPermission &DefPermission);
+void from_json(const nlohmann::json &jsonObject, InstallMark &installMark);
 void from_json(const nlohmann::json &jsonObject, RequestPermission &requestPermission);
 void from_json(const nlohmann::json &jsonObject, DefinePermission &definePermission);
-void from_json(const nlohmann::json &jsonObject, InstallMark &installMark);
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_INNER_BUNDLE_INFO_H

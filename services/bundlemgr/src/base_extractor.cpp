@@ -41,6 +41,8 @@ bool BaseExtractor::Init()
         APP_LOGE("open zip file failed");
         return false;
     }
+    ZipEntry zipEntry;
+    isNewVersion_ = zipFile_.GetEntry(Constants::MODULE_PROFILE_NAME, zipEntry);
     initial_ = true;
     APP_LOGI("success");
     return true;
@@ -91,5 +93,9 @@ bool BaseExtractor::GetZipFileNames(std::vector<std::string> &fileNames)
     return true;
 }
 
+bool BaseExtractor::isNewVersion() const
+{
+    return isNewVersion_;
+}
 }  // namespace AppExecFwk
 }  // namespace OHOS

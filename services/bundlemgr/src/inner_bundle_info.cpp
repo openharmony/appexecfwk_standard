@@ -55,8 +55,6 @@ const std::string MODULE_DISTRO = "distro";
 const std::string MODULE_REQ_CAPABILITIES = "reqCapabilities";
 const std::string MODULE_REQ_PERMS = "reqPermissions";
 const std::string MODULE_DEF_PERMS = "defPermissions";
-const std::string MODULE_REQUEST_PERMS = "requestPermissions";
-const std::string MODULE_DEFINE_PERMS = "definePermissions";
 const std::string MODULE_DATA_DIR = "moduleDataDir";
 const std::string MODULE_RES_PATH = "moduleResPath";
 const std::string MODULE_ABILITY_KEYS = "abilityKeys";
@@ -75,6 +73,19 @@ const std::string INSTALL_MARK = "installMark";
 const char WILDCARD = '*';
 const std::string TYPE_WILDCARD = "*/*";
 const std::string INNER_BUNDLE_USER_INFOS = "innerBundleUserInfos";
+const std::string MODULE_PROCESS = "process";
+const std::string MODULE_DEVICE_TYPES = "deviceTypes";
+const std::string MODULE_VIRTUAL_MACHINE = "virtualMachine";
+const std::string MODULE_UI_SYNTAX = "uiSyntax";
+const std::string MODULE_PAGES = "pages";
+const std::string MODULE_META_DATA = "metadata";
+const std::string MODULE_REQUEST_PERMISSIONS = "requestPermissions";
+const std::string MODULE_DEFINE_PERMISSIONS = "definePermissions";
+const std::string MODULE_EXTENSION_KEYS = "extensionKeys";
+const std::string MODULE_EXTENSION_SKILL_KEYS = "extensionSkillKeys";
+const std::string BUNDLE_IS_NEW_VERSION = "isNewVersion_";
+const std::string BUNDLE_BASE_EXTENSION_INFOS = "baseExtensionInfos_";
+const std::string BUNDLE_EXTENSION_SKILL_INFOS = "extensionSkillInfos_";
 
 const std::string NameAndUserIdToKey(const std::string &bundleName, int32_t userId)
 {
@@ -209,7 +220,7 @@ bool Skill::MatchUri(const std::string &uriString, const SkillUri &skillUri) con
     if (!skillUri.port.empty()) {
         skillUriString.append(PORT_SEPARATOR).append(skillUri.port);
     }
-    if (skillUri.path.empty() && skillUri.pathStartWith.empty() && skillUri.pathRegx.empty()) {
+    if (skillUri.path.empty() && skillUri.pathStartWith.empty() && skillUri.pathRegex.empty()) {
         return uriString == skillUriString;
     }
     skillUriString.append(PATH_SEPARATOR);
@@ -230,10 +241,10 @@ bool Skill::MatchUri(const std::string &uriString, const SkillUri &skillUri) con
             return true;
         }
     }
-    if (!skillUri.pathRegx.empty()) {
+    if (!skillUri.pathRegex.empty()) {
         // pathRegex match
         std::string pathRegxUri(skillUriString);
-        pathRegxUri.append(skillUri.pathRegx);
+        pathRegxUri.append(skillUri.pathRegex);
         try {
             std::regex regex(pathRegxUri);
             if (regex_match(uriString, regex)) {
@@ -300,6 +311,14 @@ void to_json(nlohmann::json &jsonObject, const UsedScene &usedScene)
     };
 }
 
+void to_json(nlohmann::json &jsonObject, const RequestPermissionUsedScene &usedScene)
+{
+    jsonObject = nlohmann::json {
+        {Profile::REQUESTPERMISSION_ABILITIES, usedScene.abilities},
+        {Profile::REQUESTPERMISSION_WHEN, usedScene.when}
+    };
+}
+
 void to_json(nlohmann::json &jsonObject, const ReqPermission &reqPermission)
 {
     jsonObject = nlohmann::json {
@@ -325,26 +344,25 @@ void to_json(nlohmann::json &jsonObject, const DefPermission &defPermission)
 void to_json(nlohmann::json &jsonObject, const RequestPermission &requestPermission)
 {
     jsonObject = nlohmann::json {
-        {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_REQ_PERMISSIONS_NAME, requestPermission.name},
-        {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_REQ_PERMISSIONS_REASON, requestPermission.reason},
-        {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_REQ_PERMISSIONS_USEDSCENE, requestPermission.usedScene}
+        {Profile::REQUESTPERMISSION_NAME, requestPermission.name},
+        {Profile::REQUESTPERMISSION_REASON, requestPermission.reason},
+        {Profile::REQUESTPERMISSION_REASON_ID, requestPermission.reasonId},
+        {Profile::REQUESTPERMISSION_USEDSCENE, requestPermission.usedScene}
     };
 }
 
 void to_json(nlohmann::json &jsonObject, const DefinePermission &definePermission)
 {
     jsonObject = nlohmann::json {
-        {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_DEF_PERMISSIONS_NAME, definePermission.name},
-        {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_DEF_PERMISSIONS_GRANTMODE, definePermission.grantMode},
-        {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_DEFINE_PERMISSIONS_AVAILABLELEVEL, definePermission.availableLevel},
-        {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_DEFINE_PERMISSIONS_PROVISION_ANABLE,
-        definePermission.provisionEnable},
-        {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_DEFINE_PERMISSIONS_DISTRIBUTED_SCENE_ENABLE,
-        definePermission.distributedSceneEnable},
-        {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_DEF_PERMISSIONS_LABEL, definePermission.label},
-        {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_DEF_PERMISSIONS_LABEL_ID, definePermission.labelId},
-        {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_DEF_PERMISSIONS_DESCRIPTION, definePermission.description},
-        {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_DEF_PERMISSIONS_DESCRIPTION_ID, definePermission.descriptionId}
+        {Profile::DEFINEPERMISSION_NAME, definePermission.name},
+        {Profile::DEFINEPERMISSION_GRANT_MODE, definePermission.grantMode},
+        {Profile::DEFINEPERMISSION_AVAILABLE_LEVEL, definePermission.availableLevel},
+        {Profile::DEFINEPERMISSION_PROVISION_ENABLE, definePermission.provisionEnable},
+        {Profile::DEFINEPERMISSION_DISTRIBUTED_SCENE_ENABLE, definePermission.distributedSceneEnable},
+        {Profile::LABEL, definePermission.label},
+        {Profile::LABEL_ID, definePermission.labelId},
+        {Profile::DESCRIPTION, definePermission.description},
+        {Profile::DESCRIPTION_ID, definePermission.descriptionId}
     };
 }
 
@@ -368,12 +386,20 @@ void to_json(nlohmann::json &jsonObject, const InnerModuleInfo &info)
         {MODULE_REQ_CAPABILITIES, info.reqCapabilities},
         {MODULE_REQ_PERMS, info.reqPermissions},
         {MODULE_DEF_PERMS, info.defPermissions},
-        {MODULE_REQUEST_PERMS, info.requestPermissions},
-        {MODULE_DEFINE_PERMS, info.definePermissions},
         {MODULE_ABILITY_KEYS, info.abilityKeys},
         {MODULE_SKILL_KEYS, info.skillKeys},
         {MODULE_MAIN_ABILITY, info.mainAbility},
-        {MODULE_SRC_PATH, info.srcPath}
+        {MODULE_SRC_PATH, info.srcPath},
+        {MODULE_PROCESS, info.process},
+        {MODULE_DEVICE_TYPES, info.deviceTypes},
+        {MODULE_VIRTUAL_MACHINE, info.virtualMachine},
+        {MODULE_UI_SYNTAX, info.uiSyntax},
+        {MODULE_PAGES, info.pages},
+        {MODULE_META_DATA, info.metadata},
+        {MODULE_REQUEST_PERMISSIONS, info.requestPermissions},
+        {MODULE_DEFINE_PERMISSIONS, info.definePermissions},
+        {MODULE_EXTENSION_KEYS, info.extensionKeys},
+        {MODULE_EXTENSION_SKILL_KEYS, info.extensionSkillKeys}
     };
 }
 
@@ -385,7 +411,7 @@ void to_json(nlohmann::json &jsonObject, const SkillUri &uri)
         {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_PORT, uri.port},
         {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_PATH, uri.path},
         {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_PATHSTARTWITH, uri.pathStartWith},
-        {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_PATHREGX, uri.pathRegx},
+        {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_PATHREGEX, uri.pathRegex},
         {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_TYPE, uri.type}
     };
 }
@@ -432,6 +458,9 @@ void InnerBundleInfo::ToJson(nlohmann::json &jsonObject) const
     jsonObject[IS_PREINSTALL_APP] = isPreInstallApp_;
     jsonObject[INSTALL_MARK] = mark_;
     jsonObject[INNER_BUNDLE_USER_INFOS] = innerBundleUserInfos_;
+    jsonObject[BUNDLE_IS_NEW_VERSION] = isNewVersion_;
+    jsonObject[BUNDLE_BASE_EXTENSION_INFOS] = baseExtensionInfos_;
+    jsonObject[BUNDLE_EXTENSION_SKILL_INFOS] = extensionSkillInfos_;
 }
 
 void from_json(const nlohmann::json &jsonObject, InnerModuleInfo &info)
@@ -590,22 +619,6 @@ void from_json(const nlohmann::json &jsonObject, InnerModuleInfo &info)
         false,
         ProfileReader::parseResult,
         ArrayType::OBJECT);
-    GetValueIfFindKey<std::vector<RequestPermission>>(jsonObject,
-        jsonObjectEnd,
-        MODULE_REQUEST_PERMS,
-        info.requestPermissions,
-        JsonType::ARRAY,
-        false,
-        ProfileReader::parseResult,
-        ArrayType::OBJECT);
-    GetValueIfFindKey<std::vector<DefinePermission>>(jsonObject,
-        jsonObjectEnd,
-        MODULE_DEFINE_PERMS,
-        info.definePermissions,
-        JsonType::ARRAY,
-        false,
-        ProfileReader::parseResult,
-        ArrayType::OBJECT);
     GetValueIfFindKey<std::vector<std::string>>(jsonObject,
         jsonObjectEnd,
         MODULE_ABILITY_KEYS,
@@ -622,6 +635,90 @@ void from_json(const nlohmann::json &jsonObject, InnerModuleInfo &info)
         false,
         ProfileReader::parseResult,
         ArrayType::STRING);
+    int32_t parseResult = ERR_OK;
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        MODULE_PROCESS,
+        info.process,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::vector<std::string>>(jsonObject,
+        jsonObjectEnd,
+        MODULE_DEVICE_TYPES,
+        info.deviceTypes,
+        JsonType::ARRAY,
+        false,
+        parseResult,
+        ArrayType::STRING);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        MODULE_VIRTUAL_MACHINE,
+        info.virtualMachine,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        MODULE_UI_SYNTAX,
+        info.uiSyntax,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        MODULE_PAGES,
+        info.pages,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::vector<Metadata>>(jsonObject,
+        jsonObjectEnd,
+        MODULE_META_DATA,
+        info.metadata,
+        JsonType::ARRAY,
+        false,
+        parseResult,
+        ArrayType::OBJECT);
+    GetValueIfFindKey<std::vector<RequestPermission>>(jsonObject,
+        jsonObjectEnd,
+        MODULE_REQUEST_PERMISSIONS,
+        info.requestPermissions,
+        JsonType::ARRAY,
+        false,
+        parseResult,
+        ArrayType::OBJECT);
+    GetValueIfFindKey<std::vector<DefinePermission>>(jsonObject,
+        jsonObjectEnd,
+        MODULE_DEFINE_PERMISSIONS,
+        info.definePermissions,
+        JsonType::ARRAY,
+        false,
+        parseResult,
+        ArrayType::OBJECT);
+    GetValueIfFindKey<std::vector<std::string>>(jsonObject,
+        jsonObjectEnd,
+        MODULE_EXTENSION_KEYS,
+        info.extensionKeys,
+        JsonType::ARRAY,
+        false,
+        parseResult,
+        ArrayType::STRING);
+    GetValueIfFindKey<std::vector<std::string>>(jsonObject,
+        jsonObjectEnd,
+        MODULE_EXTENSION_SKILL_KEYS,
+        info.extensionSkillKeys,
+        JsonType::ARRAY,
+        false,
+        parseResult,
+        ArrayType::STRING);
+    if (parseResult != ERR_OK) {
+        APP_LOGE("read InnerModuleInfo from database error, error code : %{public}d", parseResult);
+    }
 }
 
 void from_json(const nlohmann::json &jsonObject, SkillUri &uri)
@@ -672,7 +769,15 @@ void from_json(const nlohmann::json &jsonObject, SkillUri &uri)
     GetValueIfFindKey<std::string>(jsonObject,
         jsonObjectEnd,
         ProfileReader::BUNDLE_MODULE_PROFILE_KEY_PATHREGX,
-        uri.pathRegx,
+        uri.pathRegex,
+        JsonType::STRING,
+        false,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        ProfileReader::BUNDLE_MODULE_PROFILE_KEY_PATHREGEX,
+        uri.pathRegex,
         JsonType::STRING,
         false,
         ProfileReader::parseResult,
@@ -805,35 +910,6 @@ void from_json(const nlohmann::json &jsonObject, ReqPermission &reqPermission)
         ArrayType::NOT_ARRAY);
 }
 
-void from_json(const nlohmann::json &jsonObject, RequestPermission &requestPermission)
-{
-    const auto &jsonObjectEnd = jsonObject.end();
-    GetValueIfFindKey<std::string>(jsonObject,
-        jsonObjectEnd,
-        ProfileReader::BUNDLE_MODULE_PROFILE_KEY_REQ_PERMISSIONS_NAME,
-        requestPermission.name,
-        JsonType::STRING,
-        true,
-        ProfileReader::parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<std::string>(jsonObject,
-        jsonObjectEnd,
-        ProfileReader::BUNDLE_MODULE_PROFILE_KEY_REQ_PERMISSIONS_REASON,
-        requestPermission.reason,
-        JsonType::STRING,
-        false,
-        ProfileReader::parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<UsedScene>(jsonObject,
-        jsonObjectEnd,
-        ProfileReader::BUNDLE_MODULE_PROFILE_KEY_REQ_PERMISSIONS_USEDSCENE,
-        requestPermission.usedScene,
-        JsonType::OBJECT,
-        false,
-        ProfileReader::parseResult,
-        ArrayType::NOT_ARRAY);
-}
-
 void from_json(const nlohmann::json &jsonObject, DefPermission &defPermission)
 {
     const auto &jsonObjectEnd = jsonObject.end();
@@ -895,83 +971,6 @@ void from_json(const nlohmann::json &jsonObject, DefPermission &defPermission)
         ArrayType::NOT_ARRAY);
 }
 
-void from_json(const nlohmann::json &jsonObject, DefinePermission &definePermission)
-{
-    const auto &jsonObjectEnd = jsonObject.end();
-    GetValueIfFindKey<std::string>(jsonObject,
-        jsonObjectEnd,
-        ProfileReader::BUNDLE_MODULE_PROFILE_KEY_DEF_PERMISSIONS_NAME,
-        definePermission.name,
-        JsonType::STRING,
-        true,
-        ProfileReader::parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<std::string>(jsonObject,
-        jsonObjectEnd,
-        ProfileReader::BUNDLE_MODULE_PROFILE_KEY_DEF_PERMISSIONS_GRANTMODE,
-        definePermission.grantMode,
-        JsonType::STRING,
-        false,
-        ProfileReader::parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<std::string>(jsonObject,
-        jsonObjectEnd,
-        ProfileReader::BUNDLE_MODULE_PROFILE_KEY_DEFINE_PERMISSIONS_AVAILABLELEVEL,
-        definePermission.availableLevel,
-        JsonType::STRING,
-        false,
-        ProfileReader::parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<bool>(jsonObject,
-        jsonObjectEnd,
-        ProfileReader::BUNDLE_MODULE_PROFILE_KEY_DEFINE_PERMISSIONS_PROVISION_ANABLE,
-        definePermission.provisionEnable,
-        JsonType::BOOLEAN,
-        false,
-        ProfileReader::parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<bool>(jsonObject,
-        jsonObjectEnd,
-        ProfileReader::BUNDLE_MODULE_PROFILE_KEY_DEFINE_PERMISSIONS_DISTRIBUTED_SCENE_ENABLE,
-        definePermission.distributedSceneEnable,
-        JsonType::BOOLEAN,
-        false,
-        ProfileReader::parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<std::string>(jsonObject,
-        jsonObjectEnd,
-        ProfileReader::BUNDLE_MODULE_PROFILE_KEY_DEF_PERMISSIONS_LABEL,
-        definePermission.label,
-        JsonType::STRING,
-        false,
-        ProfileReader::parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<int32_t>(jsonObject,
-        jsonObjectEnd,
-        ProfileReader::BUNDLE_MODULE_PROFILE_KEY_DEF_PERMISSIONS_LABEL_ID,
-        definePermission.labelId,
-        JsonType::NUMBER,
-        false,
-        ProfileReader::parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<std::string>(jsonObject,
-        jsonObjectEnd,
-        ProfileReader::BUNDLE_MODULE_PROFILE_KEY_DEF_PERMISSIONS_DESCRIPTION,
-        definePermission.description,
-        JsonType::STRING,
-        false,
-        ProfileReader::parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<int32_t>(jsonObject,
-        jsonObjectEnd,
-        ProfileReader::BUNDLE_MODULE_PROFILE_KEY_DEF_PERMISSIONS_DESCRIPTION_ID,
-        definePermission.descriptionId,
-        JsonType::NUMBER,
-        false,
-        ProfileReader::parseResult,
-        ArrayType::NOT_ARRAY);
-}
-
 void from_json(const nlohmann::json &jsonObject, InstallMark &installMark)
 {
     const auto &jsonObjectEnd = jsonObject.end();
@@ -999,6 +998,153 @@ void from_json(const nlohmann::json &jsonObject, InstallMark &installMark)
         false,
         ProfileReader::parseResult,
         ArrayType::NOT_ARRAY);
+}
+
+void from_json(const nlohmann::json &jsonObject, RequestPermissionUsedScene &usedScene)
+{
+    const auto &jsonObjectEnd = jsonObject.end();
+    int32_t parseResult = ERR_OK;
+    GetValueIfFindKey<std::vector<std::string>>(jsonObject,
+        jsonObjectEnd,
+        Profile::REQUESTPERMISSION_ABILITIES,
+        usedScene.abilities,
+        JsonType::ARRAY,
+        false,
+        parseResult,
+        ArrayType::STRING);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        Profile::REQUESTPERMISSION_WHEN,
+        usedScene.when,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    if (parseResult != ERR_OK) {
+        APP_LOGE("read RequestPermissionUsedScene from database error, error code : %{public}d", parseResult);
+    }
+}
+
+void from_json(const nlohmann::json &jsonObject, RequestPermission &requestPermission)
+{
+    const auto &jsonObjectEnd = jsonObject.end();
+    int32_t parseResult = ERR_OK;
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        Profile::REQUESTPERMISSION_NAME,
+        requestPermission.name,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        Profile::REQUESTPERMISSION_REASON,
+        requestPermission.reason,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<int32_t>(jsonObject,
+        jsonObjectEnd,
+        Profile::REQUESTPERMISSION_REASON_ID,
+        requestPermission.reasonId,
+        JsonType::NUMBER,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<RequestPermissionUsedScene>(jsonObject,
+        jsonObjectEnd,
+        Profile::REQUESTPERMISSION_USEDSCENE,
+        requestPermission.usedScene,
+        JsonType::OBJECT,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    if (parseResult != ERR_OK) {
+        APP_LOGE("read RequestPermission from database error, error code : %{public}d", parseResult);
+    }
+}
+
+void from_json(const nlohmann::json &jsonObject, DefinePermission &definePermission)
+{
+    const auto &jsonObjectEnd = jsonObject.end();
+    int32_t parseResult = ERR_OK;
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        Profile::DEFINEPERMISSION_NAME,
+        definePermission.name,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        Profile::DEFINEPERMISSION_GRANT_MODE,
+        definePermission.grantMode,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        Profile::DEFINEPERMISSION_AVAILABLE_LEVEL,
+        definePermission.availableLevel,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<bool>(jsonObject,
+        jsonObjectEnd,
+        Profile::DEFINEPERMISSION_PROVISION_ENABLE,
+        definePermission.provisionEnable,
+        JsonType::BOOLEAN,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<bool>(jsonObject,
+        jsonObjectEnd,
+        Profile::DEFINEPERMISSION_DISTRIBUTED_SCENE_ENABLE,
+        definePermission.distributedSceneEnable,
+        JsonType::BOOLEAN,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        Profile::LABEL,
+        definePermission.label,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<int32_t>(jsonObject,
+        jsonObjectEnd,
+        Profile::LABEL_ID,
+        definePermission.labelId,
+        JsonType::NUMBER,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        Profile::DESCRIPTION,
+        definePermission.description,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<int32_t>(jsonObject,
+        jsonObjectEnd,
+        Profile::DESCRIPTION_ID,
+        definePermission.descriptionId,
+        JsonType::NUMBER,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    if (parseResult != ERR_OK) {
+        APP_LOGE("read DefinePermission from database error, error code : %{public}d", parseResult);
+    }
 }
 
 int32_t InnerBundleInfo::FromJson(const nlohmann::json &jsonObject)
@@ -1205,6 +1351,35 @@ int32_t InnerBundleInfo::FromJson(const nlohmann::json &jsonObject)
         // if the old data does not have bundleUserInfos,
         // the default user information needs to be constructed.
         BuildDefaultUserInfo();
+    }
+    int32_t parseResult = ERR_OK;
+    GetValueIfFindKey<bool>(jsonObject,
+        jsonObjectEnd,
+        BUNDLE_IS_NEW_VERSION,
+        isNewVersion_,
+        JsonType::BOOLEAN,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::map<std::string, ExtensionInfo>>(jsonObject,
+        jsonObjectEnd,
+        BUNDLE_BASE_EXTENSION_INFOS,
+        baseExtensionInfos_,
+        JsonType::OBJECT,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::map<std::string, std::vector<Skill>>>(jsonObject,
+        jsonObjectEnd,
+        BUNDLE_EXTENSION_SKILL_INFOS,
+        extensionSkillInfos_,
+        JsonType::OBJECT,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    if (parseResult != ERR_OK) {
+        APP_LOGE("read InnerBundleInfo from database error, error code : %{public}d", parseResult);
+        return parseResult;
     }
     return ret;
 }
@@ -1507,6 +1682,9 @@ std::string InnerBundleInfo::ToString() const
     j[IS_PREINSTALL_APP] = isPreInstallApp_;
     j[INSTALL_MARK] = mark_;
     j[INNER_BUNDLE_USER_INFOS] = innerBundleUserInfos_;
+    j[BUNDLE_IS_NEW_VERSION] = isNewVersion_;
+    j[BUNDLE_BASE_EXTENSION_INFOS] = baseExtensionInfos_;
+    j[BUNDLE_EXTENSION_SKILL_INFOS] = extensionSkillInfos_;
     return j.dump();
 }
 
@@ -1532,18 +1710,25 @@ void InnerBundleInfo::GetApplicationInfo(int32_t flags, int32_t userId, Applicat
             appInfo.entryDir = info.second.modulePath;
         }
         if ((static_cast<uint32_t>(flags) & GET_APPLICATION_INFO_WITH_PERMS) == GET_APPLICATION_INFO_WITH_PERMS) {
-            std::transform(info.second.reqPermissions.begin(),
-                info.second.reqPermissions.end(),
-                std::back_inserter(appInfo.permissions),
-                [](const auto &p) { return p.name; });
-            std::transform(info.second.requestPermissions.begin(),
-                info.second.requestPermissions.end(),
-                std::back_inserter(appInfo.permissions),
-                [](const auto &p) { return p.name; });
+            if (isNewVersion_) {
+                std::transform(info.second.requestPermissions.begin(),
+                    info.second.requestPermissions.end(),
+                    std::back_inserter(appInfo.permissions),
+                    [](const auto &p) { return p.name; });
+            } else {
+                std::transform(info.second.reqPermissions.begin(),
+                    info.second.reqPermissions.end(),
+                    std::back_inserter(appInfo.permissions),
+                    [](const auto &p) { return p.name; });
+            }
         }
-        if ((static_cast<uint32_t>(flags) & GET_APPLICATION_INFO_WITH_METADATA) == GET_APPLICATION_INFO_WITH_METADATA
-            && info.second.metaData.customizeData.size() > 0) {
-            appInfo.metaData[info.second.moduleName] = info.second.metaData.customizeData;
+        if ((static_cast<uint32_t>(flags) & GET_APPLICATION_INFO_WITH_METADATA) == GET_APPLICATION_INFO_WITH_METADATA) {
+            if (!isNewVersion_ && info.second.metaData.customizeData.size() > 0) {
+                appInfo.metaData[info.second.moduleName] = info.second.metaData.customizeData;
+            }
+            if (isNewVersion_ && info.second.metadata.size() > 0) {
+                appInfo.metadata = info.second.metadata;
+            }
         }
     }
 }
@@ -1568,22 +1753,25 @@ void InnerBundleInfo::GetBundleInfo(int32_t flags, BundleInfo &bundleInfo, int32
     for (const auto &info : innerModuleInfos_) {
         if ((static_cast<uint32_t>(flags) & GET_BUNDLE_WITH_REQUESTED_PERMISSION)
             == GET_BUNDLE_WITH_REQUESTED_PERMISSION) {
-            std::transform(info.second.reqPermissions.begin(),
-                info.second.reqPermissions.end(),
-                std::back_inserter(bundleInfo.reqPermissions),
-                [](const auto &p) { return p.name; });
-            std::transform(info.second.defPermissions.begin(),
-                info.second.defPermissions.end(),
-                std::back_inserter(bundleInfo.defPermissions),
-                [](const auto &p) { return p.name; });
-            std::transform(info.second.requestPermissions.begin(),
-                info.second.requestPermissions.end(),
-                std::back_inserter(bundleInfo.reqPermissions),
-                [](const auto &p) { return p.name; });
-            std::transform(info.second.definePermissions.begin(),
-                info.second.definePermissions.end(),
-                std::back_inserter(bundleInfo.defPermissions),
-                [](const auto &p) { return p.name; });
+            if (isNewVersion_) {
+                std::transform(info.second.requestPermissions.begin(),
+                    info.second.requestPermissions.end(),
+                    std::back_inserter(bundleInfo.reqPermissions),
+                    [](const auto &p) { return p.name; });
+                std::transform(info.second.definePermissions.begin(),
+                    info.second.definePermissions.end(),
+                    std::back_inserter(bundleInfo.defPermissions),
+                    [](const auto &p) { return p.name; });
+            } else {
+                std::transform(info.second.reqPermissions.begin(),
+                    info.second.reqPermissions.end(),
+                    std::back_inserter(bundleInfo.reqPermissions),
+                    [](const auto &p) { return p.name; });
+                std::transform(info.second.defPermissions.begin(),
+                    info.second.defPermissions.end(),
+                    std::back_inserter(bundleInfo.defPermissions),
+                    [](const auto &p) { return p.name; });
+            }
         }
         bundleInfo.hapModuleNames.emplace_back(info.second.modulePackage);
         auto hapmoduleinfo = FindHapModuleInfo(info.second.modulePackage, userId);
@@ -1621,6 +1809,17 @@ void InnerBundleInfo::GetBundleWithAbilities(int32_t flags, BundleInfo &bundleIn
 
 bool InnerBundleInfo::CheckSpecialMetaData(const std::string &metaData) const
 {
+    if (isNewVersion_) {
+        for (const auto &moduleInfo : innerModuleInfos_) {
+            for (const auto &data : moduleInfo.second.metadata) {
+                if (metaData == data.name) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    // old version
     for (const auto &moduleInfo : innerModuleInfos_) {
         for (const auto &data : moduleInfo.second.metaData.customizeData) {
             if (metaData == data.name) {
