@@ -147,6 +147,7 @@ const std::string BUNDLE_MODULE_PROFILE_KEY_PORT = "port";
 const std::string BUNDLE_MODULE_PROFILE_KEY_PATH = "path";
 const std::string BUNDLE_MODULE_PROFILE_KEY_PATHSTARTWITH = "pathStartWith";
 const std::string BUNDLE_MODULE_PROFILE_KEY_PATHREGX = "pathRegx";
+const std::string BUNDLE_MODULE_PROFILE_KEY_PATHREGEX = "pathRegex";
 const std::string BUNDLE_MODULE_PROFILE_KEY_TYPE = "type";
 // sub BUNDLE_MODULE_PROFILE_KEY_META_DATA
 const std::string BUNDLE_MODULE_META_KEY_CUSTOMIZE_DATA = "customizeData";
@@ -282,6 +283,108 @@ const std::string KEY_WIFI_INTERACTION = "wifiInteraction";
 const std::string KEY_VOIP = "voip";
 const std::string KEY_TASK_KEEPING = "taskKeeping";
 }  // namespace ProfileReader
+
+namespace Profile {
+// common
+const std::string ICON = "icon";
+const std::string ICON_ID = "iconId";
+const std::string LABEL = "label";
+const std::string LABEL_ID = "labelId";
+const std::string DESCRIPTION = "description";
+const std::string DESCRIPTION_ID = "descriptionId";
+const std::string META_DATA = "metadata";
+const std::string SKILLS = "skills";
+const std::string SRC_ENTRANCE = "srcEntrance";
+const std::string PERMISSIONS = "permissions";
+const std::string VISIBLE = "visible";
+const std::string SRC_LANGUAGE = "srcLanguage";
+// module.json
+const std::string APP = "app";
+const std::string MODULE = "module";
+// app
+const std::string APP_BUNDLE_NAME = "bundleName";
+const std::string APP_DEBUG = "debug";
+const std::string APP_VENDOR = "vendor";
+const std::string APP_VERSION_CODE = "versionCode";
+const std::string APP_VERSION_NAME = "versionName";
+const std::string APP_MIN_COMPATIBLE_VERSION_CODE = "minCompatibleVersionCode";
+const std::string APP_API_COMPATIBLE_VERSION = "apiCompatibleVersion";
+const std::string APP_API_TARGET_VERSION = "apiTargetVersion";
+const std::string APP_API_RELEASETYPE = "apiReleaseType";
+const std::string APP_API_RELEASETYPE_DEFAULT_VALUE = "Release";
+const std::string APP_DISTRIBUTED_NOTIFICATION_ENABLED = "distributedNotificationEnabled";
+const std::string APP_ENTITY_TYPE = "entityType";
+const std::string APP_ENTITY_TYPE_DEFAULT_VALUE = "unspecified";
+const std::string APP_KEEP_ALIVE = "keepAlive";
+const std::string APP_REMOVABLE = "removable";
+const std::string APP_SINGLE_USER = "singleUser";
+const std::string APP_CLEAR_USER_DATA = "clearUserData";
+const std::string APP_PHONE = "phone";
+const std::string APP_TABLET = "tablet";
+const std::string APP_TV = "tv";
+const std::string APP_WEARABLE = "wearable";
+const std::string APP_LITE_WEARABLE = "liteWearable";
+const std::string APP_CAR = "car";
+const std::string APP_SMART_VISION = "smartVision";
+const std::string APP_ROUTER = "router";
+// module
+const std::string MODULE_NAME = "name";
+const std::string MODULE_TYPE = "type";
+const std::string MODULE_PROCESS = "process";
+const std::string MODULE_MAIN_ELEMENT = "mainElement";
+const std::string MODULE_DEVICE_TYPES = "deviceTypes";
+const std::string MODULE_DELIVERY_WITH_INSTALL = "deliveryWithInstall";
+const std::string MODULE_INSTALLATION_FREE = "installationFree";
+const std::string MODULE_VIRTUAL_MACHINE = "virtualMachine";
+const std::string MODULE_UI_SYNTAX = "uiSyntax";
+const std::string MODULE_PAGES = "pages";
+const std::string MODULE_ABILITIES = "abilities";
+const std::string MODULE_EXTENSION_ABILITIES = "extensionAbilities";
+const std::string MODULE_REQUEST_PERMISSIONS = "requestPermissions";
+const std::string MODULE_DEFINE_PERMISSIONS = "definePermissions";
+// module type
+const std::string MODULE_TYPE_ENTRY = "entry";
+const std::string MODULE_TYPE_FEATURE = "feature";
+// deviceConfig
+const std::string DEVICE_CONFIG_API_COMPATIBLE_VERSION = "apiCompatibleVersion";
+const std::string DEVICE_CONFIG_DISTRIBUTED_NOTIFICATION_ENABLED = "distributedNotificationEnabled";
+const std::string DEVICE_CONFIG_KEEP_ALIVE = "keepAlive";
+const std::string DEVICE_CONFIG_REMOVABLE = "removable";
+const std::string DEVICE_CONFIG_SINGLE_USER = "singleUser";
+const std::string DEVICE_CONFIG_CLEAR_USER_DATA = "clearUserData";
+// metadata
+const std::string META_DATA_NAME = "name";
+const std::string META_DATA_VALUE = "value";
+const std::string META_DATA_RESOURCE = "resource";
+// metadata reserved
+const std::string META_DATA_FORM = "ohos.extension.form";
+const std::string META_DATA_SHORTCUTS = "ohos.app.shortcuts";
+const std::string META_DATA_COMMON_EVENTS = "ohos.extension.staticSubscriber";
+// ability
+const std::string ABILITY_NAME = "name";
+const std::string ABILITY_ORIENTATION = "orientation";
+const std::string ABILITY_ORIENTATION_DEFAULT_VALUE = "unspecified";
+const std::string ABILITY_CONFIGCHANGES = "configChanges";
+const std::string ABILITY_BACKGROUNDMODES = "backgroundModes";
+// extension ability
+const std::string EXTENSION_ABILITY_NAME = "name";
+const std::string EXTENSION_ABILITY_TYPE = "type";
+// requestPermission
+const std::string REQUESTPERMISSION_NAME = "name";
+const std::string REQUESTPERMISSION_REASON = "reason";
+const std::string REQUESTPERMISSION_REASON_ID = "reasonId";
+const std::string REQUESTPERMISSION_USEDSCENE = "usedScene";
+const std::string REQUESTPERMISSION_ABILITIES = "abilities";
+const std::string REQUESTPERMISSION_WHEN = "when";
+// definePermission
+const std::string DEFINEPERMISSION_NAME = "name";
+const std::string DEFINEPERMISSION_GRANT_MODE = "grantMode";
+const std::string DEFINEPERMISSION_AVAILABLE_LEVEL = "availableLevel";
+const std::string DEFINEPERMISSION_PROVISION_ENABLE = "provisionEnable";
+const std::string DEFINEPERMISSION_DISTRIBUTED_SCENE_ENABLE = "distributedSceneEnable";
+
+extern thread_local int32_t parseResult;
+}  // namespace Profile
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_COMMON_PROFILE_H

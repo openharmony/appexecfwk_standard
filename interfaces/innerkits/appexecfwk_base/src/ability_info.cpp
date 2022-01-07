@@ -312,6 +312,15 @@ void to_json(nlohmann::json &jsonObject, const Metadata &metadata)
     };
 }
 
+void to_json(nlohmann::json &jsonObject, const Metadata &metadata)
+{
+    jsonObject = nlohmann::json {
+        {META_DATA_NAME, metadata.name},
+        {META_DATA_VALUE, metadata.value},
+        {META_DATA_RESOURCE, metadata.resource}
+    };
+}
+
 void to_json(nlohmann::json &jsonObject, const AbilityInfo &abilityInfo)
 {
     jsonObject = nlohmann::json {

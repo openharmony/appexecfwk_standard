@@ -24,6 +24,7 @@ namespace AppExecFwk {
 namespace Constants {
 const std::string EMPTY_STRING = "";
 const std::string BUNDLE_PROFILE_NAME = "config.json";
+const std::string MODULE_PROFILE_NAME = "module.json";
 const std::string INSTALL_FILE_SUFFIX = ".hap";
 const std::string PATH_SEPARATOR = "/";
 const std::string FILE_UNDERLINE = "_";

@@ -33,6 +33,11 @@ BundleExtractor::~BundleExtractor()
 
 bool BundleExtractor::ExtractProfile(std::ostream &dest) const
 {
+    if (isNewVersion()) {
+        APP_LOGD("profile is module.json");
+        return ExtractByName(Constants::MODULE_PROFILE_NAME, dest);
+    }
+    APP_LOGD("profile is config.json");
     return ExtractByName(Constants::BUNDLE_PROFILE_NAME, dest);
 }
 
