@@ -383,6 +383,16 @@ public:
     {
         return 0;
     }
+    virtual int RegisterMissionListener(const std::string &deviceId,
+        const sptr<IRemoteMissionListener> &listener) override
+    {
+        return 0;
+    }
+    virtual int UnRegisterMissionListener(const std::string &deviceId,
+        const sptr<IRemoteMissionListener> &listener) override
+    {
+        return 0;
+    }
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS
