@@ -18,6 +18,7 @@
 #include "app_log_wrapper.h"
 #include "bundle_constants.h"
 #include "datetime_ex.h"
+#include "os_account_manager.h"
 #include "perf_profile.h"
 #include "system_ability_definition.h"
 #include "system_ability_helper.h"
@@ -174,6 +175,8 @@ bool BundleMgrService::Init()
         perChangeSub_ = std::make_shared<BundlePermissionsChangedMonitor>(dataMgr_, subscribeInfo);
         EventFwk::CommonEventManager::SubscribeCommonEvent(perChangeSub_);
     }
+
+    CheckAllUser();
     ready_ = true;
     APP_LOGI("init end success");
     return true;
@@ -210,6 +213,28 @@ void BundleMgrService::SelfClean()
 sptr<BundleUserMgrHostImpl> BundleMgrService::GetBundleUserMgr() const
 {
     return userMgrHost_;
+}
+
+void BundleMgrService::CheckAllUser()
+{
+    if (!dataMgr_) {
+        return;
+    }
+
+    APP_LOGD("Check all user start.");
+    std::set<int32_t> userIds = dataMgr_->GetAllUser();
+    for (auto userId : userIds) {
+        bool isExists = false;
+        if (AccountSA::OsAccountManager::IsOsAccountExists(userId, isExists) != ERR_OK) {
+            APP_LOGE("Failed to query whether the user(%{public}d) exists.", userId);
+            continue;
+        }
+
+        if (!isExists) {
+            userMgrHost_->RemoveUser(userId);
+        }
+    }
+    APP_LOGD("Check all user end");
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS

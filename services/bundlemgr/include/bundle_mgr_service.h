@@ -70,7 +70,10 @@ public:
      * @return Returns the pointer of IBundleUserMgr object.
      */
     sptr<BundleUserMgrHostImpl> GetBundleUserMgr() const;
-
+    /**
+     * @brief Check all user.
+     */
+    void CheckAllUser();
 private:
     /**
      * @brief Initialize the bundle manager service context.
