@@ -18,6 +18,7 @@
 #include "hilog_wrapper.h"
 #include "ipc_singleton.h"
 #include "locale_config.h"
+#include "os_account_manager.h"
 #include "sys_mgr_client.h"
 #include "system_ability_definition.h"
 
@@ -101,7 +102,7 @@ std::string ContextImpl::GetDistributedFilesDir()
     HILOG_DEBUG("ContextImpl::GetDistributedFilesDir");
     std::string dir;
     if (IsCreateBySystemApp()) {
-        dir = CONTEXT_DISTRIBUTEDFILES_BASE_BEFORE + GetCurrentAccount() +
+        dir = CONTEXT_DISTRIBUTEDFILES_BASE_BEFORE + GetCurrentAccountId() +
             CONTEXT_DISTRIBUTEDFILES_BASE_MIDDLE + GetBundleName();
     } else {
         dir = CONTEXT_BASE + CONTEXT_DISTRIBUTEDFILES;
@@ -114,7 +115,7 @@ std::string ContextImpl::GetBaseDir() const
 {
     std::string baseDir;
     if (IsCreateBySystemApp()) {
-        baseDir = CONTEXT_DATA + currArea_ + CONTEXT_FILE_SEPARATOR + GetCurrentAccount() +
+        baseDir = CONTEXT_DATA + currArea_ + CONTEXT_FILE_SEPARATOR + GetCurrentAccountId() +
             CONTEXT_BUNDLE + GetBundleName();
     } else {
         baseDir = CONTEXT_BASE + currArea_;
@@ -127,9 +128,11 @@ std::string ContextImpl::GetBaseDir() const
     return baseDir;
 }
 
-std::string ContextImpl::GetCurrentAccount() const
+std::string ContextImpl::GetCurrentAccountId() const
 {
-    return "0";
+    int userId;
+    AccountSA::OsAccountManager::GetOsAccountLocalIdFromProcess(userId);
+    return std::to_string(userId);
 }
 
 std::shared_ptr<Context> ContextImpl::CreateBundleContext(const std::string &bundleName)
