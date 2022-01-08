@@ -339,6 +339,16 @@ public:
     }
     void NotifyCompleteContinuation(const std::string &deviceId, int32_t sessionId, bool isSuccess) override
     {}
+    virtual int RegisterMissionListener(const std::string &deviceId,
+        const sptr<IRemoteMissionListener> &listener) override
+    {
+        return 0;
+    }
+    virtual int UnRegisterMissionListener(const std::string &deviceId,
+        const sptr<IRemoteMissionListener> &listener) override
+    {
+        return 0;
+    }
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS
