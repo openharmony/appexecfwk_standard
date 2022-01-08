@@ -1304,6 +1304,20 @@ public:
     {
         onlyCreateBundleUser_ = onlyCreateBundleUser;
     }
+    /**
+     * @brief Check whether isSingleUser.
+     * @return Return isSingleUser.
+     */
+    bool IsSingleUser()
+    {
+        return baseApplicationInfo_.singleUser;
+    }
+    /**
+     * @brief Get response userId.
+     * @param userId Indicates the request userId..
+     * @return Return response userId.
+     */
+    int32_t GetResponseUserId(int32_t requestUserId) const;
 
     std::vector<std::string> GetModuleNameVec()
     {
