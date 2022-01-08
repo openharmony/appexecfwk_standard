@@ -2331,5 +2331,11 @@ int32_t BundleDataMgr::GetUserIdByCallingUid() const
     APP_LOGD("get calling uid(%{public}d)", uid);
     return GetUserIdByUid(uid);
 }
+
+std::set<int32_t> BundleDataMgr::GetAllUser() const
+{
+    std::lock_guard<std::mutex> lock(multiUserIdSetMutex_);
+    return multiUserIdsSet_;
+}
 }  // namespace AppExecFwk
 }  // namespace OHOS

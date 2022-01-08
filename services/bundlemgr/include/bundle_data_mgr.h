@@ -605,6 +605,11 @@ public:
      * @return Returns userId.
      */
     int32_t GetUserIdByCallingUid() const;
+    /**
+     * @brief Get all user.
+     * @return Returns all userId.
+     */
+    std::set<int32_t> GetAllUser() const;
 private:
     /**
      * @brief Init transferStates.
