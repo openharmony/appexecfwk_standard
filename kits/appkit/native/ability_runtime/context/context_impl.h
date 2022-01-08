@@ -191,7 +191,7 @@ private:
         const AppExecFwk::BundleInfo &bundleInfo, const std::shared_ptr<ContextImpl> &appContext) const;
     bool IsCreateBySystemApp() const;
     std::string GetBaseDir() const;
-    std::string GetCurrentAccount() const;
+    std::string GetCurrentAccountId() const;
     void SetFlags(int64_t flags);
 
     std::shared_ptr<AppExecFwk::ApplicationInfo> applicationInfo_ = nullptr;

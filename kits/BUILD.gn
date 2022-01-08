@@ -165,6 +165,10 @@ ohos_shared_library("appkit_native") {
 # build so
 ohos_shared_library("app_context") {
   include_dirs = [
+    "//base/account/os_account/frameworks/common/account_error/include",
+    "//base/account/os_account/frameworks/common/database/include",
+    "//base/account/os_account/frameworks/common/log/include",
+    "//base/account/os_account/interfaces/innerkits/osaccount/native/include",
     "$SUBSYSTEM_DIR/kits/appkit/native/app/include",
     "$SUBSYSTEM_DIR/kits/appkit/native/ability_runtime/context",
     "$SUBSYSTEM_DIR/interfaces/innerkits/appexecfwk_core/include/bundlemgr",
@@ -205,6 +209,7 @@ ohos_shared_library("app_context") {
   ]
 
   public_deps = [
+    "//base/account/os_account/frameworks/osaccount/native:os_account_innerkits",
     "//base/global/i18n_standard/frameworks/intl:intl_util",
     "//base/global/resmgr_standard/frameworks/resmgr:global_resmgr",
   ]
