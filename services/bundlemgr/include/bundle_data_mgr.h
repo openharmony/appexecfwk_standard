@@ -601,10 +601,15 @@ public:
      */
     bool HasUserId(int32_t userId) const;
     /**
-     * @brief delete uid and userId in uidAndUserIdMap.
-     * @param userId Indicates the user ID.
+     * @brief Get userId by calling uid.
+     * @return Returns userId.
      */
-    void DeleteUidAndUserId(int32_t uid);
+    int32_t GetUserIdByCallingUid() const;
+    /**
+     * @brief Get all user.
+     * @return Returns all userId.
+     */
+    std::set<int32_t> GetAllUser() const;
 private:
     /**
      * @brief Init transferStates.
@@ -665,7 +670,6 @@ private:
         const std::string &deviceId, InnerBundleInfo &info, int32_t userId = Constants::UNSPECIFIED_USERID) const;
     int32_t GetUserId(int32_t userId = Constants::UNSPECIFIED_USERID) const;
     bool GenerateBundleId(const std::string &bundleName, int32_t &bundleId);
-    void AddUidAndUserId(int32_t uid, int32_t userId);
     int32_t GetUserIdByUid(int32_t uid) const;
 private:
     mutable std::mutex bundleInfoMutex_;
@@ -675,7 +679,6 @@ private:
     mutable std::shared_mutex bundleMutex_;
     mutable std::mutex allPermissionsChangedLock_;
     mutable std::mutex permissionsChangedLock_;
-    mutable std::mutex uidAndUserIdMapMutex_;
     mutable std::mutex multiUserIdSetMutex_;
     bool allInstallFlag_ = false;
     // using for locking by bundleName
@@ -684,9 +687,6 @@ private:
     // key:bundleId
     // value:bundleName
     std::map<int32_t, std::string> bundleIdMap_;
-    // Typically, uids are unique,
-    // and uid = userId * 100000 + bundleId % 100000
-    std::map<int32_t, int32_t> uidAndUserIdMap_;
     // save all created users.
     std::set<int32_t> multiUserIdsSet_;
     // use vector because these functions using for IPC, the bundleName may duplicate

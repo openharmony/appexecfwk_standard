@@ -1979,5 +1979,27 @@ void InnerBundleInfo::SetApplicationEnabled(bool enabled, int32_t userId)
 
     infoItem->second.bundleUserInfo.enabled = enabled;
 }
+
+int32_t InnerBundleInfo::GetResponseUserId(int32_t requestUserId) const
+{
+    if (HasInnerBundleUserInfo(requestUserId)) {
+        return requestUserId;
+    }
+
+    if (requestUserId < Constants::START_USERID) {
+        APP_LOGE("requestUserId(%{public}d) less than start userId.", requestUserId);
+        return Constants::INVALID_USERID;
+    }
+
+    int32_t responseUserId = Constants::INVALID_USERID;
+    for (const auto &innerBundleUserInfo : innerBundleUserInfos_) {
+        if (innerBundleUserInfo.second.bundleUserInfo.userId < Constants::START_USERID) {
+            responseUserId = innerBundleUserInfo.second.bundleUserInfo.userId;
+            break;
+        }
+    }
+
+    return responseUserId;
+}
 }  // namespace AppExecFwk
 }  // namespace OHOS
