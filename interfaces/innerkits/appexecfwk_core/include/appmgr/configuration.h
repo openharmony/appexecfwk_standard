@@ -109,6 +109,15 @@ public:
     std::string GetItem(const std::string &key) const;
 
     /**
+     * @brief obtain the value according to the display number and storage key.
+     *
+     * @param key The key obtained from Configuration
+     *
+     * @return return empty string if not found | return val if found
+     */
+    std::string GetItemForIdAndKey(const std::string &key) const;
+
+    /**
      * @brief Delete element.
      *
      * @param key The key of the item to access configura. ej : key = GlobalConfigurationKey::SYSTEM_LANGUAGE

@@ -225,7 +225,6 @@ int32_t AppMgrStub::HandleGetSystemMemoryAttr(MessageParcel &data, MessageParcel
 
 int32_t AppMgrStub::HandleAddAbilityStageDone(MessageParcel &data, MessageParcel &reply)
 {
-    BYTRACE(BYTRACE_TAG_APP);
     int32_t recordId = data.ReadInt32();
     AddAbilityStageDone(recordId);
     return NO_ERROR;
@@ -233,7 +232,6 @@ int32_t AppMgrStub::HandleAddAbilityStageDone(MessageParcel &data, MessageParcel
 
 int32_t AppMgrStub::HandleStartupResidentProcess(MessageParcel &data, MessageParcel &reply)
 {
-    BYTRACE(BYTRACE_TAG_APP);
     StartupResidentProcess();
     return NO_ERROR;
 }

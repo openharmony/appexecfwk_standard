@@ -235,6 +235,10 @@ void AppMgrServiceInner::ApplicationTerminated(const int32_t recordId)
         APP_LOGE("get app record failed");
         return;
     }
+    // Maybe can't get in here
+    if (appRecord->IsKeepAliveApp()) {
+        return;
+    }
     if (appRecord->GetState() != ApplicationState::APP_STATE_BACKGROUND) {
         APP_LOGE("current state is not background");
         return;
@@ -266,6 +270,7 @@ int32_t AppMgrServiceInner::KillApplication(const std::string &bundleName)
     int result = ERR_OK;
     int64_t startTime = SystemTimeMillis();
     std::list<pid_t> pids;
+
     if (!appRunningManager_->GetPidsByBundleName(bundleName, pids)) {
         APP_LOGI("The process corresponding to the package name did not start");
         return result;
@@ -734,6 +739,13 @@ void AppMgrServiceInner::KillProcessByAbilityToken(const sptr<IRemoteObject> &to
         APP_LOGE("app record is not exist for ability token");
         return;
     }
+
+    // befor exec ScheduleProcessSecurityExit return
+    // The resident process won't let him die
+    if (appRecord->IsKeepAliveApp()) {
+        return;
+    }
+
     std::list<pid_t> pids;
     pid_t pid = appRecord->GetPriorityObject()->GetPid();
     if (pid > 0) {
@@ -1117,6 +1129,12 @@ void AppMgrServiceInner::RemoveAppFromRecentList(const std::string &appName, con
         appProcessManager_->RemoveAppFromRecentList(appTaskInfo);
         return;
     }
+
+    // Do not delete resident processes, berfor exec ScheduleProcessSecurityExit
+    if (appRecord->IsKeepAliveApp()) {
+        return;
+    }
+
     startTime = SystemTimeMillis();
     pids.push_back(appTaskInfo->GetPid());
     appRecord->ScheduleProcessSecurityExit();
@@ -1142,6 +1160,7 @@ void AppMgrServiceInner::ClearRecentAppList()
     if (GetAllPids(pids)) {
         return;
     }
+
     startTime = SystemTimeMillis();
     if (WaitForRemoteProcessExit(pids, startTime)) {
         appProcessManager_->ClearRecentAppList();

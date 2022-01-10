@@ -148,7 +148,6 @@ int32_t AppSchedulerHost::HandleScheduleLaunchApplication(MessageParcel &data, M
 
 int32_t AppSchedulerHost::HandleScheduleAbilityStageInfo(MessageParcel &data, MessageParcel &reply)
 {
-    BYTRACE(BYTRACE_TAG_APP);
     std::unique_ptr<AppResidentProcessInfo> appResidentProcessInfo(data.ReadParcelable<AppResidentProcessInfo>());
     if (!appResidentProcessInfo) {
         APP_LOGE("ReadParcelable<launchData> failed");
