@@ -100,7 +100,7 @@ const std::set<std::string> GRANT_MODE_SET = {
 
 const std::set<std::string> AVAILABLE_LEVEL_SET = {
     "system_core",
-    "system_core",
+    "system_basic",
     "normal"
 };
 
