@@ -264,8 +264,6 @@ public:
      */
     void OnStop();
 
-    // functions about appspawn
-
     /**
      * OpenAppSpawnConnection, Open connection with appspwan.
      *

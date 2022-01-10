@@ -21,11 +21,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-BundleMgrService::BundleMgrService()
-{
-    MakingPackageData();
-}
-
 bool BundleMgrProxy::QueryAbilityInfo(const AAFwk::Want &want, AbilityInfo &abilityInfo)
 {
     ElementName eleName = want.GetElement();
@@ -64,6 +59,11 @@ std::string BundleMgrProxy::GetAppType(const std::string &bundleName)
 int BundleMgrStub::OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option)
 {
     return 0;
+}
+
+BundleMgrService::BundleMgrService()
+{
+    MakingPackageData();
 }
 
 bool BundleMgrService::QueryAbilityInfo(const AAFwk::Want &want, AbilityInfo &abilityInfo)
