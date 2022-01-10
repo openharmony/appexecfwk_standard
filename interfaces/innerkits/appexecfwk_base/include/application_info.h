@@ -128,7 +128,6 @@ struct ApplicationInfo : public Parcelable {
     bool systemApp = false;
     std::map<std::string, std::vector<CustomizeData>> metaData;
     // new version fields
-    int32_t uid = -1;
     std::vector<Metadata> metadata;
     std::string vendor;
     int32_t versionCode = 0;
