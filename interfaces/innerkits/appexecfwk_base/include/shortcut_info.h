@@ -17,10 +17,29 @@
 #define FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_BASE_INCLUDE_SHORTCUT_INFO_H
 
 #include <string>
+#include <vector>
 #include "parcel.h"
 
 namespace OHOS {
 namespace AppExecFwk {
+struct ShortcutWant {
+    std::string bundleName;
+    std::string abilityName;
+};
+
+struct Shortcut {
+    std::string shortcutId;
+    std::string icon;
+    int32_t iconId = 0;
+    std::string label;
+    int32_t labelId = 0;
+    std::vector<ShortcutWant> wants;
+};
+
+struct ShortcutJson {
+    std::vector<Shortcut> shortcuts;
+};
+
 struct ShortcutIntent {
     std::string targetBundle;
     std::string targetClass;

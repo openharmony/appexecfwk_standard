@@ -28,6 +28,7 @@
 #include "bundle_util.h"
 #include "datetime_ex.h"
 #include "installd_client.h"
+#include "nlohmann/json.hpp"
 #include "perf_profile.h"
 #include "string_ex.h"
 #include "system_ability_definition.h"
@@ -267,6 +268,52 @@ ErrCode BaseBundleInstaller::InnerProcessBundleInstall(std::unordered_map<std::s
     uid = bundleInfo.GetUid(userId_);
     mainAbility_ = bundleInfo.GetMainAbility();
     return result;
+}
+
+void BaseBundleInstaller::ParseShortcuts(InnerBundleInfo &info)
+{
+    if (!info.GetIsNewVersion()) {
+        return;
+    }
+    std::string mainAbility = info.GetMainAbility();
+    if (mainAbility.empty()) {
+        APP_LOGD("current hap do not have mainAbility, skip.");
+        return;
+    }
+    APP_LOGD("mainAbility is %{public}s", mainAbility.c_str());
+    AbilityInfo abilityInfo;
+    info.GetMainAbilityInfo(abilityInfo);
+    std::vector<std::string> rawJson;
+    if (rawJson.size() == 0) {
+        APP_LOGD("rawJson size 0, skip.");
+        return;
+    }
+    ShortcutJson shortcutJson;
+    nlohmann::json jsonObject = nlohmann::json::parse(rawJson[0], nullptr, false);
+    if (jsonObject.is_discarded()) {
+        APP_LOGE("shortcuts json invalid");
+        return;
+    }
+    shortcutJson = jsonObject.get<ShortcutJson>();
+    for (const Shortcut &item : shortcutJson.shortcuts) {
+        ShortcutInfo shortcutInfo;
+        shortcutInfo.id = item.shortcutId;
+        shortcutInfo.bundleName = abilityInfo.bundleName;
+        shortcutInfo.icon = item.icon;
+        shortcutInfo.label = item.label;
+        shortcutInfo.iconId = item.iconId;
+        shortcutInfo.labelId = item.labelId;
+        for (const ShortcutWant &shortcutWant : item.wants) {
+            ShortcutIntent shortcutIntent;
+            shortcutIntent.targetBundle = shortcutWant.bundleName;
+            shortcutIntent.targetClass = shortcutWant.abilityName;
+            shortcutInfo.intents.emplace_back(shortcutIntent);
+        }
+        std::string shortcutKey;
+        shortcutKey.append(abilityInfo.bundleName).append(".")
+            .append(abilityInfo.moduleName).append(".").append(item.shortcutId);
+        info.InsertShortcutInfos(shortcutKey, shortcutInfo);
+    }
 }
 
 ErrCode BaseBundleInstaller::ProcessBundleInstall(const std::vector<std::string> &inBundlePaths,
@@ -713,6 +760,7 @@ ErrCode BaseBundleInstaller::ProcessBundleInstallStatus(InnerBundleInfo &info, i
         return result;
     }
 
+    ParseShortcuts(info);
     info.SetInstallMark(bundleName_, modulePackage_, InstallExceptionStatus::INSTALL_FINISH);
     uid = info.GetUid(userId_);
     info.SetBundleInstallTime(BundleUtil::GetCurrentTime(), userId_);
@@ -818,6 +866,7 @@ ErrCode BaseBundleInstaller::ProcessNewModuleInstall(InnerBundleInfo &newInfo, I
         return ERR_APPEXECFWK_INSTALL_BUNDLE_MGR_SERVICE_ERROR;
     }
 
+    ParseShortcuts(newInfo);
     oldInfo.SetInstallMark(bundleName_, modulePackage_, InstallExceptionStatus::INSTALL_FINISH);
 
     oldInfo.SetBundleUpdateTime(BundleUtil::GetCurrentTime(), userId_);
@@ -870,6 +919,7 @@ ErrCode BaseBundleInstaller::ProcessModuleUpdate(InnerBundleInfo &newInfo, Inner
     }
 
     newInfo.RestoreModuleInfo(oldInfo);
+    ParseShortcuts(newInfo);
     oldInfo.SetInstallMark(bundleName_, modulePackage_, InstallExceptionStatus::UPDATING_FINISH);
 
     oldInfo.SetBundleUpdateTime(BundleUtil::GetCurrentTime(), userId_);
