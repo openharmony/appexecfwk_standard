@@ -1200,7 +1200,7 @@ void GetPermissions(const Profile::ModuleJson &moduleJson, InnerModuleInfo &inne
     }
 }
 
-bool ToInnerModuleInfo(const Profile::ModuleJson &moduleJson, InnerModuleInfo &innerModuleInfo)
+bool ToInnerModuleInfo(const Profile::ModuleJson &moduleJson, InnerModuleInfo &innerModuleInfo, bool isSystemApp)
 {
     APP_LOGD("transform ModuleJson to InnerModuleInfo");
     innerModuleInfo.modulePackage = moduleJson.module.name;
