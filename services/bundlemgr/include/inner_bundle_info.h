@@ -76,8 +76,8 @@ struct RequestPermission {
 
 struct DefinePermission {
     std::string name;
-    std::string grantMode;
-    std::string availableLevel;
+    std::string grantMode = Profile::DEFINEPERMISSION_GRANT_MODE_DEFAULT_VALUE;
+    std::string availableLevel = Profile::DEFINEPERMISSION_AVAILABLE_LEVEL_DEFAULT_VALUE;
     bool provisionEnable = true;
     bool distributedSceneEnable = false;
     std::string label;
@@ -270,6 +270,14 @@ public:
             baseAbilityInfos_.try_emplace(ability.first, ability.second);
         }
     }
+
+
+    void AddModuleExtensionInfos(const std::map<std::string, ExtensionInfo> &extensionInfos)
+    {
+        for (const auto &extensionInfo : extensionInfos) {
+            baseExtensionInfos_.try_emplace(extensionInfo.first, extensionInfo.second);
+        }
+    }
     /**
      * @brief Add skill infos to old InnerBundleInfo object.
      * @param skillInfos Indicates the Skill object to be add.
@@ -279,6 +287,13 @@ public:
     {
         for (const auto &skills : skillInfos) {
             skillInfos_.try_emplace(skills.first, skills.second);
+        }
+    }
+
+    void AddModuleExtensionSkillInfos(const std::map<std::string, std::vector<Skill>> &extensionSkillInfos)
+    {
+        for (const auto &skills : extensionSkillInfos) {
+            extensionSkillInfos_.try_emplace(skills.first, skills.second);
         }
     }
     /**
@@ -850,13 +865,21 @@ public:
     void AddModuleResPath(const std::string &moduleSrcDir)
     {
         if (innerModuleInfos_.count(currentPackage_) == 1) {
-            std::string moduleResPath = moduleSrcDir + Constants::PATH_SEPARATOR + Constants::ASSETS_DIR +
-                                        Constants::PATH_SEPARATOR +
-                                        innerModuleInfos_.at(currentPackage_).distro.moduleName +
-                                        Constants::PATH_SEPARATOR + Constants::RESOURCES_INDEX;
+            std::string moduleResPath;
+            if (isNewVersion_) {
+                moduleResPath = moduleSrcDir + Constants::PATH_SEPARATOR + Constants::RESOURCES_INDEX;
+            } else {
+                moduleResPath = moduleSrcDir + Constants::PATH_SEPARATOR + Constants::ASSETS_DIR +
+                    Constants::PATH_SEPARATOR +innerModuleInfos_.at(currentPackage_).distro.moduleName +
+                    Constants::PATH_SEPARATOR + Constants::RESOURCES_INDEX;
+            }
+            
             innerModuleInfos_.at(currentPackage_).moduleResPath = moduleResPath;
             for (auto &abilityInfo : baseAbilityInfos_) {
                 abilityInfo.second.resourcePath = moduleResPath;
+            }
+            for (auto &extensionInfo : baseExtensionInfos_) {
+                extensionInfo.second.resourcePath = moduleResPath;
             }
         }
     }

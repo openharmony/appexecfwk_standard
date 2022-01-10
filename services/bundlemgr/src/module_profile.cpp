@@ -27,13 +27,6 @@ namespace Profile {
 thread_local int32_t parseResult;
 thread_local bool g_hasConfigureRemovable = false;
 
-const std::map<std::string, DisplayOrientation> DISPLAY_ORIENTATION_MAP = {
-    {"unspecified", DisplayOrientation::UNSPECIFIED},
-    {"landscape", DisplayOrientation::LANDSCAPE},
-    {"portrait", DisplayOrientation::PORTRAIT},
-    {"followrecent", DisplayOrientation::FOLLOWRECENT}
-};
-
 const std::set<std::string> MODULE_TYPE_SET = {
     "entry",
     "feature",
@@ -61,19 +54,6 @@ const std::set<std::string> UI_SYNTAX_SET = {
     "ets"
 };
 
-const std::set<std::string> CONFIG_CHANGES_SET = {
-    "density",
-    "fontSize",
-    "layout",
-    "locale",
-    "mcc",
-    "mnc",
-    "orientation",
-    "size",
-    "smallestSize",
-    "colorMode"
-};
-
 const std::map<std::string, uint32_t> BACKGROUND_MODES_MAP = {
     {ProfileReader::KEY_DATA_TRANSFER, ProfileReader::VALUE_DATA_TRANSFER},
     {ProfileReader::KEY_AUDIO_PLAYBACK, ProfileReader::VALUE_AUDIO_PLAYBACK},
@@ -98,6 +78,38 @@ const std::set<std::string> EXTENSION_TYPE_SET = {
     "wallpaper"
 };
 
+const std::set<std::string> ENTITY_TYPE_SET = {
+    "game",
+    "media",
+    "communication",
+    "news",
+    "travel",
+    "utility",
+    "shopping",
+    "education",
+    "kids",
+    "business",
+    "photography",
+    "unspecified"
+};
+
+const std::set<std::string> GRANT_MODE_SET = {
+    "system_grant",
+    "user_grant"
+};
+
+const std::set<std::string> AVAILABLE_LEVEL_SET = {
+    "system_core",
+    "system_core",
+    "normal"
+};
+
+const std::map<std::string, LaunchMode> LAUNCH_MODE_MAP = {
+    {"singleton", LaunchMode::SINGLETON},
+    {"standard", LaunchMode::STANDARD},
+    {"specified", LaunchMode::SPECIFIED}
+};
+
 struct DeviceConfig {
     // pair first : if exist in module.json then true, otherwise false
     // pair second : actual value
@@ -118,6 +130,7 @@ struct Metadata {
 struct Ability {
     std::string name;
     std::string srcEntrance;
+    std::string launchType = ABILITY_LAUNCH_TYPE_DEFAULT_VALUE;
     std::string description;
     int32_t descriptionId = 0;
     std::string icon;
@@ -126,10 +139,8 @@ struct Ability {
     int32_t labelId = 0;
     std::vector<std::string> permissions;
     std::vector<Metadata> metadata;
-    std::string orientation = ABILITY_ORIENTATION_DEFAULT_VALUE;
     bool visible = false;
     std::vector<Skill> skills;
-    std::vector<std::string> configChanges;
     std::vector<std::string> backgroundModes;
 };
 
@@ -252,6 +263,14 @@ void from_json(const nlohmann::json &jsonObject, Ability &ability)
         ArrayType::NOT_ARRAY);
     GetValueIfFindKey<std::string>(jsonObject,
         jsonObjectEnd,
+        ABILITY_LAUNCH_TYPE,
+        ability.launchType,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
         DESCRIPTION,
         ability.description,
         JsonType::STRING,
@@ -314,14 +333,6 @@ void from_json(const nlohmann::json &jsonObject, Ability &ability)
         false,
         parseResult,
         ArrayType::OBJECT);
-    GetValueIfFindKey<std::string>(jsonObject,
-        jsonObjectEnd,
-        ABILITY_ORIENTATION,
-        ability.orientation,
-        JsonType::STRING,
-        false,
-        parseResult,
-        ArrayType::NOT_ARRAY);
     GetValueIfFindKey<bool>(jsonObject,
         jsonObjectEnd,
         VISIBLE,
@@ -338,14 +349,6 @@ void from_json(const nlohmann::json &jsonObject, Ability &ability)
         false,
         parseResult,
         ArrayType::OBJECT);
-    GetValueIfFindKey<std::vector<std::string>>(jsonObject,
-        jsonObjectEnd,
-        ABILITY_CONFIGCHANGES,
-        ability.configChanges,
-        JsonType::ARRAY,
-        false,
-        parseResult,
-        ArrayType::STRING);
     GetValueIfFindKey<std::vector<std::string>>(jsonObject,
         jsonObjectEnd,
         ABILITY_BACKGROUNDMODES,
@@ -1050,7 +1053,9 @@ bool ToApplicationInfo(const Profile::ModuleJson &moduleJson, ApplicationInfo &a
     }
     applicationInfo.apiReleaseType = moduleJson.app.apiReleaseType;
     applicationInfo.distributedNotificationEnabled = moduleJson.app.distributedNotificationEnabled;
-    applicationInfo.entityType = moduleJson.app.entityType;
+    if (Profile::ENTITY_TYPE_SET.find(moduleJson.app.entityType) != Profile::EXTENSION_TYPE_SET.end()) {
+        applicationInfo.entityType = moduleJson.app.entityType;
+    }
     applicationInfo.deviceId = Constants::CURRENT_DEVICE_ID; // to do
 
     if (applicationInfo.isSystemApp) {
@@ -1062,7 +1067,6 @@ bool ToApplicationInfo(const Profile::ModuleJson &moduleJson, ApplicationInfo &a
         applicationInfo.singleUser = moduleJson.app.singleUser;
         applicationInfo.clearUserData = moduleJson.app.clearUserData;
     }
-
     // device adapt
     std::string deviceType = "phone";
     if (moduleJson.app.deviceConfigs.find(deviceType) != moduleJson.app.deviceConfigs.end()) {
@@ -1132,25 +1136,19 @@ bool ToAbilityInfo(const Profile::ModuleJson &moduleJson, const Profile::Ability
     abilityInfo.label = ability.label;
     abilityInfo.labelId = ability.labelId;
     abilityInfo.permissions = ability.permissions;
-
-    auto iterOrientation = std::find_if(std::begin(Profile::DISPLAY_ORIENTATION_MAP),
-        std::end(Profile::DISPLAY_ORIENTATION_MAP),
-        [&ability](const auto &item) { return item.first == ability.orientation; });
-    if (iterOrientation != Profile::DISPLAY_ORIENTATION_MAP.end()) {
-        abilityInfo.orientation = iterOrientation->second;
-    }
     abilityInfo.visible = ability.visible;
-    for (const std::string &configChange : ability.configChanges) {
-        if (Profile::CONFIG_CHANGES_SET.find(configChange) != Profile::CONFIG_CHANGES_SET.end()) {
-            abilityInfo.configChanges.emplace_back(configChange);
-        }
-    }
     abilityInfo.backgroundModes = GetBackgroundModes(ability.backgroundModes);
     GetMetadata(abilityInfo.metadata, ability.metadata);
     abilityInfo.package = moduleJson.module.name;
     abilityInfo.bundleName = moduleJson.app.bundleName;
     abilityInfo.moduleName = moduleJson.module.name;
     abilityInfo.applicationName = moduleJson.app.bundleName;
+    auto iterLaunch = std::find_if(std::begin(Profile::LAUNCH_MODE_MAP),
+        std::end(Profile::LAUNCH_MODE_MAP),
+        [&ability](const auto &item) { return item.first == ability.launchType; });
+    if (iterLaunch != Profile::LAUNCH_MODE_MAP.end()) {
+        abilityInfo.launchMode = iterLaunch->second;
+    }
     return true;
 }
 
@@ -1177,6 +1175,31 @@ bool ToExtensionInfo(const Profile::ModuleJson &moduleJson,
     return true;
 }
 
+void GetPermissions(const Profile::ModuleJson &moduleJson, InnerModuleInfo &innerModuleInfo, bool isSystemApp)
+{
+    if (isSystemApp) {
+        for (const DefinePermission &definePermission : moduleJson.module.definePermissions) {
+            if (definePermission.name.empty()) {
+                continue;
+            }
+            if (Profile::GRANT_MODE_SET.find(definePermission.grantMode) == Profile::GRANT_MODE_SET.end()) {
+                continue;
+            }
+            if (Profile::AVAILABLE_LEVEL_SET.find(definePermission.availableLevel)
+                == Profile::AVAILABLE_LEVEL_SET.end()) {
+                continue;
+            }
+            innerModuleInfo.definePermissions.emplace_back(definePermission);
+        }
+    }
+    for (const RequestPermission &requestPermission : moduleJson.module.requestPermissions) {
+        if (requestPermission.name.empty()) {
+            continue;
+        }
+        innerModuleInfo.requestPermissions.emplace_back(requestPermission);
+    }
+}
+
 bool ToInnerModuleInfo(const Profile::ModuleJson &moduleJson, InnerModuleInfo &innerModuleInfo)
 {
     APP_LOGD("transform ModuleJson to InnerModuleInfo");
@@ -1191,10 +1214,6 @@ bool ToInnerModuleInfo(const Profile::ModuleJson &moduleJson, InnerModuleInfo &i
     if (Profile::MODULE_TYPE_SET.find(moduleJson.module.type) != Profile::MODULE_TYPE_SET.end()) {
         innerModuleInfo.distro.moduleType = moduleJson.module.type;
     }
-    // to do, verify and systemApp
-    innerModuleInfo.definePermissions = moduleJson.module.definePermissions;
-    // to do, verify
-    innerModuleInfo.requestPermissions = moduleJson.module.requestPermissions;
     innerModuleInfo.mainAbility = moduleJson.module.mainElement;
     innerModuleInfo.srcPath = moduleJson.module.srcEntrance;
     if (!moduleJson.module.process.empty()) {
@@ -1216,6 +1235,7 @@ bool ToInnerModuleInfo(const Profile::ModuleJson &moduleJson, InnerModuleInfo &i
         innerModuleInfo.uiSyntax = moduleJson.module.uiSyntax;
     }
     innerModuleInfo.pages = moduleJson.module.pages;
+    GetPermissions(moduleJson, innerModuleInfo, isSystemApp);
     // abilities and extensionAbilities store in InnerBundleInfo
     return true;
 }
@@ -1229,7 +1249,7 @@ bool ToInnerBundleInfo(const Profile::ModuleJson &moduleJson, InnerBundleInfo &i
     }
 
     ApplicationInfo applicationInfo;
-    applicationInfo.isSystemApp = innerBundleInfo.GetAppType() == Constants::AppType::SYSTEM_APP; // modify GetAppType
+    applicationInfo.isSystemApp = innerBundleInfo.GetAppType() == Constants::AppType::SYSTEM_APP;
     ToApplicationInfo(moduleJson, applicationInfo);
 
     innerBundleInfo.SetHasConfigureRemovable(Profile::g_hasConfigureRemovable);
@@ -1240,7 +1260,7 @@ bool ToInnerBundleInfo(const Profile::ModuleJson &moduleJson, InnerBundleInfo &i
     bundleInfo.applicationInfo.removable = applicationInfo.removable;
 
     InnerModuleInfo innerModuleInfo;
-    ToInnerModuleInfo(moduleJson, innerModuleInfo);
+    ToInnerModuleInfo(moduleJson, innerModuleInfo, applicationInfo.isSystemApp);
 
     // handle abilities
     bool findEntry = false;

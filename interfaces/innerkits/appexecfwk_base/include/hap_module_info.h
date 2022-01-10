@@ -20,6 +20,7 @@
 
 #include "parcel.h"
 #include "ability_info.h"
+#include "extension_info.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -45,6 +46,10 @@ struct HapModuleInfo : public Parcelable {
     std::vector<std::string> deviceTypes;
     std::vector<AbilityInfo> abilityInfos;
     ModuleColorMode colorMode = ModuleColorMode::AUTO;
+    // new version fields
+    std::vector<ExtensionInfo> extensionInfos;
+    std::vector<Metadata> metadata;
+    std::string resourcePath;
 
     bool ReadFromParcel(Parcel &parcel);
     virtual bool Marshalling(Parcel &parcel) const override;
