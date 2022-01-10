@@ -95,7 +95,7 @@ NativeValue* JsBaseContext::OnCreateBundleContext(NativeEngine& engine, NativeCa
 
     JsRuntime& jsRuntime = *static_cast<JsRuntime*>(engine.GetJsEngine());
     NativeValue* value = CreateJsBaseContext(engine, bundleContext, true);
-    return jsRuntime.LoadSystemModule("application.AbilityStageContext", &value, 1)->Get();
+    return jsRuntime.LoadSystemModule("application.Context", &value, 1)->Get();
 }
 
 NativeValue* JsBaseContext::OnGetApplicationContext(NativeEngine& engine, NativeCallbackInfo& info)
