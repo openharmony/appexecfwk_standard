@@ -425,6 +425,10 @@ int AppMgrProxy::GetParcelableInfos(MessageParcel &reply, std::vector<T> &parcel
 int AppMgrProxy::RegisterApplicationStateObserver(
     const sptr<IApplicationStateObserver> &observer)
 {
+    if (!observer) {
+        APP_LOGE("observer null");
+        return ERR_INVALID_VALUE;
+    }
     APP_LOGD("RegisterApplicationStateObserver start");
     MessageParcel data;
     MessageParcel reply;
@@ -449,6 +453,10 @@ int AppMgrProxy::RegisterApplicationStateObserver(
 int AppMgrProxy::UnregisterApplicationStateObserver(
     const sptr<IApplicationStateObserver> &observer)
 {
+    if (!observer) {
+        APP_LOGE("observer null");
+        return ERR_INVALID_VALUE;
+    }
     APP_LOGD("UnregisterApplicationStateObserver start");
     MessageParcel data;
     MessageParcel reply;
