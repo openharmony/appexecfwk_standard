@@ -22,6 +22,7 @@
 #include "app_log_wrapper.h"
 #include "appexecfwk_errors.h"
 #include "bundle_constants.h"
+#include "bytrace.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -39,6 +40,7 @@ BundleMgrProxy::~BundleMgrProxy()
 bool BundleMgrProxy::GetApplicationInfo(
     const std::string &appName, const ApplicationFlag flag, const int userId, ApplicationInfo &appInfo)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGD("begin to GetApplicationInfo of %{public}s", appName.c_str());
     if (appName.empty()) {
         APP_LOGE("fail to GetApplicationInfo due to params empty");
@@ -73,6 +75,7 @@ bool BundleMgrProxy::GetApplicationInfo(
 bool BundleMgrProxy::GetApplicationInfo(
     const std::string &appName, int32_t flags, int32_t userId, ApplicationInfo &appInfo)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGD("begin to GetApplicationInfo of %{public}s", appName.c_str());
     if (appName.empty()) {
         APP_LOGE("fail to GetApplicationInfo due to params empty");
@@ -107,6 +110,7 @@ bool BundleMgrProxy::GetApplicationInfo(
 bool BundleMgrProxy::GetApplicationInfos(
     const ApplicationFlag flag, const int userId, std::vector<ApplicationInfo> &appInfos)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGD("begin to get GetApplicationInfos of specific userId id %{private}d", userId);
     MessageParcel data;
     if (!data.WriteInterfaceToken(GetDescriptor())) {
@@ -132,6 +136,7 @@ bool BundleMgrProxy::GetApplicationInfos(
 bool BundleMgrProxy::GetApplicationInfos(
     int32_t flags, int32_t userId, std::vector<ApplicationInfo> &appInfos)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGD("begin to get GetApplicationInfos of specific userId id %{private}d", userId);
     MessageParcel data;
     if (!data.WriteInterfaceToken(GetDescriptor())) {
@@ -158,6 +163,7 @@ bool BundleMgrProxy::GetApplicationInfos(
 bool BundleMgrProxy::GetBundleInfo(
     const std::string &bundleName, const BundleFlag flag, BundleInfo &bundleInfo, int32_t userId)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGD("begin to get bundle info of %{public}s", bundleName.c_str());
     if (bundleName.empty()) {
         APP_LOGE("fail to GetBundleInfo due to params empty");
@@ -192,6 +198,7 @@ bool BundleMgrProxy::GetBundleInfo(
 bool BundleMgrProxy::GetBundleInfo(
     const std::string &bundleName, int32_t flags, BundleInfo &bundleInfo, int32_t userId)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGD("begin to get bundle info of %{public}s", bundleName.c_str());
     if (bundleName.empty()) {
         APP_LOGE("fail to GetBundleInfo due to params empty");
@@ -226,6 +233,7 @@ bool BundleMgrProxy::GetBundleInfo(
 bool BundleMgrProxy::GetBundleInfos(
     const BundleFlag flag, std::vector<BundleInfo> &bundleInfos, int32_t userId)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGD("begin to get bundle infos");
     MessageParcel data;
     if (!data.WriteInterfaceToken(GetDescriptor())) {
@@ -251,6 +259,7 @@ bool BundleMgrProxy::GetBundleInfos(
 bool BundleMgrProxy::GetBundleInfos(
     int32_t flags, std::vector<BundleInfo> &bundleInfos, int32_t userId)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGD("begin to get bundle infos");
     MessageParcel data;
     if (!data.WriteInterfaceToken(GetDescriptor())) {
@@ -275,6 +284,7 @@ bool BundleMgrProxy::GetBundleInfos(
 
 int BundleMgrProxy::GetUidByBundleName(const std::string &bundleName, const int userId)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGI("begin to get uid of %{public}s", bundleName.c_str());
     std::vector<BundleInfo> bundleInfos;
     int uid = Constants::INVALID_UID;
@@ -302,6 +312,7 @@ int BundleMgrProxy::GetUidByBundleName(const std::string &bundleName, const int 
 
 std::string BundleMgrProxy::GetAppIdByBundleName(const std::string &bundleName, const int userId)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGI("begin to get appId of %{public}s", bundleName.c_str());
     BundleInfo bundleInfo;
     std::string appId = Constants::EMPTY_STRING;
@@ -317,6 +328,7 @@ std::string BundleMgrProxy::GetAppIdByBundleName(const std::string &bundleName, 
 
 bool BundleMgrProxy::GetBundleNameForUid(const int uid, std::string &bundleName)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGI("begin to GetBundleNameForUid of %{public}d", uid);
     MessageParcel data;
     if (!data.WriteInterfaceToken(GetDescriptor())) {
@@ -343,6 +355,7 @@ bool BundleMgrProxy::GetBundleNameForUid(const int uid, std::string &bundleName)
 
 bool BundleMgrProxy::GetBundlesForUid(const int uid, std::vector<std::string> &bundleNames)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGI("begin to GetBundlesForUid of %{public}d", uid);
     MessageParcel data;
     if (!data.WriteInterfaceToken(GetDescriptor())) {
@@ -372,6 +385,7 @@ bool BundleMgrProxy::GetBundlesForUid(const int uid, std::vector<std::string> &b
 
 bool BundleMgrProxy::GetNameForUid(const int uid, std::string &name)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGI("begin to GetNameForUid of %{public}d", uid);
     MessageParcel data;
     if (!data.WriteInterfaceToken(GetDescriptor())) {
@@ -398,6 +412,7 @@ bool BundleMgrProxy::GetNameForUid(const int uid, std::string &name)
 
 bool BundleMgrProxy::GetBundleGids(const std::string &bundleName, std::vector<int> &gids)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGI("begin to GetBundleGids of %{public}s", bundleName.c_str());
     MessageParcel data;
     if (!data.WriteInterfaceToken(GetDescriptor())) {
@@ -427,6 +442,7 @@ bool BundleMgrProxy::GetBundleGids(const std::string &bundleName, std::vector<in
 
 bool BundleMgrProxy::GetBundleGidsByUid(const std::string &bundleName, const int &uid, std::vector<int> &gids)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGI("begin to GetBundleGidsByUid of %{public}s", bundleName.c_str());
     MessageParcel data;
     if (!data.WriteInterfaceToken(GetDescriptor())) {
@@ -460,6 +476,7 @@ bool BundleMgrProxy::GetBundleGidsByUid(const std::string &bundleName, const int
 
 std::string BundleMgrProxy::GetAppType(const std::string &bundleName)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGI("begin to GetAppType of %{public}s", bundleName.c_str());
     BundleInfo bundleInfo;
     bool ret = GetBundleInfo(bundleName, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo);
@@ -478,6 +495,7 @@ std::string BundleMgrProxy::GetAppType(const std::string &bundleName)
 
 bool BundleMgrProxy::CheckIsSystemAppByUid(const int uid)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGI("begin to CheckIsSystemAppByUid of %{public}d", uid);
     MessageParcel data;
     if (!data.WriteInterfaceToken(GetDescriptor())) {
@@ -499,6 +517,7 @@ bool BundleMgrProxy::CheckIsSystemAppByUid(const int uid)
 
 bool BundleMgrProxy::GetBundleInfosByMetaData(const std::string &metaData, std::vector<BundleInfo> &bundleInfos)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGI("begin to GetBundleInfosByMetaData of %{public}s", metaData.c_str());
     if (metaData.empty()) {
         APP_LOGE("fail to GetBundleInfosByMetaData due to params empty");
@@ -524,6 +543,7 @@ bool BundleMgrProxy::GetBundleInfosByMetaData(const std::string &metaData, std::
 
 bool BundleMgrProxy::QueryAbilityInfo(const Want &want, AbilityInfo &abilityInfo)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     MessageParcel data;
     if (!data.WriteInterfaceToken(GetDescriptor())) {
         APP_LOGE("fail to QueryAbilityInfo due to write MessageParcel fail");
@@ -543,6 +563,7 @@ bool BundleMgrProxy::QueryAbilityInfo(const Want &want, AbilityInfo &abilityInfo
 
 bool BundleMgrProxy::QueryAbilityInfo(const Want &want, int32_t flags, int32_t userId, AbilityInfo &abilityInfo)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     MessageParcel data;
     if (!data.WriteInterfaceToken(GetDescriptor())) {
         APP_LOGE("fail to QueryAbilityInfo mutiparam due to write MessageParcel fail");
@@ -570,6 +591,7 @@ bool BundleMgrProxy::QueryAbilityInfo(const Want &want, int32_t flags, int32_t u
 
 bool BundleMgrProxy::QueryAbilityInfos(const Want &want, std::vector<AbilityInfo> &abilityInfos)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     MessageParcel data;
     if (!data.WriteInterfaceToken(GetDescriptor())) {
         APP_LOGE("fail to QueryAbilityInfos due to write MessageParcel fail");
@@ -590,6 +612,7 @@ bool BundleMgrProxy::QueryAbilityInfos(const Want &want, std::vector<AbilityInfo
 bool BundleMgrProxy::QueryAbilityInfos(
     const Want &want, int32_t flags, int32_t userId, std::vector<AbilityInfo> &abilityInfos)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     MessageParcel data;
     if (!data.WriteInterfaceToken(GetDescriptor())) {
         APP_LOGE("fail to QueryAbilityInfos mutiparam due to write MessageParcel fail");
@@ -617,6 +640,7 @@ bool BundleMgrProxy::QueryAbilityInfos(
 
 bool BundleMgrProxy::QueryAllAbilityInfos(const Want &want, int32_t userId, std::vector<AbilityInfo> &abilityInfos)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     MessageParcel data;
     if (!data.WriteInterfaceToken(GetDescriptor())) {
         APP_LOGE("fail to QueryAbilityInfo due to write MessageParcel fail");
@@ -640,6 +664,7 @@ bool BundleMgrProxy::QueryAllAbilityInfos(const Want &want, int32_t userId, std:
 
 bool BundleMgrProxy::QueryAbilityInfosForClone(const Want &want, std::vector<AbilityInfo> &abilityInfos)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     MessageParcel data;
     if (!data.WriteInterfaceToken(GetDescriptor())) {
         APP_LOGE("fail to QueryAbilityInfo due to write MessageParcel fail");
@@ -659,6 +684,7 @@ bool BundleMgrProxy::QueryAbilityInfosForClone(const Want &want, std::vector<Abi
 
 bool BundleMgrProxy::QueryAbilityInfoByUri(const std::string &abilityUri, AbilityInfo &abilityInfo)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     MessageParcel data;
     if (!data.WriteInterfaceToken(GetDescriptor())) {
         APP_LOGE("fail to QueryAbilityInfoByUri due to write MessageParcel fail");
@@ -678,6 +704,7 @@ bool BundleMgrProxy::QueryAbilityInfoByUri(const std::string &abilityUri, Abilit
 
 bool BundleMgrProxy::QueryAbilityInfosByUri(const std::string &abilityUri, std::vector<AbilityInfo> &abilityInfos)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     MessageParcel data;
     if (!data.WriteInterfaceToken(GetDescriptor())) {
         APP_LOGE("fail to QueryAbilityInfosByUri due to write MessageParcel fail");
@@ -697,6 +724,7 @@ bool BundleMgrProxy::QueryAbilityInfosByUri(const std::string &abilityUri, std::
 
 bool BundleMgrProxy::QueryKeepAliveBundleInfos(std::vector<BundleInfo> &bundleInfos)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGI("begin to QueryKeepAliveBundleInfos");
 
     MessageParcel data;
@@ -714,6 +742,7 @@ bool BundleMgrProxy::QueryKeepAliveBundleInfos(std::vector<BundleInfo> &bundleIn
 
 std::string BundleMgrProxy::GetAbilityLabel(const std::string &bundleName, const std::string &className)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGI("begin to get bundle info of %{public}s", bundleName.c_str());
     if (bundleName.empty()) {
         APP_LOGE("fail to GetAbilityLabel due to params empty");
@@ -744,6 +773,7 @@ std::string BundleMgrProxy::GetAbilityLabel(const std::string &bundleName, const
 
 bool BundleMgrProxy::GetBundleArchiveInfo(const std::string &hapFilePath, const BundleFlag flag, BundleInfo &bundleInfo)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGD("begin to GetBundleArchiveInfo of %{public}s", hapFilePath.c_str());
     if (hapFilePath.empty()) {
         APP_LOGE("fail to GetBundleArchiveInfo due to params empty");
@@ -773,6 +803,7 @@ bool BundleMgrProxy::GetBundleArchiveInfo(const std::string &hapFilePath, const 
 
 bool BundleMgrProxy::GetBundleArchiveInfo(const std::string &hapFilePath, int32_t flags, BundleInfo &bundleInfo)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGD("begin to GetBundleArchiveInfo with int flags of %{public}s", hapFilePath.c_str());
     if (hapFilePath.empty()) {
         APP_LOGE("fail to GetBundleArchiveInfo due to params empty");
@@ -802,6 +833,7 @@ bool BundleMgrProxy::GetBundleArchiveInfo(const std::string &hapFilePath, int32_
 
 bool BundleMgrProxy::GetHapModuleInfo(const AbilityInfo &abilityInfo, HapModuleInfo &hapModuleInfo)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGI("begin to GetHapModuleInfo of %{public}s", abilityInfo.package.c_str());
     if (abilityInfo.bundleName.empty() || abilityInfo.package.empty()) {
         APP_LOGE("fail to GetHapModuleInfo due to params empty");
@@ -827,6 +859,7 @@ bool BundleMgrProxy::GetHapModuleInfo(const AbilityInfo &abilityInfo, HapModuleI
 
 bool BundleMgrProxy::GetLaunchWantForBundle(const std::string &bundleName, Want &want)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGI("begin to GetLaunchWantForBundle of %{public}s", bundleName.c_str());
     if (bundleName.empty()) {
         APP_LOGE("fail to GetHapModuleInfo due to params empty");
@@ -852,6 +885,7 @@ bool BundleMgrProxy::GetLaunchWantForBundle(const std::string &bundleName, Want 
 
 int BundleMgrProxy::CheckPublicKeys(const std::string &firstBundleName, const std::string &secondBundleName)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGI(
         "begin to CheckPublicKeys of %{public}s and %{public}s", firstBundleName.c_str(), secondBundleName.c_str());
     if (firstBundleName.empty() || secondBundleName.empty()) {
@@ -883,6 +917,7 @@ int BundleMgrProxy::CheckPublicKeys(const std::string &firstBundleName, const st
 
 int BundleMgrProxy::CheckPermission(const std::string &bundleName, const std::string &permission)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGI("begin to CheckPublicKeys of %{public}s and %{public}s", bundleName.c_str(), permission.c_str());
     if (bundleName.empty() || permission.empty()) {
         APP_LOGE("fail to CheckPermission due to params empty");
@@ -913,6 +948,7 @@ int BundleMgrProxy::CheckPermission(const std::string &bundleName, const std::st
 
 int BundleMgrProxy::CheckPermissionByUid(const std::string &bundleName, const std::string &permission, const int userId)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGI("begin to CheckPublicKeys of %{public}s and %{public}s", bundleName.c_str(), permission.c_str());
     if (bundleName.empty() || permission.empty()) {
         APP_LOGE("fail to CheckPermissionByUid due to params empty");
@@ -947,6 +983,7 @@ int BundleMgrProxy::CheckPermissionByUid(const std::string &bundleName, const st
 
 bool BundleMgrProxy::GetPermissionDef(const std::string &permissionName, PermissionDef &permissionDef)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGI("begin to GetPermissionDef of %{public}s", permissionName.c_str());
     if (permissionName.empty()) {
         APP_LOGE("fail to GetPermissionDef due to params empty");
@@ -972,6 +1009,7 @@ bool BundleMgrProxy::GetPermissionDef(const std::string &permissionName, Permiss
 
 bool BundleMgrProxy::GetAllPermissionGroupDefs(std::vector<PermissionDef> &permissionDefs)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGI("begin to GetPermissionDefs");
     MessageParcel data;
     if (!data.WriteInterfaceToken(GetDescriptor())) {
@@ -989,6 +1027,7 @@ bool BundleMgrProxy::GetAllPermissionGroupDefs(std::vector<PermissionDef> &permi
 bool BundleMgrProxy::GetAppsGrantedPermissions(
     const std::vector<std::string> &permissions, std::vector<std::string> &appNames)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGI("begin to GetAppsGrantedPermissions");
     MessageParcel data;
     if (!data.WriteInterfaceToken(GetDescriptor())) {
@@ -1016,6 +1055,7 @@ bool BundleMgrProxy::GetAppsGrantedPermissions(
 
 bool BundleMgrProxy::HasSystemCapability(const std::string &capName)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGI("begin to HasSystemCapability of %{public}s", capName.c_str());
     if (capName.empty()) {
         APP_LOGE("fail to HasSystemCapability due to params empty");
@@ -1042,6 +1082,7 @@ bool BundleMgrProxy::HasSystemCapability(const std::string &capName)
 
 bool BundleMgrProxy::GetSystemAvailableCapabilities(std::vector<std::string> &systemCaps)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGI("begin to GetSystemAvailableCapabilities");
     MessageParcel data;
     if (!data.WriteInterfaceToken(GetDescriptor())) {
@@ -1065,6 +1106,7 @@ bool BundleMgrProxy::GetSystemAvailableCapabilities(std::vector<std::string> &sy
 
 bool BundleMgrProxy::IsSafeMode()
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGI("begin to IsSafeMode");
     MessageParcel data;
     if (!data.WriteInterfaceToken(GetDescriptor())) {
@@ -1083,6 +1125,7 @@ bool BundleMgrProxy::IsSafeMode()
 bool BundleMgrProxy::CleanBundleCacheFiles(
     const std::string &bundleName, const sptr<ICleanCacheCallback> &cleanCacheCallback)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGI("begin to CleanBundleCacheFiles of %{public}s", bundleName.c_str());
     if (bundleName.empty() || !cleanCacheCallback) {
         APP_LOGE("fail to CleanBundleCacheFiles due to params error");
@@ -1114,6 +1157,7 @@ bool BundleMgrProxy::CleanBundleCacheFiles(
 
 bool BundleMgrProxy::CleanBundleDataFiles(const std::string &bundleName, const int userId)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGI("begin to CleanBundleDataFiles of %{public}s", bundleName.c_str());
     if (bundleName.empty()) {
         APP_LOGE("fail to CleanBundleDataFiles due to params empty");
@@ -1144,6 +1188,7 @@ bool BundleMgrProxy::CleanBundleDataFiles(const std::string &bundleName, const i
 
 bool BundleMgrProxy::RegisterBundleStatusCallback(const sptr<IBundleStatusCallback> &bundleStatusCallback)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGI("begin to RegisterBundleStatusCallback");
     if (!bundleStatusCallback || bundleStatusCallback->GetBundleName().empty()) {
         APP_LOGE("fail to RegisterBundleStatusCallback");
@@ -1174,6 +1219,7 @@ bool BundleMgrProxy::RegisterBundleStatusCallback(const sptr<IBundleStatusCallba
 
 bool BundleMgrProxy::ClearBundleStatusCallback(const sptr<IBundleStatusCallback> &bundleStatusCallback)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGI("begin to ClearBundleStatusCallback");
     if (!bundleStatusCallback) {
         APP_LOGE("fail to ClearBundleStatusCallback, for bundleStatusCallback is nullptr");
@@ -1200,6 +1246,7 @@ bool BundleMgrProxy::ClearBundleStatusCallback(const sptr<IBundleStatusCallback>
 
 bool BundleMgrProxy::UnregisterBundleStatusCallback()
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGI("begin to UnregisterBundleStatusCallback");
     MessageParcel data;
     if (!data.WriteInterfaceToken(GetDescriptor())) {
@@ -1218,6 +1265,7 @@ bool BundleMgrProxy::UnregisterBundleStatusCallback()
 bool BundleMgrProxy::DumpInfos(
     const DumpFlag flag, const std::string &bundleName, int32_t userId, std::string &result)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGD("begin to dump");
     MessageParcel data;
     if (!data.WriteInterfaceToken(GetDescriptor())) {
@@ -1259,6 +1307,7 @@ bool BundleMgrProxy::DumpInfos(
 
 bool BundleMgrProxy::IsApplicationEnabled(const std::string &bundleName)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGI("begin to IsApplicationEnabled of %{public}s", bundleName.c_str());
     if (bundleName.empty()) {
         APP_LOGE("fail to IsApplicationEnabled due to params empty");
@@ -1285,6 +1334,7 @@ bool BundleMgrProxy::IsApplicationEnabled(const std::string &bundleName)
 
 bool BundleMgrProxy::SetApplicationEnabled(const std::string &bundleName, bool isEnable)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGI("begin to SetApplicationEnabled of %{public}s", bundleName.c_str());
     if (bundleName.empty()) {
         APP_LOGE("fail to SetApplicationEnabled due to params empty");
@@ -1315,6 +1365,7 @@ bool BundleMgrProxy::SetApplicationEnabled(const std::string &bundleName, bool i
 
 bool BundleMgrProxy::IsAbilityEnabled(const AbilityInfo &abilityInfo)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGI("begin to IsAbilityEnabled of %{public}s", abilityInfo.name.c_str());
     if (abilityInfo.name.empty()) {
         APP_LOGE("fail to IsAbilityEnabled due to params empty");
@@ -1341,6 +1392,7 @@ bool BundleMgrProxy::IsAbilityEnabled(const AbilityInfo &abilityInfo)
 
 bool BundleMgrProxy::SetAbilityEnabled(const AbilityInfo &abilityInfo, bool isEnabled)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGI("begin to SetAbilityEnabled of %{public}s", abilityInfo.name.c_str());
     if (abilityInfo.name.empty()) {
         APP_LOGE("fail to SetAbilityEnabled due to params empty");
@@ -1371,6 +1423,7 @@ bool BundleMgrProxy::SetAbilityEnabled(const AbilityInfo &abilityInfo, bool isEn
 
 std::string BundleMgrProxy::GetAbilityIcon(const std::string &bundleName, const std::string &className)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGI("begin to get bundle info of %{public}s", bundleName.c_str());
     if (bundleName.empty()) {
         APP_LOGE("fail to GetAbilityIcon due to params empty");
@@ -1401,6 +1454,7 @@ std::string BundleMgrProxy::GetAbilityIcon(const std::string &bundleName, const 
 
 sptr<IBundleInstaller> BundleMgrProxy::GetBundleInstaller()
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGD("begin to get bundle installer");
     MessageParcel data;
     MessageParcel reply;
@@ -1424,6 +1478,7 @@ sptr<IBundleInstaller> BundleMgrProxy::GetBundleInstaller()
 
 sptr<IBundleUserMgr> BundleMgrProxy::GetBundleUserMgr()
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     MessageParcel data;
     MessageParcel reply;
     if (!data.WriteInterfaceToken(GetDescriptor())) {
@@ -1446,6 +1501,7 @@ sptr<IBundleUserMgr> BundleMgrProxy::GetBundleUserMgr()
 bool BundleMgrProxy::CanRequestPermission(
     const std::string &bundleName, const std::string &permissionName, const int userId)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGI("begin to CanRequestPermission of %{public}s and %{public}s", bundleName.c_str(), permissionName.c_str());
     if (bundleName.empty() || permissionName.empty()) {
         APP_LOGE("fail to CanRequestPermission due to params empty");
@@ -1481,6 +1537,7 @@ bool BundleMgrProxy::CanRequestPermission(
 bool BundleMgrProxy::RequestPermissionFromUser(
     const std::string &bundleName, const std::string &permission, const int userId)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGI("begin to RequestPermissionsFromUser of %{public}s", bundleName.c_str());
     if (bundleName.empty() || permission.empty()) {
         APP_LOGE("fail to RequestPermissionsFromUser due to params empty");
@@ -1515,6 +1572,7 @@ bool BundleMgrProxy::RequestPermissionFromUser(
 
 bool BundleMgrProxy::RegisterAllPermissionsChanged(const sptr<OnPermissionChangedCallback> &callback)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGI("begin to RegisterAllPermissionsChanged");
     if (!callback) {
         APP_LOGE("fail to RegisterAllPermissionsChanged");
@@ -1542,6 +1600,7 @@ bool BundleMgrProxy::RegisterAllPermissionsChanged(const sptr<OnPermissionChange
 bool BundleMgrProxy::RegisterPermissionsChanged(
     const std::vector<int> &uids, const sptr<OnPermissionChangedCallback> &callback)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGI("begin to RegisterAllPermissionsChanged");
     if (!callback || uids.empty()) {
         APP_LOGE("fail to RegisterAllPermissionsChanged");
@@ -1572,6 +1631,7 @@ bool BundleMgrProxy::RegisterPermissionsChanged(
 
 bool BundleMgrProxy::UnregisterPermissionsChanged(const sptr<OnPermissionChangedCallback> &callback)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGI("begin to UnregisterPermissionsChanged");
     if (!callback) {
         APP_LOGE("fail to UnregisterPermissionsChanged, for callback is nullptr");
@@ -1598,6 +1658,7 @@ bool BundleMgrProxy::UnregisterPermissionsChanged(const sptr<OnPermissionChanged
 
 bool BundleMgrProxy::GetAllFormsInfo(std::vector<FormInfo> &formInfos)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     MessageParcel data;
     if (!data.WriteInterfaceToken(GetDescriptor())) {
         APP_LOGE("fail to GetAllFormsInfo due to write MessageParcel fail");
@@ -1613,6 +1674,7 @@ bool BundleMgrProxy::GetAllFormsInfo(std::vector<FormInfo> &formInfos)
 
 bool BundleMgrProxy::GetFormsInfoByApp(const std::string &bundleName, std::vector<FormInfo> &formInfos)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     if (bundleName.empty()) {
         APP_LOGE("fail to GetFormsInfoByApp due to params empty");
         return false;
@@ -1637,6 +1699,7 @@ bool BundleMgrProxy::GetFormsInfoByApp(const std::string &bundleName, std::vecto
 bool BundleMgrProxy::GetFormsInfoByModule(
     const std::string &bundleName, const std::string &moduleName, std::vector<FormInfo> &formInfos)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     if (bundleName.empty() || moduleName.empty()) {
         APP_LOGE("fail to GetFormsByModule due to params empty");
         return false;
@@ -1667,6 +1730,7 @@ bool BundleMgrProxy::GetFormsInfoByModule(
 
 bool BundleMgrProxy::GetShortcutInfos(const std::string &bundleName, std::vector<ShortcutInfo> &shortcutInfos)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     if (bundleName.empty()) {
         APP_LOGE("fail to GetShortcutInfos due to params empty");
         return false;
@@ -1692,6 +1756,7 @@ bool BundleMgrProxy::GetShortcutInfos(const std::string &bundleName, std::vector
 
 bool BundleMgrProxy::GetAllCommonEventInfo(const std::string &eventKey, std::vector<CommonEventInfo> &commonEventInfos)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     if (eventKey.empty()) {
         APP_LOGE("fail to GetAllCommonEventInfo due to eventKey empty");
         return false;
@@ -1717,6 +1782,7 @@ bool BundleMgrProxy::GetAllCommonEventInfo(const std::string &eventKey, std::vec
 
 bool BundleMgrProxy::GetModuleUsageRecords(const int32_t number, std::vector<ModuleUsageRecord> &moduleUsageRecords)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     MessageParcel data;
     if (!data.WriteInterfaceToken(GetDescriptor())) {
         APP_LOGE("fail to GetModuleUsageRecords due to write MessageParcel fail");
@@ -1739,6 +1805,7 @@ bool BundleMgrProxy::GetModuleUsageRecords(const int32_t number, std::vector<Mod
 bool BundleMgrProxy::NotifyAbilityLifeStatus(
     const std::string &bundleName, const std::string &abilityName, const int64_t launchTime, const int uid)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGI("begin to NotifyAbilityLifeStatus of %{public}s", abilityName.c_str());
     if (bundleName.empty() || abilityName.empty()) {
         APP_LOGE("fail to NotifyAbilityLifeStatus due to params empty");
@@ -1777,6 +1844,7 @@ bool BundleMgrProxy::NotifyAbilityLifeStatus(
 
 bool BundleMgrProxy::CheckBundleNameInAllowList(const std::string &bundleName)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGI("begin to Check BundleName In AllowList");
     if (bundleName.empty()) {
         APP_LOGE("fail to Check BundleName In AllowList due to params empty");
@@ -1801,6 +1869,7 @@ bool BundleMgrProxy::CheckBundleNameInAllowList(const std::string &bundleName)
 
 bool BundleMgrProxy::BundleClone(const std::string &bundleName)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGI("begin to bundle clone");
     if (bundleName.empty()) {
         APP_LOGE("fail to bundle clone due to params empty");
@@ -1825,6 +1894,7 @@ bool BundleMgrProxy::BundleClone(const std::string &bundleName)
 
 bool BundleMgrProxy::RemoveClonedBundle(const std::string &bundleName, const int32_t uid)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGI("begin to remove cloned bundle");
     if (bundleName.empty()) {
         APP_LOGE("fail to remove cloned bundle due to params empty");
