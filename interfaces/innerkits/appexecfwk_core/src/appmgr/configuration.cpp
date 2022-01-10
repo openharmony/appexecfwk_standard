@@ -195,6 +195,22 @@ std::string Configuration::GetItem(const std::string &key) const
     return GetItem(defaultDisplayId_, key);
 }
 
+std::string Configuration::GetItemForIdAndKey(const std::string &key) const
+{
+    if (key.empty()) {
+        return ConfigurationInner::EMPTY_STRING;
+    }
+
+    APP_LOGI("Configuration::%{public}s called. [%{public}s]", __func__, key.c_str());
+
+    auto iter = configParameter_.find(key);
+    if (iter != configParameter_.end()) {
+        return iter->second;
+    }
+
+    return ConfigurationInner::EMPTY_STRING;
+}
+
 int Configuration::RemoveItem(const std::string &key)
 {
     return RemoveItem(defaultDisplayId_, key);
