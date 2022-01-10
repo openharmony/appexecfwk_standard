@@ -499,5 +499,38 @@ const std::unique_ptr<AbilityRuntime::Runtime>& OHOSApplication::GetRuntime()
 {
     return runtime_;
 }
+
+bool OHOSApplication::InitAddAbilityStage(const std::shared_ptr<AbilityInfo> &abilityInfo)
+{
+    if (abilityInfo == nullptr ||
+        abilityRuntimeContext_ == nullptr ||
+        runtime_ == nullptr) {
+        APP_LOGE("OHOSApplication::%{public}s: %{public}s is nullptr",
+            __func__,
+            ((abilityInfo == nullptr) ?
+                ("abilityInfo") : ((runtime_ == nullptr) ? ("runtime") : ("abilityRuntimeContext_"))));
+        return false;
+    }
+
+    if (abilityStages_.find(abilityInfo->moduleName) != abilityStages_.end()) {
+        APP_LOGE("OHOSApplication::%{public}s: object already exists ", __func__);
+        return false;
+    }
+
+    auto stageContext = std::make_shared<AbilityRuntime::ContextImpl>();
+    stageContext->SetParentContext(abilityRuntimeContext_);
+    stageContext->InitHapModuleInfo(abilityInfo);
+    auto hapModuleInfo = stageContext->GetHapModuleInfo();
+    if (hapModuleInfo == nullptr) {
+        APP_LOGE("OHOSApplication::%{public}s: hapModuleInfo is nullptr", __func__);
+        return false;
+    }
+    auto abilityStage = AbilityRuntime::AbilityStage::Create(runtime_, *hapModuleInfo);
+    abilityStage->Init(stageContext);
+    abilityStage->OnCreate();
+    abilityStages_[abilityInfo->moduleName] = abilityStage;
+    APP_LOGE("OHOSApplication::%{public}s: abilityStage insert and initialization", __func__);
+    return true;
+}
 }  // namespace AppExecFwk
 }  // namespace OHOS

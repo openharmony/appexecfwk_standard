@@ -376,13 +376,6 @@ public:
 
     bool IsTerminating();
 
-    bool IsKeepAliveApp() const;
-
-    // Please use with caution, it may affect the ability to start.
-    void SetKeepAliveAppState();
-
-    void insertAbilityStageInfo(std::vector<HapModuleInfo> moduleInfos);
-
     /**
      * Notify observers when state change.
      *
@@ -390,6 +383,15 @@ public:
      * @param state, ability or extension state.
      */
     void StateChangedNotifyObserver(const std::shared_ptr<AbilityRunningRecord> &ability, int32_t state, bool isAbility);
+
+    bool IsKeepAliveApp() const;
+
+    // Please use with caution, it may affect the ability to start.
+    void SetKeepAliveAppState();
+
+    bool CanRestartResidentProc();
+
+    void insertAbilityStageInfo(std::vector<HapModuleInfo> moduleInfos);
 
 private:
     // drive application state changes when ability state changes.
@@ -456,6 +458,7 @@ private:
     std::shared_ptr<AppLifeCycleDeal> appLifeCycleDeal_ = nullptr;
     std::shared_ptr<AMSEventHandler> eventHandler_ = nullptr;
     bool isTerminating = false;
+    int restartCount_ = 15;
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS
