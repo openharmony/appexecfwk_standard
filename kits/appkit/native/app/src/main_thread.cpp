@@ -163,6 +163,7 @@ std::shared_ptr<ApplicationImpl> MainThread::GetApplicationImpl()
  */
 bool MainThread::ConnectToAppMgr()
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGI("MainThread::ConnectToAppMgr start");
     auto object = OHOS::DelayedSingleton<SysMrgClient>::GetInstance()->GetSystemAbility(APP_MGR_SERVICE_ID);
     if (object == nullptr) {
@@ -201,6 +202,7 @@ bool MainThread::ConnectToAppMgr()
  */
 void MainThread::Attach()
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGI("MainThread::attach called");
     if (!ConnectToAppMgr()) {
         APP_LOGE("attachApplication failed");
@@ -252,6 +254,7 @@ std::shared_ptr<EventHandler> MainThread::GetMainHandler() const
  */
 void MainThread::ScheduleForegroundApplication()
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGI("MainThread::scheduleForegroundApplication called begin");
     auto task = [appThread = this]() { appThread->HandleForegroundApplication(); };
     if (!mainHandler_->PostTask(task)) {
@@ -344,6 +347,7 @@ void MainThread::ScheduleLowMemory()
  */
 void MainThread::ScheduleLaunchApplication(const AppLaunchData &data)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGI("MainThread::scheduleLaunchApplication start");
 
     auto task = [appThread = this, data]() { appThread->HandleLaunchApplication(data); };
@@ -561,7 +565,7 @@ void MainThread::HandleTerminateApplicationLocal()
  */
 void MainThread::HandleProcessSecurityExit()
 {
-    BYTRACE(BYTRACE_TAG_APP);
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGI("MainThread::HandleProcessSecurityExit called start.");
     if (abilityRecordMgr_ == nullptr) {
         APP_LOGE("MainThread::HandleProcessSecurityExit abilityRecordMgr_ is null");
@@ -581,6 +585,7 @@ void MainThread::HandleProcessSecurityExit()
 bool MainThread::InitCreate(
     std::shared_ptr<ContextDeal> &contextDeal, ApplicationInfo &appInfo, ProcessInfo &processInfo, Profile &appProfile)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     applicationInfo_ = std::make_shared<ApplicationInfo>(appInfo);
     if (applicationInfo_ == nullptr) {
         APP_LOGE("MainThread::InitCreate create applicationInfo_ failed");
@@ -642,6 +647,7 @@ bool MainThread::CheckForHandleLaunchApplication(const AppLaunchData &appLaunchD
 bool MainThread::InitResourceManager(std::shared_ptr<Global::Resource::ResourceManager> &resourceManager,
     std::shared_ptr<ContextDeal> &contextDeal, ApplicationInfo &appInfo, BundleInfo& bundleInfo)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGI("MainThread::handleLaunchApplication moduleResPaths count: %{public}zu start",
         bundleInfo.moduleResPaths.size());
     for (auto moduleResPath : bundleInfo.moduleResPaths) {
@@ -687,7 +693,7 @@ bool MainThread::InitResourceManager(std::shared_ptr<Global::Resource::ResourceM
  */
 void MainThread::HandleLaunchApplication(const AppLaunchData &appLaunchData)
 {
-    BYTRACE(BYTRACE_TAG_APP);
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGI("MainThread::handleLaunchApplication called start.");
     if (!CheckForHandleLaunchApplication(appLaunchData)) {
         APP_LOGE("MainThread::handleLaunchApplication CheckForHandleLaunchApplication failed");
@@ -806,7 +812,7 @@ void MainThread::HandleAbilityStageInfo(const AppResidentProcessInfo &residentPr
  */
 void MainThread::HandleLaunchAbility(const std::shared_ptr<AbilityLocalRecord> &abilityRecord)
 {
-    BYTRACE(BYTRACE_TAG_APP);
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGI("MainThread::handleLaunchAbility called start.");
 
     if (applicationImpl_ == nullptr) {
@@ -915,7 +921,7 @@ void MainThread::HandleCleanAbilityLocal(const sptr<IRemoteObject> &token)
  */
 void MainThread::HandleCleanAbility(const sptr<IRemoteObject> &token)
 {
-    BYTRACE(BYTRACE_TAG_APP);
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGI("MainThread::handleCleanAbility called start.");
     if (!IsApplicationReady()) {
         APP_LOGE("MainThread::handleCleanAbility not init OHOSApplication, should launch application first");
@@ -966,7 +972,7 @@ void MainThread::HandleCleanAbility(const sptr<IRemoteObject> &token)
  */
 void MainThread::HandleForegroundApplication()
 {
-    BYTRACE(BYTRACE_TAG_APP);
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGI("MainThread::handleForegroundApplication called start.");
     if ((application_ == nullptr) || (appMgr_ == nullptr)) {
         APP_LOGE("MainThread::handleForegroundApplication error!");
@@ -991,7 +997,7 @@ void MainThread::HandleForegroundApplication()
  */
 void MainThread::HandleBackgroundApplication()
 {
-    BYTRACE(BYTRACE_TAG_APP);
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGI("MainThread::handleBackgroundApplication called start.");
 
     if ((application_ == nullptr) || (appMgr_ == nullptr)) {
@@ -1017,7 +1023,7 @@ void MainThread::HandleBackgroundApplication()
  */
 void MainThread::HandleTerminateApplication()
 {
-    BYTRACE(BYTRACE_TAG_APP);
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGI("MainThread::handleTerminateApplication called start.");
     if ((application_ == nullptr) || (appMgr_ == nullptr)) {
         APP_LOGE("MainThread::handleTerminateApplication error!");
@@ -1071,7 +1077,7 @@ void MainThread::HandleTerminateApplication()
  */
 void MainThread::HandleShrinkMemory(const int level)
 {
-    BYTRACE(BYTRACE_TAG_APP);
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGI("MainThread::HandleShrinkMemory called start.");
 
     if (applicationImpl_ == nullptr) {
@@ -1092,7 +1098,7 @@ void MainThread::HandleShrinkMemory(const int level)
  */
 void MainThread::HandleConfigurationUpdated(const Configuration &config)
 {
-    BYTRACE(BYTRACE_TAG_APP);
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGI("MainThread::HandleConfigurationUpdated called start.");
 
     if (applicationImpl_ == nullptr) {
@@ -1106,6 +1112,7 @@ void MainThread::HandleConfigurationUpdated(const Configuration &config)
 
 void MainThread::Init(const std::shared_ptr<EventRunner> &runner)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGI("MainThread:Init Start");
     mainHandler_ = std::make_shared<MainHandler>(runner, this);
     auto task = [appThread = this]() {
@@ -1123,6 +1130,7 @@ void MainThread::Init(const std::shared_ptr<EventRunner> &runner)
 
 void MainThread::Start()
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGI("MainThread::main called start");
     std::shared_ptr<EventRunner> runner = EventRunner::GetMainEventRunner();
     if (runner == nullptr) {
@@ -1195,6 +1203,7 @@ bool MainThread::IsApplicationReady() const
  */
 void MainThread::LoadAbilityLibrary(const std::vector<std::string> &libraryPaths)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
 #ifdef ABILITY_LIBRARY_LOADER
     APP_LOGI("MainThread::LoadAbilityLibrary called start");
 #ifdef ACEABILITY_LIBRARY_LOADER
@@ -1252,6 +1261,7 @@ void MainThread::LoadAbilityLibrary(const std::vector<std::string> &libraryPaths
 
 void MainThread::LoadAppLibrary()
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
 #ifdef APPLICATION_LIBRARY_LOADER
     std::string appPath = applicationLibraryPath;
     APP_LOGI("MainThread::handleLaunchApplication Start calling dlopen. appPath=%{public}s", appPath.c_str());
