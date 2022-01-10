@@ -1198,7 +1198,11 @@ void MainThread::LoadAbilityLibrary(const std::vector<std::string> &libraryPaths
 #ifdef ABILITY_LIBRARY_LOADER
     APP_LOGI("MainThread::LoadAbilityLibrary called start");
 #ifdef ACEABILITY_LIBRARY_LOADER
+#ifdef _ARM64_
+    std::string acelibdir("/system/lib64/libace.z.so");
+#else
     std::string acelibdir("/system/lib/libace.z.so");
+#endif
     void *AceAbilityLib = nullptr;
     APP_LOGI("MainThread::LoadAbilityLibrary. Start calling dlopen acelibdir.");
     AceAbilityLib = dlopen(acelibdir.c_str(), RTLD_NOW | RTLD_GLOBAL);
