@@ -40,6 +40,9 @@ public:
 private:
     const std::shared_ptr<BundleDataMgr> GetDataMgrFromService();
     const sptr<IBundleInstaller> GetBundleInstaller();
+    void CheckInitialUser();
+
+    std::mutex bundleUserMgrMutex_;
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS

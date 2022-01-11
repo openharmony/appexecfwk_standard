@@ -196,9 +196,11 @@ private:
      * @brief Remove the code and data directories of a module in a bundle.
      * @param info Indicates the InnerBundleInfo object of a bundle.
      * @param modulePackage Indicates the module to be removed.
+     * @param userId Indicates the userId.
      * @return Returns ERR_OK if the bundle directories removed successfully; returns error code otherwise.
      */
-    ErrCode RemoveModuleAndDataDir(const InnerBundleInfo &info, const std::string &modulePackage) const;
+    ErrCode RemoveModuleAndDataDir(const InnerBundleInfo &info,
+        const std::string &modulePackage, int32_t userId = Constants::UNSPECIFIED_USERID) const;
     /**
      * @brief Parse the bundle config.json file.
      * @param bundleFilePath Indicates the HAP file path.
@@ -390,7 +392,8 @@ private:
     ErrCode CreateBundleCodeDir(InnerBundleInfo &info) const;
     ErrCode CreateBundleDataDir(InnerBundleInfo &info, bool onlyOneUser = true) const;
     ErrCode RemoveModuleDataDir(const InnerBundleInfo &info, const std::string &modulePackage) const;
-    ErrCode RemoveHapModuleDataDir(const InnerBundleInfo &info, const std::string &modulePackage) const;
+    ErrCode RemoveHapModuleDataDir(const InnerBundleInfo &info,
+        const std::string &modulePackage, int32_t userId = Constants::UNSPECIFIED_USERID) const;
     ErrCode RemoveBundleCodeDir(const InnerBundleInfo &info) const;
     ErrCode RemoveBundleDataDir(const InnerBundleInfo &info) const;
 
