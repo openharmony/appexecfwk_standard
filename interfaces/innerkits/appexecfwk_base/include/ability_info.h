@@ -70,7 +70,7 @@ enum class LaunchMode {
     SINGLETON = 0,
     STANDARD,  // support more than one instance
     SINGLETOP,
-    SPECIFIED
+    SPECIFIED,
 };
 
 struct AbilityInfo;
