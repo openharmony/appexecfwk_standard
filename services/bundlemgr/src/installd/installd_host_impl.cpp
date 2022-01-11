@@ -335,7 +335,7 @@ ErrCode InstalldHostImpl::GetBundleStats(
     std::vector<std::string> bundlePath;
     for (auto &el : Constants::BUNDLE_EL) {
         std::string filePath = Constants::BUNDLE_APP_DATA_BASE_DIR + el + Constants::FILE_SEPARATOR_CHAR +
-            std::to_string(userId) + Constants::FILE_SEPARATOR_CHAR + Constants::BASE + bundleName;
+            std::to_string(userId) + Constants::BASE + bundleName;
         bundlePath.push_back(filePath);
     }
     std::vector<std::string> cachePath;
@@ -363,7 +363,7 @@ ErrCode InstalldHostImpl::GetBundleStats(
     std::vector<std::string> dataBasePath;
     for (auto &el : Constants::DATABASE_EL) {
         std::string filePath = Constants::BUNDLE_APP_DATA_BASE_DIR + el + Constants::FILE_SEPARATOR_CHAR +
-            std::to_string(userId) + Constants::FILE_SEPARATOR_CHAR + Constants::DATABASE + bundleName;
+            std::to_string(userId) + Constants::DATABASE + bundleName;
         dataBasePath.push_back(filePath);
     }
     int64_t databaseFileSize = InstalldOperator::GetDiskUsageFromPath(dataBasePath);
