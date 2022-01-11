@@ -47,6 +47,7 @@ const std::string BUNDLE_APP_PROFILE_KEY_SINGLE_USER = "singleUser";
 const std::string BUNDLE_APP_PROFILE_KEY_REMOVABLE = "removable";
 // sub BUNDLE_APP_PROFILE_KEY_VERSION
 const std::string BUNDLE_APP_PROFILE_KEY_CODE = "code";
+const std::string BUNDLE_APP_PROFILE_KEY_MIN_COMPATIBLE_VERSION_CODE = "minCompatibleVersionCode";
 // sub BUNDLE_APP_PROFILE_KEY_API_VERSION
 const std::string BUNDLE_APP_PROFILE_KEY_COMPATIBLE = "compatible";
 const std::string BUNDLE_APP_PROFILE_KEY_TARGET = "target";

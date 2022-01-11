@@ -21,6 +21,7 @@
 #include <sys/stat.h>
 #include <sys/statfs.h>
 #include <unistd.h>
+#include <thread>
 
 #include "app_log_wrapper.h"
 #include "bundle_constants.h"
@@ -31,6 +32,8 @@ namespace OHOS {
 namespace AppExecFwk {
 namespace {
 const std::string::size_type EXPECT_SPLIT_SIZE = 2;
+static std::string g_deviceUdid;
+static std::mutex g_mutex;
 }
 
 ErrCode BundleUtil::CheckFilePath(const std::string &bundlePath, std::string &realPath)
@@ -233,6 +236,18 @@ bool BundleUtil::KeyToDeviceAndName(
     }
     APP_LOGD("bundleName = %{public}s", bundleName.c_str());
     return ret;
+}
+
+void BundleUtil::SetCurrentDeviceId(const std::string &deviceId)
+{
+    std::lock_guard<std::mutex> lock(g_mutex);
+    g_deviceUdid = deviceId;
+}
+
+std::string BundleUtil::GetCurrentDeviceId()
+{
+    std::lock_guard<std::mutex> lock(g_mutex);
+    return g_deviceUdid;
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS
