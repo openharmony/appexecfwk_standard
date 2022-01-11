@@ -254,6 +254,9 @@ int BundleMgrHost::OnRemoteRequest(uint32_t code, MessageParcel &data, MessagePa
         case static_cast<uint32_t>(IBundleMgr::Message::GET_BUNDLE_USER_MGR):
             errCode = HandleGetBundleUserMgr(data, reply);
             break;
+        case static_cast<uint32_t>(IBundleMgr::Message::GET_DISTRIBUTE_BUNDLE_INFO):
+            errCode = HandleGetDistributedBundleInfo(data, reply);
+            break;
         default:
             return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
     }
@@ -1478,6 +1481,26 @@ ErrCode BundleMgrHost::HandleRemoveClonedBundle(Parcel &data, Parcel &reply)
     if (!reply.WriteBool(ret)) {
         APP_LOGE("write failed");
         return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    return ERR_OK;
+}
+
+ErrCode BundleMgrHost::HandleGetDistributedBundleInfo(Parcel &data, Parcel &reply)
+{
+    std::string networkId = data.ReadString();
+    int32_t userId = data.ReadInt32();
+    std::string bundleName = data.ReadString();
+    DistributedBundleInfo distributedBundleInfo;
+    bool ret = GetDistributedBundleInfo(networkId, userId, bundleName, distributedBundleInfo);
+    if (!reply.WriteBool(ret)) {
+        APP_LOGE("write failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    if (ret) {
+        if (!reply.WriteParcelable(&distributedBundleInfo)) {
+            APP_LOGE("write failed");
+            return ERR_APPEXECFWK_PARCEL_ERROR;
+        }
     }
     return ERR_OK;
 }

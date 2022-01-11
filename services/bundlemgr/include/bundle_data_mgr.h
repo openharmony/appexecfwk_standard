@@ -36,6 +36,7 @@
 #include "module_usage_record.h"
 #include "on_permission_changed_callback_interface.h"
 #include "preinstall_data_storage.h"
+#include "distributed_data_storage.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -610,6 +611,17 @@ public:
      * @return Returns all userId.
      */
     std::set<int32_t> GetAllUser() const;
+    /**
+     * @brief Obtains the DistributedBundleInfo based on a given bundle name and networkId.
+     * @param networkId Indicates the networkId of remote device.
+     * @param userId Indicates the user id.
+     * @param bundleName Indicates the application bundle name to be queried.
+     * @param distributedBundleInfo Indicates the obtained DistributedBundleInfo object.
+     * @return Returns true if the DistributedBundleInfo is successfully obtained; returns false otherwise.
+     */
+    bool GetDistributedBundleInfo(
+        const std::string &networkId, int32_t userId, const std::string &bundleName,
+        DistributedBundleInfo &distributedBundleInfo);
 private:
     /**
      * @brief Init transferStates.
@@ -702,6 +714,7 @@ private:
     std::shared_ptr<IBundleDataStorage> dataStorage_;
     std::shared_ptr<ModuleUsageRecordStorage> usageRecordStorage_;
     std::shared_ptr<PreInstallDataStorage> preInstallDataStorage_;
+    std::shared_ptr<DistributedDataStorage> distributedDataStorage_;
     std::set<sptr<OnPermissionChangedCallback>> allPermissionsCallbacks_;
     // map<uid, callback>.
     std::map<int32_t, std::set<sptr<OnPermissionChangedCallback>>> permissionsCallbacks_;

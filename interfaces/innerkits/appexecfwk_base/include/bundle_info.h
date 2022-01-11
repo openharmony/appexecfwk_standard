@@ -47,6 +47,7 @@ struct BundleInfo : public Parcelable {
     std::string description;  // detail description. When ResourceKit ready replace with descriptionId
     std::string vendor;
     uint32_t versionCode = 0;
+    uint32_t minCompatibleVersionCode = 0;
     std::string versionName;
     std::string jointUserId;
     int32_t minSdkVersion = -1;  // The min SDK version this app can run on

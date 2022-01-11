@@ -81,6 +81,7 @@ std::map<std::string, uint32_t> backgroundModeMap = {
 struct Version {
     int32_t code = 0;
     std::string name;
+    int32_t minCompatibleVersionCode = -1;
 };
 
 struct ApiVersion {
@@ -332,6 +333,14 @@ void from_json(const nlohmann::json &jsonObject, Version &version)
         version.name,
         JsonType::STRING,
         true,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<int32_t>(jsonObject,
+        jsonObjectEnd,
+        BUNDLE_APP_PROFILE_KEY_MIN_COMPATIBLE_VERSION_CODE,
+        version.minCompatibleVersionCode,
+        JsonType::NUMBER,
+        false,
         parseResult,
         ArrayType::NOT_ARRAY);
 }
@@ -1876,6 +1885,11 @@ bool TransformToInfo(const ProfileReader::ConfigJson &configJson, BundleInfo &bu
     bundleInfo.vendor = configJson.app.vendor;
     bundleInfo.versionCode = static_cast<uint32_t>(configJson.app.version.code);
     bundleInfo.versionName = configJson.app.version.name;
+    if (configJson.app.version.minCompatibleVersionCode == -1) {
+        bundleInfo.minCompatibleVersionCode = bundleInfo.versionCode;
+    } else {
+        bundleInfo.minCompatibleVersionCode = configJson.app.version.minCompatibleVersionCode;
+    }
     bundleInfo.jointUserId = configJson.deveicConfig.defaultDevice.jointUserId;
     bundleInfo.minSdkVersion = configJson.deveicConfig.defaultDevice.ark.reqVersion.compatible;
     if (configJson.deveicConfig.defaultDevice.ark.reqVersion.target == Constants::EQUAL_ZERO) {

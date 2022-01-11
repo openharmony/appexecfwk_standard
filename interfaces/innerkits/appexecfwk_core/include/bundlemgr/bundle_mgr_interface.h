@@ -32,6 +32,7 @@
 #include "ohos/aafwk/content/want.h"
 #include "permission_def.h"
 #include "shortcut_info.h"
+#include "distributed_bundle_info.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -593,6 +594,17 @@ public:
      * @return Returns a pointer to IBundleUserMgr class if exist; returns nullptr otherwise.
      */
     virtual sptr<IBundleUserMgr> GetBundleUserMgr() = 0;
+    /**
+     * @brief Obtains the DistributedBundleInfo based on a given bundle name and networkId.
+     * @param networkId Indicates the networkId of remote device.
+     * @param userId Indicates the user id.
+     * @param bundleName Indicates the application bundle name to be queried.
+     * @param distributedBundleInfo Indicates the obtained DistributedBundleInfo object.
+     * @return Returns true if the DistributedBundleInfo is successfully obtained; returns false otherwise.
+     */
+    virtual bool GetDistributedBundleInfo(
+        const std::string &networkId, int32_t userId, const std::string &bundleName,
+        DistributedBundleInfo &distributedBundleInfo) = 0;
     enum class Message {
         GET_APPLICATION_INFO = 0,
         GET_APPLICATION_INFOS,
@@ -662,7 +674,8 @@ public:
         GET_BUNDLE_INFO_WITH_INT_FLAGS,
         GET_BUNDLE_INFOS_WITH_INT_FLAGS,
         GET_BUNDLE_ARCHIVE_INFO_WITH_INT_FLAGS,
-        GET_BUNDLE_USER_MGR
+        GET_BUNDLE_USER_MGR,
+		GET_DISTRIBUTE_BUNDLE_INFO
     };
 };
 

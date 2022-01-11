@@ -33,6 +33,7 @@ const std::string BUNDLE_INFO_APPLICATION_INFO = "applicationInfo";
 const std::string BUNDLE_INFO_ABILITY_INFOS = "abilityInfos";
 const std::string BUNDLE_INFO_JOINT_USERID = "jointUserId";
 const std::string BUNDLE_INFO_VERSION_CODE = "versionCode";
+const std::string BUNDLE_INFO_MIN_COMPATIBLE_VERSION_CODE = "minCompatibleVersionCode";
 const std::string BUNDLE_INFO_VERSION_NAME = "versionName";
 const std::string BUNDLE_INFO_MIN_SDK_VERSION = "minSdkVersion";
 const std::string BUNDLE_INFO_MAX_SDK_VERSION = "maxSdkVersion";
@@ -72,6 +73,7 @@ bool BundleInfo::ReadFromParcel(Parcel &parcel)
     jointUserId = Str16ToStr8(parcel.ReadString16());
     seInfo = Str16ToStr8(parcel.ReadString16());
     versionCode = parcel.ReadUint32();
+    minCompatibleVersionCode = parcel.ReadUint32();
     minSdkVersion = parcel.ReadInt32();
     maxSdkVersion = parcel.ReadInt32();
     compatibleVersion = parcel.ReadInt32();
@@ -171,6 +173,7 @@ bool BundleInfo::Marshalling(Parcel &parcel) const
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(jointUserId));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(seInfo));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Uint32, parcel, versionCode);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Uint32, parcel, minCompatibleVersionCode);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, minSdkVersion);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, maxSdkVersion);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, compatibleVersion);
@@ -258,6 +261,7 @@ void to_json(nlohmann::json &jsonObject, const BundleInfo &bundleInfo)
         {BUNDLE_INFO_ABILITY_INFOS, bundleInfo.abilityInfos},
         {BUNDLE_INFO_JOINT_USERID, bundleInfo.jointUserId},
         {BUNDLE_INFO_VERSION_CODE, bundleInfo.versionCode},
+        {BUNDLE_INFO_MIN_COMPATIBLE_VERSION_CODE, bundleInfo.minCompatibleVersionCode},
         {BUNDLE_INFO_VERSION_NAME, bundleInfo.versionName},
         {BUNDLE_INFO_MIN_SDK_VERSION, bundleInfo.minSdkVersion},
         {BUNDLE_INFO_MAX_SDK_VERSION, bundleInfo.maxSdkVersion},
@@ -364,6 +368,14 @@ void from_json(const nlohmann::json &jsonObject, BundleInfo &bundleInfo)
         jsonObjectEnd,
         BUNDLE_INFO_VERSION_CODE,
         bundleInfo.versionCode,
+        JsonType::NUMBER,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<uint32_t>(jsonObject,
+        jsonObjectEnd,
+        BUNDLE_INFO_MIN_COMPATIBLE_VERSION_CODE,
+        bundleInfo.minCompatibleVersionCode,
         JsonType::NUMBER,
         false,
         parseResult,
