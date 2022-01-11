@@ -1428,6 +1428,8 @@ std::optional<HapModuleInfo> InnerBundleInfo::FindHapModuleInfo(const std::strin
     hapInfo.colorMode = it->second.colorMode;
     hapInfo.mainAbility = it->second.mainAbility;
     hapInfo.srcPath = it->second.srcPath;
+    hapInfo.metadata = it->second.metadata;
+    hapInfo.resourcePath = it->second.moduleResPath;
     bool first = false;
     for (auto &ability : baseAbilityInfos_) {
         if (ability.first.find(modulePackage) != std::string::npos) {
@@ -1439,6 +1441,11 @@ std::optional<HapModuleInfo> InnerBundleInfo::FindHapModuleInfo(const std::strin
             }
             auto &abilityInfo = hapInfo.abilityInfos.emplace_back(ability.second);
             GetApplicationInfo(ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMS, userId, abilityInfo.applicationInfo);
+        }
+    }
+    for (const auto &extension : baseExtensionInfos_) {
+        if (extension.first.find(modulePackage) != std::string::npos) {
+            hapInfo.extensionInfos.emplace_back(extension.second);
         }
     }
     return hapInfo;
@@ -1522,6 +1529,8 @@ bool InnerBundleInfo::AddModuleInfo(const InnerBundleInfo &newInfo)
     AddInnerModuleInfo(newInfo.innerModuleInfos_);
     AddModuleAbilityInfo(newInfo.baseAbilityInfos_);
     AddModuleSkillInfo(newInfo.skillInfos_);
+    AddModuleExtensionInfos(newInfo.baseExtensionInfos_);
+    AddModuleExtensionSkillInfos(newInfo.extensionSkillInfos_);
     AddModuleFormInfo(newInfo.formInfos_);
     AddModuleShortcutInfo(newInfo.shortcutInfos_);
     AddModuleCommonEvent(newInfo.commonEvents_);
@@ -1572,6 +1581,14 @@ void InnerBundleInfo::UpdateModuleInfo(const InnerBundleInfo &newInfo)
             ++it;
         }
     }
+    for (auto it = baseExtensionInfos_.begin(); it != baseExtensionInfos_.end();) {
+        if (it->first.find(newInfo.currentPackage_) != std::string::npos) {
+            extensionSkillInfos_.erase(it->first);
+            it = baseExtensionInfos_.erase(it);
+        } else {
+            ++it;
+        }
+    }
     for (auto it = shortcutInfos_.begin(); it != shortcutInfos_.end();) {
         if (it->first.find(newInfo.currentPackage_) != std::string::npos) {
             shortcutInfos_.erase(it++);
@@ -1595,6 +1612,8 @@ void InnerBundleInfo::UpdateModuleInfo(const InnerBundleInfo &newInfo)
     AddInnerModuleInfo(newInfo.innerModuleInfos_);
     AddModuleAbilityInfo(newInfo.baseAbilityInfos_);
     AddModuleSkillInfo(newInfo.skillInfos_);
+    AddModuleExtensionInfos(newInfo.baseExtensionInfos_);
+    AddModuleExtensionSkillInfos(newInfo.extensionSkillInfos_);
     AddModuleFormInfo(newInfo.formInfos_);
     AddModuleShortcutInfo(newInfo.shortcutInfos_);
     AddModuleCommonEvent(newInfo.commonEvents_);
@@ -1628,6 +1647,20 @@ void InnerBundleInfo::RemoveModuleInfo(const std::string &modulePackage)
     for (auto it = skillInfos_.begin(); it != skillInfos_.end();) {
         if (it->first.find(modulePackage) != std::string::npos) {
             skillInfos_.erase(it++);
+        } else {
+            ++it;
+        }
+    }
+    for (auto it = baseExtensionInfos_.begin(); it != baseExtensionInfos_.end();) {
+        if (it->first.find(modulePackage) != std::string::npos) {
+            baseExtensionInfos_.erase(it++);
+        } else {
+            ++it;
+        }
+    }
+    for (auto it = extensionSkillInfos_.begin(); it != extensionSkillInfos_.end();) {
+        if (it->first.find(modulePackage) != std::string::npos) {
+            extensionSkillInfos_.erase(it++);
         } else {
             ++it;
         }
@@ -1700,6 +1733,7 @@ void InnerBundleInfo::GetApplicationInfo(int32_t flags, int32_t userId, Applicat
     appInfo.enabled = innerBundleUserInfo.bundleUserInfo.enabled;
     appInfo.uid = innerBundleUserInfo.uid;
     appInfo.accessTokenId = innerBundleUserInfo.accessTokenId;
+    appInfo.uid = innerBundleUserInfo.uid;
     for (const auto &info : innerModuleInfos_) {
         ModuleInfo moduleInfo;
         moduleInfo.moduleName = info.second.moduleName;

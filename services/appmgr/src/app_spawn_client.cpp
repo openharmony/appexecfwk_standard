@@ -16,6 +16,7 @@
 #include "app_spawn_client.h"
 
 #include "app_log_wrapper.h"
+#include "bytrace.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -32,6 +33,7 @@ AppSpawnClient::AppSpawnClient()
 
 ErrCode AppSpawnClient::OpenConnection()
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     if (!socket_) {
         APP_LOGE("failed to open connection without socket!");
         return ERR_APPEXECFWK_BAD_APPSPAWN_SOCKET;
@@ -56,6 +58,7 @@ ErrCode AppSpawnClient::OpenConnection()
 
 ErrCode AppSpawnClient::StartProcess(const AppSpawnStartMsg &startMsg, pid_t &pid)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     int32_t retryCount = 1;
     ErrCode errCode = StartProcessImpl(startMsg, pid);
     while (FAILED(errCode) && retryCount <= CONNECT_RETRY_MAX_TIMES) {
@@ -69,6 +72,7 @@ ErrCode AppSpawnClient::StartProcess(const AppSpawnStartMsg &startMsg, pid_t &pi
 
 ErrCode AppSpawnClient::StartProcessImpl(const AppSpawnStartMsg &startMsg, pid_t &pid)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     if (!socket_) {
         APP_LOGE("failed to startProcess without socket!");
         return ERR_APPEXECFWK_BAD_APPSPAWN_SOCKET;
