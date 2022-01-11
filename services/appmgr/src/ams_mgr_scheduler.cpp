@@ -36,6 +36,7 @@ const std::string TASK_REGISTER_APP_STATE_CALLBACK = "RegisterAppStateCallbackTa
 const std::string TASK_STOP_ALL_PROCESS = "StopAllProcessTask";
 const std::string TASK_ABILITY_BEHAVIOR_ANALYSIS = "AbilityBehaviorAnalysisTask";
 const std::string TASK_KILL_PROCESS_BY_ABILITYTOKEN = "KillProcessByAbilityTokenTask";
+const std::string TASK_KILL_PROCESSES_BY_USERID = "KillProcessesByUserIdTask";
 const std::string TASK_KILL_APPLICATION = "KillApplicationTask";
 };  // namespace
 
@@ -137,6 +138,16 @@ void AmsMgrScheduler::KillProcessByAbilityToken(const sptr<IRemoteObject> &token
     std::function<void()> killProcessByAbilityTokenFunc =
         std::bind(&AppMgrServiceInner::KillProcessByAbilityToken, amsMgrServiceInner_, token);
     amsHandler_->PostTask(killProcessByAbilityTokenFunc, TASK_KILL_PROCESS_BY_ABILITYTOKEN);
+}
+
+void AmsMgrScheduler::KillProcessesByUserId(int32_t userId)
+{
+    if (!IsReady()) {
+        return;
+    }
+    std::function<void()> killProcessesByUserIdFunc =
+        std::bind(&AppMgrServiceInner::KillProcessesByUserId, amsMgrServiceInner_, userId);
+    amsHandler_->PostTask(killProcessesByUserIdFunc, TASK_KILL_PROCESSES_BY_USERID);
 }
 
 void AmsMgrScheduler::AbilityAttachTimeOut(const sptr<IRemoteObject> &token)

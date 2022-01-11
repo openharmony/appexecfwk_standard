@@ -119,6 +119,15 @@ public:
     virtual AppMgrResultCode KillProcessByAbilityToken(const sptr<IRemoteObject> &token);
 
     /**
+     * KillProcessesByUserId, call KillProcessesByUserId() through proxy object,
+     * kill the processes by user id.
+     *
+     * @param userId, the user id.
+     * @return Returns RESULT_OK on success, others on failure.
+     */
+    virtual AppMgrResultCode KillProcessesByUserId(int32_t userId);
+
+    /**
      * KillApplication, call KillApplication() through proxy object, kill the application.
      *
      * @param  bundleName, bundle name in Application record.

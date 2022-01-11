@@ -45,6 +45,8 @@ AmsMgrStub::AmsMgrStub()
         &AmsMgrStub::HandleAbilityBehaviorAnalysis;
     memberFuncMap_[static_cast<uint32_t>(IAmsMgr::Message::KILL_PEOCESS_BY_ABILITY_TOKEN)] =
         &AmsMgrStub::HandleKillProcessByAbilityToken;
+    memberFuncMap_[static_cast<uint32_t>(IAmsMgr::Message::KILL_PROCESSES_BY_USERID)] =
+        &AmsMgrStub::HandleKillProcessesByUserId;
     memberFuncMap_[static_cast<uint32_t>(IAmsMgr::Message::KILL_APPLICATION)] = &AmsMgrStub::HandleKillApplication;
     memberFuncMap_[static_cast<uint32_t>(IAmsMgr::Message::ABILITY_ATTACH_TIMEOUT)] =
         &AmsMgrStub::HandleAbilityAttachTimeOut;
@@ -163,6 +165,15 @@ ErrCode AmsMgrStub::HandleKillProcessByAbilityToken(MessageParcel &data, Message
     sptr<IRemoteObject> token = data.ReadParcelable<IRemoteObject>();
 
     KillProcessByAbilityToken(token);
+    return NO_ERROR;
+}
+
+ErrCode AmsMgrStub::HandleKillProcessesByUserId(MessageParcel &data, MessageParcel &reply)
+{
+    BYTRACE(BYTRACE_TAG_APP);
+    int32_t userId = data.ReadInt32();
+
+    KillProcessesByUserId(userId);
     return NO_ERROR;
 }
 
