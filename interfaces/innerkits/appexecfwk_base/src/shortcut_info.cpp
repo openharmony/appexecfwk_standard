@@ -42,6 +42,15 @@ const std::string JSON_KEY_BUNDLE_TARGET_BUNDLE = "targetBundle";
 const std::string JSON_KEY_BUNDLE_TARGET_CLASS = "targetClass";
 const std::string JSON_KEY_ICON_ID = "iconId";
 const std::string JSON_KEY_LABEL_ID = "labelId";
+const std::string SHORTCUTS = "shortcuts";
+const std::string SHORTCUT_ID = "shortcutId";
+const std::string SHORTCUT_WANTS = "wants";
+const std::string WANT_BUNDLE_NAME = "bundleName";
+const std::string WANT_ABILITY_NAME = "abilityName";
+const std::string ICON = "icon";
+const std::string ICON_ID = "iconId";
+const std::string LABEL = "label";
+const std::string LABEL_ID = "labelId";
 }  // namespace
 
 bool ShortcutInfo::ReadFromParcel(Parcel &parcel)
@@ -251,6 +260,106 @@ void from_json(const nlohmann::json &jsonObject, ShortcutInfo &shortcutInfo)
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
+}
+
+void from_json(const nlohmann::json &jsonObject, ShortcutWant &shortcutWant)
+{
+    const auto &jsonObjectEnd = jsonObject.end();
+    int32_t parseResult = ERR_OK;
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        WANT_BUNDLE_NAME,
+        shortcutWant.bundleName,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        WANT_ABILITY_NAME,
+        shortcutWant.abilityName,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    if (parseResult != ERR_OK) {
+        APP_LOGE("read shortcutWant from module.json error, error code : %{public}d", parseResult);
+    }
+}
+
+void from_json(const nlohmann::json &jsonObject, Shortcut &shortcut)
+{
+    const auto &jsonObjectEnd = jsonObject.end();
+    int32_t parseResult = ERR_OK;
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        SHORTCUT_ID,
+        shortcut.shortcutId,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        ICON,
+        shortcut.icon,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<int32_t>(jsonObject,
+        jsonObjectEnd,
+        ICON_ID,
+        shortcut.iconId,
+        JsonType::NUMBER,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        LABEL,
+        shortcut.label,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<int32_t>(jsonObject,
+        jsonObjectEnd,
+        LABEL_ID,
+        shortcut.labelId,
+        JsonType::NUMBER,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::vector<ShortcutWant>>(jsonObject,
+        jsonObjectEnd,
+        SHORTCUT_WANTS,
+        shortcut.wants,
+        JsonType::ARRAY,
+        false,
+        parseResult,
+        ArrayType::OBJECT);
+    if (parseResult != ERR_OK) {
+        APP_LOGE("read Shortcut from module.json error, error code : %{public}d", parseResult);
+    }
+}
+
+void from_json(const nlohmann::json &jsonObject, ShortcutJson &shortcutJson)
+{
+    APP_LOGD("read shortcuts tag from module.json");
+    const auto &jsonObjectEnd = jsonObject.end();
+    int32_t parseResult = ERR_OK;
+    GetValueIfFindKey<std::vector<Shortcut>>(jsonObject,
+        jsonObjectEnd,
+        SHORTCUTS,
+        shortcutJson.shortcuts,
+        JsonType::ARRAY,
+        false,
+        parseResult,
+        ArrayType::OBJECT);
+    if (parseResult != ERR_OK) {
+        APP_LOGE("read ShortcutJson from module.json error, error code : %{public}d", parseResult);
+    }
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS

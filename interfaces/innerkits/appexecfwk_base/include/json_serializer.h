@@ -55,6 +55,9 @@ void to_json(nlohmann::json &jsonObject, const HapModuleInfo &hapModuleInfo);
 void from_json(const nlohmann::json &jsonObject, HapModuleInfo &hapModuleInfo);
 void to_json(nlohmann::json& jsonObject, const BundleUserInfo& bundleUserInfo);
 void from_json(const nlohmann::json& jsonObject, BundleUserInfo& bundleUserInfo);
+void from_json(const nlohmann::json &jsonObject, ShortcutWant &shortcutWant);
+void from_json(const nlohmann::json &jsonObject, Shortcut &shortcut);
+void from_json(const nlohmann::json &jsonObject, ShortcutJson &shortcutJson);
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_BASE_INCLUDE_JSON_SERIALIZER_H

@@ -358,13 +358,12 @@ const std::string META_DATA_VALUE = "value";
 const std::string META_DATA_RESOURCE = "resource";
 // metadata reserved
 const std::string META_DATA_FORM = "ohos.extension.form";
-const std::string META_DATA_SHORTCUTS = "ohos.app.shortcuts";
+const std::string META_DATA_SHORTCUTS = "ohos.ability.shortcuts";
 const std::string META_DATA_COMMON_EVENTS = "ohos.extension.staticSubscriber";
 // ability
 const std::string ABILITY_NAME = "name";
-const std::string ABILITY_ORIENTATION = "orientation";
-const std::string ABILITY_ORIENTATION_DEFAULT_VALUE = "unspecified";
-const std::string ABILITY_CONFIGCHANGES = "configChanges";
+const std::string ABILITY_LAUNCH_TYPE = "launchType";
+const std::string ABILITY_LAUNCH_TYPE_DEFAULT_VALUE = "standard";
 const std::string ABILITY_BACKGROUNDMODES = "backgroundModes";
 // extension ability
 const std::string EXTENSION_ABILITY_NAME = "name";
@@ -382,6 +381,8 @@ const std::string DEFINEPERMISSION_GRANT_MODE = "grantMode";
 const std::string DEFINEPERMISSION_AVAILABLE_LEVEL = "availableLevel";
 const std::string DEFINEPERMISSION_PROVISION_ENABLE = "provisionEnable";
 const std::string DEFINEPERMISSION_DISTRIBUTED_SCENE_ENABLE = "distributedSceneEnable";
+const std::string DEFINEPERMISSION_GRANT_MODE_DEFAULT_VALUE = "system_grant";
+const std::string DEFINEPERMISSION_AVAILABLE_LEVEL_DEFAULT_VALUE = "normal";
 
 extern thread_local int32_t parseResult;
 }  // namespace Profile
