@@ -38,6 +38,8 @@ struct ExtensionInfo {
     std::vector<std::string> permissions;
     bool visible = false;
     std::vector<Metadata> metadata;
+    // set when install
+    std::string resourcePath;
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS

@@ -386,6 +386,9 @@ private:
      */
     ErrCode UpdateUserInfoToDb(
         InnerBundleInfo &innerBundleInfo, bool needResetInstallState = true);
+
+    void ParseShortcuts(InnerBundleInfo &info);
+
 private:
     ErrCode CreateBundleCodeDir(InnerBundleInfo &info) const;
     ErrCode CreateBundleDataDir(InnerBundleInfo &info, bool onlyOneUser = true) const;
