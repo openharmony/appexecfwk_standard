@@ -19,6 +19,7 @@
 
 #include "app_log_wrapper.h"
 #include "bundle_constants.h"
+#include "bytrace.h"
 #include "datetime_ex.h"
 #include "ipc_types.h"
 #include "string_ex.h"
@@ -263,6 +264,7 @@ int BundleMgrHost::OnRemoteRequest(uint32_t code, MessageParcel &data, MessagePa
 
 int BundleMgrHost::GetUidByBundleName(const std::string &bundleName, const int userId)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGI("begin to get uid of %{public}s", bundleName.c_str());
     std::vector<BundleInfo> bundleInfos;
     int uid = Constants::INVALID_UID;
@@ -290,6 +292,7 @@ int BundleMgrHost::GetUidByBundleName(const std::string &bundleName, const int u
 
 std::string BundleMgrHost::GetAppIdByBundleName([[maybe_unused]] const std::string &bundleName, const int userId)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGI("begin to get appId of %{public}s", bundleName.c_str());
     BundleInfo bundleInfo;
     std::string appId = Constants::EMPTY_STRING;
@@ -311,6 +314,7 @@ std::string BundleMgrHost::GetAppType([[maybe_unused]] const std::string &bundle
 
 ErrCode BundleMgrHost::HandleGetApplicationInfo(Parcel &data, Parcel &reply)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::string name = data.ReadString();
     ApplicationFlag flag = static_cast<ApplicationFlag>(data.ReadInt32());
     int userId = data.ReadInt32();
@@ -333,6 +337,7 @@ ErrCode BundleMgrHost::HandleGetApplicationInfo(Parcel &data, Parcel &reply)
 
 ErrCode BundleMgrHost::HandleGetApplicationInfoWithIntFlags(Parcel &data, Parcel &reply)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::string name = data.ReadString();
     int flags = data.ReadInt32();
     int userId = data.ReadInt32();
@@ -355,6 +360,7 @@ ErrCode BundleMgrHost::HandleGetApplicationInfoWithIntFlags(Parcel &data, Parcel
 
 ErrCode BundleMgrHost::HandleGetApplicationInfos(Parcel &data, Parcel &reply)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     ApplicationFlag flag = static_cast<ApplicationFlag>(data.ReadInt32());
     int userId = data.ReadInt32();
     std::vector<ApplicationInfo> infos;
@@ -374,6 +380,7 @@ ErrCode BundleMgrHost::HandleGetApplicationInfos(Parcel &data, Parcel &reply)
 
 ErrCode BundleMgrHost::HandleGetApplicationInfosWithIntFlags(Parcel &data, Parcel &reply)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     int flags = data.ReadInt32();
     int userId = data.ReadInt32();
     std::vector<ApplicationInfo> infos;
@@ -393,6 +400,7 @@ ErrCode BundleMgrHost::HandleGetApplicationInfosWithIntFlags(Parcel &data, Parce
 
 ErrCode BundleMgrHost::HandleGetBundleInfo(Parcel &data, Parcel &reply)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::string name = data.ReadString();
     BundleFlag flag = static_cast<BundleFlag>(data.ReadInt32());
     int userId = data.ReadInt32();
@@ -414,6 +422,7 @@ ErrCode BundleMgrHost::HandleGetBundleInfo(Parcel &data, Parcel &reply)
 
 ErrCode BundleMgrHost::HandleGetBundleInfoWithIntFlags(Parcel &data, Parcel &reply)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::string name = data.ReadString();
     int flags = data.ReadInt32();
     int userId = data.ReadInt32();
@@ -435,6 +444,7 @@ ErrCode BundleMgrHost::HandleGetBundleInfoWithIntFlags(Parcel &data, Parcel &rep
 
 ErrCode BundleMgrHost::HandleGetBundleInfos(Parcel &data, Parcel &reply)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     BundleFlag flag = static_cast<BundleFlag>(data.ReadInt32());
     int userId = data.ReadInt32();
 
@@ -456,6 +466,7 @@ ErrCode BundleMgrHost::HandleGetBundleInfos(Parcel &data, Parcel &reply)
 
 ErrCode BundleMgrHost::HandleGetBundleInfosWithIntFlags(Parcel &data, Parcel &reply)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     int flags = data.ReadInt32();
     int userId = data.ReadInt32();
 
@@ -477,6 +488,7 @@ ErrCode BundleMgrHost::HandleGetBundleInfosWithIntFlags(Parcel &data, Parcel &re
 
 ErrCode BundleMgrHost::HandleGetBundleNameForUid(Parcel &data, Parcel &reply)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     int uid = data.ReadInt32();
     std::string name;
     bool ret = GetBundleNameForUid(uid, name);
@@ -495,6 +507,7 @@ ErrCode BundleMgrHost::HandleGetBundleNameForUid(Parcel &data, Parcel &reply)
 
 ErrCode BundleMgrHost::HandleGetBundlesForUid(Parcel &data, Parcel &reply)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     int uid = data.ReadInt32();
     std::vector<std::string> names;
     bool ret = GetBundlesForUid(uid, names);
@@ -513,6 +526,7 @@ ErrCode BundleMgrHost::HandleGetBundlesForUid(Parcel &data, Parcel &reply)
 
 ErrCode BundleMgrHost::HandleGetNameForUid(Parcel &data, Parcel &reply)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     int uid = data.ReadInt32();
     std::string name;
     bool ret = GetNameForUid(uid, name);
@@ -531,6 +545,7 @@ ErrCode BundleMgrHost::HandleGetNameForUid(Parcel &data, Parcel &reply)
 
 ErrCode BundleMgrHost::HandleGetBundleGids(Parcel &data, Parcel &reply)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::string name = data.ReadString();
 
     std::vector<int> gids;
@@ -550,6 +565,7 @@ ErrCode BundleMgrHost::HandleGetBundleGids(Parcel &data, Parcel &reply)
 
 ErrCode BundleMgrHost::HandleGetBundleGidsByUid(Parcel &data, Parcel &reply)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::string name = data.ReadString();
     int uid = data.ReadInt32();
 
@@ -570,6 +586,7 @@ ErrCode BundleMgrHost::HandleGetBundleGidsByUid(Parcel &data, Parcel &reply)
 
 ErrCode BundleMgrHost::HandleGetBundleInfosByMetaData(Parcel &data, Parcel &reply)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::string metaData = data.ReadString();
 
     std::vector<BundleInfo> infos;
@@ -589,6 +606,7 @@ ErrCode BundleMgrHost::HandleGetBundleInfosByMetaData(Parcel &data, Parcel &repl
 
 ErrCode BundleMgrHost::HandleQueryAbilityInfo(Parcel &data, Parcel &reply)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::unique_ptr<Want> want(data.ReadParcelable<Want>());
     if (!want) {
         APP_LOGE("ReadParcelable<want> failed");
@@ -612,6 +630,7 @@ ErrCode BundleMgrHost::HandleQueryAbilityInfo(Parcel &data, Parcel &reply)
 
 ErrCode BundleMgrHost::HandleQueryAbilityInfoMutiparam(Parcel &data, Parcel &reply)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::unique_ptr<Want> want(data.ReadParcelable<Want>());
     if (!want) {
         APP_LOGE("ReadParcelable<want> failed");
@@ -636,6 +655,7 @@ ErrCode BundleMgrHost::HandleQueryAbilityInfoMutiparam(Parcel &data, Parcel &rep
 
 ErrCode BundleMgrHost::HandleQueryAbilityInfos(Parcel &data, Parcel &reply)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::unique_ptr<Want> want(data.ReadParcelable<Want>());
     if (!want) {
         APP_LOGE("ReadParcelable<want> failed");
@@ -659,6 +679,7 @@ ErrCode BundleMgrHost::HandleQueryAbilityInfos(Parcel &data, Parcel &reply)
 
 ErrCode BundleMgrHost::HandleQueryAbilityInfosMutiparam(Parcel &data, Parcel &reply)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::unique_ptr<Want> want(data.ReadParcelable<Want>());
     if (!want) {
         APP_LOGE("ReadParcelable<want> failed");
@@ -683,6 +704,7 @@ ErrCode BundleMgrHost::HandleQueryAbilityInfosMutiparam(Parcel &data, Parcel &re
 
 ErrCode BundleMgrHost::HandleQueryAllAbilityInfos(Parcel &data, Parcel &reply)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::unique_ptr<Want> want(data.ReadParcelable<Want>());
     if (!want) {
         APP_LOGE("ReadParcelable<want> failed");
@@ -706,6 +728,7 @@ ErrCode BundleMgrHost::HandleQueryAllAbilityInfos(Parcel &data, Parcel &reply)
 
 ErrCode BundleMgrHost::HandleQueryAbilityInfosForClone(Parcel &data, Parcel &reply)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::unique_ptr<Want> want(data.ReadParcelable<Want>());
     if (!want) {
         APP_LOGE("ReadParcelable<want> failed");
@@ -729,6 +752,7 @@ ErrCode BundleMgrHost::HandleQueryAbilityInfosForClone(Parcel &data, Parcel &rep
 
 ErrCode BundleMgrHost::HandleQueryAbilityInfoByUri(Parcel &data, Parcel &reply)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::string abilityUri = data.ReadString();
     AbilityInfo info;
     bool ret = QueryAbilityInfoByUri(abilityUri, info);
@@ -747,6 +771,7 @@ ErrCode BundleMgrHost::HandleQueryAbilityInfoByUri(Parcel &data, Parcel &reply)
 
 ErrCode BundleMgrHost::HandleQueryAbilityInfosByUri(Parcel &data, Parcel &reply)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::string abilityUri = data.ReadString();
     std::vector<AbilityInfo> abilityInfos;
     bool ret = QueryAbilityInfosByUri(abilityUri, abilityInfos);
@@ -765,6 +790,7 @@ ErrCode BundleMgrHost::HandleQueryAbilityInfosByUri(Parcel &data, Parcel &reply)
 
 ErrCode BundleMgrHost::HandleQueryKeepAliveBundleInfos(Parcel &data, Parcel &reply)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::vector<BundleInfo> infos;
     bool ret = QueryKeepAliveBundleInfos(infos);
     if (!reply.WriteBool(ret)) {
@@ -782,6 +808,7 @@ ErrCode BundleMgrHost::HandleQueryKeepAliveBundleInfos(Parcel &data, Parcel &rep
 
 ErrCode BundleMgrHost::HandleGetAbilityLabel(Parcel &data, Parcel &reply)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::string bundleName = data.ReadString();
     std::string className = data.ReadString();
 
@@ -797,6 +824,7 @@ ErrCode BundleMgrHost::HandleGetAbilityLabel(Parcel &data, Parcel &reply)
 
 ErrCode BundleMgrHost::HandleCheckIsSystemAppByUid(Parcel &data, Parcel &reply)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     int uid = data.ReadInt32();
     bool ret = CheckIsSystemAppByUid(uid);
     if (!reply.WriteBool(ret)) {
@@ -808,6 +836,7 @@ ErrCode BundleMgrHost::HandleCheckIsSystemAppByUid(Parcel &data, Parcel &reply)
 
 ErrCode BundleMgrHost::HandleGetBundleArchiveInfo(Parcel &data, Parcel &reply)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::string hapFilePath = data.ReadString();
     BundleFlag flag = static_cast<BundleFlag>(data.ReadInt32());
     APP_LOGD("hapFilePath %{public}s, flag %{public}d", hapFilePath.c_str(), flag);
@@ -829,6 +858,7 @@ ErrCode BundleMgrHost::HandleGetBundleArchiveInfo(Parcel &data, Parcel &reply)
 
 ErrCode BundleMgrHost::HandleGetBundleArchiveInfoWithIntFlags(Parcel &data, Parcel &reply)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::string hapFilePath = data.ReadString();
     int32_t flags = data.ReadInt32();
     APP_LOGD("hapFilePath %{public}s, flagS %{public}d", hapFilePath.c_str(), flags);
@@ -850,6 +880,7 @@ ErrCode BundleMgrHost::HandleGetBundleArchiveInfoWithIntFlags(Parcel &data, Parc
 
 ErrCode BundleMgrHost::HandleGetHapModuleInfo(Parcel &data, Parcel &reply)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::unique_ptr<AbilityInfo> abilityInfo(data.ReadParcelable<AbilityInfo>());
     if (!abilityInfo) {
         APP_LOGE("ReadParcelable<abilityInfo> failed");
@@ -873,6 +904,7 @@ ErrCode BundleMgrHost::HandleGetHapModuleInfo(Parcel &data, Parcel &reply)
 
 ErrCode BundleMgrHost::HandleGetLaunchWantForBundle(Parcel &data, Parcel &reply)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::string bundleName = data.ReadString();
     APP_LOGI("name %{public}s", bundleName.c_str());
 
@@ -893,6 +925,7 @@ ErrCode BundleMgrHost::HandleGetLaunchWantForBundle(Parcel &data, Parcel &reply)
 
 ErrCode BundleMgrHost::HandleCheckPublicKeys(Parcel &data, Parcel &reply)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::string firstBundleName = data.ReadString();
     std::string secondBundleName = data.ReadString();
 
@@ -908,6 +941,7 @@ ErrCode BundleMgrHost::HandleCheckPublicKeys(Parcel &data, Parcel &reply)
 
 ErrCode BundleMgrHost::HandleCheckPermission(Parcel &data, Parcel &reply)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::string bundleName = data.ReadString();
     std::string permission = data.ReadString();
 
@@ -922,6 +956,7 @@ ErrCode BundleMgrHost::HandleCheckPermission(Parcel &data, Parcel &reply)
 
 ErrCode BundleMgrHost::HandleCheckPermissionByUid(Parcel &data, Parcel &reply)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::string bundleName = data.ReadString();
     std::string permission = data.ReadString();
     int userId = data.ReadInt32();
@@ -937,6 +972,7 @@ ErrCode BundleMgrHost::HandleCheckPermissionByUid(Parcel &data, Parcel &reply)
 
 ErrCode BundleMgrHost::HandleGetPermissionDef(Parcel &data, Parcel &reply)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::string permissionName = data.ReadString();
     APP_LOGI("name %{public}s", permissionName.c_str());
 
@@ -957,6 +993,7 @@ ErrCode BundleMgrHost::HandleGetPermissionDef(Parcel &data, Parcel &reply)
 
 ErrCode BundleMgrHost::HandleGetAllPermissionGroupDefs(Parcel &data, Parcel &reply)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::vector<PermissionDef> permissionDefs;
     bool ret = GetAllPermissionGroupDefs(permissionDefs);
     if (!reply.WriteBool(ret)) {
@@ -974,6 +1011,7 @@ ErrCode BundleMgrHost::HandleGetAllPermissionGroupDefs(Parcel &data, Parcel &rep
 
 ErrCode BundleMgrHost::HandleGetAppsGrantedPermissions(Parcel &data, Parcel &reply)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::vector<std::string> permissions;
     if (data.ReadStringVector(&permissions)) {
         APP_LOGE("read failed");
@@ -997,6 +1035,7 @@ ErrCode BundleMgrHost::HandleGetAppsGrantedPermissions(Parcel &data, Parcel &rep
 
 ErrCode BundleMgrHost::HandleHasSystemCapability(Parcel &data, Parcel &reply)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::string capName = data.ReadString();
 
     bool ret = HasSystemCapability(capName);
@@ -1009,6 +1048,7 @@ ErrCode BundleMgrHost::HandleHasSystemCapability(Parcel &data, Parcel &reply)
 
 ErrCode BundleMgrHost::HandleGetSystemAvailableCapabilities(Parcel &data, Parcel &reply)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::vector<std::string> caps;
     bool ret = GetSystemAvailableCapabilities(caps);
     if (!reply.WriteBool(ret)) {
@@ -1026,6 +1066,7 @@ ErrCode BundleMgrHost::HandleGetSystemAvailableCapabilities(Parcel &data, Parcel
 
 ErrCode BundleMgrHost::HandleIsSafeMode(Parcel &data, Parcel &reply)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     bool ret = IsSafeMode();
     if (!reply.WriteBool(ret)) {
         APP_LOGE("write failed");
@@ -1036,6 +1077,7 @@ ErrCode BundleMgrHost::HandleIsSafeMode(Parcel &data, Parcel &reply)
 
 ErrCode BundleMgrHost::HandleCleanBundleCacheFiles(Parcel &data, Parcel &reply)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::string bundleName = data.ReadString();
     sptr<IRemoteObject> object = data.ReadParcelable<IRemoteObject>();
     sptr<ICleanCacheCallback> cleanCacheCallback = iface_cast<ICleanCacheCallback>(object);
@@ -1050,6 +1092,7 @@ ErrCode BundleMgrHost::HandleCleanBundleCacheFiles(Parcel &data, Parcel &reply)
 
 ErrCode BundleMgrHost::HandleCleanBundleDataFiles(Parcel &data, Parcel &reply)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::string bundleName = data.ReadString();
     int userId = data.ReadInt32();
 
@@ -1063,6 +1106,7 @@ ErrCode BundleMgrHost::HandleCleanBundleDataFiles(Parcel &data, Parcel &reply)
 
 ErrCode BundleMgrHost::HandleRegisterBundleStatusCallback(Parcel &data, Parcel &reply)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::string bundleName = data.ReadString();
     sptr<IRemoteObject> object = data.ReadParcelable<IRemoteObject>();
     sptr<IBundleStatusCallback> BundleStatusCallback = iface_cast<IBundleStatusCallback>(object);
@@ -1083,6 +1127,7 @@ ErrCode BundleMgrHost::HandleRegisterBundleStatusCallback(Parcel &data, Parcel &
 
 ErrCode BundleMgrHost::HandleClearBundleStatusCallback(Parcel &data, Parcel &reply)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     sptr<IRemoteObject> object = data.ReadParcelable<IRemoteObject>();
     sptr<IBundleStatusCallback> BundleStatusCallback = iface_cast<IBundleStatusCallback>(object);
 
@@ -1096,6 +1141,7 @@ ErrCode BundleMgrHost::HandleClearBundleStatusCallback(Parcel &data, Parcel &rep
 
 ErrCode BundleMgrHost::HandleUnregisterBundleStatusCallback(Parcel &data, Parcel &reply)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     bool ret = UnregisterBundleStatusCallback();
     if (!reply.WriteBool(ret)) {
         APP_LOGE("write failed");
@@ -1106,6 +1152,7 @@ ErrCode BundleMgrHost::HandleUnregisterBundleStatusCallback(Parcel &data, Parcel
 
 ErrCode BundleMgrHost::HandleDumpInfos(Parcel &data, Parcel &reply)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     DumpFlag flag = static_cast<DumpFlag>(data.ReadInt32());
     std::string bundleName = data.ReadString();
     int32_t userId = data.ReadInt32();
@@ -1128,6 +1175,7 @@ ErrCode BundleMgrHost::HandleDumpInfos(Parcel &data, Parcel &reply)
 
 ErrCode BundleMgrHost::HandleIsApplicationEnabled(Parcel &data, Parcel &reply)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::string bundleName = data.ReadString();
     bool ret = IsApplicationEnabled(bundleName);
     if (!reply.WriteBool(ret)) {
@@ -1139,6 +1187,7 @@ ErrCode BundleMgrHost::HandleIsApplicationEnabled(Parcel &data, Parcel &reply)
 
 ErrCode BundleMgrHost::HandleSetApplicationEnabled(Parcel &data, Parcel &reply)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::string bundleName = data.ReadString();
     bool isEnable = data.ReadBool();
     bool ret = SetApplicationEnabled(bundleName, isEnable);
@@ -1151,6 +1200,7 @@ ErrCode BundleMgrHost::HandleSetApplicationEnabled(Parcel &data, Parcel &reply)
 
 ErrCode BundleMgrHost::HandleIsAbilityEnabled(Parcel &data, Parcel &reply)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::unique_ptr<AbilityInfo> abilityInfo(data.ReadParcelable<AbilityInfo>());
     if (!abilityInfo) {
         APP_LOGE("ReadParcelable<abilityInfo> failed");
@@ -1166,6 +1216,7 @@ ErrCode BundleMgrHost::HandleIsAbilityEnabled(Parcel &data, Parcel &reply)
 
 ErrCode BundleMgrHost::HandleSetAbilityEnabled(Parcel &data, Parcel &reply)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::unique_ptr<AbilityInfo> abilityInfo(data.ReadParcelable<AbilityInfo>());
     if (!abilityInfo) {
         APP_LOGE("ReadParcelable<abilityInfo> failed");
@@ -1182,6 +1233,7 @@ ErrCode BundleMgrHost::HandleSetAbilityEnabled(Parcel &data, Parcel &reply)
 
 ErrCode BundleMgrHost::HandleGetAbilityIcon(Parcel &data, Parcel &reply)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::string bundleName = data.ReadString();
     std::string className = data.ReadString();
 
@@ -1197,6 +1249,7 @@ ErrCode BundleMgrHost::HandleGetAbilityIcon(Parcel &data, Parcel &reply)
 
 ErrCode BundleMgrHost::HandleCanRequestPermission(Parcel &data, Parcel &reply)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::string bundleName = data.ReadString();
     std::string permission = data.ReadString();
     int32_t userId = data.ReadInt32();
@@ -1212,6 +1265,7 @@ ErrCode BundleMgrHost::HandleCanRequestPermission(Parcel &data, Parcel &reply)
 
 ErrCode BundleMgrHost::HandleRequestPermissionFromUser(Parcel &data, Parcel &reply)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::string bundleName = data.ReadString();
     std::string permission = data.ReadString();
     int32_t userId = data.ReadInt32();
@@ -1227,6 +1281,7 @@ ErrCode BundleMgrHost::HandleRequestPermissionFromUser(Parcel &data, Parcel &rep
 
 ErrCode BundleMgrHost::HandleRegisterAllPermissionsChanged(Parcel &data, Parcel &reply)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     sptr<IRemoteObject> object = data.ReadParcelable<IRemoteObject>();
     sptr<OnPermissionChangedCallback> callback = iface_cast<OnPermissionChangedCallback>(object);
 
@@ -1245,6 +1300,7 @@ ErrCode BundleMgrHost::HandleRegisterAllPermissionsChanged(Parcel &data, Parcel 
 
 ErrCode BundleMgrHost::HandleRegisterPermissionsChanged(Parcel &data, Parcel &reply)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::vector<int> uids;
     if (!data.ReadInt32Vector(&uids)) {
         APP_LOGE("read parcel failed");
@@ -1267,6 +1323,7 @@ ErrCode BundleMgrHost::HandleRegisterPermissionsChanged(Parcel &data, Parcel &re
 
 ErrCode BundleMgrHost::HandleUnregisterPermissionsChanged(Parcel &data, Parcel &reply)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     sptr<IRemoteObject> object = data.ReadParcelable<IRemoteObject>();
     sptr<OnPermissionChangedCallback> callback = iface_cast<OnPermissionChangedCallback>(object);
     bool ret = false;
@@ -1284,6 +1341,7 @@ ErrCode BundleMgrHost::HandleUnregisterPermissionsChanged(Parcel &data, Parcel &
 
 ErrCode BundleMgrHost::HandleGetBundleInstaller(Parcel &data, Parcel &reply)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     sptr<IBundleInstaller> installer = GetBundleInstaller();
     if (!installer) {
         APP_LOGE("bundle installer is nullptr");
@@ -1299,6 +1357,7 @@ ErrCode BundleMgrHost::HandleGetBundleInstaller(Parcel &data, Parcel &reply)
 
 ErrCode BundleMgrHost::HandleGetBundleUserMgr(Parcel &data, Parcel &reply)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     sptr<IBundleUserMgr> bundleUserMgr = GetBundleUserMgr();
     if (!bundleUserMgr) {
         APP_LOGE("bundle installer is nullptr");
@@ -1314,6 +1373,7 @@ ErrCode BundleMgrHost::HandleGetBundleUserMgr(Parcel &data, Parcel &reply)
 
 ErrCode BundleMgrHost::HandleGetAllFormsInfo(Parcel &data, Parcel &reply)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::vector<FormInfo> infos;
     bool ret = GetAllFormsInfo(infos);
     if (!reply.WriteBool(ret)) {
@@ -1332,6 +1392,7 @@ ErrCode BundleMgrHost::HandleGetAllFormsInfo(Parcel &data, Parcel &reply)
 
 ErrCode BundleMgrHost::HandleGetFormsInfoByApp(Parcel &data, Parcel &reply)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::string bundlename = data.ReadString();
     std::vector<FormInfo> infos;
     bool ret = GetFormsInfoByApp(bundlename, infos);
@@ -1351,6 +1412,7 @@ ErrCode BundleMgrHost::HandleGetFormsInfoByApp(Parcel &data, Parcel &reply)
 
 ErrCode BundleMgrHost::HandleGetFormsInfoByModule(Parcel &data, Parcel &reply)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::string bundlename = data.ReadString();
     std::string modulename = data.ReadString();
     std::vector<FormInfo> infos;
@@ -1371,6 +1433,7 @@ ErrCode BundleMgrHost::HandleGetFormsInfoByModule(Parcel &data, Parcel &reply)
 
 ErrCode BundleMgrHost::HandleGetShortcutInfos(Parcel &data, Parcel &reply)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::string bundlename = data.ReadString();
     std::vector<ShortcutInfo> infos;
     bool ret = GetShortcutInfos(bundlename, infos);
@@ -1390,6 +1453,7 @@ ErrCode BundleMgrHost::HandleGetShortcutInfos(Parcel &data, Parcel &reply)
 
 ErrCode BundleMgrHost::HandleGetAllCommonEventInfo(Parcel &data, Parcel &reply)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::string eventKey = data.ReadString();
     std::vector<CommonEventInfo> infos;
     bool ret = GetAllCommonEventInfo(eventKey, infos);
@@ -1409,6 +1473,7 @@ ErrCode BundleMgrHost::HandleGetAllCommonEventInfo(Parcel &data, Parcel &reply)
 
 ErrCode BundleMgrHost::HandleGetModuleUsageRecords(Parcel &data, Parcel &reply)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     int32_t number = data.ReadInt32();
     std::vector<ModuleUsageRecord> records;
     bool ret = GetModuleUsageRecords(number, records);
@@ -1428,6 +1493,7 @@ ErrCode BundleMgrHost::HandleGetModuleUsageRecords(Parcel &data, Parcel &reply)
 
 ErrCode BundleMgrHost::HandleNotifyAbilityLifeStatus(Parcel &data, Parcel &reply)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::string bundleName = data.ReadString();
     std::string abilityName = data.ReadString();
     int64_t launchTime = data.ReadInt64();
@@ -1447,6 +1513,7 @@ ErrCode BundleMgrHost::HandleNotifyAbilityLifeStatus(Parcel &data, Parcel &reply
 
 ErrCode BundleMgrHost::HandleCheckBundleNameInAllowList(Parcel &data, Parcel &reply)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::string bundleName = data.ReadString();
     APP_LOGI("bundleName %{public}s," PRId64, bundleName.c_str());
     bool ret = CheckBundleNameInAllowList(bundleName);
@@ -1459,6 +1526,7 @@ ErrCode BundleMgrHost::HandleCheckBundleNameInAllowList(Parcel &data, Parcel &re
 
 ErrCode BundleMgrHost::HandleBundleClone(Parcel &data, Parcel &reply)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::string bundleName = data.ReadString();
     APP_LOGI("bundleName %{public}s," PRId64, bundleName.c_str());
     bool ret = BundleClone(bundleName);
@@ -1471,6 +1539,7 @@ ErrCode BundleMgrHost::HandleBundleClone(Parcel &data, Parcel &reply)
 
 ErrCode BundleMgrHost::HandleRemoveClonedBundle(Parcel &data, Parcel &reply)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::string bundleName = data.ReadString();
     int32_t uid = data.ReadInt32();
     APP_LOGI("bundleName %{public}s," PRId64, bundleName.c_str());

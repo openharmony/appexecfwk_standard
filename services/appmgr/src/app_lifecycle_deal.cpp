@@ -15,6 +15,7 @@
 
 #include "app_lifecycle_deal.h"
 #include "app_log_wrapper.h"
+#include "bytrace.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -26,6 +27,7 @@ AppLifeCycleDeal::~AppLifeCycleDeal()
 
 void AppLifeCycleDeal::LaunchApplication(const AppLaunchData &launchData_)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGI("AppLifeCycleDeal ScheduleLaunchApplication");
     if (appThread_) {
         appThread_->ScheduleLaunchApplication(launchData_);
