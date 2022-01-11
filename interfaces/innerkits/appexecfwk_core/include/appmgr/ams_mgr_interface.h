@@ -108,6 +108,15 @@ public:
     virtual void KillProcessByAbilityToken(const sptr<IRemoteObject> &token) = 0;
 
     /**
+     * KillProcessesByUserId, call KillProcessesByUserId() through proxy object,
+     * kill the processes by userId.
+     *
+     * @param userId, the user id.
+     * @return
+     */
+    virtual void KillProcessesByUserId(int32_t userId) = 0;
+
+    /**
      * KillApplication, call KillApplication() through proxy object, kill the application.
      *
      * @param  bundleName, bundle name in Application record.
@@ -149,6 +158,7 @@ public:
         RESET,
         ABILITY_BEHAVIOR_ANALYSIS,
         KILL_PEOCESS_BY_ABILITY_TOKEN,
+        KILL_PROCESSES_BY_USERID,
         KILL_APPLICATION,
         ABILITY_ATTACH_TIMEOUT,
         COMPEL_VERIFY_PERMISSION,

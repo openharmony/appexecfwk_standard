@@ -25,6 +25,13 @@
 namespace OHOS {
 namespace AppExecFwk {
 namespace {
+static const int32_t USER_UID_RANGE = 200000;
+
+bool IsUidBelongsToUser(int32_t uid, int32_t userId)
+{
+    return (uid / USER_UID_RANGE) == userId;
+}
+
 bool CheckUid(const int32_t uid)
 {
     return uid >= 0 && uid < std::numeric_limits<int32_t>::max();
@@ -162,6 +169,23 @@ bool AppRunningManager::GetPidsByBundleName(const std::string &bundleName, std::
     for (const auto &item : appRunningRecordMap_) {
         const auto &appRecord = item.second;
         if (appRecord && appRecord->GetBundleName() == bundleName && appRecord->GetCloneInfo() == false) {
+            pid_t pid = appRecord->GetPriorityObject()->GetPid();
+            if (pid > 0) {
+                pids.push_back(pid);
+                appRecord->ScheduleProcessSecurityExit();
+            }
+        }
+    }
+
+    return (pids.empty() ? false : true);
+}
+
+bool AppRunningManager::GetPidsByUserId(int32_t userId, std::list<pid_t> &pids)
+{
+    std::lock_guard<std::recursive_mutex> guard(lock_);
+    for (const auto &item : appRunningRecordMap_) {
+        const auto &appRecord = item.second;
+        if (appRecord && IsUidBelongsToUser(appRecord->GetUid(), userId)) {
             pid_t pid = appRecord->GetPriorityObject()->GetPid();
             if (pid > 0) {
                 pids.push_back(pid);
