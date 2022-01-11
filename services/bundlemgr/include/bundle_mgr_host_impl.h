@@ -541,9 +541,11 @@ public:
 private:
     const std::shared_ptr<BundleCloneMgr> GetCloneMgrFromService();
     const std::shared_ptr<BundleDataMgr> GetDataMgrFromService();
-    bool GetBundleUserInfos(
-        const std::string &bundleName, int32_t userId, std::vector<InnerBundleUserInfo> &innerBundleUserInfo);
+    bool GetBundleUserInfo(
+        const std::string &bundleName, int32_t userId, InnerBundleUserInfo &innerBundleUserInfo);
     bool TraverseCacheDirectory(const std::string& rootDir, std::vector<std::string>& cacheDirs);
+    bool GetShortcutInfos(
+        const std::string &bundleName, int32_t userId, std::vector<ShortcutInfo> &shortcutInfos);
     std::shared_ptr<BMSEventHandler> handler_;
 };
 
