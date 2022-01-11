@@ -73,7 +73,7 @@ AppMgrServiceInner::~AppMgrServiceInner()
 void AppMgrServiceInner::LoadAbility(const sptr<IRemoteObject> &token, const sptr<IRemoteObject> &preToken,
     const std::shared_ptr<AbilityInfo> &abilityInfo, const std::shared_ptr<ApplicationInfo> &appInfo)
 {
-    BYTRACE(BYTRACE_TAG_APP);
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     if (!token || !abilityInfo || !appInfo) {
         APP_LOGE("param error");
         return;
@@ -119,7 +119,7 @@ void AppMgrServiceInner::LoadAbility(const sptr<IRemoteObject> &token, const spt
 
 void AppMgrServiceInner::AttachApplication(const pid_t pid, const sptr<IAppScheduler> &app)
 {
-    BYTRACE(BYTRACE_TAG_APP);
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     if (pid <= 0) {
         APP_LOGE("invalid pid:%{public}d", pid);
         return;
@@ -143,6 +143,7 @@ void AppMgrServiceInner::AttachApplication(const pid_t pid, const sptr<IAppSched
 
 void AppMgrServiceInner::LaunchApplication(const std::shared_ptr<AppRunningRecord> &appRecord)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     if (!appRecord) {
         APP_LOGE("appRecord is null");
         return;
@@ -177,7 +178,7 @@ void AppMgrServiceInner::AddAbilityStageDone(const int32_t recordId)
 
 void AppMgrServiceInner::ApplicationForegrounded(const int32_t recordId)
 {
-    BYTRACE(BYTRACE_TAG_APP);
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     auto appRecord = GetAppRunningRecordByAppRecordId(recordId);
     if (!appRecord) {
         APP_LOGE("get app record failed");
@@ -205,7 +206,7 @@ void AppMgrServiceInner::ApplicationForegrounded(const int32_t recordId)
 
 void AppMgrServiceInner::ApplicationBackgrounded(const int32_t recordId)
 {
-    BYTRACE(BYTRACE_TAG_APP);
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     auto appRecord = GetAppRunningRecordByAppRecordId(recordId);
     if (!appRecord) {
         APP_LOGE("get app record failed");
@@ -229,7 +230,7 @@ void AppMgrServiceInner::ApplicationBackgrounded(const int32_t recordId)
 
 void AppMgrServiceInner::ApplicationTerminated(const int32_t recordId)
 {
-    BYTRACE(BYTRACE_TAG_APP);
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     auto appRecord = GetAppRunningRecordByAppRecordId(recordId);
     if (!appRecord) {
         APP_LOGE("get app record failed");
@@ -369,7 +370,7 @@ int32_t AppMgrServiceInner::KillApplicationByUserId(const std::string &bundleNam
 
 void AppMgrServiceInner::ClearUpApplicationData(const std::string &bundleName, int32_t callerUid, pid_t callerPid)
 {
-    BYTRACE(BYTRACE_TAG_APP);
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     ClearUpApplicationDataByUserId(bundleName, callerUid, callerPid, Constants::DEFAULT_USERID);
 }
 
@@ -542,7 +543,7 @@ std::shared_ptr<AppRunningRecord> AppMgrServiceInner::GetOrCreateAppRunningRecor
     const std::shared_ptr<ApplicationInfo> &appInfo, const std::shared_ptr<AbilityInfo> &abilityInfo,
     const std::string &processName, const int32_t uid, RecordQueryResult &result)
 {
-    BYTRACE(BYTRACE_TAG_APP);
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     return appRunningManager_->GetOrCreateAppRunningRecord(token, appInfo, abilityInfo, processName, uid, result);
 }
 
@@ -554,7 +555,7 @@ std::shared_ptr<AppRunningRecord> AppMgrServiceInner::GetOrCreateAppRunningRecor
 
 void AppMgrServiceInner::TerminateAbility(const sptr<IRemoteObject> &token)
 {
-    BYTRACE(BYTRACE_TAG_APP);
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGD("AppMgrServiceInner::TerminateAbility begin");
     if (!token) {
         APP_LOGE("AppMgrServiceInner::TerminateAbility token is null!");
@@ -578,7 +579,7 @@ void AppMgrServiceInner::TerminateAbility(const sptr<IRemoteObject> &token)
 
 void AppMgrServiceInner::UpdateAbilityState(const sptr<IRemoteObject> &token, const AbilityState state)
 {
-    BYTRACE(BYTRACE_TAG_APP);
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     if (!token) {
         APP_LOGE("token is null!");
         return;
@@ -675,7 +676,7 @@ void AppMgrServiceInner::SetBundleManager(sptr<IBundleMgr> bundleManager)
 
 void AppMgrServiceInner::RegisterAppStateCallback(const sptr<IAppStateCallback> &callback)
 {
-    BYTRACE(BYTRACE_TAG_APP);
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     if (callback != nullptr) {
         appStateCallbacks_.push_back(callback);
     }
@@ -683,7 +684,7 @@ void AppMgrServiceInner::RegisterAppStateCallback(const sptr<IAppStateCallback> 
 
 void AppMgrServiceInner::StopAllProcess()
 {
-    BYTRACE(BYTRACE_TAG_APP);
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     ClearRecentAppList();
     appRunningManager_->ClearAppRunningRecordMap();
 }
@@ -693,7 +694,7 @@ void AppMgrServiceInner::AbilityBehaviorAnalysis(const sptr<IRemoteObject> &toke
     const int32_t perceptibility,   // 0:false,1:true
     const int32_t connectionState)  // 0:false,1:true
 {
-    BYTRACE(BYTRACE_TAG_APP);
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     if (!token) {
         APP_LOGE("token is null");
         return;
@@ -729,7 +730,7 @@ void AppMgrServiceInner::AbilityBehaviorAnalysis(const sptr<IRemoteObject> &toke
 
 void AppMgrServiceInner::KillProcessByAbilityToken(const sptr<IRemoteObject> &token)
 {
-    BYTRACE(BYTRACE_TAG_APP);
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     if (!token) {
         APP_LOGE("token is null");
         return;
@@ -764,7 +765,7 @@ void AppMgrServiceInner::KillProcessByAbilityToken(const sptr<IRemoteObject> &to
 void AppMgrServiceInner::StartAbility(const sptr<IRemoteObject> &token, const sptr<IRemoteObject> &preToken,
     const std::shared_ptr<AbilityInfo> &abilityInfo, const std::shared_ptr<AppRunningRecord> &appRecord)
 {
-    BYTRACE(BYTRACE_TAG_APP);
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGI("already create appRecord, just start ability");
     if (!appRecord) {
         APP_LOGE("appRecord is null");
@@ -896,7 +897,7 @@ std::shared_ptr<AbilityRunningRecord> AppMgrServiceInner::GetAbilityRunningRecor
 
 void AppMgrServiceInner::AbilityTerminated(const sptr<IRemoteObject> &token)
 {
-    BYTRACE(BYTRACE_TAG_APP);
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGD("begin");
     if (!token) {
         APP_LOGE("token is null!");
@@ -1056,7 +1057,7 @@ void AppMgrServiceInner::OnProcessDied(const std::shared_ptr<AppRunningRecord> &
 void AppMgrServiceInner::StartProcess(const std::string &appName, const std::string &processName,
     const std::shared_ptr<AppRunningRecord> &appRecord, const int uid)
 {
-    BYTRACE(BYTRACE_TAG_APP);
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     if (!remoteClientManager_->GetSpawnClient() || !appRecord) {
         APP_LOGE("appSpawnClient or apprecord is null");
         return;
@@ -1229,7 +1230,7 @@ const std::shared_ptr<AppTaskInfo> AppMgrServiceInner::GetAppTaskInfoById(const 
 
 void AppMgrServiceInner::AddAppDeathRecipient(const pid_t pid, const sptr<AppDeathRecipient> &appDeathRecipient) const
 {
-    BYTRACE(BYTRACE_TAG_APP);
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::shared_ptr<AppRunningRecord> appRecord = GetAppRunningRecordByPid(pid);
     if (appRecord) {
         appRecord->SetAppDeathRecipient(appDeathRecipient);
@@ -1384,7 +1385,7 @@ void AppMgrServiceInner::SetEventHandler(const std::shared_ptr<AMSEventHandler> 
 
 void AppMgrServiceInner::HandleAbilityAttachTimeOut(const sptr<IRemoteObject> &token)
 {
-    BYTRACE(BYTRACE_TAG_APP);
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGI("%{public}s called", __func__);
     if (!appRunningManager_) {
         APP_LOGE("appRunningManager_ is nullptr");
@@ -1644,7 +1645,7 @@ int32_t AppMgrServiceInner::UnregisterApplicationStateObserver(const sptr<IAppli
         return ERR_INVALID_VALUE;
     }
     std::vector<sptr<IApplicationStateObserver>>::iterator it;
-    for (it = appStateObservers_.begin(); it != appStateObservers_.end(); it++) {
+    for (it = appStateObservers_.begin(); it != appStateObservers_.end(); ++it) {
         if ((*it)->AsObject() == observer->AsObject()) {
             appStateObservers_.erase(it);
             APP_LOGI("%{public}s appStateObservers_ size:%{public}d", __func__, (int32_t)appStateObservers_.size());

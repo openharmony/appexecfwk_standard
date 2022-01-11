@@ -401,6 +401,7 @@ bool BundleDataMgr::ExplicitQueryAbilityInfo(const std::string &bundleName, cons
     }
     if ((static_cast<uint32_t>(flags) & GET_ABILITY_INFO_WITH_METADATA) != GET_ABILITY_INFO_WITH_METADATA) {
         ability->metaData.customizeData.clear();
+        ability->metadata.clear();
     }
     abilityInfo = (*ability);
     if ((static_cast<uint32_t>(flags) & GET_ABILITY_INFO_WITH_APPLICATION) == GET_ABILITY_INFO_WITH_APPLICATION) {
@@ -550,6 +551,7 @@ void BundleDataMgr::GetMatchAbilityInfos(const Want &want, int32_t flags,
                 }
                 if ((static_cast<uint32_t>(flags) & GET_ABILITY_INFO_WITH_METADATA) != GET_ABILITY_INFO_WITH_METADATA) {
                     abilityinfo.metaData.customizeData.clear();
+                    abilityinfo.metadata.clear();
                 }
                 abilityInfos.emplace_back(abilityinfo);
                 break;

@@ -44,7 +44,8 @@ const std::map<std::string, DisplayOrientation> DISPLAY_ORIENTATION_MAP = {
 const std::map<std::string, LaunchMode> LAUNCH_MODE_MAP = {
     {"singleton", LaunchMode::SINGLETON},
     {"singletop", LaunchMode::SINGLETOP},
-    {"standard", LaunchMode::STANDARD}
+    {"standard", LaunchMode::STANDARD},
+    {"standard", LaunchMode::SPECIFIED}
 };
 const std::map<std::string, int32_t> dimensionMap = {
     {"1*2", 1},
