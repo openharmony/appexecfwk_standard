@@ -1999,6 +1999,7 @@ int32_t InnerBundleInfo::GetResponseUserId(int32_t requestUserId) const
         }
     }
 
+    APP_LOGD("requestUserId(%{public}d) and responseUserId(%{public}d).", requestUserId, responseUserId);
     return responseUserId;
 }
 }  // namespace AppExecFwk
