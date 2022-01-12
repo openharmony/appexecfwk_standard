@@ -143,6 +143,7 @@ const std::string APP_ID = "bundle_manager_service";
 const std::string STORE_ID = "installed_bundle_datas";
 const std::string ABILITY_USAGE_STORE_ID = "ability_usage_datas";
 const std::string PRE_INSTALL_DATA_STORE_ID = "preinstall_usage_datas";
+const std::string DISTRIBUTE_DATA_STORE_ID = "distribute_bundle_datas";
 
 // single max hap size
 constexpr int64_t ONE_GB = 1024 * 1024 * 1024;

@@ -59,6 +59,7 @@ struct AsyncBundleInfoCallbackInfo {
     std::string param;
     int32_t flags = 0;
     OHOS::AppExecFwk::BundleInfo bundleInfo;
+    OHOS::AppExecFwk::DistributedBundleInfo distributedBundleInfo;
     bool ret = false;
     int32_t err = 0;
     std::string message;

@@ -509,6 +509,13 @@ private:
      * @return Returns true if bundle name in the allow list successfully; returns false otherwise.
      */
     ErrCode HandleCheckBundleNameInAllowList(Parcel &data, Parcel &reply);
+    /**
+     * @brief Handles the GetDistributedBundleInfo function called from a IBundleMgr proxy object.
+     * @param data Indicates the data to be read.
+     * @param reply Indicates the reply to be sent;
+     * @return Returns ERR_OK if called successfully; returns error code otherwise.
+     */
+    ErrCode HandleGetDistributedBundleInfo(Parcel &data, Parcel &reply);
 private:
     /**
      * @brief Write a parcelabe vector objects to the proxy node.
