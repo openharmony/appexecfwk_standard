@@ -76,6 +76,7 @@ enum class InstallErrorCode {
     STATUS_ABILITY_NOT_FOUND = 0x40,
     STATUS_BMS_SERVICE_ERROR = 0x41,
     STATUS_FAILED_NO_SPACE_LEFT = 0X42,
+    STATUS_GRANT_REQUEST_PERMISSIONS_FAILED = 0X43,
     STATUS_USER_NOT_EXIST = 0X50,
     STATUS_USER_FAILURE_INVALID = 0X51,
     STATUS_USER_CREATE_FALIED = 0X52,
@@ -2638,6 +2639,11 @@ static void ConvertInstallResult(InstallResult &installResult)
         case static_cast<int32_t>(IStatusReceiver::ERR_INSTALL_DISK_MEM_INSUFFICIENT):
             installResult.resultCode = static_cast<int32_t>(InstallErrorCode::STATUS_FAILED_NO_SPACE_LEFT);
             installResult.resultMsg = "STATUS_FAILED_NO_SPACE_LEFT";
+            break;
+        case static_cast<int32_t>(IStatusReceiver::ERR_INSTALL_GRANT_REQUEST_PERMISSIOMS_FAILED):
+        case static_cast<int32_t>(IStatusReceiver::ERR_INSTALL_UPDATE_HAP_TOKEN_FAILED):
+            installResult.resultCode = static_cast<int32_t>(InstallErrorCode::STATUS_GRANT_REQUEST_PERMISSIONS_FAILED);
+            installResult.resultMsg = "STATUS_GRANT_REQUEST_PERMISSIONS_FAILED";
             break;
         case static_cast<int32_t>(IStatusReceiver::ERR_USER_NOT_EXIST):
             installResult.resultCode = static_cast<int32_t>(InstallErrorCode::STATUS_USER_NOT_EXIST);
