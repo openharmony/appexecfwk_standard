@@ -98,8 +98,7 @@ ErrCode AmsMgrStub::HandleLoadAbility(MessageParcel &data, MessageParcel &reply)
         return ERR_APPEXECFWK_PARCEL_ERROR;
     }
 
-    int32_t uid = data.ReadInt32();
-    LoadAbility(token, preToke, abilityInfo, appInfo, uid);
+    LoadAbility(token, preToke, abilityInfo, appInfo);
     return NO_ERROR;
 }
 

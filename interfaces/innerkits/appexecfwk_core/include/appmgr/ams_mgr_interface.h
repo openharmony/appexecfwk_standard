@@ -40,8 +40,7 @@ public:
      * @return
      */
     virtual void LoadAbility(const sptr<IRemoteObject> &token, const sptr<IRemoteObject> &preToken,
-        const std::shared_ptr<AbilityInfo> &abilityInfo, const std::shared_ptr<ApplicationInfo> &appInfo,
-        int32_t uid) = 0;
+        const std::shared_ptr<AbilityInfo> &abilityInfo, const std::shared_ptr<ApplicationInfo> &appInfo) = 0;
 
     /**
      * TerminateAbility, call TerminateAbility() through the proxy object, terminate the token ability.

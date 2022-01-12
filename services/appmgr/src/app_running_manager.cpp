@@ -63,12 +63,11 @@ std::shared_ptr<AppRunningRecord> AppRunningManager::GetOrCreateAppRunningRecord
         return nullptr;
     }
 
-    auto record = GetAppRunningRecordByProcessName(appInfo->name, processName, uid);
+    auto record = GetAppRunningRecordByProcessName(appInfo->name, processName, appInfo->uid);
     if (!record) {
         APP_LOGI("no app record, create");
         auto recordId = AppRecordId::Create();
         record = std::make_shared<AppRunningRecord>(appInfo, recordId, processName);
-        record->SetUid(uid);
         appRunningRecordMap_.emplace(recordId, record);
     } else {
         result.appExists = true;
@@ -120,15 +119,15 @@ std::shared_ptr<AppRunningRecord> AppRunningManager::GetAppRunningRecordByAppNam
 }
 
 std::shared_ptr<AppRunningRecord> AppRunningManager::GetAppRunningRecordByProcessName(
-    const std::string &appName, const std::string &processName, int32_t uid)
+    const std::string &appName, const std::string &processName, const int uid)
 {
     APP_LOGI("GetAppRunningRecordByProcessName appName : %{public}s | processName : %{public}s | uid : %{public}d",
         appName.c_str(), processName.c_str(), uid);
     std::lock_guard<std::recursive_mutex> guard(lock_);
     auto iter = std::find_if(
-        appRunningRecordMap_.begin(), appRunningRecordMap_.end(), [&appName, &processName, uid](const auto &pair) {
+        appRunningRecordMap_.begin(), appRunningRecordMap_.end(), [&appName, &processName, &uid](const auto &pair) {
             return ((pair.second->GetName() == appName) && (pair.second->GetProcessName() == processName) &&
-                    !(pair.second->IsTerminating()) && pair.second->GetUid() == uid);
+                    (pair.second->GetUid() == uid) && !(pair.second->IsTerminating()));
         });
     APP_LOGI("find result : %{public}d", iter != appRunningRecordMap_.end());
     return ((iter == appRunningRecordMap_.end()) ? nullptr : iter->second);
