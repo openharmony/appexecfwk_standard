@@ -275,6 +275,17 @@ public:
     /**
      * @brief Query the AbilityInfo by ability.uri in config.json.
      * @param abilityUri Indicates the uri of the ability.
+     * @param userId Indicates the user ID.
+     * @param abilityInfo Indicates the obtained AbilityInfo object.
+     * @return Returns true if the AbilityInfo is successfully obtained; returns false otherwise.
+     */
+    virtual bool QueryAbilityInfoByUri(const std::string &abilityUri, int32_t userId, AbilityInfo &abilityInfo)
+    {
+        return true;
+    };
+    /**
+     * @brief Query the AbilityInfo by ability.uri in config.json.
+     * @param abilityUri Indicates the uri of the ability.
      * @param abilityInfos Indicates the obtained AbilityInfos object.
      * @return Returns true if the AbilityInfo is successfully obtained; returns false otherwise.
      */
