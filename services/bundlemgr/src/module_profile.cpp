@@ -20,6 +20,7 @@
 #include "app_log_wrapper.h"
 #include "bundle_constants.h"
 #include "common_profile.h"
+#include "parameter.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -113,12 +114,12 @@ const std::map<std::string, LaunchMode> LAUNCH_MODE_MAP = {
 struct DeviceConfig {
     // pair first : if exist in module.json then true, otherwise false
     // pair second : actual value
-    std::pair<bool, int32_t> apiCompatibleVersion = std::make_pair<>(false, 0);
+    std::pair<bool, int32_t> minAPIVersion = std::make_pair<>(false, 0);
     std::pair<bool, bool> distributedNotificationEnabled = std::make_pair<>(false, false);
     std::pair<bool, bool> keepAlive = std::make_pair<>(false, false);
     std::pair<bool, bool> removable = std::make_pair<>(false, true);
-    std::pair<bool, bool> singleUser = std::make_pair<>(false, false);
-    std::pair<bool, bool> clearUserData = std::make_pair<>(false, true);
+    std::pair<bool, bool> singleton = std::make_pair<>(false, false);
+    std::pair<bool, bool> userDataClearable = std::make_pair<>(false, true);
 };
 
 struct Metadata {
@@ -154,6 +155,8 @@ struct Extension {
     std::string description;
     int32_t descriptionId = 0;
     std::string type;
+    std::string readPermission;
+    std::string writePermission;
     std::vector<std::string> permissions;
     bool visible = false;
     std::vector<Skill> skills;
@@ -173,15 +176,15 @@ struct App {
     int32_t versionCode = 0;
     std::string versionName;
     int32_t minCompatibleVersionCode = -1;
-    int32_t apiCompatibleVersion = -1;
-    int32_t apiTargetVersion = -1;
+    int32_t minAPIVersion = 0;
+    int32_t targetAPIVersion = 0;
     std::string apiReleaseType = APP_API_RELEASETYPE_DEFAULT_VALUE;
     bool distributedNotificationEnabled = false;
     std::string entityType = APP_ENTITY_TYPE_DEFAULT_VALUE;
     bool keepAlive = false;
     std::pair<bool, bool> removable = std::make_pair<>(false, true);
-    bool singleUser = false;
-    bool clearUserData = true;
+    bool singleton = false;
+    bool userDataClearable = true;
     std::map<std::string, DeviceConfig> deviceConfigs;
 };
 
@@ -435,6 +438,22 @@ void from_json(const nlohmann::json &jsonObject, Extension &extension)
         true,
         parseResult,
         ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        EXTENSION_ABILITY_READ_PERMISSION,
+        extension.readPermission,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        EXTENSION_ABILITY_WRITE_PERMISSION,
+        extension.writePermission,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
     GetValueIfFindKey<std::vector<std::string>>(jsonObject,
         jsonObjectEnd,
         PERMISSIONS,
@@ -472,12 +491,12 @@ void from_json(const nlohmann::json &jsonObject, Extension &extension)
 void from_json(const nlohmann::json &jsonObject, DeviceConfig &deviceConfig)
 {
     const auto &jsonObjectEnd = jsonObject.end();
-    if (jsonObject.find(DEVICE_CONFIG_API_COMPATIBLE_VERSION) != jsonObjectEnd) {
-        deviceConfig.apiCompatibleVersion.first = true;
+    if (jsonObject.find(MIN_API_VERSION) != jsonObjectEnd) {
+        deviceConfig.minAPIVersion.first = true;
         GetValueIfFindKey<int32_t>(jsonObject,
             jsonObjectEnd,
-            DEVICE_CONFIG_API_COMPATIBLE_VERSION,
-            deviceConfig.apiCompatibleVersion.second,
+            MIN_API_VERSION,
+            deviceConfig.minAPIVersion.second,
             JsonType::NUMBER,
             false,
             parseResult,
@@ -516,23 +535,23 @@ void from_json(const nlohmann::json &jsonObject, DeviceConfig &deviceConfig)
             parseResult,
             ArrayType::NOT_ARRAY);
     }
-    if (jsonObject.find(DEVICE_CONFIG_SINGLE_USER) != jsonObjectEnd) {
-        deviceConfig.singleUser.first = true;
+    if (jsonObject.find(DEVICE_CONFIG_SINGLETON) != jsonObjectEnd) {
+        deviceConfig.singleton.first = true;
         GetValueIfFindKey<bool>(jsonObject,
             jsonObjectEnd,
-            DEVICE_CONFIG_SINGLE_USER,
-            deviceConfig.singleUser.second,
+            DEVICE_CONFIG_SINGLETON,
+            deviceConfig.singleton.second,
             JsonType::BOOLEAN,
             false,
             parseResult,
             ArrayType::NOT_ARRAY);
     }
-    if (jsonObject.find(DEVICE_CONFIG_CLEAR_USER_DATA) != jsonObjectEnd) {
-        deviceConfig.clearUserData.first = true;
+    if (jsonObject.find(DEVICE_CONFIG_USER_DATA_CLEARABLE) != jsonObjectEnd) {
+        deviceConfig.userDataClearable.first = true;
         GetValueIfFindKey<bool>(jsonObject,
             jsonObjectEnd,
-            DEVICE_CONFIG_CLEAR_USER_DATA,
-            deviceConfig.clearUserData.second,
+            DEVICE_CONFIG_USER_DATA_CLEARABLE,
+            deviceConfig.userDataClearable.second,
             JsonType::BOOLEAN,
             false,
             parseResult,
@@ -642,18 +661,18 @@ void from_json(const nlohmann::json &jsonObject, App &app)
         ArrayType::NOT_ARRAY);
     GetValueIfFindKey<int32_t>(jsonObject,
         jsonObjectEnd,
-        APP_API_COMPATIBLE_VERSION,
-        app.apiCompatibleVersion,
+        APP_MIN_API_VERSION,
+        app.minAPIVersion,
         JsonType::NUMBER,
-        false,
+        true,
         parseResult,
         ArrayType::NOT_ARRAY);
     GetValueIfFindKey<int32_t>(jsonObject,
         jsonObjectEnd,
-        APP_API_TARGET_VERSION,
-        app.apiTargetVersion,
+        APP_TARGET_API_VERSION,
+        app.targetAPIVersion,
         JsonType::NUMBER,
-        false,
+        true,
         parseResult,
         ArrayType::NOT_ARRAY);
     GetValueIfFindKey<std::string>(jsonObject,
@@ -701,16 +720,16 @@ void from_json(const nlohmann::json &jsonObject, App &app)
     }
     GetValueIfFindKey<bool>(jsonObject,
         jsonObjectEnd,
-        APP_SINGLE_USER,
-        app.singleUser,
+        APP_SINGLETON,
+        app.singleton,
         JsonType::BOOLEAN,
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
     GetValueIfFindKey<bool>(jsonObject,
         jsonObjectEnd,
-        APP_CLEAR_USER_DATA,
-        app.clearUserData,
+        APP_USER_DATA_CLEARABLE,
+        app.userDataClearable,
         JsonType::BOOLEAN,
         false,
         parseResult,
@@ -1039,18 +1058,8 @@ bool ToApplicationInfo(const Profile::ModuleJson &moduleJson, ApplicationInfo &a
         // default equal to versionCode
         applicationInfo.minCompatibleVersionCode = moduleJson.app.versionCode;
     }
-    if (moduleJson.app.apiCompatibleVersion != -1) {
-        applicationInfo.apiCompatibleVersion = moduleJson.app.apiCompatibleVersion;
-    } else {
-        // default equal to current device API version
-        applicationInfo.apiCompatibleVersion = 0; // to do, get device API
-    }
-    if (moduleJson.app.apiTargetVersion != -1) {
-        applicationInfo.apiTargetVersion = moduleJson.app.apiTargetVersion;
-    } else {
-        // default equal to current device API version
-        applicationInfo.apiTargetVersion = 0; // to do, get device API
-    }
+    applicationInfo.apiCompatibleVersion = moduleJson.app.minAPIVersion;
+    applicationInfo.apiTargetVersion = moduleJson.app.targetAPIVersion;
     applicationInfo.apiReleaseType = moduleJson.app.apiReleaseType;
     applicationInfo.distributedNotificationEnabled = moduleJson.app.distributedNotificationEnabled;
     if (Profile::ENTITY_TYPE_SET.find(moduleJson.app.entityType) != Profile::EXTENSION_TYPE_SET.end()) {
@@ -1064,15 +1073,15 @@ bool ToApplicationInfo(const Profile::ModuleJson &moduleJson, ApplicationInfo &a
             Profile::g_hasConfigureRemovable = true;
             applicationInfo.removable = moduleJson.app.removable.second;
         }
-        applicationInfo.singleUser = moduleJson.app.singleUser;
-        applicationInfo.clearUserData = moduleJson.app.clearUserData;
+        applicationInfo.singleUser = moduleJson.app.singleton;
+        applicationInfo.clearUserData = moduleJson.app.userDataClearable;
     }
     // device adapt
-    std::string deviceType = "phone";
+    std::string deviceType = GetDeviceType();
     if (moduleJson.app.deviceConfigs.find(deviceType) != moduleJson.app.deviceConfigs.end()) {
         Profile::DeviceConfig deviceConfig = moduleJson.app.deviceConfigs.at(deviceType);
-        if (deviceConfig.apiCompatibleVersion.first) {
-            applicationInfo.apiCompatibleVersion = deviceConfig.apiCompatibleVersion.second;
+        if (deviceConfig.minAPIVersion.first) {
+            applicationInfo.apiCompatibleVersion = deviceConfig.minAPIVersion.second;
         }
         if (deviceConfig.distributedNotificationEnabled.first) {
             applicationInfo.distributedNotificationEnabled = deviceConfig.distributedNotificationEnabled.second;
@@ -1085,11 +1094,11 @@ bool ToApplicationInfo(const Profile::ModuleJson &moduleJson, ApplicationInfo &a
                 Profile::g_hasConfigureRemovable = true;
                 applicationInfo.removable = deviceConfig.removable.second;
             }
-            if (deviceConfig.singleUser.first) {
-                applicationInfo.singleUser = deviceConfig.singleUser.second;
+            if (deviceConfig.singleton.first) {
+                applicationInfo.singleUser = deviceConfig.singleton.second;
             }
-            if (deviceConfig.clearUserData.first) {
-                applicationInfo.clearUserData = deviceConfig.clearUserData.second;
+            if (deviceConfig.userDataClearable.first) {
+                applicationInfo.clearUserData = deviceConfig.userDataClearable.second;
             }
         }
     }
@@ -1108,6 +1117,7 @@ bool ToBundleInfo(const ApplicationInfo &applicationInfo, BundleInfo &bundleInfo
     bundleInfo.targetVersion = static_cast<uint32_t>(applicationInfo.apiTargetVersion);
     bundleInfo.releaseType = applicationInfo.apiReleaseType;
     bundleInfo.isKeepAlive = applicationInfo.keepAlive;
+    bundleInfo.singleUser = applicationInfo.singleUser;
     bundleInfo.label = applicationInfo.label;
     bundleInfo.description = applicationInfo.description;
     return true;
@@ -1149,6 +1159,8 @@ bool ToAbilityInfo(const Profile::ModuleJson &moduleJson, const Profile::Ability
     if (iterLaunch != Profile::LAUNCH_MODE_MAP.end()) {
         abilityInfo.launchMode = iterLaunch->second;
     }
+    abilityInfo.enabled = true;
+    abilityInfo.isStageBasedModel = true;
     return true;
 }
 
@@ -1167,6 +1179,8 @@ bool ToExtensionInfo(const Profile::ModuleJson &moduleJson,
     if (Profile::EXTENSION_TYPE_SET.find(extension.type) != Profile::EXTENSION_TYPE_SET.end()) {
         extensionInfo.type = extension.type;
     }
+    extensionInfo.readPermission = extension.readPermission;
+    extensionInfo.writePermission = extension.writePermission;
     extensionInfo.permissions = extension.permissions;
     extensionInfo.visible = extension.visible;
     GetMetadata(extensionInfo.metadata, extension.metadata);
@@ -1211,6 +1225,7 @@ bool ToInnerModuleInfo(const Profile::ModuleJson &moduleJson, InnerModuleInfo &i
     innerModuleInfo.distro.deliveryWithInstall = moduleJson.module.deliveryWithInstall;
     innerModuleInfo.distro.installationFree = moduleJson.module.installationFree;
     innerModuleInfo.distro.moduleName = moduleJson.module.name;
+    innerModuleInfo.installationFree = moduleJson.module.installationFree;
     if (Profile::MODULE_TYPE_SET.find(moduleJson.module.type) != Profile::MODULE_TYPE_SET.end()) {
         innerModuleInfo.distro.moduleType = moduleJson.module.type;
     }
@@ -1236,6 +1251,7 @@ bool ToInnerModuleInfo(const Profile::ModuleJson &moduleJson, InnerModuleInfo &i
     }
     innerModuleInfo.pages = moduleJson.module.pages;
     GetPermissions(moduleJson, innerModuleInfo, isSystemApp);
+    innerModuleInfo.isStageBasedModel = true;
     // abilities and extensionAbilities store in InnerBundleInfo
     return true;
 }

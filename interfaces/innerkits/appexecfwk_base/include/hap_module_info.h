@@ -50,6 +50,7 @@ struct HapModuleInfo : public Parcelable {
     std::vector<ExtensionInfo> extensionInfos;
     std::vector<Metadata> metadata;
     std::string resourcePath;
+    bool isStageBasedModel = false;
 
     bool ReadFromParcel(Parcel &parcel);
     virtual bool Marshalling(Parcel &parcel) const override;
