@@ -113,7 +113,7 @@ void AmsAppRecentListModuleTest::CreateAppRecentList(const int32_t appNum)
             .WillOnce(DoAll(SetArgReferee<1>(pid), Return(ERR_OK)));
 
         serviceInner_->SetAppSpawnClient(std::unique_ptr<MockAppSpawnClient>(mockedSpawnClient));
-        serviceInner_->LoadAbility(token, nullptr, abilityInfo, appInfo, 0);
+        serviceInner_->LoadAbility(token, nullptr, abilityInfo, appInfo);
     }
     return;
 }
@@ -144,7 +144,7 @@ HWTEST_F(AmsAppRecentListModuleTest, Create_Recent_List_001, TestSize.Level1)
     MockAppSpawnClient *mockedSpawnClient = new MockAppSpawnClient();
 
     serviceInner_->SetAppSpawnClient(std::unique_ptr<MockAppSpawnClient>(mockedSpawnClient));
-    serviceInner_->LoadAbility(token, nullptr, abilityInfo, appInfo, 0);
+    serviceInner_->LoadAbility(token, nullptr, abilityInfo, appInfo);
     EXPECT_EQ(INDEX_NUM_10, static_cast<int32_t>(serviceInner_->GetRecentAppList().size()));
     APP_LOGI("Create_Recent_List_001 end");
 }
@@ -177,7 +177,7 @@ HWTEST_F(AmsAppRecentListModuleTest, Create_Recent_List_002, TestSize.Level1)
     EXPECT_CALL(*mockedSpawnClient, StartProcess(_, _)).Times(1).WillOnce(DoAll(SetArgReferee<1>(pid), Return(ERR_OK)));
 
     serviceInner_->SetAppSpawnClient(std::unique_ptr<MockAppSpawnClient>(mockedSpawnClient));
-    serviceInner_->LoadAbility(token, nullptr, abilityInfo, appInfo, 0);
+    serviceInner_->LoadAbility(token, nullptr, abilityInfo, appInfo);
     EXPECT_EQ(INDEX_NUM_10 + INDEX_NUM_1, static_cast<int32_t>(serviceInner_->GetRecentAppList().size()));
     APP_LOGI("Create_Recent_List_002 end");
 }

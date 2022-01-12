@@ -104,7 +104,7 @@ std::shared_ptr<AppRunningRecord> AmsServiceLoadAbilityProcessTest::StartLoadAbi
     EXPECT_CALL(*mockClientPtr, StartProcess(_, _)).Times(1).WillOnce(DoAll(SetArgReferee<1>(newPid), Return(ERR_OK)));
 
     service_->SetAppSpawnClient(mockClientPtr);
-    service_->LoadAbility(token, preToken, abilityInfo, appInfo, 0);
+    service_->LoadAbility(token, preToken, abilityInfo, appInfo);
     std::shared_ptr<AppRunningRecord> record =
         service_->GetOrCreateAppRunningRecord(token, appInfo, abilityInfo, abilityInfo->process, 0, result);
     EXPECT_EQ(record->GetPriorityObject()->GetPid(), newPid);
@@ -239,7 +239,7 @@ HWTEST_F(AmsServiceLoadAbilityProcessTest, LoadAbility_003, TestSize.Level1)
     EXPECT_CALL(*mockClientPtr, StartProcess(_, _)).Times(0);
 
     service_->SetAppSpawnClient(mockClientPtr);
-    service_->LoadAbility(nullptr, nullptr, abilityInfo, appInfo, 0);
+    service_->LoadAbility(nullptr, nullptr, abilityInfo, appInfo);
 
     const auto &recordMap = service_->GetRecordMap();
     EXPECT_EQ(recordMap.size(), (uint32_t)0);
@@ -270,7 +270,7 @@ HWTEST_F(AmsServiceLoadAbilityProcessTest, LoadAbility_004, TestSize.Level1)
     EXPECT_CALL(*mockClientPtr, StartProcess(_, _)).Times(0);
 
     service_->SetAppSpawnClient(mockClientPtr);
-    service_->LoadAbility(token, nullptr, abilityInfo, appInfo, 0);
+    service_->LoadAbility(token, nullptr, abilityInfo, appInfo);
     const auto &recordMap = service_->GetRecordMap();
     EXPECT_EQ(recordMap.size(), (uint32_t)0);
     APP_LOGI("AmsServiceLoadAbilityProcessTest LoadAbility_004 end");
@@ -299,7 +299,7 @@ HWTEST_F(AmsServiceLoadAbilityProcessTest, LoadAbility_005, TestSize.Level1)
     EXPECT_CALL(*mockClientPtr, StartProcess(_, _)).Times(0);
 
     service_->SetAppSpawnClient(mockClientPtr);
-    service_->LoadAbility(token, nullptr, abilityInfo, appInfo, 0);
+    service_->LoadAbility(token, nullptr, abilityInfo, appInfo);
     const auto &recordMap = service_->GetRecordMap();
     EXPECT_EQ(recordMap.size(), (uint32_t)0);
     APP_LOGI("AmsServiceLoadAbilityProcessTest LoadAbility_005 end");
@@ -329,7 +329,7 @@ HWTEST_F(AmsServiceLoadAbilityProcessTest, LoadAbility_006, TestSize.Level1)
     EXPECT_CALL(*mockClientPtr, StartProcess(_, _)).Times(0);
 
     service_->SetAppSpawnClient(mockClientPtr);
-    service_->LoadAbility(token, nullptr, abilityInfo, appInfo, 0);
+    service_->LoadAbility(token, nullptr, abilityInfo, appInfo);
     const auto &recordMap = service_->GetRecordMap();
     EXPECT_EQ(recordMap.size(), (uint32_t)0);
     APP_LOGI("AmsServiceLoadAbilityProcessTest LoadAbility_006 end");
@@ -374,7 +374,7 @@ HWTEST_F(AmsServiceLoadAbilityProcessTest, LoadAbility_007, TestSize.Level1)
     EXPECT_CALL(*mockClientPtr, StartProcess(_, _)).Times(0);
 
     service_->SetAppSpawnClient(mockClientPtr);
-    service_->LoadAbility(token, nullptr, abilityInfo, appInfo, 0);
+    service_->LoadAbility(token, nullptr, abilityInfo, appInfo);
     EXPECT_EQ(recordMap.size(), (uint32_t)1);
     auto record2 = service_->GetAppRunningRecordByAppName(GetTestAppName());
     EXPECT_EQ(record2, record);
@@ -428,7 +428,7 @@ HWTEST_F(AmsServiceLoadAbilityProcessTest, LoadAbility_008, TestSize.Level1)
     EXPECT_CALL(*mockClientPtr, StartProcess(_, _)).Times(0);
 
     service_->SetAppSpawnClient(mockClientPtr);
-    service_->LoadAbility(token2, preToken, abilityInfo2, appInfo, 0);
+    service_->LoadAbility(token2, preToken, abilityInfo2, appInfo);
     EXPECT_EQ(recordMap.size(), (uint32_t)1);
     auto record2 = service_->GetAppRunningRecordByAppName(GetTestAppName());
     EXPECT_EQ(record2, record);
@@ -468,7 +468,7 @@ HWTEST_F(AmsServiceLoadAbilityProcessTest, RequestProcess_001, TestSize.Level1)
     EXPECT_CALL(*mockClientPtr, StartProcess(_, _)).Times(1).WillOnce(DoAll(SetArgReferee<1>(PID), Return(ERR_OK)));
 
     service_->SetAppSpawnClient(mockClientPtr);
-    service_->LoadAbility(token, nullptr, abilityInfo, appInfo, 0);
+    service_->LoadAbility(token, nullptr, abilityInfo, appInfo);
 
     const auto &recordMap = service_->GetRecordMap();
     EXPECT_EQ(recordMap.size(), (uint32_t)1);
@@ -505,7 +505,7 @@ HWTEST_F(AmsServiceLoadAbilityProcessTest, RequestProcess_002, TestSize.Level1)
     EXPECT_CALL(*mockClientPtr, StartProcess(_, _)).Times(1).WillOnce(Return(ERR_APPEXECFWK_INVALID_PID));
 
     service_->SetAppSpawnClient(mockClientPtr);
-    service_->LoadAbility(token, nullptr, abilityInfo, appInfo, 0);
+    service_->LoadAbility(token, nullptr, abilityInfo, appInfo);
 
     const auto &recordMap = service_->GetRecordMap();
     EXPECT_EQ(recordMap.size(), (uint32_t)0);
@@ -538,7 +538,7 @@ HWTEST_F(AmsServiceLoadAbilityProcessTest, SavePid_001, TestSize.Level1)
     EXPECT_CALL(*mockClientPtr, StartProcess(_, _)).Times(1).WillOnce(DoAll(SetArgReferee<1>(PID), Return(ERR_OK)));
 
     service_->SetAppSpawnClient(mockClientPtr);
-    service_->LoadAbility(token, nullptr, abilityInfo, appInfo, 0);
+    service_->LoadAbility(token, nullptr, abilityInfo, appInfo);
 
     auto record = service_->GetAppRunningRecordByAppName(GetTestAppName());
     EXPECT_EQ(record->GetPriorityObject()->GetPid(), PID);
@@ -568,7 +568,7 @@ HWTEST_F(AmsServiceLoadAbilityProcessTest, SavePid_002, TestSize.Level1)
     EXPECT_CALL(*mockClientPtr, StartProcess(_, _)).Times(1).WillOnce(Return(ERR_APPEXECFWK_INVALID_PID));
 
     service_->SetAppSpawnClient(mockClientPtr);
-    service_->LoadAbility(token, nullptr, abilityInfo, appInfo, 0);
+    service_->LoadAbility(token, nullptr, abilityInfo, appInfo);
 
     auto record = service_->GetAppRunningRecordByAppName(GetTestAppName());
     EXPECT_EQ(record, nullptr);
@@ -654,7 +654,7 @@ HWTEST_F(AmsServiceLoadAbilityProcessTest, LaunchMode_002, TestSize.Level1)
     sptr<IRemoteObject> token2 = new MockAbilityToken();
     sptr<IRemoteObject> preToken = token;
     service_->SetAppSpawnClient(mockClientPtr);
-    service_->LoadAbility(token2, preToken, abilityInfo, appInfo, 0);
+    service_->LoadAbility(token2, preToken, abilityInfo, appInfo);
     EXPECT_EQ(recordMap.size(), (uint32_t)1);
     auto record2 = service_->GetAppRunningRecordByAppName(GetTestAppName());
     EXPECT_EQ(record2, record);

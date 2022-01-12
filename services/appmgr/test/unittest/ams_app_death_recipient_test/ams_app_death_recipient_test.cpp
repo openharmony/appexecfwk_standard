@@ -135,7 +135,7 @@ sptr<IRemoteObject> AppDeathRecipientTest::GetApp(int32_t pid, int size)
     std::shared_ptr<MockAppSpawnClient> mockClientstr(mockClientPtr);
     appMgrServiceInner_->SetAppSpawnClient(mockClientstr);
 
-    appMgrServiceInner_->LoadAbility(token, nullptr, abilityInfo, appInfo, 0);
+    appMgrServiceInner_->LoadAbility(token, nullptr, abilityInfo, appInfo);
 
     auto appRecord = GetAppRunningRecordByIndex(pid);
 
