@@ -162,9 +162,9 @@ HWTEST_F(AmsIpcAmsmgrModuleTest, ExcuteAmsmgrIPCInterface_001, TestSize.Level3)
     sptr<OHOS::IRemoteObject> token = new MockAbilityToken();
 
     for (int i = 0; i < COUNT; i++) {
-        EXPECT_CALL(*mockAppMgrServiceInner, LoadAbility(_, _, _, _))
+        EXPECT_CALL(*mockAppMgrServiceInner, LoadAbility(_, _, _, _, _))
             .WillOnce(InvokeWithoutArgs(mockAppMgrServiceInner.get(), &MockAppMgrServiceInner::Post));
-        amsMgrScheduler_->LoadAbility(token_, nullptr, abilityInfo, appInfo);
+        amsMgrScheduler_->LoadAbility(token_, nullptr, abilityInfo, appInfo, 0);
         mockAppMgrServiceInner->Wait();
     }
 
