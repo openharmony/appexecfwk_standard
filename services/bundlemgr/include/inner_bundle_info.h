@@ -569,8 +569,7 @@ public:
      * @param userId Indicates the user ID.
      * @return Returns the AbilityInfo object if find it; returns null otherwise.
      */
-    std::optional<AbilityInfo> FindAbilityInfoByUri(
-        const std::string &abilityUri, int32_t userId = Constants::UNSPECIFIED_USERID) const
+    std::optional<AbilityInfo> FindAbilityInfoByUri(const std::string &abilityUri) const
     {
         APP_LOGI("Uri is %{public}s", abilityUri.c_str());
         for (const auto &ability : baseAbilityInfos_) {
@@ -582,8 +581,6 @@ public:
             auto configUri = abilityInfo.uri.substr(Constants::DATA_ABILITY_URI_PREFIX.size());
             APP_LOGI("configUri is %{public}s", configUri.c_str());
             if (configUri == abilityUri) {
-                GetApplicationInfo(
-                    ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMS, userId, abilityInfo.applicationInfo);
                 return abilityInfo;
             }
         }
