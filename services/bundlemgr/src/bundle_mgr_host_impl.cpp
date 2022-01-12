@@ -92,6 +92,17 @@ bool BundleMgrHostImpl::GetBundleUserInfo(
     return dataMgr->GetInnerBundleUserInfoByUserId(bundleName, userId, innerBundleUserInfo);
 }
 
+bool BundleMgrHostImpl::GetBundleUserInfos(
+    const std::string &bundleName, std::vector<InnerBundleUserInfo> &innerBundleUserInfos)
+{
+    auto dataMgr = GetDataMgrFromService();
+    if (dataMgr == nullptr) {
+        APP_LOGE("DataMgr is nullptr");
+        return false;
+    }
+    return dataMgr->GetInnerBundleUserInfos(bundleName, innerBundleUserInfos);
+}
+
 bool BundleMgrHostImpl::GetBundleInfos(const BundleFlag flag, std::vector<BundleInfo> &bundleInfos, int32_t userId)
 {
     return GetBundleInfos(static_cast<int32_t>(flag), bundleInfos, userId);
@@ -517,85 +528,22 @@ bool BundleMgrHostImpl::UnregisterBundleStatusCallback()
 bool BundleMgrHostImpl::DumpInfos(
     const DumpFlag flag, const std::string &bundleName, int32_t userId, std::string &result)
 {
-    auto dataMgr = GetDataMgrFromService();
-    if (dataMgr == nullptr) {
-        APP_LOGE("DataMgr is nullptr");
-        return false;
-    }
     bool ret = false;
     switch (flag) {
         case DumpFlag::DUMP_BUNDLE_LIST: {
-            std::vector<std::string> bundleNames;
-            ret = dataMgr->GetBundleList(bundleNames, userId);
-            if (ret) {
-                for (const auto &name : bundleNames) {
-                    result.append(name);
-                    result.append("\n");
-                }
-                APP_LOGI("get installed bundles success");
-            }
+            ret = DumpAllBundleInfoNames(userId, result);
             break;
         }
         case DumpFlag::DUMP_ALL_BUNDLE_INFO: {
-            std::vector<BundleInfo> bundleInfos;
-            ret = GetBundleInfos(
-                BundleFlag::GET_BUNDLE_WITH_ABILITIES, bundleInfos, userId);
-            if (ret) {
-                for (const auto &info : bundleInfos) {
-                    InnerBundleUserInfo innerBundleUserInfo;
-                    if (!GetBundleUserInfo(info.name, userId, innerBundleUserInfo)) {
-                        APP_LOGI("get all userInfo in bundle(%{public}s) failed", info.name.c_str());
-                    }
-
-                    result.append(info.name);
-                    result.append(":\n");
-                    nlohmann::json jsonObject = info;
-                    jsonObject["hapModuleInfos"] = info.hapModuleInfos;
-                    jsonObject["innerBundleUserInfo"] = innerBundleUserInfo;
-                    result.append(jsonObject.dump(Constants::DUMP_INDENT));
-                    result.append("\n");
-                }
-                APP_LOGI("get all bundle info success");
-            }
+            ret = DumpAllBundleInfos(userId, result);
             break;
         }
         case DumpFlag::DUMP_BUNDLE_INFO: {
-            BundleInfo bundleInfo;
-            ret = GetBundleInfo(
-                bundleName, BundleFlag::GET_BUNDLE_WITH_ABILITIES | BundleFlag::GET_BUNDLE_WITH_REQUESTED_PERMISSION,
-                bundleInfo, userId);
-            InnerBundleUserInfo innerBundleUserInfo;
-            if (!GetBundleUserInfo(bundleName, userId, innerBundleUserInfo)) {
-                APP_LOGI("get all userInfo in bundle(%{public}s) failed", bundleName.c_str());
-            }
-
-            if (ret) {
-                result.append(bundleName);
-                result.append(":\n");
-                nlohmann::json jsonObject = bundleInfo;
-                jsonObject["hapModuleInfos"] = bundleInfo.hapModuleInfos;
-                jsonObject["innerBundleUserInfo"] = innerBundleUserInfo;
-                result.append(jsonObject.dump(Constants::DUMP_INDENT));
-                result.append("\n");
-                APP_LOGI("get %{public}s bundle info success", bundleName.c_str());
-            }
+            ret = DumpBundleInfo(bundleName, userId, result);
             break;
         }
         case DumpFlag::DUMP_SHORTCUT_INFO: {
-            std::vector<ShortcutInfo> shortcutInfos;
-            ret = GetShortcutInfos(bundleName, userId, shortcutInfos);
-            if (ret) {
-                result.append("shortcuts");
-                result.append(":\n");
-                for (const auto &info : shortcutInfos) {
-                    result.append("\"shortcut\"");
-                    result.append(":\n");
-                    nlohmann::json jsonObject = info;
-                    result.append(jsonObject.dump(Constants::DUMP_INDENT));
-                    result.append("\n");
-                }
-                APP_LOGI("get %{public}s shortcut info success", bundleName.c_str());
-            }
+            ret = DumpShortcutInfo(bundleName, userId, result);
             break;
         }
         default:
@@ -603,6 +551,149 @@ bool BundleMgrHostImpl::DumpInfos(
             return false;
     }
     return ret;
+}
+
+bool BundleMgrHostImpl::DumpAllBundleInfoNames(int32_t userId, std::string &result)
+{
+    if (userId != Constants::ALL_USERID) {
+        return DumpAllBundleInfoNamesByUserId(userId, result);
+    }
+
+    auto userIds = GetExistsCommonUserIs();
+    for (auto userId : userIds) {
+        DumpAllBundleInfoNamesByUserId(userId, result);
+    }
+
+    APP_LOGI("get installed bundles success");
+    return true;
+}
+
+bool BundleMgrHostImpl::DumpAllBundleInfoNamesByUserId(int32_t userId, std::string &result)
+{
+    auto dataMgr = GetDataMgrFromService();
+    if (dataMgr == nullptr) {
+        APP_LOGE("DataMgr is nullptr");
+        return false;
+    }
+
+    std::vector<std::string> bundleNames;
+    if (!dataMgr->GetBundleList(bundleNames, userId)) {
+        APP_LOGE("get bundle list failed by userId(%{public}d)", userId);
+        return false;
+    }
+
+    result.append("ID: ");
+    result.append(std::to_string(userId));
+    result.append(":\n");
+    for (const auto &name : bundleNames) {
+        result.append("\t");
+        result.append(name);
+        result.append("\n");
+    }
+    return true;
+}
+
+bool BundleMgrHostImpl::DumpAllBundleInfos(int32_t userId, std::string &result)
+{
+    std::vector<BundleInfo> bundleInfos;
+    if (!GetBundleInfos(BundleFlag::GET_BUNDLE_WITH_ABILITIES, bundleInfos, userId)) {
+        APP_LOGE("get bundleInfos failed.");
+        return false;
+    }
+
+    for (const auto &info : bundleInfos) {
+        std::vector<InnerBundleUserInfo> innerBundleUserInfos;
+        if (userId == Constants::ALL_USERID) {
+            if (!GetBundleUserInfos(info.name, innerBundleUserInfos)) {
+                APP_LOGE("get all userInfos in bundle(%{public}s) failed", info.name.c_str());
+                return false;
+            }
+        } else {
+            InnerBundleUserInfo innerBundleUserInfo;
+            if (!GetBundleUserInfo(info.name, userId, innerBundleUserInfo)) {
+                APP_LOGI("get all userInfo in bundle(%{public}s) failed", info.name.c_str());
+            }
+            innerBundleUserInfos.emplace_back(innerBundleUserInfo);
+        }
+
+        result.append(info.name);
+        result.append(":\n");
+        nlohmann::json jsonObject = info;
+        jsonObject["hapModuleInfos"] = info.hapModuleInfos;
+        jsonObject["userInfo"] = innerBundleUserInfos;
+        result.append(jsonObject.dump(Constants::DUMP_INDENT));
+        result.append("\n");
+    }
+    APP_LOGI("get all bundle info success");
+    return true;
+}
+
+bool BundleMgrHostImpl::DumpBundleInfo(
+    const std::string &bundleName, int32_t userId, std::string &result)
+{
+    std::vector<InnerBundleUserInfo> innerBundleUserInfos;
+    if (userId == Constants::ALL_USERID) {
+        if (!GetBundleUserInfos(bundleName, innerBundleUserInfos)) {
+            APP_LOGE("get all userInfos in bundle(%{public}s) failed", bundleName.c_str());
+            return false;
+        }
+        userId = innerBundleUserInfos.begin()->bundleUserInfo.userId;
+    } else {
+        InnerBundleUserInfo innerBundleUserInfo;
+        if (!GetBundleUserInfo(bundleName, userId, innerBundleUserInfo)) {
+            APP_LOGI("get userInfo in bundle(%{public}s) failed", bundleName.c_str());
+        }
+        innerBundleUserInfos.emplace_back(innerBundleUserInfo);
+    }
+
+    BundleInfo bundleInfo;
+    if (!GetBundleInfo(bundleName,
+        BundleFlag::GET_BUNDLE_WITH_ABILITIES | BundleFlag::GET_BUNDLE_WITH_REQUESTED_PERMISSION,
+        bundleInfo, userId)) {
+        APP_LOGE("get bundleInfo(%{public}s) failed", bundleName.c_str());
+        return false;
+    }
+
+    result.append(bundleName);
+    result.append(":\n");
+    nlohmann::json jsonObject = bundleInfo;
+    jsonObject["hapModuleInfos"] = bundleInfo.hapModuleInfos;
+    jsonObject["userInfo"] = innerBundleUserInfos;
+    result.append(jsonObject.dump(Constants::DUMP_INDENT));
+    result.append("\n");
+    APP_LOGI("get %{public}s bundle info success", bundleName.c_str());
+    return true;
+}
+
+bool BundleMgrHostImpl::DumpShortcutInfo(
+    const std::string &bundleName, int32_t userId, std::string &result)
+{
+    std::vector<ShortcutInfo> shortcutInfos;
+    if (userId == Constants::ALL_USERID) {
+        std::vector<InnerBundleUserInfo> innerBundleUserInfos;
+        if (!GetBundleUserInfos(bundleName, innerBundleUserInfos)) {
+            APP_LOGE("get all userInfos in bundle(%{public}s) failed", bundleName.c_str());
+            return false;
+        }
+        userId = innerBundleUserInfos.begin()->bundleUserInfo.userId;
+    }
+
+    if (!GetShortcutInfos(bundleName, userId, shortcutInfos)) {
+        APP_LOGE("get all shortcut info by bundle(%{public}s) failed", bundleName.c_str());
+        return false;
+    }
+
+    result.append("shortcuts");
+    result.append(":\n");
+    for (const auto &info : shortcutInfos) {
+        result.append("\"shortcut\"");
+        result.append(":\n");
+        nlohmann::json jsonObject = info;
+        result.append(jsonObject.dump(Constants::DUMP_INDENT));
+        result.append("\n");
+    }
+    APP_LOGI("get %{public}s shortcut info success", bundleName.c_str());
+    return true;
 }
 
 bool BundleMgrHostImpl::IsApplicationEnabled(const std::string &bundleName)
@@ -906,5 +997,21 @@ const std::shared_ptr<BundleDataMgr> BundleMgrHostImpl::GetDataMgrFromService()
     return DelayedSingleton<BundleMgrService>::GetInstance()->GetDataMgr();
 }
 
+std::set<int32_t> BundleMgrHostImpl::GetExistsCommonUserIs()
+{
+    std::set<int32_t> userIds;
+    auto dataMgr = GetDataMgrFromService();
+    if (dataMgr == nullptr) {
+        APP_LOGE("Get dataMgr shared_ptr nullptr");
+        return userIds;
+    }
+
+    for (auto userId : dataMgr->GetAllUser()) {
+        if (userId >= Constants::START_USERID) {
+            userIds.insert(userId);
+        }
+    }
+    return userIds;
+}
 }  // namespace AppExecFwk
 }  // namespace OHOS

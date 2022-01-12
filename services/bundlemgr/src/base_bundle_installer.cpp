@@ -186,6 +186,13 @@ ErrCode BaseBundleInstaller::InnerProcessBundleInstall(std::unordered_map<std::s
             return ERR_APPEXECFWK_INSTALL_BUNDLE_MGR_SERVICE_ERROR;
         }
 
+        // to guaruntee that the hap version can be compatible.
+        result = CheckVersionCompatibility(oldInfo);
+        if (result != ERR_OK) {
+            APP_LOGE("The app has been installed and update lower version bundle.");
+            return result;
+        }
+
         hasInstalledInUser_ = oldInfo.HasInnerBundleUserInfo(userId_);
         if (!hasInstalledInUser_) {
             APP_LOGD("new userInfo with bundleName %{public}s and userId %{public}d",
@@ -201,13 +208,6 @@ ErrCode BaseBundleInstaller::InnerProcessBundleInstall(std::unordered_map<std::s
             if (result != ERR_OK) {
                 return result;
             }
-        }
-
-        // to guaruntee that the hap version can be compatible.
-        result = CheckVersionCompatibility(oldInfo);
-        if (result != ERR_OK) {
-            APP_LOGE("The app has been installed and update lower version bundle.");
-            return result;
         }
 
         for (auto &info : newInfos) {
@@ -239,6 +239,7 @@ ErrCode BaseBundleInstaller::InnerProcessBundleInstall(std::unordered_map<std::s
         }
 
         it++;
+        hasInstalledInUser_ = true;
     }
 
     InnerBundleInfo bundleInfo;
@@ -838,6 +839,12 @@ ErrCode BaseBundleInstaller::ProcessNewModuleInstall(InnerBundleInfo &newInfo, I
 {
     APP_LOGD("ProcessNewModuleInstall %{public}s, userId: %{public}d.",
         newInfo.GetBundleName().c_str(), userId_);
+    ScopeGuard userGuard([&] {
+        if (!hasInstalledInUser_) {
+            RemoveBundleUserData(oldInfo);
+        }
+    });
+
     if (newInfo.HasEntry() && oldInfo.HasEntry()) {
         APP_LOGE("install more than one entry module");
         return ERR_APPEXECFWK_INSTALL_ENTRY_ALREADY_EXIST;
@@ -878,6 +885,7 @@ ErrCode BaseBundleInstaller::ProcessNewModuleInstall(InnerBundleInfo &newInfo, I
 
     moduleGuard.Dismiss();
     moduleDataGuard.Dismiss();
+    userGuard.Dismiss();
     return ERR_OK;
 }
 
@@ -885,6 +893,12 @@ ErrCode BaseBundleInstaller::ProcessModuleUpdate(InnerBundleInfo &newInfo, Inner
 {
     APP_LOGD("ProcessModuleUpdate %{public}s userId: %{public}d.",
         newInfo.GetBundleName().c_str(), userId_);
+    ScopeGuard userGuard([&] {
+        if (!hasInstalledInUser_) {
+            RemoveBundleUserData(oldInfo);
+        }
+    });
+
     if (!isReplace && versionCode_ == oldInfo.GetVersionCode()) {
         if (hasInstalledInUser_) {
             APP_LOGE("fail to install already existing bundle using normal flag");
@@ -894,6 +908,7 @@ ErrCode BaseBundleInstaller::ProcessModuleUpdate(InnerBundleInfo &newInfo, Inner
         // app versionCode equals to the old and do not need to update module
         // and only need to update userInfo
         newInfo.SetOnlyCreateBundleUser(true);
+        userGuard.Dismiss();
         return ERR_OK;
     }
 
@@ -927,6 +942,8 @@ ErrCode BaseBundleInstaller::ProcessModuleUpdate(InnerBundleInfo &newInfo, Inner
         APP_LOGE("update innerBundleInfo %{public}s failed", bundleName_.c_str());
         return ERR_APPEXECFWK_INSTALL_BUNDLE_MGR_SERVICE_ERROR;
     }
+
+    userGuard.Dismiss();
     return ERR_OK;
 }
 
@@ -1523,6 +1540,19 @@ ErrCode BaseBundleInstaller::RemoveBundleUserData(InnerBundleInfo &innerBundleIn
     innerBundleInfo.RemoveInnerBundleUserInfo(userId_);
     BundlePermissionMgr::UninstallPermissions(innerBundleInfo, userId_, true);
     return UpdateUserInfoToDb(innerBundleInfo, true);
+}
+
+void BaseBundleInstaller::ResetInstallProperties()
+{
+    isContainEntry_ = false;
+    isAppExist_ = false;
+    hasInstalledInUser_ = false;
+    needNotifyBundleStatus_ = true;
+    isFeatureNeedUninstall_ = false;
+    versionCode_ = 0;
+    uninstallModuleVec_.clear();
+    installedModules_.clear();
+    state_ = InstallerState::INSTALL_START;
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS
