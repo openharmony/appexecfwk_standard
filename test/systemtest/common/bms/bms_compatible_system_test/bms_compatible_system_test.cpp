@@ -676,7 +676,7 @@ HWTEST_F(BmsCompatibleSystemTest, BMS_QueryAbilityInfoByUri_0100, Function | Med
         APP_LOGE("bundle mgr proxy is nullptr.");
         EXPECT_TRUE(false);
     }
-    bool result = bundleMgrProxy->QueryAbilityInfoByUri(abilityUri, abilityInfo);
+    bool result = bundleMgrProxy->QueryAbilityInfoByUri(abilityUri, 0, abilityInfo);
     EXPECT_TRUE(result);
     EXPECT_EQ(abilityInfo.name, abilityName);
     EXPECT_EQ(abilityInfo.bundleName, bundleName);
@@ -700,7 +700,7 @@ HWTEST_F(BmsCompatibleSystemTest, BMS_QueryAbilityInfoByUri_0200, Function | Med
         APP_LOGE("bundle mgr proxy is nullptr.");
         EXPECT_TRUE(false);
     }
-    bool result = bundleMgrProxy->QueryAbilityInfoByUri(abilityUri, abilityInfo);
+    bool result = bundleMgrProxy->QueryAbilityInfoByUri(abilityUri, 0, abilityInfo);
     EXPECT_FALSE(result);
     EXPECT_EQ(abilityInfo.name, "");
     EXPECT_EQ(abilityInfo.bundleName, "");
@@ -722,7 +722,7 @@ HWTEST_F(BmsCompatibleSystemTest, BMS_QueryAbilityInfoByUri_0300, Function | Med
         APP_LOGE("bundle mgr proxy is nullptr.");
         EXPECT_TRUE(false);
     }
-    bool result = bundleMgrProxy->QueryAbilityInfoByUri(abilityUri, abilityInfo);
+    bool result = bundleMgrProxy->QueryAbilityInfoByUri(abilityUri, 0, abilityInfo);
     EXPECT_FALSE(result);
     EXPECT_EQ(abilityInfo.name, "");
     EXPECT_EQ(abilityInfo.bundleName, "");

@@ -1524,5 +1524,18 @@ ErrCode BaseBundleInstaller::RemoveBundleUserData(InnerBundleInfo &innerBundleIn
     BundlePermissionMgr::UninstallPermissions(innerBundleInfo, userId_, true);
     return UpdateUserInfoToDb(innerBundleInfo, true);
 }
+
+void BaseBundleInstaller::ResetInstallProperties()
+{
+    isContainEntry_ = false;
+    isAppExist_ = false;
+    hasInstalledInUser_ = false;
+    needNotifyBundleStatus_ = true;
+    isFeatureNeedUninstall_ = false;
+    versionCode_ = 0;
+    uninstallModuleVec_.clear();
+    installedModules_.clear();
+    state_ = InstallerState::INSTALL_START;
+}
 }  // namespace AppExecFwk
 }  // namespace OHOS

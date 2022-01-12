@@ -183,17 +183,19 @@ public:
     /**
      * @brief Query the AbilityInfo by ability.uri in config.json.
      * @param abilityUri Indicates the uri of the ability.
-     * @param abilityInfo Indicates the obtained AbilityInfo object.
-     * @return Returns true if the AbilityInfo is successfully obtained; returns false otherwise.
-     */
-    bool QueryAbilityInfoByUri(const std::string &abilityUri, AbilityInfo &abilityInfo) const;
-    /**
-     * @brief Query the AbilityInfo by ability.uri in config.json.
-     * @param abilityUri Indicates the uri of the ability.
      * @param abilityInfos Indicates the obtained AbilityInfos object.
      * @return Returns true if the AbilityInfo is successfully obtained; returns false otherwise.
      */
     bool QueryAbilityInfosByUri(const std::string &abilityUri, std::vector<AbilityInfo> &abilityInfos);
+    /**
+     * @brief Query the AbilityInfo by ability.uri in config.json.
+     * @param abilityUri Indicates the uri of the ability.
+     * @param userId Indicates the user ID.
+     * @param abilityInfo Indicates the obtained AbilityInfo object.
+     * @return Returns true if the AbilityInfo is successfully obtained; returns false otherwise.
+     */
+    bool QueryAbilityInfoByUri(
+        const std::string &abilityUri, int32_t userId, AbilityInfo &abilityInfo) const;
     /**
      * @brief Obtains the ApplicationInfo based on a given bundle name.
      * @param appName Indicates the application bundle name to be queried.
@@ -629,6 +631,14 @@ public:
     {
         bundlePromise_ = bundlePromise;
     }
+    /**
+     * @brief Get bundleUserInfos by bundleName.
+     * @param bundleName Indicates the application bundle name to be queried.
+     * @param innerBundleUserInfo Indicates the obtained InnerBundleUserInfo object.
+     * @return Returns true if the application is successfully obtained; returns false otherwise.
+     */
+    bool GetInnerBundleUserInfos(
+        const std::string &bundleName, std::vector<InnerBundleUserInfo> &innerBundleUserInfos);
 private:
     /**
      * @brief Init transferStates.
@@ -691,6 +701,7 @@ private:
     bool GenerateBundleId(const std::string &bundleName, int32_t &bundleId);
     int32_t GetUserIdByUid(int32_t uid) const;
     bool GetInnerBundleInfoByUid(const int uid, InnerBundleInfo &innerBundleInfo) const;
+    bool GetAllBundleInfos(int32_t flags, std::vector<BundleInfo> &bundleInfos) const;
 private:
     mutable std::mutex bundleInfoMutex_;
     mutable std::mutex stateMutex_;

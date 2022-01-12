@@ -244,6 +244,15 @@ public:
      */
     virtual bool QueryAbilityInfosByUri(const std::string &abilityUri, std::vector<AbilityInfo> &abilityInfos) override;
     /**
+     * @brief Query the AbilityInfo by ability.uri in config.json through the proxy object.
+     * @param abilityUri Indicates the uri of the ability.
+     * @param userId Indicates the user ID.
+     * @param abilityInfo Indicates the obtained AbilityInfo object.
+     * @return Returns true if the AbilityInfo is successfully obtained; returns false otherwise.
+     */
+    virtual bool QueryAbilityInfoByUri(
+        const std::string &abilityUri, int32_t userId, AbilityInfo &abilityInfo) override;
+    /**
      * @brief Obtains the BundleInfo of all keep-alive applications in the system through the proxy object.
      * @param bundleInfos Indicates all of the obtained BundleInfo objects.
      * @return Returns true if the BundleInfos is successfully obtained; returns false otherwise.
