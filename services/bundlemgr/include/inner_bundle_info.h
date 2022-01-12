@@ -31,6 +31,7 @@
 #include "json_util.h"
 #include "shortcut_info.h"
 #include "want.h"
+#include "distributed_bundle_info.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -1371,6 +1372,8 @@ public:
     {
         return isNewVersion_;
     }
+
+    void GetDistributedBundleInfo(DistributedBundleInfo &distributedBundleInfo) const;
 
 private:
     void GetBundleWithAbilities(

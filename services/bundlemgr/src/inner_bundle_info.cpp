@@ -2035,5 +2035,32 @@ int32_t InnerBundleInfo::GetResponseUserId(int32_t requestUserId) const
 
     return responseUserId;
 }
+
+void InnerBundleInfo::GetDistributedBundleInfo(DistributedBundleInfo &distributedBundleInfo) const
+{
+    distributedBundleInfo.name = baseBundleInfo_.name;
+    distributedBundleInfo.versionCode = baseBundleInfo_.versionCode;
+    distributedBundleInfo.compatibleVersionCode = baseBundleInfo_.compatibleVersion;
+    distributedBundleInfo.versionName = baseBundleInfo_.versionName;
+    distributedBundleInfo.minCompatibleVersion = baseBundleInfo_.minCompatibleVersionCode;
+    distributedBundleInfo.targetVersionCode = baseBundleInfo_.targetVersion;
+    distributedBundleInfo.appId = baseBundleInfo_.appId;
+
+    for (const auto &innerModuleInfo : innerModuleInfos_) {
+        if (innerModuleInfo.second.isEntry) {
+            distributedBundleInfo.mainAbility = innerModuleInfo.second.mainAbility;
+        }
+    }
+
+    for (const auto &innerBundleUserInfo : innerBundleUserInfos_) {
+        BundleUserInfo bundleUserInfo = innerBundleUserInfo.second.bundleUserInfo;
+        for (const auto &item : baseAbilityInfos_) {
+            if (item.second.enabled) {
+                bundleUserInfo.enabledAbilities.emplace_back(item.second.name);
+            }
+        }
+        distributedBundleInfo.bundleUserInfos.emplace_back(bundleUserInfo);
+    }
+}
 }  // namespace AppExecFwk
 }  // namespace OHOS

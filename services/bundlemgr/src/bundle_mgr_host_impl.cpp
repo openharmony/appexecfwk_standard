@@ -873,6 +873,18 @@ bool BundleMgrHostImpl::CheckBundleNameInAllowList(const std::string &bundleName
     return result;
 }
 
+bool BundleMgrHostImpl::GetDistributedBundleInfo(
+    const std::string &networkId, int32_t userId, const std::string &bundleName,
+    DistributedBundleInfo &distributedBundleInfo)
+{
+    auto dataMgr = GetDataMgrFromService();
+    if (dataMgr == nullptr) {
+        APP_LOGE("DataMgr is nullptr");
+        return false;
+    }
+    return dataMgr->GetDistributedBundleInfo(networkId, userId, bundleName, distributedBundleInfo);
+}
+
 const std::shared_ptr<BundleCloneMgr> BundleMgrHostImpl::GetCloneMgrFromService()
 {
     return DelayedSingleton<BundleMgrService>::GetInstance()->GetCloneMgr();

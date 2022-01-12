@@ -1921,6 +1921,44 @@ bool BundleMgrProxy::RemoveClonedBundle(const std::string &bundleName, const int
     return reply.ReadBool();
 }
 
+bool BundleMgrProxy::GetDistributedBundleInfo(
+    const std::string &networkId, int32_t userId, const std::string &bundleName,
+    DistributedBundleInfo &distributedBundleInfo)
+{
+    APP_LOGI("begin to GetDistributedBundleInfo of %{public}s", bundleName.c_str());
+    if (networkId.empty() || bundleName.empty()) {
+        APP_LOGE("fail to GetDistributedBundleInfo due to params empty");
+        return false;
+    }
+    MessageParcel data;
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        APP_LOGE("fail to GetDistributedBundleInfo due to write MessageParcel fail");
+        return false;
+    }
+
+    if (!data.WriteString(networkId)) {
+        APP_LOGE("fail to GetDistributedBundleInfo due to write networkId fail");
+        return false;
+    }
+
+    if (!data.WriteInt32(userId)) {
+        APP_LOGE("fail to GetDistributedBundleInfo due to write userId fail");
+        return false;
+    }
+
+    if (!data.WriteString(bundleName)) {
+        APP_LOGE("fail to GetDistributedBundleInfo due to write bundleName fail");
+        return false;
+    }
+    MessageParcel reply;
+    if (!GetParcelableInfo<DistributedBundleInfo>(
+            IBundleMgr::Message::GET_DISTRIBUTE_BUNDLE_INFO, data, distributedBundleInfo)) {
+        APP_LOGE("fail to GetDistributedBundleInfo from server");
+        return false;
+    }
+    return true;
+}
+
 template<typename T>
 bool BundleMgrProxy::GetParcelableInfo(IBundleMgr::Message code, MessageParcel &data, T &parcelableInfo)
 {

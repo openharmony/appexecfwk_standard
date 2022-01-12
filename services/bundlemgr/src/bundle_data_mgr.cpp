@@ -46,6 +46,8 @@ BundleDataMgr::BundleDataMgr()
     // register distributed data process death listener.
     usageRecordStorage_->RegisterKvStoreDeathListener();
     preInstallDataStorage_ = std::make_shared<PreInstallDataStorage>();
+    distributedDataStorage_ = std::make_shared<DistributedDataStorage>();
+    distributedDataStorage_->SetDeviceId();
     APP_LOGI("BundleDataMgr instance is created");
 }
 
@@ -139,6 +141,11 @@ bool BundleDataMgr::AddInnerBundleInfo(const std::string &bundleName, InnerBundl
             std::map<std::string, InnerBundleInfo> infoWithId;
             infoWithId.emplace(Constants::CURRENT_DEVICE_ID, info);
             bundleInfos_.emplace(bundleName, infoWithId);
+            DistributedBundleInfo DistributedBundleInfo;
+            info.GetDistributedBundleInfo(DistributedBundleInfo);
+            if (!distributedDataStorage_->SaveStorageDistributeInfo(DistributedBundleInfo)) {
+                APP_LOGW("write DistributedBundleInfo fail bundle:%{public}s", bundleName.c_str());
+            }
             return true;
         }
     }
@@ -170,6 +177,11 @@ bool BundleDataMgr::SaveNewInfoToDB(const std::string &bundleName, InnerBundleIn
         std::map<std::string, InnerBundleInfo> infoWithId;
         infoWithId.emplace(Constants::CURRENT_DEVICE_ID, info);
         bundleInfos_.emplace(Newbundlename, infoWithId);
+        DistributedBundleInfo DistributedBundleInfo;
+        info.GetDistributedBundleInfo(DistributedBundleInfo);
+        if (!distributedDataStorage_->SaveStorageDistributeInfo(DistributedBundleInfo)) {
+            APP_LOGW("write DistributedBundleInfo fail bundle:%{public}s", bundleName.c_str());
+        }
         return true;
     }
     APP_LOGE("SaveNewInfoToDB finish");
@@ -202,6 +214,10 @@ bool BundleDataMgr::AddNewModuleInfo(
             if (dataStorage_->SaveStorageBundleInfo(Constants::CURRENT_DEVICE_ID, oldInfo)) {
                 APP_LOGI("update storage success bundle:%{public}s", bundleName.c_str());
                 bundleInfos_.at(bundleName).at(Constants::CURRENT_DEVICE_ID) = oldInfo;
+                DistributedBundleInfo DistributedBundleInfo;
+                oldInfo.GetDistributedBundleInfo(DistributedBundleInfo);
+                bool ret = distributedDataStorage_->SaveStorageDistributeInfo(DistributedBundleInfo);
+                APP_LOGI("write DistributedBundleInfo bundle:%{public}s result:%{public}d", bundleName.c_str(), ret);
                 return true;
             }
         }
@@ -233,6 +249,10 @@ bool BundleDataMgr::RemoveModuleInfo(
             if (dataStorage_->SaveStorageBundleInfo(Constants::CURRENT_DEVICE_ID, oldInfo)) {
                 APP_LOGI("update storage success bundle:%{public}s", bundleName.c_str());
                 bundleInfos_.at(bundleName).at(Constants::CURRENT_DEVICE_ID) = oldInfo;
+                DistributedBundleInfo DistributedBundleInfo;
+                oldInfo.GetDistributedBundleInfo(DistributedBundleInfo);
+                bool ret = distributedDataStorage_->SaveStorageDistributeInfo(DistributedBundleInfo);
+                APP_LOGI("write DistributedBundleInfo bundle:%{public}s result:%{public}d", bundleName.c_str(), ret);
                 return true;
             }
         }
@@ -273,6 +293,10 @@ bool BundleDataMgr::UpdateInnerBundleInfo(
             if (dataStorage_->SaveStorageBundleInfo(Constants::CURRENT_DEVICE_ID, oldInfo)) {
                 APP_LOGI("update storage success bundle:%{public}s", bundleName.c_str());
                 bundleInfos_.at(bundleName).at(Constants::CURRENT_DEVICE_ID) = oldInfo;
+                DistributedBundleInfo DistributedBundleInfo;
+                oldInfo.GetDistributedBundleInfo(DistributedBundleInfo);
+                bool ret = distributedDataStorage_->SaveStorageDistributeInfo(DistributedBundleInfo);
+                APP_LOGI("write DistributedBundleInfo bundle:%{public}s result:%{public}d", bundleName.c_str(), ret);
                 return true;
             }
         }
@@ -980,7 +1004,7 @@ std::string BundleDataMgr::GetAbilityLabel(const std::string &bundleName, const 
         APP_LOGW("bundleInfos_ data is empty");
         return Constants::EMPTY_STRING;
     }
-    APP_LOGD("GetAbilityLabel %{public}s", bundleName.c_str());
+    APP_LOGI("GetAbilityLabel %{public}s", bundleName.c_str());
     auto infoItem = bundleInfos_.find(bundleName);
     if (infoItem == bundleInfos_.end()) {
         return Constants::EMPTY_STRING;
@@ -1128,6 +1152,11 @@ void BundleDataMgr::DeleteBundleInfo(const std::string &bundleName, const Instal
         bool ret = dataStorage_->DeleteStorageBundleInfo(Constants::CURRENT_DEVICE_ID, innerBundleInfo);
         if (!ret) {
             APP_LOGW("delete storage error name:%{public}s", bundleName.c_str());
+        } else {
+            DistributedBundleInfo DistributedBundleInfo;
+            if (!distributedDataStorage_->DeleteStorageDistributeInfo(innerBundleInfo.GetBundleName())) {
+                APP_LOGW("delete DistributedBundleInfo fail bundle:%{public}s", bundleName.c_str());
+            }
         }
         // only delete self-device bundle
         infoItem->second.erase(Constants::CURRENT_DEVICE_ID);
@@ -2136,6 +2165,11 @@ bool BundleDataMgr::RemoveClonedBundleInfo(const std::string &bundleName)
         if (!ret) {
             APP_LOGW("delete storage error name:%{public}s", bundleName.c_str());
             return false;
+        } else {
+            DistributedBundleInfo DistributedBundleInfo;
+            if (!distributedDataStorage_->DeleteStorageDistributeInfo(innerBundleInfo.GetBundleName())) {
+                APP_LOGW("delete DistributedBundleInfo fail bundle:%{public}s", bundleName.c_str());
+            }
         }
         // only delete self-device bundle
         infoItem->second.erase(Constants::CURRENT_DEVICE_ID);
@@ -2338,6 +2372,16 @@ std::set<int32_t> BundleDataMgr::GetAllUser() const
 {
     std::lock_guard<std::mutex> lock(multiUserIdSetMutex_);
     return multiUserIdsSet_;
+}
+
+bool BundleDataMgr::GetDistributedBundleInfo(
+    const std::string &networkId, int32_t userId, const std::string &bundleName,
+    DistributedBundleInfo &distributedBundleInfo)
+{
+    if (userId == Constants::INVALID_USERID) {
+        return false;
+    }
+    return distributedDataStorage_->QueryStroageDistributeInfo(bundleName, userId, networkId, distributedBundleInfo);
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS

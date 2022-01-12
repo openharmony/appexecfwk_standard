@@ -221,6 +221,12 @@ public:
     {
         return 0;
     }
+    virtual bool GetDistributedBundleInfo(
+        const std::string &networkId, int32_t userId, const std::string &bundleName,
+        DistributedBundleInfo &distributedBundleInfo)
+    {
+        return true;
+    }
 };
 
 class BundleMgrStub : public IRemoteStub<IBundleMgr> {
@@ -430,6 +436,12 @@ public:
         GTEST_LOG_(INFO) << "bundleInfos size : "<<bundleInfos.size();
         return true;
     };
+    virtual bool GetDistributedBundleInfo(
+        const std::string &networkId, int32_t userId, const std::string &bundleName,
+        DistributedBundleInfo &distributedBundleInfo)
+    {
+        return true;
+    }
     BundleMgrService();
     virtual ~BundleMgrService() {}
     void MakingPackageData();
