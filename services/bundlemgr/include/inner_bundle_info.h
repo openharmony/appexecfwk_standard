@@ -120,6 +120,7 @@ struct InnerModuleInfo {
     std::vector<DefinePermission> definePermissions;
     std::vector<std::string> extensionKeys;
     std::vector<std::string> extensionSkillKeys;
+    bool isStageBasedModel = false;
 };
 
 struct SkillUri {
@@ -1415,7 +1416,7 @@ private:
     std::map<std::string, ShortcutInfo> shortcutInfos_;
     std::map<std::string, InnerBundleUserInfo> innerBundleUserInfos_;
     // new version fields
-    bool isNewVersion_ = true;
+    bool isNewVersion_ = false;
     std::map<std::string, ExtensionInfo> baseExtensionInfos_;
     std::map<std::string, std::vector<Skill>> extensionSkillInfos_;
 };
