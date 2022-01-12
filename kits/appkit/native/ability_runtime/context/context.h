@@ -137,7 +137,36 @@ public:
      */
     virtual std::string GetDistributedFilesDir() = 0;
 
+    /**
+     * @brief Getting derived class
+     *
+     * @tparam T template
+     * @param context the context object
+     * @return std::shared_ptr<T> derived class
+     */
+    template<class T>
+    static std::shared_ptr<T> ConvertTo(const std::shared_ptr<Context>& context)
+    {
+        if constexpr (!std::is_same_v<T, typename T::SelfType>) {
+            return nullptr;
+        }
+
+        if (context && context->IsContext(T::CONTEXT_TYPE_ID)) {
+            return std::static_pointer_cast<T>(context);
+        }
+
+        return nullptr;
+    }
+
+    using SelfType = Context;
+    static const size_t CONTEXT_TYPE_ID;
+
 protected:
+    virtual bool IsContext(size_t contextTypeId)
+    {
+        return contextTypeId == CONTEXT_TYPE_ID;
+    }
+
     static std::shared_ptr<Context> appContext_;
     static std::mutex contextMutex_;
 };
