@@ -35,6 +35,8 @@ struct ExtensionInfo {
     std::string description;
     int32_t descriptionId = 0;
     std::string type;
+    std::string readPermission;
+    std::string writePermission;
     std::vector<std::string> permissions;
     bool visible = false;
     std::vector<Metadata> metadata;

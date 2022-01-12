@@ -309,8 +309,8 @@ const std::string APP_VENDOR = "vendor";
 const std::string APP_VERSION_CODE = "versionCode";
 const std::string APP_VERSION_NAME = "versionName";
 const std::string APP_MIN_COMPATIBLE_VERSION_CODE = "minCompatibleVersionCode";
-const std::string APP_API_COMPATIBLE_VERSION = "apiCompatibleVersion";
-const std::string APP_API_TARGET_VERSION = "apiTargetVersion";
+const std::string APP_MIN_API_VERSION = "minAPIVersion";
+const std::string APP_TARGET_API_VERSION = "targetAPIVersion";
 const std::string APP_API_RELEASETYPE = "apiReleaseType";
 const std::string APP_API_RELEASETYPE_DEFAULT_VALUE = "Release";
 const std::string APP_DISTRIBUTED_NOTIFICATION_ENABLED = "distributedNotificationEnabled";
@@ -318,8 +318,8 @@ const std::string APP_ENTITY_TYPE = "entityType";
 const std::string APP_ENTITY_TYPE_DEFAULT_VALUE = "unspecified";
 const std::string APP_KEEP_ALIVE = "keepAlive";
 const std::string APP_REMOVABLE = "removable";
-const std::string APP_SINGLE_USER = "singleUser";
-const std::string APP_CLEAR_USER_DATA = "clearUserData";
+const std::string APP_SINGLETON = "singleton";
+const std::string APP_USER_DATA_CLEARABLE = "userDataClearable";
 const std::string APP_PHONE = "phone";
 const std::string APP_TABLET = "tablet";
 const std::string APP_TV = "tv";
@@ -347,12 +347,12 @@ const std::string MODULE_DEFINE_PERMISSIONS = "definePermissions";
 const std::string MODULE_TYPE_ENTRY = "entry";
 const std::string MODULE_TYPE_FEATURE = "feature";
 // deviceConfig
-const std::string DEVICE_CONFIG_API_COMPATIBLE_VERSION = "apiCompatibleVersion";
+const std::string MIN_API_VERSION = "minAPIVersion";
 const std::string DEVICE_CONFIG_DISTRIBUTED_NOTIFICATION_ENABLED = "distributedNotificationEnabled";
 const std::string DEVICE_CONFIG_KEEP_ALIVE = "keepAlive";
 const std::string DEVICE_CONFIG_REMOVABLE = "removable";
-const std::string DEVICE_CONFIG_SINGLE_USER = "singleUser";
-const std::string DEVICE_CONFIG_CLEAR_USER_DATA = "clearUserData";
+const std::string DEVICE_CONFIG_SINGLETON = "singleton";
+const std::string DEVICE_CONFIG_USER_DATA_CLEARABLE = "userDataClearable";
 // metadata
 const std::string META_DATA_NAME = "name";
 const std::string META_DATA_VALUE = "value";
@@ -369,6 +369,8 @@ const std::string ABILITY_BACKGROUNDMODES = "backgroundModes";
 // extension ability
 const std::string EXTENSION_ABILITY_NAME = "name";
 const std::string EXTENSION_ABILITY_TYPE = "type";
+const std::string EXTENSION_ABILITY_READ_PERMISSION = "readPermission";
+const std::string EXTENSION_ABILITY_WRITE_PERMISSION = "writePermission";
 // requestPermission
 const std::string REQUESTPERMISSION_NAME = "name";
 const std::string REQUESTPERMISSION_REASON = "reason";
