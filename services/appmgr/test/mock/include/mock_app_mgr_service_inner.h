@@ -30,10 +30,9 @@ public:
     virtual ~MockAppMgrServiceInner()
     {}
 
-    MOCK_METHOD5(LoadAbility,
+    MOCK_METHOD4(LoadAbility,
         void(const sptr<IRemoteObject> &token, const sptr<IRemoteObject> &preToken,
-            const std::shared_ptr<AbilityInfo> &abilityInfo, const std::shared_ptr<ApplicationInfo> &appInfo,
-	    int32_t uid));
+            const std::shared_ptr<AbilityInfo> &abilityInfo, const std::shared_ptr<ApplicationInfo> &appInfo));
     MOCK_METHOD2(AttachApplication, void(const pid_t pid, const sptr<IAppScheduler> &app));
     MOCK_METHOD1(ApplicationForegrounded, void(const int32_t recordId));
     MOCK_METHOD1(ApplicationBackgrounded, void(const int32_t recordId));

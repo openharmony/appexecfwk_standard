@@ -136,7 +136,7 @@ std::shared_ptr<AppRunningRecord> AmsAppRunningRecordTest::StartLoadAbility(cons
     service_->SetAppSpawnClient(mockClientPtr);
     EXPECT_CALL(*mockClientPtr, StartProcess(_, _)).Times(1).WillOnce(DoAll(SetArgReferee<1>(newPid), Return(ERR_OK)));
 
-    service_->LoadAbility(token, nullptr, abilityInfo, appInfo, 0);
+    service_->LoadAbility(token, nullptr, abilityInfo, appInfo);
 
     std::shared_ptr<AppRunningRecord> record =
         service_->GetOrCreateAppRunningRecord(GetMockToken(), appInfo, abilityInfo, GetTestProcessName(), 0, result);
@@ -782,9 +782,9 @@ HWTEST_F(AmsAppRunningRecordTest, AttachApplication_006, TestSize.Level1)
     auto record = StartLoadAbility(token, abilityInfo, appInfo, PID);
 
     sptr<IRemoteObject> token2 = new (std::nothrow) MockAbilityToken();
-    service_->LoadAbility(token2, nullptr, abilityInfo2, appInfo, 0);
+    service_->LoadAbility(token2, nullptr, abilityInfo2, appInfo);
     sptr<IRemoteObject> token3 = new (std::nothrow) MockAbilityToken();
-    service_->LoadAbility(token3, nullptr, abilityInfo3, appInfo, 0);
+    service_->LoadAbility(token3, nullptr, abilityInfo3, appInfo);
     EXPECT_EQ(record->GetAbilities().size(), EXPECT_RECORD_SIZE);
 
     EXPECT_CALL(*mockAppSchedulerClient_, ScheduleLaunchApplication(_)).Times(1);
@@ -953,7 +953,7 @@ HWTEST_F(AmsAppRunningRecordTest, LaunchAbilityForApp_004, TestSize.Level1)
     EXPECT_CALL(*mockAppSchedulerClient_, ScheduleLaunchApplication(_)).Times(0);
     EXPECT_CALL(*mockAppSchedulerClient_, ScheduleLaunchAbility(_, _)).Times(0);
     sptr<IRemoteObject> token2 = new (std::nothrow) MockAbilityToken();
-    service_->LoadAbility(token2, nullptr, abilityInfo2, appInfo, 0);
+    service_->LoadAbility(token2, nullptr, abilityInfo2, appInfo);
     APP_LOGI("AmsAppRunningRecordTest LaunchAbilityForApp_004 end");
 }
 
