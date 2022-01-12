@@ -44,7 +44,7 @@ public:
      * @return Returns RESULT_OK on success, others on failure.
      */
     virtual AppMgrResultCode LoadAbility(const sptr<IRemoteObject> &token, const sptr<IRemoteObject> &preToken,
-        const AbilityInfo &abilityInfo, const ApplicationInfo &appInfo);
+        const AbilityInfo &abilityInfo, const ApplicationInfo &appInfo, int32_t uid);
 
     /**
      * Terminate ability.
