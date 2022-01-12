@@ -23,10 +23,9 @@ namespace OHOS {
 namespace AppExecFwk {
 class MockAmsMgrScheduler : public AmsMgrStub {
 public:
-    MOCK_METHOD5(LoadAbility,
+    MOCK_METHOD4(LoadAbility,
         void(const sptr<IRemoteObject> &token, const sptr<IRemoteObject> &preToken,
-            const std::shared_ptr<AbilityInfo> &abilityInfo, const std::shared_ptr<ApplicationInfo> &appInfo,
-	    int32_t uid));
+            const std::shared_ptr<AbilityInfo> &abilityInfo, const std::shared_ptr<ApplicationInfo> &appInfo));
     MOCK_METHOD5(AbilityBehaviorAnalysis,
         void(const sptr<OHOS::IRemoteObject> &token, const sptr<OHOS::IRemoteObject> &preToken,
             const int32_t visibility, const int32_t perceptibility, const int32_t connectionState));

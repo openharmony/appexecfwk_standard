@@ -37,7 +37,7 @@ AppMgrClient::~AppMgrClient()
 {}
 
 AppMgrResultCode AppMgrClient::LoadAbility(const sptr<IRemoteObject> &token, const sptr<IRemoteObject> &preToken,
-    const AbilityInfo &abilityInfo, const ApplicationInfo &appInfo, int32_t uid)
+    const AbilityInfo &abilityInfo, const ApplicationInfo &appInfo)
 {
     sptr<IAppMgr> service = iface_cast<IAppMgr>(remote_);
     if (service != nullptr) {
@@ -46,7 +46,7 @@ AppMgrResultCode AppMgrClient::LoadAbility(const sptr<IRemoteObject> &token, con
             // From here, separate AbilityInfo and ApplicationInfo from AA.
             std::shared_ptr<AbilityInfo> abilityInfoPtr = std::make_shared<AbilityInfo>(abilityInfo);
             std::shared_ptr<ApplicationInfo> appInfoPtr = std::make_shared<ApplicationInfo>(appInfo);
-            amsService->LoadAbility(token, preToken, abilityInfoPtr, appInfoPtr, uid);
+            amsService->LoadAbility(token, preToken, abilityInfoPtr, appInfoPtr);
             return AppMgrResultCode::RESULT_OK;
         }
     }
