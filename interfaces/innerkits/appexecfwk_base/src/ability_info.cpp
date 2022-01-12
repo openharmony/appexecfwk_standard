@@ -82,6 +82,7 @@ const std::string META_DATA_NAME = "name";
 const std::string META_DATA_VALUE = "value";
 const std::string META_DATA_RESOURCE = "resource";
 const std::string SRC_ENTRANCE = "srcEntrance";
+const std::string IS_STAGE_BASED_MODEL = "isStageBasedModel";
 }  // namespace
 
 bool AbilityInfo::ReadFromParcel(Parcel &parcel)
@@ -360,7 +361,8 @@ void to_json(nlohmann::json &jsonObject, const AbilityInfo &abilityInfo)
         {JSON_KEY_META_DATA, abilityInfo.metaData},
         {JSON_KEY_FORM_ENABLED, abilityInfo.formEnabled},
         {SRC_ENTRANCE, abilityInfo.srcEntrance},
-        {META_DATA, abilityInfo.metadata}
+        {META_DATA, abilityInfo.metadata},
+        {IS_STAGE_BASED_MODEL, abilityInfo.isStageBasedModel}
     };
 }
 
@@ -813,6 +815,14 @@ void from_json(const nlohmann::json &jsonObject, AbilityInfo &abilityInfo)
         false,
         parseResult,
         ArrayType::OBJECT);
+    GetValueIfFindKey<bool>(jsonObject,
+        jsonObjectEnd,
+        IS_STAGE_BASED_MODEL,
+        abilityInfo.isStageBasedModel,
+        JsonType::BOOLEAN,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
     if (parseResult != ERR_OK) {
         APP_LOGE("read Ability from database error, error code : %{public}d", parseResult);
     }
