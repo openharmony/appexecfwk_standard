@@ -189,7 +189,7 @@ private:
      */
     ErrCode HandleQueryAbilityInfosByUri(Parcel &data, Parcel &reply);
     /**
-     * @brief Handles the QueryAbilityInfos function called from a IBundleMgr proxy object.
+     * @brief Handles the QueryAbilityInfosMutiparam function called from a IBundleMgr proxy object.
      * @param data Indicates the data to be read.
      * @param reply Indicates the reply to be sent;
      * @return Returns ERR_OK if called successfully; returns error code otherwise.
@@ -202,6 +202,13 @@ private:
      * @return Returns ERR_OK if called successfully; returns error code otherwise.
      */
     ErrCode HandleQueryAllAbilityInfos(Parcel &data, Parcel &reply);
+    /**
+     * @brief Handles the QueryAbilityInfoByUri function called from a IBundleMgr proxy object.
+     * @param data Indicates the data to be read.
+     * @param reply Indicates the reply to be sent;
+     * @return Returns ERR_OK if called successfully; returns error code otherwise.
+     */
+    ErrCode HandleQueryAbilityInfoByUriForUserId(Parcel &data, Parcel &reply);
     /**
      * @brief Handles the QueryKeepAliveBundleInfos function called from a IBundleMgr proxy object.
      * @param data Indicates the data to be read.

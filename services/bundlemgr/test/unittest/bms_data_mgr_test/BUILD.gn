@@ -88,6 +88,7 @@ ohos_unittest("BmsDataMgrTest") {
     "ces_standard:cesfwk_innerkits",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
+    "os_account_standard:os_account_innerkits",
   ]
 }
 

@@ -28,6 +28,7 @@
 #include "ability_info.h"
 #include "application_info.h"
 #include "bundle_data_storage_interface.h"
+#include "bundle_promise.h"
 #include "bundle_status_callback_interface.h"
 #include "common_event_manager.h"
 #include "inner_bundle_info.h"
@@ -183,17 +184,19 @@ public:
     /**
      * @brief Query the AbilityInfo by ability.uri in config.json.
      * @param abilityUri Indicates the uri of the ability.
-     * @param abilityInfo Indicates the obtained AbilityInfo object.
-     * @return Returns true if the AbilityInfo is successfully obtained; returns false otherwise.
-     */
-    bool QueryAbilityInfoByUri(const std::string &abilityUri, AbilityInfo &abilityInfo) const;
-    /**
-     * @brief Query the AbilityInfo by ability.uri in config.json.
-     * @param abilityUri Indicates the uri of the ability.
      * @param abilityInfos Indicates the obtained AbilityInfos object.
      * @return Returns true if the AbilityInfo is successfully obtained; returns false otherwise.
      */
     bool QueryAbilityInfosByUri(const std::string &abilityUri, std::vector<AbilityInfo> &abilityInfos);
+    /**
+     * @brief Query the AbilityInfo by ability.uri in config.json.
+     * @param abilityUri Indicates the uri of the ability.
+     * @param userId Indicates the user ID.
+     * @param abilityInfo Indicates the obtained AbilityInfo object.
+     * @return Returns true if the AbilityInfo is successfully obtained; returns false otherwise.
+     */
+    bool QueryAbilityInfoByUri(
+        const std::string &abilityUri, int32_t userId, AbilityInfo &abilityInfo) const;
     /**
      * @brief Obtains the ApplicationInfo based on a given bundle name.
      * @param appName Indicates the application bundle name to be queried.
@@ -313,7 +316,7 @@ public:
     /**
      * @brief Obtains all bundle names installed.
      * @param bundleNames Indicates the bundle Names.
-     * @param userId Indicates the userId.
+     * @param userId Indicates the user ID.
      * @return Returns true if have bundle installed; returns false otherwise.
      */
     bool GetBundleList(
@@ -414,11 +417,11 @@ public:
      */
     bool GetAppFeature(const std::string &bundleName, std::string &appFeature) const;
     /**
-     * @brief Set the flag that indicates whether all applications are installed.
+     * @brief Set the flag that indicates whether initial user create successfully.
      * @param flag Indicates the flag to be set.
      * @return
      */
-    void SetAllInstallFlag(bool flag);
+    void SetInitialUserFlag(bool flag);
     /**
      * @brief Checks whether the publickeys of two bundles are the same.
      * @param firstBundleName Indicates the first bundle name.
@@ -458,10 +461,12 @@ public:
     /**
      * @brief Obtains the ShortcutInfo objects provided by a specified application on the device.
      * @param bundleName Indicates the bundle name of the application.
+     * @param userId Indicates the user ID.
      * @param shortcutInfos List of ShortcutInfo objects if obtained.
      * @return Returns true if this function is successfully called; returns false otherwise.
      */
-    bool GetShortcutInfos(const std::string &bundleName, std::vector<ShortcutInfo> &shortcutInfos) const;
+    bool GetShortcutInfos(
+        const std::string &bundleName, int32_t userId, std::vector<ShortcutInfo> &shortcutInfos) const;
     /**
      * @brief Obtains the CommonEventInfo objects provided by a event key on the device.
      * @param eventKey Indicates the event of the subscribe.
@@ -577,14 +582,14 @@ public:
      */
     bool SaveInstallMark(const InnerBundleInfo &info, bool isAppExisted) const;
     /**
-     * @brief GetInnerBundleUserInfosByUserId.
+     * @brief GetInnerBundleUserInfoByUserId.
      * @param bundleName Indicates the application bundle name to be queried.
      * @param userId Indicates the user ID.
-     * @param innerBundleUserInfos Indicates the obtained ApplicationInfo object.
+     * @param innerBundleUserInfo Indicates the obtained InnerBundleUserInfo object.
      * @return Returns true if the application is successfully obtained; returns false otherwise.
      */
-    bool GetInnerBundleUserInfosByUserId(
-        const std::string &bundleName, int32_t userId, std::vector<InnerBundleUserInfo> &innerBundleUserInfos) const;
+    bool GetInnerBundleUserInfoByUserId(
+        const std::string &bundleName, int32_t userId, InnerBundleUserInfo &innerBundleUserInfo) const;
     /**
      * @brief save all created users.
      * @param userId Indicates the user ID.
@@ -622,6 +627,30 @@ public:
     bool GetDistributedBundleInfo(
         const std::string &networkId, int32_t userId, const std::string &bundleName,
         DistributedBundleInfo &distributedBundleInfo);
+    /**
+     * @brief Has initial user created.
+     * @return Returns initial user flag.
+     */
+    bool HasInitialUserCreated() const
+    {
+        return initialUserFlag_;
+    }
+    /**
+     * @brief Set bundlePromise.
+     * @param bundlePromise Indicates the bundlePromise.
+     */
+    void SetBundlePromise(const std::shared_ptr<BundlePromise>& bundlePromise)
+    {
+        bundlePromise_ = bundlePromise;
+    }
+    /**
+     * @brief Get bundleUserInfos by bundleName.
+     * @param bundleName Indicates the application bundle name to be queried.
+     * @param innerBundleUserInfo Indicates the obtained InnerBundleUserInfo object.
+     * @return Returns true if the application is successfully obtained; returns false otherwise.
+     */
+    bool GetInnerBundleUserInfos(
+        const std::string &bundleName, std::vector<InnerBundleUserInfo> &innerBundleUserInfos);
 private:
     /**
      * @brief Init transferStates.
@@ -674,8 +703,8 @@ private:
      */
     bool ImplicitQueryAbilityInfos(
         const Want &want, int32_t flags, int32_t userId, std::vector<AbilityInfo> &abilityInfos) const;
-    void GetMatchAbilityInfos(
-        const Want &want, int32_t flags, const InnerBundleInfo &info, std::vector<AbilityInfo> &abilityInfos) const;
+    void GetMatchAbilityInfos(const Want &want, int32_t flags,
+        const InnerBundleInfo &info, int32_t userId, std::vector<AbilityInfo> &abilityInfos) const;
     bool ExplicitQueryAbilityInfo(const std::string &bundleName, const std::string &abilityName,
         int32_t flags, int32_t userId, AbilityInfo &abilityInfo) const;
     bool GetInnerBundleInfoWithFlags(const std::string &bundleName, const int32_t flags,
@@ -683,6 +712,8 @@ private:
     int32_t GetUserId(int32_t userId = Constants::UNSPECIFIED_USERID) const;
     bool GenerateBundleId(const std::string &bundleName, int32_t &bundleId);
     int32_t GetUserIdByUid(int32_t uid) const;
+    bool GetInnerBundleInfoByUid(const int uid, InnerBundleInfo &innerBundleInfo) const;
+    bool GetAllBundleInfos(int32_t flags, std::vector<BundleInfo> &bundleInfos) const;
 private:
     mutable std::mutex bundleInfoMutex_;
     mutable std::mutex stateMutex_;
@@ -692,7 +723,7 @@ private:
     mutable std::mutex allPermissionsChangedLock_;
     mutable std::mutex permissionsChangedLock_;
     mutable std::mutex multiUserIdSetMutex_;
-    bool allInstallFlag_ = false;
+    bool initialUserFlag_ = false;
     // using for locking by bundleName
     std::unordered_map<std::string, std::mutex> bundleMutexMap_;
     // using for generating bundleId
@@ -718,6 +749,7 @@ private:
     std::set<sptr<OnPermissionChangedCallback>> allPermissionsCallbacks_;
     // map<uid, callback>.
     std::map<int32_t, std::set<sptr<OnPermissionChangedCallback>>> permissionsCallbacks_;
+    std::shared_ptr<BundlePromise> bundlePromise_ = nullptr;
 };
 
 }  // namespace AppExecFwk

@@ -92,7 +92,7 @@ void BMSEventHandler::SetAllInstallFlag() const
         APP_LOGE("DataMgr is nullptr");
         return;
     }
-    dataMgr->SetAllInstallFlag(true);
+    dataMgr->SetInitialUserFlag(true);
 }
 
 }  // namespace AppExecFwk
