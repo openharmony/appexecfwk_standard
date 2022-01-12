@@ -55,6 +55,12 @@ const int32_t SIGNAL_KILL = 9;
 const std::string REQ_PERMISSION = "ohos.permission.LOCATION_IN_BACKGROUND";
 constexpr int32_t SYSTEM_UID = 1000;
 #define ENUM_TO_STRING(s) #s
+constexpr int32_t BASE_USER_RANGE = 200000;
+
+int32_t GetUserIdByUid(int32_t uid)
+{
+    return uid / BASE_USER_RANGE;
+}
 }  // namespace
 
 using OHOS::AppExecFwk::Constants::PERMISSION_GRANTED;
@@ -71,10 +77,13 @@ AppMgrServiceInner::~AppMgrServiceInner()
 {}
 
 void AppMgrServiceInner::LoadAbility(const sptr<IRemoteObject> &token, const sptr<IRemoteObject> &preToken,
-    const std::shared_ptr<AbilityInfo> &abilityInfo, const std::shared_ptr<ApplicationInfo> &appInfo)
+    const std::shared_ptr<AbilityInfo> &abilityInfo, const std::shared_ptr<ApplicationInfo> &appInfo,
+    int32_t uid)
 {
+    APP_LOGE("LoadAbility, appInfo:%{public}s, abilityInfo:%{public}s, uid:%{public}d",
+        appInfo->name.c_str(), abilityInfo->name.c_str(), uid);
     BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
-    if (!token || !abilityInfo || !appInfo) {
+    if (!token || !abilityInfo || !appInfo || uid < 0) {
         APP_LOGE("param error");
         return;
     }
@@ -90,11 +99,10 @@ void AppMgrServiceInner::LoadAbility(const sptr<IRemoteObject> &token, const spt
     auto processName = abilityInfo->process.empty() ? appInfo->bundleName : abilityInfo->process;
     APP_LOGI("processName = [%{public}s]", processName.c_str());
 
-    auto appRecord = GetAppRunningRecordByProcessName(appInfo->name, processName, appInfo->uid);
+    auto appRecord = GetAppRunningRecordByProcessName(appInfo->name, processName, uid);
     if (!appRecord) {
         RecordQueryResult result;
-        int32_t defaultUid = 0;
-        appRecord = GetOrCreateAppRunningRecord(token, appInfo, abilityInfo, processName, defaultUid, result);
+        appRecord = GetOrCreateAppRunningRecord(token, appInfo, abilityInfo, processName, uid, result);
         if (FAILED(result.error)) {
             APP_LOGE("create appRunningRecord failed");
             return;
@@ -106,7 +114,7 @@ void AppMgrServiceInner::LoadAbility(const sptr<IRemoteObject> &token, const spt
         }
         APP_LOGI("LoadAbility StartProcess appname [%{public}s] | bundename [%{public}s]", appRecord->GetName().c_str(),
             appRecord->GetBundleName().c_str());
-        StartProcess(abilityInfo->applicationName, processName, appRecord, abilityInfo->applicationInfo.uid);
+        StartProcess(abilityInfo->applicationName, processName, appRecord, uid);
     } else {
         APP_LOGI("LoadAbility StartAbility appname [%{public}s] | bundename [%{public}s]", appRecord->GetName().c_str(),
             appRecord->GetBundleName().c_str());
@@ -529,7 +537,7 @@ std::shared_ptr<AppRunningRecord> AppMgrServiceInner::GetAppRunningRecordByAppNa
 }
 
 std::shared_ptr<AppRunningRecord> AppMgrServiceInner::GetAppRunningRecordByProcessName(
-    const std::string &appName, const std::string &processName, const int uid) const
+    const std::string &appName, const std::string &processName, int32_t uid) const
 {
     return appRunningManager_->GetAppRunningRecordByProcessName(appName, processName, uid);
 }
@@ -1055,7 +1063,7 @@ void AppMgrServiceInner::OnProcessDied(const std::shared_ptr<AppRunningRecord> &
 }
 
 void AppMgrServiceInner::StartProcess(const std::string &appName, const std::string &processName,
-    const std::shared_ptr<AppRunningRecord> &appRecord, const int uid)
+    const std::shared_ptr<AppRunningRecord> &appRecord, int32_t uid)
 {
     BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     if (!remoteClientManager_->GetSpawnClient() || !appRecord) {
@@ -1069,10 +1077,12 @@ void AppMgrServiceInner::StartProcess(const std::string &appName, const std::str
         return;
     }
 
+    int32_t userId = GetUserIdByUid(uid);
     AppSpawnStartMsg startMsg;
     BundleInfo bundleInfo;
     std::vector<AppExecFwk::BundleInfo> bundleInfos;
-    bool bundleMgrResult = bundleMgr_->GetBundleInfos(AppExecFwk::BundleFlag::GET_BUNDLE_WITH_ABILITIES, bundleInfos);
+    bool bundleMgrResult =
+        bundleMgr_->GetBundleInfo(appRecord->GetBundleName(), BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo, userId);
     if (!bundleMgrResult) {
         APP_LOGE("GetBundleInfo is fail");
         return;
@@ -1088,6 +1098,7 @@ void AppMgrServiceInner::StartProcess(const std::string &appName, const std::str
     }
     startMsg.uid = (*bundleInfoIter).uid;
     startMsg.gid = (*bundleInfoIter).gid;
+    APP_LOGI("GetBundleInfo info, uid=%{public}d, gid=%{public}d", bundleInfo.uid, bundleInfo.gid);
 
     bundleMgrResult = bundleMgr_->GetBundleGidsByUid(appRecord->GetBundleName(), uid, startMsg.gids);
     if (!bundleMgrResult) {

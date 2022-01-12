@@ -172,7 +172,7 @@ std::shared_ptr<AppRunningRecord> AmsAppLifeCycleModuleTest::StartProcessAndLoad
         EXPECT_CALL(*mockAppScheduler, ScheduleLaunchAbility(_, _)).Times(1);
     }
 
-    serviceInner_->LoadAbility(token, nullptr, abilityInfo, appInfo);
+    serviceInner_->LoadAbility(token, nullptr, abilityInfo, appInfo, 0);
 
     std::shared_ptr<AppRunningRecord> record = serviceInner_->GetAppRunningRecordByProcessName(
         appInfo->name, abilityInfo->process, abilityInfo->applicationInfo.uid);
@@ -344,7 +344,7 @@ void AmsAppLifeCycleModuleTest::CreateAppRecentList(const int32_t appNum)
         EXPECT_CALL(*mockAppStateCallbackStub_, OnAppStateChanged(_)).Times(1);
 
         serviceInner_->SetAppSpawnClient(std::unique_ptr<MockAppSpawnClient>(mockedSpawnClient));
-        serviceInner_->LoadAbility(token, nullptr, abilityInfo, appInfo);
+        serviceInner_->LoadAbility(token, nullptr, abilityInfo, appInfo, 0);
     }
     return;
 }
@@ -1087,7 +1087,7 @@ HWTEST_F(AmsAppLifeCycleModuleTest, AbilityBehaviorAnalysis_01, TestSize.Level1)
     serviceInner_->SetBundleManager(bundleMgr.GetRefPtr());
 
     StartAppProcess(pid);
-    serviceInner_->LoadAbility(token, nullptr, abilityInfo, appInfo);
+    serviceInner_->LoadAbility(token, nullptr, abilityInfo, appInfo, 0);
     std::shared_ptr<AppRunningRecord> record = serviceInner_->GetAppRunningRecordByProcessName(
         appInfo->name, abilityInfo->process, abilityInfo->applicationInfo.uid);
     if (record == nullptr) {
@@ -1140,7 +1140,7 @@ HWTEST_F(AmsAppLifeCycleModuleTest, AbilityBehaviorAnalysis_02, TestSize.Level1)
     serviceInner_->SetBundleManager(bundleMgr.GetRefPtr());
 
     StartAppProcess(pid);
-    serviceInner_->LoadAbility(token, nullptr, abilityInfo, appInfo);
+    serviceInner_->LoadAbility(token, nullptr, abilityInfo, appInfo, 0);
     std::shared_ptr<AppRunningRecord> record = serviceInner_->GetAppRunningRecordByProcessName(
         appInfo->name, abilityInfo->process, abilityInfo->applicationInfo.uid);
     if (record == nullptr) {
@@ -1193,7 +1193,7 @@ HWTEST_F(AmsAppLifeCycleModuleTest, AbilityBehaviorAnalysis_03, TestSize.Level1)
     serviceInner_->SetBundleManager(bundleMgr.GetRefPtr());
 
     StartAppProcess(pid);
-    serviceInner_->LoadAbility(token, nullptr, abilityInfo, appInfo);
+    serviceInner_->LoadAbility(token, nullptr, abilityInfo, appInfo, 0);
     std::shared_ptr<AppRunningRecord> record = serviceInner_->GetAppRunningRecordByProcessName(
         appInfo->name, abilityInfo->process, abilityInfo->applicationInfo.uid);
     if (record == nullptr) {
@@ -1246,7 +1246,7 @@ HWTEST_F(AmsAppLifeCycleModuleTest, AbilityBehaviorAnalysis_04, TestSize.Level1)
     serviceInner_->SetBundleManager(bundleMgr.GetRefPtr());
 
     StartAppProcess(pid);
-    serviceInner_->LoadAbility(token, nullptr, abilityInfo, appInfo);
+    serviceInner_->LoadAbility(token, nullptr, abilityInfo, appInfo, 0);
     std::shared_ptr<AppRunningRecord> record = serviceInner_->GetAppRunningRecordByProcessName(
         appInfo->name, abilityInfo->process, abilityInfo->applicationInfo.uid);
     if (record == nullptr) {
@@ -1299,7 +1299,7 @@ HWTEST_F(AmsAppLifeCycleModuleTest, AbilityBehaviorAnalysis_05, TestSize.Level1)
     serviceInner_->SetBundleManager(bundleMgr.GetRefPtr());
 
     StartAppProcess(pid);
-    serviceInner_->LoadAbility(token, nullptr, abilityInfo, appInfo);
+    serviceInner_->LoadAbility(token, nullptr, abilityInfo, appInfo, 0);
     std::shared_ptr<AppRunningRecord> record = serviceInner_->GetAppRunningRecordByProcessName(
         appInfo->name, abilityInfo->process, abilityInfo->applicationInfo.uid);
     if (record == nullptr) {
@@ -1354,7 +1354,7 @@ HWTEST_F(AmsAppLifeCycleModuleTest, AbilityBehaviorAnalysis_06, TestSize.Level1)
     serviceInner_->SetBundleManager(bundleMgr.GetRefPtr());
 
     StartAppProcess(pid);
-    serviceInner_->LoadAbility(token, nullptr, abilityInfo, appInfo);
+    serviceInner_->LoadAbility(token, nullptr, abilityInfo, appInfo, 0);
     std::shared_ptr<AppRunningRecord> record = serviceInner_->GetAppRunningRecordByProcessName(
         appInfo->name, abilityInfo->process, abilityInfo->applicationInfo.uid);
     if (record == nullptr) {

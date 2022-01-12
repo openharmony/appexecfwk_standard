@@ -65,7 +65,8 @@ public:
      * @return
      */
     virtual void LoadAbility(const sptr<IRemoteObject> &token, const sptr<IRemoteObject> &preToken,
-        const std::shared_ptr<AbilityInfo> &abilityInfo, const std::shared_ptr<ApplicationInfo> &appInfo);
+        const std::shared_ptr<AbilityInfo> &abilityInfo, const std::shared_ptr<ApplicationInfo> &appInfo,
+        int32_t uid);
 
     /**
      * TerminateAbility, terminate the token ability.
@@ -339,7 +340,7 @@ public:
      * @return process record.
      */
     std::shared_ptr<AppRunningRecord> GetAppRunningRecordByProcessName(
-        const std::string &appName, const std::string &processName, const int uid) const;
+        const std::string &appName, const std::string &processName, int32_t uid) const;
 
     /**
      * GetAppRunningRecordByPid, Get process record by application pid.
@@ -603,9 +604,8 @@ private:
      *
      * @return
      */
-    void StartProcess(
-        const std::string &appName, const std::string &processName, const std::shared_ptr<AppRunningRecord> &appRecord,
-        const int uid);
+    void StartProcess(const std::string &appName, const std::string &processName,
+        const std::shared_ptr<AppRunningRecord> &appRecord, int32_t uid);
 
     /**
      * PushAppFront, Adjust the latest application record to the top level.
