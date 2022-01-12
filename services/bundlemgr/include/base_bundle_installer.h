@@ -118,7 +118,10 @@ protected:
      * @return Returns ERR_OK if the application install successfully; returns error code otherwise.
      */
     ErrCode Recover(const std::string &bundleName, const InstallParam &installParam);
-
+    /**
+     * @brief Reset install properties.
+     */
+    void ResetInstallProperties();
 private:
     /**
      * @brief The real procedure for system and normal bundle install.
