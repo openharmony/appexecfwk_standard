@@ -194,9 +194,12 @@ ErrCode BaseBundleInstaller::InnerProcessBundleInstall(std::unordered_map<std::s
             newInnerBundleUserInfo.bundleUserInfo.userId = userId_;
             newInnerBundleUserInfo.bundleName = bundleName_;
             oldInfo.AddInnerBundleUserInfo(newInnerBundleUserInfo);
-            uint32_t tokenId = BundlePermissionMgr::CreateTokenId(oldInfo, bundleName_, userId_);
+            uint32_t tokenId = CreateAccessTokenId(oldInfo);
             oldInfo.SetAccessTokenId(tokenId, userId_);
-            BundlePermissionMgr::GrantedRequestPermissions(oldInfo, userId_);
+            result = GrantRequestPermissions(oldInfo, tokenId);
+            if (result != ERR_OK) {
+                return result;
+            }
             result = CreateBundleUserData(oldInfo, false);
             if (result != ERR_OK) {
                 return result;
@@ -268,6 +271,20 @@ ErrCode BaseBundleInstaller::InnerProcessBundleInstall(std::unordered_map<std::s
     uid = bundleInfo.GetUid(userId_);
     mainAbility_ = bundleInfo.GetMainAbility();
     return result;
+}
+
+uint32_t BaseBundleInstaller::CreateAccessTokenId(const InnerBundleInfo &info)
+{
+    return BundlePermissionMgr::CreateAccessTokenId(info, bundleName_, userId_);
+}
+
+ErrCode BaseBundleInstaller::GrantRequestPermissions(const InnerBundleInfo &info, const uint32_t tokenId)
+{
+    if (!BundlePermissionMgr::GrantRequestPermissions(info, tokenId)) {
+        APP_LOGE("GrantRequestPermissions failed");
+        return ERR_APPEXECFWK_INSTALL_GRANT_REQUEST_PERMISSIOMS_FAILED;
+    }
+    return ERR_OK;
 }
 
 void BaseBundleInstaller::ParseShortcuts(InnerBundleInfo &info)
@@ -398,6 +415,10 @@ void BaseBundleInstaller::RollBack(const std::unordered_map<std::string, InnerBu
     APP_LOGD("start rollback due to install failed");
     if (!isAppExist_) {
         RemoveBundleAndDataDir(newInfos.begin()->second, false);
+        // delete accessTokenId
+        if (BundlePermissionMgr::DeleteAccessTokenId(newInfos.begin()->second.GetAccessTokenId(userId_)) != ERR_OK) {
+            APP_LOGE("delete accessToken failed");
+        }
         // remove innerBundleInfo
         RemoveInfo(bundleName_, "");
         return;
@@ -679,9 +700,12 @@ ErrCode BaseBundleInstaller::ProcessRecover(
             curInnerBundleUserInfo.bundleUserInfo.userId = userId_;
             curInnerBundleUserInfo.bundleName = bundleName;
             oldInfo.AddInnerBundleUserInfo(curInnerBundleUserInfo);
-            uint32_t tokenId = BundlePermissionMgr::CreateTokenId(oldInfo, bundleName_, userId_);
+            uint32_t tokenId = CreateAccessTokenId(oldInfo);
             oldInfo.SetAccessTokenId(tokenId, userId_);
-            BundlePermissionMgr::GrantedRequestPermissions(oldInfo, userId_);
+            ErrCode result = GrantRequestPermissions(oldInfo, tokenId);
+            if (result != ERR_OK) {
+                return result;
+            }
             return CreateBundleUserData(oldInfo, true);
         }
     }
@@ -718,7 +742,7 @@ ErrCode BaseBundleInstaller::RemoveBundle(InnerBundleInfo &info)
         return ERR_APPEXECFWK_INSTALL_BUNDLE_MGR_SERVICE_ERROR;
     }
 
-    if (BundlePermissionMgr::DeleteTokenId(info.GetAccessTokenId(userId_)) != ERR_OK) {
+    if (BundlePermissionMgr::DeleteAccessTokenId(info.GetAccessTokenId(userId_)) != ERR_OK) {
         APP_LOGE("delete accessToken failed");
     }
     BundlePermissionMgr::UninstallPermissions(info, userId_, false);
@@ -750,7 +774,7 @@ ErrCode BaseBundleInstaller::ProcessBundleInstallStatus(InnerBundleInfo &info, i
     std::string modulePath = info.GetAppCodePath() + Constants::PATH_SEPARATOR + modulePackage_;
     result = ExtractModule(info, modulePath);
     if (result != ERR_OK) {
-        APP_LOGE("create bundle and data dir failed");
+        APP_LOGE("extract module failed");
         return result;
     }
 
@@ -764,15 +788,14 @@ ErrCode BaseBundleInstaller::ProcessBundleInstallStatus(InnerBundleInfo &info, i
     info.SetInstallMark(bundleName_, modulePackage_, InstallExceptionStatus::INSTALL_FINISH);
     uid = info.GetUid(userId_);
     info.SetBundleInstallTime(BundleUtil::GetCurrentTime(), userId_);
-    uint32_t tokenId = BundlePermissionMgr::CreateTokenId(info, bundleName_, userId_);
+    uint32_t tokenId = CreateAccessTokenId(info);
     info.SetAccessTokenId(tokenId, userId_);
-    BundlePermissionMgr::GrantedRequestPermissions(info, userId_);
-
+    result = GrantRequestPermissions(info, tokenId);
+    if (result != ERR_OK) {
+        return result;
+    }
     if (!dataMgr_->AddInnerBundleInfo(bundleName_, info)) {
         APP_LOGE("add bundle %{public}s info failed", bundleName_.c_str());
-        if (BundlePermissionMgr::DeleteTokenId(tokenId) != ERR_OK) {
-            APP_LOGE("delete accessToken failed");
-        }
         dataMgr_->UpdateBundleInstallState(bundleName_, InstallState::UNINSTALL_START);
         dataMgr_->UpdateBundleInstallState(bundleName_, InstallState::UNINSTALL_SUCCESS);
         return ERR_APPEXECFWK_INSTALL_BUNDLE_MGR_SERVICE_ERROR;
@@ -869,6 +892,18 @@ ErrCode BaseBundleInstaller::ProcessNewModuleInstall(InnerBundleInfo &newInfo, I
     ParseShortcuts(newInfo);
     oldInfo.SetInstallMark(bundleName_, modulePackage_, InstallExceptionStatus::INSTALL_FINISH);
 
+    std::vector<std::string> newRequestPermName;
+    if (!BundlePermissionMgr::AddDefinePermissions(oldInfo.GetAccessTokenId(userId_), newInfo, newRequestPermName)) {
+        APP_LOGE("BundlePermissionMgr::AddDefinePermissions failed %{public}s", bundleName_.c_str());
+        return ERR_APPEXECFWK_INSTALL_UPDATE_HAP_TOKEN_FAILED;
+    }
+
+    if (!BundlePermissionMgr::GrantRequestPermissions(newInfo, newRequestPermName,
+        oldInfo.GetAccessTokenId(userId_))) {
+        APP_LOGE("BundlePermissionMgr::GrantRequestPermissions failed %{public}s", bundleName_.c_str());
+        return ERR_APPEXECFWK_INSTALL_GRANT_REQUEST_PERMISSIOMS_FAILED;
+    }
+
     oldInfo.SetBundleUpdateTime(BundleUtil::GetCurrentTime(), userId_);
     if (!dataMgr_->AddNewModuleInfo(bundleName_, newInfo, oldInfo)) {
         APP_LOGE(
@@ -921,7 +956,11 @@ ErrCode BaseBundleInstaller::ProcessModuleUpdate(InnerBundleInfo &newInfo, Inner
     newInfo.RestoreModuleInfo(oldInfo);
     ParseShortcuts(newInfo);
     oldInfo.SetInstallMark(bundleName_, modulePackage_, InstallExceptionStatus::UPDATING_FINISH);
-
+    uint32_t tokenId = oldInfo.GetAccessTokenId(userId_);
+    if (BundlePermissionMgr::UpdateHapToken(tokenId, newInfo) != ERR_OK) {
+        APP_LOGE("update HapToken %{public}s failed", bundleName_.c_str());
+        return ERR_APPEXECFWK_INSTALL_UPDATE_HAP_TOKEN_FAILED;
+    }
     oldInfo.SetBundleUpdateTime(BundleUtil::GetCurrentTime(), userId_);
     if (!dataMgr_->UpdateInnerBundleInfo(bundleName_, newInfo, oldInfo)) {
         APP_LOGE("update innerBundleInfo %{public}s failed", bundleName_.c_str());
@@ -1503,6 +1542,10 @@ ErrCode BaseBundleInstaller::RemoveBundleUserData(InnerBundleInfo &innerBundleIn
     if (result != ERR_OK) {
         APP_LOGE("remove user data directory failed.");
         return result;
+    }
+    // delete accessTokenId
+    if (BundlePermissionMgr::DeleteAccessTokenId(innerBundleInfo.GetAccessTokenId(userId_)) != ERR_OK) {
+        APP_LOGE("delete accessToken failed");
     }
 
     innerBundleInfo.RemoveInnerBundleUserInfo(userId_);

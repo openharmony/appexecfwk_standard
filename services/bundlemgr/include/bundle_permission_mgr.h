@@ -102,12 +102,21 @@ public:
     static bool RequestPermissionFromUser(
         const std::string &bundleName, const std::string &permissionName, const int userId);
 
-    static uint32_t CreateTokenId(
+    static uint32_t CreateAccessTokenId(
         const InnerBundleInfo &innerBundleInfo, const std::string bundleName, const int32_t userId);
 
-    static int32_t DeleteTokenId(const uint32_t tokenId);
+    static int32_t UpdateHapToken(const uint32_t tokenId,
+        const InnerBundleInfo &innerBundleInfo);
 
-    static int32_t GrantedRequestPermissions(const InnerBundleInfo &innerBundleInfo, const int32_t userId);
+    static bool AddDefinePermissions(const uint32_t tokenId,
+        const InnerBundleInfo &innerBundleInfo, std::vector<std::string> &newRequestPermName);
+
+    static int32_t DeleteAccessTokenId(const uint32_t tokenId);
+
+    static bool GrantRequestPermissions(const InnerBundleInfo &info, const uint32_t tokenId);
+
+    static bool GrantRequestPermissions(const InnerBundleInfo &info,
+        const std::vector<std::string> &requestPermName, const uint32_t tokenId);
 
 private:
     /**
@@ -176,8 +185,8 @@ private:
      */
     static int RemoveSystemGrantedReqPermissions(const std::string &bundleName);
 
-    static bool ConvertPermissionDef(const Security::Permission::PermissionDef &permDef, PermissionDef &permissionDef);
-    static bool ConvertPermissionDef(
+    static void ConvertPermissionDef(const Security::Permission::PermissionDef &permDef, PermissionDef &permissionDef);
+    static void ConvertPermissionDef(
         Security::Permission::PermissionDef &permDef, const DefPermission &defPermission,
         const std::string &bundleName);
 };
