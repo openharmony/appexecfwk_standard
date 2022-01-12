@@ -130,7 +130,7 @@ std::string ContextImpl::GetBaseDir() const
 
 std::string ContextImpl::GetCurrentAccountId() const
 {
-    int userId;
+    int userId = 0;
     AccountSA::OsAccountManager::GetOsAccountLocalIdFromProcess(userId);
     return std::to_string(userId);
 }
