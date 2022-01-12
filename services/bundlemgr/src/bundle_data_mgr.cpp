@@ -804,7 +804,6 @@ bool BundleDataMgr::GetBundleInfo(
     if (requestUserId == Constants::INVALID_USERID) {
         return false;
     }
-
     std::lock_guard<std::mutex> lock(bundleInfoMutex_);
     InnerBundleInfo innerBundleInfo;
     if (!GetInnerBundleInfoWithFlags(
@@ -886,6 +885,10 @@ bool BundleDataMgr::GetBundleList(
 bool BundleDataMgr::GetBundleInfos(
     int32_t flags, std::vector<BundleInfo> &bundleInfos, int32_t userId) const
 {
+    if (userId == Constants::ALL_USERID) {
+        return GetAllBundleInfos(flags, bundleInfos);
+    }
+
     int32_t requestUserId = GetUserId(userId);
     if (requestUserId == Constants::INVALID_USERID) {
         return false;
@@ -912,6 +915,34 @@ bool BundleDataMgr::GetBundleInfos(
         find = true;
     }
     APP_LOGD("get bundleInfos result(%{public}d) in user(%{public}d).", find, userId);
+    return find;
+}
+
+bool BundleDataMgr::GetAllBundleInfos(
+    int32_t flags, std::vector<BundleInfo> &bundleInfos) const
+{
+    std::lock_guard<std::mutex> lock(bundleInfoMutex_);
+    if (bundleInfos_.empty()) {
+        APP_LOGE("bundleInfos_ data is empty");
+        return false;
+    }
+
+    bool find = false;
+    for (const auto &item : bundleInfos_) {
+        for (const auto &info : item.second) {
+            if (info.second.IsDisabled()) {
+                APP_LOGD("app %{public}s is disabled", info.second.GetBundleName().c_str());
+                continue;
+            }
+
+            BundleInfo bundleInfo;
+            info.second.GetBundleInfo(flags, bundleInfo, Constants::ALL_USERID);
+            bundleInfos.emplace_back(bundleInfo);
+            find = true;
+        }
+    }
+
+    APP_LOGD("get all bundleInfos result(%{public}d).", find);
     return find;
 }
 
@@ -1036,7 +1067,7 @@ std::string BundleDataMgr::GetAbilityLabel(const std::string &bundleName, const 
         APP_LOGW("bundleInfos_ data is empty");
         return Constants::EMPTY_STRING;
     }
-    APP_LOGD("GetAbilityLabel %{public}s", bundleName.c_str());
+    APP_LOGI("GetAbilityLabel %{public}s", bundleName.c_str());
     auto infoItem = bundleInfos_.find(bundleName);
     if (infoItem == bundleInfos_.end()) {
         return Constants::EMPTY_STRING;
@@ -1150,7 +1181,9 @@ void BundleDataMgr::InitStateTransferMap()
     transferStates_.emplace(InstallState::UNINSTALL_START, InstallState::USER_CHANGE);
     transferStates_.emplace(InstallState::UPDATING_START, InstallState::USER_CHANGE);
     transferStates_.emplace(InstallState::INSTALL_SUCCESS, InstallState::USER_CHANGE);
+    transferStates_.emplace(InstallState::UPDATING_SUCCESS, InstallState::USER_CHANGE);
     transferStates_.emplace(InstallState::USER_CHANGE, InstallState::INSTALL_SUCCESS);
+    transferStates_.emplace(InstallState::USER_CHANGE, InstallState::UPDATING_SUCCESS);
 }
 
 bool BundleDataMgr::IsDeleteDataState(const InstallState state) const
@@ -2404,6 +2437,43 @@ std::set<int32_t> BundleDataMgr::GetAllUser() const
 {
     std::lock_guard<std::mutex> lock(multiUserIdSetMutex_);
     return multiUserIdsSet_;
+}
+
+bool BundleDataMgr::GetInnerBundleUserInfos(
+    const std::string &bundleName, std::vector<InnerBundleUserInfo> &innerBundleUserInfos)
+{
+    APP_LOGD("get all user info in bundleName:(%{public}s)", bundleName.c_str());
+    if (bundleName.empty()) {
+        APP_LOGW("bundle name is empty");
+        return false;
+    }
+
+    std::lock_guard<std::mutex> lock(bundleInfoMutex_);
+    if (bundleInfos_.empty()) {
+        APP_LOGE("bundleInfos data is empty");
+        return false;
+    }
+
+    auto infoItem = bundleInfos_.find(bundleName);
+    if (infoItem == bundleInfos_.end()) {
+        return false;
+    }
+
+    auto innerBundleInfo = infoItem->second.find(Constants::CURRENT_DEVICE_ID);
+    if (innerBundleInfo == infoItem->second.end()) {
+        return false;
+    }
+
+    if (innerBundleInfo->second.IsDisabled()) {
+        APP_LOGE("app %{public}s is disabled", innerBundleInfo->second.GetBundleName().c_str());
+        return false;
+    }
+
+    for (auto userInfo : innerBundleInfo->second.GetInnerBundleUserInfos()) {
+        innerBundleUserInfos.emplace_back(userInfo.second);
+    }
+
+    return !innerBundleUserInfos.empty();
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS
