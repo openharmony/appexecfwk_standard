@@ -1109,16 +1109,6 @@ public:
         return canUninstall_;
     }
 
-    bool SetAbilityEnabled(const std::string &bundleName, const std::string &abilityName, bool isEnabled)
-    {
-        for (auto &ability : baseAbilityInfos_) {
-            if ((ability.second.bundleName == bundleName) && (ability.second.name == abilityName)) {
-                ability.second.enabled = isEnabled;
-                return true;
-            }
-        }
-        return false;
-    }
     /**
      * @brief Insert formInfo.
      * @param keyName Indicates object as key.
@@ -1160,6 +1150,16 @@ public:
             innerModuleInfos_.at(currentPackage_).moduleDataDir = oldInfo.GetModuleDataDir(currentPackage_);
         }
     }
+    /**
+     * @brief Set ability enabled.
+     * @param bundleName Indicates the bundleName.
+     * @param abilityName Indicates the abilityName.
+     * @param isEnabled Indicates the ability enabled.
+     * @param userId Indicates the user id.
+     * @return Return whether the application is enabled.
+     */
+    bool SetAbilityEnabled(
+        const std::string &bundleName, const std::string &abilityName, bool isEnabled, int32_t userId);
     /**
      * @brief Obtains configuration information about an application.
      * @param flags Indicates the flag used to specify information contained
@@ -1373,6 +1373,13 @@ public:
 
     void GetDistributedBundleInfo(DistributedBundleInfo &distributedBundleInfo) const;
 
+    /**
+     * @brief ability is enabled.
+     * @param abilityInfo Indicates the abilityInfo.
+     * @param userId Indicates the user Id.
+     * @return Return set ability enabled result.
+     */
+    bool IsAbilityEnabled(const AbilityInfo &abilityInfo, int32_t userId) const;
 private:
     void GetBundleWithAbilities(
         int32_t flags, BundleInfo &bundleInfo, int32_t userId = Constants::UNSPECIFIED_USERID) const;
