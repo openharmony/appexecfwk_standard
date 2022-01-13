@@ -24,6 +24,7 @@
 
 namespace OHOS {
 namespace AbilityRuntime {
+const size_t Context::CONTEXT_TYPE_ID(std::hash<const char*> {} ("Context"));
 const int64_t ContextImpl::CONTEXT_CREATE_BY_SYSTEM_APP(0x00000001);
 const std::string ContextImpl::CONTEXT_BUNDLECODE_BASE("/data/app/base/");
 const std::string ContextImpl::CONTEXT_BUNDLECODE("/data/storage/app/base");

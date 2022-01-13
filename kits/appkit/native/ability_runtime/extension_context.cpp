@@ -19,6 +19,8 @@
 
 namespace OHOS {
 namespace AbilityRuntime {
+const size_t ExtensionContext::CONTEXT_TYPE_ID(std::hash<const char*> {} ("ExtensionContext"));
+
 void ExtensionContext::SetToken(const sptr<IRemoteObject> &token)
 {
     if (token == nullptr) {

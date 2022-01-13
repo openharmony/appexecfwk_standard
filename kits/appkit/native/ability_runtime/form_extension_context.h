@@ -57,6 +57,15 @@ public:
      */
     void SetAbilityInfo(const std::shared_ptr<OHOS::AppExecFwk::AbilityInfo> &abilityInfo);
 
+    using SelfType = FormExtensionContext;
+    static const size_t CONTEXT_TYPE_ID;
+
+protected:
+    bool IsContext(size_t contextTypeId) override
+    {
+        return contextTypeId == CONTEXT_TYPE_ID || Context::IsContext(contextTypeId);
+    }
+
 private:
     /**
      * @brief Get Current Ability Type

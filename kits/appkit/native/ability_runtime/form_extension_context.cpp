@@ -21,6 +21,8 @@
 
 namespace OHOS {
 namespace AbilityRuntime {
+const size_t FormExtensionContext::CONTEXT_TYPE_ID(std::hash<const char*> {} ("FormExtensionContext"));
+
 int FormExtensionContext::UpdateForm(const int64_t formId, const AppExecFwk::FormProviderData &formProviderData)
 {
     HILOG_DEBUG("%{public}s begin.", __func__);
