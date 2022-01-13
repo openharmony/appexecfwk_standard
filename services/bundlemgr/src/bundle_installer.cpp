@@ -162,12 +162,7 @@ std::set<int32_t> BundleInstaller::GetExistsCommonUserIs()
         return userIds;
     }
 
-    for (auto userId : dataMgr->GetAllUser()) {
-        if (userId >= Constants::START_USERID) {
-            userIds.insert(userId);
-        }
-    }
-    return userIds;
+    return dataMgr->GetAllUser();
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS
