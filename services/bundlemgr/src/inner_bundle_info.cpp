@@ -1961,6 +1961,15 @@ void InnerBundleInfo::AddInnerBundleUserInfo(
 bool InnerBundleInfo::GetInnerBundleUserInfo(
     int32_t userId, InnerBundleUserInfo& innerBundleUserInfo) const
 {
+    if (userId == Constants::ALL_USERID) {
+        if (innerBundleUserInfos_.empty()) {
+            return false;
+        }
+
+        innerBundleUserInfo = innerBundleUserInfos_.begin()->second;
+        return true;
+    }
+
     auto& key = NameAndUserIdToKey(GetBundleName(), userId);
     auto infoItem = innerBundleUserInfos_.find(key);
     if (infoItem == innerBundleUserInfos_.end()) {
@@ -1974,6 +1983,10 @@ bool InnerBundleInfo::GetInnerBundleUserInfo(
 
 bool InnerBundleInfo::HasInnerBundleUserInfo(int32_t userId) const
 {
+    if (userId == Constants::ALL_USERID) {
+        return !innerBundleUserInfos_.empty();
+    }
+
     auto& key = NameAndUserIdToKey(GetBundleName(), userId);
     auto infoItem = innerBundleUserInfos_.find(key);
     return infoItem != innerBundleUserInfos_.end();
@@ -2043,6 +2056,7 @@ int32_t InnerBundleInfo::GetResponseUserId(int32_t requestUserId) const
         }
     }
 
+    APP_LOGD("requestUserId(%{public}d) and responseUserId(%{public}d).", requestUserId, responseUserId);
     return responseUserId;
 }
 

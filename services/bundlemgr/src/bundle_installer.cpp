@@ -19,6 +19,7 @@
 
 #include "app_log_wrapper.h"
 #include "bundle_installer_manager.h"
+#include "bundle_mgr_service.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -37,28 +38,79 @@ BundleInstaller::~BundleInstaller()
 
 void BundleInstaller::Install(const std::string &bundleFilePath, const InstallParam &installParam)
 {
-    auto resultCode = InstallBundle(bundleFilePath, installParam, Constants::AppType::THIRD_PARTY_APP);
+    ErrCode resultCode = ERR_OK;
+    if (installParam.userId == Constants::ALL_USERID) {
+        auto userInstallParam = installParam;
+        for (auto userId : GetExistsCommonUserIs()) {
+            userInstallParam.userId = userId;
+            resultCode = InstallBundle(
+                bundleFilePath, userInstallParam, Constants::AppType::THIRD_PARTY_APP);
+            ResetInstallProperties();
+        }
+    } else {
+        resultCode = InstallBundle(
+            bundleFilePath, installParam, Constants::AppType::THIRD_PARTY_APP);
+    }
+
     statusReceiver_->OnFinished(resultCode, "");
     SendRemoveEvent();
 }
 
 void BundleInstaller::Recover(const std::string &bundleName, const InstallParam &installParam)
 {
-    auto resultCode = BaseBundleInstaller::Recover(bundleName, installParam);
+    ErrCode resultCode = ERR_OK;
+    if (installParam.userId == Constants::ALL_USERID) {
+        auto userInstallParam = installParam;
+        for (auto userId : GetExistsCommonUserIs()) {
+            userInstallParam.userId = userId;
+            resultCode = BaseBundleInstaller::Recover(bundleName, userInstallParam);
+            ResetInstallProperties();
+        }
+    } else {
+        resultCode = BaseBundleInstaller::Recover(bundleName, installParam);
+    }
+
     statusReceiver_->OnFinished(resultCode, "");
     SendRemoveEvent();
 }
 
 void BundleInstaller::Install(const std::vector<std::string> &bundleFilePaths, const InstallParam &installParam)
 {
-    auto resultCode = InstallBundle(bundleFilePaths, installParam, Constants::AppType::THIRD_PARTY_APP);
+    ErrCode resultCode = ERR_OK;
+    if (installParam.userId == Constants::ALL_USERID) {
+        auto userInstallParam = installParam;
+        for (auto userId : GetExistsCommonUserIs()) {
+            userInstallParam.userId = userId;
+            resultCode = InstallBundle(
+                bundleFilePaths, userInstallParam, Constants::AppType::THIRD_PARTY_APP);
+            ResetInstallProperties();
+        }
+    } else {
+        resultCode = InstallBundle(bundleFilePaths, installParam, Constants::AppType::THIRD_PARTY_APP);
+    }
+
     statusReceiver_->OnFinished(resultCode, "");
     SendRemoveEvent();
 }
 
 void BundleInstaller::Uninstall(const std::string &bundleName, const InstallParam &installParam)
 {
-    auto resultCode = UninstallBundle(bundleName, installParam);
+    ErrCode resultCode = ERR_OK;
+    if (installParam.userId == Constants::ALL_USERID) {
+        auto userInstallParam = installParam;
+        for (auto userId : GetExistsCommonUserIs()) {
+            userInstallParam.userId = userId;
+            resultCode = UninstallBundle(bundleName, userInstallParam);
+            if (resultCode == ERR_APPEXECFWK_UNINSTALL_MISSING_INSTALLED_BUNDLE ||
+                resultCode == ERR_APPEXECFWK_USER_NOT_EXIST) {
+                resultCode = ERR_OK;
+            }
+            ResetInstallProperties();
+        }
+    } else {
+        resultCode = UninstallBundle(bundleName, installParam);
+    }
+
     statusReceiver_->OnFinished(resultCode, "");
     SendRemoveEvent();
 }
@@ -66,7 +118,18 @@ void BundleInstaller::Uninstall(const std::string &bundleName, const InstallPara
 void BundleInstaller::Uninstall(
     const std::string &bundleName, const std::string &modulePackage, const InstallParam &installParam)
 {
-    auto resultCode = UninstallBundle(bundleName, modulePackage, installParam);
+    ErrCode resultCode = ERR_OK;
+    if (installParam.userId == Constants::ALL_USERID) {
+        auto userInstallParam = installParam;
+        for (auto userId : GetExistsCommonUserIs()) {
+            userInstallParam.userId = userId;
+            resultCode = UninstallBundle(bundleName, modulePackage, userInstallParam);
+            ResetInstallProperties();
+        }
+    } else {
+        resultCode = UninstallBundle(bundleName, modulePackage, installParam);
+    }
+
     statusReceiver_->OnFinished(resultCode, "");
     SendRemoveEvent();
 }
@@ -90,5 +153,16 @@ void BundleInstaller::SendRemoveEvent() const
     }
 }
 
+std::set<int32_t> BundleInstaller::GetExistsCommonUserIs()
+{
+    std::set<int32_t> userIds;
+    auto dataMgr = DelayedSingleton<BundleMgrService>::GetInstance()->GetDataMgr();
+    if (!dataMgr) {
+        APP_LOGE("Get dataMgr shared_ptr nullptr");
+        return userIds;
+    }
+
+    return dataMgr->GetAllUser();
+}
 }  // namespace AppExecFwk
 }  // namespace OHOS
