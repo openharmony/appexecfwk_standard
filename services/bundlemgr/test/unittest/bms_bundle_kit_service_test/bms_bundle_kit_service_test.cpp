@@ -3089,7 +3089,7 @@ HWTEST_F(BmsBundleKitServiceTest, GetShortcutInfos_0500, Function | SmallTest | 
 
 /**
  * @tc.number: GetUsageRecords_0100
- * @tc.name: test can get usage records by notify activity life status
+ * @tc.name: test can get usage records by notify ability life status
  * @tc.desc: 1.can get usage records
  */
 HWTEST_F(BmsBundleKitServiceTest, GetUsageRecords_0100, Function | SmallTest | Level1)
