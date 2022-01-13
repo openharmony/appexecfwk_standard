@@ -74,6 +74,17 @@ public:
     MOCK_METHOD0(CleanAllMissions, int());
     MOCK_METHOD1(MoveMissionToFront, int(int32_t missionId));
 
+    virtual int SetAbilityController(const sptr<AppExecFwk::IAbilityController> &abilityController,
+        bool imAStabilityTest) override
+    {
+        return 0;
+    }
+
+    virtual bool IsUserAStabilityTest() override
+    {
+        return true;
+    }
+
     void Wait()
     {
         sem_.Wait();
