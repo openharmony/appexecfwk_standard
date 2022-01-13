@@ -43,10 +43,11 @@ public:
      *
      * @param want Indicates the Want containing information about the target ability to start.
      *
+     * @return errCode ERR_OK on success, others on failure.
      */
-    void StartAbility(const AAFwk::Want &want) const;
+    ErrCode StartAbility(const AAFwk::Want &want) const;
 
-    void StartAbility(const AAFwk::Want &want, const AAFwk::StartOptions &startOptions) const;
+    ErrCode StartAbility(const AAFwk::Want &want, const AAFwk::StartOptions &startOptions) const;
 
     /**
      * @brief Connects the current ability to an ability using the AbilityInfo.AbilityType.SERVICE template.
@@ -65,15 +66,18 @@ public:
      *
      * @param conn Indicates the IAbilityConnection callback object passed by connectAbility after the connection
      *              is set up. The IAbilityConnection object uniquely identifies a connection between two abilities.
+     *
+     * @return errCode ERR_OK on success, others on failure.
      */
-    void DisconnectAbility(
+    ErrCode DisconnectAbility(
         const AAFwk::Want &want, const std::shared_ptr<AbilityConnectCallback> &connectCallback) const;
 
     /**
      * @brief Destroys the current ability.
      *
+     * @return errCode ERR_OK on success, others on failure.
      */
-    void TerminateAbility();
+    ErrCode TerminateAbility();
 
     /**
      * @brief Obtains information about the current ability.

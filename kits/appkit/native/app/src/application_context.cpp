@@ -48,9 +48,12 @@ const std::shared_ptr<AbilityInfo> ApplicationContext::GetAbilityInfo()
  * ranges from 0 to 65535. This parameter takes effect only on abilities using the AbilityInfo.AbilityType.PAGE
  * template.
  *
+ * @return errCode ERR_OK on success, others on failure.
  */
-void ApplicationContext::StartAbility(const AAFwk::Want &want, int requestCode)
-{}
+ErrCode ApplicationContext::StartAbility(const AAFwk::Want &want, int requestCode)
+{
+    return ERR_INVALID_VALUE;
+}
 
 /**
  * @brief Starts a new ability with special ability start setting.
@@ -60,9 +63,13 @@ void ApplicationContext::StartAbility(const AAFwk::Want &want, int requestCode)
  * to identify the results returned by abilities. The value ranges from 0 to 65535.
  * @param abilityStartSetting Indicates the special start setting used in starting ability.
  *
+ * @return errCode ERR_OK on success, others on failure.
  */
-void ApplicationContext::StartAbility(const Want &want, int requestCode, const AbilityStartSetting &abilityStartSetting)
-{}
+ErrCode ApplicationContext::StartAbility(const Want &want, int requestCode,
+    const AbilityStartSetting &abilityStartSetting)
+{
+    return ERR_INVALID_VALUE;
+}
 
 /**
  * @brief Destroys another ability you had previously started by calling Ability.startAbilityForResult
@@ -70,16 +77,22 @@ void ApplicationContext::StartAbility(const Want &want, int requestCode, const A
  *
  * @param requestCode Indicates the request code passed for starting the ability.
  *
+ * @return errCode ERR_OK on success, others on failure.
  */
-void ApplicationContext::TerminateAbility(int requestCode)
-{}
+ErrCode ApplicationContext::TerminateAbility(int requestCode)
+{
+    return ERR_INVALID_VALUE;
+}
 
 /**
  * @brief Destroys the current ability.
  *
+ * @return errCode ERR_OK on success, others on failure.
  */
-void ApplicationContext::TerminateAbility()
-{}
+ErrCode ApplicationContext::TerminateAbility()
+{
+    return ERR_INVALID_VALUE;
+}
 
 /**
  * @brief
@@ -133,9 +146,13 @@ bool ApplicationContext::ConnectAbility(const Want &want, const sptr<AAFwk::IAbi
  *
  * @param conn Indicates the IAbilityConnection callback object passed by connectAbility after the connection
  *              is set up. The IAbilityConnection object uniquely identifies a connection between two abilities.
+ *
+ * @return errCode ERR_OK on success, others on failure.
  */
-void ApplicationContext::DisconnectAbility(const sptr<AAFwk::IAbilityConnection> &conn)
-{}
+ErrCode ApplicationContext::DisconnectAbility(const sptr<AAFwk::IAbilityConnection> &conn)
+{
+    return ERR_INVALID_VALUE;
+}
 
 /**
  * @brief Destroys another ability that uses the AbilityInfo.AbilityType.SERVICE template.

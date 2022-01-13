@@ -47,8 +47,9 @@ public:
      * ranges from 0 to 65535. This parameter takes effect only on abilities using the AbilityInfo.AbilityType.PAGE
      * template.
      *
+     * @return errCode ERR_OK on success, others on failure.
      */
-    void StartAbility(const AAFwk::Want &want, int requestCode) override;
+    ErrCode StartAbility(const AAFwk::Want &want, int requestCode) override;
 
     /**
      * @brief Starts a new ability with special ability start setting.
@@ -58,8 +59,9 @@ public:
      * code to identify the results returned by abilities. The value ranges from 0 to 65535.
      * @param abilityStartSetting Indicates the special start setting used in starting ability.
      *
+     * @return errCode ERR_OK on success, others on failure.
      */
-    void StartAbility(const Want &want, int requestCode, const AbilityStartSetting &abilityStartSetting) override;
+    ErrCode StartAbility(const Want &want, int requestCode, const AbilityStartSetting &abilityStartSetting) override;
 
     /**
      * @brief Destroys another ability you had previously started by calling Ability.startAbilityForResult
@@ -68,14 +70,16 @@ public:
      *
      * @param requestCode Indicates the request code passed for starting the ability.
      *
+     * @return errCode ERR_OK on success, others on failure.
      */
-    void TerminateAbility(int requestCode) override;
+    ErrCode TerminateAbility(int requestCode) override;
 
     /**
      * @brief Destroys the current ability.
      *
+     * @return errCode ERR_OK on success, others on failure.
      */
-    void TerminateAbility() override;
+    ErrCode TerminateAbility() override;
 
     /**
      * @brief
@@ -120,8 +124,10 @@ public:
      *
      * @param conn Indicates the IAbilityConnection callback object passed by connectAbility after the connection
      *              is set up. The IAbilityConnection object uniquely identifies a connection between two abilities.
+     *
+     * @return errCode ERR_OK on success, others on failure.
      */
-    void DisconnectAbility(const sptr<AAFwk::IAbilityConnection> &conn) override;
+    ErrCode DisconnectAbility(const sptr<AAFwk::IAbilityConnection> &conn) override;
 
     /**
      * @brief Destroys another ability that uses the AbilityInfo.AbilityType.SERVICE template.
