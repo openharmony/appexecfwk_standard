@@ -418,7 +418,8 @@ bool BundleDataMgr::ExplicitQueryAbilityInfo(const std::string &bundleName, cons
         return false;
     }
     if (!(static_cast<uint32_t>(flags) & GET_ABILITY_INFO_WITH_DISABLE)) {
-        if (!ability->enabled) {
+        if (!innerBundleInfo.IsAbilityEnabled((*ability), GetUserId(userId))) {
+            APP_LOGE("ability:%{public}s is disabled", ability->name.c_str());
             return false;
         }
     }
@@ -535,7 +536,7 @@ bool BundleDataMgr::ImplicitQueryAbilityInfos(
         if (!GetInnerBundleInfoWithFlags(
             item.first, flags, Constants::CURRENT_DEVICE_ID, innerBundleInfo, requestUserId)) {
             APP_LOGE("ImplicitQueryAbilityInfos failed");
-            return false;
+            continue;
         }
 
         int32_t responseUserId = innerBundleInfo.GetResponseUserId(requestUserId);
@@ -561,7 +562,8 @@ void BundleDataMgr::GetMatchAbilityInfos(const Want &want, int32_t flags,
             if (skill.Match(want)) {
                 AbilityInfo abilityinfo = abilityInfoPair.second;
                 if (!(static_cast<uint32_t>(flags) & GET_ABILITY_INFO_WITH_DISABLE)) {
-                    if (!abilityinfo.enabled) {
+                    if (!info.IsAbilityEnabled(abilityinfo, GetUserId(userId))) {
+                        APP_LOGW("GetMatchAbilityInfos %{public}s is disabled", abilityinfo.name.c_str());
                         continue;
                     }
                 }
@@ -1475,18 +1477,18 @@ bool BundleDataMgr::IsAbilityEnabled(const AbilityInfo &abilityInfo) const
     if (!ability) {
         return false;
     }
-    return (*ability).enabled;
+    return innerBundleInfo->second.IsAbilityEnabled((*ability), GetUserId());
 }
 
 bool BundleDataMgr::SetAbilityEnabled(const AbilityInfo &abilityInfo, bool isEnabled)
 {
-    APP_LOGD("IsAbilityEnabled %{public}s", abilityInfo.name.c_str());
+    APP_LOGD("SetAbilityEnabled %{public}s", abilityInfo.name.c_str());
     std::lock_guard<std::mutex> lock(bundleInfoMutex_);
     if (bundleInfos_.empty()) {
         APP_LOGE("bundleInfos_ data is empty");
         return false;
     }
-    APP_LOGD("IsAbilityEnabled %{public}s", abilityInfo.bundleName.c_str());
+    APP_LOGD("SetAbilityEnabled %{public}s", abilityInfo.bundleName.c_str());
     auto infoItem = bundleInfos_.find(abilityInfo.bundleName);
     if (infoItem == bundleInfos_.end()) {
         return false;
@@ -1496,9 +1498,10 @@ bool BundleDataMgr::SetAbilityEnabled(const AbilityInfo &abilityInfo, bool isEna
         return false;
     }
     InnerBundleInfo newInfo = innerBundleInfo->second;
-    newInfo.SetAbilityEnabled(abilityInfo.bundleName, abilityInfo.name, isEnabled);
+    newInfo.SetAbilityEnabled(abilityInfo.bundleName, abilityInfo.name, isEnabled, GetUserId());
     if (dataStorage_->SaveStorageBundleInfo(Constants::CURRENT_DEVICE_ID, newInfo)) {
-        return innerBundleInfo->second.SetAbilityEnabled(abilityInfo.bundleName, abilityInfo.name, isEnabled);
+        return innerBundleInfo->second.SetAbilityEnabled(
+            abilityInfo.bundleName, abilityInfo.name, isEnabled, GetUserId());
     }
     APP_LOGD("dataStorage SetAbilityEnabled %{public}s failed", abilityInfo.bundleName.c_str());
     return false;
