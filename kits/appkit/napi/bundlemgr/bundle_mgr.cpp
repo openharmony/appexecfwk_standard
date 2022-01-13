@@ -661,6 +661,17 @@ static void ConvertBundleInfo(napi_env env, napi_value objBundleInfo, const Bund
     }
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objBundleInfo, "reqPermissions", nReqPermissions));
 
+    napi_value nReqPermissionStates;
+    NAPI_CALL_RETURN_VOID(env, napi_create_array(env, &nReqPermissionStates));
+    for (size_t idx = 0; idx < bundleInfo.reqPermissionStates.size(); idx++) {
+        napi_value nReqPermissionState;
+        NAPI_CALL_RETURN_VOID(env,
+            napi_create_int32(env, bundleInfo.reqPermissionStates[idx], &nReqPermissionState));
+        NAPI_CALL_RETURN_VOID(env, napi_set_element(env, nReqPermissionStates, idx, nReqPermissionState));
+    }
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objBundleInfo, "reqPermissionStates",
+        nReqPermissionStates));
+
     napi_value nIsCompressNativeLibs;
     NAPI_CALL_RETURN_VOID(env, napi_get_boolean(env, false, &nIsCompressNativeLibs));
     NAPI_CALL_RETURN_VOID(

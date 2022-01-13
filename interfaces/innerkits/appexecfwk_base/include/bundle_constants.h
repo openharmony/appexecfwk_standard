@@ -84,6 +84,7 @@ constexpr int SIGNATURE_NOT_MATCHED = 1;
 constexpr int SIGNATURE_UNKNOWN_BUNDLE = 2;
 constexpr int PERMISSION_GRANTED = 0;
 constexpr int PERMISSION_NOT_GRANTED = -1;
+constexpr int PERMISSION_INVALID_GRANTED = -2;
 constexpr int DUMP_INDENT = 4;
 constexpr unsigned int INSTALLD_UMASK = 0000;
 

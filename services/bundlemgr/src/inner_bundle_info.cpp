@@ -16,7 +16,7 @@
 #include "inner_bundle_info.h"
 
 #include <regex>
-
+#include "bundle_permission_mgr.h"
 #include "common_profile.h"
 
 namespace OHOS {
@@ -1845,6 +1845,9 @@ void InnerBundleInfo::GetBundleInfo(int32_t flags, BundleInfo &bundleInfo, int32
             bundleInfo.mainEntry = info.second.modulePackage;
             bundleInfo.entryModuleName = info.second.moduleName;
         }
+    }
+    if (!BundlePermissionMgr::GetRequestPermissionStates(bundleInfo)) {
+        APP_LOGE("get request permission state failed");
     }
     GetBundleWithAbilities(flags, bundleInfo, userId);
 }
