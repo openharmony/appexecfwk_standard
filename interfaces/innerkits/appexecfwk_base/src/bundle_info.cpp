@@ -50,6 +50,7 @@ const std::string BUNDLE_INFO_INSTALL_TIME = "installTime";
 const std::string BUNDLE_INFO_UPDATE_TIME = "updateTime";
 const std::string BUNDLE_INFO_ENTRY_MODULE_NAME = "entryModuleName";
 const std::string BUNDLE_INFO_REQ_PERMISSIONS = "reqPermissions";
+const std::string BUNDLE_INFO_REQ_PERMISSION_STATES = "reqPermissionStates";
 const std::string BUNDLE_INFO_DEF_PERMISSIONS = "defPermissions";
 const std::string BUNDLE_INFO_HAP_MODULE_NAMES = "hapModuleNames";
 const std::string BUNDLE_INFO_MODULE_NAMES = "moduleNames";
@@ -91,6 +92,11 @@ bool BundleInfo::ReadFromParcel(Parcel &parcel)
     READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, reqPermissionsSize);
     for (int32_t i = 0; i < reqPermissionsSize; i++) {
         reqPermissions.emplace_back(Str16ToStr8(parcel.ReadString16()));
+    }
+
+    if (!parcel.ReadInt32Vector(&reqPermissionStates)) {
+        APP_LOGE("fail to read Int32Vector type into parcel");
+        return false;
     }
 
     int32_t defPermissionsSize;
@@ -192,6 +198,11 @@ bool BundleInfo::Marshalling(Parcel &parcel) const
         WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(reqPermission));
     }
 
+    if (!parcel.WriteInt32Vector(reqPermissionStates)) {
+        APP_LOGE("fail to write Int32Vector type into parcel");
+        return false;
+    }
+
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, defPermissions.size());
     for (auto &defPermission : defPermissions) {
         WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(defPermission));
@@ -278,6 +289,7 @@ void to_json(nlohmann::json &jsonObject, const BundleInfo &bundleInfo)
         {BUNDLE_INFO_UPDATE_TIME, bundleInfo.updateTime},
         {BUNDLE_INFO_ENTRY_MODULE_NAME, bundleInfo.entryModuleName},
         {BUNDLE_INFO_REQ_PERMISSIONS, bundleInfo.reqPermissions},
+        {BUNDLE_INFO_REQ_PERMISSION_STATES, bundleInfo.reqPermissionStates},
         {BUNDLE_INFO_DEF_PERMISSIONS, bundleInfo.defPermissions},
         {BUNDLE_INFO_HAP_MODULE_NAMES, bundleInfo.hapModuleNames},
         {BUNDLE_INFO_MODULE_NAMES, bundleInfo.moduleNames},
@@ -516,6 +528,14 @@ void from_json(const nlohmann::json &jsonObject, BundleInfo &bundleInfo)
         false,
         parseResult,
         ArrayType::STRING);
+    GetValueIfFindKey<std::vector<int32_t>>(jsonObject,
+        jsonObjectEnd,
+        BUNDLE_INFO_REQ_PERMISSION_STATES,
+        bundleInfo.reqPermissionStates,
+        JsonType::ARRAY,
+        false,
+        parseResult,
+        ArrayType::NUMBER);
     GetValueIfFindKey<std::vector<std::string>>(jsonObject,
         jsonObjectEnd,
         BUNDLE_INFO_DEF_PERMISSIONS,

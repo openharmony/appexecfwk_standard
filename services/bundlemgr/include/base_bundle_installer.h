@@ -402,6 +402,8 @@ private:
         const std::string &modulePackage, int32_t userId = Constants::UNSPECIFIED_USERID) const;
     ErrCode RemoveBundleCodeDir(const InnerBundleInfo &info) const;
     ErrCode RemoveBundleDataDir(const InnerBundleInfo &info) const;
+    uint32_t CreateAccessTokenId(const InnerBundleInfo &info);
+    ErrCode GrantRequestPermissions(const InnerBundleInfo &info, const uint32_t tokenId);
 
     InstallerState state_ = InstallerState::INSTALL_START;
     std::shared_ptr<BundleDataMgr> dataMgr_ = nullptr;  // this pointer will get when public functions called

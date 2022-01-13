@@ -1373,6 +1373,17 @@ public:
 
     void GetDistributedBundleInfo(DistributedBundleInfo &distributedBundleInfo) const;
 
+    void SetAllowedAcls(const std::vector<std::string> &allowedAcls)
+    {
+        for (const auto &acl : allowedAcls) {
+            allowedAcls_.emplace_back(acl);
+        }
+    }
+
+    std::vector<std::string> GetAllowedAcls() const
+    {
+        return allowedAcls_;
+    }
     /**
      * @brief ability is enabled.
      * @param abilityInfo Indicates the abilityInfo.
@@ -1401,6 +1412,7 @@ private:
     bool hasEntry_ = false;
     bool canUninstall_ = true;
     bool isPreInstallApp_ = false;
+    std::vector<std::string> allowedAcls_;
     InstallMark mark_;
 
     // only using for install or update progress, doesn't need to save to database
