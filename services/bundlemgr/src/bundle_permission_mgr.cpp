@@ -112,6 +112,11 @@ bool BundlePermissionMgr::GrantRequestPermissions(const InnerBundleInfo &info,
     return true;
 }
 
+bool BundlePermissionMgr::GetRequestPermissionStates(BundleInfo &info)
+{
+    return true;
+}
+
 bool BundlePermissionMgr::InitPermissions()
 {
     // need load all system defined permissions here on first start up.

@@ -118,6 +118,8 @@ public:
     static bool GrantRequestPermissions(const InnerBundleInfo &info,
         const std::vector<std::string> &requestPermName, const uint32_t tokenId);
 
+    static bool GetRequestPermissionStates(BundleInfo &info);
+
 private:
     /**
      * @brief Add the defPermissions to permission kit.
