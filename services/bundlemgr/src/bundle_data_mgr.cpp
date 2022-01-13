@@ -672,12 +672,13 @@ bool BundleDataMgr::QueryAbilityInfoByUri(const std::string &abilityUri, Ability
             APP_LOGE("app %{public}s is disabled", infoWithIdItem->second.GetBundleName().c_str());
             continue;
         }
-        auto ability = infoWithIdItem->second.FindAbilityInfoByUri(uri);
+
+        int32_t responseUserId = infoWithIdItem->second.GetResponseUserId(requestUserId);
+        auto ability = infoWithIdItem->second.FindAbilityInfoByUri(uri, responseUserId);
         if (!ability) {
             continue;
         }
         abilityInfo = (*ability);
-        int32_t responseUserId = infoWithIdItem->second.GetResponseUserId(requestUserId);
         infoWithIdItem->second.GetApplicationInfo(
             ApplicationFlag::GET_BASIC_APPLICATION_INFO, responseUserId, abilityInfo.applicationInfo);
         return true;
