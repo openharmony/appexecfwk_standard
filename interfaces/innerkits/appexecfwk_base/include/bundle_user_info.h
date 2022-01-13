@@ -32,6 +32,9 @@ struct BundleUserInfo : public Parcelable {
     // enabled abilities of the user.
     std::vector<std::string> enabledAbilities;
 
+    // disabled abilities of the user.
+    std::vector<std::string> disabledAbilities;
+
     bool ReadFromParcel(Parcel &parcel);
     virtual bool Marshalling(Parcel &parcel) const override;
     static BundleUserInfo *Unmarshalling(Parcel &parcel);
