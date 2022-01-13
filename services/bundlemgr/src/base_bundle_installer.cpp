@@ -1049,7 +1049,16 @@ ErrCode BaseBundleInstaller::RemoveBundleAndDataDir(const InnerBundleInfo &info,
 
 ErrCode BaseBundleInstaller::RemoveBundleCodeDir(const InnerBundleInfo &info) const
 {
-    return InstalldClient::GetInstance()->RemoveDir(info.GetAppCodePath());
+    auto result = InstalldClient::GetInstance()->RemoveDir(info.GetAppCodePath());
+    if (result != ERR_OK) {
+        return result;
+    }
+    std::string bundleCodeDir = Constants::BUNDLE_CODE_DIR + Constants::PATH_SEPARATOR + info.GetBundleName();
+    result = InstalldClient::GetInstance()->RemoveDir(bundleCodeDir);
+    if (result != ERR_OK) {
+        APP_LOGE("fail to remove bundle code dir %{public}s, error is %{public}d", bundleCodeDir.c_str(), result);
+    }
+    return result;
 }
 
 ErrCode BaseBundleInstaller::RemoveBundleDataDir(const InnerBundleInfo &info) const

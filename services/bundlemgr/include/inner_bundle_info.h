@@ -607,7 +607,7 @@ public:
             APP_LOGI("configUri is %{public}s", configUri.c_str());
             if (configUri == abilityUri) {
                 GetApplicationInfo(
-                    ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMS, userId, abilityInfo.applicationInfo);
+                    ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMISSION, userId, abilityInfo.applicationInfo);
                 abilityInfos.emplace_back(abilityInfo);
             }
         }

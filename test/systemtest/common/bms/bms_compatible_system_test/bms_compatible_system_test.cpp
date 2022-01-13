@@ -519,7 +519,7 @@ HWTEST_F(BmsCompatibleSystemTest, BMS_ConvertToCompatible_0800, Function | Mediu
     ApplicationInfo appInfo;
     CompatibleApplicationInfo compatibleApplicationInfo;
     bool result = bundleMgrProxy->GetApplicationInfo(
-        bundleName, ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMS, userId, appInfo);
+        bundleName, ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMISSION, userId, appInfo);
     EXPECT_TRUE(result);
     appInfo.ConvertToCompatibleApplicationInfo(compatibleApplicationInfo);
     EXPECT_EQ(compatibleApplicationInfo.name, bundleName);

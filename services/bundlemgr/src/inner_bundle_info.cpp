@@ -1451,7 +1451,8 @@ std::optional<HapModuleInfo> InnerBundleInfo::FindHapModuleInfo(const std::strin
                 first = true;
             }
             auto &abilityInfo = hapInfo.abilityInfos.emplace_back(ability.second);
-            GetApplicationInfo(ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMS, userId, abilityInfo.applicationInfo);
+            GetApplicationInfo(
+                ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMISSION, userId, abilityInfo.applicationInfo);
         }
     }
     for (const auto &extension : baseExtensionInfos_) {
@@ -1469,7 +1470,7 @@ std::optional<AbilityInfo> InnerBundleInfo::FindAbilityInfo(
         auto abilityInfo = ability.second;
         if ((abilityInfo.bundleName == bundleName) && (abilityInfo.name == abilityName)) {
             GetApplicationInfo(
-                ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMS, userId, abilityInfo.applicationInfo);
+                ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMISSION, userId, abilityInfo.applicationInfo);
             return abilityInfo;
         }
     }
@@ -1489,7 +1490,7 @@ std::optional<std::vector<AbilityInfo>> InnerBundleInfo::FindAbilityInfos(
         auto abilityInfo = ability.second;
         if ((abilityInfo.bundleName == bundleName)) {
             GetApplicationInfo(
-                ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMS, userId, abilityInfo.applicationInfo);
+                ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMISSION, userId, abilityInfo.applicationInfo);
             abilitys.emplace_back(abilityInfo);
         }
     }
@@ -1512,7 +1513,7 @@ void InnerBundleInfo::FindAbilityInfosForClone(const std::string &bundleName,
         auto abilityInfo = ability.second;
         if ((abilityInfo.bundleName == bundleName && (abilityInfo.name == abilityName))) {
             GetApplicationInfo(
-                ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMS, userId, abilityInfo.applicationInfo);
+                ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMISSION, userId, abilityInfo.applicationInfo);
             abilitys.emplace_back(abilityInfo);
         }
     }
@@ -1753,7 +1754,8 @@ void InnerBundleInfo::GetApplicationInfo(int32_t flags, int32_t userId, Applicat
         if (info.second.isEntry) {
             appInfo.entryDir = info.second.modulePath;
         }
-        if ((static_cast<uint32_t>(flags) & GET_APPLICATION_INFO_WITH_PERMS) == GET_APPLICATION_INFO_WITH_PERMS) {
+        if ((static_cast<uint32_t>(flags) & GET_APPLICATION_INFO_WITH_PERMISSION) ==
+            GET_APPLICATION_INFO_WITH_PERMISSION) {
             if (isNewVersion_) {
                 std::transform(info.second.requestPermissions.begin(),
                     info.second.requestPermissions.end(),

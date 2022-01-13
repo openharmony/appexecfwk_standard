@@ -4689,7 +4689,7 @@ void CreateDisplayOrientationObject(napi_env env, napi_value value)
     napi_value nFollowrecent;
     NAPI_CALL_RETURN_VOID(
         env, napi_create_int32(env, static_cast<int32_t>(DisplayOrientation::FOLLOWRECENT), &nFollowrecent));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, value, "FOLLOWRECENT", nFollowrecent));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, value, "FOLLOW_RECENT", nFollowrecent));
 }
 
 void CreateLaunchModeObject(napi_env env, napi_value value)
@@ -4814,20 +4814,84 @@ void CreateQueryShortCutFlagObject(napi_env env, napi_value value)
 
 void CreateBundleFlagObject(napi_env env, napi_value value)
 {
-    napi_value nDefault;
+    napi_value nGetAllApplicationInfo;
+    NAPI_CALL_RETURN_VOID(env, napi_create_int32(env,
+                                                 static_cast<int32_t>(ApplicationFlag::GET_ALL_APPLICATION_INFO),
+                                                 &nGetAllApplicationInfo));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, value, "GET_ALL_APPLICATION_INFO", nGetAllApplicationInfo));
+
+    napi_value nGetBundleDefault;
     NAPI_CALL_RETURN_VOID(
-        env, napi_create_int32(env, static_cast<int32_t>(BundleFlag::GET_BUNDLE_DEFAULT), &nDefault));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, value, "GET_BUNDLE_DEFAULT", nDefault));
-    napi_value nWithAbilities;
+        env, napi_create_int32(env, static_cast<int32_t>(BundleFlag::GET_BUNDLE_DEFAULT), &nGetBundleDefault));
     NAPI_CALL_RETURN_VOID(
-        env, napi_create_int32(env, static_cast<int32_t>(BundleFlag::GET_BUNDLE_WITH_ABILITIES), &nWithAbilities));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, value, "GET_BUNDLE_WITH_ABILITIES", nWithAbilities));
-    napi_value nWithPermission;
+        env, napi_set_named_property(env, value, "GET_BUNDLE_DEFAULT", nGetBundleDefault));
+    napi_value nGetBundleWithAbilities;
+    NAPI_CALL_RETURN_VOID(env, napi_create_int32(env,
+                                                 static_cast<int32_t>(BundleFlag::GET_BUNDLE_WITH_ABILITIES),
+                                                 &nGetBundleWithAbilities));
     NAPI_CALL_RETURN_VOID(
-        env, napi_create_int32(
-            env, static_cast<int32_t>(BundleFlag::GET_APPLICATION_INFO_WITH_PERMISSION), &nWithPermission));
+        env, napi_set_named_property(env, value, "GET_BUNDLE_WITH_ABILITIES", nGetBundleWithAbilities));
+    napi_value nGetBundleWithRequestedPermission;
+    NAPI_CALL_RETURN_VOID(env, napi_create_int32(env,
+                                                 static_cast<int32_t>(BundleFlag::GET_BUNDLE_WITH_REQUESTED_PERMISSION),
+                                                 &nGetBundleWithRequestedPermission));
+    NAPI_CALL_RETURN_VOID(env,
+        napi_set_named_property(
+            env, value, "GET_BUNDLE_WITH_REQUESTED_PERMISSION", nGetBundleWithRequestedPermission));
+
+    napi_value nGetAbilityInfoWithPermission;
+    NAPI_CALL_RETURN_VOID(env,
+        napi_create_int32(env,
+                          static_cast<int32_t>(AbilityInfoFlag::GET_ABILITY_INFO_WITH_PERMISSION),
+                          &nGetAbilityInfoWithPermission));
     NAPI_CALL_RETURN_VOID(
-        env, napi_set_named_property(env, value, "GET_APPLICATION_INFO_WITH_PERMISSION", nWithPermission));
+        env, napi_set_named_property(env, value, "GET_ABILITY_INFO_WITH_PERMISSION", nGetAbilityInfoWithPermission));
+    napi_value nGetAbilityInfoWithApplication;
+    NAPI_CALL_RETURN_VOID(env,
+        napi_create_int32(env,
+                          static_cast<int32_t>(AbilityInfoFlag::GET_ABILITY_INFO_WITH_APPLICATION),
+                          &nGetAbilityInfoWithApplication));
+    NAPI_CALL_RETURN_VOID(
+        env, napi_set_named_property(env, value, "GET_ABILITY_INFO_WITH_APPLICATION", nGetAbilityInfoWithApplication));
+    napi_value nGetAbilityInfoSystemappOnly;
+    NAPI_CALL_RETURN_VOID(env, napi_create_int32(env,
+                                                 static_cast<int32_t>(AbilityInfoFlag::GET_ABILITY_INFO_SYSTEMAPP_ONLY),
+                                                 &nGetAbilityInfoSystemappOnly));
+    NAPI_CALL_RETURN_VOID(
+        env, napi_set_named_property(env, value, "GET_ABILITY_INFO_SYSTEMAPP_ONLY", nGetAbilityInfoSystemappOnly));
+    napi_value nGetAbilityInfoWithMetadata;
+    NAPI_CALL_RETURN_VOID(env, napi_create_int32(env,
+                                                 static_cast<int32_t>(AbilityInfoFlag::GET_ABILITY_INFO_WITH_METADATA),
+                                                 &nGetAbilityInfoWithMetadata));
+    NAPI_CALL_RETURN_VOID(
+        env, napi_set_named_property(env, value, "GET_ABILITY_INFO_WITH_METADATA", nGetAbilityInfoWithMetadata));
+    napi_value nGetAbilityInfoWithDisable;
+    NAPI_CALL_RETURN_VOID(env, napi_create_int32(env,
+                                                 static_cast<int32_t>(AbilityInfoFlag::GET_ABILITY_INFO_WITH_DISABLE),
+                                                 &nGetAbilityInfoWithDisable));
+    NAPI_CALL_RETURN_VOID(
+        env, napi_set_named_property(env, value, "GET_ABILITY_INFO_WITH_DISABLE", nGetAbilityInfoWithDisable));
+
+    napi_value nGetApplicationInfoWithPermission;
+    NAPI_CALL_RETURN_VOID(env,
+        napi_create_int32(env, static_cast<int32_t>(ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMISSION),
+            &nGetApplicationInfoWithPermission));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env,
+                                                       value,
+                                                       "GET_APPLICATION_INFO_WITH_PERMISSION",
+                                                       nGetApplicationInfoWithPermission));
+    napi_value nGetApplicationInfoWithMetadata;
+    NAPI_CALL_RETURN_VOID(env,
+        napi_create_int32(env, static_cast<int32_t>(ApplicationFlag::GET_APPLICATION_INFO_WITH_METADATA),
+            &nGetApplicationInfoWithMetadata));
+    NAPI_CALL_RETURN_VOID(env,
+        napi_set_named_property(env, value, "GET_APPLICATION_INFO_WITH_METADATA", nGetApplicationInfoWithMetadata));
+    napi_value nGetApplicationInfoWithDisable;
+    NAPI_CALL_RETURN_VOID(env,
+        napi_create_int32(env, static_cast<int32_t>(ApplicationFlag::GET_APPLICATION_INFO_WITH_DISABLE),
+            &nGetApplicationInfoWithDisable));
+    NAPI_CALL_RETURN_VOID(env,
+        napi_set_named_property(env, value, "GET_APPLICATION_INFO_WITH_DISABLE", nGetApplicationInfoWithDisable));
 }
 
 void CreateInstallErrorCodeObject(napi_env env, napi_value value)
