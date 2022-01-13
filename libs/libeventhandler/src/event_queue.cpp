@@ -297,8 +297,8 @@ InnerEvent::Pointer EventQueue::GetExpiredEventLocked(InnerEvent::TimePoint &nex
     // If found nothing, enter idle mode and make a time stamp.
     if (!isIdle_) {
         isIdle_ = true;
-        idleTimeStamp_ = now;
     }
+    idleTimeStamp_ = now;
 
     if (!idleEvents_.empty()) {
         const auto &idleEvent = idleEvents_.front();
