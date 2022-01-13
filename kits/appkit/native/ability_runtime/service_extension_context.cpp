@@ -23,7 +23,7 @@ namespace OHOS {
 namespace AbilityRuntime {
 int ServiceExtensionContext::ILLEGAL_REQUEST_CODE(-1);
 
-void ServiceExtensionContext::StartAbility(const AAFwk::Want &want) const
+ErrCode ServiceExtensionContext::StartAbility(const AAFwk::Want &want) const
 {
     HILOG_DEBUG("%{public}s begin.", __func__);
     ErrCode err = AAFwk::AbilityManagerClient::GetInstance()->StartAbility(want, token_, ILLEGAL_REQUEST_CODE);
@@ -31,9 +31,10 @@ void ServiceExtensionContext::StartAbility(const AAFwk::Want &want) const
     if (err != ERR_OK) {
         HILOG_ERROR("ServiceContext::StartAbility is failed %{public}d", err);
     }
+    return err;
 }
 
-void ServiceExtensionContext::StartAbility(const AAFwk::Want &want, const AAFwk::StartOptions &startOptions) const
+ErrCode ServiceExtensionContext::StartAbility(const AAFwk::Want &want, const AAFwk::StartOptions &startOptions) const
 {
     HILOG_DEBUG("%{public}s begin.", __func__);
     ErrCode err = AAFwk::AbilityManagerClient::GetInstance()->StartAbility(want, startOptions, token_,
@@ -42,6 +43,7 @@ void ServiceExtensionContext::StartAbility(const AAFwk::Want &want, const AAFwk:
     if (err != ERR_OK) {
         HILOG_ERROR("ServiceContext::StartAbility is failed %{public}d", err);
     }
+    return err;
 }
 
 bool ServiceExtensionContext::ConnectAbility(
@@ -54,7 +56,7 @@ bool ServiceExtensionContext::ConnectAbility(
     return ret == ERR_OK;
 }
 
-void ServiceExtensionContext::DisconnectAbility(
+ErrCode ServiceExtensionContext::DisconnectAbility(
     const AAFwk::Want &want, const std::shared_ptr<AbilityConnectCallback> &connectCallback) const
 {
     HILOG_INFO("%{public}s begin.", __func__);
@@ -64,9 +66,10 @@ void ServiceExtensionContext::DisconnectAbility(
         HILOG_ERROR("%{public}s end ams->DisconnectAbility error, ret=%{public}d", __func__, ret);
     }
     HILOG_INFO("%{public}s end ams->DisconnectAbility", __func__);
+    return ret;
 }
 
-void ServiceExtensionContext::TerminateAbility()
+ErrCode ServiceExtensionContext::TerminateAbility()
 {
     HILOG_INFO("%{public}s begin.", __func__);
     ErrCode err = AAFwk::AbilityManagerClient::GetInstance()->TerminateAbility(token_, -1, nullptr);
@@ -74,6 +77,7 @@ void ServiceExtensionContext::TerminateAbility()
         HILOG_ERROR("ServiceExtensionContext::TerminateAbility is failed %{public}d", err);
     }
     HILOG_INFO("%{public}s end.", __func__);
+    return err;
 }
 
 AppExecFwk::AbilityType ServiceExtensionContext::GetAbilityInfoType() const

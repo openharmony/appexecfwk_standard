@@ -472,10 +472,12 @@ std::string ContextDeal::GetBundleResourcePath()
  * ranges from 0 to 65535. This parameter takes effect only on abilities using the AbilityInfo.AbilityType.PAGE
  * template.
  *
+ * @return errCode ERR_OK on success, others on failure.
  */
-void ContextDeal::StartAbility(const AAFwk::Want &want, int requestCode)
+ErrCode ContextDeal::StartAbility(const AAFwk::Want &want, int requestCode)
 {
     APP_LOGI("ContextDeal::StartAbility is called");
+    return ERR_INVALID_VALUE;
 }
 
 /**
@@ -537,9 +539,12 @@ std::string ContextDeal::GetAppType()
  *
  * @param requestCode Indicates the request code passed for starting the ability.
  *
+ * @return errCode ERR_OK on success, others on failure.
  */
-void ContextDeal::TerminateAbility(int requestCode)
-{}
+ErrCode ContextDeal::TerminateAbility(int requestCode)
+{
+    return ERR_INVALID_VALUE;
+}
 
 /**
  * @brief Confirms with the permission management module to check whether a request prompt is required for granting a
@@ -689,16 +694,22 @@ void ContextDeal::RequestPermissionsFromUser(std::vector<std::string> &permissio
  * to identify the results returned by abilities. The value ranges from 0 to 65535.
  * @param abilityStartSetting Indicates the special start setting used in starting ability.
  *
+ * @return errCode ERR_OK on success, others on failure.
  */
-void ContextDeal::StartAbility(const Want &want, int requestCode, const AbilityStartSetting &abilityStartSetting)
-{}
+ErrCode ContextDeal::StartAbility(const Want &want, int requestCode, const AbilityStartSetting &abilityStartSetting)
+{
+    return ERR_INVALID_VALUE;
+}
 
 /**
  * @brief Destroys the current ability.
  *
+ * @return errCode ERR_OK on success, others on failure.
  */
-void ContextDeal::TerminateAbility()
-{}
+ErrCode ContextDeal::TerminateAbility()
+{
+    return ERR_INVALID_VALUE;
+}
 
 /**
  * @brief Connects the current ability to an ability
@@ -719,9 +730,13 @@ bool ContextDeal::ConnectAbility(const Want &want, const sptr<AAFwk::IAbilityCon
  *
  * @param conn Indicates the IAbilityConnection callback object passed by connectAbility after the connection
  *              is set up. The IAbilityConnection object uniquely identifies a connection between two abilities.
+ *
+ * @return errCode ERR_OK on success, others on failure.
  */
-void ContextDeal::DisconnectAbility(const sptr<AAFwk::IAbilityConnection> &conn)
-{}
+ErrCode ContextDeal::DisconnectAbility(const sptr<AAFwk::IAbilityConnection> &conn)
+{
+    return ERR_INVALID_VALUE;
+}
 
 sptr<IRemoteObject> ContextDeal::GetToken()
 {
