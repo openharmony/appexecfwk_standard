@@ -314,8 +314,9 @@ public:
      * ranges from 0 to 65535. This parameter takes effect only on abilities using the AbilityInfo.AbilityType.PAGE
      * template.
      *
+     * @return errCode ERR_OK on success, others on failure.
      */
-    virtual void StartAbility(const AAFwk::Want &want, int requestCode) = 0;
+    virtual ErrCode StartAbility(const AAFwk::Want &want, int requestCode) = 0;
 
     /**
      * @brief Remove permissions for all users who have access to specific permissions
@@ -352,14 +353,16 @@ public:
      *
      * @param requestCode Indicates the request code passed for starting the ability.
      *
+     * @return errCode ERR_OK on success, others on failure.
      */
-    virtual void TerminateAbility(int requestCode) = 0;
+    virtual ErrCode TerminateAbility(int requestCode) = 0;
 
     /**
      * @brief Destroys the current ability.
      *
+     * @return errCode ERR_OK on success, others on failure.
      */
-    virtual void TerminateAbility() = 0;
+    virtual ErrCode TerminateAbility() = 0;
 
     /**
      * @brief Confirms with the permission management module to check whether a request prompt is required for granting
@@ -463,8 +466,9 @@ public:
      * code to identify the results returned by abilities. The value ranges from 0 to 65535.
      * @param abilityStartSetting Indicates the special start setting used in starting ability.
      *
+     * @return errCode ERR_OK on success, others on failure.
      */
-    virtual void StartAbility(const Want &want, int requestCode, const AbilityStartSetting &abilityStartSetting) = 0;
+    virtual ErrCode StartAbility(const Want &want, int requestCode, const AbilityStartSetting &abilityStartSetting) = 0;
 
     /**
      * @brief Connects the current ability to an ability using the AbilityInfo.AbilityType.SERVICE template.
@@ -482,8 +486,10 @@ public:
      *
      * @param conn Indicates the IAbilityConnection callback object passed by connectAbility after the connection
      *              is set up. The IAbilityConnection object uniquely identifies a connection between two abilities.
+     *
+     * @return errCode ERR_OK on success, others on failure.
      */
-    virtual void DisconnectAbility(const sptr<AAFwk::IAbilityConnection> &conn) = 0;
+    virtual ErrCode DisconnectAbility(const sptr<AAFwk::IAbilityConnection> &conn) = 0;
 
     /**
      * @brief Obtains information about the caller of this ability.
