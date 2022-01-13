@@ -33,10 +33,18 @@ const std::string MODULE_DIR = "/data/accounts/account_0/applications/com.exampl
 const std::string BUNDLE_DATA_DIR = "/data/accounts/account_0/appdata/com.example.l3jsdemo";
 const std::string BUNDLE_CODE_DIR = "/data/accounts/account_0/applications/com.example.l3jsdemo";
 const std::string ROOT_DIR = "/data/accounts";
+const std::string BUNDLE_APP_DIR = "/data/app/el1/bundle/com.example.l4jsdemo/code";
+const std::string BUNDLE_EL1_BASE_DIR = "/data/app/el1/101/base/com.example.l4jsdemo/temp";
+const std::string BUNDLE_EL1_DATABASE_DIR = "/data/app/el1/101/database/com.example.l4jsdemo/temp";
+const std::string BUNDLE_EL2_BASE_DIR = "/data/app/el2/101/base/com.example.l4jsdemo/cache/temp";
+const std::string BUNDLE_EL3_BASE_DIR = "/data/app/el3/101/base/com.example.l4jsdemo/temp";
+const std::string BUNDLE_EL4_BASE_DIR = "/data/app/el4/101/base/com.example.l4jsdemo/temp";
+const std::string BUNDLE_NAME = "com.example.l4jsdemo";
 const int32_t ROOT_UID = 0;
 const int32_t USERID = 0;
 const int32_t UID = 1000;
 const int32_t GID = 1000;
+const int32_t USERID_2 = 101;
 }  // namespace
 
 class BmsInstallDaemonTest : public testing::Test {
@@ -183,7 +191,10 @@ bool BmsInstallDaemonTest::GetBundleStats(const std::string &bundleName, const i
     if (!service_->IsServiceReady()) {
         service_->Start();
     }
-    return InstalldClient::GetInstance()->GetBundleStats(bundleName, userId, bundleStats);
+    if (InstalldClient::GetInstance()->GetBundleStats(bundleName, userId, bundleStats) == ERR_OK) {
+        return true;
+    }
+    return false;
 }
 
 /**
@@ -572,7 +583,7 @@ HWTEST_F(BmsInstallDaemonTest, ExtractBundleFile_0500, Function | SmallTest | Le
 HWTEST_F(BmsInstallDaemonTest, GetBundleStats_0100, Function | SmallTest | Level0)
 {
     std::vector<int64_t> stats;
-    bool result = GetBundleStats("wrong_bundleName", 0, stats);
+    bool result = GetBundleStats("", 0, stats);
     EXPECT_EQ(result, false);
 }
 
@@ -585,12 +596,56 @@ HWTEST_F(BmsInstallDaemonTest, GetBundleStats_0100, Function | SmallTest | Level
 HWTEST_F(BmsInstallDaemonTest, GetBundleStats_0200, Function | SmallTest | Level0)
 {
     std::vector<int64_t> stats;
-    bool result = GetBundleStats("com.ohos.settings", 0, stats);
-    EXPECT_EQ(result, false); // distributed data dircctory does not exit
-    EXPECT_NE(stats[0], -1);
-    EXPECT_NE(stats[1], -1);
-    EXPECT_EQ(stats[2], -1);
-    EXPECT_NE(stats[3], -1);
-    EXPECT_NE(stats[4], -1);
+    bool result = GetBundleStats(BUNDLE_NAME, 0, stats);
+    EXPECT_EQ(result, true);
+    for (const auto &t : stats) {
+        EXPECT_EQ(t, 0);
+    }
+}
+
+/**
+ * @tc.number: GetBundleStats_0300
+ * @tc.name: test the GetBundleStats function of installd service
+ * @tc.desc: 1. the bundle exists, wrong userName
+ * @tc.require: AR000GK0AH
+*/
+HWTEST_F(BmsInstallDaemonTest, GetBundleStats_0300, Function | SmallTest | Level0)
+{
+    OHOS::ForceCreateDirectory(BUNDLE_APP_DIR);
+    std::vector<int64_t> stats;
+    bool result = GetBundleStats(BUNDLE_NAME, USERID_2, stats);
+    EXPECT_EQ(result, true);
+    EXPECT_NE(stats[0], 0);
+    OHOS::ForceRemoveDirectory(BUNDLE_APP_DIR);
+}
+
+/**
+ * @tc.number: GetBundleStats_0400
+ * @tc.name: test the GetBundleStats function of installd service
+ * @tc.desc: 1. the bundle exists,
+ * @tc.require: AR000GK0AH
+*/
+HWTEST_F(BmsInstallDaemonTest, GetBundleStats_0400, Function | SmallTest | Level0)
+{
+    OHOS::ForceCreateDirectory(BUNDLE_APP_DIR);
+    OHOS::ForceCreateDirectory(BUNDLE_EL1_BASE_DIR);
+    OHOS::ForceCreateDirectory(BUNDLE_EL1_DATABASE_DIR);
+    OHOS::ForceCreateDirectory(BUNDLE_EL2_BASE_DIR);
+    OHOS::ForceCreateDirectory(BUNDLE_EL3_BASE_DIR);
+    OHOS::ForceCreateDirectory(BUNDLE_EL4_BASE_DIR);
+    std::vector<int64_t> stats;
+    bool result = GetBundleStats(BUNDLE_NAME, USERID_2, stats);
+    EXPECT_EQ(result, true);
+    EXPECT_NE(stats[0], 0);
+    EXPECT_NE(stats[1], 0);
+    EXPECT_EQ(stats[2], 0); // distributed file does not exist
+    EXPECT_NE(stats[3], 0);
+    EXPECT_NE(stats[4], 0);
+    OHOS::ForceRemoveDirectory(BUNDLE_APP_DIR);
+    OHOS::ForceRemoveDirectory(BUNDLE_EL1_BASE_DIR);
+    OHOS::ForceRemoveDirectory(BUNDLE_EL1_DATABASE_DIR);
+    OHOS::ForceRemoveDirectory(BUNDLE_EL2_BASE_DIR);
+    OHOS::ForceRemoveDirectory(BUNDLE_EL3_BASE_DIR);
+    OHOS::ForceRemoveDirectory(BUNDLE_EL4_BASE_DIR);
 }
 } // OHOS
