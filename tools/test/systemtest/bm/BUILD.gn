@@ -29,7 +29,10 @@ ohos_systemtest("bm_command_install_system_test") {
     "bm_command_install_system_test.cpp",
   ]
 
-  configs = [ "${appexecfwk_path}/tools/bm:tools_bm_config" ]
+  configs = [
+    "${appexecfwk_path}/tools/bm:tools_bm_config",
+    "${appexecfwk_path}/tools/test/unittest/bm:tools_bm_config_mock",
+  ]
 
   cflags = []
   if (target_cpu == "arm") {
@@ -63,7 +66,10 @@ ohos_systemtest("bm_command_uninstall_system_test") {
     "bm_command_uninstall_system_test.cpp",
   ]
 
-  configs = [ "${appexecfwk_path}/tools/bm:tools_bm_config" ]
+  configs = [
+    "${appexecfwk_path}/tools/bm:tools_bm_config",
+    "${appexecfwk_path}/tools/test/unittest/bm:tools_bm_config_mock",
+  ]
 
   cflags = []
   if (target_cpu == "arm") {
@@ -97,7 +103,10 @@ ohos_systemtest("bm_command_dump_system_test") {
     "bm_command_dump_system_test.cpp",
   ]
 
-  configs = [ "${appexecfwk_path}/tools/bm:tools_bm_config" ]
+  configs = [
+    "${appexecfwk_path}/tools/bm:tools_bm_config",
+    "${appexecfwk_path}/tools/test/unittest/bm:tools_bm_config_mock",
+  ]
 
   cflags = []
   if (target_cpu == "arm") {

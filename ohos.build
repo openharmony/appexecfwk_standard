@@ -112,7 +112,7 @@
       "module_list": [
         "//foundation/appexecfwk/standard/common:common_target",
         "//foundation/appexecfwk/standard/services:services_target",
-        "//foundation/appexecfwk/standard/tools:tools_target",
+        "//foundation/appexecfwk/standard/tools/fm:tools_fm",
         "//foundation/appexecfwk/standard/interfaces/innerkits:innerkits_target",
         "//foundation/appexecfwk/standard/kits:app_context",
         "//foundation/appexecfwk/standard/kits:appkit_native",
@@ -132,9 +132,6 @@
         "//foundation/appexecfwk/standard/services/appmgr/test:unittest",
         "//foundation/appexecfwk/standard/services/formmgr/test:unittest",
         "//foundation/appexecfwk/standard/test/systemtest:systemtest",
-        "//foundation/appexecfwk/standard/tools/test:moduletest",
-        "//foundation/appexecfwk/standard/tools/test:systemtest",
-        "//foundation/appexecfwk/standard/tools/test:unittest",
         "//foundation/appexecfwk/standard/libs/test:moduletest",
         "//foundation/appexecfwk/standard/interfaces/innerkits/task_dispatcher/test:unittest",
         "//foundation/appexecfwk/standard/interfaces/innerkits/test:moduletest"
