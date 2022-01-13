@@ -15,8 +15,6 @@
 
 #include "bundle_user_mgr_host_impl.h"
 
-#include <atomic>
-
 #include "app_log_wrapper.h"
 #include "bundle_mgr_service.h"
 #include "bundle_promise.h"
