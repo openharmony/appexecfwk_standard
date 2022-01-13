@@ -77,6 +77,20 @@ void JsAbilityStage::Init(std::shared_ptr<Context> context)
 
     context->Bind(jsRuntime_, shellContextRef.release());
     obj->SetProperty("context", contextObj);
+
+    auto nativeObj = ConvertNativeValueTo<NativeObject>(contextObj);
+    if (nativeObj == nullptr) {
+        HILOG_ERROR("Failed to get ability stage native object");
+        return;
+    }
+
+    HILOG_INFO("Set ability stage context pointer: %{public}p", context.get());
+
+    nativeObj->SetNativePointer(new std::weak_ptr<AbilityRuntime::Context>(context),
+        [](NativeEngine*, void* data, void*) {
+            HILOG_INFO("Finalizer for weak_ptr ability stage context is called");
+            delete static_cast<std::weak_ptr<AbilityRuntime::Context>*>(data);
+        }, nullptr);
 }
 
 void JsAbilityStage::OnCreate() const

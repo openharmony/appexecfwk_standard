@@ -21,6 +21,7 @@
 
 namespace OHOS {
 namespace AbilityRuntime {
+const size_t ServiceExtensionContext::CONTEXT_TYPE_ID(std::hash<const char*> {} ("ServiceExtensionContext"));
 int ServiceExtensionContext::ILLEGAL_REQUEST_CODE(-1);
 
 ErrCode ServiceExtensionContext::StartAbility(const AAFwk::Want &want) const

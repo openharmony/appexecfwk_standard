@@ -44,7 +44,15 @@ public:
      */
     sptr<IRemoteObject> GetToken() const;
 
+    using SelfType = ExtensionContext;
+    static const size_t CONTEXT_TYPE_ID;
+
 protected:
+    bool IsContext(size_t contextTypeId) override
+    {
+        return contextTypeId == CONTEXT_TYPE_ID || Context::IsContext(contextTypeId);
+    }
+
     sptr<IRemoteObject> token_;
 private:
 };
