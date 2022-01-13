@@ -972,7 +972,7 @@ HWTEST_F(BmsLauncherServiceSystemTest, BMS_GetApplicationInfo_0200, Function | M
 
     ApplicationInfo applicationInfo;
     bool result = launcherservice.GetApplicationInfo(
-        bundleName, ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMS, userId, applicationInfo);
+        bundleName, ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMISSION, userId, applicationInfo);
     EXPECT_TRUE(result);
 
     CommonTool commonTool;
