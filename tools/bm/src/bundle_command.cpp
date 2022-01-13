@@ -230,6 +230,14 @@ ErrCode BundleManagerShellCommand::CreateMessageMap()
             IStatusReceiver::ERR_INSTALL_DISK_MEM_INSUFFICIENT,
             "error: install failed due to insufficient disk memory",
         },
+        {
+            IStatusReceiver::ERR_INSTALL_GRANT_REQUEST_PERMISSIOMS_FAILED,
+            "error: install failed due to grant request permissions failed",
+        },
+        {
+            IStatusReceiver::ERR_INSTALL_UPDATE_HAP_TOKEN_FAILED,
+            "error: install failed due to update hap token failed",
+        },
 
         {
             IStatusReceiver::ERR_INSTALL_PARSE_UNEXPECTED,

@@ -28,7 +28,7 @@ const uint32_t DEFAULT_ACCESSTOKENID = 100;
 }
 // convert the Permission::PermissionDef struct to
 // AppExecFwk::PermissionDef struct that can be used in IPC process
-bool BundlePermissionMgr::ConvertPermissionDef(const Permission::PermissionDef &permDef, PermissionDef &permissionDef)
+void BundlePermissionMgr::ConvertPermissionDef(const Permission::PermissionDef &permDef, PermissionDef &permissionDef)
 {
     permissionDef.permissionName = permDef.permissionName;
     permissionDef.bundleName = permDef.bundleName;
@@ -38,11 +38,10 @@ bool BundlePermissionMgr::ConvertPermissionDef(const Permission::PermissionDef &
     permissionDef.labelId = permDef.labelId;
     permissionDef.description = permDef.description;
     permissionDef.descriptionId = permDef.descriptionId;
-    return true;
 }
 
 // Convert from the struct DefPermission that parsed from config.json
-bool BundlePermissionMgr::ConvertPermissionDef(
+void BundlePermissionMgr::ConvertPermissionDef(
     Permission::PermissionDef &permDef, const DefPermission &defPermission, const std::string &bundleName)
 {
     permDef.permissionName = defPermission.name;
@@ -77,23 +76,45 @@ bool BundlePermissionMgr::ConvertPermissionDef(
     permDef.labelId = defPermission.labelId;
     permDef.description = defPermission.description;
     permDef.descriptionId = defPermission.descriptionId;
-    return true;
 }
 
-uint32_t BundlePermissionMgr::CreateTokenId(
+uint32_t BundlePermissionMgr::CreateAccessTokenId(
     const InnerBundleInfo &innerBundleInfo, const std::string bundleName, const int32_t userId)
 {
     return DEFAULT_ACCESSTOKENID;
 }
 
-int32_t BundlePermissionMgr::DeleteTokenId(const uint32_t tokenId)
+int32_t BundlePermissionMgr::UpdateHapToken(const uint32_t tokenId,
+    const InnerBundleInfo &innerBundleInfo)
 {
     return 0;
 }
 
-int32_t BundlePermissionMgr::GrantedRequestPermissions(const InnerBundleInfo &innerBundleInfo, const int32_t userId)
+int32_t BundlePermissionMgr::DeleteAccessTokenId(const uint32_t tokenId)
 {
     return 0;
+}
+
+bool BundlePermissionMgr::AddDefinePermissions(const uint32_t tokenId,
+    const InnerBundleInfo &innerBundleInfo, std::vector<std::string> &newRequestPermName)
+{
+    return true;
+}
+
+bool BundlePermissionMgr::GrantRequestPermissions(const InnerBundleInfo &info, const uint32_t tokenId)
+{
+    return true;
+}
+
+bool BundlePermissionMgr::GrantRequestPermissions(const InnerBundleInfo &info,
+    const std::vector<std::string> &requestPermName, const uint32_t tokenId)
+{
+    return true;
+}
+
+bool BundlePermissionMgr::GetRequestPermissionStates(BundleInfo &info)
+{
+    return true;
 }
 
 bool BundlePermissionMgr::InitPermissions()
@@ -305,7 +326,8 @@ bool BundlePermissionMgr::GetPermissionDef(const std::string &permissionName, Pe
         APP_LOGE("get permission def failed");
         return false;
     }
-    return ConvertPermissionDef(permDef, permissionDef);
+    ConvertPermissionDef(permDef, permissionDef);
+    return true;
 }
 
 bool BundlePermissionMgr::CheckCallingPermission(const std::string &permissionName, int32_t userId)

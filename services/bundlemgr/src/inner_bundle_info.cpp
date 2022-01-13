@@ -16,7 +16,7 @@
 #include "inner_bundle_info.h"
 
 #include <regex>
-
+#include "bundle_permission_mgr.h"
 #include "common_profile.h"
 
 namespace OHOS {
@@ -87,6 +87,7 @@ const std::string MODULE_IS_STAGE_BASED_MODEL = "isStageBasedModel";
 const std::string BUNDLE_IS_NEW_VERSION = "isNewVersion_";
 const std::string BUNDLE_BASE_EXTENSION_INFOS = "baseExtensionInfos_";
 const std::string BUNDLE_EXTENSION_SKILL_INFOS = "extensionSkillInfos_";
+const std::string ALLOWED_ACLS = "allowedAcls";
 
 const std::string NameAndUserIdToKey(const std::string &bundleName, int32_t userId)
 {
@@ -442,6 +443,7 @@ void InnerBundleInfo::ToJson(nlohmann::json &jsonObject) const
     jsonObject[APP_TYPE] = appType_;
     jsonObject[BASE_DATA_DIR] = baseDataDir_;
     jsonObject[BUNDLE_STATUS] = bundleStatus_;
+    jsonObject[ALLOWED_ACLS] = allowedAcls_;
     jsonObject[BASE_APPLICATION_INFO] = baseApplicationInfo_;
     jsonObject[BASE_BUNDLE_INFO] = baseBundleInfo_;
     jsonObject[BASE_ABILITY_INFO] = baseAbilityInfos_;
@@ -1192,6 +1194,14 @@ int32_t InnerBundleInfo::FromJson(const nlohmann::json &jsonObject)
         false,
         ProfileReader::parseResult,
         ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::vector<std::string>>(jsonObject,
+        jsonObjectEnd,
+        ALLOWED_ACLS,
+        allowedAcls_,
+        JsonType::ARRAY,
+        false,
+        ProfileReader::parseResult,
+        ArrayType::STRING);
     GetValueIfFindKey<std::string>(jsonObject,
         jsonObjectEnd,
         BASE_DATA_DIR,
@@ -1708,6 +1718,7 @@ std::string InnerBundleInfo::ToString() const
     j[GID] = gid_;
     j[BASE_DATA_DIR] = baseDataDir_;
     j[BUNDLE_STATUS] = bundleStatus_;
+    j[ALLOWED_ACLS] = allowedAcls_;
     j[BASE_APPLICATION_INFO] = baseApplicationInfo_;
     j[BASE_BUNDLE_INFO] = baseBundleInfo_;
     j[BASE_ABILITY_INFO] = baseAbilityInfos_;
@@ -1764,6 +1775,10 @@ void InnerBundleInfo::GetApplicationInfo(int32_t flags, int32_t userId, Applicat
                     info.second.reqPermissions.end(),
                     std::back_inserter(appInfo.permissions),
                     [](const auto &p) { return p.name; });
+                std::transform(info.second.requestPermissions.begin(),
+                    info.second.requestPermissions.end(),
+                    std::back_inserter(appInfo.permissions),
+                    [](const auto &p) { return p.name; });
             }
         }
         if ((static_cast<uint32_t>(flags) & GET_APPLICATION_INFO_WITH_METADATA) == GET_APPLICATION_INFO_WITH_METADATA) {
@@ -1815,6 +1830,14 @@ void InnerBundleInfo::GetBundleInfo(int32_t flags, BundleInfo &bundleInfo, int32
                     info.second.defPermissions.end(),
                     std::back_inserter(bundleInfo.defPermissions),
                     [](const auto &p) { return p.name; });
+                std::transform(info.second.requestPermissions.begin(),
+                    info.second.requestPermissions.end(),
+                    std::back_inserter(bundleInfo.reqPermissions),
+                    [](const auto &p) { return p.name; });
+                std::transform(info.second.definePermissions.begin(),
+                    info.second.definePermissions.end(),
+                    std::back_inserter(bundleInfo.defPermissions),
+                    [](const auto &p) { return p.name; });
             }
         }
         bundleInfo.hapModuleNames.emplace_back(info.second.modulePackage);
@@ -1832,6 +1855,9 @@ void InnerBundleInfo::GetBundleInfo(int32_t flags, BundleInfo &bundleInfo, int32
             bundleInfo.mainEntry = info.second.modulePackage;
             bundleInfo.entryModuleName = info.second.moduleName;
         }
+    }
+    if (!BundlePermissionMgr::GetRequestPermissionStates(bundleInfo)) {
+        APP_LOGE("get request permission state failed");
     }
     GetBundleWithAbilities(flags, bundleInfo, userId);
 }
