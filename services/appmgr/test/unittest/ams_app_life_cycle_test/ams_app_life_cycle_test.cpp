@@ -119,7 +119,7 @@ std::shared_ptr<AppRunningRecord> AmsAppLifeCycleTest::StartProcessAndLoadAbilit
 
     serviceInner_->SetAppSpawnClient(mockClientPtr);
 
-    serviceInner_->LoadAbility(token, preToken, abilityInfo, appInfo);
+    serviceInner_->LoadAbility(token, preToken, abilityInfo, appInfo, 0);
     std::shared_ptr<AppRunningRecord> record = serviceInner_->GetAppRunningRecordByAppName(appInfo->name);
     EXPECT_EQ(record->GetPriorityObject()->GetPid(), newPid);
     return record;
@@ -267,7 +267,7 @@ std::shared_ptr<AbilityRunningRecord> AmsAppLifeCycleTest::AddNewAbility(
 {
     auto newAbilityInfo = GetAbilityInfoByIndex(index);
     sptr<IRemoteObject> newToken = new (std::nothrow) MockAbilityToken();
-    serviceInner_->LoadAbility(newToken, nullptr, newAbilityInfo, GetApplication());
+    serviceInner_->LoadAbility(newToken, nullptr, newAbilityInfo, GetApplication(), 0);
     auto newAbilityRecord = appRecord->GetAbilityRunningRecordByToken(newToken);
     EXPECT_NE(newAbilityRecord, nullptr);
     return newAbilityRecord;
@@ -281,7 +281,7 @@ std::shared_ptr<AbilityRunningRecord> AmsAppLifeCycleTest::AddNewAbility(
     auto app = GetApplication();
     app->uid = uid;
     sptr<IRemoteObject> newToken = new (std::nothrow) MockAbilityToken();
-    serviceInner_->LoadAbility(newToken, nullptr, newAbilityInfo, app);
+    serviceInner_->LoadAbility(newToken, nullptr, newAbilityInfo, app, 0);
     auto newAbilityRecord = appRecord->GetAbilityRunningRecordByToken(newToken);
     EXPECT_NE(newAbilityRecord, nullptr);
     return newAbilityRecord;
@@ -391,7 +391,7 @@ HWTEST_F(AmsAppLifeCycleTest, Schedule_001, TestSize.Level1)
     AbilityState abilityState = abilityRecord->GetState();
     ApplicationState appState = appRecord->GetState();
 
-    serviceInner_->LoadAbility(token, nullptr, abilityInfo, appInfo);
+    serviceInner_->LoadAbility(token, nullptr, abilityInfo, appInfo, 0);
     EXPECT_EQ(abilityState, abilityRecord->GetState());
     EXPECT_EQ(appState, appRecord->GetState());
 }
@@ -1350,7 +1350,7 @@ HWTEST_F(AmsAppLifeCycleTest, Stop_001, TestSize.Level1)
     EXPECT_NE(abilityRecord, nullptr);
     AbilityState abilityState = abilityRecord->GetState();
     ApplicationState appState = appRecord->GetState();
-    serviceInner_->LoadAbility(token, nullptr, abilityInfo, appInfo);
+    serviceInner_->LoadAbility(token, nullptr, abilityInfo, appInfo, 0);
     EXPECT_EQ(abilityState, abilityRecord->GetState());
     EXPECT_EQ(appState, appRecord->GetState());
 
@@ -1409,7 +1409,7 @@ HWTEST_F(AmsAppLifeCycleTest, Stop_003, TestSize.Level1)
     EXPECT_NE(abilityRecord, nullptr);
     AbilityState abilityState = abilityRecord->GetState();
     ApplicationState appState = appRecord->GetState();
-    serviceInner_->LoadAbility(token, nullptr, abilityInfo, appInfo);
+    serviceInner_->LoadAbility(token, nullptr, abilityInfo, appInfo, 0);
     EXPECT_EQ(abilityState, abilityRecord->GetState());
     EXPECT_EQ(appState, appRecord->GetState());
 
@@ -1463,7 +1463,7 @@ HWTEST_F(AmsAppLifeCycleTest, KillApplication_002, TestSize.Level1)
 
     serviceInner_->SetAppSpawnClient(mockClientPtr);
 
-    serviceInner_->LoadAbility(token, nullptr, abilityInfo, appInfo);
+    serviceInner_->LoadAbility(token, nullptr, abilityInfo, appInfo, 0);
     std::shared_ptr<AppRunningRecord> appRecord = serviceInner_->GetAppRunningRecordByAppName(appInfo->name);
     EXPECT_EQ(appRecord->GetPriorityObject()->GetPid(), NEW_PID);
 
