@@ -30,7 +30,7 @@ namespace AppExecFwk {
 namespace {
 const std::string BUNDLE_USER_INFO_USER_ID = "userId";
 const std::string BUNDLE_USER_INFO_ENABLE = "enabled";
-const std::string BUNDLE_USER_INFO_ENABLE_ABILITIES = "enabledAbilities";
+const std::string BUNDLE_USER_INFO_ABILITIES = "abilities";
 const std::string BUNDLE_USER_INFO_DISABLE_ABILITIES = "disabledAbilities";
 } // namespace
 
@@ -38,10 +38,10 @@ bool BundleUserInfo::ReadFromParcel(Parcel &parcel)
 {
     userId = parcel.ReadInt32();
     enabled = parcel.ReadBool();
-    int32_t enabledAbilitiesSize;
-    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, enabledAbilitiesSize);
-    for (int32_t i = 0; i < enabledAbilitiesSize; i++) {
-        enabledAbilities.emplace_back(Str16ToStr8(parcel.ReadString16()));
+    int32_t abilitiesSize;
+    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, abilitiesSize);
+    for (int32_t i = 0; i < abilitiesSize; i++) {
+        abilities.emplace_back(Str16ToStr8(parcel.ReadString16()));
     }
 
     int32_t disabledAbilitiesSize;
@@ -69,9 +69,9 @@ bool BundleUserInfo::Marshalling(Parcel &parcel) const
 {
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, userId);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, enabled);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, enabledAbilities.size());
-    for (auto &enabledAbility : enabledAbilities) {
-        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(enabledAbility));
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, abilities.size());
+    for (auto &ability : abilities) {
+        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(ability));
     }
 
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, disabledAbilities.size());
@@ -113,7 +113,7 @@ void to_json(nlohmann::json& jsonObject, const BundleUserInfo& bundleUserInfo)
     jsonObject = nlohmann::json {
         {BUNDLE_USER_INFO_USER_ID, bundleUserInfo.userId},
         {BUNDLE_USER_INFO_ENABLE, bundleUserInfo.enabled},
-        {BUNDLE_USER_INFO_ENABLE_ABILITIES, bundleUserInfo.enabledAbilities},
+        {BUNDLE_USER_INFO_ABILITIES, bundleUserInfo.abilities},
         {BUNDLE_USER_INFO_DISABLE_ABILITIES, bundleUserInfo.disabledAbilities},
     };
 }
@@ -140,8 +140,8 @@ void from_json(const nlohmann::json& jsonObject, BundleUserInfo& bundleUserInfo)
         ArrayType::NOT_ARRAY);
     GetValueIfFindKey<std::vector<std::string>>(jsonObject,
         jsonObjectEnd,
-        BUNDLE_USER_INFO_ENABLE_ABILITIES,
-        bundleUserInfo.enabledAbilities,
+        BUNDLE_USER_INFO_ABILITIES,
+        bundleUserInfo.abilities,
         JsonType::ARRAY,
         false,
         parseResult,

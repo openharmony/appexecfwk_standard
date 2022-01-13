@@ -2157,9 +2157,7 @@ void InnerBundleInfo::GetDistributedBundleInfo(DistributedBundleInfo &distribute
     for (const auto &innerBundleUserInfo : innerBundleUserInfos_) {
         BundleUserInfo bundleUserInfo = innerBundleUserInfo.second.bundleUserInfo;
         for (const auto &item : baseAbilityInfos_) {
-            if (item.second.enabled) {
-                bundleUserInfo.enabledAbilities.emplace_back(item.second.name);
-            }
+            bundleUserInfo.abilities.emplace_back(item.second.name);
         }
         distributedBundleInfo.bundleUserInfos.emplace_back(bundleUserInfo);
     }
