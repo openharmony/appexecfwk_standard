@@ -250,26 +250,27 @@ bool InstalldOperator::MkOwnerDir(const std::string &path, int mode, const int u
     return ChangeFileAttr(path, uid, gid);
 }
 
-bool InstalldOperator::GetDiskUsage(const std::string &dir, int64_t &size)
+int64_t InstalldOperator::GetDiskUsage(const std::string &dir)
 {
     if (dir.empty() || (dir.size() > Constants::PATH_MAX_SIZE)) {
         APP_LOGE("GetDiskUsage dir path invaild");
-        return false;
+        return 0;
     }
     std::string filePath = "";
     if (!PathToRealPath(dir, filePath)) {
         APP_LOGE("file is not real path, file path: %{public}s", dir.c_str());
-        return false;
+        return 0;
     }
     DIR *dirPtr = opendir(filePath.c_str());
     if (dirPtr == nullptr) {
         APP_LOGE("GetDiskUsage open file dir:%{private}s is failure", filePath.c_str());
-        return false;
+        return 0;
     }
     if (filePath.back() != Constants::FILE_SEPARATOR_CHAR) {
         filePath.push_back(Constants::FILE_SEPARATOR_CHAR);
     }
     struct dirent *entry = nullptr;
+    int64_t size = 0;
     while ((entry = readdir(dirPtr)) != nullptr) {
         if ((strcmp(entry->d_name, ".") == 0) || (strcmp(entry->d_name, "..") == 0)) {
             continue;
@@ -277,39 +278,37 @@ bool InstalldOperator::GetDiskUsage(const std::string &dir, int64_t &size)
         std::string path = filePath + entry->d_name;
         std::string realPath = "";
         if (!PathToRealPath(path, realPath)) {
-            APP_LOGE("file is not real path");
-            closedir(dirPtr);
-            return false;
+            APP_LOGE("file is not real path %{public}s", path.c_str());
+            continue;
         }
         struct stat fileInfo = {0};
         if (stat(realPath.c_str(), &fileInfo) != 0) {
-            APP_LOGE("call stat error");
-            closedir(dirPtr);
-            return false;
+            APP_LOGE("call stat error %{public}s", realPath.c_str());
+            fileInfo.st_size = 0;
         }
         size += fileInfo.st_size;
         if (entry->d_type == DT_DIR) {
-            GetDiskUsage(realPath, size);
+            size += GetDiskUsage(realPath);
         }
     }
     closedir(dirPtr);
-    return true;
+    return size;
 }
 
-bool InstalldOperator::TraverseCacheDirectory(const std::string &currentPath, std::vector<std::string> &cacheDirs)
+void InstalldOperator::TraverseCacheDirectory(const std::string &currentPath, std::vector<std::string> &cacheDirs)
 {
     if (currentPath.empty() || (currentPath.size() > Constants::PATH_MAX_SIZE)) {
         APP_LOGE("TraverseCacheDirectory current path invaild");
-        return false;
+        return;
     }
     std::string filePath = "";
     if (!PathToRealPath(currentPath, filePath)) {
         APP_LOGE("file is not real path, file path: %{public}s", currentPath.c_str());
-        return false;
+        return;
     }
     DIR* dir = opendir(filePath.c_str());
     if (dir == nullptr) {
-        return false;
+        return;
     }
     if (filePath.back() != Constants::FILE_SEPARATOR_CHAR) {
         filePath.push_back(Constants::FILE_SEPARATOR_CHAR);
@@ -330,20 +329,13 @@ bool InstalldOperator::TraverseCacheDirectory(const std::string &currentPath, st
         }
     }
     closedir(dir);
-    return true;
 }
 
 int64_t InstalldOperator::GetDiskUsageFromPath(const std::vector<std::string> &path)
 {
     int64_t fileSize = 0;
     for (auto &st : path) {
-        int64_t size = 0;
-        if (GetDiskUsage(st, size)) {
-            fileSize += size;
-        } else {
-            fileSize = Constants::INVALID_FILE_SIZE;
-            break;
-        }
+        fileSize += GetDiskUsage(st);
     }
     return fileSize;
 }

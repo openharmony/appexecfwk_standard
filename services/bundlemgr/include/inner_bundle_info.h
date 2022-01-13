@@ -120,6 +120,7 @@ struct InnerModuleInfo {
     std::vector<DefinePermission> definePermissions;
     std::vector<std::string> extensionKeys;
     std::vector<std::string> extensionSkillKeys;
+    bool isStageBasedModel = false;
 };
 
 struct SkillUri {
@@ -569,8 +570,7 @@ public:
      * @param userId Indicates the user ID.
      * @return Returns the AbilityInfo object if find it; returns null otherwise.
      */
-    std::optional<AbilityInfo> FindAbilityInfoByUri(
-        const std::string &abilityUri, int32_t userId = Constants::UNSPECIFIED_USERID) const
+    std::optional<AbilityInfo> FindAbilityInfoByUri(const std::string &abilityUri) const
     {
         APP_LOGI("Uri is %{public}s", abilityUri.c_str());
         for (const auto &ability : baseAbilityInfos_) {
@@ -582,8 +582,6 @@ public:
             auto configUri = abilityInfo.uri.substr(Constants::DATA_ABILITY_URI_PREFIX.size());
             APP_LOGI("configUri is %{public}s", configUri.c_str());
             if (configUri == abilityUri) {
-                GetApplicationInfo(
-                    ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMS, userId, abilityInfo.applicationInfo);
                 return abilityInfo;
             }
         }
@@ -1111,16 +1109,6 @@ public:
         return canUninstall_;
     }
 
-    bool SetAbilityEnabled(const std::string &bundleName, const std::string &abilityName, bool isEnabled)
-    {
-        for (auto &ability : baseAbilityInfos_) {
-            if ((ability.second.bundleName == bundleName) && (ability.second.name == abilityName)) {
-                ability.second.enabled = isEnabled;
-                return true;
-            }
-        }
-        return false;
-    }
     /**
      * @brief Insert formInfo.
      * @param keyName Indicates object as key.
@@ -1162,6 +1150,16 @@ public:
             innerModuleInfos_.at(currentPackage_).moduleDataDir = oldInfo.GetModuleDataDir(currentPackage_);
         }
     }
+    /**
+     * @brief Set ability enabled.
+     * @param bundleName Indicates the bundleName.
+     * @param abilityName Indicates the abilityName.
+     * @param isEnabled Indicates the ability enabled.
+     * @param userId Indicates the user id.
+     * @return Return whether the application is enabled.
+     */
+    bool SetAbilityEnabled(
+        const std::string &bundleName, const std::string &abilityName, bool isEnabled, int32_t userId);
     /**
      * @brief Obtains configuration information about an application.
      * @param flags Indicates the flag used to specify information contained
@@ -1386,6 +1384,13 @@ public:
     {
         return allowedAcls_;
     }
+    /**
+     * @brief ability is enabled.
+     * @param abilityInfo Indicates the abilityInfo.
+     * @param userId Indicates the user Id.
+     * @return Return set ability enabled result.
+     */
+    bool IsAbilityEnabled(const AbilityInfo &abilityInfo, int32_t userId) const;
 private:
     void GetBundleWithAbilities(
         int32_t flags, BundleInfo &bundleInfo, int32_t userId = Constants::UNSPECIFIED_USERID) const;
@@ -1427,7 +1432,7 @@ private:
     std::map<std::string, ShortcutInfo> shortcutInfos_;
     std::map<std::string, InnerBundleUserInfo> innerBundleUserInfos_;
     // new version fields
-    bool isNewVersion_ = true;
+    bool isNewVersion_ = false;
     std::map<std::string, ExtensionInfo> baseExtensionInfos_;
     std::map<std::string, std::vector<Skill>> extensionSkillInfos_;
 };
