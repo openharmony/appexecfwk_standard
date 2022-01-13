@@ -442,7 +442,7 @@ ErrCode BundleManagerShellCommand::RunAsInstallCommand()
     int counter = 0;
     std::vector<std::string> bundlePath;
     int index = 0;
-    int32_t userId = Constants::UNSPECIFIED_USERID;
+    int32_t userId = Constants::ALL_USERID;
     while (true) {
         counter++;
         option = getopt_long(argc_, argv_, SHORT_OPTIONS.c_str(), LONG_OPTIONS, nullptr);
@@ -604,7 +604,7 @@ ErrCode BundleManagerShellCommand::RunAsUninstallCommand()
     int counter = 0;
     std::string bundleName = "";
     std::string moduleName = "";
-    int32_t userId = Constants::UNSPECIFIED_USERID;
+    int32_t userId = Constants::ALL_USERID;
     while (true) {
         counter++;
         option = getopt_long(argc_, argv_, SHORT_OPTIONS.c_str(), LONG_OPTIONS, nullptr);
@@ -740,7 +740,7 @@ ErrCode BundleManagerShellCommand::RunAsDumpCommand()
     bool bundleDumpInfos = false;
     bool bundleDumpInfo = false;
     bool bundleDumpShortcut = false;
-    int32_t userId = Constants::UNSPECIFIED_USERID;
+    int32_t userId = Constants::ALL_USERID;
     while (true) {
         counter++;
         option = getopt_long(argc_, argv_, SHORT_OPTIONS_DUMP.c_str(), LONG_OPTIONS_DUMP, nullptr);
@@ -1223,7 +1223,7 @@ ErrCode BundleManagerShellCommand::RunAsRecoverCommand()
     int option = -1;
     int counter = 0;
     std::string bundleName = "";
-    int32_t userId = Constants::UNSPECIFIED_USERID;
+    int32_t userId = Constants::ALL_USERID;
     while (true) {
         counter++;
         option = getopt_long(argc_, argv_, SHORT_OPTIONS.c_str(), LONG_OPTIONS, nullptr);

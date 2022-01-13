@@ -83,6 +83,7 @@ const std::string MODULE_REQUEST_PERMISSIONS = "requestPermissions";
 const std::string MODULE_DEFINE_PERMISSIONS = "definePermissions";
 const std::string MODULE_EXTENSION_KEYS = "extensionKeys";
 const std::string MODULE_EXTENSION_SKILL_KEYS = "extensionSkillKeys";
+const std::string MODULE_IS_STAGE_BASED_MODEL = "isStageBasedModel";
 const std::string BUNDLE_IS_NEW_VERSION = "isNewVersion_";
 const std::string BUNDLE_BASE_EXTENSION_INFOS = "baseExtensionInfos_";
 const std::string BUNDLE_EXTENSION_SKILL_INFOS = "extensionSkillInfos_";
@@ -400,7 +401,8 @@ void to_json(nlohmann::json &jsonObject, const InnerModuleInfo &info)
         {MODULE_REQUEST_PERMISSIONS, info.requestPermissions},
         {MODULE_DEFINE_PERMISSIONS, info.definePermissions},
         {MODULE_EXTENSION_KEYS, info.extensionKeys},
-        {MODULE_EXTENSION_SKILL_KEYS, info.extensionSkillKeys}
+        {MODULE_EXTENSION_SKILL_KEYS, info.extensionSkillKeys},
+        {MODULE_IS_STAGE_BASED_MODEL, info.isStageBasedModel}
     };
 }
 
@@ -718,6 +720,14 @@ void from_json(const nlohmann::json &jsonObject, InnerModuleInfo &info)
         false,
         parseResult,
         ArrayType::STRING);
+    GetValueIfFindKey<bool>(jsonObject,
+        jsonObjectEnd,
+        MODULE_IS_STAGE_BASED_MODEL,
+        info.isStageBasedModel,
+        JsonType::BOOLEAN,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
     if (parseResult != ERR_OK) {
         APP_LOGE("read InnerModuleInfo from database error, error code : %{public}d", parseResult);
     }
@@ -1440,6 +1450,7 @@ std::optional<HapModuleInfo> InnerBundleInfo::FindHapModuleInfo(const std::strin
     hapInfo.srcPath = it->second.srcPath;
     hapInfo.metadata = it->second.metadata;
     hapInfo.resourcePath = it->second.moduleResPath;
+    hapInfo.isStageBasedModel = it->second.isStageBasedModel;
     bool first = false;
     for (auto &ability : baseAbilityInfos_) {
         if (ability.first.find(modulePackage) != std::string::npos) {
@@ -1744,7 +1755,6 @@ void InnerBundleInfo::GetApplicationInfo(int32_t flags, int32_t userId, Applicat
     appInfo.enabled = innerBundleUserInfo.bundleUserInfo.enabled;
     appInfo.uid = innerBundleUserInfo.uid;
     appInfo.accessTokenId = innerBundleUserInfo.accessTokenId;
-    appInfo.uid = innerBundleUserInfo.uid;
     for (const auto &info : innerModuleInfos_) {
         ModuleInfo moduleInfo;
         moduleInfo.moduleName = info.second.moduleName;
@@ -1854,10 +1864,12 @@ void InnerBundleInfo::GetBundleInfo(int32_t flags, BundleInfo &bundleInfo, int32
 
 void InnerBundleInfo::GetBundleWithAbilities(int32_t flags, BundleInfo &bundleInfo, int32_t userId) const
 {
+    APP_LOGD("bundleName:%{public}s userid:%{public}d", bundleInfo.name.c_str(), userId);
     if (static_cast<uint32_t>(flags) & GET_BUNDLE_WITH_ABILITIES) {
         for (auto &ability : baseAbilityInfos_) {
             if (!(static_cast<uint32_t>(flags) & GET_ABILITY_INFO_WITH_DISABLE)
-                && !ability.second.enabled) {
+                && !IsAbilityEnabled(ability.second, userId)) {
+                APP_LOGW("%{public}s is disabled,", ability.second.name.c_str());
                 continue;
             }
             AbilityInfo abilityInfo = ability.second;
@@ -1977,6 +1989,15 @@ void InnerBundleInfo::AddInnerBundleUserInfo(
 bool InnerBundleInfo::GetInnerBundleUserInfo(
     int32_t userId, InnerBundleUserInfo& innerBundleUserInfo) const
 {
+    if (userId == Constants::ALL_USERID) {
+        if (innerBundleUserInfos_.empty()) {
+            return false;
+        }
+
+        innerBundleUserInfo = innerBundleUserInfos_.begin()->second;
+        return true;
+    }
+
     auto& key = NameAndUserIdToKey(GetBundleName(), userId);
     auto infoItem = innerBundleUserInfos_.find(key);
     if (infoItem == innerBundleUserInfos_.end()) {
@@ -1990,6 +2011,10 @@ bool InnerBundleInfo::GetInnerBundleUserInfo(
 
 bool InnerBundleInfo::HasInnerBundleUserInfo(int32_t userId) const
 {
+    if (userId == Constants::ALL_USERID) {
+        return !innerBundleUserInfos_.empty();
+    }
+
     auto& key = NameAndUserIdToKey(GetBundleName(), userId);
     auto infoItem = innerBundleUserInfos_.find(key);
     return infoItem != innerBundleUserInfos_.end();
@@ -2029,6 +2054,56 @@ void InnerBundleInfo::SetBundleUpdateTime(const int64_t time, int32_t userId)
     infoItem->second.updateTime = time;
 }
 
+bool InnerBundleInfo::IsAbilityEnabled(const AbilityInfo &abilityInfo, int32_t userId) const
+{
+    APP_LOGD("IsAbilityEnabled bundleName:%{public}s, userId:%{public}d", abilityInfo.bundleName.c_str(), userId);
+    auto& key = NameAndUserIdToKey(abilityInfo.bundleName, userId);
+    auto infoItem = innerBundleUserInfos_.find(key);
+    if (infoItem == innerBundleUserInfos_.end()) {
+        APP_LOGE("innerBundleUserInfos find key:%{public}s, error", key.c_str());
+        return false;
+    }
+    auto disabledAbilities = infoItem->second.bundleUserInfo.disabledAbilities;
+    if (std::find(disabledAbilities.begin(), disabledAbilities.end(), abilityInfo.name) != disabledAbilities.end()) {
+        return false;
+    } else {
+        return true;
+    }
+}
+
+bool InnerBundleInfo::SetAbilityEnabled(const std::string &bundleName,
+                                        const std::string &abilityName,
+                                        bool isEnabled,
+                                        int32_t userId)
+{
+    APP_LOGD("SetAbilityEnabled :%{public}s, %{public}s, %{public}d",
+        bundleName.c_str(), abilityName.c_str(), userId);
+    for (auto &ability : baseAbilityInfos_) {
+        if ((ability.second.bundleName == bundleName) && (ability.second.name == abilityName)) {
+            auto &key = NameAndUserIdToKey(bundleName, userId);
+            auto infoItem = innerBundleUserInfos_.find(key);
+            if (infoItem == innerBundleUserInfos_.end()) {
+                APP_LOGE("SetAbilityEnabled find innerBundleUserInfo failed");
+                return false;
+            }
+            auto iter = std::find(infoItem->second.bundleUserInfo.disabledAbilities.begin(),
+                                  infoItem->second.bundleUserInfo.disabledAbilities.end(),
+                                  abilityName);
+            if (iter != infoItem->second.bundleUserInfo.disabledAbilities.end()) {
+                if (isEnabled) {
+                    infoItem->second.bundleUserInfo.disabledAbilities.erase(iter);
+                }
+            } else {
+                if (!isEnabled) {
+                    infoItem->second.bundleUserInfo.disabledAbilities.push_back(abilityName);
+                }
+            }
+            return true;
+        }
+    }
+    return false;
+}
+
 void InnerBundleInfo::SetApplicationEnabled(bool enabled, int32_t userId)
 {
     auto& key = NameAndUserIdToKey(GetBundleName(), userId);
@@ -2059,6 +2134,7 @@ int32_t InnerBundleInfo::GetResponseUserId(int32_t requestUserId) const
         }
     }
 
+    APP_LOGD("requestUserId(%{public}d) and responseUserId(%{public}d).", requestUserId, responseUserId);
     return responseUserId;
 }
 

@@ -1811,7 +1811,8 @@ HWTEST_F(BmsBundleKitServiceTest, QueryAbilityInfoByUri_0100, Function | SmallTe
     MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
 
     AbilityInfo result;
-    bool testRet = GetBundleDataMgr()->QueryAbilityInfoByUri(ABILITY_URI, result);
+    bool testRet = GetBundleDataMgr()->QueryAbilityInfoByUri(
+        ABILITY_URI, Constants::DEFAULT_USERID, result);
     EXPECT_EQ(true, testRet);
     EXPECT_EQ(ABILITY_NAME_TEST, result.name);
     EXPECT_NE(ABILITY_NAME_DEMO, result.name);
@@ -1831,7 +1832,8 @@ HWTEST_F(BmsBundleKitServiceTest, QueryAbilityInfoByUri_0200, Function | SmallTe
     MockInstallBundle(BUNDLE_NAME_DEMO, MODULE_NAME_TEST, ABILITY_NAME_TEST);
 
     AbilityInfo result;
-    bool testRet = GetBundleDataMgr()->QueryAbilityInfoByUri(ABILITY_URI, result);
+    bool testRet = GetBundleDataMgr()->QueryAbilityInfoByUri(
+        ABILITY_URI, Constants::DEFAULT_USERID, result);
     EXPECT_EQ(true, testRet);
     EXPECT_EQ(ABILITY_NAME_TEST, result.name);
     EXPECT_NE(ABILITY_NAME_DEMO, result.name);
@@ -1850,7 +1852,8 @@ HWTEST_F(BmsBundleKitServiceTest, QueryAbilityInfoByUri_0200, Function | SmallTe
 HWTEST_F(BmsBundleKitServiceTest, QueryAbilityInfoByUri_0300, Function | SmallTest | Level1)
 {
     AbilityInfo result;
-    bool testRet = GetBundleDataMgr()->QueryAbilityInfoByUri(ABILITY_URI, result);
+    bool testRet = GetBundleDataMgr()->QueryAbilityInfoByUri(
+        ABILITY_URI, Constants::DEFAULT_USERID, result);
     EXPECT_EQ(false, testRet);
 }
 
@@ -1865,7 +1868,8 @@ HWTEST_F(BmsBundleKitServiceTest, QueryAbilityInfoByUri_0400, Function | SmallTe
     MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
 
     AbilityInfo result;
-    bool testRet = GetBundleDataMgr()->QueryAbilityInfoByUri("", result);
+    bool testRet = GetBundleDataMgr()->QueryAbilityInfoByUri(
+        "",  Constants::DEFAULT_USERID, result);
     EXPECT_EQ(false, testRet);
 
     MockUninstallBundle(BUNDLE_NAME_TEST);
@@ -1882,7 +1886,8 @@ HWTEST_F(BmsBundleKitServiceTest, QueryAbilityInfoByUri_0500, Function | SmallTe
     MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
 
     AbilityInfo result;
-    bool testRet = GetBundleDataMgr()->QueryAbilityInfoByUri(ERROR_URI, result);
+    bool testRet = GetBundleDataMgr()->QueryAbilityInfoByUri(
+        ERROR_URI,  Constants::DEFAULT_USERID, result);
     EXPECT_EQ(false, testRet);
 
     MockUninstallBundle(BUNDLE_NAME_TEST);
@@ -3008,7 +3013,8 @@ HWTEST_F(BmsBundleKitServiceTest, GetShortcutInfos_0100, Function | SmallTest | 
 {
     MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
     std::vector<ShortcutInfo> shortcutInfos;
-    auto result = GetBundleDataMgr()->GetShortcutInfos(BUNDLE_NAME_TEST, shortcutInfos);
+    auto result = GetBundleDataMgr()->GetShortcutInfos(
+        BUNDLE_NAME_TEST,  Constants::DEFAULT_USERID, shortcutInfos);
     EXPECT_TRUE(result);
     CheckShortcutInfoTest(shortcutInfos);
     MockUninstallBundle(BUNDLE_NAME_TEST);
@@ -3024,11 +3030,13 @@ HWTEST_F(BmsBundleKitServiceTest, GetShortcutInfos_0200, Function | SmallTest | 
     MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
     MockInstallBundle(BUNDLE_NAME_DEMO, MODULE_NAME_DEMO, ABILITY_NAME_TEST);
     std::vector<ShortcutInfo> shortcutInfo1;
-    auto result1 = GetBundleDataMgr()->GetShortcutInfos(BUNDLE_NAME_TEST, shortcutInfo1);
+    auto result1 = GetBundleDataMgr()->GetShortcutInfos(
+        BUNDLE_NAME_TEST,  Constants::DEFAULT_USERID, shortcutInfo1);
     EXPECT_TRUE(result1);
     CheckShortcutInfoTest(shortcutInfo1);
     std::vector<ShortcutInfo> shortcutInfo2;
-    auto result2 = GetBundleDataMgr()->GetShortcutInfos(BUNDLE_NAME_DEMO, shortcutInfo2);
+    auto result2 = GetBundleDataMgr()->GetShortcutInfos(
+        BUNDLE_NAME_DEMO,  Constants::DEFAULT_USERID, shortcutInfo2);
     EXPECT_TRUE(result2);
     CheckShortcutInfoDemo(shortcutInfo2);
     MockUninstallBundle(BUNDLE_NAME_TEST);
@@ -3044,7 +3052,8 @@ HWTEST_F(BmsBundleKitServiceTest, GetShortcutInfos_0300, Function | SmallTest | 
 {
     MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
     std::vector<ShortcutInfo> shortcutInfos;
-    GetBundleDataMgr()->GetShortcutInfos(BUNDLE_NAME_DEMO, shortcutInfos);
+    GetBundleDataMgr()->GetShortcutInfos(
+        BUNDLE_NAME_DEMO,  Constants::DEFAULT_USERID, shortcutInfos);
     EXPECT_TRUE(shortcutInfos.empty());
     MockUninstallBundle(BUNDLE_NAME_TEST);
 }
@@ -3058,7 +3067,8 @@ HWTEST_F(BmsBundleKitServiceTest, GetShortcutInfos_0400, Function | SmallTest | 
 {
     MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
     std::vector<ShortcutInfo> shortcutInfos;
-    GetBundleDataMgr()->GetShortcutInfos(EMPTY_STRING, shortcutInfos);
+    GetBundleDataMgr()->GetShortcutInfos(
+        EMPTY_STRING,  Constants::DEFAULT_USERID, shortcutInfos);
     EXPECT_TRUE(shortcutInfos.empty());
     MockUninstallBundle(BUNDLE_NAME_TEST);
 }
@@ -3072,13 +3082,14 @@ HWTEST_F(BmsBundleKitServiceTest, GetShortcutInfos_0400, Function | SmallTest | 
 HWTEST_F(BmsBundleKitServiceTest, GetShortcutInfos_0500, Function | SmallTest | Level1)
 {
     std::vector<ShortcutInfo> shortcutInfos;
-    GetBundleDataMgr()->GetShortcutInfos(BUNDLE_NAME_TEST, shortcutInfos);
+    GetBundleDataMgr()->GetShortcutInfos(
+        BUNDLE_NAME_TEST, Constants::DEFAULT_USERID, shortcutInfos);
     EXPECT_TRUE(shortcutInfos.empty());
 }
 
 /**
  * @tc.number: GetUsageRecords_0100
- * @tc.name: test can get usage records by notify ability life status
+ * @tc.name: test can get usage records by notify activity life status
  * @tc.desc: 1.can get usage records
  */
 HWTEST_F(BmsBundleKitServiceTest, GetUsageRecords_0100, Function | SmallTest | Level1)

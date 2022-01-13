@@ -40,8 +40,11 @@ const std::string DESCRIPTION = "description";
 const std::string DESCRIPTION_ID = "descriptionId";
 const std::string TYPE = "type";
 const std::string PERMISSIONS = "permissions";
+const std::string READ_PERMISSION = "readPermission";
+const std::string WRITE_PERMISSION = "writePermission";
 const std::string VISIBLE = "visible";
 const std::string META_DATA = "metadata";
+const std::string RESOURCE_PATH = "resourcePath";
 }; // namespace
 
 void to_json(nlohmann::json &jsonObject, const ExtensionInfo &extensionInfo)
@@ -59,9 +62,12 @@ void to_json(nlohmann::json &jsonObject, const ExtensionInfo &extensionInfo)
         {DESCRIPTION, extensionInfo.description},
         {DESCRIPTION_ID, extensionInfo.descriptionId},
         {TYPE, extensionInfo.type},
+        {READ_PERMISSION, extensionInfo.readPermission},
+        {WRITE_PERMISSION, extensionInfo.writePermission},
         {PERMISSIONS, extensionInfo.permissions},
         {VISIBLE, extensionInfo.visible},
-        {META_DATA, extensionInfo.metadata}
+        {META_DATA, extensionInfo.metadata},
+        {RESOURCE_PATH, extensionInfo.resourcePath}
     };
 }
 
@@ -158,6 +164,22 @@ void from_json(const nlohmann::json &jsonObject, ExtensionInfo &extensionInfo)
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        READ_PERMISSION,
+        extensionInfo.readPermission,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        WRITE_PERMISSION,
+        extensionInfo.writePermission,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
     GetValueIfFindKey<std::vector<std::string>>(jsonObject,
         jsonObjectEnd,
         PERMISSIONS,
@@ -182,6 +204,14 @@ void from_json(const nlohmann::json &jsonObject, ExtensionInfo &extensionInfo)
         false,
         parseResult,
         ArrayType::OBJECT);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        RESOURCE_PATH,
+        extensionInfo.resourcePath,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
     if (parseResult != ERR_OK) {
         APP_LOGE("read ExtensionInfo from database error, error code : %{public}d", parseResult);
     }

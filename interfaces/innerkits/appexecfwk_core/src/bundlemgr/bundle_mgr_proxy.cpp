@@ -722,6 +722,31 @@ bool BundleMgrProxy::QueryAbilityInfosByUri(const std::string &abilityUri, std::
     return true;
 }
 
+bool BundleMgrProxy::QueryAbilityInfoByUri(
+    const std::string &abilityUri, int32_t userId, AbilityInfo &abilityInfo)
+{
+    MessageParcel data;
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        APP_LOGE("fail to QueryAbilityInfoByUri due to write MessageParcel fail");
+        return false;
+    }
+    if (!data.WriteString(abilityUri)) {
+        APP_LOGE("fail to QueryAbilityInfoByUri due to write abilityUri fail");
+        return false;
+    }
+    if (!data.WriteInt32(userId)) {
+        APP_LOGE("fail to QueryAbilityInfo due to write want fail");
+        return false;
+    }
+
+    if (!GetParcelableInfo<AbilityInfo>(
+        IBundleMgr::Message::QUERY_ABILITY_INFO_BY_URI_FOR_USERID, data, abilityInfo)) {
+        APP_LOGE("fail to QueryAbilityInfoByUri from server");
+        return false;
+    }
+    return true;
+}
+
 bool BundleMgrProxy::QueryKeepAliveBundleInfos(std::vector<BundleInfo> &bundleInfos)
 {
     BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);

@@ -123,6 +123,9 @@ int BundleMgrHost::OnRemoteRequest(uint32_t code, MessageParcel &data, MessagePa
         case static_cast<uint32_t>(IBundleMgr::Message::QUERY_ABILITY_INFOS_BY_URI):
             errCode = HandleQueryAbilityInfosByUri(data, reply);
             break;
+        case static_cast<uint32_t>(IBundleMgr::Message::QUERY_ABILITY_INFO_BY_URI_FOR_USERID):
+            errCode = HandleQueryAbilityInfoByUriForUserId(data, reply);
+            break;
         case static_cast<uint32_t>(IBundleMgr::Message::QUERY_KEEPALIVE_BUNDLE_INFOS):
             errCode = HandleQueryKeepAliveBundleInfos(data, reply);
             break;
@@ -784,6 +787,25 @@ ErrCode BundleMgrHost::HandleQueryAbilityInfosByUri(Parcel &data, Parcel &reply)
     }
     if (ret) {
         if (!WriteParcelableVector(abilityInfos, reply)) {
+            APP_LOGE("write failed");
+            return ERR_APPEXECFWK_PARCEL_ERROR;
+        }
+    }
+    return ERR_OK;
+}
+
+ErrCode BundleMgrHost::HandleQueryAbilityInfoByUriForUserId(Parcel &data, Parcel &reply)
+{
+    std::string abilityUri = data.ReadString();
+    int32_t userId = data.ReadInt32();
+    AbilityInfo info;
+    bool ret = QueryAbilityInfoByUri(abilityUri, userId, info);
+    if (!reply.WriteBool(ret)) {
+        APP_LOGE("write failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    if (ret) {
+        if (!reply.WriteParcelable(&info)) {
             APP_LOGE("write failed");
             return ERR_APPEXECFWK_PARCEL_ERROR;
         }

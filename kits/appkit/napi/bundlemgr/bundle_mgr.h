@@ -45,7 +45,7 @@ struct AsyncAbilityInfoCallbackInfo {
     napi_ref callback = 0;
     OHOS::AAFwk::Want want;
     int32_t flags = 0;
-    int32_t userId = 0;
+    int32_t userId = Constants::UNSPECIFIED_USERID;
     std::vector<OHOS::AppExecFwk::AbilityInfo> abilityInfos;
     bool ret = false;
     int32_t err = 0;
