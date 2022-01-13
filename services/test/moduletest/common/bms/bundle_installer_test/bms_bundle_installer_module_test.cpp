@@ -1474,7 +1474,7 @@ HWTEST_F(BmsBundleInstallerModuleTest, BundleDataStorage_0200, Function | Medium
     for (std::string item : bundleNames) {
         ApplicationInfo appInfo;
         bool getAppInfo =
-            dataMgr->GetApplicationInfo(item, ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMS, 0, appInfo);
+            dataMgr->GetApplicationInfo(item, ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMISSION, 0, appInfo);
         EXPECT_TRUE(getAppInfo) << "Get Application: " + item + " fail!";
         EXPECT_EQ(appInfo.bundleName, item) << "appinfo bundleName is wrong";
     }
@@ -1537,7 +1537,8 @@ HWTEST_F(BmsBundleInstallerModuleTest, BundleDataStorage003, TestSize.Level3)
     ApplicationInfo appInfo;
     for (int i = 0; i < saveTimes; i++) {
         bool getAppInfo =
-            dataMgr->GetApplicationInfo(bundleNames[i], ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMS, 0, appInfo);
+            dataMgr->GetApplicationInfo(
+                bundleNames[i], ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMISSION, 0, appInfo);
         if (i == pos) {
             EXPECT_FALSE(getAppInfo) << "Get Application: " + bundleNames[i] + " success!";
         } else {

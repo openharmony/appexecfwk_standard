@@ -1091,7 +1091,7 @@ HWTEST_F(BmsBundleKitServiceTest, GetApplicationInfo_0100, Function | SmallTest 
 
     ApplicationInfo demoResult;
     bool demoRet = GetBundleDataMgr()->GetApplicationInfo(
-        BUNDLE_NAME_DEMO, ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMS, DEFAULT_USER_ID_TEST, demoResult);
+        BUNDLE_NAME_DEMO, ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMISSION, DEFAULT_USER_ID_TEST, demoResult);
     EXPECT_TRUE(demoRet);
     CheckApplicationInfo(BUNDLE_NAME_DEMO, PERMISSION_SIZE_TWO, demoResult);
 
@@ -1190,7 +1190,7 @@ HWTEST_F(BmsBundleKitServiceTest, GetApplicationInfo_0600, Function | SmallTest 
 
     ApplicationInfo testResult;
     bool testRet = GetBundleDataMgr()->GetApplicationInfo(BUNDLE_NAME_TEST,
-        GET_APPLICATION_INFO_WITH_PERMS | GET_APPLICATION_INFO_WITH_METADATA, DEFAULT_USER_ID_TEST, testResult);
+        GET_APPLICATION_INFO_WITH_PERMISSION | GET_APPLICATION_INFO_WITH_METADATA, DEFAULT_USER_ID_TEST, testResult);
     EXPECT_TRUE(testRet);
     EXPECT_EQ(PERMISSION_SIZE_TWO, testResult.permissions.size());
     EXPECT_EQ(META_DATA_SIZE_ONE, testResult.metaData.size());
@@ -1233,7 +1233,7 @@ HWTEST_F(BmsBundleKitServiceTest, GetApplicationInfos_0200, Function | SmallTest
 
     std::vector<ApplicationInfo> appInfos;
     bool ret = GetBundleDataMgr()->GetApplicationInfos(
-        ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMS, DEFAULT_USER_ID_TEST, appInfos);
+        ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMISSION, DEFAULT_USER_ID_TEST, appInfos);
     EXPECT_TRUE(ret);
     CheckInstalledApplicationInfos(PERMISSION_SIZE_TWO, appInfos);
 
