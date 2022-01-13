@@ -130,14 +130,14 @@ public:
      * @param size Indicates the disk size.
      * @return Returns true if successfully; returns false otherwise.
      */
-    static bool GetDiskUsage(const std::string &dir, int64_t &size);
+    static int64_t GetDiskUsage(const std::string &dir);
     /**
      * @brief Traverse all cache directories.
      * @param currentPath Indicates the current path.
      * @param cacheDirs Indicates the cache directories.
      * @return Returns true if successfully; returns false otherwise.
      */
-    static bool TraverseCacheDirectory(const std::string &currentPath, std::vector<std::string> &cacheDirs);
+    static void TraverseCacheDirectory(const std::string &currentPath, std::vector<std::string> &cacheDirs);
     /**
      * @brief Get disk usage from path.
      * @param path Indicates the current path.
