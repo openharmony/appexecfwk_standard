@@ -1838,10 +1838,12 @@ void InnerBundleInfo::GetBundleInfo(int32_t flags, BundleInfo &bundleInfo, int32
 
 void InnerBundleInfo::GetBundleWithAbilities(int32_t flags, BundleInfo &bundleInfo, int32_t userId) const
 {
+    APP_LOGD("bundleName:%{public}s userid:%{public}d", bundleInfo.name.c_str(), userId);
     if (static_cast<uint32_t>(flags) & GET_BUNDLE_WITH_ABILITIES) {
         for (auto &ability : baseAbilityInfos_) {
             if (!(static_cast<uint32_t>(flags) & GET_ABILITY_INFO_WITH_DISABLE)
-                && !ability.second.enabled) {
+                && !IsAbilityEnabled(ability.second, userId)) {
+                APP_LOGW("%{public}s is disabled,", ability.second.name.c_str());
                 continue;
             }
             AbilityInfo abilityInfo = ability.second;
@@ -2024,6 +2026,56 @@ void InnerBundleInfo::SetBundleUpdateTime(const int64_t time, int32_t userId)
     }
 
     infoItem->second.updateTime = time;
+}
+
+bool InnerBundleInfo::IsAbilityEnabled(const AbilityInfo &abilityInfo, int32_t userId) const
+{
+    APP_LOGD("IsAbilityEnabled bundleName:%{public}s, userId:%{public}d", abilityInfo.bundleName.c_str(), userId);
+    auto& key = NameAndUserIdToKey(abilityInfo.bundleName, userId);
+    auto infoItem = innerBundleUserInfos_.find(key);
+    if (infoItem == innerBundleUserInfos_.end()) {
+        APP_LOGE("innerBundleUserInfos find key:%{public}s, error", key.c_str());
+        return false;
+    }
+    auto disabledAbilities = infoItem->second.bundleUserInfo.disabledAbilities;
+    if (std::find(disabledAbilities.begin(), disabledAbilities.end(), abilityInfo.name) != disabledAbilities.end()) {
+        return false;
+    } else {
+        return true;
+    }
+}
+
+bool InnerBundleInfo::SetAbilityEnabled(const std::string &bundleName,
+                                        const std::string &abilityName,
+                                        bool isEnabled,
+                                        int32_t userId)
+{
+    APP_LOGD("SetAbilityEnabled :%{public}s, %{public}s, %{public}d",
+        bundleName.c_str(), abilityName.c_str(), userId);
+    for (auto &ability : baseAbilityInfos_) {
+        if ((ability.second.bundleName == bundleName) && (ability.second.name == abilityName)) {
+            auto &key = NameAndUserIdToKey(bundleName, userId);
+            auto infoItem = innerBundleUserInfos_.find(key);
+            if (infoItem == innerBundleUserInfos_.end()) {
+                APP_LOGE("SetAbilityEnabled find innerBundleUserInfo failed");
+                return false;
+            }
+            auto iter = std::find(infoItem->second.bundleUserInfo.disabledAbilities.begin(),
+                                  infoItem->second.bundleUserInfo.disabledAbilities.end(),
+                                  abilityName);
+            if (iter != infoItem->second.bundleUserInfo.disabledAbilities.end()) {
+                if (isEnabled) {
+                    infoItem->second.bundleUserInfo.disabledAbilities.erase(iter);
+                }
+            } else {
+                if (!isEnabled) {
+                    infoItem->second.bundleUserInfo.disabledAbilities.push_back(abilityName);
+                }
+            }
+            return true;
+        }
+    }
+    return false;
 }
 
 void InnerBundleInfo::SetApplicationEnabled(bool enabled, int32_t userId)
