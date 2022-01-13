@@ -447,7 +447,8 @@ HWTEST_F(BmsSearchSystemTest, BMS_Search_0500, Function | MediumTest | Level1)
     ApplicationInfo appInfo;
     int userId = Constants::DEFAULT_USERID;
     bool getInfoResult =
-        bundleMgrProxy->GetApplicationInfo(appName, ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMS, userId, appInfo);
+        bundleMgrProxy->GetApplicationInfo(
+            appName, ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMISSION, userId, appInfo);
     std::string permission = commonTool.VectorToStr(appInfo.permissions);
     EXPECT_TRUE(getInfoResult);
     std::cout << permission << std::endl;
@@ -832,7 +833,8 @@ HWTEST_F(BmsSearchSystemTest, BMS_Search_1700, Function | MediumTest | Level1)
 
         std::vector<ApplicationInfo> appInfos;
         bool getInfoResult =
-            bundleMgrProxy->GetApplicationInfos(ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMS, userId, appInfos);
+            bundleMgrProxy->GetApplicationInfos(
+                ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMISSION, userId, appInfos);
         EXPECT_TRUE(getInfoResult);
         bool isSubStrExist = false;
         for (auto iter = appInfos.begin(); iter != appInfos.end(); iter++) {
@@ -870,7 +872,7 @@ HWTEST_F(BmsSearchSystemTest, BMS_Search_1800, Function | MediumTest | Level1)
     }
     std::vector<ApplicationInfo> appInfos;
     bool getInfoResult =
-        bundleMgrProxy->GetApplicationInfos(ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMS, userId, appInfos);
+        bundleMgrProxy->GetApplicationInfos(ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMISSION, userId, appInfos);
     EXPECT_TRUE(getInfoResult);
     std::cout << "END BMS_SEARCH_1800" << std::endl;
 }

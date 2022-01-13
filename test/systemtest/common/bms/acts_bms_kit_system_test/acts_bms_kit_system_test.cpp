@@ -991,7 +991,7 @@ HWTEST_F(ActsBmsKitSystemTest, GetApplicationInfo_0200, Function | MediumTest | 
         ApplicationInfo appInfo;
         int userId = Constants::DEFAULT_USERID;
         bool getInfoResult = bundleMgrProxy->GetApplicationInfo(
-            appName, ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMS, userId, appInfo);
+            appName, ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMISSION, userId, appInfo);
         std::string permission = commonTool.VectorToStr(appInfo.permissions);
         EXPECT_TRUE(getInfoResult);
         resvec.clear();
@@ -1286,7 +1286,8 @@ HWTEST_F(ActsBmsKitSystemTest, GetApplicationInfos_0100, Function | MediumTest |
 
             std::vector<ApplicationInfo> appInfos;
             bool getInfoResult =
-                bundleMgrProxy->GetApplicationInfos(ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMS, userId, appInfos);
+                bundleMgrProxy->GetApplicationInfos(
+                    ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMISSION, userId, appInfos);
             EXPECT_TRUE(getInfoResult);
             resvec.clear();
             Uninstall(appName, resvec);
@@ -1335,7 +1336,8 @@ HWTEST_F(ActsBmsKitSystemTest, GetApplicationInfos_0200, Function | MediumTest |
         }
         std::vector<ApplicationInfo> appInfos;
         bool getInfoResult =
-            bundleMgrProxy->GetApplicationInfos(ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMS, userId, appInfos);
+            bundleMgrProxy->GetApplicationInfos(
+                ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMISSION, userId, appInfos);
         EXPECT_TRUE(getInfoResult);
         int count = 0;
         for (auto appInfo : appInfos) {
