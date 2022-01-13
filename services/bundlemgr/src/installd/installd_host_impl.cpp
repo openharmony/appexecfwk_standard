@@ -325,10 +325,7 @@ ErrCode InstalldHostImpl::GetBundleStats(
     }
     // index 0 : bundle data size
     std::string path = Constants::BUNDLE_CODE_DIR + Constants::FILE_SEPARATOR_CHAR + bundleName;
-    int64_t fileSize = 0;
-    if (!InstalldOperator::GetDiskUsage(path, fileSize)) {
-        fileSize = Constants::INVALID_FILE_SIZE;
-    }
+    int64_t fileSize = InstalldOperator::GetDiskUsage(path);
     bundleStats.push_back(fileSize);
 
     // index 1 : local bundle data size
@@ -344,19 +341,14 @@ ErrCode InstalldHostImpl::GetBundleStats(
     }
     int64_t bundleLocalSize = InstalldOperator::GetDiskUsageFromPath(bundlePath);
     int64_t cacheSize = InstalldOperator::GetDiskUsageFromPath(cachePath);
-    if ((bundleLocalSize != Constants::INVALID_FILE_SIZE) && (cacheSize != Constants::INVALID_FILE_SIZE)) {
-        bundleLocalSize -= cacheSize;
-    }
+    bundleLocalSize -= cacheSize;
     bundleStats.push_back(bundleLocalSize);
 
     // index 2 : distributed data size
     std::string distributedfilePath = Constants::DISTRIBUTED_FILE;
     distributedfilePath = distributedfilePath.replace(distributedfilePath.find("%"), 1, std::to_string(userId)) +
         bundleName;
-    int64_t distributedFileSize = 0;
-    if (!InstalldOperator::GetDiskUsage(distributedfilePath, distributedFileSize)) {
-        distributedFileSize = Constants::INVALID_FILE_SIZE;
-    }
+    int64_t distributedFileSize = InstalldOperator::GetDiskUsage(distributedfilePath);
     bundleStats.push_back(distributedFileSize);
 
     // index 3 : database size
