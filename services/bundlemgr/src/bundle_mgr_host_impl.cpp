@@ -1036,5 +1036,15 @@ std::set<int32_t> BundleMgrHostImpl::GetExistsCommonUserIs()
     }
     return userIds;
 }
+
+std::string BundleMgrHostImpl::GetAppPrivilegeLevel(const std::string &bundleName)
+{
+    auto dataMgr = GetDataMgrFromService();
+    if (dataMgr == nullptr) {
+        APP_LOGE("DataMgr is nullptr");
+        return Constants::EMPTY_STRING;
+    }
+    return dataMgr->GetAppPrivilegeLevel(bundleName);
+}
 }  // namespace AppExecFwk
 }  // namespace OHOS

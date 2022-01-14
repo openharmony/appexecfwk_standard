@@ -261,6 +261,9 @@ int BundleMgrHost::OnRemoteRequest(uint32_t code, MessageParcel &data, MessagePa
         case static_cast<uint32_t>(IBundleMgr::Message::GET_DISTRIBUTE_BUNDLE_INFO):
             errCode = HandleGetDistributedBundleInfo(data, reply);
             break;
+        case static_cast<uint32_t>(IBundleMgr::Message::GET_APPLICATION_PRIVILEGE_LEVEL):
+            errCode = HandleGetAppPrivilegeLevel(data, reply);
+            break;
         default:
             return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
     }
@@ -1592,6 +1595,18 @@ ErrCode BundleMgrHost::HandleGetDistributedBundleInfo(Parcel &data, Parcel &repl
             APP_LOGE("write failed");
             return ERR_APPEXECFWK_PARCEL_ERROR;
         }
+    }
+    return ERR_OK;
+}
+
+ErrCode BundleMgrHost::HandleGetAppPrivilegeLevel(Parcel &data, Parcel &reply)
+{
+    std::string bundleName = data.ReadString();
+    APP_LOGD("bundleName %{public}s", bundleName.c_str());
+    auto ret = GetAppPrivilegeLevel(bundleName);
+    if (!reply.WriteString(ret)) {
+        APP_LOGE("write failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
     }
     return ERR_OK;
 }

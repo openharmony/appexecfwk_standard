@@ -651,6 +651,12 @@ public:
      */
     bool GetInnerBundleUserInfos(
         const std::string &bundleName, std::vector<InnerBundleUserInfo> &innerBundleUserInfos);
+    /**
+     * @brief Get app privilege level.
+     * @param bundleName Indicates the bundle name of the app privilege level.
+     * @return Returns app privilege level.
+     */
+    std::string GetAppPrivilegeLevel(const std::string &bundleName);
 private:
     /**
      * @brief Init transferStates.

@@ -558,6 +558,12 @@ public:
     virtual bool GetDistributedBundleInfo(
         const std::string &networkId, int32_t userId, const std::string &bundleName,
         DistributedBundleInfo &distributedBundleInfo) override;
+    /**
+     * @brief Get app privilege level.
+     * @param bundleName Indicates the bundle name of the app privilege level.
+     * @return Returns app privilege level.
+     */
+    virtual std::string GetAppPrivilegeLevel(const std::string &bundleName) override;
 private:
     const std::shared_ptr<BundleCloneMgr> GetCloneMgrFromService();
     const std::shared_ptr<BundleDataMgr> GetDataMgrFromService();
