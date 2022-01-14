@@ -29,8 +29,7 @@ struct BundleUserInfo : public Parcelable {
     // Indicates whether the bundle is disabled.
     bool enabled = true;
 
-    // enabled abilities of the user.
-    std::vector<std::string> enabledAbilities;
+    std::vector<std::string> abilities;
 
     // disabled abilities of the user.
     std::vector<std::string> disabledAbilities;
