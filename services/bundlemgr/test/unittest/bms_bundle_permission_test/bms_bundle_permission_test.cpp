@@ -34,7 +34,6 @@ using namespace OHOS::AppExecFwk;
 using namespace OHOS::Security;
 
 namespace {
-
 const std::string BUNDLE_LABEL = "Hello, OHOS";
 const std::string PROCESS_TEST = "test.process";
 const std::string BUNDLE_DESCRIPTION = "example helloworld";
@@ -341,7 +340,6 @@ const ReqPermission REQPERMISSION4 = {
         .when = "when"
     }
 };
-
 }  // namespace
 class BmsBundlePermissionTest : public testing::Test {
 public:

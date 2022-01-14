@@ -22,7 +22,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class BundleMgrService;
 class BundleScanner {
 public:

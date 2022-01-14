@@ -24,7 +24,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class InstalldHost : public IRemoteStub<IInstalld> {
 public:
     InstalldHost();
@@ -113,7 +112,6 @@ private:
     using InstalldFunc = bool (InstalldHost::*)(MessageParcel &, MessageParcel &);
     std::unordered_map<uint32_t, InstalldFunc> funcMap_;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_IPC_INSTALLD_HOST_H

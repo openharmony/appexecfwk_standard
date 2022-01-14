@@ -24,9 +24,7 @@
 namespace OHOS {
 namespace AppExecFwk {
 namespace {
-
 const std::string ADD_INSTALLER_FAIL = "fail to add installer in bundle installer manager";
-
 }
 
 BundleInstallerManager::BundleInstallerManager(const std::shared_ptr<EventRunner> &runner) : EventHandler(runner)
@@ -148,6 +146,5 @@ void BundleInstallerManager::RemoveInstaller(const int64_t installerId)
         APP_LOGD("erase the specific %{public}" PRId64 " installer", installerId);
     }
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

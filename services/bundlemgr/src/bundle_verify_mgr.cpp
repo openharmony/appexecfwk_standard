@@ -22,7 +22,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 using namespace OHOS::Security;
 
 bool BundleVerifyMgr::HapVerify(const std::string &filePath, Verify::HapVerifyResult &hapVerifyResult)
@@ -31,6 +30,5 @@ bool BundleVerifyMgr::HapVerify(const std::string &filePath, Verify::HapVerifyRe
     APP_LOGI("HapVerify result %{public}d", ret);
     return ret == Verify::HapVerifyResultCode::VERIFY_SUCCESS;
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

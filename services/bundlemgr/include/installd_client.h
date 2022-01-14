@@ -28,7 +28,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class InstalldClient : public DelayedSingleton<InstalldClient> {
 public:
     /**
@@ -136,7 +135,6 @@ private:
     sptr<IInstalld> installdProxy_;
     sptr<IRemoteObject::DeathRecipient> recipient_;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_INSTALLD_CLIENT_H

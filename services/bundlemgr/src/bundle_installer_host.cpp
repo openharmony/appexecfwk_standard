@@ -26,10 +26,8 @@
 namespace OHOS {
 namespace AppExecFwk {
 namespace {
-
 const std::string INSTALL_THREAD = "install_thread";
 const std::string GET_MANAGER_FAIL = "fail to get bundle installer manager";
-
 }  // namespace
 
 BundleInstallerHost::BundleInstallerHost()

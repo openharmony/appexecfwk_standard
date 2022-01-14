@@ -27,7 +27,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class BundleInstallerHost : public IRemoteStub<IBundleInstaller> {
 public:
     BundleInstallerHost();
@@ -134,7 +133,6 @@ private:
 
     DISALLOW_COPY_AND_MOVE(BundleInstallerHost);
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_BUNDLE_INSTALLER_HOST_H

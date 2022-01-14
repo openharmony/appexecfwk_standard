@@ -24,7 +24,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class InstalldProxy : public IRemoteProxy<IInstalld> {
 public:
     explicit InstalldProxy(const sptr<IRemoteObject> &object);
@@ -110,7 +109,6 @@ private:
         MessageOption &option);
     static inline BrokerDelegator<InstalldProxy> delegator_;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_IPC_INSTALLD_PROXY_H

@@ -25,7 +25,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 BMSEventHandler::BMSEventHandler(const std::shared_ptr<EventRunner> &runner) : EventHandler(runner)
 {
     APP_LOGI("instance is created");
@@ -94,6 +93,5 @@ void BMSEventHandler::SetAllInstallFlag() const
     }
     dataMgr->SetInitialUserFlag(true);
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
