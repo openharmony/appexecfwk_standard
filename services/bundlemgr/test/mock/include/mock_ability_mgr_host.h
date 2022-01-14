@@ -56,6 +56,11 @@ public:
     {
         return 0;
     }
+    virtual int StartAbility(const Want &want, const StartOptions &startOptions,
+        const sptr<IRemoteObject> &callerToken, int requestCode = -1) override
+    {
+        return 0;
+    }
     virtual int TerminateAbility(
         const sptr<IRemoteObject> &token, int resultCode, const AAFwk::Want *resultWant = nullptr) override
     {
@@ -118,7 +123,7 @@ public:
     {
         return 0;
     }
-    virtual int StopServiceAbility(const AAFwk::Want &want, const sptr<IRemoteObject> &callerToken)
+    virtual int StopServiceAbility(const AAFwk::Want &want) override
     {
         return 0;
     }
@@ -346,6 +351,74 @@ public:
     }
     virtual int UnRegisterMissionListener(const std::string &deviceId,
         const sptr<IRemoteMissionListener> &listener) override
+    {
+        return 0;
+    }
+
+    virtual int LockMissionForCleanup(int32_t missionId) override
+    {
+        return 0;
+    }
+
+    virtual int UnlockMissionForCleanup(int32_t missionId) override
+    {
+        return 0;
+    }
+
+    virtual int RegisterMissionListener(const sptr<IMissionListener> &listener) override
+    {
+        return 0;
+    }
+
+    virtual int UnRegisterMissionListener(const sptr<IMissionListener> &listener) override
+    {
+        return 0;
+    }
+
+    virtual int GetMissionInfos(const std::string& deviceId, int32_t numMax,
+        std::vector<MissionInfo> &missionInfos) override
+    {
+        return 0;
+    }
+
+    virtual int GetMissionInfo(const std::string& deviceId, int32_t missionId,
+        MissionInfo &missionInfo) override
+    {
+        return 0;
+    }
+
+    virtual int GetMissionSnapshot(const std::string& deviceId, int32_t missionId,
+        MissionSnapshot& snapshot) override
+    {
+        return 0;
+    }
+
+    virtual int CleanMission(int32_t missionId) override
+    {
+        return 0;
+    }
+
+    virtual int CleanAllMissions() override
+    {
+        return 0;
+    }
+
+    virtual int MoveMissionToFront(int32_t missionId) override
+    {
+        return 0;
+    }
+
+    virtual int StartUser(int userId) override
+    {
+        return 0;
+    }
+
+    virtual int StopUser(int userId, const sptr<IStopUserCallback> &callback) override
+    {
+        return 0;
+    }
+
+    virtual int RegisterSnapshotHandler(const sptr<ISnapshotHandler>& handler) override
     {
         return 0;
     }
