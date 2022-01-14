@@ -199,8 +199,8 @@ struct Module {
     std::vector<std::string> deviceTypes;
     bool deliveryWithInstall = true;
     bool installationFree = true;
-    std::string virtualMachine;
-    std::string uiSyntax;
+    std::string virtualMachine = MODULE_VIRTUAL_MACHINE_DEFAULT_VALUE;
+    std::string uiSyntax = MODULE_UI_SYNTAX_DEFAULT_VALUE;
     std::string pages;
     std::vector<Metadata> metadata;
     std::vector<Ability> abilities;
@@ -1036,50 +1036,50 @@ bool CheckBundleNameIsValid(const std::string &bundleName)
     return true;
 }
 
-bool ToApplicationInfo(const Profile::ModuleJson &moduleJson, ApplicationInfo &applicationInfo)
+bool ToApplicationInfo(const Profile::App &app, ApplicationInfo &applicationInfo)
 {
     APP_LOGD("transform ModuleJson to ApplicationInfo");
-    applicationInfo.name = moduleJson.app.bundleName;
-    applicationInfo.bundleName = moduleJson.app.bundleName;
-    applicationInfo.debug = moduleJson.app.debug;
-    applicationInfo.icon = moduleJson.app.icon;
-    applicationInfo.iconPath = moduleJson.app.icon;
-    applicationInfo.iconId = moduleJson.app.iconId;
-    applicationInfo.label = moduleJson.app.label;
-    applicationInfo.labelId = moduleJson.app.labelId;
-    applicationInfo.description = moduleJson.app.description;
-    applicationInfo.descriptionId = moduleJson.app.descriptionId;
-    applicationInfo.vendor = moduleJson.app.vendor;
-    applicationInfo.versionCode = moduleJson.app.versionCode;
-    applicationInfo.versionName = moduleJson.app.versionName;
-    if (moduleJson.app.minCompatibleVersionCode != -1) {
-        applicationInfo.minCompatibleVersionCode = moduleJson.app.minCompatibleVersionCode;
+    applicationInfo.name = app.bundleName;
+    applicationInfo.bundleName = app.bundleName;
+    applicationInfo.debug = app.debug;
+    applicationInfo.icon = app.icon;
+    applicationInfo.iconPath = app.icon;
+    applicationInfo.iconId = app.iconId;
+    applicationInfo.label = app.label;
+    applicationInfo.labelId = app.labelId;
+    applicationInfo.description = app.description;
+    applicationInfo.descriptionId = app.descriptionId;
+    applicationInfo.vendor = app.vendor;
+    applicationInfo.versionCode = app.versionCode;
+    applicationInfo.versionName = app.versionName;
+    if (app.minCompatibleVersionCode != -1) {
+        applicationInfo.minCompatibleVersionCode = app.minCompatibleVersionCode;
     } else {
         // default equal to versionCode
-        applicationInfo.minCompatibleVersionCode = moduleJson.app.versionCode;
+        applicationInfo.minCompatibleVersionCode = app.versionCode;
     }
-    applicationInfo.apiCompatibleVersion = moduleJson.app.minAPIVersion;
-    applicationInfo.apiTargetVersion = moduleJson.app.targetAPIVersion;
-    applicationInfo.apiReleaseType = moduleJson.app.apiReleaseType;
-    applicationInfo.distributedNotificationEnabled = moduleJson.app.distributedNotificationEnabled;
-    if (Profile::ENTITY_TYPE_SET.find(moduleJson.app.entityType) != Profile::EXTENSION_TYPE_SET.end()) {
-        applicationInfo.entityType = moduleJson.app.entityType;
+    applicationInfo.apiCompatibleVersion = app.minAPIVersion;
+    applicationInfo.apiTargetVersion = app.targetAPIVersion;
+    applicationInfo.apiReleaseType = app.apiReleaseType;
+    applicationInfo.distributedNotificationEnabled = app.distributedNotificationEnabled;
+    if (Profile::ENTITY_TYPE_SET.find(app.entityType) != Profile::EXTENSION_TYPE_SET.end()) {
+        applicationInfo.entityType = app.entityType;
     }
     applicationInfo.deviceId = Constants::CURRENT_DEVICE_ID; // to do
 
     if (applicationInfo.isSystemApp) {
-        applicationInfo.keepAlive = moduleJson.app.keepAlive;
-        if (moduleJson.app.removable.first) {
+        applicationInfo.keepAlive = app.keepAlive;
+        if (app.removable.first) {
             Profile::g_hasConfigureRemovable = true;
-            applicationInfo.removable = moduleJson.app.removable.second;
+            applicationInfo.removable = app.removable.second;
         }
-        applicationInfo.singleUser = moduleJson.app.singleton;
-        applicationInfo.clearUserData = moduleJson.app.userDataClearable;
+        applicationInfo.singleUser = app.singleton;
+        applicationInfo.clearUserData = app.userDataClearable;
     }
     // device adapt
     std::string deviceType = GetDeviceType();
-    if (moduleJson.app.deviceConfigs.find(deviceType) != moduleJson.app.deviceConfigs.end()) {
-        Profile::DeviceConfig deviceConfig = moduleJson.app.deviceConfigs.at(deviceType);
+    if (app.deviceConfigs.find(deviceType) != app.deviceConfigs.end()) {
+        Profile::DeviceConfig deviceConfig = app.deviceConfigs.at(deviceType);
         if (deviceConfig.minAPIVersion.first) {
             applicationInfo.apiCompatibleVersion = deviceConfig.minAPIVersion.second;
         }
@@ -1107,12 +1107,14 @@ bool ToApplicationInfo(const Profile::ModuleJson &moduleJson, ApplicationInfo &a
     return true;
 }
 
-bool ToBundleInfo(const ApplicationInfo &applicationInfo, BundleInfo &bundleInfo)
+bool ToBundleInfo(const ApplicationInfo &applicationInfo,
+    const InnerModuleInfo &innerModuleInfo, BundleInfo &bundleInfo)
 {
     bundleInfo.name = applicationInfo.bundleName;
     bundleInfo.vendor = applicationInfo.vendor;
     bundleInfo.versionCode = static_cast<uint32_t>(applicationInfo.versionCode);
     bundleInfo.versionName = applicationInfo.versionName;
+    bundleInfo.minCompatibleVersionCode = static_cast<uint32_t>(applicationInfo.minCompatibleVersionCode);
     bundleInfo.compatibleVersion = static_cast<uint32_t>(applicationInfo.apiCompatibleVersion);
     bundleInfo.targetVersion = static_cast<uint32_t>(applicationInfo.apiTargetVersion);
     bundleInfo.releaseType = applicationInfo.apiReleaseType;
@@ -1120,6 +1122,10 @@ bool ToBundleInfo(const ApplicationInfo &applicationInfo, BundleInfo &bundleInfo
     bundleInfo.singleUser = applicationInfo.singleUser;
     bundleInfo.label = applicationInfo.label;
     bundleInfo.description = applicationInfo.description;
+    if (innerModuleInfo.isEntry) {
+        bundleInfo.entryModuleName = innerModuleInfo.moduleName;
+        bundleInfo.entryInstallationFree = innerModuleInfo.installationFree;
+    }
     return true;
 }
 
@@ -1165,7 +1171,7 @@ bool ToAbilityInfo(const Profile::ModuleJson &moduleJson, const Profile::Ability
 }
 
 bool ToExtensionInfo(const Profile::ModuleJson &moduleJson,
-    const Profile::Extension &extension, ExtensionInfo &extensionInfo)
+    const Profile::Extension &extension, ExtensionInfo &extensionInfo, bool isSystemApp)
 {
     APP_LOGD("transform ModuleJson to ExtensionInfo");
     extensionInfo.name = extension.name;
@@ -1179,8 +1185,10 @@ bool ToExtensionInfo(const Profile::ModuleJson &moduleJson,
     if (Profile::EXTENSION_TYPE_SET.find(extension.type) != Profile::EXTENSION_TYPE_SET.end()) {
         extensionInfo.type = extension.type;
     }
-    extensionInfo.readPermission = extension.readPermission;
-    extensionInfo.writePermission = extension.writePermission;
+    if (isSystemApp) {
+        extensionInfo.readPermission = extension.readPermission;
+        extensionInfo.writePermission = extension.writePermission;
+    }
     extensionInfo.permissions = extension.permissions;
     extensionInfo.visible = extension.visible;
     GetMetadata(extensionInfo.metadata, extension.metadata);
@@ -1228,6 +1236,9 @@ bool ToInnerModuleInfo(const Profile::ModuleJson &moduleJson, InnerModuleInfo &i
     innerModuleInfo.installationFree = moduleJson.module.installationFree;
     if (Profile::MODULE_TYPE_SET.find(moduleJson.module.type) != Profile::MODULE_TYPE_SET.end()) {
         innerModuleInfo.distro.moduleType = moduleJson.module.type;
+        if (moduleJson.module.type == Profile::MODULE_TYPE_ENTRY) {
+            innerModuleInfo.isEntry = true;
+        }
     }
     innerModuleInfo.mainAbility = moduleJson.module.mainElement;
     innerModuleInfo.srcPath = moduleJson.module.srcEntrance;
@@ -1266,26 +1277,23 @@ bool ToInnerBundleInfo(const Profile::ModuleJson &moduleJson, InnerBundleInfo &i
 
     ApplicationInfo applicationInfo;
     applicationInfo.isSystemApp = innerBundleInfo.GetAppType() == Constants::AppType::SYSTEM_APP;
-    ToApplicationInfo(moduleJson, applicationInfo);
+    ToApplicationInfo(moduleJson.app, applicationInfo);
 
     innerBundleInfo.SetHasConfigureRemovable(Profile::g_hasConfigureRemovable);
     Profile::g_hasConfigureRemovable = false;
 
-    BundleInfo bundleInfo;
-    ToBundleInfo(applicationInfo, bundleInfo);
-    bundleInfo.applicationInfo.removable = applicationInfo.removable;
-
     InnerModuleInfo innerModuleInfo;
     ToInnerModuleInfo(moduleJson, innerModuleInfo, applicationInfo.isSystemApp);
+
+    BundleInfo bundleInfo;
+    ToBundleInfo(applicationInfo, innerModuleInfo, bundleInfo);
+    bundleInfo.applicationInfo.removable = applicationInfo.removable;
 
     // handle abilities
     bool findEntry = false;
     for (const Profile::Ability &ability : moduleJson.module.abilities) {
         AbilityInfo abilityInfo;
-        if (!ToAbilityInfo(moduleJson, ability, abilityInfo)) {
-            APP_LOGE("ToAbilityInfo error");
-            return false;
-        }
+        ToAbilityInfo(moduleJson, ability, abilityInfo);
         std::string key;
         key.append(moduleJson.app.bundleName).append(".")
             .append(moduleJson.module.name).append(".").append(abilityInfo.name);
@@ -1323,10 +1331,7 @@ bool ToInnerBundleInfo(const Profile::ModuleJson &moduleJson, InnerBundleInfo &i
     // handle extensionAbilities
     for (const Profile::Extension &extension : moduleJson.module.extensionAbilities) {
         ExtensionInfo extensionInfo;
-        if (!ToExtensionInfo(moduleJson, extension, extensionInfo)) {
-            APP_LOGE("ToExtensionInfo error");
-            return false;
-        }
+        ToExtensionInfo(moduleJson, extension, extensionInfo, applicationInfo.isSystemApp);
         std::string key;
         key.append(moduleJson.app.bundleName).append(".")
             .append(moduleJson.module.name).append(".").append(extension.name);
@@ -1338,7 +1343,6 @@ bool ToInnerBundleInfo(const Profile::ModuleJson &moduleJson, InnerBundleInfo &i
 
     if (moduleJson.module.type == Profile::MODULE_TYPE_ENTRY) {
         innerBundleInfo.SetHasEntry(true);
-        innerModuleInfo.isEntry = true;
     }
     innerBundleInfo.SetCurrentModulePackage(moduleJson.module.name);
     innerBundleInfo.SetBaseApplicationInfo(applicationInfo);

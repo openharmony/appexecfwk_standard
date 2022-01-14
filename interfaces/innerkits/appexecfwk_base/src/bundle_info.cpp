@@ -49,6 +49,7 @@ const std::string BUNDLE_INFO_SEINFO = "seInfo";
 const std::string BUNDLE_INFO_INSTALL_TIME = "installTime";
 const std::string BUNDLE_INFO_UPDATE_TIME = "updateTime";
 const std::string BUNDLE_INFO_ENTRY_MODULE_NAME = "entryModuleName";
+const std::string BUNDLE_INFO_ENTRY_INSTALLATION_FREE = "entryInstallationFree";
 const std::string BUNDLE_INFO_REQ_PERMISSIONS = "reqPermissions";
 const std::string BUNDLE_INFO_REQ_PERMISSION_STATES = "reqPermissionStates";
 const std::string BUNDLE_INFO_DEF_PERMISSIONS = "defPermissions";
@@ -87,6 +88,8 @@ bool BundleInfo::ReadFromParcel(Parcel &parcel)
     singleUser = parcel.ReadBool();
     installTime = parcel.ReadInt64();
     updateTime = parcel.ReadInt64();
+    entryModuleName = Str16ToStr8(parcel.ReadString16());
+    entryInstallationFree = parcel.ReadBool();
 
     int32_t reqPermissionsSize;
     READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, reqPermissionsSize);
@@ -192,6 +195,8 @@ bool BundleInfo::Marshalling(Parcel &parcel) const
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, singleUser);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int64, parcel, installTime);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int64, parcel, updateTime);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(entryModuleName));
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, entryInstallationFree);
 
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, reqPermissions.size());
     for (auto &reqPermission : reqPermissions) {
@@ -288,6 +293,7 @@ void to_json(nlohmann::json &jsonObject, const BundleInfo &bundleInfo)
         {BUNDLE_INFO_INSTALL_TIME, bundleInfo.installTime},
         {BUNDLE_INFO_UPDATE_TIME, bundleInfo.updateTime},
         {BUNDLE_INFO_ENTRY_MODULE_NAME, bundleInfo.entryModuleName},
+        {BUNDLE_INFO_ENTRY_INSTALLATION_FREE, bundleInfo.entryInstallationFree},
         {BUNDLE_INFO_REQ_PERMISSIONS, bundleInfo.reqPermissions},
         {BUNDLE_INFO_REQ_PERMISSION_STATES, bundleInfo.reqPermissionStates},
         {BUNDLE_INFO_DEF_PERMISSIONS, bundleInfo.defPermissions},
@@ -517,6 +523,14 @@ void from_json(const nlohmann::json &jsonObject, BundleInfo &bundleInfo)
         BUNDLE_INFO_ENTRY_MODULE_NAME,
         bundleInfo.entryModuleName,
         JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<bool>(jsonObject,
+        jsonObjectEnd,
+        BUNDLE_INFO_ENTRY_INSTALLATION_FREE,
+        bundleInfo.entryInstallationFree,
+        JsonType::BOOLEAN,
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
