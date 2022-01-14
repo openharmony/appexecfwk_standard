@@ -616,6 +616,15 @@ public:
     virtual bool GetDistributedBundleInfo(
         const std::string &networkId, int32_t userId, const std::string &bundleName,
         DistributedBundleInfo &distributedBundleInfo) = 0;
+    /**
+     * @brief Get app privilege level.
+     * @param bundleName Indicates the bundle name of the app privilege level.
+     * @return Returns app privilege level.
+     */
+    virtual std::string GetAppPrivilegeLevel(const std::string &bundleName)
+    {
+        return Constants::EMPTY_STRING;
+    }
     enum class Message {
         GET_APPLICATION_INFO = 0,
         GET_APPLICATION_INFOS,
@@ -687,7 +696,8 @@ public:
         GET_BUNDLE_ARCHIVE_INFO_WITH_INT_FLAGS,
         GET_BUNDLE_USER_MGR,
         GET_DISTRIBUTE_BUNDLE_INFO,
-        QUERY_ABILITY_INFO_BY_URI_FOR_USERID
+        QUERY_ABILITY_INFO_BY_URI_FOR_USERID,
+        GET_APPLICATION_PRIVILEGE_LEVEL
     };
 };
 

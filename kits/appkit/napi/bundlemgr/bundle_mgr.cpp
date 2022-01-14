@@ -4070,6 +4070,18 @@ static bool InnerUnregisterPermissionsChanged(napi_env env, const std::vector<in
     return false;
 }
 
+static bool InnerGetAppPrivilegeLevel(const std::string &bundleName, std::string &appPrivilegeLevel)
+{
+    auto iBundleMgr = GetBundleMgr();
+    if (!iBundleMgr) {
+        HILOG_ERROR("can not get iBundleMgr");
+        return false;
+    }
+    std::string level = iBundleMgr->GetAppPrivilegeLevel(bundleName);
+    appPrivilegeLevel = level;
+    return true;
+}
+
 napi_value UnregisterPermissionsChanged(napi_env env, napi_callback_info info)
 {
     size_t argc = ARGS_SIZE_THREE;
@@ -4531,6 +4543,83 @@ napi_value SetAbilityEnabled(napi_env env, napi_callback_info info)
                 } else {
                     napi_get_undefined(env, &result[0]);
                     napi_resolve_deferred(env, asyncCallbackInfo->deferred, result[0]);
+                }
+            }
+            napi_delete_async_work(env, asyncCallbackInfo->asyncWork);
+            delete asyncCallbackInfo;
+        },
+        (void*)asyncCallbackInfo, &asyncCallbackInfo->asyncWork);
+    napi_queue_async_work(env, asyncCallbackInfo->asyncWork);
+    return promise;
+}
+
+napi_value GetAppPrivilegeLevel(napi_env env, napi_callback_info info)
+{
+    size_t requireArgc = ARGS_SIZE_ONE;
+    size_t argc = ARGS_SIZE_TWO;
+    napi_value argv[ARGS_SIZE_TWO] = { 0 };
+    napi_value thisArg = nullptr;
+    void *data = nullptr;
+
+    NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, &thisArg, &data));
+    NAPI_ASSERT(env, argc >= requireArgc, "requires 1 parameter");
+
+    AppPrivilegeLevel *asyncCallbackInfo = new AppPrivilegeLevel();
+    asyncCallbackInfo->env = env;
+    for (size_t i = 0; i < argc; ++i) {
+        napi_valuetype valueType = napi_undefined;
+        napi_typeof(env, argv[i], &valueType);
+        if ((i == PARAM0) && (valueType == napi_string)) {
+            ParseString(env, asyncCallbackInfo->bundleName, argv[i]);
+        } else if ((i == PARAM1) && (valueType == napi_function)) {
+            napi_create_reference(env, argv[i], NAPI_RETURN_ONE, &asyncCallbackInfo->callbackRef);
+            break;
+        } else {
+            asyncCallbackInfo->errCode = INVALID_PARAM;
+            asyncCallbackInfo->errMssage = "type misMatch";
+        }
+    }
+
+    napi_value promise = nullptr;
+    if (asyncCallbackInfo->callbackRef == nullptr) {
+        napi_create_promise(env, &asyncCallbackInfo->deferred, &promise);
+    } else {
+        napi_get_undefined(env, &promise);
+    }
+    napi_value resource = nullptr;
+    napi_create_string_utf8(env, "JSGetAppPrivilegeLevel", NAPI_AUTO_LENGTH, &resource);
+    napi_create_async_work(
+        env, nullptr, resource,
+        [](napi_env env, void* data) {
+            AppPrivilegeLevel* asyncCallbackInfo = (AppPrivilegeLevel*)data;
+            if (!asyncCallbackInfo->errCode) {
+                asyncCallbackInfo->result =
+                    InnerGetAppPrivilegeLevel(asyncCallbackInfo->bundleName, asyncCallbackInfo->appPrivilegeLevel);
+                if (!asyncCallbackInfo->result) {
+                    asyncCallbackInfo->errCode = OPERATION_FAILED;
+                }
+            }
+        },
+        [](napi_env env, napi_status status, void* data) {
+            AppPrivilegeLevel* asyncCallbackInfo = (AppPrivilegeLevel*)data;
+            napi_value result[2] = { 0 };
+            if (asyncCallbackInfo->errCode) {
+                napi_create_int32(env, asyncCallbackInfo->errCode, &result[0]);
+            } else {
+                napi_create_string_utf8(
+                    env, asyncCallbackInfo->appPrivilegeLevel.c_str(), NAPI_AUTO_LENGTH, &result[1]);
+            }
+            if (asyncCallbackInfo->callbackRef) {
+                napi_value callback = nullptr;
+                napi_value placeHolder = nullptr;
+                napi_get_reference_value(env, asyncCallbackInfo->callbackRef, &callback);
+                napi_call_function(env, nullptr, callback, sizeof(result) / sizeof(result[0]), result, &placeHolder);
+                napi_delete_reference(env, asyncCallbackInfo->callbackRef);
+            } else {
+                if (asyncCallbackInfo->errCode) {
+                    napi_reject_deferred(env, asyncCallbackInfo->deferred, result[0]);
+                } else {
+                    napi_resolve_deferred(env, asyncCallbackInfo->deferred, result[1]);
                 }
             }
             napi_delete_async_work(env, asyncCallbackInfo->asyncWork);
