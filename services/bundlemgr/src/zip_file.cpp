@@ -26,7 +26,6 @@
 namespace OHOS {
 namespace AppExecFwk {
 namespace {
-
 constexpr uint32_t MAX_FILE_NAME = 256;
 constexpr uint32_t UNZIP_BUFFER_SIZE = 1024;
 constexpr uint32_t UNZIP_BUF_IN_LEN = 160 * UNZIP_BUFFER_SIZE;   // in  buffer length: 160KB
@@ -576,6 +575,5 @@ bool ZipFile::ExtractFile(const std::string &file, std::ostream &dest) const
 
     return ret;
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

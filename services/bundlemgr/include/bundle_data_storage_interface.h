@@ -22,7 +22,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class IBundleDataStorage {
 public:
     IBundleDataStorage() = default;
@@ -50,7 +49,6 @@ public:
 
     virtual bool ResetKvStore() = 0;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_IBUNDLE_DATA_STORAGE_H

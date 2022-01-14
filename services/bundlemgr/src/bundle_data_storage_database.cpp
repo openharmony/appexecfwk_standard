@@ -26,10 +26,8 @@ using namespace OHOS::DistributedKv;
 namespace OHOS {
 namespace AppExecFwk {
 namespace {
-
 const int32_t MAX_TIMES = 600;              // 1min
 const int32_t SLEEP_INTERVAL = 100 * 1000;  // 100ms
-
 }  // namespace
 
 BundleDataStorageDatabase::BundleDataStorageDatabase()
@@ -252,9 +250,9 @@ bool BundleDataStorageDatabase::CheckKvStore()
 Status BundleDataStorageDatabase::GetKvStore()
 {
     Options options = {
-        .createIfMissing = true, 
-        .encrypt = false, 
-        .autoSync = true, 
+        .createIfMissing = true,
+        .encrypt = false,
+        .autoSync = true,
         .kvStoreType = KvStoreType::SINGLE_VERSION
         };
 

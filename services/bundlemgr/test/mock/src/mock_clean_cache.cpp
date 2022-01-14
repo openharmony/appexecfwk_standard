@@ -17,7 +17,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 void MockCleanCache::OnCleanCacheFinished(bool error)
 {
     signal_.set_value(!error);
@@ -34,6 +33,5 @@ bool MockCleanCache::GetResultCode()
     future.wait();
     return future.get();
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
