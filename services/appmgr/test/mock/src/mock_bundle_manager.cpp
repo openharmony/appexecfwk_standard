@@ -130,6 +130,20 @@ bool BundleMgrService::GetBundleInfo(
     int32_t userGid = 10001;
     bundleInfo.uid = userUid;
     bundleInfo.gid = userGid;
+    int index1 = 101;
+    int index2 = 102;
+    int index3 = 103;
+    int index4 = 104;
+    if (bundleName == COM_OHOS_HELLO + std::to_string(index1) ||
+        bundleName == COM_OHOS_HELLO + std::to_string(index2)) {
+        bundleInfo.jointUserId = "join";
+        bundleInfo.appId = bundleName + "_xxx";
+    }
+    if (bundleName == COM_OHOS_HELLO + std::to_string(index3) ||
+        bundleName == COM_OHOS_HELLO + std::to_string(index4)) {
+        bundleInfo.jointUserId = "";
+        bundleInfo.appId = bundleName + "_xxx";
+    }
     return true;
 }
 bool BundleMgrService::GetBundleGids(const std::string &bundleName, std::vector<int> &gids)

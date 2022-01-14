@@ -105,6 +105,7 @@ const std::shared_ptr<AbilityInfo> AppDeathRecipientTest::GetAbilityInfoByIndex(
     std::shared_ptr<AbilityInfo> abilityInfo = std::make_shared<AbilityInfo>();
     abilityInfo->name = "AppDeathRecipientTest_ability" + std::to_string(index);
     abilityInfo->applicationName = "com.ohos.test.helloworld" + std::to_string(index);
+    abilityInfo->applicationInfo.bundleName = "com.ohos.test.helloworld" + std::to_string(index);
     return abilityInfo;
 }
 
@@ -119,7 +120,12 @@ const std::shared_ptr<ApplicationInfo> AppDeathRecipientTest::GetApplicationByIn
 const std::shared_ptr<AppRunningRecord> AppDeathRecipientTest::GetAppRunningRecordByIndex(const int32_t index) const
 {
     auto appInfo = GetApplicationByIndex(index);
-    auto appRecord = appMgrServiceInner_->GetAppRunningRecordByAppName(appInfo->name);
+    BundleInfo bundleInfo;
+    bundleInfo.appId = "com.ohos.test.helloworld_code123";
+
+    auto appRecord = appMgrServiceInner_->appRunningManager_->CheckAppRunningRecordIsExist(
+        appInfo->name, appInfo->name, appInfo->uid, bundleInfo);
+
     EXPECT_NE(nullptr, appRecord);
     return appRecord;
 }

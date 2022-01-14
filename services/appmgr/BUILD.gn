@@ -89,6 +89,7 @@ ohos_shared_library("libams") {
     "src/app_spawn_socket.cpp",
     "src/cgroup_manager.cpp",
     "src/lmks_client.cpp",
+    "src/module_running_record.cpp",
     "src/process_optimizer.cpp",
     "src/process_optimizer_uba.cpp",
     "src/remote_client_manager.cpp",

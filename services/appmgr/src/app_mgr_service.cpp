@@ -318,7 +318,7 @@ void AppMgrService::GetSystemMemoryAttr(SystemMemoryAttr &memoryInfo, std::strin
             APP_LOGE("%{public}s, memThreshold = %{public}d", __func__, EXPERIENCE_MEM_THRESHOLD);
         } else {
             memThreshold = memJson.at("memorythreshold").get<int>();
-            APP_LOGI("%{public}s, memThreshold = %{public}d", __func__, memThreshold);
+            APP_LOGI("memThreshold = %{public}d", memThreshold);
         }
     }
 

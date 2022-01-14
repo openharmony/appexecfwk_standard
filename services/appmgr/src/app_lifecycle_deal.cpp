@@ -34,11 +34,14 @@ void AppLifeCycleDeal::LaunchApplication(const AppLaunchData &launchData_)
     }
 }
 
-void AppLifeCycleDeal::AddAbilityStageInfo(const AppResidentProcessInfo &residentProcessInfo)
+void AppLifeCycleDeal::AddAbilityStageInfo(const HapModuleInfo &abilityStage)
 {
-    if (appThread_) {
-        appThread_->ScheduleAbilityStageInfo(residentProcessInfo);
+    if (!appThread_) {
+        APP_LOGE("appThread_ is nullptr");
+        return;
     }
+
+    appThread_->ScheduleAbilityStageInfo(abilityStage);
 }
 
 void AppLifeCycleDeal::LaunchAbility(const std::shared_ptr<AbilityRunningRecord> &ability)
@@ -50,51 +53,71 @@ void AppLifeCycleDeal::LaunchAbility(const std::shared_ptr<AbilityRunningRecord>
 
 void AppLifeCycleDeal::ScheduleTerminate()
 {
-    if (appThread_) {
-        appThread_->ScheduleTerminateApplication();
+    if (!appThread_) {
+        APP_LOGE("appThread_ is nullptr");
+        return;
     }
+
+    appThread_->ScheduleTerminateApplication();
 }
 
 void AppLifeCycleDeal::ScheduleForegroundRunning()
 {
-    if (appThread_) {
-        appThread_->ScheduleForegroundApplication();
+    if (!appThread_) {
+        APP_LOGE("appThread_ is nullptr");
+        return;
     }
+
+    appThread_->ScheduleForegroundApplication();
 }
 
 void AppLifeCycleDeal::ScheduleBackgroundRunning()
 {
-    if (appThread_) {
-        appThread_->ScheduleBackgroundApplication();
+    if (!appThread_) {
+        APP_LOGE("appThread_ is nullptr");
+        return;
     }
+
+    appThread_->ScheduleBackgroundApplication();
 }
 
 void AppLifeCycleDeal::ScheduleTrimMemory(int32_t timeLevel)
 {
-    if (appThread_) {
-        appThread_->ScheduleShrinkMemory(timeLevel);
+    if (!appThread_) {
+        APP_LOGE("appThread_ is nullptr");
+        return;
     }
+
+    appThread_->ScheduleShrinkMemory(timeLevel);
 }
 
 void AppLifeCycleDeal::LowMemoryWarning()
 {
-    if (appThread_) {
-        appThread_->ScheduleLowMemory();
+    if (!appThread_) {
+        APP_LOGE("appThread_ is nullptr");
+        return;
     }
+
+    appThread_->ScheduleLowMemory();
 }
 
 void AppLifeCycleDeal::ScheduleCleanAbility(const sptr<IRemoteObject> &token)
 {
-    if (appThread_) {
-        appThread_->ScheduleCleanAbility(token);
+    if (!appThread_) {
+        APP_LOGE("appThread_ is nullptr");
+        return;
     }
+    appThread_->ScheduleCleanAbility(token);
 }
 
 void AppLifeCycleDeal::ScheduleProcessSecurityExit()
 {
-    if (appThread_) {
-        appThread_->ScheduleProcessSecurityExit();
+    if (!appThread_) {
+        APP_LOGE("appThread_ is nullptr");
+        return;
     }
+
+    appThread_->ScheduleProcessSecurityExit();
 }
 
 void AppLifeCycleDeal::SetApplicationClient(const sptr<IAppScheduler> &thread)

@@ -123,9 +123,13 @@ void AmsMgrScheduler::AbilityBehaviorAnalysis(const sptr<IRemoteObject> &token, 
     if (!IsReady()) {
         return;
     }
-    std::function<void()> abilityBehaviorAnalysisFunc =
-        std::bind(&AppMgrServiceInner::AbilityBehaviorAnalysis, amsMgrServiceInner_, token, preToken, visibility,
-                  perceptibility, connectionState);
+    std::function<void()> abilityBehaviorAnalysisFunc = std::bind(&AppMgrServiceInner::AbilityBehaviorAnalysis,
+        amsMgrServiceInner_,
+        token,
+        preToken,
+        visibility,
+        perceptibility,
+        connectionState);
     amsHandler_->PostTask(abilityBehaviorAnalysisFunc, TASK_ABILITY_BEHAVIOR_ANALYSIS);
 }
 
@@ -157,7 +161,6 @@ void AmsMgrScheduler::AbilityAttachTimeOut(const sptr<IRemoteObject> &token)
     }
     auto task = [=]() { amsMgrServiceInner_->HandleAbilityAttachTimeOut(token); };
     amsHandler_->PostTask(task);
-    APP_LOGI("AmsMgrScheduler AttachTimeOut end");
 }
 
 void AmsMgrScheduler::PrepareTerminate(const sptr<IRemoteObject> &token)
@@ -168,7 +171,6 @@ void AmsMgrScheduler::PrepareTerminate(const sptr<IRemoteObject> &token)
     }
     auto task = [=]() { amsMgrServiceInner_->PrepareTerminate(token); };
     amsHandler_->PostTask(task);
-    APP_LOGI("AmsMgrScheduler PrepareTerminate end");
 }
 
 int32_t AmsMgrScheduler::KillApplication(const std::string &bundleName)

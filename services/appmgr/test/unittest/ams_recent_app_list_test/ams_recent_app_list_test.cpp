@@ -78,6 +78,7 @@ const std::shared_ptr<AbilityInfo> AmsRecentAppListTest::GetAbilityInfoByIndex(c
     std::shared_ptr<AbilityInfo> abilityInfo = std::make_shared<AbilityInfo>();
     abilityInfo->name = "test_ability" + std::to_string(index);
     abilityInfo->applicationName = "com.ohos.test.helloworld" + std::to_string(index);
+    abilityInfo->applicationInfo.bundleName = "com.ohos.test.helloworld" + std::to_string(index);
     return abilityInfo;
 }
 
@@ -92,7 +93,12 @@ const std::shared_ptr<ApplicationInfo> AmsRecentAppListTest::GetApplicationByInd
 const std::shared_ptr<AppRunningRecord> AmsRecentAppListTest::GetAppRunningRecordByIndex(const int32_t index) const
 {
     auto appInfo = GetApplicationByIndex(index);
-    auto appRecord = serviceInner_->GetAppRunningRecordByAppName(appInfo->name);
+    BundleInfo bundleInfo;
+    bundleInfo.appId = "com.ohos.test.helloworld_code123";
+
+    auto appRecord = serviceInner_->appRunningManager_->CheckAppRunningRecordIsExist(
+        appInfo->name, appInfo->name, appInfo->uid, bundleInfo);
+
     EXPECT_NE(nullptr, appRecord);
     return appRecord;
 }

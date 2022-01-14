@@ -17,25 +17,56 @@
 
 #include "app_log_wrapper.h"
 
+#include "nlohmann/json.hpp"
+#include "string_ex.h"
+#include "parcel_macro.h"
+
 namespace OHOS {
 namespace AppExecFwk {
+namespace {
+bool ReadFromParcelAppData(std::vector<AppData> &appDatas, Parcel &parcel)
+{
+    int32_t appDataSize;
+    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, appDataSize);
+    for (auto i = 0; i < appDataSize; i++) {
+        AppData appDataInfo;
+        std::string appName = Str16ToStr8(parcel.ReadString16());
+        int32_t uid = parcel.ReadInt32();
+        appDataInfo.appName = appName;
+        appDataInfo.uid = uid;
+        appDatas.emplace_back(appDataInfo);
+    }
+    return true;
+}
+}  // namespace
+
 bool AppProcessData::Marshalling(Parcel &parcel) const
 {
-    return (parcel.WriteString(appName) && parcel.WriteString(processName) &&
-            parcel.WriteInt32(static_cast<int32_t>(appState)) && parcel.WriteInt32(pid) && parcel.WriteInt32(uid));
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(processName));
+
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, static_cast<int32_t>(appState));
+
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, pid);
+
+    const auto appDataSize = static_cast<int32_t>(appDatas.size());
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, appDataSize);
+    for (auto i = 0; i < appDataSize; i++) {
+        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(appDatas[i].appName));
+        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, appDatas[i].uid);
+    }
+
+    return true;
 }
 
 bool AppProcessData::ReadFromParcel(Parcel &parcel)
 {
-    appName = parcel.ReadString();
-
-    processName = parcel.ReadString();
+    processName = Str16ToStr8(parcel.ReadString16());
 
     appState = static_cast<ApplicationState>(parcel.ReadInt32());
 
     pid = parcel.ReadInt32();
 
-    uid = parcel.ReadInt32();
+    ReadFromParcelAppData(appDatas, parcel);
 
     return true;
 }

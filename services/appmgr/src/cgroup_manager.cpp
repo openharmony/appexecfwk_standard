@@ -74,7 +74,7 @@ int WriteValue(int fd, std::string_view v)
 
     int ret = TEMP_FAILURE_RETRY(write(fd, v.data(), v.size()));
     if (ret != 0) {
-        APP_LOGE("%{public}s(%{public}d) err: %{public}s.", __func__, __LINE__, strerror(errno));
+        APP_LOGE("err: %{public}s.", strerror(errno));
     }
     fsync(fd);
 
@@ -129,15 +129,15 @@ CgroupManager::~CgroupManager()
 
 bool CgroupManager::Init()
 {
-    APP_LOGE("%{public}s(%{public}d) Init enter.", __func__, __LINE__);
+    APP_LOGI("Init enter.");
     if (IsInited()) {
-        APP_LOGE("%{public}s(%{public}d) already inited.", __func__, __LINE__);
+        APP_LOGE("already inited.");
         return false;
     }
 
     auto eventHandler = std::make_shared<EventHandler>(EventRunner::Create());
     if (!eventHandler) {
-        APP_LOGE("%{public}s(%{public}d) failed to get event handler.", __func__, __LINE__);
+        APP_LOGE("failed to get event handler.");
         return false;
     }
 
@@ -219,53 +219,41 @@ bool CgroupManager::IsInited() const
 bool CgroupManager::SetThreadSchedPolicy(int tid, SchedPolicy schedPolicy)
 {
     if (!IsInited()) {
-        APP_LOGE("%{public}s(%{public}d) not inited.", __func__, __LINE__);
+        APP_LOGE("not inited.");
         return false;
     }
 
     if (tid < 1) {
-        APP_LOGE("%{public}s(%{public}d) invalid tid %{public}d.", __func__, __LINE__, tid);
+        APP_LOGE("invalid tid %{public}d.", tid);
         return false;
     }
 
     if (schedPolicy < 0 || schedPolicy >= SchedPolicy::SCHED_POLICY_MAX) {
-        APP_LOGE("%{public}s(%{public}d) invalid sched policy %{public}d.", __func__, __LINE__, schedPolicy);
+        APP_LOGE("invalid sched policy %{public}d.", schedPolicy);
         return false;
     }
 
     if (schedPolicy == SchedPolicy::SCHED_POLICY_FREEZED) {
         // set frozen of freezer
         if (!SetFreezerSubsystem(tid, SchedPolicyFreezer::SCHED_POLICY_FREEZER_FROZEN)) {
-            APP_LOGE("%{public}s(%{public}d) set freezer subsystem failed sched policy %{public}d.",
-                __func__,
-                __LINE__,
-                schedPolicy);
+            APP_LOGE("set freezer subsystem failed sched policy %{public}d.", schedPolicy);
             return false;
         }
     } else {
         // set cpuset
         if (!SetCpusetSubsystem(tid, schedPolicy)) {
-            APP_LOGE("%{public}s(%{public}d) set cpuset subsystem failed sched policy %{public}d.",
-                __func__,
-                __LINE__,
-                schedPolicy);
+            APP_LOGE("set cpuset subsystem failed sched policy %{public}d.", schedPolicy);
             return false;
         }
         // set cpuctl
         if (!SetCpuctlSubsystem(tid, schedPolicy)) {
-            APP_LOGE("%{public}s(%{public}d) set cpuctl subsystem failed sched policy %{public}d.",
-                __func__,
-                __LINE__,
-                schedPolicy);
+            APP_LOGE("set cpuctl subsystem failed sched policy %{public}d.", schedPolicy);
             return false;
         }
 
         // set thawed of freezer
         if (!SetFreezerSubsystem(tid, SchedPolicyFreezer::SCHED_POLICY_FREEZER_THAWED)) {
-            APP_LOGE("%{public}s(%{public}d) set freezer subsystem failed sched policy %{public}d.",
-                __func__,
-                __LINE__,
-                schedPolicy);
+            APP_LOGE("set freezer subsystem failed sched policy %{public}d.", schedPolicy);
             return false;
         }
     }
@@ -276,17 +264,17 @@ bool CgroupManager::SetThreadSchedPolicy(int tid, SchedPolicy schedPolicy)
 bool CgroupManager::SetProcessSchedPolicy(int pid, SchedPolicy schedPolicy)
 {
     if (!IsInited()) {
-        APP_LOGE("%{public}s(%{public}d) not inited.", __func__, __LINE__);
+        APP_LOGE("not inited.");
         return false;
     }
 
     if (pid < 1) {
-        APP_LOGE("%{public}s(%{public}d) invalid pid %{public}d", __func__, __LINE__, pid);
+        APP_LOGE("invalid pid %{public}d", pid);
         return false;
     }
 
     if (schedPolicy < 0 && schedPolicy >= SCHED_POLICY_MAX) {
-        APP_LOGE("%{public}s(%{public}d) invalid sched policy %{public}d", __func__, __LINE__, schedPolicy);
+        APP_LOGE("invalid sched policy %{public}d", schedPolicy);
         return false;
     }
 
@@ -298,9 +286,7 @@ bool CgroupManager::SetProcessSchedPolicy(int pid, SchedPolicy schedPolicy)
 
     DIR *dir = opendir(taskDir);
     if (dir == nullptr) {
-        APP_LOGE("%{public}s(%{public}d) failed to opendir invalid pid %{public}d taskDir %{public}s , %{public}s",
-            __func__,
-            __LINE__,
+        APP_LOGE("failed to opendir invalid pid %{public}d taskDir %{public}s , %{public}s",
             pid,
             taskDir,
             strerror(errno));
@@ -322,29 +308,27 @@ bool CgroupManager::SetProcessSchedPolicy(int pid, SchedPolicy schedPolicy)
 
 void CgroupManager::OnReadable(int32_t fd)
 {
-    APP_LOGW("%{public}s(%{public}d) system low memory alert.", __func__, __LINE__);
+    APP_LOGW("system low memory alert.");
 
     if (!LowMemoryAlert) {
-        APP_LOGE("%{public}s(%{public}d) 'LowMemoryAlert' not available.", __func__, __LINE__);
+        APP_LOGE("'LowMemoryAlert' not available.");
         return;
     }
 
     auto TryToRaiseLowMemoryAlert = [=](LowMemoryLevel level) {
         if (fd == memoryEventFds_[level]) {
-            APP_LOGW("%{public}s(%{public}d) checking level %{public}d", __func__, __LINE__, level);
+            APP_LOGW("checking level %{public}d", level);
             uint64_t count = 0;
             int ret = TEMP_FAILURE_RETRY(read(fd, &count, sizeof(uint64_t)));
             if (ret <= 0) {
-                APP_LOGW("%{public}s(%{public}d) failed to read eventfd %{public}d.", __func__, __LINE__, errno);
+                APP_LOGW("failed to read eventfd %{public}d.", errno);
                 return false;
             }
             if (count < 1) {
-                APP_LOGW(
-                    "%{public}s(%{public}d) invalid eventfd count %{public}" PRIu64 ".", __func__, __LINE__, count);
+                APP_LOGW("invalid eventfd count %{public}" PRIu64 ".", count);
                 return false;
             }
-            APP_LOGW(
-                "%{public}s(%{public}d) raising low memory alert for level %{public}d...", __func__, __LINE__, level);
+            APP_LOGW("raising low memory alert for level %{public}d...", level);
             LowMemoryAlert(level);
             return true;
         }
@@ -364,7 +348,7 @@ void CgroupManager::OnReadable(int32_t fd)
     }
 
     // Should not reach here!
-    APP_LOGE("%{public}s(%{public}d) Unknown fd %{public}d.", __func__, __LINE__, fd);
+    APP_LOGE("Unknown fd %{public}d.", fd);
 }
 
 bool CgroupManager::RegisterLowMemoryMonitor(const int memoryEventFds[LOW_MEMORY_LEVEL_MAX],
@@ -402,7 +386,7 @@ bool CgroupManager::InitCpusetTasksFds(UniqueFd cpusetTasksFds[SCHED_POLICY_CPU_
     cpusetTasksFds[SCHED_POLICY_CPU_DEFAULT] = UniqueFd(open(CG_CPUSET_DEFAULT_TASKS_PATH.data(), O_RDWR));
     cpusetTasksFds[SCHED_POLICY_CPU_BACKGROUND] = UniqueFd(open(CG_CPUSET_BACKGROUND_TASKS_PATH.data(), O_RDWR));
     if (cpusetTasksFds[SCHED_POLICY_CPU_DEFAULT].Get() < 0 || cpusetTasksFds[SCHED_POLICY_CPU_BACKGROUND].Get() < 0) {
-        APP_LOGE("%{public}s(%{public}d) cannot open cpuset cgroups %{public}d.", __func__, __LINE__, errno);
+        APP_LOGE("cannot open cpuset cgroups %{public}d.", errno);
         return false;
     }
 
@@ -416,7 +400,7 @@ bool CgroupManager::InitCpuctlTasksFds(UniqueFd cpuctlTasksFds[SCHED_POLICY_CPU_
     cpuctlTasksFds[SCHED_POLICY_CPU_DEFAULT] = UniqueFd(open(CG_CPUCTL_DEFAULT_TASKS_PATH.data(), O_RDWR));
     cpuctlTasksFds[SCHED_POLICY_CPU_BACKGROUND] = UniqueFd(open(CG_CPUCTL_BACKGROUND_TASKS_PATH.data(), O_RDWR));
     if (cpuctlTasksFds[SCHED_POLICY_CPU_DEFAULT].Get() < 0 || cpuctlTasksFds[SCHED_POLICY_CPU_BACKGROUND].Get() < 0) {
-        APP_LOGE("%{public}s(%{public}d) cannot open cpuctl cgroups %{public}d.", __func__, __LINE__, errno);
+        APP_LOGE("cannot open cpuctl cgroups %{public}d.", errno);
         return false;
     }
 
@@ -431,7 +415,7 @@ bool CgroupManager::InitFreezerTasksFds(UniqueFd freezerTasksFds[SCHED_POLICY_FR
     freezerTasksFds[SCHED_POLICY_FREEZER_THAWED] = UniqueFd(open(CG_FREEZER_THAWED_TASKS_PATH.data(), O_RDWR));
     if (freezerTasksFds[SCHED_POLICY_FREEZER_FROZEN].Get() < 0 ||
         freezerTasksFds[SCHED_POLICY_FREEZER_THAWED].Get() < 0) {
-        APP_LOGE("%{public}s(%{public}d) cannot open freezer cgroups %{public}d.", __func__, __LINE__, errno);
+        APP_LOGE("cannot open freezer cgroups %{public}d.", errno);
         return false;
     }
 
@@ -444,8 +428,7 @@ bool CgroupManager::InitMemoryEventControlFd(UniqueFd &memoryEventControlFd)
 {
     memoryEventControlFd = UniqueFd(open(CG_MEM_EVTCTL_PATH.data(), O_WRONLY));
     if (memoryEventControlFd.Get() < 0) {
-        APP_LOGE(
-            "%{pubid}s(%{publid}d) failed to open memory event control node %{public}d.", __func__, __LINE__, errno);
+        APP_LOGE("failed to open memory event control node %{public}d.", errno);
         return false;
     }
 
@@ -460,7 +443,7 @@ bool CgroupManager::InitMemoryEventFds(UniqueFd memoryEventFds[LOW_MEMORY_LEVEL_
     memoryEventFds[LOW_MEMORY_LEVEL_CRITICAL] = UniqueFd(eventfd(0, EFD_NONBLOCK));
     if (memoryEventFds[LOW_MEMORY_LEVEL_LOW].Get() < 0 || memoryEventFds[LOW_MEMORY_LEVEL_MEDIUM].Get() < 0 ||
         memoryEventFds[LOW_MEMORY_LEVEL_CRITICAL].Get() < 0) {
-        APP_LOGE("%{public}s(${public}d) failed to create memory eventfd %{public}d.", __func__, __LINE__, errno);
+        APP_LOGE("failed to create memory eventfd %{public}d.", errno);
         return false;
     }
 
@@ -477,7 +460,7 @@ bool CgroupManager::InitMemoryPressureFds(UniqueFd memoryPressureFds[LOW_MEMORY_
     memoryPressureFds[LOW_MEMORY_LEVEL_CRITICAL] = UniqueFd(open(CG_MEM_PRESSURE_LEVEL_PATH.data(), O_RDONLY));
     if (memoryPressureFds[LOW_MEMORY_LEVEL_LOW].Get() < 0 || memoryPressureFds[LOW_MEMORY_LEVEL_MEDIUM].Get() < 0 ||
         memoryPressureFds[LOW_MEMORY_LEVEL_CRITICAL].Get() < 0) {
-        APP_LOGE("%{public}s(${public}d) failed to open memory pressure fd %{public}d.", __func__, __LINE__, errno);
+        APP_LOGE("failed to open memory pressure fd %{public}d.", errno);
         return false;
     }
 
@@ -491,13 +474,13 @@ bool CgroupManager::SetCpusetSubsystem(const int tid, const SchedPolicy schedPol
 {
     int fd = cpusetTasksFds_[schedPolicy];
     if (fd < 0) {
-        APP_LOGE("%{public}s(%{public}d) invalid cpuset fd for policy %{public}d.", __func__, __LINE__, schedPolicy);
+        APP_LOGE("invalid cpuset fd for policy %{public}d.", schedPolicy);
         return false;
     }
 
     int ret = WriteValue(fd, tid);
     if (ret < 0) {
-        APP_LOGE("%{public}s(%{public}d) write cpuset tid failed %{public}d.", __func__, __LINE__, errno);
+        APP_LOGE("write cpuset tid failed %{public}d.", errno);
         return false;
     }
 
@@ -508,13 +491,13 @@ bool CgroupManager::SetCpuctlSubsystem(const int tid, const SchedPolicy schedPol
 {
     int fd = cpuctlTasksFds_[schedPolicy];
     if (fd < 0) {
-        APP_LOGE("%{public}s(%{public}d) invalid cpuctl fd for policy %{public}d.", __func__, __LINE__, schedPolicy);
+        APP_LOGE("invalid cpuctl fd for policy %{public}d.", schedPolicy);
         return false;
     }
 
     int ret = WriteValue(fd, tid);
     if (ret < 0) {
-        APP_LOGE("%{public}s(%{public}d) write cpuctl tid failed %{public}d.", __func__, __LINE__, errno);
+        APP_LOGE("write cpuctl tid failed %{public}d.", errno);
         return false;
     }
 
@@ -525,13 +508,13 @@ bool CgroupManager::SetFreezerSubsystem(const int tid, const SchedPolicyFreezer 
 {
     int fd = freezerTasksFds_[state];
     if (fd < 0) {
-        APP_LOGE("%{public}s(%{public}d) invalid freezer fd for state %{public}d.", __func__, __LINE__, state);
+        APP_LOGE("invalid freezer fd for state %{public}d.", state);
         return false;
     }
 
     int ret = WriteValue(fd, tid);
     if (ret < 0) {
-        APP_LOGE("%{public}s(%{public}d) write freezer tid failed %{public}d.", __func__, __LINE__, errno);
+        APP_LOGE("write freezer tid failed %{public}d.", errno);
         return false;
     }
 

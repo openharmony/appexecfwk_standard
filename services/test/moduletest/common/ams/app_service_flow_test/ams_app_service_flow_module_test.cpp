@@ -21,7 +21,11 @@
 
 #include "app_launch_data.h"
 #include "app_log_wrapper.h"
+#define private public
 #include "app_mgr_service_inner.h"
+#undef private
+#include "mock_ability_token.h"
+#include "mock_bundle_manager.h"
 #include "mock_ability_token.h"
 #include "mock_app_scheduler.h"
 #include "mock_app_spawn_client.h"
@@ -76,6 +80,7 @@ protected:
 protected:
     std::shared_ptr<AppMgrServiceInner> serviceInner_ = nullptr;
     std::shared_ptr<AMSEventHandler> handler_ = nullptr;
+    sptr<BundleMgrService> mockBundleMgr_ {nullptr};
 };
 
 void AmsAppServiceFlowModuleTest::SetUpTestCase()
@@ -91,6 +96,8 @@ void AmsAppServiceFlowModuleTest::SetUp()
     auto runner = EventRunner::Create("AmsAppServiceFlowModuleTest");
     handler_ = std::make_shared<AMSEventHandler>(runner, serviceInner_);
     serviceInner_->SetEventHandler(handler_);
+    mockBundleMgr_ = new (std::nothrow) BundleMgrService();
+    serviceInner_->SetBundleManager(mockBundleMgr_);
 }
 
 void AmsAppServiceFlowModuleTest::TearDown()
@@ -105,6 +112,7 @@ sptr<MockAppScheduler> AmsAppServiceFlowModuleTest::TestCreateApplicationClient(
     sptr<MockAppScheduler> mockAppScheduler = new (std::nothrow) MockAppScheduler();
     sptr<IAppScheduler> client = iface_cast<IAppScheduler>(mockAppScheduler.GetRefPtr());
     appRecord->SetApplicationClient(client);
+    appRecord->LaunchPendingAbilities();
     return mockAppScheduler;
 }
 
@@ -113,30 +121,34 @@ TestApplicationPreRunningRecord AmsAppServiceFlowModuleTest::TestCreateApplicati
     const std::string &abilityName, const std::string &appName, const AbilityState abilityState,
     const ApplicationState appState) const
 {
-    RecordQueryResult result;
-    AbilityInfo abilityInfo;
-    ApplicationInfo appInfo;
+    auto abilityInfo = std::make_shared<AbilityInfo>();
+    auto appInfo = std::make_shared<ApplicationInfo>();
 
-    appInfo.name = appName;
-    appInfo.bundleName = appName;  // specify process condition
-    appInfo.uid = 0;
-    abilityInfo.name = abilityName;
-    abilityInfo.applicationInfo.uid = 0;
+    appInfo->name = appName;
+    appInfo->bundleName = appName;  // specify process condition
+    appInfo->uid = 0;
+    abilityInfo->name = abilityName;
+    abilityInfo->applicationInfo.uid = 0;
     sptr<IRemoteObject> token = new (std::nothrow) MockAbilityToken();
-    auto appRecord = serviceInner_->GetOrCreateAppRunningRecord(token,
-        std::make_shared<ApplicationInfo>(appInfo),
-        std::make_shared<AbilityInfo>(abilityInfo),
-        appInfo.bundleName,
-        0,
-        result);
+
+    BundleInfo bundleInfo;
+    HapModuleInfo hapModuleInfo;
+    EXPECT_TRUE(serviceInner_->GetBundleAndHapInfo(*abilityInfo, appInfo, bundleInfo, hapModuleInfo));
+
+    auto appRecord = serviceInner_->appRunningManager_->CheckAppRunningRecordIsExist(
+        appInfo->name, appName, appInfo->uid, bundleInfo);
+    if (!appRecord) {
+        appRecord = serviceInner_->CreateAppRunningRecord(
+            token, nullptr, appInfo, abilityInfo, appName, bundleInfo, hapModuleInfo);
+        appRecord->GetPriorityObject()->SetPid(TestApplicationPreRunningRecord::g_pid++);
+    } else {
+        serviceInner_->StartAbility(token, nullptr, abilityInfo, appRecord, hapModuleInfo);
+    }
 
     EXPECT_TRUE(appRecord);
     appRecord->SetUid(0);
     appRecord->SetEventHandler(handler_);
 
-    if (!result.appExists && appRecord) {
-        appRecord->GetPriorityObject()->SetPid(TestApplicationPreRunningRecord::g_pid++);
-    }
     auto abilityRecord = appRecord->GetAbilityRunningRecordByToken(token);
     EXPECT_NE(abilityRecord, nullptr);
     abilityRecord->SetState(abilityState);

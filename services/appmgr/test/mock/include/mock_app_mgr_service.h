@@ -86,7 +86,6 @@ public:
             return;
         }
         AppProcessData processData;
-        processData.appName = "";
         processData.pid = 1;
         processData.appState = ApplicationState::APP_STATE_BEGIN;
         callback_->OnAppStateChanged(processData);

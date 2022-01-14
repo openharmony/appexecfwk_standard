@@ -96,7 +96,7 @@ ProcessOptimizerUBA::ProcessOptimizerUBA(
     const UbaServicePtr &ubaService, const LmksClientPtr &lmksClient, int suspendTimeout)
     : ProcessOptimizer(lmksClient, suspendTimeout), ubaService_(ubaService), abilityActionCount_(0)
 {
-    APP_LOGI("%{public}s(%{public}d) constructed.", __func__, __LINE__);
+    APP_LOGI("ProcessOptimizerUBA ProcessOptimizerUBA start !");
 }
 
 ProcessOptimizerUBA::~ProcessOptimizerUBA()
@@ -104,15 +104,13 @@ ProcessOptimizerUBA::~ProcessOptimizerUBA()
     if (abilityActionCount_ > 0) {
         CommitAbilityActions();
     }
-
-    APP_LOGI("%{public}s(%{public}d) destructed.", __func__, __LINE__);
 }
 
 void ProcessOptimizerUBA::OnAppAdded(const AppPtr &app)
 {
     auto ubaService = GetUbaService();
     if (ubaService) {
-        APP_LOGD("%{public}s(%{public}d) ubaService implement.", __func__, __LINE__);
+        APP_LOGI("ubaService implement.");
     } else {
         ProcessOptimizer::OnAppAdded(app);
     }
@@ -122,7 +120,7 @@ void ProcessOptimizerUBA::OnAppRemoved(const AppPtr &app)
 {
     auto ubaService = GetUbaService();
     if (ubaService) {
-        APP_LOGD("%{public}s(%{public}d) ubaService implement.", __func__, __LINE__);
+        APP_LOGI("ubaService implement.");
     } else {
         ProcessOptimizer::OnAppRemoved(app);
     }
@@ -132,7 +130,7 @@ void ProcessOptimizerUBA::OnAppStateChanged(const AppPtr &app, const Application
 {
     auto ubaService = GetUbaService();
     if (ubaService) {
-        APP_LOGD("%{public}s(%{public}d) ubaService implement.", __func__, __LINE__);
+        APP_LOGI("ubaService implement.");
     } else {
         ProcessOptimizer::OnAppStateChanged(app, oldState);
     }
@@ -141,7 +139,7 @@ void ProcessOptimizerUBA::OnAppStateChanged(const AppPtr &app, const Application
 void ProcessOptimizerUBA::OnAbilityStarted(const AbilityPtr &ability)
 {
     if (!ability) {
-        APP_LOGE("%{public}s(%{public}d) invalid ability.", __func__, __LINE__);
+        APP_LOGE("invalid ability.");
         return;
     }
 
@@ -152,14 +150,14 @@ void ProcessOptimizerUBA::OnAbilityStarted(const AbilityPtr &ability)
         // 'preAbility' can be a nullptr.
         preAbility = GetAbilityByToken(preToken);
     } else {
-        APP_LOGW("%{public}s(%{public}d) 'GetAbilityByToken' is not registered.", __func__, __LINE__);
+        APP_LOGW(" 'GetAbilityByToken' is not registered.");
     }
 
     RecordAbilityAction<StartAbilityAction>(ability, preAbility);
 
     auto ubaService = GetUbaService();
     if (ubaService) {
-        APP_LOGD("%{public}s(%{public}d) ubaService implement.", __func__, __LINE__);
+        APP_LOGI("ubaService implement.");
     } else {
         ProcessOptimizer::OnAbilityStarted(ability);
     }
@@ -168,12 +166,12 @@ void ProcessOptimizerUBA::OnAbilityStarted(const AbilityPtr &ability)
 void ProcessOptimizerUBA::OnAbilityConnected(const AbilityPtr &ability, const AbilityPtr &targetAbility)
 {
     if (!ability) {
-        APP_LOGE("%{public}s(%{public}d) invalid ability.", __func__, __LINE__);
+        APP_LOGE("invalid ability.");
         return;
     }
 
     if (!targetAbility) {
-        APP_LOGE("%{public}s(%{public}d) invalid targetAbility.", __func__, __LINE__);
+        APP_LOGE("invalid targetAbility.");
         return;
     }
 
@@ -181,7 +179,7 @@ void ProcessOptimizerUBA::OnAbilityConnected(const AbilityPtr &ability, const Ab
 
     auto ubaService = GetUbaService();
     if (ubaService) {
-        APP_LOGD("%{public}s(%{public}d) ubaService implement.", __func__, __LINE__);
+        APP_LOGI("ubaService implement.");
     } else {
         ProcessOptimizer::OnAbilityConnected(ability, targetAbility);
     }
@@ -190,12 +188,12 @@ void ProcessOptimizerUBA::OnAbilityConnected(const AbilityPtr &ability, const Ab
 void ProcessOptimizerUBA::OnAbilityDisconnected(const AbilityPtr &ability, const AbilityPtr &targetAbility)
 {
     if (!ability) {
-        APP_LOGE("%{public}s(%{public}d) invalid ability.", __func__, __LINE__);
+        APP_LOGE("invalid ability.");
         return;
     }
 
     if (!targetAbility) {
-        APP_LOGE("%{public}s(%{public}d) invalid targetAbility.", __func__, __LINE__);
+        APP_LOGE("invalid targetAbility.");
         return;
     }
 
@@ -203,7 +201,7 @@ void ProcessOptimizerUBA::OnAbilityDisconnected(const AbilityPtr &ability, const
 
     auto ubaService = GetUbaService();
     if (ubaService) {
-        APP_LOGD("%{public}s(%{public}d) ubaService implement.", __func__, __LINE__);
+        APP_LOGI("ubaService implement.");
     } else {
         ProcessOptimizer::OnAbilityDisconnected(ability, targetAbility);
     }
@@ -212,14 +210,14 @@ void ProcessOptimizerUBA::OnAbilityDisconnected(const AbilityPtr &ability, const
 void ProcessOptimizerUBA::OnAbilityStateChanged(const AbilityPtr &ability, const AbilityState oldState)
 {
     if (!ability) {
-        APP_LOGE("%{public}s(%{public}d) invalid ability.", __func__, __LINE__);
+        APP_LOGE("invalid ability.");
         return;
     }
 
     RecordAbilityAction<ChangeAbilityStateAction>(ability, oldState);
     auto ubaService = GetUbaService();
     if (ubaService) {
-        APP_LOGD("%{public}s(%{public}d) ubaService implement.", __func__, __LINE__);
+        APP_LOGI("ubaService implement.");
     } else {
         ProcessOptimizer::OnAbilityStateChanged(ability, oldState);
     }
@@ -228,14 +226,14 @@ void ProcessOptimizerUBA::OnAbilityStateChanged(const AbilityPtr &ability, const
 void ProcessOptimizerUBA::OnAbilityVisibleChanged(const AbilityPtr &ability)
 {
     if (!ability) {
-        APP_LOGE("%{public}s(%{public}d) invalid ability.", __func__, __LINE__);
+        APP_LOGE("invalid ability.");
         return;
     }
 
     RecordAbilityAction<ChangeAbilityVisible>(ability);
     auto ubaService = GetUbaService();
     if (ubaService) {
-        APP_LOGD("%{public}s(%{public}d) ubaService implement.", __func__, __LINE__);
+        APP_LOGI("ubaService implement.");
     } else {
         ProcessOptimizer::OnAbilityVisibleChanged(ability);
     }
@@ -244,14 +242,14 @@ void ProcessOptimizerUBA::OnAbilityVisibleChanged(const AbilityPtr &ability)
 void ProcessOptimizerUBA::OnAbilityPerceptibleChanged(const AbilityPtr &ability)
 {
     if (!ability) {
-        APP_LOGE("%{public}s(%{public}d) invalid ability.", __func__, __LINE__);
+        APP_LOGE("invalid ability.");
         return;
     }
 
     RecordAbilityAction<ChangeAbilityPerceptible>(ability);
     auto ubaService = GetUbaService();
     if (ubaService) {
-        APP_LOGD("%{public}s(%{public}d) ubaService implement.", __func__, __LINE__);
+        APP_LOGI("ubaService implement.");
     } else {
         ProcessOptimizer::OnAbilityPerceptibleChanged(ability);
     }
@@ -260,7 +258,7 @@ void ProcessOptimizerUBA::OnAbilityPerceptibleChanged(const AbilityPtr &ability)
 void ProcessOptimizerUBA::OnAbilityRemoved(const AbilityPtr &ability)
 {
     if (!ability) {
-        APP_LOGE("%{public}s(%{public}d) invalid ability.", __func__, __LINE__);
+        APP_LOGE("invalid ability.");
         return;
     }
 
@@ -268,7 +266,7 @@ void ProcessOptimizerUBA::OnAbilityRemoved(const AbilityPtr &ability)
 
     auto ubaService = GetUbaService();
     if (ubaService) {
-        APP_LOGD("%{public}s(%{public}d) ubaService implement.", __func__, __LINE__);
+        APP_LOGI("ubaService implement.");
     } else {
         ProcessOptimizer::OnAbilityRemoved(ability);
     }
@@ -278,7 +276,7 @@ void ProcessOptimizerUBA::OnLowMemoryAlert(const CgroupManager::LowMemoryLevel l
 {
     auto ubaService = GetUbaService();
     if (ubaService) {
-        APP_LOGD("%{public}s(%{public}d) ubaService implement.", __func__, __LINE__);
+        APP_LOGI("ubaService implement.");
     } else {
         ProcessOptimizer::OnLowMemoryAlert(level);
     }
@@ -290,11 +288,11 @@ void ProcessOptimizerUBA::CommitAbilityActions()
     abilityActionCount_ = 0;
     auto ubaService = GetUbaService();
     if (!ubaService) {
-        APP_LOGE("%{public}s(%{pubic}d) uba is not available.", __func__, __LINE__);
+        APP_LOGE("uba is not available.");
         return;
     }
 
-    APP_LOGI("%{public}s(%{pubic}d) committing %{public}zu actions...", __func__, __LINE__, n);
+    APP_LOGI("committing %{public}zu actions...", n);
 
     for (size_t i = 0; i < n; ++i) {
         auto &abilityAction = abilityActionCache_[i];
@@ -329,7 +327,7 @@ void ProcessOptimizerUBA::CommitAbilityActions()
 
 void ProcessOptimizerUBA::CommitStartAbilityAction(const StartAbilityAction& action, size_t index)
 {
-    APP_LOGD("  [%{public}zu] %{public}s ability '%{public}s' starts '%{public}s'",
+    APP_LOGI("  [%{public}zu] %{public}s ability '%{public}s' starts '%{public}s'",
         index,
         action.GetTimeString().c_str(),
         action.GetPreName().c_str(),
@@ -339,7 +337,7 @@ void ProcessOptimizerUBA::CommitStartAbilityAction(const StartAbilityAction& act
 
 void ProcessOptimizerUBA::CommitConnectAbilityAction(const ConnectAbilityAction& action, size_t index)
 {
-    APP_LOGD("  [%{public}zu] %{public}s ability '%{public}s' connect to '%{public}s'",
+    APP_LOGI("  [%{public}zu] %{public}s ability '%{public}s' connect to '%{public}s'",
         index,
         action.GetTimeString().c_str(),
         action.GetName().c_str(),
@@ -349,7 +347,7 @@ void ProcessOptimizerUBA::CommitConnectAbilityAction(const ConnectAbilityAction&
 
 void ProcessOptimizerUBA::CommitDisconnectAbilityAction(const DisconnectAbilityAction& action, size_t index)
 {
-    APP_LOGD("  [%{public}zu] %{public}s '%{public}s' ability disconnect with '%{public}s'",
+    APP_LOGI("  [%{public}zu] %{public}s '%{public}s' ability disconnect with '%{public}s'",
         index,
         action.GetTimeString().c_str(),
         action.GetName().c_str(),
@@ -359,7 +357,7 @@ void ProcessOptimizerUBA::CommitDisconnectAbilityAction(const DisconnectAbilityA
 
 void ProcessOptimizerUBA::CommitChangedAbilityStateAction(const ChangeAbilityStateAction& action, size_t index)
 {
-    APP_LOGD("  [%{public}zu] %{public}s ability '%{public}s' state changed from %{public}d to %{public}d.",
+    APP_LOGI("  [%{public}zu] %{public}s ability '%{public}s' state changed from %{public}d to %{public}d.",
         index,
         action.GetTimeString().c_str(),
         action.GetName().c_str(),
@@ -370,7 +368,7 @@ void ProcessOptimizerUBA::CommitChangedAbilityStateAction(const ChangeAbilitySta
 
 void ProcessOptimizerUBA::CommitRemoveAbilityAction(const RemoveAbilityAction& action, size_t index)
 {
-    APP_LOGD("  [%{public}zu] %{public}s '%{public}s' removed.",
+    APP_LOGI("  [%{public}zu] %{public}s '%{public}s' removed.",
         index,
         action.GetTimeString().c_str(),
         action.GetName().c_str());
@@ -391,7 +389,7 @@ void ProcessOptimizerUBA::SetAppFreezingTime(int time)
 {
     auto ubaService = GetUbaService();
     if (ubaService) {
-        APP_LOGD("%{public}s(%{public}d) ubaService implement.", __func__, __LINE__);
+        APP_LOGI("ubaService implement.");
     } else {
         ProcessOptimizer::SetAppFreezingTime(time);
     }
@@ -401,7 +399,7 @@ void ProcessOptimizerUBA::GetAppFreezingTime(int &time)
 {
     auto ubaService = GetUbaService();
     if (ubaService) {
-        APP_LOGD("%{public}s(%{public}d) ubaService implement.", __func__, __LINE__);
+        APP_LOGI("ubaService implement.");
     } else {
         ProcessOptimizer::GetAppFreezingTime(time);
     }
