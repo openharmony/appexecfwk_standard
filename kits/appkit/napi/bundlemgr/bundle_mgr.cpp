@@ -703,25 +703,18 @@ static void ConvertBundleInfo(napi_env env, napi_value objBundleInfo, const Bund
         env, napi_set_named_property(env, objBundleInfo, "entryInstallationFree", nEntryInstallationFree));
 }
 
-static void ConvertUserInfo(napi_env env, napi_value objUserInfo, const BundleUserInfo &userInfo)
+static void ConvertDistributedAbilityInfo(napi_env env, napi_value objDistributedAbilityInfo,
+    const std::string bundleName, const std::string abilityName)
 {
-    napi_value nUserId;
-    NAPI_CALL_RETURN_VOID(env, napi_create_int32(env, userInfo.userId, &nUserId));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objUserInfo, "userId", nUserId));
+    napi_value nBundleName;
+    NAPI_CALL_RETURN_VOID(
+        env, napi_create_string_utf8(env, bundleName.c_str(), NAPI_AUTO_LENGTH, &nBundleName));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objDistributedAbilityInfo, "bundleName", nBundleName));
 
-    napi_value nEnable;
-    NAPI_CALL_RETURN_VOID(env, napi_get_boolean(env, userInfo.enabled, &nEnable));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objUserInfo, "enable", nEnable));
-
-    napi_value nEnableAbilities;
-    NAPI_CALL_RETURN_VOID(env, napi_create_array(env, &nEnableAbilities));
-    for (size_t idx = 0; idx < userInfo.enabledAbilities.size(); idx++) {
-        napi_value nName;
-        NAPI_CALL_RETURN_VOID(
-            env, napi_create_string_utf8(env, userInfo.enabledAbilities[idx].c_str(), NAPI_AUTO_LENGTH, &nName));
-        NAPI_CALL_RETURN_VOID(env, napi_set_element(env, nEnableAbilities, idx, nName));
-    }
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objUserInfo, "enabledAbilities", nEnableAbilities));
+    napi_value nName;
+    NAPI_CALL_RETURN_VOID(
+        env, napi_create_string_utf8(env, abilityName.c_str(), NAPI_AUTO_LENGTH, &nName));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objDistributedAbilityInfo, "name", nName));
 }
 
 static void ConvertDistributedBundleInfo(
@@ -732,10 +725,6 @@ static void ConvertDistributedBundleInfo(
     NAPI_CALL_RETURN_VOID(
         env, napi_create_string_utf8(env, distributedBundleInfo.name.c_str(), NAPI_AUTO_LENGTH, &nName));
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objBundleInfo, "name", nName));
-
-    napi_value nVersion;
-    NAPI_CALL_RETURN_VOID(env, napi_create_int32(env, distributedBundleInfo.version, &nVersion));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objBundleInfo, "version", nVersion));
 
     napi_value nVersionCode;
     NAPI_CALL_RETURN_VOID(env, napi_create_uint32(env, distributedBundleInfo.versionCode, &nVersionCode));
@@ -766,20 +755,20 @@ static void ConvertDistributedBundleInfo(
         env, napi_create_string_utf8(env, distributedBundleInfo.appId.c_str(), NAPI_AUTO_LENGTH, &nAppId));
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objBundleInfo, "appId", nAppId));
 
-    napi_value nMainAbility;
-    NAPI_CALL_RETURN_VOID(
-        env, napi_create_string_utf8(env, distributedBundleInfo.mainAbility.c_str(), NAPI_AUTO_LENGTH, &nMainAbility));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objBundleInfo, "mainAbility", nMainAbility));
-
-    napi_value nUserInfos;
-    NAPI_CALL_RETURN_VOID(env, napi_create_array(env, &nUserInfos));
+    napi_value nAbilityInfos;
+    NAPI_CALL_RETURN_VOID(env, napi_create_array(env, &nAbilityInfos));
     for (size_t idx = 0; idx < distributedBundleInfo.bundleUserInfos.size(); idx++) {
-        napi_value objUserInfo;
-        NAPI_CALL_RETURN_VOID(env, napi_create_object(env, &objUserInfo));
-        ConvertUserInfo(env, objUserInfo, distributedBundleInfo.bundleUserInfos[idx]);
-        NAPI_CALL_RETURN_VOID(env, napi_set_element(env, nUserInfos, idx, objUserInfo));
+        for (size_t idx1 = 0; idx1 < distributedBundleInfo.bundleUserInfos[idx].abilities.size(); idx1++) {
+            napi_value nAbilityInfo;
+            NAPI_CALL_RETURN_VOID(env, napi_create_object(env, &nAbilityInfo));
+            ConvertDistributedAbilityInfo(env,
+                                          nAbilityInfo,
+                                          distributedBundleInfo.name,
+                                          distributedBundleInfo.bundleUserInfos[idx].abilities[idx1]);
+            NAPI_CALL_RETURN_VOID(env, napi_set_element(env, nAbilityInfos, idx1, nAbilityInfo));
+        }
     }
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objBundleInfo, "userInfos", nUserInfos));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objBundleInfo, "abilityInfo", nAbilityInfos));
 }
 
 static void ConvertFormCustomizeData(napi_env env, napi_value objformInfo, const FormCustomizeData &customizeData)

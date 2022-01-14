@@ -346,7 +346,10 @@ protected:
                     "bundleName":"com.ohos.launcher",
                     "bundleUserInfo": {
                         "enabled":true,
-                        "enabledAbilities":[
+                        "abilities":[
+
+                        ],
+                        "disabledAbilities":[
 
                         ],
                         "userId":0

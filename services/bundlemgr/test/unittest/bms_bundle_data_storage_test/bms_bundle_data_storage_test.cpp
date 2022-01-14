@@ -235,7 +235,10 @@ protected:
                     "bundleName":"com.example.myapplication1_0",
                     "bundleUserInfo": {
                         "enabled":true,
-                        "enabledAbilities":[
+                        "abilities":[
+
+                        ],
+                        "disabledAbilities":[
 
                         ],
                         "userId":0
