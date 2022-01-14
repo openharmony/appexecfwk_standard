@@ -16,28 +16,22 @@ import("//foundation/appexecfwk/standard/appexecfwk.gni")
 
 config("tools_bm_config") {
   include_dirs = [
-    "${aafwk_path}/interfaces/innerkits/want/include",
-    "${aafwk_path}/interfaces/innerkits/base/include",
-    "${aafwk_path}/interfaces/innerkits/want/include/ohos/aafwk/content",
-    "${aafwk_path}/services/abilitymgr/include",
     "${aafwk_path}/services/common/include",
     "${aafwk_path}/tools/aa/include",
-    "${appexecfwk_path}/common/log/include",
-    "${appexecfwk_path}/interfaces/innerkits/libeventhandler/include",
-    "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy/include",
-    "//foundation/distributedschedule/dmsfwk/services/dtbschedmgr/include",
-    "//foundation/appexecfwk/standard/kits/appkit/napi/bundlemgr",
-    "//utils/native/base/include",
+    "${common_path}/log/include",
+    "${kits_path}/appkit/napi/bundlemgr",
+    "//utils/system/safwk/native/include",
     "include",
   ]
 
-  configs = [ "${appexecfwk_path}/services/bundlemgr:bundlemgr_common_config" ]
+  configs = [ "${services_path}/bundlemgr:bundlemgr_common_config" ]
 }
 
 ohos_source_set("tools_bm_source_set") {
   sources = [
     "${aafwk_path}/tools/aa/src/shell_command.cpp",
-    "${appexecfwk_path}/kits/appkit/napi/bundlemgr/bundle_death_recipient.cpp",
+    "${common_path}/log/src/app_log_wrapper.cpp",
+    "${kits_path}/appkit/napi/bundlemgr/bundle_death_recipient.cpp",
     "src/bundle_command.cpp",
     "src/main.cpp",
     "src/status_receiver_impl.cpp",
@@ -53,19 +47,14 @@ ohos_source_set("tools_bm_source_set") {
     cflags += [ "-DBINDER_IPC_32BIT" ]
   }
 
-  deps = [
-    "${aafwk_path}/interfaces/innerkits/want:want",
-    "${aafwk_path}/services/abilitymgr:abilityms",
-    "${appexecfwk_path}/common:libappexecfwk_common",
-    "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base:appexecfwk_base",
-    "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core:appexecfwk_core",
-    "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
-    "//utils/native/base:utils",
-  ]
-
   external_deps = [
+    "aafwk_standard:want",
+    "appexecfwk_standard:appexecfwk_base",
+    "appexecfwk_standard:appexecfwk_core",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
+    "samgr_standard:samgr_proxy",
+    "utils_base:utils",
   ]
 }
 
@@ -75,7 +64,7 @@ ohos_executable("bm") {
   install_enable = true
 
   subsystem_name = "appexecfwk"
-  part_name = "appexecfwk_standard"
+  part_name = "bundle_tool"
 }
 
 group("tools_bm") {
