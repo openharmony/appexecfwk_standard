@@ -16,6 +16,7 @@
 #include "inner_bundle_info.h"
 
 #include <regex>
+#include "bundle_mgr_client.h"
 #include "bundle_permission_mgr.h"
 #include "common_profile.h"
 
@@ -1926,6 +1927,46 @@ void InnerBundleInfo::GetFormsInfoByApp(std::vector<FormInfo> &formInfos) const
 
 void InnerBundleInfo::GetShortcutInfos(std::vector<ShortcutInfo> &shortcutInfos) const
 {
+    if (isNewVersion_) {
+        AbilityInfo abilityInfo;
+        info.GetMainAbilityInfo(abilityInfo);
+        if (!abilityInfo.resourcePath.empty() && abilityInfo.metadata.size() > 0) {
+            std::vector<std::string> rawJson;
+            BundleMgrClient bundleMgrClient;
+            bool ret = false; // to do
+            if (ret == false) {
+                APP_LOGD("GetResConfigFile return false");
+                return;
+            }
+            if (rawJson.size() == 0) {
+                APP_LOGD("rawJson size 0. skip.");
+                return;
+            }
+            nlohmann::json jsonObject = nlohmann::json::parse(rawJson[0], nullptr, false);
+            if (jsonObject.is_discarded()) {
+                APP_LOGE("shortcuts json invalid");
+                return;
+            }
+            ShortcutJson shortcutJson = jsonObject.get<ShortcutJson>();
+            for (const Shortcut &item : shortcutJson.shortcuts) {
+                ShortcutInfo shortcutInfo;
+                shortcutInfo.id = item.shortcutId;
+                shortcutInfo.bundleName = abilityInfo.bundleName;
+                shortcutInfo.icon = item.icon;
+                shortcutInfo.label = item.label;
+                shortcutInfo.iconId = item.iconId;
+                shortcutInfo.labelId = item.labelId;
+                for (const ShortcutWant &shortcutWant : item.wants) {
+                    ShortcutIntent shortcutIntent;
+                    shortcutIntent.targetBundle = shortcutWant.bundleName;
+                    shortcutIntent.targetClass = shortcutWant.abilityName;
+                    shortcutInfo.intents.emplace_back(shortcutIntent);
+                }
+                shortcutInfos.emplace_back(shortcutInfo);
+            }
+        }
+        return;
+    }
     for (const auto &shortcut : shortcutInfos_) {
         shortcutInfos.emplace_back(shortcut.second);
     }
