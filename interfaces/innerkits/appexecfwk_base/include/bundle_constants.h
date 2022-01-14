@@ -48,6 +48,7 @@ const std::string APP_DATA_DIR = "appdata";
 const std::string DATA_BASE_DIR = "database";
 const std::string DATA_DIR = "files";
 const std::string CACHE_DIR = "cache";
+const std::string CACHES_DIR = "caches";
 const std::string SHARED_DIR = "shared";
 const std::string SHARED_PREFERENCE_DIR = "sharedPreference";
 const std::string TMP_SUFFIX = "_tmp";
