@@ -762,6 +762,32 @@ void AppMgrServiceInner::KillProcessByAbilityToken(const sptr<IRemoteObject> &to
     }
 }
 
+void AppMgrServiceInner::KillProcessesByUserId(int32_t userId)
+{
+    if (!appRunningManager_) {
+        APP_LOGE("appRunningManager_ is nullptr");
+        return;
+    }
+
+    int64_t startTime = SystemTimeMillis();
+    std::list<pid_t> pids;
+    if (!appRunningManager_->GetPidsByUserId(userId, pids)) {
+        APP_LOGI("The process corresponding to the userId did not start");
+        return;
+    }
+    if (WaitForRemoteProcessExit(pids, startTime)) {
+        APP_LOGI("The remote process exited successfully ");
+        return;
+    }
+    for (auto iter = pids.begin(); iter != pids.end(); ++iter) {
+        auto result = KillProcessByPid(*iter);
+        if (result < 0) {
+            APP_LOGE("KillProcessByPid is failed. pid: %{public}d", *iter);
+            return;
+        }
+    }
+}
+
 void AppMgrServiceInner::StartAbility(const sptr<IRemoteObject> &token, const sptr<IRemoteObject> &preToken,
     const std::shared_ptr<AbilityInfo> &abilityInfo, const std::shared_ptr<AppRunningRecord> &appRecord)
 {

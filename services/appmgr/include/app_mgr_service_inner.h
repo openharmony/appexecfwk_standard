@@ -142,6 +142,14 @@ public:
     virtual void KillProcessByAbilityToken(const sptr<IRemoteObject> &token);
 
     /**
+     * KillProcessesByUserId, kill the processes by userId.
+     *
+     * @param userId, the user id.
+     * @return
+     */
+    virtual void KillProcessesByUserId(int32_t userId);
+
+    /**
      * AttachApplication, get all the information needed to start the Application
      * (data related to the Application ).
      *
