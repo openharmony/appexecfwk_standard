@@ -20,9 +20,7 @@
 #include <map>
 #include <memory>
 #include <string>
-
 #include "iremote_object.h"
-
 #include "ability_running_record.h"
 #include "ability_state_data.h"
 #include "application_info.h"
@@ -34,13 +32,15 @@
 #include "profile.h"
 #include "priority_object.h"
 #include "app_lifecycle_deal.h"
-#include "app_resident_process_info.h"
+#include "module_running_record.h"
 
 namespace OHOS {
 namespace AppExecFwk {
 class AbilityRunningRecord;
 class AppMgrServiceInner;
 class AppRunningRecord : public std::enable_shared_from_this<AppRunningRecord> {
+public:
+    static int64_t appEventId_;
 public:
     AppRunningRecord(
         const std::shared_ptr<ApplicationInfo> &info, const int32_t recordId, const std::string &processName);
@@ -51,7 +51,7 @@ public:
      *
      * @return Returns app record bundleName.
      */
-    std::string GetBundleName() const;
+    const std::string &GetBundleName() const;
 
     /**
      * @brief Obtains the app record isLauncherApp flag.
@@ -87,6 +87,34 @@ public:
      * @return Returns the process name.
      */
     const std::string &GetProcessName() const;
+
+    /**
+     * @brief Obtains the sign code.
+     *
+     * @return Returns the sign code.
+     */
+    const std::string &GetSignCode() const;
+
+    /**
+     * @brief Setting the sign code.
+     *
+     * @param code, the sign code.
+     */
+    void SetSignCode(const std::string &signCode);
+
+    /**
+     * @brief Obtains the jointUserId.
+     *
+     * @return Returns the jointUserId.
+     */
+    const std::string &GetJointUserId() const;
+
+    /**
+     * @brief Setting the jointUserId.
+     *
+     * @param jointUserId, the jointUserId.
+     */
+    void SetJointUserId(const std::string &jointUserId);
 
     /**
      * @brief Obtains the application uid.
@@ -126,7 +154,7 @@ public:
      *
      * @return Returns the abilitys info for the application record.
      */
-    const std::map<const sptr<IRemoteObject>, std::shared_ptr<AbilityRunningRecord>> &GetAbilities() const;
+    const std::map<const sptr<IRemoteObject>, std::shared_ptr<AbilityRunningRecord>> GetAbilities();
     // Update appThread with appThread
 
     /**
@@ -143,17 +171,28 @@ public:
      */
     sptr<IAppScheduler> GetApplicationClient() const;
 
-    // Add new ability instance to current running abilities list managed by this process
+    // Add new module instance to current running modules list managed by this process
     /**
-     * AddAbility, Add new ability instance to current running abilities list managed by this process.
+     * AddModule, Add new module instance to current running modules list managed by this process.
      *
+     * @param appInfo, the app info.
      * @param token, the unique identification to the ability.
      * @param abilityInfo, the ability info.
+     * @param hapModuleInfo, the hapModule info.
      *
      * @return the ability record.
      */
-    std::shared_ptr<AbilityRunningRecord> AddAbility(
-        const sptr<IRemoteObject> &token, const std::shared_ptr<AbilityInfo> &abilityInfo);
+    void AddModule(const std::shared_ptr<ApplicationInfo> &appInfo, const std::shared_ptr<AbilityInfo> &abilityInfo,
+        const sptr<IRemoteObject> &token, const HapModuleInfo &hapModuleInfo);
+
+    void AddModules(const std::shared_ptr<ApplicationInfo> &appInfo, const std::vector<HapModuleInfo> &moduleInfos);
+
+    std::shared_ptr<ModuleRunningRecord> GetModuleRecordByModuleName(
+        const std::string bundleName, const std::string &moduleName);
+
+    std::shared_ptr<ModuleRunningRecord> GetModuleRunningRecordByToken(const sptr<IRemoteObject> &token) const;
+
+    std::shared_ptr<ModuleRunningRecord> GetModuleRunningRecordByTerminateLists(const sptr<IRemoteObject> &token) const;
 
     // It can only used in SINGLETON mode.
     /**
@@ -256,20 +295,6 @@ public:
      * @return
      */
     void ScheduleTerminate();
-
-    /**
-     * ScheduleForegroundRunning, Notify application to switch to foreground.
-     *
-     * @return
-     */
-    void ScheduleForegroundRunning();
-
-    /**
-     * ScheduleBackgroundRunning, Notify application to switch to background.
-     *
-     * @return
-     */
-    void ScheduleBackgroundRunning();
 
     /**
      * ScheduleTerminate, Notify application process exit safely.
@@ -376,6 +401,22 @@ public:
 
     bool IsTerminating();
 
+    bool IsKeepAliveApp() const;
+
+    // Please use with caution, it may affect the ability to start.
+    void SetKeepAliveAppState();
+
+    std::list<std::shared_ptr<ModuleRunningRecord>> GetAllModuleRecord() const;
+
+    std::map<std::string, std::vector<std::shared_ptr<ModuleRunningRecord>>> &GetModules();
+
+    const std::list<std::shared_ptr<ApplicationInfo>> GetAppInfoList();
+
+    void SetRestartResidentProcCount(int count);
+    void DecRestartResidentProcCount();
+    int GetRestartResidentProcCount() const;
+    bool CanRestartResidentProc();
+
     /**
      * Notify observers when state change.
      *
@@ -384,26 +425,30 @@ public:
      */
     void StateChangedNotifyObserver(const std::shared_ptr<AbilityRunningRecord> &ability, int32_t state, bool isAbility);
 
-    bool IsKeepAliveApp() const;
-
-    // Please use with caution, it may affect the ability to start.
-    void SetKeepAliveAppState();
-
-    bool CanRestartResidentProc();
-
     void insertAbilityStageInfo(std::vector<HapModuleInfo> moduleInfos);
 
 private:
+    /**
+     * SearchTheModuleInfoNeedToUpdated, Get an uninitialized abilitystage data.
+     *
+     * @return If an uninitialized data is found return true,Otherwise return false.
+     */
+    bool GetTheModuleInfoNeedToUpdated(const std::string bundleName, HapModuleInfo &info);
+
     // drive application state changes when ability state changes.
     /**
-     * OnAbilityStateChanged, Call ability state change.
-     *
-     * @param ability, the ability info.
-     * @param state, the ability state.
+     * ScheduleForegroundRunning, Notify application to switch to foreground.
      *
      * @return
      */
-    void OnAbilityStateChanged(const std::shared_ptr<AbilityRunningRecord> &ability, const AbilityState state);
+    void ScheduleForegroundRunning();
+
+    /**
+     * ScheduleBackgroundRunning, Notify application to switch to background.
+     *
+     * @return
+     */
+    void ScheduleBackgroundRunning();
 
     /**
      * AbilityForeground, Handling the ability process when switching to the foreground.
@@ -422,35 +467,21 @@ private:
      * @return
      */
     void AbilityBackground(const std::shared_ptr<AbilityRunningRecord> &ability);
+    // drive application state changes when ability state changes.
 
-    /**
-     * OptimizerAbilityStateChanged, Optimizer processing ability state changes.
-     *
-     * @param ability, the ability info.
-     * @param state, the ability state.
-     *
-     * @return
-     */
-    void OptimizerAbilityStateChanged(const std::shared_ptr<AbilityRunningRecord> &ability, const AbilityState state);
-
-    void SendEvent(uint32_t msg, int64_t timeOut, const std::shared_ptr<AbilityRunningRecord> &abilityRecord);
     void SendEvent(uint32_t msg, int64_t timeOut);
 
+    void RemoveModuleRecord(const std::shared_ptr<ModuleRunningRecord> &record);
+
 private:
-    bool isKeepAliveApp = false; // Only resident processes can be set to true, please choose carefully
+    bool isKeepAliveApp = false;  // Only resident processes can be set to true, please choose carefully
     ApplicationState curState_ = ApplicationState::APP_STATE_CREATE;  // current state of this process
 
     std::shared_ptr<ApplicationInfo> appInfo_ = nullptr;  // the application's info of this process
     int32_t appRecordId_ = 0;
     std::string appName_;
     std::string processName_;  // the name of this process
-    int32_t uid_ = 0;
-    static int64_t appEventId_;
     int64_t eventId_ = 0;
-    // List of abilities running in the process
-    std::map<const sptr<IRemoteObject>, std::shared_ptr<AbilityRunningRecord>> abilities_;
-    std::map<const sptr<IRemoteObject>, std::shared_ptr<AbilityRunningRecord>> terminateAbilitys_;
-    std::map<int32_t, std::vector<HapModuleInfo>> abilityStage_;
     std::list<const sptr<IRemoteObject>> foregroundingAbilityTokens_;
     std::weak_ptr<AppMgrServiceInner> appMgrServiceInner_;
     sptr<AppDeathRecipient> appDeathRecipient_ = nullptr;
@@ -458,6 +489,16 @@ private:
     std::shared_ptr<AppLifeCycleDeal> appLifeCycleDeal_ = nullptr;
     std::shared_ptr<AMSEventHandler> eventHandler_ = nullptr;
     bool isTerminating = false;
+    std::string signCode_;  // the sign of this hap
+    std::string jointUserId_;
+    std::map<std::string, std::shared_ptr<ApplicationInfo>> appInfos_;
+    std::map<std::string, std::vector<std::shared_ptr<ModuleRunningRecord>>> hapModules_;
+    int32_t mainUid_;
+    std::string mainBundleName_;
+    bool isLauncherApp_;
+    bool isClonedApp_;
+    std::string mainAppName_;
+    int restartResidentProcCount_ = 15;
     int restartCount_ = 15;
 };
 }  // namespace AppExecFwk

@@ -63,31 +63,28 @@ LmksClient::~LmksClient()
 
 int32_t LmksClient::Open()
 {
-    APP_LOGI("%{public}s(%{public}d) connecting lmks.", __func__, __LINE__);
+    APP_LOGI("connecting lmks.");
 
     if (socket_ >= 0) {
-        APP_LOGE("%{public}s(%{public}d) already connected.", __func__, __LINE__);
+        APP_LOGE("already connected.");
         return -1;
     }
 
     UniqueFd sk(socket(PF_LOCAL, SOCK_SEQPACKET, 0));
     if (sk.Get() < 0) {
-        APP_LOGE("%{public}s(%{public}d) failed to create local socket %{public}d.", __func__, __LINE__, errno);
+        APP_LOGE("failed to create local socket %{public}d.", errno);
         return (-errno);
     }
 
     struct timeval timeOut = {.tv_sec = LMKS_SOCKET_TIMEOUT, .tv_usec = 0};
     int fd = sk.Get();
     if (fd < 0) {
-        APP_LOGE("%{public}s(%{public}d) fd is negative.", __func__, __LINE__);
+        APP_LOGE("fd is negative.");
         return -1;
     }
     if ((setsockopt(fd, SOL_SOCKET, SO_RCVTIMEO, &timeOut, sizeof(timeOut)) != 0) ||
         (setsockopt(fd, SOL_SOCKET, SO_SNDTIMEO, &timeOut, sizeof(timeOut)) != 0)) {
-        APP_LOGE("%{public}s(%{public}d) failed to set local socket timeout %{public}s.",
-            __func__,
-            __LINE__,
-            strerror(errno));
+        APP_LOGE("failed to set local socket timeout %{public}s.", strerror(errno));
         return (-errno);
     }
 
@@ -95,20 +92,20 @@ int32_t LmksClient::Open()
     int32_t ret;
     ret = memset_s(&addr, sizeof(addr), 0, sizeof(addr));
     if (ret != EOK) {
-        APP_LOGE("%{public}s(%{public}d) failed to clear local socket addr.", __func__, __LINE__);
+        APP_LOGE("failed to clear local socket addr.");
         return ret;
     }
 
     ret = memcpy_s(addr.sun_path, LMKS_SOCKET_PATH_MAX, LMKS_SOCKET_PATH.data(), LMKS_SOCKET_PATH.size());
     if (ret != EOK) {
-        APP_LOGE("%{public}s(%{public}d) failed to make local socket path.", __func__, __LINE__);
+        APP_LOGE("failed to make local socket path.");
         return ret;
     }
 
     addr.sun_family = AF_LOCAL;
     socklen_t addrLen = offsetof(struct sockaddr_un, sun_path) + LMKS_SOCKET_PATH.size() + 1;
     if (connect(sk, reinterpret_cast<struct sockaddr *>(&addr), addrLen) < 0) {
-        APP_LOGE("%{public}s(%{public}d) failed to connect to lmks %{public}s.", __func__, __LINE__, strerror(errno));
+        APP_LOGE("failed to connect to lmks %{public}s.", strerror(errno));
         return (-errno);
     }
 
@@ -119,10 +116,10 @@ int32_t LmksClient::Open()
 
 void LmksClient::Close()
 {
-    APP_LOGI("%{public}s(%{public}d) closing lmks.", __func__, __LINE__);
+    APP_LOGI("closing lmks.");
 
     if (socket_ < 0) {
-        APP_LOGE("%{public}s(%{public}d) not connected.", __func__, __LINE__);
+        APP_LOGE("not connected.");
         return;
     }
 
@@ -140,8 +137,7 @@ int32_t LmksClient::Target(const Targets &targets)
     APP_LOGI("Target enter");
 
     if (targets.empty() || targets.size() > LMKS_MAX_TARGETS) {
-        APP_LOGE(
-            "%{public}s(%{public}d) empty target or too many targets. %{public}zu", __func__, __LINE__, targets.size());
+        APP_LOGE("empty target or too many targets. %{public}zu", targets.size());
         return (-EINVAL);
     }
 
@@ -151,11 +147,7 @@ int32_t LmksClient::Target(const Targets &targets)
 
     for (auto target : targets) {
         if (target.first < 0 || !CheckOomAdj(target.second)) {
-            APP_LOGE("%{public}s(%{public}d) invalid target: %{public}d %{public}d",
-                __func__,
-                __LINE__,
-                target.first,
-                target.second);
+            APP_LOGE("invalid target: %{public}d %{public}d", target.first, target.second);
             return (-EINVAL);
         }
         buf[i++] = target.first;
@@ -170,12 +162,7 @@ int32_t LmksClient::ProcPrio(pid_t pid, uid_t uid, int oomAdj)
     APP_LOGI("ProcPrio enter");
 
     if (pid < 0 || uid < 0 || !CheckOomAdj(oomAdj)) {
-        APP_LOGE("%{public}s(%{public}d) invalid parameter: %{public}d %{public}d %{public}d.",
-            __func__,
-            __LINE__,
-            pid,
-            uid,
-            oomAdj);
+        APP_LOGE("invalid parameter: %{public}d %{public}d %{public}d.", pid, uid, oomAdj);
         return (-EINVAL);
     }
 
@@ -189,7 +176,7 @@ int32_t LmksClient::ProcRemove(pid_t pid)
     APP_LOGI("ProcRemove enter");
 
     if (pid < 1) {
-        APP_LOGE("%{public}s(%{public}d) invalid pid %{public}d.", __func__, __LINE__, pid);
+        APP_LOGE("invalid pid %{public}d.", pid);
         return (-EINVAL);
     }
 
@@ -231,7 +218,7 @@ bool LmksClient::CheckOomAdj(int v)
 bool LmksClient::Write(const void *buf, size_t len)
 {
     if (buf == nullptr || len < 1) {
-        APP_LOGE("%{public}s(%{public}d) invalid parameter.", __func__, __LINE__);
+        APP_LOGE("invalid parameter.");
         return false;
     }
 

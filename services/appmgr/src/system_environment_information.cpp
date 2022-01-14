@@ -37,10 +37,10 @@ void KernelSystemMemoryInfo::Init(std::map<std::string, std::string> &memInfo)
     auto findData = [&] (const std::string& key) -> std::string {
         auto iter = memInfo.find(key);
         if (iter != memInfo.end()) {
-            APP_LOGD("%{public}s, key[%{public}s] data[%{public}s]", __func__, key.c_str(), iter->second.c_str());
+            APP_LOGD("key[%{public}s] data[%{public}s]", key.c_str(), iter->second.c_str());
             return iter->second;
         } else {
-            APP_LOGE("%{public}s, key[%{public}s]", __func__, key.c_str());
+            APP_LOGE("key[%{public}s]", key.c_str());
             return std::string("");
         }
     };
@@ -92,7 +92,7 @@ static void RequestSystemMemoryInfo(std::map<std::string, std::string> &memInfo)
 
     FILE *fp = popen("cat /proc/meminfo", "r");
     if (fp == nullptr) {
-        APP_LOGE("%{public}s, open meminfo failed", __func__);
+        APP_LOGE("open meminfo failed");
         return;
     }
 
@@ -104,14 +104,14 @@ static void RequestSystemMemoryInfo(std::map<std::string, std::string> &memInfo)
         bool flag = false;
         flag = std::regex_search(strbuf, sm, rLabel);
         if (!flag) {
-            APP_LOGE("%{public}s, open meminfo failed", __func__);
+            APP_LOGE("open meminfo failed");
             continue;
         }
         std::string strLabel = sm[0];
         strbuf = sm.suffix().str();
         flag = std::regex_search(strbuf, sm, rData);
         if (!flag) {
-            APP_LOGE("%{public}s, open meminfo failed", __func__);
+            APP_LOGE("open meminfo failed");
             continue;
         }
         std::string strData = sm[0];

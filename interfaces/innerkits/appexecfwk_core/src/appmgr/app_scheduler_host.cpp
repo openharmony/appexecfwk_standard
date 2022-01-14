@@ -148,13 +148,14 @@ int32_t AppSchedulerHost::HandleScheduleLaunchApplication(MessageParcel &data, M
 
 int32_t AppSchedulerHost::HandleScheduleAbilityStageInfo(MessageParcel &data, MessageParcel &reply)
 {
-    std::unique_ptr<AppResidentProcessInfo> appResidentProcessInfo(data.ReadParcelable<AppResidentProcessInfo>());
-    if (!appResidentProcessInfo) {
+    BYTRACE(BYTRACE_TAG_APP);
+    std::unique_ptr<HapModuleInfo> abilityStage(data.ReadParcelable<HapModuleInfo>());
+    if (!abilityStage) {
         APP_LOGE("ReadParcelable<launchData> failed");
         return ERR_APPEXECFWK_PARCEL_ERROR;
     }
 
-    ScheduleAbilityStageInfo(*appResidentProcessInfo);
+    ScheduleAbilityStageInfo(*abilityStage);
     return NO_ERROR;
 }
 

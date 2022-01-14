@@ -74,47 +74,105 @@ void AppMgrServiceInner::LoadAbility(const sptr<IRemoteObject> &token, const spt
     const std::shared_ptr<AbilityInfo> &abilityInfo, const std::shared_ptr<ApplicationInfo> &appInfo)
 {
     BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
-    if (!token || !abilityInfo || !appInfo) {
-        APP_LOGE("param error");
-        return;
-    }
-    if (abilityInfo->name.empty() || appInfo->name.empty()) {
-        APP_LOGE("error abilityInfo or appInfo");
-        return;
-    }
-    if (abilityInfo->applicationName != appInfo->name) {
-        APP_LOGE("abilityInfo and appInfo have different appName, don't load for it");
+    if (!CheckLoadabilityConditions(token, abilityInfo, appInfo)) {
         return;
     }
 
-    auto processName = abilityInfo->process.empty() ? appInfo->bundleName : abilityInfo->process;
+    if (!appRunningManager_) {
+        APP_LOGE("appRunningManager_ is nullptr");
+        return;
+    }
+
+    BundleInfo bundleInfo;
+    HapModuleInfo hapModuleInfo;
+    if (!GetBundleAndHapInfo(*abilityInfo, appInfo, bundleInfo, hapModuleInfo)) {
+        return;
+    }
+
+    std::string processName;
+    MakeProcessName(processName, abilityInfo, appInfo);
     APP_LOGI("processName = [%{public}s]", processName.c_str());
 
-    auto appRecord = GetAppRunningRecordByProcessName(appInfo->name, processName, appInfo->uid);
+    auto appRecord =
+        appRunningManager_->CheckAppRunningRecordIsExist(appInfo->name, processName, appInfo->uid, bundleInfo);
     if (!appRecord) {
-        RecordQueryResult result;
-        int32_t defaultUid = 0;
-        appRecord = GetOrCreateAppRunningRecord(token, appInfo, abilityInfo, processName, defaultUid, result);
-        if (FAILED(result.error)) {
-            APP_LOGE("create appRunningRecord failed");
+        appRecord =
+            CreateAppRunningRecord(token, preToken, appInfo, abilityInfo, processName, bundleInfo, hapModuleInfo);
+        if (!appRecord) {
+            APP_LOGI("appRecord is nullptr");
             return;
         }
-        appRecord->SetEventHandler(eventHandler_);
-        if (preToken != nullptr) {
-            auto abilityRecord = appRecord->GetAbilityRunningRecordByToken(token);
-            abilityRecord->SetPreToken(preToken);
-        }
-        APP_LOGI("LoadAbility StartProcess appname [%{public}s] | bundename [%{public}s]", appRecord->GetName().c_str(),
-            appRecord->GetBundleName().c_str());
-        StartProcess(abilityInfo->applicationName, processName, appRecord, abilityInfo->applicationInfo.uid);
+        StartProcess(abilityInfo->applicationName,
+            processName,
+            appRecord,
+            abilityInfo->applicationInfo.uid,
+            abilityInfo->applicationInfo.bundleName);
     } else {
-        APP_LOGI("LoadAbility StartAbility appname [%{public}s] | bundename [%{public}s]", appRecord->GetName().c_str(),
-            appRecord->GetBundleName().c_str());
-        StartAbility(token, preToken, abilityInfo, appRecord);
+        StartAbility(token, preToken, abilityInfo, appRecord, hapModuleInfo);
     }
     PerfProfile::GetInstance().SetAbilityLoadEndTime(GetTickCount());
     PerfProfile::GetInstance().Dump();
     PerfProfile::GetInstance().Reset();
+}
+
+bool AppMgrServiceInner::CheckLoadabilityConditions(const sptr<IRemoteObject> &token,
+    const std::shared_ptr<AbilityInfo> &abilityInfo, const std::shared_ptr<ApplicationInfo> &appInfo)
+{
+    if (!token || !abilityInfo || !appInfo) {
+        APP_LOGE("param error");
+        return false;
+    }
+    if (abilityInfo->name.empty() || appInfo->name.empty()) {
+        APP_LOGE("error abilityInfo or appInfo");
+        return false;
+    }
+    if (abilityInfo->applicationName != appInfo->name) {
+        APP_LOGE("abilityInfo and appInfo have different appName, don't load for it");
+        return false;
+    }
+
+    return true;
+}
+
+void AppMgrServiceInner::MakeProcessName(std::string &processName, const std::shared_ptr<AbilityInfo> &abilityInfo,
+    const std::shared_ptr<ApplicationInfo> &appInfo)
+{
+    if (!abilityInfo || !appInfo) {
+        return;
+    }
+    if (!abilityInfo->process.empty()) {
+        processName = abilityInfo->process;
+        return;
+    }
+    if (!appInfo->process.empty()) {
+        processName = appInfo->process;
+        return;
+    }
+    processName = appInfo->bundleName;
+}
+
+bool AppMgrServiceInner::GetBundleAndHapInfo(const AbilityInfo &abilityInfo,
+    const std::shared_ptr<ApplicationInfo> &appInfo, BundleInfo &bundleInfo, HapModuleInfo &hapModuleInfo)
+{
+    APP_LOGI("AppMgrServiceInner GetBundleAndHapInfo start!");
+    auto bundleMgr_ = remoteClientManager_->GetBundleManager();
+    if (bundleMgr_ == nullptr) {
+        APP_LOGE("GetBundleManager fail");
+        return false;
+    }
+
+    bool bundleMgrResult = bundleMgr_->GetBundleInfo(appInfo->bundleName, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo);
+    if (!bundleMgrResult) {
+        APP_LOGE("GetBundleInfo is fail");
+        return false;
+    }
+    bundleMgrResult = bundleMgr_->GetHapModuleInfo(abilityInfo, hapModuleInfo);
+    if (!bundleMgrResult) {
+        APP_LOGE("GetHapModuleInfo is fail");
+        return false;
+    }
+
+    return true;
 }
 
 void AppMgrServiceInner::AttachApplication(const pid_t pid, const sptr<IAppScheduler> &app)
@@ -161,7 +219,7 @@ void AppMgrServiceInner::LaunchApplication(const std::shared_ptr<AppRunningRecor
     // There is no process of switching the foreground, waiting for his first ability to start
     if (appRecord->IsKeepAliveApp()) {
         appRecord->AddAbilityStage();
-        return ;
+        return;
     }
     appRecord->LaunchPendingAbilities();
 }
@@ -262,17 +320,11 @@ int32_t AppMgrServiceInner::KillApplication(const std::string &bundleName)
         return ERR_NO_INIT;
     }
 
-    // All means can not kill the resident process
-    auto appRecord = appRunningManager_->GetAppRunningRecordByBundleName(bundleName);
-    if (appRecord && appRecord->IsKeepAliveApp()) {
-        return ERR_INVALID_VALUE;
-    }
-
     int result = ERR_OK;
     int64_t startTime = SystemTimeMillis();
     std::list<pid_t> pids;
 
-    if (!appRunningManager_->GetPidsByBundleName(bundleName, pids)) {
+    if (!appRunningManager_->ProcessExitByBundleName(bundleName, pids)) {
         APP_LOGI("The process corresponding to the package name did not start");
         return result;
     }
@@ -311,7 +363,7 @@ int32_t AppMgrServiceInner::KillApplicationByUid(const std::string &bundleName, 
         return ERR_NO_INIT;
     }
     APP_LOGI("uid value is %{public}d", uid);
-    if (!appRunningManager_->GetPidsByBundleNameByUid(bundleName, uid, pids)) {
+    if (!appRunningManager_->ProcessExitByBundleNameAndUid(bundleName, uid, pids)) {
         APP_LOGI("The process corresponding to the package name did not start");
         return result;
     }
@@ -350,7 +402,7 @@ int32_t AppMgrServiceInner::KillApplicationByUserId(const std::string &bundleNam
     APP_LOGI("userId value is %{public}d", userId);
     int uid = bundleMgr_->GetUidByBundleName(bundleName, userId);
     APP_LOGI("uid value is %{public}d", uid);
-    if (!appRunningManager_->GetPidsByBundleNameByUid(bundleName, uid, pids)) {
+    if (!appRunningManager_->ProcessExitByBundleNameAndUid(bundleName, uid, pids)) {
         APP_LOGI("The process corresponding to the package name did not start");
         return result;
     }
@@ -374,8 +426,8 @@ void AppMgrServiceInner::ClearUpApplicationData(const std::string &bundleName, i
     ClearUpApplicationDataByUserId(bundleName, callerUid, callerPid, Constants::DEFAULT_USERID);
 }
 
-void AppMgrServiceInner::ClearUpApplicationDataByUserId(const std::string &bundleName,
-    int32_t callerUid, pid_t callerPid, const int userId)
+void AppMgrServiceInner::ClearUpApplicationDataByUserId(
+    const std::string &bundleName, int32_t callerUid, pid_t callerPid, const int userId)
 {
     if (callerPid <= 0) {
         APP_LOGE("invalid callerPid:%{public}d", callerPid);
@@ -391,29 +443,26 @@ void AppMgrServiceInner::ClearUpApplicationDataByUserId(const std::string &bundl
         return;
     }
 
-    int32_t clearUid = bundleMgr_->GetUidByBundleName(bundleName, userId);
-    if (bundleMgr_->CheckIsSystemAppByUid(callerUid) || callerUid == clearUid) {
-        // request to clear user information permission.
-        int32_t result =
-            Permission::PermissionKit::RemoveUserGrantedReqPermissions(bundleName, userId);
-        if (result) {
-            APP_LOGE("RemoveUserGrantedReqPermissions failed");
-            return;
-        }
-        // 2.delete bundle side user data
-        if (!bundleMgr_->CleanBundleDataFiles(bundleName, userId)) {
-            APP_LOGE("Delete bundle side user data is fail");
-            return;
-        }
-        // 3.kill application
-        // 4.revoke user rights
-        result = KillApplicationByUserId(bundleName, userId);
-        if (result < 0) {
-            APP_LOGE("Kill Application by bundle name is fail");
-            return;
-        }
-        NotifyAppStatus(bundleName, EventFwk::CommonEventSupport::COMMON_EVENT_PACKAGE_DATA_CLEARED);
+    // request to clear user information permission.
+    int32_t result =
+        Permission::PermissionKit::RemoveUserGrantedReqPermissions(bundleName, userId);
+    if (result) {
+        APP_LOGE("RemoveUserGrantedReqPermissions failed");
+        return;
     }
+    // 2.delete bundle side user data
+    if (!bundleMgr_->CleanBundleDataFiles(bundleName, userId)) {
+        APP_LOGE("Delete bundle side user data is fail");
+        return;
+    }
+    // 3.kill application
+    // 4.revoke user rights
+    result = KillApplicationByUserId(bundleName, userId);
+    if (result < 0) {
+        APP_LOGE("Kill Application by bundle name is fail");
+        return;
+    }
+    NotifyAppStatus(bundleName, EventFwk::CommonEventSupport::COMMON_EVENT_PACKAGE_DATA_CLEARED);
 }
 
 int32_t AppMgrServiceInner::IsBackgroundRunningRestricted(const std::string &bundleName)
@@ -437,7 +486,7 @@ int32_t AppMgrServiceInner::GetAllRunningProcesses(std::vector<RunningProcessInf
     for (const auto &item : appRunningManager_->GetAppRunningRecordMap()) {
         const auto &appRecord = item.second;
         RunningProcessInfo runningProcessInfo;
-        runningProcessInfo.processName_ = appRecord->GetName();
+        runningProcessInfo.processName_ = appRecord->GetProcessName();
         runningProcessInfo.pid_ = appRecord->GetPriorityObject()->GetPid();
         runningProcessInfo.uid_ = appRecord->GetUid();
         runningProcessInfo.state_ = static_cast<AppProcessState>(appRecord->GetState());
@@ -523,34 +572,36 @@ int64_t AppMgrServiceInner::SystemTimeMillis()
     return (int64_t)((t.tv_sec) * NANOSECONDS + t.tv_nsec) / MICROSECONDS;
 }
 
-std::shared_ptr<AppRunningRecord> AppMgrServiceInner::GetAppRunningRecordByAppName(const std::string &appName) const
-{
-    return appRunningManager_->GetAppRunningRecordByAppName(appName);
-}
-
-std::shared_ptr<AppRunningRecord> AppMgrServiceInner::GetAppRunningRecordByProcessName(
-    const std::string &appName, const std::string &processName, const int uid) const
-{
-    return appRunningManager_->GetAppRunningRecordByProcessName(appName, processName, uid);
-}
-
 std::shared_ptr<AppRunningRecord> AppMgrServiceInner::GetAppRunningRecordByPid(const pid_t pid) const
 {
     return appRunningManager_->GetAppRunningRecordByPid(pid);
 }
 
-std::shared_ptr<AppRunningRecord> AppMgrServiceInner::GetOrCreateAppRunningRecord(const sptr<IRemoteObject> &token,
-    const std::shared_ptr<ApplicationInfo> &appInfo, const std::shared_ptr<AbilityInfo> &abilityInfo,
-    const std::string &processName, const int32_t uid, RecordQueryResult &result)
+std::shared_ptr<AppRunningRecord> AppMgrServiceInner::CreateAppRunningRecord(const sptr<IRemoteObject> &token,
+    const sptr<IRemoteObject> &preToken, const std::shared_ptr<ApplicationInfo> &appInfo,
+    const std::shared_ptr<AbilityInfo> &abilityInfo, const std::string &processName, const BundleInfo &bundleInfo,
+    const HapModuleInfo &hapModuleInfo)
 {
     BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
-    return appRunningManager_->GetOrCreateAppRunningRecord(token, appInfo, abilityInfo, processName, uid, result);
-}
+    if (!appRunningManager_) {
+        return nullptr;
+    }
+    auto appRecord = appRunningManager_->CreateAppRunningRecord(appInfo, processName, bundleInfo);
+    if (!appRecord) {
+        return nullptr;
+    }
 
-std::shared_ptr<AppRunningRecord> AppMgrServiceInner::GetOrCreateAppRunningRecord(
-    const ApplicationInfo &appInfo, bool &appExist)
-{
-    return appRunningManager_->GetOrCreateAppRunningRecord(appInfo, appExist);
+    appRecord->SetEventHandler(eventHandler_);
+    appRecord->AddModule(appInfo, abilityInfo, token, hapModuleInfo);
+
+    if (preToken) {
+        auto abilityRecord = appRecord->GetAbilityRunningRecordByToken(token);
+        if (abilityRecord) {
+            abilityRecord->SetPreToken(preToken);
+        }
+    }
+
+    return appRecord;
 }
 
 void AppMgrServiceInner::TerminateAbility(const sptr<IRemoteObject> &token)
@@ -574,7 +625,6 @@ void AppMgrServiceInner::TerminateAbility(const sptr<IRemoteObject> &token)
     if (appRunningManager_) {
         appRunningManager_->TerminateAbility(token);
     }
-    APP_LOGD("AppMgrServiceInner::TerminateAbility end");
 }
 
 void AppMgrServiceInner::UpdateAbilityState(const sptr<IRemoteObject> &token, const AbilityState state)
@@ -608,7 +658,6 @@ void AppMgrServiceInner::UpdateAbilityState(const sptr<IRemoteObject> &token, co
     }
 
     appRecord->UpdateAbilityState(token, state);
-    APP_LOGD("end");
 }
 
 void AppMgrServiceInner::UpdateExtensionState(const sptr<IRemoteObject> &token, const ExtensionState state)
@@ -789,7 +838,8 @@ void AppMgrServiceInner::KillProcessesByUserId(int32_t userId)
 }
 
 void AppMgrServiceInner::StartAbility(const sptr<IRemoteObject> &token, const sptr<IRemoteObject> &preToken,
-    const std::shared_ptr<AbilityInfo> &abilityInfo, const std::shared_ptr<AppRunningRecord> &appRecord)
+    const std::shared_ptr<AbilityInfo> &abilityInfo, const std::shared_ptr<AppRunningRecord> &appRecord,
+    const HapModuleInfo &hapModuleInfo)
 {
     BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGI("already create appRecord, just start ability");
@@ -819,7 +869,15 @@ void AppMgrServiceInner::StartAbility(const sptr<IRemoteObject> &token, const sp
         OptimizerAppStateChanged(appRecord, ApplicationState::APP_STATE_SUSPENDED);
     }
 
-    ability = appRecord->AddAbility(token, abilityInfo);
+    auto appInfo = std::make_shared<ApplicationInfo>(abilityInfo->applicationInfo);
+    appRecord->AddModule(appInfo, abilityInfo, token, hapModuleInfo);
+    auto moduleRecord = appRecord->GetModuleRecordByModuleName(appInfo->bundleName, hapModuleInfo.moduleName);
+    if (!moduleRecord) {
+        APP_LOGE("add moduleRecord failed");
+        return;
+    }
+
+    ability = moduleRecord->GetAbilityRunningRecordByToken(token);
     if (!ability) {
         APP_LOGE("add ability failed");
         return;
@@ -849,10 +907,7 @@ void AppMgrServiceInner::UnsuspendApplication(const std::shared_ptr<AppRunningRe
         return;
     }
 
-    APP_LOGI("%{public}s : app name is %{public}s , Uid is %{public}d",
-        __func__,
-        appRecord->GetName().c_str(),
-        appRecord->GetUid());
+    APP_LOGI("app name is %{public}s , Uid is %{public}d", appRecord->GetName().c_str(), appRecord->GetUid());
     // Resume subscription via UID
     DelayedSingleton<EventFwk::CommonEvent>::GetInstance()->Unfreeze(appRecord->GetUid());
 }
@@ -863,10 +918,7 @@ void AppMgrServiceInner::SuspendApplication(const std::shared_ptr<AppRunningReco
         APP_LOGE("app record is null");
         return;
     }
-    APP_LOGD("%{public}s : app name is %{public}s , Uid is %{public}d",
-        __func__,
-        appRecord->GetName().c_str(),
-        appRecord->GetUid());
+    APP_LOGD("app name is %{public}s , Uid is %{public}d", appRecord->GetName().c_str(), appRecord->GetUid());
     // Temporary unsubscribe via UID
     appRecord->SetState(ApplicationState::APP_STATE_SUSPENDED);
     OptimizerAppStateChanged(appRecord, ApplicationState::APP_STATE_BACKGROUND);
@@ -937,7 +989,6 @@ void AppMgrServiceInner::AbilityTerminated(const sptr<IRemoteObject> &token)
     }
 
     appRecord->AbilityTerminated(token);
-    APP_LOGD("end");
 }
 
 std::shared_ptr<AppRunningRecord> AppMgrServiceInner::GetAppRunningRecordByAppRecordId(const int32_t recordId) const
@@ -975,18 +1026,22 @@ void AppMgrServiceInner::OnAppStateChanged(
             }
         }
     }
-    APP_LOGD("end");
 }
 
 AppProcessData AppMgrServiceInner::WrapAppProcessData(const std::shared_ptr<AppRunningRecord> &appRecord,
     const ApplicationState state)
 {
     AppProcessData processData;
-    processData.appName = appRecord->GetName();
+    auto appInfoList = appRecord->GetAppInfoList();
+    for (const auto &list : appInfoList) {
+        AppData data;
+        data.appName = list->name;
+        data.uid = list->uid;
+        processData.appDatas.push_back(data);
+    }
     processData.processName = appRecord->GetProcessName();
     processData.pid = appRecord->GetPriorityObject()->GetPid();
     processData.appState = state;
-    processData.uid = appRecord->GetUid();
     return processData;
 }
 
@@ -1022,7 +1077,6 @@ void AppMgrServiceInner::OnAbilityStateChanged(
             callback->OnAbilityRequestDone(ability->GetToken(), state);
         }
     }
-    APP_LOGD("end");
 }
 
 void AppMgrServiceInner::StateChangedNotifyObserver(const AbilityStateData abilityStateData, bool isAbility)
@@ -1081,7 +1135,7 @@ void AppMgrServiceInner::OnProcessDied(const std::shared_ptr<AppRunningRecord> &
 }
 
 void AppMgrServiceInner::StartProcess(const std::string &appName, const std::string &processName,
-    const std::shared_ptr<AppRunningRecord> &appRecord, const int uid)
+    const std::shared_ptr<AppRunningRecord> &appRecord, const int uid, const std::string &bundleName)
 {
     BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     if (!remoteClientManager_->GetSpawnClient() || !appRecord) {
@@ -1103,7 +1157,7 @@ void AppMgrServiceInner::StartProcess(const std::string &appName, const std::str
         APP_LOGE("GetBundleInfo is fail");
         return;
     }
-    std::string bundleName = appRecord->GetBundleName();
+
     auto isExist = [&bundleName, &uid](const AppExecFwk::BundleInfo &bundleInfo) {
         return bundleInfo.name == bundleName && bundleInfo.uid == uid;
     };
@@ -1115,7 +1169,7 @@ void AppMgrServiceInner::StartProcess(const std::string &appName, const std::str
     startMsg.uid = (*bundleInfoIter).uid;
     startMsg.gid = (*bundleInfoIter).gid;
 
-    bundleMgrResult = bundleMgr_->GetBundleGidsByUid(appRecord->GetBundleName(), uid, startMsg.gids);
+    bundleMgrResult = bundleMgr_->GetBundleGidsByUid(bundleName, uid, startMsg.gids);
     if (!bundleMgrResult) {
         APP_LOGE("GetBundleGids is fail");
         return;
@@ -1205,6 +1259,7 @@ void AppMgrServiceInner::ClearRecentAppList()
 
 void AppMgrServiceInner::OnRemoteDied(const wptr<IRemoteObject> &remote)
 {
+    APP_LOGE("On remote died.");
     auto appRecord = appRunningManager_->OnRemoteDied(remote);
     if (appRecord) {
         for (const auto &item : appRecord->GetAbilities()) {
@@ -1219,17 +1274,18 @@ void AppMgrServiceInner::OnRemoteDied(const wptr<IRemoteObject> &remote)
     }
 
     if (appRecord && appRecord->IsKeepAliveApp()) {
-        std::string bundleName = appRecord->GetBundleName();
-        APP_LOGI("[%{public}s] will be restartProcss!", bundleName.c_str());
-        auto restartProcss = [appRecord, innerService = shared_from_this()]() {
-            innerService->RestartResidentProcess(appRecord);
-        };
+        appRecord->DecRestartResidentProcCount();
+        if (appRecord->CanRestartResidentProc()) {
+            auto restartProcss = [appRecord, innerService = shared_from_this()]() {
+                innerService->RestartResidentProcess(appRecord);
+            };
 
-        if (!eventHandler_) {
-            APP_LOGE("eventHandler_ is nullptr");
-            return;
+            if (!eventHandler_) {
+                APP_LOGE("eventHandler_ is nullptr");
+                return;
+            }
+            eventHandler_->PostTask(restartProcss, "RestartResidentProcess");
         }
-        eventHandler_->PostTask(restartProcss, "RestartResidentProcess");
     }
 }
 
@@ -1384,7 +1440,7 @@ void AppMgrServiceInner::GetAppFreezingTime(int &time)
 
 void AppMgrServiceInner::HandleTimeOut(const InnerEvent::Pointer &event)
 {
-    APP_LOGI("%{public}s", __func__);
+    APP_LOGI("handle time out");
     if (!appRunningManager_ || event == nullptr) {
         APP_LOGE("appRunningManager or event is nullptr");
         return;
@@ -1422,7 +1478,7 @@ void AppMgrServiceInner::HandleAbilityAttachTimeOut(const sptr<IRemoteObject> &t
 
 void AppMgrServiceInner::PrepareTerminate(const sptr<IRemoteObject> &token)
 {
-    APP_LOGI("%{public}s called", __func__);
+    APP_LOGI("Prepare terminate");
     if (!appRunningManager_) {
         APP_LOGE("appRunningManager_ is nullptr");
         return;
@@ -1432,7 +1488,7 @@ void AppMgrServiceInner::PrepareTerminate(const sptr<IRemoteObject> &token)
 
 void AppMgrServiceInner::HandleTerminateApplicationTimeOut(const int64_t eventId)
 {
-    APP_LOGI("%{public}s called", __func__);
+    APP_LOGI("handle terminate application time out");
     if (!appRunningManager_) {
         APP_LOGE("appRunningManager_ is nullptr");
         return;
@@ -1461,15 +1517,15 @@ void AppMgrServiceInner::HandleTerminateApplicationTimeOut(const int64_t eventId
 
 void AppMgrServiceInner::HandleAddAbilityStageTimeOut(const int64_t eventId)
 {
-    APP_LOGI("%{public}s called add ability stage info time out!", __func__);
+    APP_LOGI("called add ability stage info time out!");
 }
 
 int AppMgrServiceInner::CompelVerifyPermission(const std::string &permission, int pid, int uid, std::string &message)
 {
-    APP_LOGI("%{public}s called", __func__);
+    APP_LOGI("compel verify permission");
     message = ENUM_TO_STRING(PERMISSION_NOT_GRANTED);
     if (!remoteClientManager_) {
-        APP_LOGE("%{public}s remoteClientManager_ is nullptr", __func__);
+        APP_LOGE("remoteClientManager_ is nullptr");
         return ERR_NO_INIT;
     }
     if (permission.empty()) {
@@ -1485,7 +1541,7 @@ int AppMgrServiceInner::CompelVerifyPermission(const std::string &permission, in
     int userId = Constants::DEFAULT_USERID;
     auto appRecord = GetAppRunningRecordByPid(pid);
     if (!appRecord) {
-        APP_LOGE("%{public}s app record is nullptr", __func__);
+        APP_LOGE("app record is nullptr");
         return PERMISSION_NOT_GRANTED;
     }
     auto bundleName = appRecord->GetBundleName();
@@ -1494,7 +1550,7 @@ int AppMgrServiceInner::CompelVerifyPermission(const std::string &permission, in
     }
     auto bundleMgr = remoteClientManager_->GetBundleManager();
     if (bundleMgr == nullptr) {
-        APP_LOGE("%{public}s GetBundleManager fail", __func__);
+        APP_LOGE("GetBundleManager fail");
         return ERR_NO_INIT;
     }
     auto bmsUid = bundleMgr->GetUidByBundleName(bundleName, userId);
@@ -1518,7 +1574,7 @@ int AppMgrServiceInner::CompelVerifyPermission(const std::string &permission, in
 void AppMgrServiceInner::LoadResidentProcess()
 {
     if (!CheckRemoteClient()) {
-        APP_LOGE("%{public}s GetBundleManager fail", __func__);
+        APP_LOGE("GetBundleManager fail");
         return;
     }
 
@@ -1527,64 +1583,74 @@ void AppMgrServiceInner::LoadResidentProcess()
     std::vector<BundleInfo> infos;
     auto funRet = remoteClientManager_->GetBundleManager()->QueryKeepAliveBundleInfos(infos);
     if (!funRet) {
-        APP_LOGE("%{public}s QueryKeepAliveBundleInfos fail!", __func__);
+        APP_LOGE("QueryKeepAliveBundleInfos fail!");
         return;
     }
 
     APP_LOGI("Get KeepAlive BundleInfo Size : [%{public}d]", static_cast<int>(infos.size()));
-    StartResidentProcess(infos);
+    StartResidentProcess(infos, -1);
 }
 
-void AppMgrServiceInner::StartResidentProcess(const std::vector<BundleInfo> &infos)
+void AppMgrServiceInner::StartResidentProcess(const std::vector<BundleInfo> &infos, int restartCount)
 {
-    APP_LOGI("%{public}s", __func__);
+    APP_LOGI("start resident process");
     if (infos.empty()) {
-        APP_LOGE("%{public}s infos is empty!", __func__);
+        APP_LOGE("infos is empty!");
         return;
     }
 
-    // Later, when distinguishing here, there is a process with ability and time and space.
-    std::shared_ptr<AppRunningRecord> appRecord(nullptr);
-    auto CheckProcessIsExist = [&appRecord, innerService = shared_from_this()](const BundleInfo &iter) {
-        bool appExist = false;
-        appRecord = innerService->GetOrCreateAppRunningRecord(iter.applicationInfo, appExist);
-        APP_LOGI("CheckProcessIsExist appExist : [%{public}d]", appExist);
-        return appExist;
-    };
+    if (!appRunningManager_) {
+        APP_LOGE("appRunningManager_ is nullptr");
+        return;
+    }
 
-    for (auto &iter : infos) {
-        if (!CheckProcessIsExist(iter) && appRecord) {
-            APP_LOGI("start bundle [%{public}s]", iter.applicationInfo.bundleName.c_str());
-            // todo Should it be time-consuming, should it be made asynchronous?
-            auto processName = iter.applicationInfo.process.empty() ? iter.applicationInfo.bundleName :
-                iter.applicationInfo.process;
-            APP_LOGI("processName = [%{public}s]", processName.c_str());
-            StartEmptyResidentProcess(iter.applicationInfo.name, processName, appRecord, iter.applicationInfo.uid);
-            appRecord->insertAbilityStageInfo(iter.hapModuleInfos);
+    for (auto &bundle : infos) {
+        auto processName =
+            bundle.applicationInfo.process.empty() ? bundle.applicationInfo.bundleName : bundle.applicationInfo.process;
+        APP_LOGI("processName = [%{public}s]", processName.c_str());
+        // Inspection records
+        auto appRecord = appRunningManager_->CheckAppRunningRecordIsExist(
+            bundle.applicationInfo.name, processName, bundle.applicationInfo.uid, bundle);
+        if (appRecord) {
+            APP_LOGI("processName [%{public}s] Already exists ", processName.c_str());
+            continue;
         }
+        StartEmptyResidentProcess(bundle, processName, restartCount);
     }
 }
 
-void AppMgrServiceInner::StartEmptyResidentProcess(const std::string &appName, const std::string &processName,
-    const std::shared_ptr<AppRunningRecord> &appRecord, const int uid)
+void AppMgrServiceInner::StartEmptyResidentProcess(
+    const BundleInfo &info, const std::string &processName, int restartCount)
 {
-    APP_LOGI("%{public}s appName [%{public}s] | processName [%{public}s]",
-        __func__, appName.c_str(), processName.c_str());
-
-    if (!CheckRemoteClient()) {
+    APP_LOGI("start bundle [%{public}s | processName [%{public}s]]", info.name.c_str(), processName.c_str());
+    if (!CheckRemoteClient() || !appRunningManager_) {
+        APP_LOGI("Failed to start resident process!");
         return;
     }
 
-    StartProcess(appName, processName, appRecord, uid);
-
-    // If it is empty, the startup failed
-    if (!appRecord || !appRunningManager_) {
+    auto appInfo = std::make_shared<ApplicationInfo>(info.applicationInfo);
+    auto appRecord = appRunningManager_->CreateAppRunningRecord(appInfo, processName, info);
+    if (!appRecord) {
         APP_LOGE("start process [%{public}s] failed!", processName.c_str());
         return;
     }
+
+    StartProcess(appInfo->name, processName, appRecord, appInfo->uid, appInfo->bundleName);
+
+    // If it is empty, the startup failed
+    if (!appRecord) {
+        APP_LOGE("start process [%{public}s] failed!", processName.c_str());
+        return;
+    }
+
     appRecord->SetKeepAliveAppState();
+
+    if (restartCount > 0) {
+        appRecord->SetRestartResidentProcCount(restartCount);
+    }
+
     appRecord->SetEventHandler(eventHandler_);
-    appRunningManager_->InitRestartResidentProcRecord(appRecord->GetProcessName());
+    appRecord->AddModules(appInfo, info.hapModuleInfos);
     APP_LOGI("StartEmptyResidentProcess oK pid : [%{public}d], ", appRecord->GetPriorityObject()->GetPid());
 }
 
@@ -1610,24 +1676,19 @@ bool AppMgrServiceInner::CheckRemoteClient()
 void AppMgrServiceInner::RestartResidentProcess(std::shared_ptr<AppRunningRecord> appRecord)
 {
     if (!CheckRemoteClient() || !appRecord || !appRunningManager_) {
-        APP_LOGE("%{public}s failed!", __func__);
+        APP_LOGE("restart resident process failed!");
         return;
-    }
-
-    if (!appRunningManager_->CanRestartResidentProcCount(appRecord->GetProcessName())) {
-        APP_LOGE("%{public}s no restart times!", appRecord->GetProcessName().c_str());
-        return ;
     }
 
     auto bundleMgr = remoteClientManager_->GetBundleManager();
     BundleInfo bundleInfo;
     if (!bundleMgr->GetBundleInfo(appRecord->GetBundleName(), BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo)) {
-        APP_LOGE("%{public}s GetBundleInfo fail", __func__);
+        APP_LOGE("GetBundleInfo fail");
         return;
     }
     std::vector<BundleInfo> infos;
     infos.emplace_back(bundleInfo);
-    StartResidentProcess(infos);
+    StartResidentProcess(infos, appRecord->GetRestartResidentProcCount());
 }
 
 void AppMgrServiceInner::NotifyAppStatus(const std::string &bundleName, const std::string &eventData)

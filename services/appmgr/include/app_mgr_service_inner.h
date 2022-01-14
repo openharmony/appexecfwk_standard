@@ -19,6 +19,7 @@
 #include <list>
 #include <map>
 #include <vector>
+#include <regex>
 
 #include "iremote_object.h"
 #include "refbase.h"
@@ -249,7 +250,7 @@ public:
     // If error occurs, error code is in |result|
 
     /**
-     * GetOrCreateAppRunningRecord, Get or create application record information.
+     * CreateAppRunningRecord, create application record information.
      *
      * @param token, the unique identification to the ability.
      * @param abilityInfo, ability information.
@@ -258,13 +259,17 @@ public:
      * @param uid, app uid in Application record.
      * @param result, If error occurs, error code is in |result|.
      *
-     * @return AppRunningRecord pointer if success get or create.
+     * @return AppRunningRecord pointer if success create.
      */
-    std::shared_ptr<AppRunningRecord> GetOrCreateAppRunningRecord(const sptr<IRemoteObject> &token,
-        const std::shared_ptr<ApplicationInfo> &appInfo, const std::shared_ptr<AbilityInfo> &abilityInfo,
-        const std::string &processName, const int32_t uid, RecordQueryResult &result);
+    std::shared_ptr<AppRunningRecord> CreateAppRunningRecord(
+        const sptr<IRemoteObject> &token,
+        const sptr<IRemoteObject> &preToken,
+        const std::shared_ptr<ApplicationInfo> &appInfo,
+        const std::shared_ptr<AbilityInfo> &abilityInfo,
+        const std::string &processName,
+        const BundleInfo &bundleInfo,
+        const HapModuleInfo &hapModuleInfo);
 
-    std::shared_ptr<AppRunningRecord> GetOrCreateAppRunningRecord(const ApplicationInfo &appInfo, bool &appExist);
     /**
      * OnStop, Application management service stopped.
      *
@@ -326,28 +331,6 @@ public:
      * @return all the ability information in the application record.
      */
     const std::map<const int32_t, const std::shared_ptr<AppRunningRecord>> &GetRecordMap() const;
-
-    // functions to get special AppRunningRecord
-    /**
-     * GetAppRunningRecordByAppName, Get process record by application name.
-     *
-     * @param appName, the application name.
-     *
-     * @return process record.
-     */
-    std::shared_ptr<AppRunningRecord> GetAppRunningRecordByAppName(const std::string &appName) const;
-
-    /**
-     * GetAppRunningRecordByProcessName, Get process record by application name and process name.
-     *
-     * @param appName, the application name.
-     * @param processName, the process name.
-     * @param uid, the process uid.
-     *
-     * @return process record.
-     */
-    std::shared_ptr<AppRunningRecord> GetAppRunningRecordByProcessName(
-        const std::string &appName, const std::string &processName, const int uid) const;
 
     /**
      * GetAppRunningRecordByPid, Get process record by application pid.
@@ -507,7 +490,7 @@ public:
      */
     void LoadResidentProcess();
 
-    void StartResidentProcess(const std::vector<BundleInfo> &v);
+    void StartResidentProcess(const std::vector<BundleInfo> &v,  int restartCount);
 
     bool CheckRemoteClient();
 
@@ -534,11 +517,17 @@ public:
 
 private:
 
-    void StartEmptyResidentProcess(const std::string &appName, const std::string &processName,
-        const std::shared_ptr<AppRunningRecord> &appRecord, const int uid);
+    void StartEmptyResidentProcess(const BundleInfo &info, const std::string &processName, int restartCount);
 
     void RestartResidentProcess(std::shared_ptr<AppRunningRecord> appRecord);
 
+    bool CheckLoadabilityConditions(const sptr<IRemoteObject> &token,
+        const std::shared_ptr<AbilityInfo> &abilityInfo, const std::shared_ptr<ApplicationInfo> &appInfo);
+
+    bool GetBundleInfo(const std::string &bundelName, BundleInfo &bundleInfo);
+
+    void MakeProcessName(std::string &processName, const std::shared_ptr<AbilityInfo> &abilityInfo,
+        const std::shared_ptr<ApplicationInfo> &appInfo);
     /**
      * StartAbility, load the ability that needed to be started(Start on the basis of the original process).
      *  Start on a new boot process
@@ -550,7 +539,8 @@ private:
      * @return
      */
     void StartAbility(const sptr<IRemoteObject> &token, const sptr<IRemoteObject> &preToken,
-        const std::shared_ptr<AbilityInfo> &abilityInfo, const std::shared_ptr<AppRunningRecord> &appRecord);
+        const std::shared_ptr<AbilityInfo> &abilityInfo, const std::shared_ptr<AppRunningRecord> &appRecord,
+        const HapModuleInfo &hapModuleInfo);
 
     /**
      * UnsuspendApplication, Application process state switch to unsuspend.
@@ -608,12 +598,13 @@ private:
      * @param processName, the process name.
      * @param appRecord, the app information.
      * @param uid, the process uid.
+     * @param bundleName, the app bundleName.
      *
      * @return
      */
     void StartProcess(
         const std::string &appName, const std::string &processName, const std::shared_ptr<AppRunningRecord> &appRecord,
-        const int uid);
+        const int uid, const std::string &bundleName);
 
     /**
      * PushAppFront, Adjust the latest application record to the top level.
@@ -717,6 +708,10 @@ private:
 
     int32_t KillApplicationByUserId(const std::string &bundleName, const int userId);
 
+    void ClipStringContent(const std::regex &re, const std::string &sorce, std::string &afferCutStr);
+
+    bool GetBundleAndHapInfo(const AbilityInfo &abilityInfo, const std::shared_ptr<ApplicationInfo> &appInfo,
+        BundleInfo &bundleInfo, HapModuleInfo &hapModuleInfo);
     AppProcessData WrapAppProcessData(const std::shared_ptr<AppRunningRecord> &appRecord,
         const ApplicationState state);
 
