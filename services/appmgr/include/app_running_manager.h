@@ -18,6 +18,7 @@
 
 #include <map>
 #include <mutex>
+#include <regex>
 
 #include "iremote_object.h"
 #include "refbase.h"
@@ -27,6 +28,7 @@
 #include "application_info.h"
 #include "app_state_data.h"
 #include "record_query_result.h"
+#include "bundle_info.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -35,7 +37,7 @@ public:
     AppRunningManager();
     virtual ~AppRunningManager();
     /**
-     * GetOrCreateAppRunningRecord, Get or create application record information.
+     * CreateAppRunningRecord, Get or create application record information.
      *
      * @param token, the unique identification to start the ability.
      * @param abilityInfo, ability information.
@@ -46,23 +48,11 @@ public:
      *
      * @return AppRunningRecord pointer if success get or create.
      */
-    std::shared_ptr<AppRunningRecord> GetOrCreateAppRunningRecord(const sptr<IRemoteObject> &token,
-        const std::shared_ptr<ApplicationInfo> &appInfo, const std::shared_ptr<AbilityInfo> &abilityInfo,
-        const std::string &processName, const int32_t uid, RecordQueryResult &result);
-    
-    std::shared_ptr<AppRunningRecord> GetOrCreateAppRunningRecord(const ApplicationInfo &appInfo, bool &appExist);
-    
-    /**
-     * GetAppRunningRecordByAppName, Get process record by application name.
-     *
-     * @param appName, the application name.
-     *
-     * @return process record.
-     */
-    std::shared_ptr<AppRunningRecord> GetAppRunningRecordByAppName(const std::string &appName);
+    std::shared_ptr<AppRunningRecord> CreateAppRunningRecord(
+        const std::shared_ptr<ApplicationInfo> &appInfo, const std::string &processName, const BundleInfo &bundleInfo);
 
     /**
-     * GetAppRunningRecordByProcessName, Get process record by application name and process Name.
+     * CheckAppRunningRecordIsExist, Get process record by application name and process Name.
      *
      * @param appName, the application name.
      * @param processName, the process name.
@@ -70,8 +60,8 @@ public:
      *
      * @return process record.
      */
-    std::shared_ptr<AppRunningRecord> GetAppRunningRecordByProcessName(
-        const std::string &appName, const std::string &processName, const int uid);
+    std::shared_ptr<AppRunningRecord> CheckAppRunningRecordIsExist(const std::string &appName,
+        const std::string &processName, const int uid, const BundleInfo &bundleInfo);
 
     /**
      * GetAppRunningRecordByPid, Get process record by application pid.
@@ -122,6 +112,12 @@ public:
     void ClearAppRunningRecordMap();
 
     /**
+     * Get the pid of a non-resident process.
+     *
+     * @return Return true if found, otherwise return false.
+     */
+    bool ProcessExitByBundleName(const std::string &bundleName, std::list<pid_t> &pids);
+    /**
      * Get Foreground Applications.
      *
      * @return Foreground Applications.
@@ -132,16 +128,13 @@ public:
     void HandleAbilityAttachTimeOut(const sptr<IRemoteObject> &token);
     std::shared_ptr<AppRunningRecord> GetAppRunningRecord(const int64_t eventId);
     void TerminateAbility(const sptr<IRemoteObject> &token);
-    bool GetPidsByBundleName(const std::string &bundleName, std::list<pid_t> &pids);
-    bool GetPidsByBundleNameByUid(const std::string &bundleName, const int uid, std::list<pid_t> &pids);
+    bool ProcessExitByBundleNameAndUid(const std::string &bundleName, const int uid, std::list<pid_t> &pids);
     bool GetPidsByUserId(int32_t userId, std::list<pid_t> &pids);
 
     void PrepareTerminate(const sptr<IRemoteObject> &token);
 
     std::shared_ptr<AppRunningRecord> GetTerminatingAppRunningRecord(const sptr<IRemoteObject> &abilityToken);
-    bool CanRestartResidentProcCount(const std::string &processName);
-    bool InitRestartResidentProcRecord(const std::string &processName);
-    std::shared_ptr<AppRunningRecord> GetAppRunningRecordByBundleName(const std::string &bundleName);
+    void ClipStringContent(const std::regex &re, const std::string &sorce, std::string &afferCutStr);
 private:
     std::shared_ptr<AbilityRunningRecord> GetAbilityRunningRecord(const int64_t eventId);
 

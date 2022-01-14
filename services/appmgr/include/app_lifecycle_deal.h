@@ -18,8 +18,8 @@
 
 #include "app_scheduler_proxy.h"
 #include "app_launch_data.h"
-#include "app_resident_process_info.h"
 #include "ability_running_record.h"
+#include "hap_module_info.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -46,7 +46,7 @@ public:
      *
      * @return
      */
-    void AddAbilityStageInfo(const AppResidentProcessInfo &residentProcessInfo);
+    void AddAbilityStageInfo(const HapModuleInfo &abilityStage);
 
     /**
      * LaunchAbility, call ScheduleLaunchAbility() through proxy project,

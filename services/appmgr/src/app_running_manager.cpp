@@ -31,13 +31,6 @@ bool IsUidBelongsToUser(int32_t uid, int32_t userId)
 {
     return (uid / USER_UID_RANGE) == userId;
 }
-
-bool CheckUid(const int32_t uid)
-{
-    return uid >= 0 && uid < std::numeric_limits<int32_t>::max();
-}
-
-const int RESTART_RESIDENT_PROCESS_MAX_TIMES = 15;
 }  // namespace
 
 AppRunningManager::AppRunningManager()
@@ -45,98 +38,80 @@ AppRunningManager::AppRunningManager()
 AppRunningManager::~AppRunningManager()
 {}
 
-std::shared_ptr<AppRunningRecord> AppRunningManager::GetOrCreateAppRunningRecord(const sptr<IRemoteObject> &token,
-    const std::shared_ptr<ApplicationInfo> &appInfo, const std::shared_ptr<AbilityInfo> &abilityInfo,
-    const std::string &processName, const int32_t uid, RecordQueryResult &result)
+std::shared_ptr<AppRunningRecord> AppRunningManager::CreateAppRunningRecord(
+    const std::shared_ptr<ApplicationInfo> &appInfo, const std::string &processName, const BundleInfo &bundleInfo)
 {
-    APP_LOGI("GetOrCreateAppRunningRecord processName : %{public}s | uid : %{public}d",
-        processName.c_str(), uid);
-
     std::lock_guard<std::recursive_mutex> guard(lock_);
-    result.Reset();
-    if (!token || !appInfo || !abilityInfo) {
+    if (!appInfo) {
         APP_LOGE("param error");
-        result.error = ERR_INVALID_VALUE;
         return nullptr;
     }
-    if (!CheckUid(uid)) {
-        APP_LOGE("uid invalid");
-        result.error = ERR_APPEXECFWK_INVALID_UID;
-        return nullptr;
-    }
+
     if (processName.empty()) {
         APP_LOGE("processName error");
-        result.error = ERR_INVALID_VALUE;
         return nullptr;
     }
 
-    auto record = GetAppRunningRecordByProcessName(appInfo->name, processName, appInfo->uid);
-    if (!record) {
-        APP_LOGI("no app record, create");
-        auto recordId = AppRecordId::Create();
-        record = std::make_shared<AppRunningRecord>(appInfo, recordId, processName);
-        appRunningRecordMap_.emplace(recordId, record);
-    } else {
-        result.appExists = true;
-    }
-
-    result.appRecordId = record->GetRecordId();
-    auto abilityRecord = record->GetAbilityRunningRecordByToken(token);
-    result.abilityExists = !!abilityRecord;
-    if (!abilityRecord) {
-        APP_LOGI("no ability record, create");
-        abilityRecord = record->AddAbility(token, abilityInfo);
-    }
-    return record;
-}
-
-std::shared_ptr<AppRunningRecord> AppRunningManager::GetOrCreateAppRunningRecord(
-    const ApplicationInfo &appInfo, bool &appExist)
-{
-    if (appInfo.bundleName.empty() || !CheckUid(appInfo.uid)) {
-        APP_LOGE("processName error");
+    auto recordId = AppRecordId::Create();
+    auto appRecord = std::make_shared<AppRunningRecord>(appInfo, recordId, processName);
+    if (!appRecord) {
         return nullptr;
     }
 
-    auto processName = appInfo.process.empty() ? appInfo.bundleName : appInfo.process;
-    APP_LOGI("processName = [%{public}s]", processName.c_str());
-    auto record = GetAppRunningRecordByProcessName(appInfo.name, processName, appInfo.uid);
-    if (!record) {
-        APP_LOGI("no app record, create");
-        auto recordId = AppRecordId::Create();
-        auto app = std::make_shared<ApplicationInfo>(appInfo);
-        APP_LOGI("app is create : [%{public}d]", app != nullptr);
-        record = std::make_shared<AppRunningRecord>(app, recordId, processName);
-        record->SetUid(appInfo.uid);
-        appRunningRecordMap_.emplace(recordId, record);
-        appExist = false;
-    } else {
-        appExist = true;
-    }
-    return record;
+    std::regex rule("[a-zA-Z.]+[-_#]{1}");
+    std::string signCode;
+    ClipStringContent(rule, bundleInfo.appId, signCode);
+
+    APP_LOGI("Create processName : %{public}s | recordId : %{public}d | signCode : %{public}s",
+        processName.c_str(), recordId, signCode.c_str());
+    appRecord->SetSignCode(signCode);
+    appRecord->SetJointUserId(bundleInfo.jointUserId);
+    appRunningRecordMap_.emplace(recordId, appRecord);
+    return appRecord;
 }
 
-std::shared_ptr<AppRunningRecord> AppRunningManager::GetAppRunningRecordByAppName(const std::string &appName)
+std::shared_ptr<AppRunningRecord> AppRunningManager::CheckAppRunningRecordIsExist(const std::string &appName,
+    const std::string &processName, const int uid, const BundleInfo &bundleInfo)
 {
-    std::lock_guard<std::recursive_mutex> guard(lock_);
-    auto iter = std::find_if(appRunningRecordMap_.begin(), appRunningRecordMap_.end(), [&appName](const auto &pair) {
-        return pair.second->GetName() == appName;
-    });
-    return ((iter == appRunningRecordMap_.end()) ? nullptr : iter->second);
-}
-
-std::shared_ptr<AppRunningRecord> AppRunningManager::GetAppRunningRecordByProcessName(
-    const std::string &appName, const std::string &processName, const int uid)
-{
-    APP_LOGI("GetAppRunningRecordByProcessName appName : %{public}s | processName : %{public}s | uid : %{public}d",
+    APP_LOGI("CheckAppRunningRecordIsExist appName : %{public}s | processName : %{public}s | uid : %{public}d",
         appName.c_str(), processName.c_str(), uid);
     std::lock_guard<std::recursive_mutex> guard(lock_);
-    auto iter = std::find_if(
-        appRunningRecordMap_.begin(), appRunningRecordMap_.end(), [&appName, &processName, &uid](const auto &pair) {
-            return ((pair.second->GetName() == appName) && (pair.second->GetProcessName() == processName) &&
-                    (pair.second->GetUid() == uid) && !(pair.second->IsTerminating()));
-        });
-    APP_LOGI("find result : %{public}d", iter != appRunningRecordMap_.end());
+
+    std::regex rule("[a-zA-Z.]+[-_#]{1}");
+    std::string signCode;
+    auto jointUserId = bundleInfo.jointUserId;
+    APP_LOGI("jointUserId : %{public}s", jointUserId.c_str());
+    ClipStringContent(rule, bundleInfo.appId, signCode);
+
+    auto FindSameProcess = [signCode, processName, jointUserId](const auto &pair) {
+            return ((pair.second->GetSignCode() == signCode) &&
+                    (pair.second->GetProcessName() == processName) &&
+                    (pair.second->GetJointUserId() == jointUserId) &&
+                    !(pair.second->IsTerminating()));
+    };
+
+    // If it is not empty, look for whether it can come in the same process
+    if (jointUserId.empty()) {
+        for (const auto &item : appRunningRecordMap_) {
+            const auto &appRecord = item.second;
+            APP_LOGI("appRecord->GetProcessName() : %{public}s", appRecord->GetProcessName().c_str());
+            if (appRecord && appRecord->GetProcessName() == processName && !(appRecord->IsTerminating())) {
+                auto appInfoList = appRecord->GetAppInfoList();
+                APP_LOGI("appInfoList : %{public}zu", appInfoList.size());
+                auto isExist = [&appName, &uid](const std::shared_ptr<ApplicationInfo> &appInfo) {
+                    APP_LOGI("appInfo->name : %{public}s", appInfo->name.c_str());
+                    return appInfo->name == appName && appInfo->uid == uid;
+                };
+                auto appInfoIter = std::find_if(appInfoList.begin(), appInfoList.end(), isExist);
+                if (appInfoIter != appInfoList.end()) {
+                    return appRecord;
+                }
+            }
+        }
+        return nullptr;
+    }
+
+    auto iter = std::find_if(appRunningRecordMap_.begin(), appRunningRecordMap_.end(), FindSameProcess);
     return ((iter == appRunningRecordMap_.end()) ? nullptr : iter->second);
 }
 
@@ -156,27 +131,35 @@ std::shared_ptr<AppRunningRecord> AppRunningManager::GetAppRunningRecordByAbilit
     for (const auto &item : appRunningRecordMap_) {
         const auto &appRecord = item.second;
         if (appRecord && appRecord->GetAbilityRunningRecordByToken(abilityToken)) {
+            APP_LOGI("appRecord is exit");
             return appRecord;
         }
     }
     return nullptr;
 }
 
-bool AppRunningManager::GetPidsByBundleName(const std::string &bundleName, std::list<pid_t> &pids)
+bool AppRunningManager::ProcessExitByBundleName(const std::string &bundleName, std::list<pid_t> &pids)
 {
     std::lock_guard<std::recursive_mutex> guard(lock_);
     for (const auto &item : appRunningRecordMap_) {
         const auto &appRecord = item.second;
-        if (appRecord && appRecord->GetBundleName() == bundleName && appRecord->GetCloneInfo() == false) {
+        // condition [!appRecord->IsKeepAliveApp()] Is to not kill the resident process.
+        // Before using this method, consider whether you need.
+        if (appRecord && !appRecord->IsKeepAliveApp()) {
             pid_t pid = appRecord->GetPriorityObject()->GetPid();
-            if (pid > 0) {
+            auto appInfoList = appRecord->GetAppInfoList();
+            auto isExist = [&bundleName](const std::shared_ptr<ApplicationInfo> &appInfo) {
+                return appInfo->bundleName == bundleName;
+            };
+            auto iter = std::find_if(appInfoList.begin(), appInfoList.end(), isExist);
+            if (iter != appInfoList.end() && pid > 0) {
                 pids.push_back(pid);
                 appRecord->ScheduleProcessSecurityExit();
             }
         }
     }
 
-    return (pids.empty() ? false : true);
+    return !pids.empty();
 }
 
 bool AppRunningManager::GetPidsByUserId(int32_t userId, std::list<pid_t> &pids)
@@ -196,14 +179,20 @@ bool AppRunningManager::GetPidsByUserId(int32_t userId, std::list<pid_t> &pids)
     return (pids.empty() ? false : true);
 }
 
-bool AppRunningManager::GetPidsByBundleNameByUid(const std::string &bundleName, const int uid, std::list<pid_t> &pids)
+bool AppRunningManager::ProcessExitByBundleNameAndUid(
+    const std::string &bundleName, const int uid, std::list<pid_t> &pids)
 {
     std::lock_guard<std::recursive_mutex> guard(lock_);
     for (const auto &item : appRunningRecordMap_) {
         const auto &appRecord = item.second;
-        if (appRecord && appRecord->GetBundleName() == bundleName && appRecord->GetUid() == uid) {
+        if (appRecord) {
+            auto appInfoList = appRecord->GetAppInfoList();
+            auto isExist = [&bundleName, &uid](const std::shared_ptr<ApplicationInfo> &appInfo) {
+                return appInfo->bundleName == bundleName && appInfo->uid == uid;
+            };
+            auto iter = std::find_if(appInfoList.begin(), appInfoList.end(), isExist);
             pid_t pid = appRecord->GetPriorityObject()->GetPid();
-            if (pid > 0) {
+            if (iter != appInfoList.end() && pid > 0) {
                 pids.push_back(pid);
                 appRecord->ScheduleProcessSecurityExit();
             }
@@ -234,6 +223,7 @@ std::shared_ptr<AppRunningRecord> AppRunningManager::OnRemoteDied(const wptr<IRe
         });
     if (iter != appRunningRecordMap_.end()) {
         auto appRecord = iter->second;
+        appRecord->SetApplicationClient(nullptr);
         appRunningRecordMap_.erase(iter);
         if (appRecord) {
             return appRecord;
@@ -262,20 +252,19 @@ void AppRunningManager::ClearAppRunningRecordMap()
 
 void AppRunningManager::HandleTerminateTimeOut(int64_t eventId)
 {
-    APP_LOGI("%{public}s, called", __func__);
+    APP_LOGI("Handle terminate timeout.");
     auto abilityRecord = GetAbilityRunningRecord(eventId);
     if (!abilityRecord) {
-        APP_LOGE("%{public}s, abilityRecord is nullptr", __func__);
+        APP_LOGE("abilityRecord is nullptr.");
         return;
     }
     auto abilityToken = abilityRecord->GetToken();
     auto appRecord = GetTerminatingAppRunningRecord(abilityToken);
     if (!appRecord) {
-        APP_LOGE("%{public}s, appRecord is nullptr", __func__);
+        APP_LOGE("appRecord is nullptr.");
         return;
     }
     appRecord->AbilityTerminated(abilityToken);
-    APP_LOGI("%{public}s, end", __func__);
 }
 
 std::shared_ptr<AppRunningRecord> AppRunningManager::GetTerminatingAppRunningRecord(
@@ -293,7 +282,7 @@ std::shared_ptr<AppRunningRecord> AppRunningManager::GetTerminatingAppRunningRec
 
 std::shared_ptr<AbilityRunningRecord> AppRunningManager::GetAbilityRunningRecord(const int64_t eventId)
 {
-    APP_LOGI("%{public}s, called", __func__);
+    APP_LOGI("Get ability running record by eventId.");
     std::lock_guard<std::recursive_mutex> guard(lock_);
     for (auto &item : appRunningRecordMap_) {
         if (item.second) {
@@ -308,7 +297,7 @@ std::shared_ptr<AbilityRunningRecord> AppRunningManager::GetAbilityRunningRecord
 
 std::shared_ptr<AppRunningRecord> AppRunningManager::GetAppRunningRecord(const int64_t eventId)
 {
-    APP_LOGI("%{public}s, called", __func__);
+    APP_LOGI("Get app running record by eventId.");
     std::lock_guard<std::recursive_mutex> guard(lock_);
     auto iter = std::find_if(appRunningRecordMap_.begin(), appRunningRecordMap_.end(), [&eventId](const auto &pair) {
         return pair.second->GetEventId() == eventId;
@@ -318,15 +307,15 @@ std::shared_ptr<AppRunningRecord> AppRunningManager::GetAppRunningRecord(const i
 
 void AppRunningManager::HandleAbilityAttachTimeOut(const sptr<IRemoteObject> &token)
 {
-    APP_LOGI("%{public}s, called", __func__);
+    APP_LOGI("Handle ability attach timeOut.");
     if (token == nullptr) {
-        APP_LOGE("%{public}s, token is nullptr", __func__);
+        APP_LOGE("token is nullptr.");
         return;
     }
 
     auto appRecord = GetAppRunningRecordByAbilityToken(token);
     if (!appRecord) {
-        APP_LOGE("%{public}s, appRecord is nullptr", __func__);
+        APP_LOGE("appRecord is nullptr.");
         return;
     }
 
@@ -344,15 +333,15 @@ void AppRunningManager::HandleAbilityAttachTimeOut(const sptr<IRemoteObject> &to
 
 void AppRunningManager::PrepareTerminate(const sptr<IRemoteObject> &token)
 {
-    APP_LOGI("%{public}s, called", __func__);
+    APP_LOGI("Prepare terminate.");
     if (token == nullptr) {
-        APP_LOGE("%{public}s, token is nullptr", __func__);
+        APP_LOGE("token is nullptr.");
         return;
     }
 
     auto appRecord = GetAppRunningRecordByAbilityToken(token);
     if (!appRecord) {
-        APP_LOGE("%{public}s, appRecord is nullptr", __func__);
+        APP_LOGE("appRecord is nullptr.");
         return;
     }
 
@@ -363,15 +352,15 @@ void AppRunningManager::PrepareTerminate(const sptr<IRemoteObject> &token)
 
 void AppRunningManager::TerminateAbility(const sptr<IRemoteObject> &token)
 {
-    APP_LOGI("%{public}s, called", __func__);
+    APP_LOGI("Terminate ability.");
     if (!token) {
-        APP_LOGE("%{public}s, token is nullptr", __func__);
+        APP_LOGE("token is nullptr.");
         return;
     }
 
     auto appRecord = GetAppRunningRecordByAbilityToken(token);
     if (!appRecord) {
-        APP_LOGE("%{public}s, appRecord is nullptr", __func__);
+        APP_LOGE("appRecord is nullptr.");
         return;
     }
 
@@ -382,49 +371,14 @@ void AppRunningManager::TerminateAbility(const sptr<IRemoteObject> &token)
     appRecord->TerminateAbility(token, false);
 }
 
-bool AppRunningManager::CanRestartResidentProcCount(const std::string &processName)
+void AppRunningManager::ClipStringContent(const std::regex &re, const std::string &sorce, std::string &afferCutStr)
 {
-    if (processName.empty()) {
-        APP_LOGE("processName is empty!");
-        return false;
+    std::smatch basket;
+    if (std::regex_search(sorce, basket, re)) {
+        APP_LOGI("prefix str: [%{public}s]", basket.prefix().str().c_str());
+        APP_LOGI("suffix str: [%{public}s]", basket.suffix().str().c_str());
+        afferCutStr = basket.prefix().str() + basket.suffix().str();
     }
-
-    auto iter = processRestartRecord_.find(processName);
-    if (iter != processRestartRecord_.end()) {
-        if (iter->second > 0) {
-            APP_LOGI("restart count processName : [%{public}s] | num : [%{public}d]",
-                processName.c_str(), iter->second);
-            processRestartRecord_[processName] = --(iter->second);
-            return true;
-        }
-    }
-    return false;
-}
-
-bool AppRunningManager::InitRestartResidentProcRecord(const std::string &processName)
-{
-    if (processName.empty()) {
-        APP_LOGE("processName is empty!");
-        return false;
-    }
-
-    // Not counting the number of connection attempts of app spwan,
-    // the number of restart attempts of a resident process is set to 15
-    auto pair = processRestartRecord_.insert(std::make_pair(processName, RESTART_RESIDENT_PROCESS_MAX_TIMES));
-    return pair.second;
-}
-
-std::shared_ptr<AppRunningRecord> AppRunningManager::GetAppRunningRecordByBundleName(const std::string &bundleName)
-{
-    APP_LOGI("%{public}s, kill bundle : [%{public}s]", __func__, bundleName.c_str());
-    std::lock_guard<std::recursive_mutex> guard(lock_);
-    for (const auto &item : appRunningRecordMap_) {
-        const auto &appRecord = item.second;
-        if (appRecord && appRecord->GetBundleName() == bundleName) {
-            return appRecord;
-        }
-    }
-    return nullptr;
 }
 
 void AppRunningManager::GetForegroundApplications(std::vector<AppStateData> &list)

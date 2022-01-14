@@ -41,7 +41,7 @@ void AMSEventHandler::ProcessEvent(const InnerEvent::Pointer &event)
 
     auto appManager = appMgr_.lock();
     if (!appManager) {
-        APP_LOGE("%{public}s, app manager is nullptr", __func__);
+        APP_LOGE("app manager is nullptr");
         return;
     }
     appManager->HandleTimeOut(event);

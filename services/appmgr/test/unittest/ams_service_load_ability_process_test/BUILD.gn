@@ -33,6 +33,7 @@ ohos_unittest("AmsServiceLoadAbilityProcessTest") {
     "${services_path}/appmgr/src/app_spawn_socket.cpp",
     "${services_path}/appmgr/src/cgroup_manager.cpp",
     "${services_path}/appmgr/src/lmks_client.cpp",
+    "${services_path}/appmgr/src/module_running_record.cpp",
     "${services_path}/appmgr/src/process_optimizer.cpp",
     "${services_path}/appmgr/src/process_optimizer_uba.cpp",
     "${services_path}/appmgr/src/remote_client_manager.cpp",

@@ -12,18 +12,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#define private public
 #include "app_running_record.h"
+#undef private
 #include <gtest/gtest.h>
 #include <vector>
 #include "iremote_object.h"
 #include "app_record_id.h"
 #include "app_scheduler_proxy.h"
 #include "app_scheduler_host.h"
+#define private public
 #include "app_mgr_service_inner.h"
+#undef private
 #include "mock_application.h"
 #include "ability_info.h"
 #include "application_info.h"
+#include "mock_bundle_manager.h"
 #include "mock_ability_token.h"
+#include "mock_app_scheduler.h"
+#include "mock_app_spawn_client.h"
 
 using namespace testing::ext;
 using OHOS::iface_cast;
@@ -101,23 +108,26 @@ protected:
         sptr<IRemoteObject> token = abilityRecord->GetToken();
         auto abilityName = abilityRecord->GetName();
         std::string processName = GetTestAppName(index);
+        BundleInfo bundleInfo;
+        HapModuleInfo hapModuleInfo;
+        EXPECT_TRUE(service_->GetBundleAndHapInfo(*abilityInfo, appInfo, bundleInfo, hapModuleInfo));
 
-        auto appRecordFromServ =
-            service_->GetOrCreateAppRunningRecord(token, appInfo, abilityInfo, processName, 0, result);
+        auto appRecordFromServ = service_->appRunningManager_->CheckAppRunningRecordIsExist(
+            appInfo->name, processName, appInfo->uid, bundleInfo);
         EXPECT_TRUE(appRecordFromServ);
         auto abilityRecordFromServ = appRecordFromServ->GetAbilityRunningRecord(GetTestAbilityName(index));
         int32_t idFromServ = appRecordFromServ->GetRecordId();
         sptr<IRemoteObject> tokenFromServ = abilityRecordFromServ->GetToken();
         auto nameFromServ = appRecordFromServ->GetName();
         auto abilityNameFromServ = abilityRecordFromServ->GetName();
-        EXPECT_TRUE(result.appExists) << "result is wrong!";
         EXPECT_TRUE(id == idFromServ) << "fail, RecordId is not equal!";
         EXPECT_TRUE(tokenFromServ.GetRefPtr() == token.GetRefPtr()) << "fail, token is not equal!";
         EXPECT_EQ(name, nameFromServ) << "fail, app record name is not equal!";
         EXPECT_EQ(abilityName, abilityNameFromServ) << "fail, app record name is not equal!";
     }
 
-    std::unique_ptr<AppMgrServiceInner> service_{nullptr};
+    std::unique_ptr<AppMgrServiceInner> service_ {nullptr};
+    sptr<BundleMgrService> mockBundleMgr_ {nullptr};
 
     sptr<MockAbilityToken> GetMockToken() const
     {
@@ -152,6 +162,8 @@ void AmsAppRunningRecordModuleTest::SetUp()
 {
     service_.reset(new (std::nothrow) AppMgrServiceInner());
     mockToken_ = new (std::nothrow) MockAbilityToken();
+    mockBundleMgr_ = new (std::nothrow) BundleMgrService();
+    service_->SetBundleManager(mockBundleMgr_);
 }
 
 void AmsAppRunningRecordModuleTest::TearDown()
@@ -180,10 +192,13 @@ HWTEST_F(AmsAppRunningRecordModuleTest, ApplicationStart_001, TestSize.Level1)
     appInfo->uid = 0;
     std::string processName = GetTestAppName(index);
     RecordQueryResult result;
-    auto record = service_->GetOrCreateAppRunningRecord(GetMockToken(), appInfo, abilityInfo, processName, 0, result);
+    BundleInfo bundleInfo;
+    HapModuleInfo hapModuleInfo;
+    EXPECT_TRUE(service_->GetBundleAndHapInfo(*abilityInfo, appInfo, bundleInfo, hapModuleInfo));
+    auto record = service_->CreateAppRunningRecord(
+        GetMockToken(), nullptr, appInfo, abilityInfo, processName, bundleInfo, hapModuleInfo);
     record->SetUid(0);
     EXPECT_TRUE(record != nullptr) << ",create apprunningrecord fail!";
-    EXPECT_FALSE(result.appExists) << ",result is wrong!";
 
     // check apprunningrecord
     int32_t id = record->GetRecordId();
@@ -203,13 +218,11 @@ HWTEST_F(AmsAppRunningRecordModuleTest, ApplicationStart_001, TestSize.Level1)
 
     // update application state and check the state
     record->SetState(ApplicationState::APP_STATE_FOREGROUND);
-    RecordQueryResult newResult;
-    auto newRecord =
-        service_->GetOrCreateAppRunningRecord(GetMockToken(), appInfo, abilityInfo, processName, 0, newResult);
+    auto newRecord = service_->appRunningManager_->CheckAppRunningRecordIsExist(
+        appInfo->name, processName, appInfo->uid, bundleInfo);
     EXPECT_TRUE(newRecord);
     newRecord->SetUid(0);
     auto stateFromRec = newRecord->GetState();
-    EXPECT_TRUE(newResult.appExists) << "fail, app is not exist!";
     EXPECT_EQ(stateFromRec, ApplicationState::APP_STATE_FOREGROUND);
 
     // clear apprunningrecord
@@ -243,11 +256,13 @@ HWTEST_F(AmsAppRunningRecordModuleTest, MultiApplicationStart_002, TestSize.Leve
         appInfo->name = GetTestAppName(i);
         appInfo->uid = 0;
         RecordQueryResult result;
-        auto record =
-            service_->GetOrCreateAppRunningRecord(GetMockToken(), appInfo, abilityInfo, processName, 0, result);
+        BundleInfo bundleInfo;
+        HapModuleInfo hapModuleInfo;
+        EXPECT_TRUE(service_->GetBundleAndHapInfo(*abilityInfo, appInfo, bundleInfo, hapModuleInfo));
+        auto record = service_->CreateAppRunningRecord(
+            GetMockToken(), nullptr, appInfo, abilityInfo, processName, bundleInfo, hapModuleInfo);
         record->SetUid(0);
         EXPECT_TRUE(record != nullptr) << "create apprunningrecord fail!";
-        EXPECT_FALSE(result.appExists) << "result is wrong!";
 
         // check abilityrunningrecord & apprunningrecord
         int32_t id = record->GetRecordId();
@@ -287,10 +302,12 @@ HWTEST_F(AmsAppRunningRecordModuleTest, ScheduleTrimMemory_003, TestSize.Level1)
     std::string processName = GetTestAppName(index);
     auto appInfo = std::make_shared<ApplicationInfo>();
     appInfo->name = GetTestAppName(index);
-    RecordQueryResult result;
-    auto record = service_->GetOrCreateAppRunningRecord(GetMockToken(), appInfo, abilityInfo, processName, 0, result);
+    BundleInfo bundleInfo;
+    HapModuleInfo hapModuleInfo;
+    EXPECT_TRUE(service_->GetBundleAndHapInfo(*abilityInfo, appInfo, bundleInfo, hapModuleInfo));
+    auto record = service_->CreateAppRunningRecord(
+        GetMockToken(), nullptr, appInfo, abilityInfo, processName, bundleInfo, hapModuleInfo);
     EXPECT_TRUE(record != nullptr) << "create apprunningrecord fail!";
-    EXPECT_FALSE(result.appExists) << "result is wrong!";
 
     // LaunchApplication
     sptr<MockApplication> mockApplication(new MockApplication());
@@ -335,10 +352,12 @@ HWTEST_F(AmsAppRunningRecordModuleTest, LowMemoryWarning_004, TestSize.Level1)
     std::string processName = GetTestAppName(index);
     auto appInfo = std::make_shared<ApplicationInfo>();
     appInfo->name = GetTestAppName(index);
-    RecordQueryResult result;
-    auto record = service_->GetOrCreateAppRunningRecord(GetMockToken(), appInfo, abilityInfo, processName, 0, result);
+    BundleInfo bundleInfo;
+    HapModuleInfo hapModuleInfo;
+    EXPECT_TRUE(service_->GetBundleAndHapInfo(*abilityInfo, appInfo, bundleInfo, hapModuleInfo));
+    auto record = service_->CreateAppRunningRecord(
+        GetMockToken(), nullptr, appInfo, abilityInfo, processName, bundleInfo, hapModuleInfo);
     EXPECT_TRUE(record != nullptr) << "create apprunningrecord fail!";
-    EXPECT_FALSE(result.appExists) << "result is wrong!";
 
     // LaunchApplication
     sptr<MockApplication> mockApplication(new MockApplication());
@@ -385,9 +404,11 @@ HWTEST_F(AmsAppRunningRecordModuleTest, ApplicationStartAndQuit_005, TestSize.Le
         std::string processName = GetTestAppName(index);
         auto appInfo = std::make_shared<ApplicationInfo>();
         appInfo->name = GetTestAppName(index);
-        RecordQueryResult result;
-        auto record =
-            service_->GetOrCreateAppRunningRecord(GetMockToken(), appInfo, abilityInfo, processName, 0, result);
+        BundleInfo bundleInfo;
+        HapModuleInfo hapModuleInfo;
+        EXPECT_TRUE(service_->GetBundleAndHapInfo(*abilityInfo, appInfo, bundleInfo, hapModuleInfo));
+        auto record = service_->CreateAppRunningRecord(
+            GetMockToken(), nullptr, appInfo, abilityInfo, processName, bundleInfo, hapModuleInfo);
         EXPECT_TRUE(record != nullptr) << "create apprunningrecord fail!";
 
         // LaunchApplication
@@ -453,8 +474,11 @@ HWTEST_F(AmsAppRunningRecordModuleTest, ApplicationStatusChange_006, TestSize.Le
     std::string processName = GetTestAppName(index);
     auto appInfo = std::make_shared<ApplicationInfo>();
     appInfo->name = GetTestAppName(index);
-    RecordQueryResult result;
-    auto record = service_->GetOrCreateAppRunningRecord(GetMockToken(), appInfo, abilityInfo, processName, 0, result);
+    BundleInfo bundleInfo;
+    HapModuleInfo hapModuleInfo;
+    EXPECT_TRUE(service_->GetBundleAndHapInfo(*abilityInfo, appInfo, bundleInfo, hapModuleInfo));
+    auto record = service_->CreateAppRunningRecord(
+        GetMockToken(), nullptr, appInfo, abilityInfo, processName, bundleInfo, hapModuleInfo);
     EXPECT_TRUE(record != nullptr) << "create apprunningrecord fail!";
 
     // LaunchApplication

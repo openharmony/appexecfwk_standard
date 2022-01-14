@@ -24,6 +24,11 @@
 
 namespace OHOS {
 namespace AppExecFwk {
+struct AppData {
+    std::string appName;
+    int32_t uid;
+};
+
 struct AppProcessData : public Parcelable {
     /**
      * @brief read this Sequenceable object from a Parcel.
@@ -47,11 +52,10 @@ struct AppProcessData : public Parcelable {
      */
     static AppProcessData *Unmarshalling(Parcel &parcel);
 
-    std::string appName;
     std::string processName;
     ApplicationState appState = ApplicationState::APP_STATE_CREATE;
     pid_t pid = 0;
-    int32_t uid = 0;
+    std::vector<AppData> appDatas;
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS

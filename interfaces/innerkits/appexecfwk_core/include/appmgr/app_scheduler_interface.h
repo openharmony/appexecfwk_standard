@@ -19,8 +19,8 @@
 #include "iremote_broker.h"
 #include "ability_info.h"
 #include "app_launch_data.h"
-#include "app_resident_process_info.h"
 #include "configuration.h"
+#include "hap_module_info.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -88,7 +88,7 @@ public:
      *
      * @return
      */
-    virtual void ScheduleAbilityStageInfo(const AppResidentProcessInfo &) = 0;
+    virtual void ScheduleAbilityStageInfo(const HapModuleInfo &) = 0;
 
     /**
      * ScheduleLaunchAbility, call ScheduleLaunchAbility() through proxy project,
