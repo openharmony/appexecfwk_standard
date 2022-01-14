@@ -357,10 +357,10 @@ void MainThread::ScheduleLaunchApplication(const AppLaunchData &data)
     APP_LOGI("MainThread::scheduleLaunchApplication end.");
 }
 
-void MainThread::ScheduleAbilityStageInfo(const AppResidentProcessInfo &residentProcessInfo)
+void MainThread::ScheduleAbilityStageInfo(const HapModuleInfo &abilityStage)
 {
     APP_LOGI("MainThread::ScheduleAbilityStageInfo start");
-    auto task = [appThread = this, residentProcessInfo]() { appThread->HandleAbilityStageInfo(residentProcessInfo);};
+    auto task = [appThread = this, abilityStage]() { appThread->HandleAbilityStageInfo(abilityStage);};
     if (!mainHandler_->PostTask(task)) {
         APP_LOGE("MainThread::ScheduleAbilityStageInfo PostTask task failed");
     }
@@ -800,7 +800,7 @@ void MainThread::HandleLaunchApplication(const AppLaunchData &appLaunchData)
     APP_LOGI("MainThread::handleLaunchApplication called end.");
 }
 
-void MainThread::HandleAbilityStageInfo(const AppResidentProcessInfo &residentProcessInfo)
+void MainThread::HandleAbilityStageInfo(const HapModuleInfo &abilityStage)
 {}
 
 /**

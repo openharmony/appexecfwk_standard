@@ -74,44 +74,40 @@ constexpr int G_MEMORY_LEVEL[] = {LMKS_OOM_ADJ_LOW, LMKS_OOM_ADJ_MEDIUM, LMKS_OO
 
 ProcessOptimizer::ProcessOptimizer(const LmksClientPtr &lmksClient, int suspendTimeout)
     : lmksClient_(lmksClient), suspendTimeout_(suspendTimeout)
-{
-    APP_LOGI("%{public}s(%{public}d) constructed.", __func__, __LINE__);
-}
+{}
 
 ProcessOptimizer::~ProcessOptimizer()
 {
     if (lmksClient_) {
         lmksClient_->ProcPurge();
     }
-
-    APP_LOGI("%{public}s(%{public}d) destructed.", __func__, __LINE__);
 }
 
 bool ProcessOptimizer::Init()
 {
-    APP_LOGI("%{public}s(%{public}d) initializing...", __func__, __LINE__);
+    APP_LOGI("initializing...");
 
     if (suspendTimeout_ < 0) {
-        APP_LOGE("%{public}s(%{public}d) invalid suspend timeout.", __func__, __LINE__);
+        APP_LOGE("invalid suspend timeout.");
         return false;
     }
 
     if (eventHandler_) {
-        APP_LOGE("%{public}s(%{public}d) already inited.", __func__, __LINE__);
+        APP_LOGE("already inited.");
         return false;
     }
 
     // Initializing cgroup manager.
     if (!DelayedSingleton<CgroupManager>::GetInstance()->IsInited()) {
-        APP_LOGW("%{public}s(%{public}d) cgroup manager not inited.", __func__, __LINE__);
+        APP_LOGW("cgroup manager not inited.");
         if (!DelayedSingleton<CgroupManager>::GetInstance()->Init()) {
-            APP_LOGE("%{public}s(%{public}d) cannot init cgroup manager.", __func__, __LINE__);
+            APP_LOGE("cannot init cgroup manager.");
             return false;
         }
     }
 
     if (DelayedSingleton<CgroupManager>::GetInstance()->LowMemoryAlert) {
-        APP_LOGW("%{public}s(%{public}d) cgroup manager 'LowMemoryWarning' already registered.", __func__, __LINE__);
+        APP_LOGW("cgroup manager 'LowMemoryWarning' already registered.");
     }
 
     DelayedSingleton<CgroupManager>::GetInstance()->LowMemoryAlert =
@@ -132,28 +128,28 @@ bool ProcessOptimizer::Init()
     if (!lmksClientLocal) {
         lmksClientLocal = std::make_shared<LmksClient>();
         if (!lmksClientLocal) {
-            APP_LOGE("%{public}s(%{public}d) failed to create lmks client.", __func__, __LINE__);
+            APP_LOGE("failed to create lmks client.");
             return false;
         }
     }
 
     if (!lmksClientLocal->IsOpen()) {
         if (lmksClientLocal->Open()) {
-            APP_LOGE("%{public}s(%{public}d) cannot open lmks connection.", __func__, __LINE__);
+            APP_LOGE("cannot open lmks connection.");
             return false;
         }
     }
 
     if (lmksClientLocal->Target(targets) != ERR_OK) {
         // print warning when lmks server not implement.
-        APP_LOGW("%{public}s(%{public}d) cannot init lmks.", __func__, __LINE__);
+        APP_LOGW("cannot init lmks.");
     }
     lmksClient_ = lmksClientLocal;
 
     // Save initialized states.
     auto eventHandler = std::make_shared<EventHandler>(EventRunner::Create());
     if (!eventHandler) {
-        APP_LOGE("%{public}s(%{public}d) no available event handler for current thread.", __func__, __LINE__);
+        APP_LOGE("no available event handler for current thread.");
         return false;
     }
 
@@ -165,15 +161,14 @@ bool ProcessOptimizer::Init()
 void ProcessOptimizer::OnAppAdded(const AppPtr &app)
 {
     if (!app) {
-        APP_LOGE("%{public}s(%{public}d) invalid app.", __func__, __LINE__);
+        APP_LOGE("invalid app.");
         return;
     }
 
     if (app != appLru_.front()) {
         auto it = std::find(appLru_.begin(), appLru_.end(), app);
         if (it != appLru_.end()) {
-            APP_LOGE(
-                "%{public}s(%{public}d) app '%{public}s' already existed.", __func__, __LINE__, app->GetName().c_str());
+            APP_LOGE("app '%{public}s' already existed.", app->GetName().c_str());
             appLru_.erase(it);
         }
         if (app->GetState() == ApplicationState::APP_STATE_FOREGROUND) {
@@ -189,12 +184,12 @@ void ProcessOptimizer::OnAppAdded(const AppPtr &app)
 void ProcessOptimizer::OnAppRemoved(const AppPtr &app)
 {
     if (!app) {
-        APP_LOGE("%{public}s(%{public}d) invalid app.", __func__, __LINE__);
+        APP_LOGE("invalid app.");
         return;
     }
 
     if (!lmksClient_) {
-        APP_LOGE("%{public}s(%{public}d) invalid lmks client.", __func__, __LINE__);
+        APP_LOGE("invalid lmks client.");
         return;
     }
 
@@ -205,19 +200,17 @@ void ProcessOptimizer::OnAppRemoved(const AppPtr &app)
     if (it != appLru_.end()) {
         appLru_.erase(it);
     } else {
-        APP_LOGE("%{pulbid}s(%{publid}d) app '%{public}s' is not existed.", __func__, __LINE__, app->GetName().c_str());
+        APP_LOGE("app '%{public}s' is not existed.", app->GetName().c_str());
     }
 
     auto priorityObject = app->GetPriorityObject();
     if (!priorityObject) {
-        APP_LOGE("%{public}s(%{public}d) invalid priority object.", __func__, __LINE__);
+        APP_LOGE("invalid priority object.");
         return;
     }
 
     if (lmksClient_->ProcRemove(priorityObject->GetPid()) != ERR_OK) {
-        APP_LOGE("%{public}s(%{public}d) failed to remove app '%{public}s'(%{publid}d) from lmks.",
-            __func__,
-            __LINE__,
+        APP_LOGE("failed to remove app '%{public}s'(%{publid}d) from lmks.",
             app->GetName().c_str(),
             priorityObject->GetPid());
     }
@@ -226,20 +219,20 @@ void ProcessOptimizer::OnAppRemoved(const AppPtr &app)
 void ProcessOptimizer::OnAppStateChanged(const AppPtr &app, const ApplicationState oldState)
 {
     if (!app) {
-        APP_LOGE("%{public}s(%{public}d) invalid app.", __func__, __LINE__);
+        APP_LOGE("invalid app.");
         return;
     }
 
     auto priorityObject = app->GetPriorityObject();
     if (!priorityObject) {
-        APP_LOGE("%{public}s(%{public}d) invalid priority object.", __func__, __LINE__);
+        APP_LOGE("invalid priority object.");
         return;
     }
 
     auto curState = app->GetState();
-    APP_LOGD("%{public}s(%{pubic}d) ability state changed to %{public}d.", __func__, __LINE__, curState);
+    APP_LOGD("ability state changed to %{public}d.", curState);
     if (curState == oldState) {
-        APP_LOGW("%{public}s(%{public}d) no change.", __func__, __LINE__);
+        APP_LOGW("no change.");
         return;
     }
 
@@ -249,10 +242,7 @@ void ProcessOptimizer::OnAppStateChanged(const AppPtr &app, const ApplicationSta
             if (it != appLru_.end()) {
                 appLru_.erase(it);
             } else {
-                APP_LOGE("%{pulbid}s(%{publid}d) app '%{public}s' is not existed.",
-                    __func__,
-                    __LINE__,
-                    app->GetName().c_str());
+                APP_LOGE("app '%{public}s' is not existed.", app->GetName().c_str());
             }
             appLru_.push_front(app);
         }
@@ -275,113 +265,113 @@ void ProcessOptimizer::OnAppStateChanged(const AppPtr &app, const ApplicationSta
 void ProcessOptimizer::OnAbilityStarted(const AbilityPtr &ability)
 {
     if (!ability) {
-        APP_LOGE("%{public}s(%{public}d) invalid ability.", __func__, __LINE__);
+        APP_LOGE("invalid ability.");
         return;
     }
 
-    APP_LOGI("%{public}s(%{public}d) OnAbilityStarted.", __func__, __LINE__);
+    APP_LOGI("OnAbilityStarted.");
 }
 
 void ProcessOptimizer::OnAbilityConnected(const AbilityPtr &ability, const AbilityPtr &targetAbility)
 {
     if (!ability) {
-        APP_LOGE("%{public}s(%{public}d) invalid ability.", __func__, __LINE__);
+        APP_LOGE("invalid ability.");
         return;
     }
 
     if (!targetAbility) {
-        APP_LOGE("%{public}s(%{public}d) invalid targetAbility.", __func__, __LINE__);
+        APP_LOGE("invalid targetAbility.");
         return;
     }
 
-    APP_LOGI("%{public}s(%{public}d) OnAbilityConnected.", __func__, __LINE__);
+    APP_LOGI("OnAbilityConnected end.");
 }
 
 void ProcessOptimizer::OnAbilityDisconnected(const AbilityPtr &ability, const AbilityPtr &targetAbility)
 {
     if (!ability) {
-        APP_LOGE("%{public}s(%{public}d) invalid ability.", __func__, __LINE__);
+        APP_LOGE("invalid ability.");
         return;
     }
 
     if (!targetAbility) {
-        APP_LOGE("%{public}s(%{public}d) invalid targetAbility.", __func__, __LINE__);
+        APP_LOGE("invalid targetAbility.");
         return;
     }
 
-    APP_LOGI("%{public}s(%{public}d) OnAbilityDisconnected.", __func__, __LINE__);
+    APP_LOGI("OnAbilityDisconnected end.");
 }
 
 void ProcessOptimizer::OnAbilityStateChanged(const AbilityPtr &ability, const AbilityState oldState)
 {
     if (!ability) {
-        APP_LOGE("%{public}s(%{public}d) invalid ability.", __func__, __LINE__);
+        APP_LOGE("invalid ability.");
         return;
     }
 
-    APP_LOGI("%{public}s(%{public}d) OnAbilityStateChanged.", __func__, __LINE__);
+    APP_LOGI("OnAbilityStateChanged end.");
 }
 
 void ProcessOptimizer::OnAbilityVisibleChanged(const AbilityPtr &ability)
 {
     if (!ability) {
-        APP_LOGE("%{public}s(%{public}d) invalid ability.", __func__, __LINE__);
+        APP_LOGE("invalid ability.");
         return;
     }
 
-    APP_LOGI("%{public}s(%{public}d) OnAbilityVisibleChanged.", __func__, __LINE__);
+    APP_LOGI("OnAbilityVisibleChanged end.");
 }
 
 void ProcessOptimizer::OnAbilityPerceptibleChanged(const AbilityPtr &ability)
 {
     if (!ability) {
-        APP_LOGE("%{public}s(%{public}d) invalid ability.", __func__, __LINE__);
+        APP_LOGE("invalid ability.");
     }
 
-    APP_LOGI("%{public}s(%{public}d) OnAbilityPerceptibleChanged.", __func__, __LINE__);
+    APP_LOGI("OnAbilityPerceptibleChanged end.");
 }
 
 void ProcessOptimizer::OnAbilityRemoved(const AbilityPtr &ability)
 {
     if (!ability) {
-        APP_LOGE("%{public}s(%{public}d) invalid ability.", __func__, __LINE__);
+        APP_LOGE("invalid ability.");
         return;
     }
 
-    APP_LOGI("%{public}s(%{public}d) OnAbilityRemoved.", __func__, __LINE__);
+    APP_LOGI("OnAbilityRemoved end.");
 }
 
 bool ProcessOptimizer::SetAppOomAdj(const AppPtr &app, int oomAdj)
 {
     if (!app) {
-        APP_LOGE("%{public}s(%{public}d) invalid app.", __func__, __LINE__);
+        APP_LOGE("invalid app.");
         return false;
     }
 
     if (!LmksClient::CheckOomAdj(oomAdj)) {
-        APP_LOGE("%{public}s(%{public}d) invalid oom adj %{public}d.", __func__, __LINE__, oomAdj);
+        APP_LOGE("invalid oom adj %{public}d.", oomAdj);
         return false;
     }
 
     if (!lmksClient_) {
-        APP_LOGE("%{public}s(%{public}d) invalid lmks client.", __func__, __LINE__);
+        APP_LOGE("invalid lmks client.");
         return false;
     }
 
     auto priorityObject = app->GetPriorityObject();
     if (!priorityObject) {
-        APP_LOGE("%{public}s(%{public}d) invalid priority object.", __func__, __LINE__);
+        APP_LOGE("invalid priority object.");
         return false;
     }
 
     if (priorityObject->GetCurAdj() == oomAdj) {
-        APP_LOGW("%{public}s(%{public}d) oom adj has no change.", __func__, __LINE__);
+        APP_LOGW("oom adj has no change.");
         return true;
     }
 
     if (lmksClient_->ProcPrio(priorityObject->GetPid(), app->GetUid(), oomAdj) != ERR_OK) {
         // print warning when lmks server not implement.
-        APP_LOGW("%{public}s(%{public}d) lmks proc prio failed.", __func__, __LINE__);
+        APP_LOGW("lmks proc prio failed.");
     }
 
     priorityObject->SetCurAdj(oomAdj);
@@ -392,19 +382,19 @@ bool ProcessOptimizer::SetAppOomAdj(const AppPtr &app, int oomAdj)
 bool ProcessOptimizer::SetAppSchedPolicy(const AppPtr &app, const CgroupManager::SchedPolicy schedPolicy)
 {
     if (!app) {
-        APP_LOGE("%{public}s(%{public}d) invalid app.", __func__, __LINE__);
+        APP_LOGE("invalid app.");
         return false;
     }
 
     auto priorityObject = app->GetPriorityObject();
     if (!priorityObject) {
-        APP_LOGE("%{public}s(%{public}d) invalid priority object.", __func__, __LINE__);
+        APP_LOGE("invalid priority object.");
         return false;
     }
 
     auto oldSchedPolicy = priorityObject->GetCurCgroup();
     if (oldSchedPolicy == schedPolicy) {
-        APP_LOGW("%{public}s(%{public}d) no change.", __func__, __LINE__);
+        APP_LOGW("no change.");
         return true;
     }
 
@@ -470,7 +460,7 @@ void ProcessOptimizer::OnLowMemoryAlert(const CgroupManager::LowMemoryLevel leve
 bool ProcessOptimizer::UpdateAppOomAdj(const AppPtr &app)
 {
     if (!app) {
-        APP_LOGE("%{public}s(%{public}d) invalid app.", __func__, __LINE__);
+        APP_LOGE("invalid app.");
         return false;
     }
     APP_LOGI("UpdateAppOomAdj bundleName[%{public}s] state[%{public}d] pid[%{public}d] curadj[%{public}d]",
@@ -481,7 +471,7 @@ bool ProcessOptimizer::UpdateAppOomAdj(const AppPtr &app)
 
     auto priorityObject = app->GetPriorityObject();
     if (!priorityObject) {
-        APP_LOGE("%{public}s(%{public}d) invalid priority object.", __func__, __LINE__);
+        APP_LOGE("invalid priority object.");
         return false;
     }
     // special set launcher and systemui adj
@@ -497,7 +487,7 @@ bool ProcessOptimizer::UpdateAppOomAdj(const AppPtr &app)
 
     int oomAdj;
     int oomAdjMax;
-    if(!GetAppOomAdj(app,state,oomAdj, oomAdjMax)){
+    if (!GetAppOomAdj(app, state, oomAdj, oomAdjMax)) {
         return false;
     }
 
@@ -518,11 +508,11 @@ bool ProcessOptimizer::UpdateAppOomAdj(const AppPtr &app)
     return true;
 }
 
-bool ProcessOptimizer::GetAppOomAdj(const AppPtr &app,ApplicationState state,int &oomAdj,int &oomAdjMax)
+bool ProcessOptimizer::GetAppOomAdj(const AppPtr &app, ApplicationState state, int &oomAdj, int &oomAdjMax)
 {
     auto priorityObject = app->GetPriorityObject();
     if (!priorityObject) {
-        APP_LOGE("%{public}s(%{public}d) invalid priority object.", __func__, __LINE__);
+        APP_LOGE("invalid priority object.");
         return false;
     }
 
@@ -558,7 +548,7 @@ bool ProcessOptimizer::GetAppOomAdj(const AppPtr &app,ApplicationState state,int
 bool ProcessOptimizer::UpdateAppSchedPolicy(const AppPtr &app)
 {
     if (!app) {
-        APP_LOGE("%{public}s(%{public}d) invalid app.", __func__, __LINE__);
+        APP_LOGE("invalid app.");
         return false;
     }
 
@@ -588,32 +578,26 @@ bool ProcessOptimizer::UpdateAppSchedPolicy(const AppPtr &app)
 void ProcessOptimizer::StartAppSuspendTimer(const AppPtr &app)
 {
     if (!app) {
-        APP_LOGE("%{public}s(%{public}d) invalid app.", __func__, __LINE__);
+        APP_LOGE("invalid app.");
         return;
     }
 
-    APP_LOGI("%{public}s(%{public}d) starting suspend timer for app '%{public}s'...",
-        __func__,
-        __LINE__,
-        app->GetName().c_str());
+    APP_LOGI("starting suspend timer for app '%{public}s'...", app->GetName().c_str());
 
     if (!eventHandler_) {
-        APP_LOGE("%{public}s(%{public}d) invalid event handler.", __func__, __LINE__);
+        APP_LOGE("invalid event handler.");
         return;
     }
 
     auto timerName = GetAppSuspendTimerName(app);
     if (timerName.empty()) {
-        APP_LOGE("%{public}s(%{public}d) invalid suspend timer name.", __func__, __LINE__);
+        APP_LOGE("invalid suspend timer name.");
         return;
     }
 
     auto it = suspendTimers_.find(timerName);
     if (it != suspendTimers_.end()) {
-        APP_LOGW("%{public}s(%{public}d) app '%{public}s' suspend timer already started.",
-            __func__,
-            __LINE__,
-            app->GetName().c_str());
+        APP_LOGW("app '%{public}s' suspend timer already started.", app->GetName().c_str());
         return;
     }
 
@@ -623,15 +607,13 @@ void ProcessOptimizer::StartAppSuspendTimer(const AppPtr &app)
         [=]() {
             auto finder = suspendTimers_.find(timerName);
             if (finder != suspendTimers_.end()) {
-                APP_LOGD("%{public}s(%{public}d) removing app '%{public}s' suspend timer name...",
+                APP_LOGD("removing app '%{public}s' '%{public}s' suspend timer name...",
                     timerName.c_str(),
-                    __LINE__,
                     app->GetName().c_str());
                 suspendTimers_.erase(finder);
             } else {
-                APP_LOGE("%{public}s(%{public}d) invalid suspend timer for app '%{public}s'.",
+                APP_LOGE("invalid suspend timer for app '%{public}s' '%{public}s'.",
                     timerName.c_str(),
-                    __LINE__,
                     app->GetName().c_str());
             }
             SuspendApp(app);
@@ -643,32 +625,26 @@ void ProcessOptimizer::StartAppSuspendTimer(const AppPtr &app)
 void ProcessOptimizer::StopAppSuspendTimer(const AppPtr &app)
 {
     if (!app) {
-        APP_LOGE("%{public}s(%{public}d) invalid app.", __func__, __LINE__);
+        APP_LOGE("invalid app.");
         return;
     }
 
-    APP_LOGI("%{public}s(%{public}d) stopping suspend timer for app '%{public}s'...",
-        __func__,
-        __LINE__,
-        app->GetName().c_str());
+    APP_LOGI("stopping suspend timer for app '%{public}s'...", app->GetName().c_str());
 
     if (!eventHandler_) {
-        APP_LOGE("%{public}s(%{public}d) invalid event handler.", __func__, __LINE__);
+        APP_LOGE("invalid event handler.");
         return;
     }
 
     auto timerName = GetAppSuspendTimerName(app);
     if (timerName.empty()) {
-        APP_LOGE("%{public}s(%{public}d) invalid suspend timer name.", __func__, __LINE__);
+        APP_LOGE("invalid suspend timer name.");
         return;
     }
 
     auto it = suspendTimers_.find(timerName);
     if (it == suspendTimers_.end()) {
-        APP_LOGW("%{public}s(%{public}d) app '%{public}s' suspend timer not started.",
-            __func__,
-            __LINE__,
-            app->GetName().c_str());
+        APP_LOGW("app '%{public}s' suspend timer not started.", app->GetName().c_str());
         return;
     }
 
@@ -679,20 +655,19 @@ void ProcessOptimizer::StopAppSuspendTimer(const AppPtr &app)
 void ProcessOptimizer::SuspendApp(const AppPtr &app)
 {
     if (!app) {
-        APP_LOGE("%{public}s(%{public}d) invalid app.", __func__, __LINE__);
+        APP_LOGE("invalid app.");
         return;
     }
 
-    APP_LOGI("%{public}s(%{public}d) suspending app '%{public}s'...", __func__, __LINE__, app->GetName().c_str());
+    APP_LOGI("suspending app '%{public}s'...", app->GetName().c_str());
 
     if (app->GetState() == ApplicationState::APP_STATE_SUSPENDED) {
-        APP_LOGE(
-            "%{public}s(%{public}d) app '%{public}s' already suspended.", __func__, __LINE__, app->GetName().c_str());
+        APP_LOGE("app '%{public}s' already suspended.", app->GetName().c_str());
         return;
     }
 
     if (!SetAppSchedPolicy(app, CgroupManager::SCHED_POLICY_FREEZED)) {
-        APP_LOGE("%{public}s(%{public}d) failed to suspend app '%s'.", __func__, __LINE__, app->GetName().c_str());
+        APP_LOGE("failed to suspend app '%s'.", app->GetName().c_str());
     }
 }
 
@@ -712,10 +687,10 @@ std::string ProcessOptimizer::GetAppSuspendTimerName(const AppPtr &app)
 
 void ProcessOptimizer::SetAppFreezingTime(int time)
 {
-    APP_LOGE("%{public}s  input second time:[%{public}d]", __func__, time);
+    APP_LOGE("input second time:[%{public}d]", time);
 
     if (time > APP_SUSPEND_TIMEOUT_MAX && time < 0) {
-        APP_LOGE("%{public}s  input time error.", __func__);
+        APP_LOGE("input time error.");
         return;
     }
 
@@ -727,7 +702,7 @@ void ProcessOptimizer::SetAppFreezingTime(int time)
 void ProcessOptimizer::GetAppFreezingTime(int &time)
 {
     time = suspendTimeout_ / TIME_ADVANCE_RATE;
-    APP_LOGE("%{public}s  current freez time:[%{public}d]", __func__, time);
+    APP_LOGE("current freez time:[%{public}d]", time);
     return;
 }
 }  // namespace AppExecFwk

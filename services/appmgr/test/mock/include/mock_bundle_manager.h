@@ -29,7 +29,7 @@ namespace OHOS {
 namespace AppExecFwk {
 namespace {
 const std::string COM_OHOS_HELLO = "com.ohos.test.helloworld";
-const int32_t APPLICATION_NUMHELLO = 100;
+const int32_t APPLICATION_NUMHELLO = 104;
 const std::string COM_OHOS_SPECIAL = "com.ohos.test.special";
 }  // namespace
 class BundleMgrProxy : public IRemoteProxy<IBundleMgr> {
@@ -116,6 +116,12 @@ public:
 
         BundleInfo bundleInfo;
         bundleInfo.applicationInfo = info;
+        HapModuleInfo hapModuleInfo;
+        hapModuleInfo.name = "Module";
+        HapModuleInfo hapModuleInfo1;
+        hapModuleInfo1.name = "Module1";
+        bundleInfo.hapModuleInfos.push_back(hapModuleInfo);
+        bundleInfo.hapModuleInfos.push_back(hapModuleInfo1);
 
         bundleInfos.push_back(bundleInfo);
         GTEST_LOG_(INFO) << "bundleInfos size : "<<bundleInfos.size();
@@ -431,6 +437,12 @@ public:
 
         BundleInfo bundleInfo;
         bundleInfo.applicationInfo = info;
+        HapModuleInfo hapModuleInfo;
+        hapModuleInfo.name = "Module";
+        HapModuleInfo hapModuleInfo1;
+        hapModuleInfo1.name = "Module1";
+        bundleInfo.hapModuleInfos.push_back(hapModuleInfo);
+        bundleInfo.hapModuleInfos.push_back(hapModuleInfo1);
 
         bundleInfos.push_back(bundleInfo);
         GTEST_LOG_(INFO) << "bundleInfos size : "<<bundleInfos.size();

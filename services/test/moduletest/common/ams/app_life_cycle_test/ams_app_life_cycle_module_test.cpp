@@ -158,6 +158,7 @@ std::shared_ptr<AbilityInfo> AmsAppLifeCycleModuleTest::GetAbilityInfo(const std
         abilityInfo->process = process;
     }
     abilityInfo->applicationName = applicationName;
+    abilityInfo->applicationInfo.bundleName = applicationName;
     return abilityInfo;
 }
 
@@ -173,9 +174,12 @@ std::shared_ptr<AppRunningRecord> AmsAppLifeCycleModuleTest::StartProcessAndLoad
     }
 
     serviceInner_->LoadAbility(token, nullptr, abilityInfo, appInfo);
+    BundleInfo bundleInfo;
+    HapModuleInfo hapModuleInfo;
+    EXPECT_TRUE(serviceInner_->GetBundleAndHapInfo(*abilityInfo, appInfo, bundleInfo, hapModuleInfo));
 
-    std::shared_ptr<AppRunningRecord> record = serviceInner_->GetAppRunningRecordByProcessName(
-        appInfo->name, abilityInfo->process, abilityInfo->applicationInfo.uid);
+    std::shared_ptr<AppRunningRecord> record = serviceInner_->appRunningManager_->CheckAppRunningRecordIsExist(
+        appInfo->name, abilityInfo->process, abilityInfo->applicationInfo.uid, bundleInfo);
     if (record == nullptr) {
         EXPECT_TRUE(false);
     } else {
@@ -334,6 +338,7 @@ void AmsAppLifeCycleModuleTest::CreateAppRecentList(const int32_t appNum)
         appInfo->bundleName = appInfo->name;
         abilityInfo->name = TEST_ABILITY_NAME + std::to_string(i);
         abilityInfo->applicationName = TEST_APP_NAME + std::to_string(i);
+        abilityInfo->applicationInfo.bundleName = appInfo->name;
         pid_t pid = i;
         sptr<IRemoteObject> token = new (std::nothrow) MockAbilityToken();
         MockAppSpawnClient *mockedSpawnClient = new (std::nothrow) MockAppSpawnClient();
@@ -1088,8 +1093,11 @@ HWTEST_F(AmsAppLifeCycleModuleTest, AbilityBehaviorAnalysis_01, TestSize.Level1)
 
     StartAppProcess(pid);
     serviceInner_->LoadAbility(token, nullptr, abilityInfo, appInfo);
-    std::shared_ptr<AppRunningRecord> record = serviceInner_->GetAppRunningRecordByProcessName(
-        appInfo->name, abilityInfo->process, abilityInfo->applicationInfo.uid);
+    BundleInfo bundleInfo;
+    HapModuleInfo hapModuleInfo;
+    EXPECT_TRUE(serviceInner_->GetBundleAndHapInfo(*abilityInfo, appInfo, bundleInfo, hapModuleInfo));
+    std::shared_ptr<AppRunningRecord> record = serviceInner_->appRunningManager_->CheckAppRunningRecordIsExist(
+        appInfo->name, abilityInfo->process, abilityInfo->applicationInfo.uid, bundleInfo);
     if (record == nullptr) {
         EXPECT_TRUE(false);
     } else {
@@ -1141,8 +1149,11 @@ HWTEST_F(AmsAppLifeCycleModuleTest, AbilityBehaviorAnalysis_02, TestSize.Level1)
 
     StartAppProcess(pid);
     serviceInner_->LoadAbility(token, nullptr, abilityInfo, appInfo);
-    std::shared_ptr<AppRunningRecord> record = serviceInner_->GetAppRunningRecordByProcessName(
-        appInfo->name, abilityInfo->process, abilityInfo->applicationInfo.uid);
+    BundleInfo bundleInfo;
+    HapModuleInfo hapModuleInfo;
+    EXPECT_TRUE(serviceInner_->GetBundleAndHapInfo(*abilityInfo, appInfo, bundleInfo, hapModuleInfo));
+    std::shared_ptr<AppRunningRecord> record = serviceInner_->appRunningManager_->CheckAppRunningRecordIsExist(
+        appInfo->name, abilityInfo->process, abilityInfo->applicationInfo.uid, bundleInfo);
     if (record == nullptr) {
         EXPECT_TRUE(false);
     } else {
@@ -1194,8 +1205,11 @@ HWTEST_F(AmsAppLifeCycleModuleTest, AbilityBehaviorAnalysis_03, TestSize.Level1)
 
     StartAppProcess(pid);
     serviceInner_->LoadAbility(token, nullptr, abilityInfo, appInfo);
-    std::shared_ptr<AppRunningRecord> record = serviceInner_->GetAppRunningRecordByProcessName(
-        appInfo->name, abilityInfo->process, abilityInfo->applicationInfo.uid);
+    BundleInfo bundleInfo;
+    HapModuleInfo hapModuleInfo;
+    EXPECT_TRUE(serviceInner_->GetBundleAndHapInfo(*abilityInfo, appInfo, bundleInfo, hapModuleInfo));
+    std::shared_ptr<AppRunningRecord> record = serviceInner_->appRunningManager_->CheckAppRunningRecordIsExist(
+        appInfo->name, abilityInfo->process, abilityInfo->applicationInfo.uid, bundleInfo);
     if (record == nullptr) {
         EXPECT_TRUE(false);
     } else {
@@ -1247,8 +1261,11 @@ HWTEST_F(AmsAppLifeCycleModuleTest, AbilityBehaviorAnalysis_04, TestSize.Level1)
 
     StartAppProcess(pid);
     serviceInner_->LoadAbility(token, nullptr, abilityInfo, appInfo);
-    std::shared_ptr<AppRunningRecord> record = serviceInner_->GetAppRunningRecordByProcessName(
-        appInfo->name, abilityInfo->process, abilityInfo->applicationInfo.uid);
+    BundleInfo bundleInfo;
+    HapModuleInfo hapModuleInfo;
+    EXPECT_TRUE(serviceInner_->GetBundleAndHapInfo(*abilityInfo, appInfo, bundleInfo, hapModuleInfo));
+    std::shared_ptr<AppRunningRecord> record = serviceInner_->appRunningManager_->CheckAppRunningRecordIsExist(
+        appInfo->name, abilityInfo->process, abilityInfo->applicationInfo.uid, bundleInfo);
     if (record == nullptr) {
         EXPECT_TRUE(false);
     } else {
@@ -1300,8 +1317,11 @@ HWTEST_F(AmsAppLifeCycleModuleTest, AbilityBehaviorAnalysis_05, TestSize.Level1)
 
     StartAppProcess(pid);
     serviceInner_->LoadAbility(token, nullptr, abilityInfo, appInfo);
-    std::shared_ptr<AppRunningRecord> record = serviceInner_->GetAppRunningRecordByProcessName(
-        appInfo->name, abilityInfo->process, abilityInfo->applicationInfo.uid);
+    BundleInfo bundleInfo;
+    HapModuleInfo hapModuleInfo;
+    EXPECT_TRUE(serviceInner_->GetBundleAndHapInfo(*abilityInfo, appInfo, bundleInfo, hapModuleInfo));
+    std::shared_ptr<AppRunningRecord> record = serviceInner_->appRunningManager_->CheckAppRunningRecordIsExist(
+        appInfo->name, abilityInfo->process, abilityInfo->applicationInfo.uid, bundleInfo);
     if (record == nullptr) {
         EXPECT_TRUE(false);
     } else {
@@ -1355,8 +1375,11 @@ HWTEST_F(AmsAppLifeCycleModuleTest, AbilityBehaviorAnalysis_06, TestSize.Level1)
 
     StartAppProcess(pid);
     serviceInner_->LoadAbility(token, nullptr, abilityInfo, appInfo);
-    std::shared_ptr<AppRunningRecord> record = serviceInner_->GetAppRunningRecordByProcessName(
-        appInfo->name, abilityInfo->process, abilityInfo->applicationInfo.uid);
+    BundleInfo bundleInfo;
+    HapModuleInfo hapModuleInfo;
+    EXPECT_TRUE(serviceInner_->GetBundleAndHapInfo(*abilityInfo, appInfo, bundleInfo, hapModuleInfo));
+    std::shared_ptr<AppRunningRecord> record = serviceInner_->appRunningManager_->CheckAppRunningRecordIsExist(
+        appInfo->name, abilityInfo->process, abilityInfo->applicationInfo.uid, bundleInfo);
     if (record == nullptr) {
         EXPECT_TRUE(false);
     } else {
@@ -1398,14 +1421,24 @@ HWTEST_F(AmsAppLifeCycleModuleTest, LoadResidentProcess_01, TestSize.Level1)
     std::string appName = "KeepAliveApp";
     std::string proc = "KeepAliveApplication";
     int uid = 2100;
-    sptr<MockAppScheduler> mockAppScheduler = new MockAppScheduler();
+    BundleInfo info;
+    info.name = proc;
+    info.uid = uid;
 
-    auto appRecord = serviceInner_->GetAppRunningRecordByProcessName(appName, proc, uid);
+    ApplicationInfo appInfo;
+    appInfo.name = "KeepAliveApp";
+    appInfo.bundleName = "KeepAliveApplication";
+    appInfo.uid = uid;
+
+    info.applicationInfo = appInfo;
+    sptr<MockAppScheduler> mockAppScheduler = new MockAppScheduler();
+    
+    auto appRecord = serviceInner_->appRunningManager_->CheckAppRunningRecordIsExist(appName, proc, uid, info);
     EXPECT_FALSE(appRecord);
 
     StartAppProcess(pid);
     serviceInner_->LoadResidentProcess();
-    appRecord = serviceInner_->GetAppRunningRecordByProcessName(appName, proc, uid);
+    appRecord = serviceInner_->appRunningManager_->CheckAppRunningRecordIsExist(appName, proc, uid, info);
     EXPECT_TRUE(appRecord);
     pid_t newPid = appRecord->GetPriorityObject()->GetPid();
     EXPECT_TRUE(newPid == pid);
@@ -1438,20 +1471,355 @@ HWTEST_F(AmsAppLifeCycleModuleTest, StartResidentProcess_01, TestSize.Level1)
     appInfo.uid = 2100;
 
     info.applicationInfo = appInfo;
+    HapModuleInfo hapModuleInfo;
+    hapModuleInfo.name = "Module";
+    HapModuleInfo hapModuleInfo1;
+    hapModuleInfo1.name = "Module1";
+    info.hapModuleInfos.push_back(hapModuleInfo);
+    info.hapModuleInfos.push_back(hapModuleInfo1);
 
     infos.push_back(info);
 
     sptr<MockAppScheduler> mockAppScheduler = new MockAppScheduler();
 
-    auto appRecord = serviceInner_->GetAppRunningRecordByProcessName(appName, proc, uid);
+    auto appRecord = serviceInner_->appRunningManager_->CheckAppRunningRecordIsExist(appName, proc, uid, info);
     EXPECT_FALSE(appRecord);
 
     StartAppProcess(pid);
-    serviceInner_->StartResidentProcess(infos);
-    appRecord = serviceInner_->GetAppRunningRecordByProcessName(appName, proc, uid);
+    serviceInner_->StartResidentProcess(infos, -1);
+    appRecord = serviceInner_->appRunningManager_->CheckAppRunningRecordIsExist(appName, proc, uid, info);
     EXPECT_TRUE(appRecord);
     pid_t newPid = appRecord->GetPriorityObject()->GetPid();
     EXPECT_TRUE(newPid == pid);
+}
+
+/*
+ * Feature: AbilityMgr
+ * Function: LoadAbility
+ * SubFunction: NA
+ * FunctionPoints: NA
+ * EnvConditions: NA
+ * CaseDescription: NA
+ */
+HWTEST_F(AmsAppLifeCycleModuleTest, LoadAbility_001, TestSize.Level1)
+{
+    EXPECT_NE(serviceInner_, nullptr);
+    CHECK_POINTER_IS_NULLPTR(serviceInner_);
+    pid_t pid_0 = 1024;
+    pid_t pid_1 = 2048;
+    sptr<IRemoteObject> token_0 = new (std::nothrow) MockAbilityToken();
+    sptr<IRemoteObject> token_1 = new (std::nothrow) MockAbilityToken();
+    auto abilityInfo_0 = GetAbilityInfo("0", "MainAbility", "p1", "com.ohos.test.helloworld0");
+    auto appInfo_0 = GetApplicationInfo("com.ohos.test.helloworld0");
+    auto abilityInfo_1 = GetAbilityInfo("0", "MainAbility1", "p2", "com.ohos.test.helloworld0");
+    auto appInfo_1 = GetApplicationInfo("com.ohos.test.helloworld0");
+    sptr<MockAppScheduler> mockAppScheduler = new (std::nothrow) MockAppScheduler();
+    TestProcessInfo testProcessInfo;
+
+    testProcessInfo.pid = pid_0;
+    testProcessInfo.isStart = false;
+    auto appRunningRecord_0 =
+        StartProcessAndLoadAbility(mockAppScheduler, token_0, abilityInfo_0, appInfo_0, testProcessInfo);
+
+    testProcessInfo.pid = pid_1;
+    testProcessInfo.isStart = false;
+    auto appRunningRecord_1 =
+        StartProcessAndLoadAbility(mockAppScheduler, token_1, abilityInfo_1, appInfo_1, testProcessInfo);
+    int32_t recordId_0 = appRunningRecord_0->GetRecordId();
+    int32_t recordId_1 = appRunningRecord_1->GetRecordId();
+    EXPECT_NE(recordId_0, recordId_1);
+    EXPECT_NE(appRunningRecord_0, appRunningRecord_1);
+    auto appMap = serviceInner_->appRunningManager_->GetAppRunningRecordMap();
+    EXPECT_EQ(2, static_cast<int>(appMap.size()));
+}
+
+/*
+ * Feature: AbilityMgr
+ * Function: LoadAbility
+ * SubFunction: NA
+ * FunctionPoints: NA
+ * EnvConditions: NA
+ * CaseDescription: NA
+ */
+HWTEST_F(AmsAppLifeCycleModuleTest, LoadAbility_002, TestSize.Level1)
+{
+    EXPECT_NE(serviceInner_, nullptr);
+    CHECK_POINTER_IS_NULLPTR(serviceInner_);
+    pid_t pid_0 = 1024;
+    sptr<IRemoteObject> token_0 = new (std::nothrow) MockAbilityToken();
+    sptr<IRemoteObject> token_1 = new (std::nothrow) MockAbilityToken();
+    auto abilityInfo_0 = GetAbilityInfo("0", "MainAbility", "p1", "com.ohos.test.helloworld0");
+    auto appInfo_0 = GetApplicationInfo("com.ohos.test.helloworld0");
+    auto abilityInfo_1 = GetAbilityInfo("0", "MainAbility1", "p1", "com.ohos.test.helloworld0");
+    auto appInfo_1 = GetApplicationInfo("com.ohos.test.helloworld0");
+    sptr<MockAppScheduler> mockAppScheduler = new (std::nothrow) MockAppScheduler();
+    TestProcessInfo testProcessInfo;
+
+    testProcessInfo.pid = pid_0;
+    testProcessInfo.isStart = false;
+    auto appRunningRecord_0 =
+        StartProcessAndLoadAbility(mockAppScheduler, token_0, abilityInfo_0, appInfo_0, testProcessInfo);
+    
+    ChangeAbilityStateAfterAppStart(mockAppScheduler, pid_0);
+    CheckState(appRunningRecord_0, token_0, AbilityState::ABILITY_STATE_READY, ApplicationState::APP_STATE_READY);
+
+    ChangeAbilityStateToForegroud(mockAppScheduler, appRunningRecord_0, token_0);
+    CheckState(appRunningRecord_0, token_0, AbilityState::ABILITY_STATE_FOREGROUND,
+        ApplicationState::APP_STATE_FOREGROUND);
+
+    testProcessInfo.pid = pid_0;
+    testProcessInfo.isStart = true;
+    auto appRunningRecord_1 =
+        StartProcessAndLoadAbility(mockAppScheduler, token_1, abilityInfo_1, appInfo_1, testProcessInfo);
+    int32_t recordId_0 = appRunningRecord_0->GetRecordId();
+    int32_t recordId_1 = appRunningRecord_1->GetRecordId();
+    EXPECT_EQ(recordId_0, recordId_1);
+    EXPECT_EQ(appRunningRecord_0, appRunningRecord_1);
+    auto appMap = serviceInner_->appRunningManager_->GetAppRunningRecordMap();
+    EXPECT_EQ(1, static_cast<int>(appMap.size()));
+}
+
+/*
+ * Feature: AbilityMgr
+ * Function: LoadAbility
+ * SubFunction: NA
+ * FunctionPoints: NA
+ * EnvConditions: NA
+ * CaseDescription: NA
+ */
+HWTEST_F(AmsAppLifeCycleModuleTest, LoadAbility_003, TestSize.Level1)
+{
+    EXPECT_NE(serviceInner_, nullptr);
+    CHECK_POINTER_IS_NULLPTR(serviceInner_);
+    pid_t pid_0 = 1024;
+    sptr<IRemoteObject> token_0 = new (std::nothrow) MockAbilityToken();
+    sptr<IRemoteObject> token_1 = new (std::nothrow) MockAbilityToken();
+    auto abilityInfo_0 = GetAbilityInfo("0", "MainAbility", "p1", "com.ohos.test.helloworld101");
+    auto appInfo_0 = GetApplicationInfo("com.ohos.test.helloworld101");
+    auto abilityInfo_1 = GetAbilityInfo("0", "MainAbility1", "p1", "com.ohos.test.helloworld102");
+    auto appInfo_1 = GetApplicationInfo("com.ohos.test.helloworld102");
+    sptr<MockAppScheduler> mockAppScheduler = new (std::nothrow) MockAppScheduler();
+    TestProcessInfo testProcessInfo;
+
+    testProcessInfo.pid = pid_0;
+    testProcessInfo.isStart = false;
+    auto appRunningRecord_0 =
+        StartProcessAndLoadAbility(mockAppScheduler, token_0, abilityInfo_0, appInfo_0, testProcessInfo);
+    ChangeAbilityStateAfterAppStart(mockAppScheduler, pid_0);
+    CheckState(appRunningRecord_0, token_0, AbilityState::ABILITY_STATE_READY, ApplicationState::APP_STATE_READY);
+
+    ChangeAbilityStateToForegroud(mockAppScheduler, appRunningRecord_0, token_0);
+    CheckState(appRunningRecord_0, token_0, AbilityState::ABILITY_STATE_FOREGROUND,
+        ApplicationState::APP_STATE_FOREGROUND);
+
+    testProcessInfo.pid = pid_0;
+    testProcessInfo.isStart = true;
+    auto appRunningRecord_1 =
+        StartProcessAndLoadAbility(mockAppScheduler, token_1, abilityInfo_1, appInfo_1, testProcessInfo);
+    int32_t recordId_0 = appRunningRecord_0->GetRecordId();
+    int32_t recordId_1 = appRunningRecord_1->GetRecordId();
+    EXPECT_EQ(recordId_0, recordId_1);
+    EXPECT_EQ(appRunningRecord_0, appRunningRecord_1);
+    auto appMap = serviceInner_->appRunningManager_->GetAppRunningRecordMap();
+    EXPECT_EQ(1, static_cast<int>(appMap.size()));
+}
+
+/*
+ * Feature: AbilityMgr
+ * Function: LoadAbility
+ * SubFunction: NA
+ * FunctionPoints: NA
+ * EnvConditions: NA
+ * CaseDescription: NA
+ */
+HWTEST_F(AmsAppLifeCycleModuleTest, LoadAbility_004, TestSize.Level1)
+{
+    EXPECT_NE(serviceInner_, nullptr);
+    CHECK_POINTER_IS_NULLPTR(serviceInner_);
+    pid_t pid_0 = 1024;
+    pid_t pid_1 = 2048;
+    sptr<IRemoteObject> token_0 = new (std::nothrow) MockAbilityToken();
+    sptr<IRemoteObject> token_1 = new (std::nothrow) MockAbilityToken();
+    auto abilityInfo_0 = GetAbilityInfo("0", "MainAbility", "p1", "com.ohos.test.helloworld103");
+    auto appInfo_0 = GetApplicationInfo("com.ohos.test.helloworld103");
+    auto abilityInfo_1 = GetAbilityInfo("0", "MainAbility1", "p1", "com.ohos.test.helloworld104");
+    auto appInfo_1 = GetApplicationInfo("com.ohos.test.helloworld104");
+    sptr<MockAppScheduler> mockAppScheduler = new (std::nothrow) MockAppScheduler();
+    TestProcessInfo testProcessInfo;
+
+    testProcessInfo.pid = pid_0;
+    testProcessInfo.isStart = false;
+    auto appRunningRecord_0 =
+        StartProcessAndLoadAbility(mockAppScheduler, token_0, abilityInfo_0, appInfo_0, testProcessInfo);
+
+    testProcessInfo.pid = pid_1;
+    testProcessInfo.isStart = false;
+    auto appRunningRecord_1 =
+        StartProcessAndLoadAbility(mockAppScheduler, token_1, abilityInfo_1, appInfo_1, testProcessInfo);
+    int32_t recordId_0 = appRunningRecord_0->GetRecordId();
+    int32_t recordId_1 = appRunningRecord_1->GetRecordId();
+    EXPECT_NE(recordId_0, recordId_1);
+    EXPECT_NE(appRunningRecord_0, appRunningRecord_1);
+    auto appMap = serviceInner_->appRunningManager_->GetAppRunningRecordMap();
+    EXPECT_EQ(2, static_cast<int>(appMap.size()));
+}
+
+/*
+ * Feature: AbilityMgr
+ * Function: KillApplication
+ * SubFunction: NA
+ * FunctionPoints: NA
+ * EnvConditions: NA
+ * CaseDescription: NA
+ */
+HWTEST_F(AmsAppLifeCycleModuleTest, KillApplication_001, TestSize.Level1)
+{
+    EXPECT_NE(serviceInner_, nullptr);
+    CHECK_POINTER_IS_NULLPTR(serviceInner_);
+    pid_t pid_0 = 1024;
+    pid_t pid_1 = 2048;
+    sptr<IRemoteObject> token_0 = new (std::nothrow) MockAbilityToken();
+    sptr<IRemoteObject> token_1 = new (std::nothrow) MockAbilityToken();
+    auto abilityInfo_0 = GetAbilityInfo("0", "MainAbility", "p1", "com.ohos.test.helloworld0");
+    auto appInfo_0 = GetApplicationInfo("com.ohos.test.helloworld0");
+    auto abilityInfo_1 = GetAbilityInfo("0", "MainAbility1", "p2", "com.ohos.test.helloworld0");
+    auto appInfo_1 = GetApplicationInfo("com.ohos.test.helloworld0");
+    sptr<MockAppScheduler> mockAppScheduler = new (std::nothrow) MockAppScheduler();
+    sptr<MockAppScheduler> mockAppScheduler1 = new (std::nothrow) MockAppScheduler();
+    TestProcessInfo testProcessInfo;
+
+    testProcessInfo.pid = pid_0;
+    testProcessInfo.isStart = false;
+    auto appRunningRecord_0 =
+        StartProcessAndLoadAbility(mockAppScheduler, token_0, abilityInfo_0, appInfo_0, testProcessInfo);
+
+    testProcessInfo.pid = pid_1;
+    testProcessInfo.isStart = false;
+    auto appRunningRecord_1 =
+        StartProcessAndLoadAbility(mockAppScheduler1, token_1, abilityInfo_1, appInfo_1, testProcessInfo);
+    ChangeAbilityStateAfterAppStart(mockAppScheduler, pid_0);
+    CheckState(appRunningRecord_0, token_0, AbilityState::ABILITY_STATE_READY, ApplicationState::APP_STATE_READY);
+    ChangeAbilityStateAfterAppStart(mockAppScheduler1, pid_1);
+    CheckState(appRunningRecord_1, token_1, AbilityState::ABILITY_STATE_READY, ApplicationState::APP_STATE_READY);
+
+    int32_t recordId_0 = appRunningRecord_0->GetRecordId();
+    int32_t recordId_1 = appRunningRecord_1->GetRecordId();
+    EXPECT_NE(recordId_0, recordId_1);
+    EXPECT_NE(appRunningRecord_0, appRunningRecord_1);
+    auto appMap = serviceInner_->appRunningManager_->GetAppRunningRecordMap();
+    EXPECT_EQ(2, static_cast<int>(appMap.size()));
+    EXPECT_CALL(*mockAppScheduler, ScheduleProcessSecurityExit()).Times(1);
+    EXPECT_CALL(*mockAppScheduler1, ScheduleProcessSecurityExit()).Times(1);
+    int32_t ret = serviceInner_->KillApplication("com.ohos.test.helloworld0");
+    EXPECT_EQ(ret, 0);
+    serviceInner_->OnRemoteDied(mockAppScheduler);  // A faked death recipient.
+    auto appMap1 = serviceInner_->appRunningManager_->GetAppRunningRecordMap();
+    EXPECT_EQ(1, static_cast<int>(appMap1.size()));
+    serviceInner_->OnRemoteDied(mockAppScheduler1);
+    auto appMap2 = serviceInner_->appRunningManager_->GetAppRunningRecordMap();
+    EXPECT_EQ(0, static_cast<int>(appMap2.size()));
+}
+
+/*
+ * Feature: AbilityMgr
+ * Function: KillApplication
+ * SubFunction: NA
+ * FunctionPoints: NA
+ * EnvConditions: NA
+ * CaseDescription: NA
+ */
+HWTEST_F(AmsAppLifeCycleModuleTest, KillApplication_002, TestSize.Level1)
+{
+    EXPECT_NE(serviceInner_, nullptr);
+    CHECK_POINTER_IS_NULLPTR(serviceInner_);
+    pid_t pid_0 = 1024;
+    pid_t pid_1 = 2048;
+    sptr<IRemoteObject> token_0 = new (std::nothrow) MockAbilityToken();
+    sptr<IRemoteObject> token_1 = new (std::nothrow) MockAbilityToken();
+    auto abilityInfo_0 = GetAbilityInfo("0", "MainAbility", "p1", "com.ohos.test.helloworld103");
+    auto appInfo_0 = GetApplicationInfo("com.ohos.test.helloworld103");
+    auto abilityInfo_1 = GetAbilityInfo("0", "MainAbility1", "p1", "com.ohos.test.helloworld104");
+    auto appInfo_1 = GetApplicationInfo("com.ohos.test.helloworld104");
+    sptr<MockAppScheduler> mockAppScheduler = new (std::nothrow) MockAppScheduler();
+    sptr<MockAppScheduler> mockAppScheduler1 = new (std::nothrow) MockAppScheduler();
+    TestProcessInfo testProcessInfo;
+
+    testProcessInfo.pid = pid_0;
+    testProcessInfo.isStart = false;
+    auto appRunningRecord_0 =
+        StartProcessAndLoadAbility(mockAppScheduler, token_0, abilityInfo_0, appInfo_0, testProcessInfo);
+
+    testProcessInfo.pid = pid_1;
+    testProcessInfo.isStart = false;
+    auto appRunningRecord_1 =
+        StartProcessAndLoadAbility(mockAppScheduler1, token_1, abilityInfo_1, appInfo_1, testProcessInfo);
+    ChangeAbilityStateAfterAppStart(mockAppScheduler, pid_0);
+    CheckState(appRunningRecord_0, token_0, AbilityState::ABILITY_STATE_READY, ApplicationState::APP_STATE_READY);
+    ChangeAbilityStateAfterAppStart(mockAppScheduler1, pid_1);
+    CheckState(appRunningRecord_1, token_1, AbilityState::ABILITY_STATE_READY, ApplicationState::APP_STATE_READY);
+    int32_t recordId_0 = appRunningRecord_0->GetRecordId();
+    int32_t recordId_1 = appRunningRecord_1->GetRecordId();
+    EXPECT_NE(recordId_0, recordId_1);
+    EXPECT_NE(appRunningRecord_0, appRunningRecord_1);
+    auto appMap = serviceInner_->appRunningManager_->GetAppRunningRecordMap();
+    EXPECT_EQ(2, static_cast<int>(appMap.size()));
+    EXPECT_CALL(*mockAppScheduler, ScheduleProcessSecurityExit()).Times(1);
+    int32_t ret = serviceInner_->KillApplication("com.ohos.test.helloworld103");
+    EXPECT_EQ(ret, 0);
+    serviceInner_->OnRemoteDied(mockAppScheduler);  // A faked death recipient.
+    auto appMap1 = serviceInner_->appRunningManager_->GetAppRunningRecordMap();
+    EXPECT_EQ(1, static_cast<int>(appMap1.size()));
+}
+
+/*
+ * Feature: AbilityMgr
+ * Function: KillApplication
+ * SubFunction: NA
+ * FunctionPoints: NA
+ * EnvConditions: NA
+ * CaseDescription: NA
+ */
+HWTEST_F(AmsAppLifeCycleModuleTest, KillApplication_003, TestSize.Level1)
+{
+    EXPECT_NE(serviceInner_, nullptr);
+    CHECK_POINTER_IS_NULLPTR(serviceInner_);
+    pid_t pid_0 = 1024;
+    sptr<IRemoteObject> token_0 = new (std::nothrow) MockAbilityToken();
+    sptr<IRemoteObject> token_1 = new (std::nothrow) MockAbilityToken();
+    auto abilityInfo_0 = GetAbilityInfo("0", "MainAbility", "p1", "com.ohos.test.helloworld101");
+    auto appInfo_0 = GetApplicationInfo("com.ohos.test.helloworld101");
+    auto abilityInfo_1 = GetAbilityInfo("0", "MainAbility1", "p1", "com.ohos.test.helloworld102");
+    auto appInfo_1 = GetApplicationInfo("com.ohos.test.helloworld102");
+    sptr<MockAppScheduler> mockAppScheduler = new (std::nothrow) MockAppScheduler();
+    TestProcessInfo testProcessInfo;
+
+    testProcessInfo.pid = pid_0;
+    testProcessInfo.isStart = false;
+    auto appRunningRecord_0 =
+        StartProcessAndLoadAbility(mockAppScheduler, token_0, abilityInfo_0, appInfo_0, testProcessInfo);
+    ChangeAbilityStateAfterAppStart(mockAppScheduler, pid_0);
+    CheckState(appRunningRecord_0, token_0, AbilityState::ABILITY_STATE_READY, ApplicationState::APP_STATE_READY);
+
+    ChangeAbilityStateToForegroud(mockAppScheduler, appRunningRecord_0, token_0);
+    CheckState(appRunningRecord_0, token_0, AbilityState::ABILITY_STATE_FOREGROUND,
+        ApplicationState::APP_STATE_FOREGROUND);
+
+    testProcessInfo.pid = pid_0;
+    testProcessInfo.isStart = true;
+    auto appRunningRecord_1 =
+        StartProcessAndLoadAbility(mockAppScheduler, token_1, abilityInfo_1, appInfo_1, testProcessInfo);
+    int32_t recordId_0 = appRunningRecord_0->GetRecordId();
+    int32_t recordId_1 = appRunningRecord_1->GetRecordId();
+    EXPECT_EQ(recordId_0, recordId_1);
+    EXPECT_EQ(appRunningRecord_0, appRunningRecord_1);
+    auto appMap = serviceInner_->appRunningManager_->GetAppRunningRecordMap();
+    EXPECT_EQ(1, static_cast<int>(appMap.size()));
+    EXPECT_CALL(*mockAppScheduler, ScheduleProcessSecurityExit()).Times(1);
+    int32_t ret = serviceInner_->KillApplication("com.ohos.test.helloworld101");
+    EXPECT_EQ(ret, 0);
+    serviceInner_->OnRemoteDied(mockAppScheduler);  // A faked death recipient.
+    auto appMap1 = serviceInner_->appRunningManager_->GetAppRunningRecordMap();
+    EXPECT_EQ(0, static_cast<int>(appMap1.size()));
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS

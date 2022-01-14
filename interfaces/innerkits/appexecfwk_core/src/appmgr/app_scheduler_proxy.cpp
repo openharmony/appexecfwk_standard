@@ -214,7 +214,7 @@ void AppSchedulerProxy::ScheduleLaunchApplication(const AppLaunchData &launchDat
     APP_LOGI("AppSchedulerProxy ScheduleLaunchApplication end");
 }
 
-void AppSchedulerProxy::ScheduleAbilityStageInfo(const AppResidentProcessInfo &residentProcessInfo)
+void AppSchedulerProxy::ScheduleAbilityStageInfo(const HapModuleInfo &abilityStage)
 {
     APP_LOGI("AppSchedulerProxy ScheduleAbilityStageInfo start");
     MessageParcel data;
@@ -224,7 +224,7 @@ void AppSchedulerProxy::ScheduleAbilityStageInfo(const AppResidentProcessInfo &r
         return;
     }
 
-    if (!data.WriteParcelable(&residentProcessInfo)) {
+    if (!data.WriteParcelable(&abilityStage)) {
         return ;
     }
 

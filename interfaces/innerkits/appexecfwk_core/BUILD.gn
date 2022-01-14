@@ -53,7 +53,6 @@ ohos_shared_library("appexecfwk_core") {
     "src/appmgr/app_mgr_stub.cpp",
     "src/appmgr/app_process_data.cpp",
     "src/appmgr/app_record_id.cpp",
-    "src/appmgr/app_resident_process_info.cpp",
     "src/appmgr/app_scheduler_host.cpp",
     "src/appmgr/app_scheduler_proxy.cpp",
     "src/appmgr/app_service_manager.cpp",

@@ -13,16 +13,18 @@
  * limitations under the License.
  */
 
+#define private public
 #include "app_mgr_service_inner.h"
-#include "app_launch_data.h"
-#include "app_log_wrapper.h"
+#undef private
+#include <unistd.h>
 #include <gtest/gtest.h>
 #include "iremote_object.h"
+#include "refbase.h"
+#include "app_launch_data.h"
+#include "app_log_wrapper.h"
 #include "mock_ability_token.h"
 #include "mock_app_scheduler.h"
 #include "mock_app_spawn_client.h"
-#include "refbase.h"
-#include <unistd.h>
 
 using namespace testing::ext;
 using testing::_;
@@ -57,8 +59,8 @@ public:
     void TearDown();
 
 protected:
-    AbilityInfo CreateAbilityInfo(const std::string &ability, const std::string &app) const;
-    ApplicationInfo CreateApplication(const std::string &app) const;
+    std::shared_ptr<AbilityInfo> CreateAbilityInfo(const std::string &ability, const std::string &app) const;
+    std::shared_ptr<ApplicationInfo> CreateApplication(const std::string &app) const;
     sptr<MockAppScheduler> AddApplicationClient(const std::shared_ptr<AppRunningRecord> &appRecord) const;
     TestApplicationPreRecord CreateTestApplicationRecord(const std::string &ability, const sptr<IRemoteObject> &token,
         const std::string &app, const AbilityState abilityState, const ApplicationState appState) const;
@@ -87,19 +89,24 @@ void AmsWorkFlowTest::TearDown()
     g_mockPid = 0;
 }
 
-AbilityInfo AmsWorkFlowTest::CreateAbilityInfo(const std::string &ability, const std::string &app) const
+std::shared_ptr<AbilityInfo> AmsWorkFlowTest::CreateAbilityInfo(
+    const std::string &ability, const std::string &app) const
 {
-    AbilityInfo abilityInfo;
-    abilityInfo.visible = true;
-    abilityInfo.name = "test_ability" + ability;
-    abilityInfo.applicationName = "test_app" + app;
+    auto abilityInfo = std::make_shared<AbilityInfo>();
+    abilityInfo->visible = true;
+    abilityInfo->name = "test_ability" + ability;
+    abilityInfo->applicationName = "test_app" + app;
+    abilityInfo->applicationInfo.bundleName = "test_app" + app;
+
     return abilityInfo;
 }
 
-ApplicationInfo AmsWorkFlowTest::CreateApplication(const std::string &app) const
+std::shared_ptr<ApplicationInfo> AmsWorkFlowTest::CreateApplication(const std::string &app) const
 {
-    ApplicationInfo appInfo;
-    appInfo.name = "test_app" + app;
+    auto appInfo = std::make_shared<ApplicationInfo>();
+    appInfo->name = "test_app" + app;
+    appInfo->bundleName = "test_app" + app;
+
     return appInfo;
 }
 
@@ -119,21 +126,30 @@ TestApplicationPreRecord AmsWorkFlowTest::CreateTestApplicationRecord(const std:
     const sptr<IRemoteObject> &token, const std::string &app, const AbilityState abilityState,
     const ApplicationState appState) const
 {
-    RecordQueryResult result;
-    AbilityInfo abilityInfo = CreateAbilityInfo(ability, app);
-    ApplicationInfo appInfo = CreateApplication(app);
-    abilityInfo.applicationInfo.uid = 0;
-    appInfo.uid = 0;
+    auto abilityInfo = CreateAbilityInfo(ability, app);
+    auto appInfo = CreateApplication(app);
+    abilityInfo->applicationInfo.uid = 0;
+    appInfo->uid = 0;
 
-    auto appRecord = serviceInner_->GetOrCreateAppRunningRecord(token,
-        std::make_shared<ApplicationInfo>(appInfo),
-        std::make_shared<AbilityInfo>(abilityInfo),
-        appInfo.name,
-        0,
-        result);
-    if (!result.appExists) {
-        appRecord->GetPriorityObject()->SetPid(g_mockPid++);
+    BundleInfo bundleInfo;
+    bundleInfo.appId = "com.ohos.test.helloworld_code123";
+    HapModuleInfo hapModuleInfo;
+    hapModuleInfo.moduleName = "module789";
+
+    auto appRecord = serviceInner_->appRunningManager_->CheckAppRunningRecordIsExist(
+        appInfo->name, appInfo->name, appInfo->uid, bundleInfo);
+    if (!appRecord) {
+        appRecord = serviceInner_->CreateAppRunningRecord(
+            token, nullptr, appInfo, abilityInfo, appInfo->name, bundleInfo, hapModuleInfo);
+        serviceInner_->StartProcess(abilityInfo->applicationName,
+            appInfo->name,
+            appRecord,
+            abilityInfo->applicationInfo.uid,
+            abilityInfo->applicationInfo.bundleName);
+    } else {
+        appRecord->AddModule(appInfo, abilityInfo, token, hapModuleInfo);
     }
+
     EXPECT_NE(appRecord, nullptr);
     appRecord->SetEventHandler(handler_);
     auto abilityRecord = appRecord->GetAbilityRunningRecordByToken(token);
@@ -286,7 +302,8 @@ HWTEST_F(AmsWorkFlowTest, BackKey_004, TestSize.Level1)
  * Function: AppLifeCycle
  * SubFunction: WorkFlow
  * FunctionPoints: BackKey
- * CaseDescription: when only one ability on foreground, previous is another app, simulate press back key and exit app
+ * CaseDescription: when only one ability on foreground, previous is another app, simulate press back key and exit
+ app
  */
 HWTEST_F(AmsWorkFlowTest, BackKey_005, TestSize.Level1)
 {
@@ -294,9 +311,11 @@ HWTEST_F(AmsWorkFlowTest, BackKey_005, TestSize.Level1)
     sptr<IRemoteObject> tokenA = new MockAbilityToken();
     TestApplicationPreRecord appA = CreateTestApplicationRecord(
         "A", tokenA, "A", AbilityState::ABILITY_STATE_FOREGROUND, ApplicationState::APP_STATE_FOREGROUND);
+    appA.appRecord_->LaunchPendingAbilities();
     sptr<IRemoteObject> tokenB = new MockAbilityToken();
     TestApplicationPreRecord appB = CreateTestApplicationRecord(
         "B", tokenB, "B", AbilityState::ABILITY_STATE_BACKGROUND, ApplicationState::APP_STATE_BACKGROUND);
+    appB.appRecord_->LaunchPendingAbilities();
     EXPECT_CALL(*(appB.mockAppScheduler_), ScheduleForegroundApplication()).Times(1);
     EXPECT_CALL(*(appA.mockAppScheduler_), ScheduleBackgroundApplication()).Times(1);
     EXPECT_CALL(*(appA.mockAppScheduler_), ScheduleCleanAbility(_)).Times(1);
@@ -330,12 +349,14 @@ HWTEST_F(AmsWorkFlowTest, BackKey_006, TestSize.Level1)
     sptr<IRemoteObject> tokenA = new MockAbilityToken();
     TestApplicationPreRecord appA = CreateTestApplicationRecord(
         "A", tokenA, "A", AbilityState::ABILITY_STATE_FOREGROUND, ApplicationState::APP_STATE_FOREGROUND);
+    appA.appRecord_->LaunchPendingAbilities();
     sptr<IRemoteObject> tokenB = new MockAbilityToken();
     CreateTestApplicationRecord(
         "B", tokenB, "A", AbilityState::ABILITY_STATE_FOREGROUND, ApplicationState::APP_STATE_FOREGROUND);
     sptr<IRemoteObject> tokenC = new MockAbilityToken();
     TestApplicationPreRecord appC = CreateTestApplicationRecord(
         "C", tokenC, "C", AbilityState::ABILITY_STATE_BACKGROUND, ApplicationState::APP_STATE_BACKGROUND);
+    appC.appRecord_->LaunchPendingAbilities();
     EXPECT_CALL(*(appC.mockAppScheduler_), ScheduleForegroundApplication()).Times(1);
     EXPECT_CALL(*(appA.mockAppScheduler_), ScheduleBackgroundApplication()).Times(1);
     EXPECT_CALL(*(appA.mockAppScheduler_), ScheduleCleanAbility(_)).Times(2);
@@ -374,12 +395,14 @@ HWTEST_F(AmsWorkFlowTest, BackKey_007, TestSize.Level1)
     sptr<IRemoteObject> tokenA = new MockAbilityToken();
     TestApplicationPreRecord appA = CreateTestApplicationRecord(
         "A", tokenA, "A", AbilityState::ABILITY_STATE_FOREGROUND, ApplicationState::APP_STATE_FOREGROUND);
+    appA.appRecord_->LaunchPendingAbilities();
     sptr<IRemoteObject> tokenB = new MockAbilityToken();
     CreateTestApplicationRecord(
         "B", tokenB, "A", AbilityState::ABILITY_STATE_FOREGROUND, ApplicationState::APP_STATE_FOREGROUND);
     sptr<IRemoteObject> tokenC = new MockAbilityToken();
     TestApplicationPreRecord appC = CreateTestApplicationRecord(
         "C", tokenC, "C", AbilityState::ABILITY_STATE_BACKGROUND, ApplicationState::APP_STATE_BACKGROUND);
+    appC.appRecord_->LaunchPendingAbilities();
     sptr<IRemoteObject> tokenD = new MockAbilityToken();
     CreateTestApplicationRecord(
         "D", tokenD, "C", AbilityState::ABILITY_STATE_BACKGROUND, ApplicationState::APP_STATE_BACKGROUND);
@@ -500,6 +523,7 @@ HWTEST_F(AmsWorkFlowTest, ScreenOff_004, TestSize.Level1)
     sptr<IRemoteObject> tokenA = new MockAbilityToken();
     TestApplicationPreRecord appA = CreateTestApplicationRecord(
         "A", tokenA, "A", AbilityState::ABILITY_STATE_FOREGROUND, ApplicationState::APP_STATE_FOREGROUND);
+    appA.appRecord_->LaunchPendingAbilities();
     EXPECT_CALL(*(appA.mockAppScheduler_), ScheduleBackgroundApplication()).Times(1);
     EXPECT_CALL(*(appA.mockAppScheduler_), ScheduleCleanAbility(_)).Times(1);
     EXPECT_CALL(*(appA.mockAppScheduler_), ScheduleTerminateApplication()).Times(1);
@@ -528,6 +552,7 @@ HWTEST_F(AmsWorkFlowTest, ScreenOff_005, TestSize.Level1)
     sptr<IRemoteObject> tokenA = new MockAbilityToken();
     TestApplicationPreRecord appA = CreateTestApplicationRecord(
         "A", tokenA, "A", AbilityState::ABILITY_STATE_FOREGROUND, ApplicationState::APP_STATE_FOREGROUND);
+    appA.appRecord_->LaunchPendingAbilities();
     sptr<IRemoteObject> tokenB = new MockAbilityToken();
     CreateTestApplicationRecord(
         "B", tokenB, "A", AbilityState::ABILITY_STATE_FOREGROUND, ApplicationState::APP_STATE_FOREGROUND);
@@ -564,6 +589,7 @@ HWTEST_F(AmsWorkFlowTest, ScreenOff_006, TestSize.Level1)
     sptr<IRemoteObject> tokenA = new MockAbilityToken();
     TestApplicationPreRecord appA = CreateTestApplicationRecord(
         "A", tokenA, "A", AbilityState::ABILITY_STATE_FOREGROUND, ApplicationState::APP_STATE_FOREGROUND);
+    appA.appRecord_->LaunchPendingAbilities();
     sptr<IRemoteObject> tokenB = new MockAbilityToken();
     CreateTestApplicationRecord(
         "B", tokenB, "A", AbilityState::ABILITY_STATE_BACKGROUND, ApplicationState::APP_STATE_FOREGROUND);
@@ -750,10 +776,11 @@ HWTEST_F(AmsWorkFlowTest, ChangeAbility_003, TestSize.Level1)
     sptr<IRemoteObject> tokenA = new MockAbilityToken();
     TestApplicationPreRecord appA = CreateTestApplicationRecord(
         "A", tokenA, "A", AbilityState::ABILITY_STATE_FOREGROUND, ApplicationState::APP_STATE_FOREGROUND);
+    appA.appRecord_->LaunchPendingAbilities();
     sptr<IRemoteObject> tokenB = new MockAbilityToken();
     TestApplicationPreRecord appB = CreateTestApplicationRecord(
         "B", tokenB, "B", AbilityState::ABILITY_STATE_READY, ApplicationState::APP_STATE_READY);
-
+    appB.appRecord_->LaunchPendingAbilities();
     EXPECT_CALL(*(appB.mockAppScheduler_), ScheduleForegroundApplication()).Times(1);
     EXPECT_CALL(*(appA.mockAppScheduler_), ScheduleBackgroundApplication()).Times(1);
 
@@ -776,9 +803,6 @@ HWTEST_F(AmsWorkFlowTest, ChangeAbility_003, TestSize.Level1)
     auto abilitiesB = appB.appRecord_->GetAbilities();
     EXPECT_NE(nullptr, abilitiesA[tokenA]);
     EXPECT_NE(nullptr, abilitiesB[tokenB]);
-    pid_t pidA = appA.appRecord_->GetPriorityObject()->GetPid();
-    pid_t pidB = appB.appRecord_->GetPriorityObject()->GetPid();
-    EXPECT_NE(pidA, pidB);
 }
 
 /*
@@ -794,13 +818,14 @@ HWTEST_F(AmsWorkFlowTest, ChangeAbility_004, TestSize.Level1)
     sptr<IRemoteObject> tokenA = new MockAbilityToken();
     TestApplicationPreRecord appA = CreateTestApplicationRecord(
         "A", tokenA, "A", AbilityState::ABILITY_STATE_FOREGROUND, ApplicationState::APP_STATE_FOREGROUND);
+    appA.appRecord_->LaunchPendingAbilities();
     sptr<IRemoteObject> tokenB = new MockAbilityToken();
     CreateTestApplicationRecord(
         "B", tokenB, "A", AbilityState::ABILITY_STATE_FOREGROUND, ApplicationState::APP_STATE_FOREGROUND);
     sptr<IRemoteObject> tokenC = new MockAbilityToken();
     TestApplicationPreRecord appC = CreateTestApplicationRecord(
         "C", tokenC, "C", AbilityState::ABILITY_STATE_READY, ApplicationState::APP_STATE_READY);
-
+    appC.appRecord_->LaunchPendingAbilities();
     EXPECT_CALL(*(appC.mockAppScheduler_), ScheduleForegroundApplication()).Times(1);
     EXPECT_CALL(*(appA.mockAppScheduler_), ScheduleBackgroundApplication()).Times(1);
 
@@ -829,10 +854,6 @@ HWTEST_F(AmsWorkFlowTest, ChangeAbility_004, TestSize.Level1)
     EXPECT_NE(nullptr, abilitiesA[tokenA]);
     EXPECT_NE(nullptr, abilitiesA[tokenB]);
     EXPECT_NE(nullptr, abilitiesC[tokenC]);
-
-    pid_t pidA = appA.appRecord_->GetPriorityObject()->GetPid();
-    pid_t pidC = appC.appRecord_->GetPriorityObject()->GetPid();
-    EXPECT_NE(pidA, pidC);
 }
 
 /*

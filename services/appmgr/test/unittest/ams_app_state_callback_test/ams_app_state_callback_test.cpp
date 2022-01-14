@@ -53,9 +53,13 @@ HWTEST_F(AmsAppStateCallBackTest, OnRemoteRequest_001, TestSize.Level1)
     sptr<AppStateCallbackHost> host(new AppStateCallbackHost());
     MessageParcel data;
     MessageParcel reply;
-    MessageOption option{MessageOption::TF_ASYNC};
+    MessageOption option {MessageOption::TF_ASYNC};
+
+    AppData appDataInfo;
     AppProcessData processData;
-    processData.appName = "test_name";
+    appDataInfo.appName = "test_name";
+    appDataInfo.uid = 2;
+    processData.appDatas.emplace_back(appDataInfo);
     processData.pid = 1;
     processData.appState = ApplicationState::APP_STATE_FOREGROUND;
     data.WriteParcelable(&processData);
@@ -98,8 +102,11 @@ HWTEST_F(AmsAppStateCallBackTest, OnRemoteRequest_002, TestSize.Level1)
 HWTEST_F(AmsAppStateCallBackTest, AppProcessData_001, TestSize.Level1)
 {
     Parcel data;
+    AppData appDataInfo;
     AppProcessData processData;
-    processData.appName = "test_name";
+    appDataInfo.appName = "test_name";
+    appDataInfo.uid = 2;
+    processData.appDatas.emplace_back(appDataInfo);
     processData.pid = 1;
     processData.appState = ApplicationState::APP_STATE_FOREGROUND;
 
@@ -109,7 +116,11 @@ HWTEST_F(AmsAppStateCallBackTest, AppProcessData_001, TestSize.Level1)
     sptr<AppProcessData> newProcessData = AppProcessData::Unmarshalling(data);
     EXPECT_NE(nullptr, newProcessData);
 
-    EXPECT_EQ(processData.appName, newProcessData->appName);
+    for (auto i = 0; i < processData.appDatas.size(); i++) {
+        EXPECT_EQ(processData.appDatas[i].appName, newProcessData->appDatas[i].appName);
+        EXPECT_EQ(processData.appDatas[i].uid, newProcessData->appDatas[i].uid);
+    }
+
     EXPECT_EQ(processData.pid, newProcessData->pid);
     EXPECT_EQ(processData.appState, newProcessData->appState);
 }

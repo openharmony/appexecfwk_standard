@@ -122,7 +122,7 @@ public:
         return abilityLaunchTime;
     }
 
-    void ScheduleAbilityStageInfo(const AppResidentProcessInfo &) override
+    void ScheduleAbilityStageInfo(const HapModuleInfo &) override
     {}
 
     void Reset() override
@@ -205,12 +205,20 @@ HWTEST_F(AmsAbilityRunningRecordModuleTest, AddAbilityRunningRecord_001, TestSiz
     auto appRunningRecord = QueryAppRunningRecord();
     auto caseAbilityInfo = std::make_shared<AbilityInfo>();
     caseAbilityInfo->name = ABILITY_RECORD_NAME;
+    auto appInfo = std::make_shared<ApplicationInfo>();
+    appInfo->bundleName = "com.ohos.test.helloworld";
+    HapModuleInfo hapModuleInfo;
+    hapModuleInfo.moduleName = "Module";
     sptr<IRemoteObject> token = new MockAbilityToken();
-    auto caseAbilityRunningRecord = appRunningRecord->AddAbility(token, caseAbilityInfo);
+    appRunningRecord->AddModule(appInfo, caseAbilityInfo, token, hapModuleInfo);
+    auto moduleRecord = appRunningRecord->GetModuleRecordByModuleName(appInfo->bundleName, hapModuleInfo.moduleName);
+    auto caseAbilityRunningRecord = moduleRecord->AddAbility(token, caseAbilityInfo);
 
-    EXPECT_TRUE(caseAbilityRunningRecord != nullptr);
+    EXPECT_TRUE(caseAbilityRunningRecord == nullptr);
+    caseAbilityRunningRecord = moduleRecord->GetAbilityRunningRecord(ABILITY_RECORD_NAME);
     EXPECT_EQ(caseAbilityRunningRecord, appRunningRecord->GetAbilityRunningRecordByToken(token));
-    auto abilityRunningRecordWithSameName = appRunningRecord->AddAbility(token, caseAbilityInfo);
+    auto abilityRunningRecordWithSameName = moduleRecord->AddAbility(token, caseAbilityInfo);
+    EXPECT_TRUE(abilityRunningRecordWithSameName == nullptr);
     appRunningRecord->ClearAbility(caseAbilityRunningRecord);
     EXPECT_TRUE(appRunningRecord->GetAbilityRunningRecordByToken(token) == nullptr);
     APP_LOGI("AddAbilityRunningRecord_001 end");
@@ -229,13 +237,21 @@ HWTEST_F(AmsAbilityRunningRecordModuleTest, AddAbilityRunningRecord_002, TestSiz
     APP_LOGI("AddAbilityRunningRecord_002 start");
     int i;
     auto appRunningRecord = QueryAppRunningRecord();
+    auto appInfo = std::make_shared<ApplicationInfo>();
+    appInfo->bundleName = "com.ohos.test.helloworld";
 
     for (i = 0; i < ABILITY_RUNNING_RECORD_NUM; i++) {
         auto caseAbilityInfo = std::make_shared<AbilityInfo>();
         caseAbilityInfo->name = ABILITY_RECORD_NAME + "_" + std::to_string(i);
         sptr<IRemoteObject> token = new MockAbilityToken();
-        auto caseAbilityRunningRecord = appRunningRecord->AddAbility(token, caseAbilityInfo);
-        EXPECT_TRUE(caseAbilityRunningRecord != nullptr);
+        HapModuleInfo hapModuleInfo;
+        hapModuleInfo.moduleName = "Module";
+        appRunningRecord->AddModule(appInfo, caseAbilityInfo, token, hapModuleInfo);
+        auto moduleRecord = appRunningRecord->GetModuleRecordByModuleName(appInfo->bundleName,
+            hapModuleInfo.moduleName);
+        auto caseAbilityRunningRecord = moduleRecord->AddAbility(token, caseAbilityInfo);
+        EXPECT_TRUE(caseAbilityRunningRecord == nullptr);
+        caseAbilityRunningRecord = moduleRecord->GetAbilityRunningRecord(ABILITY_RECORD_NAME + "_" + std::to_string(i));
         EXPECT_EQ(caseAbilityRunningRecord, appRunningRecord->GetAbilityRunningRecordByToken(token));
         EXPECT_EQ(caseAbilityRunningRecord->GetState(), AbilityState::ABILITY_STATE_BEGIN);
     }
@@ -255,13 +271,21 @@ HWTEST_F(AmsAbilityRunningRecordModuleTest, UpdateAbilityRunningRecord_001, Test
     APP_LOGI("UpdateAbilityRunningRecord_001 start");
     int i;
     auto appRunningRecord = QueryAppRunningRecord();
+    auto appInfo = std::make_shared<ApplicationInfo>();
+    appInfo->bundleName = "com.ohos.test.helloworld";
 
     for (i = 0; i < ABILITY_RUNNING_RECORD_NUM; i++) {
         auto caseAbilityInfo = std::make_shared<AbilityInfo>();
         caseAbilityInfo->name = ABILITY_RECORD_NAME + "_" + std::to_string(i);
         sptr<IRemoteObject> token = new MockAbilityToken();
-        auto caseAbilityRunningRecord = appRunningRecord->AddAbility(token, caseAbilityInfo);
-        EXPECT_TRUE(caseAbilityRunningRecord != nullptr);
+        HapModuleInfo hapModuleInfo;
+        hapModuleInfo.moduleName = "Module";
+        appRunningRecord->AddModule(appInfo, caseAbilityInfo, token, hapModuleInfo);
+        auto moduleRecord = appRunningRecord->GetModuleRecordByModuleName(appInfo->bundleName,
+            hapModuleInfo.moduleName);
+        auto caseAbilityRunningRecord = moduleRecord->AddAbility(token, caseAbilityInfo);
+        EXPECT_TRUE(caseAbilityRunningRecord == nullptr);
+        caseAbilityRunningRecord = moduleRecord->GetAbilityRunningRecord(ABILITY_RECORD_NAME + "_" + std::to_string(i));
         EXPECT_EQ(caseAbilityRunningRecord, appRunningRecord->GetAbilityRunningRecordByToken(token));
         caseAbilityRunningRecord->SetState(AbilityState::ABILITY_STATE_BACKGROUND);
         appRunningRecord->SetState(ApplicationState::APP_STATE_FOREGROUND);
@@ -286,13 +310,21 @@ HWTEST_F(AmsAbilityRunningRecordModuleTest, UpdateAbilityRunningRecord_002, Test
     APP_LOGI("UpdateAbilityRunningRecord_002 start");
     int i;
     auto appRunningRecord = QueryAppRunningRecord();
+    auto appInfo = std::make_shared<ApplicationInfo>();
+    appInfo->bundleName = "com.ohos.test.helloworld";
 
     for (i = 0; i < ABILITY_RUNNING_RECORD_NUM; i++) {
         auto caseAbilityInfo = std::make_shared<AbilityInfo>();
         caseAbilityInfo->name = ABILITY_RECORD_NAME + "_" + std::to_string(i);
         sptr<IRemoteObject> token = new MockAbilityToken();
-        auto caseAbilityRunningRecord = appRunningRecord->AddAbility(token, caseAbilityInfo);
-        EXPECT_TRUE(caseAbilityRunningRecord != nullptr);
+        HapModuleInfo hapModuleInfo;
+        hapModuleInfo.moduleName = "Module";
+        appRunningRecord->AddModule(appInfo, caseAbilityInfo, token, hapModuleInfo);
+        auto moduleRecord = appRunningRecord->GetModuleRecordByModuleName(appInfo->bundleName,
+            hapModuleInfo.moduleName);
+        auto caseAbilityRunningRecord = moduleRecord->AddAbility(token, caseAbilityInfo);
+        EXPECT_TRUE(caseAbilityRunningRecord == nullptr);
+        caseAbilityRunningRecord = moduleRecord->GetAbilityRunningRecord(ABILITY_RECORD_NAME + "_" + std::to_string(i));
         EXPECT_EQ(caseAbilityRunningRecord, appRunningRecord->GetAbilityRunningRecordByToken(token));
         appRunningRecord->UpdateAbilityState(token, AbilityState::ABILITY_STATE_END);
         EXPECT_EQ(caseAbilityRunningRecord->GetState(), AbilityState::ABILITY_STATE_BEGIN);
@@ -313,13 +345,21 @@ HWTEST_F(AmsAbilityRunningRecordModuleTest, UpdateAbilityRunningRecord_003, Test
     APP_LOGI("UpdateAbilityRunningRecord_003 start");
     int i;
     auto appRunningRecord = QueryAppRunningRecord();
+    auto appInfo = std::make_shared<ApplicationInfo>();
+    appInfo->bundleName = "com.ohos.test.helloworld";
 
     for (i = 0; i < ABILITY_RUNNING_RECORD_NUM; i++) {
         auto caseAbilityInfo = std::make_shared<AbilityInfo>();
         caseAbilityInfo->name = ABILITY_RECORD_NAME + "_" + std::to_string(i);
         sptr<IRemoteObject> token = new MockAbilityToken();
-        auto caseAbilityRunningRecord = appRunningRecord->AddAbility(token, caseAbilityInfo);
-        EXPECT_TRUE(caseAbilityRunningRecord != nullptr);
+        HapModuleInfo hapModuleInfo;
+        hapModuleInfo.moduleName = "Module";
+        appRunningRecord->AddModule(appInfo, caseAbilityInfo, token, hapModuleInfo);
+        auto moduleRecord = appRunningRecord->GetModuleRecordByModuleName(appInfo->bundleName,
+            hapModuleInfo.moduleName);
+        auto caseAbilityRunningRecord = moduleRecord->AddAbility(token, caseAbilityInfo);
+        EXPECT_TRUE(caseAbilityRunningRecord == nullptr);
+        caseAbilityRunningRecord = moduleRecord->GetAbilityRunningRecord(ABILITY_RECORD_NAME + "_" + std::to_string(i));
         EXPECT_EQ(caseAbilityRunningRecord, appRunningRecord->GetAbilityRunningRecordByToken(token));
         caseAbilityRunningRecord->SetState(AbilityState::ABILITY_STATE_FOREGROUND);
         appRunningRecord->SetState(ApplicationState::APP_STATE_BACKGROUND);
@@ -344,13 +384,21 @@ HWTEST_F(AmsAbilityRunningRecordModuleTest, ClearAbilityRunningRecord_001, TestS
     APP_LOGI("ClearAbilityRunningRecord_001 start");
     int i;
     auto appRunningRecord = QueryAppRunningRecord();
+    auto appInfo = std::make_shared<ApplicationInfo>();
+    appInfo->bundleName = "com.ohos.test.helloworld";
 
     for (i = 0; i < ABILITY_RUNNING_RECORD_NUM; i++) {
         auto caseAbilityInfo = std::make_shared<AbilityInfo>();
         caseAbilityInfo->name = ABILITY_RECORD_NAME + "_" + std::to_string(i);
         sptr<IRemoteObject> token = new MockAbilityToken();
-        auto caseAbilityRunningRecord = appRunningRecord->AddAbility(token, caseAbilityInfo);
-        EXPECT_TRUE(caseAbilityRunningRecord != nullptr);
+        HapModuleInfo hapModuleInfo;
+        hapModuleInfo.moduleName = "Module";
+        appRunningRecord->AddModule(appInfo, caseAbilityInfo, token, hapModuleInfo);
+        auto moduleRecord = appRunningRecord->GetModuleRecordByModuleName(appInfo->bundleName,
+            hapModuleInfo.moduleName);
+        auto caseAbilityRunningRecord = moduleRecord->AddAbility(token, caseAbilityInfo);
+        EXPECT_TRUE(caseAbilityRunningRecord == nullptr);
+        caseAbilityRunningRecord = moduleRecord->GetAbilityRunningRecord(ABILITY_RECORD_NAME + "_" + std::to_string(i));
         EXPECT_EQ(caseAbilityRunningRecord, appRunningRecord->GetAbilityRunningRecordByToken(token));
     }
     for (i = 0; i < ABILITY_RUNNING_RECORD_NUM; i++) {
@@ -377,13 +425,21 @@ HWTEST_F(AmsAbilityRunningRecordModuleTest, ClearAbilityRunningRecord_002, TestS
     APP_LOGI("ClearAbilityRunningRecord_002 start");
     int i;
     auto appRunningRecord = QueryAppRunningRecord();
+    auto appInfo = std::make_shared<ApplicationInfo>();
+    appInfo->bundleName = "com.ohos.test.helloworld";
 
     for (i = 0; i < ABILITY_RUNNING_RECORD_NUM; i++) {
         auto caseAbilityInfo = std::make_shared<AbilityInfo>();
         caseAbilityInfo->name = ABILITY_RECORD_NAME + "_" + std::to_string(i);
         sptr<IRemoteObject> token = new MockAbilityToken();
-        auto caseAbilityRunningRecord = appRunningRecord->AddAbility(token, caseAbilityInfo);
-        EXPECT_TRUE(caseAbilityRunningRecord != nullptr);
+        HapModuleInfo hapModuleInfo;
+        hapModuleInfo.moduleName = "Module";
+        appRunningRecord->AddModule(appInfo, caseAbilityInfo, token, hapModuleInfo);
+        auto moduleRecord = appRunningRecord->GetModuleRecordByModuleName(appInfo->bundleName,
+            hapModuleInfo.moduleName);
+        auto caseAbilityRunningRecord = moduleRecord->AddAbility(token, caseAbilityInfo);
+        EXPECT_TRUE(caseAbilityRunningRecord == nullptr);
+        caseAbilityRunningRecord = moduleRecord->GetAbilityRunningRecord(ABILITY_RECORD_NAME + "_" + std::to_string(i));
         EXPECT_EQ(caseAbilityRunningRecord, appRunningRecord->GetAbilityRunningRecordByToken(token));
         appRunningRecord->ClearAbility(caseAbilityRunningRecord);
         EXPECT_TRUE(appRunningRecord->GetAbilityRunningRecordByToken(token) == nullptr);
@@ -408,13 +464,21 @@ HWTEST_F(AmsAbilityRunningRecordModuleTest, OperateAbilityRunningRecord_001, Tes
     APP_LOGI("OperateAbilityRunningRecord_001 start");
     int i;
     auto appRunningRecord = QueryAppRunningRecord();
+    auto appInfo = std::make_shared<ApplicationInfo>();
+    appInfo->bundleName = "com.ohos.test.helloworld";
 
     for (i = 0; i < ABILITY_RUNNING_RECORD_NUM; i++) {
         auto caseAbilityInfo = std::make_shared<AbilityInfo>();
         caseAbilityInfo->name = ABILITY_RECORD_NAME + "_" + std::to_string(i);
         sptr<IRemoteObject> token = new MockAbilityToken();
-        auto caseAbilityRunningRecord = appRunningRecord->AddAbility(token, caseAbilityInfo);
-        EXPECT_TRUE(caseAbilityRunningRecord != nullptr);
+        HapModuleInfo hapModuleInfo;
+        hapModuleInfo.moduleName = "Module";
+        appRunningRecord->AddModule(appInfo, caseAbilityInfo, token, hapModuleInfo);
+        auto moduleRecord = appRunningRecord->GetModuleRecordByModuleName(appInfo->bundleName,
+            hapModuleInfo.moduleName);
+        auto caseAbilityRunningRecord = moduleRecord->AddAbility(token, caseAbilityInfo);
+        EXPECT_TRUE(caseAbilityRunningRecord == nullptr);
+        caseAbilityRunningRecord = moduleRecord->GetAbilityRunningRecord(ABILITY_RECORD_NAME + "_" + std::to_string(i));
         EXPECT_EQ(caseAbilityRunningRecord, appRunningRecord->GetAbilityRunningRecordByToken(token));
     }
     for (i = 0; i < ABILITY_RUNNING_RECORD_NUM; i++) {
