@@ -32,7 +32,6 @@ using namespace OHOS::AppExecFwk::Constants;
 using namespace OHOS::AppExecFwk::ProfileReader;
 
 namespace {
-
 const std::string RESOURCE_ROOT_PATH = "/data/test/resource/bms/parse_bundle/";
 const std::string NEW_APP = "new";
 const std::string BREAK_ZIP = "break_zip";
@@ -197,7 +196,6 @@ const nlohmann::json CONFIG_JSON = R"(
         }
     }
 )"_json;
-
 }  // namespace
 
 class BmsBundleParserTest : public testing::Test {
@@ -814,29 +812,29 @@ HWTEST_F(BmsBundleParserTest, TestParse_2400, Function | SmallTest | Level1)
         ],
         "forms": [
             {
-            "description": "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-",
-            "type": "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-",
-            "colorMode": "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-",
-            "isDefault": "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-",
-            "updateEnabled": "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-",
-            "scheduledUpateTime": "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-",
-            "updateDuration": "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-",
-            "defaultDimension": "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-",
-            "supportDimensions": [
-              "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-",
-              "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-"
-            ],
-            "jsComponentName": "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-",
-            "deepLink": "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-",
-            "metaData": {
-              "customizeData": [
-                {
-                  "name": "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-",
-                  "value": "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-"
+                "description": "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-",
+                "type": "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-",
+                "colorMode": "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-",
+                "isDefault": "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-",
+                "updateEnabled": "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-",
+                "scheduledUpateTime": "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-",
+                "updateDuration": "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-",
+                "defaultDimension": "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-",
+                "supportDimensions": [
+                    "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-",
+                    "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-"
+                ],
+                "jsComponentName": "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-",
+                "deepLink": "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-",
+                "metaData": {
+                    "customizeData": [
+                        {
+                            "name": "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-",
+                            "value": "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-"
+                        }
+                    ]
                 }
-              ]
             }
-          }
         ],
         "name": "com.example.napi_test_suite.MainAbility",
         "icon": "$media:icon",

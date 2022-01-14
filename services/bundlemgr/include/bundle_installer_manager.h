@@ -30,7 +30,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class BundleInstallerManager : public EventHandler {
 public:
     explicit BundleInstallerManager(const std::shared_ptr<EventRunner> &runner);
@@ -116,7 +115,6 @@ private:
 
     DISALLOW_COPY_AND_MOVE(BundleInstallerManager);
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_BUNDLE_INSTALLER_MANAGER_H

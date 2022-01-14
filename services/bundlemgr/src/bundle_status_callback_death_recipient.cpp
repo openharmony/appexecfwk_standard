@@ -22,7 +22,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 BundleStatusCallbackDeathRecipient::BundleStatusCallbackDeathRecipient()
 {
     APP_LOGI("create BundleStatusCallbackDeathRecipient instance");
@@ -49,6 +48,5 @@ void BundleStatusCallbackDeathRecipient::OnRemoteDied(const wptr<IRemoteObject> 
     }
     dataMgr->ClearBundleStatusCallback(callback);
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

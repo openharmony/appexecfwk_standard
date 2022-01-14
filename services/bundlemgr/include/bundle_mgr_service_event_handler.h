@@ -21,7 +21,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class BundleMgrService;
 
 class BMSEventHandler : public EventHandler {
@@ -62,7 +61,6 @@ private:
      */
     void OnStartScanning(int32_t userId = Constants::UNSPECIFIED_USERID);
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_BUNDLE_MGR_SERVICE_EVENT_HANDLER_H
