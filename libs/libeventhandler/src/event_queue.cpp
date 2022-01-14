@@ -296,16 +296,12 @@ InnerEvent::Pointer EventQueue::GetExpiredEventLocked(InnerEvent::TimePoint &nex
 
     // If found nothing, enter idle mode and make a time stamp.
     if (!isIdle_) {
+        idleTimeStamp_ = now;
         isIdle_ = true;
     }
-    idleTimeStamp_ = now;
 
     if (!idleEvents_.empty()) {
         const auto &idleEvent = idleEvents_.front();
-
-        if (wakeUpTime_ > idleEvent->GetHandleTime()) {
-            wakeUpTime_ = idleEvent->GetHandleTime();
-        }
 
         // Return the idle event that has been sent before time stamp and reaches its handle time.
         if ((idleEvent->GetSendTime() <= idleTimeStamp_) && (idleEvent->GetHandleTime() <= now)) {
