@@ -1929,7 +1929,7 @@ void InnerBundleInfo::GetShortcutInfos(std::vector<ShortcutInfo> &shortcutInfos)
 {
     if (isNewVersion_) {
         AbilityInfo abilityInfo;
-        abilityInfo.GetMainAbilityInfo(abilityInfo);
+        GetMainAbilityInfo(abilityInfo);
         if (!abilityInfo.resourcePath.empty() && abilityInfo.metadata.size() > 0) {
             std::vector<std::string> rawJson;
             BundleMgrClient bundleMgrClient;
