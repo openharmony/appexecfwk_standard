@@ -26,7 +26,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class BundleDataStorageDatabase :
     public IBundleDataStorage, public std::enable_shared_from_this<BundleDataStorageDatabase> {
 public:
@@ -72,7 +71,6 @@ private:
     // std::shared_ptr<DataChangeListener> dataChangeListener_;
     mutable std::mutex kvStorePtrMutex_;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_BUNDLE_DATA_STORAGE_DATABASE_H

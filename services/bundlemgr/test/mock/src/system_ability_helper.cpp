@@ -24,9 +24,7 @@
 namespace OHOS {
 namespace AppExecFwk {
 namespace {
-
 std::map<int32_t, sptr<IRemoteObject>> g_abilities;
-
 }  // namespace
 
 sptr<IRemoteObject> SystemAbilityHelper::GetSystemAbility(const int32_t systemAbilityId)
@@ -62,6 +60,5 @@ bool SystemAbilityHelper::RemoveSystemAbility(const int32_t systemAbilityId)
     // mock helper always return true.
     return true;
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

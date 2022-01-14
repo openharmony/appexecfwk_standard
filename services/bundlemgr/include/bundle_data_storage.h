@@ -23,7 +23,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class BundleDataStorage : public IBundleDataStorage {
 public:
     /**

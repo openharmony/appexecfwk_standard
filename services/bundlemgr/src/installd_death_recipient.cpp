@@ -20,12 +20,10 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 void InstalldDeathRecipient::OnRemoteDied([[maybe_unused]] const wptr<IRemoteObject> &remote)
 {
     APP_LOGI("installd service died, remove the proxy object");
     InstalldClient::GetInstance()->ResetInstalldProxy();
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
