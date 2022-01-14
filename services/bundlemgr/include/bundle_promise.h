@@ -16,6 +16,7 @@
 #ifndef FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_BUNDLE_PROMISE_H
 #define FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_BUNDLE_PROMISE_H
 
+#include <atomic>
 #include <future>
 
 #include "app_log_wrapper.h"
@@ -32,7 +33,14 @@ public:
      */
     void NotifyAllTasksExecuteFinished()
     {
+        std::lock_guard<std::mutex> lock(notifyTaskMutex_);
+        if (hasNotified_) {
+            APP_LOGE("promise has executed and abort when NotifyAllTasksExecuteFinished.");
+            return;
+        }
+
         APP_LOGD("Notify all tasks has executed finished.");
+        hasNotified_ = true;
         promise_.set_value();
     }
     /**
@@ -41,11 +49,23 @@ public:
      */
     void WaitForAllTasksExecute()
     {
+        std::lock_guard<std::mutex> lock(waitTaskMutex_);
+        if (hasWaited_) {
+            APP_LOGE("promise has executed and abort when WaitForAllTasksExecute.");
+            return;
+        }
+
         APP_LOGD("Wait for all tasks execute.");
-        promise_.get_future().get();
+        hasWaited_ = true;
+        future_.get();
     }
 private:
+    std::atomic_bool hasNotified_ = false;
+    std::atomic_bool hasWaited_ = false;
     std::promise<void> promise_;
+    std::future<void> future_ = promise_.get_future();
+    std::mutex waitTaskMutex_;
+    std::mutex notifyTaskMutex_;
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS
