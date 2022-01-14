@@ -14,7 +14,6 @@
 group("services_target") {
   deps = [
     "appmgr:ams_target",
-    "bundlemgr:bms_target",
     "formmgr:fms_target",
   ]
 }
