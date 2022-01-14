@@ -18,6 +18,7 @@
 
 #include <string>
 
+#include "bundle_constants.h"
 #include "parcel.h"
 namespace OHOS {
 namespace AppExecFwk {
@@ -39,7 +40,7 @@ enum class InstallLocation {
 struct InstallParam : public Parcelable {
     InstallFlag installFlag = InstallFlag::NORMAL;
     InstallLocation installLocation = InstallLocation::INTERNAL_ONLY;
-    int userId = 0;
+    int userId = Constants::UNSPECIFIED_USERID;
     // is keep user data while uninstall.
     bool isKeepData = false;
     bool noCheckSignature = false;

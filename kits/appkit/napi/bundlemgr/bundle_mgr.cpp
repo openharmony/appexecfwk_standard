@@ -2484,54 +2484,72 @@ static bool ParseInstallParam(napi_env env, InstallParam &installParam, napi_val
         HILOG_ERROR("args type incorrect!");
         return false;
     }
+
     napi_value property = nullptr;
-    status = napi_get_named_property(env, args, "userId", &property);
-    if (status != napi_ok) {
-        HILOG_ERROR("cannot find property userId");
-        return false;
+    bool hasKey = false;
+    napi_has_named_property(env, args, "userId", &hasKey);
+    if (hasKey) {
+        status = napi_get_named_property(env, args, "userId", &property);
+        if (status != napi_ok) {
+            HILOG_ERROR("napi get named property error!");
+            return false;
+        }
+
+        napi_typeof(env, property, &valueType);
+        if (valueType != napi_number) {
+            HILOG_ERROR("param(userId) type incorrect!");
+            return false;
+        }
+
+        int userId = Constants::UNSPECIFIED_USERID;
+        NAPI_CALL(env, napi_get_value_int32(env, property, &userId));
+        installParam.userId = userId;
     }
-    napi_typeof(env, property, &valueType);
-    if (valueType != napi_number) {
-        HILOG_ERROR("param type incorrect!");
-        return false;
-    }
-    int userId = 0;
-    NAPI_CALL(env, napi_get_value_int32(env, property, &userId));
-    installParam.userId = userId;
     HILOG_INFO("ParseInstallParam userId=%{public}d.", installParam.userId);
 
     property = nullptr;
-    status = napi_get_named_property(env, args, "installFlag", &property);
-    if (status != napi_ok) {
-        HILOG_ERROR("cannot find property installFlag");
-        return false;
+    hasKey = false;
+    napi_has_named_property(env, args, "installFlag", &hasKey);
+    if (hasKey) {
+        status = napi_get_named_property(env, args, "installFlag", &property);
+        if (status != napi_ok) {
+            HILOG_ERROR("napi get named property error!");
+            return false;
+        }
+
+        napi_typeof(env, property, &valueType);
+        if (valueType != napi_number) {
+            HILOG_ERROR("param(installFlag) type incorrect!");
+            return false;
+        }
+
+        int installFlag = 0;
+        NAPI_CALL(env, napi_get_value_int32(env, property, &installFlag));
+        installParam.installFlag = static_cast<OHOS::AppExecFwk::InstallFlag>(installFlag);
     }
-    napi_typeof(env, property, &valueType);
-    if (valueType != napi_number) {
-        HILOG_ERROR("param type incorrect!");
-        return false;
-    }
-    int installFlag = 0;
-    NAPI_CALL(env, napi_get_value_int32(env, property, &installFlag));
-    installParam.installFlag = static_cast<OHOS::AppExecFwk::InstallFlag>(installFlag);
     HILOG_INFO("ParseInstallParam installFlag=%{public}d.", installParam.installFlag);
 
     property = nullptr;
-    status = napi_get_named_property(env, args, "isKeepData", &property);
-    if (status != napi_ok) {
-        HILOG_ERROR("cannot find property isKeepData");
-        return false;
-    }
-    napi_typeof(env, property, &valueType);
-    if (valueType != napi_boolean) {
-        HILOG_ERROR("param type incorrect!");
-        return false;
-    }
-    bool isKeepData = false;
-    NAPI_CALL(env, napi_get_value_bool(env, property, &isKeepData));
-    installParam.isKeepData = isKeepData;
-    HILOG_INFO("ParseInstallParam isKeepData=%{public}d.", installParam.isKeepData);
+    hasKey = false;
+    napi_has_named_property(env, args, "isKeepData", &hasKey);
+    if (hasKey) {
+        status = napi_get_named_property(env, args, "isKeepData", &property);
+        if (status != napi_ok) {
+            HILOG_ERROR("napi get named property error!");
+            return false;
+        }
 
+        napi_typeof(env, property, &valueType);
+        if (valueType != napi_boolean) {
+            HILOG_ERROR("param(isKeepData) type incorrect!");
+            return false;
+        }
+
+        bool isKeepData = false;
+        NAPI_CALL(env, napi_get_value_bool(env, property, &isKeepData));
+        installParam.isKeepData = isKeepData;
+    }
+    HILOG_INFO("ParseInstallParam isKeepData=%{public}d.", installParam.isKeepData);
     return true;
 }
 
@@ -2685,6 +2703,7 @@ napi_value Install(napi_env env, napi_callback_info info)
     retFirst = ParseStringArray(env, bundleFilePaths, argv[PARAM0]);
     retSecond = ParseInstallParam(env, installParam, argv[PARAM1]);
     if (retFirst == nullptr || !retSecond) {
+        HILOG_ERROR("Install installParam error.");
         asyncCallbackInfo->errCode = PARAM_TYPE_ERROR;
     }
     asyncCallbackInfo->hapFiles = bundleFilePaths;
@@ -2708,7 +2727,9 @@ napi_value Install(napi_env env, napi_callback_info info)
             [](napi_env env, void *data) {
                 AsyncInstallCallbackInfo *asyncCallbackInfo = (AsyncInstallCallbackInfo *)data;
                 if (!asyncCallbackInfo->errCode) {
-                    InnerInstall(env, asyncCallbackInfo->hapFiles, asyncCallbackInfo->installParam,
+                    InnerInstall(env,
+                        asyncCallbackInfo->hapFiles,
+                        asyncCallbackInfo->installParam,
                         asyncCallbackInfo->installResult);
                 }
             },
@@ -2820,22 +2841,28 @@ napi_value Recover(napi_env env, napi_callback_info info)
     HILOG_DEBUG("Recover by bundleName called");
     size_t argc = ARGS_SIZE_THREE;
     napi_value argv[ARGS_SIZE_THREE] = {nullptr};
+    AsyncInstallCallbackInfo *asyncCallbackInfo = new (std::nothrow) AsyncInstallCallbackInfo {
+        .env = env,
+        .asyncWork = nullptr,
+        .deferred = nullptr,
+        .errCode = 0,
+    };
+    if (asyncCallbackInfo == nullptr) {
+        return nullptr;
+    }
+
     NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, NULL, NULL));
     HILOG_DEBUG("argc = [%{public}zu]", argc);
     std::string bundleName;
     ParseString(env, bundleName, argv[PARAM0]);
     InstallParam installParam;
-    ParseInstallParam(env, installParam, argv[PARAM1]);
-    AsyncInstallCallbackInfo *asyncCallbackInfo = new (std::nothrow) AsyncInstallCallbackInfo {
-        .env = env,
-        .asyncWork = nullptr,
-        .deferred = nullptr,
-        .bundleName = bundleName,
-        .installParam = installParam,
-    };
-    if (asyncCallbackInfo == nullptr) {
-        return nullptr;
+    if (!ParseInstallParam(env, installParam, argv[PARAM1])) {
+        HILOG_ERROR("Recover installParam error.");
+        asyncCallbackInfo->errCode = PARAM_TYPE_ERROR;
     }
+
+    asyncCallbackInfo->installParam = installParam;
+    asyncCallbackInfo->bundleName = bundleName;
     if (argc > (ARGS_SIZE_THREE - CALLBACK_SIZE)) {
         HILOG_DEBUG("Recover by bundleName asyncCallback.");
         napi_valuetype valuetype = napi_undefined;
@@ -2851,10 +2878,12 @@ napi_value Recover(napi_env env, napi_callback_info info)
             resourceName,
             [](napi_env env, void *data) {
                 AsyncInstallCallbackInfo *asyncCallbackInfo = (AsyncInstallCallbackInfo *)data;
-                InnerRecover(env,
-                    asyncCallbackInfo->bundleName,
-                    asyncCallbackInfo->installParam,
-                    asyncCallbackInfo->installResult);
+                if (!asyncCallbackInfo->errCode) {
+                    InnerRecover(env,
+                        asyncCallbackInfo->bundleName,
+                        asyncCallbackInfo->installParam,
+                        asyncCallbackInfo->installResult);
+                }
             },
             [](napi_env env, napi_status status, void *data) {
                 AsyncInstallCallbackInfo *asyncCallbackInfo = (AsyncInstallCallbackInfo *)data;
@@ -2862,17 +2891,25 @@ napi_value Recover(napi_env env, napi_callback_info info)
                 napi_value callback = 0;
                 napi_value undefined = 0;
                 napi_value callResult = 0;
-                napi_create_object(env, &result[PARAM1]);
-                ConvertInstallResult(asyncCallbackInfo->installResult);
-                napi_value nResultMsg;
-                napi_create_string_utf8(
-                    env, asyncCallbackInfo->installResult.resultMsg.c_str(), NAPI_AUTO_LENGTH, &nResultMsg);
-                napi_set_named_property(env, result[PARAM1], "statusMessage", nResultMsg);
-                napi_value nResultCode;
-                napi_create_int32(env, asyncCallbackInfo->installResult.resultCode, &nResultCode);
-                napi_set_named_property(env, result[PARAM1], "status", nResultCode);
-                result[PARAM0] = GetCallbackErrorValue(
-                    env, (asyncCallbackInfo->installResult.resultCode == 0) ? CODE_SUCCESS : CODE_FAILED);
+                if (!asyncCallbackInfo->errCode) {
+                    napi_create_object(env, &result[PARAM1]);
+                    ConvertInstallResult(asyncCallbackInfo->installResult);
+                    napi_value nResultMsg;
+                    napi_create_string_utf8(
+                        env, asyncCallbackInfo->installResult.resultMsg.c_str(), NAPI_AUTO_LENGTH, &nResultMsg);
+                    napi_set_named_property(env, result[PARAM1], "statusMessage", nResultMsg);
+                    napi_value nResultCode;
+                    napi_create_int32(env, asyncCallbackInfo->installResult.resultCode, &nResultCode);
+                    napi_set_named_property(env, result[PARAM1], "status", nResultCode);
+                    result[PARAM0] = GetCallbackErrorValue(
+                        env, (asyncCallbackInfo->installResult.resultCode == 0) ? CODE_SUCCESS : CODE_FAILED);
+                } else {
+                    napi_value nResultMsg;
+                    std::string msg = "error param type.";
+                    napi_create_string_utf8(env, msg.c_str(), NAPI_AUTO_LENGTH, &nResultMsg);
+                    result[PARAM0] = GetCallbackErrorValue(env, CODE_FAILED);
+                    napi_set_named_property(env, result[PARAM0], "Message", nResultMsg);
+                }
                 napi_get_undefined(env, &undefined);
                 napi_get_reference_value(env, asyncCallbackInfo->callback, &callback);
                 napi_call_function(env, undefined, callback, ARGS_SIZE_TWO, &result[PARAM0], &callResult);
@@ -2986,22 +3023,28 @@ napi_value Uninstall(napi_env env, napi_callback_info info)
     HILOG_INFO("Uninstall called");
     size_t argc = ARGS_SIZE_THREE;
     napi_value argv[ARGS_SIZE_THREE] = {nullptr};
+    AsyncInstallCallbackInfo *asyncCallbackInfo = new (std::nothrow) AsyncInstallCallbackInfo {
+        .env = env,
+        .asyncWork = nullptr,
+        .deferred = nullptr,
+        .errCode = 0,
+    };
+    if (asyncCallbackInfo == nullptr) {
+        return nullptr;
+    }
+
     NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, NULL, NULL));
     HILOG_INFO("argc = [%{public}zu]", argc);
     std::string bundleName;
     ParseString(env, bundleName, argv[PARAM0]);
     InstallParam installParam;
-    ParseInstallParam(env, installParam, argv[PARAM1]);
-    AsyncInstallCallbackInfo *asyncCallbackInfo = new (std::nothrow) AsyncInstallCallbackInfo {
-        .env = env,
-        .asyncWork = nullptr,
-        .deferred = nullptr,
-        .param = bundleName,
-        .installParam = installParam,
-    };
-    if (asyncCallbackInfo == nullptr) {
-        return nullptr;
+    if (!ParseInstallParam(env, installParam, argv[PARAM1])) {
+        HILOG_ERROR("Uninstall installParam error.");
+        asyncCallbackInfo->errCode = PARAM_TYPE_ERROR;
     }
+
+    asyncCallbackInfo->installParam = installParam;
+    asyncCallbackInfo->bundleName = bundleName;
     if (argc > (ARGS_SIZE_THREE - CALLBACK_SIZE)) {
         HILOG_INFO("Uninstall asyncCallback.");
         napi_valuetype valuetype = napi_undefined;
@@ -3017,8 +3060,12 @@ napi_value Uninstall(napi_env env, napi_callback_info info)
             resourceName,
             [](napi_env env, void *data) {
                 AsyncInstallCallbackInfo *asyncCallbackInfo = (AsyncInstallCallbackInfo *)data;
-                InnerUninstall(
-                    env, asyncCallbackInfo->param, asyncCallbackInfo->installParam, asyncCallbackInfo->installResult);
+                if (!asyncCallbackInfo->errCode) {
+                    InnerUninstall(env,
+                        asyncCallbackInfo->bundleName,
+                        asyncCallbackInfo->installParam,
+                        asyncCallbackInfo->installResult);
+                }
             },
             [](napi_env env, napi_status status, void *data) {
                 AsyncInstallCallbackInfo *asyncCallbackInfo = (AsyncInstallCallbackInfo *)data;
@@ -3026,17 +3073,25 @@ napi_value Uninstall(napi_env env, napi_callback_info info)
                 napi_value callback = 0;
                 napi_value undefined = 0;
                 napi_value callResult = 0;
-                napi_create_object(env, &result[PARAM1]);
-                ConvertInstallResult(asyncCallbackInfo->installResult);
-                napi_value nResultMsg;
-                napi_create_string_utf8(
-                    env, asyncCallbackInfo->installResult.resultMsg.c_str(), NAPI_AUTO_LENGTH, &nResultMsg);
-                napi_set_named_property(env, result[PARAM1], "statusMessage", nResultMsg);
-                napi_value nResultCode;
-                napi_create_int32(env, asyncCallbackInfo->installResult.resultCode, &nResultCode);
-                napi_set_named_property(env, result[PARAM1], "status", nResultCode);
-                result[PARAM0] = GetCallbackErrorValue(
-                    env, (asyncCallbackInfo->installResult.resultCode == 0) ? CODE_SUCCESS : CODE_FAILED);
+                if (!asyncCallbackInfo->errCode) {
+                    napi_create_object(env, &result[PARAM1]);
+                    ConvertInstallResult(asyncCallbackInfo->installResult);
+                    napi_value nResultMsg;
+                    napi_create_string_utf8(
+                        env, asyncCallbackInfo->installResult.resultMsg.c_str(), NAPI_AUTO_LENGTH, &nResultMsg);
+                    napi_set_named_property(env, result[PARAM1], "statusMessage", nResultMsg);
+                    napi_value nResultCode;
+                    napi_create_int32(env, asyncCallbackInfo->installResult.resultCode, &nResultCode);
+                    napi_set_named_property(env, result[PARAM1], "status", nResultCode);
+                    result[PARAM0] = GetCallbackErrorValue(
+                        env, (asyncCallbackInfo->installResult.resultCode == 0) ? CODE_SUCCESS : CODE_FAILED);
+                } else {
+                    napi_value nResultMsg;
+                    std::string msg = "error param type.";
+                    napi_create_string_utf8(env, msg.c_str(), NAPI_AUTO_LENGTH, &nResultMsg);
+                    result[PARAM0] = GetCallbackErrorValue(env, CODE_FAILED);
+                    napi_set_named_property(env, result[PARAM0], "Message", nResultMsg);
+                }
                 napi_get_undefined(env, &undefined);
                 napi_get_reference_value(env, asyncCallbackInfo->callback, &callback);
                 napi_call_function(env, undefined, callback, ARGS_SIZE_TWO, &result[PARAM0], &callResult);
