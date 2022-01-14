@@ -116,6 +116,15 @@ public:
     virtual void KillProcessByAbilityToken(const sptr<IRemoteObject> &token) override;
 
     /**
+     * KillProcessesByUserId, call KillProcessesByUserId() through proxy object,
+     * kill the processes by userId.
+     *
+     * @param userId, the user id.
+     * @return
+     */
+    virtual void KillProcessesByUserId(int32_t userId) override;
+
+    /**
      * KillApplication, call KillApplication() through proxy object, kill the application.
      *
      * @param  bundleName, bundle name in Application record.
