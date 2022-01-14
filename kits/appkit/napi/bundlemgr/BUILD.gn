@@ -12,15 +12,14 @@
 # limitations under the License.
 
 import("//build/ohos.gni")
+import("//foundation/appexecfwk/standard/appexecfwk.gni")
 
 ohos_shared_library("bundle") {
   include_dirs = [
-    "//foundation/ace/napi/interfaces/kits",
     "//third_party/node/src",
     "//third_party/libuv/include",
     "//foundation/aafwk/standard/services/common/include",
     "//utils/system/safwk/native/include",
-    "./",
   ]
 
   sources = [
@@ -32,25 +31,23 @@ ohos_shared_library("bundle") {
     "permission_callback.cpp",
   ]
 
-  deps = [
-    "//foundation/aafwk/standard/interfaces/innerkits/base:base",
-    "//foundation/aafwk/standard/interfaces/innerkits/want:want",
-    "//foundation/ace/napi:ace_napi",
-    "//foundation/appexecfwk/standard/common:libappexecfwk_common",
-    "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_base:appexecfwk_base",
-    "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_core:appexecfwk_core",
-    "//foundation/appexecfwk/standard/libs/libeventhandler:libeventhandler_target",
-    "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
-    "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
-    "//utils/native/base:utils",
-  ]
+  deps = [ "${common_path}:libappexecfwk_common" ]
 
   external_deps = [
+    "aafwk_standard:base",
+    "aafwk_standard:want",
+    "bundle_framework:appexecfwk_base",
+    "bundle_framework:appexecfwk_core",
+    "eventhandler:libeventhandler",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
+    "napi:ace_napi",
+    "safwk:system_ability_fwk",
+    "samgr_standard:samgr_proxy",
+    "utils_base:utils",
   ]
 
   relative_install_dir = "module"
   subsystem_name = "appexecfwk"
-  part_name = "appexecfwk_standard"
+  part_name = "bundle_framework"
 }

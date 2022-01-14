@@ -19,7 +19,6 @@ group("napi_packages") {
     "//foundation/appexecfwk/standard/kits/appkit/napi/ability_stage_context:abilitystagecontext_napi",
     "//foundation/appexecfwk/standard/kits/appkit/napi/appMgr:napi_app_mgr",
     "//foundation/appexecfwk/standard/kits/appkit/napi/app_manager:appmanager_napi",
-    "//foundation/appexecfwk/standard/kits/appkit/napi/bundlemgr:bundle",
     "//foundation/appexecfwk/standard/kits/appkit/napi/context:context_napi",
     "//foundation/appexecfwk/standard/kits/appkit/napi/launchermgr:innerbundlemanager",
   ]

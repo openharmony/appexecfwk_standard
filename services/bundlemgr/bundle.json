@@ -1,0 +1,79 @@
+{
+    "name": "@ohos/bundle_framework",
+    "description": "提供OpenHarmony应用和服务安装包的安装、更新、卸载以及信息查询等能力，包含包管理接口和包管理服务",
+    "version": "3.1",
+    "license": "Apache 2.0",
+    "component": {
+        "name": "bundle_framework",
+        "subsystem": "appexecfwk",
+        "syscap": [],
+        "features": [],
+        "adapted_system_type": [
+            "standard"
+        ],
+        "rom": "2500KB",
+        "ram": "2500KB",
+        "deps": {
+            "components": [
+                "aafwk_standard",
+                "appexecfwk_standard",
+                "appverify",
+                "ces_standard",
+                "distributeddatamgr",
+                "hiviewdfx_hilog_native",
+                "ipc",
+                "napi",
+                "permission_standard",
+                "safwk",
+                "samgr_standard",
+                "startup_l2",
+                "utils_base"
+            ],
+            "third_party": [
+                "json",
+                "libuv",
+                "node",
+                "zlib"
+            ]
+        },
+        "build": {
+            "sub_component": [
+                "//foundation/appexecfwk/standard/services/bundlemgr:bms_target",
+                "//foundation/appexecfwk/standard/kits/appkit/napi/bundlemgr:bundle"
+            ],
+            "inner_kits": [
+                {
+                    "header": {
+                      "header_base": "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_base/include",
+                      "header_files": [
+                        "ability_info.h",
+                        "appexecfwk_errors.h",
+                        "application_info.h",
+                        "element_name.h",
+                        "bundle_info.h"
+                      ]
+                    },
+                    "name": "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_base:appexecfwk_base"
+                  },
+                  {
+                    "header": {
+                      "header_base": "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_core/include",
+                      "header_files": [
+                        "bundlemgr/bundle_installer_interface.h",
+                        "bundlemgr/bundle_mgr_interface.h",
+                        "bundlemgr/bundle_status_callback_interface.h",
+                        "bundlemgr/clean_cache_callback_interface.h",
+                        "bundlemgr/status_receiver_interface.h"
+                      ]
+                    },
+                    "name": "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_core:appexecfwk_core"
+                  }
+            ],
+            "test": [
+                "//foundation/appexecfwk/standard/services/bundlemgr/test:unittest",
+                "//foundation/appexecfwk/standard/services/test/moduletest/common/bms:moduletest",
+                "//foundation/appexecfwk/standard/test/systemtest/common/bms:systemtest_bms"
+            ]
+        }
+    }
+}
