@@ -60,6 +60,7 @@ struct BundleInfo : public Parcelable {
     int gid = -1;
     std::string seInfo;
     std::string entryModuleName;
+    bool entryInstallationFree = false;
     bool isKeepAlive = false;
     bool isNativeApp = false;
     bool isDifferentName = false;
