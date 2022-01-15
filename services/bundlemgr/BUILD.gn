@@ -216,11 +216,7 @@ ohos_executable("installs") {
 }
 
 ohos_prebuilt_etc("installs.rc") {
-  if (use_musl) {
-    source = "installs.cfg"
-  } else {
-    source = "installs.rc"
-  }
+  source = "installs.cfg"
   relative_install_dir = "init"
   subsystem_name = "appexecfwk"
   part_name = "bundle_framework"

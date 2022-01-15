@@ -127,8 +127,7 @@ Security::AccessToken::HapPolicyParams BundlePermissionMgr::CreateHapPolicyParam
     const InnerBundleInfo &innerBundleInfo)
 {
     AccessToken::HapPolicyParams hapPolicy;
-    // std::string apl = innerBundleInfo.GetAppPrivilegeLevel();
-    std::string apl = Profile::AVAILABLELEVEL_NORMAL;
+    std::string apl = innerBundleInfo.GetAppPrivilegeLevel();
     APP_LOGD("BundlePermissionMgr::CreateHapPolicyParam apl : %{public}s", apl.c_str());
     std::vector<AccessToken::PermissionDef> permDef = GetPermissionDefList(innerBundleInfo);
     std::vector<AccessToken::PermissionStateFull> permStateFull = GetPermissionStateFullList(innerBundleInfo);
@@ -223,8 +222,7 @@ bool BundlePermissionMgr::AddDefinePermissions(const Security::AccessToken::Acce
     }
 
     AccessToken::HapPolicyParams hapPolicy;
-    // std::string apl = innerBundleInfo.GetAppPrivilegeLevel();
-    std::string apl = Profile::AVAILABLELEVEL_NORMAL;
+    std::string apl = innerBundleInfo.GetAppPrivilegeLevel();
     APP_LOGD("BundlePermissionMgr::AddDefinePermissions apl : %{public}s, newDefPermList size : %{public}zu, \
              newPermissionStateList size : %{public}zu", apl.c_str(), newDefPermList.size(),
              newPermissionStateList.size());
@@ -325,8 +323,7 @@ bool BundlePermissionMgr::GrantRequestPermissions(const InnerBundleInfo &innerBu
     const AccessToken::AccessTokenID tokenId)
 {
     std::vector<RequestPermission> reqPermissions = innerBundleInfo.GetRequestPermissions();
-    // std::string apl = innerBundleInfo.GetAppPrivilegeLevel();
-    std::string apl = Profile::AVAILABLELEVEL_NORMAL;
+    std::string apl = innerBundleInfo.GetAppPrivilegeLevel();
     std::vector<std::string> acls = innerBundleInfo.GetAllowedAcls();
     return InnerGrantRequestPermissions(reqPermissions, apl, acls, tokenId);
 }
@@ -336,8 +333,7 @@ bool BundlePermissionMgr::GrantRequestPermissions(const InnerBundleInfo &innerBu
     const AccessToken::AccessTokenID tokenId)
 {
     std::vector<RequestPermission> reqPermissions = innerBundleInfo.GetRequestPermissions();
-    // std::string apl = innerBundleInfo.GetAppPrivilegeLevel();
-    std::string apl = Profile::AVAILABLELEVEL_NORMAL;
+    std::string apl = innerBundleInfo.GetAppPrivilegeLevel();
     std::vector<std::string> acls = innerBundleInfo.GetAllowedAcls();
     std::vector<RequestPermission> newRequestPermissions;
     for (const auto &name : requestPermName) {
