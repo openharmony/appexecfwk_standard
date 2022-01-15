@@ -2538,5 +2538,16 @@ bool BundleDataMgr::GetInnerBundleUserInfos(
 
     return !innerBundleUserInfos.empty();
 }
+
+std::string BundleDataMgr::GetAppPrivilegeLevel(const std::string &bundleName)
+{
+    APP_LOGD("GetAppPrivilegeLevel:%{public}s", bundleName.c_str());
+    std::lock_guard<std::mutex> lock(bundleInfoMutex_);
+    InnerBundleInfo info;
+    if (!GetInnerBundleInfoWithFlags(bundleName, 0, Constants::CURRENT_DEVICE_ID, info)) {
+        return Constants::EMPTY_STRING;
+    }
+    return info.GetAppPrivilegeLevel();
+}
 }  // namespace AppExecFwk
 }  // namespace OHOS

@@ -1089,6 +1089,16 @@ public:
         return appFeature_;
     }
 
+    void SetAppPrivilegeLevel(const std::string &appPrivilegeLevel)
+    {
+        appPrivilegeLevel_ = appPrivilegeLevel;
+    }
+
+    std::string GetAppPrivilegeLevel() const
+    {
+        return appPrivilegeLevel_;
+    }
+
     void SetHasEntry(bool hasEntry)
     {
         hasEntry_ = hasEntry;
@@ -1409,6 +1419,7 @@ private:
     BundleInfo baseBundleInfo_;  // applicationInfo and abilityInfo empty
     std::string mainAbility_;
     std::string appFeature_;
+    std::string appPrivilegeLevel_ = Constants::EMPTY_STRING;
     bool hasEntry_ = false;
     bool canUninstall_ = true;
     bool isPreInstallApp_ = false;
