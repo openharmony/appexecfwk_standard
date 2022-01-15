@@ -24,7 +24,7 @@
 #include "bundle_info.h"
 #include "common_event_info.h"
 #include "common_profile.h"
-#include "extension_info.h"
+#include "extension_ability_info.h"
 #include "form_info.h"
 #include "hap_module_info.h"
 #include "inner_bundle_user_info.h"
@@ -248,6 +248,20 @@ public:
     std::optional<std::vector<AbilityInfo>> FindAbilityInfos(
         const std::string &bundleName, int32_t userId = Constants::UNSPECIFIED_USERID) const;
     /**
+     * @brief Find extensionInfo by bundle name and extension name.
+     * @param bundleName Indicates the bundle name.
+     * @param extensionName Indicates the extension name
+     * @return Returns the ExtensionAbilityInfo object if find it; returns null otherwise.
+     */
+    std::optional<ExtensionAbilityInfo> FindExtensionInfo(
+        const std::string &bundleName, const std::string &extensionName) const;
+    /**
+     * @brief Find extensionInfos by bundle name.
+     * @param bundleName Indicates the bundle name.
+     * @return Returns the ExtensionAbilityInfo array if find it; returns null otherwise.
+     */
+    std::optional<std::vector<ExtensionAbilityInfo>> FindExtensionInfos(const std::string &bundleName) const;
+    /**
      * @brief Find abilityInfo of list for clone by bundle name and ability name.
      * @param bundleName Indicates the bundle name.
      * @param abilityName Indicates the ability name
@@ -273,8 +287,7 @@ public:
         }
     }
 
-
-    void AddModuleExtensionInfos(const std::map<std::string, ExtensionInfo> &extensionInfos)
+    void AddModuleExtensionInfos(const std::map<std::string, ExtensionAbilityInfo> &extensionInfos)
     {
         for (const auto &extensionInfo : extensionInfos) {
             baseExtensionInfos_.try_emplace(extensionInfo.first, extensionInfo.second);
@@ -291,7 +304,6 @@ public:
             skillInfos_.try_emplace(skills.first, skills.second);
         }
     }
-
     void AddModuleExtensionSkillInfos(const std::map<std::string, std::vector<Skill>> &extensionSkillInfos)
     {
         for (const auto &skills : extensionSkillInfos) {
@@ -538,11 +550,11 @@ public:
         baseAbilityInfos_.emplace(key, abilityInfo);
     }
     /**
-     * @brief Insert ExtensionInfo.
+     * @brief Insert ExtensionAbilityInfo.
      * @param key bundleName.moduleName.extensionName
      * @param extensionInfo value.
      */
-    void InsertExtensionInfo(const std::string &key, const ExtensionInfo &extensionInfo)
+    void InsertExtensionInfo(const std::string &key, const ExtensionAbilityInfo &extensionInfo)
     {
         baseExtensionInfos_.emplace(key, extensionInfo);
     }
@@ -1232,6 +1244,20 @@ public:
         return skillInfos_;
     }
     /**
+     * @brief Obtains all extensionAbilityInfos.
+     */
+    const std::map<std::string, ExtensionAbilityInfo> &GetInnerExtensionInfos() const
+    {
+        return baseExtensionInfos_;
+    }
+    /**
+     * @brief Obtains all extensionSkillInfos.
+     */
+    const std::map<std::string, std::vector<Skill>> &GetExtensionSkillInfos() const
+    {
+        return  extensionSkillInfos_;
+    }
+    /**
      * @brief Set removable to indicate the bundle is removable or not.
      * @param removable Indicates the removable to set.
      */
@@ -1404,6 +1430,8 @@ public:
 private:
     void GetBundleWithAbilities(
         int32_t flags, BundleInfo &bundleInfo, int32_t userId = Constants::UNSPECIFIED_USERID) const;
+    void GetBundeleWithExtension(
+        int32_t flags, BundleInfo &bundleInfo, int32_t userId = Constants::UNSPECIFIED_USERID) const;
     void BuildDefaultUserInfo();
 
     // using for get
@@ -1444,7 +1472,7 @@ private:
     std::map<std::string, InnerBundleUserInfo> innerBundleUserInfos_;
     // new version fields
     bool isNewVersion_ = false;
-    std::map<std::string, ExtensionInfo> baseExtensionInfos_;
+    std::map<std::string, ExtensionAbilityInfo> baseExtensionInfos_;
     std::map<std::string, std::vector<Skill>> extensionSkillInfos_;
 };
 

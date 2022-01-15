@@ -73,6 +73,14 @@ bool BundleMgrHostImpl::GetBundleInfo(
 bool BundleMgrHostImpl::GetBundleInfo(
     const std::string &bundleName, int32_t flags, BundleInfo &bundleInfo, int32_t userId)
 {
+    std::vector<InnerBundleUserInfo> innerBundleUserInfos;
+    if (userId == Constants::ANY_USERID) {
+        if (!GetBundleUserInfos(bundleName, innerBundleUserInfos)) {
+            APP_LOGE("no userInfos for this bundle(%{public}s)", bundleName.c_str());
+            return false;
+        }
+        userId = innerBundleUserInfos.begin()->bundleUserInfo.userId;
+    }
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
         APP_LOGE("DataMgr is nullptr");
@@ -607,7 +615,8 @@ bool BundleMgrHostImpl::DumpAllBundleInfoNamesByUserId(int32_t userId, std::stri
 bool BundleMgrHostImpl::DumpAllBundleInfos(int32_t userId, std::string &result)
 {
     std::vector<BundleInfo> bundleInfos;
-    if (!GetBundleInfos(BundleFlag::GET_BUNDLE_WITH_ABILITIES, bundleInfos, userId)) {
+    if (!GetBundleInfos(BundleFlag::GET_BUNDLE_WITH_ABILITIES | BundleFlag::GET_BUNDLE_WITH_EXTENSION_INFO,
+        bundleInfos, userId)) {
         APP_LOGE("get bundleInfos failed.");
         return false;
     }
@@ -659,8 +668,8 @@ bool BundleMgrHostImpl::DumpBundleInfo(
 
     BundleInfo bundleInfo;
     if (!GetBundleInfo(bundleName,
-        BundleFlag::GET_BUNDLE_WITH_ABILITIES | BundleFlag::GET_BUNDLE_WITH_REQUESTED_PERMISSION,
-        bundleInfo, userId)) {
+        BundleFlag::GET_BUNDLE_WITH_ABILITIES | BundleFlag::GET_BUNDLE_WITH_REQUESTED_PERMISSION |
+        BundleFlag::GET_BUNDLE_WITH_EXTENSION_INFO, bundleInfo, userId)) {
         APP_LOGE("get bundleInfo(%{public}s) failed", bundleName.c_str());
         return false;
     }
@@ -1008,6 +1017,54 @@ bool BundleMgrHostImpl::GetDistributedBundleInfo(
         return false;
     }
     return dataMgr->GetDistributedBundleInfo(networkId, userId, bundleName, distributedBundleInfo);
+}
+
+bool BundleMgrHostImpl::QueryExtensionAbilityInfos(const Want &want, const int32_t &flag, const int32_t &userId,
+    std::vector<ExtensionAbilityInfo> &extensionInfos)
+{
+    APP_LOGI("QueryExtensionAbilityInfos begin");
+    auto dataMgr = GetDataMgrFromService();
+    if (dataMgr == nullptr) {
+        APP_LOGE("DataMgr is nullptr");
+        return false;
+    }
+    bool ret = dataMgr->QueryExtensionAbilityInfos(want, flag, userId, extensionInfos);
+    if (!ret) {
+        APP_LOGE("QueryExtensionAbilityInfos is failed");
+        return false;
+    }
+    if (extensionInfos.empty()) {
+        APP_LOGE("no valid extension info can be inquired");
+        return false;
+    }
+    return true;
+}
+
+bool BundleMgrHostImpl::QueryExtensionAbilityInfos(const Want &want, const int32_t &extensionType, const int32_t &flag,
+    const int32_t &userId, std::vector<ExtensionAbilityInfo> &extensionInfos)
+{
+    APP_LOGI("QueryExtensionAbilityInfos begin");
+    auto dataMgr = GetDataMgrFromService();
+    if (dataMgr == nullptr) {
+        APP_LOGE("DataMgr is nullptr");
+        return false;
+    }
+    std::vector<ExtensionAbilityInfo> infos;
+    bool ret = dataMgr->QueryExtensionAbilityInfos(want, flag, userId, infos);
+    if (!ret) {
+        APP_LOGE("QueryExtensionAbilityInfos is failed");
+        return false;
+    }
+    for_each(infos.begin(), infos.end(), [&extensionType, &extensionInfos](const auto &info)->decltype(auto) {
+        if (extensionType == static_cast<int32_t>(info.type)) {
+            extensionInfos.emplace_back(info);
+        }
+    });
+    if (extensionInfos.empty()) {
+        APP_LOGE("no valid extension info can be inquired");
+        return false;
+    }
+    return true;
 }
 
 const std::shared_ptr<BundleCloneMgr> BundleMgrHostImpl::GetCloneMgrFromService()

@@ -176,6 +176,19 @@ bool AbilityInfo::ReadFromParcel(Parcel &parcel)
         return false;
     }
     applicationInfo = *appInfo;
+
+    srcEntrance = Str16ToStr8(parcel.ReadString16());
+    int32_t metadataSize;
+    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, metadataSize);
+    for (auto i = 0; i < metadataSize; ++i) {
+        std::unique_ptr<Metadata> data(parcel.ReadParcelable<Metadata>());
+        if (!data) {
+            APP_LOGE("ReadParcelable<CustomizeData> failed");
+            return false;
+        }
+        metadata.emplace_back(*data);
+    }
+    isStageBasedModel = parcel.ReadBool();
     return true;
 }
 
@@ -258,6 +271,14 @@ bool AbilityInfo::Marshalling(Parcel &parcel) const
     }
 
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Parcelable, parcel, &applicationInfo);
+
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(srcEntrance));
+    const auto metadataSize = static_cast<int32_t>(metadata.size());
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, metadataSize);
+    for (auto i = 0; i < metadataSize; i++) {
+        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Parcelable, parcel, &metadata[i]);
+    }
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, isStageBasedModel);
     return true;
 }
 

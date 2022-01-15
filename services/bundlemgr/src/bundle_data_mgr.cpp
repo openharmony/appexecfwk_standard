@@ -2549,5 +2549,156 @@ std::string BundleDataMgr::GetAppPrivilegeLevel(const std::string &bundleName)
     }
     return info.GetAppPrivilegeLevel();
 }
+
+bool BundleDataMgr::QueryExtensionAbilityInfos(const Want &want, int32_t flags, int32_t userId,
+    std::vector<ExtensionAbilityInfo> &extensionInfos) const
+{
+    int32_t requestUserId = GetUserId(userId);
+    if (requestUserId == Constants::INVALID_USERID) {
+        return false;
+    }
+
+    ElementName element = want.GetElement();
+    std::string bundleName = element.GetBundleName();
+    std::string extensionName = element.GetAbilityName();
+    APP_LOGD("bundle name:%{public}s, extension name:%{public}s", bundleName.c_str(), extensionName.c_str());
+    // explicit query
+    if (!bundleName.empty() && !extensionName.empty()) {
+        ExtensionAbilityInfo info;
+        bool ret = ExplicitQueryExtensionInfo(bundleName, extensionName, flags, requestUserId, info);
+        if (ret == false) {
+            APP_LOGE("explicit queryExtensionInfo error");
+            return false;
+        }
+        extensionInfos.emplace_back(info);
+        return true;
+    }
+
+    bool ret = ImplicitQueryExtensionInfos(want, flags, requestUserId, extensionInfos);
+    if (ret == false) {
+        APP_LOGE("implicit queryAbilityInfos error");
+        return false;
+    }
+    if (extensionInfos.size() == 0) {
+        APP_LOGE("no matching abilityInfo");
+        return false;
+    }
+    return true;
+}
+
+bool BundleDataMgr::ExplicitQueryExtensionInfo(const std::string &bundleName, const std::string &extensionName,
+    int32_t flags, int32_t userId, ExtensionAbilityInfo &extensionInfo) const
+{
+    APP_LOGD("bundleName:%{public}s, abilityName:%{public}s", bundleName.c_str(), extensionName.c_str());
+    APP_LOGD("flags:%{public}d, userId:%{public}d", flags, userId);
+    int32_t requestUserId = GetUserId(userId);
+    if (requestUserId == Constants::INVALID_USERID) {
+        return false;
+    }
+    std::lock_guard<std::mutex> lock(bundleInfoMutex_);
+    InnerBundleInfo innerBundleInfo;
+    if (!GetInnerBundleInfoWithFlags(
+        bundleName, flags, Constants::CURRENT_DEVICE_ID, innerBundleInfo, requestUserId)) {
+        APP_LOGE("ExplicitQueryAbilityInfo failed");
+        return false;
+    }
+    auto extension = innerBundleInfo.FindExtensionInfo(bundleName, extensionName);
+    if (!extension) {
+        APP_LOGE("ability not found or disabled");
+        return false;
+    }
+    if ((static_cast<uint32_t>(flags) & GET_ABILITY_INFO_WITH_PERMISSION) != GET_ABILITY_INFO_WITH_PERMISSION) {
+        extension->permissions.clear();
+    }
+    if ((static_cast<uint32_t>(flags) & GET_ABILITY_INFO_WITH_METADATA) != GET_ABILITY_INFO_WITH_METADATA) {
+        extension->metadata.clear();
+    }
+    extensionInfo = (*extension);
+    if ((static_cast<uint32_t>(flags) & GET_ABILITY_INFO_WITH_APPLICATION) == GET_ABILITY_INFO_WITH_APPLICATION) {
+        int32_t responseUserId = innerBundleInfo.GetResponseUserId(requestUserId);
+        innerBundleInfo.GetApplicationInfo(
+            ApplicationFlag::GET_BASIC_APPLICATION_INFO, responseUserId, extensionInfo.applicationInfo);
+    }
+    return true;
+}
+
+bool BundleDataMgr::ImplicitQueryExtensionInfos(
+    const Want &want, int32_t flags, int32_t userId, std::vector<ExtensionAbilityInfo> &extensionInfos) const
+{
+    if (want.GetAction().empty() && want.GetEntities().empty()
+        && want.GetUriString().empty() && want.GetType().empty()) {
+        APP_LOGE("param invalid");
+        return false;
+    }
+    APP_LOGD("action:%{public}s, uri:%{public}s, type:%{public}s",
+        want.GetAction().c_str(), want.GetUriString().c_str(), want.GetType().c_str());
+    APP_LOGD("flags:%{public}d, userId:%{public}d", flags, userId);
+
+    int32_t requestUserId = GetUserId(userId);
+    if (requestUserId == Constants::INVALID_USERID) {
+        return false;
+    }
+    std::string bundleName = want.GetElement().GetBundleName();
+    // query at current bundle
+    if (!bundleName.empty()) {
+        std::lock_guard<std::mutex> lock(bundleInfoMutex_);
+        InnerBundleInfo innerBundleInfo;
+        if (!GetInnerBundleInfoWithFlags(
+            bundleName, flags, Constants::CURRENT_DEVICE_ID, innerBundleInfo, requestUserId)) {
+            APP_LOGE("ExplicitQueryAbilityInfo failed");
+            return false;
+        }
+        int32_t responseUserId = innerBundleInfo.GetResponseUserId(requestUserId);
+        GetMatchExtensionInfos(want, flags, responseUserId, innerBundleInfo, extensionInfos);
+        return true;
+    }
+
+    // query all
+    std::lock_guard<std::mutex> lock(bundleInfoMutex_);
+    for (const auto &item : bundleInfos_) {
+        InnerBundleInfo innerBundleInfo;
+        if (!GetInnerBundleInfoWithFlags(
+            item.first, flags, Constants::CURRENT_DEVICE_ID, innerBundleInfo, requestUserId)) {
+            APP_LOGE("ImplicitQueryAbilityInfos failed");
+            continue;
+        }
+        int32_t responseUserId = innerBundleInfo.GetResponseUserId(requestUserId);
+        GetMatchExtensionInfos(want, flags, responseUserId, innerBundleInfo, extensionInfos);
+    }
+    return true;
+}
+
+void BundleDataMgr::GetMatchExtensionInfos(const Want &want, int32_t flags, const int32_t &userId,
+    const InnerBundleInfo &info, std::vector<ExtensionAbilityInfo> &infos) const
+{
+    auto extensionSkillInfos = info.GetExtensionSkillInfos();
+    auto extensionInfos = info.GetInnerExtensionInfos();
+    for (const auto &skillInfos : extensionSkillInfos) {
+        for (const auto &skill : skillInfos.second) {
+            if (!skill.Match(want)) {
+                continue;
+            }
+            if (extensionInfos.find(skillInfos.first) == extensionInfos.end()) {
+                APP_LOGW("cannot find the extension info with %{public}s", skillInfos.first.c_str());
+                break;
+            }
+            ExtensionAbilityInfo extensionInfo = extensionInfos[skillInfos.first];
+            if ((static_cast<uint32_t>(flags) & GET_ABILITY_INFO_WITH_APPLICATION) ==
+                GET_ABILITY_INFO_WITH_APPLICATION) {
+                info.GetApplicationInfo(
+                    ApplicationFlag::GET_BASIC_APPLICATION_INFO, userId, extensionInfo.applicationInfo);
+            }
+            if ((static_cast<uint32_t>(flags) & GET_ABILITY_INFO_WITH_PERMISSION) !=
+                GET_ABILITY_INFO_WITH_PERMISSION) {
+                extensionInfo.permissions.clear();
+            }
+            if ((static_cast<uint32_t>(flags) & GET_ABILITY_INFO_WITH_METADATA) != GET_ABILITY_INFO_WITH_METADATA) {
+                extensionInfo.metadata.clear();
+            }
+            infos.emplace_back(extensionInfo);
+            break;
+        }
+    }
+}
 }  // namespace AppExecFwk
 }  // namespace OHOS

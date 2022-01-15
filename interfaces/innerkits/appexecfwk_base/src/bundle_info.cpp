@@ -31,6 +31,7 @@ const std::string BUNDLE_INFO_IS_NATIVE_APP = "isNativeApp";
 const std::string BUNDLE_INFO_IS_DIFFERENT_NAME = "isDifferentName";
 const std::string BUNDLE_INFO_APPLICATION_INFO = "applicationInfo";
 const std::string BUNDLE_INFO_ABILITY_INFOS = "abilityInfos";
+const std::string BUNDLE_INFO_EXTENSION_ABILITY_INFOS = "extensionAbilityInfo";
 const std::string BUNDLE_INFO_JOINT_USERID = "jointUserId";
 const std::string BUNDLE_INFO_VERSION_CODE = "versionCode";
 const std::string BUNDLE_INFO_MIN_COMPATIBLE_VERSION_CODE = "minCompatibleVersionCode";
@@ -156,6 +157,7 @@ bool BundleInfo::ReadFromParcel(Parcel &parcel)
     }
 
     int32_t hapModuleInfosSize = parcel.ReadInt32();
+    APP_LOGE("HapModuleInfo size is %{public}d", hapModuleInfosSize);
     for (int32_t i = 0; i < hapModuleInfosSize; i++) {
         std::unique_ptr<HapModuleInfo> hapModuleInfo(parcel.ReadParcelable<HapModuleInfo>());
         if (!hapModuleInfo) {
@@ -275,6 +277,7 @@ void to_json(nlohmann::json &jsonObject, const BundleInfo &bundleInfo)
         {BUNDLE_INFO_IS_DIFFERENT_NAME, bundleInfo.isDifferentName},
         {BUNDLE_INFO_APPLICATION_INFO, bundleInfo.applicationInfo},
         {BUNDLE_INFO_ABILITY_INFOS, bundleInfo.abilityInfos},
+        {BUNDLE_INFO_EXTENSION_ABILITY_INFOS, bundleInfo.extensionInfos},
         {BUNDLE_INFO_JOINT_USERID, bundleInfo.jointUserId},
         {BUNDLE_INFO_VERSION_CODE, bundleInfo.versionCode},
         {BUNDLE_INFO_MIN_COMPATIBLE_VERSION_CODE, bundleInfo.minCompatibleVersionCode},
@@ -606,6 +609,14 @@ void from_json(const nlohmann::json &jsonObject, BundleInfo &bundleInfo)
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::vector<ExtensionAbilityInfo>>(jsonObject,
+        jsonObjectEnd,
+        BUNDLE_INFO_EXTENSION_ABILITY_INFOS,
+        bundleInfo.extensionInfos,
+        JsonType::ARRAY,
+        false,
+        parseResult,
+        ArrayType::OBJECT);
 }
 
 }  // namespace AppExecFwk
