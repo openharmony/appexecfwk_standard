@@ -62,7 +62,7 @@ ohos_unittest("BmsBundleDataStorageTest") {
   external_deps = [
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
-    "resmgr_standard:global_resmgr"
+    "resmgr_standard:global_resmgr",
   ]
 }
 
@@ -100,7 +100,7 @@ ohos_unittest("BmsBundleDataStorageDatabaseTest") {
   external_deps = [
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
-    "resmgr_standard:global_resmgr"
+    "resmgr_standard:global_resmgr",
   ]
 }
 
