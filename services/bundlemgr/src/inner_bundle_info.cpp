@@ -16,7 +16,7 @@
 #include "inner_bundle_info.h"
 
 #include <regex>
-#include "bundle_mgr_client.h"
+
 #include "bundle_permission_mgr.h"
 #include "common_profile.h"
 
@@ -1392,7 +1392,7 @@ int32_t InnerBundleInfo::FromJson(const nlohmann::json &jsonObject)
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<std::map<std::string, ExtensionInfo>>(jsonObject,
+    GetValueIfFindKey<std::map<std::string, ExtensionAbilityInfo>>(jsonObject,
         jsonObjectEnd,
         BUNDLE_BASE_EXTENSION_INFOS,
         baseExtensionInfos_,
@@ -1462,6 +1462,8 @@ std::optional<HapModuleInfo> InnerBundleInfo::FindHapModuleInfo(const std::strin
     hapInfo.metadata = it->second.metadata;
     hapInfo.resourcePath = it->second.moduleResPath;
     hapInfo.isStageBasedModel = it->second.isStageBasedModel;
+    hapInfo.mainElementName = it->second.mainAbility;
+
     bool first = false;
     for (auto &ability : baseAbilityInfos_) {
         if (ability.first.find(modulePackage) != std::string::npos) {
@@ -1517,6 +1519,38 @@ std::optional<std::vector<AbilityInfo>> InnerBundleInfo::FindAbilityInfos(
     }
     if (!abilitys.empty()) {
         return abilitys;
+    }
+
+    return std::nullopt;
+}
+
+std::optional<ExtensionAbilityInfo> InnerBundleInfo::FindExtensionInfo(
+    const std::string &bundleName, const std::string &extensionName) const
+{
+    for (const auto &extension : baseExtensionInfos_) {
+        if ((extension.second.bundleName == bundleName) && (extension.second.name == extensionName)) {
+            return extension.second;
+        }
+    }
+    return std::nullopt;
+}
+
+std::optional<std::vector<ExtensionAbilityInfo>> InnerBundleInfo::FindExtensionInfos(
+    const std::string &bundleName) const
+{
+    std::vector<ExtensionAbilityInfo> extensions;
+
+    if (bundleName.empty()) {
+        return std::nullopt;
+    }
+
+    for (const auto &extension : baseExtensionInfos_) {
+        if ((extension.second.bundleName == bundleName)) {
+            extensions.emplace_back(extension.second);
+        }
+    }
+    if (!extensions.empty()) {
+        return extensions;
     }
 
     return std::nullopt;
@@ -1874,6 +1908,7 @@ void InnerBundleInfo::GetBundleInfo(int32_t flags, BundleInfo &bundleInfo, int32
         APP_LOGE("get request permission state failed");
     }
     GetBundleWithAbilities(flags, bundleInfo, userId);
+    GetBundeleWithExtension(flags, bundleInfo, userId);
 }
 
 void InnerBundleInfo::GetBundleWithAbilities(int32_t flags, BundleInfo &bundleInfo, int32_t userId) const
@@ -1891,6 +1926,22 @@ void InnerBundleInfo::GetBundleWithAbilities(int32_t flags, BundleInfo &bundleIn
             bundleInfo.abilityInfos.emplace_back(abilityInfo);
         }
     }
+}
+
+void InnerBundleInfo::GetBundeleWithExtension(int32_t flags, BundleInfo &bundleInfo, int32_t userId) const
+{
+    APP_LOGD("get bundleInfo with extensionInfo begin");
+    if ((static_cast<uint32_t>(flags) & GET_BUNDLE_WITH_EXTENSION_INFO) == GET_BUNDLE_WITH_EXTENSION_INFO) {
+        for (const auto &extensionInfo : baseExtensionInfos_) {
+            if (!extensionInfo.second.enabled) {
+                continue;
+            }
+            ExtensionAbilityInfo info = extensionInfo.second;
+            GetApplicationInfo(ApplicationFlag::GET_BASIC_APPLICATION_INFO, userId, info.applicationInfo);
+            bundleInfo.extensionInfos.emplace_back(info);
+        }
+    }
+    APP_LOGD("get bundleInfo with extensionInfo end");
 }
 
 bool InnerBundleInfo::CheckSpecialMetaData(const std::string &metaData) const
@@ -1943,7 +1994,6 @@ void InnerBundleInfo::GetShortcutInfos(std::vector<ShortcutInfo> &shortcutInfos)
         GetMainAbilityInfo(abilityInfo);
         if (!abilityInfo.resourcePath.empty() && abilityInfo.metadata.size() > 0) {
             std::vector<std::string> rawJson;
-            BundleMgrClient bundleMgrClient;
             bool ret = false; // to do
             if (ret == false) {
                 APP_LOGD("GetResConfigFile return false");

@@ -33,6 +33,7 @@ const std::string HAP_MODULE_INFO_BACKGROUND_IMG = "backgroundImg";
 const std::string HAP_MODULE_INFO_MAIN_ABILITY = "mainAbility";
 const std::string HAP_MODULE_INFO_SRC_PATH = "srcPath";
 const std::string HAP_MODULE_INFO_SUPPORTED_MODES = "supportedModes";
+const std::string HAP_MODULE_INFO_MAIN_ELEMENTNAME = "mainElementName";
 const std::string HAP_MODULE_INFO_REQ_CAPABILITIES = "reqCapabilities";
 const std::string HAP_MODULE_INFO_DEVICE_TYPES = "deviceTypes";
 const std::string HAP_MODULE_INFO_COLOR_MODE = "colorMode";
@@ -41,14 +42,23 @@ const std::string HAP_MODULE_INFO_COLOR_MODE = "colorMode";
 bool HapModuleInfo::ReadFromParcel(Parcel &parcel)
 {
     name = Str16ToStr8(parcel.ReadString16());
+    APP_LOGE("Read name is %{public}s", name.c_str());
     moduleName = Str16ToStr8(parcel.ReadString16());
+    APP_LOGE("Read moduleName is %{public}s", moduleName.c_str());
     description = Str16ToStr8(parcel.ReadString16());
+    APP_LOGE("Read description is %{public}s", description.c_str());
     iconPath = Str16ToStr8(parcel.ReadString16());
+    APP_LOGE("Read iconPath is %{public}s", iconPath.c_str());
     label = Str16ToStr8(parcel.ReadString16());
+    APP_LOGE("Read label is %{public}s", label.c_str());
     backgroundImg = Str16ToStr8(parcel.ReadString16());
+    APP_LOGE("Read backgroundImg is %{public}s", backgroundImg.c_str());
     mainAbility = Str16ToStr8(parcel.ReadString16());
+    APP_LOGE("Read mainAbility is %{public}s", mainAbility.c_str());
     srcPath = Str16ToStr8(parcel.ReadString16());
+    APP_LOGE("Read srcPath is %{public}s", srcPath.c_str());
     supportedModes = parcel.ReadInt32();
+    APP_LOGE("Read supportedModes is %{public}d", supportedModes);
 
     int32_t reqCapabilitiesSize;
     READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, reqCapabilitiesSize);
@@ -100,6 +110,7 @@ bool HapModuleInfo::Marshalling(Parcel &parcel) const
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(mainAbility));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(srcPath));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, supportedModes);
+
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, reqCapabilities.size());
     for (auto &reqCapability : reqCapabilities) {
         WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(reqCapability));
@@ -128,6 +139,7 @@ void to_json(nlohmann::json &jsonObject, const HapModuleInfo &hapModuleInfo)
         {HAP_MODULE_INFO_MAIN_ABILITY, hapModuleInfo.mainAbility},
         {HAP_MODULE_INFO_SRC_PATH, hapModuleInfo.srcPath},
         {HAP_MODULE_INFO_SUPPORTED_MODES, hapModuleInfo.supportedModes},
+        {HAP_MODULE_INFO_MAIN_ELEMENTNAME, hapModuleInfo.mainElementName},
         {HAP_MODULE_INFO_REQ_CAPABILITIES, hapModuleInfo.reqCapabilities},
         {HAP_MODULE_INFO_DEVICE_TYPES, hapModuleInfo.deviceTypes},
         {HAP_MODULE_INFO_COLOR_MODE, hapModuleInfo.colorMode},
@@ -207,6 +219,14 @@ void from_json(const nlohmann::json &jsonObject, HapModuleInfo &hapModuleInfo)
         HAP_MODULE_INFO_SUPPORTED_MODES,
         hapModuleInfo.supportedModes,
         JsonType::NUMBER,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        HAP_MODULE_INFO_MAIN_ELEMENTNAME,
+        hapModuleInfo.mainElementName,
+        JsonType::STRING,
         false,
         parseResult,
         ArrayType::NOT_ARRAY);

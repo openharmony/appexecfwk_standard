@@ -139,6 +139,19 @@ static void ConvertCustomizeData(napi_env env, napi_value objCustomizeData, cons
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objCustomizeData, "extra", nExtra));
 }
 
+static void ConvertInnerMetadata(napi_env env, napi_value value, const Metadata &metadata)
+{
+    napi_value nName;
+    NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, metadata.name.c_str(), NAPI_AUTO_LENGTH, &nName));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, value, "name", nName));
+    napi_value nValue;
+    NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, metadata.value.c_str(), NAPI_AUTO_LENGTH, &nValue));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, value, "value", nValue));
+    napi_value nResource;
+    NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, metadata.resource.c_str(), NAPI_AUTO_LENGTH, &nResource));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, value, "resource", nResource));
+}
+
 static void ConvertApplicationInfo(napi_env env, napi_value objAppInfo, const ApplicationInfo &appInfo)
 {
     napi_value nName;
@@ -255,6 +268,17 @@ static void ConvertApplicationInfo(napi_env env, napi_value objAppInfo, const Ap
     }
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objAppInfo, "metaData", nMetaData));
 
+    napi_value nMetadata;
+    size_t len = appInfo.metadata.size();
+    NAPI_CALL_RETURN_VOID(env, napi_create_array_with_length(env, len, &nMetadata));
+    for (size_t index = 0; index < len; ++index) {
+        napi_value innerMeta;
+        NAPI_CALL_RETURN_VOID(env, napi_create_object(env, &innerMeta));
+        ConvertInnerMetadata(env, innerMeta, appInfo.metadata[index]);
+        NAPI_CALL_RETURN_VOID(env, napi_set_element(env, nMetadata, index, innerMeta));
+    }
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objAppInfo, "metadata", nMetadata));
+
     napi_value nEnabled;
     NAPI_CALL_RETURN_VOID(env, napi_get_boolean(env, appInfo.enabled, &nEnabled));
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objAppInfo, "enabled", nEnabled));
@@ -262,6 +286,15 @@ static void ConvertApplicationInfo(napi_env env, napi_value objAppInfo, const Ap
     napi_value nFlags;
     NAPI_CALL_RETURN_VOID(env, napi_create_int32(env, DEFAULT_INT32, &nFlags));
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objAppInfo, "flags", nFlags));
+
+    napi_value nUid;
+    NAPI_CALL_RETURN_VOID(env, napi_create_int32(env, appInfo.uid, &nUid));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objAppInfo, "uid", nUid));
+
+    napi_value nEntityType;
+    NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, appInfo.entityType.c_str(), NAPI_AUTO_LENGTH,
+        &nEntityType));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objAppInfo, "entityType", nEntityType));
 
     HILOG_INFO("ConvertApplicationInfo entryDir=%{public}s.", appInfo.entryDir.c_str());
 }
@@ -443,6 +476,21 @@ static void ConvertAbilityInfo(napi_env env, napi_value objAbilityInfo, const Ab
     NAPI_CALL_RETURN_VOID(env, napi_create_array(env, &nMetaData));
     ConvertMetaData(env, nMetaData, abilityInfo.metaData);
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objAbilityInfo, "metaData", nMetaData));
+
+    napi_value nMetadata;
+    size_t size = abilityInfo.metadata.size();
+    NAPI_CALL_RETURN_VOID(env, napi_create_array_with_length(env, size, &nMetadata));
+    for (size_t index = 0; index < size; ++index) {
+        napi_value innerMeta;
+        NAPI_CALL_RETURN_VOID(env, napi_create_object(env, &innerMeta));
+        ConvertInnerMetadata(env, innerMeta, abilityInfo.metadata[index]);
+        NAPI_CALL_RETURN_VOID(env, napi_set_element(env, nMetadata, index, innerMeta));
+    }
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objAbilityInfo, "metadata", nMetadata));
+
+    napi_value nEnabled;
+    NAPI_CALL_RETURN_VOID(env, napi_get_boolean(env, abilityInfo.enabled, &nEnabled));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objAbilityInfo, "enabled", nEnabled));
 }
 
 static void ProcessAbilityInfos(
@@ -462,6 +510,99 @@ static void ProcessAbilityInfos(
     } else {
         HILOG_INFO("-----abilityInfos is null-----");
     }
+}
+
+static void ConvertExtensionInfos(napi_env env, napi_value result,
+    std::vector<OHOS::AppExecFwk::ExtensionAbilityInfo> extensionInfos)
+{
+    HILOG_DEBUG("convert extensionInfos start");
+    if (extensionInfos.empty()) {
+        HILOG_WARN("extensionInfos is null");
+        return;
+    }
+
+    for (size_t i = 0; i < extensionInfos.size(); ++i) {
+        napi_value value = nullptr;
+        napi_create_object(env, &value);
+        napi_value nBundleName;
+        NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, extensionInfos[i].bundleName.c_str(),
+            NAPI_AUTO_LENGTH, &nBundleName));
+        NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, value, "bundleName", nBundleName));
+
+        napi_value nModuleName;
+        NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, extensionInfos[i].moduleName.c_str(),
+            NAPI_AUTO_LENGTH, &nModuleName));
+        NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, value, "moduleName", nModuleName));
+
+        napi_value nName;
+        NAPI_CALL_RETURN_VOID(env,
+            napi_create_string_utf8(env, extensionInfos[i].name.c_str(), NAPI_AUTO_LENGTH, &nName));
+        NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, value, "name", nName));
+
+        napi_value nLabelId;
+        NAPI_CALL_RETURN_VOID(env, napi_create_int32(env, extensionInfos[i].labelId, &nLabelId));
+        NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, value, "labelId", nLabelId));
+
+        napi_value nDescriptionId;
+        NAPI_CALL_RETURN_VOID(env, napi_create_int32(env, extensionInfos[i].descriptionId, &nDescriptionId));
+        NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, value, "descriptionId", nDescriptionId));
+
+        napi_value nIconId;
+        NAPI_CALL_RETURN_VOID(env, napi_create_int32(env, extensionInfos[i].iconId, &nIconId));
+        NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, value, "iconId", nIconId));
+
+        napi_value nIsVisible;
+        NAPI_CALL_RETURN_VOID(env, napi_get_boolean(env, extensionInfos[i].visible, &nIsVisible));
+        NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, value, "isVisible", nIsVisible));
+
+        napi_value nExtensionAbilityType;
+        NAPI_CALL_RETURN_VOID(env,
+            napi_create_int32(env, static_cast<int32_t>(extensionInfos[i].type), &nExtensionAbilityType));
+        NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, value, "extensionAbilityType", nExtensionAbilityType));
+
+        napi_value nPermission;
+        size_t size = extensionInfos[i].permissions.size();
+        NAPI_CALL_RETURN_VOID(env, napi_create_array_with_length(env, size, &nPermission));
+        for (size_t j = 0; j < size; ++j) {
+            napi_value innerPerm;
+            NAPI_CALL_RETURN_VOID(env,
+                napi_create_string_utf8(env, extensionInfos[i].permissions[j].c_str(), NAPI_AUTO_LENGTH, &innerPerm));
+            NAPI_CALL_RETURN_VOID(env, napi_set_element(env, nPermission, j, innerPerm));
+        }
+        NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, value, "permissions", nPermission));
+
+        napi_value nApplication;
+        NAPI_CALL_RETURN_VOID(env, napi_create_object(env, &nApplication));
+        ConvertApplicationInfo(env, nApplication, extensionInfos[i].applicationInfo);
+        NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, value, "applicationInfo", nApplication));
+
+        napi_value nMetadata;
+        size = extensionInfos[i].metadata.size();
+        NAPI_CALL_RETURN_VOID(env, napi_create_array_with_length(env, size, &nMetadata));
+        for (size_t index = 0; index < size; ++index) {
+            napi_value innerMeta;
+            NAPI_CALL_RETURN_VOID(env, napi_create_object(env, &innerMeta));
+            ConvertInnerMetadata(env, innerMeta, extensionInfos[i].metadata[index]);
+            NAPI_CALL_RETURN_VOID(env, napi_set_element(env, nMetadata, index, innerMeta));
+        }
+        NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, value, "metadata", nMetadata));
+
+        napi_value nEnabled;
+        NAPI_CALL_RETURN_VOID(env, napi_get_boolean(env, extensionInfos[i].enabled, &nEnabled));
+        NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, value, "enabled", nEnabled));
+
+        napi_value nReadPermission;
+        NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, extensionInfos[i].readPermission.c_str(),
+            NAPI_AUTO_LENGTH, &nReadPermission));
+        NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, value, "readPermission", nReadPermission));
+
+        napi_value nWritePermission;
+        NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, extensionInfos[i].writePermission.c_str(),
+            NAPI_AUTO_LENGTH, &nWritePermission));
+        NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, value, "writePermission", nWritePermission));
+        napi_set_element(env, result, i, value);
+    }
+    HILOG_DEBUG("convert extensionInfos finished");
 }
 
 static void ConvertHapModuleInfo(napi_env env, napi_value objHapModuleInfo, const HapModuleInfo &hapModuleInfo)
@@ -565,6 +706,17 @@ static void ConvertHapModuleInfo(napi_env env, napi_value objHapModuleInfo, cons
     napi_value nInstallationFree;
     NAPI_CALL_RETURN_VOID(env, napi_get_boolean(env, false, &nInstallationFree));
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objHapModuleInfo, "installationFree", nInstallationFree));
+
+    napi_value nMainElementName;
+    NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, hapModuleInfo.mainElementName.c_str(), NAPI_AUTO_LENGTH,
+        &nMainElementName));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objHapModuleInfo, "mainElementName", nMainElementName));
+
+    napi_value nExtensionAbilityInfos;
+    napi_create_array_with_length(env, hapModuleInfo.extensionInfos.size(), &nExtensionAbilityInfos);
+    ConvertExtensionInfos(env, nExtensionAbilityInfos, hapModuleInfo.extensionInfos);
+    NAPI_CALL_RETURN_VOID(env,
+        napi_set_named_property(env, objHapModuleInfo, "extensionAbilityInfo", nExtensionAbilityInfos));
 }
 
 static void ConvertBundleInfo(napi_env env, napi_value objBundleInfo, const BundleInfo &bundleInfo)
@@ -5091,6 +5243,226 @@ void CreateInstallErrorCodeObject(napi_env env, napi_value value)
     NAPI_CALL_RETURN_VOID(env,
         napi_create_int32(env, static_cast<int32_t>(InstallErrorCode::STATUS_BMS_SERVICE_ERROR), &nBmsServiceError));
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, value, "STATUS_BMS_SERVICE_ERROR", nBmsServiceError));
+}
+
+static bool ParseWant(napi_env env, AsyncExtensionInfoCallbackInfo *info, napi_value args)
+{
+    napi_valuetype valueType;
+    NAPI_CALL(env, napi_typeof(env, args, &valueType));
+    if (valueType != napi_object) {
+        HILOG_ERROR("args not object type");
+        return false;
+    }
+    napi_status status;
+    napi_value prop = nullptr;
+    status = napi_get_named_property(env, args, "extensionAbilityName", &prop);
+    if (status != napi_ok) {
+        HILOG_WARN("cannot find the property of extensionAbilityName");
+    } else {
+        napi_typeof(env, prop, &valueType);
+        if (valueType != napi_string) {
+            HILOG_ERROR("extensionAbilityName is not type of string");
+            return false;
+        }
+        info->extensionAbilityName = GetStringFromNAPI(env, prop);
+    }
+
+    prop = nullptr;
+    status = napi_get_named_property(env, args, "extensionAbilityType", &prop);
+    if (status != napi_ok) {
+        HILOG_WARN("cannot find the property of extensionAbilityType");
+    } else {
+    napi_typeof(env, prop, &valueType);
+        if (valueType != napi_number) {
+            HILOG_ERROR("extensionAbilityName is not type of number");
+            return false;
+        }
+        napi_get_value_int32(env, prop, &(info->extensionAbilityType));
+    }
+
+    if (!ParseWant(env, info->want, args)) {
+        HILOG_ERROR("parse want failed");
+        return false;
+    }
+    ElementName element = info->want.GetElement();
+    ElementName newElement(element.GetDeviceID(), element.GetBundleName(), info->extensionAbilityName);
+    info->want.SetElement(newElement);
+    return true;
+}
+
+static bool InnerQueryExtensionInfo(napi_env env, AsyncExtensionInfoCallbackInfo *info)
+{
+    auto iBundleMgr = GetBundleMgr();
+    if (!iBundleMgr) {
+        HILOG_ERROR("can not get iBundleMgr");
+        return false;
+    }
+    if (info->userId < 0) {
+        info->userId = IPCSkeleton::GetCallingUid();
+    }
+    if (info->extensionAbilityType < 0) {
+        return iBundleMgr->QueryExtensionAbilityInfos(info->want, info->flags, info->userId, info->extensionInfos);
+    } else {
+        return iBundleMgr->QueryExtensionAbilityInfos(info->want, info->extensionAbilityType, info->flags, info->userId,
+            info->extensionInfos);
+    }
+}
+
+/**
+ * Promise and async callback
+ */
+napi_value QueryExtensionInfoByWant(napi_env env, napi_callback_info info)
+{
+    HILOG_DEBUG("QueryExtensionInfoByWant start in NAPI");
+    size_t argc = ARGS_SIZE_FOUR;
+    napi_value argv[ARGS_SIZE_FOUR] = { nullptr };
+
+    NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, NULL, NULL));
+    HILOG_DEBUG("the count of input arguments is [%{public}zu]", argc);
+
+    AsyncExtensionInfoCallbackInfo *callBackInfo = new AsyncExtensionInfoCallbackInfo {
+        .env = env,
+        .asyncWork = nullptr,
+        .deferred = nullptr,
+    };
+
+    if (callBackInfo == nullptr) {
+        HILOG_ERROR("QueryExtensionInfoByWant failed due to null callBackInfo");
+        return nullptr;
+    }
+
+    if (argc < ARGS_SIZE_TWO || argc > ARGS_SIZE_FOUR) {
+        HILOG_ERROR("the number of input arguments is invalid");
+        return nullptr;
+    }
+    for (size_t i = 0; i < argc; ++i) {
+        napi_valuetype valueType = napi_undefined;
+        napi_typeof(env, argv[i], &valueType);
+        if ((i == 0) && (valueType == napi_object)) {
+            if (!ParseWant(env, callBackInfo, argv[i])) {
+                callBackInfo->err = PARAM_TYPE_ERROR;
+            }
+        } else if ((i == ARGS_SIZE_ONE) && (valueType == napi_number)) {
+            ParseInt(env, callBackInfo->flags, argv[i]);
+        } else if (i == ARGS_SIZE_TWO) {
+            if (valueType == napi_number) {
+                ParseInt(env, callBackInfo->userId, argv[i]);
+            } else if (valueType == napi_function) {
+                napi_create_reference(env, argv[i], NAPI_RETURN_ONE, &callBackInfo->callback);
+                break;
+            } else {
+                callBackInfo->err = PARAM_TYPE_ERROR;
+            }
+        } else if ((i == ARGS_SIZE_THREE) && (valueType == napi_function)) {
+            napi_create_reference(env, argv[i], NAPI_RETURN_ONE, &callBackInfo->callback);
+        } else {
+            callBackInfo->err = PARAM_TYPE_ERROR;
+        }
+    }
+
+    HILOG_DEBUG("QueryExtensionInfoByWant finish to parse arguments");
+    napi_value promise = nullptr;
+    if (callBackInfo->callback == nullptr) {
+        napi_create_promise(env, &callBackInfo->deferred, &promise);
+    } else {
+        napi_get_undefined(env, &promise);
+    }
+    napi_value resource = nullptr;
+    napi_create_string_utf8(env, "QueryExtensionInfoByWant", NAPI_AUTO_LENGTH, &resource);
+    napi_create_async_work(
+        env, nullptr, resource,
+        [](napi_env env, void *data) {
+            AsyncExtensionInfoCallbackInfo *info = (AsyncExtensionInfoCallbackInfo *)data;
+            if (!info->err) {
+                info->ret = InnerQueryExtensionInfo(env, info);
+            }
+        },
+        [](napi_env env, napi_status status, void *data) {
+            AsyncExtensionInfoCallbackInfo *info = (AsyncExtensionInfoCallbackInfo *)data;
+            napi_value result[2] = { 0 };
+            if (info->err) {
+                napi_create_uint32(env, info->err, &result[0]);
+                napi_create_string_utf8(env, "type mismatch", NAPI_AUTO_LENGTH, &result[1]);
+            } else {
+                if (info->ret) {
+                    napi_create_uint32(env, info->ret, &result[0]);
+                    napi_create_array_with_length(env, info->extensionInfos.size(), &result[1]);
+                    ConvertExtensionInfos(env, result[1], info->extensionInfos);
+                } else {
+                    napi_create_uint32(env, info->ret, &result[0]);
+                    napi_create_string_utf8(env, "QueryExtensionInfoByWant failed", NAPI_AUTO_LENGTH, &result[1]);
+                }
+            }
+            if (info->deferred) {
+                if (info->ret) {
+                    napi_resolve_deferred(env, info->deferred, result[1]);
+                } else {
+                    napi_reject_deferred(env, info->deferred, result[0]);
+                }
+            } else {
+                napi_value callback = nullptr;
+                napi_value placeHolder = nullptr;
+                napi_get_reference_value(env, info->callback, &callback);
+                napi_call_function(env, nullptr, callback, sizeof(result) / sizeof(result[0]), result, &placeHolder);
+                napi_delete_reference(env, info->callback);
+            }
+            napi_delete_async_work(env, info->asyncWork);
+            delete info;
+        },
+        (void*)callBackInfo, &callBackInfo->asyncWork);
+    napi_queue_async_work(env, callBackInfo->asyncWork);
+    return promise;
+}
+
+void CreateExtensionAbilityTypeObject(napi_env env, napi_value value)
+{
+    napi_value nForm;
+    NAPI_CALL_RETURN_VOID(env, napi_create_int32(env, static_cast<int32_t>(ExtensionAbilityType::FORM), &nForm));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, value, "FORM", nForm));
+
+    napi_value nWorkSchedule;
+    NAPI_CALL_RETURN_VOID(env,
+        napi_create_int32(env, static_cast<int32_t>(ExtensionAbilityType::WORK_SCHEDULER), &nWorkSchedule));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, value, "WORK_SCHEDULER", nWorkSchedule));
+
+    napi_value nInputMethod;
+    NAPI_CALL_RETURN_VOID(env,
+        napi_create_int32(env, static_cast<int32_t>(ExtensionAbilityType::INPUTMETHOD), &nInputMethod));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, value, "INPUTMETHOD", nInputMethod));
+
+    napi_value nService;
+    NAPI_CALL_RETURN_VOID(env, napi_create_int32(env, static_cast<int32_t>(ExtensionAbilityType::SERVICE), &nService));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, value, "SERVICE", nService));
+
+    napi_value nAccessibility;
+    NAPI_CALL_RETURN_VOID(env,
+        napi_create_int32(env, static_cast<int32_t>(ExtensionAbilityType::ACCESSIBILITY), &nAccessibility));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, value, "ACCESSIBILITY", nAccessibility));
+
+    napi_value nDataShare;
+    NAPI_CALL_RETURN_VOID(env,
+        napi_create_int32(env, static_cast<int32_t>(ExtensionAbilityType::DATASHARE), &nDataShare));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, value, "DATASHARE", nDataShare));
+
+    napi_value nFileShare;
+    NAPI_CALL_RETURN_VOID(env,
+        napi_create_int32(env, static_cast<int32_t>(ExtensionAbilityType::FILESHARE), &nFileShare));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, value, "FILESHARE", nFileShare));
+
+    napi_value nStaticSubscriber;
+    NAPI_CALL_RETURN_VOID(env,
+        napi_create_int32(env, static_cast<int32_t>(ExtensionAbilityType::STATICSUBSCRIBER), &nStaticSubscriber));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, value, "STATICSUBSCRIBER", nStaticSubscriber));
+
+    napi_value nWallpaper;
+    NAPI_CALL_RETURN_VOID(env, napi_create_int32(env,
+        static_cast<int32_t>(ExtensionAbilityType::WALLPAPER), &nWallpaper));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, value, "WALLPAPER", nWallpaper));
+
+    napi_value nUnspecified;
+    NAPI_CALL_RETURN_VOID(env,
+        napi_create_int32(env, static_cast<int32_t>(ExtensionAbilityType::UNSPECIFIED), &nUnspecified));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, value, "UNSPECIFIED", nUnspecified));
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS

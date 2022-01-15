@@ -36,10 +36,13 @@ config("appexecfwk_core_config") {
 
 ohos_shared_library("appexecfwk_core") {
   include_dirs = [
-    "//third_party/json/include",
     "${services_path}/appmgr/include",
     "${services_path}/bundlemgr/include",
     "${services_path}/formmgr/include",
+    "//base/global/resmgr_standard/interfaces/innerkits/include",
+    "//base/global/i18n_standard/frameworks/intl/include",
+    "//third_party/icu/icu4c/source/common",
+    "//third_party/json/include",
     "//utils/system/safwk/native/include",
   ]
 
@@ -117,6 +120,13 @@ ohos_shared_library("appexecfwk_core") {
     "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_base:appexecfwk_base",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
     "//utils/native/base:utils",
+  ]
+
+  public_deps = [
+    "//base/global/i18n_standard/frameworks/intl:intl_util",
+    "//base/global/resmgr_standard/frameworks/resmgr:global_resmgr",
+    "//third_party/icu/icu4c:shared_icuuc",
+    "//third_party/jsoncpp:jsoncpp",
   ]
 
   external_deps = [

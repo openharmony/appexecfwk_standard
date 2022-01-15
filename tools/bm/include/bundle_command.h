@@ -34,7 +34,8 @@ const std::string HELP_MSG = "usage: bm <command> <options>\n"
                              "  clean        clean the bundle data\n"
                              "  enable       enable the bundle\n"
                              "  disable      disable the bundle\n"
-                             "  recover      recover the bundle\n";
+                             "  recover      recover the bundle\n"
+                             "  query        query extensionInfo or profile\n";
 
 const std::string HELP_MSG_INSTALL =
     "usage: bm install <options>\n"
@@ -91,6 +92,14 @@ const std::string HELP_MSG_RECOVER =
     "  -h, --help                             list available commands\n"
     "  -n, --bundle-name  <bundle-name>       recover bundle by bundle name\n";
 
+const std::string HELP_MSG_QUERY =
+    "usage: bm query <options>\n"
+    "options list:\n"
+    "  -h, --help                             list available commands\n"
+    "  -n, --bundle-name <bundle-name>        query bundle by bundle name\n"
+    "  -e, --element-name <element-name>      query info by element name\n"
+    "  -m, --metadata-name <metadata-name>    query metadata by metadata name\n";
+
 const std::string HELP_MSG_NO_BUNDLE_PATH_OPTION =
     "error: you must specify a bundle path with '-p' or '--bundle-path'.";
 
@@ -119,6 +128,11 @@ const std::string STRING_DISABLE_BUNDLE_NG = "error: failed to disable bundle.";
 
 const std::string STRING_RECOVER_BUNDLE_OK = "recover bundle successfully.";
 const std::string STRING_RECOVER_BUNDLE_NG = "error: failed to recover bundle.";
+
+const std::string STRING_QUERY_BUNDLE_OK = "query bundle successfully.";
+const std::string STRING_QUERY_BUNDLE_NG = "error: failed to query profile.";
+const std::string STRING_QUERY_NEED_CORRECT_ARGUMENTS = "error: need correct arguments!";
+const std::string NO_PROFILE = "no profile!\n";
 }  // namespace
 
 class BundleManagerShellCommand : public OHOS::AAFwk::ShellCommand {
@@ -143,6 +157,7 @@ private:
     ErrCode RunAsEnableCommand();
     ErrCode RunAsDisableCommand();
     ErrCode RunAsRecoverCommand();
+    ErrCode RunAsQueryCommand();
 
     std::string DumpBundleList(int32_t userId) const;
     std::string DumpBundleInfo(const std::string &bundleName, int32_t userId) const;
@@ -160,6 +175,11 @@ private:
 
     bool SetApplicationEnabledOperation(const AbilityInfo &abilityInfo, bool isEnable) const;
     int32_t RecoverOperation(const std::string &bundleName, InstallParam &installParam) const;
+
+    bool QueryOperation(const std::string &bundleName, const std::string &elementName,
+        const std::string &metadataName, std::string &result) const;
+
+    bool CheckArguments(const std::string &argument) const;
 
     sptr<IBundleMgr> bundleMgrProxy_;
     sptr<IBundleInstaller> bundleInstallerProxy_;

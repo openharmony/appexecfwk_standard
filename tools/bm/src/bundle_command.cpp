@@ -23,6 +23,7 @@
 
 #include "app_log_wrapper.h"
 #include "bundle_death_recipient.h"
+#include "bundle_mgr_client.h"
 #include "clean_cache_callback_host.h"
 #include "if_system_ability_manager.h"
 #include "iservice_registry.h"
@@ -60,6 +61,16 @@ const struct option LONG_OPTIONS_DUMP[] = {
     {"all", no_argument, nullptr, 'a'},
     {"bundle-info", no_argument, nullptr, 'i'},
     {"shortcut-info", no_argument, nullptr, 's'},
+    {"user-id", required_argument, nullptr, 'u'},
+    {nullptr, 0, nullptr, 0},
+};
+
+const std::string SHORT_OPTIONS_QUERY = "hn:e:m:u:";
+const struct option LONG_OPTIONS_QUERY[] = {
+    {"help", no_argument, nullptr, 'h'},
+    {"bundle-name", required_argument, nullptr, 'n'},
+    {"element-name", required_argument, nullptr, 'e'},
+    {"metadata-name", required_argument, nullptr, 'm'},
     {"user-id", required_argument, nullptr, 'u'},
     {nullptr, 0, nullptr, 0},
 };
@@ -109,6 +120,7 @@ ErrCode BundleManagerShellCommand::CreateCommandMap()
         {"enable", std::bind(&BundleManagerShellCommand::RunAsEnableCommand, this)},
         {"disable", std::bind(&BundleManagerShellCommand::RunAsDisableCommand, this)},
         {"recover", std::bind(&BundleManagerShellCommand::RunAsRecoverCommand, this)},
+        {"query", std::bind(&BundleManagerShellCommand::RunAsQueryCommand, this)},
     };
 
     return OHOS::ERR_OK;
@@ -1319,6 +1331,135 @@ ErrCode BundleManagerShellCommand::RunAsRecoverCommand()
     return result;
 }
 
+ErrCode BundleManagerShellCommand::RunAsQueryCommand()
+{
+    int result = OHOS::ERR_OK;
+    int option = -1;
+    int counter = 0;
+    std::string queryResults = "";
+    std::string bundleName = "";
+    std::string elementName = "";
+    std::string metadataName = "";
+    int32_t userId = Constants::ANY_USERID;
+    while (true) {
+        counter++;
+        option = getopt_long(argc_, argv_, SHORT_OPTIONS_QUERY.c_str(), LONG_OPTIONS_QUERY, nullptr);
+        APP_LOGD("option: %{public}d, optopt: %{public}d, optind: %{public}d", option, optopt, optind);
+        if (optind < 0 || optind > argc_) {
+            return OHOS::ERR_INVALID_VALUE;
+        }
+        if (option == -1) {
+            if (counter == 1) {
+                if (strcmp(argv_[optind], cmd_.c_str()) == 0) {
+                    // 1.'bm query' with no option: bm query
+                    // 2.'bm query' with a wrong argument: bm query -xxx
+                    APP_LOGD("'bm query' %{public}s", HELP_MSG_NO_OPTION.c_str());
+                    resultReceiver_.append(HELP_MSG_NO_OPTION + "\n");
+                    result = OHOS::ERR_INVALID_VALUE;
+                }
+            }
+            break;
+        }
+        if (option == '?') {
+            switch (optopt) {
+                case 'n': {
+                    // 'bm query -n' with no argument: bm query -n
+                    // 'bm query --bundle-name' with no argument: bm query --bundle-name
+                    APP_LOGD("'bm query -n' with no argument.");
+                    resultReceiver_.append("error: option ");
+                    resultReceiver_.append("requires a value.\n");
+                    result = OHOS::ERR_INVALID_VALUE;
+                    break;
+                }
+                case 'e': {
+                    APP_LOGD("'bm query -e' with no argument.");
+                    resultReceiver_.append("error: option ");
+                    resultReceiver_.append("requires a value.\n");
+                    result = OHOS::ERR_INVALID_VALUE;
+                    break;
+                }
+                case 'm': {
+                    APP_LOGD("'bm query -m' with no argument.");
+                    resultReceiver_.append("error: option ");
+                    resultReceiver_.append("requires a value.\n");
+                    result = OHOS::ERR_INVALID_VALUE;
+                    break;
+                }
+                case 'u': {
+                    APP_LOGD("'bm query -u' with no argument.");
+                    resultReceiver_.append("error: option ");
+                    resultReceiver_.append("requires a value.\n");
+                    result = OHOS::ERR_INVALID_VALUE;
+                    break;
+                }
+                default: {
+                    // 'bm query' with an unknown option: bm dump -x
+                    // 'bm query' with an unknown option: bm dump -xxx
+                    std::string unknownOption = "";
+                    std::string unknownOptionMsg = GetUnknownOptionMsg(unknownOption);
+                    APP_LOGD("'bm dump' with an unknown option.");
+                    resultReceiver_.append(unknownOptionMsg);
+                    result = OHOS::ERR_INVALID_VALUE;
+                    break;
+                }
+            }
+            break;
+        }
+        switch (option) {
+            case 'h': {
+                result = OHOS::ERR_INVALID_VALUE;
+                break;
+            }
+            case 'n': {
+                APP_LOGD("'bm query bundleName is %{public}s'", optarg);
+                bundleName = optarg;
+                break;
+            }
+            case 'e': {
+                APP_LOGD("'bm query elementName is %{public}s'", optarg);
+                elementName = optarg;
+                break;
+            }
+            case 'm': {
+                APP_LOGD("'bm query metadataName is %{public}s'", optarg);
+                metadataName = optarg;
+                break;
+            }
+            case 'u': {
+                APP_LOGD("'bm query userId is %{public}s'", optarg);
+                userId = std::stoi(optarg);
+                break;
+            }
+            default: {
+                result = OHOS::ERR_INVALID_VALUE;
+                break;
+            }
+        }
+    }
+    if (result != OHOS::ERR_OK) {
+        resultReceiver_.append(HELP_MSG_QUERY);
+        return result;
+    }
+    if (!QueryOperation(bundleName, elementName, metadataName, queryResults)) {
+        result = OHOS::ERR_INVALID_VALUE;
+    }
+    if (queryResults.empty()) {
+        resultReceiver_.append(NO_PROFILE);
+        return result;
+    }
+    resultReceiver_.append(queryResults);
+    return result;
+}
+
+bool BundleManagerShellCommand::CheckArguments(const std::string &argument) const
+{
+    if (argument.empty() || argument == "-n" || argument == "-m" || argument == "-e" || argument == "bundle-name" ||
+        argument == "element-name" || argument == "metadata-name") {
+        return false;
+    }
+    return true;
+}
+
 std::string BundleManagerShellCommand::DumpBundleList(int32_t userId) const
 {
     std::string dumpResults;
@@ -1463,6 +1604,44 @@ int32_t BundleManagerShellCommand::RecoverOperation(const std::string &bundleNam
     sptr<StatusReceiverImpl> statusReceiver(new StatusReceiverImpl());
     bundleInstallerProxy_->Recover(bundleName, installParam, statusReceiver);
     return statusReceiver->GetResultCode();
+}
+
+bool BundleManagerShellCommand::QueryOperation(const std::string &bundleName, const std::string &elementName,
+    const std::string &metadataName, std::string &result) const
+{
+    if (!CheckArguments(bundleName) || !CheckArguments(elementName) || !CheckArguments(metadataName)) {
+        APP_LOGD("bundleName: %{public}s, elementName: %{public}s, metadataName: %{public}s", bundleName.c_str(),
+            elementName.c_str(), metadataName.c_str());
+        result += STRING_QUERY_NEED_CORRECT_ARGUMENTS;
+        result += HELP_MSG_QUERY;
+        return false;
+    }
+    BundleInfo info;
+    auto ret = bundleMgrProxy_->GetBundleInfo(bundleName,
+        GET_BUNDLE_WITH_ABILITIES | GET_BUNDLE_WITH_EXTENSION_INFO, info);
+    if (!ret) {
+        APP_LOGE("getBundleInfo failed");
+        result += STRING_QUERY_NEED_CORRECT_ARGUMENTS;
+        result = HELP_MSG_QUERY;
+        return false;
+    }
+    BundleMgrClient bundleClient;
+    std::vector<std::string> profiles;
+    auto spliceResult = [&](const auto &str)->void {
+        result.append(str);
+        result.append("\n");
+    };
+    auto matchInfo = [&](const auto &info)->void {
+        if (elementName.compare(info.name) == 0) {
+            if (bundleClient.GetResConfigFile(info, metadataName, profiles)) {
+                for_each(profiles.begin(), profiles.end(), spliceResult);
+            }
+        }
+    };
+    for_each(info.hapModuleInfos.begin(), info.hapModuleInfos.end(), matchInfo);
+    for_each(info.abilityInfos.begin(), info.abilityInfos.end(), matchInfo);
+    for_each(info.extensionInfos.begin(), info.extensionInfos.end(), matchInfo);
+    return true;
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS

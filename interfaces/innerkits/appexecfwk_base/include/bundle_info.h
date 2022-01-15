@@ -23,7 +23,7 @@
 
 #include "ability_info.h"
 #include "application_info.h"
-#include "extension_info.h"
+#include "extension_ability_info.h"
 #include "hap_module_info.h"
 
 namespace OHOS {
@@ -36,6 +36,8 @@ enum BundleFlag {
     GET_BUNDLE_WITH_ABILITIES = 0x00000001,
     // get bundle info include request permissions
     GET_BUNDLE_WITH_REQUESTED_PERMISSION = 0x00000010,
+    // get bundle info include extension info
+    GET_BUNDLE_WITH_EXTENSION_INFO = 0x00000020,
 };
 
 // configuration information about a bundle
@@ -82,7 +84,7 @@ struct BundleInfo : public Parcelable {
     std::vector<std::string> moduleDirs;        // the paths of all modules of the application.
     std::vector<std::string> moduleResPaths;    // the paths of all resources paths.
     // new version fields
-    std::vector<ExtensionInfo> extensionInfos;
+    std::vector<ExtensionAbilityInfo> extensionInfos;
     std::vector<int32_t> reqPermissionStates;
 
     bool ReadFromParcel(Parcel &parcel);
