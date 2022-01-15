@@ -125,6 +125,7 @@ ohos_shared_library("appkit_native") {
     "$SUBSYSTEM_DIR/kits/appkit/native/app/src/main_thread.cpp",
     "$SUBSYSTEM_DIR/kits/appkit/native/app/src/ohos_application.cpp",
     "$SUBSYSTEM_DIR/kits/appkit/native/app/src/sys_mgr_client.cpp",
+    "$SUBSYSTEM_DIR/kits/appkit/native/app/src/watchdog.cpp",
   ]
   cflags = []
   if (target_cpu == "arm") {
