@@ -72,6 +72,8 @@ bool BundleDataMgr::LoadDataFromPersistentStorage()
             std::lock_guard<std::mutex> lock(stateMutex_);
             installStates_.emplace(item.first, InstallState::INSTALL_SUCCESS);
         }
+
+        LoadAllPreInstallBundleInfos(preInstallBundleInfos_);
         RestoreUidAndGid();
         SetInitialUserFlag(true);
     }
@@ -1223,6 +1225,7 @@ void BundleDataMgr::InitStateTransferMap()
     transferStates_.emplace(InstallState::UPDATING_SUCCESS, InstallState::USER_CHANGE);
     transferStates_.emplace(InstallState::USER_CHANGE, InstallState::INSTALL_SUCCESS);
     transferStates_.emplace(InstallState::USER_CHANGE, InstallState::UPDATING_SUCCESS);
+    transferStates_.emplace(InstallState::USER_CHANGE, InstallState::UPDATING_START);
 }
 
 bool BundleDataMgr::IsDeleteDataState(const InstallState state) const
@@ -2315,12 +2318,20 @@ bool BundleDataMgr::GetClonedBundleName(const std::string &bundleName, std::stri
 bool BundleDataMgr::SavePreInstallBundleInfo(
     const std::string &bundleName, const PreInstallBundleInfo &preInstallBundleInfo)
 {
+    std::lock_guard<std::mutex> lock(preInstallInfoMutex_);
     if (!preInstallDataStorage_) {
         return false;
     }
 
     if (preInstallDataStorage_->SavePreInstallStorageBundleInfo(
         Constants::PRE_INSTALL_DEVICE_ID, preInstallBundleInfo)) {
+        auto info = std::find_if(
+            preInstallBundleInfos_.begin(), preInstallBundleInfos_.end(), preInstallBundleInfo);
+        if (info != preInstallBundleInfos_.end()) {
+            *info = preInstallBundleInfo;
+        } else {
+            preInstallBundleInfos_.emplace_back(preInstallBundleInfo);
+        }
         APP_LOGD("write storage success bundle:%{public}s", bundleName.c_str());
         return true;
     }
@@ -2331,21 +2342,20 @@ bool BundleDataMgr::SavePreInstallBundleInfo(
 bool BundleDataMgr::GetPreInstallBundleInfo(
     const std::string &bundleName, PreInstallBundleInfo &preInstallBundleInfo)
 {
+    std::lock_guard<std::mutex> lock(preInstallInfoMutex_);
     if (bundleName.empty()) {
         APP_LOGE("bundleName or deviceId empty");
         return false;
     }
 
-    if (!preInstallDataStorage_) {
-        return false;
-    }
-
-    if (preInstallDataStorage_->GetPreInstallStorageBundleInfo(
-        Constants::PRE_INSTALL_DEVICE_ID, preInstallBundleInfo)) {
-        APP_LOGD("get storage success bundle:%{public}s", bundleName.c_str());
+    auto info = std::find_if(
+        preInstallBundleInfos_.begin(), preInstallBundleInfos_.end(), preInstallBundleInfo);
+    if (info != preInstallBundleInfos_.end()) {
+        preInstallBundleInfo = *info;
         return true;
     }
 
+    APP_LOGE("get preInstall bundleInfo failed by bundle(%{public}s).", bundleName.c_str());
     return false;
 }
 

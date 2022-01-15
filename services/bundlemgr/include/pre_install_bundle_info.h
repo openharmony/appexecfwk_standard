@@ -59,17 +59,21 @@ public:
      * @brief Get bundle path.
      * @return Return bundle path
      */
-    std::string GetBundlePath() const
+    std::vector<std::string> GetBundlePaths() const
     {
-        return bundlePath_;
+        return bundlePaths_;
     }
     /**
-     * @brief Set bundle path.
+     * @brief Add bundle path.
      * @param bundlePath bundle path.
      */
-    void SetBundlePath(const std::string &bundlePath)
+    void AddBundlePath(const std::string &bundlePath)
     {
-        bundlePath_ = bundlePath;
+        bool ret = std::find(
+            bundlePaths_.begin(), bundlePaths_.end(), bundlePath) != bundlePaths_.end();
+        if (!ret) {
+            bundlePaths_.emplace_back(bundlePath);
+        }
     }
     /**
      * @brief Get AppType.
@@ -87,10 +91,17 @@ public:
     {
         appType_ = appType;
     }
-
+    /**
+     * @brief operator.
+     * @param PreInstallBundleInfo Indicates the PreInstallBundleInfo.
+     */
+    bool operator() (const PreInstallBundleInfo& info) const
+    {
+        return bundleName_ == info.GetBundleName();
+    }
 private:
     std::string bundleName_;
-    std::string bundlePath_;
+    std::vector<std::string> bundlePaths_;
     Constants::AppType appType_ = Constants::AppType::SYSTEM_APP;
 };
 }  // namespace AppExecFwk

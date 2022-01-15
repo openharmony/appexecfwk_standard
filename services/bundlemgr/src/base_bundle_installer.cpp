@@ -171,21 +171,17 @@ ErrCode BaseBundleInstaller::InnerProcessBundleInstall(std::unordered_map<std::s
         return ERR_APPEXECFWK_INSTALL_BUNDLE_MGR_SERVICE_ERROR;
     }
 
-    if (!isAppExist_ && installParam.needSavePreInstallInfo) {
+    if (installParam.needSavePreInstallInfo) {
         PreInstallBundleInfo preInstallBundleInfo;
         preInstallBundleInfo.SetBundleName(bundleName_);
-        preInstallBundleInfo.SetBundlePath(newInfos.begin()->first);
+        dataMgr_->GetPreInstallBundleInfo(bundleName_, preInstallBundleInfo);
+        preInstallBundleInfo.AddBundlePath(newInfos.begin()->first);
         preInstallBundleInfo.SetAppType(newInfos.begin()->second.GetAppType());
         dataMgr_->SavePreInstallBundleInfo(bundleName_, preInstallBundleInfo);
     }
 
     ErrCode result = ERR_OK;
     if (isAppExist_) {
-        if (oldInfo.IsSingleUser()) {
-            APP_LOGE("singleUser app(%{public}s) does not supported upgrade.", bundleName_.c_str());
-            return ERR_APPEXECFWK_INSTALL_BUNDLE_MGR_SERVICE_ERROR;
-        }
-
         // to guaruntee that the hap version can be compatible.
         result = CheckVersionCompatibility(oldInfo);
         if (result != ERR_OK) {
@@ -222,8 +218,7 @@ ErrCode BaseBundleInstaller::InnerProcessBundleInstall(std::unordered_map<std::s
     if (!isAppExist_) {
         APP_LOGI("app is not exist");
         InnerBundleInfo &newInfo = it->second;
-        if (newInfo.IsSingleUser() &&
-            (dataMgr_->GetUserIdByCallingUid() != Constants::DEFAULT_USERID)) {
+        if (newInfo.IsSingleUser() && (userId_ != Constants::DEFAULT_USERID)) {
             APP_LOGE("singleUser app(%{public}s) must be installed in user 0.", bundleName_.c_str());
             return ERR_APPEXECFWK_INSTALL_BUNDLE_MGR_SERVICE_ERROR;
         }
@@ -690,15 +685,14 @@ ErrCode BaseBundleInstaller::ProcessRecover(
     PreInstallBundleInfo preInstallBundleInfo;
     preInstallBundleInfo.SetBundleName(bundleName);
     if (!dataMgr_->GetPreInstallBundleInfo(bundleName, preInstallBundleInfo)
-        || preInstallBundleInfo.GetBundlePath().empty()
+        || preInstallBundleInfo.GetBundlePaths().empty()
         || preInstallBundleInfo.GetAppType() != Constants::AppType::SYSTEM_APP) {
         APP_LOGE("Get PreInstallBundleInfo faile, bundleName: %{public}s.", bundleName.c_str());
         return ERR_APPEXECFWK_RECOVER_GET_BUNDLEPATH_ERROR;
     }
 
-    APP_LOGD("Get bundlePath success when install Bundle by bundleName, bundlePath: (%{public}s).",
-        preInstallBundleInfo.GetBundlePath().c_str());
-    std::vector<std::string> pathVec { preInstallBundleInfo.GetBundlePath() };
+    APP_LOGD("Get bundlePath success when recover.");
+    std::vector<std::string> pathVec { preInstallBundleInfo.GetBundlePaths() };
     auto recoverInstallParam = installParam;
     recoverInstallParam.isPreInstallApp = true;
     return ProcessBundleInstall(
@@ -845,6 +839,11 @@ ErrCode BaseBundleInstaller::ProcessNewModuleInstall(InnerBundleInfo &newInfo, I
         }
     });
 
+    if (newInfo.IsSingleUser() && (userId_ != Constants::DEFAULT_USERID)) {
+        APP_LOGE("singleUser app(%{public}s) must be installed in user 0.", bundleName_.c_str());
+        return ERR_APPEXECFWK_INSTALL_BUNDLE_MGR_SERVICE_ERROR;
+    }
+
     if (newInfo.HasEntry() && oldInfo.HasEntry()) {
         APP_LOGE("install more than one entry module");
         return ERR_APPEXECFWK_INSTALL_ENTRY_ALREADY_EXIST;
@@ -898,6 +897,11 @@ ErrCode BaseBundleInstaller::ProcessModuleUpdate(InnerBundleInfo &newInfo, Inner
             RemoveBundleUserData(oldInfo);
         }
     });
+
+    if (newInfo.IsSingleUser() && (userId_ != Constants::DEFAULT_USERID)) {
+        APP_LOGE("singleUser app(%{public}s) must be installed in user 0.", bundleName_.c_str());
+        return ERR_APPEXECFWK_INSTALL_BUNDLE_MGR_SERVICE_ERROR;
+    }
 
     if (!isReplace && versionCode_ == oldInfo.GetVersionCode()) {
         if (hasInstalledInUser_) {
