@@ -98,7 +98,8 @@ const std::string HELP_MSG_QUERY =
     "  -h, --help                             list available commands\n"
     "  -n, --bundle-name <bundle-name>        query bundle by bundle name\n"
     "  -e, --element-name <element-name>      query info by element name\n"
-    "  -m, --metadata-name <metadata-name>    query metadata by metadata name\n";
+    "  -m, --metadata-name <metadata-name>    query metadata by metadata name\n"
+    "  -u, --user-id <usr -id>                designate an user id\n";
 
 const std::string HELP_MSG_NO_BUNDLE_PATH_OPTION =
     "error: you must specify a bundle path with '-p' or '--bundle-path'.";
