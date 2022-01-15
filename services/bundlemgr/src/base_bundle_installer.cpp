@@ -1250,6 +1250,16 @@ ErrCode BaseBundleInstaller::CheckMultipleHapsSignInfo(const std::vector<std::st
         APP_LOGE("hap files have different signuature info");
         return ERR_APPEXECFWK_INSTALL_SIGN_INFO_INCONSISTENT;
     }
+    auto apl = hapVerifyRes[0].GetProvisionInfo().bundleInfo.apl;
+    APP_LOGD("bundle apl is %{public}s", apl.c_str());
+    isValid = std::any_of(hapVerifyRes.begin(), hapVerifyRes.end(), [&](auto &hapVerifyResult) {
+        APP_LOGD("module appid is %{public}s", hapVerifyResult.GetProvisionInfo().bundleInfo.apl.c_str());
+        return apl != hapVerifyResult.GetProvisionInfo().bundleInfo.apl;
+    });
+    if (isValid) {
+        APP_LOGE("hap files have different apl info");
+        return ERR_APPEXECFWK_INSTALL_SIGN_INFO_INCONSISTENT;
+    }
     APP_LOGD("finish check multiple haps signInfo");
     return ERR_OK;
 }
@@ -1285,6 +1295,7 @@ ErrCode BaseBundleInstaller::ParseHapFiles(const std::vector<std::string> &bundl
             auto provisionInfo = hapVerifyRes[i].GetProvisionInfo();
             newInfo.SetProvisionId(provisionInfo.appId);
             newInfo.SetAppFeature(provisionInfo.bundleInfo.appFeature);
+            newInfo.SetAppPrivilegeLevel(provisionInfo.bundleInfo.apl);
             if (provisionInfo.bundleInfo.appFeature == Constants::HOS_SYSTEM_APP ||
                 provisionInfo.bundleInfo.appFeature == Constants::OHOS_SYSTEM_APP) {
                 newInfo.SetAppType(Constants::AppType::SYSTEM_APP);

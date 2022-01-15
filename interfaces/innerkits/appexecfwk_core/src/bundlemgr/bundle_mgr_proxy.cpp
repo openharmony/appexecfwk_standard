@@ -1984,6 +1984,31 @@ bool BundleMgrProxy::GetDistributedBundleInfo(
     return true;
 }
 
+std::string BundleMgrProxy::GetAppPrivilegeLevel(const std::string &bundleName)
+{
+    APP_LOGD("begin to GetAppPrivilegeLevel of %{public}s", bundleName.c_str());
+    if (bundleName.empty()) {
+        APP_LOGE("fail to GetAppPrivilegeLevel due to params empty");
+        return Constants::EMPTY_STRING;
+    }
+    MessageParcel data;
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        APP_LOGE("fail to GetAppPrivilegeLevel due to write InterfaceToken fail");
+        return Constants::EMPTY_STRING;
+    }
+    if (!data.WriteString(bundleName)) {
+        APP_LOGE("fail to GetAppPrivilegeLevel due to write abilityInfo fail");
+        return Constants::EMPTY_STRING;
+    }
+
+    MessageParcel reply;
+    if (!SendTransactCmd(IBundleMgr::Message::GET_APPLICATION_PRIVILEGE_LEVEL, data, reply)) {
+        APP_LOGE("fail to GetAppPrivilegeLevel from server");
+        return Constants::EMPTY_STRING;
+    }
+    return reply.ReadString();
+}
+
 template<typename T>
 bool BundleMgrProxy::GetParcelableInfo(IBundleMgr::Message code, MessageParcel &data, T &parcelableInfo)
 {
