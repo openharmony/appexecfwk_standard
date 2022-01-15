@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2021 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -23,7 +23,27 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-struct ExtensionInfo {
+enum ExtensionAbilityInfoFlag {
+    GET_EXTENSION_INFO_DEFAULT = 0x00000000,
+    GET_EXTENSION_INFO_WITH_PERMISSION = 0x00000002,
+    GET_EXTENSION_INFO_WITH_APPLICATION = 0x00000004,
+    GET_EXTENSION_INFO_WITH_METADATA = 0x00000020,
+};
+
+enum class ExtensionAbilityType {
+    FORM = 0,
+    WORK_SCHEDULER,
+    INPUTMETHOD,
+    SERVICE,
+    ACCESSIBILITY,
+    DATASHARE,
+    FILESHARE,
+    STATICSUBSCRIBER,
+    WALLPAPER,
+    UNSPECIFIED
+};
+
+struct ExtensionAbilityInfo : public Parcelable {
     std::string bundleName;
     std::string moduleName;
     std::string name;
@@ -34,14 +54,20 @@ struct ExtensionInfo {
     int32_t labelId = 0;
     std::string description;
     int32_t descriptionId = 0;
-    std::string type;
+    std::vector<std::string> permissions;
     std::string readPermission;
     std::string writePermission;
-    std::vector<std::string> permissions;
+    ExtensionAbilityType type;
     bool visible = false;
     std::vector<Metadata> metadata;
+    ApplicationInfo applicationInfo;
     // set when install
     std::string resourcePath;
+    bool enabled = true;
+
+    bool ReadFromParcel(Parcel &parcel);
+    virtual bool Marshalling(Parcel &parcel) const override;
+    static ExtensionAbilityInfo *Unmarshalling(Parcel &parcel);
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS

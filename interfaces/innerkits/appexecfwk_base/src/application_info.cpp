@@ -72,6 +72,38 @@ const std::string APPLICATION_SINGLE_USER = "singleUser";
 const std::string APPLICATION_CLEAR_USER_DATA = "clearUserData";
 }
 
+Metadata::Metadata(const std::string &paramName, const std::string &paramValue, const std::string &paramResource)
+    : name(paramName), value(paramValue), resource(paramResource)
+{
+}
+
+bool Metadata::ReadFromParcel(Parcel &parcel)
+{
+    name = Str16ToStr8(parcel.ReadString16());
+    value = Str16ToStr8(parcel.ReadString16());
+    resource = Str16ToStr8(parcel.ReadString16());
+    return true;
+}
+
+bool Metadata::Marshalling(Parcel &parcel) const
+{
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(name));
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(value));
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(resource));
+    return true;
+}
+
+Metadata *Metadata::Unmarshalling(Parcel &parcel)
+{
+    Metadata *metadata = new (std::nothrow) Metadata;
+    if (metadata && !metadata->ReadFromParcel(parcel)) {
+        APP_LOGE("read from parcel failed");
+        delete metadata;
+        metadata = nullptr;
+    }
+    return metadata;
+}
+
 CustomizeData::CustomizeData(std::string paramName, std::string paramValue, std::string paramExtra)
     :name(paramName), value(paramValue), extra(paramExtra)
 {
@@ -133,6 +165,7 @@ bool ApplicationInfo::ReadFromParcel(Parcel &parcel)
     accessTokenId = parcel.ReadUint32();
     flags = parcel.ReadInt32();
     uid = parcel.ReadInt32();
+    entityType = Str16ToStr8(parcel.ReadString16());
 
     int32_t permissionsSize;
     READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, permissionsSize);
@@ -157,6 +190,17 @@ bool ApplicationInfo::ReadFromParcel(Parcel &parcel)
     }
     if (!ReadMetaDataFromParcel(parcel)) {
         return false;
+    }
+
+    int32_t metadataSize;
+    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, metadataSize);
+    for (int32_t i = 0; i < metadataSize; ++i) {
+        std::unique_ptr<Metadata> meta(parcel.ReadParcelable<Metadata>());
+        if (!meta) {
+            APP_LOGE("ReadParcelable<Metadata> failed");
+            return false;
+        }
+        metadata.emplace_back(*meta);
     }
     return true;
 }
@@ -221,6 +265,7 @@ bool ApplicationInfo::Marshalling(Parcel &parcel) const
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Uint32, parcel, accessTokenId);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, flags);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, uid);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(entityType));
 
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, permissions.size());
     for (auto &permission : permissions) {
@@ -244,6 +289,11 @@ bool ApplicationInfo::Marshalling(Parcel &parcel) const
         for (auto &customizeData : item.second) {
             WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Parcelable, parcel, &customizeData);
         }
+    }
+
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, metadata.size());
+    for (const auto &meta : metadata) {
+        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Parcelable, parcel, &meta);
     }
     return true;
 }

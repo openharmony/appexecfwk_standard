@@ -25,6 +25,7 @@
 
 namespace OHOS {
 namespace AppExecFwk {
+
 /*
  * form_json and to_json is global static overload method, which need callback by json library,
  * and can not rename this function, so don't named according UpperCamelCase style
@@ -37,8 +38,8 @@ void to_json(nlohmann::json &jsonObject, const Metadata &metadata);
 void from_json(const nlohmann::json &jsonObject, Metadata &metadata);
 void to_json(nlohmann::json &jsonObject, const AbilityInfo &abilityInfo);
 void from_json(const nlohmann::json &jsonObject, AbilityInfo &abilityInfo);
-void to_json(nlohmann::json &jsonObject, const ExtensionInfo &extensionInfo);
-void from_json(const nlohmann::json &jsonObject, ExtensionInfo &extensionInfo);
+void to_json(nlohmann::json &jsonObject, const ExtensionAbilityInfo &extensionInfo);
+void from_json(const nlohmann::json &jsonObject, ExtensionAbilityInfo &extensionInfo);
 void to_json(nlohmann::json &jsonObject, const ApplicationInfo &applicationInfo);
 void from_json(const nlohmann::json &jsonObject, ApplicationInfo &applicationInfo);
 void to_json(nlohmann::json &jsonObject, const BundleInfo &bundleInfo);

@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-#include "extension_info.h"
+#include "extension_ability_info.h"
 
 #include <fcntl.h>
 #include <string>
@@ -45,11 +45,86 @@ const std::string WRITE_PERMISSION = "writePermission";
 const std::string VISIBLE = "visible";
 const std::string META_DATA = "metadata";
 const std::string RESOURCE_PATH = "resourcePath";
+const std::string ENABLED = "enabled";
 }; // namespace
 
-void to_json(nlohmann::json &jsonObject, const ExtensionInfo &extensionInfo)
+bool ExtensionAbilityInfo::ReadFromParcel(Parcel &parcel)
 {
-    APP_LOGD("write ExtensionInfo to database");
+    bundleName = Str16ToStr8(parcel.ReadString16());
+    moduleName = Str16ToStr8(parcel.ReadString16());
+    name = Str16ToStr8(parcel.ReadString16());
+    iconId = parcel.ReadInt32();
+    labelId = parcel.ReadInt32();
+    descriptionId = parcel.ReadInt32();
+    type = static_cast<ExtensionAbilityType>(parcel.ReadInt32());
+    int32_t permissionSize = parcel.ReadInt32();
+    for (int32_t i = 0; i < permissionSize; ++i) {
+        permissions.emplace_back(Str16ToStr8(parcel.ReadString16()));
+    }
+    readPermission = Str16ToStr8(parcel.ReadString16());
+    writePermission = Str16ToStr8(parcel.ReadString16());
+    visible = parcel.ReadBool();
+    int32_t metadataSize = parcel.ReadInt32();
+    for (int32_t i = 0; i < metadataSize; ++i) {
+        std::unique_ptr<Metadata> meta(parcel.ReadParcelable<Metadata>());
+        if (!meta) {
+            APP_LOGE("ReadParcelable<ApplicationInfo> failed");
+            return false;
+        }
+        metadata.emplace_back(*meta);
+    }
+    std::unique_ptr<ApplicationInfo> appInfo(parcel.ReadParcelable<ApplicationInfo>());
+    if (!appInfo) {
+        APP_LOGE("ReadParcelable<ApplicationInfo> failed");
+        return false;
+    }
+    applicationInfo = *appInfo;
+
+    resourcePath = Str16ToStr8(parcel.ReadString16());
+    enabled = parcel.ReadBool();
+    return true;
+}
+
+ExtensionAbilityInfo *ExtensionAbilityInfo::Unmarshalling(Parcel &parcel)
+{
+    ExtensionAbilityInfo *info = new (std::nothrow) ExtensionAbilityInfo();
+    if (info && !info->ReadFromParcel(parcel)) {
+        APP_LOGW("read from parcel failed");
+        delete info;
+        info = nullptr;
+    }
+    return info;
+}
+
+bool ExtensionAbilityInfo::Marshalling(Parcel &parcel) const
+{
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(bundleName));
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(moduleName));
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(name));
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, iconId);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, labelId);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, descriptionId);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, static_cast<int32_t>(type));
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, permissions.size());
+    for (const auto &per : permissions) {
+        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(per));
+    }
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(readPermission));
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(writePermission));
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, visible);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, metadata.size());
+    for (const auto &meta : metadata) {
+        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Parcelable, parcel, &meta);
+    }
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Parcelable, parcel, &applicationInfo);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(resourcePath));
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, enabled);
+    return true;
+}
+
+void to_json(nlohmann::json &jsonObject, const ExtensionAbilityInfo &extensionInfo)
+{
+    APP_LOGD("write ExtensionAbilityInfo to database");
     jsonObject = nlohmann::json {
         {BUNDLE_NAME, extensionInfo.bundleName},
         {MODULE_NAME, extensionInfo.moduleName},
@@ -67,13 +142,14 @@ void to_json(nlohmann::json &jsonObject, const ExtensionInfo &extensionInfo)
         {PERMISSIONS, extensionInfo.permissions},
         {VISIBLE, extensionInfo.visible},
         {META_DATA, extensionInfo.metadata},
-        {RESOURCE_PATH, extensionInfo.resourcePath}
+        {RESOURCE_PATH, extensionInfo.resourcePath},
+        {ENABLED, extensionInfo.enabled}
     };
 }
 
-void from_json(const nlohmann::json &jsonObject, ExtensionInfo &extensionInfo)
+void from_json(const nlohmann::json &jsonObject, ExtensionAbilityInfo &extensionInfo)
 {
-    APP_LOGD("read ExtensionInfo from database");
+    APP_LOGD("read ExtensionAbilityInfo from database");
     const auto &jsonObjectEnd = jsonObject.end();
     int32_t parseResult = ERR_OK;
     GetValueIfFindKey<std::string>(jsonObject,
@@ -156,11 +232,11 @@ void from_json(const nlohmann::json &jsonObject, ExtensionInfo &extensionInfo)
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<std::string>(jsonObject,
+    GetValueIfFindKey<ExtensionAbilityType>(jsonObject,
         jsonObjectEnd,
         TYPE,
         extensionInfo.type,
-        JsonType::STRING,
+        JsonType::NUMBER,
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
@@ -212,8 +288,16 @@ void from_json(const nlohmann::json &jsonObject, ExtensionInfo &extensionInfo)
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<bool>(jsonObject,
+        jsonObjectEnd,
+        ENABLED,
+        extensionInfo.enabled,
+        JsonType::BOOLEAN,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
     if (parseResult != ERR_OK) {
-        APP_LOGE("read ExtensionInfo from database error, error code : %{public}d", parseResult);
+        APP_LOGE("read ExtensionAbilityInfo from database error, error code : %{public}d", parseResult);
     }
 }
 }  // namespace AppExecFwk
