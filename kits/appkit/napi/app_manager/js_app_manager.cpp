@@ -17,6 +17,7 @@
 
 #include <cstdint>
 
+#include "ability_manager_interface.h"
 #include "app_mgr_interface.h"
 #include "hilog_wrapper.h"
 #include "js_runtime.h"
@@ -40,7 +41,9 @@ constexpr size_t ARGC_TWO = 2;
 
 class JsAppManager final {
 public:
-    JsAppManager(sptr<OHOS::AppExecFwk::IAppMgr> appManager) : appManager_(appManager) {}
+    JsAppManager(sptr<OHOS::AppExecFwk::IAppMgr> appManager,
+        sptr<OHOS::AAFwk::IAbilityManager> abilityManager) : appManager_(appManager),
+        abilityManager_(abilityManager) {}
     ~JsAppManager() = default;
 
     static void Finalizer(NativeEngine* engine, void* data, void* hint)
@@ -67,12 +70,19 @@ public:
         return (me != nullptr) ? me->OnGetForegroundApplications(*engine, *info) : nullptr;
     }
 
+    static NativeValue* IsUserAStabilityTest(NativeEngine* engine, NativeCallbackInfo* info)
+    {
+        JsAppManager* me = CheckParamsAndGetThis<JsAppManager>(engine, info);
+        return (me != nullptr) ? me->OnIsUserAStabilityTest(*engine, *info) : nullptr;
+    }
+
 private:
     sptr<OHOS::AppExecFwk::IAppMgr> appManager_ = nullptr;
+    sptr<OHOS::AAFwk::IAbilityManager> abilityManager_ = nullptr;
 
     NativeValue* OnRegisterApplicationStateObserver(NativeEngine& engine, NativeCallbackInfo& info)
     {
-    HILOG_INFO("OnRegisterApplicationStateObserver is called");
+        HILOG_INFO("OnRegisterApplicationStateObserver is called");
         // only support one or two params
         if (info.argc != ARGC_ONE) {
             HILOG_ERROR("Not enough params");
@@ -94,6 +104,11 @@ private:
         AsyncTask::CompleteCallback complete =
             [appManager = appManager_, observer](NativeEngine& engine, AsyncTask& task, int32_t status) {
                 HILOG_INFO("RegisterApplicationStateObserver callback begin");
+                if (appManager == nullptr) {
+                    HILOG_ERROR("appManager nullptr");
+                    task.Reject(engine, CreateJsError(engine, ERROR_CODE_ONE, "appManager nullptr"));
+                    return;
+                }
                 int32_t err = appManager->RegisterApplicationStateObserver(observer);
                 if (err == 0) {
                     HILOG_INFO("RegisterApplicationStateObserver success err 0");
@@ -136,9 +151,9 @@ private:
             [appManager = appManager_, observer, observerId](
                 NativeEngine& engine, AsyncTask& task, int32_t status) {
                 HILOG_INFO("OnUnregisterApplicationStateObserver begin");
-                if (observer == nullptr) {
-                    HILOG_WARN("observer nullptr");
-                    task.Reject(engine, CreateJsError(engine, ERROR_CODE_ONE, "not found observer"));
+                if (observer == nullptr || appManager == nullptr) {
+                    HILOG_ERROR("observer or appManager nullptr");
+                    task.Reject(engine, CreateJsError(engine, ERROR_CODE_ONE, "observer or appManager nullptr"));
                     return;
                 }
                 HILOG_INFO("observer->UnregisterApplicationStateObserver");
@@ -172,6 +187,11 @@ private:
             [appManager = appManager_](
                 NativeEngine& engine, AsyncTask& task, int32_t status) {
                 HILOG_INFO("OnGetForegroundApplications begin");
+                if (appManager == nullptr) {
+                    HILOG_ERROR("appManager nullptr");
+                    task.Reject(engine, CreateJsError(engine, ERROR_CODE_ONE, "appManager nullptr"));
+                    return;
+                }
                 std::vector<AppExecFwk::AppStateData> list;
                 int32_t err = appManager->GetForegroundApplications(list);
                 if (err == 0) {
@@ -181,6 +201,33 @@ private:
                     HILOG_ERROR("OnGetForegroundApplications failed error:%{public}d", err);
                     task.Reject(engine, CreateJsError(engine, err, "OnGetForegroundApplications failed"));
                 }
+            };
+
+        NativeValue* lastParam = (info.argc == ARGC_ZERO) ? nullptr : info.argv[INDEX_ZERO];
+        NativeValue* result = nullptr;
+        AsyncTask::Schedule(
+            engine, CreateAsyncTaskWithLastParam(engine, lastParam, nullptr, std::move(complete), &result));
+        return result;
+    }
+
+    NativeValue* OnIsUserAStabilityTest(NativeEngine& engine, NativeCallbackInfo& info)
+    {
+        // only support 0 or 1 params
+        if (info.argc != ARGC_ONE && info.argc != ARGC_ZERO) {
+            HILOG_ERROR("Not enough params");
+            return engine.CreateUndefined();
+        }
+        AsyncTask::CompleteCallback complete =
+            [abilityManager = abilityManager_](NativeEngine& engine, AsyncTask& task, int32_t status) {
+                if (abilityManager == nullptr) {
+                    HILOG_WARN("abilityManager nullptr");
+                    task.Reject(engine, CreateJsError(engine, ERROR_CODE_ONE, "abilityManager nullptr"));
+                    return;
+                }
+                HILOG_INFO("IsUserAStabilityTest begin");
+                bool ret = abilityManager->IsUserAStabilityTest();
+                HILOG_INFO("IsUserAStabilityTest result:%{public}d", ret);
+                task.Resolve(engine, CreateJsValue(engine, ret));
             };
 
         NativeValue* lastParam = (info.argc == ARGC_ZERO) ? nullptr : info.argv[INDEX_ZERO];
@@ -200,6 +247,15 @@ OHOS::sptr<OHOS::AppExecFwk::IAppMgr> GetAppManagerInstance()
     return OHOS::iface_cast<OHOS::AppExecFwk::IAppMgr>(appObject);
 }
 
+OHOS::sptr<OHOS::AAFwk::IAbilityManager> GetAbilityManagerInstance()
+{
+    OHOS::sptr<OHOS::ISystemAbilityManager> systemAbilityManager =
+        OHOS::SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
+    OHOS::sptr<OHOS::IRemoteObject> abilityObject =
+        systemAbilityManager->GetSystemAbility(OHOS::ABILITY_MGR_SERVICE_ID);
+    return OHOS::iface_cast<OHOS::AAFwk::IAbilityManager>(abilityObject);
+}
+
 NativeValue* JsAppManagerInit(NativeEngine* engine, NativeValue* exportObj)
 {
     HILOG_INFO("JsAppManagerInit is called");
@@ -216,7 +272,7 @@ NativeValue* JsAppManagerInit(NativeEngine* engine, NativeValue* exportObj)
     }
 
     std::unique_ptr<JsAppManager> jsAppManager =
-        std::make_unique<JsAppManager>(GetAppManagerInstance());
+        std::make_unique<JsAppManager>(GetAppManagerInstance(), GetAbilityManagerInstance());
     object->SetNativePointer(jsAppManager.release(), JsAppManager::Finalizer, nullptr);
 
     //make handler
@@ -229,6 +285,8 @@ NativeValue* JsAppManagerInit(NativeEngine* engine, NativeValue* exportObj)
         JsAppManager::UnregisterApplicationStateObserver);
     BindNativeFunction(*engine, *object, "getForegroundApplications",
         JsAppManager::GetForegroundApplications);
+    BindNativeFunction(*engine, *object, "isUserAStabilityTest",
+        JsAppManager::IsUserAStabilityTest);
     HILOG_INFO("JsAppManagerInit end");
     return engine->CreateUndefined();
 }
