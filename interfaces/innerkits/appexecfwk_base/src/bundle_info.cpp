@@ -166,6 +166,21 @@ bool BundleInfo::ReadFromParcel(Parcel &parcel)
         }
         hapModuleInfos.emplace_back(*hapModuleInfo);
     }
+
+    int32_t extensionInfoSize = parcel.ReadInt32();
+    for (int32_t i = 0; i < extensionInfoSize; ++i) {
+        std::unique_ptr<ExtensionAbilityInfo> info(parcel.ReadParcelable<ExtensionAbilityInfo>());
+        if (!info) {
+            APP_LOGE("ReadParcelable<ExtensionAbilityInfo> failed");
+            return false;
+        }
+        extensionInfos.emplace_back(*info);
+    }
+
+    int32_t reqPermissionStatesSize = parcel.ReadInt32();
+    for (int32_t i = 0; i < reqPermissionStatesSize; ++i) {
+        reqPermissionStates.emplace_back(parcel.ReadInt32());
+    }
     return true;
 }
 
@@ -250,6 +265,16 @@ bool BundleInfo::Marshalling(Parcel &parcel) const
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, hapModuleInfos.size());
     for (auto &hapModuleInfo : hapModuleInfos) {
         WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Parcelable, parcel, &hapModuleInfo);
+    }
+
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, extensionInfos.size());
+    for (auto &info : extensionInfos) {
+        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Parcelable, parcel, &info);
+    }
+
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, reqPermissionStates.size());
+    for (auto &states : reqPermissionStates) {
+        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, states);
     }
     return true;
 }
