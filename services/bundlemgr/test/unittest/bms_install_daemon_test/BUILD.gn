@@ -52,6 +52,7 @@ ohos_unittest("BmsInstallDaemonTest") {
   external_deps = [
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
+    "resmgr_standard:global_resmgr"
   ]
 
   resource_config_file = "//foundation/appexecfwk/standard/test/resource/bundlemgrservice/ohos_test.xml"
