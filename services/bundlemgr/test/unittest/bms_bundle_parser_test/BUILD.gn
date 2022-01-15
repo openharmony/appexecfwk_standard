@@ -51,6 +51,7 @@ ohos_unittest("BmsBundleParserTest") {
 
   external_deps = [
     "aafwk_standard:want",
+    "access_token:libaccesstoken_sdk",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
   ]
