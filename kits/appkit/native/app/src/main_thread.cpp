@@ -535,6 +535,10 @@ void MainThread::HandleTerminateApplicationLocal()
         APP_LOGE("MainThread::HandleTerminateApplicationLocal get manHandler error");
         return;
     }
+
+    if (watchDogHandler_ != nullptr) {
+        watchDogHandler_->Stop();
+    }
     int ret = runner->Stop();
     if (ret != ERR_OK) {
         APP_LOGE("MainThread::HandleTerminateApplicationLocal failed. runner->Run failed ret = %{public}d", ret);
@@ -898,7 +902,6 @@ void MainThread::HandleCleanAbilityLocal(const sptr<IRemoteObject> &token)
     abilityRecordMgr_->RemoveAbilityRecord(token);
 #ifdef APP_ABILITY_USE_TWO_RUNNER
     std::shared_ptr<EventRunner> runner = record->GetEventRunner();
-
     if (runner != nullptr) {
         int ret = runner->Stop();
         if (ret != ERR_OK) {
@@ -948,7 +951,6 @@ void MainThread::HandleCleanAbility(const sptr<IRemoteObject> &token)
     abilityRecordMgr_->RemoveAbilityRecord(token);
 #ifdef APP_ABILITY_USE_TWO_RUNNER
     std::shared_ptr<EventRunner> runner = record->GetEventRunner();
-
     if (runner != nullptr) {
         int ret = runner->Stop();
         if (ret != ERR_OK) {
@@ -1046,6 +1048,9 @@ void MainThread::HandleTerminateApplication()
         return;
     }
 
+    if (watchDogHandler_ != nullptr) {
+        watchDogHandler_->Stop();
+    }
     APP_LOGI("MainThread::handleTerminateApplication before stop runner");
     int ret = runner->Stop();
     APP_LOGI("MainThread::handleTerminateApplication after stop runner");
@@ -1110,18 +1115,26 @@ void MainThread::HandleConfigurationUpdated(const Configuration &config)
     APP_LOGI("MainThread::HandleConfigurationUpdated called end.");
 }
 
-void MainThread::Init(const std::shared_ptr<EventRunner> &runner)
+void MainThread::Init(const std::shared_ptr<EventRunner> &runner, const std::shared_ptr<EventRunner> &watchDogRunner)
 {
     BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGI("MainThread:Init Start");
     mainHandler_ = std::make_shared<MainHandler>(runner, this);
+    watchDogHandler_ = std::make_shared<WatchDog>(watchDogRunner);
     auto task = [appThread = this]() {
         APP_LOGI("MainThread:MainHandler Start");
         appThread->SetRunnerStarted(true);
     };
+    auto taskWatchDog = []() {
+        APP_LOGI("MainThread:WatchDogHandler Start");
+    };
     if (!mainHandler_->PostTask(task)) {
         APP_LOGE("MainThread::Init PostTask task failed");
     }
+    if (!watchDogHandler_->PostTask(taskWatchDog)) {
+        APP_LOGE("MainThread::Init WatchDog postTask task failed");
+    }
+    watchDogHandler_->Init(mainHandler_, watchDogHandler_);
     APP_LOGI("MainThread:Init before CreateRunner.");
     TaskHandlerClient::GetInstance()->CreateRunner();
     APP_LOGI("MainThread:Init after CreateRunner.");
@@ -1137,6 +1150,11 @@ void MainThread::Start()
         APP_LOGE("MainThread::main called start");
         return;
     }
+    std::shared_ptr<EventRunner> runnerWatchDog = EventRunner::Create("WatchDogRunner");
+    if (runnerWatchDog == nullptr) {
+        APP_LOGE("MainThread::Start runnerWatchDog is nullptr");
+        return;
+    }
     sptr<MainThread> thread = sptr<MainThread>(new (std::nothrow) MainThread());
     if (thread == nullptr) {
         APP_LOGE("MainThread::static failed. new MainThread failed");
@@ -1144,7 +1162,7 @@ void MainThread::Start()
     }
 
     APP_LOGI("MainThread::main called start Init");
-    thread->Init(runner);
+    thread->Init(runner, runnerWatchDog);
     APP_LOGI("MainThread::main called end Init");
 
     APP_LOGI("MainThread::main called start Attach");
@@ -1172,7 +1190,12 @@ MainThread::MainHandler::MainHandler(const std::shared_ptr<EventRunner> &runner,
  *
  */
 void MainThread::MainHandler::ProcessEvent(const OHOS::AppExecFwk::InnerEvent::Pointer &event)
-{}
+{
+    auto eventId = event->GetInnerEventId();
+    if (eventId == MAIN_THREAD_IS_ALIVE) {
+        WatchDog::GetCurrentHandler()->SendEvent(MAIN_THREAD_IS_ALIVE);
+    }
+}
 
 /**
  *

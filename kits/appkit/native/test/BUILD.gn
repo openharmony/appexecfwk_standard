@@ -56,10 +56,14 @@ config("module_context_config") {
     "//foundation/appexecfwk/standard/kits/appkit/native/test/mock/include",
     "//foundation/aafwk/standard/frameworks/kits/ability/native/test/mock/include",
     "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_core/include/bundlemgr",
+    "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_base/include",
     "//foundation/appexecfwk/standard/interfaces/innerkits/task_dispatcher/include/dispatcher",
     "//foundation/appexecfwk/standard/interfaces/innerkits/task_dispatcher/include/task",
     "//foundation/appexecfwk/standard/interfaces/innerkits/task_dispatcher/include/threading",
     "//foundation/appexecfwk/standard/kits/appkit/native/app/include/task",
+    "//foundation/appexecfwk/standard/interfaces/innerkits/libeventhandler/include",
+    "//foundation/aafwk/standard/frameworks/kits/ability/native/include",
+    "//foundation/aafwk/standard/interfaces/innerkits/base/include",
   ]
   cflags = []
   if (target_cpu == "arm") {
@@ -335,6 +339,29 @@ ohos_unittest("ability_start_setting_test") {
   ]
 }
 
+ohos_unittest("watchdog_test") {
+  module_out_path = module_output_path
+
+  configs = [
+    ":module_context_config",
+    ":ability_start_setting_config",
+  ]
+
+  sources = [ "unittest/watchdog_test.cpp" ]
+
+  deps = [
+    "//foundation/appexecfwk/standard/kits:appkit_native",
+    "//third_party/googletest:gtest_main",
+    "//utils/native/base:utils",
+    "//utils/native/base:utilsbase",
+  ]
+
+  external_deps = [
+    "hiviewdfx_hilog_native:libhilog",
+    "ipc:ipc_core",
+  ]
+}
+
 ###############################################################################
 
 group("unittest") {
@@ -347,6 +374,7 @@ group("unittest") {
     ":application_test",
     ":context_container_test",
     ":context_deal_test",
+    ":watchdog_test",
   ]
 }
 ###############################################################################

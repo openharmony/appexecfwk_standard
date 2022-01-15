@@ -26,6 +26,7 @@
 #include "application_impl.h"
 #include "resource_manager.h"
 #include "ohos/aafwk/base/ipc_singleton.h"
+#include "watchdog.h"
 #define ABILITY_LIBRARY_LOADER
 
 namespace OHOS {
@@ -366,7 +367,7 @@ private:
      * @param runner the runner belong to the mainthread.
      *
      */
-    void Init(const std::shared_ptr<EventRunner> &runner);
+    void Init(const std::shared_ptr<EventRunner> &runner, const std::shared_ptr<EventRunner> &watchDogRunner);
 
     /**
      *
@@ -402,6 +403,7 @@ private:
     std::shared_ptr<OHOSApplication> application_ = nullptr;
     std::shared_ptr<ApplicationImpl> applicationImpl_ = nullptr;
     std::shared_ptr<MainHandler> mainHandler_ = nullptr;
+    std::shared_ptr<WatchDog> watchDogHandler_ = nullptr;
     std::shared_ptr<AbilityRecordMgr> abilityRecordMgr_ = nullptr;
     MainThreadState mainThreadState_ = MainThreadState::INIT;
     sptr<IAppMgr> appMgr_ = nullptr;  // appMgrService Handler
