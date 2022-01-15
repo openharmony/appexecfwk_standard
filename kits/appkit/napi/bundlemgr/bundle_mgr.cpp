@@ -116,11 +116,14 @@ static OHOS::sptr<OHOS::AppExecFwk::IBundleMgr> GetBundleMgr()
 
 static bool CheckIsSystemApp()
 {
-    int32_t uid = IPCSkeleton::GetCallingUid();
-    if (uid >= OHOS::AppExecFwk::Constants::ROOT_UID && uid <= OHOS::AppExecFwk::Constants::MAX_SYS_UID) {
-        return true;
+    auto iBundleMgr = GetBundleMgr();
+    if (!iBundleMgr) {
+        HILOG_ERROR("can not get iBundleMgr");
+        return false;
     }
-    return false;
+
+    int32_t uid = IPCSkeleton::GetCallingUid();
+    return iBundleMgr->CheckIsSystemAppByUid(uid);
 }
 
 static void ConvertCustomizeData(napi_env env, napi_value objCustomizeData, const CustomizeData &customizeData)
