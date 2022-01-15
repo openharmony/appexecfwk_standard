@@ -214,6 +214,21 @@ struct AsyncModuleUsageRecordsCallbackInfo {
     bool ret = false;
 };
 
+struct AsyncExtensionInfoCallbackInfo {
+    napi_env env;
+    napi_async_work asyncWork;
+    napi_deferred deferred;
+    napi_ref callback = 0;
+    OHOS::AAFwk::Want want;
+    std::string extensionAbilityName;
+    int32_t extensionAbilityType = -1;
+    int32_t flags = 0;
+    int32_t userId = -1;
+    std::vector<OHOS::AppExecFwk::ExtensionAbilityInfo> extensionInfos;
+    bool ret = false;
+    int32_t err = 0;
+};
+
 struct AsyncRegisterAllPermissions {
     napi_env env;
     napi_async_work asyncWork;
@@ -302,6 +317,7 @@ napi_value ClearBundleCache(napi_env env, napi_callback_info info);
 napi_value SetApplicationEnabled(napi_env env, napi_callback_info info);
 napi_value SetAbilityEnabled(napi_env env, napi_callback_info info);
 napi_value GetAppPrivilegeLevel(napi_env env, napi_callback_info info);
+napi_value QueryExtensionInfoByWant(napi_env env, napi_callback_info info);
 bool UnwrapAbilityInfo(napi_env env, napi_value param, OHOS::AppExecFwk::AbilityInfo& abilityInfo);
 void CreateAbilityTypeObject(napi_env env, napi_value value);
 void CreateAbilitySubTypeObject(napi_env env, napi_value value);
@@ -317,6 +333,7 @@ void CreateShortcutExistenceObject(napi_env env, napi_value value);
 void CreateQueryShortCutFlagObject(napi_env env, napi_value value);
 void CreateBundleFlagObject(napi_env env, napi_value value);
 void CreateInstallErrorCodeObject(napi_env env, napi_value value);
+void CreateExtensionAbilityTypeObject(napi_env env, napi_value value);
 }  // namespace AppExecFwk
 }  // namespace OHOS
-#endif /* BUNDLE_MGR_H_ */
+#endif /* BUNDLE_MGR_H */

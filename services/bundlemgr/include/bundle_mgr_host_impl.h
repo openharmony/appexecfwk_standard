@@ -564,6 +564,28 @@ public:
      * @return Returns app privilege level.
      */
     virtual std::string GetAppPrivilegeLevel(const std::string &bundleName) override;
+    /**
+     * @brief Query extension info.
+     * @param Want Indicates the information of extension info.
+     * @param flag Indicates the query flag which will fliter any specified stuff in the extension info.
+     * @param userId Indicates the userId in the system.
+     * @param extensionInfos Indicates the obtained extensions.
+     * @return Returns true if this function is successfully called; returns false otherwise.
+     */
+    virtual bool QueryExtensionAbilityInfos(const Want &want, const int32_t &flag, const int32_t &userId,
+        std::vector<ExtensionAbilityInfo> &extensionInfos) override;
+    /**
+     * @brief Query extension info.
+     * @param Want Indicates the information of extension info.
+     * @param extensionType Indicates the type of the extension.
+     * @param flag Indicates the query flag which will fliter any specified stuff in the extension info.
+     * @param userId Indicates the userId in the system.
+     * @param extensionInfos Indicates the obtained extensions.
+     * @return Returns true if this function is successfully called; returns false otherwise.
+     */
+    virtual bool QueryExtensionAbilityInfos(const Want &want, const int32_t &extensionType, const int32_t &flag,
+        const int32_t &userId, std::vector<ExtensionAbilityInfo> &extensionInfos) override;
+
 private:
     const std::shared_ptr<BundleCloneMgr> GetCloneMgrFromService();
     const std::shared_ptr<BundleDataMgr> GetDataMgrFromService();

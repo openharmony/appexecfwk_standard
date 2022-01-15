@@ -72,6 +72,7 @@ group("systemtest_bms") {
 
   deps = [
     "acts_bms_kit_system_test:systemtest",
+    "bms_client_system_test:systemtest",
     "bms_compatible_system_test:systemtest",
     "bms_install_system_test:systemtest",
     "bms_launcher_service_system_test:systemtest",

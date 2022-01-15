@@ -67,7 +67,7 @@ const std::map<std::string, uint32_t> BACKGROUND_MODES_MAP = {
     {ProfileReader::KEY_TASK_KEEPING, ProfileReader::VALUE_TASK_KEEPING}
 };
 
-const std::set<std::string> EXTENSION_TYPE_SET = {
+const std::vector<std::string> EXTENSION_TYPE_SET = {
     "form",
     "workScheduler",
     "inputMethod",
@@ -1062,7 +1062,7 @@ bool ToApplicationInfo(const Profile::App &app, ApplicationInfo &applicationInfo
     applicationInfo.apiTargetVersion = app.targetAPIVersion;
     applicationInfo.apiReleaseType = app.apiReleaseType;
     applicationInfo.distributedNotificationEnabled = app.distributedNotificationEnabled;
-    if (Profile::ENTITY_TYPE_SET.find(app.entityType) != Profile::EXTENSION_TYPE_SET.end()) {
+    if (Profile::ENTITY_TYPE_SET.find(app.entityType) != Profile::ENTITY_TYPE_SET.end()) {
         applicationInfo.entityType = app.entityType;
     }
     applicationInfo.deviceId = Constants::CURRENT_DEVICE_ID; // to do
@@ -1170,10 +1170,21 @@ bool ToAbilityInfo(const Profile::ModuleJson &moduleJson, const Profile::Ability
     return true;
 }
 
-bool ToExtensionInfo(const Profile::ModuleJson &moduleJson,
-    const Profile::Extension &extension, ExtensionInfo &extensionInfo, bool isSystemApp)
+ExtensionAbilityType ConvertToExtensionAbilityType(const std::string &type)
 {
-    APP_LOGD("transform ModuleJson to ExtensionInfo");
+    for (size_t index = 0; index < Profile::EXTENSION_TYPE_SET.size(); ++index) {
+        if (Profile::EXTENSION_TYPE_SET[index] == type) {
+            return static_cast<ExtensionAbilityType>(index);
+        }
+    }
+
+    return ExtensionAbilityType::UNSPECIFIED;
+}
+
+bool ToExtensionInfo(const Profile::ModuleJson &moduleJson,
+    const Profile::Extension &extension, ExtensionAbilityInfo &extensionInfo, bool isSystemApp)
+{
+    APP_LOGD("transform ModuleJson to ExtensionAbilityInfo");
     extensionInfo.name = extension.name;
     extensionInfo.srcEntrance = extension.srcEntrance;
     extensionInfo.icon = extension.icon;
@@ -1182,9 +1193,7 @@ bool ToExtensionInfo(const Profile::ModuleJson &moduleJson,
     extensionInfo.labelId = extension.labelId;
     extensionInfo.description = extension.description;
     extensionInfo.descriptionId = extension.descriptionId;
-    if (Profile::EXTENSION_TYPE_SET.find(extension.type) != Profile::EXTENSION_TYPE_SET.end()) {
-        extensionInfo.type = extension.type;
-    }
+    extensionInfo.type = ConvertToExtensionAbilityType(extension.type);
     if (isSystemApp) {
         extensionInfo.readPermission = extension.readPermission;
         extensionInfo.writePermission = extension.writePermission;
@@ -1330,7 +1339,7 @@ bool ToInnerBundleInfo(const Profile::ModuleJson &moduleJson, InnerBundleInfo &i
 
     // handle extensionAbilities
     for (const Profile::Extension &extension : moduleJson.module.extensionAbilities) {
-        ExtensionInfo extensionInfo;
+        ExtensionAbilityInfo extensionInfo;
         ToExtensionInfo(moduleJson, extension, extensionInfo, applicationInfo.isSystemApp);
         std::string key;
         key.append(moduleJson.app.bundleName).append(".")

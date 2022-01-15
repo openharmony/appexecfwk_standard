@@ -77,6 +77,9 @@ static napi_value Init(napi_env env, napi_value exports)
     NAPI_CALL(env, napi_create_object(env, &nQueryShortCutFlag));
     CreateQueryShortCutFlagObject(env, nShortcutExistence);
 
+    napi_value nExtensionAbilityType = nullptr;
+    NAPI_CALL(env, napi_create_object(env, &nExtensionAbilityType));
+    CreateExtensionAbilityTypeObject(env, nExtensionAbilityType);
     napi_value nBundleFlag = nullptr;
     NAPI_CALL(env, napi_create_object(env, &nBundleFlag));
     CreateBundleFlagObject(env, nBundleFlag);
@@ -111,6 +114,7 @@ static napi_value Init(napi_env env, napi_value exports)
         DECLARE_NAPI_FUNCTION("setApplicationEnabled", SetApplicationEnabled),
         DECLARE_NAPI_FUNCTION("setAbilityEnabled", SetAbilityEnabled),
         DECLARE_NAPI_FUNCTION("getAppPrivilegeLevel", GetAppPrivilegeLevel),
+        DECLARE_NAPI_FUNCTION("queryExtensionAbilityInfosByWant", QueryExtensionInfoByWant),
         DECLARE_NAPI_PROPERTY("AbilityType", nAbilityType),
         DECLARE_NAPI_PROPERTY("AbilitySubType", nAbilitySubType),
         DECLARE_NAPI_PROPERTY("DisplayOrientation", nDisplayOrientation),
@@ -123,8 +127,9 @@ static napi_value Init(napi_env env, napi_value exports)
         DECLARE_NAPI_PROPERTY("SignatureCompareResult", nSignatureCompareResult),
         DECLARE_NAPI_PROPERTY("ShortcutExistence", nShortcutExistence),
         DECLARE_NAPI_PROPERTY("QueryShortCutFlag", nQueryShortCutFlag),
-        DECLARE_NAPI_PROPERTY("BundleFlag", nBundleFlag),
-        DECLARE_NAPI_PROPERTY("InstallErrorCode", nInstallErrorCode)
+        DECLARE_NAPI_PROPERTY("InstallErrorCode", nInstallErrorCode),
+        DECLARE_NAPI_PROPERTY("ExtensionAbilityType", nExtensionAbilityType),
+        DECLARE_NAPI_PROPERTY("BundleFlag", nBundleFlag)
     };
     NAPI_CALL(env, napi_define_properties(env, exports, sizeof(desc) / sizeof(desc[0]), desc));
 

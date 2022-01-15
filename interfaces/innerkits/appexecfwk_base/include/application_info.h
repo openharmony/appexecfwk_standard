@@ -34,10 +34,15 @@ enum ApplicationFlag {
     GET_ALL_APPLICATION_INFO = 0xFFFF0000,
 };
 
-struct Metadata {
+struct Metadata : public Parcelable {
     std::string name;
     std::string value;
     std::string resource;
+    Metadata() = default;
+    Metadata(const std::string &paramName, const std::string &paramValue, const std::string &paramResource);
+    bool ReadFromParcel(Parcel &parcel);
+    virtual bool Marshalling(Parcel &parcel) const override;
+    static Metadata *Unmarshalling(Parcel &parcel);
 };
 
 struct CustomizeData : public Parcelable {

@@ -403,4 +403,9 @@
       <option name="push" value="stVendorBundle/bmsVendorBundle3.hap -> /system/vendor/" src="res" />
     </preparer>
   </target>
+    <target name="BundleMgrClientSystemTest">
+    <preparer>
+    <option name="push" value="BundleClient/bundleClient1.hap -> /data/test/bms_bundle/" src="res" />
+    </preparer>
+  </target>
 </configuration>

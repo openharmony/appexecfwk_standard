@@ -31,13 +31,13 @@
 #include "bundle_promise.h"
 #include "bundle_status_callback_interface.h"
 #include "common_event_manager.h"
+#include "distributed_data_storage.h"
 #include "inner_bundle_info.h"
 #include "inner_bundle_user_info.h"
 #include "module_usage_data_storage.h"
 #include "module_usage_record.h"
 #include "on_permission_changed_callback_interface.h"
 #include "preinstall_data_storage.h"
-#include "distributed_data_storage.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -657,6 +657,17 @@ public:
      * @return Returns app privilege level.
      */
     std::string GetAppPrivilegeLevel(const std::string &bundleName);
+    /**
+     * @brief Query a ExtensionAbilityInfo of list by the given Want.
+     * @param want Indicates the information of the ability.
+     * @param flags Indicates the information contained in the AbilityInfo object to be returned.
+     * @param userId Indicates the user ID.
+     * @param extensionInfos Indicates the obtained ExtensionAbilityInfo of list.
+     * @return Returns true if the ExtensionAbilityInfo is successfully obtained; returns false otherwise.
+     */
+    bool QueryExtensionAbilityInfos(const Want &want, int32_t flags, int32_t userId,
+        std::vector<ExtensionAbilityInfo> &extensionInfos) const;
+
 private:
     /**
      * @brief Init transferStates.
@@ -720,6 +731,13 @@ private:
     int32_t GetUserIdByUid(int32_t uid) const;
     bool GetInnerBundleInfoByUid(const int uid, InnerBundleInfo &innerBundleInfo) const;
     bool GetAllBundleInfos(int32_t flags, std::vector<BundleInfo> &bundleInfos) const;
+    bool ExplicitQueryExtensionInfo(const std::string &bundleName, const std::string &extensionName, int32_t flags,
+        int32_t userId, ExtensionAbilityInfo &extensionInfo) const;
+    bool ImplicitQueryExtensionInfos(const Want &want, int32_t flags, int32_t userId,
+        std::vector<ExtensionAbilityInfo> &extensionInfos) const;
+    void GetMatchExtensionInfos(const Want &want, int32_t flags, const int32_t &userId, const InnerBundleInfo &info,
+        std::vector<ExtensionAbilityInfo> &einfos) const;
+
 private:
     mutable std::mutex bundleInfoMutex_;
     mutable std::mutex stateMutex_;
