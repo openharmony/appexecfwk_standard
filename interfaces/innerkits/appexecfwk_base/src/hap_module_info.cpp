@@ -42,23 +42,36 @@ const std::string HAP_MODULE_INFO_COLOR_MODE = "colorMode";
 bool HapModuleInfo::ReadFromParcel(Parcel &parcel)
 {
     name = Str16ToStr8(parcel.ReadString16());
-    APP_LOGE("Read name is %{public}s", name.c_str());
     moduleName = Str16ToStr8(parcel.ReadString16());
-    APP_LOGE("Read moduleName is %{public}s", moduleName.c_str());
     description = Str16ToStr8(parcel.ReadString16());
-    APP_LOGE("Read description is %{public}s", description.c_str());
     iconPath = Str16ToStr8(parcel.ReadString16());
-    APP_LOGE("Read iconPath is %{public}s", iconPath.c_str());
     label = Str16ToStr8(parcel.ReadString16());
-    APP_LOGE("Read label is %{public}s", label.c_str());
     backgroundImg = Str16ToStr8(parcel.ReadString16());
-    APP_LOGE("Read backgroundImg is %{public}s", backgroundImg.c_str());
     mainAbility = Str16ToStr8(parcel.ReadString16());
-    APP_LOGE("Read mainAbility is %{public}s", mainAbility.c_str());
     srcPath = Str16ToStr8(parcel.ReadString16());
-    APP_LOGE("Read srcPath is %{public}s", srcPath.c_str());
     supportedModes = parcel.ReadInt32();
-    APP_LOGE("Read supportedModes is %{public}d", supportedModes);
+    mainElementName = Str16ToStr8(parcel.ReadString16());
+    int32_t extensionAbilityInfoSize = parcel.ReadInt32();
+    for (int32_t i = 0; i < extensionAbilityInfoSize; ++i) {
+        std::unique_ptr<ExtensionAbilityInfo> extensionAbilityInfo(parcel.ReadParcelable<ExtensionAbilityInfo>());
+        if (!extensionAbilityInfo) {
+            APP_LOGE("ReadParcelable<ExtensionAbilityInfo> failed");
+            return false;
+        }
+        extensionInfos.emplace_back(*extensionAbilityInfo);
+    }
+    int32_t metadataSize = parcel.ReadInt32();
+    APP_LOGE("Read metadataSize is %{public}d", metadataSize);
+    for (int32_t i = 0; i < metadataSize; ++i) {
+        std::unique_ptr<Metadata> meta(parcel.ReadParcelable<Metadata>());
+        if (!meta) {
+            APP_LOGE("ReadParcelable<Metadata> failed");
+            return false;
+        }
+        metadata.emplace_back(*meta);
+    }
+    resourcePath = Str16ToStr8(parcel.ReadString16());
+    isStageBasedModel = parcel.ReadBool();
 
     int32_t reqCapabilitiesSize;
     READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, reqCapabilitiesSize);
@@ -110,6 +123,17 @@ bool HapModuleInfo::Marshalling(Parcel &parcel) const
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(mainAbility));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(srcPath));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, supportedModes);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(mainElementName));
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, extensionInfos.size());
+    for (auto &extensionInfo : extensionInfos) {
+        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Parcelable, parcel, &extensionInfo);
+    }
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, metadata.size());
+    for (const auto &meta : metadata) {
+        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Parcelable, parcel, &meta);
+    }
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(resourcePath));
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, isStageBasedModel);
 
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, reqCapabilities.size());
     for (auto &reqCapability : reqCapabilities) {
