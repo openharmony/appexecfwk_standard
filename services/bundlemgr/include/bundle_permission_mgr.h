@@ -16,6 +16,7 @@
 #ifndef FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_BUNDLE_PERMISSION_MGR_H
 #define FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_BUNDLE_PERMISSION_MGR_H
 
+#include "accesstoken_kit.h"
 #include "bundle_constants.h"
 #include "inner_bundle_info.h"
 #include "permission_def.h"
@@ -72,7 +73,8 @@ public:
      * @param userId Indicates the userId of the bundle.
      * @return Returns 0 if the bundle has the permission; returns -1 otherwise.
      */
-    static int VerifyPermission(const std::string &bundleName, const std::string &permissionName, const int userId);
+    static int32_t VerifyPermission(const std::string &bundleName, const std::string &permissionName,
+        const int32_t userId);
     /**
      * @brief Obtains detailed information about a specified permission.
      * @param permissionName Indicates the name of the permission.
@@ -91,7 +93,7 @@ public:
      * by the system, or the permission is denied by the user and the user has turned off further requests.
      */
     static bool CanRequestPermission(
-        const std::string &bundleName, const std::string &permissionName, const int userId);
+        const std::string &bundleName, const std::string &permissionName, const int32_t userId);
     /**
      * @brief Requests a certain permission from user.
      * @param bundleName Indicates the name of the bundle.
@@ -100,25 +102,34 @@ public:
      * @return Returns true if the permission request successfully; returns false otherwise.
      */
     static bool RequestPermissionFromUser(
-        const std::string &bundleName, const std::string &permissionName, const int userId);
+        const std::string &bundleName, const std::string &permissionName, const int32_t userId);
 
-    static uint32_t CreateAccessTokenId(
+    static Security::AccessToken::AccessTokenID CreateAccessTokenId(
         const InnerBundleInfo &innerBundleInfo, const std::string bundleName, const int32_t userId);
 
-    static int32_t UpdateHapToken(const uint32_t tokenId,
+    static int32_t UpdateHapToken(const Security::AccessToken::AccessTokenID tokenId,
         const InnerBundleInfo &innerBundleInfo);
 
-    static bool AddDefinePermissions(const uint32_t tokenId,
+    static bool AddDefinePermissions(const Security::AccessToken::AccessTokenID tokenId,
         const InnerBundleInfo &innerBundleInfo, std::vector<std::string> &newRequestPermName);
 
-    static int32_t DeleteAccessTokenId(const uint32_t tokenId);
+    static int32_t DeleteAccessTokenId(const Security::AccessToken::AccessTokenID tokenId);
 
-    static bool GrantRequestPermissions(const InnerBundleInfo &info, const uint32_t tokenId);
+    static bool GrantRequestPermissions(const InnerBundleInfo &innerBundleInfo,
+        const Security::AccessToken::AccessTokenID tokenId);
 
-    static bool GrantRequestPermissions(const InnerBundleInfo &info,
-        const std::vector<std::string> &requestPermName, const uint32_t tokenId);
+    static bool GrantRequestPermissions(const InnerBundleInfo &innerBundleInfo,
+        const std::vector<std::string> &requestPermName,
+        const Security::AccessToken::AccessTokenID tokenId);
 
-    static bool GetRequestPermissionStates(BundleInfo &info);
+    static bool GetRequestPermissionStates(BundleInfo &bundleInfo);
+
+    static int32_t ClearUserGrantedPermissionState(const Security::AccessToken::AccessTokenID tokenId);
+
+    static bool GetDefinePermission(
+        const std::string& permissionName, PermissionDefine& permissionDefResult);
+
+    static int32_t VerifyPermission(Security::AccessToken::AccessTokenID tokenId, const std::string &permissionName);
 
 private:
     /**
@@ -126,7 +137,7 @@ private:
      * @param innerBundleInfo Indicates the current installing inner bundle information.
      * @return Returns 0 if the defPermissions add successfully; returns -1 otherwise.
      */
-    static int AddDefPermissions(const InnerBundleInfo &innerBundleInfo);
+    static int32_t AddDefPermissions(const InnerBundleInfo &innerBundleInfo);
     /**
      * @brief Add and grant the reqPermissions to permission kit.
      * @param innerBundleInfo Indicates the current installing inner bundle information.
@@ -134,7 +145,7 @@ private:
      * @param onlyOneUser Indicates is the only one user.
      * @return Returns 0 if the reqPermissions add and grant successfully; returns -1 otherwise.
      */
-    static int AddAndGrantedReqPermissions(const InnerBundleInfo &innerBundleInfo,
+    static int32_t AddAndGrantedReqPermissions(const InnerBundleInfo &innerBundleInfo,
         int32_t userId = Constants::DEFAULT_USERID, bool onlyOneUser = true);
     /**
      * @brief Grant a reqPermission from permission kit.
@@ -142,7 +153,7 @@ private:
      * @param permissionName Indicates the permission.
      * @return Returns 0 if the reqPermission grant successfully; returns -1 otherwise.
      */
-    static int GrantReqPermissions(const std::string &bundleName, const std::string &permissionName);
+    static int32_t GrantReqPermissions(const std::string &bundleName, const std::string &permissionName);
     /**
      * @brief Add user granted reqPermissions to permission kit.
      * @param bundleName Indicates the name of the bundle to add.
@@ -150,15 +161,16 @@ private:
      * @param userId Indicates the userId of the bundle.
      * @return Returns 0 if the reqPermissions add successfully; returns -1 otherwise.
      */
-    static int AddUserGrantedReqPermissions(
-        const std::string &bundleName, const std::vector<std::string> &permList, const int userId);
+    static int32_t AddUserGrantedReqPermissions(
+        const std::string &bundleName, const std::vector<std::string> &permList, const int32_t userId);
     /**
      * @brief Add system granted reqPermissions to permission kit.
      * @param bundleName Indicates the name of the bundle to add.
      * @param permList Indicates the list of reqPermission to add.
      * @return Returns 0 if the reqPermissions add successfully; returns -1 otherwise.
      */
-    static int AddSystemGrantedReqPermissions(const std::string &bundleName, const std::vector<std::string> &permList);
+    static int32_t AddSystemGrantedReqPermissions(const std::string &bundleName,
+        const std::vector<std::string> &permList);
     /**
      * @brief Check whether a permission need to be granted.
      * @param permissionDef Indicates the definition of a permission.
@@ -172,24 +184,60 @@ private:
      * @param innerBundleInfo Indicates the current uninstalling inner bundle information.
      * @return Returns 0 if the defPermissions removed successfully; returns -1 otherwise.
      */
-    static int RemoveDefPermissions(const std::string &bundleName);
+    static int32_t RemoveDefPermissions(const std::string &bundleName);
     /**
      * @brief Remove user granted reqPermissions from permission kit.
      * @param bundleName Indicates the name of the bundle to remove.
      * @param userId Indicates the userId of the bundle.
      * @return Returns 0 if the reqPermissions removed successfully; returns -1 otherwise.
      */
-    static int RemoveUserGrantedReqPermissions(const std::string &bundleName, const int userId);
+    static int32_t RemoveUserGrantedReqPermissions(const std::string &bundleName, const int32_t userId);
     /**
      * @brief Remove system granted reqPermissions from permission kit.
      * @param bundleName Indicates the name of the bundle to remove.
      * @return Returns 0 if the reqPermissions removed successfully; returns -1 otherwise.
      */
-    static int RemoveSystemGrantedReqPermissions(const std::string &bundleName);
+    static int32_t RemoveSystemGrantedReqPermissions(const std::string &bundleName);
+
+    static std::vector<Security::AccessToken::PermissionDef> GetPermissionDefList(
+        const InnerBundleInfo &innerBundleInfo);
+
+    static std::vector<Security::AccessToken::PermissionStateFull> GetPermissionStateFullList(
+        const InnerBundleInfo &innerBundleInfo);
+
+    static bool CheckGrantPermission(const Security::AccessToken::PermissionDef &permDef,
+        const std::string &apl,
+        const std::vector<std::string> &acls);
+
+    static bool GetNewPermissionDefList(Security::AccessToken::AccessTokenID tokenId,
+        const std::vector<Security::AccessToken::PermissionDef> &permissionDef,
+        std::vector<Security::AccessToken::PermissionDef> &newPermission);
+
+    static bool GetNewPermissionStateFull(Security::AccessToken::AccessTokenID tokenId,
+        const std::vector<Security::AccessToken::PermissionStateFull> &permissionState,
+        std::vector<Security::AccessToken::PermissionStateFull> &newPermissionState,
+        std::vector<std::string> &newRequestPermName);
+
+    static bool GetAllReqPermissionStateFull(Security::AccessToken::AccessTokenID tokenId,
+        std::vector<Security::AccessToken::PermissionStateFull> &newPermissionState);
+
+    static bool InnerGrantRequestPermissions(const std::vector<RequestPermission> &reqPermissions,
+        const std::string &apl, const std::vector<std::string> &acls,
+        const Security::AccessToken::AccessTokenID tokenId);
+
+    static Security::AccessToken::ATokenAplEnum GetTokenApl(const std::string &apl);
+
+    static Security::AccessToken::HapPolicyParams CreateHapPolicyParam(const InnerBundleInfo &innerBundleInfo);
 
     static void ConvertPermissionDef(const Security::Permission::PermissionDef &permDef, PermissionDef &permissionDef);
     static void ConvertPermissionDef(
         Security::Permission::PermissionDef &permDef, const DefPermission &defPermission,
+        const std::string &bundleName);
+
+    static void ConvertPermissionDef(const Security::AccessToken::PermissionDef &permDef,
+        PermissionDefine &permissionDef);
+    static void ConvertPermissionDef(
+        Security::AccessToken::PermissionDef &permDef, const DefinePermission &defPermission,
         const std::string &bundleName);
 };
 }  // namespace AppExecFwk

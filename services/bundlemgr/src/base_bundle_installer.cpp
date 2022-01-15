@@ -371,7 +371,8 @@ void BaseBundleInstaller::RollBack(const std::unordered_map<std::string, InnerBu
     if (!isAppExist_) {
         RemoveBundleAndDataDir(newInfos.begin()->second, false);
         // delete accessTokenId
-        if (BundlePermissionMgr::DeleteAccessTokenId(newInfos.begin()->second.GetAccessTokenId(userId_)) != ERR_OK) {
+        if (BundlePermissionMgr::DeleteAccessTokenId(newInfos.begin()->second.GetAccessTokenId(userId_)) !=
+            AccessToken::AccessTokenKitRet::RET_SUCCESS) {
             APP_LOGE("delete accessToken failed");
         }
         // remove innerBundleInfo
@@ -697,7 +698,8 @@ ErrCode BaseBundleInstaller::RemoveBundle(InnerBundleInfo &info)
         return ERR_APPEXECFWK_INSTALL_BUNDLE_MGR_SERVICE_ERROR;
     }
 
-    if (BundlePermissionMgr::DeleteAccessTokenId(info.GetAccessTokenId(userId_)) != ERR_OK) {
+    if (BundlePermissionMgr::DeleteAccessTokenId(info.GetAccessTokenId(userId_)) !=
+        AccessToken::AccessTokenKitRet::RET_SUCCESS) {
         APP_LOGE("delete accessToken failed");
     }
     BundlePermissionMgr::UninstallPermissions(info, userId_, false);
@@ -926,6 +928,10 @@ ErrCode BaseBundleInstaller::ProcessModuleUpdate(InnerBundleInfo &newInfo, Inner
     if (BundlePermissionMgr::UpdateHapToken(tokenId, newInfo) != ERR_OK) {
         APP_LOGE("update HapToken %{public}s failed", bundleName_.c_str());
         return ERR_APPEXECFWK_INSTALL_UPDATE_HAP_TOKEN_FAILED;
+    }
+    result = GrantRequestPermissions(oldInfo, tokenId);
+    if (result != ERR_OK) {
+        return result;
     }
     oldInfo.SetBundleUpdateTime(BundleUtil::GetCurrentTime(), userId_);
     if (!dataMgr_->UpdateInnerBundleInfo(bundleName_, newInfo, oldInfo)) {
@@ -1536,7 +1542,8 @@ ErrCode BaseBundleInstaller::RemoveBundleUserData(InnerBundleInfo &innerBundleIn
         return result;
     }
     // delete accessTokenId
-    if (BundlePermissionMgr::DeleteAccessTokenId(innerBundleInfo.GetAccessTokenId(userId_)) != ERR_OK) {
+    if (BundlePermissionMgr::DeleteAccessTokenId(innerBundleInfo.GetAccessTokenId(userId_)) !=
+        AccessToken::AccessTokenKitRet::RET_SUCCESS) {
         APP_LOGE("delete accessToken failed");
     }
 
