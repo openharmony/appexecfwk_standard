@@ -856,6 +856,12 @@ static void ConvertBundleInfo(napi_env env, napi_value objBundleInfo, const Bund
     NAPI_CALL_RETURN_VOID(env, napi_get_boolean(env, bundleInfo.entryInstallationFree, &nEntryInstallationFree));
     NAPI_CALL_RETURN_VOID(
         env, napi_set_named_property(env, objBundleInfo, "entryInstallationFree", nEntryInstallationFree));
+
+    napi_value nExtensionAbilityInfos;
+    napi_create_array_with_length(env, bundleInfo.extensionInfos.size(), &nExtensionAbilityInfos);
+    ConvertExtensionInfos(env, nExtensionAbilityInfos, bundleInfo.extensionInfos);
+    NAPI_CALL_RETURN_VOID(env,
+        napi_set_named_property(env, objBundleInfo, "extensionAbilityInfo", nExtensionAbilityInfos));
 }
 
 static void ConvertDistributedAbilityInfo(napi_env env, napi_value objDistributedAbilityInfo,
@@ -5308,10 +5314,9 @@ static bool ParseWant(napi_env env, AsyncExtensionInfoCallbackInfo *info, napi_v
         HILOG_ERROR("args not object type");
         return false;
     }
-    napi_status status;
     napi_value prop = nullptr;
-    status = napi_get_named_property(env, args, "extensionAbilityName", &prop);
-    if (status != napi_ok) {
+    napi_get_named_property(env, args, "extensionAbilityName", &prop);
+    if (prop == nullptr) {
         HILOG_WARN("cannot find the property of extensionAbilityName");
     } else {
         napi_typeof(env, prop, &valueType);
@@ -5323,11 +5328,11 @@ static bool ParseWant(napi_env env, AsyncExtensionInfoCallbackInfo *info, napi_v
     }
 
     prop = nullptr;
-    status = napi_get_named_property(env, args, "extensionAbilityType", &prop);
-    if (status != napi_ok) {
+    napi_get_named_property(env, args, "extensionAbilityType", &prop);
+    if (prop == nullptr) {
         HILOG_WARN("cannot find the property of extensionAbilityType");
     } else {
-    napi_typeof(env, prop, &valueType);
+        napi_typeof(env, prop, &valueType);
         if (valueType != napi_number) {
             HILOG_ERROR("extensionAbilityName is not type of number");
             return false;
@@ -5352,13 +5357,12 @@ static bool InnerQueryExtensionInfo(napi_env env, AsyncExtensionInfoCallbackInfo
         HILOG_ERROR("can not get iBundleMgr");
         return false;
     }
-    if (info->userId < 0) {
-        info->userId = IPCSkeleton::GetCallingUid();
-    }
+
     if (info->extensionAbilityType < 0) {
         return iBundleMgr->QueryExtensionAbilityInfos(info->want, info->flags, info->userId, info->extensionInfos);
     } else {
-        return iBundleMgr->QueryExtensionAbilityInfos(info->want, info->extensionAbilityType, info->flags, info->userId,
+        auto type = static_cast<ExtensionAbilityType>(info->extensionAbilityType);
+        return iBundleMgr->QueryExtensionAbilityInfos(info->want, type, info->flags, info->userId,
             info->extensionInfos);
     }
 }

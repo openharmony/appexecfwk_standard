@@ -14,6 +14,7 @@
  */
 #include "bundle_mgr_client.h"
 
+#include <cerrno>
 #include <fstream>
 #include <unistd.h>
 
@@ -252,9 +253,10 @@ bool BundleMgrClient::TransformFileToJsonString(const std::string &resPath, std:
         APP_LOGE("the file is not existed");
         return false;
     }
-    std::fstream in(resPath);
+    std::fstream in;
+    in.open(resPath, std::ios_base::in | std::ios_base::binary);
     if (!in.is_open()) {
-        APP_LOGE("the file is not opened %{private}s", resPath.c_str());
+        APP_LOGE("the file cannot be open due to %{public}s", strerror(errno));
         return false;
     }
     in.seekg(0, std::ios::end);
@@ -268,9 +270,11 @@ bool BundleMgrClient::TransformFileToJsonString(const std::string &resPath, std:
     nlohmann::json profileJson = nlohmann::json::parse(in, nullptr, false);
     if (profileJson.is_discarded()) {
         APP_LOGE("bad profile file");
+        in.close();
         return false;
     }
     profile = profileJson.dump(Constants::DUMP_INDENT);
+    in.close();
     return true;
 }
 

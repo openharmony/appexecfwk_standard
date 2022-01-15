@@ -647,8 +647,8 @@ public:
      * @param extensionInfos Indicates the obtained extensions.
      * @return Returns true if this function is successfully called; returns false otherwise.
      */
-    virtual bool QueryExtensionAbilityInfos(const Want &want, const int32_t &extensionType, const int32_t &flag,
-        const int32_t &userId, std::vector<ExtensionAbilityInfo> &extensionInfos)
+    virtual bool QueryExtensionAbilityInfos(const Want &want, const ExtensionAbilityType &extensionType,
+        const int32_t &flag, const int32_t &userId, std::vector<ExtensionAbilityInfo> &extensionInfos)
     {
         return true;
     }

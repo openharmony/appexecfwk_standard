@@ -223,7 +223,7 @@ struct AsyncExtensionInfoCallbackInfo {
     std::string extensionAbilityName;
     int32_t extensionAbilityType = -1;
     int32_t flags = 0;
-    int32_t userId = -1;
+    int32_t userId = Constants::UNSPECIFIED_USERID;
     std::vector<OHOS::AppExecFwk::ExtensionAbilityInfo> extensionInfos;
     bool ret = false;
     int32_t err = 0;
