@@ -80,6 +80,7 @@ ohos_moduletest("BmsServiceStartModuleTest") {
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
     "os_account_standard:os_account_innerkits",
+    "resmgr_standard:global_resmgr",
   ]
   resource_config_file = "//foundation/appexecfwk/standard/test/resource/mstbundlemgrservice/ohos_test.xml"
 }
