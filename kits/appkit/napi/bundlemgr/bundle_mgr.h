@@ -23,8 +23,10 @@
 #include "application_info.h"
 #include "bundle_mgr_interface.h"
 #include "cleancache_callback.h"
+#include "element_name.h"
 #include "hilog_wrapper.h"
 #include "ohos/aafwk/content/want.h"
+#include "remote_ability_info.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -290,6 +292,18 @@ struct AppPrivilegeLevel {
     std::string errMssage;
 };
 
+struct ElementNameInfo {
+    napi_env env = nullptr;
+    napi_async_work asyncWork = nullptr;
+    napi_deferred deferred = nullptr;
+    napi_ref callbackRef = 0;
+    OHOS::AppExecFwk::ElementName elementName;
+    OHOS::AppExecFwk::RemoteAbilityInfo remoteAbilityInfo;
+    int32_t errCode = 0;
+    bool result = false;
+    std::string errMssage;
+};
+
 extern thread_local napi_ref g_classBundleInstaller;
 
 napi_value GetApplicationInfos(napi_env env, napi_callback_info info);
@@ -318,6 +332,7 @@ napi_value SetApplicationEnabled(napi_env env, napi_callback_info info);
 napi_value SetAbilityEnabled(napi_env env, napi_callback_info info);
 napi_value GetAppPrivilegeLevel(napi_env env, napi_callback_info info);
 napi_value QueryExtensionInfoByWant(napi_env env, napi_callback_info info);
+napi_value GetRemoteAbilityInfo(napi_env env, napi_callback_info info);
 bool UnwrapAbilityInfo(napi_env env, napi_value param, OHOS::AppExecFwk::AbilityInfo& abilityInfo);
 void CreateAbilityTypeObject(napi_env env, napi_value value);
 void CreateAbilitySubTypeObject(napi_env env, napi_value value);
