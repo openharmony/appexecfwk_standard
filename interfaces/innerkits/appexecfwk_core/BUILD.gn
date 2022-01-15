@@ -47,6 +47,8 @@ ohos_shared_library("appexecfwk_core") {
   ]
 
   sources = [
+    "src/appmgr/ability_controller_proxy.cpp",
+    "src/appmgr/ability_controller_stub.cpp",
     "src/appmgr/ability_state_data.cpp",
     "src/appmgr/ams_mgr_proxy.cpp",
     "src/appmgr/ams_mgr_stub.cpp",
