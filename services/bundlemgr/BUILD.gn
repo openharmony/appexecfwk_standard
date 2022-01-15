@@ -29,7 +29,6 @@ config("bundlemgr_common_config") {
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base/include",
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core/include/bundlemgr",
     "//utils/system/safwk/native/include",
-    "//base/security/access_token/interfaces/innerkits/accesstoken/include",
     "//base/security/permission/interfaces/innerkits/permission_standard/permissionsdk/main/cpp/include",
     "//base/security/appverify/interfaces/innerkits/appverify/include",
   ]
