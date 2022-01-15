@@ -16,7 +16,7 @@
 #include "inner_bundle_info.h"
 
 #include <regex>
-
+#include "bundle_mgr_client.h"
 #include "bundle_permission_mgr.h"
 #include "common_profile.h"
 
@@ -90,6 +90,7 @@ const std::string BUNDLE_IS_NEW_VERSION = "isNewVersion_";
 const std::string BUNDLE_BASE_EXTENSION_INFOS = "baseExtensionInfos_";
 const std::string BUNDLE_EXTENSION_SKILL_INFOS = "extensionSkillInfos_";
 const std::string ALLOWED_ACLS = "allowedAcls";
+const std::string META_DATA_SHORTCUTS_NAME = "ohos.ability.shortcuts";
 
 const std::string NameAndUserIdToKey(const std::string &bundleName, int32_t userId)
 {
@@ -1994,7 +1995,8 @@ void InnerBundleInfo::GetShortcutInfos(std::vector<ShortcutInfo> &shortcutInfos)
         GetMainAbilityInfo(abilityInfo);
         if (!abilityInfo.resourcePath.empty() && abilityInfo.metadata.size() > 0) {
             std::vector<std::string> rawJson;
-            bool ret = false; // to do
+            BundleMgrClient bundleMgrClient;
+            bool ret = bundleMgrClient.GetResConfigFile(abilityInfo, META_DATA_SHORTCUTS_NAME, rawJson);
             if (ret == false) {
                 APP_LOGD("GetResConfigFile return false");
                 return;
