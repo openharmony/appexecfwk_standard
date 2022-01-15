@@ -89,6 +89,7 @@ ohos_unittest("BmsBundleUpdaterTest") {
   deps += bundle_install_deps
 
   external_deps = [
+    "access_token:libaccesstoken_sdk",
     "ces_standard:cesfwk_innerkits",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
