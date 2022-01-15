@@ -12,46 +12,45 @@
 # limitations under the License.
 
 import("//build/ohos.gni")
-import("//foundation/appexecfwk/standard/appexecfwk.gni")
 
-ohos_shared_library("bundle") {
+group("dbms_target") {
+  deps = [ ":libdbms" ]
+}
+
+ohos_shared_library("libdbms") {
   include_dirs = [
-    "//third_party/node/src",
-    "//third_party/libuv/include",
     "//foundation/aafwk/standard/services/common/include",
     "//foundation/appexecfwk/standard/services/dbms/include",
+    "//foundation/appexecfwk/standard/kits/appkit/native/app/include",
+    "//base/global/resmgr_standard/interfaces/innerkits/include",
+    "//base/global/i18n_standard/frameworks/intl/include",
     "//utils/system/safwk/native/include",
   ]
 
   sources = [
-    "bundle_death_recipient.cpp",
-    "bundle_mgr.cpp",
-    "cleancache_callback.cpp",
-    "installer_callback.cpp",
-    "native_module.cpp",
-    "permission_callback.cpp",
+    "//foundation/appexecfwk/standard/services/dbms/src/distributed_bms.cpp",
+    "//foundation/appexecfwk/standard/services/dbms/src/distributed_bms_host.cpp",
+    "//foundation/appexecfwk/standard/services/dbms/src/distributed_bms_proxy.cpp",
   ]
 
   deps = [
-    "${common_path}:libappexecfwk_common",
-    "//foundation/appexecfwk/standard/services/dbms:libdbms",
+    "//base/global/i18n_standard/frameworks/intl:intl_util",
+    "//base/global/resmgr_standard/frameworks/resmgr:global_resmgr",
+    "//foundation/appexecfwk/standard/common:libappexecfwk_common",
+    "//foundation/appexecfwk/standard/kits:appkit_native",
   ]
 
   external_deps = [
-    "aafwk_standard:base",
     "aafwk_standard:want",
-    "bundle_framework:appexecfwk_base",
-    "bundle_framework:appexecfwk_core",
-    "eventhandler:libeventhandler",
+    "appexecfwk_standard:appexecfwk_base",
+    "appexecfwk_standard:appexecfwk_core",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
-    "napi:ace_napi",
     "safwk:system_ability_fwk",
     "samgr_standard:samgr_proxy",
     "utils_base:utils",
   ]
 
-  relative_install_dir = "module"
+  part_name = "appexecfwk_standard"
   subsystem_name = "appexecfwk"
-  part_name = "bundle_framework"
 }
