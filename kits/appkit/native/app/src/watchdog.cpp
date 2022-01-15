@@ -14,10 +14,13 @@
  */
 
 #include "watchdog.h"
-#include "app_log_wrapper.h"
+
 #include <sys/time.h>
-#include <signal.h>
+#include <csignal>
 #include <thread>
+
+#include "app_log_wrapper.h"
+
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -56,9 +59,11 @@ void WatchDog::Init(const std::shared_ptr<EventHandler> &mainHandler, const std:
     tick.it_interval.tv_sec = INI_TIMER_SECOND;
     tick.it_interval.tv_usec = INI_ZERO;
 
-    signal(SIGALRM, &WatchDog::Timer);
+    if (signal(SIGALRM, &WatchDog::Timer) == SIG_ERR) {
+        APP_LOGE("WatchDog::Timer signal fail.");
+    }
 
-    if(setitimer(ITIMER_REAL, &tick, NULL) < INI_ZERO) {
+    if (setitimer(ITIMER_REAL, &tick, NULL) < INI_ZERO) {
         APP_LOGE("Init WatchDog timer failed");
     }
 }
@@ -66,10 +71,10 @@ void WatchDog::Init(const std::shared_ptr<EventHandler> &mainHandler, const std:
 void WatchDog::Stop()
 {
     APP_LOGI("Watchdog is stop !");
-    if(watchDogRunner_) {
+    if (watchDogRunner_) {
         watchDogRunner_.reset();
     }
-    if(currentHandler_) {
+    if (currentHandler_) {
         currentHandler_.reset();
     }
 }

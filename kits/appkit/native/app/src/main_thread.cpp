@@ -536,7 +536,7 @@ void MainThread::HandleTerminateApplicationLocal()
         return;
     }
 
-    if(watchDogHandler_ != nullptr) {
+    if (watchDogHandler_ != nullptr) {
         watchDogHandler_->Stop();
     }
     int ret = runner->Stop();
@@ -1048,7 +1048,7 @@ void MainThread::HandleTerminateApplication()
         return;
     }
 
-    if(watchDogHandler_ != nullptr) {
+    if (watchDogHandler_ != nullptr) {
         watchDogHandler_->Stop();
     }
     APP_LOGI("MainThread::handleTerminateApplication before stop runner");

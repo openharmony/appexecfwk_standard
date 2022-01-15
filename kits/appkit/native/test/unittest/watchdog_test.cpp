@@ -68,7 +68,9 @@ HWTEST_F(WatchDogTest, AppExecFwk_WatchDog_GetAppMainThreadState_0100, Function 
  */
 HWTEST_F(WatchDogTest, AppExecFwk_WatchDog_GetAppMainThreadState_0200, Function | MediumTest | Level3)
 {
-    std::thread mainthread([&](){MainThread::Start();});
+    std::thread mainthread([&]() {
+        MainThread::Start();
+    });
     mainthread.detach();
     std::this_thread::sleep_for(std::chrono::milliseconds(USleepTime));
     bool ret = WatchDog::GetAppMainThreadState();
