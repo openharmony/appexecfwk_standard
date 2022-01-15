@@ -202,6 +202,17 @@ bool ApplicationInfo::ReadFromParcel(Parcel &parcel)
         }
         metadata.emplace_back(*meta);
     }
+
+    vendor = Str16ToStr8(parcel.ReadString16());
+    versionCode = parcel.ReadInt32();
+    versionName = Str16ToStr8(parcel.ReadString16());
+    minCompatibleVersionCode = parcel.ReadInt32();
+    apiCompatibleVersion = parcel.ReadInt32();
+    apiTargetVersion = parcel.ReadInt32();
+    apiReleaseType = Str16ToStr8(parcel.ReadString16());
+    distributedNotificationEnabled = parcel.ReadBool();
+    keepAlive = parcel.ReadBool();
+    clearUserData = parcel.ReadBool();
     return true;
 }
 
@@ -295,6 +306,17 @@ bool ApplicationInfo::Marshalling(Parcel &parcel) const
     for (const auto &meta : metadata) {
         WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Parcelable, parcel, &meta);
     }
+
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(vendor));
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, versionCode);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(versionName));
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, minCompatibleVersionCode);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, apiCompatibleVersion);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, apiTargetVersion);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(apiReleaseType));
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, distributedNotificationEnabled);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, keepAlive);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, clearUserData);
     return true;
 }
 
