@@ -15,6 +15,8 @@ import("//foundation/appexecfwk/standard/appexecfwk.gni")
 
 config("bundlemgr_test_config") {
   include_dirs = [
+    "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base/include",
+    "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core/include/bundlemgr",
     "//utils/native/base/include",
     "//utils/system/safwk/native/include",
     "mock/include",
@@ -25,10 +27,11 @@ config("bundlemgr_test_config") {
     "//foundation/aafwk/standard/services/abilitymgr/include",
     "//foundation/aafwk/standard/services/common/include",
     "//base/notification/ces_standard/interfaces/innerkits/native/include",
+    "//base/security/permission/interfaces/innerkits/permission_standard/permissionsdk/main/cpp/include",
+    "//base/security/appverify/interfaces/innerkits/appverify/include",
   ]
 
   configs = [
-    "${services_path}/bundlemgr:bundlemgr_config",
     "${services_path}/bundlemgr:bundlemgr_common_config",
     "${common_path}:appexecfwk_common_config",
   ]
