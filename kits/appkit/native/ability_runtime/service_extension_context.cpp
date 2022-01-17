@@ -48,7 +48,7 @@ ErrCode ServiceExtensionContext::StartAbility(const AAFwk::Want &want, const AAF
 }
 
 bool ServiceExtensionContext::ConnectAbility(
-    const AAFwk::Want &want, const std::shared_ptr<AbilityConnectCallback> &connectCallback) const
+    const AAFwk::Want &want, const sptr<AbilityConnectCallback> &connectCallback) const
 {
     HILOG_INFO("%{public}s begin.", __func__);
     ErrCode ret =
@@ -58,7 +58,7 @@ bool ServiceExtensionContext::ConnectAbility(
 }
 
 ErrCode ServiceExtensionContext::DisconnectAbility(
-    const AAFwk::Want &want, const std::shared_ptr<AbilityConnectCallback> &connectCallback) const
+    const AAFwk::Want &want, const sptr<AbilityConnectCallback> &connectCallback) const
 {
     HILOG_INFO("%{public}s begin.", __func__);
     ErrCode ret =
