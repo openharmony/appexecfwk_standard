@@ -36,9 +36,9 @@ ohos_moduletest("bm_command_dump_module_test") {
   module_out_path = module_output_path
 
   sources = [
-    "${aafwk_path}/tools/aa/src/shell_command.cpp",
     "${appexecfwk_path}/kits/appkit/napi/bundlemgr/bundle_death_recipient.cpp",
     "${appexecfwk_path}/tools/bm/src/bundle_command.cpp",
+    "${appexecfwk_path}/tools/bm/src/shell_command.cpp",
     "${appexecfwk_path}/tools/bm/src/status_receiver_impl.cpp",
     "bm_command_dump_module_test.cpp",
   ]
@@ -77,9 +77,9 @@ ohos_moduletest("bm_command_install_module_test") {
   module_out_path = module_output_path
 
   sources = [
-    "${aafwk_path}/tools/aa/src/shell_command.cpp",
     "${appexecfwk_path}/kits/appkit/napi/bundlemgr/bundle_death_recipient.cpp",
     "${appexecfwk_path}/tools/bm/src/bundle_command.cpp",
+    "${appexecfwk_path}/tools/bm/src/shell_command.cpp",
     "${appexecfwk_path}/tools/bm/src/status_receiver_impl.cpp",
     "bm_command_install_module_test.cpp",
   ]
@@ -118,9 +118,9 @@ ohos_moduletest("bm_command_uninstall_module_test") {
   module_out_path = module_output_path
 
   sources = [
-    "${aafwk_path}/tools/aa/src/shell_command.cpp",
     "${appexecfwk_path}/kits/appkit/napi/bundlemgr/bundle_death_recipient.cpp",
     "${appexecfwk_path}/tools/bm/src/bundle_command.cpp",
+    "${appexecfwk_path}/tools/bm/src/shell_command.cpp",
     "${appexecfwk_path}/tools/bm/src/status_receiver_impl.cpp",
     "bm_command_uninstall_module_test.cpp",
   ]
