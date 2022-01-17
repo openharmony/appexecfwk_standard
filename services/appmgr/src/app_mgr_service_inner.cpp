@@ -40,6 +40,7 @@ namespace AppExecFwk {
 using namespace OHOS::Security;
 
 namespace {
+constexpr int TARGET_VERSION_THRESHOLDS = 8;
 // NANOSECONDS mean 10^9 nano second
 constexpr int64_t NANOSECONDS = 1000000000;
 // MICROSECONDS mean 10^6 millias second
@@ -1518,6 +1519,25 @@ void AppMgrServiceInner::HandleTerminateApplicationTimeOut(const int64_t eventId
 void AppMgrServiceInner::HandleAddAbilityStageTimeOut(const int64_t eventId)
 {
     APP_LOGI("called add ability stage info time out!");
+    if (!appRunningManager_) {
+        APP_LOGE("appRunningManager_ is nullptr");
+        return;
+    }
+    auto appRecord = appRunningManager_->GetAppRunningRecord(eventId);
+    if (!appRecord) {
+        APP_LOGE("appRecord is nullptr");
+        return;
+    }
+
+    appRecord->SetState(ApplicationState::APP_STATE_TERMINATED);
+    appRecord->RemoveAppDeathRecipient();
+    pid_t pid = appRecord->GetPriorityObject()->GetPid();
+    KillProcessByPid(pid);
+    appRunningManager_->RemoveAppRunningRecordById(appRecord->GetRecordId());
+
+    OptimizerAppStateChanged(appRecord, ApplicationState::APP_STATE_TERMINATED);
+    RemoveAppFromRecentListById(appRecord->GetRecordId());
+    OnProcessDied(appRecord);
 }
 
 int AppMgrServiceInner::CompelVerifyPermission(const std::string &permission, int pid, int uid, std::string &message)
@@ -1643,9 +1663,11 @@ void AppMgrServiceInner::StartEmptyResidentProcess(
         return;
     }
 
-    appRecord->SetKeepAliveAppState();
+    APP_LOGI("StartEmptyResidentProcess current version  : [%{public}d], ", info.compatibleVersion);
+    appRecord->SetKeepAliveAppState(true, info.compatibleVersion >= TARGET_VERSION_THRESHOLDS);
 
     if (restartCount > 0) {
+        APP_LOGI("StartEmptyResidentProcess restartCount : [%{public}d], ", restartCount);
         appRecord->SetRestartResidentProcCount(restartCount);
     }
 

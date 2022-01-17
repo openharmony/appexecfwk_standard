@@ -88,7 +88,7 @@ public:
      *
      * @return
      */
-    virtual void ScheduleAbilityStageInfo(const HapModuleInfo &) = 0;
+    virtual void ScheduleAbilityStage(const HapModuleInfo &) = 0;
 
     /**
      * ScheduleLaunchAbility, call ScheduleLaunchAbility() through proxy project,

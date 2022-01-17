@@ -214,9 +214,9 @@ void AppSchedulerProxy::ScheduleLaunchApplication(const AppLaunchData &launchDat
     APP_LOGI("AppSchedulerProxy ScheduleLaunchApplication end");
 }
 
-void AppSchedulerProxy::ScheduleAbilityStageInfo(const HapModuleInfo &abilityStage)
+void AppSchedulerProxy::ScheduleAbilityStage(const HapModuleInfo &abilityStage)
 {
-    APP_LOGI("AppSchedulerProxy ScheduleAbilityStageInfo start");
+    APP_LOGI("AppSchedulerProxy ScheduleAbilityStage start");
     MessageParcel data;
     MessageParcel reply;
     MessageOption option(MessageOption::TF_SYNC);
@@ -238,7 +238,7 @@ void AppSchedulerProxy::ScheduleAbilityStageInfo(const HapModuleInfo &abilitySta
     if (ret != NO_ERROR) {
         APP_LOGW("SendRequest is failed, error code: %{public}d", ret);
     }
-    APP_LOGI("AppSchedulerProxy ScheduleAbilityStageInfo end");
+    APP_LOGI("AppSchedulerProxy ScheduleAbilityStage end");
 }
 
 void AppSchedulerProxy::ScheduleProfileChanged(const Profile &profile)

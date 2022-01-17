@@ -245,11 +245,16 @@ void AppRunningRecord::LaunchApplication()
 
 void AppRunningRecord::AddAbilityStage()
 {
+    if (!isNewMission_) {
+        APP_LOGI("Current version than supports !");
+        return;
+    }
     HapModuleInfo abilityStage;
     if (GetTheModuleInfoNeedToUpdated(mainBundleName_, abilityStage)) {
         SendEvent(AMSEventHandler::ADD_ABILITY_STAGE_INFO_TIMEOUT_MSG, AMSEventHandler::ADD_ABILITY_STAGE_INFO_TIMEOUT);
-        APP_LOGI("Current Informed module : [%{public}s]", abilityStage.moduleName.c_str());
-        appLifeCycleDeal_->AddAbilityStageInfo(abilityStage);
+        APP_LOGI("Current Informed module : [%{public}s] | bundle : [%{public}s]",
+            abilityStage.moduleName.c_str(), mainBundleName_.c_str());
+        appLifeCycleDeal_->AddAbilityStage(abilityStage);
         return;
     }
 
@@ -774,12 +779,13 @@ bool AppRunningRecord::IsTerminating()
 
 bool AppRunningRecord::IsKeepAliveApp() const
 {
-    return isKeepAliveApp;
+    return isKeepAliveApp_;
 }
 
-void AppRunningRecord::SetKeepAliveAppState()
+void AppRunningRecord::SetKeepAliveAppState(bool isKeepAlive, bool isNewMission)
 {
-    isKeepAliveApp = true;
+    isKeepAliveApp_ = isKeepAlive;
+    isNewMission_ = isNewMission;
 }
 
 bool AppRunningRecord::GetTheModuleInfoNeedToUpdated(const std::string bundleName, HapModuleInfo &info)

@@ -164,6 +164,13 @@ public:
     void InitHapModuleInfo(const std::shared_ptr<AppExecFwk::AbilityInfo> &abilityInfo);
 
     /**
+     * @brief Set HapModuleInfo
+     *
+     * @param hapModuleInfo HapModuleInfo instance.
+     */
+    void InitHapModuleInfo(const AppExecFwk::HapModuleInfo &hapModuleInfo);
+
+    /**
      * @brief Set application context
      */
     void InitAppContext();
