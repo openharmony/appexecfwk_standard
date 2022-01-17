@@ -2583,6 +2583,7 @@ bool BundleDataMgr::QueryExtensionAbilityInfos(const Want &want, int32_t flags, 
         APP_LOGE("no matching abilityInfo");
         return false;
     }
+    APP_LOGD("query extensionAbilityInfo successfully");
     return true;
 }
 
@@ -2604,7 +2605,7 @@ bool BundleDataMgr::ExplicitQueryExtensionInfo(const std::string &bundleName, co
     }
     auto extension = innerBundleInfo.FindExtensionInfo(bundleName, extensionName);
     if (!extension) {
-        APP_LOGE("ability not found or disabled");
+        APP_LOGE("extensionAbility not found or disabled");
         return false;
     }
     if ((static_cast<uint32_t>(flags) & GET_ABILITY_INFO_WITH_PERMISSION) != GET_ABILITY_INFO_WITH_PERMISSION) {

@@ -1040,8 +1040,8 @@ bool BundleMgrHostImpl::QueryExtensionAbilityInfos(const Want &want, const int32
     return true;
 }
 
-bool BundleMgrHostImpl::QueryExtensionAbilityInfos(const Want &want, const int32_t &extensionType, const int32_t &flag,
-    const int32_t &userId, std::vector<ExtensionAbilityInfo> &extensionInfos)
+bool BundleMgrHostImpl::QueryExtensionAbilityInfos(const Want &want, const ExtensionAbilityType &extensionType,
+    const int32_t &flag, const int32_t &userId, std::vector<ExtensionAbilityInfo> &extensionInfos)
 {
     APP_LOGI("QueryExtensionAbilityInfos begin");
     auto dataMgr = GetDataMgrFromService();
@@ -1056,7 +1056,7 @@ bool BundleMgrHostImpl::QueryExtensionAbilityInfos(const Want &want, const int32
         return false;
     }
     for_each(infos.begin(), infos.end(), [&extensionType, &extensionInfos](const auto &info)->decltype(auto) {
-        if (extensionType == static_cast<int32_t>(info.type)) {
+        if (extensionType == info.type) {
             extensionInfos.emplace_back(info);
         }
     });
