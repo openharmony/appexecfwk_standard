@@ -111,6 +111,7 @@ struct InnerModuleInfo {
     std::vector<std::string> skillKeys;
     // new version fields
     std::string process;
+    std::string srcEntrance;
     std::vector<std::string> deviceTypes;
     std::string virtualMachine;
     std::string uiSyntax;

@@ -99,6 +99,8 @@ struct App {
     Version version;
     ApiVersion apiVersion;
     bool singleUser = false;
+    int32_t iconId = 0;
+    int32_t labelId = 0;
 };
 
 struct ReqVersion {
@@ -427,6 +429,22 @@ void from_json(const nlohmann::json &jsonObject, App &app)
         BUNDLE_APP_PROFILE_KEY_SINGLE_USER,
         app.singleUser,
         JsonType::BOOLEAN,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<int32_t>(jsonObject,
+        jsonObjectEnd,
+        PROFILE_KEY_ICON_ID,
+        app.iconId,
+        JsonType::NUMBER,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<int32_t>(jsonObject,
+        jsonObjectEnd,
+        PROFILE_KEY_LABEL_ID,
+        app.labelId,
+        JsonType::NUMBER,
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
@@ -1877,6 +1895,8 @@ bool TransformToInfo(const ProfileReader::ConfigJson &configJson, ApplicationInf
     applicationInfo.enabled = true;
     applicationInfo.removable = configJson.app.removable;
     applicationInfo.singleUser = configJson.app.singleUser;
+    applicationInfo.iconId = configJson.app.iconId;
+    applicationInfo.labelId = configJson.app.labelId;
     return true;
 }
 
