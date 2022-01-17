@@ -27,6 +27,8 @@ ohos_unittest("AmsAppRunningRecordTest") {
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy/include",
     "//foundation/distributedschedule/samgr/adapter/interfaces/innerkits/include/",
     "//foundation/aafwk/standard/interfaces/innerkits/want/include/ohos/aafwk/content",
+    "//base/account/os_account/frameworks/common/database/include",
+    "//base/account/os_account/frameworks/common/account_error/include",
   ]
 
   sources = [
@@ -49,6 +51,7 @@ ohos_unittest("AmsAppRunningRecordTest") {
   deps = [
     "${libs_path}/libeventhandler:libeventhandler_target",
     "${services_path}/appmgr/test:appmgr_test_source",
+    "//base/account/os_account/frameworks/osaccount/native:os_account_innerkits",
     "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_core:appexecfwk_core",
     "//foundation/appexecfwk/standard/services/appmgr:libams",
   ]

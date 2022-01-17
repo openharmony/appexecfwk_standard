@@ -26,6 +26,8 @@ ohos_unittest("AmsMgrSchedulerTest") {
     "//foundation/distributedschedule/dmsfwk/services/dtbschedmgr/include",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy/include",
     "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_core/include",
+    "//base/account/os_account/frameworks/common/database/include",
+    "//base/account/os_account/frameworks/common/account_error/include",
   ]
 
   sources = [ "${services_path}/appmgr/src/ams_mgr_scheduler.cpp" ]
@@ -44,6 +46,7 @@ ohos_unittest("AmsMgrSchedulerTest") {
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core:appexecfwk_core",
     "${libs_path}/libeventhandler:libeventhandler_target",
     "${services_path}/appmgr/test:appmgr_test_source",
+    "//base/account/os_account/frameworks/osaccount/native:os_account_innerkits",
     "//foundation/appexecfwk/standard/services/appmgr:libams",
   ]
 
