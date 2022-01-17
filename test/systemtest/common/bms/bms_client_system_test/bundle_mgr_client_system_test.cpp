@@ -38,9 +38,9 @@ namespace OHOS {
 namespace AppExecFwk {
 namespace {
 const std::string RESOURCE_PATH =
-    "/data/accounts/account_0/applications/com.example.testRes/com.example.testRes/assets/entry/resources.index";
+    "/data/accounts/account_0/applications/com.example.ohosproject.hmservice/entry_phone/resources.index";
 const std::string THIRD_PATH = "/data/test/bms_bundle/";
-const std::string BUNDLE_NAME = "com.example.testRes";
+const std::string BUNDLE_NAME = "com.example.ohosproject.hmservice";
 const std::string MSG_SUCCESS = "[SUCCESS]";
 const std::string OPERATION_FAILURE = "Failure";
 const std::string OPERATION_SUCCESS = "Success";
@@ -208,15 +208,21 @@ void BundleMgrClientSystemTest::UninstallBundle(
  * @tc.number: GetResourceConfigFile_001
  * @tc.name: GetResConfigFile
  * @tc.desc: Test the interface of GetResConfigFile
- *           1. metadata is empty
+ *           1. extensionAbilityInfo is invalid, resourcePath is empty
  */
 HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_001, TestSize.Level1)
 {
     auto name = std::string("GetResourceConfigFile_001");
     GTEST_LOG_(INFO) << name << " start";
     ExtensionAbilityInfo info;
+    std::vector<Metadata> &metadata = info.metadata;
+    Metadata data;
+    data.name = "ohos.extension.forms";
+    data.resource = "@profile:form_config";
+    metadata.emplace_back(data);
+    info.resourcePath = "";
     BundleMgrClient bundleMgrClient;
-    std::string metadataName = "test_name";
+    std::string metadataName = "ohos.extension.forms";
     std::vector<std::string> profileInfo;
     auto ret = bundleMgrClient.GetResConfigFile(info, metadataName, profileInfo);
     EXPECT_FALSE(ret);
@@ -227,7 +233,7 @@ HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_001, TestSize.Level1)
  * @tc.number: GetResourceConfigFile_002
  * @tc.name: GetResConfigFile
  * @tc.desc: Test the interface of GetResConfigFile
- *           1. metadataName is empty
+ *           1. extensionAbilityInfo is invalid, resourcePath is not existed
  */
 HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_002, TestSize.Level1)
 {
@@ -236,13 +242,12 @@ HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_002, TestSize.Level1)
     ExtensionAbilityInfo info;
     std::vector<Metadata> &metadata = info.metadata;
     Metadata data;
-    data.name = "extensionName";
-    data.value = "extensionValue";
-    data.resource = "@profile:forms";
+    data.name = "ohos.extension.forms";
+    data.resource = "@profile:form_config";
     metadata.emplace_back(data);
     info.resourcePath = "resourcePath";
     BundleMgrClient bundleMgrClient;
-    std::string metadataName = "";
+    std::string metadataName = "ohos.extension.forms";
     std::vector<std::string> profileInfo;
     auto ret = bundleMgrClient.GetResConfigFile(info, metadataName, profileInfo);
     EXPECT_FALSE(ret);
@@ -253,7 +258,7 @@ HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_002, TestSize.Level1)
  * @tc.number: GetResourceConfigFile_003
  * @tc.name: GetResConfigFile
  * @tc.desc: Test the interface of GetResConfigFile
- *           1. metadataName cannot be found
+ *           1. extensionAbilityInfo is invalid, metadata is not existed
  */
 HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_003, TestSize.Level1)
 {
@@ -263,12 +268,11 @@ HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_003, TestSize.Level1)
     std::vector<Metadata> &metadata = info.metadata;
     Metadata data;
     data.name = "extensionName";
-    data.value = "extensionValue";
-    data.resource = "@profile:forms";
+    data.resource = "@profile:form_config";
     metadata.emplace_back(data);
-    info.resourcePath = "resourcePath";
+    info.resourcePath = RESOURCE_PATH;
     BundleMgrClient bundleMgrClient;
-    std::string metadataName = "extensionName1";
+    std::string metadataName = "ohos.extension.forms";
     std::vector<std::string> profileInfo;
     auto ret = bundleMgrClient.GetResConfigFile(info, metadataName, profileInfo);
     EXPECT_FALSE(ret);
@@ -279,22 +283,18 @@ HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_003, TestSize.Level1)
  * @tc.number: GetResourceConfigFile_004
  * @tc.name: GetResConfigFile
  * @tc.desc: Test the interface of GetResConfigFile
- *           1. extensionInfo is invalid
+ *           1. extensionAbilityInfo is valid
+ *           2. metadataName is not empty
+ *           3. extensionAbilityInfo does not have metadata
  */
 HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_004, TestSize.Level1)
 {
     auto name = std::string("GetResourceConfigFile_004");
     GTEST_LOG_(INFO) << name << " start";
     ExtensionAbilityInfo info;
-    std::vector<Metadata> &metadata = info.metadata;
-    Metadata data;
-    data.name = "extensionName";
-    data.value = "extensionValue";
-    data.resource = "@profile:forms";
-    metadata.emplace_back(data);
-    info.resourcePath = "resourcePath";
+    info.resourcePath = RESOURCE_PATH;
     BundleMgrClient bundleMgrClient;
-    std::string metadataName = "extensionName";
+    std::string metadataName = "ohos.extension.forms";
     std::vector<std::string> profileInfo;
     auto ret = bundleMgrClient.GetResConfigFile(info, metadataName, profileInfo);
     EXPECT_FALSE(ret);
@@ -305,7 +305,9 @@ HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_004, TestSize.Level1)
  * @tc.number: GetResourceConfigFile_005
  * @tc.name: GetResConfigFile
  * @tc.desc: Test the interface of GetResConfigFile
- *           1. metadata's resource is empty
+ *           1. extensionAbilityInfo is valid
+ *           2. metadataName is not empty
+ *           3. metadataName cannot be found
  */
 HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_005, TestSize.Level1)
 {
@@ -314,12 +316,12 @@ HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_005, TestSize.Level1)
     ExtensionAbilityInfo info;
     std::vector<Metadata> &metadata = info.metadata;
     Metadata data;
-    data.name = "extensionName";
-    data.value = "extensionValue";
+    data.name = "ohos.extension.forms";
+    data.resource = "@profile:form_config";
     metadata.emplace_back(data);
-    info.resourcePath = "resourcePath";
+    info.resourcePath = RESOURCE_PATH;
     BundleMgrClient bundleMgrClient;
-    std::string metadataName = "extensionName";
+    std::string metadataName = "ohos.extension.forms1";
     std::vector<std::string> profileInfo;
     auto ret = bundleMgrClient.GetResConfigFile(info, metadataName, profileInfo);
     EXPECT_FALSE(ret);
@@ -330,7 +332,9 @@ HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_005, TestSize.Level1)
  * @tc.number: GetResourceConfigFile_006
  * @tc.name: GetResConfigFile
  * @tc.desc: Test the interface of GetResConfigFile
- *           1. metadata's resource file is not json format.
+ *           1. extensionAbilityInfo is valid and has only one metadata
+ *           2. metadataName is not empty
+ *           3. metadataName can be found
  */
 HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_006, TestSize.Level1)
 {
@@ -344,13 +348,12 @@ HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_006, TestSize.Level1)
     ExtensionAbilityInfo info;
     std::vector<Metadata> &metadata = info.metadata;
     Metadata data;
-    data.name = "ohos.forms";
-    data.value = "forms";
-    data.resource = "@profile:forms";
+    data.name = "ohos.extension.forms";
+    data.resource = "@profile:form_config";
     metadata.emplace_back(data);
     info.resourcePath = RESOURCE_PATH;
     BundleMgrClient bundleMgrClient;
-    std::string metadataName = "ohos.forms";
+    std::string metadataName = "ohos.extension.forms";
     std::vector<std::string> profileInfo;
     auto ret = bundleMgrClient.GetResConfigFile(info, metadataName, profileInfo);
     EXPECT_TRUE(ret);
@@ -367,13 +370,15 @@ HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_006, TestSize.Level1)
  * @tc.number: GetResourceConfigFile_007
  * @tc.name: GetResConfigFile
  * @tc.desc: Test the interface of GetResConfigFile
- *           1. profile's suffix is not .json.
+ *           1. extensionAbilityInfo is valid and has multiple metadata
+ *           2. metadataName is not empty
+ *           3. metadataName can be found
  */
 HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_007, TestSize.Level1)
 {
     auto name = std::string("GetResourceConfigFile_007");
     GTEST_LOG_(INFO) << name << " start";
-    std::string bundleFilePath = THIRD_PATH + "bundleClient2.hap";
+    std::string bundleFilePath = THIRD_PATH + "bundleClient1.hap";
     std::string installMsg;
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
     EXPECT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
@@ -381,22 +386,27 @@ HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_007, TestSize.Level1)
     ExtensionAbilityInfo info;
     std::vector<Metadata> &metadata = info.metadata;
     Metadata data;
-    data.name = "ohos.forms";
-    data.value = "forms";
-    data.resource = "@profile:forms";
+    data.name = "ohos.extension.forms";
+    data.resource = "@profile:form_config";
+
+    Metadata data1;
+    data1.name = "ohos.extension.forms1";
+    data1.resource = "@profile:shortcuts_config";
+
     metadata.emplace_back(data);
+    metadata.emplace_back(data1);
     info.resourcePath = RESOURCE_PATH;
     BundleMgrClient bundleMgrClient;
-    std::string metadataName = "ohos.forms";
+    std::string metadataName = "ohos.extension.forms";
     std::vector<std::string> profileInfo;
     auto ret = bundleMgrClient.GetResConfigFile(info, metadataName, profileInfo);
-    EXPECT_FALSE(ret);
-    EXPECT_EQ(profileInfo.size(), 0);
+    EXPECT_TRUE(ret);
+    std::cout << profileInfo[0] << std::endl;
 
     std::string uninstallMsg;
     UninstallBundle(BUNDLE_NAME, uninstallMsg);
     EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
-    std::cout << "END GetResourceConfigFile_007" << std::endl;
+    std::cout << "END GetResourceConfigFile_006" << std::endl;
     GTEST_LOG_(INFO) << name << " end";
 }
 
@@ -404,18 +414,45 @@ HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_007, TestSize.Level1)
  * @tc.number: GetResourceConfigFile_008
  * @tc.name: GetResConfigFile
  * @tc.desc: Test the interface of GetResConfigFile
- *           1. metadata is empty
+ *           1. extensionAbilityInfo is valid and has multiple metadata
+ *           2. metadataName is not empty
+ *           3. metadataName can be found
  */
 HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_008, TestSize.Level1)
 {
     auto name = std::string("GetResourceConfigFile_008");
     GTEST_LOG_(INFO) << name << " start";
-    AbilityInfo info;
+    std::string bundleFilePath = THIRD_PATH + "bundleClient1.hap";
+    std::string installMsg;
+    InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
+    EXPECT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
+
+    ExtensionAbilityInfo info;
+    std::vector<Metadata> &metadata = info.metadata;
+    Metadata data;
+    data.name = "ohos.extension.forms";
+    data.resource = "@profile:form_config";
+
+    Metadata data1;
+    data1.name = "ohos.extension.forms";
+    data1.resource = "@profile:shortcuts_config";
+
+    metadata.emplace_back(data);
+    metadata.emplace_back(data1);
+    info.resourcePath = RESOURCE_PATH;
     BundleMgrClient bundleMgrClient;
-    std::string metadataName = "test_name";
+    std::string metadataName = "ohos.extension.forms";
     std::vector<std::string> profileInfo;
     auto ret = bundleMgrClient.GetResConfigFile(info, metadataName, profileInfo);
-    EXPECT_FALSE(ret);
+    EXPECT_TRUE(ret);
+    EXPECT_EQ(profileInfo.size(), 2);
+    std::cout << profileInfo[0] << std::endl;
+    std::cout << profileInfo[1] << std::endl;
+
+    std::string uninstallMsg;
+    UninstallBundle(BUNDLE_NAME, uninstallMsg);
+    EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
+    std::cout << "END GetResourceConfigFile_006" << std::endl;
     GTEST_LOG_(INFO) << name << " end";
 }
 
@@ -424,24 +461,35 @@ HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_008, TestSize.Level1)
  * @tc.name: GetResConfigFile
  * @tc.desc: Test the interface of GetResConfigFile
  *           1. metadataName is empty
+ *           2. extensionAbilityInfo has only one metadata
  */
 HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_009, TestSize.Level1)
 {
     auto name = std::string("GetResourceConfigFile_009");
     GTEST_LOG_(INFO) << name << " start";
-    AbilityInfo info;
+    std::string bundleFilePath = THIRD_PATH + "bundleClient1.hap";
+    std::string installMsg;
+    InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
+    EXPECT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
+
+    ExtensionAbilityInfo info;
     std::vector<Metadata> &metadata = info.metadata;
     Metadata data;
-    data.name = "extensionName";
-    data.value = "extensionValue";
-    data.resource = "@profile:forms";
+    data.name = "ohos.extension.forms";
+    data.resource = "@profile:form_config";
     metadata.emplace_back(data);
-    info.resourcePath = "resourcePath";
+    info.resourcePath = RESOURCE_PATH;
     BundleMgrClient bundleMgrClient;
-    std::string metadataName = "";
+    std::string metadataName;
     std::vector<std::string> profileInfo;
     auto ret = bundleMgrClient.GetResConfigFile(info, metadataName, profileInfo);
-    EXPECT_FALSE(ret);
+    EXPECT_TRUE(ret);
+    std::cout << profileInfo[0] << std::endl;
+
+    std::string uninstallMsg;
+    UninstallBundle(BUNDLE_NAME, uninstallMsg);
+    EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
+    std::cout << "END GetResourceConfigFile_006" << std::endl;
     GTEST_LOG_(INFO) << name << " end";
 }
 
@@ -449,25 +497,43 @@ HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_009, TestSize.Level1)
  * @tc.number: GetResourceConfigFile_010
  * @tc.name: GetResConfigFile
  * @tc.desc: Test the interface of GetResConfigFile
- *           1. metadataName cannot be found
+ *           1. metadataName is empty
+ *           2. extensionAbilityInfo has only multiple metadata
  */
 HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_010, TestSize.Level1)
 {
     auto name = std::string("GetResourceConfigFile_010");
     GTEST_LOG_(INFO) << name << " start";
-    AbilityInfo info;
+    std::string bundleFilePath = THIRD_PATH + "bundleClient1.hap";
+    std::string installMsg;
+    InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
+    EXPECT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
+
+    ExtensionAbilityInfo info;
     std::vector<Metadata> &metadata = info.metadata;
     Metadata data;
-    data.name = "extensionName";
-    data.value = "extensionValue";
-    data.resource = "@profile:forms";
+    data.name = "ohos.extension.forms";
+    data.resource = "@profile:form_config";
+
+    Metadata data1;
+    data1.name = "ohos.extension.forms1";
+    data1.resource = "@profile:shortcuts_config";
+
     metadata.emplace_back(data);
-    info.resourcePath = "resourcePath";
+    metadata.emplace_back(data1);
+    info.resourcePath = RESOURCE_PATH;
     BundleMgrClient bundleMgrClient;
-    std::string metadataName = "extensionName1";
+    std::string metadataName;
     std::vector<std::string> profileInfo;
     auto ret = bundleMgrClient.GetResConfigFile(info, metadataName, profileInfo);
-    EXPECT_FALSE(ret);
+    EXPECT_TRUE(ret);
+    EXPECT_EQ(profileInfo.size(), 2);
+    std::cout << profileInfo[0] << std::endl;
+    std::cout << profileInfo[1] << std::endl;
+    std::string uninstallMsg;
+    UninstallBundle(BUNDLE_NAME, uninstallMsg);
+    EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
+    std::cout << "END GetResourceConfigFile_006" << std::endl;
     GTEST_LOG_(INFO) << name << " end";
 }
 
@@ -475,25 +541,34 @@ HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_010, TestSize.Level1)
  * @tc.number: GetResourceConfigFile_011
  * @tc.name: GetResConfigFile
  * @tc.desc: Test the interface of GetResConfigFile
- *           1. extensionInfo is invalid
+ *           1. profile's suffix is not .json
  */
 HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_011, TestSize.Level1)
 {
     auto name = std::string("GetResourceConfigFile_011");
     GTEST_LOG_(INFO) << name << " start";
-    AbilityInfo info;
+    std::string bundleFilePath = THIRD_PATH + "bundleClient1.hap";
+    std::string installMsg;
+    InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
+    EXPECT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
+
+    ExtensionAbilityInfo info;
     std::vector<Metadata> &metadata = info.metadata;
     Metadata data;
-    data.name = "extensionName";
-    data.value = "extensionValue";
-    data.resource = "@profile:forms";
+    data.name = "ohos.extension.forms";
+    data.resource = "@profile:form_config1";
     metadata.emplace_back(data);
-    info.resourcePath = "resourcePath";
+    info.resourcePath = RESOURCE_PATH;
     BundleMgrClient bundleMgrClient;
-    std::string metadataName = "extensionName";
+    std::string metadataName = "ohos.extension.forms";
     std::vector<std::string> profileInfo;
     auto ret = bundleMgrClient.GetResConfigFile(info, metadataName, profileInfo);
     EXPECT_FALSE(ret);
+
+    std::string uninstallMsg;
+    UninstallBundle(BUNDLE_NAME, uninstallMsg);
+    EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
+    std::cout << "END GetResourceConfigFile_006" << std::endl;
     GTEST_LOG_(INFO) << name << " end";
 }
 
@@ -501,24 +576,34 @@ HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_011, TestSize.Level1)
  * @tc.number: GetResourceConfigFile_012
  * @tc.name: GetResConfigFile
  * @tc.desc: Test the interface of GetResConfigFile
- *           1. metadata's resource is empty
+ *           1. profile is empty file
  */
 HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_012, TestSize.Level1)
 {
     auto name = std::string("GetResourceConfigFile_012");
     GTEST_LOG_(INFO) << name << " start";
-    AbilityInfo info;
+    std::string bundleFilePath = THIRD_PATH + "bundleClient1.hap";
+    std::string installMsg;
+    InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
+    EXPECT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
+
+    ExtensionAbilityInfo info;
     std::vector<Metadata> &metadata = info.metadata;
     Metadata data;
-    data.name = "extensionName";
-    data.value = "extensionValue";
+    data.name = "ohos.extension.forms";
+    data.resource = "@profile:form_config2";
     metadata.emplace_back(data);
-    info.resourcePath = "resourcePath";
+    info.resourcePath = RESOURCE_PATH;
     BundleMgrClient bundleMgrClient;
-    std::string metadataName = "extensionName";
+    std::string metadataName = "ohos.extension.forms";
     std::vector<std::string> profileInfo;
     auto ret = bundleMgrClient.GetResConfigFile(info, metadataName, profileInfo);
     EXPECT_FALSE(ret);
+
+    std::string uninstallMsg;
+    UninstallBundle(BUNDLE_NAME, uninstallMsg);
+    EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
+    std::cout << "END GetResourceConfigFile_006" << std::endl;
     GTEST_LOG_(INFO) << name << " end";
 }
 
@@ -526,35 +611,34 @@ HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_012, TestSize.Level1)
  * @tc.number: GetResourceConfigFile_013
  * @tc.name: GetResConfigFile
  * @tc.desc: Test the interface of GetResConfigFile
+ *           1. profile is not json-format
  */
 HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_013, TestSize.Level1)
 {
     auto name = std::string("GetResourceConfigFile_013");
     GTEST_LOG_(INFO) << name << " start";
-
     std::string bundleFilePath = THIRD_PATH + "bundleClient1.hap";
     std::string installMsg;
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
     EXPECT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
 
-    AbilityInfo info;
+    ExtensionAbilityInfo info;
     std::vector<Metadata> &metadata = info.metadata;
     Metadata data;
-    data.name = "ohos.forms";
-    data.value = "forms";
-    data.resource = "@profile:forms";
+    data.name = "ohos.extension.forms";
+    data.resource = "@profile:form_config3";
     metadata.emplace_back(data);
     info.resourcePath = RESOURCE_PATH;
     BundleMgrClient bundleMgrClient;
-    std::string metadataName = "ohos.forms";
+    std::string metadataName = "ohos.extension.forms";
     std::vector<std::string> profileInfo;
     auto ret = bundleMgrClient.GetResConfigFile(info, metadataName, profileInfo);
-    EXPECT_TRUE(ret);
+    EXPECT_FALSE(ret);
 
     std::string uninstallMsg;
     UninstallBundle(BUNDLE_NAME, uninstallMsg);
     EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
-    std::cout << "END GetResourceConfigFile_013" << std::endl;
+    std::cout << "END GetResourceConfigFile_006" << std::endl;
     GTEST_LOG_(INFO) << name << " end";
 }
 
@@ -562,54 +646,60 @@ HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_013, TestSize.Level1)
  * @tc.number: GetResourceConfigFile_014
  * @tc.name: GetResConfigFile
  * @tc.desc: Test the interface of GetResConfigFile
- *           1. profile's suffix is not .json
+ *           1. profiles both have json-format file and non-json-format file
  */
 HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_014, TestSize.Level1)
 {
     auto name = std::string("GetResourceConfigFile_014");
     GTEST_LOG_(INFO) << name << " start";
-
-    std::string bundleFilePath = THIRD_PATH + "bundleClient2.hap";
+    std::string bundleFilePath = THIRD_PATH + "bundleClient1.hap";
     std::string installMsg;
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
     EXPECT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
 
-    AbilityInfo info;
+    ExtensionAbilityInfo info;
     std::vector<Metadata> &metadata = info.metadata;
     Metadata data;
-    data.name = "ohos.forms";
-    data.value = "forms";
-    data.resource = "@profile:forms";
+    data.name = "ohos.extension.forms";
+    data.resource = "@profile:form_config";
+    Metadata data1;
+    data.name = "ohos.extension.forms";
+    data.resource = "@profile:form_config1";
+
     metadata.emplace_back(data);
     info.resourcePath = RESOURCE_PATH;
     BundleMgrClient bundleMgrClient;
-    std::string metadataName = "ohos.forms";
+    std::string metadataName = "ohos.extension.forms";
     std::vector<std::string> profileInfo;
     auto ret = bundleMgrClient.GetResConfigFile(info, metadataName, profileInfo);
     EXPECT_FALSE(ret);
-    EXPECT_EQ(profileInfo.size(), 0);
 
     std::string uninstallMsg;
     UninstallBundle(BUNDLE_NAME, uninstallMsg);
     EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
-    std::cout << "END GetResourceConfigFile_014" << std::endl;
+    std::cout << "END GetResourceConfigFile_006" << std::endl;
     GTEST_LOG_(INFO) << name << " end";
 }
-
 
 /**
  * @tc.number: GetResourceConfigFile_015
  * @tc.name: GetResConfigFile
  * @tc.desc: Test the interface of GetResConfigFile
- *           1. metadata is empty
+ *           1. AbilityInfo is invalid, resourcePath is empty
  */
 HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_015, TestSize.Level1)
 {
     auto name = std::string("GetResourceConfigFile_015");
     GTEST_LOG_(INFO) << name << " start";
-    HapModuleInfo info;
+    AbilityInfo info;
+    std::vector<Metadata> &metadata = info.metadata;
+    Metadata data;
+    data.name = "ohos.extension.forms";
+    data.resource = "@profile:form_config";
+    metadata.emplace_back(data);
+    info.resourcePath = "";
     BundleMgrClient bundleMgrClient;
-    std::string metadataName = "test_name";
+    std::string metadataName = "ohos.extension.forms";
     std::vector<std::string> profileInfo;
     auto ret = bundleMgrClient.GetResConfigFile(info, metadataName, profileInfo);
     EXPECT_FALSE(ret);
@@ -620,22 +710,21 @@ HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_015, TestSize.Level1)
  * @tc.number: GetResourceConfigFile_016
  * @tc.name: GetResConfigFile
  * @tc.desc: Test the interface of GetResConfigFile
- *           1. metadataName is empty
+ *           1. AbilityInfo is invalid, resourcePath is not existed
  */
 HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_016, TestSize.Level1)
 {
-    auto name = std::string("GetResourceConfigFile_009");
+    auto name = std::string("GetResourceConfigFile_016");
     GTEST_LOG_(INFO) << name << " start";
-    HapModuleInfo info;
+    AbilityInfo info;
     std::vector<Metadata> &metadata = info.metadata;
     Metadata data;
-    data.name = "extensionName";
-    data.value = "extensionValue";
-    data.resource = "@profile:forms";
+    data.name = "ohos.extension.forms";
+    data.resource = "@profile:form_config";
     metadata.emplace_back(data);
     info.resourcePath = "resourcePath";
     BundleMgrClient bundleMgrClient;
-    std::string metadataName = "";
+    std::string metadataName = "ohos.extension.forms";
     std::vector<std::string> profileInfo;
     auto ret = bundleMgrClient.GetResConfigFile(info, metadataName, profileInfo);
     EXPECT_FALSE(ret);
@@ -646,22 +735,21 @@ HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_016, TestSize.Level1)
  * @tc.number: GetResourceConfigFile_017
  * @tc.name: GetResConfigFile
  * @tc.desc: Test the interface of GetResConfigFile
- *           1. metadataName cannot be found
+ *           1. AbilityInfo is invalid, metadata is not existed
  */
 HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_017, TestSize.Level1)
 {
-    auto name = std::string("GetResourceConfigFile_010");
+    auto name = std::string("GetResourceConfigFile_017");
     GTEST_LOG_(INFO) << name << " start";
-    HapModuleInfo info;
+    AbilityInfo info;
     std::vector<Metadata> &metadata = info.metadata;
     Metadata data;
     data.name = "extensionName";
-    data.value = "extensionValue";
-    data.resource = "@profile:forms";
+    data.resource = "@profile:form_config";
     metadata.emplace_back(data);
-    info.resourcePath = "resourcePath";
+    info.resourcePath = RESOURCE_PATH;
     BundleMgrClient bundleMgrClient;
-    std::string metadataName = "extensionName1";
+    std::string metadataName = "ohos.extension.forms";
     std::vector<std::string> profileInfo;
     auto ret = bundleMgrClient.GetResConfigFile(info, metadataName, profileInfo);
     EXPECT_FALSE(ret);
@@ -672,22 +760,18 @@ HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_017, TestSize.Level1)
  * @tc.number: GetResourceConfigFile_018
  * @tc.name: GetResConfigFile
  * @tc.desc: Test the interface of GetResConfigFile
- *           1. extensionInfo is invalid
+ *           1. AbilityInfo is valid
+ *           2. metadataName is not empty
+ *           3. AbilityInfo does not have metadata
  */
 HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_018, TestSize.Level1)
 {
     auto name = std::string("GetResourceConfigFile_018");
     GTEST_LOG_(INFO) << name << " start";
-    HapModuleInfo info;
-    std::vector<Metadata> &metadata = info.metadata;
-    Metadata data;
-    data.name = "extensionName";
-    data.value = "extensionValue";
-    data.resource = "@profile:forms";
-    metadata.emplace_back(data);
-    info.resourcePath = "resourcePath";
+    AbilityInfo info;
+    info.resourcePath = RESOURCE_PATH;
     BundleMgrClient bundleMgrClient;
-    std::string metadataName = "extensionName";
+    std::string metadataName = "ohos.extension.forms";
     std::vector<std::string> profileInfo;
     auto ret = bundleMgrClient.GetResConfigFile(info, metadataName, profileInfo);
     EXPECT_FALSE(ret);
@@ -698,21 +782,23 @@ HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_018, TestSize.Level1)
  * @tc.number: GetResourceConfigFile_019
  * @tc.name: GetResConfigFile
  * @tc.desc: Test the interface of GetResConfigFile
- *           1. metadata's resource is empty
+ *           1. AbilityInfo is valid
+ *           2. metadataName is not empty
+ *           3. metadataName cannot be found
  */
 HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_019, TestSize.Level1)
 {
     auto name = std::string("GetResourceConfigFile_019");
     GTEST_LOG_(INFO) << name << " start";
-    HapModuleInfo info;
+    AbilityInfo info;
     std::vector<Metadata> &metadata = info.metadata;
     Metadata data;
-    data.name = "extensionName";
-    data.value = "extensionValue";
+    data.name = "ohos.extension.forms";
+    data.resource = "@profile:form_config";
     metadata.emplace_back(data);
-    info.resourcePath = "resourcePath";
+    info.resourcePath = RESOURCE_PATH;
     BundleMgrClient bundleMgrClient;
-    std::string metadataName = "extensionName";
+    std::string metadataName = "ohos.extension.forms1";
     std::vector<std::string> profileInfo;
     auto ret = bundleMgrClient.GetResConfigFile(info, metadataName, profileInfo);
     EXPECT_FALSE(ret);
@@ -723,12 +809,491 @@ HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_019, TestSize.Level1)
  * @tc.number: GetResourceConfigFile_020
  * @tc.name: GetResConfigFile
  * @tc.desc: Test the interface of GetResConfigFile
+ *           1. AbilityInfo is valid and has only one metadata
+ *           2. metadataName is not empty
+ *           3. metadataName can be found
  */
 HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_020, TestSize.Level1)
 {
     auto name = std::string("GetResourceConfigFile_020");
     GTEST_LOG_(INFO) << name << " start";
+    std::string bundleFilePath = THIRD_PATH + "bundleClient1.hap";
+    std::string installMsg;
+    InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
+    EXPECT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
 
+    AbilityInfo info;
+    std::vector<Metadata> &metadata = info.metadata;
+    Metadata data;
+    data.name = "ohos.extension.forms";
+    data.resource = "@profile:form_config";
+    metadata.emplace_back(data);
+    info.resourcePath = RESOURCE_PATH;
+    BundleMgrClient bundleMgrClient;
+    std::string metadataName = "ohos.extension.forms";
+    std::vector<std::string> profileInfo;
+    auto ret = bundleMgrClient.GetResConfigFile(info, metadataName, profileInfo);
+    EXPECT_TRUE(ret);
+    std::cout << profileInfo[0] << std::endl;
+
+    std::string uninstallMsg;
+    UninstallBundle(BUNDLE_NAME, uninstallMsg);
+    EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
+    std::cout << "END GetResourceConfigFile_006" << std::endl;
+    GTEST_LOG_(INFO) << name << " end";
+}
+
+/**
+ * @tc.number: GetResourceConfigFile_021
+ * @tc.name: GetResConfigFile
+ * @tc.desc: Test the interface of GetResConfigFile
+ *           1. AbilityInfo is valid and has multiple metadata
+ *           2. metadataName is not empty
+ *           3. metadataName can be found
+ */
+HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_021, TestSize.Level1)
+{
+    auto name = std::string("GetResourceConfigFile_021");
+    GTEST_LOG_(INFO) << name << " start";
+    std::string bundleFilePath = THIRD_PATH + "bundleClient1.hap";
+    std::string installMsg;
+    InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
+    EXPECT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
+
+    AbilityInfo info;
+    std::vector<Metadata> &metadata = info.metadata;
+    Metadata data;
+    data.name = "ohos.extension.forms";
+    data.resource = "@profile:form_config";
+
+    Metadata data1;
+    data1.name = "ohos.extension.forms1";
+    data1.resource = "@profile:shortcuts_config";
+
+    metadata.emplace_back(data);
+    metadata.emplace_back(data1);
+    info.resourcePath = RESOURCE_PATH;
+    BundleMgrClient bundleMgrClient;
+    std::string metadataName = "ohos.extension.forms";
+    std::vector<std::string> profileInfo;
+    auto ret = bundleMgrClient.GetResConfigFile(info, metadataName, profileInfo);
+    EXPECT_TRUE(ret);
+    std::cout << profileInfo[0] << std::endl;
+
+    std::string uninstallMsg;
+    UninstallBundle(BUNDLE_NAME, uninstallMsg);
+    EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
+    std::cout << "END GetResourceConfigFile_006" << std::endl;
+    GTEST_LOG_(INFO) << name << " end";
+}
+
+/**
+ * @tc.number: GetResourceConfigFile_022
+ * @tc.name: GetResConfigFile
+ * @tc.desc: Test the interface of GetResConfigFile
+ *           1. AbilityInfo is valid and has multiple metadata
+ *           2. metadataName is not empty
+ *           3. metadataName can be found
+ */
+HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_022, TestSize.Level1)
+{
+    auto name = std::string("GetResourceConfigFile_022");
+    GTEST_LOG_(INFO) << name << " start";
+    std::string bundleFilePath = THIRD_PATH + "bundleClient1.hap";
+    std::string installMsg;
+    InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
+    EXPECT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
+
+    AbilityInfo info;
+    std::vector<Metadata> &metadata = info.metadata;
+    Metadata data;
+    data.name = "ohos.extension.forms";
+    data.resource = "@profile:form_config";
+
+    Metadata data1;
+    data1.name = "ohos.extension.forms";
+    data1.resource = "@profile:shortcuts_config";
+
+    metadata.emplace_back(data);
+    metadata.emplace_back(data1);
+    info.resourcePath = RESOURCE_PATH;
+    BundleMgrClient bundleMgrClient;
+    std::string metadataName = "ohos.extension.forms";
+    std::vector<std::string> profileInfo;
+    auto ret = bundleMgrClient.GetResConfigFile(info, metadataName, profileInfo);
+    EXPECT_TRUE(ret);
+    EXPECT_EQ(profileInfo.size(), 2);
+    std::cout << profileInfo[0] << std::endl;
+    std::cout << profileInfo[1] << std::endl;
+
+    std::string uninstallMsg;
+    UninstallBundle(BUNDLE_NAME, uninstallMsg);
+    EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
+    std::cout << "END GetResourceConfigFile_006" << std::endl;
+    GTEST_LOG_(INFO) << name << " end";
+}
+
+/**
+ * @tc.number: GetResourceConfigFile_023
+ * @tc.name: GetResConfigFile
+ * @tc.desc: Test the interface of GetResConfigFile
+ *           1. metadataName is empty
+ *           2. AbilityInfo has only one metadata
+ */
+HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_023, TestSize.Level1)
+{
+    auto name = std::string("GetResourceConfigFile_023");
+    GTEST_LOG_(INFO) << name << " start";
+    std::string bundleFilePath = THIRD_PATH + "bundleClient1.hap";
+    std::string installMsg;
+    InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
+    EXPECT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
+
+    AbilityInfo info;
+    std::vector<Metadata> &metadata = info.metadata;
+    Metadata data;
+    data.name = "ohos.extension.forms";
+    data.resource = "@profile:form_config";
+    metadata.emplace_back(data);
+    info.resourcePath = RESOURCE_PATH;
+    BundleMgrClient bundleMgrClient;
+    std::string metadataName;
+    std::vector<std::string> profileInfo;
+    auto ret = bundleMgrClient.GetResConfigFile(info, metadataName, profileInfo);
+    EXPECT_TRUE(ret);
+    std::cout << profileInfo[0] << std::endl;
+
+    std::string uninstallMsg;
+    UninstallBundle(BUNDLE_NAME, uninstallMsg);
+    EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
+    std::cout << "END GetResourceConfigFile_006" << std::endl;
+    GTEST_LOG_(INFO) << name << " end";
+}
+
+/**
+ * @tc.number: GetResourceConfigFile_024
+ * @tc.name: GetResConfigFile
+ * @tc.desc: Test the interface of GetResConfigFile
+ *           1. metadataName is empty
+ *           2. AbilityInfo has only multiple metadata
+ */
+HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_024, TestSize.Level1)
+{
+    auto name = std::string("GetResourceConfigFile_024");
+    GTEST_LOG_(INFO) << name << " start";
+    std::string bundleFilePath = THIRD_PATH + "bundleClient1.hap";
+    std::string installMsg;
+    InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
+    EXPECT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
+
+    AbilityInfo info;
+    std::vector<Metadata> &metadata = info.metadata;
+    Metadata data;
+    data.name = "ohos.extension.forms";
+    data.resource = "@profile:form_config";
+
+    Metadata data1;
+    data1.name = "ohos.extension.forms1";
+    data1.resource = "@profile:shortcuts_config";
+
+    metadata.emplace_back(data);
+    metadata.emplace_back(data1);
+    info.resourcePath = RESOURCE_PATH;
+    BundleMgrClient bundleMgrClient;
+    std::string metadataName;
+    std::vector<std::string> profileInfo;
+    auto ret = bundleMgrClient.GetResConfigFile(info, metadataName, profileInfo);
+    EXPECT_TRUE(ret);
+    EXPECT_EQ(profileInfo.size(), 2);
+    std::cout << profileInfo[0] << std::endl;
+    std::cout << profileInfo[1] << std::endl;
+    std::string uninstallMsg;
+    UninstallBundle(BUNDLE_NAME, uninstallMsg);
+    EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
+    std::cout << "END GetResourceConfigFile_006" << std::endl;
+    GTEST_LOG_(INFO) << name << " end";
+}
+
+/**
+ * @tc.number: GetResourceConfigFile_025
+ * @tc.name: GetResConfigFile
+ * @tc.desc: Test the interface of GetResConfigFile
+ *           1. profile's suffix is not .json
+ */
+HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_025, TestSize.Level1)
+{
+    auto name = std::string("GetResourceConfigFile_025");
+    GTEST_LOG_(INFO) << name << " start";
+    std::string bundleFilePath = THIRD_PATH + "bundleClient1.hap";
+    std::string installMsg;
+    InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
+    EXPECT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
+
+    AbilityInfo info;
+    std::vector<Metadata> &metadata = info.metadata;
+    Metadata data;
+    data.name = "ohos.extension.forms";
+    data.resource = "@profile:form_config1";
+    metadata.emplace_back(data);
+    info.resourcePath = RESOURCE_PATH;
+    BundleMgrClient bundleMgrClient;
+    std::string metadataName = "ohos.extension.forms";
+    std::vector<std::string> profileInfo;
+    auto ret = bundleMgrClient.GetResConfigFile(info, metadataName, profileInfo);
+    EXPECT_FALSE(ret);
+
+    std::string uninstallMsg;
+    UninstallBundle(BUNDLE_NAME, uninstallMsg);
+    EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
+    std::cout << "END GetResourceConfigFile_006" << std::endl;
+    GTEST_LOG_(INFO) << name << " end";
+}
+
+/**
+ * @tc.number: GetResourceConfigFile_026
+ * @tc.name: GetResConfigFile
+ * @tc.desc: Test the interface of GetResConfigFile
+ *           1. profile is empty file
+ */
+HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_026, TestSize.Level1)
+{
+    auto name = std::string("GetResourceConfigFile_026");
+    GTEST_LOG_(INFO) << name << " start";
+    std::string bundleFilePath = THIRD_PATH + "bundleClient1.hap";
+    std::string installMsg;
+    InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
+    EXPECT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
+
+    AbilityInfo info;
+    std::vector<Metadata> &metadata = info.metadata;
+    Metadata data;
+    data.name = "ohos.extension.forms";
+    data.resource = "@profile:form_config2";
+    metadata.emplace_back(data);
+    info.resourcePath = RESOURCE_PATH;
+    BundleMgrClient bundleMgrClient;
+    std::string metadataName = "ohos.extension.forms";
+    std::vector<std::string> profileInfo;
+    auto ret = bundleMgrClient.GetResConfigFile(info, metadataName, profileInfo);
+    EXPECT_FALSE(ret);
+
+    std::string uninstallMsg;
+    UninstallBundle(BUNDLE_NAME, uninstallMsg);
+    EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
+    std::cout << "END GetResourceConfigFile_006" << std::endl;
+    GTEST_LOG_(INFO) << name << " end";
+}
+
+/**
+ * @tc.number: GetResourceConfigFile_027
+ * @tc.name: GetResConfigFile
+ * @tc.desc: Test the interface of GetResConfigFile
+ *           1. profile is not json-format
+ */
+HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_027, TestSize.Level1)
+{
+    auto name = std::string("GetResourceConfigFile_027");
+    GTEST_LOG_(INFO) << name << " start";
+    std::string bundleFilePath = THIRD_PATH + "bundleClient1.hap";
+    std::string installMsg;
+    InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
+    EXPECT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
+
+    AbilityInfo info;
+    std::vector<Metadata> &metadata = info.metadata;
+    Metadata data;
+    data.name = "ohos.extension.forms";
+    data.resource = "@profile:form_config3";
+    metadata.emplace_back(data);
+    info.resourcePath = RESOURCE_PATH;
+    BundleMgrClient bundleMgrClient;
+    std::string metadataName = "ohos.extension.forms";
+    std::vector<std::string> profileInfo;
+    auto ret = bundleMgrClient.GetResConfigFile(info, metadataName, profileInfo);
+    EXPECT_FALSE(ret);
+
+    std::string uninstallMsg;
+    UninstallBundle(BUNDLE_NAME, uninstallMsg);
+    EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
+    std::cout << "END GetResourceConfigFile_006" << std::endl;
+    GTEST_LOG_(INFO) << name << " end";
+}
+
+/**
+ * @tc.number: GetResourceConfigFile_028
+ * @tc.name: GetResConfigFile
+ * @tc.desc: Test the interface of GetResConfigFile
+ *           1. profiles both have json-format file and non-json-format file
+ */
+HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_028, TestSize.Level1)
+{
+    auto name = std::string("GetResourceConfigFile_028");
+    GTEST_LOG_(INFO) << name << " start";
+    std::string bundleFilePath = THIRD_PATH + "bundleClient1.hap";
+    std::string installMsg;
+    InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
+    EXPECT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
+
+    AbilityInfo info;
+    std::vector<Metadata> &metadata = info.metadata;
+    Metadata data;
+    data.name = "ohos.extension.forms";
+    data.resource = "@profile:form_config";
+    Metadata data1;
+    data.name = "ohos.extension.forms";
+    data.resource = "@profile:form_config1";
+
+    metadata.emplace_back(data);
+    info.resourcePath = RESOURCE_PATH;
+    BundleMgrClient bundleMgrClient;
+    std::string metadataName = "ohos.extension.forms";
+    std::vector<std::string> profileInfo;
+    auto ret = bundleMgrClient.GetResConfigFile(info, metadataName, profileInfo);
+    EXPECT_FALSE(ret);
+
+    std::string uninstallMsg;
+    UninstallBundle(BUNDLE_NAME, uninstallMsg);
+    EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
+    std::cout << "END GetResourceConfigFile_006" << std::endl;
+    GTEST_LOG_(INFO) << name << " end";
+}
+
+/**
+ * @tc.number: GetResourceConfigFile_029
+ * @tc.name: GetResConfigFile
+ * @tc.desc: Test the interface of GetResConfigFile
+ *           1. HapModuleInfo is invalid, resourcePath is empty
+ */
+HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_029, TestSize.Level1)
+{
+    auto name = std::string("GetResourceConfigFile_029");
+    GTEST_LOG_(INFO) << name << " start";
+    HapModuleInfo info;
+    std::vector<Metadata> &metadata = info.metadata;
+    Metadata data;
+    data.name = "ohos.extension.forms";
+    data.resource = "@profile:form_config";
+    metadata.emplace_back(data);
+    info.resourcePath = "";
+    BundleMgrClient bundleMgrClient;
+    std::string metadataName = "ohos.extension.forms";
+    std::vector<std::string> profileInfo;
+    auto ret = bundleMgrClient.GetResConfigFile(info, metadataName, profileInfo);
+    EXPECT_FALSE(ret);
+    GTEST_LOG_(INFO) << name << " end";
+}
+
+/**
+ * @tc.number: GetResourceConfigFile_030
+ * @tc.name: GetResConfigFile
+ * @tc.desc: Test the interface of GetResConfigFile
+ *           1. HapModuleInfo is invalid, resourcePath is not existed
+ */
+HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_030, TestSize.Level1)
+{
+    auto name = std::string("GetResourceConfigFile_030");
+    GTEST_LOG_(INFO) << name << " start";
+    HapModuleInfo info;
+    std::vector<Metadata> &metadata = info.metadata;
+    Metadata data;
+    data.name = "ohos.extension.forms";
+    data.resource = "@profile:form_config";
+    metadata.emplace_back(data);
+    info.resourcePath = "resourcePath";
+    BundleMgrClient bundleMgrClient;
+    std::string metadataName = "ohos.extension.forms";
+    std::vector<std::string> profileInfo;
+    auto ret = bundleMgrClient.GetResConfigFile(info, metadataName, profileInfo);
+    EXPECT_FALSE(ret);
+    GTEST_LOG_(INFO) << name << " end";
+}
+
+/**
+ * @tc.number: GetResourceConfigFile_031
+ * @tc.name: GetResConfigFile
+ * @tc.desc: Test the interface of GetResConfigFile
+ *           1. HapModuleInfo is invalid, metadata is not existed
+ */
+HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_031, TestSize.Level1)
+{
+    auto name = std::string("GetResourceConfigFile_031");
+    GTEST_LOG_(INFO) << name << " start";
+    HapModuleInfo info;
+    std::vector<Metadata> &metadata = info.metadata;
+    Metadata data;
+    data.name = "extensionName";
+    data.resource = "@profile:form_config";
+    metadata.emplace_back(data);
+    info.resourcePath = RESOURCE_PATH;
+    BundleMgrClient bundleMgrClient;
+    std::string metadataName = "ohos.extension.forms";
+    std::vector<std::string> profileInfo;
+    auto ret = bundleMgrClient.GetResConfigFile(info, metadataName, profileInfo);
+    EXPECT_FALSE(ret);
+    GTEST_LOG_(INFO) << name << " end";
+}
+
+/**
+ * @tc.number: GetResourceConfigFile_032
+ * @tc.name: GetResConfigFile
+ * @tc.desc: Test the interface of GetResConfigFile
+ *           1. HapModuleInfo is valid
+ *           2. metadataName is not empty
+ *           3. HapModuleInfo does not have metadata
+ */
+HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_032, TestSize.Level1)
+{
+    auto name = std::string("GetResourceConfigFile_032");
+    GTEST_LOG_(INFO) << name << " start";
+    HapModuleInfo info;
+    info.resourcePath = RESOURCE_PATH;
+    BundleMgrClient bundleMgrClient;
+    std::string metadataName = "ohos.extension.forms";
+    std::vector<std::string> profileInfo;
+    auto ret = bundleMgrClient.GetResConfigFile(info, metadataName, profileInfo);
+    EXPECT_FALSE(ret);
+    GTEST_LOG_(INFO) << name << " end";
+}
+
+/**
+ * @tc.number: GetResourceConfigFile_033
+ * @tc.name: GetResConfigFile
+ * @tc.desc: Test the interface of GetResConfigFile
+ *           1. HapModuleInfo is valid
+ *           2. metadataName is not empty
+ *           3. metadataName cannot be found
+ */
+HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_033, TestSize.Level1)
+{
+    auto name = std::string("GetResourceConfigFile_033");
+    GTEST_LOG_(INFO) << name << " start";
+    HapModuleInfo info;
+    std::vector<Metadata> &metadata = info.metadata;
+    Metadata data;
+    data.name = "ohos.extension.forms";
+    data.resource = "@profile:form_config";
+    metadata.emplace_back(data);
+    info.resourcePath = RESOURCE_PATH;
+    BundleMgrClient bundleMgrClient;
+    std::string metadataName = "ohos.extension.forms1";
+    std::vector<std::string> profileInfo;
+    auto ret = bundleMgrClient.GetResConfigFile(info, metadataName, profileInfo);
+    EXPECT_FALSE(ret);
+    GTEST_LOG_(INFO) << name << " end";
+}
+
+/**
+ * @tc.number: GetResourceConfigFile_034
+ * @tc.name: GetResConfigFile
+ * @tc.desc: Test the interface of GetResConfigFile
+ *           1. HapModuleInfo is valid and has only one metadata
+ *           2. metadataName is not empty
+ *           3. metadataName can be found
+ */
+HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_034, TestSize.Level1)
+{
+    auto name = std::string("GetResourceConfigFile_034");
+    GTEST_LOG_(INFO) << name << " start";
     std::string bundleFilePath = THIRD_PATH + "bundleClient1.hap";
     std::string installMsg;
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
@@ -737,36 +1302,37 @@ HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_020, TestSize.Level1)
     HapModuleInfo info;
     std::vector<Metadata> &metadata = info.metadata;
     Metadata data;
-    data.name = "ohos.forms";
-    data.value = "forms";
-    data.resource = "@profile:forms";
+    data.name = "ohos.extension.forms";
+    data.resource = "@profile:form_config";
     metadata.emplace_back(data);
     info.resourcePath = RESOURCE_PATH;
     BundleMgrClient bundleMgrClient;
-    std::string metadataName = "ohos.forms";
+    std::string metadataName = "ohos.extension.forms";
     std::vector<std::string> profileInfo;
     auto ret = bundleMgrClient.GetResConfigFile(info, metadataName, profileInfo);
     EXPECT_TRUE(ret);
+    std::cout << profileInfo[0] << std::endl;
 
     std::string uninstallMsg;
     UninstallBundle(BUNDLE_NAME, uninstallMsg);
     EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
-    std::cout << "END GetResourceConfigFile_020" << std::endl;
+    std::cout << "END GetResourceConfigFile_006" << std::endl;
     GTEST_LOG_(INFO) << name << " end";
 }
 
 /**
- * @tc.number: GetResourceConfigFile_021
+ * @tc.number: GetResourceConfigFile_035
  * @tc.name: GetResConfigFile
  * @tc.desc: Test the interface of GetResConfigFile
- *           1. profile's suffix is not .json
+ *           1. HapModuleInfo is valid and has multiple metadata
+ *           2. metadataName is not empty
+ *           3. metadataName can be found
  */
-HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_021, TestSize.Level1)
+HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_035, TestSize.Level1)
 {
-    auto name = std::string("GetResourceConfigFile_021");
+    auto name = std::string("GetResourceConfigFile_035");
     GTEST_LOG_(INFO) << name << " start";
-
-    std::string bundleFilePath = THIRD_PATH + "bundleClient2.hap";
+    std::string bundleFilePath = THIRD_PATH + "bundleClient1.hap";
     std::string installMsg;
     InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
     EXPECT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
@@ -774,22 +1340,298 @@ HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_021, TestSize.Level1)
     HapModuleInfo info;
     std::vector<Metadata> &metadata = info.metadata;
     Metadata data;
-    data.name = "ohos.forms";
-    data.value = "forms";
-    data.resource = "@profile:forms";
+    data.name = "ohos.extension.forms";
+    data.resource = "@profile:form_config";
+
+    Metadata data1;
+    data1.name = "ohos.extension.forms1";
+    data1.resource = "@profile:shortcuts_config";
+
     metadata.emplace_back(data);
+    metadata.emplace_back(data1);
     info.resourcePath = RESOURCE_PATH;
     BundleMgrClient bundleMgrClient;
-    std::string metadataName = "ohos.forms";
+    std::string metadataName = "ohos.extension.forms";
     std::vector<std::string> profileInfo;
     auto ret = bundleMgrClient.GetResConfigFile(info, metadataName, profileInfo);
-    EXPECT_FALSE(ret);
-    EXPECT_EQ(profileInfo.size(), 0);
+    EXPECT_TRUE(ret);
+    std::cout << profileInfo[0] << std::endl;
 
     std::string uninstallMsg;
     UninstallBundle(BUNDLE_NAME, uninstallMsg);
     EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
-    std::cout << "END GetResourceConfigFile_021" << std::endl;
+    std::cout << "END GetResourceConfigFile_006" << std::endl;
+    GTEST_LOG_(INFO) << name << " end";
+}
+
+/**
+ * @tc.number: GetResourceConfigFile_036
+ * @tc.name: GetResConfigFile
+ * @tc.desc: Test the interface of GetResConfigFile
+ *           1. HapModuleInfo is valid and has multiple metadata
+ *           2. metadataName is not empty
+ *           3. metadataName can be found
+ */
+HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_036, TestSize.Level1)
+{
+    auto name = std::string("GetResourceConfigFile_036");
+    GTEST_LOG_(INFO) << name << " start";
+    std::string bundleFilePath = THIRD_PATH + "bundleClient1.hap";
+    std::string installMsg;
+    InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
+    EXPECT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
+
+    HapModuleInfo info;
+    std::vector<Metadata> &metadata = info.metadata;
+    Metadata data;
+    data.name = "ohos.extension.forms";
+    data.resource = "@profile:form_config";
+
+    Metadata data1;
+    data1.name = "ohos.extension.forms";
+    data1.resource = "@profile:shortcuts_config";
+
+    metadata.emplace_back(data);
+    metadata.emplace_back(data1);
+    info.resourcePath = RESOURCE_PATH;
+    BundleMgrClient bundleMgrClient;
+    std::string metadataName = "ohos.extension.forms";
+    std::vector<std::string> profileInfo;
+    auto ret = bundleMgrClient.GetResConfigFile(info, metadataName, profileInfo);
+    EXPECT_TRUE(ret);
+    EXPECT_EQ(profileInfo.size(), 2);
+    std::cout << profileInfo[0] << std::endl;
+    std::cout << profileInfo[1] << std::endl;
+
+    std::string uninstallMsg;
+    UninstallBundle(BUNDLE_NAME, uninstallMsg);
+    EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
+    std::cout << "END GetResourceConfigFile_006" << std::endl;
+    GTEST_LOG_(INFO) << name << " end";
+}
+
+/**
+ * @tc.number: GetResourceConfigFile_037
+ * @tc.name: GetResConfigFile
+ * @tc.desc: Test the interface of GetResConfigFile
+ *           1. metadataName is empty
+ *           2. HapModuleInfo has only one metadata
+ */
+HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_037, TestSize.Level1)
+{
+    auto name = std::string("GetResourceConfigFile_037");
+    GTEST_LOG_(INFO) << name << " start";
+    std::string bundleFilePath = THIRD_PATH + "bundleClient1.hap";
+    std::string installMsg;
+    InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
+    EXPECT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
+
+    HapModuleInfo info;
+    std::vector<Metadata> &metadata = info.metadata;
+    Metadata data;
+    data.name = "ohos.extension.forms";
+    data.resource = "@profile:form_config";
+    metadata.emplace_back(data);
+    info.resourcePath = RESOURCE_PATH;
+    BundleMgrClient bundleMgrClient;
+    std::string metadataName;
+    std::vector<std::string> profileInfo;
+    auto ret = bundleMgrClient.GetResConfigFile(info, metadataName, profileInfo);
+    EXPECT_TRUE(ret);
+    std::cout << profileInfo[0] << std::endl;
+
+    std::string uninstallMsg;
+    UninstallBundle(BUNDLE_NAME, uninstallMsg);
+    EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
+    std::cout << "END GetResourceConfigFile_006" << std::endl;
+    GTEST_LOG_(INFO) << name << " end";
+}
+
+/**
+ * @tc.number: GetResourceConfigFile_038
+ * @tc.name: GetResConfigFile
+ * @tc.desc: Test the interface of GetResConfigFile
+ *           1. metadataName is empty
+ *           2. HapModuleInfo has only multiple metadata
+ */
+HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_038, TestSize.Level1)
+{
+    auto name = std::string("GetResourceConfigFile_038");
+    GTEST_LOG_(INFO) << name << " start";
+    std::string bundleFilePath = THIRD_PATH + "bundleClient1.hap";
+    std::string installMsg;
+    InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
+    EXPECT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
+
+    HapModuleInfo info;
+    std::vector<Metadata> &metadata = info.metadata;
+    Metadata data;
+    data.name = "ohos.extension.forms";
+    data.resource = "@profile:form_config";
+
+    Metadata data1;
+    data1.name = "ohos.extension.forms1";
+    data1.resource = "@profile:shortcuts_config";
+
+    metadata.emplace_back(data);
+    metadata.emplace_back(data1);
+    info.resourcePath = RESOURCE_PATH;
+    BundleMgrClient bundleMgrClient;
+    std::string metadataName;
+    std::vector<std::string> profileInfo;
+    auto ret = bundleMgrClient.GetResConfigFile(info, metadataName, profileInfo);
+    EXPECT_TRUE(ret);
+    EXPECT_EQ(profileInfo.size(), 2);
+    std::cout << profileInfo[0] << std::endl;
+    std::cout << profileInfo[1] << std::endl;
+    std::string uninstallMsg;
+    UninstallBundle(BUNDLE_NAME, uninstallMsg);
+    EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
+    std::cout << "END GetResourceConfigFile_006" << std::endl;
+    GTEST_LOG_(INFO) << name << " end";
+}
+
+/**
+ * @tc.number: GetResourceConfigFile_039
+ * @tc.name: GetResConfigFile
+ * @tc.desc: Test the interface of GetResConfigFile
+ *           1. profile's suffix is not .json
+ */
+HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_039, TestSize.Level1)
+{
+    auto name = std::string("GetResourceConfigFile_039");
+    GTEST_LOG_(INFO) << name << " start";
+    std::string bundleFilePath = THIRD_PATH + "bundleClient1.hap";
+    std::string installMsg;
+    InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
+    EXPECT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
+
+    HapModuleInfo info;
+    std::vector<Metadata> &metadata = info.metadata;
+    Metadata data;
+    data.name = "ohos.extension.forms";
+    data.resource = "@profile:form_config1";
+    metadata.emplace_back(data);
+    info.resourcePath = RESOURCE_PATH;
+    BundleMgrClient bundleMgrClient;
+    std::string metadataName = "ohos.extension.forms";
+    std::vector<std::string> profileInfo;
+    auto ret = bundleMgrClient.GetResConfigFile(info, metadataName, profileInfo);
+    EXPECT_FALSE(ret);
+
+    std::string uninstallMsg;
+    UninstallBundle(BUNDLE_NAME, uninstallMsg);
+    EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
+    std::cout << "END GetResourceConfigFile_006" << std::endl;
+    GTEST_LOG_(INFO) << name << " end";
+}
+
+/**
+ * @tc.number: GetResourceConfigFile_040
+ * @tc.name: GetResConfigFile
+ * @tc.desc: Test the interface of GetResConfigFile
+ *           1. profile is empty file
+ */
+HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_040, TestSize.Level1)
+{
+    auto name = std::string("GetResourceConfigFile_040");
+    GTEST_LOG_(INFO) << name << " start";
+    std::string bundleFilePath = THIRD_PATH + "bundleClient1.hap";
+    std::string installMsg;
+    InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
+    EXPECT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
+
+    HapModuleInfo info;
+    std::vector<Metadata> &metadata = info.metadata;
+    Metadata data;
+    data.name = "ohos.extension.forms";
+    data.resource = "@profile:form_config2";
+    metadata.emplace_back(data);
+    info.resourcePath = RESOURCE_PATH;
+    BundleMgrClient bundleMgrClient;
+    std::string metadataName = "ohos.extension.forms";
+    std::vector<std::string> profileInfo;
+    auto ret = bundleMgrClient.GetResConfigFile(info, metadataName, profileInfo);
+    EXPECT_FALSE(ret);
+
+    std::string uninstallMsg;
+    UninstallBundle(BUNDLE_NAME, uninstallMsg);
+    EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
+    std::cout << "END GetResourceConfigFile_006" << std::endl;
+    GTEST_LOG_(INFO) << name << " end";
+}
+
+/**
+ * @tc.number: GetResourceConfigFile_041
+ * @tc.name: GetResConfigFile
+ * @tc.desc: Test the interface of GetResConfigFile
+ *           1. profile is not json-format
+ */
+HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_041, TestSize.Level1)
+{
+    auto name = std::string("GetResourceConfigFile_041");
+    GTEST_LOG_(INFO) << name << " start";
+    std::string bundleFilePath = THIRD_PATH + "bundleClient1.hap";
+    std::string installMsg;
+    InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
+    EXPECT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
+
+    HapModuleInfo info;
+    std::vector<Metadata> &metadata = info.metadata;
+    Metadata data;
+    data.name = "ohos.extension.forms";
+    data.resource = "@profile:form_config3";
+    metadata.emplace_back(data);
+    info.resourcePath = RESOURCE_PATH;
+    BundleMgrClient bundleMgrClient;
+    std::string metadataName = "ohos.extension.forms";
+    std::vector<std::string> profileInfo;
+    auto ret = bundleMgrClient.GetResConfigFile(info, metadataName, profileInfo);
+    EXPECT_FALSE(ret);
+
+    std::string uninstallMsg;
+    UninstallBundle(BUNDLE_NAME, uninstallMsg);
+    EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
+    std::cout << "END GetResourceConfigFile_006" << std::endl;
+    GTEST_LOG_(INFO) << name << " end";
+}
+
+/**
+ * @tc.number: GetResourceConfigFile_042
+ * @tc.name: GetResConfigFile
+ * @tc.desc: Test the interface of GetResConfigFile
+ *           1. profiles both have json-format file and non-json-format file
+ */
+HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_042, TestSize.Level1)
+{
+    auto name = std::string("GetResourceConfigFile_042");
+    GTEST_LOG_(INFO) << name << " start";
+    std::string bundleFilePath = THIRD_PATH + "bundleClient1.hap";
+    std::string installMsg;
+    InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
+    EXPECT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
+
+    HapModuleInfo info;
+    std::vector<Metadata> &metadata = info.metadata;
+    Metadata data;
+    data.name = "ohos.extension.forms";
+    data.resource = "@profile:form_config";
+    Metadata data1;
+    data.name = "ohos.extension.forms";
+    data.resource = "@profile:form_config1";
+
+    metadata.emplace_back(data);
+    info.resourcePath = RESOURCE_PATH;
+    BundleMgrClient bundleMgrClient;
+    std::string metadataName = "ohos.extension.forms";
+    std::vector<std::string> profileInfo;
+    auto ret = bundleMgrClient.GetResConfigFile(info, metadataName, profileInfo);
+    EXPECT_FALSE(ret);
+
+    std::string uninstallMsg;
+    UninstallBundle(BUNDLE_NAME, uninstallMsg);
+    EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
+    std::cout << "END GetResourceConfigFile_006" << std::endl;
     GTEST_LOG_(INFO) << name << " end";
 }
 }  // namespace AppExecFwk
