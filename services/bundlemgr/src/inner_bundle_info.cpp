@@ -2095,6 +2095,10 @@ void InnerBundleInfo::AddInnerBundleUserInfo(
 bool InnerBundleInfo::GetInnerBundleUserInfo(
     int32_t userId, InnerBundleUserInfo& innerBundleUserInfo) const
 {
+    if (userId == Constants::NOT_EXIST_USERID) {
+        return true;
+    }
+
     if (userId == Constants::ALL_USERID) {
         if (innerBundleUserInfos_.empty()) {
             return false;
