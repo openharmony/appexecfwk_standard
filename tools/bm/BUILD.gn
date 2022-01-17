@@ -17,8 +17,6 @@ import("//foundation/appexecfwk/standard/appexecfwk.gni")
 config("tools_bm_config") {
   include_dirs = [
     "include",
-    "${aafwk_path}/services/common/include",
-    "${aafwk_path}/tools/aa/include",
     "${common_path}/log/include",
     "${kits_path}/appkit/napi/bundlemgr",
     "//utils/system/safwk/native/include",
@@ -27,11 +25,11 @@ config("tools_bm_config") {
 
 ohos_source_set("tools_bm_source_set") {
   sources = [
-    "${aafwk_path}/tools/aa/src/shell_command.cpp",
     "${common_path}/log/src/app_log_wrapper.cpp",
     "${kits_path}/appkit/napi/bundlemgr/bundle_death_recipient.cpp",
     "src/bundle_command.cpp",
     "src/main.cpp",
+    "src/shell_command.cpp",
     "src/status_receiver_impl.cpp",
   ]
 
