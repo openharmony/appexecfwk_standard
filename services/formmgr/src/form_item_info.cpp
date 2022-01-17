@@ -128,12 +128,12 @@ std::string FormItemInfo::GetScheduledUpdateTime() const
  * @param dirs Hap source dirs.
  * @return Returns true on success, false on failure.
  */
-bool FormItemInfo::GetHapSourceDirs(std::vector<std::string> &dirs) const 
+bool FormItemInfo::GetHapSourceDirs(std::vector<std::string> &dirs) const
 {
     if (hapSourceDirs_.size() > 0) {
         dirs.assign(hapSourceDirs_.begin(), hapSourceDirs_.end());
         return true;
-    }    
+    }
     return false;
 }
 /**
@@ -344,7 +344,7 @@ void FormItemInfo::AddHapSourceDirs(const std::string &hapSourceDir)
 /**
  * @brief Set value of temporaryFlag_.
  * @param temporaryFlag Temporary flag.
- */ 
+ */
 void FormItemInfo::SetTemporaryFlag(bool temporaryFlag)
 {
     temporaryFlag_ = temporaryFlag;
@@ -353,7 +353,7 @@ void FormItemInfo::SetTemporaryFlag(bool temporaryFlag)
  * @brief Add module info.
  * @param moduleName Module name.
  * @param moduleSourceDir Module source dir.
- */ 
+ */
 void FormItemInfo::AddModuleInfo(const std::string &moduleName, const std::string &moduleSourceDir)
 {
     moduleInfoMap_.emplace(std::make_pair(moduleName, moduleSourceDir));

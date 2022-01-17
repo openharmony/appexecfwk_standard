@@ -30,8 +30,8 @@ namespace AppExecFwk {
 void ProviderConnectProxy::OnAbilityConnectDone(
     const AppExecFwk::ElementName &element, const sptr<IRemoteObject> &remoteObject, int resultCode)
 {
-    APP_LOGD("%{public}s, abilityName:%{public}s,resultCode:%{public}d", 
-        __func__, element.GetAbilityName().c_str(), resultCode);    
+    APP_LOGD("%{public}s, abilityName:%{public}s,resultCode:%{public}d",
+        __func__, element.GetAbilityName().c_str(), resultCode);
     int error;
     MessageParcel data;
     MessageParcel reply;

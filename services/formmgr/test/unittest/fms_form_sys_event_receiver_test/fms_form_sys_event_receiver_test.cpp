@@ -25,20 +25,20 @@
 #include "form_host_interface.h"
 #include "form_mgr.h"
 #undef private
-#include "form_bms_helper.h"
 #include "form_mgr_service.h"
 #include "form_refresh_limiter.h"
 #include "form_sys_event_receiver.h"
 #include "if_system_ability_manager.h"
 #include "inner_bundle_info.h"
 #include "ipc_skeleton.h"
+#include "form_bms_helper.h"
 #include "iservice_registry.h"
 
 #include "mock_ability_manager.h"
 #include "mock_bundle_manager.h"
 #include "mock_form_host_client.h"
-#include "permission/permission.h"
 #include "permission/permission_kit.h"
+#include "permission/permission.h"
 #include "running_process_info.h"
 #include "system_ability_definition.h"
 
@@ -51,6 +51,7 @@ namespace {
 const std::string PERMISSION_NAME_REQUIRE_FORM = "ohos.permission.REQUIRE_FORM";
 const std::string PARAM_PROVIDER_PACKAGE_NAME = "com.form.provider.app.test.abiliy";
 const std::string FORM_PROVIDER_BUNDLE_NAME = "com.form.provider.service";
+const std::string FORM_PROVIDER_BUNDLE_NAME_1 = "com.form.provider.service1";
 const std::string PARAM_PROVIDER_MODULE_NAME = "com.form.provider.app.test.abiliy";
 const std::string FORM_PROVIDER_ABILITY_NAME = "com.form.provider.app.test.abiliy";
 const std::string PARAM_FORM_NAME = "com.form.name.test";
@@ -73,7 +74,7 @@ public:
     static void TearDownTestCase();
     void SetUp();
     void TearDown();
-    void CreateEventData(std::string bundle, int64_t formId, 
+    void CreateEventData(std::string bundle, int64_t formId,
         int callingUid, std::string actionType, EventFwk::CommonEventData &eventData);
     void CreateFormRecordAndFormInfo(std::string bundle, int64_t formId, int callingUid);
     void ClearFormRecord(int64_t formId);
@@ -81,7 +82,7 @@ public:
 protected:
     sptr<MockFormHostClient> token_;
     std::shared_ptr<FormMgrService> formyMgrServ_ = DelayedSingleton<FormMgrService>::GetInstance();
-    
+
     sptr<BundleMgrService> mockBundleMgr_;
     sptr<MockAbilityMgrService> mockAbilityMgrServ_;
 };
@@ -100,10 +101,10 @@ void FmsFormSysEventReceiverTest::SetUp()
     mockBundleMgr_ = new (std::nothrow) BundleMgrService();
     EXPECT_TRUE(mockBundleMgr_ != nullptr);
     FormBmsHelper::GetInstance().SetBundleManager(mockBundleMgr_);
-    
+
     mockAbilityMgrServ_ = new (std::nothrow) MockAbilityMgrService();
     FormAmsHelper::GetInstance().SetAbilityManager(mockAbilityMgrServ_);
- 
+
     // APP_LOGI("fms_form_mgr_client_test_001 FormMgrService started");
     token_ = new (std::nothrow) MockFormHostClient();
 
@@ -120,7 +121,7 @@ void FmsFormSysEventReceiverTest::SetUp()
     permDef.descriptionId = 1;
     permList.emplace_back(permDef);
     Permission::PermissionKit::AddDefPermissions(permList);
-    Permission::PermissionKit::AddUserGrantedReqPermissions(FORM_PROVIDER_BUNDLE_NAME, 
+    Permission::PermissionKit::AddUserGrantedReqPermissions(FORM_PROVIDER_BUNDLE_NAME,
         {PERMISSION_NAME_REQUIRE_FORM}, 0);
     Permission::PermissionKit::GrantUserGrantedPermission(FORM_PROVIDER_BUNDLE_NAME, PERMISSION_NAME_REQUIRE_FORM, 0);
 }
@@ -128,12 +129,12 @@ void FmsFormSysEventReceiverTest::SetUp()
 void FmsFormSysEventReceiverTest::TearDown()
 {}
 
-void FmsFormSysEventReceiverTest::CreateEventData(std::string bundle, int64_t formId, 
+void FmsFormSysEventReceiverTest::CreateEventData(std::string bundle, int64_t formId,
     int callingUid, std::string actionType, EventFwk::CommonEventData &eventData)
 {
     Want want;
     want.SetAction(actionType);
-    want.SetParam(KEY_BUNDLE_NAME, bundle);
+    want.SetBundle(bundle);
     want.SetParam(KEY_UID, callingUid);
     eventData.SetWant(want);
 }
@@ -153,11 +154,11 @@ void FmsFormSysEventReceiverTest::CreateFormRecordAndFormInfo(std::string bundle
 
     FormRecord realFormRecord;
     FormDataMgr::GetInstance().GetFormRecord(formId, realFormRecord);
-    
+
     FormDBInfo formDBInfo(formId, realFormRecord);
     FormDbCache::GetInstance().SaveFormInfo(formDBInfo);
-    
-    FormDataMgr::GetInstance().AllotFormHostRecord(record, token_, formId, callingUid);  
+
+    FormDataMgr::GetInstance().AllotFormHostRecord(record, token_, formId, callingUid);
 }
 
 void FmsFormSysEventReceiverTest::ClearFormRecord(int64_t formId)
@@ -182,24 +183,24 @@ HWTEST_F(FmsFormSysEventReceiverTest, OnReceiveEvent_001, TestSize.Level0)
     std::string bundle = FORM_PROVIDER_BUNDLE_NAME;
     int64_t formId = 0x0ffabcff00000000;
     int callingUid {0};
-    
+
     FormItemInfo record;
     record.SetFormId(formId);
     record.SetProviderBundleName(bundle);
-    record.SetModuleName(PARAM_FORM_NAME);
+    record.SetModuleName(PARAM_PROVIDER_MODULE_NAME);
     record.SetAbilityName(FORM_PROVIDER_ABILITY_NAME);
     record.SetFormName(PARAM_FORM_NAME);
     record.SetSpecificationId(PARAM_FORM_DIMENSION_VALUE);
     record.SetTemporaryFlag(false);
     Want want;
-    want.SetAction(EventFwk::CommonEventSupport::COMMON_EVENT_ABILITY_REMOVED);
-    want.SetParam(KEY_BUNDLE_NAME, bundle);
+    want.SetAction(EventFwk::CommonEventSupport::COMMON_EVENT_PACKAGE_REMOVED);
+    want.SetBundle(bundle);
     FormRecord realFormRecord = FormDataMgr::GetInstance().AllotFormRecord(record, callingUid);
     // Set database info
     FormDBInfo formDBInfo(formId, realFormRecord);
     std::vector<FormDBInfo> allFormInfo;
     FormDbCache::GetInstance().SaveFormInfo(formDBInfo);
-    // Set form host record 
+    // Set form host record
     FormItemInfo info;
     FormDataMgr::GetInstance().AllotFormHostRecord(info, token_, formId, callingUid);
     EventFwk::CommonEventData eventData;
@@ -207,7 +208,8 @@ HWTEST_F(FmsFormSysEventReceiverTest, OnReceiveEvent_001, TestSize.Level0)
     FormSysEventReceiver testCase;
     testCase.OnReceiveEvent(eventData);
     FormDbCache::GetInstance().GetAllFormInfo(allFormInfo);
-    EXPECT_EQ(ERR_APPEXECFWK_FORM_COMMON_CODE, FormDbCache::GetInstance().DeleteFormInfo(formId));
+    FormDBInfo tempFormDBInfo;
+    EXPECT_EQ(ERR_APPEXECFWK_FORM_NOT_EXIST_ID, FormDbCache::GetInstance().GetDBRecord(formId, tempFormDBInfo));
     FormDataMgr::GetInstance().DeleteFormRecord(formId);
     FormDbCache::GetInstance().DeleteFormInfo(formId);
     FormDataMgr::GetInstance().DeleteHostRecord(token_, formId);
@@ -261,16 +263,17 @@ HWTEST_F(FmsFormSysEventReceiverTest, OnReceiveEvent_003, TestSize.Level0)
     GTEST_LOG_(INFO) << "fms_form_sys_event_receiver_test_003 start";
 
     std::string bundle = FORM_PROVIDER_BUNDLE_NAME;
+    std::string bundle1 = FORM_PROVIDER_BUNDLE_NAME_1;
     int64_t formId = 0x0ffabcdf00000000;
     int callingUid {15};
     std::string actionType = EventFwk::CommonEventSupport::COMMON_EVENT_PACKAGE_DATA_CLEARED;
     EventFwk::CommonEventData eventData;
-    CreateEventData(bundle, formId, callingUid, actionType, eventData);
+    CreateEventData(bundle1, formId, callingUid, actionType, eventData);
     CreateFormRecordAndFormInfo(bundle, formId, callingUid);
 
     FormRecord tempFormRecord;
     ASSERT_TRUE(FormDataMgr::GetInstance().GetFormRecord(formId, tempFormRecord));
-    
+
     FormSysEventReceiver testCase;
     testCase.OnReceiveEvent(eventData);
 
@@ -299,7 +302,7 @@ HWTEST_F(FmsFormSysEventReceiverTest, OnReceiveEvent_004, TestSize.Level0)
     Want want;
     FormRecord tempFormRecord;
     eventData.SetWant(want);
-    want.SetParam(KEY_BUNDLE_NAME, bundle);
+    want.SetBundle(bundle);
     want.SetParam(KEY_UID, callingUid);
     FormSysEventReceiver testCase;
     testCase.OnReceiveEvent(eventData);
@@ -327,7 +330,7 @@ HWTEST_F(FmsFormSysEventReceiverTest, OnReceiveEvent_005, TestSize.Level0)
     std::string actionType = EventFwk::CommonEventSupport::COMMON_EVENT_PACKAGE_DATA_CLEARED + "ERROR";
     EventFwk::CommonEventData eventData;
     CreateEventData(bundle, formId, callingUid, actionType, eventData);
-    
+
     FormSysEventReceiver testCase;
     testCase.OnReceiveEvent(eventData);
 
@@ -353,7 +356,7 @@ HWTEST_F(FmsFormSysEventReceiverTest, OnReceiveEvent_006, TestSize.Level0)
     std::string actionType = EventFwk::CommonEventSupport::COMMON_EVENT_PACKAGE_DATA_CLEARED;
     EventFwk::CommonEventData eventData;
     CreateEventData(bundle, formId, callingUid, actionType, eventData);
-    
+
     // CreateFormRecordAndFormInfo
     FormItemInfo record;
     record.SetFormId(formId);
@@ -371,11 +374,11 @@ HWTEST_F(FmsFormSysEventReceiverTest, OnReceiveEvent_006, TestSize.Level0)
     FormDataMgr::GetInstance().GetFormRecord(formId, realFormRecord);
     FormDBInfo formDBInfo(formId, realFormRecord);
     FormDbCache::GetInstance().SaveFormInfo(formDBInfo);
-    FormDataMgr::GetInstance().AllotFormHostRecord(record, token_, formId, callingUid);  
+    FormDataMgr::GetInstance().AllotFormHostRecord(record, token_, formId, callingUid);
 
     FormRecord tempFormRecord;
     ASSERT_TRUE(FormDataMgr::GetInstance().GetFormRecord(formId, tempFormRecord));
-    
+
     FormSysEventReceiver testCase;
     testCase.OnReceiveEvent(eventData);
 
@@ -402,7 +405,7 @@ HWTEST_F(FmsFormSysEventReceiverTest, OnReceiveEvent_007, TestSize.Level0)
 
     std::string bundle = FORM_PROVIDER_BUNDLE_NAME;
     int64_t formId = 0x0ffabcdf00000000;
-    int callingUid {15};
+    int callingUid {0};
     std::string actionType = EventFwk::CommonEventSupport::COMMON_EVENT_ABILITY_UPDATED;
     EventFwk::CommonEventData eventData;
     CreateEventData(bundle, formId, callingUid, actionType, eventData);
@@ -410,7 +413,7 @@ HWTEST_F(FmsFormSysEventReceiverTest, OnReceiveEvent_007, TestSize.Level0)
 
     FormRecord tempFormRecord;
     ASSERT_TRUE(FormDataMgr::GetInstance().GetFormRecord(formId, tempFormRecord));
-    
+
     FormSysEventReceiver testCase;
     testCase.OnReceiveEvent(eventData);
 
@@ -457,11 +460,11 @@ HWTEST_F(FmsFormSysEventReceiverTest, OnReceiveEvent_008, TestSize.Level0)
     FormDataMgr::GetInstance().GetFormRecord(formId, realFormRecord);
     FormDBInfo formDBInfo(formId, realFormRecord);
     FormDbCache::GetInstance().SaveFormInfo(formDBInfo);
-    FormDataMgr::GetInstance().AllotFormHostRecord(record, token_, formId, callingUid);  
+    FormDataMgr::GetInstance().AllotFormHostRecord(record, token_, formId, callingUid);
 
     FormRecord tempFormRecord;
     ASSERT_TRUE(FormDataMgr::GetInstance().GetFormRecord(formId, tempFormRecord));
-    
+
     FormSysEventReceiver testCase;
     testCase.OnReceiveEvent(eventData);
 

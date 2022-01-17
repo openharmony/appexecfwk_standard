@@ -32,7 +32,7 @@ public:
 
     /**
      * @brief Get the error message content.
-     * 
+     *
      * @param errCode Error code.
      * @return Message content.
      */
@@ -41,7 +41,7 @@ public:
 private:
     /**
     * @brief Init error message map object.
-    * 
+    *
     */
     void InitErrorMessageMap();
 

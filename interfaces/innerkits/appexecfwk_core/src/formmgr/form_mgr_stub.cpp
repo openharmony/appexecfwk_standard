@@ -167,7 +167,7 @@ int32_t FormMgrStub::HandleReleaseForm(MessageParcel &data, MessageParcel &reply
         return ERR_APPEXECFWK_PARCEL_ERROR;
     }
     bool delCache = data.ReadBool();
-    
+
     int32_t result = ReleaseForm(formId, client, delCache);
     reply.WriteInt32(result);
     return result;
@@ -314,7 +314,7 @@ int32_t FormMgrStub::HandleDumpStorageFormInfos(MessageParcel &data, MessageParc
             return ERR_APPEXECFWK_PARCEL_ERROR;
         }
     }
-    
+
     return result;
 }
 /**

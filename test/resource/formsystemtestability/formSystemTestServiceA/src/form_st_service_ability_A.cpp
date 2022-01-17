@@ -242,7 +242,7 @@ bool FormStServiceAbilityA::PublishEvent(const std::string &eventName, const int
 sptr<IRemoteObject> FormStServiceAbilityA::OnConnect(const Want &want)
 {
     APP_LOGI("FormStServiceAbilityA::OnConnect");
-    
+
     sptr<FormProviderClient> formProviderClient = new (std::nothrow) FormProviderClient();
     std::shared_ptr<Ability> thisAbility = this->shared_from_this();
     formProviderClient->SetOwner(thisAbility);
@@ -293,7 +293,7 @@ FormProviderInfo FormStServiceAbilityA::OnCreate(const Want &want)
 {
     APP_LOGI("%{public}s start", __func__);
     FormProviderInfo formProviderInfo;
-    if(!want.HasParameter(Constants::PARAM_FORM_IDENTITY_KEY)) {
+    if (!want.HasParameter(Constants::PARAM_FORM_IDENTITY_KEY)) {
          APP_LOGE("%{public}s, formId not exist", __func__);
         return formProviderInfo;
     }

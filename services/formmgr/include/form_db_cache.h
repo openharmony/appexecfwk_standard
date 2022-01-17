@@ -64,9 +64,9 @@ public:
      * @brief Delete form data in DbCache and DB with formId.
      * @param formId form data Id.
      * @return Returns ERR_OK on success, others on failure.
-     */    
+     */
     ErrCode DeleteFormInfo(int64_t formId);
-    
+
     /**
      * @brief Get record from DB cache with formId
      * @param formId Form data Id
@@ -74,6 +74,7 @@ public:
      * @return Returns ERR_OK on success, others on failure.
      */
     ErrCode GetDBRecord(const int64_t formId, FormRecord &record) const;
+
     /**
      * @brief Get record from DB cache with formId
      * @param formId Form data Id
@@ -81,6 +82,7 @@ public:
      * @return Returns ERR_OK on success, others on failure.
      */
     ErrCode GetDBRecord(const int64_t formId, FormDBInfo &record) const;
+
     /**
      * @brief Use record save or update DB data and DB cache with formId
      * @param formId Form data Id
@@ -96,6 +98,7 @@ public:
      * @return Returns ERR_OK on success, others on failure.
      */
     ErrCode DeleteFormInfoByBundleName(const std::string &bundleName, std::vector<FormDBInfo> &removedDBForms);
+
     /**
      * @brief Get no host db record.
      * @param uid The caller uid.
@@ -104,7 +107,8 @@ public:
      * @return Returns ERR_OK on success, others on failure.
      */
     ErrCode GetNoHostDBForms(const int uid, std::map<FormIdKey, std::set<int64_t>> &noHostFormDBList,
-    std::map<int64_t, bool> &foundFormsMap);
+        std::map<int64_t, bool> &foundFormsMap);
+
     /**
      * @brief Get match count by bundleName and moduleName.
      * @param bundleName BundleName.
@@ -113,6 +117,10 @@ public:
      */
     int GetMatchCount(const std::string &bundleName, const std::string &moduleName);
 
+    /**
+     * @brief Get data storage.
+     * @return Returns data storage.
+     */
     std::shared_ptr<FormStorageMgr> GetDataStorage() const;
 private:
     std::shared_ptr<FormStorageMgr> dataStorage_;

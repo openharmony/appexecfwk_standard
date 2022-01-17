@@ -71,7 +71,7 @@ public:
 protected:
     sptr<MockFormHostClient> token_;
     std::shared_ptr<FormMgrService> formyMgrServ_ = DelayedSingleton<FormMgrService>::GetInstance();
-    
+
     sptr<BundleMgrService> mockBundleMgr_;
     sptr<MockAbilityMgrService> mockAbilityMgrServ_;
 };
@@ -90,10 +90,10 @@ void FmsFormMgrAddFormTest::SetUp()
     mockBundleMgr_ = new (std::nothrow) BundleMgrService();
     EXPECT_TRUE(mockBundleMgr_ != nullptr);
     FormBmsHelper::GetInstance().SetBundleManager(mockBundleMgr_);
-    
+
     mockAbilityMgrServ_ = new (std::nothrow) MockAbilityMgrService();
     FormAmsHelper::GetInstance().SetAbilityManager(mockAbilityMgrServ_);
- 
+
     // APP_LOGI("fms_form_mgr_client_test_001 FormMgrService started");
     token_ = new (std::nothrow) MockFormHostClient();
 
@@ -110,7 +110,7 @@ void FmsFormMgrAddFormTest::SetUp()
     permDef.descriptionId = 1;
     permList.emplace_back(permDef);
     Permission::PermissionKit::AddDefPermissions(permList);
-    Permission::PermissionKit::AddUserGrantedReqPermissions(FORM_PROVIDER_BUNDLE_NAME, 
+    Permission::PermissionKit::AddUserGrantedReqPermissions(FORM_PROVIDER_BUNDLE_NAME,
         {PERMISSION_NAME_REQUIRE_FORM}, 0);
     Permission::PermissionKit::GrantUserGrantedPermission(FORM_PROVIDER_BUNDLE_NAME, PERMISSION_NAME_REQUIRE_FORM, 0);
 }
@@ -130,7 +130,7 @@ void FmsFormMgrAddFormTest::TearDown()
 HWTEST_F(FmsFormMgrAddFormTest, AddForm_001, TestSize.Level0)
 {
     GTEST_LOG_(INFO) << "fms_form_mgr_add_form_test_001 start";
-    // No cache 
+    // No cache
     FormJsInfo formJsInfo;
     Want want;
     want.SetParam(Constants::PARAM_FORM_HOST_BUNDLENAME_KEY, FORM_HOST_BUNDLE_NAME);
@@ -140,7 +140,13 @@ HWTEST_F(FmsFormMgrAddFormTest, AddForm_001, TestSize.Level0)
     want.SetElementName(DEVICE_ID, FORM_PROVIDER_BUNDLE_NAME, FORM_PROVIDER_ABILITY_NAME);
     want.SetParam(Constants::PARAM_FORM_TEMPORARY_KEY, false);
     want.SetParam(Constants::ACQUIRE_TYPE, Constants::ACQUIRE_TYPE_CREATE_FORM);
+    // clear old data
+    FormDataMgr::GetInstance().ClearFormRecords();
+    std::vector<FormDBInfo> oldFormDBInfos;
+    FormDbCache::GetInstance().GetAllFormInfo(oldFormDBInfos);
+    FormDbCache::GetInstance().DeleteFormInfoByBundleName(FORM_PROVIDER_BUNDLE_NAME, oldFormDBInfos);
 
+    // add form
     EXPECT_EQ(ERR_OK, FormMgr::GetInstance().AddForm(0L, want, token_, formJsInfo));
     token_->Wait();
 
@@ -187,7 +193,7 @@ HWTEST_F(FmsFormMgrAddFormTest, AddForm_002, TestSize.Level0)
     FormItemInfo record1;
     record1.SetFormId(formId);
     record1.SetProviderBundleName(FORM_PROVIDER_BUNDLE_NAME);
-    record1.SetModuleName(PARAM_FORM_NAME);
+    record1.SetModuleName(PARAM_PROVIDER_MODULE_NAME);
     record1.SetAbilityName(FORM_PROVIDER_ABILITY_NAME);
     record1.SetFormName(PARAM_FORM_NAME);
     record1.SetSpecificationId(PARAM_FORM_DIMENSION_VALUE);
@@ -199,9 +205,8 @@ HWTEST_F(FmsFormMgrAddFormTest, AddForm_002, TestSize.Level0)
     // Set database info
     FormDBInfo formDBInfo(formId, retFormRec);
     FormDbCache::GetInstance().SaveFormInfo(formDBInfo);
-    // Set form host record 
-    FormItemInfo info;
-    FormDataMgr::GetInstance().AllotFormHostRecord(info, token_, formId, callingUid);
+    // Set form host record
+    FormDataMgr::GetInstance().AllotFormHostRecord(record1, token_, formId, callingUid);
 
     FormJsInfo formJsInfo;
     Want want;
@@ -268,7 +273,7 @@ HWTEST_F(FmsFormMgrAddFormTest, AddForm_003, TestSize.Level0)
     record1.formTempFlg = false;
     FormDBInfo formDBInfo(formId, record1);
     FormDbCache::GetInstance().SaveFormInfo(formDBInfo);
-    // Set form host record 
+    // Set form host record
     FormItemInfo info;
     FormDataMgr::GetInstance().AllotFormHostRecord(info, token_, formId, callingUid);
     FormJsInfo formJsInfo;
@@ -423,7 +428,7 @@ HWTEST_F(FmsFormMgrAddFormTest, AddForm_006, TestSize.Level0)
     FormDataMgr::GetInstance().DeleteFormRecord(formId);
     FormDbCache::GetInstance().DeleteFormInfo(formId);
     FormDataMgr::GetInstance().DeleteHostRecord(token_, formId);
-    
+
     GTEST_LOG_(INFO) << "fms_form_mgr_add_form_test_006 end";
 }
 /*
@@ -476,7 +481,7 @@ HWTEST_F(FmsFormMgrAddFormTest, AddForm_007, TestSize.Level0)
     FormDataMgr::GetInstance().DeleteFormRecord(formId);
     FormDbCache::GetInstance().DeleteFormInfo(formId);
     FormDataMgr::GetInstance().DeleteHostRecord(token_, formId);
-    
+
     for (tempCount = 0; tempCount<OHOS::AppExecFwk::Constants::MAX_TEMP_FORMS; tempCount++) {
     FormDataMgr::GetInstance().DeleteFormRecord(formId + tempCount);
     FormDbCache::GetInstance().DeleteFormInfo(formId + tempCount);
@@ -496,15 +501,20 @@ HWTEST_F(FmsFormMgrAddFormTest, AddForm_007, TestSize.Level0)
 HWTEST_F(FmsFormMgrAddFormTest, AddForm_008, TestSize.Level0)
 {
     GTEST_LOG_(INFO) << "fms_form_mgr_add_form_test_008 start";
+    // clear old data
     FormDataMgr::GetInstance().formRecords_.clear();
     FormDataMgr::GetInstance().tempForms_.clear();
+    std::vector<FormDBInfo> oldFormDBInfos;
+    FormDbCache::GetInstance().GetAllFormInfo(oldFormDBInfos);
+    FormDbCache::GetInstance().DeleteFormInfoByBundleName(FORM_PROVIDER_BUNDLE_NAME, oldFormDBInfos);
+
     int64_t formId = 0x0ab5bc5f00000000;
     int callingUid {0}, tempCount = 0;
     // Set cache info .
     FormItemInfo record1[Constants::MAX_FORMS+7];
     for (; tempCount<Constants::MAX_FORMS+7; tempCount++){
         record1[tempCount].SetFormId(formId+tempCount);
-        record1[tempCount].SetProviderBundleName(FORM_PROVIDER_ABILITY_NAME);
+        record1[tempCount].SetProviderBundleName(FORM_PROVIDER_BUNDLE_NAME);
         record1[tempCount].SetModuleName(PARAM_FORM_NAME);
         record1[tempCount].SetAbilityName(FORM_PROVIDER_ABILITY_NAME);
         record1[tempCount].SetFormName(PARAM_FORM_NAME);
@@ -530,13 +540,13 @@ HWTEST_F(FmsFormMgrAddFormTest, AddForm_008, TestSize.Level0)
     want.SetParam(Constants::ACQUIRE_TYPE, Constants::ACQUIRE_TYPE_CREATE_FORM);
 
     GTEST_LOG_(INFO) << "formId :"<<formId;
-    EXPECT_EQ(ERR_APPEXECFWK_FORM_MAX_SYSTEM_FORMS, FormMgr::GetInstance().AddForm(formId-1, want, token_, formJsInfo));
+    EXPECT_EQ(ERR_APPEXECFWK_FORM_MAX_SYSTEM_FORMS, FormMgr::GetInstance().AddForm(0, want, token_, formJsInfo));
     token_->Wait();
 
     FormDataMgr::GetInstance().DeleteFormRecord(formId);
     FormDbCache::GetInstance().DeleteFormInfo(formId);
     FormDataMgr::GetInstance().DeleteHostRecord(token_, formId);
-    
+
     for (tempCount = 0; tempCount<Constants::MAX_FORMS+7; tempCount++){
     FormDataMgr::GetInstance().DeleteFormRecord(formId + tempCount);
     FormDbCache::GetInstance().DeleteFormInfo(formId + tempCount);

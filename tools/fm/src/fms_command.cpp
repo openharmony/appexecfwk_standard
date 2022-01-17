@@ -69,7 +69,7 @@ ErrCode FormMgrShellCommand::CreateCommandMap()
 }
 /**
  * @brief Create message map.
- */  
+ */
 ErrCode FormMgrShellCommand::CreateMessageMap()
 {
     messageMap_ = {
@@ -100,7 +100,7 @@ ErrCode FormMgrShellCommand::CreateMessageMap()
 }
 /**
  * @brief Run help command.
- */ 
+ */
 ErrCode FormMgrShellCommand::RunAsHelpCommand()
 {
     resultReceiver_.append(FM_HELP_MSG);
@@ -115,7 +115,7 @@ ErrCode FormMgrShellCommand::RunAsQueryCommand()
     int32_t result = OHOS::ERR_OK;
     int32_t cmdFlag = COMMAND_QUERY_INVALID;
     int option = -1;
-    int counter = 0;    
+    int counter = 0;
     std::string bundleName = "";
     int64_t formId = 0;
 
@@ -144,20 +144,20 @@ ErrCode FormMgrShellCommand::RunAsQueryCommand()
             }
             break;
         }
-        
+
         if (option == '?') {
             result = HandleUnknownOption(optopt);
             break;
         }
 
         result = HandleNormalOption(option, bundleName, formId, cmdFlag);
-        // if(result == OHOS::ERR_OK) {
+        // if (result == OHOS::ERR_OK) {
         //     break;
         // }
     }
 
     if (result == OHOS::ERR_OK) {
-        result = ExecuteQuery(bundleName, formId, cmdFlag);        
+        result = ExecuteQuery(bundleName, formId, cmdFlag);
     } else {
         resultReceiver_.append(HELP_MSG_QUERY);
     }
@@ -170,7 +170,7 @@ ErrCode FormMgrShellCommand::RunAsQueryCommand()
  * @return Returns ERR_OK on success, others on failure.
  */
 int32_t FormMgrShellCommand::HandleUnknownOption(const char optopt)
-{   
+{
     int32_t result = OHOS::ERR_OK;
     switch (optopt) {
         case 'n':
@@ -239,7 +239,7 @@ int32_t FormMgrShellCommand::HandleNormalOption(const int option, std::string &b
         case 'n': {
             // 'fm query -n <bundle-name>'
             // 'fm query --bundle-name <bundle-name>'
-            if(optarg == nullptr) {
+            if (optarg == nullptr) {
                 resultReceiver_.append("error: option ");
                 resultReceiver_.append("'-n'");
                 resultReceiver_.append(" requires a value.\n");
@@ -253,7 +253,7 @@ int32_t FormMgrShellCommand::HandleNormalOption(const int option, std::string &b
         case 'i': {
             // 'fm query -i <form-id> '
             // 'fm query --form-id <form-id> '
-            if(optarg == nullptr) {
+            if (optarg == nullptr) {
                 resultReceiver_.append("error: option ");
                 resultReceiver_.append("'-i'");
                 resultReceiver_.append(" requires a value.\n");
@@ -323,9 +323,9 @@ int32_t FormMgrShellCommand::ExecuteQuery(const std::string &bundleName, const i
 int32_t FormMgrShellCommand::QueryStorageFormInfos()
 {
     APP_LOGI("%{public}s start", __func__);
-    
+
     int errCode = ConnectFms();
-    if(errCode != OHOS::ERR_OK) {
+    if (errCode != OHOS::ERR_OK) {
         return errCode;
     }
 
@@ -356,7 +356,7 @@ int32_t FormMgrShellCommand::QueryFormInfoByBundleName(const std::string& bundle
     APP_LOGI("%{public}s start, bundleName: %{public}s", __func__, bundleName.c_str());
 
     int errCode = ConnectFms();
-    if(errCode != OHOS::ERR_OK) {
+    if (errCode != OHOS::ERR_OK) {
         return errCode;
     }
 
@@ -393,7 +393,7 @@ int32_t FormMgrShellCommand::QueryFormInfoByFormId(const std::int64_t formId)
     APP_LOGI("%{public}s start, formId: %{public}" PRId64 "", __func__, formId);
 
     int errCode = ConnectFms();
-    if(errCode != OHOS::ERR_OK) {
+    if (errCode != OHOS::ERR_OK) {
         return errCode;
     }
 
@@ -468,7 +468,7 @@ int FormMgrShellCommand::SendTransactCmd(IFormMgr::Message code, MessageParcel &
     int32_t result = remoteObject_->SendRequest(static_cast<uint32_t>(code), data, reply, option);
     if (result != ERR_OK) {
         APP_LOGE("%{public}s, failed to SendRequest: %{public}d, cmd: %{public}d", __func__, result, code);
-        return result; 
+        return result;
     }
     return ERR_OK;
 }
@@ -478,7 +478,7 @@ int FormMgrShellCommand::SendTransactCmd(IFormMgr::Message code, MessageParcel &
  */
 int32_t FormMgrShellCommand::ConnectFms()
 {
-    if(remoteObject_ != nullptr) {
+    if (remoteObject_ != nullptr) {
         return OHOS::ERR_OK;
     }
     sptr<ISystemAbilityManager> systemManager = SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();

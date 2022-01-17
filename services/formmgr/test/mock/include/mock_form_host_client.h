@@ -82,7 +82,7 @@ public:
     virtual void OnUninstall(const std::vector<int64_t> &formIds) override;
 
 private:
- 
+
 private:
     Semaphore sem_;
     DISALLOW_COPY_AND_MOVE(MockFormHostClient);

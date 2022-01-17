@@ -49,7 +49,7 @@ public:
      * @param resultCode ERR_OK on success, others on failure.
      */
     virtual void OnAbilityDisconnectDone(const AppExecFwk::ElementName &element, int resultCode) override;
-    
+
     /**
      * @brief remote object died event.
      * @param remoteObject the remote object of service ability.
@@ -69,18 +69,18 @@ public:
     void SetConnectId(long connectId);
     /**
      * @brief Get the provider Key
-     * 
-     * @return The provider Key 
+     *
+     * @return The provider Key
      */
     std::string GetProviderKey();
     /**
      * @brief Set the Provider Key
-     * 
+     *
      * @param bundleName bundleName
      * @param abilityName abilityName
      */
     void SetProviderKey(const std::string &bundleName, const std::string &abilityName);
-    
+
 private:
     int64_t formId_ = 0;
     std::string deviceId_ = "";

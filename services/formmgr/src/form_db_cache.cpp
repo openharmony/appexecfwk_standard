@@ -79,7 +79,7 @@ ErrCode FormDbCache::SaveFormInfo(const FormDBInfo &formDBInfo)
     } else {
         formDBInfos_.emplace_back(formDBInfo);
         InnerFormInfo innerFormInfo(formDBInfo);
-        return dataStorage_->SaveStorageFormInfo(innerFormInfo);         
+        return dataStorage_->SaveStorageFormInfo(innerFormInfo);
     }
 }
 
@@ -105,7 +105,7 @@ ErrCode FormDbCache::SaveFormInfoNolock(const FormDBInfo &formDBInfo)
     } else {
         formDBInfos_.emplace_back(formDBInfo);
         InnerFormInfo innerFormInfo(formDBInfo);
-        return dataStorage_->SaveStorageFormInfo(innerFormInfo);         
+        return dataStorage_->SaveStorageFormInfo(innerFormInfo);
     }
 }
 
@@ -113,7 +113,7 @@ ErrCode FormDbCache::SaveFormInfoNolock(const FormDBInfo &formDBInfo)
  * @brief Delete form data in DbCache and DB with formId.
  * @param formId form data Id.
  * @return Returns ERR_OK on success, others on failure.
- */   
+ */
 ErrCode FormDbCache::DeleteFormInfo(int64_t formId)
 {
     std::lock_guard<std::mutex> lock(formDBInfosMutex_);
@@ -143,7 +143,7 @@ ErrCode FormDbCache::DeleteFormInfoByBundleName(const std::string &bundleName, s
     std::vector<FormDBInfo>::iterator itRecord;
     for (itRecord = formDBInfos_.begin(); itRecord != formDBInfos_.end(); ) {
         if (bundleName == itRecord->bundleName) {
-            int64_t formId = itRecord->formId;            
+            int64_t formId = itRecord->formId;
             if (dataStorage_->DeleteStorageFormInfo(std::to_string(formId)) == ERR_OK) {
                 removedDBForms.emplace_back(*itRecord);
                 itRecord = formDBInfos_.erase(itRecord);
@@ -186,7 +186,7 @@ ErrCode FormDbCache::GetDBRecord(const int64_t formId, FormRecord &record) const
             record.abilityName = dbInfo.abilityName;
             record.formUserUids = dbInfo.formUserUids;
             return ERR_OK;
-        }    
+        }
     }
     APP_LOGE("%{public}s, not find formId[%{public}" PRId64 "]", __func__, formId);
     return ERR_APPEXECFWK_FORM_NOT_EXIST_ID;
@@ -204,7 +204,7 @@ ErrCode FormDbCache::GetDBRecord(const int64_t formId, FormDBInfo &record) const
         if (dbInfo.formId == formId) {
             record = dbInfo;
             return ERR_OK;
-        }    
+        }
     }
     APP_LOGE("%{public}s, not find formId[%{public}" PRId64 "]", __func__, formId);
     return ERR_APPEXECFWK_FORM_NOT_EXIST_ID;
@@ -227,7 +227,7 @@ ErrCode FormDbCache::UpdateDBRecord(const int64_t formId, const FormRecord &reco
  * @param foundFormsMap Form Id list.
  * @return Returns ERR_OK on success, others on failure.
  */
-ErrCode FormDbCache::GetNoHostDBForms(const int uid, std::map<FormIdKey, 
+ErrCode FormDbCache::GetNoHostDBForms(const int uid, std::map<FormIdKey,
     std::set<int64_t>> &noHostFormDBList, std::map<int64_t, bool> &foundFormsMap)
 {
     std::lock_guard<std::mutex> lock(formDBInfosMutex_);

@@ -55,7 +55,7 @@ ErrCode FormProviderMgr::AcquireForm(const int64_t formId, const FormProviderInf
         APP_LOGE("%{public}s fail, not exist such form, formId:%{public}" PRId64 "", __func__, formId);
         return ERR_APPEXECFWK_FORM_NOT_EXIST_ID;
     }
-    
+
     FormHostRecord clientHost;
     bool isGetFormHostRecord = FormDataMgr::GetInstance().GetFormHostRecord(formId, clientHost);
     if (!isGetFormHostRecord) {
@@ -78,12 +78,12 @@ ErrCode FormProviderMgr::AcquireForm(const int64_t formId, const FormProviderInf
     formRecord.isInited = true;
     formRecord.needRefresh = false;
     FormDataMgr::GetInstance().SetFormCacheInited(formId, true);
-    
+
     if (clientHost.Contains(formId)) {
         formRecord.formProviderInfo = formProviderInfo;
         clientHost.OnAcquire(formId, formRecord);
     }
-    
+
     // we do not cache when data size is over 1k
     std::string jsonData = formProviderInfo.GetFormDataString(); // get json data
     APP_LOGD("%{public}s , jsonData is %{public}s.",  __func__, jsonData.c_str());
@@ -96,7 +96,7 @@ ErrCode FormProviderMgr::AcquireForm(const int64_t formId, const FormProviderInf
 
 /**
  * @brief Refresh form.
- * 
+ *
  * @param formId The form id.
  * @param want The want of the form to request.
  * @return Returns ERR_OK on success, others on failure.
@@ -113,7 +113,7 @@ ErrCode FormProviderMgr::RefreshForm(const int64_t formId, const Want &want)
 
     bool isTimerRefresh = want.GetBoolParam(Constants::KEY_IS_TIMER, false);
     Want newWant(want);
-    newWant.RemoveParam(Constants::KEY_IS_TIMER);    
+    newWant.RemoveParam(Constants::KEY_IS_TIMER);
 
     if (isTimerRefresh) {
         FormDataMgr::GetInstance().SetCountTimerRefresh(formId, true);
@@ -142,14 +142,14 @@ ErrCode FormProviderMgr::RefreshForm(const int64_t formId, const Want &want)
 
 /**
  * @brief Connect ams for refresh form
- * 
+ *
  * @param formId The form id.
  * @param record Form data.
  * @param want The want of the form.
  * @param isTimerRefresh The flag of timer refresh.
  * @return Returns ERR_OK on success, others on failure.
  */
-ErrCode FormProviderMgr::ConnectAmsForRefresh(const int64_t formId, 
+ErrCode FormProviderMgr::ConnectAmsForRefresh(const int64_t formId,
     const FormRecord &record, const Want &want, const bool isTimerRefresh)
 {
     APP_LOGD("%{public}s called, bundleName:%{public}s, abilityName:%{public}s.",
@@ -173,7 +173,7 @@ ErrCode FormProviderMgr::ConnectAmsForRefresh(const int64_t formId,
         APP_LOGE("%{public}s, ConnectServiceAbility failed.", __func__);
         return ERR_APPEXECFWK_FORM_BIND_PROVIDER_FAILED;
     }
-    
+
     if (record.isCountTimerRefresh) {
         IncreaseTimerRefreshCount(formId);
     }
@@ -201,7 +201,7 @@ ErrCode FormProviderMgr::NotifyProviderFormDelete(const int64_t formId, const Fo
 
     APP_LOGD("%{public}s, connectAbility,bundleName:%{public}s, abilityName:%{public}s",
         __func__, formRecord.bundleName.c_str(), formRecord.abilityName.c_str());
-    sptr<IAbilityConnection> formDeleteConnection = new FormDeleteConnection(formId, 
+    sptr<IAbilityConnection> formDeleteConnection = new FormDeleteConnection(formId,
         formRecord.bundleName, formRecord.abilityName);
     Want want;
     want.SetElementName(formRecord.bundleName, formRecord.abilityName);
@@ -235,7 +235,7 @@ ErrCode FormProviderMgr::NotifyProviderFormsBatchDelete(const std::string &bundl
         return ERR_APPEXECFWK_FORM_INVALID_PARAM;
     }
 
-    APP_LOGD("%{public}s, bundleName:%{public}s, abilityName:%{public}s",  
+    APP_LOGD("%{public}s, bundleName:%{public}s, abilityName:%{public}s",
         __func__, bundleName.c_str(), abilityName.c_str());
     sptr<IAbilityConnection> batchDeleteConnection = new FormBatchDeleteConnection(formIds, bundleName, abilityName);
     Want want;
@@ -274,7 +274,7 @@ ErrCode FormProviderMgr::UpdateForm(const int64_t formId, const FormProviderInfo
  * @param formProviderData provider form info.
  * @return Returns ERR_OK on success, others on failure.
  */
-ErrCode FormProviderMgr::UpdateForm(const int64_t formId, 
+ErrCode FormProviderMgr::UpdateForm(const int64_t formId,
     FormRecord &formRecord, const FormProviderData &formProviderData)
 {
     APP_LOGI("%{public}s start", __func__);
@@ -291,7 +291,7 @@ ErrCode FormProviderMgr::UpdateForm(const int64_t formId,
     formRecord.isInited = true;
     formRecord.needRefresh = false;
     FormDataMgr::GetInstance().SetFormCacheInited(formId, true);
-    
+
     // update form for host clients
     FormDataMgr::GetInstance().UpdateHostNeedRefresh(formId, true);
 
@@ -327,9 +327,9 @@ ErrCode FormProviderMgr::UpdateForm(const int64_t formId,
 int FormProviderMgr::MessageEvent(const int64_t formId, const FormRecord &record, const Want &want)
 {
     APP_LOGI("%{public}s called, formId:%{public}" PRId64 ".", __func__, formId);
-   
+
     bool screenOnFlag = PowerMgr::PowerMgrClient::GetInstance().IsScreenOn();
-    if (!screenOnFlag) {        
+    if (!screenOnFlag) {
         APP_LOGW("%{public}s fail, screen off now", __func__);
         return ERR_APPEXECFWK_FORM_COMMON_CODE;
     }
@@ -351,7 +351,7 @@ int FormProviderMgr::MessageEvent(const int64_t formId, const FormRecord &record
 
 /**
  * @brief Increase the timer refresh count.
- * 
+ *
  * @param formId The form id.
  */
 void FormProviderMgr::IncreaseTimerRefreshCount(const int64_t formId)

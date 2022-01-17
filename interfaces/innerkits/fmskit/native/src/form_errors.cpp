@@ -28,13 +28,13 @@ FormErrors::~FormErrors()
 
 /**
  * @brief Get the error message content.
- * 
+ *
  * @param errCode Error code.
  * @return Message content.
  */
 std::string FormErrors::GetErrorMessage(int errCode)
 {
-    if(errorMessageMap_.find(errCode) != errorMessageMap_.end()) {
+    if (errorMessageMap_.find(errCode) != errorMessageMap_.end()) {
         return errorMessageMap_[errCode];
     } else {
         return errorMessageMap_[ERR_APPEXECFWK_FORM_COMMON_CODE];
@@ -43,16 +43,16 @@ std::string FormErrors::GetErrorMessage(int errCode)
 
 /**
  * @brief Init error message map object.
- * 
+ *
  */
 void FormErrors::InitErrorMessageMap()
 {
-    errorMessageMap_ =  { //  error + message        
+    errorMessageMap_ =  { //  error + message
         {
             ERR_APPEXECFWK_FORM_COMMON_CODE, "some internal server error occurs.",
         },
         {
-            ERR_APPEXECFWK_FORM_PERMISSION_DENY, 
+            ERR_APPEXECFWK_FORM_PERMISSION_DENY,
             "check permission deny, need to request ohos.permission.REQUIRE_FORM.",
         },
         {
@@ -80,7 +80,7 @@ void FormErrors::InitErrorMessageMap()
             ERR_APPEXECFWK_FORM_EXCEED_INSTANCES_PER_FORM, "exceed max instances per form, limit is 32.",
         },
         {
-            ERR_APPEXECFWK_FORM_OPERATION_NOT_SELF, 
+            ERR_APPEXECFWK_FORM_OPERATION_NOT_SELF,
             "the form to be operated is not self-owned or has been deleted already.",
         },
         {

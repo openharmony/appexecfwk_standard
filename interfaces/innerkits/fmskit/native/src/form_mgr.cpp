@@ -47,9 +47,9 @@ FormMgr::~FormMgr()
  * @return Returns ERR_OK on success, others on failure.
  */
 int FormMgr::AddForm(
-    const int64_t formId, 
-    const Want &want, 
-    const sptr<IRemoteObject> &callerToken, 
+    const int64_t formId,
+    const Want &want,
+    const sptr<IRemoteObject> &callerToken,
     FormJsInfo &formInfo)
 {
     APP_LOGI("%{public}s called.", __func__);
@@ -76,7 +76,7 @@ int FormMgr::DeleteForm(const int64_t formId, const sptr<IRemoteObject> &callerT
     if (errCode != ERR_OK) {
         return errCode;
     }
-  
+
     return remoteProxy_->DeleteForm(formId, callerToken);
 }
 
@@ -132,7 +132,7 @@ int FormMgr::UpdateForm(const int64_t formId, const std::string &bundleName, con
 int FormMgr::RequestForm(const int64_t formId, const sptr<IRemoteObject> &callerToken, const Want &want)
 {
     APP_LOGI("%{public}s called.", __func__);
-    
+
     int errCode = Connect();
     if (errCode != ERR_OK) {
         return errCode;
@@ -149,8 +149,8 @@ int FormMgr::RequestForm(const int64_t formId, const sptr<IRemoteObject> &caller
  * @return Returns ERR_OK on success, others on failure.
  */
 int FormMgr::NotifyWhetherVisibleForms(
-    const std::vector<int64_t> &formIds, 
-    const sptr<IRemoteObject> &callerToken, 
+    const std::vector<int64_t> &formIds,
+    const sptr<IRemoteObject> &callerToken,
     const int32_t formVisibleType)
 {
     int errCode = Connect();
@@ -175,7 +175,7 @@ int FormMgr::CastTempForm(const int64_t formId, const sptr<IRemoteObject> &calle
     if (errCode != ERR_OK) {
         return errCode;
     }
-    
+
     return remoteProxy_->CastTempForm(formId, callerToken);
 }
 
@@ -190,7 +190,7 @@ int FormMgr::DumpStorageFormInfos(std::string &formInfos)
     if (errCode != ERR_OK) {
         return errCode;
     }
-    
+
     return remoteProxy_->DumpStorageFormInfos(formInfos);
 }
 /**
@@ -205,7 +205,7 @@ int FormMgr::DumpFormInfoByBundleName(const std::string bundleName, std::string 
     if (errCode != ERR_OK) {
         return errCode;
     }
-    
+
     return remoteProxy_->DumpFormInfoByBundleName(bundleName, formInfos);
 }
 /**
@@ -279,15 +279,15 @@ int FormMgr::SetNextRefreshTime(const int64_t formId, const int64_t nextTime)
  * @return Returns ERR_OK on success, others on failure.
  */
 int FormMgr::LifecycleUpdate(
-    const std::vector<int64_t> &formIds, 
-    const sptr<IRemoteObject> &callerToken, 
+    const std::vector<int64_t> &formIds,
+    const sptr<IRemoteObject> &callerToken,
     const int32_t updateType)
 {
     int errCode = Connect();
     if (errCode != ERR_OK) {
         return errCode;
     }
-  
+
     return remoteProxy_->LifecycleUpdate(formIds, callerToken, updateType);
 }
 /**
@@ -316,7 +316,7 @@ void FormMgr::SetRecoverStatus(int recoverStatus)
 
 /**
  * @brief Get the error message content.
- * 
+ *
  * @param errCode Error code.
  * @return Message content.
  */
@@ -327,7 +327,7 @@ std::string FormMgr::GetErrorMessage(int errCode)
 
 /**
  * @brief Register death callback.
- * 
+ *
  * @param deathCallback Death callback.
  */
 void FormMgr::RegisterDeathCallback(const std::shared_ptr<FormCallbackInterface> &formDeathCallback)
@@ -344,7 +344,7 @@ void FormMgr::RegisterDeathCallback(const std::shared_ptr<FormCallbackInterface>
 
 /**
  * @brief UnRegister death callback.
- * 
+ *
  * @param deathCallback Death callback.
  */
 void FormMgr::UnRegisterDeathCallback(const std::shared_ptr<FormCallbackInterface> &formDeathCallback)
@@ -459,7 +459,7 @@ ErrCode FormMgr::Connect()
     if (remoteProxy_ != nullptr && !resetFlag_) {
         return ERR_OK;
     }
-    
+
     sptr<ISystemAbilityManager> systemManager = SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
     if (systemManager == nullptr) {
         APP_LOGE("%{private}s:fail to get registry", __func__);

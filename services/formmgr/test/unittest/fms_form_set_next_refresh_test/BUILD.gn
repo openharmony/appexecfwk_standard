@@ -39,11 +39,14 @@ ohos_unittest("FmsFormSetNextRefreshTest") {
     "//foundation/appexecfwk/standard/services/formmgr/test/mock/include",
     "//base/security/permission/interfaces/innerkits/permission_standard/permissionsdk/main/cpp/include",
     "//foundation/appexecfwk/standard/interfaces/innerkits/fmskit/native/include/",
+    "//foundation/distributeddatamgr/distributeddatamgr/interfaces/innerkits/distributeddata/include",
   ]
 
   configs = [
     "${services_path}/formmgr/test:formmgr_test_config",
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core:formmgr_sdk_config",
+    "//foundation/aafwk/standard/services/abilitymgr:abilityms_config",
+    "${services_path}/bundlemgr/test:bundlemgr_test_config",
 
     #"${appexecfwk_path}/interfaces/innerkits/appexecfwk_core:bundlemgr_sdk_config",
     #"//foundation/appexecfwk/standard/services/formmgr:formmgr_config",
@@ -65,6 +68,7 @@ ohos_unittest("FmsFormSetNextRefreshTest") {
     #"${libs_path}/libeventhandler:libeventhandler_target",
     "//foundation/aafwk/standard/interfaces/innerkits/base:base",
     "//foundation/aafwk/standard/interfaces/innerkits/want:want",
+    "//foundation/distributeddatamgr/distributeddatamgr/interfaces/innerkits/distributeddata:distributeddata_inner",
     "//foundation/distributedschedule/dmsfwk/services/dtbschedmgr:distributedschedsvr",
     "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",

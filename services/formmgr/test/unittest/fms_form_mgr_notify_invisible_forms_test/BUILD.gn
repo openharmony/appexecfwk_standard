@@ -45,6 +45,7 @@ ohos_unittest("FmsFormMgrNotifyInvisibleFormsTest") {
     "//foundation/aafwk/standard/frameworks/kits/ability/native/include",
     "//foundation/appexecfwk/standard/kits/appkit/native/app/include",
     "//base/global/resmgr_standard/interfaces/innerkits/include",
+    "//foundation/distributeddatamgr/distributeddatamgr/interfaces/innerkits/distributeddata/include",
   ]
 
   configs = [

@@ -29,20 +29,20 @@ using Want = OHOS::AAFwk::Want;
  */
 class FormMsgEventConnection : public FormAbilityConnection {
 public:
-    FormMsgEventConnection(const int64_t formId, const Want &want, 
+    FormMsgEventConnection(const int64_t formId, const Want &want,
         const std::string &bundleName, const std::string &abilityName);
     virtual ~FormMsgEventConnection() = default;
 
     /**
      * @brief OnAbilityConnectDone, AbilityMs notify caller ability the result of connect.
-     * 
+     *
      * @param element service ability's ElementName.
      * @param remoteObject the session proxy of service ability.
      * @param resultCode ERR_OK on success, others on failure.
      */
     void OnAbilityConnectDone(
         const AppExecFwk::ElementName &element, const sptr<IRemoteObject> &remoteObject, int resultCode) override;
-    
+
 private:
     int64_t formId_;
     Want want_;

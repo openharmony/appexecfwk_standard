@@ -42,21 +42,21 @@ FormProviderData::FormProviderData()
  * the {@code nlohmann::json} type specified.
  * @param jsonData Indicates the data to be carried in the new {@code FormProviderData} instance,
  *             in {@code nlohmann::json} format.
- */    
+ */
 FormProviderData::FormProviderData(nlohmann::json &jsonData)
 {
     jsonFormProviderData_ = jsonData;
 }
 
 /**
- * @brief A constructor used to create a {@code FormProviderData} instance with data of the {@code String} type 
+ * @brief A constructor used to create a {@code FormProviderData} instance with data of the {@code String} type
  * specified.
- * @param jsonDataString Indicates the data to be carried in the new {@code FormProviderData} instance, 
+ * @param jsonDataString Indicates the data to be carried in the new {@code FormProviderData} instance,
  * in JSON string format.
  */
 FormProviderData::FormProviderData(std::string jsonDataString)
 {
-    if(jsonDataString.empty()) {
+    if (jsonDataString.empty()) {
         jsonDataString = JSON_EMPTY_STRING;
     }
     jsonFormProviderData_ = nlohmann::json::parse(jsonDataString);
@@ -65,7 +65,7 @@ FormProviderData::FormProviderData(std::string jsonDataString)
 /**
  * @brief Updates form data in this {@code FormProviderData} object.
  * @param jsonData Indicates the new data to use, in {@code ZSONObject} format.
- */  
+ */
 void FormProviderData::UpdateData(nlohmann::json &jsonData)
 {
     jsonFormProviderData_ = jsonData;
@@ -81,7 +81,7 @@ nlohmann::json FormProviderData::GetData() const
 /**
  * @brief Obtains the form data stored in this {@code FormProviderData} object.
  * @return Returns json string format
- */  
+ */
 std::string FormProviderData::GetDataString() const
 {
     APP_LOGI("%{public}s called", __func__);
@@ -94,7 +94,7 @@ std::string FormProviderData::GetDataString() const
  * @brief Adds an image to this {@code FormProviderData} instance.
  * @param picName Indicates the name of the image to add.
  * @param data Indicates the binary data of the image content.
- */ 
+ */
 void FormProviderData::AddImageData(std::string picName, char *data)
 {
     if ((picName.length() == 0) || (sizeof(data) == 0)) {
@@ -119,11 +119,11 @@ void FormProviderData::RemoveImageData(std::string picName)
 /**
  * @brief Set the form data stored from string string.
  * @param Returns string string.
- */  
+ */
 void FormProviderData::SetDataString(std::string &jsonDataString)
 {
     APP_LOGI("%{public}s called", __func__);
-    if(jsonDataString.empty()) {
+    if (jsonDataString.empty()) {
         jsonDataString = JSON_EMPTY_STRING;
     }
     jsonFormProviderData_ = nlohmann::json::parse(jsonDataString);
@@ -131,7 +131,7 @@ void FormProviderData::SetDataString(std::string &jsonDataString)
 /**
  * @brief Merge new data to FormProviderData.
  * @param addJsonData data to merge to FormProviderData
- */   
+ */
 void FormProviderData::MergeData(nlohmann::json &addJsonData)
 {
     APP_LOGI("%{public}s called", __func__);
@@ -152,7 +152,7 @@ void FormProviderData::MergeData(nlohmann::json &addJsonData)
 /**
  * @brief Obtains the imageDataMap stored in this {@code FormProviderData} object.
  * @return Returns the map that contains shared image data.
- */  
+ */
 std::map<std::string, std::pair<sptr<Ashmem>, int32_t>> FormProviderData::GetImageDataMap()
 {
     return imageDataMap_;
@@ -179,7 +179,7 @@ void FormProviderData::SetImageDataState(int32_t imageDataState)
 /**
  * @brief Updates imageDataMap in this {@code FormProviderData} object.
  * @param imageDataMap Indicates the imageDataMap to update.
- */ 
+ */
 void FormProviderData::SetImageDataMap(std::map<std::string, std::pair<sptr<Ashmem>, int32_t>> imageDataMap)
 {
     imageDataMap_ = imageDataMap;
@@ -207,7 +207,7 @@ bool FormProviderData::ReadFromParcel(Parcel &parcel)
                 }
 
                 int32_t len = parcel.ReadInt32();
-                std::pair<sptr<Ashmem>, int32_t> imageDataRecord = std::make_pair(ashmem, len);                
+                std::pair<sptr<Ashmem>, int32_t> imageDataRecord = std::make_pair(ashmem, len);
                 imageDataMap_.emplace(Str16ToStr8(parcel.ReadString16()), imageDataRecord);
             }
             break;
@@ -226,7 +226,7 @@ bool FormProviderData::ReadFromParcel(Parcel &parcel)
  * @brief Marshals this {@code FormProviderData} object into a {@link ohos.utils.Parcel} object.
  * @param parcel Indicates the {@code Parcel} object for marshalling.
  * @return Returns {@code true} if the marshalling is successful; returns {@code false} otherwise.
- */ 
+ */
 bool FormProviderData::Marshalling(Parcel &parcel) const
 {
     APP_LOGI("%{public}s called, jsonFormProviderData_: %{public}s", __func__, jsonFormProviderData_.dump().c_str());

@@ -40,6 +40,7 @@ ohos_unittest("FmsFormMgrMessageEventTest") {
     "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_core/include/formmgr/",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy/include/",
     "//foundation/distributedschedule/samgr/adapter/interfaces/innerkits/include/",
+    "//foundation/distributeddatamgr/distributeddatamgr/interfaces/innerkits/distributeddata/include",
   ]
 
   configs = [

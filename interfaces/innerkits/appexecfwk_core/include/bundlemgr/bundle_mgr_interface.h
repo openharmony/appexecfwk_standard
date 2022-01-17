@@ -600,7 +600,7 @@ public:
      * @return Returns true if bundle name in the allow list successfully; returns false otherwise.
      */
     virtual bool CheckBundleNameInAllowList(const std::string &bundleName) = 0;
-	/**
+    /**
      * @brief Obtains the interface used to create or delete user.
      * @return Returns a pointer to IBundleUserMgr class if exist; returns nullptr otherwise.
      */

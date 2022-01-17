@@ -40,9 +40,11 @@ ohos_unittest("FmsFormSysEventReceiverTest") {
     "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_core/include/formmgr/",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy/include/",
     "//foundation/distributedschedule/samgr/adapter/interfaces/innerkits/include/",
+    "//foundation/distributeddatamgr/distributeddatamgr/interfaces/innerkits/distributeddata/include",
   ]
 
   configs = [
+    "${services_path}/bundlemgr/test:bundlemgr_test_config",
     "${services_path}/formmgr/test:formmgr_test_config",
     "//foundation/aafwk/standard/services/abilitymgr:abilityms_config",
 
@@ -68,6 +70,7 @@ ohos_unittest("FmsFormSysEventReceiverTest") {
 
     #"${services_path}/bundlemgr:bms_target",
     "//foundation/aafwk/standard/services/abilitymgr:abilityms_target",
+    "//foundation/distributeddatamgr/distributeddatamgr/interfaces/innerkits/distributeddata:distributeddata_inner",
     "//foundation/distributedschedule/dmsfwk/services/dtbschedmgr:distributedschedsvr",
     "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",

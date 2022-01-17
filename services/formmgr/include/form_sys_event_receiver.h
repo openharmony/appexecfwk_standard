@@ -37,18 +37,18 @@ public:
     /**
      * @brief System common event receiver.
      * @param eventData Common event data.
-     */ 
+     */
     virtual void OnReceiveEvent(const EventFwk::CommonEventData &eventData) override;
 private:
     void HandleProviderUpdated(const std::string &bundleName);
-    bool ProviderFormUpdated(const int64_t formId, const FormRecord &formRecord, 
+    bool ProviderFormUpdated(const int64_t formId, const FormRecord &formRecord,
     const std::vector<FormInfo> &targetForms);
     void HandleProviderRemoved(const std::string &bundleName);
     void HandleBundleDataCleared(const std::string &bundleName, const int uid);
     void HandleFormHostDataCleared(const int uid);
     void ClearFormDBRecordData(const int uid, std::map<int64_t, bool> &removedFormsMap);
     void ClearTempFormRecordData(const int uid, std::map<int64_t, bool> &removedFormsMap);
-    void BatchDeleteNoHostDBForms(const int uid, std::map<FormIdKey, std::set<int64_t>> &noHostFormDbMap, 
+    void BatchDeleteNoHostDBForms(const int uid, std::map<FormIdKey, std::set<int64_t>> &noHostFormDbMap,
     std::map<int64_t, bool> &removedFormsMap);
     /**
      * @brief Delete no host temp forms.
@@ -56,11 +56,11 @@ private:
      * @param noHostTempFormsMap no host temp forms.
      * @param foundFormsMap Form Id list.
      */
-    void BatchDeleteNoHostTempForms(const int uid, std::map<FormIdKey, std::set<int64_t>> &noHostTempFormsMap, 
+    void BatchDeleteNoHostTempForms(const int uid, std::map<FormIdKey, std::set<int64_t>> &noHostTempFormsMap,
     std::map<int64_t, bool> &foundFormsMap);
     void ReCreateForm(const int64_t formId);
     bool IsSameForm(const FormRecord &record, const FormInfo &formInfo);
-    void GetTimerCfg(const bool updateEnabled, const int updateDuration, const std::string &configUpdateAt, 
+    void GetTimerCfg(const bool updateEnabled, const int updateDuration, const std::string &configUpdateAt,
     FormTimerCfg &cfg);
     void HandleTimerUpdate(const int64_t formId, const FormRecord &record, const FormTimerCfg &timerCfg);
 };

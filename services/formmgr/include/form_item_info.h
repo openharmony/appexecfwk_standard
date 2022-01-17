@@ -95,7 +95,7 @@ public:
     /**
      * @brief Set value of formName_.
      * @param formName Form name.
-     */   
+     */
     void SetFormName(const std::string &formName);
     /**
      * @brief Get jsComponentName_.
@@ -105,7 +105,7 @@ public:
     /**
      * @brief Set value of jsComponentName_.
      * @param jsComponentName Js component name.
-     */   
+     */
     void SetJsComponentName(const std::string &jsComponentName);
     /**
      * @brief Get abilityModuleName_.
@@ -115,7 +115,7 @@ public:
     /**
      * @brief Set value of abilityModuleName_.
      * @param abilityModuleName ability module name_.
-     */  
+     */
     void SetAbilityModuleName(const std::string &abilityModuleName);
     /**
      * @brief Get specificationId_.
@@ -125,7 +125,7 @@ public:
     /**
      * @brief Set value of specificationId_.
      * @param specificationId Specification id.
-     */ 
+     */
     void SetSpecificationId(const int specificationId);
 
     /**
@@ -136,7 +136,7 @@ public:
     /**
      * @brief Set value of updateFlag_.
      * @param IsEnableUpdateFlag Enable update flag or not.
-     */ 
+     */
     void SetEnableUpdateFlag(bool IsEnableUpdateFlag);
     /**
      * @brief Get updateDuration_.
@@ -146,7 +146,7 @@ public:
     /**
      * @brief Set value of updateDuration_.
      * @param updateDuration Update duration.
-     */ 
+     */
     void SetUpdateDuration(int updateDuration);
     /**
      * @brief Get scheduledUpdateTime_.
@@ -156,7 +156,7 @@ public:
     /**
      * @brief Set value of scheduledUpdateTime_.
      * @param scheduledUpdateTime Scheduled update time.
-     */ 
+     */
     void SetScheduledUpdateTime(const std::string &scheduledUpdateTime);
     /**
      * @brief Get hapSourceDirs_.
@@ -182,7 +182,7 @@ public:
     /**
      * @brief Set value of temporaryFlag_.
      * @param temporaryFlag Temporary flag.
-     */ 
+     */
     void SetTemporaryFlag(bool temporaryFlag);
     /**
      * @brief Obtains the hap source by ability module name.
@@ -194,7 +194,7 @@ public:
      * @brief Add module info.
      * @param moduleName Module name.
      * @param moduleSourceDir Module source dir.
-     */ 
+     */
     void AddModuleInfo(const std::string &moduleName, const std::string &moduleSourceDir);
     /**
      * @brief Check if item valid or not.
