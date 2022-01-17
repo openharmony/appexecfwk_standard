@@ -209,5 +209,15 @@ int AmsMgrScheduler::CompelVerifyPermission(const std::string &permission, int p
     }
     return amsMgrServiceInner_->CompelVerifyPermission(permission, pid, uid, message);
 }
+
+void AmsMgrScheduler::GetRunningProcessInfoByToken(
+    const sptr<IRemoteObject> &token, AppExecFwk::RunningProcessInfo &info)
+{
+    if (!IsReady()) {
+        return;
+    }
+
+    amsMgrServiceInner_->GetRunningProcessInfoByToken(token, info);
+}
 }  // namespace AppExecFwk
 }  // namespace OHOS

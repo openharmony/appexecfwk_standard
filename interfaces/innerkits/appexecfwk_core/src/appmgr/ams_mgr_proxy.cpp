@@ -395,5 +395,40 @@ int AmsMgrProxy::CompelVerifyPermission(const std::string &permission, int pid, 
     message = Str16ToStr8(reply.ReadString16());
     return reply.ReadInt32();
 }
+
+void AmsMgrProxy::GetRunningProcessInfoByToken(
+    const sptr<IRemoteObject> &token, AppExecFwk::RunningProcessInfo &info)
+{
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option(MessageOption::TF_SYNC);
+    if (!WriteInterfaceToken(data)) {
+        return;
+    }
+
+    if (!data.WriteParcelable(token.GetRefPtr())) {
+        return;
+    }
+
+    auto remote = Remote();
+    if (remote == nullptr) {
+        APP_LOGE("Remote() is NULL");
+        return;
+    }
+    auto ret = remote->SendRequest(
+        static_cast<uint32_t>(IAmsMgr::Message::GET_RUNNING_PROCESS_INFO_BY_TOKEN), data, reply, option);
+    if (ret != NO_ERROR) {
+        APP_LOGW("SendRequest is failed, error code: %{public}d", ret);
+        return;
+    }
+
+    std::unique_ptr<AppExecFwk::RunningProcessInfo> processInfo(reply.ReadParcelable<AppExecFwk::RunningProcessInfo>());
+    if (processInfo == nullptr) {
+        APP_LOGE("recv process info faild");
+        return;
+    }
+
+    info = *processInfo;
+}
 }  // namespace AppExecFwk
 }  // namespace OHOS

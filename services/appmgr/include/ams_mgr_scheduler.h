@@ -157,6 +157,9 @@ public:
      */
     virtual int CompelVerifyPermission(const std::string &permission, int pid, int uid, std::string &message) override;
 
+    virtual void GetRunningProcessInfoByToken(
+        const sptr<IRemoteObject> &token, AppExecFwk::RunningProcessInfo &info) override;
+
 private:
     /**
      * @brief Judge whether the application service is ready.

@@ -70,10 +70,17 @@ public:
         return (me != nullptr) ? me->OnGetForegroundApplications(*engine, *info) : nullptr;
     }
 
+<<<<<<< HEAD
+    static NativeValue* GetProcessRunningInfos(NativeEngine* engine, NativeCallbackInfo* info)
+    {
+        JsAppManager* me = CheckParamsAndGetThis<JsAppManager>(engine, info);
+        return (me != nullptr) ? me->OnGetProcessRunningInfos(*engine, *info) : nullptr;
+=======
     static NativeValue* IsUserAStabilityTest(NativeEngine* engine, NativeCallbackInfo* info)
     {
         JsAppManager* me = CheckParamsAndGetThis<JsAppManager>(engine, info);
         return (me != nullptr) ? me->OnIsUserAStabilityTest(*engine, *info) : nullptr;
+>>>>>>> dev
     }
 
 private:
@@ -210,6 +217,23 @@ private:
         return result;
     }
 
+<<<<<<< HEAD
+    NativeValue* OnGetProcessRunningInfos(NativeEngine &engine, NativeCallbackInfo &info)
+    {
+        AsyncTask::CompleteCallback complete =
+            [appManager = appManager_](
+                NativeEngine &engine, AsyncTask &task, int32_t status) {
+                std::vector<AppExecFwk::RunningProcessInfo> infos;
+                auto errcode = appManager->GetAllRunningProcesses(infos);
+                if (errcode == 0) {
+                    task.Resolve(engine, CreateJsProcessRunningInfoArray(engine, infos));
+                } else {
+                    task.Reject(engine, CreateJsError(engine, errcode, "Get mission infos failed."));
+                }
+            };
+
+        NativeValue* lastParam = (info.argc == 0) ? nullptr : info.argv[0];
+=======
     NativeValue* OnIsUserAStabilityTest(NativeEngine& engine, NativeCallbackInfo& info)
     {
         // only support 0 or 1 params
@@ -231,6 +255,7 @@ private:
             };
 
         NativeValue* lastParam = (info.argc == ARGC_ZERO) ? nullptr : info.argv[INDEX_ZERO];
+>>>>>>> dev
         NativeValue* result = nullptr;
         AsyncTask::Schedule(
             engine, CreateAsyncTaskWithLastParam(engine, lastParam, nullptr, std::move(complete), &result));
@@ -285,8 +310,12 @@ NativeValue* JsAppManagerInit(NativeEngine* engine, NativeValue* exportObj)
         JsAppManager::UnregisterApplicationStateObserver);
     BindNativeFunction(*engine, *object, "getForegroundApplications",
         JsAppManager::GetForegroundApplications);
+<<<<<<< HEAD
+    BindNativeFunction(*engine, *object, "getProcessRunningInfos", JsAppManager::GetProcessRunningInfos);
+=======
     BindNativeFunction(*engine, *object, "isUserAStabilityTest",
         JsAppManager::IsUserAStabilityTest);
+>>>>>>> dev
     HILOG_INFO("JsAppManagerInit end");
     return engine->CreateUndefined();
 }
