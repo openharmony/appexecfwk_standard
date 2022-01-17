@@ -76,6 +76,7 @@ const char WILDCARD = '*';
 const std::string TYPE_WILDCARD = "*/*";
 const std::string INNER_BUNDLE_USER_INFOS = "innerBundleUserInfos";
 const std::string MODULE_PROCESS = "process";
+const std::string MODULE_SRC_ENTRANCE = "srcEntrance";
 const std::string MODULE_DEVICE_TYPES = "deviceTypes";
 const std::string MODULE_VIRTUAL_MACHINE = "virtualMachine";
 const std::string MODULE_UI_SYNTAX = "uiSyntax";
@@ -396,6 +397,7 @@ void to_json(nlohmann::json &jsonObject, const InnerModuleInfo &info)
         {MODULE_MAIN_ABILITY, info.mainAbility},
         {MODULE_SRC_PATH, info.srcPath},
         {MODULE_PROCESS, info.process},
+        {MODULE_SRC_ENTRANCE, info.srcEntrance},
         {MODULE_DEVICE_TYPES, info.deviceTypes},
         {MODULE_VIRTUAL_MACHINE, info.virtualMachine},
         {MODULE_UI_SYNTAX, info.uiSyntax},
@@ -648,6 +650,14 @@ void from_json(const nlohmann::json &jsonObject, InnerModuleInfo &info)
         jsonObjectEnd,
         MODULE_PROCESS,
         info.process,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        MODULE_SRC_ENTRANCE,
+        info.srcEntrance,
         JsonType::STRING,
         false,
         parseResult,
@@ -1463,6 +1473,8 @@ std::optional<HapModuleInfo> InnerBundleInfo::FindHapModuleInfo(const std::strin
     hapInfo.metadata = it->second.metadata;
     hapInfo.resourcePath = it->second.moduleResPath;
     hapInfo.isStageBasedModel = it->second.isStageBasedModel;
+    hapInfo.bundleName = baseApplicationInfo_.bundleName;
+    hapInfo.srcEntrance = it->second.srcEntrance;
     hapInfo.mainElementName = it->second.mainAbility;
 
     bool first = false;

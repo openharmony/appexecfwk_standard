@@ -27,6 +27,7 @@ namespace ProfileReader {
 const std::string PROFILE_KEY_NAME = "name";
 const std::string PROFILE_KEY_ORIGINAL_NAME = "originalName";
 const std::string PROFILE_KEY_LABEL = "label";
+const std::string PROFILE_KEY_ICON_ID = "iconId";
 const std::string PROFILE_KEY_LABEL_ID = "labelId";
 const std::string PROFILE_KEY_DESCRIPTION = "description";
 const std::string PROFILE_KEY_DESCRIPTION_ID = "descriptionId";
