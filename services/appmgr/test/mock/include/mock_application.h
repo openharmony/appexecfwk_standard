@@ -34,7 +34,7 @@ public:
     MOCK_METHOD1(ScheduleProfileChanged, void(const Profile &));
     MOCK_METHOD1(ScheduleConfigurationUpdated, void(const Configuration &));
     MOCK_METHOD0(ScheduleProcessSecurityExit, void());
-    MOCK_METHOD1(ScheduleAbilityStageInfo, void(const HapModuleInfo &));
+    MOCK_METHOD1(ScheduleAbilityStage, void(const HapModuleInfo &));
 
     void Post()
     {

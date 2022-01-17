@@ -122,7 +122,7 @@ public:
         return abilityLaunchTime;
     }
 
-    void ScheduleAbilityStageInfo(const HapModuleInfo &) override
+    void ScheduleAbilityStage(const HapModuleInfo &) override
     {}
 
     void Reset() override
