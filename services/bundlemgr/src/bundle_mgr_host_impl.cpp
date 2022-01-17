@@ -321,7 +321,7 @@ bool BundleMgrHostImpl::GetBundleArchiveInfo(
         APP_LOGE("parse bundle info failed, error: %{public}d", ret);
         return false;
     }
-    info.GetBundleInfo(flags, bundleInfo);
+    info.GetBundleInfo(flags, bundleInfo, Constants::NOT_EXIST_USERID);
     return true;
 }
 
