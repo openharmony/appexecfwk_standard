@@ -21,6 +21,11 @@ config("tools_bm_config") {
     "${kits_path}/appkit/napi/bundlemgr",
     "//utils/system/safwk/native/include",
   ]
+
+  defines = [
+    "APP_LOG_TAG = \"BundleTool\"",
+    "LOG_DOMAIN = 0xD001120",
+  ]
 }
 
 ohos_source_set("tools_bm_source_set") {
