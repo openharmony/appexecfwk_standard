@@ -417,6 +417,10 @@ bool BundleDataMgr::ExplicitQueryAbilityInfo(const std::string &bundleName, cons
         APP_LOGE("ability not found");
         return false;
     }
+    if ((static_cast<uint32_t>(flags) & GET_ABILITY_INFO_SYSTEMAPP_ONLY) == GET_ABILITY_INFO_SYSTEMAPP_ONLY &&
+        !innerBundleInfo.IsSystemApp()) {
+        return false;
+    }
     if (!(static_cast<uint32_t>(flags) & GET_ABILITY_INFO_WITH_DISABLE)) {
         if (!innerBundleInfo.IsAbilityEnabled((*ability), GetUserId(userId))) {
             APP_LOGE("ability:%{public}s is disabled", ability->name.c_str());
@@ -437,7 +441,6 @@ bool BundleDataMgr::ExplicitQueryAbilityInfo(const std::string &bundleName, cons
     }
     return true;
 }
-
 
 bool BundleDataMgr::QueryAbilityInfosForClone(const Want &want, std::vector<AbilityInfo> &abilityInfo)
 {
