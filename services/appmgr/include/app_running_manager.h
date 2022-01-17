@@ -28,6 +28,7 @@
 #include "application_info.h"
 #include "app_state_data.h"
 #include "record_query_result.h"
+#include "running_process_info.h"
 #include "bundle_info.h"
 
 namespace OHOS {
@@ -134,6 +135,9 @@ public:
     void PrepareTerminate(const sptr<IRemoteObject> &token);
 
     std::shared_ptr<AppRunningRecord> GetTerminatingAppRunningRecord(const sptr<IRemoteObject> &abilityToken);
+
+    void GetRunningProcessInfoByToken(const sptr<IRemoteObject> &token, AppExecFwk::RunningProcessInfo &info);
+
     void ClipStringContent(const std::regex &re, const std::string &sorce, std::string &afferCutStr);
 private:
     std::shared_ptr<AbilityRunningRecord> GetAbilityRunningRecord(const int64_t eventId);

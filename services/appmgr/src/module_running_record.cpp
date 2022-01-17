@@ -290,6 +290,11 @@ ModuleRecordState ModuleRunningRecord::GetModuleRecordState()
     return owenState_;
 }
 
+void ModuleRunningRecord::SetModuleRecordState(const ModuleRecordState &state)
+{
+    owenState_ = state;
+}
+
 void ModuleRunningRecord::GetHapModuleInfo(HapModuleInfo &info)
 {
     info = owenInfo_;

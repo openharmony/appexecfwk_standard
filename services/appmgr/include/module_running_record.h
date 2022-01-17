@@ -171,6 +171,8 @@ public:
 
     ModuleRecordState GetModuleRecordState();
 
+    void SetModuleRecordState(const ModuleRecordState &state);
+
     void GetHapModuleInfo(HapModuleInfo &info);
 
     void SetApplicationClient(std::shared_ptr<AppLifeCycleDeal> &appLifeCycleDeal);

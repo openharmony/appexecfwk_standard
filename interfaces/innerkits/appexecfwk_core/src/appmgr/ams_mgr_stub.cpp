@@ -56,6 +56,8 @@ AmsMgrStub::AmsMgrStub()
         &AmsMgrStub::HandlePrepareTerminate;
     memberFuncMap_[static_cast<uint32_t>(IAmsMgr::Message::KILL_APPLICATION_BYUID)] =
         &AmsMgrStub::HandleKillApplicationByUid;
+    memberFuncMap_[static_cast<uint32_t>(IAmsMgr::Message::GET_RUNNING_PROCESS_INFO_BY_TOKEN)] =
+        &AmsMgrStub::HandleGetRunningProcessInfoByToken;
 }
 
 AmsMgrStub::~AmsMgrStub()
@@ -225,5 +227,17 @@ int32_t AmsMgrStub::HandlePrepareTerminate(MessageParcel &data, MessageParcel &r
 
 void AmsMgrStub::UpdateExtensionState(const sptr<IRemoteObject> &token, const ExtensionState state)
 {}
+
+int32_t AmsMgrStub::HandleGetRunningProcessInfoByToken(MessageParcel &data, MessageParcel &reply)
+{
+    RunningProcessInfo processInfo;
+    auto token = data.ReadParcelable<IRemoteObject>();
+    GetRunningProcessInfoByToken(token, processInfo);
+    if (reply.WriteParcelable(&processInfo)) {
+        APP_LOGE("process info write failed.");
+        return ERR_INVALID_VALUE;
+    }
+    return NO_ERROR;
+}
 }  // namespace AppExecFwk
 }  // namespace OHOS

@@ -52,6 +52,7 @@ struct RunningProcessInfo : public Parcelable {
     std::int32_t pid_;
     std::int32_t uid_;
     AppProcessState state_;
+    std::vector<std::string> bundleNames;
 
     bool ReadFromParcel(Parcel &parcel);
     virtual bool Marshalling(Parcel &parcel) const override;

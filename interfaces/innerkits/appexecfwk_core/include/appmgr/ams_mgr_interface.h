@@ -23,6 +23,7 @@
 #include "application_info.h"
 #include "app_record_id.h"
 #include "iapp_state_callback.h"
+#include "running_process_info.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -148,6 +149,9 @@ public:
      */
     virtual int CompelVerifyPermission(const std::string &permission, int pid, int uid, std::string &message) = 0;
 
+    virtual void GetRunningProcessInfoByToken(
+        const sptr<IRemoteObject> &token, OHOS::AppExecFwk::RunningProcessInfo &info) = 0;
+
     enum class Message {
         LOAD_ABILITY = 0,
         TERMINATE_ABILITY,
@@ -163,6 +167,7 @@ public:
         COMPEL_VERIFY_PERMISSION,
         PREPARE_TERMINATE_ABILITY,
         KILL_APPLICATION_BYUID,
+        GET_RUNNING_PROCESS_INFO_BY_TOKEN,
     };
 };
 }  // namespace AppExecFwk
