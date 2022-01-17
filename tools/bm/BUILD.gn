@@ -16,15 +16,13 @@ import("//foundation/appexecfwk/standard/appexecfwk.gni")
 
 config("tools_bm_config") {
   include_dirs = [
+    "include",
     "${aafwk_path}/services/common/include",
     "${aafwk_path}/tools/aa/include",
     "${common_path}/log/include",
     "${kits_path}/appkit/napi/bundlemgr",
     "//utils/system/safwk/native/include",
-    "include",
   ]
-
-  configs = [ "${services_path}/bundlemgr:bundlemgr_common_config" ]
 }
 
 ohos_source_set("tools_bm_source_set") {
@@ -37,10 +35,7 @@ ohos_source_set("tools_bm_source_set") {
     "src/status_receiver_impl.cpp",
   ]
 
-  public_configs = [
-    "${aafwk_path}/tools/aa:ability_command_config",
-    ":tools_bm_config",
-  ]
+  public_configs = [ ":tools_bm_config" ]
 
   cflags = []
   if (target_cpu == "arm") {
@@ -49,8 +44,8 @@ ohos_source_set("tools_bm_source_set") {
 
   external_deps = [
     "aafwk_standard:want",
-    "appexecfwk_standard:appexecfwk_base",
-    "appexecfwk_standard:appexecfwk_core",
+    "bundle_framework:appexecfwk_base",
+    "bundle_framework:appexecfwk_core",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
     "samgr_standard:samgr_proxy",

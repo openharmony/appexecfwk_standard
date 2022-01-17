@@ -3,6 +3,9 @@
     "description": "提供OpenHarmony应用和服务安装包的安装、更新、卸载以及信息查询等能力，包含包管理接口和包管理服务",
     "version": "3.1",
     "license": "Apache 2.0",
+    "segment": {
+        "destPath": "foundation/appexecfwk/standard/services/bundlemgr"
+    },
     "component": {
         "name": "bundle_framework",
         "subsystem": "appexecfwk",
