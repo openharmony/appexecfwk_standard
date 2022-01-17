@@ -83,7 +83,7 @@ public:
      *
      * @param The resident process data value.
      */
-    virtual void ScheduleAbilityStageInfo(const HapModuleInfo &abilityStage) override;
+    virtual void ScheduleAbilityStage(const HapModuleInfo &abilityStage) override;
 
     /**
      * ScheduleLaunchAbility, call ScheduleLaunchAbility() through proxy project,

@@ -357,10 +357,10 @@ void MainThread::ScheduleLaunchApplication(const AppLaunchData &data)
     APP_LOGI("MainThread::scheduleLaunchApplication end.");
 }
 
-void MainThread::ScheduleAbilityStageInfo(const HapModuleInfo &abilityStage)
+void MainThread::ScheduleAbilityStage(const HapModuleInfo &abilityStage)
 {
     APP_LOGI("MainThread::ScheduleAbilityStageInfo start");
-    auto task = [appThread = this, abilityStage]() { appThread->HandleAbilityStageInfo(abilityStage);};
+    auto task = [appThread = this, abilityStage]() { appThread->HandleAbilityStage(abilityStage);};
     if (!mainHandler_->PostTask(task)) {
         APP_LOGE("MainThread::ScheduleAbilityStageInfo PostTask task failed");
     }
@@ -804,8 +804,25 @@ void MainThread::HandleLaunchApplication(const AppLaunchData &appLaunchData)
     APP_LOGI("MainThread::handleLaunchApplication called end.");
 }
 
-void MainThread::HandleAbilityStageInfo(const HapModuleInfo &abilityStage)
-{}
+void MainThread::HandleAbilityStage(const HapModuleInfo &abilityStage)
+{
+    APP_LOGI("MainThread::HandleAbilityStageInfo");
+    if (!application_) {
+        APP_LOGE("application_ is nullptr");
+        return;
+    }
+    auto ref = application_->AddAbilityStage(abilityStage);
+    if (!ref) {
+        APP_LOGE("AddAbilityStage Failed ");
+        return;
+    }
+
+    if (!appMgr_ || !applicationImpl_) {
+        APP_LOGE("appMgr_ is nullptr");
+        return;
+    }
+    appMgr_->AddAbilityStageDone(applicationImpl_->GetRecordId());
+}
 
 /**
  *

@@ -241,7 +241,7 @@ void AppMgrService::StartupResidentProcess()
     if (!IsReady()) {
         return;
     }
-
+    APP_LOGI("Notify start resident process");
     std::function <void()> startupResidentProcess =
         std::bind(&AppMgrServiceInner::LoadResidentProcess, appMgrServiceInner_);
     handler_->PostTask(startupResidentProcess, TASK_STARTUP_RESIDENT_PROCESS);
@@ -283,7 +283,7 @@ int32_t AppMgrService::GetAllRunningProcesses(std::vector<RunningProcessInfo> &i
 
 void AppMgrService::SetAppFreezingTime(int time)
 {
-    APP_LOGE("set app freeze time %{public}d ", time);
+    APP_LOGI("set app freeze time %{public}d", time);
     if (!IsReady()) {
         return;
     }
