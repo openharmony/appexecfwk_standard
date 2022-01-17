@@ -34,6 +34,7 @@
 #include "resource_manager.h"
 #include "runtime.h"
 #include "service_extension.h"
+#include "static_subscriber_extension.h"
 #include "sys_mgr_client.h"
 #include "system_ability_definition.h"
 #include "task_handler_client.h"
@@ -768,6 +769,9 @@ void MainThread::HandleLaunchApplication(const AppLaunchData &appLaunchData)
         });
         AbilityLoader::GetInstance().RegisterExtension("FormExtension", [application = application_]() {
             return AbilityRuntime::FormExtension::Create(application->GetRuntime());
+        });
+        AbilityLoader::GetInstance().RegisterExtension("StaticSubscriberExtension", [application = application_]() {
+            return AbilityRuntime::StaticSubscriberExtension::Create(application->GetRuntime());
         });
     }
 
