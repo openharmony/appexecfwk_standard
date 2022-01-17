@@ -1838,6 +1838,9 @@ void InnerBundleInfo::GetApplicationInfo(int32_t flags, int32_t userId, Applicat
             }
         }
     }
+    if (!appInfo.permissions.empty()) {
+        RemoveDuplicateName(appInfo.permissions);
+    }
 }
 
 void InnerBundleInfo::GetBundleInfo(int32_t flags, BundleInfo &bundleInfo, int32_t userId) const
@@ -1903,6 +1906,12 @@ void InnerBundleInfo::GetBundleInfo(int32_t flags, BundleInfo &bundleInfo, int32
             bundleInfo.mainEntry = info.second.modulePackage;
             bundleInfo.entryModuleName = info.second.moduleName;
         }
+    }
+    if (!bundleInfo.reqPermissions.empty()) {
+        RemoveDuplicateName(bundleInfo.reqPermissions);
+    }
+    if (!bundleInfo.defPermissions.empty()) {
+        RemoveDuplicateName(bundleInfo.defPermissions);
     }
     if (!BundlePermissionMgr::GetRequestPermissionStates(bundleInfo)) {
         APP_LOGE("get request permission state failed");
@@ -2206,6 +2215,43 @@ bool InnerBundleInfo::SetAbilityEnabled(const std::string &bundleName,
         }
     }
     return false;
+}
+
+void InnerBundleInfo::RemoveDuplicateName(std::vector<std::string> &name) const
+{
+    std::sort(name.begin(), name.end());
+    auto iter = std::unique(name.begin(), name.end());
+    name.erase(iter, name.end());
+}
+
+std::vector<DefinePermission> InnerBundleInfo::GetAllDefinePermissions() const
+{
+    std::vector<DefinePermission> definePermissions;
+    for (const auto &info : innerModuleInfos_) {
+        std::transform(info.second.definePermissions.begin(),
+            info.second.definePermissions.end(),
+            std::back_inserter(definePermissions),
+            [](const auto &p) { return p.name; });
+    }
+    if (!definePermissions.empty()) {
+        RemoveDuplicateName(definePermissions);
+    }
+    return definePermissions;
+}
+
+std::vector<RequestPermission> InnerBundleInfo::GetAllRequestPermissions() const
+{
+    std::vector<RequestPermission> requestPermissions;
+    for (const auto &info : innerModuleInfos_) {
+        std::transform(info.second.requestPermissions.begin(),
+            info.second.requestPermissions.end(),
+            std::back_inserter(requestPermissions),
+            [](const auto &p) { return p.name; });
+    }
+    if (!requestPermissions.empty()) {
+        RemoveDuplicateName(requestPermissions);
+    }
+    return requestPermissions;
 }
 
 void InnerBundleInfo::SetApplicationEnabled(bool enabled, int32_t userId)

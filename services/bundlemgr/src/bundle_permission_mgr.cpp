@@ -260,7 +260,7 @@ std::vector<AccessToken::PermissionDef> BundlePermissionMgr::GetPermissionDefLis
     if (!defPermissions.empty()) {
         for (const auto &defPermission : defPermissions) {
             AccessToken::PermissionDef perm;
-            APP_LOGI("defPermission %{public}s", defPermission.name.c_str());
+            APP_LOGD("defPermission %{public}s", defPermission.name.c_str());
             ConvertPermissionDef(perm, defPermission, bundleName);
             permList.emplace_back(perm);
         }
@@ -284,6 +284,8 @@ std::vector<AccessToken::PermissionStateFull> BundlePermissionMgr::GetPermission
             perState.grantFlags.emplace_back(AccessToken::PermissionFlag::PERMISSION_USER_SET);
             permStateFullList.emplace_back(perState);
         }
+    } else {
+        APP_LOGD("BundlePermissionMgr::GetPermissionStateFullList requestPermission is empty");
     }
     return permStateFullList;
 }

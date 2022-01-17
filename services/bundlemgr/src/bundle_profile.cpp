@@ -300,7 +300,6 @@ struct Module {
     std::vector<DefPermission> defPermissions;
     std::vector<ReqPermission> reqPermissions;
     std::vector<DefinePermission> definePermissions;
-    std::vector<RequestPermission> requestPermissions;
     std::string mainAbility;
     std::string srcPath;
 };
@@ -1660,14 +1659,6 @@ void from_json(const nlohmann::json &jsonObject, Module &module)
         false,
         parseResult,
         ArrayType::OBJECT);
-    GetValueIfFindKey<std::vector<RequestPermission>>(jsonObject,
-        jsonObjectEnd,
-        BUNDLE_MODULE_PROFILE_KEY_REQUEST_PERMISSIONS,
-        module.requestPermissions,
-        JsonType::ARRAY,
-        false,
-        parseResult,
-        ArrayType::OBJECT);
     GetValueIfFindKey<std::string>(jsonObject,
         jsonObjectEnd,
         BUNDLE_MODULE_PROFILE_KEY_MAIN_ABILITY,
@@ -1908,6 +1899,8 @@ bool TransformToInfo(const ProfileReader::ConfigJson &configJson, BundleInfo &bu
     }
     if (configJson.module.distro.moduleType == ProfileReader::MODULE_DISTRO_MODULE_TYPE_VALUE_ENTRY) {
         bundleInfo.description = configJson.module.description;
+        bundleInfo.entryModuleName = configJson.module.distro.moduleName;
+        bundleInfo.entryInstallationFree = configJson.module.distro.installationFree;
     }
     bundleInfo.isDifferentName =
         (!configJson.app.originalName.empty()) && (configJson.app.bundleName.compare(configJson.app.originalName) != 0);
@@ -1953,8 +1946,16 @@ bool TransformToInfo(const ProfileReader::ConfigJson &configJson, InnerModuleInf
     innerModuleInfo.reqCapabilities = configJson.module.reqCapabilities;
     innerModuleInfo.defPermissions = configJson.module.defPermissions;
     innerModuleInfo.reqPermissions = configJson.module.reqPermissions;
+    for (const auto &req : configJson.module.reqPermissions) {
+        RequestPermission requestPermission;
+        requestPermission.name = req.name;
+        requestPermission.reason = req.reason;
+        requestPermission.reasonId = 0;
+        requestPermission.usedScene.abilities = req.usedScene.ability;
+        requestPermission.usedScene.when = req.usedScene.when;
+        innerModuleInfo.requestPermissions.emplace_back(requestPermission);
+    }
     innerModuleInfo.definePermissions = configJson.module.definePermissions;
-    innerModuleInfo.requestPermissions = configJson.module.requestPermissions;
     innerModuleInfo.mainAbility = configJson.module.mainAbility;
     innerModuleInfo.srcPath = configJson.module.srcPath;
     return true;
