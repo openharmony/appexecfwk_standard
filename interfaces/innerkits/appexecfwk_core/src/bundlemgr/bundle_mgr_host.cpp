@@ -1649,7 +1649,7 @@ ErrCode BundleMgrHost::HandleQueryExtAbilityInfos(Parcel &data, Parcel &reply)
         return ERR_APPEXECFWK_PARCEL_ERROR;
     }
 
-    int32_t type = data.ReadInt32();
+    ExtensionAbilityType type = static_cast<ExtensionAbilityType>(data.ReadInt32());
     int32_t flag = data.ReadInt32();
     int32_t userId = data.ReadInt32();
     std::vector<ExtensionAbilityInfo> infos;

@@ -2037,8 +2037,8 @@ bool BundleMgrProxy::QueryExtensionAbilityInfos(const Want &want, const int32_t 
     return true;
 }
 
-bool BundleMgrProxy::QueryExtensionAbilityInfos(const Want &want, const int32_t &extensionType, const int32_t &flag,
-    const int32_t &userId, std::vector<ExtensionAbilityInfo> &extensionInfos)
+bool BundleMgrProxy::QueryExtensionAbilityInfos(const Want &want, const ExtensionAbilityType &extensionType,
+    const int32_t &flag, const int32_t &userId, std::vector<ExtensionAbilityInfo> &extensionInfos)
 {
     MessageParcel data;
     if (!data.WriteInterfaceToken(GetDescriptor())) {
@@ -2049,7 +2049,7 @@ bool BundleMgrProxy::QueryExtensionAbilityInfos(const Want &want, const int32_t 
         APP_LOGE("fail to QueryExtensionAbilityInfos due to write want fail");
         return false;
     }
-    if (!data.WriteInt32(extensionType)) {
+    if (!data.WriteInt32(static_cast<int32_t>(extensionType))) {
         APP_LOGE("fail to QueryExtensionAbilityInfos due to write type fail");
         return false;
     }
