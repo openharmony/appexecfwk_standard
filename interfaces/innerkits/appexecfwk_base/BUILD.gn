@@ -45,6 +45,7 @@ ohos_shared_library("appexecfwk_base") {
     "src/module_info.cpp",
     "src/module_usage_record.cpp",
     "src/permission_def.cpp",
+    "src/remote_ability_info.cpp",
     "src/running_process_info.cpp",
     "src/shortcut_info.cpp",
     "src/system_memory_attr.cpp",
