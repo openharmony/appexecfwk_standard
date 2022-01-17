@@ -2231,10 +2231,18 @@ std::vector<DefinePermission> InnerBundleInfo::GetAllDefinePermissions() const
         std::transform(info.second.definePermissions.begin(),
             info.second.definePermissions.end(),
             std::back_inserter(definePermissions),
-            [](const auto &p) { return p.name; });
+            [](const auto &p) { return p; });
     }
     if (!definePermissions.empty()) {
-        RemoveDuplicateName(definePermissions);
+        std::sort(definePermissions.begin(), definePermissions.end(),
+            [](DefinePermission defPermA, DefinePermission defPermB) {
+                return defPermA.name < defPermB.name;
+            });
+        auto iter = std::unique(definePermissions.begin(), definePermissions.end(),
+            [](DefinePermission defPermA, DefinePermission defPermB) {
+                return defPermA.name == defPermB.name;
+            });
+        definePermissions.erase(iter, definePermissions.end());
     }
     return definePermissions;
 }
@@ -2246,10 +2254,18 @@ std::vector<RequestPermission> InnerBundleInfo::GetAllRequestPermissions() const
         std::transform(info.second.requestPermissions.begin(),
             info.second.requestPermissions.end(),
             std::back_inserter(requestPermissions),
-            [](const auto &p) { return p.name; });
+            [](const auto &p) { return p; });
     }
     if (!requestPermissions.empty()) {
-        RemoveDuplicateName(requestPermissions);
+        std::sort(requestPermissions.begin(), requestPermissions.end(),
+            [](RequestPermission reqPermA, RequestPermission reqPermB) {
+                return reqPermA.name < reqPermB.name;
+            });
+        auto iter = std::unique(requestPermissions.begin(), requestPermissions.end(),
+            [](RequestPermission reqPermA, RequestPermission reqPermB) {
+                return reqPermA.name == reqPermB.name;
+            });
+        requestPermissions.erase(iter, requestPermissions.end());
     }
     return requestPermissions;
 }
