@@ -134,8 +134,12 @@ bool BundleMgrClient::GetResConfigFile(const AbilityInfo &abilityInfo, const std
 bool BundleMgrClient::GetResProfileByMetadata(const std::vector<Metadata> &metadata, const std::string &metadataName,
     const std ::string &resourcePath, std::vector<std::string> &profileInfos) const
 {
-    if (metadata.empty() || resourcePath.empty()) {
-        APP_LOGE("GetResProfileByMetadata failed due to invalid params");
+    if (metadata.empty()) {
+        APP_LOGE("GetResProfileByMetadata failed due to empty metadata");
+        return false;
+    }
+    if (resourcePath.empty()) {
+        APP_LOGE("GetResProfileByMetadata failed due to empty resourcePath");
         return false;
     }
     std::shared_ptr<ResourceManager> resMgr = InitResMgr(resourcePath);

@@ -315,6 +315,10 @@ static void ConvertApplicationInfo(napi_env env, napi_value objAppInfo, const Ap
         &nEntityType));
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objAppInfo, "entityType", nEntityType));
 
+    napi_value nRemovable;
+    NAPI_CALL_RETURN_VOID(env, napi_get_boolean(env, appInfo.removable, &nRemovable));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objAppInfo, "removable", nRemovable));
+
     HILOG_INFO("ConvertApplicationInfo entryDir=%{public}s.", appInfo.entryDir.c_str());
 }
 
