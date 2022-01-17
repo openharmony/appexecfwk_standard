@@ -930,6 +930,10 @@ public:
         return requestPermissions;
     }
 
+    std::vector<DefinePermission> GetAllDefinePermissions() const;
+
+    std::vector<RequestPermission> GetAllRequestPermissions() const;
+
     bool FindModule(std::string modulePackage) const
     {
         return (innerModuleInfos_.find(modulePackage) != innerModuleInfos_.end());
@@ -1433,6 +1437,7 @@ private:
     void GetBundeleWithExtension(
         int32_t flags, BundleInfo &bundleInfo, int32_t userId = Constants::UNSPECIFIED_USERID) const;
     void BuildDefaultUserInfo();
+    void RemoveDuplicateName(std::vector<std::string> &name) const;
 
     // using for get
     bool isSupportBackup_ = false;
