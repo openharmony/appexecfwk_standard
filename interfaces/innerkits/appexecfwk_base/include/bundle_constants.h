@@ -83,6 +83,7 @@ constexpr int INVALID_USERID = -1;
 constexpr int UNSPECIFIED_USERID = -2;
 constexpr int ALL_USERID = -3;
 constexpr int ANY_USERID = -4;
+constexpr int NOT_EXIST_USERID = -5;
 constexpr int PATH_MAX_SIZE = 256;
 constexpr int SIGNATURE_MATCHED = 0;
 constexpr int SIGNATURE_NOT_MATCHED = 1;
