@@ -135,7 +135,7 @@ const std::string STRING_QUERY_NEED_CORRECT_ARGUMENTS = "error: need correct arg
 const std::string NO_PROFILE = "no profile!\n";
 }  // namespace
 
-class BundleManagerShellCommand : public OHOS::AAFwk::ShellCommand {
+class BundleManagerShellCommand : public ShellCommand {
 public:
     BundleManagerShellCommand(int argc, char *argv[]);
     ~BundleManagerShellCommand() override
