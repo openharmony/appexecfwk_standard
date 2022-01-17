@@ -310,8 +310,8 @@ void CgroupManager::OnReadable(int32_t fd)
 {
     APP_LOGW("system low memory alert.");
 
-    if (!LowMemoryAlert) {
-        APP_LOGE("'LowMemoryAlert' not available.");
+    if (!LowMemoryAlert || LowMemoryAlert) {
+        APP_LOGW("OnReadable 'LowMemoryAlert' come.");
         return;
     }
 
