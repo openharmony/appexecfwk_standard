@@ -43,7 +43,7 @@ private:
     int32_t HandleScheduleLaunchAbility(MessageParcel &data, MessageParcel &reply);
     int32_t HandleScheduleCleanAbility(MessageParcel &data, MessageParcel &reply);
     int32_t HandleScheduleLaunchApplication(MessageParcel &data, MessageParcel &reply);
-    int32_t HandleScheduleAbilityStageInfo(MessageParcel &data, MessageParcel &reply);
+    int32_t HandleScheduleAbilityStage(MessageParcel &data, MessageParcel &reply);
     int32_t HandleScheduleProfileChanged(MessageParcel &data, MessageParcel &reply);
     int32_t HandleScheduleConfigurationUpdated(MessageParcel &data, MessageParcel &reply);
     int32_t HandleScheduleProcessSecurityExit(MessageParcel &data, MessageParcel &reply);

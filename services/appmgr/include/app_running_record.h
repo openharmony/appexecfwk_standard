@@ -404,7 +404,7 @@ public:
     bool IsKeepAliveApp() const;
 
     // Please use with caution, it may affect the ability to start.
-    void SetKeepAliveAppState();
+    void SetKeepAliveAppState(bool isKeepAlive, bool isNewMission);
 
     std::list<std::shared_ptr<ModuleRunningRecord>> GetAllModuleRecord() const;
 
@@ -474,7 +474,8 @@ private:
     void RemoveModuleRecord(const std::shared_ptr<ModuleRunningRecord> &record);
 
 private:
-    bool isKeepAliveApp = false;  // Only resident processes can be set to true, please choose carefully
+    bool isKeepAliveApp_ = false;  // Only resident processes can be set to true, please choose carefully
+    bool isNewMission_ = false;
     ApplicationState curState_ = ApplicationState::APP_STATE_CREATE;  // current state of this process
 
     std::shared_ptr<ApplicationInfo> appInfo_ = nullptr;  // the application's info of this process

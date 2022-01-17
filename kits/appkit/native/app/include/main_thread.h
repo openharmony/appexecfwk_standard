@@ -159,7 +159,7 @@ public:
      *
      * @param The resident process data value.
      */
-    void ScheduleAbilityStageInfo(const HapModuleInfo &abilityStage) override;
+    void ScheduleAbilityStage(const HapModuleInfo &abilityStage) override;
 
     /**
      *
@@ -252,7 +252,7 @@ private:
      * @param appLaunchData The launchdata of the application witch launced.
      *
      */
-    void HandleAbilityStageInfo(const HapModuleInfo &abilityStage);
+    void HandleAbilityStage(const HapModuleInfo &abilityStage);
 
     /**
      *
