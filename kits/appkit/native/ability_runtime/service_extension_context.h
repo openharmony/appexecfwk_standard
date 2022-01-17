@@ -59,7 +59,7 @@ public:
      * @return True means success and false means failure
      */
     bool ConnectAbility(
-        const AAFwk::Want &want, const std::shared_ptr<AbilityConnectCallback> &connectCallback) const;
+        const AAFwk::Want &want, const sptr<AbilityConnectCallback> &connectCallback) const;
 
     /**
      * @brief Disconnects the current ability from an ability
@@ -70,7 +70,7 @@ public:
      * @return errCode ERR_OK on success, others on failure.
      */
     ErrCode DisconnectAbility(
-        const AAFwk::Want &want, const std::shared_ptr<AbilityConnectCallback> &connectCallback) const;
+        const AAFwk::Want &want, const sptr<AbilityConnectCallback> &connectCallback) const;
 
     /**
      * @brief Destroys the current ability.
