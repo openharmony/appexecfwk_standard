@@ -40,7 +40,7 @@ public:
      * @param callerToken Caller ability token.
      * @return Returns ERR_OK on success, others on failure.
      */
-    virtual int AcquireProviderFormInfo(const int64_t formId, const Want &want, 
+    virtual int AcquireProviderFormInfo(const int64_t formId, const Want &want,
     const sptr<IRemoteObject> &callerToken) = 0;
 
     /**
@@ -59,7 +59,7 @@ public:
      * @param callerToken Caller ability token.
      * @return Returns ERR_OK on success, others on failure.
      */
-    virtual int NotifyFormsDelete(const std::vector<int64_t> &formIds, const Want &want, 
+    virtual int NotifyFormsDelete(const std::vector<int64_t> &formIds, const Want &want,
     const sptr<IRemoteObject> &callerToken) = 0;
     /**
      * @brief Notify provider when the form need update.
@@ -72,7 +72,7 @@ public:
 
     /**
      * @brief Event notify when change the form visible.
-     * 
+     *
      * @param formIds The vector of form ids.
      * @param formVisibleType The form visible type, including FORM_VISIBLE and FORM_INVISIBLE.
      * @param want Indicates the structure containing form info.
@@ -89,7 +89,7 @@ public:
      * @param callerToken Caller ability token.
      * @return Returns ERR_OK on success, others on failure.
      */
-    virtual int NotifyFormCastTempForm(const int64_t formId, const Want &want, 
+    virtual int NotifyFormCastTempForm(const int64_t formId, const Want &want,
     const sptr<IRemoteObject> &callerToken) = 0;
 
     /**
@@ -100,7 +100,7 @@ public:
      * @param callerToken Form provider proxy object.
      * @return Returns ERR_OK on success, others on failure.
      */
-    virtual int FireFormEvent(const int64_t formId, const std::string &message, const Want &want, 
+    virtual int FireFormEvent(const int64_t formId, const std::string &message, const Want &want,
     const sptr<IRemoteObject> &callerToken) = 0;
 
     enum class Message {

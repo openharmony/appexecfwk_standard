@@ -31,9 +31,9 @@ FormMgrProxy::FormMgrProxy(const sptr<IRemoteObject> &impl) : IRemoteProxy<IForm
  * @return Returns ERR_OK on success, others on failure.
  */
 int FormMgrProxy::AddForm(
-    const int64_t formId, 
-    const Want &want, 
-    const sptr<IRemoteObject> &callerToken, 
+    const int64_t formId,
+    const Want &want,
+    const sptr<IRemoteObject> &callerToken,
     FormJsInfo &formInfo)
 {
     MessageParcel data;
@@ -57,7 +57,7 @@ int FormMgrProxy::AddForm(
 
     int error = GetParcelableInfo<FormJsInfo>(IFormMgr::Message::FORM_MGR_ADD_FORM, data, formInfo);
     if (error != ERR_OK) {
-        APP_LOGE("%{public}s, failed to SendRequest: %{public}d", __func__, error);      
+        APP_LOGE("%{public}s, failed to SendRequest: %{public}d", __func__, error);
     }
 
     return error;
@@ -87,15 +87,15 @@ int FormMgrProxy::DeleteForm(const int64_t formId, const sptr<IRemoteObject> &ca
     MessageParcel reply;
     MessageOption option;
     int error = Remote()->SendRequest(
-        static_cast<uint32_t>(IFormMgr::Message::FORM_MGR_DELETE_FORM), 
-        data, 
-        reply, 
+        static_cast<uint32_t>(IFormMgr::Message::FORM_MGR_DELETE_FORM),
+        data,
+        reply,
         option);
     if (error != ERR_OK) {
         APP_LOGE("%{public}s, failed to SendRequest: %{public}d", __func__, error);
         return ERR_APPEXECFWK_FORM_SEND_FMS_MSG;
     }
-    return reply.ReadInt32();    
+    return reply.ReadInt32();
 }
 
 /**
@@ -123,13 +123,13 @@ int FormMgrProxy::ReleaseForm(const int64_t formId, const sptr<IRemoteObject> &c
     if (!data.WriteBool(delCache)) {
         APP_LOGE("%{public}s, failed to write delCache", __func__);
         return ERR_APPEXECFWK_PARCEL_ERROR;
-    }       
-        
+    }
+
     MessageParcel reply;
     MessageOption option;
     int error = Remote()->SendRequest(
-        static_cast<uint32_t>(IFormMgr::Message::FORM_MGR_RELEASE_FORM), 
-        data, 
+        static_cast<uint32_t>(IFormMgr::Message::FORM_MGR_RELEASE_FORM),
+        data,
         reply,
         option);
     if (error != ERR_OK) {
@@ -147,8 +147,8 @@ int FormMgrProxy::ReleaseForm(const int64_t formId, const sptr<IRemoteObject> &c
  * @return Returns ERR_OK on success, others on failure.
  */
 int FormMgrProxy::UpdateForm(
-    const int64_t formId, 
-    const std::string &bundleName, 
+    const int64_t formId,
+    const std::string &bundleName,
     const FormProviderData &FormProviderData)
 {
     MessageParcel data;
@@ -172,9 +172,9 @@ int FormMgrProxy::UpdateForm(
     MessageParcel reply;
     MessageOption option;
     int error = Remote()->SendRequest(
-        static_cast<uint32_t>(IFormMgr::Message::FORM_MGR_UPDATE_FORM), 
-        data, 
-        reply, 
+        static_cast<uint32_t>(IFormMgr::Message::FORM_MGR_UPDATE_FORM),
+        data,
+        reply,
         option);
     if (error != ERR_OK) {
         APP_LOGE("%{public}s, failed to SendRequest: %{public}d", __func__, error);
@@ -209,9 +209,9 @@ int FormMgrProxy::SetNextRefreshTime(const int64_t formId, const int64_t nextTim
     }
     MessageOption option;
     int error = Remote()->SendRequest(
-        static_cast<uint32_t>(IFormMgr::Message::FORM_MGR_SET_NEXT_REFRESH_TIME), 
-        data, 
-        reply, 
+        static_cast<uint32_t>(IFormMgr::Message::FORM_MGR_SET_NEXT_REFRESH_TIME),
+        data,
+        reply,
         option);
     if (error != ERR_OK) {
         APP_LOGE("%{public}s, failed to SendRequest: %{public}d", __func__, error);
@@ -227,8 +227,8 @@ int FormMgrProxy::SetNextRefreshTime(const int64_t formId, const int64_t nextTim
  * @return Returns ERR_OK on success, others on failure.
  */
 int FormMgrProxy::LifecycleUpdate(
-    const std::vector<int64_t> &formIds, 
-    const sptr<IRemoteObject> &callerToken, 
+    const std::vector<int64_t> &formIds,
+    const sptr<IRemoteObject> &callerToken,
     const int32_t updateType)
 {
     MessageParcel data;
@@ -252,9 +252,9 @@ int FormMgrProxy::LifecycleUpdate(
     }
     MessageOption option;
     int error = Remote()->SendRequest(
-        static_cast<uint32_t>(IFormMgr::Message::FORM_MGR_LIFECYCLE_UPDATE), 
-        data, 
-        reply, 
+        static_cast<uint32_t>(IFormMgr::Message::FORM_MGR_LIFECYCLE_UPDATE),
+        data,
+        reply,
         option);
     if (error != ERR_OK) {
         APP_LOGE("%{public}s, failed to SendRequest: %{public}d", __func__, error);
@@ -295,9 +295,9 @@ int FormMgrProxy::RequestForm(const int64_t formId, const sptr<IRemoteObject> &c
     MessageParcel reply;
     MessageOption option;
     int error = Remote()->SendRequest(
-        static_cast<uint32_t>(IFormMgr::Message::FORM_MGR_REQUEST_FORM), 
-        data, 
-        reply, 
+        static_cast<uint32_t>(IFormMgr::Message::FORM_MGR_REQUEST_FORM),
+        data,
+        reply,
         option);
     if (error != ERR_OK) {
         APP_LOGE("%{public}s, failed to SendRequest: %{public}d", __func__, error);
@@ -314,8 +314,8 @@ int FormMgrProxy::RequestForm(const int64_t formId, const sptr<IRemoteObject> &c
  * @return Returns ERR_OK on success, others on failure.
  */
 int FormMgrProxy::NotifyWhetherVisibleForms(
-    const std::vector<int64_t> &formIds, 
-    const sptr<IRemoteObject> &callerToken, 
+    const std::vector<int64_t> &formIds,
+    const sptr<IRemoteObject> &callerToken,
     const int32_t formVisibleType)
 {
     MessageParcel data;
@@ -342,15 +342,15 @@ int FormMgrProxy::NotifyWhetherVisibleForms(
     MessageParcel reply;
     MessageOption option;
     int error = Remote()->SendRequest(
-        static_cast<uint32_t>(IFormMgr::Message::FORM_MGR_NOTIFY_FORM_WHETHER_VISIBLE), 
-        data, 
-        reply, 
+        static_cast<uint32_t>(IFormMgr::Message::FORM_MGR_NOTIFY_FORM_WHETHER_VISIBLE),
+        data,
+        reply,
         option);
     if (error != ERR_OK) {
         APP_LOGE("%{public}s, failed to SendRequest: %{public}d", __func__, error);
         return ERR_APPEXECFWK_FORM_SEND_FMS_MSG;
     }
-    return reply.ReadInt32();   
+    return reply.ReadInt32();
 }
 
 /**
@@ -373,8 +373,8 @@ int FormMgrProxy::CastTempForm(const int64_t formId, const sptr<IRemoteObject> &
     if (!data.WriteParcelable(callerToken)) {
         APP_LOGE("%{public}s, failed to write callerToken", __func__);
         return ERR_APPEXECFWK_PARCEL_ERROR;
-    }        
-        
+    }
+
     MessageParcel reply;
     MessageOption option;
     int error = Remote()->SendRequest(
@@ -404,7 +404,7 @@ int FormMgrProxy::DumpStorageFormInfos(std::string &formInfos)
 
     int error = GetStringInfo(IFormMgr::Message::FORM_MGR_STORAGE_FORM_INFOS, data, formInfos);
     if (error != ERR_OK) {
-        APP_LOGE("%{public}s, failed to GetStringInfo: %{public}d", __func__, error);     
+        APP_LOGE("%{public}s, failed to GetStringInfo: %{public}d", __func__, error);
     }
 
     return error;
@@ -430,7 +430,7 @@ int FormMgrProxy::DumpFormInfoByBundleName(const std::string &bundleName, std::s
 
     int error = GetStringInfo(IFormMgr::Message::FORM_MGR_FORM_INFOS_BY_NAME, data, formInfos);
     if (error != ERR_OK) {
-        APP_LOGE("%{public}s, failed to GetStringInfo: %{public}d", __func__, error);          
+        APP_LOGE("%{public}s, failed to GetStringInfo: %{public}d", __func__, error);
     }
 
     return error;

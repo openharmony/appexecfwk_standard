@@ -235,7 +235,7 @@ HWTEST_F(FmsAcquireFormTest, FMS_acquireForm_1200, Function | MediumTest | Level
     } else {
         GTEST_LOG_(INFO) << "FMS_acquireForm_1200,  formData:" << data2;
     }
-    
+
     int64_t formId = std::stoll(strFormId);
     std::string cachedData = SystemTestFormUtil::QueryFormInfoByFormId(formId);
     GTEST_LOG_(INFO) << "FMS_acquireForm_1200,  cachedData:" << cachedData;
@@ -246,7 +246,7 @@ HWTEST_F(FmsAcquireFormTest, FMS_acquireForm_1200, Function | MediumTest | Level
     bool result3 = data3 == "true";
     EXPECT_TRUE(result3);
     GTEST_LOG_(INFO) << "FMS_acquireForm_1200,  delete form, result:" << result3;
-    
+
     std::cout << "END FMS_acquireForm_1200" << std::endl;
 }
 

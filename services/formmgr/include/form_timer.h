@@ -43,7 +43,7 @@ public:
     bool isEnable = true;
     bool isCountTimer = false;
     UpdateType type = UpdateType::TYPE_INTERVAL_CHANGE;
-    
+
     FormTimer()
     {
         formId = -1;

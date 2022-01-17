@@ -37,7 +37,7 @@ int FormSupplyProxy::OnAcquire(const FormProviderInfo &formInfo, const Want& wan
         APP_LOGE("%{public}s, failed to write want", __func__);
         return ERR_APPEXECFWK_PARCEL_ERROR;
     }
-    
+
     if (want.GetIntParam(Constants::PROVIDER_FLAG, ERR_OK) == ERR_OK) {
         if (!data.WriteParcelable(&formInfo)) {
             APP_LOGE("%{public}s, failed to write formInfo", __func__);
@@ -48,9 +48,9 @@ int FormSupplyProxy::OnAcquire(const FormProviderInfo &formInfo, const Want& wan
     MessageParcel reply;
     MessageOption option;
     int error = Remote()->SendRequest(
-        static_cast<uint32_t>(IFormSupply::Message::TRANSACTION_FORM_ACQUIRED), 
-        data, 
-        reply, 
+        static_cast<uint32_t>(IFormSupply::Message::TRANSACTION_FORM_ACQUIRED),
+        data,
+        reply,
         option);
     if (error != ERR_OK) {
         APP_LOGE("%{public}s, failed to SendRequest: %{public}d", __func__, error);
@@ -81,9 +81,9 @@ int FormSupplyProxy::OnEventHandle(const Want& want)
     MessageParcel reply;
     MessageOption option;
     int error = Remote()->SendRequest(
-        static_cast<uint32_t>(IFormSupply::Message::TRANSACTION_EVENT_HANDLE), 
-        data, 
-        reply, 
+        static_cast<uint32_t>(IFormSupply::Message::TRANSACTION_EVENT_HANDLE),
+        data,
+        reply,
         option);
     if (error != ERR_OK) {
         APP_LOGE("%{public}s, failed to SendRequest: %{public}d", __func__, error);

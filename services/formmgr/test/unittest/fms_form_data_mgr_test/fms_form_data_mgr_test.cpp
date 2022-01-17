@@ -38,7 +38,7 @@ const std::string FORM_NAME = "formName";
 namespace {
 class FmsFormDataMgrTest : public testing::Test {
 public:
-    FmsFormDataMgrTest() 
+    FmsFormDataMgrTest()
     {}
     ~FmsFormDataMgrTest()
     {}
@@ -92,7 +92,7 @@ void FmsFormDataMgrTest::InitFormItemInfo(int64_t formId, FormItemInfo &form_ite
  * @tc.number: FmsFormDataMgrTest_AllotFormRecord_001
  * @tc.name: AllotFormRecord
  * @tc.desc: Verify that the return value is correct.
- * @tc.details: 
+ * @tc.details:
  *      temporaryFlag is true, and tempForms is empty, then create a tempForm.
  *      formRecords_ is empty, then create formRecords.
  */
@@ -117,7 +117,7 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_AllotFormRecord_001, TestSize.Le
  * @tc.number: FmsFormDataMgrTest_AllotFormRecord_002
  * @tc.name: AllotFormRecord
  * @tc.desc: Verify that the return value is correct.
- * @tc.details: 
+ * @tc.details:
  *      formRecords_ is include this formId.
  */
 HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_AllotFormRecord_002, TestSize.Level0)
@@ -145,7 +145,7 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_AllotFormRecord_002, TestSize.Le
  * @tc.number: FmsFormDataMgrTest_AllotFormRecord_003
  * @tc.name: AllotFormRecord
  * @tc.desc: Verify that the return value is correct.
- * @tc.details: 
+ * @tc.details:
  *      formRecords_ is not include this formId, then create formRecords.
  */
 HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_AllotFormRecord_003, TestSize.Level0)
@@ -159,7 +159,7 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_AllotFormRecord_003, TestSize.Le
     // create FormItemInfo
     FormItemInfo form_item_info;
     InitFormItemInfo(formId, form_item_info);
-    
+
     // create other FormItemInfo
     FormItemInfo otherFormItemInfo;
     InitFormItemInfo(otherformId, otherFormItemInfo);
@@ -178,7 +178,7 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_AllotFormRecord_003, TestSize.Le
  * @tc.number: FmsFormDataMgrTest_AllotFormRecord_004
  * @tc.name: AllotFormRecord
  * @tc.desc: Verify that the return value is correct.
- * @tc.details: 
+ * @tc.details:
  *      EnableUpdateFlag is true,
  *      SetUpdateDuration is not MAX_CONFIG_DURATION.(call ParseIntervalConfig)
  */
@@ -204,7 +204,7 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_AllotFormRecord_004, TestSize.Le
  * @tc.number: FmsFormDataMgrTest_AllotFormRecord_005
  * @tc.name: AllotFormRecord
  * @tc.desc: Verify that the return value is correct.
- * @tc.details: 
+ * @tc.details:
  *      EnableUpdateFlag is true,
  *      SetUpdateDuration is between MIN_CONFIG_DURATION and MAX_CONFIG_DURATION.(call ParseIntervalConfig)
  */
@@ -230,7 +230,7 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_AllotFormRecord_005, TestSize.Le
  * @tc.number: FmsFormDataMgrTest_AllotFormRecord_006
  * @tc.name: AllotFormRecord
  * @tc.desc: Verify that the return value is correct.
- * @tc.details:  
+ * @tc.details:
  *      SetUpdateDuration is 0.(call ParseAtTimerConfig)
  *      获取配置项scheduledUpdateTime_为empty
  */
@@ -257,7 +257,7 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_AllotFormRecord_006, TestSize.Le
  * @tc.number: FmsFormDataMgrTest_AllotFormRecord_007
  * @tc.name: AllotFormRecord
  * @tc.desc: Verify that the return value is correct.
- * @tc.details: 
+ * @tc.details:
  *      SetUpdateDuration is 0.(call ParseAtTimerConfig)
  *      获取配置项scheduledUpdateTime_为无效值
  */
@@ -284,7 +284,7 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_AllotFormRecord_007, TestSize.Le
  * @tc.number: FmsFormDataMgrTest_AllotFormRecord_008
  * @tc.name: AllotFormRecord
  * @tc.desc: Verify that the return value is correct.
- * @tc.details: 
+ * @tc.details:
  *      SetUpdateDuration is 0.(call ParseAtTimerConfig)
  *      获取配置项scheduledUpdateTime_为无效值
  *      不存在hapSourceDirs_
@@ -313,7 +313,7 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_AllotFormRecord_008, TestSize.Le
  * @tc.number: FmsFormDataMgrTest_AllotFormRecord_009
  * @tc.name: AllotFormRecord
  * @tc.desc: Verify that the return value is correct.
- * @tc.details: 
+ * @tc.details:
  *      SetUpdateDuration is 0.(call ParseAtTimerConfig)
  *      获取配置项scheduledUpdateTime_为有效值
  */
@@ -340,7 +340,7 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_AllotFormRecord_009, TestSize.Le
  * @tc.number: FmsFormDataMgrTest_AllotFormHostRecord_001
  * @tc.name: AllotFormHostRecord
  * @tc.desc: Verify that the return value is correct.
- * @tc.details: 
+ * @tc.details:
  *      clientRecords_ is include token_.
  */
 HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_AllotFormHostRecord_001, TestSize.Level0)
@@ -369,7 +369,7 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_AllotFormHostRecord_001, TestSiz
  * @tc.number: FmsFormDataMgrTest_AllotFormHostRecord_002
  * @tc.name: AllotFormHostRecord
  * @tc.desc: Verify that the return value is correct.
- * @tc.details: 
+ * @tc.details:
  *      clientRecords_ is not include token_.
  *      CreateHostRecord is OK.
  */
@@ -393,7 +393,7 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_AllotFormHostRecord_002, TestSiz
  * @tc.number: FmsFormDataMgrTest_AllotFormHostRecord_003
  * @tc.name: AllotFormHostRecord
  * @tc.desc: Verify that the return value is correct.
- * @tc.details: 
+ * @tc.details:
  *      clientRecords_ is not include token_.
  *      CreateHostRecord is NG.
  */
@@ -419,7 +419,7 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_AllotFormHostRecord_003, TestSiz
 /**
  * @tc.number: FmsFormDataMgrTest_CreateFormInfo_001
  * @tc.name: CreateFormInfo
- * @tc.desc: Verify that the return value is correct.     
+ * @tc.desc: Verify that the return value is correct.
  */
 HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_CreateFormInfo_001, TestSize.Level0)
 {
@@ -447,8 +447,8 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_CreateFormInfo_001, TestSize.Lev
  * @tc.number: FmsFormDataMgrTest_CheckTempEnoughForm_001
  * @tc.name: CheckTempEnoughForm
  * @tc.desc: Verify that the return value is correct.
- * @tc.details: 
- *      tempForms_ is empty.    
+ * @tc.details:
+ *      tempForms_ is empty.
  */
 HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_CheckTempEnoughForm_001, TestSize.Level0)
 {
@@ -462,9 +462,9 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_CheckTempEnoughForm_001, TestSiz
 /**
  * @tc.number: FmsFormDataMgrTest_CheckTempEnoughForm_002
  * @tc.name: CheckTempEnoughForm
- * @tc.desc: Verify that the return value is correct.    
-* @tc.details: 
- *      tempForms_'s size is over 256.    
+ * @tc.desc: Verify that the return value is correct.
+* @tc.details:
+ *      tempForms_'s size is over 256.
  */
 HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_CheckTempEnoughForm_002, TestSize.Level0)
 {
@@ -481,9 +481,9 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_CheckTempEnoughForm_002, TestSiz
 /**
  * @tc.number: FmsFormDataMgrTest_CheckEnoughForm_001
  * @tc.name: CheckEnoughForm
- * @tc.desc: Verify that the return value is correct. 
- * @tc.details: 
- *      formRecords_'s size is over 512.    
+ * @tc.desc: Verify that the return value is correct.
+ * @tc.details:
+ *      formRecords_'s size is over 512.
  */
 HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_CheckEnoughForm_001, TestSize.Level0)
 {
@@ -508,9 +508,9 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_CheckEnoughForm_001, TestSize.Le
 /**
  * @tc.number: FmsFormDataMgrTest_CheckEnoughForm_002
  * @tc.name: CheckEnoughForm
- * @tc.desc: Verify that the return value is correct. 
- * @tc.details: 
- *      there is no formRecords.    
+ * @tc.desc: Verify that the return value is correct.
+ * @tc.details:
+ *      there is no formRecords.
  */
 HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_CheckEnoughForm_002, TestSize.Level0)
 {
@@ -526,9 +526,9 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_CheckEnoughForm_002, TestSize.Le
 /**
  * @tc.number: FmsFormDataMgrTest_CheckEnoughForm_003
  * @tc.name: CheckEnoughForm
- * @tc.desc: Verify that the return value is correct. 
- * @tc.details: 
- *      there is 256 formRecords and their callingUid is 0.    
+ * @tc.desc: Verify that the return value is correct.
+ * @tc.details:
+ *      there is 256 formRecords and their callingUid is 0.
  */
 HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_CheckEnoughForm_003, TestSize.Level0)
 {
@@ -553,8 +553,8 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_CheckEnoughForm_003, TestSize.Le
 /**
  * @tc.number: FmsFormDataMgrTest_DeleteTempForm_001
  * @tc.name: DeleteTempForm
- * @tc.desc: Verify that the return value is correct. 
- * @tc.details: 
+ * @tc.desc: Verify that the return value is correct.
+ * @tc.details:
  *       temp form is not found.
  */
 HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_DeleteTempForm_001, TestSize.Level0)
@@ -570,8 +570,8 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_DeleteTempForm_001, TestSize.Lev
 /**
  * @tc.number: FmsFormDataMgrTest_DeleteTempForm_002
  * @tc.name: DeleteTempForm
- * @tc.desc: Verify that the return value is correct. 
- * @tc.details: 
+ * @tc.desc: Verify that the return value is correct.
+ * @tc.details:
  *       temp form is found.
  */
 HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_DeleteTempForm_002, TestSize.Level0)
@@ -590,8 +590,8 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_DeleteTempForm_002, TestSize.Lev
 /**
  * @tc.number: FmsFormDataMgrTest_ModifyFormTempFlg_001
  * @tc.name: ModifyFormTempFlg
- * @tc.desc: Verify that the return value is correct. 
- * @tc.details: 
+ * @tc.desc: Verify that the return value is correct.
+ * @tc.details:
  *       formRecords is not found.
  */
 HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_ModifyFormTempFlg_001, TestSize.Level0)
@@ -609,8 +609,8 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_ModifyFormTempFlg_001, TestSize.
 /**
  * @tc.number: FmsFormDataMgrTest_ModifyFormTempFlg_002
  * @tc.name: ModifyFormTempFlg
- * @tc.desc: Verify that the return value is correct. 
- * @tc.details: 
+ * @tc.desc: Verify that the return value is correct.
+ * @tc.details:
  *       formRecords is found.
  */
 HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_ModifyFormTempFlg_002, TestSize.Level0)
@@ -636,8 +636,8 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_ModifyFormTempFlg_002, TestSize.
 /**
  * @tc.number: FmsFormDataMgrTest_AddFormUserUid_001
  * @tc.name: AddFormUserUid
- * @tc.desc: Verify that the return value is correct. 
- * @tc.details: 
+ * @tc.desc: Verify that the return value is correct.
+ * @tc.details:
  *       formRecords is not found.
  */
 HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_AddFormUserUid_001, TestSize.Level0)
@@ -655,8 +655,8 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_AddFormUserUid_001, TestSize.Lev
 /**
  * @tc.number: FmsFormDataMgrTest_AddFormUserUid_002
  * @tc.name: AddFormUserUid
- * @tc.desc: Verify that the return value is correct. 
- * @tc.details: 
+ * @tc.desc: Verify that the return value is correct.
+ * @tc.details:
  *       formRecords is found, and add new formUserUid.
  */
 HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_AddFormUserUid_002, TestSize.Level0)
@@ -690,8 +690,8 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_AddFormUserUid_002, TestSize.Lev
 /**
  * @tc.number: FmsFormDataMgrTest_DeleteFormUserUid_001
  * @tc.name: DeleteFormUserUid
- * @tc.desc: Verify that the return value is correct. 
- * @tc.details: 
+ * @tc.desc: Verify that the return value is correct.
+ * @tc.details:
  *       formRecords is not found.
  */
 HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_DeleteFormUserUid_001, TestSize.Level0)
@@ -709,8 +709,8 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_DeleteFormUserUid_001, TestSize.
 /**
  * @tc.number: FmsFormDataMgrTest_DeleteFormUserUid_002
  * @tc.name: DeleteFormUserUid
- * @tc.desc: Verify that the return value is correct. 
- * @tc.details: 
+ * @tc.desc: Verify that the return value is correct.
+ * @tc.details:
  *       formRecords is found, and delete.
  */
 HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_DeleteFormUserUid_002, TestSize.Level0)
@@ -743,8 +743,8 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_DeleteFormUserUid_002, TestSize.
 /**
  * @tc.number: FmsFormDataMgrTest_UpdateFormRecord_001
  * @tc.name: UpdateFormRecord
- * @tc.desc: Verify that the return value is correct. 
- * @tc.details: 
+ * @tc.desc: Verify that the return value is correct.
+ * @tc.details:
  *       formRecords is not found.
  */
 HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_UpdateFormRecord_001, TestSize.Level0)
@@ -767,8 +767,8 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_UpdateFormRecord_001, TestSize.L
 /**
  * @tc.number: FmsFormDataMgrTest_UpdateFormRecord_002
  * @tc.name: UpdateFormRecord
- * @tc.desc: Verify that the return value is correct. 
- * @tc.details: 
+ * @tc.desc: Verify that the return value is correct.
+ * @tc.details:
  *       formRecords is found.
  */
 HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_UpdateFormRecord_002, TestSize.Level0)
@@ -790,7 +790,7 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_UpdateFormRecord_002, TestSize.L
     EXPECT_EQ(true, formDataMgr_.UpdateFormRecord(formId, recordModify));
 
     // check update form
-    auto iter = std::find(formDataMgr_.formRecords_[formId].formUserUids.begin(), 
+    auto iter = std::find(formDataMgr_.formRecords_[formId].formUserUids.begin(),
     formDataMgr_.formRecords_[formId].formUserUids.end(), callingUidModify);
     if (iter != formDataMgr_.formRecords_[formId].formUserUids.end())
     {
@@ -803,8 +803,8 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_UpdateFormRecord_002, TestSize.L
 /**
  * @tc.number: FmsFormDataMgrTest_GetFormRecord_001
  * @tc.name: GetFormRecord
- * @tc.desc: Verify that the return value is correct. 
- * @tc.details: 
+ * @tc.desc: Verify that the return value is correct.
+ * @tc.details:
  *       formRecords is not found.
  */
 HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_GetFormRecord_001, TestSize.Level0)
@@ -822,8 +822,8 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_GetFormRecord_001, TestSize.Leve
 /**
  * @tc.number: FmsFormDataMgrTest_GetFormRecord_002
  * @tc.name: GetFormRecord
- * @tc.desc: Verify that the return value is correct. 
- * @tc.details: 
+ * @tc.desc: Verify that the return value is correct.
+ * @tc.details:
  *       formRecords is found.
  */
 HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_GetFormRecord_002, TestSize.Level0)
@@ -850,8 +850,8 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_GetFormRecord_002, TestSize.Leve
 /**
  * @tc.number: FmsFormDataMgrTest_GetFormRecord_2_001
  * @tc.name: GetFormRecord_2
- * @tc.desc: Verify that the return value is correct. 
- * @tc.details: 
+ * @tc.desc: Verify that the return value is correct.
+ * @tc.details:
  *       formRecords is not found.
  */
 HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_GetFormRecord_2_001, TestSize.Level0)
@@ -869,8 +869,8 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_GetFormRecord_2_001, TestSize.Le
 /**
  * @tc.number: FmsFormDataMgrTest_GetFormRecord_2_002
  * @tc.name: GetFormRecord_2
- * @tc.desc: Verify that the return value is correct. 
- * @tc.details: 
+ * @tc.desc: Verify that the return value is correct.
+ * @tc.details:
  *       formRecords is found.
  */
 HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_GetFormRecord_2_002, TestSize.Level0)
@@ -897,8 +897,8 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_GetFormRecord_2_002, TestSize.Le
 /**
  * @tc.number: FmsFormDataMgrTest_HasFormUserUids_001
  * @tc.name: HasFormUserUids
- * @tc.desc: Verify that the return value is correct. 
- * @tc.details: 
+ * @tc.desc: Verify that the return value is correct.
+ * @tc.details:
  *       formRecords is not found.
  */
 HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_HasFormUserUids_001, TestSize.Level0)
@@ -915,8 +915,8 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_HasFormUserUids_001, TestSize.Le
 /**
  * @tc.number: FmsFormDataMgrTest_HasFormUserUids_002
  * @tc.name: HasFormUserUids
- * @tc.desc: Verify that the return value is correct. 
- * @tc.details: 
+ * @tc.desc: Verify that the return value is correct.
+ * @tc.details:
  *       formRecords is found.
  */
 HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_HasFormUserUids_002, TestSize.Level0)
@@ -940,8 +940,8 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_HasFormUserUids_002, TestSize.Le
 /**
  * @tc.number: FmsFormDataMgrTest_GetFormHostRecord_001
  * @tc.name: GetFormHostRecord
- * @tc.desc: Verify that the return value is correct. 
- * @tc.details: 
+ * @tc.desc: Verify that the return value is correct.
+ * @tc.details:
  *       clientRecords_ is not found.
  */
 HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_GetFormHostRecord_001, TestSize.Level0)
@@ -959,8 +959,8 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_GetFormHostRecord_001, TestSize.
 /**
  * @tc.number: FmsFormDataMgrTest_GetFormHostRecord_002
  * @tc.name: GetFormHostRecord
- * @tc.desc: Verify that the return value is correct. 
- * @tc.details: 
+ * @tc.desc: Verify that the return value is correct.
+ * @tc.details:
  *       clientRecords_ is found.
  */
 HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_GetFormHostRecord_002, TestSize.Level0)
@@ -969,7 +969,7 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_GetFormHostRecord_002, TestSize.
 
     int64_t formId = 2;
     FormHostRecord formHostRecord;
-    
+
     // create clientRecords_
     FormHostRecord form_host_record;
     form_host_record.SetClientStub(token_);
@@ -985,8 +985,8 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_GetFormHostRecord_002, TestSize.
 /**
  * @tc.number: FmsFormDataMgrTest_DeleteHostRecord_001
  * @tc.name: DeleteHostRecord
- * @tc.desc: Verify that the return value is correct. 
- * @tc.details: 
+ * @tc.desc: Verify that the return value is correct.
+ * @tc.details:
  *       clientRecords_ is found.
  */
 HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_DeleteHostRecord_001, TestSize.Level0)
@@ -1010,8 +1010,8 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_DeleteHostRecord_001, TestSize.L
 /**
  * @tc.number: FmsFormDataMgrTest_CleanHostRemovedForms_001
  * @tc.name: CleanHostRemovedForms
- * @tc.desc: Verify that the return value is correct. 
- * @tc.details: 
+ * @tc.desc: Verify that the return value is correct.
+ * @tc.details:
  *       clientRecords_ is found.
  */
 HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_CleanHostRemovedForms_001, TestSize.Level0)
@@ -1036,8 +1036,8 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_CleanHostRemovedForms_001, TestS
 /**
  * @tc.number: FmsFormDataMgrTest_HandleHostDied_001
  * @tc.name: HandleHostDied
- * @tc.desc: Verify that the return value is correct. 
- * @tc.details: 
+ * @tc.desc: Verify that the return value is correct.
+ * @tc.details:
  *       clientRecords_ & tempForms_ & formRecords is found.
  */
 HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_HandleHostDied_001, TestSize.Level0)
@@ -1070,8 +1070,8 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_HandleHostDied_001, TestSize.Lev
 /**
  * @tc.number: FmsFormDataMgrTest_HandleHostDied_002
  * @tc.name: HandleHostDied
- * @tc.desc: Verify that the return value is correct. 
- * @tc.details: 
+ * @tc.desc: Verify that the return value is correct.
+ * @tc.details:
  *       tempForms_ is not match.
  */
 HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_HandleHostDied_002, TestSize.Level0)
@@ -1105,8 +1105,8 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_HandleHostDied_002, TestSize.Lev
 /**
  * @tc.number: FmsFormDataMgrTest_HandleHostDied_003
  * @tc.name: HandleHostDied
- * @tc.desc: Verify that the return value is correct. 
- * @tc.details: 
+ * @tc.desc: Verify that the return value is correct.
+ * @tc.details:
  *       remoteHost is not match, formRecords is not found.
  */
 HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_HandleHostDied_003, TestSize.Level0)
@@ -1121,7 +1121,7 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_HandleHostDied_003, TestSize.Lev
     formHostRecord.SetClientStub(token_2);
     formHostRecord.AddForm(formId);
     formDataMgr_.clientRecords_.push_back(formHostRecord);
-   
+
     // create formRecords
     int callingUid = 0;
     FormItemInfo formItemInfo;
@@ -1137,14 +1137,14 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_HandleHostDied_003, TestSize.Lev
 /**
  * @tc.number: FmsFormDataMgrTest_IsEnableRefresh_001
  * @tc.name: IsEnableRefresh
- * @tc.desc: Verify that the return value is correct. 
- * @tc.details: 
+ * @tc.desc: Verify that the return value is correct.
+ * @tc.details:
  *       clientRecords_ is not found.
  */
 HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_IsEnableRefresh_001, TestSize.Level0)
 {
     GTEST_LOG_(INFO) << "FmsFormDataMgrTest_IsEnableRefresh_001 start";
-    
+
     int64_t formId = 1;
     EXPECT_EQ(false, formDataMgr_.IsEnableRefresh(formId));
 
@@ -1154,14 +1154,14 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_IsEnableRefresh_001, TestSize.Le
 /**
  * @tc.number: FmsFormDataMgrTest_IsEnableRefresh_002
  * @tc.name: IsEnableRefresh
- * @tc.desc: Verify that the return value is correct. 
- * @tc.details: 
+ * @tc.desc: Verify that the return value is correct.
+ * @tc.details:
  *       clientRecords_ is found.
  */
 HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_IsEnableRefresh_002, TestSize.Level0)
 {
     GTEST_LOG_(INFO) << "FmsFormDataMgrTest_IsEnableRefresh_002 start";
-    
+
     int64_t formId = 2;
 
     // create clientRecords_
@@ -1179,14 +1179,14 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_IsEnableRefresh_002, TestSize.Le
 /**
  * @tc.number: FmsFormDataMgrTest_GenerateUdidHash_001
  * @tc.name: GenerateUdidHash
- * @tc.desc: Verify that the return value is correct. 
- * @tc.details: 
+ * @tc.desc: Verify that the return value is correct.
+ * @tc.details:
  *       udidHash_ is not 0.
  */
 HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_GenerateUdidHash_001, TestSize.Level0)
 {
     GTEST_LOG_(INFO) << "FmsFormDataMgrTest_GenerateUdidHash_001 start";
-    
+
     formDataMgr_.udidHash_ = 1;
     EXPECT_EQ(true, formDataMgr_.GenerateUdidHash());
 
@@ -1196,14 +1196,14 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_GenerateUdidHash_001, TestSize.L
 /**
  * @tc.number: FmsFormDataMgrTest_GenerateUdidHash_002
  * @tc.name: GenerateUdidHash
- * @tc.desc: Verify that the return value is correct. 
- * @tc.details: 
+ * @tc.desc: Verify that the return value is correct.
+ * @tc.details:
  *       udidHash_ is 0.
  */
 HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_GenerateUdidHash_002, TestSize.Level0)
 {
     GTEST_LOG_(INFO) << "FmsFormDataMgrTest_GenerateUdidHash_002 start";
-    
+
     formDataMgr_.udidHash_ = Constants::INVALID_UDID_HASH;
     EXPECT_EQ(true, formDataMgr_.GenerateUdidHash());
 
@@ -1213,14 +1213,14 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_GenerateUdidHash_002, TestSize.L
 /**
  * @tc.number: FmsFormDataMgrTest_GetMatchedHostClient_001
  * @tc.name: GetMatchedHostClient
- * @tc.desc: Verify that the return value is correct. 
- * @tc.details: 
+ * @tc.desc: Verify that the return value is correct.
+ * @tc.details:
  *       clientRecords_ is not found.
  */
 HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_GetMatchedHostClient_001, TestSize.Level0)
 {
     GTEST_LOG_(INFO) << "FmsFormDataMgrTest_GetMatchedHostClient_001 start";
-    
+
     // create clientRecords_
     FormHostRecord formHostRecord;
 
@@ -1232,14 +1232,14 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_GetMatchedHostClient_001, TestSi
 /**
  * @tc.number: FmsFormDataMgrTest_GetMatchedHostClient_002
  * @tc.name: GetMatchedHostClient
- * @tc.desc: Verify that the return value is correct. 
- * @tc.details: 
+ * @tc.desc: Verify that the return value is correct.
+ * @tc.details:
  *       clientRecords_ is found.
  */
 HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_GetMatchedHostClient_002, TestSize.Level0)
 {
     GTEST_LOG_(INFO) << "FmsFormDataMgrTest_GetMatchedHostClient_002 start";
-    
+
     int64_t formId = 2;
 
     // create clientRecords_
@@ -1259,14 +1259,14 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_GetMatchedHostClient_002, TestSi
 /**
  * @tc.number: FmsFormDataMgrTest_SetNeedRefresh_001
  * @tc.name: SetNeedRefresh
- * @tc.desc: Verify that the return value is correct. 
- * @tc.details: 
+ * @tc.desc: Verify that the return value is correct.
+ * @tc.details:
  *       formRecords_ is not found.
  */
 HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_SetNeedRefresh_001, TestSize.Level0)
 {
     GTEST_LOG_(INFO) << "FmsFormDataMgrTest_SetNeedRefresh_001 start";
-        
+
     int64_t formId = 1;
     bool needRefresh = true;
 
@@ -1278,14 +1278,14 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_SetNeedRefresh_001, TestSize.Lev
 /**
  * @tc.number: FmsFormDataMgrTest_SetNeedRefresh_002
  * @tc.name: SetNeedRefresh
- * @tc.desc: Verify that the return value is correct. 
- * @tc.details: 
+ * @tc.desc: Verify that the return value is correct.
+ * @tc.details:
  *       formRecords_ is not found.
  */
 HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_SetNeedRefresh_002, TestSize.Level0)
 {
     GTEST_LOG_(INFO) << "FmsFormDataMgrTest_SetNeedRefresh_002 start";
-        
+
     int64_t formId = 2;
     bool needRefresh = true;
 
@@ -1305,14 +1305,14 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_SetNeedRefresh_002, TestSize.Lev
 /**
  * @tc.number: FmsFormDataMgrTest_SetCountTimerRefresh_001
  * @tc.name: SetCountTimerRefresh
- * @tc.desc: Verify that the return value is correct. 
- * @tc.details: 
+ * @tc.desc: Verify that the return value is correct.
+ * @tc.details:
  *       formRecords_ is not found.
  */
 HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_SetCountTimerRefresh_001, TestSize.Level0)
 {
     GTEST_LOG_(INFO) << "FmsFormDataMgrTest_SetCountTimerRefresh_001 start";
-        
+
     int64_t formId = 1;
     bool countTimerRefresh = true;
 
@@ -1324,14 +1324,14 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_SetCountTimerRefresh_001, TestSi
 /**
  * @tc.number: FmsFormDataMgrTest_SetCountTimerRefresh_002
  * @tc.name: SetCountTimerRefresh
- * @tc.desc: Verify that the return value is correct. 
- * @tc.details: 
+ * @tc.desc: Verify that the return value is correct.
+ * @tc.details:
  *       formRecords_ is not found.
  */
 HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_SetCountTimerRefresh_002, TestSize.Level0)
 {
     GTEST_LOG_(INFO) << "FmsFormDataMgrTest_SetCountTimerRefresh_002 start";
-        
+
     int64_t formId = 2;
     bool countTimerRefresh = true;
 
@@ -1351,21 +1351,21 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_SetCountTimerRefresh_002, TestSi
 /**
  * @tc.number: FmsFormDataMgrTest_GetUpdatedForm_001
  * @tc.name: GetUpdatedForm
- * @tc.desc: Verify that the return value is correct. 
- * @tc.details: 
+ * @tc.desc: Verify that the return value is correct.
+ * @tc.details:
  *       targetForms is empty.
  */
 HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_GetUpdatedForm_001, TestSize.Level0)
 {
     GTEST_LOG_(INFO) << "FmsFormDataMgrTest_GetUpdatedForm_001 start";
-        
+
     FormRecord record;
     record.bundleName = "";
     record.moduleName = "";
     record.abilityName = "";
     record.formName = "";
     record.specification = 0;
-    
+
     std::vector<FormInfo> targetForms;
     FormInfo updatedForm;
 
@@ -1377,14 +1377,14 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_GetUpdatedForm_001, TestSize.Lev
 /**
  * @tc.number: FmsFormDataMgrTest_GetUpdatedForm_002
  * @tc.name: GetUpdatedForm
- * @tc.desc: Verify that the return value is correct. 
- * @tc.details: 
+ * @tc.desc: Verify that the return value is correct.
+ * @tc.details:
  *       targetForms is not empty. record is same as formInfo.
  */
 HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_GetUpdatedForm_002, TestSize.Level0)
 {
     GTEST_LOG_(INFO) << "FmsFormDataMgrTest_GetUpdatedForm_002 start";
-        
+
     int32_t specification = 2;
 
     FormRecord record;
@@ -1414,14 +1414,14 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_GetUpdatedForm_002, TestSize.Lev
 /**
  * @tc.number: FmsFormDataMgrTest_GetUpdatedForm_003
  * @tc.name: GetUpdatedForm
- * @tc.desc: Verify that the return value is correct. 
- * @tc.details: 
+ * @tc.desc: Verify that the return value is correct.
+ * @tc.details:
  *       targetForms is not empty. record is not same as formInfo.
  */
 HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_GetUpdatedForm_003, TestSize.Level0)
 {
     GTEST_LOG_(INFO) << "FmsFormDataMgrTest_GetUpdatedForm_003 start";
-        
+
     int32_t specification = 3;
 
     FormRecord record;
@@ -1450,14 +1450,14 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_GetUpdatedForm_003, TestSize.Lev
 /**
  * @tc.number: FmsFormDataMgrTest_SetEnableUpdate_001
  * @tc.name: SetEnableUpdate
- * @tc.desc: Verify that the return value is correct. 
- * @tc.details: 
+ * @tc.desc: Verify that the return value is correct.
+ * @tc.details:
  *       formRecords_ is not found.
  */
 HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_SetEnableUpdate_001, TestSize.Level0)
 {
     GTEST_LOG_(INFO) << "FmsFormDataMgrTest_SetEnableUpdate_001 start";
-        
+
     int64_t formId = 1;
     bool enableUpdate = true;
 
@@ -1469,14 +1469,14 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_SetEnableUpdate_001, TestSize.Le
 /**
  * @tc.number: FmsFormDataMgrTest_SetEnableUpdate_002
  * @tc.name: SetEnableUpdate
- * @tc.desc: Verify that the return value is correct. 
- * @tc.details: 
+ * @tc.desc: Verify that the return value is correct.
+ * @tc.details:
  *       formRecords_ is not found.
  */
 HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_SetEnableUpdate_002, TestSize.Level0)
 {
     GTEST_LOG_(INFO) << "FmsFormDataMgrTest_SetEnableUpdate_002 start";
-        
+
     int64_t formId = 2;
     bool enableUpdate = true;
 
@@ -1496,8 +1496,8 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_SetEnableUpdate_002, TestSize.Le
 /**
  * @tc.number: FmsFormDataMgrTest_SetUpdateInfo_001
  * @tc.name: SetUpdateInfo
- * @tc.desc: Verify that the return value is correct. 
- * @tc.details: 
+ * @tc.desc: Verify that the return value is correct.
+ * @tc.details:
  *       formRecords_ is not found.
  */
 HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_SetUpdateInfo_001, TestSize.Level0)
@@ -1518,14 +1518,14 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_SetUpdateInfo_001, TestSize.Leve
 /**
  * @tc.number: FmsFormDataMgrTest_SetUpdateInfo_002
  * @tc.name: SetUpdateInfo
- * @tc.desc: Verify that the return value is correct. 
- * @tc.details: 
+ * @tc.desc: Verify that the return value is correct.
+ * @tc.details:
  *       formRecords_ is not found.
  */
 HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_SetUpdateInfo_002, TestSize.Level0)
 {
     GTEST_LOG_(INFO) << "FmsFormDataMgrTest_SetUpdateInfo_002 start";
-        
+
     int64_t formId = 1;
     bool enableUpdate = true;
     long updateDuration = 100;
@@ -1552,8 +1552,8 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_SetUpdateInfo_002, TestSize.Leve
  * @tc.number: FmsFormDataMgrTest_CleanRemovedFormRecords_001
  * @tc.name: CleanRemovedFormRecords
 
- * @tc.desc: Verify that the return value is correct. 
- * @tc.details: 
+ * @tc.desc: Verify that the return value is correct.
+ * @tc.details:
  *       removedForm is matched with formRecords_.
  */
 HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_CleanRemovedFormRecords_001, TestSize.Level0)
@@ -1573,7 +1573,7 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_CleanRemovedFormRecords_001, Tes
     std::set<int64_t> removedForms;
     int64_t removedForm = formId;
     removedForms.emplace(removedForm);
-    
+
     formDataMgr_.CleanRemovedFormRecords(bundleName, removedForms);
     EXPECT_EQ(true, formDataMgr_.formRecords_.empty());
 
@@ -1584,8 +1584,8 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_CleanRemovedFormRecords_001, Tes
  * @tc.number: FmsFormDataMgrTest_CleanRemovedFormRecords_002
  * @tc.name: CleanRemovedFormRecords
 
- * @tc.desc: Verify that the return value is correct. 
- * @tc.details: 
+ * @tc.desc: Verify that the return value is correct.
+ * @tc.details:
  *       removedForm is not matched with formRecords_.
  */
 HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_CleanRemovedFormRecords_002, TestSize.Level0)
@@ -1605,7 +1605,7 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_CleanRemovedFormRecords_002, Tes
     std::set<int64_t> removedForms;
     int64_t removedForm = 100;
     removedForms.emplace(removedForm);
-    
+
     formDataMgr_.CleanRemovedFormRecords(bundleName, removedForms);
 
     GTEST_LOG_(INFO) << "FmsFormDataMgrTest_CleanRemovedFormRecords_002 end";
@@ -1615,18 +1615,18 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_CleanRemovedFormRecords_002, Tes
  * @tc.number: FmsFormDataMgrTest_CleanRemovedTempFormRecords_001
  * @tc.name: CleanRemovedTempFormRecords
 
- * @tc.desc: Verify that the return value is correct. 
- * @tc.details: 
+ * @tc.desc: Verify that the return value is correct.
+ * @tc.details:
  *      bundleName is matched with formRecords_, and it is temp.
  *      erase formRecords_ and tempForms_.
  */
 HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_CleanRemovedTempFormRecords_001, TestSize.Level0)
 {
     GTEST_LOG_(INFO) << "FmsFormDataMgrTest_CleanRemovedTempFormRecords_001 start";
-    
+
     int64_t formId = 1;
     std::string bundleName = FORM_HOST_BUNDLE_NAME;
-   
+
     std::set<int64_t> removedForms;
     int64_t removedForm = formId;
     removedForms.emplace(removedForm);
@@ -1653,15 +1653,15 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_CleanRemovedTempFormRecords_001,
  * @tc.number: FmsFormDataMgrTest_CleanRemovedTempFormRecords_002
  * @tc.name: CleanRemovedTempFormRecords
 
- * @tc.desc: Verify that the return value is correct. 
- * @tc.details: 
+ * @tc.desc: Verify that the return value is correct.
+ * @tc.details:
  *      bundleName is not matched with formRecords_.
  *      erase none.
  */
 HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_CleanRemovedTempFormRecords_002, TestSize.Level0)
 {
     GTEST_LOG_(INFO) << "FmsFormDataMgrTest_CleanRemovedTempFormRecords_002 start";
-    
+
     int64_t formId = 2;
     std::string bundleName = FORM_HOST_BUNDLE_NAME;
     std::string otherBundleName = "bundleName";
@@ -1692,15 +1692,15 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_CleanRemovedTempFormRecords_002,
  * @tc.number: FmsFormDataMgrTest_GetReCreateFormRecordsByBundleName_001
  * @tc.name: GetReCreateFormRecordsByBundleName
 
- * @tc.desc: Verify that the return value is correct. 
+ * @tc.desc: Verify that the return value is correct.
  */
 HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_GetReCreateFormRecordsByBundleName_001, TestSize.Level0)
 {
     GTEST_LOG_(INFO) << "FmsFormDataMgrTest_GetReCreateFormRecordsByBundleName_001 start";
-    
+
     int64_t formId = 1;
     std::string bundleName = FORM_HOST_BUNDLE_NAME;
-   
+
     std::set<int64_t> reCreateForms;
     int64_t reCreateForm = formId;
     reCreateForms.emplace(reCreateForm);
@@ -1722,8 +1722,8 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_GetReCreateFormRecordsByBundleNa
 /**
  * @tc.number: FmsFormDataMgrTest_SetFormCacheInited_001
  * @tc.name: SetFormCacheInited
- * @tc.desc: Verify that the return value is correct. 
- * @tc.details: 
+ * @tc.desc: Verify that the return value is correct.
+ * @tc.details:
  *       formRecords_ is not found.
  */
 HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_SetFormCacheInited_001, TestSize.Level0)
@@ -1740,8 +1740,8 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_SetFormCacheInited_001, TestSize
 /**
  * @tc.number: FmsFormDataMgrTest_SetFormCacheInited_002
  * @tc.name: SetFormCacheInited
- * @tc.desc: Verify that the return value is correct. 
- * @tc.details: 
+ * @tc.desc: Verify that the return value is correct.
+ * @tc.details:
  *       formRecords_ is found.
  */
 HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_SetFormCacheInited_002, TestSize.Level0)
@@ -1767,8 +1767,8 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_SetFormCacheInited_002, TestSize
 /**
  * @tc.number: FmsFormDataMgrTest_SetVersionUpgrade_001
  * @tc.name: SetVersionUpgrade
- * @tc.desc: Verify that the return value is correct. 
- * @tc.details: 
+ * @tc.desc: Verify that the return value is correct.
+ * @tc.details:
  *       formRecords_ is not found.
  */
 HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_SetVersionUpgrade_001, TestSize.Level0)
@@ -1786,8 +1786,8 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_SetVersionUpgrade_001, TestSize.
 /**
  * @tc.number: FmsFormDataMgrTest_SetVersionUpgrade_002
  * @tc.name: SetFormCacheInited
- * @tc.desc: Verify that the return value is correct. 
- * @tc.details: 
+ * @tc.desc: Verify that the return value is correct.
+ * @tc.details:
  *       formRecords_ is found.
  */
 HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_SetVersionUpgrade_002, TestSize.Level0)
@@ -1813,7 +1813,7 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_SetVersionUpgrade_002, TestSize.
 /**
  * @tc.number: FmsFormDataMgrTest_UpdateHostNeedRefresh_001
  * @tc.name: UpdateHostNeedRefresh
- * @tc.desc: Verify that the return value is correct. 
+ * @tc.desc: Verify that the return value is correct.
  */
 HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_UpdateHostNeedRefresh_001, TestSize.Level0)
 {
@@ -1835,7 +1835,7 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_UpdateHostNeedRefresh_001, TestS
 /**
  * @tc.number: FmsFormDataMgrTest_UpdateHostForm_001
  * @tc.name: UpdateHostForm
- * @tc.desc: Verify that the return value is correct. 
+ * @tc.desc: Verify that the return value is correct.
  */
 HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_UpdateHostForm_001, TestSize.Level0)
 {
@@ -1857,9 +1857,9 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_UpdateHostForm_001, TestSize.Lev
 /**
  * @tc.number: FmsFormDataMgrTest_UpdateHostFormFlag_001
  * @tc.name: UpdateHostFormFlag
- * @tc.desc: Verify that the return value is correct. 
- * @tc.details: 
- *       clientRecords_ is not exit.  
+ * @tc.desc: Verify that the return value is correct.
+ * @tc.details:
+ *       clientRecords_ is not exit.
  */
 HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_UpdateHostFormFlag_001, TestSize.Level0)
 {
@@ -1882,8 +1882,8 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_UpdateHostFormFlag_001, TestSize
  * @tc.number: FmsFormDataMgrTest_UpdateHostFormFlag_002
  * @tc.name: UpdateHostFormFlag
  * @tc.desc: Verify that the return value is correct.
- * @tc.details: 
- *       formRecords's VersionUpgrade is false.  
+ * @tc.details:
+ *       formRecords's VersionUpgrade is false.
  */
 HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_UpdateHostFormFlag_002, TestSize.Level0)
 {
@@ -1922,9 +1922,9 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_UpdateHostFormFlag_002, TestSize
 /**
  * @tc.number: FmsFormDataMgrTest_UpdateHostFormFlag_003
  * @tc.name: UpdateHostFormFlag
- * @tc.desc: Verify that the return value is correct. 
- * @tc.details: 
- *       formRecords's VersionUpgrade is true.  
+ * @tc.desc: Verify that the return value is correct.
+ * @tc.details:
+ *       formRecords's VersionUpgrade is true.
  */
 HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_UpdateHostFormFlag_003, TestSize.Level0)
 {
@@ -1963,9 +1963,9 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_UpdateHostFormFlag_003, TestSize
 /**
  * @tc.number: FmsFormDataMgrTest_UpdateHostFormFlag_004
  * @tc.name: UpdateHostFormFlag
- * @tc.desc: Verify that the return value is correct. 
- * @tc.details: 
- *       clientRecords_'s NeedRefresh is false.  
+ * @tc.desc: Verify that the return value is correct.
+ * @tc.details:
+ *       clientRecords_'s NeedRefresh is false.
  */
 HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_UpdateHostFormFlag_004, TestSize.Level0)
 {
@@ -2002,9 +2002,9 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_UpdateHostFormFlag_004, TestSize
 /**
  * @tc.number: FmsFormDataMgrTest_UpdateHostFormFlag_005
  * @tc.name: UpdateHostFormFlag
- * @tc.desc: Verify that the return value is correct. 
- * @tc.details: 
- *       clientRecords_ is not include formId.  
+ * @tc.desc: Verify that the return value is correct.
+ * @tc.details:
+ *       clientRecords_ is not include formId.
  */
 HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_UpdateHostFormFlag_005, TestSize.Level0)
 {
@@ -2040,9 +2040,9 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_UpdateHostFormFlag_005, TestSize
 /**
  * @tc.number: FmsFormDataMgrTest_UpdateHostFormFlag_006
  * @tc.name: UpdateHostFormFlag
- * @tc.desc: Verify that the return value is correct. 
- * @tc.details: 
- *       flag is false.  
+ * @tc.desc: Verify that the return value is correct.
+ * @tc.details:
+ *       flag is false.
  */
 HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_UpdateHostFormFlag_006, TestSize.Level0)
 {
@@ -2077,9 +2077,9 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_UpdateHostFormFlag_006, TestSize
 /**
  * @tc.number: FmsFormDataMgrTest_UpdateHostFormFlag_007
  * @tc.name: UpdateHostFormFlag
- * @tc.desc: Verify that the return value is correct. 
- * @tc.details: 
- *       formRecords's needRefresh is true.  
+ * @tc.desc: Verify that the return value is correct.
+ * @tc.details:
+ *       formRecords's needRefresh is true.
  */
 HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_UpdateHostFormFlag_007, TestSize.Level0)
 {
@@ -2105,7 +2105,7 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_UpdateHostFormFlag_007, TestSize
     InitFormItemInfo(formId, formItemInfo);
     FormRecord record = formDataMgr_.CreateFormRecord(formItemInfo, callingUid);
     // needRefresh:true
-    record.needRefresh = true; 
+    record.needRefresh = true;
     formDataMgr_.formRecords_.emplace(formId, record);
 
     EXPECT_EQ(ERR_OK, formDataMgr_.UpdateHostFormFlag(formIds, token_, flag, refreshForms));
@@ -2116,9 +2116,9 @@ HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_UpdateHostFormFlag_007, TestSize
 /**
  * @tc.number: FmsFormDataMgrTest_UpdateHostFormFlag_008
  * @tc.name: UpdateHostFormFlag
- * @tc.desc: Verify that the return value is correct. 
- * @tc.details: 
- *       formRecords is not include formId.  
+ * @tc.desc: Verify that the return value is correct.
+ * @tc.details:
+ *       formRecords is not include formId.
  */
 HWTEST_F(FmsFormDataMgrTest, FmsFormDataMgrTest_UpdateHostFormFlag_008, TestSize.Level0)
 {

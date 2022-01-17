@@ -200,7 +200,7 @@ ErrCode BundleCloneMgr::ProcessCloneInstall(const std::string &bundleName)
     bundleName_ = cloneInfo_.GetBundleName();
     modulePackage_ = cloneInfo_.GetCurrentModulePackage();
     mainAbility_ = cloneInfo_.GetMainAbilityName();
-    
+
     // Create clone Uid
     result = CreateBundleAndDataDir(cloneInfo_);
     if (result != ERR_OK) {

@@ -94,7 +94,7 @@ void FmsFormMgrRequestFormTest::SetUp()
     permDef.descriptionId = 1;
     permList.emplace_back(permDef);
     Permission::PermissionKit::AddDefPermissions(permList);
-    Permission::PermissionKit::AddUserGrantedReqPermissions(FORM_PROVIDER_BUNDLE_NAME, 
+    Permission::PermissionKit::AddUserGrantedReqPermissions(FORM_PROVIDER_BUNDLE_NAME,
         {PERMISSION_NAME_REQUIRE_FORM}, 0);
     Permission::PermissionKit::GrantUserGrantedPermission(FORM_PROVIDER_BUNDLE_NAME, PERMISSION_NAME_REQUIRE_FORM, 0);
 }
@@ -113,7 +113,7 @@ void FmsFormMgrRequestFormTest::TearDown()
 HWTEST_F(FmsFormMgrRequestFormTest, RequestForm_001, TestSize.Level0)
 {
     APP_LOGI("fms_form_mgr_request_test_001 start");
-    
+
     int64_t formId {0X0000FFFF00000000};
     int callingUid {0};
     // Create cache
@@ -135,49 +135,6 @@ HWTEST_F(FmsFormMgrRequestFormTest, RequestForm_001, TestSize.Level0)
     FormDataMgr::GetInstance().DeleteFormRecord(formId);
     FormDataMgr::GetInstance().DeleteHostRecord(token_, formId);
     APP_LOGI("fms_form_mgr_request_test_001 end");
-}
-
-/*
- * Feature: FormMgrService
- * Function: FormMgrClient
- * SubFunction: RequestForm Function
- * FunctionPoints: FormMgrClient RequestForm interface
- * EnvConditions: Mobile that can run ohos test framework
- * CaseDescription: Abnomal case: Verify permission deny.
- */
-HWTEST_F(FmsFormMgrRequestFormTest, RequestForm_002, TestSize.Level0)
-{
-    APP_LOGI("fms_form_mgr_request_test_002 start");
-    
-    int64_t formId {0X0000FFAF00000000};
-    FormItemInfo itemInfo;
-    FormDataMgr::GetInstance().AllotFormHostRecord(itemInfo, token_, formId, 0);
-
-    Want want;
-    OHOS::Security::Permission::PermissionKit::RemoveDefPermissions(FORM_PROVIDER_BUNDLE_NAME);
-    OHOS::Security::Permission::PermissionKit::RemoveUserGrantedReqPermissions(FORM_PROVIDER_BUNDLE_NAME, 0);
-    OHOS::Security::Permission::PermissionKit::RemoveSystemGrantedReqPermissions(FORM_PROVIDER_BUNDLE_NAME);
-    EXPECT_EQ(ERR_APPEXECFWK_FORM_PERMISSION_DENY, FormMgr::GetInstance().RequestForm(formId, token_, want));
-    // Permission install
-    std::vector<Permission::PermissionDef> permList;
-    Permission::PermissionDef permDef;
-    permDef.permissionName = PERMISSION_NAME_REQUIRE_FORM;
-    permDef.bundleName = FORM_PROVIDER_BUNDLE_NAME;
-    permDef.grantMode = Permission::GrantMode::USER_GRANT;
-    permDef.availableScope = Permission::AvailableScope::AVAILABLE_SCOPE_ALL;
-    permDef.label = DEF_LABEL1;
-    permDef.labelId = 1;
-    permDef.description = DEF_LABEL1;
-    permDef.descriptionId = 1;
-    permList.emplace_back(permDef);
-    Permission::PermissionKit::AddDefPermissions(permList);
-    Permission::PermissionKit::AddUserGrantedReqPermissions(FORM_PROVIDER_BUNDLE_NAME, {PERMISSION_NAME_REQUIRE_FORM}, 
-    0);
-    Permission::PermissionKit::GrantUserGrantedPermission(FORM_PROVIDER_BUNDLE_NAME, PERMISSION_NAME_REQUIRE_FORM, 0);
-    token_->Wait();
-    FormDataMgr::GetInstance().DeleteFormRecord(formId);
-    FormDataMgr::GetInstance().DeleteHostRecord(token_, formId);
-    APP_LOGI("fms_form_mgr_request_test_002 end");
 }
 
 /*

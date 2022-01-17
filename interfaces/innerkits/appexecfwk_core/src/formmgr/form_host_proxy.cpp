@@ -37,11 +37,11 @@ void FormHostProxy::OnAcquired(const FormJsInfo &formInfo)
     if (!data.WriteParcelable(&formInfo)) {
         APP_LOGE("%{public}s, failed to write formInfo", __func__);
     }
- 
+
     error = Remote()->SendRequest(
-        static_cast<uint32_t>(IFormHost::Message::FORM_HOST_ON_ACQUIRED), 
-        data, 
-        reply, 
+        static_cast<uint32_t>(IFormHost::Message::FORM_HOST_ON_ACQUIRED),
+        data,
+        reply,
         option);
     if (error != ERR_OK) {
         APP_LOGE("%{public}s, failed to SendRequest: %{public}d", __func__, error);
@@ -95,9 +95,9 @@ void  FormHostProxy::OnUninstall(const std::vector<int64_t> &formIds)
     }
 
     error = Remote()->SendRequest(
-        static_cast<uint32_t>(IFormHost::Message::FORM_HOST_ON_UNINSTALL), 
-        data, 
-        reply, 
+        static_cast<uint32_t>(IFormHost::Message::FORM_HOST_ON_UNINSTALL),
+        data,
+        reply,
         option);
     if (error != ERR_OK) {
         APP_LOGE("%{public}s, failed to SendRequest: %{public}d", __func__, error);

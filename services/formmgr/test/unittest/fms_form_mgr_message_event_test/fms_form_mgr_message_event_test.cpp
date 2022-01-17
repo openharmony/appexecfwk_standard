@@ -69,7 +69,7 @@ public:
 protected:
     sptr<MockFormHostClient> token_;
     std::shared_ptr<FormMgrService> formyMgrServ_ = DelayedSingleton<FormMgrService>::GetInstance();
-    
+
     sptr<BundleMgrService> mockBundleMgr_;
     sptr<MockAbilityMgrService> mockAbilityMgrServ_;
 };
@@ -87,7 +87,7 @@ void FmsFormMgrMessageEventTest::SetUp()
     mockBundleMgr_ = new (std::nothrow) BundleMgrService();
     EXPECT_TRUE(mockBundleMgr_ != nullptr);
     FormBmsHelper::GetInstance().SetBundleManager(mockBundleMgr_);
-    
+
     mockAbilityMgrServ_ = new (std::nothrow) MockAbilityMgrService();
     FormAmsHelper::GetInstance().SetAbilityManager(mockAbilityMgrServ_);
 
@@ -106,7 +106,7 @@ void FmsFormMgrMessageEventTest::SetUp()
     permDef.descriptionId = 1;
     permList.emplace_back(permDef);
     Permission::PermissionKit::AddDefPermissions(permList);
-    Permission::PermissionKit::AddUserGrantedReqPermissions(FORM_PROVIDER_BUNDLE_NAME, 
+    Permission::PermissionKit::AddUserGrantedReqPermissions(FORM_PROVIDER_BUNDLE_NAME,
         {PERMISSION_NAME_REQUIRE_FORM}, 0);
     Permission::PermissionKit::GrantUserGrantedPermission(FORM_PROVIDER_BUNDLE_NAME, PERMISSION_NAME_REQUIRE_FORM, 0);
 }
@@ -153,52 +153,10 @@ HWTEST_F(FmsFormMgrMessageEventTest, MessageEvent_001, TestSize.Level0)
     want.SetElementName(DEVICE_ID, FORM_PROVIDER_BUNDLE_NAME, FORM_PROVIDER_ABILITY_NAME);
     want.SetParam(Constants::PARAM_MESSAGE_KEY, FORM_MESSAGE_EVENT_VALUE_1);
     EXPECT_EQ(ERR_OK, FormMgr::GetInstance().MessageEvent(formId, want, token_));
-   
+
     GTEST_LOG_(INFO) << "fms_form_mgr_message_event_test_001 end";
 }
 
-/*
- * Feature: FormMgrService
- * Function: FormMgr
- * SubFunction: MessageEvent Function
- * FunctionPoints: FormMgr MessageEvent interface
- * EnvConditions: Mobile that can run ohos test framework
- * CaseDescription: An exception tests if check permission error.
- */
-HWTEST_F(FmsFormMgrMessageEventTest, MessageEvent_002, TestSize.Level0)
-{
-    GTEST_LOG_(INFO) << "fms_form_mgr_message_event_test_002 start";
-    int64_t formId {10000001};
-    // Remove Permission
-    OHOS::Security::Permission::PermissionKit::RemoveDefPermissions(FORM_PROVIDER_BUNDLE_NAME);
-    OHOS::Security::Permission::PermissionKit::RemoveUserGrantedReqPermissions(FORM_PROVIDER_BUNDLE_NAME, 0);
-    OHOS::Security::Permission::PermissionKit::RemoveSystemGrantedReqPermissions(FORM_PROVIDER_BUNDLE_NAME);
-
-    Want want;
-    want.SetParam(Constants::PARAM_FORM_HOST_BUNDLENAME_KEY, FORM_HOST_BUNDLE_NAME);
-    want.SetParam(Constants::PARAM_MODULE_NAME_KEY, PARAM_PROVIDER_MODULE_NAME);
-    want.SetParam(Constants::PARAM_FORM_NAME_KEY, PARAM_FORM_NAME);
-    want.SetElementName(DEVICE_ID, FORM_PROVIDER_BUNDLE_NAME, FORM_PROVIDER_ABILITY_NAME);
-    want.SetParam(Constants::PARAM_MESSAGE_KEY, FORM_MESSAGE_EVENT_VALUE_1);
-    EXPECT_EQ(ERR_APPEXECFWK_FORM_PERMISSION_DENY, FormMgr::GetInstance().MessageEvent(formId, want, token_));
-    // Permission install
-    std::vector<Permission::PermissionDef> permList;
-    Permission::PermissionDef permDef;
-    permDef.permissionName = PERMISSION_NAME_REQUIRE_FORM;
-    permDef.bundleName = FORM_PROVIDER_BUNDLE_NAME;
-    permDef.grantMode = Permission::GrantMode::USER_GRANT;
-    permDef.availableScope = Permission::AvailableScope::AVAILABLE_SCOPE_ALL;
-    permDef.label = DEF_LABEL1;
-    permDef.labelId = 1;
-    permDef.description = DEF_LABEL1;
-    permDef.descriptionId = 1;
-    permList.emplace_back(permDef);
-    Permission::PermissionKit::AddDefPermissions(permList);
-    Permission::PermissionKit::AddUserGrantedReqPermissions(FORM_PROVIDER_BUNDLE_NAME, {PERMISSION_NAME_REQUIRE_FORM}, 
-    0);
-    Permission::PermissionKit::GrantUserGrantedPermission(FORM_PROVIDER_BUNDLE_NAME, PERMISSION_NAME_REQUIRE_FORM, 0);
-    GTEST_LOG_(INFO) << "fms_form_mgr_message_event_test_002 end";
-}
 /*
  * Feature: FormMgrService
  * Function: FormMgr
@@ -306,7 +264,7 @@ HWTEST_F(FmsFormMgrMessageEventTest, MessageEvent_007, TestSize.Level0)
     want.SetParam(Constants::PARAM_FORM_NAME_KEY, PARAM_FORM_NAME);
     want.SetElementName(DEVICE_ID, FORM_PROVIDER_BUNDLE_NAME, FORM_PROVIDER_ABILITY_NAME);
     want.SetParam(Constants::PARAM_MESSAGE_KEY, FORM_MESSAGE_EVENT_VALUE_1);
-    EXPECT_EQ(ERR_APPEXECFWK_FORM_COMMON_CODE, FormMgr::GetInstance().MessageEvent(formId, want, 
+    EXPECT_EQ(ERR_APPEXECFWK_FORM_COMMON_CODE, FormMgr::GetInstance().MessageEvent(formId, want,
     new (std::nothrow) MockFormHostClient()));
     GTEST_LOG_(INFO) << "fms_form_mgr_message_event_test_007 end";
 }
@@ -341,7 +299,7 @@ HWTEST_F(FmsFormMgrMessageEventTest, MessageEvent_008, TestSize.Level0)
     // Set host record
     FormItemInfo info;
     FormDataMgr::GetInstance().AllotFormHostRecord(info, token_, formId, callingUid);
- 
+
     FormDataMgr::GetInstance().DeleteHostRecord(token_, formId2);
 
     Want want;

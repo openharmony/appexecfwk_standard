@@ -884,7 +884,7 @@ public:
                     Constants::PATH_SEPARATOR +innerModuleInfos_.at(currentPackage_).distro.moduleName +
                     Constants::PATH_SEPARATOR + Constants::RESOURCES_INDEX;
             }
-            
+
             innerModuleInfos_.at(currentPackage_).moduleResPath = moduleResPath;
             for (auto &abilityInfo : baseAbilityInfos_) {
                 abilityInfo.second.resourcePath = moduleResPath;
@@ -1307,7 +1307,7 @@ public:
         return hasConfigureRemovable_;
     }
 
-    /** 
+    /**
      * @brief Get whether the bundle is a system app.
      * @return Return whether the bundle is a system app.
      */

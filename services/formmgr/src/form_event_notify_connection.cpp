@@ -26,7 +26,7 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-FormEventNotifyConnection::FormEventNotifyConnection(const std::vector<int64_t> formEvents, 
+FormEventNotifyConnection::FormEventNotifyConnection(const std::vector<int64_t> formEvents,
     const int32_t formVisibleType, const std::string &bundleName, const std::string &abilityName)
     :formEvents_(formEvents),
     formVisibleType_(formVisibleType)
@@ -35,7 +35,7 @@ FormEventNotifyConnection::FormEventNotifyConnection(const std::vector<int64_t> 
 }
 /**
  * @brief OnAbilityConnectDone, AbilityMs notify caller ability the result of connect.
- * 
+ *
  * @param element Service ability's ElementName.
  * @param remoteObject The session proxy of service ability.
  * @param resultCode ERR_OK on success, others on failure.

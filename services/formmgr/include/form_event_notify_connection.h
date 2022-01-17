@@ -35,14 +35,14 @@ public:
 
     /**
      * @brief OnAbilityConnectDone, AbilityMs notify caller ability the result of connect.
-     * 
+     *
      * @param element service ability's ElementName.
      * @param remoteObject the session proxy of service ability.
      * @param resultCode ERR_OK on success, others on failure.
      */
     void OnAbilityConnectDone(
         const AppExecFwk::ElementName &element, const sptr<IRemoteObject> &remoteObject, int resultCode) override;
-    
+
 private:
     std::vector<int64_t> formEvents_;
     int32_t formVisibleType_;

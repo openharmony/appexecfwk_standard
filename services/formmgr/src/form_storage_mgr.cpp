@@ -95,7 +95,7 @@ void FormStorageMgr::SaveEntries(
  */
 ErrCode FormStorageMgr::LoadFormData(std::vector<InnerFormInfo> &innerFormInfos)
 {
-    APP_LOGD("%{public}s called.", __func__);
+    APP_LOGI("%{public}s called.", __func__);
     bool ret = ERR_OK;
     {
         std::lock_guard<std::mutex> lock(kvStorePtrMutex_);
@@ -118,7 +118,7 @@ ErrCode FormStorageMgr::LoadFormData(std::vector<InnerFormInfo> &innerFormInfos)
         SaveEntries(allEntries, innerFormInfos);
     }
 
-    APP_LOGD("%{public}s, readdir over", __func__);
+    APP_LOGI("%{public}s, readdir over", __func__);
     return ret;
 }
 

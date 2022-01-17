@@ -40,7 +40,7 @@ namespace Constants {
 
     const std::string KEY_IS_TIMER = "isTimerRefresh";
     const std::string SYSTEM_PARAM_FORM_UPDATE_TIME = "persist.sys.fms.form.update.time";
-    const std::string SYSTEM_PARAM_FORM_REFRESH_MIN_TIME = "persist.sys.fms.form.refresh.min.time";    
+    const std::string SYSTEM_PARAM_FORM_REFRESH_MIN_TIME = "persist.sys.fms.form.refresh.min.time";
     const std::string ACTION_UPDATEATTIMER = "form_update_at_timer";
     const std::string KEY_WAKEUP_TIME = "wakeUpTime";
     const std::string KEY_ACTION_TYPE = "form_update_action_type";
@@ -48,7 +48,7 @@ namespace Constants {
     const int TYPE_STATIC_UPDATE = 2;
     const int TYPE_DYNAMIC_UPDATE = 3;
     const long ABS_REFRESH_MS = 2500;
-    
+
     // The form events type which means that the form becomes visible.
     const int32_t FORM_VISIBLE = 1;
     // The form events type which means that the form becomes invisible.
@@ -62,6 +62,7 @@ namespace Constants {
 
     const int MAX_HOUR = 23;
     const int MAX_MININUTE = 59;
+    const int MAX_SECOND = 60;
     const int MIN_TIME = 0;
     const int HOUR_PER_DAY = 24;
     const int MIN_PER_HOUR = 60;
@@ -118,13 +119,13 @@ namespace Constants {
     const int NOT_IN_RECOVERY = 0;
     const int RECOVER_FAIL = 1;
     const int IN_RECOVERING = 2;
-    
+
     const int FLAG_HAS_OBJECT = 1;
     const int FLAG_NO_OBJECT = 0;
 
     const int DEATH_RECIPIENT_FLAG = 0;
     const int MAX_VISIBLE_NOTIFY_LIST = 32;
-    
+
     const std::string ACQUIRE_TYPE = "form_acquire_form";
     const int ACQUIRE_TYPE_CREATE_FORM = 1;
     const int ACQUIRE_TYPE_RECREATE_FORM = 2;
@@ -159,7 +160,7 @@ namespace Constants {
 
         // ipc id for refreshing data cache (3007)
         FORM_MGR_CAST_TEMP_FORM,
-               
+
         // ipc id 2001-3000 for tools
         // ipc id for dumping state (2001)
         FORM_MGR_DUMP_STATE = 2001,

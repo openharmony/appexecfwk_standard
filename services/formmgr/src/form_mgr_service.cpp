@@ -107,7 +107,7 @@ int FormMgrService::DeleteForm(const int64_t formId, const sptr<IRemoteObject> &
         APP_LOGE("%{public}s fail, delete form permission denied", __func__);
         return ERR_APPEXECFWK_FORM_PERMISSION_DENY;
     }
-        
+
     return FormMgrAdapter::GetInstance().DeleteForm(formId, callerToken);
 }
 
@@ -124,7 +124,7 @@ int FormMgrService::ReleaseForm(const int64_t formId, const sptr<IRemoteObject> 
         APP_LOGE("%{public}s fail, release form permission denied", __func__);
         return ERR_APPEXECFWK_FORM_PERMISSION_DENY;
     }
-    
+
     return FormMgrAdapter::GetInstance().ReleaseForm(formId, callerToken, delCache);
 }
 
@@ -135,7 +135,7 @@ int FormMgrService::ReleaseForm(const int64_t formId, const sptr<IRemoteObject> 
  * @param formBindingData Form binding data.
  * @return Returns ERR_OK on success, others on failure.
  */
-int FormMgrService::UpdateForm(const int64_t formId, 
+int FormMgrService::UpdateForm(const int64_t formId,
     const std::string &bundleName, const FormProviderData &formBindingData)
 {
     if (!CheckFormPermission()) {
@@ -186,14 +186,14 @@ int FormMgrService::SetNextRefreshTime(const int64_t formId, const int64_t nextT
  * @param formVisibleType The form visible type, including FORM_VISIBLE and FORM_INVISIBLE.
  * @return Returns ERR_OK on success, others on failure.
  */
-int FormMgrService::NotifyWhetherVisibleForms(const std::vector<int64_t> &formIds, 
+int FormMgrService::NotifyWhetherVisibleForms(const std::vector<int64_t> &formIds,
     const sptr<IRemoteObject> &callerToken, const int32_t formVisibleType)
 {
     if (!CheckFormPermission()) {
         APP_LOGE("%{public}s fail, event notify visible permission denied", __func__);
         return ERR_APPEXECFWK_FORM_PERMISSION_DENY;
     }
-   
+
     return FormMgrAdapter::GetInstance().NotifyWhetherVisibleForms(formIds, callerToken, formVisibleType);
 }
 
@@ -220,7 +220,7 @@ int FormMgrService::CastTempForm(const int64_t formId, const sptr<IRemoteObject>
  * @param updateType update type,enable or disable.
  * @return Returns true on success, false on failure.
  */
-int FormMgrService::LifecycleUpdate(const std::vector<int64_t> &formIds, 
+int FormMgrService::LifecycleUpdate(const std::vector<int64_t> &formIds,
     const sptr<IRemoteObject> &callerToken, const int32_t updateType)
 {
     APP_LOGI("lifecycleUpdate.");
@@ -229,7 +229,7 @@ int FormMgrService::LifecycleUpdate(const std::vector<int64_t> &formIds,
         APP_LOGE("%{public}s fail, delete form permission denied", __func__);
         return ERR_APPEXECFWK_FORM_PERMISSION_DENY;
     }
- 
+
     if (updateType == ENABLE_FORM_UPDATE) {
         return FormMgrAdapter::GetInstance().EnableUpdateForm(formIds, callerToken);
     } else {

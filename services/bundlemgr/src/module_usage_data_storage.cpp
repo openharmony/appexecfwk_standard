@@ -333,7 +333,7 @@ bool ModuleUsageRecordStorage::QueryRecordByCondition(DataQuery &query, std::vec
 Status ModuleUsageRecordStorage::GetKvStore()
 {
     Options options = {
-        .createIfMissing = true, 
+        .createIfMissing = true,
         .encrypt = false,
         .autoSync = true,
         .kvStoreType = KvStoreType::SINGLE_VERSION

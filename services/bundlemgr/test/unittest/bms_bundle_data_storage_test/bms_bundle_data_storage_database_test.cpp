@@ -338,7 +338,7 @@ protected:
             },
             "userId_": 0,
             "isPreInstallApp": true,
-			"canUninstall": true,
+            "canUninstall": true,
             "newBundleName": "com.example.myapplication1#20010001",
             "innerBundleUserInfos": {
                 "com.ohos.launcher_0": {

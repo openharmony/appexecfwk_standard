@@ -40,7 +40,7 @@ constexpr int64_t INVALID_UDID_HASH = 0;
  * @param isTemporaryForm temporary form or not.
  * @param want The want of the form.
  */
-void FormUtil::CreateFormWant(const std::string &formName, 
+void FormUtil::CreateFormWant(const std::string &formName,
     const int32_t specificationId,  const bool isTemporaryForm, Want &want)
 {
     want.SetParam(Constants::PARAM_FORM_NAME_KEY, formName);
@@ -85,10 +85,11 @@ int64_t FormUtil::GenerateFormId(int64_t udidHash)
     int64_t elapsedTime { ((t.tv_sec) * SEC_TO_NANOSEC + t.tv_nsec) };
     size_t elapsedHash = std::hash<std::string>()(std::to_string(elapsedTime));
     APP_LOGI("%{public}s, GenerateFormId generate elapsed hash %{public}zu", __func__, elapsedHash);
-    uint64_t unsignedudidHash = static_cast<int64_t>(udidHash);
+    uint64_t unsignedudidHash = static_cast<uint64_t>(udidHash);
     uint64_t formId = unsignedudidHash | (int32_t)(elapsedHash & 0x000000007fffffffL);
-    APP_LOGI("%{public}s, GenerateFormId generate formId %{public}" PRId64 "", __func__, formId);
-    return formId;
+    int64_t ret = static_cast<int64_t>(formId);
+    APP_LOGI("%{public}s, GenerateFormId generate formId %{public}" PRId64 "", __func__, ret);
+    return ret;
 }
 
 /**
@@ -103,7 +104,7 @@ int64_t FormUtil::PaddingUDIDHash(uint64_t formId, uint64_t udidHash)
     if ((formId & 0xffffffff00000000L) == 0) {
         return udidHash | formId;
     }
-    
+
     return formId;
 }
 /**
@@ -117,7 +118,7 @@ bool FormUtil::GenerateUdidHash(int64_t &udidHash)
     if (udidHash != INVALID_UDID_HASH) {
         return true;
     }
- 
+
     u_int64_t hashId = 0L;
     const int32_t thirtyTwo = 32;
     udidHash = (hashId & 0x0000000000ffffffL) << thirtyTwo;
@@ -125,7 +126,7 @@ bool FormUtil::GenerateUdidHash(int64_t &udidHash)
         udidHash = 0L;
     }
     APP_LOGI("%{public}s, FormAdapter generate hash %{public}" PRId64 "", __func__, udidHash);
-    
+
     return true;
 }
 /**

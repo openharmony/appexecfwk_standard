@@ -100,30 +100,6 @@ void FmsFormMgrNotifyVisibleFormsTest::TearDown(void)
 {}
 
 /**
- * @tc.number: FmsFormMgrNotifyVisibleFormsTest_NotifyVisibleForms_001
- * @tc.name: NotifyVisibleForms
- * @tc.desc: Verify that the return code is ERR_APPEXECFWK_FORM_PERMISSION_DENY.
- * @tc.info: The permission denied occurred.
- */
-HWTEST_F(FmsFormMgrNotifyVisibleFormsTest, FmsFormMgrNotifyVisibleFormsTest_NotifyVisibleForms_001, TestSize.Level0)
-{
-    GTEST_LOG_(INFO) << "FmsFormMgrNotifyVisibleFormsTest_NotifyVisibleForms_001 start";
-    
-    std::vector<int64_t> formIds;
-    formIds.push_back(100);
-
-    // Remove permission.
-    OHOS::Security::Permission::PermissionKit::RemoveDefPermissions(FORM_PROVIDER_BUNDLE_NAME);
-    OHOS::Security::Permission::PermissionKit::RemoveUserGrantedReqPermissions(FORM_PROVIDER_BUNDLE_NAME, 0);
-    OHOS::Security::Permission::PermissionKit::RemoveSystemGrantedReqPermissions(FORM_PROVIDER_BUNDLE_NAME);
-
-    EXPECT_EQ(ERR_APPEXECFWK_FORM_PERMISSION_DENY, FormMgr::GetInstance().NotifyWhetherVisibleForms(formIds, token_, 
-    Constants::FORM_VISIBLE));
-    
-    GTEST_LOG_(INFO) << "FmsFormMgrNotifyVisibleFormsTest_NotifyVisibleForms_001 end";
-}
-
-/**
  * @tc.number: FmsFormMgrNotifyVisibleFormsTest_NotifyVisibleForms_002
  * @tc.name: NotifyVisibleForms
  * @tc.desc: Verify that the return code is ERR_APPEXECFWK_FORM_INVALID_PARAM.
@@ -132,7 +108,7 @@ HWTEST_F(FmsFormMgrNotifyVisibleFormsTest, FmsFormMgrNotifyVisibleFormsTest_Noti
 HWTEST_F(FmsFormMgrNotifyVisibleFormsTest, FmsFormMgrNotifyVisibleFormsTest_NotifyVisibleForms_002, TestSize.Level0)
 {
     GTEST_LOG_(INFO) << "FmsFormMgrNotifyVisibleFormsTest_NotifyVisibleForms_002 start";
-    
+
     // set the callerToken to nullptr.
     token_ = nullptr;
 
@@ -150,7 +126,7 @@ HWTEST_F(FmsFormMgrNotifyVisibleFormsTest, FmsFormMgrNotifyVisibleFormsTest_Noti
     formiteminfo1.SetAbilityName(FORM_PROVIDER_ABILITY_NAME);
     formiteminfo1.SetTemporaryFlag(false);
     FormDataMgr::GetInstance().AllotFormRecord(formiteminfo1, 0);
-    
+
     FormItemInfo formiteminfo2;
     formiteminfo2.SetFormId(formId2);
     formiteminfo2.SetProviderBundleName(FORM_PROVIDER_BUNDLE_NAME);
@@ -173,7 +149,7 @@ HWTEST_F(FmsFormMgrNotifyVisibleFormsTest, FmsFormMgrNotifyVisibleFormsTest_Noti
 HWTEST_F(FmsFormMgrNotifyVisibleFormsTest, FmsFormMgrNotifyVisibleFormsTest_NotifyVisibleForms_003, TestSize.Level0)
 {
     GTEST_LOG_(INFO) << "FmsFormMgrNotifyVisibleFormsTest_NotifyVisibleForms_003 start";
-    
+
     // create formIds
     int64_t formId1 = 401;
     int64_t formId2 = 402;
@@ -208,7 +184,7 @@ HWTEST_F(FmsFormMgrNotifyVisibleFormsTest, FmsFormMgrNotifyVisibleFormsTest_Noti
 HWTEST_F(FmsFormMgrNotifyVisibleFormsTest, FmsFormMgrNotifyVisibleFormsTest_NotifyVisibleForms_004, TestSize.Level0)
 {
     GTEST_LOG_(INFO) << "FmsFormMgrNotifyVisibleFormsTest_NotifyVisibleForms_004 start";
-    
+
     // create formIds
     int64_t formId1 = 501;
     int64_t formId2 = 502;
@@ -252,7 +228,7 @@ HWTEST_F(FmsFormMgrNotifyVisibleFormsTest, FmsFormMgrNotifyVisibleFormsTest_Noti
 HWTEST_F(FmsFormMgrNotifyVisibleFormsTest, FmsFormMgrNotifyVisibleFormsTest_NotifyVisibleForms_005, TestSize.Level0)
 {
     GTEST_LOG_(INFO) << "FmsFormMgrNotifyVisibleFormsTest_NotifyVisibleForms_005 start";
-    
+
     // create formIds
     int64_t formId1 = 601;
     int64_t formId2 = 602;
@@ -296,7 +272,7 @@ HWTEST_F(FmsFormMgrNotifyVisibleFormsTest, FmsFormMgrNotifyVisibleFormsTest_Noti
 HWTEST_F(FmsFormMgrNotifyVisibleFormsTest, FmsFormMgrNotifyVisibleFormsTest_NotifyVisibleForms_006, TestSize.Level0)
 {
     GTEST_LOG_(INFO) << "FmsFormMgrNotifyVisibleFormsTest_NotifyVisibleForms_006 start";
-    
+
     // create formIds
     int64_t formId = 700;
     std::vector<int64_t> formIds;
@@ -328,7 +304,7 @@ HWTEST_F(FmsFormMgrNotifyVisibleFormsTest, FmsFormMgrNotifyVisibleFormsTest_Noti
 HWTEST_F(FmsFormMgrNotifyVisibleFormsTest, FmsFormMgrNotifyVisibleFormsTest_NotifyVisibleForms_007, TestSize.Level0)
 {
     GTEST_LOG_(INFO) << "FmsFormMgrNotifyVisibleFormsTest_NotifyVisibleForms_007 start";
-    
+
     // create formIds
     int64_t formId = 800;
     std::vector<int64_t> formIds;

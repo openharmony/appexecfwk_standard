@@ -67,7 +67,7 @@ public:
 protected:
     sptr<MockFormHostClient> token_;
     std::shared_ptr<FormMgrService> formyMgrServ_ = DelayedSingleton<FormMgrService>::GetInstance();
-    
+
     sptr<BundleMgrService> mockBundleMgr_;
     sptr<MockAbilityMgrService> mockAbilityMgrServ_;
 };
@@ -85,7 +85,7 @@ void FmsFormMgrDeleteFormTest::SetUp()
     mockBundleMgr_ = new (std::nothrow) BundleMgrService();
     EXPECT_TRUE(mockBundleMgr_ != nullptr);
     FormBmsHelper::GetInstance().SetBundleManager(mockBundleMgr_);
-    
+
     mockAbilityMgrServ_ = new (std::nothrow) MockAbilityMgrService();
     FormAmsHelper::GetInstance().SetAbilityManager(mockAbilityMgrServ_);
 
@@ -104,7 +104,7 @@ void FmsFormMgrDeleteFormTest::SetUp()
     permDef.descriptionId = 1;
     permList.emplace_back(permDef);
     Permission::PermissionKit::AddDefPermissions(permList);
-    Permission::PermissionKit::AddUserGrantedReqPermissions(FORM_PROVIDER_BUNDLE_NAME, 
+    Permission::PermissionKit::AddUserGrantedReqPermissions(FORM_PROVIDER_BUNDLE_NAME,
         {PERMISSION_NAME_REQUIRE_FORM}, 0);
     Permission::PermissionKit::GrantUserGrantedPermission(FORM_PROVIDER_BUNDLE_NAME, PERMISSION_NAME_REQUIRE_FORM, 0);
 }
@@ -244,69 +244,6 @@ HWTEST_F(FmsFormMgrDeleteFormTest, DeleteForm_003, TestSize.Level0)
  * SubFunction: DeleteForm Function
  * FunctionPoints: FormMgr DeleteForm interface
  * EnvConditions: Mobile that can run ohos test framework
- * CaseDescription: An exception tests if check permission error.
- */
-HWTEST_F(FmsFormMgrDeleteFormTest, DeleteForm_004, TestSize.Level0)
-{
-    GTEST_LOG_(INFO) << "fms_form_mgr_delete_form_test_004 start";
-    int64_t formId {12004};
-    // Remove Permission
-    OHOS::Security::Permission::PermissionKit::RemoveDefPermissions(FORM_PROVIDER_BUNDLE_NAME);
-    OHOS::Security::Permission::PermissionKit::RemoveUserGrantedReqPermissions(FORM_PROVIDER_BUNDLE_NAME, 0);
-    OHOS::Security::Permission::PermissionKit::RemoveSystemGrantedReqPermissions(FORM_PROVIDER_BUNDLE_NAME);
-    EXPECT_EQ(ERR_APPEXECFWK_FORM_PERMISSION_DENY, FormMgr::GetInstance().DeleteForm(formId, token_));
-    // Permission install
-    std::vector<Permission::PermissionDef> permList;
-    Permission::PermissionDef permDef;
-    permDef.permissionName = PERMISSION_NAME_REQUIRE_FORM;
-    permDef.bundleName = FORM_PROVIDER_BUNDLE_NAME;
-    permDef.grantMode = Permission::GrantMode::USER_GRANT;
-    permDef.availableScope = Permission::AvailableScope::AVAILABLE_SCOPE_ALL;
-    permDef.label = DEF_LABEL1;
-    permDef.labelId = 1;
-    permDef.description = DEF_LABEL1;
-    permDef.descriptionId = 1;
-    permList.emplace_back(permDef);
-    Permission::PermissionKit::AddDefPermissions(permList);
-    Permission::PermissionKit::AddUserGrantedReqPermissions(FORM_PROVIDER_BUNDLE_NAME, {PERMISSION_NAME_REQUIRE_FORM}, 
-    0);
-    Permission::PermissionKit::GrantUserGrantedPermission(FORM_PROVIDER_BUNDLE_NAME, PERMISSION_NAME_REQUIRE_FORM, 0);
-    GTEST_LOG_(INFO) << "fms_form_mgr_delete_form_test_004 end";
-}
-
-/*
- * Feature: FormMgrService
- * Function: FormMgr
- * SubFunction: DeleteForm Function
- * FunctionPoints: FormMgr DeleteForm interface
- * EnvConditions: Mobile that can run ohos test framework
- * CaseDescription: Cases when permission is not available
- */
-HWTEST_F(FmsFormMgrDeleteFormTest, DeleteForm_005, TestSize.Level0)
-{
-    GTEST_LOG_(INFO) << "fms_form_mgr_delete_form_test_005 start";
-    int64_t formId {12005};
-    int callingUid {0};
-    FormItemInfo record1;
-    record1.SetFormId(formId);
-    record1.SetProviderBundleName("ERR BUNDLE NAME");
-    record1.SetAbilityName(FORM_PROVIDER_ABILITY_NAME);
-    record1.SetTemporaryFlag(false);
-    FormDataMgr::GetInstance().AllotFormRecord(record1, callingUid);
-    Permission::PermissionKit::RemoveDefPermissions(FORM_PROVIDER_BUNDLE_NAME);
-    EXPECT_EQ(ERR_APPEXECFWK_FORM_PERMISSION_DENY, FormMgr::GetInstance().DeleteForm(formId, token_));
-    FormDataMgr::GetInstance().DeleteFormRecord(formId);
-    FormDbCache::GetInstance().DeleteFormInfo(formId);
-    FormDataMgr::GetInstance().DeleteHostRecord(token_, formId);
-    GTEST_LOG_(INFO) << "fms_form_mgr_delete_form_test_005 end";
-}
-
-/*
- * Feature: FormMgrService
- * Function: FormMgr
- * SubFunction: DeleteForm Function
- * FunctionPoints: FormMgr DeleteForm interface
- * EnvConditions: Mobile that can run ohos test framework
  * CaseDescription: Case with no database info and form is not temporary.
  */
 HWTEST_F(FmsFormMgrDeleteFormTest, DeleteForm_006, TestSize.Level0)
@@ -415,7 +352,7 @@ HWTEST_F(FmsFormMgrDeleteFormTest, DeleteForm_008, TestSize.Level0)
     FormItemInfo info;
     FormDataMgr::GetInstance().AllotFormHostRecord(info, token_, formId, callingUid);
 
-    ASSERT_EQ(ERR_APPEXECFWK_FORM_COMMON_CODE, FormMgr::GetInstance().DeleteForm(formId, token_));
+    ASSERT_EQ(ERR_APPEXECFWK_FORM_INVALID_PARAM, FormMgr::GetInstance().DeleteForm(formId, token_));
 
     // Cache uid is not deleted yet.
     FormRecord formInfo;
@@ -441,7 +378,7 @@ HWTEST_F(FmsFormMgrDeleteFormTest, DeleteForm_008, TestSize.Level0)
     FormDBInfo formDBInfo1(formId, retFormRec);
     FormDbCache::GetInstance().SaveFormInfo(formDBInfo1);
 
-    EXPECT_EQ(ERR_APPEXECFWK_FORM_COMMON_CODE, FormMgr::GetInstance().DeleteForm(formId, token_));
+    EXPECT_EQ(ERR_APPEXECFWK_FORM_INVALID_PARAM, FormMgr::GetInstance().DeleteForm(formId, token_));
 
     // Cache uid is not deleted yet.
     ret = FormDataMgr::GetInstance().GetFormRecord(formId, formInfo);

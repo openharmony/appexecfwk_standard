@@ -60,7 +60,7 @@ FormMgrAdapter::~FormMgrAdapter()
  * @param formInfo Form info.
  * @return Returns ERR_OK on success, others on failure.
  */
-int FormMgrAdapter::AddForm(const int64_t formId, const Want &want, 
+int FormMgrAdapter::AddForm(const int64_t formId, const Want &want,
     const sptr<IRemoteObject> &callerToken, FormJsInfo &formInfo)
 {
     if (formId < 0 || callerToken == nullptr) {
@@ -255,7 +255,7 @@ ErrCode FormMgrAdapter::HandleDeleteTempForm(const int64_t formId, const sptr<IR
     bool isFormRecExist = FormDataMgr::GetInstance().GetFormRecord(formId, record);
     bool isSelfTempFormId = false;
     if (isFormRecExist && record.formTempFlg) {
-        isSelfTempFormId = (std::find(record.formUserUids.begin(), record.formUserUids.end(), uid) != 
+        isSelfTempFormId = (std::find(record.formUserUids.begin(), record.formUserUids.end(), uid) !=
             record.formUserUids.end()) ? true : false;
     }
     if (!isSelfTempFormId) {
@@ -356,14 +356,14 @@ ErrCode FormMgrAdapter::HandleDeleteFormCache(FormRecord &dbRecord, const int ui
  * @param formProviderData form provider data.
  * @return Returns ERR_OK on success, others on failure.
  */
-int FormMgrAdapter::UpdateForm(const int64_t formId, 
+int FormMgrAdapter::UpdateForm(const int64_t formId,
     const std::string &bundleName, const FormProviderData &formProviderData)
 {
     APP_LOGI("%{public}s start.", __func__);
 
     // check formId and bundleName
     if (formId <= 0 || bundleName.empty()) {
-        APP_LOGE("%{public}s error, the passed in formId can't be negative or zero, bundleName is not empty.", 
+        APP_LOGE("%{public}s error, the passed in formId can't be negative or zero, bundleName is not empty.",
             __func__);
         return ERR_APPEXECFWK_FORM_INVALID_PARAM;
     }
@@ -391,6 +391,12 @@ int FormMgrAdapter::UpdateForm(const int64_t formId,
     FormRecord formRecord;
     if (!FormDataMgr::GetInstance().GetFormRecord(matchedFormId, formRecord)) {
         APP_LOGE("%{public}s error, not exist such form:%{public}" PRId64 ".", __func__, matchedFormId);
+        return ERR_APPEXECFWK_FORM_NOT_EXIST_ID;
+    }
+
+    // check then form under current user
+    if (!FormDataMgr::GetInstance().IsCallingUidValid(formRecord.formUserUids)) {
+        APP_LOGE("%{public}s error, not under current user, formId:%{public}" PRId64 ".", __func__, matchedFormId);
         return ERR_APPEXECFWK_FORM_NOT_EXIST_ID;
     }
 
@@ -426,13 +432,13 @@ int FormMgrAdapter::RequestForm(const int64_t formId, const sptr<IRemoteObject> 
         return ERR_APPEXECFWK_FORM_NOT_EXIST_ID;
     }
 
-    FormHostRecord formHostRecord; 
+    FormHostRecord formHostRecord;
     bool isHostExist = FormDataMgr::GetInstance().GetMatchedHostClient(callerToken, formHostRecord);
     if (!isHostExist) {
         APP_LOGE("%{public}s fail, cannot find target client.", __func__);
         return ERR_APPEXECFWK_FORM_INVALID_PARAM;
     }
-    
+
     if (!formHostRecord.Contains(matchedFormId)) {
         APP_LOGE("%{public}s fail, form is not self-owned.", __func__);
         return ERR_APPEXECFWK_FORM_OPERATION_NOT_SELF;
@@ -444,13 +450,12 @@ int FormMgrAdapter::RequestForm(const int64_t formId, const sptr<IRemoteObject> 
 
 /**
  * @brief Form visible/invisible notify, send formIds to form manager service.
- * 
  * @param formIds The vector of form Ids.
  * @param callerToken Caller ability token.
  * @param formVisibleType The form visible type, including FORM_VISIBLE and FORM_INVISIBLE.
  * @return Returns ERR_OK on success, others on failure.
  */
-ErrCode FormMgrAdapter::NotifyWhetherVisibleForms(const std::vector<int64_t> &formIds, 
+ErrCode FormMgrAdapter::NotifyWhetherVisibleForms(const std::vector<int64_t> &formIds,
     const sptr<IRemoteObject> &callerToken, const int32_t formVisibleType)
 {
     APP_LOGI("%{public}s called.", __func__);
@@ -578,9 +583,9 @@ ErrCode FormMgrAdapter::HandleCastTempForm(const int64_t formId, const FormRecor
 {
     APP_LOGD("%{public}s, cast temp form to normal form, notify supplier, package:%{public}s, class:%{public}s",
         __func__, record.bundleName.c_str(), record.abilityName.c_str());
-    sptr<IAbilityConnection> castTempConnection = new FormCastTempConnection(formId, 
+    sptr<IAbilityConnection> castTempConnection = new FormCastTempConnection(formId,
         record.bundleName, record.abilityName);
-    
+
     Want want;
     want.AddFlags(Want::FLAG_ABILITY_FORM_ENABLED);
     want.SetElementName(record.bundleName, record.abilityName);
@@ -601,7 +606,7 @@ int FormMgrAdapter::DumpStorageFormInfos(std::string &formInfos) const
     std::vector<FormDBInfo> formDBInfos;
     FormDbCache::GetInstance().GetAllFormInfo(formDBInfos);
     if (formDBInfos.size() > 0) {
-        std::sort(formDBInfos.begin(), formDBInfos.end(), 
+        std::sort(formDBInfos.begin(), formDBInfos.end(),
         [] (FormDBInfo &formDBInfoA, FormDBInfo &formDBInfoB) -> bool {
             return formDBInfoA.formId < formDBInfoB.formId;
         });
@@ -719,8 +724,8 @@ ErrCode FormMgrAdapter::GetFormConfigInfo(const Want &want, FormItemInfo &formCo
  * @param wantParams WantParams of the request.
  * @param formInfo Form info for form host.
  * @return Returns ERR_OK on success, others on failure.
- */   
-ErrCode FormMgrAdapter::AllotFormById(const FormItemInfo &info, 
+ */
+ErrCode FormMgrAdapter::AllotFormById(const FormItemInfo &info,
     const sptr<IRemoteObject> &callerToken, const WantParams &wantParams, FormJsInfo &formInfo)
 {
     int64_t formId = PaddingUDIDHash(info.GetFormId());
@@ -828,8 +833,8 @@ ErrCode FormMgrAdapter::AddExistFormRecord(const FormItemInfo &info, const sptr<
  * @param wantParams WantParams of the request.
  * @param formInfo Form info for form host.
  * @return Returns ERR_OK on success, others on failure.
- */   
-ErrCode FormMgrAdapter::AllotFormByInfo(const FormItemInfo &info, 
+ */
+ErrCode FormMgrAdapter::AllotFormByInfo(const FormItemInfo &info,
     const sptr<IRemoteObject> &callerToken, const WantParams &wantParams, FormJsInfo &formInfo)
 {
     // generate formId
@@ -852,7 +857,7 @@ ErrCode FormMgrAdapter::AllotFormByInfo(const FormItemInfo &info,
  * @param formInfo Form info for form host.
  * @return Returns ERR_OK on success, others on failure.
  */
-ErrCode FormMgrAdapter::AddNewFormRecord(const FormItemInfo &info, const int64_t formId, 
+ErrCode FormMgrAdapter::AddNewFormRecord(const FormItemInfo &info, const int64_t formId,
     const sptr<IRemoteObject> &callerToken, const WantParams &wantParams, FormJsInfo &formInfo)
 {
     APP_LOGI("%{public}s start", __func__);
@@ -873,7 +878,7 @@ ErrCode FormMgrAdapter::AddNewFormRecord(const FormItemInfo &info, const int64_t
         APP_LOGE("%{public}s fail, AcquireProviderFormInfoAsync failed", __func__);
         return errorCode;
     }
-    
+
     // create form info for js
     FormDataMgr::GetInstance().CreateFormInfo(formId, formRecord, formInfo);
 
@@ -901,7 +906,7 @@ ErrCode FormMgrAdapter::AddFormTimer(const FormRecord &formRecord)
         if (formRecord.updateDuration > 0) {
             timerRet = FormTimerMgr::GetInstance().AddFormTimer(formRecord.formId, formRecord.updateDuration);
         } else {
-            timerRet = FormTimerMgr::GetInstance().AddFormTimer(formRecord.formId, formRecord.updateAtHour, 
+            timerRet = FormTimerMgr::GetInstance().AddFormTimer(formRecord.formId, formRecord.updateAtHour,
                 formRecord.updateAtMin);
         }
         if (!timerRet) {
@@ -915,7 +920,7 @@ ErrCode FormMgrAdapter::AddFormTimer(const FormRecord &formRecord)
 
 /**
  * @brief Send event notify to form provider. The event notify type include FORM_VISIBLE and FORM_INVISIBLE.
- * 
+ *
  * @param providerKey The provider key string which consists of the provider bundle name and ability name.
  * @param formIdsByProvider The vector of form Ids which have the same provider.
  * @param formVisibleType The form visible type, including FORM_VISIBLE and FORM_INVISIBLE.
@@ -932,7 +937,7 @@ ErrCode FormMgrAdapter::HandleEventNotify(const std::string &providerKey, const 
         formVisibleType, bundleName, abilityName);
     Want connectWant;
     connectWant.AddFlags(Want::FLAG_ABILITY_FORM_ENABLED);
-    
+
     connectWant.SetElementName(bundleName, abilityName);
 
     ErrCode errorCode = FormAmsHelper::GetInstance().ConnectServiceAbility(connectWant, formEventNotifyConnection);
@@ -951,7 +956,7 @@ ErrCode FormMgrAdapter::HandleEventNotify(const std::string &providerKey, const 
  * @param wantParams WantParams of the request.
  * @return Returns ERR_OK on success, others on failure.
  */
-ErrCode FormMgrAdapter::AcquireProviderFormInfoAsync(const int64_t formId, 
+ErrCode FormMgrAdapter::AcquireProviderFormInfoAsync(const int64_t formId,
     const FormItemInfo &info, const WantParams &wantParams)
 {
     if (formId <= 0) {
@@ -959,7 +964,7 @@ ErrCode FormMgrAdapter::AcquireProviderFormInfoAsync(const int64_t formId,
         return ERR_APPEXECFWK_FORM_INVALID_PARAM;
     }
 
-    sptr<IAbilityConnection> formAcquireConnection 
+    sptr<IAbilityConnection> formAcquireConnection
         = new FormAcquireConnection(formId, info, wantParams);
     Want want;
     want.SetElementName(info.GetProviderBundleName(), info.GetAbilityName());
@@ -1052,7 +1057,7 @@ ErrCode FormMgrAdapter::GetFormInfo(const AAFwk::Want &want, FormInfo &formInfo)
         APP_LOGE("GetFormInfo, failed to get IBundleMgr.");
         return ERR_APPEXECFWK_FORM_GET_BMS_FAILED;
     }
-    
+
     std::vector<FormInfo> formInfos;
     if (iBundleMgr->GetFormsInfoByModule(bundleName, moduleName, formInfos) == false) {
         APP_LOGE("GetFormsInfoByModule,  failed to get form config info.");
@@ -1090,7 +1095,7 @@ ErrCode FormMgrAdapter::GetFormInfo(const AAFwk::Want &want, FormInfo &formInfo)
  * @param formItemInfo Form configure info.
  * @return Returns ERR_OK on success, others on failure.
  */
-ErrCode FormMgrAdapter::GetFormItemInfo(const AAFwk::Want &want, const BundleInfo &bundleInfo, 
+ErrCode FormMgrAdapter::GetFormItemInfo(const AAFwk::Want &want, const BundleInfo &bundleInfo,
     const FormInfo &formInfo, FormItemInfo &formItemInfo)
 {
     APP_LOGD("GetFormItemInfo start.");
@@ -1114,7 +1119,7 @@ ErrCode FormMgrAdapter::GetFormItemInfo(const AAFwk::Want &want, const BundleInf
  * @param formInfo Form info.
  * @param dimensionId Dimension id.
  * @return Returns true on success, false on failure.
- */   
+ */
 bool FormMgrAdapter::IsDimensionValid(const FormInfo &formInfo, int dimensionId) const
 {
     if (formInfo.supportDimensions.empty()) {
@@ -1227,7 +1232,7 @@ int FormMgrAdapter::SetNextRefreshTime(const int64_t formId, const int64_t nextT
  * @brief get bundleName.
  * @param bundleName for output.
  * @return Returns true on success, others on failure.
- */ 
+ */
 bool FormMgrAdapter::GetBundleName(std::string &bundleName)
 {
     sptr<IBundleMgr> iBundleMgr = FormBmsHelper::GetInstance().GetBundleMgr();
@@ -1280,7 +1285,7 @@ int FormMgrAdapter::SetNextRefreshtTimeLocked(const int64_t formId, const int64_
  * @param bundleName Provider ability bundleName.
  * @return Returns true or false.
  */
-bool FormMgrAdapter::IsUpdateValid(const int64_t formId, const std::string &bundleName) 
+bool FormMgrAdapter::IsUpdateValid(const int64_t formId, const std::string &bundleName)
 {
     if (formId <= 0 || bundleName.empty()) {
         return false;
@@ -1344,8 +1349,8 @@ int FormMgrAdapter::MessageEvent(const int64_t formId, const Want &want, const s
         APP_LOGE("%{public}s fail, not exist such form:%{public}" PRId64 "", __func__, matchedFormId);
         return ERR_APPEXECFWK_FORM_NOT_EXIST_ID;
     }
-    
-    FormHostRecord formHostRecord; 
+
+    FormHostRecord formHostRecord;
     bool isHostExist = FormDataMgr::GetInstance().GetMatchedHostClient(callerToken, formHostRecord);
     if (!isHostExist) {
         APP_LOGE("%{public}s failed, cannot find target client.", __func__);
@@ -1361,7 +1366,7 @@ int FormMgrAdapter::MessageEvent(const int64_t formId, const Want &want, const s
     return FormProviderMgr::GetInstance().MessageEvent(matchedFormId, record, want);
 }
 
-int FormMgrAdapter::HandleUpdateFormFlag(std::vector<int64_t> formIds, 
+int FormMgrAdapter::HandleUpdateFormFlag(std::vector<int64_t> formIds,
     const sptr<IRemoteObject> &callerToken, bool flag)
 {
     APP_LOGI("%{public}s called.", __func__);
@@ -1388,7 +1393,7 @@ int FormMgrAdapter::HandleUpdateFormFlag(std::vector<int64_t> formIds,
  * @param flag form flag.
  * @return Returns true on success, false on failure.
  */
-bool FormMgrAdapter::IsFormCached(const FormRecord record) 
+bool FormMgrAdapter::IsFormCached(const FormRecord record)
 {
     if (record.versionUpgrade) {
         return false;
@@ -1402,7 +1407,7 @@ bool FormMgrAdapter::IsFormCached(const FormRecord record)
  * @param want The want of the request.
  * @param remoteObject Form provider proxy object.
  */
-void FormMgrAdapter::AcquireProviderFormInfo(const int64_t formId, const Want &want, 
+void FormMgrAdapter::AcquireProviderFormInfo(const int64_t formId, const Want &want,
 const sptr<IRemoteObject> &remoteObject)
 {
     APP_LOGI("%{public}s called.", __func__);
@@ -1424,7 +1429,7 @@ const sptr<IRemoteObject> &remoteObject)
 
 /**
  * @brief Notify form provider for delete form.
- * 
+ *
  * @param formId The Id of the from.
  * @param want The want of the form.
  * @param remoteObject Form provider proxy object.
@@ -1525,9 +1530,9 @@ bool FormMgrAdapter::CreateHandleEventMap(const int64_t matchedFormId, const For
     std::map<std::string, std::vector<int64_t>> &eventMaps)
 {
     if (!formRecord.formVisibleNotify) {
-            APP_LOGW("%{public}s fail, the config item 'formVisibleNotify' is false, formId:%{public}" PRId64 ".",
-                __func__, matchedFormId);
-            return false;
+        APP_LOGW("%{public}s fail, the config item 'formVisibleNotify' is false, formId:%{public}" PRId64 ".",
+            __func__, matchedFormId);
+        return false;
     }
 
     std::string providerKey = formRecord.bundleName + Constants::NAME_DELIMITER + formRecord.abilityName;

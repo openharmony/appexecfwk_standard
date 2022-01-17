@@ -39,7 +39,7 @@ sptr<IBundleMgr> FormBmsHelper::GetBundleMgr()
     APP_LOGI("%{public}s called.", __func__);
 
     if (iBundleMgr_ == nullptr) {
-        sptr<ISystemAbilityManager> systemAbilityManager = 
+        sptr<ISystemAbilityManager> systemAbilityManager =
         SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
         auto remoteObject = systemAbilityManager->GetSystemAbility(BUNDLE_MGR_SERVICE_SYS_ABILITY_ID);
         if (remoteObject == nullptr) {
@@ -48,9 +48,9 @@ sptr<IBundleMgr> FormBmsHelper::GetBundleMgr()
         }
 
         iBundleMgr_ = iface_cast<IBundleMgr>(remoteObject);
-        if (iBundleMgr_ == nullptr) {        
+        if (iBundleMgr_ == nullptr) {
             APP_LOGE("%{public}s error, failed to get bundle manager service", __func__);
-            return nullptr;  
+            return nullptr;
         }
     }
     return iBundleMgr_;
@@ -73,7 +73,7 @@ void FormBmsHelper::SetBundleManager(const sptr<IBundleMgr> &bundleManager)
  */
 void FormBmsHelper::NotifyModuleRemovable(const std::string &bundleName, const std::string &moduleName)
 {
-    APP_LOGI("%{public}s, bundleName:%{public}s, moduleName:%{public}s", 
+    APP_LOGI("%{public}s, bundleName:%{public}s, moduleName:%{public}s",
         __func__, bundleName.c_str(), moduleName.c_str());
     if (bundleName.empty() || moduleName.empty()) {
         return;
@@ -88,7 +88,7 @@ void FormBmsHelper::NotifyModuleRemovable(const std::string &bundleName, const s
     }
 
     std::string originId = IPCSkeleton::ResetCallingIdentity();
-    
+
     IPCSkeleton::SetCallingIdentity(originId);
 }
 /**

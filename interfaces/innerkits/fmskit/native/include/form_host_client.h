@@ -45,8 +45,8 @@ public:
     /**
      * @brief Add form.
      *
-     * @param formCallback the host's form callback. 
-     * @param formId The Id of the form. 
+     * @param formCallback the host's form callback.
+     * @param formId The Id of the form.
      * @return none.
      */
     void AddForm(std::shared_ptr<FormCallbackInterface> formCallback, const int64_t formId);
@@ -54,8 +54,8 @@ public:
     /**
      * @brief Remove form.
      *
-     * @param formCallback the host's form callback. 
-     * @param formId The Id of the form. 
+     * @param formCallback the host's form callback.
+     * @param formId The Id of the form.
      * @return none.
      */
     void RemoveForm(std::shared_ptr<FormCallbackInterface> formCallback, const int64_t formId);
@@ -63,7 +63,7 @@ public:
     /**
      * @brief Check whether the form exist in the formhosts.
      *
-     * @param formId The Id of the form. 
+     * @param formId The Id of the form.
      * @return Returns true if contains form; returns false otherwise.
      */
     bool ContainsForm(int64_t formId);
@@ -87,7 +87,7 @@ public:
     /**
      * @brief UnInstall the forms.
      *
-     * @param formIds The Id of the forms. 
+     * @param formIds The Id of the forms.
      * @return none.
      */
     virtual void OnUninstall(const std::vector<int64_t> &formIds);
@@ -113,7 +113,7 @@ private:
     /**
      * @brief Find Key By form callback.
      *
-     * @param formCallback The form callback. 
+     * @param formCallback The form callback.
      * @return callback's key
      */
     int32_t FindKeyByCallback(std::shared_ptr<FormCallbackInterface> formCallback);
@@ -121,8 +121,8 @@ private:
     /**
      * @brief Compare callback.
      *
-     * @param formCallback1 The  form callback1. 
-     * @param formCallback2 The callback to be compared with form callback1. 
+     * @param formCallback1 The  form callback1.
+     * @param formCallback2 The callback to be compared with form callback1.
      * @return Returns true if the two callback are equal to each other, returns false otherwise.
      */
     bool Compare(std::shared_ptr<FormCallbackInterface> formCallback1, std::shared_ptr<FormCallbackInterface> formCallback2);
@@ -134,10 +134,10 @@ class HostForms {
 public:
     /**
      * @brief Add form by formId.
-     * 
+     *
      * @param formId The Id of the form.
      */
-    void AddForm(const int64_t formId) 
+    void AddForm(const int64_t formId)
     {
         std::map<int64_t, bool>::iterator it = forms_.find(formId);
         if (it != forms_.end()) {
@@ -148,10 +148,10 @@ public:
 
     /**
      * @brief Delete form by formId.
-     * 
+     *
      * @param formId The Id of the form.
      */
-    void DelForm(const int64_t formId) 
+    void DelForm(const int64_t formId)
     {
         forms_.erase(formId);
     }
@@ -159,7 +159,7 @@ public:
     /**
      * @brief Check whether the form is empty.
      */
-    bool IsEmpty() 
+    bool IsEmpty()
     {
         return forms_.empty();
     }
@@ -167,10 +167,10 @@ public:
     /**
      * @brief Check whether the form exist in the forms.
      *
-     * @param formId The Id of the form. 
+     * @param formId The Id of the form.
      * @return Returns true if contains form; returns false otherwise.
      */
-    bool Contains(const int64_t formId) 
+    bool Contains(const int64_t formId)
     {
         std::map<int64_t, bool>::iterator it = forms_.find(formId);
         return (it == forms_.end()) ? false : true;

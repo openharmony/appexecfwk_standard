@@ -85,7 +85,7 @@ HWTEST_F(FmsFormSetNextRefreshTest, FmsFormSetNextRefreshTest_SetNextRefreshTime
     GTEST_LOG_(INFO) << "FmsFormSetNextRefreshTest_SetNextRefreshTime_001 start";
     int64_t formId = 0; // invalid formId
     int64_t nextTime = Constants::MIN_NEXT_TIME;
-    
+
     EXPECT_EQ(ERR_APPEXECFWK_FORM_INVALID_PARAM, formSetNextRefresh_->SetNextRefreshTime(formId, nextTime));
     GTEST_LOG_(INFO) << "FmsFormSetNextRefreshTest_SetNextRefreshTime_001 end";
 }
@@ -100,7 +100,7 @@ HWTEST_F(FmsFormSetNextRefreshTest, FmsFormSetNextRefreshTest_SetNextRefreshTime
     GTEST_LOG_(INFO) << "FmsFormSetNextRefreshTest_SetNextRefreshTime_002 start";
     int64_t formId = 2;
     int64_t nextTime = Constants::MIN_NEXT_TIME;
-    
+
     EXPECT_EQ(ERR_APPEXECFWK_FORM_NOT_EXIST_ID, formSetNextRefresh_->SetNextRefreshTime(formId, nextTime));
     GTEST_LOG_(INFO) << "FmsFormSetNextRefreshTest_SetNextRefreshTime_002 end";
 }
@@ -113,22 +113,22 @@ HWTEST_F(FmsFormSetNextRefreshTest, FmsFormSetNextRefreshTest_SetNextRefreshTime
 HWTEST_F(FmsFormSetNextRefreshTest, FmsFormSetNextRefreshTest_SetNextRefreshTime_003, TestSize.Level0)
 {
     GTEST_LOG_(INFO) << "FmsFormSetNextRefreshTest_SetNextRefreshTime_003 start";
-    int64_t formId = 3;  
+    int64_t formId = 3;
     int64_t nextTime = Constants::MIN_NEXT_TIME;
 
     // check dynamicRefreshTasks_
     EXPECT_EQ(true, FormTimerMgr::GetInstance().dynamicRefreshTasks_.empty());
-    
+
     // creat formRecords_
     FormItemInfo iteminfo;
     iteminfo.formId_ = formId;
     iteminfo.providerBundleName_ = FORM_HOST_BUNDLE_NAME;
     iteminfo.abilityName_ = FORM_PROVIDER_ABILITY_NAME;
     iteminfo.temporaryFlag_ = true;
-    FormDataMgr::GetInstance().AllotFormRecord(iteminfo, 0);	
+    FormDataMgr::GetInstance().AllotFormRecord(iteminfo, 0);
 
     EXPECT_EQ(ERR_OK, formSetNextRefresh_->SetNextRefreshTime(formId, nextTime));
-    
+
     // check dynamicRefreshTasks_
     EXPECT_EQ(false, FormTimerMgr::GetInstance().dynamicRefreshTasks_.empty());
 
@@ -143,7 +143,7 @@ HWTEST_F(FmsFormSetNextRefreshTest, FmsFormSetNextRefreshTest_SetNextRefreshTime
 HWTEST_F(FmsFormSetNextRefreshTest, FmsFormSetNextRefreshTest_SetNextRefreshTime_004, TestSize.Level0)
 {
     GTEST_LOG_(INFO) << "FmsFormSetNextRefreshTest_SetNextRefreshTime_004 start";
-    int64_t formId = 4;  
+    int64_t formId = 4;
     int64_t nextTime = Constants::MIN_NEXT_TIME;
 
     // creat formRecords_
@@ -152,7 +152,7 @@ HWTEST_F(FmsFormSetNextRefreshTest, FmsFormSetNextRefreshTest_SetNextRefreshTime
     iteminfo.providerBundleName_ = "other_bundleName";
     iteminfo.abilityName_ = FORM_PROVIDER_ABILITY_NAME;
     iteminfo.temporaryFlag_ = true;
-    FormDataMgr::GetInstance().AllotFormRecord(iteminfo, 0);	
+    FormDataMgr::GetInstance().AllotFormRecord(iteminfo, 0);
 
     EXPECT_EQ(ERR_APPEXECFWK_FORM_OPERATION_NOT_SELF, formSetNextRefresh_->SetNextRefreshTime(formId, nextTime));
     GTEST_LOG_(INFO) << "FmsFormSetNextRefreshTest_SetNextRefreshTime_004 end";
@@ -166,7 +166,7 @@ HWTEST_F(FmsFormSetNextRefreshTest, FmsFormSetNextRefreshTest_SetNextRefreshTime
 HWTEST_F(FmsFormSetNextRefreshTest, FmsFormSetNextRefreshTest_SetNextRefreshTime_005, TestSize.Level0)
 {
     GTEST_LOG_(INFO) << "FmsFormSetNextRefreshTest_SetNextRefreshTime_005 start";
-    int64_t formId = 5;  
+    int64_t formId = 5;
     int64_t nextTime = Constants::MIN_NEXT_TIME;
 
     // creat formRecords_
@@ -175,7 +175,7 @@ HWTEST_F(FmsFormSetNextRefreshTest, FmsFormSetNextRefreshTest_SetNextRefreshTime
     iteminfo.providerBundleName_ = FORM_HOST_BUNDLE_NAME;
     iteminfo.abilityName_ = FORM_PROVIDER_ABILITY_NAME;
     iteminfo.temporaryFlag_ = true;
-    FormDataMgr::GetInstance().AllotFormRecord(iteminfo, 0);	
+    FormDataMgr::GetInstance().AllotFormRecord(iteminfo, 0);
 
     // Creat dynamicRefreshTasks_
     DynamicRefreshItem theItem;
@@ -187,10 +187,9 @@ HWTEST_F(FmsFormSetNextRefreshTest, FmsFormSetNextRefreshTest_SetNextRefreshTime
     EXPECT_EQ(1, FormTimerMgr::GetInstance().dynamicRefreshTasks_.at(0).settedTime);
 
     // Create IntervalTimerTasks_
-    FormTimer task;
-    task.formId = formId;
+    FormTimer task(formId, 3 * Constants::MIN_PERIOD);
     task.isEnable = true;
-    FormTimerMgr::GetInstance().AddIntervalTimer(task);
+    FormTimerMgr::GetInstance().AddFormTimer(task);
 
     EXPECT_EQ(ERR_OK, formSetNextRefresh_->SetNextRefreshTime(formId, nextTime));
     // check dynamicRefreshTasks_
@@ -208,7 +207,7 @@ HWTEST_F(FmsFormSetNextRefreshTest, FmsFormSetNextRefreshTest_SetNextRefreshTime
 {
     GTEST_LOG_(INFO) << "FmsFormSetNextRefreshTest_SetNextRefreshTime_006 start";
 
-    int64_t formId = 6;  
+    int64_t formId = 6;
     int64_t nextTime = Constants::MIN_NEXT_TIME;
 
     // creat formRecords_
@@ -228,7 +227,7 @@ HWTEST_F(FmsFormSetNextRefreshTest, FmsFormSetNextRefreshTest_SetNextRefreshTime
         iter->second.refreshCount = Constants::LIMIT_COUNT;
     }
     EXPECT_EQ(ERR_APPEXECFWK_FORM_MAX_REFRESH, formSetNextRefresh_->SetNextRefreshTime(formId, nextTime));
-    
+
     GTEST_LOG_(INFO) << "FmsFormSetNextRefreshTest_SetNextRefreshTime_006 end";
 }
 }
