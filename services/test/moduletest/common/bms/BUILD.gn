@@ -26,7 +26,7 @@ config("bms_module_test_config") {
 
   configs = [
     "${services_path}/test:services_module_test_config",
-    "${services_path}/bundlemgr:bundlemgr_config",
+    "${services_path}/bundlemgr:bundlemgr_common_config",
   ]
 }
 

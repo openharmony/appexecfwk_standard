@@ -42,12 +42,6 @@ bundle_install_sources = [
 ]
 
 bundle_install_deps = [
-  "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base:appexecfwk_base",
   "${services_path}/bundlemgr:bundle_parser",
   "${services_path}/bundlemgr:parser_common",
-]
-
-bundle_install_external_deps = [
-  "aafwk_standard:want",
-  #"communication:ipc_core",
 ]

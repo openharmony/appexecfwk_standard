@@ -16,21 +16,10 @@ import("//foundation/appexecfwk/standard/appexecfwk.gni")
 import(
     "//foundation/appexecfwk/standard/services/bundlemgr/appexecfwk_bundlemgr.gni")
 
-config("bundlemgr_config") {
-  include_dirs = [
-    "include",
-    "//utils/system/safwk/native/include",
-  ]
-}
-
 config("bundlemgr_common_config") {
   include_dirs = [
     "include",
-    "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base/include",
-    "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core/include/bundlemgr",
     "//utils/system/safwk/native/include",
-    "//base/security/permission/interfaces/innerkits/permission_standard/permissionsdk/main/cpp/include",
-    "//base/security/appverify/interfaces/innerkits/appverify/include",
   ]
 
   defines = [
@@ -44,7 +33,6 @@ config("bundlemgr_parse_config") {
     "//third_party/json/include",
     "//third_party/zlib/contrib/minizip",
     "//third_party/zlib",
-    "//utils/native/base/include",
   ]
 }
 
@@ -144,7 +132,6 @@ ohos_shared_library("libbms") {
   defines = [ "APP_LOG_TAG = \"BundleMgrService\"" ]
 
   configs = [
-    ":bundlemgr_config",
     ":bundlemgr_common_config",
     "${libs_path}/libeventhandler:libeventhandler_config",
   ]
@@ -191,7 +178,7 @@ ohos_executable("installs") {
 
   defines = [ "APP_LOG_TAG = \"BundleMgrService\"" ]
 
-  configs = [ ":bundlemgr_config" ]
+  configs = [ ":bundlemgr_common_config" ]
   cflags = []
   if (target_cpu == "arm") {
     cflags += [ "-DBINDER_IPC_32BIT" ]
@@ -203,6 +190,7 @@ ohos_executable("installs") {
   ]
 
   external_deps = [
+    "bundle_framework:appexecfwk_base",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
     "samgr_standard:samgr_proxy",
