@@ -373,6 +373,10 @@ ErrCode BundleManagerShellCommand::CreateMessageMap()
             "error: recover invalid bundle name.",
         },
         {
+            IStatusReceiver::ERR_USER_NOT_EXIST,
+            "error: user not exist.",
+        },
+        {
             IStatusReceiver::ERR_UNKNOWN,
             "error: unknown.",
         }

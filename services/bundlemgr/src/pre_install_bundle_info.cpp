@@ -21,14 +21,14 @@ namespace OHOS {
 namespace AppExecFwk {
 namespace {
 const std::string BUNDLE_NAME = "bundleName";
-const std::string BUNDLE_PATH = "bundlePath";
+const std::string BUNDLE_PATHS = "bundlePaths";
 const std::string APP_TYPE = "appType";
 }  // namespace
 
 void PreInstallBundleInfo::ToJson(nlohmann::json &jsonObject) const
 {
     jsonObject[BUNDLE_NAME] = bundleName_;
-    jsonObject[BUNDLE_PATH] = bundlePath_;
+    jsonObject[BUNDLE_PATHS] = bundlePaths_;
     jsonObject[APP_TYPE] = appType_;
 }
 
@@ -43,14 +43,14 @@ int32_t PreInstallBundleInfo::FromJson(const nlohmann::json &jsonObject)
         true,
         ProfileReader::parseResult,
         ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<std::string>(jsonObject,
+    GetValueIfFindKey<std::vector<std::string>>(jsonObject,
         jsonObjectEnd,
-        BUNDLE_PATH,
-        bundlePath_,
-        JsonType::STRING,
+        BUNDLE_PATHS,
+        bundlePaths_,
+        JsonType::ARRAY,
         true,
         ProfileReader::parseResult,
-        ArrayType::NOT_ARRAY);
+        ArrayType::STRING);
     GetValueIfFindKey<Constants::AppType>(jsonObject,
         jsonObjectEnd,
         APP_TYPE,
@@ -69,7 +69,7 @@ std::string PreInstallBundleInfo::ToString() const
 {
     nlohmann::json j;
     j[BUNDLE_NAME] = bundleName_;
-    j[BUNDLE_PATH] = bundlePath_;
+    j[BUNDLE_PATHS] = bundlePaths_;
     j[APP_TYPE] = appType_;
     return j.dump();
 }

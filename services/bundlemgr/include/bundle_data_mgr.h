@@ -747,6 +747,7 @@ private:
     mutable std::mutex allPermissionsChangedLock_;
     mutable std::mutex permissionsChangedLock_;
     mutable std::mutex multiUserIdSetMutex_;
+    mutable std::mutex preInstallInfoMutex_;
     bool initialUserFlag_ = false;
     // using for locking by bundleName
     std::unordered_map<std::string, std::mutex> bundleMutexMap_;
@@ -771,6 +772,7 @@ private:
     std::shared_ptr<PreInstallDataStorage> preInstallDataStorage_;
     std::shared_ptr<DistributedDataStorage> distributedDataStorage_;
     std::set<sptr<OnPermissionChangedCallback>> allPermissionsCallbacks_;
+    std::vector<PreInstallBundleInfo> preInstallBundleInfos_;
     // map<uid, callback>.
     std::map<int32_t, std::set<sptr<OnPermissionChangedCallback>>> permissionsCallbacks_;
     std::shared_ptr<BundlePromise> bundlePromise_ = nullptr;

@@ -90,7 +90,7 @@ void BundleUserMgrHostImpl::CreateNewUser(int32_t userId)
     int32_t totalHapNum = preInstallBundleInfos.size();
     // Read apps installed by other users that are visible to all users
     for (const auto &info : preInstallBundleInfos) {
-        std::vector<std::string> pathVec { info.GetBundlePath() };
+        std::vector<std::string> pathVec { info.GetBundlePaths() };
         InstallParam installParam;
         installParam.userId = userId;
         installParam.isPreInstallApp = true;

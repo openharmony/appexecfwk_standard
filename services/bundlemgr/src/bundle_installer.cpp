@@ -43,6 +43,7 @@ void BundleInstaller::Install(const std::string &bundleFilePath, const InstallPa
         auto userInstallParam = installParam;
         for (auto userId : GetExistsCommonUserIs()) {
             userInstallParam.userId = userId;
+            userInstallParam.installFlag = InstallFlag::REPLACE_EXISTING;
             resultCode = InstallBundle(
                 bundleFilePath, userInstallParam, Constants::AppType::THIRD_PARTY_APP);
             ResetInstallProperties();
@@ -63,6 +64,7 @@ void BundleInstaller::Recover(const std::string &bundleName, const InstallParam 
         auto userInstallParam = installParam;
         for (auto userId : GetExistsCommonUserIs()) {
             userInstallParam.userId = userId;
+            userInstallParam.installFlag = InstallFlag::REPLACE_EXISTING;
             resultCode = BaseBundleInstaller::Recover(bundleName, userInstallParam);
             ResetInstallProperties();
         }
@@ -81,6 +83,7 @@ void BundleInstaller::Install(const std::vector<std::string> &bundleFilePaths, c
         auto userInstallParam = installParam;
         for (auto userId : GetExistsCommonUserIs()) {
             userInstallParam.userId = userId;
+            userInstallParam.installFlag = InstallFlag::REPLACE_EXISTING;
             resultCode = InstallBundle(
                 bundleFilePaths, userInstallParam, Constants::AppType::THIRD_PARTY_APP);
             ResetInstallProperties();
