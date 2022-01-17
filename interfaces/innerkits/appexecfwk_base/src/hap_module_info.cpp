@@ -33,6 +33,8 @@ const std::string HAP_MODULE_INFO_BACKGROUND_IMG = "backgroundImg";
 const std::string HAP_MODULE_INFO_MAIN_ABILITY = "mainAbility";
 const std::string HAP_MODULE_INFO_SRC_PATH = "srcPath";
 const std::string HAP_MODULE_INFO_SUPPORTED_MODES = "supportedModes";
+const std::string HAP_MODULE_INFO_BUNDLE_NAME = "bundleName";
+const std::string HAP_MODULE_INFO_SRC_ENTRANCE = "srcEntrance";
 const std::string HAP_MODULE_INFO_MAIN_ELEMENTNAME = "mainElementName";
 const std::string HAP_MODULE_INFO_REQ_CAPABILITIES = "reqCapabilities";
 const std::string HAP_MODULE_INFO_DEVICE_TYPES = "deviceTypes";
@@ -50,6 +52,8 @@ bool HapModuleInfo::ReadFromParcel(Parcel &parcel)
     mainAbility = Str16ToStr8(parcel.ReadString16());
     srcPath = Str16ToStr8(parcel.ReadString16());
     supportedModes = parcel.ReadInt32();
+    bundleName = Str16ToStr8(parcel.ReadString16());
+    srcEntrance = Str16ToStr8(parcel.ReadString16());
     mainElementName = Str16ToStr8(parcel.ReadString16());
     int32_t extensionAbilityInfoSize = parcel.ReadInt32();
     for (int32_t i = 0; i < extensionAbilityInfoSize; ++i) {
@@ -123,6 +127,8 @@ bool HapModuleInfo::Marshalling(Parcel &parcel) const
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(mainAbility));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(srcPath));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, supportedModes);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(bundleName));
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(srcEntrance));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(mainElementName));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, extensionInfos.size());
     for (auto &extensionInfo : extensionInfos) {
@@ -163,6 +169,8 @@ void to_json(nlohmann::json &jsonObject, const HapModuleInfo &hapModuleInfo)
         {HAP_MODULE_INFO_MAIN_ABILITY, hapModuleInfo.mainAbility},
         {HAP_MODULE_INFO_SRC_PATH, hapModuleInfo.srcPath},
         {HAP_MODULE_INFO_SUPPORTED_MODES, hapModuleInfo.supportedModes},
+        {HAP_MODULE_INFO_BUNDLE_NAME, hapModuleInfo.bundleName},
+        {HAP_MODULE_INFO_SRC_ENTRANCE, hapModuleInfo.srcEntrance},
         {HAP_MODULE_INFO_MAIN_ELEMENTNAME, hapModuleInfo.mainElementName},
         {HAP_MODULE_INFO_REQ_CAPABILITIES, hapModuleInfo.reqCapabilities},
         {HAP_MODULE_INFO_DEVICE_TYPES, hapModuleInfo.deviceTypes},
@@ -243,6 +251,22 @@ void from_json(const nlohmann::json &jsonObject, HapModuleInfo &hapModuleInfo)
         HAP_MODULE_INFO_SUPPORTED_MODES,
         hapModuleInfo.supportedModes,
         JsonType::NUMBER,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        HAP_MODULE_INFO_BUNDLE_NAME,
+        hapModuleInfo.bundleName,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        HAP_MODULE_INFO_SRC_ENTRANCE,
+        hapModuleInfo.srcEntrance,
+        JsonType::STRING,
         false,
         parseResult,
         ArrayType::NOT_ARRAY);

@@ -1250,7 +1250,7 @@ bool ToInnerModuleInfo(const Profile::ModuleJson &moduleJson, InnerModuleInfo &i
         }
     }
     innerModuleInfo.mainAbility = moduleJson.module.mainElement;
-    innerModuleInfo.srcPath = moduleJson.module.srcEntrance;
+    innerModuleInfo.srcEntrance = moduleJson.module.srcEntrance;
     if (!moduleJson.module.process.empty()) {
         innerModuleInfo.process = moduleJson.module.process;
     } else {
