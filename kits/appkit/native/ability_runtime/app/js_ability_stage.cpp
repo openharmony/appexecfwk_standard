@@ -26,20 +26,34 @@ std::shared_ptr<AbilityStage> JsAbilityStage::Create(
     const std::unique_ptr<Runtime>& runtime, const AppExecFwk::HapModuleInfo& hapModuleInfo)
 {
     auto& jsRuntime = static_cast<JsRuntime&>(*runtime);
-
     std::string srcPath(hapModuleInfo.name);
-    srcPath.append("/assets/js/");
-    if (hapModuleInfo.srcPath.empty()) {
-        srcPath.append("AbilityStage.abc");
-    } else {
-        srcPath.append(hapModuleInfo.srcPath);
-        srcPath.append("/AbilityStage.abc");
+
+    /* temporary compatibility api8 + config.json */
+    if (!hapModuleInfo.isStageBasedModel) {
+        srcPath.append("/assets/js/");
+        if (hapModuleInfo.srcPath.empty()) {
+            srcPath.append("AbilityStage.abc");
+        } else {
+            srcPath.append(hapModuleInfo.srcPath);
+            srcPath.append("/AbilityStage.abc");
+        }
+        std::string moduleName(hapModuleInfo.moduleName);
+        moduleName.append("::").append("AbilityStage");
+        auto moduleObj = jsRuntime.LoadModule(moduleName, srcPath);
+        return std::make_shared<JsAbilityStage>(jsRuntime, std::move(moduleObj));
     }
 
-    std::string moduleName(hapModuleInfo.moduleName);
-    moduleName.append("::").append("AbilityStage");
-
-    auto moduleObj = jsRuntime.LoadModule(moduleName, srcPath);
+    std::unique_ptr<NativeReference> moduleObj;
+    srcPath.append("/");
+    if (!hapModuleInfo.srcEntrance.empty()) {
+        srcPath.append(hapModuleInfo.srcEntrance);
+        srcPath.erase(srcPath.rfind("."));
+        srcPath.append(".abc");
+        std::string moduleName(hapModuleInfo.moduleName);
+        moduleName.append("::").append("AbilityStage");
+        moduleObj = jsRuntime.LoadModule(moduleName, srcPath);
+        HILOG_INFO("JsAbilityStage srcPath is %{public}s", srcPath.c_str());
+    }
     return std::make_shared<JsAbilityStage>(jsRuntime, std::move(moduleObj));
 }
 
