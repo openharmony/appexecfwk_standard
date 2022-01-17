@@ -2054,12 +2054,18 @@ bool TransformToInfo(ProfileReader::ConfigJson &configJson, InnerBundleInfo &inn
     }
     ApplicationInfo applicationInfo;
     TransformToInfo(configJson, applicationInfo);
-    applicationInfo.isSystemApp = (innerBundleInfo.GetAppType() == Constants::AppType::SYSTEM_APP) ? true : false;
     innerBundleInfo.SetHasConfigureRemovable(ProfileReader::g_hasConfigureRemovable);
     ProfileReader::g_hasConfigureRemovable = false;
     BundleInfo bundleInfo;
     bundleInfo.applicationInfo.removable = applicationInfo.removable;
     TransformToInfo(configJson, bundleInfo);
+    if (innerBundleInfo.GetAppType() == Constants::AppType::SYSTEM_APP) {
+        applicationInfo.isSystemApp = true;
+    } else {
+        applicationInfo.isSystemApp = false;
+        bundleInfo.singleUser = false;
+        bundleInfo.isKeepAlive = false;
+    }
 
     InnerModuleInfo innerModuleInfo;
     TransformToInfo(configJson, innerModuleInfo);

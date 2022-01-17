@@ -110,7 +110,7 @@ public:
     static int32_t UpdateHapToken(const Security::AccessToken::AccessTokenID tokenId,
         const InnerBundleInfo &innerBundleInfo);
 
-    static bool AddDefinePermissions(const Security::AccessToken::AccessTokenID tokenId,
+    static bool AddDefineAndRequestPermissions(const Security::AccessToken::AccessTokenID tokenId,
         const InnerBundleInfo &innerBundleInfo, std::vector<std::string> &newRequestPermName);
 
     static int32_t DeleteAccessTokenId(const Security::AccessToken::AccessTokenID tokenId);

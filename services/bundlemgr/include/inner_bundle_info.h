@@ -930,7 +930,7 @@ public:
         return requestPermissions;
     }
 
-    std::vector<DefinePermission> GetAllDefinePermissions() const
+    std::vector<DefinePermission> GetAllDefinePermissions() const;
 
     std::vector<RequestPermission> GetAllRequestPermissions() const;
 
