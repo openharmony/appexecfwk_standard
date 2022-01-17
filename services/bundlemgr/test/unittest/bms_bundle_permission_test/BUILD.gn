@@ -23,6 +23,8 @@ ohos_unittest("BmsBundlePermissionTest") {
   include_dirs = [
     "//third_party/jsoncpp/include",
     "//base/startup/syspara_lite/interfaces/innerkits/native/syspara/include",
+    "//base/account/os_account/frameworks/common/database/include",
+    "//base/account/os_account/frameworks/common/account_error/include",
   ]
   sources = [
     "${innerkits_path}/appexecfwk_base/src/ability_info.cpp",
@@ -71,6 +73,7 @@ ohos_unittest("BmsBundlePermissionTest") {
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base:appexecfwk_base",
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core:appexecfwk_core",
     "${libs_path}/libeventhandler:libeventhandler_target",
+    "//base/account/os_account/frameworks/osaccount/native:os_account_innerkits",
     "//base/security/appverify/interfaces/innerkits/appverify:libhapverify",
     "//base/security/permission/interfaces/innerkits/permission_standard/permissionsdk:libpermissionsdk_standard",
     "//base/startup/syspara_lite/interfaces/innerkits/native/syspara:syspara",

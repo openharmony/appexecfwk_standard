@@ -48,6 +48,8 @@ ohos_source_set("appmgr_mst_source") {
     "//third_party/json/include",
     "${services_path}/appmgr/test/mock/include",
     "${services_path}/appmgr/include/lmks",
+    "//base/account/os_account/frameworks/common/database/include",
+    "//base/account/os_account/frameworks/common/account_error/include",
   ]
 
   public_configs = [
@@ -76,6 +78,7 @@ ohos_source_set("appmgr_mst_source") {
     "${innerkits_path}/appexecfwk_base:appexecfwk_base",
     "${innerkits_path}/appexecfwk_core:appexecfwk_core",
     "${libs_path}/libeventhandler:libeventhandler_target",
+    "//base/account/os_account/frameworks/osaccount/native:os_account_innerkits",
     "//base/security/permission/interfaces/innerkits/permission_standard/permissionsdk:libpermissionsdk_standard",
     "//foundation/aafwk/standard/interfaces/innerkits/base:base",
     "//foundation/aafwk/standard/interfaces/innerkits/want:want",
