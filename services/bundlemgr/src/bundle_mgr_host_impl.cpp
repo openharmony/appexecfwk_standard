@@ -485,22 +485,34 @@ bool BundleMgrHostImpl::CleanBundleDataFiles(const std::string &bundleName, cons
     }
     bool result = false;
     for (auto applicationInfo : appInfos) {
-        if (userId == Constants::C_UESRID) {
-            if (applicationInfo.bundleName == bundleName && applicationInfo.isCloned == true) {
-                result = true;
-                if (InstalldClient::GetInstance()->CleanBundleDataDir(applicationInfo.dataDir) != ERR_OK) {
-                    return false;
-                }
-                break;
+        if (applicationInfo.bundleName == bundleName &&
+            ((userId == Constants::C_UESRID && applicationInfo.isCloned == true) ||
+                (userId != Constants::C_UESRID && applicationInfo.isCloned == false))) {
+            result = true;
+            if (BundlePermissionMgr::ClearUserGrantedPermissionState(applicationInfo.accessTokenId)) {
+                APP_LOGE("%{public}s, ClearUserGrantedPermissionState failed", bundleName.c_str());
+                return false;
             }
-        } else {
-            if (applicationInfo.bundleName == bundleName && applicationInfo.isCloned == false) {
-                result = true;
-                if (InstalldClient::GetInstance()->CleanBundleDataDir(applicationInfo.dataDir) != ERR_OK) {
-                    return false;
-                }
-                break;
+            if (InstalldClient::GetInstance()->RemoveDir(applicationInfo.dataDir) != ERR_OK) {
+                APP_LOGE("%{public}s, RemoveDir:%{public}s failed",
+                    bundleName.c_str(), applicationInfo.dataDir.c_str());
+                return false;
             }
+            InnerBundleUserInfo innerBundleUserInfo;
+            if (!GetBundleUserInfo(bundleName, userId, innerBundleUserInfo)) {
+                APP_LOGE("%{public}s, userId:%{public}d, GetBundleUserInfo failed", bundleName.c_str(), userId);
+                return false;
+            }
+            if (InstalldClient::GetInstance()->RemoveBundleDataDir(bundleName, userId) != ERR_OK) {
+                APP_LOGE("%{public}s, RemoveBundleDataDir failed", bundleName.c_str());
+                return false;
+            }
+            if (InstalldClient::GetInstance()->CreateBundleDataDir(
+                applicationInfo.dataDir, userId, innerBundleUserInfo.uid, innerBundleUserInfo.uid, true) != ERR_OK) {
+                APP_LOGE("%{public}s, CreateBundleDataDir failed", bundleName.c_str());
+                return false;
+            }
+            break;
         }
     }
     return result;
