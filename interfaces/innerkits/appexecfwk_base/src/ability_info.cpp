@@ -133,6 +133,10 @@ bool AbilityInfo::ReadFromParcel(Parcel &parcel)
     READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, typeData);
     type = static_cast<AbilityType>(typeData);
 
+    int32_t extensionTypeData;
+    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, extensionTypeData);
+    extensionAbilityType = static_cast<ExtensionAbilityType>(extensionTypeData);
+
     int32_t orientationData;
     READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, orientationData);
     orientation = static_cast<DisplayOrientation>(orientationData);
@@ -246,6 +250,7 @@ bool AbilityInfo::Marshalling(Parcel &parcel) const
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, descriptionId);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, iconId);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, static_cast<int32_t>(type));
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, static_cast<int32_t>(extensionAbilityType));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, static_cast<int32_t>(orientation));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, static_cast<int32_t>(launchMode));
 
