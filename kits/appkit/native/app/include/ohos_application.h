@@ -225,6 +225,14 @@ public:
         const std::shared_ptr<AbilityLocalRecord> &abilityRecord);
 
     /**
+     * @brief add the ability stage when a hap first load
+     *
+     * @param hapModuleInfo
+     * @return Returns true on success, false on failure
+     */
+    bool AddAbilityStage(const AppExecFwk::HapModuleInfo &hapModuleInfo);
+
+    /**
      * @brief remove the ability stage when all of the abilities in the hap have been removed
      *
      * @param abilityInfo

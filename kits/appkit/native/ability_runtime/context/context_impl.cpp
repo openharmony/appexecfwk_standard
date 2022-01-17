@@ -293,6 +293,11 @@ void ContextImpl::InitHapModuleInfo(const std::shared_ptr<AppExecFwk::AbilityInf
     }
 }
 
+void ContextImpl::InitHapModuleInfo(const AppExecFwk::HapModuleInfo &hapModuleInfo)
+{
+    hapModuleInfo_ = std::make_shared<AppExecFwk::HapModuleInfo>(hapModuleInfo);
+}
+
 std::shared_ptr<AppExecFwk::HapModuleInfo> ContextImpl::GetHapModuleInfo() const
 {
     return hapModuleInfo_;

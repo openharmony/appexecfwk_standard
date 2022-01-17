@@ -63,7 +63,7 @@ public:
     {}
     void ScheduleProcessSecurityExit() override
     {}
-    void ScheduleAbilityStageInfo(const HapModuleInfo &) override
+    void ScheduleAbilityStage(const HapModuleInfo &) override
     {}
 };
 class AppMgrServiceModuleTest : public testing::Test {

@@ -46,7 +46,7 @@ public:
      *
      * @return
      */
-    void AddAbilityStageInfo(const HapModuleInfo &abilityStage);
+    void AddAbilityStage(const HapModuleInfo &abilityStage);
 
     /**
      * LaunchAbility, call ScheduleLaunchAbility() through proxy project,

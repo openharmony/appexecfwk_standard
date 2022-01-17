@@ -34,14 +34,14 @@ void AppLifeCycleDeal::LaunchApplication(const AppLaunchData &launchData_)
     }
 }
 
-void AppLifeCycleDeal::AddAbilityStageInfo(const HapModuleInfo &abilityStage)
+void AppLifeCycleDeal::AddAbilityStage(const HapModuleInfo &abilityStage)
 {
     if (!appThread_) {
         APP_LOGE("appThread_ is nullptr");
         return;
     }
 
-    appThread_->ScheduleAbilityStageInfo(abilityStage);
+    appThread_->ScheduleAbilityStage(abilityStage);
 }
 
 void AppLifeCycleDeal::LaunchAbility(const std::shared_ptr<AbilityRunningRecord> &ability)

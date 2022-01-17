@@ -47,7 +47,7 @@ AppSchedulerHost::AppSchedulerHost()
     memberFuncMap_[static_cast<uint32_t>(IAppScheduler::Message::SCHEDULE_PROCESS_SECURITY_EXIT_TRANSACTION)] =
         &AppSchedulerHost::HandleScheduleProcessSecurityExit;
     memberFuncMap_[static_cast<uint32_t>(IAppScheduler::Message::SCHEDULE_ABILITY_STAGE_INFO)] =
-        &AppSchedulerHost::HandleScheduleAbilityStageInfo;
+        &AppSchedulerHost::HandleScheduleAbilityStage;
 }
 
 AppSchedulerHost::~AppSchedulerHost()
@@ -146,7 +146,7 @@ int32_t AppSchedulerHost::HandleScheduleLaunchApplication(MessageParcel &data, M
     return NO_ERROR;
 }
 
-int32_t AppSchedulerHost::HandleScheduleAbilityStageInfo(MessageParcel &data, MessageParcel &reply)
+int32_t AppSchedulerHost::HandleScheduleAbilityStage(MessageParcel &data, MessageParcel &reply)
 {
     BYTRACE(BYTRACE_TAG_APP);
     std::unique_ptr<HapModuleInfo> abilityStage(data.ReadParcelable<HapModuleInfo>());
@@ -155,7 +155,7 @@ int32_t AppSchedulerHost::HandleScheduleAbilityStageInfo(MessageParcel &data, Me
         return ERR_APPEXECFWK_PARCEL_ERROR;
     }
 
-    ScheduleAbilityStageInfo(*abilityStage);
+    ScheduleAbilityStage(*abilityStage);
     return NO_ERROR;
 }
 
