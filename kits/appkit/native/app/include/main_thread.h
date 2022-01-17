@@ -25,13 +25,16 @@
 #include "ability_record_mgr.h"
 #include "application_impl.h"
 #include "resource_manager.h"
+#include "foundation/aafwk/standard/interfaces/innerkits/runtime/include/runtime.h"
 #include "ohos/aafwk/base/ipc_singleton.h"
 #include "watchdog.h"
 #define ABILITY_LIBRARY_LOADER
 
+class Runtime;
 namespace OHOS {
 namespace AppExecFwk {
 using namespace OHOS::Global;
+using OHOS::AbilityRuntime::Runtime;
 enum class MainThreadState { INIT, ATTACH, READY, RUNNING };
 struct BundleInfo;
 class ContextDeal;
@@ -377,6 +380,10 @@ private:
      *
      */
     bool IsApplicationReady() const;
+
+    void LoadAndRegisterExtension(const std::string &libName, const std::string &extensionName,
+        const std::unique_ptr<Runtime>& runtime);
+
     class MainHandler : public EventHandler {
     public:
         MainHandler(const std::shared_ptr<EventRunner> &runner, const sptr<MainThread> &thread);
