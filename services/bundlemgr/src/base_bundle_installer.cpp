@@ -1280,6 +1280,11 @@ ErrCode BaseBundleInstaller::ParseHapFiles(const std::vector<std::string> &bundl
     for (int i = 0; i < bundlePaths.size(); ++i) {
         InnerBundleInfo newInfo;
         newInfo.SetAppType(appType);
+        bool isSystemApp = (provisionInfo.bundleInfo.appFeature == Constants::HOS_SYSTEM_APP ||
+            provisionInfo.bundleInfo.appFeature == Constants::OHOS_SYSTEM_APP);
+        if (installParam.noCheckSignature == false && isSystemApp) {
+            newInfo.SetAppType(Constants::AppType::SYSTEM_APP);
+        }
         newInfo.SetUserId(installParam.userId);
         newInfo.SetIsKeepData(installParam.isKeepData);
         newInfo.SetIsPreInstallApp(installParam.isPreInstallApp);
@@ -1303,10 +1308,6 @@ ErrCode BaseBundleInstaller::ParseHapFiles(const std::vector<std::string> &bundl
             newInfo.SetAppFeature(provisionInfo.bundleInfo.appFeature);
             newInfo.SetAppPrivilegeLevel(provisionInfo.bundleInfo.apl);
             newInfo.SetAllowedAcls(provisionInfo.acls.allowedAcls);
-            if (provisionInfo.bundleInfo.appFeature == Constants::HOS_SYSTEM_APP ||
-                provisionInfo.bundleInfo.appFeature == Constants::OHOS_SYSTEM_APP) {
-                newInfo.SetAppType(Constants::AppType::SYSTEM_APP);
-            }
         }
 
         if ((result = CheckSystemSize(bundlePaths[i], appType)) != ERR_OK) {
