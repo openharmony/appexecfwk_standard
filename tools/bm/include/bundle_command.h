@@ -172,7 +172,7 @@ private:
     ErrCode GetBundlePath(const std::string& param, std::vector<std::string>& bundlePaths) const;
 
     bool CleanBundleCacheFilesOperation(const std::string &bundleName) const;
-    bool CleanBundleDataFilesOperation(const std::string &bundleName) const;
+    bool CleanBundleDataFilesOperation(const std::string &bundleName, int userId) const;
 
     bool SetApplicationEnabledOperation(const AbilityInfo &abilityInfo, bool isEnable) const;
     int32_t RecoverOperation(const std::string &bundleName, InstallParam &installParam) const;
