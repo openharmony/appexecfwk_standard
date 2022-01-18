@@ -1789,6 +1789,7 @@ bool BundleDataMgr::NotifyBundleStatus(const std::string& bundleName, const std:
     element.SetAbilityName(abilityName);
     want.SetElement(element);
     want.SetParam(Constants::UID, uid);
+    want.SetParam(Constants::USER_ID, GetUserIdByUid(uid));
     want.SetParam(ABILTY_NAME.data(), abilityName);
     EventFwk::CommonEventData commonData { want };
     EventFwk::CommonEventManager::PublishCommonEvent(commonData);

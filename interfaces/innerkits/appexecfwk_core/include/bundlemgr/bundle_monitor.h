@@ -53,8 +53,6 @@ public:
     void OnReceiveEvent(const EventFwk::CommonEventData &eventData);
 
 private:
-    const std::string BUNDLE_NAME = "bundleName";
-    const std::string USER_ID = "userId";
     sptr<IBundleStatusCallback> callback_ = nullptr;
 };
 }  // namespace AppExecFwk

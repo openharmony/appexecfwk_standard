@@ -52,8 +52,9 @@ void BundleMonitor::OnReceiveEvent(const EventFwk::CommonEventData &eventData)
     Want want = eventData.GetWant();
     std::string action = want.GetAction();
     std::string bundleName = want.GetElement().GetBundleName();
-    int userId = want.GetIntParam(USER_ID, Constants::INVALID_USERID);
-    APP_LOGI("OnReceiveEvent action = %{public}s, bundle = %{public}s", action.c_str(), bundleName.c_str());
+    int userId = want.GetIntParam(Constants::USER_ID, Constants::INVALID_USERID);
+    APP_LOGI("OnReceiveEvent action = %{public}s, bundle = %{public}s, userId = %{public}d",
+        action.c_str(), bundleName.c_str(), userId);
     if ((action == EventFwk::CommonEventSupport::COMMON_EVENT_PACKAGE_ADDED) && (callback_ != nullptr)) {
         callback_->OnBundleAdded(bundleName, userId);
     } else if ((action == EventFwk::CommonEventSupport::COMMON_EVENT_PACKAGE_CHANGED) && (callback_ != nullptr)) {
