@@ -83,7 +83,7 @@ ErrCode BaseBundleInstaller::InstallBundle(
 
     int32_t uid = Constants::INVALID_UID;
     ErrCode result = ProcessBundleInstall(bundlePaths, installParam, appType, uid);
-    if (dataMgr_ && !bundleName_.empty() && needNotifyBundleStatus_) {
+    if (dataMgr_ && !bundleName_.empty()) {
         dataMgr_->NotifyBundleStatus(bundleName_,
             Constants::EMPTY_STRING,
             mainAbility_,
@@ -126,7 +126,7 @@ ErrCode BaseBundleInstaller::UninstallBundle(const std::string &bundleName, cons
 
     int32_t uid = Constants::INVALID_UID;
     ErrCode result = ProcessBundleUninstall(bundleName, installParam, uid);
-    if (dataMgr_ && needNotifyBundleStatus_) {
+    if (dataMgr_) {
         dataMgr_->NotifyBundleStatus(
             bundleName, Constants::EMPTY_STRING, Constants::EMPTY_STRING, result, NotifyType::UNINSTALL_BUNDLE, uid);
     }
@@ -144,7 +144,7 @@ ErrCode BaseBundleInstaller::UninstallBundle(
 
     int32_t uid = Constants::INVALID_UID;
     ErrCode result = ProcessBundleUninstall(bundleName, modulePackage, installParam, uid);
-    if (dataMgr_ && needNotifyBundleStatus_) {
+    if (dataMgr_) {
         dataMgr_->NotifyBundleStatus(
             bundleName, modulePackage, Constants::EMPTY_STRING, result, NotifyType::UNINSTALL_MODULE, uid);
     }
@@ -1500,12 +1500,7 @@ int32_t BaseBundleInstaller::GetUserId(const InstallParam& installParam) const
         userId = callingUserId;
     }
 
-    if (userId != callingUserId) {
-        needNotifyBundleStatus_ = false;
-    }
-
-    APP_LOGD("BundleInstaller GetUserId, now userId is %{public}d  needNotifyBundleStatus: %{public}d",
-        userId, needNotifyBundleStatus_);
+    APP_LOGD("BundleInstaller GetUserId, now userId is %{public}d", userId);
     return userId;
 }
 
@@ -1585,7 +1580,6 @@ void BaseBundleInstaller::ResetInstallProperties()
     isContainEntry_ = false;
     isAppExist_ = false;
     hasInstalledInUser_ = false;
-    needNotifyBundleStatus_ = true;
     isFeatureNeedUninstall_ = false;
     versionCode_ = 0;
     uninstallModuleVec_.clear();
