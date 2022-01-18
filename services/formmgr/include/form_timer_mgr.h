@@ -44,7 +44,7 @@ using namespace OHOS::Notification::WantAgent;
  * @class FormTimerMgr
  * form timer task manager.
  */
-class FormTimerMgr final  : public DelayedRefSingleton<FormTimerMgr> {
+class FormTimerMgr final : public DelayedRefSingleton<FormTimerMgr> {
 DECLARE_DELAYED_REF_SINGLETON(FormTimerMgr)
 public:
     DISALLOW_COPY_AND_MOVE(FormTimerMgr);
