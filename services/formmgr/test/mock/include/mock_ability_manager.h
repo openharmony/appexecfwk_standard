@@ -432,11 +432,6 @@ public:
     {
         return 0;
     }
-    // virtual int GetRecentMissions(
-    //     const int32_t numMax, const int32_t flags, std::vector<AAFwk::RecentMissionInfo> &recentList)
-    // {
-    //     return 0;
-    // }
     virtual int GetRecentMissions(
         const int32_t numMax, const int32_t flags, std::vector<AAFwk::AbilityMissionInfo> &recentList) override
     {
@@ -713,6 +708,18 @@ public:
     }
     virtual int UnRegisterMissionListener(const std::string &deviceId,
         const sptr<IRemoteMissionListener> &listener) override
+    {
+        return 0;
+    }
+    virtual int GetAbilityRunningInfos(std::vector<AbilityRunningInfo> &info) override
+    {
+        return 0;
+    }
+    virtual int GetExtensionRunningInfos(int upperLimit, std::vector<ExtensionRunningInfo> &info) override
+    {
+        return 0;
+    }
+    virtual int GetProcessRunningInfos(std::vector<AppExecFwk::RunningProcessInfo> &info) override
     {
         return 0;
     }
