@@ -1342,7 +1342,8 @@ bool ToInnerBundleInfo(const Profile::ModuleJson &moduleJson, InnerBundleInfo &i
     // handle extensionAbilities
     for (const Profile::Extension &extension : moduleJson.module.extensionAbilities) {
         ExtensionAbilityInfo extensionInfo;
-        ToExtensionInfo(moduleJson, extension, extensionInfo, applicationInfo.isSystemApp, innerBundleInfo.IsPreInstallApp());
+        ToExtensionInfo(moduleJson, extension, extensionInfo,
+            applicationInfo.isSystemApp, innerBundleInfo.IsPreInstallApp());
         std::string key;
         key.append(moduleJson.app.bundleName).append(".")
             .append(moduleJson.module.name).append(".").append(extension.name);
