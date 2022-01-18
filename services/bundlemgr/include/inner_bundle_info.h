@@ -486,6 +486,19 @@ public:
         if (!baseApplicationInfo_.isLauncherApp) {
             baseApplicationInfo_.isLauncherApp = applicationInfo.isLauncherApp;
         }
+        baseApplicationInfo_.debug = applicationInfo.debug;
+        baseApplicationInfo_.vendor = applicationInfo.vendor;
+        baseApplicationInfo_.versionCode = applicationInfo.versionCode;
+        baseApplicationInfo_.versionName = applicationInfo.versionName;
+        baseApplicationInfo_.minCompatibleVersionCode = applicationInfo.minCompatibleVersionCode;
+        baseApplicationInfo_.apiCompatibleVersion = applicationInfo.apiCompatibleVersion;
+        baseApplicationInfo_.apiTargetVersion = applicationInfo.apiTargetVersion;
+        baseApplicationInfo_.apiReleaseType = applicationInfo.apiReleaseType;
+        baseApplicationInfo_.distributedNotificationEnabled = applicationInfo.distributedNotificationEnabled;
+        baseApplicationInfo_.entityType = applicationInfo.entityType;
+        baseApplicationInfo_.keepAlive = applicationInfo.keepAlive;
+        baseApplicationInfo_.singleUser = applicationInfo.singleUser;
+        baseApplicationInfo_.clearUserData = applicationInfo.clearUserData;
     }
     /**
      * @brief Get baseApplicationInfo.
