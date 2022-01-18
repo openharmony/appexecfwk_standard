@@ -131,7 +131,10 @@ ErrCode InstalldHostImpl::CreateBundleDataDir(const std::string &bundleDataDir,
             return ERR_APPEXECFWK_INSTALLD_CREATE_DIR_FAILED;
         }
 
-        if (!InstalldOperator::MkOwnerDir(createDir + Constants::DATA_BASE_DIR, true, uid, gid)) {
+        if (!InstalldOperator::MkOwnerDir(createDir + Constants::DATA_BASE_DIR,
+                                          S_IRWXU | S_IRWXG | S_ISGID,
+                                          uid,
+                                          Constants::DATABASE_DIR_GID)) {
             APP_LOGE("CreateBundleDataDir MkOwnerDir DATA_BASE_DIR failed");
             return ERR_APPEXECFWK_INSTALLD_CREATE_DIR_FAILED;
         }
