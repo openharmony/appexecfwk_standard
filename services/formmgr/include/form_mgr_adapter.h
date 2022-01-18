@@ -82,7 +82,7 @@ public:
 
     /**
      * @brief Request form with formId and want, send formId and want to form manager service.
-     * 
+     *
      * @param formId The Id of the form to update.
      * @param callerToken Caller ability token.
      * @param want The want of the form to request.
@@ -92,15 +92,15 @@ public:
 
     /**
      * @brief Form visible/invisible notify, send formIds to form manager service.
-     * 
+     *
      * @param formIds The vector of form Ids.
      * @param callerToken Caller ability token.
      * @param formVisibleType The form visible type, including FORM_VISIBLE and FORM_INVISIBLE.
      * @return Returns ERR_OK on success, others on failure.
      */
-    ErrCode NotifyWhetherVisibleForms(const std::vector<int64_t> &formIds, const sptr<IRemoteObject> &callerToken, 
+    ErrCode NotifyWhetherVisibleForms(const std::vector<int64_t> &formIds, const sptr<IRemoteObject> &callerToken,
     const int32_t formVisibleType);
-    
+
     /**
      * @brief temp form to normal form.
      * @param formId The Id of the form.
@@ -242,14 +242,14 @@ private:
      * @param formItemInfo Form configure info.
      * @return Returns ERR_OK on success, others on failure.
      */
-    ErrCode GetFormItemInfo(const AAFwk::Want &want, const BundleInfo &bundleInfo, const FormInfo &formInfo, 
+    ErrCode GetFormItemInfo(const AAFwk::Want &want, const BundleInfo &bundleInfo, const FormInfo &formInfo,
     FormItemInfo &formItemInfo);
     /**
      * @brief Dimension valid check.
      * @param formInfo Form info.
      * @param dimensionId Dimension id.
      * @return Returns true on success, false on failure.
-     */    
+     */
     bool IsDimensionValid(const FormInfo &formInfo, int dimensionId) const;
     /**
      * @brief Create form configure info.
@@ -266,8 +266,8 @@ private:
      * @param wantParams WantParams of the request.
      * @param formInfo Form info for form host.
      * @return Returns ERR_OK on success, others on failure.
-     */   
-    ErrCode AllotFormById(const FormItemInfo &info, const sptr<IRemoteObject> &callerToken, 
+     */
+    ErrCode AllotFormById(const FormItemInfo &info, const sptr<IRemoteObject> &callerToken,
     const WantParams &wantParams, FormJsInfo &formInfo);
     /**
      * @brief Allocate form by form configure info.
@@ -276,8 +276,8 @@ private:
      * @param wantParams WantParams of the request.
      * @param formInfo Form info for form host.
      * @return Returns ERR_OK on success, others on failure.
-     */   
-    ErrCode AllotFormByInfo(const FormItemInfo &info, const sptr<IRemoteObject> &callerToken, 
+     */
+    ErrCode AllotFormByInfo(const FormItemInfo &info, const sptr<IRemoteObject> &callerToken,
     const WantParams& wantParams, FormJsInfo &formInfo);
     /**
      * @brief Acquire form data from form provider.
@@ -285,7 +285,7 @@ private:
      * @param info Form configure info.
      * @param wantParams WantParams of the request.
      * @return Returns ERR_OK on success, others on failure.
-     */  
+     */
     ErrCode AcquireProviderFormInfoAsync(const int64_t formId, const FormItemInfo &info, const WantParams &wantParams);
 
     /**
@@ -350,12 +350,12 @@ private:
      * @param formInfo Form info for form host.
      * @return Returns ERR_OK on success, others on failure.
      */
-    ErrCode AddNewFormRecord(const FormItemInfo &info, const int64_t formId, 
+    ErrCode AddNewFormRecord(const FormItemInfo &info, const int64_t formId,
         const sptr<IRemoteObject> &callerToken, const WantParams &wantParams, FormJsInfo &formInfo);
 
     /**
      * @brief Send event notify to form provider. The event notify type include FORM_VISIBLE and FORM_INVISIBLE.
-     * 
+     *
      * @param providerKey The provider key string which consists of the provider bundle name and ability name.
      * @param formIdsByProvider The map of form Ids and their event type which have the same provider.
      * @param formVisibleType The form visible type, including FORM_VISIBLE and FORM_INVISIBLE.
@@ -366,7 +366,7 @@ private:
 
     /**
      * @brief Increase the timer refresh count.
-     * 
+     *
      * @param formId The form id.
      * @return none.
      */
@@ -379,7 +379,7 @@ private:
      * @param flag form flag.
      * @return Returns ERR_OK on success, others on failure.
      */
-    int HandleUpdateFormFlag(const std::vector<int64_t> formIds, 
+    int HandleUpdateFormFlag(const std::vector<int64_t> formIds,
     const sptr<IRemoteObject> &callerToken, const bool flag);
 
     /**
@@ -390,7 +390,7 @@ private:
      * @return Returns ERR_OK on success, others on failure.
      */
     bool IsFormCached(const FormRecord record);
-    
+
     /**
      * @brief set next refresht time locked.
      * @param formId The form's id.

@@ -98,9 +98,9 @@ public:
      * @param formVisibleType The form visible type, including FORM_VISIBLE and FORM_INVISIBLE.
      * @return Returns ERR_OK on success, others on failure.
      */
-    int NotifyWhetherVisibleForms(const std::vector<int64_t> &formIds, const sptr<IRemoteObject> &callerToken, 
+    int NotifyWhetherVisibleForms(const std::vector<int64_t> &formIds, const sptr<IRemoteObject> &callerToken,
     const int32_t formVisibleType);
-    
+
     /**
      * @brief temp form to normal form.
      * @param formId The Id of the form.
@@ -154,7 +154,7 @@ public:
 
     /**
      * @brief Register death callback.
-     * 
+     *
      * @param formDeathCallback The death callback.
      */
     void RegisterDeathCallback(const std::shared_ptr<FormCallbackInterface> &formDeathCallback);
@@ -276,7 +276,7 @@ private:
     sptr<IFormMgr> remoteProxy_;
 
     sptr<IRemoteObject::DeathRecipient> deathRecipient_ {nullptr};
-    
+
     // True: need to get a new fms remote object,
     // False: no need to get a new fms remote object.
     volatile bool resetFlag_ = false;

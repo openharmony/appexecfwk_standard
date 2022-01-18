@@ -73,11 +73,11 @@ public:
      * @param want The want of the request.
      * @param remoteObject Form provider proxy object.
      */
-    void PostProviderBatchDeleteTask(std::set<int64_t> &formIds, const Want &want, 
+    void PostProviderBatchDeleteTask(std::set<int64_t> &formIds, const Want &want,
         const sptr<IRemoteObject> &remoteObject);
     /**
      * @brief Refresh form data from form provider(task).
-     * 
+     *
      * @param formId The Id of the form.
      * @param want The want of the form.
      * @param remoteObject Form provider proxy object.
@@ -87,7 +87,7 @@ public:
 
     /**
      * @brief Cast temp form data from form provider(task).
-     * 
+     *
      * @param formId The Id of the form.
      * @param want The want of the request.
      * @param remoteObject Form provider proxy object.
@@ -124,14 +124,14 @@ public:
 
     /**
      * @brief Post event notify to form provider.
-     * 
+     *
      * @param formEvent The vector of form ids.
      * @param formVisibleType The form visible type, including FORM_VISIBLE and FORM_INVISIBLE.
      * @param want The want of the form.
      * @param remoteObject The form provider proxy object.
      * @return none.
      */
-    void PostEventNotifyTask(const std::vector<int64_t> &formEvent, const int32_t formVisibleType, const Want &want, 
+    void PostEventNotifyTask(const std::vector<int64_t> &formEvent, const int32_t formVisibleType, const Want &want,
         const sptr<IRemoteObject> &remoteObject);
 
     /**
@@ -141,7 +141,7 @@ public:
      * @param want The want of the request.
      * @param remoteObject Form provider proxy object.
      */
-    void PostFormEventTask(const int64_t formId, const std::string &message, const Want &want, 
+    void PostFormEventTask(const int64_t formId, const std::string &message, const Want &want,
         const sptr<IRemoteObject> &remoteObject);
 
      /**
@@ -179,19 +179,19 @@ private:
 
     /**
      * @brief Event notify to form provider.
-     * 
+     *
      * @param formEvents The vector of form ids.
      * @param formVisibleType The form visible type, including FORM_VISIBLE and FORM_INVISIBLE.
      * @param want The want of the form.
      * @param remoteObject The form provider proxy object.
      * @return none.
-     */ 
-    void EventNotify(const std::vector<int64_t> &formEvents, const int32_t formVisibleType, const Want &want, 
+     */
+    void EventNotify(const std::vector<int64_t> &formEvents, const int32_t formVisibleType, const Want &want,
         const sptr<IRemoteObject> &remoteObject);
 
     /**
      * @brief Notify form provider for cast temp form.
-     * 
+     *
      * @param formId The Id of the from.
      * @param want The want of the form.
      * @param remoteObject Form provider proxy object.
@@ -223,7 +223,7 @@ private:
      * @param remoteHost Form host proxy object.
      */
     void HostDied(const sptr<IRemoteObject> &remoteHost);
-    
+
     /**
      * @brief Post provider batch delete.
      * @param formIds The Id list.
@@ -238,7 +238,7 @@ private:
      * @param want The want of the request.
      * @param remoteObject Form provider proxy object.
      */
-    void FireFormEvent(const int64_t formId, const std::string &message, const Want &want, 
+    void FireFormEvent(const int64_t formId, const std::string &message, const Want &want,
         const sptr<IRemoteObject> &remoteObject);
 
     /**

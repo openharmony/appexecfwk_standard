@@ -30,11 +30,11 @@
 namespace OHOS {
 namespace AppExecFwk {
 FormAcquireConnection::FormAcquireConnection(
-    const int64_t formId, 
-    const FormItemInfo &info, 
+    const int64_t formId,
+    const FormItemInfo &info,
     const WantParams &wantParams)
     :formId_(formId),
-    info_(info), 
+    info_(info),
     wantParams_(wantParams)
 {
     SetProviderKey(info.GetProviderBundleName(), info.GetAbilityName());
@@ -59,7 +59,6 @@ void FormAcquireConnection::OnAbilityConnectDone(
     Want want;
     want.SetParams(wantParams_);
     FormUtil::CreateFormWant(info_.GetFormName(), info_.GetSpecificationId(), info_.IsTemporaryForm(), want);
-    want.SetElementName(info_.GetProviderBundleName(), info_.GetAbilityName());
     if (want.GetBoolParam(Constants::RECREATE_FORM_KEY, false)) {
         want.SetParam(Constants::ACQUIRE_TYPE, Constants::ACQUIRE_TYPE_RECREATE_FORM);
     } else {

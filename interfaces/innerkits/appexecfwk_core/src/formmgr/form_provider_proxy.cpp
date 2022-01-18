@@ -26,8 +26,8 @@ namespace AppExecFwk {
  * @return Returns ERR_OK on success, others on failure.
  */
 int FormProviderProxy::AcquireProviderFormInfo(
-    const int64_t formId, 
-    const Want &want, 
+    const int64_t formId,
+    const Want &want,
     const sptr<IRemoteObject> &callerToken)
 {
     int error;
@@ -54,9 +54,9 @@ int FormProviderProxy::AcquireProviderFormInfo(
     }
 
     error = Remote()->SendRequest(
-        static_cast<uint32_t>(IFormProvider::Message::FORM_ACQUIRE_PROVIDER_FORM_INFO), 
-        data, 
-        reply, 
+        static_cast<uint32_t>(IFormProvider::Message::FORM_ACQUIRE_PROVIDER_FORM_INFO),
+        data,
+        reply,
         option);
     if (error != ERR_OK) {
         APP_LOGE("%{public}s, failed to SendRequest: %{public}d", __func__, error);
@@ -97,9 +97,9 @@ int FormProviderProxy::NotifyFormDelete(const int64_t formId, const Want &want, 
     }
 
     error = Remote()->SendRequest(
-        static_cast<uint32_t>(IFormProvider::Message::FORM_PROVIDER_NOTIFY_FORM_DELETE), 
-        data, 
-        reply, 
+        static_cast<uint32_t>(IFormProvider::Message::FORM_PROVIDER_NOTIFY_FORM_DELETE),
+        data,
+        reply,
         option);
     if (error != ERR_OK) {
         APP_LOGE("%{public}s, failed to SendRequest: %{public}d", __func__, error);
@@ -115,8 +115,8 @@ int FormProviderProxy::NotifyFormDelete(const int64_t formId, const Want &want, 
  * @return Returns ERR_OK on success, others on failure.
  */
 int FormProviderProxy::NotifyFormsDelete(
-    const std::vector<int64_t> &formIds, 
-    const Want &want, 
+    const std::vector<int64_t> &formIds,
+    const Want &want,
     const sptr<IRemoteObject> &callerToken)
 {
     int error;
@@ -142,9 +142,9 @@ int FormProviderProxy::NotifyFormsDelete(
     }
 
     error = Remote()->SendRequest(
-        static_cast<uint32_t>(IFormProvider::Message::FORM_PROVIDER_NOTIFY_FORMS_DELETE), 
-        data, 
-        reply, 
+        static_cast<uint32_t>(IFormProvider::Message::FORM_PROVIDER_NOTIFY_FORMS_DELETE),
+        data,
+        reply,
         option);
     if (error != ERR_OK) {
         APP_LOGE("%{public}s, failed to SendRequest: %{public}d", __func__, error);
@@ -187,9 +187,9 @@ int FormProviderProxy::NotifyFormUpdate(const int64_t formId, const Want &want, 
     }
 
     error = Remote()->SendRequest(
-        static_cast<uint32_t>(IFormProvider::Message::FORM_PROVIDER_NOTIFY_FORM_UPDATE), 
-        data, 
-        reply, 
+        static_cast<uint32_t>(IFormProvider::Message::FORM_PROVIDER_NOTIFY_FORM_UPDATE),
+        data,
+        reply,
         option);
     if (error != ERR_OK) {
         APP_LOGE("%{public}s, failed to SendRequest: %{public}d", __func__, error);
@@ -200,7 +200,7 @@ int FormProviderProxy::NotifyFormUpdate(const int64_t formId, const Want &want, 
 
 /**
  * @brief Event notify when change the form visible.
- * 
+ *
  * @param formIds The vector of form ids.
  * @param formVisibleType The form visible type, including FORM_VISIBLE and FORM_INVISIBLE.
  * @param want Indicates the structure containing form info.
@@ -241,9 +241,9 @@ int FormProviderProxy::EventNotify(const std::vector<int64_t> &formIds, const in
     }
 
     error = Remote()->SendRequest(
-        static_cast<uint32_t>(IFormProvider::Message::FORM_PROVIDER_EVENT_NOTIFY), 
-        data, 
-        reply, 
+        static_cast<uint32_t>(IFormProvider::Message::FORM_PROVIDER_EVENT_NOTIFY),
+        data,
+        reply,
         option);
     if (error != ERR_OK) {
         APP_LOGE("%{public}s, failed to SendRequest: %{public}d", __func__, error);
@@ -260,9 +260,9 @@ int FormProviderProxy::EventNotify(const std::vector<int64_t> &formIds, const in
  * @return Returns ERR_OK on success, others on failure.
  */
 int FormProviderProxy::NotifyFormCastTempForm(
-    const int64_t formId, 
-    const Want &want, 
-    const sptr<IRemoteObject> &callerToken) 
+    const int64_t formId,
+    const Want &want,
+    const sptr<IRemoteObject> &callerToken)
 {
     int error;
     MessageParcel data;
@@ -288,9 +288,9 @@ int FormProviderProxy::NotifyFormCastTempForm(
     }
 
     error = Remote()->SendRequest(
-        static_cast<uint32_t>(IFormProvider::Message::FORM_PROVIDER_NOTIFY_TEMP_FORM_CAST), 
-        data, 
-        reply, 
+        static_cast<uint32_t>(IFormProvider::Message::FORM_PROVIDER_NOTIFY_TEMP_FORM_CAST),
+        data,
+        reply,
         option);
     if (error != ERR_OK) {
         APP_LOGE("%{public}s, failed to SendRequest: %{public}d", __func__, error);
@@ -308,9 +308,9 @@ int FormProviderProxy::NotifyFormCastTempForm(
  * @return Returns ERR_OK on success, others on failure.
  */
 int FormProviderProxy::FireFormEvent(
-    const int64_t formId, 
-    const std::string &message, 
-    const Want &want, 
+    const int64_t formId,
+    const std::string &message,
+    const Want &want,
     const sptr<IRemoteObject> &callerToken)
 {
     MessageParcel data;

@@ -203,12 +203,12 @@ void FormSysEventReceiver::HandleBundleDataCleared(const std::string &bundleName
     // as provider data is cleared
     std::set<int64_t> reCreateForms;
     FormDataMgr::GetInstance().GetReCreateFormRecordsByBundleName(bundleName, reCreateForms);
-    if (reCreateForms.empty()) {
-        return;
+    if (!reCreateForms.empty()) {
+        for (int64_t formId : reCreateForms) {
+            ReCreateForm(formId);
+        }
     }
-    for (int64_t formId : reCreateForms) {
-        ReCreateForm(formId);
-    }
+
     // as form host data is cleared
     HandleFormHostDataCleared(uid);
 }

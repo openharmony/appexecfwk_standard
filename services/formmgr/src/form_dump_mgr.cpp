@@ -82,8 +82,8 @@ void FormDumpMgr::DumpFormInfos(const std::vector<FormRecord> &formRecordInfos, 
                 formInfos += "    Uid [" + std::to_string(uId) + "]";
             }
             formInfos += "]";
-        }  
-        
+        }
+
         // formCacheData
         std::string strCacheData;
         if (FormCacheMgr::GetInstance().GetData(info.formId, strCacheData)) {
@@ -157,7 +157,7 @@ void FormDumpMgr::DumpFormInfo(const FormRecord &formRecordInfo, std::string &fo
         }
         formInfo += "]";
     }
-    
+
     // formCacheData
     std::string strCacheData;
     if (FormCacheMgr::GetInstance().GetData(formRecordInfo.formId, strCacheData)) {

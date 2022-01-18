@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
 #include "appexecfwk_errors.h"
 #include "app_log_wrapper.h"
 #include "app_scheduler_interface.h"
@@ -31,7 +31,7 @@ FormHostStub::FormHostStub()
     memberFuncMap_[static_cast<uint32_t>(IFormHost::Message::FORM_HOST_ON_UPDATE)] =
         &FormHostStub::HandleOnUpdate;
     memberFuncMap_[static_cast<uint32_t>(IFormHost::Message::FORM_HOST_ON_UNINSTALL)] =
-        &FormHostStub::HandleOnUninstall; 
+        &FormHostStub::HandleOnUninstall;
 }
 
 FormHostStub::~FormHostStub()

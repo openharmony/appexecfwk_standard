@@ -72,7 +72,7 @@ public:
 protected:
     sptr<MockFormHostClient> token_;
     std::shared_ptr<FormMgrService> formyMgrServ_ = DelayedSingleton<FormMgrService>::GetInstance();
-    
+
     sptr<BundleMgrService> mockBundleMgr_;
     sptr<MockAbilityMgrService> mockAbilityMgrServ_;
 };
@@ -91,10 +91,10 @@ void FmsFormMgrDeathCallbackTest::SetUp()
     mockBundleMgr_ = new (std::nothrow) BundleMgrService();
     EXPECT_TRUE(mockBundleMgr_ != nullptr);
     FormBmsHelper::GetInstance().SetBundleManager(mockBundleMgr_);
-    
+
     mockAbilityMgrServ_ = new (std::nothrow) MockAbilityMgrService();
     FormAmsHelper::GetInstance().SetAbilityManager(mockAbilityMgrServ_);
- 
+
     // APP_LOGI("fms_form_mgr_client_test_001 FormMgrService started");
     token_ = new (std::nothrow) MockFormHostClient();
 
@@ -111,7 +111,7 @@ void FmsFormMgrDeathCallbackTest::SetUp()
     permDef.descriptionId = 1;
     permList.emplace_back(permDef);
     Permission::PermissionKit::AddDefPermissions(permList);
-    Permission::PermissionKit::AddUserGrantedReqPermissions(FORM_PROVIDER_BUNDLE_NAME, 
+    Permission::PermissionKit::AddUserGrantedReqPermissions(FORM_PROVIDER_BUNDLE_NAME,
         {PERMISSION_NAME_REQUIRE_FORM}, 0);
     Permission::PermissionKit::GrantUserGrantedPermission(FORM_PROVIDER_BUNDLE_NAME, PERMISSION_NAME_REQUIRE_FORM, 0);
 }
@@ -130,7 +130,7 @@ void FmsFormMgrDeathCallbackTest::TearDown()
 HWTEST_F(FmsFormMgrDeathCallbackTest, OnRemoteDied_001, TestSize.Level0)
 {
     GTEST_LOG_(INFO) << "fms_form_mgr_death_callback_test_001 start";
-    // No cache 
+    // No cache
     FormJsInfo formJsInfo;
     Want want;
     want.SetParam(Constants::PARAM_FORM_HOST_BUNDLENAME_KEY, FORM_HOST_BUNDLE_NAME)
@@ -177,7 +177,7 @@ HWTEST_F(FmsFormMgrDeathCallbackTest, OnRemoteDied_001, TestSize.Level0)
 HWTEST_F(FmsFormMgrDeathCallbackTest, OnRemoteDied_002, TestSize.Level0)
 {
     GTEST_LOG_(INFO) << "fms_form_mgr_death_callback_test_002 start";
-    // No cache 
+    // No cache
     FormJsInfo formJsInfo;
     Want want;
     want.SetParam(Constants::PARAM_FORM_HOST_BUNDLENAME_KEY, FORM_HOST_BUNDLE_NAME)

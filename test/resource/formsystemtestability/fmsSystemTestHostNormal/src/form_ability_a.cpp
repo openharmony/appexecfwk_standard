@@ -420,7 +420,7 @@ void FormAbilityA::FMS_acquireForm_2200(std::string data)
     APP_LOGI("%{public}s called", __func__);
     std::shared_ptr<AcquireFormCallback> callback =
         std::make_shared<AcquireFormCallback>(FORM_EVENT_RECV_ACQUIRE_FORM_2200, EVENT_CODE_2200);
-   
+
     // Set Want info end
     bool bResult = CastTempForm(-1);
     if (bResult) {
@@ -435,7 +435,7 @@ void FormAbilityA::FMS_acquireForm_2300(std::string data)
     APP_LOGI("%{public}s called", __func__);
     std::shared_ptr<AcquireFormCallback> callback =
         std::make_shared<AcquireFormCallback>(FORM_EVENT_RECV_ACQUIRE_FORM_2300, EVENT_CODE_2300);
-   
+
     // Set Want info end
     bool bResult = CastTempForm(0);
     if (bResult) {
@@ -473,7 +473,7 @@ void FormAbilityA::FMS_acquireForm_2500(std::string data)
     APP_LOGI("%{public}s called", __func__);
     std::shared_ptr<AcquireFormCallback> callback =
         std::make_shared<AcquireFormCallback>(FORM_EVENT_RECV_ACQUIRE_FORM_2500, EVENT_CODE_2500);
-   
+
     // Set Want info end
     bool bResult = CastTempForm(EVENT_CODE_1234);
     if (bResult) {
@@ -888,7 +888,7 @@ void FormEventSubscriber::OnReceiveEvent(const CommonEventData &data)
     APP_LOGI("FormEventSubscriber::OnReceiveEvent:code=%{public}d", data.GetCode());
     auto eventName = data.GetWant().GetAction();
     ability_->handleEvent(eventName, data.GetData());
-    
+
     CommonEventManager::UnSubscribeCommonEvent(ability_->subscriber_);
 }
 

@@ -66,7 +66,7 @@ void FormTaskMgr::PostDeleteTask(const int64_t formId, const Want &want, const s
 
 /**
  * @brief Refresh form data from form provider(task).
- * 
+ *
  * @param formId The Id of the form.
  * @param want The want of the form.
  * @param remoteObject Form provider proxy object.
@@ -85,7 +85,7 @@ void FormTaskMgr::PostRefreshTask(const int64_t formId, const Want &want, const 
 
 /**
  * @brief Cast temp form data from form provider(task).
- * 
+ *
  * @param formId The Id of the form.
  * @param want The want of the form.
  * @param remoteObject Form provider proxy object.
@@ -110,7 +110,7 @@ void FormTaskMgr::PostCastTempTask(const int64_t formId, const Want &want, const
  * @param wantParams WantParams of the request.
  * @param remoteObject Form provider proxx object.
  */
-void FormTaskMgr::PostAcquireTaskToHost(const int64_t formId, const FormRecord &record, 
+void FormTaskMgr::PostAcquireTaskToHost(const int64_t formId, const FormRecord &record,
     const sptr<IRemoteObject> &remoteObject)
 {
     if (eventHandler_ == nullptr) {
@@ -130,7 +130,7 @@ void FormTaskMgr::PostAcquireTaskToHost(const int64_t formId, const FormRecord &
  * @param wantParams WantParams of the request.
  * @param remoteObject Form provider proxx object.
  */
-void FormTaskMgr::PostUpdateTaskToHost(const int64_t formId, const FormRecord &record, 
+void FormTaskMgr::PostUpdateTaskToHost(const int64_t formId, const FormRecord &record,
     const sptr<IRemoteObject> &remoteObject)
 {
     APP_LOGI("%{public}s called.", __func__);
@@ -170,14 +170,14 @@ void FormTaskMgr::PostHostDiedTask(const sptr<IRemoteObject> &remoteHost)
 
 /**
  * @brief Post event notify to form provider.
- * 
+ *
  * @param formEvent The vector of form ids.
  * @param formVisibleType The form visible type, including FORM_VISIBLE and FORM_INVISIBLE.
  * @param want The want of the form.
  * @param remoteObject The form provider proxy object.
  * @return none.
  */
-void FormTaskMgr::PostEventNotifyTask(const std::vector<int64_t> &formEvent, const int32_t formVisibleType, 
+void FormTaskMgr::PostEventNotifyTask(const std::vector<int64_t> &formEvent, const int32_t formVisibleType,
     const Want &want, const sptr<IRemoteObject> &remoteObject)
 {
     if (eventHandler_ == nullptr) {
@@ -194,7 +194,7 @@ void FormTaskMgr::PostEventNotifyTask(const std::vector<int64_t> &formEvent, con
  * @param want The want of the request.
  * @param remoteObject Form provider proxy object.
  */
-void FormTaskMgr::PostProviderBatchDeleteTask(std::set<int64_t> &formIds, const Want &want, 
+void FormTaskMgr::PostProviderBatchDeleteTask(std::set<int64_t> &formIds, const Want &want,
     const sptr<IRemoteObject> &remoteObject)
 {
     if (eventHandler_ == nullptr) {
@@ -212,7 +212,7 @@ void FormTaskMgr::PostProviderBatchDeleteTask(std::set<int64_t> &formIds, const 
  * @param want The want of the request.
  * @param remoteObject Form provider proxy object.
  */
-void FormTaskMgr::PostFormEventTask(const int64_t formId, const std::string &message, 
+void FormTaskMgr::PostFormEventTask(const int64_t formId, const std::string &message,
     const Want &want, const sptr<IRemoteObject> &remoteObject)
 {
     if (eventHandler_ == nullptr) {
@@ -248,15 +248,15 @@ void FormTaskMgr::PostUninstallTaskToHost(const std::vector<int64_t> &formIds, c
  * @param want The want of the request.
  * @param remoteObject Form provider proxy object.
  */
-void FormTaskMgr::AcquireProviderFormInfo(const int64_t formId, const Want &want, 
+void FormTaskMgr::AcquireProviderFormInfo(const int64_t formId, const Want &want,
     const sptr<IRemoteObject> &remoteObject)
-{   
+{
     FormMgrAdapter::GetInstance().AcquireProviderFormInfo(formId, want, remoteObject);
 }
 
 /**
  * @brief Notify form provider for delete form.
- * 
+ *
  * @param formId The Id of the from.
  * @param want The want of the form.
  * @param remoteObject Form provider proxy object.
@@ -269,7 +269,7 @@ void FormTaskMgr::NotifyFormDelete(const int64_t formId, const Want &want, const
 
 /**
  * @brief Notify form provider for updating form.
- * 
+ *
  * @param formId The Id of the from.
  * @param want The want of the form.
  * @param remoteObject Form provider proxy object.
@@ -295,14 +295,14 @@ void FormTaskMgr::NotifyFormUpdate(const int64_t formId, const Want &want, const
 
 /**
  * @brief Event notify to form provider.
- * 
+ *
  * @param formEvents The vector of form ids.
  * @param formVisibleType The form visible type, including FORM_VISIBLE and FORM_INVISIBLE.
  * @param want The want of the form.
  * @param remoteObject The form provider proxy object.
  * @return none.
- */ 
-void FormTaskMgr::EventNotify(const std::vector<int64_t> &formEvents, const int32_t formVisibleType, 
+ */
+void FormTaskMgr::EventNotify(const std::vector<int64_t> &formEvents, const int32_t formVisibleType,
     const Want &want, const sptr<IRemoteObject> &remoteObject)
 {
     APP_LOGI("%{public}s called.", __func__);
@@ -314,7 +314,7 @@ void FormTaskMgr::EventNotify(const std::vector<int64_t> &formEvents, const int3
         APP_LOGE("%{public}s fail, failed to get formProviderProxy", __func__);
         return;
     }
-    
+
     int error = formProviderProxy->EventNotify(formEvents, formVisibleType, want, FormSupplyCallback::GetInstance());
     if (error != ERR_OK) {
         FormSupplyCallback::GetInstance()->RemoveConnection(connectId);
@@ -324,7 +324,7 @@ void FormTaskMgr::EventNotify(const std::vector<int64_t> &formEvents, const int3
 
 /**
  * @brief Notify form provider for cast temp form.
- * 
+ *
  * @param formId The Id of the from.
  * @param want The want of the form.
  * @param remoteObject Form provider proxy object.
@@ -357,7 +357,7 @@ void FormTaskMgr::NotifyCastTemp(const int64_t formId, const Want &want, const s
  * @param wantParams WantParams of the request.
  * @param remoteObject Form provider proxx object.
  */
-void FormTaskMgr::AcquireTaskToHost(const int64_t formId, const FormRecord &record, 
+void FormTaskMgr::AcquireTaskToHost(const int64_t formId, const FormRecord &record,
     const sptr<IRemoteObject> &remoteObject)
 {
     APP_LOGI("FormTaskMgr AcquireTaskToHost, formId:%{public}" PRId64 "", formId);
@@ -380,7 +380,7 @@ void FormTaskMgr::AcquireTaskToHost(const int64_t formId, const FormRecord &reco
  * @param wantParams WantParams of the request.
  * @param remoteObject Form provider proxx object.
  */
-void FormTaskMgr::UpdateTaskToHost(const int64_t formId, const FormRecord &record, 
+void FormTaskMgr::UpdateTaskToHost(const int64_t formId, const FormRecord &record,
     const sptr<IRemoteObject> &remoteObject)
 {
     APP_LOGI("%{public}s start.", __func__);
@@ -416,7 +416,7 @@ void FormTaskMgr::HostDied(const sptr<IRemoteObject> &remoteHost)
  * @param want The want of the request.
  * @param remoteObject Form provider proxy object.
  */
-void FormTaskMgr::ProviderBatchDelete(std::set<int64_t> &formIds, const Want &want, 
+void FormTaskMgr::ProviderBatchDelete(std::set<int64_t> &formIds, const Want &want,
     const sptr<IRemoteObject> &remoteObject)
 {
     APP_LOGI("%{public}s called.", __func__);
@@ -426,7 +426,7 @@ void FormTaskMgr::ProviderBatchDelete(std::set<int64_t> &formIds, const Want &wa
         FormSupplyCallback::GetInstance()->RemoveConnection(connectId);
         APP_LOGE("%{public}s fail, Failed to get formProviderProxy", __func__);
         return;
-    } 
+    }
     std::vector<int64_t> vFormIds;
     vFormIds.assign(formIds.begin(), formIds.end());
     int error = formProviderProxy->NotifyFormsDelete(vFormIds, want, FormSupplyCallback::GetInstance());
@@ -442,7 +442,7 @@ void FormTaskMgr::ProviderBatchDelete(std::set<int64_t> &formIds, const Want &wa
  * @param want The want of the request.
  * @param remoteObject Form provider proxy object.
  */
-void FormTaskMgr::FireFormEvent(const int64_t formId, const std::string &message, const Want &want, 
+void FormTaskMgr::FireFormEvent(const int64_t formId, const std::string &message, const Want &want,
     const sptr<IRemoteObject> &remoteObject)
 {
     APP_LOGI("%{public}s start", __func__);
@@ -467,7 +467,7 @@ void FormTaskMgr::FireFormEvent(const int64_t formId, const std::string &message
  * @param formIds The Id list of the forms.
  * @param remoteObject Form provider proxy object.
  */
-void FormTaskMgr::FormUninstall(const std::vector<int64_t> &formIds, 
+void FormTaskMgr::FormUninstall(const std::vector<int64_t> &formIds,
     const sptr<IRemoteObject> &remoteObject)
 {
     APP_LOGI("%{public}s start", __func__);

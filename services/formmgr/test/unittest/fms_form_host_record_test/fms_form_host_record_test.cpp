@@ -67,7 +67,7 @@ public:
 protected:
     sptr<MockFormHostClient> token_;
     std::shared_ptr<FormMgrService> formyMgrServ_ = DelayedSingleton<FormMgrService>::GetInstance();
-    
+
     sptr<BundleMgrService> mockBundleMgr_;
     sptr<MockAbilityMgrService> mockAbilityMgrServ_;
 };
@@ -85,7 +85,7 @@ void FmsFormHostRecordTest::SetUp()
     mockBundleMgr_ = new (std::nothrow) BundleMgrService();
     EXPECT_TRUE(mockBundleMgr_ != nullptr);
     FormBmsHelper::GetInstance().SetBundleManager(mockBundleMgr_);
-    
+
     mockAbilityMgrServ_ = new (std::nothrow) MockAbilityMgrService();
     FormAmsHelper::GetInstance().SetAbilityManager(mockAbilityMgrServ_);
 
@@ -104,7 +104,7 @@ void FmsFormHostRecordTest::SetUp()
     permDef.descriptionId = 1;
     permList.emplace_back(permDef);
     Permission::PermissionKit::AddDefPermissions(permList);
-    Permission::PermissionKit::AddUserGrantedReqPermissions(FORM_PROVIDER_BUNDLE_NAME, 
+    Permission::PermissionKit::AddUserGrantedReqPermissions(FORM_PROVIDER_BUNDLE_NAME,
         {PERMISSION_NAME_REQUIRE_FORM}, 0);
     Permission::PermissionKit::GrantUserGrantedPermission(FORM_PROVIDER_BUNDLE_NAME, PERMISSION_NAME_REQUIRE_FORM, 0);
 }
@@ -147,7 +147,7 @@ HWTEST_F(FmsFormHostRecordTest, OnRemoteDied_001, TestSize.Level0)
     FormHostRecord hostRecord;
     FormDataMgr::GetInstance().GetFormHostRecord(formId1, hostRecord);
     hostRecord.GetDeathRecipient()->OnRemoteDied(token_);
-    
+
     FormDataMgr::GetInstance().DeleteFormRecord(formId1);
     FormDataMgr::GetInstance().DeleteFormRecord(formId2);
     FormDataMgr::GetInstance().ClearHostDataByUId(callingUid);

@@ -37,7 +37,7 @@ void FormAbilityConnection::OnAbilityConnectDone(
     const AppExecFwk::ElementName &element, const sptr<IRemoteObject> &remoteObject, int resultCode)
 {
     if (resultCode != ERR_OK) {
-        APP_LOGE("%{public}s, formId:%{public}" PRId64 ", resultCode:%{public}d", 
+        APP_LOGE("%{public}s, formId:%{public}" PRId64 ", resultCode:%{public}d",
         __func__, formId_, resultCode);
         return;
     }
@@ -92,12 +92,12 @@ long FormAbilityConnection::GetConnectId()
 }
 /**
  * @brief Get the provider Key
- * 
- * @return The provider Key 
+ *
+ * @return The provider Key
  */
 std::string FormAbilityConnection::GetProviderKey()
 {
-    if(bundleName_.empty() || abilityName_.empty()) {
+    if (bundleName_.empty() || abilityName_.empty()) {
         return "";
     }
     return bundleName_ + "::" + abilityName_;
@@ -105,7 +105,7 @@ std::string FormAbilityConnection::GetProviderKey()
 
 /**
  * @brief Set the Provider Key
- * 
+ *
  * @param bundleName bundleName
  * @param abilityName abilityName
  */

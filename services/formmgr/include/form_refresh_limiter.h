@@ -69,7 +69,7 @@ public:
     /**
      * @brief Get remind list.
      * @return remind list.
-     */    
+     */
     std::vector<int64_t> GetRemindList() const;
     /**
      * @brief Get remind list and reset limit.

@@ -38,7 +38,7 @@ public:
      */
     void OnAbilityConnectDone(
         const AppExecFwk::ElementName &element, const sptr<IRemoteObject> &remoteObject, int resultCode) override;
-    
+
 private:
     int64_t formId_;
     DISALLOW_COPY_AND_MOVE(FormDeleteConnection);

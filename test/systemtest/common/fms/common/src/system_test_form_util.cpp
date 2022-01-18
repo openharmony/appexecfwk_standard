@@ -599,7 +599,7 @@ int SystemTestFormUtil::ClearFormRecords()
         std::cout << "BatchAddFormRecords, failed to write interface token." << std::endl;
         return ERR_APPEXECFWK_PARCEL_ERROR;
     }
-    
+
     MessageParcel reply;
     MessageOption option;
     int error = remoteObject->SendRequest(

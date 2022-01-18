@@ -38,7 +38,7 @@ public:
      * @param formInfo Form info.
      * @return Returns ERR_OK on success, others on failure.
      */
-    virtual int AddForm(const int64_t formId, const Want &want, const sptr<IRemoteObject> &callerToken, 
+    virtual int AddForm(const int64_t formId, const Want &want, const sptr<IRemoteObject> &callerToken,
     FormJsInfo &formInfo) override;
 
     /**
@@ -65,7 +65,7 @@ public:
      * @param FormProviderData Form binding data.
      * @return Returns ERR_OK on success, others on failure.
      */
-    virtual int UpdateForm(const int64_t formId, const std::string &bundleName, 
+    virtual int UpdateForm(const int64_t formId, const std::string &bundleName,
     const FormProviderData &FormProviderData) override;
 
     /**
@@ -83,7 +83,7 @@ public:
      * @param updateType update type.
      * @return Returns ERR_OK on success, others on failure.
      */
-    virtual int LifecycleUpdate(const std::vector<int64_t> &formIds, const sptr<IRemoteObject> &callerToken, 
+    virtual int LifecycleUpdate(const std::vector<int64_t> &formIds, const sptr<IRemoteObject> &callerToken,
     const int32_t updateType) override;
 
     /**
@@ -102,9 +102,9 @@ public:
      * @param formVisibleType The form visible type, including FORM_VISIBLE and FORM_INVISIBLE.
      * @return Returns ERR_OK on success, others on failure.
      */
-    virtual int NotifyWhetherVisibleForms(const std::vector<int64_t> &formIds, const sptr<IRemoteObject> &callerToken, 
+    virtual int NotifyWhetherVisibleForms(const std::vector<int64_t> &formIds, const sptr<IRemoteObject> &callerToken,
     const int32_t formVisibleType) override;
-    
+
     /**
      * @brief temp form to normal form.
      * @param formId The Id of the form.

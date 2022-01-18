@@ -703,7 +703,7 @@ private:
     void SetBundleManager(sptr<IBundleMgr> bundleManager);
 
     void HandleTerminateApplicationTimeOut(const int64_t eventId);
-    
+
     void HandleAddAbilityStageTimeOut(const int64_t eventId);
 
     int32_t KillApplicationByUserId(const std::string &bundleName, const int userId);

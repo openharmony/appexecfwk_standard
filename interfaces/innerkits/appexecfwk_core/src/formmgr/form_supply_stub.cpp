@@ -81,20 +81,20 @@ int FormSupplyStub::HandleOnAcquire(MessageParcel &data, MessageParcel &reply)
     do {
         errCode = want->GetIntParam(Constants::PROVIDER_FLAG, ERR_OK);
         if (errCode != ERR_OK) {
-            APP_LOGE("%{public}s, provider error", __func__); 
+            APP_LOGE("%{public}s, provider error", __func__);
             break;
         }
         std::unique_ptr<FormProviderInfo> formInfo(data.ReadParcelable<FormProviderInfo>());
         if (formInfo == nullptr) {
-            APP_LOGE("%{public}s, failed to ReadParcelable<FormProviderInfo>", __func__);      
+            APP_LOGE("%{public}s, failed to ReadParcelable<FormProviderInfo>", __func__);
             errCode = ERR_APPEXECFWK_PARCEL_ERROR;
             break;
         }
         int32_t result = OnAcquire(*formInfo, *want);
         reply.WriteInt32(result);
         return result;
-    } while (true);       
-    
+    } while (true);
+
     FormProviderInfo formProviderInfo;
     want->SetParam(Constants::PROVIDER_FLAG, errCode);
     OnAcquire(formProviderInfo, *want);

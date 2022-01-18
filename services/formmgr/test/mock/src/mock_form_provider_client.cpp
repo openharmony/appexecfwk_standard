@@ -29,7 +29,7 @@ namespace AppExecFwk {
  * @param callerToken, Caller ability token.
  * @return none.
  */
-int MockFormProviderClient::AcquireProviderFormInfo(const int64_t formId, const Want &want, 
+int MockFormProviderClient::AcquireProviderFormInfo(const int64_t formId, const Want &want,
     const sptr<IRemoteObject> &callerToken)
 {
     // avoid the user modify the number in onCreate
@@ -42,7 +42,13 @@ int MockFormProviderClient::AcquireProviderFormInfo(const int64_t formId, const 
     }
 
     FormProviderInfo formProviderInfo;
-    formSupply->OnAcquire(formProviderInfo, want);
+    Want newWant(want);
+    newWant.SetParam(Constants::ACQUIRE_TYPE, want.GetIntParam(Constants::ACQUIRE_TYPE, 0));
+    newWant.SetParam(Constants::FORM_CONNECT_ID, want.GetLongParam(Constants::FORM_CONNECT_ID, 0));
+    newWant.SetParam(Constants::FORM_SUPPLY_INFO, want.GetStringParam(Constants::FORM_SUPPLY_INFO));
+    newWant.SetParam(Constants::PROVIDER_FLAG, true);
+    newWant.SetParam(Constants::PARAM_FORM_IDENTITY_KEY, std::to_string(formId));
+    formSupply->OnAcquire(formProviderInfo, newWant);
     return ERR_OK;
 }
 
@@ -53,7 +59,7 @@ int MockFormProviderClient::AcquireProviderFormInfo(const int64_t formId, const 
  * @param callerToken, Caller ability token.
  * @return none.
  */
-int MockFormProviderClient::NotifyFormDelete(const int64_t formId, const Want &want, 
+int MockFormProviderClient::NotifyFormDelete(const int64_t formId, const Want &want,
     const sptr<IRemoteObject> &callerToken)
 {
     APP_LOGD("Notify form delete");
@@ -67,7 +73,7 @@ int MockFormProviderClient::NotifyFormDelete(const int64_t formId, const Want &w
  * @param callerToken, Caller ability token.
  * @return none.
  */
-int MockFormProviderClient::NotifyFormsDelete(const std::vector<int64_t> &formIds, const Want &want, 
+int MockFormProviderClient::NotifyFormsDelete(const std::vector<int64_t> &formIds, const Want &want,
     const sptr<IRemoteObject> &callerToken)
 {
     APP_LOGD("Notify forms delete");
@@ -80,7 +86,7 @@ int MockFormProviderClient::NotifyFormsDelete(const std::vector<int64_t> &formId
  * @param want Indicates the structure containing form info.
  * @param callerToken Caller ability token.
  */
-int MockFormProviderClient::NotifyFormUpdate(const int64_t formId, const Want &want, 
+int MockFormProviderClient::NotifyFormUpdate(const int64_t formId, const Want &want,
     const sptr<IRemoteObject> &callerToken)
 {
     APP_LOGD("Notify form update");
@@ -89,7 +95,7 @@ int MockFormProviderClient::NotifyFormUpdate(const int64_t formId, const Want &w
 
 /**
  * @brief Event notify when change the form visible.
- * 
+ *
  * @param formEvents The vector of form ids.
  * @param formVisibleType The form visible type, including FORM_VISIBLE and FORM_INVISIBLE.
  * @param want Indicates the structure containing form info.
@@ -110,7 +116,7 @@ int MockFormProviderClient::EventNotify(const std::vector<int64_t> &formIds, con
  * @param callerToken, Caller ability token.
  * @return none.
  */
-int MockFormProviderClient::NotifyFormCastTempForm(const int64_t formId, const Want &want, 
+int MockFormProviderClient::NotifyFormCastTempForm(const int64_t formId, const Want &want,
     const sptr<IRemoteObject> &callerToken)
 {
     APP_LOGD("Notify cast temp form");
@@ -124,7 +130,7 @@ int MockFormProviderClient::NotifyFormCastTempForm(const int64_t formId, const W
  * @param callerToken Form provider proxy object.
  * @return Returns ERR_OK on success, others on failure.
  */
-int MockFormProviderClient::FireFormEvent(const int64_t formId, const std::string &message, const Want &want, 
+int MockFormProviderClient::FireFormEvent(const int64_t formId, const std::string &message, const Want &want,
     const sptr<IRemoteObject> &callerToken)
 {
     APP_LOGD("Fire form event");

@@ -134,7 +134,7 @@ std::shared_ptr<AbilityLocalRecord> AbilityRecordMgr::GetAbilityItem(const sptr<
     if (iter != abilityRecords_.end()) {
         APP_LOGI("AbilityRecordMgr::GetAbilityItem : the ability found");
         return iter->second;
-    } 
+    }
     APP_LOGI("AbilityRecordMgr::GetAbilityItem : the ability not found");
     return nullptr;
 }

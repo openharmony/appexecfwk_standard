@@ -59,7 +59,7 @@ public:
      * @param formInfo Form info.
      * @return Returns ERR_OK on success, others on failure.
      */
-    int AddForm(const int64_t formId, const Want &want, const sptr<IRemoteObject> &callerToken, 
+    int AddForm(const int64_t formId, const Want &want, const sptr<IRemoteObject> &callerToken,
     FormJsInfo &formInfo) override;
 
     /**
@@ -86,9 +86,9 @@ public:
      * @param FormProviderData Form binding data.
      * @return Returns ERR_OK on success, others on failure.
      */
-    int UpdateForm(const int64_t formId, const std::string &bundleName, 
+    int UpdateForm(const int64_t formId, const std::string &bundleName,
     const FormProviderData &FormProviderData) override;
-   
+
     /**
      * @brief set next refresh time.
      * @param formId The id of the form.
@@ -96,7 +96,7 @@ public:
      * @return Returns ERR_OK on success, others on failure.
      */
     int SetNextRefreshTime(const int64_t formId, const int64_t nextTime) override;
-    
+
     /**
      * @brief lifecycle update.
      * @param formIds formIds of hostclient.
@@ -104,9 +104,9 @@ public:
      * @param updateType update type,enable or disable.
      * @return Returns true on success, false on failure.
      */
-    int LifecycleUpdate(const std::vector<int64_t> &formIds, const sptr<IRemoteObject> &callerToken, 
+    int LifecycleUpdate(const std::vector<int64_t> &formIds, const sptr<IRemoteObject> &callerToken,
     const int32_t updateType) override;
-    
+
     /**
      * @brief Request form with formId and want, send formId and want to form manager service.
      * @param formId The Id of the form to update.
@@ -123,9 +123,9 @@ public:
      * @param formVisibleType The form visible type, including FORM_VISIBLE and FORM_INVISIBLE.
      * @return Returns ERR_OK on success, others on failure.
      */
-    int NotifyWhetherVisibleForms(const std::vector<int64_t> &formIds, const sptr<IRemoteObject> &callerToken, 
+    int NotifyWhetherVisibleForms(const std::vector<int64_t> &formIds, const sptr<IRemoteObject> &callerToken,
     const int32_t formVisibleType) override;
-    
+
     /**
      * @brief temp form to normal form.
      * @param formId The Id of the form.

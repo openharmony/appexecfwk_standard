@@ -61,12 +61,12 @@ private:
     /**
      * @brief check if disconnect ability or not.
      * @param connection The ability connection.
-     */  
+     */
     bool CanDisConnect(sptr<FormAbilityConnection> &connection);
 private:
     static std::mutex mutex_;
     static sptr<FormSupplyCallback> instance_;
-    
+
     mutable std::mutex conMutex_;
     std::map<long, sptr<FormAbilityConnection>> connections_;
     DISALLOW_COPY_AND_MOVE(FormSupplyCallback);

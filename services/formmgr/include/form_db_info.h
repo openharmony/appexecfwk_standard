@@ -98,7 +98,7 @@ struct FormDBInfo {
         }
 
         return true;
-    }    
+    }
 };
 
 class InnerFormInfo {
@@ -276,7 +276,7 @@ public:
     {
         formDBInfo_.formName = formName;
     }
-    
+
     /**
      * @brief Get application user uids.
      * @return Returns the user uids.

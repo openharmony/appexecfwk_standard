@@ -360,4 +360,4 @@ HWTEST_F(ContextDealTest, AppExecFwk_ContextDeal_SetShowOnLockScreen_0200, Funct
     testing::Mock::AllowLeak(abilityMgrClient.get());
 }
 }  // namespace AppExecFwk
-}  
+}

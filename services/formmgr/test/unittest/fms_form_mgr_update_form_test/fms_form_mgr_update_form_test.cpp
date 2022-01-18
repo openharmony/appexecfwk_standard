@@ -63,7 +63,7 @@ public:
 protected:
     sptr<MockFormHostClient> token_;
     std::shared_ptr<FormMgrService> formyMgrServ_ = DelayedSingleton<FormMgrService>::GetInstance();
-    
+
     sptr<BundleMgrService> mockBundleMgr_;
     sptr<MockAbilityMgrService> mockAbilityMgrServ_;
 };
@@ -82,7 +82,7 @@ void FmsFormMgrUpdateFormTest::SetUp()
 
     mockBundleMgr_ = new (std::nothrow) BundleMgrService();
     ASSERT_TRUE(mockBundleMgr_ != nullptr);
-    FormBmsHelper::GetInstance().SetBundleManager(mockBundleMgr_);    
+    FormBmsHelper::GetInstance().SetBundleManager(mockBundleMgr_);
 
     mockAbilityMgrServ_ = new (std::nothrow) MockAbilityMgrService();
     FormAmsHelper::GetInstance().SetAbilityManager(mockAbilityMgrServ_);
@@ -102,7 +102,7 @@ void FmsFormMgrUpdateFormTest::SetUp()
     permDef.descriptionId = 1;
     permList.emplace_back(permDef);
     Permission::PermissionKit::AddDefPermissions(permList);
-    Permission::PermissionKit::AddUserGrantedReqPermissions(FORM_PROVIDER_BUNDLE_NAME, 
+    Permission::PermissionKit::AddUserGrantedReqPermissions(FORM_PROVIDER_BUNDLE_NAME,
         {PERMISSION_NAME_REQUIRE_FORM}, 0);
     Permission::PermissionKit::GrantUserGrantedPermission(FORM_PROVIDER_BUNDLE_NAME, PERMISSION_NAME_REQUIRE_FORM, 0);
 }
@@ -153,51 +153,6 @@ HWTEST_F(FmsFormMgrUpdateFormTest, UpdateForm_001, TestSize.Level0)
     token_->Wait();
 
     GTEST_LOG_(INFO) << "fms_form_mgr_client_updateForm_test_001 end";
-}
-
-/*
- * Feature: FormMgrService
- * Function: FormMgr
- * SubFunction: UpdateForm Function
- * FunctionPoints: FormMgr UpdateForm interface
- * EnvConditions: Mobile that can run ohos test framework
- * CaseDescription: Verify if FormMgr invoke UpdateForm works when permission denied.
-  */
-HWTEST_F(FmsFormMgrUpdateFormTest, UpdateForm_002, TestSize.Level0)
-{
-    GTEST_LOG_(INFO) << "fms_form_mgr_client_updateForm_test_002 start";
-
-    // param editor
-    int64_t formId {200L};
-    int32_t callingUid {0};
-    std::string bandleName = FORM_HOST_BUNDLE_NAME;
-    FormProviderData formProviderData = FormProviderData(std::string("{\"city\": \"beijing002\"}"));
-
-    // add formRecord
-    FormItemInfo formItemInfo;
-    formItemInfo.SetFormId(formId);
-    formItemInfo.SetProviderBundleName(FORM_HOST_BUNDLE_NAME);
-    formItemInfo.SetAbilityName(FORM_PROVIDER_ABILITY_NAME);
-    formItemInfo.SetTemporaryFlag(false);
-    FormDataMgr::GetInstance().AllotFormRecord(formItemInfo, callingUid);
-
-    // add formHostRecord
-    FormItemInfo itemInfo;
-    FormDataMgr::GetInstance().AllotFormHostRecord(itemInfo, token_, formId, callingUid);
-
-    // del permission
-    Permission::PermissionKit::RevokeUserGrantedPermission(FORM_PROVIDER_BUNDLE_NAME, PERMISSION_NAME_REQUIRE_FORM,
-    callingUid);
-
-    // test exec
-    EXPECT_EQ(ERR_APPEXECFWK_FORM_PERMISSION_DENY, FormMgr::GetInstance().UpdateForm(formId, bandleName, 
-    formProviderData));
-
-    // add permission
-    Permission::PermissionKit::GrantUserGrantedPermission(FORM_PROVIDER_BUNDLE_NAME, PERMISSION_NAME_REQUIRE_FORM,
-    callingUid);
-
-    GTEST_LOG_(INFO) << "fms_form_mgr_client_updateForm_test_002 end";
 }
 
 /*
