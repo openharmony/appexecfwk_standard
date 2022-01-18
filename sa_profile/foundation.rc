@@ -32,7 +32,7 @@ on init
     chmod 0755 /dev/freezer
     mount cgroup none /dev/freezer freezer
 
-    # create directory of frozen and thawed 
+    # create directory of frozen and thawed
     mkdir /dev/freezer/frozen
     mkdir /dev/freezer/thawed
 

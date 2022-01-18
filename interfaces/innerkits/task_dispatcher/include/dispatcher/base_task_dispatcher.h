@@ -72,7 +72,7 @@ public:
      */
     ErrCode AsyncDispatchBarrier(const std::shared_ptr<Runnable> &runnable) override;
     /**
-     * 	Create a group.
+     *     Create a group.
      *  @return a new created group.
      */
     std::shared_ptr<Group> CreateDispatchGroup() override;

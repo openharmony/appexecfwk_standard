@@ -26,7 +26,7 @@ namespace OHOS {
 namespace AbilityRuntime {
 NativeValue* CreateJsAppStateData(NativeEngine &engine, const AppStateData &appStateData)
 {
-    HILOG_INFO("%{public}s called.", __func__); 
+    HILOG_INFO("%{public}s called.", __func__);
     NativeValue* objValue = engine.CreateObject();
     NativeObject* object = ConvertNativeValueTo<NativeObject>(objValue);
     object->SetProperty("bundleName", CreateJsValue(engine, appStateData.bundleName));
@@ -37,7 +37,7 @@ NativeValue* CreateJsAppStateData(NativeEngine &engine, const AppStateData &appS
 
 NativeValue* CreateJsAbilityStateData(NativeEngine &engine, const AbilityStateData &abilityStateData)
 {
-    HILOG_INFO("%{public}s called.", __func__); 
+    HILOG_INFO("%{public}s called.", __func__);
     NativeValue* objValue = engine.CreateObject();
     NativeObject* object = ConvertNativeValueTo<NativeObject>(objValue);
     object->SetProperty("bundleName", CreateJsValue(engine, abilityStateData.bundleName));
@@ -50,7 +50,7 @@ NativeValue* CreateJsAbilityStateData(NativeEngine &engine, const AbilityStateDa
 
 NativeValue* CreateJsProcessData(NativeEngine &engine, const ProcessData &processData)
 {
-    HILOG_INFO("%{public}s called.", __func__); 
+    HILOG_INFO("%{public}s called.", __func__);
     NativeValue* objValue = engine.CreateObject();
     NativeObject* object = ConvertNativeValueTo<NativeObject>(objValue);
     object->SetProperty("bundleName", CreateJsValue(engine, processData.bundleName));

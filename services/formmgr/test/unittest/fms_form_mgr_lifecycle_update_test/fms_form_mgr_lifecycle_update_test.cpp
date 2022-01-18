@@ -71,15 +71,15 @@ void FmsFormMgrLifecycleUpdateTest::SetUp()
 {
     // APP_LOGI("fms_form_mgr_enable_update_test_001 setup");
     formyMgrServ_->OnStart();
-  
+
     // mock BundleMgr
     mockBundleMgr_ = new (std::nothrow) BundleMgrService();
     ASSERT_TRUE(mockBundleMgr_ != nullptr);
-    FormBmsHelper::GetInstance().SetBundleManager(mockBundleMgr_);    
+    FormBmsHelper::GetInstance().SetBundleManager(mockBundleMgr_);
 
     // token
     token_ = new (std::nothrow) MockFormHostClient();
-    
+
     // Permission install
     std::vector<Permission::PermissionDef> permList;
     Permission::PermissionDef permDef;
@@ -93,7 +93,7 @@ void FmsFormMgrLifecycleUpdateTest::SetUp()
     permDef.descriptionId = 1;
     permList.emplace_back(permDef);
     Permission::PermissionKit::AddDefPermissions(permList);
-    Permission::PermissionKit::AddUserGrantedReqPermissions(FORM_PROVIDER_BUNDLE_NAME, 
+    Permission::PermissionKit::AddUserGrantedReqPermissions(FORM_PROVIDER_BUNDLE_NAME,
         {PERMISSION_NAME_REQUIRE_FORM}, 0);
     Permission::PermissionKit::GrantUserGrantedPermission(FORM_PROVIDER_BUNDLE_NAME, PERMISSION_NAME_REQUIRE_FORM, 0);
 }
@@ -115,28 +115,6 @@ void FmsFormMgrLifecycleUpdateTest::InitFormItemInfo(int64_t formId, FormItemInf
     formItemInfo.SetUpdateDuration(Constants::MIN_CONFIG_DURATION);
     formItemInfo.SetScheduledUpdateTime("10:30");
     formItemInfo.SetHapSourceDirs(hapSourceDirs);
-}
-/**
- * @tc.number: FmsFormMgrLifecycleUpdateTest_LifecycleUpdate_001
- * @tc.name: LifecycleUpdate
- * @tc.desc: Verify that the return value is correct.
- * @tc.info: permission denied.
- */
-HWTEST_F(FmsFormMgrLifecycleUpdateTest, FmsFormMgrLifecycleUpdateTest_LifecycleUpdate_001, TestSize.Level0)
-{
-    GTEST_LOG_(INFO) << "FmsFormMgrLifecycleUpdateTest_LifecycleUpdate_001 start";
-
-    std::vector<int64_t> formIds;
-    int32_t updateType = OHOS::AppExecFwk::FormMgrService::ENABLE_FORM_UPDATE;
-
-    // Remove Permission
-    OHOS::Security::Permission::PermissionKit::RemoveDefPermissions(FORM_PROVIDER_BUNDLE_NAME);
-    OHOS::Security::Permission::PermissionKit::RemoveUserGrantedReqPermissions(FORM_PROVIDER_BUNDLE_NAME, 0);
-    OHOS::Security::Permission::PermissionKit::RemoveSystemGrantedReqPermissions(FORM_PROVIDER_BUNDLE_NAME);
-
-    EXPECT_EQ(ERR_APPEXECFWK_FORM_PERMISSION_DENY, FormMgr::GetInstance().LifecycleUpdate(formIds, token_, updateType));
-
-    GTEST_LOG_(INFO) << "FmsFormMgrLifecycleUpdateTest_LifecycleUpdate_001 end";
 }
 
 /**
@@ -181,7 +159,7 @@ HWTEST_F(FmsFormMgrLifecycleUpdateTest, FmsFormMgrLifecycleUpdateTest_LifecycleU
  * @tc.number: FmsFormMgrLifecycleUpdateTest_LifecycleUpdate_004
  * @tc.name: LifecycleUpdate
  * @tc.desc: Verify that the return value is correct.
- * @tc.info: 
+ * @tc.info:
  *      clientRecords_ is exist, but no formRecords.
  *      set EnableRefresh,  and not pull up Provider.
  */
@@ -212,8 +190,8 @@ HWTEST_F(FmsFormMgrLifecycleUpdateTest, FmsFormMgrLifecycleUpdateTest_LifecycleU
  * @tc.number: FmsFormMgrLifecycleUpdateTest_LifecycleUpdate_005
  * @tc.name: LifecycleUpdate
  * @tc.desc: Verify that the return value is correct.
- * @tc.info: 
- *      clientRecords and formRecords(needRefresh:true) is exist. 
+ * @tc.info:
+ *      clientRecords and formRecords(needRefresh:true) is exist.
  *      set EnableRefresh, and pull up Provider and update.
  */
 HWTEST_F(FmsFormMgrLifecycleUpdateTest, FmsFormMgrLifecycleUpdateTest_LifecycleUpdate_005, TestSize.Level0)
@@ -239,7 +217,7 @@ HWTEST_F(FmsFormMgrLifecycleUpdateTest, FmsFormMgrLifecycleUpdateTest_LifecycleU
     InitFormItemInfo(formId, formItemInfo);
     FormRecord record = FormDataMgr::GetInstance().CreateFormRecord(formItemInfo, callingUid);
     // needRefresh:true
-    record.needRefresh = true; 
+    record.needRefresh = true;
     FormDataMgr::GetInstance().formRecords_.emplace(formId, record);
 
     EXPECT_EQ(ERR_OK, FormMgr::GetInstance().LifecycleUpdate(formIds, token_, updateType));
@@ -251,10 +229,10 @@ HWTEST_F(FmsFormMgrLifecycleUpdateTest, FmsFormMgrLifecycleUpdateTest_LifecycleU
  * @tc.number: FmsFormMgrLifecycleUpdateTest_LifecycleUpdate_006
  * @tc.name: LifecycleUpdate
  * @tc.desc: Verify that the return value is correct.
- * 
- * @tc.info:  
- *      clientRecords(needRefresh:true) and formRecords(needRefresh & versionUpgrade:false) is exist. 
- *      set EnableRefresh, and update hostRecord. 
+ *
+ * @tc.info:
+ *      clientRecords(needRefresh:true) and formRecords(needRefresh & versionUpgrade:false) is exist.
+ *      set EnableRefresh, and update hostRecord.
  */
 HWTEST_F(FmsFormMgrLifecycleUpdateTest, FmsFormMgrLifecycleUpdateTest_LifecycleUpdate_006, TestSize.Level0)
 {
@@ -280,13 +258,13 @@ HWTEST_F(FmsFormMgrLifecycleUpdateTest, FmsFormMgrLifecycleUpdateTest_LifecycleU
     InitFormItemInfo(formId, formItemInfo);
     FormRecord record = FormDataMgr::GetInstance().CreateFormRecord(formItemInfo, callingUid);
     // needRefresh:false
-    record.needRefresh = false; 
+    record.needRefresh = false;
     // versionUpgrade:false
     record.versionUpgrade = false;
     FormDataMgr::GetInstance().formRecords_.emplace(formId, record);
 
     EXPECT_EQ(ERR_OK, FormMgr::GetInstance().LifecycleUpdate(formIds, token_, updateType));
-    
+
     // judge hostrecord's needRefresh_ is false.
     EXPECT_EQ(false, FormDataMgr::GetInstance().clientRecords_.at(0).IsNeedRefresh(formId));
 

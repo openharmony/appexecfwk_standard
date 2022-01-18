@@ -62,7 +62,7 @@ private:
     ErrCode CreateCommandMap() override;
     /**
      * @brief Create message map.
-     */    
+     */
     ErrCode CreateMessageMap() override;
     /**
      * @brief init.

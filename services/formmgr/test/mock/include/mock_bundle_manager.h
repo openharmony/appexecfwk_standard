@@ -42,11 +42,14 @@ public:
     MOCK_METHOD2(GetBundlesForUid, bool(const int uid, std::vector<std::string> &));
     MOCK_METHOD2(SetAbilityEnabled, bool(const AbilityInfo &, bool));
     MOCK_METHOD1(IsAbilityEnabled, bool(const AbilityInfo &));
-    MOCK_METHOD2(GetAbilityIcon, std::string(const std::string &bundleName, const std::string &className));
     MOCK_METHOD1(RegisterAllPermissionsChanged, bool(const sptr<OnPermissionChangedCallback> &callback));
     MOCK_METHOD2(RegisterPermissionsChanged,
         bool(const std::vector<int> &uids, const sptr<OnPermissionChangedCallback> &callback));
     MOCK_METHOD1(UnregisterPermissionsChanged, bool(const sptr<OnPermissionChangedCallback> &callback));
+    std::string GetAbilityIcon(const std::string &bundleName, const std::string &className) override
+    {
+        return "AbilityIcon";
+    }
     bool QueryAbilityInfo(const AAFwk::Want &want, AbilityInfo &abilityInfo) override
     {
         return true;
@@ -193,7 +196,7 @@ public:
     }
 
     /**
-	 *  @brief Obtains information about the shortcuts of the application.
+     *  @brief Obtains information about the shortcuts of the application.
      *  @param bundleName Indicates the name of the bundle to shortcut.
      *  @param form Indicates the callback a list to shortcutinfo.
      *  @return Returns true if shortcutinfo get success
@@ -270,7 +273,6 @@ public:
     MOCK_METHOD2(GetBundlesForUid, bool(const int uid, std::vector<std::string> &));
     MOCK_METHOD2(SetAbilityEnabled, bool(const AbilityInfo &, bool));
     MOCK_METHOD1(IsAbilityEnabled, bool(const AbilityInfo &));
-    MOCK_METHOD2(GetAbilityIcon, std::string(const std::string &bundleName, const std::string &className));
     MOCK_METHOD1(RegisterAllPermissionsChanged, bool(const sptr<OnPermissionChangedCallback> &callback));
     MOCK_METHOD2(RegisterPermissionsChanged,
         bool(const std::vector<int> &uids, const sptr<OnPermissionChangedCallback> &callback));
@@ -280,7 +282,10 @@ public:
 
     std::string GetAppType(const std::string &bundleName) override;
     virtual int GetUidByBundleName(const std::string &bundleName, const int userId) override;
-
+    virtual std::string GetAbilityIcon(const std::string &bundleName, const std::string &className) override
+    {
+        return "AbilityIcon";
+    }
     virtual bool GetApplicationInfo(
         const std::string &appName, const ApplicationFlag flag, const int userId, ApplicationInfo &appInfo) override;
     virtual bool GetApplicationInfos(
@@ -434,7 +439,7 @@ public:
         return true;
     }
     /**
-	 *  @brief Obtains information about the shortcuts of the application.
+     *  @brief Obtains information about the shortcuts of the application.
      *  @param bundleName Indicates the name of the bundle to shortcut.
      *  @param form Indicates the callback a list to shortcutinfo.
      *  @return Returns true if shortcutinfo get success
@@ -452,6 +457,12 @@ public:
      */
     virtual bool GetAllCommonEventInfo(const std::string &eventKey,
         std::vector<CommonEventInfo> &commonEventInfos) override
+    {
+        return true;
+    }
+
+    virtual bool GetDistributedBundleInfo(const std::string &networkId, int32_t userId,
+        const std::string &bundleName, DistributedBundleInfo &distributedBundleInfo) override
     {
         return true;
     }

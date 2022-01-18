@@ -108,7 +108,7 @@ HWTEST_F(FmsFormTimerMgrTest, Fms_FormTimerMgr_0004, Function | MediumTest | Lev
     FormTimerCfg timerCfg1;
     timerCfg1.enableUpdate = true;
     timerCfg1.updateDuration = 2 * Constants::MIN_PERIOD;
-    bool isUpdateOk1 = FormTimerMgr::GetInstance().UpdateFormTimer(PARAM_FORM_ID_VALUE_1, 
+    bool isUpdateOk1 = FormTimerMgr::GetInstance().UpdateFormTimer(PARAM_FORM_ID_VALUE_1,
     UpdateType::TYPE_INTERVAL_CHANGE, timerCfg1);
     EXPECT_EQ(isUpdateOk1, true);
     GTEST_LOG_(INFO) << "Fms_FormTimerMgr_0004 end";
@@ -204,7 +204,7 @@ HWTEST_F(FmsFormTimerMgrTest, Fms_FormTimerMgr_0009, Function | MediumTest | Lev
     EXPECT_EQ(isAddOk5, true);
     bool isAddOk6 = FormTimerMgr::GetInstance().HandleSystemTimeChanged();
     EXPECT_EQ(isAddOk6, true);
-    
+
     GTEST_LOG_(INFO) << "Fms_FormTimerMgr_0009 end";
 }
 /**
@@ -219,7 +219,7 @@ HWTEST_F(FmsFormTimerMgrTest, Fms_FormTimerMgr_0010, Function | MediumTest | Lev
     EXPECT_EQ(isAddOk5, true);
     bool isAddOk6 = FormTimerMgr::GetInstance().HandleResetLimiter();
     EXPECT_EQ(isAddOk6, true);
-    
+
     GTEST_LOG_(INFO) << "Fms_FormTimerMgr_0010 end";
 }
 
@@ -252,7 +252,7 @@ HWTEST_F(FmsFormTimerMgrTest, Fms_FormTimerMgr_0012, Function | MediumTest | Lev
 
     bool isAddOk6 = FormTimerMgr::GetInstance().OnDynamicTimeTrigger(90L);
     EXPECT_EQ(isAddOk6, true);
-    
+
     GTEST_LOG_(INFO) << "Fms_FormTimerMgr_0012 end";
 }
 
@@ -297,7 +297,7 @@ HWTEST_F(FmsFormTimerMgrTest, Fms_FormTimerMgr_0015, Function | MediumTest | Lev
     FormTimerCfg timerCfg1;
     timerCfg1.enableUpdate = true;
     timerCfg1.updateDuration = 0;
-    bool isUpdateOk1 = FormTimerMgr::GetInstance().UpdateFormTimer(PARAM_FORM_ID_VALUE_1, 
+    bool isUpdateOk1 = FormTimerMgr::GetInstance().UpdateFormTimer(PARAM_FORM_ID_VALUE_1,
     UpdateType::TYPE_INTERVAL_CHANGE, timerCfg1);
     EXPECT_EQ(isUpdateOk1, false);
     GTEST_LOG_(INFO) << "Fms_FormTimerMgr_0015 end";
@@ -318,7 +318,7 @@ HWTEST_F(FmsFormTimerMgrTest, Fms_FormTimerMgr_0016, Function | MediumTest | Lev
     timerCfg2.enableUpdate = true;
     timerCfg2.updateAtHour = 0;
     timerCfg2.updateAtMin = 60;
-    bool isUpdateOk2 = FormTimerMgr::GetInstance().UpdateFormTimer(PARAM_FORM_ID_VALUE_2, 
+    bool isUpdateOk2 = FormTimerMgr::GetInstance().UpdateFormTimer(PARAM_FORM_ID_VALUE_2,
     UpdateType::TYPE_ATTIME_CHANGE,  timerCfg2);
     EXPECT_EQ(isUpdateOk2, false);
 
@@ -340,7 +340,7 @@ HWTEST_F(FmsFormTimerMgrTest, Fms_FormTimerMgr_0017, Function | MediumTest | Lev
     timerCfg3.enableUpdate = true;
     timerCfg3.updateAtHour = 0;
     timerCfg3.updateAtMin = 60;
-    bool isUpdateOk3 = FormTimerMgr::GetInstance().UpdateFormTimer(PARAM_FORM_ID_VALUE_3, 
+    bool isUpdateOk3 = FormTimerMgr::GetInstance().UpdateFormTimer(PARAM_FORM_ID_VALUE_3,
     UpdateType::TYPE_INTERVAL_TO_ATTIME,  timerCfg3);
     EXPECT_EQ(isUpdateOk3, false);
     GTEST_LOG_(INFO) << "Fms_FormTimerMgr_0017 end";
@@ -360,7 +360,7 @@ HWTEST_F(FmsFormTimerMgrTest, Fms_FormTimerMgr_0018, Function | MediumTest | Lev
     FormTimerCfg timerCfg4;
     timerCfg4.enableUpdate = true;
     timerCfg4.updateDuration = 0;
-    bool isUpdateOk4 = FormTimerMgr::GetInstance().UpdateFormTimer(PARAM_FORM_ID_VALUE_4, 
+    bool isUpdateOk4 = FormTimerMgr::GetInstance().UpdateFormTimer(PARAM_FORM_ID_VALUE_4,
     UpdateType::TYPE_ATTIME_TO_INTERVAL,  timerCfg4);
     EXPECT_EQ(isUpdateOk4, false);
     GTEST_LOG_(INFO) << "Fms_FormTimerMgr_0018 end";
@@ -378,7 +378,7 @@ HWTEST_F(FmsFormTimerMgrTest, Fms_FormTimerMgr_0019, Function | MediumTest | Lev
     FormRefreshLimiter refreshLimiter;
     bool isAddOk = refreshLimiter.AddItem(PARAM_FORM_ID_VALUE_1);
     EXPECT_EQ(isAddOk, true);
-    
+
     EXPECT_EQ(refreshLimiter.GetItemCount(), 1);
 
     GTEST_LOG_(INFO) << "Fms_FormTimerMgr_0019 end";
@@ -425,7 +425,7 @@ HWTEST_F(FmsFormTimerMgrTest, Fms_FormTimerMgr_0021, Function | MediumTest | Lev
 HWTEST_F(FmsFormTimerMgrTest, Fms_FormTimerMgr_0022, Function | MediumTest | Level1)
 {
     GTEST_LOG_(INFO) << "Fms_FormTimerMgr_0022 start";
-    
+
     FormRefreshLimiter refreshLimiter;
     bool isAddOk = refreshLimiter.AddItem(PARAM_FORM_ID_VALUE_6);
     EXPECT_EQ(isAddOk, true);
@@ -434,7 +434,7 @@ HWTEST_F(FmsFormTimerMgrTest, Fms_FormTimerMgr_0022, Function | MediumTest | Lev
 
     int count = refreshLimiter.GetRefreshCount(PARAM_FORM_ID_VALUE_6);
     EXPECT_EQ(count, 1);
-    
+
     GTEST_LOG_(INFO) << "Fms_FormTimerMgr_0022 end";
 }
 
@@ -446,7 +446,7 @@ HWTEST_F(FmsFormTimerMgrTest, Fms_FormTimerMgr_0022, Function | MediumTest | Lev
 HWTEST_F(FmsFormTimerMgrTest, Fms_FormTimerMgr_0023, Function | MediumTest | Level1)
 {
     GTEST_LOG_(INFO) << "Fms_FormTimerMgr_0023 start";
-    
+
     FormRefreshLimiter refreshLimiter;
     bool isAddOk = refreshLimiter.AddItem(PARAM_FORM_ID_VALUE_6);
     EXPECT_EQ(isAddOk, true);
@@ -457,7 +457,7 @@ HWTEST_F(FmsFormTimerMgrTest, Fms_FormTimerMgr_0023, Function | MediumTest | Lev
 
     int count = refreshLimiter.GetRefreshCount(PARAM_FORM_ID_VALUE_6);
     EXPECT_EQ(count, 0);
-    
+
     GTEST_LOG_(INFO) << "Fms_FormTimerMgr_0023 end";
 }
 
@@ -469,17 +469,17 @@ HWTEST_F(FmsFormTimerMgrTest, Fms_FormTimerMgr_0023, Function | MediumTest | Lev
 HWTEST_F(FmsFormTimerMgrTest, Fms_FormTimerMgr_0024, Function | MediumTest | Level1)
 {
     GTEST_LOG_(INFO) << "Fms_FormTimerMgr_0024 start";
-    
+
     FormRefreshLimiter refreshLimiter;
     bool isAddOk = refreshLimiter.AddItem(PARAM_FORM_ID_VALUE_6);
     EXPECT_EQ(isAddOk, true);
     for (int iIndex = 0; iIndex < Constants::LIMIT_COUNT; iIndex++) {
         refreshLimiter.Increase(PARAM_FORM_ID_VALUE_6);
-    }   
+    }
 
     int count = refreshLimiter.GetRefreshCount(PARAM_FORM_ID_VALUE_6);
     EXPECT_EQ(count, Constants::LIMIT_COUNT);
-    
+
     GTEST_LOG_(INFO) << "Fms_FormTimerMgr_0024 end";
 }
 
@@ -497,11 +497,11 @@ HWTEST_F(FmsFormTimerMgrTest, Fms_FormTimerMgr_0025, Function | MediumTest | Lev
     EXPECT_EQ(isAddOk, true);
     for (int iIndex = 0; iIndex < Constants::LIMIT_COUNT + 1; iIndex++) {
         refreshLimiter.Increase(PARAM_FORM_ID_VALUE_6);
-    }   
+    }
 
     bool isEnableRefresh = refreshLimiter.IsEnableRefresh(PARAM_FORM_ID_VALUE_6);
     EXPECT_EQ(isEnableRefresh, false);
-    
+
     GTEST_LOG_(INFO) << "Fms_FormTimerMgr_0025 end";
 }
 
@@ -519,7 +519,7 @@ HWTEST_F(FmsFormTimerMgrTest, Fms_FormTimerMgr_0026, Function | MediumTest | Lev
     EXPECT_EQ(isAddOk, true);
     for (int iIndex = 0; iIndex < Constants::LIMIT_COUNT + 1; iIndex++) {
         refreshLimiter.Increase(PARAM_FORM_ID_VALUE_6);
-    }   
+    }
 
     refreshLimiter.MarkRemind(PARAM_FORM_ID_VALUE_6);
 

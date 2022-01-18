@@ -209,7 +209,7 @@ public:
 
     /**
      * @brief Get the matched form host record by client stub.
-     * 
+     *
      * @param callerToken The client stub of the form host record.
      * @param formHostRecord The form host record.
      * @return Returns true if this function is successfully called, returns false otherwise.
@@ -231,7 +231,7 @@ public:
     /**
      * @brief Get updated form info.
      * @param record FormRecord.
-     * @param targetForms Target forms. 
+     * @param targetForms Target forms.
      * @param updatedForm Updated form info.
      * @return Returns true on success, false on failure.
      */
@@ -250,7 +250,7 @@ public:
      * @param updateAtHour Update at hour.
      * @param updateAtMin Update at minute.
      */
-    void SetUpdateInfo(const int64_t formId, const bool enableUpdate, const long updateDuration, 
+    void SetUpdateInfo(const int64_t formId, const bool enableUpdate, const long updateDuration,
     const int updateAtHour, const int updateAtMin);
     /**
      * @brief Clean removed form records.
@@ -291,7 +291,7 @@ public:
      * @brief Update form for host clients.
      * @param formId The Id of the form.
      * @param formRecord The form info.
-     * @return Returns true if form update, false if other. 
+     * @return Returns true if form update, false if other.
      */
     bool UpdateHostForm(const int64_t formId, const FormRecord &formRecord);
     /**
@@ -302,7 +302,7 @@ public:
      * @param refreshForms Refresh forms
      * @return Returns ERR_OK on success, others on failure.
      */
-    int32_t UpdateHostFormFlag(std::vector<int64_t> formIds, const sptr<IRemoteObject> &callerToken, 
+    int32_t UpdateHostFormFlag(std::vector<int64_t> formIds, const sptr<IRemoteObject> &callerToken,
     const bool flag, std::vector<int64_t> &refreshForms);
     /**
      * @brief Find matched form id.
@@ -351,7 +351,7 @@ private:
      * @param record The form host record.
      * @return Returns true if this function is successfully called; returns false otherwise.
      */
-    bool CreateHostRecord(const FormItemInfo &info, const sptr<IRemoteObject> &callerToken, 
+    bool CreateHostRecord(const FormItemInfo &info, const sptr<IRemoteObject> &callerToken,
     const int callingUid, FormHostRecord &record);
     /**
      * @brief Parse update config.

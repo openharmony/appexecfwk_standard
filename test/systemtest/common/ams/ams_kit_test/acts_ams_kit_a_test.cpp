@@ -194,7 +194,7 @@ void ActsAmsKitATest::ResetSystem() const
  */
 HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_00100, Function | MediumTest | Level1)
 {
-    // ability_context.h	ApplicationInfo* getApplicationInfo() 001
+    // ability_context.h    ApplicationInfo* getApplicationInfo() 001
     GTEST_LOG_(INFO) << "ActsAmsKitATest AMS_Page_AbilityContext_00100 start";
     MAP_STR_STR params;
     Want want = STAbilityUtil::MakeWant("device", FIRST_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
@@ -226,7 +226,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_00100, Function | MediumTest |
  */
 HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_00200, Function | MediumTest | Level1)
 {
-    // ability_context.h	ApplicationInfo* getApplicationInfo() 002
+    // ability_context.h    ApplicationInfo* getApplicationInfo() 002
     GTEST_LOG_(INFO) << "ActsAmsKitATest AMS_Page_AbilityContext_00200 start";
     MAP_STR_STR params;
     Want want = STAbilityUtil::MakeWant("device", FIRST_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);
@@ -273,7 +273,7 @@ HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_00200, Function | MediumTest |
  */
 HWTEST_F(ActsAmsKitATest, AMS_Page_AbilityContext_00300, Function | MediumTest | Level1)
 {
-    // ability_context.h	ApplicationInfo* getApplicationInfo() 003
+    // ability_context.h    ApplicationInfo* getApplicationInfo() 003
     GTEST_LOG_(INFO) << "ActsAmsKitATest AMS_Page_AbilityContext_00300 start";
     MAP_STR_STR params;
     Want want = STAbilityUtil::MakeWant("device", FIRST_ABILITY_NAME, KIT_BUNDLE_NAME + "A", params);

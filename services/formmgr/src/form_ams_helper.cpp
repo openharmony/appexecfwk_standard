@@ -49,7 +49,7 @@ sptr<AAFwk::IAbilityManager> FormAmsHelper::GetAbilityManager()
 
         abilityManager_ = iface_cast<AAFwk::IAbilityManager>(remoteObject);
     }
-    
+
     return abilityManager_;
 }
 
@@ -60,7 +60,7 @@ sptr<AAFwk::IAbilityManager> FormAmsHelper::GetAbilityManager()
  * @return Returns ERR_OK on success, others on failure.
  */
 ErrCode FormAmsHelper::ConnectServiceAbility(
-    const Want &want, const sptr<AAFwk::IAbilityConnection> &connect) 
+    const Want &want, const sptr<AAFwk::IAbilityConnection> &connect)
 {
     APP_LOGI("%{public}s called.", __func__);
     sptr<AAFwk::IAbilityManager> ams = GetAbilityManager();
@@ -102,7 +102,7 @@ ErrCode FormAmsHelper::DisConnectServiceAbilityDelay(const sptr<AAFwk::IAbilityC
         &FormAmsHelper::DisConnectAbilityTask,
         this,
         connect);
-    if(!eventHandler_->PostTask(disConnectAbilityFunc, FORM_DISCONNECT_DELAY_TIME)) {
+    if (!eventHandler_->PostTask(disConnectAbilityFunc, FORM_DISCONNECT_DELAY_TIME)) {
         APP_LOGE("%{public}s, failed to disconnect ability", __func__);
         return ERR_APPEXECFWK_FORM_BIND_PROVIDER_FAILED;
     }
@@ -123,7 +123,7 @@ void FormAmsHelper::SetAbilityManager(const sptr<AAFwk::IAbilityManager> &abilit
  * @param connect Callback used to notify caller the result of connecting or disconnecting.
  */
 void FormAmsHelper::DisConnectAbilityTask(const sptr<AAFwk::IAbilityConnection> &connect)
-{    
+{
     sptr<AAFwk::IAbilityManager> ams = GetAbilityManager();
     if (ams == nullptr) {
         APP_LOGE("%{public}s, ability service not connect", __func__);

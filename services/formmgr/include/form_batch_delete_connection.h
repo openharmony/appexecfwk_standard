@@ -44,10 +44,10 @@ public:
      */
     void OnAbilityConnectDone(
         const AppExecFwk::ElementName &element, const sptr<IRemoteObject> &remoteObject, int resultCode) override;
-    
+
 private:
     std::set<int64_t> formIds_;
-    
+
     DISALLOW_COPY_AND_MOVE(FormBatchDeleteConnection);
 };
 }  // namespace AppExecFwk

@@ -75,7 +75,7 @@ void DeserializationStOperatorFromVector(StOperator &ParentOperator, std::vector
 int StOperator::countChild = 0;
 
 StOperator::StOperator()
-    : g_parentOperator(nullptr), g_abilityType("0"), 
+    : g_parentOperator(nullptr), g_abilityType("0"),
     g_bundleName(""), g_abilityName(""), g_operatorName(""), g_message("")
 {
     g_childOperator.clear();

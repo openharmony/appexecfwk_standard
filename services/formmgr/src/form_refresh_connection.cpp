@@ -30,14 +30,14 @@ namespace OHOS {
 namespace AppExecFwk {
 FormRefreshConnection::FormRefreshConnection(const int64_t formId, const Want& want,
     const std::string &bundleName, const std::string &abilityName)
-    :formId_(formId),  
+    :formId_(formId),
     want_(want)
 {
     SetProviderKey(bundleName, abilityName);
 }
 /**
  * @brief OnAbilityConnectDone, AbilityMs notify caller ability the result of connect.
- * 
+ *
  * @param element Service ability's ElementName.
  * @param remoteObject The session proxy of service ability.
  * @param resultCode ERR_OK on success, others on failure.
@@ -48,7 +48,7 @@ void FormRefreshConnection::OnAbilityConnectDone(
 {
     APP_LOGI("%{public}s called.", __func__);
     if (resultCode != ERR_OK) {
-        APP_LOGE("%{public}s, abilityName:%{public}s, formId:%{public}" PRId64 ", resultCode:%{public}d", 
+        APP_LOGE("%{public}s, abilityName:%{public}s, formId:%{public}" PRId64 ", resultCode:%{public}d",
             __func__, element.GetAbilityName().c_str(), formId_, resultCode);
         return;
     }

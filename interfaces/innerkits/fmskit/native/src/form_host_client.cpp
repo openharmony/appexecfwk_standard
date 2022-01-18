@@ -50,8 +50,8 @@ sptr<FormHostClient> FormHostClient::GetInstance()
 /**
  * @brief Add form.
  *
- * @param formCallback the host's form callback. 
- * @param formId The Id of the form. 
+ * @param formCallback the host's form callback.
+ * @param formId The Id of the form.
  * @return none.
  */
 void FormHostClient::AddForm(std::shared_ptr<FormCallbackInterface> formCallback, const int64_t formId)
@@ -73,7 +73,7 @@ void FormHostClient::AddForm(std::shared_ptr<FormCallbackInterface> formCallback
                 tempKey = keyVector_.back();
                 keyVector_.pop_back();
             }
-            hostForms.AddForm(formId);                  
+            hostForms.AddForm(formId);
             recordCallback_.insert(std::make_pair(tempKey, formCallback));
             recordHostForms_.insert(std::make_pair(tempKey, hostForms));
 
@@ -89,8 +89,8 @@ void FormHostClient::AddForm(std::shared_ptr<FormCallbackInterface> formCallback
 /**
  * @brief Remove form.
  *
- * @param formCallback the host's form callback. 
- * @param formId The Id of the form. 
+ * @param formCallback the host's form callback.
+ * @param formId The Id of the form.
  * @return none.
  */
 void FormHostClient::RemoveForm(std::shared_ptr<FormCallbackInterface> formCallback, const int64_t formId)
@@ -117,7 +117,7 @@ void FormHostClient::RemoveForm(std::shared_ptr<FormCallbackInterface> formCallb
             APP_LOGI("%{public}s, clear data.", __func__);
             return;
         }
-        
+
         recordHostForms_[key].DelForm(formId);
         if (recordHostForms_[key].IsEmpty()) {
             recordCallback_.erase(key);
@@ -132,7 +132,7 @@ void FormHostClient::RemoveForm(std::shared_ptr<FormCallbackInterface> formCallb
 /**
  * @brief Check whether the form exist in the formhosts.
  *
- * @param formId The Id of the form. 
+ * @param formId The Id of the form.
  * @return Returns true if contains form; returns false otherwise.
  */
 bool FormHostClient::ContainsForm(int64_t formId)
@@ -157,7 +157,7 @@ bool FormHostClient::ContainsForm(int64_t formId)
 void FormHostClient::OnAcquired(const FormJsInfo &formJsInfo)
 {
     APP_LOGI("%{public}s called.", __func__);
-    int64_t formId = formJsInfo.formId; 
+    int64_t formId = formJsInfo.formId;
     if (formId < 0) {
         APP_LOGE("%{public}s error, the passed form id can't be negative.", __func__);
         return;
@@ -167,7 +167,7 @@ void FormHostClient::OnAcquired(const FormJsInfo &formJsInfo)
         APP_LOGE("%{public}s error, can't find target callback. formId: %{public}" PRId64 ".", __func__, formId);
         return;
     }
-    APP_LOGI("%{public}s, formId: %{public}" PRId64 ", jspath: %{public}s, data: %{public}s", __func__, formId, 
+    APP_LOGI("%{public}s, formId: %{public}" PRId64 ", jspath: %{public}s, data: %{public}s", __func__, formId,
         formJsInfo.jsFormCodePath.c_str(), formJsInfo.formData.c_str());
     targetCallback->ProcessFormUpdate(formJsInfo);
 }
@@ -181,7 +181,7 @@ void FormHostClient::OnAcquired(const FormJsInfo &formJsInfo)
 void FormHostClient::OnUpdate(const FormJsInfo &formJsInfo)
 {
     APP_LOGI("%{public}s called.", __func__);
-    int64_t formId = formJsInfo.formId; 
+    int64_t formId = formJsInfo.formId;
     if (formId < 0) {
         APP_LOGE("%{public}s error, the passed form id can't be negative.", __func__);
         return;
@@ -197,7 +197,7 @@ void FormHostClient::OnUpdate(const FormJsInfo &formJsInfo)
 /**
  * @brief UnInstall the forms.
  *
- * @param formIds The Id of the forms. 
+ * @param formIds The Id of the forms.
  * @return none.
  */
 void FormHostClient::OnUninstall(const std::vector<int64_t> &formIds)
@@ -218,7 +218,7 @@ void FormHostClient::OnUninstall(const std::vector<int64_t> &formIds)
             continue;
         }
         targetCallback->ProcessFormUninstall(formId);
-    }   
+    }
 }
 
 /**
@@ -241,7 +241,7 @@ std::shared_ptr<FormCallbackInterface> FormHostClient::FindTargetCallback(int64_
 /**
  * @brief Find Key By form callback.
  *
- * @param formCallback The form callback. 
+ * @param formCallback The form callback.
  * @return callback's key
  */
 int32_t FormHostClient::FindKeyByCallback(std::shared_ptr<FormCallbackInterface> formCallback)
@@ -257,11 +257,11 @@ int32_t FormHostClient::FindKeyByCallback(std::shared_ptr<FormCallbackInterface>
 /**
  * @brief Compare form callback.
  *
- * @param formCallback1 The form callback. 
- * @param formCallback2 The form callback to be compared with form callback1. 
+ * @param formCallback1 The form callback.
+ * @param formCallback2 The form callback to be compared with form callback1.
  * @return Returns true if the two form callback are equal to each other, returns false otherwise.
  */
-bool FormHostClient::Compare(std::shared_ptr<FormCallbackInterface> formCallback1, 
+bool FormHostClient::Compare(std::shared_ptr<FormCallbackInterface> formCallback1,
     std::shared_ptr<FormCallbackInterface> formCallback2)
 {
     return (formCallback1 == formCallback2) ? true : false;

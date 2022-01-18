@@ -73,7 +73,7 @@ void FmsFormMgrNotifyInvisibleFormsTest::SetUp(void)
     // mock BundleMgr
     mockBundleMgr_ = new (std::nothrow) BundleMgrService();
     ASSERT_TRUE(mockBundleMgr_ != nullptr);
-    FormBmsHelper::GetInstance().SetBundleManager(mockBundleMgr_);    
+    FormBmsHelper::GetInstance().SetBundleManager(mockBundleMgr_);
 
     // token
     token_ = new (std::nothrow) OHOS::AppExecFwk::MockFormHostClient();
@@ -93,9 +93,9 @@ void FmsFormMgrNotifyInvisibleFormsTest::SetUp(void)
     OHOS::Security::Permission::PermissionKit::AddDefPermissions(permList);
     std::vector<std::string> permnameList;
     permnameList.emplace_back(PERMISSION_NAME_REQUIRE_FORM);
-    OHOS::Security::Permission::PermissionKit::AddUserGrantedReqPermissions(FORM_HOST_BUNDLE_NAME, 
+    OHOS::Security::Permission::PermissionKit::AddUserGrantedReqPermissions(FORM_HOST_BUNDLE_NAME,
         permnameList, 0);
-    OHOS::Security::Permission::PermissionKit::GrantUserGrantedPermission(FORM_HOST_BUNDLE_NAME, 
+    OHOS::Security::Permission::PermissionKit::GrantUserGrantedPermission(FORM_HOST_BUNDLE_NAME,
         PERMISSION_NAME_REQUIRE_FORM, 0);
 }
 
@@ -103,41 +103,16 @@ void FmsFormMgrNotifyInvisibleFormsTest::TearDown(void)
 {}
 
 /**
- * @tc.number: FmsFormMgrNotifyInvisibleFormsTest_NotifyInvisibleForms_001
- * @tc.name: NotifyInvisibleForms
- * @tc.desc: Verify that the return value is ERR_APPEXECFWK_FORM_PERMISSION_DENY.
- * @tc.info: permission denied.
- */
-HWTEST_F(FmsFormMgrNotifyInvisibleFormsTest, FmsFormMgrNotifyInvisibleFormsTest_NotifyInvisibleForms_001, 
-TestSize.Level0)
-{
-    GTEST_LOG_(INFO) << "FmsFormMgrNotifyInvisibleFormsTest_NotifyInvisibleForms_001 start";
-    
-    int64_t formId = 1;
-    std::vector<int64_t> formIds;
-    formIds.push_back(formId);
-
-    // Remove Permission
-    OHOS::Security::Permission::PermissionKit::RemoveDefPermissions(FORM_HOST_BUNDLE_NAME);
-    OHOS::Security::Permission::PermissionKit::RemoveUserGrantedReqPermissions(FORM_HOST_BUNDLE_NAME, 0);
-    OHOS::Security::Permission::PermissionKit::RemoveSystemGrantedReqPermissions(FORM_HOST_BUNDLE_NAME);
-
-    EXPECT_EQ(ERR_APPEXECFWK_FORM_PERMISSION_DENY, FormMgr::GetInstance().NotifyWhetherVisibleForms(formIds, 
-        token_, Constants::FORM_INVISIBLE));
-    GTEST_LOG_(INFO) << "FmsFormMgrNotifyInvisibleFormsTest_NotifyInvisibleForms_001 end";
-}
-
-/**
  * @tc.number: FmsFormMgrNotifyInvisibleFormsTest_NotifyInvisibleForms_002
  * @tc.name: NotifyInvisibleForms
  * @tc.desc: Verify that the return value is ERR_APPEXECFWK_FORM_INVALID_PARAM.
  * @tc.info: callerToken is nullptr.
  */
-HWTEST_F(FmsFormMgrNotifyInvisibleFormsTest, FmsFormMgrNotifyInvisibleFormsTest_NotifyInvisibleForms_002, 
+HWTEST_F(FmsFormMgrNotifyInvisibleFormsTest, FmsFormMgrNotifyInvisibleFormsTest_NotifyInvisibleForms_002,
 TestSize.Level0)
 {
     GTEST_LOG_(INFO) << "FmsFormMgrNotifyInvisibleFormsTest_NotifyInvisibleForms_002 start";
-    
+
     int64_t formId = 2;
     std::vector<int64_t> formIds;
     formIds.push_back(formId);
@@ -148,12 +123,12 @@ TestSize.Level0)
     iteminfo.providerBundleName_ = FORM_HOST_BUNDLE_NAME;
     iteminfo.abilityName_ = FORM_PROVIDER_ABILITY_NAME;
     iteminfo.temporaryFlag_ = true;
-    FormDataMgr::GetInstance().AllotFormRecord(iteminfo, 0);	
+    FormDataMgr::GetInstance().AllotFormRecord(iteminfo, 0);
 
     // clear callerToken
     token_ = nullptr;
 
-    EXPECT_EQ(ERR_APPEXECFWK_FORM_INVALID_PARAM, FormMgr::GetInstance().NotifyWhetherVisibleForms(formIds, 
+    EXPECT_EQ(ERR_APPEXECFWK_FORM_INVALID_PARAM, FormMgr::GetInstance().NotifyWhetherVisibleForms(formIds,
         token_, Constants::FORM_INVISIBLE));
     GTEST_LOG_(INFO) << "FmsFormMgrNotifyInvisibleFormsTest_NotifyInvisibleForms_002 end";
 }
@@ -164,11 +139,11 @@ TestSize.Level0)
  * @tc.desc: Verify that the return value is ERR_OK.
  * @tc.info: form record is not found.
  */
-HWTEST_F(FmsFormMgrNotifyInvisibleFormsTest, FmsFormMgrNotifyInvisibleFormsTest_NotifyInvisibleForms_003, 
+HWTEST_F(FmsFormMgrNotifyInvisibleFormsTest, FmsFormMgrNotifyInvisibleFormsTest_NotifyInvisibleForms_003,
 TestSize.Level0)
 {
     GTEST_LOG_(INFO) << "FmsFormMgrNotifyInvisibleFormsTest_NotifyInvisibleForms_003 start";
-    
+
     int64_t formId = 3;
     std::vector<int64_t> formIds;
     formIds.push_back(formId);
@@ -183,11 +158,11 @@ TestSize.Level0)
  * @tc.desc: Verify that the return value is ERR_OK.
  * @tc.info: host form record is not found.
  */
-HWTEST_F(FmsFormMgrNotifyInvisibleFormsTest, FmsFormMgrNotifyInvisibleFormsTest_NotifyInvisibleForms_004, 
+HWTEST_F(FmsFormMgrNotifyInvisibleFormsTest, FmsFormMgrNotifyInvisibleFormsTest_NotifyInvisibleForms_004,
 TestSize.Level0)
 {
     GTEST_LOG_(INFO) << "FmsFormMgrNotifyInvisibleFormsTest_NotifyInvisibleForms_004 start";
-    
+
     int64_t formId = 4;
     std::vector<int64_t> formIds;
     formIds.push_back(formId);
@@ -198,7 +173,7 @@ TestSize.Level0)
     iteminfo.providerBundleName_ = FORM_HOST_BUNDLE_NAME;
     iteminfo.abilityName_ = FORM_PROVIDER_ABILITY_NAME;
     iteminfo.temporaryFlag_ = true;
-    FormDataMgr::GetInstance().AllotFormRecord(iteminfo, 0);	
+    FormDataMgr::GetInstance().AllotFormRecord(iteminfo, 0);
 
     EXPECT_EQ(ERR_OK, FormMgr::GetInstance().NotifyWhetherVisibleForms(formIds, token_, Constants::FORM_INVISIBLE));
     GTEST_LOG_(INFO) << "FmsFormMgrNotifyInvisibleFormsTest_NotifyInvisibleForms_004 end";
@@ -210,11 +185,11 @@ TestSize.Level0)
  * @tc.desc: Verify that the return value is ERR_OK.
  * @tc.info: host form record is found, but formVisibleNotify is false.
  */
-HWTEST_F(FmsFormMgrNotifyInvisibleFormsTest, FmsFormMgrNotifyInvisibleFormsTest_NotifyInvisibleForms_005, 
+HWTEST_F(FmsFormMgrNotifyInvisibleFormsTest, FmsFormMgrNotifyInvisibleFormsTest_NotifyInvisibleForms_005,
 TestSize.Level0)
 {
     GTEST_LOG_(INFO) << "FmsFormMgrNotifyInvisibleFormsTest_NotifyInvisibleForms_005 start";
-    
+
     int64_t formId = 5;
     std::vector<int64_t> formIds;
     formIds.push_back(formId);
@@ -226,7 +201,7 @@ TestSize.Level0)
     iteminfo.abilityName_ = FORM_PROVIDER_ABILITY_NAME;
     iteminfo.formVisibleNotify_ = false;
     iteminfo.temporaryFlag_ = true;
-    FormDataMgr::GetInstance().AllotFormRecord(iteminfo, 0);	
+    FormDataMgr::GetInstance().AllotFormRecord(iteminfo, 0);
 
     // creat clientRecords_
     FormDataMgr::GetInstance().AllotFormHostRecord(iteminfo, token_, formId, 0);
@@ -241,11 +216,11 @@ TestSize.Level0)
  * @tc.desc: Verify that the return value is ERR_OK.
  * @tc.info: host form record is found, formVisibleNotify is true, it is a SystemApp.
  */
-HWTEST_F(FmsFormMgrNotifyInvisibleFormsTest, FmsFormMgrNotifyInvisibleFormsTest_NotifyInvisibleForms_006, 
+HWTEST_F(FmsFormMgrNotifyInvisibleFormsTest, FmsFormMgrNotifyInvisibleFormsTest_NotifyInvisibleForms_006,
 TestSize.Level0)
 {
     GTEST_LOG_(INFO) << "FmsFormMgrNotifyInvisibleFormsTest_NotifyInvisibleForms_006 start";
-    
+
     int64_t formId = 6;
     std::vector<int64_t> formIds;
     formIds.push_back(formId);
@@ -257,7 +232,7 @@ TestSize.Level0)
     iteminfo.abilityName_ = FORM_PROVIDER_ABILITY_NAME;
     iteminfo.formVisibleNotify_ = true;
     iteminfo.temporaryFlag_ = true;
-    FormDataMgr::GetInstance().AllotFormRecord(iteminfo, 0);	
+    FormDataMgr::GetInstance().AllotFormRecord(iteminfo, 0);
 
     // creat clientRecords_
     FormDataMgr::GetInstance().AllotFormHostRecord(iteminfo, token_, formId, 0);
@@ -272,11 +247,11 @@ TestSize.Level0)
  * @tc.desc: Verify that the return value is ERR_OK.
  * @tc.info: it is not a SystemApp.
  */
-HWTEST_F(FmsFormMgrNotifyInvisibleFormsTest, FmsFormMgrNotifyInvisibleFormsTest_NotifyInvisibleForms_007, 
+HWTEST_F(FmsFormMgrNotifyInvisibleFormsTest, FmsFormMgrNotifyInvisibleFormsTest_NotifyInvisibleForms_007,
 TestSize.Level0)
 {
     GTEST_LOG_(INFO) << "FmsFormMgrNotifyInvisibleFormsTest_NotifyInvisibleForms_007 start";
-    
+
     int64_t formId = 7;
     std::string mockBundleName = "com.form.host.app600";
     std::vector<int64_t> formIds;
@@ -289,7 +264,7 @@ TestSize.Level0)
     iteminfo.abilityName_ = FORM_PROVIDER_ABILITY_NAME;
     iteminfo.formVisibleNotify_ = true;
     iteminfo.temporaryFlag_ = true;
-    FormDataMgr::GetInstance().AllotFormRecord(iteminfo, 0);	
+    FormDataMgr::GetInstance().AllotFormRecord(iteminfo, 0);
 
     // creat clientRecords_
     FormDataMgr::GetInstance().AllotFormHostRecord(iteminfo, token_, formId, 0);
@@ -307,9 +282,9 @@ TestSize.Level0)
     permDef.descriptionId = 1;
     permList.emplace_back(permDef);
     OHOS::Security::Permission::PermissionKit::AddDefPermissions(permList);
-    OHOS::Security::Permission::PermissionKit::AddUserGrantedReqPermissions(mockBundleName, 
+    OHOS::Security::Permission::PermissionKit::AddUserGrantedReqPermissions(mockBundleName,
     {PERMISSION_NAME_REQUIRE_FORM}, 0);
-    OHOS::Security::Permission::PermissionKit::GrantUserGrantedPermission(mockBundleName, 
+    OHOS::Security::Permission::PermissionKit::GrantUserGrantedPermission(mockBundleName,
     PERMISSION_NAME_REQUIRE_FORM, 0);
 
     EXPECT_EQ(ERR_OK, FormMgr::GetInstance().NotifyWhetherVisibleForms(formIds, token_, Constants::FORM_INVISIBLE));

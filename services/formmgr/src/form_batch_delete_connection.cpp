@@ -27,7 +27,7 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-FormBatchDeleteConnection::FormBatchDeleteConnection(const std::set<int64_t> &formIds, 
+FormBatchDeleteConnection::FormBatchDeleteConnection(const std::set<int64_t> &formIds,
     const std::string &bundleName, const std::string &abilityName)
     :formIds_(formIds)
 {
@@ -44,7 +44,7 @@ void FormBatchDeleteConnection::OnAbilityConnectDone(
 {
     APP_LOGI("%{public}s called.", __func__);
     if (resultCode != ERR_OK) {
-        APP_LOGE("%{public}s, abilityName:%{public}s, resultCode:%{public}d", 
+        APP_LOGE("%{public}s, abilityName:%{public}s, resultCode:%{public}d",
             __func__, element.GetAbilityName().c_str(), resultCode);
         return;
     }

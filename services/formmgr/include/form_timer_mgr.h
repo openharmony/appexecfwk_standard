@@ -34,10 +34,12 @@
 #include "form_refresh_limiter.h"
 #include "form_timer.h"
 #include "thread_pool.h"
+#include "time_service_client.h"
 // #include "timer.h"
 
 namespace OHOS {
 namespace AppExecFwk {
+using namespace OHOS::Notification::WantAgent;
 /**
  * @class FormTimerMgr
  * form timer task manager.
@@ -229,31 +231,31 @@ private:
     /**
      * @brief Update at timer task alarm.
      * @return Returns true on success, false on failure.
-     */ 
+     */
     bool UpdateAtTimerAlarm();
     /**
      * @brief Update limiter task alarm.
      * @return Returns true on success, false on failure.
-     */ 
+     */
     bool UpdateLimiterAlarm();
     /**
      * @brief Clear limiter timer resource.
-     */ 
+     */
     void ClearLimiterTimerResource();
     /**
      * @brief Delete dynamic refresh item.
      * @param formId The Id of the form.
      * @return Returns true on success, false on failure.
-     */  
+     */
     bool DeleteDynamicItem(const int64_t formId);
     /**
      * @brief Update dynamic refresh task alarm.
      * @return Returns true on success, false on failure.
-     */ 
+     */
     bool UpdateDynamicAlarm();
     /**
      * @brief Clear dynamic refresh resource.
-     */ 
+     */
     void ClearDynamicResource();
     /**
      * @brief Fint next at timer item.
@@ -264,13 +266,13 @@ private:
     bool FindNextAtTimerItem(const int nowTime, UpdateAtItem &updateAtItem);
     /**
      * @brief Clear update at timer resource.
-     */ 
+     */
     void ClearUpdateAtTimerResource();
 
     /**
      * @brief Execute Form timer task.
      * @param task Form timer task.
-     */ 
+     */
     void ExecTimerTask(const FormTimer &task);
 
     /**
@@ -286,16 +288,32 @@ private:
      */
     void ClearIntervalTimer();
     /**
-    * @brief Get thread pool for timer task.
+    * @brief Creat thread pool for timer task.
     */
-    OHOS::ThreadPool* GetTaskThreadExecutor();
-
+    void CreatTaskThreadExecutor();
     /**
      * @brief Set enable flag.
      * @param formId The Id of the form.
      * @param flag Enable flag.
-     */ 
+     */
     void SetEnableFlag(int64_t formId, bool flag);
+    /**
+     * @brief Get WantAgent.
+     * @param updateAtTime The next update time.
+     * @return Returns WantAgent.
+     */
+    std::shared_ptr<WantAgent> GetUpdateAtWantAgent(long updateAtTime);
+    /**
+     * @brief Get WantAgent.
+     * @return Returns WantAgent.
+     */
+    std::shared_ptr<WantAgent> GetLimiterWantAgent();
+    /**
+     * @brief Get WantAgent.
+     * @param nextTime The next update time.
+     * @return Returns WantAgent.
+     */
+    std::shared_ptr<WantAgent> GetDynamicWantAgent(long nextTime);
 private:
     /**
      * @class TimerReceiver
@@ -309,15 +327,15 @@ private:
         /**
          * @brief Receive common event.
          * @param eventData Common event data.
-         */ 
+         */
         virtual void OnReceiveEvent(const EventFwk::CommonEventData &eventData) override;
     };
 
     struct {
         bool operator()(DynamicRefreshItem a, DynamicRefreshItem b) const
-        {   
+        {
             return (a.settedTime > b.settedTime ? true : false);
-        }   
+        }
     } CompareDynamicRefreshItem;
 
     mutable std::mutex intervalMutex_;
@@ -329,14 +347,20 @@ private:
     std::list<UpdateAtItem> updateAtTimerTasks_;
     std::vector<DynamicRefreshItem> dynamicRefreshTasks_;
     std::shared_ptr<TimerReceiver> timerReceiver_ = nullptr;
-    OHOS::ThreadPool* taskExecutor_ = nullptr;
+    std::unique_ptr<ThreadPool> taskExecutor_ = nullptr;
 
     uint64_t intervalTimerId_ = 0L;
     uint64_t updateAtTimerId_ = 0L;
     uint64_t dynamicAlarmTimerId_ = 0L;
     uint64_t limiterTimerId_= 0L;
+
+    std::shared_ptr<WantAgent> currentUpdateAtWantAgent = nullptr;
+    std::shared_ptr<WantAgent> currentDynamicWantAgent = nullptr;
+    std::shared_ptr<WantAgent> currentLimiterWantAgent = nullptr;
+
+    long dynamicWakeUpTime_ = LONG_MAX;
+    long atTimerWakeUpTime_ = LONG_MAX;
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS
-
 #endif // FOUNDATION_APPEXECFWK_SERVICES_FORMMGR_INCLUDE_FORM_TIMER_MGR_H

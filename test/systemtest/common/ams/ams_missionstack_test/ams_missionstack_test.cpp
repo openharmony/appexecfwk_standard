@@ -251,7 +251,7 @@ HWTEST_F(AmsMissionStackTest, ACTS_FWK_MissionStack_0300, Function | MediumTest 
     STAbilityUtil::PublishEvent(
         g_EVENT_REQU_MAIN, CODE_, "MissionStack_" + std::to_string((int)MissionStackApi::LockMission) + "_2");
     EXPECT_EQ(TestWaitCompleted(event, g_EVENT_RESP_MAIN, CODE_), 0);
-    
+
     sleep(WAIT_LAUNCHER_TIME);
     Want wantEntity;
     wantEntity.SetElementName(LAUNCHER_BUNDLE_NAME, LAUNCHER_ABILITY_NAME);
@@ -283,7 +283,7 @@ HWTEST_F(AmsMissionStackTest, ACTS_FWK_MissionStack_0400, Function | MediumTest 
     STAbilityUtil::PublishEvent(
         g_EVENT_REQU_THIRD, CODE_, "MissionStack_" + std::to_string((int)MissionStackApi::LockMission) + "_4");
     EXPECT_EQ(TestWaitCompleted(event, g_EVENT_RESP_THIRD, CODE_), 0);
-    
+
     sleep(WAIT_LAUNCHER_TIME);
     EXPECT_NE(TestWaitCompleted(event, "OnStart", SECOND_ABILITY_CODE), 0);
 
@@ -310,7 +310,7 @@ HWTEST_F(AmsMissionStackTest, ACTS_FWK_MissionStack_0500, Function | MediumTest 
     STAbilityUtil::PublishEvent(
         g_EVENT_REQU_MAIN, CODE_, "MissionStack_" + std::to_string((int)MissionStackApi::LockMission) + "_5");
     EXPECT_EQ(TestWaitCompleted(event, g_EVENT_RESP_MAIN, CODE_), 0);
-    
+
     sleep(WAIT_LAUNCHER_TIME);
     EXPECT_NE(TestWaitCompleted(event, "OnStart", THIRD_ABILITY_CODE), 0);
 
@@ -337,7 +337,7 @@ HWTEST_F(AmsMissionStackTest, ACTS_FWK_MissionStack_0600, Function | MediumTest 
     STAbilityUtil::PublishEvent(
         g_EVENT_REQU_MAIN, CODE_, "MissionStack_" + std::to_string((int)MissionStackApi::LockMission) + "_6");
     EXPECT_EQ(TestWaitCompleted(event, g_EVENT_RESP_MAIN, CODE_), 0);
-    
+
     Want wantEntity;
     wantEntity.SetElementName(LAUNCHER_BUNDLE_NAME, LAUNCHER_ABILITY_NAME);
     STAbilityUtil::StartAbility(wantEntity, abilityMgrService);
@@ -666,7 +666,7 @@ HWTEST_F(AmsMissionStackTest, ACTS_FWK_MissionStack_1500, Function | MediumTest 
         g_EVENT_REQU_MAIN, CODE_, "MissionStack_" + std::to_string((int)MissionStackApi::LockMission) + "_17");
     sleep(WAIT_LAUNCHER_TIME);
     EXPECT_EQ(TestWaitCompleted(event, g_EVENT_RESP_MAIN, CODE_), 0);
-    
+
     EXPECT_NE(TestWaitCompleted(event, "OnBackground", MAIN_ABILITY_CODE, WAIT_LAUNCHER_TIME), 0);
 
     GTEST_LOG_(INFO) << "AmsMissionStackTest ACTS_FWK_MissionStack_1500 end";

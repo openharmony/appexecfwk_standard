@@ -34,7 +34,7 @@ public:
      * @param isTemporaryForm temporary form or not.
      * @param want The want of the form.
      */
-    static void CreateFormWant(const std::string &formName, const int32_t specificationId, const bool isTemporaryForm, 
+    static void CreateFormWant(const std::string &formName, const int32_t specificationId, const bool isTemporaryForm,
     Want &want);
     /**
      * @brief create default want for form.
@@ -56,7 +56,7 @@ public:
      * @return new form id.
      */
     static int64_t GenerateFormId(int64_t udidHash);
-    
+
     /**
      * @brief padding form id.
      * @param formId The id of the form.
@@ -64,7 +64,7 @@ public:
      * @return new form id.
      */
     static int64_t PaddingUDIDHash(uint64_t formId, uint64_t udidHash);
-    
+
     /**
      * @brief create udid hash.
      * @param udidHash udid hash.

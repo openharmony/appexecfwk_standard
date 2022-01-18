@@ -30,11 +30,11 @@ const int64_t PARAM_FORM_ID_SECOND = 1002;
 namespace {
 class FmsFormCacheMgrTest : public testing::Test {
 public:
-    
+
     static void SetUpTestCase();
     static void TearDownTestCase();
     void SetUp();
-    void TearDown();  
+    void TearDown();
 
 protected:
     FormCacheMgr formCacheMgr_;
@@ -192,7 +192,7 @@ HWTEST_F(FmsFormCacheMgrTest, FmsFormCacheMgrTest_006, TestSize.Level0)
  * Function: UpdateData
  * FunctionPoints: FormCacheMgr UpdateData interface
  * EnvConditions: Mobile that can run ohos test framework
- * CaseDescription: update cache's data by input param 
+ * CaseDescription: update cache's data by input param
  */
 HWTEST_F(FmsFormCacheMgrTest, FmsFormCacheMgrTest_007, TestSize.Level0)
 {
@@ -213,7 +213,7 @@ HWTEST_F(FmsFormCacheMgrTest, FmsFormCacheMgrTest_007, TestSize.Level0)
  * Function: UpdateData
  * FunctionPoints: FormCacheMgr UpdateData interface
  * EnvConditions: Mobile that can run ohos test framework
- * CaseDescription: update cache's data but not exsit key 
+ * CaseDescription: update cache's data but not exsit key
  */
 HWTEST_F(FmsFormCacheMgrTest, FmsFormCacheMgrTest_008, TestSize.Level0)
 {

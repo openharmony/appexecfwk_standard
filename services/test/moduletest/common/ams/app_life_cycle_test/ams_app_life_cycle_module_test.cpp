@@ -1432,7 +1432,7 @@ HWTEST_F(AmsAppLifeCycleModuleTest, LoadResidentProcess_01, TestSize.Level1)
 
     info.applicationInfo = appInfo;
     sptr<MockAppScheduler> mockAppScheduler = new MockAppScheduler();
-    
+
     auto appRecord = serviceInner_->appRunningManager_->CheckAppRunningRecordIsExist(appName, proc, uid, info);
     EXPECT_FALSE(appRecord);
 
@@ -1559,7 +1559,7 @@ HWTEST_F(AmsAppLifeCycleModuleTest, LoadAbility_002, TestSize.Level1)
     testProcessInfo.isStart = false;
     auto appRunningRecord_0 =
         StartProcessAndLoadAbility(mockAppScheduler, token_0, abilityInfo_0, appInfo_0, testProcessInfo);
-    
+
     ChangeAbilityStateAfterAppStart(mockAppScheduler, pid_0);
     CheckState(appRunningRecord_0, token_0, AbilityState::ABILITY_STATE_READY, ApplicationState::APP_STATE_READY);
 

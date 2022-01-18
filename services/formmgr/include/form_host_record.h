@@ -119,7 +119,7 @@ public:
      * @brief Get callerUid_.
      * @return callerUid_.
      */
-    int GetCallerUid() const 
+    int GetCallerUid() const
     {
         return callerUid_;
     }

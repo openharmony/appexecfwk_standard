@@ -157,7 +157,7 @@ void FormEventSubscriber::OnReceiveEvent(const CommonEventData &data)
     APP_LOGI("FormEventSubscriber::OnReceiveEvent:code=%{public}d", data.GetCode());
     auto eventName = data.GetWant().GetAction();
     ability_->handleEvent(eventName, data.GetData());
-    
+
     CommonEventManager::UnSubscribeCommonEvent(ability_->subscriber_);
 }
 

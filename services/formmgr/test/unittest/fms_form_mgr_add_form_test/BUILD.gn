@@ -43,6 +43,7 @@ ohos_unittest("FmsFormMgrAddFormTest") {
   ]
 
   configs = [
+    "${services_path}/bundlemgr/test:bundlemgr_test_config",
     "${services_path}/formmgr/test:formmgr_test_config",
     "//foundation/aafwk/standard/services/abilitymgr:abilityms_config",
 

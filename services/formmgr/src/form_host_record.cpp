@@ -226,9 +226,9 @@ void FormHostRecord::AddDeathRecipient(const sptr<IRemoteObject::DeathRecipient>
  * @param callback remote object.
  * @param callingUid Calling uid.
  */
-FormHostRecord FormHostRecord::CreateRecord(const FormItemInfo &info, 
-    const sptr<IRemoteObject> &callback, int callingUid) 
-{  
+FormHostRecord FormHostRecord::CreateRecord(const FormItemInfo &info,
+    const sptr<IRemoteObject> &callback, int callingUid)
+{
     FormHostRecord record;
     record.SetHostBundleName(info.GetHostBundleName());
     record.SetCallerUid(callingUid);
