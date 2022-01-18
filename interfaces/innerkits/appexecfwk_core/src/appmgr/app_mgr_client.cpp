@@ -312,6 +312,17 @@ void AppMgrClient::GetSystemMemoryAttr(SystemMemoryAttr &memoryInfo, std::string
     service->GetSystemMemoryAttr(memoryInfo, strConfig);
 }
 
+void AppMgrClient::GetRunningProcessInfoByToken(const sptr<IRemoteObject> &token, AppExecFwk::RunningProcessInfo &info)
+{
+    sptr<IAppMgr> service = iface_cast<IAppMgr>(remote_);
+    if (service != nullptr) {
+        sptr<IAmsMgr> amsService = service->GetAmsMgr();
+        if (amsService != nullptr) {
+            amsService->GetRunningProcessInfoByToken(token, info);
+        }
+    }
+}
+
 void AppMgrClient::AddAbilityStageDone(const int32_t recordId)
 {
     sptr<IAppMgr> service = iface_cast<IAppMgr>(remote_);

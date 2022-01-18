@@ -69,5 +69,28 @@ NativeValue* CreateJsAppStateDataArray(NativeEngine &engine, std::vector<AppStat
     }
     return arrayValue;
 }
+
+NativeValue* CreateJsProcessRunningInfoArray(NativeEngine &engine, const std::vector<RunningProcessInfo> &infos)
+{
+    NativeValue* arrayValue = engine.CreateArray(infos.size());
+    NativeArray* array = ConvertNativeValueTo<NativeArray>(arrayValue);
+    uint32_t index = 0;
+    for (const auto &runningInfo : infos) {
+        array->SetElement(index++, CreateJsProcessRunningInfo(engine, runningInfo));
+    }
+    return arrayValue;
+}
+
+NativeValue* CreateJsProcessRunningInfo(NativeEngine &engine, const RunningProcessInfo &info)
+{
+    NativeValue* objValue = engine.CreateObject();
+    NativeObject* object = ConvertNativeValueTo<NativeObject>(objValue);
+
+    object->SetProperty("processName", CreateJsValue(engine, info.processName_));
+    object->SetProperty("pid", CreateJsValue(engine, info.pid_));
+    object->SetProperty("uid", CreateJsValue(engine, info.uid_));
+    object->SetProperty("bundleNames", CreateNativeArray(engine, info.bundleNames));
+    return objValue;
+}
 }  // namespace AbilityRuntime
 }  // namespace OHOS

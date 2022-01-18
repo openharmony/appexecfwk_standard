@@ -24,6 +24,8 @@ ohos_unittest("AmsServiceStartupTest") {
     "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy/include/",
     "//foundation/distributedschedule/samgr/adapter/interfaces/innerkits/include/",
+    "//base/account/os_account/frameworks/common/database/include",
+    "//base/account/os_account/frameworks/common/account_error/include",
   ]
 
   sources = [
@@ -48,6 +50,7 @@ ohos_unittest("AmsServiceStartupTest") {
   deps = [
     "${libs_path}/libeventhandler:libeventhandler_target",
     "${services_path}/appmgr/test:appmgr_test_source",
+    "//base/account/os_account/frameworks/osaccount/native:os_account_innerkits",
     "//foundation/aafwk/standard/interfaces/innerkits/base:base",
     "//foundation/aafwk/standard/interfaces/innerkits/want:want",
     "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_core:appexecfwk_core",

@@ -145,6 +145,8 @@ public:
      */
     virtual int CompelVerifyPermission(const std::string &permission, int pid, int uid, std::string &message) override;
 
+    void GetRunningProcessInfoByToken(const sptr<IRemoteObject> &token, AppExecFwk::RunningProcessInfo &info) override;
+
 private:
     bool WriteInterfaceToken(MessageParcel &data);
 

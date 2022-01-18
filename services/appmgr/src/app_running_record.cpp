@@ -805,6 +805,7 @@ bool AppRunningRecord::GetTheModuleInfoNeedToUpdated(const std::string bundleNam
         std::find_if(moduleInfoVectorIter->second.begin(), moduleInfoVectorIter->second.end(), findCondition);
     if (moduleRecordIter != moduleInfoVectorIter->second.end()) {
         (*moduleRecordIter)->GetHapModuleInfo(info);
+        (*moduleRecordIter)->SetModuleRecordState(ModuleRecordState::RUNNING_STATE);
         result = true;
     }
 
@@ -829,6 +830,13 @@ int AppRunningRecord::GetRestartResidentProcCount() const
 bool AppRunningRecord::CanRestartResidentProc()
 {
     return (restartResidentProcCount_ > 0);
+}
+
+void AppRunningRecord::GetBundleNames(std::vector<std::string> &bundleNames)
+{
+    for (auto &app : appInfos_) {
+        bundleNames.emplace_back(app.first);
+    }
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS

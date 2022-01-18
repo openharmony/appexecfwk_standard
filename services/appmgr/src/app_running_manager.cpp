@@ -371,6 +371,22 @@ void AppRunningManager::TerminateAbility(const sptr<IRemoteObject> &token)
     appRecord->TerminateAbility(token, false);
 }
 
+void AppRunningManager::GetRunningProcessInfoByToken(
+    const sptr<IRemoteObject> &token, AppExecFwk::RunningProcessInfo &info)
+{
+    std::lock_guard<std::recursive_mutex> guard(lock_);
+    auto appRecord = GetAppRunningRecordByAbilityToken(token);
+    if (!appRecord) {
+        APP_LOGE("appRecord is nullptr");
+        return;
+    }
+
+    info.processName_ = appRecord->GetName();
+    info.pid_ = appRecord->GetPriorityObject()->GetPid();
+    info.uid_ = appRecord->GetUid();
+    info.bundleNames.emplace_back(appRecord->GetBundleName());
+}
+
 void AppRunningManager::ClipStringContent(const std::regex &re, const std::string &sorce, std::string &afferCutStr)
 {
     std::smatch basket;

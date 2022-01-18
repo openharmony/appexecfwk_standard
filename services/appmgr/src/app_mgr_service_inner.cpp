@@ -32,6 +32,7 @@
 #include "common_event_support.h"
 #include "iremote_object.h"
 #include "iservice_registry.h"
+#include "os_account_manager.h"
 #include "permission/permission_kit.h"
 #include "system_ability_definition.h"
 
@@ -55,6 +56,7 @@ const std::string SO_PATH = "system/lib64/libmapleappkit.z.so";
 const int32_t SIGNAL_KILL = 9;
 const std::string REQ_PERMISSION = "ohos.permission.LOCATION_IN_BACKGROUND";
 constexpr int32_t SYSTEM_UID = 1000;
+constexpr int32_t USER_SCALE = 200000;
 #define ENUM_TO_STRING(s) #s
 }  // namespace
 
@@ -486,12 +488,22 @@ int32_t AppMgrServiceInner::GetAllRunningProcesses(std::vector<RunningProcessInf
     // check permission
     for (const auto &item : appRunningManager_->GetAppRunningRecordMap()) {
         const auto &appRecord = item.second;
-        RunningProcessInfo runningProcessInfo;
-        runningProcessInfo.processName_ = appRecord->GetProcessName();
-        runningProcessInfo.pid_ = appRecord->GetPriorityObject()->GetPid();
-        runningProcessInfo.uid_ = appRecord->GetUid();
-        runningProcessInfo.state_ = static_cast<AppProcessState>(appRecord->GetState());
-        info.emplace_back(runningProcessInfo);
+        if (USER_SCALE == 0) {
+            APP_LOGE("USER_SCALE is not zero");
+            return ERR_WOULD_BLOCK;
+        }
+        int32_t userId = static_cast<int32_t>(appRecord->GetUid() / USER_SCALE);
+        bool isExist = false;
+        auto errCode = AccountSA::OsAccountManager::IsOsAccountActived(userId, isExist);
+        if ((errCode == ERR_OK) && isExist) {
+            RunningProcessInfo runningProcessInfo;
+            runningProcessInfo.processName_ = appRecord->GetProcessName();
+            runningProcessInfo.pid_ = appRecord->GetPriorityObject()->GetPid();
+            runningProcessInfo.uid_ = appRecord->GetUid();
+            runningProcessInfo.state_ = static_cast<AppProcessState>(appRecord->GetState());
+            appRecord->GetBundleNames(runningProcessInfo.bundleNames);
+            info.emplace_back(runningProcessInfo);
+        }
     }
     return ERR_OK;
 }
@@ -1589,6 +1601,17 @@ int AppMgrServiceInner::CompelVerifyPermission(const std::string &permission, in
     }
     message = ENUM_TO_STRING(PERMISSION_GRANTED);
     return ERR_OK;
+}
+
+void AppMgrServiceInner::GetRunningProcessInfoByToken(
+    const sptr<IRemoteObject> &token, AppExecFwk::RunningProcessInfo &info)
+{
+    APP_LOGI("%{public}s called", __func__);
+    if (!appRunningManager_) {
+        APP_LOGE("appRunningManager_ is nullptr");
+        return;
+    }
+    appRunningManager_->GetRunningProcessInfoByToken(token, info);
 }
 
 void AppMgrServiceInner::LoadResidentProcess()
