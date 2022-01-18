@@ -883,6 +883,7 @@ ErrCode BundleManagerShellCommand::RunAsCleanCommand()
     int result = OHOS::ERR_OK;
     int option = -1;
     int counter = 0;
+    int userId = Constants::UNSPECIFIED_USERID;
     bool cleanCache = false;
     bool cleanData = false;
     std::string bundleName = "";
@@ -963,6 +964,13 @@ ErrCode BundleManagerShellCommand::RunAsCleanCommand()
                 cleanData = (cleanCache == true) ? false : true;
                 break;
             }
+            case 'u': {
+                // 'bm clean -u userId'
+                // 'bm clean --user-id userId'
+                APP_LOGD("'bm install %{public}s %{public}s'", argv_[optind - OFFSET_REQUIRED_ARGUMENT], optarg);
+                userId = std::stoi(optarg);
+                break;
+            }
             default: {
                 result = OHOS::ERR_INVALID_VALUE;
                 break;
@@ -997,7 +1005,7 @@ ErrCode BundleManagerShellCommand::RunAsCleanCommand()
         }
         // bm clean -d
         if (cleanData) {
-            if (CleanBundleDataFilesOperation(bundleName)) {
+            if (CleanBundleDataFilesOperation(bundleName, userId)) {
                 resultReceiver_.append(STRING_CLEAN_DATA_BUNDLE_OK + "\n");
             } else {
                 resultReceiver_.append(STRING_CLEAN_DATA_BUNDLE_NG + "\n");
@@ -1572,10 +1580,9 @@ bool BundleManagerShellCommand::CleanBundleCacheFilesOperation(const std::string
     return cleanRet;
 }
 
-bool BundleManagerShellCommand::CleanBundleDataFilesOperation(const std::string &bundleName) const
+bool BundleManagerShellCommand::CleanBundleDataFilesOperation(const std::string &bundleName, int userId) const
 {
-    APP_LOGD("bundleName: %{public}s", bundleName.c_str());
-    int32_t userId = 0;
+    APP_LOGD("bundleName: %{public}s, userId:%{public}d", bundleName.c_str(), userId);
     bool cleanRet = bundleMgrProxy_->CleanBundleDataFiles(bundleName, userId);
     if (!cleanRet) {
         APP_LOGE("clean bundle data files operation failed");
