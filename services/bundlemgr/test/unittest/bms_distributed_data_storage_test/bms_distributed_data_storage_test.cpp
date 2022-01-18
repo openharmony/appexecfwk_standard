@@ -29,19 +29,19 @@ using namespace OHOS::DistributedKv;
 using namespace OHOS;
 
 namespace {
-std::string BUNDULE_NAME_FIRST{"bunduleName1"};
-std::string BUNDULE_NAME_SECOND{"bunduleName2"};
-const std::string MAIN_ABILITY{"com.ohos.distributedmusicplayer.MainAbility"};
-constexpr uint32_t VERSION{5};
-constexpr uint32_t VERSION_CODE{10};
-std::string VERSION_NAME{"10"};
-constexpr uint32_t MIN_COMPATIBLE_VERSION{8};
-constexpr uint32_t TARGET_VERSION_CODE{10};
-constexpr uint32_t COMPATIBLE_VERSION_CODE{10};
-constexpr int32_t USER_ID{0};
-constexpr int32_t USER_ID_INVALID{1000};
-std::string APP_ID{"com.ohos.distributedmusicplayer_1234567890123"};
-std::string NETWORK_ID_INVALID{"ffea7058b8cfcb4b74628faeaa7063ac3f1a337294176202b54311540072db42"};
+std::string BUNDULE_NAME_FIRST {"bunduleName1"};
+std::string BUNDULE_NAME_SECOND {"bunduleName2"};
+const std::string MAIN_ABILITY {"com.ohos.distributedmusicplayer.MainAbility"};
+constexpr uint32_t VERSION {5};
+constexpr uint32_t VERSION_CODE {10};
+std::string VERSION_NAME {"10"};
+constexpr uint32_t MIN_COMPATIBLE_VERSION {8};
+constexpr uint32_t TARGET_VERSION_CODE {10};
+constexpr uint32_t COMPATIBLE_VERSION_CODE {10};
+constexpr int32_t USER_ID {0};
+constexpr int32_t USER_ID_INVALID {1000};
+std::string APP_ID {"com.ohos.distributedmusicplayer_1234567890123"};
+std::string NETWORK_ID_INVALID {"ffea7058b8cfcb4b74628faeaa7063ac3f1a337294176202b54311540072db42"};
 }
 
 class BmsDistributedDataStorageTest : public testing::Test {
@@ -150,7 +150,8 @@ HWTEST_F(BmsDistributedDataStorageTest, QueryStroageDistributeInfo_0100, Functio
 {
     auto dataStorage =  GetDistributedDataStorage();
     DistributedBundleInfo distributedBundleInfo;
-    bool result = dataStorage->QueryStroageDistributeInfo(BUNDULE_NAME_SECOND, USER_ID_INVALID, NETWORK_ID_INVALID, distributedBundleInfo);
+    bool result = dataStorage->QueryStroageDistributeInfo(
+        BUNDULE_NAME_SECOND, USER_ID_INVALID, NETWORK_ID_INVALID, distributedBundleInfo);
     EXPECT_FALSE(result);
 }
 
