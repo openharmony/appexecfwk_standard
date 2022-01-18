@@ -44,9 +44,9 @@ ohos_unittest("bm_command_dump_test") {
   include_dirs = []
 
   sources = [
-    "${aafwk_path}/tools/aa/src/shell_command.cpp",
     "${appexecfwk_path}/kits/appkit/napi/bundlemgr/bundle_death_recipient.cpp",
     "${appexecfwk_path}/tools/bm/src/bundle_command.cpp",
+    "${appexecfwk_path}/tools/bm/src/shell_command.cpp",
     "${appexecfwk_path}/tools/bm/src/status_receiver_impl.cpp",
     "bm_command_dump_test.cpp",
   ]
@@ -89,9 +89,9 @@ ohos_unittest("bm_command_install_test") {
   include_dirs = []
 
   sources = [
-    "${aafwk_path}/tools/aa/src/shell_command.cpp",
     "${appexecfwk_path}/kits/appkit/napi/bundlemgr/bundle_death_recipient.cpp",
     "${appexecfwk_path}/tools/bm/src/bundle_command.cpp",
+    "${appexecfwk_path}/tools/bm/src/shell_command.cpp",
     "${appexecfwk_path}/tools/bm/src/status_receiver_impl.cpp",
     "bm_command_install_test.cpp",
   ]
@@ -134,9 +134,9 @@ ohos_unittest("bm_command_test") {
   include_dirs = []
 
   sources = [
-    "${aafwk_path}/tools/aa/src/shell_command.cpp",
     "${appexecfwk_path}/kits/appkit/napi/bundlemgr/bundle_death_recipient.cpp",
     "${appexecfwk_path}/tools/bm/src/bundle_command.cpp",
+    "${appexecfwk_path}/tools/bm/src/shell_command.cpp",
     "${appexecfwk_path}/tools/bm/src/status_receiver_impl.cpp",
     "bm_command_test.cpp",
   ]
@@ -179,9 +179,9 @@ ohos_unittest("bm_command_uninstall_test") {
   include_dirs = []
 
   sources = [
-    "${aafwk_path}/tools/aa/src/shell_command.cpp",
     "${appexecfwk_path}/kits/appkit/napi/bundlemgr/bundle_death_recipient.cpp",
     "${appexecfwk_path}/tools/bm/src/bundle_command.cpp",
+    "${appexecfwk_path}/tools/bm/src/shell_command.cpp",
     "${appexecfwk_path}/tools/bm/src/status_receiver_impl.cpp",
     "bm_command_uninstall_test.cpp",
   ]
