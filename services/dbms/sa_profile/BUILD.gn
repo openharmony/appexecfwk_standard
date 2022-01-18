@@ -14,15 +14,22 @@
 import("//build/ohos.gni")
 import("//build/ohos/sa_profile/sa_profile.gni")
 
+group("distributedbms") {
+  deps = [
+    ":distributedbms.cfg",
+    ":distributedbms_sa_profile",
+  ]
+}
+
 ohos_sa_profile("distributedbms_sa_profile") {
   sources = [ "402.xml" ]
 
-  part_name = "appexecfwk_standard"
+  part_name = "bundle_framework"
 }
 
 ohos_prebuilt_etc("distributedbms.cfg") {
   source = "distributedbms.cfg"
   relative_install_dir = "init"
   subsystem_name = "appexecfwk"
-  part_name = "appexecfwk_standard"
+  part_name = "bundle_framework"
 }

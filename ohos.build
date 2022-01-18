@@ -91,12 +91,10 @@
       ],
       "module_list": [
         "//foundation/appexecfwk/standard/common:common_target",
-        "//foundation/appexecfwk/standard/services:services_target",
         "//foundation/appexecfwk/standard/tools/zip:tools_zip",
         "//foundation/appexecfwk/standard/interfaces/innerkits:innerkits_target",
         "//foundation/appexecfwk/standard/sa_profile:appexecfwk_sa_profile",
         "//foundation/appexecfwk/standard/sa_profile:foundation.rc",
-        "//foundation/appexecfwk/standard/services/dbms/sa_profile:distributedbms_sa_profile",
         "//foundation/appexecfwk/standard/test/resource/amssystemtestability/abilitySrc:ams_system_test_app",
         "//foundation/appexecfwk/standard/test/resource/bmssystemtestability/abilitySrc:bms_system_test_app",
         "//foundation/appexecfwk/standard/test/resource/formsystemtestability:fms_system_test_app",

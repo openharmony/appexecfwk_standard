@@ -19,7 +19,10 @@
 #include <memory>
 
 #include "bundle_info.h"
+#include "bundle_mgr_interface.h"
 #include "distributed_bms_host.h"
+#include "if_system_ability_manager.h"
+#include "iremote_object.h"
 #include "resource_manager.h"
 #include "system_ability.h"
 
