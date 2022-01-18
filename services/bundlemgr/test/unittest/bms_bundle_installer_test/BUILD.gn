@@ -82,6 +82,7 @@ ohos_unittest("BmsBundleInstallerTest") {
 
   external_deps = [
     "access_token:libaccesstoken_sdk",
+    "bytrace_standard:bytrace_core",
     "ces_standard:cesfwk_innerkits",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
@@ -156,6 +157,7 @@ ohos_unittest("BmsMultipleBundleInstallerTest") {
 
   external_deps = [
     "access_token:libaccesstoken_sdk",
+    "bytrace_standard:bytrace_core",
     "ces_standard:cesfwk_innerkits",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",

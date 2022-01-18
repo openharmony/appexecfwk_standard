@@ -152,6 +152,7 @@ ohos_shared_library("libbms") {
     "appverify:libhapverify",
     "bundle_framework:appexecfwk_base",
     "bundle_framework:appexecfwk_core",
+    "bytrace_standard:bytrace_core",
     "ces_standard:cesfwk_core",
     "ces_standard:cesfwk_innerkits",
     "distributeddatamgr:distributeddata_inner",
