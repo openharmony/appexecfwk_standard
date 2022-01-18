@@ -28,12 +28,19 @@ NativeValue* CreateJsHapModuleInfo(NativeEngine& engine, AppExecFwk::HapModuleIn
     object->SetProperty("name", CreateJsValue(engine, hapModuleInfo.name));
     object->SetProperty("moduleName", CreateJsValue(engine, hapModuleInfo.moduleName));
     object->SetProperty("description", CreateJsValue(engine, hapModuleInfo.description));
-    object->SetProperty("iconPath", CreateJsValue(engine, hapModuleInfo.iconPath));
+    object->SetProperty("icon", CreateJsValue(engine, hapModuleInfo.iconPath));
     object->SetProperty("label", CreateJsValue(engine, hapModuleInfo.label));
     object->SetProperty("backgroundImg", CreateJsValue(engine, hapModuleInfo.backgroundImg));
-    object->SetProperty("mainAbility", CreateJsValue(engine, hapModuleInfo.mainAbility));
-    object->SetProperty("srcPath", CreateJsValue(engine, hapModuleInfo.srcPath));
+    object->SetProperty("mainAbilityName", CreateJsValue(engine, hapModuleInfo.mainAbility));
+    // object->SetProperty("srcPath", CreateJsValue(engine, hapModuleInfo.srcPath)); // d.ts no have
     object->SetProperty("supportedModes", CreateJsValue(engine, hapModuleInfo.supportedModes));
+
+    // At present, the C++ data structure does not support the following structures, so pass in empty
+    NativeValue* nullValue = nullptr;
+    object->SetProperty("descriptionId", nullValue);
+    object->SetProperty("labelId", nullValue);
+    object->SetProperty("iconId", nullValue);
+    object->SetProperty("installationFree", engine.CreateBoolean(false));
 
     NativeValue *capArrayValue = engine.CreateArray(hapModuleInfo.reqCapabilities.size());
     NativeArray *capArray = ConvertNativeValueTo<NativeArray>(capArrayValue);
@@ -63,7 +70,7 @@ NativeValue* CreateJsHapModuleInfo(NativeEngine& engine, AppExecFwk::HapModuleIn
             abilityArray->SetElement(index++, CreateJsAbilityInfo(engine, abilityInfo));
         }
     }
-    object->SetProperty("abilityInfos", abilityArrayValue);
+    object->SetProperty("abilityInfo", abilityArrayValue);
 
     return objValue;
 }
