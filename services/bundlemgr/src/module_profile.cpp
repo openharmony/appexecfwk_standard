@@ -1167,6 +1167,7 @@ bool ToAbilityInfo(const Profile::ModuleJson &moduleJson, const Profile::Ability
     }
     abilityInfo.enabled = true;
     abilityInfo.isStageBasedModel = true;
+    abilityInfo.type = AbilityType::PAGE;
     return true;
 }
 
