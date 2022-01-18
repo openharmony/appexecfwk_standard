@@ -314,6 +314,8 @@ NativeValue* JsAppManagerInit(NativeEngine* engine, NativeValue* exportObj)
         JsAppManager::GetForegroundApplications);
     BindNativeFunction(*engine, *object, "isUserAStabilityTest",
         JsAppManager::IsUserAStabilityTest);
+    BindNativeFunction(*engine, *object, "getProcessRunningInfos",
+        JsAppManager::GetProcessRunningInfos);
     HILOG_INFO("JsAppManagerInit end");
     return engine->CreateUndefined();
 }
