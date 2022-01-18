@@ -20,6 +20,7 @@
 
 #include "parcel.h"
 #include "application_info.h"
+#include "extension_ability_info.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -155,6 +156,7 @@ struct AbilityInfo : public Parcelable {
     bool visible = false;
     std::string kind;  // ability category
     AbilityType type = AbilityType::UNKNOWN;
+    ExtensionAbilityType extensionAbilityType = ExtensionAbilityType::UNSPECIFIED;
     DisplayOrientation orientation = DisplayOrientation::UNSPECIFIED;
     LaunchMode launchMode = LaunchMode::STANDARD;
     std::string srcPath;
