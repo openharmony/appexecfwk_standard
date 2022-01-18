@@ -40,6 +40,8 @@ public:
     MOCK_METHOD1(AbilityAttachTimeOut, void(const sptr<IRemoteObject> &token));
     MOCK_METHOD1(PrepareTerminate, void(const sptr<IRemoteObject> &token));
     MOCK_METHOD4(CompelVerifyPermission, int(const std::string &permission, int pid, int uid, std::string &message));
+    MOCK_METHOD2(GetRunningProcessInfoByToken,
+        void(const sptr<IRemoteObject> &token, OHOS::AppExecFwk::RunningProcessInfo &info));
     MockAmsMgrScheduler() : AmsMgrStub() {};
     virtual ~MockAmsMgrScheduler(){};
     virtual void RegisterAppStateCallback(const sptr<IAppStateCallback> &callback) override

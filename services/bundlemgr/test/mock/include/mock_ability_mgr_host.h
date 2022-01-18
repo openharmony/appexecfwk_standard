@@ -431,6 +431,22 @@ public:
     {
         return true;
     }
+
+    virtual int GetAbilityRunningInfos(std::vector<AbilityRunningInfo> &info) override
+    {
+        return 0;
+    }
+
+    virtual int GetExtensionRunningInfos(
+        int upperLimit, std::vector<ExtensionRunningInfo> &info) override
+    {
+        return 0;
+    }
+
+    virtual int GetProcessRunningInfos(std::vector<AppExecFwk::RunningProcessInfo> &info) override
+    {
+        return 0;
+    }
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS

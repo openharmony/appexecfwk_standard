@@ -427,6 +427,8 @@ public:
 
     void insertAbilityStageInfo(std::vector<HapModuleInfo> moduleInfos);
 
+    void GetBundleNames(std::vector<std::string> &bundleNames);
+
 private:
     /**
      * SearchTheModuleInfoNeedToUpdated, Get an uninitialized abilitystage data.

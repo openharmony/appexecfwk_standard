@@ -19,7 +19,11 @@ module_output_path = "appexecfwk_standard/appmgrservice"
 ohos_unittest("AmsServiceLoadAbilityProcessTest") {
   module_out_path = module_output_path
 
-  include_dirs = [ "${services_path}/appmgr/test/unittest/mocks" ]
+  include_dirs = [
+    "${services_path}/appmgr/test/unittest/mocks",
+    "//base/account/os_account/frameworks/common/database/include",
+    "//base/account/os_account/frameworks/common/account_error/include",
+  ]
 
   sources = [
     "${services_path}/appmgr/src/ability_running_record.cpp",
@@ -54,6 +58,7 @@ ohos_unittest("AmsServiceLoadAbilityProcessTest") {
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core:appexecfwk_core",
     "${libs_path}/libeventhandler:libeventhandler_target",
     "${services_path}/appmgr/test:appmgr_test_source",
+    "//base/account/os_account/frameworks/osaccount/native:os_account_innerkits",
     "//foundation/aafwk/standard/interfaces/innerkits/base:base",
     "//foundation/aafwk/standard/interfaces/innerkits/want:want",
     "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_base:appexecfwk_base",

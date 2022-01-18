@@ -19,7 +19,11 @@ module_output_path = "appexecfwk_standard/appmgrservice"
 ohos_unittest("AmsCgroupManagerTest") {
   module_out_path = module_output_path
 
-  include_dirs = [ "//foundation/appexecfwk/standard/services/appmgr/include" ]
+  include_dirs = [
+    "//foundation/appexecfwk/standard/services/appmgr/include",
+    "//base/account/os_account/frameworks/common/database/include",
+    "//base/account/os_account/frameworks/common/account_error/include",
+  ]
 
   sources = [ "${services_path}/appmgr/src/cgroup_manager.cpp" ]
 
@@ -37,6 +41,7 @@ ohos_unittest("AmsCgroupManagerTest") {
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core:appexecfwk_core",
     "${libs_path}/libeventhandler:libeventhandler_target",
     "${services_path}/appmgr/test:appmgr_test_source",
+    "//base/account/os_account/frameworks/osaccount/native:os_account_innerkits",
   ]
 
   external_deps = [ "hiviewdfx_hilog_native:libhilog" ]

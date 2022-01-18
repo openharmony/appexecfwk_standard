@@ -19,12 +19,20 @@ module_output_path = "appexecfwk_standard/appmgrservice"
 ohos_unittest("AmsStartViaAsanTest") {
   module_out_path = module_output_path
 
+  include_dirs = [
+    "//base/account/os_account/frameworks/common/database/include",
+    "//base/account/os_account/frameworks/common/account_error/include",
+  ]
+
   sources = [
     "${services_path}/appmgr/src/start_via_asan.cpp",
     "ams_start_via_asan_test.cpp",
   ]
 
-  deps = [ "${services_path}/appmgr/test:appmgr_test_source" ]
+  deps = [
+    "${services_path}/appmgr/test:appmgr_test_source",
+    "//base/account/os_account/frameworks/osaccount/native:os_account_innerkits",
+  ]
 
   external_deps = [ "hiviewdfx_hilog_native:libhilog" ]
 }

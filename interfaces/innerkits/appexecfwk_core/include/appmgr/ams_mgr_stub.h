@@ -56,6 +56,7 @@ private:
     int32_t HandleCompelVerifyPermission(MessageParcel &data, MessageParcel &reply);
     int32_t HandlePrepareTerminate(MessageParcel &data, MessageParcel &reply);
     int32_t HandleKillApplicationByUid(MessageParcel &data, MessageParcel &reply);
+    int32_t HandleGetRunningProcessInfoByToken(MessageParcel &data, MessageParcel &reply);
 
     using AmsMgrFunc = int32_t (AmsMgrStub::*)(MessageParcel &data, MessageParcel &reply);
     std::map<uint32_t, AmsMgrFunc> memberFuncMap_;
