@@ -5491,6 +5491,12 @@ void CreateInstallErrorCodeObject(napi_env env, napi_value value)
     NAPI_CALL_RETURN_VOID(env,
         napi_create_int32(env, static_cast<int32_t>(InstallErrorCode::STATUS_BMS_SERVICE_ERROR), &nBmsServiceError));
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, value, "STATUS_BMS_SERVICE_ERROR", nBmsServiceError));
+    napi_value nStatusGrantRequestPermissionsFailed;
+    NAPI_CALL_RETURN_VOID(env,
+        napi_create_int32(env, static_cast<int32_t>(InstallErrorCode::STATUS_GRANT_REQUEST_PERMISSIONS_FAILED),
+                          &nStatusGrantRequestPermissionsFailed));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, value, "STATUS_GRANT_REQUEST_PERMISSIONS_FAILED",
+                          nStatusGrantRequestPermissionsFailed));
 }
 
 static bool ParseWant(napi_env env, AsyncExtensionInfoCallbackInfo *info, napi_value args)
