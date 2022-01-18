@@ -30,8 +30,6 @@
 #include "status_receiver_impl.h"
 #include "system_ability_definition.h"
 
-using namespace OHOS::AAFwk;
-
 namespace OHOS {
 namespace AppExecFwk {
 namespace {
