@@ -32,7 +32,7 @@ using Want = OHOS::AAFwk::Want;
  * @class FormAmsHelper
  * Ams helpler.
  */
-class FormAmsHelper final  : public DelayedRefSingleton<FormAmsHelper> {
+class FormAmsHelper final : public DelayedRefSingleton<FormAmsHelper> {
     DECLARE_DELAYED_REF_SINGLETON(FormAmsHelper)
 public:
     DISALLOW_COPY_AND_MOVE(FormAmsHelper);
