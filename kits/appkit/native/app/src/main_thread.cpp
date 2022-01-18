@@ -25,6 +25,7 @@
 #include "bytrace.h"
 #include "context_deal.h"
 #include "context_impl.h"
+#include "extension_module_loader.h"
 #include "form_extension.h"
 #include "if_system_ability_manager.h"
 #include "iservice_registry.h"
@@ -764,15 +765,14 @@ void MainThread::HandleLaunchApplication(const AppLaunchData &appLaunchData)
         AbilityLoader::GetInstance().RegisterAbility("Ability", [application = application_]() {
             return Ability::Create(application->GetRuntime());
         });
-        AbilityLoader::GetInstance().RegisterExtension("ServiceExtension", [application = application_]() {
-            return AbilityRuntime::ServiceExtension::Create(application->GetRuntime());
-        });
         AbilityLoader::GetInstance().RegisterExtension("FormExtension", [application = application_]() {
             return AbilityRuntime::FormExtension::Create(application->GetRuntime());
         });
         AbilityLoader::GetInstance().RegisterExtension("StaticSubscriberExtension", [application = application_]() {
             return AbilityRuntime::StaticSubscriberExtension::Create(application->GetRuntime());
         });
+        LoadAndRegisterExtension("system/lib/libservice_extension_module.z.so", "ServiceExtension",
+            application_->GetRuntime());
     }
 
     contextDeal->initResourceManager(resourceManager);
@@ -826,6 +826,21 @@ void MainThread::HandleAbilityStage(const HapModuleInfo &abilityStage)
         return;
     }
     appMgr_->AddAbilityStageDone(applicationImpl_->GetRecordId());
+}
+
+void MainThread::LoadAndRegisterExtension(const std::string &libName,
+    const std::string &extensionName, const std::unique_ptr<AbilityRuntime::Runtime>& runtime)
+{
+    APP_LOGI("MainThread::LoadAndRegisterExtension.libName:%{public}s,extensionName:%{public}s,",
+        libName.c_str(), extensionName.c_str());
+    if (application_ == nullptr) {
+        APP_LOGE("LoadAndRegisterExtension::application launch failed");
+        return;
+    }
+    APP_LOGI("MainThread::LoadAndRegisterExtension load success.");
+    AbilityLoader::GetInstance().RegisterExtension(extensionName, [application = application_, libName]() {
+        return AbilityRuntime::ExtensionModuleLoader::GetLoader(libName.c_str()).Create(application->GetRuntime());
+    });
 }
 
 /**
