@@ -424,7 +424,6 @@ private:
 
     int32_t userId_ = Constants::INVALID_USERID;
     bool hasInstalledInUser_ = false;
-    mutable bool needNotifyBundleStatus_ = true;
 
     DISALLOW_COPY_AND_MOVE(BaseBundleInstaller);
 
