@@ -35,13 +35,6 @@ NativeValue* CreateJsHapModuleInfo(NativeEngine& engine, AppExecFwk::HapModuleIn
     // object->SetProperty("srcPath", CreateJsValue(engine, hapModuleInfo.srcPath)); // d.ts no have
     object->SetProperty("supportedModes", CreateJsValue(engine, hapModuleInfo.supportedModes));
 
-    // At present, the C++ data structure does not support the following structures, so pass in empty
-    NativeValue* nullValue = nullptr;
-    object->SetProperty("descriptionId", nullValue);
-    object->SetProperty("labelId", nullValue);
-    object->SetProperty("iconId", nullValue);
-    object->SetProperty("installationFree", engine.CreateBoolean(false));
-
     NativeValue *capArrayValue = engine.CreateArray(hapModuleInfo.reqCapabilities.size());
     NativeArray *capArray = ConvertNativeValueTo<NativeArray>(capArrayValue);
     if (capArray != nullptr) {
