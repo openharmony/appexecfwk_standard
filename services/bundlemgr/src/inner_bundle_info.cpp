@@ -2063,7 +2063,7 @@ void InnerBundleInfo::GetCommonEvents(const std::string &eventKey, std::vector<C
         for (const auto &event : commonEvent.second.events) {
             if (event == eventKey) {
                 item = commonEvent.second;
-                item.uid = GetUid();
+                item.uid = GetUid(GetUserId());
                 commonEvents.emplace_back(item);
                 break;
             }
