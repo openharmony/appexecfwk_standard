@@ -18,14 +18,7 @@ group("dbms_target") {
 }
 
 ohos_shared_library("libdbms") {
-  include_dirs = [
-    "//foundation/aafwk/standard/frameworks/kits/appkit/native/app/include",
-    "//foundation/aafwk/standard/services/common/include",
-    "//foundation/appexecfwk/standard/services/dbms/include",
-    "//base/global/resmgr_standard/interfaces/innerkits/include",
-    "//base/global/i18n_standard/frameworks/intl/include",
-    "//utils/system/safwk/native/include",
-  ]
+  include_dirs = [ "include" ]
 
   sources = [
     "//foundation/appexecfwk/standard/services/dbms/src/distributed_bms.cpp",
@@ -33,12 +26,9 @@ ohos_shared_library("libdbms") {
     "//foundation/appexecfwk/standard/services/dbms/src/distributed_bms_proxy.cpp",
   ]
 
-  deps = [
-    "//base/global/i18n_standard/frameworks/intl:intl_util",
-    "//base/global/resmgr_standard/frameworks/resmgr:global_resmgr",
-    "//foundation/aafwk/standard/frameworks/kits/appkit:appkit_native",
-    "//foundation/appexecfwk/standard/common:libappexecfwk_common",
-  ]
+  defines = [ "APP_LOG_TAG = \"BundleMgrService\"" ]
+
+  deps = [ "//foundation/appexecfwk/standard/common:libappexecfwk_common" ]
 
   external_deps = [
     "ability_runtime:app_manager",
@@ -47,11 +37,12 @@ ohos_shared_library("libdbms") {
     "appexecfwk_standard:appexecfwk_core",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
+    "resmgr_standard:global_resmgr",
     "safwk:system_ability_fwk",
     "samgr_standard:samgr_proxy",
     "utils_base:utils",
   ]
 
-  part_name = "appexecfwk_standard"
+  part_name = "bundle_framework"
   subsystem_name = "appexecfwk"
 }
