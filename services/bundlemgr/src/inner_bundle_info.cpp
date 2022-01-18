@@ -2188,6 +2188,9 @@ void InnerBundleInfo::SetBundleUpdateTime(const int64_t time, int32_t userId)
 bool InnerBundleInfo::IsAbilityEnabled(const AbilityInfo &abilityInfo, int32_t userId) const
 {
     APP_LOGD("IsAbilityEnabled bundleName:%{public}s, userId:%{public}d", abilityInfo.bundleName.c_str(), userId);
+    if (userId == Constants::NOT_EXIST_USERID) {
+        return true;
+    }
     auto& key = NameAndUserIdToKey(abilityInfo.bundleName, userId);
     auto infoItem = innerBundleUserInfos_.find(key);
     if (infoItem == innerBundleUserInfos_.end()) {
