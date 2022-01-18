@@ -19,6 +19,7 @@
 #include "bundle_mgr_service.h"
 #include "bundle_promise.h"
 #include "bundle_util.h"
+#include "bytrace.h"
 #include "status_receiver_host.h"
 
 namespace OHOS {
@@ -57,6 +58,7 @@ private:
 
 void BundleUserMgrHostImpl::CreateNewUser(int32_t userId)
 {
+    BYTRACE(BYTRACE_TAG_APP);
     APP_LOGD("CreateNewUser user(%{public}d) start.", userId);
     std::lock_guard<std::mutex> lock(bundleUserMgrMutex_);
     CheckInitialUser();
@@ -109,6 +111,7 @@ void BundleUserMgrHostImpl::CreateNewUser(int32_t userId)
 
 void BundleUserMgrHostImpl::RemoveUser(int32_t userId)
 {
+    BYTRACE(BYTRACE_TAG_APP);
     APP_LOGD("RemoveUser user(%{public}d) start.", userId);
     std::lock_guard<std::mutex> lock(bundleUserMgrMutex_);
     auto dataMgr = GetDataMgrFromService();
