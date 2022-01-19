@@ -2715,5 +2715,30 @@ void BundleDataMgr::GetMatchExtensionInfos(const Want &want, int32_t flags, cons
         }
     }
 }
+
+bool BundleDataMgr::QueryExtensionAbilityInfos(const ExtensionAbilityType &extensionType, const int32_t &userId,
+    std::vector<ExtensionAbilityInfo> &extensionInfos) const
+{
+    int32_t requestUserId = GetUserId(userId);
+    if (requestUserId == Constants::INVALID_USERID) {
+        return false;
+    }
+    std::lock_guard<std::mutex> lock(bundleInfoMutex_);
+    for (const auto &item : bundleInfos_) {
+        InnerBundleInfo innerBundleInfo;
+        if (!GetInnerBundleInfoWithFlags(
+            item.first, 0, Constants::CURRENT_DEVICE_ID, innerBundleInfo, requestUserId)) {
+            APP_LOGE("ImplicitQueryAbilityInfos failed");
+            continue;
+        }
+        auto innerExtensionInfos = innerBundleInfo.GetInnerExtensionInfos();
+        for (const auto &info : innerExtensionInfos) {
+            if (info.second.type == extensionType) {
+                extensionInfos.emplace_back(info.second);
+            }
+        }
+    }
+    return true;
+}
 }  // namespace AppExecFwk
 }  // namespace OHOS
