@@ -46,7 +46,7 @@ ohos_source_set("tools_bm_source_set") {
   }
 
   external_deps = [
-    "aafwk_standard:want",
+    "ability_runtime:want",
     "bundle_framework:appexecfwk_base",
     "bundle_framework:appexecfwk_core",
     "hiviewdfx_hilog_native:libhilog",

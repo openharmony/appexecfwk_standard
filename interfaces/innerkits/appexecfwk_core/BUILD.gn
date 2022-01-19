@@ -14,20 +14,8 @@
 import("//build/ohos.gni")
 import("//foundation/appexecfwk/standard/appexecfwk.gni")
 
-config("appmgr_sdk_config") {
-  include_dirs = [
-    "include/appmgr",
-    "//foundation/aafwk/standard/frameworks/kits/ability/native/include",
-    "//foundation/aafwk/standard/interfaces/innerkits/ability_manager/include",
-  ]
-}
-
 config("bundlemgr_sdk_config") {
   include_dirs = [ "include/bundlemgr" ]
-}
-
-config("formmgr_sdk_config") {
-  include_dirs = [ "include/formmgr" ]
 }
 
 config("appexecfwk_core_config") {
@@ -36,9 +24,7 @@ config("appexecfwk_core_config") {
 
 ohos_shared_library("appexecfwk_core") {
   include_dirs = [
-    "${services_path}/appmgr/include",
     "${services_path}/bundlemgr/include",
-    "${services_path}/formmgr/include",
     "//base/global/resmgr_standard/interfaces/innerkits/include",
     "//base/global/i18n_standard/frameworks/intl/include",
     "//third_party/icu/icu4c/source/common",
@@ -47,31 +33,6 @@ ohos_shared_library("appexecfwk_core") {
   ]
 
   sources = [
-    "src/appmgr/ability_controller_proxy.cpp",
-    "src/appmgr/ability_controller_stub.cpp",
-    "src/appmgr/ability_state_data.cpp",
-    "src/appmgr/ams_mgr_proxy.cpp",
-    "src/appmgr/ams_mgr_stub.cpp",
-    "src/appmgr/app_launch_data.cpp",
-    "src/appmgr/app_mgr_client.cpp",
-    "src/appmgr/app_mgr_proxy.cpp",
-    "src/appmgr/app_mgr_stub.cpp",
-    "src/appmgr/app_process_data.cpp",
-    "src/appmgr/app_record_id.cpp",
-    "src/appmgr/app_scheduler_host.cpp",
-    "src/appmgr/app_scheduler_proxy.cpp",
-    "src/appmgr/app_service_manager.cpp",
-    "src/appmgr/app_state_callback_host.cpp",
-    "src/appmgr/app_state_callback_proxy.cpp",
-    "src/appmgr/app_state_data.cpp",
-    "src/appmgr/app_task_info.cpp",
-    "src/appmgr/application_state_observer_proxy.cpp",
-    "src/appmgr/application_state_observer_stub.cpp",
-    "src/appmgr/configuration.cpp",
-    "src/appmgr/priority_object.cpp",
-    "src/appmgr/process_data.cpp",
-    "src/appmgr/process_info.cpp",
-    "src/appmgr/profile.cpp",
     "src/bundlemgr/bundle_installer_proxy.cpp",
     "src/bundlemgr/bundle_mgr_client.cpp",
     "src/bundlemgr/bundle_mgr_host.cpp",
@@ -88,23 +49,11 @@ ohos_shared_library("appexecfwk_core") {
     "src/bundlemgr/on_permission_changed_callback_proxy.cpp",
     "src/bundlemgr/status_receiver_host.cpp",
     "src/bundlemgr/status_receiver_proxy.cpp",
-    "src/formmgr/form_host_proxy.cpp",
-    "src/formmgr/form_host_stub.cpp",
-    "src/formmgr/form_mgr_proxy.cpp",
-    "src/formmgr/form_mgr_stub.cpp",
-    "src/formmgr/form_provider_proxy.cpp",
-    "src/formmgr/form_provider_stub.cpp",
-    "src/formmgr/form_supply_proxy.cpp",
-    "src/formmgr/form_supply_stub.cpp",
-    "src/formmgr/provider_connect_proxy.cpp",
-    "src/formmgr/provider_connect_stub.cpp",
   ]
 
   public_configs = [
     ":appexecfwk_core_config",
-    ":appmgr_sdk_config",
     ":bundlemgr_sdk_config",
-    ":formmgr_sdk_config",
   ]
 
   defines = [

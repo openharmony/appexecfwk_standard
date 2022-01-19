@@ -2106,16 +2106,18 @@ bool TransformToInfo(ProfileReader::ConfigJson &configJson, InnerBundleInfo &inn
         std::string shortcutkey = configJson.app.bundleName + configJson.module.package + info.shortcutId;
         innerBundleInfo.InsertShortcutInfos(shortcutkey, shortcutInfo);
     }
-    for (const auto &info : configJson.module.commonEvents) {
-        CommonEventInfo commonEvent;
-        commonEvent.name = info.name;
-        commonEvent.bundleName = configJson.app.bundleName;
-        commonEvent.permission = info.permission;
-        commonEvent.data = info.data;
-        commonEvent.type = info.type;
-        commonEvent.events = info.events;
-        std::string commonEventKey = configJson.app.bundleName + configJson.module.package + info.name;
-        innerBundleInfo.InsertCommonEvents(commonEventKey, commonEvent);
+    if (innerBundleInfo.GetAppType() == Constants::AppType::SYSTEM_APP) {
+        for (const auto &info : configJson.module.commonEvents) {
+            CommonEventInfo commonEvent;
+            commonEvent.name = info.name;
+            commonEvent.bundleName = configJson.app.bundleName;
+            commonEvent.permission = info.permission;
+            commonEvent.data = info.data;
+            commonEvent.type = info.type;
+            commonEvent.events = info.events;
+            std::string commonEventKey = configJson.app.bundleName + configJson.module.package + info.name;
+            innerBundleInfo.InsertCommonEvents(commonEventKey, commonEvent);
+        }
     }
     bool find = false;
     for (const auto &ability : configJson.module.abilities) {

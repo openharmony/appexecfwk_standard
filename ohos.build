@@ -37,9 +37,7 @@
               "appexecfwk_errors.h",
               "application_info.h",
               "element_name.h",
-              "bundle_info.h",
-              "form_constants.h",
-              "form_js_info.h"
+              "bundle_info.h"
             ]
           },
           "name": "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_base:appexecfwk_base"
@@ -48,18 +46,11 @@
           "header": {
             "header_base": "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_core/include",
             "header_files": [
-              "appmgr/app_mgr_client.h",
-              "appmgr/iapp_state_callback.h",
-              "appmgr/app_state_callback_host.h",
-              "appmgr/app_mgr_constants.h",
               "bundlemgr/bundle_installer_interface.h",
               "bundlemgr/bundle_mgr_interface.h",
               "bundlemgr/bundle_status_callback_interface.h",
               "bundlemgr/clean_cache_callback_interface.h",
-              "bundlemgr/status_receiver_interface.h",
-              "appmgr/app_process_data.h",
-              "formmgr/form_mgr_interface.h"
-
+              "bundlemgr/status_receiver_interface.h"
             ]
           },
           "name": "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_core:appexecfwk_core"
@@ -96,27 +87,13 @@
             ]
           },
           "name": "//foundation/appexecfwk/standard/interfaces/innerkits/napi/eventhandler:emitter"
-        },
-        {
-          "header": {
-            "header_base": "//foundation/appexecfwk/standard/interfaces/innerkits/fmskit/native/include",
-            "header_files": [
-              "form_callback_interface.h",
-              "form_host_client.h",
-              "form_mgr.h"
-            ]
-          },
-          "name": "//foundation/appexecfwk/standard/interfaces/innerkits/fmskit:fmskit_native"
         }
       ],
       "module_list": [
         "//foundation/appexecfwk/standard/common:common_target",
         "//foundation/appexecfwk/standard/services:services_target",
-        "//foundation/appexecfwk/standard/tools/fm:tools_fm",
+        "//foundation/appexecfwk/standard/tools/zip:tools_zip",
         "//foundation/appexecfwk/standard/interfaces/innerkits:innerkits_target",
-        "//foundation/appexecfwk/standard/kits:app_context",
-        "//foundation/appexecfwk/standard/kits:appkit_native",
-        "//foundation/appexecfwk/standard/kits:appexec",
         "//foundation/appexecfwk/standard/sa_profile:appexecfwk_sa_profile",
         "//foundation/appexecfwk/standard/sa_profile:foundation.rc",
         "//foundation/appexecfwk/standard/services/dbms/sa_profile:distributedbms_sa_profile",
@@ -126,16 +103,11 @@
         "//foundation/appexecfwk/standard/kits/appkit/napi:napi_packages"
       ],
       "test_list": [
-        "//foundation/appexecfwk/standard/kits/appkit/native/test:unittest",
-        "//foundation/appexecfwk/standard/kits/appkit/test:moduletest",
         "//foundation/appexecfwk/standard/services/test:moduletest",
         "//foundation/appexecfwk/standard/services/bundlemgr/test:unittest",
-        "//foundation/appexecfwk/standard/services/appmgr/test:unittest",
-        "//foundation/appexecfwk/standard/services/formmgr/test:unittest",
         "//foundation/appexecfwk/standard/test/systemtest:systemtest",
         "//foundation/appexecfwk/standard/libs/test:moduletest",
-        "//foundation/appexecfwk/standard/interfaces/innerkits/task_dispatcher/test:unittest",
-        "//foundation/appexecfwk/standard/interfaces/innerkits/test:moduletest"
+        "//foundation/appexecfwk/standard/tools/zip/test:unittest"
       ],
       "variants": [
         "phone",

@@ -1,0 +1,73 @@
+# Copyright (c) 2021 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import("//build/test.gni")
+
+module_output_path = "appexecfwk_standard/tools"
+
+config("module_private_config") {
+  visibility = [ ":*" ]
+  include_dirs = []
+  cflags = []
+  if (target_cpu == "arm") {
+    cflags += [ "-DBINDER_IPC_32BIT" ]
+  }
+  defines = [
+    "APP_LOG_TAG = \"ZipUnitTest\"",
+    "LOG_DOMAIN = 0xD002201",
+  ]
+}
+
+ohos_unittest("zip_test") {
+  module_out_path = module_output_path
+
+  include_dirs = [ "//foundation/appexecfwk/standard/tools/zip/include" ]
+  sources = [
+    "//foundation/appexecfwk/standard/tools/zip/src/file_path.cpp",
+    "//foundation/appexecfwk/standard/tools/zip/src/zip.cpp",
+    "//foundation/appexecfwk/standard/tools/zip/src/zip_internal.cpp",
+    "//foundation/appexecfwk/standard/tools/zip/src/zip_reader.cpp",
+    "//foundation/appexecfwk/standard/tools/zip/src/zip_utils.cpp",
+    "//foundation/appexecfwk/standard/tools/zip/src/zip_writer.cpp",
+    "//foundation/appexecfwk/standard/tools/zip/test/unittest/zip_test.cpp",
+  ]
+
+  configs = [
+    "//foundation/appexecfwk/standard/tools/zip:zip_config",
+    ":module_private_config",
+  ]
+
+  deps = [
+    "//foundation/aafwk/standard/common/task_dispatcher:appkit_dispatcher_td",
+    "//foundation/aafwk/standard/interfaces/innerkits/want:want",
+    "//foundation/ace/napi:ace_napi",
+    "//third_party/googletest:gmock_main",
+    "//third_party/googletest:gtest_main",
+    "//third_party/libuv:uv_static",
+    "//third_party/zlib:libz",
+    "//utils/native/base:utils",
+    "//utils/native/base:utils",
+  ]
+
+  external_deps = [
+    "hiviewdfx_hilog_native:libhilog",
+    "ipc:ipc_core",
+  ]
+}
+
+group("unittest") {
+  testonly = true
+  deps = []
+
+  deps += [ ":zip_test" ]
+}

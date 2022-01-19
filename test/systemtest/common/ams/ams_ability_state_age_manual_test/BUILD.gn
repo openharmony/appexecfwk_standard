@@ -17,8 +17,9 @@ import("//foundation/appexecfwk/standard/appexecfwk.gni")
 module_output_path = "appexecfwk_standard/ams/"
 
 config("system_test_ams_ability_state_age_manual_test_config") {
-  include_dirs =
-      [ "//foundation/appexecfwk/standard/kits/appkit/native/app/include" ]
+  include_dirs = [
+    "//foundation/aafwk/standard/frameworks/kits/appkit/native/app/include",
+  ]
   cflags = []
   if (target_cpu == "arm") {
     cflags += [ "-DBINDER_IPC_32BIT" ]
@@ -44,8 +45,8 @@ ohos_systemtest("ams_ability_state_age_manual_test") {
 
   configs = [
     "${aafwk_path}/services/abilitymgr:abilityms_config",
-    "${appexecfwk_path}/services/appmgr:appmgr_config",
-    "//foundation/appexecfwk/standard/kits:appkit_config",
+    "${aafwk_path}/services/appmgr:appmgr_config",
+    "//foundation/aafwk/standard/frameworks/kits/appkit:appkit_config",
 
     ":system_test_ams_ability_state_age_manual_test_config",
     "//foundation/appexecfwk/standard/test/systemtest/common/ams/tool/:system_test_ability_util_config",
@@ -56,12 +57,13 @@ ohos_systemtest("ams_ability_state_age_manual_test") {
     cflags += [ "-DBINDER_IPC_32BIT" ]
   }
   deps = [
+    "${aafwk_path}/interfaces/innerkits/app_manager:app_manager",
     "${aafwk_path}/interfaces/innerkits/want:want",
     "${aafwk_path}/services/abilitymgr:abilityms",
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base:appexecfwk_base",
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core:appexecfwk_core",
+    "//foundation/aafwk/standard/frameworks/kits/appkit:appkit_native",
     "//foundation/appexecfwk/standard/interfaces/innerkits/libeventhandler:libeventhandler",
-    "//foundation/appexecfwk/standard/kits:appkit_native",
     "//foundation/distributedschedule/dmsfwk/interfaces/innerkits/uri:zuri",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
     "//third_party/googletest:gtest_main",
