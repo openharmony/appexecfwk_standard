@@ -20,7 +20,7 @@ config("verify_act_ability_config") {
   visibility = [ ":*" ]
   include_dirs = [
     "${SUBDEMOSYSTEM_DIR}/include",
-    "//foundation/appexecfwk/standard/kits/appkit/native/app",
+    "//foundation/aafwk/standard/frameworks/kits/appkit/native/app",
     "//foundation/aafwk/standard/interfaces/innerkits/want/include/ohos/aafwk/content",
     "//foundation/aafwk/standard/interfaces/innerkits/ability_manager/include",
     "//foundation/appexecfwk/standard/interfaces/innerkits/libeventhandler/include",
@@ -48,15 +48,16 @@ ohos_shared_library("amsStDataAbility") {
   configs = [ ":verify_act_ability_config" ]
   public_configs = [ ":verify_act_ability_public_config" ]
   deps = [
+    "${aafwk_path}/interfaces/innerkits/app_manager:app_manager",
     "//base/notification/ces_standard/frameworks/native:cesfwk_innerkits",
     "//base/notification/ces_standard/interfaces/kits/napi/common_event:commonevent",
     "//foundation/aafwk/standard/frameworks/kits/ability/native:abilitykit_native",
+    "//foundation/aafwk/standard/frameworks/kits/appkit:appkit_native",
     "//foundation/aafwk/standard/interfaces/innerkits/ability_manager:ability_manager",
     "//foundation/aafwk/standard/interfaces/innerkits/want:want",
     "//foundation/appexecfwk/standard/common:libappexecfwk_common",
     "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_base:appexecfwk_base",
     "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_core:appexecfwk_core",
-    "//foundation/appexecfwk/standard/kits:appkit_native",
     "//foundation/appexecfwk/standard/services/bundlemgr:libbms",
     "//foundation/distributedschedule/dmsfwk/interfaces/innerkits/uri:zuri",
     "//utils/native/base:utilsbase",
@@ -71,5 +72,5 @@ ohos_shared_library("amsStDataAbility") {
   ]
   subsystem_name = "amssystemtestability"
 
-  #part_name = "aafwk_standard"
+  #part_name = "ability_runtime"
 }

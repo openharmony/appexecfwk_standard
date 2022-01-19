@@ -60,6 +60,7 @@ ohos_moduletest("BmsServiceStartModuleTest") {
     cflags += [ "-DBINDER_IPC_32BIT" ]
   }
   deps = [
+    "${aafwk_path}/interfaces/innerkits/app_manager:app_manager",
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core:appexecfwk_core",
     "${libs_path}/libeventhandler:libeventhandler_target",
     "//base/security/appverify/interfaces/innerkits/appverify:libhapverify",
@@ -76,6 +77,7 @@ ohos_moduletest("BmsServiceStartModuleTest") {
   deps += bundle_install_deps
 
   external_deps = [
+    "ability_runtime:app_manager",
     "access_token:libaccesstoken_sdk",
     "ces_standard:cesfwk_innerkits",
     "hiviewdfx_hilog_native:libhilog",

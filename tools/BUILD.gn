@@ -14,6 +14,6 @@
 group("tools_target") {
   deps = [
     "bm:tools_bm",
-    "fm:tools_fm",
+    "zip:tools_zip",
   ]
 }

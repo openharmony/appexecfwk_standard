@@ -34,13 +34,14 @@ ohos_systemtest("ams_power_test") {
 
   configs = [
     "${aafwk_path}/services/abilitymgr:abilityms_config",
-    "${appexecfwk_path}/services/appmgr:appmgr_config",
+    "${aafwk_path}/services/appmgr:appmgr_config",
   ]
   cflags = []
   if (target_cpu == "arm") {
     cflags += [ "-DBINDER_IPC_32BIT" ]
   }
   deps = [
+    "${aafwk_path}/interfaces/innerkits/app_manager:app_manager",
     "${aafwk_path}/interfaces/innerkits/want:want",
     "${aafwk_path}/services/abilitymgr:abilityms",
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base:appexecfwk_base",

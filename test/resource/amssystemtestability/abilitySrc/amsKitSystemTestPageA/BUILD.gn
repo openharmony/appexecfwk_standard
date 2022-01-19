@@ -18,7 +18,7 @@ config("amsSystemTestCConfig") {
   visibility = [ ":*" ]
   include_dirs = [
     "${subdemosystem_path}/include",
-    "${appexecfwk_path}/kits/appkit/native/app",
+    "${aafwk_path}/frameworks/kits/appkit/native/app",
     "${aafwk_path}/interfaces/innerkits/want/include/ohos/aafwk/content",
     "${aafwk_path}/interfaces/innerkits/ability_manager/include",
     "${appexecfwk_path}/interfaces/innerkits/libeventhandler/include",
@@ -46,13 +46,14 @@ ohos_shared_library("amsKitSystemTestPageA") {
   configs = [ ":amsSystemTestCConfig" ]
   deps = [
     "${aafwk_path}/frameworks/kits/ability/native:abilitykit_native",
+    "${aafwk_path}/frameworks/kits/appkit:appkit_native",
+    "${aafwk_path}/interfaces/innerkits/app_manager:app_manager",
     "${aafwk_path}/interfaces/innerkits/want:want",
     "${aafwk_path}/services/abilitymgr:abilityms",
     "${aafwk_path}/services/abilitymgr:abilityms",
     "${appexecfwk_path}/common:libappexecfwk_common",
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base:appexecfwk_base",
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core:appexecfwk_core",
-    "${appexecfwk_path}/kits:appkit_native",
     "${appexecfwk_path}/services/bundlemgr:libbms",
     "${libs_path}/libeventhandler:libeventhandler_target",
     "//third_party/jsoncpp:jsoncpp",
