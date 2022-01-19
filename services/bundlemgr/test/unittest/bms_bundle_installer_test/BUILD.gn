@@ -87,6 +87,7 @@ ohos_unittest("BmsBundleInstallerTest") {
     "ipc:ipc_core",
     "os_account_standard:os_account_innerkits",
     "resmgr_standard:global_resmgr",
+    "samgr_standard:samgr_proxy",
   ]
 
   resource_config_file = "//foundation/appexecfwk/standard/test/resource/bundlemgrservice/ohos_test.xml"
@@ -161,6 +162,7 @@ ohos_unittest("BmsMultipleBundleInstallerTest") {
     "ipc:ipc_core",
     "os_account_standard:os_account_innerkits",
     "resmgr_standard:global_resmgr",
+    "samgr_standard:samgr_proxy",
   ]
 
   resource_config_file = "//foundation/appexecfwk/standard/test/resource/bundlemgrservice/ohos_test.xml"
