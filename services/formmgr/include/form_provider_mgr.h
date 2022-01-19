@@ -28,7 +28,7 @@ using Want = OHOS::AAFwk::Want;
  * @class FormProviderMgr
  * Form provider manager.
  */
-class FormProviderMgr final : public DelayedRefSingleton<FormProviderMgr> {
+class FormProviderMgr  final  : public DelayedRefSingleton<FormProviderMgr> {
     DECLARE_DELAYED_REF_SINGLETON(FormProviderMgr)
 public:
     DISALLOW_COPY_AND_MOVE(FormProviderMgr);
