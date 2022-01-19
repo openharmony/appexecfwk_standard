@@ -28,7 +28,7 @@ namespace AppExecFwk {
  * @class FormDumpMgr
  * Form dump mgr.
  */
-class FormDumpMgr final : public DelayedRefSingleton<FormDumpMgr> {
+class FormDumpMgr final  : public DelayedRefSingleton<FormDumpMgr> {
     DECLARE_DELAYED_REF_SINGLETON(FormDumpMgr)
 public:
     DISALLOW_COPY_AND_MOVE(FormDumpMgr);
