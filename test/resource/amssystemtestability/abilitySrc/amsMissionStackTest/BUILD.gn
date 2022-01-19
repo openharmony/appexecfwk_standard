@@ -19,7 +19,7 @@ config("amsMissionStackTestConfig") {
   visibility = [ ":*" ]
   include_dirs = [
     "${SUBDEMOSYSTEM_DIR}/include",
-    "${kits_path}/appkit/native/app",
+    "${aafwk_path}/frameworks/kits/appkit/native/app",
     "${aafwk_path}/interfaces/innerkits/want/include/ohos/aafwk/content",
     "${aafwk_path}/interfaces/innerkits/ability_manager/include",
     "${innerkits_path}/libeventhandler/include",
@@ -50,11 +50,12 @@ ohos_shared_library("amsMissionStackTest") {
   deps = [
     "${aafwk_path}/frameworks/kits/ability/native:abilitykit_native",
     "${aafwk_path}/frameworks/kits/ability/native:dummy_classes",
+    "${aafwk_path}/frameworks/kits/appkit:appkit_native",
+    "${aafwk_path}/interfaces/innerkits/app_manager:app_manager",
     "${aafwk_path}/interfaces/innerkits/want:want",
     "${common_path}:libappexecfwk_common",
     "${innerkits_path}/appexecfwk_base:appexecfwk_base",
     "${innerkits_path}/appexecfwk_core:appexecfwk_core",
-    "${kits_path}:appkit_native",
     "${services_path}/bundlemgr:libbms",
     "//foundation/distributedschedule/dmsfwk/interfaces/innerkits/uri:zuri",
     "//utils/native/base:utilsbase",
