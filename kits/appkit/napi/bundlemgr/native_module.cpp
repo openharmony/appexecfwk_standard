@@ -80,6 +80,11 @@ static napi_value Init(napi_env env, napi_value exports)
     napi_value nExtensionAbilityType = nullptr;
     NAPI_CALL(env, napi_create_object(env, &nExtensionAbilityType));
     CreateExtensionAbilityTypeObject(env, nExtensionAbilityType);
+
+    napi_value nExtensionFlag = nullptr;
+    NAPI_CALL(env, napi_create_object(env, &nExtensionFlag));
+    CreateExtensionFlagObject(env, nExtensionFlag);
+
     napi_value nBundleFlag = nullptr;
     NAPI_CALL(env, napi_create_object(env, &nBundleFlag));
     CreateBundleFlagObject(env, nBundleFlag);
