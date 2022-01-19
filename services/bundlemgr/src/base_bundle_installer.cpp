@@ -286,7 +286,7 @@ ErrCode BaseBundleInstaller::GrantRequestPermissions(const InnerBundleInfo &info
 {
     if (!BundlePermissionMgr::GrantRequestPermissions(info, tokenId)) {
         APP_LOGE("GrantRequestPermissions failed");
-        return ERR_APPEXECFWK_INSTALL_GRANT_REQUEST_PERMISSIOMS_FAILED;
+        return ERR_APPEXECFWK_INSTALL_GRANT_REQUEST_PERMISSIONS_FAILED;
     }
     return ERR_OK;
 }
@@ -873,7 +873,7 @@ ErrCode BaseBundleInstaller::ProcessNewModuleInstall(InnerBundleInfo &newInfo, I
         }
         if (!BundlePermissionMgr::GrantRequestPermissions(newInfo, newRequestPermName, info.second.accessTokenId)) {
             APP_LOGE("BundlePermissionMgr::GrantRequestPermissions failed %{public}s", bundleName_.c_str());
-            return ERR_APPEXECFWK_INSTALL_GRANT_REQUEST_PERMISSIOMS_FAILED;
+            return ERR_APPEXECFWK_INSTALL_GRANT_REQUEST_PERMISSIONS_FAILED;
         }
     }
 

@@ -241,7 +241,7 @@ ErrCode BundleManagerShellCommand::CreateMessageMap()
             "error: install failed due to insufficient disk memory",
         },
         {
-            IStatusReceiver::ERR_INSTALL_GRANT_REQUEST_PERMISSIOMS_FAILED,
+            IStatusReceiver::ERR_INSTALL_GRANT_REQUEST_PERMISSIONS_FAILED,
             "error: install failed due to grant request permissions failed",
         },
         {
