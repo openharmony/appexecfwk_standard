@@ -653,6 +653,11 @@ public:
         return true;
     }
 
+    virtual bool QueryExtensionAbilityInfos(const ExtensionAbilityType &extensionType, const int32_t &userId,
+        std::vector<ExtensionAbilityInfo> &extensionInfos)
+    {
+        return true;
+    }
     enum class Message {
         GET_APPLICATION_INFO = 0,
         GET_APPLICATION_INFOS,
@@ -727,7 +732,8 @@ public:
         QUERY_ABILITY_INFO_BY_URI_FOR_USERID,
         GET_APPLICATION_PRIVILEGE_LEVEL,
         QUERY_EXTENSION_INFO_WITHOUT_TYPE,
-        QUERY_EXTENSION_INFO
+        QUERY_EXTENSION_INFO,
+        QUERY_EXTENSION_INFO_BY_TYPE
     };
 };
 
