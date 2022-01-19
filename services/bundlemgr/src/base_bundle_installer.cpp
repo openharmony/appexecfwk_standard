@@ -171,6 +171,14 @@ ErrCode BaseBundleInstaller::InnerProcessBundleInstall(std::unordered_map<std::s
         return ERR_APPEXECFWK_INSTALL_BUNDLE_MGR_SERVICE_ERROR;
     }
 
+    if (isAppExist_) {
+        for (const auto &item : newInfos) {
+            if (oldInfo.GetIsNewVersion() != item.second.GetIsNewVersion()) {
+                return ERR_APPEXECFWK_INSTALL_STATE_ERROR;
+            }
+        }
+    }
+
     if (installParam.needSavePreInstallInfo) {
         PreInstallBundleInfo preInstallBundleInfo;
         preInstallBundleInfo.SetBundleName(bundleName_);
