@@ -270,6 +270,9 @@ int BundleMgrHost::OnRemoteRequest(uint32_t code, MessageParcel &data, MessagePa
         case static_cast<uint32_t>(IBundleMgr::Message::QUERY_EXTENSION_INFO):
             errCode = HandleQueryExtAbilityInfos(data, reply);
             break;
+        case static_cast<uint32_t>(IBundleMgr::Message::QUERY_EXTENSION_INFO_BY_TYPE):
+            errCode = HandleQueryExtAbilityInfosByType(data, reply);
+            break;
         default:
             return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
     }
@@ -1654,6 +1657,24 @@ ErrCode BundleMgrHost::HandleQueryExtAbilityInfos(Parcel &data, Parcel &reply)
     int32_t userId = data.ReadInt32();
     std::vector<ExtensionAbilityInfo> infos;
     bool ret = QueryExtensionAbilityInfos(*want, type, flag, userId, infos);
+    if (!reply.WriteBool(ret)) {
+        APP_LOGE("write result failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    if (ret && !WriteParcelableVector(infos, reply)) {
+        APP_LOGE("write extension infos failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    return ERR_OK;
+}
+
+ErrCode BundleMgrHost::HandleQueryExtAbilityInfosByType(Parcel &data, Parcel &reply)
+{
+    ExtensionAbilityType type = static_cast<ExtensionAbilityType>(data.ReadInt32());
+    int32_t userId = data.ReadInt32();
+    std::vector<ExtensionAbilityInfo> infos;
+
+    bool ret = QueryExtensionAbilityInfos(type, userId, infos);
     if (!reply.WriteBool(ret)) {
         APP_LOGE("write result failed");
         return ERR_APPEXECFWK_PARCEL_ERROR;

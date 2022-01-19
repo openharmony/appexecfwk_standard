@@ -1034,7 +1034,8 @@ bool BundleMgrHostImpl::GetDistributedBundleInfo(
 bool BundleMgrHostImpl::QueryExtensionAbilityInfos(const Want &want, const int32_t &flag, const int32_t &userId,
     std::vector<ExtensionAbilityInfo> &extensionInfos)
 {
-    APP_LOGI("QueryExtensionAbilityInfos begin");
+    APP_LOGI("QueryExtensionAbilityInfos without type begin");
+    APP_LOGI("want uri is %{public}s", want.GetUriString().c_str());
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
         APP_LOGE("DataMgr is nullptr");
@@ -1068,10 +1069,34 @@ bool BundleMgrHostImpl::QueryExtensionAbilityInfos(const Want &want, const Exten
         return false;
     }
     for_each(infos.begin(), infos.end(), [&extensionType, &extensionInfos](const auto &info)->decltype(auto) {
+        APP_LOGD("QueryExtensionAbilityInfos extensionType is %{public}d, info.type is %{public}d",
+            static_cast<int32_t>(extensionType), static_cast<int32_t>(info.type));
         if (extensionType == info.type) {
             extensionInfos.emplace_back(info);
         }
     });
+    if (extensionInfos.empty()) {
+        APP_LOGE("no valid extension info can be inquired");
+        return false;
+    }
+    return true;
+}
+
+bool BundleMgrHostImpl::QueryExtensionAbilityInfos(const ExtensionAbilityType &extensionType, const int32_t &userId,
+    std::vector<ExtensionAbilityInfo> &extensionInfos)
+{
+    APP_LOGI("QueryExtensionAbilityInfos with type begin");
+    auto dataMgr = GetDataMgrFromService();
+    if (dataMgr == nullptr) {
+        APP_LOGE("DataMgr is nullptr");
+        return false;
+    }
+    bool ret = dataMgr->QueryExtensionAbilityInfos(extensionType, userId, extensionInfos);
+    if (!ret) {
+        APP_LOGE("QueryExtensionAbilityInfos is failed");
+        return false;
+    }
+
     if (extensionInfos.empty()) {
         APP_LOGE("no valid extension info can be inquired");
         return false;
