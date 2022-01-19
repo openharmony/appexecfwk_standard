@@ -586,6 +586,9 @@ public:
     virtual bool QueryExtensionAbilityInfos(const Want &want, const ExtensionAbilityType &extensionType,
         const int32_t &flag, const int32_t &userId, std::vector<ExtensionAbilityInfo> &extensionInfos) override;
 
+    virtual bool QueryExtensionAbilityInfos(const ExtensionAbilityType &extensionType, const int32_t &userId,
+        std::vector<ExtensionAbilityInfo> &extensionInfos) override;
+
 private:
     const std::shared_ptr<BundleCloneMgr> GetCloneMgrFromService();
     const std::shared_ptr<BundleDataMgr> GetDataMgrFromService();

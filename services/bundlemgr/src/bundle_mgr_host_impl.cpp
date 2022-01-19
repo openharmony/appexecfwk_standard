@@ -1034,7 +1034,7 @@ bool BundleMgrHostImpl::GetDistributedBundleInfo(
 bool BundleMgrHostImpl::QueryExtensionAbilityInfos(const Want &want, const int32_t &flag, const int32_t &userId,
     std::vector<ExtensionAbilityInfo> &extensionInfos)
 {
-    APP_LOGI("QueryExtensionAbilityInfos begin");
+    APP_LOGI("QueryExtensionAbilityInfos without type begin");
     APP_LOGI("want uri is %{public}s", want.GetUriString().c_str());
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
@@ -1056,7 +1056,7 @@ bool BundleMgrHostImpl::QueryExtensionAbilityInfos(const Want &want, const int32
 bool BundleMgrHostImpl::QueryExtensionAbilityInfos(const Want &want, const ExtensionAbilityType &extensionType,
     const int32_t &flag, const int32_t &userId, std::vector<ExtensionAbilityInfo> &extensionInfos)
 {
-    APP_LOGI("QueryExtensionAbilityInfos with type begin");
+    APP_LOGI("QueryExtensionAbilityInfos begin");
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
         APP_LOGE("DataMgr is nullptr");
@@ -1075,6 +1075,28 @@ bool BundleMgrHostImpl::QueryExtensionAbilityInfos(const Want &want, const Exten
             extensionInfos.emplace_back(info);
         }
     });
+    if (extensionInfos.empty()) {
+        APP_LOGE("no valid extension info can be inquired");
+        return false;
+    }
+    return true;
+}
+
+bool BundleMgrHostImpl::QueryExtensionAbilityInfos(const ExtensionAbilityType &extensionType, const int32_t &userId,
+    std::vector<ExtensionAbilityInfo> &extensionInfos)
+{
+    APP_LOGI("QueryExtensionAbilityInfos with type begin");
+    auto dataMgr = GetDataMgrFromService();
+    if (dataMgr == nullptr) {
+        APP_LOGE("DataMgr is nullptr");
+        return false;
+    }
+    bool ret = dataMgr->QueryExtensionAbilityInfos(extensionType, userId, extensionInfos);
+    if (!ret) {
+        APP_LOGE("QueryExtensionAbilityInfos is failed");
+        return false;
+    }
+
     if (extensionInfos.empty()) {
         APP_LOGE("no valid extension info can be inquired");
         return false;
