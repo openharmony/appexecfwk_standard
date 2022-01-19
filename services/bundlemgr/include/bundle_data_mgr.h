@@ -668,6 +668,9 @@ public:
     bool QueryExtensionAbilityInfos(const Want &want, int32_t flags, int32_t userId,
         std::vector<ExtensionAbilityInfo> &extensionInfos) const;
 
+    bool QueryExtensionAbilityInfos(const ExtensionAbilityType &extensionType, const int32_t &userId,
+        std::vector<ExtensionAbilityInfo> &extensionInfos) const;
+
 private:
     /**
      * @brief Init transferStates.
