@@ -1136,7 +1136,8 @@ void FormTimerMgr::EnsureInitIntervalTimer()
     timerOption->SetRepeat(false);
     timerOption->SetInterval(0);
     timerOption->SetWantAgent(nullptr);
-    timerOption->SetCallbackInfo([]() { FormTimerMgr::GetInstance().OnIntervalTimeOut(); });
+    auto timeCallback = std::bind(&FormTimerMgr::OnIntervalTimeOut, this);
+    timerOption->SetCallbackInfo(timeCallback);
 
     intervalTimerId_ = MiscServices::TimeServiceClient::GetInstance()->CreateTimer(timerOption);
     bool bRet = MiscServices::TimeServiceClient::GetInstance()->StartTimer(intervalTimerId_,

@@ -35,8 +35,8 @@ public:
     virtual void SetWantAgent(std::shared_ptr<OHOS::Notification::WantAgent::WantAgent> wantAgent) override;
     void SetCallbackInfo(std::function<void()> callBack);
 
-private:
-    std::function<void()> callBack;
+    private:
+        std::function<void()> callBack;
 };
 
 FormTimerOption::FormTimerOption()
@@ -49,9 +49,7 @@ FormTimerOption::~FormTimerOption()
 
 void FormTimerOption::OnTrigger()
 {
-    if (this->callBack) {
-        this->callBack();
-    }
+    callBack();
 }
 
 void FormTimerOption::SetCallbackInfo(std::function<void()> callBack)
@@ -68,16 +66,15 @@ void FormTimerOption::SetRepeat(bool repeat)
 {
     this->repeat = repeat;
 }
-
 void FormTimerOption::SetInterval(const uint64_t &interval)
 {
     this->interval = interval;
 }
-
-void FormTimerOption::SetWantAgent(std::shared_ptr<OHOS::Notification::WantAgent::WantAgent> wantAgent)
+void FormTimerOption::SetWantAgent(std::shared_ptr<OHOS::Notification::WantAgent::WantAgent> _wantAgent)
 {
-    this->wantAgent = wantAgent;
+    this->wantAgent = _wantAgent;
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS
+
 #endif // FOUNDATION_APPEXECFWK_SERVICES_FORMMGR_INCLUDE_FORM_TIMER_INFO_H
