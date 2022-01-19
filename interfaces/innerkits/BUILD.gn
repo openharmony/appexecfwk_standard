@@ -19,8 +19,6 @@ group("innerkits_target") {
     "appexecfwk_base:appexecfwk_base",
     "appexecfwk_core:appexecfwk_core",
     "eventhandler_native:eventhandler_native",
-    "fmskit:fmskit_native",
     "libeventhandler:libeventhandler",
-    "task_dispatcher:appkit_dispatcher_td",
   ]
 }

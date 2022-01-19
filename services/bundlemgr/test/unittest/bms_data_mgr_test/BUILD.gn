@@ -86,6 +86,7 @@ ohos_unittest("BmsDataMgrTest") {
   deps += bundle_install_deps
 
   external_deps = [
+    "ability_runtime:app_manager",
     "access_token:libaccesstoken_sdk",
     "ces_standard:cesfwk_innerkits",
     "hiviewdfx_hilog_native:libhilog",

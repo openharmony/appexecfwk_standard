@@ -13,26 +13,11 @@
 
 import("//foundation/appexecfwk/standard/appexecfwk.gni")
 
-config("services_module_test_config") {
-  include_dirs = [
-    "mock/include",
-    "//base/notification/ces_standard/interfaces/innerkits/native/include",
-  ]
-
-  configs = []
-}
-
-config("services_mock_ams_config") {
-  include_dirs = [ "../appmgr/test/mock/include" ]
-}
-
 group("moduletest") {
   testonly = true
 
   deps = [
-    "moduletest/common/ams:moduletest",
     "moduletest/common/bms:moduletest",
-
     # Temporary disable bms because build error.
     #"moduletest/common/bms:moduletest",
   ]

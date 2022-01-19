@@ -38,18 +38,18 @@ ohos_shared_library("serviceAbilityA") {
   deps = [
     "//base/notification/ces_standard/frameworks/native:cesfwk_innerkits",
     "//foundation/aafwk/standard/frameworks/kits/ability/native:abilitykit_native",
+    "//foundation/aafwk/standard/frameworks/kits/appkit:appkit_native",
     "//foundation/appexecfwk/standard/common:libappexecfwk_common",
-    "//foundation/appexecfwk/standard/kits:appkit_native",
   ]
   external_deps = [
-    "aafwk_standard:ability_manager",
-    "aafwk_standard:want",
+    "ability_runtime:ability_manager",
+    "ability_runtime:app_manager",
+    "ability_runtime:want",
     "appexecfwk_standard:appexecfwk_base",
     "appexecfwk_standard:appexecfwk_core",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
   ]
 
-  subsystem_name = "aafwk"
-  part_name = "aafwk_standard"
+  subsystem_name = "amssystemtestability"
 }

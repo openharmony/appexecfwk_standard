@@ -12,9 +12,5 @@
 # limitations under the License.
 
 group("services_target") {
-  deps = [
-    "appmgr:ams_target",
-    "dbms:dbms_target",
-    "formmgr:fms_target",
-  ]
+  deps = [ "dbms:dbms_target" ]
 }
