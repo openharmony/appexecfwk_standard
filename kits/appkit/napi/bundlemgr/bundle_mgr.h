@@ -349,6 +349,7 @@ void CreateQueryShortCutFlagObject(napi_env env, napi_value value);
 void CreateBundleFlagObject(napi_env env, napi_value value);
 void CreateInstallErrorCodeObject(napi_env env, napi_value value);
 void CreateExtensionAbilityTypeObject(napi_env env, napi_value value);
+void CreateExtensionFlagObject(napi_env env, napi_value value);
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif /* BUNDLE_MGR_H */
