@@ -544,6 +544,8 @@ private:
      * @return Returns ERR_OK if called successfully; returns error code otherwise.
      */
     ErrCode HandleQueryExtAbilityInfos(Parcel &data, Parcel &reply);
+
+    ErrCode HandleQueryExtAbilityInfosByType(Parcel &data, Parcel &reply);
 private:
     /**
      * @brief Write a parcelabe vector objects to the proxy node.

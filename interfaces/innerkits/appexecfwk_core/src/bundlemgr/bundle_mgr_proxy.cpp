@@ -2069,6 +2069,29 @@ bool BundleMgrProxy::QueryExtensionAbilityInfos(const Want &want, const Extensio
     return true;
 }
 
+bool BundleMgrProxy::QueryExtensionAbilityInfos(const ExtensionAbilityType &extensionType, const int32_t &userId,
+    std::vector<ExtensionAbilityInfo> &extensionInfos)
+{
+    MessageParcel data;
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        APP_LOGE("fail to QueryExtensionAbilityInfos due to write InterfaceToken fail");
+        return false;
+    }
+    if (!data.WriteInt32(static_cast<int32_t>(extensionType))) {
+        APP_LOGE("fail to QueryExtensionAbilityInfos due to write type fail");
+        return false;
+    }
+    if (!data.WriteInt32(userId)) {
+        APP_LOGE("fail to QueryExtensionAbilityInfos due to write userId fail");
+        return false;
+    }
+
+    if (!GetParcelableInfos(IBundleMgr::Message::QUERY_EXTENSION_INFO_BY_TYPE, data, extensionInfos)) {
+        APP_LOGE("fail to obtain extensionInfos");
+        return false;
+    }
+    return true;
+}
 template<typename T>
 bool BundleMgrProxy::GetParcelableInfo(IBundleMgr::Message code, MessageParcel &data, T &parcelableInfo)
 {
