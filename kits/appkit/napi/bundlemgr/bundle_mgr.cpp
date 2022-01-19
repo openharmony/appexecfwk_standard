@@ -5367,6 +5367,12 @@ void CreateBundleFlagObject(napi_env env, napi_value value)
                                                  &nGetAbilityInfoWithMetadata));
     NAPI_CALL_RETURN_VOID(
         env, napi_set_named_property(env, value, "GET_ABILITY_INFO_WITH_METADATA", nGetAbilityInfoWithMetadata));
+    napi_value nGetBundleWithExtensionAbility;
+    NAPI_CALL_RETURN_VOID(env, napi_create_int32(env,
+                                                 static_cast<int32_t>(BundleFlag::GET_BUNDLE_WITH_EXTENSION_INFO),
+                                                 &nGetBundleWithExtensionAbility));
+    NAPI_CALL_RETURN_VOID(
+        env, napi_set_named_property(env, value, "GET_BUNDLE_WITH_EXTENSION_ABILITY", nGetBundleWithExtensionAbility));
     napi_value nGetAbilityInfoWithDisable;
     NAPI_CALL_RETURN_VOID(env, napi_create_int32(env,
                                                  static_cast<int32_t>(AbilityInfoFlag::GET_ABILITY_INFO_WITH_DISABLE),
@@ -5394,6 +5400,37 @@ void CreateBundleFlagObject(napi_env env, napi_value value)
             &nGetApplicationInfoWithDisable));
     NAPI_CALL_RETURN_VOID(env,
         napi_set_named_property(env, value, "GET_APPLICATION_INFO_WITH_DISABLE", nGetApplicationInfoWithDisable));
+}
+
+void CreateExtensionFlagObject(napi_env env, napi_value value)
+{
+    napi_value nGetExtensionInfoDefault;
+    NAPI_CALL_RETURN_VOID(env,
+        napi_create_int32(env, static_cast<int32_t>(ExtensionAbilityInfoFlag::GET_EXTENSION_INFO_DEFAULT),
+            &nGetExtensionInfoDefault));
+    NAPI_CALL_RETURN_VOID(env,
+        napi_set_named_property(env, value, "GET_EXTENSION_INFO_DEFAULT", nGetExtensionInfoDefault));
+
+    napi_value nGetExtensionInfoWithPermission;
+    NAPI_CALL_RETURN_VOID(env,
+        napi_create_int32(env, static_cast<int32_t>(ExtensionAbilityInfoFlag::GET_EXTENSION_INFO_WITH_PERMISSION),
+            &nGetExtensionInfoWithPermission));
+    NAPI_CALL_RETURN_VOID(env,
+        napi_set_named_property(env, value, "GET_EXTENSION_INFO_WITH_PERMISSION", nGetExtensionInfoWithPermission));
+
+    napi_value nGetExtensionInfoWithApplication;
+    NAPI_CALL_RETURN_VOID(env,
+        napi_create_int32(env, static_cast<int32_t>(ExtensionAbilityInfoFlag::GET_EXTENSION_INFO_WITH_APPLICATION),
+            &nGetExtensionInfoWithApplication));
+    NAPI_CALL_RETURN_VOID(env,
+        napi_set_named_property(env, value, "GET_EXTENSION_INFO_WITH_APPLICATION", nGetExtensionInfoWithApplication));
+
+    napi_value nGetExtensionInfoWithMetaData;
+    NAPI_CALL_RETURN_VOID(env,
+        napi_create_int32(env, static_cast<int32_t>(ExtensionAbilityInfoFlag::GET_EXTENSION_INFO_WITH_METADATA),
+            &nGetExtensionInfoWithMetaData));
+    NAPI_CALL_RETURN_VOID(env,
+        napi_set_named_property(env, value, "GET_EXTENSION_INFO_WITH_METADATA", nGetExtensionInfoWithMetaData));
 }
 
 void CreateInstallErrorCodeObject(napi_env env, napi_value value)
@@ -5495,9 +5532,13 @@ void CreateInstallErrorCodeObject(napi_env env, napi_value value)
     NAPI_CALL_RETURN_VOID(env,
         napi_create_int32(env, static_cast<int32_t>(InstallErrorCode::STATUS_BMS_SERVICE_ERROR), &nBmsServiceError));
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, value, "STATUS_BMS_SERVICE_ERROR", nBmsServiceError));
+    napi_value nNoSpaceLeft;
+    NAPI_CALL_RETURN_VOID(env,
+        napi_create_int32(env, static_cast<int32_t>(InstallErrorCode::STATUS_FAILED_NO_SPACE_LEFT), &nNoSpaceLeft));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, value, "STATUS_FAILED_NO_SPACE_LEFT", nNoSpaceLeft));
 }
 
-static bool ParseWant(napi_env env, AsyncExtensionInfoCallbackInfo *info, napi_value args)
+static bool ParseWant(napi_env env, AsyncExtensionInfoCallbackInfo &info, napi_value args)
 {
     napi_valuetype valueType;
     NAPI_CALL(env, napi_typeof(env, args, &valueType));
@@ -5506,55 +5547,64 @@ static bool ParseWant(napi_env env, AsyncExtensionInfoCallbackInfo *info, napi_v
         return false;
     }
     napi_value prop = nullptr;
-    napi_get_named_property(env, args, "extensionAbilityName", &prop);
-    if (prop == nullptr) {
+    bool ret = false;
+    napi_has_named_property(env, args, "extensionAbilityName", &ret);
+    if (!ret) {
         HILOG_WARN("cannot find the property of extensionAbilityName");
     } else {
+        napi_get_named_property(env, args, "extensionAbilityName", &prop);
         napi_typeof(env, prop, &valueType);
         if (valueType != napi_string) {
             HILOG_ERROR("extensionAbilityName is not type of string");
             return false;
         }
-        info->extensionAbilityName = GetStringFromNAPI(env, prop);
+        info.extensionAbilityName = GetStringFromNAPI(env, prop);
+        HILOG_DEBUG("extensionAbilityInfo name is %{public}s", info.extensionAbilityName.c_str());
     }
 
     prop = nullptr;
-    napi_get_named_property(env, args, "extensionAbilityType", &prop);
-    if (prop == nullptr) {
+    ret = false;
+    napi_has_named_property(env, args, "extensionAbilityType", &ret);
+    if (!ret) {
         HILOG_WARN("cannot find the property of extensionAbilityType");
     } else {
+        napi_get_named_property(env, args, "extensionAbilityType", &prop);
         napi_typeof(env, prop, &valueType);
         if (valueType != napi_number) {
             HILOG_ERROR("extensionAbilityName is not type of number");
             return false;
         }
-        napi_get_value_int32(env, prop, &(info->extensionAbilityType));
+        napi_get_value_int32(env, prop, &(info.extensionAbilityType));
+        HILOG_DEBUG("extensionAbilityInfo type is %{public}d", info.extensionAbilityType);
     }
 
-    if (!ParseWant(env, info->want, args)) {
+    if (!ParseWant(env, info.want, args)) {
         HILOG_ERROR("parse want failed");
         return false;
     }
-    ElementName element = info->want.GetElement();
-    ElementName newElement(element.GetDeviceID(), element.GetBundleName(), info->extensionAbilityName);
-    info->want.SetElement(newElement);
+    ElementName element = info.want.GetElement();
+    ElementName newElement(element.GetDeviceID(), element.GetBundleName(), info.extensionAbilityName);
+    info.want.SetElement(newElement);
     return true;
 }
 
-static bool InnerQueryExtensionInfo(napi_env env, AsyncExtensionInfoCallbackInfo *info)
+static bool InnerQueryExtensionInfo(napi_env env, AsyncExtensionInfoCallbackInfo &info)
 {
     auto iBundleMgr = GetBundleMgr();
     if (!iBundleMgr) {
         HILOG_ERROR("can not get iBundleMgr");
         return false;
     }
+    HILOG_DEBUG("action:%{public}s, uri:%{public}s, type:%{public}s, flags:%{public}d",
+        info.want.GetAction().c_str(), info.want.GetUriString().c_str(), info.want.GetType().c_str(), info.flags);
 
-    if (info->extensionAbilityType < 0) {
-        return iBundleMgr->QueryExtensionAbilityInfos(info->want, info->flags, info->userId, info->extensionInfos);
+    if (info.extensionAbilityType < 0) {
+        HILOG_DEBUG("query extensionAbilityInfo without type");
+        return iBundleMgr->QueryExtensionAbilityInfos(info.want, info.flags, info.userId, info.extensionInfos);
     } else {
-        auto type = static_cast<ExtensionAbilityType>(info->extensionAbilityType);
-        return iBundleMgr->QueryExtensionAbilityInfos(info->want, type, info->flags, info->userId,
-            info->extensionInfos);
+        auto type = static_cast<ExtensionAbilityType>(info.extensionAbilityType);
+        HILOG_DEBUG("query extensionAbilityInfo with type");
+        return iBundleMgr->QueryExtensionAbilityInfos(info.want, type, info.flags, info.userId, info.extensionInfos);
     }
 }
 
@@ -5589,7 +5639,7 @@ napi_value QueryExtensionInfoByWant(napi_env env, napi_callback_info info)
         napi_valuetype valueType = napi_undefined;
         napi_typeof(env, argv[i], &valueType);
         if ((i == 0) && (valueType == napi_object)) {
-            if (!ParseWant(env, callBackInfo, argv[i])) {
+            if (!ParseWant(env, *callBackInfo, argv[i])) {
                 callBackInfo->err = PARAM_TYPE_ERROR;
             }
         } else if ((i == ARGS_SIZE_ONE) && (valueType == napi_number)) {
@@ -5624,7 +5674,7 @@ napi_value QueryExtensionInfoByWant(napi_env env, napi_callback_info info)
         [](napi_env env, void *data) {
             AsyncExtensionInfoCallbackInfo *info = (AsyncExtensionInfoCallbackInfo *)data;
             if (!info->err) {
-                info->ret = InnerQueryExtensionInfo(env, info);
+                info->ret = InnerQueryExtensionInfo(env, *info);
             }
         },
         [](napi_env env, napi_status status, void *data) {
@@ -5635,11 +5685,11 @@ napi_value QueryExtensionInfoByWant(napi_env env, napi_callback_info info)
                 napi_create_string_utf8(env, "type mismatch", NAPI_AUTO_LENGTH, &result[1]);
             } else {
                 if (info->ret) {
-                    napi_create_uint32(env, info->ret, &result[0]);
+                    napi_create_uint32(env, 0, &result[0]);
                     napi_create_array_with_length(env, info->extensionInfos.size(), &result[1]);
                     ConvertExtensionInfos(env, result[1], info->extensionInfos);
                 } else {
-                    napi_create_uint32(env, info->ret, &result[0]);
+                    napi_create_uint32(env, 1, &result[0]);
                     napi_create_string_utf8(env, "QueryExtensionInfoByWant failed", NAPI_AUTO_LENGTH, &result[1]);
                 }
             }
