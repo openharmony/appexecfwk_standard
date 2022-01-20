@@ -317,14 +317,6 @@ void to_json(nlohmann::json &jsonObject, const UsedScene &usedScene)
     };
 }
 
-void to_json(nlohmann::json &jsonObject, const RequestPermissionUsedScene &usedScene)
-{
-    jsonObject = nlohmann::json {
-        {Profile::REQUESTPERMISSION_ABILITIES, usedScene.abilities},
-        {Profile::REQUESTPERMISSION_WHEN, usedScene.when}
-    };
-}
-
 void to_json(nlohmann::json &jsonObject, const ReqPermission &reqPermission)
 {
     jsonObject = nlohmann::json {
@@ -344,16 +336,6 @@ void to_json(nlohmann::json &jsonObject, const DefPermission &defPermission)
         {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_DEF_PERMISSIONS_LABEL_ID, defPermission.labelId},
         {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_DEF_PERMISSIONS_DESCRIPTION, defPermission.description},
         {ProfileReader::BUNDLE_MODULE_PROFILE_KEY_DEF_PERMISSIONS_DESCRIPTION_ID, defPermission.descriptionId}
-    };
-}
-
-void to_json(nlohmann::json &jsonObject, const RequestPermission &requestPermission)
-{
-    jsonObject = nlohmann::json {
-        {Profile::REQUESTPERMISSION_NAME, requestPermission.name},
-        {Profile::REQUESTPERMISSION_REASON, requestPermission.reason},
-        {Profile::REQUESTPERMISSION_REASON_ID, requestPermission.reasonId},
-        {Profile::REQUESTPERMISSION_USEDSCENE, requestPermission.usedScene}
     };
 }
 
@@ -1024,72 +1006,6 @@ void from_json(const nlohmann::json &jsonObject, InstallMark &installMark)
         false,
         ProfileReader::parseResult,
         ArrayType::NOT_ARRAY);
-}
-
-void from_json(const nlohmann::json &jsonObject, RequestPermissionUsedScene &usedScene)
-{
-    const auto &jsonObjectEnd = jsonObject.end();
-    int32_t parseResult = ERR_OK;
-    GetValueIfFindKey<std::vector<std::string>>(jsonObject,
-        jsonObjectEnd,
-        Profile::REQUESTPERMISSION_ABILITIES,
-        usedScene.abilities,
-        JsonType::ARRAY,
-        false,
-        parseResult,
-        ArrayType::STRING);
-    GetValueIfFindKey<std::string>(jsonObject,
-        jsonObjectEnd,
-        Profile::REQUESTPERMISSION_WHEN,
-        usedScene.when,
-        JsonType::STRING,
-        false,
-        parseResult,
-        ArrayType::NOT_ARRAY);
-    if (parseResult != ERR_OK) {
-        APP_LOGE("read RequestPermissionUsedScene from database error, error code : %{public}d", parseResult);
-    }
-}
-
-void from_json(const nlohmann::json &jsonObject, RequestPermission &requestPermission)
-{
-    const auto &jsonObjectEnd = jsonObject.end();
-    int32_t parseResult = ERR_OK;
-    GetValueIfFindKey<std::string>(jsonObject,
-        jsonObjectEnd,
-        Profile::REQUESTPERMISSION_NAME,
-        requestPermission.name,
-        JsonType::STRING,
-        false,
-        parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<std::string>(jsonObject,
-        jsonObjectEnd,
-        Profile::REQUESTPERMISSION_REASON,
-        requestPermission.reason,
-        JsonType::STRING,
-        false,
-        parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<int32_t>(jsonObject,
-        jsonObjectEnd,
-        Profile::REQUESTPERMISSION_REASON_ID,
-        requestPermission.reasonId,
-        JsonType::NUMBER,
-        false,
-        parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<RequestPermissionUsedScene>(jsonObject,
-        jsonObjectEnd,
-        Profile::REQUESTPERMISSION_USEDSCENE,
-        requestPermission.usedScene,
-        JsonType::OBJECT,
-        false,
-        parseResult,
-        ArrayType::NOT_ARRAY);
-    if (parseResult != ERR_OK) {
-        APP_LOGE("read RequestPermission from database error, error code : %{public}d", parseResult);
-    }
 }
 
 void from_json(const nlohmann::json &jsonObject, DefinePermission &definePermission)
@@ -1920,14 +1836,18 @@ void InnerBundleInfo::GetBundleInfo(int32_t flags, BundleInfo &bundleInfo, int32
             bundleInfo.entryModuleName = info.second.moduleName;
         }
     }
-    if (!bundleInfo.reqPermissions.empty()) {
-        RemoveDuplicateName(bundleInfo.reqPermissions);
-    }
-    if (!bundleInfo.defPermissions.empty()) {
-        RemoveDuplicateName(bundleInfo.defPermissions);
-    }
-    if (!BundlePermissionMgr::GetRequestPermissionStates(bundleInfo)) {
-        APP_LOGE("get request permission state failed");
+    if ((static_cast<uint32_t>(flags) & GET_BUNDLE_WITH_REQUESTED_PERMISSION)
+        == GET_BUNDLE_WITH_REQUESTED_PERMISSION) {
+        if (!bundleInfo.reqPermissions.empty()) {
+            RemoveDuplicateName(bundleInfo.reqPermissions);
+        }
+        if (!bundleInfo.defPermissions.empty()) {
+            RemoveDuplicateName(bundleInfo.defPermissions);
+        }
+        if (!BundlePermissionMgr::GetRequestPermissionStates(bundleInfo)) {
+            APP_LOGE("get request permission state failed");
+        }
+        bundleInfo.reqPermissionDetails = GetAllRequestPermissions();
     }
     GetBundleWithAbilities(flags, bundleInfo, userId);
     GetBundeleWithExtension(flags, bundleInfo, userId);
