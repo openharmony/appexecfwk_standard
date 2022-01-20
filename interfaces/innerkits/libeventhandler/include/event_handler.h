@@ -32,6 +32,7 @@ class ThreadLocalData;
 
 class EventHandler : public std::enable_shared_from_this<EventHandler> {
 public:
+    using CallbackTimeout = std::function<void()>;
     using Callback = InnerEvent::Callback;
     using Priority = EventQueue::Priority;
 
@@ -394,6 +395,26 @@ public:
         Priority priority = Priority::LOW)
     {
         return SendEvent(InnerEvent::Get(callback, name), delayTime, priority);
+    }
+
+    /**
+     * Set delivery time out callback.
+     *
+     * @param callback Delivery Time out callback.
+     */
+    void SetDeliveryTimeoutCallback(const Callback &callback)
+    {
+        deliveryTimeoutCallback_ = callback;
+    }
+
+    /**
+     * Set distribute time out callback.
+     *
+     * @param callback Distribute Time out callback.
+     */
+    void SetDistributeTimeoutCallback(const Callback &callback)
+    {
+        distributeTimeoutCallback_ = callback;
     }
 
     /**
@@ -844,6 +865,50 @@ public:
     void DistributeEvent(const InnerEvent::Pointer &event);
 
     /**
+     * Set the distribution standard expiration time.
+     *
+     * @param deliveryTimeout the distribution standard expiration time.
+     */
+    void SetDeliveryTimeout(int64_t deliveryTimeout);
+
+    /**
+     * Get the distribution standard expiration time.
+     *
+     * @return the distribution standard expiration time.
+     */
+    int64_t GetDeliveryTimeout() const;
+
+    /**
+     * Set the execution standard timeout period.
+     *
+     * @param distributeTimeout the distribution standard expiration time.
+     */
+    void SetDistributeTimeout(int64_t distributeTimeout);
+
+    /**
+     * Get the execution standard timeout period.
+     *
+     * @return the distribution standard expiration time.
+     */
+    int64_t GetDistributeTimeout() const;
+
+    /**
+     * Distribute time out action.
+     *
+     * @param event The event should be distribute.
+     * @param nowStart Dotting before distribution.
+     */
+    void DistributeTimeAction(const InnerEvent::Pointer &event, InnerEvent::TimePoint nowStart);
+
+    /**
+     * Delivery time out action.
+     *
+     * @param event The event should be distribute.
+     * @param nowStart Dotting before distribution.
+     */
+    void DeliveryTimeAction(const InnerEvent::Pointer &event, InnerEvent::TimePoint nowStart);
+
+    /**
      * Print out the internal information about an object in the specified format,
      * helping you diagnose internal errors of the object.
      *
@@ -890,7 +955,11 @@ protected:
     virtual void ProcessEvent(const InnerEvent::Pointer &event);
 
 private:
+    int64_t deliveryTimeout_ = 0;
+    int64_t distributeTimeout_ = 0;
     std::shared_ptr<EventRunner> eventRunner_;
+    CallbackTimeout deliveryTimeoutCallback_;
+    CallbackTimeout distributeTimeoutCallback_;
 
     static ThreadLocalData<std::weak_ptr<EventHandler>> currentEventHandler;
 };
