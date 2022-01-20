@@ -145,7 +145,7 @@ struct ApplicationInfo : public Parcelable {
     bool distributedNotificationEnabled = false;
     std::string entityType;
     bool keepAlive = false;
-    bool clearUserData = true;
+    bool userDataClearable = true;
 
     bool ReadFromParcel(Parcel &parcel);
     bool ReadMetaDataFromParcel(Parcel &parcel);
