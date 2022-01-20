@@ -211,6 +211,7 @@ bool BundleDataMgr::AddNewModuleInfo(
         oldInfo.UpdateVersionInfo(newInfo);
         oldInfo.updateCommonHapInfo(newInfo);
         oldInfo.AddModuleInfo(newInfo);
+        oldInfo.SetIsPreInstallApp(newInfo.IsPreInstallApp());
         oldInfo.SetBundleStatus(InnerBundleInfo::BundleStatus::ENABLED);
         if (dataStorage_->DeleteStorageBundleInfo(Constants::CURRENT_DEVICE_ID, oldInfo)) {
             if (dataStorage_->SaveStorageBundleInfo(Constants::CURRENT_DEVICE_ID, oldInfo)) {
@@ -286,7 +287,6 @@ bool BundleDataMgr::UpdateInnerBundleInfo(
         oldInfo.UpdateVersionInfo(newInfo);
         oldInfo.updateCommonHapInfo(newInfo);
         oldInfo.UpdateModuleInfo(newInfo);
-        oldInfo.SetRemovable(newInfo.IsRemovable());
         oldInfo.SetAppType(newInfo.GetAppType());
         oldInfo.SetAppFeature(newInfo.GetAppFeature());
         oldInfo.SetIsPreInstallApp(newInfo.IsPreInstallApp());

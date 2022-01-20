@@ -215,6 +215,7 @@ struct AbilityInfo : public Parcelable {
     std::string srcEntrance;
     std::vector<Metadata> metadata;
     bool isStageBasedModel = false;
+    bool continuable = false;
 
     bool ReadFromParcel(Parcel &parcel);
     virtual bool Marshalling(Parcel &parcel) const override;

@@ -26,7 +26,6 @@ namespace OHOS {
 namespace AppExecFwk {
 namespace Profile {
 thread_local int32_t parseResult;
-thread_local bool g_hasConfigureRemovable = false;
 
 const std::set<std::string> MODULE_TYPE_SET = {
     "entry",
@@ -141,6 +140,7 @@ struct Ability {
     std::vector<std::string> permissions;
     std::vector<Metadata> metadata;
     bool visible = false;
+    bool continuable = false;
     std::vector<Skill> skills;
     std::vector<std::string> backgroundModes;
 };
@@ -340,6 +340,14 @@ void from_json(const nlohmann::json &jsonObject, Ability &ability)
         jsonObjectEnd,
         VISIBLE,
         ability.visible,
+        JsonType::BOOLEAN,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<bool>(jsonObject,
+        jsonObjectEnd,
+        ABILITY_CONTINUABLE,
+        ability.continuable,
         JsonType::BOOLEAN,
         false,
         parseResult,
@@ -1069,12 +1077,13 @@ bool ToApplicationInfo(const Profile::App &app, ApplicationInfo &applicationInfo
 
     if (applicationInfo.isSystemApp && isPreInstallApp) {
         applicationInfo.keepAlive = app.keepAlive;
-        if (app.removable.first) {
-            Profile::g_hasConfigureRemovable = true;
-            applicationInfo.removable = app.removable.second;
-        }
         applicationInfo.singleUser = app.singleton;
-        applicationInfo.clearUserData = app.userDataClearable;
+        applicationInfo.userDataClearable = app.userDataClearable;
+        if (app.removable.first) {
+            applicationInfo.removable = app.removable.second;
+        } else {
+            applicationInfo.removable = false;
+        }
     }
     // device adapt
     std::string deviceType = GetDeviceType();
@@ -1090,15 +1099,14 @@ bool ToApplicationInfo(const Profile::App &app, ApplicationInfo &applicationInfo
             if (deviceConfig.keepAlive.first) {
                 applicationInfo.keepAlive = deviceConfig.keepAlive.second;
             }
-            if (deviceConfig.removable.first) {
-                Profile::g_hasConfigureRemovable = true;
-                applicationInfo.removable = deviceConfig.removable.second;
-            }
             if (deviceConfig.singleton.first) {
                 applicationInfo.singleUser = deviceConfig.singleton.second;
             }
             if (deviceConfig.userDataClearable.first) {
-                applicationInfo.clearUserData = deviceConfig.userDataClearable.second;
+                applicationInfo.userDataClearable = deviceConfig.userDataClearable.second;
+            }
+            if (deviceConfig.removable.first) {
+                applicationInfo.removable = deviceConfig.removable.second;
             }
         }
     }
@@ -1153,6 +1161,7 @@ bool ToAbilityInfo(const Profile::ModuleJson &moduleJson, const Profile::Ability
     abilityInfo.labelId = ability.labelId;
     abilityInfo.permissions = ability.permissions;
     abilityInfo.visible = ability.visible;
+    abilityInfo.continuable = ability.continuable;
     abilityInfo.backgroundModes = GetBackgroundModes(ability.backgroundModes);
     GetMetadata(abilityInfo.metadata, ability.metadata);
     abilityInfo.package = moduleJson.module.name;
@@ -1291,15 +1300,11 @@ bool ToInnerBundleInfo(const Profile::ModuleJson &moduleJson, InnerBundleInfo &i
     applicationInfo.isSystemApp = innerBundleInfo.GetAppType() == Constants::AppType::SYSTEM_APP;
     ToApplicationInfo(moduleJson.app, applicationInfo, innerBundleInfo.IsPreInstallApp());
 
-    innerBundleInfo.SetHasConfigureRemovable(Profile::g_hasConfigureRemovable);
-    Profile::g_hasConfigureRemovable = false;
-
     InnerModuleInfo innerModuleInfo;
     ToInnerModuleInfo(moduleJson, innerModuleInfo, applicationInfo.isSystemApp, innerBundleInfo.IsPreInstallApp());
 
     BundleInfo bundleInfo;
     ToBundleInfo(applicationInfo, innerModuleInfo, bundleInfo);
-    bundleInfo.applicationInfo.removable = applicationInfo.removable;
 
     // handle abilities
     bool findEntry = false;
@@ -1380,7 +1385,6 @@ ErrCode ModuleProfile::TransformTo(const std::ostringstream &source, InnerBundle
         int32_t ret = Profile::parseResult;
         // need recover parse result to ERR_OK
         Profile::parseResult = ERR_OK;
-        Profile::g_hasConfigureRemovable = false;
         return ret;
     }
     if (!ToInnerBundleInfo(moduleJson, innerBundleInfo)) {

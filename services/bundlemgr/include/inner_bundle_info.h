@@ -498,7 +498,8 @@ public:
         baseApplicationInfo_.entityType = applicationInfo.entityType;
         baseApplicationInfo_.keepAlive = applicationInfo.keepAlive;
         baseApplicationInfo_.singleUser = applicationInfo.singleUser;
-        baseApplicationInfo_.clearUserData = applicationInfo.clearUserData;
+        baseApplicationInfo_.userDataClearable = applicationInfo.userDataClearable;
+        baseApplicationInfo_.removable = applicationInfo.removable;
     }
     /**
      * @brief Get baseApplicationInfo.
@@ -1276,15 +1277,6 @@ public:
         return  extensionSkillInfos_;
     }
     /**
-     * @brief Set removable to indicate the bundle is removable or not.
-     * @param removable Indicates the removable to set.
-     */
-    void SetRemovable(bool removable)
-    {
-        baseApplicationInfo_.removable = removable;
-        baseBundleInfo_.applicationInfo.removable = removable;
-    }
-    /**
      * @brief Get the bundle is whether removable.
      * @return Return whether the bundle is removable.
      */
@@ -1308,23 +1300,6 @@ public:
     {
         return isPreInstallApp_;
     }
-    /**
-     * @brief Set hasConfigureRemovable to indicate the bundle has configure removable or not.
-     * @param hasConfigureRemovable Indicates the hasConfigureRemovable to set.
-     */
-    void SetHasConfigureRemovable(bool hasConfigureRemovable)
-    {
-        hasConfigureRemovable_ = hasConfigureRemovable;
-    }
-    /**
-     * @brief Get the bundle is whether has configure removable.
-     * @return Return whether the bundle has configure removable.
-     */
-    bool HasConfigureRemovable() const
-    {
-        return hasConfigureRemovable_;
-    }
-
     /**
      * @brief Get whether the bundle is a system app.
      * @return Return whether the bundle is a system app.
@@ -1477,7 +1452,6 @@ private:
     std::string currentPackage_;
     std::string mainAbilityName_;
     std::string newBundleName_;
-    bool hasConfigureRemovable_ = false;
     // Auxiliary property, which is used when the application
     // has been installed when the user is created.
     bool onlyCreateBundleUser_ = false;
