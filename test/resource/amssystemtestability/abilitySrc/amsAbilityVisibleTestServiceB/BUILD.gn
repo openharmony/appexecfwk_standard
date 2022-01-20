@@ -23,6 +23,7 @@ config("amsAbilityVisibleTestServiceBConfig") {
     "//foundation/aafwk/standard/interfaces/innerkits/ability_manager/include",
     "//foundation/appexecfwk/standard/interfaces/innerkits/libeventhandler/include",
     "//foundation/appexecfwk/standard/services/bundlemgr/include",
+    "//foundation/aafwk/standard/frameworks/kits/appkit/native/ability_runtime",
     "//foundation/aafwk/standard/services/abilitymgr/include",
     "//foundation/appexecfwk/standard/common/log/include",
     "//foundation/distributedschedule/dmsfwk/services/dtbschedmgr/include",
@@ -46,6 +47,7 @@ ohos_shared_library("amsAbilityVisibleTestServiceB") {
   deps = [
     "//base/notification/ans_standard/frameworks/wantagent:wantagent_innerkits",
     "//foundation/aafwk/standard/frameworks/kits/ability/native:abilitykit_native",
+    "//foundation/aafwk/standard/frameworks/kits/appkit:app_context",
     "//foundation/aafwk/standard/frameworks/kits/appkit:appkit_native",
     "//foundation/aafwk/standard/interfaces/innerkits/ability_manager:ability_manager",
     "//foundation/aafwk/standard/interfaces/innerkits/app_manager:app_manager",
