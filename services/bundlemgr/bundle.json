@@ -42,6 +42,8 @@
         "build": {
             "sub_component": [
                 "//foundation/appexecfwk/standard/services/bundlemgr:bms_target",
+                "//foundation/appexecfwk/standard/services/dbms:dbms_target",
+                "//foundation/appexecfwk/standard/services/dbms/sa_profile:distributedbms",
                 "//foundation/appexecfwk/standard/kits/appkit/napi/bundlemgr:bundle"
             ],
             "inner_kits": [

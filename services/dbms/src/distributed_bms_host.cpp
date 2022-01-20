@@ -15,26 +15,26 @@
 
 #include "distributed_bms_host.h"
 
+#include "app_log_wrapper.h"
 #include "appexecfwk_errors.h"
 #include "bundle_constants.h"
-#include "hilog_wrapper.h"
 #include "remote_ability_info.h"
 
 namespace OHOS {
 namespace AppExecFwk {
 DistributedBmsHost::DistributedBmsHost()
 {
-    HILOG_INFO("DistributedBmsHost instance is created");
+    APP_LOGI("DistributedBmsHost instance is created");
 }
 
 DistributedBmsHost::~DistributedBmsHost()
 {
-    HILOG_INFO("DistributedBmsHost instance is destroyed");
+    APP_LOGI("DistributedBmsHost instance is destroyed");
 }
 
 int DistributedBmsHost::OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option)
 {
-    HILOG_INFO("DistributedBmsHost receives message from client, code = %{public}d, flags = %{public}d", code,
+    APP_LOGI("DistributedBmsHost receives message from client, code = %{public}d, flags = %{public}d", code,
         option.GetFlags());
     switch (code) {
         case static_cast<uint32_t>(IDistributedBms::Message::GET_REMOTE_ABILITY_INFO): {
@@ -58,10 +58,10 @@ int DistributedBmsHost::OnRemoteRequest(uint32_t code, MessageParcel &data, Mess
             break;
         }
         default:
-            HILOG_ERROR("DistributedBmsHost receives unknown code, code = %{public}d", code);
+            APP_LOGW("DistributedBmsHost receives unknown code, code = %{public}d", code);
             return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
     }
-    HILOG_INFO("DistributedBmsHost finish to process message from client");
+    APP_LOGI("DistributedBmsHost finish to process message from client");
     return NO_ERROR;
 }
 }  // namespace AppExecFwk

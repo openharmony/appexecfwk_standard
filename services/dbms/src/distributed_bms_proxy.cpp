@@ -15,19 +15,19 @@
 
 #include "distributed_bms_proxy.h"
 
-#include "hilog_wrapper.h"
+#include "app_log_wrapper.h"
 #include "parcel_macro.h"
 
 namespace OHOS {
 namespace AppExecFwk {
 DistributedBmsProxy::DistributedBmsProxy(const sptr<IRemoteObject> &object) : IRemoteProxy<IDistributedBms>(object)
 {
-    HILOG_INFO("DistributedBmsProxy instance is created");
+    APP_LOGI("DistributedBmsProxy instance is created");
 }
 
 DistributedBmsProxy::~DistributedBmsProxy()
 {
-    HILOG_INFO("DistributedBmsProxy instance is destroyed");
+    APP_LOGI("DistributedBmsProxy instance is destroyed");
 }
 
 bool DistributedBmsProxy::GetRemoteAbilityInfo(
@@ -37,7 +37,7 @@ bool DistributedBmsProxy::GetRemoteAbilityInfo(
     MessageParcel data;
     MessageParcel reply;
     if (!data.WriteParcelable(&elementName)) {
-        HILOG_ERROR("DistributedBmsProxy GetRemoteAbilityInfo write elementName error");
+        APP_LOGE("DistributedBmsProxy GetRemoteAbilityInfo write elementName error");
         return false;
     }
     if (!SendRequest(IDistributedBms::Message::GET_REMOTE_ABILITY_INFO, data, reply)) {
@@ -57,12 +57,12 @@ bool DistributedBmsProxy::SendRequest(IDistributedBms::Message code, MessageParc
     sptr<IRemoteObject> remote = Remote();
     MessageOption option(MessageOption::TF_SYNC);
     if (remote == nullptr) {
-        HILOG_ERROR("fail to send %{public}d cmd to service due to remote object is null", code);
+        APP_LOGE("fail to send %{public}d cmd to service due to remote object is null", code);
         return false;
     }
     int32_t result = remote->SendRequest(static_cast<uint32_t>(code), data, reply, option);
     if (result != OHOS::NO_ERROR) {
-        HILOG_ERROR("fail to send %{public}d cmd to service due to transact error", code);
+        APP_LOGE("fail to send %{public}d cmd to service due to transact error", code);
         return false;
     }
     return true;

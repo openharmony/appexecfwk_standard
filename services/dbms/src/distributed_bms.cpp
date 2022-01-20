@@ -18,11 +18,11 @@
 #include <fstream>
 #include <vector>
 
+#include "app_log_wrapper.h"
 #include "bundle_mgr_interface.h"
-#include "hilog_wrapper.h"
-#include "if_system_ability_manager.h"
+#include "bundle_mgr_proxy.h"
 #include "iservice_registry.h"
-#include "sys_mgr_client.h"
+#include "if_system_ability_manager.h"
 #include "system_ability_definition.h"
 
 namespace OHOS {
@@ -47,92 +47,87 @@ REGISTER_SYSTEM_ABILITY_BY_ID(DistributedBms, DISTRIBUTED_BUNDLE_MGR_SERVICE_SYS
 
 DistributedBms::DistributedBms(int32_t saId, bool runOnCreate) : SystemAbility(saId, runOnCreate)
 {
-    HILOG_INFO("DistributedBms :%{public}s call", __func__);
+    APP_LOGI("DistributedBms :%{public}s call", __func__);
 }
 
 DistributedBms::~DistributedBms()
 {
-    HILOG_INFO("DistributedBms: DBundleMgrService");
+    APP_LOGI("DistributedBms: DBundleMgrService");
 }
 
 void DistributedBms::OnStart()
 {
-    HILOG_INFO("DistributedBms: OnStart");
+    APP_LOGI("DistributedBms: OnStart");
     bool res = Publish(this);
     if (!res) {
-        HILOG_ERROR("DistributedBms: OnStart failed");
+        APP_LOGE("DistributedBms: OnStart failed");
     }
-    HILOG_INFO("DistributedBms: OnStart end");
+    APP_LOGI("DistributedBms: OnStart end");
 }
 
 void DistributedBms::OnStop()
 {
-    HILOG_INFO("DistributedBms: OnStop");
+    APP_LOGI("DistributedBms: OnStop");
 }
 
 static OHOS::sptr<OHOS::AppExecFwk::IBundleMgr> GetBundleMgr()
 {
-    HILOG_DEBUG("DistributedBms::GetBundleManager begin");
-    auto bundleObj =
-        OHOS::DelayedSingleton<AppExecFwk::SysMrgClient>::GetInstance()->GetSystemAbility(
-            BUNDLE_MGR_SERVICE_SYS_ABILITY_ID);
-    if (bundleObj == nullptr) {
-        HILOG_ERROR("failed to get bundle manager service");
-        return nullptr;
-    }
-    sptr<AppExecFwk::IBundleMgr> bms = iface_cast<AppExecFwk::IBundleMgr>(bundleObj);
-    HILOG_DEBUG("DistributedBms::GetBundleManager end");
-    return bms;
+    APP_LOGI("DistributedBms::GetBundleManager begin");
+    OHOS::sptr<OHOS::ISystemAbilityManager> systemAbilityManager =
+        OHOS::SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
+    OHOS::sptr<OHOS::IRemoteObject> remoteObject =
+        systemAbilityManager->GetSystemAbility(OHOS::BUNDLE_MGR_SERVICE_SYS_ABILITY_ID);
+    return OHOS::iface_cast<IBundleMgr>(remoteObject);
 }
 
 bool DistributedBms::GetRemoteAbilityInfo(
     const OHOS::AppExecFwk::ElementName &elementName, RemoteAbilityInfo &remoteAbilityInfo)
 {
-    HILOG_INFO("DistributedBms GetRemoteAbilityInfo bundleName:%{public}s , abilityName:%{public}s",
+    APP_LOGI("DistributedBms GetRemoteAbilityInfo bundleName:%{public}s , abilityName:%{public}s",
         elementName.GetBundleName().c_str(), elementName.GetAbilityName().c_str());
     auto iBundleMgr = GetBundleMgr();
     if (!iBundleMgr) {
-        HILOG_ERROR("DistributedBms GetBundleMgr failed");
+        APP_LOGE("DistributedBms GetBundleMgr failed");
         return false;
     }
     BundleInfo bundleInfo;
     if (!iBundleMgr->GetBundleInfo(elementName.GetBundleName(), 1, bundleInfo, 0)) {
-        HILOG_ERROR("DistributedBms GetBundleInfo failed");
+        APP_LOGE("DistributedBms GetBundleInfo failed");
         return false;
     }
     std::shared_ptr<Global::Resource::ResourceManager> resourceManager = nullptr;
     resourceManager = GetResourceManager(bundleInfo);
     if (resourceManager == nullptr) {
-        HILOG_ERROR("DistributedBms InitResourceManager failed");
+        APP_LOGE("DistributedBms InitResourceManager failed");
         return false;
     }
     AbilityInfo abilityInfo;
     OHOS::AAFwk::Want want;
     want.SetElement(elementName);
     if (!iBundleMgr->QueryAbilityInfo(want, abilityInfo)) {
-        HILOG_ERROR("DistributedBms QueryAbilityInfo failed");
+        APP_LOGE("DistributedBms QueryAbilityInfo failed");
         return false;
     }
     remoteAbilityInfo.elementName = elementName;
     OHOS::Global::Resource::RState errval =
         resourceManager->GetStringById(static_cast<uint32_t>(abilityInfo.labelId), remoteAbilityInfo.label);
     if (errval != OHOS::Global::Resource::RState::SUCCESS) {
-        HILOG_ERROR("DistributedBms GetStringById failed");
+        APP_LOGE("DistributedBms GetStringById failed");
         return false;
     }
     std::string iconPath;
     OHOS::Global::Resource::RState iconPathErrval =
         resourceManager->GetMediaById(static_cast<uint32_t>(abilityInfo.iconId), iconPath);
     if (iconPathErrval != OHOS::Global::Resource::RState::SUCCESS) {
-        HILOG_ERROR("DistributedBms GetStringById  iconPath failed");
+        APP_LOGE("DistributedBms GetStringById  iconPath failed");
         return false;
     }
     if (!GetMediaBase64(iconPath, remoteAbilityInfo.icon)) {
-        HILOG_ERROR("DistributedBms GetMediaBase64 failed");
+        APP_LOGE("DistributedBms GetMediaBase64 failed");
         return false;
     }
-    HILOG_DEBUG("DistributedBms GetRemoteAbilityInfo label:%{public}s", remoteAbilityInfo.label.c_str());
-    HILOG_DEBUG("DistributedBms GetRemoteAbilityInfo iconId:%{public}s", remoteAbilityInfo.icon.c_str());
+    APP_LOGD("DistributedBms GetRemoteAbilityInfo label:%{public}s", remoteAbilityInfo.label.c_str());
+    APP_LOGD("DistributedBms GetRemoteAbilityInfo iconId:%{public}s", remoteAbilityInfo.icon.c_str());
     return true;
 }
 
@@ -140,15 +135,15 @@ std::shared_ptr<Global::Resource::ResourceManager> DistributedBms::GetResourceMa
     const AppExecFwk::BundleInfo &bundleInfo)
 {
     std::shared_ptr<Global::Resource::ResourceManager> resourceManager(Global::Resource::CreateResourceManager());
-    HILOG_DEBUG(
+    APP_LOGD(
         "DistributedBms::InitResourceManager moduleResPaths count: %{public}zu", bundleInfo.moduleResPaths.size());
     for (auto moduleResPath : bundleInfo.moduleResPaths) {
         if (!moduleResPath.empty()) {
-            HILOG_ERROR("DistributedBms::InitResourceManager length: %{public}zu, moduleResPath: %{public}s",
+            APP_LOGE("DistributedBms::InitResourceManager length: %{public}zu, moduleResPath: %{public}s",
                 moduleResPath.length(),
                 moduleResPath.c_str());
             if (!resourceManager->AddResource(moduleResPath.c_str())) {
-                HILOG_ERROR("DistributedBms::InitResourceManager AddResource failed");
+                APP_LOGE("DistributedBms::InitResourceManager AddResource failed");
             }
         }
     }
@@ -156,12 +151,12 @@ std::shared_ptr<Global::Resource::ResourceManager> DistributedBms::GetResourceMa
     std::unique_ptr<Global::Resource::ResConfig> resConfig(Global::Resource::CreateResConfig());
     resConfig->SetLocaleInfo("zh", "Hans", "CN");
     if (resConfig->GetLocaleInfo() != nullptr) {
-        HILOG_DEBUG("DistributedBms::InitResourceManager language: %{public}s, script: %{public}s, region: %{public}s,",
+        APP_LOGD("DistributedBms::InitResourceManager language: %{public}s, script: %{public}s, region: %{public}s,",
             resConfig->GetLocaleInfo()->getLanguage(),
             resConfig->GetLocaleInfo()->getScript(),
             resConfig->GetLocaleInfo()->getCountry());
     } else {
-        HILOG_ERROR("DistributedBms::InitResourceManager language: GetLocaleInfo is null.");
+        APP_LOGE("DistributedBms::InitResourceManager language: GetLocaleInfo is null.");
     }
     resourceManager->UpdateResConfig(*resConfig);
     return resourceManager;
