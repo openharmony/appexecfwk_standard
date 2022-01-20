@@ -17,10 +17,12 @@
 
 #include <stdio.h>
 
+#include "app_log_wrapper.h"
 #include "contrib/minizip/zip.h"
 #include "directory_ex.h"
-#include "hilog_wrapper.h"
 #include "zip_internal.h"
+
+using namespace OHOS::AppExecFwk;
 
 namespace OHOS {
 namespace AAFwk {
@@ -37,11 +39,11 @@ const std::string SEPARATOR = "/";
 
 bool AddFileContentToZip(zipFile zip_file, FilePath &file_path)
 {
-    HILOG_INFO("%{public}s called", __func__);
+    APP_LOGI("%{public}s called", __func__);
     int num_bytes;
     char buf[kZipBufSize];
     if (!FilePathCheckValid(file_path.Value())) {
-        HILOG_INFO(
+        APP_LOGI(
             "%{public}s called, filePath is invalid!!! file_path=%{public}s", __func__, file_path.Value().c_str());
         return false;
     }
@@ -52,7 +54,7 @@ bool AddFileContentToZip(zipFile zip_file, FilePath &file_path)
 
     FILE *fp = fopen(file_path.Value().c_str(), "rb");
     if (fp == nullptr) {
-        HILOG_INFO("%{public}s called, filePath to realPath failed! filePath:%{private}s ",
+        APP_LOGI("%{public}s called, filePath to realPath failed! filePath:%{private}s ",
             __func__,
             file_path.Value().c_str());
         return false;
@@ -62,7 +64,7 @@ bool AddFileContentToZip(zipFile zip_file, FilePath &file_path)
         num_bytes = fread(buf, 1, kZipBufSize, fp);
         if (num_bytes > 0) {
             if (zipWriteInFileInZip(zip_file, buf, num_bytes) != ZIP_OK) {
-                HILOG_INFO("%{public}s called, Could not write data to zip for path:%{public}s ",
+                APP_LOGI("%{public}s called, Could not write data to zip for path:%{public}s ",
                     __func__,
                     file_path.Value().c_str());
                 fclose(fp);
@@ -79,20 +81,20 @@ bool AddFileContentToZip(zipFile zip_file, FilePath &file_path)
 bool OpenNewFileEntry(
     zipFile zip_file, FilePath &path, bool is_directory, struct tm *last_modified, const OPTIONS &options)
 {
-    HILOG_INFO("%{public}s called", __func__);
+    APP_LOGI("%{public}s called", __func__);
     std::string strPath = path.Value();
     return ZipOpenNewFileInZip(zip_file, strPath, options, last_modified);
 }
 
 bool CloseNewFileEntry(zipFile zip_file)
 {
-    HILOG_INFO("%{public}s called", __func__);
+    APP_LOGI("%{public}s called", __func__);
     return zipCloseFileInZip(zip_file) == ZIP_OK;
 }
 
 bool AddFileEntryToZip(zipFile zip_file, FilePath &relativePath, FilePath &absolutePath, const OPTIONS &options)
 {
-    HILOG_INFO("%{public}s called", __func__);
+    APP_LOGI("%{public}s called", __func__);
 
     struct tm *lastModified = GetCurrentSystemTime();
     if (lastModified == nullptr) {
@@ -111,7 +113,7 @@ bool AddFileEntryToZip(zipFile zip_file, FilePath &relativePath, FilePath &absol
 
 bool AddDirectoryEntryToZip(zipFile zip_file, FilePath &path, struct tm *lastModified, const OPTIONS &options)
 {
-    HILOG_INFO("%{public}s called", __func__);
+    APP_LOGI("%{public}s called", __func__);
     return OpenNewFileEntry(zip_file, path, true, lastModified, options) && CloseNewFileEntry(zip_file);
 }
 
@@ -119,14 +121,14 @@ bool AddDirectoryEntryToZip(zipFile zip_file, FilePath &path, struct tm *lastMod
 
 std::unique_ptr<ZipWriter> ZipWriter::CreateWithFd(PlatformFile zipFilefd, const FilePath &rootDir)
 {
-    HILOG_INFO("%{public}s called", __func__);
+    APP_LOGI("%{public}s called", __func__);
     if (zipFilefd == kInvalidPlatformFile) {
         return nullptr;
     }
 
     zipFile zip_file = OpenFdForZipping(zipFilefd, APPEND_STATUS_CREATE);
     if (!zip_file) {
-        HILOG_INFO("%{public}s called, Couldn't create ZIP file for FD", __func__);
+        APP_LOGI("%{public}s called, Couldn't create ZIP file for FD", __func__);
         return nullptr;
     }
     return std::unique_ptr<ZipWriter>(new ZipWriter(zip_file, rootDir));
@@ -136,15 +138,15 @@ std::unique_ptr<ZipWriter> ZipWriter::CreateWithFd(PlatformFile zipFilefd, const
 std::unique_ptr<ZipWriter> ZipWriter::Create(const FilePath &zip_file_path, const FilePath &rootDir)
 {
     FilePath zipFilePath = zip_file_path;
-    HILOG_INFO("%{public}s called", __func__);
+    APP_LOGI("%{public}s called", __func__);
     if (zipFilePath.Value().empty()) {
-        HILOG_INFO("%{public}s called, Path is empty", __func__);
+        APP_LOGI("%{public}s called, Path is empty", __func__);
         return nullptr;
     }
 
     zipFile zip_file = OpenForZipping(zipFilePath.Value(), APPEND_STATUS_CREATE);
     if (!zip_file) {
-        HILOG_INFO("%{public}s called, Couldn't create ZIP file at path", __func__);
+        APP_LOGI("%{public}s called, Couldn't create ZIP file at path", __func__);
         return nullptr;
     }
     return std::unique_ptr<ZipWriter>(new (std::nothrow) ZipWriter(zip_file, rootDir));
@@ -160,7 +162,7 @@ ZipWriter::~ZipWriter()
 
 bool ZipWriter::WriteEntries(const std::vector<FilePath> &paths, const OPTIONS &options, CALLBACK callback)
 {
-    HILOG_INFO("%{public}s called", __func__);
+    APP_LOGI("%{public}s called", __func__);
     return AddEntries(paths, options, callback) && Close(options, callback);
 }
 
@@ -213,7 +215,7 @@ bool ZipWriter::FlushEntriesIfNeeded(bool force, const OPTIONS &options, CALLBAC
             if (FilePath::PathIsValid(absolutePath)) {
                 if (!AddFileEntryToZip(zipFile_, relativePath, absolutePath, options)) {
                     CALLING_CALL_BACK(callback, ERROR_CODE_ERRNO)
-                    HILOG_INFO("%{public}s called, Failed to write file", __func__);
+                    APP_LOGI("%{public}s called, Failed to write file", __func__);
                     return false;
                 }
             } else {
@@ -221,7 +223,7 @@ bool ZipWriter::FlushEntriesIfNeeded(bool force, const OPTIONS &options, CALLBAC
                 struct tm *last_modified = GetCurrentSystemTime();
                 if (!AddDirectoryEntryToZip(zipFile_, relativePath, last_modified, options)) {
                     CALLING_CALL_BACK(callback, ERROR_CODE_ERRNO)
-                    HILOG_INFO("%{public}s called, Failed to write directory", __func__);
+                    APP_LOGI("%{public}s called, Failed to write directory", __func__);
                     return false;
                 }
             }

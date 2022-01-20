@@ -12,6 +12,7 @@
 # limitations under the License.
 
 import("//build/test.gni")
+import("//foundation/appexecfwk/standard/appexecfwk.gni")
 
 module_output_path = "appexecfwk_standard/tools"
 
@@ -22,10 +23,6 @@ config("module_private_config") {
   if (target_cpu == "arm") {
     cflags += [ "-DBINDER_IPC_32BIT" ]
   }
-  defines = [
-    "APP_LOG_TAG = \"ZipUnitTest\"",
-    "LOG_DOMAIN = 0xD002201",
-  ]
 }
 
 ohos_unittest("zip_test") {
@@ -48,6 +45,7 @@ ohos_unittest("zip_test") {
   ]
 
   deps = [
+    "${common_path}:libappexecfwk_common",
     "//foundation/aafwk/standard/common/task_dispatcher:appkit_dispatcher_td",
     "//foundation/aafwk/standard/interfaces/innerkits/want:want",
     "//foundation/ace/napi:ace_napi",
