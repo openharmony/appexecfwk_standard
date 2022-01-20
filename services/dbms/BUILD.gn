@@ -43,6 +43,6 @@ ohos_shared_library("libdbms") {
     "utils_base:utils",
   ]
 
-  part_name = "bundle_framework"
+  part_name = "distributed_bundle_framework"
   subsystem_name = "appexecfwk"
 }
