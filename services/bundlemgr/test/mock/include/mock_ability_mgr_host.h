@@ -408,6 +408,12 @@ public:
         return 0;
     }
 
+    virtual int SetMissionLabel(const sptr<IRemoteObject> &token,
+        const std::string &lable) override
+    {
+        return 0;
+    }
+
     virtual int StartUser(int userId) override
     {
         return 0;
