@@ -18,11 +18,13 @@ ohos_shared_library("bundle") {
   include_dirs = [
     "//third_party/node/src",
     "//third_party/libuv/include",
-    "//foundation/aafwk/standard/services/common/include",
     "//foundation/appexecfwk/standard/services/dbms/include",
     "//utils/system/safwk/native/include",
   ]
-
+  defines = [
+    "APP_LOG_TAG = \"BundleMgrService\"",
+    "LOG_DOMAIN = 0xD001120",
+  ]
   sources = [
     "bundle_death_recipient.cpp",
     "bundle_mgr.cpp",

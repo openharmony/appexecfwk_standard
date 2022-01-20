@@ -23,7 +23,6 @@
 #include "napi/native_node_api.h"
 
 #include "clean_cache_callback_host.h"
-#include "hilog_wrapper.h"
 #include "nocopyable.h"
 
 class CleanCacheCallback : public OHOS::AppExecFwk::CleanCacheCallbackHost {

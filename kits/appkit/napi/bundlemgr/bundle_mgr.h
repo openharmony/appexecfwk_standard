@@ -24,7 +24,7 @@
 #include "bundle_mgr_interface.h"
 #include "cleancache_callback.h"
 #include "element_name.h"
-#include "hilog_wrapper.h"
+
 #include "ohos/aafwk/content/want.h"
 #include "remote_ability_info.h"
 
