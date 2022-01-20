@@ -17,6 +17,7 @@
 
 #include "json_util.h"
 #include "parcel_macro.h"
+#include "message_parcel.h"
 #include "string_ex.h"
 
 namespace OHOS {
@@ -63,208 +64,46 @@ const std::string BUNDLE_INFO_MODULE_RES_PATHS = "moduleResPaths";
 
 bool BundleInfo::ReadFromParcel(Parcel &parcel)
 {
-    name = Str16ToStr8(parcel.ReadString16());
-    label = Str16ToStr8(parcel.ReadString16());
-    description = Str16ToStr8(parcel.ReadString16());
-    vendor = Str16ToStr8(parcel.ReadString16());
-    versionName = Str16ToStr8(parcel.ReadString16());
-    mainEntry = Str16ToStr8(parcel.ReadString16());
-    cpuAbi = Str16ToStr8(parcel.ReadString16());
-    appId = Str16ToStr8(parcel.ReadString16());
-    entryModuleName = Str16ToStr8(parcel.ReadString16());
-    releaseType = Str16ToStr8(parcel.ReadString16());
-    jointUserId = Str16ToStr8(parcel.ReadString16());
-    seInfo = Str16ToStr8(parcel.ReadString16());
-    versionCode = parcel.ReadUint32();
-    minCompatibleVersionCode = parcel.ReadUint32();
-    minSdkVersion = parcel.ReadInt32();
-    maxSdkVersion = parcel.ReadInt32();
-    compatibleVersion = parcel.ReadInt32();
-    targetVersion = parcel.ReadInt32();
-    uid = parcel.ReadInt32();
-    gid = parcel.ReadInt32();
-    isKeepAlive = parcel.ReadBool();
-    isNativeApp = parcel.ReadBool();
-    isDifferentName = parcel.ReadBool();
-    singleUser = parcel.ReadBool();
-    installTime = parcel.ReadInt64();
-    updateTime = parcel.ReadInt64();
-    entryModuleName = Str16ToStr8(parcel.ReadString16());
-    entryInstallationFree = parcel.ReadBool();
-
-    int32_t reqPermissionsSize;
-    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, reqPermissionsSize);
-    for (int32_t i = 0; i < reqPermissionsSize; i++) {
-        reqPermissions.emplace_back(Str16ToStr8(parcel.ReadString16()));
-    }
-
-    if (!parcel.ReadInt32Vector(&reqPermissionStates)) {
-        APP_LOGE("fail to read Int32Vector type into parcel");
+    MessageParcel *messageParcel = reinterpret_cast<MessageParcel *>(&parcel);
+    if (!messageParcel) {
+        APP_LOGE("Type conversion failed");
         return false;
     }
-
-    int32_t defPermissionsSize;
-    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, defPermissionsSize);
-    for (int32_t i = 0; i < defPermissionsSize; i++) {
-        defPermissions.emplace_back(Str16ToStr8(parcel.ReadString16()));
-    }
-
-    int32_t hapModuleNamesSize;
-    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, hapModuleNamesSize);
-    for (int32_t i = 0; i < hapModuleNamesSize; i++) {
-        hapModuleNames.emplace_back(Str16ToStr8(parcel.ReadString16()));
-    }
-
-    int32_t moduleNamesSize;
-    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, moduleNamesSize);
-    for (int32_t i = 0; i < moduleNamesSize; i++) {
-        moduleNames.emplace_back(Str16ToStr8(parcel.ReadString16()));
-    }
-
-    int32_t modulePublicDirsSize;
-    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, modulePublicDirsSize);
-    for (int32_t i = 0; i < modulePublicDirsSize; i++) {
-        modulePublicDirs.emplace_back(Str16ToStr8(parcel.ReadString16()));
-    }
-
-    int32_t moduleDirsSize;
-    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, moduleDirsSize);
-    for (int32_t i = 0; i < moduleDirsSize; i++) {
-        moduleDirs.emplace_back(Str16ToStr8(parcel.ReadString16()));
-    }
-
-    int32_t moduleResPathsSize;
-    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, moduleResPathsSize);
-    for (int32_t i = 0; i < moduleResPathsSize; i++) {
-        moduleResPaths.emplace_back(Str16ToStr8(parcel.ReadString16()));
-    }
-
-    std::unique_ptr<ApplicationInfo> appInfo(parcel.ReadParcelable<ApplicationInfo>());
-    if (!appInfo) {
-        APP_LOGE("ReadParcelable<ApplicationInfo> failed");
+    uint32_t length = messageParcel->ReadUint32();
+    if (length == 0) {
+        APP_LOGE("Invalid data length");
         return false;
     }
-    applicationInfo = *appInfo;
-
-    int32_t abilityInfosSize = parcel.ReadInt32();
-    for (int32_t i = 0; i < abilityInfosSize; i++) {
-        std::unique_ptr<AbilityInfo> abilityInfo(parcel.ReadParcelable<AbilityInfo>());
-        if (!abilityInfo) {
-            APP_LOGE("ReadParcelable<AbilityInfo> failed");
-            return false;
-        }
-        abilityInfos.emplace_back(*abilityInfo);
+    const char *data = reinterpret_cast<const char *>(messageParcel->ReadRawData(length));
+    if (!data) {
+        APP_LOGE("Fail to read raw data, length = %{public}d", length);
+        return false;
     }
-
-    int32_t hapModuleInfosSize = parcel.ReadInt32();
-    APP_LOGE("HapModuleInfo size is %{public}d", hapModuleInfosSize);
-    for (int32_t i = 0; i < hapModuleInfosSize; i++) {
-        std::unique_ptr<HapModuleInfo> hapModuleInfo(parcel.ReadParcelable<HapModuleInfo>());
-        if (!hapModuleInfo) {
-            APP_LOGE("ReadParcelable<HapModuleInfo> failed");
-            return false;
-        }
-        hapModuleInfos.emplace_back(*hapModuleInfo);
+    nlohmann::json jsonObject = nlohmann::json::parse(data, nullptr, false);
+    if (jsonObject.is_discarded()) {
+        APP_LOGE("failed to parse BundleInfo");
+        return false;
     }
-
-    int32_t extensionInfoSize = parcel.ReadInt32();
-    for (int32_t i = 0; i < extensionInfoSize; ++i) {
-        std::unique_ptr<ExtensionAbilityInfo> info(parcel.ReadParcelable<ExtensionAbilityInfo>());
-        if (!info) {
-            APP_LOGE("ReadParcelable<ExtensionAbilityInfo> failed");
-            return false;
-        }
-        extensionInfos.emplace_back(*info);
-    }
+    *this = jsonObject.get<BundleInfo>();
     return true;
 }
 
 bool BundleInfo::Marshalling(Parcel &parcel) const
 {
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(name));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(label));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(description));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(vendor));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(versionName));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(mainEntry));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(cpuAbi));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(appId));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(entryModuleName));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(releaseType));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(jointUserId));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(seInfo));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Uint32, parcel, versionCode);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Uint32, parcel, minCompatibleVersionCode);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, minSdkVersion);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, maxSdkVersion);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, compatibleVersion);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, targetVersion);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, uid);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, gid);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, isKeepAlive);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, isNativeApp);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, isDifferentName);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, singleUser);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int64, parcel, installTime);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int64, parcel, updateTime);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(entryModuleName));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, entryInstallationFree);
-
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, reqPermissions.size());
-    for (auto &reqPermission : reqPermissions) {
-        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(reqPermission));
-    }
-
-    if (!parcel.WriteInt32Vector(reqPermissionStates)) {
-        APP_LOGE("fail to write Int32Vector type into parcel");
+    MessageParcel *messageParcel = reinterpret_cast<MessageParcel *>(&parcel);
+    if (!messageParcel) {
+        APP_LOGE("Type conversion failed");
         return false;
     }
-
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, defPermissions.size());
-    for (auto &defPermission : defPermissions) {
-        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(defPermission));
+    nlohmann::json json = *this;
+    std::string str = json.dump();
+    if (!messageParcel->WriteUint32(str.size() + 1)) {
+        APP_LOGE("Failed to write data size");
+        return false;
     }
-
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, hapModuleNames.size());
-    for (auto &hapModuleName : hapModuleNames) {
-        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(hapModuleName));
-    }
-
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, moduleNames.size());
-    for (auto &moduleName : moduleNames) {
-        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(moduleName));
-    }
-
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, modulePublicDirs.size());
-    for (auto &modulePublicDir : modulePublicDirs) {
-        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(modulePublicDir));
-    }
-
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, moduleDirs.size());
-    for (auto &moduleDir : moduleDirs) {
-        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(moduleDir));
-    }
-
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, moduleResPaths.size());
-    for (auto &moduleResPath : moduleResPaths) {
-        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(moduleResPath));
-    }
-
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Parcelable, parcel, &applicationInfo);
-
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, abilityInfos.size());
-    for (auto &abilityInfo : abilityInfos) {
-        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Parcelable, parcel, &abilityInfo);
-    }
-
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, hapModuleInfos.size());
-    for (auto &hapModuleInfo : hapModuleInfos) {
-        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Parcelable, parcel, &hapModuleInfo);
-    }
-
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, extensionInfos.size());
-    for (auto &info : extensionInfos) {
-        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Parcelable, parcel, &info);
+    if (!messageParcel->WriteRawData(str.c_str(), str.size() + 1)) {
+        APP_LOGE("Failed to write data");
+        return false;
     }
     return true;
 }
