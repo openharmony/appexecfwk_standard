@@ -18,9 +18,11 @@
 #include <stddef.h>
 #include <unistd.h>
 
-#include "hilog_wrapper.h"
+#include "app_log_wrapper.h"
 #include "securec.h"
 #include "zip_utils.h"
+
+using namespace OHOS::AppExecFwk;
 
 namespace OHOS {
 namespace AAFwk {
@@ -113,7 +115,7 @@ void *OpenZipBuffer(void *opaque, const char *, int mode)
 {
     uint32_t modeInner = static_cast<uint32_t>(mode);
     if ((modeInner & ZLIB_FILEFUNC_MODE_READWRITEFILTER) != ZLIB_FILEFUNC_MODE_READ) {
-        HILOG_INFO("%{public}s called, mode is not ZLIB_FILEFUNC_MODE_READ.", __func__);
+        APP_LOGI("%{public}s called, mode is not ZLIB_FILEFUNC_MODE_READ.", __func__);
         return NULL;
     }
     ZipBuffer *buffer = static_cast<ZipBuffer *>(opaque);
@@ -130,11 +132,11 @@ uLong ReadZipBuffer(void *opaque, void *, void *buf, uLong size)
 {
     ZipBuffer *buffer = static_cast<ZipBuffer *>(opaque);
     if (buffer == nullptr) {
-        HILOG_INFO("%{public}s called, buffer = nullptr.", __func__);
+        APP_LOGI("%{public}s called, buffer = nullptr.", __func__);
         return 0;
     }
     if (buffer->offset > buffer->length) {
-        HILOG_INFO("%{public}s called, buffer->offset > buffer->length.", __func__);
+        APP_LOGI("%{public}s called, buffer->offset > buffer->length.", __func__);
         return 0;
     }
 
@@ -154,7 +156,7 @@ uLong ReadZipBuffer(void *opaque, void *, void *buf, uLong size)
 // because this implementation is only for reading compressed data.
 uLong WriteZipBuffer(void *opaque, void *stream, const void *buf, uLong)
 {
-    HILOG_INFO("%{public}s called. opaque=%p, stream=%p, buf=%p", __func__, opaque, stream, buf);
+    APP_LOGI("%{public}s called. opaque=%p, stream=%p, buf=%p", __func__, opaque, stream, buf);
     return 0;
 }
 
@@ -187,7 +189,7 @@ long SeekZipBuffer(void *opaque, void *, uLong offset, int origin)
         buffer->offset = std::min(buffer->length, static_cast<size_t>(offset));
         return 0;
     }
-    HILOG_INFO("%{public}s called. origin is not supported.", __func__);
+    APP_LOGI("%{public}s called. origin is not supported.", __func__);
     return -1;
 }
 

@@ -14,7 +14,6 @@
  */
 #include "napi_zlib_common.h"
 
-#include "hilog_wrapper.h"
 #include "securec.h"
 
 namespace OHOS {
