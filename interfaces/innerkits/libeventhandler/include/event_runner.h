@@ -84,6 +84,13 @@ public:
     ErrCode Stop();
 
     /**
+     * Get thread name
+     *
+     * @return Returns thread name.
+     */
+    std::string GetRunnerThreadName() const;
+
+    /**
      * Get event queue from event runner.
      * This method only called by 'EventHandler'.
      *

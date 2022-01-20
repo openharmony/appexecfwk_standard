@@ -445,6 +445,11 @@ std::shared_ptr<EventRunner> EventRunner::Current()
 EventRunner::EventRunner(bool deposit) : deposit_(deposit)
 {}
 
+std::string EventRunner::GetRunnerThreadName() const
+{
+    return innerRunner_->GetThreadName();
+}
+
 EventRunner::~EventRunner()
 {
     if (deposit_) {
