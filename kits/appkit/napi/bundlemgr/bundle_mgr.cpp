@@ -16,6 +16,7 @@
 
 #include <string>
 
+#include "app_log_wrapper.h"
 #include "bundle_constants.h"
 #include "bundle_death_recipient.h"
 #include "bundle_mgr_host.h"
@@ -119,15 +120,15 @@ static OHOS::sptr<OHOS::AppExecFwk::IBundleMgr> GetBundleMgr()
 
 static OHOS::sptr<OHOS::AppExecFwk::IDistributedBms> GetDistributedBundleMgr(const std::string &deviceId)
 {
-    HILOG_INFO("GetDistributedBundleMgr");
+    APP_LOGI("GetDistributedBundleMgr");
     auto samgr = OHOS::SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
     OHOS::sptr<OHOS::IRemoteObject> remoteObject;
-    HILOG_INFO("GetDistributedBundleMgr deviceId:%{public}s", deviceId.c_str());
+    APP_LOGI("GetDistributedBundleMgr deviceId:%{public}s", deviceId.c_str());
     if (deviceId.empty()) {
-        HILOG_INFO("GetDistributedBundleMgr get local d-bms");
+        APP_LOGI("GetDistributedBundleMgr get local d-bms");
         remoteObject = samgr->GetSystemAbility(OHOS::DISTRIBUTED_BUNDLE_MGR_SERVICE_SYS_ABILITY_ID);
     } else {
-        HILOG_INFO("GetDistributedBundleMgr get remote d-bms");
+        APP_LOGI("GetDistributedBundleMgr get remote d-bms");
         remoteObject = samgr->CheckSystemAbility(OHOS::DISTRIBUTED_BUNDLE_MGR_SERVICE_SYS_ABILITY_ID, deviceId);
     }
     return OHOS::iface_cast<IDistributedBms>(remoteObject);
@@ -137,7 +138,7 @@ static bool CheckIsSystemApp()
 {
     auto iBundleMgr = GetBundleMgr();
     if (!iBundleMgr) {
-        HILOG_ERROR("can not get iBundleMgr");
+        APP_LOGE("can not get iBundleMgr");
         return false;
     }
 
@@ -176,7 +177,7 @@ static void ConvertApplicationInfo(napi_env env, napi_value objAppInfo, const Ap
     napi_value nName;
     NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, appInfo.name.c_str(), NAPI_AUTO_LENGTH, &nName));
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objAppInfo, "name", nName));
-    HILOG_INFO("ConvertApplicationInfo name=%{public}s.", appInfo.name.c_str());
+    APP_LOGI("ConvertApplicationInfo name=%{public}s.", appInfo.name.c_str());
 
     napi_value nCodePath;
     NAPI_CALL_RETURN_VOID(
@@ -319,7 +320,7 @@ static void ConvertApplicationInfo(napi_env env, napi_value objAppInfo, const Ap
     NAPI_CALL_RETURN_VOID(env, napi_get_boolean(env, appInfo.removable, &nRemovable));
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objAppInfo, "removable", nRemovable));
 
-    HILOG_INFO("ConvertApplicationInfo entryDir=%{public}s.", appInfo.entryDir.c_str());
+    APP_LOGI("ConvertApplicationInfo entryDir=%{public}s.", appInfo.entryDir.c_str());
 }
 
 static void ConvertMetaData(napi_env env, napi_value objMetaData, const MetaData &metaData)
@@ -520,10 +521,10 @@ static void ProcessAbilityInfos(
     napi_env env, napi_value result, const std::vector<OHOS::AppExecFwk::AbilityInfo> abilityInfos)
 {
     if (abilityInfos.size() > 0) {
-        HILOG_INFO("-----abilityInfos is not null-----");
+        APP_LOGI("-----abilityInfos is not null-----");
         size_t index = 0;
         for (const auto &item : abilityInfos) {
-            HILOG_INFO("name{%s} ", item.name.c_str());
+            APP_LOGI("name{%s} ", item.name.c_str());
             napi_value objAbilityInfo = nullptr;
             napi_create_object(env, &objAbilityInfo);
             ConvertAbilityInfo(env, objAbilityInfo, item);
@@ -531,16 +532,16 @@ static void ProcessAbilityInfos(
             index++;
         }
     } else {
-        HILOG_INFO("-----abilityInfos is null-----");
+        APP_LOGI("-----abilityInfos is null-----");
     }
 }
 
 static void ConvertExtensionInfos(napi_env env, napi_value result,
     std::vector<OHOS::AppExecFwk::ExtensionAbilityInfo> extensionInfos)
 {
-    HILOG_DEBUG("convert extensionInfos start");
+    APP_LOGD("convert extensionInfos start");
     if (extensionInfos.empty()) {
-        HILOG_WARN("extensionInfos is null");
+        APP_LOGW("extensionInfos is null");
         return;
     }
 
@@ -625,7 +626,7 @@ static void ConvertExtensionInfos(napi_env env, napi_value result,
         NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, value, "writePermission", nWritePermission));
         napi_set_element(env, result, i, value);
     }
-    HILOG_DEBUG("convert extensionInfos finished");
+    APP_LOGD("convert extensionInfos finished");
 }
 
 static void ConvertHapModuleInfo(napi_env env, napi_value objHapModuleInfo, const HapModuleInfo &hapModuleInfo)
@@ -633,19 +634,19 @@ static void ConvertHapModuleInfo(napi_env env, napi_value objHapModuleInfo, cons
     napi_value nName;
     NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, hapModuleInfo.name.c_str(), NAPI_AUTO_LENGTH, &nName));
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objHapModuleInfo, "name", nName));
-    HILOG_INFO("ConvertHapModuleInfo name=%{public}s.", hapModuleInfo.name.c_str());
+    APP_LOGI("ConvertHapModuleInfo name=%{public}s.", hapModuleInfo.name.c_str());
 
     napi_value nModuleName;
     NAPI_CALL_RETURN_VOID(
         env, napi_create_string_utf8(env, hapModuleInfo.moduleName.c_str(), NAPI_AUTO_LENGTH, &nModuleName));
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objHapModuleInfo, "moduleName", nModuleName));
-    HILOG_INFO("ConvertHapModuleInfo moduleName=%{public}s.", hapModuleInfo.moduleName.c_str());
+    APP_LOGI("ConvertHapModuleInfo moduleName=%{public}s.", hapModuleInfo.moduleName.c_str());
 
     napi_value nDescription;
     NAPI_CALL_RETURN_VOID(
         env, napi_create_string_utf8(env, hapModuleInfo.description.c_str(), NAPI_AUTO_LENGTH, &nDescription));
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objHapModuleInfo, "description", nDescription));
-    HILOG_INFO("ConvertHapModuleInfo description=%{public}s.", hapModuleInfo.description.c_str());
+    APP_LOGI("ConvertHapModuleInfo description=%{public}s.", hapModuleInfo.description.c_str());
 
     napi_value ndescriptionId;
     NAPI_CALL_RETURN_VOID(env, napi_create_int32(env, 0, &ndescriptionId));
@@ -655,7 +656,7 @@ static void ConvertHapModuleInfo(napi_env env, napi_value objHapModuleInfo, cons
     NAPI_CALL_RETURN_VOID(
         env, napi_create_string_utf8(env, hapModuleInfo.iconPath.c_str(), NAPI_AUTO_LENGTH, &nIconPath));
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objHapModuleInfo, "iconPath", nIconPath));
-    HILOG_INFO("ConvertHapModuleInfo iconPath=%{public}s.", hapModuleInfo.iconPath.c_str());
+    APP_LOGI("ConvertHapModuleInfo iconPath=%{public}s.", hapModuleInfo.iconPath.c_str());
 
     napi_value nIcon;
     std::string theIcon = "";
@@ -665,7 +666,7 @@ static void ConvertHapModuleInfo(napi_env env, napi_value objHapModuleInfo, cons
     napi_value nLabel;
     NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, hapModuleInfo.label.c_str(), NAPI_AUTO_LENGTH, &nLabel));
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objHapModuleInfo, "label", nLabel));
-    HILOG_INFO("ConvertHapModuleInfo label=%{public}s.", hapModuleInfo.label.c_str());
+    APP_LOGI("ConvertHapModuleInfo label=%{public}s.", hapModuleInfo.label.c_str());
 
     napi_value nLabelId;
     NAPI_CALL_RETURN_VOID(env, napi_create_int32(env, 0, &nLabelId));
@@ -679,7 +680,7 @@ static void ConvertHapModuleInfo(napi_env env, napi_value objHapModuleInfo, cons
     NAPI_CALL_RETURN_VOID(
         env, napi_create_string_utf8(env, hapModuleInfo.backgroundImg.c_str(), NAPI_AUTO_LENGTH, &nBackgroundImg));
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objHapModuleInfo, "backgroundImg", nBackgroundImg));
-    HILOG_INFO("ConvertHapModuleInfo backgroundImg=%{public}s.", hapModuleInfo.backgroundImg.c_str());
+    APP_LOGI("ConvertHapModuleInfo backgroundImg=%{public}s.", hapModuleInfo.backgroundImg.c_str());
 
     napi_value nSupportedModes;
     NAPI_CALL_RETURN_VOID(env, napi_create_int32(env, hapModuleInfo.supportedModes, &nSupportedModes));
@@ -724,7 +725,7 @@ static void ConvertHapModuleInfo(napi_env env, napi_value objHapModuleInfo, cons
     NAPI_CALL_RETURN_VOID(
         env, napi_create_string_utf8(env, hapModuleInfo.mainAbility.c_str(), NAPI_AUTO_LENGTH, &nMainAbilityName));
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objHapModuleInfo, "mainAbilityName", nMainAbilityName));
-    HILOG_INFO("ConvertHapModuleInfo mainAbilityName=%{public}s.", hapModuleInfo.mainAbility.c_str());
+    APP_LOGI("ConvertHapModuleInfo mainAbilityName=%{public}s.", hapModuleInfo.mainAbility.c_str());
 
     napi_value nInstallationFree;
     NAPI_CALL_RETURN_VOID(env, napi_get_boolean(env, false, &nInstallationFree));
@@ -904,7 +905,7 @@ static void ConvertDistributedAbilityInfo(napi_env env, napi_value objDistribute
 static void ConvertDistributedBundleInfo(
     napi_env env, napi_value objBundleInfo, const DistributedBundleInfo &distributedBundleInfo)
 {
-    HILOG_INFO("ConvertDistributedBundleInfo");
+    APP_LOGI("ConvertDistributedBundleInfo");
     napi_value nName;
     NAPI_CALL_RETURN_VOID(
         env, napi_create_string_utf8(env, distributedBundleInfo.name.c_str(), NAPI_AUTO_LENGTH, &nName));
@@ -980,7 +981,7 @@ static void ConvertFormInfo(napi_env env, napi_value objformInfo, const FormInfo
     napi_value nName;
     NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, formInfo.name.c_str(), NAPI_AUTO_LENGTH, &nName));
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objformInfo, "name", nName));
-    HILOG_INFO("ConvertFormInfo name=%{public}s.", formInfo.name.c_str());
+    APP_LOGI("ConvertFormInfo name=%{public}s.", formInfo.name.c_str());
 
     napi_value nDescription;
     NAPI_CALL_RETURN_VOID(
@@ -1067,13 +1068,13 @@ static void ConvertFormInfo(napi_env env, napi_value objformInfo, const FormInfo
     napi_value nSrc;
     NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, formInfo.src.c_str(), NAPI_AUTO_LENGTH, &nSrc));
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objformInfo, "src", nSrc));
-    HILOG_INFO("ConvertFormInfo src=%{public}s.", formInfo.src.c_str());
+    APP_LOGI("ConvertFormInfo src=%{public}s.", formInfo.src.c_str());
 
     napi_value nWindow;
     NAPI_CALL_RETURN_VOID(env, napi_create_object(env, &nWindow));
     ConvertFormWindow(env, nWindow, formInfo.window);
-    HILOG_INFO("ConvertFormInfo window.designWidth=%{public}d.", formInfo.window.designWidth);
-    HILOG_INFO("ConvertFormInfo window.autoDesignWidth=%{public}d.", formInfo.window.autoDesignWidth);
+    APP_LOGI("ConvertFormInfo window.designWidth=%{public}d.", formInfo.window.designWidth);
+    APP_LOGI("ConvertFormInfo window.autoDesignWidth=%{public}d.", formInfo.window.autoDesignWidth);
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objformInfo, "window", nWindow));
 }
 
@@ -1094,7 +1095,7 @@ static void ConvertShortcutInfos(napi_env env, napi_value objShortcutInfo, const
     napi_value nId;
     NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, shortcutInfo.id.c_str(), NAPI_AUTO_LENGTH, &nId));
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objShortcutInfo, "id", nId));
-    HILOG_INFO("ConvertShortcutInfos Id=%{public}s.", shortcutInfo.id.c_str());
+    APP_LOGI("ConvertShortcutInfos Id=%{public}s.", shortcutInfo.id.c_str());
 
     napi_value nBundleName;
     NAPI_CALL_RETURN_VOID(
@@ -1291,13 +1292,13 @@ static std::string GetStringFromNAPI(napi_env env, napi_value value)
     size_t size = 0;
 
     if (napi_get_value_string_utf8(env, value, nullptr, NAPI_RETURN_ZERO, &size) != napi_ok) {
-        HILOG_ERROR("can not get string size");
+        APP_LOGE("can not get string size");
         return "";
     }
     result.reserve(size + NAPI_RETURN_ONE);
     result.resize(size);
     if (napi_get_value_string_utf8(env, value, result.data(), (size + NAPI_RETURN_ONE), &size) != napi_ok) {
-        HILOG_ERROR("can not get string value");
+        APP_LOGE("can not get string value");
         return "";
     }
     return result;
@@ -1307,11 +1308,11 @@ static napi_value ParseInt(napi_env env, int &param, napi_value args)
 {
     napi_valuetype valuetype = napi_undefined;
     NAPI_CALL(env, napi_typeof(env, args, &valuetype));
-    HILOG_INFO("valuetype=%{public}d.", valuetype);
+    APP_LOGI("valuetype=%{public}d.", valuetype);
     NAPI_ASSERT(env, valuetype == napi_number, "Wrong argument type. int32 expected.");
     int32_t value = 0;
     napi_get_value_int32(env, args, &value);
-    HILOG_INFO("param=%{public}d.", value);
+    APP_LOGI("param=%{public}d.", value);
     param = value;
     // create result code
     napi_value result = nullptr;
@@ -1335,7 +1336,7 @@ static bool InnerGetApplicationInfos(napi_env env, int32_t flags, const int user
 {
     auto iBundleMgr = GetBundleMgr();
     if (!iBundleMgr) {
-        HILOG_ERROR("can not get iBundleMgr");
+        APP_LOGE("can not get iBundleMgr");
         return false;
     }
     return iBundleMgr->GetApplicationInfos(flags, userId, appInfos);
@@ -1345,14 +1346,14 @@ static void ProcessApplicationInfos(
     napi_env env, napi_value result, const std::vector<OHOS::AppExecFwk::ApplicationInfo> &appInfos)
 {
     if (appInfos.size() > 0) {
-        HILOG_INFO("-----appInfos is not null-----");
+        APP_LOGI("-----appInfos is not null-----");
         size_t index = 0;
         for (const auto &item : appInfos) {
-            HILOG_INFO("name{%s} ", item.name.c_str());
-            HILOG_INFO("bundleName{%s} ", item.bundleName.c_str());
+            APP_LOGI("name{%s} ", item.name.c_str());
+            APP_LOGI("bundleName{%s} ", item.bundleName.c_str());
             for (const auto &moduleInfo : item.moduleInfos) {
-                HILOG_INFO("moduleName{%s} ", moduleInfo.moduleName.c_str());
-                HILOG_INFO("bundleName{%s} ", moduleInfo.moduleSourceDir.c_str());
+                APP_LOGI("moduleName{%s} ", moduleInfo.moduleName.c_str());
+                APP_LOGI("bundleName{%s} ", moduleInfo.moduleSourceDir.c_str());
             }
             napi_value objAppInfo;
             NAPI_CALL_RETURN_VOID(env, napi_create_object(env, &objAppInfo));
@@ -1361,7 +1362,7 @@ static void ProcessApplicationInfos(
             index++;
         }
     } else {
-        HILOG_INFO("-----appInfos is null-----");
+        APP_LOGI("-----appInfos is null-----");
     }
 }
 /**
@@ -1369,7 +1370,7 @@ static void ProcessApplicationInfos(
  */
 napi_value GetApplicationInfos(napi_env env, napi_callback_info info)
 {
-    HILOG_DEBUG("NAPI_GetApplicationInfos called");
+    APP_LOGD("NAPI_GetApplicationInfos called");
     size_t argc = ARGS_SIZE_THREE;
     napi_value argv[ARGS_SIZE_THREE] = {nullptr};
     napi_value thisArg = nullptr;
@@ -1377,7 +1378,7 @@ napi_value GetApplicationInfos(napi_env env, napi_callback_info info)
     AsyncApplicationInfosCallbackInfo *asyncCallbackInfo = new AsyncApplicationInfosCallbackInfo();
 
     NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, &thisArg, &data));
-    HILOG_INFO("argc = [%{public}zu]", argc);
+    APP_LOGI("argc = [%{public}zu]", argc);
 
     asyncCallbackInfo->env = env;
     for (size_t i = 0; i < argc; ++i) {
@@ -1457,23 +1458,23 @@ napi_value GetApplicationInfos(napi_env env, napi_callback_info info)
 
 static napi_value ParseStringArray(napi_env env, std::vector<std::string> &stringArray, napi_value args)
 {
-    HILOG_DEBUG("begin to parse string array");
+    APP_LOGD("begin to parse string array");
     bool isArray = false;
     NAPI_CALL(env, napi_is_array(env, args, &isArray));
     if (!isArray) {
-        HILOG_ERROR("args not array");
+        APP_LOGE("args not array");
         return nullptr;
     }
     uint32_t arrayLength = 0;
     NAPI_CALL(env, napi_get_array_length(env, args, &arrayLength));
-    HILOG_DEBUG("length=%{public}ud", arrayLength);
+    APP_LOGD("length=%{public}ud", arrayLength);
     for (uint32_t j = 0; j < arrayLength; j++) {
         napi_value value = nullptr;
         NAPI_CALL(env, napi_get_element(env, args, j, &value));
         napi_valuetype valueType = napi_undefined;
         NAPI_CALL(env, napi_typeof(env, value, &valueType));
         if (valueType != napi_string) {
-            HILOG_ERROR("array inside not string type");
+            APP_LOGE("array inside not string type");
             stringArray.clear();
             return nullptr;
         }
@@ -1493,7 +1494,7 @@ static bool InnerQueryAbilityInfos(napi_env env, const Want &want,
 {
     auto iBundleMgr = GetBundleMgr();
     if (!iBundleMgr) {
-        HILOG_ERROR("can not get iBundleMgr");
+        APP_LOGE("can not get iBundleMgr");
         return false;
     }
     return iBundleMgr->QueryAbilityInfos(want, flags, userId, abilityInfos);
@@ -1501,12 +1502,12 @@ static bool InnerQueryAbilityInfos(napi_env env, const Want &want,
 
 static bool ParseBundleOptions(napi_env env, BundleOptions &bundleOptions, napi_value args)
 {
-    HILOG_DEBUG("begin to parse bundleOptions");
+    APP_LOGD("begin to parse bundleOptions");
     napi_status status;
     napi_valuetype valueType;
     NAPI_CALL(env, napi_typeof(env, args, &valueType));
     if (valueType != napi_object) {
-        HILOG_ERROR("args not object type");
+        APP_LOGE("args not object type");
         return false;
     }
 
@@ -1525,12 +1526,12 @@ static bool ParseBundleOptions(napi_env env, BundleOptions &bundleOptions, napi_
 
 static bool ParseWant(napi_env env, Want &want, napi_value args)
 {
-    HILOG_DEBUG("begin to parse want");
+    APP_LOGD("begin to parse want");
     napi_status status;
     napi_valuetype valueType;
     NAPI_CALL(env, napi_typeof(env, args, &valueType));
     if (valueType != napi_object) {
-        HILOG_ERROR("args not object type");
+        APP_LOGE("args not object type");
         return false;
     }
     std::string wantBundleName;
@@ -1581,7 +1582,7 @@ static bool ParseWant(napi_env env, Want &want, napi_value args)
     status = napi_get_named_property(env, args, "entities", &prop);
     ParseStringArray(env, wantEntities, prop);
     for (size_t idx = 0; idx < wantEntities.size(); idx++) {
-        HILOG_DEBUG("entity:%{public}s", wantEntities[idx].c_str());
+        APP_LOGD("entity:%{public}s", wantEntities[idx].c_str());
         want.AddEntity(wantEntities[idx]);
     }
 
@@ -1589,7 +1590,7 @@ static bool ParseWant(napi_env env, Want &want, napi_value args)
     status = napi_get_named_property(env, args, "elementName", &elementProp);
     napi_typeof(env, elementProp, &valueType);
     if (valueType == napi_object) {
-        HILOG_DEBUG("begin to parse want elementName");
+        APP_LOGD("begin to parse want elementName");
 
         prop = nullptr;
         status = napi_get_named_property(env, elementProp, "deviceId", &prop);
@@ -1602,12 +1603,12 @@ static bool ParseWant(napi_env env, Want &want, napi_value args)
         prop = nullptr;
         status = napi_get_named_property(env, elementProp, "bundleName", &prop);
         if (status != napi_ok) {
-            HILOG_ERROR("elementName bundleName incorrect!");
+            APP_LOGE("elementName bundleName incorrect!");
             return false;
         }
         napi_typeof(env, prop, &valueType);
         if (valueType != napi_string) {
-            HILOG_ERROR("elementName bundleName type mismatch!");
+            APP_LOGE("elementName bundleName type mismatch!");
             return false;
         }
         elementBundleName = GetStringFromNAPI(env, prop);
@@ -1615,12 +1616,12 @@ static bool ParseWant(napi_env env, Want &want, napi_value args)
         prop = nullptr;
         status = napi_get_named_property(env, elementProp, "abilityName", &prop);
         if (status != napi_ok) {
-            HILOG_ERROR("elementName abilityName incorrect!");
+            APP_LOGE("elementName abilityName incorrect!");
             return false;
         }
         napi_typeof(env, prop, &valueType);
         if (valueType != napi_string) {
-            HILOG_ERROR("elementName abilityName type mismatch!");
+            APP_LOGE("elementName abilityName type mismatch!");
             return false;
         }
         elementAbilityName = GetStringFromNAPI(env, prop);
@@ -1637,9 +1638,9 @@ static bool ParseWant(napi_env env, Want &want, napi_value args)
     if (elementUri.empty()) {
         elementUri = wantUri;
     }
-    HILOG_DEBUG("deviceId:%{public}s, bundleName:%{public}s, abilityName:%{public}s",
+    APP_LOGD("deviceId:%{public}s, bundleName:%{public}s, abilityName:%{public}s",
         elementDeviceId.c_str(), elementBundleName.c_str(), elementAbilityName.c_str());
-    HILOG_DEBUG("action:%{public}s, uri:%{public}s, type:%{public}s, flags:%{public}d",
+    APP_LOGD("action:%{public}s, uri:%{public}s, type:%{public}s, flags:%{public}d",
         wantAction.c_str(), elementUri.c_str(), wantType.c_str(), wantFlags);
     want.SetAction(wantAction);
     want.SetUri(elementUri);
@@ -1652,26 +1653,26 @@ static bool ParseWant(napi_env env, Want &want, napi_value args)
 
 static bool ParseElementName(napi_env env, OHOS::AppExecFwk::ElementName &elementName, napi_value args)
 {
-    HILOG_DEBUG("begin to parse ElementName");
+    APP_LOGD("begin to parse ElementName");
     napi_status status;
     napi_valuetype valueType;
     NAPI_CALL(env, napi_typeof(env, args, &valueType));
     if (valueType != napi_object) {
-        HILOG_ERROR("args not object type");
+        APP_LOGE("args not object type");
         return false;
     }
     napi_value prop = nullptr;
     status = napi_get_named_property(env, args, "deviceId", &prop);
     napi_typeof(env, prop, &valueType);
     if (status == napi_ok && valueType == napi_string) {
-        HILOG_DEBUG("begin to parse ElementName deviceId");
+        APP_LOGD("begin to parse ElementName deviceId");
         elementName.SetDeviceID(GetStringFromNAPI(env, prop));
     }
     prop = nullptr;
     status = napi_get_named_property(env, args, "bundleName", &prop);
     napi_typeof(env, prop, &valueType);
     if (status == napi_ok && valueType == napi_string) {
-        HILOG_DEBUG("begin to parse ElementName bundleName");
+        APP_LOGD("begin to parse ElementName bundleName");
         elementName.SetBundleName(GetStringFromNAPI(env, prop));
     }
 
@@ -1679,10 +1680,10 @@ static bool ParseElementName(napi_env env, OHOS::AppExecFwk::ElementName &elemen
     status = napi_get_named_property(env, args, "abilityName", &prop);
     napi_typeof(env, prop, &valueType);
     if (status == napi_ok && valueType == napi_string) {
-        HILOG_DEBUG("begin to parse ElementName abilityName");
+        APP_LOGD("begin to parse ElementName abilityName");
         elementName.SetAbilityName(GetStringFromNAPI(env, prop));
     }
-    HILOG_DEBUG("parse ElementName deviceId:%{public}s, bundleName:%{public}s, abilityName:%{public}s",
+    APP_LOGD("parse ElementName deviceId:%{public}s, bundleName:%{public}s, abilityName:%{public}s",
         elementName.GetDeviceID().c_str(),
         elementName.GetBundleName().c_str(),
         elementName.GetAbilityName().c_str());
@@ -1694,13 +1695,13 @@ static bool ParseElementName(napi_env env, OHOS::AppExecFwk::ElementName &elemen
  */
 napi_value QueryAbilityInfos(napi_env env, napi_callback_info info)
 {
-    HILOG_INFO("QueryAbilityInfos called");
+    APP_LOGI("QueryAbilityInfos called");
     size_t argc = ARGS_SIZE_FOUR;
     napi_value argv[ARGS_SIZE_FOUR] = {nullptr};
     napi_value thisArg = nullptr;
     void *data = nullptr;
     NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, &thisArg, &data));
-    HILOG_INFO("argc = [%{public}zu]", argc);
+    APP_LOGI("argc = [%{public}zu]", argc);
     Want want;
 
     AsyncAbilityInfoCallbackInfo *asyncCallbackInfo = new AsyncAbilityInfoCallbackInfo {
@@ -1799,7 +1800,7 @@ static bool InnerGetApplicationInfo(napi_env env, const std::string &bundleName,
 {
     auto iBundleMgr = GetBundleMgr();
     if (!iBundleMgr) {
-        HILOG_ERROR("can not get iBundleMgr");
+        APP_LOGE("can not get iBundleMgr");
         return false;
     }
     return iBundleMgr->GetApplicationInfo(bundleName, flags, userId, appInfo);
@@ -1812,7 +1813,7 @@ static napi_value ParseString(napi_env env, std::string &param, napi_value args)
     NAPI_CALL(env, napi_typeof(env, args, &valuetype));
     NAPI_ASSERT(env, valuetype == napi_string, "Wrong argument type. String expected.");
     param = GetStringFromNAPI(env, args);
-    HILOG_INFO("param=%{public}s.", param.c_str());
+    APP_LOGI("param=%{public}s.", param.c_str());
     // create result code
     napi_value result;
     status = napi_create_int32(env, NAPI_RETURN_ONE, &result);
@@ -1824,7 +1825,7 @@ static napi_value ParseString(napi_env env, std::string &param, napi_value args)
  */
 napi_value GetApplicationInfo(napi_env env, napi_callback_info info)
 {
-    HILOG_DEBUG("NAPI_GetApplicationInfo called");
+    APP_LOGD("NAPI_GetApplicationInfo called");
     size_t argc = ARGS_SIZE_FOUR;
     napi_value argv[ARGS_SIZE_FOUR] = {nullptr};
     napi_value thisArg = nullptr;
@@ -1833,7 +1834,7 @@ napi_value GetApplicationInfo(napi_env env, napi_callback_info info)
     AsyncApplicationInfoCallbackInfo *asyncCallbackInfo = new AsyncApplicationInfoCallbackInfo();
 
     NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, &thisArg, &data));
-    HILOG_DEBUG("argc = [%{public}zu]", argc);
+    APP_LOGD("argc = [%{public}zu]", argc);
 
     asyncCallbackInfo->env = env;
     for (size_t i = 0; i < argc; ++i) {
@@ -1919,7 +1920,7 @@ static bool InnerGetBundleInfos(
 {
     auto iBundleMgr = GetBundleMgr();
     if (!iBundleMgr) {
-        HILOG_ERROR("can not get iBundleMgr");
+        APP_LOGE("can not get iBundleMgr");
         return false;
     }
     return iBundleMgr->GetBundleInfos(flags, bundleInfos, userId);
@@ -1929,14 +1930,14 @@ static void ProcessBundleInfos(
     napi_env env, napi_value result, const std::vector<OHOS::AppExecFwk::BundleInfo> &bundleInfos)
 {
     if (bundleInfos.size() > 0) {
-        HILOG_INFO("-----bundleInfos is not null-----");
+        APP_LOGI("-----bundleInfos is not null-----");
         size_t index = 0;
         for (const auto &item : bundleInfos) {
-            HILOG_INFO("name{%s} ", item.name.c_str());
-            HILOG_INFO("bundleName{%s} ", item.applicationInfo.bundleName.c_str());
+            APP_LOGI("name{%s} ", item.name.c_str());
+            APP_LOGI("bundleName{%s} ", item.applicationInfo.bundleName.c_str());
             for (const auto &moduleInfo : item.applicationInfo.moduleInfos) {
-                HILOG_INFO("moduleName{%s} ", moduleInfo.moduleName.c_str());
-                HILOG_INFO("moduleSourceDir{%s} ", moduleInfo.moduleSourceDir.c_str());
+                APP_LOGI("moduleName{%s} ", moduleInfo.moduleName.c_str());
+                APP_LOGI("moduleSourceDir{%s} ", moduleInfo.moduleSourceDir.c_str());
             }
             napi_value objBundleInfo = nullptr;
             napi_create_object(env, &objBundleInfo);
@@ -1945,7 +1946,7 @@ static void ProcessBundleInfos(
             index++;
         }
     } else {
-        HILOG_INFO("-----bundleInfos is null-----");
+        APP_LOGI("-----bundleInfos is null-----");
     }
 }
 /**
@@ -1953,13 +1954,13 @@ static void ProcessBundleInfos(
  */
 napi_value GetBundleInfos(napi_env env, napi_callback_info info)
 {
-    HILOG_DEBUG("NAPI GetBundleInfos called");
+    APP_LOGD("NAPI GetBundleInfos called");
     size_t argc = ARGS_SIZE_THREE;
     napi_value argv[ARGS_SIZE_THREE] = {0};
     napi_value thisArg = nullptr;
     void *data = nullptr;
     NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, &thisArg, &data));
-    HILOG_DEBUG("argc = [%{public}zu]", argc);
+    APP_LOGD("argc = [%{public}zu]", argc);
     AsyncBundleInfosCallbackInfo *asyncCallbackInfo = new AsyncBundleInfosCallbackInfo();
     asyncCallbackInfo->env = env;
     for (size_t i = 0; i < argc; ++i) {
@@ -2043,12 +2044,12 @@ static bool InnerGetBundleInfo(
 {
     auto iBundleMgr = GetBundleMgr();
     if (!iBundleMgr) {
-        HILOG_ERROR("can not get iBundleMgr");
+        APP_LOGE("can not get iBundleMgr");
         return false;
     }
     bool ret = iBundleMgr->GetBundleInfo(bundleName, flags, bundleInfo, bundleOptions.userId);
     if (!ret) {
-        HILOG_INFO("-----bundleInfo is not find-----");
+        APP_LOGI("-----bundleInfo is not find-----");
     }
     return ret;
 }
@@ -2059,13 +2060,13 @@ static bool InnerGetDistributedBundleInfo(
 {
     auto iBundleMgr = GetBundleMgr();
     if (!iBundleMgr) {
-        HILOG_ERROR("can not get iBundleMgr");
+        APP_LOGE("can not get iBundleMgr");
         return false;
     }
     bool ret = iBundleMgr->GetDistributedBundleInfo(
         bundleOptions.networkId, bundleOptions.userId, bundleName, distributedBundleInfo);
     if (!ret) {
-        HILOG_INFO("-----distributedBundleInfo is not find-----");
+        APP_LOGI("-----distributedBundleInfo is not find-----");
     }
     return ret;
 }
@@ -2075,13 +2076,13 @@ static bool InnerGetDistributedBundleInfo(
  */
 napi_value GetBundleInfo(napi_env env, napi_callback_info info)
 {
-    HILOG_DEBUG("NAPI GetBundleInfo called");
+    APP_LOGD("NAPI GetBundleInfo called");
     size_t argc = ARGS_SIZE_FOUR;
     napi_value argv[ARGS_SIZE_FOUR] = {nullptr};
     napi_value thisArg = nullptr;
     void *data = nullptr;
     NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, &thisArg, &data));
-    HILOG_DEBUG("argc = [%{public}zu]", argc);
+    APP_LOGD("argc = [%{public}zu]", argc);
     AsyncBundleInfoCallbackInfo *asyncCallbackInfo = new AsyncBundleInfoCallbackInfo();
     asyncCallbackInfo->env = env;
     for (size_t i = 0; i < argc; ++i) {
@@ -2180,12 +2181,12 @@ static bool InnerGetArchiveInfo(
 {
     auto iBundleMgr = GetBundleMgr();
     if (!iBundleMgr) {
-        HILOG_ERROR("can not get iBundleMgr");
+        APP_LOGE("can not get iBundleMgr");
         return false;
     };
     bool ret = iBundleMgr->GetBundleArchiveInfo(hapFilePath, flags, bundleInfo);
     if (!ret) {
-        HILOG_DEBUG("ArchiveInfo not found");
+        APP_LOGD("ArchiveInfo not found");
     }
     return ret;
 }
@@ -2194,13 +2195,13 @@ static bool InnerGetArchiveInfo(
  */
 napi_value GetBundleArchiveInfo(napi_env env, napi_callback_info info)
 {
-    HILOG_DEBUG("NAPI GetBundleArchiveInfo called");
+    APP_LOGD("NAPI GetBundleArchiveInfo called");
     size_t argc = ARGS_SIZE_THREE;
     napi_value argv[ARGS_SIZE_THREE] = {nullptr};
     napi_value thisArg = nullptr;
     void *data = nullptr;
     NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, &thisArg, &data));
-    HILOG_DEBUG("argc = [%{public}zu]", argc);
+    APP_LOGD("argc = [%{public}zu]", argc);
     AsyncBundleInfoCallbackInfo *asyncCallbackInfo = new AsyncBundleInfoCallbackInfo();
     asyncCallbackInfo->env = env;
     for (size_t i = 0; i < argc; ++i) {
@@ -2281,12 +2282,12 @@ static bool InnerGetLaunchWantForBundle(
 {
     auto iBundleMgr = GetBundleMgr();
     if (!iBundleMgr) {
-        HILOG_ERROR("can not get iBundleMgr");
+        APP_LOGE("can not get iBundleMgr");
         return false;
     }
     bool ret = iBundleMgr->GetLaunchWantForBundle(bundleName, want);
     if (!ret) {
-        HILOG_ERROR("-----launchWantForBundle is not find-----");
+        APP_LOGE("-----launchWantForBundle is not find-----");
     }
     return ret;
 }
@@ -2297,7 +2298,7 @@ napi_value GetLaunchWantForBundle(napi_env env, napi_callback_info info)
     napi_value thisArg = nullptr;
     void *data = nullptr;
     NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, &thisArg, &data));
-    HILOG_INFO("ARGCSIZE is =%{public}zu.", argc);
+    APP_LOGI("ARGCSIZE is =%{public}zu.", argc);
     std::string bundleName;
     AsyncLaunchWantForBundleCallbackInfo *asyncCallbackInfo = new (std::nothrow) AsyncLaunchWantForBundleCallbackInfo {
         .env = env,
@@ -2381,13 +2382,13 @@ static void ConvertPermissionDef(napi_env env, napi_value result, const Permissi
     NAPI_CALL_RETURN_VOID(
         env, napi_create_string_utf8(env, permissionDef.permissionName.c_str(), NAPI_AUTO_LENGTH, &nPermissionName));
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, result, "name", nPermissionName));
-    HILOG_INFO("InnerGetPermissionDef name=%{public}s.", permissionDef.permissionName.c_str());
+    APP_LOGI("InnerGetPermissionDef name=%{public}s.", permissionDef.permissionName.c_str());
 
     napi_value nBundleName;
     NAPI_CALL_RETURN_VOID(
         env, napi_create_string_utf8(env, permissionDef.bundleName.c_str(), NAPI_AUTO_LENGTH, &nBundleName));
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, result, "bundleName", nBundleName));
-    HILOG_INFO("InnerGetPermissionDef bundleName=%{public}s.", permissionDef.bundleName.c_str());
+    APP_LOGI("InnerGetPermissionDef bundleName=%{public}s.", permissionDef.bundleName.c_str());
 
     napi_value nGrantMode;
     NAPI_CALL_RETURN_VOID(env, napi_create_int32(env, permissionDef.grantMode, &nGrantMode));
@@ -2439,12 +2440,12 @@ static bool InnerGetPermissionDef(napi_env env, const std::string &permissionNam
 {
     auto iBundleMgr = GetBundleMgr();
     if (!iBundleMgr) {
-        HILOG_ERROR("can not get iBundleMgr");
+        APP_LOGE("can not get iBundleMgr");
         return false;
     };
     bool ret = iBundleMgr->GetPermissionDef(permissionName, permissionDef);
     if (ret) {
-        HILOG_INFO("-----permissionName is not find-----");
+        APP_LOGI("-----permissionName is not find-----");
     }
     return ret;
 }
@@ -2453,11 +2454,11 @@ static bool InnerGetPermissionDef(napi_env env, const std::string &permissionNam
  */
 napi_value GetPermissionDef(napi_env env, napi_callback_info info)
 {
-    HILOG_INFO("GetPermissionDef called");
+    APP_LOGI("GetPermissionDef called");
     size_t argc = ARGS_SIZE_TWO;
     napi_value argv[ARGS_SIZE_TWO] = {nullptr};
     NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, NULL, NULL));
-    HILOG_INFO("argc = [%{public}zu]", argc);
+    APP_LOGI("argc = [%{public}zu]", argc);
     std::string permissionName;
     ParseString(env, permissionName, argv[PARAM0]);
     AsyncPermissionDefCallbackInfo *asyncCallbackInfo = new (std::nothrow) AsyncPermissionDefCallbackInfo {
@@ -2470,7 +2471,7 @@ napi_value GetPermissionDef(napi_env env, napi_callback_info info)
         return nullptr;
     }
     if (argc > (ARGS_SIZE_TWO - CALLBACK_SIZE)) {
-        HILOG_INFO("GetPermissionDef asyncCallback.");
+        APP_LOGI("GetPermissionDef asyncCallback.");
         napi_valuetype valuetype = napi_undefined;
         napi_typeof(env, argv[ARGS_SIZE_ONE], &valuetype);
         NAPI_ASSERT(env, valuetype == napi_function, "Wrong argument type. Function expected.");
@@ -2484,7 +2485,7 @@ napi_value GetPermissionDef(napi_env env, napi_callback_info info)
             resourceName,
             [](napi_env env, void *data) {
                 AsyncPermissionDefCallbackInfo *asyncCallbackInfo = (AsyncPermissionDefCallbackInfo *)data;
-                HILOG_INFO("asyncCallbackInfo->permissionName=%{public}s.", asyncCallbackInfo->permissionName.c_str());
+                APP_LOGI("asyncCallbackInfo->permissionName=%{public}s.", asyncCallbackInfo->permissionName.c_str());
                 InnerGetPermissionDef(env, asyncCallbackInfo->permissionName, asyncCallbackInfo->permissionDef);
             },
             [](napi_env env, napi_status status, void *data) {
@@ -2538,7 +2539,7 @@ napi_value GetPermissionDef(napi_env env, napi_callback_info info)
                 InnerGetPermissionDef(env, asyncCallbackInfo->permissionName, asyncCallbackInfo->permissionDef);
             },
             [](napi_env env, napi_status status, void *data) {
-                HILOG_INFO("=================load=================");
+                APP_LOGI("=================load=================");
                 AsyncPermissionDefCallbackInfo *asyncCallbackInfo = (AsyncPermissionDefCallbackInfo *)data;
                 napi_value result;
                 napi_create_object(env, &result);
@@ -2573,18 +2574,18 @@ static void InnerInstall(napi_env env, const std::vector<std::string> &bundleFil
     }
     auto iBundleMgr = GetBundleMgr();
     if (!iBundleMgr) {
-        HILOG_ERROR("can not get iBundleMgr");
+        APP_LOGE("can not get iBundleMgr");
         return;
     }
     auto iBundleInstaller = iBundleMgr->GetBundleInstaller();
     if ((iBundleInstaller == nullptr) || (iBundleInstaller->AsObject() == nullptr)) {
-        HILOG_ERROR("can not get iBundleInstaller");
+        APP_LOGE("can not get iBundleInstaller");
         return;
     }
     installParam.installFlag = InstallFlag::REPLACE_EXISTING;
     OHOS::sptr<InstallerCallback> callback = new InstallerCallback();
     if (!callback) {
-        HILOG_ERROR("callback nullptr");
+        APP_LOGE("callback nullptr");
         return;
     }
 
@@ -2592,9 +2593,9 @@ static void InnerInstall(napi_env env, const std::vector<std::string> &bundleFil
     iBundleInstaller->AsObject()->AddDeathRecipient(recipient);
     iBundleInstaller->Install(bundleFilePath, installParam, callback);
     installResult.resultMsg = callback->GetResultMsg();
-    HILOG_DEBUG("InnerInstall resultMsg %{public}s", installResult.resultMsg.c_str());
+    APP_LOGD("InnerInstall resultMsg %{public}s", installResult.resultMsg.c_str());
     installResult.resultCode = callback->GetResultCode();
-    HILOG_DEBUG("InnerInstall resultCode %{public}d", installResult.resultCode);
+    APP_LOGD("InnerInstall resultCode %{public}d", installResult.resultCode);
 }
 
 static void InnerRecover(napi_env env, const std::string &bundleName, InstallParam &installParam,
@@ -2606,36 +2607,36 @@ static void InnerRecover(napi_env env, const std::string &bundleName, InstallPar
     }
     auto iBundleMgr = GetBundleMgr();
     if (!iBundleMgr) {
-        HILOG_ERROR("can not get iBundleMgr");
+        APP_LOGE("can not get iBundleMgr");
         return;
     }
     auto iBundleInstaller = iBundleMgr->GetBundleInstaller();
     if (!iBundleInstaller) {
-        HILOG_ERROR("can not get iBundleInstaller");
+        APP_LOGE("can not get iBundleInstaller");
         return;
     }
 
     OHOS::sptr<InstallerCallback> callback = new InstallerCallback();
     if (!callback) {
-        HILOG_ERROR("callback nullptr");
+        APP_LOGE("callback nullptr");
         return;
     }
     iBundleInstaller->Recover(bundleName, installParam, callback);
     installResult.resultMsg = callback->GetResultMsg();
-    HILOG_DEBUG("InnerRecover resultMsg %{public}s.", installResult.resultMsg.c_str());
+    APP_LOGD("InnerRecover resultMsg %{public}s.", installResult.resultMsg.c_str());
     installResult.resultCode = callback->GetResultCode();
-    HILOG_DEBUG("InnerRecover resultCode %{public}d.", installResult.resultCode);
+    APP_LOGD("InnerRecover resultCode %{public}d.", installResult.resultCode);
 }
 /**
  * Promise and async callback
  */
 napi_value GetBundleInstaller(napi_env env, napi_callback_info info)
 {
-    HILOG_INFO("GetBundleInstaller called");
+    APP_LOGI("GetBundleInstaller called");
     size_t argc = ARGS_SIZE_ONE;
     napi_value argv[ARGS_SIZE_ONE] = {nullptr};
     NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, NULL, NULL));
-    HILOG_INFO("argc = [%{public}zu]", argc);
+    APP_LOGI("argc = [%{public}zu]", argc);
 
     AsyncGetBundleInstallerCallbackInfo *asyncCallbackInfo =
         new AsyncGetBundleInstallerCallbackInfo {
@@ -2647,7 +2648,7 @@ napi_value GetBundleInstaller(napi_env env, napi_callback_info info)
         return nullptr;
     }
     if (argc > (ARGS_SIZE_ONE - CALLBACK_SIZE)) {
-        HILOG_INFO("GetBundleInstaller asyncCallback.");
+        APP_LOGI("GetBundleInstaller asyncCallback.");
         napi_valuetype valuetype = napi_undefined;
         NAPI_CALL(env, napi_typeof(env, argv[PARAM0], &valuetype));
         NAPI_ASSERT(env, valuetype == napi_function, "Wrong argument type. Function expected.");
@@ -2708,7 +2709,7 @@ napi_value GetBundleInstaller(napi_env env, napi_callback_info info)
             resourceName,
             [](napi_env env, void *data) {},
             [](napi_env env, napi_status status, void *data) {
-                HILOG_INFO("=================load=================");
+                APP_LOGI("=================load=================");
                 AsyncGetBundleInstallerCallbackInfo *asyncCallbackInfo = (AsyncGetBundleInstallerCallbackInfo *)data;
                 napi_value result;
                 napi_value m_classBundleInstaller = nullptr;
@@ -2741,7 +2742,7 @@ static bool ParseInstallParam(napi_env env, InstallParam &installParam, napi_val
     napi_valuetype valueType;
     NAPI_CALL(env, napi_typeof(env, args, &valueType));
     if (valueType != napi_object) {
-        HILOG_ERROR("args type incorrect!");
+        APP_LOGE("args type incorrect!");
         return false;
     }
 
@@ -2751,13 +2752,13 @@ static bool ParseInstallParam(napi_env env, InstallParam &installParam, napi_val
     if (hasKey) {
         status = napi_get_named_property(env, args, "userId", &property);
         if (status != napi_ok) {
-            HILOG_ERROR("napi get named property error!");
+            APP_LOGE("napi get named property error!");
             return false;
         }
 
         napi_typeof(env, property, &valueType);
         if (valueType != napi_number) {
-            HILOG_ERROR("param(userId) type incorrect!");
+            APP_LOGE("param(userId) type incorrect!");
             return false;
         }
 
@@ -2765,7 +2766,7 @@ static bool ParseInstallParam(napi_env env, InstallParam &installParam, napi_val
         NAPI_CALL(env, napi_get_value_int32(env, property, &userId));
         installParam.userId = userId;
     }
-    HILOG_INFO("ParseInstallParam userId=%{public}d.", installParam.userId);
+    APP_LOGI("ParseInstallParam userId=%{public}d.", installParam.userId);
 
     property = nullptr;
     hasKey = false;
@@ -2773,13 +2774,13 @@ static bool ParseInstallParam(napi_env env, InstallParam &installParam, napi_val
     if (hasKey) {
         status = napi_get_named_property(env, args, "installFlag", &property);
         if (status != napi_ok) {
-            HILOG_ERROR("napi get named property error!");
+            APP_LOGE("napi get named property error!");
             return false;
         }
 
         napi_typeof(env, property, &valueType);
         if (valueType != napi_number) {
-            HILOG_ERROR("param(installFlag) type incorrect!");
+            APP_LOGE("param(installFlag) type incorrect!");
             return false;
         }
 
@@ -2787,7 +2788,7 @@ static bool ParseInstallParam(napi_env env, InstallParam &installParam, napi_val
         NAPI_CALL(env, napi_get_value_int32(env, property, &installFlag));
         installParam.installFlag = static_cast<OHOS::AppExecFwk::InstallFlag>(installFlag);
     }
-    HILOG_INFO("ParseInstallParam installFlag=%{public}d.", installParam.installFlag);
+    APP_LOGI("ParseInstallParam installFlag=%{public}d.", installParam.installFlag);
 
     property = nullptr;
     hasKey = false;
@@ -2795,13 +2796,13 @@ static bool ParseInstallParam(napi_env env, InstallParam &installParam, napi_val
     if (hasKey) {
         status = napi_get_named_property(env, args, "isKeepData", &property);
         if (status != napi_ok) {
-            HILOG_ERROR("napi get named property error!");
+            APP_LOGE("napi get named property error!");
             return false;
         }
 
         napi_typeof(env, property, &valueType);
         if (valueType != napi_boolean) {
-            HILOG_ERROR("param(isKeepData) type incorrect!");
+            APP_LOGE("param(isKeepData) type incorrect!");
             return false;
         }
 
@@ -2809,13 +2810,13 @@ static bool ParseInstallParam(napi_env env, InstallParam &installParam, napi_val
         NAPI_CALL(env, napi_get_value_bool(env, property, &isKeepData));
         installParam.isKeepData = isKeepData;
     }
-    HILOG_INFO("ParseInstallParam isKeepData=%{public}d.", installParam.isKeepData);
+    APP_LOGI("ParseInstallParam isKeepData=%{public}d.", installParam.isKeepData);
     return true;
 }
 
 static void ConvertInstallResult(InstallResult &installResult)
 {
-    HILOG_INFO("ConvertInstallResult = %{public}s.", installResult.resultMsg.c_str());
+    APP_LOGI("ConvertInstallResult = %{public}s.", installResult.resultMsg.c_str());
     switch (installResult.resultCode) {
         case static_cast<int32_t>(IStatusReceiver::SUCCESS):
             installResult.resultCode = static_cast<int32_t>(InstallErrorCode::SUCCESS);
@@ -2946,7 +2947,7 @@ static void ConvertInstallResult(InstallResult &installResult)
  */
 napi_value Install(napi_env env, napi_callback_info info)
 {
-    HILOG_INFO("Install called");
+    APP_LOGI("Install called");
     size_t argc = ARGS_SIZE_THREE;
     napi_value argv[ARGS_SIZE_THREE] = {nullptr};
     AsyncInstallCallbackInfo *asyncCallbackInfo = new (std::nothrow) AsyncInstallCallbackInfo {
@@ -2959,7 +2960,7 @@ napi_value Install(napi_env env, napi_callback_info info)
         return nullptr;
     }
     NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, NULL, NULL));
-    HILOG_INFO("argc = [%{public}zu]", argc);
+    APP_LOGI("argc = [%{public}zu]", argc);
 
     std::vector<std::string> bundleFilePaths;
     InstallParam installParam;
@@ -2968,17 +2969,17 @@ napi_value Install(napi_env env, napi_callback_info info)
     retFirst = ParseStringArray(env, bundleFilePaths, argv[PARAM0]);
     retSecond = ParseInstallParam(env, installParam, argv[PARAM1]);
     if (retFirst == nullptr || !retSecond) {
-        HILOG_ERROR("Install installParam error.");
+        APP_LOGE("Install installParam error.");
         asyncCallbackInfo->errCode = PARAM_TYPE_ERROR;
     }
     asyncCallbackInfo->hapFiles = bundleFilePaths;
     asyncCallbackInfo->installParam = installParam;
     if (argc > (ARGS_SIZE_THREE - CALLBACK_SIZE)) {
-        HILOG_INFO("Install asyncCallback.");
+        APP_LOGI("Install asyncCallback.");
         napi_valuetype valuetype = napi_undefined;
         NAPI_CALL(env, napi_typeof(env, argv[ARGS_SIZE_TWO], &valuetype));
         if (valuetype != napi_function) {
-            HILOG_ERROR("Wrong argument type. Function expected.");
+            APP_LOGE("Wrong argument type. Function expected.");
             return nullptr;
         }
         napi_create_reference(env, argv[ARGS_SIZE_TWO], NAPI_RETURN_ONE, &asyncCallbackInfo->callback);
@@ -3068,7 +3069,7 @@ napi_value Install(napi_env env, napi_callback_info info)
                     asyncCallbackInfo->installResult);
             },
             [](napi_env env, napi_status status, void *data) {
-                HILOG_INFO("=================load=================");
+                APP_LOGI("=================load=================");
                 AsyncInstallCallbackInfo *asyncCallbackInfo = (AsyncInstallCallbackInfo *)data;
                 ConvertInstallResult(asyncCallbackInfo->installResult);
                 napi_value result;
@@ -3103,7 +3104,7 @@ napi_value Install(napi_env env, napi_callback_info info)
 
 napi_value Recover(napi_env env, napi_callback_info info)
 {
-    HILOG_DEBUG("Recover by bundleName called");
+    APP_LOGD("Recover by bundleName called");
     size_t argc = ARGS_SIZE_THREE;
     napi_value argv[ARGS_SIZE_THREE] = {nullptr};
     AsyncInstallCallbackInfo *asyncCallbackInfo = new (std::nothrow) AsyncInstallCallbackInfo {
@@ -3117,19 +3118,19 @@ napi_value Recover(napi_env env, napi_callback_info info)
     }
 
     NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, NULL, NULL));
-    HILOG_DEBUG("argc = [%{public}zu]", argc);
+    APP_LOGD("argc = [%{public}zu]", argc);
     std::string bundleName;
     ParseString(env, bundleName, argv[PARAM0]);
     InstallParam installParam;
     if (!ParseInstallParam(env, installParam, argv[PARAM1])) {
-        HILOG_ERROR("Recover installParam error.");
+        APP_LOGE("Recover installParam error.");
         asyncCallbackInfo->errCode = PARAM_TYPE_ERROR;
     }
 
     asyncCallbackInfo->installParam = installParam;
     asyncCallbackInfo->bundleName = bundleName;
     if (argc > (ARGS_SIZE_THREE - CALLBACK_SIZE)) {
-        HILOG_DEBUG("Recover by bundleName asyncCallback.");
+        APP_LOGD("Recover by bundleName asyncCallback.");
         napi_valuetype valuetype = napi_undefined;
         NAPI_CALL(env, napi_typeof(env, argv[ARGS_SIZE_TWO], &valuetype));
         NAPI_ASSERT(env, valuetype == napi_function, "Wrong argument type. Function expected.");
@@ -3257,18 +3258,18 @@ static void InnerUninstall(
 {
     auto iBundleMgr = GetBundleMgr();
     if (!iBundleMgr) {
-        HILOG_ERROR("can not get iBundleMgr");
+        APP_LOGE("can not get iBundleMgr");
         return;
     }
     auto iBundleInstaller = iBundleMgr->GetBundleInstaller();
     if ((iBundleInstaller == nullptr) || (iBundleInstaller->AsObject() == nullptr)) {
-        HILOG_ERROR("can not get iBundleInstaller");
+        APP_LOGE("can not get iBundleInstaller");
         return;
     }
     installParam.installFlag = InstallFlag::NORMAL;
     OHOS::sptr<InstallerCallback> callback = new InstallerCallback();
     if (!callback) {
-        HILOG_ERROR("callback nullptr");
+        APP_LOGE("callback nullptr");
         return;
     }
 
@@ -3276,16 +3277,16 @@ static void InnerUninstall(
     iBundleInstaller->AsObject()->AddDeathRecipient(recipient);
     iBundleInstaller->Uninstall(bundleName, installParam, callback);
     installResult.resultMsg = callback->GetResultMsg();
-    HILOG_INFO("-----InnerUninstall resultMsg %{public}s-----", installResult.resultMsg.c_str());
+    APP_LOGI("-----InnerUninstall resultMsg %{public}s-----", installResult.resultMsg.c_str());
     installResult.resultCode = callback->GetResultCode();
-    HILOG_INFO("-----InnerUninstall resultCode %{public}d-----", installResult.resultCode);
+    APP_LOGI("-----InnerUninstall resultCode %{public}d-----", installResult.resultCode);
 }
 /**
  * Promise and async callback
  */
 napi_value Uninstall(napi_env env, napi_callback_info info)
 {
-    HILOG_INFO("Uninstall called");
+    APP_LOGI("Uninstall called");
     size_t argc = ARGS_SIZE_THREE;
     napi_value argv[ARGS_SIZE_THREE] = {nullptr};
     AsyncInstallCallbackInfo *asyncCallbackInfo = new (std::nothrow) AsyncInstallCallbackInfo {
@@ -3299,19 +3300,19 @@ napi_value Uninstall(napi_env env, napi_callback_info info)
     }
 
     NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, NULL, NULL));
-    HILOG_INFO("argc = [%{public}zu]", argc);
+    APP_LOGI("argc = [%{public}zu]", argc);
     std::string bundleName;
     ParseString(env, bundleName, argv[PARAM0]);
     InstallParam installParam;
     if (!ParseInstallParam(env, installParam, argv[PARAM1])) {
-        HILOG_ERROR("Uninstall installParam error.");
+        APP_LOGE("Uninstall installParam error.");
         asyncCallbackInfo->errCode = PARAM_TYPE_ERROR;
     }
 
     asyncCallbackInfo->installParam = installParam;
     asyncCallbackInfo->bundleName = bundleName;
     if (argc > (ARGS_SIZE_THREE - CALLBACK_SIZE)) {
-        HILOG_INFO("Uninstall asyncCallback.");
+        APP_LOGI("Uninstall asyncCallback.");
         napi_valuetype valuetype = napi_undefined;
         NAPI_CALL(env, napi_typeof(env, argv[ARGS_SIZE_TWO], &valuetype));
         NAPI_ASSERT(env, valuetype == napi_function, "Wrong argument type. Function expected.");
@@ -3401,7 +3402,7 @@ napi_value Uninstall(napi_env env, napi_callback_info info)
                     env, asyncCallbackInfo->param, asyncCallbackInfo->installParam, asyncCallbackInfo->installResult);
             },
             [](napi_env env, napi_status status, void *data) {
-                HILOG_INFO("=================load=================");
+                APP_LOGI("=================load=================");
                 AsyncInstallCallbackInfo *asyncCallbackInfo = (AsyncInstallCallbackInfo *)data;
                 ConvertInstallResult(asyncCallbackInfo->installResult);
                 napi_value result;
@@ -3445,7 +3446,7 @@ static bool InnerGetAllFormsInfo(napi_env env, std::vector<OHOS::AppExecFwk::For
 {
     auto iBundleMgr = GetBundleMgr();
     if (!iBundleMgr) {
-        HILOG_ERROR("can not get iBundleMgr");
+        APP_LOGE("can not get iBundleMgr");
         return false;
     }
     return iBundleMgr->GetAllFormsInfo(formInfos);
@@ -3454,11 +3455,11 @@ static bool InnerGetAllFormsInfo(napi_env env, std::vector<OHOS::AppExecFwk::For
 static void ProcessFormsInfo(napi_env env, napi_value result, const std::vector<OHOS::AppExecFwk::FormInfo> &formInfos)
 {
     if (formInfos.size() > 0) {
-        HILOG_INFO("-----formInfos is not null-----");
+        APP_LOGI("-----formInfos is not null-----");
         size_t index = 0;
         for (const auto &item : formInfos) {
-            HILOG_INFO("name{%s} ", item.name.c_str());
-            HILOG_INFO("bundleName{%s} ", item.bundleName.c_str());
+            APP_LOGI("name{%s} ", item.name.c_str());
+            APP_LOGI("bundleName{%s} ", item.bundleName.c_str());
             napi_value objFormInfo;
             NAPI_CALL_RETURN_VOID(env, napi_create_object(env, &objFormInfo));
             ConvertFormInfo(env, objFormInfo, item);
@@ -3466,7 +3467,7 @@ static void ProcessFormsInfo(napi_env env, napi_value result, const std::vector<
             index++;
         }
     } else {
-        HILOG_INFO("-----formInfos is null-----");
+        APP_LOGI("-----formInfos is null-----");
     }
 }
 /**
@@ -3479,7 +3480,7 @@ napi_value GetAllFormsInfo(napi_env env, napi_callback_info info)
     napi_value thisArg;
     void *data = nullptr;
     NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, &thisArg, &data));
-    HILOG_INFO("ARGCSIZE is =%{public}zu.", argc);
+    APP_LOGI("ARGCSIZE is =%{public}zu.", argc);
 
     AsyncFormInfosCallbackInfo *asyncCallbackInfo = new AsyncFormInfosCallbackInfo {
         .env = env,
@@ -3490,7 +3491,7 @@ napi_value GetAllFormsInfo(napi_env env, napi_callback_info info)
         return nullptr;
     }
     if (argc > (ARGS_SIZE_ONE - CALLBACK_SIZE)) {
-        HILOG_INFO("GetAllFormsInfo asyncCallback.");
+        APP_LOGI("GetAllFormsInfo asyncCallback.");
         napi_value resourceName;
         NAPI_CALL(env, napi_create_string_latin1(env, "GetAllFormsInfo", NAPI_AUTO_LENGTH, &resourceName));
         napi_valuetype valuetype = napi_undefined;
@@ -3542,7 +3543,7 @@ napi_value GetAllFormsInfo(napi_env env, napi_callback_info info)
         NAPI_CALL(env, napi_create_int32(env, NAPI_RETURN_ONE, &result));
         return result;
     } else {
-        HILOG_INFO("GetFormInfos promise.");
+        APP_LOGI("GetFormInfos promise.");
         napi_deferred deferred;
         napi_value promise;
         NAPI_CALL(env, napi_create_promise(env, &deferred, &promise));
@@ -3559,7 +3560,7 @@ napi_value GetAllFormsInfo(napi_env env, napi_callback_info info)
                 InnerGetAllFormsInfo(env, asyncCallbackInfo->formInfos);
             },
             [](napi_env env, napi_status status, void *data) {
-                HILOG_INFO("=================load=================");
+                APP_LOGI("=================load=================");
                 AsyncFormInfosCallbackInfo *asyncCallbackInfo = (AsyncFormInfosCallbackInfo *)data;
                 napi_value result;
                 napi_create_array(env, &result);
@@ -3590,7 +3591,7 @@ static bool InnerGetFormInfosByModule(napi_env env, const std::string &bundleNam
 {
     auto iBundleMgr = GetBundleMgr();
     if (!iBundleMgr) {
-        HILOG_ERROR("can not get iBundleMgr");
+        APP_LOGE("can not get iBundleMgr");
         return false;
     }
     return iBundleMgr->GetFormsInfoByModule(bundleName, moduleName, formInfos);
@@ -3605,7 +3606,7 @@ napi_value GetFormsInfoByModule(napi_env env, napi_callback_info info)
     napi_value thisArg;
     void *data = nullptr;
     NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, &thisArg, &data));
-    HILOG_INFO("ARGCSIZE is =%{public}zu.", argc);
+    APP_LOGI("ARGCSIZE is =%{public}zu.", argc);
     std::string bundleName;
     std::string moduleName;
     ParseString(env, bundleName, argv[PARAM0]);
@@ -3622,7 +3623,7 @@ napi_value GetFormsInfoByModule(napi_env env, napi_callback_info info)
         return nullptr;
     }
     if (argc > (ARGS_SIZE_THREE - CALLBACK_SIZE)) {
-        HILOG_INFO("GetFormsInfoByModule asyncCallback.");
+        APP_LOGI("GetFormsInfoByModule asyncCallback.");
         napi_value resourceName;
         NAPI_CALL(env, napi_create_string_latin1(env, "GetFormsInfoByModule", NAPI_AUTO_LENGTH, &resourceName));
         napi_valuetype valuetype = napi_undefined;
@@ -3674,7 +3675,7 @@ napi_value GetFormsInfoByModule(napi_env env, napi_callback_info info)
         NAPI_CALL(env, napi_create_int32(env, NAPI_RETURN_ONE, &result));
         return result;
     } else {
-        HILOG_INFO("GetFormsInfoByModule promise.");
+        APP_LOGI("GetFormsInfoByModule promise.");
         napi_deferred deferred;
         napi_value promise;
         NAPI_CALL(env, napi_create_promise(env, &deferred, &promise));
@@ -3692,7 +3693,7 @@ napi_value GetFormsInfoByModule(napi_env env, napi_callback_info info)
                     env, asyncCallbackInfo->bundleName, asyncCallbackInfo->moduleName, asyncCallbackInfo->formInfos);
             },
             [](napi_env env, napi_status status, void *data) {
-                HILOG_INFO("=================load=================");
+                APP_LOGI("=================load=================");
                 AsyncFormInfosByModuleCallbackInfo *asyncCallbackInfo = (AsyncFormInfosByModuleCallbackInfo *)data;
                 napi_value result;
                 napi_create_array(env, &result);
@@ -3723,7 +3724,7 @@ static bool InnerGetFormInfosByApp(
 {
     auto iBundleMgr = GetBundleMgr();
     if (!iBundleMgr) {
-        HILOG_ERROR("can not get iBundleMgr");
+        APP_LOGE("can not get iBundleMgr");
         return false;
     }
     return iBundleMgr->GetFormsInfoByApp(bundleName, formInfos);
@@ -3738,7 +3739,7 @@ napi_value GetFormsInfoByApp(napi_env env, napi_callback_info info)
     napi_value thisArg;
     void *data = nullptr;
     NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, &thisArg, &data));
-    HILOG_INFO("ARGCSIZE is =%{public}zu.", argc);
+    APP_LOGI("ARGCSIZE is =%{public}zu.", argc);
     std::string bundleName;
     ParseString(env, bundleName, argv[PARAM0]);
 
@@ -3752,7 +3753,7 @@ napi_value GetFormsInfoByApp(napi_env env, napi_callback_info info)
         return nullptr;
     }
     if (argc > (ARGS_SIZE_TWO - CALLBACK_SIZE)) {
-        HILOG_INFO("GetFormsInfoByApp asyncCallback.");
+        APP_LOGI("GetFormsInfoByApp asyncCallback.");
         napi_value resourceName;
         NAPI_CALL(env, napi_create_string_latin1(env, "GetFormsInfoByApp", NAPI_AUTO_LENGTH, &resourceName));
         napi_valuetype valuetype = napi_undefined;
@@ -3804,7 +3805,7 @@ napi_value GetFormsInfoByApp(napi_env env, napi_callback_info info)
         NAPI_CALL(env, napi_create_int32(env, NAPI_RETURN_ONE, &result));
         return result;
     } else {
-        HILOG_INFO("GetFormsInfoByApp promise.");
+        APP_LOGI("GetFormsInfoByApp promise.");
         napi_deferred deferred;
         napi_value promise;
         NAPI_CALL(env, napi_create_promise(env, &deferred, &promise));
@@ -3821,7 +3822,7 @@ napi_value GetFormsInfoByApp(napi_env env, napi_callback_info info)
                 InnerGetFormInfosByApp(env, asyncCallbackInfo->bundleName, asyncCallbackInfo->formInfos);
             },
             [](napi_env env, napi_status status, void *data) {
-                HILOG_INFO("=================load=================");
+                APP_LOGI("=================load=================");
                 AsyncFormInfosByAppCallbackInfo *asyncCallbackInfo = (AsyncFormInfosByAppCallbackInfo *)data;
                 napi_value result;
                 napi_create_array(env, &result);
@@ -3851,11 +3852,11 @@ static void ProcessShortcutInfos(
     napi_env env, napi_value result, const std::vector<OHOS::AppExecFwk::ShortcutInfo> &shortcutInfos)
 {
     if (shortcutInfos.size() > 0) {
-        HILOG_INFO("-----ShortcutInfos is not null-----");
+        APP_LOGI("-----ShortcutInfos is not null-----");
         size_t index = 0;
         for (const auto &item : shortcutInfos) {
-            HILOG_INFO("shortcutId{%s} ", item.id.c_str());
-            HILOG_INFO("bundleName{%s} ", item.bundleName.c_str());
+            APP_LOGI("shortcutId{%s} ", item.id.c_str());
+            APP_LOGI("bundleName{%s} ", item.bundleName.c_str());
             napi_value objShortcutInfo;
             NAPI_CALL_RETURN_VOID(env, napi_create_object(env, &objShortcutInfo));
             ConvertShortcutInfos(env, objShortcutInfo, item);
@@ -3863,7 +3864,7 @@ static void ProcessShortcutInfos(
             index++;
         }
     } else {
-        HILOG_INFO("-----ShortcutInfos is null-----");
+        APP_LOGI("-----ShortcutInfos is null-----");
     }
 }
 
@@ -3872,7 +3873,7 @@ static bool InnerGetShortcutInfos(
 {
     auto iBundleMgr = GetBundleMgr();
     if (!iBundleMgr) {
-        HILOG_ERROR("can not get iBundleMgr");
+        APP_LOGE("can not get iBundleMgr");
         return false;
     }
     return iBundleMgr->GetShortcutInfos(bundleName, shortcutInfos);
@@ -3882,7 +3883,7 @@ static bool InnerGetShortcutInfos(
  */
 napi_value GetShortcutInfos(napi_env env, napi_callback_info info)
 {
-    HILOG_INFO("NAPI_GetShortcutInfos called");
+    APP_LOGI("NAPI_GetShortcutInfos called");
     size_t argc = ARGS_SIZE_TWO;
     napi_value argv[ARGS_SIZE_TWO] = {nullptr};
     napi_value thisArg = nullptr;
@@ -3890,7 +3891,7 @@ napi_value GetShortcutInfos(napi_env env, napi_callback_info info)
 
     AsyncShortcutInfosCallbackInfo *asyncCallbackInfo = new AsyncShortcutInfosCallbackInfo();
     NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, &thisArg, &data));
-    HILOG_INFO("argc = [%{public}zu]", argc);
+    APP_LOGI("argc = [%{public}zu]", argc);
 
     asyncCallbackInfo->env = env;
     for (size_t i = 0; i < argc; ++i) {
@@ -3968,11 +3969,11 @@ static void ProcessModuleUsageRecords(
     napi_env env, napi_value result, const std::vector<OHOS::AppExecFwk::ModuleUsageRecord> &moduleUsageRecords)
 {
     if (moduleUsageRecords.size() > 0) {
-        HILOG_INFO("-----moduleUsageRecords is not null-----");
+        APP_LOGI("-----moduleUsageRecords is not null-----");
         size_t index = 0;
         for (const auto &item : moduleUsageRecords) {
-            HILOG_INFO("bundleName{%s} ", item.bundleName.c_str());
-            HILOG_INFO("abilityName{%s} ", item.abilityName.c_str());
+            APP_LOGI("bundleName{%s} ", item.bundleName.c_str());
+            APP_LOGI("abilityName{%s} ", item.abilityName.c_str());
             napi_value objModuleUsageRecord;
             NAPI_CALL_RETURN_VOID(env, napi_create_object(env, &objModuleUsageRecord));
             ConvertModuleUsageRecords(env, objModuleUsageRecord, item);
@@ -3980,7 +3981,7 @@ static void ProcessModuleUsageRecords(
             index++;
         }
     } else {
-        HILOG_INFO("-----moduleUsageRecords is null-----");
+        APP_LOGI("-----moduleUsageRecords is null-----");
     }
 }
 
@@ -3989,7 +3990,7 @@ static bool InnerGetModuleUsageRecords(
 {
     auto iBundleMgr = GetBundleMgr();
     if (!iBundleMgr) {
-        HILOG_ERROR("can not get iBundleMgr");
+        APP_LOGE("can not get iBundleMgr");
         return false;
     }
     return iBundleMgr->GetModuleUsageRecords(number, moduleUsageRecords);
@@ -4004,7 +4005,7 @@ napi_value GetModuleUsageRecords(napi_env env, napi_callback_info info)
     napi_value thisArg;
     void *data = nullptr;
     NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, &thisArg, &data));
-    HILOG_INFO("ARGCSIZE is =%{public}zu.", argc);
+    APP_LOGI("ARGCSIZE is =%{public}zu.", argc);
     int number;
     ParseInt(env, number, argv[PARAM0]);
     AsyncModuleUsageRecordsCallbackInfo *asyncCallbackInfo = new (std::nothrow) AsyncModuleUsageRecordsCallbackInfo {
@@ -4017,7 +4018,7 @@ napi_value GetModuleUsageRecords(napi_env env, napi_callback_info info)
         return nullptr;
     }
     if (argc > (ARGS_SIZE_TWO - CALLBACK_SIZE)) {
-        HILOG_INFO("GetModuleUsageRecords asyncCallback.");
+        APP_LOGI("GetModuleUsageRecords asyncCallback.");
         napi_value resourceName;
         NAPI_CALL(env, napi_create_string_latin1(env, "GetModuleUsageRecords", NAPI_AUTO_LENGTH, &resourceName));
         napi_valuetype valuetype = napi_undefined;
@@ -4069,7 +4070,7 @@ napi_value GetModuleUsageRecords(napi_env env, napi_callback_info info)
         NAPI_CALL(env, napi_create_int32(env, NAPI_RETURN_ONE, &result));
         return result;
     } else {
-        HILOG_INFO("GetModuleUsageRecords promise.");
+        APP_LOGI("GetModuleUsageRecords promise.");
         napi_deferred deferred;
         napi_value promise;
         NAPI_CALL(env, napi_create_promise(env, &deferred, &promise));
@@ -4086,7 +4087,7 @@ napi_value GetModuleUsageRecords(napi_env env, napi_callback_info info)
                 InnerGetModuleUsageRecords(env, asyncCallbackInfo->number, asyncCallbackInfo->moduleUsageRecords);
             },
             [](napi_env env, napi_status status, void *data) {
-                HILOG_INFO("=================load=================");
+                APP_LOGI("=================load=================");
                 AsyncModuleUsageRecordsCallbackInfo *asyncCallbackInfo = (AsyncModuleUsageRecordsCallbackInfo *)data;
                 napi_value result;
                 napi_create_array(env, &result);
@@ -4114,42 +4115,42 @@ napi_value GetModuleUsageRecords(napi_env env, napi_callback_info info)
 
 static bool InnerRegisterAllPermissionsChanged(napi_env env, napi_ref callbackRef)
 {
-    HILOG_INFO("InnerRegisterAllPermissionsChanged begin");
+    APP_LOGI("InnerRegisterAllPermissionsChanged begin");
     auto iBundleMgr = GetBundleMgr();
     if (!iBundleMgr) {
-        HILOG_ERROR("can not get iBundleMgr");
+        APP_LOGE("can not get iBundleMgr");
         return false;
     }
     OHOS::sptr<PermissionCallback> callback = new PermissionCallback(env, callbackRef);
     if (!callback) {
-        HILOG_ERROR("callback nullptr");
+        APP_LOGE("callback nullptr");
         return false;
     }
     auto result = iBundleMgr->RegisterAllPermissionsChanged(callback);
     if (!result) {
-        HILOG_ERROR("RegisterAllPermissionsChanged call error");
+        APP_LOGE("RegisterAllPermissionsChanged call error");
         return false;
     }
     std::lock_guard<std::mutex> lock(g_anyPermissionsCallbackMutex);
     auto ret = g_anyPermissionsCallback.emplace(callbackRef, callback);
     if (!ret.second) {
-        HILOG_ERROR("RegisterAllPermissionsChanged emplace failed");
+        APP_LOGE("RegisterAllPermissionsChanged emplace failed");
         return false;
     }
-    HILOG_INFO("InnerRegisterAllPermissionsChanged end");
+    APP_LOGI("InnerRegisterAllPermissionsChanged end");
     return true;
 }
 
 static napi_value ParseInt32Array(napi_env env, std::vector<int32_t> &uids, napi_value args)
 {
-    HILOG_INFO("Parseint32Array called");
+    APP_LOGI("Parseint32Array called");
     bool isArray = false;
     uint32_t arrayLength = 0;
     napi_value valueAry = 0;
     napi_valuetype valueAryType = napi_undefined;
     NAPI_CALL(env, napi_is_array(env, args, &isArray));
     NAPI_CALL(env, napi_get_array_length(env, args, &arrayLength));
-    HILOG_INFO("Parseint32Array args is array, length=%{public}ud", arrayLength);
+    APP_LOGI("Parseint32Array args is array, length=%{public}ud", arrayLength);
 
     for (uint32_t j = 0; j < arrayLength; j++) {
         NAPI_CALL(env, napi_get_element(env, args, j, &valueAry));
@@ -4168,20 +4169,20 @@ static napi_value ParseInt32Array(napi_env env, std::vector<int32_t> &uids, napi
 
 static bool InnerRegisterPermissionsChanged(napi_env env, const std::vector<int32_t> &uids, napi_ref callbackRef)
 {
-    HILOG_INFO("InnerRegisterPermissionsChanged begin");
+    APP_LOGI("InnerRegisterPermissionsChanged begin");
     auto iBundleMgr = GetBundleMgr();
     if (!iBundleMgr) {
-        HILOG_ERROR("can not get iBundleMgr");
+        APP_LOGE("can not get iBundleMgr");
         return false;
     }
     OHOS::sptr<PermissionCallback> callback = new PermissionCallback(env, callbackRef);
     if (!callback) {
-        HILOG_ERROR("callback nullptr");
+        APP_LOGE("callback nullptr");
         return false;
     }
     auto result = iBundleMgr->RegisterPermissionsChanged(uids, callback);
     if (!result) {
-        HILOG_ERROR("RegisterAllPermissionsChanged call error");
+        APP_LOGE("RegisterAllPermissionsChanged call error");
         return false;
     }
 
@@ -4193,10 +4194,10 @@ static bool InnerRegisterPermissionsChanged(napi_env env, const std::vector<int3
     std::lock_guard<std::mutex> lock(g_permissionsCallbackMutex);
     auto ret = g_permissionsCallback.emplace(permissonsKey, callback);
     if (!ret.second) {
-        HILOG_ERROR("InnerRegisterPermissionsChanged emplace failed");
+        APP_LOGE("InnerRegisterPermissionsChanged emplace failed");
         return false;
     }
-    HILOG_INFO("InnerRegisterPermissionsChanged end");
+    APP_LOGI("InnerRegisterPermissionsChanged end");
     return true;
 }
 
@@ -4207,7 +4208,7 @@ napi_value RegisterAllPermissionsChanged(napi_env env, napi_callback_info info)
     napi_value thisArg;
     void *data = nullptr;
     NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, &thisArg, &data));
-    HILOG_INFO("ARGCSIZE is = %{public}zu.", argc);
+    APP_LOGI("ARGCSIZE is = %{public}zu.", argc);
     std::string permissionEvent;
     ParseString(env, permissionEvent, argv[PARAM0]);
     if (permissionEvent == PERMISSION_CHANGE && argc == ARGS_SIZE_THREE) {
@@ -4221,7 +4222,7 @@ napi_value RegisterAllPermissionsChanged(napi_env env, napi_callback_info info)
         if (asyncCallbackInfo == nullptr) {
             return nullptr;
         }
-        HILOG_INFO("RegisterAllPermissionsChanged permissionChange asyncCallback.");
+        APP_LOGI("RegisterAllPermissionsChanged permissionChange asyncCallback.");
         napi_valuetype valuetype = napi_undefined;
         napi_typeof(env, argv[ARGS_SIZE_TWO], &valuetype);
         NAPI_ASSERT(env, valuetype == napi_function, "Wrong argument type. Function expected.");
@@ -4265,7 +4266,7 @@ napi_value RegisterAllPermissionsChanged(napi_env env, napi_callback_info info)
         if (asyncCallbackInfo == nullptr) {
             return nullptr;
         }
-        HILOG_INFO("RegisterAllPermissionsChanged anyPermissionChange asyncCallback.");
+        APP_LOGI("RegisterAllPermissionsChanged anyPermissionChange asyncCallback.");
         napi_valuetype valuetype = napi_undefined;
         napi_typeof(env, argv[ARGS_SIZE_ONE], &valuetype);
         NAPI_ASSERT(env, valuetype == napi_function, "Wrong argument type. Function expected.");
@@ -4309,7 +4310,7 @@ napi_value RegisterAllPermissionsChanged(napi_env env, napi_callback_info info)
 
 static bool InnerUnregisterAnyPermissionsChanged(napi_env env, napi_ref callbackRef)
 {
-    HILOG_INFO("InnerUnregisterAnyPermissionsChanged");
+    APP_LOGI("InnerUnregisterAnyPermissionsChanged");
     std::lock_guard<std::mutex> lock(g_anyPermissionsCallbackMutex);
     for (const auto &item : g_anyPermissionsCallback) {
         napi_value callback = 0;
@@ -4318,30 +4319,30 @@ static bool InnerUnregisterAnyPermissionsChanged(napi_env env, napi_ref callback
         napi_get_reference_value(env, callbackRef, &ref);
         bool result = false;
         auto napiRet = napi_strict_equals(env, callback, ref, &result);
-        HILOG_INFO("status is = %{public}d.", napiRet);
+        APP_LOGI("status is = %{public}d.", napiRet);
         if (result) {
-            HILOG_INFO("find value in g_anyPermissionsCallback");
+            APP_LOGI("find value in g_anyPermissionsCallback");
             auto iBundleMgr = GetBundleMgr();
             if (!iBundleMgr) {
-                HILOG_ERROR("can not get iBundleMgr");
+                APP_LOGE("can not get iBundleMgr");
                 return false;
             }
             auto ret = iBundleMgr->UnregisterPermissionsChanged(item.second);
             if (!ret) {
-                HILOG_ERROR("UnregisterPermissionsChanged call error");
+                APP_LOGE("UnregisterPermissionsChanged call error");
                 return false;
             }
             g_anyPermissionsCallback.erase(item.first);
             return true;
         }
     }
-    HILOG_INFO("InnerUnregisterAnyPermissionsChanged end");
+    APP_LOGI("InnerUnregisterAnyPermissionsChanged end");
     return false;
 }
 
 static bool InnerUnregisterPermissionsChanged(napi_env env, const std::vector<int32_t> &uids, napi_ref callbackRef)
 {
-    HILOG_INFO("InnerUnregisterPermissionsChanged");
+    APP_LOGI("InnerUnregisterPermissionsChanged");
     std::lock_guard<std::mutex> lock(g_permissionsCallbackMutex);
     for (const auto &item : g_permissionsCallback) {
         napi_value callback = 0;
@@ -4350,26 +4351,26 @@ static bool InnerUnregisterPermissionsChanged(napi_env env, const std::vector<in
         napi_get_reference_value(env, callbackRef, &ref);
         bool result = false;
         auto napiRet = napi_strict_equals(env, callback, ref, &result);
-        HILOG_INFO("status is = %{public}d.", napiRet);
+        APP_LOGI("status is = %{public}d.", napiRet);
         if (result && uids == item.first.uids) {
-            HILOG_INFO("find value in g_permissionsCallback");
+            APP_LOGI("find value in g_permissionsCallback");
             auto iBundleMgr = GetBundleMgr();
             if (!iBundleMgr) {
-                HILOG_ERROR("can not get iBundleMgr");
+                APP_LOGE("can not get iBundleMgr");
                 return false;
             }
             auto ret = iBundleMgr->UnregisterPermissionsChanged(item.second);
             if (!ret) {
-                HILOG_ERROR("InnerUnregisterPermissionsChanged call error");
+                APP_LOGE("InnerUnregisterPermissionsChanged call error");
                 return false;
             }
-            HILOG_INFO("call UnregisterPermissionsChanged success = %{public}zu.", g_permissionsCallback.size());
+            APP_LOGI("call UnregisterPermissionsChanged success = %{public}zu.", g_permissionsCallback.size());
             g_permissionsCallback.erase(item.first);
             return true;
         }
-        HILOG_INFO("can not find value in g_permissionsCallback");
+        APP_LOGI("can not find value in g_permissionsCallback");
     }
-    HILOG_INFO("InnerUnregisterPermissionsChanged end");
+    APP_LOGI("InnerUnregisterPermissionsChanged end");
     return false;
 }
 
@@ -4377,7 +4378,7 @@ static bool InnerGetAppPrivilegeLevel(const std::string &bundleName, std::string
 {
     auto iBundleMgr = GetBundleMgr();
     if (!iBundleMgr) {
-        HILOG_ERROR("can not get iBundleMgr");
+        APP_LOGE("can not get iBundleMgr");
         return false;
     }
     std::string level = iBundleMgr->GetAppPrivilegeLevel(bundleName);
@@ -4392,7 +4393,7 @@ napi_value UnregisterPermissionsChanged(napi_env env, napi_callback_info info)
     napi_value thisArg;
     void *data = nullptr;
     NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, &thisArg, &data));
-    HILOG_INFO("ARGCSIZE is =%{public}zu.", argc);
+    APP_LOGI("ARGCSIZE is =%{public}zu.", argc);
     std::string permissionEvent;
     ParseString(env, permissionEvent, argv[PARAM0]);
 
@@ -4404,7 +4405,7 @@ napi_value UnregisterPermissionsChanged(napi_env env, napi_callback_info info)
         if (asyncCallbackInfo == nullptr) {
             return nullptr;
         }
-        HILOG_INFO("UnregisterAnyPermissionsChanged asyncCallback.");
+        APP_LOGI("UnregisterAnyPermissionsChanged asyncCallback.");
         napi_valuetype valuetype = napi_undefined;
         napi_typeof(env, argv[ARGS_SIZE_ONE], &valuetype);
         NAPI_ASSERT(env, valuetype == napi_function, "Wrong argument type. Function expected.");
@@ -4459,7 +4460,7 @@ napi_value UnregisterPermissionsChanged(napi_env env, napi_callback_info info)
         if (asyncCallbackInfo == nullptr) {
             return nullptr;
         }
-        HILOG_INFO("UnregisterPermissionsChanged asyncCallback.");
+        APP_LOGI("UnregisterPermissionsChanged asyncCallback.");
         napi_valuetype valuetype = napi_undefined;
         napi_typeof(env, argv[ARGS_SIZE_TWO], &valuetype);
         NAPI_ASSERT(env, valuetype == napi_function, "Wrong argument type. Function expected.");
@@ -4515,7 +4516,7 @@ static int InnerCheckPermission(napi_env env, const std::string &bundleName, con
 {
     auto iBundleMgr = GetBundleMgr();
     if (!iBundleMgr) {
-        HILOG_ERROR("can not get iBundleMgr");
+        APP_LOGE("can not get iBundleMgr");
         return false;
     };
     int ret = iBundleMgr->CheckPermission(bundleName, permission);
@@ -4549,7 +4550,7 @@ napi_value CheckPermission(napi_env env, napi_callback_info info)
         return nullptr;
     }
     if (argc > (ARGS_SIZE_THREE - CALLBACK_SIZE)) {
-        HILOG_INFO("CheckPermission asyncCallback.");
+        APP_LOGI("CheckPermission asyncCallback.");
         napi_value resourceName;
         napi_create_string_latin1(env, "CheckPermission", NAPI_AUTO_LENGTH, &resourceName);
 
@@ -4602,7 +4603,7 @@ napi_value CheckPermission(napi_env env, napi_callback_info info)
         NAPI_CALL(env, napi_create_int32(env, NAPI_RETURN_ONE, &result));
         return result;
     } else {
-        HILOG_INFO("BundleMgr::CheckPermission promise.");
+        APP_LOGI("BundleMgr::CheckPermission promise.");
         napi_deferred deferred;
         napi_value promise;
         NAPI_CALL(env, napi_create_promise(env, &deferred, &promise));
@@ -4620,7 +4621,7 @@ napi_value CheckPermission(napi_env env, napi_callback_info info)
                     InnerCheckPermission(env, asyncCallbackInfo->bundleName, asyncCallbackInfo->permission);
             },
             [](napi_env env, napi_status status, void *data) {
-                HILOG_INFO("=================load=================");
+                APP_LOGI("=================load=================");
                 AsyncPermissionCallbackInfo *asyncCallbackInfo = (AsyncPermissionCallbackInfo *)data;
                 napi_value result;
                 napi_create_int32(asyncCallbackInfo->env, asyncCallbackInfo->ret, &result);
@@ -4649,12 +4650,12 @@ static bool InnerSetApplicationEnabled(napi_env env, const std::string &bundleNa
 {
     auto iBundleMgr = GetBundleMgr();
     if (!iBundleMgr) {
-        HILOG_ERROR("can not get iBundleMgr");
+        APP_LOGE("can not get iBundleMgr");
         return false;
     }
     auto result = iBundleMgr->SetApplicationEnabled(bundleName, isEnable);
     if (result) {
-        HILOG_ERROR("InnerSetApplicationEnabled::SetApplicationEnabled");
+        APP_LOGE("InnerSetApplicationEnabled::SetApplicationEnabled");
     }
     return result;
 }
@@ -4663,12 +4664,12 @@ static bool InnerSetAbilityEnabled(napi_env env, const OHOS::AppExecFwk::Ability
 {
     auto iBundleMgr = GetBundleMgr();
     if (!iBundleMgr) {
-        HILOG_ERROR("can not get iBundleMgr");
+        APP_LOGE("can not get iBundleMgr");
         return false;
     }
     auto result = iBundleMgr->SetAbilityEnabled(abilityInfo, isEnable);
     if (result) {
-        HILOG_ERROR("InnerSetAbilityEnabled::SetAbilityEnabled");
+        APP_LOGE("InnerSetAbilityEnabled::SetAbilityEnabled");
     }
     return result;
 }
@@ -4678,16 +4679,16 @@ static bool InnerCleanBundleCacheCallback(
 {
     auto iBundleMgr = GetBundleMgr();
     if (!iBundleMgr) {
-        HILOG_ERROR("can not get iBundleMgr");
+        APP_LOGE("can not get iBundleMgr");
         return false;
     }
     if (!cleanCacheCallback) {
-        HILOG_ERROR("callback nullptr");
+        APP_LOGE("callback nullptr");
         return false;
     }
     auto result = iBundleMgr->CleanBundleCacheFiles(bundleName, cleanCacheCallback);
     if (!result) {
-        HILOG_ERROR("CleanBundleDataFiles call error");
+        APP_LOGE("CleanBundleDataFiles call error");
         return result;
     }
 
@@ -4699,11 +4700,11 @@ static bool InnerGetRemoteAbilityInfo(
 {
     auto iDistBundleMgr = GetDistributedBundleMgr(elementName.GetDeviceID());
     if (!iDistBundleMgr) {
-        HILOG_ERROR("can not get iDistBundleMgr");
+        APP_LOGE("can not get iDistBundleMgr");
         return false;
     }
     if (!iDistBundleMgr->GetRemoteAbilityInfo(elementName, remoteAbilityInfo)) {
-        HILOG_ERROR("InnerGetRemoteAbilityInfo failed");
+        APP_LOGE("InnerGetRemoteAbilityInfo failed");
         return false;
     }
     return true;
@@ -5032,7 +5033,7 @@ bool UnwrapAbilityInfo(napi_env env, napi_value param, OHOS::AppExecFwk::Ability
     napi_valuetype valueType;
     NAPI_CALL(env, napi_typeof(env, param, &valueType));
     if (valueType != napi_object) {
-        HILOG_ERROR("param type mismatch!");
+        APP_LOGE("param type mismatch!");
         return false;
     }
 
@@ -5549,7 +5550,7 @@ static bool ParseWant(napi_env env, AsyncExtensionInfoCallbackInfo &info, napi_v
     napi_valuetype valueType;
     NAPI_CALL(env, napi_typeof(env, args, &valueType));
     if (valueType != napi_object) {
-        HILOG_ERROR("args not object type");
+        APP_LOGE("args not object type");
         return false;
     }
 
@@ -5557,36 +5558,36 @@ static bool ParseWant(napi_env env, AsyncExtensionInfoCallbackInfo &info, napi_v
     bool ret = false;
     napi_has_named_property(env, args, "extensionAbilityName", &ret);
     if (!ret) {
-        HILOG_WARN("cannot find the property of extensionAbilityName");
+        APP_LOGW("cannot find the property of extensionAbilityName");
     } else {
         napi_get_named_property(env, args, "extensionAbilityName", &prop);
         napi_typeof(env, prop, &valueType);
         if (valueType != napi_string) {
-            HILOG_ERROR("extensionAbilityName is not type of string");
+            APP_LOGE("extensionAbilityName is not type of string");
             return false;
         }
         info.extensionAbilityName = GetStringFromNAPI(env, prop);
-        HILOG_DEBUG("extensionAbilityInfo name is %{public}s", info.extensionAbilityName.c_str());
+        APP_LOGD("extensionAbilityInfo name is %{public}s", info.extensionAbilityName.c_str());
     }
 
     prop = nullptr;
     ret = false;
     napi_has_named_property(env, args, "extensionAbilityType", &ret);
     if (!ret) {
-        HILOG_WARN("cannot find the property of extensionAbilityType");
+        APP_LOGW("cannot find the property of extensionAbilityType");
     } else {
         napi_get_named_property(env, args, "extensionAbilityType", &prop);
         napi_typeof(env, prop, &valueType);
         if (valueType != napi_number) {
-            HILOG_ERROR("extensionAbilityName is not type of number");
+            APP_LOGE("extensionAbilityName is not type of number");
             return false;
         }
         napi_get_value_int32(env, prop, &(info.extensionAbilityType));
-        HILOG_DEBUG("extensionAbilityInfo type is %{public}d", info.extensionAbilityType);
+        APP_LOGD("extensionAbilityInfo type is %{public}d", info.extensionAbilityType);
     }
 
     if (!ParseWant(env, info.want, args)) {
-        HILOG_ERROR("parse want failed");
+        APP_LOGE("parse want failed");
         return false;
     }
     ElementName element = info.want.GetElement();
@@ -5599,18 +5600,18 @@ static bool InnerQueryExtensionInfo(napi_env env, AsyncExtensionInfoCallbackInfo
 {
     auto iBundleMgr = GetBundleMgr();
     if (!iBundleMgr) {
-        HILOG_ERROR("can not get iBundleMgr");
+        APP_LOGE("can not get iBundleMgr");
         return false;
     }
-    HILOG_DEBUG("action:%{public}s, uri:%{public}s, type:%{public}s, flags:%{public}d",
+    APP_LOGD("action:%{public}s, uri:%{public}s, type:%{public}s, flags:%{public}d",
         info.want.GetAction().c_str(), info.want.GetUriString().c_str(), info.want.GetType().c_str(), info.flags);
 
     if (info.extensionAbilityType < 0) {
-        HILOG_DEBUG("query extensionAbilityInfo without type");
+        APP_LOGD("query extensionAbilityInfo without type");
         return iBundleMgr->QueryExtensionAbilityInfos(info.want, info.flags, info.userId, info.extensionInfos);
     } else {
         auto type = static_cast<ExtensionAbilityType>(info.extensionAbilityType);
-        HILOG_DEBUG("query extensionAbilityInfo with type");
+        APP_LOGD("query extensionAbilityInfo with type");
         return iBundleMgr->QueryExtensionAbilityInfos(info.want, type, info.flags, info.userId, info.extensionInfos);
     }
 }
@@ -5620,12 +5621,12 @@ static bool InnerQueryExtensionInfo(napi_env env, AsyncExtensionInfoCallbackInfo
  */
 napi_value QueryExtensionInfoByWant(napi_env env, napi_callback_info info)
 {
-    HILOG_DEBUG("QueryExtensionInfoByWant start in NAPI");
+    APP_LOGD("QueryExtensionInfoByWant start in NAPI");
     size_t argc = ARGS_SIZE_FOUR;
     napi_value argv[ARGS_SIZE_FOUR] = { nullptr };
 
     NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, NULL, NULL));
-    HILOG_DEBUG("the count of input arguments is [%{public}zu]", argc);
+    APP_LOGD("the count of input arguments is [%{public}zu]", argc);
 
     AsyncExtensionInfoCallbackInfo *callBackInfo = new AsyncExtensionInfoCallbackInfo {
         .env = env,
@@ -5634,12 +5635,12 @@ napi_value QueryExtensionInfoByWant(napi_env env, napi_callback_info info)
     };
 
     if (callBackInfo == nullptr) {
-        HILOG_ERROR("QueryExtensionInfoByWant failed due to null callBackInfo");
+        APP_LOGE("QueryExtensionInfoByWant failed due to null callBackInfo");
         return nullptr;
     }
 
     if (argc < ARGS_SIZE_TWO || argc > ARGS_SIZE_FOUR) {
-        HILOG_ERROR("the number of input arguments is invalid");
+        APP_LOGE("the number of input arguments is invalid");
         return nullptr;
     }
     for (size_t i = 0; i < argc; ++i) {
@@ -5667,7 +5668,7 @@ napi_value QueryExtensionInfoByWant(napi_env env, napi_callback_info info)
         }
     }
 
-    HILOG_DEBUG("QueryExtensionInfoByWant finish to parse arguments");
+    APP_LOGD("QueryExtensionInfoByWant finish to parse arguments");
     napi_value promise = nullptr;
     if (callBackInfo->callback == nullptr) {
         napi_create_promise(env, &callBackInfo->deferred, &promise);

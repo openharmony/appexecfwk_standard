@@ -16,7 +16,7 @@
 
 #include <uv.h>
 
-#include "hilog_wrapper.h"
+#include "app_log_wrapper.h"
 #include "napi/native_common.h"
 
 namespace OHOS {
@@ -42,13 +42,13 @@ void PermissionCallback::OnChanged(const int32_t uid)
     napi_get_uv_event_loop(env_, &loop);
 #endif  // NAPI_VERSION >= 2
     if (loop == nullptr) {
-        HILOG_INFO("loop instance is nullptr");
+        APP_LOGI("loop instance is nullptr");
         return;
     }
 
     uv_work_t *work = new (std::nothrow) uv_work_t;
     if (work == nullptr) {
-        HILOG_ERROR("new uv_work_t failed");
+        APP_LOGE("new uv_work_t failed");
         return;
     }
     CallbackInfo *callbackInfo = new (std::nothrow) CallbackInfo{
@@ -57,7 +57,7 @@ void PermissionCallback::OnChanged(const int32_t uid)
         .uid = uid,
     };
     if (callbackInfo == nullptr) {
-        HILOG_ERROR("new CallbackInfo failed");
+        APP_LOGE("new CallbackInfo failed");
         return;
     }
     work->data = (void *)callbackInfo;
@@ -67,7 +67,7 @@ void PermissionCallback::OnChanged(const int32_t uid)
         work,
         [](uv_work_t *work) {},
         [](uv_work_t *work, int status) {
-            HILOG_INFO("CallOnPermissonChanged, uv_queue_work");
+            APP_LOGI("CallOnPermissonChanged, uv_queue_work");
             // JS Thread
             CallbackInfo *event = (CallbackInfo *)work->data;
             napi_value result[2] = {0};
@@ -100,7 +100,7 @@ void PermissionCallback::OnChanged(const int32_t uid)
             delete work;
         }
     }
-    HILOG_INFO("OnChanged, end");
+    APP_LOGI("OnChanged, end");
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS
