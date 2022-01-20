@@ -304,6 +304,18 @@ struct ElementNameInfo {
     std::string errMssage;
 };
 
+struct ElementNameInfos {
+    napi_env env = nullptr;
+    napi_async_work asyncWork = nullptr;
+    napi_deferred deferred = nullptr;
+    napi_ref callbackRef = 0;
+    std::vector<ElementName> elementNames;
+    std::vector<RemoteAbilityInfo> remoteAbilityInfos;
+    int32_t errCode = 0;
+    bool result = false;
+    std::string errMssage;
+};
+
 extern thread_local napi_ref g_classBundleInstaller;
 
 napi_value GetApplicationInfos(napi_env env, napi_callback_info info);
@@ -333,6 +345,7 @@ napi_value SetAbilityEnabled(napi_env env, napi_callback_info info);
 napi_value GetAppPrivilegeLevel(napi_env env, napi_callback_info info);
 napi_value QueryExtensionInfoByWant(napi_env env, napi_callback_info info);
 napi_value GetRemoteAbilityInfo(napi_env env, napi_callback_info info);
+napi_value GetRemoteAbilityInfos(napi_env env, napi_callback_info info);
 bool UnwrapAbilityInfo(napi_env env, napi_value param, OHOS::AppExecFwk::AbilityInfo& abilityInfo);
 void CreateAbilityTypeObject(napi_env env, napi_value value);
 void CreateAbilitySubTypeObject(napi_env env, napi_value value);
