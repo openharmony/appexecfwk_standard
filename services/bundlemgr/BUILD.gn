@@ -131,10 +131,7 @@ ohos_shared_library("libbms") {
 
   defines = [ "APP_LOG_TAG = \"BundleMgrService\"" ]
 
-  configs = [
-    ":bundlemgr_common_config",
-    "${libs_path}/libeventhandler:libeventhandler_config",
-  ]
+  configs = [ ":bundlemgr_common_config" ]
   cflags = []
   if (target_cpu == "arm") {
     cflags += [ "-DBINDER_IPC_32BIT" ]
