@@ -63,18 +63,6 @@ struct ReqPermission {
     UsedScene usedScene;
 };
 
-struct RequestPermissionUsedScene {
-    std::vector<std::string> abilities;
-    std::string when;
-};
-
-struct RequestPermission {
-    std::string name;
-    std::string reason;
-    int32_t reasonId = 0;
-    RequestPermissionUsedScene usedScene;
-};
-
 struct DefinePermission {
     std::string name;
     std::string grantMode = Profile::DEFINEPERMISSION_GRANT_MODE_DEFAULT_VALUE;
@@ -1476,7 +1464,6 @@ void from_json(const nlohmann::json &jsonObject, Distro &distro);
 void from_json(const nlohmann::json &jsonObject, ReqPermission &ReqPermission);
 void from_json(const nlohmann::json &jsonObject, DefPermission &DefPermission);
 void from_json(const nlohmann::json &jsonObject, InstallMark &installMark);
-void from_json(const nlohmann::json &jsonObject, RequestPermission &requestPermission);
 void from_json(const nlohmann::json &jsonObject, DefinePermission &definePermission);
 }  // namespace AppExecFwk
 }  // namespace OHOS
