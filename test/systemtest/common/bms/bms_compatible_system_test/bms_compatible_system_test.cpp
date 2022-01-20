@@ -1097,7 +1097,7 @@ HWTEST_F(BmsCompatibleSystemTest, BMS_GetDebug_0200, Function | MediumTest | Lev
 /**
  * @tc.number: BMS_GetDebug_0300
  * @tc.name: get new fileds Debug of an app which has two haps, both filed are cofiged different value
- * @tc.desc: 1. install app's two at the different time 
+ * @tc.desc: 1. install app's two at the different time
  *           2. call GetApplicationInfo to get debug
  *           3. uninstall the app
  */
@@ -1153,7 +1153,6 @@ HWTEST_F(BmsCompatibleSystemTest, BMS_GetIsKeepAliveAndSingleUser_0100, Function
     EXPECT_EQ(message, "Success") << "uninstall fail!";
     GTEST_LOG_(INFO) << "END BMS_GetIsKeepAliveAndSingleUser_0100";
 }
-
 
 /**
  * @tc.number: BMS_GetIsKeepAliveAndSingleUser_0200
@@ -1243,6 +1242,5 @@ HWTEST_F(BmsCompatibleSystemTest, BMS_GetIsKeepAliveAndSingleUser_0400, Function
     EXPECT_EQ(message, "Success") << "uninstall fail!";
     GTEST_LOG_(INFO) << "END BMS_GetIsKeepAliveAndSingleUser_0400";
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

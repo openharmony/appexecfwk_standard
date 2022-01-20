@@ -269,9 +269,9 @@ void BmsLauncherServiceSystemTest::CheckShortcutInfos(
         EXPECT_EQ(shortcutinfo.icon, "$media:icon");
         EXPECT_EQ(shortcutinfo.id, "id.third1");
         EXPECT_EQ(shortcutinfo.label, "$string:app_name");
-        for (auto intent : shortcutinfo.intents) {
-            EXPECT_EQ(intent.targetBundle, "com.example.third1");
-            EXPECT_EQ(intent.targetClass, "com.example.third1.MainAbility");
+        for (auto want : shortcutinfo.intents) {
+            EXPECT_EQ(want.targetBundle, "com.example.third1");
+            EXPECT_EQ(want.targetClass, "com.example.third1.MainAbility");
         }
     }
 }
