@@ -14,6 +14,7 @@
  */
 
 #include "amsabilityvisibletestpageb2.h"
+#include "context/context.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -163,7 +164,8 @@ void AmsAbilityVisibleTestPageB2::GetAndTriggerWantAgent(
     vec.push_back(wantParameter);
     WantAgentInfo info(0, operationType, WantAgentConstant::Flags::UPDATE_PRESENT_FLAG, vec, nullptr);
     APP_LOGI("AmsAbilityVisibleTestPageB2::StartOtherAbility()");
-    std::shared_ptr<WantAgent> agent = WantAgentHelper::GetWantAgent(GetContext(), info);
+    std::shared_ptr<AbilityRuntime::Context> context = OHOS::AbilityRuntime::Context::GetApplicationContext();
+    std::shared_ptr<WantAgent> agent = WantAgentHelper::GetWantAgent(context, info);
     if (agent == nullptr) {
         pageAbilityEvent.PublishEvent(
             STEventName::g_eventName, STEventName::g_defeventCode, STEventName::g_getWantAgentState);
@@ -172,7 +174,7 @@ void AmsAbilityVisibleTestPageB2::GetAndTriggerWantAgent(
     }
     TriggerInfo paramsInfo;
     std::shared_ptr<PendingWantCallback> callback = std::make_shared<PendingWantCallback>();
-    WantAgentHelper::TriggerWantAgent(GetContext(), agent, callback, paramsInfo);
+    WantAgentHelper::TriggerWantAgent(agent, callback, paramsInfo);
     APP_LOGI("AmsAbilityVisibleTestPageB2::StartOtherAbility():WantAgentHelper::TriggerWantAgent end.");
 }
 
