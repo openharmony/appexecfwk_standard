@@ -12,7 +12,6 @@
 # limitations under the License.
 
 import("//build/ohos.gni")
-import("//build/test.gni")
 import("//foundation/appexecfwk/standard/appexecfwk.gni")
 
 config("appexecfwk_base_sdk_config") {
@@ -23,8 +22,6 @@ config("appexecfwk_base_sdk_config") {
 }
 
 ohos_shared_library("appexecfwk_base") {
-  include_dirs = [ "//third_party/json/include" ]
-
   sources = [
     "src/ability_info.cpp",
     "src/application_info.cpp",
@@ -48,10 +45,7 @@ ohos_shared_library("appexecfwk_base") {
     "src/system_memory_attr.cpp",
   ]
 
-  public_configs = [
-    ":appexecfwk_base_sdk_config",
-    "//utils/native/base:utils_config",
-  ]
+  public_configs = [ ":appexecfwk_base_sdk_config" ]
 
   defines = [
     "APP_LOG_TAG = \"AppExecFwkBase\"",
@@ -61,14 +55,12 @@ ohos_shared_library("appexecfwk_base") {
   if (target_cpu == "arm") {
     cflags += [ "-DBINDER_IPC_32BIT" ]
   }
-  deps = [
-    "${common_path}:libappexecfwk_common",
-    "//utils/native/base:utils",
-  ]
+  deps = [ "${common_path}:libappexecfwk_common" ]
 
   external_deps = [
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
+    "utils_base:utils",
   ]
 
   subsystem_name = "appexecfwk"
