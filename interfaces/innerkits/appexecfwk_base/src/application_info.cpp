@@ -69,7 +69,7 @@ const std::string APPLICATION_DISTRIBUTED_NOTIFICATION_ENABLED = "distributedNot
 const std::string APPLICATION_ENTITY_TYPE = "entityType";
 const std::string APPLICATION_KEEP_ALIVE = "keepAlive";
 const std::string APPLICATION_SINGLE_USER = "singleUser";
-const std::string APPLICATION_CLEAR_USER_DATA = "clearUserData";
+const std::string APPLICATION_USER_DATA_CLEARABLE = "userDataClearable";
 }
 
 Metadata::Metadata(const std::string &paramName, const std::string &paramValue, const std::string &paramResource)
@@ -212,7 +212,7 @@ bool ApplicationInfo::ReadFromParcel(Parcel &parcel)
     apiReleaseType = Str16ToStr8(parcel.ReadString16());
     distributedNotificationEnabled = parcel.ReadBool();
     keepAlive = parcel.ReadBool();
-    clearUserData = parcel.ReadBool();
+    userDataClearable = parcel.ReadBool();
     return true;
 }
 
@@ -316,7 +316,7 @@ bool ApplicationInfo::Marshalling(Parcel &parcel) const
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(apiReleaseType));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, distributedNotificationEnabled);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, keepAlive);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, clearUserData);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, userDataClearable);
     return true;
 }
 
@@ -390,7 +390,7 @@ void to_json(nlohmann::json &jsonObject, const ApplicationInfo &applicationInfo)
         {APPLICATION_ENTITY_TYPE, applicationInfo.entityType},
         {APPLICATION_KEEP_ALIVE, applicationInfo.keepAlive},
         {APPLICATION_SINGLE_USER, applicationInfo.singleUser},
-        {APPLICATION_CLEAR_USER_DATA, applicationInfo.clearUserData}
+        {APPLICATION_USER_DATA_CLEARABLE, applicationInfo.userDataClearable}
     };
 }
 
@@ -526,23 +526,14 @@ void from_json(const nlohmann::json &jsonObject, ApplicationInfo &applicationInf
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
-    // To be compatible with the data of the old image.
-    // if the app is a system app and is not configured with removable,
-    // the application cannot be uninstalled.
-    parseResult = ERR_OK;
     GetValueIfFindKey<bool>(jsonObject,
         jsonObjectEnd,
         APPLICATION_REMOVABLE,
         applicationInfo.removable,
         JsonType::BOOLEAN,
-        true,
+        false,
         parseResult,
         ArrayType::NOT_ARRAY);
-    if (parseResult == ERR_APPEXECFWK_PARSE_PROFILE_MISSING_PROP
-        && applicationInfo.isSystemApp) {
-        applicationInfo.removable = false;
-    }
-    parseResult = ERR_OK;
     GetValueIfFindKey<int>(jsonObject,
         jsonObjectEnd,
         APPLICATION_SUPPORTED_MODES,
@@ -729,8 +720,8 @@ void from_json(const nlohmann::json &jsonObject, ApplicationInfo &applicationInf
         ArrayType::NOT_ARRAY);
     GetValueIfFindKey<bool>(jsonObject,
         jsonObjectEnd,
-        APPLICATION_CLEAR_USER_DATA,
-        applicationInfo.clearUserData,
+        APPLICATION_USER_DATA_CLEARABLE,
+        applicationInfo.userDataClearable,
         JsonType::BOOLEAN,
         false,
         parseResult,

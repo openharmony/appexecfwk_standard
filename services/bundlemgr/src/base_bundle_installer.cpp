@@ -770,13 +770,6 @@ ErrCode BaseBundleInstaller::ProcessBundleInstallStatus(InnerBundleInfo &info, i
 ErrCode BaseBundleInstaller::ProcessBundleUpdateStatus(
     InnerBundleInfo &oldInfo, InnerBundleInfo &newInfo, bool isReplace)
 {
-    bool needResetRemovable = newInfo.GetBaseApplicationInfo().isSystemApp
-        && !newInfo.HasConfigureRemovable() && oldInfo.IsPreInstallApp();
-    if (needResetRemovable) {
-        newInfo.SetRemovable(oldInfo.IsRemovable());
-        newInfo.SetIsPreInstallApp(oldInfo.IsPreInstallApp());
-    }
-
     modulePackage_ = newInfo.GetCurrentModulePackage();
     if (modulePackage_.empty()) {
         APP_LOGE("get current package failed");
@@ -1336,13 +1329,6 @@ ErrCode BaseBundleInstaller::ParseHapFiles(const std::vector<std::string> &bundl
         if ((result = CheckSystemSize(bundlePaths[i], appType)) != ERR_OK) {
             APP_LOGE("install failed due to insufficient disk memory");
             return result;
-        }
-        if (!newInfo.HasConfigureRemovable() && newInfo.IsPreInstallApp()) {
-            newInfo.SetRemovable(false);
-        }
-
-        if (!newInfo.GetBaseApplicationInfo().isSystemApp) {
-            newInfo.SetRemovable(true);
         }
 
         infos.emplace(bundlePaths[i], newInfo);

@@ -38,6 +38,7 @@ const std::string JSON_KEY_DESCRIPTION = "description";
 const std::string JSON_KEY_ICON_PATH = "iconPath";
 const std::string JSON_KEY_THEME = "theme";
 const std::string JSON_KEY_VISIBLE = "visible";
+const std::string JSON_KEY_ABILITY_CONTINUABLE = "continuable";
 const std::string JSON_KEY_KIND = "kind";
 const std::string JSON_KEY_TYPE = "type";
 const std::string JSON_KEY_ORIENTATION = "orientation";
@@ -109,6 +110,7 @@ bool AbilityInfo::ReadFromParcel(Parcel &parcel)
     srcPath = Str16ToStr8(parcel.ReadString16());
     srcLanguage = Str16ToStr8(parcel.ReadString16());
     visible = parcel.ReadBool();
+    continuable = parcel.ReadBool();
     isLauncherAbility = parcel.ReadBool();
     isNativeAbility = parcel.ReadBool();
     enabled = parcel.ReadBool();
@@ -231,6 +233,7 @@ bool AbilityInfo::Marshalling(Parcel &parcel) const
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(srcPath));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(srcLanguage));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, visible);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, continuable);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, isLauncherAbility);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, isNativeAbility);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, enabled);
@@ -348,6 +351,7 @@ void to_json(nlohmann::json &jsonObject, const AbilityInfo &abilityInfo)
         {JSON_KEY_ICON_PATH, abilityInfo.iconPath},
         {JSON_KEY_THEME, abilityInfo.theme},
         {JSON_KEY_VISIBLE, abilityInfo.visible},
+        {JSON_KEY_ABILITY_CONTINUABLE, abilityInfo.continuable},
         {JSON_KEY_IS_LAUNCHER_ABILITY, abilityInfo.isLauncherAbility},
         {JSON_KEY_IS_NATIVE_ABILITY, abilityInfo.isNativeAbility},
         {JSON_KEY_ENABLED, abilityInfo.enabled},
@@ -525,6 +529,14 @@ void from_json(const nlohmann::json &jsonObject, AbilityInfo &abilityInfo)
         jsonObjectEnd,
         JSON_KEY_VISIBLE,
         abilityInfo.visible,
+        JsonType::BOOLEAN,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<bool>(jsonObject,
+        jsonObjectEnd,
+        JSON_KEY_ABILITY_CONTINUABLE,
+        abilityInfo.continuable,
         JsonType::BOOLEAN,
         false,
         parseResult,

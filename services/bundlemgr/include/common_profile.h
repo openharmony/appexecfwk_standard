@@ -44,8 +44,9 @@ const std::string BUNDLE_APP_PROFILE_KEY_BUNDLE_NAME = "bundleName";
 const std::string BUNDLE_APP_PROFILE_KEY_VENDOR = "vendor";
 const std::string BUNDLE_APP_PROFILE_KEY_VERSION = "version";
 const std::string BUNDLE_APP_PROFILE_KEY_API_VERSION = "apiVersion";
-const std::string BUNDLE_APP_PROFILE_KEY_SINGLE_USER = "singleUser";
+const std::string BUNDLE_APP_PROFILE_KEY_SINGLETON = "singleton";
 const std::string BUNDLE_APP_PROFILE_KEY_REMOVABLE = "removable";
+const std::string BUNDLE_APP_PROFILE_KEY_USER_DATA_CLEARABLE = "userDataClearable";
 // sub BUNDLE_APP_PROFILE_KEY_VERSION
 const std::string BUNDLE_APP_PROFILE_KEY_CODE = "code";
 const std::string BUNDLE_APP_PROFILE_KEY_MIN_COMPATIBLE_VERSION_CODE = "minCompatibleVersionCode";
@@ -160,6 +161,7 @@ const std::string BUNDLE_MODULE_PROFILE_KEY_URI = "uri";
 const std::string BUNDLE_MODULE_PROFILE_KEY_LAUNCH_TYPE = "launchType";
 const std::string BUNDLE_MODULE_PROFILE_KEY_LAUNCH_THEME = "theme";
 const std::string BUNDLE_MODULE_PROFILE_KEY_VISIBLE = "visible";
+const std::string BUNDLE_MODULE_PROFILE_KEY_CONTINUABLE = "continuable";
 const std::string BUNDLE_MODULE_PROFILE_KEY_PERMISSIONS = "permissions";
 const std::string BUNDLE_MODULE_PROFILE_KEY_SKILLS = "skills";
 const std::string BUNDLE_MODULE_PROFILE_KEY_PROCESS = "process";
@@ -363,6 +365,7 @@ const std::string ABILITY_NAME = "name";
 const std::string ABILITY_LAUNCH_TYPE = "launchType";
 const std::string ABILITY_LAUNCH_TYPE_DEFAULT_VALUE = "standard";
 const std::string ABILITY_BACKGROUNDMODES = "backgroundModes";
+const std::string ABILITY_CONTINUABLE = "continuable";
 // extension ability
 const std::string EXTENSION_ABILITY_NAME = "name";
 const std::string EXTENSION_ABILITY_TYPE = "type";

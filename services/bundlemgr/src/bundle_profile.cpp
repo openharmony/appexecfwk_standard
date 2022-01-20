@@ -28,7 +28,6 @@ namespace AppExecFwk {
 namespace ProfileReader {
 
 thread_local int32_t parseResult;
-thread_local bool g_hasConfigureRemovable = false;
 const std::map<std::string, AbilityType> ABILITY_TYPE_MAP = {
     {"page", AbilityType::PAGE},
     {"service", AbilityType::SERVICE},
@@ -95,12 +94,15 @@ struct App {
     std::string bundleName;
     std::string originalName;
     std::string vendor;
-    bool removable = true;
+    // pair first : if exist in config.json then true, otherwise false
+    // pair second : actual value
+    std::pair<bool, bool> removable = std::make_pair<>(false, true);
     Version version;
     ApiVersion apiVersion;
-    bool singleUser = false;
+    bool singleton = false;
     int32_t iconId = 0;
     int32_t labelId = 0;
+    bool userDataClearable = true;
 };
 
 struct ReqVersion {
@@ -229,6 +231,7 @@ struct Ability {
     std::string launchType = "standard";
     std::string theme;
     bool visible = false;
+    bool continuable = false;
     std::vector<std::string> permissions;
     std::vector<Skill> skills;
     std::vector<std::string> deviceCapability;
@@ -425,8 +428,8 @@ void from_json(const nlohmann::json &jsonObject, App &app)
         ArrayType::NOT_ARRAY);
     GetValueIfFindKey<bool>(jsonObject,
         jsonObjectEnd,
-        BUNDLE_APP_PROFILE_KEY_SINGLE_USER,
-        app.singleUser,
+        BUNDLE_APP_PROFILE_KEY_SINGLETON,
+        app.singleton,
         JsonType::BOOLEAN,
         false,
         parseResult,
@@ -447,21 +450,24 @@ void from_json(const nlohmann::json &jsonObject, App &app)
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
-    if (parseResult) {
-        return;
-    }
+    if (jsonObject.find(BUNDLE_APP_PROFILE_KEY_REMOVABLE) != jsonObject.end()) {
+        app.removable.first = true;
+        GetValueIfFindKey<bool>(jsonObject,
+            jsonObjectEnd,
+            BUNDLE_APP_PROFILE_KEY_REMOVABLE,
+            app.removable.second,
+            JsonType::BOOLEAN,
+            false,
+            parseResult,
+            ArrayType::NOT_ARRAY);
     GetValueIfFindKey<bool>(jsonObject,
         jsonObjectEnd,
-        BUNDLE_APP_PROFILE_KEY_REMOVABLE,
-        app.removable,
+        BUNDLE_APP_PROFILE_KEY_USER_DATA_CLEARABLE,
+        app.userDataClearable,
         JsonType::BOOLEAN,
-        true,
+        false,
         parseResult,
         ArrayType::NOT_ARRAY);
-    if (parseResult != ERR_APPEXECFWK_PARSE_PROFILE_MISSING_PROP) {
-        g_hasConfigureRemovable = true;
-    } else {
-        parseResult = ERR_OK;
     }
 }
 
@@ -1209,6 +1215,14 @@ void from_json(const nlohmann::json &jsonObject, Ability &ability)
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<bool>(jsonObject,
+        jsonObjectEnd,
+        BUNDLE_MODULE_PROFILE_KEY_CONTINUABLE,
+        ability.continuable,
+        JsonType::BOOLEAN,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
     GetValueIfFindKey<std::vector<std::string>>(jsonObject,
         jsonObjectEnd,
         BUNDLE_MODULE_PROFILE_KEY_PERMISSIONS,
@@ -1867,7 +1881,8 @@ bool ConvertFormInfo(FormInfo &formInfo, const ProfileReader::Forms &form)
     return true;
 }
 
-bool TransformToInfo(const ProfileReader::ConfigJson &configJson, ApplicationInfo &applicationInfo)
+bool TransformToInfo(const ProfileReader::ConfigJson &configJson,
+    ApplicationInfo &applicationInfo, bool isPreInstallApp)
 {
     applicationInfo.name = configJson.app.bundleName;
     applicationInfo.bundleName = configJson.app.bundleName;
@@ -1884,14 +1899,23 @@ bool TransformToInfo(const ProfileReader::ConfigJson &configJson, ApplicationInf
     applicationInfo.process = configJson.deveicConfig.defaultDevice.process;
     applicationInfo.debug = configJson.deveicConfig.defaultDevice.debug;
     applicationInfo.enabled = true;
-    applicationInfo.removable = configJson.app.removable;
-    applicationInfo.singleUser = configJson.app.singleUser;
+    if (applicationInfo.isSystemApp && isPreInstallApp) {
+        applicationInfo.singleUser = configJson.app.singleton;
+        applicationInfo.keepAlive = configJson.deveicConfig.defaultDevice.keepAlive;
+        applicationInfo.userDataClearable = configJson.app.userDataClearable;
+        if (configJson.app.removable.first) {
+            applicationInfo.removable = configJson.app.removable.second;
+        } else {
+            applicationInfo.removable = false;
+        }
+    }
     applicationInfo.iconId = configJson.app.iconId;
     applicationInfo.labelId = configJson.app.labelId;
     return true;
 }
 
-bool TransformToInfo(const ProfileReader::ConfigJson &configJson, BundleInfo &bundleInfo)
+bool TransformToInfo(const ProfileReader::ConfigJson &configJson, BundleInfo &bundleInfo,
+    bool isSystemApp, bool isPreInstallApp)
 {
     bundleInfo.name = configJson.app.bundleName;
     bundleInfo.vendor = configJson.app.vendor;
@@ -1912,8 +1936,10 @@ bool TransformToInfo(const ProfileReader::ConfigJson &configJson, BundleInfo &bu
     bundleInfo.compatibleVersion = configJson.app.apiVersion.compatible;
     bundleInfo.targetVersion = configJson.app.apiVersion.target;
     bundleInfo.releaseType = configJson.app.apiVersion.releaseType;
-    bundleInfo.isKeepAlive = configJson.deveicConfig.defaultDevice.keepAlive;
-    bundleInfo.singleUser = configJson.app.singleUser;
+    if (isSystemApp && isPreInstallApp) {
+        bundleInfo.isKeepAlive = configJson.deveicConfig.defaultDevice.keepAlive;
+        bundleInfo.singleUser = configJson.app.singleton;
+    }
     if (configJson.module.abilities.size() > 0) {
         bundleInfo.label = configJson.module.abilities[0].label;
     }
@@ -1995,6 +2021,7 @@ bool TransformToInfo(
     abilityInfo.descriptionId = ability.descriptionId;
     abilityInfo.iconId = ability.iconId;
     abilityInfo.visible = ability.visible;
+    abilityInfo.continuable = ability.continuable;
     abilityInfo.kind = ability.type;
     abilityInfo.srcPath = ability.srcPath;
     abilityInfo.srcLanguage = ability.srcLanguage;
@@ -2073,19 +2100,11 @@ bool TransformToInfo(ProfileReader::ConfigJson &configJson, InnerBundleInfo &inn
         return false;
     }
     ApplicationInfo applicationInfo;
-    TransformToInfo(configJson, applicationInfo);
-    innerBundleInfo.SetHasConfigureRemovable(ProfileReader::g_hasConfigureRemovable);
-    ProfileReader::g_hasConfigureRemovable = false;
+    applicationInfo.isSystemApp = innerBundleInfo.GetAppType() == Constants::AppType::SYSTEM_APP;
+    TransformToInfo(configJson, applicationInfo, innerBundleInfo.IsPreInstallApp());
+
     BundleInfo bundleInfo;
-    bundleInfo.applicationInfo.removable = applicationInfo.removable;
-    TransformToInfo(configJson, bundleInfo);
-    if (innerBundleInfo.GetAppType() == Constants::AppType::SYSTEM_APP) {
-        applicationInfo.isSystemApp = true;
-    } else {
-        applicationInfo.isSystemApp = false;
-        bundleInfo.singleUser = false;
-        bundleInfo.isKeepAlive = false;
-    }
+    TransformToInfo(configJson, bundleInfo, applicationInfo.isSystemApp, innerBundleInfo.IsPreInstallApp());
 
     InnerModuleInfo innerModuleInfo;
     TransformToInfo(configJson, innerModuleInfo);
@@ -2212,7 +2231,6 @@ ErrCode BundleProfile::TransformTo(const std::ostringstream &source, InnerBundle
         int32_t ret = ProfileReader::parseResult;
         // need recover parse result to ERR_OK
         ProfileReader::parseResult = ERR_OK;
-        ProfileReader::g_hasConfigureRemovable = false;
         return ret;
     }
     if (!TransformToInfo(configJson, innerBundleInfo)) {
