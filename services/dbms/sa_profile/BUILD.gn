@@ -24,12 +24,12 @@ group("distributedbms") {
 ohos_sa_profile("distributedbms_sa_profile") {
   sources = [ "402.xml" ]
 
-  part_name = "bundle_framework"
+  part_name = "distributed_bundle_framework"
 }
 
 ohos_prebuilt_etc("distributedbms.cfg") {
   source = "distributedbms.cfg"
   relative_install_dir = "init"
   subsystem_name = "appexecfwk"
-  part_name = "bundle_framework"
+  part_name = "distributed_bundle_framework"
 }
