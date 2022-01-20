@@ -18,13 +18,15 @@
 #include <uv.h>
 #include <vector>
 
+#include "app_log_wrapper.h"
 #include "file_path.h"
-#include "hilog_wrapper.h"
 #include "napi/native_common.h"
 #include "napi/native_node_api.h"
 #include "napi_zlib_common.h"
 #include "zip.h"
 #include "zip_utils.h"
+
+using namespace OHOS::AppExecFwk;
 
 namespace OHOS {
 namespace AAFwk {
@@ -34,7 +36,7 @@ namespace LIBZIP {
 #define COMPRESS_LEVE_CHECK(level, ret)                                                            \
     if (!(level == COMPRESS_LEVEL_NO_COMPRESSION || level == COMPRESS_LEVEL_DEFAULT_COMPRESSION || \
             level == COMPRESS_LEVEL_BEST_SPEED || level == COMPRESS_LEVEL_BEST_COMPRESSION)) {     \
-        HILOG_ERROR("level parameter =[%{public}d] value is incorrect", (int)level);               \
+        APP_LOGE("level parameter =[%{public}d] value is incorrect", (int)level);               \
         return ret;                                                                                \
     }
 
@@ -42,13 +44,13 @@ namespace LIBZIP {
     if (!(strategy == COMPRESS_STRATEGY_DEFAULT_STRATEGY || strategy == COMPRESS_STRATEGY_FILTERED || \
             strategy == COMPRESS_STRATEGY_HUFFMAN_ONLY || strategy == COMPRESS_STRATEGY_RLE ||        \
             strategy == COMPRESS_STRATEGY_FIXED)) {                                                   \
-        HILOG_ERROR("strategy parameter= [%{public}d] value is incorrect", (int)strategy);            \
+        APP_LOGE("strategy parameter= [%{public}d] value is incorrect", (int)strategy);            \
         return ret;                                                                                   \
     }
 
 #define COMPRESS_MEM_CHECK(mem, false)                                                                            \
     if (!(mem == MEM_LEVEL_MIN_MEMLEVEL || mem == MEM_LEVEL_DEFAULT_MEMLEVEL || mem == MEM_LEVEL_MAX_MEMLEVEL)) { \
-        HILOG_ERROR("memLevel parameter =[%{public}d] value is incorrect", (int)mem);                             \
+        APP_LOGE("memLevel parameter =[%{public}d] value is incorrect", (int)mem);                             \
         return ret;                                                                                               \
     }
 
@@ -80,7 +82,7 @@ void ZipAndUnzipFileAsyncCallBackInnerJsThread(uv_work_t *work, int status);
  */
 napi_value FlushTypeInit(napi_env env, napi_value exports)
 {
-    HILOG_INFO("%{public}s called.", __func__);
+    APP_LOGI("%{public}s called.", __func__);
     const int FLUSH_TYPE_NO_FLUSH = 0;
     const int FLUSH_TYPE_PARTIAL_FLUSH = 1;
     const int FLUSH_TYPE_SYNC_FLUSH = 2;
@@ -116,7 +118,7 @@ napi_value FlushTypeInit(napi_env env, napi_value exports)
  */
 napi_value CompressLevelInit(napi_env env, napi_value exports)
 {
-    HILOG_INFO("%{public}s called.", __func__);
+    APP_LOGI("%{public}s called.", __func__);
     const int COMPRESS_LEVEL_NO_COMPRESSION = 0;
     const int COMPRESS_LEVEL_BEST_SPEED = 1;
     const int COMPRESS_LEVEL_BEST_COMPRESSION = 9;
@@ -146,7 +148,7 @@ napi_value CompressLevelInit(napi_env env, napi_value exports)
  */
 napi_value CompressStrategyInit(napi_env env, napi_value exports)
 {
-    HILOG_INFO("%{public}s called.", __func__);
+    APP_LOGI("%{public}s called.", __func__);
     const int COMPRESS_STRATEGY_DEFAULT_STRATEGY = 0;
     const int COMPRESS_STRATEGY_FILTERED = 1;
     const int COMPRESS_STRATEGY_HUFFMAN_ONLY = 2;
@@ -178,7 +180,7 @@ napi_value CompressStrategyInit(napi_env env, napi_value exports)
  */
 napi_value MemLevelInit(napi_env env, napi_value exports)
 {
-    HILOG_INFO("%{public}s called.", __func__);
+    APP_LOGI("%{public}s called.", __func__);
     const int MEM_LEVEL_MIN_MEMLEVEL = 1;
     const int MEM_LEVEL_DEFAULT_MEMLEVEL = 8;
     const int MEM_LEVEL_MAX_MEMLEVEL = 9;
@@ -206,7 +208,7 @@ napi_value MemLevelInit(napi_env env, napi_value exports)
  */
 napi_value ErrorCodeInit(napi_env env, napi_value exports)
 {
-    HILOG_INFO("%{public}s called.", __func__);
+    APP_LOGI("%{public}s called.", __func__);
 
     const int ERROR_CODE_OK = 0;
     const int ERROR_CODE_STREAM_END = 1;
@@ -248,7 +250,7 @@ napi_value ErrorCodeInit(napi_env env, napi_value exports)
  */
 napi_value ZlibInit(napi_env env, napi_value exports)
 {
-    HILOG_INFO("%{public}s,called", __func__);
+    APP_LOGI("%{public}s,called", __func__);
 
     napi_property_descriptor properties[] = {
         DECLARE_NAPI_FUNCTION("zipFile", NAPI_ZipFile),
@@ -262,7 +264,7 @@ napi_value ZlibInit(napi_env env, napi_value exports)
 
 AsyncZipCallbackInfo *CreateZipAsyncCallbackInfo(napi_env env)
 {
-    HILOG_INFO("%{public}s called.", __func__);
+    APP_LOGI("%{public}s called.", __func__);
     napi_status ret;
     napi_value global = 0;
     const napi_extended_error_info *errorInfo = nullptr;
@@ -270,10 +272,10 @@ AsyncZipCallbackInfo *CreateZipAsyncCallbackInfo(napi_env env)
     if (ret != napi_ok) {
         napi_get_last_error_info(env, &errorInfo);
         if (errorInfo == nullptr) {
-            HILOG_ERROR("%{public}s errorInfo is null", __func__);
+            APP_LOGE("%{public}s errorInfo is null", __func__);
             return nullptr;
         }
-        HILOG_ERROR("%{public}s get_global=%{public}d err:%{public}s", __func__, ret, errorInfo->error_message);
+        APP_LOGE("%{public}s get_global=%{public}d err:%{public}s", __func__, ret, errorInfo->error_message);
     }
 
     AsyncZipCallbackInfo *asyncCallbackInfo = new (std::nothrow) AsyncZipCallbackInfo {
@@ -281,10 +283,10 @@ AsyncZipCallbackInfo *CreateZipAsyncCallbackInfo(napi_env env)
         .aceCallback = nullptr,
     };
     if (asyncCallbackInfo == nullptr) {
-        HILOG_ERROR("%{public}s asyncCallbackInfo is null", __func__);
+        APP_LOGE("%{public}s asyncCallbackInfo is null", __func__);
         return nullptr;
     }
-    HILOG_INFO("%{public}s end.", __func__);
+    APP_LOGI("%{public}s end.", __func__);
     return asyncCallbackInfo;
 }
 
@@ -298,14 +300,14 @@ AsyncZipCallbackInfo *CreateZipAsyncCallbackInfo(napi_env env)
  */
 napi_value NAPI_ZipFile(napi_env env, napi_callback_info info)
 {
-    HILOG_INFO("%{public}s,called env=%{public}p", __func__, env);
+    APP_LOGI("%{public}s,called env=%{public}p", __func__, env);
     napi_value args[ARGS_MAX_COUNT] = {nullptr};
     napi_value ret = 0;
     size_t argcAsync = 4;
     const size_t argcPromise = 3;
     NAPI_CALL(env, napi_get_cb_info(env, info, &argcAsync, args, nullptr, nullptr));
     if (argcAsync < argcPromise || argcAsync > ARGS_MAX_COUNT) {
-        HILOG_ERROR("%{public}s, Wrong argument count.", __func__);
+        APP_LOGE("%{public}s, Wrong argument count.", __func__);
         return nullptr;
     }
 
@@ -332,24 +334,24 @@ napi_value NAPI_ZipFile(napi_env env, napi_callback_info info)
 
 napi_value ZipFileWrap(napi_env env, napi_callback_info info, AsyncZipCallbackInfo *asyncZipCallbackInfo)
 {
-    HILOG_INFO("%{public}s,called", __func__);
+    APP_LOGI("%{public}s,called", __func__);
     napi_value args[ARGS_MAX_COUNT] = {nullptr};
     napi_value ret = 0;
     size_t argcAsync = 4;
     const size_t argcPromise = 3;
     NAPI_CALL(env, napi_get_cb_info(env, info, &argcAsync, args, nullptr, nullptr));
     if (argcAsync < argcPromise || argcAsync > ARGS_MAX_COUNT) {
-        HILOG_ERROR("%{public}s, Wrong argument count.", __func__);
+        APP_LOGE("%{public}s, Wrong argument count.", __func__);
         return nullptr;
     }
     CallZipUnzipParam param;
     if (UnwrapZipParam(param, env, args, argcAsync) == nullptr) {
-        HILOG_ERROR("%{public}s, call unwrapWant failed.", __func__);
+        APP_LOGE("%{public}s, call unwrapWant failed.", __func__);
         return nullptr;
     }
     g_zipAceCallbackInfo = std::make_shared<ZlibCallbackInfo>();
     if (g_zipAceCallbackInfo == nullptr) {
-        HILOG_ERROR("%{public}s, call param failed.", __func__);
+        APP_LOGE("%{public}s, call param failed.", __func__);
         return nullptr;
     }
     asyncZipCallbackInfo->aceCallback = g_zipAceCallbackInfo;
@@ -365,9 +367,9 @@ napi_value ZipFileWrap(napi_env env, napi_callback_info info, AsyncZipCallbackIn
 }
 napi_value ZipFilePromise(napi_env env, AsyncZipCallbackInfo *asyncZipCallbackInfo)
 {
-    HILOG_INFO("%{public}s, promise.", __func__);
+    APP_LOGI("%{public}s, promise.", __func__);
     if (asyncZipCallbackInfo == nullptr) {
-        HILOG_ERROR("%{public}s, asyncZipCallbackInfo is nullptr.", __func__);
+        APP_LOGE("%{public}s, asyncZipCallbackInfo is nullptr.", __func__);
         return nullptr;
     }
 
@@ -382,7 +384,7 @@ napi_value ZipFilePromise(napi_env env, AsyncZipCallbackInfo *asyncZipCallbackIn
         nullptr,
         resourceName,
         [](napi_env env, void *data) {
-            HILOG_INFO("NAPI_ZipFile_Promise, worker pool thread execute.");
+            APP_LOGI("NAPI_ZipFile_Promise, worker pool thread execute.");
             AsyncZipCallbackInfo *asyncCallbackInfo = static_cast<AsyncZipCallbackInfo *>(data);
             if (asyncCallbackInfo != nullptr && asyncCallbackInfo->aceCallback != nullptr) {
                 Zip(FilePath(asyncCallbackInfo->aceCallback->param.src),
@@ -391,27 +393,27 @@ napi_value ZipFilePromise(napi_env env, AsyncZipCallbackInfo *asyncZipCallbackIn
                     ZipFilePromiseCallBack,
                     false);
             }
-            HILOG_INFO("NAPI_ZipFile_Promise, worker pool thread execute end.");
+            APP_LOGI("NAPI_ZipFile_Promise, worker pool thread execute end.");
         },
         [](napi_env env, napi_status status, void *data) {
-            HILOG_INFO("NAPI_ZipFile_Promise, main event thread complete.");
+            APP_LOGI("NAPI_ZipFile_Promise, main event thread complete.");
             AsyncZipCallbackInfo *asyncCallbackInfo = static_cast<AsyncZipCallbackInfo *>(data);
             napi_delete_async_work(env, asyncCallbackInfo->asyncWork);
             delete asyncCallbackInfo;
             asyncCallbackInfo = nullptr;
-            HILOG_INFO("NAPI_ZipFile_Promise, main event thread complete end.");
+            APP_LOGI("NAPI_ZipFile_Promise, main event thread complete end.");
         },
         (void *)asyncZipCallbackInfo,
         &asyncZipCallbackInfo->asyncWork);
 
     napi_queue_async_work(env, asyncZipCallbackInfo->asyncWork);
-    HILOG_INFO("%{public}s, promise end.", __func__);
+    APP_LOGI("%{public}s, promise end.", __func__);
     return promise;
 }
 
 napi_value UnwrapStringParam(std::string &str, napi_env env, napi_value argv)
 {
-    HILOG_INFO("%{public}s,called", __func__);
+    APP_LOGI("%{public}s,called", __func__);
     // unwrap the param[0]
     napi_valuetype valueType = napi_valuetype::napi_undefined;
     napi_status rev = napi_typeof(env, argv, &valueType);
@@ -420,20 +422,20 @@ napi_value UnwrapStringParam(std::string &str, napi_env env, napi_value argv)
     }
 
     if (valueType != napi_valuetype::napi_string) {
-        HILOG_INFO("%{public}s called, Parameter type does not match", __func__);
+        APP_LOGI("%{public}s called, Parameter type does not match", __func__);
         return nullptr;
     }
 
     size_t len;
     napi_status status = napi_get_value_string_utf8(env, argv, nullptr, 0, &len);
     if (status != napi_ok) {
-        HILOG_INFO("%{public}s called, Get locale tag length failed", __func__);
+        APP_LOGI("%{public}s called, Get locale tag length failed", __func__);
         return nullptr;
     }
     std::vector<char> buf(len + 1);
     status = napi_get_value_string_utf8(env, argv, buf.data(), len + 1, &len);
     if (status != napi_ok) {
-        HILOG_INFO("%{public}s called, Get locale tag failed", __func__);
+        APP_LOGI("%{public}s called, Get locale tag failed", __func__);
         return nullptr;
     }
     str = std::string(buf.data());
@@ -445,7 +447,7 @@ napi_value UnwrapStringParam(std::string &str, napi_env env, napi_value argv)
 
 bool UnwrapOptionsParams(OPTIONS &options, napi_env env, napi_value arg)
 {
-    HILOG_INFO("%{public}s called.", __func__);
+    APP_LOGI("%{public}s called.", __func__);
 
     if (!IsTypeForNapiValue(env, arg, napi_object)) {
         return false;
@@ -456,7 +458,7 @@ bool UnwrapOptionsParams(OPTIONS &options, napi_env env, napi_value arg)
 
     NAPI_CALL_BASE(env, napi_get_property_names(env, arg, &jsProNameList), false);
     NAPI_CALL_BASE(env, napi_get_array_length(env, jsProNameList, &jsProCount), false);
-    HILOG_INFO("%{public}s called. Property size=%{public}d.", __func__, jsProCount);
+    APP_LOGI("%{public}s called. Property size=%{public}d.", __func__, jsProCount);
 
     napi_value jsProName = nullptr;
     napi_value jsProValue = nullptr;
@@ -464,7 +466,7 @@ bool UnwrapOptionsParams(OPTIONS &options, napi_env env, napi_value arg)
     for (uint32_t index = 0; index < jsProCount; index++) {
         NAPI_CALL_BASE(env, napi_get_element(env, jsProNameList, index, &jsProName), false);
         std::string strProName = UnwrapStringFromJS(env, jsProName, std::string());
-        HILOG_INFO("%{public}s called. Property name=%{public}s.", __func__, strProName.c_str());
+        APP_LOGI("%{public}s called. Property name=%{public}s.", __func__, strProName.c_str());
         NAPI_CALL_BASE(env, napi_get_named_property(env, arg, strProName.c_str(), &jsProValue), false);
         NAPI_CALL_BASE(env, napi_typeof(env, jsProValue, &jsValueType), false);
 
@@ -501,28 +503,28 @@ bool UnwrapOptionsParams(OPTIONS &options, napi_env env, napi_value arg)
 
 napi_value UnwrapZipParam(CallZipUnzipParam &param, napi_env env, napi_value *args, size_t argc)
 {
-    HILOG_INFO("%{public}s,called", __func__);
+    APP_LOGI("%{public}s,called", __func__);
     size_t argcPromise = 3;
     if (argc < argcPromise) {
-        HILOG_INFO("%{public}s called, param count is wrong", __func__);
+        APP_LOGI("%{public}s called, param count is wrong", __func__);
         return nullptr;
     }
 
     // unwrap the param[0]
     if (UnwrapStringParam(param.src, env, args[0]) == nullptr) {
-        HILOG_INFO("%{public}s called, args[0] error", __func__);
+        APP_LOGI("%{public}s called, args[0] error", __func__);
         return nullptr;
     }
 
     // unwrap the param[1]
     if (UnwrapStringParam(param.dest, env, args[1]) == nullptr) {
-        HILOG_INFO("%{public}s called, args[1] error", __func__);
+        APP_LOGI("%{public}s called, args[1] error", __func__);
         return nullptr;
     }
 
     // unwrap the param[2]
     if (!UnwrapOptionsParams(param.options, env, args[2])) {
-        HILOG_INFO("%{public}s called, args[2] error", __func__);
+        APP_LOGI("%{public}s called, args[2] error", __func__);
         return nullptr;
     }
     // create reutrn
@@ -533,7 +535,7 @@ napi_value UnwrapZipParam(CallZipUnzipParam &param, napi_env env, napi_value *ar
 
 napi_value UnwrapUnZipParam(CallZipUnzipParam &param, napi_env env, napi_value *args, size_t argc)
 {
-    HILOG_INFO("%{public}s,called", __func__);
+    APP_LOGI("%{public}s,called", __func__);
     size_t argcPromise = 3;
     if (argc < argcPromise) {
         return nullptr;
@@ -565,9 +567,9 @@ napi_value UnwrapUnZipParam(CallZipUnzipParam &param, napi_env env, napi_value *
 
 napi_value ZipFileAsync(napi_env env, napi_value *args, size_t argcAsync, AsyncZipCallbackInfo *asyncZipCallbackInfo)
 {
-    HILOG_INFO("%{public}s, asyncCallback.", __func__);
+    APP_LOGI("%{public}s, asyncCallback.", __func__);
     if (args == nullptr || asyncZipCallbackInfo == nullptr) {
-        HILOG_ERROR("%{public}s, asyncZipCallbackInfo == nullptr.", __func__);
+        APP_LOGE("%{public}s, asyncZipCallbackInfo == nullptr.", __func__);
         return nullptr;
     }
     napi_value resourceName = 0;
@@ -580,7 +582,7 @@ napi_value ZipFileAsync(napi_env env, napi_value *args, size_t argcAsync, AsyncZ
             // resultCallback: AsyncCallback<ZipRestult>
             napi_create_reference(env, args[PARAM3], 1, &g_zipAceCallbackInfo->callback);
         } else {
-            HILOG_ERROR("%{public}s, args[3] error. It should be a function type.", __func__);
+            APP_LOGE("%{public}s, args[3] error. It should be a function type.", __func__);
             return nullptr;
         }
     }
@@ -589,7 +591,7 @@ napi_value ZipFileAsync(napi_env env, napi_value *args, size_t argcAsync, AsyncZ
         nullptr,
         resourceName,
         [](napi_env env, void *data) {
-            HILOG_INFO("NAPI_ZipFile_callback, worker pool thread execute.");
+            APP_LOGI("NAPI_ZipFile_callback, worker pool thread execute.");
             AsyncZipCallbackInfo *asyncCallbackInfo = (AsyncZipCallbackInfo *)data;
             if (asyncCallbackInfo != nullptr && asyncCallbackInfo->aceCallback != nullptr) {
                 Zip(FilePath(asyncCallbackInfo->aceCallback->param.src),
@@ -600,7 +602,7 @@ napi_value ZipFileAsync(napi_env env, napi_value *args, size_t argcAsync, AsyncZ
             }
         },
         [](napi_env env, napi_status status, void *data) {
-            HILOG_INFO("NAPI_ZipFile_callback, main event thread complete.");
+            APP_LOGI("NAPI_ZipFile_callback, main event thread complete.");
             AsyncZipCallbackInfo *asyncCallbackInfo = (AsyncZipCallbackInfo *)data;
             napi_delete_async_work(env, asyncCallbackInfo->asyncWork);
             delete asyncCallbackInfo;
@@ -624,20 +626,20 @@ napi_value ZipFileAsync(napi_env env, napi_value *args, size_t argcAsync, AsyncZ
  */
 napi_value NAPI_UnzipFile(napi_env env, napi_callback_info info)
 {
-    HILOG_INFO("%{public}s,called", __func__);
+    APP_LOGI("%{public}s,called", __func__);
     napi_value args[ARGS_MAX_COUNT] = {nullptr};
     napi_value ret = 0;
     size_t argcAsync = 4;
     const size_t argcPromise = 3;
     NAPI_CALL(env, napi_get_cb_info(env, info, &argcAsync, args, nullptr, nullptr));
     if (argcAsync < argcPromise || argcAsync > ARGS_MAX_COUNT) {
-        HILOG_ERROR("%{public}s, Wrong argument count.", __func__);
+        APP_LOGE("%{public}s, Wrong argument count.", __func__);
         return nullptr;
     }
     // parse param
     CallZipUnzipParam param;
     if (UnwrapUnZipParam(param, env, args, argcAsync) == nullptr) {
-        HILOG_ERROR("%{public}s, call unwrap param failed.", __func__);
+        APP_LOGE("%{public}s, call unwrap param failed.", __func__);
         return nullptr;
     }
 
@@ -657,7 +659,7 @@ napi_value NAPI_UnzipFile(napi_env env, napi_callback_info info)
         ret = UnzipFilePromise(env, asyncZipCallbackInfo);
     }
     if (ret == nullptr) {
-        HILOG_ERROR("%{public}s,ret == nullptr", __func__);
+        APP_LOGE("%{public}s,ret == nullptr", __func__);
         if (g_unzipAceCallbackInfo != nullptr) {
             g_unzipAceCallbackInfo.reset();
             g_unzipAceCallbackInfo = nullptr;
@@ -668,14 +670,14 @@ napi_value NAPI_UnzipFile(napi_env env, napi_callback_info info)
             asyncZipCallbackInfo = nullptr;
         }
     }
-    HILOG_INFO("%{public}s,end", __func__);
+    APP_LOGI("%{public}s,end", __func__);
     return ret;
 }
 napi_value UnzipFilePromise(napi_env env, AsyncZipCallbackInfo *asyncZipCallbackInfo)
 {
-    HILOG_INFO("%{public}s, promise.", __func__);
+    APP_LOGI("%{public}s, promise.", __func__);
     if (asyncZipCallbackInfo == nullptr) {
-        HILOG_ERROR("%{public}s, asyncZipCallbackInfo is nullptr.", __func__);
+        APP_LOGE("%{public}s, asyncZipCallbackInfo is nullptr.", __func__);
         return nullptr;
     }
     napi_value resourceName = 0;
@@ -689,7 +691,7 @@ napi_value UnzipFilePromise(napi_env env, AsyncZipCallbackInfo *asyncZipCallback
         nullptr,
         resourceName,
         [](napi_env env, void *data) {
-            HILOG_INFO("NAPI_UnzipFile_Promise, worker pool thread execute.");
+            APP_LOGI("NAPI_UnzipFile_Promise, worker pool thread execute.");
             AsyncZipCallbackInfo *asyncCallbackInfo = static_cast<AsyncZipCallbackInfo *>(data);
             if (asyncCallbackInfo != nullptr && asyncCallbackInfo->aceCallback != nullptr) {
                 Unzip(FilePath(asyncCallbackInfo->aceCallback->param.src),
@@ -697,27 +699,27 @@ napi_value UnzipFilePromise(napi_env env, AsyncZipCallbackInfo *asyncZipCallback
                     asyncCallbackInfo->aceCallback->param.options,
                     UnzipFilePromiseCallBack);
             }
-            HILOG_INFO("NAPI_UnzipFile_Promise, worker pool thread execute end.");
+            APP_LOGI("NAPI_UnzipFile_Promise, worker pool thread execute end.");
         },
         [](napi_env env, napi_status status, void *data) {
-            HILOG_INFO("NAPI_UnzipFile_Promise, main event thread complete.");
+            APP_LOGI("NAPI_UnzipFile_Promise, main event thread complete.");
             AsyncZipCallbackInfo *asyncCallbackInfo = static_cast<AsyncZipCallbackInfo *>(data);
             napi_delete_async_work(env, asyncCallbackInfo->asyncWork);
             delete asyncCallbackInfo;
             asyncCallbackInfo = nullptr;
-            HILOG_INFO("NAPI_UnzipFile_Promise, main event thread complete end.");
+            APP_LOGI("NAPI_UnzipFile_Promise, main event thread complete end.");
         },
         (void *)asyncZipCallbackInfo,
         &asyncZipCallbackInfo->asyncWork);
     napi_queue_async_work(env, asyncZipCallbackInfo->asyncWork);
-    HILOG_INFO("%{public}s, promise end.", __func__);
+    APP_LOGI("%{public}s, promise end.", __func__);
     return promise;
 }
 napi_value UnzipFileAsync(napi_env env, napi_value *args, size_t argcAsync, AsyncZipCallbackInfo *asyncZipCallbackInfo)
 {
-    HILOG_INFO("%{public}s, asyncCallback.", __func__);
+    APP_LOGI("%{public}s, asyncCallback.", __func__);
     if (args == nullptr || asyncZipCallbackInfo == nullptr) {
-        HILOG_ERROR("%{public}s, param == nullptr.", __func__);
+        APP_LOGE("%{public}s, param == nullptr.", __func__);
         return nullptr;
     }
     napi_value resourceName = 0;
@@ -729,7 +731,7 @@ napi_value UnzipFileAsync(napi_env env, napi_value *args, size_t argcAsync, Asyn
             // resultCallback: AsyncCallback<ZipRestult>
             napi_create_reference(env, args[PARAM3], 1, &g_unzipAceCallbackInfo->callback);
         } else {
-            HILOG_ERROR("%{public}s, args[3] error. It should be a function type.", __func__);
+            APP_LOGE("%{public}s, args[3] error. It should be a function type.", __func__);
             return nullptr;
         }
     }
@@ -738,7 +740,7 @@ napi_value UnzipFileAsync(napi_env env, napi_value *args, size_t argcAsync, Asyn
         nullptr,
         resourceName,
         [](napi_env env, void *data) {
-            HILOG_INFO("NAPI_UnzipFile, worker pool thread execute.");
+            APP_LOGI("NAPI_UnzipFile, worker pool thread execute.");
             AsyncZipCallbackInfo *asyncCallbackInfo = (AsyncZipCallbackInfo *)data;
             // Unzip
             if (asyncCallbackInfo != nullptr && asyncCallbackInfo->aceCallback != nullptr) {
@@ -749,7 +751,7 @@ napi_value UnzipFileAsync(napi_env env, napi_value *args, size_t argcAsync, Asyn
             }
         },
         [](napi_env env, napi_status status, void *data) {
-            HILOG_INFO("NAPI_UnzipFile, main event thread complete.");
+            APP_LOGI("NAPI_UnzipFile, main event thread complete.");
             AsyncZipCallbackInfo *asyncCallbackInfo = (AsyncZipCallbackInfo *)data;
             napi_delete_async_work(env, asyncCallbackInfo->asyncWork);
             delete asyncCallbackInfo;
@@ -804,7 +806,7 @@ void ZipAndUnzipFileAsyncCallBackInnerJsThread(uv_work_t *work)
     napi_value result[ARGS_TWO] = {0};
     // callback result
     napi_create_int32(asyncCallbackInfo->env, (int32_t)asyncCallbackInfo->callbackResult, &result[PARAM1]);
-    HILOG_INFO("%{public}s called, callbackResult =%{public}d", __func__, asyncCallbackInfo->callbackResult);
+    APP_LOGI("%{public}s called, callbackResult =%{public}d", __func__, asyncCallbackInfo->callbackResult);
 
     if (asyncCallbackInfo->isCallBack) {
         napi_value callback = 0;
@@ -839,16 +841,16 @@ void ZipAndUnzipFileAsyncCallBack(std::shared_ptr<ZlibCallbackInfo> &zipAceCallb
     if (zipAceCallbackInfo == nullptr) {
         return;
     }
-    HILOG_INFO("%{public}s,called env=%{public}p, result=%{public}d", __func__, zipAceCallbackInfo->env, result);
+    APP_LOGI("%{public}s,called env=%{public}p, result=%{public}d", __func__, zipAceCallbackInfo->env, result);
     uv_loop_s *loop = nullptr;
     napi_get_uv_event_loop(zipAceCallbackInfo->env, &loop);
     if (loop == nullptr) {
-        HILOG_ERROR("%{public}s, work == nullptr.", __func__);
+        APP_LOGE("%{public}s, work == nullptr.", __func__);
         return;
     }
     uv_work_t *work = new (std::nothrow) uv_work_t;
     if (work == nullptr) {
-        HILOG_ERROR("%{public}s, work == nullptr.", __func__);
+        APP_LOGE("%{public}s, work == nullptr.", __func__);
         return;
     }
     ZlibCallbackInfo *asyncCallbackInfo = new (std::nothrow) ZlibCallbackInfo();
@@ -867,9 +869,9 @@ void ZipAndUnzipFileAsyncCallBack(std::shared_ptr<ZlibCallbackInfo> &zipAceCallb
         work,
         [](uv_work_t *work) {},
         [](uv_work_t *work, int status) {
-            HILOG_INFO("ZipAndUnzipFileAsyncCallBack, uv_queue_work");
+            APP_LOGI("ZipAndUnzipFileAsyncCallBack, uv_queue_work");
             ZipAndUnzipFileAsyncCallBackInnerJsThread(work);
-            HILOG_INFO("ZipAndUnzipFileAsyncCallBack, uv_queue_work end.");
+            APP_LOGI("ZipAndUnzipFileAsyncCallBack, uv_queue_work end.");
         });
     if (rev != napi_ok) {
         if (asyncCallbackInfo->isCallBack) {

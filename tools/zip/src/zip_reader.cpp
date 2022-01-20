@@ -20,12 +20,14 @@
 #include <unistd.h>
 #include <utility>
 
+#include "app_log_wrapper.h"
 #include "checked_cast.h"
 #include "contrib/minizip/unzip.h"
-#include "hilog_wrapper.h"
 #include "string_ex.h"
 #include "zip_internal.h"
 #include "zip_utils.h"
+
+using namespace OHOS::AppExecFwk;
 
 namespace OHOS {
 namespace AAFwk {
@@ -264,7 +266,7 @@ FilePathWriterDelegate::~FilePathWriterDelegate()
 bool FilePathWriterDelegate::PrepareOutput()
 {
     if (!FilePathCheckValid(outputFilePath_.Value())) {
-        HILOG_ERROR("%{public}s called, outputFilePath_ invalid !!!.", __func__);
+        APP_LOGE("%{public}s called, outputFilePath_ invalid !!!.", __func__);
         return false;
     }
     // We can't rely on parent directory entries being specified in the
