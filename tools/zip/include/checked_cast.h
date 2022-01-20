@@ -18,7 +18,7 @@
 #include <exception>
 #include <typeinfo>
 #include <cassert>
-#include "hilog_wrapper.h"
+#include "app_log_wrapper.h"
 
 namespace hidden {
 // workaroud for T& equally matching f(T&) and f(T const&)
@@ -123,7 +123,7 @@ struct checked_cast_impl<T, X, false> {
         T t = dynamic_cast<T>(x);
         // check cross cast
         if (&t != &static_cast<T>(x)) {
-            HILOG_ERROR("!!!bad cast!!!");
+            APP_LOGE("!!!bad cast!!!");
         }
         return t;
 #else

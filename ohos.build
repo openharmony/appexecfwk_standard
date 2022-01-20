@@ -91,7 +91,6 @@
       ],
       "module_list": [
         "//foundation/appexecfwk/standard/common:common_target",
-        "//foundation/appexecfwk/standard/tools/zip:tools_zip",
         "//foundation/appexecfwk/standard/interfaces/innerkits:innerkits_target",
         "//foundation/appexecfwk/standard/sa_profile:appexecfwk_sa_profile",
         "//foundation/appexecfwk/standard/sa_profile:foundation.rc",
@@ -104,8 +103,7 @@
         "//foundation/appexecfwk/standard/services/test:moduletest",
         "//foundation/appexecfwk/standard/services/bundlemgr/test:unittest",
         "//foundation/appexecfwk/standard/test/systemtest:systemtest",
-        "//foundation/appexecfwk/standard/libs/test:moduletest",
-        "//foundation/appexecfwk/standard/tools/zip/test:unittest"
+        "//foundation/appexecfwk/standard/libs/test:moduletest"
       ],
       "variants": [
         "phone",

@@ -11,50 +11,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import("//build/test.gni")
+import("//build/ohos.gni")
 import("//foundation/appexecfwk/standard/appexecfwk.gni")
-TASK_DIR = "//foundation/appexecfwk/standard"
-LOG_DIR = "//foundation/aafwk/standard"
-NAPI_DIR2 =
-    "//foundation/aafwk/standard/interfaces/kits/napi/aafwk/inner/napi_common"
-ACE_DIR = "//foundation/ace/napi/interfaces/kits"
-PACMAP_DIR = "//foundation/aafwk/standard/interfaces/innerkits/want/include/ohos/aafwk/content"
-ABILITY_DIR =
-    "//foundation/aafwk/standard/frameworks/kits/ability/native/include"
-IREMOTE_DIR =
-    "//foundation/communication/ipc/interfaces/innerkits/ipc_core/include"
-BUNDLE_MGR_DIR =
-    "//foundation/aafwk/standard/interfaces/innerkits/ability_manager/include"
-BUNDLE_MGR_DIR2 = "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_core/include/bundlemgr"
-APP_DIR = "//foundation/aafwk/standard/interfaces/innerkits/app_manager/include/appmgr"
-RESMGR_DIR = "//base/global/resmgr_standard/interfaces/innerkits/include"
 
 config("zip_config") {
   include_dirs = [
     "include",
-    "$NAPI_DIR2",
-    "$ACE_DIR",
-    "$ABILITY_DIR",
-    "$PACMAP_DIR",
-    "$IREMOTE_DIR",
-    "$BUNDLE_MGR_DIR",
-    "$BUNDLE_MGR_DIR2",
-    "$APP_DIR",
-    "$RESMGR_DIR",
-    "//third_party/zlib",
-    "//utils/native/base/include",
-    "$LOG_DIR/services/common/include",
-    "$TASK_DIR/common/log/include",
-    "$TASK_DIR/interfaces/innerkits/appexecfwk_base/include",
-    "$TASK_DIR/interfaces/innerkits/libeventhandler/include",
-    "$LOG_DIR/common/task_dispatcher/include/dispatcher",
-    "$LOG_DIR/common/task_dispatcher/include/task",
-    "$LOG_DIR/common/task_dispatcher/include/threading",
-    "$LOG_DIR/frameworks/kits/appkit/native/app/include/task",
-    "$LOG_DIR/frameworks/kits/appkit/native/app/include",
+    "${aafwk_path}/common/task_dispatcher/include/dispatcher",
+    "${aafwk_path}/common/task_dispatcher/include/task",
+    "${aafwk_path}/common/task_dispatcher/include/threading",
+    "${aafwk_path}/frameworks/kits/appkit/native/app/include/task",
+    "${aafwk_path}/frameworks/kits/appkit/native/app/include",
     "//third_party/libuv/include",
     "//third_party/node/src",
-    "//third_party/icu/icu4c/source/common/unicode",
+    "//third_party/zlib",
+  ]
+
+  defines = [
+    "APP_LOG_TAG = \"BundleMgrService\"",
+    "LOG_DOMAIN = 0xD001120",
   ]
 }
 
@@ -79,20 +54,26 @@ ohos_shared_library("zlib") {
   }
 
   deps = [
+    "${common_path}:libappexecfwk_common",
     "//foundation/aafwk/standard/common/task_dispatcher:appkit_dispatcher_td",
-    "//foundation/aafwk/standard/interfaces/innerkits/app_manager:app_manager",
-    "//foundation/aafwk/standard/interfaces/innerkits/want:want",
-    "//foundation/ace/napi:ace_napi",
     "//third_party/libuv:uv_static",
     "//third_party/zlib:libz",
-    "//utils/native/base:utils",
   ]
 
-  external_deps = [ "hiviewdfx_hilog_native:libhilog" ]
+  external_deps = [
+    "ability_runtime:want",
+    "bundle_framework:appexecfwk_base",
+    "bundle_framework:appexecfwk_core",
+    "eventhandler:libeventhandler",
+    "hiviewdfx_hilog_native:libhilog",
+    "ipc:ipc_core",
+    "napi:ace_napi",
+    "utils_base:utils",
+  ]
 
   install_enable = true
   subsystem_name = "appexecfwk"
-  part_name = "appexecfwk_standard"
+  part_name = "bundle_framework"
   relative_install_dir = "module"
 }
 

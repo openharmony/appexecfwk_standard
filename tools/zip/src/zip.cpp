@@ -21,13 +21,15 @@
 #include <unistd.h>
 #include <vector>
 
+#include "app_log_wrapper.h"
 #include "directory_ex.h"
 #include "file_path.h"
-#include "hilog_wrapper.h"
 #include "runnable.h"
 #include "zip_internal.h"
 #include "zip_reader.h"
 #include "zip_writer.h"
+
+using namespace OHOS::AppExecFwk;
 
 namespace OHOS {
 namespace AAFwk {
@@ -76,7 +78,7 @@ std::vector<FileAccessor::DirectoryContentEntry> ListDirectoryContent(const File
     std::vector<FileAccessor::DirectoryContentEntry> fileDirectoryVector;
     std::vector<std::string> filelist;
     GetDirFiles(curPath.Value(), filelist);
-    HILOG_INFO("filelist ========filelist.size=%{public}zu", filelist.size());
+    APP_LOGI("filelist ========filelist.size=%{public}zu", filelist.size());
     for (size_t i = 0; i < filelist.size(); i++) {
         std::string str(filelist[i]);
         if (!str.empty()) {
@@ -174,31 +176,31 @@ bool Zip(const ZipParams &params, const OPTIONS &options, CALLBACK callback)
 bool UnzipWithFilterAndWriters(const PlatformFile &srcFile, FilePath &destDir, WriterFactory writerFactory,
     DirectoryCreator directoryCreator, UnzipParam &unzipParam)
 {
-    HILOG_INFO("%{public}s called, destDir=%{public}s", __func__, destDir.Value().c_str());
+    APP_LOGI("%{public}s called, destDir=%{public}s", __func__, destDir.Value().c_str());
     ZipReader reader;
     if (!reader.OpenFromPlatformFile(srcFile)) {
         CALLING_CALL_BACK(unzipParam.callback, ERROR_CODE_ERRNO)
-        HILOG_INFO("%{public}s called, Failed to open srcFile.", __func__);
+        APP_LOGI("%{public}s called, Failed to open srcFile.", __func__);
         return false;
     }
     while (reader.HasMore()) {
         if (!reader.OpenCurrentEntryInZip()) {
             CALLING_CALL_BACK(unzipParam.callback, ERROR_CODE_ERRNO)
-            HILOG_INFO("%{public}s called, Failed to open the current file in zip.", __func__);
+            APP_LOGI("%{public}s called, Failed to open the current file in zip.", __func__);
             return false;
         }
         const FilePath &constEntryPath = reader.CurrentEntryInfo()->GetFilePath();
         FilePath entryPath = constEntryPath;
         if (reader.CurrentEntryInfo()->IsUnsafe()) {
             CALLING_CALL_BACK(unzipParam.callback, ERROR_CODE_ERRNO)
-            HILOG_INFO("%{public}s called, Found an unsafe file in zip.", __func__);
+            APP_LOGI("%{public}s called, Found an unsafe file in zip.", __func__);
             return false;
         }
         // callback
         if (unzipParam.filterCB(entryPath)) {
             if (reader.CurrentEntryInfo()->IsDirectory()) {
                 if (!directoryCreator(destDir, entryPath)) {
-                    HILOG_INFO("!!!directory_creator(%{public}s) Failed!!!.", entryPath.Value().c_str());
+                    APP_LOGI("!!!directory_creator(%{public}s) Failed!!!.", entryPath.Value().c_str());
                     CALLING_CALL_BACK(unzipParam.callback, ERROR_CODE_ERRNO)
                     return false;
                 }
@@ -207,17 +209,17 @@ bool UnzipWithFilterAndWriters(const PlatformFile &srcFile, FilePath &destDir, W
                 std::unique_ptr<WriterDelegate> writer = writerFactory(destDir, entryPath);
                 if (!reader.ExtractCurrentEntry(writer.get(), std::numeric_limits<uint64_t>::max())) {
                     CALLING_CALL_BACK(unzipParam.callback, ERROR_CODE_ERRNO)
-                    HILOG_INFO("%{public}s called, Failed to extract.", __func__);
+                    APP_LOGI("%{public}s called, Failed to extract.", __func__);
                     return false;
                 }
             }
         } else if (unzipParam.logSkippedFiles) {
-            HILOG_INFO("%{public}s called, Skipped file.", __func__);
+            APP_LOGI("%{public}s called, Skipped file.", __func__);
         }
 
         if (!reader.AdvanceToNextEntry()) {
             CALLING_CALL_BACK(unzipParam.callback, ERROR_CODE_ERRNO)
-            HILOG_INFO("%{public}s called, Failed to advance to the next file.", __func__);
+            APP_LOGI("%{public}s called, Failed to advance to the next file.", __func__);
             return false;
         }
     }
@@ -235,21 +237,21 @@ bool UnzipWithFilterCallback(
 
     FilePath dest = destDir;
 
-    HILOG_INFO("%{public}s called,  srcFile=%{public}s, destFile=%{public}s",
+    APP_LOGI("%{public}s called,  srcFile=%{public}s, destFile=%{public}s",
         __func__,
         src.Value().c_str(),
         dest.Value().c_str());
 
     if (!FilePath::PathIsValid(srcFile)) {
         CALLING_CALL_BACK(unzipParam.callback, ERROR_CODE_DATA_ERROR)
-        HILOG_INFO("%{public}s called, Failed to open.", __func__);
+        APP_LOGI("%{public}s called, Failed to open.", __func__);
         return false;
     }
 
     PlatformFile zipFd = open(src.Value().c_str(), S_IREAD);
     if (zipFd == kInvalidPlatformFile) {
         CALLING_CALL_BACK(unzipParam.callback, ERROR_CODE_STREAM_ERROR)
-        HILOG_INFO("%{public}s called, Failed to open.", __func__);
+        APP_LOGI("%{public}s called, Failed to open.", __func__);
         return false;
     }
     bool ret = UnzipWithFilterAndWriters(zipFd,
@@ -266,7 +268,7 @@ bool Unzip(const FilePath &srcFile, const FilePath &destDir, const OPTIONS &opti
 {
     FilePath srcFileDir = srcFile;
     FilePath destDirTemp = destDir;
-    HILOG_INFO("%{public}s called,  srcFile=%{public}s, destFile=%{public}s",
+    APP_LOGI("%{public}s called,  srcFile=%{public}s, destFile=%{public}s",
         __func__,
         srcFileDir.Value().c_str(),
         destDirTemp.Value().c_str());
@@ -307,7 +309,7 @@ bool Zip(const FilePath &srcDir, const FilePath &destFile, const OPTIONS &option
 {
     FilePath srctemp = srcDir;
     FilePath desttemp = destFile;
-    HILOG_INFO("%{public}s called,  srcDir=%{public}s, destFile=%{public}s",
+    APP_LOGI("%{public}s called,  srcDir=%{public}s, destFile=%{public}s",
         __func__,
         srctemp.Value().c_str(),
         desttemp.Value().c_str());
