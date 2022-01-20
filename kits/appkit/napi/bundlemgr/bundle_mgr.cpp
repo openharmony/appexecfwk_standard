@@ -290,13 +290,18 @@ static void ConvertApplicationInfo(napi_env env, napi_value objAppInfo, const Ap
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objAppInfo, "metaData", nMetaData));
 
     napi_value nMetadata;
-    size_t len = appInfo.metadata.size();
-    NAPI_CALL_RETURN_VOID(env, napi_create_array_with_length(env, len, &nMetadata));
-    for (size_t index = 0; index < len; ++index) {
-        napi_value innerMeta;
-        NAPI_CALL_RETURN_VOID(env, napi_create_object(env, &innerMeta));
-        ConvertInnerMetadata(env, innerMeta, appInfo.metadata[index]);
-        NAPI_CALL_RETURN_VOID(env, napi_set_element(env, nMetadata, index, innerMeta));
+    NAPI_CALL_RETURN_VOID(env, napi_create_object(env, &nMetadata));
+    for (const auto &item : appInfo.metadata) {
+        napi_value nInnerMetadata;
+        size_t len = item.second.size();
+        NAPI_CALL_RETURN_VOID(env, napi_create_array_with_length(env, len, &nInnerMetadata));
+        for (size_t index = 0; index < len; ++index) {
+            napi_value nMeta;
+            NAPI_CALL_RETURN_VOID(env, napi_create_object(env, &nMeta));
+            ConvertInnerMetadata(env, nMeta, item.second[index]);
+            NAPI_CALL_RETURN_VOID(env, napi_set_element(env, nInnerMetadata, index, nMeta));
+        }
+        NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, nMetadata, item.first.c_str(), nInnerMetadata));
     }
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objAppInfo, "metadata", nMetadata));
 
@@ -5786,7 +5791,7 @@ static bool ParseWant(napi_env env, AsyncExtensionInfoCallbackInfo &info, napi_v
         napi_get_named_property(env, args, "extensionAbilityType", &prop);
         napi_typeof(env, prop, &valueType);
         if (valueType != napi_number) {
-            APP_LOGE("extensionAbilityName is not type of number");
+            APP_LOGE("extensionAbilityType is not type of number");
             return false;
         }
         napi_get_value_int32(env, prop, &(info.extensionAbilityType));
