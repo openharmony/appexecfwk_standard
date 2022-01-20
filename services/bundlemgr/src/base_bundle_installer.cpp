@@ -934,7 +934,11 @@ ErrCode BaseBundleInstaller::ProcessModuleUpdate(InnerBundleInfo &newInfo, Inner
 
     newInfo.RestoreModuleInfo(oldInfo);
     oldInfo.SetInstallMark(bundleName_, modulePackage_, InstallExceptionStatus::UPDATING_FINISH);
-
+    oldInfo.SetBundleUpdateTime(BundleUtil::GetCurrentTime(), userId_);
+    if (!dataMgr_->UpdateInnerBundleInfo(bundleName_, newInfo, oldInfo)) {
+        APP_LOGE("update innerBundleInfo %{public}s failed", bundleName_.c_str());
+        return ERR_APPEXECFWK_INSTALL_BUNDLE_MGR_SERVICE_ERROR;
+    }
     auto bundleUserInfos = oldInfo.GetInnerBundleUserInfos();
     for (const auto &info : bundleUserInfos) {
         if (info.second.accessTokenId == 0) {
@@ -948,11 +952,6 @@ ErrCode BaseBundleInstaller::ProcessModuleUpdate(InnerBundleInfo &newInfo, Inner
         if (result != ERR_OK) {
             return result;
         }
-    }
-    oldInfo.SetBundleUpdateTime(BundleUtil::GetCurrentTime(), userId_);
-    if (!dataMgr_->UpdateInnerBundleInfo(bundleName_, newInfo, oldInfo)) {
-        APP_LOGE("update innerBundleInfo %{public}s failed", bundleName_.c_str());
-        return ERR_APPEXECFWK_INSTALL_BUNDLE_MGR_SERVICE_ERROR;
     }
 
     userGuard.Dismiss();
