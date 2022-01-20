@@ -54,12 +54,85 @@ const std::string BUNDLE_INFO_ENTRY_MODULE_NAME = "entryModuleName";
 const std::string BUNDLE_INFO_ENTRY_INSTALLATION_FREE = "entryInstallationFree";
 const std::string BUNDLE_INFO_REQ_PERMISSIONS = "reqPermissions";
 const std::string BUNDLE_INFO_REQ_PERMISSION_STATES = "reqPermissionStates";
+const std::string BUNDLE_INFO_REQ_PERMISSION_DETAILS = "reqPermissionDetails";
 const std::string BUNDLE_INFO_DEF_PERMISSIONS = "defPermissions";
 const std::string BUNDLE_INFO_HAP_MODULE_NAMES = "hapModuleNames";
 const std::string BUNDLE_INFO_MODULE_NAMES = "moduleNames";
 const std::string BUNDLE_INFO_MODULE_PUBLIC_DIRS = "modulePublicDirs";
 const std::string BUNDLE_INFO_MODULE_DIRS = "moduleDirs";
 const std::string BUNDLE_INFO_MODULE_RES_PATHS = "moduleResPaths";
+const std::string REQUESTPERMISSION_NAME = "name";
+const std::string REQUESTPERMISSION_REASON = "reason";
+const std::string REQUESTPERMISSION_REASON_ID = "reasonId";
+const std::string REQUESTPERMISSION_USEDSCENE = "usedScene";
+const std::string REQUESTPERMISSION_ABILITIES = "abilities";
+const std::string REQUESTPERMISSION_WHEN = "when";
+}
+
+bool RequestPermissionUsedScene::ReadFromParcel(Parcel &parcel)
+{
+    int32_t size;
+    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, size);
+    for (int32_t i = 0; i < size; i++) {
+        abilities.emplace_back(Str16ToStr8(parcel.ReadString16()));
+    }
+    when = Str16ToStr8(parcel.ReadString16());
+    return true;
+}
+
+bool RequestPermissionUsedScene::Marshalling(Parcel &parcel) const
+{
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, abilities.size());
+    for (auto &ability : abilities) {
+        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(ability));
+    }
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(when));
+    return true;
+}
+
+RequestPermissionUsedScene *RequestPermissionUsedScene::Unmarshalling(Parcel &parcel)
+{
+    RequestPermissionUsedScene *info = new (std::nothrow) RequestPermissionUsedScene();
+    if (info && !info->ReadFromParcel(parcel)) {
+        APP_LOGW("read from parcel failed");
+        delete info;
+        info = nullptr;
+    }
+    return info;
+}
+
+bool RequestPermission::ReadFromParcel(Parcel &parcel)
+{
+    name = Str16ToStr8(parcel.ReadString16());
+    reason = Str16ToStr8(parcel.ReadString16());
+    reasonId = parcel.ReadInt32();
+    std::unique_ptr<RequestPermissionUsedScene> scene(parcel.ReadParcelable<RequestPermissionUsedScene>());
+    if (!scene) {
+        APP_LOGE("ReadParcelable<RequestPermissionUsedScene> failed");
+        return false;
+    }
+    usedScene = *scene;
+    return true;
+}
+
+bool RequestPermission::Marshalling(Parcel &parcel) const
+{
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(name));
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(reason));
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, reasonId);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Parcelable, parcel, &usedScene);
+    return true;
+}
+
+RequestPermission *RequestPermission::Unmarshalling(Parcel &parcel)
+{
+    RequestPermission *info = new (std::nothrow) RequestPermission();
+    if (info && !info->ReadFromParcel(parcel)) {
+        APP_LOGW("read from parcel failed");
+        delete info;
+        info = nullptr;
+    }
+    return info;
 }
 
 bool BundleInfo::ReadFromParcel(Parcel &parcel)
@@ -119,6 +192,90 @@ BundleInfo *BundleInfo::Unmarshalling(Parcel &parcel)
     return info;
 }
 
+void to_json(nlohmann::json &jsonObject, const RequestPermissionUsedScene &usedScene)
+{
+    jsonObject = nlohmann::json {
+        {REQUESTPERMISSION_ABILITIES, usedScene.abilities},
+        {REQUESTPERMISSION_WHEN, usedScene.when}
+    };
+}
+
+void to_json(nlohmann::json &jsonObject, const RequestPermission &requestPermission)
+{
+    jsonObject = nlohmann::json {
+        {REQUESTPERMISSION_NAME, requestPermission.name},
+        {REQUESTPERMISSION_REASON, requestPermission.reason},
+        {REQUESTPERMISSION_REASON_ID, requestPermission.reasonId},
+        {REQUESTPERMISSION_USEDSCENE, requestPermission.usedScene}
+    };
+}
+
+void from_json(const nlohmann::json &jsonObject, RequestPermissionUsedScene &usedScene)
+{
+    const auto &jsonObjectEnd = jsonObject.end();
+    int32_t parseResult = ERR_OK;
+    GetValueIfFindKey<std::vector<std::string>>(jsonObject,
+        jsonObjectEnd,
+        REQUESTPERMISSION_ABILITIES,
+        usedScene.abilities,
+        JsonType::ARRAY,
+        false,
+        parseResult,
+        ArrayType::STRING);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        REQUESTPERMISSION_WHEN,
+        usedScene.when,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    if (parseResult != ERR_OK) {
+        APP_LOGE("read RequestPermissionUsedScene from database error, error code : %{public}d", parseResult);
+    }
+}
+
+void from_json(const nlohmann::json &jsonObject, RequestPermission &requestPermission)
+{
+    const auto &jsonObjectEnd = jsonObject.end();
+    int32_t parseResult = ERR_OK;
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        REQUESTPERMISSION_NAME,
+        requestPermission.name,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        REQUESTPERMISSION_REASON,
+        requestPermission.reason,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<int32_t>(jsonObject,
+        jsonObjectEnd,
+        REQUESTPERMISSION_REASON_ID,
+        requestPermission.reasonId,
+        JsonType::NUMBER,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<RequestPermissionUsedScene>(jsonObject,
+        jsonObjectEnd,
+        REQUESTPERMISSION_USEDSCENE,
+        requestPermission.usedScene,
+        JsonType::OBJECT,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    if (parseResult != ERR_OK) {
+        APP_LOGE("read RequestPermission from database error, error code : %{public}d", parseResult);
+    }
+}
+
 void to_json(nlohmann::json &jsonObject, const BundleInfo &bundleInfo)
 {
     jsonObject = nlohmann::json {
@@ -153,6 +310,7 @@ void to_json(nlohmann::json &jsonObject, const BundleInfo &bundleInfo)
         {BUNDLE_INFO_ENTRY_INSTALLATION_FREE, bundleInfo.entryInstallationFree},
         {BUNDLE_INFO_REQ_PERMISSIONS, bundleInfo.reqPermissions},
         {BUNDLE_INFO_REQ_PERMISSION_STATES, bundleInfo.reqPermissionStates},
+        {BUNDLE_INFO_REQ_PERMISSION_DETAILS, bundleInfo.reqPermissionDetails},
         {BUNDLE_INFO_DEF_PERMISSIONS, bundleInfo.defPermissions},
         {BUNDLE_INFO_HAP_MODULE_NAMES, bundleInfo.hapModuleNames},
         {BUNDLE_INFO_MODULE_NAMES, bundleInfo.moduleNames},
@@ -407,6 +565,14 @@ void from_json(const nlohmann::json &jsonObject, BundleInfo &bundleInfo)
         false,
         parseResult,
         ArrayType::NUMBER);
+    GetValueIfFindKey<std::vector<RequestPermission>>(jsonObject,
+        jsonObjectEnd,
+        BUNDLE_INFO_REQ_PERMISSION_DETAILS,
+        bundleInfo.reqPermissionDetails,
+        JsonType::ARRAY,
+        false,
+        parseResult,
+        ArrayType::OBJECT);
     GetValueIfFindKey<std::vector<std::string>>(jsonObject,
         jsonObjectEnd,
         BUNDLE_INFO_DEF_PERMISSIONS,

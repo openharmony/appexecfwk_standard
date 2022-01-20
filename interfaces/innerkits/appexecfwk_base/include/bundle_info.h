@@ -40,6 +40,25 @@ enum BundleFlag {
     GET_BUNDLE_WITH_EXTENSION_INFO = 0x00000020,
 };
 
+struct RequestPermissionUsedScene : public Parcelable {
+    std::vector<std::string> abilities;
+    std::string when;
+
+    bool ReadFromParcel(Parcel &parcel);
+    virtual bool Marshalling(Parcel &parcel) const override;
+    static RequestPermissionUsedScene *Unmarshalling(Parcel &parcel);
+};
+
+struct RequestPermission : public Parcelable {
+    std::string name;
+    std::string reason;
+    int32_t reasonId = 0;
+    RequestPermissionUsedScene usedScene;
+
+    bool ReadFromParcel(Parcel &parcel);
+    virtual bool Marshalling(Parcel &parcel) const override;
+    static RequestPermission *Unmarshalling(Parcel &parcel);
+};
 // configuration information about a bundle
 struct BundleInfo : public Parcelable {
     std::string name;         // bundle name
@@ -86,6 +105,7 @@ struct BundleInfo : public Parcelable {
     // new version fields
     std::vector<ExtensionAbilityInfo> extensionInfos;
     std::vector<int32_t> reqPermissionStates;
+    std::vector<RequestPermission> reqPermissionDetails;
 
     bool ReadFromParcel(Parcel &parcel);
     virtual bool Marshalling(Parcel &parcel) const override;

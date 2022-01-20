@@ -744,6 +744,45 @@ static void ConvertHapModuleInfo(napi_env env, napi_value objHapModuleInfo, cons
         napi_set_named_property(env, objHapModuleInfo, "extensionAbilityInfo", nExtensionAbilityInfos));
 }
 
+static void ConvertRequestPermissionUsedScene(napi_env env, napi_value result,
+    const RequestPermissionUsedScene &requestPermissionUsedScene)
+{
+    napi_value nAbilities;
+    NAPI_CALL_RETURN_VOID(env, napi_create_array(env, &nAbilities));
+    for (size_t idx = 0; idx < requestPermissionUsedScene.abilities.size(); idx++) {
+        napi_value objAbility;
+        NAPI_CALL_RETURN_VOID(env,
+            napi_create_string_utf8(env, requestPermissionUsedScene.abilities[idx].c_str(),
+                                    NAPI_AUTO_LENGTH, &objAbility));
+        NAPI_CALL_RETURN_VOID(env, napi_set_element(env, nAbilities, idx, objAbility));
+    }
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, result, "abilities", nAbilities));
+
+    napi_value nWhen;
+    NAPI_CALL_RETURN_VOID(env,
+        napi_create_string_utf8(env, requestPermissionUsedScene.when.c_str(), NAPI_AUTO_LENGTH, &nWhen));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, result, "when", nWhen));
+}
+
+static void ConvertRequestPermission(napi_env env, napi_value result, const RequestPermission &requestPermission)
+{
+    napi_value nPermissionName;
+    NAPI_CALL_RETURN_VOID(
+        env, napi_create_string_utf8(env, requestPermission.name.c_str(), NAPI_AUTO_LENGTH, &nPermissionName));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, result, "name", nPermissionName));
+
+    napi_value nReason;
+    NAPI_CALL_RETURN_VOID(
+        env, napi_create_string_utf8(env, requestPermission.reason.c_str(), NAPI_AUTO_LENGTH, &nReason));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, result, "reason", nReason));
+
+
+    napi_value nUsedScene;
+    NAPI_CALL_RETURN_VOID(env, napi_create_object(env, &nUsedScene));
+    ConvertRequestPermissionUsedScene(env, nUsedScene, requestPermission.usedScene);
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, result, "usedScene", nUsedScene));
+}
+
 static void ConvertBundleInfo(napi_env env, napi_value objBundleInfo, const BundleInfo &bundleInfo)
 {
     napi_value nName;
@@ -869,6 +908,12 @@ static void ConvertBundleInfo(napi_env env, napi_value objBundleInfo, const Bund
 
     napi_value nReqPermissionDetails;
     NAPI_CALL_RETURN_VOID(env, napi_create_array(env, &nReqPermissionDetails));
+    for (size_t idx = 0; idx < bundleInfo.reqPermissionDetails.size(); idx++) {
+        napi_value objReqPermission;
+        NAPI_CALL_RETURN_VOID(env, napi_create_object(env, &objReqPermission));
+        ConvertRequestPermission(env, objReqPermission, bundleInfo.reqPermissionDetails[idx]);
+        NAPI_CALL_RETURN_VOID(env, napi_set_element(env, nReqPermissionDetails, idx, objReqPermission));
+    }
     NAPI_CALL_RETURN_VOID(
         env, napi_set_named_property(env, objBundleInfo, "reqPermissionDetails", nReqPermissionDetails));
 
