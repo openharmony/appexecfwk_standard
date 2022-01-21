@@ -14,7 +14,6 @@
  */
 
 #include "js_launcher_mgr.h"
-#include "hilog_wrapper.h"
 
 namespace OHOS {
 namespace AppExecFwk {
