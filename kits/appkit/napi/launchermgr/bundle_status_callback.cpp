@@ -16,7 +16,6 @@
 
 #include "bundle_status_callback.h"
 
-#include "hilog_wrapper.h"
 #include "napi/native_common.h"
 
 BundleStatusCallback::BundleStatusCallback(napi_env env, napi_ref addedCallback,
