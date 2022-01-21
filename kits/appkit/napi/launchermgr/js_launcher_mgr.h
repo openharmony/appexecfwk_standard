@@ -20,7 +20,6 @@
 #include <string>
 #include <vector>
 
-#include "hilog_wrapper.h"
 #include "launcher_service.h"
 #include "nocopyable.h"
 #include "singleton.h"

@@ -18,12 +18,14 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "app_log_wrapper.h"
 #include "bundle_status_callback.h"
-#include "hilog_wrapper.h"
 #include "js_launcher_mgr.h"
 #include "launcher_service.h"
 #include "napi/native_api.h"
 #include "napi/native_node_api.h"
+
+using namespace OHOS::AppExecFwk;
 
 namespace {
 const std::string REGISTERCALLBACK = "BundleStatusChange";
@@ -64,14 +66,14 @@ static void ParseString(napi_env env, napi_value value, std::string& result)
     size_t size = 0;
 
     if (napi_get_value_string_utf8(env, value, nullptr, NAPI_RETURN_ZERO, &size) != napi_ok) {
-        HILOG_ERROR("can not get string size");
+        APP_LOGE("can not get string size");
         return;
     }
 
     result.reserve(size + NAPI_RETURN_ONE);
     result.resize(size);
     if (napi_get_value_string_utf8(env, value, result.data(), (size + NAPI_RETURN_ONE), &size) != napi_ok) {
-        HILOG_ERROR("can not get string value");
+        APP_LOGE("can not get string value");
         return;
     }
 }
@@ -83,7 +85,7 @@ static bool ParseBundleStatusCallback(napi_env env,
     napi_valuetype valueType;
     NAPI_CALL(env, napi_typeof(env, args, &valueType));
     if (valueType != napi_object) {
-        HILOG_ERROR("param type mismatch!");
+        APP_LOGE("param type mismatch!");
         return false;
     }
 
@@ -94,7 +96,7 @@ static bool ParseBundleStatusCallback(napi_env env,
     NAPI_ASSERT(env, status == napi_ok, "property name incorrect!");
     napi_typeof(env, addValue, &valueType);
     if (valueType != napi_function) {
-        HILOG_ERROR("add param type mismatch!");
+        APP_LOGE("add param type mismatch!");
         return false;
     }
     napi_create_reference(env, addValue, NAPI_RETURN_ONE, &addCallback);
@@ -106,7 +108,7 @@ static bool ParseBundleStatusCallback(napi_env env,
     NAPI_ASSERT(env, status == napi_ok, "property name incorrect!");
     napi_typeof(env, updateValue, &valueType);
     if (valueType != napi_function) {
-        HILOG_ERROR("update param type mismatch!");
+        APP_LOGE("update param type mismatch!");
         return false;
     }
     napi_create_reference(env, updateValue, NAPI_RETURN_ONE, &updateCallback);
@@ -118,7 +120,7 @@ static bool ParseBundleStatusCallback(napi_env env,
     NAPI_ASSERT(env, status == napi_ok, "property name incorrect!");
     napi_typeof(env, removeValue, &valueType);
     if (valueType != napi_function) {
-        HILOG_ERROR("remove param type mismatch!");
+        APP_LOGE("remove param type mismatch!");
         return false;
     }
     napi_create_reference(env, removeValue, NAPI_RETURN_ONE, &removeCallback);
@@ -234,7 +236,7 @@ static void ConvertApplicationInfo(napi_env env, napi_value objAppInfo,
     NAPI_CALL_RETURN_VOID(env, napi_create_int32(env, appInfo.flags, &nFlags));
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objAppInfo, "flags", nFlags));
 
-    HILOG_INFO("ConvertApplicationInfo entryDir=%{public}s.", appInfo.entryDir.c_str());
+    APP_LOGI("ConvertApplicationInfo entryDir=%{public}s.", appInfo.entryDir.c_str());
 }
 
 static void ConvertElementName(napi_env env, napi_value elementInfo, const OHOS::AppExecFwk::ElementName &elementName)
@@ -404,7 +406,7 @@ static void ParseShortcutInfo(napi_env env, napi_value result,
                               const std::vector<OHOS::AppExecFwk::ShortcutInfo> &shortcutInfos)
 {
     if (shortcutInfos.empty()) {
-        HILOG_ERROR("launcher shortcut info is empty");
+        APP_LOGE("launcher shortcut info is empty");
         return;
     }
     size_t index = 0;
@@ -422,17 +424,17 @@ static void ParseShortcutInfo(napi_env env, napi_value result,
 static bool InnerJSLauncherServiceOn(napi_env env, OHOS::sptr<BundleStatusCallback> callbackRef)
 {
     if (!callbackRef) {
-        HILOG_ERROR("Input null BundleStatusCallback");
+        APP_LOGE("Input null BundleStatusCallback");
     }
     auto launcher = GetLauncherService();
     if (!launcher) {
-        HILOG_ERROR("can not get launcher");
+        APP_LOGE("can not get launcher");
         return false;
     }
 
     auto result = launcher->RegisterCallback(callbackRef);
     if (!result) {
-        HILOG_ERROR("RegisterBundleStatusCallback call error");
+        APP_LOGE("RegisterBundleStatusCallback call error");
         return false;
     }
     return true;
@@ -474,7 +476,7 @@ static napi_value JSLauncherServiceOn(napi_env env, napi_callback_info info)
 
     napi_value promise = nullptr;
     if (command != REGISTERCALLBACK) {
-        HILOG_ERROR("Input wrong command");
+        APP_LOGE("Input wrong command");
         if (asyncCallbackInfo != nullptr) {
             delete asyncCallbackInfo;
             asyncCallbackInfo = nullptr;
@@ -543,13 +545,13 @@ static bool InnerJSLauncherServiceOff()
 {
     auto launcher = GetLauncherService();
     if (!launcher) {
-        HILOG_ERROR("can not get launcher");
+        APP_LOGE("can not get launcher");
         return false;
     }
 
     auto result = launcher->UnRegisterCallback();
     if (!result) {
-        HILOG_ERROR("RegisterBundleStatusCallback call error");
+        APP_LOGE("RegisterBundleStatusCallback call error");
         return false;
     }
     return true;
@@ -582,7 +584,7 @@ static napi_value JSLauncherServiceOff(napi_env env, napi_callback_info info)
 
     napi_value promise = nullptr;
     if (command != UNREGISTERCALLBACK) {
-        HILOG_ERROR("Input wrong command");
+        APP_LOGE("Input wrong command");
         if (asyncCallbackInfo != nullptr) {
             delete asyncCallbackInfo;
             asyncCallbackInfo = nullptr;
@@ -643,13 +645,13 @@ static bool InnerJSGetAllLauncherAbilityInfos(napi_env env, uint32_t userId,
 {
     auto launcher = GetLauncherService();
     if (!launcher) {
-        HILOG_ERROR("can not get launcher");
+        APP_LOGE("can not get launcher");
         return false;
     }
 
     auto result = launcher->GetAllLauncherAbilityInfos(userId, launcherAbilityInfos);
     if (!result) {
-        HILOG_ERROR("GetAllLauncherAbilityInfos call error");
+        APP_LOGE("GetAllLauncherAbilityInfos call error");
         return false;
     }
     return true;
@@ -746,13 +748,13 @@ static bool InnerJSGetLauncherAbilityInfos(napi_env env, std::string& bundleName
 {
     auto launcher = GetLauncherService();
     if (!launcher) {
-        HILOG_ERROR("can not get launcher");
+        APP_LOGE("can not get launcher");
         return false;
     }
 
     auto result = launcher->GetAbilityList(bundleName, userId, launcherAbilityInfos);
     if (!result) {
-        HILOG_ERROR("GetAbilityList call error");
+        APP_LOGE("GetAbilityList call error");
         return false;
     }
     return true;
@@ -854,12 +856,12 @@ static bool InnerJSGetShortcutInfos(napi_env env, const std::string& bundleName,
 {
     auto launcher = GetLauncherService();
     if (!launcher) {
-        HILOG_ERROR("can not get launcher");
+        APP_LOGE("can not get launcher");
         return false;
     }
     auto result = launcher->GetShortcutInfos(bundleName, shortcutInfos);
     if (!result) {
-        HILOG_ERROR("GetShortcutInfos call error");
+        APP_LOGE("GetShortcutInfos call error");
         return false;
     }
     return true;
