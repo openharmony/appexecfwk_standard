@@ -48,8 +48,8 @@ ohos_shared_library("appexecfwk_base") {
   public_configs = [ ":appexecfwk_base_sdk_config" ]
 
   defines = [
-    "APP_LOG_TAG = \"AppExecFwkBase\"",
-    "LOG_DOMAIN = 0xD001100",
+    "APP_LOG_TAG = \"BundleMgrService\"",
+    "LOG_DOMAIN = 0xD001120",
   ]
   cflags = []
   if (target_cpu == "arm") {
