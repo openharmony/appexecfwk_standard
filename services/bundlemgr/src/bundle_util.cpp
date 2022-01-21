@@ -25,6 +25,7 @@
 
 #include "app_log_wrapper.h"
 #include "bundle_constants.h"
+#include "bytrace.h"
 #include "directory_ex.h"
 #include "string_ex.h"
 
@@ -63,6 +64,7 @@ ErrCode BundleUtil::CheckFilePath(const std::string &bundlePath, std::string &re
 
 ErrCode BundleUtil::CheckFilePath(const std::vector<std::string> &bundlePaths, std::vector<std::string> &realPaths)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     // there are three cases for bundlePaths:
     // 1. one bundle direction in the bundlePaths, some hap files under this bundle direction.
     // 2. one hap direction in the bundlePaths.

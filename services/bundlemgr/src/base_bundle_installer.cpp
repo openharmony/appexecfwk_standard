@@ -26,6 +26,7 @@
 #include "bundle_parser.h"
 #include "bundle_permission_mgr.h"
 #include "bundle_util.h"
+#include "bytrace.h"
 #include "datetime_ex.h"
 #include "installd_client.h"
 #include "nlohmann/json.hpp"
@@ -77,6 +78,7 @@ ErrCode BaseBundleInstaller::InstallBundle(
 ErrCode BaseBundleInstaller::InstallBundle(
     const std::vector<std::string> &bundlePaths, const InstallParam &installParam, const Constants::AppType appType)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGD("begin to process bundle install");
 
     PerfProfile::GetInstance().SetBundleInstallStartTime(GetTickCount());
@@ -163,6 +165,7 @@ void BaseBundleInstaller::UpdateInstallerState(const InstallerState state)
 ErrCode BaseBundleInstaller::InnerProcessBundleInstall(std::unordered_map<std::string, InnerBundleInfo> &newInfos,
     InnerBundleInfo &oldInfo, const InstallParam &installParam, int32_t &uid)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     bundleName_ = newInfos.begin()->second.GetBundleName();
     APP_LOGD("InnerProcessBundleInstall with bundleName %{public}s", bundleName_.c_str());
 
@@ -1240,6 +1243,7 @@ bool BaseBundleInstaller::UpdateBundlePaths(InnerBundleInfo &info, const std::st
 ErrCode BaseBundleInstaller::CheckMultipleHapsSignInfo(const std::vector<std::string> &bundlePaths,
     const InstallParam &installParam, std::vector<Security::Verify::HapVerifyResult>& hapVerifyRes) const
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGD("Check multiple haps signInfo");
     if (bundlePaths.empty()) {
         APP_LOGE("check hap sign info failed due to empty bundlePaths!");
@@ -1290,6 +1294,7 @@ ErrCode BaseBundleInstaller::ParseHapFiles(const std::vector<std::string> &bundl
     std::vector<Security::Verify::HapVerifyResult> &hapVerifyRes,
     std::unordered_map<std::string, InnerBundleInfo> &infos)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGD("Parse hap file");
     ErrCode result = ERR_OK;
     for (int i = 0; i < bundlePaths.size(); ++i) {
