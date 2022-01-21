@@ -107,8 +107,8 @@ public:
     static Security::AccessToken::AccessTokenID CreateAccessTokenId(
         const InnerBundleInfo &innerBundleInfo, const std::string bundleName, const int32_t userId);
 
-    static int32_t UpdateHapToken(const Security::AccessToken::AccessTokenID tokenId,
-        const InnerBundleInfo &innerBundleInfo);
+    static bool UpdateDefineAndRequestPermissions(const Security::AccessToken::AccessTokenID tokenId,
+        const InnerBundleInfo &oldInfo, const InnerBundleInfo &newInfo, std::vector<std::string> &newRequestPermName);
 
     static bool AddDefineAndRequestPermissions(const Security::AccessToken::AccessTokenID tokenId,
         const InnerBundleInfo &innerBundleInfo, std::vector<std::string> &newRequestPermName);
@@ -239,6 +239,12 @@ private:
     static void ConvertPermissionDef(
         Security::AccessToken::PermissionDef &permDef, const DefinePermission &defPermission,
         const std::string &bundleName);
+
+    static std::vector<std::string> GetNeedDeleteDefinePermissionName(const InnerBundleInfo &oldInfo,
+        const InnerBundleInfo &newInfo);
+    
+    static std::vector<std::string> GetNeedDeleteRequestPermissionName(const InnerBundleInfo &oldInfo,
+        const InnerBundleInfo &newInfo);
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS
