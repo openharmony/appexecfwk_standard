@@ -935,6 +935,7 @@ ErrCode BaseBundleInstaller::ProcessModuleUpdate(InnerBundleInfo &newInfo, Inner
     newInfo.RestoreModuleInfo(oldInfo);
     oldInfo.SetInstallMark(bundleName_, modulePackage_, InstallExceptionStatus::UPDATING_FINISH);
     oldInfo.SetBundleUpdateTime(BundleUtil::GetCurrentTime(), userId_);
+    auto noUpdateInfo = oldInfo;
     if (!dataMgr_->UpdateInnerBundleInfo(bundleName_, newInfo, oldInfo)) {
         APP_LOGE("update innerBundleInfo %{public}s failed", bundleName_.c_str());
         return ERR_APPEXECFWK_INSTALL_BUNDLE_MGR_SERVICE_ERROR;
@@ -944,16 +945,17 @@ ErrCode BaseBundleInstaller::ProcessModuleUpdate(InnerBundleInfo &newInfo, Inner
         if (info.second.accessTokenId == 0) {
             continue;
         }
-        if (BundlePermissionMgr::UpdateHapToken(info.second.accessTokenId, newInfo) != ERR_OK) {
-            APP_LOGE("update HapToken %{public}s failed", bundleName_.c_str());
+        std::vector<std::string> newRequestPermName;
+        if (!BundlePermissionMgr::UpdateDefineAndRequestPermissions(info.second.accessTokenId, noUpdateInfo,
+            oldInfo, newRequestPermName)) {
+            APP_LOGE("UpdateDefineAndRequestPermissions %{public}s failed", bundleName_.c_str());
             return ERR_APPEXECFWK_INSTALL_UPDATE_HAP_TOKEN_FAILED;
         }
-        result = GrantRequestPermissions(oldInfo, info.second.accessTokenId);
-        if (result != ERR_OK) {
-            return result;
+        if (!BundlePermissionMgr::GrantRequestPermissions(oldInfo, newRequestPermName, info.second.accessTokenId)) {
+            APP_LOGE("BundlePermissionMgr::GrantRequestPermissions failed %{public}s", bundleName_.c_str());
+            return ERR_APPEXECFWK_INSTALL_GRANT_REQUEST_PERMISSIONS_FAILED;
         }
     }
-
     userGuard.Dismiss();
     return ERR_OK;
 }

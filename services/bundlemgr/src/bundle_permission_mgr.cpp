@@ -155,13 +155,98 @@ AccessToken::AccessTokenID BundlePermissionMgr::CreateAccessTokenId(
     return accessToken.tokenIdExStruct.tokenID;
 }
 
-int32_t BundlePermissionMgr::UpdateHapToken(const Security::AccessToken::AccessTokenID tokenId,
-    const InnerBundleInfo &innerBundleInfo)
+bool BundlePermissionMgr::UpdateDefineAndRequestPermissions(const Security::AccessToken::AccessTokenID tokenId,
+    const InnerBundleInfo &oldInfo, const InnerBundleInfo &newInfo, std::vector<std::string> &newRequestPermName)
 {
-    APP_LOGD("BundlePermissionMgr::UpdateHapToken bundleName = %{public}s", innerBundleInfo.GetBundleName().c_str());
-    std::string appId = innerBundleInfo.GetProvisionId();
-    AccessToken::HapPolicyParams hapPolicy = CreateHapPolicyParam(innerBundleInfo);
-    return AccessToken::AccessTokenKit::UpdateHapToken(tokenId, appId, hapPolicy);
+    APP_LOGD("BundlePermissionMgr::UpdateDefineAndRequestPermissions bundleName = %{public}s",
+        newInfo.GetBundleName().c_str());
+    std::vector<AccessToken::PermissionDef> defPermList = GetPermissionDefList(newInfo);
+    std::vector<AccessToken::PermissionDef> newDefPermList;
+    if (!GetNewPermissionDefList(tokenId, defPermList, newDefPermList)) {
+        return false;
+    }
+    std::vector<AccessToken::PermissionStateFull> reqPermissionStateList = GetPermissionStateFullList(newInfo);
+    std::vector<AccessToken::PermissionStateFull> newPermissionStateList;
+    if (!GetNewPermissionStateFull(tokenId, reqPermissionStateList, newPermissionStateList, newRequestPermName)) {
+        return false;
+    }
+    // delete old definePermission
+    std::vector<std::string> needDeleteDefinePermission = GetNeedDeleteDefinePermissionName(oldInfo, newInfo);
+    for (const auto &name : needDeleteDefinePermission) {
+        auto iter = std::find_if(newDefPermList.begin(), newDefPermList.end(), [&name](const auto &defPerm) {
+            return defPerm.permissionName == name;
+        });
+        if (iter != newDefPermList.end()) {
+            APP_LOGD("delete definePermission %{public}s", name.c_str());
+            newDefPermList.erase(iter);
+        }
+    }
+    // delete old requestPermission
+    std::vector<std::string> needDeleteRequestPermission = GetNeedDeleteRequestPermissionName(oldInfo, newInfo);
+    for (const auto &name : needDeleteRequestPermission) {
+        auto iter = std::find_if(newPermissionStateList.begin(), newPermissionStateList.end(),
+            [&name](const auto &defPerm) {
+            return defPerm.permissionName == name;
+        });
+        if (iter != newPermissionStateList.end()) {
+            APP_LOGD("delete requestPermission %{public}s", name.c_str());
+            newPermissionStateList.erase(iter);
+        }
+    }
+    AccessToken::HapPolicyParams hapPolicy;
+    std::string apl = newInfo.GetAppPrivilegeLevel();
+    APP_LOGD("apl : %{public}s, newDefPermList size : %{public}zu, newPermissionStateList size : %{public}zu",
+             apl.c_str(), newDefPermList.size(), newPermissionStateList.size());
+    hapPolicy.apl = GetTokenApl(apl);
+    hapPolicy.domain = "domain"; // default
+    hapPolicy.permList = newDefPermList;
+    hapPolicy.permStateList = newPermissionStateList;
+    std::string appId = newInfo.GetProvisionId();
+    int32_t ret = AccessToken::AccessTokenKit::UpdateHapToken(tokenId, appId, hapPolicy);
+    if (ret != AccessToken::AccessTokenKitRet::RET_SUCCESS) {
+        APP_LOGE("UpdateDefineAndRequestPermissions UpdateHapToken failed errcode: %{public}d", ret);
+        return false;
+    }
+    APP_LOGD("BundlePermissionMgr::UpdateDefineAndRequestPermissions end");
+    return true;
+}
+
+std::vector<std::string> BundlePermissionMgr::GetNeedDeleteDefinePermissionName(const InnerBundleInfo &oldInfo,
+    const InnerBundleInfo &newInfo)
+{
+    std::vector<DefinePermission> oldDefinePermissions = oldInfo.GetAllDefinePermissions();
+    std::vector<DefinePermission> newDefinePermissions = newInfo.GetAllDefinePermissions();
+    std::vector<std::string> needDeleteDefinePermission;
+    for (const auto &defPerm : oldDefinePermissions) {
+        auto iter = std::find_if(newDefinePermissions.begin(), newDefinePermissions.end(),
+            [&defPerm](const auto &perm) {
+            return defPerm.name == perm.name;
+        });
+        if (iter == newDefinePermissions.end()) {
+            APP_LOGD("GetNeedDeleteDefinePermissionName need delete %{public}s", defPerm.name.c_str());
+            needDeleteDefinePermission.emplace_back(defPerm.name);
+        }
+    }
+    return needDeleteDefinePermission;
+}
+
+std::vector<std::string> BundlePermissionMgr::GetNeedDeleteRequestPermissionName(const InnerBundleInfo &oldInfo,
+    const InnerBundleInfo &newInfo)
+{
+    std::vector<RequestPermission> oldRequestPermissions = oldInfo.GetAllRequestPermissions();
+    std::vector<RequestPermission> newRequestPermissions = newInfo.GetAllRequestPermissions();
+    std::vector<std::string> needDeleteRequestPermission;
+    for (const auto &reqPerm : oldRequestPermissions) {
+        auto iter = std::find_if(newRequestPermissions.begin(), newRequestPermissions.end(),
+            [&reqPerm](const auto &perm) {
+            return reqPerm.name == perm.name;
+        });
+        if (iter == newRequestPermissions.end()) {
+            APP_LOGD("GetNeedDeleteRequestPermissionName need delete %{public}s", reqPerm.name.c_str());
+            needDeleteRequestPermission.emplace_back(reqPerm.name);
+        }
+    }
+    return needDeleteRequestPermission;
 }
 
 bool BundlePermissionMgr::GetNewPermissionDefList(Security::AccessToken::AccessTokenID tokenId,
@@ -177,6 +262,8 @@ bool BundlePermissionMgr::GetNewPermissionDefList(Security::AccessToken::AccessT
         if (std::find_if(newPermissionDef.begin(), newPermissionDef.end(), [&perm](const auto &newPerm) {
             return newPerm.permissionName == perm.permissionName;
             }) == newPermissionDef.end()) {
+            APP_LOGD("BundlePermissionMgr::GetNewPermissionDefList add define permission %{public}s",
+                     perm.permissionName.c_str());
             newPermissionDef.emplace_back(perm);
         }
     }
