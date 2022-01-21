@@ -15,6 +15,7 @@
 
 #include "event_handler.h"
 
+#include <unistd.h>
 #include "event_handler_utils.h"
 #include "thread_local_data.h"
 
@@ -235,6 +236,53 @@ void EventHandler::SetEventRunner(const std::shared_ptr<EventRunner> &runner)
     return;
 }
 
+void EventHandler::DeliveryTimeAction(const InnerEvent::Pointer &event, InnerEvent::TimePoint nowStart)
+{
+    int64_t deliveryTimeout = GetDeliveryTimeout();
+    if (deliveryTimeout != 0) {
+        std::string threadName = eventRunner_->GetRunnerThreadName();
+        std::string eventName = GetEventName(event);
+        int64_t threadId = gettid();
+        std::string threadIdCharacter = std::to_string(threadId);
+        std::chrono::duration<double> deliveryTime = nowStart - event->GetSendTime();
+        std::string deliveryTimeCharacter = std::to_string((deliveryTime).count());
+        std::string deliveryTimeoutCharacter = std::to_string(deliveryTimeout);
+        std::string handOutTag = "threadId: " + threadIdCharacter + "," + "threadName: " + threadName + "," +
+        "eventName: " + eventName + "," + "deliveryTime: " + deliveryTimeCharacter + "," +
+        "deliveryTimeout: " + deliveryTimeoutCharacter;
+        if ((nowStart - std::chrono::milliseconds(deliveryTimeout)) > event->GetHandleTime()) {
+            HILOGD("the delivery timeout '%{public}s'", handOutTag.c_str());
+            if (deliveryTimeoutCallback_) {
+                deliveryTimeoutCallback_();
+            }
+        }
+    }
+}
+
+void EventHandler::DistributeTimeAction(const InnerEvent::Pointer &event, InnerEvent::TimePoint nowStart)
+{
+    int64_t distributeTimeout = GetDistributeTimeout();
+    if (distributeTimeout != 0) {
+        std::string threadName = eventRunner_->GetRunnerThreadName();
+        std::string eventName = GetEventName(event);
+        int64_t threadId = gettid();
+        std::string threadIdCharacter = std::to_string(threadId);
+        InnerEvent::TimePoint nowEnd = InnerEvent::Clock::now();
+        std::chrono::duration<double> distributeTime = nowEnd - nowStart;
+        std::string distributeTimeCharacter = std::to_string((distributeTime).count());
+        std::string distributeTimeoutCharacter = std::to_string(distributeTimeout);
+        std::string executeTag = "threadId: " + threadIdCharacter + "," + "threadName: " + threadName + "," +
+        "eventName: " + eventName + "," + "deliveryTime: " + distributeTimeCharacter + "," +
+        "deliveryTimeout: " + distributeTimeoutCharacter;
+        if ((nowEnd - std::chrono::milliseconds(distributeTimeout)) > nowStart) {
+            HILOGD("the distribute timeout '%{public}s'", executeTag.c_str());
+            if (distributeTimeoutCallback_) {
+                distributeTimeoutCallback_();
+            }
+        }
+    }
+}
+
 void EventHandler::DistributeEvent(const InnerEvent::Pointer &event)
 {
     if (!event) {
@@ -255,6 +303,9 @@ void EventHandler::DistributeEvent(const InnerEvent::Pointer &event)
         HiTracePointerOutPut(spanId, event, "Receive", HiTraceTracepointType::HITRACE_TP_SR);
     }
 
+    InnerEvent::TimePoint nowStart = InnerEvent::Clock::now();
+    DeliveryTimeAction(event, nowStart);
+
     if (event->HasTask()) {
         // Call task callback directly if contains a task.
         (event->GetTaskCallback())();
@@ -262,6 +313,8 @@ void EventHandler::DistributeEvent(const InnerEvent::Pointer &event)
         // Otherwise let developers to handle it.
         ProcessEvent(event);
     }
+
+    DistributeTimeAction(event, nowStart);
 
     if (allowTraceOutPut) {
         HiTrace::Tracepoint(HiTraceTracepointType::HITRACE_TP_SS, *spanId, "Event Distribute over");
@@ -277,6 +330,26 @@ void EventHandler::DistributeEvent(const InnerEvent::Pointer &event)
     } else {
         currentEventHandler = oldHandler;
     }
+}
+
+void EventHandler::SetDeliveryTimeout(int64_t deliveryTimeout)
+{
+    deliveryTimeout_ = deliveryTimeout;
+}
+
+void EventHandler::SetDistributeTimeout(int64_t distributeTimeout)
+{
+    distributeTimeout_ = distributeTimeout;
+}
+
+int64_t EventHandler::GetDistributeTimeout() const
+{
+    return distributeTimeout_;
+}
+
+int64_t EventHandler::GetDeliveryTimeout() const
+{
+    return deliveryTimeout_;
 }
 
 void EventHandler::Dump(Dumper &dumper)
