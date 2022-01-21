@@ -12,15 +12,17 @@
 # limitations under the License.
 
 import("//build/ohos.gni")
+import("//foundation/appexecfwk/standard/appexecfwk.gni")
 
 ohos_shared_library("innerbundlemanager") {
   include_dirs = [
-    "//foundation/aafwk/standard/services/common/include",
-    "//foundation/ace/napi/interfaces/kits",
     "//third_party/libuv/include",
     "//third_party/node/src",
-    "//utils/system/safwk/native/include",
-    "./",
+  ]
+
+  defines = [
+    "APP_LOG_TAG = \"BundleMgrService\"",
+    "LOG_DOMAIN = 0xD001120",
   ]
 
   sources = [
@@ -29,27 +31,24 @@ ohos_shared_library("innerbundlemanager") {
     "js_launcher_mgr.cpp",
   ]
 
-  deps = [
-    "//foundation/aafwk/standard/interfaces/innerkits/base:base",
-    "//foundation/aafwk/standard/interfaces/innerkits/want:want",
-    "//foundation/ace/napi:ace_napi",
-    "//foundation/appexecfwk/standard/common:libappexecfwk_common",
-    "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_base:appexecfwk_base",
-    "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_core:appexecfwk_core",
-    "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
-    "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
-    "//utils/native/base:utils",
-  ]
+  deps = [ "${common_path}:libappexecfwk_common" ]
 
   external_deps = [
     "ability_runtime:app_manager",
+    "ability_runtime:base",
+    "ability_runtime:want",
+    "bundle_framework:appexecfwk_base",
+    "bundle_framework:appexecfwk_core",
     "ces_standard:cesfwk_core",
     "ces_standard:cesfwk_innerkits",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
+    "napi:ace_napi",
+    "samgr_standard:samgr_proxy",
+    "utils_base:utils",
   ]
 
   relative_install_dir = "module/bundle"
   subsystem_name = "appexecfwk"
-  part_name = "appexecfwk_standard"
+  part_name = "bundle_framework"
 }
