@@ -24,11 +24,7 @@ config("appexecfwk_core_config") {
 
 ohos_shared_library("appexecfwk_core") {
   include_dirs = [
-    "${services_path}/bundlemgr/include",
-    "//base/global/resmgr_standard/interfaces/innerkits/include",
     "//base/global/i18n_standard/frameworks/intl/include",
-    "//third_party/icu/icu4c/source/common",
-    "//third_party/json/include",
     "//utils/system/safwk/native/include",
   ]
 
@@ -57,8 +53,8 @@ ohos_shared_library("appexecfwk_core") {
   ]
 
   defines = [
-    "APP_LOG_TAG = \"AppexecfwkCore\"",
-    "LOG_DOMAIN = 0xD001100",
+    "APP_LOG_TAG = \"BundleMgrService\"",
+    "LOG_DOMAIN = 0xD001120",
   ]
   cflags = []
   if (target_cpu == "arm") {
@@ -66,27 +62,24 @@ ohos_shared_library("appexecfwk_core") {
   }
   deps = [
     "${common_path}:libappexecfwk_common",
-    "//foundation/aafwk/standard/interfaces/innerkits/base:base",
-    "//foundation/aafwk/standard/interfaces/innerkits/want:want",
-    "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_base:appexecfwk_base",
-    "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
-    "//utils/native/base:utils",
-  ]
-
-  public_deps = [
     "//base/global/i18n_standard/frameworks/intl:intl_util",
-    "//base/global/resmgr_standard/frameworks/resmgr:global_resmgr",
-    "//third_party/icu/icu4c:shared_icuuc",
     "//third_party/jsoncpp:jsoncpp",
   ]
 
+  public_deps =
+      [ "//base/global/resmgr_standard/frameworks/resmgr:global_resmgr" ]
+
   external_deps = [
+    "ability_runtime:base",
+    "ability_runtime:want",
+    "bundle_framework:appexecfwk_base",
     "bytrace_standard:bytrace_core",
     "ces_standard:cesfwk_core",
     "ces_standard:cesfwk_innerkits",
     "hiviewdfx_hilog_native:libhilog",
-    "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
+    "samgr_standard:samgr_proxy",
+    "utils_base:utils",
   ]
 
   subsystem_name = "appexecfwk"
