@@ -63,8 +63,8 @@ ohos_moduletest("bm_command_dump_module_test") {
 
   external_deps = [
     "ability_runtime:base",
-    "appexecfwk_standard:appexecfwk_base",
-    "appexecfwk_standard:appexecfwk_core",
+    "bundle_framework:appexecfwk_base",
+    "bundle_framework:appexecfwk_core",
     "ces_standard:cesfwk_innerkits",
     "distributeddatamgr:distributeddata_inner",
     "hiviewdfx_hilog_native:libhilog",
@@ -105,8 +105,8 @@ ohos_moduletest("bm_command_install_module_test") {
 
   external_deps = [
     "ability_runtime:base",
-    "appexecfwk_standard:appexecfwk_base",
-    "appexecfwk_standard:appexecfwk_core",
+    "bundle_framework:appexecfwk_base",
+    "bundle_framework:appexecfwk_core",
     "ces_standard:cesfwk_innerkits",
     "distributeddatamgr:distributeddata_inner",
     "hiviewdfx_hilog_native:libhilog",
@@ -147,8 +147,8 @@ ohos_moduletest("bm_command_uninstall_module_test") {
 
   external_deps = [
     "ability_runtime:base",
-    "appexecfwk_standard:appexecfwk_base",
-    "appexecfwk_standard:appexecfwk_core",
+    "bundle_framework:appexecfwk_base",
+    "bundle_framework:appexecfwk_core",
     "ces_standard:cesfwk_innerkits",
     "distributeddatamgr:distributeddata_inner",
     "hiviewdfx_hilog_native:libhilog",
