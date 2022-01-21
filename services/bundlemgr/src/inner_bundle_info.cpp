@@ -1763,7 +1763,7 @@ void InnerBundleInfo::GetApplicationInfo(int32_t flags, int32_t userId, Applicat
                 appInfo.metaData[info.second.moduleName] = info.second.metaData.customizeData;
             }
             if (isNewVersion_ && info.second.metadata.size() > 0) {
-                appInfo.metadata = info.second.metadata;
+                appInfo.metadata[info.second.moduleName] = info.second.metadata;
             }
         }
     }

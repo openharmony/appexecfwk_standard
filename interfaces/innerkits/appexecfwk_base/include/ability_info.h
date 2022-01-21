@@ -177,7 +177,7 @@ struct AbilityInfo : public Parcelable {
     std::string readPermission;
     std::string writePermission;
     std::vector<std::string> configChanges;
-    uint32_t formEntity;
+    uint32_t formEntity = 0;
     int32_t minFormHeight = 0;
     int32_t defaultFormHeight = 0;
     int32_t minFormWidth = 0;
