@@ -195,12 +195,16 @@ bool ApplicationInfo::ReadFromParcel(Parcel &parcel)
     int32_t metadataSize;
     READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, metadataSize);
     for (int32_t i = 0; i < metadataSize; ++i) {
-        std::unique_ptr<Metadata> meta(parcel.ReadParcelable<Metadata>());
-        if (!meta) {
-            APP_LOGE("ReadParcelable<Metadata> failed");
-            return false;
+        std::string moduleName = Str16ToStr8(parcel.ReadString16());
+        int32_t metaSize = parcel.ReadInt32();
+        for (int n = 0; n < metaSize; ++n) {
+            std::unique_ptr<Metadata> meta(parcel.ReadParcelable<Metadata>());
+            if (!meta) {
+                APP_LOGE("ReadParcelable<Metadata> failed");
+                return false;
+            }
+            metadata[moduleName].emplace_back(*meta);
         }
-        metadata.emplace_back(*meta);
     }
 
     vendor = Str16ToStr8(parcel.ReadString16());
@@ -303,8 +307,12 @@ bool ApplicationInfo::Marshalling(Parcel &parcel) const
     }
 
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, metadata.size());
-    for (const auto &meta : metadata) {
-        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Parcelable, parcel, &meta);
+    for (auto &item : metadata) {
+        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(item.first));
+        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, item.second.size());
+        for (auto &meta : item.second) {
+            WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Parcelable, parcel, &meta);
+        }
     }
 
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(vendor));
