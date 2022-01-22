@@ -69,6 +69,7 @@ ohos_moduletest("bm_command_dump_module_test") {
     "distributeddatamgr:distributeddata_inner",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
+    "resmgr_standard:global_resmgr",
     "samgr_standard:samgr_proxy",
     "utils_base:utils",
   ]
@@ -111,6 +112,7 @@ ohos_moduletest("bm_command_install_module_test") {
     "distributeddatamgr:distributeddata_inner",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
+    "resmgr_standard:global_resmgr",
     "samgr_standard:samgr_proxy",
     "utils_base:utils",
   ]
@@ -153,6 +155,7 @@ ohos_moduletest("bm_command_uninstall_module_test") {
     "distributeddatamgr:distributeddata_inner",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
+    "resmgr_standard:global_resmgr",
     "samgr_standard:samgr_proxy",
     "utils_base:utils",
   ]

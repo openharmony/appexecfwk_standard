@@ -66,9 +66,6 @@ ohos_shared_library("appexecfwk_core") {
     "//third_party/jsoncpp:jsoncpp",
   ]
 
-  public_deps =
-      [ "//base/global/resmgr_standard/frameworks/resmgr:global_resmgr" ]
-
   external_deps = [
     "ability_runtime:base",
     "ability_runtime:want",
@@ -78,6 +75,7 @@ ohos_shared_library("appexecfwk_core") {
     "ces_standard:cesfwk_innerkits",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
+    "resmgr_standard:global_resmgr",
     "samgr_standard:samgr_proxy",
     "utils_base:utils",
   ]
