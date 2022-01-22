@@ -33,6 +33,8 @@ ohos_shared_library("appexecfwk_base") {
     "src/distributed_bundle_info.cpp",
     "src/element_name.cpp",
     "src/extension_ability_info.cpp",
+    "src/extension_form_info.cpp",
+    "src/extension_form_profile.cpp",
     "src/form_info.cpp",
     "src/hap_module_info.cpp",
     "src/install_param.cpp",
