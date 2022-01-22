@@ -61,6 +61,39 @@ const std::string JSON_KEY_DESIGN_WIDTH = "designWidth";
 const std::string JSON_KEY_AUTO_DESIGN_WIDTH = "autoDesignWidth";
 }  // namespace
 
+FormInfo::FormInfo(const ExtensionAbilityInfo &abilityInfo, const ExtensionFormInfo &formInfo)
+{
+    // package = abilityInfo.moduleName;
+    bundleName = abilityInfo.bundleName;
+    // originalBundleName = abilityInfo.bundleName;
+    // relatedBundleName = abilityInfo.bundleName;
+    moduleName = abilityInfo.moduleName;
+    abilityName = abilityInfo.name;
+    name = formInfo.name;
+    description = formInfo.description;
+    // jsComponentName =
+    deepLink = "";
+    formConfigAbility = formInfo.formConfigAbility;
+    scheduledUpateTime = formInfo.scheduledUpdateTime;
+    src = formInfo.src;
+    window.designWidth = formInfo.window.designWidth;
+    window.autoDesignWidth = formInfo.window.autoDesignWidth;
+    // descriptionId =
+    updateDuration = formInfo.updateDuration;
+    defaultDimension = formInfo.defaultDimension;
+    defaultFlag = formInfo.isDefault;
+    formVisibleNotify = formInfo.formVisibleNotify;
+    updateEnabled = formInfo.updateEnabled;
+    type = FormType::JS;
+    colorMode = formInfo.colorMode;
+    for (const auto &dimension : formInfo.supportDimensions) {
+        supportDimensions.push_back(dimension);
+    }
+    for (const auto &metadata : formInfo.metadata) {
+        customizeDatas.push_back(metadata);
+    }
+}
+
 bool FormInfo::ReadCustomizeData(Parcel &parcel)
 {
     int32_t customizeDataSize = 0;
