@@ -17,6 +17,5 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

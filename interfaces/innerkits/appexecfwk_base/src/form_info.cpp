@@ -63,22 +63,22 @@ const std::string JSON_KEY_AUTO_DESIGN_WIDTH = "autoDesignWidth";
 
 FormInfo::FormInfo(const ExtensionAbilityInfo &abilityInfo, const ExtensionFormInfo &formInfo)
 {
-    // package = abilityInfo.moduleName;
+    package = abilityInfo.bundleName + abilityInfo.moduleName;
     bundleName = abilityInfo.bundleName;
-    // originalBundleName = abilityInfo.bundleName;
-    // relatedBundleName = abilityInfo.bundleName;
+    originalBundleName = abilityInfo.bundleName;
+    relatedBundleName = abilityInfo.bundleName;
     moduleName = abilityInfo.moduleName;
     abilityName = abilityInfo.name;
     name = formInfo.name;
     description = formInfo.description;
-    // jsComponentName =
+    jsComponentName = "";
     deepLink = "";
     formConfigAbility = formInfo.formConfigAbility;
     scheduledUpateTime = formInfo.scheduledUpdateTime;
     src = formInfo.src;
     window.designWidth = formInfo.window.designWidth;
     window.autoDesignWidth = formInfo.window.autoDesignWidth;
-    // descriptionId =
+    descriptionId = 0;
     updateDuration = formInfo.updateDuration;
     defaultDimension = formInfo.defaultDimension;
     defaultFlag = formInfo.isDefault;
