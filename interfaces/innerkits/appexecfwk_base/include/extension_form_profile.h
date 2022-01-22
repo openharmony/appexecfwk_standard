@@ -23,6 +23,28 @@
 
 namespace OHOS {
 namespace AppExecFwk {
+namespace ExtensionFormProfileReader {
+const std::string FORMS = "forms";
+const std::string NAME = "name";
+const std::string DESCRIPTION = "description";
+const std::string SRC = "src";
+const std::string WINDOW = "window";
+const std::string WINDOW_DESIGN_WIDTH = "designWidth";
+const std::string WINDOW_AUTO_DESIGN_WIDTH = "autoDesignWidth";
+const std::string COLOR_MODE = "colorMode";
+const std::string FORM_CONFIG_ABILITY = "formConfigAbility";
+const std::string FORM_VISIBLE_NOTIFY = "formVisibleNotify";
+const std::string IS_DEFAULT = "isDefault";
+const std::string UPDATE_ENABLED = "updateEnabled";
+const std::string SCHEDULED_UPDATE_TIME = "scheduledUpdateTime";
+const std::string UPDATE_DURATION = "updateDuration";
+const std::string DEFAULT_DIMENSION = "defaultDimension";
+const std::string SUPPORT_DIMENSIONS = "supportDimensions";
+const std::string METADATA = "metadata";
+const std::string METADATA_NAME = "name";
+const std::string METADATA_VALUE = "value";
+}
+
 class ExtensionFormProfile {
 public:
     /**
@@ -33,7 +55,6 @@ public:
      */
     static ErrCode TransformTo(const std::string &formProfile, std::vector<ExtensionFormInfo> &infos);
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif // FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_BASE_INCLUDE_EXTENSION_FORM_PROFILE_H
