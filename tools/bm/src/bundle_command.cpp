@@ -881,7 +881,7 @@ ErrCode BundleManagerShellCommand::RunAsCleanCommand()
     int result = OHOS::ERR_OK;
     int option = -1;
     int counter = 0;
-    int userId = Constants::UNSPECIFIED_USERID;
+    int userId = Constants::INVALID_USERID;
     bool cleanCache = false;
     bool cleanData = false;
     std::string bundleName = "";

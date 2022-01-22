@@ -473,49 +473,42 @@ bool BundleMgrHostImpl::CleanBundleCacheFiles(
 
 bool BundleMgrHostImpl::CleanBundleDataFiles(const std::string &bundleName, const int userId)
 {
-    if (bundleName.empty()) {
-        APP_LOGE("the  bundleName empty");
+    if (bundleName.empty() || userId < 0) {
+        APP_LOGE("the  bundleName empty or invalid userid");
         return false;
     }
-    std::vector<ApplicationInfo> appInfos;
-    if (!GetApplicationInfos(
-        ApplicationFlag::GET_BASIC_APPLICATION_INFO, Constants::UNSPECIFIED_USERID, appInfos)) {
+    ApplicationInfo applicationInfo;
+    if (!GetApplicationInfo(bundleName, ApplicationFlag::GET_BASIC_APPLICATION_INFO, userId, applicationInfo)) {
         APP_LOGE("can not get application info of %{public}s", bundleName.c_str());
         return false;
     }
-    bool result = false;
-    for (auto applicationInfo : appInfos) {
-        if (applicationInfo.bundleName == bundleName &&
-            ((userId == Constants::C_UESRID && applicationInfo.isCloned == true) ||
-                (userId != Constants::C_UESRID && applicationInfo.isCloned == false))) {
-            result = true;
-            if (BundlePermissionMgr::ClearUserGrantedPermissionState(applicationInfo.accessTokenId)) {
-                APP_LOGE("%{public}s, ClearUserGrantedPermissionState failed", bundleName.c_str());
-                return false;
-            }
-            if (InstalldClient::GetInstance()->RemoveDir(applicationInfo.dataDir) != ERR_OK) {
-                APP_LOGE("%{public}s, RemoveDir:%{public}s failed",
-                    bundleName.c_str(), applicationInfo.dataDir.c_str());
-                return false;
-            }
-            InnerBundleUserInfo innerBundleUserInfo;
-            if (!GetBundleUserInfo(bundleName, userId, innerBundleUserInfo)) {
-                APP_LOGE("%{public}s, userId:%{public}d, GetBundleUserInfo failed", bundleName.c_str(), userId);
-                return false;
-            }
-            if (InstalldClient::GetInstance()->RemoveBundleDataDir(bundleName, userId) != ERR_OK) {
-                APP_LOGE("%{public}s, RemoveBundleDataDir failed", bundleName.c_str());
-                return false;
-            }
-            if (InstalldClient::GetInstance()->CreateBundleDataDir(
-                applicationInfo.dataDir, userId, innerBundleUserInfo.uid, innerBundleUserInfo.uid, true) != ERR_OK) {
-                APP_LOGE("%{public}s, CreateBundleDataDir failed", bundleName.c_str());
-                return false;
-            }
-            break;
+    InnerBundleUserInfo innerBundleUserInfo;
+    if (!GetBundleUserInfo(bundleName, userId, innerBundleUserInfo)) {
+        APP_LOGE("%{public}s, userId:%{public}d, GetBundleUserInfo failed", bundleName.c_str(), userId);
+        return false;
+    }
+    if (BundlePermissionMgr::ClearUserGrantedPermissionState(applicationInfo.accessTokenId)) {
+        APP_LOGE("%{public}s, ClearUserGrantedPermissionState failed", bundleName.c_str());
+        return false;
+    }
+    bool isStartUserId = false;
+    if (userId == Constants::START_USERID) {
+        isStartUserId = true;
+        if (InstalldClient::GetInstance()->RemoveDir(applicationInfo.dataDir) != ERR_OK) {
+            APP_LOGE("%{public}s, RemoveDir:%{public}s failed", bundleName.c_str(), applicationInfo.dataDir.c_str());
+            return false;
         }
     }
-    return result;
+    if (InstalldClient::GetInstance()->RemoveBundleDataDir(bundleName, userId) != ERR_OK) {
+        APP_LOGE("%{public}s, RemoveBundleDataDir failed", bundleName.c_str());
+        return false;
+    }
+    if (InstalldClient::GetInstance()->CreateBundleDataDir(
+        applicationInfo.dataDir, userId, innerBundleUserInfo.uid, innerBundleUserInfo.uid, isStartUserId) != ERR_OK) {
+        APP_LOGE("%{public}s, CreateBundleDataDir failed", bundleName.c_str());
+        return false;
+    }
+    return true;
 }
 
 bool BundleMgrHostImpl::RegisterBundleStatusCallback(const sptr<IBundleStatusCallback> &bundleStatusCallback)
