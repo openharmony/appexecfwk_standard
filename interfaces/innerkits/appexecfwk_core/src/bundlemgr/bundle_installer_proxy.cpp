@@ -15,6 +15,7 @@
 
 #include "bundle_installer_proxy.h"
 
+#include "bytrace.h"
 #include "ipc_types.h"
 #include "parcel.h"
 #include "string_ex.h"
@@ -37,6 +38,7 @@ BundleInstallerProxy::~BundleInstallerProxy()
 bool BundleInstallerProxy::Install(
     const std::string &bundlePath, const InstallParam &installParam, const sptr<IStatusReceiver> &statusReceiver)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     MessageParcel data;
     MessageParcel reply;
     MessageOption option(MessageOption::TF_SYNC);
@@ -57,6 +59,7 @@ bool BundleInstallerProxy::Install(
 bool BundleInstallerProxy::Install(const std::vector<std::string> &bundleFilePaths, const InstallParam &installParam,
     const sptr<IStatusReceiver> &statusReceiver)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     MessageParcel data;
     MessageParcel reply;
     MessageOption option(MessageOption::TF_SYNC);
@@ -103,6 +106,7 @@ bool BundleInstallerProxy::Recover(const std::string &bundleName,
 bool BundleInstallerProxy::Uninstall(
     const std::string &bundleName, const InstallParam &installParam, const sptr<IStatusReceiver> &statusReceiver)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     MessageParcel data;
     MessageParcel reply;
     MessageOption option(MessageOption::TF_SYNC);
@@ -122,6 +126,7 @@ bool BundleInstallerProxy::Uninstall(
 bool BundleInstallerProxy::Uninstall(const std::string &bundleName, const std::string &modulePackage,
     const InstallParam &installParam, const sptr<IStatusReceiver> &statusReceiver)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     MessageParcel data;
     MessageParcel reply;
     MessageOption option(MessageOption::TF_SYNC);
