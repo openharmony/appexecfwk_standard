@@ -390,10 +390,13 @@ bool BundlePermissionMgr::InnerGrantRequestPermissions(const std::vector<Request
             APP_LOGE("get permission def failed, request permission name: %{public}s", reqPermission.name.c_str());
             continue;
         }
-        // need to check apl
-        if (permDef.grantMode == AccessToken::GrantMode::SYSTEM_GRANT) {
-            APP_LOGD("InnerGrantRequestPermissions system grant permission %{public}s", reqPermission.name.c_str());
-            grantPermList.emplace_back(reqPermission.name);
+        if (CheckGrantPermission(permDef, apl, acls)) {
+            if (permDef.grantMode == AccessToken::GrantMode::SYSTEM_GRANT) {
+                APP_LOGD("InnerGrantRequestPermissions system grant permission %{public}s", reqPermission.name.c_str());
+                grantPermList.emplace_back(reqPermission.name);
+            }
+        } else {
+            return false;
         }
     }
 
@@ -524,6 +527,7 @@ bool BundlePermissionMgr::CheckGrantPermission(
             break;
     }
     if (permDef.provisionEnable) {
+        APP_LOGD("CheckGrantPermission acls size: %{public}zu", acls.size());
         for (auto &perm : acls) {
             if (permDef.permissionName == perm) {
                 return true;
