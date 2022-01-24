@@ -109,6 +109,7 @@ struct InnerModuleInfo {
     std::vector<DefinePermission> definePermissions;
     std::vector<std::string> extensionKeys;
     std::vector<std::string> extensionSkillKeys;
+    bool isModuleJson = false;
     bool isStageBasedModel = false;
 };
 
@@ -1236,6 +1237,20 @@ public:
     std::optional<InnerModuleInfo> GetInnerModuleInfoByModuleName(const std::string &moduleName) const;
 
     void GetModuleNames(std::vector<std::string> &moduleNames) const;
+    /**
+     * @brief Fetch all innerModuleInfos, can be modify.
+     */
+    std::map<std::string, InnerModuleInfo> &FetchInnerModuleInfos()
+    {
+        return innerModuleInfos_;
+    }
+    /**
+     * @brief Fetch all abilityInfos, can be modify.
+     */
+    std::map<std::string, AbilityInfo> &FetchAbilityInfos()
+    {
+        return baseAbilityInfos_;
+    }
     /**
      * @brief Obtains all abilityInfos.
      */

@@ -57,7 +57,8 @@ public:
      * @return Returns true if the file names obtained successfully; returns false otherwise.
      */
     bool GetZipFileNames(std::vector<std::string> &fileNames);
-    bool isNewVersion() const;
+    bool IsStageBasedModel(std::string abilityName);
+    bool IsNewVersion() const;
 
 protected:
     const std::string sourceFile_;

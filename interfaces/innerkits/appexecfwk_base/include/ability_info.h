@@ -214,6 +214,7 @@ struct AbilityInfo : public Parcelable {
     // new version fields
     std::string srcEntrance;
     std::vector<Metadata> metadata;
+    bool isModuleJson = false;
     bool isStageBasedModel = false;
     bool continuable = false;
 

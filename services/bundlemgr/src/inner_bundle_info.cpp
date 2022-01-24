@@ -86,6 +86,7 @@ const std::string MODULE_REQUEST_PERMISSIONS = "requestPermissions";
 const std::string MODULE_DEFINE_PERMISSIONS = "definePermissions";
 const std::string MODULE_EXTENSION_KEYS = "extensionKeys";
 const std::string MODULE_EXTENSION_SKILL_KEYS = "extensionSkillKeys";
+const std::string MODULE_IS_MODULE_JSON = "isModuleJson";
 const std::string MODULE_IS_STAGE_BASED_MODEL = "isStageBasedModel";
 const std::string BUNDLE_IS_NEW_VERSION = "isNewVersion_";
 const std::string BUNDLE_BASE_EXTENSION_INFOS = "baseExtensionInfos_";
@@ -389,6 +390,7 @@ void to_json(nlohmann::json &jsonObject, const InnerModuleInfo &info)
         {MODULE_DEFINE_PERMISSIONS, info.definePermissions},
         {MODULE_EXTENSION_KEYS, info.extensionKeys},
         {MODULE_EXTENSION_SKILL_KEYS, info.extensionSkillKeys},
+        {MODULE_IS_MODULE_JSON, info.isModuleJson},
         {MODULE_IS_STAGE_BASED_MODEL, info.isStageBasedModel}
     };
 }
@@ -716,6 +718,14 @@ void from_json(const nlohmann::json &jsonObject, InnerModuleInfo &info)
         false,
         parseResult,
         ArrayType::STRING);
+    GetValueIfFindKey<bool>(jsonObject,
+        jsonObjectEnd,
+        MODULE_IS_MODULE_JSON,
+        info.isModuleJson,
+        JsonType::BOOLEAN,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
     GetValueIfFindKey<bool>(jsonObject,
         jsonObjectEnd,
         MODULE_IS_STAGE_BASED_MODEL,
@@ -1388,6 +1398,7 @@ std::optional<HapModuleInfo> InnerBundleInfo::FindHapModuleInfo(const std::strin
     hapInfo.srcPath = it->second.srcPath;
     hapInfo.metadata = it->second.metadata;
     hapInfo.resourcePath = it->second.moduleResPath;
+    hapInfo.isModuleJson = it->second.isModuleJson;
     hapInfo.isStageBasedModel = it->second.isStageBasedModel;
     hapInfo.bundleName = baseApplicationInfo_.bundleName;
     hapInfo.srcEntrance = it->second.srcEntrance;

@@ -39,6 +39,8 @@ const std::string HAP_MODULE_INFO_MAIN_ELEMENTNAME = "mainElementName";
 const std::string HAP_MODULE_INFO_REQ_CAPABILITIES = "reqCapabilities";
 const std::string HAP_MODULE_INFO_DEVICE_TYPES = "deviceTypes";
 const std::string HAP_MODULE_INFO_COLOR_MODE = "colorMode";
+const std::string HAP_MODULE_INFO_IS_MODULE_JSON = "isModuleJsonHap";
+const std::string HAP_MODULE_INFO_IS_STAGE_BASED_MODEL = "isStageBasedModelHap";
 }
 
 bool HapModuleInfo::ReadFromParcel(Parcel &parcel)
@@ -65,7 +67,7 @@ bool HapModuleInfo::ReadFromParcel(Parcel &parcel)
         extensionInfos.emplace_back(*extensionAbilityInfo);
     }
     int32_t metadataSize = parcel.ReadInt32();
-    APP_LOGE("Read metadataSize is %{public}d", metadataSize);
+    APP_LOGI("Read metadataSize is %{public}d", metadataSize);
     for (int32_t i = 0; i < metadataSize; ++i) {
         std::unique_ptr<Metadata> meta(parcel.ReadParcelable<Metadata>());
         if (!meta) {
@@ -75,8 +77,8 @@ bool HapModuleInfo::ReadFromParcel(Parcel &parcel)
         metadata.emplace_back(*meta);
     }
     resourcePath = Str16ToStr8(parcel.ReadString16());
+    isModuleJson = parcel.ReadBool();
     isStageBasedModel = parcel.ReadBool();
-
     int32_t reqCapabilitiesSize;
     READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, reqCapabilitiesSize);
     for (int32_t i = 0; i < reqCapabilitiesSize; i++) {
@@ -139,6 +141,7 @@ bool HapModuleInfo::Marshalling(Parcel &parcel) const
         WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Parcelable, parcel, &meta);
     }
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(resourcePath));
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, isModuleJson);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, isStageBasedModel);
 
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, reqCapabilities.size());
@@ -175,6 +178,8 @@ void to_json(nlohmann::json &jsonObject, const HapModuleInfo &hapModuleInfo)
         {HAP_MODULE_INFO_REQ_CAPABILITIES, hapModuleInfo.reqCapabilities},
         {HAP_MODULE_INFO_DEVICE_TYPES, hapModuleInfo.deviceTypes},
         {HAP_MODULE_INFO_COLOR_MODE, hapModuleInfo.colorMode},
+        {HAP_MODULE_INFO_IS_MODULE_JSON, hapModuleInfo.isModuleJson},
+        {HAP_MODULE_INFO_IS_STAGE_BASED_MODEL, hapModuleInfo.isStageBasedModel},
     };
 }
 
@@ -296,12 +301,31 @@ void from_json(const nlohmann::json &jsonObject, HapModuleInfo &hapModuleInfo)
         ArrayType::STRING);
     GetValueIfFindKey<ModuleColorMode>(jsonObject,
         jsonObjectEnd,
-        HAP_MODULE_INFO_DEVICE_TYPES,
+        HAP_MODULE_INFO_COLOR_MODE,
         hapModuleInfo.colorMode,
-        JsonType::OBJECT,
+        JsonType::NUMBER,
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<bool>(jsonObject,
+        jsonObjectEnd,
+        HAP_MODULE_INFO_IS_MODULE_JSON,
+        hapModuleInfo.isModuleJson,
+        JsonType::BOOLEAN,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<bool>(jsonObject,
+        jsonObjectEnd,
+        HAP_MODULE_INFO_IS_STAGE_BASED_MODEL,
+        hapModuleInfo.isStageBasedModel,
+        JsonType::BOOLEAN,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    if (parseResult != ERR_OK) {
+        APP_LOGE("read hapModuleInfo from database error, error code : %{public}d", parseResult);
+    }
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS
