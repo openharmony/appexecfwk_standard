@@ -15,12 +15,11 @@
 
 #include "hap_module_info.h"
 
-#include "string_ex.h"
-
-#include "nlohmann/json.hpp"
 #include "json_util.h"
 #include "message_parcel.h"
+#include "nlohmann/json.hpp"
 #include "parcel_macro.h"
+#include "string_ex.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -248,7 +247,7 @@ void from_json(const nlohmann::json &jsonObject, HapModuleInfo &hapModuleInfo)
         jsonObjectEnd,
         HAP_MODULE_INFO_COLOR_MODE,
         hapModuleInfo.colorMode,
-        JsonType::OBJECT,
+        JsonType::NUMBER,
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
@@ -344,7 +343,7 @@ void from_json(const nlohmann::json &jsonObject, HapModuleInfo &hapModuleInfo)
         jsonObjectEnd,
         HAP_MODULE_INFO_MODULE_TYPE,
         hapModuleInfo.moduleType,
-        JsonType::OBJECT,
+        JsonType::NUMBER,
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
