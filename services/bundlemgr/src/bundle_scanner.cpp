@@ -23,6 +23,7 @@
 #include "bundle_constants.h"
 #include "bundle_mgr_service.h"
 #include "bundle_util.h"
+#include "bytrace.h"
 #include "datetime_ex.h"
 #include "perf_profile.h"
 #include "string_ex.h"
@@ -42,6 +43,7 @@ BundleScanner::~BundleScanner()
 
 const std::list<std::string> &BundleScanner::Scan(const std::string &dirPath)
 {
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     PerfProfile::GetInstance().SetBundleScanStartTime(GetTickCount());
 
     APP_LOGD("path:%{private}s", dirPath.c_str());
