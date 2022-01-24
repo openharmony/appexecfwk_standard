@@ -356,9 +356,11 @@ void BmsBundleKitServiceTest::MockInstallBundle(
     AddBundleInfo(bundleName, bundleInfo);
 
     InnerModuleInfo moduleInfo;
-    ReqPermission reqPermission1 = {.name = "permission1"};
-    ReqPermission reqPermission2 = {.name = "permission1"};
-    moduleInfo.reqPermissions = {reqPermission1, reqPermission2};
+    RequestPermission reqPermission1;
+    reqPermission1.name = "permission1";
+    RequestPermission reqPermission2;
+    reqPermission2.name = "permission1";
+    moduleInfo.requestPermissions = {reqPermission1, reqPermission2};
     moduleInfo.modulePackage = PACKAGE_NAME;
     moduleInfo.moduleName = moduleName;
     moduleInfo.description = BUNDLE_DESCRIPTION;
