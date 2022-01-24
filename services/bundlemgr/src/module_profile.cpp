@@ -1213,6 +1213,14 @@ bool ToExtensionInfo(const Profile::ModuleJson &moduleJson, const Profile::Exten
     GetMetadata(extensionInfo.metadata, extension.metadata);
     extensionInfo.bundleName = moduleJson.app.bundleName;
     extensionInfo.moduleName = moduleJson.module.name;
+    if (extensionInfo.type != ExtensionAbilityType::SERVICE &&
+        extensionInfo.type != ExtensionAbilityType::DATASHARE) {
+        extensionInfo.process = extensionInfo.bundleName;
+        extensionInfo.process.append(".");
+        extensionInfo.process.append(extensionInfo.moduleName);
+        extensionInfo.process.append(":");
+        extensionInfo.process.append(extensionInfo.name);
+    }
     return true;
 }
 
