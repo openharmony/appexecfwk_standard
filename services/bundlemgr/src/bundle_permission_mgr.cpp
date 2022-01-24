@@ -36,9 +36,9 @@ void BundlePermissionMgr::ConvertPermissionDef(const Permission::PermissionDef &
     permissionDef.descriptionId = permDef.descriptionId;
 }
 
-// Convert from the struct DefPermission that parsed from config.json
+// Convert from the struct DefinePermission that parsed from config.json
 void BundlePermissionMgr::ConvertPermissionDef(
-    Permission::PermissionDef &permDef, const DefPermission &defPermission, const std::string &bundleName)
+    Permission::PermissionDef &permDef, const DefinePermission &defPermission, const std::string &bundleName)
 {
     permDef.permissionName = defPermission.name;
     permDef.bundleName = bundleName;
@@ -75,7 +75,7 @@ void BundlePermissionMgr::ConvertPermissionDef(
 }
 
 void BundlePermissionMgr::ConvertPermissionDef(
-    const AccessToken::PermissionDef &permDef, PermissionDefine &permissionDef)
+    const AccessToken::PermissionDef &permDef, PermissionDef &permissionDef)
 {
     permissionDef.permissionName = permDef.permissionName;
     permissionDef.bundleName = permDef.bundleName;
@@ -542,7 +542,7 @@ int32_t BundlePermissionMgr::VerifyPermission(AccessToken::AccessTokenID tokenId
 }
 
 bool BundlePermissionMgr::GetDefinePermission(
-    const std::string& permissionName, PermissionDefine& permissionDefResult)
+    const std::string& permissionName, PermissionDef& permissionDefResult)
 {
     APP_LOGD("GetPermissionDef permission %{public}s", permissionName.c_str());
     AccessToken::PermissionDef permDef;
@@ -564,7 +564,7 @@ bool BundlePermissionMgr::InitPermissions()
 int32_t BundlePermissionMgr::AddDefPermissions(const InnerBundleInfo &innerBundleInfo)
 {
     const auto bundleName = innerBundleInfo.GetBundleName();
-    const auto defPermissions = innerBundleInfo.GetDefPermissions();
+    const auto defPermissions = innerBundleInfo.GetDefinePermissions();
     int32_t ret = Permission::RET_FAILED;
     if (!defPermissions.empty()) {
         std::vector<Permission::PermissionDef> permList;
@@ -621,7 +621,7 @@ bool BundlePermissionMgr::CheckPermissionAuthorization(
 int32_t BundlePermissionMgr::AddAndGrantedReqPermissions(
     const InnerBundleInfo &innerBundleInfo, int32_t userId, bool onlyOneUser)
 {
-    auto reqPermissions = innerBundleInfo.GetReqPermissions();
+    auto reqPermissions = innerBundleInfo.GetRequestPermissions();
     std::vector<std::string> userPermList;
     std::vector<std::string> systemPermList;
     std::vector<std::string> grantPermList;

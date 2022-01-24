@@ -92,7 +92,7 @@ const std::string DEFPERMISSION_NAME18 = "com.myability.permission.MYPERMISSION1
 const std::string DEF_LABEL1 = "MockDefPermissionBundleSystemGrant";
 const std::string DEF_LABEL2 = "MockDefPermissionBundleUserGrant";
 const std::string DEF_LABEL3 = "MockSameDefPermissionNameBundleSystemGrant";
-const DefPermission DEFPERMISSION_SYSTEM1 = {
+const DefinePermission DEFPERMISSION_SYSTEM1 = {
     .name = DEFPERMISSION_NAME1,
     .grantMode = "system_grant",
     .availableScope = {"signature"},
@@ -101,7 +101,7 @@ const DefPermission DEFPERMISSION_SYSTEM1 = {
     .description = DEF_LABEL1,
     .descriptionId = 1
 };
-const DefPermission DEFPERMISSION_SYSTEM2 = {
+const DefinePermission DEFPERMISSION_SYSTEM2 = {
     .name = DEFPERMISSION_NAME2,
     .grantMode = "system_grant",
     .availableScope = {"signature"},
@@ -110,7 +110,7 @@ const DefPermission DEFPERMISSION_SYSTEM2 = {
     .description = DEF_LABEL1,
     .descriptionId = 1
 };
-const DefPermission DEFPERMISSION_SYSTEM3 = {
+const DefinePermission DEFPERMISSION_SYSTEM3 = {
     .name = DEFPERMISSION_NAME3,
     .grantMode = "system_grant",
     .availableScope = {"signature"},
@@ -119,7 +119,7 @@ const DefPermission DEFPERMISSION_SYSTEM3 = {
     .description = DEF_LABEL1,
     .descriptionId = 1
 };
-const DefPermission DEFPERMISSION_UPDATE1 = {
+const DefinePermission DEFPERMISSION_UPDATE1 = {
     .name = DEFPERMISSION_NAME1,
     .grantMode = "user_grant",
     .availableScope = {"signature"},
@@ -128,7 +128,7 @@ const DefPermission DEFPERMISSION_UPDATE1 = {
     .description = DEF_LABEL2,
     .descriptionId = 10
 };
-const DefPermission DEFPERMISSION_UPDATE2 = {
+const DefinePermission DEFPERMISSION_UPDATE2 = {
     .name = DEFPERMISSION_NAME2,
     .grantMode = "user_grant",
     .availableScope = {"signature"},
@@ -137,7 +137,7 @@ const DefPermission DEFPERMISSION_UPDATE2 = {
     .description = DEF_LABEL2,
     .descriptionId = 10
 };
-const DefPermission DEFPERMISSION_UPDATE3 = {
+const DefinePermission DEFPERMISSION_UPDATE3 = {
     .name = DEFPERMISSION_NAME3,
     .grantMode = "user_grant",
     .availableScope = {"signature"},
@@ -146,7 +146,7 @@ const DefPermission DEFPERMISSION_UPDATE3 = {
     .description = DEF_LABEL2,
     .descriptionId = 10
 };
-const DefPermission DEFPERMISSION_EMAIL = {
+const DefinePermission DEFPERMISSION_EMAIL = {
     .name = DEFPERMISSION_NAME_EMAIL,
     .grantMode = "system_grant",
     .availableScope = {""},
@@ -155,7 +155,7 @@ const DefPermission DEFPERMISSION_EMAIL = {
     .description = DEF_LABEL1,
     .descriptionId = 1
 };
-const DefPermission DEFPERMISSION_MUSIC = {
+const DefinePermission DEFPERMISSION_MUSIC = {
     .name = DEFPERMISSION_NAME_MUSIC,
     .grantMode = "system_grant",
     .availableScope = {""},
@@ -164,7 +164,7 @@ const DefPermission DEFPERMISSION_MUSIC = {
     .description = DEF_LABEL1,
     .descriptionId = 1
 };
-const DefPermission DEFPERMISSION_APP = {
+const DefinePermission DEFPERMISSION_APP = {
     .name = DEFPERMISSION_NAME_APP,
     .grantMode = "system_grant",
     .availableScope = {""},
@@ -173,7 +173,7 @@ const DefPermission DEFPERMISSION_APP = {
     .description = DEF_LABEL1,
     .descriptionId = 1
 };
-const DefPermission DEFPERMISSION_WECHAT = {
+const DefinePermission DEFPERMISSION_WECHAT = {
     .name = DEFPERMISSION_NAME_WECHAT,
     .grantMode = "system_grant",
     .availableScope = {""},
@@ -182,7 +182,7 @@ const DefPermission DEFPERMISSION_WECHAT = {
     .description = DEF_LABEL1,
     .descriptionId = 1
 };
-const DefPermission DEFPERMISSION_NOAVAILIAVLE1 = {
+const DefinePermission DEFPERMISSION_NOAVAILIAVLE1 = {
     .name = DEFPERMISSION_NAME4,
     .grantMode = "system_grant",
     .availableScope = {""},
@@ -191,7 +191,7 @@ const DefPermission DEFPERMISSION_NOAVAILIAVLE1 = {
     .description = DEF_LABEL1,
     .descriptionId = 1
 };
-const DefPermission DEFPERMISSION_NOAVAILIAVLE2 = {
+const DefinePermission DEFPERMISSION_NOAVAILIAVLE2 = {
     .name = DEFPERMISSION_NAME5,
     .grantMode = "system_grant",
     .availableScope = {""},
@@ -200,7 +200,7 @@ const DefPermission DEFPERMISSION_NOAVAILIAVLE2 = {
     .description = DEF_LABEL1,
     .descriptionId = 1
 };
-const DefPermission DEFPERMISSION_NOAVAILIAVLE3 = {
+const DefinePermission DEFPERMISSION_NOAVAILIAVLE3 = {
     .name = DEFPERMISSION_NAME6,
     .grantMode = "system_grant",
     .availableScope = {""},
@@ -209,7 +209,7 @@ const DefPermission DEFPERMISSION_NOAVAILIAVLE3 = {
     .description = DEF_LABEL1,
     .descriptionId = 1
 };
-const DefPermission DEFPERMISSION_USERGRANT1 = {
+const DefinePermission DEFPERMISSION_USERGRANT1 = {
     .name = DEFPERMISSION_NAME10,
     .grantMode = "user_grant",
     .availableScope = {"signature"},
@@ -218,7 +218,7 @@ const DefPermission DEFPERMISSION_USERGRANT1 = {
     .description = DEF_LABEL1,
     .descriptionId = 1
 };
-const DefPermission DEFPERMISSION_USERGRANT2 = {
+const DefinePermission DEFPERMISSION_USERGRANT2 = {
     .name = DEFPERMISSION_NAME11,
     .grantMode = "user_grant",
     .availableScope = {"signature"},
@@ -227,7 +227,7 @@ const DefPermission DEFPERMISSION_USERGRANT2 = {
     .description = DEF_LABEL1,
     .descriptionId = 1
 };
-const DefPermission DEFPERMISSION_USERGRANT3 = {
+const DefinePermission DEFPERMISSION_USERGRANT3 = {
     .name = DEFPERMISSION_NAME12,
     .grantMode = "user_grant",
     .availableScope = {"signature"},
@@ -236,7 +236,7 @@ const DefPermission DEFPERMISSION_USERGRANT3 = {
     .description = DEF_LABEL1,
     .descriptionId = 1
 };
-const DefPermission DEFPERMISSION_USERGRANT4 = {
+const DefinePermission DEFPERMISSION_USERGRANT4 = {
     .name = DEFPERMISSION_NAME13,
     .grantMode = "user_grant",
     .availableScope = {"signature"},
@@ -245,7 +245,7 @@ const DefPermission DEFPERMISSION_USERGRANT4 = {
     .description = DEF_LABEL1,
     .descriptionId = 1
 };
-const DefPermission DEFPERMISSION_USERGRANT5 = {
+const DefinePermission DEFPERMISSION_USERGRANT5 = {
     .name = DEFPERMISSION_NAME14,
     .grantMode = "user_grant",
     .availableScope = {"signature"},
@@ -254,7 +254,7 @@ const DefPermission DEFPERMISSION_USERGRANT5 = {
     .description = DEF_LABEL1,
     .descriptionId = 1
 };
-const DefPermission DEFPERMISSION_USERGRANT6 = {
+const DefinePermission DEFPERMISSION_USERGRANT6 = {
     .name = DEFPERMISSION_NAME15,
     .grantMode = "user_grant",
     .availableScope = {"signature"},
@@ -263,7 +263,7 @@ const DefPermission DEFPERMISSION_USERGRANT6 = {
     .description = DEF_LABEL1,
     .descriptionId = 1
 };
-const DefPermission DEFPERMISSION_SAMENAME1 = {
+const DefinePermission DEFPERMISSION_SAMENAME1 = {
     .name = DEFPERMISSION_NAME10,
     .grantMode = "system_grant",
     .availableScope = {"signature"},
@@ -272,7 +272,7 @@ const DefPermission DEFPERMISSION_SAMENAME1 = {
     .description = DEF_LABEL1,
     .descriptionId = 1
 };
-const DefPermission DEFPERMISSION_SAMENAME2 = {
+const DefinePermission DEFPERMISSION_SAMENAME2 = {
     .name = DEFPERMISSION_NAME11,
     .grantMode = "system_grant",
     .availableScope = {"signature"},
@@ -281,7 +281,7 @@ const DefPermission DEFPERMISSION_SAMENAME2 = {
     .description = DEF_LABEL1,
     .descriptionId = 1
 };
-const DefPermission DEFPERMISSION_SAME2 = {
+const DefinePermission DEFPERMISSION_SAME2 = {
     .name = DEFPERMISSION_NAME17,
     .grantMode = "system_grant",
     .availableScope = {"signature"},
@@ -290,7 +290,7 @@ const DefPermission DEFPERMISSION_SAME2 = {
     .description = DEF_LABEL1,
     .descriptionId = 1
 };
-const DefPermission DEFPERMISSION_SAME1 = {
+const DefinePermission DEFPERMISSION_SAME1 = {
     .name = DEFPERMISSION_NAME16,
     .grantMode = "system_grant",
     .availableScope = {"signature"},
@@ -299,7 +299,7 @@ const DefPermission DEFPERMISSION_SAME1 = {
     .description = DEF_LABEL1,
     .descriptionId = 1
 };
-const DefPermission DEFPERMISSION_SAME3 = {
+const DefinePermission DEFPERMISSION_SAME3 = {
     .name = DEFPERMISSION_NAME18,
     .grantMode = "system_grant",
     .availableScope = {"signature"},
@@ -307,38 +307,6 @@ const DefPermission DEFPERMISSION_SAME3 = {
     .labelId = 1,
     .description = DEF_LABEL1,
     .descriptionId = 1
-};
-const ReqPermission REQPERMISSION1 = {
-    .name = DEFPERMISSION_NAME_EMAIL,
-    .reason = "reason",
-    .usedScene = {
-        .ability = {"ability"},
-        .when = "when"
-    }
-};
-const ReqPermission REQPERMISSION2 = {
-    .name = DEFPERMISSION_NAME_WECHAT,
-    .reason = "reason",
-    .usedScene = {
-        .ability = {"ability"},
-        .when = "when"
-    }
-};
-const ReqPermission REQPERMISSION3 = {
-    .name = DEFPERMISSION_NAME_APP,
-    .reason = "reason",
-    .usedScene = {
-        .ability = {"ability"},
-        .when = "when"
-    }
-};
-const ReqPermission REQPERMISSION4 = {
-    .name = DEFPERMISSION_NAME_MUSIC,
-    .reason = "reason",
-    .usedScene = {
-        .ability = {"ability"},
-        .when = "when"
-    }
 };
 }  // namespace
 class BmsBundlePermissionTest : public testing::Test {
@@ -359,11 +327,12 @@ public:
     void MockReqPermissionBundle(InnerBundleInfo &innerbundleinfo);
     void MockOtherReqPermissionBundle(InnerBundleInfo &innerbundleinfo);
     void MockUpdateDefPermissionBundleSystemGrant(InnerBundleInfo &innerbundleinfo);
-    void CheckPermissionDef(const DefPermission &defPermission, std::string bundlename, PermissionDef &permissionDef);
+    void CheckPermissionDef(const DefinePermission &defPermission, std::string bundlename,
+        PermissionDef &permissionDef);
     void CheckErrPermissionDef(
-        const DefPermission &defPermission, std::string bundlename, PermissionDef &permissionDef);
+        const DefinePermission &defPermission, std::string bundlename, PermissionDef &permissionDef);
     bool ConvertPermissionDef(
-        Permission::PermissionDef &permDef, const DefPermission &defPermission, const std::string &bundleName);
+        Permission::PermissionDef &permDef, const DefinePermission &defPermission, const std::string &bundleName);
 };
 
 BmsBundlePermissionTest::BmsBundlePermissionTest()
@@ -412,7 +381,7 @@ void BmsBundlePermissionTest::MockDefPermissionBundleSystemGrant(InnerBundleInfo
 
     InnerModuleInfo moduleInfo;
     std::map<std::string, InnerModuleInfo> innerModuleInfos_;
-    moduleInfo.defPermissions = {DEFPERMISSION_SYSTEM1, DEFPERMISSION_SYSTEM2, DEFPERMISSION_SYSTEM3};
+    moduleInfo.definePermissions = {DEFPERMISSION_SYSTEM1, DEFPERMISSION_SYSTEM2, DEFPERMISSION_SYSTEM3};
     moduleInfo.modulePackage = PACKAGE_NAME;
     moduleInfo.moduleName = PACKAGE_NAME;
     moduleInfo.description = BUNDLE_DESCRIPTION;
@@ -460,7 +429,7 @@ void BmsBundlePermissionTest::MockUpdateDefPermissionBundleSystemGrant(InnerBund
 
     InnerModuleInfo moduleInfo;
     std::map<std::string, InnerModuleInfo> innerModuleInfos_;
-    moduleInfo.defPermissions = {DEFPERMISSION_UPDATE1, DEFPERMISSION_UPDATE2, DEFPERMISSION_UPDATE3};
+    moduleInfo.definePermissions = {DEFPERMISSION_UPDATE1, DEFPERMISSION_UPDATE2, DEFPERMISSION_UPDATE3};
     moduleInfo.modulePackage = PACKAGE_NAME;
     moduleInfo.moduleName = PACKAGE_NAME;
     moduleInfo.description = BUNDLE_DESCRIPTION;
@@ -508,7 +477,7 @@ void BmsBundlePermissionTest::MockDefPermissionBundleTestReqpermission(InnerBund
 
     InnerModuleInfo moduleInfo;
     std::map<std::string, InnerModuleInfo> innerModuleInfos_;
-    moduleInfo.defPermissions = {DEFPERMISSION_EMAIL, DEFPERMISSION_MUSIC, DEFPERMISSION_APP, DEFPERMISSION_WECHAT};
+    moduleInfo.definePermissions = {DEFPERMISSION_EMAIL, DEFPERMISSION_MUSIC, DEFPERMISSION_APP, DEFPERMISSION_WECHAT};
     moduleInfo.modulePackage = PACKAGE_NAME;
     moduleInfo.moduleName = PACKAGE_NAME;
     moduleInfo.description = BUNDLE_DESCRIPTION;
@@ -603,7 +572,8 @@ void BmsBundlePermissionTest::MockNoAvailableScopeDefPermissionBundle(InnerBundl
 
     InnerModuleInfo moduleInfo;
     std::map<std::string, InnerModuleInfo> innerModuleInfos_;
-    moduleInfo.defPermissions = {DEFPERMISSION_NOAVAILIAVLE1, DEFPERMISSION_NOAVAILIAVLE2, DEFPERMISSION_NOAVAILIAVLE3};
+    moduleInfo.definePermissions = {DEFPERMISSION_NOAVAILIAVLE1, DEFPERMISSION_NOAVAILIAVLE2,
+        DEFPERMISSION_NOAVAILIAVLE3};
     moduleInfo.modulePackage = PACKAGE_NAME;
     moduleInfo.moduleName = PACKAGE_NAME;
     moduleInfo.description = BUNDLE_DESCRIPTION;
@@ -651,7 +621,7 @@ void BmsBundlePermissionTest::MockDefPermissionBundleUserGrant(InnerBundleInfo &
 
     InnerModuleInfo moduleInfo;
     std::map<std::string, InnerModuleInfo> innerModuleInfos_;
-    moduleInfo.defPermissions = {DEFPERMISSION_USERGRANT1,
+    moduleInfo.definePermissions = {DEFPERMISSION_USERGRANT1,
         DEFPERMISSION_USERGRANT2,
         DEFPERMISSION_USERGRANT3,
         DEFPERMISSION_USERGRANT4,
@@ -705,7 +675,7 @@ void BmsBundlePermissionTest::MockSameDefPermissionNameBundleSystemGrant(InnerBu
     InnerModuleInfo moduleInfo;
     std::map<std::string, InnerModuleInfo> innerModuleInfos_;
 
-    moduleInfo.defPermissions = {DEFPERMISSION_SAMENAME1, DEFPERMISSION_SAMENAME2};
+    moduleInfo.definePermissions = {DEFPERMISSION_SAMENAME1, DEFPERMISSION_SAMENAME2};
     moduleInfo.modulePackage = PACKAGE_NAME;
     moduleInfo.moduleName = PACKAGE_NAME;
     moduleInfo.description = BUNDLE_DESCRIPTION;
@@ -753,7 +723,7 @@ void BmsBundlePermissionTest::MockDefPermissionBundleSame(InnerBundleInfo &inner
 
     InnerModuleInfo moduleInfo;
     std::map<std::string, InnerModuleInfo> innerModuleInfos_;
-    moduleInfo.defPermissions = {DEFPERMISSION_SAME1, DEFPERMISSION_SAME2, DEFPERMISSION_SAME3};
+    moduleInfo.definePermissions = {DEFPERMISSION_SAME1, DEFPERMISSION_SAME2, DEFPERMISSION_SAME3};
     moduleInfo.modulePackage = PACKAGE_NAME;
     moduleInfo.moduleName = PACKAGE_NAME;
     moduleInfo.description = BUNDLE_DESCRIPTION;
@@ -802,7 +772,11 @@ void BmsBundlePermissionTest::MockReqPermissionBundle(InnerBundleInfo &innerbund
     InnerModuleInfo moduleInfo;
     std::map<std::string, InnerModuleInfo> innerModuleInfos_;
 
-    moduleInfo.reqPermissions = {REQPERMISSION1, REQPERMISSION2};
+    RequestPermission reqPermission1;
+    reqPermission1.name = DEFPERMISSION_NAME_EMAIL;
+    RequestPermission reqPermission2;
+    reqPermission2.name = DEFPERMISSION_NAME_WECHAT;
+    moduleInfo.requestPermissions = {reqPermission1, reqPermission2};
     moduleInfo.modulePackage = PACKAGE_NAME;
     moduleInfo.moduleName = PACKAGE_NAME;
     moduleInfo.description = BUNDLE_DESCRIPTION;
@@ -850,7 +824,11 @@ void BmsBundlePermissionTest::MockOtherReqPermissionBundle(InnerBundleInfo &inne
 
     InnerModuleInfo moduleInfo;
     std::map<std::string, InnerModuleInfo> innerModuleInfos_;
-    moduleInfo.reqPermissions = {REQPERMISSION3, REQPERMISSION4};
+    RequestPermission reqPermission3;
+    reqPermission3.name = DEFPERMISSION_NAME_APP;
+    RequestPermission reqPermission4;
+    reqPermission4.name = DEFPERMISSION_NAME_MUSIC;
+    moduleInfo.requestPermissions = {reqPermission3, reqPermission4};
     moduleInfo.modulePackage = PACKAGE_NAME;
     moduleInfo.moduleName = PACKAGE_NAME;
     moduleInfo.description = BUNDLE_DESCRIPTION;
@@ -871,7 +849,7 @@ void BmsBundlePermissionTest::MockOtherReqPermissionBundle(InnerBundleInfo &inne
 }
 
 bool BmsBundlePermissionTest::ConvertPermissionDef(
-    Permission::PermissionDef &permDef, const DefPermission &defPermission, const std::string &bundleName)
+    Permission::PermissionDef &permDef, const DefinePermission &defPermission, const std::string &bundleName)
 {
     permDef.permissionName = defPermission.name;
     permDef.bundleName = bundleName;
@@ -909,7 +887,7 @@ bool BmsBundlePermissionTest::ConvertPermissionDef(
 }
 
 void BmsBundlePermissionTest::CheckPermissionDef(
-    const DefPermission &defPermission, std::string bundlename, PermissionDef &permissionDef)
+    const DefinePermission &defPermission, std::string bundlename, PermissionDef &permissionDef)
 {
     Permission::PermissionDef permDef;
     ConvertPermissionDef(permDef, defPermission, bundlename);
@@ -924,7 +902,7 @@ void BmsBundlePermissionTest::CheckPermissionDef(
 }
 
 void BmsBundlePermissionTest::CheckErrPermissionDef(
-    const DefPermission &defPermission, std::string bundlename, PermissionDef &permissionDef)
+    const DefinePermission &defPermission, std::string bundlename, PermissionDef &permissionDef)
 {
     Permission::PermissionDef permDef;
     ConvertPermissionDef(permDef, defPermission, bundlename);
