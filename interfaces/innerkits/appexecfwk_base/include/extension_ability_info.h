@@ -64,6 +64,7 @@ struct ExtensionAbilityInfo : public Parcelable {
     // set when install
     std::string resourcePath;
     bool enabled = true;
+    std::string process;
 
     bool ReadFromParcel(Parcel &parcel);
     virtual bool Marshalling(Parcel &parcel) const override;
