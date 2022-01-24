@@ -34,10 +34,10 @@ const std::string HAP_MODULE_INFO_BACKGROUND_IMG = "backgroundImg";
 const std::string HAP_MODULE_INFO_MAIN_ABILITY = "mainAbility";
 const std::string HAP_MODULE_INFO_SRC_PATH = "srcPath";
 const std::string HAP_MODULE_INFO_SUPPORTED_MODES = "supportedModes";
-const std::string HAP_MODULE_INFO_BUNDLE_REQ_CAPABILITIES = "reqCapabilities";
-const std::string HAP_MODULE_INFO_BUNDLE_DEVICE_TYPES = "deviceTypes";
-const std::string HAP_MODULE_INFO_BUNDLE_ABILITY_INFOS = "abilityInfos";
-const std::string HAP_MODULE_INFO_BUNDLE_COLOR_MODE = "colorMode";
+const std::string HAP_MODULE_INFO_REQ_CAPABILITIES = "reqCapabilities";
+const std::string HAP_MODULE_INFO_DEVICE_TYPES = "deviceTypes";
+const std::string HAP_MODULE_INFO_ABILITY_INFOS = "abilityInfos";
+const std::string HAP_MODULE_INFO_COLOR_MODE = "colorMode";
 const std::string HAP_MODULE_INFO_BUNDLE_NAME = "bundleName";
 const std::string HAP_MODULE_INFO_MAIN_ELEMENTNAME = "mainElementName";
 const std::string HAP_MODULE_INFO_PAGES = "pages";
@@ -123,10 +123,10 @@ void to_json(nlohmann::json &jsonObject, const HapModuleInfo &hapModuleInfo)
         {HAP_MODULE_INFO_MAIN_ABILITY, hapModuleInfo.mainAbility},
         {HAP_MODULE_INFO_SRC_PATH, hapModuleInfo.srcPath},
         {HAP_MODULE_INFO_SUPPORTED_MODES, hapModuleInfo.supportedModes},
-        {HAP_MODULE_INFO_BUNDLE_REQ_CAPABILITIES, hapModuleInfo.reqCapabilities},
-        {HAP_MODULE_INFO_BUNDLE_DEVICE_TYPES, hapModuleInfo.deviceTypes},
-        {HAP_MODULE_INFO_BUNDLE_ABILITY_INFOS, hapModuleInfo.abilityInfos},
-        {HAP_MODULE_INFO_BUNDLE_COLOR_MODE, hapModuleInfo.colorMode},
+        {HAP_MODULE_INFO_REQ_CAPABILITIES, hapModuleInfo.reqCapabilities},
+        {HAP_MODULE_INFO_DEVICE_TYPES, hapModuleInfo.deviceTypes},
+        {HAP_MODULE_INFO_ABILITY_INFOS, hapModuleInfo.abilityInfos},
+        {HAP_MODULE_INFO_COLOR_MODE, hapModuleInfo.colorMode},
         {HAP_MODULE_INFO_BUNDLE_NAME, hapModuleInfo.bundleName},
         {HAP_MODULE_INFO_MAIN_ELEMENTNAME, hapModuleInfo.mainElementName},
         {HAP_MODULE_INFO_PAGES, hapModuleInfo.pages},
@@ -238,7 +238,7 @@ void from_json(const nlohmann::json &jsonObject, HapModuleInfo &hapModuleInfo)
         ArrayType::STRING);
     GetValueIfFindKey<std::vector<AbilityInfo>>(jsonObject,
         jsonObjectEnd,
-        HAP_MODULE_INFO_BUNDLE_ABILITY_INFOS,
+        HAP_MODULE_INFO_ABILITY_INFOS,
         hapModuleInfo.abilityInfos,
         JsonType::ARRAY,
         false,
@@ -246,7 +246,7 @@ void from_json(const nlohmann::json &jsonObject, HapModuleInfo &hapModuleInfo)
         ArrayType::OBJECT);
     GetValueIfFindKey<ModuleColorMode>(jsonObject,
         jsonObjectEnd,
-        HAP_MODULE_INFO_BUNDLE_COLOR_MODE,
+        HAP_MODULE_INFO_COLOR_MODE,
         hapModuleInfo.colorMode,
         JsonType::OBJECT,
         false,
