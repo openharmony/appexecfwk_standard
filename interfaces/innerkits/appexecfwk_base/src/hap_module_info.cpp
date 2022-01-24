@@ -15,10 +15,11 @@
 
 #include "hap_module_info.h"
 
-#include "nlohmann/json.hpp"
 #include "string_ex.h"
 
+#include "nlohmann/json.hpp"
 #include "json_util.h"
+#include "message_parcel.h"
 #include "parcel_macro.h"
 
 namespace OHOS {
@@ -33,75 +34,49 @@ const std::string HAP_MODULE_INFO_BACKGROUND_IMG = "backgroundImg";
 const std::string HAP_MODULE_INFO_MAIN_ABILITY = "mainAbility";
 const std::string HAP_MODULE_INFO_SRC_PATH = "srcPath";
 const std::string HAP_MODULE_INFO_SUPPORTED_MODES = "supportedModes";
+const std::string HAP_MODULE_INFO_BUNDLE_REQ_CAPABILITIES = "reqCapabilities";
+const std::string HAP_MODULE_INFO_BUNDLE_DEVICE_TYPES = "deviceTypes";
+const std::string HAP_MODULE_INFO_BUNDLE_ABILITY_INFOS = "abilityInfos";
+const std::string HAP_MODULE_INFO_BUNDLE_COLOR_MODE = "colorMode";
 const std::string HAP_MODULE_INFO_BUNDLE_NAME = "bundleName";
-const std::string HAP_MODULE_INFO_SRC_ENTRANCE = "srcEntrance";
 const std::string HAP_MODULE_INFO_MAIN_ELEMENTNAME = "mainElementName";
-const std::string HAP_MODULE_INFO_REQ_CAPABILITIES = "reqCapabilities";
-const std::string HAP_MODULE_INFO_DEVICE_TYPES = "deviceTypes";
-const std::string HAP_MODULE_INFO_COLOR_MODE = "colorMode";
+const std::string HAP_MODULE_INFO_PAGES = "pages";
+const std::string HAP_MODULE_INFO_PROCESS = "process";
+const std::string HAP_MODULE_INFO_RESOURCE_PATH = "resourcePath";
+const std::string HAP_MODULE_INFO_SRC_ENTRANCE = "srcEntrance";
+const std::string HAP_MODULE_INFO_UI_SYNTAX = "uiSyntax";
+const std::string HAP_MODULE_INFO_VIRTUAL_MACHINE = "virtualMachine";
+const std::string HAP_MODULE_INFO_DELIVERY_WITH_INSTALL = "deliveryWithInstall";
+const std::string HAP_MODULE_INFO_INSTALLATION_FREE = "installationFree";
+const std::string HAP_MODULE_INFO_IS_STAGE_BASED_MODEL = "isStageBasedModel";
+const std::string HAP_MODULE_INFO_MODULE_TYPE = "moduleType";
+const std::string HAP_MODULE_INFO_EXTENSION_INFOS = "extensionInfos";
+const std::string HAP_MODULE_INFO_META_DATA = "metadata";
 }
 
 bool HapModuleInfo::ReadFromParcel(Parcel &parcel)
 {
-    name = Str16ToStr8(parcel.ReadString16());
-    moduleName = Str16ToStr8(parcel.ReadString16());
-    description = Str16ToStr8(parcel.ReadString16());
-    iconPath = Str16ToStr8(parcel.ReadString16());
-    label = Str16ToStr8(parcel.ReadString16());
-    backgroundImg = Str16ToStr8(parcel.ReadString16());
-    mainAbility = Str16ToStr8(parcel.ReadString16());
-    srcPath = Str16ToStr8(parcel.ReadString16());
-    supportedModes = parcel.ReadInt32();
-    bundleName = Str16ToStr8(parcel.ReadString16());
-    srcEntrance = Str16ToStr8(parcel.ReadString16());
-    mainElementName = Str16ToStr8(parcel.ReadString16());
-    int32_t extensionAbilityInfoSize = parcel.ReadInt32();
-    for (int32_t i = 0; i < extensionAbilityInfoSize; ++i) {
-        std::unique_ptr<ExtensionAbilityInfo> extensionAbilityInfo(parcel.ReadParcelable<ExtensionAbilityInfo>());
-        if (!extensionAbilityInfo) {
-            APP_LOGE("ReadParcelable<ExtensionAbilityInfo> failed");
-            return false;
-        }
-        extensionInfos.emplace_back(*extensionAbilityInfo);
+    MessageParcel *messageParcel = reinterpret_cast<MessageParcel *>(&parcel);
+    if (!messageParcel) {
+        APP_LOGE("Type conversion failed");
+        return false;
     }
-    int32_t metadataSize = parcel.ReadInt32();
-    APP_LOGE("Read metadataSize is %{public}d", metadataSize);
-    for (int32_t i = 0; i < metadataSize; ++i) {
-        std::unique_ptr<Metadata> meta(parcel.ReadParcelable<Metadata>());
-        if (!meta) {
-            APP_LOGE("ReadParcelable<Metadata> failed");
-            return false;
-        }
-        metadata.emplace_back(*meta);
+    uint32_t length = messageParcel->ReadUint32();
+    if (length == 0) {
+        APP_LOGE("Invalid data length");
+        return false;
     }
-    resourcePath = Str16ToStr8(parcel.ReadString16());
-    isStageBasedModel = parcel.ReadBool();
-
-    int32_t reqCapabilitiesSize;
-    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, reqCapabilitiesSize);
-    for (int32_t i = 0; i < reqCapabilitiesSize; i++) {
-        reqCapabilities.emplace_back(Str16ToStr8(parcel.ReadString16()));
+    const char *data = reinterpret_cast<const char *>(messageParcel->ReadRawData(length));
+    if (!data) {
+        APP_LOGE("Fail to read raw data, length = %{public}d", length);
+        return false;
     }
-
-    int32_t deviceTypesSize;
-    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, deviceTypesSize);
-    for (int32_t i = 0; i < deviceTypesSize; i++) {
-        deviceTypes.emplace_back(Str16ToStr8(parcel.ReadString16()));
+    nlohmann::json jsonObject = nlohmann::json::parse(data, nullptr, false);
+    if (jsonObject.is_discarded()) {
+        APP_LOGE("failed to parse HapModuleInfo");
+        return false;
     }
-
-    int32_t abilityInfosSize = parcel.ReadInt32();
-    for (int32_t i = 0; i < abilityInfosSize; i++) {
-        std::unique_ptr<AbilityInfo> abilityInfo(parcel.ReadParcelable<AbilityInfo>());
-        if (!abilityInfo) {
-            APP_LOGE("ReadParcelable<AbilityInfo> failed");
-            return false;
-        }
-        abilityInfos.emplace_back(*abilityInfo);
-    }
-
-    int32_t colorModeData;
-    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, colorModeData);
-    colorMode = static_cast<ModuleColorMode>(colorModeData);
+    *this = jsonObject.get<HapModuleInfo>();
     return true;
 }
 
@@ -118,42 +93,21 @@ HapModuleInfo *HapModuleInfo::Unmarshalling(Parcel &parcel)
 
 bool HapModuleInfo::Marshalling(Parcel &parcel) const
 {
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(name));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(moduleName));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(description));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(iconPath));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(label));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(backgroundImg));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(mainAbility));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(srcPath));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, supportedModes);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(bundleName));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(srcEntrance));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(mainElementName));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, extensionInfos.size());
-    for (auto &extensionInfo : extensionInfos) {
-        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Parcelable, parcel, &extensionInfo);
+    MessageParcel *messageParcel = reinterpret_cast<MessageParcel *>(&parcel);
+    if (!messageParcel) {
+        APP_LOGE("Type conversion failed");
+        return false;
     }
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, metadata.size());
-    for (const auto &meta : metadata) {
-        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Parcelable, parcel, &meta);
+    nlohmann::json json = *this;
+    std::string str = json.dump();
+    if (!messageParcel->WriteUint32(str.size() + 1)) {
+        APP_LOGE("Failed to write data size");
+        return false;
     }
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(resourcePath));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, isStageBasedModel);
-
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, reqCapabilities.size());
-    for (auto &reqCapability : reqCapabilities) {
-        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(reqCapability));
+    if (!messageParcel->WriteRawData(str.c_str(), str.size() + 1)) {
+        APP_LOGE("Failed to write data");
+        return false;
     }
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, deviceTypes.size());
-    for (auto &deviceType : deviceTypes) {
-        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(deviceType));
-    }
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, abilityInfos.size());
-    for (auto &abilityInfo : abilityInfos) {
-        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Parcelable, parcel, &abilityInfo);
-    }
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, static_cast<int32_t>(colorMode));
     return true;
 }
 
@@ -169,12 +123,24 @@ void to_json(nlohmann::json &jsonObject, const HapModuleInfo &hapModuleInfo)
         {HAP_MODULE_INFO_MAIN_ABILITY, hapModuleInfo.mainAbility},
         {HAP_MODULE_INFO_SRC_PATH, hapModuleInfo.srcPath},
         {HAP_MODULE_INFO_SUPPORTED_MODES, hapModuleInfo.supportedModes},
+        {HAP_MODULE_INFO_BUNDLE_REQ_CAPABILITIES, hapModuleInfo.reqCapabilities},
+        {HAP_MODULE_INFO_BUNDLE_DEVICE_TYPES, hapModuleInfo.deviceTypes},
+        {HAP_MODULE_INFO_BUNDLE_ABILITY_INFOS, hapModuleInfo.abilityInfos},
+        {HAP_MODULE_INFO_BUNDLE_COLOR_MODE, hapModuleInfo.colorMode},
         {HAP_MODULE_INFO_BUNDLE_NAME, hapModuleInfo.bundleName},
-        {HAP_MODULE_INFO_SRC_ENTRANCE, hapModuleInfo.srcEntrance},
         {HAP_MODULE_INFO_MAIN_ELEMENTNAME, hapModuleInfo.mainElementName},
-        {HAP_MODULE_INFO_REQ_CAPABILITIES, hapModuleInfo.reqCapabilities},
-        {HAP_MODULE_INFO_DEVICE_TYPES, hapModuleInfo.deviceTypes},
-        {HAP_MODULE_INFO_COLOR_MODE, hapModuleInfo.colorMode},
+        {HAP_MODULE_INFO_PAGES, hapModuleInfo.pages},
+        {HAP_MODULE_INFO_PROCESS, hapModuleInfo.process},
+        {HAP_MODULE_INFO_RESOURCE_PATH, hapModuleInfo.resourcePath},
+        {HAP_MODULE_INFO_SRC_ENTRANCE, hapModuleInfo.srcEntrance},
+        {HAP_MODULE_INFO_UI_SYNTAX, hapModuleInfo.uiSyntax},
+        {HAP_MODULE_INFO_VIRTUAL_MACHINE, hapModuleInfo.virtualMachine},
+        {HAP_MODULE_INFO_DELIVERY_WITH_INSTALL, hapModuleInfo.deliveryWithInstall},
+        {HAP_MODULE_INFO_INSTALLATION_FREE, hapModuleInfo.installationFree},
+        {HAP_MODULE_INFO_IS_STAGE_BASED_MODEL, hapModuleInfo.isStageBasedModel},
+        {HAP_MODULE_INFO_MODULE_TYPE, hapModuleInfo.moduleType},
+        {HAP_MODULE_INFO_EXTENSION_INFOS, hapModuleInfo.extensionInfos},
+        {HAP_MODULE_INFO_META_DATA, hapModuleInfo.metadata}
     };
 }
 
@@ -254,30 +220,6 @@ void from_json(const nlohmann::json &jsonObject, HapModuleInfo &hapModuleInfo)
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<std::string>(jsonObject,
-        jsonObjectEnd,
-        HAP_MODULE_INFO_BUNDLE_NAME,
-        hapModuleInfo.bundleName,
-        JsonType::STRING,
-        false,
-        parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<std::string>(jsonObject,
-        jsonObjectEnd,
-        HAP_MODULE_INFO_SRC_ENTRANCE,
-        hapModuleInfo.srcEntrance,
-        JsonType::STRING,
-        false,
-        parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<std::string>(jsonObject,
-        jsonObjectEnd,
-        HAP_MODULE_INFO_MAIN_ELEMENTNAME,
-        hapModuleInfo.mainElementName,
-        JsonType::STRING,
-        false,
-        parseResult,
-        ArrayType::NOT_ARRAY);
     GetValueIfFindKey<std::vector<std::string>>(jsonObject,
         jsonObjectEnd,
         HAP_MODULE_INFO_REQ_CAPABILITIES,
@@ -294,14 +236,134 @@ void from_json(const nlohmann::json &jsonObject, HapModuleInfo &hapModuleInfo)
         false,
         parseResult,
         ArrayType::STRING);
+    GetValueIfFindKey<std::vector<AbilityInfo>>(jsonObject,
+        jsonObjectEnd,
+        HAP_MODULE_INFO_BUNDLE_ABILITY_INFOS,
+        hapModuleInfo.abilityInfos,
+        JsonType::ARRAY,
+        false,
+        parseResult,
+        ArrayType::OBJECT);
     GetValueIfFindKey<ModuleColorMode>(jsonObject,
         jsonObjectEnd,
-        HAP_MODULE_INFO_DEVICE_TYPES,
+        HAP_MODULE_INFO_BUNDLE_COLOR_MODE,
         hapModuleInfo.colorMode,
         JsonType::OBJECT,
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        HAP_MODULE_INFO_BUNDLE_NAME,
+        hapModuleInfo.bundleName,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        HAP_MODULE_INFO_MAIN_ELEMENTNAME,
+        hapModuleInfo.mainElementName,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        HAP_MODULE_INFO_PAGES,
+        hapModuleInfo.pages,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        HAP_MODULE_INFO_PROCESS,
+        hapModuleInfo.process,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        HAP_MODULE_INFO_RESOURCE_PATH,
+        hapModuleInfo.resourcePath,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        HAP_MODULE_INFO_SRC_ENTRANCE,
+        hapModuleInfo.srcEntrance,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        HAP_MODULE_INFO_UI_SYNTAX,
+        hapModuleInfo.uiSyntax,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        HAP_MODULE_INFO_VIRTUAL_MACHINE,
+        hapModuleInfo.virtualMachine,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<bool>(jsonObject,
+        jsonObjectEnd,
+        HAP_MODULE_INFO_DELIVERY_WITH_INSTALL,
+        hapModuleInfo.deliveryWithInstall,
+        JsonType::BOOLEAN,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<bool>(jsonObject,
+        jsonObjectEnd,
+        HAP_MODULE_INFO_INSTALLATION_FREE,
+        hapModuleInfo.installationFree,
+        JsonType::BOOLEAN,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<bool>(jsonObject,
+        jsonObjectEnd,
+        HAP_MODULE_INFO_IS_STAGE_BASED_MODEL,
+        hapModuleInfo.isStageBasedModel,
+        JsonType::BOOLEAN,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<ModuleType>(jsonObject,
+        jsonObjectEnd,
+        HAP_MODULE_INFO_MODULE_TYPE,
+        hapModuleInfo.moduleType,
+        JsonType::OBJECT,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::vector<ExtensionAbilityInfo>>(jsonObject,
+        jsonObjectEnd,
+        HAP_MODULE_INFO_EXTENSION_INFOS,
+        hapModuleInfo.extensionInfos,
+        JsonType::ARRAY,
+        false,
+        parseResult,
+        ArrayType::OBJECT);
+    GetValueIfFindKey<std::vector<Metadata>>(jsonObject,
+        jsonObjectEnd,
+        HAP_MODULE_INFO_META_DATA,
+        hapModuleInfo.metadata,
+        JsonType::ARRAY,
+        false,
+        parseResult,
+        ArrayType::OBJECT);
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS

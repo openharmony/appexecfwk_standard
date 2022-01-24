@@ -32,6 +32,7 @@ const std::string BUNDLE_INFO_IS_NATIVE_APP = "isNativeApp";
 const std::string BUNDLE_INFO_IS_DIFFERENT_NAME = "isDifferentName";
 const std::string BUNDLE_INFO_APPLICATION_INFO = "applicationInfo";
 const std::string BUNDLE_INFO_ABILITY_INFOS = "abilityInfos";
+const std::string BUNDLE_INFO_HAP_MODULE_INFOS = "hapModuleInfos";
 const std::string BUNDLE_INFO_EXTENSION_ABILITY_INFOS = "extensionAbilityInfo";
 const std::string BUNDLE_INFO_JOINT_USERID = "jointUserId";
 const std::string BUNDLE_INFO_VERSION_CODE = "versionCode";
@@ -288,6 +289,7 @@ void to_json(nlohmann::json &jsonObject, const BundleInfo &bundleInfo)
         {BUNDLE_INFO_IS_DIFFERENT_NAME, bundleInfo.isDifferentName},
         {BUNDLE_INFO_APPLICATION_INFO, bundleInfo.applicationInfo},
         {BUNDLE_INFO_ABILITY_INFOS, bundleInfo.abilityInfos},
+        {BUNDLE_INFO_HAP_MODULE_INFOS, bundleInfo.hapModuleInfos},
         {BUNDLE_INFO_EXTENSION_ABILITY_INFOS, bundleInfo.extensionInfos},
         {BUNDLE_INFO_JOINT_USERID, bundleInfo.jointUserId},
         {BUNDLE_INFO_VERSION_CODE, bundleInfo.versionCode},
@@ -393,6 +395,14 @@ void from_json(const nlohmann::json &jsonObject, BundleInfo &bundleInfo)
         jsonObjectEnd,
         BUNDLE_INFO_ABILITY_INFOS,
         bundleInfo.abilityInfos,
+        JsonType::ARRAY,
+        false,
+        parseResult,
+        ArrayType::OBJECT);
+    GetValueIfFindKey<std::vector<HapModuleInfo>>(jsonObject,
+        jsonObjectEnd,
+        BUNDLE_INFO_HAP_MODULE_INFOS,
+        bundleInfo.hapModuleInfos,
         JsonType::ARRAY,
         false,
         parseResult,
