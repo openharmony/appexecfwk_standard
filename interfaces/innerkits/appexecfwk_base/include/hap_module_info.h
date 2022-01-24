@@ -18,9 +18,9 @@
 
 #include <string>
 
-#include "parcel.h"
 #include "ability_info.h"
 #include "extension_ability_info.h"
+#include "parcel.h"
 
 namespace OHOS {
 namespace AppExecFwk {
