@@ -81,6 +81,7 @@ ohos_unittest("bm_command_dump_test") {
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
     "permission_standard:libpermissionsdk_standard",
+    "resmgr_standard:global_resmgr",
     "samgr_standard:samgr_proxy",
     "utils_base:utils",
   ]
@@ -129,6 +130,7 @@ ohos_unittest("bm_command_install_test") {
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
     "permission_standard:libpermissionsdk_standard",
+    "resmgr_standard:global_resmgr",
     "samgr_standard:samgr_proxy",
     "utils_base:utils",
   ]
@@ -177,6 +179,7 @@ ohos_unittest("bm_command_test") {
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
     "permission_standard:libpermissionsdk_standard",
+    "resmgr_standard:global_resmgr",
     "samgr_standard:samgr_proxy",
     "utils_base:utils",
   ]
@@ -225,6 +228,7 @@ ohos_unittest("bm_command_uninstall_test") {
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
     "permission_standard:libpermissionsdk_standard",
+    "resmgr_standard:global_resmgr",
     "samgr_standard:samgr_proxy",
     "utils_base:utils",
   ]

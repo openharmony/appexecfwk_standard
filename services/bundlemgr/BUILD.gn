@@ -159,6 +159,7 @@ ohos_shared_library("libbms") {
     "ipc:ipc_core",
     "os_account_standard:os_account_innerkits",
     "permission_standard:libpermissionsdk_standard",
+    "resmgr_standard:global_resmgr",
     "safwk:system_ability_fwk",
     "samgr_standard:samgr_proxy",
   ]
