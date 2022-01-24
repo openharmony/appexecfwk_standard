@@ -75,6 +75,7 @@ bool HapModuleInfo::ReadFromParcel(Parcel &parcel)
         metadata.emplace_back(*meta);
     }
     resourcePath = Str16ToStr8(parcel.ReadString16());
+    isModuleJson = parcel.ReadBool();
     isStageBasedModel = parcel.ReadBool();
 
     int32_t reqCapabilitiesSize;
@@ -139,6 +140,7 @@ bool HapModuleInfo::Marshalling(Parcel &parcel) const
         WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Parcelable, parcel, &meta);
     }
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(resourcePath));
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, isModuleJson);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, isStageBasedModel);
 
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, reqCapabilities.size());
