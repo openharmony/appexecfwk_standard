@@ -41,7 +41,7 @@ ErrCode BundleParser::Parse(const std::string &pathName, InnerBundleInfo &innerB
         return ERR_APPEXECFWK_PARSE_NO_PROFILE;
     }
 
-    if (bundleExtractor.isNewVersion()) {
+    if (bundleExtractor.IsNewVersion()) {
         APP_LOGD("module.json transform to InnerBundleInfo");
         innerBundleInfo.SetIsNewVersion(true);
         ModuleProfile moduleProfile;
@@ -50,7 +50,16 @@ ErrCode BundleParser::Parse(const std::string &pathName, InnerBundleInfo &innerB
     APP_LOGD("config.json transform to InnerBundleInfo");
     innerBundleInfo.SetIsNewVersion(false);
     BundleProfile bundleProfile;
-    return bundleProfile.TransformTo(outStream, innerBundleInfo);
+    ErrCode ret = bundleProfile.TransformTo(outStream, innerBundleInfo);
+    auto& abilityInfos = innerBundleInfo.FetchAbilityInfos();
+    for (auto& info : abilityInfos) {
+        info.second.isStageBasedModel = bundleExtractor.IsStageBasedModel(info.second.name);
+        auto iter = innerBundleInfo.FetchInnerModuleInfos().find(info.second.package);
+        if (iter != innerBundleInfo.FetchInnerModuleInfos().end()) {
+            iter->second.isStageBasedModel = info.second.isStageBasedModel;
+        }
+    }
+    return ret;
 }
 
 }  // namespace AppExecFwk

@@ -53,6 +53,7 @@ struct HapModuleInfo : public Parcelable {
     std::vector<ExtensionAbilityInfo> extensionInfos;
     std::vector<Metadata> metadata;
     std::string resourcePath;
+    bool isModuleJson = false;
     bool isStageBasedModel = false;
 
     bool ReadFromParcel(Parcel &parcel);

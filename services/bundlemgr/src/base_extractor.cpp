@@ -92,7 +92,19 @@ bool BaseExtractor::GetZipFileNames(std::vector<std::string> &fileNames)
     return true;
 }
 
-bool BaseExtractor::isNewVersion() const
+bool BaseExtractor::IsStageBasedModel(std::string abilityName)
+{
+    auto &entryMap = zipFile_.GetAllEntries();
+    std::vector<std::string> splitStrs;
+    OHOS::SplitStr(abilityName, ".", splitStrs);
+    std::string name = splitStrs.empty() ? abilityName : splitStrs.back();
+    std::string entry = "assets/js/" + name + "/" + name + ".js";
+    bool isStageBasedModel = entryMap.find(entry) != entryMap.end();
+    APP_LOGI("name:%{public}s isStageBasedModel:%{public}d", abilityName.c_str(), isStageBasedModel);
+    return isStageBasedModel;
+}
+
+bool BaseExtractor::IsNewVersion() const
 {
     return isNewVersion_;
 }

@@ -1175,6 +1175,7 @@ bool ToAbilityInfo(const Profile::ModuleJson &moduleJson, const Profile::Ability
         abilityInfo.launchMode = iterLaunch->second;
     }
     abilityInfo.enabled = true;
+    abilityInfo.isModuleJson = true;
     abilityInfo.isStageBasedModel = true;
     abilityInfo.type = AbilityType::PAGE;
     return true;
@@ -1283,6 +1284,7 @@ bool ToInnerModuleInfo(const Profile::ModuleJson &moduleJson, InnerModuleInfo &i
     }
     innerModuleInfo.pages = moduleJson.module.pages;
     GetPermissions(moduleJson, innerModuleInfo, isSystemApp, isPreInstallApp);
+    innerModuleInfo.isModuleJson = true;
     innerModuleInfo.isStageBasedModel = true;
     // abilities and extensionAbilities store in InnerBundleInfo
     return true;

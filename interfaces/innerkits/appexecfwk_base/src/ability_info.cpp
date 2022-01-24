@@ -83,6 +83,7 @@ const std::string META_DATA_NAME = "name";
 const std::string META_DATA_VALUE = "value";
 const std::string META_DATA_RESOURCE = "resource";
 const std::string SRC_ENTRANCE = "srcEntrance";
+const std::string IS_MODULE_JSON = "isModuleJson";
 const std::string IS_STAGE_BASED_MODEL = "isStageBasedModel";
 }  // namespace
 
@@ -194,6 +195,7 @@ bool AbilityInfo::ReadFromParcel(Parcel &parcel)
         }
         metadata.emplace_back(*data);
     }
+    isModuleJson = parcel.ReadBool();
     isStageBasedModel = parcel.ReadBool();
     return true;
 }
@@ -286,6 +288,7 @@ bool AbilityInfo::Marshalling(Parcel &parcel) const
     for (auto i = 0; i < metadataSize; i++) {
         WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Parcelable, parcel, &metadata[i]);
     }
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, isModuleJson);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, isStageBasedModel);
     return true;
 }
@@ -392,6 +395,7 @@ void to_json(nlohmann::json &jsonObject, const AbilityInfo &abilityInfo)
         {JSON_KEY_FORM_ENABLED, abilityInfo.formEnabled},
         {SRC_ENTRANCE, abilityInfo.srcEntrance},
         {META_DATA, abilityInfo.metadata},
+        {IS_MODULE_JSON, abilityInfo.isModuleJson},
         {IS_STAGE_BASED_MODEL, abilityInfo.isStageBasedModel}
     };
 }
@@ -853,6 +857,14 @@ void from_json(const nlohmann::json &jsonObject, AbilityInfo &abilityInfo)
         false,
         parseResult,
         ArrayType::OBJECT);
+    GetValueIfFindKey<bool>(jsonObject,
+        jsonObjectEnd,
+        IS_MODULE_JSON,
+        abilityInfo.isModuleJson,
+        JsonType::BOOLEAN,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
     GetValueIfFindKey<bool>(jsonObject,
         jsonObjectEnd,
         IS_STAGE_BASED_MODEL,
