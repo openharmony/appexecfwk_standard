@@ -1399,19 +1399,14 @@ std::optional<HapModuleInfo> InnerBundleInfo::FindHapModuleInfo(const std::strin
     hapInfo.installationFree = it->second.distro.installationFree;
     hapInfo.isStageBasedModel = it->second.isStageBasedModel;
     std::string moduleType = it->second.distro.moduleType;
-    switch (moduleType) {
-        case Profile::MODULE_TYPE_ENTRY:
-            hapInfo.moduleType = ModuleType::ENTRY;
-            break;
-        case Profile::MODULE_TYPE_FEATURE:
-            hapInfo.moduleType = ModuleType::FEATURE;
-            break;
-        case Profile::MODULE_TYPE_HAR:
-            hapInfo.moduleType = ModuleType::HAR;
-            break;
-        default:
-            hapInfo.moduleType = ModuleType::UNKNOWN;
-            break;
+    if (moduleType == Profile::MODULE_TYPE_ENTRY) {
+        hapInfo.moduleType = ModuleType::ENTRY;
+    } else if (moduleType == Profile::MODULE_TYPE_FEATURE) {
+        hapInfo.moduleType = ModuleType::FEATURE;
+    } else if (moduleType == Profile::MODULE_TYPE_HAR) {
+        hapInfo.moduleType = ModuleType::HAR;
+    } else {
+        hapInfo.moduleType = ModuleType::UNKNOWN;
     }
     for (const auto &extension : baseExtensionInfos_) {
         if (extension.first.find(modulePackage) != std::string::npos) {
