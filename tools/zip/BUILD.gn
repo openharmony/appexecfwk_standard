@@ -77,6 +77,18 @@ ohos_shared_library("zlib") {
   relative_install_dir = "module"
 }
 
+ohos_shared_library("z") {
+  configs = [ "//third_party/zlib:zlib_config" ]
+  public_configs = [ "//third_party/zlib:zlib_public_config" ]
+  deps = [ "//third_party/zlib:libz" ]
+  output_extension = "so"
+  subsystem_name = "appexecfwk"
+  part_name = "bundle_framework"
+}
+
 group("tools_zip") {
-  deps = [ ":zlib" ]
+  deps = [
+    ":z",
+    ":zlib",
+  ]
 }
