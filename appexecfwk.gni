@@ -13,7 +13,6 @@
 
 aafwk_path = "//foundation/aafwk/standard"
 appexecfwk_path = "//foundation/appexecfwk/standard"
-appspawn_path = "//base/startup/appspawn_standard"
 even_path = "//base/notification/ces_standard"
 
 libs_path = "${appexecfwk_path}/libs"
@@ -22,7 +21,5 @@ services_path = "${appexecfwk_path}/services"
 kits_path = "${appexecfwk_path}/kits"
 innerkits_path = "${appexecfwk_path}/interfaces/innerkits"
 tools_path = "${appexecfwk_path}/tools"
-test_hap_common_path = "${appexecfwk_path}/test/common"
 system_test_app_path =
     "${appexecfwk_path}/test/resource/amssystemtestability/abilitySrc"
-dispatcher_path = "${appexecfwk_path}/interfaces/innerkits/task_dispatcher"
