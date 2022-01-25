@@ -1992,9 +1992,7 @@ bool TransformToInfo(const ProfileReader::ConfigJson &configJson, InnerModuleInf
     innerModuleInfo.reqCapabilities = configJson.module.reqCapabilities;
     innerModuleInfo.requestPermissions = configJson.module.requestPermissions;
     innerModuleInfo.definePermissions = configJson.module.definePermissions;
-    for (const auto &defPerm : configJson.module.defPermissions) {
-        innerModuleInfo.definePermissions.emplace_back(defPerm);
-    }
+    innerModuleInfo.defPermissions = configJson.module.defPermissions;
     innerModuleInfo.mainAbility = configJson.module.mainAbility;
     innerModuleInfo.srcPath = configJson.module.srcPath;
     return true;
