@@ -47,6 +47,7 @@ const std::string HAP_MODULE_INFO_UI_SYNTAX = "uiSyntax";
 const std::string HAP_MODULE_INFO_VIRTUAL_MACHINE = "virtualMachine";
 const std::string HAP_MODULE_INFO_DELIVERY_WITH_INSTALL = "deliveryWithInstall";
 const std::string HAP_MODULE_INFO_INSTALLATION_FREE = "installationFree";
+const std::string HAP_MODULE_INFO_IS_MODULE_JSON = "isModuleJson";
 const std::string HAP_MODULE_INFO_IS_STAGE_BASED_MODEL = "isStageBasedModel";
 const std::string HAP_MODULE_INFO_MODULE_TYPE = "moduleType";
 const std::string HAP_MODULE_INFO_EXTENSION_INFOS = "extensionInfos";
@@ -136,6 +137,7 @@ void to_json(nlohmann::json &jsonObject, const HapModuleInfo &hapModuleInfo)
         {HAP_MODULE_INFO_VIRTUAL_MACHINE, hapModuleInfo.virtualMachine},
         {HAP_MODULE_INFO_DELIVERY_WITH_INSTALL, hapModuleInfo.deliveryWithInstall},
         {HAP_MODULE_INFO_INSTALLATION_FREE, hapModuleInfo.installationFree},
+        {HAP_MODULE_INFO_IS_MODULE_JSON, hapModuleInfo.isModuleJson},
         {HAP_MODULE_INFO_IS_STAGE_BASED_MODEL, hapModuleInfo.isStageBasedModel},
         {HAP_MODULE_INFO_MODULE_TYPE, hapModuleInfo.moduleType},
         {HAP_MODULE_INFO_EXTENSION_INFOS, hapModuleInfo.extensionInfos},
@@ -327,6 +329,14 @@ void from_json(const nlohmann::json &jsonObject, HapModuleInfo &hapModuleInfo)
         jsonObjectEnd,
         HAP_MODULE_INFO_INSTALLATION_FREE,
         hapModuleInfo.installationFree,
+        JsonType::BOOLEAN,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<bool>(jsonObject,
+        jsonObjectEnd,
+        HAP_MODULE_INFO_IS_MODULE_JSON,
+        hapModuleInfo.isModuleJson,
         JsonType::BOOLEAN,
         false,
         parseResult,
