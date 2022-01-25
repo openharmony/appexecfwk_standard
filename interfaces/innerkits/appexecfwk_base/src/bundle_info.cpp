@@ -68,6 +68,7 @@ const std::string REQUESTPERMISSION_REASON = "reason";
 const std::string REQUESTPERMISSION_REASON_ID = "reasonId";
 const std::string REQUESTPERMISSION_USEDSCENE = "usedScene";
 const std::string REQUESTPERMISSION_ABILITIES = "abilities";
+const std::string REQUESTPERMISSION_ABILITY = "ability";
 const std::string REQUESTPERMISSION_WHEN = "when";
 }
 
@@ -219,6 +220,14 @@ void from_json(const nlohmann::json &jsonObject, RequestPermissionUsedScene &use
     GetValueIfFindKey<std::vector<std::string>>(jsonObject,
         jsonObjectEnd,
         REQUESTPERMISSION_ABILITIES,
+        usedScene.abilities,
+        JsonType::ARRAY,
+        false,
+        parseResult,
+        ArrayType::STRING);
+    GetValueIfFindKey<std::vector<std::string>>(jsonObject,
+        jsonObjectEnd,
+        REQUESTPERMISSION_ABILITY,
         usedScene.abilities,
         JsonType::ARRAY,
         false,

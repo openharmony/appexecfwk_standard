@@ -42,31 +42,11 @@ struct Distro {
     bool installationFree = false;
 };
 
-struct DefPermission {
-    std::string name;
-    std::string grantMode;
-    std::vector<std::string> availableScope;
-    std::string label;
-    int32_t labelId;
-    std::string description;
-    int32_t descriptionId;
-};
-
-struct UsedScene {
-    std::vector<std::string> ability;
-    std::string when;
-};
-
-struct ReqPermission {
-    std::string name;
-    std::string reason;
-    UsedScene usedScene;
-};
-
 struct DefinePermission {
     std::string name;
     std::string grantMode = Profile::DEFINEPERMISSION_GRANT_MODE_DEFAULT_VALUE;
     std::string availableLevel = Profile::DEFINEPERMISSION_AVAILABLE_LEVEL_DEFAULT_VALUE;
+    std::vector<std::string> availableScope;
     bool provisionEnable = true;
     bool distributedSceneEnable = false;
     std::string label;
@@ -93,8 +73,7 @@ struct InnerModuleInfo {
     ModuleColorMode colorMode = ModuleColorMode::AUTO;
     Distro distro;
     std::vector<std::string> reqCapabilities;
-    std::vector<ReqPermission> reqPermissions;
-    std::vector<DefPermission> defPermissions;
+    std::vector<DefinePermission> defPermissions;
     std::vector<std::string> abilityKeys;
     std::vector<std::string> skillKeys;
     // new version fields
@@ -898,9 +877,10 @@ public:
             }
         }
     }
-    std::vector<DefPermission> GetDefPermissions() const
+
+    std::vector<DefinePermission> GetDefPermissions() const
     {
-        std::vector<DefPermission> defPermissions;
+        std::vector<DefinePermission> defPermissions;
         if (innerModuleInfos_.count(currentPackage_) == 1) {
             defPermissions = innerModuleInfos_.at(currentPackage_).defPermissions;
         }
@@ -914,15 +894,6 @@ public:
             definePermissions = innerModuleInfos_.at(currentPackage_).definePermissions;
         }
         return definePermissions;
-    }
-
-    std::vector<ReqPermission> GetReqPermissions() const
-    {
-        std::vector<ReqPermission> reqPermissions;
-        if (innerModuleInfos_.count(currentPackage_) == 1) {
-            reqPermissions = innerModuleInfos_.at(currentPackage_).reqPermissions;
-        }
-        return reqPermissions;
     }
 
     std::vector<RequestPermission> GetRequestPermissions() const
@@ -1477,8 +1448,6 @@ void from_json(const nlohmann::json &jsonObject, InnerModuleInfo &info);
 void from_json(const nlohmann::json &jsonObject, SkillUri &uri);
 void from_json(const nlohmann::json &jsonObject, Skill &skill);
 void from_json(const nlohmann::json &jsonObject, Distro &distro);
-void from_json(const nlohmann::json &jsonObject, ReqPermission &ReqPermission);
-void from_json(const nlohmann::json &jsonObject, DefPermission &DefPermission);
 void from_json(const nlohmann::json &jsonObject, InstallMark &installMark);
 void from_json(const nlohmann::json &jsonObject, DefinePermission &definePermission);
 }  // namespace AppExecFwk
