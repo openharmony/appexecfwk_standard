@@ -16,17 +16,15 @@
 #ifndef FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_CORE_INCLUDE_BUNDLEMGR_BUNDLE_MGR_CLIENT_H
 #define FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_CORE_INCLUDE_BUNDLEMGR_BUNDLE_MGR_CLIENT_H
 
-#include "appexecfwk_errors.h"
 #include "bundle_info.h"
-#include "bundle_mgr_interface.h"
 #include "extension_ability_info.h"
 #include "hap_module_info.h"
-#include "resource_manager.h"
-#include "singleton.h"
 
 namespace OHOS {
 namespace AppExecFwk {
-class BundleMgrClient : public DelayedSingleton<BundleMgrClient> {
+class BundleMgrClientImpl;
+
+class BundleMgrClient {
 public:
     BundleMgrClient();
     virtual ~BundleMgrClient();
@@ -71,18 +69,7 @@ public:
         std::vector<std::string> &profileInfos) const;
 
 private:
-    ErrCode Connect();
-    bool GetResProfileByMetadata(const std::vector<Metadata> &metadata, const std::string &metadataName,
-        const std ::string &resourcePath, std::vector<std::string> &profileInfos) const;
-    std::shared_ptr<Global::Resource::ResourceManager> InitResMgr(const std::string &resourcePath) const;
-    bool GetResFromResMgr(const std::string &resName, const std::shared_ptr<Global::Resource::ResourceManager> &resMgr,
-        std::vector<std::string> &profileInfos) const;
-    bool IsFileExisted(const std::string &filePath, const std::string &suffix) const;
-    bool TransformFileToJsonString(const std::string &resPath, std::string &profile) const;
-
-private:
-    std::mutex mutex_;
-    sptr<IBundleMgr> bundleMgr_;
+    std::shared_ptr<BundleMgrClientImpl> impl_;
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS
