@@ -280,5 +280,40 @@ bool PreInstallDataStorage::GetPreInstallStorageBundleInfo(
     APP_LOGI("Get value success when Get PreInstall bundle data.");
     return true;
 }
+
+bool PreInstallDataStorage::DeletePreInstallStorageBundleInfo(
+    const std::string &deviceId, const PreInstallBundleInfo &preInstallBundleInfo)
+{
+    APP_LOGI("delete PreInstall bundle data");
+    {
+        std::lock_guard<std::mutex> lock(kvStorePtrMutex_);
+        if (!CheckKvStore()) {
+            APP_LOGE("kvStore is nullptr");
+            return false;
+        }
+    }
+    std::string keyOfData;
+    BundleUtil::DeviceAndNameToKey(deviceId, preInstallBundleInfo.GetBundleName(), keyOfData);
+    Key key(keyOfData);
+    Status status;
+
+    {
+        std::lock_guard<std::mutex> lock(kvStorePtrMutex_);
+        status = kvStorePtr_->Delete(key);
+        if (status == Status::IPC_ERROR) {
+            status = kvStorePtr_->Delete(key);
+            APP_LOGW("distribute database ipc error and try to call again, result = %{public}d", status);
+        }
+    }
+
+    if (status != Status::SUCCESS) {
+        const std::string interfaceName = "kvStorePtr::Delete()";
+        APP_LOGE("delete key error: %{public}d", status);
+        return false;
+    } else {
+        APP_LOGI("delete value to kvStore success");
+    }
+    return true;
+}
 }  // namespace AppExecFwk
 }  // namespace OHOS
