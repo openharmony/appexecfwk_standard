@@ -51,6 +51,14 @@ public:
      * @return Returns true if this function is successfully called; returns false otherwise.
      */
     bool LoadAllPreInstallBundleInfos(std::vector<PreInstallBundleInfo> &preInstallBundleInfos);
+    /**
+     * @brief Delete the bundle data corresponding to the device Id of the bundle name to KvStore.
+     * @param deviceId Indicates this device Id corresponding to the bundle name.
+     * @param innerBundleInfo Indicates the InnerBundleInfo object to be Delete.
+     * @return Returns true if the data is successfully deleted; returns false otherwise.
+     */
+    bool DeletePreInstallStorageBundleInfo(
+        const std::string &deviceId, const PreInstallBundleInfo &preInstallBundleInfo);
 
 private:
     void TryTwice(const std::function<DistributedKv::Status()>& func) const;

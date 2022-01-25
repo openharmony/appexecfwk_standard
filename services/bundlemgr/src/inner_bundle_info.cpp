@@ -1808,6 +1808,7 @@ void InnerBundleInfo::GetBundleInfo(int32_t flags, BundleInfo &bundleInfo, int32
     }
 
     bundleInfo = baseBundleInfo_;
+    bundleInfo.isPreInstallApp = isPreInstallApp_;
     bundleInfo.uid = innerBundleUserInfo.uid;
     if (!innerBundleUserInfo.gids.empty()) {
         bundleInfo.gid = innerBundleUserInfo.gids[0];

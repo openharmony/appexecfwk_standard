@@ -32,6 +32,18 @@ public:
      */
     bool InstallSystemBundle(
         Constants::AppType appType, int32_t userId = Constants::UNSPECIFIED_USERID);
+    /**
+     * @brief OTA Install system and system vendor bundles.
+     * @param appType Indicates the bundle type.
+     * @return Returns true if this function called successfully; returns false otherwise.
+     */
+    bool OTAInstallSystemBundle(Constants::AppType appType);
+    /**
+     * @brief Uninstall system and system vendor bundles.
+     * @param bundleName Indicates the bundle name.
+     * @return Returns true if this function called successfully; returns false otherwise.
+     */
+    bool UninstallSystemBundle(const std::string &bundleName);
 
 private:
     const std::string filePath_;

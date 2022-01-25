@@ -1294,6 +1294,7 @@ public:
     void SetIsPreInstallApp(bool isPreInstallApp)
     {
         isPreInstallApp_ = isPreInstallApp;
+        baseBundleInfo_.isPreInstallApp = isPreInstallApp;
     }
     /**
      * @brief Get the bundle is whether isPreInstallApp.
