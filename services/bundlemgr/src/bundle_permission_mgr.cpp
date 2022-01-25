@@ -564,7 +564,7 @@ bool BundlePermissionMgr::InitPermissions()
 int32_t BundlePermissionMgr::AddDefPermissions(const InnerBundleInfo &innerBundleInfo)
 {
     const auto bundleName = innerBundleInfo.GetBundleName();
-    const auto defPermissions = innerBundleInfo.GetDefinePermissions();
+    const auto defPermissions = innerBundleInfo.GetDefPermissions();
     int32_t ret = Permission::RET_FAILED;
     if (!defPermissions.empty()) {
         std::vector<Permission::PermissionDef> permList;

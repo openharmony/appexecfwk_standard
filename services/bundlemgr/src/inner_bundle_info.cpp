@@ -82,6 +82,7 @@ const std::string MODULE_PAGES = "pages";
 const std::string MODULE_META_DATA = "metadata";
 const std::string MODULE_REQUEST_PERMISSIONS = "requestPermissions";
 const std::string MODULE_DEFINE_PERMISSIONS = "definePermissions";
+const std::string MODULE_DEF_PERMS = "defPermissions";
 const std::string MODULE_EXTENSION_KEYS = "extensionKeys";
 const std::string MODULE_EXTENSION_SKILL_KEYS = "extensionSkillKeys";
 const std::string MODULE_IS_STAGE_BASED_MODEL = "isStageBasedModel";
@@ -354,6 +355,7 @@ void to_json(nlohmann::json &jsonObject, const InnerModuleInfo &info)
         {MODULE_META_DATA, info.metadata},
         {MODULE_REQUEST_PERMISSIONS, info.requestPermissions},
         {MODULE_DEFINE_PERMISSIONS, info.definePermissions},
+        {MODULE_DEF_PERMS, info.defPermissions},
         {MODULE_EXTENSION_KEYS, info.extensionKeys},
         {MODULE_EXTENSION_SKILL_KEYS, info.extensionSkillKeys},
         {MODULE_IS_STAGE_BASED_MODEL, info.isStageBasedModel}
@@ -650,6 +652,14 @@ void from_json(const nlohmann::json &jsonObject, InnerModuleInfo &info)
         JsonType::ARRAY,
         false,
         parseResult,
+        ArrayType::OBJECT);
+    GetValueIfFindKey<std::vector<DefinePermission>>(jsonObject,
+        jsonObjectEnd,
+        MODULE_DEF_PERMS,
+        info.defPermissions,
+        JsonType::ARRAY,
+        false,
+        ProfileReader::parseResult,
         ArrayType::OBJECT);
     GetValueIfFindKey<std::vector<std::string>>(jsonObject,
         jsonObjectEnd,
@@ -1635,6 +1645,10 @@ void InnerBundleInfo::GetBundleInfo(int32_t flags, BundleInfo &bundleInfo, int32
                 [](const auto &p) { return p.name; });
             std::transform(info.second.definePermissions.begin(),
                 info.second.definePermissions.end(),
+                std::back_inserter(bundleInfo.defPermissions),
+                [](const auto &p) { return p.name; });
+            std::transform(info.second.defPermissions.begin(),
+                info.second.defPermissions.end(),
                 std::back_inserter(bundleInfo.defPermissions),
                 [](const auto &p) { return p.name; });
         }
