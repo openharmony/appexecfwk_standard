@@ -167,8 +167,7 @@ ErrCode BaseBundleInstaller::InnerProcessBundleInstall(std::unordered_map<std::s
 {
     BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     bundleName_ = newInfos.begin()->second.GetBundleName();
-    APP_LOGD("InnerProcessBundleInstall with bundleName %{public}s", bundleName_.c_str());
-
+    APP_LOGI("InnerProcessBundleInstall with bundleName %{public}s", bundleName_.c_str());
     // try to get the bundle info to decide use install or update.
     if (!GetInnerBundleInfo(oldInfo, isAppExist_)) {
         return ERR_APPEXECFWK_INSTALL_BUNDLE_MGR_SERVICE_ERROR;
@@ -188,6 +187,7 @@ ErrCode BaseBundleInstaller::InnerProcessBundleInstall(std::unordered_map<std::s
         dataMgr_->GetPreInstallBundleInfo(bundleName_, preInstallBundleInfo);
         preInstallBundleInfo.AddBundlePath(newInfos.begin()->first);
         preInstallBundleInfo.SetAppType(newInfos.begin()->second.GetAppType());
+        preInstallBundleInfo.SetVersionCode(newInfos.begin()->second.GetVersionCode());
         dataMgr_->SavePreInstallBundleInfo(bundleName_, preInstallBundleInfo);
     }
 
@@ -270,7 +270,8 @@ ErrCode BaseBundleInstaller::InnerProcessBundleInstall(std::unordered_map<std::s
         newInfo.AddInnerBundleUserInfo(innerBundleUserInfo);
         bool isReplace = (installParam.installFlag == InstallFlag::REPLACE_EXISTING);
         // app exist, but module may not
-        if ((result = ProcessBundleUpdateStatus(bundleInfo, newInfo, isReplace)) != ERR_OK) {
+        if ((result = ProcessBundleUpdateStatus(
+            bundleInfo, newInfo, isReplace, installParam.noSkipsKill)) != ERR_OK) {
             break;
         }
     }
@@ -478,7 +479,8 @@ ErrCode BaseBundleInstaller::ProcessBundleUninstall(
 
     uid = curInnerBundleUserInfo.uid;
     oldInfo.SetIsKeepData(installParam.isKeepData);
-    if (!installParam.forceExecuted && oldInfo.GetBaseApplicationInfo().isSystemApp && !oldInfo.IsRemovable()) {
+    if (!installParam.forceExecuted && oldInfo.GetBaseApplicationInfo().isSystemApp &&
+        !oldInfo.IsRemovable() && installParam.noSkipsKill) {
         APP_LOGE("uninstall system app");
         return ERR_APPEXECFWK_UNINSTALL_SYSTEM_APP_ERROR;
     }
@@ -499,11 +501,14 @@ ErrCode BaseBundleInstaller::ProcessBundleUninstall(
         return ERR_APPEXECFWK_INSTALL_BUNDLE_MGR_SERVICE_ERROR;
     }
 
-    // kill the bundle process during uninstall.
-    if (!UninstallApplicationProcesses(oldInfo.GetApplicationName(), uid)) {
-        APP_LOGE("can not kill process");
-        dataMgr_->UpdateBundleInstallState(bundleName, InstallState::INSTALL_SUCCESS);
-        return ERR_APPEXECFWK_UNINSTALL_KILLING_APP_ERROR;
+    // kill the bundle for reboot scan.
+    if (installParam.noSkipsKill) {
+        // kill the bundle process during uninstall.
+        if (!UninstallApplicationProcesses(oldInfo.GetApplicationName(), uid)) {
+            APP_LOGE("can not kill process");
+            dataMgr_->UpdateBundleInstallState(bundleName, InstallState::INSTALL_SUCCESS);
+            return ERR_APPEXECFWK_UNINSTALL_KILLING_APP_ERROR;
+        }
     }
     enableGuard.Dismiss();
     std::string packageName;
@@ -516,6 +521,13 @@ ErrCode BaseBundleInstaller::ProcessBundleUninstall(
     if (result != ERR_OK) {
         APP_LOGE("remove whole bundle failed");
         return result;
+    }
+    if (installParam.needSavePreInstallInfo) {
+        PreInstallBundleInfo preInstallBundleInfo;
+        preInstallBundleInfo.SetBundleName(bundleName);
+        APP_LOGI("GetPreInstallBundleInfo bundleName %{public}s ", bundleName.c_str());
+        dataMgr_->GetPreInstallBundleInfo(bundleName, preInstallBundleInfo);
+        dataMgr_->DeletePreInstallBundleInfo(bundleName, preInstallBundleInfo);
     }
     APP_LOGD("finish to process %{public}s bundle uninstall", bundleName.c_str());
     return ERR_OK;
@@ -560,7 +572,8 @@ ErrCode BaseBundleInstaller::ProcessBundleUninstall(
 
     uid = curInnerBundleUserInfo.uid;
     oldInfo.SetIsKeepData(installParam.isKeepData);
-    if (!installParam.forceExecuted && oldInfo.GetBaseApplicationInfo().isSystemApp && !oldInfo.IsRemovable()) {
+    if (!installParam.forceExecuted && oldInfo.GetBaseApplicationInfo().isSystemApp
+        && !oldInfo.IsRemovable() && installParam.noSkipsKill) {
         APP_LOGE("uninstall system app");
         return ERR_APPEXECFWK_UNINSTALL_SYSTEM_APP_ERROR;
     }
@@ -771,7 +784,7 @@ ErrCode BaseBundleInstaller::ProcessBundleInstallStatus(InnerBundleInfo &info, i
 }
 
 ErrCode BaseBundleInstaller::ProcessBundleUpdateStatus(
-    InnerBundleInfo &oldInfo, InnerBundleInfo &newInfo, bool isReplace)
+    InnerBundleInfo &oldInfo, InnerBundleInfo &newInfo, bool isReplace, bool noSkipsKill)
 {
     modulePackage_ = newInfo.GetCurrentModulePackage();
     if (modulePackage_.empty()) {
@@ -793,17 +806,26 @@ ErrCode BaseBundleInstaller::ProcessBundleUpdateStatus(
         APP_LOGE("the signature of the new bundle is not the same as old one");
         return ERR_APPEXECFWK_INSTALL_SIGN_INFO_INCONSISTENT;
     }
-
+    APP_LOGE("ProcessBundleUpdateStatus noSkipsKill = %{public}d", noSkipsKill);
     // now there are two cases for updating:
     // 1. bundle exist, hap exist, update hap
     // 2. bundle exist, install new hap
     bool isModuleExist = oldInfo.FindModule(modulePackage_);
     newInfo.RestoreFromOldInfo(oldInfo);
-    auto result = isModuleExist ? ProcessModuleUpdate(newInfo, oldInfo, isReplace) :
-        ProcessNewModuleInstall(newInfo, oldInfo);
+    auto result = isModuleExist ? ProcessModuleUpdate(newInfo, oldInfo,
+        isReplace, noSkipsKill) : ProcessNewModuleInstall(newInfo, oldInfo);
     if (result != ERR_OK) {
         APP_LOGE("install module failed %{public}d", result);
         return result;
+    }
+
+    if (!noSkipsKill) {
+        PreInstallBundleInfo preInstallBundleInfo;
+        dataMgr_->GetPreInstallBundleInfo(newInfo.GetBundleName(), preInstallBundleInfo);
+        preInstallBundleInfo.SetVersionCode(newInfo.GetVersionCode());
+        APP_LOGI("Up preInstallBundleInfo.SetVersionCode bundleName %{public}s ", newInfo.GetBundleName().c_str());
+        APP_LOGI("Up preInstallBundleInfo.SetVersionCode %{public}d ", newInfo.GetVersionCode());
+        dataMgr_->SavePreInstallBundleInfo(bundleName_, preInstallBundleInfo);
     }
 
     BundlePermissionMgr::UpdatePermissions(newInfo, userId_, newInfo.IsOnlyCreateBundleUser());
@@ -886,7 +908,8 @@ ErrCode BaseBundleInstaller::ProcessNewModuleInstall(InnerBundleInfo &newInfo, I
     return ERR_OK;
 }
 
-ErrCode BaseBundleInstaller::ProcessModuleUpdate(InnerBundleInfo &newInfo, InnerBundleInfo &oldInfo, bool isReplace)
+ErrCode BaseBundleInstaller::ProcessModuleUpdate(InnerBundleInfo &newInfo,
+    InnerBundleInfo &oldInfo, bool isReplace, bool noSkipsKill)
 {
     APP_LOGD("ProcessModuleUpdate %{public}s userId: %{public}d.",
         newInfo.GetBundleName().c_str(), userId_);
@@ -913,11 +936,14 @@ ErrCode BaseBundleInstaller::ProcessModuleUpdate(InnerBundleInfo &newInfo, Inner
         userGuard.Dismiss();
         return ERR_OK;
     }
-
-    // kill the bundle process during updating
-    if (!UninstallApplicationProcesses(oldInfo.GetApplicationName(), oldInfo.GetUid(userId_))) {
-        APP_LOGE("fail to kill running application");
-        return ERR_APPEXECFWK_INSTALL_INTERNAL_ERROR;
+    APP_LOGE("ProcessModuleUpdate noSkipsKill = %{public}d", noSkipsKill);
+    // kill the bundle for reboot scan.
+    if (noSkipsKill) {
+        // kill the bundle process during updating
+        if (!UninstallApplicationProcesses(oldInfo.GetApplicationName(), oldInfo.GetUid(userId_))) {
+            APP_LOGE("fail to kill running application");
+            return ERR_APPEXECFWK_INSTALL_INTERNAL_ERROR;
+    }
     }
     oldInfo.SetInstallMark(bundleName_, modulePackage_, InstallExceptionStatus::UPDATING_EXISTED_START);
     if (!dataMgr_->SaveInstallMark(oldInfo, true)) {

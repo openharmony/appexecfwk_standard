@@ -21,6 +21,7 @@ namespace OHOS {
 namespace AppExecFwk {
 namespace {
 const std::string BUNDLE_NAME = "bundleName";
+const std::string VERSION_CODE = "versionCode";
 const std::string BUNDLE_PATHS = "bundlePaths";
 const std::string APP_TYPE = "appType";
 }  // namespace
@@ -28,6 +29,7 @@ const std::string APP_TYPE = "appType";
 void PreInstallBundleInfo::ToJson(nlohmann::json &jsonObject) const
 {
     jsonObject[BUNDLE_NAME] = bundleName_;
+    jsonObject[VERSION_CODE] = versionCode_;
     jsonObject[BUNDLE_PATHS] = bundlePaths_;
     jsonObject[APP_TYPE] = appType_;
 }
@@ -40,6 +42,14 @@ int32_t PreInstallBundleInfo::FromJson(const nlohmann::json &jsonObject)
         BUNDLE_NAME,
         bundleName_,
         JsonType::STRING,
+        true,
+        ProfileReader::parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<uint32_t>(jsonObject,
+        jsonObjectEnd,
+        VERSION_CODE,
+        versionCode_,
+        JsonType::NUMBER,
         true,
         ProfileReader::parseResult,
         ArrayType::NOT_ARRAY);
@@ -69,6 +79,7 @@ std::string PreInstallBundleInfo::ToString() const
 {
     nlohmann::json j;
     j[BUNDLE_NAME] = bundleName_;
+    j[VERSION_CODE] = versionCode_;
     j[BUNDLE_PATHS] = bundlePaths_;
     j[APP_TYPE] = appType_;
     return j.dump();

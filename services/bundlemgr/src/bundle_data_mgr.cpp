@@ -2346,6 +2346,28 @@ bool BundleDataMgr::SavePreInstallBundleInfo(
     return false;
 }
 
+bool BundleDataMgr::DeletePreInstallBundleInfo(
+    const std::string &bundleName, const PreInstallBundleInfo &preInstallBundleInfo)
+{
+    std::lock_guard<std::mutex> lock(preInstallInfoMutex_);
+    if (!preInstallDataStorage_) {
+        return false;
+    }
+
+    if (preInstallDataStorage_->DeletePreInstallStorageBundleInfo(
+        Constants::PRE_INSTALL_DEVICE_ID, preInstallBundleInfo)) {
+        auto info = std::find_if(
+            preInstallBundleInfos_.begin(), preInstallBundleInfos_.end(), preInstallBundleInfo);
+        if (info != preInstallBundleInfos_.end()) {
+            preInstallBundleInfos_.erase(info);
+        }
+        APP_LOGI("Delete PreInstall Storage success bundle:%{public}s", bundleName.c_str());
+        return true;
+    }
+
+    return false;
+}
+
 bool BundleDataMgr::GetPreInstallBundleInfo(
     const std::string &bundleName, PreInstallBundleInfo &preInstallBundleInfo)
 {
