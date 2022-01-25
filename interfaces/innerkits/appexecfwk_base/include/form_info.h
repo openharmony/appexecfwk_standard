@@ -17,29 +17,16 @@
 #define FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_BASE_INCLUDE_FORM_INFO_H
 
 #include <string>
+#include "extension_ability_info.h"
+#include "extension_form_info.h"
+#include "form_info_base.h"
 #include "parcel.h"
 
 namespace OHOS {
 namespace AppExecFwk {
-enum class FormsColorMode {
-    AUTO_MODE = -1,
-    DARK_MODE = 0,
-    LIGHT_MODE = 1,
-};
-
 enum class FormType {
     JAVA = 0,
     JS = 1,
-};
-
-struct FormCustomizeData {
-    std::string name;
-    std::string value;
-};
-
-struct FormWindow {
-    int32_t designWidth = 0;
-    bool autoDesignWidth = false;
 };
 
 struct FormInfo : public Parcelable {
@@ -69,6 +56,9 @@ struct FormInfo : public Parcelable {
     std::vector<std::string> landscapeLayouts;
     std::vector<std::string> portraitLayouts;
     std::vector<FormCustomizeData> customizeDatas;
+
+    FormInfo() = default;
+    explicit FormInfo(const ExtensionAbilityInfo &abilityInfo, const ExtensionFormInfo &formInfo);
 
     bool ReadFromParcel(Parcel &parcel);
     virtual bool Marshalling(Parcel &parcel) const override;
