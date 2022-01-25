@@ -31,6 +31,7 @@ ohos_shared_library("appexecfwk_core") {
   sources = [
     "src/bundlemgr/bundle_installer_proxy.cpp",
     "src/bundlemgr/bundle_mgr_client.cpp",
+    "src/bundlemgr/bundle_mgr_client_impl.cpp",
     "src/bundlemgr/bundle_mgr_host.cpp",
     "src/bundlemgr/bundle_mgr_proxy.cpp",
     "src/bundlemgr/bundle_monitor.cpp",
