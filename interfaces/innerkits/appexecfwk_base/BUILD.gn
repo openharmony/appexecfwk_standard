@@ -66,5 +66,5 @@ ohos_shared_library("appexecfwk_base") {
   ]
 
   subsystem_name = "appexecfwk"
-  part_name = "appexecfwk_standard"
+  part_name = "bundle_framework"
 }

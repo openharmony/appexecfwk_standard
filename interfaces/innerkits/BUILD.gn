@@ -16,8 +16,6 @@ import("//foundation/appexecfwk/standard/appexecfwk.gni")
 
 group("innerkits_target") {
   deps = [
-    "appexecfwk_base:appexecfwk_base",
-    "appexecfwk_core:appexecfwk_core",
     "eventhandler_native:eventhandler_native",
     "libeventhandler:libeventhandler",
   ]
