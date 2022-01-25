@@ -90,17 +90,11 @@
         }
       ],
       "module_list": [
-        "//foundation/appexecfwk/standard/common:common_target",
         "//foundation/appexecfwk/standard/interfaces/innerkits:innerkits_target",
-        "//foundation/appexecfwk/standard/sa_profile:appexecfwk_sa_profile",
-        "//foundation/appexecfwk/standard/sa_profile:foundation.rc",
         "//foundation/appexecfwk/standard/test/resource/amssystemtestability/abilitySrc:ams_system_test_app",
-        "//foundation/appexecfwk/standard/test/resource/bmssystemtestability/abilitySrc:bms_system_test_app",
         "//foundation/appexecfwk/standard/test/resource/formsystemtestability:fms_system_test_app"
       ],
       "test_list": [
-        "//foundation/appexecfwk/standard/services/test:moduletest",
-        "//foundation/appexecfwk/standard/services/bundlemgr/test:unittest",
         "//foundation/appexecfwk/standard/test/systemtest:systemtest",
         "//foundation/appexecfwk/standard/libs/test:moduletest"
       ],
