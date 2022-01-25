@@ -1177,6 +1177,11 @@ bool ToAbilityInfo(const Profile::ModuleJson &moduleJson, const Profile::Ability
     abilityInfo.enabled = true;
     abilityInfo.isStageBasedModel = true;
     abilityInfo.type = AbilityType::PAGE;
+    for (const std::string &deviceType : moduleJson.module.deviceTypes) {
+        if (Profile::DEVICE_TYPE_SET.find(deviceType) != Profile::DEVICE_TYPE_SET.end()) {
+            abilityInfo.deviceTypes.emplace_back(deviceType);
+        }
+    }
     return true;
 }
 
