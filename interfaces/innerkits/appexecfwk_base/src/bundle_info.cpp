@@ -29,6 +29,7 @@ const std::string BUNDLE_INFO_DESCRIPTION = "description";
 const std::string BUNDLE_INFO_VENDOR = "vendor";
 const std::string BUNDLE_INFO_IS_KEEP_ALIVE = "isKeepAlive";
 const std::string BUNDLE_INFO_IS_NATIVE_APP = "isNativeApp";
+const std::string BUNDLE_INFO_IS_PREINSTALL_APP = "isPreInstallApp";
 const std::string BUNDLE_INFO_IS_DIFFERENT_NAME = "isDifferentName";
 const std::string BUNDLE_INFO_APPLICATION_INFO = "applicationInfo";
 const std::string BUNDLE_INFO_ABILITY_INFOS = "abilityInfos";
@@ -286,6 +287,7 @@ void to_json(nlohmann::json &jsonObject, const BundleInfo &bundleInfo)
         {BUNDLE_INFO_VENDOR, bundleInfo.vendor},
         {BUNDLE_INFO_IS_KEEP_ALIVE, bundleInfo.isKeepAlive},
         {BUNDLE_INFO_IS_NATIVE_APP, bundleInfo.isNativeApp},
+        {BUNDLE_INFO_IS_PREINSTALL_APP, bundleInfo.isPreInstallApp},
         {BUNDLE_INFO_IS_DIFFERENT_NAME, bundleInfo.isDifferentName},
         {BUNDLE_INFO_APPLICATION_INFO, bundleInfo.applicationInfo},
         {BUNDLE_INFO_ABILITY_INFOS, bundleInfo.abilityInfos},
@@ -377,6 +379,14 @@ void from_json(const nlohmann::json &jsonObject, BundleInfo &bundleInfo)
         ArrayType::NOT_ARRAY);
     GetValueIfFindKey<bool>(jsonObject,
         jsonObjectEnd,
+        BUNDLE_INFO_IS_PREINSTALL_APP,
+        bundleInfo.isPreInstallApp,
+        JsonType::BOOLEAN,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<bool>(jsonObject,
+        jsonObjectEnd,
         BUNDLE_INFO_IS_DIFFERENT_NAME,
         bundleInfo.isDifferentName,
         JsonType::BOOLEAN,
@@ -395,14 +405,6 @@ void from_json(const nlohmann::json &jsonObject, BundleInfo &bundleInfo)
         jsonObjectEnd,
         BUNDLE_INFO_ABILITY_INFOS,
         bundleInfo.abilityInfos,
-        JsonType::ARRAY,
-        false,
-        parseResult,
-        ArrayType::OBJECT);
-    GetValueIfFindKey<std::vector<HapModuleInfo>>(jsonObject,
-        jsonObjectEnd,
-        BUNDLE_INFO_HAP_MODULE_INFOS,
-        bundleInfo.hapModuleInfos,
         JsonType::ARRAY,
         false,
         parseResult,

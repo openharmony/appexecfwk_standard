@@ -18,6 +18,7 @@
 
 #include "event_handler.h"
 #include "bundle_constants.h"
+#include "bundle_data_mgr.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -38,6 +39,7 @@ public:
         BUNDLE_SCAN_START = 1,
         BUNDLE_SCAN_FINISHED,
         BMS_START_FINISHED,
+        BUNDLE_REBOOT_SCAN_START,
     };
 
 private:
@@ -60,6 +62,43 @@ private:
      * @return
      */
     void OnStartScanning(int32_t userId = Constants::UNSPECIFIED_USERID);
+    /**
+     * @brief start scan.
+     * @param userId Indicates the userId.
+     * @return
+     */
+    void RebootStartScanning(int32_t userId = Constants::UNSPECIFIED_USERID);
+    /**
+     * @brief Install system and system vendor bundles.
+     * @param appType Indicates the bundle type.
+     * @param userId Indicates userId.
+     * @return
+     */
+    void RebootProcessSystemBundle(
+        Constants::AppType appType, int32_t userId = Constants::UNSPECIFIED_USERID);
+    /**
+     * @brief Get bundleinfo of HAP by path.
+     * @param hapFilePath Indicates the absolute file path of the HAP.
+     * @param bundleInfo Indicates the obtained BundleInfo object.
+     * @return Returns true if the BundleInfo is successfully obtained; returns false otherwise.
+     */
+    bool GetScanBundleArchiveInfo(const std::string &hapFilePath, BundleInfo &bundleInfo);
+    /**
+     * @brief Reboot install system and system vendor bundles.
+     * @param bundleList Indicates store bundle list.
+     * @param appType Indicates the bundle type.
+     * @return
+     */
+    void RebootBundleInstall(
+        const std::list<std::string> &bundleList, Constants::AppType appType);
+    /**
+     * @brief Reboot uninstall system and system vendor bundles.
+     * @return
+     */
+    void RebootBundleUninstall();
+
+    std::map<std::string, std::string> bundleInfoMap_;
+    std::map<std::string, BundleInfo> loadExistData_;
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS
