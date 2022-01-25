@@ -19,7 +19,6 @@
         "deps": {
             "components": [
                 "aafwk_standard",
-                "appexecfwk_standard",
                 "appverify",
                 "ces_standard",
                 "distributeddatamgr",
