@@ -1302,11 +1302,14 @@ ErrCode BaseBundleInstaller::ParseHapFiles(const std::vector<std::string> &bundl
     for (int i = 0; i < bundlePaths.size(); ++i) {
         InnerBundleInfo newInfo;
         newInfo.SetAppType(appType);
-        auto provisionInfo = hapVerifyRes[i].GetProvisionInfo();
-        bool isSystemApp = (provisionInfo.bundleInfo.appFeature == Constants::HOS_SYSTEM_APP ||
-            provisionInfo.bundleInfo.appFeature == Constants::OHOS_SYSTEM_APP);
-        if (installParam.noCheckSignature == false && isSystemApp) {
-            newInfo.SetAppType(Constants::AppType::SYSTEM_APP);
+        Security::Verify::ProvisionInfo provisionInfo;
+        if (installParam.noCheckSignature == false) {
+            provisionInfo = hapVerifyRes[i].GetProvisionInfo();
+            bool isSystemApp = (provisionInfo.bundleInfo.appFeature == Constants::HOS_SYSTEM_APP ||
+                provisionInfo.bundleInfo.appFeature == Constants::OHOS_SYSTEM_APP);
+            if (isSystemApp) {
+                newInfo.SetAppType(Constants::AppType::SYSTEM_APP);
+            }
         }
         newInfo.SetUserId(installParam.userId);
         newInfo.SetIsKeepData(installParam.isKeepData);
