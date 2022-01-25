@@ -398,8 +398,7 @@ HWTEST_F(BmsServiceBundleScanTest, RebootBundleScan_0600, Function | SmallTest |
         result = true;
     }
     EXPECT_TRUE(result);
-    handler_->RebootBundleInstall(bundleList,
-        Constants::AppType::SYSTEM_APP, Constants::UNSPECIFIED_USERID);
+    handler_->RebootBundleInstall(bundleList, Constants::AppType::SYSTEM_APP);
     EXPECT_LT(0, handler_->bundleInfoMap_.size());
 }
 
@@ -426,7 +425,6 @@ HWTEST_F(BmsServiceBundleScanTest, RebootBundleScan_0700, Function | SmallTest |
         result = true;
     }
     EXPECT_TRUE(result);
-    handler_->RebootBundleInstall(bundleList,
-        Constants::AppType::THIRD_SYSTEM_APP, Constants::UNSPECIFIED_USERID);
+    handler_->RebootBundleInstall(bundleList, Constants::AppType::THIRD_SYSTEM_APP);
     EXPECT_LT(0, handler_->bundleInfoMap_.size());
 }
