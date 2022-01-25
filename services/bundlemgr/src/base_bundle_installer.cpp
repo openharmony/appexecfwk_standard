@@ -765,7 +765,7 @@ ErrCode BaseBundleInstaller::ProcessBundleInstallStatus(InnerBundleInfo &info, i
     stateGuard.Dismiss();
     bundleGuard.Dismiss();
 
-    BundlePermissionMgr::InstallPermissions(info, userId_, false);
+    BundlePermissionMgr::InstallPermissions(info, userId_, true);
     APP_LOGD("finish to call processBundleInstallStatus");
     return ERR_OK;
 }
