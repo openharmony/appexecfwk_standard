@@ -248,6 +248,10 @@ ErrCode BundleManagerShellCommand::CreateMessageMap()
             IStatusReceiver::ERR_INSTALL_UPDATE_HAP_TOKEN_FAILED,
             "error: install failed due to update hap token failed",
         },
+        {
+            IStatusReceiver::ERR_INSTALL_SINGLE_USER_NOT_SAME,
+            "error: install failed due to singleUser not same",
+        },
 
         {
             IStatusReceiver::ERR_INSTALL_PARSE_UNEXPECTED,
