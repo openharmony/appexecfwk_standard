@@ -168,8 +168,6 @@ const char DATA_ABILITY_URI_SEPARATOR = '/';
 const int MAX_DIMENSION_SIZE = 10;
 const int MAX_DEVICETYPE_SIZE = 50;
 
-const std::string OHOS_GLOBAL_SYSTEMRES = "ohos.global.systemres";
-
 // appFeature
 const std::string HOS_NORMAL_APP = "hos_normal_app";
 const std::string HOS_SYSTEM_APP = "hos_system_app";
