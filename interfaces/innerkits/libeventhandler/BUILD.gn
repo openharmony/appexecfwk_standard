@@ -17,11 +17,7 @@ import(
     "//foundation/appexecfwk/standard/libs/libeventhandler/lib_event_handler_sources.gni")
 
 config("public_libeventhandler_config") {
-  include_dirs = [
-    "include",
-    "//base/hiviewdfx/interfaces/innerkits/libhilog/include",
-    "//base/hiviewdfx/interfaces/innerkits/libhitrace/include",
-  ]
+  include_dirs = [ "include" ]
 }
 
 ohos_shared_library("libeventhandler") {

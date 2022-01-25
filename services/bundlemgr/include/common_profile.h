@@ -345,6 +345,7 @@ const std::string MODULE_DEFINE_PERMISSIONS = "definePermissions";
 // module type
 const std::string MODULE_TYPE_ENTRY = "entry";
 const std::string MODULE_TYPE_FEATURE = "feature";
+const std::string MODULE_TYPE_HAR = "har";
 // deviceConfig
 const std::string MIN_API_VERSION = "minAPIVersion";
 const std::string DEVICE_CONFIG_DISTRIBUTED_NOTIFICATION_ENABLED = "distributedNotificationEnabled";
