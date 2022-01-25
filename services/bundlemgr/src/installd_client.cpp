@@ -54,14 +54,14 @@ ErrCode InstalldClient::RenameModuleDir(const std::string &oldPath, const std::s
 }
 
 ErrCode InstalldClient::CreateBundleDataDir(const std::string &bundleDir,
-    const int userid, const int uid, const int gid, bool onlyOneUser)
+    const int userid, const int uid, const int gid, const std::string &apl, bool onlyOneUser)
 {
     if (bundleDir.empty() || userid < 0 || uid < 0 || gid < 0) {
         APP_LOGE("params are invalid");
         return ERR_APPEXECFWK_INSTALLD_PARAM_ERROR;
     }
 
-    return CallService(&IInstalld::CreateBundleDataDir, bundleDir, userid, uid, gid, onlyOneUser);
+    return CallService(&IInstalld::CreateBundleDataDir, bundleDir, userid, uid, gid, apl, onlyOneUser);
 }
 
 ErrCode InstalldClient::RemoveBundleDataDir(

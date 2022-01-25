@@ -503,8 +503,8 @@ bool BundleMgrHostImpl::CleanBundleDataFiles(const std::string &bundleName, cons
         APP_LOGE("%{public}s, RemoveBundleDataDir failed", bundleName.c_str());
         return false;
     }
-    if (InstalldClient::GetInstance()->CreateBundleDataDir(
-        applicationInfo.dataDir, userId, innerBundleUserInfo.uid, innerBundleUserInfo.uid, isStartUserId) != ERR_OK) {
+    if (InstalldClient::GetInstance()->CreateBundleDataDir(applicationInfo.dataDir, userId, innerBundleUserInfo.uid,
+        innerBundleUserInfo.uid, GetAppPrivilegeLevel(bundleName), isStartUserId) != ERR_OK) {
         APP_LOGE("%{public}s, CreateBundleDataDir failed", bundleName.c_str());
         return false;
     }
