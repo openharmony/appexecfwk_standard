@@ -575,6 +575,14 @@ public:
      */
     bool LoadAllPreInstallBundleInfos(std::vector<PreInstallBundleInfo> &preInstallBundleInfos);
     /**
+     * @brief Save new PreInstallBundleInfo.
+     * @param bundleName Indicates the bundle name.
+     * @param preInstallBundleInfo Indicates the PreInstallBundleInfo object to be save.
+     * @return Returns true if this function is successfully called; returns false otherwise.
+     */
+    bool DeletePreInstallBundleInfo(
+        const std::string &bundleName, const PreInstallBundleInfo &preInstallBundleInfo);
+    /**
      * @brief Save installation mark to datebase storage.
      * @param info Indicates the innerBundleInfo of the bundle which needs to save installation mark.
      * @param isAppExisted Indicates whether the application exists in the database storage or not.
