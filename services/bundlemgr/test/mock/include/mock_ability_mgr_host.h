@@ -453,6 +453,11 @@ public:
     {
         return 0;
     }
+
+    virtual bool SendANRProcessID(int pid) override
+    {
+        return true;
+    }
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS
