@@ -169,7 +169,8 @@ private:
      * @param isReplace Indicates whether there is the replace flag in the install flag.
      * @return Returns ERR_OK if the bundle updating successfully; returns error code otherwise.
      */
-    ErrCode ProcessBundleUpdateStatus(InnerBundleInfo &oldInfo, InnerBundleInfo &newInfo, bool isReplace);
+    ErrCode ProcessBundleUpdateStatus(InnerBundleInfo &oldInfo,
+        InnerBundleInfo &newInfo, bool isReplace, bool noSkipsKill = true);
     /**
      * @brief Remove a whole bundle.
      * @param info Indicates the InnerBundleInfo object of a bundle.
@@ -261,7 +262,8 @@ private:
      * @param oldInfo Indicates the exist InnerBundleInfo object get from the database.
      * @return Returns ERR_OK if the module updating successfully; returns error code otherwise.
      */
-    ErrCode ProcessModuleUpdate(InnerBundleInfo &newInfo, InnerBundleInfo &oldInfo, bool isReplace);
+    ErrCode ProcessModuleUpdate(InnerBundleInfo &newInfo,
+        InnerBundleInfo &oldInfo, bool isReplace, bool noSkipsKill = true);
     /**
      * @brief try to get the bundle info to decide use install or update.
      * @param newInfo Indicates the InnerBundleInfo object parsed from the config.json in the HAP package.

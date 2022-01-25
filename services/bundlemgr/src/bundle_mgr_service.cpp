@@ -162,7 +162,12 @@ bool BundleMgrService::Init()
         dataMgr_->AddUserId(Constants::DEFAULT_USERID);
         handler_->SendEvent(BMSEventHandler::BUNDLE_SCAN_START);
         needToScan_ = true;
+    } else {
+        APP_LOGD("Reboot start scan");
+        handler_->SendEvent(BMSEventHandler::BUNDLE_REBOOT_SCAN_START);
+        APP_LOGD("Reboot start scan success");
     }
+
     if (!cloneMgr_) {
         APP_LOGI("Create BundleCloneMgr");
         cloneMgr_ = std::make_shared<BundleCloneMgr>();

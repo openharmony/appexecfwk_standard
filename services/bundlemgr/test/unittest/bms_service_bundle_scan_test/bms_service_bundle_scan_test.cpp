@@ -12,6 +12,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#define private public
+#include "bundle_mgr_service_event_handler.h"
+#undef private
 
 #include <gtest/gtest.h>
 
@@ -25,6 +28,7 @@
 #include "app_log_wrapper.h"
 #include "bundle_mgr_service.h"
 #include "bundle_scanner.h"
+#include "system_bundle_installer.h"
 
 using namespace testing::ext;
 using namespace OHOS::AppExecFwk;
@@ -39,6 +43,11 @@ const std::string BUNDLE_FILENAME_3 = "app3.hap";
 const std::string BUNDLE_FILENAME_4 = "app1.ha";
 const std::string BUNDLE_FILENAME_5 = "app2..ap";
 const std::string BUNDLE_FILENAME_6 = "app3";
+const std::string SYSTEM_APP_SCAN_PATH = "/system/app";
+const std::string THIRD_SYSTEM_APP_SCAN_PATH = "/system/vendor";
+const std::string TEST_ERROR_DIR = "/data/error";
+const std::string PHOTOS_HAP = "Photos.hap";
+const std::string PHOTOS_HAP_NAME = "com.ohos.photos";
 
 }  // namespace
 
@@ -150,11 +159,11 @@ bool BmsServiceBundleScanTest::IsScanResultContain(const std::string name) const
     return true;
 }
 /**
-* @tc.number: BundleScan_0100
-* @tc.name:  Scan
-* @tc.desc: 1. scan dir not exist
-*           2. verify scan result file number is 0
-*/
+ * @tc.number: BundleScan_0100
+ * @tc.name:  Scan
+ * @tc.desc: 1. scan dir not exist
+ *           2. verify scan result file number is 0
+ */
 HWTEST_F(BmsServiceBundleScanTest, BundleScan_0100, Function | SmallTest | Level0)
 {
     DeleteDir(TEST_DIR);
@@ -162,22 +171,22 @@ HWTEST_F(BmsServiceBundleScanTest, BundleScan_0100, Function | SmallTest | Level
     EXPECT_EQ(0, number);
 }
 /**
-* @tc.number: BundleScan_0200
-* @tc.name:  Scan
-* @tc.desc: 1. scan dir exist, no bundle file
-*           2. verify scan result file number is 0
-*/
+ * @tc.number: BundleScan_0200
+ * @tc.name:  Scan
+ * @tc.desc: 1. scan dir exist, no bundle file
+ *           2. verify scan result file number is 0
+ */
 HWTEST_F(BmsServiceBundleScanTest, BundleScan_0200, Function | SmallTest | Level0)
 {
     int number = static_cast<int>(TriggerScan());
     EXPECT_EQ(0, number);
 }
 /**
-* @tc.number: BundleScan_0300
-* @tc.name:  Scan
-* @tc.desc: 1. scan dir exist, 3 legal file exist
-*           2. verify scan result file number is 3 and file name correct
-*/
+ * @tc.number: BundleScan_0300
+ * @tc.name:  Scan
+ * @tc.desc: 1. scan dir exist, 3 legal file exist
+ *           2. verify scan result file number is 3 and file name correct
+ */
 HWTEST_F(BmsServiceBundleScanTest, BundleScan_0300, Function | SmallTest | Level0)
 {
     CreateDir(TEST_DIR);
@@ -200,11 +209,11 @@ HWTEST_F(BmsServiceBundleScanTest, BundleScan_0300, Function | SmallTest | Level
     DeleteFile(TEST_FILE_NAME_3);
 }
 /**
-* @tc.number: BundleScan_0400
-* @tc.name:  Scan
-* @tc.desc: 1. scan dir exist, 3 illegal file exist
-*           2. verify scan result file number is 3
-*/
+ * @tc.number: BundleScan_0400
+ * @tc.name:  Scan
+ * @tc.desc: 1. scan dir exist, 3 illegal file exist
+ *           2. verify scan result file number is 3
+ */
 HWTEST_F(BmsServiceBundleScanTest, BundleScan_0400, Function | SmallTest | Level0)
 {
     const std::string TEST_FILE_NAME_4 = TEST_DIR + "/" + BUNDLE_FILENAME_4;
@@ -223,11 +232,11 @@ HWTEST_F(BmsServiceBundleScanTest, BundleScan_0400, Function | SmallTest | Level
     DeleteFile(TEST_FILE_NAME_6);
 }
 /**
-* @tc.number: BundleScan_0500
-* @tc.name:  Scan
-* @tc.desc: 1. scan dir exist, 3 illegal and 3 legal file exist
-*           2. verify scan result file number is 6 and file name correct
-*/
+ * @tc.number: BundleScan_0500
+ * @tc.name:  Scan
+ * @tc.desc: 1. scan dir exist, 3 illegal and 3 legal file exist
+ *           2. verify scan result file number is 6 and file name correct
+ */
 HWTEST_F(BmsServiceBundleScanTest, BundleScan_0500, Function | SmallTest | Level0)
 {
     const std::string TEST_FILE_NAME_1 = TEST_DIR + "/" + BUNDLE_FILENAME_1;
@@ -257,4 +266,167 @@ HWTEST_F(BmsServiceBundleScanTest, BundleScan_0500, Function | SmallTest | Level
     DeleteFile(TEST_FILE_NAME_4);
     DeleteFile(TEST_FILE_NAME_5);
     DeleteFile(TEST_FILE_NAME_6);
+}
+/**
+ * @tc.number: RebootBundleScan_0100
+ * @tc.name: test reboot scan bundle path
+ * @tc.desc: 1. reboot scan dir exist
+ *           2. Bundle information can be scanned
+ */
+HWTEST_F(BmsServiceBundleScanTest, RebootBundleScan_0100, Function | SmallTest | Level0)
+{
+    auto scanner = std::make_unique<BundleScanner>();
+    if (!scanner) {
+        APP_LOGE("make scanner failed");
+        return;
+    }
+    std::string scanDir = Constants::SYSTEM_APP_SCAN_PATH;
+    std::list<std::string> bundleList = scanner->Scan(scanDir);
+    auto result = false;
+    if (bundleList.size() > 0) {
+        result = true;
+    }
+    EXPECT_TRUE(result);
+}
+
+/**
+ * @tc.number: RebootBundleScan_0200
+ * @tc.name: test reboot scan bundle path
+ * @tc.desc: 1. reboot scan dir not exist
+ *           2. Bundle information can't be scanned
+ */
+HWTEST_F(BmsServiceBundleScanTest, RebootBundleScan_0200, Function | SmallTest | Level1)
+{
+    auto scanner = std::make_unique<BundleScanner>();
+    if (!scanner) {
+        APP_LOGE("make scanner failed");
+        return;
+    }
+    std::string scanDir = TEST_ERROR_DIR;
+    std::list<std::string> bundleList = scanner->Scan(scanDir);
+    auto result = false;
+    if (bundleList.size() > 0) {
+        result = true;
+    }
+    EXPECT_FALSE(result);
+}
+
+/**
+ * @tc.number: RebootBundleScan_0300
+ * @tc.name: Get bundleinfo of HAP by path
+ * @tc.desc: Pass a HAP of SYSTEM_APP path. Can find information
+ */
+HWTEST_F(BmsServiceBundleScanTest, RebootBundleScan_0300, Function | SmallTest | Level0)
+{
+    std::shared_ptr<BMSEventHandler> handler_;
+    BundleInfo bundleInfo;
+    const std::string PATH = SYSTEM_APP_SCAN_PATH + "/" + PHOTOS_HAP;
+    auto result = handler_->GetScanBundleArchiveInfo(PATH, bundleInfo);
+    EXPECT_TRUE(result);
+    EXPECT_EQ(1, bundleInfo.versionCode);
+    EXPECT_EQ(PHOTOS_HAP_NAME, bundleInfo.name);
+}
+
+/**
+ * @tc.number: RebootBundleScan_0400
+ * @tc.name: Get bundleinfo of HAP by path
+ * @tc.desc: Pass a HAP of SYSTEM_APP path. Can't find information
+ */
+HWTEST_F(BmsServiceBundleScanTest, RebootBundleScan_0400, Function | SmallTest | Level1)
+{
+    std::shared_ptr<EventRunner> runner_;
+    runner_ = EventRunner::Create(Constants::BMS_SERVICE_NAME);
+    std::shared_ptr<BMSEventHandler> handler_;
+    handler_ = std::make_shared<BMSEventHandler>(runner_);
+    BundleInfo bundleInfo;
+    const std::string PATH = TEST_ERROR_DIR + "/" + PHOTOS_HAP;
+    auto result = handler_->GetScanBundleArchiveInfo(PATH, bundleInfo);
+    EXPECT_FALSE(result);
+    
+}
+
+/**
+ * @tc.number: RebootBundleScan_0500
+ * @tc.name: Get bundleinfo of HAP by path
+ * @tc.desc: Pass multiple HAP of SYSTEM_APP path. Can find information
+ */
+HWTEST_F(BmsServiceBundleScanTest, RebootBundleScan_0500, Function | SmallTest | Level0)
+{
+    auto scanner = std::make_unique<BundleScanner>();
+    if (!scanner) {
+        APP_LOGE("make scanner failed");
+        return;
+    }
+    std::string scanDir = Constants::SYSTEM_APP_SCAN_PATH;
+    std::list<std::string> bundleList = scanner->Scan(scanDir);
+    auto result = false;
+    if (bundleList.size() > 0) {
+        result = true;
+    }
+    EXPECT_TRUE(result);
+    std::shared_ptr<EventRunner> runner_;
+    runner_ = EventRunner::Create(Constants::BMS_SERVICE_NAME);
+    std::shared_ptr<BMSEventHandler> handler_;
+    handler_ = std::make_shared<BMSEventHandler>(runner_);
+    BundleInfo bundleInfo;
+    for (auto &listIter : bundleList) {
+        result = handler_->GetScanBundleArchiveInfo(listIter, bundleInfo);
+        EXPECT_TRUE(result);
+    }
+}
+
+/**
+ * @tc.number: RebootBundleScan_0600
+ * @tc.name: test reboot bundle install
+ * @tc.desc: Pass multiple HAP of SYSTEM_APP path. Can find information
+ */
+HWTEST_F(BmsServiceBundleScanTest, RebootBundleScan_0600, Function | SmallTest | Level0)
+{
+    std::shared_ptr<EventRunner> runner_;
+    runner_ = EventRunner::Create(Constants::BMS_SERVICE_NAME);
+    std::shared_ptr<BMSEventHandler> handler_;
+    handler_ = std::make_shared<BMSEventHandler>(runner_);
+    auto scanner = std::make_unique<BundleScanner>();
+    if (!scanner) {
+        APP_LOGE("make scanner failed");
+        return;
+    }
+    std::string scanDir = Constants::SYSTEM_APP_SCAN_PATH;
+    std::list<std::string> bundleList = scanner->Scan(scanDir);
+    auto result = false;
+    if (bundleList.size() > 0) {
+        result = true;
+    }
+    EXPECT_TRUE(result);
+    handler_->RebootBundleInstall(bundleList,
+        Constants::AppType::SYSTEM_APP, Constants::UNSPECIFIED_USERID);
+    EXPECT_LT(0, handler_->bundleInfoMap_.size());
+}
+
+/**
+ * @tc.number: RebootBundleScan_0700
+ * @tc.name: test reboot bundle install
+ * @tc.desc: Pass multiple HAP of THIRD_SYSTEM_APP path. Can find information
+ */
+HWTEST_F(BmsServiceBundleScanTest, RebootBundleScan_0700, Function | SmallTest | Level0)
+{
+    std::shared_ptr<EventRunner> runner_;
+    runner_ = EventRunner::Create(Constants::BMS_SERVICE_NAME);
+    std::shared_ptr<BMSEventHandler> handler_;
+    handler_ = std::make_shared<BMSEventHandler>(runner_);
+    auto scanner = std::make_unique<BundleScanner>();
+    if (!scanner) {
+        APP_LOGE("make scanner failed");
+        return;
+    }
+    std::string scanDir = Constants::SYSTEM_APP_SCAN_PATH;
+    std::list<std::string> bundleList = scanner->Scan(scanDir);
+    auto result = false;
+    if (bundleList.size() > 0) {
+        result = true;
+    }
+    EXPECT_TRUE(result);
+    handler_->RebootBundleInstall(bundleList,
+        Constants::AppType::THIRD_SYSTEM_APP, Constants::UNSPECIFIED_USERID);
+    EXPECT_LT(0, handler_->bundleInfoMap_.size());
 }

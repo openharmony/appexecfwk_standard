@@ -16,6 +16,7 @@
 #include "system_bundle_installer.h"
 
 #include "app_log_wrapper.h"
+#include "bundle_mgr_service.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -34,6 +35,7 @@ bool SystemBundleInstaller::InstallSystemBundle(Constants::AppType appType, int3
     InstallParam installParam;
     installParam.userId = userId;
     installParam.isPreInstallApp = true;
+    installParam.noSkipsKill = false;
     if (appType == Constants::AppType::SYSTEM_APP
         || appType == Constants::AppType::THIRD_SYSTEM_APP) {
         installParam.needSavePreInstallInfo = true;
@@ -42,6 +44,54 @@ bool SystemBundleInstaller::InstallSystemBundle(Constants::AppType appType, int3
     if (result != ERR_OK) {
         APP_LOGE("install system bundle fail, error: %{public}d", result);
         return false;
+    }
+    return true;
+}
+
+bool SystemBundleInstaller::OTAInstallSystemBundle(Constants::AppType appType)
+{
+    auto dataMgr = DelayedSingleton<BundleMgrService>::GetInstance()->GetDataMgr();
+    if (!dataMgr) {
+        APP_LOGE("Get dataMgr shared_ptr nullptr");
+        return false;
+    }
+    InstallParam installParam;
+    installParam.isPreInstallApp = true;
+    installParam.noSkipsKill = false;
+    if (appType == Constants::AppType::SYSTEM_APP
+    || appType == Constants::AppType::THIRD_SYSTEM_APP) {
+        installParam.needSavePreInstallInfo = true;
+    }
+    for (auto allUserId : dataMgr->GetAllUser()) {
+        installParam.userId = allUserId;
+        ErrCode result = InstallBundle(filePath_, installParam, appType);
+        if (result != ERR_OK) {
+            APP_LOGE("install system bundle fail, error: %{public}d", result);
+            return false;
+        }
+        ResetInstallProperties();
+    }
+    return true;
+}
+
+bool SystemBundleInstaller::UninstallSystemBundle(const std::string &bundleName)
+{
+    auto dataMgr = DelayedSingleton<BundleMgrService>::GetInstance()->GetDataMgr();
+    if (!dataMgr) {
+        APP_LOGE("Get dataMgr shared_ptr nullptr");
+        return false;
+    }
+    InstallParam installParam;
+    for (auto userId : dataMgr->GetAllUser()) {
+        installParam.userId = userId;
+        installParam.needSavePreInstallInfo = true;
+        installParam.noSkipsKill = false;
+        ErrCode result = UninstallBundle(bundleName, installParam);
+        if (result != ERR_OK) {
+            APP_LOGE("uninstall system bundle fail, error: %{public}d", result);
+            return false;
+        }
+        ResetInstallProperties();
     }
     return true;
 }

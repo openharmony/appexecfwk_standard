@@ -48,6 +48,8 @@ struct InstallParam : public Parcelable {
     bool isPreInstallApp = false;
     // should force uninstall when delete userinfo.
     bool forceExecuted  = false;
+    // OTA upgrade skips the killing process
+    bool noSkipsKill  = true;
 
     // the parcel object function is not const.
     bool ReadFromParcel(Parcel &parcel);
