@@ -14,6 +14,24 @@
  * limitations under the License.
  -->
 <configuration ver="2.0">
+  <target name="BmsBundlePermissionGrantTest">
+  <preparer>
+      <option name="push" value="permission_bundle/bmsGrantPermission1.hap -> /data/test/resource/bms/permission_bundle/"
+        src="res" />
+      <option name="push" value="permission_bundle/bmsGrantPermission2.hap -> /data/test/resource/bms/permission_bundle/"
+        src="res" />
+      <option name="push" value="permission_bundle/bmsGrantPermission3.hap -> /data/test/resource/bms/permission_bundle/"
+        src="res" />
+      <option name="push" value="permission_bundle/bmsGrantPermission4.hap -> /data/test/resource/bms/permission_bundle/"
+        src="res" />
+      <option name="push" value="permission_bundle/bmsGrantPermission5.hap -> /data/test/resource/bms/permission_bundle/"
+        src="res" />
+      <option name="push" value="permission_bundle/bmsGrantPermission6.hap -> /data/test/resource/bms/permission_bundle/"
+        src="res" />
+      <option name="push" value="permission_bundle/bmsGrantPermission7.hap -> /data/test/resource/bms/permission_bundle/"
+        src="res" />
+    </preparer>
+  </target>
   <target name="BmsBundleAccessTokenIdTest">
   <preparer>
       <option name="push" value="test_bundle/bmsAccessTokentest1.hap -> /data/test/resource/bms/accesstoken_bundle/"

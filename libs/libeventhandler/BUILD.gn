@@ -19,8 +19,6 @@ config("libeventhandler_config") {
     "${appexecfwk_path}/interfaces/innerkits/libeventhandler/include",
     "//utils/native/base/include",
     "src",
-    "//base/hiviewdfx/interfaces/innerkits/libhilog/include",
-    "//base/hiviewdfx/interfaces/innerkits/libhitrace/include",
   ]
 }
 

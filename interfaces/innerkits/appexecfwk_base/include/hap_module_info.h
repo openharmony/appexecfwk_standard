@@ -18,9 +18,9 @@
 
 #include <string>
 
-#include "parcel.h"
 #include "ability_info.h"
 #include "extension_ability_info.h"
+#include "parcel.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -28,6 +28,13 @@ enum class ModuleColorMode {
     AUTO = -1,
     DARK,
     LIGHT,
+};
+
+enum class ModuleType {
+    UNKNOWN = 0,
+    ENTRY = 1,
+    FEATURE = 2,
+    HAR = 3
 };
 
 // configuration information about an module
@@ -48,13 +55,20 @@ struct HapModuleInfo : public Parcelable {
     ModuleColorMode colorMode = ModuleColorMode::AUTO;
     // new version fields
     std::string bundleName;
-    std::string srcEntrance;
     std::string mainElementName;
-    std::vector<ExtensionAbilityInfo> extensionInfos;
-    std::vector<Metadata> metadata;
+    std::string pages;
+    std::string process;
     std::string resourcePath;
+    std::string srcEntrance;
+    std::string uiSyntax;
+    std::string virtualMachine;
+    bool deliveryWithInstall = true;
+    bool installationFree = true;
     bool isModuleJson = false;
     bool isStageBasedModel = false;
+    ModuleType moduleType = ModuleType::UNKNOWN;
+    std::vector<ExtensionAbilityInfo> extensionInfos;
+    std::vector<Metadata> metadata;
 
     bool ReadFromParcel(Parcel &parcel);
     virtual bool Marshalling(Parcel &parcel) const override;

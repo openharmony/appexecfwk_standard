@@ -98,19 +98,19 @@ struct InnerModuleInfo {
     std::vector<std::string> abilityKeys;
     std::vector<std::string> skillKeys;
     // new version fields
+    std::string pages;
     std::string process;
     std::string srcEntrance;
-    std::vector<std::string> deviceTypes;
-    std::string virtualMachine;
     std::string uiSyntax;
-    std::string pages;
-    std::vector<Metadata> metadata;
-    std::vector<RequestPermission> requestPermissions;
-    std::vector<DefinePermission> definePermissions;
-    std::vector<std::string> extensionKeys;
-    std::vector<std::string> extensionSkillKeys;
+    std::string virtualMachine;
     bool isModuleJson = false;
     bool isStageBasedModel = false;
+    std::vector<DefinePermission> definePermissions;
+    std::vector<RequestPermission> requestPermissions;
+    std::vector<std::string> deviceTypes;
+    std::vector<std::string> extensionKeys;
+    std::vector<std::string> extensionSkillKeys;
+    std::vector<Metadata> metadata;
 };
 
 struct SkillUri {

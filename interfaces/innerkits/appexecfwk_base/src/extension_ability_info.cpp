@@ -82,6 +82,7 @@ bool ExtensionAbilityInfo::ReadFromParcel(Parcel &parcel)
 
     resourcePath = Str16ToStr8(parcel.ReadString16());
     enabled = parcel.ReadBool();
+    process = Str16ToStr8(parcel.ReadString16());
     return true;
 }
 
@@ -119,6 +120,7 @@ bool ExtensionAbilityInfo::Marshalling(Parcel &parcel) const
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Parcelable, parcel, &applicationInfo);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(resourcePath));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, enabled);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(process));
     return true;
 }
 
