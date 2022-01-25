@@ -1381,18 +1381,39 @@ std::optional<HapModuleInfo> InnerBundleInfo::FindHapModuleInfo(const std::strin
     hapInfo.name = it->second.modulePackage;
     hapInfo.moduleName = it->second.moduleName;
     hapInfo.description = it->second.description;
+    hapInfo.mainAbility = it->second.mainAbility;
+    hapInfo.srcPath = it->second.srcPath;
     hapInfo.supportedModes = baseApplicationInfo_.supportedModes;
     hapInfo.reqCapabilities = it->second.reqCapabilities;
     hapInfo.colorMode = it->second.colorMode;
-    hapInfo.mainAbility = it->second.mainAbility;
-    hapInfo.srcPath = it->second.srcPath;
-    hapInfo.metadata = it->second.metadata;
-    hapInfo.resourcePath = it->second.moduleResPath;
-    hapInfo.isStageBasedModel = it->second.isStageBasedModel;
-    hapInfo.bundleName = baseApplicationInfo_.bundleName;
-    hapInfo.srcEntrance = it->second.srcEntrance;
-    hapInfo.mainElementName = it->second.mainAbility;
 
+    hapInfo.bundleName = baseApplicationInfo_.bundleName;
+    hapInfo.mainElementName = it->second.mainAbility;
+    hapInfo.pages = it->second.pages;
+    hapInfo.process = it->second.process;
+    hapInfo.resourcePath = it->second.moduleResPath;
+    hapInfo.srcEntrance = it->second.srcEntrance;
+    hapInfo.uiSyntax = it->second.uiSyntax;
+    hapInfo.virtualMachine = it->second.virtualMachine;
+    hapInfo.deliveryWithInstall = it->second.distro.deliveryWithInstall;
+    hapInfo.installationFree = it->second.distro.installationFree;
+    hapInfo.isStageBasedModel = it->second.isStageBasedModel;
+    std::string moduleType = it->second.distro.moduleType;
+    if (moduleType == Profile::MODULE_TYPE_ENTRY) {
+        hapInfo.moduleType = ModuleType::ENTRY;
+    } else if (moduleType == Profile::MODULE_TYPE_FEATURE) {
+        hapInfo.moduleType = ModuleType::FEATURE;
+    } else if (moduleType == Profile::MODULE_TYPE_HAR) {
+        hapInfo.moduleType = ModuleType::HAR;
+    } else {
+        hapInfo.moduleType = ModuleType::UNKNOWN;
+    }
+    for (const auto &extension : baseExtensionInfos_) {
+        if (extension.first.find(modulePackage) != std::string::npos) {
+            hapInfo.extensionInfos.emplace_back(extension.second);
+        }
+    }
+    hapInfo.metadata = it->second.metadata;
     bool first = false;
     for (auto &ability : baseAbilityInfos_) {
         if (ability.first.find(modulePackage) != std::string::npos) {
@@ -1405,11 +1426,6 @@ std::optional<HapModuleInfo> InnerBundleInfo::FindHapModuleInfo(const std::strin
             auto &abilityInfo = hapInfo.abilityInfos.emplace_back(ability.second);
             GetApplicationInfo(
                 ApplicationFlag::GET_APPLICATION_INFO_WITH_PERMISSION, userId, abilityInfo.applicationInfo);
-        }
-    }
-    for (const auto &extension : baseExtensionInfos_) {
-        if (extension.first.find(modulePackage) != std::string::npos) {
-            hapInfo.extensionInfos.emplace_back(extension.second);
         }
     }
     return hapInfo;
