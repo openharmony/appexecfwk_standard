@@ -56,6 +56,22 @@ public:
         bundleName_ = bundleName;
     }
     /**
+     * @brief Get versionCode.
+     * @return Return versionCode.
+     */
+    uint32_t GetVersionCode() const
+    {
+        return versionCode_;
+    }
+    /**
+     * @brief Set versionCode.
+     * @param versionCode versionCode.
+     */
+    void SetVersionCode(const uint32_t &versionCode)
+    {
+        versionCode_ = versionCode;
+    }
+    /**
      * @brief Get bundle path.
      * @return Return bundle path
      */
@@ -101,6 +117,7 @@ public:
     }
 private:
     std::string bundleName_;
+    uint32_t versionCode_;
     std::vector<std::string> bundlePaths_;
     Constants::AppType appType_ = Constants::AppType::SYSTEM_APP;
 };
