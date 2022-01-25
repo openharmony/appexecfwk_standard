@@ -26,33 +26,19 @@ namespace AppExecFwk {
 struct PermissionDef : public Parcelable {
     std::string permissionName;
     std::string bundleName;
-    int grantMode = 0;
-    int availableScope = 0;
+    int32_t grantMode = 0;
+    int32_t availableLevel = 1;
+    int32_t availableScope = 0;
+    bool provisionEnable = true;
+    bool distributedSceneEnable = false;
     std::string label;
-    int labelId = 0;
+    int32_t labelId = 0;
     std::string description;
-    int descriptionId = 0;
+    int32_t descriptionId = 0;
 
     bool ReadFromParcel(Parcel &parcel);
     virtual bool Marshalling(Parcel &parcel) const override;
     static PermissionDef *Unmarshalling(Parcel &parcel);
-};
-
-struct PermissionDefine : public Parcelable {
-    std::string permissionName;
-    std::string bundleName;
-    int grantMode = 0;
-    int availableLevel = 1;
-    bool provisionEnable = true;
-    bool distributedSceneEnable = false;
-    std::string label;
-    int labelId = 0;
-    std::string description;
-    int descriptionId = 0;
-
-    bool ReadFromParcel(Parcel &parcel);
-    virtual bool Marshalling(Parcel &parcel) const override;
-    static PermissionDefine *Unmarshalling(Parcel &parcel);
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS

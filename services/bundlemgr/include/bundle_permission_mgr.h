@@ -127,7 +127,7 @@ public:
     static int32_t ClearUserGrantedPermissionState(const Security::AccessToken::AccessTokenID tokenId);
 
     static bool GetDefinePermission(
-        const std::string& permissionName, PermissionDefine& permissionDefResult);
+        const std::string &permissionName, PermissionDef &permissionDefResult);
 
     static int32_t VerifyPermission(Security::AccessToken::AccessTokenID tokenId, const std::string &permissionName);
 
@@ -231,11 +231,11 @@ private:
 
     static void ConvertPermissionDef(const Security::Permission::PermissionDef &permDef, PermissionDef &permissionDef);
     static void ConvertPermissionDef(
-        Security::Permission::PermissionDef &permDef, const DefPermission &defPermission,
+        Security::Permission::PermissionDef &permDef, const DefinePermission &defPermission,
         const std::string &bundleName);
 
     static void ConvertPermissionDef(const Security::AccessToken::PermissionDef &permDef,
-        PermissionDefine &permissionDef);
+        PermissionDef &permissionDef);
     static void ConvertPermissionDef(
         Security::AccessToken::PermissionDef &permDef, const DefinePermission &defPermission,
         const std::string &bundleName);
