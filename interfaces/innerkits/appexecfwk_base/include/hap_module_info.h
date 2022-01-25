@@ -64,6 +64,7 @@ struct HapModuleInfo : public Parcelable {
     std::string virtualMachine;
     bool deliveryWithInstall = true;
     bool installationFree = true;
+    bool isModuleJson = false;
     bool isStageBasedModel = false;
     ModuleType moduleType = ModuleType::UNKNOWN;
     std::vector<ExtensionAbilityInfo> extensionInfos;
