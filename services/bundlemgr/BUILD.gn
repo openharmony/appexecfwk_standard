@@ -197,6 +197,11 @@ ohos_executable("installs") {
     "startup_l2:syspara",
   ]
 
+  if (build_selinux) {
+    external_deps += [ "selinux:libhap_restorecon" ]
+    cflags += [ "-DWITH_SELINUX" ]
+  }
+
   install_enable = true
   subsystem_name = "appexecfwk"
   part_name = "bundle_framework"

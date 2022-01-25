@@ -89,6 +89,11 @@ ohos_unittest("BmsBundleCloneTest") {
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
   ]
+
+  if (build_selinux) {
+    external_deps += [ "selinux:libhap_restorecon" ]
+    cflags += [ "-DWITH_SELINUX" ]
+  }
 }
 
 group("unittest") {

@@ -54,11 +54,12 @@ public:
      * @param userid Indicates userid to be set to the directory.
      * @param uid Indicates uid to be set to the directory.
      * @param gid Indicates gid to be set to the directory.
+     * @param apl Indicates apl to be set to the directory.
      * @param onlyOneUser Indicates is only one user or not.
      * @return Returns ERR_OK if the bundle data directory created successfully; returns error code otherwise.
      */
     virtual ErrCode CreateBundleDataDir(const std::string &bundleDir, const int userid,
-        const int uid, const int gid, bool onlyOneUser = true) override;
+        const int uid, const int gid, const std::string &apl, bool onlyOneUser = true) override;
     /**
      * @brief Remove a bundle data directory through a proxy object.
      * @param bundleDir Indicates the bundle data directory path that to be created.

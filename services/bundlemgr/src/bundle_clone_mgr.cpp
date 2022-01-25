@@ -244,7 +244,7 @@ ErrCode BundleCloneMgr::CreateBundleAndDataDir(InnerBundleInfo &info) const
     auto cloneDataPath = baseDataPath_ + Constants::PATH_SEPARATOR + Newbundlename;
     ErrCode result = InstalldClient::GetInstance()->CreateBundleDataDir(
         cloneDataPath, newInnerBundleUserInfo.bundleUserInfo.userId,
-        newInnerBundleUserInfo.uid, newInnerBundleUserInfo.uid, true);
+        newInnerBundleUserInfo.uid, newInnerBundleUserInfo.uid, info.GetAppPrivilegeLevel(), true);
     if (result != ERR_OK) {
         APP_LOGE("clone fail to create bundle data dir, error is %{public}d", result);
         return result;

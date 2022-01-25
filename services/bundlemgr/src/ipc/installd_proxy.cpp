@@ -75,7 +75,7 @@ ErrCode InstalldProxy::RenameModuleDir(const std::string &oldPath, const std::st
 }
 
 ErrCode InstalldProxy::CreateBundleDataDir(const std::string &bundleDir,
-    const int userid, const int uid, const int gid, bool onlyOneUser)
+    const int userid, const int uid, const int gid, const std::string &apl, bool onlyOneUser)
 {
     MessageParcel data;
     INSTALLD_PARCEL_WRITE_INTERFACE_TOKEN(data, (GetDescriptor()));
@@ -83,6 +83,7 @@ ErrCode InstalldProxy::CreateBundleDataDir(const std::string &bundleDir,
     INSTALLD_PARCEL_WRITE(data, Int32, userid);
     INSTALLD_PARCEL_WRITE(data, Int32, uid);
     INSTALLD_PARCEL_WRITE(data, Int32, gid);
+    INSTALLD_PARCEL_WRITE(data, String16, Str8ToStr16(apl));
     INSTALLD_PARCEL_WRITE(data, Bool, onlyOneUser);
 
     MessageParcel reply;
