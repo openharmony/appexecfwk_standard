@@ -168,6 +168,21 @@ ErrCode BaseBundleInstaller::InnerProcessBundleInstall(std::unordered_map<std::s
     BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     bundleName_ = newInfos.begin()->second.GetBundleName();
     APP_LOGI("InnerProcessBundleInstall with bundleName %{public}s", bundleName_.c_str());
+
+    if (installParam.needSavePreInstallInfo) {
+        PreInstallBundleInfo preInstallBundleInfo;
+        preInstallBundleInfo.SetBundleName(bundleName_);
+        dataMgr_->GetPreInstallBundleInfo(bundleName_, preInstallBundleInfo);
+        preInstallBundleInfo.AddBundlePath(newInfos.begin()->first);
+        preInstallBundleInfo.SetAppType(newInfos.begin()->second.GetAppType());
+        dataMgr_->SavePreInstallBundleInfo(bundleName_, preInstallBundleInfo);
+    }
+
+    if ((userId_ == Constants::DEFAULT_USERID) && !newInfos.begin()->second.IsSingleUser()) {
+        APP_LOGE("user(0) can only install singleUser app(%{public}s).", bundleName_.c_str());
+        return ERR_APPEXECFWK_INSTALL_BUNDLE_MGR_SERVICE_ERROR;
+    }
+
     // try to get the bundle info to decide use install or update.
     if (!GetInnerBundleInfo(oldInfo, isAppExist_)) {
         return ERR_APPEXECFWK_INSTALL_BUNDLE_MGR_SERVICE_ERROR;
@@ -179,16 +194,6 @@ ErrCode BaseBundleInstaller::InnerProcessBundleInstall(std::unordered_map<std::s
                 return ERR_APPEXECFWK_INSTALL_STATE_ERROR;
             }
         }
-    }
-
-    if (installParam.needSavePreInstallInfo) {
-        PreInstallBundleInfo preInstallBundleInfo;
-        preInstallBundleInfo.SetBundleName(bundleName_);
-        dataMgr_->GetPreInstallBundleInfo(bundleName_, preInstallBundleInfo);
-        preInstallBundleInfo.AddBundlePath(newInfos.begin()->first);
-        preInstallBundleInfo.SetAppType(newInfos.begin()->second.GetAppType());
-        preInstallBundleInfo.SetVersionCode(newInfos.begin()->second.GetVersionCode());
-        dataMgr_->SavePreInstallBundleInfo(bundleName_, preInstallBundleInfo);
     }
 
     ErrCode result = ERR_OK;
@@ -1237,8 +1242,9 @@ ErrCode BaseBundleInstaller::CreateModuleDataDir(InnerBundleInfo &info) const
 ErrCode BaseBundleInstaller::ModifyInstallDirByHapType(const InstallParam &installParam,
     const Constants::AppType appType)
 {
+    auto dirUser = (userId_ == Constants::START_USERID) ? Constants::DEFAULT_USERID : userId_;
     auto internalPath = Constants::PATH_SEPARATOR + Constants::USER_ACCOUNT_DIR + Constants::FILE_UNDERLINE +
-                        std::to_string(userId_) + Constants::PATH_SEPARATOR;
+                        std::to_string(dirUser) + Constants::PATH_SEPARATOR;
     switch (appType) {
         case Constants::AppType::SYSTEM_APP:
             baseCodePath_ = Constants::SYSTEM_APP_INSTALL_PATH + internalPath + Constants::APP_CODE_DIR;
@@ -1379,6 +1385,7 @@ ErrCode BaseBundleInstaller::CheckAppLabelInfo(const std::unordered_map<std::str
     std::string versionName = (infos.begin()->second).GetVersionName();
     uint32_t target = (infos.begin()->second).GetTargetVersion();
     uint32_t compatible = (infos.begin()->second).GetCompatibleVersion();
+    bool singleUser = (infos.begin()->second).IsSingleUser();
 
     for (const auto &info :infos) {
         // check bundleName
@@ -1402,6 +1409,9 @@ ErrCode BaseBundleInstaller::CheckAppLabelInfo(const std::unordered_map<std::str
         }
         if (compatible != info.second.GetCompatibleVersion()) {
             return ERR_APPEXECFWK_INSTALL_RELEASETYPE_COMPATIBLE_NOT_SAME;
+        }
+        if (singleUser != info.second.IsSingleUser()) {
+            return ERR_APPEXECFWK_INSTALL_SINGLE_USER_NOT_SAME;
         }
     }
     APP_LOGD("finish check APP label");
