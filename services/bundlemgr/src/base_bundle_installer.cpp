@@ -179,8 +179,8 @@ ErrCode BaseBundleInstaller::InnerProcessBundleInstall(std::unordered_map<std::s
     }
 
     if ((userId_ == Constants::DEFAULT_USERID) && !newInfos.begin()->second.IsSingleUser()) {
-        APP_LOGE("user(0) can only install singleUser app(%{public}s).", bundleName_.c_str());
-        return ERR_APPEXECFWK_INSTALL_BUNDLE_MGR_SERVICE_ERROR;
+        APP_LOGE("user(0) can only install singleton app(%{public}s).", bundleName_.c_str());
+        return ERR_APPEXECFWK_INSTALL_ZERO_USER_WITH_NO_SINGLETON;
     }
 
     // try to get the bundle info to decide use install or update.
@@ -238,8 +238,8 @@ ErrCode BaseBundleInstaller::InnerProcessBundleInstall(std::unordered_map<std::s
         APP_LOGI("app is not exist");
         InnerBundleInfo &newInfo = it->second;
         if (newInfo.IsSingleUser() && (userId_ != Constants::DEFAULT_USERID)) {
-            APP_LOGE("singleUser app(%{public}s) must be installed in user 0.", bundleName_.c_str());
-            return ERR_APPEXECFWK_INSTALL_BUNDLE_MGR_SERVICE_ERROR;
+            APP_LOGE("singleton app(%{public}s) must be installed in user 0.", bundleName_.c_str());
+            return ERR_APPEXECFWK_INSTALL_ZERO_USER_WITH_NO_SINGLETON;
         }
 
         modulePath_ = it->first;
@@ -881,8 +881,8 @@ ErrCode BaseBundleInstaller::ProcessNewModuleInstall(InnerBundleInfo &newInfo, I
     });
 
     if (newInfo.IsSingleUser() && (userId_ != Constants::DEFAULT_USERID)) {
-        APP_LOGE("singleUser app(%{public}s) must be installed in user 0.", bundleName_.c_str());
-        return ERR_APPEXECFWK_INSTALL_BUNDLE_MGR_SERVICE_ERROR;
+        APP_LOGE("singleton app(%{public}s) must be installed in user 0.", bundleName_.c_str());
+        return ERR_APPEXECFWK_INSTALL_ZERO_USER_WITH_NO_SINGLETON;
     }
 
     if (newInfo.HasEntry() && oldInfo.HasEntry()) {
@@ -957,8 +957,8 @@ ErrCode BaseBundleInstaller::ProcessModuleUpdate(InnerBundleInfo &newInfo,
     });
 
     if (newInfo.IsSingleUser() && (userId_ != Constants::DEFAULT_USERID)) {
-        APP_LOGE("singleUser app(%{public}s) must be installed in user 0.", bundleName_.c_str());
-        return ERR_APPEXECFWK_INSTALL_BUNDLE_MGR_SERVICE_ERROR;
+        APP_LOGE("singleton app(%{public}s) must be installed in user 0.", bundleName_.c_str());
+        return ERR_APPEXECFWK_INSTALL_ZERO_USER_WITH_NO_SINGLETON;
     }
 
     if (!isReplace && versionCode_ == oldInfo.GetVersionCode()) {
@@ -1446,7 +1446,7 @@ ErrCode BaseBundleInstaller::CheckAppLabelInfo(const std::unordered_map<std::str
             return ERR_APPEXECFWK_INSTALL_RELEASETYPE_COMPATIBLE_NOT_SAME;
         }
         if (singleUser != info.second.IsSingleUser()) {
-            return ERR_APPEXECFWK_INSTALL_SINGLE_USER_NOT_SAME;
+            return ERR_APPEXECFWK_INSTALL_SINGLETON_NOT_SAME;
         }
     }
     APP_LOGD("finish check APP label");
