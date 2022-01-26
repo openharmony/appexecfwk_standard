@@ -105,8 +105,9 @@ bool InstalldHost::HandleCreateBundleDataDir(MessageParcel &data, MessageParcel 
     int userid = data.ReadInt32();
     int uid = data.ReadInt32();
     int gid = data.ReadInt32();
+    std::string apl = Str16ToStr8(data.ReadString16());
     bool onlyOneUser = data.ReadBool();
-    ErrCode result = CreateBundleDataDir(bundleDir, userid, uid, gid, onlyOneUser);
+    ErrCode result = CreateBundleDataDir(bundleDir, userid, uid, gid, apl, onlyOneUser);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, reply, result);
     return true;
 }

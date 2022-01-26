@@ -1073,7 +1073,7 @@ ErrCode BaseBundleInstaller::CreateBundleDataDir(InnerBundleInfo &info, bool onl
 
     auto appDataPath = baseDataPath_ + Constants::PATH_SEPARATOR + info.GetBundleName();
     auto result = InstalldClient::GetInstance()->CreateBundleDataDir(appDataPath, userId_,
-        newInnerBundleUserInfo.uid, newInnerBundleUserInfo.uid, onlyOneUser);
+        newInnerBundleUserInfo.uid, newInnerBundleUserInfo.uid, info.GetAppPrivilegeLevel(), onlyOneUser);
     if (result != ERR_OK) {
         APP_LOGE("fail to create bundle data dir, error is %{public}d", result);
         return result;
