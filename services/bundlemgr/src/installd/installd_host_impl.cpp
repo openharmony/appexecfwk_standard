@@ -27,7 +27,11 @@
 
 #include "app_log_wrapper.h"
 #include "bundle_constants.h"
+#include "common_profile.h"
 #include "directory_ex.h"
+#ifdef WITH_SELINUX
+#include "hap_restorecon.h"
+#endif // WITH_SELINUX
 #include "installd/installd_operator.h"
 #include "parameters.h"
 
@@ -111,13 +115,13 @@ ErrCode InstalldHostImpl::RenameModuleDir(const std::string &oldPath, const std:
 }
 
 ErrCode InstalldHostImpl::CreateBundleDataDir(const std::string &bundleDataDir,
-    const int userid, const int uid, const int gid, bool onlyOneUser)
+    const int userid, const int uid, const int gid, const std::string &apl, bool onlyOneUser)
 {
     if (bundleDataDir.empty() || uid < 0 || gid < 0) {
         APP_LOGE("Calling the function CreateBundleDataDir with invalid param");
         return ERR_APPEXECFWK_INSTALLD_PARAM_ERROR;
     }
-
+    std::string bundleName = strrchr(bundleDataDir.c_str(), Constants::FILE_SEPARATOR_CHAR);
     if (onlyOneUser) {
         std::string createDir;
         if (bundleDataDir.back() != Constants::PATH_SEPARATOR[0]) {
@@ -125,7 +129,6 @@ ErrCode InstalldHostImpl::CreateBundleDataDir(const std::string &bundleDataDir,
         } else {
             createDir = bundleDataDir;
         }
-
         if (!InstalldOperator::MkOwnerDir(createDir + Constants::DATA_DIR, true, uid, gid)) {
             APP_LOGE("CreateBundleDataDir MkOwnerDir DATA_DIR failed");
             return ERR_APPEXECFWK_INSTALLD_CREATE_DIR_FAILED;
@@ -148,17 +151,17 @@ ErrCode InstalldHostImpl::CreateBundleDataDir(const std::string &bundleDataDir,
             APP_LOGE("CreateBundleDataDir MkOwnerDir SHARED_PREFERENCE_DIR failed");
             return ERR_APPEXECFWK_INSTALLD_CREATE_DIR_FAILED;
         }
+        SetDirApl(createDir, bundleName, apl);
     }
 
-    std::string bundleName = strrchr(bundleDataDir.c_str(), Constants::FILE_SEPARATOR_CHAR);
-    if (CreateNewBundleDataDir(bundleName, userid, uid, gid) != ERR_OK) {
+    if (CreateNewBundleDataDir(bundleName, userid, uid, gid, apl) != ERR_OK) {
         APP_LOGE("CreateNewBundleDataDir MkOwnerDir failed");
     }
     return ERR_OK;
 }
 
 ErrCode InstalldHostImpl::CreateNewBundleDataDir(
-    const std::string &bundleName, const int userid, const int uid, const int gid) const
+    const std::string &bundleName, const int userid, const int uid, const int gid, const std::string &apl) const
 {
     if (bundleName.empty() || userid < 0 || uid < 0 || gid < 0) {
         APP_LOGE("Calling the function CreateBundleDataDir with invalid param");
@@ -178,6 +181,7 @@ ErrCode InstalldHostImpl::CreateNewBundleDataDir(
                 }
             }
         }
+        SetDirApl(bundleDataDir, bundleName, apl);
     }
     for (const auto el : Constants::DATABASE_EL) {
         std::string databaseDir = GetBundleDataDir(el, userid) + Constants::DATABASE + bundleName;
@@ -185,6 +189,7 @@ ErrCode InstalldHostImpl::CreateNewBundleDataDir(
             APP_LOGE("CreateBundle databaseDir MkOwnerDir failed");
             return ERR_APPEXECFWK_INSTALLD_CREATE_DIR_FAILED;
         }
+        SetDirApl(databaseDir, bundleName, apl);
     }
     if (system::GetBoolParameter(Constants::DISTRIBUTED_FILE_PROPERTY, false)) {
         std::string distributedfile = Constants::DISTRIBUTED_FILE;
@@ -368,6 +373,25 @@ ErrCode InstalldHostImpl::GetBundleStats(
     bundleStats.push_back(cacheSize);
     APP_LOGD("InstalldHostImpl::GetBundleStats end");
     return ERR_OK;
+}
+
+void InstalldHostImpl::SetDirApl(const std::string &dir, const std::string &bundleName, const std::string &apl) const
+{
+#ifdef WITH_SELINUX
+    if (dir.empty() || bundleName.empty()) {
+        APP_LOGE("Calling the function SetDirApl with invalid param");
+        return;
+    }
+    std::string aplLevel = Profile::AVAILABLELEVEL_NORMAL;
+    if (!apl.empty()) {
+        aplLevel = apl;
+    }
+    HapContext hapContext;
+    int ret = hapContext.HapFileRestorecon(dir, aplLevel, bundleName, SELINUX_HAP_RESTORECON_RECURSE);
+    if (ret != 0) {
+        APP_LOGE("HapFileRestorecon path: %{public}s failed, ret:%{public}d", dir.c_str(), ret);
+    }
+#endif // WITH_SELINUX
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS

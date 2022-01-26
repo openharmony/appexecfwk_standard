@@ -92,6 +92,11 @@ ohos_unittest("BmsBundleInstallerTest") {
     "samgr_standard:samgr_proxy",
   ]
 
+  if (build_selinux) {
+    external_deps += [ "selinux:libhap_restorecon" ]
+    cflags += [ "-DWITH_SELINUX" ]
+  }
+
   resource_config_file = "//foundation/appexecfwk/standard/test/resource/bundlemgrservice/ohos_test.xml"
 }
 
@@ -168,6 +173,11 @@ ohos_unittest("BmsMultipleBundleInstallerTest") {
     "resmgr_standard:global_resmgr",
     "samgr_standard:samgr_proxy",
   ]
+
+  if (build_selinux) {
+    external_deps += [ "selinux:libhap_restorecon" ]
+    cflags += [ "-DWITH_SELINUX" ]
+  }
 
   resource_config_file = "//foundation/appexecfwk/standard/test/resource/bundlemgrservice/ohos_test.xml"
 }
