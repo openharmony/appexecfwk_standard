@@ -4,7 +4,7 @@
     "version": "3.1",
     "license": "Apache 2.0",
     "segment": {
-        "destPath": "foundation/appexecfwk/standard/services/bundlemgr"
+        "destPath": "foundation/appexecfwk/standard/"
     },
     "component": {
         "name": "bundle_framework",
@@ -23,6 +23,7 @@
                 "ces_standard",
                 "distributeddatamgr",
                 "hiviewdfx_hilog_native",
+                "i18n_standard",
                 "ipc",
                 "napi",
                 "permission_standard",
