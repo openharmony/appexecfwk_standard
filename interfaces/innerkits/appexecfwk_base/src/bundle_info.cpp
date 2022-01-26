@@ -418,6 +418,14 @@ void from_json(const nlohmann::json &jsonObject, BundleInfo &bundleInfo)
         false,
         parseResult,
         ArrayType::OBJECT);
+    GetValueIfFindKey<std::vector<HapModuleInfo>>(jsonObject,
+        jsonObjectEnd,
+        BUNDLE_INFO_HAP_MODULE_INFOS,
+        bundleInfo.hapModuleInfos,
+        JsonType::ARRAY,
+        false,
+        parseResult,
+        ArrayType::OBJECT);
     GetValueIfFindKey<uint32_t>(jsonObject,
         jsonObjectEnd,
         BUNDLE_INFO_VERSION_CODE,
