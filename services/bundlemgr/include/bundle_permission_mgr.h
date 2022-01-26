@@ -126,9 +126,6 @@ public:
 
     static int32_t ClearUserGrantedPermissionState(const Security::AccessToken::AccessTokenID tokenId);
 
-    static bool GetDefinePermission(
-        const std::string &permissionName, PermissionDef &permissionDefResult);
-
     static int32_t VerifyPermission(Security::AccessToken::AccessTokenID tokenId, const std::string &permissionName);
 
 private:
