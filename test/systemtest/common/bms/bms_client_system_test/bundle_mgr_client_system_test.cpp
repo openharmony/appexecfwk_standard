@@ -20,6 +20,7 @@
 
 #include "ability_info.h"
 #include "app_log_wrapper.h"
+#include "bundle_constants.h"
 #include "bundle_installer_interface.h"
 #include "bundle_mgr_client.h"
 #include "bundle_mgr_interface.h"
@@ -162,7 +163,8 @@ sptr<IBundleInstaller> BundleMgrClientSystemTest::GetInstallerProxy()
 }
 
 void BundleMgrClientSystemTest::InstallBundle(
-    const std::string &bundleFilePath, const InstallFlag installFlag, std::string &installMsg, const int userId = 0)
+    const std::string &bundleFilePath, const InstallFlag installFlag, std::string &installMsg,
+    const int userId = Constants::ALL_USERID)
 {
     sptr<IBundleInstaller> installerProxy = GetInstallerProxy();
     if (!installerProxy) {
@@ -184,7 +186,7 @@ void BundleMgrClientSystemTest::InstallBundle(
 }
 
 void BundleMgrClientSystemTest::UninstallBundle(
-    const std::string &bundleName, std::string &uninstallMsg, const int userId = 0)
+    const std::string &bundleName, std::string &uninstallMsg, const int userId = Constants::ALL_USERID)
 {
     sptr<IBundleInstaller> installerProxy = GetInstallerProxy();
     if (!installerProxy) {
@@ -406,7 +408,7 @@ HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_007, TestSize.Level1)
     std::string uninstallMsg;
     UninstallBundle(BUNDLE_NAME, uninstallMsg);
     EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
-    std::cout << "END GetResourceConfigFile_006" << std::endl;
+    std::cout << "END GetResourceConfigFile_007" << std::endl;
     GTEST_LOG_(INFO) << name << " end";
 }
 
@@ -452,7 +454,7 @@ HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_008, TestSize.Level1)
     std::string uninstallMsg;
     UninstallBundle(BUNDLE_NAME, uninstallMsg);
     EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
-    std::cout << "END GetResourceConfigFile_006" << std::endl;
+    std::cout << "END GetResourceConfigFile_008" << std::endl;
     GTEST_LOG_(INFO) << name << " end";
 }
 
@@ -489,7 +491,7 @@ HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_009, TestSize.Level1)
     std::string uninstallMsg;
     UninstallBundle(BUNDLE_NAME, uninstallMsg);
     EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
-    std::cout << "END GetResourceConfigFile_006" << std::endl;
+    std::cout << "END GetResourceConfigFile_009" << std::endl;
     GTEST_LOG_(INFO) << name << " end";
 }
 
@@ -533,7 +535,7 @@ HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_010, TestSize.Level1)
     std::string uninstallMsg;
     UninstallBundle(BUNDLE_NAME, uninstallMsg);
     EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
-    std::cout << "END GetResourceConfigFile_006" << std::endl;
+    std::cout << "END GetResourceConfigFile_010" << std::endl;
     GTEST_LOG_(INFO) << name << " end";
 }
 
@@ -568,7 +570,7 @@ HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_011, TestSize.Level1)
     std::string uninstallMsg;
     UninstallBundle(BUNDLE_NAME, uninstallMsg);
     EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
-    std::cout << "END GetResourceConfigFile_006" << std::endl;
+    std::cout << "END GetResourceConfigFile_011" << std::endl;
     GTEST_LOG_(INFO) << name << " end";
 }
 
@@ -603,7 +605,7 @@ HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_012, TestSize.Level1)
     std::string uninstallMsg;
     UninstallBundle(BUNDLE_NAME, uninstallMsg);
     EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
-    std::cout << "END GetResourceConfigFile_006" << std::endl;
+    std::cout << "END GetResourceConfigFile_012" << std::endl;
     GTEST_LOG_(INFO) << name << " end";
 }
 
@@ -638,7 +640,7 @@ HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_013, TestSize.Level1)
     std::string uninstallMsg;
     UninstallBundle(BUNDLE_NAME, uninstallMsg);
     EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
-    std::cout << "END GetResourceConfigFile_006" << std::endl;
+    std::cout << "END GetResourceConfigFile_013" << std::endl;
     GTEST_LOG_(INFO) << name << " end";
 }
 
@@ -677,7 +679,7 @@ HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_014, TestSize.Level1)
     std::string uninstallMsg;
     UninstallBundle(BUNDLE_NAME, uninstallMsg);
     EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
-    std::cout << "END GetResourceConfigFile_006" << std::endl;
+    std::cout << "END GetResourceConfigFile_014" << std::endl;
     GTEST_LOG_(INFO) << name << " end";
 }
 
@@ -839,7 +841,7 @@ HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_020, TestSize.Level1)
     std::string uninstallMsg;
     UninstallBundle(BUNDLE_NAME, uninstallMsg);
     EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
-    std::cout << "END GetResourceConfigFile_006" << std::endl;
+    std::cout << "END GetResourceConfigFile_020" << std::endl;
     GTEST_LOG_(INFO) << name << " end";
 }
 
@@ -883,7 +885,7 @@ HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_021, TestSize.Level1)
     std::string uninstallMsg;
     UninstallBundle(BUNDLE_NAME, uninstallMsg);
     EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
-    std::cout << "END GetResourceConfigFile_006" << std::endl;
+    std::cout << "END GetResourceConfigFile_021" << std::endl;
     GTEST_LOG_(INFO) << name << " end";
 }
 
@@ -929,7 +931,7 @@ HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_022, TestSize.Level1)
     std::string uninstallMsg;
     UninstallBundle(BUNDLE_NAME, uninstallMsg);
     EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
-    std::cout << "END GetResourceConfigFile_006" << std::endl;
+    std::cout << "END GetResourceConfigFile_022" << std::endl;
     GTEST_LOG_(INFO) << name << " end";
 }
 
@@ -966,7 +968,7 @@ HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_023, TestSize.Level1)
     std::string uninstallMsg;
     UninstallBundle(BUNDLE_NAME, uninstallMsg);
     EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
-    std::cout << "END GetResourceConfigFile_006" << std::endl;
+    std::cout << "END GetResourceConfigFile_023" << std::endl;
     GTEST_LOG_(INFO) << name << " end";
 }
 
@@ -1010,7 +1012,7 @@ HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_024, TestSize.Level1)
     std::string uninstallMsg;
     UninstallBundle(BUNDLE_NAME, uninstallMsg);
     EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
-    std::cout << "END GetResourceConfigFile_006" << std::endl;
+    std::cout << "END GetResourceConfigFile_024" << std::endl;
     GTEST_LOG_(INFO) << name << " end";
 }
 
@@ -1045,7 +1047,7 @@ HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_025, TestSize.Level1)
     std::string uninstallMsg;
     UninstallBundle(BUNDLE_NAME, uninstallMsg);
     EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
-    std::cout << "END GetResourceConfigFile_006" << std::endl;
+    std::cout << "END GetResourceConfigFile_025" << std::endl;
     GTEST_LOG_(INFO) << name << " end";
 }
 
@@ -1080,7 +1082,7 @@ HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_026, TestSize.Level1)
     std::string uninstallMsg;
     UninstallBundle(BUNDLE_NAME, uninstallMsg);
     EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
-    std::cout << "END GetResourceConfigFile_006" << std::endl;
+    std::cout << "END GetResourceConfigFile_026" << std::endl;
     GTEST_LOG_(INFO) << name << " end";
 }
 
@@ -1115,7 +1117,7 @@ HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_027, TestSize.Level1)
     std::string uninstallMsg;
     UninstallBundle(BUNDLE_NAME, uninstallMsg);
     EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
-    std::cout << "END GetResourceConfigFile_006" << std::endl;
+    std::cout << "END GetResourceConfigFile_027" << std::endl;
     GTEST_LOG_(INFO) << name << " end";
 }
 
@@ -1154,7 +1156,7 @@ HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_028, TestSize.Level1)
     std::string uninstallMsg;
     UninstallBundle(BUNDLE_NAME, uninstallMsg);
     EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
-    std::cout << "END GetResourceConfigFile_006" << std::endl;
+    std::cout << "END GetResourceConfigFile_028" << std::endl;
     GTEST_LOG_(INFO) << name << " end";
 }
 
@@ -1316,7 +1318,7 @@ HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_034, TestSize.Level1)
     std::string uninstallMsg;
     UninstallBundle(BUNDLE_NAME, uninstallMsg);
     EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
-    std::cout << "END GetResourceConfigFile_006" << std::endl;
+    std::cout << "END GetResourceConfigFile_034" << std::endl;
     GTEST_LOG_(INFO) << name << " end";
 }
 
@@ -1360,7 +1362,7 @@ HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_035, TestSize.Level1)
     std::string uninstallMsg;
     UninstallBundle(BUNDLE_NAME, uninstallMsg);
     EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
-    std::cout << "END GetResourceConfigFile_006" << std::endl;
+    std::cout << "END GetResourceConfigFile_035" << std::endl;
     GTEST_LOG_(INFO) << name << " end";
 }
 
@@ -1406,7 +1408,7 @@ HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_036, TestSize.Level1)
     std::string uninstallMsg;
     UninstallBundle(BUNDLE_NAME, uninstallMsg);
     EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
-    std::cout << "END GetResourceConfigFile_006" << std::endl;
+    std::cout << "END GetResourceConfigFile_036" << std::endl;
     GTEST_LOG_(INFO) << name << " end";
 }
 
@@ -1443,7 +1445,7 @@ HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_037, TestSize.Level1)
     std::string uninstallMsg;
     UninstallBundle(BUNDLE_NAME, uninstallMsg);
     EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
-    std::cout << "END GetResourceConfigFile_006" << std::endl;
+    std::cout << "END GetResourceConfigFile_037" << std::endl;
     GTEST_LOG_(INFO) << name << " end";
 }
 
@@ -1487,7 +1489,7 @@ HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_038, TestSize.Level1)
     std::string uninstallMsg;
     UninstallBundle(BUNDLE_NAME, uninstallMsg);
     EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
-    std::cout << "END GetResourceConfigFile_006" << std::endl;
+    std::cout << "END GetResourceConfigFile_038" << std::endl;
     GTEST_LOG_(INFO) << name << " end";
 }
 
@@ -1522,7 +1524,7 @@ HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_039, TestSize.Level1)
     std::string uninstallMsg;
     UninstallBundle(BUNDLE_NAME, uninstallMsg);
     EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
-    std::cout << "END GetResourceConfigFile_006" << std::endl;
+    std::cout << "END GetResourceConfigFile_039" << std::endl;
     GTEST_LOG_(INFO) << name << " end";
 }
 
@@ -1557,7 +1559,7 @@ HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_040, TestSize.Level1)
     std::string uninstallMsg;
     UninstallBundle(BUNDLE_NAME, uninstallMsg);
     EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
-    std::cout << "END GetResourceConfigFile_006" << std::endl;
+    std::cout << "END GetResourceConfigFile_040" << std::endl;
     GTEST_LOG_(INFO) << name << " end";
 }
 
@@ -1592,7 +1594,7 @@ HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_041, TestSize.Level1)
     std::string uninstallMsg;
     UninstallBundle(BUNDLE_NAME, uninstallMsg);
     EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
-    std::cout << "END GetResourceConfigFile_006" << std::endl;
+    std::cout << "END GetResourceConfigFile_041" << std::endl;
     GTEST_LOG_(INFO) << name << " end";
 }
 
@@ -1631,7 +1633,7 @@ HWTEST_F(BundleMgrClientSystemTest, GetResourceConfigFile_042, TestSize.Level1)
     std::string uninstallMsg;
     UninstallBundle(BUNDLE_NAME, uninstallMsg);
     EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
-    std::cout << "END GetResourceConfigFile_006" << std::endl;
+    std::cout << "END GetResourceConfigFile_042" << std::endl;
     GTEST_LOG_(INFO) << name << " end";
 }
 }  // namespace AppExecFwk
