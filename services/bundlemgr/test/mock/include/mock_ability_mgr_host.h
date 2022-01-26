@@ -61,6 +61,16 @@ public:
     {
         return 0;
     }
+    virtual int StartAbilityByCall(
+        const Want &want, const sptr<IAbilityConnection> &connect, const sptr<IRemoteObject> &callerToken) override
+    {
+        return 0;
+    }
+    virtual int ReleaseAbility(
+        const sptr<IAbilityConnection> &connect, const AppExecFwk::ElementName &element) override
+    {
+        return 0;
+    }
     virtual int TerminateAbility(
         const sptr<IRemoteObject> &token, int resultCode, const AAFwk::Want *resultWant = nullptr) override
     {
