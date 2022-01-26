@@ -1067,7 +1067,10 @@ public:
 
     std::string GetProvisionId() const
     {
-        return baseBundleInfo_.appId.substr(baseBundleInfo_.name.size() + 1);
+        if (!baseBundleInfo_.appId.empty()) {
+            return baseBundleInfo_.appId.substr(baseBundleInfo_.name.size() + 1);
+        }
+        return "";
     }
 
     void SetAppFeature(const std::string &appFeature)
