@@ -379,6 +379,10 @@ ErrCode BundleManagerShellCommand::CreateMessageMap()
             "error: user not exist.",
         },
         {
+            IStatusReceiver::ERR_OPERATION_TIME_OUT,
+            "error: operation time out.",
+        },
+        {
             IStatusReceiver::ERR_UNKNOWN,
             "error: unknown.",
         }
