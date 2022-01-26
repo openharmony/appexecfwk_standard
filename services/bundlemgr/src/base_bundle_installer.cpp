@@ -391,10 +391,42 @@ void BaseBundleInstaller::RollBack(const std::unordered_map<std::string, InnerBu
         RemoveInfo(bundleName_, "");
         return;
     }
+    InnerBundleInfo preInfo = oldInfo;
     for (const auto &info : newInfos) {
         RollBack(info.second, oldInfo);
     }
+    // need delete definePermissions and requestPermissions
+    InnerBundleInfo innerBundleInfo;
+    bool isExist = false;
+    if (!GetInnerBundleInfo(innerBundleInfo, isExist) || !isExist) {
+        APP_LOGI("finish rollback due to install failed");
+        return;
+    }
+    ErrCode ret = UpdateDefineAndRequestPermissions(preInfo, innerBundleInfo);
+    if (ret != ERR_OK) {
+        return;
+    }
     APP_LOGD("finish rollback due to install failed");
+}
+
+ErrCode BaseBundleInstaller::UpdateDefineAndRequestPermissions(const InnerBundleInfo &oldInfo,
+    const InnerBundleInfo &newInfo)
+{
+    APP_LOGD("UpdateDefineAndRequestPermissions %{public}s start", bundleName_.c_str());
+    auto bundleUserInfos = newInfo.GetInnerBundleUserInfos();
+    for (const auto &uerInfo : bundleUserInfos) {
+        if (uerInfo.second.accessTokenId == 0) {
+            continue;
+        }
+        std::vector<std::string> newRequestPermName;
+        if (!BundlePermissionMgr::UpdateDefineAndRequestPermissions(uerInfo.second.accessTokenId, oldInfo,
+            newInfo, newRequestPermName)) {
+            APP_LOGE("UpdateDefineAndRequestPermissions %{public}s failed", bundleName_.c_str());
+            return ERR_APPEXECFWK_INSTALL_UPDATE_HAP_TOKEN_FAILED;
+        }
+    }
+    APP_LOGD("UpdateDefineAndRequestPermissions %{public}s end", bundleName_.c_str());
+    return ERR_OK;
 }
 
 void BaseBundleInstaller::RollBack(const InnerBundleInfo &info, InnerBundleInfo &oldInfo)
@@ -1495,6 +1527,7 @@ ErrCode BaseBundleInstaller::UninstallLowerVersionFeature(const std::vector<std:
         return ERR_APPEXECFWK_UNINSTALL_KILLING_APP_ERROR;
     }
     std::vector<std::string> moduleVec = info.GetModuleNameVec();
+    InnerBundleInfo oldInfo = info;
     for (const auto &package : moduleVec) {
         if (find(packageVec.begin(), packageVec.end(), package) == packageVec.end()) {
             APP_LOGD("uninstall package %{public}s", package.c_str());
@@ -1508,6 +1541,12 @@ ErrCode BaseBundleInstaller::UninstallLowerVersionFeature(const std::vector<std:
                 return ERR_APPEXECFWK_INSTALL_BUNDLE_MGR_SERVICE_ERROR;
             }
         }
+    }
+    // need to delete lower version feature hap definePermissions and requestPermissions
+    APP_LOGD("delete lower version feature hap definePermissions and requestPermissions");
+    ErrCode ret = UpdateDefineAndRequestPermissions(oldInfo, info);
+    if (ret != ERR_OK) {
+        return ret;
     }
     APP_LOGD("finish to uninstall lower version feature hap");
     return ERR_OK;
