@@ -402,6 +402,16 @@ public:
     {
         return true;
     }
+    virtual int StartAbilityByCall(
+        const Want &want, const sptr<IAbilityConnection> &connect, const sptr<IRemoteObject> &callerToken) override
+    {
+        return 0;
+    }
+
+    virtual int ReleaseAbility(const sptr<IAbilityConnection> &connect, const AppExecFwk::ElementName &element) override
+    {
+        return 0;
+    }
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS
