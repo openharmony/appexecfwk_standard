@@ -31,32 +31,6 @@
       "inner_kits": [
         {
           "header": {
-            "header_base": "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_base/include",
-            "header_files": [
-              "ability_info.h",
-              "appexecfwk_errors.h",
-              "application_info.h",
-              "element_name.h",
-              "bundle_info.h"
-            ]
-          },
-          "name": "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_base:appexecfwk_base"
-        },
-        {
-          "header": {
-            "header_base": "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_core/include",
-            "header_files": [
-              "bundlemgr/bundle_installer_interface.h",
-              "bundlemgr/bundle_mgr_interface.h",
-              "bundlemgr/bundle_status_callback_interface.h",
-              "bundlemgr/clean_cache_callback_interface.h",
-              "bundlemgr/status_receiver_interface.h"
-            ]
-          },
-          "name": "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_core:appexecfwk_core"
-        },
-        {
-          "header": {
             "header_base": "//foundation/appexecfwk/standard/interfaces/innerkits/libeventhandler/include",
             "header_files": [
               "event_handler_errors.h",
