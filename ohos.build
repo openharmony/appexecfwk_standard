@@ -28,6 +28,7 @@
       ]
     },
     "appexecfwk_standard": {
+      "inner_kits": [
         {
           "header": {
             "header_base": "//foundation/appexecfwk/standard/interfaces/innerkits/libeventhandler/include",
