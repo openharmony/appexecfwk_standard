@@ -249,8 +249,12 @@ ErrCode BundleManagerShellCommand::CreateMessageMap()
             "error: install failed due to update hap token failed",
         },
         {
-            IStatusReceiver::ERR_INSTALL_SINGLE_USER_NOT_SAME,
-            "error: install failed due to singleUser not same",
+            IStatusReceiver::ERR_INSTALL_SINGLETON_NOT_SAME,
+            "error: install failed due to singleton not same",
+        },
+        {
+            IStatusReceiver::ERR_INSTALL_ZERO_USER_WITH_NO_SINGLETON,
+            "error: install failed due to zero user can only install singleton app",
         },
 
         {
