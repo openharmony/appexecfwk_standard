@@ -25,7 +25,8 @@
         },
         "build": {
             "sub_component": [
-                "//foundation/appexecfwk/standard/interfaces/innerkits/libeventhandler:libeventhandler"
+                "//foundation/appexecfwk/standard/interfaces/innerkits:innerkits_target",
+                "//foundation/appexecfwk/standard/interfaces/innerkits/napi/eventhandler:emitter"
             ],
             "inner_kits": [
                 {
@@ -63,7 +64,9 @@
                 }
             ],
             "test": [
-                "//foundation/appexecfwk/standard/libs/libeventhandler/test:unittest"
+                "//foundation/appexecfwk/standard/libs/libeventhandler/test:unittest",
+                "//foundation/appexecfwk/standard/libs/test:moduletest",
+                "//foundation/appexecfwk/standard/test/systemtest/common/ems:systemtest_ems"
             ]
         }
     }
