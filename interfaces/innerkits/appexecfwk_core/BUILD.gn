@@ -23,7 +23,10 @@ config("appexecfwk_core_config") {
 }
 
 ohos_shared_library("appexecfwk_core") {
-  include_dirs = [ "//utils/system/safwk/native/include" ]
+  include_dirs = [
+    "//base/global/i18n_standard/frameworks/intl/include",
+    "//utils/system/safwk/native/include",
+  ]
 
   sources = [
     "src/bundlemgr/bundle_installer_proxy.cpp",
@@ -60,6 +63,7 @@ ohos_shared_library("appexecfwk_core") {
   }
   deps = [
     "${common_path}:libappexecfwk_common",
+    "//base/global/i18n_standard/frameworks/intl:intl_util",
     "//third_party/jsoncpp:jsoncpp",
   ]
 
@@ -71,7 +75,6 @@ ohos_shared_library("appexecfwk_core") {
     "ces_standard:cesfwk_core",
     "ces_standard:cesfwk_innerkits",
     "hiviewdfx_hilog_native:libhilog",
-    "i18n_standard:intl_util",
     "ipc:ipc_core",
     "resmgr_standard:global_resmgr",
     "samgr_standard:samgr_proxy",
@@ -79,5 +82,5 @@ ohos_shared_library("appexecfwk_core") {
   ]
 
   subsystem_name = "appexecfwk"
-  part_name = "bundle_framework"
+  part_name = "appexecfwk_standard"
 }
