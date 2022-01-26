@@ -1334,7 +1334,7 @@ public:
      * @brief Check whether isSingleUser.
      * @return Return isSingleUser.
      */
-    bool IsSingleUser()
+    bool IsSingleUser() const
     {
         return baseApplicationInfo_.singleUser;
     }
