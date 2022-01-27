@@ -198,7 +198,7 @@ ErrCode BaseBundleInstaller::InnerProcessBundleInstall(std::unordered_map<std::s
 
     ErrCode result = ERR_OK;
     if (isAppExist_) {
-        // to guaruntee that the hap version can be compatible.
+        // to guarantee that the hap version can be compatible.
         result = CheckVersionCompatibility(oldInfo);
         if (result != ERR_OK) {
             APP_LOGE("The app has been installed and update lower version bundle.");
@@ -948,8 +948,8 @@ ErrCode BaseBundleInstaller::ProcessNewModuleInstall(InnerBundleInfo &newInfo, I
 ErrCode BaseBundleInstaller::ProcessModuleUpdate(InnerBundleInfo &newInfo,
     InnerBundleInfo &oldInfo, bool isReplace, bool noSkipsKill)
 {
-    APP_LOGD("ProcessModuleUpdate %{public}s userId: %{public}d.",
-        newInfo.GetBundleName().c_str(), userId_);
+    APP_LOGD("ProcessModuleUpdate, bundleName : %{public}s, moduleName : %{public}s, userId: %{public}d.",
+        newInfo.GetBundleName().c_str(), newInfo.GetCurrentModulePackage().c_str(), userId_);
     ScopeGuard userGuard([&] {
         if (!hasInstalledInUser_) {
             RemoveBundleUserData(oldInfo);
