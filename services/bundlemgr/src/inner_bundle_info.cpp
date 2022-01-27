@@ -417,7 +417,6 @@ void InnerBundleInfo::ToJson(nlohmann::json &jsonObject) const
     jsonObject[MODULE_SHORTCUT] = shortcutInfos_;
     jsonObject[NEW_BUNDLE_NAME] = newBundleName_;
     jsonObject[MODULE_COMMON_EVENT] = commonEvents_;
-    jsonObject[CAN_UNINSTALL] = canUninstall_;
     jsonObject[IS_PREINSTALL_APP] = isPreInstallApp_;
     jsonObject[INSTALL_MARK] = mark_;
     jsonObject[INNER_BUNDLE_USER_INFOS] = innerBundleUserInfos_;
@@ -1138,14 +1137,6 @@ int32_t InnerBundleInfo::FromJson(const nlohmann::json &jsonObject)
         ArrayType::NOT_ARRAY);
     GetValueIfFindKey<bool>(jsonObject,
         jsonObjectEnd,
-        CAN_UNINSTALL,
-        canUninstall_,
-        JsonType::BOOLEAN,
-        true,
-        ProfileReader::parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<bool>(jsonObject,
-        jsonObjectEnd,
         IS_PREINSTALL_APP,
         isPreInstallApp_,
         JsonType::BOOLEAN,
@@ -1223,19 +1214,6 @@ void InnerBundleInfo::BuildDefaultUserInfo()
     defaultInnerBundleUserInfo.bundleName = baseApplicationInfo_.bundleName;
     defaultInnerBundleUserInfo.bundleUserInfo.enabled = baseApplicationInfo_.enabled;
     AddInnerBundleUserInfo(defaultInnerBundleUserInfo);
-}
-
-std::optional<std::vector<Skill>> InnerBundleInfo::FindSkills(const std::string &keyName) const
-{
-    auto skillsInfo = skillInfos_.find(keyName);
-    if (skillsInfo == skillInfos_.end()) {
-        return std::nullopt;
-    }
-    auto &skills = skillsInfo->second;
-    if (skills.empty()) {
-        return std::nullopt;
-    }
-    return std::optional<std::vector<Skill>> {skills};
 }
 
 std::optional<HapModuleInfo> InnerBundleInfo::FindHapModuleInfo(const std::string &modulePackage, int32_t userId) const
@@ -1418,22 +1396,66 @@ bool InnerBundleInfo::AddModuleInfo(const InnerBundleInfo &newInfo)
     return true;
 }
 
-void InnerBundleInfo::UpdateVersionInfo(const InnerBundleInfo &newInfo)
+void InnerBundleInfo::UpdateBaseBundleInfo(const BundleInfo &bundleInfo, bool isEntry)
 {
-    if (baseBundleInfo_.versionCode > newInfo.GetVersionCode()) {
-        APP_LOGE("old version larger than new version");
-        return;
+    baseBundleInfo_.name = bundleInfo.name;
+    baseBundleInfo_.vendor = bundleInfo.vendor;
+    baseBundleInfo_.versionCode = bundleInfo.versionCode;
+    baseBundleInfo_.versionName = bundleInfo.versionName;
+    baseBundleInfo_.minCompatibleVersionCode = bundleInfo.minCompatibleVersionCode;
+    baseBundleInfo_.compatibleVersion = bundleInfo.compatibleVersion;
+    baseBundleInfo_.targetVersion = bundleInfo.targetVersion;
+    baseBundleInfo_.releaseType = bundleInfo.releaseType;
+    baseBundleInfo_.isKeepAlive = bundleInfo.isKeepAlive;
+    baseBundleInfo_.singleUser = bundleInfo.singleUser;
+    baseBundleInfo_.label = bundleInfo.label;
+    baseBundleInfo_.description = bundleInfo.description;
+    if (isEntry) {
+        baseBundleInfo_.entryModuleName = bundleInfo.entryModuleName;
+        baseBundleInfo_.entryInstallationFree = bundleInfo.entryInstallationFree;
     }
-    baseBundleInfo_.vendor = newInfo.GetBaseBundleInfo().vendor;
-    baseBundleInfo_.minSdkVersion = newInfo.GetBaseBundleInfo().minSdkVersion;
-    baseBundleInfo_.maxSdkVersion = newInfo.GetBaseBundleInfo().maxSdkVersion;
-    // version
-    baseBundleInfo_.versionCode = newInfo.GetVersionCode();
-    baseBundleInfo_.versionName = newInfo.GetBaseBundleInfo().versionName;
-    // apiversion
-    baseBundleInfo_.compatibleVersion = newInfo.GetBaseBundleInfo().compatibleVersion;
-    baseBundleInfo_.targetVersion = newInfo.GetBaseBundleInfo().targetVersion;
-    baseBundleInfo_.releaseType = newInfo.GetBaseBundleInfo().releaseType;
+
+    baseBundleInfo_.jointUserId = bundleInfo.jointUserId;
+    baseBundleInfo_.minSdkVersion = bundleInfo.minSdkVersion;
+    baseBundleInfo_.maxSdkVersion = bundleInfo.maxSdkVersion;
+    baseBundleInfo_.isDifferentName = bundleInfo.isDifferentName;
+}
+
+void InnerBundleInfo::UpdateBaseApplicationInfo(const ApplicationInfo &applicationInfo)
+{
+    baseApplicationInfo_.name = applicationInfo.name;
+    baseApplicationInfo_.bundleName = applicationInfo.bundleName;
+    baseApplicationInfo_.debug = applicationInfo.debug;
+    baseApplicationInfo_.icon = applicationInfo.icon;
+    baseApplicationInfo_.iconPath = applicationInfo.iconPath;
+    baseApplicationInfo_.iconId = applicationInfo.iconId;
+    baseApplicationInfo_.label = applicationInfo.label;
+    baseApplicationInfo_.labelId = applicationInfo.labelId;
+    baseApplicationInfo_.description = applicationInfo.description;
+    baseApplicationInfo_.descriptionId = applicationInfo.descriptionId;
+    baseApplicationInfo_.vendor = applicationInfo.vendor;
+    baseApplicationInfo_.versionCode = applicationInfo.versionCode;
+    baseApplicationInfo_.versionName = applicationInfo.versionName;
+    baseApplicationInfo_.minCompatibleVersionCode = applicationInfo.minCompatibleVersionCode;
+    baseApplicationInfo_.apiCompatibleVersion = applicationInfo.apiCompatibleVersion;
+    baseApplicationInfo_.apiTargetVersion = applicationInfo.apiTargetVersion;
+    baseApplicationInfo_.apiReleaseType = applicationInfo.apiReleaseType;
+    baseApplicationInfo_.distributedNotificationEnabled = applicationInfo.distributedNotificationEnabled;
+    baseApplicationInfo_.entityType = applicationInfo.entityType;
+    baseApplicationInfo_.deviceId = applicationInfo.deviceId;
+    baseApplicationInfo_.keepAlive = applicationInfo.keepAlive;
+    baseApplicationInfo_.singleUser = applicationInfo.singleUser;
+    baseApplicationInfo_.userDataClearable = applicationInfo.userDataClearable;
+    baseApplicationInfo_.removable = applicationInfo.removable;
+    if (!baseApplicationInfo_.isLauncherApp) {
+        baseApplicationInfo_.isLauncherApp = applicationInfo.isLauncherApp;
+    }
+    if (!baseApplicationInfo_.isSystemApp) {
+        baseApplicationInfo_.isSystemApp = applicationInfo.isSystemApp;
+    }
+
+    baseApplicationInfo_.supportedModes = applicationInfo.supportedModes;
+    baseApplicationInfo_.process = applicationInfo.process;
 }
 
 void InnerBundleInfo::updateCommonHapInfo(const InnerBundleInfo &newInfo)
@@ -1453,8 +1475,10 @@ void InnerBundleInfo::UpdateModuleInfo(const InnerBundleInfo &newInfo)
         return;
     }
     innerModuleInfos_.erase(newInfo.currentPackage_);
+    std::string key;
+    key.append(newInfo.baseApplicationInfo_.bundleName).append(".").append(newInfo.currentPackage_).append(".");
     for (auto it = baseAbilityInfos_.begin(); it != baseAbilityInfos_.end();) {
-        if (it->first.find(newInfo.currentPackage_) != std::string::npos) {
+        if (it->first.find(key) == 0) {
             skillInfos_.erase(it->first);
             formInfos_.erase(it->first);
             it = baseAbilityInfos_.erase(it);
@@ -1463,7 +1487,7 @@ void InnerBundleInfo::UpdateModuleInfo(const InnerBundleInfo &newInfo)
         }
     }
     for (auto it = baseExtensionInfos_.begin(); it != baseExtensionInfos_.end();) {
-        if (it->first.find(newInfo.currentPackage_) != std::string::npos) {
+        if (it->first.find(key) == 0) {
             extensionSkillInfos_.erase(it->first);
             it = baseExtensionInfos_.erase(it);
         } else {
@@ -1471,25 +1495,20 @@ void InnerBundleInfo::UpdateModuleInfo(const InnerBundleInfo &newInfo)
         }
     }
     for (auto it = shortcutInfos_.begin(); it != shortcutInfos_.end();) {
-        if (it->first.find(newInfo.currentPackage_) != std::string::npos) {
+        if (it->first.find(key) == 0) {
             shortcutInfos_.erase(it++);
         } else {
             ++it;
         }
     }
     for (auto it = commonEvents_.begin(); it != commonEvents_.end();) {
-        if (it->first.find(newInfo.currentPackage_) != std::string::npos) {
+        if (it->first.find(key) == 0) {
             commonEvents_.erase(it++);
         } else {
             ++it;
         }
     }
-    if (!hasEntry_ && newInfo.HasEntry()) {
-        hasEntry_ = true;
-    }
-    if (mainAbility_ == newInfo.mainAbility_) {
-        UpdateBaseApplicationInfo(newInfo.baseApplicationInfo_);
-    }
+
     AddInnerModuleInfo(newInfo.innerModuleInfos_);
     AddModuleAbilityInfo(newInfo.baseAbilityInfos_);
     AddModuleSkillInfo(newInfo.skillInfos_);
@@ -1594,7 +1613,6 @@ std::string InnerBundleInfo::ToString() const
     j[MODULE_SHORTCUT] = shortcutInfos_;
     j[NEW_BUNDLE_NAME] = newBundleName_;
     j[MODULE_COMMON_EVENT] = commonEvents_;
-    j[CAN_UNINSTALL] = canUninstall_;
     j[IS_PREINSTALL_APP] = isPreInstallApp_;
     j[INSTALL_MARK] = mark_;
     j[INNER_BUNDLE_USER_INFOS] = innerBundleUserInfos_;
