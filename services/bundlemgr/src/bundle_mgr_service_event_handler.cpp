@@ -27,12 +27,12 @@ namespace OHOS {
 namespace AppExecFwk {
 BMSEventHandler::BMSEventHandler(const std::shared_ptr<EventRunner> &runner) : EventHandler(runner)
 {
-    APP_LOGI("instance is created");
+    APP_LOGD("instance is created");
 }
 
 BMSEventHandler::~BMSEventHandler()
 {
-    APP_LOGI("instance is destroyed");
+    APP_LOGD("instance is destroyed");
 }
 
 void BMSEventHandler::ProcessEvent(const InnerEvent::Pointer &event)
@@ -69,7 +69,7 @@ void BMSEventHandler::OnStartScanning(int32_t userId)
 
 void BMSEventHandler::ProcessSystemBundleInstall(Constants::AppType appType, int32_t userId) const
 {
-    APP_LOGI("scan thread start");
+    APP_LOGD("scan thread start");
     auto scanner = std::make_unique<BundleScanner>();
     if (!scanner) {
         APP_LOGE("make scanner failed");
@@ -77,11 +77,11 @@ void BMSEventHandler::ProcessSystemBundleInstall(Constants::AppType appType, int
     }
     std::string scanDir = (appType == Constants::AppType::SYSTEM_APP) ? Constants::SYSTEM_APP_SCAN_PATH
                                                                       : Constants::THIRD_SYSTEM_APP_SCAN_PATH;
-    APP_LOGI("scanDir: %{public}s and userId: %{public}d", scanDir.c_str(), userId);
+    APP_LOGD("scanDir: %{public}s and userId: %{public}d", scanDir.c_str(), userId);
     std::list<std::string> bundleList = scanner->Scan(scanDir);
     for (const auto &item : bundleList) {
         SystemBundleInstaller installer(item);
-        APP_LOGI("scan item %{public}s", item.c_str());
+        APP_LOGD("scan item %{public}s", item.c_str());
         if (!installer.InstallSystemBundle(appType, userId)) {
             APP_LOGW("Install System app:%{public}s error", item.c_str());
         }
@@ -132,7 +132,7 @@ bool BMSEventHandler::GetScanBundleArchiveInfo(
 
 void BMSEventHandler::RebootProcessSystemBundle(Constants::AppType appType, int32_t userId)
 {
-    APP_LOGI("reboot scan thread start");
+    APP_LOGD("reboot scan thread start");
     auto dataMgr = DelayedSingleton<BundleMgrService>::GetInstance()->GetDataMgr();
     if (dataMgr == nullptr) {
         APP_LOGE("DataMgr is nullptr");
@@ -145,7 +145,7 @@ void BMSEventHandler::RebootProcessSystemBundle(Constants::AppType appType, int3
     }
     std::string scanDir = (appType == Constants::AppType::SYSTEM_APP) ? Constants::SYSTEM_APP_SCAN_PATH
                                                                       : Constants::THIRD_SYSTEM_APP_SCAN_PATH;
-    APP_LOGI("scanDir: %{public}s and userId: %{public}d", scanDir.c_str(), userId);
+    APP_LOGD("scanDir: %{public}s and userId: %{public}d", scanDir.c_str(), userId);
     std::list<std::string> bundleList = scanner->Scan(scanDir);
     
     BundleInfo bundleInfo;
@@ -170,27 +170,27 @@ void BMSEventHandler::RebootBundleInstall(
     BundleInfo bundleInfo;
     for (auto &listIter : bundleList) {
         bool exist = false;
-        APP_LOGI("reboot scan bundle listIter: %{public}s ", listIter.c_str());
+        APP_LOGD("reboot scan bundle listIter: %{public}s ", listIter.c_str());
         auto result = GetScanBundleArchiveInfo(listIter, bundleInfo);
         bundleInfoMap_.emplace(bundleInfo.name, listIter);
         auto mapIter = loadExistData_.find(bundleInfo.name);
-        APP_LOGI("reboot scan bundleName: %{public}s ", bundleInfo.name.c_str());
+        APP_LOGD("reboot scan bundleName: %{public}s ", bundleInfo.name.c_str());
         if (mapIter != loadExistData_.end() && result) {
-            APP_LOGI("reboot scan %{public}s is exist", bundleInfo.name.c_str());
+            APP_LOGD("reboot scan %{public}s is exist", bundleInfo.name.c_str());
             exist = true;
         }
         BundleInfo Info;
         result = dataMgr->GetBundleInfo(bundleInfo.name, BundleFlag::GET_BUNDLE_DEFAULT, Info);
         if (mapIter->second.versionCode < bundleInfo.versionCode && result) {
             SystemBundleInstaller installer(listIter);
-            APP_LOGI("reboot scan bundle updata listIter %{public}s", listIter.c_str());
+            APP_LOGD("reboot scan bundle updata listIter %{public}s", listIter.c_str());
             if (!installer.OTAInstallSystemBundle(appType)) {
                 APP_LOGW("reboot Install updata System app:%{public}s error", listIter.c_str());
             }
         }
         if (!exist) {
             SystemBundleInstaller installer(listIter);
-            APP_LOGI("reboot scan %{public}s is not exist", listIter.c_str());
+            APP_LOGD("reboot scan %{public}s is not exist", listIter.c_str());
             if (!installer.OTAInstallSystemBundle(appType)) {
                 APP_LOGW("reboot Install System app:%{public}s error", listIter.c_str());
             }
@@ -200,18 +200,18 @@ void BMSEventHandler::RebootBundleInstall(
 
 void BMSEventHandler::RebootBundleUninstall()
 {
-    APP_LOGE("RebootBundleUninstall start");
+    APP_LOGD("RebootBundleUninstall start");
     for (auto &loadIter : loadExistData_) {
         std::string bundleName = loadIter.first;
         auto listIter = bundleInfoMap_.find(bundleName);
         if (listIter == bundleInfoMap_.end()) {
-            APP_LOGI("reboot scan uninstall bundleInfo.name: %{public}s", loadIter.first.c_str());
-            std::string list = listIter->second;
+            APP_LOGD("reboot scan uninstall bundleInfo.name: %{public}s", loadIter.first.c_str());
+            std::string list;
             SystemBundleInstaller installer(list);
             if (!installer.UninstallSystemBundle(bundleName)) {
                 APP_LOGW("reboot Uninstall System app:%{public}s error", bundleName.c_str());
             }
-            APP_LOGE("reboot scan uninstall success");
+            APP_LOGD("reboot scan uninstall success");
         }
     }
 }
