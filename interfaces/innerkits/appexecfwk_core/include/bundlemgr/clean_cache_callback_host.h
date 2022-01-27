@@ -23,7 +23,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class CleanCacheCallbackHost : public IRemoteStub<ICleanCacheCallback> {
 public:
     CleanCacheCallbackHost();
@@ -34,7 +33,6 @@ public:
 private:
     DISALLOW_COPY_AND_MOVE(CleanCacheCallbackHost);
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_CORE_INCLUDE_CLEAN_CACHE_CALLBACK_HOST_H

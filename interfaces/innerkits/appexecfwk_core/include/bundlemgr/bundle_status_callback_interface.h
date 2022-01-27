@@ -20,7 +20,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 const std::string INSTALL_SUCCESS = "install success !";
 const std::string UNINSTALL_SUCCESS = "uninstall success !";
 
@@ -77,7 +76,6 @@ public:
 private:
     std::string bundleName_;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 

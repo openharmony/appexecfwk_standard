@@ -24,7 +24,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 OnPermissionChangedCallbackProxy::OnPermissionChangedCallbackProxy(const sptr<IRemoteObject> &object)
     : IRemoteProxy<OnPermissionChangedCallback>(object)
 {
@@ -60,6 +59,5 @@ void OnPermissionChangedCallbackProxy::OnChanged(const int32_t uid)
         APP_LOGW("fail to call OnChanged, for transact is failed, error code is: %{public}d", ret);
     }
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
