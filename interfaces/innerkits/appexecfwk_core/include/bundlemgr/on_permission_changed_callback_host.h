@@ -23,7 +23,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class OnPermissionChangedCallbackHost : public IRemoteStub<OnPermissionChangedCallback> {
 public:
     OnPermissionChangedCallbackHost();
@@ -34,7 +33,6 @@ public:
 private:
     DISALLOW_COPY_AND_MOVE(OnPermissionChangedCallbackHost);
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_CORE_INCLUDE_ON_PERMISSION_CHANGED_CALLBACK_HOST_H
