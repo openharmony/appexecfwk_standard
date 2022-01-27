@@ -165,6 +165,14 @@ public:
     void Dump(Dumper &dumper);
 
     /**
+     * Print out the internal information about an object in the specified format,
+     * helping you diagnose internal errors of the object.
+     *
+     * @param queueInfo queue Info.
+     */
+    void DumpQueueInfo(std::string& queueInfo);
+
+    /**
      * Checks whether the current EventHandler is idle.
      *
      * @return Returns true if all events have been processed; returns false otherwise.
@@ -231,10 +239,10 @@ private:
     std::list<InnerEvent::Pointer> idleEvents_;
 
     // Next wake up time when block in 'GetEvent'.
-    InnerEvent::TimePoint wakeUpTime_{InnerEvent::TimePoint::max()};
+    InnerEvent::TimePoint wakeUpTime_ { InnerEvent::TimePoint::max() };
 
     // Mark if in idle mode, and record the start time of idle.
-    InnerEvent::TimePoint idleTimeStamp_{InnerEvent::Clock::now()};
+    InnerEvent::TimePoint idleTimeStamp_ { InnerEvent::Clock::now() };
 
     bool isIdle_{true};
 
