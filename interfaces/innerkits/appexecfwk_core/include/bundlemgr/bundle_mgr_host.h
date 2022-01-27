@@ -27,7 +27,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class BundleMgrHost : public IRemoteStub<IBundleMgr> {
 public:
     BundleMgrHost() = default;
@@ -558,7 +557,6 @@ private:
 
     DISALLOW_COPY_AND_MOVE(BundleMgrHost);
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_CORE_INCLUDE_BUNDLEMGR_BUNDLE_MGR_HOST_H
