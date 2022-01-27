@@ -511,6 +511,21 @@ void EventRunner::Dump(Dumper &dumper)
     queue_->Dump(dumper);
 }
 
+void EventRunner::DumpRunnerInfo(std::string& runnerInfo)
+{
+    if (!IsRunning()) {
+        runnerInfo = "        Event runner is not running" + LINE_SEPARATOR;
+    }
+
+    if (queue_ == nullptr) {
+        runnerInfo = "        Queue is null" + LINE_SEPARATOR;
+    }
+
+    std::string queueInfo;
+    queue_->DumpQueueInfo(queueInfo);
+    runnerInfo += queueInfo;
+}
+
 void EventRunner::SetLogger(const std::shared_ptr<Logger> &logger)
 {
     innerRunner_->SetLogger(logger);
