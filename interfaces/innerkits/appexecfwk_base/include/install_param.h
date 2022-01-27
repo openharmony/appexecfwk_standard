@@ -22,7 +22,6 @@
 #include "parcel.h"
 namespace OHOS {
 namespace AppExecFwk {
-
 enum class InstallFlag {
     NORMAL = 0,
     // Allow to replace the existing bundle when the new version isn't lower than the old one.

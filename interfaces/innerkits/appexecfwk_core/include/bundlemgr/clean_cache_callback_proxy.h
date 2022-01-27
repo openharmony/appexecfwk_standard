@@ -22,7 +22,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class CleanCacheCallbackProxy : public IRemoteProxy<ICleanCacheCallback> {
 public:
     explicit CleanCacheCallbackProxy(const sptr<IRemoteObject> &object);
@@ -36,7 +35,6 @@ public:
 private:
     static inline BrokerDelegator<CleanCacheCallbackProxy> delegator_;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 
