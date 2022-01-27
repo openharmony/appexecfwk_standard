@@ -38,8 +38,8 @@ public:
      * @param onlyOneUser Indicates is the only one user.
      * @return Returns true if the permissions install successfully; returns false otherwise.
      */
-    static bool InstallPermissions(
-        const InnerBundleInfo &innerBundleInfo, int32_t userId = Constants::DEFAULT_USERID, bool onlyOneUser = true);
+    static bool InstallPermissions(const InnerBundleInfo &innerBundleInfo,
+        int32_t userId = Constants::UNSPECIFIED_USERID, bool onlyOneUser = true);
     /**
      * @brief Handle the permissions in updating progress.
      * @param innerBundleInfo Indicates the current installing inner bundle information.
@@ -47,8 +47,8 @@ public:
      * @param onlyOneUser Indicates is the only one user.
      * @return Returns true if the permissions updating successfully; returns false otherwise.
      */
-    static bool UpdatePermissions(
-        const InnerBundleInfo &innerBundleInfo, int32_t userId = Constants::DEFAULT_USERID, bool onlyOneUser = true);
+    static bool UpdatePermissions(const InnerBundleInfo &innerBundleInfo,
+        int32_t userId = Constants::UNSPECIFIED_USERID, bool onlyOneUser = true);
     /**
      * @brief Handle the permissions in uninstall progress.
      * @param innerBundleInfo Indicates the current installing inner bundle information.
@@ -56,8 +56,8 @@ public:
      * @param onlyOneUser Indicates is the only one user.
      * @return Returns true if the permissions uninstall successfully; returns false otherwise.
      */
-    static bool UninstallPermissions(
-        const InnerBundleInfo &innerBundleInfo, int32_t userId = Constants::DEFAULT_USERID, bool onlyOneUser = true);
+    static bool UninstallPermissions(const InnerBundleInfo &innerBundleInfo,
+        int32_t userId = Constants::UNSPECIFIED_USERID, bool onlyOneUser = true);
     /**
      * @brief Check the permission whether granted for calling process.
      * @param permissionName Indicates the permission name.
@@ -65,7 +65,7 @@ public:
      * @return Returns true if the permissions has been granted; returns false otherwise.
      */
     static bool CheckCallingPermission(
-        const std::string &permissionName, int32_t userId = Constants::DEFAULT_USERID);
+        const std::string &permissionName, int32_t userId = Constants::UNSPECIFIED_USERID);
     /**
      * @brief Verify whether a specified bundle has been granted a specific permission.
      * @param bundleName Indicates the name of the bundle to check.
@@ -145,8 +145,8 @@ private:
      * @param onlyOneUser Indicates is the only one user.
      * @return Returns 0 if the reqPermissions add and grant successfully; returns -1 otherwise.
      */
-    static int32_t AddAndGrantedReqPermissions(const InnerBundleInfo &innerBundleInfo,
-        int32_t userId = Constants::DEFAULT_USERID, bool onlyOneUser = true);
+    static int32_t AddAndGrantedReqPermissions(
+        const InnerBundleInfo &innerBundleInfo, int32_t userId, bool onlyOneUser = true);
     /**
      * @brief Grant a reqPermission from permission kit.
      * @param bundleName Indicates the name of the bundle.

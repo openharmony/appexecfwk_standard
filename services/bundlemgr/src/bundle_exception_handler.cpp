@@ -51,7 +51,7 @@ void BundleExceptionHandler::HandleInvalidBundle(InnerBundleInfo &info, bool &is
     auto moduleDataDir = appDataPath.empty() ? "" : (appDataPath + Constants::PATH_SEPARATOR + mark.packageName);
     // install and update failed before service restart
     if (mark.status == InstallExceptionStatus::INSTALL_START && RemoveBundleAndDataDir(appCodePath, appDataPath)) {
-        BundlePermissionMgr::UninstallPermissions(info);
+        UninstallPermissions(info);
         DeleteBundleInfoFromStorage(info);
         isBundleValid = false;
     } else if (mark.status == InstallExceptionStatus::UPDATING_EXISTED_START) {
@@ -65,12 +65,12 @@ void BundleExceptionHandler::HandleInvalidBundle(InnerBundleInfo &info, bool &is
         info.SetBundleStatus(InnerBundleInfo::BundleStatus::ENABLED);
     } else if (mark.status == InstallExceptionStatus::UNINSTALL_BUNDLE_START &&
         RemoveBundleAndDataDir(appCodePath, appDataPath)) {   // continue to uninstall
-        BundlePermissionMgr::UninstallPermissions(info);
+        UninstallPermissions(info);
         DeleteBundleInfoFromStorage(info);
         isBundleValid = false;
     } else if (mark.status == InstallExceptionStatus::UNINSTALL_PACKAGE_START) {
         if (info.IsOnlyModule(mark.packageName) && RemoveBundleAndDataDir(appCodePath, appDataPath)) {
-            BundlePermissionMgr::UninstallPermissions(info);
+            UninstallPermissions(info);
             DeleteBundleInfoFromStorage(info);
             isBundleValid = false;
             return;
@@ -86,6 +86,13 @@ void BundleExceptionHandler::HandleInvalidBundle(InnerBundleInfo &info, bool &is
         }
     } else {
         APP_LOGD("bundle %{public}s is under unknown installation status", info.GetBundleName().c_str());
+    }
+}
+
+void BundleExceptionHandler::UninstallPermissions(const InnerBundleInfo &info)
+{
+    for (auto userInfo : info.GetInnerBundleUserInfos()) {
+        BundlePermissionMgr::UninstallPermissions(info, userInfo.second.bundleUserInfo.userId);
     }
 }
 
