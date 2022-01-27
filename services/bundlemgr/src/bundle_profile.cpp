@@ -2132,7 +2132,9 @@ bool TransformToInfo(ProfileReader::ConfigJson &configJson, InnerBundleInfo &inn
             APP_LOGE("ability type is valid");
             return false;
         }
-        std::string keyName = configJson.app.bundleName + configJson.module.package + abilityInfo.name;
+        std::string keyName;
+        keyName.append(configJson.app.bundleName).append(".")
+            .append(configJson.module.package).append(".").append(abilityInfo.name);
         innerModuleInfo.abilityKeys.emplace_back(keyName);
         innerModuleInfo.skillKeys.emplace_back(keyName);
         innerBundleInfo.InsertSkillInfo(keyName, ability.skills);

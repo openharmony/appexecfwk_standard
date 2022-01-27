@@ -168,12 +168,6 @@ public:
      */
     void UpdateModuleInfo(const InnerBundleInfo &newInfo);
     /**
-     * @brief Update version info to old InnerBundleInfo object.
-     * @param newInfo Indicates the new InnerBundleInfo object.
-     * @return
-     */
-    void UpdateVersionInfo(const InnerBundleInfo &newInfo);
-    /**
      * @brief Update common hap info to old InnerBundleInfo object.
      * @param newInfo Indicates the new InnerBundleInfo object.
      * @return
@@ -193,12 +187,6 @@ public:
      */
     std::optional<HapModuleInfo> FindHapModuleInfo(
         const std::string &modulePackage, int32_t userId = Constants::UNSPECIFIED_USERID) const;
-    /**
-     * @brief Find skills by keyName.
-     * @param keyName Indicates the keyName.
-     * @return Returns the skills object if find it; returns null otherwise.
-     */
-    std::optional<std::vector<Skill>> FindSkills(const std::string &keyName) const;
     /**
      * @brief Find abilityInfo by bundle name and ability name.
      * @param bundleName Indicates the bundle name.
@@ -416,6 +404,14 @@ public:
         return baseApplicationInfo_.bundleName;
     }
     /**
+     * @brief Get baseBundleInfo.
+     * @return Return the BundleInfo object.
+     */
+    BundleInfo GetBaseBundleInfo() const
+    {
+        return baseBundleInfo_;
+    }
+    /**
      * @brief Set baseBundleInfo.
      * @param bundleInfo Indicates the BundleInfo object.
      */
@@ -424,12 +420,18 @@ public:
         baseBundleInfo_ = bundleInfo;
     }
     /**
-     * @brief Get baseBundleInfo.
-     * @return Return the BundleInfo object.
+     * @brief Update baseBundleInfo.
+     * @param bundleInfo Indicates the new BundleInfo object.
+     * @return
      */
-    BundleInfo GetBaseBundleInfo() const
+    void UpdateBaseBundleInfo(const BundleInfo &bundleInfo, bool isEntry);
+    /**
+     * @brief Get baseApplicationInfo.
+     * @return Return the ApplicationInfo object.
+     */
+    ApplicationInfo GetBaseApplicationInfo() const
     {
-        return baseBundleInfo_;
+        return baseApplicationInfo_;
     }
     /**
      * @brief Set baseApplicationInfo.
@@ -443,40 +445,7 @@ public:
      * @brief Update baseApplicationInfo.
      * @param applicationInfo Indicates the ApplicationInfo object.
      */
-    void UpdateBaseApplicationInfo(const ApplicationInfo &applicationInfo)
-    {
-        baseApplicationInfo_.label = applicationInfo.label;
-        baseApplicationInfo_.labelId = applicationInfo.labelId;
-        baseApplicationInfo_.iconPath = applicationInfo.iconPath;
-        baseApplicationInfo_.iconId = applicationInfo.iconId;
-        baseApplicationInfo_.description = applicationInfo.description;
-        baseApplicationInfo_.descriptionId = applicationInfo.descriptionId;
-        if (!baseApplicationInfo_.isLauncherApp) {
-            baseApplicationInfo_.isLauncherApp = applicationInfo.isLauncherApp;
-        }
-        baseApplicationInfo_.debug = applicationInfo.debug;
-        baseApplicationInfo_.vendor = applicationInfo.vendor;
-        baseApplicationInfo_.versionCode = applicationInfo.versionCode;
-        baseApplicationInfo_.versionName = applicationInfo.versionName;
-        baseApplicationInfo_.minCompatibleVersionCode = applicationInfo.minCompatibleVersionCode;
-        baseApplicationInfo_.apiCompatibleVersion = applicationInfo.apiCompatibleVersion;
-        baseApplicationInfo_.apiTargetVersion = applicationInfo.apiTargetVersion;
-        baseApplicationInfo_.apiReleaseType = applicationInfo.apiReleaseType;
-        baseApplicationInfo_.distributedNotificationEnabled = applicationInfo.distributedNotificationEnabled;
-        baseApplicationInfo_.entityType = applicationInfo.entityType;
-        baseApplicationInfo_.keepAlive = applicationInfo.keepAlive;
-        baseApplicationInfo_.singleUser = applicationInfo.singleUser;
-        baseApplicationInfo_.userDataClearable = applicationInfo.userDataClearable;
-        baseApplicationInfo_.removable = applicationInfo.removable;
-    }
-    /**
-     * @brief Get baseApplicationInfo.
-     * @return Return the ApplicationInfo object.
-     */
-    ApplicationInfo GetBaseApplicationInfo() const
-    {
-        return baseApplicationInfo_;
-    }
+    void UpdateBaseApplicationInfo(const ApplicationInfo &applicationInfo);
     /**
      * @brief Get application enabled.
      * @param userId Indicates the user ID.
@@ -619,18 +588,6 @@ public:
             abilityNames.emplace_back(ability.second.name);
         }
         return abilityNames;
-    }
-    /**
-     * @brief Get all skill keys in application.
-     * @return Returns skill keys.
-     */
-    auto GetSkillKeys() const
-    {
-        std::vector<std::string> skillKeys;
-        for (auto &skill : skillInfos_) {
-            skillKeys.emplace_back(skill.first);
-        }
-        return skillKeys;
     }
     /**
      * @brief Get version code in application.
@@ -1103,16 +1060,6 @@ public:
         return hasEntry_;
     }
 
-    void SetAppCanUninstall(bool canUninstall)
-    {
-        canUninstall_ = canUninstall;
-    }
-
-    bool GetAppCanUninstall() const
-    {
-        return canUninstall_;
-    }
-
     /**
      * @brief Insert formInfo.
      * @param keyName Indicates object as key.
@@ -1418,28 +1365,30 @@ private:
     ApplicationInfo baseApplicationInfo_;
     BundleInfo baseBundleInfo_;  // applicationInfo and abilityInfo empty
     std::string mainAbility_;
+    std::string mainAbilityName_;
     std::string appFeature_;
     std::string appPrivilegeLevel_ = Constants::EMPTY_STRING;
     bool hasEntry_ = false;
-    bool canUninstall_ = true;
     bool isPreInstallApp_ = false;
     std::vector<std::string> allowedAcls_;
     InstallMark mark_;
 
     // only using for install or update progress, doesn't need to save to database
     std::string currentPackage_;
-    std::string mainAbilityName_;
     std::string newBundleName_;
     // Auxiliary property, which is used when the application
     // has been installed when the user is created.
     bool onlyCreateBundleUser_ = false;
 
+    std::map<std::string, InnerModuleInfo> innerModuleInfos_;
+
     std::map<std::string, std::vector<FormInfo>> formInfos_;
     std::map<std::string, CommonEventInfo> commonEvents_;
-    std::map<std::string, AbilityInfo> baseAbilityInfos_;
-    std::map<std::string, InnerModuleInfo> innerModuleInfos_;
-    std::map<std::string, std::vector<Skill>> skillInfos_;
     std::map<std::string, ShortcutInfo> shortcutInfos_;
+
+    std::map<std::string, AbilityInfo> baseAbilityInfos_;
+    std::map<std::string, std::vector<Skill>> skillInfos_;
+
     std::map<std::string, InnerBundleUserInfo> innerBundleUserInfos_;
     // new version fields
     bool isNewVersion_ = false;

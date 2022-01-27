@@ -208,7 +208,7 @@ bool BundleDataMgr::AddNewModuleInfo(
     }
     if (statusItem->second == InstallState::UPDATING_SUCCESS) {
         APP_LOGD("save bundle:%{public}s info", bundleName.c_str());
-        oldInfo.UpdateVersionInfo(newInfo);
+        oldInfo.UpdateBaseBundleInfo(newInfo.GetBaseBundleInfo(), newInfo.HasEntry());
         oldInfo.updateCommonHapInfo(newInfo);
         oldInfo.AddModuleInfo(newInfo);
         oldInfo.SetAppPrivilegeLevel(newInfo.GetAppPrivilegeLevel());
@@ -269,7 +269,7 @@ bool BundleDataMgr::RemoveModuleInfo(
 bool BundleDataMgr::UpdateInnerBundleInfo(
     const std::string &bundleName, const InnerBundleInfo &newInfo, InnerBundleInfo &oldInfo)
 {
-    APP_LOGD("update module info:%{public}s", bundleName.c_str());
+    APP_LOGD("UpdateInnerBundleInfo:%{public}s", bundleName.c_str());
     std::lock_guard<std::mutex> lock(bundleInfoMutex_);
     auto infoItem = bundleInfos_.find(bundleName);
     if (infoItem == bundleInfos_.end()) {
@@ -282,18 +282,30 @@ bool BundleDataMgr::UpdateInnerBundleInfo(
         APP_LOGE("save info fail, app:%{public}s is not updated", bundleName.c_str());
         return false;
     }
+    // ROLL_BACK and USER_CHANGE should not be here
     if (statusItem->second == InstallState::UPDATING_SUCCESS
         || statusItem->second == InstallState::ROLL_BACK
         || statusItem->second == InstallState::USER_CHANGE) {
-        APP_LOGD("save bundle:%{public}s info", bundleName.c_str());
-        oldInfo.UpdateVersionInfo(newInfo);
-        oldInfo.updateCommonHapInfo(newInfo);
+        APP_LOGD("begin to update, bundleName : %{public}s, moduleName : %{public}s",
+            bundleName.c_str(), newInfo.GetCurrentModulePackage().c_str());
+        // 1.exist entry, update entry.
+        // 2.only exist feature, update feature.
+        if (newInfo.HasEntry() || !oldInfo.HasEntry()) {
+            oldInfo.UpdateBaseBundleInfo(newInfo.GetBaseBundleInfo(), newInfo.HasEntry());
+            oldInfo.UpdateBaseApplicationInfo(newInfo.GetBaseApplicationInfo());
+            oldInfo.SetMainAbility(newInfo.GetMainAbility());
+            oldInfo.SetMainAbilityName(newInfo.GetMainAbilityName());
+            oldInfo.SetAppType(newInfo.GetAppType());
+            oldInfo.SetAppFeature(newInfo.GetAppFeature());
+            oldInfo.SetIsPreInstallApp(newInfo.IsPreInstallApp());
+            oldInfo.SetAppPrivilegeLevel(newInfo.GetAppPrivilegeLevel());
+            oldInfo.SetAllowedAcls(newInfo.GetAllowedAcls());
+        }
+        if (newInfo.HasEntry()) {
+            oldInfo.SetHasEntry(true);
+        }
+        oldInfo.updateCommonHapInfo(newInfo); // to do
         oldInfo.UpdateModuleInfo(newInfo);
-        oldInfo.SetAppPrivilegeLevel(newInfo.GetAppPrivilegeLevel());
-        oldInfo.SetAllowedAcls(newInfo.GetAllowedAcls());
-        oldInfo.SetAppType(newInfo.GetAppType());
-        oldInfo.SetAppFeature(newInfo.GetAppFeature());
-        oldInfo.SetIsPreInstallApp(newInfo.IsPreInstallApp());
         oldInfo.SetBundleStatus(InnerBundleInfo::BundleStatus::ENABLED);
         if (dataStorage_->DeleteStorageBundleInfo(Constants::CURRENT_DEVICE_ID, oldInfo)) {
             if (dataStorage_->SaveStorageBundleInfo(Constants::CURRENT_DEVICE_ID, oldInfo)) {
