@@ -132,6 +132,11 @@ public:
     {
         return;
     }
+    virtual void DumpSysState(
+            const std::string& args, std::vector<std::string>& info, bool isClient, bool isUserID, int UserID) override
+    {
+        return;
+    }
     virtual int TerminateAbilityResult(const sptr<IRemoteObject> &token, int startId) override
     {
         return 0;

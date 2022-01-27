@@ -526,6 +526,35 @@ void EventQueue::Dump(Dumper &dumper)
     dumper.Dump(dumper.GetTag() + " Total event size : " + std::to_string(total) + LINE_SEPARATOR);
 }
 
+void EventQueue::DumpQueueInfo(std::string& queueInfo)
+{
+    std::lock_guard<std::mutex> lock(queueLock_);
+    std::string priority[] = {"Immediate", "High", "Low"};
+    uint32_t total = 0;
+    for (uint32_t i = 0; i < SUB_EVENT_QUEUE_NUM; ++i) {
+        uint32_t n = 0;
+        queueInfo +=  "          " + priority[i] + " priority event queue:" + LINE_SEPARATOR;
+        for (auto it = subEventQueues_[i].queue.begin(); it != subEventQueues_[i].queue.end(); ++it) {
+            ++n;
+            queueInfo +=  "            No." + std::to_string(n) + " : " + (*it)->Dump();
+            ++total;
+        }
+        queueInfo +=  "            Total size of " + priority[i] + " events : " + std::to_string(n) + LINE_SEPARATOR;
+    }
+
+    queueInfo += "          Idle priority event queue:" + LINE_SEPARATOR;
+
+    int n = 0;
+    for (auto it = idleEvents_.begin(); it != idleEvents_.end(); ++it) {
+        ++n;
+        queueInfo += "            No." + std::to_string(n) + " : " + (*it)->Dump();
+        ++total;
+    }
+    queueInfo += "            Total size of Idle events : " + std::to_string(n) + LINE_SEPARATOR;
+
+    queueInfo += "          Total event size : " + std::to_string(total);
+}
+
 bool EventQueue::IsIdle()
 {
     return isIdle_;

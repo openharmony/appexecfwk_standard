@@ -117,6 +117,14 @@ public:
     void Dump(Dumper &dumper);
 
     /**
+     * Print out the internal information about an object in the specified format,
+     * helping you diagnose internal errors of the object.
+     *
+     * @param runnerInfo runner Info.
+     */
+    void DumpRunnerInfo(std::string& runnerInfo);
+
+    /**
      * Set the Logger object for logging messages that are processed by this event runner.
      *
      * @param logger The Logger object you have implemented for logging messages.
