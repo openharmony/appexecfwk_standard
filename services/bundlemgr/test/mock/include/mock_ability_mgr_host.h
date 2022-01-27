@@ -37,27 +37,27 @@ public:
     MockAbilityMgrStub() = default;
     virtual ~MockAbilityMgrStub() = default;
 
-    virtual int StartAbility(const AAFwk::Want &want, int requestCode = -1) override
+    virtual int StartAbility(
+        const AAFwk::Want &want, int32_t userId = DEFAULT_INVAL_VALUE, int requestCode = -1) override
     {
         return 0;
     }
     virtual int StartAbility(
-        const AAFwk::Want &want, const sptr<IRemoteObject> &callerToken, int requestCode = -1) override
+        const Want &want, const sptr<IRemoteObject> &callerToken, int32_t userId, int requestCode) override
     {
         return 0;
     }
-    virtual int StartAbility(const AAFwk::Want &want, const AAFwk::AbilityStartSetting &abilityStartSetting,
-        const sptr<IRemoteObject> &callerToken, int requestCode = -1) override
+    virtual int StartAbility(const Want &want, const AbilityStartSetting &abilityStartSetting,
+        const sptr<IRemoteObject> &callerToken, int32_t userId, int requestCode) override
     {
         return 0;
     }
     virtual int StartAbility(
-        const Want &want, const sptr<IRemoteObject> &callerToken, int requestCode, int requestUid)
-    {
-        return 0;
-    }
-    virtual int StartAbility(const Want &want, const StartOptions &startOptions,
-        const sptr<IRemoteObject> &callerToken, int requestCode = -1) override
+        const Want &want,
+        const StartOptions &startOptions,
+        const sptr<IRemoteObject> &callerToken,
+        int32_t userId = DEFAULT_INVAL_VALUE,
+        int requestCode = DEFAULT_INVAL_VALUE) override
     {
         return 0;
     }
@@ -80,8 +80,11 @@ public:
     {
         return 0;
     }
-    virtual int ConnectAbility(const AAFwk::Want &want, const sptr<AAFwk::IAbilityConnection> &connect,
-        const sptr<IRemoteObject> &callerToken) override
+    virtual int ConnectAbility(
+        const Want &want,
+        const sptr<IAbilityConnection> &connect,
+        const sptr<IRemoteObject> &callerToken,
+        int32_t userId = DEFAULT_INVAL_VALUE) override
     {
         return 0;
     }
@@ -133,7 +136,7 @@ public:
     {
         return 0;
     }
-    virtual int StopServiceAbility(const AAFwk::Want &want) override
+    virtual int StopServiceAbility(const Want &want, int32_t userId = DEFAULT_INVAL_VALUE) override
     {
         return 0;
     }
