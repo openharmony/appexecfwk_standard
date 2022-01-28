@@ -38,9 +38,10 @@ bool BundleMgrClient::GetBundleNameForUid(const int uid, std::string &bundleName
     return impl_->GetBundleNameForUid(uid, bundleName);
 }
 
-bool BundleMgrClient::GetBundleInfo(const std::string &bundleName, const BundleFlag flag, BundleInfo &bundleInfo)
+bool BundleMgrClient::GetBundleInfo(const std::string &bundleName, const BundleFlag flag, BundleInfo &bundleInfo,
+    int32_t userId)
 {
-    return impl_->GetBundleInfo(bundleName, flag, bundleInfo);
+    return impl_->GetBundleInfo(bundleName, flag, bundleInfo, userId);
 }
 
 bool BundleMgrClient::GetHapModuleInfo(const std::string &bundleName, const std::string &hapName,

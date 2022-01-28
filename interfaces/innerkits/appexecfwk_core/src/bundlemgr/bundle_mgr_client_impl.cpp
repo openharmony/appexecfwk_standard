@@ -54,7 +54,8 @@ bool BundleMgrClientImpl::GetBundleNameForUid(const int uid, std::string &bundle
     return bundleMgr_->GetBundleNameForUid(uid, bundleName);
 }
 
-bool BundleMgrClientImpl::GetBundleInfo(const std::string &bundleName, const BundleFlag flag, BundleInfo &bundleInfo)
+bool BundleMgrClientImpl::GetBundleInfo(const std::string &bundleName, const BundleFlag flag, BundleInfo &bundleInfo,
+    int32_t userId)
 {
     APP_LOGI("enter");
 
@@ -64,7 +65,7 @@ bool BundleMgrClientImpl::GetBundleInfo(const std::string &bundleName, const Bun
         return false;
     }
 
-    return bundleMgr_->GetBundleInfo(bundleName, flag, bundleInfo);
+    return bundleMgr_->GetBundleInfo(bundleName, flag, bundleInfo, userId);
 }
 
 bool BundleMgrClientImpl::GetHapModuleInfo(const std::string &bundleName, const std::string &hapName,
