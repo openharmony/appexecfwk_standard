@@ -193,7 +193,7 @@ struct Forms {
     std::vector<std::string> landscapeLayouts;
     std::vector<std::string> portraitLayouts;
     bool updateEnabled = false;
-    std::string scheduledUpateTime = "0:0";
+    std::string scheduledUpdateTime = "0:0";
     int32_t updateDuration = 0;
     std::string deepLink;
     std::string formConfigAbility;
@@ -1013,7 +1013,7 @@ void from_json(const nlohmann::json &jsonObject, Forms &forms)
     GetValueIfFindKey<std::string>(jsonObject,
         jsonObjectEnd,
         BUNDLE_MODULE_PROFILE_FORMS_SCHEDULED_UPDATE_TIME,
-        forms.scheduledUpateTime,
+        forms.scheduledUpdateTime,
         JsonType::STRING,
         false,
         parseResult,
@@ -1846,7 +1846,7 @@ bool ConvertFormInfo(FormInfo &formInfo, const ProfileReader::Forms &form)
         formInfo.colorMode = colorMode->second;
     }
     formInfo.updateEnabled = form.updateEnabled;
-    formInfo.scheduledUpateTime = form.scheduledUpateTime;
+    formInfo.scheduledUpdateTime = form.scheduledUpdateTime;
     formInfo.updateDuration = form.updateDuration;
     formInfo.jsComponentName = form.jsComponentName;
     for (auto &data : form.metaData.customizeData) {
