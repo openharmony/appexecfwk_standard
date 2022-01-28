@@ -52,7 +52,7 @@ const struct option LONG_OPTIONS[] = {
     {nullptr, 0, nullptr, 0},
 };
 
-const std::string SHORT_OPTIONS_DUMP = "hn:aisu:";
+const std::string SHORT_OPTIONS_DUMP = "hn:aisu:d:";
 const struct option LONG_OPTIONS_DUMP[] = {
     {"help", no_argument, nullptr, 'h'},
     {"bundle-name", required_argument, nullptr, 'n'},
@@ -60,6 +60,7 @@ const struct option LONG_OPTIONS_DUMP[] = {
     {"bundle-info", no_argument, nullptr, 'i'},
     {"shortcut-info", no_argument, nullptr, 's'},
     {"user-id", required_argument, nullptr, 'u'},
+    {"device-id", required_argument, nullptr, 'd'},
     {nullptr, 0, nullptr, 0},
 };
 
@@ -501,6 +502,15 @@ ErrCode BundleManagerShellCommand::RunAsInstallCommand()
                     result = OHOS::ERR_INVALID_VALUE;
                     break;
                 }
+                case 'u': {
+                    // 'bm install -u' with no argument: bm install -u
+                    // 'bm install --user-id' with no argument: bm install --user-id
+                    APP_LOGD("'bm install -u' with no argument.");
+                    resultReceiver_.append("error: option ");
+                    resultReceiver_.append("requires a value.\n");
+                    result = OHOS::ERR_INVALID_VALUE;
+                    break;
+                }
                 default: {
                     // 'bm install' with an unknown option: bm install -x
                     // 'bm install' with an unknown option: bm install -xxx
@@ -675,8 +685,10 @@ ErrCode BundleManagerShellCommand::RunAsUninstallCommand()
                 case 'u': {
                     // 'bm uninstall -n <bundleName> -u userId'
                     // 'bm uninstall --bundle-name <bundleName> --user-id userId'
-                    APP_LOGD("'bm uninstall %{public}s %{public}s'", argv_[optind - OFFSET_REQUIRED_ARGUMENT], optarg);
-                    userId = std::stoi(optarg);
+                    APP_LOGD("'bm uninstall -u' with no argument.");
+                    resultReceiver_.append("error: option ");
+                    resultReceiver_.append("requires a value.\n");
+                    result = OHOS::ERR_INVALID_VALUE;
                     break;
                 }
                 default: {
@@ -766,6 +778,8 @@ ErrCode BundleManagerShellCommand::RunAsDumpCommand()
     bool bundleDumpInfos = false;
     bool bundleDumpInfo = false;
     bool bundleDumpShortcut = false;
+    bool bundleDumpDistributedBundleInfo = false;
+    std::string deviceId = "";
     int32_t userId = Constants::ALL_USERID;
     while (true) {
         counter++;
@@ -793,6 +807,24 @@ ErrCode BundleManagerShellCommand::RunAsDumpCommand()
                     // 'bm dump -n' with no argument: bm dump -n
                     // 'bm dump --bundle-name' with no argument: bm dump --bundle-name
                     APP_LOGD("'bm dump -n' with no argument.");
+                    resultReceiver_.append("error: option ");
+                    resultReceiver_.append("requires a value.\n");
+                    result = OHOS::ERR_INVALID_VALUE;
+                    break;
+                }
+                case 'u': {
+                    // 'bm dump -u' with no argument: bm dump -u
+                    // 'bm dump --user-id' with no argument: bm dump --user-id
+                    APP_LOGD("'bm dump -u' with no argument.");
+                    resultReceiver_.append("error: option ");
+                    resultReceiver_.append("requires a value.\n");
+                    result = OHOS::ERR_INVALID_VALUE;
+                    break;
+                }
+                case 'd': {
+                    // 'bm dump -d' with no argument: bm dump -d
+                    // 'bm dump --device-id' with no argument: bm dump --device-id
+                    APP_LOGD("'bm dump -d' with no argument.");
                     resultReceiver_.append("error: option ");
                     resultReceiver_.append("requires a value.\n");
                     result = OHOS::ERR_INVALID_VALUE;
@@ -855,6 +887,14 @@ ErrCode BundleManagerShellCommand::RunAsDumpCommand()
                 userId = std::stoi(optarg);
                 break;
             }
+            case 'd': {
+                // 'bm dump -n <bundleName> -d deviceId'
+                // 'bm dump --bundle-name <bundleName> --device-id deviceId'
+                APP_LOGD("'bm dump %{public}s %{public}s'", argv_[optind - OFFSET_REQUIRED_ARGUMENT], optarg);
+                deviceId = optarg;
+                bundleDumpDistributedBundleInfo = true;
+                break;
+            }
             default: {
                 result = OHOS::ERR_INVALID_VALUE;
                 break;
@@ -868,6 +908,12 @@ ErrCode BundleManagerShellCommand::RunAsDumpCommand()
             resultReceiver_.append(HELP_MSG_NO_BUNDLE_NAME_OPTION + "\n");
             result = OHOS::ERR_INVALID_VALUE;
         }
+        if ((resultReceiver_ == "") && bundleDumpDistributedBundleInfo && (bundleName.size() == 0)) {
+            // 'bm dump d ...' with no bundle name option
+            APP_LOGD("'bm dump -d' with no bundle name option.");
+            resultReceiver_.append(HELP_MSG_NO_BUNDLE_NAME_OPTION + "\n");
+            result = OHOS::ERR_INVALID_VALUE;
+        }
     }
     if (result != OHOS::ERR_OK) {
         resultReceiver_.append(HELP_MSG_DUMP);
@@ -875,6 +921,8 @@ ErrCode BundleManagerShellCommand::RunAsDumpCommand()
         APP_LOGD("dumpResults: %{public}s", dumpResults.c_str());
         if (bundleDumpShortcut) {
             dumpResults = DumpShortcutInfos(bundleName, userId);
+        } else if (bundleDumpDistributedBundleInfo) {
+            dumpResults = DumpDistributedBundleInfo(deviceId, userId, bundleName);
         } else if (bundleDumpAll) {
             dumpResults = DumpBundleList(userId);
         } else if (bundleDumpInfos) {
@@ -930,7 +978,15 @@ ErrCode BundleManagerShellCommand::RunAsCleanCommand()
                     result = OHOS::ERR_INVALID_VALUE;
                     break;
                 }
-                case 0:
+                case 'u': {
+                    // 'bm clean -u' with no argument: bm clean -u
+                    // 'bm clean --user-id' with no argument: bm clean --user-id
+                    APP_LOGD("'bm clean -u' with no argument.");
+                    resultReceiver_.append("error: option ");
+                    resultReceiver_.append("requires a value.\n");
+                    result = OHOS::ERR_INVALID_VALUE;
+                    break;
+                }
                 default: {
                     // 'bm clean' with an unknown option: bm clear -x
                     // 'bm clean' with an unknown option: bm clear -xxx
@@ -1289,6 +1345,15 @@ ErrCode BundleManagerShellCommand::RunAsRecoverCommand()
                     result = OHOS::ERR_INVALID_VALUE;
                     break;
                 }
+                case 'u': {
+                    // 'bm recover -n <bundleName> -u userId'
+                    // 'bm recover --bundle-name <bundleName> --user-id userId'
+                    APP_LOGD("'bm recover -u' with no argument.");
+                    resultReceiver_.append("error: option ");
+                    resultReceiver_.append("requires a value.\n");
+                    result = OHOS::ERR_INVALID_VALUE;
+                    break;
+                }
                 default: {
                     // 'bm recover' with an unknown option: bm recover -x
                     // 'bm recover' with an unknown option: bm recover -xxx
@@ -1522,6 +1587,23 @@ std::string BundleManagerShellCommand::DumpShortcutInfos(const std::string &bund
         DumpFlag::DUMP_SHORTCUT_INFO, bundleName, userId, dumpResults);
     if (!dumpRet) {
         APP_LOGE("failed to dump shortcut infos.");
+    }
+    return dumpResults;
+}
+
+std::string BundleManagerShellCommand::DumpDistributedBundleInfo(const std::string &deviceId,
+    int32_t userId, const std::string &bundleName)
+{
+    std::string dumpResults = "";
+    DistributedBundleInfo bundleInfo;
+    bool dumpRet = bundleMgrProxy_->GetDistributedBundleInfo(deviceId, userId, bundleName, bundleInfo);
+    if (!dumpRet) {
+        APP_LOGE("failed to dump distributed bundleInfo.");
+    } else {
+        dumpResults.append("distributed bundleInfo");
+        dumpResults.append(":\n");
+        dumpResults.append(bundleInfo.ToString());
+        dumpResults.append("\n");
     }
     return dumpResults;
 }
