@@ -1991,6 +1991,9 @@ bool TransformToInfo(const ProfileReader::ConfigJson &configJson, InnerModuleInf
     innerModuleInfo.defPermissions = configJson.module.defPermissions;
     innerModuleInfo.mainAbility = configJson.module.mainAbility;
     innerModuleInfo.srcPath = configJson.module.srcPath;
+    if (configJson.module.distro.moduleType == ProfileReader::MODULE_DISTRO_MODULE_TYPE_VALUE_ENTRY) {
+        innerModuleInfo.installationFree = configJson.module.distro.installationFree;
+    }
     return true;
 }
 
