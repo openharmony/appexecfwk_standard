@@ -41,9 +41,10 @@ ohos_shared_library("libappexecfwk_common") {
     "//utils/native/base:utils_config",
   ]
 
-  deps = [ "//utils/native/base:utils" ]
-
-  external_deps = [ "hiviewdfx_hilog_native:libhilog" ]
+  external_deps = [
+    "utils_base:utils",
+    "hiviewdfx_hilog_native:libhilog",
+  ]
 
   subsystem_name = "appexecfwk"
   part_name = "bundle_framework"
