@@ -545,20 +545,6 @@ int32_t BundlePermissionMgr::VerifyPermission(AccessToken::AccessTokenID tokenId
     return AccessToken::AccessTokenKit::VerifyAccessToken(tokenId, permissionName);
 }
 
-bool BundlePermissionMgr::GetDefinePermission(
-    const std::string& permissionName, PermissionDef& permissionDefResult)
-{
-    APP_LOGD("GetPermissionDef permission %{public}s", permissionName.c_str());
-    AccessToken::PermissionDef permDef;
-    int32_t ret = AccessToken::AccessTokenKit::GetDefPermission(permissionName, permDef);
-    if (ret != AccessToken::AccessTokenKitRet::RET_SUCCESS) {
-        APP_LOGE("get permission def failed");
-        return false;
-    }
-    ConvertPermissionDef(permDef, permissionDefResult);
-    return true;
-}
-
 bool BundlePermissionMgr::InitPermissions()
 {
     // need load all system defined permissions here on first start up.
@@ -761,15 +747,22 @@ bool BundlePermissionMgr::RequestPermissionFromUser(
 
 bool BundlePermissionMgr::GetPermissionDef(const std::string &permissionName, PermissionDef &permissionDef)
 {
-    APP_LOGI("GetPermissionDef permission %{public}s", permissionName.c_str());
-    Permission::PermissionDef permDef;
-    int32_t ret = Permission::PermissionKit::GetDefPermission(permissionName, permDef);
-    if (ret != Permission::RET_SUCCESS) {
-        APP_LOGE("get permission def failed");
-        return false;
+    APP_LOGD("BundlePermissionMgr::GetPermissionDef permission %{public}s", permissionName.c_str());
+    AccessToken::PermissionDef accessTokenPermDef;
+    int32_t ret = AccessToken::AccessTokenKit::GetDefPermission(permissionName, accessTokenPermDef);
+    if (ret == AccessToken::AccessTokenKitRet::RET_SUCCESS) {
+        ConvertPermissionDef(accessTokenPermDef, permissionDef);
+        return true;
     }
-    ConvertPermissionDef(permDef, permissionDef);
-    return true;
+    APP_LOGD("AccessTokenKit::GetDefPermission failed %{public}s", permissionName.c_str());
+    Permission::PermissionDef PermissionKitPermDef;
+    ret = Permission::PermissionKit::GetDefPermission(permissionName, PermissionKitPermDef);
+    if (ret == Permission::RET_SUCCESS) {
+        ConvertPermissionDef(PermissionKitPermDef, permissionDef);
+        return true;
+    }
+    APP_LOGD("PermissionKit::GetDefPermission failed %{public}s", permissionName.c_str());
+    return false;
 }
 
 bool BundlePermissionMgr::CheckCallingPermission(const std::string &permissionName, int32_t userId)

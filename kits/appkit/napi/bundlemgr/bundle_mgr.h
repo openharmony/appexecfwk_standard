@@ -91,6 +91,8 @@ struct AsyncPermissionDefCallbackInfo {
     std::string permissionName;
     OHOS::AppExecFwk::PermissionDef permissionDef;
     bool ret = false;
+    int32_t err = 0;
+    std::string message;
 };
 
 struct AsyncPermissionCallbackInfo {
