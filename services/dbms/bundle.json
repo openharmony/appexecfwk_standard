@@ -18,7 +18,7 @@
         "ram": "100KB",
         "deps": {
             "components": [
-                "aafwk_standard",
+                "ability_runtime",
                 "bundle_framework",
                 "distributeddatamgr",
                 "hiviewdfx_hilog_native",

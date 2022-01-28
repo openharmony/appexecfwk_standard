@@ -4,7 +4,7 @@
     "version": "3.1",
     "license": "Apache 2.0",
     "segment": {
-        "destPath": "foundation/appexecfwk/standard/services/bundlemgr"
+        "destPath": "foundation/appexecfwk/standard"
     },
     "component": {
         "name": "bundle_framework",
@@ -18,15 +18,21 @@
         "ram": "4000KB",
         "deps": {
             "components": [
-                "aafwk_standard",
+                "ability_runtime",
+                "access_token",
                 "appverify",
+                "bytrace_standard",
                 "ces_standard",
                 "distributeddatamgr",
+                "eventhandler",
                 "hiviewdfx_hilog_native",
+                "i18n_standard",
                 "ipc",
                 "napi",
+                "os_account_standard",
                 "permission_standard",
                 "safwk",
+                "resmgr_standard",
                 "samgr_standard",
                 "startup_l2",
                 "utils_base"
