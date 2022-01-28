@@ -274,7 +274,7 @@ protected:
                         "jsComponentName": "com.ohos.launcher",
                         "deepLink": "com.example.myapplication.fa/.MainAbility",
                         "formConfigAbility": "com.example.myapplication.fa/.MainAbility",
-                        "scheduledUpateTime": "21:05",
+                        "scheduledUpdateTime": "21:05",
                         "descriptionId": 125,
                         "updateDuration": 1,
                         "defaultDimension": 1,

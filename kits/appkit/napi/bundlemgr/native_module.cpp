@@ -137,7 +137,8 @@ static napi_value Init(napi_env env, napi_value exports)
         DECLARE_NAPI_PROPERTY("QueryShortCutFlag", nQueryShortCutFlag),
         DECLARE_NAPI_PROPERTY("InstallErrorCode", nInstallErrorCode),
         DECLARE_NAPI_PROPERTY("ExtensionAbilityType", nExtensionAbilityType),
-        DECLARE_NAPI_PROPERTY("BundleFlag", nBundleFlag)
+        DECLARE_NAPI_PROPERTY("BundleFlag", nBundleFlag),
+        DECLARE_NAPI_PROPERTY("ExtensionFlag", nExtensionFlag)
     };
     NAPI_CALL(env, napi_define_properties(env, exports, sizeof(desc) / sizeof(desc[0]), desc));
 
