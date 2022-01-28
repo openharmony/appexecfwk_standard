@@ -68,7 +68,7 @@ struct InnerModuleInfo {
     std::string mainAbility;
     std::string srcPath;
     bool isEntry;
-    bool installationFree;
+    bool installationFree = false;
     MetaData metaData;
     ModuleColorMode colorMode = ModuleColorMode::AUTO;
     Distro distro;
