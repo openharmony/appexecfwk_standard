@@ -18,10 +18,11 @@
         "ram": "100KB",
         "deps": {
             "components": [
-                "aafwk_standard",
+                "ability_runtime",
                 "bundle_framework",
                 "hiviewdfx_hilog_native",
                 "ipc",
+                "resmgr_standard",
                 "samgr_standard",
                 "utils_base"
             ],
