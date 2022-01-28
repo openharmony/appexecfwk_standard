@@ -539,10 +539,27 @@ bool BundlePermissionMgr::CheckGrantPermission(
     return false;
 }
 
-int32_t BundlePermissionMgr::VerifyPermission(AccessToken::AccessTokenID tokenId, const std::string &permissionName)
+bool BundlePermissionMgr::VerifyPermission(AccessToken::AccessTokenID tokenId, const std::string &permissionName)
 {
     APP_LOGD("VerifyPermission permission %{public}s", permissionName.c_str());
-    return AccessToken::AccessTokenKit::VerifyAccessToken(tokenId, permissionName);
+    int32_t ret = AccessToken::AccessTokenKit::VerifyAccessToken(tokenId, permissionName);
+    if (ret == AccessToken::PermissionState::PERMISSION_DENIED) {
+        APP_LOGE("permission %{public}s: PERMISSION_DENIED", permissionName.c_str());
+        return false;
+    }
+    return true;
+}
+
+bool BundlePermissionMgr::VerifyCallingPermission(const std::string &permissionName)
+{
+    APP_LOGD("VerifyCallingPermission permission %{public}s", permissionName.c_str());
+    AccessToken::AccessTokenID callerToken = IPCSkeleton::GetCallingTokenID();
+    int32_t ret = AccessToken::AccessTokenKit::VerifyAccessToken(callerToken, permissionName);
+    if (ret == AccessToken::PermissionState::PERMISSION_DENIED) {
+        APP_LOGE("permission %{public}s: PERMISSION_DENIED", permissionName.c_str());
+        return false;
+    }
+    return true;
 }
 
 bool BundlePermissionMgr::InitPermissions()
