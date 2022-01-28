@@ -1042,6 +1042,9 @@ public:
 
     void SetAppPrivilegeLevel(const std::string &appPrivilegeLevel)
     {
+        if (appPrivilegeLevel.empty()) {
+            return;
+        }
         appPrivilegeLevel_ = appPrivilegeLevel;
     }
 
@@ -1367,7 +1370,7 @@ private:
     std::string mainAbility_;
     std::string mainAbilityName_;
     std::string appFeature_;
-    std::string appPrivilegeLevel_ = Constants::EMPTY_STRING;
+    std::string appPrivilegeLevel_ = Profile::AVAILABLELEVEL_NORMAL;
     bool hasEntry_ = false;
     bool isPreInstallApp_ = false;
     std::vector<std::string> allowedAcls_;
