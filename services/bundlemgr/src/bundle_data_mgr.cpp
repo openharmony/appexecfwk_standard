@@ -2628,7 +2628,7 @@ bool BundleDataMgr::QueryExtensionAbilityInfos(const Want &want, int32_t flags, 
 
     bool ret = ImplicitQueryExtensionInfos(want, flags, requestUserId, extensionInfos);
     if (ret == false) {
-        APP_LOGE("implicit queryAbilityInfos error");
+        APP_LOGE("implicit queryExtensionAbilityInfos error");
         return false;
     }
     if (extensionInfos.size() == 0) {
@@ -2652,7 +2652,7 @@ bool BundleDataMgr::ExplicitQueryExtensionInfo(const std::string &bundleName, co
     InnerBundleInfo innerBundleInfo;
     if (!GetInnerBundleInfoWithFlags(
         bundleName, flags, Constants::CURRENT_DEVICE_ID, innerBundleInfo, requestUserId)) {
-        APP_LOGE("ExplicitQueryAbilityInfo failed");
+        APP_LOGE("ExplicitQueryExtensionInfo failed");
         return false;
     }
     auto extension = innerBundleInfo.FindExtensionInfo(bundleName, extensionName);
@@ -2698,7 +2698,7 @@ bool BundleDataMgr::ImplicitQueryExtensionInfos(
         InnerBundleInfo innerBundleInfo;
         if (!GetInnerBundleInfoWithFlags(
             bundleName, flags, Constants::CURRENT_DEVICE_ID, innerBundleInfo, requestUserId)) {
-            APP_LOGE("ExplicitQueryAbilityInfo failed");
+            APP_LOGE("ExplicitQueryExtensionAbilityInfo failed");
             return false;
         }
         int32_t responseUserId = innerBundleInfo.GetResponseUserId(requestUserId);
@@ -2712,7 +2712,7 @@ bool BundleDataMgr::ImplicitQueryExtensionInfos(
         InnerBundleInfo innerBundleInfo;
         if (!GetInnerBundleInfoWithFlags(
             item.first, flags, Constants::CURRENT_DEVICE_ID, innerBundleInfo, requestUserId)) {
-            APP_LOGE("ImplicitQueryAbilityInfos failed");
+            APP_LOGE("ImplicitQueryExtensionAbilityInfos failed");
             continue;
         }
         int32_t responseUserId = innerBundleInfo.GetResponseUserId(requestUserId);
@@ -2766,7 +2766,7 @@ bool BundleDataMgr::QueryExtensionAbilityInfos(const ExtensionAbilityType &exten
         InnerBundleInfo innerBundleInfo;
         if (!GetInnerBundleInfoWithFlags(
             item.first, 0, Constants::CURRENT_DEVICE_ID, innerBundleInfo, requestUserId)) {
-            APP_LOGE("ImplicitQueryAbilityInfos failed");
+            APP_LOGE("QueryExtensionAbilityInfos failed");
             continue;
         }
         auto innerExtensionInfos = innerBundleInfo.GetInnerExtensionInfos();

@@ -16,6 +16,7 @@
 #ifndef FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_CORE_INCLUDE_BUNDLEMGR_BUNDLE_MGR_CLIENT_H
 #define FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_CORE_INCLUDE_BUNDLEMGR_BUNDLE_MGR_CLIENT_H
 
+#include "bundle_constants.h"
 #include "bundle_info.h"
 #include "extension_ability_info.h"
 #include "hap_module_info.h"
@@ -30,7 +31,8 @@ public:
     virtual ~BundleMgrClient();
 
     bool GetBundleNameForUid(const int uid, std::string &bundleName);
-    bool GetBundleInfo(const std::string &bundleName, const BundleFlag flag, BundleInfo &bundleInfo);
+    bool GetBundleInfo(const std::string &bundleName, const BundleFlag flag, BundleInfo &bundleInfo,
+        int32_t userId = Constants::UNSPECIFIED_USERID);
 
     /**
      * @brief Obtain the profile which are deploied in the Metadata in the bundle.
