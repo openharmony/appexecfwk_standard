@@ -2491,7 +2491,7 @@ static void ConvertPermissionDef(napi_env env, napi_value result, const Permissi
     napi_value nPermissionName;
     NAPI_CALL_RETURN_VOID(
         env, napi_create_string_utf8(env, permissionDef.permissionName.c_str(), NAPI_AUTO_LENGTH, &nPermissionName));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, result, "name", nPermissionName));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, result, "permissionName", nPermissionName));
     APP_LOGI("InnerGetPermissionDef name=%{public}s.", permissionDef.permissionName.c_str());
 
     napi_value nBundleName;
@@ -2500,50 +2500,13 @@ static void ConvertPermissionDef(napi_env env, napi_value result, const Permissi
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, result, "bundleName", nBundleName));
     APP_LOGI("InnerGetPermissionDef bundleName=%{public}s.", permissionDef.bundleName.c_str());
 
-    napi_value nGrantMode;
-    NAPI_CALL_RETURN_VOID(env, napi_create_int32(env, permissionDef.grantMode, &nGrantMode));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, result, "grantMode", nGrantMode));
-
-    napi_value nAvailableScope;
-    NAPI_CALL_RETURN_VOID(env, napi_create_int32(env, permissionDef.availableScope, &nAvailableScope));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, result, "availableScope", nAvailableScope));
-
-    napi_value nLabel;
-    NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, permissionDef.label.c_str(), NAPI_AUTO_LENGTH, &nLabel));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, result, "label", nLabel));
-
     napi_value nLabelId;
     NAPI_CALL_RETURN_VOID(env, napi_create_int32(env, permissionDef.labelId, &nLabelId));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, result, "labelRes", nLabelId));
-
-    napi_value nDescription;
-    NAPI_CALL_RETURN_VOID(
-        env, napi_create_string_utf8(env, permissionDef.description.c_str(), NAPI_AUTO_LENGTH, &nDescription));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, result, "description", nDescription));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, result, "labelId", nLabelId));
 
     napi_value nDescriptionId;
     NAPI_CALL_RETURN_VOID(env, napi_create_int32(env, permissionDef.descriptionId, &nDescriptionId));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, result, "descriptionRes", nDescriptionId));
-
-    napi_value nUsageInfo;
-    NAPI_CALL_RETURN_VOID(env, napi_create_int32(env, DEFAULT_INT32, &nUsageInfo));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, result, "usageInfo", nUsageInfo));
-
-    napi_value nGroup;
-    NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, std::string().c_str(), NAPI_AUTO_LENGTH, &nGroup));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, result, "group", nGroup));
-
-    napi_value nReminderIcon;
-    NAPI_CALL_RETURN_VOID(env, napi_create_int32(env, DEFAULT_INT32, &nReminderIcon));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, result, "reminderIcon", nReminderIcon));
-
-    napi_value nReminderDesc;
-    NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, std::string().c_str(), NAPI_AUTO_LENGTH, &nReminderDesc));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, result, "reminderDesc", nReminderDesc));
-
-    napi_value nPermissionFlags;
-    NAPI_CALL_RETURN_VOID(env, napi_create_int32(env, DEFAULT_INT32, &nPermissionFlags));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, result, "permissionFlags", nPermissionFlags));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, result, "descriptionId", nDescriptionId));
 }
 
 static bool InnerGetPermissionDef(napi_env env, const std::string &permissionName, PermissionDef &permissionDef)
@@ -2554,125 +2517,96 @@ static bool InnerGetPermissionDef(napi_env env, const std::string &permissionNam
         return false;
     };
     bool ret = iBundleMgr->GetPermissionDef(permissionName, permissionDef);
-    if (ret) {
-        APP_LOGI("-----permissionName is not find-----");
+    if (!ret) {
+        APP_LOGE("permissionName is not find");
     }
     return ret;
 }
+
 /**
  * Promise and async callback
  */
 napi_value GetPermissionDef(napi_env env, napi_callback_info info)
 {
-    APP_LOGI("GetPermissionDef called");
+    APP_LOGD("GetPermissionDef called");
     size_t argc = ARGS_SIZE_TWO;
     napi_value argv[ARGS_SIZE_TWO] = {nullptr};
     NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, NULL, NULL));
-    APP_LOGI("argc = [%{public}zu]", argc);
-    std::string permissionName;
-    ParseString(env, permissionName, argv[PARAM0]);
-    AsyncPermissionDefCallbackInfo *asyncCallbackInfo = new (std::nothrow) AsyncPermissionDefCallbackInfo {
-        .env = env,
-        .asyncWork = nullptr,
-        .deferred = nullptr,
-        .permissionName = permissionName
-    };
+    APP_LOGD("argc = [%{public}zu]", argc);
+    AsyncPermissionDefCallbackInfo *asyncCallbackInfo = new AsyncPermissionDefCallbackInfo();
     if (asyncCallbackInfo == nullptr) {
         return nullptr;
     }
-    if (argc > (ARGS_SIZE_TWO - CALLBACK_SIZE)) {
-        APP_LOGI("GetPermissionDef asyncCallback.");
+    asyncCallbackInfo->env = env;
+    for (size_t i = 0; i < argc; ++i) {
         napi_valuetype valuetype = napi_undefined;
-        napi_typeof(env, argv[ARGS_SIZE_ONE], &valuetype);
-        NAPI_ASSERT(env, valuetype == napi_function, "Wrong argument type. Function expected.");
-        NAPI_CALL(env, napi_create_reference(env, argv[ARGS_SIZE_ONE], NAPI_RETURN_ONE, &asyncCallbackInfo->callback));
-
-        napi_value resourceName;
-        napi_create_string_latin1(env, "GetPermissionDef", NAPI_AUTO_LENGTH, &resourceName);
-        napi_create_async_work(
-            env,
-            nullptr,
-            resourceName,
-            [](napi_env env, void *data) {
-                AsyncPermissionDefCallbackInfo *asyncCallbackInfo = (AsyncPermissionDefCallbackInfo *)data;
-                APP_LOGI("asyncCallbackInfo->permissionName=%{public}s.", asyncCallbackInfo->permissionName.c_str());
-                InnerGetPermissionDef(env, asyncCallbackInfo->permissionName, asyncCallbackInfo->permissionDef);
-            },
-            [](napi_env env, napi_status status, void *data) {
-                AsyncPermissionDefCallbackInfo *asyncCallbackInfo = (AsyncPermissionDefCallbackInfo *)data;
-                napi_value result[ARGS_SIZE_TWO] = {0};
-                napi_value callback = 0;
-                napi_value undefined = 0;
-                napi_value callResult = 0;
-                napi_get_undefined(env, &undefined);
-                napi_create_object(env, &result[PARAM1]);
-                ConvertPermissionDef(env, result[PARAM1], asyncCallbackInfo->permissionDef);
-                result[PARAM0] = GetCallbackErrorValue(env, asyncCallbackInfo->ret ? CODE_SUCCESS : CODE_FAILED);
-                napi_get_reference_value(env, asyncCallbackInfo->callback, &callback);
-                napi_call_function(env, undefined, callback, ARGS_SIZE_TWO, &result[PARAM0], &callResult);
-
-                if (asyncCallbackInfo->callback != nullptr) {
-                    napi_delete_reference(env, asyncCallbackInfo->callback);
-                }
-                napi_delete_async_work(env, asyncCallbackInfo->asyncWork);
-                delete asyncCallbackInfo;
-                asyncCallbackInfo = nullptr;
-            },
-            (void *)asyncCallbackInfo,
-            &asyncCallbackInfo->asyncWork);
-        NAPI_CALL(env, napi_queue_async_work(env, asyncCallbackInfo->asyncWork));
-        napi_value ret = nullptr;
-        NAPI_CALL(env, napi_get_null(env, &ret));
-        if (ret == nullptr) {
-            if (asyncCallbackInfo != nullptr) {
-                delete asyncCallbackInfo;
-                asyncCallbackInfo = nullptr;
-            }
+        napi_typeof(env, argv[i], &valuetype);
+        if ((i == PARAM0) && (valuetype == napi_string)) {
+            ParseString(env, asyncCallbackInfo->permissionName, argv[i]);
+        } else if ((i == PARAM1) && (valuetype == napi_function)) {
+            napi_create_reference(env, argv[i], NAPI_RETURN_ONE, &asyncCallbackInfo->callback);
+        } else {
+            asyncCallbackInfo->err = PARAM_TYPE_ERROR;
+            asyncCallbackInfo->message = "type mismatch";
         }
-        napi_value result;
-        NAPI_CALL(env, napi_create_int32(env, NAPI_RETURN_ONE, &result));
-        return result;
-    } else {
-        napi_deferred deferred;
-        napi_value promise;
-        NAPI_CALL(env, napi_create_promise(env, &deferred, &promise));
-        asyncCallbackInfo->deferred = deferred;
-
-        napi_value resourceName;
-        napi_create_string_latin1(env, "GetBundleInfo", NAPI_AUTO_LENGTH, &resourceName);
-        napi_create_async_work(
-            env,
-            nullptr,
-            resourceName,
-            [](napi_env env, void *data) {
-                AsyncPermissionDefCallbackInfo *asyncCallbackInfo = (AsyncPermissionDefCallbackInfo *)data;
-                InnerGetPermissionDef(env, asyncCallbackInfo->permissionName, asyncCallbackInfo->permissionDef);
-            },
-            [](napi_env env, napi_status status, void *data) {
-                APP_LOGI("=================load=================");
-                AsyncPermissionDefCallbackInfo *asyncCallbackInfo = (AsyncPermissionDefCallbackInfo *)data;
-                napi_value result;
-                napi_create_object(env, &result);
-                ConvertPermissionDef(env, result, asyncCallbackInfo->permissionDef);
-                napi_resolve_deferred(asyncCallbackInfo->env, asyncCallbackInfo->deferred, result);
-                napi_delete_async_work(env, asyncCallbackInfo->asyncWork);
-                delete asyncCallbackInfo;
-                asyncCallbackInfo = nullptr;
-            },
-            (void *)asyncCallbackInfo,
-            &asyncCallbackInfo->asyncWork);
-        napi_queue_async_work(env, asyncCallbackInfo->asyncWork);
-
-        napi_value ret = nullptr;
-        NAPI_CALL(env, napi_get_null(env, &ret));
-        if (ret == nullptr) {
-            if (asyncCallbackInfo != nullptr) {
-                delete asyncCallbackInfo;
-                asyncCallbackInfo = nullptr;
-            }
-        }
-        return promise;
     }
+
+    napi_value promise = nullptr;
+    if (asyncCallbackInfo->callback == nullptr) {
+        napi_create_promise(env, &asyncCallbackInfo->deferred, &promise);
+    } else {
+        napi_get_undefined(env, &promise);
+    }
+
+    napi_value resourceName;
+    napi_create_string_latin1(env, "GetPermissionDef", NAPI_AUTO_LENGTH, &resourceName);
+    napi_create_async_work(
+        env, nullptr, resourceName,
+        [](napi_env env, void *data) {
+            AsyncPermissionDefCallbackInfo *asyncCallbackInfo = (AsyncPermissionDefCallbackInfo *)data;
+            APP_LOGD("asyncCallbackInfo->permissionName=%{public}s.", asyncCallbackInfo->permissionName.c_str());
+            if (!asyncCallbackInfo->err) {
+                asyncCallbackInfo->ret = InnerGetPermissionDef(env, asyncCallbackInfo->permissionName,
+                                                               asyncCallbackInfo->permissionDef);
+            }
+        },
+        [](napi_env env, napi_status status, void *data) {
+            AsyncPermissionDefCallbackInfo *asyncCallbackInfo = (AsyncPermissionDefCallbackInfo *)data;
+            napi_value result[ARGS_SIZE_TWO] = {0};
+            if (asyncCallbackInfo->err) {
+                napi_create_uint32(env, asyncCallbackInfo->err, &result[PARAM0]);
+                napi_create_string_utf8(env, asyncCallbackInfo->message.c_str(), NAPI_AUTO_LENGTH, &result[PARAM1]);
+            } else {
+                if (asyncCallbackInfo->ret) {
+                    napi_create_uint32(env, CODE_SUCCESS, &result[PARAM0]);
+                    napi_create_object(env, &result[PARAM1]);
+                    ConvertPermissionDef(env, result[PARAM1], asyncCallbackInfo->permissionDef);
+                } else {
+                    napi_create_uint32(env, OPERATION_FAILED, &result[PARAM0]);
+                    napi_get_undefined(env, &result[PARAM1]);
+                }
+            }
+            if (asyncCallbackInfo->deferred) {
+                if (asyncCallbackInfo->ret) {
+                    napi_resolve_deferred(env, asyncCallbackInfo->deferred, result[PARAM1]);
+                } else {
+                    napi_reject_deferred(env, asyncCallbackInfo->deferred, result[PARAM0]);
+                }
+            } else {
+                napi_value callback = nullptr;
+                napi_value placeHolder = nullptr;
+                napi_get_reference_value(env, asyncCallbackInfo->callback, &callback);
+                napi_call_function(env, nullptr, callback, sizeof(result) / sizeof(result[PARAM0]),
+                                   result, &placeHolder);
+                napi_delete_reference(env, asyncCallbackInfo->callback);
+            }
+            napi_delete_async_work(env, asyncCallbackInfo->asyncWork);
+            delete asyncCallbackInfo;
+            asyncCallbackInfo = nullptr;
+        },
+        (void *)asyncCallbackInfo, &asyncCallbackInfo->asyncWork);
+    napi_queue_async_work(env, asyncCallbackInfo->asyncWork);
+    return promise;
 }
 
 static void InnerInstall(napi_env env, const std::vector<std::string> &bundleFilePath, InstallParam &installParam,
