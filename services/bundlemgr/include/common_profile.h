@@ -154,6 +154,7 @@ const std::string BUNDLE_MODULE_META_KEY_EXTRA = "extra";
 // sub BUNDLE_MODULE_PROFILE_KEY_DISTRO_TYPE
 const std::string MODULE_DISTRO_MODULE_TYPE_VALUE_ENTRY = "entry";
 const std::string MODULE_DISTRO_MODULE_TYPE_VALUE_FEATURE = "feature";
+const std::string MODULE_DISTRO_MODULE_TYPE_VALUE_HAR = "har";
 // sub BUNDLE_MODULE_PROFILE_KEY_ABILITIES
 const std::string BUNDLE_MODULE_PROFILE_KEY_ICON = "icon";
 const std::string BUNDLE_MODULE_PROFILE_KEY_ICON_ID = "iconId";

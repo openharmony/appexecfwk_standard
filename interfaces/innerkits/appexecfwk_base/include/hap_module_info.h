@@ -62,8 +62,8 @@ struct HapModuleInfo : public Parcelable {
     std::string srcEntrance;
     std::string uiSyntax;
     std::string virtualMachine;
-    bool deliveryWithInstall = true;
-    bool installationFree = true;
+    bool deliveryWithInstall = false;
+    bool installationFree = false;
     bool isModuleJson = false;
     bool isStageBasedModel = false;
     ModuleType moduleType = ModuleType::UNKNOWN;

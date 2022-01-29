@@ -28,6 +28,11 @@ namespace AppExecFwk {
 namespace ProfileReader {
 
 thread_local int32_t parseResult;
+const std::set<std::string> MODULE_TYPE_SET = {
+    "entry",
+    "feature",
+    "har"
+};
 const std::map<std::string, AbilityType> ABILITY_TYPE_MAP = {
     {"page", AbilityType::PAGE},
     {"service", AbilityType::SERVICE},
@@ -1877,13 +1882,43 @@ bool ConvertFormInfo(FormInfo &formInfo, const ProfileReader::Forms &form)
     return true;
 }
 
-bool TransformToInfo(const ProfileReader::ConfigJson &configJson,
+bool ToApplicationInfo(const ProfileReader::ConfigJson &configJson,
     ApplicationInfo &applicationInfo, bool isPreInstallApp)
 {
+    APP_LOGD("transform ConfigJson to ApplicationInfo");
     applicationInfo.name = configJson.app.bundleName;
     applicationInfo.bundleName = configJson.app.bundleName;
+
+    applicationInfo.versionCode = static_cast<uint32_t>(configJson.app.version.code);
+    applicationInfo.versionName = configJson.app.version.name;
+    if (configJson.app.version.minCompatibleVersionCode != -1) {
+        applicationInfo.minCompatibleVersionCode = configJson.app.version.minCompatibleVersionCode;
+    } else {
+        applicationInfo.minCompatibleVersionCode = applicationInfo.versionCode;
+    }
+
+    applicationInfo.apiCompatibleVersion = configJson.app.apiVersion.compatible;
+    applicationInfo.apiTargetVersion = configJson.app.apiVersion.target;
+
+    // if there is main ability, it's icon label description will be set to applicationInfo.
+
+    if (applicationInfo.isSystemApp && isPreInstallApp) {
+        applicationInfo.keepAlive = configJson.deveicConfig.defaultDevice.keepAlive;
+        applicationInfo.singleUser = configJson.app.singleton;
+        applicationInfo.userDataClearable = configJson.app.userDataClearable;
+        if (configJson.app.removable.first) {
+            applicationInfo.removable = configJson.app.removable.second;
+        } else {
+            applicationInfo.removable = false;
+        }
+    }
+
+    applicationInfo.apiReleaseType = configJson.app.apiVersion.releaseType;
+    applicationInfo.debug = configJson.deveicConfig.defaultDevice.debug;
     applicationInfo.deviceId = Constants::CURRENT_DEVICE_ID;
-    applicationInfo.isLauncherApp = false;
+    applicationInfo.distributedNotificationEnabled = false;
+    applicationInfo.entityType = Profile::APP_ENTITY_TYPE_DEFAULT_VALUE;
+    applicationInfo.process = configJson.deveicConfig.defaultDevice.process;
     auto it = find(configJson.module.supportedModes.begin(),
         configJson.module.supportedModes.end(),
         ProfileReader::MODULE_SUPPORTED_MODES_VALUE_DRIVE);
@@ -1892,60 +1927,44 @@ bool TransformToInfo(const ProfileReader::ConfigJson &configJson,
     } else {
         applicationInfo.supportedModes = 0;
     }
-    applicationInfo.process = configJson.deveicConfig.defaultDevice.process;
-    applicationInfo.debug = configJson.deveicConfig.defaultDevice.debug;
-    applicationInfo.enabled = true;
-    if (applicationInfo.isSystemApp && isPreInstallApp) {
-        applicationInfo.singleUser = configJson.app.singleton;
-        applicationInfo.keepAlive = configJson.deveicConfig.defaultDevice.keepAlive;
-        applicationInfo.userDataClearable = configJson.app.userDataClearable;
-        if (configJson.app.removable.first) {
-            applicationInfo.removable = configJson.app.removable.second;
-        } else {
-            applicationInfo.removable = false;
-        }
-    }
+    applicationInfo.vendor = configJson.app.vendor;
+
+    // for SystemResource
     applicationInfo.iconId = configJson.app.iconId;
     applicationInfo.labelId = configJson.app.labelId;
+
+    applicationInfo.enabled = true;
     return true;
 }
 
-bool TransformToInfo(const ProfileReader::ConfigJson &configJson, BundleInfo &bundleInfo,
-    bool isSystemApp, bool isPreInstallApp)
+bool ToBundleInfo(const ProfileReader::ConfigJson &configJson, const ApplicationInfo &applicationInfo,
+    const InnerModuleInfo &innerModuleInfo, bool isPreInstallApp, BundleInfo &bundleInfo)
 {
-    bundleInfo.name = configJson.app.bundleName;
-    bundleInfo.vendor = configJson.app.vendor;
-    bundleInfo.versionCode = static_cast<uint32_t>(configJson.app.version.code);
-    bundleInfo.versionName = configJson.app.version.name;
-    if (configJson.app.version.minCompatibleVersionCode == -1) {
-        bundleInfo.minCompatibleVersionCode = bundleInfo.versionCode;
-    } else {
-        bundleInfo.minCompatibleVersionCode = configJson.app.version.minCompatibleVersionCode;
+    bundleInfo.name = applicationInfo.bundleName;
+
+    bundleInfo.versionCode = static_cast<uint32_t>(applicationInfo.versionCode);
+    bundleInfo.versionName = applicationInfo.versionName;
+    bundleInfo.minCompatibleVersionCode = static_cast<uint32_t>(applicationInfo.minCompatibleVersionCode);
+
+    bundleInfo.compatibleVersion = static_cast<uint32_t>(applicationInfo.apiCompatibleVersion);
+    bundleInfo.targetVersion = static_cast<uint32_t>(applicationInfo.apiTargetVersion);
+
+    bundleInfo.isKeepAlive = applicationInfo.keepAlive;
+    bundleInfo.singleUser = applicationInfo.singleUser;
+    bundleInfo.isPreInstallApp = isPreInstallApp;
+
+    bundleInfo.vendor = applicationInfo.vendor;
+    bundleInfo.releaseType = applicationInfo.apiReleaseType;
+    if (configJson.module.jses.empty()) {
+        bundleInfo.isNativeApp = true;
     }
-    bundleInfo.jointUserId = configJson.deveicConfig.defaultDevice.jointUserId;
-    bundleInfo.minSdkVersion = configJson.deveicConfig.defaultDevice.ark.reqVersion.compatible;
-    if (configJson.deveicConfig.defaultDevice.ark.reqVersion.target == Constants::EQUAL_ZERO) {
-        bundleInfo.maxSdkVersion = bundleInfo.minSdkVersion;
-    } else {
-        bundleInfo.minSdkVersion = configJson.deveicConfig.defaultDevice.ark.reqVersion.target;
+
+    if (innerModuleInfo.isEntry) {
+        bundleInfo.mainEntry = innerModuleInfo.modulePackage;
+        bundleInfo.entryModuleName = innerModuleInfo.moduleName;
+        bundleInfo.entryInstallationFree = innerModuleInfo.installationFree;
     }
-    bundleInfo.compatibleVersion = configJson.app.apiVersion.compatible;
-    bundleInfo.targetVersion = configJson.app.apiVersion.target;
-    bundleInfo.releaseType = configJson.app.apiVersion.releaseType;
-    if (isSystemApp && isPreInstallApp) {
-        bundleInfo.isKeepAlive = configJson.deveicConfig.defaultDevice.keepAlive;
-        bundleInfo.singleUser = configJson.app.singleton;
-    }
-    if (configJson.module.abilities.size() > 0) {
-        bundleInfo.label = configJson.module.abilities[0].label;
-    }
-    if (configJson.module.distro.moduleType == ProfileReader::MODULE_DISTRO_MODULE_TYPE_VALUE_ENTRY) {
-        bundleInfo.description = configJson.module.description;
-        bundleInfo.entryModuleName = configJson.module.distro.moduleName;
-        bundleInfo.entryInstallationFree = configJson.module.distro.installationFree;
-    }
-    bundleInfo.isDifferentName =
-        (!configJson.app.originalName.empty()) && (configJson.app.bundleName.compare(configJson.app.originalName) != 0);
+
     return true;
 }
 
@@ -1971,10 +1990,11 @@ uint32_t GetBackgroundModes(const std::vector<std::string>& backgroundModes)
     return backgroundMode;
 }
 
-bool TransformToInfo(const ProfileReader::ConfigJson &configJson, InnerModuleInfo &innerModuleInfo)
+bool ToInnerModuleInfo(const ProfileReader::ConfigJson &configJson, InnerModuleInfo &innerModuleInfo)
 {
     innerModuleInfo.modulePackage = configJson.module.package;
     innerModuleInfo.moduleName = configJson.module.distro.moduleName;
+    innerModuleInfo.installationFree = configJson.module.distro.installationFree;
     innerModuleInfo.description = configJson.module.description;
     innerModuleInfo.descriptionId = configJson.module.descriptionId;
     auto colorModeInfo = std::find_if(std::begin(ProfileReader::moduleColorMode),
@@ -1991,14 +2011,19 @@ bool TransformToInfo(const ProfileReader::ConfigJson &configJson, InnerModuleInf
     innerModuleInfo.defPermissions = configJson.module.defPermissions;
     innerModuleInfo.mainAbility = configJson.module.mainAbility;
     innerModuleInfo.srcPath = configJson.module.srcPath;
-    if (configJson.module.distro.moduleType == ProfileReader::MODULE_DISTRO_MODULE_TYPE_VALUE_ENTRY) {
-        innerModuleInfo.installationFree = configJson.module.distro.installationFree;
+    std::string moduleType = innerModuleInfo.distro.moduleType;
+    if (ProfileReader::MODULE_TYPE_SET.find(moduleType) != ProfileReader::MODULE_TYPE_SET.end()) {
+        if (moduleType == ProfileReader::MODULE_DISTRO_MODULE_TYPE_VALUE_ENTRY) {
+            innerModuleInfo.isEntry = true;
+        }
     }
+
+    innerModuleInfo.isModuleJson = false;
     return true;
 }
 
-bool TransformToInfo(
-    const ProfileReader::ConfigJson &configJson, const ProfileReader::Ability &ability, AbilityInfo &abilityInfo)
+bool ToAbilityInfo(const ProfileReader::ConfigJson &configJson,
+    const ProfileReader::Ability &ability, AbilityInfo &abilityInfo)
 {
     abilityInfo.name = ability.name;
     if (ability.srcLanguage != "c++" && ability.name.substr(0, 1) == ".") {
@@ -2075,10 +2100,11 @@ bool TransformToInfo(
     GetMetaData(abilityInfo.metaData, ability.metaData);
     abilityInfo.formEnabled = ability.formsEnabled;
     abilityInfo.backgroundModes = GetBackgroundModes(ability.backgroundModes);
+    abilityInfo.isModuleJson = false;
     return true;
 }
 
-bool TransformToInfo(ProfileReader::ConfigJson &configJson, InnerBundleInfo &innerBundleInfo)
+bool ToInnerBundleInfo(ProfileReader::ConfigJson &configJson, InnerBundleInfo &innerBundleInfo)
 {
     APP_LOGD("transform profile configJson to innerBundleInfo");
     if (!CheckBundleNameIsValid(configJson.app.bundleName)) {
@@ -2089,15 +2115,19 @@ bool TransformToInfo(ProfileReader::ConfigJson &configJson, InnerBundleInfo &inn
         APP_LOGE("module infos is invalid");
         return false;
     }
+
+    bool isPreInstallApp = innerBundleInfo.IsPreInstallApp();
+
     ApplicationInfo applicationInfo;
     applicationInfo.isSystemApp = innerBundleInfo.GetAppType() == Constants::AppType::SYSTEM_APP;
-    TransformToInfo(configJson, applicationInfo, innerBundleInfo.IsPreInstallApp());
-
-    BundleInfo bundleInfo;
-    TransformToInfo(configJson, bundleInfo, applicationInfo.isSystemApp, innerBundleInfo.IsPreInstallApp());
+    ToApplicationInfo(configJson, applicationInfo, isPreInstallApp);
 
     InnerModuleInfo innerModuleInfo;
-    TransformToInfo(configJson, innerModuleInfo);
+    ToInnerModuleInfo(configJson, innerModuleInfo);
+
+    BundleInfo bundleInfo;
+    ToBundleInfo(configJson, applicationInfo, innerModuleInfo, isPreInstallApp, bundleInfo);
+
     for (const auto &info : configJson.module.shortcuts) {
         ShortcutInfo shortcutInfo;
         shortcutInfo.id = info.shortcutId;
@@ -2112,7 +2142,9 @@ bool TransformToInfo(ProfileReader::ConfigJson &configJson, InnerBundleInfo &inn
             shortcutIntent.targetClass = intent.targetClass;
             shortcutInfo.intents.emplace_back(shortcutIntent);
         }
-        std::string shortcutkey = configJson.app.bundleName + configJson.module.package + info.shortcutId;
+        std::string shortcutkey;
+        shortcutkey.append(configJson.app.bundleName).append(".")
+            .append(configJson.module.package).append(".").append(info.shortcutId);
         innerBundleInfo.InsertShortcutInfos(shortcutkey, shortcutInfo);
     }
     if (innerBundleInfo.GetAppType() == Constants::AppType::SYSTEM_APP) {
@@ -2124,14 +2156,16 @@ bool TransformToInfo(ProfileReader::ConfigJson &configJson, InnerBundleInfo &inn
             commonEvent.data = info.data;
             commonEvent.type = info.type;
             commonEvent.events = info.events;
-            std::string commonEventKey = configJson.app.bundleName + configJson.module.package + info.name;
+            std::string commonEventKey;
+            commonEventKey.append(configJson.app.bundleName).append(".")
+                .append(configJson.module.package).append(".").append(info.name);
             innerBundleInfo.InsertCommonEvents(commonEventKey, commonEvent);
         }
     }
     bool find = false;
     for (const auto &ability : configJson.module.abilities) {
         AbilityInfo abilityInfo;
-        if (!TransformToInfo(configJson, ability, abilityInfo)) {
+        if (!ToAbilityInfo(configJson, ability, abilityInfo)) {
             APP_LOGE("ability type is valid");
             return false;
         }
@@ -2188,15 +2222,11 @@ bool TransformToInfo(ProfileReader::ConfigJson &configJson, InnerBundleInfo &inn
                 }
             }
         }
-        if (configJson.module.jses.empty()) {
-            bundleInfo.isNativeApp = true;
-        }
         innerBundleInfo.InsertAbilitiesInfo(keyName, abilityInfo);
     }
 
     if (configJson.module.distro.moduleType == ProfileReader::MODULE_DISTRO_MODULE_TYPE_VALUE_ENTRY) {
         innerBundleInfo.SetHasEntry(true);
-        innerModuleInfo.isEntry = true;
     }
     innerBundleInfo.SetIsSupportBackup(configJson.deveicConfig.defaultDevice.supportBackup);
     innerBundleInfo.SetCurrentModulePackage(configJson.module.package);
@@ -2225,7 +2255,7 @@ ErrCode BundleProfile::TransformTo(const std::ostringstream &source, InnerBundle
         ProfileReader::parseResult = ERR_OK;
         return ret;
     }
-    if (!TransformToInfo(configJson, innerBundleInfo)) {
+    if (!ToInnerBundleInfo(configJson, innerBundleInfo)) {
         return ERR_APPEXECFWK_PARSE_PROFILE_PROP_CHECK_ERROR;
     }
     return ERR_OK;
