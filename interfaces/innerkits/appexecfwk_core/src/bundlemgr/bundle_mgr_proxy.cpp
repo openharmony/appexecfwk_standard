@@ -1984,7 +1984,7 @@ bool BundleMgrProxy::GetDistributedBundleInfo(
     return true;
 }
 
-std::string BundleMgrProxy::GetAppPrivilegeLevel(const std::string &bundleName)
+std::string BundleMgrProxy::GetAppPrivilegeLevel(const std::string &bundleName, int32_t userId)
 {
     APP_LOGD("begin to GetAppPrivilegeLevel of %{public}s", bundleName.c_str());
     if (bundleName.empty()) {
@@ -1997,7 +1997,11 @@ std::string BundleMgrProxy::GetAppPrivilegeLevel(const std::string &bundleName)
         return Constants::EMPTY_STRING;
     }
     if (!data.WriteString(bundleName)) {
-        APP_LOGE("fail to GetAppPrivilegeLevel due to write abilityInfo fail");
+        APP_LOGE("fail to GetAppPrivilegeLevel due to write bundleName fail");
+        return Constants::EMPTY_STRING;
+    }
+    if (!data.WriteInt32(userId)) {
+        APP_LOGE("fail to GetAppPrivilegeLevel due to write userId fail");
         return Constants::EMPTY_STRING;
     }
 

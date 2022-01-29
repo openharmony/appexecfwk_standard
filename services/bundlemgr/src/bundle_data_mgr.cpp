@@ -2591,14 +2591,15 @@ bool BundleDataMgr::GetInnerBundleUserInfos(
     return !innerBundleUserInfos.empty();
 }
 
-std::string BundleDataMgr::GetAppPrivilegeLevel(const std::string &bundleName)
+std::string BundleDataMgr::GetAppPrivilegeLevel(const std::string &bundleName, int32_t userId)
 {
-    APP_LOGD("GetAppPrivilegeLevel:%{public}s", bundleName.c_str());
+    APP_LOGD("GetAppPrivilegeLevel:%{public}s, userId:%{public}d", bundleName.c_str(), userId);
     std::lock_guard<std::mutex> lock(bundleInfoMutex_);
     InnerBundleInfo info;
-    if (!GetInnerBundleInfoWithFlags(bundleName, 0, Constants::CURRENT_DEVICE_ID, info)) {
+    if (!GetInnerBundleInfoWithFlags(bundleName, 0, Constants::CURRENT_DEVICE_ID, info, userId)) {
         return Constants::EMPTY_STRING;
     }
+
     return info.GetAppPrivilegeLevel();
 }
 
