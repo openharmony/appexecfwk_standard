@@ -223,7 +223,7 @@ private:
 
     static bool InnerGrantRequestPermissions(const std::vector<RequestPermission> &reqPermissions,
         const std::string &apl, const std::vector<std::string> &acls,
-        const Security::AccessToken::AccessTokenID tokenId);
+        const Security::AccessToken::AccessTokenID tokenId, bool isPreInstallApp = false);
 
     static Security::AccessToken::ATokenAplEnum GetTokenApl(const std::string &apl);
 
