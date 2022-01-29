@@ -147,6 +147,26 @@ bool CustomizeData::Marshalling(Parcel &parcel) const
     return true;
 }
 
+bool ApplicationInfo::ReadMetaDataFromParcel(Parcel &parcel)
+{
+    int32_t metaDataSize = parcel.ReadInt32();
+    for (int32_t i = 0; i < metaDataSize; i++) {
+        std::string mouduleName = Str16ToStr8(parcel.ReadString16());
+        int32_t customizeDataSize = parcel.ReadInt32();
+        std::vector<CustomizeData> customizeDatas;
+        metaData[mouduleName] = customizeDatas;
+        for (int j = 0; j < customizeDataSize; j++) {
+            std::unique_ptr<CustomizeData> customizeData(parcel.ReadParcelable<CustomizeData>());
+            if (!customizeData) {
+                APP_LOGE("ReadParcelable<CustomizeData> failed");
+                return false;
+            }
+            metaData[mouduleName].emplace_back(*customizeData);
+        }
+    }
+    return true;
+}
+
 bool ApplicationInfo::ReadFromParcel(Parcel &parcel)
 {
     MessageParcel *messageParcel = reinterpret_cast<MessageParcel *>(&parcel);
@@ -172,28 +192,6 @@ bool ApplicationInfo::ReadFromParcel(Parcel &parcel)
     *this = jsonObject.get<ApplicationInfo>();
     return true;
 }
-
-bool ApplicationInfo::ReadMetaDataFromParcel(Parcel &parcel)
-{
-    int32_t metaDataSize = parcel.ReadInt32();
-    for (int32_t i = 0; i < metaDataSize; i++) {
-        std::string mouduleName = Str16ToStr8(parcel.ReadString16());
-        int32_t customizeDataSize = parcel.ReadInt32();
-        std::vector<CustomizeData> customizeDatas;
-        metaData[mouduleName] = customizeDatas;
-        for (int j = 0; j < customizeDataSize; j++) {
-            std::unique_ptr<CustomizeData> customizeData(parcel.ReadParcelable<CustomizeData>());
-            if (!customizeData) {
-                APP_LOGE("ReadParcelable<CustomizeData> failed");
-                return false;
-            }
-            metaData[mouduleName].emplace_back(*customizeData);
-        }
-    }
-    return true;
-}
-
-
 
 ApplicationInfo *ApplicationInfo::Unmarshalling(Parcel &parcel)
 {
@@ -305,7 +303,6 @@ void to_json(nlohmann::json &jsonObject, const ApplicationInfo &applicationInfo)
         {APPLICATION_IS_COMPRESS_NATIVE_LIBS, applicationInfo.isCompressNativeLibs},
         {APPLICATION_SYSTEM_APP, applicationInfo.systemApp},
         {APPLICATION_SIGNATURE_KEY, applicationInfo.signatureKey}
-        
     };
 }
 
