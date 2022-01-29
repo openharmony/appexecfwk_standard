@@ -61,52 +61,59 @@ struct RequestPermission : public Parcelable {
 };
 // configuration information about a bundle
 struct BundleInfo : public Parcelable {
-    std::string name;         // bundle name
-    std::string label;        // name display on screen
-    std::string description;  // detail description. When ResourceKit ready replace with descriptionId
-    std::string vendor;
+    std::string name;
+
     uint32_t versionCode = 0;
-    uint32_t minCompatibleVersionCode = 0;
     std::string versionName;
-    std::string jointUserId;
-    int32_t minSdkVersion = -1;  // The min SDK version this app can run on
-    int32_t maxSdkVersion = -1;  // The max SDK version this app can run on
-    std::string mainEntry;       // entry is path of ability main executable file
-    std::string cpuAbi;
-    std::string appId;
+    uint32_t minCompatibleVersionCode = 0;
+
     uint32_t compatibleVersion = 0;
     uint32_t targetVersion = 0;
-    std::string releaseType;
-    int uid = -1;
-    int gid = -1;
-    std::string seInfo;
-    std::string entryModuleName;
-    bool entryInstallationFree = false;
+
     bool isKeepAlive = false;
-    bool isNativeApp = false;
-    bool isDifferentName = false;
     bool singleUser = false;
     bool isPreInstallApp = false;
-    int64_t installTime = 0;    // the installation time is the number of seconds elapsed since January 1,
-                                // 1970 00:00:00 UTC. The time will be recalculated if the application is reinstalled
-                                // after being uninstalled.
-    int64_t updateTime = 0;     // the update time is the number of seconds elapsed since January 1,
-                                // 1970 00:00:00 UTC. If the application is installed for the first time, the application
-                                // update time is the same as the installation time.
+    
+    std::string vendor;
+    std::string releaseType;
+    bool isNativeApp = false;
+    
+    std::string mainEntry; // modulePackage
+    std::string entryModuleName; // moduleName
+    bool entryInstallationFree = false;
+
+    std::string appId;
+    
+    // user related fields, assign when calling the get interface
+    int uid = -1;
+    int gid = -1;
+    int64_t installTime = 0;
+    int64_t updateTime = 0;
+
     ApplicationInfo applicationInfo;
     std::vector<AbilityInfo> abilityInfos;
+    std::vector<ExtensionAbilityInfo> extensionInfos;
     std::vector<HapModuleInfo> hapModuleInfos;
-    std::vector<std::string> reqPermissions;
-    std::vector<std::string> defPermissions;    // the permissions required for accessing the application.
     std::vector<std::string> hapModuleNames;    // the "module.package" in each config.json
     std::vector<std::string> moduleNames;       // the "module.name" in each config.json
     std::vector<std::string> modulePublicDirs;  // the public paths of all modules of the application.
     std::vector<std::string> moduleDirs;        // the paths of all modules of the application.
     std::vector<std::string> moduleResPaths;    // the paths of all resources paths.
-    // new version fields
-    std::vector<ExtensionAbilityInfo> extensionInfos;
+
+    std::vector<std::string> reqPermissions;
+    std::vector<std::string> defPermissions;
     std::vector<int32_t> reqPermissionStates;
     std::vector<RequestPermission> reqPermissionDetails;
+
+    // unused
+    std::string cpuAbi;
+    std::string seInfo;
+    std::string label;
+    std::string description;
+    std::string jointUserId;
+    int32_t minSdkVersion = -1;
+    int32_t maxSdkVersion = -1;
+    bool isDifferentName = false;
 
     bool ReadFromParcel(Parcel &parcel);
     virtual bool Marshalling(Parcel &parcel) const override;
