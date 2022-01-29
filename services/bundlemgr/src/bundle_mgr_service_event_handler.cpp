@@ -39,7 +39,7 @@ void BMSEventHandler::ProcessEvent(const InnerEvent::Pointer &event)
 {
     switch (event->GetInnerEventId()) {
         case BUNDLE_SCAN_START: {
-            OnStartScanning();
+            OnStartScanning(Constants::DEFAULT_USERID);
             SetAllInstallFlag();
             break;
         }

@@ -2494,12 +2494,7 @@ int32_t BundleDataMgr::GetUserId(int32_t userId) const
 
 int32_t BundleDataMgr::GetUserIdByUid(int32_t uid) const
 {
-    if (uid <= Constants::INVALID_UID) {
-        APP_LOGD("uid is illegal: %{public}d", uid);
-        return Constants::INVALID_USERID;
-    }
-
-    return uid / Constants::BASE_USER_RANGE;
+    return BundleUtil::GetUserIdByUid(uid);
 }
 
 void BundleDataMgr::AddUserId(int32_t userId)
@@ -2532,9 +2527,7 @@ bool BundleDataMgr::HasUserId(int32_t userId) const
 
 int32_t BundleDataMgr::GetUserIdByCallingUid() const
 {
-    int32_t uid = IPCSkeleton::GetCallingUid();
-    APP_LOGD("get calling uid(%{public}d)", uid);
-    return GetUserIdByUid(uid);
+    return BundleUtil::GetUserIdByCallingUid();
 }
 
 std::set<int32_t> BundleDataMgr::GetAllUser() const
