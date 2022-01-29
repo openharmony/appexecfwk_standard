@@ -22,9 +22,5 @@ config("system_test_config") {
 group("systemtest") {
   testonly = true
 
-  deps = [
-    "common/ams:systemtest",
-    "common/ems:systemtest_ems",
-    "common/task_dispatcher:systemtest_task",
-  ]
+  deps = [ "common/ems:systemtest_ems" ]
 }
