@@ -41,7 +41,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 enum class NotifyType { INSTALL, UPDATE, UNINSTALL_BUNDLE, UNINSTALL_MODULE, ABILITY_ENABLE, APPLICATION_ENABLE };
 
 enum class InstallState {
@@ -788,7 +787,6 @@ private:
     std::map<int32_t, std::set<sptr<OnPermissionChangedCallback>>> permissionsCallbacks_;
     std::shared_ptr<BundlePromise> bundlePromise_ = nullptr;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_BUNDLE_DATA_MGR_H

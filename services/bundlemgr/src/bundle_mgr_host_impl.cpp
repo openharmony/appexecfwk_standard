@@ -29,7 +29,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 bool BundleMgrHostImpl::GetApplicationInfo(
     const std::string &appName, const ApplicationFlag flag, const int userId, ApplicationInfo &appInfo)
 {

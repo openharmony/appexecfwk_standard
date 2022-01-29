@@ -28,7 +28,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 enum BundleFlag {
     // get bundle info except abilityInfos
     GET_BUNDLE_DEFAULT = 0x00000000,
@@ -112,7 +111,6 @@ struct BundleInfo : public Parcelable {
     virtual bool Marshalling(Parcel &parcel) const override;
     static BundleInfo *Unmarshalling(Parcel &parcel);
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_BASE_INCLUDE_BUNDLE_INFO_H

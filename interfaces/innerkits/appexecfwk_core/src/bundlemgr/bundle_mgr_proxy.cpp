@@ -26,7 +26,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 BundleMgrProxy::BundleMgrProxy(const sptr<IRemoteObject> &impl) : IRemoteProxy<IBundleMgr>(impl)
 {
     APP_LOGI("create bundle mgr proxy instance");
@@ -2157,6 +2156,5 @@ bool BundleMgrProxy::SendTransactCmd(IBundleMgr::Message code, MessageParcel &da
     }
     return true;
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

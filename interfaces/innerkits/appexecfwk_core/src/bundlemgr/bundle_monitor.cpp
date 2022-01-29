@@ -17,7 +17,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 BundleMonitor::BundleMonitor(const EventFwk::CommonEventSubscribeInfo &subscribeInfo)
     : EventFwk::CommonEventSubscriber(subscribeInfo)
 {
@@ -65,6 +64,5 @@ void BundleMonitor::OnReceiveEvent(const EventFwk::CommonEventData &eventData)
         APP_LOGI("OnReceiveEvent action = %{public}s not support", action.c_str());
     }
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

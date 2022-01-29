@@ -24,7 +24,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class BundleMgrHostImpl : public BundleMgrHost {
 public:
     BundleMgrHostImpl()
@@ -608,7 +607,6 @@ private:
 
     std::shared_ptr<BMSEventHandler> handler_;
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_BUNDLE_MGR_HOST_IMPL_H

@@ -233,7 +233,6 @@ public:
     void AddInnerBundleInfoByTest(const std::string &bundleName, const std::string &moduleName,
         const std::string &abilityName, InnerBundleInfo &innerBundleInfo) const;
 
-
 public:
     std::shared_ptr<BundleMgrService> bundleMgrService_ = DelayedSingleton<BundleMgrService>::GetInstance();
     std::shared_ptr<InstalldService> service_ = std::make_shared<InstalldService>();
