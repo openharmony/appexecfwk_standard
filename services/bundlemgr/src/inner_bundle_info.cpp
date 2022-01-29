@@ -39,7 +39,6 @@ const std::string MAIN_ABILITY_NAME = "mainAbilityName";
 const std::string SKILL_INFOS = "skillInfos";
 const std::string USER_ID = "userId_";
 const std::string APP_FEATURE = "appFeature";
-const std::string APP_PRIVILEGE_LEVEL = "appPrivilegeLevel";
 const std::string HAS_ENTRY = "hasEntry";
 const std::string CAN_UNINSTALL = "canUninstall";
 const std::string MODULE_PACKAGE = "modulePackage";
@@ -411,7 +410,6 @@ void InnerBundleInfo::ToJson(nlohmann::json &jsonObject) const
     jsonObject[MAIN_ABILITY] = mainAbility_;
     jsonObject[MAIN_ABILITY_NAME] = mainAbilityName_;
     jsonObject[APP_FEATURE] = appFeature_;
-    jsonObject[APP_PRIVILEGE_LEVEL] = appPrivilegeLevel_;
     jsonObject[HAS_ENTRY] = hasEntry_;
     jsonObject[MODULE_FORMS] = formInfos_;
     jsonObject[MODULE_SHORTCUT] = shortcutInfos_;
@@ -1087,14 +1085,6 @@ int32_t InnerBundleInfo::FromJson(const nlohmann::json &jsonObject)
         true,
         ProfileReader::parseResult,
         ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<std::string>(jsonObject,
-        jsonObjectEnd,
-        APP_PRIVILEGE_LEVEL,
-        appPrivilegeLevel_,
-        JsonType::STRING,
-        false,
-        ProfileReader::parseResult,
-        ArrayType::NOT_ARRAY);
     GetValueIfFindKey<std::map<std::string, std::vector<FormInfo>>>(jsonObject,
         jsonObjectEnd,
         MODULE_FORMS,
@@ -1607,7 +1597,6 @@ std::string InnerBundleInfo::ToString() const
     j[MAIN_ABILITY] = mainAbility_;
     j[MAIN_ABILITY_NAME] = mainAbilityName_;
     j[APP_FEATURE] = appFeature_;
-    j[APP_PRIVILEGE_LEVEL] = appPrivilegeLevel_;
     j[HAS_ENTRY] = hasEntry_;
     j[MODULE_FORMS] = formInfos_;
     j[MODULE_SHORTCUT] = shortcutInfos_;

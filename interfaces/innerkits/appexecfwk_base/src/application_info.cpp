@@ -70,6 +70,7 @@ const std::string APPLICATION_ENTITY_TYPE = "entityType";
 const std::string APPLICATION_KEEP_ALIVE = "keepAlive";
 const std::string APPLICATION_SINGLE_USER = "singleUser";
 const std::string APPLICATION_USER_DATA_CLEARABLE = "userDataClearable";
+const std::string APPLICATION_PRIVILEGE_LEVEL = "appPrivilegeLevel";
 }
 
 Metadata::Metadata(const std::string &paramName, const std::string &paramValue, const std::string &paramResource)
@@ -217,6 +218,7 @@ bool ApplicationInfo::ReadFromParcel(Parcel &parcel)
     distributedNotificationEnabled = parcel.ReadBool();
     keepAlive = parcel.ReadBool();
     userDataClearable = parcel.ReadBool();
+    appPrivilegeLevel = Str16ToStr8(parcel.ReadString16());
     return true;
 }
 
@@ -325,6 +327,7 @@ bool ApplicationInfo::Marshalling(Parcel &parcel) const
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, distributedNotificationEnabled);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, keepAlive);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, userDataClearable);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(appPrivilegeLevel));
     return true;
 }
 
@@ -398,7 +401,8 @@ void to_json(nlohmann::json &jsonObject, const ApplicationInfo &applicationInfo)
         {APPLICATION_ENTITY_TYPE, applicationInfo.entityType},
         {APPLICATION_KEEP_ALIVE, applicationInfo.keepAlive},
         {APPLICATION_SINGLE_USER, applicationInfo.singleUser},
-        {APPLICATION_USER_DATA_CLEARABLE, applicationInfo.userDataClearable}
+        {APPLICATION_USER_DATA_CLEARABLE, applicationInfo.userDataClearable},
+        {APPLICATION_PRIVILEGE_LEVEL, applicationInfo.appPrivilegeLevel}
     };
 }
 
@@ -731,6 +735,14 @@ void from_json(const nlohmann::json &jsonObject, ApplicationInfo &applicationInf
         APPLICATION_USER_DATA_CLEARABLE,
         applicationInfo.userDataClearable,
         JsonType::BOOLEAN,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        APPLICATION_PRIVILEGE_LEVEL,
+        applicationInfo.appPrivilegeLevel,
+        JsonType::STRING,
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
