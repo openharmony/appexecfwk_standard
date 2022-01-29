@@ -231,6 +231,15 @@ bool FormInfo::Marshalling(Parcel &parcel) const
     return true;
 }
 
+bool FormInfo::IsValid() const
+{
+    if (!window.autoDesignWidth && window.designWidth <= 0) {
+        APP_LOGW("Invalid FormInfo, window.designWidth <= 0.");
+        return false;
+    }
+    return true;
+}
+
 void to_json(nlohmann::json &jsonObject, const FormCustomizeData &customizeDatas)
 {
     jsonObject = nlohmann::json{
