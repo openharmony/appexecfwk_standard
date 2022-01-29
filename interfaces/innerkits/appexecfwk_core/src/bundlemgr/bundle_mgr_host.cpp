@@ -1611,8 +1611,8 @@ ErrCode BundleMgrHost::HandleGetDistributedBundleInfo(Parcel &data, Parcel &repl
 ErrCode BundleMgrHost::HandleGetAppPrivilegeLevel(Parcel &data, Parcel &reply)
 {
     std::string bundleName = data.ReadString();
-    APP_LOGD("bundleName %{public}s", bundleName.c_str());
-    auto ret = GetAppPrivilegeLevel(bundleName);
+    int32_t userId = data.ReadInt32();
+    auto ret = GetAppPrivilegeLevel(bundleName, userId);
     if (!reply.WriteString(ret)) {
         APP_LOGE("write failed");
         return ERR_APPEXECFWK_PARCEL_ERROR;
