@@ -13,8 +13,7 @@
 import("//build/ohos.gni")
 import("//foundation/appexecfwk/standard/appexecfwk.gni")
 SUBDEMOSYSTEM_DIR = "${appexecfwk_path}/test/resource/bmssystemtestability/abilitySrc/thirdPageDemo4"
-SUBST_TOOLS_DIR =
-    "${appexecfwk_path}/test/resource/amssystemtestability/abilitySrc/tools"
+SUBST_TOOLS_DIR = "${appexecfwk_path}/test/resource/common"
 config("third_page_demo4_config") {
   visibility = [ ":*" ]
   include_dirs = [
