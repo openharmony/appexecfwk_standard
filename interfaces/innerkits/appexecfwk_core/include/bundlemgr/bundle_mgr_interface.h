@@ -36,7 +36,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 enum class DumpFlag {
     DUMP_BUNDLE_LIST = 1,  // corresponse to option "-bundle-list"
     DUMP_ALL_BUNDLE_INFO,  // corresponse to option "-bundle"
@@ -736,7 +735,6 @@ public:
         QUERY_EXTENSION_INFO_BY_TYPE
     };
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_CORE_INCLUDE_BUNDLEMGR_BUNDLE_MGR_INTERFACE_H

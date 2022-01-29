@@ -28,7 +28,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class BundleInstaller : public BaseBundleInstaller {
 public:
     BundleInstaller(const int64_t installerId, const std::shared_ptr<EventHandler> &handler,
@@ -106,7 +105,6 @@ private:
 
     DISALLOW_COPY_AND_MOVE(BundleInstaller);
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_BUNDLE_INSTALLER_H

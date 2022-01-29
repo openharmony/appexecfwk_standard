@@ -387,6 +387,5 @@ bool ModuleUsageRecordStorage::ResetKvStore()
     APP_LOGW("usage reset failed");
     return false;
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

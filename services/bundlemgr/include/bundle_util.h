@@ -23,7 +23,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class BundleUtil {
 public:
     /**
@@ -106,7 +105,6 @@ public:
      */
     static std::string GetCurrentDeviceId();
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_BUNDLE_UTIL_H

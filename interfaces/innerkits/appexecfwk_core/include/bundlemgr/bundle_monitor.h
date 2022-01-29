@@ -26,7 +26,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class BundleMonitor : public EventFwk::CommonEventSubscriber, public std::enable_shared_from_this<BundleMonitor> {
 public:
     using Want = OHOS::AAFwk::Want;
