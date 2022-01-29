@@ -20,12 +20,14 @@
 #include <string>
 #include <vector>
 
-#include "parcel.h"
-
 #include "module_info.h"
+#include "parcel.h"
 
 namespace OHOS {
 namespace AppExecFwk {
+namespace {
+    const std::string AVAILABLELEVEL_NORMAL = "normal";
+}
 enum ApplicationFlag {
     GET_BASIC_APPLICATION_INFO = 0x00000000,
     GET_APPLICATION_INFO_WITH_PERMISSION = 0x00000008,
@@ -146,6 +148,8 @@ struct ApplicationInfo : public Parcelable {
     std::string entityType;
     bool keepAlive = false;
     bool userDataClearable = true;
+    // apl
+    std::string appPrivilegeLevel = AVAILABLELEVEL_NORMAL;
 
     bool ReadFromParcel(Parcel &parcel);
     bool ReadMetaDataFromParcel(Parcel &parcel);

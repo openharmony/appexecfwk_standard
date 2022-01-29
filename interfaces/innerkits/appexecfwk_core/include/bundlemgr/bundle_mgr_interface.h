@@ -619,9 +619,11 @@ public:
     /**
      * @brief Get app privilege level.
      * @param bundleName Indicates the bundle name of the app privilege level.
+     * @param userId Indicates the user id.
      * @return Returns app privilege level.
      */
-    virtual std::string GetAppPrivilegeLevel(const std::string &bundleName)
+    virtual std::string GetAppPrivilegeLevel(
+        const std::string &bundleName, int32_t userId = Constants::UNSPECIFIED_USERID)
     {
         return Constants::EMPTY_STRING;
     }

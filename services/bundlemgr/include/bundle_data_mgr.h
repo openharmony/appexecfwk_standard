@@ -662,9 +662,11 @@ public:
     /**
      * @brief Get app privilege level.
      * @param bundleName Indicates the bundle name of the app privilege level.
+     * @param userId Indicates the user id.
      * @return Returns app privilege level.
      */
-    std::string GetAppPrivilegeLevel(const std::string &bundleName);
+    std::string GetAppPrivilegeLevel(
+        const std::string &bundleName, int32_t userId = Constants::UNSPECIFIED_USERID);
     /**
      * @brief Query a ExtensionAbilityInfo of list by the given Want.
      * @param want Indicates the information of the ability.
