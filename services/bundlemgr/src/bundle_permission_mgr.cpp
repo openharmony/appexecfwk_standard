@@ -379,7 +379,7 @@ std::vector<AccessToken::PermissionStateFull> BundlePermissionMgr::GetPermission
 
 bool BundlePermissionMgr::InnerGrantRequestPermissions(const std::vector<RequestPermission> &reqPermissions,
     const std::string &apl, const std::vector<std::string> &acls,
-    const Security::AccessToken::AccessTokenID tokenId)
+    const Security::AccessToken::AccessTokenID tokenId, bool isPreInstallApp)
 {
     std::vector<std::string> grantPermList;
     for (const auto &reqPermission : reqPermissions) {
@@ -390,7 +390,7 @@ bool BundlePermissionMgr::InnerGrantRequestPermissions(const std::vector<Request
             APP_LOGE("get permission def failed, request permission name: %{public}s", reqPermission.name.c_str());
             continue;
         }
-        if (CheckGrantPermission(permDef, apl, acls)) {
+        if (CheckGrantPermission(permDef, apl, acls) || isPreInstallApp) {
             if (permDef.grantMode == AccessToken::GrantMode::SYSTEM_GRANT) {
                 APP_LOGD("InnerGrantRequestPermissions system grant permission %{public}s", reqPermission.name.c_str());
                 grantPermList.emplace_back(reqPermission.name);
@@ -417,7 +417,8 @@ bool BundlePermissionMgr::GrantRequestPermissions(const InnerBundleInfo &innerBu
     std::vector<RequestPermission> reqPermissions = innerBundleInfo.GetAllRequestPermissions();
     std::string apl = innerBundleInfo.GetAppPrivilegeLevel();
     std::vector<std::string> acls = innerBundleInfo.GetAllowedAcls();
-    return InnerGrantRequestPermissions(reqPermissions, apl, acls, tokenId);
+    bool isPreInstallApp = innerBundleInfo.IsPreInstallApp();
+    return InnerGrantRequestPermissions(reqPermissions, apl, acls, tokenId, isPreInstallApp);
 }
 
 bool BundlePermissionMgr::GrantRequestPermissions(const InnerBundleInfo &innerBundleInfo,
@@ -427,6 +428,7 @@ bool BundlePermissionMgr::GrantRequestPermissions(const InnerBundleInfo &innerBu
     std::vector<RequestPermission> reqPermissions = innerBundleInfo.GetAllRequestPermissions();
     std::string apl = innerBundleInfo.GetAppPrivilegeLevel();
     std::vector<std::string> acls = innerBundleInfo.GetAllowedAcls();
+    bool isPreInstallApp = innerBundleInfo.IsPreInstallApp();
     std::vector<RequestPermission> newRequestPermissions;
     for (const auto &name : requestPermName) {
         auto iter = find_if(reqPermissions.begin(), reqPermissions.end(), [&name](const auto &req) {
@@ -436,7 +438,7 @@ bool BundlePermissionMgr::GrantRequestPermissions(const InnerBundleInfo &innerBu
             newRequestPermissions.emplace_back(*iter);
         }
     }
-    return InnerGrantRequestPermissions(newRequestPermissions, apl, acls, tokenId);
+    return InnerGrantRequestPermissions(newRequestPermissions, apl, acls, tokenId, isPreInstallApp);
 }
 
 bool BundlePermissionMgr::GetAllReqPermissionStateFull(AccessToken::AccessTokenID tokenId,
