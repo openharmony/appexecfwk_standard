@@ -35,7 +35,7 @@ const std::string JSON_KEY_PACKAGE = "package";
 const std::string JSON_KEY_SUPPORT_DIMENSIONS = "supportDimensions";
 const std::string JSON_KEY_DEFAULT_DIMENSION = "defaultDimension";
 const std::string JSON_KEY_UPDATE_ENABLED = "updateEnabled";
-const std::string JSON_KEY_SCHEDULED_UPDATE_TIME = "scheduledUpateTime";
+const std::string JSON_KEY_SCHEDULED_UPDATE_TIME = "scheduledUpdateTime";
 const std::string JSON_KEY_UPDATE_DURATION = "updateDuration";
 const std::string JSON_KEY_DEEP_LINK = "deepLink";
 const std::string JSON_KEY_JS_COMPONENT_NAME = "jsComponentName";
@@ -74,7 +74,7 @@ FormInfo::FormInfo(const ExtensionAbilityInfo &abilityInfo, const ExtensionFormI
     jsComponentName = "";
     deepLink = "";
     formConfigAbility = formInfo.formConfigAbility;
-    scheduledUpateTime = formInfo.scheduledUpdateTime;
+    scheduledUpdateTime = formInfo.scheduledUpdateTime;
     src = formInfo.src;
     window.designWidth = formInfo.window.designWidth;
     window.autoDesignWidth = formInfo.window.autoDesignWidth;
@@ -118,7 +118,7 @@ bool FormInfo::ReadFromParcel(Parcel &parcel)
     abilityName = Str16ToStr8(parcel.ReadString16());
     description = Str16ToStr8(parcel.ReadString16());
     formConfigAbility = Str16ToStr8(parcel.ReadString16());
-    scheduledUpateTime = Str16ToStr8(parcel.ReadString16());
+    scheduledUpdateTime = Str16ToStr8(parcel.ReadString16());
     jsComponentName = Str16ToStr8(parcel.ReadString16());
     relatedBundleName = Str16ToStr8(parcel.ReadString16());
     originalBundleName = Str16ToStr8(parcel.ReadString16());
@@ -186,7 +186,7 @@ bool FormInfo::Marshalling(Parcel &parcel) const
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(abilityName));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(description));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(formConfigAbility));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(scheduledUpateTime));
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(scheduledUpdateTime));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(jsComponentName));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(relatedBundleName));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(originalBundleName));
@@ -259,7 +259,7 @@ void to_json(nlohmann::json &jsonObject, const FormInfo &formInfo)
         {JSON_KEY_DEEP_LINK, formInfo.deepLink},
         {JSON_KEY_SRC, formInfo.src},
         {JSON_KEY_FORMCONFIG_ABILITY, formInfo.formConfigAbility},
-        {JSON_KEY_SCHEDULED_UPDATE_TIME, formInfo.scheduledUpateTime},
+        {JSON_KEY_SCHEDULED_UPDATE_TIME, formInfo.scheduledUpdateTime},
         {JSON_KEY_ORIGINAL_BUNDLE_NAME, formInfo.originalBundleName},
         {JSON_KEY_DESCRIPTION_ID, formInfo.descriptionId},
         {JSON_KEY_UPDATE_DURATION, formInfo.updateDuration},
@@ -301,7 +301,7 @@ void from_json(const nlohmann::json &jsonObject, FormInfo &formInfo)
     formInfo.jsComponentName = jsonObject.at(JSON_KEY_JS_COMPONENT_NAME).get<std::string>();
     formInfo.deepLink = jsonObject.at(JSON_KEY_DEEP_LINK).get<std::string>();
     formInfo.formConfigAbility = jsonObject.at(JSON_KEY_FORMCONFIG_ABILITY).get<std::string>();
-    formInfo.scheduledUpateTime = jsonObject.at(JSON_KEY_SCHEDULED_UPDATE_TIME).get<std::string>();
+    formInfo.scheduledUpdateTime = jsonObject.at(JSON_KEY_SCHEDULED_UPDATE_TIME).get<std::string>();
     formInfo.src = jsonObject.at(JSON_KEY_SRC).get<std::string>();
     formInfo.originalBundleName = jsonObject.at(JSON_KEY_ORIGINAL_BUNDLE_NAME).get<std::string>();
     formInfo.descriptionId = jsonObject.at(JSON_KEY_DESCRIPTION_ID).get<int32_t>();
