@@ -105,6 +105,17 @@ public:
      * @return Returns DeviceId.
      */
     static std::string GetCurrentDeviceId();
+    /**
+     * @brief get userId by callinguid.
+     * @return Returns userId.
+     */
+    static int32_t GetUserIdByCallingUid();
+    /**
+     * @brief get userId by uid.
+     * @param uid Indicates uid.
+     * @return Returns userId.
+     */
+    static int32_t GetUserIdByUid(int32_t uid);
 };
 
 }  // namespace AppExecFwk

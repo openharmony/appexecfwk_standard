@@ -2808,6 +2808,10 @@ static bool ParseInstallParam(napi_env env, InstallParam &installParam, napi_val
 
         int userId = Constants::UNSPECIFIED_USERID;
         NAPI_CALL(env, napi_get_value_int32(env, property, &userId));
+        if (userId < Constants::DEFAULT_USERID) {
+            APP_LOGE("param userId(%{public}d) is invalid.", userId);
+            return false;
+        }
         installParam.userId = userId;
     }
     APP_LOGI("ParseInstallParam userId=%{public}d.", installParam.userId);
