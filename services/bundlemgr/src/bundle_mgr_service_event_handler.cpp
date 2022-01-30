@@ -79,6 +79,11 @@ void BMSEventHandler::ProcessSystemBundleInstall(Constants::AppType appType, int
                                                                       : Constants::THIRD_SYSTEM_APP_SCAN_PATH;
     APP_LOGD("scanDir: %{public}s and userId: %{public}d", scanDir.c_str(), userId);
     std::list<std::string> bundleList = scanner->Scan(scanDir);
+    auto iter = std::find(bundleList.begin(), bundleList.end(), Constants::SYSTEM_RESOURCES_APP_PATH);
+    if (iter != bundleList.end()) {
+        bundleList.erase(iter);
+        bundleList.insert(bundleList.begin(), Constants::SYSTEM_RESOURCES_APP_PATH);
+    }
     for (const auto &item : bundleList) {
         SystemBundleInstaller installer(item);
         APP_LOGD("scan item %{public}s", item.c_str());
@@ -147,7 +152,12 @@ void BMSEventHandler::RebootProcessSystemBundle(Constants::AppType appType, int3
                                                                       : Constants::THIRD_SYSTEM_APP_SCAN_PATH;
     APP_LOGD("scanDir: %{public}s and userId: %{public}d", scanDir.c_str(), userId);
     std::list<std::string> bundleList = scanner->Scan(scanDir);
-    
+    auto iter = std::find(bundleList.begin(), bundleList.end(), Constants::SYSTEM_RESOURCES_APP_PATH);
+    if (iter != bundleList.end()) {
+        bundleList.erase(iter);
+        bundleList.insert(bundleList.begin(), Constants::SYSTEM_RESOURCES_APP_PATH);
+    }
+
     BundleInfo bundleInfo;
     std::vector<PreInstallBundleInfo> preInstallBundleInfos;
     if (!dataMgr->LoadAllPreInstallBundleInfos(preInstallBundleInfos)) {
