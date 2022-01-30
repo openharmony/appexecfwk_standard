@@ -20,6 +20,7 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "message_parcel.h"
 #include "nlohmann/json.hpp"
 #include "parcel_macro.h"
 #include "string_ex.h"
@@ -33,44 +34,53 @@ namespace AppExecFwk {
 namespace {
 const std::string APPLICATION_NAME = "name";
 const std::string APPLICATION_BUNDLE_NAME = "bundleName";
-const std::string APPLICATION_DESCRIPTION = "description";
-const std::string APPLICATION_ICON_PATH = "iconPath";
-const std::string APPLICATION_LABEL = "label";
-const std::string APPLICATION_LABEL_ID = "labelId";
-const std::string APPLICATION_DESCRIPTION_ID = "descriptionId";
-const std::string APPLICATION_ACCESSTOKEN_ID = "accessTokenId";
-const std::string APPLICATION_ICON_ID = "iconId";
-const std::string APPLICATION_DEVICE_ID = "deviceId";
-const std::string APPLICATION_SIGNATURE_KEY = "signatureKey";
-const std::string APPLICATION_IS_SYSTEM_APP = "isSystemApp";
-const std::string APPLICATION_IS_LAUNCHER_APP = "isLauncherApp";
-const std::string APPLICATION_ENABLED = "enabled";
-const std::string APPLICATION_DEBUG = "debug";
-const std::string APPLICATION_REMOVABLE = "removable";
-const std::string APPLICATION_SUPPORTED_MODES = "supportedModes";
-const std::string APPLICATION_PROCESS = "process";
-const std::string APPLICATION_PERMISSIONS = "permissions";
-const std::string APPLICATION_MODULE_SOURCE_DIRS = "moduleSourceDirs";
-const std::string APPLICATION_MODULE_INFOS = "moduleInfos";
-const std::string APPLICATION_ENTRY_DIR = "entryDir";
-const std::string APPLICATION_CODE_PATH = "codePath";
-const std::string APPLICATION_DATA_DIR = "dataDir";
-const std::string APPLICATION_DATA_BASE_DIR = "dataBaseDir";
-const std::string APPLICATION_CACHE_DIR = "cacheDir";
-const std::string APPLICATION_FLAGS = "flags";
-const std::string APPLICATION_VENDOR = "vendor";
 const std::string APPLICATION_VERSION_CODE = "versionCode";
 const std::string APPLICATION_VERSION_NAME = "versionName";
 const std::string APPLICATION_MIN_COMPATIBLE_VERSION_CODE = "minCompatibleVersionCode";
 const std::string APPLICATION_API_COMPATIBLE_VERSION = "apiCompatibleVersion";
 const std::string APPLICATION_API_TARGET_VERSION = "apiTargetVersion";
-const std::string APPLICATION_API_RELEASETYPE = "apiReleaseType";
-const std::string APPLICATION_DISTRIBUTED_NOTIFICATION_ENABLED = "distributedNotificationEnabled";
-const std::string APPLICATION_ENTITY_TYPE = "entityType";
+const std::string APPLICATION_ICON_PATH = "iconPath";
+const std::string APPLICATION_ICON_ID = "iconId";
+const std::string APPLICATION_LABEL = "label";
+const std::string APPLICATION_LABEL_ID = "labelId";
+const std::string APPLICATION_DESCRIPTION = "description";
+const std::string APPLICATION_DESCRIPTION_ID = "descriptionId";
 const std::string APPLICATION_KEEP_ALIVE = "keepAlive";
+const std::string APPLICATION_REMOVABLE = "removable";
 const std::string APPLICATION_SINGLE_USER = "singleUser";
 const std::string APPLICATION_USER_DATA_CLEARABLE = "userDataClearable";
+const std::string APPLICATION_IS_SYSTEM_APP = "isSystemApp";
+const std::string APPLICATION_IS_LAUNCHER_APP = "isLauncherApp";
+const std::string APPLICATION_CODE_PATH = "codePath";
+const std::string APPLICATION_DATA_DIR = "dataDir";
+const std::string APPLICATION_DATA_BASE_DIR = "dataBaseDir";
+const std::string APPLICATION_CACHE_DIR = "cacheDir";
+const std::string APPLICATION_ENTRY_DIR = "entryDir";
+const std::string APPLICATION_API_RELEASETYPE = "apiReleaseType";
+const std::string APPLICATION_DEBUG = "debug";
+const std::string APPLICATION_DEVICE_ID = "deviceId";
+const std::string APPLICATION_DISTRIBUTED_NOTIFICATION_ENABLED = "distributedNotificationEnabled";
+const std::string APPLICATION_ENTITY_TYPE = "entityType";
+const std::string APPLICATION_PROCESS = "process";
+const std::string APPLICATION_SUPPORTED_MODES = "supportedModes";
+const std::string APPLICATION_VENDOR = "vendor";
 const std::string APPLICATION_PRIVILEGE_LEVEL = "appPrivilegeLevel";
+const std::string APPLICATION_ACCESSTOKEN_ID = "accessTokenId";
+const std::string APPLICATION_ENABLED = "enabled";
+const std::string APPLICATION_UID = "uid";
+const std::string APPLICATION_PERMISSIONS = "permissions";
+const std::string APPLICATION_MODULE_SOURCE_DIRS = "moduleSourceDirs";
+const std::string APPLICATION_MODULE_INFOS = "moduleInfos";
+const std::string APPLICATION_META_DATA_CONFIG_JSON = "metaData";
+const std::string APPLICATION_META_DATA_MODULE_JSON = "metadata";
+const std::string APPLICATION_IS_CLONED = "isCloned";
+const std::string APPLICATION_ICON = "icon";
+const std::string APPLICATION_FLAGS = "flags";
+const std::string APPLICATION_ENTRY_MODULE_NAME = "entryModuleName";
+const std::string APPLICATION_CPU_ABI = "cpuAbi";
+const std::string APPLICATION_IS_COMPRESS_NATIVE_LIBS = "isCompressNativeLibs";
+const std::string APPLICATION_SYSTEM_APP = "systemApp";
+const std::string APPLICATION_SIGNATURE_KEY = "signatureKey";
 }
 
 Metadata::Metadata(const std::string &paramName, const std::string &paramValue, const std::string &paramResource)
@@ -137,91 +147,6 @@ bool CustomizeData::Marshalling(Parcel &parcel) const
     return true;
 }
 
-bool ApplicationInfo::ReadFromParcel(Parcel &parcel)
-{
-    name = Str16ToStr8(parcel.ReadString16());
-    bundleName = Str16ToStr8(parcel.ReadString16());
-    description = Str16ToStr8(parcel.ReadString16());
-    iconPath = Str16ToStr8(parcel.ReadString16());
-    label = Str16ToStr8(parcel.ReadString16());
-    deviceId = Str16ToStr8(parcel.ReadString16());
-    signatureKey = Str16ToStr8(parcel.ReadString16());
-    process = Str16ToStr8(parcel.ReadString16());
-    entryDir = Str16ToStr8(parcel.ReadString16());
-    codePath = Str16ToStr8(parcel.ReadString16());
-    dataDir = Str16ToStr8(parcel.ReadString16());
-    dataBaseDir = Str16ToStr8(parcel.ReadString16());
-    cacheDir = Str16ToStr8(parcel.ReadString16());
-    isSystemApp = parcel.ReadBool();
-    isCloned = parcel.ReadBool();
-    isLauncherApp = parcel.ReadBool();
-    enabled = parcel.ReadBool();
-    debug = parcel.ReadBool();
-    singleUser = parcel.ReadBool();
-    removable = parcel.ReadBool();
-    supportedModes = parcel.ReadInt32();
-    labelId = parcel.ReadInt32();
-    iconId = parcel.ReadInt32();
-    descriptionId = parcel.ReadInt32();
-    accessTokenId = parcel.ReadUint32();
-    flags = parcel.ReadInt32();
-    uid = parcel.ReadInt32();
-    entityType = Str16ToStr8(parcel.ReadString16());
-
-    int32_t permissionsSize;
-    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, permissionsSize);
-    for (int32_t i = 0; i < permissionsSize; i++) {
-        permissions.emplace_back(Str16ToStr8(parcel.ReadString16()));
-    }
-
-    int32_t moduleSourceDirsSize;
-    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, moduleSourceDirsSize);
-    for (int32_t i = 0; i < moduleSourceDirsSize; i++) {
-        moduleSourceDirs.emplace_back(Str16ToStr8(parcel.ReadString16()));
-    }
-
-    int32_t moduleInfosSize = parcel.ReadInt32();
-    for (int32_t i = 0; i < moduleInfosSize; i++) {
-        std::unique_ptr<ModuleInfo> moduleInfo(parcel.ReadParcelable<ModuleInfo>());
-        if (!moduleInfo) {
-            APP_LOGE("ReadParcelable<ModuleInfo> failed");
-            return false;
-        }
-        moduleInfos.emplace_back(*moduleInfo);
-    }
-    if (!ReadMetaDataFromParcel(parcel)) {
-        return false;
-    }
-
-    int32_t metadataSize;
-    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, metadataSize);
-    for (int32_t i = 0; i < metadataSize; ++i) {
-        std::string moduleName = Str16ToStr8(parcel.ReadString16());
-        int32_t metaSize = parcel.ReadInt32();
-        for (int n = 0; n < metaSize; ++n) {
-            std::unique_ptr<Metadata> meta(parcel.ReadParcelable<Metadata>());
-            if (!meta) {
-                APP_LOGE("ReadParcelable<Metadata> failed");
-                return false;
-            }
-            metadata[moduleName].emplace_back(*meta);
-        }
-    }
-
-    vendor = Str16ToStr8(parcel.ReadString16());
-    versionCode = parcel.ReadInt32();
-    versionName = Str16ToStr8(parcel.ReadString16());
-    minCompatibleVersionCode = parcel.ReadInt32();
-    apiCompatibleVersion = parcel.ReadInt32();
-    apiTargetVersion = parcel.ReadInt32();
-    apiReleaseType = Str16ToStr8(parcel.ReadString16());
-    distributedNotificationEnabled = parcel.ReadBool();
-    keepAlive = parcel.ReadBool();
-    userDataClearable = parcel.ReadBool();
-    appPrivilegeLevel = Str16ToStr8(parcel.ReadString16());
-    return true;
-}
-
 bool ApplicationInfo::ReadMetaDataFromParcel(Parcel &parcel)
 {
     int32_t metaDataSize = parcel.ReadInt32();
@@ -242,6 +167,32 @@ bool ApplicationInfo::ReadMetaDataFromParcel(Parcel &parcel)
     return true;
 }
 
+bool ApplicationInfo::ReadFromParcel(Parcel &parcel)
+{
+    MessageParcel *messageParcel = reinterpret_cast<MessageParcel *>(&parcel);
+    if (!messageParcel) {
+        APP_LOGE("Type conversion failed");
+        return false;
+    }
+    uint32_t length = messageParcel->ReadUint32();
+    if (length == 0) {
+        APP_LOGE("Invalid data length");
+        return false;
+    }
+    const char *data = reinterpret_cast<const char *>(messageParcel->ReadRawData(length));
+    if (!data) {
+        APP_LOGE("Fail to read raw data, length = %{public}d", length);
+        return false;
+    }
+    nlohmann::json jsonObject = nlohmann::json::parse(data, nullptr, false);
+    if (jsonObject.is_discarded()) {
+        APP_LOGE("failed to parse ApplicationInfo");
+        return false;
+    }
+    *this = jsonObject.get<ApplicationInfo>();
+    return true;
+}
+
 ApplicationInfo *ApplicationInfo::Unmarshalling(Parcel &parcel)
 {
     ApplicationInfo *info = new (std::nothrow) ApplicationInfo();
@@ -255,79 +206,21 @@ ApplicationInfo *ApplicationInfo::Unmarshalling(Parcel &parcel)
 
 bool ApplicationInfo::Marshalling(Parcel &parcel) const
 {
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(name));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(bundleName));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(description));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(iconPath));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(label));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(deviceId));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(signatureKey));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(process));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(entryDir));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(codePath));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(dataDir));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(dataBaseDir));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(cacheDir));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, isSystemApp);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, isCloned);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, isLauncherApp);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, enabled);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, debug);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, singleUser);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, removable);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, supportedModes);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, labelId);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, iconId);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, descriptionId);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Uint32, parcel, accessTokenId);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, flags);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, uid);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(entityType));
-
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, permissions.size());
-    for (auto &permission : permissions) {
-        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(permission));
+    MessageParcel *messageParcel = reinterpret_cast<MessageParcel *>(&parcel);
+    if (!messageParcel) {
+        APP_LOGE("Type conversion failed");
+        return false;
     }
-
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, moduleSourceDirs.size());
-    for (auto &moduleSourceDir : moduleSourceDirs) {
-        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(moduleSourceDir));
+    nlohmann::json json = *this;
+    std::string str = json.dump();
+    if (!messageParcel->WriteUint32(str.size() + 1)) {
+        APP_LOGE("Failed to write data size");
+        return false;
     }
-
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, moduleInfos.size());
-    for (auto &moduleInfo : moduleInfos) {
-        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Parcelable, parcel, &moduleInfo);
+    if (!messageParcel->WriteRawData(str.c_str(), str.size() + 1)) {
+        APP_LOGE("Failed to write data");
+        return false;
     }
-
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, metaData.size());
-    for (auto &item : metaData) {
-        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(item.first));
-        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, item.second.size());
-        for (auto &customizeData : item.second) {
-            WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Parcelable, parcel, &customizeData);
-        }
-    }
-
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, metadata.size());
-    for (auto &item : metadata) {
-        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(item.first));
-        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, item.second.size());
-        for (auto &meta : item.second) {
-            WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Parcelable, parcel, &meta);
-        }
-    }
-
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(vendor));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, versionCode);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(versionName));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, minCompatibleVersionCode);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, apiCompatibleVersion);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, apiTargetVersion);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(apiReleaseType));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, distributedNotificationEnabled);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, keepAlive);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, userDataClearable);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(appPrivilegeLevel));
     return true;
 }
 
@@ -363,46 +256,53 @@ void to_json(nlohmann::json &jsonObject, const ApplicationInfo &applicationInfo)
     jsonObject = nlohmann::json {
         {APPLICATION_NAME, applicationInfo.name},
         {APPLICATION_BUNDLE_NAME, applicationInfo.bundleName},
-        {APPLICATION_DESCRIPTION, applicationInfo.description},
-        {APPLICATION_ICON_PATH, applicationInfo.iconPath},
-        {APPLICATION_LABEL, applicationInfo.label},
-        {APPLICATION_LABEL_ID, applicationInfo.labelId},
-        {APPLICATION_DESCRIPTION_ID, applicationInfo.descriptionId},
-        {APPLICATION_ACCESSTOKEN_ID, applicationInfo.accessTokenId},
-        {APPLICATION_ICON_ID, applicationInfo.iconId},
-        {APPLICATION_DEVICE_ID, applicationInfo.deviceId},
-        {APPLICATION_SIGNATURE_KEY, applicationInfo.signatureKey},
-        {APPLICATION_IS_SYSTEM_APP, applicationInfo.isSystemApp},
-        {"isCloned", applicationInfo.isCloned},
-        {APPLICATION_IS_LAUNCHER_APP, applicationInfo.isLauncherApp},
-        {APPLICATION_ENABLED, applicationInfo.enabled},
-        {APPLICATION_DEBUG, applicationInfo.debug},
-        {APPLICATION_REMOVABLE, applicationInfo.removable},
-        {APPLICATION_SUPPORTED_MODES, applicationInfo.supportedModes},
-        {APPLICATION_PROCESS, applicationInfo.process},
-        {APPLICATION_PERMISSIONS, applicationInfo.permissions},
-        {APPLICATION_MODULE_SOURCE_DIRS, applicationInfo.moduleSourceDirs},
-        {APPLICATION_MODULE_INFOS, applicationInfo.moduleInfos},
-        {APPLICATION_ENTRY_DIR, applicationInfo.entryDir},
-        {APPLICATION_CODE_PATH, applicationInfo.codePath},
-        {APPLICATION_DATA_DIR, applicationInfo.dataDir},
-        {APPLICATION_DATA_BASE_DIR, applicationInfo.dataBaseDir},
-        {APPLICATION_CACHE_DIR, applicationInfo.cacheDir},
-        {APPLICATION_FLAGS, applicationInfo.flags},
-        {"uid", applicationInfo.uid},
-        {APPLICATION_VENDOR, applicationInfo.vendor},
         {APPLICATION_VERSION_CODE, applicationInfo.versionCode},
         {APPLICATION_VERSION_NAME, applicationInfo.versionName},
         {APPLICATION_MIN_COMPATIBLE_VERSION_CODE, applicationInfo.minCompatibleVersionCode},
         {APPLICATION_API_COMPATIBLE_VERSION, applicationInfo.apiCompatibleVersion},
         {APPLICATION_API_TARGET_VERSION, applicationInfo.apiTargetVersion},
-        {APPLICATION_API_RELEASETYPE, applicationInfo.apiReleaseType},
-        {APPLICATION_DISTRIBUTED_NOTIFICATION_ENABLED, applicationInfo.distributedNotificationEnabled},
-        {APPLICATION_ENTITY_TYPE, applicationInfo.entityType},
+        {APPLICATION_ICON_PATH, applicationInfo.iconPath},
+        {APPLICATION_ICON_ID, applicationInfo.iconId},
+        {APPLICATION_LABEL, applicationInfo.label},
+        {APPLICATION_LABEL_ID, applicationInfo.labelId},
+        {APPLICATION_DESCRIPTION, applicationInfo.description},
+        {APPLICATION_DESCRIPTION_ID, applicationInfo.descriptionId},
         {APPLICATION_KEEP_ALIVE, applicationInfo.keepAlive},
+        {APPLICATION_REMOVABLE, applicationInfo.removable},
         {APPLICATION_SINGLE_USER, applicationInfo.singleUser},
         {APPLICATION_USER_DATA_CLEARABLE, applicationInfo.userDataClearable},
-        {APPLICATION_PRIVILEGE_LEVEL, applicationInfo.appPrivilegeLevel}
+        {APPLICATION_IS_SYSTEM_APP, applicationInfo.isSystemApp},
+        {APPLICATION_IS_LAUNCHER_APP, applicationInfo.isLauncherApp},
+        {APPLICATION_CODE_PATH, applicationInfo.codePath},
+        {APPLICATION_DATA_DIR, applicationInfo.dataDir},
+        {APPLICATION_DATA_BASE_DIR, applicationInfo.dataBaseDir},
+        {APPLICATION_CACHE_DIR, applicationInfo.cacheDir},
+        {APPLICATION_ENTRY_DIR, applicationInfo.entryDir},
+        {APPLICATION_API_RELEASETYPE, applicationInfo.apiReleaseType},
+        {APPLICATION_DEBUG, applicationInfo.debug},
+        {APPLICATION_DEVICE_ID, applicationInfo.deviceId},
+        {APPLICATION_DISTRIBUTED_NOTIFICATION_ENABLED, applicationInfo.distributedNotificationEnabled},
+        {APPLICATION_ENTITY_TYPE, applicationInfo.entityType},
+        {APPLICATION_PROCESS, applicationInfo.process},
+        {APPLICATION_SUPPORTED_MODES, applicationInfo.supportedModes},
+        {APPLICATION_VENDOR, applicationInfo.vendor},
+        {APPLICATION_PRIVILEGE_LEVEL, applicationInfo.appPrivilegeLevel},
+        {APPLICATION_ACCESSTOKEN_ID, applicationInfo.accessTokenId},
+        {APPLICATION_ENABLED, applicationInfo.enabled},
+        {APPLICATION_UID, applicationInfo.uid},
+        {APPLICATION_PERMISSIONS, applicationInfo.permissions},
+        {APPLICATION_MODULE_SOURCE_DIRS, applicationInfo.moduleSourceDirs},
+        {APPLICATION_MODULE_INFOS, applicationInfo.moduleInfos},
+        {APPLICATION_META_DATA_CONFIG_JSON, applicationInfo.metaData},
+        {APPLICATION_META_DATA_MODULE_JSON, applicationInfo.metadata},
+        {APPLICATION_IS_CLONED, applicationInfo.isCloned},
+        {APPLICATION_ICON, applicationInfo.icon},
+        {APPLICATION_FLAGS, applicationInfo.flags},
+        {APPLICATION_ENTRY_MODULE_NAME, applicationInfo.entryModuleName},
+        {APPLICATION_CPU_ABI, applicationInfo.cpuAbi},
+        {APPLICATION_IS_COMPRESS_NATIVE_LIBS, applicationInfo.isCompressNativeLibs},
+        {APPLICATION_SYSTEM_APP, applicationInfo.systemApp},
+        {APPLICATION_SIGNATURE_KEY, applicationInfo.signatureKey}
     };
 }
 
@@ -422,230 +322,6 @@ void from_json(const nlohmann::json &jsonObject, ApplicationInfo &applicationInf
         jsonObjectEnd,
         APPLICATION_BUNDLE_NAME,
         applicationInfo.bundleName,
-        JsonType::STRING,
-        false,
-        parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<std::string>(jsonObject,
-        jsonObjectEnd,
-        APPLICATION_DESCRIPTION,
-        applicationInfo.description,
-        JsonType::STRING,
-        false,
-        parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<std::string>(jsonObject,
-        jsonObjectEnd,
-        APPLICATION_ICON_PATH,
-        applicationInfo.iconPath,
-        JsonType::STRING,
-        false,
-        parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<std::string>(jsonObject,
-        jsonObjectEnd,
-        APPLICATION_LABEL,
-        applicationInfo.label,
-        JsonType::STRING,
-        false,
-        parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<int32_t>(jsonObject,
-        jsonObjectEnd,
-        APPLICATION_LABEL_ID,
-        applicationInfo.labelId,
-        JsonType::NUMBER,
-        false,
-        parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<int32_t>(jsonObject,
-        jsonObjectEnd,
-        APPLICATION_DESCRIPTION_ID,
-        applicationInfo.descriptionId,
-        JsonType::NUMBER,
-        false,
-        parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<uint32_t>(jsonObject,
-        jsonObjectEnd,
-        APPLICATION_ACCESSTOKEN_ID,
-        applicationInfo.accessTokenId,
-        JsonType::NUMBER,
-        false,
-        parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<int32_t>(jsonObject,
-        jsonObjectEnd,
-        APPLICATION_ICON_ID,
-        applicationInfo.iconId,
-        JsonType::NUMBER,
-        false,
-        parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<std::string>(jsonObject,
-        jsonObjectEnd,
-        APPLICATION_DEVICE_ID,
-        applicationInfo.deviceId,
-        JsonType::STRING,
-        false,
-        parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<std::string>(jsonObject,
-        jsonObjectEnd,
-        APPLICATION_SIGNATURE_KEY,
-        applicationInfo.signatureKey,
-        JsonType::STRING,
-        false,
-        parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<bool>(jsonObject,
-        jsonObjectEnd,
-        APPLICATION_IS_SYSTEM_APP,
-        applicationInfo.isSystemApp,
-        JsonType::BOOLEAN,
-        false,
-        parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<bool>(jsonObject,
-        jsonObjectEnd,
-        "isCloned",
-        applicationInfo.isCloned,
-        JsonType::BOOLEAN,
-        false,
-        parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<bool>(jsonObject,
-        jsonObjectEnd,
-        APPLICATION_IS_LAUNCHER_APP,
-        applicationInfo.isLauncherApp,
-        JsonType::BOOLEAN,
-        false,
-        parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<bool>(jsonObject,
-        jsonObjectEnd,
-        APPLICATION_ENABLED,
-        applicationInfo.enabled,
-        JsonType::BOOLEAN,
-        false,
-        parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<bool>(jsonObject,
-        jsonObjectEnd,
-        APPLICATION_DEBUG,
-        applicationInfo.debug,
-        JsonType::BOOLEAN,
-        false,
-        parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<bool>(jsonObject,
-        jsonObjectEnd,
-        APPLICATION_REMOVABLE,
-        applicationInfo.removable,
-        JsonType::BOOLEAN,
-        false,
-        parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<int>(jsonObject,
-        jsonObjectEnd,
-        APPLICATION_SUPPORTED_MODES,
-        applicationInfo.supportedModes,
-        JsonType::NUMBER,
-        false,
-        parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<std::string>(jsonObject,
-        jsonObjectEnd,
-        APPLICATION_PROCESS,
-        applicationInfo.process,
-        JsonType::STRING,
-        false,
-        parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<std::vector<std::string>>(jsonObject,
-        jsonObjectEnd,
-        APPLICATION_PERMISSIONS,
-        applicationInfo.permissions,
-        JsonType::ARRAY,
-        false,
-        parseResult,
-        ArrayType::STRING);
-    GetValueIfFindKey<std::vector<std::string>>(jsonObject,
-        jsonObjectEnd,
-        APPLICATION_MODULE_SOURCE_DIRS,
-        applicationInfo.moduleSourceDirs,
-        JsonType::ARRAY,
-        false,
-        parseResult,
-        ArrayType::STRING);
-    GetValueIfFindKey<std::vector<ModuleInfo>>(jsonObject,
-        jsonObjectEnd,
-        APPLICATION_MODULE_INFOS,
-        applicationInfo.moduleInfos,
-        JsonType::ARRAY,
-        false,
-        parseResult,
-        ArrayType::OBJECT);
-    GetValueIfFindKey<std::string>(jsonObject,
-        jsonObjectEnd,
-        APPLICATION_ENTRY_DIR,
-        applicationInfo.entryDir,
-        JsonType::STRING,
-        false,
-        parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<std::string>(jsonObject,
-        jsonObjectEnd,
-        APPLICATION_CODE_PATH,
-        applicationInfo.codePath,
-        JsonType::STRING,
-        false,
-        parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<std::string>(jsonObject,
-        jsonObjectEnd,
-        APPLICATION_DATA_DIR,
-        applicationInfo.dataDir,
-        JsonType::STRING,
-        false,
-        parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<std::string>(jsonObject,
-        jsonObjectEnd,
-        APPLICATION_DATA_BASE_DIR,
-        applicationInfo.dataBaseDir,
-        JsonType::STRING,
-        false,
-        parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<std::string>(jsonObject,
-        jsonObjectEnd,
-        APPLICATION_CACHE_DIR,
-        applicationInfo.cacheDir,
-        JsonType::STRING,
-        false,
-        parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<int>(jsonObject,
-        jsonObjectEnd,
-        APPLICATION_FLAGS,
-        applicationInfo.flags,
-        JsonType::NUMBER,
-        false,
-        parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<int>(jsonObject,
-        jsonObjectEnd,
-        "uid",
-        applicationInfo.uid,
-        JsonType::NUMBER,
-        false,
-        parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<std::string>(jsonObject,
-        jsonObjectEnd,
-        APPLICATION_VENDOR,
-        applicationInfo.vendor,
         JsonType::STRING,
         false,
         parseResult,
@@ -692,25 +368,49 @@ void from_json(const nlohmann::json &jsonObject, ApplicationInfo &applicationInf
         ArrayType::NOT_ARRAY);
     GetValueIfFindKey<std::string>(jsonObject,
         jsonObjectEnd,
-        APPLICATION_API_RELEASETYPE,
-        applicationInfo.apiReleaseType,
+        APPLICATION_ICON_PATH,
+        applicationInfo.iconPath,
         JsonType::STRING,
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<bool>(jsonObject,
+    GetValueIfFindKey<int32_t>(jsonObject,
         jsonObjectEnd,
-        APPLICATION_DISTRIBUTED_NOTIFICATION_ENABLED,
-        applicationInfo.distributedNotificationEnabled,
-        JsonType::BOOLEAN,
+        APPLICATION_ICON_ID,
+        applicationInfo.iconId,
+        JsonType::NUMBER,
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
     GetValueIfFindKey<std::string>(jsonObject,
         jsonObjectEnd,
-        APPLICATION_ENTITY_TYPE,
-        applicationInfo.entityType,
+        APPLICATION_LABEL,
+        applicationInfo.label,
         JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<int32_t>(jsonObject,
+        jsonObjectEnd,
+        APPLICATION_LABEL_ID,
+        applicationInfo.labelId,
+        JsonType::NUMBER,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        APPLICATION_DESCRIPTION,
+        applicationInfo.description,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<int32_t>(jsonObject,
+        jsonObjectEnd,
+        APPLICATION_DESCRIPTION_ID,
+        applicationInfo.descriptionId,
+        JsonType::NUMBER,
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
@@ -718,6 +418,14 @@ void from_json(const nlohmann::json &jsonObject, ApplicationInfo &applicationInf
         jsonObjectEnd,
         APPLICATION_KEEP_ALIVE,
         applicationInfo.keepAlive,
+        JsonType::BOOLEAN,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<bool>(jsonObject,
+        jsonObjectEnd,
+        APPLICATION_REMOVABLE,
+        applicationInfo.removable,
         JsonType::BOOLEAN,
         false,
         parseResult,
@@ -738,6 +446,126 @@ void from_json(const nlohmann::json &jsonObject, ApplicationInfo &applicationInf
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<bool>(jsonObject,
+        jsonObjectEnd,
+        APPLICATION_IS_SYSTEM_APP,
+        applicationInfo.isSystemApp,
+        JsonType::BOOLEAN,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<bool>(jsonObject,
+        jsonObjectEnd,
+        APPLICATION_IS_LAUNCHER_APP,
+        applicationInfo.isLauncherApp,
+        JsonType::BOOLEAN,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        APPLICATION_CODE_PATH,
+        applicationInfo.codePath,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        APPLICATION_DATA_DIR,
+        applicationInfo.dataDir,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        APPLICATION_DATA_BASE_DIR,
+        applicationInfo.dataBaseDir,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        APPLICATION_CACHE_DIR,
+        applicationInfo.cacheDir,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        APPLICATION_ENTRY_DIR,
+        applicationInfo.entryDir,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        APPLICATION_API_RELEASETYPE,
+        applicationInfo.apiReleaseType,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<bool>(jsonObject,
+        jsonObjectEnd,
+        APPLICATION_DEBUG,
+        applicationInfo.debug,
+        JsonType::BOOLEAN,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        APPLICATION_DEVICE_ID,
+        applicationInfo.deviceId,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<bool>(jsonObject,
+        jsonObjectEnd,
+        APPLICATION_DISTRIBUTED_NOTIFICATION_ENABLED,
+        applicationInfo.distributedNotificationEnabled,
+        JsonType::BOOLEAN,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        APPLICATION_ENTITY_TYPE,
+        applicationInfo.entityType,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        APPLICATION_PROCESS,
+        applicationInfo.process,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<int>(jsonObject,
+        jsonObjectEnd,
+        APPLICATION_SUPPORTED_MODES,
+        applicationInfo.supportedModes,
+        JsonType::NUMBER,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        APPLICATION_VENDOR,
+        applicationInfo.vendor,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
     GetValueIfFindKey<std::string>(jsonObject,
         jsonObjectEnd,
         APPLICATION_PRIVILEGE_LEVEL,
@@ -746,8 +574,136 @@ void from_json(const nlohmann::json &jsonObject, ApplicationInfo &applicationInf
         false,
         parseResult,
         ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<uint32_t>(jsonObject,
+        jsonObjectEnd,
+        APPLICATION_ACCESSTOKEN_ID,
+        applicationInfo.accessTokenId,
+        JsonType::NUMBER,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<bool>(jsonObject,
+        jsonObjectEnd,
+        APPLICATION_ENABLED,
+        applicationInfo.enabled,
+        JsonType::BOOLEAN,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<int>(jsonObject,
+        jsonObjectEnd,
+        APPLICATION_UID,
+        applicationInfo.uid,
+        JsonType::NUMBER,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::vector<std::string>>(jsonObject,
+        jsonObjectEnd,
+        APPLICATION_PERMISSIONS,
+        applicationInfo.permissions,
+        JsonType::ARRAY,
+        false,
+        parseResult,
+        ArrayType::STRING);
+    GetValueIfFindKey<std::vector<std::string>>(jsonObject,
+        jsonObjectEnd,
+        APPLICATION_MODULE_SOURCE_DIRS,
+        applicationInfo.moduleSourceDirs,
+        JsonType::ARRAY,
+        false,
+        parseResult,
+        ArrayType::STRING);
+    GetValueIfFindKey<std::vector<ModuleInfo>>(jsonObject,
+        jsonObjectEnd,
+        APPLICATION_MODULE_INFOS,
+        applicationInfo.moduleInfos,
+        JsonType::ARRAY,
+        false,
+        parseResult,
+        ArrayType::OBJECT);
+    GetValueIfFindKey<std::map<std::string, std::vector<CustomizeData>>>(jsonObject,
+        jsonObjectEnd,
+        APPLICATION_META_DATA_CONFIG_JSON,
+        applicationInfo.metaData,
+        JsonType::OBJECT,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::map<std::string, std::vector<Metadata>>>(jsonObject,
+        jsonObjectEnd,
+        APPLICATION_META_DATA_MODULE_JSON,
+        applicationInfo.metadata,
+        JsonType::OBJECT,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<bool>(jsonObject,
+        jsonObjectEnd,
+        APPLICATION_IS_CLONED,
+        applicationInfo.isCloned,
+        JsonType::BOOLEAN,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        APPLICATION_ICON,
+        applicationInfo.icon,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<int>(jsonObject,
+        jsonObjectEnd,
+        APPLICATION_FLAGS,
+        applicationInfo.flags,
+        JsonType::NUMBER,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        APPLICATION_ENTRY_MODULE_NAME,
+        applicationInfo.entryModuleName,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        APPLICATION_CPU_ABI,
+        applicationInfo.cpuAbi,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<bool>(jsonObject,
+        jsonObjectEnd,
+        APPLICATION_IS_COMPRESS_NATIVE_LIBS,
+        applicationInfo.isCompressNativeLibs,
+        JsonType::BOOLEAN,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<bool>(jsonObject,
+        jsonObjectEnd,
+        APPLICATION_SYSTEM_APP,
+        applicationInfo.systemApp,
+        JsonType::BOOLEAN,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        APPLICATION_SIGNATURE_KEY,
+        applicationInfo.signatureKey,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
     if (parseResult != ERR_OK) {
-        APP_LOGE("read ApplicationInfo from database error, error code : %{public}d", parseResult);
+        APP_LOGE("from_json error, error code : %{public}d", parseResult);
     }
 }
 

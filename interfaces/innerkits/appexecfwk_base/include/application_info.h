@@ -98,58 +98,69 @@ struct CompatibleApplicationInfo : public Parcelable {
 struct ApplicationInfo : public Parcelable {
     std::string name;  // application name is same to bundleName
     std::string bundleName;
-    std::string description;
+
+    int32_t versionCode = 0;
+    std::string versionName;
+    int32_t minCompatibleVersionCode = 0;
+
+    int32_t apiCompatibleVersion = 0;
+    int32_t apiTargetVersion = 0;
+
     std::string iconPath;
-    std::string label;  // entity.system.home ability label
-    int32_t labelId = 0;
     int32_t iconId = 0;
+    std::string label;
+    int32_t labelId = 0;
+    std::string description;
     int32_t descriptionId = 0;
-    uint32_t accessTokenId = 0;
-    std::string deviceId;      // should auto-get self device id.
-    std::string signatureKey;  // the public key info of this application.
+
+    bool keepAlive = false;
+    bool removable = true;
+    bool singleUser = false;
+    bool userDataClearable = true;
+
     bool isSystemApp = false;
     bool isLauncherApp = false;
-    int supportedModes = 0;  // returns 0 if the application does not support the driving mode
-    std::string process;
-    std::vector<std::string> permissions;
-    std::vector<std::string> moduleSourceDirs;
-    std::vector<ModuleInfo> moduleInfos;
-    std::string entryDir;
+
     std::string codePath;
     std::string dataDir;
     std::string dataBaseDir;
     std::string cacheDir;
-    int flags = 0;
-    bool enabled = false;
-    // Clone the required elements
-    bool isCloned = false;
-    int uid = -1;
-    bool removable = true;
-
-    //  element that does not exist for a while
-    std::string entryModuleName;
-    std::string icon;
-    std::string cpuAbi;
-    bool isCompressNativeLibs = true;
-    bool debug = false;
-    bool singleUser = false;
-    bool systemApp = false;
-    std::map<std::string, std::vector<CustomizeData>> metaData;
-    // new version fields
-    std::map<std::string, std::vector<Metadata>> metadata;
-    std::string vendor;
-    int32_t versionCode = 0;
-    std::string versionName;
-    int32_t minCompatibleVersionCode = 0;
-    int32_t apiCompatibleVersion = 0;
-    int32_t apiTargetVersion = 0;
+    std::string entryDir;
+    
     std::string apiReleaseType;
+    bool debug = false;
+    std::string deviceId;
     bool distributedNotificationEnabled = false;
     std::string entityType;
-    bool keepAlive = false;
-    bool userDataClearable = true;
+    std::string process;
+    int supportedModes = 0;  // returns 0 if the application does not support the driving mode
+    std::string vendor;
+
     // apl
     std::string appPrivilegeLevel = AVAILABLELEVEL_NORMAL;
+
+    // user related fields, assign when calling the get interface
+    uint32_t accessTokenId = 0;
+    bool enabled = false;
+    int uid = -1;
+
+    // assign when calling the get interface
+    std::vector<std::string> permissions;
+    std::vector<std::string> moduleSourceDirs;
+    std::vector<ModuleInfo> moduleInfos;
+    std::map<std::string, std::vector<CustomizeData>> metaData;
+    std::map<std::string, std::vector<Metadata>> metadata;
+
+    bool isCloned = false;
+
+    // unused
+    std::string icon;
+    int flags = 0;
+    std::string entryModuleName;
+    std::string cpuAbi;
+    bool isCompressNativeLibs = true;
+    bool systemApp = false;
+    std::string signatureKey;
 
     bool ReadFromParcel(Parcel &parcel);
     bool ReadMetaDataFromParcel(Parcel &parcel);

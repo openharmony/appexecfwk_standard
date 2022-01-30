@@ -36,7 +36,7 @@
 namespace OHOS {
 namespace AppExecFwk {
 struct Distro {
-    bool deliveryWithInstall;
+    bool deliveryWithInstall = false;
     std::string moduleName;
     std::string moduleType;
     bool installationFree = false;
@@ -67,7 +67,7 @@ struct InnerModuleInfo {
     int32_t descriptionId = 0;
     std::string mainAbility;
     std::string srcPath;
-    bool isEntry;
+    bool isEntry = false;
     bool installationFree = false;
     MetaData metaData;
     ModuleColorMode colorMode = ModuleColorMode::AUTO;
@@ -657,14 +657,6 @@ public:
         return mark_;
     }
     /**
-     * @brief Get signature key in application.
-     * @return Returns signature key.
-     */
-    const std::string GetSignatureKey() const
-    {
-        return baseApplicationInfo_.signatureKey;
-    }
-    /**
      * @brief Set application base data dir.
      * @param baseDataDir Indicates the dir to be set.
      */
@@ -999,16 +991,6 @@ public:
         return (bundleStatus_ == BundleStatus::ENABLED);
     }
 
-    void SetSeInfo(const std::string &seInfo)
-    {
-        baseBundleInfo_.seInfo = seInfo;
-    }
-
-    std::string GetSeInfo() const
-    {
-        return baseBundleInfo_.seInfo;
-    }
-
     bool IsOnlyModule(const std::string &modulePackage)
     {
         if ((innerModuleInfos_.size() == 1) && (innerModuleInfos_.count(modulePackage) == 1)) {
@@ -1211,22 +1193,13 @@ public:
     {
         return baseApplicationInfo_.removable;
     }
-    /**
-     * @brief Set removable to indicate the bundle is removable or not.
-     * @param removable Indicates the removable to set.
-     */
     void SetIsPreInstallApp(bool isPreInstallApp)
     {
-        isPreInstallApp_ = isPreInstallApp;
         baseBundleInfo_.isPreInstallApp = isPreInstallApp;
     }
-    /**
-     * @brief Get the bundle is whether isPreInstallApp.
-     * @return Return whether the bundle is isPreInstallApp.
-     */
     bool IsPreInstallApp() const
     {
-        return isPreInstallApp_;
+        return baseBundleInfo_.isPreInstallApp;
     }
     /**
      * @brief Get whether the bundle is a system app.
@@ -1371,7 +1344,6 @@ private:
     std::string mainAbilityName_;
     std::string appFeature_;
     bool hasEntry_ = false;
-    bool isPreInstallApp_ = false;
     std::vector<std::string> allowedAcls_;
     InstallMark mark_;
 
