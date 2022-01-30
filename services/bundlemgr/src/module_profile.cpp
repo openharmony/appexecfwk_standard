@@ -197,8 +197,8 @@ struct Module {
     std::string process;
     std::string mainElement;
     std::vector<std::string> deviceTypes;
-    bool deliveryWithInstall = true;
-    bool installationFree = true;
+    bool deliveryWithInstall = false;
+    bool installationFree = false;
     std::string virtualMachine = MODULE_VIRTUAL_MACHINE_DEFAULT_VALUE;
     std::string uiSyntax = MODULE_UI_SYNTAX_DEFAULT_VALUE;
     std::string pages;
@@ -1049,31 +1049,24 @@ bool ToApplicationInfo(const Profile::App &app, ApplicationInfo &applicationInfo
     APP_LOGD("transform ModuleJson to ApplicationInfo");
     applicationInfo.name = app.bundleName;
     applicationInfo.bundleName = app.bundleName;
-    applicationInfo.debug = app.debug;
-    applicationInfo.icon = app.icon;
+
+    applicationInfo.versionCode = app.versionCode;
+    applicationInfo.versionName = app.versionName;
+    if (app.minCompatibleVersionCode != -1) {
+        applicationInfo.minCompatibleVersionCode = app.minCompatibleVersionCode;
+    } else {
+        applicationInfo.minCompatibleVersionCode = applicationInfo.versionCode;
+    }
+
+    applicationInfo.apiCompatibleVersion = app.minAPIVersion;
+    applicationInfo.apiTargetVersion = app.targetAPIVersion;
+    
     applicationInfo.iconPath = app.icon;
     applicationInfo.iconId = app.iconId;
     applicationInfo.label = app.label;
     applicationInfo.labelId = app.labelId;
     applicationInfo.description = app.description;
     applicationInfo.descriptionId = app.descriptionId;
-    applicationInfo.vendor = app.vendor;
-    applicationInfo.versionCode = app.versionCode;
-    applicationInfo.versionName = app.versionName;
-    if (app.minCompatibleVersionCode != -1) {
-        applicationInfo.minCompatibleVersionCode = app.minCompatibleVersionCode;
-    } else {
-        // default equal to versionCode
-        applicationInfo.minCompatibleVersionCode = app.versionCode;
-    }
-    applicationInfo.apiCompatibleVersion = app.minAPIVersion;
-    applicationInfo.apiTargetVersion = app.targetAPIVersion;
-    applicationInfo.apiReleaseType = app.apiReleaseType;
-    applicationInfo.distributedNotificationEnabled = app.distributedNotificationEnabled;
-    if (Profile::ENTITY_TYPE_SET.find(app.entityType) != Profile::ENTITY_TYPE_SET.end()) {
-        applicationInfo.entityType = app.entityType;
-    }
-    applicationInfo.deviceId = Constants::CURRENT_DEVICE_ID; // to do
 
     if (applicationInfo.isSystemApp && isPreInstallApp) {
         applicationInfo.keepAlive = app.keepAlive;
@@ -1085,6 +1078,18 @@ bool ToApplicationInfo(const Profile::App &app, ApplicationInfo &applicationInfo
             applicationInfo.removable = false;
         }
     }
+
+    applicationInfo.apiReleaseType = app.apiReleaseType;
+    applicationInfo.debug = app.debug;
+    applicationInfo.deviceId = Constants::CURRENT_DEVICE_ID;
+    applicationInfo.distributedNotificationEnabled = app.distributedNotificationEnabled;
+    if (Profile::ENTITY_TYPE_SET.find(app.entityType) != Profile::ENTITY_TYPE_SET.end()) {
+        applicationInfo.entityType = app.entityType;
+    } else {
+        applicationInfo.entityType = Profile::APP_ENTITY_TYPE_DEFAULT_VALUE;
+    }
+    applicationInfo.vendor = app.vendor;
+
     // device adapt
     std::string deviceType = GetDeviceType();
     if (app.deviceConfigs.find(deviceType) != app.deviceConfigs.end()) {
@@ -1116,24 +1121,31 @@ bool ToApplicationInfo(const Profile::App &app, ApplicationInfo &applicationInfo
 }
 
 bool ToBundleInfo(const ApplicationInfo &applicationInfo,
-    const InnerModuleInfo &innerModuleInfo, BundleInfo &bundleInfo)
+    const InnerModuleInfo &innerModuleInfo, bool isPreInstallApp, BundleInfo &bundleInfo)
 {
     bundleInfo.name = applicationInfo.bundleName;
-    bundleInfo.vendor = applicationInfo.vendor;
+
     bundleInfo.versionCode = static_cast<uint32_t>(applicationInfo.versionCode);
     bundleInfo.versionName = applicationInfo.versionName;
     bundleInfo.minCompatibleVersionCode = static_cast<uint32_t>(applicationInfo.minCompatibleVersionCode);
+
     bundleInfo.compatibleVersion = static_cast<uint32_t>(applicationInfo.apiCompatibleVersion);
     bundleInfo.targetVersion = static_cast<uint32_t>(applicationInfo.apiTargetVersion);
-    bundleInfo.releaseType = applicationInfo.apiReleaseType;
+
     bundleInfo.isKeepAlive = applicationInfo.keepAlive;
     bundleInfo.singleUser = applicationInfo.singleUser;
-    bundleInfo.label = applicationInfo.label;
-    bundleInfo.description = applicationInfo.description;
+    bundleInfo.isPreInstallApp = isPreInstallApp;
+    
+    bundleInfo.vendor = applicationInfo.vendor;
+    bundleInfo.releaseType = applicationInfo.apiReleaseType;
+    bundleInfo.isNativeApp = false;
+
     if (innerModuleInfo.isEntry) {
+        bundleInfo.mainEntry = innerModuleInfo.moduleName;
         bundleInfo.entryModuleName = innerModuleInfo.moduleName;
         bundleInfo.entryInstallationFree = innerModuleInfo.installationFree;
     }
+
     return true;
 }
 
@@ -1311,15 +1323,17 @@ bool ToInnerBundleInfo(const Profile::ModuleJson &moduleJson, InnerBundleInfo &i
         return false;
     }
 
+    bool isPreInstallApp = innerBundleInfo.IsPreInstallApp();
+
     ApplicationInfo applicationInfo;
     applicationInfo.isSystemApp = innerBundleInfo.GetAppType() == Constants::AppType::SYSTEM_APP;
-    ToApplicationInfo(moduleJson.app, applicationInfo, innerBundleInfo.IsPreInstallApp());
+    ToApplicationInfo(moduleJson.app, applicationInfo, isPreInstallApp);
 
     InnerModuleInfo innerModuleInfo;
-    ToInnerModuleInfo(moduleJson, innerModuleInfo, applicationInfo.isSystemApp, innerBundleInfo.IsPreInstallApp());
+    ToInnerModuleInfo(moduleJson, innerModuleInfo, applicationInfo.isSystemApp, isPreInstallApp);
 
     BundleInfo bundleInfo;
-    ToBundleInfo(applicationInfo, innerModuleInfo, bundleInfo);
+    ToBundleInfo(applicationInfo, innerModuleInfo, isPreInstallApp, bundleInfo);
 
     // handle abilities
     bool findEntry = false;
@@ -1364,7 +1378,7 @@ bool ToInnerBundleInfo(const Profile::ModuleJson &moduleJson, InnerBundleInfo &i
     for (const Profile::Extension &extension : moduleJson.module.extensionAbilities) {
         ExtensionAbilityInfo extensionInfo;
         ToExtensionInfo(moduleJson, extension, extensionInfo,
-            applicationInfo.isSystemApp, innerBundleInfo.IsPreInstallApp());
+            applicationInfo.isSystemApp, isPreInstallApp);
         std::string key;
         key.append(moduleJson.app.bundleName).append(".")
             .append(moduleJson.module.name).append(".").append(extension.name);

@@ -213,7 +213,6 @@ bool BundleDataMgr::AddNewModuleInfo(
         oldInfo.AddModuleInfo(newInfo);
         oldInfo.SetAppPrivilegeLevel(newInfo.GetAppPrivilegeLevel());
         oldInfo.SetAllowedAcls(newInfo.GetAllowedAcls());
-        oldInfo.SetIsPreInstallApp(newInfo.IsPreInstallApp());
         oldInfo.SetBundleStatus(InnerBundleInfo::BundleStatus::ENABLED);
         if (dataStorage_->DeleteStorageBundleInfo(Constants::CURRENT_DEVICE_ID, oldInfo)) {
             if (dataStorage_->SaveStorageBundleInfo(Constants::CURRENT_DEVICE_ID, oldInfo)) {
@@ -297,7 +296,6 @@ bool BundleDataMgr::UpdateInnerBundleInfo(
             oldInfo.SetMainAbilityName(newInfo.GetMainAbilityName());
             oldInfo.SetAppType(newInfo.GetAppType());
             oldInfo.SetAppFeature(newInfo.GetAppFeature());
-            oldInfo.SetIsPreInstallApp(newInfo.IsPreInstallApp());
             oldInfo.SetAppPrivilegeLevel(newInfo.GetAppPrivilegeLevel());
             oldInfo.SetAllowedAcls(newInfo.GetAllowedAcls());
         }

@@ -415,7 +415,6 @@ void InnerBundleInfo::ToJson(nlohmann::json &jsonObject) const
     jsonObject[MODULE_SHORTCUT] = shortcutInfos_;
     jsonObject[NEW_BUNDLE_NAME] = newBundleName_;
     jsonObject[MODULE_COMMON_EVENT] = commonEvents_;
-    jsonObject[IS_PREINSTALL_APP] = isPreInstallApp_;
     jsonObject[INSTALL_MARK] = mark_;
     jsonObject[INNER_BUNDLE_USER_INFOS] = innerBundleUserInfos_;
     jsonObject[BUNDLE_IS_NEW_VERSION] = isNewVersion_;
@@ -1125,14 +1124,6 @@ int32_t InnerBundleInfo::FromJson(const nlohmann::json &jsonObject)
         true,
         ProfileReader::parseResult,
         ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<bool>(jsonObject,
-        jsonObjectEnd,
-        IS_PREINSTALL_APP,
-        isPreInstallApp_,
-        JsonType::BOOLEAN,
-        false,
-        ProfileReader::parseResult,
-        ArrayType::NOT_ARRAY);
     GetValueIfFindKey<InstallMark>(jsonObject,
         jsonObjectEnd,
         INSTALL_MARK,
@@ -1389,63 +1380,72 @@ bool InnerBundleInfo::AddModuleInfo(const InnerBundleInfo &newInfo)
 void InnerBundleInfo::UpdateBaseBundleInfo(const BundleInfo &bundleInfo, bool isEntry)
 {
     baseBundleInfo_.name = bundleInfo.name;
-    baseBundleInfo_.vendor = bundleInfo.vendor;
+
     baseBundleInfo_.versionCode = bundleInfo.versionCode;
     baseBundleInfo_.versionName = bundleInfo.versionName;
     baseBundleInfo_.minCompatibleVersionCode = bundleInfo.minCompatibleVersionCode;
+
     baseBundleInfo_.compatibleVersion = bundleInfo.compatibleVersion;
     baseBundleInfo_.targetVersion = bundleInfo.targetVersion;
-    baseBundleInfo_.releaseType = bundleInfo.releaseType;
+
     baseBundleInfo_.isKeepAlive = bundleInfo.isKeepAlive;
     baseBundleInfo_.singleUser = bundleInfo.singleUser;
-    baseBundleInfo_.label = bundleInfo.label;
-    baseBundleInfo_.description = bundleInfo.description;
+    baseBundleInfo_.isPreInstallApp = bundleInfo.isPreInstallApp;
+
+    baseBundleInfo_.vendor = bundleInfo.vendor;
+    baseBundleInfo_.releaseType = bundleInfo.releaseType;
+    if (!baseBundleInfo_.isNativeApp) {
+        baseBundleInfo_.isNativeApp = bundleInfo.isNativeApp;
+    }
+
     if (isEntry) {
+        baseBundleInfo_.mainEntry = bundleInfo.mainEntry;
         baseBundleInfo_.entryModuleName = bundleInfo.entryModuleName;
         baseBundleInfo_.entryInstallationFree = bundleInfo.entryInstallationFree;
     }
-
-    baseBundleInfo_.jointUserId = bundleInfo.jointUserId;
-    baseBundleInfo_.minSdkVersion = bundleInfo.minSdkVersion;
-    baseBundleInfo_.maxSdkVersion = bundleInfo.maxSdkVersion;
-    baseBundleInfo_.isDifferentName = bundleInfo.isDifferentName;
 }
 
 void InnerBundleInfo::UpdateBaseApplicationInfo(const ApplicationInfo &applicationInfo)
 {
     baseApplicationInfo_.name = applicationInfo.name;
     baseApplicationInfo_.bundleName = applicationInfo.bundleName;
-    baseApplicationInfo_.debug = applicationInfo.debug;
-    baseApplicationInfo_.icon = applicationInfo.icon;
+
+    baseApplicationInfo_.versionCode = applicationInfo.versionCode;
+    baseApplicationInfo_.versionName = applicationInfo.versionName;
+    baseApplicationInfo_.minCompatibleVersionCode = applicationInfo.minCompatibleVersionCode;
+
+    baseApplicationInfo_.apiCompatibleVersion = applicationInfo.apiCompatibleVersion;
+    baseApplicationInfo_.apiTargetVersion = applicationInfo.apiTargetVersion;
+
     baseApplicationInfo_.iconPath = applicationInfo.iconPath;
     baseApplicationInfo_.iconId = applicationInfo.iconId;
     baseApplicationInfo_.label = applicationInfo.label;
     baseApplicationInfo_.labelId = applicationInfo.labelId;
     baseApplicationInfo_.description = applicationInfo.description;
     baseApplicationInfo_.descriptionId = applicationInfo.descriptionId;
-    baseApplicationInfo_.vendor = applicationInfo.vendor;
-    baseApplicationInfo_.versionCode = applicationInfo.versionCode;
-    baseApplicationInfo_.versionName = applicationInfo.versionName;
-    baseApplicationInfo_.minCompatibleVersionCode = applicationInfo.minCompatibleVersionCode;
-    baseApplicationInfo_.apiCompatibleVersion = applicationInfo.apiCompatibleVersion;
-    baseApplicationInfo_.apiTargetVersion = applicationInfo.apiTargetVersion;
-    baseApplicationInfo_.apiReleaseType = applicationInfo.apiReleaseType;
-    baseApplicationInfo_.distributedNotificationEnabled = applicationInfo.distributedNotificationEnabled;
-    baseApplicationInfo_.entityType = applicationInfo.entityType;
-    baseApplicationInfo_.deviceId = applicationInfo.deviceId;
+
     baseApplicationInfo_.keepAlive = applicationInfo.keepAlive;
+    baseApplicationInfo_.removable = applicationInfo.removable;
     baseApplicationInfo_.singleUser = applicationInfo.singleUser;
     baseApplicationInfo_.userDataClearable = applicationInfo.userDataClearable;
-    baseApplicationInfo_.removable = applicationInfo.removable;
-    if (!baseApplicationInfo_.isLauncherApp) {
-        baseApplicationInfo_.isLauncherApp = applicationInfo.isLauncherApp;
-    }
+
     if (!baseApplicationInfo_.isSystemApp) {
         baseApplicationInfo_.isSystemApp = applicationInfo.isSystemApp;
     }
+    if (!baseApplicationInfo_.isLauncherApp) {
+        baseApplicationInfo_.isLauncherApp = applicationInfo.isLauncherApp;
+    }
 
-    baseApplicationInfo_.supportedModes = applicationInfo.supportedModes;
+    baseApplicationInfo_.apiReleaseType = applicationInfo.apiReleaseType;
+    baseApplicationInfo_.debug = applicationInfo.debug;
+    baseApplicationInfo_.deviceId = applicationInfo.deviceId;
+    baseApplicationInfo_.distributedNotificationEnabled = applicationInfo.distributedNotificationEnabled;
+    baseApplicationInfo_.entityType = applicationInfo.entityType;
     baseApplicationInfo_.process = applicationInfo.process;
+    baseApplicationInfo_.supportedModes = applicationInfo.supportedModes;
+    baseApplicationInfo_.vendor = applicationInfo.vendor;
+
+    baseApplicationInfo_.appPrivilegeLevel = applicationInfo.appPrivilegeLevel;
 }
 
 void InnerBundleInfo::updateCommonHapInfo(const InnerBundleInfo &newInfo)
@@ -1602,7 +1602,6 @@ std::string InnerBundleInfo::ToString() const
     j[MODULE_SHORTCUT] = shortcutInfos_;
     j[NEW_BUNDLE_NAME] = newBundleName_;
     j[MODULE_COMMON_EVENT] = commonEvents_;
-    j[IS_PREINSTALL_APP] = isPreInstallApp_;
     j[INSTALL_MARK] = mark_;
     j[INNER_BUNDLE_USER_INFOS] = innerBundleUserInfos_;
     j[BUNDLE_IS_NEW_VERSION] = isNewVersion_;
@@ -1620,9 +1619,11 @@ void InnerBundleInfo::GetApplicationInfo(int32_t flags, int32_t userId, Applicat
     }
 
     appInfo = baseApplicationInfo_;
+
+    appInfo.accessTokenId = innerBundleUserInfo.accessTokenId;
     appInfo.enabled = innerBundleUserInfo.bundleUserInfo.enabled;
     appInfo.uid = innerBundleUserInfo.uid;
-    appInfo.accessTokenId = innerBundleUserInfo.accessTokenId;
+
     for (const auto &info : innerModuleInfos_) {
         ModuleInfo moduleInfo;
         moduleInfo.moduleName = info.second.moduleName;
@@ -1640,10 +1641,11 @@ void InnerBundleInfo::GetApplicationInfo(int32_t flags, int32_t userId, Applicat
                 [](const auto &p) { return p.name; });
         }
         if ((static_cast<uint32_t>(flags) & GET_APPLICATION_INFO_WITH_METADATA) == GET_APPLICATION_INFO_WITH_METADATA) {
-            if (!isNewVersion_ && info.second.metaData.customizeData.size() > 0) {
+            bool isModuleJson = info.second.isModuleJson;
+            if (!isModuleJson && info.second.metaData.customizeData.size() > 0) {
                 appInfo.metaData[info.second.moduleName] = info.second.metaData.customizeData;
             }
-            if (isNewVersion_ && info.second.metadata.size() > 0) {
+            if (isModuleJson && info.second.metadata.size() > 0) {
                 appInfo.metadata[info.second.moduleName] = info.second.metadata;
             }
         }
@@ -1662,14 +1664,14 @@ void InnerBundleInfo::GetBundleInfo(int32_t flags, BundleInfo &bundleInfo, int32
     }
 
     bundleInfo = baseBundleInfo_;
-    bundleInfo.isPreInstallApp = isPreInstallApp_;
+
     bundleInfo.uid = innerBundleUserInfo.uid;
     if (!innerBundleUserInfo.gids.empty()) {
         bundleInfo.gid = innerBundleUserInfo.gids[0];
     }
-
     bundleInfo.installTime = innerBundleUserInfo.installTime;
     bundleInfo.updateTime = innerBundleUserInfo.updateTime;
+
     GetApplicationInfo(ApplicationFlag::GET_BASIC_APPLICATION_INFO, userId, bundleInfo.applicationInfo);
     for (const auto &info : innerModuleInfos_) {
         if ((static_cast<uint32_t>(flags) & GET_BUNDLE_WITH_REQUESTED_PERMISSION)
@@ -1697,10 +1699,6 @@ void InnerBundleInfo::GetBundleInfo(int32_t flags, BundleInfo &bundleInfo, int32
             bundleInfo.moduleResPaths.emplace_back(info.second.moduleResPath);
         } else {
             APP_LOGE("can not find hapmoduleinfo %{public}s", info.second.moduleName.c_str());
-        }
-        if (info.second.isEntry) {
-            bundleInfo.mainEntry = info.second.modulePackage;
-            bundleInfo.entryModuleName = info.second.moduleName;
         }
     }
     if ((static_cast<uint32_t>(flags) & GET_BUNDLE_WITH_REQUESTED_PERMISSION)
@@ -1731,7 +1729,6 @@ void InnerBundleInfo::GetBundleWithAbilities(int32_t flags, BundleInfo &bundleIn
                 continue;
             }
             AbilityInfo abilityInfo = ability.second;
-            GetApplicationInfo(ApplicationFlag::GET_BASIC_APPLICATION_INFO, userId, abilityInfo.applicationInfo);
             bundleInfo.abilityInfos.emplace_back(abilityInfo);
         }
     }
@@ -1746,7 +1743,6 @@ void InnerBundleInfo::GetBundeleWithExtension(int32_t flags, BundleInfo &bundleI
                 continue;
             }
             ExtensionAbilityInfo info = extensionInfo.second;
-            GetApplicationInfo(ApplicationFlag::GET_BASIC_APPLICATION_INFO, userId, info.applicationInfo);
             bundleInfo.extensionInfos.emplace_back(info);
         }
     }
