@@ -1573,9 +1573,9 @@ ErrCode BaseBundleInstaller::CheckSystemSize(const std::string &bundlePath, cons
 int32_t BaseBundleInstaller::GetUserId(const InstallParam& installParam) const
 {
     int32_t userId = installParam.userId;
-    int32_t callingUserId = dataMgr_->GetUserIdByCallingUid();
-    if (userId == Constants::UNSPECIFIED_USERID) {
-        userId = callingUserId;
+    if (userId < Constants::DEFAULT_USERID) {
+        APP_LOGE("userId(%{public}d) is invalid.", userId);
+        return Constants::INVALID_USERID;
     }
 
     APP_LOGD("BundleInstaller GetUserId, now userId is %{public}d", userId);

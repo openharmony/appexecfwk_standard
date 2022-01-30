@@ -129,6 +129,7 @@ private:
     bool CheckBundleInstallerManager(const sptr<IStatusReceiver> &statusReceiver) const;
 
 private:
+    InstallParam CheckInstallParam(const InstallParam &installParam);
     std::shared_ptr<BundleInstallerManager> manager_;
 
     DISALLOW_COPY_AND_MOVE(BundleInstallerHost);

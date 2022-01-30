@@ -22,6 +22,7 @@
 #include "appexecfwk_errors.h"
 #include "bundle_constants.h"
 #include "bundle_permission_mgr.h"
+#include "bundle_util.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -192,7 +193,7 @@ bool BundleInstallerHost::Install(
         return false;
     }
 
-    manager_->CreateInstallTask(bundleFilePath, installParam, statusReceiver);
+    manager_->CreateInstallTask(bundleFilePath, CheckInstallParam(installParam), statusReceiver);
     return true;
 }
 
@@ -209,7 +210,7 @@ bool BundleInstallerHost::Install(const std::vector<std::string> &bundleFilePath
         return false;
     }
 
-    manager_->CreateInstallTask(bundleFilePaths, installParam, statusReceiver);
+    manager_->CreateInstallTask(bundleFilePaths, CheckInstallParam(installParam), statusReceiver);
     return true;
 }
 
@@ -225,7 +226,7 @@ bool BundleInstallerHost::Recover(
         statusReceiver->OnFinished(ERR_APPEXECFWK_INSTALL_PERMISSION_DENIED, "");
         return false;
     }
-    manager_->CreateRecoverTask(bundleName, installParam, statusReceiver);
+    manager_->CreateRecoverTask(bundleName, CheckInstallParam(installParam), statusReceiver);
     return true;
 }
 
@@ -241,7 +242,7 @@ bool BundleInstallerHost::Uninstall(
         statusReceiver->OnFinished(ERR_APPEXECFWK_UNINSTALL_PERMISSION_DENIED, "");
         return false;
     }
-    manager_->CreateUninstallTask(bundleName, installParam, statusReceiver);
+    manager_->CreateUninstallTask(bundleName, CheckInstallParam(installParam), statusReceiver);
     return true;
 }
 
@@ -257,7 +258,8 @@ bool BundleInstallerHost::Uninstall(const std::string &bundleName, const std::st
         statusReceiver->OnFinished(ERR_APPEXECFWK_UNINSTALL_PERMISSION_DENIED, "");
         return false;
     }
-    manager_->CreateUninstallTask(bundleName, modulePackage, installParam, statusReceiver);
+    manager_->CreateUninstallTask(
+        bundleName, modulePackage, CheckInstallParam(installParam), statusReceiver);
     return true;
 }
 
@@ -273,6 +275,18 @@ bool BundleInstallerHost::CheckBundleInstallerManager(const sptr<IStatusReceiver
         return false;
     }
     return true;
+}
+
+InstallParam BundleInstallerHost::CheckInstallParam(const InstallParam &installParam)
+{
+    if (installParam.userId == Constants::UNSPECIFIED_USERID) {
+        APP_LOGI("installParam userId is unspecified and get calling userId by callingUid");
+        InstallParam callInstallParam = installParam;
+        callInstallParam.userId = BundleUtil::GetUserIdByCallingUid();
+        return callInstallParam;
+    }
+
+    return installParam;
 }
 
 }  // namespace AppExecFwk

@@ -20,13 +20,14 @@
 #include <dirent.h>
 #include <sys/stat.h>
 #include <sys/statfs.h>
-#include <unistd.h>
 #include <thread>
+#include <unistd.h>
 
 #include "app_log_wrapper.h"
 #include "bundle_constants.h"
 #include "bytrace.h"
 #include "directory_ex.h"
+#include "ipc_skeleton.h"
 #include "string_ex.h"
 
 namespace OHOS {
@@ -250,6 +251,23 @@ std::string BundleUtil::GetCurrentDeviceId()
 {
     std::lock_guard<std::mutex> lock(g_mutex);
     return g_deviceUdid;
+}
+
+int32_t BundleUtil::GetUserIdByCallingUid()
+{
+    int32_t uid = IPCSkeleton::GetCallingUid();
+    APP_LOGI("get calling uid(%{public}d)", uid);
+    return GetUserIdByUid(uid);
+}
+
+int32_t BundleUtil::GetUserIdByUid(int32_t uid)
+{
+    if (uid <= Constants::INVALID_UID) {
+        APP_LOGE("uid is illegal: %{public}d", uid);
+        return Constants::INVALID_USERID;
+    }
+
+    return uid / Constants::BASE_USER_RANGE;
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS
