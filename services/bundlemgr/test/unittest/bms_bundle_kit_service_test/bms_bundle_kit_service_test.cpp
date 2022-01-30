@@ -407,7 +407,7 @@ FormInfo BmsBundleKitServiceTest::MockFormInfo(
     formInfo.updateDuration = 0;
     formInfo.formVisibleNotify = true;
     formInfo.deepLink = FORM_PATH;
-    formInfo.scheduledUpateTime = FORM_SCHEDULED_UPDATE_TIME;
+    formInfo.scheduledUpdateTime = FORM_SCHEDULED_UPDATE_TIME;
     formInfo.updateEnabled = true;
     formInfo.jsComponentName = FORM_JS_COMPONENT_NAME;
     formInfo.src = FORM_SRC;
@@ -825,7 +825,7 @@ void BmsBundleKitServiceTest::CheckFormInfoTest(const std::vector<FormInfo> &for
         EXPECT_EQ(formInfo.supportDimensions.size(), i);
         EXPECT_EQ(formInfo.defaultDimension, 1);
         EXPECT_EQ(formInfo.updateDuration, 0);
-        EXPECT_EQ(formInfo.scheduledUpateTime, FORM_SCHEDULED_UPDATE_TIME);
+        EXPECT_EQ(formInfo.scheduledUpdateTime, FORM_SCHEDULED_UPDATE_TIME);
         EXPECT_EQ(formInfo.jsComponentName, FORM_JS_COMPONENT_NAME);
         EXPECT_EQ(formInfo.updateEnabled, true);
         for (auto &info : formInfo.customizeDatas) {
@@ -858,7 +858,7 @@ void BmsBundleKitServiceTest::CheckFormInfoDemo(const std::vector<FormInfo> &for
         EXPECT_EQ(formInfo.supportDimensions.size(), i);
         EXPECT_EQ(formInfo.defaultDimension, 1);
         EXPECT_EQ(formInfo.updateDuration, 0);
-        EXPECT_EQ(formInfo.scheduledUpateTime, FORM_SCHEDULED_UPDATE_TIME);
+        EXPECT_EQ(formInfo.scheduledUpdateTime, FORM_SCHEDULED_UPDATE_TIME);
         EXPECT_EQ(formInfo.jsComponentName, FORM_JS_COMPONENT_NAME);
         EXPECT_EQ(formInfo.updateEnabled, true);
         EXPECT_EQ(formInfo.src, FORM_SRC);

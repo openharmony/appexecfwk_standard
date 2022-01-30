@@ -817,7 +817,7 @@ HWTEST_F(BmsBundleParserTest, TestParse_2400, Function | SmallTest | Level1)
                 "colorMode": "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-",
                 "isDefault": "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-",
                 "updateEnabled": "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-",
-                "scheduledUpateTime": "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-",
+                "scheduledUpdateTime": "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-",
                 "updateDuration": "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-",
                 "defaultDimension": "~!@#$%^&*(){}[]:;'?<>,.|`/./+_-",
                 "supportDimensions": [
