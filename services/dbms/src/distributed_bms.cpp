@@ -28,6 +28,7 @@
 namespace OHOS {
 namespace AppExecFwk {
 namespace {
+    const int START_USERID = 100;
     const uint8_t DECODE_BUNBER_ONE = 1;
     const uint8_t DECODE_BUNBER_TWO = 2;
     const uint8_t DECODE_BUNBER_THREE = 3;
@@ -91,7 +92,7 @@ bool DistributedBms::GetRemoteAbilityInfo(
         return false;
     }
     BundleInfo bundleInfo;
-    if (!iBundleMgr->GetBundleInfo(elementName.GetBundleName(), 1, bundleInfo, 0)) {
+    if (!iBundleMgr->GetBundleInfo(elementName.GetBundleName(), 1, bundleInfo, START_USERID)) {
         APP_LOGE("DistributedBms GetBundleInfo failed");
         return false;
     }
@@ -104,7 +105,7 @@ bool DistributedBms::GetRemoteAbilityInfo(
     AbilityInfo abilityInfo;
     OHOS::AAFwk::Want want;
     want.SetElement(elementName);
-    if (!iBundleMgr->QueryAbilityInfo(want, abilityInfo)) {
+    if (!iBundleMgr->QueryAbilityInfo(want, GET_ABILITY_INFO_WITH_APPLICATION, START_USERID, abilityInfo)) {
         APP_LOGE("DistributedBms QueryAbilityInfo failed");
         return false;
     }

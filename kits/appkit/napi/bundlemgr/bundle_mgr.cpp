@@ -21,8 +21,6 @@
 #include "bundle_death_recipient.h"
 #include "bundle_mgr_host.h"
 #include "cleancache_callback.h"
-#include "distributed_bms_interface.h"
-#include "distributed_bms_proxy.h"
 #include "if_system_ability_manager.h"
 #include "installer_callback.h"
 #include "ipc_skeleton.h"
@@ -30,7 +28,6 @@
 #include "napi/native_api.h"
 #include "napi/native_node_api.h"
 #include "permission_callback.h"
-#include "remote_ability_info.h"
 #include "securec.h"
 #include "system_ability_definition.h"
 
@@ -62,7 +59,6 @@ constexpr int32_t OPERATION_FAILED = 1;
 constexpr int32_t INVALID_PARAM = 2;
 constexpr int32_t PARAM_TYPE_ERROR = 1;
 constexpr int32_t UNDEFINED_ERROR = -1;
-constexpr int32_t GET_REMOTE_ABILITY_INFO_MAX_SIZE = 10;
 enum class InstallErrorCode {
     SUCCESS = 0,
     STATUS_INSTALL_FAILURE = 1,
@@ -117,22 +113,6 @@ static OHOS::sptr<OHOS::AppExecFwk::IBundleMgr> GetBundleMgr()
     OHOS::sptr<OHOS::IRemoteObject> remoteObject =
         systemAbilityManager->GetSystemAbility(OHOS::BUNDLE_MGR_SERVICE_SYS_ABILITY_ID);
     return OHOS::iface_cast<IBundleMgr>(remoteObject);
-}
-
-static OHOS::sptr<OHOS::AppExecFwk::IDistributedBms> GetDistributedBundleMgr(const std::string &deviceId)
-{
-    APP_LOGI("GetDistributedBundleMgr");
-    auto samgr = OHOS::SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
-    OHOS::sptr<OHOS::IRemoteObject> remoteObject;
-    APP_LOGI("GetDistributedBundleMgr deviceId:%{public}s", deviceId.c_str());
-    if (deviceId.empty()) {
-        APP_LOGI("GetDistributedBundleMgr get local d-bms");
-        remoteObject = samgr->GetSystemAbility(OHOS::DISTRIBUTED_BUNDLE_MGR_SERVICE_SYS_ABILITY_ID);
-    } else {
-        APP_LOGI("GetDistributedBundleMgr get remote d-bms");
-        remoteObject = samgr->CheckSystemAbility(OHOS::DISTRIBUTED_BUNDLE_MGR_SERVICE_SYS_ABILITY_ID, deviceId);
-    }
-    return OHOS::iface_cast<IDistributedBms>(remoteObject);
 }
 
 static bool CheckIsSystemApp()
@@ -1301,63 +1281,6 @@ static void ConvertModuleUsageRecords(
         napi_set_named_property(env, objModuleUsageRecord, "installationFreeSupported", ninstallationFreeSupported));
 }
 
-static void ConvertElementName(napi_env env, napi_value objElementName, const ElementName &elementName)
-{
-    napi_value nDeviceId;
-    NAPI_CALL_RETURN_VOID(
-        env, napi_create_string_utf8(env, elementName.GetDeviceID().c_str(), NAPI_AUTO_LENGTH, &nDeviceId));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objElementName, "deviceId", nDeviceId));
-
-    napi_value nBundleName;
-    NAPI_CALL_RETURN_VOID(
-        env, napi_create_string_utf8(env, elementName.GetBundleName().c_str(), NAPI_AUTO_LENGTH, &nBundleName));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objElementName, "bundleName", nBundleName));
-
-    napi_value nAbilityName;
-    NAPI_CALL_RETURN_VOID(
-        env, napi_create_string_utf8(env, elementName.GetAbilityName().c_str(), NAPI_AUTO_LENGTH, &nAbilityName));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objElementName, "abilityName", nAbilityName));
-}
-
-static void ConvertRemoteAbilityInfo(
-    napi_env env, napi_value objRemoteAbilityInfo, const RemoteAbilityInfo &remoteAbilityInfo)
-{
-    napi_value objElementName;
-    NAPI_CALL_RETURN_VOID(env, napi_create_object(env, &objElementName));
-    ConvertElementName(env, objElementName, remoteAbilityInfo.elementName);
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objRemoteAbilityInfo, "elementName", objElementName));
-
-    napi_value nLabel;
-    NAPI_CALL_RETURN_VOID(
-        env, napi_create_string_utf8(env, remoteAbilityInfo.label.c_str(), NAPI_AUTO_LENGTH, &nLabel));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objRemoteAbilityInfo, "label", nLabel));
-
-    napi_value nIcon;
-    NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, remoteAbilityInfo.icon.c_str(), NAPI_AUTO_LENGTH, &nIcon));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objRemoteAbilityInfo, "icon", nIcon));
-}
-
-static void ConvertRemoteAbilityInfos(
-    napi_env env, napi_value objRemoteAbilityInfos, const std::vector<RemoteAbilityInfo> &remoteAbilityInfos)
-{
-    if (remoteAbilityInfos.size() == 0) {
-        APP_LOGE("ConvertRemoteAbilityInfos remoteAbilityInfos is empty");
-        return;
-    }
-    size_t index = 0;
-    for (const auto &remoteAbilityInfo : remoteAbilityInfos) {
-        APP_LOGD("remoteAbilityInfo bundleName:%{public}s, abilityName:%{public}s, label:%{public}s",
-                 remoteAbilityInfo.elementName.GetBundleName().c_str(),
-                 remoteAbilityInfo.elementName.GetAbilityName().c_str(),
-                 remoteAbilityInfo.label.c_str());
-        napi_value objRemoteAbilityInfo = nullptr;
-        NAPI_CALL_RETURN_VOID(env, napi_create_object(env, &objRemoteAbilityInfo));
-        ConvertRemoteAbilityInfo(env, objRemoteAbilityInfo, remoteAbilityInfo);
-        NAPI_CALL_RETURN_VOID(env, napi_set_element(env, objRemoteAbilityInfos, index, objRemoteAbilityInfo));
-        index++;
-    }
-}
-
 static std::string GetStringFromNAPI(napi_env env, napi_value value)
 {
     std::string result;
@@ -1720,83 +1643,6 @@ static bool ParseWant(napi_env env, Want &want, napi_value args)
     want.SetFlags(wantFlags);
     ElementName elementName(elementDeviceId, elementBundleName, elementAbilityName);
     want.SetElement(elementName);
-    return true;
-}
-
-static bool ParseElementName(napi_env env, OHOS::AppExecFwk::ElementName &elementName, napi_value args)
-{
-    APP_LOGD("begin to parse ElementName");
-    napi_status status;
-    napi_valuetype valueType;
-    NAPI_CALL(env, napi_typeof(env, args, &valueType));
-    if (valueType != napi_object) {
-        APP_LOGE("args not object type");
-        return false;
-    }
-    napi_value prop = nullptr;
-    status = napi_get_named_property(env, args, "deviceId", &prop);
-    napi_typeof(env, prop, &valueType);
-    if (status == napi_ok && valueType == napi_string) {
-        APP_LOGD("begin to parse ElementName deviceId");
-        elementName.SetDeviceID(GetStringFromNAPI(env, prop));
-    }
-    prop = nullptr;
-    status = napi_get_named_property(env, args, "bundleName", &prop);
-    napi_typeof(env, prop, &valueType);
-    if (status == napi_ok && valueType == napi_string) {
-        APP_LOGD("begin to parse ElementName bundleName");
-        elementName.SetBundleName(GetStringFromNAPI(env, prop));
-    }
-
-    prop = nullptr;
-    status = napi_get_named_property(env, args, "abilityName", &prop);
-    napi_typeof(env, prop, &valueType);
-    if (status == napi_ok && valueType == napi_string) {
-        APP_LOGD("begin to parse ElementName abilityName");
-        elementName.SetAbilityName(GetStringFromNAPI(env, prop));
-    }
-    APP_LOGD("parse ElementName deviceId:%{public}s, bundleName:%{public}s, abilityName:%{public}s",
-        elementName.GetDeviceID().c_str(),
-        elementName.GetBundleName().c_str(),
-        elementName.GetAbilityName().c_str());
-    return true;
-}
-
-static bool ParseElementNames(napi_env env, std::vector<ElementName> &elementNames, napi_value args)
-{
-    APP_LOGD("begin to parse ElementNames");
-    bool isArray = false;
-    NAPI_CALL(env, napi_is_array(env, args, &isArray));
-    if (!isArray) {
-        APP_LOGE("parseElementNames args not array");
-        return false;
-    }
-    uint32_t arrayLength = 0;
-    NAPI_CALL(env, napi_get_array_length(env, args, &arrayLength));
-    APP_LOGD("arrayLength:%{public}d", arrayLength);
-    if (arrayLength > GET_REMOTE_ABILITY_INFO_MAX_SIZE) {
-        APP_LOGE("parseElementNames args size failed");
-        return false;
-    }
-    for (uint32_t i = 0; i < arrayLength; i++) {
-        napi_value value = nullptr;
-        NAPI_CALL(env, napi_get_element(env, args, i, &value));
-        napi_valuetype valueType = napi_undefined;
-        NAPI_CALL(env, napi_typeof(env, value, &valueType));
-        if (valueType != napi_object) {
-            APP_LOGE("array inside not object type");
-            elementNames.clear();
-            return false;
-        }
-        ElementName elementName;
-        if (ParseElementName(env, elementName, value)) {
-            elementNames.push_back(elementName);
-        } else {
-            APP_LOGE("elementNames parse elementName failed");
-            return false;
-        }
-
-    }
     return true;
 }
 
@@ -4745,45 +4591,6 @@ static bool InnerCleanBundleCacheCallback(
     return result;
 }
 
-static bool InnerGetRemoteAbilityInfo(
-    const OHOS::AppExecFwk::ElementName &elementName, RemoteAbilityInfo &remoteAbilityInfo)
-{
-    auto iDistBundleMgr = GetDistributedBundleMgr(elementName.GetDeviceID());
-    if (!iDistBundleMgr) {
-        APP_LOGE("can not get iDistBundleMgr");
-        return false;
-    }
-    if (!iDistBundleMgr->GetRemoteAbilityInfo(elementName, remoteAbilityInfo)) {
-        APP_LOGE("InnerGetRemoteAbilityInfo failed");
-        return false;
-    }
-    return true;
-}
-
-static bool InnerGetRemoteAbilityInfos(
-    const std::vector<ElementName> &elementNames, std::vector<RemoteAbilityInfo> &remoteAbilityInfos)
-{
-    if (elementNames.size() == 0) {
-        APP_LOGE("InnerGetRemoteAbilityInfos elementNames is empty");
-        return false;
-    }
-    
-    for (auto elementName : elementNames) {
-        RemoteAbilityInfo remoteAbilityInfo;
-        if (InnerGetRemoteAbilityInfo(elementName, remoteAbilityInfo)) {
-            APP_LOGD("InnerGetRemoteAbilityInfo:%{public}s ability:%{public}s",
-                elementName.GetBundleName().c_str(), elementName.GetAbilityName().c_str());
-            remoteAbilityInfos.push_back(remoteAbilityInfo);
-        } else {
-            APP_LOGE("InnerGetRemoteAbilityInfo:%{public}s ability:%{public}s failed",
-                elementName.GetBundleName().c_str(), elementName.GetAbilityName().c_str());
-            return false;
-        }
-    }
-    
-    return true;
-}
-
 napi_value SetApplicationEnabled(napi_env env, napi_callback_info info)
 {
     size_t requireArgc = ARGS_SIZE_TWO;
@@ -5001,162 +4808,6 @@ napi_value GetAppPrivilegeLevel(napi_env env, napi_callback_info info)
             } else {
                 napi_create_string_utf8(
                     env, asyncCallbackInfo->appPrivilegeLevel.c_str(), NAPI_AUTO_LENGTH, &result[1]);
-            }
-            if (asyncCallbackInfo->callbackRef) {
-                napi_value callback = nullptr;
-                napi_value placeHolder = nullptr;
-                napi_get_reference_value(env, asyncCallbackInfo->callbackRef, &callback);
-                napi_call_function(env, nullptr, callback, sizeof(result) / sizeof(result[0]), result, &placeHolder);
-                napi_delete_reference(env, asyncCallbackInfo->callbackRef);
-            } else {
-                if (asyncCallbackInfo->errCode) {
-                    napi_reject_deferred(env, asyncCallbackInfo->deferred, result[0]);
-                } else {
-                    napi_resolve_deferred(env, asyncCallbackInfo->deferred, result[1]);
-                }
-            }
-            napi_delete_async_work(env, asyncCallbackInfo->asyncWork);
-            delete asyncCallbackInfo;
-        },
-        (void*)asyncCallbackInfo, &asyncCallbackInfo->asyncWork);
-    napi_queue_async_work(env, asyncCallbackInfo->asyncWork);
-    return promise;
-}
-
-napi_value GetRemoteAbilityInfo(napi_env env, napi_callback_info info)
-{
-    size_t requireArgc = ARGS_SIZE_ONE;
-    size_t argc = ARGS_SIZE_TWO;
-    napi_value argv[ARGS_SIZE_TWO] = { 0 };
-    napi_value thisArg = nullptr;
-    void *data = nullptr;
-
-    NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, &thisArg, &data));
-    NAPI_ASSERT(env, argc >= requireArgc, "requires 1 parameter");
-
-    ElementNameInfo *asyncCallbackInfo = new ElementNameInfo();
-    asyncCallbackInfo->env = env;
-    for (size_t i = 0; i < argc; ++i) {
-        napi_valuetype valueType = napi_undefined;
-        napi_typeof(env, argv[i], &valueType);
-        if ((i == PARAM0) && (valueType == napi_object)) {
-            ParseElementName(env, asyncCallbackInfo->elementName, argv[i]);
-        } else if ((i == PARAM1) && (valueType == napi_function)) {
-            napi_create_reference(env, argv[i], NAPI_RETURN_ONE, &asyncCallbackInfo->callbackRef);
-            break;
-        } else {
-            asyncCallbackInfo->errCode = INVALID_PARAM;
-            asyncCallbackInfo->errMssage = "type misMatch";
-        }
-    }
-
-    napi_value promise = nullptr;
-    if (asyncCallbackInfo->callbackRef == nullptr) {
-        napi_create_promise(env, &asyncCallbackInfo->deferred, &promise);
-    } else {
-        napi_get_undefined(env, &promise);
-    }
-    napi_value resource = nullptr;
-    napi_create_string_utf8(env, "getRemoteAbilityInfo", NAPI_AUTO_LENGTH, &resource);
-    napi_create_async_work(
-        env, nullptr, resource,
-        [](napi_env env, void* data) {
-            ElementNameInfo* asyncCallbackInfo = (ElementNameInfo*)data;
-            if (!asyncCallbackInfo->errCode) {
-                asyncCallbackInfo->result =
-                    InnerGetRemoteAbilityInfo(asyncCallbackInfo->elementName, asyncCallbackInfo->remoteAbilityInfo);
-                if (!asyncCallbackInfo->result) {
-                    asyncCallbackInfo->errCode = OPERATION_FAILED;
-                }
-            }
-        },
-        [](napi_env env, napi_status status, void* data) {
-            ElementNameInfo* asyncCallbackInfo = (ElementNameInfo*)data;
-            napi_value result[2] = { 0 };
-            if (asyncCallbackInfo->errCode) {
-                napi_create_int32(env, asyncCallbackInfo->errCode, &result[0]);
-            } else {
-                napi_create_uint32(env, 0, &result[0]);
-                napi_create_object(env, &result[1]);
-                ConvertRemoteAbilityInfo(env, result[1], asyncCallbackInfo->remoteAbilityInfo);
-            }
-            if (asyncCallbackInfo->callbackRef) {
-                napi_value callback = nullptr;
-                napi_value placeHolder = nullptr;
-                napi_get_reference_value(env, asyncCallbackInfo->callbackRef, &callback);
-                napi_call_function(env, nullptr, callback, sizeof(result) / sizeof(result[0]), result, &placeHolder);
-                napi_delete_reference(env, asyncCallbackInfo->callbackRef);
-            } else {
-                if (asyncCallbackInfo->errCode) {
-                    napi_reject_deferred(env, asyncCallbackInfo->deferred, result[0]);
-                } else {
-                    napi_resolve_deferred(env, asyncCallbackInfo->deferred, result[1]);
-                }
-            }
-            napi_delete_async_work(env, asyncCallbackInfo->asyncWork);
-            delete asyncCallbackInfo;
-        },
-        (void*)asyncCallbackInfo, &asyncCallbackInfo->asyncWork);
-    napi_queue_async_work(env, asyncCallbackInfo->asyncWork);
-    return promise;
-}
-
-napi_value GetRemoteAbilityInfos(napi_env env, napi_callback_info info)
-{
-    size_t requireArgc = ARGS_SIZE_ONE;
-    size_t argc = ARGS_SIZE_TWO;
-    napi_value argv[ARGS_SIZE_TWO] = { 0 };
-    napi_value thisArg = nullptr;
-    void *data = nullptr;
-
-    NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, &thisArg, &data));
-    NAPI_ASSERT(env, argc >= requireArgc, "requires 1 parameter");
-
-    ElementNameInfos *asyncCallbackInfo = new ElementNameInfos();
-    asyncCallbackInfo->env = env;
-    for (size_t i = 0; i < argc; ++i) {
-        napi_valuetype valueType = napi_undefined;
-        napi_typeof(env, argv[i], &valueType);
-        if (i == PARAM0) {
-            ParseElementNames(env, asyncCallbackInfo->elementNames, argv[i]);
-        } else if ((i == PARAM1) && (valueType == napi_function)) {
-            napi_create_reference(env, argv[i], NAPI_RETURN_ONE, &asyncCallbackInfo->callbackRef);
-            break;
-        } else {
-            asyncCallbackInfo->errCode = INVALID_PARAM;
-            asyncCallbackInfo->errMssage = "type misMatch";
-        }
-    }
-
-    napi_value promise = nullptr;
-    if (asyncCallbackInfo->callbackRef == nullptr) {
-        napi_create_promise(env, &asyncCallbackInfo->deferred, &promise);
-    } else {
-        napi_get_undefined(env, &promise);
-    }
-    napi_value resource = nullptr;
-    napi_create_string_utf8(env, "getRemoteAbilityInfos", NAPI_AUTO_LENGTH, &resource);
-    napi_create_async_work(
-        env, nullptr, resource,
-        [](napi_env env, void* data) {
-            ElementNameInfos* asyncCallbackInfo = (ElementNameInfos*)data;
-            if (!asyncCallbackInfo->errCode) {
-                asyncCallbackInfo->result =
-                    InnerGetRemoteAbilityInfos(asyncCallbackInfo->elementNames, asyncCallbackInfo->remoteAbilityInfos);
-                if (!asyncCallbackInfo->result) {
-                    asyncCallbackInfo->errCode = OPERATION_FAILED;
-                }
-            }
-        },
-        [](napi_env env, napi_status status, void* data) {
-            ElementNameInfos* asyncCallbackInfo = (ElementNameInfos*)data;
-            napi_value result[2] = { 0 };
-            if (asyncCallbackInfo->errCode) {
-                napi_create_int32(env, asyncCallbackInfo->errCode, &result[0]);
-            } else {
-                napi_create_uint32(env, 0, &result[0]);
-                napi_create_array(env, &result[1]);
-                ConvertRemoteAbilityInfos(env, result[1], asyncCallbackInfo->remoteAbilityInfos);
             }
             if (asyncCallbackInfo->callbackRef) {
                 napi_value callback = nullptr;

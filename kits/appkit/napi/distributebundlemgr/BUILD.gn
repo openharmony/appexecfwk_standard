@@ -14,43 +14,30 @@
 import("//build/ohos.gni")
 import("//foundation/appexecfwk/standard/appexecfwk.gni")
 
-ohos_shared_library("bundle") {
-  include_dirs = [
-    "//third_party/node/src",
-    "//third_party/libuv/include",
-    "//utils/system/safwk/native/include",
-  ]
+ohos_shared_library("distributedbundle") {
+  include_dirs = []
   defines = [
     "APP_LOG_TAG = \"BundleMgrService\"",
     "LOG_DOMAIN = 0xD001120",
   ]
   sources = [
-    "bundle_death_recipient.cpp",
-    "bundle_mgr.cpp",
-    "cleancache_callback.cpp",
-    "installer_callback.cpp",
+    "distributed_bundle_mgr.cpp",
     "native_module.cpp",
-    "permission_callback.cpp",
   ]
 
   deps = [ "${common_path}:libappexecfwk_common" ]
 
   external_deps = [
-    "ability_runtime:app_manager",
-    "ability_runtime:base",
-    "ability_runtime:want",
     "bundle_framework:appexecfwk_base",
-    "bundle_framework:appexecfwk_core",
-    "eventhandler:libeventhandler",
+    "distributed_bundle_framework:libdbms",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
     "napi:ace_napi",
-    "safwk:system_ability_fwk",
     "samgr_standard:samgr_proxy",
     "utils_base:utils",
   ]
 
   relative_install_dir = "module"
   subsystem_name = "appexecfwk"
-  part_name = "bundle_framework"
+  part_name = "distributed_bundle_framework"
 }
