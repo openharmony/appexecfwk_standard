@@ -17,9 +17,11 @@ group("dbms_target") {
   deps = [ ":libdbms" ]
 }
 
-ohos_shared_library("libdbms") {
+config("distributed_bms_config") {
   include_dirs = [ "include" ]
+}
 
+ohos_shared_library("libdbms") {
   sources = [
     "//foundation/appexecfwk/standard/services/dbms/src/distributed_bms.cpp",
     "//foundation/appexecfwk/standard/services/dbms/src/distributed_bms_host.cpp",
@@ -27,6 +29,8 @@ ohos_shared_library("libdbms") {
   ]
 
   defines = [ "APP_LOG_TAG = \"BundleMgrService\"" ]
+
+  public_configs = [ ":distributed_bms_config" ]
 
   deps = [ "//foundation/appexecfwk/standard/common:libappexecfwk_common" ]
 
