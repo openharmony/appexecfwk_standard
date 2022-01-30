@@ -25,7 +25,6 @@
 #include "distributed_kv_data_manager.h"
 #include "inner_bundle_info.h"
 
-
 namespace OHOS {
 namespace AppExecFwk {
 class DataMgr;
@@ -77,7 +76,6 @@ private:
         DATABASE_KEY_INDEX_MAX_LENGTH,
     };
 };
-
 } // namespace AppExecFwk
 } // namespace OHOS
 #endif // FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_MODULE_USAGE_DATA_STORAGE_H

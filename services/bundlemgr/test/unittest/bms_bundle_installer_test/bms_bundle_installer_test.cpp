@@ -43,7 +43,6 @@ using namespace OHOS;
 using OHOS::DelayedSingleton;
 
 namespace {
-
 const std::string BUNDLE_NAME = "com.example.l3jsdemo";
 const std::string RESOURCE_ROOT_PATH = "/data/test/resource/bms/install_bundle/";
 const std::string INVALID_PATH = "/install_bundle/";

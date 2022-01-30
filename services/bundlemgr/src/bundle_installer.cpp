@@ -23,7 +23,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 BundleInstaller::BundleInstaller(const int64_t installerId, const std::shared_ptr<EventHandler> &handler,
     const sptr<IStatusReceiver> &statusReceiver)
     : installerId_(installerId), handler_(handler), statusReceiver_(statusReceiver)
