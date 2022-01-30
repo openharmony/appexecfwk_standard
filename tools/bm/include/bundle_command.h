@@ -178,7 +178,7 @@ private:
     int32_t RecoverOperation(const std::string &bundleName, InstallParam &installParam) const;
 
     bool QueryOperation(const std::string &bundleName, const std::string &elementName,
-        const std::string &metadataName, std::string &result) const;
+        const std::string &metadataName, const int32_t userId, std::string &result) const;
 
     bool CheckArguments(const std::string &argument) const;
 
