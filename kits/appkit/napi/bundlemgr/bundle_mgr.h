@@ -31,6 +31,14 @@
 
 namespace OHOS {
 namespace AppExecFwk {
+
+struct CommonNapiInfo {
+    napi_env env;
+    napi_async_work asyncWork;
+    napi_deferred deferred;
+    napi_ref callback = 0;
+};
+
 struct QueryParameter {
     int flags;
     std::string userId;
@@ -234,6 +242,14 @@ struct AsyncExtensionInfoCallbackInfo {
     int32_t err = 0;
 };
 
+struct AsyncGetNameByUidInfo {
+    CommonNapiInfo commonNapiInfo;
+    int32_t uid;
+    std::string bundleName;
+    int32_t err = 0;
+    bool ret = false;
+};
+
 struct AsyncRegisterAllPermissions {
     napi_env env;
     napi_async_work asyncWork;
@@ -349,6 +365,7 @@ napi_value GetAppPrivilegeLevel(napi_env env, napi_callback_info info);
 napi_value QueryExtensionInfoByWant(napi_env env, napi_callback_info info);
 napi_value GetRemoteAbilityInfo(napi_env env, napi_callback_info info);
 napi_value GetRemoteAbilityInfos(napi_env env, napi_callback_info info);
+napi_value GetNameForUid(napi_env env, napi_callback_info info);
 bool UnwrapAbilityInfo(napi_env env, napi_value param, OHOS::AppExecFwk::AbilityInfo& abilityInfo);
 void CreateAbilityTypeObject(napi_env env, napi_value value);
 void CreateAbilitySubTypeObject(napi_env env, napi_value value);
