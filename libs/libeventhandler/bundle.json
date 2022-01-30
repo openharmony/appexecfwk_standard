@@ -25,8 +25,7 @@
         },
         "build": {
             "sub_component": [
-                "//foundation/appexecfwk/standard/interfaces/innerkits:innerkits_target",
-                "//foundation/appexecfwk/standard/interfaces/innerkits/napi/eventhandler:emitter"
+                "//foundation/appexecfwk/standard/interfaces/innerkits:innerkits_target"
             ],
             "inner_kits": [
                 {
@@ -52,15 +51,6 @@
                         ]
                     },
                     "name": "//foundation/appexecfwk/standard/interfaces/innerkits/eventhandler_native:eventhandler_native"
-                },
-                {
-                    "header": {
-                        "header_base": "//foundation/appexecfwk/standard/interfaces/innerkits/napi/eventhandler/include",
-                        "header_files": [
-                            "events_emitter.h"
-                        ]
-                    },
-                    "name": "//foundation/appexecfwk/standard/interfaces/innerkits/napi/eventhandler:emitter"
                 }
             ],
             "test": [
