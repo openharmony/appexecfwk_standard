@@ -5207,6 +5207,94 @@ bool UnwrapAbilityInfo(napi_env env, napi_value param, OHOS::AppExecFwk::Ability
     return true;
 }
 
+static bool InnerGetNameForUid(int32_t uid, std::string &bundleName)
+{
+    auto iBundleMgr = GetBundleMgr();
+    if (!iBundleMgr) {
+        APP_LOGE("can not get iBundleMgr");
+        return false;
+    }
+    return iBundleMgr->GetNameForUid(uid, bundleName);
+}
+
+napi_value GetNameForUid(napi_env env, napi_callback_info info)
+{
+    size_t requireArgc = ARGS_SIZE_ONE;
+    size_t argc = ARGS_SIZE_TWO;
+    napi_value argv[ARGS_SIZE_TWO] = { 0 };
+    napi_value thisArg = nullptr;
+    void *data = nullptr;
+    NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, &thisArg, &data));
+    NAPI_ASSERT(env, argc >= requireArgc, "requires 1 parameter");
+    AsyncGetNameByUidInfo *asyncCallbackInfo = new AsyncGetNameByUidInfo();
+    asyncCallbackInfo->commonNapiInfo.env = env;
+    for (size_t i = 0; i < argc; ++i) {
+        napi_valuetype valueType = napi_undefined;
+        napi_typeof(env, argv[i], &valueType);
+        if ((i == 0) && (valueType == napi_number)) {
+            ParseInt(env, asyncCallbackInfo->uid, argv[i]);
+        } else if ((i == 1) && (valueType == napi_function)) {
+            napi_create_reference(env, argv[i], NAPI_RETURN_ONE, &asyncCallbackInfo->commonNapiInfo.callback);
+        } else {
+            asyncCallbackInfo->err = INVALID_PARAM;
+        }
+    }
+    napi_value promise = nullptr;
+
+    if (asyncCallbackInfo->commonNapiInfo.callback == nullptr) {
+        napi_create_promise(env, &asyncCallbackInfo->commonNapiInfo.deferred, &promise);
+    } else {
+        napi_get_undefined(env, &promise);
+    }
+    napi_value resource = nullptr;
+    napi_create_string_utf8(env, "JSGetNameForUid", NAPI_AUTO_LENGTH, &resource);
+    napi_create_async_work(
+        env, nullptr, resource,
+        [](napi_env env, void* data) {
+            AsyncGetNameByUidInfo* asyncCallbackInfo = (AsyncGetNameByUidInfo*)data;
+            if (!asyncCallbackInfo->err) {
+                asyncCallbackInfo->ret = InnerGetNameForUid(asyncCallbackInfo->uid, asyncCallbackInfo->bundleName);
+            }
+        },
+        [](napi_env env, napi_status status, void* data) {
+            AsyncGetNameByUidInfo* asyncCallbackInfo = (AsyncGetNameByUidInfo*)data;
+            napi_value result[ARGS_SIZE_TWO] = { 0 };
+            // set error code
+            if (asyncCallbackInfo->err) {
+                napi_create_int32(env, asyncCallbackInfo->err, &result[PARAM0]);
+            } else {
+                if (!asyncCallbackInfo->ret) {
+                    napi_create_int32(env, OPERATION_FAILED, &result[PARAM0]);
+                } else {
+                    napi_create_uint32(env, CODE_SUCCESS, &result[PARAM0]);
+                    napi_create_string_utf8(env, asyncCallbackInfo->bundleName.c_str(), NAPI_AUTO_LENGTH,
+                        &result[PARAM1]);
+                }
+            }
+            // implement callback or promise
+            if (asyncCallbackInfo->commonNapiInfo.deferred) {
+                if (!asyncCallbackInfo->ret) {
+                    napi_reject_deferred(env, asyncCallbackInfo->commonNapiInfo.deferred, result[PARAM0]);
+                } else {
+                    napi_resolve_deferred(env, asyncCallbackInfo->commonNapiInfo.deferred, result[PARAM1]);
+                }
+            } else {
+                napi_value callback = nullptr;
+                napi_value placeHolder = nullptr;
+                napi_get_reference_value(env, asyncCallbackInfo->commonNapiInfo.callback, &callback);
+                napi_call_function(env, nullptr, callback, sizeof(result) / sizeof(result[PARAM0]), result,
+                    &placeHolder);
+                napi_delete_reference(env, asyncCallbackInfo->commonNapiInfo.callback);
+            }
+            napi_delete_async_work(env, asyncCallbackInfo->commonNapiInfo.asyncWork);
+            delete asyncCallbackInfo;
+        },
+        (void*)asyncCallbackInfo, &asyncCallbackInfo->commonNapiInfo.asyncWork);
+    napi_queue_async_work(env, asyncCallbackInfo->commonNapiInfo.asyncWork);
+
+    return promise;
+}
+
 napi_value ClearBundleCache(napi_env env, napi_callback_info info)
 {
     size_t requireArgc = ARGS_SIZE_ONE;
