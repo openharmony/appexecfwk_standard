@@ -1462,7 +1462,7 @@ ErrCode BundleManagerShellCommand::RunAsQueryCommand()
         resultReceiver_.append(HELP_MSG_QUERY);
         return result;
     }
-    if (!QueryOperation(bundleName, elementName, metadataName, queryResults)) {
+    if (!QueryOperation(bundleName, elementName, metadataName, userId, queryResults)) {
         result = OHOS::ERR_INVALID_VALUE;
     }
     if (queryResults.empty()) {
@@ -1628,7 +1628,7 @@ int32_t BundleManagerShellCommand::RecoverOperation(const std::string &bundleNam
 }
 
 bool BundleManagerShellCommand::QueryOperation(const std::string &bundleName, const std::string &elementName,
-    const std::string &metadataName, std::string &result) const
+    const std::string &metadataName, const int32_t userId, std::string &result) const
 {
     if (!CheckArguments(bundleName) || !CheckArguments(elementName) || !CheckArguments(metadataName)) {
         APP_LOGD("bundleName: %{public}s, elementName: %{public}s, metadataName: %{public}s", bundleName.c_str(),
@@ -1639,7 +1639,7 @@ bool BundleManagerShellCommand::QueryOperation(const std::string &bundleName, co
     }
     BundleInfo info;
     auto ret = bundleMgrProxy_->GetBundleInfo(bundleName,
-        GET_BUNDLE_WITH_ABILITIES | GET_BUNDLE_WITH_EXTENSION_INFO, info);
+        GET_BUNDLE_WITH_ABILITIES | GET_BUNDLE_WITH_EXTENSION_INFO, info, userId);
     if (!ret) {
         APP_LOGE("getBundleInfo failed");
         result += STRING_QUERY_NEED_CORRECT_ARGUMENTS;

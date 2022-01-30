@@ -658,7 +658,7 @@ public:
      * @return Returns true if the application is successfully obtained; returns false otherwise.
      */
     bool GetInnerBundleUserInfos(
-        const std::string &bundleName, std::vector<InnerBundleUserInfo> &innerBundleUserInfos);
+        const std::string &bundleName, std::vector<InnerBundleUserInfo> &innerBundleUserInfos) const;
     /**
      * @brief Get app privilege level.
      * @param bundleName Indicates the bundle name of the app privilege level.
