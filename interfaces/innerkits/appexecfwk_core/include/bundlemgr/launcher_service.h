@@ -35,7 +35,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class LauncherService : public virtual RefBase {
 public:
     using Want = OHOS::AAFwk::Want;
@@ -117,7 +116,6 @@ private:
 
     DISALLOW_COPY_AND_MOVE(LauncherService);
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_LAUNCHER_SERVICE_H

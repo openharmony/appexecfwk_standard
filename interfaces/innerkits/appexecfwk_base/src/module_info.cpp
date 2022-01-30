@@ -82,6 +82,5 @@ void from_json(const nlohmann::json &jsonObject, ModuleInfo &moduleInfo)
         parseResult,
         ArrayType::NOT_ARRAY);
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

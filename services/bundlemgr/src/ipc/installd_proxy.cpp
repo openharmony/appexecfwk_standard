@@ -24,7 +24,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 namespace {
 constexpr int32_t WAIT_TIME = 3000;
 }

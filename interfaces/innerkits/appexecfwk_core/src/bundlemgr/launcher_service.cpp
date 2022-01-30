@@ -303,6 +303,5 @@ bool LauncherService::GetShortcutInfos(
     }
     return true;
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS

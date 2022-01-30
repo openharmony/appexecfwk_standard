@@ -19,6 +19,7 @@
 namespace OHOS {
 namespace AppExecFwk {
 const std::string BUNDLE_DATA_ROOT_PATH = "/data/accounts/account_0/appdata/";
+const int32_t FOLDER_LAYERS = 7;
 void PageAbilityDemo::OnStart(const Want &want)
 {
     APP_LOGI("PageAbilityDemo::onStart");
@@ -26,7 +27,7 @@ void PageAbilityDemo::OnStart(const Want &want)
     const std::string appName = "com.third.hiworld.example1";
     std::string path = BUNDLE_DATA_ROOT_PATH + appName + "/cache/";
     APP_LOGI("PageAbilityDemo::CreateDir");
-    for (int i = 1; i < 7; i++) {
+    for (int i = 1; i < FOLDER_LAYERS; i++) {
         path += "dir" + std::to_string(i) + "/";
         APP_LOGI("PageAbilityDemo::CreateDir %{public}s", path.c_str());
         CreateDir(path);
@@ -74,7 +75,6 @@ void PageAbilityDemo::OnBackground()
 
 void PageAbilityDemo::CreateFile(const std::string &path) const
 {
-
     std::ofstream file(path);
     file.close();
 

@@ -36,7 +36,6 @@ using namespace OHOS;
 using namespace OHOS::AppExecFwk;
 
 namespace {
-
 const std::string PACKAGE_NAME = "com.example.l3jsdemo";
 const std::string BUNDLE_NAME = "com.example.l3jsdemo";
 const std::string ERROR_BUNDLE_NAME = "com.example.bundle.update.error";
@@ -57,7 +56,6 @@ const uint32_t VERSION_1 = 1;
 const uint32_t VERSION_2 = 2;
 const uint32_t VERSION_3 = 3;
 const int32_t MAX_TRY_TIMES = 1000;
-
 }  // namespace
 
 class BmsBundleUpdaterTest : public testing::Test {
