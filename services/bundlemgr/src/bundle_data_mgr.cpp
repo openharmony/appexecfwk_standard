@@ -860,6 +860,15 @@ bool BundleDataMgr::GetApplicationInfos(
 bool BundleDataMgr::GetBundleInfo(
     const std::string &bundleName, int32_t flags, BundleInfo &bundleInfo, int32_t userId) const
 {
+    std::vector<InnerBundleUserInfo> innerBundleUserInfos;
+    if (userId == Constants::ANY_USERID) {
+        if (!GetInnerBundleUserInfos(bundleName, innerBundleUserInfos)) {
+            APP_LOGE("no userInfos for this bundle(%{public}s)", bundleName.c_str());
+            return false;
+        }
+        userId = innerBundleUserInfos.begin()->bundleUserInfo.userId;
+    }
+
     int32_t requestUserId = GetUserId(userId);
     if (requestUserId == Constants::INVALID_USERID) {
         return false;
@@ -2546,7 +2555,7 @@ bool BundleDataMgr::GetDistributedBundleInfo(
 }
 
 bool BundleDataMgr::GetInnerBundleUserInfos(
-    const std::string &bundleName, std::vector<InnerBundleUserInfo> &innerBundleUserInfos)
+    const std::string &bundleName, std::vector<InnerBundleUserInfo> &innerBundleUserInfos) const
 {
     APP_LOGD("get all user info in bundle(%{public}s)", bundleName.c_str());
     if (bundleName.empty()) {

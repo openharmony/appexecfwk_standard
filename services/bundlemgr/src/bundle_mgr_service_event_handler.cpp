@@ -182,20 +182,27 @@ void BMSEventHandler::RebootBundleInstall(
         bool exist = false;
         APP_LOGD("reboot scan bundle listIter: %{public}s ", listIter.c_str());
         auto result = GetScanBundleArchiveInfo(listIter, bundleInfo);
+        if (!result) {
+            APP_LOGW("obtain bundleinfo failed : %{public}s ", listIter.c_str());
+            continue;
+        }
         bundleInfoMap_.emplace(bundleInfo.name, listIter);
         auto mapIter = loadExistData_.find(bundleInfo.name);
+
         APP_LOGD("reboot scan bundleName: %{public}s ", bundleInfo.name.c_str());
         if (mapIter != loadExistData_.end() && result) {
             APP_LOGD("reboot scan %{public}s is exist", bundleInfo.name.c_str());
             exist = true;
-        }
-        BundleInfo Info;
-        result = dataMgr->GetBundleInfo(bundleInfo.name, BundleFlag::GET_BUNDLE_DEFAULT, Info);
-        if (mapIter->second.versionCode < bundleInfo.versionCode && result) {
-            SystemBundleInstaller installer(listIter);
-            APP_LOGD("reboot scan bundle updata listIter %{public}s", listIter.c_str());
-            if (!installer.OTAInstallSystemBundle(appType)) {
-                APP_LOGW("reboot Install updata System app:%{public}s error", listIter.c_str());
+
+            BundleInfo Info;
+            result = dataMgr->GetBundleInfo(bundleInfo.name, BundleFlag::GET_BUNDLE_DEFAULT, Info,
+                Constants::ANY_USERID);
+            if (mapIter->second.versionCode < bundleInfo.versionCode && result) {
+                SystemBundleInstaller installer(listIter);
+                APP_LOGD("reboot scan bundle updata listIter %{public}s", listIter.c_str());
+                if (!installer.OTAInstallSystemBundle(appType)) {
+                    APP_LOGW("reboot Install updata System app:%{public}s error", listIter.c_str());
+                }
             }
         }
         if (!exist) {
