@@ -80,7 +80,7 @@ const std::string PACKAGE_NAME_SECOND = "com.example.l2jsdemo";
 const std::string PACKAGE_NAME_THIRD = "com.example.l1jsdemo";
 const std::string ROOT_DIR = "/data/accounts";
 const int32_t ROOT_UID = 0;
-const int32_t USERID = 0;
+const int32_t USERID = 100;
 const std::string INSTALL_THREAD = "TestInstall";
 }  // namespace
 
@@ -129,6 +129,7 @@ ErrCode BmsMultipleInstallerTest::InstallThirdPartyBundle(const std::string &fil
         return ERR_APPEXECFWK_INSTALL_INTERNAL_ERROR;
     }
     InstallParam installParam;
+    installParam.userId = USERID;
     installParam.installFlag = InstallFlag::NORMAL;
     bool result = installer->Install(filePath, installParam, receiver);
     EXPECT_TRUE(result);
@@ -149,6 +150,7 @@ ErrCode BmsMultipleInstallerTest::InstallThirdPartyMultipleBundles(const std::ve
         return ERR_APPEXECFWK_INSTALL_INTERNAL_ERROR;
     }
     InstallParam installParam;
+    installParam.userId = USERID;
     installParam.installFlag = flag ? InstallFlag::NORMAL : InstallFlag::REPLACE_EXISTING;
     bool result = installer->Install(filePaths, installParam, receiver);
     EXPECT_TRUE(result);
@@ -168,6 +170,7 @@ ErrCode BmsMultipleInstallerTest::UpdateThirdPartyBundle(const std::string &file
         return ERR_APPEXECFWK_INSTALL_INTERNAL_ERROR;
     }
     InstallParam installParam;
+    installParam.userId = USERID;
     installParam.installFlag = InstallFlag::REPLACE_EXISTING;
     bool result = installer->Install(filePath, installParam, receiver);
     EXPECT_TRUE(result);
@@ -809,7 +812,7 @@ HWTEST_F(BmsMultipleInstallerTest, MultipleHapsInstall_1600, Function | SmallTes
     CheckModuleFileExist(PACKAGE_NAME_SECOND);
 
     BundleInfo info;
-    auto result = dataMgr->GetBundleInfo(BUNDLE_NAME, BundleFlag::GET_BUNDLE_DEFAULT, info);
+    auto result = dataMgr->GetBundleInfo(BUNDLE_NAME, BundleFlag::GET_BUNDLE_DEFAULT, info, USERID);
     EXPECT_TRUE(result);
     IsContainModuleInfo(info, PACKAGE_NAME_SECOND);
 
@@ -840,7 +843,7 @@ HWTEST_F(BmsMultipleInstallerTest, MultipleHapsInstall_1700, Function | SmallTes
     CheckModuleFileExist(PACKAGE_NAME_SECOND);
 
     BundleInfo info;
-    auto result = dataMgr->GetBundleInfo(BUNDLE_NAME, BundleFlag::GET_BUNDLE_DEFAULT, info);
+    auto result = dataMgr->GetBundleInfo(BUNDLE_NAME, BundleFlag::GET_BUNDLE_DEFAULT, info, USERID);
     EXPECT_TRUE(result);
     IsContainModuleInfo(info, PACKAGE_NAME_FIRST);
     IsContainModuleInfo(info, PACKAGE_NAME_SECOND);
@@ -872,7 +875,7 @@ HWTEST_F(BmsMultipleInstallerTest, MultipleHapsInstall_1800, Function | SmallTes
     CheckModuleFileExist(PACKAGE_NAME_THIRD);
 
     BundleInfo info;
-    auto result = dataMgr->GetBundleInfo(BUNDLE_NAME, BundleFlag::GET_BUNDLE_DEFAULT, info);
+    auto result = dataMgr->GetBundleInfo(BUNDLE_NAME, BundleFlag::GET_BUNDLE_DEFAULT, info, USERID);
     EXPECT_TRUE(result);
     IsContainModuleInfo(info, PACKAGE_NAME_SECOND);
     IsContainModuleInfo(info, PACKAGE_NAME_THIRD);
@@ -923,7 +926,7 @@ HWTEST_F(BmsMultipleInstallerTest, MultipleHapsInstall_2000, Function | SmallTes
     CheckModuleFileExist(PACKAGE_NAME_SECOND);
 
     BundleInfo info;
-    auto result = dataMgr->GetBundleInfo(BUNDLE_NAME, BundleFlag::GET_BUNDLE_DEFAULT, info);
+    auto result = dataMgr->GetBundleInfo(BUNDLE_NAME, BundleFlag::GET_BUNDLE_DEFAULT, info, USERID);
     EXPECT_TRUE(result);
     IsContainModuleInfo(info, PACKAGE_NAME_FIRST);
     IsContainModuleInfo(info, PACKAGE_NAME_SECOND);
@@ -954,7 +957,7 @@ HWTEST_F(BmsMultipleInstallerTest, MultipleHapsInstall_2100, Function | SmallTes
     CheckModuleFileExist(PACKAGE_NAME_THIRD);
 
     BundleInfo info;
-    auto result = dataMgr->GetBundleInfo(BUNDLE_NAME, BundleFlag::GET_BUNDLE_DEFAULT, info);
+    auto result = dataMgr->GetBundleInfo(BUNDLE_NAME, BundleFlag::GET_BUNDLE_DEFAULT, info, USERID);
     EXPECT_TRUE(result);
     IsContainModuleInfo(info, PACKAGE_NAME_SECOND);
     IsContainModuleInfo(info, PACKAGE_NAME_THIRD);
@@ -1034,7 +1037,7 @@ HWTEST_F(BmsMultipleInstallerTest, MultipleHapsInstall_2500, Function | SmallTes
     CheckFileExist();
 
     BundleInfo info;
-    auto result = dataMgr->GetBundleInfo(BUNDLE_NAME, BundleFlag::GET_BUNDLE_DEFAULT, info);
+    auto result = dataMgr->GetBundleInfo(BUNDLE_NAME, BundleFlag::GET_BUNDLE_DEFAULT, info, USERID);
     EXPECT_TRUE(result);
     IsContainModuleInfo(info, PACKAGE_NAME_SECOND);
 
@@ -1732,7 +1735,7 @@ HWTEST_F(BmsMultipleInstallerTest, MultipleHapsUpdateData_2300, Function | Small
     EXPECT_EQ(installRes, ERR_OK);
 
     BundleInfo bundleInfo;
-    result = dataMgr->GetBundleInfo(BUNDLE_NAME, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo);
+    result = dataMgr->GetBundleInfo(BUNDLE_NAME, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo, USERID);
     EXPECT_TRUE(result);
 
     IsContainModuleInfo(bundleInfo, PACKAGE_NAME_FIRST);
@@ -1797,7 +1800,7 @@ HWTEST_F(BmsMultipleInstallerTest, MultipleHapsUpdateData_2500, Function | Small
     EXPECT_EQ(installRes, ERR_OK);
 
     BundleInfo bundleInfo;
-    result = dataMgr->GetBundleInfo(BUNDLE_NAME, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo);
+    result = dataMgr->GetBundleInfo(BUNDLE_NAME, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo, USERID);
     EXPECT_TRUE(result);
 
     IsContainModuleInfo(bundleInfo, PACKAGE_NAME_FIRST);
@@ -1836,7 +1839,7 @@ HWTEST_F(BmsMultipleInstallerTest, MultipleHapsUpdateData_2600, Function | Small
     EXPECT_EQ(installRes, ERR_OK);
 
     BundleInfo bundleInfo;
-    result = dataMgr->GetBundleInfo(BUNDLE_NAME, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo);
+    result = dataMgr->GetBundleInfo(BUNDLE_NAME, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo, USERID);
     EXPECT_TRUE(result);
 
     IsContainModuleInfo(bundleInfo, PACKAGE_NAME_FIRST);

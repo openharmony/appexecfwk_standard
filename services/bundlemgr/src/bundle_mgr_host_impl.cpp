@@ -72,14 +72,6 @@ bool BundleMgrHostImpl::GetBundleInfo(
 bool BundleMgrHostImpl::GetBundleInfo(
     const std::string &bundleName, int32_t flags, BundleInfo &bundleInfo, int32_t userId)
 {
-    std::vector<InnerBundleUserInfo> innerBundleUserInfos;
-    if (userId == Constants::ANY_USERID) {
-        if (!GetBundleUserInfos(bundleName, innerBundleUserInfos)) {
-            APP_LOGE("no userInfos for this bundle(%{public}s)", bundleName.c_str());
-            return false;
-        }
-        userId = innerBundleUserInfos.begin()->bundleUserInfo.userId;
-    }
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
         APP_LOGE("DataMgr is nullptr");

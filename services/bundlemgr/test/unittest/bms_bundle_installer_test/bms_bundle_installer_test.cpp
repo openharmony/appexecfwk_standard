@@ -55,7 +55,7 @@ const std::string BUNDLE_DATA_DIR = "/data/accounts/account_0/appdata/com.exampl
 const std::string BUNDLE_CODE_DIR = "/data/accounts/account_0/applications/com.example.l3jsdemo";
 const std::string ROOT_DIR = "/data/accounts";
 const int32_t ROOT_UID = 0;
-const int32_t USERID = 0;
+const int32_t USERID = 100;
 const std::string INSTALL_THREAD = "TestInstall";
 }  // namespace
 
@@ -94,7 +94,7 @@ BmsBundleInstallerTest::~BmsBundleInstallerTest()
 bool BmsBundleInstallerTest::InstallSystemBundle(const std::string &filePath) const
 {
     auto installer = std::make_unique<SystemBundleInstaller>(filePath);
-    return installer->InstallSystemBundle(Constants::AppType::SYSTEM_APP);
+    return installer->InstallSystemBundle(Constants::AppType::SYSTEM_APP, USERID);
 }
 
 ErrCode BmsBundleInstallerTest::InstallThirdPartyBundle(const std::string &filePath) const
@@ -110,6 +110,7 @@ ErrCode BmsBundleInstallerTest::InstallThirdPartyBundle(const std::string &fileP
         return ERR_APPEXECFWK_INSTALL_INTERNAL_ERROR;
     }
     InstallParam installParam;
+    installParam.userId = USERID;
     installParam.installFlag = InstallFlag::NORMAL;
     bool result = installer->Install(filePath, installParam, receiver);
     EXPECT_TRUE(result);
@@ -129,6 +130,7 @@ ErrCode BmsBundleInstallerTest::UpdateThirdPartyBundle(const std::string &filePa
         return ERR_APPEXECFWK_INSTALL_INTERNAL_ERROR;
     }
     InstallParam installParam;
+    installParam.userId = USERID;
     installParam.installFlag = InstallFlag::REPLACE_EXISTING;
     bool result = installer->Install(filePath, installParam, receiver);
     EXPECT_TRUE(result);
@@ -459,6 +461,7 @@ HWTEST_F(BmsBundleInstallerTest, CreateInstallTask_0100, Function | SmallTest | 
     sptr<MockStatusReceiver> receiver = new (std::nothrow) MockStatusReceiver();
     EXPECT_NE(receiver, nullptr);
     InstallParam installParam;
+    installParam.userId = USERID;
     std::string bundleFile = RESOURCE_ROOT_PATH + RIGHT_BUNDLE;
     GetBundleInstallerManager()->CreateInstallTask(bundleFile, installParam, receiver);
     ErrCode result = receiver->GetResultCode();
@@ -479,6 +482,7 @@ HWTEST_F(BmsBundleInstallerTest, CreateInstallTask_0200, Function | SmallTest | 
     sptr<MockStatusReceiver> receiver = new (std::nothrow) MockStatusReceiver();
     EXPECT_NE(receiver, nullptr);
     InstallParam installParam;
+    installParam.userId = USERID;
     std::string bundleFile = RESOURCE_ROOT_PATH + INVALID_BUNDLE;
     GetBundleInstallerManager()->CreateInstallTask(bundleFile, installParam, receiver);
     ErrCode result = receiver->GetResultCode();
@@ -498,6 +502,7 @@ HWTEST_F(BmsBundleInstallerTest, CreateUninstallTask_0200, Function | SmallTest 
     sptr<MockStatusReceiver> receiver = new (std::nothrow) MockStatusReceiver();
     EXPECT_NE(receiver, nullptr);
     InstallParam installParam;
+    installParam.userId = USERID;
     std::string bundleFile = RESOURCE_ROOT_PATH + INVALID_BUNDLE;
     GetBundleInstallerManager()->CreateUninstallTask(bundleFile, installParam, receiver);
     ErrCode result = receiver->GetResultCode();
