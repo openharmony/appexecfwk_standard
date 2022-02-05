@@ -271,6 +271,9 @@ int BundleMgrHost::OnRemoteRequest(uint32_t code, MessageParcel &data, MessagePa
         case static_cast<uint32_t>(IBundleMgr::Message::QUERY_EXTENSION_INFO_BY_TYPE):
             errCode = HandleQueryExtAbilityInfosByType(data, reply);
             break;
+        case static_cast<uint32_t>(IBundleMgr::Message::VERIFY_CALLING_PERMISSION):
+            errCode = HandleVerifyCallingPermission(data, reply);
+            break;
         default:
             return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
     }
@@ -1684,6 +1687,17 @@ ErrCode BundleMgrHost::HandleQueryExtAbilityInfosByType(Parcel &data, Parcel &re
     return ERR_OK;
 }
 
+ErrCode BundleMgrHost::HandleVerifyCallingPermission(Parcel &data, Parcel &reply)
+{
+    std::string permission = data.ReadString();
+
+    bool ret = VerifyCallingPermission(permission);
+    if (!reply.WriteBool(ret)) {
+        APP_LOGE("write result failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    return ERR_OK;
+}
 template<typename T>
 bool BundleMgrHost::WriteParcelableVector(std::vector<T> &parcelableVector, Parcel &reply)
 {

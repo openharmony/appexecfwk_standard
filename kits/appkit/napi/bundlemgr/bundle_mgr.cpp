@@ -420,7 +420,11 @@ static void ConvertAbilityInfo(napi_env env, napi_value objAbilityInfo, const Ab
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objAbilityInfo, "launchMode", nLaunchMode));
 
     napi_value nBackgroundModes;
-    NAPI_CALL_RETURN_VOID(env, napi_create_int32(env, abilityInfo.backgroundModes, &nBackgroundModes));
+    if (!abilityInfo.isModuleJson) {
+        NAPI_CALL_RETURN_VOID(env, napi_create_int32(env, abilityInfo.backgroundModes, &nBackgroundModes));
+    } else {
+        NAPI_CALL_RETURN_VOID(env, napi_create_int32(env, 0, &nBackgroundModes));
+    }
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objAbilityInfo, "backgroundModes", nBackgroundModes));
 
     napi_value nDescriptionId;

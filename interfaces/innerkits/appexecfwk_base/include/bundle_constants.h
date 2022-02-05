@@ -179,6 +179,9 @@ const int32_t MAX_CAPACITY_BUNDLES = 1024 * 1000; // 1M
 
 // file size
 const int32_t INVALID_FILE_SIZE = -1;
+
+// permission
+const std::string LISTEN_BUNDLE_CHANGE = "ohos.permission.LISTEN_BUNDLE_CHANGE";
 }  // namespace Constants
 }  // namespace AppExecFwk
 }  // namespace OHOS

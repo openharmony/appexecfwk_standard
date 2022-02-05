@@ -508,6 +508,12 @@ bool BundleMgrHostImpl::RegisterBundleStatusCallback(const sptr<IBundleStatusCal
         APP_LOGE("the bundleStatusCallback is nullptr or bundleName empty");
         return false;
     }
+    // check permission
+    if (!BundlePermissionMgr::VerifyCallingPermission(Constants::LISTEN_BUNDLE_CHANGE)) {
+        APP_LOGE("register bundle status callback failed due to lack of permission");
+        return false;
+    }
+
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
         APP_LOGE("DataMgr is nullptr");
@@ -522,6 +528,13 @@ bool BundleMgrHostImpl::ClearBundleStatusCallback(const sptr<IBundleStatusCallba
         APP_LOGE("the bundleStatusCallback is nullptr");
         return false;
     }
+
+    // check permission
+    if (!BundlePermissionMgr::VerifyCallingPermission(Constants::LISTEN_BUNDLE_CHANGE)) {
+        APP_LOGE("register bundle status callback failed due to lack of permission");
+        return false;
+    }
+
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
         APP_LOGE("DataMgr is nullptr");
@@ -532,6 +545,12 @@ bool BundleMgrHostImpl::ClearBundleStatusCallback(const sptr<IBundleStatusCallba
 
 bool BundleMgrHostImpl::UnregisterBundleStatusCallback()
 {
+    // check permission
+    if (!BundlePermissionMgr::VerifyCallingPermission(Constants::LISTEN_BUNDLE_CHANGE)) {
+        APP_LOGE("register bundle status callback failed due to lack of permission");
+        return false;
+    }
+
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
         APP_LOGE("DataMgr is nullptr");
@@ -1018,8 +1037,8 @@ bool BundleMgrHostImpl::GetDistributedBundleInfo(
 bool BundleMgrHostImpl::QueryExtensionAbilityInfos(const Want &want, const int32_t &flag, const int32_t &userId,
     std::vector<ExtensionAbilityInfo> &extensionInfos)
 {
-    APP_LOGI("QueryExtensionAbilityInfos without type begin");
-    APP_LOGI("want uri is %{public}s", want.GetUriString().c_str());
+    APP_LOGD("QueryExtensionAbilityInfos without type begin");
+    APP_LOGD("want uri is %{public}s", want.GetUriString().c_str());
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
         APP_LOGE("DataMgr is nullptr");
@@ -1040,7 +1059,7 @@ bool BundleMgrHostImpl::QueryExtensionAbilityInfos(const Want &want, const int32
 bool BundleMgrHostImpl::QueryExtensionAbilityInfos(const Want &want, const ExtensionAbilityType &extensionType,
     const int32_t &flag, const int32_t &userId, std::vector<ExtensionAbilityInfo> &extensionInfos)
 {
-    APP_LOGI("QueryExtensionAbilityInfos begin");
+    APP_LOGD("QueryExtensionAbilityInfos begin");
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
         APP_LOGE("DataMgr is nullptr");
@@ -1069,7 +1088,7 @@ bool BundleMgrHostImpl::QueryExtensionAbilityInfos(const Want &want, const Exten
 bool BundleMgrHostImpl::QueryExtensionAbilityInfos(const ExtensionAbilityType &extensionType, const int32_t &userId,
     std::vector<ExtensionAbilityInfo> &extensionInfos)
 {
-    APP_LOGI("QueryExtensionAbilityInfos with type begin");
+    APP_LOGD("QueryExtensionAbilityInfos with type begin");
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
         APP_LOGE("DataMgr is nullptr");
@@ -1123,6 +1142,12 @@ std::string BundleMgrHostImpl::GetAppPrivilegeLevel(const std::string &bundleNam
         return Constants::EMPTY_STRING;
     }
     return dataMgr->GetAppPrivilegeLevel(bundleName, userId);
+}
+
+bool BundleMgrHostImpl::VerifyCallingPermission(const std::string &permission)
+{
+    APP_LOGD("VerifyCallingPermission begin");
+    return BundlePermissionMgr::VerifyCallingPermission(permission);
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS
