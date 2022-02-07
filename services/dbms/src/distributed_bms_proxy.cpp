@@ -40,9 +40,7 @@ bool DistributedBmsProxy::GetRemoteAbilityInfo(
         APP_LOGE("DistributedBmsProxy GetRemoteAbilityInfo write elementName error");
         return false;
     }
-    if (!SendRequest(IDistributedBms::Message::GET_REMOTE_ABILITY_INFO, data, reply)) {
-        return false;
-    }
+
     if (!GetParcelableInfo<RemoteAbilityInfo>(
             IDistributedBms::Message::GET_REMOTE_ABILITY_INFO, data, remoteAbilityInfo)) {
         APP_LOGE("fail to query ability info mutiparam from server");
