@@ -39,7 +39,7 @@ namespace OHOS {
 namespace AppExecFwk {
 namespace {
 const std::string RESOURCE_PATH =
-    "/data/accounts/account_0/applications/com.example.ohosproject.hmservice/entry_phone/resources.index";
+    "/data/app/el1/bundle/public/com.example.ohosproject.hmservice/entry_phone/resources.index";
 const std::string THIRD_PATH = "/data/test/bms_bundle/";
 const std::string BUNDLE_NAME = "com.example.ohosproject.hmservice";
 const std::string MSG_SUCCESS = "[SUCCESS]";

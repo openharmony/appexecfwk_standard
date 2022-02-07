@@ -61,22 +61,6 @@ ErrCode InstalldHostImpl::CreateBundleDir(const std::string &bundleDir)
         APP_LOGE("create bundle dir %{public}s failed", bundleDir.c_str());
         return ERR_APPEXECFWK_INSTALLD_CREATE_DIR_FAILED;
     }
-
-    auto bundleName = strrchr(bundleDir.c_str(), Constants::FILE_SEPARATOR_CHAR);
-    if (!bundleName) {
-        APP_LOGE("Calling the function CreateBundleDir with invalid bundleName");
-        return ERR_APPEXECFWK_INSTALLD_PARAM_ERROR;
-    }
-
-    std::string newBundleDir = Constants::BUNDLE_CODE_DIR + bundleName;
-    if (InstalldOperator::IsExistDir(newBundleDir)) {
-        APP_LOGW("new bundle dir: %{public}s is exist", newBundleDir.c_str());
-        OHOS::ForceRemoveDirectory(newBundleDir);
-    }
-    if (!InstalldOperator::MkRecursiveDir(newBundleDir, true)) {
-        APP_LOGE("create new bundle dir %{public}s failed", newBundleDir.c_str());
-        return ERR_APPEXECFWK_INSTALLD_CREATE_DIR_FAILED;
-    }
     return ERR_OK;
 }
 
