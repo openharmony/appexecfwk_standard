@@ -165,7 +165,7 @@ std::set<int32_t> BundleInstaller::GetExistsCommonUserIs()
     }
 
     for (auto userId : dataMgr->GetAllUser()) {
-        if (userId == Constants::START_USERID) {
+        if (userId >= Constants::START_USERID) {
             userIds.insert(userId);
         }
     }
