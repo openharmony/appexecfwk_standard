@@ -180,7 +180,7 @@ struct FormsMetaData {
 };
 
 struct Window {
-    int32_t designWidth = 750;
+    int32_t designWidth = 720;
     bool autoDesignWidth = false;
 };
 

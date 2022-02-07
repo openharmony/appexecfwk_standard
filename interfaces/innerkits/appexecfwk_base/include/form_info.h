@@ -63,6 +63,7 @@ struct FormInfo : public Parcelable {
     bool ReadFromParcel(Parcel &parcel);
     virtual bool Marshalling(Parcel &parcel) const override;
     static FormInfo *Unmarshalling(Parcel &parcel);
+    bool IsValid() const;
 
 private:
     bool ReadCustomizeData(Parcel &parcel);
