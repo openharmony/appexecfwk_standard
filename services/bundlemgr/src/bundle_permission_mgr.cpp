@@ -556,6 +556,10 @@ bool BundlePermissionMgr::VerifyCallingPermission(const std::string &permissionN
 {
     APP_LOGD("VerifyCallingPermission permission %{public}s", permissionName.c_str());
     AccessToken::AccessTokenID callerToken = IPCSkeleton::GetCallingTokenID();
+    AccessToken::ATokenTypeEnum tokenType = AccessToken::AccessTokenKit::GetTokenTypeFlag(callerToken);
+    if (tokenType == AccessToken::ATokenTypeEnum::TOKEN_NATIVE) {
+        return true;
+    }
     int32_t ret = AccessToken::AccessTokenKit::VerifyAccessToken(callerToken, permissionName);
     if (ret == AccessToken::PermissionState::PERMISSION_DENIED) {
         APP_LOGE("permission %{public}s: PERMISSION_DENIED", permissionName.c_str());
