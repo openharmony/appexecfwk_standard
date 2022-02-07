@@ -9,7 +9,9 @@
     "component": {
         "name": "bundle_tool",
         "subsystem": "appexecfwk",
-        "syscap": [],
+        "syscap": [
+            "SystemCapability.BundleManager.BundleTool"
+        ],
         "features": [],
         "adapted_system_type": [
             "standard"
