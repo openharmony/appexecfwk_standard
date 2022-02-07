@@ -59,6 +59,7 @@ private:
     bool GetMediaBase64(std::string &path, std::string &value);
     std::unique_ptr<char[]> LoadResourceFile(std::string &path, int &len);
     std::unique_ptr<char[]> EncodeBase64(std::unique_ptr<char[]> &data, int srcLen);
+    bool GetCurrentUserId(int &userId);
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS
