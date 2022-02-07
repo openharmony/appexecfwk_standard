@@ -23,12 +23,15 @@
 #include "bundle_mgr_proxy.h"
 #include "iservice_registry.h"
 #include "if_system_ability_manager.h"
+#include "os_account_info.h"
+#include "os_account_manager.h"
+#include "parameter.h"
 #include "system_ability_definition.h"
 
 namespace OHOS {
 namespace AppExecFwk {
 namespace {
-    const int START_USERID = 100;
+    const std::uint32_t DEVICE_UUID_LENGTH = 65;
     const uint8_t DECODE_BUNBER_ONE = 1;
     const uint8_t DECODE_BUNBER_TWO = 2;
     const uint8_t DECODE_BUNBER_THREE = 3;
@@ -91,8 +94,13 @@ bool DistributedBms::GetRemoteAbilityInfo(
         APP_LOGE("DistributedBms GetBundleMgr failed");
         return false;
     }
+    int userId = -1;
+    if (!GetCurrentUserId(userId)) {
+        APP_LOGE("GetCurrentUserId failed");
+        return false;
+    }
     BundleInfo bundleInfo;
-    if (!iBundleMgr->GetBundleInfo(elementName.GetBundleName(), 1, bundleInfo, START_USERID)) {
+    if (!iBundleMgr->GetBundleInfo(elementName.GetBundleName(), 1, bundleInfo, userId)) {
         APP_LOGE("DistributedBms GetBundleInfo failed");
         return false;
     }
@@ -105,7 +113,7 @@ bool DistributedBms::GetRemoteAbilityInfo(
     AbilityInfo abilityInfo;
     OHOS::AAFwk::Want want;
     want.SetElement(elementName);
-    if (!iBundleMgr->QueryAbilityInfo(want, GET_ABILITY_INFO_WITH_APPLICATION, START_USERID, abilityInfo)) {
+    if (!iBundleMgr->QueryAbilityInfo(want, GET_ABILITY_INFO_WITH_APPLICATION, userId, abilityInfo)) {
         APP_LOGE("DistributedBms QueryAbilityInfo failed");
         return false;
     }
@@ -235,6 +243,26 @@ std::unique_ptr<char[]> DistributedBms::EncodeBase64(std::unique_ptr<char[]> &da
     dstData[outLen] = '\0';
 
     return result;
+}
+
+bool DistributedBms::GetCurrentUserId(int &userId)
+{
+    char udid[DEVICE_UUID_LENGTH] = {0};
+    int ret = GetDevUdid(udid, DEVICE_UUID_LENGTH);
+    if (ret != 0) {
+        APP_LOGE("GetDevUdid failed! ret = %{public}d.", ret);
+        return false;
+    }
+    std::vector<AccountSA::OsAccountInfo> osAccountList;
+    AccountSA::OsAccountManager::GetOsAccountListFromDatabase(std::string(udid), osAccountList);
+    for (auto osAccount : osAccountList) {
+        APP_LOGD("osAccount userId:%{public}d, isActived:%{public}d", osAccount.GetLocalId(), osAccount.GetIsActived());
+        if (osAccount.GetIsActived()) {
+            userId = osAccount.GetLocalId();
+            return true;
+        }
+    }
+    return false;
 }
 }
 }
