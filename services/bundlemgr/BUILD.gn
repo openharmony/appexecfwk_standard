@@ -61,6 +61,16 @@ ohos_source_set("parser_common") {
   ]
 }
 
+ohos_source_set("rpcid_decode") {
+  include_dirs = [ "include/rpcid_decode" ]
+
+  sources = [ "src/rpcid_decode/syscap_tool.c" ]
+
+  deps = [ "//third_party/bounds_checking_function:libsec_static" ]
+
+  external_deps = [ "hiviewdfx_hilog_native:libhilog" ]
+}
+
 ohos_source_set("bundle_parser") {
   sources = [
     "include/bundle_extractor.h",
@@ -80,6 +90,7 @@ ohos_source_set("bundle_parser") {
   }
   deps = [
     ":parser_common",
+    ":rpcid_decode",
     "${common_path}:libappexecfwk_common",
   ]
 
