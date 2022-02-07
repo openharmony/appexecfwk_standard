@@ -253,9 +253,9 @@ void BmsLauncherServiceSystemTest::CheckApplicationInfo(const std::string &bundl
     EXPECT_EQ(applicationInfo.process, "");
     EXPECT_EQ(commonTool.VectorToStr(applicationInfo.permissions), "");
     EXPECT_EQ(commonTool.VectorToStr(applicationInfo.moduleSourceDirs),
-        "/data/accounts/account_0/applications/com.example.third1/com.example.third1");
-    EXPECT_EQ(applicationInfo.entryDir, "/data/accounts/account_0/applications/com.example.third1/com.example.third1");
-    EXPECT_EQ(applicationInfo.codePath, "/data/accounts/account_0/applications/com.example.third1");
+        "/data/app/el1/bundle/public/com.example.third1/com.example.third1");
+    EXPECT_EQ(applicationInfo.entryDir, "/data/app/el1/bundle/public/com.example.third1/com.example.third1");
+    EXPECT_EQ(applicationInfo.codePath, "/data/app/el1/bundle/public/com.example.third1");
     EXPECT_EQ(applicationInfo.cacheDir, "/data/accounts/account_0/appdata/com.example.third1/cache");
     EXPECT_GE(applicationInfo.flags, 0);
     EXPECT_GT(applicationInfo.enabled, 0);

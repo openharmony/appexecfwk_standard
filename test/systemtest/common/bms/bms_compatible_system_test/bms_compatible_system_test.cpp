@@ -246,7 +246,7 @@ static void CheckCompatibleApplicationInfo(
     if (!compatibleApplicationInfo.moduleInfos.empty()) {
         EXPECT_EQ(compatibleApplicationInfo.moduleInfos[0].moduleName, "entry");
         EXPECT_EQ(compatibleApplicationInfo.moduleInfos[0].moduleSourceDir,
-            "/data/accounts/account_0/applications/com.example.third1/com.example.third1");
+            "/data/app/el1/bundle/public/com.example.third1/com.example.third1");
     }
     EXPECT_TRUE(compatibleApplicationInfo.enabled);
 }
