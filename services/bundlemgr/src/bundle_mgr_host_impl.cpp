@@ -1154,7 +1154,7 @@ std::set<int32_t> BundleMgrHostImpl::GetExistsCommonUserIs()
     return userIds;
 }
 
-bool BundleMgrHostImpl::verifyQueryPermission(bool allowNormalApl, const std::string &queryBundleName) const
+bool BundleMgrHostImpl::verifyQueryPermission(bool allowNormalApl, const std::string &queryBundleName)
 {
     if (BundlePermissionMgr::VerifyCallingPermission(Constants::PERMISSION_GET_BUNDLE_INFO_PRIVILEGED)) {
         APP_LOGD("verify GET_BUNDLE_INFO_PRIVILEGED success");
