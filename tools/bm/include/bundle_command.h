@@ -46,14 +46,16 @@ const std::string HELP_MSG_INSTALL =
     "  -p, --bundle-path <bundle-direction>                       install one bundle by a direction,\n"
     "                                                                     under which are some hap files\n"
     "  -r -p <bundle-file-path>                                   replace an existing bundle\n"
-    "  -r --bundle-path <bundle-file-path>                        replace an existing bundle\n";
+    "  -r --bundle-path <bundle-file-path>                        replace an existing bundle\n"
+    "  -u, --user-id <user-id>                                    specify a user id\n";
 
 const std::string HELP_MSG_UNINSTALL =
     "usage: bm uninstall <options>\n"
     "options list:\n"
     "  -h, --help                           list available commands\n"
     "  -n, --bundle-name <bundle-name>      uninstall a bundle by bundle name\n"
-    "  -m, --module-name <module-name>      uninstall a module by module name\n";
+    "  -m, --module-name <module-name>      uninstall a module by module name\n"
+    "  -u, --user-id <user-id>              specify a user id\n";
 
 const std::string HELP_MSG_DUMP =
     "usage: bm dump <options>\n"
@@ -62,7 +64,9 @@ const std::string HELP_MSG_DUMP =
     "  -a, --all                            list all bundles in system\n"
     "  -i, --bundle-info                    list all bundles info in system\n"
     "  -n, --bundle-name <bundle-name>      list the bundle info by a bundle name\n"
-    "  -s, --shortcut-info                  list the shortcut info\n";
+    "  -s, --shortcut-info                  list the shortcut info\n"
+    "  -d, --device-id <device-id>          specify a device id\n"
+    "  -u, --user-id <user-id>              specify a user id\n";
 
 const std::string HELP_MSG_CLEAN =
     "usage: bm clean <options>\n"
@@ -70,7 +74,8 @@ const std::string HELP_MSG_CLEAN =
     "  -h, --help                                      list available commands\n"
     "  -n, --bundle-name  <bundle-name>                bundle name\n"
     "  -c, --cache                                     clean bundle cache files by bundle name\n"
-    "  -d, --data                                      clean bundle data files by bundle name\n";
+    "  -d, --data                                      clean bundle data files by bundle name\n"
+    "  -u, --user-id <user-id>                         specify a user id";
 
 const std::string HELP_MSG_ENABLE =
     "usage: bm enable <options>\n"
@@ -90,7 +95,8 @@ const std::string HELP_MSG_RECOVER =
     "usage: bm recover <options>\n"
     "options list:\n"
     "  -h, --help                             list available commands\n"
-    "  -n, --bundle-name  <bundle-name>       recover bundle by bundle name\n";
+    "  -n, --bundle-name  <bundle-name>       recover bundle by bundle name\n"
+    "  -u, --user-id <user-id>                specify a user id\n";
 
 const std::string HELP_MSG_QUERY =
     "usage: bm query <options>\n"
@@ -99,7 +105,7 @@ const std::string HELP_MSG_QUERY =
     "  -n, --bundle-name <bundle-name>        query bundle by bundle name\n"
     "  -e, --element-name <element-name>      query info by element name\n"
     "  -m, --metadata-name <metadata-name>    query metadata by metadata name\n"
-    "  -u, --user-id <usr -id>                designate an user id\n";
+    "  -u, --user-id <usr-id>                 specify a user id\n";
 
 const std::string HELP_MSG_NO_BUNDLE_PATH_OPTION =
     "error: you must specify a bundle path with '-p' or '--bundle-path'.";
@@ -164,6 +170,7 @@ private:
     std::string DumpBundleInfo(const std::string &bundleName, int32_t userId) const;
     std::string DumpBundleInfos(int32_t userId) const;
     std::string DumpShortcutInfos(const std::string &bundleName, int32_t userId) const;
+    std::string DumpDistributedBundleInfo(const std::string &deviceId, int32_t userId, const std::string &bundleName);
 
     int32_t InstallOperation(const std::vector<std::string> &bundlePaths, InstallParam &installParam) const;
     int32_t UninstallOperation(const std::string &bundleName, const std::string &moduleName,
