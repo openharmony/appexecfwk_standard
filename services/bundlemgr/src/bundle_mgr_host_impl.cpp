@@ -25,6 +25,7 @@
 #include "bundle_util.h"
 #include "directory_ex.h"
 #include "installd_client.h"
+#include "ipc_skeleton.h"
 #include "json_serializer.h"
 
 namespace OHOS {
@@ -1163,7 +1164,12 @@ bool BundleMgrHostImpl::verifyQueryPermission(bool allowNormalApl, const std::st
         APP_LOGD("not allow normal apl, verify permission failed");
         return false;
     }
-    std::string callingBundleName = GetBundleNameForUid(IPCSkeleton::GetCallingUid());
+    std::string callingBundleName;
+    bool ret = GetBundleNameForUid(IPCSkeleton::GetCallingUid(), callingBundleName);
+    if (!ret) {
+        APP_LOGE("GetBundleNameForUid failed");
+        return false;
+    }
     bool isBundleNameEqual = queryBundleName == callingBundleName;
     bool allowGetbundleInfo = BundlePermissionMgr::VerifyCallingPermission(Constants::PERMISSION_GET_BUNDLE_INFO);
     APP_LOGD("isBundleNameEqual : %{public}d, allowGetbundleInfo : %{public}d", isBundleNameEqual, allowGetbundleInfo);
