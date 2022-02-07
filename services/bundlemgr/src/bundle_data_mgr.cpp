@@ -438,7 +438,7 @@ bool BundleDataMgr::ExplicitQueryAbilityInfo(const std::string &bundleName, cons
         return false;
     }
     if (!(static_cast<uint32_t>(flags) & GET_ABILITY_INFO_WITH_DISABLE)) {
-        if (!innerBundleInfo.IsAbilityEnabled((*ability), GetUserId(userId))) {
+        if (!innerBundleInfo.IsAbilityEnabled((*ability), responseUserId)) {
             APP_LOGE("ability:%{public}s is disabled", ability->name.c_str());
             return false;
         }
