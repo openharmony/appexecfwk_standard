@@ -12,6 +12,7 @@
 # limitations under the License.
 
 import("//build/ohos.gni")
+import("//foundation/appexecfwk/standard/appexecfwk.gni")
 
 group("dbms_target") {
   deps = [ ":libdbms" ]
@@ -23,16 +24,16 @@ config("distributed_bms_config") {
 
 ohos_shared_library("libdbms") {
   sources = [
-    "//foundation/appexecfwk/standard/services/dbms/src/distributed_bms.cpp",
-    "//foundation/appexecfwk/standard/services/dbms/src/distributed_bms_host.cpp",
-    "//foundation/appexecfwk/standard/services/dbms/src/distributed_bms_proxy.cpp",
+    "src/distributed_bms.cpp",
+    "src/distributed_bms_host.cpp",
+    "src/distributed_bms_proxy.cpp",
   ]
 
   defines = [ "APP_LOG_TAG = \"BundleMgrService\"" ]
 
   public_configs = [ ":distributed_bms_config" ]
 
-  deps = [ "//foundation/appexecfwk/standard/common:libappexecfwk_common" ]
+  deps = [ "${common_path}:libappexecfwk_common" ]
 
   external_deps = [
     "ability_runtime:app_manager",

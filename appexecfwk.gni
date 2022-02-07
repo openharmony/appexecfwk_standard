@@ -13,7 +13,6 @@
 
 aafwk_path = "//foundation/aafwk/standard"
 appexecfwk_path = "//foundation/appexecfwk/standard"
-even_path = "//base/notification/ces_standard"
 
 libs_path = "${appexecfwk_path}/libs"
 common_path = "${appexecfwk_path}/common"
