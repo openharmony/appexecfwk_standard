@@ -41,6 +41,7 @@ bool BundleMgrHostImpl::GetApplicationInfo(
 {
     if (!VerifyQueryPermission(true, appName)) {
         APP_LOGE("verify permission failed");
+        return false;
     }
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
@@ -61,6 +62,7 @@ bool BundleMgrHostImpl::GetApplicationInfos(
 {
     if (!VerifyQueryPermission()) {
         APP_LOGE("verify permission failed");
+        return false;
     }
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
@@ -81,6 +83,7 @@ bool BundleMgrHostImpl::GetBundleInfo(
 {
     if (!VerifyQueryPermission(true, bundleName)) {
         APP_LOGE("verify permission failed");
+        return false;
     }
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
@@ -121,6 +124,7 @@ bool BundleMgrHostImpl::GetBundleInfos(int32_t flags, std::vector<BundleInfo> &b
 {
     if (!VerifyQueryPermission()) {
         APP_LOGE("verify permission failed");
+        return false;
     }
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
@@ -209,6 +213,7 @@ bool BundleMgrHostImpl::QueryAbilityInfo(const Want &want, int32_t flags, int32_
 {
     if (!VerifyQueryPermission(true, want.GetElement().GetBundleName())) {
         APP_LOGE("verify permission failed");
+        return false;
     }
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
@@ -229,6 +234,7 @@ bool BundleMgrHostImpl::QueryAbilityInfos(
 {
     if (!VerifyQueryPermission(true, want.GetElement().GetBundleName())) {
         APP_LOGE("verify permission failed");
+        return false;
     }
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
@@ -252,6 +258,7 @@ bool BundleMgrHostImpl::QueryAllAbilityInfos(const Want &want, int32_t userId, s
 {
     if (!VerifyQueryPermission()) {
         APP_LOGE("verify permission failed");
+        return false;
     }
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
@@ -336,6 +343,7 @@ bool BundleMgrHostImpl::GetBundleArchiveInfo(
     }
     if (!VerifyQueryPermission(true, info.GetBundleName())) {
         APP_LOGE("verify permission failed");
+        return false;
     }
     info.GetBundleInfo(flags, bundleInfo, Constants::NOT_EXIST_USERID);
     return true;
@@ -359,6 +367,7 @@ bool BundleMgrHostImpl::GetLaunchWantForBundle(const std::string &bundleName, Wa
 {
     if (!VerifyQueryPermission()) {
         APP_LOGE("verify permission failed");
+        return false;
     }
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
@@ -754,6 +763,7 @@ bool BundleMgrHostImpl::SetApplicationEnabled(const std::string &bundleName, boo
 {
     if (!BundlePermissionMgr::VerifyCallingPermission(Constants::PERMISSION_CHANGE_ABILITY_ENABLED_STATE)) {
         APP_LOGE("verify permission failed");
+        return false;
     }
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
@@ -795,6 +805,7 @@ bool BundleMgrHostImpl::SetAbilityEnabled(const AbilityInfo &abilityInfo, bool i
 {
     if (!BundlePermissionMgr::VerifyCallingPermission(Constants::PERMISSION_CHANGE_ABILITY_ENABLED_STATE)) {
         APP_LOGE("verify permission failed");
+        return false;
     }
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
@@ -949,6 +960,7 @@ bool BundleMgrHostImpl::GetShortcutInfos(
 {
     if (!VerifyQueryPermission()) {
         APP_LOGE("verify permission failed");
+        return false;
     }
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
