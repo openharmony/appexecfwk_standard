@@ -465,6 +465,10 @@ bool BundleMgrHostImpl::CleanBundleCacheFiles(
         APP_LOGE("the cleanCacheCallback is nullptr or bundleName empty");
         return false;
     }
+    if (!BundlePermissionMgr::VerifyCallingPermission(Constants::PERNISSION_REMOVECACHEFILE)) {
+        APP_LOGE("ohos.permission.REMOVE_CACHE_FILES permission denied");
+        return false;
+    }
     ApplicationInfo applicationInfo;
     if (!GetApplicationInfo(bundleName, ApplicationFlag::GET_BASIC_APPLICATION_INFO,
         Constants::UNSPECIFIED_USERID, applicationInfo)) {
