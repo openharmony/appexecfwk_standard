@@ -381,7 +381,7 @@ void BmsBundlePermissionTest::MockDefPermissionBundleSystemGrant(InnerBundleInfo
 
     InnerModuleInfo moduleInfo;
     std::map<std::string, InnerModuleInfo> innerModuleInfos_;
-    moduleInfo.definePermissions = {DEFPERMISSION_SYSTEM1, DEFPERMISSION_SYSTEM2, DEFPERMISSION_SYSTEM3};
+    moduleInfo.defPermissions = {DEFPERMISSION_SYSTEM1, DEFPERMISSION_SYSTEM2, DEFPERMISSION_SYSTEM3};
     moduleInfo.modulePackage = PACKAGE_NAME;
     moduleInfo.moduleName = PACKAGE_NAME;
     moduleInfo.description = BUNDLE_DESCRIPTION;
@@ -429,7 +429,7 @@ void BmsBundlePermissionTest::MockUpdateDefPermissionBundleSystemGrant(InnerBund
 
     InnerModuleInfo moduleInfo;
     std::map<std::string, InnerModuleInfo> innerModuleInfos_;
-    moduleInfo.definePermissions = {DEFPERMISSION_UPDATE1, DEFPERMISSION_UPDATE2, DEFPERMISSION_UPDATE3};
+    moduleInfo.defPermissions = {DEFPERMISSION_UPDATE1, DEFPERMISSION_UPDATE2, DEFPERMISSION_UPDATE3};
     moduleInfo.modulePackage = PACKAGE_NAME;
     moduleInfo.moduleName = PACKAGE_NAME;
     moduleInfo.description = BUNDLE_DESCRIPTION;
@@ -477,7 +477,7 @@ void BmsBundlePermissionTest::MockDefPermissionBundleTestReqpermission(InnerBund
 
     InnerModuleInfo moduleInfo;
     std::map<std::string, InnerModuleInfo> innerModuleInfos_;
-    moduleInfo.definePermissions = {DEFPERMISSION_EMAIL, DEFPERMISSION_MUSIC, DEFPERMISSION_APP, DEFPERMISSION_WECHAT};
+    moduleInfo.defPermissions = {DEFPERMISSION_EMAIL, DEFPERMISSION_MUSIC, DEFPERMISSION_APP, DEFPERMISSION_WECHAT};
     moduleInfo.modulePackage = PACKAGE_NAME;
     moduleInfo.moduleName = PACKAGE_NAME;
     moduleInfo.description = BUNDLE_DESCRIPTION;
@@ -572,7 +572,7 @@ void BmsBundlePermissionTest::MockNoAvailableScopeDefPermissionBundle(InnerBundl
 
     InnerModuleInfo moduleInfo;
     std::map<std::string, InnerModuleInfo> innerModuleInfos_;
-    moduleInfo.definePermissions = {DEFPERMISSION_NOAVAILIAVLE1, DEFPERMISSION_NOAVAILIAVLE2,
+    moduleInfo.defPermissions = {DEFPERMISSION_NOAVAILIAVLE1, DEFPERMISSION_NOAVAILIAVLE2,
         DEFPERMISSION_NOAVAILIAVLE3};
     moduleInfo.modulePackage = PACKAGE_NAME;
     moduleInfo.moduleName = PACKAGE_NAME;
@@ -621,7 +621,7 @@ void BmsBundlePermissionTest::MockDefPermissionBundleUserGrant(InnerBundleInfo &
 
     InnerModuleInfo moduleInfo;
     std::map<std::string, InnerModuleInfo> innerModuleInfos_;
-    moduleInfo.definePermissions = {DEFPERMISSION_USERGRANT1,
+    moduleInfo.defPermissions = {DEFPERMISSION_USERGRANT1,
         DEFPERMISSION_USERGRANT2,
         DEFPERMISSION_USERGRANT3,
         DEFPERMISSION_USERGRANT4,
@@ -675,7 +675,7 @@ void BmsBundlePermissionTest::MockSameDefPermissionNameBundleSystemGrant(InnerBu
     InnerModuleInfo moduleInfo;
     std::map<std::string, InnerModuleInfo> innerModuleInfos_;
 
-    moduleInfo.definePermissions = {DEFPERMISSION_SAMENAME1, DEFPERMISSION_SAMENAME2};
+    moduleInfo.defPermissions = {DEFPERMISSION_SAMENAME1, DEFPERMISSION_SAMENAME2};
     moduleInfo.modulePackage = PACKAGE_NAME;
     moduleInfo.moduleName = PACKAGE_NAME;
     moduleInfo.description = BUNDLE_DESCRIPTION;
@@ -723,7 +723,7 @@ void BmsBundlePermissionTest::MockDefPermissionBundleSame(InnerBundleInfo &inner
 
     InnerModuleInfo moduleInfo;
     std::map<std::string, InnerModuleInfo> innerModuleInfos_;
-    moduleInfo.definePermissions = {DEFPERMISSION_SAME1, DEFPERMISSION_SAME2, DEFPERMISSION_SAME3};
+    moduleInfo.defPermissions = {DEFPERMISSION_SAME1, DEFPERMISSION_SAME2, DEFPERMISSION_SAME3};
     moduleInfo.modulePackage = PACKAGE_NAME;
     moduleInfo.moduleName = PACKAGE_NAME;
     moduleInfo.description = BUNDLE_DESCRIPTION;
