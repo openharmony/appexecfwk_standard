@@ -611,6 +611,8 @@ public:
 
     virtual bool QueryExtensionAbilityInfos(const ExtensionAbilityType &extensionType, const int32_t &userId,
         std::vector<ExtensionAbilityInfo> &extensionInfos) override;
+
+    virtual bool VerifyCallingPermission(const std::string &permission) override;
 private:
     /**
      * @brief Send a command message from the proxy object.

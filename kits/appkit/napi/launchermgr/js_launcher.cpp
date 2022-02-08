@@ -81,6 +81,7 @@ static void ParseString(napi_env env, napi_value value, std::string& result)
 static bool ParseBundleStatusCallback(napi_env env,
     OHOS::sptr<BundleStatusCallback>& bundleStatusCallback, napi_value args)
 {
+    APP_LOGD("parse bundleStatusCallback begin");
     napi_status status;
     napi_valuetype valueType;
     NAPI_CALL(env, napi_typeof(env, args, &valueType));
@@ -126,7 +127,7 @@ static bool ParseBundleStatusCallback(napi_env env,
     napi_create_reference(env, removeValue, NAPI_RETURN_ONE, &removeCallback);
 
     bundleStatusCallback = new BundleStatusCallback(env, addCallback, updateCallback, removeCallback);
-
+    APP_LOGD("parse bundleStatusCallback end");
     return true;
 }
 

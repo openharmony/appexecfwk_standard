@@ -144,6 +144,10 @@ bool BundleMgrService::Init()
     if (!dataMgr_) {
         APP_LOGI("Create BundledataMgr");
         dataMgr_ = std::make_shared<BundleDataMgr>();
+        if (!dataMgr_) {
+            APP_LOGE("create data manager fail");
+            return false;
+        }
     }
     APP_LOGD("create dataManager success");
 
@@ -164,7 +168,6 @@ bool BundleMgrService::Init()
     } else {
         APP_LOGD("Reboot start scan");
         handler_->SendEvent(BMSEventHandler::BUNDLE_REBOOT_SCAN_START);
-        APP_LOGD("Reboot start scan success");
     }
 
     if (!cloneMgr_) {

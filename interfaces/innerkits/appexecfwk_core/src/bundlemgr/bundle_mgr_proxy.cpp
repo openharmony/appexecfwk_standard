@@ -2095,6 +2095,28 @@ bool BundleMgrProxy::QueryExtensionAbilityInfos(const ExtensionAbilityType &exte
     }
     return true;
 }
+
+bool BundleMgrProxy::VerifyCallingPermission(const std::string &permission)
+{
+    APP_LOGD("VerifyCallingPermission begin");
+    MessageParcel data;
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        APP_LOGE("fail to VerifyCallingPermission due to write InterfaceToken fail");
+        return false;
+    }
+
+    if (!data.WriteString(permission)) {
+        APP_LOGE("fail to VerifyCallingPermission due to write bundleName fail");
+        return false;
+    }
+
+    MessageParcel reply;
+    if (!SendTransactCmd(IBundleMgr::Message::VERIFY_CALLING_PERMISSION, data, reply)) {
+        APP_LOGE("fail to sendRequest");
+        return false;
+    }
+    return reply.ReadBool();
+}
 template<typename T>
 bool BundleMgrProxy::GetParcelableInfo(IBundleMgr::Message code, MessageParcel &data, T &parcelableInfo)
 {

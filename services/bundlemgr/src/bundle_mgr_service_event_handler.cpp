@@ -180,7 +180,7 @@ void BMSEventHandler::RebootBundleInstall(
     BundleInfo bundleInfo;
     for (auto &listIter : bundleList) {
         bool exist = false;
-        APP_LOGD("reboot scan bundle listIter: %{public}s ", listIter.c_str());
+        APP_LOGD("reboot scan bundle path: %{public}s ", listIter.c_str());
         auto result = GetScanBundleArchiveInfo(listIter, bundleInfo);
         if (!result) {
             APP_LOGW("obtain bundleinfo failed : %{public}s ", listIter.c_str());
@@ -199,9 +199,9 @@ void BMSEventHandler::RebootBundleInstall(
                 Constants::ANY_USERID);
             if (mapIter->second.versionCode < bundleInfo.versionCode && result) {
                 SystemBundleInstaller installer(listIter);
-                APP_LOGD("reboot scan bundle updata listIter %{public}s", listIter.c_str());
+                APP_LOGD("bundle update due to high version bundle %{public}s existed", listIter.c_str());
                 if (!installer.OTAInstallSystemBundle(appType)) {
-                    APP_LOGW("reboot Install updata System app:%{public}s error", listIter.c_str());
+                    APP_LOGW("system app :%{public}s update failed", listIter.c_str());
                 }
             }
         }
