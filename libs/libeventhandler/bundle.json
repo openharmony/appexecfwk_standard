@@ -19,7 +19,8 @@
         "deps": {
             "components": [
                 "hitrace_native",
-                "hiviewdfx_hilog_native"
+                "hiviewdfx_hilog_native",
+                "hichecker_native"
             ],
             "third_party": []
         },
