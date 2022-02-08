@@ -63,7 +63,9 @@ const std::map<std::string, uint32_t> BACKGROUND_MODES_MAP = {
     {ProfileReader::KEY_MULTI_DEVICE_CONNECTION, ProfileReader::VALUE_MULTI_DEVICE_CONNECTION},
     {ProfileReader::KEY_WIFI_INTERACTION, ProfileReader::VALUE_WIFI_INTERACTION},
     {ProfileReader::KEY_VOIP, ProfileReader::VALUE_VOIP},
-    {ProfileReader::KEY_TASK_KEEPING, ProfileReader::VALUE_TASK_KEEPING}
+    {ProfileReader::KEY_TASK_KEEPING, ProfileReader::VALUE_TASK_KEEPING},
+    {ProfileReader::KEY_PICTURE_IN_PICTURE, ProfileReader::VALUE_PICTURE_IN_PICTURE},
+    {ProfileReader::KEY_SCREEN_FETCH, ProfileReader::VALUE_SCREEN_FETCH}
 };
 
 const std::vector<std::string> EXTENSION_TYPE_SET = {
