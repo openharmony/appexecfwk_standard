@@ -54,6 +54,16 @@ bool LauncherService::RegisterCallback(const sptr<IBundleStatusCallback> &callba
         return false;
     }
 
+    // check permission
+    auto iBundleMgr = GetBundleMgr();
+    if (!iBundleMgr) {
+        APP_LOGE("can not get iBundleMgr");
+        return false;
+    }
+    if (!iBundleMgr->VerifyCallingPermission(Constants::LISTEN_BUNDLE_CHANGE)) {
+        APP_LOGE("register bundle status callback failed due to lack of permission");
+        return false;
+    }
     return bundleMonitor_->Subscribe(callback);
 }
 
@@ -65,6 +75,16 @@ bool LauncherService::UnRegisterCallback()
         return false;
     }
 
+    // check permission
+    auto iBundleMgr = GetBundleMgr();
+    if (!iBundleMgr) {
+        APP_LOGE("can not get iBundleMgr");
+        return false;
+    }
+    if (!iBundleMgr->VerifyCallingPermission(Constants::LISTEN_BUNDLE_CHANGE)) {
+        APP_LOGE("register bundle status callback failed due to lack of permission");
+        return false;
+    }
     return bundleMonitor_->UnSubscribe();
 }
 
