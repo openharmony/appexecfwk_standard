@@ -198,6 +198,13 @@ ErrCode InstalldHostImpl::CreateNewBundleDataDir(
             APP_LOGE("CreateBundle distributedfile MkOwnerDir failed");
             return ERR_APPEXECFWK_INSTALLD_CREATE_DIR_FAILED;
         }
+
+        distributedfile = Constants::DISTRIBUTED_FILE_NON_ACCOUNT;
+        distributedfile = distributedfile.replace(distributedfile.find("%"), 1, std::to_string(userid));
+        if (!InstalldOperator::MkOwnerDir(distributedfile + bundleName, S_IRWXU, uid, gid)) {
+            APP_LOGE("CreateBundle distributedfile MkOwnerDir failed");
+            return ERR_APPEXECFWK_INSTALLD_CREATE_DIR_FAILED;
+        }
     }
     return ERR_OK;
 }
