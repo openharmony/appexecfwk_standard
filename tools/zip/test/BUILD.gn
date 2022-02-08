@@ -46,7 +46,7 @@ ohos_unittest("zip_test") {
 
   deps = [
     "${common_path}:libappexecfwk_common",
-    "//foundation/aafwk/standard/common/task_dispatcher:appkit_dispatcher_td",
+    "//foundation/aafwk/standard/common/task_dispatcher:task_dispatcher",
     "//foundation/aafwk/standard/interfaces/innerkits/want:want",
     "//foundation/ace/napi:ace_napi",
     "//third_party/googletest:gmock_main",
