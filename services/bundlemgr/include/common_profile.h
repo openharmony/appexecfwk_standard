@@ -260,17 +260,23 @@ constexpr uint32_t VALUE_LOCATION = 1 << 3;
 // 0001 0000 represents bluetooth scanning, connection, transmission service (wearing)
 constexpr uint32_t VALUE_BLUETOOTH_INTERACTION = 1 << 4;
 
-// 0010 0000 represents WiFi scanning, connection, transmission services (clone, multi-screen)
+// 0010 0000 represents multi device connection services
 constexpr uint32_t VALUE_MULTI_DEVICE_CONNECTION = 1 << 5;
 
-// 0010 0000 represents WiFi scanning, connection, transmission services (clone, multi-screen)
+// 0100 0000 represents WiFi scanning, connection, transmission services (clone, multi-screen)
 constexpr uint32_t VALUE_WIFI_INTERACTION = 1 << 6;
 
-// 0100 0000 represents audio call,VOIP service
+// 1000 0000 represents audio call,VOIP service
 constexpr uint32_t VALUE_VOIP = 1 << 7;
 
-// 1000 0000 represents task Keeping service
+// 1 0000 0000 represents task Keeping service
 constexpr uint32_t VALUE_TASK_KEEPING = 1 << 8;
+
+// 10 0000 0000 represents picture in picture service
+constexpr uint32_t VALUE_PICTURE_IN_PICTURE = 1 << 9;
+
+// 100 0000 0000 represents screen fetch service
+constexpr uint32_t VALUE_SCREEN_FETCH = 1 << 10;
 
 const std::string KEY_DATA_TRANSFER = "dataTransfer";
 const std::string KEY_AUDIO_PLAYBACK = "audioPlayback";
@@ -281,6 +287,8 @@ const std::string KEY_MULTI_DEVICE_CONNECTION = "multiDeviceConnection";
 const std::string KEY_WIFI_INTERACTION = "wifiInteraction";
 const std::string KEY_VOIP = "voip";
 const std::string KEY_TASK_KEEPING = "taskKeeping";
+const std::string KEY_PICTURE_IN_PICTURE = "pictureInPicture";
+const std::string KEY_SCREEN_FETCH = "screenFetch";
 }  // namespace ProfileReader
 
 namespace Profile {
