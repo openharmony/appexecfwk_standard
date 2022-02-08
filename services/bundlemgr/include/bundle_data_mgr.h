@@ -750,6 +750,9 @@ private:
     void GetMatchExtensionInfos(const Want &want, int32_t flags, const int32_t &userId, const InnerBundleInfo &info,
         std::vector<ExtensionAbilityInfo> &einfos) const;
 
+    void MakeHmdfsConfig(const std::string &bundleName, int32_t bundleId) const;
+    void RemoveHmdfsConfig(const std::string &bundleName) const;
+
 private:
     mutable std::mutex bundleInfoMutex_;
     mutable std::mutex stateMutex_;
