@@ -17,11 +17,6 @@ import("//foundation/appexecfwk/standard/appexecfwk.gni")
 config("zip_config") {
   include_dirs = [
     "include",
-    "${aafwk_path}/common/task_dispatcher/include/dispatcher",
-    "${aafwk_path}/common/task_dispatcher/include/task",
-    "${aafwk_path}/common/task_dispatcher/include/threading",
-    "${aafwk_path}/frameworks/kits/appkit/native/app/include/task",
-    "${aafwk_path}/frameworks/kits/appkit/native/app/include",
     "//third_party/libuv/include",
     "//third_party/node/src",
     "//third_party/zlib",
@@ -55,12 +50,12 @@ ohos_shared_library("zlib") {
 
   deps = [
     "${common_path}:libappexecfwk_common",
-    "//foundation/aafwk/standard/common/task_dispatcher:appkit_dispatcher_td",
     "//third_party/libuv:uv_static",
     "//third_party/zlib:libz",
   ]
 
   external_deps = [
+    "ability_runtime:task_dispatcher",
     "ability_runtime:want",
     "bundle_framework:appexecfwk_base",
     "bundle_framework:appexecfwk_core",
