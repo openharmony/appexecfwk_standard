@@ -118,13 +118,10 @@ const std::string PROFILE_KEY_UID_AND_GID = "uid_and_gid";
 
 // permissions
 const std::string PERMISSION_INSTALL_BUNDLE = "ohos.permission.INSTALL_BUNDLE";
-<<<<<<< HEAD
 const std::string PERMISSION_GET_BUNDLE_INFO = "ohos.permission.GET_BUNDLE_INFO";
 const std::string PERMISSION_GET_BUNDLE_INFO_PRIVILEGED = "ohos.permission.GET_BUNDLE_INFO_PRIVILEGED";
 const std::string PERMISSION_CHANGE_ABILITY_ENABLED_STATE = "ohos.permission.CHANGE_ABILITY_ENABLED_STATE";
-=======
 const std::string PERNISSION_REMOVECACHEFILE = "ohos.permission.REMOVE_CACHE_FILES";
->>>>>>> add permission check for clean cache
 
 enum class AppType {
     SYSTEM_APP = 0,
