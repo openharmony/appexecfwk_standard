@@ -606,6 +606,7 @@ private:
     bool DumpBundleInfo(const std::string &bundleName, int32_t userId, std::string &result);
     bool DumpShortcutInfo(const std::string &bundleName, int32_t userId, std::string &result);
     std::set<int32_t> GetExistsCommonUserIs();
+    bool VerifyQueryPermission(bool allowNormalApl = false, const std::string &queryBundleName = "");
 
     std::shared_ptr<BMSEventHandler> handler_;
 };
