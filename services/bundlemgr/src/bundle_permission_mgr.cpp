@@ -541,17 +541,6 @@ bool BundlePermissionMgr::CheckGrantPermission(
     return false;
 }
 
-bool BundlePermissionMgr::VerifyPermission(AccessToken::AccessTokenID tokenId, const std::string &permissionName)
-{
-    APP_LOGD("VerifyPermission permission %{public}s", permissionName.c_str());
-    int32_t ret = AccessToken::AccessTokenKit::VerifyAccessToken(tokenId, permissionName);
-    if (ret == AccessToken::PermissionState::PERMISSION_DENIED) {
-        APP_LOGE("permission %{public}s: PERMISSION_DENIED", permissionName.c_str());
-        return false;
-    }
-    return true;
-}
-
 bool BundlePermissionMgr::VerifyCallingPermission(const std::string &permissionName)
 {
     APP_LOGD("VerifyCallingPermission permission %{public}s", permissionName.c_str());
@@ -744,9 +733,17 @@ bool BundlePermissionMgr::UninstallPermissions(
 int32_t BundlePermissionMgr::VerifyPermission(
     const std::string &bundleName, const std::string &permissionName, const int32_t userId)
 {
-    APP_LOGI(
-        "VerifyPermission bundleName %{public}s, permission %{public}s", bundleName.c_str(), permissionName.c_str());
-    return Permission::PermissionKit::VerifyPermission(bundleName, permissionName, userId);
+    APP_LOGD("VerifyPermission bundleName %{public}s, permission %{public}s", bundleName.c_str(),
+             permissionName.c_str());
+    AccessToken::AccessTokenID tokenId = AccessToken::AccessTokenKit::GetHapTokenID(userId,
+        bundleName, 0);
+    int32_t ret = AccessToken::AccessTokenKit::VerifyAccessToken(tokenId, permissionName);
+    if (ret == AccessToken::PermissionState::PERMISSION_GRANTED) {
+        return ret;
+    }
+    APP_LOGD("VerifyPermission permission kit");
+    ret = Permission::PermissionKit::VerifyPermission(bundleName, permissionName, userId);
+    return ret;
 }
 
 bool BundlePermissionMgr::CanRequestPermission(
