@@ -5631,7 +5631,7 @@ void CreateExtensionAbilityTypeObject(napi_env env, napi_value value)
     napi_value nInputMethod;
     NAPI_CALL_RETURN_VOID(env,
         napi_create_int32(env, static_cast<int32_t>(ExtensionAbilityType::INPUTMETHOD), &nInputMethod));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, value, "INPUTMETHOD", nInputMethod));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, value, "INPUT_METHOD", nInputMethod));
 
     napi_value nService;
     NAPI_CALL_RETURN_VOID(env, napi_create_int32(env, static_cast<int32_t>(ExtensionAbilityType::SERVICE), &nService));
@@ -5645,17 +5645,17 @@ void CreateExtensionAbilityTypeObject(napi_env env, napi_value value)
     napi_value nDataShare;
     NAPI_CALL_RETURN_VOID(env,
         napi_create_int32(env, static_cast<int32_t>(ExtensionAbilityType::DATASHARE), &nDataShare));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, value, "DATASHARE", nDataShare));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, value, "DATA_SHARE", nDataShare));
 
     napi_value nFileShare;
     NAPI_CALL_RETURN_VOID(env,
         napi_create_int32(env, static_cast<int32_t>(ExtensionAbilityType::FILESHARE), &nFileShare));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, value, "FILESHARE", nFileShare));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, value, "FILE_SHARE", nFileShare));
 
     napi_value nStaticSubscriber;
     NAPI_CALL_RETURN_VOID(env,
         napi_create_int32(env, static_cast<int32_t>(ExtensionAbilityType::STATICSUBSCRIBER), &nStaticSubscriber));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, value, "STATICSUBSCRIBER", nStaticSubscriber));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, value, "STATIC_SUBSCRIBER", nStaticSubscriber));
 
     napi_value nWallpaper;
     NAPI_CALL_RETURN_VOID(env, napi_create_int32(env,
