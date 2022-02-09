@@ -49,6 +49,25 @@ bool DistributedBmsProxy::GetRemoteAbilityInfo(
     return true;
 }
 
+bool DistributedBmsProxy::GetAbilityInfo(
+    const OHOS::AppExecFwk::ElementName &elementName, RemoteAbilityInfo &remoteAbilityInfo)
+{
+    APP_LOGD("DistributedBmsProxy GetAbilityInfo");
+    MessageParcel data;
+    MessageParcel reply;
+    if (!data.WriteParcelable(&elementName)) {
+        APP_LOGE("DistributedBmsProxy GetAbilityInfo write elementName error");
+        return false;
+    }
+
+    if (!GetParcelableInfo<RemoteAbilityInfo>(
+            IDistributedBms::Message::GET_ABILITY_INFO, data, remoteAbilityInfo)) {
+        APP_LOGE("fail to query ability info mutiparam from server");
+        return false;
+    }
+    return true;
+}
+
 bool DistributedBmsProxy::SendRequest(IDistributedBms::Message code, MessageParcel &data, MessageParcel &reply)
 {
     APP_LOGD("DistributedBmsProxy SendRequest");

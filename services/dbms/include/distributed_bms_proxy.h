@@ -36,6 +36,14 @@ public:
      */
     bool GetRemoteAbilityInfo(
         const OHOS::AppExecFwk::ElementName &elementName, RemoteAbilityInfo &remoteAbilityInfo) override;
+    /**
+     * @brief get ability info
+     * @param elementName Indicates the elementName.
+     * @param remoteAbilityInfo Indicates the remote ability info.
+     * @return Returns true when get remote ability info success; returns false otherwise.
+     */
+    bool GetAbilityInfo(
+        const OHOS::AppExecFwk::ElementName &elementName, RemoteAbilityInfo &remoteAbilityInfo) override;
 
 private:
     bool SendRequest(IDistributedBms::Message code, MessageParcel &data, MessageParcel &reply);
