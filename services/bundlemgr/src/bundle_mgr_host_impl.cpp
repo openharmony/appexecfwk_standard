@@ -365,7 +365,8 @@ int BundleMgrHostImpl::CheckPermission(const std::string &bundleName, const std:
         APP_LOGE("fail to CheckPermission due to params empty");
         return Constants::PERMISSION_NOT_GRANTED;
     }
-    return BundlePermissionMgr::VerifyPermission(bundleName, permission, Constants::DEFAULT_USERID);
+    int32_t userId = BundleUtil::GetUserIdByCallingUid();
+    return BundlePermissionMgr::VerifyPermission(bundleName, permission, userId);
 }
 
 int BundleMgrHostImpl::CheckPermissionByUid(
