@@ -35,7 +35,8 @@ const std::string HELP_MSG = "usage: bm <command> <options>\n"
                              "  enable       enable the bundle\n"
                              "  disable      disable the bundle\n"
                              "  recover      recover the bundle\n"
-                             "  query        query extensionInfo or profile\n";
+                             "  query        query extensionInfo or profile\n"
+                             "  get          obtain device udid\n";
 
 const std::string HELP_MSG_INSTALL =
     "usage: bm install <options>\n"
@@ -107,6 +108,12 @@ const std::string HELP_MSG_QUERY =
     "  -m, --metadata-name <metadata-name>    query metadata by metadata name\n"
     "  -u, --user-id <usr-id>                 specify a user id\n";
 
+const std::string HELP_MSG_GET =
+    "usage: bm get <options>\n"
+    "options list:\n"
+    "  -u, --udid                             obtain udid of the current device\n";
+
+const std::string STRING_INCORRECT_OPTION = "error: incorrect option";
 const std::string HELP_MSG_NO_BUNDLE_PATH_OPTION =
     "error: you must specify a bundle path with '-p' or '--bundle-path'.";
 
@@ -140,7 +147,10 @@ const std::string STRING_QUERY_BUNDLE_OK = "query bundle successfully.";
 const std::string STRING_QUERY_BUNDLE_NG = "error: failed to query profile.";
 const std::string STRING_QUERY_NEED_CORRECT_ARGUMENTS = "error: need correct arguments!";
 const std::string NO_PROFILE = "no profile!\n";
-}  // namespace
+
+const std::string STRING_GET_UDID_OK = "udid of current device is :";
+const std::string STRING_GET_UDID_NG = "error: failed to get udid";
+} // namespace
 
 class BundleManagerShellCommand : public ShellCommand {
 public:
@@ -165,6 +175,7 @@ private:
     ErrCode RunAsDisableCommand();
     ErrCode RunAsRecoverCommand();
     ErrCode RunAsQueryCommand();
+    ErrCode RunAsGetCommand();
 
     std::string DumpBundleList(int32_t userId) const;
     std::string DumpBundleInfo(const std::string &bundleName, int32_t userId) const;
@@ -175,6 +186,7 @@ private:
     int32_t InstallOperation(const std::vector<std::string> &bundlePaths, InstallParam &installParam) const;
     int32_t UninstallOperation(const std::string &bundleName, const std::string &moduleName,
                                InstallParam &installParam) const;
+    std::string GetUdid() const;
 
     ErrCode GetBundlePath(const std::string& param, std::vector<std::string>& bundlePaths) const;
 

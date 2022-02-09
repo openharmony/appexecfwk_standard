@@ -27,6 +27,7 @@
 #include "clean_cache_callback_host.h"
 #include "if_system_ability_manager.h"
 #include "iservice_registry.h"
+#include "parameter.h"
 #include "status_receiver_impl.h"
 #include "system_ability_definition.h"
 
@@ -36,6 +37,8 @@ namespace {
 const std::string BUNDLE_NAME_EMPTY = "";
 const int32_t INDEX_OFFSET = 2;
 const int32_t MAX_WAITING_TIME = 3000;
+const int32_t DEVICE_UUID_LENGTH = 65;
+const int32_t MAX_ARGUEMENTS_NUMBER = 3;
 const std::string SHORT_OPTIONS = "hp:rfn:m:a:cdu:";
 const struct option LONG_OPTIONS[] = {
     {"help", no_argument, nullptr, 'h'},
@@ -71,6 +74,13 @@ const struct option LONG_OPTIONS_QUERY[] = {
     {"element-name", required_argument, nullptr, 'e'},
     {"metadata-name", required_argument, nullptr, 'm'},
     {"user-id", required_argument, nullptr, 'u'},
+    {nullptr, 0, nullptr, 0},
+};
+
+const std::string SHORT_OPTIONS_GET = "hu";
+const struct option LONG_OPTIONS_GET[] = {
+    {"help", no_argument, nullptr, 'h'},
+    {"udid", no_argument, nullptr, 'u'},
     {nullptr, 0, nullptr, 0},
 };
 }  // namespace
@@ -120,6 +130,7 @@ ErrCode BundleManagerShellCommand::CreateCommandMap()
         {"disable", std::bind(&BundleManagerShellCommand::RunAsDisableCommand, this)},
         {"recover", std::bind(&BundleManagerShellCommand::RunAsRecoverCommand, this)},
         {"query", std::bind(&BundleManagerShellCommand::RunAsQueryCommand, this)},
+        {"get", std::bind(&BundleManagerShellCommand::RunAsGetCommand, this)},
     };
 
     return OHOS::ERR_OK;
@@ -1545,6 +1556,70 @@ bool BundleManagerShellCommand::CheckArguments(const std::string &argument) cons
         return false;
     }
     return true;
+}
+
+ErrCode BundleManagerShellCommand::RunAsGetCommand()
+{
+    int result = OHOS::ERR_OK;
+    int option = -1;
+    int counter = 0;
+    while (true) {
+        counter++;
+        if (argc_ > MAX_ARGUEMENTS_NUMBER) {
+            resultReceiver_.append(HELP_MSG_GET);
+            return OHOS::ERR_INVALID_VALUE;
+        }
+        option = getopt_long(argc_, argv_, SHORT_OPTIONS_GET.c_str(), LONG_OPTIONS_GET, nullptr);
+        APP_LOGD("option: %{public}d, optopt: %{public}d, optind: %{public}d", option, optopt, optind);
+        if (optind < 0 || optind > argc_) {
+            return OHOS::ERR_INVALID_VALUE;
+        }
+        if (option == -1) {
+            if (counter == 1) {
+                if (strcmp(argv_[optind], cmd_.c_str()) == 0) {
+                    // 1.'bm get' with no option: bm query
+                    // 2.'bm get' with a wrong argument: bm get -xxx
+                    APP_LOGD("'bm get' %{public}s", HELP_MSG_NO_OPTION.c_str());
+                    resultReceiver_.append(HELP_MSG_NO_OPTION + "\n");
+                    result = OHOS::ERR_INVALID_VALUE;
+                }
+            }
+            break;
+        }
+        switch (option) {
+            case 'h': {
+                result = OHOS::ERR_INVALID_VALUE;
+                break;
+            }
+            case 'u': {
+                break;
+            }
+            default: {
+                result = OHOS::ERR_INVALID_VALUE;
+                resultReceiver_.append(STRING_INCORRECT_OPTION + "\n");
+                break;
+            }
+        }
+    }
+    if (result != OHOS::ERR_OK) {
+        resultReceiver_.append(HELP_MSG_GET);
+        return result;
+    }
+    resultReceiver_.append(STRING_GET_UDID_OK + "\n");
+    resultReceiver_.append(GetUdid() + "\n");
+    return result;
+}
+
+std::string BundleManagerShellCommand::GetUdid() const
+{
+    char innerUdid[DEVICE_UUID_LENGTH] = { 0 };
+    int ret = GetDevUdid(innerUdid, DEVICE_UUID_LENGTH);
+    if (ret != 0) {
+        APP_LOGE("GetUdid failed! ret = %{public}d.", ret);
+        return STRING_GET_UDID_NG;
+    }
+    std::string udid = innerUdid;
+    return udid;
 }
 
 std::string BundleManagerShellCommand::DumpBundleList(int32_t userId) const

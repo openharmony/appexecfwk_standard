@@ -669,4 +669,238 @@ HWTEST_F(BmCommandTest, Bm_Command_Recover_0003, Function | MediumTest | Level1)
     SetMockObjects(cmd);
     EXPECT_EQ(cmd.ExecCommand(), STRING_RECOVER_BUNDLE_OK + "\n");
 }
+
+/**
+ * @tc.number: Bm_Command_Get_0001
+ * @tc.name: ExecCommand
+ * @tc.desc: Verify the "bm get" command.
+ * @tc.require: AR000GJ4K9
+ */
+HWTEST_F(BmCommandTest, Bm_Command_Get_0001, Function | MediumTest | Level1)
+{
+    // install a bundle
+    char *argv[] = {
+        (char *)TOOL_NAME.c_str(),
+        (char *)"get",
+        (char *)"",
+    };
+    int argc = sizeof(argv) / sizeof(argv[0]) - 1;
+
+    BundleManagerShellCommand cmd(argc, argv);
+
+    // set the mock objects
+    SetMockObjects(cmd);
+
+    EXPECT_EQ(cmd.ExecCommand(), HELP_MSG_NO_OPTION + "\n" + HELP_MSG_GET);
+}
+
+/**
+ * @tc.number: Bm_Command_Get_0002
+ * @tc.name: ExecCommand
+ * @tc.desc: Verify the "bm get -u" command.
+ * @tc.require: AR000GJ4K9
+ */
+HWTEST_F(BmCommandTest, Bm_Command_Get_0002, Function | MediumTest | Level1)
+{
+    // install a bundle
+    char *argv[] = {
+        (char *)TOOL_NAME.c_str(),
+        (char *)"get",
+        (char *)"-u",
+        (char *)"",
+    };
+    int argc = sizeof(argv) / sizeof(argv[0]) - 1;
+
+    BundleManagerShellCommand cmd(argc, argv);
+
+    // set the mock objects
+    SetMockObjects(cmd);
+
+    std::string result = cmd.ExecCommand();
+    auto pos = result.find(STRING_GET_UDID_OK);
+
+    EXPECT_NE(pos, std::string::npos);
+}
+
+/**
+ * @tc.number: Bm_Command_Get_0003
+ * @tc.name: ExecCommand
+ * @tc.desc: Verify the "bm get -x" command.
+ * @tc.require: AR000GJ4K9
+ */
+HWTEST_F(BmCommandTest, Bm_Command_Get_0003, Function | MediumTest | Level1)
+{
+    // install a bundle
+    char *argv[] = {
+        (char *)TOOL_NAME.c_str(),
+        (char *)"get",
+        (char *)"-x",
+        (char *)"",
+    };
+    int argc = sizeof(argv) / sizeof(argv[0]) - 1;
+
+    BundleManagerShellCommand cmd(argc, argv);
+
+    // set the mock objects
+    SetMockObjects(cmd);
+
+    EXPECT_EQ(cmd.ExecCommand(), STRING_INCORRECT_OPTION + "\n" + HELP_MSG_GET);
+}
+
+/**
+ * @tc.number: Bm_Command_Get_0004
+ * @tc.name: ExecCommand
+ * @tc.desc: Verify the "bm get -u -x" command.
+ * @tc.require: AR000GJ4K9
+ */
+HWTEST_F(BmCommandTest, Bm_Command_Get_0004, Function | MediumTest | Level1)
+{
+    // install a bundle
+    char *argv[] = {
+        (char *)TOOL_NAME.c_str(),
+        (char *)"get",
+        (char *)"-u",
+        (char *)"-x",
+        (char *)"",
+    };
+    int argc = sizeof(argv) / sizeof(argv[0]) - 1;
+
+    BundleManagerShellCommand cmd(argc, argv);
+
+    // set the mock objects
+    SetMockObjects(cmd);
+
+    EXPECT_EQ(cmd.ExecCommand(), HELP_MSG_GET);
+}
+
+/**
+ * @tc.number: Bm_Command_Get_0005
+ * @tc.name: ExecCommand
+ * @tc.desc: Verify the "bm get -u xxx" command.
+ * @tc.require: AR000GJ4K9
+ */
+HWTEST_F(BmCommandTest, Bm_Command_Get_0005, Function | MediumTest | Level1)
+{
+    // install a bundle
+    char *argv[] = {
+        (char *)TOOL_NAME.c_str(),
+        (char *)"get",
+        (char *)"-u",
+        (char *)"xxx",
+        (char *)"",
+    };
+    int argc = sizeof(argv) / sizeof(argv[0]) - 1;
+
+    BundleManagerShellCommand cmd(argc, argv);
+
+    // set the mock objects
+    SetMockObjects(cmd);
+
+    EXPECT_EQ(cmd.ExecCommand(), HELP_MSG_GET);
+}
+
+/**
+ * @tc.number: Bm_Command_Get_0006
+ * @tc.name: ExecCommand
+ * @tc.desc: Verify the "bm get --udid" command.
+ * @tc.require: AR000GJ4K9
+ */
+HWTEST_F(BmCommandTest, Bm_Command_Get_0006, Function | MediumTest | Level1)
+{
+    // install a bundle
+    char *argv[] = {
+        (char *)TOOL_NAME.c_str(),
+        (char *)"get",
+        (char *)"--udid",
+        (char *)"",
+    };
+    int argc = sizeof(argv) / sizeof(argv[0]) - 1;
+
+    BundleManagerShellCommand cmd(argc, argv);
+
+    // set the mock objects
+    SetMockObjects(cmd);
+
+    std::string result = cmd.ExecCommand();
+    auto pos = result.find(STRING_GET_UDID_OK);
+
+    EXPECT_NE(pos, std::string::npos);
+}
+
+/**
+ * @tc.number: Bm_Command_Get_0007
+ * @tc.name: ExecCommand
+ * @tc.desc: Verify the "bm get --xxx" command.
+ * @tc.require: AR000GJ4K9
+ */
+HWTEST_F(BmCommandTest, Bm_Command_Get_0007, Function | MediumTest | Level1)
+{
+    // install a bundle
+    char *argv[] = {
+        (char *)TOOL_NAME.c_str(),
+        (char *)"get",
+        (char *)"--xxx",
+        (char *)"",
+    };
+    int argc = sizeof(argv) / sizeof(argv[0]) - 1;
+
+    BundleManagerShellCommand cmd(argc, argv);
+
+    // set the mock objects
+    SetMockObjects(cmd);
+
+    EXPECT_EQ(cmd.ExecCommand(), STRING_INCORRECT_OPTION + "\n" + HELP_MSG_GET);
+}
+
+/**
+ * @tc.number: Bm_Command_Get_0008
+ * @tc.name: ExecCommand
+ * @tc.desc: Verify the "bm get --udid -x" command.
+ * @tc.require: AR000GJ4K9
+ */
+HWTEST_F(BmCommandTest, Bm_Command_Get_0008, Function | MediumTest | Level1)
+{
+    // install a bundle
+    char *argv[] = {
+        (char *)TOOL_NAME.c_str(),
+        (char *)"get",
+        (char *)"--udid",
+        (char *)"-x",
+        (char *)"",
+    };
+    int argc = sizeof(argv) / sizeof(argv[0]) - 1;
+
+    BundleManagerShellCommand cmd(argc, argv);
+
+    // set the mock objects
+    SetMockObjects(cmd);
+
+    EXPECT_EQ(cmd.ExecCommand(), HELP_MSG_GET);
+}
+
+/**
+ * @tc.number: Bm_Command_Get_0009
+ * @tc.name: ExecCommand
+ * @tc.desc: Verify the "bm get -u xxx" command.
+ * @tc.require: AR000GJ4K9
+ */
+HWTEST_F(BmCommandTest, Bm_Command_Get_0009, Function | MediumTest | Level1)
+{
+    // install a bundle
+    char *argv[] = {
+        (char *)TOOL_NAME.c_str(),
+        (char *)"get",
+        (char *)"--udid",
+        (char *)"xxx",
+        (char *)"",
+    };
+    int argc = sizeof(argv) / sizeof(argv[0]) - 1;
+
+    BundleManagerShellCommand cmd(argc, argv);
+
+    // set the mock objects
+    SetMockObjects(cmd);
+
+    EXPECT_EQ(cmd.ExecCommand(), HELP_MSG_GET);
+}
 } // namespace OHOS
