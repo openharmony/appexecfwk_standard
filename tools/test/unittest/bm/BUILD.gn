@@ -83,6 +83,7 @@ ohos_unittest("bm_command_dump_test") {
     "permission_standard:libpermissionsdk_standard",
     "resmgr_standard:global_resmgr",
     "samgr_standard:samgr_proxy",
+    "startup_l2:syspara",
     "utils_base:utils",
   ]
 }
@@ -132,6 +133,7 @@ ohos_unittest("bm_command_install_test") {
     "permission_standard:libpermissionsdk_standard",
     "resmgr_standard:global_resmgr",
     "samgr_standard:samgr_proxy",
+    "startup_l2:syspara",
     "utils_base:utils",
   ]
 }
@@ -181,6 +183,7 @@ ohos_unittest("bm_command_test") {
     "permission_standard:libpermissionsdk_standard",
     "resmgr_standard:global_resmgr",
     "samgr_standard:samgr_proxy",
+    "startup_l2:syspara",
     "utils_base:utils",
   ]
 }
@@ -230,6 +233,7 @@ ohos_unittest("bm_command_uninstall_test") {
     "permission_standard:libpermissionsdk_standard",
     "resmgr_standard:global_resmgr",
     "samgr_standard:samgr_proxy",
+    "startup_l2:syspara",
     "utils_base:utils",
   ]
 }
