@@ -37,7 +37,7 @@ namespace {
 const std::string BUNDLE_NAME_EMPTY = "";
 const int32_t INDEX_OFFSET = 2;
 const int32_t MAX_WAITING_TIME = 3000;
-const int32_t DEVICE_UUID_LENGTH = 65;
+const int32_t DEVICE_UDID_LENGTH = 65;
 const int32_t MAX_ARGUEMENTS_NUMBER = 3;
 const std::string SHORT_OPTIONS = "hp:rfn:m:a:cdu:";
 const struct option LONG_OPTIONS[] = {
@@ -1612,8 +1612,8 @@ ErrCode BundleManagerShellCommand::RunAsGetCommand()
 
 std::string BundleManagerShellCommand::GetUdid() const
 {
-    char innerUdid[DEVICE_UUID_LENGTH] = { 0 };
-    int ret = GetDevUdid(innerUdid, DEVICE_UUID_LENGTH);
+    char innerUdid[DEVICE_UDID_LENGTH] = { 0 };
+    int ret = GetDevUdid(innerUdid, DEVICE_UDID_LENGTH);
     if (ret != 0) {
         APP_LOGE("GetUdid failed! ret = %{public}d.", ret);
         return STRING_GET_UDID_NG;
