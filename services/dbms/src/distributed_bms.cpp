@@ -84,10 +84,47 @@ static OHOS::sptr<OHOS::AppExecFwk::IBundleMgr> GetBundleMgr()
     return OHOS::iface_cast<IBundleMgr>(remoteObject);
 }
 
+static OHOS::sptr<OHOS::AppExecFwk::IDistributedBms> GetDistributedBundleMgr(const std::string &deviceId)
+{
+    APP_LOGI("GetDistributedBundleMgr");
+    auto samgr = OHOS::SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
+    OHOS::sptr<OHOS::IRemoteObject> remoteObject;
+    APP_LOGD("GetDistributedBundleMgr deviceId:%{public}s", deviceId.c_str());
+    if (deviceId.empty()) {
+        return nullptr;
+    } else {
+        APP_LOGI("GetDistributedBundleMgr get remote d-bms");
+        remoteObject = samgr->CheckSystemAbility(OHOS::DISTRIBUTED_BUNDLE_MGR_SERVICE_SYS_ABILITY_ID, deviceId);
+    }
+    return OHOS::iface_cast<IDistributedBms>(remoteObject);
+}
+
 bool DistributedBms::GetRemoteAbilityInfo(
     const OHOS::AppExecFwk::ElementName &elementName, RemoteAbilityInfo &remoteAbilityInfo)
 {
-    APP_LOGI("DistributedBms GetRemoteAbilityInfo bundleName:%{public}s , abilityName:%{public}s",
+    APP_LOGD("DistributedBms GetRemoteAbilityInfo bundleName:%{public}s , abilityName:%{public}s",
+        elementName.GetBundleName().c_str(), elementName.GetAbilityName().c_str());
+    auto iDistBundleMgr = GetDistributedBundleMgr(elementName.GetDeviceID());
+    if (!iDistBundleMgr) {
+        APP_LOGD("GetDistributedBundleMgr get local d-bms");
+        if (!GetAbilityInfo(elementName, remoteAbilityInfo)) {
+            APP_LOGE("GetAbilityInfo failed");
+            return false;
+        }
+    } else {
+        APP_LOGD("GetDistributedBundleMgr get remote d-bms");
+        if (!iDistBundleMgr->GetAbilityInfo(elementName, remoteAbilityInfo)) {
+            APP_LOGE("get remote AbilityInfo failed");
+            return false;
+        }
+    }
+    return true;
+}
+
+bool DistributedBms::GetAbilityInfo(
+    const OHOS::AppExecFwk::ElementName &elementName, RemoteAbilityInfo &remoteAbilityInfo)
+{
+    APP_LOGI("DistributedBms GetAbilityInfo bundleName:%{public}s , abilityName:%{public}s",
         elementName.GetBundleName().c_str(), elementName.GetAbilityName().c_str());
     auto iBundleMgr = GetBundleMgr();
     if (!iBundleMgr) {
@@ -135,8 +172,8 @@ bool DistributedBms::GetRemoteAbilityInfo(
         APP_LOGE("DistributedBms GetMediaBase64 failed");
         return false;
     }
-    APP_LOGD("DistributedBms GetRemoteAbilityInfo label:%{public}s", remoteAbilityInfo.label.c_str());
-    APP_LOGD("DistributedBms GetRemoteAbilityInfo iconId:%{public}s", remoteAbilityInfo.icon.c_str());
+    APP_LOGD("DistributedBms GetAbilityInfo label:%{public}s", remoteAbilityInfo.label.c_str());
+    APP_LOGD("DistributedBms GetAbilityInfo iconId:%{public}s", remoteAbilityInfo.icon.c_str());
     return true;
 }
 

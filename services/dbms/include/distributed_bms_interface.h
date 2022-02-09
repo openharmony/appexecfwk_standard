@@ -38,8 +38,18 @@ public:
     virtual bool GetRemoteAbilityInfo(
         const OHOS::AppExecFwk::ElementName &elementName, RemoteAbilityInfo &remoteAbilityInfo) = 0;
 
+    /**
+     * @brief get ability info
+     * @param elementName Indicates the elementName.
+     * @param remoteAbilityInfo Indicates the remote ability info.
+     * @return Returns true when get remote ability info success; returns false otherwise.
+     */
+    virtual bool GetAbilityInfo(
+        const OHOS::AppExecFwk::ElementName &elementName, RemoteAbilityInfo &remoteAbilityInfo) = 0;
+
     enum class Message {
         GET_REMOTE_ABILITY_INFO = 1,
+        GET_ABILITY_INFO = 2,
     };
 };
 }  // namespace AppExecFwk

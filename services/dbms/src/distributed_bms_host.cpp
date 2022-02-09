@@ -57,6 +57,26 @@ int DistributedBmsHost::OnRemoteRequest(uint32_t code, MessageParcel &data, Mess
             }
             break;
         }
+        case static_cast<uint32_t>(IDistributedBms::Message::GET_ABILITY_INFO): {
+            std::unique_ptr<ElementName> elementName(data.ReadParcelable<ElementName>());
+            if (!elementName) {
+                APP_LOGE("ReadParcelable<elementName> failed");
+                return ERR_APPEXECFWK_PARCEL_ERROR;
+            }
+            RemoteAbilityInfo remoteAbilityInfo;
+            bool ret = GetAbilityInfo(*elementName, remoteAbilityInfo);
+            if (!reply.WriteBool(ret)) {
+                APP_LOGE("GetAbilityInfo write failed");
+                return ERR_APPEXECFWK_PARCEL_ERROR;
+            }
+            if (ret) {
+                if (!reply.WriteParcelable(&remoteAbilityInfo)) {
+                    APP_LOGE("GetAbilityInfo write failed");
+                    return ERR_APPEXECFWK_PARCEL_ERROR;
+                }
+            }
+            break;
+        }
         default:
             APP_LOGW("DistributedBmsHost receives unknown code, code = %{public}d", code);
             return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
