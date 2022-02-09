@@ -502,6 +502,16 @@ public:
     {
         return 0;
     }
+
+    virtual int DoAbilityForeground(const sptr<IRemoteObject> &token, uint32_t flag) override
+    {
+        return 0;
+    }
+
+    virtual int DoAbilityBackground(const sptr<IRemoteObject> &token, uint32_t flag) override
+    {
+        return 0;
+    }
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS
