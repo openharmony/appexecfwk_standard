@@ -45,19 +45,12 @@ constexpr int32_t INVALID_PARAM = 2;
 constexpr int32_t GET_REMOTE_ABILITY_INFO_MAX_SIZE = 10;
 }
 
-static OHOS::sptr<OHOS::AppExecFwk::IDistributedBms> GetDistributedBundleMgr(const std::string &deviceId)
+static OHOS::sptr<OHOS::AppExecFwk::IDistributedBms> GetDistributedBundleMgr()
 {
     APP_LOGI("GetDistributedBundleMgr");
     auto samgr = OHOS::SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
-    OHOS::sptr<OHOS::IRemoteObject> remoteObject;
-    APP_LOGD("GetDistributedBundleMgr deviceId:%{public}s", deviceId.c_str());
-    if (deviceId.empty()) {
-        APP_LOGI("GetDistributedBundleMgr get local d-bms");
-        remoteObject = samgr->GetSystemAbility(OHOS::DISTRIBUTED_BUNDLE_MGR_SERVICE_SYS_ABILITY_ID);
-    } else {
-        APP_LOGI("GetDistributedBundleMgr get remote d-bms");
-        remoteObject = samgr->CheckSystemAbility(OHOS::DISTRIBUTED_BUNDLE_MGR_SERVICE_SYS_ABILITY_ID, deviceId);
-    }
+    // OHOS::sptr<OHOS::IRemoteObject> remoteObject;
+    auto remoteObject = samgr->GetSystemAbility(OHOS::DISTRIBUTED_BUNDLE_MGR_SERVICE_SYS_ABILITY_ID);
     return OHOS::iface_cast<IDistributedBms>(remoteObject);
 }
 
@@ -215,7 +208,7 @@ static bool ParseElementNames(napi_env env, std::vector<ElementName> &elementNam
 static bool InnerGetRemoteAbilityInfo(
     const OHOS::AppExecFwk::ElementName &elementName, RemoteAbilityInfo &remoteAbilityInfo)
 {
-    auto iDistBundleMgr = GetDistributedBundleMgr(elementName.GetDeviceID());
+    auto iDistBundleMgr = GetDistributedBundleMgr();
     if (!iDistBundleMgr) {
         APP_LOGE("can not get iDistBundleMgr");
         return false;
