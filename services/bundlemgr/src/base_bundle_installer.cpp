@@ -34,6 +34,7 @@
 #include "string_ex.h"
 #include "system_ability_definition.h"
 #include "system_ability_helper.h"
+#include "systemcapability.h"
 #include "bundle_clone_mgr.h"
 #include "scope_guard.h"
 #include "bundle_verify_mgr.h"
@@ -328,11 +329,16 @@ ErrCode BaseBundleInstaller::ProcessBundleInstall(const std::vector<std::string>
     CHECK_RESULT_WITHOUT_ROLLBACK(result, "hap file check failed %{public}d");
     UpdateInstallerState(InstallerState::INSTALL_BUNDLE_CHECKED);                  // ---- 5%
 
+    // check syscap
+    result = CheckSysCap(bundlePaths);
+    CHECK_RESULT_WITHOUT_ROLLBACK(result, "hap syscap check failed %{public}d");
+    UpdateInstallerState(InstallerState::INSTALL_SYSCAP_CHECKED);                  // ---- 10%
+
     // verify signature info for all haps
     std::vector<Security::Verify::HapVerifyResult> hapVerifyResults;
     result = CheckMultipleHapsSignInfo(bundlePaths, installParam, hapVerifyResults);
     CHECK_RESULT_WITHOUT_ROLLBACK(result, "hap files check signature info failed %{public}d");
-    UpdateInstallerState(InstallerState::INSTALL_SIGNATURE_CHECKED);               // ---- 10%
+    UpdateInstallerState(InstallerState::INSTALL_SIGNATURE_CHECKED);               // ---- 15%
 
     result = ModifyInstallDirByHapType(installParam, appType);
     CHECK_RESULT_WITHOUT_ROLLBACK(result, "modify bundle install dir failed %{public}d");
@@ -342,7 +348,7 @@ ErrCode BaseBundleInstaller::ProcessBundleInstall(const std::vector<std::string>
     std::unordered_map<std::string, InnerBundleInfo> newInfos;
     result = ParseHapFiles(bundlePaths, installParam, appType, hapVerifyResults, newInfos);
     CHECK_RESULT_WITHOUT_ROLLBACK(result, "parse haps file failed %{public}d");
-    UpdateInstallerState(InstallerState::INSTALL_PARSED);                          // ---- 15%
+    UpdateInstallerState(InstallerState::INSTALL_PARSED);                          // ---- 20%
 
     // check versioncode and bundleName
     result = CheckAppLabelInfo(newInfos);
@@ -1304,6 +1310,39 @@ bool BaseBundleInstaller::UpdateBundlePaths(InnerBundleInfo &info, const std::st
     info.SetAppDataBaseDir(baseDataPath + Constants::PATH_SEPARATOR + Constants::DATA_BASE_DIR);
     info.SetAppCacheDir(baseDataPath + Constants::PATH_SEPARATOR + Constants::CACHE_DIR);
     return true;
+}
+
+ErrCode BaseBundleInstaller::CheckSysCap(const std::vector<std::string> &bundlePaths)
+{
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
+    APP_LOGD("check hap syscaps start.");
+    if (bundlePaths.empty()) {
+        APP_LOGE("check hap syscaps failed due to empty bundlePaths!");
+        return ERR_APPEXECFWK_INSTALL_PARAM_ERROR;
+    }
+
+    ErrCode result = ERR_OK;
+    BundleParser bundleParser;
+    for (auto bundlePath : bundlePaths) {
+        std::vector<std::string> bundleSysCaps;
+        result = bundleParser.ParseSysCap(bundlePath, bundleSysCaps);
+        if (result != ERR_OK) {
+            APP_LOGE("parse bundle syscap failed, error: %{public}d", result);
+            return result;
+        }
+
+        for (auto bundleSysCapItem : bundleSysCaps) {
+            APP_LOGD("check syscap(%{public}s)", bundleSysCapItem.c_str());
+            if (!HasSystemCapability(bundleSysCapItem.c_str())) {
+                APP_LOGE("check syscap failed which %{public}s is not exsit",
+                    bundleSysCapItem.c_str());
+                return ERR_APPEXECFWK_INSTALL_CHECK_SYSCAP_FAILED;
+            }
+        }
+    }
+
+    APP_LOGD("finish check hap syscaps");
+    return result;
 }
 
 ErrCode BaseBundleInstaller::CheckMultipleHapsSignInfo(const std::vector<std::string> &bundlePaths,

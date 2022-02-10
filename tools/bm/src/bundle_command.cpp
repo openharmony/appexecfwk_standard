@@ -268,6 +268,10 @@ ErrCode BundleManagerShellCommand::CreateMessageMap()
             IStatusReceiver::ERR_INSTALL_ZERO_USER_WITH_NO_SINGLETON,
             "error: install failed due to zero user can only install singleton app",
         },
+        {
+            IStatusReceiver::ERR_INSTALL_CHECK_SYSCAP_FAILED,
+            "error: install failed due to check syscap filed",
+        },
 
         {
             IStatusReceiver::ERR_INSTALL_PARSE_UNEXPECTED,
@@ -304,6 +308,10 @@ ErrCode BundleManagerShellCommand::CreateMessageMap()
         {
             IStatusReceiver::ERR_INSTALL_PARSE_PERMISSION_ERROR,
             "error: install parse permission error.",
+        },
+        {
+            IStatusReceiver::ERR_INSTALL_PARSE_RPCID_FAILED,
+            "error: install parse syscap error.",
         },
         {
             IStatusReceiver::ERR_INSTALLD_PARAM_ERROR,

@@ -29,6 +29,7 @@
                 "eventhandler",
                 "hiviewdfx_hilog_native",
                 "i18n_standard",
+                "init",
                 "ipc",
                 "napi",
                 "os_account_standard",

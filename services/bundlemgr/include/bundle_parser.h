@@ -32,6 +32,13 @@ public:
      * @return Returns ERR_OK if the bundle successfully parsed; returns ErrCode otherwise.
      */
     ErrCode Parse(const std::string &pathName, InnerBundleInfo &innerBundleInfo) const;
+    /**
+     * @brief Parse bundle by the path name, then save in innerBundleInfo info.
+     * @param pathName Indicates the path of Bundle.
+     * @param sysCaps Indicates the sysCap.
+     * @return Returns ERR_OK if the bundle successfully parsed; returns ErrCode otherwise.
+     */
+    ErrCode ParseSysCap(const std::string &pathName, std::vector<std::string> &sysCaps) const;
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS
