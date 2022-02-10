@@ -43,6 +43,7 @@ ohos_moduletest("EventHandlerSendEventModuleTest") {
   deps = [ "//third_party/googletest:gtest_main" ]
 
   external_deps = [
+    "hichecker_native:libhichecker",
     "hitrace_native:libhitrace",
     "hiviewdfx_hilog_native:libhilog",
   ]
@@ -63,6 +64,7 @@ ohos_moduletest("EventHandlerPostTaskModuleTest") {
   deps = [ "//third_party/googletest:gtest_main" ]
 
   external_deps = [
+    "hichecker_native:libhichecker",
     "hitrace_native:libhitrace",
     "hiviewdfx_hilog_native:libhilog",
   ]
@@ -83,6 +85,7 @@ ohos_moduletest("EventHandlerSetGetRemoveModuleTest") {
   deps = [ "//third_party/googletest:gtest_main" ]
 
   external_deps = [
+    "hichecker_native:libhichecker",
     "hitrace_native:libhitrace",
     "hiviewdfx_hilog_native:libhilog",
   ]
@@ -103,6 +106,7 @@ ohos_moduletest("EventHandlerFdListenerModuleTest") {
   deps = [ "//third_party/googletest:gtest_main" ]
 
   external_deps = [
+    "hichecker_native:libhichecker",
     "hitrace_native:libhitrace",
     "hiviewdfx_hilog_native:libhilog",
   ]
@@ -123,6 +127,7 @@ ohos_moduletest("EventHandlerPressModuleTest") {
   deps = [ "//third_party/googletest:gtest_main" ]
 
   external_deps = [
+    "hichecker_native:libhichecker",
     "hitrace_native:libhitrace",
     "hiviewdfx_hilog_native:libhilog",
   ]
@@ -143,6 +148,7 @@ ohos_moduletest("EventHandlerSendSyncEventModuleTest") {
   deps = [ "//third_party/googletest:gtest_main" ]
 
   external_deps = [
+    "hichecker_native:libhichecker",
     "hitrace_native:libhitrace",
     "hiviewdfx_hilog_native:libhilog",
   ]
@@ -163,6 +169,7 @@ ohos_moduletest("EventHandlerSendTimingEventModuleTest") {
   deps = [ "//third_party/googletest:gtest_main" ]
 
   external_deps = [
+    "hichecker_native:libhichecker",
     "hitrace_native:libhitrace",
     "hiviewdfx_hilog_native:libhilog",
   ]

@@ -17,10 +17,12 @@
 
 #include <unistd.h>
 #include "event_handler_utils.h"
+#include "hichecker.h"
 #include "thread_local_data.h"
 
 DEFINE_HILOG_LABEL("EventHandler");
 
+using namespace OHOS::HiviewDFX;
 namespace OHOS {
 namespace AppExecFwk {
 static constexpr int DATETIME_STRING_LENGTH = 80;
@@ -239,7 +241,7 @@ void EventHandler::SetEventRunner(const std::shared_ptr<EventRunner> &runner)
 void EventHandler::DeliveryTimeAction(const InnerEvent::Pointer &event, InnerEvent::TimePoint nowStart)
 {
     int64_t deliveryTimeout = GetDeliveryTimeout();
-    if (deliveryTimeout != 0) {
+    if (HiChecker::NeedCheckSlowEvent() && deliveryTimeout != 0) {
         std::string threadName = eventRunner_->GetRunnerThreadName();
         std::string eventName = GetEventName(event);
         int64_t threadId = gettid();
@@ -251,7 +253,7 @@ void EventHandler::DeliveryTimeAction(const InnerEvent::Pointer &event, InnerEve
         "eventName: " + eventName + "," + "deliveryTime: " + deliveryTimeCharacter + "," +
         "deliveryTimeout: " + deliveryTimeoutCharacter;
         if ((nowStart - std::chrono::milliseconds(deliveryTimeout)) > event->GetHandleTime()) {
-            HILOGD("the delivery timeout '%{public}s'", handOutTag.c_str());
+            HiChecker::NotifySlowEvent(handOutTag);
             if (deliveryTimeoutCallback_) {
                 deliveryTimeoutCallback_();
             }
@@ -262,7 +264,7 @@ void EventHandler::DeliveryTimeAction(const InnerEvent::Pointer &event, InnerEve
 void EventHandler::DistributeTimeAction(const InnerEvent::Pointer &event, InnerEvent::TimePoint nowStart)
 {
     int64_t distributeTimeout = GetDistributeTimeout();
-    if (distributeTimeout != 0) {
+    if (HiChecker::NeedCheckSlowEvent() && distributeTimeout != 0) {
         std::string threadName = eventRunner_->GetRunnerThreadName();
         std::string eventName = GetEventName(event);
         int64_t threadId = gettid();
@@ -275,7 +277,7 @@ void EventHandler::DistributeTimeAction(const InnerEvent::Pointer &event, InnerE
         "eventName: " + eventName + "," + "deliveryTime: " + distributeTimeCharacter + "," +
         "deliveryTimeout: " + distributeTimeoutCharacter;
         if ((nowEnd - std::chrono::milliseconds(distributeTimeout)) > nowStart) {
-            HILOGD("the distribute timeout '%{public}s'", executeTag.c_str());
+            HiChecker::NotifySlowEvent(executeTag);
             if (distributeTimeoutCallback_) {
                 distributeTimeoutCallback_();
             }
