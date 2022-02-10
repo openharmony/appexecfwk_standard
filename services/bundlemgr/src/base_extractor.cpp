@@ -47,6 +47,16 @@ bool BaseExtractor::Init()
     return true;
 }
 
+bool BaseExtractor::HasEntry(const std::string &fileName) const
+{
+    if (!initial_) {
+        APP_LOGE("extractor is not initial");
+        return false;
+    }
+
+    return zipFile_.HasEntry(fileName);
+}
+
 bool BaseExtractor::ExtractByName(const std::string &fileName, std::ostream &dest) const
 {
     if (!initial_) {

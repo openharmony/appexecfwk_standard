@@ -241,6 +241,11 @@ const ZipEntryMap &ZipFile::GetAllEntries() const
     return entriesMap_;
 }
 
+bool ZipFile::HasEntry(const std::string &entryName) const
+{
+    return entriesMap_.find(entryName) != entriesMap_.end();
+}
+
 bool ZipFile::GetEntry(const std::string &entryName, ZipEntry &resultEntry) const
 {
     APP_LOGD("get entry by name: %{public}s", entryName.c_str());

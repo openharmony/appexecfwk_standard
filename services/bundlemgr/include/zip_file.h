@@ -179,6 +179,12 @@ public:
      */
     const ZipEntryMap &GetAllEntries() const;
     /**
+     * @brief Has entry by name.
+     * @param entryName Indicates the entry name.
+     * @return Returns true if the ZipEntry is successfully finded; returns false otherwise.
+     */
+    bool HasEntry(const std::string &entryName) const;
+    /**
      * @brief Get entry by name.
      * @param entryName Indicates the entry name.
      * @param resultEntry Indicates the obtained ZipEntry object.
