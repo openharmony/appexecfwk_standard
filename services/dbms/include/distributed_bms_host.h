@@ -29,6 +29,15 @@ public:
 
     virtual int OnRemoteRequest(
         uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option) override;
+private:
+    int HandleGetRemoteAbilityInfo(Parcel &data, Parcel &reply);
+    int HandleGetRemoteAbilityInfos(Parcel &data, Parcel &reply);
+    int HandleGetAbilityInfo(Parcel &data, Parcel &reply);
+    int HandleGetAbilityInfos(Parcel &data, Parcel &reply);
+    template <typename T>
+    bool GetParcelableInfos(Parcel &data, std::vector<T> &parcelableInfos);
+    template<typename T>
+    bool WriteParcelableVector(std::vector<T> &parcelableVector, Parcel &data);
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS

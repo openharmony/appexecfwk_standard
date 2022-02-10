@@ -17,7 +17,7 @@ import("//foundation/appexecfwk/standard/appexecfwk.gni")
 ohos_shared_library("distributedbundle") {
   include_dirs = []
   defines = [
-    "APP_LOG_TAG = \"BundleMgrService\"",
+    "APP_LOG_TAG = \"DistributedBundleMgrService\"",
     "LOG_DOMAIN = 0xD001120",
   ]
   sources = [

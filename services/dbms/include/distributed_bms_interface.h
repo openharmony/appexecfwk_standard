@@ -39,6 +39,15 @@ public:
         const OHOS::AppExecFwk::ElementName &elementName, RemoteAbilityInfo &remoteAbilityInfo) = 0;
 
     /**
+     * @brief get remote ability infos
+     * @param elementNames Indicates the elementNames.
+     * @param remoteAbilityInfos Indicates the remote ability infos.
+     * @return Returns true when get remote ability info success; returns false otherwise.
+     */
+    virtual bool GetRemoteAbilityInfos(
+        const std::vector<ElementName> &elementNames, std::vector<RemoteAbilityInfo> &remoteAbilityInfos) = 0;
+
+    /**
      * @brief get ability info
      * @param elementName Indicates the elementName.
      * @param remoteAbilityInfo Indicates the remote ability info.
@@ -47,9 +56,20 @@ public:
     virtual bool GetAbilityInfo(
         const OHOS::AppExecFwk::ElementName &elementName, RemoteAbilityInfo &remoteAbilityInfo) = 0;
 
+    /**
+     * @brief get ability infos
+     * @param elementNames Indicates the elementNames.
+     * @param remoteAbilityInfos Indicates the remote ability infos.
+     * @return Returns true when get remote ability info success; returns false otherwise.
+     */
+    virtual bool GetAbilityInfos(
+        const std::vector<ElementName> &elementNames, std::vector<RemoteAbilityInfo> &remoteAbilityInfos) = 0;
+
     enum class Message {
-        GET_REMOTE_ABILITY_INFO = 1,
-        GET_ABILITY_INFO = 2,
+        GET_REMOTE_ABILITY_INFO = 0,
+        GET_REMOTE_ABILITY_INFOS,
+        GET_ABILITY_INFO,
+        GET_ABILITY_INFOS,
     };
 };
 }  // namespace AppExecFwk

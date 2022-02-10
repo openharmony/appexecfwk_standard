@@ -44,6 +44,15 @@ public:
     bool GetRemoteAbilityInfo(
         const OHOS::AppExecFwk::ElementName &elementName, RemoteAbilityInfo &remoteAbilityInfo) override;
     /**
+     * @brief get remote ability infos
+     * @param elementNames Indicates the elementNames.
+     * @param remoteAbilityInfos Indicates the remote ability infos.
+     * @return Returns true when get remote ability info success; returns false otherwise.
+     */
+    bool GetRemoteAbilityInfos(
+        const std::vector<ElementName> &elementNames, std::vector<RemoteAbilityInfo> &remoteAbilityInfos) override;
+
+    /**
      * @brief get ability info
      * @param elementName Indicates the elementName.
      * @param remoteAbilityInfo Indicates the remote ability info.
@@ -51,6 +60,14 @@ public:
      */
     bool GetAbilityInfo(
         const OHOS::AppExecFwk::ElementName &elementName, RemoteAbilityInfo &remoteAbilityInfo) override;
+    /**
+     * @brief get ability infos
+     * @param elementNames Indicates the elementNames.
+     * @param remoteAbilityInfos Indicates the remote ability infos.
+     * @return Returns true when get remote ability info success; returns false otherwise.
+     */
+    bool GetAbilityInfos(
+        const std::vector<ElementName> &elementNames, std::vector<RemoteAbilityInfo> &remoteAbilityInfos) override;
 
     /**
      * @brief Start the bundle manager service.
