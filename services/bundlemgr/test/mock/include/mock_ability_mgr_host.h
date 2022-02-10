@@ -76,7 +76,7 @@ public:
     {
         return 0;
     }
-    virtual int MinimizeAbility(const sptr<IRemoteObject> &token) override
+    virtual int MinimizeAbility(const sptr<IRemoteObject> &token, bool fromUser) override
     {
         return 0;
     }
