@@ -19,7 +19,6 @@ import(
 config("bundlemgr_common_config") {
   include_dirs = [
     "include",
-    "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_base/include",
     "//utils/system/safwk/native/include",
   ]
 
