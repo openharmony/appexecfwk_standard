@@ -1018,10 +1018,11 @@ bool BundleMgrHostImpl::NotifyAbilityLifeStatus(
     const std::string &bundleName, const std::string &abilityName, const int64_t launchTime, const int uid)
 {
     APP_LOGI("NotifyAbilityLifeStatus begin");
-    std::thread([this, bundleName, abilityName, launchTime, uid]() {
+    auto task = [this, bundleName, abilityName, launchTime, uid] {
         auto dataMgr = GetDataMgrFromService();
         dataMgr->NotifyAbilityLifeStatus(bundleName, abilityName, launchTime, uid);
-    }).detach();
+    };
+    handler_->PostTask(task);
     APP_LOGI("NotifyAbilityLifeStatus end");
     return true;
 }
