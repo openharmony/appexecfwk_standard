@@ -71,7 +71,7 @@ ohos_unittest("bm_command_dump_test") {
   ]
 
   external_deps = [
-    "ability_runtime:want",
+    "ability_base:want",
     "appverify:libhapverify",
     "bundle_framework:appexecfwk_base",
     "bundle_framework:appexecfwk_core",
@@ -121,7 +121,7 @@ ohos_unittest("bm_command_install_test") {
   ]
 
   external_deps = [
-    "ability_runtime:want",
+    "ability_base:want",
     "appverify:libhapverify",
     "bundle_framework:appexecfwk_base",
     "bundle_framework:appexecfwk_core",
@@ -171,7 +171,7 @@ ohos_unittest("bm_command_test") {
   ]
 
   external_deps = [
-    "ability_runtime:want",
+    "ability_base:want",
     "appverify:libhapverify",
     "bundle_framework:appexecfwk_base",
     "bundle_framework:appexecfwk_core",
@@ -221,7 +221,7 @@ ohos_unittest("bm_command_uninstall_test") {
   ]
 
   external_deps = [
-    "ability_runtime:want",
+    "ability_base:want",
     "appverify:libhapverify",
     "bundle_framework:appexecfwk_base",
     "bundle_framework:appexecfwk_core",
