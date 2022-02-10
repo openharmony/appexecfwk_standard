@@ -121,6 +121,28 @@ bool DistributedBms::GetRemoteAbilityInfo(
     return true;
 }
 
+bool DistributedBms::GetRemoteAbilityInfos(
+    const std::vector<ElementName> &elementNames, std::vector<RemoteAbilityInfo> &remoteAbilityInfos)
+{
+    APP_LOGD("DistributedBms GetRemoteAbilityInfos");
+    auto iDistBundleMgr = GetDistributedBundleMgr(elementNames[0].GetDeviceID());
+    if (!iDistBundleMgr) {
+        APP_LOGD("GetDistributedBundleMgr get local d-bms");
+        if (!GetAbilityInfos(elementNames, remoteAbilityInfos)) {
+            APP_LOGE("GetAbilityInfo failed");
+            return false;
+        }
+    } else {
+        APP_LOGD("GetDistributedBundleMgr get remote d-bms");
+        if (!iDistBundleMgr->GetAbilityInfos(elementNames, remoteAbilityInfos)) {
+            APP_LOGE("get remote AbilityInfo failed");
+            return false;
+        }
+    }
+    return true;
+}
+
+
 bool DistributedBms::GetAbilityInfo(
     const OHOS::AppExecFwk::ElementName &elementName, RemoteAbilityInfo &remoteAbilityInfo)
 {
@@ -174,6 +196,22 @@ bool DistributedBms::GetAbilityInfo(
     }
     APP_LOGD("DistributedBms GetAbilityInfo label:%{public}s", remoteAbilityInfo.label.c_str());
     APP_LOGD("DistributedBms GetAbilityInfo iconId:%{public}s", remoteAbilityInfo.icon.c_str());
+    return true;
+}
+
+bool DistributedBms::GetAbilityInfos(
+    const std::vector<ElementName> &elementNames, std::vector<RemoteAbilityInfo> &remoteAbilityInfos)
+{
+    APP_LOGD("DistributedBms GetAbilityInfos");
+    for (auto elementName : elementNames) {
+        RemoteAbilityInfo remoteAbilityInfo;
+        if (!GetAbilityInfo(elementName, remoteAbilityInfo)) {
+            APP_LOGE("get AbilityInfo:%{public}s, %{public}s failed", elementName.GetBundleName().c_str(),
+                elementName.GetAbilityName().c_str());
+            return false;
+        }
+        remoteAbilityInfos.push_back(remoteAbilityInfo);
+    }
     return true;
 }
 
