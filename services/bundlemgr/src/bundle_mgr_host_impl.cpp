@@ -1206,9 +1206,8 @@ bool BundleMgrHostImpl::VerifyQueryPermission(bool allowNormalApl, const std::st
         return false;
     }
     bool isBundleNameEqual = queryBundleName == callingBundleName;
-    bool allowGetbundleInfo = BundlePermissionMgr::VerifyCallingPermission(Constants::PERMISSION_GET_BUNDLE_INFO);
-    APP_LOGD("isBundleNameEqual : %{public}d, allowGetbundleInfo : %{public}d", isBundleNameEqual, allowGetbundleInfo);
-    return isBundleNameEqual && allowGetbundleInfo;
+    APP_LOGD("isBundleNameEqual : %{public}d", isBundleNameEqual);
+    return isBundleNameEqual;
 }
 
 std::string BundleMgrHostImpl::GetAppPrivilegeLevel(const std::string &bundleName, int32_t userId)
