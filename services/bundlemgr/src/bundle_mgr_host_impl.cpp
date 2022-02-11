@@ -1231,7 +1231,7 @@ bool BundleMgrHostImpl::VerifyQueryPermission(bool allowNormalApl, const std::st
             return true;
         }
     }
-    APP_LOGE("Verify query permission failed");
+    APP_LOGE("verify query permission failed");
     return false;
 }
 
