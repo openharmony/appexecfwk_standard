@@ -37,6 +37,14 @@ public:
     bool GetRemoteAbilityInfo(
         const OHOS::AppExecFwk::ElementName &elementName, RemoteAbilityInfo &remoteAbilityInfo) override;
     /**
+     * @brief get remote ability infos
+     * @param elementNames Indicates the elementNames.
+     * @param remoteAbilityInfos Indicates the remote ability infos.
+     * @return Returns true when get remote ability info success; returns false otherwise.
+     */
+    bool GetRemoteAbilityInfos(
+        const std::vector<ElementName> &elementNames, std::vector<RemoteAbilityInfo> &remoteAbilityInfos) override;
+    /**
      * @brief get ability info
      * @param elementName Indicates the elementName.
      * @param remoteAbilityInfo Indicates the remote ability info.
@@ -44,12 +52,23 @@ public:
      */
     bool GetAbilityInfo(
         const OHOS::AppExecFwk::ElementName &elementName, RemoteAbilityInfo &remoteAbilityInfo) override;
+    /**
+     * @brief get ability infos
+     * @param elementNames Indicates the elementNames.
+     * @param remoteAbilityInfos Indicates the remote ability infos.
+     * @return Returns true when get remote ability info success; returns false otherwise.
+     */
+    bool GetAbilityInfos(
+        const std::vector<ElementName> &elementNames, std::vector<RemoteAbilityInfo> &remoteAbilityInfos) override;
 
 private:
     bool SendRequest(IDistributedBms::Message code, MessageParcel &data, MessageParcel &reply);
-
+    template<typename T>
+    bool WriteParcelableVector(const std::vector<T> &parcelableVector, Parcel &data);
     template <typename T>
     bool GetParcelableInfo(IDistributedBms::Message code, MessageParcel &data, T &parcelableInfo);
+    template <typename T>
+    bool GetParcelableInfos(IDistributedBms::Message code, MessageParcel &data, std::vector<T> &parcelableInfos);
     static inline BrokerDelegator<DistributedBmsProxy> delegator_;
 };
 }  // namespace AppExecFwk

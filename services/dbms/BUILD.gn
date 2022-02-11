@@ -29,7 +29,10 @@ ohos_shared_library("libdbms") {
     "src/distributed_bms_proxy.cpp",
   ]
 
-  defines = [ "APP_LOG_TAG = \"BundleMgrService\"" ]
+  defines = [
+    "APP_LOG_TAG = \"DistributedBundleMgrService\"",
+    "LOG_DOMAIN = 0xD001120",
+  ]
 
   public_configs = [ ":distributed_bms_config" ]
 
