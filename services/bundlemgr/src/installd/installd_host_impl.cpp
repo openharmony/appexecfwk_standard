@@ -194,14 +194,15 @@ ErrCode InstalldHostImpl::CreateNewBundleDataDir(
     if (system::GetBoolParameter(Constants::DISTRIBUTED_FILE_PROPERTY, false)) {
         std::string distributedfile = Constants::DISTRIBUTED_FILE;
         distributedfile = distributedfile.replace(distributedfile.find("%"), 1, std::to_string(userid));
-        if (!InstalldOperator::MkOwnerDir(distributedfile + bundleName, S_IRWXU, uid, gid)) {
+        if (!InstalldOperator::MkOwnerDir(distributedfile + bundleName, S_IRWXU | S_IRWXG | S_ISGID, uid, gid)) {
             APP_LOGE("Failed to mk dir for distributedfile");
             return ERR_APPEXECFWK_INSTALLD_CREATE_DIR_FAILED;
         }
 
         distributedfile = Constants::DISTRIBUTED_FILE_NON_ACCOUNT;
         distributedfile = distributedfile.replace(distributedfile.find("%"), 1, std::to_string(userid));
-        if (!InstalldOperator::MkOwnerDir(distributedfile + bundleName, S_IRWXU, uid, gid)) {
+        if (!InstalldOperator::MkOwnerDir(distributedfile + bundleName,
+            S_IRWXU | S_IRWXG | S_ISGID, uid, Constants::DFS_GID)) {
             APP_LOGE("Failed to mk dir for non account distributedfile");
             return ERR_APPEXECFWK_INSTALLD_CREATE_DIR_FAILED;
         }
