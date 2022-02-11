@@ -38,51 +38,147 @@ int DistributedBmsHost::OnRemoteRequest(uint32_t code, MessageParcel &data, Mess
         option.GetFlags());
     switch (code) {
         case static_cast<uint32_t>(IDistributedBms::Message::GET_REMOTE_ABILITY_INFO): {
-            std::unique_ptr<ElementName> elementName(data.ReadParcelable<ElementName>());
-            if (!elementName) {
-                APP_LOGE("ReadParcelable<elementName> failed");
-                return ERR_APPEXECFWK_PARCEL_ERROR;
-            }
-            RemoteAbilityInfo remoteAbilityInfo;
-            bool ret = GetRemoteAbilityInfo(*elementName, remoteAbilityInfo);
-            if (!reply.WriteBool(ret)) {
-                APP_LOGE("GetRemoteAbilityInfo write failed");
-                return ERR_APPEXECFWK_PARCEL_ERROR;
-            }
-            if (ret) {
-                if (!reply.WriteParcelable(&remoteAbilityInfo)) {
-                    APP_LOGE("GetRemoteAbilityInfo write failed");
-                    return ERR_APPEXECFWK_PARCEL_ERROR;
-                }
-            }
-            break;
+            return HandleGetRemoteAbilityInfo(data, reply);
+        }
+        case static_cast<uint32_t>(IDistributedBms::Message::GET_REMOTE_ABILITY_INFOS): {
+            return HandleGetRemoteAbilityInfos(data, reply);
         }
         case static_cast<uint32_t>(IDistributedBms::Message::GET_ABILITY_INFO): {
-            std::unique_ptr<ElementName> elementName(data.ReadParcelable<ElementName>());
-            if (!elementName) {
-                APP_LOGE("ReadParcelable<elementName> failed");
-                return ERR_APPEXECFWK_PARCEL_ERROR;
-            }
-            RemoteAbilityInfo remoteAbilityInfo;
-            bool ret = GetAbilityInfo(*elementName, remoteAbilityInfo);
-            if (!reply.WriteBool(ret)) {
-                APP_LOGE("GetAbilityInfo write failed");
-                return ERR_APPEXECFWK_PARCEL_ERROR;
-            }
-            if (ret) {
-                if (!reply.WriteParcelable(&remoteAbilityInfo)) {
-                    APP_LOGE("GetAbilityInfo write failed");
-                    return ERR_APPEXECFWK_PARCEL_ERROR;
-                }
-            }
-            break;
+            return HandleGetAbilityInfo(data, reply);
+        }
+        case static_cast<uint32_t>(IDistributedBms::Message::GET_ABILITY_INFOS): {
+            return HandleGetAbilityInfos(data, reply);
         }
         default:
             APP_LOGW("DistributedBmsHost receives unknown code, code = %{public}d", code);
             return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
     }
-    APP_LOGI("DistributedBmsHost finish to process message from client");
     return NO_ERROR;
+}
+
+int DistributedBmsHost::HandleGetRemoteAbilityInfo(Parcel &data, Parcel &reply)
+{
+    APP_LOGI("DistributedBmsHost handle get remote ability info");
+    std::unique_ptr<ElementName> elementName(data.ReadParcelable<ElementName>());
+    if (!elementName) {
+        APP_LOGE("ReadParcelable<elementName> failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    RemoteAbilityInfo remoteAbilityInfo;
+    bool ret = GetRemoteAbilityInfo(*elementName, remoteAbilityInfo);
+    if (!reply.WriteBool(ret)) {
+        APP_LOGE("GetRemoteAbilityInfo write failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    if (ret) {
+        if (!reply.WriteParcelable(&remoteAbilityInfo)) {
+            APP_LOGE("GetRemoteAbilityInfo write failed");
+            return ERR_APPEXECFWK_PARCEL_ERROR;
+        }
+    }
+    return NO_ERROR;
+}
+
+int DistributedBmsHost::HandleGetRemoteAbilityInfos(Parcel &data, Parcel &reply)
+{
+    APP_LOGI("DistributedBmsHost handle get remote ability infos");
+    std::vector<ElementName> elementNames;
+    if (!GetParcelableInfos<ElementName>(data, elementNames)) {
+        APP_LOGE("GetRemoteAbilityInfos get parcelable infos failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    std::vector<RemoteAbilityInfo> remoteAbilityInfos;
+    bool ret = GetRemoteAbilityInfos(elementNames, remoteAbilityInfos);
+    if (!reply.WriteBool(ret)) {
+        APP_LOGE("GetRemoteAbilityInfos write failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    if (ret) {
+        if (!WriteParcelableVector<RemoteAbilityInfo>(remoteAbilityInfos, reply)) {
+            APP_LOGE("GetRemoteAbilityInfos write failed");
+            return ERR_APPEXECFWK_PARCEL_ERROR;
+        }
+    }
+    return NO_ERROR;
+}
+
+int DistributedBmsHost::HandleGetAbilityInfo(Parcel &data, Parcel &reply)
+{
+    APP_LOGI("DistributedBmsHost handle get ability info");
+    std::unique_ptr<ElementName> elementName(data.ReadParcelable<ElementName>());
+    if (!elementName) {
+        APP_LOGE("ReadParcelable<elementName> failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    RemoteAbilityInfo remoteAbilityInfo;
+    bool ret = GetAbilityInfo(*elementName, remoteAbilityInfo);
+    if (!reply.WriteBool(ret)) {
+        APP_LOGE("GetRemoteAbilityInfo write failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    if (ret) {
+        if (!reply.WriteParcelable(&remoteAbilityInfo)) {
+            APP_LOGE("GetRemoteAbilityInfo write failed");
+            return ERR_APPEXECFWK_PARCEL_ERROR;
+        }
+    }
+    return NO_ERROR;
+}
+
+int DistributedBmsHost::HandleGetAbilityInfos(Parcel &data, Parcel &reply)
+{
+    APP_LOGI("DistributedBmsHost handle get ability infos");
+    std::vector<ElementName> elementNames;
+    if (!GetParcelableInfos<ElementName>(data, elementNames)) {
+        APP_LOGE("GetRemoteAbilityInfos get parcelable infos failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    std::vector<RemoteAbilityInfo> remoteAbilityInfos;
+    bool ret = GetAbilityInfos(elementNames, remoteAbilityInfos);
+    if (!reply.WriteBool(ret)) {
+        APP_LOGE("GetRemoteAbilityInfos write failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    if (ret) {
+        if (!WriteParcelableVector<RemoteAbilityInfo>(remoteAbilityInfos, reply)) {
+            APP_LOGE("GetRemoteAbilityInfos write failed");
+            return ERR_APPEXECFWK_PARCEL_ERROR;
+        }
+    }
+    return NO_ERROR;
+}
+
+template<typename T>
+bool DistributedBmsHost::WriteParcelableVector(std::vector<T> &parcelableVector, Parcel &reply)
+{
+    if (!reply.WriteInt32(parcelableVector.size())) {
+        APP_LOGE("write ParcelableVector failed");
+        return false;
+    }
+
+    for (auto &parcelable : parcelableVector) {
+        if (!reply.WriteParcelable(&parcelable)) {
+            APP_LOGE("write ParcelableVector failed");
+            return false;
+        }
+    }
+    return true;
+}
+
+template<typename T>
+bool DistributedBmsHost::GetParcelableInfos(Parcel &data, std::vector<T> &parcelableInfos)
+{
+    int32_t infoSize = data.ReadInt32();
+    for (int32_t i = 0; i < infoSize; i++) {
+        std::unique_ptr<T> info(data.ReadParcelable<T>());
+        if (!info) {
+            APP_LOGE("Read Parcelable infos failed");
+            return false;
+        }
+        parcelableInfos.emplace_back(*info);
+    }
+    APP_LOGD("get parcelable infos success");
+    return true;
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS

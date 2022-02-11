@@ -49,6 +49,25 @@ bool DistributedBmsProxy::GetRemoteAbilityInfo(
     return true;
 }
 
+bool DistributedBmsProxy::GetRemoteAbilityInfos(
+    const std::vector<ElementName> &elementNames, std::vector<RemoteAbilityInfo> &remoteAbilityInfos)
+{
+    APP_LOGD("DistributedBmsProxy GetRemoteAbilityInfo");
+    MessageParcel data;
+    MessageParcel reply;
+    if (!WriteParcelableVector(elementNames, data)) {
+        APP_LOGE("DistributedBmsProxy GetRemoteAbilityInfos write elementName error");
+        return false;
+    }
+
+    if (!GetParcelableInfos<RemoteAbilityInfo>(
+            IDistributedBms::Message::GET_REMOTE_ABILITY_INFOS, data, remoteAbilityInfos)) {
+        APP_LOGE("fail to query remote ability infos mutiparam from server");
+        return false;
+    }
+    return true;
+}
+
 bool DistributedBmsProxy::GetAbilityInfo(
     const OHOS::AppExecFwk::ElementName &elementName, RemoteAbilityInfo &remoteAbilityInfo)
 {
@@ -68,19 +87,38 @@ bool DistributedBmsProxy::GetAbilityInfo(
     return true;
 }
 
-bool DistributedBmsProxy::SendRequest(IDistributedBms::Message code, MessageParcel &data, MessageParcel &reply)
+bool DistributedBmsProxy::GetAbilityInfos(
+    const std::vector<ElementName> &elementNames, std::vector<RemoteAbilityInfo> &remoteAbilityInfos)
 {
-    APP_LOGD("DistributedBmsProxy SendRequest");
-    sptr<IRemoteObject> remote = Remote();
-    MessageOption option(MessageOption::TF_SYNC);
-    if (remote == nullptr) {
-        APP_LOGE("fail to send %{public}d cmd to service due to remote object is null", code);
+    APP_LOGD("DistributedBmsProxy GetAbilityInfos");
+    MessageParcel data;
+    MessageParcel reply;
+    if (!WriteParcelableVector(elementNames, data)) {
+        APP_LOGE("DistributedBmsProxy GetAbilityInfos write elementName error");
         return false;
     }
-    int32_t result = remote->SendRequest(static_cast<uint32_t>(code), data, reply, option);
-    if (result != OHOS::NO_ERROR) {
-        APP_LOGE("fail to send %{public}d cmd to service due to transact error", code);
+
+    if (!GetParcelableInfos<RemoteAbilityInfo>(
+            IDistributedBms::Message::GET_ABILITY_INFOS, data, remoteAbilityInfos)) {
+        APP_LOGE("fail to query ability infos mutiparam from server");
         return false;
+    }
+    return true;
+}
+
+template<typename T>
+bool DistributedBmsProxy::WriteParcelableVector(const std::vector<T> &parcelableVector, Parcel &data)
+{
+    if (!data.WriteInt32(parcelableVector.size())) {
+        APP_LOGE("write ParcelableVector failed");
+        return false;
+    }
+
+    for (auto &parcelable : parcelableVector) {
+        if (!data.WriteParcelable(&parcelable)) {
+            APP_LOGE("write ParcelableVector failed");
+            return false;
+        }
     }
     return true;
 }
@@ -105,6 +143,50 @@ bool DistributedBmsProxy::GetParcelableInfo(IDistributedBms::Message code, Messa
     }
     parcelableInfo = *info;
     APP_LOGD("get parcelable info success");
+    return true;
+}
+
+template<typename T>
+bool DistributedBmsProxy::GetParcelableInfos(
+    IDistributedBms::Message code, MessageParcel &data, std::vector<T> &parcelableInfos)
+{
+    MessageParcel reply;
+    if (!SendRequest(code, data, reply)) {
+        return false;
+    }
+
+    if (!reply.ReadBool()) {
+        APP_LOGE("readParcelableInfo failed");
+        return false;
+    }
+
+    int32_t infoSize = reply.ReadInt32();
+    for (int32_t i = 0; i < infoSize; i++) {
+        std::unique_ptr<T> info(reply.ReadParcelable<T>());
+        if (!info) {
+            APP_LOGE("Read Parcelable infos failed");
+            return false;
+        }
+        parcelableInfos.emplace_back(*info);
+    }
+    APP_LOGD("get parcelable infos success");
+    return true;
+}
+
+bool DistributedBmsProxy::SendRequest(IDistributedBms::Message code, MessageParcel &data, MessageParcel &reply)
+{
+    APP_LOGD("DistributedBmsProxy SendRequest");
+    sptr<IRemoteObject> remote = Remote();
+    MessageOption option(MessageOption::TF_SYNC);
+    if (remote == nullptr) {
+        APP_LOGE("fail to send %{public}d cmd to service due to remote object is null", code);
+        return false;
+    }
+    int32_t result = remote->SendRequest(static_cast<uint32_t>(code), data, reply, option);
+    if (result != OHOS::NO_ERROR) {
+        APP_LOGE("fail to send %{public}d cmd to service due to transact error", code);
+        return false;
+    }
     return true;
 }
 }  // namespace AppExecFwk

@@ -227,20 +227,15 @@ static bool InnerGetRemoteAbilityInfos(
         APP_LOGE("InnerGetRemoteAbilityInfos elementNames is empty");
         return false;
     }
-    
-    for (auto elementName : elementNames) {
-        RemoteAbilityInfo remoteAbilityInfo;
-        if (InnerGetRemoteAbilityInfo(elementName, remoteAbilityInfo)) {
-            APP_LOGD("InnerGetRemoteAbilityInfo:%{public}s ability:%{public}s",
-                elementName.GetBundleName().c_str(), elementName.GetAbilityName().c_str());
-            remoteAbilityInfos.push_back(remoteAbilityInfo);
-        } else {
-            APP_LOGE("InnerGetRemoteAbilityInfo:%{public}s ability:%{public}s failed",
-                elementName.GetBundleName().c_str(), elementName.GetAbilityName().c_str());
-            return false;
-        }
+    auto iDistBundleMgr = GetDistributedBundleMgr();
+    if (!iDistBundleMgr) {
+        APP_LOGE("can not get iDistBundleMgr");
+        return false;
     }
-    
+    if (!iDistBundleMgr->GetRemoteAbilityInfos(elementNames, remoteAbilityInfos)) {
+        APP_LOGE("InnerGetRemoteAbilityInfo failed");
+        return false;
+    }
     return true;
 }
 
