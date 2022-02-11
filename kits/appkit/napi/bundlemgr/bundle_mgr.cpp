@@ -2494,11 +2494,9 @@ static void ConvertPermissionDef(napi_env env, napi_value result, const Permissi
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, result, "permissionName", nPermissionName));
     APP_LOGI("InnerGetPermissionDef name=%{public}s.", permissionDef.permissionName.c_str());
 
-    napi_value nBundleName;
-    NAPI_CALL_RETURN_VOID(
-        env, napi_create_string_utf8(env, permissionDef.bundleName.c_str(), NAPI_AUTO_LENGTH, &nBundleName));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, result, "bundleName", nBundleName));
-    APP_LOGI("InnerGetPermissionDef bundleName=%{public}s.", permissionDef.bundleName.c_str());
+    napi_value nGrantMode;
+    NAPI_CALL_RETURN_VOID(env, napi_create_int32(env, permissionDef.grantMode, &nGrantMode));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, result, "grantMode", nGrantMode));
 
     napi_value nLabelId;
     NAPI_CALL_RETURN_VOID(env, napi_create_int32(env, permissionDef.labelId, &nLabelId));
