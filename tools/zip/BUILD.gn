@@ -55,8 +55,8 @@ ohos_shared_library("zlib") {
   ]
 
   external_deps = [
+    "ability_base:want",
     "ability_runtime:task_dispatcher",
-    "ability_runtime:want",
     "bundle_framework:appexecfwk_base",
     "bundle_framework:appexecfwk_core",
     "eventhandler:libeventhandler",
