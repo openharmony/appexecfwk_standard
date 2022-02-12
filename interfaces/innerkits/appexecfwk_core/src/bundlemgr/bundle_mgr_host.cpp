@@ -1119,8 +1119,9 @@ ErrCode BundleMgrHost::HandleCleanBundleCacheFiles(Parcel &data, Parcel &reply)
     std::string bundleName = data.ReadString();
     sptr<IRemoteObject> object = data.ReadParcelable<IRemoteObject>();
     sptr<ICleanCacheCallback> cleanCacheCallback = iface_cast<ICleanCacheCallback>(object);
+    int32_t userId = data.ReadInt32();
 
-    bool ret = CleanBundleCacheFiles(bundleName, cleanCacheCallback);
+    bool ret = CleanBundleCacheFiles(bundleName, cleanCacheCallback, userId);
     if (!reply.WriteBool(ret)) {
         APP_LOGE("write failed");
         return ERR_APPEXECFWK_PARCEL_ERROR;
@@ -1228,7 +1229,8 @@ ErrCode BundleMgrHost::HandleSetApplicationEnabled(Parcel &data, Parcel &reply)
     BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::string bundleName = data.ReadString();
     bool isEnable = data.ReadBool();
-    bool ret = SetApplicationEnabled(bundleName, isEnable);
+    int32_t userId = data.ReadInt32();
+    bool ret = SetApplicationEnabled(bundleName, isEnable, userId);
     if (!reply.WriteBool(ret)) {
         APP_LOGE("write failed");
         return ERR_APPEXECFWK_PARCEL_ERROR;
@@ -1261,7 +1263,8 @@ ErrCode BundleMgrHost::HandleSetAbilityEnabled(Parcel &data, Parcel &reply)
         return ERR_APPEXECFWK_PARCEL_ERROR;
     }
     bool isEnabled = data.ReadBool();
-    bool ret = SetAbilityEnabled(*abilityInfo, isEnabled);
+    int32_t userId = data.ReadInt32();
+    bool ret = SetAbilityEnabled(*abilityInfo, isEnabled, userId);
     if (!reply.WriteBool(ret)) {
         APP_LOGE("write failed");
         return ERR_APPEXECFWK_PARCEL_ERROR;
