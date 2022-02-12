@@ -941,6 +941,9 @@ ErrCode BundleManagerShellCommand::RunAsDumpCommand()
         } else if (bundleDumpInfo) {
             dumpResults = DumpBundleInfo(bundleName, userId);
         }
+        if (dumpResults.empty() || (dumpResults == "")) {
+            dumpResults = HELP_MSG_DUMP_FAILED;
+        }
         resultReceiver_.append(dumpResults);
     }
 
