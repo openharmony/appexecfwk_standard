@@ -150,6 +150,8 @@ const std::string NO_PROFILE = "no profile!\n";
 
 const std::string STRING_GET_UDID_OK = "udid of current device is :";
 const std::string STRING_GET_UDID_NG = "error: failed to get udid";
+
+const std::string HELP_MSG_DUMP_FAILED = "error: failed to get information and the parameters may be wrong";
 } // namespace
 
 class BundleManagerShellCommand : public ShellCommand {
