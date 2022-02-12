@@ -1196,6 +1196,7 @@ ErrCode BundleMgrHost::HandleDumpInfos(Parcel &data, Parcel &reply)
     int32_t userId = data.ReadInt32();
 
     std::string result;
+    APP_LOGI("dump info name %{public}s", bundleName.c_str());
     bool ret = DumpInfos(flag, bundleName, userId, result);
     if (!reply.WriteBool(ret)) {
         APP_LOGE("write failed");

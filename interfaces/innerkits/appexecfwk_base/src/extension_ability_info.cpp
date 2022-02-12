@@ -53,8 +53,11 @@ bool ExtensionAbilityInfo::ReadFromParcel(Parcel &parcel)
     bundleName = Str16ToStr8(parcel.ReadString16());
     moduleName = Str16ToStr8(parcel.ReadString16());
     name = Str16ToStr8(parcel.ReadString16());
+    icon = Str16ToStr8(parcel.ReadString16());
     iconId = parcel.ReadInt32();
+    label = Str16ToStr8(parcel.ReadString16());
     labelId = parcel.ReadInt32();
+    description = Str16ToStr8(parcel.ReadString16());
     descriptionId = parcel.ReadInt32();
     type = static_cast<ExtensionAbilityType>(parcel.ReadInt32());
     int32_t permissionSize = parcel.ReadInt32();
@@ -102,8 +105,11 @@ bool ExtensionAbilityInfo::Marshalling(Parcel &parcel) const
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(bundleName));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(moduleName));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(name));
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(icon));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, iconId);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(label));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, labelId);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(description));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, descriptionId);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, static_cast<int32_t>(type));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, permissions.size());
