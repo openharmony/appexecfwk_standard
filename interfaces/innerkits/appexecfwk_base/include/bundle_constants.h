@@ -95,6 +95,7 @@ constexpr int PERMISSION_NOT_GRANTED = -1;
 constexpr int PERMISSION_INVALID_GRANTED = -2;
 constexpr int DUMP_INDENT = 4;
 constexpr unsigned int INSTALLD_UMASK = 0000;
+constexpr unsigned int PERMISSION_COMPATIBLE_API_VERSION = 7;
 
 // uid and gid
 constexpr int32_t INVALID_UID = -1;
