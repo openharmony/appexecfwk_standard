@@ -1207,7 +1207,32 @@ bool BundleMgrHostImpl::VerifyQueryPermission(bool allowNormalApl, const std::st
     }
     bool isBundleNameEqual = queryBundleName == callingBundleName;
     APP_LOGD("isBundleNameEqual : %{public}d", isBundleNameEqual);
-    return isBundleNameEqual;
+    if (isBundleNameEqual) {
+        APP_LOGD("query own info, verify success");
+        return true;
+    }
+    // adapt HO
+    ApplicationInfo applicationInfo;
+    auto dataMgr = GetDataMgrFromService();
+    if (dataMgr == nullptr) {
+        APP_LOGE("get DataMgr failed");
+        return false;
+    }
+    bool retVal = dataMgr->GetApplicationInfo(
+        callingBundleName, GET_BASIC_APPLICATION_INFO, Constants::UNSPECIFIED_USERID, applicationInfo);
+    if (!retVal) {
+        APP_LOGE("GetApplicationInfo failed");
+        return false;
+    }
+    if (applicationInfo.apiCompatibleVersion <= Constants::PERMISSION_COMPATIBLE_API_VERSION) {
+        APP_LOGD("begin to verify GET_BUNDLE_INFO");
+        if (BundlePermissionMgr::VerifyCallingPermission(Constants::PERMISSION_GET_BUNDLE_INFO)) {
+            APP_LOGD("verify GET_BUNDLE_INFO success");
+            return true;
+        }
+    }
+    APP_LOGE("verify query permission failed");
+    return false;
 }
 
 std::string BundleMgrHostImpl::GetAppPrivilegeLevel(const std::string &bundleName, int32_t userId)
