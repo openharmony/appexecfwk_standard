@@ -1219,12 +1219,12 @@ bool BundleMgrHostImpl::VerifyQueryPermission(bool allowNormalApl, const std::st
         return false;
     }
     bool retVal = dataMgr->GetApplicationInfo(
-        callingBundleName, GET_BASIC_APPLICATION_INFO, UNSPECIFIED_USERID, applicationInfo);
+        callingBundleName, GET_BASIC_APPLICATION_INFO, Constants::UNSPECIFIED_USERID, applicationInfo);
     if (!retVal) {
         APP_LOGE("GetApplicationInfo failed");
         return false;
     }
-    if (applicationInfo.apiCompatibleVersion <= PERMISSION_COMPATIBLE_API_VERSION) {
+    if (applicationInfo.apiCompatibleVersion <= Constants::PERMISSION_COMPATIBLE_API_VERSION) {
         APP_LOGD("begin to verify GET_BUNDLE_INFO");
         if (BundlePermissionMgr::VerifyCallingPermission(Constants::PERMISSION_GET_BUNDLE_INFO)) {
             APP_LOGD("verify GET_BUNDLE_INFO success");
