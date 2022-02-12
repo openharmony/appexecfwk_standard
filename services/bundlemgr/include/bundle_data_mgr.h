@@ -342,9 +342,11 @@ public:
      * @brief Set the application status.
      * @param bundleName Indicates the bundle name.
      * @param isEnable Indicates the status to set.
+     * @param userId Indicates the user id.
      * @return Returns true if the bundle status successfully set; returns false otherwise.
      */
-    bool SetApplicationEnabled(const std::string &bundleName, bool isEnable);
+    bool SetApplicationEnabled(const std::string &bundleName, bool isEnable,
+        int32_t userId = Constants::UNSPECIFIED_USERID);
     /**
      * @brief Sets whether to enable a specified ability through the proxy object.
      * @param abilityInfo Indicates information about the ability to check.
@@ -356,9 +358,11 @@ public:
      * @param abilityInfo Indicates information about the ability.
      * @param isEnabled Specifies whether to enable the ability.
      *                 The value true means to enable it, and the value false means to disable it.
+     * @param userId Indicates the user id.
      * @return Returns true if the ability is enabled; returns false otherwise.
      */
-    bool SetAbilityEnabled(const AbilityInfo &abilityInfo, bool isEnabled);
+    bool SetAbilityEnabled(const AbilityInfo &abilityInfo, bool isEnabled,
+        int32_t userId = Constants::UNSPECIFIED_USERID);
     /**
      * @brief Obtains the icon of a specified ability through the proxy object.
      * @param bundleName Indicates the bundle name.

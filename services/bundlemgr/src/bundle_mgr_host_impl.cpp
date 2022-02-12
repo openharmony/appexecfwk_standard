@@ -469,7 +469,8 @@ bool BundleMgrHostImpl::TraverseCacheDirectory(const std::string& rootDir, std::
 }
 
 bool BundleMgrHostImpl::CleanBundleCacheFiles(
-    const std::string &bundleName, const sptr<ICleanCacheCallback> &cleanCacheCallback)
+    const std::string &bundleName, const sptr<ICleanCacheCallback> &cleanCacheCallback,
+    int32_t userId)
 {
     if (bundleName.empty() || !cleanCacheCallback) {
         APP_LOGE("the cleanCacheCallback is nullptr or bundleName empty");
@@ -481,7 +482,7 @@ bool BundleMgrHostImpl::CleanBundleCacheFiles(
     }
     ApplicationInfo applicationInfo;
     if (!GetApplicationInfo(bundleName, ApplicationFlag::GET_BASIC_APPLICATION_INFO,
-        Constants::UNSPECIFIED_USERID, applicationInfo)) {
+        userId, applicationInfo)) {
         APP_LOGE("can not get application info of %{public}s", bundleName.c_str());
         return false;
     }
@@ -783,7 +784,7 @@ bool BundleMgrHostImpl::IsApplicationEnabled(const std::string &bundleName)
     return dataMgr->IsApplicationEnabled(bundleName);
 }
 
-bool BundleMgrHostImpl::SetApplicationEnabled(const std::string &bundleName, bool isEnable)
+bool BundleMgrHostImpl::SetApplicationEnabled(const std::string &bundleName, bool isEnable, int32_t userId)
 {
     if (!BundlePermissionMgr::VerifyCallingPermission(Constants::PERMISSION_CHANGE_ABILITY_ENABLED_STATE)) {
         APP_LOGE("verify permission failed");
@@ -795,13 +796,13 @@ bool BundleMgrHostImpl::SetApplicationEnabled(const std::string &bundleName, boo
         return false;
     }
 
-    if (!dataMgr->SetApplicationEnabled(bundleName, isEnable)) {
+    if (!dataMgr->SetApplicationEnabled(bundleName, isEnable, userId)) {
         APP_LOGE("Set application(%{public}s) enabled value faile.", bundleName.c_str());
         return false;
     }
 
     InnerBundleUserInfo innerBundleUserInfo;
-    if (!GetBundleUserInfo(bundleName, Constants::UNSPECIFIED_USERID, innerBundleUserInfo)) {
+    if (!GetBundleUserInfo(bundleName, userId, innerBundleUserInfo)) {
         APP_LOGE("Get calling userInfo in bundle(%{public}s) failed", bundleName.c_str());
         return false;
     }
@@ -825,7 +826,7 @@ bool BundleMgrHostImpl::IsAbilityEnabled(const AbilityInfo &abilityInfo)
     return dataMgr->IsAbilityEnabled(abilityInfo);
 }
 
-bool BundleMgrHostImpl::SetAbilityEnabled(const AbilityInfo &abilityInfo, bool isEnabled)
+bool BundleMgrHostImpl::SetAbilityEnabled(const AbilityInfo &abilityInfo, bool isEnabled, int32_t userId)
 {
     if (!BundlePermissionMgr::VerifyCallingPermission(Constants::PERMISSION_CHANGE_ABILITY_ENABLED_STATE)) {
         APP_LOGE("verify permission failed");
@@ -837,13 +838,13 @@ bool BundleMgrHostImpl::SetAbilityEnabled(const AbilityInfo &abilityInfo, bool i
         return false;
     }
 
-    if (!dataMgr->SetAbilityEnabled(abilityInfo, isEnabled)) {
+    if (!dataMgr->SetAbilityEnabled(abilityInfo, isEnabled, userId)) {
         APP_LOGE("Set ability(%{public}s) enabled value faile.", abilityInfo.bundleName.c_str());
         return false;
     }
 
     InnerBundleUserInfo innerBundleUserInfo;
-    if (!GetBundleUserInfo(abilityInfo.bundleName, Constants::UNSPECIFIED_USERID, innerBundleUserInfo)) {
+    if (!GetBundleUserInfo(abilityInfo.bundleName, userId, innerBundleUserInfo)) {
         APP_LOGE("Get calling userInfo in bundle(%{public}s) failed", abilityInfo.bundleName.c_str());
         return false;
     }

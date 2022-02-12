@@ -952,10 +952,10 @@ ErrCode BundleManagerShellCommand::RunAsDumpCommand()
 
 ErrCode BundleManagerShellCommand::RunAsCleanCommand()
 {
-    int result = OHOS::ERR_OK;
-    int option = -1;
-    int counter = 0;
-    int userId = Constants::INVALID_USERID;
+    int32_t result = OHOS::ERR_OK;
+    int32_t option = -1;
+    int32_t counter = 0;
+    int32_t userId = Constants::UNSPECIFIED_USERID;
     bool cleanCache = false;
     bool cleanData = false;
     std::string bundleName = "";
@@ -1077,7 +1077,7 @@ ErrCode BundleManagerShellCommand::RunAsCleanCommand()
     } else {
         // bm clean -c
         if (cleanCache) {
-            if (CleanBundleCacheFilesOperation(bundleName)) {
+            if (CleanBundleCacheFilesOperation(bundleName, userId)) {
                 resultReceiver_ = STRING_CLEAN_CACHE_BUNDLE_OK + "\n";
             } else {
                 resultReceiver_ = STRING_CLEAN_CACHE_BUNDLE_NG + "\n";
@@ -1102,6 +1102,7 @@ ErrCode BundleManagerShellCommand::RunAsEnableCommand()
     int counter = 0;
     std::string bundleName = "";
     std::string abilityName = "";
+    int32_t userId = Constants::UNSPECIFIED_USERID;
     while (true) {
         counter++;
         option = getopt_long(argc_, argv_, SHORT_OPTIONS.c_str(), LONG_OPTIONS, nullptr);
@@ -1144,6 +1145,15 @@ ErrCode BundleManagerShellCommand::RunAsEnableCommand()
                     result = OHOS::ERR_INVALID_VALUE;
                     break;
                 }
+                case 'u': {
+                    // 'bm enable -u' with no argument: bm enable -u
+                    // 'bm enable --user-id' with no argument: bm enable --user-id
+                    APP_LOGD("'bm enable -u' with no argument.");
+                    resultReceiver_.append("error: option ");
+                    resultReceiver_.append("requires a value.\n");
+                    result = OHOS::ERR_INVALID_VALUE;
+                    break;
+                }
                 default: {
                     // 'bm enable' with an unknown option: bm enable -x
                     // 'bm enable' with an unknown option: bm enable -xxx
@@ -1178,6 +1188,13 @@ ErrCode BundleManagerShellCommand::RunAsEnableCommand()
                 abilityName = optarg;
                 break;
             }
+            case 'u': {
+                // 'bm enable -u userId'
+                // 'bm enable --user-id userId'
+                APP_LOGD("'bm enable %{public}s %{public}s'", argv_[optind - OFFSET_REQUIRED_ARGUMENT], optarg);
+                userId = std::stoi(optarg);
+                break;
+            }
             default: {
                 result = OHOS::ERR_INVALID_VALUE;
                 break;
@@ -1201,7 +1218,7 @@ ErrCode BundleManagerShellCommand::RunAsEnableCommand()
         AbilityInfo abilityInfo;
         abilityInfo.name = abilityName;
         abilityInfo.bundleName = bundleName;
-        bool enableResult = SetApplicationEnabledOperation(abilityInfo, true);
+        bool enableResult = SetApplicationEnabledOperation(abilityInfo, true, userId);
         if (enableResult == true) {
             resultReceiver_ = STRING_ENABLE_BUNDLE_OK + "\n";
         } else {
@@ -1218,6 +1235,7 @@ ErrCode BundleManagerShellCommand::RunAsDisableCommand()
     int counter = 0;
     std::string bundleName = "";
     std::string abilityName = "";
+    int32_t userId = Constants::UNSPECIFIED_USERID;
     while (true) {
         counter++;
         option = getopt_long(argc_, argv_, SHORT_OPTIONS.c_str(), LONG_OPTIONS, nullptr);
@@ -1258,6 +1276,15 @@ ErrCode BundleManagerShellCommand::RunAsDisableCommand()
                     result = OHOS::ERR_INVALID_VALUE;
                     break;
                 }
+                case 'u': {
+                    // 'bm disable -u' with no argument: bm disable -u
+                    // 'bm disable --user-id' with no argument: bm disable --user-id
+                    APP_LOGD("'bm disable -u' with no argument.");
+                    resultReceiver_.append("error: option ");
+                    resultReceiver_.append("requires a value.\n");
+                    result = OHOS::ERR_INVALID_VALUE;
+                    break;
+                }
                 default: {
                     // 'bm disable' with an unknown option: bm disable -x
                     // 'bm disable' with an unknown option: bm disable -xxx
@@ -1291,6 +1318,13 @@ ErrCode BundleManagerShellCommand::RunAsDisableCommand()
                 abilityName = optarg;
                 break;
             }
+            case 'u': {
+                // 'bm disable -u userId'
+                // 'bm disable --user-id userId'
+                APP_LOGD("'bm disable %{public}s %{public}s'", argv_[optind - OFFSET_REQUIRED_ARGUMENT], optarg);
+                userId = std::stoi(optarg);
+                break;
+            }
             default: {
                 result = OHOS::ERR_INVALID_VALUE;
                 break;
@@ -1311,7 +1345,7 @@ ErrCode BundleManagerShellCommand::RunAsDisableCommand()
         AbilityInfo abilityInfo;
         abilityInfo.name = abilityName;
         abilityInfo.bundleName = bundleName;
-        bool enableResult = SetApplicationEnabledOperation(abilityInfo, false);
+        bool enableResult = SetApplicationEnabledOperation(abilityInfo, false, userId);
         if (enableResult == true) {
             resultReceiver_ = STRING_DISABLE_BUNDLE_OK + "\n";
         } else {
@@ -1739,10 +1773,10 @@ int32_t BundleManagerShellCommand::UninstallOperation(
     return statusReceiver->GetResultCode();
 }
 
-bool BundleManagerShellCommand::CleanBundleCacheFilesOperation(const std::string &bundleName) const
+bool BundleManagerShellCommand::CleanBundleCacheFilesOperation(const std::string &bundleName, int32_t userId) const
 {
     sptr<CleanCacheCallbackImpl> cleanCacheCallBack(new CleanCacheCallbackImpl());
-    bool cleanRet = bundleMgrProxy_->CleanBundleCacheFiles(bundleName, cleanCacheCallBack);
+    bool cleanRet = bundleMgrProxy_->CleanBundleCacheFiles(bundleName, cleanCacheCallBack, userId);
     if (cleanRet) {
         return cleanCacheCallBack->GetResultCode();
     }
@@ -1750,7 +1784,7 @@ bool BundleManagerShellCommand::CleanBundleCacheFilesOperation(const std::string
     return cleanRet;
 }
 
-bool BundleManagerShellCommand::CleanBundleDataFilesOperation(const std::string &bundleName, int userId) const
+bool BundleManagerShellCommand::CleanBundleDataFilesOperation(const std::string &bundleName, int32_t userId) const
 {
     APP_LOGD("bundleName: %{public}s, userId:%{public}d", bundleName.c_str(), userId);
     bool cleanRet = bundleMgrProxy_->CleanBundleDataFiles(bundleName, userId);
@@ -1760,14 +1794,15 @@ bool BundleManagerShellCommand::CleanBundleDataFilesOperation(const std::string 
     return cleanRet;
 }
 
-bool BundleManagerShellCommand::SetApplicationEnabledOperation(const AbilityInfo &abilityInfo, bool isEnable) const
+bool BundleManagerShellCommand::SetApplicationEnabledOperation(const AbilityInfo &abilityInfo,
+    bool isEnable, int32_t userId) const
 {
     APP_LOGD("bundleName: %{public}s", abilityInfo.bundleName.c_str());
     bool ret = false;
     if (abilityInfo.name.size() == 0) {
-        ret = bundleMgrProxy_->SetApplicationEnabled(abilityInfo.bundleName, isEnable);
+        ret = bundleMgrProxy_->SetApplicationEnabled(abilityInfo.bundleName, isEnable, userId);
     } else {
-        ret = bundleMgrProxy_->SetAbilityEnabled(abilityInfo, isEnable);
+        ret = bundleMgrProxy_->SetAbilityEnabled(abilityInfo, isEnable, userId);
     }
     if (!ret) {
         if (isEnable) {

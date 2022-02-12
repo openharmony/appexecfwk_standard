@@ -367,10 +367,12 @@ public:
      * @brief Clears cache data of a specified application through the proxy object.
      * @param bundleName Indicates the bundle name of the application whose cache data is to be cleared.
      * @param cleanCacheCallback Indicates the callback to be invoked for returning the operation result.
+     * @param userId description the user id.
      * @return Returns true if this function is successfully called; returns false otherwise.
      */
     virtual bool CleanBundleCacheFiles(
-        const std::string &bundleName, const sptr<ICleanCacheCallback> &cleanCacheCallback) override;
+        const std::string &bundleName, const sptr<ICleanCacheCallback> &cleanCacheCallback,
+        int32_t userId = Constants::UNSPECIFIED_USERID) override;
     /**
      * @brief Clears application running data of a specified application through the proxy object.
      * @param bundleName Indicates the bundle name of the application whose data is to be cleared.
@@ -416,9 +418,11 @@ public:
      * @param bundleName Indicates the bundle name of the application.
      * @param isEnable Specifies whether to enable the application.
      *                 The value true means to enable it, and the value false means to disable it.
+     * @param userId description the user id.
      * @return Returns true if the application is enabled; returns false otherwise.
      */
-    virtual bool SetApplicationEnabled(const std::string &bundleName, bool isEnable) override;
+    virtual bool SetApplicationEnabled(const std::string &bundleName, bool isEnable,
+        int32_t userId = Constants::UNSPECIFIED_USERID) override;
     /**
      * @brief Sets whether to enable a specified ability through the proxy object.
      * @param abilityInfo Indicates information about the ability to check.
@@ -430,9 +434,11 @@ public:
      * @param abilityInfo Indicates information about the ability.
      * @param isEnabled Specifies whether to enable the ability.
      *                 The value true means to enable it, and the value false means to disable it.
+     * @param userId description the user id.
      * @return Returns true if the ability is enabled; returns false otherwise.
      */
-    virtual bool SetAbilityEnabled(const AbilityInfo &abilityInfo, bool isEnabled) override;
+    virtual bool SetAbilityEnabled(const AbilityInfo &abilityInfo, bool isEnabled,
+        int32_t userId = Constants::UNSPECIFIED_USERID) override;
     /**
      * @brief Obtains the icon of a specified ability through the proxy object.
      * @param bundleName Indicates the bundle name.

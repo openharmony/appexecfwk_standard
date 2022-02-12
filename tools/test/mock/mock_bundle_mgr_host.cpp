@@ -31,7 +31,7 @@ bool MockBundleMgrHost::DumpInfos(
 }
 
 bool MockBundleMgrHost::CleanBundleCacheFiles(const std::string &bundleName,
-    const sptr<ICleanCacheCallback> &cleanCacheCallback)
+    const sptr<ICleanCacheCallback> &cleanCacheCallback, int32_t userId)
 {
     APP_LOGD("enter");
     APP_LOGD("bundleName: %{public}s", bundleName.c_str());
@@ -46,7 +46,7 @@ bool MockBundleMgrHost::CleanBundleDataFiles(const std::string &bundleName, cons
     return true;
 }
 
-bool MockBundleMgrHost::SetApplicationEnabled(const std::string &bundleName, bool isEnable)
+bool MockBundleMgrHost::SetApplicationEnabled(const std::string &bundleName, bool isEnable, int32_t userId)
 {
     APP_LOGD("enter");
     APP_LOGD("bundleName: %{public}s", bundleName.c_str());
@@ -54,7 +54,7 @@ bool MockBundleMgrHost::SetApplicationEnabled(const std::string &bundleName, boo
     return true;
 }
 
-bool MockBundleMgrHost::SetAbilityEnabled(const AbilityInfo &abilityInfo, bool isEnable)
+bool MockBundleMgrHost::SetAbilityEnabled(const AbilityInfo &abilityInfo, bool isEnable, int32_t userId)
 {
     APP_LOGD("enter");
     APP_LOGD("abilityName: %{public}s", abilityInfo.name.c_str());
