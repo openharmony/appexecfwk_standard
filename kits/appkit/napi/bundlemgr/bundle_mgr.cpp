@@ -78,6 +78,8 @@ enum class InstallErrorCode {
     STATUS_BMS_SERVICE_ERROR = 0x41,
     STATUS_FAILED_NO_SPACE_LEFT = 0X42,
     STATUS_GRANT_REQUEST_PERMISSIONS_FAILED = 0X43,
+    STATUS_INSTALL_PERMISSION_DENIED = 0X44,
+    STATUS_UNINSTALL_PERMISSION_DENIED = 0X45,
     STATUS_USER_NOT_EXIST = 0X50,
     STATUS_USER_FAILURE_INVALID = 0X51,
     STATUS_USER_CREATE_FALIED = 0X52,
@@ -2752,6 +2754,9 @@ static void ConvertInstallResult(InstallResult &installResult)
             installResult.resultMsg = "STATUS_INSTALL_FAILURE_INCOMPATIBLE";
             break;
         case static_cast<int32_t>(IStatusReceiver::ERR_INSTALL_PERMISSION_DENIED):
+            installResult.resultCode = static_cast<int32_t>(InstallErrorCode::STATUS_INSTALL_PERMISSION_DENIED);
+            installResult.resultMsg = "STATUS_INSTALL_PERMISSION_DENIED";
+            break;
         case static_cast<int32_t>(IStatusReceiver::ERR_INSTALL_ENTRY_ALREADY_EXIST):
         case static_cast<int32_t>(IStatusReceiver::ERR_INSTALL_ALREADY_EXIST):
         case static_cast<int32_t>(IStatusReceiver::ERR_INSTALL_BUNDLENAME_NOT_SAME):
@@ -2781,9 +2786,12 @@ static void ConvertInstallResult(InstallResult &installResult)
             installResult.resultCode = static_cast<int32_t>(InstallErrorCode::STATUS_INSTALL_FAILURE_STORAGE);
             installResult.resultMsg = "STATUS_INSTALL_FAILURE_STORAGE";
             break;
+        case static_cast<int32_t>(IStatusReceiver::ERR_UNINSTALL_PERMISSION_DENIED):
+            installResult.resultCode = static_cast<int32_t>(InstallErrorCode::STATUS_UNINSTALL_PERMISSION_DENIED);
+            installResult.resultMsg = "STATUS_UNINSTALL_PERMISSION_DENIED";
+            break;
         case static_cast<int32_t>(IStatusReceiver::ERR_UNINSTALL_INVALID_NAME):
         case static_cast<int32_t>(IStatusReceiver::ERR_UNINSTALL_PARAM_ERROR):
-        case static_cast<int32_t>(IStatusReceiver::ERR_UNINSTALL_PERMISSION_DENIED):
             if (CheckIsSystemApp()) {
                 installResult.resultCode = static_cast<int32_t>(InstallErrorCode::STATUS_UNINSTALL_FAILURE_ABORTED);
                 installResult.resultMsg = "STATUS_UNINSTALL_FAILURE_ABORTED";
@@ -5432,6 +5440,18 @@ void CreateInstallErrorCodeObject(napi_env env, napi_value value)
                           &nStatusGrantRequestPermissionsFailed));
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, value, "STATUS_GRANT_REQUEST_PERMISSIONS_FAILED",
                           nStatusGrantRequestPermissionsFailed));
+    napi_value nStatusInstallPermissionDenied;
+    NAPI_CALL_RETURN_VOID(env,
+        napi_create_int32(env, static_cast<int32_t>(InstallErrorCode::STATUS_INSTALL_PERMISSION_DENIED),
+                          &nStatusInstallPermissionDenied));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, value, "STATUS_INSTALL_PERMISSION_DENIED",
+                          nStatusInstallPermissionDenied));
+    napi_value nStatusUnInstallPermissionDenied;
+    NAPI_CALL_RETURN_VOID(env,
+        napi_create_int32(env, static_cast<int32_t>(InstallErrorCode::STATUS_UNINSTALL_PERMISSION_DENIED),
+                          &nStatusUnInstallPermissionDenied));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, value, "STATUS_UNINSTALL_PERMISSION_DENIED",
+                          nStatusUnInstallPermissionDenied));
     napi_value nNoSpaceLeft;
     NAPI_CALL_RETURN_VOID(env,
         napi_create_int32(env, static_cast<int32_t>(InstallErrorCode::STATUS_FAILED_NO_SPACE_LEFT), &nNoSpaceLeft));
