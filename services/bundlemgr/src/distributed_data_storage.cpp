@@ -68,7 +68,7 @@ bool DistributedDataStorage::SaveStorageDistributeInfo(const DistributedBundleIn
         APP_LOGE("put to kvStore error: %{public}d", status);
         return false;
     } else {
-        APP_LOGE("put value to kvStore success");
+        APP_LOGI("put value to kvStore success");
     }
     return true;
 }
@@ -99,7 +99,7 @@ bool DistributedDataStorage::DeleteStorageDistributeInfo(const std::string &bund
         APP_LOGE("delete key error: %{public}d", status);
         return false;
     } else {
-        APP_LOGE("delete value to kvStore success");
+        APP_LOGI("delete value to kvStore success");
     }
     return true;
 }
@@ -259,7 +259,7 @@ bool DistributedDataStorage::SetDeviceId()
     DeviceInfo deviceInfo;
     status = dataManager_.GetLocalDevice(deviceInfo);
     if (status == Status::SUCCESS) {
-        APP_LOGI("set Device Id: %{public}s", deviceInfo.deviceName.c_str());
+        APP_LOGD("set Device Id: %{public}s", deviceInfo.deviceName.c_str());
         BundleUtil::SetCurrentDeviceId(deviceInfo.deviceName);
         return true;
     }
