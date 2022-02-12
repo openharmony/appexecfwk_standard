@@ -25,8 +25,13 @@ namespace AppExecFwk {
 void PermissionChangedDeathRecipient::OnRemoteDied(const wptr<IRemoteObject>& object)
 {
     APP_LOGI("permission changed callback died, remove the callback");
+    auto dataMgr = DelayedSingleton<BundleMgrService>::GetInstance()->GetDataMgr();
+    if (dataMgr == nullptr) {
+        APP_LOGE("DataMgr is nullptr");
+        return;
+    }
     sptr<OnPermissionChangedCallback> callback = iface_cast<OnPermissionChangedCallback>(object.promote());
-    DelayedSingleton<BundleMgrService>::GetInstance()->GetDataMgr()->UnregisterPermissionsChanged(callback);
+    dataMgr->UnregisterPermissionsChanged(callback);
 }
 } // namespace AppExecFwk
 } // namespace OHOS
