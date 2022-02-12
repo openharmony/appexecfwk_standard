@@ -61,18 +61,19 @@ const std::string BUNDLE_CODE_DIR = "/data/app/el1/bundle";
 const std::string BUNDLE_APP_DATA_BASE_DIR = "/data/app/";
 const std::string BASE = "/base/";
 const std::string DATABASE = "/database/";
+const std::string HAPS = "/haps/";
 const std::string DISTRIBUTED_FILE = "/data/service/el2/%/hmdfs/account/data/";
 const std::string DISTRIBUTED_FILE_NON_ACCOUNT = "/data/service/el2/%/hmdfs/non_account/data/";
 const std::string DISTRIBUTED_FILE_PROPERTY = "const.distributed_file_property.enabled";
-const std::vector<std::string> BUNDLE_EL = {"el1", "el2", "el3", "el4"};
-const std::vector<std::string> DATABASE_EL = {"el1", "el2"};
+const std::vector<std::string> BUNDLE_EL = {"el1", "el2"};
 const std::vector<std::string> BUNDLE_DATA_DIR = {
-    "/temp",
+    "/cache",
     "/files",
-    "/private",
-    "/private/caches",
-    "/private/storage",
-    "/haps"
+    "/temp",
+    "/preferences",
+    "/haps",
+    "/el3/base",
+    "/el4/base"
 };
 
 const std::string BMS_SERVICE_NAME = "BundleMgrService";
