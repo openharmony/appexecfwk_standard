@@ -112,6 +112,9 @@ bool DistributedDataStorage::GetDistributeInfoByUserId(
         kvStorePtr_->Delete(key);
         return false;
     }
+    if (userId == Constants::ALL_USERID) {
+        return true;
+    }
     if (userId >= Constants::DEFAULT_USERID) {
         for (auto it = info.bundleUserInfos.begin(); it != info.bundleUserInfos.end();) {
             if (it->userId != userId) {
