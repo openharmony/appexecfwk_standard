@@ -87,6 +87,7 @@ ohos_unittest("BmsBundleCloneTest") {
     "bytrace_standard:bytrace_core",
     "ces_standard:cesfwk_innerkits",
     "hiviewdfx_hilog_native:libhilog",
+    "init:libbegetutil",
     "ipc:ipc_core",
   ]
 

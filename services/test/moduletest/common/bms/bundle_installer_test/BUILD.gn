@@ -96,6 +96,7 @@ ohos_moduletest("BmsBundleInstallerModuleTest") {
     "bytrace_standard:bytrace_core",
     "ces_standard:cesfwk_innerkits",
     "hiviewdfx_hilog_native:libhilog",
+    "init:libbegetutil",
     "ipc:ipc_core",
     "os_account_standard:os_account_innerkits",
     "resmgr_standard:global_resmgr",

@@ -22,9 +22,35 @@
 #include "bundle_extractor.h"
 #include "bundle_profile.h"
 #include "module_profile.h"
+#include "rpcid_decode/syscap_tool.h"
+#include "securec.h"
 
 namespace OHOS {
 namespace AppExecFwk {
+namespace {
+bool ParseStr(const char *buf, const int itemLen, int totalLen, std::vector<std::string> &sysCaps)
+{
+    APP_LOGD("Parse rpcid output start, itemLen:%{public}d  totalLen:%{public}d.", itemLen, totalLen);
+    if (buf == nullptr || itemLen <= 0 || totalLen <= 0) {
+        APP_LOGE("param invalid.");
+        return false;
+    }
+
+    int index = 0;
+    while (index + itemLen <= totalLen) {
+        char item[itemLen];
+        if (strncpy_s(item, sizeof(item), buf + index, itemLen) != 0) {
+            APP_LOGE("Parse rpcid failed due to strncpy_s error.");
+            return false;
+        }
+
+        sysCaps.emplace_back((std::string)item, 0, itemLen);
+        index += itemLen;
+    }
+
+    return true;
+}
+}
 ErrCode BundleParser::Parse(const std::string &pathName, InnerBundleInfo &innerBundleInfo) const
 {
     APP_LOGI("parse from %{public}s", pathName.c_str());
@@ -59,6 +85,46 @@ ErrCode BundleParser::Parse(const std::string &pathName, InnerBundleInfo &innerB
         }
     }
     return ret;
+}
+
+ErrCode BundleParser::ParseSysCap(const std::string &pathName, std::vector<std::string> &sysCaps) const
+{
+    APP_LOGD("Parse sysCaps from %{public}s", pathName.c_str());
+    BundleExtractor bundleExtractor(pathName);
+    if (!bundleExtractor.Init()) {
+        APP_LOGE("Bundle extractor init failed");
+        return ERR_APPEXECFWK_PARSE_UNEXPECTED;
+    }
+
+    if (!bundleExtractor.HasEntry(Constants::SYSCAP_NAME)) {
+        APP_LOGD("Rpcid.sc is not exist, and do not need verification sysCaps.");
+        return ERR_OK;
+    }
+
+    std::stringstream rpcidStream;
+    if (!bundleExtractor.ExtractByName(Constants::SYSCAP_NAME, rpcidStream)) {
+        APP_LOGE("Extract rpcid file failed");
+        return ERR_APPEXECFWK_PARSE_RPCID_FAILED;
+    }
+
+    int rpcidLen = rpcidStream.tellp();
+    char rpcidBuf[rpcidLen];
+    rpcidStream.read(rpcidBuf, rpcidLen);
+    uint32_t outLen;
+    char *outBuffer;
+    int result = RPCIDStreamDecodeToBuffer(rpcidBuf, rpcidLen, &outBuffer, &outLen);
+    if (result != 0) {
+        APP_LOGE("Decode syscaps failed");
+        return ERR_APPEXECFWK_PARSE_RPCID_FAILED;
+    }
+
+    if (!ParseStr(outBuffer, SINGLE_SYSCAP_LENGTH, outLen, sysCaps)) {
+        APP_LOGE("Parse syscaps str failed");
+        return ERR_APPEXECFWK_PARSE_RPCID_FAILED;
+    }
+
+    APP_LOGE("Parse sysCaps str success");
+    return ERR_OK;
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS
