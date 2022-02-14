@@ -493,7 +493,7 @@ bool BundlePermissionMgr::GetRequestPermissionStates(BundleInfo &bundleInfo)
             }
         } else {
             APP_LOGE("request permission name : %{public}s is not exit", req.c_str());
-            bundleInfo.reqPermissionStates.emplace_back(Constants::PERMISSION_INVALID_GRANTED);
+            bundleInfo.reqPermissionStates.emplace_back(Constants::PERMISSION_NOT_GRANTED);
         }
     }
     return true;
