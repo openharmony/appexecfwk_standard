@@ -83,14 +83,16 @@ const std::string HELP_MSG_ENABLE =
     "options list:\n"
     "  -h, --help                             list available commands\n"
     "  -n, --bundle-name  <bundle-name>       enable bundle by bundle name\n"
-    "  -a, --ability-name <ability-name>      enable ability by ability name\n";
+    "  -a, --ability-name <ability-name>      enable ability by ability name\n"
+    "  -u, --user-id <user-id>                specify a user id\n";
 
 const std::string HELP_MSG_DISABLE =
     "usage: bm disable <options>\n"
     "options list:\n"
     "  -h, --help                             list available commands\n"
     "  -n, --bundle-name  <bundle-name>       disable bundle by bundle name\n"
-    "  -a, --ability-name <ability-name>      disable ability by ability name\n";
+    "  -a, --ability-name <ability-name>      disable ability by ability name\n"
+    "  -u, --user-id <user-id>                specify a user id\n";
 
 const std::string HELP_MSG_RECOVER =
     "usage: bm recover <options>\n"
@@ -150,6 +152,8 @@ const std::string NO_PROFILE = "no profile!\n";
 
 const std::string STRING_GET_UDID_OK = "udid of current device is :";
 const std::string STRING_GET_UDID_NG = "error: failed to get udid";
+
+const std::string HELP_MSG_DUMP_FAILED = "error: failed to get information and the parameters may be wrong";
 } // namespace
 
 class BundleManagerShellCommand : public ShellCommand {
@@ -190,10 +194,10 @@ private:
 
     ErrCode GetBundlePath(const std::string& param, std::vector<std::string>& bundlePaths) const;
 
-    bool CleanBundleCacheFilesOperation(const std::string &bundleName) const;
-    bool CleanBundleDataFilesOperation(const std::string &bundleName, int userId) const;
+    bool CleanBundleCacheFilesOperation(const std::string &bundleName, int32_t userId) const;
+    bool CleanBundleDataFilesOperation(const std::string &bundleName, int32_t userId) const;
 
-    bool SetApplicationEnabledOperation(const AbilityInfo &abilityInfo, bool isEnable) const;
+    bool SetApplicationEnabledOperation(const AbilityInfo &abilityInfo, bool isEnable, int32_t userId) const;
     int32_t RecoverOperation(const std::string &bundleName, InstallParam &installParam) const;
 
     bool QueryOperation(const std::string &bundleName, const std::string &elementName,
