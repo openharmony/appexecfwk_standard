@@ -375,6 +375,10 @@ public:
     {
         return 0;
     }
+    virtual int MoveMissionToFront(int32_t missionId, const StartOptions &startOptions) override
+    {
+        return 0;
+    }
     virtual int StartSyncRemoteMissions(const std::string& devId, bool fixConflict, int64_t tag) override
     {
         return 0;
