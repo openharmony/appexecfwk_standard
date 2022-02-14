@@ -204,6 +204,7 @@ private:
         const std::string &metadataName, const int32_t userId, std::string &result) const;
 
     bool CheckArguments(const std::string &argument) const;
+    int32_t GetCurrentUserId(int32_t userId) const;
 
     sptr<IBundleMgr> bundleMgrProxy_;
     sptr<IBundleInstaller> bundleInstallerProxy_;
