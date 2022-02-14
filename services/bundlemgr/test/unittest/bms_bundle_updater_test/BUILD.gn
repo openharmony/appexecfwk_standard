@@ -23,7 +23,7 @@ config("private_config") {
   ]
 }
 
-module_output_path = "appexecfwk_standard/bundlemgrservice"
+module_output_path = "bundle_framework/bundlemgrservice"
 
 ohos_unittest("BmsBundleUpdaterTest") {
   use_exceptions = true

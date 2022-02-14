@@ -16,7 +16,7 @@ import("//foundation/appexecfwk/standard/appexecfwk.gni")
 import(
     "//foundation/appexecfwk/standard/services/bundlemgr/appexecfwk_bundlemgr.gni")
 
-module_output_path = "appexecfwk_standard/bundlemgrservice"
+module_output_path = "bundle_framework/bundlemgrservice"
 
 ohos_unittest("BmsServiceStartupTest") {
   use_exceptions = true
