@@ -1464,7 +1464,7 @@ bool BundleDataMgr::IsApplicationEnabled(const std::string &bundleName) const
     return infoWithIdItem->second.GetApplicationEnabled(responseUserId);
 }
 
-bool BundleDataMgr::SetApplicationEnabled(const std::string &bundleName, bool isEnable)
+bool BundleDataMgr::SetApplicationEnabled(const std::string &bundleName, bool isEnable, int32_t userId)
 {
     APP_LOGD("SetApplicationEnabled %{public}s", bundleName.c_str());
     if (bundleName.empty()) {
@@ -1483,9 +1483,9 @@ bool BundleDataMgr::SetApplicationEnabled(const std::string &bundleName, bool is
         return false;
     }
     InnerBundleInfo newInfo = infoWithIdItem->second;
-    newInfo.SetApplicationEnabled(isEnable, GetUserId());
+    newInfo.SetApplicationEnabled(isEnable, GetUserId(userId));
     if (dataStorage_->SaveStorageBundleInfo(Constants::CURRENT_DEVICE_ID, newInfo)) {
-        infoWithIdItem->second.SetApplicationEnabled(isEnable, GetUserId());
+        infoWithIdItem->second.SetApplicationEnabled(isEnable, GetUserId(userId));
         return true;
     } else {
         APP_LOGE("bundle:%{private}s SetApplicationEnabled failed", bundleName.c_str());
@@ -1517,7 +1517,7 @@ bool BundleDataMgr::IsAbilityEnabled(const AbilityInfo &abilityInfo) const
     return innerBundleInfo->second.IsAbilityEnabled((*ability), GetUserId());
 }
 
-bool BundleDataMgr::SetAbilityEnabled(const AbilityInfo &abilityInfo, bool isEnabled)
+bool BundleDataMgr::SetAbilityEnabled(const AbilityInfo &abilityInfo, bool isEnabled, int32_t userId)
 {
     APP_LOGD("SetAbilityEnabled %{public}s", abilityInfo.name.c_str());
     std::lock_guard<std::mutex> lock(bundleInfoMutex_);
@@ -1535,10 +1535,10 @@ bool BundleDataMgr::SetAbilityEnabled(const AbilityInfo &abilityInfo, bool isEna
         return false;
     }
     InnerBundleInfo newInfo = innerBundleInfo->second;
-    newInfo.SetAbilityEnabled(abilityInfo.bundleName, abilityInfo.name, isEnabled, GetUserId());
+    newInfo.SetAbilityEnabled(abilityInfo.bundleName, abilityInfo.name, isEnabled, GetUserId(userId));
     if (dataStorage_->SaveStorageBundleInfo(Constants::CURRENT_DEVICE_ID, newInfo)) {
         return innerBundleInfo->second.SetAbilityEnabled(
-            abilityInfo.bundleName, abilityInfo.name, isEnabled, GetUserId());
+            abilityInfo.bundleName, abilityInfo.name, isEnabled, GetUserId(userId));
     }
     APP_LOGD("dataStorage SetAbilityEnabled %{public}s failed", abilityInfo.bundleName.c_str());
     return false;

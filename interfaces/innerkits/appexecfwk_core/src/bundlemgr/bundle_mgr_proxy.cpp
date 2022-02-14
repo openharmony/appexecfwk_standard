@@ -1147,7 +1147,7 @@ bool BundleMgrProxy::IsSafeMode()
 }
 
 bool BundleMgrProxy::CleanBundleCacheFiles(
-    const std::string &bundleName, const sptr<ICleanCacheCallback> &cleanCacheCallback)
+    const std::string &bundleName, const sptr<ICleanCacheCallback> &cleanCacheCallback, int32_t userId)
 {
     BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGI("begin to CleanBundleCacheFiles of %{public}s", bundleName.c_str());
@@ -1165,9 +1165,12 @@ bool BundleMgrProxy::CleanBundleCacheFiles(
         APP_LOGE("fail to CleanBundleCacheFiles due to write bundleName fail");
         return false;
     }
-
     if (!data.WriteParcelable(cleanCacheCallback->AsObject())) {
         APP_LOGE("fail to CleanBundleCacheFiles, for write parcel failed");
+        return false;
+    }
+    if (!data.WriteInt32(userId)) {
+        APP_LOGE("fail to CleanBundleCacheFiles due to write userId fail");
         return false;
     }
 
@@ -1356,7 +1359,7 @@ bool BundleMgrProxy::IsApplicationEnabled(const std::string &bundleName)
     return reply.ReadBool();
 }
 
-bool BundleMgrProxy::SetApplicationEnabled(const std::string &bundleName, bool isEnable)
+bool BundleMgrProxy::SetApplicationEnabled(const std::string &bundleName, bool isEnable, int32_t userId)
 {
     BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGI("begin to SetApplicationEnabled of %{public}s", bundleName.c_str());
@@ -1376,6 +1379,10 @@ bool BundleMgrProxy::SetApplicationEnabled(const std::string &bundleName, bool i
     }
     if (!data.WriteBool(isEnable)) {
         APP_LOGE("fail to IsApplicationEnabled due to write isEnable fail");
+        return false;
+    }
+    if (!data.WriteInt32(userId)) {
+        APP_LOGE("fail to IsApplicationEnabled due to write userId fail");
         return false;
     }
 
@@ -1414,7 +1421,7 @@ bool BundleMgrProxy::IsAbilityEnabled(const AbilityInfo &abilityInfo)
     return reply.ReadBool();
 }
 
-bool BundleMgrProxy::SetAbilityEnabled(const AbilityInfo &abilityInfo, bool isEnabled)
+bool BundleMgrProxy::SetAbilityEnabled(const AbilityInfo &abilityInfo, bool isEnabled, int32_t userId)
 {
     BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGI("begin to SetAbilityEnabled of %{public}s", abilityInfo.name.c_str());
@@ -1434,6 +1441,10 @@ bool BundleMgrProxy::SetAbilityEnabled(const AbilityInfo &abilityInfo, bool isEn
     }
     if (!data.WriteBool(isEnabled)) {
         APP_LOGE("fail to SetAbilityEnabled due to write isEnabled fail");
+        return false;
+    }
+    if (!data.WriteInt32(userId)) {
+        APP_LOGE("fail to SetAbilityEnabled due to write userId fail");
         return false;
     }
 

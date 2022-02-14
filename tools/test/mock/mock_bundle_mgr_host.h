@@ -64,7 +64,8 @@ public:
     MOCK_METHOD1(GetSystemAvailableCapabilities, bool(std::vector<std::string> &systemCaps));
     MOCK_METHOD0(IsSafeMode, bool());
 
-    bool CleanBundleCacheFiles(const std::string &bundleName, const sptr<ICleanCacheCallback> &cleanCacheCallback);
+    bool CleanBundleCacheFiles(const std::string &bundleName, const sptr<ICleanCacheCallback> &cleanCacheCallback,
+        int32_t userId = Constants::UNSPECIFIED_USERID) override;
     bool CleanBundleDataFiles(const std::string &bundleName, const int userId = 0);
 
     MOCK_METHOD1(RegisterBundleStatusCallback, bool(const sptr<IBundleStatusCallback> &bundleStatusCallback));
@@ -76,8 +77,10 @@ public:
 
     MOCK_METHOD1(IsApplicationEnabled, bool(const std::string &bundleName));
 
-    bool SetApplicationEnabled(const std::string &bundleName, bool isEnable);
-    bool SetAbilityEnabled(const AbilityInfo &abilityInfo, bool isEnable);
+    bool SetApplicationEnabled(const std::string &bundleName, bool isEnable,
+        int32_t userId = Constants::UNSPECIFIED_USERID) override;
+    bool SetAbilityEnabled(const AbilityInfo &abilityInfo, bool isEnable,
+        int32_t userId = Constants::UNSPECIFIED_USERID) override;
 
     MOCK_METHOD0(GetBundleInstaller, sptr<IBundleInstaller>());
     MOCK_METHOD0(GetBundleUserMgr, sptr<IBundleUserMgr>());
