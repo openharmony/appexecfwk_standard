@@ -1207,7 +1207,7 @@ ErrCode BaseBundleInstaller::RemoveHapModuleDataDir(
         APP_LOGE("fail to findHapModule info modulePackage: %{public}s", modulePackage.c_str());
         return ERR_NO_INIT;
     }
-    std::string moduleDataDir = info.GetBundleName() + Constants::PATH_SEPARATOR + (*hapModuleInfo).moduleName;
+    std::string moduleDataDir = info.GetBundleName() + Constants::HAPS + (*hapModuleInfo).moduleName;
     APP_LOGD("RemoveHapModuleDataDir moduleDataDir: %{public}s", moduleDataDir.c_str());
     auto result = InstalldClient::GetInstance()->RemoveModuleDataDir(moduleDataDir, userId);
     if (result != ERR_OK) {
