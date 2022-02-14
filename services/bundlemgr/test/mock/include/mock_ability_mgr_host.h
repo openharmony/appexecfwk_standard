@@ -425,7 +425,10 @@ public:
     {
         return 0;
     }
-
+    virtual int MoveMissionToFront(int32_t missionId, const StartOptions &startOptions) override
+    {
+        return 0;
+    }
     virtual int SetMissionLabel(const sptr<IRemoteObject> &token,
         const std::string &lable) override
     {
