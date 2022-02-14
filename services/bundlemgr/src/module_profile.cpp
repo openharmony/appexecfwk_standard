@@ -181,7 +181,7 @@ struct App {
     int32_t minAPIVersion = 0;
     int32_t targetAPIVersion = 0;
     std::string apiReleaseType = APP_API_RELEASETYPE_DEFAULT_VALUE;
-    bool distributedNotificationEnabled = false;
+    bool distributedNotificationEnabled = true;
     std::string entityType = APP_ENTITY_TYPE_DEFAULT_VALUE;
     bool keepAlive = false;
     std::pair<bool, bool> removable = std::make_pair<>(false, true);
