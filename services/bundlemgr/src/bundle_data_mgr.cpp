@@ -1201,8 +1201,9 @@ bool BundleDataMgr::GetLaunchWantForBundle(const std::string &bundleName, Want &
 {
     std::lock_guard<std::mutex> lock(bundleInfoMutex_);
     InnerBundleInfo innerBundleInfo;
-    if (!GetInnerBundleInfoWithFlags(
-        bundleName, BundleFlag::GET_BUNDLE_DEFAULT, Constants::CURRENT_DEVICE_ID, innerBundleInfo)) {
+
+    if (!GetInnerBundleInfoWithFlags(bundleName, BundleFlag::GET_BUNDLE_DEFAULT, Constants::CURRENT_DEVICE_ID,
+        innerBundleInfo, GetUserIdByCallingUid())) {
         APP_LOGE("GetLaunchWantForBundle failed");
         return false;
     }
@@ -2811,9 +2812,13 @@ bool BundleDataMgr::QueryExtensionAbilityInfos(const ExtensionAbilityType &exten
             continue;
         }
         auto innerExtensionInfos = innerBundleInfo.GetInnerExtensionInfos();
+        int32_t responseUserId = innerBundleInfo.GetResponseUserId(requestUserId);
         for (const auto &info : innerExtensionInfos) {
             if (info.second.type == extensionType) {
-                extensionInfos.emplace_back(info.second);
+                ExtensionAbilityInfo extensionAbilityInfo = info.second;
+                innerBundleInfo.GetApplicationInfo(
+                    ApplicationFlag::GET_BASIC_APPLICATION_INFO, responseUserId, extensionAbilityInfo.applicationInfo);
+                extensionInfos.emplace_back(extensionAbilityInfo);
             }
         }
     }

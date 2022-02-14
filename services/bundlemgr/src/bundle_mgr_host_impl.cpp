@@ -498,6 +498,7 @@ bool BundleMgrHostImpl::CleanBundleCacheFiles(
                 }
             }
         }
+        APP_LOGD("CleanBundleCacheFiles with error %{public}d", error);
         cleanCacheCallback->OnCleanCacheFinished(error);
     };
     handler_->PostTask(cleanCache);
@@ -604,6 +605,7 @@ bool BundleMgrHostImpl::UnregisterBundleStatusCallback()
 bool BundleMgrHostImpl::DumpInfos(
     const DumpFlag flag, const std::string &bundleName, int32_t userId, std::string &result)
 {
+    APP_LOGD("dump infos begin");
     bool ret = false;
     switch (flag) {
         case DumpFlag::DUMP_BUNDLE_LIST: {
@@ -708,6 +710,7 @@ bool BundleMgrHostImpl::DumpAllBundleInfos(int32_t userId, std::string &result)
 bool BundleMgrHostImpl::DumpBundleInfo(
     const std::string &bundleName, int32_t userId, std::string &result)
 {
+    APP_LOGD("dump bundle info begin");
     std::vector<InnerBundleUserInfo> innerBundleUserInfos;
     if (userId == Constants::ALL_USERID) {
         if (!GetBundleUserInfos(bundleName, innerBundleUserInfos)) {
