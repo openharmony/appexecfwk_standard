@@ -100,8 +100,8 @@ HWTEST_F(LibEventHandlerCheckTest, EventTimeout001, TestSize.Level1)
      * @tc.expected: step1. timeout success, but no hiCheck log.
      */
    
-    handler->SetDeliveryTimeout(deliveryTimeout);
-    handler->SetDistributeTimeout(distributeTimeout);
+    runner->SetDeliveryTimeout(deliveryTimeout);
+    runner->SetDistributeTimeout(distributeTimeout);
     handler->PostTask(fs);
     handler->PostTask(f);
 
@@ -152,8 +152,8 @@ HWTEST_F(LibEventHandlerCheckTest, EventTimeout002, TestSize.Level1)
      * @tc.expected: step1. timeout success, but no hiCheck log.
      */
    
-    handler->SetDeliveryTimeout(deliveryTimeout);
-    handler->SetDistributeTimeout(distributeTimeout);
+    runner->SetDeliveryTimeout(deliveryTimeout);
+    runner->SetDistributeTimeout(distributeTimeout);
     handler->PostTask(fs);
     handler->PostTask(f);
 
@@ -203,8 +203,8 @@ HWTEST_F(LibEventHandlerCheckTest, EventTimeout003, TestSize.Level1)
      * @tc.expected: step1. timeout success, but no hiCheck log.
      */
    
-    handler->SetDeliveryTimeout(deliveryTimeout);
-    handler->SetDistributeTimeout(distributeTimeout);
+    runner->SetDeliveryTimeout(deliveryTimeout);
+    runner->SetDistributeTimeout(distributeTimeout);
     handler->PostTask(fs);
     handler->PostTask(f, "eventHandlerCheckTest");
 
