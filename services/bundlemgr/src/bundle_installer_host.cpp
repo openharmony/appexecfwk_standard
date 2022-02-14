@@ -187,7 +187,7 @@ bool BundleInstallerHost::Install(
         APP_LOGE("statusReceiver invalid");
         return false;
     }
-    if (!BundlePermissionMgr::CheckCallingPermission(Constants::PERMISSION_INSTALL_BUNDLE)) {
+    if (!BundlePermissionMgr::VerifyCallingPermission(Constants::PERMISSION_INSTALL_BUNDLE)) {
         APP_LOGE("install permission denied");
         statusReceiver->OnFinished(ERR_APPEXECFWK_INSTALL_PERMISSION_DENIED, "");
         return false;
@@ -204,7 +204,7 @@ bool BundleInstallerHost::Install(const std::vector<std::string> &bundleFilePath
         APP_LOGE("statusReceiver invalid");
         return false;
     }
-    if (!BundlePermissionMgr::CheckCallingPermission(Constants::PERMISSION_INSTALL_BUNDLE)) {
+    if (!BundlePermissionMgr::VerifyCallingPermission(Constants::PERMISSION_INSTALL_BUNDLE)) {
         APP_LOGE("install permission denied");
         statusReceiver->OnFinished(ERR_APPEXECFWK_INSTALL_PERMISSION_DENIED, "");
         return false;
@@ -221,7 +221,7 @@ bool BundleInstallerHost::Recover(
         APP_LOGE("statusReceiver invalid");
         return false;
     }
-    if (!BundlePermissionMgr::CheckCallingPermission(Constants::PERMISSION_INSTALL_BUNDLE)) {
+    if (!BundlePermissionMgr::VerifyCallingPermission(Constants::PERMISSION_INSTALL_BUNDLE)) {
         APP_LOGE("install permission denied");
         statusReceiver->OnFinished(ERR_APPEXECFWK_INSTALL_PERMISSION_DENIED, "");
         return false;
@@ -237,7 +237,7 @@ bool BundleInstallerHost::Uninstall(
         APP_LOGE("statusReceiver invalid");
         return false;
     }
-    if (!BundlePermissionMgr::CheckCallingPermission(Constants::PERMISSION_INSTALL_BUNDLE)) {
+    if (!BundlePermissionMgr::VerifyCallingPermission(Constants::PERMISSION_INSTALL_BUNDLE)) {
         APP_LOGE("uninstall permission denied");
         statusReceiver->OnFinished(ERR_APPEXECFWK_UNINSTALL_PERMISSION_DENIED, "");
         return false;
@@ -253,7 +253,7 @@ bool BundleInstallerHost::Uninstall(const std::string &bundleName, const std::st
         APP_LOGE("statusReceiver invalid");
         return false;
     }
-    if (!BundlePermissionMgr::CheckCallingPermission(Constants::PERMISSION_INSTALL_BUNDLE)) {
+    if (!BundlePermissionMgr::VerifyCallingPermission(Constants::PERMISSION_INSTALL_BUNDLE)) {
         APP_LOGE("uninstall permission denied");
         statusReceiver->OnFinished(ERR_APPEXECFWK_UNINSTALL_PERMISSION_DENIED, "");
         return false;
