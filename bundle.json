@@ -10,7 +10,8 @@
         "name": "bundle_framework",
         "subsystem": "appexecfwk",
         "syscap": [
-            "SystemCapability.BundleManager.BundleFramework"
+            "SystemCapability.BundleManager.BundleFramework",
+            "SystemCapability.BundleManager.Zlib"
         ],
         "features": [],
         "adapted_system_type": [
