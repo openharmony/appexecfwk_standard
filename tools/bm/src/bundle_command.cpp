@@ -27,6 +27,8 @@
 #include "clean_cache_callback_host.h"
 #include "if_system_ability_manager.h"
 #include "iservice_registry.h"
+#include "os_account_info.h"
+#include "os_account_manager.h"
 #include "parameter.h"
 #include "status_receiver_impl.h"
 #include "system_ability_definition.h"
@@ -942,7 +944,7 @@ ErrCode BundleManagerShellCommand::RunAsDumpCommand()
             dumpResults = DumpBundleInfo(bundleName, userId);
         }
         if (dumpResults.empty() || (dumpResults == "")) {
-            dumpResults = HELP_MSG_DUMP_FAILED;
+            dumpResults = HELP_MSG_DUMP_FAILED + "\n";
         }
         resultReceiver_.append(dumpResults);
     }
@@ -1775,6 +1777,7 @@ int32_t BundleManagerShellCommand::UninstallOperation(
 
 bool BundleManagerShellCommand::CleanBundleCacheFilesOperation(const std::string &bundleName, int32_t userId) const
 {
+    userId = GetCurrentUserId(userId);
     sptr<CleanCacheCallbackImpl> cleanCacheCallBack(new CleanCacheCallbackImpl());
     bool cleanRet = bundleMgrProxy_->CleanBundleCacheFiles(bundleName, cleanCacheCallBack, userId);
     if (cleanRet) {
@@ -1787,6 +1790,7 @@ bool BundleManagerShellCommand::CleanBundleCacheFilesOperation(const std::string
 bool BundleManagerShellCommand::CleanBundleDataFilesOperation(const std::string &bundleName, int32_t userId) const
 {
     APP_LOGD("bundleName: %{public}s, userId:%{public}d", bundleName.c_str(), userId);
+    userId = GetCurrentUserId(userId);
     bool cleanRet = bundleMgrProxy_->CleanBundleDataFiles(bundleName, userId);
     if (!cleanRet) {
         APP_LOGE("clean bundle data files operation failed");
@@ -1798,6 +1802,7 @@ bool BundleManagerShellCommand::SetApplicationEnabledOperation(const AbilityInfo
     bool isEnable, int32_t userId) const
 {
     APP_LOGD("bundleName: %{public}s", abilityInfo.bundleName.c_str());
+    userId = GetCurrentUserId(userId);
     bool ret = false;
     if (abilityInfo.name.size() == 0) {
         ret = bundleMgrProxy_->SetApplicationEnabled(abilityInfo.bundleName, isEnable, userId);
@@ -1858,6 +1863,28 @@ bool BundleManagerShellCommand::QueryOperation(const std::string &bundleName, co
     for_each(info.abilityInfos.begin(), info.abilityInfos.end(), matchInfo);
     for_each(info.extensionInfos.begin(), info.extensionInfos.end(), matchInfo);
     return true;
+}
+
+int32_t BundleManagerShellCommand::GetCurrentUserId(int32_t userId) const
+{
+    if (userId == Constants::UNSPECIFIED_USERID) {
+        char udid[DEVICE_UDID_LENGTH] = {0};
+        int32_t ret = GetDevUdid(udid, DEVICE_UDID_LENGTH);
+        if (ret != 0) {
+            APP_LOGE("BundleManagerShellCommand GetDevUdid failed! ret = %{public}d.", ret);
+            return userId;
+        }
+        std::vector<AccountSA::OsAccountInfo> osAccountList;
+        AccountSA::OsAccountManager::GetOsAccountListFromDatabase(std::string(udid), osAccountList);
+        for (auto osAccount : osAccountList) {
+            APP_LOGD("BundleManagerShellCommand osAccount userId:%{public}d, isActived:%{public}d",
+                     osAccount.GetLocalId(), osAccount.GetIsActived());
+            if (osAccount.GetIsActived()) {
+                return osAccount.GetLocalId();
+            }
+        }
+    }
+    return userId;
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS

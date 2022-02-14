@@ -48,6 +48,7 @@ ohos_systemtest("bm_command_install_system_test") {
   external_deps = [
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
+    "os_account_standard:os_account_innerkits",
   ]
   resource_config_file =
       "//foundation/appexecfwk/standard/test/resource/tools/ohos_test.xml"
@@ -85,6 +86,7 @@ ohos_systemtest("bm_command_uninstall_system_test") {
   external_deps = [
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
+    "os_account_standard:os_account_innerkits",
   ]
   resource_config_file =
       "//foundation/appexecfwk/standard/test/resource/tools/ohos_test.xml"
@@ -122,6 +124,7 @@ ohos_systemtest("bm_command_dump_system_test") {
   external_deps = [
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
+    "os_account_standard:os_account_innerkits",
   ]
   resource_config_file =
       "//foundation/appexecfwk/standard/test/resource/tools/ohos_test.xml"
