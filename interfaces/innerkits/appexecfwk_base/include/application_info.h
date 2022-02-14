@@ -130,7 +130,7 @@ struct ApplicationInfo : public Parcelable {
     std::string apiReleaseType;
     bool debug = false;
     std::string deviceId;
-    bool distributedNotificationEnabled = false;
+    bool distributedNotificationEnabled = true;
     std::string entityType;
     std::string process;
     int supportedModes = 0;  // returns 0 if the application does not support the driving mode
