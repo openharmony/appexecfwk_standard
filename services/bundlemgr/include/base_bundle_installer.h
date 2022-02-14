@@ -39,9 +39,10 @@ protected:
     enum class InstallerState {
         INSTALL_START,
         INSTALL_BUNDLE_CHECKED = 5,
-        INSTALL_SIGNATURE_CHECKED = 10,
-        INSTALL_PARSED = 15,
-        INSTALL_PERMS_REQ = 20,
+        INSTALL_SYSCAP_CHECKED = 10,
+        INSTALL_SIGNATURE_CHECKED = 15,
+        INSTALL_PARSED = 20,
+        INSTALL_PERMS_REQ = 25,
         INSTALL_VERSION_AND_BUNDLENAME_CHECKED = 30,
         INSTALL_CREATDIR = 40,
         INSTALL_EXTRACTED = 60,
@@ -281,6 +282,12 @@ private:
      */
     ErrCode ProcessRecover(
         const std::string &bundleName, const InstallParam &installParam, int32_t &uid);
+    /**
+     * @brief Check syscap.
+     * @param bundlePaths Indicates the file paths of all HAP packages.
+     * @return Returns ERR_OK if the syscap satisfy; returns error code otherwise.
+     */
+    ErrCode CheckSysCap(const std::vector<std::string> &bundlePaths);
     /**
      * @brief Check signature info of multiple haps.
      * @param bundlePaths Indicates the file paths of all HAP packages.

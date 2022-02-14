@@ -101,6 +101,7 @@ ohos_source_set("bundle_parser") {
     "ipc:ipc_core",
     "permission_standard:libpermissionsdk_standard",
     "startup_l2:syspara",
+    "utils_base:utils",
   ]
 }
 
@@ -167,6 +168,7 @@ ohos_shared_library("libbms") {
     "distributeddatamgr:distributeddata_inner",
     "eventhandler:libeventhandler",
     "hiviewdfx_hilog_native:libhilog",
+    "init:libbegetutil",
     "ipc:ipc_core",
     "os_account_standard:os_account_innerkits",
     "permission_standard:libpermissionsdk_standard",
