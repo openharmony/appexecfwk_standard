@@ -85,6 +85,8 @@ private:
     std::unique_ptr<char[]> LoadResourceFile(std::string &path, int &len);
     std::unique_ptr<char[]> EncodeBase64(std::unique_ptr<char[]> &data, int srcLen);
     bool GetCurrentUserId(int &userId);
+    static OHOS::sptr<OHOS::AppExecFwk::IBundleMgr> bundleMgr_;
+    static std::mutex bundleMgrMutex_;
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS
