@@ -104,17 +104,36 @@ struct PermissionsKey {
 thread_local std::map<PermissionsKey, OHOS::sptr<PermissionCallback>> g_permissionsCallback;
 thread_local std::map<napi_ref, OHOS::sptr<PermissionCallback>> g_anyPermissionsCallback;
 
+static OHOS::sptr<OHOS::AppExecFwk::IBundleMgr> bundleMgr_ = nullptr;
+std::mutex bundleMgrMutex_;
+
 }  // namespace
 
 napi_ref thread_local g_classBundleInstaller;
 
 static OHOS::sptr<OHOS::AppExecFwk::IBundleMgr> GetBundleMgr()
 {
-    OHOS::sptr<OHOS::ISystemAbilityManager> systemAbilityManager =
-        OHOS::SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
-    OHOS::sptr<OHOS::IRemoteObject> remoteObject =
-        systemAbilityManager->GetSystemAbility(OHOS::BUNDLE_MGR_SERVICE_SYS_ABILITY_ID);
-    return OHOS::iface_cast<IBundleMgr>(remoteObject);
+    if (bundleMgr_ == nullptr) {
+        std::lock_guard<std::mutex> lock(bundleMgrMutex_);
+        if (bundleMgr_ == nullptr) {
+            auto systemAbilityManager = OHOS::SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
+            if (systemAbilityManager == nullptr) {
+                APP_LOGE("GetBundleMgr GetSystemAbilityManager is null");
+                return nullptr;
+            }
+            auto bundleMgrSa = systemAbilityManager->GetSystemAbility(OHOS::BUNDLE_MGR_SERVICE_SYS_ABILITY_ID);
+            if (bundleMgrSa == nullptr) {
+                APP_LOGE("GetBundleMgr GetSystemAbility is null");
+                return nullptr;
+            }
+            auto bundleMgr = OHOS::iface_cast<IBundleMgr>(bundleMgrSa);
+            if (bundleMgr == nullptr) {
+                APP_LOGE("GetBundleMgr iface_cast get null");
+            }
+            bundleMgr_ = bundleMgr;
+        }
+    }
+    return bundleMgr_;
 }
 
 static bool CheckIsSystemApp()
