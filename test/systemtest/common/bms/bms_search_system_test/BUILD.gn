@@ -14,7 +14,7 @@
 import("//build/test.gni")
 import("//foundation/appexecfwk/standard/appexecfwk.gni")
 
-module_output_path = "appexecfwk_standard/bundlemgrsst"
+module_output_path = "bundle_framework/bundlemgrsst"
 
 ohos_systemtest("BmsSearchSystemTest") {
   module_out_path = module_output_path
