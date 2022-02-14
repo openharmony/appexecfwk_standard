@@ -146,6 +146,46 @@ public:
     bool IsCurrentRunnerThread();
 
     /**
+     * Set the distribution standard expiration time.
+     *
+     * @param deliveryTimeout the distribution standard expiration time.
+     */
+    void SetDeliveryTimeout(int64_t deliveryTimeout)
+    {
+        deliveryTimeout_ = deliveryTimeout;
+    }
+
+    /**
+     * Get the distribution standard expiration time.
+     *
+     * @return the distribution standard expiration time.
+     */
+    int64_t GetDeliveryTimeout() const
+    {
+        return deliveryTimeout_;
+    }
+
+    /**
+     * Set the execution standard timeout period.
+     *
+     * @param distributeTimeout the distribution standard expiration time.
+     */
+    void SetDistributeTimeout(int64_t distributeTimeout)
+    {
+        distributeTimeout_ = distributeTimeout;
+    }
+
+    /**
+     * Get the execution standard timeout period.
+     *
+     * @return the distribution standard expiration time.
+     */
+    int64_t GetDistributeTimeout() const
+    {
+        return distributeTimeout_;
+    }
+
+    /**
      * Obtains the EventRunner for the main thread of the application.
      *
      * @return Returns the EventRunner for the main thread of the application.
@@ -168,6 +208,8 @@ private:
         return (deposit_) || (running_.load());
     }
 
+    int64_t deliveryTimeout_ = 0;
+    int64_t distributeTimeout_ = 0;
     bool deposit_{true};
     std::atomic<bool> running_{false};
     std::shared_ptr<EventQueue> queue_;

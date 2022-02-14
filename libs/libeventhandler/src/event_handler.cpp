@@ -240,8 +240,11 @@ void EventHandler::SetEventRunner(const std::shared_ptr<EventRunner> &runner)
 
 void EventHandler::DeliveryTimeAction(const InnerEvent::Pointer &event, InnerEvent::TimePoint nowStart)
 {
-    int64_t deliveryTimeout = GetDeliveryTimeout();
-    if (HiChecker::NeedCheckSlowEvent() && deliveryTimeout != 0) {
+    if (!HiChecker::NeedCheckSlowEvent()) {
+        return;
+    }
+    int64_t deliveryTimeout = eventRunner_->GetDeliveryTimeout();
+    if (deliveryTimeout > 0) {
         std::string threadName = eventRunner_->GetRunnerThreadName();
         std::string eventName = GetEventName(event);
         int64_t threadId = gettid();
@@ -250,8 +253,8 @@ void EventHandler::DeliveryTimeAction(const InnerEvent::Pointer &event, InnerEve
         std::string deliveryTimeCharacter = std::to_string((deliveryTime).count());
         std::string deliveryTimeoutCharacter = std::to_string(deliveryTimeout);
         std::string handOutTag = "threadId: " + threadIdCharacter + "," + "threadName: " + threadName + "," +
-        "eventName: " + eventName + "," + "deliveryTime: " + deliveryTimeCharacter + "," +
-        "deliveryTimeout: " + deliveryTimeoutCharacter;
+            "eventName: " + eventName + "," + "deliveryTime: " + deliveryTimeCharacter + "," +
+            "deliveryTimeout: " + deliveryTimeoutCharacter;
         if ((nowStart - std::chrono::milliseconds(deliveryTimeout)) > event->GetHandleTime()) {
             HiChecker::NotifySlowEvent(handOutTag);
             if (deliveryTimeoutCallback_) {
@@ -263,8 +266,11 @@ void EventHandler::DeliveryTimeAction(const InnerEvent::Pointer &event, InnerEve
 
 void EventHandler::DistributeTimeAction(const InnerEvent::Pointer &event, InnerEvent::TimePoint nowStart)
 {
-    int64_t distributeTimeout = GetDistributeTimeout();
-    if (HiChecker::NeedCheckSlowEvent() && distributeTimeout != 0) {
+    if (!HiChecker::NeedCheckSlowEvent()) {
+        return;
+    }
+    int64_t distributeTimeout = eventRunner_->GetDistributeTimeout();
+    if (distributeTimeout > 0) {
         std::string threadName = eventRunner_->GetRunnerThreadName();
         std::string eventName = GetEventName(event);
         int64_t threadId = gettid();
@@ -274,8 +280,8 @@ void EventHandler::DistributeTimeAction(const InnerEvent::Pointer &event, InnerE
         std::string distributeTimeCharacter = std::to_string((distributeTime).count());
         std::string distributeTimeoutCharacter = std::to_string(distributeTimeout);
         std::string executeTag = "threadId: " + threadIdCharacter + "," + "threadName: " + threadName + "," +
-        "eventName: " + eventName + "," + "deliveryTime: " + distributeTimeCharacter + "," +
-        "deliveryTimeout: " + distributeTimeoutCharacter;
+            "eventName: " + eventName + "," + "distributeTime: " + distributeTimeCharacter + "," +
+            "distributeTimeout: " + distributeTimeoutCharacter;
         if ((nowEnd - std::chrono::milliseconds(distributeTimeout)) > nowStart) {
             HiChecker::NotifySlowEvent(executeTag);
             if (distributeTimeoutCallback_) {
@@ -332,26 +338,6 @@ void EventHandler::DistributeEvent(const InnerEvent::Pointer &event)
     } else {
         currentEventHandler = oldHandler;
     }
-}
-
-void EventHandler::SetDeliveryTimeout(int64_t deliveryTimeout)
-{
-    deliveryTimeout_ = deliveryTimeout;
-}
-
-void EventHandler::SetDistributeTimeout(int64_t distributeTimeout)
-{
-    distributeTimeout_ = distributeTimeout;
-}
-
-int64_t EventHandler::GetDistributeTimeout() const
-{
-    return distributeTimeout_;
-}
-
-int64_t EventHandler::GetDeliveryTimeout() const
-{
-    return deliveryTimeout_;
 }
 
 void EventHandler::Dump(Dumper &dumper)

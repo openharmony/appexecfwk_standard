@@ -865,34 +865,6 @@ public:
     void DistributeEvent(const InnerEvent::Pointer &event);
 
     /**
-     * Set the distribution standard expiration time.
-     *
-     * @param deliveryTimeout the distribution standard expiration time.
-     */
-    void SetDeliveryTimeout(int64_t deliveryTimeout);
-
-    /**
-     * Get the distribution standard expiration time.
-     *
-     * @return the distribution standard expiration time.
-     */
-    int64_t GetDeliveryTimeout() const;
-
-    /**
-     * Set the execution standard timeout period.
-     *
-     * @param distributeTimeout the distribution standard expiration time.
-     */
-    void SetDistributeTimeout(int64_t distributeTimeout);
-
-    /**
-     * Get the execution standard timeout period.
-     *
-     * @return the distribution standard expiration time.
-     */
-    int64_t GetDistributeTimeout() const;
-
-    /**
      * Distribute time out action.
      *
      * @param event The event should be distribute.
@@ -955,8 +927,6 @@ protected:
     virtual void ProcessEvent(const InnerEvent::Pointer &event);
 
 private:
-    int64_t deliveryTimeout_ = 0;
-    int64_t distributeTimeout_ = 0;
     std::shared_ptr<EventRunner> eventRunner_;
     CallbackTimeout deliveryTimeoutCallback_;
     CallbackTimeout distributeTimeoutCallback_;
