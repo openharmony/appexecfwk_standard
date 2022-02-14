@@ -20,6 +20,7 @@
         "ram": "4000KB",
         "deps": {
             "components": [
+                "ability_base",
                 "ability_runtime",
                 "access_token",
                 "appverify",
