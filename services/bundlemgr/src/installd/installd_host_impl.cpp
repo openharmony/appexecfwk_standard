@@ -167,14 +167,14 @@ ErrCode InstalldHostImpl::CreateNewBundleDataDir(
         APP_LOGE("Calling the function CreateBundleDataDir with invalid param");
         return ERR_APPEXECFWK_INSTALLD_PARAM_ERROR;
     }
-    for (const auto el : Constants::BUNDLE_EL) {
+    for (const auto &el : Constants::BUNDLE_EL) {
         std::string bundleDataDir = GetBundleDataDir(el, userid) + Constants::BASE + bundleName;
         if (!InstalldOperator::MkOwnerDir(bundleDataDir, S_IRWXU, uid, gid)) {
             APP_LOGE("CreateBundledatadir MkOwnerDir failed");
             return ERR_APPEXECFWK_INSTALLD_CREATE_DIR_FAILED;
         }
         if (el == Constants::BUNDLE_EL[1]) {
-            for (const auto dir : Constants::BUNDLE_DATA_DIR) {
+            for (const auto &dir : Constants::BUNDLE_DATA_DIR) {
                 if (!InstalldOperator::MkOwnerDir(bundleDataDir + dir, S_IRWXU, uid, gid)) {
                     APP_LOGE("CreateBundledatadir MkOwnerDir el2 failed");
                     return ERR_APPEXECFWK_INSTALLD_CREATE_DIR_FAILED;
@@ -182,10 +182,10 @@ ErrCode InstalldHostImpl::CreateNewBundleDataDir(
             }
         }
         SetDirApl(bundleDataDir, bundleName, apl);
-    }
-    for (const auto el : Constants::DATABASE_EL) {
+
         std::string databaseDir = GetBundleDataDir(el, userid) + Constants::DATABASE + bundleName;
-        if (!InstalldOperator::MkOwnerDir(databaseDir, S_IRWXU, uid, gid)) {
+        if (!InstalldOperator::MkOwnerDir(
+            databaseDir, S_IRWXU | S_IRWXG | S_ISGID, uid, Constants::DATABASE_DIR_GID)) {
             APP_LOGE("CreateBundle databaseDir MkOwnerDir failed");
             return ERR_APPEXECFWK_INSTALLD_CREATE_DIR_FAILED;
         }
@@ -217,14 +217,12 @@ ErrCode InstalldHostImpl::RemoveBundleDataDir(const std::string &bundleName, con
         APP_LOGE("Calling the function CreateBundleDataDir with invalid param");
         return ERR_APPEXECFWK_INSTALLD_PARAM_ERROR;
     }
-    for (const auto el : Constants::BUNDLE_EL) {
+    for (const auto &el : Constants::BUNDLE_EL) {
         std::string bundleDataDir = GetBundleDataDir(el, userid) + Constants::BASE + bundleName;
         if (!InstalldOperator::DeleteDir(bundleDataDir)) {
             APP_LOGE("remove dir %{public}s failed", bundleDataDir.c_str());
             return ERR_APPEXECFWK_INSTALLD_REMOVE_DIR_FAILED;
         }
-    }
-    for (const auto el : Constants::DATABASE_EL) {
         std::string databaseDir = GetBundleDataDir(el, userid) + Constants::DATABASE + bundleName;
         if (!InstalldOperator::DeleteDir(databaseDir)) {
             APP_LOGE("remove dir %{public}s failed", databaseDir.c_str());
@@ -286,7 +284,7 @@ ErrCode InstalldHostImpl::RemoveModuleDataDir(const std::string &ModuleDir, cons
         return ERR_APPEXECFWK_INSTALLD_PARAM_ERROR;
     }
 
-    for (const auto el : Constants::BUNDLE_EL) {
+    for (const auto &el : Constants::BUNDLE_EL) {
         std::string moduleDataDir = GetBundleDataDir(el, userid) + Constants::BASE + ModuleDir;
         if (!InstalldOperator::DeleteDir(moduleDataDir)) {
             APP_LOGE("remove dir %{public}s failed", moduleDataDir.c_str());
@@ -369,7 +367,7 @@ ErrCode InstalldHostImpl::GetBundleStats(
 
     // index 3 : database size
     std::vector<std::string> dataBasePath;
-    for (auto &el : Constants::DATABASE_EL) {
+    for (auto &el : Constants::BUNDLE_EL) {
         std::string filePath = Constants::BUNDLE_APP_DATA_BASE_DIR + el + Constants::FILE_SEPARATOR_CHAR +
             std::to_string(userId) + Constants::DATABASE + bundleName;
         dataBasePath.push_back(filePath);
