@@ -1918,7 +1918,7 @@ bool ToApplicationInfo(const ProfileReader::ConfigJson &configJson,
     applicationInfo.apiReleaseType = configJson.app.apiVersion.releaseType;
     applicationInfo.debug = configJson.deveicConfig.defaultDevice.debug;
     applicationInfo.deviceId = Constants::CURRENT_DEVICE_ID;
-    applicationInfo.distributedNotificationEnabled = false;
+    applicationInfo.distributedNotificationEnabled = true;
     applicationInfo.entityType = Profile::APP_ENTITY_TYPE_DEFAULT_VALUE;
     applicationInfo.process = configJson.deveicConfig.defaultDevice.process;
     auto it = find(configJson.module.supportedModes.begin(),
