@@ -14,7 +14,7 @@
 import("//build/test.gni")
 import("//foundation/appexecfwk/standard/appexecfwk.gni")
 
-module_output_path = "appexecfwk_standard/tools"
+module_output_path = "bundle_tool/tools"
 
 config("tools_bm_config_mock") {
   include_dirs = [

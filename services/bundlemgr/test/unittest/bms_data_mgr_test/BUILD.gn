@@ -20,7 +20,7 @@ config("private_config") {
   include_dirs = [ "${services_path}/bundlemgr/test/mock/include" ]
 }
 
-module_output_path = "appexecfwk_standard/bundlemgrservice"
+module_output_path = "bundle_framework/bundlemgrservice"
 
 ohos_unittest("BmsDataMgrTest") {
   use_exceptions = true
