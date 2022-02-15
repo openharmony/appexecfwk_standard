@@ -76,7 +76,7 @@ const std::string HELP_MSG_CLEAN =
     "  -n, --bundle-name  <bundle-name>                bundle name\n"
     "  -c, --cache                                     clean bundle cache files by bundle name\n"
     "  -d, --data                                      clean bundle data files by bundle name\n"
-    "  -u, --user-id <user-id>                         specify a user id";
+    "  -u, --user-id <user-id>                         specify a user id\n";
 
 const std::string HELP_MSG_ENABLE =
     "usage: bm enable <options>\n"
@@ -153,7 +153,7 @@ const std::string NO_PROFILE = "no profile!\n";
 const std::string STRING_GET_UDID_OK = "udid of current device is :";
 const std::string STRING_GET_UDID_NG = "error: failed to get udid";
 
-const std::string HELP_MSG_DUMP_FAILED = "error: failed to get information and the parameters may be wrong";
+const std::string HELP_MSG_DUMP_FAILED = "error: failed to get information and the parameters may be wrong.";
 } // namespace
 
 class BundleManagerShellCommand : public ShellCommand {
