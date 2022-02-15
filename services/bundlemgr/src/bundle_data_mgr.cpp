@@ -2144,9 +2144,6 @@ bool BundleDataMgr::GetShortcutInfos(
         return false;
     }
     innerBundleInfo.GetShortcutInfos(shortcutInfos);
-    if (shortcutInfos.size() == 0) {
-        return false;
-    }
     return true;
 }
 
