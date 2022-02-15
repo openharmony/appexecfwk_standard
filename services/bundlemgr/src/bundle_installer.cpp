@@ -99,15 +99,24 @@ void BundleInstaller::Uninstall(const std::string &bundleName, const InstallPara
 {
     ErrCode resultCode = ERR_OK;
     if (installParam.userId == Constants::ALL_USERID) {
+        std::vector<ErrCode> errCode;
         auto userInstallParam = installParam;
         for (auto userId : GetExistsCommonUserIs()) {
             userInstallParam.userId = userId;
             resultCode = UninstallBundle(bundleName, userInstallParam);
-            if (resultCode == ERR_APPEXECFWK_UNINSTALL_MISSING_INSTALLED_BUNDLE ||
-                resultCode == ERR_APPEXECFWK_USER_NOT_EXIST) {
-                resultCode = ERR_OK;
-            }
+            errCode.push_back(resultCode);
             ResetInstallProperties();
+        }
+        if (std::find(errCode.begin(), errCode.end(), ERR_OK) != errCode.end()) {
+            for (const auto &err : errCode) {
+                if (!(err == ERR_APPEXECFWK_UNINSTALL_MISSING_INSTALLED_BUNDLE ||
+                    err == ERR_APPEXECFWK_USER_NOT_EXIST || err == ERR_OK)) {
+                    resultCode = err;
+                    break;
+                }
+            }
+        } else {
+            resultCode = (errCode.size() > 0) ? errCode[0] : ERR_OK;
         }
     } else {
         resultCode = UninstallBundle(bundleName, installParam);
@@ -122,11 +131,24 @@ void BundleInstaller::Uninstall(
 {
     ErrCode resultCode = ERR_OK;
     if (installParam.userId == Constants::ALL_USERID) {
+        std::vector<ErrCode> errCode;
         auto userInstallParam = installParam;
         for (auto userId : GetExistsCommonUserIs()) {
             userInstallParam.userId = userId;
             resultCode = UninstallBundle(bundleName, modulePackage, userInstallParam);
+            errCode.push_back(resultCode);
             ResetInstallProperties();
+        }
+        if (std::find(errCode.begin(), errCode.end(), ERR_OK) != errCode.end()) {
+            for (const auto &err : errCode) {
+                if (!(err == ERR_APPEXECFWK_UNINSTALL_MISSING_INSTALLED_BUNDLE ||
+                    err == ERR_APPEXECFWK_USER_NOT_EXIST || err == ERR_OK)) {
+                    resultCode = err;
+                    break;
+                }
+            }
+        } else {
+            resultCode = (errCode.size() > 0) ? errCode[0] : ERR_OK;
         }
     } else {
         resultCode = UninstallBundle(bundleName, modulePackage, installParam);
