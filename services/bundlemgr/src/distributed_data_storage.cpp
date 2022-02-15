@@ -124,6 +124,10 @@ bool DistributedDataStorage::GetDistributeInfoByUserId(
             }
         }
     }
+    if (info.bundleUserInfos.empty()) {
+        APP_LOGE("GetDistributeInfoByUserId: the user %{public}d does not exists", userId);
+        return false;
+    }
     return true;
 }
 
