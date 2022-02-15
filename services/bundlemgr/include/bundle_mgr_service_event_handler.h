@@ -74,8 +74,7 @@ private:
      * @param userId Indicates userId.
      * @return
      */
-    void RebootProcessSystemBundle(
-        Constants::AppType appType, int32_t userId = Constants::UNSPECIFIED_USERID);
+    void RebootProcessSystemBundle(int32_t userId = Constants::UNSPECIFIED_USERID);
     /**
      * @brief Get bundleinfo of HAP by path.
      * @param hapFilePath Indicates the absolute file path of the HAP.
