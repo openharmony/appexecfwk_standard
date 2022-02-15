@@ -127,18 +127,6 @@ public:
      * Send an event.
      *
      * @param innerEventId The id of the event.
-     * @param delayTime Process the event after 'delayTime' milliseconds.
-     * @return Returns true if event has been sent successfully.
-     */
-    inline bool SendEvent(uint32_t innerEventId, int64_t delayTime)
-    {
-        return SendEvent(InnerEvent::Get(innerEventId, 0), delayTime, Priority::LOW);
-    }
-
-    /**
-     * Send an event.
-     *
-     * @param innerEventId The id of the event.
      * @param priority Priority of the event queue for this event.
      * @return Returns true if event has been sent successfully.
      */
