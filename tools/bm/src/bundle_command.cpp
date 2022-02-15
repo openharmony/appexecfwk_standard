@@ -15,6 +15,7 @@
 #include "bundle_command.h"
 
 #include <chrono>
+#include <cstdlib>
 #include <cstring>
 #include <future>
 #include <getopt.h>
@@ -583,7 +584,7 @@ ErrCode BundleManagerShellCommand::RunAsInstallCommand()
                 // 'bm install -p <bundle-file-path> -u userId'
                 // 'bm install --bundle-path <bundle-file-path> --user-id userId'
                 APP_LOGD("'bm install %{public}s %{public}s'", argv_[optind - OFFSET_REQUIRED_ARGUMENT], optarg);
-                userId = std::stoi(optarg);
+                userId = atoi(optarg);
                 break;
             }
             default: {
@@ -752,7 +753,7 @@ ErrCode BundleManagerShellCommand::RunAsUninstallCommand()
                 // 'bm uninstall -n <bundleName> -u userId'
                 // 'bm uninstall --bundle-name <bundleName> --user-id userId'
                 APP_LOGD("'bm uninstall %{public}s %{public}s'", argv_[optind - OFFSET_REQUIRED_ARGUMENT], optarg);
-                userId = std::stoi(optarg);
+                userId = atoi(optarg);
                 break;
             }
             default: {
@@ -905,7 +906,7 @@ ErrCode BundleManagerShellCommand::RunAsDumpCommand()
                 // 'bm dump -n <bundleName> -u userId'
                 // 'bm dump --bundle-name <bundleName> --user-id userId'
                 APP_LOGD("'bm dump %{public}s %{public}s'", argv_[optind - OFFSET_REQUIRED_ARGUMENT], optarg);
-                userId = std::stoi(optarg);
+                userId = atoi(optarg);
                 break;
             }
             case 'd': {
@@ -1058,7 +1059,7 @@ ErrCode BundleManagerShellCommand::RunAsCleanCommand()
                 // 'bm clean -u userId'
                 // 'bm clean --user-id userId'
                 APP_LOGD("'bm install %{public}s %{public}s'", argv_[optind - OFFSET_REQUIRED_ARGUMENT], optarg);
-                userId = std::stoi(optarg);
+                userId = atoi(optarg);
                 break;
             }
             default: {
@@ -1202,7 +1203,7 @@ ErrCode BundleManagerShellCommand::RunAsEnableCommand()
                 // 'bm enable -u userId'
                 // 'bm enable --user-id userId'
                 APP_LOGD("'bm enable %{public}s %{public}s'", argv_[optind - OFFSET_REQUIRED_ARGUMENT], optarg);
-                userId = std::stoi(optarg);
+                userId = atoi(optarg);
                 break;
             }
             default: {
@@ -1332,7 +1333,7 @@ ErrCode BundleManagerShellCommand::RunAsDisableCommand()
                 // 'bm disable -u userId'
                 // 'bm disable --user-id userId'
                 APP_LOGD("'bm disable %{public}s %{public}s'", argv_[optind - OFFSET_REQUIRED_ARGUMENT], optarg);
-                userId = std::stoi(optarg);
+                userId = atoi(optarg);
                 break;
             }
             default: {
@@ -1443,7 +1444,7 @@ ErrCode BundleManagerShellCommand::RunAsRecoverCommand()
                 // 'bm recover -n <bundleName> -u userId'
                 // 'bm recover --bundle-name <bundleName> --user-id userId'
                 APP_LOGD("'bm recover %{public}s %{public}s'", argv_[optind - OFFSET_REQUIRED_ARGUMENT], optarg);
-                userId = std::stoi(optarg);
+                userId = atoi(optarg);
                 break;
             }
             default: {
@@ -1572,7 +1573,7 @@ ErrCode BundleManagerShellCommand::RunAsQueryCommand()
             }
             case 'u': {
                 APP_LOGD("'bm query userId is %{public}s'", optarg);
-                userId = std::stoi(optarg);
+                userId = atoi(optarg);
                 break;
             }
             default: {
