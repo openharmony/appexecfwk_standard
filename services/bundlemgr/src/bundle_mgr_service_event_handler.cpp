@@ -107,8 +107,7 @@ void BMSEventHandler::SetAllInstallFlag() const
 void BMSEventHandler::RebootStartScanning(int32_t userId)
 {
     auto future = std::async(std::launch::async, [this, userId] {
-        RebootProcessSystemBundle(Constants::AppType::SYSTEM_APP, userId);
-        RebootProcessSystemBundle(Constants::AppType::THIRD_SYSTEM_APP, userId);
+        RebootProcessSystemBundle(userId);
     });
     future.get();
 }
@@ -132,10 +131,11 @@ bool BMSEventHandler::GetScanBundleArchiveInfo(
     }
     bundleInfo.name = info.GetBundleName();
     bundleInfo.versionCode = info.GetVersionCode();
+    bundleInfo.hapModuleNames = info.GetModuleNameVec();
     return true;
 }
 
-void BMSEventHandler::RebootProcessSystemBundle(Constants::AppType appType, int32_t userId)
+void BMSEventHandler::RebootProcessSystemBundle(int32_t userId)
 {
     APP_LOGD("reboot scan thread start");
     auto dataMgr = DelayedSingleton<BundleMgrService>::GetInstance()->GetDataMgr();
@@ -148,15 +148,14 @@ void BMSEventHandler::RebootProcessSystemBundle(Constants::AppType appType, int3
         APP_LOGE("make scanner failed");
         return;
     }
-    std::string scanDir = (appType == Constants::AppType::SYSTEM_APP) ? Constants::SYSTEM_APP_SCAN_PATH
-                                                                      : Constants::THIRD_SYSTEM_APP_SCAN_PATH;
-    APP_LOGD("scanDir: %{public}s and userId: %{public}d", scanDir.c_str(), userId);
-    std::list<std::string> bundleList = scanner->Scan(scanDir);
+    std::list<std::string> bundleList = scanner->Scan(Constants::SYSTEM_APP_SCAN_PATH);
     auto iter = std::find(bundleList.begin(), bundleList.end(), Constants::SYSTEM_RESOURCES_APP_PATH);
     if (iter != bundleList.end()) {
         bundleList.erase(iter);
         bundleList.insert(bundleList.begin(), Constants::SYSTEM_RESOURCES_APP_PATH);
     }
+
+    std::list<std::string> vendorBundleList = scanner->Scan(Constants::THIRD_SYSTEM_APP_SCAN_PATH);
 
     BundleInfo bundleInfo;
     std::vector<PreInstallBundleInfo> preInstallBundleInfos;
@@ -169,7 +168,8 @@ void BMSEventHandler::RebootProcessSystemBundle(Constants::AppType appType, int3
         bundleInfo.versionCode = iter.GetVersionCode();
         loadExistData_.emplace(iter.GetBundleName(), bundleInfo);
     }
-    RebootBundleInstall(bundleList, appType);
+    RebootBundleInstall(bundleList, Constants::AppType::SYSTEM_APP);
+    RebootBundleInstall(vendorBundleList, Constants::AppType::THIRD_SYSTEM_APP);
     RebootBundleUninstall();
 }
 
@@ -197,11 +197,26 @@ void BMSEventHandler::RebootBundleInstall(
             BundleInfo Info;
             result = dataMgr->GetBundleInfo(bundleInfo.name, BundleFlag::GET_BUNDLE_DEFAULT, Info,
                 Constants::ANY_USERID);
-            if (mapIter->second.versionCode < bundleInfo.versionCode && result) {
+            if (!result) {
+                APP_LOGW("obtain bundleinfo failed with moduleName: %{public}s ", bundleInfo.name.c_str());
+                continue;
+            }
+            if (mapIter->second.versionCode < bundleInfo.versionCode) {
                 SystemBundleInstaller installer(listIter);
                 APP_LOGD("bundle update due to high version bundle %{public}s existed", listIter.c_str());
                 if (!installer.OTAInstallSystemBundle(appType)) {
                     APP_LOGW("system app :%{public}s update failed", listIter.c_str());
+                }
+            }
+            if (mapIter->second.versionCode == bundleInfo.versionCode) {
+                APP_LOGD("reboot scan versioncode is same");
+                if (find(Info.hapModuleNames.begin(), Info.hapModuleNames.end(), bundleInfo.hapModuleNames[0]) ==
+                    Info.hapModuleNames.end()) {
+                    SystemBundleInstaller installer(listIter);
+                    APP_LOGD("bundle update due to another same version module %{public}s existed", listIter.c_str());
+                    if (!installer.OTAInstallSystemBundle(appType)) {
+                        APP_LOGW("system app :%{public}s update failed", listIter.c_str());
+                    }
                 }
             }
         }
