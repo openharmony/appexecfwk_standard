@@ -67,7 +67,6 @@ bool SystemBundleInstaller::OTAInstallSystemBundle(Constants::AppType appType)
         ErrCode result = InstallBundle(filePath_, installParam, appType);
         if (result != ERR_OK) {
             APP_LOGE("install system bundle fail, error: %{public}d", result);
-            return false;
         }
         ResetInstallProperties();
     }
