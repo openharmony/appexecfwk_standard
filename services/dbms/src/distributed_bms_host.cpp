@@ -65,16 +65,18 @@ int DistributedBmsHost::HandleGetRemoteAbilityInfo(Parcel &data, Parcel &reply)
         return ERR_APPEXECFWK_PARCEL_ERROR;
     }
     RemoteAbilityInfo remoteAbilityInfo;
-    bool ret = GetRemoteAbilityInfo(*elementName, remoteAbilityInfo);
-    if (!reply.WriteBool(ret)) {
+    int ret = GetRemoteAbilityInfo(*elementName, remoteAbilityInfo);
+    if (ret != NO_ERROR) {
+        APP_LOGE("GetRemoteAbilityInfo result:%{public}d", ret);
+        return ret;
+    }
+    if (!reply.WriteBool(true)) {
         APP_LOGE("GetRemoteAbilityInfo write failed");
         return ERR_APPEXECFWK_PARCEL_ERROR;
     }
-    if (ret) {
-        if (!reply.WriteParcelable(&remoteAbilityInfo)) {
-            APP_LOGE("GetRemoteAbilityInfo write failed");
-            return ERR_APPEXECFWK_PARCEL_ERROR;
-        }
+    if (!reply.WriteParcelable(&remoteAbilityInfo)) {
+        APP_LOGE("GetRemoteAbilityInfo write failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
     }
     return NO_ERROR;
 }
@@ -88,16 +90,18 @@ int DistributedBmsHost::HandleGetRemoteAbilityInfos(Parcel &data, Parcel &reply)
         return ERR_APPEXECFWK_PARCEL_ERROR;
     }
     std::vector<RemoteAbilityInfo> remoteAbilityInfos;
-    bool ret = GetRemoteAbilityInfos(elementNames, remoteAbilityInfos);
-    if (!reply.WriteBool(ret)) {
+    int ret = GetRemoteAbilityInfos(elementNames, remoteAbilityInfos);
+    if (ret != NO_ERROR) {
+        APP_LOGE("GetRemoteAbilityInfos result:%{public}d", ret);
+        return ret;
+    }
+    if (!reply.WriteBool(true)) {
         APP_LOGE("GetRemoteAbilityInfos write failed");
         return ERR_APPEXECFWK_PARCEL_ERROR;
     }
-    if (ret) {
-        if (!WriteParcelableVector<RemoteAbilityInfo>(remoteAbilityInfos, reply)) {
-            APP_LOGE("GetRemoteAbilityInfos write failed");
-            return ERR_APPEXECFWK_PARCEL_ERROR;
-        }
+    if (!WriteParcelableVector<RemoteAbilityInfo>(remoteAbilityInfos, reply)) {
+        APP_LOGE("GetRemoteAbilityInfos write failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
     }
     return NO_ERROR;
 }
@@ -111,16 +115,18 @@ int DistributedBmsHost::HandleGetAbilityInfo(Parcel &data, Parcel &reply)
         return ERR_APPEXECFWK_PARCEL_ERROR;
     }
     RemoteAbilityInfo remoteAbilityInfo;
-    bool ret = GetAbilityInfo(*elementName, remoteAbilityInfo);
-    if (!reply.WriteBool(ret)) {
+    int ret = GetAbilityInfo(*elementName, remoteAbilityInfo);
+    if (ret != NO_ERROR) {
+        APP_LOGE("GetAbilityInfo result:%{public}d", ret);
+        return ret;
+    }
+    if (!reply.WriteBool(true)) {
         APP_LOGE("GetRemoteAbilityInfo write failed");
         return ERR_APPEXECFWK_PARCEL_ERROR;
     }
-    if (ret) {
-        if (!reply.WriteParcelable(&remoteAbilityInfo)) {
-            APP_LOGE("GetRemoteAbilityInfo write failed");
-            return ERR_APPEXECFWK_PARCEL_ERROR;
-        }
+    if (!reply.WriteParcelable(&remoteAbilityInfo)) {
+        APP_LOGE("GetRemoteAbilityInfo write failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
     }
     return NO_ERROR;
 }
@@ -134,16 +140,18 @@ int DistributedBmsHost::HandleGetAbilityInfos(Parcel &data, Parcel &reply)
         return ERR_APPEXECFWK_PARCEL_ERROR;
     }
     std::vector<RemoteAbilityInfo> remoteAbilityInfos;
-    bool ret = GetAbilityInfos(elementNames, remoteAbilityInfos);
-    if (!reply.WriteBool(ret)) {
-        APP_LOGE("GetRemoteAbilityInfos write failed");
+    int ret = GetAbilityInfos(elementNames, remoteAbilityInfos);
+    if (ret != NO_ERROR) {
+        APP_LOGE("GetAbilityInfos result:%{public}d", ret);
+        return ret;
+    }
+    if (!reply.WriteBool(true)) {
+        APP_LOGE("GetAbilityInfos write failed");
         return ERR_APPEXECFWK_PARCEL_ERROR;
     }
-    if (ret) {
-        if (!WriteParcelableVector<RemoteAbilityInfo>(remoteAbilityInfos, reply)) {
-            APP_LOGE("GetRemoteAbilityInfos write failed");
-            return ERR_APPEXECFWK_PARCEL_ERROR;
-        }
+    if (!WriteParcelableVector<RemoteAbilityInfo>(remoteAbilityInfos, reply)) {
+        APP_LOGE("GetAbilityInfos write failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
     }
     return NO_ERROR;
 }
