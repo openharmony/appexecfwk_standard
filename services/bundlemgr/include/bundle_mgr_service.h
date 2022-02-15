@@ -84,6 +84,11 @@ private:
      * @return
      */
     void SelfClean();
+    /**
+     * @brief Do some work after register to service.
+     * @return
+     */
+    void AfterRegisterToService();
 
 private:
     bool ready_ = false;
