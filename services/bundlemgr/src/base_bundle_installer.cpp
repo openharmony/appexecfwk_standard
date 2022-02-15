@@ -1557,10 +1557,6 @@ ErrCode BaseBundleInstaller::UninstallLowerVersionFeature(const std::vector<std:
         return ERR_APPEXECFWK_UNINSTALL_BUNDLE_MGR_SERVICE_ERROR;
     }
 
-    if (info.GetBaseApplicationInfo().isSystemApp && !info.IsRemovable()) {
-        APP_LOGE("uninstall system app");
-        return ERR_APPEXECFWK_UNINSTALL_SYSTEM_APP_ERROR;
-    }
     if (!dataMgr_->UpdateBundleInstallState(bundleName_, InstallState::UNINSTALL_START)) {
         APP_LOGE("uninstall already start");
         return ERR_APPEXECFWK_INSTALL_BUNDLE_MGR_SERVICE_ERROR;
@@ -1568,8 +1564,7 @@ ErrCode BaseBundleInstaller::UninstallLowerVersionFeature(const std::vector<std:
 
     // kill the bundle process during uninstall.
     if (!UninstallApplicationProcesses(info.GetApplicationName(), info.GetUid(userId_))) {
-        APP_LOGE("can not kill process");
-        return ERR_APPEXECFWK_UNINSTALL_KILLING_APP_ERROR;
+        APP_LOGW("can not kill process");
     }
     std::vector<std::string> moduleVec = info.GetModuleNameVec();
     InnerBundleInfo oldInfo = info;
