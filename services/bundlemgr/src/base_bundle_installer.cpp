@@ -168,7 +168,8 @@ ErrCode BaseBundleInstaller::InnerProcessBundleInstall(std::unordered_map<std::s
 {
     BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     bundleName_ = newInfos.begin()->second.GetBundleName();
-    APP_LOGI("InnerProcessBundleInstall with bundleName %{public}s", bundleName_.c_str());
+    APP_LOGI("InnerProcessBundleInstall with bundleName %{public}s, userId is %{public}d", bundleName_.c_str(),
+        userId_);
 
     if (installParam.needSavePreInstallInfo) {
         PreInstallBundleInfo preInstallBundleInfo;
@@ -176,6 +177,7 @@ ErrCode BaseBundleInstaller::InnerProcessBundleInstall(std::unordered_map<std::s
         dataMgr_->GetPreInstallBundleInfo(bundleName_, preInstallBundleInfo);
         preInstallBundleInfo.AddBundlePath(newInfos.begin()->first);
         preInstallBundleInfo.SetAppType(newInfos.begin()->second.GetAppType());
+        preInstallBundleInfo.SetVersionCode(newInfos.begin()->second.GetVersionCode());
         dataMgr_->SavePreInstallBundleInfo(bundleName_, preInstallBundleInfo);
     }
 
