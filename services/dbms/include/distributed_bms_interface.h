@@ -33,36 +33,36 @@ public:
      * @brief get remote ability info
      * @param elementName Indicates the elementName.
      * @param remoteAbilityInfo Indicates the remote ability info.
-     * @return Returns true when get remote ability info success; returns false otherwise.
+     * @return Returns result code when get remote ability info.
      */
-    virtual bool GetRemoteAbilityInfo(
+    virtual int32_t GetRemoteAbilityInfo(
         const OHOS::AppExecFwk::ElementName &elementName, RemoteAbilityInfo &remoteAbilityInfo) = 0;
 
     /**
      * @brief get remote ability infos
      * @param elementNames Indicates the elementNames.
      * @param remoteAbilityInfos Indicates the remote ability infos.
-     * @return Returns true when get remote ability info success; returns false otherwise.
+     * @return Returns result code when get remote ability infos.
      */
-    virtual bool GetRemoteAbilityInfos(
+    virtual int32_t GetRemoteAbilityInfos(
         const std::vector<ElementName> &elementNames, std::vector<RemoteAbilityInfo> &remoteAbilityInfos) = 0;
 
     /**
      * @brief get ability info
      * @param elementName Indicates the elementName.
      * @param remoteAbilityInfo Indicates the remote ability info.
-     * @return Returns true when get remote ability info success; returns false otherwise.
+     * @return Returns result code when get ability info.
      */
-    virtual bool GetAbilityInfo(
+    virtual int32_t GetAbilityInfo(
         const OHOS::AppExecFwk::ElementName &elementName, RemoteAbilityInfo &remoteAbilityInfo) = 0;
 
     /**
      * @brief get ability infos
      * @param elementNames Indicates the elementNames.
      * @param remoteAbilityInfos Indicates the remote ability infos.
-     * @return Returns true when get remote ability info success; returns false otherwise.
+     * @return Returns result code when get ability infos.
      */
-    virtual bool GetAbilityInfos(
+    virtual int32_t GetAbilityInfos(
         const std::vector<ElementName> &elementNames, std::vector<RemoteAbilityInfo> &remoteAbilityInfos) = 0;
 
     enum class Message {

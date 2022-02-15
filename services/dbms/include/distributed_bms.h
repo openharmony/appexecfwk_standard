@@ -41,7 +41,7 @@ public:
      * @param remoteAbilityInfo Indicates the remote ability info.
      * @return Returns true when get remote ability info success; returns false otherwise.
      */
-    bool GetRemoteAbilityInfo(
+    int32_t GetRemoteAbilityInfo(
         const OHOS::AppExecFwk::ElementName &elementName, RemoteAbilityInfo &remoteAbilityInfo) override;
     /**
      * @brief get remote ability infos
@@ -49,7 +49,7 @@ public:
      * @param remoteAbilityInfos Indicates the remote ability infos.
      * @return Returns true when get remote ability info success; returns false otherwise.
      */
-    bool GetRemoteAbilityInfos(
+    int32_t GetRemoteAbilityInfos(
         const std::vector<ElementName> &elementNames, std::vector<RemoteAbilityInfo> &remoteAbilityInfos) override;
 
     /**
@@ -58,7 +58,7 @@ public:
      * @param remoteAbilityInfo Indicates the remote ability info.
      * @return Returns true when get remote ability info success; returns false otherwise.
      */
-    bool GetAbilityInfo(
+    int32_t GetAbilityInfo(
         const OHOS::AppExecFwk::ElementName &elementName, RemoteAbilityInfo &remoteAbilityInfo) override;
     /**
      * @brief get ability infos
@@ -66,7 +66,7 @@ public:
      * @param remoteAbilityInfos Indicates the remote ability infos.
      * @return Returns true when get remote ability info success; returns false otherwise.
      */
-    bool GetAbilityInfos(
+    int32_t GetAbilityInfos(
         const std::vector<ElementName> &elementNames, std::vector<RemoteAbilityInfo> &remoteAbilityInfos) override;
 
     /**

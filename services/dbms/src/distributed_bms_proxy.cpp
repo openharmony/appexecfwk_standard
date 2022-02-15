@@ -16,6 +16,7 @@
 #include "distributed_bms_proxy.h"
 
 #include "app_log_wrapper.h"
+#include "appexecfwk_errors.h"
 #include "parcel_macro.h"
 
 namespace OHOS {
@@ -30,7 +31,7 @@ DistributedBmsProxy::~DistributedBmsProxy()
     APP_LOGI("DistributedBmsProxy instance is destroyed");
 }
 
-bool DistributedBmsProxy::GetRemoteAbilityInfo(
+int32_t DistributedBmsProxy::GetRemoteAbilityInfo(
     const OHOS::AppExecFwk::ElementName &elementName, RemoteAbilityInfo &remoteAbilityInfo)
 {
     APP_LOGD("DistributedBmsProxy GetRemoteAbilityInfo");
@@ -38,18 +39,17 @@ bool DistributedBmsProxy::GetRemoteAbilityInfo(
     MessageParcel reply;
     if (!data.WriteParcelable(&elementName)) {
         APP_LOGE("DistributedBmsProxy GetRemoteAbilityInfo write elementName error");
-        return false;
+        return ERR_APPEXECFWK_PARCEL_ERROR;
     }
-
-    if (!GetParcelableInfo<RemoteAbilityInfo>(
-            IDistributedBms::Message::GET_REMOTE_ABILITY_INFO, data, remoteAbilityInfo)) {
+    int32_t result = GetParcelableInfo<RemoteAbilityInfo>(
+        IDistributedBms::Message::GET_REMOTE_ABILITY_INFO, data, remoteAbilityInfo);
+    if (result != OHOS::NO_ERROR) {
         APP_LOGE("fail to query ability info mutiparam from server");
-        return false;
     }
-    return true;
+    return result;
 }
 
-bool DistributedBmsProxy::GetRemoteAbilityInfos(
+int32_t DistributedBmsProxy::GetRemoteAbilityInfos(
     const std::vector<ElementName> &elementNames, std::vector<RemoteAbilityInfo> &remoteAbilityInfos)
 {
     APP_LOGD("DistributedBmsProxy GetRemoteAbilityInfo");
@@ -57,18 +57,18 @@ bool DistributedBmsProxy::GetRemoteAbilityInfos(
     MessageParcel reply;
     if (!WriteParcelableVector(elementNames, data)) {
         APP_LOGE("DistributedBmsProxy GetRemoteAbilityInfos write elementName error");
-        return false;
+        return ERR_APPEXECFWK_PARCEL_ERROR;
     }
 
-    if (!GetParcelableInfos<RemoteAbilityInfo>(
-            IDistributedBms::Message::GET_REMOTE_ABILITY_INFOS, data, remoteAbilityInfos)) {
+    int32_t result = GetParcelableInfos<RemoteAbilityInfo>(
+        IDistributedBms::Message::GET_REMOTE_ABILITY_INFOS, data, remoteAbilityInfos);
+    if (result != OHOS::NO_ERROR) {
         APP_LOGE("fail to query remote ability infos mutiparam from server");
-        return false;
     }
-    return true;
+    return result;
 }
 
-bool DistributedBmsProxy::GetAbilityInfo(
+int32_t DistributedBmsProxy::GetAbilityInfo(
     const OHOS::AppExecFwk::ElementName &elementName, RemoteAbilityInfo &remoteAbilityInfo)
 {
     APP_LOGD("DistributedBmsProxy GetAbilityInfo");
@@ -76,18 +76,17 @@ bool DistributedBmsProxy::GetAbilityInfo(
     MessageParcel reply;
     if (!data.WriteParcelable(&elementName)) {
         APP_LOGE("DistributedBmsProxy GetAbilityInfo write elementName error");
-        return false;
+        return ERR_APPEXECFWK_PARCEL_ERROR;
     }
-
-    if (!GetParcelableInfo<RemoteAbilityInfo>(
-            IDistributedBms::Message::GET_ABILITY_INFO, data, remoteAbilityInfo)) {
+    int32_t result = GetParcelableInfo<RemoteAbilityInfo>(
+        IDistributedBms::Message::GET_ABILITY_INFO, data, remoteAbilityInfo);
+    if (result != OHOS::NO_ERROR) {
         APP_LOGE("fail to query ability info mutiparam from server");
-        return false;
     }
-    return true;
+    return result;
 }
 
-bool DistributedBmsProxy::GetAbilityInfos(
+int32_t DistributedBmsProxy::GetAbilityInfos(
     const std::vector<ElementName> &elementNames, std::vector<RemoteAbilityInfo> &remoteAbilityInfos)
 {
     APP_LOGD("DistributedBmsProxy GetAbilityInfos");
@@ -95,15 +94,14 @@ bool DistributedBmsProxy::GetAbilityInfos(
     MessageParcel reply;
     if (!WriteParcelableVector(elementNames, data)) {
         APP_LOGE("DistributedBmsProxy GetAbilityInfos write elementName error");
-        return false;
+        return ERR_APPEXECFWK_PARCEL_ERROR;
     }
-
-    if (!GetParcelableInfos<RemoteAbilityInfo>(
-            IDistributedBms::Message::GET_ABILITY_INFOS, data, remoteAbilityInfos)) {
+    int32_t result = GetParcelableInfos<RemoteAbilityInfo>(
+        IDistributedBms::Message::GET_ABILITY_INFOS, data, remoteAbilityInfos);
+    if (result != OHOS::NO_ERROR) {
         APP_LOGE("fail to query ability infos mutiparam from server");
-        return false;
     }
-    return true;
+    return result;
 }
 
 template<typename T>
@@ -124,40 +122,44 @@ bool DistributedBmsProxy::WriteParcelableVector(const std::vector<T> &parcelable
 }
 
 template<typename T>
-bool DistributedBmsProxy::GetParcelableInfo(IDistributedBms::Message code, MessageParcel &data, T &parcelableInfo)
+int32_t DistributedBmsProxy::GetParcelableInfo(IDistributedBms::Message code, MessageParcel &data, T &parcelableInfo)
 {
     MessageParcel reply;
-    if (!SendRequest(code, data, reply)) {
-        return false;
+    int32_t result = SendRequest(code, data, reply);
+    if (result != OHOS::NO_ERROR) {
+        APP_LOGE("reply result false");
+        return result;
     }
 
     if (!reply.ReadBool()) {
         APP_LOGE("reply result false");
-        return false;
+        return ERR_APPEXECFWK_PARCEL_ERROR;
     }
 
     std::unique_ptr<T> info(reply.ReadParcelable<T>());
     if (!info) {
         APP_LOGE("readParcelableInfo failed");
-        return false;
+        return ERR_APPEXECFWK_PARCEL_ERROR;
     }
     parcelableInfo = *info;
     APP_LOGD("get parcelable info success");
-    return true;
+    return OHOS::NO_ERROR;
 }
 
 template<typename T>
-bool DistributedBmsProxy::GetParcelableInfos(
+int32_t DistributedBmsProxy::GetParcelableInfos(
     IDistributedBms::Message code, MessageParcel &data, std::vector<T> &parcelableInfos)
 {
     MessageParcel reply;
-    if (!SendRequest(code, data, reply)) {
-        return false;
+    int32_t result = SendRequest(code, data, reply);
+    if (result != OHOS::NO_ERROR) {
+        APP_LOGE("reply result false");
+        return result;
     }
 
     if (!reply.ReadBool()) {
-        APP_LOGE("readParcelableInfo failed");
-        return false;
+        APP_LOGE("reply result false");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
     }
 
     int32_t infoSize = reply.ReadInt32();
@@ -165,15 +167,15 @@ bool DistributedBmsProxy::GetParcelableInfos(
         std::unique_ptr<T> info(reply.ReadParcelable<T>());
         if (!info) {
             APP_LOGE("Read Parcelable infos failed");
-            return false;
+            return ERR_APPEXECFWK_PARCEL_ERROR;
         }
         parcelableInfos.emplace_back(*info);
     }
     APP_LOGD("get parcelable infos success");
-    return true;
+    return OHOS::NO_ERROR;
 }
 
-bool DistributedBmsProxy::SendRequest(IDistributedBms::Message code, MessageParcel &data, MessageParcel &reply)
+int32_t DistributedBmsProxy::SendRequest(IDistributedBms::Message code, MessageParcel &data, MessageParcel &reply)
 {
     APP_LOGD("DistributedBmsProxy SendRequest");
     sptr<IRemoteObject> remote = Remote();
@@ -185,9 +187,8 @@ bool DistributedBmsProxy::SendRequest(IDistributedBms::Message code, MessageParc
     int32_t result = remote->SendRequest(static_cast<uint32_t>(code), data, reply, option);
     if (result != OHOS::NO_ERROR) {
         APP_LOGE("fail to send %{public}d cmd to service due to transact error", code);
-        return false;
     }
-    return true;
+    return result;
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS
