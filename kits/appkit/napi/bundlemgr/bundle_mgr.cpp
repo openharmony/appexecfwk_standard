@@ -1442,7 +1442,7 @@ napi_value GetApplicationInfos(napi_env env, napi_callback_info info)
             AsyncApplicationInfosCallbackInfo* asyncCallbackInfo = (AsyncApplicationInfosCallbackInfo*)data;
             napi_value result[2] = { 0 };
             if (asyncCallbackInfo->err) {
-                napi_create_uint32(env, asyncCallbackInfo->err, &result[0]);
+                napi_create_uint32(env, static_cast<uint32_t>(asyncCallbackInfo->err), &result[0]);
                 napi_create_string_utf8(env, asyncCallbackInfo->message.c_str(), NAPI_AUTO_LENGTH, &result[1]);
             } else {
                 if (asyncCallbackInfo->ret) {
@@ -1743,7 +1743,7 @@ napi_value QueryAbilityInfos(napi_env env, napi_callback_info info)
             AsyncAbilityInfoCallbackInfo *asyncCallbackInfo = (AsyncAbilityInfoCallbackInfo *)data;
             napi_value result[2] = { 0 };
             if (asyncCallbackInfo->err) {
-                napi_create_uint32(env, asyncCallbackInfo->err, &result[0]);
+                napi_create_uint32(env, static_cast<uint32_t>(asyncCallbackInfo->err), &result[0]);
                 napi_create_string_utf8(env, "type mismatch", NAPI_AUTO_LENGTH, &result[1]);
             } else {
                 if (asyncCallbackInfo->ret) {
@@ -1862,7 +1862,7 @@ napi_value GetApplicationInfo(napi_env env, napi_callback_info info)
             AsyncApplicationInfoCallbackInfo* asyncCallbackInfo = (AsyncApplicationInfoCallbackInfo*)data;
             napi_value result[2] = { 0 };
             if (asyncCallbackInfo->err) {
-                napi_create_uint32(env, asyncCallbackInfo->err, &result[0]);
+                napi_create_uint32(env, static_cast<uint32_t>(asyncCallbackInfo->err), &result[0]);
                 napi_create_string_utf8(env, asyncCallbackInfo->message.c_str(), NAPI_AUTO_LENGTH, &result[1]);
             } else {
                 if (asyncCallbackInfo->ret) {
@@ -1986,7 +1986,7 @@ napi_value GetBundleInfos(napi_env env, napi_callback_info info)
             AsyncBundleInfosCallbackInfo* asyncCallbackInfo = (AsyncBundleInfosCallbackInfo*)data;
             napi_value result[2] = { 0 };
             if (asyncCallbackInfo->err) {
-                napi_create_uint32(env, asyncCallbackInfo->err, &result[0]);
+                napi_create_uint32(env, static_cast<uint32_t>(asyncCallbackInfo->err), &result[0]);
                 napi_create_string_utf8(env, asyncCallbackInfo->message.c_str(), NAPI_AUTO_LENGTH, &result[1]);
             } else {
                 if (asyncCallbackInfo->ret) {
@@ -2119,7 +2119,7 @@ napi_value GetBundleInfo(napi_env env, napi_callback_info info)
             AsyncBundleInfoCallbackInfo* asyncCallbackInfo = (AsyncBundleInfoCallbackInfo*)data;
             napi_value result[2] = { 0 };
             if (asyncCallbackInfo->err) {
-                napi_create_uint32(env, asyncCallbackInfo->err, &result[0]);
+                napi_create_uint32(env, static_cast<uint32_t>(asyncCallbackInfo->err), &result[0]);
                 napi_create_string_utf8(env, asyncCallbackInfo->message.c_str(), NAPI_AUTO_LENGTH, &result[1]);
             } else {
                 if (asyncCallbackInfo->ret) {
@@ -2224,7 +2224,7 @@ napi_value GetBundleArchiveInfo(napi_env env, napi_callback_info info)
             AsyncBundleInfoCallbackInfo* asyncCallbackInfo = (AsyncBundleInfoCallbackInfo*)data;
             napi_value result[2] = { 0 };
             if (asyncCallbackInfo->err) {
-                napi_create_uint32(env, asyncCallbackInfo->err, &result[0]);
+                napi_create_uint32(env, static_cast<uint32_t>(asyncCallbackInfo->err), &result[0]);
                 napi_create_string_utf8(env, asyncCallbackInfo->message.c_str(), NAPI_AUTO_LENGTH, &result[1]);
             } else {
                 if (asyncCallbackInfo->ret) {
@@ -2323,7 +2323,7 @@ napi_value GetLaunchWantForBundle(napi_env env, napi_callback_info info)
             AsyncLaunchWantForBundleCallbackInfo* asyncCallbackInfo = (AsyncLaunchWantForBundleCallbackInfo*)data;
             napi_value result[2] = { 0 };
             if (asyncCallbackInfo->err) {
-                napi_create_uint32(env, asyncCallbackInfo->err, &result[0]);
+                napi_create_uint32(env, static_cast<uint32_t>(asyncCallbackInfo->err), &result[0]);
                 napi_create_string_utf8(env, "type mismatch", NAPI_AUTO_LENGTH, &result[1]);
             } else {
                 if (asyncCallbackInfo->ret) {
@@ -2443,7 +2443,7 @@ napi_value GetPermissionDef(napi_env env, napi_callback_info info)
             AsyncPermissionDefCallbackInfo *asyncCallbackInfo = (AsyncPermissionDefCallbackInfo *)data;
             napi_value result[ARGS_SIZE_TWO] = {0};
             if (asyncCallbackInfo->err) {
-                napi_create_uint32(env, asyncCallbackInfo->err, &result[PARAM0]);
+                napi_create_uint32(env, static_cast<uint32_t>(asyncCallbackInfo->err), &result[PARAM0]);
                 napi_create_string_utf8(env, asyncCallbackInfo->message.c_str(), NAPI_AUTO_LENGTH, &result[PARAM1]);
             } else {
                 if (asyncCallbackInfo->ret) {
@@ -3858,16 +3858,16 @@ napi_value GetShortcutInfos(napi_env env, napi_callback_info info)
             AsyncShortcutInfosCallbackInfo* asyncCallbackInfo = (AsyncShortcutInfosCallbackInfo*)data;
             napi_value result[2] = { 0 };
             if (asyncCallbackInfo->err) {
-                napi_create_uint32(env, asyncCallbackInfo->err, &result[0]);
+                napi_create_uint32(env, static_cast<uint32_t>(asyncCallbackInfo->err), &result[0]);
                 napi_create_string_utf8(env, asyncCallbackInfo->message.c_str(), NAPI_AUTO_LENGTH, &result[1]);
             } else {
                 if (asyncCallbackInfo->ret) {
-                napi_create_uint32(env, 0, &result[0]);
-                napi_create_array(env, &result[1]);
-                ProcessShortcutInfos(env, result[1], asyncCallbackInfo->shortcutInfos);
+                    napi_create_uint32(env, 0, &result[0]);
+                    napi_create_array(env, &result[1]);
+                    ProcessShortcutInfos(env, result[1], asyncCallbackInfo->shortcutInfos);
                 } else {
-                napi_create_int32(env, 1, &result[0]);
-                napi_get_undefined(env, &result[1]);
+                    napi_create_int32(env, 1, &result[0]);
+                    napi_get_undefined(env, &result[1]);
                 }
             }
             if (asyncCallbackInfo->deferred) {
@@ -5623,7 +5623,7 @@ napi_value QueryExtensionInfoByWant(napi_env env, napi_callback_info info)
             AsyncExtensionInfoCallbackInfo *info = (AsyncExtensionInfoCallbackInfo *)data;
             napi_value result[2] = { 0 };
             if (info->err) {
-                napi_create_uint32(env, info->err, &result[0]);
+                napi_create_uint32(env, static_cast<uint32_t>(info->err), &result[0]);
                 napi_create_string_utf8(env, "type mismatch", NAPI_AUTO_LENGTH, &result[1]);
             } else {
                 if (info->ret) {
