@@ -85,7 +85,7 @@ bool CommonTool::CopyTmpFileToSystemPath(const std::string &srcPath, const std::
     std::string buff;
     buff.reserve(READ_SIZE);
     buff.resize(READ_SIZE - 1);
-    int count = 0;
+    size_t count = 0;
     while ((count = fread(&(buff[0]), 1, READ_SIZE - 1, srcFile)) != 0) {
         fwrite(&(buff[0]), 1, count, dstFile);
     }
