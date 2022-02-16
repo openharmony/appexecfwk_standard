@@ -76,6 +76,11 @@ public:
     {
         return 0;
     }
+    virtual int CloseAbility(const sptr<IRemoteObject> &token, int resultCode = DEFAULT_INVAL_VALUE,
+        const Want *resultWant = nullptr) override
+    {
+        return 0;
+    }
     virtual int MinimizeAbility(const sptr<IRemoteObject> &token, bool fromUser) override
     {
         return 0;
