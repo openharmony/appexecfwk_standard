@@ -138,8 +138,8 @@ bool CompatibleAbilityInfo::ReadFromParcel(Parcel& parcel)
 CompatibleAbilityInfo* CompatibleAbilityInfo::Unmarshalling(Parcel& parcel)
 {
     APP_LOGD("CompatibleAbilityInfo::Unmarshalling called");
-    CompatibleAbilityInfo* info = new CompatibleAbilityInfo();
-    if (!info->ReadFromParcel(parcel)) {
+    CompatibleAbilityInfo* info = new (std::nothrow) CompatibleAbilityInfo();
+    if (info && !info->ReadFromParcel(parcel)) {
         APP_LOGW("read from parcel failed");
         delete info;
         info = nullptr;
