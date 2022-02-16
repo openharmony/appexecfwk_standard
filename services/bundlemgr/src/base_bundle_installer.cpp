@@ -1095,7 +1095,7 @@ ErrCode BaseBundleInstaller::CreateBundleAndDataDir(InnerBundleInfo &info) const
 
 ErrCode BaseBundleInstaller::CreateBundleCodeDir(InnerBundleInfo &info) const
 {
-    auto appCodePath = baseCodePath_ + Constants::PATH_SEPARATOR + bundleName_;
+    auto appCodePath = Constants::BUNDLE_CODE_DIR + Constants::PATH_SEPARATOR + bundleName_;
     APP_LOGD("create bundle dir %{public}s", appCodePath.c_str());
     ErrCode result = InstalldClient::GetInstance()->CreateBundleDir(appCodePath);
     if (result != ERR_OK) {
@@ -1180,12 +1180,8 @@ ErrCode BaseBundleInstaller::RemoveBundleCodeDir(const InnerBundleInfo &info) co
 {
     auto result = InstalldClient::GetInstance()->RemoveDir(info.GetAppCodePath());
     if (result != ERR_OK) {
-        return result;
-    }
-    std::string bundleCodeDir = Constants::BUNDLE_CODE_DIR + Constants::PATH_SEPARATOR + info.GetBundleName();
-    result = InstalldClient::GetInstance()->RemoveDir(bundleCodeDir);
-    if (result != ERR_OK) {
-        APP_LOGE("fail to remove bundle code dir %{public}s, error is %{public}d", bundleCodeDir.c_str(), result);
+        APP_LOGE("fail to remove bundle code dir %{public}s, error is %{public}d",
+            info.GetAppCodePath().c_str(), result);
     }
     return result;
 }
@@ -1329,15 +1325,12 @@ ErrCode BaseBundleInstaller::ModifyInstallDirByHapType(const InstallParam &insta
                         std::to_string(dirUser) + Constants::PATH_SEPARATOR;
     switch (appType) {
         case Constants::AppType::SYSTEM_APP:
-            baseCodePath_ = Constants::SYSTEM_APP_INSTALL_PATH + internalPath + Constants::APP_CODE_DIR;
             baseDataPath_ = Constants::SYSTEM_APP_INSTALL_PATH + internalPath + Constants::APP_DATA_DIR;
             break;
         case Constants::AppType::THIRD_SYSTEM_APP:
-            baseCodePath_ = Constants::THIRD_SYSTEM_APP_INSTALL_PATH + internalPath + Constants::APP_CODE_DIR;
             baseDataPath_ = Constants::THIRD_SYSTEM_APP_INSTALL_PATH + internalPath + Constants::APP_DATA_DIR;
             break;
         case Constants::AppType::THIRD_PARTY_APP:
-            baseCodePath_ = Constants::THIRD_PARTY_APP_INSTALL_PATH + internalPath + Constants::APP_CODE_DIR;
             baseDataPath_ = Constants::THIRD_PARTY_APP_INSTALL_PATH + internalPath + Constants::APP_DATA_DIR;
             break;
         default:

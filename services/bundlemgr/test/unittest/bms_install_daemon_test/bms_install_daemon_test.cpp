@@ -28,10 +28,10 @@ namespace OHOS {
 namespace {
 const std::string BUNDLE_FILE = "/data/test/resource/bms/install_daemon/right.hap";
 const std::string SYSTEM_DIR = "/sys/com.example.l3jsdemo";
-const std::string TEMP_DIR = "/data/accounts/account_0/applications/com.example.l3jsdemo/temp";
-const std::string MODULE_DIR = "/data/accounts/account_0/applications/com.example.l3jsdemo/com.example.l3jsdemo";
+const std::string TEMP_DIR = "/data/app/el1/bundle/public/com.example.l3jsdemo/temp";
+const std::string MODULE_DIR = "/data/app/el1/bundle/public/com.example.l3jsdemo/com.example.l3jsdemo";
 const std::string BUNDLE_DATA_DIR = "/data/accounts/account_0/appdata/com.example.l3jsdemo";
-const std::string BUNDLE_CODE_DIR = "/data/accounts/account_0/applications/com.example.l3jsdemo";
+const std::string BUNDLE_CODE_DIR = "/data/app/el1/bundle/public/com.example.l3jsdemo";
 const std::string ROOT_DIR = "/data/accounts";
 const std::string BUNDLE_APP_DIR = "/data/app/el1/bundle/com.example.l4jsdemo/code";
 const std::string BUNDLE_EL1_BASE_DIR = "/data/app/el1/101/base/com.example.l4jsdemo/temp";
