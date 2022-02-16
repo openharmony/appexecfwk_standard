@@ -75,7 +75,7 @@ bool InstalldService::InitDir(const std::string &path)
         return false;
     }
     if (!InstalldOperator::MkOwnerDir(path, true, Constants::BMS_UID, Constants::BMS_GID)) {
-        APP_LOGE("create path failed %{public}s", strerror(errno));
+        APP_LOGE("create path failed, errno : %{public}d", errno);
         return false;
     }
     return true;
