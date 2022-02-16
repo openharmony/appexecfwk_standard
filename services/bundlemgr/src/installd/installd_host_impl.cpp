@@ -161,7 +161,7 @@ ErrCode InstalldHostImpl::CreateBundleDataDir(const std::string &bundleDataDir,
 }
 
 ErrCode InstalldHostImpl::CreateNewBundleDataDir(
-    const std::string &bundleName, const int userid, const int uid, const int gid, const std::string &apl) const
+    const std::string &bundleName, const int userid, const int uid, const int gid, const std::string &apl)
 {
     if (bundleName.empty() || userid < 0 || uid < 0 || gid < 0) {
         APP_LOGE("Calling the function CreateBundleDataDir with invalid param");
@@ -181,15 +181,22 @@ ErrCode InstalldHostImpl::CreateNewBundleDataDir(
                 }
             }
         }
-        SetDirApl(bundleDataDir, bundleName, apl);
-
+        ErrCode ret = SetDirApl(bundleDataDir, bundleName, apl);
+        if (ret != ERR_OK) {
+            APP_LOGE("CreateBundleDataDir SetDirApl failed");
+            return ret;
+        }
         std::string databaseDir = GetBundleDataDir(el, userid) + Constants::DATABASE + bundleName;
         if (!InstalldOperator::MkOwnerDir(
             databaseDir, S_IRWXU | S_IRWXG | S_ISGID, uid, Constants::DATABASE_DIR_GID)) {
             APP_LOGE("CreateBundle databaseDir MkOwnerDir failed");
             return ERR_APPEXECFWK_INSTALLD_CREATE_DIR_FAILED;
         }
-        SetDirApl(databaseDir, bundleName, apl);
+        ret = SetDirApl(databaseDir, bundleName, apl);
+        if (ret != ERR_OK) {
+            APP_LOGE("CreateBundleDataDir SetDirApl failed");
+            return ret;
+        }
     }
     if (system::GetBoolParameter(Constants::DISTRIBUTED_FILE_PROPERTY, false)) {
         std::string distributedfile = Constants::DISTRIBUTED_FILE;
@@ -381,12 +388,12 @@ ErrCode InstalldHostImpl::GetBundleStats(
     return ERR_OK;
 }
 
-void InstalldHostImpl::SetDirApl(const std::string &dir, const std::string &bundleName, const std::string &apl) const
+ErrCode InstalldHostImpl::SetDirApl(const std::string &dir, const std::string &bundleName, const std::string &apl)
 {
 #ifdef WITH_SELINUX
     if (dir.empty() || bundleName.empty()) {
         APP_LOGE("Calling the function SetDirApl with invalid param");
-        return;
+        return ERR_APPEXECFWK_INSTALLD_PARAM_ERROR;
     }
     std::string aplLevel = Profile::AVAILABLELEVEL_NORMAL;
     if (!apl.empty()) {
@@ -397,6 +404,9 @@ void InstalldHostImpl::SetDirApl(const std::string &dir, const std::string &bund
     if (ret != 0) {
         APP_LOGE("HapFileRestorecon path: %{public}s failed, ret:%{public}d", dir.c_str(), ret);
     }
+    return ret;
+#else
+    return ERR_OK;
 #endif // WITH_SELINUX
 }
 }  // namespace AppExecFwk

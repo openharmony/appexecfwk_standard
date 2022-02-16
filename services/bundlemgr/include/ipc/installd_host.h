@@ -108,6 +108,13 @@ private:
      * @brief Init private hash map funcMap_.
      */
     void init();
+    /**
+     * @brief Handles the set dir apl function called from a IInstalld proxy object.
+     * @param data Indicates the data to be read.
+     * @param reply Indicates the reply to be sent;
+     * @return Returns true if called successfully; returns false otherwise.
+     */
+    bool HandleSetDirApl(MessageParcel &data, MessageParcel &reply);
 
     using InstalldFunc = bool (InstalldHost::*)(MessageParcel &, MessageParcel &);
     std::unordered_map<uint32_t, InstalldFunc> funcMap_;
