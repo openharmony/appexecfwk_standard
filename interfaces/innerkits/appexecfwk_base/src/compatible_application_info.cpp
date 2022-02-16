@@ -93,7 +93,7 @@ bool CompatibleApplicationInfo::ReadFromParcel(Parcel& parcel)
 CompatibleApplicationInfo* CompatibleApplicationInfo::Unmarshalling(Parcel& parcel)
 {
     APP_LOGD("CompatibleApplicationInfo::Unmarshalling called");
-    CompatibleApplicationInfo* info = new CompatibleApplicationInfo();
+    CompatibleApplicationInfo* info = new (std::nothrow) CompatibleApplicationInfo();
     if (info && !info->ReadFromParcel(parcel)) {
         APP_LOGW("read from parcel failed");
         delete info;
