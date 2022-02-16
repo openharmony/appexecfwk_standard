@@ -233,7 +233,7 @@ void ApplicationInfo::Dump(std::string prefix, int fd)
     }
     int flags = fcntl(fd, F_GETFL);
     if (flags < 0) {
-        APP_LOGE("dump ApplicationInfo fcntl error %{public}s", strerror(errno));
+        APP_LOGE("dump ApplicationInfo fcntl error, errno : %{public}d", errno);
         return;
     }
     uint uflags = static_cast<uint>(flags);
@@ -245,7 +245,7 @@ void ApplicationInfo::Dump(std::string prefix, int fd)
         result.append(jsonObject.dump(Constants::DUMP_INDENT));
         int ret = TEMP_FAILURE_RETRY(write(fd, result.c_str(), result.size()));
         if (ret < 0) {
-            APP_LOGE("dump ApplicationInfo write error %{public}s", strerror(errno));
+            APP_LOGE("dump ApplicationInfo write error, errno : %{public}d", errno);
         }
     }
     return;
