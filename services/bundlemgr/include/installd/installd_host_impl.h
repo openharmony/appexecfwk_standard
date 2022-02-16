@@ -103,11 +103,18 @@ public:
      */
     virtual ErrCode GetBundleStats(
         const std::string &bundleName, const int32_t userId, std::vector<int64_t> &bundleStats) override;
+    /**
+     * @brief Set dir apl.
+     * @param dir Indicates the data dir.
+     * @param bundleName Indicates the bundle name.
+     * @param apl Indicates the apl type.
+     * @return Returns ERR_OK if set apl successfully; returns error code otherwise.
+     */
+    virtual ErrCode SetDirApl(const std::string &dir, const std::string &bundleName, const std::string &apl) override;
 private:
     std::string GetBundleDataDir(const std::string &el, const int userid) const;
     ErrCode CreateNewBundleDataDir(const std::string &bundleName, const int userid, const int uid, const int gid,
-        const std::string &apl) const;
-    void SetDirApl(const std::string &dir, const std::string &bundleName, const std::string &apl) const;
+        const std::string &apl);
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS
