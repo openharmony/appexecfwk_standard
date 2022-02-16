@@ -77,9 +77,21 @@ void BundleMgrService::OnStart()
         registerToService_ = true;
     }
 
+    AfterRegisterToService();
     PerfProfile::GetInstance().SetBmsLoadEndTime(GetTickCount());
     if (!needToScan_) {
         PerfProfile::GetInstance().Dump();
+    }
+}
+
+void BundleMgrService::AfterRegisterToService()
+{
+    if (!perChangeSub_) {
+        EventFwk::MatchingSkills matchingSkills;
+        matchingSkills.AddEvent("PERMISSIONS_CHANGED_EVENT");
+        EventFwk::CommonEventSubscribeInfo subscribeInfo(matchingSkills);
+        perChangeSub_ = std::make_shared<BundlePermissionsChangedMonitor>(dataMgr_, subscribeInfo);
+        EventFwk::CommonEventManager::SubscribeCommonEvent(perChangeSub_);
     }
 }
 
@@ -175,13 +187,6 @@ bool BundleMgrService::Init()
         cloneMgr_ = std::make_shared<BundleCloneMgr>();
     }
     APP_LOGI("create BundleCloneMgr success");
-    if (!perChangeSub_) {
-        EventFwk::MatchingSkills matchingSkills;
-        matchingSkills.AddEvent("PERMISSIONS_CHANGED_EVENT");
-        EventFwk::CommonEventSubscribeInfo subscribeInfo(matchingSkills);
-        perChangeSub_ = std::make_shared<BundlePermissionsChangedMonitor>(dataMgr_, subscribeInfo);
-        EventFwk::CommonEventManager::SubscribeCommonEvent(perChangeSub_);
-    }
 
     CheckAllUser();
     ready_ = true;
