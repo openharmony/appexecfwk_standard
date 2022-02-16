@@ -105,6 +105,14 @@ public:
      */
     virtual ErrCode GetBundleStats(
         const std::string &bundleName, const int32_t userId, std::vector<int64_t> &bundleStats) = 0;
+    /**
+     * @brief Set dir apl.
+     * @param dir Indicates the data dir.
+     * @param bundleName Indicates the bundle name.
+     * @param apl Indicates the apl type.
+     * @return Returns ERR_OK if set apl successfully; returns error code otherwise.
+     */
+    virtual ErrCode SetDirApl(const std::string &dir, const std::string &bundleName, const std::string &apl) = 0;
 protected:
     enum Message : uint32_t {
         CREATE_BUNDLE_DIR = 1,
@@ -117,6 +125,7 @@ protected:
         REMOVE_MODULE_DATA_DIR,
         REMOVE_DIR,
         GET_BUNDLE_STATS,
+        SET_DIR_APL,
     };
 };
 

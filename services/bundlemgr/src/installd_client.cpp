@@ -127,6 +127,16 @@ ErrCode InstalldClient::GetBundleStats(
     return CallService(&IInstalld::GetBundleStats, bundleName, userId, bundleStats);
 }
 
+ErrCode InstalldClient::SetDirApl(const std::string &dir, const std::string &bundleName, const std::string &apl)
+{
+    if (dir.empty() || bundleName.empty() || apl.empty()) {
+        APP_LOGE("params are invalid");
+        return ERR_APPEXECFWK_INSTALLD_PARAM_ERROR;
+    }
+
+    return CallService(&IInstalld::SetDirApl, dir, bundleName, apl);
+}
+
 void InstalldClient::ResetInstalldProxy()
 {
     if ((installdProxy_ != nullptr) && (installdProxy_->AsObject() != nullptr)) {
