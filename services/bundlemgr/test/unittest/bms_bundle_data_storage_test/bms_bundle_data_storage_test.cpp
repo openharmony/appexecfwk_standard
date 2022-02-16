@@ -87,7 +87,7 @@ protected:
                     "package": "com.ohos.launcher",
                     "permissions": [],
                     "process": "",
-                    "resourcePath": "/data/accounts/account_0/applications/com.ohos.launcher/com.ohos.launcher/assets/launcher/resources.index",
+                    "resourcePath": "/data/app/el1/bundle/public/com.ohos.launcher/com.ohos.launcher/assets/launcher/resources.index",
                     "targetAbility": "",
                     "type": 1,
                     "uri": "",
@@ -97,7 +97,7 @@ protected:
             "baseApplicationInfo": {
                 "bundleName": "com.ohos.launcher",
                 "cacheDir": "/data/accounts/account_0/appdata/com.ohos.launcher/cache",
-                "codePath": "/data/accounts/account_0/applications/com.ohos.launcher",
+                "codePath": "/data/app/el1/bundle/public/com.ohos.launcher",
                 "dataBaseDir": "/data/accounts/account_0/appdata/com.ohos.launcher/database",
                 "dataDir": "/data/accounts/account_0/appdata/com.ohos.launcher/files",
                 "description": "$string:mainability_description",
@@ -202,8 +202,8 @@ protected:
                     "moduleDataDir": "/data/accounts/account_0/appdata/com.ohos.launcher/com.ohos.launcher",
                     "moduleName": ".MyApplication",
                     "modulePackage": "com.ohos.launcher",
-                    "modulePath": "/data/accounts/account_0/applications/com.ohos.launcher/com.ohos.launcher",
-                    "moduleResPath": "/data/accounts/account_0/applications/com.ohos.launcher/com.ohos.launcher/assets/launcher/resources.index",
+                    "modulePath": "/data/app/el1/bundle/public/com.ohos.launcher/com.ohos.launcher",
+                    "moduleResPath": "/data/app/el1/bundle/public/com.ohos.launcher/com.ohos.launcher/assets/launcher/resources.index",
                     "reqCapabilities": [],
                     "reqPermissions": [],
                     "skillKeys": [

@@ -56,7 +56,7 @@ namespace {
     const std::string NULL_STR = "";
     const std::string BUNDLE_DATA_DIR = "/data/accounts/account_0/appdata/";
     const std::string BUNDLE_DATA_DIR1 = "/data/accounts/account_0/appdata/com.example.third*";
-    const std::string BUNDLE_CODE_DIR = "/data/accounts/account_0/applications/bmsThirdBundleTest*";
+    const std::string BUNDLE_CODE_DIR = "/data/app/el1/bundle/public/bmsThirdBundleTest*";
     const std::string TEST_BUNDLE_DIR = "/data/bmsThirdBundleTest1.hap";
     const std::string DEMO_BUNDLE_DIR = "/data/bmsThirdBundleTest2.hap";
     const std::string ILLEGAL_BUNDLE_DIR = "/data/bmsThirdBundleTest3.hap";

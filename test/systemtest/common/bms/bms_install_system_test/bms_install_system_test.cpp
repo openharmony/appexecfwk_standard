@@ -33,7 +33,7 @@ using namespace std::chrono_literals;
 namespace {
 const std::string THIRD_BUNDLE_PATH = "/data/test/bms_bundle/";
 const std::string SYSTEM_BUNDLE_PATH = "/system/app/";
-const std::string CODE_ROOT_PATH = "/data/accounts/account_0/applications/";
+const std::string CODE_ROOT_PATH = "/data/app/el1/bundle/public/";
 const std::string DATA_ROOT_PATH = "/data/accounts/account_0/appdata/";
 const std::string THIRD_BASE_BUNDLE_NAME = "com.third.hiworld.example";
 const std::string SYSTEM_BASE_BUNDLE_NAME = "com.system.hiworld.example";

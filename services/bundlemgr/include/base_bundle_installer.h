@@ -420,7 +420,6 @@ private:
     std::string bundleName_;
     std::string moduleTmpDir_;
     std::string modulePath_;
-    std::string baseCodePath_;
     std::string baseDataPath_;
     std::string modulePackage_;
     std::string mainAbility_;
