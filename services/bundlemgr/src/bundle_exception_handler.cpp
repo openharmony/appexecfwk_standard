@@ -98,12 +98,13 @@ void BundleExceptionHandler::UninstallPermissions(const InnerBundleInfo &info)
 
 bool BundleExceptionHandler::RemoveBundleAndDataDir(const std::string &bundleDir, const std::string &dataDir) const
 {
-    ErrCode result = ERR_OK;
-    if (!bundleDir.empty() && (result = InstalldClient::GetInstance()->RemoveDir(bundleDir)) != ERR_OK) {
+    ErrCode result = InstalldClient::GetInstance()->RemoveDir(bundleDir);
+    if (result != ERR_OK) {
         APP_LOGE("fail to remove bundle dir %{public}s, error is %{public}d", bundleDir.c_str(), result);
         return false;
     }
-    if (!dataDir.empty() && (result = InstalldClient::GetInstance()->RemoveDir(dataDir)) != ERR_OK) {
+    result = InstalldClient::GetInstance()->RemoveDir(dataDir);
+    if (result != ERR_OK) {
         APP_LOGE("fail to remove data dir %{public}s, error is %{public}d", dataDir.c_str(), result);
         return false;
     }
