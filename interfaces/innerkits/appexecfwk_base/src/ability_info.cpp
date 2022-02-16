@@ -154,8 +154,8 @@ bool AbilityInfo::ReadFromParcel(Parcel &parcel)
         permissions.emplace_back(Str16ToStr8(parcel.ReadString16()));
     }
 
-    int32_t deviceTypesSize;
-    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, deviceTypesSize);
+    uint32_t deviceTypesSize;
+    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Uint32, parcel, deviceTypesSize);
     for (int32_t i = 0; i < deviceTypesSize; i++) {
         deviceTypes.emplace_back(Str16ToStr8(parcel.ReadString16()));
     }
@@ -264,7 +264,7 @@ bool AbilityInfo::Marshalling(Parcel &parcel) const
         WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(permission));
     }
 
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, deviceTypes.size());
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Uint32, parcel, deviceTypes.size());
     for (auto &deviceType : deviceTypes) {
         WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(deviceType));
     }

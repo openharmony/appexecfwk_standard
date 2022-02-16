@@ -97,7 +97,7 @@ void BundleUserMgrHostImpl::CreateNewUser(int32_t userId)
         installParam.userId = userId;
         installParam.isPreInstallApp = true;
         installParam.installFlag = InstallFlag::NORMAL;
-        sptr<UserReceiverImpl> userReceiverImpl(new UserReceiverImpl());
+        sptr<UserReceiverImpl> userReceiverImpl(new (std::nothrow) UserReceiverImpl());
         userReceiverImpl->SetBundlePromise(bundlePromise);
         userReceiverImpl->SetTotalHapNum(totalHapNum);
         installer->Install(pathVec, installParam, userReceiverImpl);
@@ -140,7 +140,7 @@ void BundleUserMgrHostImpl::RemoveUser(int32_t userId)
 
     g_installedHapNum = 0;
     std::shared_ptr<BundlePromise> bundlePromise = std::make_shared<BundlePromise>();
-    int32_t totalHapNum = bundleInfos.size();
+    uint32_t totalHapNum = bundleInfos.size();
     for (const auto &info : bundleInfos) {
         InstallParam installParam;
         installParam.userId = userId;
