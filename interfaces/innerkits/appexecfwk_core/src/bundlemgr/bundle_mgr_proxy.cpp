@@ -2128,6 +2128,40 @@ bool BundleMgrProxy::VerifyCallingPermission(const std::string &permission)
     }
     return reply.ReadBool();
 }
+
+std::vector<std::string> BundleMgrProxy::GetAccessibleAppCodePaths(int32_t userId)
+{
+    APP_LOGD("GetAccessibleAppCodePaths begin");
+    MessageParcel data;
+    std::vector<std::string> vec;
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        APP_LOGE("fail to GetAccessibleAppCodePaths due to write InterfaceToken fail");
+        return vec;
+    }
+
+    if (!data.WriteInt32(userId)) {
+        APP_LOGE("fail to GetAccessibleAppCodePaths due to write userId fail");
+        return vec;
+    }
+
+    MessageParcel reply;
+    if (!SendTransactCmd(IBundleMgr::Message::GET_ACCESSIBLE_APP_CODE_PATH, data, reply)) {
+        APP_LOGE("fail to sendRequest");
+        return vec;
+    }
+
+    if (!reply.ReadBool()) {
+        APP_LOGE("reply result false");
+        return vec;
+    }
+
+    if (!reply.ReadStringVector(&vec)) {
+        APP_LOGE("fail to GetAccessibleAppCodePaths from reply");
+        return vec;
+    }
+    return vec;
+}
+
 template<typename T>
 bool BundleMgrProxy::GetParcelableInfo(IBundleMgr::Message code, MessageParcel &data, T &parcelableInfo)
 {

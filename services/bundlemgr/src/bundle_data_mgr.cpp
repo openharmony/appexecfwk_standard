@@ -2821,5 +2821,32 @@ bool BundleDataMgr::QueryExtensionAbilityInfos(const ExtensionAbilityType &exten
     }
     return true;
 }
+
+std::vector<std::string> BundleDataMgr::GetAccessibleAppCodePaths(int32_t userId) const
+{
+    std::lock_guard<std::mutex> lock(bundleInfoMutex_);
+    std::vector<std::string> vec;
+    if (bundleInfos_.empty()) {
+        APP_LOGE("bundleInfos_ is empty");
+        return vec;
+    }
+
+    for (const auto &info : bundleInfos_) {
+        auto item = info.second.find(Constants::CURRENT_DEVICE_ID);
+        if (item == info.second.end()) {
+            continue;
+        }
+
+        InnerBundleInfo innerBundleInfo = item->second;
+        auto userInfoMap = innerBundleInfo.GetInnerBundleUserInfos();
+        for (const auto &userInfo : userInfoMap) {
+            auto innerUserId = userInfo.second.bundleUserInfo.userId;
+            if (((innerUserId == 0) || (innerUserId == userId)) && innerBundleInfo.IsAccessible()) {
+                vec.emplace_back(innerBundleInfo.GetAppCodePath());
+            }
+        }
+    }
+    return vec;
+}
 }  // namespace AppExecFwk
 }  // namespace OHOS

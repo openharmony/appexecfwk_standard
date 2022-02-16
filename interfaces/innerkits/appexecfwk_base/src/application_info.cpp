@@ -64,6 +64,7 @@ const std::string APPLICATION_ENTITY_TYPE = "entityType";
 const std::string APPLICATION_PROCESS = "process";
 const std::string APPLICATION_SUPPORTED_MODES = "supportedModes";
 const std::string APPLICATION_VENDOR = "vendor";
+const std::string APPLICATION_ACCESSIBLE = "accessible";
 const std::string APPLICATION_PRIVILEGE_LEVEL = "appPrivilegeLevel";
 const std::string APPLICATION_ACCESSTOKEN_ID = "accessTokenId";
 const std::string APPLICATION_ENABLED = "enabled";
@@ -271,6 +272,7 @@ void to_json(nlohmann::json &jsonObject, const ApplicationInfo &applicationInfo)
         {APPLICATION_REMOVABLE, applicationInfo.removable},
         {APPLICATION_SINGLE_USER, applicationInfo.singleUser},
         {APPLICATION_USER_DATA_CLEARABLE, applicationInfo.userDataClearable},
+        {APPLICATION_ACCESSIBLE, applicationInfo.accessible},
         {APPLICATION_IS_SYSTEM_APP, applicationInfo.isSystemApp},
         {APPLICATION_IS_LAUNCHER_APP, applicationInfo.isLauncherApp},
         {APPLICATION_CODE_PATH, applicationInfo.codePath},
@@ -442,6 +444,14 @@ void from_json(const nlohmann::json &jsonObject, ApplicationInfo &applicationInf
         jsonObjectEnd,
         APPLICATION_USER_DATA_CLEARABLE,
         applicationInfo.userDataClearable,
+        JsonType::BOOLEAN,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<bool>(jsonObject,
+        jsonObjectEnd,
+        APPLICATION_ACCESSIBLE,
+        applicationInfo.accessible,
         JsonType::BOOLEAN,
         false,
         parseResult,

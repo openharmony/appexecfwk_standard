@@ -40,7 +40,7 @@ public:
         std::vector<std::string> &profileInfos) const;
     bool GetResConfigFile(const AbilityInfo &abilityInfo, const std::string &metadataName,
         std::vector<std::string> &profileInfos) const;
-
+    std::vector<std::string> GetAccessibleAppCodePaths(int32_t userId);
 private:
     ErrCode Connect();
     bool GetResProfileByMetadata(const std::vector<Metadata> &metadata, const std::string &metadataName,

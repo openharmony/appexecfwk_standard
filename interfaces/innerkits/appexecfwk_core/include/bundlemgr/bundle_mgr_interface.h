@@ -679,6 +679,12 @@ public:
     {
         return true;
     }
+
+    virtual std::vector<std::string> GetAccessibleAppCodePaths(int32_t userId)
+    {
+        std::vector<std::string> vec;
+        return vec;
+    }
     enum class Message {
         GET_APPLICATION_INFO = 0,
         GET_APPLICATION_INFOS,
@@ -755,7 +761,8 @@ public:
         QUERY_EXTENSION_INFO_WITHOUT_TYPE,
         QUERY_EXTENSION_INFO,
         QUERY_EXTENSION_INFO_BY_TYPE,
-        VERIFY_CALLING_PERMISSION
+        VERIFY_CALLING_PERMISSION,
+        GET_ACCESSIBLE_APP_CODE_PATH
     };
 };
 }  // namespace AppExecFwk

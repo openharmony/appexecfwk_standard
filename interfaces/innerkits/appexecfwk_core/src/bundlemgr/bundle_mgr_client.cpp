@@ -35,37 +35,71 @@ BundleMgrClient::~BundleMgrClient()
 
 bool BundleMgrClient::GetBundleNameForUid(const int uid, std::string &bundleName)
 {
+    if (impl_ == nullptr) {
+        APP_LOGE("Bundle mgr client impl is nullptr");
+        return false;
+    }
     return impl_->GetBundleNameForUid(uid, bundleName);
 }
 
 bool BundleMgrClient::GetBundleInfo(const std::string &bundleName, const BundleFlag flag, BundleInfo &bundleInfo,
     int32_t userId)
 {
+    if (impl_ == nullptr) {
+        APP_LOGE("Bundle mgr client impl is nullptr");
+        return false;
+    }
     return impl_->GetBundleInfo(bundleName, flag, bundleInfo, userId);
 }
 
 bool BundleMgrClient::GetHapModuleInfo(const std::string &bundleName, const std::string &hapName,
     HapModuleInfo &hapModuleInfo)
 {
+    if (impl_ == nullptr) {
+        APP_LOGE("Bundle mgr client impl is nullptr");
+        return false;
+    }
     return impl_->GetHapModuleInfo(bundleName, hapName, hapModuleInfo);
 }
 
 bool BundleMgrClient::GetResConfigFile(const HapModuleInfo &hapModuleInfo, const std::string &metadataName,
     std::vector<std::string> &profileInfos) const
 {
+    if (impl_ == nullptr) {
+        APP_LOGE("Bundle mgr client impl is nullptr");
+        return false;
+    }
     return impl_->GetResConfigFile(hapModuleInfo, metadataName, profileInfos);
 }
 
 bool BundleMgrClient::GetResConfigFile(const ExtensionAbilityInfo &extensionInfo, const std::string &metadataName,
     std::vector<std::string> &profileInfos) const
 {
+    if (impl_ == nullptr) {
+        APP_LOGE("Bundle mgr client impl is nullptr");
+        return false;
+    }
     return impl_->GetResConfigFile(extensionInfo, metadataName, profileInfos);
 }
 
 bool BundleMgrClient::GetResConfigFile(const AbilityInfo &abilityInfo, const std::string &metadataName,
     std::vector<std::string> &profileInfos) const
 {
+    if (impl_ == nullptr) {
+        APP_LOGE("Bundle mgr client impl is nullptr");
+        return false;
+    }
     return impl_->GetResConfigFile(abilityInfo, metadataName, profileInfos);
+}
+
+std::vector<std::string> BundleMgrClient::GetAccessibleAppCodePaths(int32_t userId)
+{
+    if (impl_ == nullptr) {
+        APP_LOGE("Bundle mgr client impl is nullptr");
+        std::vector<std::string> vec;
+        return vec;
+    }
+    return impl_->GetAccessibleAppCodePaths(userId);
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS
