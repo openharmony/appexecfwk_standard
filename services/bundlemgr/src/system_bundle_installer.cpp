@@ -66,7 +66,7 @@ bool SystemBundleInstaller::OTAInstallSystemBundle(Constants::AppType appType)
         installParam.userId = allUserId;
         ErrCode result = InstallBundle(filePath_, installParam, appType);
         if (result != ERR_OK) {
-            APP_LOGE("install system bundle fail, error: %{public}d", result);
+            APP_LOGW("install system bundle fail, error: %{public}d", result);
         }
         ResetInstallProperties();
     }
@@ -87,8 +87,7 @@ bool SystemBundleInstaller::UninstallSystemBundle(const std::string &bundleName)
         installParam.noSkipsKill = false;
         ErrCode result = UninstallBundle(bundleName, installParam);
         if (result != ERR_OK) {
-            APP_LOGE("uninstall system bundle fail, error: %{public}d", result);
-            return false;
+            APP_LOGW("uninstall system bundle fail, error: %{public}d", result);
         }
         ResetInstallProperties();
     }
