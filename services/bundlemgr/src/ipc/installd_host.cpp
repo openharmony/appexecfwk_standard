@@ -44,6 +44,7 @@ void InstalldHost::init()
     funcMap_.emplace(IInstalld::Message::CREATE_MODULE_DATA_DIR, &InstalldHost::HandleCreateModuleDataDir);
     funcMap_.emplace(IInstalld::Message::REMOVE_MODULE_DATA_DIR, &InstalldHost::HandleRemoveModuleDataDir);
     funcMap_.emplace(IInstalld::Message::CLEAN_BUNDLE_DATA_DIR, &InstalldHost::HandleCleanBundleDataDir);
+    funcMap_.emplace(IInstalld::Message::SET_DIR_APL, &InstalldHost::HandleSetDirApl);
     funcMap_.emplace(IInstalld::Message::REMOVE_DIR, &InstalldHost::HandleRemoveDir);
     funcMap_.emplace(IInstalld::Message::GET_BUNDLE_STATS, &InstalldHost::HandleGetBundleStats);
 }
@@ -171,6 +172,16 @@ bool InstalldHost::HandleGetBundleStats(MessageParcel &data, MessageParcel &repl
         APP_LOGE("HandleGetBundleStats write failed");
         return false;
     }
+    return true;
+}
+
+bool InstalldHost::HandleSetDirApl(MessageParcel &data, MessageParcel &reply)
+{
+    std::string dataDir = Str16ToStr8(data.ReadString16());
+    std::string bundleName = Str16ToStr8(data.ReadString16());
+    std::string apl = Str16ToStr8(data.ReadString16());
+    ErrCode result = SetDirApl(dataDir, bundleName, apl);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, reply, result);
     return true;
 }
 }  // namespace AppExecFwk
