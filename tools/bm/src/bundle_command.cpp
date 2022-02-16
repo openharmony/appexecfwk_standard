@@ -1877,21 +1877,17 @@ bool BundleManagerShellCommand::QueryOperation(const std::string &bundleName, co
 int32_t BundleManagerShellCommand::GetCurrentUserId(int32_t userId) const
 {
     if (userId == Constants::UNSPECIFIED_USERID) {
-        char udid[DEVICE_UDID_LENGTH] = {0};
-        int32_t ret = GetDevUdid(udid, DEVICE_UDID_LENGTH);
+        std::vector<int> activeIds;
+        int32_t ret = AccountSA::OsAccountManager::QueryActiveOsAccountIds(activeIds);
         if (ret != 0) {
-            APP_LOGE("BundleManagerShellCommand GetDevUdid failed! ret = %{public}d.", ret);
+            APP_LOGE("QueryActiveOsAccountIds failed! ret = %{public}d.", ret);
             return userId;
         }
-        std::vector<AccountSA::OsAccountInfo> osAccountList;
-        AccountSA::OsAccountManager::GetOsAccountListFromDatabase(std::string(udid), osAccountList);
-        for (auto osAccount : osAccountList) {
-            APP_LOGD("BundleManagerShellCommand osAccount userId:%{public}d, isActived:%{public}d",
-                     osAccount.GetLocalId(), osAccount.GetIsActived());
-            if (osAccount.GetIsActived()) {
-                return osAccount.GetLocalId();
-            }
+        if (activeIds.empty()) {
+            APP_LOGE("QueryActiveOsAccountIds activeIds empty");
+            return userId;
         }
+        return activeIds[0];
     }
     return userId;
 }
