@@ -121,6 +121,7 @@ struct DeviceConfig {
     std::pair<bool, bool> removable = std::make_pair<>(false, true);
     std::pair<bool, bool> singleton = std::make_pair<>(false, false);
     std::pair<bool, bool> userDataClearable = std::make_pair<>(false, true);
+    std::pair<bool, bool> accessible = std::make_pair<>(false, true);
 };
 
 struct Metadata {
@@ -187,6 +188,7 @@ struct App {
     std::pair<bool, bool> removable = std::make_pair<>(false, true);
     bool singleton = false;
     bool userDataClearable = true;
+    bool accessible = false;
     std::map<std::string, DeviceConfig> deviceConfigs;
 };
 
@@ -567,6 +569,17 @@ void from_json(const nlohmann::json &jsonObject, DeviceConfig &deviceConfig)
             parseResult,
             ArrayType::NOT_ARRAY);
     }
+    if (jsonObject.find(DEVICE_CONFIG_ACCESSIBLE) != jsonObjectEnd) {
+        deviceConfig.accessible.first = true;
+        GetValueIfFindKey<bool>(jsonObject,
+            jsonObjectEnd,
+            DEVICE_CONFIG_ACCESSIBLE,
+            deviceConfig.accessible.second,
+            JsonType::BOOLEAN,
+            false,
+            parseResult,
+            ArrayType::NOT_ARRAY);
+    }
 }
 
 void from_json(const nlohmann::json &jsonObject, App &app)
@@ -740,6 +753,14 @@ void from_json(const nlohmann::json &jsonObject, App &app)
         jsonObjectEnd,
         APP_USER_DATA_CLEARABLE,
         app.userDataClearable,
+        JsonType::BOOLEAN,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<bool>(jsonObject,
+        jsonObjectEnd,
+        APP_ACCESSIBLE,
+        app.accessible,
         JsonType::BOOLEAN,
         false,
         parseResult,
@@ -1079,6 +1100,7 @@ bool ToApplicationInfo(const Profile::App &app, ApplicationInfo &applicationInfo
         } else {
             applicationInfo.removable = false;
         }
+        applicationInfo.accessible = app.accessible;
     }
 
     applicationInfo.apiReleaseType = app.apiReleaseType;
@@ -1115,9 +1137,11 @@ bool ToApplicationInfo(const Profile::App &app, ApplicationInfo &applicationInfo
             if (deviceConfig.removable.first) {
                 applicationInfo.removable = deviceConfig.removable.second;
             }
+            if (deviceConfig.accessible.first) {
+                applicationInfo.accessible = deviceConfig.accessible.second;
+            }
         }
     }
-
     applicationInfo.enabled = true;
     return true;
 }
@@ -1137,7 +1161,7 @@ bool ToBundleInfo(const ApplicationInfo &applicationInfo,
     bundleInfo.isKeepAlive = applicationInfo.keepAlive;
     bundleInfo.singleUser = applicationInfo.singleUser;
     bundleInfo.isPreInstallApp = isPreInstallApp;
-    
+
     bundleInfo.vendor = applicationInfo.vendor;
     bundleInfo.releaseType = applicationInfo.apiReleaseType;
     bundleInfo.isNativeApp = false;

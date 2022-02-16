@@ -334,6 +334,7 @@ const std::string APP_LITE_WEARABLE = "liteWearable";
 const std::string APP_CAR = "car";
 const std::string APP_SMART_VISION = "smartVision";
 const std::string APP_ROUTER = "router";
+const std::string APP_ACCESSIBLE = "accessible";
 // module
 const std::string MODULE_NAME = "name";
 const std::string MODULE_TYPE = "type";
@@ -362,6 +363,7 @@ const std::string DEVICE_CONFIG_KEEP_ALIVE = "keepAlive";
 const std::string DEVICE_CONFIG_REMOVABLE = "removable";
 const std::string DEVICE_CONFIG_SINGLETON = "singleton";
 const std::string DEVICE_CONFIG_USER_DATA_CLEARABLE = "userDataClearable";
+const std::string DEVICE_CONFIG_ACCESSIBLE = "accessible";
 // metadata
 const std::string META_DATA_NAME = "name";
 const std::string META_DATA_VALUE = "value";

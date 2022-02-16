@@ -684,6 +684,8 @@ public:
     bool QueryExtensionAbilityInfos(const ExtensionAbilityType &extensionType, const int32_t &userId,
         std::vector<ExtensionAbilityInfo> &extensionInfos) const;
 
+    std::vector<std::string> GetAccessibleAppCodePaths(int32_t userId) const;
+
 private:
     /**
      * @brief Init transferStates.

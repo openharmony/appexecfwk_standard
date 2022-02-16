@@ -72,7 +72,7 @@ struct BundleInfo : public Parcelable {
     bool isKeepAlive = false;
     bool singleUser = false;
     bool isPreInstallApp = false;
-    
+
     std::string vendor;
     std::string releaseType;
     bool isNativeApp = false;
