@@ -105,6 +105,14 @@ public:
      */
     virtual ErrCode GetBundleStats(
         const std::string &bundleName, const int32_t userId, std::vector<int64_t> &bundleStats) override;
+    /**
+     * @brief Set dir apl.
+     * @param dir Indicates the data dir.
+     * @param bundleName Indicates the bundle name.
+     * @param apl Indicates the apl type.
+     * @return Returns ERR_OK if set apl successfully; returns error code otherwise.
+     */
+    virtual ErrCode SetDirApl(const std::string &dir, const std::string &bundleName, const std::string &apl) override;
 private:
     ErrCode TransactInstalldCmd(uint32_t code, MessageParcel &data, MessageParcel &reply,
         MessageOption &option);
