@@ -27,6 +27,7 @@
                 "appverify",
                 "bytrace_standard",
                 "ces_standard",
+                "device_manager_base",
                 "distributeddatamgr",
                 "eventhandler",
                 "hiviewdfx_hilog_native",
