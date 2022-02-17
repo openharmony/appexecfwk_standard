@@ -197,12 +197,12 @@ bool InstalldOperator::IsValideCodePath(const std::string &codePath)
     if (codePath.empty()) {
         return false;
     }
-    return IsValidPath(Constants::THIRD_PARTY_APP_INSTALL_PATH + Constants::PATH_SEPARATOR, codePath) ||
-           IsValidPath(Constants::SYSTEM_APP_INSTALL_PATH + Constants::PATH_SEPARATOR, codePath);
+    return IsValidPath(Constants::BUNDLE_BASE_CODE_DIR + Constants::PATH_SEPARATOR, codePath);
 }
 
 bool InstalldOperator::DeleteFiles(const std::string &dataPath)
 {
+    APP_LOGD("InstalldOperator::DeleteFiles start");
     std::string subPath;
     bool ret = true;
     DIR *dir = opendir(dataPath.c_str());
