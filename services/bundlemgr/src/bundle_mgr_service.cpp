@@ -82,6 +82,8 @@ void BundleMgrService::OnStart()
     if (!needToScan_) {
         PerfProfile::GetInstance().Dump();
     }
+    AddSystemAbilityListener(DISTRIBUTED_HARDWARE_DEVICEMANAGER_SA_ID);
+    AddSystemAbilityListener(DISTRIBUTED_BUNDLE_MGR_SERVICE_SYS_ABILITY_ID);
 }
 
 void BundleMgrService::AfterRegisterToService()
@@ -187,7 +189,10 @@ bool BundleMgrService::Init()
         cloneMgr_ = std::make_shared<BundleCloneMgr>();
     }
     APP_LOGI("create BundleCloneMgr success");
-
+    if (!deviceManager_) {
+        APP_LOGI("Create device manager");
+        deviceManager_ = std::make_shared<BmsDeviceManager>();
+    }
     CheckAllUser();
     ready_ = true;
     APP_LOGI("init end success");
@@ -247,6 +252,22 @@ void BundleMgrService::CheckAllUser()
         }
     }
     APP_LOGD("Check all user end");
+}
+
+void BundleMgrService::OnAddSystemAbility(int32_t systemAbilityId, const std::string& deviceId)
+{
+    APP_LOGD("OnAddSystemAbility systemAbilityId:%{public}d added!", systemAbilityId);
+    if (deviceManager_) {
+        deviceManager_->OnAddSystemAbility(systemAbilityId, deviceId);
+    }
+}
+
+void BundleMgrService::OnRemoveSystemAbility(int32_t systemAbilityId, const std::string& deviceId)
+{
+    APP_LOGD("OnRemoveSystemAbility systemAbilityId:%{public}d removed!", systemAbilityId);
+    if (deviceManager_) {
+        deviceManager_->OnRemoveSystemAbility(systemAbilityId, deviceId);
+    }
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS
