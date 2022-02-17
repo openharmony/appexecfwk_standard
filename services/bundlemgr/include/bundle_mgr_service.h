@@ -29,6 +29,7 @@
 #include "bundle_mgr_service_event_handler.h"
 #include "bundle_permissions_changed_monitor.h"
 #include "bundle_user_mgr_host_impl.h"
+#include "bms_device_manager.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -73,6 +74,9 @@ public:
      * @brief Check all user.
      */
     void CheckAllUser();
+protected:
+    void OnAddSystemAbility(int32_t systemAbilityId, const std::string& deviceId) override;
+    void OnRemoveSystemAbility(int32_t systemAbilityId, const std::string& deviceId) override;
 private:
     /**
      * @brief Initialize the bundle manager service context.
@@ -98,6 +102,7 @@ private:
     std::shared_ptr<BMSEventHandler> handler_;
     std::shared_ptr<BundleDataMgr> dataMgr_;
     std::shared_ptr<BundleCloneMgr> cloneMgr_;
+    std::shared_ptr<BmsDeviceManager> deviceManager_;
     sptr<BundleMgrHostImpl> host_;
     sptr<BundleInstallerHost> installer_;
     sptr<BundleUserMgrHostImpl> userMgrHost_;
