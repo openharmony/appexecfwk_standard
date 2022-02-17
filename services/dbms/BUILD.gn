@@ -27,6 +27,8 @@ ohos_shared_library("libdbms") {
     "src/distributed_bms.cpp",
     "src/distributed_bms_host.cpp",
     "src/distributed_bms_proxy.cpp",
+    "src/image_buffer.cpp",
+    "src/image_compress.cpp",
   ]
 
   defines = [
@@ -36,7 +38,11 @@ ohos_shared_library("libdbms") {
 
   public_configs = [ ":distributed_bms_config" ]
 
-  deps = [ "${common_path}:libappexecfwk_common" ]
+  deps = [
+    "${common_path}:libappexecfwk_common",
+    "//third_party/libjpeg:libjpeg_static",
+    "//third_party/libpng:libpng",
+  ]
 
   external_deps = [
     "ability_base:want",
