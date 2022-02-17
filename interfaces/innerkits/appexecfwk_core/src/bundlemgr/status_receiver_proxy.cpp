@@ -108,6 +108,7 @@ const std::string MSG_ERR_OPERATION_TIME_OUT = "[MSG_ERR_OPERATION_TIME_OUT]";
 const std::string MSG_ERR_USER_NOT_EXIST = "[ERR_USER_NOT_EXIST]";
 const std::string MSG_ERR_USER_CREATE_FALIED = "[ERR_USER_CREATE_FALIED]";
 const std::string MSG_ERR_USER_REMOVE_FALIED = "[ERR_USER_REMOVE_FALIED]";
+const std::string MSG_ERR_USER_NOT_INSTALL_HAP = "[ERR_USER_NOT_INSTALL_HAP]";
 
 const std::map<int32_t, struct ReceivedResult> MAP_RECEIVED_RESULTS {
     {ERR_OK, {IStatusReceiver::SUCCESS, MSG_SUCCESS}},
@@ -245,6 +246,8 @@ const std::map<int32_t, struct ReceivedResult> MAP_RECEIVED_RESULTS {
         {IStatusReceiver::ERR_USER_CREATE_FALIED, MSG_ERR_USER_CREATE_FALIED}},
     {ERR_APPEXECFWK_USER_REMOVE_FALIED,
         {IStatusReceiver::ERR_USER_REMOVE_FALIED, MSG_ERR_USER_REMOVE_FALIED}},
+    {ERR_APPEXECFWK_USER_NOT_INSTALL_HAP,
+        {IStatusReceiver::ERR_USER_NOT_INSTALL_HAP, MSG_ERR_USER_NOT_INSTALL_HAP}},
 };
 }  // namespace
 

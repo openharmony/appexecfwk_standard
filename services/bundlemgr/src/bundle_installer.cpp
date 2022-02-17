@@ -110,7 +110,7 @@ void BundleInstaller::Uninstall(const std::string &bundleName, const InstallPara
         if (std::find(errCode.begin(), errCode.end(), ERR_OK) != errCode.end()) {
             for (const auto &err : errCode) {
                 if (!(err == ERR_APPEXECFWK_UNINSTALL_MISSING_INSTALLED_BUNDLE ||
-                    err == ERR_APPEXECFWK_USER_NOT_EXIST || err == ERR_OK)) {
+                    err == ERR_APPEXECFWK_USER_NOT_INSTALL_HAP || err == ERR_OK)) {
                     resultCode = err;
                     break;
                 }
@@ -143,7 +143,7 @@ void BundleInstaller::Uninstall(
         if (std::find(errCode.begin(), errCode.end(), ERR_OK) != errCode.end()) {
             for (const auto &err : errCode) {
                 if (!(err == ERR_APPEXECFWK_UNINSTALL_MISSING_INSTALLED_BUNDLE ||
-                    err == ERR_APPEXECFWK_USER_NOT_EXIST || err == ERR_OK)) {
+                    err == ERR_APPEXECFWK_USER_NOT_INSTALL_HAP || err == ERR_OK)) {
                     resultCode = err;
                     break;
                 }

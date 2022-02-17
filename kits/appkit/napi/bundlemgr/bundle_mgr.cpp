@@ -2828,6 +2828,7 @@ static void ConvertInstallResult(InstallResult &installResult)
         case static_cast<int32_t>(IStatusReceiver::ERR_UNINSTALL_BUNDLE_MGR_SERVICE_ERROR):
         case static_cast<int32_t>(IStatusReceiver::ERR_UNINSTALL_MISSING_INSTALLED_BUNDLE):
         case static_cast<int32_t>(IStatusReceiver::ERR_UNINSTALL_MISSING_INSTALLED_MODULE):
+        case static_cast<int32_t>(IStatusReceiver::ERR_USER_NOT_INSTALL_HAP):
             installResult.resultCode = static_cast<int32_t>(InstallErrorCode::STATUS_UNINSTALL_FAILURE);
             installResult.resultMsg = "STATUS_UNINSTALL_FAILURE";
             break;
