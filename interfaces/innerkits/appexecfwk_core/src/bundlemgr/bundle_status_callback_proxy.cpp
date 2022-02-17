@@ -158,6 +158,8 @@ std::string TransformResult(ErrCode resultCode)
             return "ERR_APPEXECFWK_USER_CREATE_FALIED";
         case ERR_APPEXECFWK_USER_REMOVE_FALIED:
             return "ERR_APPEXECFWK_USER_REMOVE_FALIED";
+        case ERR_APPEXECFWK_USER_NOT_INSTALL_HAP:
+            return "ERR_APPEXECFWK_USER_NOT_INSTALL_HAP";
         default:
             return "";
     }
