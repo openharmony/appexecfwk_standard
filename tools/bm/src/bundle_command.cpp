@@ -406,6 +406,10 @@ ErrCode BundleManagerShellCommand::CreateMessageMap()
             "error: user not exist.",
         },
         {
+            IStatusReceiver::ERR_USER_NOT_INSTALL_HAP,
+            "error: user does not install the hap.",
+        },
+        {
             IStatusReceiver::ERR_OPERATION_TIME_OUT,
             "error: operation time out.",
         },

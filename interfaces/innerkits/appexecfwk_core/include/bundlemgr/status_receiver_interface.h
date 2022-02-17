@@ -119,6 +119,7 @@ public:
         ERR_USER_NOT_EXIST = 301,
         ERR_USER_CREATE_FALIED,
         ERR_USER_REMOVE_FALIED,
+        ERR_USER_NOT_INSTALL_HAP,
     };
 };
 }  // namespace AppExecFwk

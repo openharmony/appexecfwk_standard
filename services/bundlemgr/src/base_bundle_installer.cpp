@@ -510,6 +510,11 @@ ErrCode BaseBundleInstaller::ProcessBundleUninstall(
         return ERR_APPEXECFWK_INSTALL_PARAM_ERROR;
     }
 
+    if (!dataMgr_->HasUserId(userId_)) {
+        APP_LOGE("The user %{public}d does not exist when uninstall.", userId_);
+        return ERR_APPEXECFWK_USER_NOT_EXIST;
+    }
+
     auto &mtx = dataMgr_->GetBundleMutex(bundleName);
     std::lock_guard lock {mtx};
     InnerBundleInfo oldInfo;
@@ -523,7 +528,7 @@ ErrCode BaseBundleInstaller::ProcessBundleUninstall(
     if (!oldInfo.GetInnerBundleUserInfo(userId_, curInnerBundleUserInfo)) {
         APP_LOGE("bundle(%{public}s) get user(%{public}d) failed when uninstall.",
             oldInfo.GetBundleName().c_str(), userId_);
-        return ERR_APPEXECFWK_USER_NOT_EXIST;
+        return ERR_APPEXECFWK_USER_NOT_INSTALL_HAP;
     }
 
     uid = curInnerBundleUserInfo.uid;
@@ -603,6 +608,11 @@ ErrCode BaseBundleInstaller::ProcessBundleUninstall(
         return ERR_APPEXECFWK_INSTALL_PARAM_ERROR;
     }
 
+    if (!dataMgr_->HasUserId(userId_)) {
+        APP_LOGE("The user %{public}d does not exist when uninstall.", userId_);
+        return ERR_APPEXECFWK_USER_NOT_EXIST;
+    }
+
     auto &mtx = dataMgr_->GetBundleMutex(bundleName);
     std::lock_guard lock {mtx};
     InnerBundleInfo oldInfo;
@@ -616,7 +626,7 @@ ErrCode BaseBundleInstaller::ProcessBundleUninstall(
     if (!oldInfo.GetInnerBundleUserInfo(userId_, curInnerBundleUserInfo)) {
         APP_LOGE("bundle(%{public}s) get user(%{public}d) failed when uninstall.",
             oldInfo.GetBundleName().c_str(), userId_);
-        return ERR_APPEXECFWK_USER_NOT_EXIST;
+        return ERR_APPEXECFWK_USER_NOT_INSTALL_HAP;
     }
 
     uid = curInnerBundleUserInfo.uid;
@@ -704,7 +714,7 @@ ErrCode BaseBundleInstaller::ProcessRecover(
     }
 
     if (!dataMgr_->HasUserId(userId_)) {
-        APP_LOGE("The user %{public}d does not exist when install.", userId_);
+        APP_LOGE("The user %{public}d does not exist when recover.", userId_);
         return ERR_APPEXECFWK_USER_NOT_EXIST;
     }
 
