@@ -135,7 +135,6 @@ ErrCode InstalldHostImpl::CreateBundleDataDir(const std::string &bundleDataDir,
             APP_LOGE("CreateBundleDataDir MkOwnerDir SHARED_PREFERENCE_DIR failed");
             return ERR_APPEXECFWK_INSTALLD_CREATE_DIR_FAILED;
         }
-        SetDirApl(createDir, bundleName, apl);
     }
 
     if (CreateNewBundleDataDir(bundleName, userid, uid, gid, apl) != ERR_OK) {
