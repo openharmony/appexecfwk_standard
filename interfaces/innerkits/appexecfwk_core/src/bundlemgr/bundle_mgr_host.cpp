@@ -274,6 +274,9 @@ int BundleMgrHost::OnRemoteRequest(uint32_t code, MessageParcel &data, MessagePa
         case static_cast<uint32_t>(IBundleMgr::Message::VERIFY_CALLING_PERMISSION):
             errCode = HandleVerifyCallingPermission(data, reply);
             break;
+        case static_cast<uint32_t>(IBundleMgr::Message::GET_ACCESSIBLE_APP_CODE_PATH):
+            errCode = HandleGetAccessibleAppCodePaths(data, reply);
+            break;
         default:
             return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
     }
@@ -1702,6 +1705,23 @@ ErrCode BundleMgrHost::HandleVerifyCallingPermission(Parcel &data, Parcel &reply
     }
     return ERR_OK;
 }
+
+ErrCode BundleMgrHost::HandleGetAccessibleAppCodePaths(Parcel &data, Parcel &reply)
+{
+    int32_t userId = data.ReadInt32();
+    std::vector<std::string> vec = GetAccessibleAppCodePaths(userId);
+    bool ret = vec.empty() ? false : true;
+    if (!reply.WriteBool(ret)) {
+        APP_LOGE("write result failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    if (ret && !reply.WriteStringVector(vec)) {
+        APP_LOGE("write code paths failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    return ERR_OK;
+}
+
 template<typename T>
 bool BundleMgrHost::WriteParcelableVector(std::vector<T> &parcelableVector, Parcel &reply)
 {

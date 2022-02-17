@@ -598,6 +598,8 @@ public:
         std::vector<ExtensionAbilityInfo> &extensionInfos) override;
 
     virtual bool VerifyCallingPermission(const std::string &permission) override;
+
+    virtual std::vector<std::string> GetAccessibleAppCodePaths(int32_t userId) override;
 private:
     const std::shared_ptr<BundleCloneMgr> GetCloneMgrFromService();
     const std::shared_ptr<BundleDataMgr> GetDataMgrFromService();

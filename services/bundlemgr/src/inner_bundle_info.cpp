@@ -1428,6 +1428,7 @@ void InnerBundleInfo::UpdateBaseApplicationInfo(const ApplicationInfo &applicati
     baseApplicationInfo_.removable = applicationInfo.removable;
     baseApplicationInfo_.singleUser = applicationInfo.singleUser;
     baseApplicationInfo_.userDataClearable = applicationInfo.userDataClearable;
+    baseApplicationInfo_.accessible = applicationInfo.accessible;
 
     if (!baseApplicationInfo_.isSystemApp) {
         baseApplicationInfo_.isSystemApp = applicationInfo.isSystemApp;
