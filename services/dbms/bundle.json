@@ -20,7 +20,7 @@
         "ram": "100KB",
         "deps": {
             "components": [
-                "ability_runtime",
+                "ability_base",
                 "bundle_framework",
                 "distributeddatamgr",
                 "hiviewdfx_hilog_native",

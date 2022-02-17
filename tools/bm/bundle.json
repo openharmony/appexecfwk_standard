@@ -21,7 +21,6 @@
         "deps": {
             "components": [
                 "ability_base",
-                "ability_runtime",
                 "bundle_framework",
                 "hiviewdfx_hilog_native",
                 "ipc",
