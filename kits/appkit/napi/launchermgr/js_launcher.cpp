@@ -52,7 +52,7 @@ struct AsyncHandleBundleContext {
     std::string className;
     int32_t userId = 0;
     bool ret = false;
-    int32_t err = 0;
+    uint32_t err = 0;
     std::string message;
 };
 
@@ -454,6 +454,9 @@ static napi_value JSLauncherServiceOn(napi_env env, napi_callback_info info)
     std::string command;
 
     AsyncHandleBundleContext *asyncCallbackInfo = new AsyncHandleBundleContext();
+    if (asyncCallbackInfo == nullptr) {
+        return nullptr;
+    }
     asyncCallbackInfo->env = env;
     for (size_t i = 0; i < argc; ++i) {
         napi_valuetype valueType = napi_undefined;
