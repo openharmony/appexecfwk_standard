@@ -59,6 +59,7 @@ const std::string TMP_SUFFIX = "_tmp";
 const std::string ASSETS_DIR = "assets";
 const std::string RESOURCES_INDEX = "resources.index";
 const std::string BUNDLE_CODE_DIR = "/data/app/el1/bundle/public";
+const std::string BUNDLE_BASE_CODE_DIR = "/data/app/el1/bundle";
 const std::string BUNDLE_APP_DATA_BASE_DIR = "/data/app/";
 const std::string BASE = "/base/";
 const std::string DATABASE = "/database/";
