@@ -43,7 +43,7 @@ BundleMgrClientImpl::~BundleMgrClientImpl()
 
 bool BundleMgrClientImpl::GetBundleNameForUid(const int uid, std::string &bundleName)
 {
-    APP_LOGI("enter");
+    APP_LOGI("GetBundleNameForUid begin");
 
     ErrCode result = Connect();
     if (result != ERR_OK) {
@@ -57,7 +57,7 @@ bool BundleMgrClientImpl::GetBundleNameForUid(const int uid, std::string &bundle
 bool BundleMgrClientImpl::GetBundleInfo(const std::string &bundleName, const BundleFlag flag, BundleInfo &bundleInfo,
     int32_t userId)
 {
-    APP_LOGI("enter");
+    APP_LOGI("GetBundleInfo begin");
 
     ErrCode result = Connect();
     if (result != ERR_OK) {
@@ -129,6 +129,19 @@ bool BundleMgrClientImpl::GetResConfigFile(const AbilityInfo &abilityInfo, const
         return false;
     }
     return true;
+}
+
+std::vector<std::string> BundleMgrClientImpl::GetAccessibleAppCodePaths(int32_t userId)
+{
+    APP_LOGI("GetAccessibleAppCodePaths begin");
+
+    ErrCode result = Connect();
+    if (result != ERR_OK) {
+        APP_LOGE("failed to connect");
+        std::vector<std::string> vec;
+        return vec;
+    }
+    return bundleMgr_->GetAccessibleAppCodePaths(userId);
 }
 
 bool BundleMgrClientImpl::GetResProfileByMetadata(const std::vector<Metadata> &metadata,

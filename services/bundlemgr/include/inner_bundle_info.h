@@ -1321,6 +1321,11 @@ public:
      * @return Return set ability enabled result.
      */
     bool IsAbilityEnabled(const AbilityInfo &abilityInfo, int32_t userId) const;
+
+    bool IsAccessible() const
+    {
+        return baseApplicationInfo_.accessible;
+    }
 private:
     void GetBundleWithAbilities(
         int32_t flags, BundleInfo &bundleInfo, int32_t userId = Constants::UNSPECIFIED_USERID) const;

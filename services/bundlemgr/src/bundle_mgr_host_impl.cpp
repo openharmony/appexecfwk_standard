@@ -1254,5 +1254,18 @@ bool BundleMgrHostImpl::VerifyCallingPermission(const std::string &permission)
     APP_LOGD("VerifyCallingPermission begin");
     return BundlePermissionMgr::VerifyCallingPermission(permission);
 }
+
+std::vector<std::string> BundleMgrHostImpl::GetAccessibleAppCodePaths(int32_t userId)
+{
+    APP_LOGD("GetAccessibleAppCodePaths begin");
+    auto dataMgr = GetDataMgrFromService();
+    if (dataMgr == nullptr) {
+        APP_LOGE("DataMgr is nullptr");
+        std::vector<std::string> vec;
+        return vec;
+    }
+
+    return dataMgr->GetAccessibleAppCodePaths(userId);
+}
 }  // namespace AppExecFwk
 }  // namespace OHOS

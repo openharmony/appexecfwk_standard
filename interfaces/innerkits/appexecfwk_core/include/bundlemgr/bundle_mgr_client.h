@@ -70,6 +70,7 @@ public:
     bool GetResConfigFile(const AbilityInfo &abilityInfo, const std::string &metadataName,
         std::vector<std::string> &profileInfos) const;
 
+    std::vector<std::string> GetAccessibleAppCodePaths(int32_t userId);
 private:
     std::shared_ptr<BundleMgrClientImpl> impl_;
 };
