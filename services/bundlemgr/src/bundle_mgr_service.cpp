@@ -68,15 +68,6 @@ void BundleMgrService::OnStart()
         return;
     }
 
-    if (!registerToService_) {
-        if (!SystemAbilityHelper::AddSystemAbility(BUNDLE_MGR_SERVICE_SYS_ABILITY_ID, host_)) {
-            APP_LOGE("fail to register to system ability manager");
-            return;
-        }
-        APP_LOGI("register to sam success");
-        registerToService_ = true;
-    }
-
     PerfProfile::GetInstance().SetBmsLoadEndTime(GetTickCount());
     if (!needToScan_) {
         PerfProfile::GetInstance().Dump();
@@ -89,6 +80,18 @@ void BundleMgrService::OnStop()
     SelfClean();
     if (perChangeSub_) {
         EventFwk::CommonEventManager::UnSubscribeCommonEvent(perChangeSub_);
+    }
+}
+
+void BundleMgrService::RegisterService()
+{
+    if (!registerToService_) {
+        if (!SystemAbilityHelper::AddSystemAbility(BUNDLE_MGR_SERVICE_SYS_ABILITY_ID, host_)) {
+            APP_LOGE("fail to register to system ability manager");
+            return;
+        }
+        APP_LOGI("register to sam success");
+        registerToService_ = true;
     }
 }
 
