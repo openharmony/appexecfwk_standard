@@ -1045,20 +1045,13 @@ ErrCode BaseBundleInstaller::ProcessModuleUpdate(InnerBundleInfo &newInfo,
 
 ErrCode BaseBundleInstaller::SetDirApl(const InnerBundleInfo &info)
 {
-    auto appDataPath = baseDataPath_ + Constants::PATH_SEPARATOR + info.GetBundleName();
-    ErrCode result = InstalldClient::GetInstance()->SetDirApl(
-        appDataPath, info.GetBundleName(), info.GetAppPrivilegeLevel());
-    if (result != ERR_OK) {
-        APP_LOGE("fail to SetDirApl data dir, error is %{public}d", result);
-        return result;
-    }
     for (const auto &el : Constants::BUNDLE_EL) {
         std::string baseBundleDataDir = Constants::BUNDLE_APP_DATA_BASE_DIR +
                                         el +
                                         Constants::FILE_SEPARATOR_CHAR +
                                         std::to_string(userId_);
         std::string baseDataDir = baseBundleDataDir + Constants::BASE + info.GetBundleName();
-        result = InstalldClient::GetInstance()->SetDirApl(
+        ErrCode result = InstalldClient::GetInstance()->SetDirApl(
             baseDataDir, info.GetBundleName(), info.GetAppPrivilegeLevel());
         if (result != ERR_OK) {
             APP_LOGE("fail to SetDirApl baseDir dir, error is %{public}d", result);
