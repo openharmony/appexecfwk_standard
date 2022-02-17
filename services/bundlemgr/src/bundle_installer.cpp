@@ -114,6 +114,7 @@ void BundleInstaller::Uninstall(const std::string &bundleName, const InstallPara
                     resultCode = err;
                     break;
                 }
+                resultCode = ERR_OK;
             }
         } else {
             resultCode = (errCode.size() > 0) ? errCode[0] : ERR_OK;
@@ -146,6 +147,7 @@ void BundleInstaller::Uninstall(
                     resultCode = err;
                     break;
                 }
+                resultCode = ERR_OK;
             }
         } else {
             resultCode = (errCode.size() > 0) ? errCode[0] : ERR_OK;
