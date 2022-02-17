@@ -62,7 +62,6 @@ ohos_shared_library("appexecfwk_core") {
   ]
 
   external_deps = [
-    "ability_base:base",
     "ability_base:want",
     "bundle_framework:appexecfwk_base",
     "bytrace_standard:bytrace_core",
