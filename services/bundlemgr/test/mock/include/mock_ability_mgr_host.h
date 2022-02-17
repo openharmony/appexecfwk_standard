@@ -480,9 +480,9 @@ public:
         return 0;
     }
 
-    virtual bool SendANRProcessID(int pid) override
+    virtual int SendANRProcessID(int pid) override
     {
-        return true;
+        return 0;
     }
 
     virtual int StartUserTest(const Want &want, const sptr<IRemoteObject> &observer) override
