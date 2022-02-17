@@ -608,66 +608,50 @@ HWTEST_F(BmCommandTest, Bm_Command_Disable_0005, Function | MediumTest | Level1)
 }
 
 /**
- * @tc.number: Bm_Command_Recover_0001
+ * @tc.number: Bm_Command_Disable_0006
  * @tc.name: ExecCommand
- * @tc.desc: Verify the "bm recover" command.
+ * @tc.desc: Verify the "bm disable -n <bundle-name> -u <user-id>" command.
  * @tc.require: AR000GJUII
  */
-HWTEST_F(BmCommandTest, Bm_Command_Recover_0001, Function | MediumTest | Level1)
+HWTEST_F(BmCommandTest, Bm_Command_Disable_0006, Function | MediumTest | Level1)
 {
     char *argv[] = {
         (char *)TOOL_NAME.c_str(),
-        (char *)"recover",
-        (char *)"",
-    };
-    int argc = sizeof(argv) / sizeof(argv[0]) - 1;
-    BundleManagerShellCommand cmd(argc, argv);
-    // set the mock objects
-    SetMockObjects(cmd);
-    EXPECT_EQ(cmd.ExecCommand(), HELP_MSG_NO_OPTION + "\n" + HELP_MSG_RECOVER);
-}
-
-/**
- * @tc.number: Bm_Command_Recover_0002
- * @tc.name: ExecCommand
- * @tc.desc: Verify the "bm recover -n <bundle-name>" command.
- * @tc.require: AR000GJUII
- */
-HWTEST_F(BmCommandTest, Bm_Command_Recover_0002, Function | MediumTest | Level1)
-{
-    char *argv[] = {
-        (char *)TOOL_NAME.c_str(),
-        (char *)"recover",
-        (char *)"-n",
-        (char *)"",
-    };
-    int argc = sizeof(argv) / sizeof(argv[0]) - 1;
-    BundleManagerShellCommand cmd(argc, argv);
-    // set the mock objects
-    SetMockObjects(cmd);
-    EXPECT_EQ(cmd.ExecCommand(), "error: option requires a value.\n" + HELP_MSG_RECOVER);
-}
-
-/**
- * @tc.number: Bm_Command_Recover_0003
- * @tc.name: ExecCommand
- * @tc.desc: Verify the "bm recover -n <bundle-name>" command.
- * @tc.require: AR000GJUII
- */
-HWTEST_F(BmCommandTest, Bm_Command_Recover_0003, Function | MediumTest | Level1)
-{
-    char *argv[] = {
-        (char *)TOOL_NAME.c_str(),
-        (char *)"recover",
+        (char *)"disable",
         (char *)"-n",
         (char *)STRING_BUNDLE_NAME.c_str(),
+        (char *)"-u",
         (char *)"",
     };
     int argc = sizeof(argv) / sizeof(argv[0]) - 1;
     BundleManagerShellCommand cmd(argc, argv);
     // set the mock objects
     SetMockObjects(cmd);
-    EXPECT_EQ(cmd.ExecCommand(), STRING_RECOVER_BUNDLE_OK + "\n");
+    EXPECT_EQ(cmd.ExecCommand(), "error: option requires a value.\n" + HELP_MSG_DISABLE);
+}
+
+/**
+ * @tc.number: Bm_Command_Disable_0007
+ * @tc.name: ExecCommand
+ * @tc.desc: Verify the "bm disable -n <bundle-name> -u <user-id>" command.
+ * @tc.require: AR000GJUII
+ */
+HWTEST_F(BmCommandTest, Bm_Command_Disable_0007, Function | MediumTest | Level1)
+{
+    char *argv[] = {
+        (char *)TOOL_NAME.c_str(),
+        (char *)"disable",
+        (char *)"-n",
+        (char *)STRING_BUNDLE_NAME.c_str(),
+        (char *)"-u",
+        (char *)"100",
+        (char *)"",
+    };
+    int argc = sizeof(argv) / sizeof(argv[0]) - 1;
+    BundleManagerShellCommand cmd(argc, argv);
+    // set the mock objects
+    SetMockObjects(cmd);
+    EXPECT_EQ(cmd.ExecCommand(), STRING_DISABLE_BUNDLE_OK + "\n");
 }
 
 /**

@@ -131,7 +131,6 @@ ErrCode BundleManagerShellCommand::CreateCommandMap()
         {"clean", std::bind(&BundleManagerShellCommand::RunAsCleanCommand, this)},
         {"enable", std::bind(&BundleManagerShellCommand::RunAsEnableCommand, this)},
         {"disable", std::bind(&BundleManagerShellCommand::RunAsDisableCommand, this)},
-        {"recover", std::bind(&BundleManagerShellCommand::RunAsRecoverCommand, this)},
         {"query", std::bind(&BundleManagerShellCommand::RunAsQueryCommand, this)},
         {"get", std::bind(&BundleManagerShellCommand::RunAsGetCommand, this)},
     };
@@ -392,14 +391,6 @@ ErrCode BundleManagerShellCommand::CreateMessageMap()
         {
             IStatusReceiver::ERR_FAILED_GET_INSTALLER_PROXY,
             "error: failed to get installer proxy",
-        },
-        {
-            IStatusReceiver::ERR_RECOVER_GET_BUNDLEPATH_ERROR,
-            "error: recover get bundlePath error.",
-        },
-        {
-            IStatusReceiver::ERR_RECOVER_INVALID_BUNDLE_NAME,
-            "error: recover invalid bundle name.",
         },
         {
             IStatusReceiver::ERR_USER_NOT_EXIST,
@@ -1366,117 +1357,6 @@ ErrCode BundleManagerShellCommand::RunAsDisableCommand()
     return result;
 }
 
-ErrCode BundleManagerShellCommand::RunAsRecoverCommand()
-{
-    int result = OHOS::ERR_OK;
-    int option = -1;
-    int counter = 0;
-    std::string bundleName = "";
-    int32_t userId = Constants::ALL_USERID;
-    while (true) {
-        counter++;
-        option = getopt_long(argc_, argv_, SHORT_OPTIONS.c_str(), LONG_OPTIONS, nullptr);
-        APP_LOGD("option: %{public}d, optopt: %{public}d, optind: %{public}d", option, optopt, optind);
-        if (optind < 0 || optind > argc_) {
-            return OHOS::ERR_INVALID_VALUE;
-        }
-        if (option == -1) {
-            if (counter == 1) {
-                // When scanning the first argument
-                if (strcmp(argv_[optind], cmd_.c_str()) == 0) {
-                    // 'bm recover' with no option: bm recover
-                    // 'bm recover' with a wrong argument: bm recover xxx
-                    APP_LOGD("'bm recover' with no option.");
-                    resultReceiver_.append(HELP_MSG_NO_OPTION + "\n");
-                    result = OHOS::ERR_INVALID_VALUE;
-                }
-            }
-            break;
-        }
-        if (option == '?') {
-            switch (optopt) {
-                case 'n': {
-                    // 'bm recover -n' with no argument: bm recover -n
-                    // 'bm recover --bundle-name' with no argument: bm recover --bundle-name
-                    APP_LOGD("'bm recover' with no argument.");
-                    resultReceiver_.append("error: option ");
-                    resultReceiver_.append("requires a value.\n");
-                    result = OHOS::ERR_INVALID_VALUE;
-                    break;
-                }
-                case 'u': {
-                    // 'bm recover -n <bundleName> -u userId'
-                    // 'bm recover --bundle-name <bundleName> --user-id userId'
-                    APP_LOGD("'bm recover -u' with no argument.");
-                    resultReceiver_.append("error: option ");
-                    resultReceiver_.append("requires a value.\n");
-                    result = OHOS::ERR_INVALID_VALUE;
-                    break;
-                }
-                default: {
-                    // 'bm recover' with an unknown option: bm recover -x
-                    // 'bm recover' with an unknown option: bm recover -xxx
-                    std::string unknownOption = "";
-                    std::string unknownOptionMsg = GetUnknownOptionMsg(unknownOption);
-                    APP_LOGD("'bm recover' with an unknown option.");
-                    resultReceiver_.append(unknownOptionMsg);
-                    result = OHOS::ERR_INVALID_VALUE;
-                    break;
-                }
-            }
-            break;
-        }
-        switch (option) {
-            case 'h': {
-                // 'bm recover -h'
-                // 'bm recover --help'
-                APP_LOGD("'bm recover %{public}s'", argv_[optind - 1]);
-                result = OHOS::ERR_INVALID_VALUE;
-                break;
-            }
-            case 'n': {
-                // 'bm recover -n <bundle-name>'
-                // 'bm recover --bundle-name <bundle-name>'
-                bundleName = optarg;
-                break;
-            }
-            case 'u': {
-                // 'bm recover -n <bundleName> -u userId'
-                // 'bm recover --bundle-name <bundleName> --user-id userId'
-                APP_LOGD("'bm recover %{public}s %{public}s'", argv_[optind - OFFSET_REQUIRED_ARGUMENT], optarg);
-                userId = atoi(optarg);
-                break;
-            }
-            default: {
-                result = OHOS::ERR_INVALID_VALUE;
-                break;
-            }
-        }
-    }
-    if (result == OHOS::ERR_OK) {
-        if (resultReceiver_ == "" && bundleName.size() == 0) {
-            // 'bm recover ...' with no bundle name option
-            APP_LOGD("'bm recover' with no bundle name option.");
-            resultReceiver_.append(HELP_MSG_NO_BUNDLE_NAME_OPTION + "\n");
-            result = OHOS::ERR_INVALID_VALUE;
-        }
-    }
-    if (result != OHOS::ERR_OK) {
-        resultReceiver_.append(HELP_MSG_RECOVER);
-    } else {
-        InstallParam installParam;
-        installParam.userId = userId;
-        int32_t recoverResult = RecoverOperation(bundleName, installParam);
-        if (recoverResult ==  OHOS::ERR_OK) {
-            resultReceiver_ = STRING_RECOVER_BUNDLE_OK + "\n";
-        } else {
-            resultReceiver_ = STRING_RECOVER_BUNDLE_NG + "\n";
-            resultReceiver_.append(GetMessageFromCode(recoverResult));
-        }
-    }
-    return result;
-}
-
 ErrCode BundleManagerShellCommand::RunAsQueryCommand()
 {
     int result = OHOS::ERR_OK;
@@ -1826,14 +1706,6 @@ bool BundleManagerShellCommand::SetApplicationEnabledOperation(const AbilityInfo
         }
     }
     return ret;
-}
-
-int32_t BundleManagerShellCommand::RecoverOperation(const std::string &bundleName, InstallParam &installParam) const
-{
-    APP_LOGD("bundleName: %{public}s", bundleName.c_str());
-    sptr<StatusReceiverImpl> statusReceiver(new StatusReceiverImpl());
-    bundleInstallerProxy_->Recover(bundleName, installParam, statusReceiver);
-    return statusReceiver->GetResultCode();
 }
 
 bool BundleManagerShellCommand::QueryOperation(const std::string &bundleName, const std::string &elementName,
