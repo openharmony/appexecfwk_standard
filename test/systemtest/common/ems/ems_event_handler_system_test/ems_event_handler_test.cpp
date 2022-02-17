@@ -1076,7 +1076,7 @@ HWTEST_F(EmsEventHandlerTest, HasEventWithID031, TestSize.Level1)
     handler->SendEvent(event, DELAY_TIME, TestEventHandler::Priority::LOW);
     bool hasInnerEvent = handler->HasInnerEvent(EVENT_ID_ONE);
     EXPECT_TRUE(hasInnerEvent);
-    int64_t delaywaittime = 100000;
+    uint64_t delaywaittime = 100000;
     usleep(delaywaittime);
     hasInnerEvent = handler->HasInnerEvent(EVENT_ID_ONE);
     EXPECT_FALSE(hasInnerEvent);
@@ -1097,7 +1097,7 @@ HWTEST_F(EmsEventHandlerTest, HasEventWithID032, TestSize.Level1)
     handler->SendEvent(event, DELAY_TIME, TestEventHandler::Priority::LOW);
     bool hasInnerEvent = handler->HasInnerEvent(EVENT_ID);
     EXPECT_TRUE(hasInnerEvent);
-    int64_t delaywaittime = 100000;
+    uint64_t delaywaittime = 100000;
     usleep(delaywaittime);
     hasInnerEvent = handler->HasInnerEvent(EVENT_ID);
     EXPECT_FALSE(hasInnerEvent);
@@ -1118,7 +1118,7 @@ HWTEST_F(EmsEventHandlerTest, HasEventWithID033, TestSize.Level1)
     handler->SendEvent(event, DELAY_TIME, TestEventHandler::Priority::HIGH);
     bool hasInnerEvent = handler->HasInnerEvent(EVENT_ID);
     EXPECT_TRUE(hasInnerEvent);
-    int64_t delaywaittime = 100000;
+    uint64_t delaywaittime = 100000;
     usleep(delaywaittime);
     hasInnerEvent = handler->HasInnerEvent(EVENT_ID);
     EXPECT_FALSE(hasInnerEvent);
@@ -1139,7 +1139,7 @@ HWTEST_F(EmsEventHandlerTest, HasEventWithID034, TestSize.Level1)
     handler->SendEvent(event, DELAY_TIME, TestEventHandler::Priority::IMMEDIATE);
     bool hasInnerEvent = handler->HasInnerEvent(EVENT_ID);
     EXPECT_TRUE(hasInnerEvent);
-    int64_t delaywaittime = 100000;
+    uint64_t delaywaittime = 100000;
     usleep(delaywaittime);
     hasInnerEvent = handler->HasInnerEvent(EVENT_ID);
     EXPECT_FALSE(hasInnerEvent);
@@ -1160,7 +1160,7 @@ HWTEST_F(EmsEventHandlerTest, HasEventWithID035, TestSize.Level1)
     handler->SendEvent(event, DELAY_TIME, TestEventHandler::Priority::IDLE);
     bool hasInnerEvent = handler->HasInnerEvent(EVENT_ID);
     EXPECT_TRUE(hasInnerEvent);
-    int64_t delaywaittime = 100000;
+    uint64_t delaywaittime = 100000;
     usleep(delaywaittime);
     hasInnerEvent = handler->HasInnerEvent(EVENT_ID);
     EXPECT_FALSE(hasInnerEvent);

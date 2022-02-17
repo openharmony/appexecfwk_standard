@@ -1580,12 +1580,12 @@ HWTEST_F(EmsEventRunnerSystemTest, IsCurrentRunnerThread005, TestSize.Level1)
 HWTEST_F(EmsEventRunnerSystemTest, GetThreadId001, TestSize.Level1)
 {
     auto runner = EventRunner::Create(THREAD_NAME_TEST5);
-    long id1 = runner->GetThreadId();
+    uint64_t id1 = runner->GetThreadId();
     auto handler = std::make_shared<EventHandler>(runner);
 
     auto f = [&]() {
         auto currentRunner = EventRunner::Current();
-        long id2 = runner->GetThreadId();
+        uint64_t id2 = runner->GetThreadId();
         EXPECT_EQ(id1, id2);
         runner->Stop();
     };
@@ -1601,12 +1601,12 @@ HWTEST_F(EmsEventRunnerSystemTest, GetThreadId001, TestSize.Level1)
 HWTEST_F(EmsEventRunnerSystemTest, GetThreadId002, TestSize.Level1)
 {
     auto runner = EventRunner::Create();
-    long id1 = runner->GetThreadId();
+    uint64_t id1 = runner->GetThreadId();
     auto handler = std::make_shared<EventHandler>(runner);
 
     auto f = [&]() {
         auto currentRunner = EventRunner::Current();
-        long id2 = currentRunner->GetThreadId();
+        uint64_t id2 = currentRunner->GetThreadId();
         EXPECT_EQ(id1, id2);
         runner->Stop();
     };
@@ -1622,12 +1622,12 @@ HWTEST_F(EmsEventRunnerSystemTest, GetThreadId002, TestSize.Level1)
 HWTEST_F(EmsEventRunnerSystemTest, GetThreadId003, TestSize.Level1)
 {
     auto runner = EventRunner::Create(true);
-    long id1 = runner->GetThreadId();
+    uint64_t id1 = runner->GetThreadId();
     auto handler = std::make_shared<EventHandler>(runner);
 
     auto f = [&]() {
         auto currentRunner = EventRunner::Current();
-        long id2 = currentRunner->GetThreadId();
+        uint64_t id2 = currentRunner->GetThreadId();
         EXPECT_EQ(id1, id2);
         runner->Stop();
     };
@@ -1643,12 +1643,12 @@ HWTEST_F(EmsEventRunnerSystemTest, GetThreadId003, TestSize.Level1)
 HWTEST_F(EmsEventRunnerSystemTest, GetThreadId004, TestSize.Level1)
 {
     auto runner = EventRunner::Create(THREAD_NAME_TEST1);
-    long id1 = runner->GetThreadId();
+    uint64_t id1 = runner->GetThreadId();
     auto handler = std::make_shared<EventHandler>(runner);
 
     auto f = [&]() {
         auto currentRunner = EventRunner::Current();
-        long id2 = currentRunner->GetThreadId();
+        uint64_t id2 = currentRunner->GetThreadId();
         EXPECT_EQ(id1, id2);
         runner->Stop();
     };
@@ -1664,12 +1664,12 @@ HWTEST_F(EmsEventRunnerSystemTest, GetThreadId004, TestSize.Level1)
 HWTEST_F(EmsEventRunnerSystemTest, GetThreadId005, TestSize.Level1)
 {
     auto runner = EventRunner::Create(THREAD_NAME_TEST2);
-    long id1 = runner->GetThreadId();
+    uint64_t id1 = runner->GetThreadId();
     auto handler = std::make_shared<EventHandler>(runner);
 
     auto f = [&]() {
         auto currentRunner = EventRunner::Current();
-        long id2 = currentRunner->GetThreadId();
+        uint64_t id2 = currentRunner->GetThreadId();
         EXPECT_EQ(id1, id2);
         runner->Stop();
     };
