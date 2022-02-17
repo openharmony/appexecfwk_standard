@@ -92,12 +92,12 @@ bool ZipFile::ParseEndDirectory()
 
     size_t eocdPos = endFilePos - endDirLen;
     if (fseek(file_, eocdPos, SEEK_SET) != 0) {
-        APP_LOGE("locate EOCD seek failed, error: %{public}s", strerror(errno));
+        APP_LOGE("locate EOCD seek failed, error: %{public}d", errno);
         return false;
     }
 
     if (fread(&endDir_, sizeof(EndDir), FILE_READ_COUNT, file_) != FILE_READ_COUNT) {
-        APP_LOGE("read EOCD struct failed, error: %{public}s", strerror(errno));
+        APP_LOGE("read EOCD struct failed, error: %{public}d", errno);
         return false;
     }
 
@@ -120,13 +120,13 @@ bool ZipFile::ParseAllEntries()
         fileName.resize(MAX_FILE_NAME - 1);
 
         if (fseek(file_, currentPos, SEEK_SET) != 0) {
-            APP_LOGE("parse entry(%{public}d) seek zipEntry failed, error: %{public}s", i, strerror(errno));
+            APP_LOGE("parse entry(%{public}d) seek zipEntry failed, error: %{public}d", i, errno);
             ret = false;
             break;
         }
 
         if (fread(&directoryEntry, sizeof(CentralDirEntry), FILE_READ_COUNT, file_) != FILE_READ_COUNT) {
-            APP_LOGE("parse entry(%{public}d) read ZipEntry failed, error: %{public}s", i, strerror(errno));
+            APP_LOGE("parse entry(%{public}d) read ZipEntry failed, error: %{public}d", i, errno);
             ret = false;
             break;
         }
@@ -142,7 +142,7 @@ bool ZipFile::ParseAllEntries()
 
         fileLength = (directoryEntry.nameSize >= MAX_FILE_NAME) ? (MAX_FILE_NAME - 1) : directoryEntry.nameSize;
         if (fread(&(fileName[0]), fileLength, FILE_READ_COUNT, file_) != FILE_READ_COUNT) {
-            APP_LOGE("parse entry(%{public}d) read file name failed, error: %{public}s", i, strerror(errno));
+            APP_LOGE("parse entry(%{public}d) read file name failed, error: %{public}d", i, errno);
             ret = false;
             break;
         }
@@ -179,19 +179,19 @@ bool ZipFile::Open()
     realPath.reserve(PATH_MAX);
     realPath.resize(PATH_MAX - 1);
     if (realpath(pathName_.c_str(), &(realPath[0])) == nullptr) {
-        APP_LOGE("transform real path error: %{public}s", strerror(errno));
+        APP_LOGE("transform real path error: %{public}d", errno);
         return false;
     }
 
     FILE *tmpFile = fopen(&(realPath[0]), "rb");
     if (tmpFile == nullptr) {
-        APP_LOGE("open file(%{private}s) failed, error: %{public}s", pathName_.c_str(), strerror(errno));
+        APP_LOGE("open file(%{private}s) failed, error: %{public}d", pathName_.c_str(), errno);
         return false;
     }
 
     if (fileLength_ == 0) {
         if (fseek(tmpFile, 0, SEEK_END) != 0) {
-            APP_LOGE("file seek failed, error: %{public}s", strerror(errno));
+            APP_LOGE("file seek failed, error: %{public}d", errno);
             fclose(tmpFile);
             return false;
         }
@@ -230,7 +230,7 @@ void ZipFile::Close()
     isOpen_ = false;
 
     if (fclose(file_) != 0) {
-        APP_LOGW("close failed, error: %{public}s", strerror(errno));
+        APP_LOGW("close failed, error: %{public}d", errno);
     }
     file_ = nullptr;
 }
@@ -272,16 +272,16 @@ bool ZipFile::CheckDataDesc(const ZipEntry &zipEntry, const LocalHeader &localHe
 
     if (localHeader.flags & FLAG_DATA_DESC) {  // use data desc
         DataDesc dataDesc;
-        ZipPos descPos = zipEntry.localHeaderOffset + GetLocalHeaderSize(localHeader.nameSize, localHeader.extraSize);
+        auto descPos = zipEntry.localHeaderOffset + GetLocalHeaderSize(localHeader.nameSize, localHeader.extraSize);
         descPos += fileStartPos_ + zipEntry.compressedSize;
 
         if (fseek(file_, descPos, SEEK_SET) != 0) {
-            APP_LOGE("check local header seek datadesc failed, error: %{public}s", strerror(errno));
+            APP_LOGE("check local header seek datadesc failed, error: %{public}d", errno);
             return false;
         }
 
         if (fread(&dataDesc, sizeof(DataDesc), FILE_READ_COUNT, file_) != FILE_READ_COUNT) {
-            APP_LOGE("check local header read datadesc failed, error: %{public}s", strerror(errno));
+            APP_LOGE("check local header read datadesc failed, error: %{public}d", errno);
             return false;
         }
 
@@ -318,12 +318,12 @@ bool ZipFile::CheckCoherencyLocalHeader(const ZipEntry &zipEntry, uint16_t &extr
     }
 
     if (fseek(file_, fileStartPos_ + zipEntry.localHeaderOffset, SEEK_SET) != 0) {
-        APP_LOGE("check local header seek failed, error: %{public}s", strerror(errno));
+        APP_LOGE("check local header seek failed, error: %{public}d", errno);
         return false;
     }
 
     if (fread(&localHeader, sizeof(LocalHeader), FILE_READ_COUNT, file_) != FILE_READ_COUNT) {
-        APP_LOGE("check local header read localheader failed, error: %{public}s", strerror(errno));
+        APP_LOGE("check local header read localheader failed, error: %{public}d", errno);
         return false;
     }
 
@@ -348,7 +348,7 @@ bool ZipFile::CheckCoherencyLocalHeader(const ZipEntry &zipEntry, uint16_t &extr
         return false;
     }
     if (fread(&(fileName[0]), fileLength, FILE_READ_COUNT, file_) != FILE_READ_COUNT) {
-        APP_LOGE("check local header read file name failed, error: %{public}s", strerror(errno));
+        APP_LOGE("check local header read file name failed, error: %{public}d", errno);
         return false;
     }
     fileName.resize(fileLength);
@@ -382,7 +382,7 @@ bool ZipFile::SeekToEntryStart(const ZipEntry &zipEntry, const uint16_t extraSiz
 
     APP_LOGD("seek to entry start 0x%{public}08llx", startOffset);
     if (fseek(file_, startOffset, SEEK_SET) != 0) {
-        APP_LOGE("seek failed, error: %{public}s", strerror(errno));
+        APP_LOGE("seek failed, error: %{public}d", errno);
         return false;
     }
     return true;
@@ -406,7 +406,7 @@ bool ZipFile::UnzipWithStore(const ZipEntry &zipEntry, const uint16_t extraSize,
         size_t readLen = (remainSize > UNZIP_BUF_OUT_LEN) ? UNZIP_BUF_OUT_LEN : remainSize;
         readBytes = fread(&(readBuffer[0]), sizeof(Byte), readLen, file_);
         if (readBytes == 0) {
-            APP_LOGE("unzip store read failed, error: %{public}s", strerror(errno));
+            APP_LOGE("unzip store read failed, error: %{public}d", errno);
             return false;
         }
         remainSize -= readBytes;
@@ -454,7 +454,7 @@ bool ZipFile::ReadZStream(const BytePtr &buffer, z_stream &zstream, uint32_t &re
         size_t remainBytes = (remainCompressedSize > UNZIP_BUF_IN_LEN) ? UNZIP_BUF_IN_LEN : remainCompressedSize;
         readBytes = fread(buffer, sizeof(Byte), remainBytes, file_);
         if (readBytes == 0) {
-            APP_LOGE("unzip inflated read failed, error: %{public}s", strerror(errno));
+            APP_LOGE("unzip inflated read failed, error: %{public}d", errno);
             return false;
         }
 

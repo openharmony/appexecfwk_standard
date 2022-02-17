@@ -94,6 +94,8 @@ bool BundleDataMgr::UpdateBundleInstallState(const std::string &bundleName, cons
         return false;
     }
 
+    // always keep lock bundleInfoMutex_ before locking stateMutex_ to avoid deadlock
+    std::lock_guard<std::mutex> lck(bundleInfoMutex_);
     std::lock_guard<std::mutex> lock(stateMutex_);
     auto item = installStates_.find(bundleName);
     if (item == installStates_.end()) {
@@ -1285,7 +1287,6 @@ void BundleDataMgr::DeleteBundleInfo(const std::string &bundleName, const Instal
         return;
     }
 
-    std::lock_guard<std::mutex> lock(bundleInfoMutex_);
     auto infoItem = bundleInfos_.find(bundleName);
     if (infoItem != bundleInfos_.end()) {
         APP_LOGD("del bundle name:%{public}s", bundleName.c_str());
