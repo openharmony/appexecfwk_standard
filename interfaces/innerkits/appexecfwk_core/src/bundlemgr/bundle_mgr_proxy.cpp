@@ -283,45 +283,67 @@ bool BundleMgrProxy::GetBundleInfos(
 
 int BundleMgrProxy::GetUidByBundleName(const std::string &bundleName, const int userId)
 {
-    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
-    APP_LOGI("begin to get uid of %{public}s", bundleName.c_str());
-    std::vector<BundleInfo> bundleInfos;
-    int uid = Constants::INVALID_UID;
-    bool ret = GetBundleInfos(BundleFlag::GET_BUNDLE_DEFAULT, bundleInfos, userId);
-    if (ret) {
-        for (auto bundleInfo : bundleInfos) {
-            if (userId == Constants::C_UESRID) {
-                if (bundleInfo.name == bundleName && bundleInfo.applicationInfo.isCloned == true) {
-                    uid = bundleInfo.uid;
-                    break;
-                }
-            } else {
-                if (bundleInfo.name == bundleName && bundleInfo.applicationInfo.isCloned == false) {
-                    uid = bundleInfo.uid;
-                    break;
-                }
-            }
-        }
-        APP_LOGD("get bundle uid success");
-    } else {
-        APP_LOGE("can not get bundleInfo's uid");
+    if (bundleName.empty()) {
+        APP_LOGE("failed to GetUidByBundleName due to bundleName empty");
+        return Constants::INVALID_UID;
     }
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
+    APP_LOGD("begin to get uid of %{public}s, userId : %{public}d", bundleName.c_str(), userId);
+
+    MessageParcel data;
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        APP_LOGE("failed to GetUidByBundleName due to write InterfaceToken fail");
+        return Constants::INVALID_UID;
+    }
+    if (!data.WriteString(bundleName)) {
+        APP_LOGE("failed to GetUidByBundleName due to write bundleName fail");
+        return Constants::INVALID_UID;
+    }
+    if (!data.WriteInt32(userId)) {
+        APP_LOGE("failed to GetUidByBundleName due to write uid fail");
+        return Constants::INVALID_UID;
+    }
+
+    MessageParcel reply;
+    if (!SendTransactCmd(IBundleMgr::Message::GET_UID_BY_BUNDLE_NAME, data, reply)) {
+        APP_LOGE("failed to GetUidByBundleName from server");
+        return Constants::INVALID_UID;
+    }
+    int32_t uid = reply.ReadInt32();
+    APP_LOGD("uid is %{public}d", uid);
     return uid;
 }
 
 std::string BundleMgrProxy::GetAppIdByBundleName(const std::string &bundleName, const int userId)
 {
-    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
-    APP_LOGI("begin to get appId of %{public}s", bundleName.c_str());
-    BundleInfo bundleInfo;
-    std::string appId = Constants::EMPTY_STRING;
-    bool ret = GetBundleInfo(bundleName, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo, userId);
-    if (ret) {
-        appId = bundleInfo.appId;
-        APP_LOGD("get bundle appId success");
-    } else {
-        APP_LOGE("can not get bundleInfo's appId");
+    if (bundleName.empty()) {
+        APP_LOGE("failed to GetAppIdByBundleName due to bundleName empty");
+        return Constants::EMPTY_STRING;
     }
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
+    APP_LOGD("begin to get appId of %{public}s", bundleName.c_str());
+
+    MessageParcel data;
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        APP_LOGE("failed to GetAppIdByBundleName due to write InterfaceToken fail");
+        return Constants::EMPTY_STRING;
+    }
+    if (!data.WriteString(bundleName)) {
+        APP_LOGE("failed to GetAppIdByBundleName due to write bundleName fail");
+        return Constants::EMPTY_STRING;
+    }
+    if (!data.WriteInt32(userId)) {
+        APP_LOGE("failed to GetAppIdByBundleName due to write uid fail");
+        return Constants::EMPTY_STRING;
+    }
+
+    MessageParcel reply;
+    if (!SendTransactCmd(IBundleMgr::Message::GET_APPID_BY_BUNDLE_NAME, data, reply)) {
+        APP_LOGE("failed to GetAppIdByBundleName from server");
+        return Constants::EMPTY_STRING;
+    }
+    std::string appId = reply.ReadString();
+    APP_LOGD("appId is %{public}s", appId.c_str());
     return appId;
 }
 
@@ -475,21 +497,31 @@ bool BundleMgrProxy::GetBundleGidsByUid(const std::string &bundleName, const int
 
 std::string BundleMgrProxy::GetAppType(const std::string &bundleName)
 {
-    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
-    APP_LOGI("begin to GetAppType of %{public}s", bundleName.c_str());
-    BundleInfo bundleInfo;
-    bool ret = GetBundleInfo(bundleName, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo);
-    if (ret) {
-        bool isSystemApp = bundleInfo.applicationInfo.isSystemApp;
-        APP_LOGD("get GetAppType success");
-        if (isSystemApp) {
-            return Constants::SYSTEM_APP;
-        } else {
-            return Constants::THIRD_PARTY_APP;
-        }
+    if (bundleName.empty()) {
+        APP_LOGE("failed to GetAppType due to bundleName empty");
+        return Constants::EMPTY_STRING;
     }
-    APP_LOGE("can not GetAppType");
-    return Constants::EMPTY_STRING;
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
+    APP_LOGD("begin to GetAppType of %{public}s", bundleName.c_str());
+
+    MessageParcel data;
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        APP_LOGE("failed to GetAppType due to write InterfaceToken fail");
+        return Constants::EMPTY_STRING;
+    }
+    if (!data.WriteString(bundleName)) {
+        APP_LOGE("failed to GetAppType due to write bundleName fail");
+        return Constants::EMPTY_STRING;
+    }
+
+    MessageParcel reply;
+    if (!SendTransactCmd(IBundleMgr::Message::GET_APP_TYPE, data, reply)) {
+        APP_LOGE("failed to GetAppType from server");
+        return Constants::EMPTY_STRING;
+    }
+    std::string appType = reply.ReadString();
+    APP_LOGD("appType is %{public}s", appType.c_str());
+    return appType;
 }
 
 bool BundleMgrProxy::CheckIsSystemAppByUid(const int uid)

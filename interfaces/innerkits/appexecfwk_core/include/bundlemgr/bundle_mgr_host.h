@@ -33,18 +33,6 @@ public:
     virtual ~BundleMgrHost() = default;
 
     int OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option) override;
-    /**
-     * @attention This function is implement in the proxy side.
-     */
-    virtual int GetUidByBundleName([[maybe_unused]] const std::string &bundleName, const int userId) override;
-    /**
-     * @attention This function is implement in the proxy side.
-     */
-    virtual std::string GetAppType([[maybe_unused]] const std::string &bundleName) override;
-    /**
-     * @attention This function is implement in the proxy side.
-     */
-    virtual std::string GetAppIdByBundleName([[maybe_unused]] const std::string &bundleName, const int userId) override;
 
 private:
     /**
@@ -551,6 +539,12 @@ private:
     ErrCode HandleGetAccessibleAppCodePaths(Parcel &data, Parcel &reply);
 
     ErrCode HandleQueryExtensionAbilityInfoByUri(Parcel &data, Parcel &reply);
+
+    ErrCode HandleGetAppIdByBundleName(Parcel &data, Parcel &reply);
+
+    ErrCode HandleGetAppType(Parcel &data, Parcel &reply);
+
+    ErrCode HandleGetUidByBundleName(Parcel &data, Parcel &reply);
 private:
     /**
      * @brief Write a parcelabe vector objects to the proxy node.
