@@ -42,6 +42,7 @@ const std::string TYPE = "type";
 const std::string PERMISSIONS = "permissions";
 const std::string READ_PERMISSION = "readPermission";
 const std::string WRITE_PERMISSION = "writePermission";
+const std::string URI = "uri";
 const std::string VISIBLE = "visible";
 const std::string META_DATA = "metadata";
 const std::string RESOURCE_PATH = "resourcePath";
@@ -66,6 +67,7 @@ bool ExtensionAbilityInfo::ReadFromParcel(Parcel &parcel)
     }
     readPermission = Str16ToStr8(parcel.ReadString16());
     writePermission = Str16ToStr8(parcel.ReadString16());
+    uri = Str16ToStr8(parcel.ReadString16());
     visible = parcel.ReadBool();
     int32_t metadataSize = parcel.ReadInt32();
     for (int32_t i = 0; i < metadataSize; ++i) {
@@ -118,6 +120,7 @@ bool ExtensionAbilityInfo::Marshalling(Parcel &parcel) const
     }
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(readPermission));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(writePermission));
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(uri));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, visible);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, metadata.size());
     for (const auto &meta : metadata) {
@@ -147,6 +150,7 @@ void to_json(nlohmann::json &jsonObject, const ExtensionAbilityInfo &extensionIn
         {TYPE, extensionInfo.type},
         {READ_PERMISSION, extensionInfo.readPermission},
         {WRITE_PERMISSION, extensionInfo.writePermission},
+        {URI, extensionInfo.uri},
         {PERMISSIONS, extensionInfo.permissions},
         {VISIBLE, extensionInfo.visible},
         {META_DATA, extensionInfo.metadata},
@@ -260,6 +264,14 @@ void from_json(const nlohmann::json &jsonObject, ExtensionAbilityInfo &extension
         jsonObjectEnd,
         WRITE_PERMISSION,
         extensionInfo.writePermission,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        URI,
+        extensionInfo.uri,
         JsonType::STRING,
         false,
         parseResult,

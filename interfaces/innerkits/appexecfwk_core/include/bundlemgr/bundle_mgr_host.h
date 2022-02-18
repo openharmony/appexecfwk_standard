@@ -549,6 +549,8 @@ private:
     ErrCode HandleVerifyCallingPermission(Parcel &data, Parcel &reply);
 
     ErrCode HandleGetAccessibleAppCodePaths(Parcel &data, Parcel &reply);
+
+    ErrCode HandleQueryExtensionAbilityInfoByUri(Parcel &data, Parcel &reply);
 private:
     /**
      * @brief Write a parcelabe vector objects to the proxy node.

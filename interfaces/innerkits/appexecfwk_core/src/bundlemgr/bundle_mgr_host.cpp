@@ -277,6 +277,9 @@ int BundleMgrHost::OnRemoteRequest(uint32_t code, MessageParcel &data, MessagePa
         case static_cast<uint32_t>(IBundleMgr::Message::GET_ACCESSIBLE_APP_CODE_PATH):
             errCode = HandleGetAccessibleAppCodePaths(data, reply);
             break;
+        case static_cast<uint32_t>(IBundleMgr::Message::QUERY_EXTENSION_ABILITY_INFO_BY_URI):
+            errCode = HandleQueryExtensionAbilityInfoByUri(data, reply);
+            break;
         default:
             return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
     }
@@ -1718,6 +1721,26 @@ ErrCode BundleMgrHost::HandleGetAccessibleAppCodePaths(Parcel &data, Parcel &rep
     if (ret && !reply.WriteStringVector(vec)) {
         APP_LOGE("write code paths failed");
         return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    return ERR_OK;
+}
+
+ErrCode BundleMgrHost::HandleQueryExtensionAbilityInfoByUri(Parcel &data, Parcel &reply)
+{
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
+    std::string uri = data.ReadString();
+    int32_t userId = data.ReadInt32();
+    ExtensionAbilityInfo extensionAbilityInfo;
+    bool ret = QueryExtensionAbilityInfoByUri(uri, userId, extensionAbilityInfo);
+    if (!reply.WriteBool(ret)) {
+        APP_LOGE("write failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    if (ret) {
+        if (!reply.WriteParcelable(&extensionAbilityInfo)) {
+            APP_LOGE("write failed");
+            return ERR_APPEXECFWK_PARCEL_ERROR;
+        }
     }
     return ERR_OK;
 }

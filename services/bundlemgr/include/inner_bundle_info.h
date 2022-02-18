@@ -551,6 +551,19 @@ public:
         }
         return std::nullopt;
     }
+
+    bool FindExtensionAbilityInfoByUri(const std::string &uri, ExtensionAbilityInfo &extensionAbilityInfo) const
+    {
+        APP_LOGD("uri : %{public}s", uri.c_str());
+        for (const auto &item : baseExtensionInfos_) {
+            if (uri.find(item.second.uri) == 0) {
+                extensionAbilityInfo = item.second;
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * @brief Find AbilityInfo object by Uri.
      * @param abilityUri Indicates the ability uri.

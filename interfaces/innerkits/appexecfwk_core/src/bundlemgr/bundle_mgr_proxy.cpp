@@ -2162,6 +2162,37 @@ std::vector<std::string> BundleMgrProxy::GetAccessibleAppCodePaths(int32_t userI
     return vec;
 }
 
+bool BundleMgrProxy::QueryExtensionAbilityInfoByUri(const std::string &uri, int32_t userId,
+    ExtensionAbilityInfo &extensionAbilityInfo)
+{
+    APP_LOGD("begin to QueryExtensionAbilityInfoByUri");
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
+    if (uri.empty()) {
+        APP_LOGE("uri is empty");
+        return false;
+    }
+    MessageParcel data;
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        APP_LOGE("failed to QueryExtensionAbilityInfoByUri due to write MessageParcel fail");
+        return false;
+    }
+    if (!data.WriteString(uri)) {
+        APP_LOGE("failed to QueryExtensionAbilityInfoByUri due to write uri fail");
+        return false;
+    }
+    if (!data.WriteInt32(userId)) {
+        APP_LOGE("failed to QueryExtensionAbilityInfoByUri due to write userId fail");
+        return false;
+    }
+
+    if (!GetParcelableInfo<ExtensionAbilityInfo>(
+        IBundleMgr::Message::QUERY_EXTENSION_ABILITY_INFO_BY_URI, data, extensionAbilityInfo)) {
+        APP_LOGE("failed to QueryExtensionAbilityInfoByUri from server");
+        return false;
+    }
+    return true;
+}
+
 template<typename T>
 bool BundleMgrProxy::GetParcelableInfo(IBundleMgr::Message code, MessageParcel &data, T &parcelableInfo)
 {
