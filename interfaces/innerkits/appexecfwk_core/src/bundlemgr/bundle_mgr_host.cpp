@@ -1707,7 +1707,7 @@ ErrCode BundleMgrHost::HandleQueryExtensionAbilityInfoByUri(Parcel &data, Parcel
 ErrCode BundleMgrHost::HandleGetAppIdByBundleName(Parcel &data, Parcel &reply)
 {
     std::string bundleName = data.ReadString();
-    int32_t userId = reply.ReadInt32();
+    int32_t userId = data.ReadInt32();
     std::string appId = GetAppIdByBundleName(bundleName, userId);
     APP_LOGD("appId is %{public}s", appId.c_str());
     if (!reply.WriteString(appId)) {
