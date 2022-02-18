@@ -160,6 +160,7 @@ struct Extension {
     std::string type;
     std::string readPermission;
     std::string writePermission;
+    std::string uri;
     std::vector<std::string> permissions;
     bool visible = false;
     std::vector<Skill> skills;
@@ -462,6 +463,14 @@ void from_json(const nlohmann::json &jsonObject, Extension &extension)
         jsonObjectEnd,
         EXTENSION_ABILITY_WRITE_PERMISSION,
         extension.writePermission,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        EXTENSION_URI,
+        extension.uri,
         JsonType::STRING,
         false,
         parseResult,
@@ -1252,6 +1261,7 @@ bool ToExtensionInfo(const Profile::ModuleJson &moduleJson, const Profile::Exten
         extensionInfo.readPermission = extension.readPermission;
         extensionInfo.writePermission = extension.writePermission;
     }
+    extensionInfo.uri = extension.uri;
     extensionInfo.permissions = extension.permissions;
     extensionInfo.visible = extension.visible;
     GetMetadata(extensionInfo.metadata, extension.metadata);

@@ -381,6 +381,7 @@ const std::string ABILITY_CONTINUABLE = "continuable";
 // extension ability
 const std::string EXTENSION_ABILITY_NAME = "name";
 const std::string EXTENSION_ABILITY_TYPE = "type";
+const std::string EXTENSION_URI = "uri";
 const std::string EXTENSION_ABILITY_READ_PERMISSION = "readPermission";
 const std::string EXTENSION_ABILITY_WRITE_PERMISSION = "writePermission";
 // requestPermission

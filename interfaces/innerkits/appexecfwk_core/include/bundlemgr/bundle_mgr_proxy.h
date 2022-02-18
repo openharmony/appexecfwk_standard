@@ -621,6 +621,9 @@ public:
     virtual bool VerifyCallingPermission(const std::string &permission) override;
 
     virtual std::vector<std::string> GetAccessibleAppCodePaths(int32_t userId) override;
+
+    virtual bool QueryExtensionAbilityInfoByUri(const std::string &uri, int32_t userId,
+        ExtensionAbilityInfo &extensionAbilityInfo) override;
 private:
     /**
      * @brief Send a command message from the proxy object.
