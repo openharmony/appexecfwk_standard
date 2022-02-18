@@ -74,6 +74,10 @@ public:
      * @brief Check all user.
      */
     void CheckAllUser();
+    /**
+     * @brief register bms sa to samgr
+     */
+    void RegisterService();
 protected:
     void OnAddSystemAbility(int32_t systemAbilityId, const std::string& deviceId) override;
     void OnRemoveSystemAbility(int32_t systemAbilityId, const std::string& deviceId) override;
