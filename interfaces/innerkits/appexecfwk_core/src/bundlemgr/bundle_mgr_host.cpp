@@ -1735,7 +1735,7 @@ ErrCode BundleMgrHost::HandleGetUidByBundleName(Parcel &data, Parcel &reply)
 {
     BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::string bundleName = data.ReadString();
-    int32_t userId = reply.ReadInt32();
+    int32_t userId = data.ReadInt32();
     int32_t uid = GetUidByBundleName(bundleName, userId);
     APP_LOGD("uid is %{public}d", uid);
     if (!reply.WriteInt32(uid)) {
