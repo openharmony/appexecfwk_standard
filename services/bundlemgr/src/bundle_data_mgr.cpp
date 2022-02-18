@@ -1131,6 +1131,9 @@ bool BundleDataMgr::QueryKeepAliveBundleInfos(std::vector<BundleInfo> &bundleInf
                 BundleInfo bundleInfo;
                 int32_t responseUserId = info.second.GetResponseUserId(requestUserId);
                 info.second.GetBundleInfo(BundleFlag::GET_BUNDLE_WITH_ABILITIES, bundleInfo, responseUserId);
+                if (bundleInfo.name == "") {
+                    continue;
+                }
                 bundleInfos.emplace_back(bundleInfo);
             }
         }
@@ -2868,7 +2871,7 @@ bool BundleDataMgr::QueryExtensionAbilityInfoByUri(const std::string &uri, int32
     }
     std::string convertUri = uri;
     convertUri.replace(uri.find(Constants::EXTENSION_URI_PARAM_SEPARATOR),
-        EXTENSION_URI_PARAM_SEPARATOR_LEN, EXTENSION_URI_MODULE_JSON_SEPARATOR);
+        Constants::EXTENSION_URI_PARAM_SEPARATOR_LEN, Constants::EXTENSION_URI_MODULE_JSON_SEPARATOR);
     APP_LOGD("convertUri : %{public}s", convertUri.c_str());
  
     std::lock_guard<std::mutex> lock(bundleInfoMutex_);
