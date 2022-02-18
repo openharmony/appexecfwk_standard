@@ -57,6 +57,7 @@ struct ExtensionAbilityInfo : public Parcelable {
     std::vector<std::string> permissions;
     std::string readPermission;
     std::string writePermission;
+    std::string uri;
     ExtensionAbilityType type;
     bool visible = false;
     std::vector<Metadata> metadata;

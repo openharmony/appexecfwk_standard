@@ -1267,5 +1267,17 @@ std::vector<std::string> BundleMgrHostImpl::GetAccessibleAppCodePaths(int32_t us
 
     return dataMgr->GetAccessibleAppCodePaths(userId);
 }
+
+bool BundleMgrHostImpl::QueryExtensionAbilityInfoByUri(const std::string &uri, int32_t userId,
+    ExtensionAbilityInfo &extensionAbilityInfo)
+{
+    APP_LOGD("uri : %{public}s, userId : %{public}d", uri.c_str(), userId);
+    auto dataMgr = GetDataMgrFromService();
+    if (dataMgr == nullptr) {
+        APP_LOGE("DataMgr is nullptr");
+        return false;
+    }
+    return dataMgr->QueryExtensionAbilityInfoByUri(uri, userId, extensionAbilityInfo);
+}
 }  // namespace AppExecFwk
 }  // namespace OHOS
