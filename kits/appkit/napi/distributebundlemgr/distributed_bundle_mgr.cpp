@@ -40,9 +40,14 @@ constexpr int32_t PARAM0 = 0;
 constexpr int32_t PARAM1 = 1;
 constexpr int32_t NAPI_RETURN_ZERO = 0;
 constexpr int32_t NAPI_RETURN_ONE = 1;
-constexpr int32_t OPERATION_FAILED = 1;
-constexpr int32_t INVALID_PARAM = 2;
 constexpr int32_t GET_REMOTE_ABILITY_INFO_MAX_SIZE = 10;
+enum GetRemoteAbilityInfoErrorCode : int32_t {
+    SUCCESS = 0,
+    ERR_INNER_ERROR,
+    ERR_INVALID_PARAM,
+    ERR_PARAMETERS_MORE_THAN_MAX,
+    ERR_REMOTE_DEVICE_IPC_ERROR,
+};
 }
 
 static OHOS::sptr<OHOS::AppExecFwk::IDistributedBms> GetDistributedBundleMgr()
@@ -70,6 +75,18 @@ static std::string GetStringFromNAPI(napi_env env, napi_value value)
         return "";
     }
     return result;
+}
+
+static int32_t ConvertResultCode(int32_t code)
+{
+    APP_LOGD("ConvertResultCode resultCode:%{public}d", code);
+    switch (code) {
+        case SUCCESS:
+            return SUCCESS;
+        default:
+            break;
+    }
+    return ERR_INNER_ERROR;
 }
 
 static void ConvertElementName(napi_env env, napi_value objElementName, const ElementName &elementName)
@@ -143,23 +160,25 @@ static bool ParseElementName(napi_env env, OHOS::AppExecFwk::ElementName &elemen
     status = napi_get_named_property(env, args, "deviceId", &prop);
     napi_typeof(env, prop, &valueType);
     if (status == napi_ok && valueType == napi_string) {
-        APP_LOGD("begin to parse ElementName deviceId");
         elementName.SetDeviceID(GetStringFromNAPI(env, prop));
     }
     prop = nullptr;
     status = napi_get_named_property(env, args, "bundleName", &prop);
     napi_typeof(env, prop, &valueType);
     if (status == napi_ok && valueType == napi_string) {
-        APP_LOGD("begin to parse ElementName bundleName");
         elementName.SetBundleName(GetStringFromNAPI(env, prop));
+    } else {
+        APP_LOGE("begin to parse ElementName bundleName failed");
+        return false;
     }
-
     prop = nullptr;
     status = napi_get_named_property(env, args, "abilityName", &prop);
     napi_typeof(env, prop, &valueType);
     if (status == napi_ok && valueType == napi_string) {
-        APP_LOGD("begin to parse ElementName abilityName");
         elementName.SetAbilityName(GetStringFromNAPI(env, prop));
+    } else {
+        APP_LOGE("begin to parse ElementName abilityName failed");
+        return false;
     }
     APP_LOGD("parse ElementName deviceId:%{public}s, bundleName:%{public}s, abilityName:%{public}s",
         elementName.GetDeviceID().c_str(),
@@ -180,10 +199,6 @@ static bool ParseElementNames(napi_env env, std::vector<ElementName> &elementNam
     uint32_t arrayLength = 0;
     NAPI_CALL(env, napi_get_array_length(env, args, &arrayLength));
     APP_LOGD("arrayLength:%{public}d", arrayLength);
-    if (arrayLength > GET_REMOTE_ABILITY_INFO_MAX_SIZE) {
-        APP_LOGE("parseElementNames args size failed");
-        return false;
-    }
     for (uint32_t i = 0; i < arrayLength; i++) {
         napi_value value = nullptr;
         NAPI_CALL(env, napi_get_element(env, args, i, &value));
@@ -205,38 +220,38 @@ static bool ParseElementNames(napi_env env, std::vector<ElementName> &elementNam
     return true;
 }
 
-static bool InnerGetRemoteAbilityInfo(
+static int32_t InnerGetRemoteAbilityInfo(
     const OHOS::AppExecFwk::ElementName &elementName, RemoteAbilityInfo &remoteAbilityInfo)
 {
     auto iDistBundleMgr = GetDistributedBundleMgr();
     if (!iDistBundleMgr) {
         APP_LOGE("can not get iDistBundleMgr");
-        return false;
+        return ERR_INNER_ERROR;
     }
-    if (!iDistBundleMgr->GetRemoteAbilityInfo(elementName, remoteAbilityInfo)) {
+    int32_t result = iDistBundleMgr->GetRemoteAbilityInfo(elementName, remoteAbilityInfo);
+    if (result != 0) {
         APP_LOGE("InnerGetRemoteAbilityInfo failed");
-        return false;
     }
-    return true;
+    return ConvertResultCode(result);
 }
 
-static bool InnerGetRemoteAbilityInfos(
+static int32_t InnerGetRemoteAbilityInfos(
     const std::vector<ElementName> &elementNames, std::vector<RemoteAbilityInfo> &remoteAbilityInfos)
 {
     if (elementNames.size() == 0) {
         APP_LOGE("InnerGetRemoteAbilityInfos elementNames is empty");
-        return false;
+        return ERR_INVALID_PARAM;
     }
     auto iDistBundleMgr = GetDistributedBundleMgr();
     if (!iDistBundleMgr) {
         APP_LOGE("can not get iDistBundleMgr");
-        return false;
+        return ERR_INNER_ERROR;
     }
-    if (!iDistBundleMgr->GetRemoteAbilityInfos(elementNames, remoteAbilityInfos)) {
+    int32_t result = iDistBundleMgr->GetRemoteAbilityInfos(elementNames, remoteAbilityInfos);
+    if (result != 0) {
         APP_LOGE("InnerGetRemoteAbilityInfo failed");
-        return false;
     }
-    return true;
+    return ConvertResultCode(result);
 }
 
 napi_value GetRemoteAbilityInfo(napi_env env, napi_callback_info info)
@@ -256,12 +271,14 @@ napi_value GetRemoteAbilityInfo(napi_env env, napi_callback_info info)
         napi_valuetype valueType = napi_undefined;
         napi_typeof(env, argv[i], &valueType);
         if ((i == PARAM0) && (valueType == napi_object)) {
-            ParseElementName(env, asyncCallbackInfo->elementName, argv[i]);
+            if (!ParseElementName(env, asyncCallbackInfo->elementName, argv[i])) {
+                asyncCallbackInfo->errCode = ERR_INVALID_PARAM;
+            }
         } else if ((i == PARAM1) && (valueType == napi_function)) {
             napi_create_reference(env, argv[i], NAPI_RETURN_ONE, &asyncCallbackInfo->callbackRef);
             break;
         } else {
-            asyncCallbackInfo->errCode = INVALID_PARAM;
+            asyncCallbackInfo->errCode = ERR_INVALID_PARAM;
             asyncCallbackInfo->errMssage = "type misMatch";
         }
     }
@@ -279,11 +296,8 @@ napi_value GetRemoteAbilityInfo(napi_env env, napi_callback_info info)
         [](napi_env env, void* data) {
             ElementNameInfo* asyncCallbackInfo = (ElementNameInfo*)data;
             if (!asyncCallbackInfo->errCode) {
-                asyncCallbackInfo->result =
+                asyncCallbackInfo->errCode =
                     InnerGetRemoteAbilityInfo(asyncCallbackInfo->elementName, asyncCallbackInfo->remoteAbilityInfo);
-                if (!asyncCallbackInfo->result) {
-                    asyncCallbackInfo->errCode = OPERATION_FAILED;
-                }
             }
         },
         [](napi_env env, napi_status status, void* data) {
@@ -334,12 +348,18 @@ napi_value GetRemoteAbilityInfos(napi_env env, napi_callback_info info)
         napi_valuetype valueType = napi_undefined;
         napi_typeof(env, argv[i], &valueType);
         if (i == PARAM0) {
-            ParseElementNames(env, asyncCallbackInfo->elementNames, argv[i]);
+            if (!ParseElementNames(env, asyncCallbackInfo->elementNames, argv[i])) {
+                asyncCallbackInfo->errCode = ERR_INVALID_PARAM;
+            }
+            if (static_cast<int32_t>(asyncCallbackInfo->elementNames.size()) > GET_REMOTE_ABILITY_INFO_MAX_SIZE) {
+                APP_LOGE("InnerGetRemoteAbilityInfos elementNames more than max");
+                asyncCallbackInfo->errCode = ERR_PARAMETERS_MORE_THAN_MAX;
+            }
         } else if ((i == PARAM1) && (valueType == napi_function)) {
             napi_create_reference(env, argv[i], NAPI_RETURN_ONE, &asyncCallbackInfo->callbackRef);
             break;
         } else {
-            asyncCallbackInfo->errCode = INVALID_PARAM;
+            asyncCallbackInfo->errCode = ERR_INVALID_PARAM;
             asyncCallbackInfo->errMssage = "type misMatch";
         }
     }
@@ -357,11 +377,8 @@ napi_value GetRemoteAbilityInfos(napi_env env, napi_callback_info info)
         [](napi_env env, void* data) {
             ElementNameInfos* asyncCallbackInfo = (ElementNameInfos*)data;
             if (!asyncCallbackInfo->errCode) {
-                asyncCallbackInfo->result =
+                asyncCallbackInfo->errCode =
                     InnerGetRemoteAbilityInfos(asyncCallbackInfo->elementNames, asyncCallbackInfo->remoteAbilityInfos);
-                if (!asyncCallbackInfo->result) {
-                    asyncCallbackInfo->errCode = OPERATION_FAILED;
-                }
             }
         },
         [](napi_env env, napi_status status, void* data) {

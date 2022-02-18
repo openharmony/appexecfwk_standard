@@ -19,11 +19,11 @@
 #include <vector>
 
 #include "app_log_wrapper.h"
+#include "appexecfwk_errors.h"
 #include "bundle_mgr_interface.h"
 #include "bundle_mgr_proxy.h"
 #include "iservice_registry.h"
 #include "if_system_ability_manager.h"
-#include "os_account_info.h"
 #include "os_account_manager.h"
 #include "parameter.h"
 #include "system_ability_definition.h"
@@ -31,7 +31,6 @@
 namespace OHOS {
 namespace AppExecFwk {
 namespace {
-    const std::uint32_t DEVICE_UUID_LENGTH = 65;
     const uint8_t DECODE_BUNBER_ONE = 1;
     const uint8_t DECODE_BUNBER_TWO = 2;
     const uint8_t DECODE_BUNBER_THREE = 3;
@@ -118,7 +117,7 @@ static OHOS::sptr<OHOS::AppExecFwk::IDistributedBms> GetDistributedBundleMgr(con
     return OHOS::iface_cast<IDistributedBms>(remoteObject);
 }
 
-bool DistributedBms::GetRemoteAbilityInfo(
+int32_t DistributedBms::GetRemoteAbilityInfo(
     const OHOS::AppExecFwk::ElementName &elementName, RemoteAbilityInfo &remoteAbilityInfo)
 {
     APP_LOGD("DistributedBms GetRemoteAbilityInfo bundleName:%{public}s , abilityName:%{public}s",
@@ -126,43 +125,29 @@ bool DistributedBms::GetRemoteAbilityInfo(
     auto iDistBundleMgr = GetDistributedBundleMgr(elementName.GetDeviceID());
     if (!iDistBundleMgr) {
         APP_LOGD("GetDistributedBundleMgr get local d-bms");
-        if (!GetAbilityInfo(elementName, remoteAbilityInfo)) {
-            APP_LOGE("GetAbilityInfo failed");
-            return false;
-        }
+        return GetAbilityInfo(elementName, remoteAbilityInfo);
     } else {
         APP_LOGD("GetDistributedBundleMgr get remote d-bms");
-        if (!iDistBundleMgr->GetAbilityInfo(elementName, remoteAbilityInfo)) {
-            APP_LOGE("get remote AbilityInfo failed");
-            return false;
-        }
+        return iDistBundleMgr->GetAbilityInfo(elementName, remoteAbilityInfo);
     }
-    return true;
 }
 
-bool DistributedBms::GetRemoteAbilityInfos(
+int32_t DistributedBms::GetRemoteAbilityInfos(
     const std::vector<ElementName> &elementNames, std::vector<RemoteAbilityInfo> &remoteAbilityInfos)
 {
     APP_LOGD("DistributedBms GetRemoteAbilityInfos");
     auto iDistBundleMgr = GetDistributedBundleMgr(elementNames[0].GetDeviceID());
     if (!iDistBundleMgr) {
         APP_LOGD("GetDistributedBundleMgr get local d-bms");
-        if (!GetAbilityInfos(elementNames, remoteAbilityInfos)) {
-            APP_LOGE("GetAbilityInfo failed");
-            return false;
-        }
+        return GetAbilityInfos(elementNames, remoteAbilityInfos);
     } else {
         APP_LOGD("GetDistributedBundleMgr get remote d-bms");
-        if (!iDistBundleMgr->GetAbilityInfos(elementNames, remoteAbilityInfos)) {
-            APP_LOGE("get remote AbilityInfo failed");
-            return false;
-        }
+        return iDistBundleMgr->GetAbilityInfos(elementNames, remoteAbilityInfos);
     }
-    return true;
 }
 
 
-bool DistributedBms::GetAbilityInfo(
+int32_t DistributedBms::GetAbilityInfo(
     const OHOS::AppExecFwk::ElementName &elementName, RemoteAbilityInfo &remoteAbilityInfo)
 {
     APP_LOGI("DistributedBms GetAbilityInfo bundleName:%{public}s , abilityName:%{public}s",
@@ -170,68 +155,69 @@ bool DistributedBms::GetAbilityInfo(
     auto iBundleMgr = GetBundleMgr();
     if (!iBundleMgr) {
         APP_LOGE("DistributedBms GetBundleMgr failed");
-        return false;
+        return ERR_APPEXECFWK_FAILED_SERVICE_DIED;
     }
     int userId = -1;
     if (!GetCurrentUserId(userId)) {
         APP_LOGE("GetCurrentUserId failed");
-        return false;
+        return ERR_APPEXECFWK_USER_NOT_EXIST;
     }
     BundleInfo bundleInfo;
     if (!iBundleMgr->GetBundleInfo(elementName.GetBundleName(), 1, bundleInfo, userId)) {
         APP_LOGE("DistributedBms GetBundleInfo failed");
-        return false;
+        return ERR_APPEXECFWK_FAILED_GET_BUNDLE_INFO;
     }
     std::shared_ptr<Global::Resource::ResourceManager> resourceManager = nullptr;
     resourceManager = GetResourceManager(bundleInfo);
     if (resourceManager == nullptr) {
         APP_LOGE("DistributedBms InitResourceManager failed");
-        return false;
+        return ERR_APPEXECFWK_FAILED_GET_RESOURCEMANAGER;
     }
     AbilityInfo abilityInfo;
     OHOS::AAFwk::Want want;
     want.SetElement(elementName);
     if (!iBundleMgr->QueryAbilityInfo(want, GET_ABILITY_INFO_WITH_APPLICATION, userId, abilityInfo)) {
         APP_LOGE("DistributedBms QueryAbilityInfo failed");
-        return false;
+        return ERR_APPEXECFWK_FAILED_GET_ABILITY_INFO;
     }
     remoteAbilityInfo.elementName = elementName;
     OHOS::Global::Resource::RState errval =
         resourceManager->GetStringById(static_cast<uint32_t>(abilityInfo.labelId), remoteAbilityInfo.label);
     if (errval != OHOS::Global::Resource::RState::SUCCESS) {
         APP_LOGE("DistributedBms GetStringById failed");
-        return false;
+        return ERR_APPEXECFWK_FAILED_GET_RESOURCEMANAGER;
     }
     std::string iconPath;
     OHOS::Global::Resource::RState iconPathErrval =
         resourceManager->GetMediaById(static_cast<uint32_t>(abilityInfo.iconId), iconPath);
     if (iconPathErrval != OHOS::Global::Resource::RState::SUCCESS) {
         APP_LOGE("DistributedBms GetStringById  iconPath failed");
-        return false;
+        return ERR_APPEXECFWK_FAILED_GET_RESOURCEMANAGER;
     }
     if (!GetMediaBase64(iconPath, remoteAbilityInfo.icon)) {
         APP_LOGE("DistributedBms GetMediaBase64 failed");
-        return false;
+        return ERR_APPEXECFWK_FAILED_GET_RESOURCEMANAGER;
     }
     APP_LOGD("DistributedBms GetAbilityInfo label:%{public}s", remoteAbilityInfo.label.c_str());
     APP_LOGD("DistributedBms GetAbilityInfo iconId:%{public}s", remoteAbilityInfo.icon.c_str());
-    return true;
+    return OHOS::NO_ERROR;
 }
 
-bool DistributedBms::GetAbilityInfos(
+int32_t DistributedBms::GetAbilityInfos(
     const std::vector<ElementName> &elementNames, std::vector<RemoteAbilityInfo> &remoteAbilityInfos)
 {
     APP_LOGD("DistributedBms GetAbilityInfos");
     for (auto elementName : elementNames) {
         RemoteAbilityInfo remoteAbilityInfo;
-        if (!GetAbilityInfo(elementName, remoteAbilityInfo)) {
+        int32_t result = GetAbilityInfo(elementName, remoteAbilityInfo);
+        if (result) {
             APP_LOGE("get AbilityInfo:%{public}s, %{public}s failed", elementName.GetBundleName().c_str(),
                 elementName.GetAbilityName().c_str());
-            return false;
+            return result;
         }
         remoteAbilityInfos.push_back(remoteAbilityInfo);
     }
-    return true;
+    return OHOS::NO_ERROR;
 }
 
 std::shared_ptr<Global::Resource::ResourceManager> DistributedBms::GetResourceManager(
@@ -341,22 +327,18 @@ std::unique_ptr<char[]> DistributedBms::EncodeBase64(std::unique_ptr<char[]> &da
 
 bool DistributedBms::GetCurrentUserId(int &userId)
 {
-    char udid[DEVICE_UUID_LENGTH] = {0};
-    int ret = GetDevUdid(udid, DEVICE_UUID_LENGTH);
+    std::vector<int> activeIds;
+    int ret = AccountSA::OsAccountManager::QueryActiveOsAccountIds(activeIds);
     if (ret != 0) {
-        APP_LOGE("GetDevUdid failed! ret = %{public}d.", ret);
+        APP_LOGE("QueryActiveOsAccountIds failed ret:%{public}d", ret);
         return false;
     }
-    std::vector<AccountSA::OsAccountInfo> osAccountList;
-    AccountSA::OsAccountManager::GetOsAccountListFromDatabase(std::string(udid), osAccountList);
-    for (auto osAccount : osAccountList) {
-        APP_LOGD("osAccount userId:%{public}d, isActived:%{public}d", osAccount.GetLocalId(), osAccount.GetIsActived());
-        if (osAccount.GetIsActived()) {
-            userId = osAccount.GetLocalId();
-            return true;
-        }
+    if (activeIds.empty()) {
+        APP_LOGE("QueryActiveOsAccountIds activeIds empty");
+        return false;
     }
-    return false;
+    userId = activeIds[0];
+    return true;
 }
 }
 }
