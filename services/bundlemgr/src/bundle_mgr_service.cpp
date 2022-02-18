@@ -68,16 +68,6 @@ void BundleMgrService::OnStart()
         return;
     }
 
-    if (!registerToService_) {
-        if (!SystemAbilityHelper::AddSystemAbility(BUNDLE_MGR_SERVICE_SYS_ABILITY_ID, host_)) {
-            APP_LOGE("fail to register to system ability manager");
-            return;
-        }
-        APP_LOGI("register to sam success");
-        registerToService_ = true;
-    }
-
-    AfterRegisterToService();
     PerfProfile::GetInstance().SetBmsLoadEndTime(GetTickCount());
     if (!needToScan_) {
         PerfProfile::GetInstance().Dump();
@@ -252,6 +242,19 @@ void BundleMgrService::CheckAllUser()
         }
     }
     APP_LOGD("Check all user end");
+}
+
+void BundleMgrService::RegisterService()
+{
+    if (!registerToService_) {
+        if (!SystemAbilityHelper::AddSystemAbility(BUNDLE_MGR_SERVICE_SYS_ABILITY_ID, host_)) {
+            APP_LOGE("fail to register to system ability manager");
+            return;
+        }
+        APP_LOGI("register to sam success");
+        registerToService_ = true;
+    }
+    AfterRegisterToService();
 }
 
 void BundleMgrService::OnAddSystemAbility(int32_t systemAbilityId, const std::string& deviceId)
