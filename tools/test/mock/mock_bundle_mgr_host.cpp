@@ -27,6 +27,7 @@ bool MockBundleMgrHost::DumpInfos(
     if (bundleName.size() > 0) {
         result = bundleName + "\n";
     }
+    result = "OK";
     return true;
 }
 
