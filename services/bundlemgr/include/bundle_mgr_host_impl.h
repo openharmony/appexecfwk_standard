@@ -603,6 +603,12 @@ public:
 
     virtual bool QueryExtensionAbilityInfoByUri(const std::string &uri, int32_t userId,
         ExtensionAbilityInfo &extensionAbilityInfo) override;
+
+    virtual std::string GetAppIdByBundleName(const std::string &bundleName, const int userId) override;
+
+    virtual std::string GetAppType(const std::string &bundleName) override;
+
+    virtual int GetUidByBundleName(const std::string &bundleName, const int userId) override;
 private:
     const std::shared_ptr<BundleCloneMgr> GetCloneMgrFromService();
     const std::shared_ptr<BundleDataMgr> GetDataMgrFromService();
@@ -619,7 +625,7 @@ private:
     bool DumpBundleInfo(const std::string &bundleName, int32_t userId, std::string &result);
     bool DumpShortcutInfo(const std::string &bundleName, int32_t userId, std::string &result);
     std::set<int32_t> GetExistsCommonUserIs();
-    bool VerifyQueryPermission(bool allowNormalApl = false, const std::string &queryBundleName = "");
+    bool VerifyQueryPermission(const std::string &queryBundleName);
 
     std::shared_ptr<BMSEventHandler> handler_;
 };
