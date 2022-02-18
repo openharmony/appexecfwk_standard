@@ -27,7 +27,7 @@
         "build": {
             "sub_component": [
                 "//foundation/appexecfwk/standard/interfaces/innerkits:innerkits_target",
-		"//foundation/appexecfwk/standard/interfaces/innerkits/napi/eventhandler:emitter"
+		"//foundation/appexecfwk/standard/interfaces/innerkits/napi:napi_packages"
             ],
             "inner_kits": [
                 {
