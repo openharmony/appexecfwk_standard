@@ -280,61 +280,20 @@ int BundleMgrHost::OnRemoteRequest(uint32_t code, MessageParcel &data, MessagePa
         case static_cast<uint32_t>(IBundleMgr::Message::QUERY_EXTENSION_ABILITY_INFO_BY_URI):
             errCode = HandleQueryExtensionAbilityInfoByUri(data, reply);
             break;
+        case static_cast<uint32_t>(IBundleMgr::Message::GET_APPID_BY_BUNDLE_NAME):
+            errCode = HandleGetAppIdByBundleName(data, reply);
+            break;
+        case static_cast<uint32_t>(IBundleMgr::Message::GET_APP_TYPE):
+            errCode = HandleGetAppType(data, reply);
+            break;
+        case static_cast<uint32_t>(IBundleMgr::Message::GET_UID_BY_BUNDLE_NAME):
+            errCode = HandleGetUidByBundleName(data, reply);
+            break;
         default:
             return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
     }
     // if ERR_OK return ipc NO_ERROR, else return ipc UNKNOW_ERROR
     return (errCode == ERR_OK) ? NO_ERROR : UNKNOWN_ERROR;
-}
-
-int BundleMgrHost::GetUidByBundleName(const std::string &bundleName, const int userId)
-{
-    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
-    APP_LOGI("begin to get uid of %{public}s", bundleName.c_str());
-    std::vector<BundleInfo> bundleInfos;
-    int uid = Constants::INVALID_UID;
-    bool ret = GetBundleInfos(BundleFlag::GET_BUNDLE_DEFAULT, bundleInfos, userId);
-    if (ret) {
-        for (auto bundleInfo : bundleInfos) {
-            if (userId == Constants::C_UESRID) {
-                if (bundleInfo.name == bundleName && bundleInfo.applicationInfo.isCloned == true) {
-                    uid = bundleInfo.uid;
-                    break;
-                }
-            } else {
-                if (bundleInfo.name == bundleName && bundleInfo.applicationInfo.isCloned == false) {
-                    uid = bundleInfo.uid;
-                    break;
-                }
-            }
-        }
-        APP_LOGD("get bundle uid success");
-    } else {
-        APP_LOGE("can not get bundleInfo's uid");
-    }
-    return uid;
-}
-
-std::string BundleMgrHost::GetAppIdByBundleName([[maybe_unused]] const std::string &bundleName, const int userId)
-{
-    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
-    APP_LOGI("begin to get appId of %{public}s", bundleName.c_str());
-    BundleInfo bundleInfo;
-    std::string appId = Constants::EMPTY_STRING;
-    bool ret = GetBundleInfo(bundleName, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo, userId);
-    if (ret) {
-        appId = bundleInfo.appId;
-        APP_LOGD("get bundle appId success");
-    } else {
-        APP_LOGE("can not get bundleInfo's appId");
-    }
-    return appId;
-}
-
-std::string BundleMgrHost::GetAppType([[maybe_unused]] const std::string &bundleName)
-{
-    APP_LOGD("need not impl for host interface");
-    return Constants::EMPTY_STRING;
 }
 
 ErrCode BundleMgrHost::HandleGetApplicationInfo(Parcel &data, Parcel &reply)
@@ -1741,6 +1700,47 @@ ErrCode BundleMgrHost::HandleQueryExtensionAbilityInfoByUri(Parcel &data, Parcel
             APP_LOGE("write failed");
             return ERR_APPEXECFWK_PARCEL_ERROR;
         }
+    }
+    return ERR_OK;
+}
+
+ErrCode BundleMgrHost::HandleGetAppIdByBundleName(Parcel &data, Parcel &reply)
+{
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
+    std::string bundleName = data.ReadString();
+    int32_t userId = data.ReadInt32();
+    std::string appId = GetAppIdByBundleName(bundleName, userId);
+    APP_LOGD("appId is %{public}s", appId.c_str());
+    if (!reply.WriteString(appId)) {
+        APP_LOGE("write failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    return ERR_OK;
+}
+
+ErrCode BundleMgrHost::HandleGetAppType(Parcel &data, Parcel &reply)
+{
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
+    std::string bundleName = data.ReadString();
+    std::string appType = GetAppType(bundleName);
+    APP_LOGD("appType is %{public}s", appType.c_str());
+    if (!reply.WriteString(appType)) {
+        APP_LOGE("write failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    return ERR_OK;
+}
+
+ErrCode BundleMgrHost::HandleGetUidByBundleName(Parcel &data, Parcel &reply)
+{
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
+    std::string bundleName = data.ReadString();
+    int32_t userId = data.ReadInt32();
+    int32_t uid = GetUidByBundleName(bundleName, userId);
+    APP_LOGD("uid is %{public}d", uid);
+    if (!reply.WriteInt32(uid)) {
+        APP_LOGE("write failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
     }
     return ERR_OK;
 }
