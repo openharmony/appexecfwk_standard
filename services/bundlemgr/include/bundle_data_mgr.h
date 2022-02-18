@@ -686,6 +686,8 @@ public:
 
     std::vector<std::string> GetAccessibleAppCodePaths(int32_t userId) const;
 
+    bool QueryExtensionAbilityInfoByUri(const std::string &uri, int32_t userId,
+        ExtensionAbilityInfo &extensionAbilityInfo) const;
 private:
     /**
      * @brief Init transferStates.

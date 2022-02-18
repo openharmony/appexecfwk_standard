@@ -728,7 +728,7 @@ bool BundleDataMgr::QueryAbilityInfoByUri(
         auto infoWithIdItem = item.second.find(deviceId);
         if (infoWithIdItem == item.second.end()) {
             APP_LOGE("bundle device id:%{public}s not find", deviceId.c_str());
-            return false;
+            continue;
         }
 
         if (infoWithIdItem->second.IsDisabled()) {
@@ -1131,6 +1131,9 @@ bool BundleDataMgr::QueryKeepAliveBundleInfos(std::vector<BundleInfo> &bundleInf
                 BundleInfo bundleInfo;
                 int32_t responseUserId = info.second.GetResponseUserId(requestUserId);
                 info.second.GetBundleInfo(BundleFlag::GET_BUNDLE_WITH_ABILITIES, bundleInfo, responseUserId);
+                if (bundleInfo.name == "") {
+                    continue;
+                }
                 bundleInfos.emplace_back(bundleInfo);
             }
         }
@@ -2848,6 +2851,61 @@ std::vector<std::string> BundleDataMgr::GetAccessibleAppCodePaths(int32_t userId
         }
     }
     return vec;
+}
+
+bool BundleDataMgr::QueryExtensionAbilityInfoByUri(const std::string &uri, int32_t userId,
+    ExtensionAbilityInfo &extensionAbilityInfo) const
+{
+    int32_t requestUserId = GetUserId(userId);
+    if (requestUserId == Constants::INVALID_USERID) {
+        APP_LOGE("invalid userId -1");
+        return false;
+    }
+    if (uri.empty()) {
+        APP_LOGE("uri empty");
+        return false;
+    }
+    if (uri.find(Constants::EXTENSION_URI_PARAM_SEPARATOR) == std::string::npos) {
+        APP_LOGE("uri not include ///, invalid");
+        return false;
+    }
+    std::string convertUri = uri;
+    convertUri.replace(uri.find(Constants::EXTENSION_URI_PARAM_SEPARATOR),
+        Constants::EXTENSION_URI_PARAM_SEPARATOR_LEN, Constants::EXTENSION_URI_MODULE_JSON_SEPARATOR);
+    APP_LOGD("convertUri : %{public}s", convertUri.c_str());
+ 
+    std::lock_guard<std::mutex> lock(bundleInfoMutex_);
+    if (bundleInfos_.empty()) {
+        APP_LOGE("bundleInfos_ data is empty");
+        return false;
+    }
+    std::string deviceId = Constants::CURRENT_DEVICE_ID;
+    for (const auto &item : bundleInfos_) {
+        auto infoWithIdItem = item.second.find(deviceId);
+        if (infoWithIdItem == item.second.end()) {
+            continue;
+        }
+
+        if (infoWithIdItem->second.IsDisabled()) {
+            APP_LOGE("app %{public}s is disabled", infoWithIdItem->second.GetBundleName().c_str());
+            continue;
+        }
+
+        int32_t responseUserId = infoWithIdItem->second.GetResponseUserId(requestUserId);
+        if (!infoWithIdItem->second.GetApplicationEnabled(responseUserId)) {
+            continue;
+        }
+
+        bool ret = infoWithIdItem->second.FindExtensionAbilityInfoByUri(convertUri, extensionAbilityInfo);
+        if (!ret) {
+            continue;
+        }
+        infoWithIdItem->second.GetApplicationInfo(
+            ApplicationFlag::GET_BASIC_APPLICATION_INFO, responseUserId, extensionAbilityInfo.applicationInfo);
+        return true;
+    }
+    APP_LOGE("QueryExtensionAbilityInfoByUri (%{public}s) failed.", uri.c_str());
+    return false;
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS
