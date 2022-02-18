@@ -685,6 +685,13 @@ public:
         std::vector<std::string> vec;
         return vec;
     }
+
+    virtual bool QueryExtensionAbilityInfoByUri(const std::string &uri, int32_t userId,
+        ExtensionAbilityInfo &extensionAbilityInfo)
+    {
+        return false;
+    }
+
     enum class Message {
         GET_APPLICATION_INFO = 0,
         GET_APPLICATION_INFOS,
