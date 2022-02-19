@@ -41,6 +41,7 @@ void BMSEventHandler::ProcessEvent(const InnerEvent::Pointer &event)
         case BUNDLE_SCAN_START: {
             OnStartScanning(Constants::DEFAULT_USERID);
             SetAllInstallFlag();
+            DelayedSingleton<BundleMgrService>::GetInstance()->RegisterService();
             break;
         }
         case BUNDLE_SCAN_FINISHED:
@@ -50,6 +51,7 @@ void BMSEventHandler::ProcessEvent(const InnerEvent::Pointer &event)
         case BUNDLE_REBOOT_SCAN_START: {
             RebootStartScanning();
             SetAllInstallFlag();
+            DelayedSingleton<BundleMgrService>::GetInstance()->RegisterService();
             break;
         }
         default:
