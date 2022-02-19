@@ -119,7 +119,8 @@ bool EpollIoWaiter::WaitFor(std::unique_lock<std::mutex> &lock, int64_t nanoseco
 
     // Block on epoll_wait outside of the lock.
     struct epoll_event epollEvents[MAX_EPOLL_EVENTS_SIZE];
-    int32_t retVal = epoll_wait(epollFd_, epollEvents, MAX_EPOLL_EVENTS_SIZE, NanosecondsToTimeout(nanoseconds));
+    int32_t retVal = TEMP_FAILURE_RETRY(
+        epoll_wait(epollFd_, epollEvents, MAX_EPOLL_EVENTS_SIZE, NanosecondsToTimeout(nanoseconds)));
 
     // Decrease waiting count after block at once.
     --waitingCount_;
