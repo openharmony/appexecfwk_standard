@@ -73,6 +73,8 @@ public:
      * @brief Check all user.
      */
     void CheckAllUser();
+
+    void RegisterService();
 private:
     /**
      * @brief Initialize the bundle manager service context.
