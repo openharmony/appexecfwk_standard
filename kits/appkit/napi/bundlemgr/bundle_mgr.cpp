@@ -2746,7 +2746,7 @@ static void ConvertInstallResult(InstallResult &installResult)
             break;
         case static_cast<int32_t>(IStatusReceiver::ERR_INSTALL_PARSE_FAILED):
         case static_cast<int32_t>(IStatusReceiver::ERR_INSTALL_VERIFICATION_FAILED):
-        case static_cast<int32_t>(IStatusReceiver::ERR_INSTALL_NO_SIGNATURE_INFO):
+        case static_cast<int32_t>(IStatusReceiver::ERR_INSTALL_FAILED_INCOMPATIBLE_SIGNATURE):
         case static_cast<int32_t>(IStatusReceiver::ERR_INSTALL_PARAM_ERROR):
         case static_cast<int32_t>(IStatusReceiver::ERR_INSTALL_FILE_PATH_INVALID):
         case static_cast<int32_t>(IStatusReceiver::ERR_INSTALL_INVALID_HAP_SIZE):
@@ -2761,6 +2761,20 @@ static void ConvertInstallResult(InstallResult &installResult)
         case static_cast<int32_t>(IStatusReceiver::ERR_INSTALL_PARSE_PROFILE_MISSING_PROP):
         case static_cast<int32_t>(IStatusReceiver::ERR_INSTALL_PARSE_PERMISSION_ERROR):
         case static_cast<int32_t>(IStatusReceiver::ERR_INSTALL_PARSE_RPCID_FAILED):
+        case static_cast<int32_t>(IStatusReceiver::ERR_INSTALL_FAILED_INVALID_SIGNATURE_FILE_PATH):
+        case static_cast<int32_t>(IStatusReceiver::ERR_INSTALL_FAILED_BAD_BUNDLE_SIGNATURE_FILE):
+        case static_cast<int32_t>(IStatusReceiver::ERR_INSTALL_FAILED_NO_BUNDLE_SIGNATURE):
+        case static_cast<int32_t>(IStatusReceiver::ERR_INSTALL_FAILED_VERIFY_APP_PKCS7_FAIL):
+        case static_cast<int32_t>(IStatusReceiver::ERR_INSTALL_FAILED_PROFILE_PARSE_FAIL):
+        case static_cast<int32_t>(IStatusReceiver::ERR_INSTALL_FAILED_APP_SOURCE_NOT_TRUESTED):
+        case static_cast<int32_t>(IStatusReceiver::ERR_INSTALL_FAILED_BAD_DIGEST):
+        case static_cast<int32_t>(IStatusReceiver::ERR_INSTALL_FAILED_BUNDLE_INTEGRITY_VERIFICATION_FAILURE):
+        case static_cast<int32_t>(IStatusReceiver::ERR_INSTALL_FAILED_FILE_SIZE_TOO_LARGE):
+        case static_cast<int32_t>(IStatusReceiver::ERR_INSTALL_FAILED_BAD_PUBLICKEY):
+        case static_cast<int32_t>(IStatusReceiver::ERR_INSTALL_FAILED_BAD_BUNDLE_SIGNATURE):
+        case static_cast<int32_t>(IStatusReceiver::ERR_INSTALL_FAILED_NO_PROFILE_BLOCK_FAIL):
+        case static_cast<int32_t>(IStatusReceiver::ERR_INSTALL_FAILED_BUNDLE_SIGNATURE_VERIFICATION_FAILURE):
+        case static_cast<int32_t>(IStatusReceiver::ERR_INSTALL_FAILED_VERIFY_SOURCE_INIT_FAIL):
             installResult.resultCode = static_cast<int32_t>(InstallErrorCode::STATUS_INSTALL_FAILURE_INVALID);
             installResult.resultMsg = "STATUS_INSTALL_FAILURE_INVALID";
             break;
@@ -2769,7 +2783,7 @@ static void ConvertInstallResult(InstallResult &installResult)
             installResult.resultMsg = "STATUS_ABILITY_NOT_FOUND";
             break;
         case static_cast<int32_t>(IStatusReceiver::ERR_INSTALL_VERSION_DOWNGRADE):
-        case static_cast<int32_t>(IStatusReceiver::ERR_INSTALL_SIGN_INFO_INCONSISTENT):
+        case static_cast<int32_t>(IStatusReceiver::ERR_INSTALL_FAILED_INCONSISTENT_SIGNATURE):
             installResult.resultCode = static_cast<int32_t>(InstallErrorCode::STATUS_INSTALL_FAILURE_INCOMPATIBLE);
             installResult.resultMsg = "STATUS_INSTALL_FAILURE_INCOMPATIBLE";
             break;

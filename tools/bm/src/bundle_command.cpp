@@ -163,11 +163,67 @@ ErrCode BundleManagerShellCommand::CreateMessageMap()
             "error: install verification failed.",
         },
         {
-            IStatusReceiver::ERR_INSTALL_NO_SIGNATURE_INFO,
-            "error: install no signature info.",
+            IStatusReceiver::ERR_INSTALL_FAILED_INVALID_SIGNATURE_FILE_PATH,
+            "error: signature file path is invalid.",
         },
         {
-            IStatusReceiver::ERR_INSTALL_SIGN_INFO_INCONSISTENT,
+            IStatusReceiver::ERR_INSTALL_FAILED_BAD_BUNDLE_SIGNATURE_FILE,
+            "error: cannot open signature file.",
+        },
+        {
+            IStatusReceiver::ERR_INSTALL_FAILED_NO_BUNDLE_SIGNATURE,
+            "error: no signature file.",
+        },
+        {
+            IStatusReceiver::ERR_INSTALL_FAILED_VERIFY_APP_PKCS7_FAIL,
+            "error: fail to verify pkcs7 file.",
+        },
+        {
+            IStatusReceiver::ERR_INSTALL_FAILED_PROFILE_PARSE_FAIL,
+            "error: fail to parse signature file.",
+        },
+        {
+            IStatusReceiver::ERR_INSTALL_FAILED_APP_SOURCE_NOT_TRUESTED,
+            "error: signature verification failed due to not trusted app source.",
+        },
+        {
+            IStatusReceiver::ERR_INSTALL_FAILED_BAD_DIGEST,
+            "error: signature verification failed due to not bad digest.",
+        },
+        {
+            IStatusReceiver::ERR_INSTALL_FAILED_BUNDLE_INTEGRITY_VERIFICATION_FAILURE,
+            "error: signature verification failed due to out of integrity.",
+        },
+        {
+            IStatusReceiver::ERR_INSTALL_FAILED_FILE_SIZE_TOO_LARGE,
+            "error: signature verification failed due to oversize file.",
+        },
+        {
+            IStatusReceiver::ERR_INSTALL_FAILED_BAD_PUBLICKEY,
+            "error: signature verification failed due to bad public key.",
+        },
+        {
+            IStatusReceiver::ERR_INSTALL_FAILED_BAD_BUNDLE_SIGNATURE,
+            "error: signature verification failed due to bad bundle signature.",
+        },
+        {
+            IStatusReceiver::ERR_INSTALL_FAILED_NO_PROFILE_BLOCK_FAIL,
+            "error: signature verification failed due to no profile block.",
+        },
+        {
+            IStatusReceiver::ERR_INSTALL_FAILED_BUNDLE_SIGNATURE_VERIFICATION_FAILURE,
+            "error: verify signature failed.",
+        },
+        {
+            IStatusReceiver::ERR_INSTALL_FAILED_VERIFY_SOURCE_INIT_FAIL,
+            "error: signature verification failed due to init source failed.",
+        },
+        {
+            IStatusReceiver::ERR_INSTALL_FAILED_INCOMPATIBLE_SIGNATURE,
+            "error: install incompatible signature info.",
+        },
+        {
+            IStatusReceiver::ERR_INSTALL_FAILED_INCONSISTENT_SIGNATURE,
             "error: install sign info inconsistent.",
         },
         {
