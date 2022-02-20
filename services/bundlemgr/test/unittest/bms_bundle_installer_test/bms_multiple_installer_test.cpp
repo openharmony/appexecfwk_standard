@@ -82,6 +82,7 @@ const std::string ROOT_DIR = "/data/accounts";
 const int32_t ROOT_UID = 0;
 const int32_t USERID = 100;
 const std::string INSTALL_THREAD = "TestInstall";
+const int32_t WAIT_TIME = 5; // init mocked bms
 }  // namespace
 
 class BmsMultipleInstallerTest : public testing::Test {
@@ -202,6 +203,7 @@ void BmsMultipleInstallerTest::SetUp()
     }
     if (!bundleMgrService_->IsServiceReady()) {
         bundleMgrService_->OnStart();
+        std::this_thread::sleep_for(std::chrono::seconds(WAIT_TIME));
     }
 }
 
@@ -1061,7 +1063,7 @@ HWTEST_F(BmsMultipleInstallerTest, MultipleHapsInstall_2600, Function | SmallTes
     filePaths.emplace_back(firstBundleFile);
     filePaths.emplace_back(secondBundleFile);
     ErrCode installRes = InstallThirdPartyMultipleBundles(filePaths, true);
-    EXPECT_EQ(installRes, ERR_APPEXECFWK_INSTALL_NO_SIGNATURE_INFO);
+    EXPECT_EQ(installRes, ERR_APPEXECFWK_INSTALL_FAILED_NO_BUNDLE_SIGNATURE);
     CheckFileNonExist();
 
     ApplicationInfo info;
@@ -1084,7 +1086,7 @@ HWTEST_F(BmsMultipleInstallerTest, MultipleHapsInstall_2700, Function | SmallTes
     filePaths.emplace_back(firstBundleFile);
     filePaths.emplace_back(secondBundleFile);
     ErrCode installRes = InstallThirdPartyMultipleBundles(filePaths, true);
-    EXPECT_EQ(installRes, ERR_APPEXECFWK_INSTALL_SIGN_INFO_INCONSISTENT);
+    EXPECT_EQ(installRes, ERR_APPEXECFWK_INSTALL_FAILED_INCONSISTENT_SIGNATURE);
     CheckFileNonExist();
 }
 

@@ -16,13 +16,14 @@
 #ifndef FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_BUNDLE_VERIFY_MGR_H
 #define FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_BUNDLE_VERIFY_MGR_H
 
+#include "appexecfwk_errors.h"
 #include "interfaces/hap_verify.h"
 
 namespace OHOS {
 namespace AppExecFwk {
 class BundleVerifyMgr {
 public:
-    static bool HapVerify(const std::string &filePath, Security::Verify::HapVerifyResult &hapVerifyResult);
+    static ErrCode HapVerify(const std::string &filePath, Security::Verify::HapVerifyResult &hapVerifyResult);
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS
