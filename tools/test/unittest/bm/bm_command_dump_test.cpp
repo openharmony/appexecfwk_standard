@@ -288,7 +288,7 @@ HWTEST_F(BmCommandDumpTest, Bm_Command_Dump_0900, Function | MediumTest | Level1
     // set the mock objects
     SetMockObjects(cmd);
 
-    EXPECT_EQ(cmd.ExecCommand(), "");
+    EXPECT_EQ(cmd.ExecCommand(), "OK");
 }
 
 /**
@@ -311,7 +311,7 @@ HWTEST_F(BmCommandDumpTest, Bm_Command_Dump_1000, Function | MediumTest | Level1
     // set the mock objects
     SetMockObjects(cmd);
 
-    EXPECT_EQ(cmd.ExecCommand(), "");
+    EXPECT_EQ(cmd.ExecCommand(), "OK");
 }
 
 /**
