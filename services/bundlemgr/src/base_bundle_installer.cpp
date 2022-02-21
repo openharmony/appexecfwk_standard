@@ -181,6 +181,12 @@ ErrCode BaseBundleInstaller::InnerProcessBundleInstall(std::unordered_map<std::s
         dataMgr_->SavePreInstallBundleInfo(bundleName_, preInstallBundleInfo);
     }
 
+    if (newInfos.begin()->second.IsSingleUser() && (userId_ != Constants::DEFAULT_USERID)) {
+        APP_LOGI("singleton app only install in user 0, bundleName %{public}s, userId is %{public}d",
+            bundleName_.c_str(), userId_);
+        return ERR_OK;
+    }
+
     // try to get the bundle info to decide use install or update. Always keep other exceptions below this line.
     if (!GetInnerBundleInfo(oldInfo, isAppExist_)) {
         return ERR_APPEXECFWK_INSTALL_BUNDLE_MGR_SERVICE_ERROR;
