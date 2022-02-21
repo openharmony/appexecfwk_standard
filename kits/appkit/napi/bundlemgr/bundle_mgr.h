@@ -101,16 +101,6 @@ struct AsyncPermissionDefCallbackInfo {
     std::string message;
 };
 
-struct AsyncPermissionCallbackInfo {
-    napi_env env;
-    napi_async_work asyncWork;
-    napi_deferred deferred;
-    napi_ref callback = 0;
-    std::string bundleName;
-    std::string permission;
-    int ret = -1;
-};
-
 struct AsyncBundleInfosCallbackInfo {
     napi_env env;
     napi_async_work asyncWork;
@@ -331,7 +321,6 @@ napi_value GetShortcutInfos(napi_env env, napi_callback_info info);
 napi_value GetModuleUsageRecords(napi_env env, napi_callback_info info);
 napi_value RegisterAllPermissionsChanged(napi_env env, napi_callback_info info);
 napi_value UnregisterPermissionsChanged(napi_env env, napi_callback_info info);
-napi_value CheckPermission(napi_env env, napi_callback_info info);
 napi_value ClearBundleCache(napi_env env, napi_callback_info info);
 napi_value SetApplicationEnabled(napi_env env, napi_callback_info info);
 napi_value SetAbilityEnabled(napi_env env, napi_callback_info info);

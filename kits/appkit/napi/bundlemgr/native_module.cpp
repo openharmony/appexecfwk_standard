@@ -115,7 +115,6 @@ static napi_value Init(napi_env env, napi_value exports)
         DECLARE_NAPI_FUNCTION("getModuleUsageRecords", GetModuleUsageRecords),
         DECLARE_NAPI_FUNCTION("on", RegisterAllPermissionsChanged),
         DECLARE_NAPI_FUNCTION("off", UnregisterPermissionsChanged),
-        DECLARE_NAPI_FUNCTION("checkPermission", CheckPermission),
         DECLARE_NAPI_FUNCTION("cleanBundleCacheFiles", ClearBundleCache),
         DECLARE_NAPI_FUNCTION("setApplicationEnabled", SetApplicationEnabled),
         DECLARE_NAPI_FUNCTION("setAbilityEnabled", SetAbilityEnabled),
