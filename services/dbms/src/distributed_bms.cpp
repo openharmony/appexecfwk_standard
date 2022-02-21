@@ -124,8 +124,8 @@ int32_t DistributedBms::GetRemoteAbilityInfo(
         elementName.GetBundleName().c_str(), elementName.GetAbilityName().c_str());
     auto iDistBundleMgr = GetDistributedBundleMgr(elementName.GetDeviceID());
     if (!iDistBundleMgr) {
-        APP_LOGD("GetDistributedBundleMgr get local d-bms");
-        return GetAbilityInfo(elementName, remoteAbilityInfo);
+        APP_LOGE("GetDistributedBundleMgr failed");
+        return ERR_APPEXECFWK_FAILED_GET_REMOTE_PROXY;
     } else {
         APP_LOGD("GetDistributedBundleMgr get remote d-bms");
         return iDistBundleMgr->GetAbilityInfo(elementName, remoteAbilityInfo);
@@ -138,8 +138,8 @@ int32_t DistributedBms::GetRemoteAbilityInfos(
     APP_LOGD("DistributedBms GetRemoteAbilityInfos");
     auto iDistBundleMgr = GetDistributedBundleMgr(elementNames[0].GetDeviceID());
     if (!iDistBundleMgr) {
-        APP_LOGD("GetDistributedBundleMgr get local d-bms");
-        return GetAbilityInfos(elementNames, remoteAbilityInfos);
+        APP_LOGE("GetDistributedBundleMgr failed");
+        return ERR_APPEXECFWK_FAILED_GET_REMOTE_PROXY;
     } else {
         APP_LOGD("GetDistributedBundleMgr get remote d-bms");
         return iDistBundleMgr->GetAbilityInfos(elementNames, remoteAbilityInfos);
