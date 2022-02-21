@@ -869,7 +869,7 @@ ErrCode BaseBundleInstaller::ProcessBundleUpdateStatus(
 
     if (oldInfo.GetProvisionId() != newInfo.GetProvisionId()) {
         APP_LOGE("the signature of the new bundle is not the same as old one");
-        return ERR_APPEXECFWK_INSTALL_SIGN_INFO_INCONSISTENT;
+        return ERR_APPEXECFWK_INSTALL_FAILED_INCONSISTENT_SIGNATURE;
     }
     APP_LOGE("ProcessBundleUpdateStatus noSkipsKill = %{public}d", noSkipsKill);
     // now there are two cases for updating:
@@ -1406,15 +1406,16 @@ ErrCode BaseBundleInstaller::CheckMultipleHapsSignInfo(const std::vector<std::st
     }
     for (const std::string &bundlePath : bundlePaths) {
         Security::Verify::HapVerifyResult hapVerifyResult;
-        if (!BundleVerifyMgr::HapVerify(bundlePath, hapVerifyResult)) {
+        auto verifyRes = BundleVerifyMgr::HapVerify(bundlePath, hapVerifyResult);
+        if (verifyRes != ERR_OK) {
             APP_LOGE("hap file verify failed");
-            return ERR_APPEXECFWK_INSTALL_NO_SIGNATURE_INFO;
+            return verifyRes;
         }
         hapVerifyRes.emplace_back(hapVerifyResult);
     }
     if (hapVerifyRes.empty()) {
         APP_LOGE("no sign info in the all haps!");
-        return ERR_APPEXECFWK_INSTALL_NO_SIGNATURE_INFO;
+        return ERR_APPEXECFWK_INSTALL_FAILED_INCOMPATIBLE_SIGNATURE;
     }
     auto appId = hapVerifyRes[0].GetProvisionInfo().appId;
     APP_LOGD("bundle appid is %{public}s", appId.c_str());
@@ -1424,7 +1425,7 @@ ErrCode BaseBundleInstaller::CheckMultipleHapsSignInfo(const std::vector<std::st
     });
     if (isValid) {
         APP_LOGE("hap files have different signuature info");
-        return ERR_APPEXECFWK_INSTALL_SIGN_INFO_INCONSISTENT;
+        return ERR_APPEXECFWK_INSTALL_FAILED_INCONSISTENT_SIGNATURE;
     }
     auto apl = hapVerifyRes[0].GetProvisionInfo().bundleInfo.apl;
     APP_LOGD("bundle apl is %{public}s", apl.c_str());
@@ -1434,7 +1435,7 @@ ErrCode BaseBundleInstaller::CheckMultipleHapsSignInfo(const std::vector<std::st
     });
     if (isValid) {
         APP_LOGE("hap files have different apl info");
-        return ERR_APPEXECFWK_INSTALL_SIGN_INFO_INCONSISTENT;
+        return ERR_APPEXECFWK_INSTALL_FAILED_INCONSISTENT_SIGNATURE;
     }
     APP_LOGD("finish check multiple haps signInfo");
     return ERR_OK;
