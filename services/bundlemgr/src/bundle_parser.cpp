@@ -70,12 +70,12 @@ ErrCode BundleParser::Parse(const std::string &pathName, InnerBundleInfo &innerB
         APP_LOGD("module.json transform to InnerBundleInfo");
         innerBundleInfo.SetIsNewVersion(true);
         ModuleProfile moduleProfile;
-        return moduleProfile.TransformTo(outStream, innerBundleInfo);
+        return moduleProfile.TransformTo(outStream, bundleExtractor, innerBundleInfo);
     }
     APP_LOGD("config.json transform to InnerBundleInfo");
     innerBundleInfo.SetIsNewVersion(false);
     BundleProfile bundleProfile;
-    ErrCode ret = bundleProfile.TransformTo(outStream, innerBundleInfo);
+    ErrCode ret = bundleProfile.TransformTo(outStream, bundleExtractor, innerBundleInfo);
     auto& abilityInfos = innerBundleInfo.FetchAbilityInfos();
     for (auto& info : abilityInfos) {
         info.second.isStageBasedModel = bundleExtractor.IsStageBasedModel(info.second.name);

@@ -144,6 +144,8 @@ public:
      * @return Returns disk size.
      */
     static int64_t GetDiskUsageFromPath(const std::vector<std::string> &path);
+
+    static bool CopyNativeSo(const std::string &srcLibPath, const std::string &targetLibPath);
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS

@@ -393,5 +393,31 @@ ErrCode InstalldHostImpl::SetDirApl(const std::string &dir, const std::string &b
     return ERR_OK;
 #endif // WITH_SELINUX
 }
+
+ErrCode InstalldHostImpl::CopyNativeSo(const std::string &srcLibPath, const std::string &targetLibPath)
+{
+    APP_LOGD("srcLibPath : %{public}s, targetLibPath : %{public}s", srcLibPath.c_str(), targetLibPath.c_str());
+    if (srcLibPath.empty() || targetLibPath.empty()) {
+        APP_LOGE("Calling the function CopyNativeSo with invalid param");
+        return ERR_APPEXECFWK_INSTALLD_PARAM_ERROR;
+    }
+    if (!InstalldOperator::IsExistDir(srcLibPath)) {
+        APP_LOGW("srcLibPath : %{public}s not exist", srcLibPath.c_str());
+        return ERR_OK;
+    }
+    // create dir if not exist
+    if (!InstalldOperator::IsExistDir(targetLibPath)) {
+        if (!InstalldOperator::MkRecursiveDir(targetLibPath, true)) {
+            APP_LOGE("create targetLibPath %{public}s failed", targetLibPath.c_str());
+            return ERR_APPEXECFWK_INSTALLD_CREATE_DIR_FAILED;
+        }
+    }
+    // copy so to targetLibPath, modify so DAC
+    if (!InstalldOperator::CopyNativeSo(srcLibPath, targetLibPath)) {
+        APP_LOGE("copy native so failed");
+        return ERR_APPEXECFWK_INSTALLD_EXTRACT_FILES_FAILED;
+    }
+    return ERR_OK;
+}
 }  // namespace AppExecFwk
 }  // namespace OHOS
