@@ -145,6 +145,10 @@ struct ApplicationInfo : public Parcelable {
     bool enabled = false;
     int uid = -1;
 
+    // native so
+    std::string nativeLibraryPath;
+    std::string cpuAbi;
+
     // assign when calling the get interface
     std::vector<std::string> permissions;
     std::vector<std::string> moduleSourceDirs;
@@ -158,7 +162,6 @@ struct ApplicationInfo : public Parcelable {
     std::string icon;
     int flags = 0;
     std::string entryModuleName;
-    std::string cpuAbi;
     bool isCompressNativeLibs = true;
     bool systemApp = false;
     std::string signatureKey;

@@ -70,7 +70,7 @@ ErrCode BundleParser::Parse(const std::string &pathName, InnerBundleInfo &innerB
         APP_LOGD("module.json transform to InnerBundleInfo");
         innerBundleInfo.SetIsNewVersion(true);
         ModuleProfile moduleProfile;
-        return moduleProfile.TransformTo(outStream, innerBundleInfo);
+        return moduleProfile.TransformTo(outStream, bundleExtractor, innerBundleInfo);
     }
     APP_LOGD("config.json transform to InnerBundleInfo");
     innerBundleInfo.SetIsNewVersion(false);

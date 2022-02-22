@@ -1447,6 +1447,11 @@ void InnerBundleInfo::UpdateBaseApplicationInfo(const ApplicationInfo &applicati
     baseApplicationInfo_.vendor = applicationInfo.vendor;
 
     baseApplicationInfo_.appPrivilegeLevel = applicationInfo.appPrivilegeLevel;
+
+    if (baseApplicationInfo_.nativeLibraryPath.empty()) {
+        baseApplicationInfo_.nativeLibraryPath = applicationInfo.nativeLibraryPath;
+        baseApplicationInfo_.cpuAbi = applicationInfo.cpuAbi;
+    }
 }
 
 void InnerBundleInfo::updateCommonHapInfo(const InnerBundleInfo &newInfo)

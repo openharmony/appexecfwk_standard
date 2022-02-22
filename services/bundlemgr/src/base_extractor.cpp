@@ -57,6 +57,19 @@ bool BaseExtractor::HasEntry(const std::string &fileName) const
     return zipFile_.HasEntry(fileName);
 }
 
+bool BaseExtractor::IsDirExist(const std::string &dir) const
+{
+    if (!initial_) {
+        APP_LOGE("extractor is not initial");
+        return false;
+    }
+    if (dir.empty()) {
+        APP_LOGE("param dir empty");
+        return false;
+    }
+    return zipFile_.IsDirExist(dir);
+}
+
 bool BaseExtractor::ExtractByName(const std::string &fileName, std::ostream &dest) const
 {
     if (!initial_) {

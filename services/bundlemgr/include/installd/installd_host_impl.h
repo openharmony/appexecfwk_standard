@@ -111,6 +111,8 @@ public:
      * @return Returns ERR_OK if set apl successfully; returns error code otherwise.
      */
     virtual ErrCode SetDirApl(const std::string &dir, const std::string &bundleName, const std::string &apl) override;
+
+    virtual ErrCode HandleNativeSo(const std::string &srcLibPath, const std::string &targetLibPath) override;
 private:
     std::string GetBundleDataDir(const std::string &el, const int userid) const;
     ErrCode CreateNewBundleDataDir(const std::string &bundleName, const int userid, const int uid, const int gid,

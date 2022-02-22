@@ -184,5 +184,14 @@ bool InstalldHost::HandleSetDirApl(MessageParcel &data, MessageParcel &reply)
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, reply, result);
     return true;
 }
+
+bool InstalldHost::HandleHandleNativeSo(MessageParcel &data, MessageParcel &reply)
+{
+    std::string srcLibPath = Str16ToStr8(data.ReadString16());
+    std::string targetLibPath = Str16ToStr8(data.ReadString16());
+    ErrCode result = HandleNativeSo(srcLibPath, targetLibPath);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, reply, result);
+    return true;
+}
 }  // namespace AppExecFwk
 }  // namespace OHOS
