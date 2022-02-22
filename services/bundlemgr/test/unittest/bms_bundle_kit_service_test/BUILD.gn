@@ -53,6 +53,7 @@ ohos_unittest("BmsBundleKitServiceTest") {
   ]
 
   sources += [
+    "${services_path}/bundlemgr/test/mock/src/accesstoken_kit.cpp",
     "${services_path}/bundlemgr/test/mock/src/mock_bundle_status.cpp",
     "${services_path}/bundlemgr/test/mock/src/mock_clean_cache.cpp",
     "${services_path}/bundlemgr/test/mock/src/system_ability_helper.cpp",
@@ -92,7 +93,6 @@ ohos_unittest("BmsBundleKitServiceTest") {
 
   external_deps = [
     "ability_runtime:app_manager",
-    "access_token:libaccesstoken_sdk",
     "bytrace_standard:bytrace_core",
     "ces_standard:cesfwk_innerkits",
     "device_manager_base:devicemanagersdk",

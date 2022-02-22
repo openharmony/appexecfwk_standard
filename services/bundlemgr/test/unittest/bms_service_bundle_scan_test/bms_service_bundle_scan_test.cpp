@@ -323,7 +323,7 @@ HWTEST_F(BmsServiceBundleScanTest, RebootBundleScan_0300, Function | SmallTest |
     const std::string PATH = SYSTEM_APP_SCAN_PATH + "/" + PHOTOS_HAP;
     auto result = handler_->GetScanBundleArchiveInfo(PATH, bundleInfo);
     EXPECT_TRUE(result);
-    EXPECT_EQ(1, bundleInfo.versionCode);
+    EXPECT_EQ(1000000, bundleInfo.versionCode);
     EXPECT_EQ(PHOTOS_HAP_NAME, bundleInfo.name);
 }
 
