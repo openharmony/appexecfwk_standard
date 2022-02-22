@@ -29,6 +29,7 @@
 #include "bundle_constants.h"
 #include "bundle_extractor.h"
 #include "directory_ex.h"
+#include "file_ex.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -338,6 +339,37 @@ int64_t InstalldOperator::GetDiskUsageFromPath(const std::vector<std::string> &p
         fileSize += GetDiskUsage(st);
     }
     return fileSize;
+}
+
+bool InstalldOperator::CopyNativeSo(const std::string &srcLibPath, const std::string &targetLibPath)
+{
+    APP_LOGD("begin to copy native so");
+    std::vector<std::string> nativeSoList;
+    GetDirFiles(srcLibPath, nativeSoList);
+
+    size_t pos = srcLibPath.size();
+    mode_t mode = S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
+    std::vector<char> content;
+
+    for (const std::string &fileName : nativeSoList) {
+        if (!OHOS::LoadBufferFromFile(fileName, content)) {
+            APP_LOGE("LoadBufferFromFile failed, fileName : %{public}s", fileName.c_str());
+            continue;
+        }
+        std::string targetFileName = targetLibPath + fileName.substr(pos);
+        if (!OHOS::SaveBufferToFile(targetFileName, content, true)) {
+            APP_LOGE("SaveBufferToFile failed, targetFileName : %{public}s", targetFileName.c_str());
+            continue;
+        }
+        if (!OHOS::ChangeModeFile(targetFileName, mode)) {
+            APP_LOGE("change mode failed, targetFileName : %{public}s", targetFileName.c_str());
+            continue;
+        }
+        APP_LOGD("copy native so success, targetFileName : %{public}s", targetFileName.c_str());
+    }
+
+    APP_LOGD("copy native so finish");
+    return true;
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS

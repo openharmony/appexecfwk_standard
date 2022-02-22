@@ -113,6 +113,8 @@ public:
      * @return Returns ERR_OK if set apl successfully; returns error code otherwise.
      */
     virtual ErrCode SetDirApl(const std::string &dir, const std::string &bundleName, const std::string &apl) = 0;
+
+    virtual ErrCode CopyNativeSo(const std::string &srcLibPath, const std::string &targetLibPath) = 0;
 protected:
     enum Message : uint32_t {
         CREATE_BUNDLE_DIR = 1,
@@ -126,6 +128,7 @@ protected:
         REMOVE_DIR,
         GET_BUNDLE_STATS,
         SET_DIR_APL,
+        COPY_NATIVE_SO
     };
 };
 
