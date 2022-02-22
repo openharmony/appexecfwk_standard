@@ -151,7 +151,6 @@ bool ZipFile::ParseAllEntries()
         ZipEntry currentEntry(directoryEntry);
         currentEntry.fileName = fileName;
         entriesMap_[fileName] = currentEntry;
-        APP_LOGD("Extreme-- : %{public}s", fileName.c_str());
 
         currentPos += sizeof(directoryEntry);
         currentPos += directoryEntry.nameSize + directoryEntry.extraSize + directoryEntry.commentSize;
