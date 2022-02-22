@@ -26,8 +26,9 @@ bool MockBundleMgrHost::DumpInfos(
     APP_LOGD("bundleName: %{public}s", bundleName.c_str());
     if (bundleName.size() > 0) {
         result = bundleName + "\n";
+    } else {
+        result = "OK";
     }
-    result = "OK";
     return true;
 }
 
