@@ -1961,9 +1961,9 @@ bool ToApplicationInfo(const ProfileReader::ConfigJson &configJson,
             std::vector<std::string> abiList;
             SplitStr(abis, Constants::ABI_SEPARATOR, abiList, false, false);
             for (const std::string &abi : abiList) {
-                std::string entryPath;
-                entryPath.append(Constants::LIBS).append(abi).append(Constants::PATH_SEPARATOR);
-                if (Constants::ABI_MAP.find(abi) != Constants::ABI_MAP.end() && bundleExtractor.IsDirExist(entryPath)) {
+                std::string libsPath;
+                libsPath.append(Constants::LIBS).append(abi).append(Constants::PATH_SEPARATOR);
+                if (Constants::ABI_MAP.find(abi) != Constants::ABI_MAP.end() && bundleExtractor.IsDirExist(libsPath)) {
                     targetAbi = abi;
                     targetLibName = Constants::ABI_MAP.at(abi);
                     break;
@@ -1973,7 +1973,7 @@ bool ToApplicationInfo(const ProfileReader::ConfigJson &configJson,
         std::string path;
         path.append(Constants::BUNDLE_CODE_DIR).append(Constants::PATH_SEPARATOR)
             .append(applicationInfo.bundleName).append(Constants::PATH_SEPARATOR)
-            .append(Constants::LIB_FOLDER_NAME).append(Constants::PATH_SEPARATOR)
+            .append(Constants::LIBS)
             .append(targetLibName).append(Constants::PATH_SEPARATOR);
         applicationInfo.nativeLibraryPath = path;
         applicationInfo.cpuAbi = targetAbi;

@@ -343,7 +343,8 @@ void BmsBundleParserTest::CheckNoPropProfileParseApp(const std::string &propKey,
     errorProfileJson[BUNDLE_PROFILE_KEY_APP].erase(propKey);
     profileFileBuffer << errorProfileJson.dump();
 
-    ErrCode result = bundleProfile.TransformTo(profileFileBuffer, innerBundleInfo);
+    BundleExtractor bundleExtractor("");
+    ErrCode result = bundleProfile.TransformTo(profileFileBuffer, bundleExtractor, innerBundleInfo);
     EXPECT_EQ(result, expectCode);
 }
 
@@ -358,7 +359,8 @@ void BmsBundleParserTest::CheckNoPropProfileParseDeviceConfig(
     errorProfileJson[BUNDLE_PROFILE_KEY_DEVICE_CONFIG].erase(propKey);
     profileFileBuffer << errorProfileJson.dump();
 
-    ErrCode result = bundleProfile.TransformTo(profileFileBuffer, innerBundleInfo);
+    BundleExtractor bundleExtractor("");
+    ErrCode result = bundleProfile.TransformTo(profileFileBuffer, bundleExtractor, innerBundleInfo);
     EXPECT_EQ(result, expectCode);
 }
 
@@ -372,7 +374,8 @@ void BmsBundleParserTest::CheckNoPropProfileParseModule(const std::string &propK
     errorProfileJson[BUNDLE_PROFILE_KEY_MODULE].erase(propKey);
     profileFileBuffer << errorProfileJson.dump();
 
-    ErrCode result = bundleProfile.TransformTo(profileFileBuffer, innerBundleInfo);
+    BundleExtractor bundleExtractor("");
+    ErrCode result = bundleProfile.TransformTo(profileFileBuffer, bundleExtractor, innerBundleInfo);
     EXPECT_EQ(result, expectCode);
 }
 
@@ -384,7 +387,8 @@ void BmsBundleParserTest::CheckProfilePermission(const nlohmann::json &checkedPr
 
     profileFileBuffer << checkedProfileJson.dump();
 
-    ErrCode result = bundleProfile.TransformTo(profileFileBuffer, innerBundleInfo);
+    BundleExtractor bundleExtractor("");
+    ErrCode result = bundleProfile.TransformTo(profileFileBuffer, bundleExtractor, innerBundleInfo);
     EXPECT_EQ(result, ERR_APPEXECFWK_PARSE_PROFILE_MISSING_PROP) << profileFileBuffer.str();
 }
 
@@ -396,7 +400,8 @@ void BmsBundleParserTest::CheckProfileForms(const nlohmann::json &checkedProfile
 
     profileFileBuffer << checkedProfileJson.dump();
 
-    ErrCode result = bundleProfile.TransformTo(profileFileBuffer, innerBundleInfo);
+    BundleExtractor bundleExtractor("");
+    ErrCode result = bundleProfile.TransformTo(profileFileBuffer, bundleExtractor, innerBundleInfo);
     EXPECT_EQ(result, ERR_APPEXECFWK_PARSE_PROFILE_MISSING_PROP) << profileFileBuffer.str();
 }
 
@@ -408,7 +413,8 @@ void BmsBundleParserTest::CheckProfileShortcut(const nlohmann::json &checkedProf
 
     profileFileBuffer << checkedProfileJson.dump();
 
-    ErrCode result = bundleProfile.TransformTo(profileFileBuffer, innerBundleInfo);
+    BundleExtractor bundleExtractor("");
+    ErrCode result = bundleProfile.TransformTo(profileFileBuffer, bundleExtractor, innerBundleInfo);
     EXPECT_EQ(result, ERR_APPEXECFWK_PARSE_PROFILE_MISSING_PROP) << profileFileBuffer.str();
 }
 
