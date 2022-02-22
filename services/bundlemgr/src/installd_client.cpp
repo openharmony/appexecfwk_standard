@@ -137,6 +137,16 @@ ErrCode InstalldClient::SetDirApl(const std::string &dir, const std::string &bun
     return CallService(&IInstalld::SetDirApl, dir, bundleName, apl);
 }
 
+ErrCode InstalldClient::HandleNativeSo(const std::string &srcLibPath, const std::string &targetLibPath)
+{
+    if (srcLibPath.empty() || targetLibPath.empty()) {
+        APP_LOGE("params are invalid");
+        return ERR_APPEXECFWK_INSTALLD_PARAM_ERROR;
+    }
+
+    return CallService(&IInstalld::HandleNativeSo, srcLibPath, targetLibPath);
+}
+
 void InstalldClient::ResetInstalldProxy()
 {
     if ((installdProxy_ != nullptr) && (installdProxy_->AsObject() != nullptr)) {

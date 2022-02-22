@@ -184,6 +184,18 @@ ErrCode InstalldProxy::SetDirApl(const std::string &dir, const std::string &bund
     return TransactInstalldCmd(IInstalld::Message::SET_DIR_APL, data, reply, option);
 }
 
+ErrCode InstalldProxy::HandleNativeSo(const std::string &srcLibPath, const std::string &targetLibPath)
+{
+    MessageParcel data;
+    INSTALLD_PARCEL_WRITE_INTERFACE_TOKEN(data, (GetDescriptor()));
+    INSTALLD_PARCEL_WRITE(data, String16, Str8ToStr16(srcLibPath));
+    INSTALLD_PARCEL_WRITE(data, String16, Str8ToStr16(targetLibPath));
+
+    MessageParcel reply;
+    MessageOption option(MessageOption::TF_SYNC);
+    return TransactInstalldCmd(IInstalld::Message::HANDLE_NATIVE_SO, data, reply, option);
+}
+
 ErrCode InstalldProxy::TransactInstalldCmd(uint32_t code, MessageParcel &data, MessageParcel &reply,
     MessageOption &option)
 {
