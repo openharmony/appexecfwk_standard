@@ -21,6 +21,7 @@
 #include "bundle_constants.h"
 #include "common_profile.h"
 #include "parameter.h"
+#include "string_ex.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -1076,7 +1077,8 @@ bool CheckBundleNameIsValid(const std::string &bundleName)
     return true;
 }
 
-bool ToApplicationInfo(const Profile::App &app, ApplicationInfo &applicationInfo, bool isPreInstallApp)
+bool ToApplicationInfo(const Profile::App &app, ApplicationInfo &applicationInfo, bool isPreInstallApp,
+    const BundleExtractor &bundleExtractor)
 {
     APP_LOGD("transform ModuleJson to ApplicationInfo");
     applicationInfo.name = app.bundleName;
@@ -1125,6 +1127,7 @@ bool ToApplicationInfo(const Profile::App &app, ApplicationInfo &applicationInfo
 
     // device adapt
     std::string deviceType = GetDeviceType();
+    APP_LOGD("deviceType : %{public}s", deviceType.c_str());
     if (app.deviceConfigs.find(deviceType) != app.deviceConfigs.end()) {
         Profile::DeviceConfig deviceConfig = app.deviceConfigs.at(deviceType);
         if (deviceConfig.minAPIVersion.first) {
@@ -1151,6 +1154,50 @@ bool ToApplicationInfo(const Profile::App &app, ApplicationInfo &applicationInfo
             }
         }
     }
+
+    // handle native so
+    std::string abis = GetAbiList();
+    bool isDefault = abis == Constants::ABI_DEFAULT;
+    APP_LOGD("abi list : %{public}s, isDefault : %{public}d", abis.c_str(), isDefault);
+
+    bool soExist = bundleExtractor.IsDirExist(Constants::LIBS);
+    if (!soExist) {
+        APP_LOGD("so not exist");
+        applicationInfo.nativeLibraryPath = Constants::EMPTY_STRING;
+        std::string targetAbi = Constants::ARM_EABI_V7A;
+        if (!isDefault) {
+            for (const auto &item : Constants::ABI_MAP) {
+                if (abis.find(item.first) == 0) {
+                    targetAbi = item.first;
+                    break;
+                }
+            }
+        }
+        applicationInfo.cpuAbi = targetAbi;
+    } else {
+        APP_LOGD("so exist");
+        std::string targetAbi = bundleExtractor.IsDirExist(Constants::LIBS_ARM_EABI_V7A) ?
+            Constants::ARM_EABI_V7A : Constants::ARM_EABI;
+        std::string targetLibName = Constants::ARM;
+        if (!isDefault) {
+            std::vector<std::string> abiList;
+            SplitStr(abis, Constants::ABI_SEPARATOR, abiList, false, false);
+            for (const std::string &abi : abiList) {
+                std::string libsPath;
+                libsPath.append(Constants::LIBS).append(abi).append(Constants::PATH_SEPARATOR);
+                if (Constants::ABI_MAP.find(abi) != Constants::ABI_MAP.end() && bundleExtractor.IsDirExist(libsPath)) {
+                    targetAbi = abi;
+                    targetLibName = Constants::ABI_MAP.at(abi);
+                    break;
+                }
+            }
+        }
+        applicationInfo.nativeLibraryPath = Constants::LIBS + targetLibName + Constants::PATH_SEPARATOR;
+        applicationInfo.cpuAbi = targetAbi;
+    }
+    APP_LOGD("nativeLibraryPath : %{public}s, cpuAbi : %{public}s",
+        applicationInfo.nativeLibraryPath.c_str(), applicationInfo.cpuAbi.c_str());
+
     applicationInfo.enabled = true;
     return true;
 }
@@ -1351,7 +1398,8 @@ bool ToInnerModuleInfo(const Profile::ModuleJson &moduleJson, InnerModuleInfo &i
     return true;
 }
 
-bool ToInnerBundleInfo(const Profile::ModuleJson &moduleJson, InnerBundleInfo &innerBundleInfo)
+bool ToInnerBundleInfo(const Profile::ModuleJson &moduleJson, const BundleExtractor &bundleExtractor,
+    InnerBundleInfo &innerBundleInfo)
 {
     APP_LOGD("transform ModuleJson to InnerBundleInfo");
     if (!CheckBundleNameIsValid(moduleJson.app.bundleName)) {
@@ -1363,7 +1411,7 @@ bool ToInnerBundleInfo(const Profile::ModuleJson &moduleJson, InnerBundleInfo &i
 
     ApplicationInfo applicationInfo;
     applicationInfo.isSystemApp = innerBundleInfo.GetAppType() == Constants::AppType::SYSTEM_APP;
-    ToApplicationInfo(moduleJson.app, applicationInfo, isPreInstallApp);
+    ToApplicationInfo(moduleJson.app, applicationInfo, isPreInstallApp, bundleExtractor);
 
     InnerModuleInfo innerModuleInfo;
     ToInnerModuleInfo(moduleJson, innerModuleInfo, applicationInfo.isSystemApp, isPreInstallApp);
@@ -1435,7 +1483,8 @@ bool ToInnerBundleInfo(const Profile::ModuleJson &moduleJson, InnerBundleInfo &i
 }
 }  // namespace
 
-ErrCode ModuleProfile::TransformTo(const std::ostringstream &source, InnerBundleInfo &innerBundleInfo) const
+ErrCode ModuleProfile::TransformTo(const std::ostringstream &source, const BundleExtractor &bundleExtractor,
+    InnerBundleInfo &innerBundleInfo) const
 {
     APP_LOGD("transform module.json stream to InnerBundleInfo");
     Profile::ModuleJson moduleJson;
@@ -1452,7 +1501,7 @@ ErrCode ModuleProfile::TransformTo(const std::ostringstream &source, InnerBundle
         Profile::parseResult = ERR_OK;
         return ret;
     }
-    if (!ToInnerBundleInfo(moduleJson, innerBundleInfo)) {
+    if (!ToInnerBundleInfo(moduleJson, bundleExtractor, innerBundleInfo)) {
         return ERR_APPEXECFWK_PARSE_PROFILE_PROP_CHECK_ERROR;
     }
     return ERR_OK;

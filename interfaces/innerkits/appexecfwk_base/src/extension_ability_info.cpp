@@ -47,6 +47,7 @@ const std::string VISIBLE = "visible";
 const std::string META_DATA = "metadata";
 const std::string RESOURCE_PATH = "resourcePath";
 const std::string ENABLED = "enabled";
+const std::string PROCESS = "process";
 }; // namespace
 
 bool ExtensionAbilityInfo::ReadFromParcel(Parcel &parcel)
@@ -155,7 +156,8 @@ void to_json(nlohmann::json &jsonObject, const ExtensionAbilityInfo &extensionIn
         {VISIBLE, extensionInfo.visible},
         {META_DATA, extensionInfo.metadata},
         {RESOURCE_PATH, extensionInfo.resourcePath},
-        {ENABLED, extensionInfo.enabled}
+        {ENABLED, extensionInfo.enabled},
+        {PROCESS, extensionInfo.process}
     };
 }
 
@@ -313,6 +315,14 @@ void from_json(const nlohmann::json &jsonObject, ExtensionAbilityInfo &extension
         ENABLED,
         extensionInfo.enabled,
         JsonType::BOOLEAN,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        PROCESS,
+        extensionInfo.process,
+        JsonType::STRING,
         false,
         parseResult,
         ArrayType::NOT_ARRAY);

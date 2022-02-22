@@ -63,6 +63,7 @@ public:
      * @return Returns true if the ZipEntry is successfully finded; returns false otherwise.
      */
     bool HasEntry(const std::string &fileName) const;
+    bool IsDirExist(const std::string &dir) const;
     bool IsStageBasedModel(std::string abilityName);
     bool IsNewVersion() const;
 

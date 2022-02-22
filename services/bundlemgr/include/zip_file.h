@@ -184,6 +184,9 @@ public:
      * @return Returns true if the ZipEntry is successfully finded; returns false otherwise.
      */
     bool HasEntry(const std::string &entryName) const;
+
+    bool IsDirExist(const std::string &dir) const;
+
     /**
      * @brief Get entry by name.
      * @param entryName Indicates the entry name.

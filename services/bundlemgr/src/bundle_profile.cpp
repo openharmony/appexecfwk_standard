@@ -21,7 +21,9 @@
 #include "app_log_wrapper.h"
 #include "bundle_constants.h"
 #include "common_profile.h"
+#include "parameter.h"
 #include "permission/permission_kit.h"
+#include "string_ex.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -1885,7 +1887,7 @@ bool ConvertFormInfo(FormInfo &formInfo, const ProfileReader::Forms &form)
 }
 
 bool ToApplicationInfo(const ProfileReader::ConfigJson &configJson,
-    ApplicationInfo &applicationInfo, bool isPreInstallApp)
+    ApplicationInfo &applicationInfo, bool isPreInstallApp, const BundleExtractor &bundleExtractor)
 {
     APP_LOGD("transform ConfigJson to ApplicationInfo");
     applicationInfo.name = configJson.app.bundleName;
@@ -1930,6 +1932,49 @@ bool ToApplicationInfo(const ProfileReader::ConfigJson &configJson,
         applicationInfo.supportedModes = 0;
     }
     applicationInfo.vendor = configJson.app.vendor;
+
+    // handle native so
+    std::string abis = GetAbiList();
+    bool isDefault = abis == Constants::ABI_DEFAULT;
+    APP_LOGD("abi list : %{public}s, isDefault : %{public}d", abis.c_str(), isDefault);
+
+    bool soExist = bundleExtractor.IsDirExist(Constants::LIBS);
+    if (!soExist) {
+        APP_LOGD("so not exist");
+        applicationInfo.nativeLibraryPath = Constants::EMPTY_STRING;
+        std::string targetAbi = Constants::ARM_EABI_V7A;
+        if (!isDefault) {
+            for (const auto &item : Constants::ABI_MAP) {
+                if (abis.find(item.first) == 0) {
+                    targetAbi = item.first;
+                    break;
+                }
+            }
+        }
+        applicationInfo.cpuAbi = targetAbi;
+    } else {
+        APP_LOGD("so exist");
+        std::string targetAbi = bundleExtractor.IsDirExist(Constants::LIBS_ARM_EABI_V7A) ?
+            Constants::ARM_EABI_V7A : Constants::ARM_EABI;
+        std::string targetLibName = Constants::ARM;
+        if (!isDefault) {
+            std::vector<std::string> abiList;
+            SplitStr(abis, Constants::ABI_SEPARATOR, abiList, false, false);
+            for (const std::string &abi : abiList) {
+                std::string libsPath;
+                libsPath.append(Constants::LIBS).append(abi).append(Constants::PATH_SEPARATOR);
+                if (Constants::ABI_MAP.find(abi) != Constants::ABI_MAP.end() && bundleExtractor.IsDirExist(libsPath)) {
+                    targetAbi = abi;
+                    targetLibName = Constants::ABI_MAP.at(abi);
+                    break;
+                }
+            }
+        }
+        applicationInfo.nativeLibraryPath = Constants::LIBS + targetLibName + Constants::PATH_SEPARATOR;
+        applicationInfo.cpuAbi = targetAbi;
+    }
+    APP_LOGD("nativeLibraryPath : %{public}s, cpuAbi : %{public}s",
+        applicationInfo.nativeLibraryPath.c_str(), applicationInfo.cpuAbi.c_str());
 
     // for SystemResource
     applicationInfo.iconId = configJson.app.iconId;
@@ -2106,7 +2151,8 @@ bool ToAbilityInfo(const ProfileReader::ConfigJson &configJson,
     return true;
 }
 
-bool ToInnerBundleInfo(ProfileReader::ConfigJson &configJson, InnerBundleInfo &innerBundleInfo)
+bool ToInnerBundleInfo(ProfileReader::ConfigJson &configJson, const BundleExtractor &bundleExtractor,
+    InnerBundleInfo &innerBundleInfo)
 {
     APP_LOGD("transform profile configJson to innerBundleInfo");
     if (!CheckBundleNameIsValid(configJson.app.bundleName)) {
@@ -2122,7 +2168,7 @@ bool ToInnerBundleInfo(ProfileReader::ConfigJson &configJson, InnerBundleInfo &i
 
     ApplicationInfo applicationInfo;
     applicationInfo.isSystemApp = innerBundleInfo.GetAppType() == Constants::AppType::SYSTEM_APP;
-    ToApplicationInfo(configJson, applicationInfo, isPreInstallApp);
+    ToApplicationInfo(configJson, applicationInfo, isPreInstallApp, bundleExtractor);
 
     InnerModuleInfo innerModuleInfo;
     ToInnerModuleInfo(configJson, innerModuleInfo);
@@ -2240,7 +2286,8 @@ bool ToInnerBundleInfo(ProfileReader::ConfigJson &configJson, InnerBundleInfo &i
 
 }  // namespace
 
-ErrCode BundleProfile::TransformTo(const std::ostringstream &source, InnerBundleInfo &innerBundleInfo) const
+ErrCode BundleProfile::TransformTo(const std::ostringstream &source, const BundleExtractor &bundleExtractor,
+    InnerBundleInfo &innerBundleInfo) const
 {
     APP_LOGI("transform profile stream to bundle info");
     ProfileReader::ConfigJson configJson;
@@ -2257,7 +2304,7 @@ ErrCode BundleProfile::TransformTo(const std::ostringstream &source, InnerBundle
         ProfileReader::parseResult = ERR_OK;
         return ret;
     }
-    if (!ToInnerBundleInfo(configJson, innerBundleInfo)) {
+    if (!ToInnerBundleInfo(configJson, bundleExtractor, innerBundleInfo)) {
         return ERR_APPEXECFWK_PARSE_PROFILE_PROP_CHECK_ERROR;
     }
     return ERR_OK;

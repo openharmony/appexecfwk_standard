@@ -246,6 +246,18 @@ bool ZipFile::HasEntry(const std::string &entryName) const
     return entriesMap_.find(entryName) != entriesMap_.end();
 }
 
+bool ZipFile::IsDirExist(const std::string &dir) const
+{
+    for (const auto &item : entriesMap_) {
+        if (item.first.find(dir) == 0) {
+            APP_LOGD("find target dir, fileName : %{public}s", item.first.c_str());
+            return true;
+        }
+    }
+    APP_LOGD("target dir not found, dir : %{public}s", dir.c_str());
+    return false;
+}
+
 bool ZipFile::GetEntry(const std::string &entryName, ZipEntry &resultEntry) const
 {
     APP_LOGD("get entry by name: %{public}s", entryName.c_str());

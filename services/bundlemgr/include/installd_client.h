@@ -123,6 +123,8 @@ public:
      * @return Returns ERR_OK if set apl successfully; returns error code otherwise.
      */
     ErrCode SetDirApl(const std::string &dir, const std::string &bundleName, const std::string &apl);
+
+    ErrCode CopyNativeSo(const std::string &srcLibPath, const std::string &targetLibPath);
 private:
     /**
      * @brief Get the installd proxy object.
