@@ -16,7 +16,6 @@ appexecfwk_base_headers = {
     "ability_info.h",
     "appexecfwk_errors.h",
     "application_info.h",
-    "element_name.h",
     "bundle_info.h",
     "hap_module_info.h",
     "install_param.h",

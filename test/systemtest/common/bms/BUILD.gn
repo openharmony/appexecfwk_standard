@@ -30,17 +30,20 @@ ohos_source_set("bms_install_sst_source") {
   testonly = true
 
   sources = [
+    "${aafwk_path}/frameworks/kits/content/cpp/src/ohos/aafwk/content/element_name.cpp",
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base/src/ability_info.cpp",
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base/src/application_info.cpp",
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base/src/bundle_info.cpp",
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base/src/bundle_user_info.cpp",
-    "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base/src/element_name.cpp",
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core/src/bundlemgr/bundle_installer_proxy.cpp",
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core/src/bundlemgr/bundle_mgr_proxy.cpp",
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core/src/bundlemgr/status_receiver_proxy.cpp",
   ]
 
-  include_dirs = [ "//third_party/json/include" ]
+  include_dirs = [
+    "${aafwk_path}/interfaces/innerkits/want/include/ohos/aafwk/content",
+    "//third_party/json/include",
+  ]
 
   public_configs = [ ":bms_system_test_config" ]
 
