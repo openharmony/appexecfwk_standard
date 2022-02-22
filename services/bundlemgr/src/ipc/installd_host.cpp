@@ -47,7 +47,7 @@ void InstalldHost::init()
     funcMap_.emplace(IInstalld::Message::SET_DIR_APL, &InstalldHost::HandleSetDirApl);
     funcMap_.emplace(IInstalld::Message::REMOVE_DIR, &InstalldHost::HandleRemoveDir);
     funcMap_.emplace(IInstalld::Message::GET_BUNDLE_STATS, &InstalldHost::HandleGetBundleStats);
-    funcMap_.emplace(IInstalld::Message::HANDLE_NATIVE_SO, &InstalldHost::HandleCopyNativeSo);
+    funcMap_.emplace(IInstalld::Message::COPY_NATIVE_SO, &InstalldHost::HandleCopyNativeSo);
 }
 
 int InstalldHost::OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option)

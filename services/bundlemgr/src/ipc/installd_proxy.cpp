@@ -193,7 +193,7 @@ ErrCode InstalldProxy::CopyNativeSo(const std::string &srcLibPath, const std::st
 
     MessageParcel reply;
     MessageOption option(MessageOption::TF_SYNC);
-    return TransactInstalldCmd(IInstalld::Message::HANDLE_NATIVE_SO, data, reply, option);
+    return TransactInstalldCmd(IInstalld::Message::COPY_NATIVE_SO, data, reply, option);
 }
 
 ErrCode InstalldProxy::TransactInstalldCmd(uint32_t code, MessageParcel &data, MessageParcel &reply,

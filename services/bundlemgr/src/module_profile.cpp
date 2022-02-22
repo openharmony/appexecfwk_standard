@@ -1192,12 +1192,7 @@ bool ToApplicationInfo(const Profile::App &app, ApplicationInfo &applicationInfo
                 }
             }
         }
-        std::string path;
-        path.append(Constants::BUNDLE_CODE_DIR).append(Constants::PATH_SEPARATOR)
-            .append(applicationInfo.bundleName).append(Constants::PATH_SEPARATOR)
-            .append(Constants::LIBS)
-            .append(targetLibName).append(Constants::PATH_SEPARATOR);
-        applicationInfo.nativeLibraryPath = path;
+        applicationInfo.nativeLibraryPath = Constants::LIBS + targetLibName + Constants::PATH_SEPARATOR;
         applicationInfo.cpuAbi = targetAbi;
     }
     APP_LOGD("nativeLibraryPath : %{public}s, cpuAbi : %{public}s",
