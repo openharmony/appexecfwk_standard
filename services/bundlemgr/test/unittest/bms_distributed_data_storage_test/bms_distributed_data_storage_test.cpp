@@ -38,7 +38,7 @@ std::string VERSION_NAME {"10"};
 constexpr uint32_t MIN_COMPATIBLE_VERSION {8};
 constexpr uint32_t TARGET_VERSION_CODE {10};
 constexpr uint32_t COMPATIBLE_VERSION_CODE {10};
-constexpr int32_t USER_ID {0};
+constexpr int32_t USER_ID {100};
 constexpr int32_t USER_ID_INVALID {1000};
 std::string APP_ID {"com.ohos.distributedmusicplayer_1234567890123"};
 std::string NETWORK_ID_INVALID {"ffea7058b8cfcb4b74628faeaa7063ac3f1a337294176202b54311540072db42"};
@@ -203,12 +203,7 @@ HWTEST_F(BmsDistributedDataStorageTest, QueryStroageDistributeInfo_0300, Functio
 
     DistributedBundleInfo getInfo;
     result = dataStorage->QueryStroageDistributeInfo(BUNDULE_NAME_FIRST, USER_ID_INVALID, deviceInfo.deviceId, getInfo);
-    EXPECT_TRUE(result);
-
-    EXPECT_EQ(getInfo.bundleUserInfos.size(), 0);
-
-    result = dataStorage->DeleteStorageDistributeInfo(BUNDULE_NAME_FIRST);
-    EXPECT_TRUE(result);
+    EXPECT_FALSE(result);
 }
 
 /**

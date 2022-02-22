@@ -22,6 +22,7 @@
 #include "bundle_clone_mgr.h"
 #include "bundle_data_mgr.h"
 #include "bundle_info.h"
+#include "bundle_permission_mgr.h"
 #include "bundle_mgr_service.h"
 #include "bundle_mgr_host.h"
 #include "directory_ex.h"
@@ -46,7 +47,7 @@ const std::string BUNDLE_NAME_TEST = "com.example.bundlekit.test";
 const std::string MODULE_NAME_TEST = "com.example.bundlekit.test.entry";
 const std::string ABILITY_NAME_TEST1 = ".Reading1";
 const std::string ABILITY_NAME_TEST = ".Reading";
-const int TEST_UID = 1001;
+const int TEST_UID = 10025;
 const std::string BUNDLE_LABEL = "Hello, OHOS";
 const std::string BUNDLE_DESCRIPTION = "example helloworld";
 const std::string BUNDLE_VENDOR = "example";
@@ -66,7 +67,7 @@ const std::string PACKAGE_NAME = "com.example.bundlekit.test.entry";
 const std::string PROCESS_TEST = "test.process";
 const std::string DEVICE_ID = "PHONE-001";
 const int APPLICATION_INFO_FLAGS = 1;
-const int DEFAULT_USER_ID_TEST = 0;
+const int DEFAULT_USER_ID_TEST = 100;
 const std::string LABEL = "hello";
 const std::string DESCRIPTION = "mainEntry";
 const std::string THEME = "mytheme";
@@ -175,7 +176,8 @@ const std::string URI_PATH_DUPLICATE_001 = SCHEME_001 + SCHEME_SEPARATOR +
     HOST_001 + PORT_SEPARATOR + PORT_001 + PATH_SEPARATOR + PATH_001 + PATH_001;
 const std::string URI_PATH_REGEX_001 = SCHEME_001 + SCHEME_SEPARATOR + HOST_001 +
     PORT_SEPARATOR + PORT_001 + PATH_SEPARATOR + PATH_REGEX_001;
-const int32_t DEFAULT_USERID = 0;
+const int32_t DEFAULT_USERID = 100;
+const int32_t WAIT_TIME = 5; // init mocked bms
 }  // namespace
 
 class BmsBundleKitServiceTest : public testing::Test {
@@ -252,6 +254,7 @@ void BmsBundleKitServiceTest::SetUp()
     }
     if (!bundleMgrService_->IsServiceReady()) {
         bundleMgrService_->OnStart();
+        std::this_thread::sleep_for(std::chrono::seconds(WAIT_TIME));
     }
 }
 
@@ -317,7 +320,7 @@ void BmsBundleKitServiceTest::AddInnerBundleInfoByTest(const std::string &bundle
         Skill skill {{ACTION}, {ENTITY}, {uri}};
         std::vector<Skill> skills;
         skills.emplace_back(skill);
-        innerBundleInfo.SetMainAbility(keyName);
+        innerBundleInfo.SetMainAbilityName(keyName);
         innerBundleInfo.InsertSkillInfo(keyName, skills);
     }
     FormInfo form = MockFormInfo(bundleName, moduleName, abilityName);
@@ -347,11 +350,14 @@ void BmsBundleKitServiceTest::MockInstallBundle(
     InnerBundleUserInfo innerBundleUserInfo;
     innerBundleUserInfo.bundleName = bundleName;
     innerBundleUserInfo.bundleUserInfo.enabled = true;
-    innerBundleUserInfo.bundleUserInfo.userId = DEFAULT_USERID;
+    innerBundleUserInfo.bundleUserInfo.userId = Constants::DEFAULT_USERID;
     dataMgr->GenerateUidAndGid(innerBundleUserInfo);
 
-    InnerBundleInfo innerBundleInfo;
-    innerBundleInfo.AddInnerBundleUserInfo(innerBundleUserInfo);
+    InnerBundleUserInfo innerBundleUserInfo1;
+    innerBundleUserInfo1.bundleName = bundleName;
+    innerBundleUserInfo1.bundleUserInfo.enabled = true;
+    innerBundleUserInfo1.bundleUserInfo.userId = DEFAULT_USERID;
+    dataMgr->GenerateUidAndGid(innerBundleUserInfo1);
 
     ApplicationInfo appInfo;
     AddApplicationInfo(bundleName, appInfo);
@@ -362,7 +368,7 @@ void BmsBundleKitServiceTest::MockInstallBundle(
     RequestPermission reqPermission1;
     reqPermission1.name = "permission1";
     RequestPermission reqPermission2;
-    reqPermission2.name = "permission1";
+    reqPermission2.name = "permission2";
     moduleInfo.requestPermissions = {reqPermission1, reqPermission2};
     moduleInfo.modulePackage = PACKAGE_NAME;
     moduleInfo.moduleName = moduleName;
@@ -375,10 +381,16 @@ void BmsBundleKitServiceTest::MockInstallBundle(
 
     std::string keyName = bundleName + moduleName + abilityName;
     AbilityInfo abilityInfo = MockAbilityInfo(bundleName, moduleName, abilityName);
+    InnerBundleInfo innerBundleInfo;
     innerBundleInfo.SetBaseApplicationInfo(appInfo);
+    innerBundleInfo.AddInnerBundleUserInfo(innerBundleUserInfo);
+    innerBundleInfo.AddInnerBundleUserInfo(innerBundleUserInfo1);
     innerBundleInfo.SetBaseBundleInfo(bundleInfo);
     innerBundleInfo.InsertAbilitiesInfo(keyName, abilityInfo);
     innerBundleInfo.InsertInnerModuleInfo(moduleName, moduleInfo);
+
+    auto accessTokenId = BundlePermissionMgr::CreateAccessTokenId(innerBundleInfo, bundleName, DEFAULT_USERID);
+    innerBundleInfo.SetAccessTokenId(accessTokenId, DEFAULT_USERID);
 
     AddInnerBundleInfoByTest(bundleName, moduleName, abilityName, innerBundleInfo);
     bool startRet = dataMgr->UpdateBundleInstallState(bundleName, InstallState::INSTALL_START);
@@ -956,7 +968,7 @@ HWTEST_F(BmsBundleKitServiceTest, GetBundleInfo_0100, Function | SmallTest | Lev
     EXPECT_EQ(PERMISSION_SIZE_ZERO, demoResult.reqPermissions.size());
 
     BundleInfo bundleInfo;
-    bool ret =GetBundleDataMgr()->GetBundleInfo(BUNDLE_NAME_DEMO, GET_BUNDLE_WITH_ABILITIES |
+    bool ret = GetBundleDataMgr()->GetBundleInfo(BUNDLE_NAME_DEMO, GET_BUNDLE_WITH_ABILITIES |
         GET_BUNDLE_WITH_REQUESTED_PERMISSION, bundleInfo, DEFAULT_USERID);
     EXPECT_TRUE(ret);
     CheckBundleInfo(BUNDLE_NAME_DEMO, MODULE_NAME_DEMO, ABILITY_SIZE_ONE, bundleInfo);
@@ -1017,30 +1029,6 @@ HWTEST_F(BmsBundleKitServiceTest, GetBundleInfo_0400, Function | SmallTest | Lev
     EXPECT_FALSE(ret);
     EXPECT_EQ(EMPTY_STRING, bundleInfo.name);
     EXPECT_EQ(EMPTY_STRING, bundleInfo.label);
-}
-
-/**
- * @tc.number: GetBundleInfo_0500
- * @tc.name: test can parceable bundle info
- * @tc.desc: 1.system run normally
- *           2.get bundle info successfully
- */
-HWTEST_F(BmsBundleKitServiceTest, GetBundleInfo_0500, Function | SmallTest | Level1)
-{
-    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
-
-    BundleInfo bundleInfo;
-    bool ret = GetBundleDataMgr()->GetBundleInfo(BUNDLE_NAME_TEST, BundleFlag::GET_BUNDLE_DEFAULT, bundleInfo,
-        DEFAULT_USERID);
-    EXPECT_TRUE(ret);
-    Parcel parcel;
-    parcel.WriteParcelable(&bundleInfo);
-    std::unique_ptr<BundleInfo> bundleInfoTest;
-    bundleInfoTest.reset(parcel.ReadParcelable<BundleInfo>());
-    EXPECT_EQ(bundleInfo.name, bundleInfoTest->name);
-    EXPECT_EQ(bundleInfo.label, bundleInfoTest->label);
-
-    MockUninstallBundle(BUNDLE_NAME_TEST);
 }
 
 /**
@@ -1162,30 +1150,6 @@ HWTEST_F(BmsBundleKitServiceTest, GetApplicationInfo_0400, Function | SmallTest 
     EXPECT_FALSE(ret);
     EXPECT_EQ(EMPTY_STRING, result.name);
     EXPECT_EQ(EMPTY_STRING, result.label);
-}
-
-/**
- * @tc.number: GetApplicationInfo_0500
- * @tc.name: test can parceable application info
- * @tc.desc: 1.system run normally
- *           2.get application info successfully
- */
-HWTEST_F(BmsBundleKitServiceTest, GetApplicationInfo_0500, Function | SmallTest | Level1)
-{
-    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
-
-    ApplicationInfo result;
-    bool ret = GetBundleDataMgr()->GetApplicationInfo(
-        BUNDLE_NAME_TEST, ApplicationFlag::GET_BASIC_APPLICATION_INFO, DEFAULT_USER_ID_TEST, result);
-    EXPECT_TRUE(ret);
-    Parcel parcel;
-    parcel.WriteParcelable(&result);
-    std::unique_ptr<ApplicationInfo> appInfoTest;
-    appInfoTest.reset(parcel.ReadParcelable<ApplicationInfo>());
-    EXPECT_EQ(result.name, appInfoTest->name);
-    EXPECT_EQ(result.label, appInfoTest->label);
-
-    MockUninstallBundle(BUNDLE_NAME_TEST);
 }
 
 /**
@@ -1612,7 +1576,7 @@ HWTEST_F(BmsBundleKitServiceTest, GetBundleNameForUid_0100, Function | SmallTest
     MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
     std::string testResult;
     bool testRet = GetBundleDataMgr()->GetBundleNameForUid(TEST_UID, testResult);
-    EXPECT_FALSE(testRet);
+    EXPECT_TRUE(testRet);
 
     MockUninstallBundle(BUNDLE_NAME_TEST);
 }
@@ -1934,7 +1898,7 @@ HWTEST_F(BmsBundleKitServiceTest, QueryKeepAliveBundleInfos_0200, Function | Sma
 {
     std::vector<BundleInfo> bundleInfos;
     bool ret = GetBundleDataMgr()->QueryKeepAliveBundleInfos(bundleInfos);
-    EXPECT_EQ(false, ret);
+    EXPECT_EQ(true, ret);
 }
 
 /**
@@ -2264,31 +2228,6 @@ HWTEST_F(BmsBundleKitServiceTest, CleanBundleDataFiles_0300, Function | SmallTes
 }
 
 /**
- * @tc.number: CleanCache_0100
- * @tc.name: test can clean the cache files by bundle name
- * @tc.desc: 1.system run normally
- *           2.clean the cache files successfully
- * @tc.require: AR000GJUJ8
- */
-HWTEST_F(BmsBundleKitServiceTest, CleanCache_0100, Function | SmallTest | Level1)
-{
-    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
-    CreateFileDir();
-
-    sptr<MockCleanCache> cleanCache = new (std::nothrow) MockCleanCache();
-    auto hostImpl = std::make_unique<BundleMgrHostImpl>();
-    bool result = hostImpl->CleanBundleCacheFiles(BUNDLE_NAME_TEST, cleanCache);
-    EXPECT_TRUE(result);
-    if (result) {
-        bool callbackResult = cleanCache->GetResultCode();
-        CheckCacheNonExist();
-        EXPECT_TRUE(callbackResult);
-    }
-    CleanFileDir();
-    MockUninstallBundle(BUNDLE_NAME_TEST);
-}
-
-/**
  * @tc.number: CleanCache_0200
  * @tc.name: test can clean the cache files by empty bundle name
  * @tc.desc: 1.system run normally
@@ -2551,8 +2490,8 @@ HWTEST_F(BmsBundleKitServiceTest, GetNameForUid_0100, Function | SmallTest | Lev
 
     std::string testResult;
     bool testRet = GetBundleDataMgr()->GetNameForUid(TEST_UID, testResult);
-    EXPECT_FALSE(testRet);
-    EXPECT_NE(BUNDLE_NAME_TEST, testResult);
+    EXPECT_TRUE(testRet);
+    EXPECT_EQ(BUNDLE_NAME_TEST, testResult);
 
     MockUninstallBundle(BUNDLE_NAME_TEST);
 }
@@ -3394,7 +3333,7 @@ HWTEST_F(BmsBundleKitServiceTest, AllAbility_001, Function | SmallTest | Level1)
     Want want1;
     want1.SetElementName(BUNDLE_NAME_DEMO, ABILITY_NAME_DEMO);
     bool testRet1 = GetBundleDataMgr()->QueryLauncherAbilityInfos(want1, DEFAULT_USER_ID_TEST, abilityInfos);
-    EXPECT_TRUE(testRet1);
+    EXPECT_FALSE(testRet1);
 }
 
 /**
@@ -3468,20 +3407,6 @@ HWTEST_F(BmsBundleKitServiceTest, GetAllCommonEventInfo_0500, Function | SmallTe
 }
 
 /**
- * @tc.number: BundleClone_0100
- * @tc.name: test the right bundle name can be cloned.
- * @tc.desc: 1.the bundle name is right.
- *           2.the bundle can be cloned success and can get bundle info success.
- */
-HWTEST_F(BmsBundleKitServiceTest, BundleClone_0100, Function | SmallTest | Level1)
-{
-    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
-    auto result = GetBundleCloneMgr()->BundleClone(BUNDLE_NAME_TEST);
-    EXPECT_TRUE(result);
-    MockUninstallBundle(BUNDLE_NAME_TEST);
-}
-
-/**
  * @tc.number: BundleClone_0200.
  * @tc.name: test the error bundle name can't be cloned.
  * @tc.desc: 1.the bundle name is error.
@@ -3492,23 +3417,6 @@ HWTEST_F(BmsBundleKitServiceTest, BundleClone_0200, Function | SmallTest | Level
     MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
     auto result = GetBundleCloneMgr()->BundleClone(BUNDLE_NAME_DEMO);
     EXPECT_FALSE(result);
-    MockUninstallBundle(BUNDLE_NAME_TEST);
-}
-
-/**
- * @tc.number: RemoveClonedBundle_0100.
- * @tc.name: test the cloned bundle can be removed.
- * @tc.desc: 1. the bundle is already cloned.
- *           2. the cloned bundle can be removed successfully.
- */
-HWTEST_F(BmsBundleKitServiceTest, RemoveClonedBundle_0100, Function | SmallTest | Level1)
-{
-    MockInstallBundle(BUNDLE_NAME_TEST, MODULE_NAME_TEST, ABILITY_NAME_TEST);
-    GetBundleCloneMgr()->BundleClone(BUNDLE_NAME_TEST);
-    std::string cloneName;
-    GetBundleDataMgr()->GetClonedBundleName(BUNDLE_NAME_TEST, cloneName);
-    auto result = GetBundleCloneMgr()->RemoveClonedBundle(BUNDLE_NAME_TEST, cloneName);
-    EXPECT_TRUE(result);
     MockUninstallBundle(BUNDLE_NAME_TEST);
 }
 

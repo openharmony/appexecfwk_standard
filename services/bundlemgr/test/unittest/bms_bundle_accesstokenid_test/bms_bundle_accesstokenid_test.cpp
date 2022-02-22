@@ -48,6 +48,7 @@ const std::string WRONG_HAP_FILE_PATH = "/data/test/resource/bms/accesstoken_bun
 const int32_t USERID = 100;
 const uint32_t ZERO = 0;
 const uint32_t INVALID_ACCESSTOKENID = 0;
+const int32_t WAIT_TIME = 5; // init mocked bms
 }  // namespace
 
 class BmsBundleAccessTokenIdTest : public testing::Test {
@@ -62,10 +63,9 @@ public:
     ErrCode UpdateBundle(const std::string &bundlePath) const;
     ErrCode UnInstallBundle(const std::string &bundleName) const;
     const std::shared_ptr<BundleDataMgr> GetBundleDataMgr() const;
-    void StopInstalldService() const;
     void StartInstalldService() const;
     void StartBundleService();
-    void StopBundleService();
+
 private:
     std::shared_ptr<InstalldService> installdService_ = std::make_shared<InstalldService>();
     std::shared_ptr<BundleMgrService> bundleMgrService_ = DelayedSingleton<BundleMgrService>::GetInstance();
@@ -90,10 +90,7 @@ void BmsBundleAccessTokenIdTest::SetUp()
 }
 
 void BmsBundleAccessTokenIdTest::TearDown()
-{
-    StopInstalldService();
-    StopBundleService();
-}
+{}
 
 ErrCode BmsBundleAccessTokenIdTest::InstallBundle(const std::string &bundlePath) const
 {
@@ -164,32 +161,18 @@ ErrCode BmsBundleAccessTokenIdTest::UnInstallBundle(const std::string &bundleNam
     return receiver->GetResultCode();
 }
 
-void BmsBundleAccessTokenIdTest::StopInstalldService() const
-{
-    installdService_->Stop();
-    InstalldClient::GetInstance()->ResetInstalldProxy();
-}
-
 void BmsBundleAccessTokenIdTest::StartInstalldService() const
 {
-    installdService_->Start();
+    if (!installdService_->IsServiceReady()) {
+        installdService_->Start();
+    }
 }
 
 void BmsBundleAccessTokenIdTest::StartBundleService()
 {
-    if (!bundleMgrService_) {
-        bundleMgrService_ = DelayedSingleton<BundleMgrService>::GetInstance();
-    }
-    if (bundleMgrService_) {
+    if (!bundleMgrService_->IsServiceReady()) {
         bundleMgrService_->OnStart();
-    }
-}
-
-void BmsBundleAccessTokenIdTest::StopBundleService()
-{
-    if (bundleMgrService_) {
-        bundleMgrService_->OnStop();
-        bundleMgrService_ = nullptr;
+        std::this_thread::sleep_for(std::chrono::seconds(WAIT_TIME));
     }
 }
 
