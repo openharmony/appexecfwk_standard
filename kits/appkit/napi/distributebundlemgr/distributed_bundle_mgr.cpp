@@ -17,6 +17,7 @@
 #include <string>
 
 #include "app_log_wrapper.h"
+#include "appexecfwk_errors.h"
 #include "bundle_constants.h"
 #include "distributed_bms_interface.h"
 #include "distributed_bms_proxy.h"
@@ -46,7 +47,7 @@ enum GetRemoteAbilityInfoErrorCode : int32_t {
     ERR_INNER_ERROR,
     ERR_INVALID_PARAM,
     ERR_PARAMETERS_MORE_THAN_MAX,
-    ERR_REMOTE_DEVICE_IPC_ERROR,
+    ERR_RPC_ERROR,
 };
 }
 
@@ -83,6 +84,8 @@ static int32_t ConvertResultCode(int32_t code)
     switch (code) {
         case SUCCESS:
             return SUCCESS;
+        case ERR_APPEXECFWK_FAILED_GET_REMOTE_PROXY:
+            return ERR_RPC_ERROR;
         default:
             break;
     }
@@ -161,6 +164,9 @@ static bool ParseElementName(napi_env env, OHOS::AppExecFwk::ElementName &elemen
     napi_typeof(env, prop, &valueType);
     if (status == napi_ok && valueType == napi_string) {
         elementName.SetDeviceID(GetStringFromNAPI(env, prop));
+    } else {
+        APP_LOGE("begin to parse ElementName deviceId failed");
+        return false;
     }
     prop = nullptr;
     status = napi_get_named_property(env, args, "bundleName", &prop);
