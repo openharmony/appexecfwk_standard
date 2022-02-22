@@ -40,6 +40,7 @@ namespace {
 const std::string BUNDLE_NAME = "com.example.bmsgrantpermission";
 const std::string HAP_FILE_PATH = "/data/test/resource/bms/permission_bundle/";
 const int32_t USERID = 100;
+const int32_t WAIT_TIME = 5; // init mocked bms
 }  // namespace
 
 class BmsBundlePermissionGrantTest : public testing::Test {
@@ -53,10 +54,8 @@ public:
     ErrCode InstallBundle(const std::string &bundlePath) const;
     ErrCode UnInstallBundle(const std::string &bundleName) const;
     const std::shared_ptr<BundleDataMgr> GetBundleDataMgr() const;
-    void StopInstalldService() const;
     void StartInstalldService() const;
     void StartBundleService();
-    void StopBundleService();
 private:
     std::shared_ptr<InstalldService> installdService_ = std::make_shared<InstalldService>();
     std::shared_ptr<BundleMgrService> bundleMgrService_ = DelayedSingleton<BundleMgrService>::GetInstance();
@@ -76,15 +75,12 @@ void BmsBundlePermissionGrantTest::TearDownTestCase()
 
 void BmsBundlePermissionGrantTest::SetUp()
 {
-    StartBundleService();
     StartInstalldService();
+    StartBundleService();
 }
 
 void BmsBundlePermissionGrantTest::TearDown()
-{
-    StopInstalldService();
-    StopBundleService();
-}
+{}
 
 ErrCode BmsBundlePermissionGrantTest::InstallBundle(const std::string &bundlePath) const
 {
@@ -132,32 +128,18 @@ ErrCode BmsBundlePermissionGrantTest::UnInstallBundle(const std::string &bundleN
     return receiver->GetResultCode();
 }
 
-void BmsBundlePermissionGrantTest::StopInstalldService() const
-{
-    installdService_->Stop();
-    InstalldClient::GetInstance()->ResetInstalldProxy();
-}
-
 void BmsBundlePermissionGrantTest::StartInstalldService() const
 {
-    installdService_->Start();
+    if (!installdService_->IsServiceReady()) {
+        installdService_->Start();
+    }
 }
 
 void BmsBundlePermissionGrantTest::StartBundleService()
 {
-    if (!bundleMgrService_) {
-        bundleMgrService_ = DelayedSingleton<BundleMgrService>::GetInstance();
-    }
-    if (bundleMgrService_) {
+    if (!bundleMgrService_->IsServiceReady()) {
         bundleMgrService_->OnStart();
-    }
-}
-
-void BmsBundlePermissionGrantTest::StopBundleService()
-{
-    if (bundleMgrService_) {
-        bundleMgrService_->OnStop();
-        bundleMgrService_ = nullptr;
+        std::this_thread::sleep_for(std::chrono::seconds(WAIT_TIME));
     }
 }
 

@@ -51,11 +51,12 @@ const std::string PROFILE_FILE = "config.json";
 const std::string SEPARATOR = "/";
 const std::chrono::seconds SLEEP_TIME {2};
 const int32_t ROOT_UID = 0;
-const int32_t USERID = 0;
+const int32_t USERID = 100;
 const uint32_t VERSION_1 = 1;
 const uint32_t VERSION_2 = 2;
 const uint32_t VERSION_3 = 3;
 const int32_t MAX_TRY_TIMES = 1000;
+const int32_t WAIT_TIME = 5; // init mocked bms
 }  // namespace
 
 class BmsBundleUpdaterTest : public testing::Test {
@@ -106,17 +107,12 @@ void BmsBundleUpdaterTest::SetUp()
     installdService_->Start();
     if (!DelayedSingleton<BundleMgrService>::GetInstance()->IsServiceReady()) {
         DelayedSingleton<BundleMgrService>::GetInstance()->OnStart();
+        std::this_thread::sleep_for(std::chrono::seconds(WAIT_TIME));
     }
 }
 
 void BmsBundleUpdaterTest::TearDown()
 {
-    // reset the case.
-    UninstallBundle(BUNDLE_NAME);
-
-    StopInstalldService();
-    StopBundleService();
-
     // clear files.
     OHOS::ForceRemoveDirectory(BUNDLE_DATA_DIR);
     OHOS::ForceRemoveDirectory(BUNDLE_CODE_DIR);
@@ -141,6 +137,7 @@ ErrCode BmsBundleUpdaterTest::InstallBundle(const std::string &bundlePath) const
         return ERR_APPEXECFWK_INSTALL_INTERNAL_ERROR;
     }
     InstallParam installParam;
+    installParam.userId = USERID;
     installParam.installFlag = InstallFlag::NORMAL;
     bool result = installer->Install(bundlePath, installParam, receiver);
     EXPECT_TRUE(result);
@@ -161,6 +158,7 @@ ErrCode BmsBundleUpdaterTest::UninstallBundle(const std::string &bundleName) con
         return ERR_APPEXECFWK_INSTALL_INTERNAL_ERROR;
     }
     InstallParam installParam;
+    installParam.userId = USERID;
     installParam.installFlag = InstallFlag::NORMAL;
     bool result = installer->Uninstall(bundleName, installParam, receiver);
     EXPECT_TRUE(result);
@@ -181,6 +179,7 @@ ErrCode BmsBundleUpdaterTest::UpdateBundle(const std::string &bundlePath) const
         return ERR_APPEXECFWK_INSTALL_INTERNAL_ERROR;
     }
     InstallParam installParam;
+    installParam.userId = USERID;
     installParam.installFlag = InstallFlag::REPLACE_EXISTING;
     bool result = installer->Install(bundlePath, installParam, receiver);
     EXPECT_TRUE(result);
@@ -200,6 +199,7 @@ ErrCode BmsBundleUpdaterTest::UpdateBundle(const std::string &bundlePath, const 
         return ERR_APPEXECFWK_INSTALL_INTERNAL_ERROR;
     }
     InstallParam installParam;
+    installParam.userId = USERID;
     installParam.installFlag = InstallFlag::REPLACE_EXISTING;
     bool result = installer->Install(bundlePath, installParam, receiver);
     EXPECT_TRUE(result);
@@ -256,7 +256,7 @@ bool BmsBundleUpdaterTest::CheckBundleInfo(const uint32_t versionCode, const boo
     if (dataMgr == nullptr) {
         return false;
     }
-    bool isExist = dataMgr->GetBundleInfo(BUNDLE_NAME, BundleFlag::GET_BUNDLE_DEFAULT, info);
+    bool isExist = dataMgr->GetBundleInfo(BUNDLE_NAME, BundleFlag::GET_BUNDLE_DEFAULT, info, USERID);
     if (!isExist) {
         return false;
     }
@@ -306,6 +306,9 @@ HWTEST_F(BmsBundleUpdaterTest, Update_0100, Function | SmallTest | Level2)
 
     bool isExist = CheckBundleInfo(VERSION_2, true);
     EXPECT_TRUE(isExist);
+
+    installResult = UninstallBundle(BUNDLE_NAME);
+    EXPECT_EQ(installResult, ERR_OK);
 }
 
 /**
@@ -325,6 +328,9 @@ HWTEST_F(BmsBundleUpdaterTest, Update_0200, Function | SmallTest | Level1)
 
     bool result = CheckBundleInfo(VERSION_3, true);
     EXPECT_TRUE(result);
+
+    installResult = UninstallBundle(BUNDLE_NAME);
+    EXPECT_EQ(installResult, ERR_OK);
 }
 
 /**
@@ -340,6 +346,9 @@ HWTEST_F(BmsBundleUpdaterTest, Update_0300, Function | SmallTest | Level0)
 
     ErrCode updateResult = UpdateBundle("");
     EXPECT_EQ(updateResult, ERR_APPEXECFWK_INSTALL_FILE_PATH_INVALID);
+
+    installResult = UninstallBundle(BUNDLE_NAME);
+    EXPECT_EQ(installResult, ERR_OK);
 }
 
 /**
@@ -355,6 +364,9 @@ HWTEST_F(BmsBundleUpdaterTest, Update_0400, Function | SmallTest | Level0)
 
     ErrCode updateResult = UpdateBundle(BUNDLE_FILE_DIR + ERROR_BUNDLE_NAME);
     EXPECT_EQ(updateResult, ERR_APPEXECFWK_INSTALL_FILE_PATH_INVALID);
+
+    installResult = UninstallBundle(BUNDLE_NAME);
+    EXPECT_EQ(installResult, ERR_OK);
 }
 
 /**
@@ -370,6 +382,9 @@ HWTEST_F(BmsBundleUpdaterTest, Update_0500, Function | SmallTest | Level0)
 
     ErrCode updateResult = UpdateBundle(BUNDLE_FILE_DIR + ERROR_FORMART_BUNDLE);
     EXPECT_EQ(updateResult, ERR_APPEXECFWK_PARSE_NO_PROFILE);
+
+    installResult = UninstallBundle(BUNDLE_NAME);
+    EXPECT_EQ(installResult, ERR_OK);
 }
 
 /**
@@ -385,6 +400,9 @@ HWTEST_F(BmsBundleUpdaterTest, Update_0600, Function | SmallTest | Level0)
 
     ErrCode updateResult = UpdateBundle(BUNDLE_FILE_DIR + V1_BUNDLE);
     EXPECT_EQ(updateResult, ERR_APPEXECFWK_INSTALL_VERSION_DOWNGRADE);
+
+    installResult = UninstallBundle(BUNDLE_NAME);
+    EXPECT_EQ(installResult, ERR_OK);
 }
 
 /**
@@ -406,7 +424,7 @@ HWTEST_F(BmsBundleUpdaterTest, Update_0700, Function | SmallTest | Level1)
     BundleInfo info;
     auto dataMgr = GetBundleDataMgr();
     EXPECT_NE(dataMgr, nullptr);
-    bool isInfoExist = dataMgr->GetBundleInfo(BUNDLE_NAME, BundleFlag::GET_BUNDLE_DEFAULT, info);
+    bool isInfoExist = dataMgr->GetBundleInfo(BUNDLE_NAME, BundleFlag::GET_BUNDLE_DEFAULT, info, USERID);
     EXPECT_TRUE(isInfoExist);
     EXPECT_EQ(info.versionCode, VERSION_1);
 
@@ -415,6 +433,9 @@ HWTEST_F(BmsBundleUpdaterTest, Update_0700, Function | SmallTest | Level1)
     EXPECT_EQ(updateResult, ERR_OK);
     EXPECT_EQ(info.versionCode, VERSION_1);
     CheckFileExist();
+
+    installResult = UninstallBundle(BUNDLE_NAME);
+    EXPECT_EQ(installResult, ERR_OK);
 }
 
 /**
@@ -434,6 +455,7 @@ HWTEST_F(BmsBundleUpdaterTest, Update_0800, Function | SmallTest | Level2)
     auto installer = DelayedSingleton<BundleMgrService>::GetInstance()->GetBundleInstaller();
     EXPECT_FALSE(!installer);
     InstallParam installParam;
+    installParam.userId = USERID;
     installParam.installFlag = InstallFlag::REPLACE_EXISTING;
     installer->Install(BUNDLE_FILE_DIR + V2_BUNDLE, installParam, nullptr);
 
@@ -447,6 +469,9 @@ HWTEST_F(BmsBundleUpdaterTest, Update_0800, Function | SmallTest | Level2)
 
     bool isExist = CheckBundleInfo(VERSION_1, true);
     EXPECT_TRUE(isExist);
+
+    installResult = UninstallBundle(BUNDLE_NAME);
+    EXPECT_EQ(installResult, ERR_OK);
 }
 
 /**
@@ -489,4 +514,7 @@ HWTEST_F(BmsBundleUpdaterTest, Update_0900, Function | SmallTest | Level2)
 
     isExist = CheckBundleInfo(VERSION_3, true);
     EXPECT_TRUE(isExist);
+
+    installResult = UninstallBundle(BUNDLE_NAME);
+    EXPECT_EQ(installResult, ERR_OK);
 }

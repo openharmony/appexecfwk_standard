@@ -385,7 +385,7 @@ void BmsBundleParserTest::CheckProfilePermission(const nlohmann::json &checkedPr
     profileFileBuffer << checkedProfileJson.dump();
 
     ErrCode result = bundleProfile.TransformTo(profileFileBuffer, innerBundleInfo);
-    EXPECT_EQ(result, ERR_APPEXECFWK_PARSE_PROFILE_MISSING_PROP) << profileFileBuffer.str();
+    EXPECT_EQ(result, ERR_OK) << profileFileBuffer.str();
 }
 
 void BmsBundleParserTest::CheckProfileForms(const nlohmann::json &checkedProfileJson) const
@@ -615,7 +615,7 @@ HWTEST_F(BmsBundleParserTest, TestParse_1200, Function | SmallTest | Level0)
 
     for (const auto &propKey : mustPropKeys) {
         APP_LOGD("test must prop %{public}s not exist", propKey.c_str());
-        CheckNoPropProfileParseModule(propKey, ERR_APPEXECFWK_PARSE_PROFILE_PROP_CHECK_ERROR);
+        CheckNoPropProfileParseModule(propKey, ERR_OK);
     }
 }
 

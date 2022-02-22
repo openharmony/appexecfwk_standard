@@ -298,6 +298,7 @@ ErrCode InstalldHostImpl::RemoveDir(const std::string &dir)
 
 ErrCode InstalldHostImpl::CleanBundleDataDir(const std::string &dataDir)
 {
+    APP_LOGD("InstalldHostImpl::CleanBundleDataDir start");
     if (dataDir.empty()) {
         APP_LOGE("Calling the function CleanBundleDataDir with invalid param");
         return ERR_APPEXECFWK_INSTALLD_PARAM_ERROR;
