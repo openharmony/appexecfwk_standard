@@ -128,7 +128,7 @@ protected:
         REMOVE_DIR,
         GET_BUNDLE_STATS,
         SET_DIR_APL,
-        HANDLE_NATIVE_SO
+        COPY_NATIVE_SO
     };
 };
 
