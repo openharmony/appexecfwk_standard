@@ -78,6 +78,7 @@ const std::string APPLICATION_IS_CLONED = "isCloned";
 const std::string APPLICATION_ICON = "icon";
 const std::string APPLICATION_FLAGS = "flags";
 const std::string APPLICATION_ENTRY_MODULE_NAME = "entryModuleName";
+const std::string APPLICATION_NATIVE_LIBRARY_PATH = "nativeLibraryPath";
 const std::string APPLICATION_CPU_ABI = "cpuAbi";
 const std::string APPLICATION_IS_COMPRESS_NATIVE_LIBS = "isCompressNativeLibs";
 const std::string APPLICATION_SYSTEM_APP = "systemApp";
@@ -301,6 +302,7 @@ void to_json(nlohmann::json &jsonObject, const ApplicationInfo &applicationInfo)
         {APPLICATION_ICON, applicationInfo.icon},
         {APPLICATION_FLAGS, applicationInfo.flags},
         {APPLICATION_ENTRY_MODULE_NAME, applicationInfo.entryModuleName},
+        {APPLICATION_NATIVE_LIBRARY_PATH, applicationInfo.nativeLibraryPath},
         {APPLICATION_CPU_ABI, applicationInfo.cpuAbi},
         {APPLICATION_IS_COMPRESS_NATIVE_LIBS, applicationInfo.isCompressNativeLibs},
         {APPLICATION_SYSTEM_APP, applicationInfo.systemApp},
@@ -676,6 +678,14 @@ void from_json(const nlohmann::json &jsonObject, ApplicationInfo &applicationInf
         jsonObjectEnd,
         APPLICATION_ENTRY_MODULE_NAME,
         applicationInfo.entryModuleName,
+        JsonType::STRING,
+        false,
+        parseResult,
+        ArrayType::NOT_ARRAY);
+    GetValueIfFindKey<std::string>(jsonObject,
+        jsonObjectEnd,
+        APPLICATION_NATIVE_LIBRARY_PATH,
+        applicationInfo.nativeLibraryPath,
         JsonType::STRING,
         false,
         parseResult,

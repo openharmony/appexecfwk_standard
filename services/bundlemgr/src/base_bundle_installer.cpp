@@ -817,6 +817,11 @@ ErrCode BaseBundleInstaller::ProcessBundleInstallStatus(InnerBundleInfo &info, i
         APP_LOGE("extract module failed");
         return result;
     }
+    result = CopyNativeSo(info, modulePath);
+    if (result != ERR_OK) {
+        APP_LOGE("copy native so failed, error : %{public}d", result);
+        return result;
+    }
 
     result = CreateModuleDataDir(info);
     if (result != ERR_OK) {
@@ -929,6 +934,11 @@ ErrCode BaseBundleInstaller::ProcessNewModuleInstall(InnerBundleInfo &newInfo, I
         APP_LOGE("extract module and rename failed");
         return result;
     }
+    result = CopyNativeSo(newInfo, modulePath);
+    if (result != ERR_OK) {
+        APP_LOGE("copy native so failed, error : %{public}d", result);
+        return result;
+    }
     ScopeGuard moduleGuard([&] { RemoveModuleDir(modulePath); });
     result = CreateModuleDataDir(newInfo);
     if (result != ERR_OK) {
@@ -1019,6 +1029,11 @@ ErrCode BaseBundleInstaller::ProcessModuleUpdate(InnerBundleInfo &newInfo,
     ErrCode result = ExtractModule(newInfo, moduleTmpDir_);
     if (result != ERR_OK) {
         APP_LOGE("extract module and rename failed");
+        return result;
+    }
+    result = CopyNativeSo(newInfo, moduleTmpDir_);
+    if (result != ERR_OK) {
+        APP_LOGE("copy native so failed, error : %{public}d", result);
         return result;
     }
     if (!dataMgr_->UpdateBundleInstallState(bundleName_, InstallState::UPDATING_SUCCESS)) {
@@ -1157,6 +1172,38 @@ ErrCode BaseBundleInstaller::ExtractModule(InnerBundleInfo &info, const std::str
     info.AddModuleSrcDir(moduleDir);
     info.AddModuleResPath(moduleDir);
     return ERR_OK;
+}
+
+ErrCode BaseBundleInstaller::CopyNativeSo(const InnerBundleInfo &info, const std::string &moduleDir)
+{
+    APP_LOGD("begin to copy native so, bundleName : %{public}s, moduleName : %{public}s",
+        info.GetBundleName().c_str(), info.GetCurrentModulePackage().c_str());
+
+    std::string nativeLibraryPath = info.GetBaseApplicationInfo().nativeLibraryPath;
+    std::string cpuAbi = info.GetBaseApplicationInfo().cpuAbi;
+    APP_LOGD("nativeLibraryPath : %{public}s, cpuAbi : %{public}s", nativeLibraryPath.c_str(), cpuAbi.c_str());
+    if (nativeLibraryPath.empty()) {
+        APP_LOGD("native so not exist, skip");
+        return ERR_OK;
+    }
+    if (cpuAbi.empty()) {
+        APP_LOGE("cpuAbi invalid");
+        return ERR_APPEXECFWK_INSTALL_INTERNAL_ERROR;
+    }
+
+    std::string srcLibPath;
+    srcLibPath.append(moduleDir).append(Constants::PATH_SEPARATOR)
+        .append(Constants::LIB_FOLDER_NAME).append(Constants::PATH_SEPARATOR)
+        .append(cpuAbi).append(Constants::PATH_SEPARATOR);
+    APP_LOGD("srcLibPath : %{public}s", srcLibPath.c_str());
+
+    std::string targetLibPath;
+    targetLibPath.append(Constants::BUNDLE_CODE_DIR).append(Constants::PATH_SEPARATOR)
+        .append(info.GetBundleName()).append(Constants::PATH_SEPARATOR)
+        .append(nativeLibraryPath);
+    APP_LOGD("targetLibPath : %{public}s", targetLibPath.c_str());
+
+    return InstalldClient::GetInstance()->CopyNativeSo(srcLibPath, targetLibPath);
 }
 
 ErrCode BaseBundleInstaller::RemoveBundleAndDataDir(const InnerBundleInfo &info, bool isUninstall) const

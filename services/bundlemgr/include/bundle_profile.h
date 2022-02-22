@@ -17,6 +17,7 @@
 #define FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_BUNDLE_PROFILE_H
 
 #include "appexecfwk_errors.h"
+#include "bundle_extractor.h"
 #include "inner_bundle_info.h"
 
 namespace OHOS {
@@ -26,10 +27,12 @@ public:
     /**
      * @brief Transform the information of config.json to InnerBundleInfo object.
      * @param source Indicates the std::ostringstream of config.json.
+     * @param bundleExtractor hold hap files.
      * @param innerBundleInfo Indicates the obtained InnerBundleInfo object.
      * @return Returns ERR_OK if the information transformed successfully; returns error code otherwise.
      */
-    ErrCode TransformTo(const std::ostringstream &source, InnerBundleInfo &innerBundleInfo) const;
+    ErrCode TransformTo(const std::ostringstream &source, const BundleExtractor &bundleExtractor,
+        InnerBundleInfo &innerBundleInfo) const;
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS

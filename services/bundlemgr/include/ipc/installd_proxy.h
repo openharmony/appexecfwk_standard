@@ -113,6 +113,8 @@ public:
      * @return Returns ERR_OK if set apl successfully; returns error code otherwise.
      */
     virtual ErrCode SetDirApl(const std::string &dir, const std::string &bundleName, const std::string &apl) override;
+
+    virtual ErrCode CopyNativeSo(const std::string &srcLibPath, const std::string &targetLibPath) override;
 private:
     ErrCode TransactInstalldCmd(uint32_t code, MessageParcel &data, MessageParcel &reply,
         MessageOption &option);

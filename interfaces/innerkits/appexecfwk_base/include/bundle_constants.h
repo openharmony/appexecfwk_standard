@@ -16,6 +16,7 @@
 #ifndef FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_BASE_INCLUDE_BUNDLE_CONSTANTS_H
 #define FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_BASE_INCLUDE_BUNDLE_CONSTANTS_H
 
+#include<map>
 #include <string>
 #include <vector>
 
@@ -98,6 +99,25 @@ constexpr int PERMISSION_NOT_GRANTED = -1;
 constexpr int DUMP_INDENT = 4;
 constexpr unsigned int INSTALLD_UMASK = 0000;
 constexpr unsigned int PERMISSION_COMPATIBLE_API_VERSION = 7;
+
+// native so
+const std::string ABI_DEFAULT = "default";
+const std::string ABI_SEPARATOR = ",";
+const std::string ARM_EABI = "armeabi";
+const std::string ARM_EABI_V7A = "armeabi-v7a";
+const std::string ARM64_V8A = "arm64-v8a";
+const std::string X86 = "x86";
+const std::string X86_64 = "x86_64";
+const std::string LIBS = "libs/";
+const std::string LIBS_ARM_EABI_V7A = "libs/armeabi-v7a/";
+const std::string ARM = "arm";
+const std::map<std::string, std::string> ABI_MAP = {
+    {ARM_EABI, "arm"},
+    {ARM_EABI_V7A, "arm"},
+    {ARM64_V8A, "arm64"},
+    {X86, "x86"},
+    {X86_64, "x86_64"},
+};
 
 // uid and gid
 constexpr int32_t INVALID_UID = -1;
