@@ -57,6 +57,7 @@ const std::string ROOT_DIR = "/data/accounts";
 const int32_t ROOT_UID = 0;
 const int32_t USERID = 100;
 const std::string INSTALL_THREAD = "TestInstall";
+const int32_t WAIT_TIME = 5; // init mocked bms
 }  // namespace
 
 class BmsBundleInstallerTest : public testing::Test {
@@ -162,6 +163,7 @@ void BmsBundleInstallerTest::SetUp()
     }
     if (!bundleMgrService_->IsServiceReady()) {
         bundleMgrService_->OnStart();
+        std::this_thread::sleep_for(std::chrono::seconds(WAIT_TIME));
     }
 }
 
