@@ -1176,7 +1176,8 @@ bool ToApplicationInfo(const Profile::App &app, ApplicationInfo &applicationInfo
         applicationInfo.cpuAbi = targetAbi;
     } else {
         APP_LOGD("so exist");
-        std::string targetAbi = bundleExtractor.IsDirExist(Constants::LIBS_ARM_EABI_V7A) ? Constants::ARM_EABI_V7A : Constants::ARM_EABI;
+        std::string targetAbi = bundleExtractor.IsDirExist(Constants::LIBS_ARM_EABI_V7A) ?
+            Constants::ARM_EABI_V7A : Constants::ARM_EABI;
         std::string targetLibName = Constants::ARM;
         if (!isDefault) {
             std::vector<std::string> abiList;
