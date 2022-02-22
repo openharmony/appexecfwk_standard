@@ -21,8 +21,8 @@
 #include "app_log_wrapper.h"
 #include "bundle_constants.h"
 #include "common_profile.h"
-#include "permission/permission_kit.h"
 #include "parameter.h"
+#include "permission/permission_kit.h"
 #include "string_ex.h"
 
 namespace OHOS {
