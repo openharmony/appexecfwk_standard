@@ -124,7 +124,7 @@ public:
      */
     ErrCode SetDirApl(const std::string &dir, const std::string &bundleName, const std::string &apl);
 
-    ErrCode HandleNativeSo(const std::string &srcLibPath, const std::string &targetLibPath);
+    ErrCode CopyNativeSo(const std::string &srcLibPath, const std::string &targetLibPath);
 private:
     /**
      * @brief Get the installd proxy object.

@@ -413,7 +413,7 @@ private:
     ErrCode GrantRequestPermissions(const InnerBundleInfo &info, const uint32_t tokenId);
     ErrCode UpdateDefineAndRequestPermissions(const InnerBundleInfo &oldInfo, const InnerBundleInfo &newInfo);
     ErrCode SetDirApl(const InnerBundleInfo &info);
-    ErrCode HandleNativeSo(const InnerBundleInfo &info, const std::string &moduleDir);
+    ErrCode CopyNativeSo(const InnerBundleInfo &info, const std::string &moduleDir);
 
     InstallerState state_ = InstallerState::INSTALL_START;
     std::shared_ptr<BundleDataMgr> dataMgr_ = nullptr;  // this pointer will get when public functions called

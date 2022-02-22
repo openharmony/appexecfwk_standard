@@ -27,6 +27,7 @@ public:
     /**
      * @brief Transform the information of module.json to InnerBundleInfo object.
      * @param source Indicates the std::ostringstream of module.json.
+     * @param bundleExtractor hold hap files.
      * @param innerBundleInfo Indicates the obtained InnerBundleInfo object.
      * @return Returns ERR_OK if the information transformed successfully; returns error code otherwise.
      */

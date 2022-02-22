@@ -114,7 +114,7 @@ public:
      */
     virtual ErrCode SetDirApl(const std::string &dir, const std::string &bundleName, const std::string &apl) = 0;
 
-    virtual ErrCode HandleNativeSo(const std::string &srcLibPath, const std::string &targetLibPath) = 0;
+    virtual ErrCode CopyNativeSo(const std::string &srcLibPath, const std::string &targetLibPath) = 0;
 protected:
     enum Message : uint32_t {
         CREATE_BUNDLE_DIR = 1,

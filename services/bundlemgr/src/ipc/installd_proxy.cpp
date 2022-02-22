@@ -184,7 +184,7 @@ ErrCode InstalldProxy::SetDirApl(const std::string &dir, const std::string &bund
     return TransactInstalldCmd(IInstalld::Message::SET_DIR_APL, data, reply, option);
 }
 
-ErrCode InstalldProxy::HandleNativeSo(const std::string &srcLibPath, const std::string &targetLibPath)
+ErrCode InstalldProxy::CopyNativeSo(const std::string &srcLibPath, const std::string &targetLibPath)
 {
     MessageParcel data;
     INSTALLD_PARCEL_WRITE_INTERFACE_TOKEN(data, (GetDescriptor()));

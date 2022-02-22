@@ -1155,7 +1155,7 @@ bool ToApplicationInfo(const Profile::App &app, ApplicationInfo &applicationInfo
         }
     }
 
-    // handle so
+    // handle native so
     std::string abis = GetAbiList();
     bool isDefault = abis == Constants::ABI_DEFAULT;
     APP_LOGD("abi list : %{public}s, isDefault : %{public}d", abis.c_str(), isDefault);
