@@ -817,7 +817,7 @@ ErrCode BaseBundleInstaller::ProcessBundleInstallStatus(InnerBundleInfo &info, i
         APP_LOGE("extract module failed");
         return result;
     }
-    result = HandleNativeSo(info, modulePath);
+    result = CopyNativeSo(info, modulePath);
     if (result != ERR_OK) {
         APP_LOGE("handle native so failed, error : %{public}d", result);
         return result;
@@ -934,7 +934,7 @@ ErrCode BaseBundleInstaller::ProcessNewModuleInstall(InnerBundleInfo &newInfo, I
         APP_LOGE("extract module and rename failed");
         return result;
     }
-    result = HandleNativeSo(newInfo, modulePath);
+    result = CopyNativeSo(newInfo, modulePath);
     if (result != ERR_OK) {
         APP_LOGE("handle native so failed, error : %{public}d", result);
         return result;
@@ -1031,7 +1031,7 @@ ErrCode BaseBundleInstaller::ProcessModuleUpdate(InnerBundleInfo &newInfo,
         APP_LOGE("extract module and rename failed");
         return result;
     }
-    result = HandleNativeSo(newInfo, moduleTmpDir_);
+    result = CopyNativeSo(newInfo, moduleTmpDir_);
     if (result != ERR_OK) {
         APP_LOGE("handle native so failed, error : %{public}d", result);
         return result;
@@ -1174,7 +1174,7 @@ ErrCode BaseBundleInstaller::ExtractModule(InnerBundleInfo &info, const std::str
     return ERR_OK;
 }
 
-ErrCode BaseBundleInstaller::HandleNativeSo(const InnerBundleInfo &info, const std::string &moduleDir)
+ErrCode BaseBundleInstaller::CopyNativeSo(const InnerBundleInfo &info, const std::string &moduleDir)
 {
     APP_LOGD("begin to handle native so, bundleName : %{public}s, moduleName : %{public}s",
         info.GetBundleName().c_str(), info.GetCurrentModulePackage().c_str());
@@ -1197,7 +1197,7 @@ ErrCode BaseBundleInstaller::HandleNativeSo(const InnerBundleInfo &info, const s
         .append(cpuAbi).append(Constants::PATH_SEPARATOR);
     APP_LOGD("srcLibPath : %{public}s", srcLibPath.c_str());
 
-    return InstalldClient::GetInstance()->HandleNativeSo(srcLibPath, nativeLibraryPath);
+    return InstalldClient::GetInstance()->CopyNativeSo(srcLibPath, nativeLibraryPath);
 }
 
 ErrCode BaseBundleInstaller::RemoveBundleAndDataDir(const InnerBundleInfo &info, bool isUninstall) const

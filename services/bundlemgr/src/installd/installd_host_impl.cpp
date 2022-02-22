@@ -393,11 +393,11 @@ ErrCode InstalldHostImpl::SetDirApl(const std::string &dir, const std::string &b
 #endif // WITH_SELINUX
 }
 
-ErrCode InstalldHostImpl::HandleNativeSo(const std::string &srcLibPath, const std::string &targetLibPath)
+ErrCode InstalldHostImpl::CopyNativeSo(const std::string &srcLibPath, const std::string &targetLibPath)
 {
     APP_LOGD("srcLibPath : %{public}s, targetLibPath : %{public}s", srcLibPath.c_str(), targetLibPath.c_str());
     if (srcLibPath.empty() || targetLibPath.empty()) {
-        APP_LOGE("Calling the function HandleNativeSo with invalid param");
+        APP_LOGE("Calling the function CopyNativeSo with invalid param");
         return ERR_APPEXECFWK_INSTALLD_PARAM_ERROR;
     }
     if (!InstalldOperator::IsExistDir(srcLibPath)) {
