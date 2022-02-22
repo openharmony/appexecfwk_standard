@@ -109,11 +109,7 @@ const std::string ARM64_V8A = "arm64-v8a";
 const std::string X86 = "x86";
 const std::string X86_64 = "x86_64";
 const std::string LIBS = "libs/";
-const std::string LIBS_ARM_EABI = "libs/armeabi/";
 const std::string LIBS_ARM_EABI_V7A = "libs/armeabi-v7a/";
-const std::string LIBS_ARM64_V8A = "libs/arm64-v8a/";
-const std::string LIBS_X86 = "libs/x86/";
-const std::string LIBS_X86_64 = "libs/x86_64/";
 const std::string ARM = "arm";
 const std::map<std::string, std::string> ABI_MAP = {
     {ARM_EABI, "arm"},
