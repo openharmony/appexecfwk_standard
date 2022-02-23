@@ -31,7 +31,6 @@ ohos_shared_library("appexecfwk_base") {
     "src/compatible_ability_info.cpp",
     "src/compatible_application_info.cpp",
     "src/distributed_bundle_info.cpp",
-    "src/element_name.cpp",
     "src/extension_ability_info.cpp",
     "src/extension_form_info.cpp",
     "src/extension_form_profile.cpp",
@@ -58,6 +57,7 @@ ohos_shared_library("appexecfwk_base") {
   deps = [ "${common_path}:libappexecfwk_common" ]
 
   external_deps = [
+    "ability_base:want",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
     "utils_base:utils",
