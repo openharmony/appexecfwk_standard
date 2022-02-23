@@ -176,10 +176,8 @@ bm get -u
 ```
 ## 相关仓
 
-用户程序框架子系统
+包管理子系统
 
 **appexecfwk_standard**
 
-aafwk_standard
-
-startup_appspawn
+developtools_packing_tool
