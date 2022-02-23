@@ -25,13 +25,15 @@ module_output_path = "bundle_framework/bundlemgrservice"
 ohos_unittest("BmsDataMgrTest") {
   use_exceptions = true
   module_out_path = module_output_path
-  include_dirs = [ "//third_party/jsoncpp/include" ]
+  include_dirs = [
+    "${aafwk_path}/interfaces/innerkits/want/include/ohos/aafwk/content",
+    "//third_party/jsoncpp/include",
+  ]
   sources = [
     "${innerkits_path}/appexecfwk_base/src/ability_info.cpp",
     "${innerkits_path}/appexecfwk_base/src/application_info.cpp",
     "${innerkits_path}/appexecfwk_base/src/bundle_info.cpp",
     "${innerkits_path}/appexecfwk_base/src/bundle_user_info.cpp",
-    "${innerkits_path}/appexecfwk_base/src/element_name.cpp",
     "${services_path}/bundlemgr/src/bms_device_manager.cpp",
     "${services_path}/bundlemgr/src/bundle_clone_mgr.cpp",
     "${services_path}/bundlemgr/src/bundle_data_mgr.cpp",
@@ -47,6 +49,7 @@ ohos_unittest("BmsDataMgrTest") {
     "${services_path}/bundlemgr/src/module_usage_data_storage.cpp",
     "${services_path}/bundlemgr/src/permission_changed_death_recipient.cpp",
     "${services_path}/bundlemgr/src/preinstall_data_storage.cpp",
+    "//foundation/aafwk/standard/frameworks/kits/content/cpp/src/ohos/aafwk/content/element_name.cpp",
   ]
 
   sources += [

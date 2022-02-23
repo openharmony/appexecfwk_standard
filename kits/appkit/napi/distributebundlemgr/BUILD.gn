@@ -28,6 +28,7 @@ ohos_shared_library("distributedbundle") {
   deps = [ "${common_path}:libappexecfwk_common" ]
 
   external_deps = [
+    "ability_base:want",
     "bundle_framework:appexecfwk_base",
     "distributed_bundle_framework:libdbms",
     "hiviewdfx_hilog_native:libhilog",
