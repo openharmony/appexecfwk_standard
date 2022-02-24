@@ -37,6 +37,10 @@ int32_t DistributedBmsProxy::GetRemoteAbilityInfo(
     APP_LOGD("DistributedBmsProxy GetRemoteAbilityInfo");
     MessageParcel data;
     MessageParcel reply;
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        APP_LOGE("fail to GetRemoteAbilityInfo due to write InterfaceToken fail");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
     if (!data.WriteParcelable(&elementName)) {
         APP_LOGE("DistributedBmsProxy GetRemoteAbilityInfo write elementName error");
         return ERR_APPEXECFWK_PARCEL_ERROR;
@@ -52,9 +56,13 @@ int32_t DistributedBmsProxy::GetRemoteAbilityInfo(
 int32_t DistributedBmsProxy::GetRemoteAbilityInfos(
     const std::vector<ElementName> &elementNames, std::vector<RemoteAbilityInfo> &remoteAbilityInfos)
 {
-    APP_LOGD("DistributedBmsProxy GetRemoteAbilityInfo");
+    APP_LOGD("DistributedBmsProxy GetRemoteAbilityInfos");
     MessageParcel data;
     MessageParcel reply;
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        APP_LOGE("fail to GetRemoteAbilityInfos due to write InterfaceToken fail");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
     if (!WriteParcelableVector(elementNames, data)) {
         APP_LOGE("DistributedBmsProxy GetRemoteAbilityInfos write elementName error");
         return ERR_APPEXECFWK_PARCEL_ERROR;
@@ -74,6 +82,10 @@ int32_t DistributedBmsProxy::GetAbilityInfo(
     APP_LOGD("DistributedBmsProxy GetAbilityInfo");
     MessageParcel data;
     MessageParcel reply;
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        APP_LOGE("fail to GetAbilityInfo due to write InterfaceToken fail");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
     if (!data.WriteParcelable(&elementName)) {
         APP_LOGE("DistributedBmsProxy GetAbilityInfo write elementName error");
         return ERR_APPEXECFWK_PARCEL_ERROR;
@@ -92,6 +104,10 @@ int32_t DistributedBmsProxy::GetAbilityInfos(
     APP_LOGD("DistributedBmsProxy GetAbilityInfos");
     MessageParcel data;
     MessageParcel reply;
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        APP_LOGE("fail to GetAbilityInfos due to write InterfaceToken fail");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
     if (!WriteParcelableVector(elementNames, data)) {
         APP_LOGE("DistributedBmsProxy GetAbilityInfos write elementName error");
         return ERR_APPEXECFWK_PARCEL_ERROR;
