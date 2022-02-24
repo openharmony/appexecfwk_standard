@@ -23,6 +23,7 @@
 #include "distributed_bms_host.h"
 #include "if_system_ability_manager.h"
 #include "iremote_object.h"
+#include "image_buffer.h"
 #include "resource_manager.h"
 #include "system_ability.h"
 
@@ -82,8 +83,9 @@ public:
 private:
     std::shared_ptr<Global::Resource::ResourceManager> GetResourceManager(const AppExecFwk::BundleInfo &bundleInfo);
     bool GetMediaBase64(std::string &path, std::string &value);
-    std::unique_ptr<char[]> LoadResourceFile(std::string &path, int &len);
-    std::unique_ptr<char[]> EncodeBase64(std::unique_ptr<char[]> &data, int srcLen);
+    bool GetMediaBae64FromImageBuffer(std::shared_ptr<ImageBuffer>& imageBuffer, std::string& value);
+    std::unique_ptr<unsigned char[]> LoadResourceFile(std::string &path, int &len);
+    std::unique_ptr<char[]> EncodeBase64(std::unique_ptr<unsigned char[]> &data, int srcLen);
     bool GetCurrentUserId(int &userId);
     static OHOS::sptr<OHOS::AppExecFwk::IBundleMgr> bundleMgr_;
     static std::mutex bundleMgrMutex_;

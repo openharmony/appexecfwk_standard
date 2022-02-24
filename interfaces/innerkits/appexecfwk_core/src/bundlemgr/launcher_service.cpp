@@ -164,6 +164,12 @@ bool LauncherService::GetAllLauncherAbilityInfos(int32_t userId, std::vector<Lau
         }
         LauncherAbilityInfo info;
         BundleInfo bundleInfo;
+        BundleFlag flags = BundleFlag::GET_BUNDLE_DEFAULT;
+        if (!iBundleMgr->GetBundleInfo(ability.bundleName, flags, bundleInfo, userId)) {
+            APP_LOGE("Get bundle info failed for %{public}s",  ability.bundleName.c_str());
+            continue;
+        }
+        info.installTime = bundleInfo.installTime;
         info.applicationInfo = ability.applicationInfo;
         info.labelId = ability.labelId;
         info.iconId = ability.iconId;
@@ -173,12 +179,6 @@ bool LauncherService::GetAllLauncherAbilityInfos(int32_t userId, std::vector<Lau
         elementName.SetAbilityName(ability.name);
         elementName.SetDeviceID(ability.deviceId);
         info.elementName = elementName;
-        BundleFlag flags = BundleFlag::GET_BUNDLE_DEFAULT;
-        if (!iBundleMgr->GetBundleInfo(ability.bundleName, flags, bundleInfo, userId)) {
-            APP_LOGE("Get bundle info failed for %{public}s",  ability.bundleName.c_str());
-            continue;
-        }
-        info.installTime = bundleInfo.installTime;
         launcherAbilityInfos.emplace_back(info);
     }
     return true;

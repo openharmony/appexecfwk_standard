@@ -26,7 +26,9 @@
 #include "if_system_ability_manager.h"
 #include "os_account_manager.h"
 #include "parameter.h"
+#include "image_compress.h"
 #include "system_ability_definition.h"
+
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -45,6 +47,7 @@ namespace {
         'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '/'
     };
+    const std::string POSTFIX = "_Compress.";
 }
 REGISTER_SYSTEM_ABILITY_BY_ID(DistributedBms, DISTRIBUTED_BUNDLE_MGR_SERVICE_SYS_ABILITY_ID, true);
 
@@ -194,10 +197,28 @@ int32_t DistributedBms::GetAbilityInfo(
         APP_LOGE("DistributedBms GetStringById  iconPath failed");
         return ERR_APPEXECFWK_FAILED_GET_RESOURCEMANAGER;
     }
-    if (!GetMediaBase64(iconPath, remoteAbilityInfo.icon)) {
-        APP_LOGE("DistributedBms GetMediaBase64 failed");
-        return ERR_APPEXECFWK_FAILED_GET_RESOURCEMANAGER;
+
+    std::shared_ptr<ImageCompress> imageCompress;
+    if (imageCompress->CalRatio(iconPath) > 0) {
+        std::shared_ptr<ImageBuffer> imageBuffer = imageCompress->CompressImage(iconPath.c_str());
+        if (imageBuffer != nullptr) {
+            if (!GetMediaBae64FromImageBuffer(imageBuffer, remoteAbilityInfo.icon)) {
+                APP_LOGE("DistributedBms GetMediaBase64 failed");
+                return ERR_APPEXECFWK_FAILED_GET_RESOURCEMANAGER;
+            }
+        } else {
+            if (!GetMediaBase64(iconPath, remoteAbilityInfo.icon)) {
+                APP_LOGE("DistributedBms GetMediaBase64 failed");
+                return ERR_APPEXECFWK_FAILED_GET_RESOURCEMANAGER;
+            }
+        }
+    } else {
+        if (!GetMediaBase64(iconPath, remoteAbilityInfo.icon)) {
+            APP_LOGE("DistributedBms GetMediaBase64 failed");
+            return ERR_APPEXECFWK_FAILED_GET_RESOURCEMANAGER;
+        }
     }
+
     APP_LOGD("DistributedBms GetAbilityInfo label:%{public}s", remoteAbilityInfo.label.c_str());
     APP_LOGD("DistributedBms GetAbilityInfo iconId:%{public}s", remoteAbilityInfo.icon.c_str());
     return OHOS::NO_ERROR;
@@ -254,7 +275,7 @@ std::shared_ptr<Global::Resource::ResourceManager> DistributedBms::GetResourceMa
 bool DistributedBms::GetMediaBase64(std::string &path, std::string &value)
 {
     int len = 0;
-    std::unique_ptr<char[]> tempData = LoadResourceFile(path, len);
+    std::unique_ptr<unsigned char[]> tempData = LoadResourceFile(path, len);
     if (tempData == nullptr) {
         return false;
     }
@@ -268,7 +289,16 @@ bool DistributedBms::GetMediaBase64(std::string &path, std::string &value)
     return true;
 }
 
-std::unique_ptr<char[]> DistributedBms::LoadResourceFile(std::string &path, int &len)
+bool DistributedBms::GetMediaBae64FromImageBuffer(std::shared_ptr<ImageBuffer>& imageBuffer, std::string& value)
+{
+    std::unique_ptr<unsigned char[]>& imageData = imageBuffer->GetCompressDataBuffer();
+    int length = imageBuffer->GetCompressSize();
+    std::unique_ptr<char[]> base64Data = EncodeBase64(imageData, length);
+    value = "data:image/" + imageBuffer->GetImageType() + ";base64," + base64Data.get();
+    return true;
+}
+
+std::unique_ptr<unsigned char[]> DistributedBms::LoadResourceFile(std::string &path, int &len)
 {
     std::ifstream mediaStream(path, std::ios::binary);
     if (!mediaStream.is_open()) {
@@ -276,28 +306,28 @@ std::unique_ptr<char[]> DistributedBms::LoadResourceFile(std::string &path, int 
     }
     mediaStream.seekg(0, std::ios::end);
     len = mediaStream.tellg();
-    std::unique_ptr<char[]> tempData = std::make_unique<char[]>(len);
+    std::unique_ptr<unsigned char[]> tempData = std::make_unique<unsigned char[]>(len);
     if (tempData == nullptr) {
         return nullptr;
     }
     mediaStream.seekg(0, std::ios::beg);
-    mediaStream.read((tempData.get()), len);
+    mediaStream.read((reinterpret_cast<char*>(tempData.get())), len);
     return tempData;
 }
 
-std::unique_ptr<char[]> DistributedBms::EncodeBase64(std::unique_ptr<char[]> &data, int srcLen)
+std::unique_ptr<char[]> DistributedBms::EncodeBase64(std::unique_ptr<unsigned char[]> &data, int srcLen)
 {
     int len = (srcLen / DECODE_BUNBER_THREE) * DECODE_BUNBER_FOUR; // Split 3 bytes to 4 parts, each containing 6 bits.
     int outLen = ((srcLen % DECODE_BUNBER_THREE) != 0) ? (len + DECODE_BUNBER_FOUR) : len;
-    const char *srcData = data.get();
+    const unsigned char *srcData = data.get();
     std::unique_ptr<char[]>  result = std::make_unique<char[]>(outLen + DECODE_BUNBER_ONE);
     char *dstData = result.get();
     int j = 0;
     int i = 0;
     for (; i < srcLen - DECODE_BUNBER_THREE; i += DECODE_BUNBER_THREE) {
-        unsigned char byte1 = static_cast<unsigned char>(srcData[i]);
-        unsigned char byte2 = static_cast<unsigned char>(srcData[i + DECODE_BUNBER_ONE]);
-        unsigned char byte3 = static_cast<unsigned char>(srcData[i + DECODE_BUNBER_TWO]);
+        unsigned char byte1 = srcData[i];
+        unsigned char byte2 = srcData[i + DECODE_BUNBER_ONE];
+        unsigned char byte3 = srcData[i + DECODE_BUNBER_TWO];
         dstData[j++] = DECODE_TABLE[byte1 >> DECODE_BUNBER_TWO];
         dstData[j++] =
             DECODE_TABLE[((byte1 & DECODE_BUNBER_THREE) << DECODE_BUNBER_FOUR) | (byte2 >> DECODE_BUNBER_FOUR)];
@@ -306,14 +336,14 @@ std::unique_ptr<char[]> DistributedBms::EncodeBase64(std::unique_ptr<char[]> &da
         dstData[j++] = DECODE_TABLE[byte3 & DECODE_BUNBER_SIXTY_THREE];
     }
     if (srcLen % DECODE_BUNBER_THREE == DECODE_BUNBER_ONE) {
-        unsigned char byte1 = static_cast<unsigned char>(srcData[i]);
+        unsigned char byte1 = srcData[i];
         dstData[j++] = DECODE_TABLE[byte1 >> DECODE_BUNBER_TWO];
         dstData[j++] = DECODE_TABLE[(byte1 & DECODE_BUNBER_THREE) << DECODE_BUNBER_FOUR];
         dstData[j++] = '=';
         dstData[j++] = '=';
     } else {
-        unsigned char byte1 = static_cast<unsigned char>(srcData[i]);
-        unsigned char byte2 = static_cast<unsigned char>(srcData[i + DECODE_BUNBER_ONE]);
+        unsigned char byte1 = srcData[i];
+        unsigned char byte2 = srcData[i + DECODE_BUNBER_ONE];
         dstData[j++] = DECODE_TABLE[byte1 >> DECODE_BUNBER_TWO];
         dstData[j++] =
             DECODE_TABLE[((byte1 & DECODE_BUNBER_THREE) << DECODE_BUNBER_FOUR) | (byte2 >> DECODE_BUNBER_FOUR)];
@@ -335,6 +365,9 @@ bool DistributedBms::GetCurrentUserId(int &userId)
     }
     if (activeIds.empty()) {
         APP_LOGE("QueryActiveOsAccountIds activeIds empty");
+        return false;
+    }
+    if (activeIds.empty()) {
         return false;
     }
     userId = activeIds[0];
