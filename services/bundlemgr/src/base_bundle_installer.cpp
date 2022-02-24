@@ -405,18 +405,17 @@ void BaseBundleInstaller::RollBack(const std::unordered_map<std::string, InnerBu
         RemoveInfo(bundleName_, "");
         return;
     }
-    InnerBundleInfo preInfo = oldInfo;
+    InnerBundleInfo preInfo;
+    bool isExist = false;
+    if (!GetInnerBundleInfo(preInfo, isExist) || !isExist) {
+        APP_LOGI("finish rollback due to install failed");
+        return;
+    }
     for (const auto &info : newInfos) {
         RollBack(info.second, oldInfo);
     }
     // need delete definePermissions and requestPermissions
-    InnerBundleInfo innerBundleInfo;
-    bool isExist = false;
-    if (!GetInnerBundleInfo(innerBundleInfo, isExist) || !isExist) {
-        APP_LOGI("finish rollback due to install failed");
-        return;
-    }
-    ErrCode ret = UpdateDefineAndRequestPermissions(preInfo, innerBundleInfo);
+    ErrCode ret = UpdateDefineAndRequestPermissions(preInfo, oldInfo);
     if (ret != ERR_OK) {
         return;
     }
