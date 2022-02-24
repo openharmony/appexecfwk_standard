@@ -926,8 +926,8 @@ void BmsBundlePermissionTest::CheckErrPermissionDef(
 HWTEST_F(BmsBundlePermissionTest, HapVerify_0200, Function | SmallTest | Level0)
 {
     Verify::HapVerifyResult hapVerifyResult;
-    bool result = BundleVerifyMgr::HapVerify(HAP_FILE_PATH1, hapVerifyResult);
-    EXPECT_EQ(result, false);
+    auto result = BundleVerifyMgr::HapVerify(HAP_FILE_PATH1, hapVerifyResult);
+    EXPECT_NE(result, ERR_OK);
 }
 
 /**
