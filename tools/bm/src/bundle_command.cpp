@@ -47,7 +47,6 @@ const struct option LONG_OPTIONS[] = {
     {"help", no_argument, nullptr, 'h'},
     {"bundle-path", required_argument, nullptr, 'p'},
     {"replace", no_argument, nullptr, 'r'},
-    {"force", no_argument, nullptr, 'f'},
     {"bundle-name", required_argument, nullptr, 'n'},
     {"module-name", required_argument, nullptr, 'm'},
     {"ability-name", required_argument, nullptr, 'a'},
@@ -537,7 +536,6 @@ ErrCode BundleManagerShellCommand::RunAsInstallCommand()
 {
     int result = OHOS::ERR_OK;
     InstallFlag installFlag = InstallFlag::NORMAL;
-    bool noCheckSignature = false;
     int option = -1;
     int counter = 0;
     std::vector<std::string> bundlePath;
@@ -625,12 +623,6 @@ ErrCode BundleManagerShellCommand::RunAsInstallCommand()
                 installFlag = InstallFlag::REPLACE_EXISTING;
                 break;
             }
-            case 'f': {
-                // 'bm install -f'
-                // 'bm install --force'
-                noCheckSignature = true;
-                break;
-            }
             case 'u': {
                 // 'bm install -p <bundle-file-path> -u userId'
                 // 'bm install --bundle-path <bundle-file-path> --user-id userId'
@@ -678,7 +670,6 @@ ErrCode BundleManagerShellCommand::RunAsInstallCommand()
     } else {
         InstallParam installParam;
         installParam.installFlag = installFlag;
-        installParam.noCheckSignature = noCheckSignature;
         installParam.userId = userId;
         int32_t installResult = InstallOperation(bundlePath, installParam);
         if (installResult == OHOS::ERR_OK) {
