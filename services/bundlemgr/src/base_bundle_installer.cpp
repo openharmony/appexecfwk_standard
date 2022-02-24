@@ -375,7 +375,10 @@ ErrCode BaseBundleInstaller::ProcessBundleInstall(const std::vector<std::string>
 
     // rename for all temp dirs
     for (const auto &info : newInfos) {
-        if (!info.second.IsOnlyCreateBundleUser() && (result = RenameModuleDir(info.second)) != ERR_OK) {
+        if (info.second.IsOnlyCreateBundleUser()) {
+            continue;
+        }
+        if ((result = RenameModuleDir(info.second)) != ERR_OK) {
             break;
         }
     }
@@ -1495,7 +1498,7 @@ ErrCode BaseBundleInstaller::ParseHapFiles(const std::vector<std::string> &bundl
     BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGD("Parse hap file");
     ErrCode result = ERR_OK;
-    for (int i = 0; i < bundlePaths.size(); ++i) {
+    for (uint32_t i = 0; i < bundlePaths.size(); ++i) {
         InnerBundleInfo newInfo;
         newInfo.SetAppType(appType);
         Security::Verify::ProvisionInfo provisionInfo;

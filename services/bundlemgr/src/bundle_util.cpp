@@ -18,6 +18,7 @@
 #include <chrono>
 #include <cinttypes>
 #include <dirent.h>
+#include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/statfs.h>
 #include <thread>
@@ -268,6 +269,47 @@ int32_t BundleUtil::GetUserIdByUid(int32_t uid)
     }
 
     return uid / Constants::BASE_USER_RANGE;
+}
+
+void BundleUtil::MakeHmdfsConfig(const std::string &bundleName, int32_t bundleId)
+{
+    std::string bundleDir = Constants::HMDFS_CONFIG_PATH + Constants::PATH_SEPERATE + bundleName;
+    if (access(bundleDir.c_str(), F_OK) != 0) {
+        if (mkdir(bundleDir.c_str(), S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH) != 0) {
+            APP_LOGE("make bundle dir error");
+            return;
+        }
+    }
+
+    std::string realBundleDir;
+    if (!PathToRealPath(bundleDir, realBundleDir)) {
+        APP_LOGE("bundleIdFile is not real path");
+        return;
+    }
+
+    realBundleDir += (Constants::PATH_SEPERATE + Constants::BUNDLE_ID_FILE);
+
+    int bundleIdFd = open(realBundleDir.c_str(), O_WRONLY | O_WRONLY | O_TRUNC);
+    if (bundleIdFd > 0) {
+        std::string bundleIdStr = std::to_string(bundleId);
+        if (write(bundleIdFd, bundleIdStr.c_str(), bundleIdStr.size()) < 0) {
+            APP_LOGE("write bundleId error");
+        }
+    }
+    close(bundleIdFd);
+}
+
+void BundleUtil::RemoveHmdfsConfig(const std::string &bundleName)
+{
+    std::string bundleDir = Constants::HMDFS_CONFIG_PATH + Constants::PATH_SEPERATE + bundleName;
+    std::string realBundleDir;
+    if (!PathToRealPath(bundleDir, realBundleDir)) {
+        APP_LOGE("bundleDir is not real path");
+        return;
+    }
+    if (rmdir(realBundleDir.c_str()) != 0) {
+        APP_LOGE("remove hmdfs bundle dir error");
+    }
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS
