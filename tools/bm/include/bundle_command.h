@@ -47,8 +47,6 @@ const std::string HELP_MSG_INSTALL =
     "                                                                     under which are some hap files\n"
     "  -r -p <bundle-file-path>                                   replace an existing bundle\n"
     "  -r --bundle-path <bundle-file-path>                        replace an existing bundle\n"
-    "  -f -p <bundle-file-path>                                   force install a bundle\n"
-    "  -f --bundle-path <bundle-file-path>                        force install a bundle\n"
     "  -u, --user-id <user-id>                                    specify a user id\n";
 
 const std::string HELP_MSG_UNINSTALL =
