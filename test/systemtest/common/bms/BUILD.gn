@@ -65,6 +65,8 @@ ohos_source_set("bms_install_sst_source") {
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
   ]
+
+  part_name = "bundle_framework"
 }
 
 group("systemtest_bms") {
