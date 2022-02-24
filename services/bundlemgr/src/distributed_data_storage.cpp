@@ -266,7 +266,7 @@ bool DistributedDataStorage::SetDeviceId()
     DeviceInfo deviceInfo;
     status = dataManager_.GetLocalDevice(deviceInfo);
     if (status == Status::SUCCESS) {
-        APP_LOGD("set Device Id: %{public}s", deviceInfo.deviceName.c_str());
+        APP_LOGD("set Device Id: %{private}s", deviceInfo.deviceName.c_str());
         BundleUtil::SetCurrentDeviceId(deviceInfo.deviceName);
         return true;
     }

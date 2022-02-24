@@ -107,7 +107,7 @@ ErrCode BundleParser::ParseSysCap(const std::string &pathName, std::vector<std::
         return ERR_APPEXECFWK_PARSE_RPCID_FAILED;
     }
 
-    int rpcidLen = rpcidStream.tellp();
+    uint32_t rpcidLen = rpcidStream.tellp();
     char rpcidBuf[rpcidLen];
     rpcidStream.read(rpcidBuf, rpcidLen);
     uint32_t outLen;
