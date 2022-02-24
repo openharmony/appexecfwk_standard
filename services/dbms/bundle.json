@@ -31,7 +31,10 @@
                 "samgr_standard",
                 "utils_base"
             ],
-            "third_party": []
+            "third_party": [
+                "libjpeg",
+                "libpng"
+            ]
         },
         "build": {
             "sub_component": [
