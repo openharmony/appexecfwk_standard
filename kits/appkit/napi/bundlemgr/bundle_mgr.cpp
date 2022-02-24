@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -464,26 +464,6 @@ static void ConvertAbilityInfo(napi_env env, napi_value objAbilityInfo, const Ab
     NAPI_CALL_RETURN_VOID(env, napi_create_int32(env, abilityInfo.labelId, &nLabelId));
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objAbilityInfo, "labelId", nLabelId));
 
-    napi_value nFormEntity;
-    NAPI_CALL_RETURN_VOID(env, napi_create_int32(env, abilityInfo.formEntity, &nFormEntity));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objAbilityInfo, "formEntity", nFormEntity));
-
-    napi_value nMinFormHeight;
-    NAPI_CALL_RETURN_VOID(env, napi_create_int32(env, abilityInfo.minFormHeight, &nMinFormHeight));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objAbilityInfo, "minFormHeight", nMinFormHeight));
-
-    napi_value nMinFormWidth;
-    NAPI_CALL_RETURN_VOID(env, napi_create_int32(env, abilityInfo.minFormWidth, &nMinFormWidth));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objAbilityInfo, "minFormWidth", nMinFormWidth));
-
-    napi_value nDefaultFormHeight;
-    NAPI_CALL_RETURN_VOID(env, napi_create_int32(env, abilityInfo.defaultFormHeight, &nDefaultFormHeight));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objAbilityInfo, "defaultFormHeight", nDefaultFormHeight));
-
-    napi_value nDefaultFormWidth;
-    NAPI_CALL_RETURN_VOID(env, napi_create_int32(env, abilityInfo.defaultFormWidth, &nDefaultFormWidth));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objAbilityInfo, "defaultFormWidth", nDefaultFormWidth));
-
     napi_value nSubType;
     NAPI_CALL_RETURN_VOID(env, napi_create_int32(env, static_cast<int32_t>(abilityInfo.subType), &nSubType));
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objAbilityInfo, "subType", nSubType));
@@ -858,17 +838,7 @@ static void ConvertBundleInfo(napi_env env, napi_value objBundleInfo, const Bund
         ConvertAbilityInfo(env, objAbilityInfo, bundleInfo.abilityInfos[idx]);
         NAPI_CALL_RETURN_VOID(env, napi_set_element(env, nAbilityInfos, idx, objAbilityInfo));
     }
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objBundleInfo, "abilityInfo", nAbilityInfos));
-
-    napi_value nAbilityInfoss;
-    NAPI_CALL_RETURN_VOID(env, napi_create_array(env, &nAbilityInfoss));
-    for (size_t idx = 0; idx < bundleInfo.abilityInfos.size(); idx++) {
-        napi_value objAbilityInfo;
-        NAPI_CALL_RETURN_VOID(env, napi_create_object(env, &objAbilityInfo));
-        ConvertAbilityInfo(env, objAbilityInfo, bundleInfo.abilityInfos[idx]);
-        NAPI_CALL_RETURN_VOID(env, napi_set_element(env, nAbilityInfoss, idx, objAbilityInfo));
-    }
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objBundleInfo, "abilityInfos", nAbilityInfoss));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objBundleInfo, "abilityInfos", nAbilityInfos));
 
     napi_value nHapModuleInfos;
     NAPI_CALL_RETURN_VOID(env, napi_create_array(env, &nHapModuleInfos));
@@ -878,7 +848,7 @@ static void ConvertBundleInfo(napi_env env, napi_value objBundleInfo, const Bund
         ConvertHapModuleInfo(env, objHapModuleInfo, bundleInfo.hapModuleInfos[idx]);
         NAPI_CALL_RETURN_VOID(env, napi_set_element(env, nHapModuleInfos, idx, objHapModuleInfo));
     }
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objBundleInfo, "hapModuleInfo", nHapModuleInfos));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objBundleInfo, "hapModuleInfos", nHapModuleInfos));
 
     napi_value nReqPermissions;
     NAPI_CALL_RETURN_VOID(env, napi_create_array(env, &nReqPermissions));
@@ -942,74 +912,6 @@ static void ConvertBundleInfo(napi_env env, napi_value objBundleInfo, const Bund
     ConvertExtensionInfos(env, nExtensionAbilityInfos, bundleInfo.extensionInfos);
     NAPI_CALL_RETURN_VOID(env,
         napi_set_named_property(env, objBundleInfo, "extensionAbilityInfo", nExtensionAbilityInfos));
-}
-
-static void ConvertDistributedAbilityInfo(napi_env env, napi_value objDistributedAbilityInfo,
-    const std::string bundleName, const std::string abilityName)
-{
-    napi_value nBundleName;
-    NAPI_CALL_RETURN_VOID(
-        env, napi_create_string_utf8(env, bundleName.c_str(), NAPI_AUTO_LENGTH, &nBundleName));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objDistributedAbilityInfo, "bundleName", nBundleName));
-
-    napi_value nName;
-    NAPI_CALL_RETURN_VOID(
-        env, napi_create_string_utf8(env, abilityName.c_str(), NAPI_AUTO_LENGTH, &nName));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objDistributedAbilityInfo, "name", nName));
-}
-
-static void ConvertDistributedBundleInfo(
-    napi_env env, napi_value objBundleInfo, const DistributedBundleInfo &distributedBundleInfo)
-{
-    APP_LOGI("ConvertDistributedBundleInfo");
-    napi_value nName;
-    NAPI_CALL_RETURN_VOID(
-        env, napi_create_string_utf8(env, distributedBundleInfo.name.c_str(), NAPI_AUTO_LENGTH, &nName));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objBundleInfo, "name", nName));
-
-    napi_value nVersionCode;
-    NAPI_CALL_RETURN_VOID(env, napi_create_uint32(env, distributedBundleInfo.versionCode, &nVersionCode));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objBundleInfo, "versionCode", nVersionCode));
-
-    napi_value nVersionName;
-    NAPI_CALL_RETURN_VOID(
-        env, napi_create_string_utf8(env, distributedBundleInfo.versionName.c_str(), NAPI_AUTO_LENGTH, &nVersionName));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objBundleInfo, "versionName", nVersionName));
-
-    napi_value nCompatibleVersion;
-    NAPI_CALL_RETURN_VOID(
-        env, napi_create_int32(env, distributedBundleInfo.compatibleVersionCode, &nCompatibleVersion));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objBundleInfo, "compatibleVersion", nCompatibleVersion));
-
-    napi_value nTargetVersion;
-    NAPI_CALL_RETURN_VOID(env, napi_create_int32(env, distributedBundleInfo.targetVersionCode, &nTargetVersion));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objBundleInfo, "targetVersion", nTargetVersion));
-
-    napi_value nMinCompatibleVersionCode;
-    NAPI_CALL_RETURN_VOID(
-        env, napi_create_int32(env, distributedBundleInfo.minCompatibleVersion, &nMinCompatibleVersionCode));
-    NAPI_CALL_RETURN_VOID(
-        env, napi_set_named_property(env, objBundleInfo, "minCompatibleVersionCode", nMinCompatibleVersionCode));
-
-    napi_value nAppId;
-    NAPI_CALL_RETURN_VOID(
-        env, napi_create_string_utf8(env, distributedBundleInfo.appId.c_str(), NAPI_AUTO_LENGTH, &nAppId));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objBundleInfo, "appId", nAppId));
-
-    napi_value nAbilityInfos;
-    NAPI_CALL_RETURN_VOID(env, napi_create_array(env, &nAbilityInfos));
-    for (size_t idx = 0; idx < distributedBundleInfo.bundleUserInfos.size(); idx++) {
-        for (size_t idx1 = 0; idx1 < distributedBundleInfo.bundleUserInfos[idx].abilities.size(); idx1++) {
-            napi_value nAbilityInfo;
-            NAPI_CALL_RETURN_VOID(env, napi_create_object(env, &nAbilityInfo));
-            ConvertDistributedAbilityInfo(env,
-                                          nAbilityInfo,
-                                          distributedBundleInfo.name,
-                                          distributedBundleInfo.bundleUserInfos[idx].abilities[idx1]);
-            NAPI_CALL_RETURN_VOID(env, napi_set_element(env, nAbilityInfos, idx1, nAbilityInfo));
-        }
-    }
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objBundleInfo, "abilityInfo", nAbilityInfos));
 }
 
 static void ConvertFormCustomizeData(napi_env env, napi_value objformInfo, const FormCustomizeData &customizeData)
@@ -1537,10 +1439,6 @@ static bool ParseBundleOptions(napi_env env, BundleOptions &bundleOptions, napi_
     if (valueType == napi_number) {
         napi_get_value_int32(env, prop, &bundleOptions.userId);
     }
-
-    prop = nullptr;
-    status = napi_get_named_property(env, args, "networkId", &prop);
-    bundleOptions.networkId = GetStringFromNAPI(env, prop);
     return true;
 }
 
@@ -2035,23 +1933,6 @@ static bool InnerGetBundleInfo(
     return ret;
 }
 
-static bool InnerGetDistributedBundleInfo(
-    napi_env env, const std::string &bundleName, const BundleOptions &bundleOptions,
-    DistributedBundleInfo &distributedBundleInfo)
-{
-    auto iBundleMgr = GetBundleMgr();
-    if (!iBundleMgr) {
-        APP_LOGE("can not get iBundleMgr");
-        return false;
-    }
-    bool ret = iBundleMgr->GetDistributedBundleInfo(
-        bundleOptions.networkId, bundleOptions.userId, bundleName, distributedBundleInfo);
-    if (!ret) {
-        APP_LOGI("-----distributedBundleInfo is not find-----");
-    }
-    return ret;
-}
-
 /**
  * Promise and async callback
  */
@@ -2105,14 +1986,8 @@ napi_value GetBundleInfo(napi_env env, napi_callback_info info)
         [](napi_env env, void* data) {
             AsyncBundleInfoCallbackInfo* asyncCallbackInfo = (AsyncBundleInfoCallbackInfo*)data;
             if (!asyncCallbackInfo->err) {
-                if (asyncCallbackInfo->bundleOptions.networkId.empty()) {
-                    asyncCallbackInfo->ret = InnerGetBundleInfo(asyncCallbackInfo->env, asyncCallbackInfo->param,
-                        asyncCallbackInfo->flags, asyncCallbackInfo->bundleOptions, asyncCallbackInfo->bundleInfo);
-                } else {
-                    asyncCallbackInfo->ret = InnerGetDistributedBundleInfo(
-                        asyncCallbackInfo->env, asyncCallbackInfo->param, asyncCallbackInfo->bundleOptions,
-                        asyncCallbackInfo->distributedBundleInfo);
-                }
+                asyncCallbackInfo->ret = InnerGetBundleInfo(asyncCallbackInfo->env, asyncCallbackInfo->param,
+                    asyncCallbackInfo->flags, asyncCallbackInfo->bundleOptions, asyncCallbackInfo->bundleInfo);
             }
         },
         [](napi_env env, napi_status status, void* data) {
@@ -2125,11 +2000,8 @@ napi_value GetBundleInfo(napi_env env, napi_callback_info info)
                 if (asyncCallbackInfo->ret) {
                     napi_create_uint32(env, 0, &result[0]);
                     napi_create_object(env, &result[1]);
-                    if (asyncCallbackInfo->bundleOptions.networkId.empty()) {
-                        ConvertBundleInfo(env, result[1], asyncCallbackInfo->bundleInfo);
-                    } else {
-                        ConvertDistributedBundleInfo(env, result[1], asyncCallbackInfo->distributedBundleInfo);
-                    }
+                    ConvertBundleInfo(env, result[1], asyncCallbackInfo->bundleInfo);
+                   
                 } else {
                     napi_create_int32(env, 1, &result[0]);
                     napi_get_undefined(env, &result[1]);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -44,7 +44,6 @@ struct QueryParameter {
 
 struct BundleOptions {
     int32_t userId = Constants::UNSPECIFIED_USERID;
-    std::string networkId;
 };
 
 struct AsyncAbilityInfoCallbackInfo {
@@ -68,7 +67,6 @@ struct AsyncBundleInfoCallbackInfo {
     std::string param;
     int32_t flags = 0;
     OHOS::AppExecFwk::BundleInfo bundleInfo;
-    OHOS::AppExecFwk::DistributedBundleInfo distributedBundleInfo;
     bool ret = false;
     int32_t err = 0;
     std::string message;
