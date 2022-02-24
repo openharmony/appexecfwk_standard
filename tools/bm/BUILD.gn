@@ -57,6 +57,8 @@ ohos_source_set("tools_bm_source_set") {
     "startup_l2:syspara",
     "utils_base:utils",
   ]
+
+  part_name = "bundle_tool"
 }
 
 ohos_executable("bm") {
