@@ -111,13 +111,13 @@ void BmsDeviceManager::DeviceInitCallBack::OnRemoteDied()
 
 void BmsDeviceManager::BmsDeviceStateCallback::OnDeviceOnline(const DistributedHardware::DmDeviceInfo &deviceInfo)
 {
-    APP_LOGD("DeviceInitCallBack OnDeviceOnline:%{public}s", deviceInfo.deviceId);
+    APP_LOGD("DeviceInitCallBack OnDeviceOnline");
     BmsDeviceManager::StartDynamicSystemProcess(DISTRIBUTED_BUNDLE_MGR_SERVICE_SYS_ABILITY_ID);
 }
 
 void BmsDeviceManager::BmsDeviceStateCallback::OnDeviceOffline(const DistributedHardware::DmDeviceInfo &deviceInfo)
 {
-    APP_LOGD("DeviceInitCallBack OnDeviceOffline:%{public}s", deviceInfo.deviceId);
+    APP_LOGD("DeviceInitCallBack OnDeviceOffline");
     std::vector<DistributedHardware::DmDeviceInfo> deviceList;
     int32_t ret =
         DistributedHardware::DeviceManager::GetInstance().GetTrustedDeviceList(BUNDLE_NAME, "", deviceList);
@@ -125,7 +125,7 @@ void BmsDeviceManager::BmsDeviceStateCallback::OnDeviceOffline(const Distributed
         APP_LOGE("GetTrustedDeviceList failed, ret:%{public}d", ret);
         return;
     }
-    APP_LOGD("OnDeviceOffline GetTrustedDeviceList size :%{public}ud", static_cast<uint32_t>(deviceList.size()));
+    APP_LOGD("OnDeviceOffline GetTrustedDeviceList size :%{public}u", static_cast<uint32_t>(deviceList.size()));
     if (deviceList.size() == 0) {
         BmsDeviceManager::StopDynamicSystemProcess(DISTRIBUTED_BUNDLE_MGR_SERVICE_SYS_ABILITY_ID);
     }
@@ -133,12 +133,12 @@ void BmsDeviceManager::BmsDeviceStateCallback::OnDeviceOffline(const Distributed
 
 void BmsDeviceManager::BmsDeviceStateCallback::OnDeviceChanged(const DistributedHardware::DmDeviceInfo &deviceInfo)
 {
-    APP_LOGD("DeviceInitCallBack OnDeviceChanged:%{public}s", deviceInfo.deviceId);
+    APP_LOGD("DeviceInitCallBack OnDeviceChanged");
 }
 
 void BmsDeviceManager::BmsDeviceStateCallback::OnDeviceReady(const DistributedHardware::DmDeviceInfo &deviceInfo)
 {
-    APP_LOGD("DeviceInitCallBack OnDeviceReady:%{public}s", deviceInfo.deviceId);
+    APP_LOGD("DeviceInitCallBack OnDeviceReady");
 }
 }
 }

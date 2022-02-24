@@ -128,7 +128,7 @@ bool CompatibleAbilityInfo::ReadFromParcel(Parcel& parcel)
     defaultFormHeight = parcel.ReadInt32();
     minFormWidth = parcel.ReadInt32();
     defaultFormWidth = parcel.ReadInt32();
-    iconId = parcel.ReadInt32();
+    iconId = parcel.ReadUint32();
     descriptionId = parcel.ReadInt32();
     labelId = parcel.ReadInt32();
     enabled = parcel.ReadBool();
@@ -207,7 +207,7 @@ bool CompatibleAbilityInfo::Marshalling(Parcel& parcel) const
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, defaultFormHeight);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, minFormWidth);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, defaultFormWidth);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, iconId);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Uint32, parcel, iconId);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, descriptionId);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, labelId);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, enabled);

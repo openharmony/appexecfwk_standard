@@ -186,10 +186,7 @@ static bool ParseElementName(napi_env env, OHOS::AppExecFwk::ElementName &elemen
         APP_LOGE("begin to parse ElementName abilityName failed");
         return false;
     }
-    APP_LOGD("parse ElementName deviceId:%{public}s, bundleName:%{public}s, abilityName:%{public}s",
-        elementName.GetDeviceID().c_str(),
-        elementName.GetBundleName().c_str(),
-        elementName.GetAbilityName().c_str());
+    APP_LOGD("parse ElementName end");
     return true;
 }
 
