@@ -156,7 +156,7 @@ bool AbilityInfo::ReadFromParcel(Parcel &parcel)
 
     uint32_t deviceTypesSize;
     READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Uint32, parcel, deviceTypesSize);
-    for (int32_t i = 0; i < deviceTypesSize; i++) {
+    for (uint32_t i = 0; i < deviceTypesSize; i++) {
         deviceTypes.emplace_back(Str16ToStr8(parcel.ReadString16()));
     }
 

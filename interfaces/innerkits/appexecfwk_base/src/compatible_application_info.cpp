@@ -46,7 +46,7 @@ bool CompatibleApplicationInfo::ReadFromParcel(Parcel& parcel)
     process = Str16ToStr8(parcel.ReadString16());
     systemApp = parcel.ReadBool();
     supportedModes = parcel.ReadInt32();
-    iconId = parcel.ReadInt32();
+    iconId = parcel.ReadUint32();
     descriptionId = parcel.ReadInt32();
     accessTokenId = parcel.ReadUint32();
     labelId = parcel.ReadInt32();
@@ -113,7 +113,7 @@ bool CompatibleApplicationInfo::Marshalling(Parcel& parcel) const
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(process));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, systemApp);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, supportedModes);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, iconId);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Uint32, parcel, iconId);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, descriptionId);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Uint32, parcel, accessTokenId);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, labelId);
