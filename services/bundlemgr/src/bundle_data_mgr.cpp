@@ -1760,7 +1760,7 @@ bool BundleDataMgr::GetUsageRecords(const int32_t maxNum, std::vector<ModuleUsag
         item.descriptionId = innerModuleInfo->descriptionId;
         item.installationFreeSupported = innerModuleInfo->installationFree;
         auto appInfo = bundleInfo->second.GetBaseApplicationInfo();
-        item.appLabelId = appInfo.labelId;
+        item.appLabelId = static_cast<uint32_t>(appInfo.labelId);
         auto ability = bundleInfo->second.FindAbilityInfo(item.bundleName, item.abilityName, GetUserId());
         if (!ability) {
             APP_LOGW("ability:%{public}s not find", item.abilityName.c_str());
