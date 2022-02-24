@@ -34,8 +34,14 @@ DistributedBmsHost::~DistributedBmsHost()
 
 int DistributedBmsHost::OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option)
 {
-    APP_LOGI("DistributedBmsHost receives message from client, code = %{public}d, flags = %{public}d", code,
+    APP_LOGI("DistributedBmsHost receives message from client, code = %{public}u, flags = %{public}d", code,
         option.GetFlags());
+    std::u16string descripter = DistributedBmsHost::GetDescriptor();
+    std::u16string remoteDescripter = data.ReadInterfaceToken();
+    if (descripter != remoteDescripter) {
+        APP_LOGE("verify interface token failed");
+        return ERR_INVALID_STATE;
+    }
     switch (code) {
         case static_cast<uint32_t>(IDistributedBms::Message::GET_REMOTE_ABILITY_INFO): {
             return HandleGetRemoteAbilityInfo(data, reply);
