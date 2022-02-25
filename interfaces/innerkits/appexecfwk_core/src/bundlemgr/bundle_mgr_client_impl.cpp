@@ -271,14 +271,17 @@ bool BundleMgrClientImpl::TransformFileToJsonString(const std::string &resPath, 
         return false;
     }
     std::fstream in;
+    char errBuf[256];
+    errBuf[0] = '\0';
     in.open(resPath, std::ios_base::in | std::ios_base::binary);
     if (!in.is_open()) {
-        APP_LOGE("the file cannot be open due to %{public}s", strerror(errno));
+        strerror_r(errno, errBuf, sizeof(errBuf));
+        APP_LOGE("the file cannot be open due to  %{public}s", errBuf);
         return false;
     }
     in.seekg(0, std::ios::end);
-    size_t size = in.tellg();
-    if (size == 0) {
+    int64_t size = in.tellg();
+    if (size <= 0) {
         APP_LOGE("the file is an empty file");
         in.close();
         return false;

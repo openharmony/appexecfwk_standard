@@ -2245,6 +2245,10 @@ bool BundleDataMgr::AddDeathRecipient(const sptr<OnPermissionChangedCallback> &c
     }
     // add callback death recipient.
     sptr<PermissionChangedDeathRecipient> deathRecipient = new PermissionChangedDeathRecipient();
+    if (deathRecipient == nullptr) {
+        APP_LOGE("create PermissionChangedDeathRecipient failed");
+        return false;
+    }
     object->AddDeathRecipient(deathRecipient);
     return true;
 }

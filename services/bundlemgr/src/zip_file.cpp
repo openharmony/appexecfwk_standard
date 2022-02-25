@@ -195,8 +195,11 @@ bool ZipFile::Open()
             fclose(tmpFile);
             return false;
         }
-
-        fileLength_ = ftell(tmpFile);
+        int64_t fileLength = ftell(tmpFile);
+        if (fileLength == -1) {
+            APP_LOGE("open file %{private}s failed", pathName_.c_str());
+        }
+        fileLength_ = fileLength;
         if (fileStartPos_ >= fileLength_) {
             APP_LOGE("open start pos > length failed");
             fclose(tmpFile);

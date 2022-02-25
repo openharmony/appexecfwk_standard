@@ -107,7 +107,7 @@ int32_t RPCIDFileDecodeToBuffer(char *inputFile, char **syscapSetBuf, uint32_t *
 int32_t RPCIDStreamDecodeToBuffer(char *contextBuffer, uint32_t bufferLen,
                                   char **syscapSetBuf, uint32_t *syscapSetLength)
 {
-    int32_t ret;
+    errno_t ret;
     char *contextBufferTail = NULL;
     char *syscapBuf = NULL;
     uint32_t syscapBufLen;
