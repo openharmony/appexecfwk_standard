@@ -21,6 +21,7 @@
 #include "app_log_wrapper.h"
 #include "appexecfwk_errors.h"
 #include "xcollie/xcollie.h"
+#include "xcollie/xcollie_define.h"
 
 namespace OHOS {
 namespace AppExecFwk {
