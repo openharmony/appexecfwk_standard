@@ -20,6 +20,7 @@
 
 #include "app_log_wrapper.h"
 #include "appexecfwk_errors.h"
+#include "xcollie/xcollie.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -60,7 +61,11 @@ void BundleInstallerManager::CreateInstallTask(
         APP_LOGE("create installer failed");
         return;
     }
-    auto task = [installer, bundleFilePath, installParam] { installer->Install(bundleFilePath, installParam); };
+    auto task = [installer, bundleFilePath, installParam] {
+        int32_t timerId = HiviewDFX::XCollie::GetInstance().SetTimer("InstallTask", 300, nullptr, nullptr, HiviewDFX::XCOLLIE_FLAG_LOG);
+        installer->Install(bundleFilePath, installParam);
+        HiviewDFX::XCollie::GetInstance().CancelTimer(timerId);
+    };
     installersPool_.AddTask(task);
 }
 
@@ -84,7 +89,11 @@ void BundleInstallerManager::CreateInstallTask(const std::vector<std::string> &b
         APP_LOGE("create installer failed");
         return;
     }
-    auto task = [installer, bundleFilePaths, installParam] { installer->Install(bundleFilePaths, installParam); };
+    auto task = [installer, bundleFilePaths, installParam] {
+        int32_t timerId = HiviewDFX::XCollie::GetInstance().SetTimer("InstallTask", 300, nullptr, nullptr, HiviewDFX::XCOLLIE_FLAG_LOG);
+        installer->Install(bundleFilePaths, installParam);
+        HiviewDFX::XCollie::GetInstance().CancelTimer(timerId);
+    };
     installersPool_.AddTask(task);
 }
 
