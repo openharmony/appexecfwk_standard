@@ -39,7 +39,8 @@ struct tm GetTmDataFromTickts(int64_t sec)
         .tm_min = 0,
         .tm_sec = 0,
     };
-    struct tm *tmNow = localtime(&second);
+    struct tm *tmNow = nullptr;
+    localtime_r(&second, tmNow);
     if (tmNow == nullptr) {
         return now;
     }

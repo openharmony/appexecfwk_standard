@@ -490,11 +490,12 @@ bool BundleMgrHostImpl::CleanBundleCacheFiles(
         return false;
     }
     ApplicationInfo applicationInfo;
-    if (!GetApplicationInfo(bundleName, ApplicationFlag::GET_BASIC_APPLICATION_INFO,
-        userId, applicationInfo)) {
-        APP_LOGE("can not get application info of %{public}s", bundleName.c_str());
+    auto dataMgr = GetDataMgrFromService();
+    if (dataMgr == nullptr) {
+        APP_LOGE("DataMgr is nullptr");
         return false;
     }
+    dataMgr->GetApplicationInfo(bundleName, ApplicationFlag::GET_BASIC_APPLICATION_INFO, userId, applicationInfo);
     std::string rootDir = applicationInfo.dataDir;
     auto cleanCache = [this, rootDir, cleanCacheCallback]() {
         std::vector<std::string> caches;
