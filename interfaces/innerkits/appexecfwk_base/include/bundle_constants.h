@@ -215,6 +215,12 @@ const int32_t INVALID_FILE_SIZE = -1;
 
 // permission
 const std::string LISTEN_BUNDLE_CHANGE = "ohos.permission.LISTEN_BUNDLE_CHANGE";
+
+// hmdfs config
+constexpr std::string_view ABILTY_NAME = "abilityName";
+const std::string HMDFS_CONFIG_PATH {"/config/hmdfs/"};
+const std::string BUNDLE_ID_FILE = { "bid" };
+const std::string PATH_SEPERATE {"/"};
 }  // namespace Constants
 }  // namespace AppExecFwk
 }  // namespace OHOS
