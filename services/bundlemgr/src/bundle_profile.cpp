@@ -1970,7 +1970,7 @@ bool ToApplicationInfo(const ProfileReader::ConfigJson &configJson,
                 }
             }
         }
-        applicationInfo.nativeLibraryPath = Constants::LIBS + targetLibName + Constants::PATH_SEPARATOR;
+        applicationInfo.nativeLibraryPath = Constants::LIBS + targetLibName;
         applicationInfo.cpuAbi = targetAbi;
     }
     APP_LOGD("nativeLibraryPath : %{public}s, cpuAbi : %{public}s",
@@ -2056,7 +2056,11 @@ bool ToInnerModuleInfo(const ProfileReader::ConfigJson &configJson, InnerModuleI
     innerModuleInfo.requestPermissions = configJson.module.requestPermissions;
     innerModuleInfo.definePermissions = configJson.module.definePermissions;
     innerModuleInfo.defPermissions = configJson.module.defPermissions;
-    innerModuleInfo.mainAbility = configJson.module.mainAbility;
+    if (configJson.module.mainAbility.substr(0, 1) == ".") {
+        innerModuleInfo.mainAbility = configJson.module.package + configJson.module.mainAbility;
+    } else {
+        innerModuleInfo.mainAbility = configJson.module.mainAbility;
+    }
     innerModuleInfo.srcPath = configJson.module.srcPath;
     std::string moduleType = innerModuleInfo.distro.moduleType;
     if (ProfileReader::MODULE_TYPE_SET.find(moduleType) != ProfileReader::MODULE_TYPE_SET.end()) {

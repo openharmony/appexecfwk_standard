@@ -1192,7 +1192,7 @@ bool ToApplicationInfo(const Profile::App &app, ApplicationInfo &applicationInfo
                 }
             }
         }
-        applicationInfo.nativeLibraryPath = Constants::LIBS + targetLibName + Constants::PATH_SEPARATOR;
+        applicationInfo.nativeLibraryPath = Constants::LIBS + targetLibName;
         applicationInfo.cpuAbi = targetAbi;
     }
     APP_LOGD("nativeLibraryPath : %{public}s, cpuAbi : %{public}s",
