@@ -912,7 +912,6 @@ void BmsBundleKitServiceTest::CheckCommonEventInfoTest(std::vector<CommonEventIn
 
         EXPECT_EQ(commonEventInfo.name, COMMON_EVENT_NAME);
         EXPECT_EQ(commonEventInfo.bundleName, BUNDLE_NAME_TEST);
-        EXPECT_EQ(commonEventInfo.uid, TEST_UID);
         EXPECT_EQ(commonEventInfo.permission, COMMON_EVENT_PERMISSION);
         for (auto item : commonEventInfo.data) {
             EXPECT_EQ(item, COMMON_EVENT_DATA);
