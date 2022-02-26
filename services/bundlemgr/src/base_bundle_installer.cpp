@@ -108,7 +108,7 @@ ErrCode BaseBundleInstaller::Recover(
 
     int32_t uid = Constants::INVALID_UID;
     ErrCode result = ProcessRecover(bundleName, installParam, uid);
-    if (dataMgr_ && !bundleName_.empty() && !modulePackage_.empty() && !isSingleton_) {
+    if (dataMgr_ && !bundleName_.empty() && !modulePackage_.empty()) {
         dataMgr_->NotifyBundleStatus(bundleName_,
             modulePackage_,
             mainAbility_,
@@ -129,7 +129,7 @@ ErrCode BaseBundleInstaller::UninstallBundle(const std::string &bundleName, cons
 
     int32_t uid = Constants::INVALID_UID;
     ErrCode result = ProcessBundleUninstall(bundleName, installParam, uid);
-    if (dataMgr_ && !isSingleton_) {
+    if (dataMgr_) {
         dataMgr_->NotifyBundleStatus(
             bundleName, Constants::EMPTY_STRING, Constants::EMPTY_STRING, result, NotifyType::UNINSTALL_BUNDLE, uid);
     }
@@ -147,7 +147,7 @@ ErrCode BaseBundleInstaller::UninstallBundle(
 
     int32_t uid = Constants::INVALID_UID;
     ErrCode result = ProcessBundleUninstall(bundleName, modulePackage, installParam, uid);
-    if (dataMgr_ && !isSingleton_) {
+    if (dataMgr_) {
         dataMgr_->NotifyBundleStatus(
             bundleName, modulePackage, Constants::EMPTY_STRING, result, NotifyType::UNINSTALL_MODULE, uid);
     }
