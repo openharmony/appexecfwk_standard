@@ -37,7 +37,9 @@
 #include "module_usage_data_storage.h"
 #include "module_usage_record.h"
 #include "on_permission_changed_callback_interface.h"
+#include "pixel_map.h"
 #include "preinstall_data_storage.h"
+#include "resource_manager.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -688,6 +690,9 @@ public:
 
     bool QueryExtensionAbilityInfoByUri(const std::string &uri, int32_t userId,
         ExtensionAbilityInfo &extensionAbilityInfo) const;
+
+    std::shared_ptr<Media::PixelMap> GetAbilityPixelMapIcon(const std::string &bundleName,
+        const std::string &abilityName) const;
 private:
     /**
      * @brief Init transferStates.
@@ -757,6 +762,9 @@ private:
         std::vector<ExtensionAbilityInfo> &extensionInfos) const;
     void GetMatchExtensionInfos(const Want &want, int32_t flags, const int32_t &userId, const InnerBundleInfo &info,
         std::vector<ExtensionAbilityInfo> &einfos) const;
+    std::shared_ptr<Global::Resource::ResourceManager> GetResourceManager(
+        const AppExecFwk::BundleInfo &bundleInfo) const;
+    std::shared_ptr<Media::PixelMap> LoadImageFile(const std::string &path) const;
 
 private:
     mutable std::mutex bundleInfoMutex_;

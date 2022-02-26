@@ -21,7 +21,10 @@ module_output_path = "bundle_framework/bundlemgrservice"
 ohos_unittest("BmsServiceStartupTest") {
   use_exceptions = true
   module_out_path = module_output_path
-  include_dirs = [ "//third_party/jsoncpp/include" ]
+  include_dirs = [
+    "//third_party/jsoncpp/include",
+    "//foundation/multimedia/image_standard/interfaces/innerkits/include",
+  ]
   sources = [
     "${services_path}/bundlemgr/src/bms_device_manager.cpp",
     "${services_path}/bundlemgr/src/bundle_clone_mgr.cpp",
@@ -56,8 +59,6 @@ ohos_unittest("BmsServiceStartupTest") {
     cflags += [ "-DBINDER_IPC_32BIT" ]
   }
   deps = [
-    "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base:appexecfwk_base",
-    "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core:appexecfwk_core",
     "${libs_path}/libeventhandler:libeventhandler_target",
     "//base/security/appverify/interfaces/innerkits/appverify:libhapverify",
     "//base/security/permission/interfaces/innerkits/permission_standard/permissionsdk:libpermissionsdk_standard",
@@ -65,6 +66,7 @@ ohos_unittest("BmsServiceStartupTest") {
     "//foundation/aafwk/standard/interfaces/innerkits/want:want",
     "//foundation/distributeddatamgr/distributeddatamgr/interfaces/innerkits/distributeddata:distributeddata_inner",
     "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
+    "//foundation/multimedia/image_standard/interfaces/innerkits:image_native",
     "//third_party/googletest:gtest_main",
     "//third_party/jsoncpp:jsoncpp",
     "//utils/native/base:utils",
@@ -75,6 +77,8 @@ ohos_unittest("BmsServiceStartupTest") {
   external_deps = [
     "ability_runtime:app_manager",
     "access_token:libaccesstoken_sdk",
+    "bundle_framework:appexecfwk_base",
+    "bundle_framework:appexecfwk_core",
     "bytrace_standard:bytrace_core",
     "ces_standard:cesfwk_innerkits",
     "device_manager_base:devicemanagersdk",

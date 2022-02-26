@@ -26,6 +26,7 @@
 #include "common_event_manager.h"
 #include "common_event_support.h"
 #include "ipc_skeleton.h"
+#include "image_source.h"
 #include "json_serializer.h"
 #include "nlohmann/json.hpp"
 #include "permission/permission_kit.h"
@@ -1560,6 +1561,54 @@ std::string BundleDataMgr::GetAbilityIcon(const std::string &bundleName, const s
     return (*ability).iconPath;
 }
 
+std::shared_ptr<Media::PixelMap> BundleDataMgr::GetAbilityPixelMapIcon(const std::string &bundleName,
+    const std::string &abilityName) const
+{
+    std::lock_guard<std::mutex> lock(bundleInfoMutex_);
+    if (bundleInfos_.empty()) {
+        APP_LOGW("bundleInfos_ data is empty");
+        return nullptr;
+    }
+    APP_LOGD("GetAbilityIcon %{public}s", bundleName.c_str());
+    auto infoItem = bundleInfos_.find(bundleName);
+    if (infoItem == bundleInfos_.end()) {
+        APP_LOGE("can not find bundle %{public}s", bundleName.c_str());
+        return nullptr;
+    }
+    auto innerBundleInfo = infoItem->second.find(Constants::CURRENT_DEVICE_ID);
+    if (innerBundleInfo == infoItem->second.end()) {
+        APP_LOGE("bundle:%{public}s device id not find", bundleName.c_str());
+        return nullptr;
+    }
+    auto ability = innerBundleInfo->second.FindAbilityInfo(bundleName, abilityName, GetUserId());
+    if (!ability) {
+        APP_LOGE("abilityName:%{public}s not find", abilityName.c_str());
+        return nullptr;
+    }
+    BundleInfo bundleInfo;
+    int32_t flags = 0;
+    innerBundleInfo->second.GetBundleInfo(flags, bundleInfo, GetUserId());
+    std::shared_ptr<Global::Resource::ResourceManager> resourceManager = GetResourceManager(bundleInfo);
+    if (resourceManager == nullptr) {
+        APP_LOGE("InitResourceManager failed");
+        return nullptr;
+    }
+    std::string iconPath;
+    OHOS::Global::Resource::RState iconPathErrval =
+        resourceManager->GetMediaById(static_cast<uint32_t>((*ability).iconId), iconPath);
+    if (iconPathErrval != OHOS::Global::Resource::RState::SUCCESS) {
+        APP_LOGE("GetMediaById iconPath failed");
+        return nullptr;
+    }
+    APP_LOGD("GetMediaById iconPath: %{public}s", iconPath.c_str());
+    auto pixelMapPtr = LoadImageFile(iconPath);
+    if (!pixelMapPtr) {
+        APP_LOGE("LoadImageFile failed");
+        return nullptr;
+    }
+    return pixelMapPtr;
+}
+
 bool BundleDataMgr::RegisterBundleStatusCallback(const sptr<IBundleStatusCallback> &bundleStatusCallback)
 {
     APP_LOGD("RegisterBundleStatusCallback %{public}s", bundleStatusCallback->GetBundleName().c_str());
@@ -2870,6 +2919,50 @@ bool BundleDataMgr::QueryExtensionAbilityInfoByUri(const std::string &uri, int32
     }
     APP_LOGE("QueryExtensionAbilityInfoByUri (%{public}s) failed.", uri.c_str());
     return false;
+}
+
+std::shared_ptr<Global::Resource::ResourceManager> BundleDataMgr::GetResourceManager(
+    const AppExecFwk::BundleInfo &bundleInfo) const
+{
+    std::shared_ptr<Global::Resource::ResourceManager> resourceManager(Global::Resource::CreateResourceManager());
+    for (auto moduleResPath : bundleInfo.moduleResPaths) {
+        if (!moduleResPath.empty()) {
+            APP_LOGE("DistributedBms::InitResourceManager, moduleResPath: %{public}s", moduleResPath.c_str());
+            if (!resourceManager->AddResource(moduleResPath.c_str())) {
+                APP_LOGE("DistributedBms::InitResourceManager AddResource failed");
+            }
+        }
+    }
+
+    std::unique_ptr<Global::Resource::ResConfig> resConfig(Global::Resource::CreateResConfig());
+    resConfig->SetLocaleInfo("zh", "Hans", "CN");
+    resourceManager->UpdateResConfig(*resConfig);
+    return resourceManager;
+}
+
+std::shared_ptr<Media::PixelMap> BundleDataMgr::LoadImageFile(const std::string &path) const
+{
+    APP_LOGD("BundleDataMgr::LoadImageFile IN");
+    uint32_t errorCode = 0;
+    Media::SourceOptions opts;
+    std::unique_ptr<Media::ImageSource> imageSource = Media::ImageSource::CreateImageSource(path,
+                                                                                            opts,
+                                                                                            errorCode);
+    if (errorCode != 0) {
+        APP_LOGE("Failed to create image source path %{public}s err %{public}d",
+            path.c_str(), errorCode);
+        return nullptr;
+    }
+
+    Media::DecodeOptions decodeOpts;
+    auto pixelMapPtr = imageSource->CreatePixelMap(decodeOpts, errorCode);
+    if (errorCode != 0) {
+        APP_LOGE("Failed to create pixelmap path %{public}s err %{public}d",
+            path.c_str(), errorCode);
+        return nullptr;
+    }
+    APP_LOGD("BundleDataMgr::LoadImageFile OUT");
+    return std::shared_ptr<Media::PixelMap>(std::move(pixelMapPtr));
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS

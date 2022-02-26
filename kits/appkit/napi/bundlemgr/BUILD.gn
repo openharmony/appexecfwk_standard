@@ -19,6 +19,8 @@ ohos_shared_library("bundle") {
     "//third_party/node/src",
     "//third_party/libuv/include",
     "//utils/system/safwk/native/include",
+    "//foundation/multimedia/image_standard/interfaces/innerkits/include",
+    "//foundation/multimedia/image_standard/interfaces/kits/js/common/include",
   ]
   defines = [
     "APP_LOG_TAG = \"BundleMgrService\"",
@@ -33,7 +35,11 @@ ohos_shared_library("bundle") {
     "permission_callback.cpp",
   ]
 
-  deps = [ "${common_path}:libappexecfwk_common" ]
+  deps = [
+    "${common_path}:libappexecfwk_common",
+    "//foundation/multimedia/image_standard/interfaces/innerkits:image",
+    "//foundation/multimedia/image_standard/interfaces/innerkits:image_native",
+  ]
 
   external_deps = [
     "ability_base:want",

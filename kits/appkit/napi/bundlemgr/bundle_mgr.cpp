@@ -28,6 +28,7 @@
 #include "napi/native_api.h"
 #include "napi/native_node_api.h"
 #include "permission_callback.h"
+#include "pixel_map_napi.h"
 #include "securec.h"
 #include "system_ability_definition.h"
 
@@ -4656,6 +4657,101 @@ bool UnwrapAbilityInfo(napi_env env, napi_value param, OHOS::AppExecFwk::Ability
     abilityInfo.name = name;
 
     return true;
+}
+
+static std::shared_ptr<Media::PixelMap> InnerGetAbilityIcon(
+    napi_env env, std::string &bundleName, std::string &abilityName)
+{
+    if (bundleName.empty() || abilityName.empty()) {
+        APP_LOGE("bundleName or abilityName is invalid param");
+        return nullptr;
+    }
+    auto iBundleMgr = GetBundleMgr();
+    if (!iBundleMgr) {
+        APP_LOGE("can not get iBundleMgr");
+        return nullptr;
+    }
+    return iBundleMgr->GetAbilityPixelMapIcon(bundleName, abilityName);
+}
+
+napi_value GetAbilityIcon(napi_env env, napi_callback_info info)
+{
+    size_t requireArgc = ARGS_SIZE_TWO;
+    size_t argc = ARGS_SIZE_THREE;
+    napi_value argv[ARGS_SIZE_THREE] = { 0 };
+    napi_value thisArg = nullptr;
+    void *data = nullptr;
+
+    NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, &thisArg, &data));
+    NAPI_ASSERT(env, argc >= requireArgc, "requires 2 parameter");
+
+    AsyncAbilityInfo *asyncCallbackInfo = new AsyncAbilityInfo();
+    asyncCallbackInfo->env = env;
+    for (size_t i = 0; i < argc; ++i) {
+        napi_valuetype valueType = napi_undefined;
+        napi_typeof(env, argv[i], &valueType);
+        if ((i == PARAM0) && (valueType == napi_string)) {
+            ParseString(env, asyncCallbackInfo->bundleName, argv[i]);
+        } else if ((i == PARAM1) && (valueType == napi_string)) {
+            ParseString(env, asyncCallbackInfo->abilityName, argv[i]);
+        } else if ((i == PARAM2) && (valueType == napi_function)) {
+            napi_create_reference(env, argv[i], NAPI_RETURN_ONE, &asyncCallbackInfo->callbackRef);
+        } else {
+            asyncCallbackInfo->errCode = INVALID_PARAM;
+            asyncCallbackInfo->errMssage = "type misMatch";
+        }
+    }
+    napi_value promise = nullptr;
+
+    if (asyncCallbackInfo->callbackRef == nullptr) {
+        napi_create_promise(env, &asyncCallbackInfo->deferred, &promise);
+    } else {
+        napi_get_undefined(env, &promise);
+    }
+    napi_value resource = nullptr;
+    napi_create_string_utf8(env, "GetAbilityIcon", NAPI_AUTO_LENGTH, &resource);
+    napi_create_async_work(
+        env, nullptr, resource,
+        [](napi_env env, void* data) {
+            AsyncAbilityInfo* asyncCallbackInfo = (AsyncAbilityInfo*)data;
+            if (!asyncCallbackInfo->errCode) {
+                asyncCallbackInfo->pixelMap = InnerGetAbilityIcon(asyncCallbackInfo->env,
+                                                                  asyncCallbackInfo->bundleName,
+                                                                  asyncCallbackInfo->abilityName);
+                if (!asyncCallbackInfo->pixelMap) {
+                    asyncCallbackInfo->errCode = OPERATION_FAILED;
+                }
+            }
+        },
+        [](napi_env env, napi_status status, void* data) {
+            AsyncAbilityInfo* asyncCallbackInfo = (AsyncAbilityInfo*)data;
+            napi_value result[2] = { 0 };
+            if (asyncCallbackInfo->errCode) {
+                napi_create_int32(env, asyncCallbackInfo->errCode, &result[0]);
+            } else {
+                napi_create_uint32(env, 0, &result[0]);
+                napi_create_object(env, &result[1]);
+                result[1] = Media::PixelMapNapi::CreatePixelMap(env, asyncCallbackInfo->pixelMap);
+            }
+            if (asyncCallbackInfo->callbackRef) {
+                napi_value callback = nullptr;
+                napi_value placeHolder = nullptr;
+                napi_get_reference_value(env, asyncCallbackInfo->callbackRef, &callback);
+                napi_call_function(env, nullptr, callback, sizeof(result) / sizeof(result[0]), result, &placeHolder);
+                napi_delete_reference(env, asyncCallbackInfo->callbackRef);
+            } else {
+                if (asyncCallbackInfo->errCode) {
+                    napi_reject_deferred(env, asyncCallbackInfo->deferred, result[0]);
+                } else {
+                    napi_resolve_deferred(env, asyncCallbackInfo->deferred, result[1]);
+                }
+            }
+            napi_delete_async_work(env, asyncCallbackInfo->asyncWork);
+            delete asyncCallbackInfo;
+        },
+        (void*)asyncCallbackInfo, &asyncCallbackInfo->asyncWork);
+    napi_queue_async_work(env, asyncCallbackInfo->asyncWork);
+    return promise;
 }
 
 static bool InnerGetNameForUid(int32_t uid, std::string &bundleName)

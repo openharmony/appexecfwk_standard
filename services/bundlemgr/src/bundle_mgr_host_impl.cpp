@@ -883,6 +883,17 @@ std::string BundleMgrHostImpl::GetAbilityIcon(const std::string &bundleName, con
     return dataMgr->GetAbilityIcon(bundleName, className);
 }
 
+std::shared_ptr<Media::PixelMap> BundleMgrHostImpl::GetAbilityPixelMapIcon(const std::string &bundleName,
+    const std::string &abilityName)
+{
+    auto dataMgr = GetDataMgrFromService();
+    if (dataMgr == nullptr) {
+        APP_LOGE("DataMgr is nullptr");
+        return nullptr;
+    }
+    return dataMgr->GetAbilityPixelMapIcon(bundleName, abilityName);
+}
+
 sptr<IBundleInstaller> BundleMgrHostImpl::GetBundleInstaller()
 {
     return DelayedSingleton<BundleMgrService>::GetInstance()->GetBundleInstaller();

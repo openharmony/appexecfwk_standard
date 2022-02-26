@@ -1519,6 +1519,47 @@ std::string BundleMgrProxy::GetAbilityIcon(const std::string &bundleName, const 
     return reply.ReadString();
 }
 
+std::shared_ptr<Media::PixelMap> BundleMgrProxy::GetAbilityPixelMapIcon(const std::string &bundleName,
+    const std::string &abilityName)
+{
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
+    APP_LOGI("begin to get ability pixelmap icon of %{public}s, %{public}s", bundleName.c_str(), abilityName.c_str());
+    if (bundleName.empty() || abilityName.empty()) {
+        APP_LOGE("fail to GetAbilityPixelMapIcon due to params empty");
+        return nullptr;
+    }
+
+    MessageParcel data;
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        APP_LOGE("fail to GetAbilityPixelMapIcon due to write InterfaceToken fail");
+        return nullptr;
+    }
+    if (!data.WriteString(bundleName)) {
+        APP_LOGE("fail to GetAbilityPixelMapIcon due to write bundleName fail");
+        return nullptr;
+    }
+    if (!data.WriteString(abilityName)) {
+        APP_LOGE("fail to GetAbilityPixelMapIcon due to write abilityName fail");
+        return nullptr;
+    }
+    MessageParcel reply;
+    if (!SendTransactCmd(IBundleMgr::Message::GET_ABILITY_PIXELMAP_ICON, data, reply)) {
+        APP_LOGE("SendTransactCmd result false");
+        return nullptr;
+    }
+    if (!reply.ReadBool()) {
+        APP_LOGE("reply result false");
+        return nullptr;
+    }
+    std::shared_ptr<Media::PixelMap> info(reply.ReadParcelable<Media::PixelMap>());
+    if (!info) {
+        APP_LOGE("readParcelableInfo failed");
+        return nullptr;
+    }
+    APP_LOGD("get ability pixelmap icon success");
+    return info;
+}
+
 sptr<IBundleInstaller> BundleMgrProxy::GetBundleInstaller()
 {
     BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);

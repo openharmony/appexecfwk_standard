@@ -28,12 +28,9 @@ ohos_unittest("BmsDataMgrTest") {
   include_dirs = [
     "${aafwk_path}/interfaces/innerkits/want/include/ohos/aafwk/content",
     "//third_party/jsoncpp/include",
+    "//foundation/multimedia/image_standard/interfaces/innerkits/include",
   ]
   sources = [
-    "${innerkits_path}/appexecfwk_base/src/ability_info.cpp",
-    "${innerkits_path}/appexecfwk_base/src/application_info.cpp",
-    "${innerkits_path}/appexecfwk_base/src/bundle_info.cpp",
-    "${innerkits_path}/appexecfwk_base/src/bundle_user_info.cpp",
     "${services_path}/bundlemgr/src/bms_device_manager.cpp",
     "${services_path}/bundlemgr/src/bundle_clone_mgr.cpp",
     "${services_path}/bundlemgr/src/bundle_data_mgr.cpp",
@@ -71,8 +68,6 @@ ohos_unittest("BmsDataMgrTest") {
     cflags += [ "-DBINDER_IPC_32BIT" ]
   }
   deps = [
-    "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base:appexecfwk_base",
-    "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core:appexecfwk_core",
     "${libs_path}/libeventhandler:libeventhandler_target",
     "${services_path}/bundlemgr:bundle_parser",
     "${services_path}/bundlemgr:parser_common",
@@ -82,6 +77,7 @@ ohos_unittest("BmsDataMgrTest") {
     "//foundation/aafwk/standard/interfaces/innerkits/want:want",
     "//foundation/distributeddatamgr/distributeddatamgr/interfaces/innerkits/distributeddata:distributeddata_inner",
     "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
+    "//foundation/multimedia/image_standard/interfaces/innerkits:image_native",
     "//third_party/googletest:gtest_main",
     "//third_party/jsoncpp:jsoncpp",
     "//utils/native/base:utils",
@@ -92,6 +88,8 @@ ohos_unittest("BmsDataMgrTest") {
   external_deps = [
     "ability_runtime:app_manager",
     "access_token:libaccesstoken_sdk",
+    "bundle_framework:appexecfwk_base",
+    "bundle_framework:appexecfwk_core",
     "bytrace_standard:bytrace_core",
     "ces_standard:cesfwk_innerkits",
     "device_manager_base:devicemanagersdk",

@@ -609,6 +609,9 @@ public:
     virtual std::string GetAppType(const std::string &bundleName) override;
 
     virtual int GetUidByBundleName(const std::string &bundleName, const int userId) override;
+
+    virtual std::shared_ptr<Media::PixelMap> GetAbilityPixelMapIcon(const std::string &bundleName,
+        const std::string &abilityName) override;
 private:
     const std::shared_ptr<BundleCloneMgr> GetCloneMgrFromService();
     const std::shared_ptr<BundleDataMgr> GetDataMgrFromService();
