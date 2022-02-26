@@ -1202,7 +1202,7 @@ ErrCode BaseBundleInstaller::CopyNativeSo(const InnerBundleInfo &info, const std
     std::string targetLibPath;
     targetLibPath.append(Constants::BUNDLE_CODE_DIR).append(Constants::PATH_SEPARATOR)
         .append(info.GetBundleName()).append(Constants::PATH_SEPARATOR)
-        .append(nativeLibraryPath);
+        .append(nativeLibraryPath).append(Constants::PATH_SEPARATOR);
     APP_LOGD("targetLibPath : %{public}s", targetLibPath.c_str());
 
     return InstalldClient::GetInstance()->CopyNativeSo(srcLibPath, targetLibPath);
