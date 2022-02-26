@@ -23,5 +23,6 @@
         <run-on-create>true</run-on-create>
         <distributed>false</distributed>
         <dump-level>1</dump-level>
+        <bootphase>CoreStartPhase</bootphase>
     </systemability>
 </info>
