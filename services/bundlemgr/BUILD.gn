@@ -20,6 +20,7 @@ config("bundlemgr_common_config") {
   include_dirs = [
     "include",
     "//utils/system/safwk/native/include",
+    "//foundation/multimedia/image_standard/interfaces/innerkits/include",
   ]
 
   defines = [
@@ -159,6 +160,7 @@ ohos_shared_library("libbms") {
     ":bundle_parser",
     ":parser_common",
     "${common_path}:libappexecfwk_common",
+    "//foundation/multimedia/image_standard/interfaces/innerkits:image_native",
   ]
 
   external_deps = [

@@ -545,6 +545,8 @@ private:
     ErrCode HandleGetAppType(Parcel &data, Parcel &reply);
 
     ErrCode HandleGetUidByBundleName(Parcel &data, Parcel &reply);
+
+    ErrCode HandleGetAbilityPixelMapIcon(Parcel &data, Parcel &reply);
 private:
     /**
      * @brief Write a parcelabe vector objects to the proxy node.
