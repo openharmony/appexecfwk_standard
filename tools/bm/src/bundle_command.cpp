@@ -329,6 +329,10 @@ ErrCode BundleManagerShellCommand::CreateMessageMap()
             IStatusReceiver::ERR_INSTALL_CHECK_SYSCAP_FAILED,
             "error: install failed due to check syscap filed",
         },
+        {
+            IStatusReceiver::ERR_INSTALL_APPTYPE_NOT_SAME,
+            "error: install failed due to apptype not same",
+        },
 
         {
             IStatusReceiver::ERR_INSTALL_PARSE_UNEXPECTED,

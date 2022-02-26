@@ -86,7 +86,7 @@ ErrCode BaseBundleInstaller::InstallBundle(
 
     int32_t uid = Constants::INVALID_UID;
     ErrCode result = ProcessBundleInstall(bundlePaths, installParam, appType, uid);
-    if (dataMgr_ && !bundleName_.empty()) {
+    if (dataMgr_ && !bundleName_.empty() && !isSingleton_) {
         dataMgr_->NotifyBundleStatus(bundleName_,
             Constants::EMPTY_STRING,
             mainAbility_,
@@ -108,7 +108,7 @@ ErrCode BaseBundleInstaller::Recover(
 
     int32_t uid = Constants::INVALID_UID;
     ErrCode result = ProcessRecover(bundleName, installParam, uid);
-    if (dataMgr_ && !bundleName_.empty() && !modulePackage_.empty()) {
+    if (dataMgr_ && !bundleName_.empty() && !modulePackage_.empty() && !isSingleton_) {
         dataMgr_->NotifyBundleStatus(bundleName_,
             modulePackage_,
             mainAbility_,
@@ -129,7 +129,7 @@ ErrCode BaseBundleInstaller::UninstallBundle(const std::string &bundleName, cons
 
     int32_t uid = Constants::INVALID_UID;
     ErrCode result = ProcessBundleUninstall(bundleName, installParam, uid);
-    if (dataMgr_) {
+    if (dataMgr_ && !isSingleton_) {
         dataMgr_->NotifyBundleStatus(
             bundleName, Constants::EMPTY_STRING, Constants::EMPTY_STRING, result, NotifyType::UNINSTALL_BUNDLE, uid);
     }
@@ -147,7 +147,7 @@ ErrCode BaseBundleInstaller::UninstallBundle(
 
     int32_t uid = Constants::INVALID_UID;
     ErrCode result = ProcessBundleUninstall(bundleName, modulePackage, installParam, uid);
-    if (dataMgr_) {
+    if (dataMgr_ && !isSingleton_) {
         dataMgr_->NotifyBundleStatus(
             bundleName, modulePackage, Constants::EMPTY_STRING, result, NotifyType::UNINSTALL_MODULE, uid);
     }
@@ -168,20 +168,22 @@ ErrCode BaseBundleInstaller::InnerProcessBundleInstall(std::unordered_map<std::s
 {
     BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     bundleName_ = newInfos.begin()->second.GetBundleName();
+    isSingleton_ = newInfos.begin()->second.IsSingleUser();
     APP_LOGI("InnerProcessBundleInstall with bundleName %{public}s, userId is %{public}d", bundleName_.c_str(),
         userId_);
-
     if (installParam.needSavePreInstallInfo) {
         PreInstallBundleInfo preInstallBundleInfo;
         preInstallBundleInfo.SetBundleName(bundleName_);
         dataMgr_->GetPreInstallBundleInfo(bundleName_, preInstallBundleInfo);
-        preInstallBundleInfo.AddBundlePath(newInfos.begin()->first);
         preInstallBundleInfo.SetAppType(newInfos.begin()->second.GetAppType());
         preInstallBundleInfo.SetVersionCode(newInfos.begin()->second.GetVersionCode());
+        for (const auto &item : newInfos) {
+            preInstallBundleInfo.AddBundlePath(item.first);
+        }
         dataMgr_->SavePreInstallBundleInfo(bundleName_, preInstallBundleInfo);
     }
 
-    if (newInfos.begin()->second.IsSingleUser() && (userId_ != Constants::DEFAULT_USERID)) {
+    if (isSingleton_ && (userId_ != Constants::DEFAULT_USERID)) {
         APP_LOGI("singleton app only install in user 0, bundleName %{public}s, userId is %{public}d",
             bundleName_.c_str(), userId_);
         return ERR_OK;
@@ -192,7 +194,7 @@ ErrCode BaseBundleInstaller::InnerProcessBundleInstall(std::unordered_map<std::s
         return ERR_APPEXECFWK_INSTALL_BUNDLE_MGR_SERVICE_ERROR;
     }
 
-    if ((userId_ == Constants::DEFAULT_USERID) && !newInfos.begin()->second.IsSingleUser()) {
+    if ((userId_ == Constants::DEFAULT_USERID) && !isSingleton_) {
         APP_LOGE("user(0) can only install singleton app(%{public}s).", bundleName_.c_str());
         return ERR_APPEXECFWK_INSTALL_ZERO_USER_WITH_NO_SINGLETON;
     }
@@ -1556,6 +1558,7 @@ ErrCode BaseBundleInstaller::CheckAppLabelInfo(const std::unordered_map<std::str
     uint32_t target = (infos.begin()->second).GetTargetVersion();
     uint32_t compatible = (infos.begin()->second).GetCompatibleVersion();
     bool singleUser = (infos.begin()->second).IsSingleUser();
+    Constants::AppType appType = (infos.begin()->second).GetAppType();
 
     for (const auto &info :infos) {
         // check bundleName
@@ -1582,6 +1585,9 @@ ErrCode BaseBundleInstaller::CheckAppLabelInfo(const std::unordered_map<std::str
         }
         if (singleUser != info.second.IsSingleUser()) {
             return ERR_APPEXECFWK_INSTALL_SINGLETON_NOT_SAME;
+        }
+        if (appType != info.second.GetAppType()) {
+            return ERR_APPEXECFWK_INSTALL_APPTYPE_NOT_SAME;
         }
     }
     APP_LOGD("finish check APP label");
