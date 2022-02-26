@@ -47,7 +47,8 @@ const std::string BUNDLE_NAME_TEST = "com.example.bundlekit.test";
 const std::string MODULE_NAME_TEST = "com.example.bundlekit.test.entry";
 const std::string ABILITY_NAME_TEST1 = ".Reading1";
 const std::string ABILITY_NAME_TEST = ".Reading";
-const int TEST_UID = 10025;
+const int32_t BASE_TEST_UID = 65535;
+const int32_t TEST_UID = 20065535;
 const std::string BUNDLE_LABEL = "Hello, OHOS";
 const std::string BUNDLE_DESCRIPTION = "example helloworld";
 const std::string BUNDLE_VENDOR = "example";
@@ -314,7 +315,6 @@ void BmsBundleKitServiceTest::AddInnerBundleInfoByTest(const std::string &bundle
     const std::string &moduleName, const std::string &abilityName, InnerBundleInfo &innerBundleInfo) const
 {
     std::string keyName = bundleName + moduleName + abilityName;
-    innerBundleInfo.SetUid((bundleName == BUNDLE_NAME_TEST) ? TEST_UID : DEMO_UID);
     if (bundleName == BUNDLE_NAME_TEST) {
         AppExecFwk::SkillUri uri {URI_SCHEME, URI_HOST};
         Skill skill {{ACTION}, {ENTITY}, {uri}};
@@ -337,7 +337,7 @@ void BmsBundleKitServiceTest::AddInnerBundleInfoByTest(const std::string &bundle
     }
     innerBundleInfo.InsertFormInfos(keyName, formInfos);
     std::string commonEventKey = bundleName + moduleName + abilityName;
-    CommonEventInfo eventInfo = MockCommonEventInfo(bundleName, innerBundleInfo.GetUid());
+    CommonEventInfo eventInfo = MockCommonEventInfo(bundleName, innerBundleInfo.GetUid(DEFAULT_USERID));
     innerBundleInfo.InsertCommonEvents(commonEventKey, eventInfo);
 }
 
@@ -351,13 +351,13 @@ void BmsBundleKitServiceTest::MockInstallBundle(
     innerBundleUserInfo.bundleName = bundleName;
     innerBundleUserInfo.bundleUserInfo.enabled = true;
     innerBundleUserInfo.bundleUserInfo.userId = Constants::DEFAULT_USERID;
-    dataMgr->GenerateUidAndGid(innerBundleUserInfo);
+    innerBundleUserInfo.uid = BASE_TEST_UID;
 
     InnerBundleUserInfo innerBundleUserInfo1;
     innerBundleUserInfo1.bundleName = bundleName;
     innerBundleUserInfo1.bundleUserInfo.enabled = true;
     innerBundleUserInfo1.bundleUserInfo.userId = DEFAULT_USERID;
-    dataMgr->GenerateUidAndGid(innerBundleUserInfo1);
+    innerBundleUserInfo1.uid = TEST_UID;
 
     ApplicationInfo appInfo;
     AddApplicationInfo(bundleName, appInfo);
