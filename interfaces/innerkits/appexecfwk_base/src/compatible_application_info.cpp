@@ -144,7 +144,7 @@ void CompatibleApplicationInfo::ConvertToApplicationInfo(ApplicationInfo& applic
     applicationInfo.description = description;
     applicationInfo.cpuAbi = cpuAbi;
     applicationInfo.process = process;
-    applicationInfo.systemApp = systemApp;
+    applicationInfo.isSystemApp = systemApp;
     applicationInfo.isCompressNativeLibs = isCompressNativeLibs;
     applicationInfo.iconId = iconId;
     applicationInfo.labelId = labelId;
