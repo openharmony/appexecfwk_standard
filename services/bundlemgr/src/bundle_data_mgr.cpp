@@ -17,10 +17,6 @@
 
 #include <chrono>
 #include <cinttypes>
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <unistd.h>
 
 #include "app_log_wrapper.h"
 #include "bundle_constants.h"
@@ -38,13 +34,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-namespace {
-constexpr std::string_view ABILTY_NAME = "abilityName";
-const std::string HMDFS_CONFIG_PATH {"/config/hmdfs/"};
-const std::string BUNDLE_ID_FILE = { "bid" };
-const std::string PATH_SEPERATE {"/"};
-}
-
 BundleDataMgr::BundleDataMgr()
 {
     InitStateTransferMap();
@@ -1644,7 +1633,7 @@ bool BundleDataMgr::GenerateBundleId(const std::string &bundleName, int32_t &bun
             APP_LOGI("the %{public}d app install", i);
             bundleId = i;
             bundleIdMap_.emplace(bundleId, bundleName);
-            MakeHmdfsConfig(bundleName, bundleId);
+            BundleUtil::MakeHmdfsConfig(bundleName, bundleId);
             return true;
         }
     }
@@ -1656,37 +1645,8 @@ bool BundleDataMgr::GenerateBundleId(const std::string &bundleName, int32_t &bun
 
     bundleId = bundleIdMap_.rbegin()->first + 1;
     bundleIdMap_.emplace(bundleId, bundleName);
-    MakeHmdfsConfig(bundleName, bundleId);
+    BundleUtil::MakeHmdfsConfig(bundleName, bundleId);
     return true;
-}
-
-void BundleDataMgr::MakeHmdfsConfig(const std::string &bundleName, int32_t bundleId) const
-{
-    std::string bundleDir = HMDFS_CONFIG_PATH + PATH_SEPERATE + bundleName;
-    if (::access(bundleDir.c_str(), F_OK) != 0) {
-        if (::mkdir(bundleDir.c_str(), S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH) != 0) {
-            APP_LOGE("make bundle dir error");
-            return;
-        }
-    }
-
-    std::string bundleIdFile = bundleDir + PATH_SEPERATE + BUNDLE_ID_FILE;
-    int bundleIdFd = ::open(bundleIdFile.c_str(), O_WRONLY | O_WRONLY | O_TRUNC);
-    if (bundleIdFd > 0) {
-        std::string bundleIdStr = std::to_string(bundleId);
-        if (::write(bundleIdFd, bundleIdStr.c_str(), bundleIdStr.size()) < 0) {
-            APP_LOGE("write bundleId error");
-        }
-    }
-    ::close(bundleIdFd);
-}
-
-void BundleDataMgr::RemoveHmdfsConfig(const std::string &bundleName) const
-{
-    std::string bundleDir = HMDFS_CONFIG_PATH + PATH_SEPERATE + bundleName;
-    if (::rmdir(bundleDir.c_str()) != 0) {
-        APP_LOGE("remove hmdfs bundle dir error");
-    }
 }
 
 void BundleDataMgr::RecycleUidAndGid(const InnerBundleInfo &info)
@@ -1706,7 +1666,7 @@ void BundleDataMgr::RecycleUidAndGid(const InnerBundleInfo &info)
     }
 
     bundleIdMap_.erase(bundleId);
-    RemoveHmdfsConfig(innerBundleUserInfo.bundleName);
+    BundleUtil::RemoveHmdfsConfig(innerBundleUserInfo.bundleName);
 }
 
 bool BundleDataMgr::GenerateCloneUid(InnerBundleInfo &info)
@@ -1798,7 +1758,7 @@ bool BundleDataMgr::RestoreUidAndGid()
                     } else {
                         bundleIdMap_[bundleId] = innerBundleUserInfo.bundleName;
                     }
-                    MakeHmdfsConfig(innerBundleUserInfo.bundleName, bundleId);
+                    BundleUtil::MakeHmdfsConfig(innerBundleUserInfo.bundleName, bundleId);
                 }
             }
         }
@@ -1858,7 +1818,7 @@ bool BundleDataMgr::NotifyBundleStatus(const std::string& bundleName, const std:
     want.SetElement(element);
     want.SetParam(Constants::UID, uid);
     want.SetParam(Constants::USER_ID, GetUserIdByUid(uid));
-    want.SetParam(ABILTY_NAME.data(), abilityName);
+    want.SetParam(Constants::ABILTY_NAME.data(), abilityName);
     EventFwk::CommonEventData commonData { want };
     EventFwk::CommonEventManager::PublishCommonEvent(commonData);
     return true;

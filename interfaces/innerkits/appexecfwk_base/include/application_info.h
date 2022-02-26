@@ -99,7 +99,7 @@ struct ApplicationInfo : public Parcelable {
     std::string name;  // application name is same to bundleName
     std::string bundleName;
 
-    int32_t versionCode = 0;
+    uint32_t versionCode = 0;
     std::string versionName;
     int32_t minCompatibleVersionCode = 0;
 

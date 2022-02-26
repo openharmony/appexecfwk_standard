@@ -115,6 +115,10 @@ public:
      * @return Returns userId.
      */
     static int32_t GetUserIdByUid(int32_t uid);
+
+    static void MakeHmdfsConfig(const std::string &bundleName, int32_t bundleId);
+
+    static void RemoveHmdfsConfig(const std::string &bundleName);
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS

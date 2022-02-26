@@ -65,9 +65,9 @@ bool BundleInstallerProxy::Install(const std::vector<std::string> &bundleFilePat
     MessageOption option(MessageOption::TF_SYNC);
 
     PARCEL_WRITE_INTERFACE_TOKEN(data, GetDescriptor());
-    int32_t size = bundleFilePaths.size();
+    auto size = bundleFilePaths.size();
     PARCEL_WRITE(data, Int32, size);
-    for (int i = 0; i < size; ++i) {
+    for (uint32_t i = 0; i < size; ++i) {
         PARCEL_WRITE(data, String16, Str8ToStr16(bundleFilePaths[i]));
     }
     PARCEL_WRITE(data, Parcelable, &installParam);
