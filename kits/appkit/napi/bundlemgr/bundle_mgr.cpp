@@ -732,6 +732,17 @@ static void ConvertHapModuleInfo(napi_env env, napi_value objHapModuleInfo, cons
     ConvertExtensionInfos(env, nExtensionAbilityInfos, hapModuleInfo.extensionInfos);
     NAPI_CALL_RETURN_VOID(env,
         napi_set_named_property(env, objHapModuleInfo, "extensionAbilityInfo", nExtensionAbilityInfos));
+
+    napi_value nMetadata;
+    size_t size = hapModuleInfo.metadata.size();
+    NAPI_CALL_RETURN_VOID(env, napi_create_array_with_length(env, size, &nMetadata));
+    for (size_t index = 0; index < size; ++index) {
+        napi_value innerMeta;
+        NAPI_CALL_RETURN_VOID(env, napi_create_object(env, &innerMeta));
+        ConvertInnerMetadata(env, innerMeta, hapModuleInfo.metadata[index]);
+        NAPI_CALL_RETURN_VOID(env, napi_set_element(env, nMetadata, index, innerMeta));
+    }
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objHapModuleInfo, "metadata", nMetadata));
 }
 
 static void ConvertRequestPermissionUsedScene(napi_env env, napi_value result,
