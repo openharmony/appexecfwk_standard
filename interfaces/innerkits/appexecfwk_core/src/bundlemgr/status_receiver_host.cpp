@@ -35,6 +35,13 @@ StatusReceiverHost::~StatusReceiverHost()
 int StatusReceiverHost::OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option)
 {
     APP_LOGI("status receiver host onReceived message, the message code is %{public}u", code);
+    std::u16string descripter = StatusReceiverHost::GetDescriptor();
+    std::u16string remoteDescripter = data.ReadInterfaceToken();
+    if (descripter != remoteDescripter) {
+        APP_LOGE("fail to write reply message in status receiver host due to the reply is nullptr");
+        return OBJECT_NULL;
+    }
+
     switch (code) {
         case static_cast<uint32_t>(IStatusReceiver::Message::ON_FINISHED): {
             int32_t resultCode = data.ReadInt32();

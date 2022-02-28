@@ -35,6 +35,13 @@ int CleanCacheCallbackHost::OnRemoteRequest(
     uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option)
 {
     APP_LOGD("clean cache callback host onReceived message, the message code is %{public}u", code);
+    std::u16string descripter = CleanCacheCallbackHost::GetDescriptor();
+    std::u16string remoteDescripter = data.ReadInterfaceToken();
+    if (descripter != remoteDescripter) {
+        APP_LOGE("fail to write reply message in clean cache host due to the reply is nullptr");
+        return OBJECT_NULL;
+    }
+
     switch (code) {
         case static_cast<uint32_t>(ICleanCacheCallback::Message::ON_CLEAN_CACHE_CALLBACK): {
             bool succeed = data.ReadBool();

@@ -39,6 +39,10 @@ void CleanCacheCallbackProxy::OnCleanCacheFinished(bool succeeded)
     MessageParcel data;
     MessageParcel reply;
     MessageOption option(MessageOption::TF_SYNC);
+    if (!data.WriteInterfaceToken(CleanCacheCallbackProxy::GetDescriptor())) {
+        APP_LOGE("fail to OnCleanCacheFinished due to write MessageParcel fail");
+        return;
+    }
 
     if (!data.WriteBool(succeeded)) {
         APP_LOGE("fail to call OnCleanCacheFinished​, for write parcel code failed");

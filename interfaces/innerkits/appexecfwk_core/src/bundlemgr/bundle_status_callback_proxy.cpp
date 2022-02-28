@@ -214,7 +214,10 @@ void BundleStatusCallbackProxy::OnBundleStateChanged(
     MessageParcel data;
     MessageParcel reply;
     MessageOption option(MessageOption::TF_SYNC);
-
+    if (!data.WriteInterfaceToken(BundleStatusCallbackProxy::GetDescriptor())) {
+        APP_LOGE("fail to OnBundleStateChanged due to write MessageParcel fail");
+        return;
+    }
     if (!data.WriteUint8(installType)) {
         APP_LOGE("fail to call OnBundleStateChanged, for write installType failed");
         return;
