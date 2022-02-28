@@ -321,6 +321,10 @@ void StatusReceiverProxy::OnStatusNotify(const int32_t progress)
     MessageParcel data;
     MessageParcel reply;
     MessageOption option(MessageOption::TF_SYNC);
+    if (!data.WriteInterfaceToken(StatusReceiverProxy::GetDescriptor())) {
+        APP_LOGE("fail to OnStatusNotify due to write MessageParcel fail");
+        return;
+    }
 
     if (!data.WriteInt32(progress)) {
         APP_LOGE("fail to call OnStatusNotify, for write progress failed");
@@ -349,6 +353,10 @@ void StatusReceiverProxy::OnFinished(const int32_t resultCode, const std::string
     MessageParcel data;
     MessageParcel reply;
     MessageOption option(MessageOption::TF_SYNC);
+    if (!data.WriteInterfaceToken(StatusReceiverProxy::GetDescriptor())) {
+        APP_LOGE("fail to OnFinished due to write MessageParcel fail");
+        return;
+    }
 
     if (!data.WriteInt32(resultCode_)) {
         APP_LOGE("fail to call OnFinished, for write resultCode_ failed");

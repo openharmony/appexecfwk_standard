@@ -35,6 +35,13 @@ int BundleUserMgrHost::OnRemoteRequest(
     uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option)
 {
     APP_LOGD("BundleUserMgrHost onReceived message, the message code is %{public}u", code);
+    std::u16string descripter = BundleUserMgrHost::GetDescriptor();
+    std::u16string remoteDescripter = data.ReadInterfaceToken();
+    if (descripter != remoteDescripter) {
+        APP_LOGE("fail to write reply message in bundle user mgr host due to the reply is nullptr");
+        return OBJECT_NULL;
+    }
+
     switch (code) {
         case static_cast<uint32_t>(IBundleUserMgr::Message::CREATE_USER): {
             HandleCreateNewUser(data, reply);

@@ -36,6 +36,13 @@ int OnPermissionChangedCallbackHost::OnRemoteRequest(
     uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option)
 {
     APP_LOGD("permission changed host onReceived message, the message code is %{public}u", code);
+    std::u16string descripter = OnPermissionChangedCallbackHost::GetDescriptor();
+    std::u16string remoteDescripter = data.ReadInterfaceToken();
+    if (descripter != remoteDescripter) {
+        APP_LOGE("fail to write reply message in permission changed host due to the reply is nullptr");
+        return OBJECT_NULL;
+    }
+
     switch (code) {
         case static_cast<uint32_t>(OnPermissionChangedCallback::Message::ON_CHANGED): {
             int32_t uid = data.ReadInt32();
