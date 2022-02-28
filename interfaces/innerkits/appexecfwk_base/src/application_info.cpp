@@ -81,7 +81,6 @@ const std::string APPLICATION_ENTRY_MODULE_NAME = "entryModuleName";
 const std::string APPLICATION_NATIVE_LIBRARY_PATH = "nativeLibraryPath";
 const std::string APPLICATION_CPU_ABI = "cpuAbi";
 const std::string APPLICATION_IS_COMPRESS_NATIVE_LIBS = "isCompressNativeLibs";
-const std::string APPLICATION_SYSTEM_APP = "systemApp";
 const std::string APPLICATION_SIGNATURE_KEY = "signatureKey";
 }
 
@@ -305,7 +304,6 @@ void to_json(nlohmann::json &jsonObject, const ApplicationInfo &applicationInfo)
         {APPLICATION_NATIVE_LIBRARY_PATH, applicationInfo.nativeLibraryPath},
         {APPLICATION_CPU_ABI, applicationInfo.cpuAbi},
         {APPLICATION_IS_COMPRESS_NATIVE_LIBS, applicationInfo.isCompressNativeLibs},
-        {APPLICATION_SYSTEM_APP, applicationInfo.systemApp},
         {APPLICATION_SIGNATURE_KEY, applicationInfo.signatureKey}
     };
 }
@@ -702,14 +700,6 @@ void from_json(const nlohmann::json &jsonObject, ApplicationInfo &applicationInf
         jsonObjectEnd,
         APPLICATION_IS_COMPRESS_NATIVE_LIBS,
         applicationInfo.isCompressNativeLibs,
-        JsonType::BOOLEAN,
-        false,
-        parseResult,
-        ArrayType::NOT_ARRAY);
-    GetValueIfFindKey<bool>(jsonObject,
-        jsonObjectEnd,
-        APPLICATION_SYSTEM_APP,
-        applicationInfo.systemApp,
         JsonType::BOOLEAN,
         false,
         parseResult,
