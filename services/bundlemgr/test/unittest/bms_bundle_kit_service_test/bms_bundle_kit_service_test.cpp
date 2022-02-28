@@ -2262,7 +2262,7 @@ HWTEST_F(BmsBundleKitServiceTest, CleanCache_0300, Function | SmallTest | Level1
 
     sptr<MockCleanCache> cleanCache = new (std::nothrow) MockCleanCache();
     auto hostImpl = std::make_unique<BundleMgrHostImpl>();
-    bool result = hostImpl->CleanBundleCacheFiles(BUNDLE_NAME_DEMO, cleanCache);
+    bool result = hostImpl->CleanBundleCacheFiles("", cleanCache);
     EXPECT_FALSE(result);
     CheckCacheExist();
 
