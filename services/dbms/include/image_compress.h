@@ -32,13 +32,15 @@ public:
     ImageCompress() = default;
     ~ImageCompress();
     double CalRatio(std::string fileName);
-    int32_t DecodePngFile(const char* fileName, std::shared_ptr<ImageBuffer>& imageBuffer);
+    bool NeedCompress(std::string fileName);
+    bool InitPngFile(std::shared_ptr<ImageBuffer>& imageBuffer, png_structp& png, png_infop& info);
+    int32_t DecodePngFile(std::string fileName, std::shared_ptr<ImageBuffer>& imageBuffer);
     int32_t EncodePngFile(std::shared_ptr<ImageBuffer>& imageBuffer);
     int32_t ResizeRGBAImage(std::shared_ptr<ImageBuffer>& imageBufferIn, std::shared_ptr<ImageBuffer>& imageBufferOut);
-    int32_t DecodeJPGFile(const char* fileName, std::shared_ptr<ImageBuffer>& imageBuffer);
+    int32_t DecodeJPGFile(std::string fileName, std::shared_ptr<ImageBuffer>& imageBuffer);
     int32_t EncodeJPGFile(std::shared_ptr<ImageBuffer>& imageBuffer);
     int32_t ResizeRGBImage(std::shared_ptr<ImageBuffer>& imageBufferIn, std::shared_ptr<ImageBuffer>& imageBufferOut);
-    std::shared_ptr<ImageBuffer> CompressImage(const char* inFileName);
+    std::shared_ptr<ImageBuffer> CompressImage(std::string inFileName);
     bool DoubleEqual(double left, double right);
     static void PngToBuffer(png_structp png_ptr, png_bytep data, png_size_t lenght);
 };

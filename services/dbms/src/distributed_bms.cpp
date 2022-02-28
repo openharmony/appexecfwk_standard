@@ -199,7 +199,7 @@ int32_t DistributedBms::GetAbilityInfo(
     }
 
     std::shared_ptr<ImageCompress> imageCompress;
-    if (imageCompress->CalRatio(iconPath) > 0) {
+    if (imageCompress->NeedCompress(iconPath)) {
         std::shared_ptr<ImageBuffer> imageBuffer = imageCompress->CompressImage(iconPath.c_str());
         if (imageBuffer != nullptr) {
             if (!GetMediaBae64FromImageBuffer(imageBuffer, remoteAbilityInfo.icon)) {
