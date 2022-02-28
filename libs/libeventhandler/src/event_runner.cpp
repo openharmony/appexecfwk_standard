@@ -519,6 +519,7 @@ void EventRunner::DumpRunnerInfo(std::string& runnerInfo)
 
     if (queue_ == nullptr) {
         runnerInfo = "        Queue is null" + LINE_SEPARATOR;
+        return;
     }
 
     std::string queueInfo;
