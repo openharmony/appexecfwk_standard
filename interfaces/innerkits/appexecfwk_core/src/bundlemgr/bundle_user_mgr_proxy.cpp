@@ -40,6 +40,11 @@ void BundleUserMgrProxy::CreateNewUser(int32_t userId)
     MessageParcel data;
     MessageParcel reply;
     MessageOption option(MessageOption::TF_SYNC);
+    if (!data.WriteInterfaceToken(BundleUserMgrProxy::GetDescriptor())) {
+        APP_LOGE("fail to CreateNewUser due to write MessageParcel fail");
+        return;
+    }
+
     data.WriteInt32(static_cast<int32_t>(userId));
     SendRequest(
         static_cast<int32_t>(IBundleUserMgr::Message::CREATE_USER), data, reply, option);
@@ -51,6 +56,11 @@ void BundleUserMgrProxy::RemoveUser(int32_t userId)
     MessageParcel data;
     MessageParcel reply;
     MessageOption option(MessageOption::TF_SYNC);
+    if (!data.WriteInterfaceToken(BundleUserMgrProxy::GetDescriptor())) {
+        APP_LOGE("fail to RemoveUser due to write MessageParcel fail");
+        return;
+    }
+
     data.WriteInt32(static_cast<int32_t>(userId));
     SendRequest(
         static_cast<int32_t>(IBundleUserMgr::Message::REMOVE_USER), data, reply, option);

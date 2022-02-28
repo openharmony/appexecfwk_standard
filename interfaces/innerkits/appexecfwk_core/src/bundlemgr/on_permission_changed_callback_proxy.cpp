@@ -41,6 +41,10 @@ void OnPermissionChangedCallbackProxy::OnChanged(const int32_t uid)
     MessageParcel data;
     MessageParcel reply;
     MessageOption option(MessageOption::TF_SYNC);
+    if (!data.WriteInterfaceToken(OnPermissionChangedCallbackProxy::GetDescriptor())) {
+        APP_LOGE("fail to OnChanged due to write MessageParcel fail");
+        return;
+    }
 
     if (!data.WriteInt32(uid)) {
         APP_LOGE("fail to call OnChanged, for write resultCode failed");
