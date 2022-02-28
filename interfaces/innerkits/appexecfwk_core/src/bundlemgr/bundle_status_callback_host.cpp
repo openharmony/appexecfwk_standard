@@ -36,6 +36,13 @@ int BundleStatusCallbackHost::OnRemoteRequest(
     uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option)
 {
     APP_LOGD("bundle status callback host onReceived message, the message code is %{public}u", code);
+    std::u16string descripter = BundleStatusCallbackHost::GetDescriptor();
+    std::u16string remoteDescripter = data.ReadInterfaceToken();
+    if (descripter != remoteDescripter) {
+        APP_LOGE("fail to write reply message in status callback host due to the reply is nullptr");
+        return OBJECT_NULL;
+    }
+
     switch (code) {
         case static_cast<uint32_t>(IBundleStatusCallback::Message::ON_BUNDLE_STATE_CHANGED): {
             uint8_t installType = data.ReadUint8();
