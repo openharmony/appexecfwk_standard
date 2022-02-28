@@ -163,7 +163,6 @@ struct ApplicationInfo : public Parcelable {
     int flags = 0;
     std::string entryModuleName;
     bool isCompressNativeLibs = true;
-    bool systemApp = false;
     std::string signatureKey;
 
     bool ReadFromParcel(Parcel &parcel);
