@@ -651,7 +651,7 @@ bool BundleDataMgr::QueryLauncherAbilityInfos(
         // query all launcher ability
         for (const auto &item : bundleInfos_) {
             auto infoWithIdItem = item.second.find(Constants::CURRENT_DEVICE_ID);
-            if (infoWithIdItem->second.IsDisabled()) {
+            if (infoWithIdItem != item.second.end() && infoWithIdItem->second.IsDisabled()) {
                 APP_LOGI("app %{public}s is disabled", infoWithIdItem->second.GetBundleName().c_str());
                 continue;
             }
