@@ -46,7 +46,7 @@ const std::string CODE_PATH = "/data/accounts/account_/com.example.l3jsdemo";
 const std::string RESOURCE_PATH = "/data/accounts/account_/com.example.l3jsdemo";
 const std::string LIB_PATH = "/data/accounts/account_/com.example.l3jsdemo";
 const bool VISIBLE = true;
-const int32_t USERID = 0;
+const int32_t USERID = 100;
 }  // namespace
 
 class BmsDataMgrTest : public testing::Test {
@@ -546,6 +546,7 @@ HWTEST_F(BmsDataMgrTest, AddBundleInfo_0200, Function | SmallTest | Level0)
     bundleInfo2.applicationInfo.bundleName = BUNDLE_NAME;
     ApplicationInfo applicationInfo2;
     applicationInfo2.name = BUNDLE_NAME;
+    applicationInfo2.bundleName = BUNDLE_NAME;
     applicationInfo2.deviceId = DEVICE_ID;
     info2.SetBaseBundleInfo(bundleInfo2);
     info2.SetBaseApplicationInfo(applicationInfo2);
@@ -553,6 +554,8 @@ HWTEST_F(BmsDataMgrTest, AddBundleInfo_0200, Function | SmallTest | Level0)
 
     auto dataMgr = GetDataMgr();
     EXPECT_NE(dataMgr, nullptr);
+    dataMgr->AddUserId(USERID);
+
     bool ret1 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_START);
     bool ret2 = dataMgr->AddInnerBundleInfo(BUNDLE_NAME, info1);
     bool ret3 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::UPDATING_START);
@@ -775,6 +778,8 @@ HWTEST_F(BmsDataMgrTest, GenerateUidAndGid_0300, Function | SmallTest | Level0)
     info.SetAppType(Constants::AppType::THIRD_PARTY_APP);
     auto dataMgr = GetDataMgr();
     EXPECT_NE(dataMgr, nullptr);
+    dataMgr->AddUserId(USERID);
+
     bool ret1 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_START);
     bool ret2 = dataMgr->AddInnerBundleInfo(BUNDLE_NAME, info);
     bool ret3 = dataMgr->GenerateUidAndGid(innerBundleUserInfo);
@@ -815,6 +820,8 @@ HWTEST_F(BmsDataMgrTest, QueryAbilityInfo_0100, Function | SmallTest | Level0)
     info1.SetAbilityEnabled(BUNDLE_NAME, ABILITY_NAME, true, USERID);
     auto dataMgr = GetDataMgr();
     EXPECT_NE(dataMgr, nullptr);
+    dataMgr->AddUserId(USERID);
+
     bool ret1 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_START);
     EXPECT_TRUE(ret1);
     bool ret2 = dataMgr->AddInnerBundleInfo(BUNDLE_NAME, info1);
@@ -827,30 +834,25 @@ HWTEST_F(BmsDataMgrTest, QueryAbilityInfo_0100, Function | SmallTest | Level0)
     want.SetElement(name);
 
     AbilityInfo abilityInfo2;
-    bool ret3 = dataMgr->QueryAbilityInfo(want, 0, 0, abilityInfo2);
+    bool ret3 = dataMgr->QueryAbilityInfo(want, 0, USERID, abilityInfo2);
     EXPECT_TRUE(ret3);
 
-    Parcel parcel;
-    parcel.WriteParcelable(&abilityInfo);
-    std::unique_ptr<AbilityInfo> abilityInfo3;
-    abilityInfo3.reset(parcel.ReadParcelable<AbilityInfo>());
-
-    EXPECT_EQ(abilityInfo3->package, abilityInfo2.package);
-    EXPECT_EQ(abilityInfo3->name, abilityInfo2.name);
-    EXPECT_EQ(abilityInfo3->bundleName, abilityInfo2.bundleName);
-    EXPECT_EQ(abilityInfo3->applicationName, abilityInfo2.applicationName);
-    EXPECT_EQ(abilityInfo3->deviceId, abilityInfo2.deviceId);
-    EXPECT_EQ(abilityInfo3->label, abilityInfo2.label);
-    EXPECT_EQ(abilityInfo3->description, abilityInfo2.description);
-    EXPECT_EQ(abilityInfo3->iconPath, abilityInfo2.iconPath);
-    EXPECT_EQ(abilityInfo3->visible, abilityInfo2.visible);
-    EXPECT_EQ(abilityInfo3->kind, abilityInfo2.kind);
-    EXPECT_EQ(abilityInfo3->type, abilityInfo2.type);
-    EXPECT_EQ(abilityInfo3->orientation, abilityInfo2.orientation);
-    EXPECT_EQ(abilityInfo3->launchMode, abilityInfo2.launchMode);
-    EXPECT_EQ(abilityInfo3->codePath, abilityInfo2.codePath);
-    EXPECT_EQ(abilityInfo3->resourcePath, abilityInfo2.resourcePath);
-    EXPECT_EQ(abilityInfo3->libPath, abilityInfo2.libPath);
+    EXPECT_EQ(abilityInfo2.package, abilityInfo.package);
+    EXPECT_EQ(abilityInfo2.name, abilityInfo.name);
+    EXPECT_EQ(abilityInfo2.bundleName, abilityInfo.bundleName);
+    EXPECT_EQ(abilityInfo2.applicationName, abilityInfo.applicationName);
+    EXPECT_EQ(abilityInfo2.deviceId, abilityInfo.deviceId);
+    EXPECT_EQ(abilityInfo2.label, abilityInfo.label);
+    EXPECT_EQ(abilityInfo2.description, abilityInfo.description);
+    EXPECT_EQ(abilityInfo2.iconPath, abilityInfo.iconPath);
+    EXPECT_EQ(abilityInfo2.visible, abilityInfo.visible);
+    EXPECT_EQ(abilityInfo2.kind, abilityInfo.kind);
+    EXPECT_EQ(abilityInfo2.type, abilityInfo.type);
+    EXPECT_EQ(abilityInfo2.orientation, abilityInfo.orientation);
+    EXPECT_EQ(abilityInfo2.launchMode, abilityInfo.launchMode);
+    EXPECT_EQ(abilityInfo2.codePath, abilityInfo.codePath);
+    EXPECT_EQ(abilityInfo2.resourcePath, abilityInfo.resourcePath);
+    EXPECT_EQ(abilityInfo2.libPath, abilityInfo.libPath);
 
     dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::UNINSTALL_START);
 }
@@ -945,6 +947,8 @@ HWTEST_F(BmsDataMgrTest, GetApplicationInfo_0100, Function | SmallTest | Level0)
 
     auto dataMgr = GetDataMgr();
     EXPECT_NE(dataMgr, nullptr);
+    dataMgr->AddUserId(USERID);
+
     bool ret1 = dataMgr->UpdateBundleInstallState(BUNDLE_NAME, InstallState::INSTALL_START);
     bool ret2 = dataMgr->AddInnerBundleInfo(BUNDLE_NAME, info1);
 
@@ -971,15 +975,10 @@ HWTEST_F(BmsDataMgrTest, GetApplicationInfo_0200, Function | SmallTest | Level0)
     appInfo.bundleName = BUNDLE_NAME;
     appInfo.deviceId = DEVICE_ID;
 
-    Parcel parcel;
-    parcel.WriteParcelable(&appInfo);
-    std::unique_ptr<ApplicationInfo> appInfo2;
-    appInfo2.reset(parcel.ReadParcelable<ApplicationInfo>());
-    EXPECT_EQ(appInfo.name, appInfo2->name);
-    EXPECT_EQ(appInfo.bundleName, appInfo2->bundleName);
-    EXPECT_EQ(appInfo.deviceId, appInfo2->deviceId);
     auto dataMgr = GetDataMgr();
     EXPECT_NE(dataMgr, nullptr);
+    dataMgr->AddUserId(USERID);
+
     ApplicationInfo appInfo3;
     bool ret = dataMgr->GetApplicationInfo(BUNDLE_NAME, ApplicationFlag::GET_BASIC_APPLICATION_INFO, USERID, appInfo3);
     EXPECT_FALSE(ret);

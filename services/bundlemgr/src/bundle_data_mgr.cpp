@@ -2498,7 +2498,7 @@ int32_t BundleDataMgr::GetUserId(int32_t userId) const
     }
 
     if (!HasUserId(userId)) {
-        APP_LOGE("user is not exit.");
+        APP_LOGE("user is not existed.");
         userId = Constants::INVALID_USERID;
     }
 
