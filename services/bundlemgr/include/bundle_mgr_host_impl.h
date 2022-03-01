@@ -169,6 +169,15 @@ public:
      */
     virtual bool QueryAbilityInfo(const Want &want, AbilityInfo &abilityInfo) override;
     /**
+     * @brief Obtains the AbilityInfo based on a given bundle name through the proxy object.
+     * @param bundleName Indicates the application bundle name to be queried.
+     * @param abilityName Indicates the application ability name to be queried.
+     * @param abilityInfo Indicates the obtained AbilityInfo object.
+     * @return Returns true if the application is successfully obtained; returns false otherwise.
+     */
+    virtual bool GetAbilityInfo(
+        const std::string &bundleName, const std::string &abilityName, AbilityInfo &abilityInfo) override;
+    /**
      * @brief Query the AbilityInfo by the given Want.
      * @param want Indicates the information of the ability.
      * @param flags Indicates the information contained in the AbilityInfo object to be returned.
