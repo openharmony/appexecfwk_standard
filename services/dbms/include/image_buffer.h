@@ -109,7 +109,7 @@ public:
     {
         return compressDataBuffer;
     }
-    uint32_t GetCompressSize() const
+    int32_t GetCompressSize() const
     {
         return compressSize;
     }
