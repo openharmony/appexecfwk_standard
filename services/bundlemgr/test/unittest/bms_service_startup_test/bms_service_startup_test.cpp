@@ -24,6 +24,10 @@ using namespace testing::ext;
 using namespace OHOS::AppExecFwk;
 using OHOS::DelayedSingleton;
 
+namespace {
+const int32_t WAIT_TIME = 5; // init mocked bms
+} // namespace
+
 class BmsServiceStartupTest : public testing::Test {
 public:
     static void SetUpTestCase();
@@ -58,6 +62,7 @@ HWTEST_F(BmsServiceStartupTest, Startup_0100, Function | SmallTest | Level0)
     bool ready = bms->IsServiceReady();
     EXPECT_EQ(false, ready);
     bms->OnStart();
+    std::this_thread::sleep_for(std::chrono::seconds(WAIT_TIME));
     ready = bms->IsServiceReady();
     EXPECT_EQ(true, ready);
 }
@@ -72,6 +77,7 @@ HWTEST_F(BmsServiceStartupTest, Startup_0200, Function | SmallTest | Level0)
 {
     std::shared_ptr<BundleMgrService> bms = DelayedSingleton<BundleMgrService>::GetInstance();
     bms->OnStart();
+    std::this_thread::sleep_for(std::chrono::seconds(WAIT_TIME));
     bool ready = bms->IsServiceReady();
     EXPECT_EQ(true, ready);
     bms->OnStop();
@@ -89,14 +95,17 @@ HWTEST_F(BmsServiceStartupTest, Startup_0300, Function | SmallTest | Level0)
 {
     std::shared_ptr<BundleMgrService> bms = DelayedSingleton<BundleMgrService>::GetInstance();
     bms->OnStart();
+    std::this_thread::sleep_for(std::chrono::seconds(WAIT_TIME));
     bool ready = bms->IsServiceReady();
     EXPECT_EQ(true, ready);
     bms->OnStop();
     ready = bms->IsServiceReady();
     EXPECT_EQ(false, ready);
     bms->OnStart();
+    std::this_thread::sleep_for(std::chrono::seconds(WAIT_TIME));
     ready = bms->IsServiceReady();
     EXPECT_EQ(true, ready);
+    bms->OnStop();
 }
 
 /**
@@ -109,11 +118,13 @@ HWTEST_F(BmsServiceStartupTest, Startup_0400, Function | SmallTest | Level0)
 {
     std::shared_ptr<BundleMgrService> bms = DelayedSingleton<BundleMgrService>::GetInstance();
     bms->OnStart();
+    std::this_thread::sleep_for(std::chrono::seconds(WAIT_TIME));
     bool ready = bms->IsServiceReady();
     EXPECT_EQ(true, ready);
     bms->OnStart();
     ready = bms->IsServiceReady();
     EXPECT_EQ(true, ready);
+    bms->OnStop();
 }
 
 /**
@@ -126,6 +137,7 @@ HWTEST_F(BmsServiceStartupTest, GetDataMgr_0100, Function | SmallTest | Level0)
 {
     std::shared_ptr<BundleMgrService> bms = DelayedSingleton<BundleMgrService>::GetInstance();
     bms->OnStart();
+    std::this_thread::sleep_for(std::chrono::seconds(WAIT_TIME));
     auto dataMgr = bms->GetDataMgr();
     EXPECT_NE(nullptr, dataMgr);
     bms->OnStop();
@@ -141,6 +153,7 @@ HWTEST_F(BmsServiceStartupTest, GetBundleInstaller_0100, Function | SmallTest | 
 {
     std::shared_ptr<BundleMgrService> bms = DelayedSingleton<BundleMgrService>::GetInstance();
     bms->OnStart();
+    std::this_thread::sleep_for(std::chrono::seconds(WAIT_TIME));
     auto installer = bms->GetBundleInstaller();
     EXPECT_NE(nullptr, installer);
     bms->OnStop();

@@ -53,200 +53,638 @@ protected:
 protected:
     nlohmann::json innerBundleInfoJson_ = R"(
         {
+            "allowedAcls": [],
             "appFeature": "ohos_system_app",
-            "appType": 2,
+            "appType": 0,
             "baseAbilityInfos": {
-                "com.ohos.launchercom.ohos.launchercom.ohos.launcher.MainAbility": {
+                "com.ohos.launcher.com.ohos.launcher.com.ohos.launcher.MainAbility": {
                     "applicationName": "com.ohos.launcher",
+                    "backgroundModes": 0,
                     "bundleName": "com.ohos.launcher",
                     "codePath": "",
+                    "configChanges": [
+                    ],
+                    "continuable": false,
+                    "defaultFormHeight": 0,
+                    "defaultFormWidth": 0,
                     "description": "$string:mainability_description",
-                    "theme": "mytheme",
-                    "deviceCapabilities": [],
+                    "descriptionId": 218103837,
+                    "deviceCapabilities": [
+                    ],
                     "deviceId": "",
                     "deviceTypes": [
                         "phone"
                     ],
-                    "iconPath": "$media:icon",
                     "enabled": true,
-                    "readPermission": "readPermission",
-                    "writePermission": "writePermission",
-                    "configChanges": [
-                        "locale"
-                    ],
-                    "formEnabled": true,
-                    "formEntity": 1,
-                    "minFormHeight": 0,
-                    "defaultFormHeight": 100,
-                    "minFormWidth": 0,
-                    "defaultFormWidth": 200,
-                    "metaData": {
-                        "customizeData": [{
-                            "name" : "string",
-                            "value" : "string",
-                            "extra" : "$string:customizeData_description"
-                        }]
-                    },
-                    "backgroundModes": 1,
+                    "formEnabled": false,
+                    "formEntity": 0,
+                    "iconId": 218103847,
+                    "iconPath": "$media:icon",
                     "isLauncherAbility": true,
+                    "isModuleJson": false,
                     "isNativeAbility": false,
-                    "supportPipMode" : false,
+                    "isStageBasedModel": true,
                     "kind": "page",
-                    "label": "Launcher",
+                    "label": "$string:entry_MainAbility",
+                    "labelId": 218103828,
                     "launchMode": 0,
                     "libPath": "",
-                    "moduleName": ".MyApplication",
+                    "metaData": {
+                        "customizeData": [
+                            {
+                                "extra": "",
+                                "name": "",
+                                "value": ""
+                            }
+                        ]
+                    },
+                    "metadata": [
+                    ],
+                    "minFormHeight": 0,
+                    "minFormWidth": 0,
+                    "moduleName": "phone",
                     "name": "com.ohos.launcher.MainAbility",
                     "orientation": 0,
                     "package": "com.ohos.launcher",
-                    "permissions": [],
+                    "permissions": [
+                    ],
                     "process": "",
-                    "resourcePath": "/data/app/el1/bundle/public/com.ohos.launcher/com.ohos.launcher/assets/launcher/resources.index",
+                    "readPermission": "",
+                    "resourcePath": "/data/app/el1/bundle/public/com.ohos.launcher/com.ohos.launcher/assets/phone/resources.index",
+                    "srcEntrance": "",
+                    "srcLanguage": "ets",
+                    "srcPath": "MainAbility",
+                    "supportPipMode": false,
                     "targetAbility": "",
+                    "theme": "",
                     "type": 1,
                     "uri": "",
-                    "visible": false,
-                    "labelId": 1,
-                    "descriptionId": 1,
-                    "iconId": 1,
-                    "srcLanguage": "C++",
-                    "srcPath": ""
+                    "visible": true,
+                    "writePermission": ""
+                },
+                "com.ohos.launcher.com.ohos.launcher.recents.com.ohos.launcher.recents.MainAbility": {
+                    "applicationName": "com.ohos.launcher",
+                    "backgroundModes": 0,
+                    "bundleName": "com.ohos.launcher",
+                    "codePath": "",
+                    "configChanges": [
+                    ],
+                    "continuable": false,
+                    "defaultFormHeight": 0,
+                    "defaultFormWidth": 0,
+                    "description": "$string: mainability_description",
+                    "descriptionId": 251658241,
+                    "deviceCapabilities": [
+                    ],
+                    "deviceId": "",
+                    "deviceTypes": [
+                        "phone"
+                    ],
+                    "enabled": true,
+                    "formEnabled": false,
+                    "formEntity": 0,
+                    "iconId": 251658246,
+                    "iconPath": "$media: icon",
+                    "isLauncherAbility": false,
+                    "isModuleJson": false,
+                    "isNativeAbility": false,
+                    "isStageBasedModel": true,
+                    "kind": "page",
+                    "label": "$string: recents_MainAbility",
+                    "labelId": 251658242,
+                    "launchMode": 0,
+                    "libPath": "",
+                    "metaData": {
+                        "customizeData": [
+                            {
+                                "extra": "",
+                                "name": "",
+                                "value": ""
+                            }
+                        ]
+                    },
+                    "metadata": [
+                    ],
+                    "minFormHeight": 0,
+                    "minFormWidth": 0,
+                    "moduleName": "recents",
+                    "name": "com.ohos.launcher.recents.MainAbility",
+                    "orientation": 0,
+                    "package": "com.ohos.launcher.recents",
+                    "permissions": [
+                    ],
+                    "process": "",
+                    "readPermission": "",
+                    "resourcePath": "/data/app/el1/bundle/public/com.ohos.launcher/com.ohos.launcher.recents/assets/recents/resources.index",
+                    "srcEntrance": "",
+                    "srcLanguage": "ets",
+                    "srcPath": "MainAbility",
+                    "supportPipMode": false,
+                    "targetAbility": "",
+                    "theme": "",
+                    "type": 1,
+                    "uri": "",
+                    "visible": true,
+                    "writePermission": ""
+                },
+                "com.ohos.launcher.com.ohos.launcher.settings.com.ohos.launcher.settings.MainAbility": {
+                    "applicationName": "com.ohos.launcher",
+                    "backgroundModes": 0,
+                    "bundleName": "com.ohos.launcher",
+                    "codePath": "",
+                    "configChanges": [
+                    ],
+                    "continuable": false,
+                    "defaultFormHeight": 0,
+                    "defaultFormWidth": 0,
+                    "description": "$string: mainability_description",
+                    "descriptionId": 285212677,
+                    "deviceCapabilities": [
+                    ],
+                    "deviceId": "",
+                    "deviceTypes": [
+                        "phone"
+                    ],
+                    "enabled": true,
+                    "formEnabled": false,
+                    "formEntity": 0,
+                    "iconId": 285212682,
+                    "iconPath": "$media: icon",
+                    "isLauncherAbility": false,
+                    "isModuleJson": false,
+                    "isNativeAbility": false,
+                    "isStageBasedModel": true,
+                    "kind": "page",
+                    "label": "$string: settings_MainAbility",
+                    "labelId": 285212679,
+                    "launchMode": 0,
+                    "libPath": "",
+                    "metaData": {
+                        "customizeData": [
+                        ]
+                    },
+                    "metadata": [
+                    ],
+                    "minFormHeight": 0,
+                    "minFormWidth": 0,
+                    "moduleName": "settings",
+                    "name": "com.ohos.launcher.settings.MainAbility",
+                    "orientation": 0,
+                    "package": "com.ohos.launcher.settings",
+                    "permissions": [
+                    ],
+                    "process": "",
+                    "readPermission": "",
+                    "resourcePath": "/data/app/el1/bundle/public/com.ohos.launcher/com.ohos.launcher.settings/assets/settings/resources.index",
+                    "srcEntrance": "",
+                    "srcLanguage": "ets",
+                    "srcPath": "MainAbility",
+                    "supportPipMode": false,
+                    "targetAbility": "",
+                    "theme": "",
+                    "type": 1,
+                    "uri": "",
+                    "visible": true,
+                    "writePermission": ""
                 }
             },
             "baseApplicationInfo": {
+                "accessTokenId": 0,
+                "accessible": false,
+                "apiCompatibleVersion": 8,
+                "apiReleaseType": "Beta1",
+                "apiTargetVersion": 8,
+                "appPrivilegeLevel": "normal",
                 "bundleName": "com.ohos.launcher",
                 "cacheDir": "/data/accounts/account_0/appdata/com.ohos.launcher/cache",
                 "codePath": "/data/app/el1/bundle/public/com.ohos.launcher",
+                "cpuAbi": "armeabi-v7a",
                 "dataBaseDir": "/data/accounts/account_0/appdata/com.ohos.launcher/database",
-                "dataDir": "/data/accounts/account_0/appdata/com.ohos.launcher/files",
-                "description": "$string:mainability_description",
-                "descriptionId": 16777217,
+                "dataDir": "/data/accounts/account_0/appdata/com.ohos.launcher",
+                "debug": false,
+                "description": "$string: mainability_description",
+                "descriptionId": 218103837,
                 "deviceId": "PHONE-001",
+                "distributedNotificationEnabled": true,
                 "enabled": true,
-                "removable": true,
+                "entityType": "unspecified",
                 "entryDir": "",
+                "entryModuleName": "",
                 "flags": 0,
-                "iconId": 16777218,
-                "iconPath": "$media:icon",
+                "icon": "",
+                "iconId": 218103847,
+                "iconPath": "$media: icon",
+                "isCloned": false,
+                "isCompressNativeLibs": true,
                 "isLauncherApp": true,
-                "isSystemApp": false,
-                "label": "Launcher",
-                "labelId": 0,
-                "moduleInfos": [],
-                "moduleSourceDirs": [],
+                "isSystemApp": true,
+                "keepAlive": false,
+                "label": "$string: entry_MainAbility",
+                "labelId": 218103828,
+                "metaData": {
+                },
+                "metadata": {
+                },
+                "minCompatibleVersionCode": 1000000,
+                "moduleInfos": [
+                ],
+                "moduleSourceDirs": [
+                ],
                 "name": "com.ohos.launcher",
-                "permissions": [],
+                "nativeLibraryPath": "",
+                "permissions": [
+                ],
                 "process": "",
+                "removable": false,
                 "signatureKey": "",
+                "singleUser": false,
                 "supportedModes": 0,
-                "debug": true,
-                "isCloned": true,
-                "uid": 10000,
-                "signatureKey": ""
+                "uid": -1,
+                "userDataClearable": true,
+                "vendor": "ohos",
+                "versionCode": 1000000,
+                "versionName": "1.0.0"
             },
             "baseBundleInfo": {
-                "abilityInfos": [],
-                "appId": "BNtg4JBClbl92Rgc3jm/RfcAdrHXaM8F0QOiwVEhnV5ebE5jNIYnAx+weFRT3QTyUjRNdhmc2aAzWyi+5t5CoBM=",
+                "abilityInfos": [
+                ],
+                "appId": "com.ohos.launcher_BNtg4JBClbl92Rgc3jm/RfcAdrHXaM8F0QOiwVEhnV5ebE5jNIYnAx+weFRT3QTyUjRNdhmc2aAzWyi+5t5CoBM=",
                 "applicationInfo": {
+                    "accessTokenId": 0,
+                    "accessible": false,
+                    "apiCompatibleVersion": 0,
+                    "apiReleaseType": "",
+                    "apiTargetVersion": 0,
+                    "appPrivilegeLevel": "normal",
                     "bundleName": "",
                     "cacheDir": "",
                     "codePath": "",
+                    "cpuAbi": "",
                     "dataBaseDir": "",
                     "dataDir": "",
+                    "debug": false,
                     "description": "",
                     "descriptionId": 0,
                     "deviceId": "",
+                    "distributedNotificationEnabled": true,
                     "enabled": false,
-                    "removable": true,
+                    "entityType": "",
                     "entryDir": "",
+                    "entryModuleName": "",
                     "flags": 0,
+                    "icon": "",
                     "iconId": 0,
                     "iconPath": "",
+                    "isCloned": false,
+                    "isCompressNativeLibs": true,
                     "isLauncherApp": false,
                     "isSystemApp": false,
+                    "keepAlive": false,
                     "label": "",
                     "labelId": 0,
-                    "moduleInfos": [],
-                    "moduleSourceDirs": [],
+                    "metaData": {
+                    },
+                    "metadata": {
+                    },
+                    "minCompatibleVersionCode": 0,
+                    "moduleInfos": [
+                    ],
+                    "moduleSourceDirs": [
+                    ],
                     "name": "",
-                    "permissions": [],
+                    "nativeLibraryPath": "",
+                    "permissions": [
+                    ],
                     "process": "",
+                    "removable": true,
                     "signatureKey": "",
+                    "singleUser": false,
                     "supportedModes": 0,
-                    "debug": true,
-                    "isCloned": true,
-                    "uid": 10000,
-                    "signatureKey": ""
+                    "uid": -1,
+                    "userDataClearable": true,
+                    "vendor": "",
+                    "versionCode": 0,
+                    "versionName": ""
                 },
-                "compatibleVersion": 3,
+                "compatibleVersion": 8,
                 "cpuAbi": "",
-                "defPermissions": [],
+                "defPermissions": [
+                ],
                 "description": "",
-                "entryModuleName": "",
-                "gid": 10000,
-                "hapModuleNames": [],
-                "installTime": 17921,
+                "entryInstallationFree": true,
+                "entryModuleName": "phone",
+                "extensionAbilityInfo": [
+                ],
+                "gid": -1,
+                "hapModuleInfos": [
+                ],
+                "hapModuleNames": [
+                ],
+                "installTime": 0,
+                "isDifferentName": false,
                 "isKeepAlive": false,
                 "isNativeApp": false,
-                "isDifferentName":false,
+                "isPreInstallApp": true,
                 "jointUserId": "",
-                "label": "Launcher",
-                "mainEntry": "",
-                "maxSdkVersion": 0,
-                "minSdkVersion": 0,
-                "moduleDirs": [],
-                "moduleNames": [],
-                "modulePublicDirs": [],
-                "moduleResPaths": [],
+                "label": "",
+                "mainEntry": "com.ohos.launcher",
+                "maxSdkVersion": -1,
+                "minCompatibleVersionCode": 1000000,
+                "minSdkVersion": -1,
+                "moduleDirs": [
+                ],
+                "moduleNames": [
+                ],
+                "modulePublicDirs": [
+                ],
+                "moduleResPaths": [
+                ],
                 "name": "com.ohos.launcher",
-                "releaseType": "Release",
-                "reqPermissions": [],
+                "releaseType": "Beta1",
+                "reqPermissionDetails": [
+                ],
+                "reqPermissionStates": [
+                ],
+                "reqPermissions": [
+                ],
                 "seInfo": "",
-                "targetVersion": 3,
-                "uid": 10000,
-                "updateTime": 17921,
+                "singleUser": false,
+                "targetVersion": 8,
+                "uid": -1,
+                "updateTime": 0,
                 "vendor": "ohos",
-                "versionCode": 1,
-                "versionName": "1.0",
-                "singleUser": true
+                "versionCode": 1000000,
+                "versionName": "1.0.0"
             },
             "baseDataDir": "/data/accounts/account_0/appdata/com.ohos.launcher",
+            "baseExtensionInfos_": {
+            },
             "bundleStatus": 1,
+            "commonEvents": {
+            },
+            "extensionSkillInfos_": {
+            },
+            "formInfos": {
+                "com.ohos.launcher.com.ohos.launcher.com.ohos.launcher.MainAbility": [
+                ],
+                "com.ohos.launcher.com.ohos.launcher.recents.com.ohos.launcher.recents.MainAbility": [
+                ],
+                "com.ohos.launcher.com.ohos.launcher.settings.com.ohos.launcher.settings.MainAbility": [
+                ]
+            },
+            "gid": -1,
             "hasEntry": true,
+            "innerBundleUserInfos": {
+                "com.ohos.launcher_100": {
+                    "accessTokenId": 537510556,
+                    "bundleName": "com.ohos.launcher",
+                    "bundleUserInfo": {
+                        "abilities": [
+                        ],
+                        "disabledAbilities": [
+                        ],
+                        "enabled": true,
+                        "userId": 100
+                    },
+                    "gids": [
+                        20010012
+                    ],
+                    "installTime": 1503988035,
+                    "uid": 20010012,
+                    "updateTime": 1503988036
+                }
+            },
             "innerModuleInfos": {
                 "com.ohos.launcher": {
                     "abilityKeys": [
-                        "com.ohos.launchercom.ohos.launchercom.ohos.launcher.MainAbility"
+                        "com.ohos.launcher.com.ohos.launcher.com.ohos.launcher.MainAbility"
                     ],
-                    "defPermissions": [],
+                    "colorMode": -1,
+                    "defPermissions": [
+                    ],
+                    "definePermissions": [
+                    ],
                     "description": "",
+                    "descriptionId": 0,
+                    "deviceTypes": [
+                    ],
                     "distro": {
                         "deliveryWithInstall": true,
-                        "moduleName": "launcher",
+                        "installationFree": true,
+                        "moduleName": "phone",
                         "moduleType": "entry"
                     },
+                    "extensionKeys": [
+                    ],
+                    "extensionSkillKeys": [
+                    ],
+                    "installationFree": true,
                     "isEntry": true,
+                    "isModuleJson": false,
+                    "isStageBasedModel": true,
+                    "label": "$string: entry_MainAbility",
+                    "labelId": 218103828,
+                    "mainAbility": "com.ohos.launcher.MainAbility",
                     "metaData": {
-                        "customizeData": []
+                        "customizeData": [
+                        ]
                     },
+                    "metadata": [
+                    ],
                     "moduleDataDir": "/data/accounts/account_0/appdata/com.ohos.launcher/com.ohos.launcher",
-                    "moduleName": ".MyApplication",
+                    "moduleName": "phone",
                     "modulePackage": "com.ohos.launcher",
                     "modulePath": "/data/app/el1/bundle/public/com.ohos.launcher/com.ohos.launcher",
-                    "moduleResPath": "/data/app/el1/bundle/public/com.ohos.launcher/com.ohos.launcher/assets/launcher/resources.index",
-                    "reqCapabilities": [],
-                    "reqPermissions": [],
-                    "colorMode": -1,
-                    "skillKeys": [
-                        "com.ohos.launchercom.ohos.launchercom.ohos.launcher.MainAbility"
+                    "moduleResPath": "/data/app/el1/bundle/public/com.ohos.launcher/com.ohos.launcher/assets/phone/resources.index",
+                    "pages": "",
+                    "process": "",
+                    "reqCapabilities": [
                     ],
-                    "srcPath": ""
+                    "requestPermissions": [
+                        {
+                            "name": "ohos.permission.GET_BUNDLE_INFO_PRIVILEGED",
+                            "reason": "",
+                            "reasonId": 0,
+                            "usedScene": {
+                                "abilities": [
+                                ],
+                                "when": ""
+                            }
+                        },
+                        {
+                            "name": "ohos.permission.INSTALL_BUNDLE",
+                            "reason": "",
+                            "reasonId": 0,
+                            "usedScene": {
+                                "abilities": [
+                                ],
+                                "when": ""
+                            }
+                        },
+                        {
+                            "name": "ohos.permission.LISTEN_BUNDLE_CHANGE",
+                            "reason": "",
+                            "reasonId": 0,
+                            "usedScene": {
+                                "abilities": [
+                                ],
+                                "when": ""
+                            }
+                        },
+                        {
+                            "name": "ohos.permission.MANAGE_MISSIONS",
+                            "reason": "",
+                            "reasonId": 0,
+                            "usedScene": {
+                                "abilities": [
+                                ],
+                                "when": ""
+                            }
+                        },
+                        {
+                            "name": "ohos.permission.REQUIRE_FORM",
+                            "reason": "",
+                            "reasonId": 0,
+                            "usedScene": {
+                                "abilities": [
+                                ],
+                                "when": ""
+                            }
+                        }
+                    ],
+                    "skillKeys": [
+                        "com.ohos.launcher.com.ohos.launcher.com.ohos.launcher.MainAbility"
+                    ],
+                    "srcEntrance": "",
+                    "srcPath": "",
+                    "uiSyntax": "",
+                    "virtualMachine": ""
+                },
+                "com.ohos.launcher.recents": {
+                    "abilityKeys": [
+                        "com.ohos.launcher.com.ohos.launcher.recents.com.ohos.launcher.recents.MainAbility"
+                    ],
+                    "colorMode": -1,
+                    "defPermissions": [
+                    ],
+                    "definePermissions": [
+                    ],
+                    "description": "",
+                    "descriptionId": 0,
+                    "deviceTypes": [
+                    ],
+                    "distro": {
+                        "deliveryWithInstall": true,
+                        "installationFree": true,
+                        "moduleName": "recents",
+                        "moduleType": "feature"
+                    },
+                    "extensionKeys": [
+                    ],
+                    "extensionSkillKeys": [
+                    ],
+                    "installationFree": true,
+                    "isEntry": false,
+                    "isModuleJson": false,
+                    "isStageBasedModel": true,
+                    "label": "",
+                    "labelId": 0,
+                    "mainAbility": "com.ohos.launcher.recents.MainAbility",
+                    "metaData": {
+                        "customizeData": [
+                        ]
+                    },
+                    "metadata": [
+                    ],
+                    "moduleDataDir": "/data/accounts/account_0/appdata/com.ohos.launcher/com.ohos.launcher.recents",
+                    "moduleName": "recents",
+                    "modulePackage": "com.ohos.launcher.recents",
+                    "modulePath": "/data/app/el1/bundle/public/com.ohos.launcher/com.ohos.launcher.recents",
+                    "moduleResPath": "/data/app/el1/bundle/public/com.ohos.launcher/com.ohos.launcher.recents/assets/recents/resources.index",
+                    "pages": "",
+                    "process": "",
+                    "reqCapabilities": [
+                    ],
+                    "requestPermissions": [
+                    ],
+                    "skillKeys": [
+                        "com.ohos.launcher.com.ohos.launcher.recents.com.ohos.launcher.recents.MainAbility"
+                    ],
+                    "srcEntrance": "",
+                    "srcPath": "",
+                    "uiSyntax": "",
+                    "virtualMachine": ""
+                },
+                "com.ohos.launcher.settings": {
+                    "abilityKeys": [
+                        "com.ohos.launcher.com.ohos.launcher.settings.com.ohos.launcher.settings.MainAbility"
+                    ],
+                    "colorMode": -1,
+                    "defPermissions": [
+                    ],
+                    "definePermissions": [
+                    ],
+                    "description": "",
+                    "descriptionId": 0,
+                    "deviceTypes": [
+                    ],
+                    "distro": {
+                        "deliveryWithInstall": true,
+                        "installationFree": true,
+                        "moduleName": "settings",
+                        "moduleType": "feature"
+                    },
+                    "extensionKeys": [
+                    ],
+                    "extensionSkillKeys": [
+                    ],
+                    "installationFree": true,
+                    "isEntry": false,
+                    "isModuleJson": false,
+                    "isStageBasedModel": true,
+                    "label": "",
+                    "labelId": 0,
+                    "mainAbility": "com.ohos.launcher.settings.MainAbility",
+                    "metaData": {
+                        "customizeData": [
+                        ]
+                    },
+                    "metadata": [
+                    ],
+                    "moduleDataDir": "/data/accounts/account_0/appdata/com.ohos.launcher/com.ohos.launcher.settings",
+                    "moduleName": "settings",
+                    "modulePackage": "com.ohos.launcher.settings",
+                    "modulePath": "/data/app/el1/bundle/public/com.ohos.launcher/com.ohos.launcher.settings",
+                    "moduleResPath": "/data/app/el1/bundle/public/com.ohos.launcher/com.ohos.launcher.settings/assets/settings/resources.index",
+                    "pages": "",
+                    "process": "",
+                    "reqCapabilities": [
+                    ],
+                    "requestPermissions": [
+                    ],
+                    "skillKeys": [
+                        "com.ohos.launcher.com.ohos.launcher.settings.com.ohos.launcher.settings.MainAbility"
+                    ],
+                    "srcEntrance": "",
+                    "srcPath": "",
+                    "uiSyntax": "",
+                    "virtualMachine": ""
                 }
             },
+            "installMark": {
+                "installMarkBundle": "com.ohos.launcher",
+                "installMarkPackage": "com.ohos.launcher.settings",
+                "installMarkStatus": 2
+            },
+            "isNewVersion_": false,
             "isSupportBackup": false,
-            "mainAbility": "com.ohos.launchercom.ohos.launchercom.ohos.launcher.MainAbility",
+            "mainAbility": "com.ohos.launcher.com.ohos.launcher.com.ohos.launcher.MainAbility",
+            "mainAbilityName": "com.ohos.launcher.MainAbility",
+            "newBundleName": "",
+            "shortcutInfos": {
+            },
             "skillInfos": {
-                "com.ohos.launchercom.ohos.launchercom.ohos.launcher.MainAbility": [
+                "com.ohos.launcher.com.ohos.launcher.com.ohos.launcher.MainAbility": [
                     {
                         "actions": [
                             "action.system.home",
@@ -256,112 +694,17 @@ protected:
                             "entity.system.home",
                             "flag.home.intent.from.system"
                         ],
-                        "uris": []
-                    }
-                ]
-            },
-            "formInfos": {
-                "com.ohos.launchercom.ohos.launchercom.ohos.launcher.MainAbility": [
-                    {
-                        "package": "com.ohos.launcher",
-                        "bundleName": "com.ohos.launcher",
-                        "originalBundleName": "com.ohos.launcher",
-                        "relatedBundleName": "com.ohos.launcher",
-                        "moduleName": "launcher",
-                        "abilityName": "com.ohos.launcher.MainAbility",
-                        "name": "Form_JS",
-                        "description": "It's JS Form",
-                        "jsComponentName": "com.ohos.launcher",
-                        "deepLink": "com.example.myapplication.fa/.MainAbility",
-                        "formConfigAbility": "com.example.myapplication.fa/.MainAbility",
-                        "scheduledUpdateTime": "21:05",
-                        "descriptionId": 125,
-                        "updateDuration": 1,
-                        "defaultDimension": 1,
-                        "defaultFlag": true,
-                        "formVisibleNotify": true,
-                        "updateEnabled": true,
-                        "type": 0,
-                        "colorMode": 0,
-                        "supportDimensions": [
-                            1
-                        ],
-                        "landscapeLayouts": [],
-                        "portraitLayouts": [],
-                        "customizeData": [
-                            {
-                                "name": "originWidgetName",
-                                "value": "com.weather.testWidget"
-                            }
+                        "uris": [
                         ]
                     }
+                ],
+                "com.ohos.launcher.com.ohos.launcher.recents.com.ohos.launcher.recents.MainAbility": [
+                ],
+                "com.ohos.launcher.com.ohos.launcher.settings.com.ohos.launcher.settings.MainAbility": [
                 ]
             },
-            "shortcutInfos": {
-                "com.example.myapplication1com.example.myapplication.h1id": {
-                    "bundleName": "com.example.myapplication1",
-                    "disableMessage": "",
-                    "hostAbility": "",
-                    "icon": "$string:mainability_description",
-                    "id": "id",
-                    "intents": [
-                        {
-                            "targetBundle": "com.example.myapplication1",
-                            "targetClass": "com.example.myapplication.MainAbility"
-                        }
-                    ],
-                    "isEnables": false,
-                    "isHomeShortcut": false,
-                    "isStatic": false,
-                    "label": "$string:mainability_description"
-                }
-            },
-            "commonEvents": {
-                "com.example.myapplication1com.example.myapplication.h1id": {
-                    "name": ".MainAbility",
-                    "bundleName": "com.example.myapplication1",
-                    "permission": "permission_test",
-                    "uid": -1,
-                    "data": [
-                        "data_one",
-                        "data_two"
-                    ],
-                    "type": [
-                        "type_one",
-                        "typea_two"
-                    ],
-                    "events": [
-                        "events_one",
-                        "events_two"
-                    ]
-                }
-            },
-            "userId_": 0,
-            "isPreInstallApp": true,
-            "canUninstall": true,
-            "newBundleName": "com.example.myapplication1#20010001",
-            "innerBundleUserInfos": {
-                "com.ohos.launcher_0": {
-                    "accessTokenId":-1,
-                    "bundleName":"com.ohos.launcher",
-                    "bundleUserInfo": {
-                        "enabled":true,
-                        "abilities":[
-
-                        ],
-                        "disabledAbilities":[
-
-                        ],
-                        "userId":0
-                    },
-                    "gids":[
-                        10000
-                    ],
-                    "installTime":17921,
-                    "uid":10000,
-                    "updateTime":17921
-                }
-            }
+            "uid": -1,
+            "userId_": 100
         }
     )"_json;
 
@@ -374,7 +717,7 @@ protected:
     const std::string deviceId_ = Constants::CURRENT_DEVICE_ID;
     const std::string BASE_ABILITY_INFO = "baseAbilityInfos";
     // need modify with innerBundleInfoJson_
-    const std::string abilityName = "com.ohos.launchercom.ohos.launchercom.ohos.launcher.MainAbility";
+    const std::string abilityName = "com.ohos.launcher.com.ohos.launcher.com.ohos.launcher.MainAbility";
     const std::string BASE_BUNDLE_INFO = "baseBundleInfo";
     const std::string BASE_APPLICATION_INFO = "baseApplicationInfo";
 };
@@ -443,7 +786,6 @@ HWTEST_F(BmsBundleDataStorageDatabaseTest, BundleInfoJsonSerializer_0100, Functi
     BundleInfo fromJsonInfo = sourceInfoJson;
     // serialize fromJsonInfo to json
     nlohmann::json toJsonObject = fromJsonInfo;
-
     EXPECT_TRUE(toJsonObject.dump() == sourceInfoJson.dump());
 }
 
@@ -543,7 +885,6 @@ HWTEST_F(BmsBundleDataStorageDatabaseTest, ApplicationInfoJsonSerializer_0100, F
     ApplicationInfo fromJsonInfo = sourceInfoJson;
     // serialize fromJsonInfo to json
     nlohmann::json toJsonObject = fromJsonInfo;
-
     EXPECT_TRUE(toJsonObject.dump() == sourceInfoJson.dump());
 }
 
