@@ -1566,7 +1566,8 @@ bool BundleDataMgr::RegisterBundleStatusCallback(const sptr<IBundleStatusCallbac
     std::lock_guard<std::mutex> lock(callbackMutex_);
     callbackList_.emplace_back(bundleStatusCallback);
     if (bundleStatusCallback->AsObject() != nullptr) {
-        sptr<BundleStatusCallbackDeathRecipient> deathRecipient = new (std::nothrow) BundleStatusCallbackDeathRecipient();
+        sptr<BundleStatusCallbackDeathRecipient> deathRecipient = 
+            new (std::nothrow) BundleStatusCallbackDeathRecipient();
         if (deathRecipient == nullptr) {
             APP_LOGE("deathRecipient is null");
             return false;

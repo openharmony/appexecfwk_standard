@@ -509,7 +509,7 @@ static void ConvertAbilityInfo(napi_env env, napi_value objAbilityInfo, const Ab
 }
 
 static void ProcessAbilityInfos(
-    napi_env env, napi_value result, const std::vector<OHOS::AppExecFwk::AbilityInfo> abilityInfos)
+    napi_env env, napi_value result, const std::vector<OHOS::AppExecFwk::AbilityInfo> &abilityInfos)
 {
     if (abilityInfos.size() > 0) {
         APP_LOGI("-----abilityInfos is not null-----");
