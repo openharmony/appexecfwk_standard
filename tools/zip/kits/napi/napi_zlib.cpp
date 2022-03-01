@@ -492,8 +492,6 @@ bool UnwrapOptionsParams(OPTIONS &options, napi_env env, napi_value arg)
             NAPI_CALL_BASE_BOOL(UnwrapIntValue(env, jsProValue, ret), false);
             COMPRESS_STRATEGY_CHECK(ret, false)
             options.strategy = static_cast<COMPRESS_STRATEGY>(ret);
-        } else if (strProName == std::string("dictionary")) {
-            continue;
         } else {
             continue;
         }
