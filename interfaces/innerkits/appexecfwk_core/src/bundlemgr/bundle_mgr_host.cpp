@@ -199,6 +199,9 @@ int BundleMgrHost::OnRemoteRequest(uint32_t code, MessageParcel &data, MessagePa
         case static_cast<uint32_t>(IBundleMgr::Message::SET_ABILITY_ENABLED):
             errCode = HandleSetAbilityEnabled(data, reply);
             break;
+        case static_cast<uint32_t>(IBundleMgr::Message::GET_ABILITY_INFO):
+            errCode = HandleGetAbilityInfo(data, reply);
+            break;
         case static_cast<uint32_t>(IBundleMgr::Message::GET_ABILITY_ICON):
             errCode = HandleGetAbilityIcon(data, reply);
             break;
@@ -1237,6 +1240,26 @@ ErrCode BundleMgrHost::HandleSetAbilityEnabled(Parcel &data, Parcel &reply)
     if (!reply.WriteBool(ret)) {
         APP_LOGE("write failed");
         return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    return ERR_OK;
+}
+
+ErrCode BundleMgrHost::HandleGetAbilityInfo(Parcel &data, Parcel &reply)
+{
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
+    AbilityInfo info;
+    std::string bundleName = data.ReadString();
+    std::string abilityName = data.ReadString();
+    bool ret = GetAbilityInfo(bundleName, abilityName, info);
+    if (!reply.WriteBool(ret)) {
+        APP_LOGE("write failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
+    if (ret) {
+        if (!reply.WriteParcelable(&info)) {
+            APP_LOGE("write failed");
+            return ERR_APPEXECFWK_PARCEL_ERROR;
+        }
     }
     return ERR_OK;
 }
