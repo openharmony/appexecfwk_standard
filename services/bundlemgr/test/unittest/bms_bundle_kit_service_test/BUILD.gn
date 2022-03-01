@@ -24,14 +24,9 @@ ohos_unittest("BmsBundleKitServiceTest") {
   include_dirs = [
     "//third_party/jsoncpp/include",
     "//base/startup/syspara_lite/interfaces/innerkits/native/syspara/include",
+    "//foundation/multimedia/image_standard/interfaces/innerkits/include",
   ]
   sources = [
-    "${innerkits_path}/appexecfwk_base/src/ability_info.cpp",
-    "${innerkits_path}/appexecfwk_base/src/application_info.cpp",
-    "${innerkits_path}/appexecfwk_base/src/bundle_info.cpp",
-    "${innerkits_path}/appexecfwk_base/src/bundle_user_info.cpp",
-    "${innerkits_path}/appexecfwk_base/src/compatible_ability_info.cpp",
-    "${innerkits_path}/appexecfwk_base/src/compatible_application_info.cpp",
     "${services_path}/bundlemgr/src/bms_device_manager.cpp",
     "${services_path}/bundlemgr/src/bundle_clone_mgr.cpp",
     "${services_path}/bundlemgr/src/bundle_data_mgr.cpp",
@@ -73,8 +68,6 @@ ohos_unittest("BmsBundleKitServiceTest") {
     cflags += [ "-DBINDER_IPC_32BIT" ]
   }
   deps = [
-    "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base:appexecfwk_base",
-    "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core:appexecfwk_core",
     "${libs_path}/libeventhandler:libeventhandler_target",
     "//base/security/appverify/interfaces/innerkits/appverify:libhapverify",
     "//base/security/permission/interfaces/innerkits/permission_standard/permissionsdk:libpermissionsdk_standard",
@@ -85,6 +78,7 @@ ohos_unittest("BmsBundleKitServiceTest") {
     "//foundation/distributeddatamgr/distributeddatamgr/interfaces/innerkits/distributeddata:distributeddata_inner",
     "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
+    "//foundation/multimedia/image_standard/interfaces/innerkits:image_native",
     "//third_party/googletest:gtest_main",
     "//third_party/jsoncpp:jsoncpp",
   ]
@@ -93,6 +87,8 @@ ohos_unittest("BmsBundleKitServiceTest") {
 
   external_deps = [
     "ability_runtime:app_manager",
+    "bundle_framework:appexecfwk_base",
+    "bundle_framework:appexecfwk_core",
     "bytrace_standard:bytrace_core",
     "ces_standard:cesfwk_innerkits",
     "device_manager_base:devicemanagersdk",
