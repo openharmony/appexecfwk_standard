@@ -72,7 +72,6 @@ struct AsyncAbilityInfosCallbackInfo {
     bool ret = false;
     int32_t err = 0;
     std::string message;
-    napi_callback_info info;
 };
 
 struct AsyncBundleInfoCallbackInfo {
