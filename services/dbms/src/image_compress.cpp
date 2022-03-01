@@ -38,6 +38,7 @@ namespace {
     constexpr double EPSILON = 1e-5;
     const std::string JPG = "jpg";
     const std::string PNG = "png";
+    const std::string JPEG = "jpeg";
     struct EncodeMemo {
         ImageRow buffer;
         int32_t size;
@@ -66,15 +67,31 @@ double ImageCompress::CalRatio(std::string fileName)
     return sqrt(static_cast<double>(FILE_COMPRESS_SIZE) / fileSize);
 }
 
+bool ImageCompress::NeedCompress(std::string fileName)
+{
+    FILE* file = fopen(fileName.c_str(), "rb");
+    if (!file) {
+        APP_LOGE("ImageCompress: CalRatio %{public}s is unavailable", fileName.c_str());
+    }
+    if (fseek(file, 0L, SEEK_END) != 0) {
+        fclose(file);
+        return false;
+    }
+    int32_t fileSize = ftell(file);
+    if (fileSize < FILE_MAX_SIZE) {
+        APP_LOGE("ImageCompress: CalRatio do not need compress");
+        fclose(file);
+        return false;
+    }
+    if (fclose(file) != 0) {
+        return false;
+    }
+    return true;
+}
+
 void ImageCompress::PngToBuffer(png_structp png, png_bytep data, png_size_t length)
 {
     struct EncodeMemo *p = (struct EncodeMemo*)png_get_io_ptr(png);
-    int32_t bufferSize = p->size + length;
-    if (p->buffer) {
-        p->buffer = (unsigned char*)realloc(p->buffer, bufferSize);
-    } else {
-        p->buffer = (unsigned char*)malloc(bufferSize);
-    }
     if (memcpy_s(p->buffer + p->size, length, data, length) != EOK) {
         APP_LOGE("ImageCompress: memcpy_s buffer failed");
         return;
@@ -87,19 +104,72 @@ bool ImageCompress::DoubleEqual(double left, double right)
     return std::abs(left - right ) <= EPSILON;
 }
 
-int ImageCompress::DecodePngFile(const char* fileName, std::shared_ptr<ImageBuffer>& imageBuffer)
+bool ImageCompress::InitPngFile(std::shared_ptr<ImageBuffer>& imageBuffer,
+    png_structp& png, png_infop& info)
 {
-    if (fileName == nullptr || imageBuffer == nullptr) {
-        APP_LOGE("ImageCompress: DecodePngFile file %s is unavailable", fileName);
+    imageBuffer->SetWidth(png_get_image_width(png, info));
+    imageBuffer->SetHeight(png_get_image_height(png, info));
+    imageBuffer->SetColorType(png_get_color_type(png, info));
+    imageBuffer->SetBitDepth(png_get_bit_depth(png, info));
+    imageBuffer->SetPngComponents(png_get_channels(png, info));
+ 
+    if (imageBuffer->GetBitDepth() == BITDEPTH_SIXTHEN) {
+        png_set_strip_16(png);
+    }
+    if (imageBuffer->GetColorType() == PNG_COLOR_TYPE_PALETTE) {
+        png_set_palette_to_rgb(png);
+    }
+    if (png_get_valid(png, info, PNG_INFO_tRNS)) {
+        png_set_tRNS_to_alpha(png);
+    }
+    if (imageBuffer->GetColorType() == PNG_COLOR_TYPE_RGB ||
+        imageBuffer->GetColorType() == PNG_COLOR_TYPE_GRAY ||
+        imageBuffer->GetColorType() == PNG_COLOR_TYPE_PALETTE) {
+        png_set_filler(png, 0xFF, PNG_FILLER_AFTER);
+    }
+    if (imageBuffer->GetColorType() == PNG_COLOR_TYPE_GRAY ||
+        imageBuffer->GetColorType() == PNG_COLOR_TYPE_GRAY_ALPHA) {
+        png_set_gray_to_rgb(png);
+    }
+    png_read_update_info(png, info);
+    if (imageBuffer->GetImageDataPointer()) {
+        return false;
+    }
+    imageBuffer->MallocImageMap(RGBA_COMPONENTS);
+    imageBuffer->SetComponents(RGBA_COMPONENTS);
+    int32_t strides = imageBuffer->GetWidth() *  RGBA_COMPONENTS;
+    png_bytep* rowPointers = (png_bytep*)malloc(sizeof(png_bytep) * imageBuffer->GetHeight());
+    for (int32_t h = 0; h < imageBuffer->GetHeight(); ++h) {
+        rowPointers[h] = (png_byte*)malloc(strides);
+    }
+    png_read_image(png, rowPointers);
+    ImageRow imageRow = imageBuffer->GetImageDataPointer().get();
+    for (int32_t h = 0; h < imageBuffer->GetHeight(); ++h) {
+        if (memcpy_s(imageRow, strides, rowPointers[h], strides) != EOK) {
+            return false;
+        }
+        imageRow += strides;
+    }
+    for (int32_t h = 0; h < imageBuffer->GetHeight(); ++h) {
+        free(rowPointers[h]);
+    }
+    free(rowPointers);
+    return true;
+}
+
+int ImageCompress::DecodePngFile(std::string fileName, std::shared_ptr<ImageBuffer>& imageBuffer)
+{
+    if (fileName.empty() || imageBuffer == nullptr) {
+        APP_LOGE("ImageCompress: DecodePngFile file %s is unavailable", fileName.c_str());
         return -1;
     }
     double ratio = CalRatio(fileName);
     if (ratio < 0) {
-        APP_LOGE("ImageCompress: DecodePngFile file %{public}s do not need compress", fileName);
+        APP_LOGE("ImageCompress: DecodePngFile file %{public}s do not need compress", fileName.c_str());
         return -1;
     }
 
-    FILE* inFile = fopen(fileName, "rb");
+    FILE* inFile = fopen(fileName.c_str(), "rb");
     imageBuffer->SetRatio(ratio);
     png_structp png = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
     if (!png) {
@@ -120,65 +190,16 @@ int ImageCompress::DecodePngFile(const char* fileName, std::shared_ptr<ImageBuff
 
     png_init_io(png, inFile);
     png_read_info(png, info);
-    imageBuffer->SetWidth(png_get_image_width(png, info));
-    imageBuffer->SetHeight(png_get_image_height(png, info));
-    imageBuffer->SetColorType(png_get_color_type(png, info));
-    imageBuffer->SetBitDepth(png_get_bit_depth(png, info));
-    imageBuffer->SetPngComponents(png_get_channels(png, info));
 
-    if (imageBuffer->GetBitDepth() == BITDEPTH_SIXTHEN) {
-        png_set_strip_16(png);
-    }
-
-    if (imageBuffer->GetColorType() == PNG_COLOR_TYPE_PALETTE) {
-        png_set_palette_to_rgb(png);
-    }
-
-    if (png_get_valid(png, info, PNG_INFO_tRNS)) {
-        png_set_tRNS_to_alpha(png);
-    }
-
-    if (imageBuffer->GetColorType() == PNG_COLOR_TYPE_RGB ||
-        imageBuffer->GetColorType() == PNG_COLOR_TYPE_GRAY ||
-        imageBuffer->GetColorType() == PNG_COLOR_TYPE_PALETTE) {
-        png_set_filler(png, 0xFF, PNG_FILLER_AFTER);
-    }
-    if (imageBuffer->GetColorType() == PNG_COLOR_TYPE_GRAY ||
-        imageBuffer->GetColorType() == PNG_COLOR_TYPE_GRAY_ALPHA) {
-        png_set_gray_to_rgb(png);
-    }
-
-    png_read_update_info(png, info);
-
-    if (imageBuffer->GetImageDataPointer()) {
+    if (!InitPngFile(imageBuffer, png, info)) {
         return -1;
-    }
-
-    imageBuffer->MallocImageMap(RGBA_COMPONENTS);
-    imageBuffer->SetComponents(RGBA_COMPONENTS);
-    int32_t strides = imageBuffer->GetWidth() *  RGBA_COMPONENTS;
-    png_bytep* rowPointers = (png_bytep*)malloc(sizeof(png_bytep) * imageBuffer->GetHeight());
-    for (int32_t h = 0; h < imageBuffer->GetHeight(); ++h) {
-        rowPointers[h] = (png_byte*)malloc(strides);
-    }
-    png_read_image(png, rowPointers);
-    ImageRow imageRow = imageBuffer->GetImageDataPointer().get();
-    for (int32_t h = 0; h < imageBuffer->GetHeight(); ++h) {
-        if (memcpy_s(imageRow, strides, rowPointers[h], strides) != EOK) {
-            return -1;
-        }
-        imageRow += strides;
     }
 
     if (fclose(inFile) != EOK) {
-        APP_LOGE("ImageCompress: fclose file %{public}s error", fileName);
+        APP_LOGE("ImageCompress: fclose file %{public}s error", fileName.c_str());
         return -1;
     }
     png_destroy_read_struct(&png, &info, NULL);
-    for (int32_t h = 0; h < imageBuffer->GetHeight(); ++h) {
-        free(rowPointers[h]);
-    }
-    free(rowPointers);
     return 0;
 }
 
@@ -213,7 +234,7 @@ int32_t ImageCompress::EncodePngFile(std::shared_ptr<ImageBuffer>& imageBuffer)
     );
     int32_t strides = imageBuffer->GetWidth() * RGBA_COMPONENTS;
     struct EncodeMemo memo;
-    memo.buffer = nullptr;
+    memo.buffer = (ImageRow)malloc(FILE_MAX_SIZE * RGBA_COMPONENTS);
     memo.size = 0;
     if (!imageBuffer->GetImageDataPointer()) {
         APP_LOGE("ImageCompress: EncodePngFile should input image buffer");
@@ -292,23 +313,23 @@ int32_t ImageCompress::ResizeRGBAImage(std::shared_ptr<ImageBuffer>& imageBuffer
     return 0;
 }
 
-int32_t ImageCompress::DecodeJPGFile(const char* fileName, std::shared_ptr<ImageBuffer>& imageBuffer)
+int32_t ImageCompress::DecodeJPGFile(std::string fileName, std::shared_ptr<ImageBuffer>& imageBuffer)
 {
-    if (fileName == nullptr || imageBuffer == nullptr) {
-        APP_LOGE("ImageCompress: DecodeJPGFile file %s is unavailable", fileName);
+    if (fileName.empty() || imageBuffer == nullptr) {
+        APP_LOGE("ImageCompress: DecodeJPGFile file %s is unavailable", fileName.c_str());
         return -1;
     }
     double ratio = CalRatio(fileName);
     if (ratio < 0) {
-        APP_LOGE("ImageCompress: DecodePngFile file %{public}s do not need compress", fileName);
+        APP_LOGE("ImageCompress: DecodePngFile file %{public}s do not need compress", fileName.c_str());
         return -1;
     }
     struct jpeg_decompress_struct cinfo;
     struct jpeg_error_mgr jerr;
     cinfo.err = jpeg_std_error(&jerr);
-    FILE* inFile = fopen(fileName, "rb");
+    FILE* inFile = fopen(fileName.c_str(), "rb");
     if (!inFile) {
-        APP_LOGE("ImageCompress: DecodeJPGFile file %{public}s is unavailable", fileName);
+        APP_LOGE("ImageCompress: DecodeJPGFile file %{public}s is unavailable", fileName.c_str());
         return -1;
     }
 
@@ -419,12 +440,10 @@ int32_t ImageCompress::ResizeRGBImage(std::shared_ptr<ImageBuffer>& imageBufferI
     return 0;
 }
 
-std::shared_ptr<ImageBuffer> ImageCompress::CompressImage(const char* inFileName)
+std::shared_ptr<ImageBuffer> ImageCompress::CompressImage(std::string inFileName)
 {
-    std::string fileName(inFileName);
-    std::string inFileSuffix = fileName.substr(fileName.find_last_of('.') + 1);
-    if (inFileSuffix.compare("png") != 0 && inFileSuffix.compare("PNG") != 0 &&
-        inFileSuffix.compare("jpg") != 0 && inFileSuffix.compare("jpeg") != 0) {
+    std::string inFileSuffix = inFileName.substr(inFileName.find_last_of('.') + 1);
+    if (inFileSuffix.compare(PNG) != 0 && inFileSuffix.compare(JPG) != 0 && inFileSuffix.compare(JPEG) != 0) {
         return nullptr;
     }
     std::shared_ptr<ImageBuffer> imageBufferIn = std::make_shared<ImageBuffer>();
@@ -443,7 +462,7 @@ std::shared_ptr<ImageBuffer> ImageCompress::CompressImage(const char* inFileName
         if (EncodePngFile(imageBufferOut) != 0) {
             return nullptr;
         }
-    } else if (inFileSuffix.compare("jpg") == 0 || inFileSuffix.compare("jpeg") == 0) {
+    } else if (inFileSuffix.compare(JPG) == 0 || inFileSuffix.compare(JPEG) == 0) {
         imageBufferIn->SetImageType(JPG);
         imageBufferOut->SetImageType(JPG);
         if (DecodeJPGFile(inFileName, imageBufferIn) != 0) {
