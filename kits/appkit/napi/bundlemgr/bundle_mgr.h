@@ -60,6 +60,21 @@ struct AsyncAbilityInfoCallbackInfo {
     int32_t err = 0;
 };
 
+struct AsyncAbilityInfosCallbackInfo {
+    napi_env env;
+    napi_async_work asyncWork;
+    napi_deferred deferred;
+    napi_ref callback = 0;
+    int32_t flags = 0;
+    std::string bundleName;
+    std::string abilityName;
+    OHOS::AppExecFwk::AbilityInfo abilityInfo;
+    bool ret = false;
+    int32_t err = 0;
+    std::string message;
+    napi_callback_info info;
+};
+
 struct AsyncBundleInfoCallbackInfo {
     napi_env env;
     napi_async_work asyncWork;
@@ -122,6 +137,18 @@ struct AsyncApplicationInfosCallbackInfo {
     int32_t userId = 0;
     std::vector<OHOS::AppExecFwk::ApplicationInfo> appInfos;
     bool ret = false;
+    int32_t err = 0;
+    std::string message;
+};
+
+struct AsyncAbilityLabelCallbackInfo {
+    napi_env env;
+    napi_async_work asyncWork;
+    napi_deferred deferred;
+    napi_ref callback = 0;
+    std::string bundleName;
+    std::string className;
+    std::string abilityLabel;
     int32_t err = 0;
     std::string message;
 };
@@ -202,6 +229,18 @@ struct AsyncLaunchWantForBundleCallbackInfo {
     OHOS::AAFwk::Want want;
     bool ret = false;
     int32_t err = 0;
+};
+
+struct AsyncGetBundleGidsCallbackInfo {
+    napi_env env;
+    napi_async_work asyncWork;
+    napi_deferred deferred;
+    napi_ref callback = 0;
+    std::string bundleName;
+    std::vector<int32_t> gids;
+    int32_t err = 0;
+    bool ret = false;
+    std::string message;
 };
 
 struct AsyncModuleUsageRecordsCallbackInfo {
@@ -313,8 +352,10 @@ struct AsyncAbilityInfo {
 
 extern thread_local napi_ref g_classBundleInstaller;
 
+napi_value WrapVoidToJS(napi_env env);
 napi_value GetApplicationInfos(napi_env env, napi_callback_info info);
 napi_value GetApplicationInfo(napi_env env, napi_callback_info info);
+napi_value GetAbilityInfo(napi_env env, napi_callback_info info);
 napi_value QueryAbilityInfos(napi_env env, napi_callback_info info);
 napi_value GetBundleInfos(napi_env env, napi_callback_info info);
 napi_value GetBundleInfo(napi_env env, napi_callback_info info);
@@ -339,7 +380,11 @@ napi_value SetAbilityEnabled(napi_env env, napi_callback_info info);
 napi_value GetAppPrivilegeLevel(napi_env env, napi_callback_info info);
 napi_value QueryExtensionInfoByWant(napi_env env, napi_callback_info info);
 napi_value GetNameForUid(napi_env env, napi_callback_info info);
+napi_value GetAbilityLabel(napi_env env, napi_callback_info info);
 napi_value GetAbilityIcon(napi_env env, napi_callback_info info);
+napi_value GetBundleGids(napi_env env, napi_callback_info info);
+napi_value IsAbilityEnabled(napi_env env, napi_callback_info info);
+napi_value IsApplicationEnabled(napi_env env, napi_callback_info info);
 bool UnwrapAbilityInfo(napi_env env, napi_value param, OHOS::AppExecFwk::AbilityInfo& abilityInfo);
 void CreateAbilityTypeObject(napi_env env, napi_value value);
 void CreateAbilitySubTypeObject(napi_env env, napi_value value);

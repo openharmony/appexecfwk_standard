@@ -627,6 +627,15 @@ public:
 
     virtual std::shared_ptr<Media::PixelMap> GetAbilityPixelMapIcon(const std::string &bundleName,
         const std::string &abilityName) override;
+    /**
+     * @brief Obtains the AbilityInfo based on a given bundle name through the proxy object.
+     * @param bundleName Indicates the bundle name to be queried.
+     * @param abilityName Indicates the ability name to be queried.
+     * @param abilityInfo Indicates the obtained AbilityInfo object.
+     * @return Returns true if the AbilityInfo is successfully obtained; returns false otherwise.
+     */
+    virtual bool GetAbilityInfo(
+        const std::string &bundleName, const std::string &abilityName, AbilityInfo &abilityInfo) override;
 private:
     /**
      * @brief Send a command message from the proxy object.
