@@ -699,6 +699,20 @@ public:
         return nullptr;
     }
 
+    /**
+     * @brief Obtains the AbilityInfo based on a given bundle name.
+     * @param bundleName Indicates the bundle name to be queried.
+     * @param abilityName Indicates the ability name to be queried.
+     * @param abilityInfo Indicates the obtained AbilityInfo object.
+     * @return Returns true if the abilityInfo is successfully obtained; returns false otherwise.
+
+     */
+    virtual bool GetAbilityInfo(
+        const std::string &bundleName, const std::string &abilityName, AbilityInfo &abilityInfo)
+    {
+        return false;
+    }
+
     enum class Message {
         GET_APPLICATION_INFO = 0,
         GET_APPLICATION_INFOS,
@@ -743,6 +757,7 @@ public:
         SET_APPLICATION_ENABLED,
         IS_ABILITY_ENABLED,
         SET_ABILITY_ENABLED,
+        GET_ABILITY_INFO,
         GET_ABILITY_ICON,
         GET_ABILITY_PIXELMAP_ICON,
         CAN_REQUEST_PERMISSION,

@@ -1155,7 +1155,24 @@ std::string BundleDataMgr::GetAbilityLabel(const std::string &bundleName, const 
     if (!ability) {
         return Constants::EMPTY_STRING;
     }
-    return (*ability).label;
+    if ((*ability).labelId == 0) {
+        return (*ability).label;
+    }
+    std::string abilityLabel;
+    BundleInfo bundleInfo;
+    innerBundleInfo->second.GetBundleInfo(0, bundleInfo, GetUserIdByCallingUid());
+    std::shared_ptr<OHOS::Global::Resource::ResourceManager> resourceManager = GetResourceManager(bundleInfo);
+    if (resourceManager == nullptr) {
+        APP_LOGE("InitResourceManager failed");
+        return Constants::EMPTY_STRING;
+    }
+    OHOS::Global::Resource::RState errval =
+        resourceManager->GetStringById(static_cast<uint32_t>((*ability).labelId), abilityLabel);
+    if (errval != OHOS::Global::Resource::RState::SUCCESS) {
+        return Constants::EMPTY_STRING;
+    } else {
+        return abilityLabel;
+    }
 }
 
 bool BundleDataMgr::GetHapModuleInfo(const AbilityInfo &abilityInfo, HapModuleInfo &hapModuleInfo) const
