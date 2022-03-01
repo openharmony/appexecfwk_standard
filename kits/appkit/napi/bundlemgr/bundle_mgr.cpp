@@ -510,7 +510,7 @@ static void ConvertAbilityInfo(napi_env env, napi_value objAbilityInfo, const Ab
 }
 
 static void ProcessAbilityInfos(
-    napi_env env, napi_value result, const std::vector<OHOS::AppExecFwk::AbilityInfo> abilityInfos)
+    napi_env env, napi_value result, const std::vector<OHOS::AppExecFwk::AbilityInfo> &abilityInfos)
 {
     if (abilityInfos.size() > 0) {
         APP_LOGI("-----abilityInfos is not null-----");
@@ -1046,79 +1046,6 @@ static void ConvertFormInfo(napi_env env, napi_value objformInfo, const FormInfo
     APP_LOGI("ConvertFormInfo window.designWidth=%{public}d.", formInfo.window.designWidth);
     APP_LOGI("ConvertFormInfo window.autoDesignWidth=%{public}d.", formInfo.window.autoDesignWidth);
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objformInfo, "window", nWindow));
-}
-
-static void ConvertShortcutIntent(napi_env env, napi_value objShortcutInfo, const ShortcutIntent &shortcutIntent)
-{
-    napi_value nTargetBundle;
-    NAPI_CALL_RETURN_VOID(
-        env, napi_create_string_utf8(env, shortcutIntent.targetBundle.c_str(), NAPI_AUTO_LENGTH, &nTargetBundle));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objShortcutInfo, "targetBundle", nTargetBundle));
-    napi_value nTargetClass;
-    NAPI_CALL_RETURN_VOID(
-        env, napi_create_string_utf8(env, shortcutIntent.targetClass.c_str(), NAPI_AUTO_LENGTH, &nTargetClass));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objShortcutInfo, "targetClass", nTargetClass));
-}
-
-static void ConvertShortcutInfos(napi_env env, napi_value objShortcutInfo, const ShortcutInfo &shortcutInfo)
-{
-    napi_value nId;
-    NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, shortcutInfo.id.c_str(), NAPI_AUTO_LENGTH, &nId));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objShortcutInfo, "id", nId));
-    APP_LOGI("ConvertShortcutInfos Id=%{public}s.", shortcutInfo.id.c_str());
-
-    napi_value nBundleName;
-    NAPI_CALL_RETURN_VOID(
-        env, napi_create_string_utf8(env, shortcutInfo.bundleName.c_str(), NAPI_AUTO_LENGTH, &nBundleName));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objShortcutInfo, "bundleName", nBundleName));
-
-    napi_value nHostAbility;
-    NAPI_CALL_RETURN_VOID(
-        env, napi_create_string_utf8(env, shortcutInfo.hostAbility.c_str(), NAPI_AUTO_LENGTH, &nHostAbility));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objShortcutInfo, "hostAbility", nHostAbility));
-
-    napi_value nIcon;
-    NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, shortcutInfo.icon.c_str(), NAPI_AUTO_LENGTH, &nIcon));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objShortcutInfo, "icon", nIcon));
-
-    napi_value nIconId;
-    NAPI_CALL_RETURN_VOID(env, napi_create_int32(env, shortcutInfo.iconId, &nIconId));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objShortcutInfo, "iconId", nIconId));
-
-    napi_value nLabel;
-    NAPI_CALL_RETURN_VOID(env, napi_create_string_utf8(env, shortcutInfo.label.c_str(), NAPI_AUTO_LENGTH, &nLabel));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objShortcutInfo, "label", nLabel));
-
-    napi_value nLabelId;
-    NAPI_CALL_RETURN_VOID(env, napi_create_int32(env, shortcutInfo.labelId, &nLabelId));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objShortcutInfo, "labelId", nLabelId));
-
-    napi_value nDisableMessage;
-    NAPI_CALL_RETURN_VOID(
-        env, napi_create_string_utf8(env, shortcutInfo.disableMessage.c_str(), NAPI_AUTO_LENGTH, &nDisableMessage));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objShortcutInfo, "disableMessage", nDisableMessage));
-
-    napi_value nIsStatic;
-    NAPI_CALL_RETURN_VOID(env, napi_get_boolean(env, shortcutInfo.isStatic, &nIsStatic));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objShortcutInfo, "isStatic", nIsStatic));
-
-    napi_value nIsHomeShortcut;
-    NAPI_CALL_RETURN_VOID(env, napi_get_boolean(env, shortcutInfo.isHomeShortcut, &nIsHomeShortcut));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objShortcutInfo, "isHomeShortcut", nIsHomeShortcut));
-
-    napi_value nIsEnables;
-    NAPI_CALL_RETURN_VOID(env, napi_get_boolean(env, shortcutInfo.isEnables, &nIsEnables));
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objShortcutInfo, "isEnabled", nIsEnables));
-
-    napi_value nIntents;
-    NAPI_CALL_RETURN_VOID(env, napi_create_array(env, &nIntents));
-    for (size_t idx = 0; idx < shortcutInfo.intents.size(); idx++) {
-        napi_value nIntent;
-        NAPI_CALL_RETURN_VOID(env, napi_create_object(env, &nIntent));
-        ConvertShortcutIntent(env, nIntent, shortcutInfo.intents[idx]);
-        NAPI_CALL_RETURN_VOID(env, napi_set_element(env, nIntents, idx, nIntent));
-    }
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objShortcutInfo, "wants", nIntents));
 }
 
 static void ConvertWantInfo(napi_env env, napi_value objWantInfo, const Want &want)
@@ -3673,123 +3600,6 @@ napi_value GetFormsInfoByApp(napi_env env, napi_callback_info info)
         }
         return promise;
     }
-}
-
-static void ProcessShortcutInfos(
-    napi_env env, napi_value result, const std::vector<OHOS::AppExecFwk::ShortcutInfo> &shortcutInfos)
-{
-    if (shortcutInfos.size() > 0) {
-        APP_LOGI("-----ShortcutInfos is not null-----");
-        size_t index = 0;
-        for (const auto &item : shortcutInfos) {
-            APP_LOGI("shortcutId{%s} ", item.id.c_str());
-            APP_LOGI("bundleName{%s} ", item.bundleName.c_str());
-            napi_value objShortcutInfo;
-            NAPI_CALL_RETURN_VOID(env, napi_create_object(env, &objShortcutInfo));
-            ConvertShortcutInfos(env, objShortcutInfo, item);
-            NAPI_CALL_RETURN_VOID(env, napi_set_element(env, result, index, objShortcutInfo));
-            index++;
-        }
-    } else {
-        APP_LOGI("-----ShortcutInfos is null-----");
-    }
-}
-
-static bool InnerGetShortcutInfos(
-    napi_env env, const std::string &bundleName, std::vector<OHOS::AppExecFwk::ShortcutInfo> &shortcutInfos)
-{
-    auto iBundleMgr = GetBundleMgr();
-    if (!iBundleMgr) {
-        APP_LOGE("can not get iBundleMgr");
-        return false;
-    }
-    return iBundleMgr->GetShortcutInfos(bundleName, shortcutInfos);
-}
-/**
- * Promise and async callback
- */
-napi_value GetShortcutInfos(napi_env env, napi_callback_info info)
-{
-    APP_LOGI("NAPI_GetShortcutInfos called");
-    size_t argc = ARGS_SIZE_TWO;
-    napi_value argv[ARGS_SIZE_TWO] = {nullptr};
-    napi_value thisArg = nullptr;
-    void *data = nullptr;
-
-    AsyncShortcutInfosCallbackInfo *asyncCallbackInfo = new AsyncShortcutInfosCallbackInfo();
-    NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, &thisArg, &data));
-    APP_LOGI("argc = [%{public}zu]", argc);
-
-    asyncCallbackInfo->env = env;
-    for (size_t i = 0; i < argc; ++i) {
-        napi_valuetype valueType = napi_undefined;
-        napi_typeof(env, argv[i], &valueType);
-        if ((i == 0) && (valueType == napi_string)) {
-            ParseString(env, asyncCallbackInfo->bundleName, argv[i]);
-        } else if ((i == ARGS_SIZE_ONE) && (valueType == napi_function)) {
-            napi_create_reference(env, argv[i], NAPI_RETURN_ONE, &asyncCallbackInfo->callback);
-            break;
-        } else {
-            asyncCallbackInfo->err = PARAM_TYPE_ERROR;
-            asyncCallbackInfo->message = "type mismatch";
-        }
-    }
-
-    napi_value promise = nullptr;
-    if (asyncCallbackInfo->callback == nullptr) {
-        napi_create_promise(env, &asyncCallbackInfo->deferred, &promise);
-    } else {
-        napi_get_undefined(env,  &promise);
-    }
-
-    napi_value resource = nullptr;
-    napi_create_string_utf8(env, "GetShortcutInfos", NAPI_AUTO_LENGTH, &resource);
-
-    napi_create_async_work(
-        env, nullptr, resource,
-        [](napi_env env, void* data) {
-            AsyncShortcutInfosCallbackInfo* asyncCallbackInfo = (AsyncShortcutInfosCallbackInfo*)data;
-            if (!asyncCallbackInfo->err) {
-                asyncCallbackInfo->ret = InnerGetShortcutInfos(asyncCallbackInfo->env,
-                    asyncCallbackInfo->bundleName, asyncCallbackInfo->shortcutInfos);
-            }
-        },
-        [](napi_env env, napi_status status, void* data) {
-            AsyncShortcutInfosCallbackInfo* asyncCallbackInfo = (AsyncShortcutInfosCallbackInfo*)data;
-            napi_value result[2] = { 0 };
-            if (asyncCallbackInfo->err) {
-                napi_create_uint32(env, static_cast<uint32_t>(asyncCallbackInfo->err), &result[0]);
-                napi_create_string_utf8(env, asyncCallbackInfo->message.c_str(), NAPI_AUTO_LENGTH, &result[1]);
-            } else {
-                if (asyncCallbackInfo->ret) {
-                    napi_create_uint32(env, 0, &result[0]);
-                    napi_create_array(env, &result[1]);
-                    ProcessShortcutInfos(env, result[1], asyncCallbackInfo->shortcutInfos);
-                } else {
-                    napi_create_int32(env, 1, &result[0]);
-                    napi_get_undefined(env, &result[1]);
-                }
-            }
-            if (asyncCallbackInfo->deferred) {
-              if (asyncCallbackInfo->ret) {
-                  napi_resolve_deferred(env, asyncCallbackInfo->deferred, result[1]);
-              } else {
-                  napi_reject_deferred(env, asyncCallbackInfo->deferred, result[0]);
-              }
-            } else {
-                napi_value callback = nullptr;
-                napi_value placeHolder = nullptr;
-                napi_get_reference_value(env, asyncCallbackInfo->callback, &callback);
-                napi_call_function(env, nullptr, callback, sizeof(result) / sizeof(result[0]), result, &placeHolder);
-                napi_delete_reference(env, asyncCallbackInfo->callback);
-            }
-            napi_delete_async_work(env, asyncCallbackInfo->asyncWork);
-            delete asyncCallbackInfo;
-            asyncCallbackInfo = nullptr;
-        },
-        (void*)asyncCallbackInfo, &asyncCallbackInfo->asyncWork);
-    napi_queue_async_work(env, asyncCallbackInfo->asyncWork);
-    return promise;
 }
 
 static void ProcessModuleUsageRecords(

@@ -1121,6 +1121,10 @@ bool BundleMgrHostImpl::QueryExtensionAbilityInfos(const Want &want, const int32
     std::vector<ExtensionAbilityInfo> &extensionInfos)
 {
     APP_LOGD("QueryExtensionAbilityInfos without type begin");
+    if (!VerifyQueryPermission(want.GetElement().GetBundleName())) {
+        APP_LOGE("verify permission failed");
+        return false;
+    }
     APP_LOGD("want uri is %{public}s", want.GetUriString().c_str());
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
@@ -1143,6 +1147,10 @@ bool BundleMgrHostImpl::QueryExtensionAbilityInfos(const Want &want, const Exten
     const int32_t &flag, const int32_t &userId, std::vector<ExtensionAbilityInfo> &extensionInfos)
 {
     APP_LOGD("QueryExtensionAbilityInfos begin");
+    if (!VerifyQueryPermission(want.GetElement().GetBundleName())) {
+        APP_LOGE("verify permission failed");
+        return false;
+    }
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
         APP_LOGE("DataMgr is nullptr");
