@@ -39,6 +39,9 @@ using namespace OHOS::AAFwk;
 using namespace OHOS::AppExecFwk;
 
 namespace {
+constexpr size_t NAPI_ERR_NO_ERROR = 0;
+constexpr size_t ARGS_ASYNC_COUNT = 1;
+constexpr size_t ARGS_MAX_COUNT = 10;
 constexpr size_t CALLBACK_SIZE = 1;
 constexpr size_t ARGS_SIZE_ONE = 1;
 constexpr size_t ARGS_SIZE_TWO = 2;
@@ -1276,6 +1279,16 @@ static bool InnerGetApplicationInfos(napi_env env, int32_t flags, const int user
     return iBundleMgr->GetApplicationInfos(flags, userId, appInfos);
 }
 
+static std::string InnerGetAbilityLabel(napi_env env, std::string &bundleName, std::string &className)
+{
+    auto iBundleMgr = GetBundleMgr();
+    if (iBundleMgr == nullptr) {
+        APP_LOGE("can not get iBundleMgr");
+        return "";
+    }
+    return iBundleMgr->GetAbilityLabel(bundleName, className);
+}
+
 static void ProcessApplicationInfos(
     napi_env env, napi_value result, const std::vector<OHOS::AppExecFwk::ApplicationInfo> &appInfos)
 {
@@ -1320,8 +1333,14 @@ napi_value GetApplicationInfos(napi_env env, napi_callback_info info)
         napi_typeof(env, argv[i], &valueType);
         if ((i == 0) && (valueType == napi_number)) {
             ParseInt(env, asyncCallbackInfo->flags, argv[i]);
+            if (argc == ARGS_SIZE_ONE) {
+                asyncCallbackInfo->userId = IPCSkeleton::GetCallingUid() / Constants::BASE_USER_RANGE;
+            }
         } else if ((i == ARGS_SIZE_ONE) && (valueType == napi_number)) {
             ParseInt(env, asyncCallbackInfo->userId, argv[i]);
+        } else if ((i == ARGS_SIZE_ONE) && (valueType == napi_function)) {
+            asyncCallbackInfo->userId = IPCSkeleton::GetCallingUid() / Constants::BASE_USER_RANGE;
+            napi_create_reference(env, argv[i], NAPI_RETURN_ONE, &asyncCallbackInfo->callback);
         } else if ((i == ARGS_SIZE_TWO) && (valueType == napi_function)) {
             napi_create_reference(env, argv[i], NAPI_RETURN_ONE, &asyncCallbackInfo->callback);
             break;
@@ -1329,6 +1348,11 @@ napi_value GetApplicationInfos(napi_env env, napi_callback_info info)
             asyncCallbackInfo->err = PARAM_TYPE_ERROR;
             asyncCallbackInfo->message = "type mismatch";
         }
+    }
+
+    if (argc == 0) {
+        asyncCallbackInfo->err = PARAM_TYPE_ERROR;
+        asyncCallbackInfo->message = "type mismatch";
     }
 
     napi_value promise = nullptr;
@@ -1711,6 +1735,124 @@ static napi_value ParseString(napi_env env, std::string &param, napi_value args)
     NAPI_ASSERT(env, status == napi_ok, "napi_create_int32 error!");
     return result;
 }
+
+static bool InnerGetAbilityInfo(const std::string &bundleName, const std::string &abilityName, AbilityInfo &abilityInfo)
+{
+    auto iBundleMgr = GetBundleMgr();
+    if (!iBundleMgr) {
+        APP_LOGE("can not get iBundleMgr");
+        return false;
+    }
+    return iBundleMgr->GetAbilityInfo(bundleName, abilityName, abilityInfo);
+}
+
+void PraseAbilityInfoParam(napi_env env, AsyncAbilityInfosCallbackInfo *asyncCallbackInfo)
+{
+    size_t argc = ARGS_SIZE_THREE;
+    napi_value argv[ARGS_SIZE_THREE] = {nullptr};
+    napi_get_cb_info(env, asyncCallbackInfo->info, &argc, argv, nullptr, nullptr);
+    APP_LOGD("argc = [%{public}zu]", argc);
+    for (size_t i = 0; i < argc; ++i) {
+        napi_valuetype valueType = napi_undefined;
+        napi_typeof(env, argv[i], &valueType);
+        if (valueType == napi_string) {
+            if (i == 0) {
+                ParseString(env, asyncCallbackInfo->bundleName, argv[i]);
+            } else if (i == ARGS_SIZE_ONE) {
+                ParseString(env, asyncCallbackInfo->abilityName, argv[i]);
+            } else {
+                asyncCallbackInfo->err = PARAM_TYPE_ERROR;
+                asyncCallbackInfo->message = "paramters size mismatch";
+            }
+        } else if (valueType == napi_function) {
+            if (i >= ARGS_SIZE_TWO) {
+                napi_create_reference(env, argv[i], NAPI_RETURN_ONE, &asyncCallbackInfo->callback);
+                break;
+            } else {
+                asyncCallbackInfo->err = PARAM_TYPE_ERROR;
+                asyncCallbackInfo->message = "paramters size mismatch";
+            }
+        } else {
+            asyncCallbackInfo->err = PARAM_TYPE_ERROR;
+            asyncCallbackInfo->message = "type mismatch";
+        }
+    }
+}
+
+void StartGetAbilityInfoExecuteCB(napi_env env, void *data)
+{
+    APP_LOGI("%{public}s called.", __func__);
+    AsyncAbilityInfosCallbackInfo *asyncCallbackInfo = (AsyncAbilityInfosCallbackInfo *)data;
+    if (asyncCallbackInfo == nullptr) {
+        APP_LOGE("%{public}s asyncCallbackInfo == nullptr", __func__);
+        return;
+    }
+    if (!asyncCallbackInfo->err) {
+        asyncCallbackInfo->ret = InnerGetAbilityInfo(
+            asyncCallbackInfo->bundleName, asyncCallbackInfo->abilityName, asyncCallbackInfo->abilityInfo);
+    }
+    APP_LOGI("%{public}s end.", __func__);
+}
+
+void StartGetAbilityInfoCompletedCB(napi_env env, napi_status status, void *data)
+{
+    APP_LOGI("%{public}s called.", __func__);
+    AsyncAbilityInfosCallbackInfo *asyncCallbackInfo = (AsyncAbilityInfosCallbackInfo *)data;
+    napi_value result[2] = {0};
+    if (asyncCallbackInfo->err) {
+        napi_create_uint32(env, asyncCallbackInfo->err, &result[0]);
+        napi_create_string_utf8(env, asyncCallbackInfo->message.c_str(), NAPI_AUTO_LENGTH, &result[1]);
+    } else {
+        if (asyncCallbackInfo->ret) {
+            napi_create_uint32(env, 0, &result[0]);
+            napi_create_object(env, &result[1]);
+            ConvertAbilityInfo(env, result[1], asyncCallbackInfo->abilityInfo);
+        } else {
+            napi_create_int32(env, 1, &result[0]);
+            napi_get_undefined(env, &result[1]);
+        }
+    }
+    if (asyncCallbackInfo->deferred) {
+        if (asyncCallbackInfo->ret) {
+            napi_resolve_deferred(env, asyncCallbackInfo->deferred, result[1]);
+        } else {
+            napi_reject_deferred(env, asyncCallbackInfo->deferred, result[0]);
+        }
+    } else {
+        napi_value callback = nullptr;
+        napi_value placeHolder = nullptr;
+        napi_get_reference_value(env, asyncCallbackInfo->callback, &callback);
+        napi_call_function(env, nullptr, callback, sizeof(result) / sizeof(result[0]), result, &placeHolder);
+        napi_delete_reference(env, asyncCallbackInfo->callback);
+    }
+    napi_delete_async_work(env, asyncCallbackInfo->asyncWork);
+    delete asyncCallbackInfo;
+    asyncCallbackInfo = nullptr;
+    APP_LOGI("%{public}s end.", __func__);
+}
+
+napi_value GetAbilityInfo(napi_env env, napi_callback_info info)
+{
+    APP_LOGD("NAPI_GetAbilityInfo called");
+    AsyncAbilityInfosCallbackInfo *asyncCallbackInfo = new AsyncAbilityInfosCallbackInfo();
+    if (asyncCallbackInfo == nullptr) {
+        APP_LOGE("%{public}s, asyncCallbackInfo == nullptr.", __func__);
+        return nullptr;
+    }
+    asyncCallbackInfo->info = info;
+    PraseAbilityInfoParam(env, asyncCallbackInfo);
+    napi_value resource = nullptr;
+    NAPI_CALL(env, napi_create_string_latin1(env, __func__, NAPI_AUTO_LENGTH, &resource));
+    napi_deferred deferred;
+    napi_value promise = 0;
+    NAPI_CALL(env, napi_create_promise(env, &deferred, &promise));
+    asyncCallbackInfo->deferred = deferred;
+    NAPI_CALL(env, napi_create_async_work(env, nullptr, resource, StartGetAbilityInfoExecuteCB,
+                       StartGetAbilityInfoCompletedCB, (void *)asyncCallbackInfo, &asyncCallbackInfo->asyncWork));
+    NAPI_CALL(env, napi_queue_async_work(env, asyncCallbackInfo->asyncWork));
+    return promise;
+}
+
 /**
  * Promise and async callback
  */
@@ -1735,8 +1877,14 @@ napi_value GetApplicationInfo(napi_env env, napi_callback_info info)
             ParseString(env, asyncCallbackInfo->bundleName, argv[i]);
         } else if ((i == ARGS_SIZE_ONE) && valueType == napi_number) {
             ParseInt(env, asyncCallbackInfo->flags, argv[i]);
+            if (argc == ARGS_SIZE_TWO) {
+                asyncCallbackInfo->userId = IPCSkeleton::GetCallingUid() / Constants::BASE_USER_RANGE;
+            }
         } else if ((i == ARGS_SIZE_TWO) && (valueType == napi_number)) {
             ParseInt(env, asyncCallbackInfo->userId, argv[i]);
+        } else if ((i == ARGS_SIZE_TWO) && (valueType == napi_function)) {
+            asyncCallbackInfo->userId = IPCSkeleton::GetCallingUid() / Constants::BASE_USER_RANGE;
+            napi_create_reference(env, argv[i], NAPI_RETURN_ONE, &asyncCallbackInfo->callback);
         } else if ((i == ARGS_SIZE_THREE) && (valueType == napi_function)) {
             napi_create_reference(env, argv[i], NAPI_RETURN_ONE, &asyncCallbackInfo->callback);
             break;
@@ -1744,6 +1892,11 @@ napi_value GetApplicationInfo(napi_env env, napi_callback_info info)
             asyncCallbackInfo->err = PARAM_TYPE_ERROR;
             asyncCallbackInfo->message = "type mismatch";
         }
+    }
+
+    if (argc == 0) {
+        asyncCallbackInfo->err = PARAM_TYPE_ERROR;
+        asyncCallbackInfo->message = "type mismatch";
     }
 
     napi_value promise = nullptr;
@@ -4339,6 +4492,241 @@ napi_value UnregisterPermissionsChanged(napi_env env, napi_callback_info info)
     return result;
 }
 
+static bool InnerGetBundleGids(napi_env env, const std::string &bundleName, std::vector<int> &gids)
+{
+    auto iBundleMgr = GetBundleMgr();
+    if (iBundleMgr == nullptr) {
+        APP_LOGE("can not get iBundleMgr");
+        return false;
+    };
+    auto ret = iBundleMgr->GetBundleGids(bundleName, gids);
+    return ret;
+}
+
+static void ProcessGids(napi_env env, napi_value result, const std::vector<int32_t> &gids)
+{
+    if (gids.size() > 0) {
+        APP_LOGI("-----gids is not null-----");
+        size_t index = 0;
+        for (const auto &item : gids) {
+            napi_value value;
+            napi_create_int32(env, item, &value);
+            NAPI_CALL_RETURN_VOID(env, napi_set_element(env, result, index, value));
+            index++;
+        }
+        APP_LOGI("-----gids is not null  end-----");
+    } else {
+        APP_LOGI("-----ShortcutInfos is null-----");
+    }
+}
+
+napi_value WrapVoidToJS(napi_env env)
+{
+    napi_value result = nullptr;
+    NAPI_CALL(env, napi_get_null(env, &result));
+    return result;
+}
+
+napi_value WrapUndefinedToJS(napi_env env)
+{
+    napi_value result = nullptr;
+    NAPI_CALL(env, napi_get_undefined(env, &result));
+    return result;
+}
+
+AsyncGetBundleGidsCallbackInfo *CreateAsyncGetBundleGidsCallbackInfo(napi_env env)
+{
+    APP_LOGI("%{public}s called.", __func__);
+    AsyncGetBundleGidsCallbackInfo *asyncCallbackInfo = new AsyncGetBundleGidsCallbackInfo {
+        .env = env,
+        .asyncWork = nullptr,
+        .deferred = nullptr,
+    };
+
+    if (asyncCallbackInfo == nullptr) {
+        APP_LOGE("%{public}s, asyncCallbackInfo == nullptr.", __func__);
+        return nullptr;
+    }
+
+    APP_LOGI("%{public}s end.", __func__);
+    return asyncCallbackInfo;
+}
+
+void GetBundleGidsExecute(napi_env env, void *data)
+{
+    APP_LOGI("NAPI_GetBundleGids, worker pool thread execute.");
+    AsyncGetBundleGidsCallbackInfo *asyncCallbackInfo = static_cast<AsyncGetBundleGidsCallbackInfo *>(data);
+    if (asyncCallbackInfo == nullptr) {
+        APP_LOGE("NAPI_GetBundleGids, asyncCallbackInfo == nullptr");
+        return;
+    }
+
+    bool ret = InnerGetBundleGids(env, asyncCallbackInfo->bundleName, asyncCallbackInfo->gids);
+
+    if (!ret) {
+        asyncCallbackInfo->err = NAPI_RETURN_FAILED;
+    }
+}
+
+void GetBundleGidsAsyncComplete(napi_env env, napi_status status, void *data)
+{
+    APP_LOGI("NAPI_GetBundleGids, main event thread complete.");
+    AsyncGetBundleGidsCallbackInfo *asyncCallbackInfo = static_cast<AsyncGetBundleGidsCallbackInfo *>(data);
+    napi_value callback = nullptr;
+    napi_value undefined = nullptr;
+    napi_value result[ARGS_SIZE_TWO] = {nullptr};
+    napi_value callResult = nullptr;
+    NAPI_CALL_RETURN_VOID(env, napi_get_undefined(env, &undefined));
+    result[PARAM0] = GetCallbackErrorValue(env, asyncCallbackInfo->err);
+
+    if (asyncCallbackInfo->err == NAPI_ERR_NO_ERROR) {
+        NAPI_CALL_RETURN_VOID(env, napi_create_array(env, &result[PARAM1]));
+        ProcessGids(env, result[PARAM1], asyncCallbackInfo->gids);
+    } else {
+        result[PARAM1] = WrapUndefinedToJS(env);
+    }
+
+    NAPI_CALL_RETURN_VOID(env, napi_get_reference_value(env, asyncCallbackInfo->callback, &callback));
+    NAPI_CALL_RETURN_VOID(env,
+        napi_call_function(env, undefined, callback, sizeof(result) / sizeof(result[PARAM0]), result, &callResult));
+
+    if (asyncCallbackInfo->callback != nullptr) {
+        NAPI_CALL_RETURN_VOID(env, napi_delete_reference(env, asyncCallbackInfo->callback));
+    }
+    NAPI_CALL_RETURN_VOID(env, napi_delete_async_work(env, asyncCallbackInfo->asyncWork));
+    delete asyncCallbackInfo;
+    asyncCallbackInfo = nullptr;
+    APP_LOGI("NAPI_GetApplicationInfo, main event thread complete end.");
+}
+
+void GetBundleGidsPromiseComplete(napi_env env, napi_status status, void *data)
+{
+    APP_LOGI("NAPI_GetBundleGids, main event thread complete.");
+    AsyncGetBundleGidsCallbackInfo *asyncCallbackInfo = static_cast<AsyncGetBundleGidsCallbackInfo *>(data);
+    napi_value result = nullptr;
+    if (asyncCallbackInfo->err == NAPI_ERR_NO_ERROR) {
+        NAPI_CALL_RETURN_VOID(env, napi_create_array(env, &result));
+        ProcessGids(env, result, asyncCallbackInfo->gids);
+        napi_resolve_deferred(env, asyncCallbackInfo->deferred, result);
+    } else {
+        result = GetCallbackErrorValue(env, asyncCallbackInfo->err);
+        napi_reject_deferred(env, asyncCallbackInfo->deferred, result);
+    }
+
+    napi_delete_async_work(env, asyncCallbackInfo->asyncWork);
+    delete asyncCallbackInfo;
+    asyncCallbackInfo = nullptr;
+    APP_LOGI("NAPI_GetApplicationInfo, main event thread complete end.");
+}
+
+napi_value GetBundleGidsAsync(
+    napi_env env, napi_value *args, const size_t argCallback, AsyncGetBundleGidsCallbackInfo *asyncCallbackInfo)
+{
+    APP_LOGI("%{public}s, asyncCallback.", __func__);
+    if (args == nullptr || asyncCallbackInfo == nullptr) {
+        APP_LOGE("%{public}s, param == nullptr.", __func__);
+        return nullptr;
+    }
+
+    napi_value resourceName = nullptr;
+    napi_create_string_latin1(env, __func__, NAPI_AUTO_LENGTH, &resourceName);
+
+    napi_valuetype valuetype = napi_undefined;
+    NAPI_CALL(env, napi_typeof(env, args[argCallback], &valuetype));
+    if (valuetype == napi_function) {
+        NAPI_CALL(env, napi_create_reference(env, args[argCallback], NAPI_RETURN_ONE, &asyncCallbackInfo->callback));
+    } else {
+        return nullptr;
+    }
+
+    NAPI_CALL(env, napi_create_async_work(env, nullptr, resourceName, GetBundleGidsExecute, GetBundleGidsAsyncComplete,
+                       (void *)asyncCallbackInfo, &asyncCallbackInfo->asyncWork));
+    NAPI_CALL(env, napi_queue_async_work(env, asyncCallbackInfo->asyncWork));
+    napi_value result = nullptr;
+    NAPI_CALL(env, napi_get_null(env, &result));
+    APP_LOGI("%{public}s, asyncCallback end.", __func__);
+    return result;
+}
+
+napi_value GetBundleGidsPromise(napi_env env, AsyncGetBundleGidsCallbackInfo *asyncCallbackInfo)
+{
+    APP_LOGI("%{public}s, promise.", __func__);
+    if (asyncCallbackInfo == nullptr) {
+        APP_LOGE("%{public}s, param == nullptr.", __func__);
+        return nullptr;
+    }
+    napi_value resourceName = nullptr;
+    NAPI_CALL(env, napi_create_string_latin1(env, __func__, NAPI_AUTO_LENGTH, &resourceName));
+    napi_deferred deferred;
+    napi_value promise = nullptr;
+    NAPI_CALL(env, napi_create_promise(env, &deferred, &promise));
+    asyncCallbackInfo->deferred = deferred;
+
+    NAPI_CALL(env, napi_create_async_work(env, nullptr, resourceName, GetBundleGidsExecute,
+                       GetBundleGidsPromiseComplete, (void *)asyncCallbackInfo, &asyncCallbackInfo->asyncWork));
+    NAPI_CALL(env, napi_queue_async_work(env, asyncCallbackInfo->asyncWork));
+    APP_LOGI("%{public}s, promise end.", __func__);
+    return promise;
+}
+
+napi_value GetBundleGidsWrap(napi_env env, napi_callback_info info, AsyncGetBundleGidsCallbackInfo *asyncCallbackInfo)
+{
+    APP_LOGI("%{public}s, asyncCallback.", __func__);
+    if (asyncCallbackInfo == nullptr) {
+        APP_LOGE("%{public}s, asyncCallbackInfo == nullptr.", __func__);
+        return nullptr;
+    }
+
+    size_t argcAsync = ARGS_SIZE_TWO;
+    const size_t argcPromise = ARGS_SIZE_ONE;
+    const size_t argCountWithAsync = argcPromise + ARGS_ASYNC_COUNT;
+    napi_value args[ARGS_MAX_COUNT] = {nullptr};
+    napi_value ret = nullptr;
+
+    NAPI_CALL(env, napi_get_cb_info(env, info, &argcAsync, args, nullptr, nullptr));
+    if (argcAsync > argCountWithAsync || argcAsync > ARGS_MAX_COUNT) {
+        APP_LOGE("%{public}s, Wrong argument count.", __func__);
+        return nullptr;
+    }
+
+    napi_valuetype valueType = napi_undefined;
+    napi_typeof(env, args[PARAM0], &valueType);
+    if (valueType == napi_string) {
+        ParseString(env, asyncCallbackInfo->bundleName, args[PARAM0]);
+    } else {
+        asyncCallbackInfo->err = INVALID_PARAM;
+    }
+
+    if (argcAsync > argcPromise) {
+        ret = GetBundleGidsAsync(env, args, argcAsync - 1, asyncCallbackInfo);
+    } else {
+        ret = GetBundleGidsPromise(env, asyncCallbackInfo);
+    }
+    APP_LOGI("%{public}s, asyncCallback end.", __func__);
+    return ret;
+}
+
+napi_value GetBundleGids(napi_env env, napi_callback_info info)
+{
+    APP_LOGI("NAPI_GetBundleGids start");
+    AsyncGetBundleGidsCallbackInfo *asyncCallbackInfo = CreateAsyncGetBundleGidsCallbackInfo(env);
+    if (asyncCallbackInfo == nullptr) {
+        return WrapVoidToJS(env);
+    }
+
+    napi_value ret = GetBundleGidsWrap(env, info, asyncCallbackInfo);
+    if (ret == nullptr) {
+        APP_LOGE("%{public}s ret == nullptr", __func__);
+        if (asyncCallbackInfo != nullptr) {
+            delete asyncCallbackInfo;
+            asyncCallbackInfo = nullptr;
+        }
+        ret = WrapVoidToJS(env);
+    }
+    APP_LOGI("%{public}s end.", __func__);
+    return ret;
+}
+
 static bool InnerSetApplicationEnabled(napi_env env, const std::string &bundleName, bool isEnable)
 {
     auto iBundleMgr = GetBundleMgr();
@@ -4548,6 +4936,611 @@ napi_value SetAbilityEnabled(napi_env env, napi_callback_info info)
         (void*)asyncCallbackInfo, &asyncCallbackInfo->asyncWork);
     napi_queue_async_work(env, asyncCallbackInfo->asyncWork);
     return promise;
+}
+
+static bool InnerIsAbilityEnabled(napi_env env, const OHOS::AppExecFwk::AbilityInfo &abilityInfo)
+{
+    auto iBundleMgr = GetBundleMgr();
+    if (iBundleMgr == nullptr) {
+        APP_LOGE("can not get iBundleMgr");
+        return false;
+    }
+    auto result = iBundleMgr->IsAbilityEnabled(abilityInfo);
+    if (result) {
+        APP_LOGI("InnerIsAbilityEnabled::IsAbilityEnabled");
+    }
+    return result;
+}
+
+EnabledInfo *CreateAsyncIsAbilityEnabledCallbackInfo(napi_env env)
+{
+    APP_LOGI("%{public}s called.", __func__);
+    EnabledInfo *asyncCallbackInfo = new EnabledInfo {
+        .env = env,
+        .asyncWork = nullptr,
+        .deferred = nullptr,
+    };
+
+    if (asyncCallbackInfo == nullptr) {
+        APP_LOGE("%{public}s, asyncCallbackInfo == nullptr.", __func__);
+        return nullptr;
+    }
+
+    APP_LOGI("%{public}s end.", __func__);
+    return asyncCallbackInfo;
+}
+
+void IsAbilityEnabledExecute(napi_env env, void *data)
+{
+    APP_LOGI("NAPI_IsAbilityEnabled, worker pool thread execute.");
+    EnabledInfo *asyncCallbackInfo = static_cast<EnabledInfo *>(data);
+    if (asyncCallbackInfo == nullptr) {
+        APP_LOGE("NAPI_IsAbilityEnabled, asyncCallbackInfo == nullptr");
+        return;
+    }
+    asyncCallbackInfo->result = InnerIsAbilityEnabled(env, asyncCallbackInfo->abilityInfo);
+}
+
+void IsAbilityEnabledAsyncComplete(napi_env env, napi_status status, void *data)
+{
+    APP_LOGI("NAPI_IsAbilityEnabled, main event thread complete.");
+    EnabledInfo *asyncCallbackInfo = static_cast<EnabledInfo *>(data);
+    napi_value callback = nullptr;
+    napi_value undefined = nullptr;
+    napi_value result[ARGS_SIZE_TWO] = {nullptr};
+    napi_value callResult = nullptr;
+    NAPI_CALL_RETURN_VOID(env, napi_get_undefined(env, &undefined));
+    result[PARAM0] = GetCallbackErrorValue(env, asyncCallbackInfo->errCode);
+
+    if (asyncCallbackInfo->errCode == NAPI_ERR_NO_ERROR) {
+        NAPI_CALL_RETURN_VOID(env, napi_get_boolean(env, asyncCallbackInfo->result, &result[PARAM1]));
+    } else {
+        result[PARAM1] = WrapUndefinedToJS(env);
+    }
+
+    NAPI_CALL_RETURN_VOID(env, napi_get_reference_value(env, asyncCallbackInfo->callbackRef, &callback));
+    NAPI_CALL_RETURN_VOID(env,
+        napi_call_function(env, undefined, callback, sizeof(result) / sizeof(result[PARAM0]), result, &callResult));
+
+    if (asyncCallbackInfo->callbackRef != nullptr) {
+        NAPI_CALL_RETURN_VOID(env, napi_delete_reference(env, asyncCallbackInfo->callbackRef));
+    }
+    NAPI_CALL_RETURN_VOID(env, napi_delete_async_work(env, asyncCallbackInfo->asyncWork));
+    delete asyncCallbackInfo;
+    asyncCallbackInfo = nullptr;
+    APP_LOGI("NAPI_IsAbilityEnabled, main event thread complete end.");
+}
+
+void IsAbilityEnabledPromiseComplete(napi_env env, napi_status status, void *data)
+{
+    APP_LOGI("NAPI_GetBundleGids, main event thread complete.");
+    EnabledInfo *asyncCallbackInfo = static_cast<EnabledInfo *>(data);
+    napi_value result = nullptr;
+    if (asyncCallbackInfo->errCode == NAPI_ERR_NO_ERROR) {
+        NAPI_CALL_RETURN_VOID(env, napi_get_boolean(env, asyncCallbackInfo->result, &result));
+        napi_resolve_deferred(env, asyncCallbackInfo->deferred, result);
+    } else {
+        result = GetCallbackErrorValue(env, asyncCallbackInfo->errCode);
+        napi_reject_deferred(env, asyncCallbackInfo->deferred, result);
+    }
+
+    napi_delete_async_work(env, asyncCallbackInfo->asyncWork);
+    delete asyncCallbackInfo;
+    asyncCallbackInfo = nullptr;
+    APP_LOGI("NAPI_GetApplicationInfo, main event thread complete end.");
+}
+
+napi_value IsAbilityEnabledAsync(
+    napi_env env, napi_value *args, const size_t argCallback, EnabledInfo *asyncCallbackInfo)
+{
+    APP_LOGI("%{public}s, asyncCallback.", __func__);
+    if (args == nullptr || asyncCallbackInfo == nullptr) {
+        APP_LOGE("%{public}s, param == nullptr.", __func__);
+        return nullptr;
+    }
+
+    napi_value resourceName = nullptr;
+    napi_create_string_latin1(env, __func__, NAPI_AUTO_LENGTH, &resourceName);
+
+    napi_valuetype valuetype = napi_undefined;
+    NAPI_CALL(env, napi_typeof(env, args[argCallback], &valuetype));
+    if (valuetype == napi_function) {
+        NAPI_CALL(env, napi_create_reference(env, args[argCallback], NAPI_RETURN_ONE, &asyncCallbackInfo->callbackRef));
+    } else {
+        return nullptr;
+    }
+
+    NAPI_CALL(env, napi_create_async_work(env, nullptr, resourceName, IsAbilityEnabledExecute,
+                       IsAbilityEnabledAsyncComplete, (void *)asyncCallbackInfo, &asyncCallbackInfo->asyncWork));
+    NAPI_CALL(env, napi_queue_async_work(env, asyncCallbackInfo->asyncWork));
+    napi_value result = nullptr;
+    NAPI_CALL(env, napi_get_null(env, &result));
+    APP_LOGI("%{public}s, asyncCallback end.", __func__);
+    return result;
+}
+
+napi_value IsAbilityEnabledPromise(napi_env env, EnabledInfo *asyncCallbackInfo)
+{
+    APP_LOGI("%{public}s, promise.", __func__);
+    if (asyncCallbackInfo == nullptr) {
+        APP_LOGE("%{public}s, param == nullptr.", __func__);
+        return nullptr;
+    }
+    napi_value resourceName = nullptr;
+    NAPI_CALL(env, napi_create_string_latin1(env, __func__, NAPI_AUTO_LENGTH, &resourceName));
+    napi_deferred deferred;
+    napi_value promise = nullptr;
+    NAPI_CALL(env, napi_create_promise(env, &deferred, &promise));
+    asyncCallbackInfo->deferred = deferred;
+
+    NAPI_CALL(env, napi_create_async_work(env, nullptr, resourceName, IsAbilityEnabledExecute,
+                       IsAbilityEnabledPromiseComplete, (void *)asyncCallbackInfo, &asyncCallbackInfo->asyncWork));
+    NAPI_CALL(env, napi_queue_async_work(env, asyncCallbackInfo->asyncWork));
+    APP_LOGI("%{public}s, promise end.", __func__);
+    return promise;
+}
+
+napi_value IsAbilityEnabledWrap(napi_env env, napi_callback_info info, EnabledInfo *asyncCallbackInfo)
+{
+    APP_LOGI("%{public}s, asyncCallback.", __func__);
+    if (asyncCallbackInfo == nullptr) {
+        APP_LOGE("%{public}s, asyncCallbackInfo == nullptr.", __func__);
+        return nullptr;
+    }
+
+    size_t argcAsync = ARGS_SIZE_TWO;
+    const size_t argcPromise = ARGS_SIZE_ONE;
+    const size_t argCountWithAsync = argcPromise + ARGS_ASYNC_COUNT;
+    napi_value args[ARGS_MAX_COUNT] = {nullptr};
+    napi_value ret = nullptr;
+
+    NAPI_CALL(env, napi_get_cb_info(env, info, &argcAsync, args, nullptr, nullptr));
+    if (argcAsync > argCountWithAsync || argcAsync > ARGS_MAX_COUNT) {
+        APP_LOGE("%{public}s, Wrong argument count.", __func__);
+        return nullptr;
+    }
+
+    napi_valuetype valueType = napi_undefined;
+    napi_typeof(env, args[PARAM0], &valueType);
+    if (valueType == napi_object) {
+        if (!UnwrapAbilityInfo(env, args[PARAM0], asyncCallbackInfo->abilityInfo)) {
+            asyncCallbackInfo->errCode = INVALID_PARAM;
+        }
+    } else {
+        asyncCallbackInfo->errCode = INVALID_PARAM;
+    }
+
+    if (argcAsync > argcPromise) {
+        ret = IsAbilityEnabledAsync(env, args, PARAM1, asyncCallbackInfo);
+    } else {
+        ret = IsAbilityEnabledPromise(env, asyncCallbackInfo);
+    }
+    APP_LOGI("%{public}s, asyncCallback end.", __func__);
+    return ret;
+}
+
+napi_value IsAbilityEnabled(napi_env env, napi_callback_info info)
+{
+    APP_LOGI("NAPI_IsAbilityEnabled start");
+    EnabledInfo *asyncCallbackInfo = CreateAsyncIsAbilityEnabledCallbackInfo(env);
+    if (asyncCallbackInfo == nullptr) {
+        return WrapVoidToJS(env);
+    }
+
+    napi_value ret = IsAbilityEnabledWrap(env, info, asyncCallbackInfo);
+
+    if (ret == nullptr) {
+        APP_LOGE("%{public}s ret == nullptr", __func__);
+        if (asyncCallbackInfo != nullptr) {
+            delete asyncCallbackInfo;
+            asyncCallbackInfo = nullptr;
+        }
+        ret = WrapVoidToJS(env);
+    }
+    APP_LOGI("%{public}s end.", __func__);
+    return ret;
+}
+
+static bool InnerIsApplicationEnabled(napi_env env, const std::string &bundleName)
+{
+    auto iBundleMgr = GetBundleMgr();
+    if (iBundleMgr == nullptr) {
+        APP_LOGE("can not get iBundleMgr");
+        return false;
+    }
+    auto result = iBundleMgr->IsApplicationEnabled(bundleName);
+    if (result) {
+        APP_LOGI("InnerIsApplicationEnabled::IsApplicationEnabled");
+    }
+    return result;
+}
+
+EnabledInfo *CreateAsyncIsApplicationEnabledCallbackInfo(napi_env env)
+{
+    APP_LOGI("%{public}s called.", __func__);
+    EnabledInfo *asyncCallbackInfo = new EnabledInfo {
+        .env = env,
+        .asyncWork = nullptr,
+        .deferred = nullptr,
+    };
+
+    if (asyncCallbackInfo == nullptr) {
+        APP_LOGE("%{public}s, asyncCallbackInfo == nullptr.", __func__);
+        return nullptr;
+    }
+
+    APP_LOGI("%{public}s end.", __func__);
+    return asyncCallbackInfo;
+}
+
+void IsApplicationEnabledExecute(napi_env env, void *data)
+{
+    APP_LOGI("NAPI_IsApplicationEnabled, worker pool thread execute.");
+    EnabledInfo *asyncCallbackInfo = static_cast<EnabledInfo *>(data);
+    if (asyncCallbackInfo == nullptr) {
+        APP_LOGE("NAPI_IsApplicationEnabled, asyncCallbackInfo == nullptr");
+        return;
+    }
+    asyncCallbackInfo->result = InnerIsApplicationEnabled(env, asyncCallbackInfo->bundleName);
+}
+
+void IsApplicationEnabledAsyncComplete(napi_env env, napi_status status, void *data)
+{
+    APP_LOGI("NAPI_ApplicationEnabled, main event thread complete.");
+    EnabledInfo *asyncCallbackInfo = static_cast<EnabledInfo *>(data);
+    napi_value callback = nullptr;
+    napi_value undefined = nullptr;
+    napi_value result[ARGS_SIZE_TWO] = {nullptr};
+    napi_value callResult = nullptr;
+    NAPI_CALL_RETURN_VOID(env, napi_get_undefined(env, &undefined));
+    result[PARAM0] = GetCallbackErrorValue(env, asyncCallbackInfo->errCode);
+
+    if (asyncCallbackInfo->errCode == NAPI_ERR_NO_ERROR) {
+        NAPI_CALL_RETURN_VOID(env, napi_get_boolean(env, asyncCallbackInfo->result, &result[PARAM1]));
+    } else {
+        result[PARAM1] = WrapUndefinedToJS(env);
+    }
+
+    NAPI_CALL_RETURN_VOID(env, napi_get_reference_value(env, asyncCallbackInfo->callbackRef, &callback));
+    NAPI_CALL_RETURN_VOID(env,
+        napi_call_function(env, undefined, callback, sizeof(result) / sizeof(result[PARAM0]), result, &callResult));
+
+    if (asyncCallbackInfo->callbackRef != nullptr) {
+        NAPI_CALL_RETURN_VOID(env, napi_delete_reference(env, asyncCallbackInfo->callbackRef));
+    }
+    NAPI_CALL_RETURN_VOID(env, napi_delete_async_work(env, asyncCallbackInfo->asyncWork));
+    delete asyncCallbackInfo;
+    asyncCallbackInfo = nullptr;
+    APP_LOGI("NAPI_ApplicationEnabled, main event thread complete end.");
+}
+
+void IsApplicationEnabledPromiseComplete(napi_env env, napi_status status, void *data)
+{
+    APP_LOGI("NAPI_IsApplicationEnabled, main event thread complete.");
+    EnabledInfo *asyncCallbackInfo = static_cast<EnabledInfo *>(data);
+    napi_value result = nullptr;
+    if (asyncCallbackInfo->errCode == NAPI_ERR_NO_ERROR) {
+        NAPI_CALL_RETURN_VOID(env, napi_get_boolean(env, asyncCallbackInfo->result, &result));
+        napi_resolve_deferred(env, asyncCallbackInfo->deferred, result);
+    } else {
+        result = GetCallbackErrorValue(env, asyncCallbackInfo->errCode);
+        napi_reject_deferred(env, asyncCallbackInfo->deferred, result);
+    }
+
+    napi_delete_async_work(env, asyncCallbackInfo->asyncWork);
+    delete asyncCallbackInfo;
+    asyncCallbackInfo = nullptr;
+    APP_LOGI("NAPI_IsApplicationEnabled, main event thread complete end.");
+}
+
+napi_value IsApplicationEnabledAsync(
+    napi_env env, napi_value *args, const size_t argCallback, EnabledInfo *asyncCallbackInfo)
+{
+    APP_LOGI("%{public}s, asyncCallback.", __func__);
+    if (args == nullptr || asyncCallbackInfo == nullptr) {
+        APP_LOGE("%{public}s, param == nullptr.", __func__);
+        return nullptr;
+    }
+
+    napi_value resourceName = nullptr;
+    napi_create_string_latin1(env, __func__, NAPI_AUTO_LENGTH, &resourceName);
+
+    napi_valuetype valuetype = napi_undefined;
+    NAPI_CALL(env, napi_typeof(env, args[argCallback], &valuetype));
+    if (valuetype == napi_function) {
+        NAPI_CALL(env, napi_create_reference(env, args[argCallback], NAPI_RETURN_ONE, &asyncCallbackInfo->callbackRef));
+    } else {
+        return nullptr;
+    }
+
+    NAPI_CALL(env, napi_create_async_work(env, nullptr, resourceName, IsApplicationEnabledExecute,
+                       IsApplicationEnabledAsyncComplete, (void *)asyncCallbackInfo, &asyncCallbackInfo->asyncWork));
+    NAPI_CALL(env, napi_queue_async_work(env, asyncCallbackInfo->asyncWork));
+    napi_value result = nullptr;
+    NAPI_CALL(env, napi_get_null(env, &result));
+    APP_LOGI("%{public}s, asyncCallback end.", __func__);
+    return result;
+}
+
+napi_value IsApplicationEnabledPromise(napi_env env, EnabledInfo *asyncCallbackInfo)
+{
+    APP_LOGI("%{public}s, promise.", __func__);
+    if (asyncCallbackInfo == nullptr) {
+        APP_LOGE("%{public}s, param == nullptr.", __func__);
+        return nullptr;
+    }
+    napi_value resourceName = nullptr;
+    NAPI_CALL(env, napi_create_string_latin1(env, __func__, NAPI_AUTO_LENGTH, &resourceName));
+    napi_deferred deferred;
+    napi_value promise = nullptr;
+    NAPI_CALL(env, napi_create_promise(env, &deferred, &promise));
+    asyncCallbackInfo->deferred = deferred;
+
+    NAPI_CALL(env, napi_create_async_work(env, nullptr, resourceName, IsApplicationEnabledExecute,
+                       IsApplicationEnabledPromiseComplete, (void *)asyncCallbackInfo, &asyncCallbackInfo->asyncWork));
+    NAPI_CALL(env, napi_queue_async_work(env, asyncCallbackInfo->asyncWork));
+    APP_LOGI("%{public}s, promise end.", __func__);
+    return promise;
+}
+
+napi_value IsApplicationEnabledWrap(napi_env env, napi_callback_info info, EnabledInfo *asyncCallbackInfo)
+{
+    APP_LOGI("%{public}s, asyncCallback.", __func__);
+    if (asyncCallbackInfo == nullptr) {
+        APP_LOGE("%{public}s, asyncCallbackInfo == nullptr.", __func__);
+        return nullptr;
+    }
+
+    size_t argcAsync = ARGS_SIZE_TWO;
+    const size_t argcPromise = ARGS_SIZE_ONE;
+    const size_t argCountWithAsync = argcPromise + ARGS_ASYNC_COUNT;
+    napi_value args[ARGS_MAX_COUNT] = {nullptr};
+    napi_value ret = nullptr;
+
+    NAPI_CALL(env, napi_get_cb_info(env, info, &argcAsync, args, nullptr, nullptr));
+    if (argcAsync > argCountWithAsync || argcAsync > ARGS_MAX_COUNT) {
+        APP_LOGE("%{public}s, Wrong argument count.", __func__);
+        return nullptr;
+    }
+
+    napi_valuetype valueType = napi_undefined;
+    napi_typeof(env, args[PARAM0], &valueType);
+    if (valueType == napi_string) {
+        ParseString(env, asyncCallbackInfo->bundleName, args[PARAM0]);
+    } else {
+        asyncCallbackInfo->errCode = INVALID_PARAM;
+        asyncCallbackInfo->errMssage = "type misMatch";
+    }
+
+    if (argcAsync > argcPromise) {
+        ret = IsApplicationEnabledAsync(env, args, argcAsync - 1, asyncCallbackInfo);
+    } else {
+        ret = IsApplicationEnabledPromise(env, asyncCallbackInfo);
+    }
+    APP_LOGI("%{public}s, asyncCallback end.", __func__);
+    return ret;
+}
+
+napi_value IsApplicationEnabled(napi_env env, napi_callback_info info)
+{
+    APP_LOGI("NAPI_IsApplicationEnabled start");
+    EnabledInfo *asyncCallbackInfo = CreateAsyncIsApplicationEnabledCallbackInfo(env);
+    if (asyncCallbackInfo == nullptr) {
+        return WrapVoidToJS(env);
+    }
+
+    napi_value ret = IsApplicationEnabledWrap(env, info, asyncCallbackInfo);
+
+    if (ret == nullptr) {
+        APP_LOGE("%{public}s ret == nullptr", __func__);
+        if (asyncCallbackInfo != nullptr) {
+            delete asyncCallbackInfo;
+            asyncCallbackInfo = nullptr;
+        }
+        ret = WrapVoidToJS(env);
+    }
+    APP_LOGI("%{public}s end.", __func__);
+    return ret;
+}
+
+AsyncAbilityLabelCallbackInfo *CreateAbilityLabelCallbackInfo(napi_env env)
+{
+    APP_LOGI("%{public}s called.", __func__);
+    AsyncAbilityLabelCallbackInfo *asyncCallbackInfo = new AsyncAbilityLabelCallbackInfo {
+        .env = env,
+        .asyncWork = nullptr,
+        .deferred = nullptr,
+    };
+
+    if (asyncCallbackInfo == nullptr) {
+        APP_LOGE("%{public}s, asyncCallbackInfo == nullptr.", __func__);
+        return nullptr;
+    }
+
+    APP_LOGI("%{public}s end.", __func__);
+    return asyncCallbackInfo;
+}
+
+void GetAbilityLabelExecute(napi_env env, void *data)
+{
+    APP_LOGI("NAPI_GetAbilityLabel, worker pool thread execute.");
+    AsyncAbilityLabelCallbackInfo *asyncCallbackInfo = static_cast<AsyncAbilityLabelCallbackInfo *>(data);
+    if (asyncCallbackInfo == nullptr) {
+        APP_LOGE("NAPI_GetAbilityLabel, asyncCallbackInfo == nullptr");
+        return;
+    }
+    asyncCallbackInfo->abilityLabel =
+        InnerGetAbilityLabel(env, asyncCallbackInfo->bundleName, asyncCallbackInfo->className);
+    if (asyncCallbackInfo->abilityLabel == "") {
+        asyncCallbackInfo->err = INVALID_PARAM;
+    }
+}
+
+void GetAbilityLabelAsyncComplete(napi_env env, napi_status status, void *data)
+{
+    APP_LOGI("NAPI_GetAbilityLabel, main event thread complete.");
+    AsyncAbilityLabelCallbackInfo *asyncCallbackInfo = static_cast<AsyncAbilityLabelCallbackInfo *>(data);
+    napi_value callback = nullptr;
+    napi_value undefined = nullptr;
+    napi_value result[ARGS_SIZE_TWO] = {nullptr};
+    napi_value callResult = nullptr;
+    NAPI_CALL_RETURN_VOID(env, napi_get_undefined(env, &undefined));
+    result[PARAM0] = GetCallbackErrorValue(env, asyncCallbackInfo->err);
+
+    if (asyncCallbackInfo->err == NAPI_ERR_NO_ERROR) {
+        napi_create_string_utf8(env, asyncCallbackInfo->abilityLabel.c_str(), NAPI_AUTO_LENGTH, &result[PARAM1]);
+    } else {
+        result[PARAM1] = WrapUndefinedToJS(env);
+    }
+
+    NAPI_CALL_RETURN_VOID(env, napi_get_reference_value(env, asyncCallbackInfo->callback, &callback));
+    NAPI_CALL_RETURN_VOID(env,
+        napi_call_function(env, undefined, callback, sizeof(result) / sizeof(result[PARAM0]), result, &callResult));
+
+    if (asyncCallbackInfo->callback != nullptr) {
+        NAPI_CALL_RETURN_VOID(env, napi_delete_reference(env, asyncCallbackInfo->callback));
+    }
+    NAPI_CALL_RETURN_VOID(env, napi_delete_async_work(env, asyncCallbackInfo->asyncWork));
+    delete asyncCallbackInfo;
+    asyncCallbackInfo = nullptr;
+    APP_LOGI("NAPI_GetAbilityLabel, main event thread complete end.");
+}
+
+void GetAbilityLabelPromiseComplete(napi_env env, napi_status status, void *data)
+{
+    APP_LOGI("NAPI_GetAbilityLabel, main event thread complete.");
+    AsyncAbilityLabelCallbackInfo *asyncCallbackInfo = static_cast<AsyncAbilityLabelCallbackInfo *>(data);
+    napi_value result = nullptr;
+    if (asyncCallbackInfo->err == NAPI_ERR_NO_ERROR) {
+        NAPI_CALL_RETURN_VOID(
+            env, napi_create_string_utf8(env, asyncCallbackInfo->abilityLabel.c_str(), NAPI_AUTO_LENGTH, &result));
+        napi_resolve_deferred(env, asyncCallbackInfo->deferred, result);
+    } else {
+        result = GetCallbackErrorValue(env, asyncCallbackInfo->err);
+        napi_reject_deferred(env, asyncCallbackInfo->deferred, result);
+    }
+
+    napi_delete_async_work(env, asyncCallbackInfo->asyncWork);
+    delete asyncCallbackInfo;
+    asyncCallbackInfo = nullptr;
+    APP_LOGI("NAPI_GetAbilityLabel, main event thread complete end.");
+}
+
+napi_value GetAbilityLabelAsync(
+    napi_env env, napi_value *args, const size_t argCallback, AsyncAbilityLabelCallbackInfo *asyncCallbackInfo)
+{
+    APP_LOGI("%{public}s, asyncCallback.", __func__);
+    if (args == nullptr || asyncCallbackInfo == nullptr) {
+        APP_LOGE("%{public}s, param == nullptr.", __func__);
+        return nullptr;
+    }
+
+    napi_value resourceName = nullptr;
+    napi_create_string_latin1(env, __func__, NAPI_AUTO_LENGTH, &resourceName);
+
+    napi_valuetype valuetype = napi_undefined;
+    NAPI_CALL(env, napi_typeof(env, args[argCallback], &valuetype));
+    if (valuetype == napi_function) {
+        NAPI_CALL(env, napi_create_reference(env, args[argCallback], NAPI_RETURN_ONE, &asyncCallbackInfo->callback));
+    } else {
+        return nullptr;
+    }
+
+    NAPI_CALL(env, napi_create_async_work(env, nullptr, resourceName, GetAbilityLabelExecute,
+                       GetAbilityLabelAsyncComplete, (void *)asyncCallbackInfo, &asyncCallbackInfo->asyncWork));
+    NAPI_CALL(env, napi_queue_async_work(env, asyncCallbackInfo->asyncWork));
+    napi_value result = nullptr;
+    NAPI_CALL(env, napi_get_null(env, &result));
+    APP_LOGI("%{public}s, asyncCallback end.", __func__);
+    return result;
+}
+
+napi_value GetAbilityLabelPromise(napi_env env, AsyncAbilityLabelCallbackInfo *asyncCallbackInfo)
+{
+    APP_LOGI("%{public}s, promise.", __func__);
+    if (asyncCallbackInfo == nullptr) {
+        APP_LOGE("%{public}s, param == nullptr.", __func__);
+        return nullptr;
+    }
+    napi_value resourceName = nullptr;
+    NAPI_CALL(env, napi_create_string_latin1(env, __func__, NAPI_AUTO_LENGTH, &resourceName));
+    napi_deferred deferred;
+    napi_value promise = nullptr;
+    NAPI_CALL(env, napi_create_promise(env, &deferred, &promise));
+    asyncCallbackInfo->deferred = deferred;
+
+    NAPI_CALL(env, napi_create_async_work(env, nullptr, resourceName, GetAbilityLabelExecute,
+                       GetAbilityLabelPromiseComplete, (void *)asyncCallbackInfo, &asyncCallbackInfo->asyncWork));
+    NAPI_CALL(env, napi_queue_async_work(env, asyncCallbackInfo->asyncWork));
+    APP_LOGI("%{public}s, promise end.", __func__);
+    return promise;
+}
+
+napi_value GetAbilityLabelWrap(napi_env env, napi_callback_info info, AsyncAbilityLabelCallbackInfo *asyncCallbackInfo)
+{
+    APP_LOGI("%{public}s, asyncCallback.", __func__);
+    if (asyncCallbackInfo == nullptr) {
+        APP_LOGE("%{public}s, asyncCallbackInfo == nullptr.", __func__);
+        return nullptr;
+    }
+
+    size_t argcAsync = ARGS_SIZE_THREE;
+    const size_t argcPromise = ARGS_SIZE_TWO;
+    const size_t argCountWithAsync = argcPromise + ARGS_ASYNC_COUNT;
+    napi_value args[ARGS_MAX_COUNT] = {nullptr};
+    napi_value ret = nullptr;
+
+    NAPI_CALL(env, napi_get_cb_info(env, info, &argcAsync, args, nullptr, nullptr));
+    if (argcAsync > argCountWithAsync || argcAsync > ARGS_MAX_COUNT) {
+        APP_LOGE("%{public}s, Wrong argument count.", __func__);
+        return nullptr;
+    }
+
+    napi_valuetype firstValueType = napi_undefined;
+    napi_typeof(env, args[PARAM0], &firstValueType);
+    if (firstValueType == napi_string) {
+        ParseString(env, asyncCallbackInfo->bundleName, args[PARAM0]);
+    } else {
+        asyncCallbackInfo->err = PARAM_TYPE_ERROR;
+    }
+
+    napi_valuetype secondValueType = napi_undefined;
+    napi_typeof(env, args[PARAM1], &secondValueType);
+    if (secondValueType == napi_string) {
+        ParseString(env, asyncCallbackInfo->className, args[PARAM1]);
+    } else {
+        asyncCallbackInfo->err = PARAM_TYPE_ERROR;
+    }
+
+    if (argcAsync > argcPromise) {
+        ret = GetAbilityLabelAsync(env, args, argcAsync - 1, asyncCallbackInfo);
+    } else {
+        ret = GetAbilityLabelPromise(env, asyncCallbackInfo);
+    }
+    APP_LOGI("%{public}s, asyncCallback end.", __func__);
+    return ret;
+}
+
+napi_value GetAbilityLabel(napi_env env, napi_callback_info info)
+{
+    APP_LOGI("NAPI_GetAbilityLabel start");
+    AsyncAbilityLabelCallbackInfo *asyncCallbackInfo = CreateAbilityLabelCallbackInfo(env);
+    if (asyncCallbackInfo == nullptr) {
+        return WrapVoidToJS(env);
+    }
+
+    napi_value ret = GetAbilityLabelWrap(env, info, asyncCallbackInfo);
+
+    if (ret == nullptr) {
+        APP_LOGE("%{public}s ret == nullptr", __func__);
+        if (asyncCallbackInfo != nullptr) {
+            delete asyncCallbackInfo;
+            asyncCallbackInfo = nullptr;
+        }
+        ret = WrapVoidToJS(env);
+    }
+    APP_LOGI("%{public}s end.", __func__);
+    return ret;
 }
 
 napi_value GetAppPrivilegeLevel(napi_env env, napi_callback_info info)
