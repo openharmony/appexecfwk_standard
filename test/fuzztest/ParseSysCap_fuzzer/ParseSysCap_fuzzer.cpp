@@ -30,13 +30,13 @@ namespace OHOS {
             return false;
         }
 
-        auto pFile = fopen("rpcid.sc","wb");
+        auto pFile = fopen("rpcid.sc", "wb");
         if (pFile == nullptr) {
             std::cout<< "fopen hap error!";
         }
 
         fputs(reinterpret_cast<const char*>(data), pFile);
-        fclose (pFile);
+        fclose(pFile);
         std::vector<std::string> sysCaps;
         BundleParser bundleParser;
         auto ret = bundleParser.ParseSysCap("rpcid.sc", sysCaps);
