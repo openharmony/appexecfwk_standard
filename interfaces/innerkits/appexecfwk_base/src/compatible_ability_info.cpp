@@ -44,8 +44,8 @@ bool CompatibleAbilityInfo::ReadFromParcel(Parcel& parcel)
     privacyName = Str16ToStr8(parcel.ReadString16());
     downloadUrl = Str16ToStr8(parcel.ReadString16());
     versionName = Str16ToStr8(parcel.ReadString16());
-    backgroundModes = parcel.ReadInt32();
-    packageSize = parcel.ReadInt32();
+    backgroundModes = static_cast<uint32_t>(parcel.ReadInt32());
+    packageSize = static_cast<uint32_t>(parcel.ReadInt32());
     visible = parcel.ReadBool();
     formEnabled = parcel.ReadBool();
     multiUserShared = parcel.ReadBool();
@@ -123,14 +123,14 @@ bool CompatibleAbilityInfo::ReadFromParcel(Parcel& parcel)
         return false;
     }
     applicationInfo = *appInfo;
-    formEntity = parcel.ReadInt32();
+    formEntity = static_cast<uint32_t>(parcel.ReadInt32());
     minFormHeight = parcel.ReadInt32();
     defaultFormHeight = parcel.ReadInt32();
     minFormWidth = parcel.ReadInt32();
     defaultFormWidth = parcel.ReadInt32();
     iconId = parcel.ReadUint32();
-    descriptionId = parcel.ReadInt32();
-    labelId = parcel.ReadInt32();
+    descriptionId = static_cast<uint32_t>(parcel.ReadInt32());
+    labelId = static_cast<uint32_t>(parcel.ReadInt32());
     enabled = parcel.ReadBool();
     return true;
 }
