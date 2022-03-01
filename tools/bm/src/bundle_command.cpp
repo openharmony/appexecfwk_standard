@@ -1693,8 +1693,16 @@ int32_t BundleManagerShellCommand::InstallOperation(const std::vector<std::strin
         realPathVec.emplace_back(absoluteBundlePath);
     }
 
-    sptr<StatusReceiverImpl> statusReceiver(new StatusReceiverImpl());
-    sptr<BundleDeathRecipient> recipient(new BundleDeathRecipient(statusReceiver));
+    sptr<StatusReceiverImpl> statusReceiver(new (std::nothrow) StatusReceiverImpl());
+    if (statusReceiver == nullptr) {
+        APP_LOGE("statusReceiver is null");
+        return IStatusReceiver::ERR_UNKNOWN;
+    }
+    sptr<BundleDeathRecipient> recipient(new (std::nothrow) BundleDeathRecipient(statusReceiver));
+    if (recipient == nullptr) {
+        APP_LOGE("recipient is null");
+        return IStatusReceiver::ERR_UNKNOWN;
+    }
     bundleInstallerProxy_->AsObject()->AddDeathRecipient(recipient);
     bundleInstallerProxy_->Install(realPathVec, installParam, statusReceiver);
     return statusReceiver->GetResultCode();
@@ -1703,12 +1711,20 @@ int32_t BundleManagerShellCommand::InstallOperation(const std::vector<std::strin
 int32_t BundleManagerShellCommand::UninstallOperation(
     const std::string &bundleName, const std::string &moduleName, InstallParam &installParam) const
 {
-    sptr<StatusReceiverImpl> statusReceiver(new StatusReceiverImpl());
+    sptr<StatusReceiverImpl> statusReceiver(new (std::nothrow) StatusReceiverImpl());
+    if (statusReceiver == nullptr) {
+        APP_LOGE("statusReceiver is null");
+        return IStatusReceiver::ERR_UNKNOWN;
+    }
 
     APP_LOGD("bundleName: %{public}s", bundleName.c_str());
     APP_LOGD("moduleName: %{public}s", moduleName.c_str());
 
-    sptr<BundleDeathRecipient> recipient(new BundleDeathRecipient(statusReceiver));
+    sptr<BundleDeathRecipient> recipient(new (std::nothrow) BundleDeathRecipient(statusReceiver));
+    if (recipient == nullptr) {
+        APP_LOGE("recipient is null");
+        return IStatusReceiver::ERR_UNKNOWN;
+    }
     bundleInstallerProxy_->AsObject()->AddDeathRecipient(recipient);
     if (moduleName.size() != 0) {
         bundleInstallerProxy_->Uninstall(bundleName, moduleName, installParam, statusReceiver);
@@ -1722,7 +1738,11 @@ int32_t BundleManagerShellCommand::UninstallOperation(
 bool BundleManagerShellCommand::CleanBundleCacheFilesOperation(const std::string &bundleName, int32_t userId) const
 {
     userId = GetCurrentUserId(userId);
-    sptr<CleanCacheCallbackImpl> cleanCacheCallBack(new CleanCacheCallbackImpl());
+    sptr<CleanCacheCallbackImpl> cleanCacheCallBack(new (std::nothrow) CleanCacheCallbackImpl());
+    if (cleanCacheCallBack == nullptr) {
+        APP_LOGE("cleanCacheCallBack is null");
+        return false;
+    }
     bool cleanRet = bundleMgrProxy_->CleanBundleCacheFiles(bundleName, cleanCacheCallBack, userId);
     if (cleanRet) {
         return cleanCacheCallBack->GetResultCode();

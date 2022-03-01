@@ -1566,7 +1566,11 @@ bool BundleDataMgr::RegisterBundleStatusCallback(const sptr<IBundleStatusCallbac
     std::lock_guard<std::mutex> lock(callbackMutex_);
     callbackList_.emplace_back(bundleStatusCallback);
     if (bundleStatusCallback->AsObject() != nullptr) {
-        sptr<BundleStatusCallbackDeathRecipient> deathRecipient = new BundleStatusCallbackDeathRecipient();
+        sptr<BundleStatusCallbackDeathRecipient> deathRecipient = new (std::nothrow) BundleStatusCallbackDeathRecipient();
+        if (deathRecipient == nullptr) {
+            APP_LOGE("deathRecipient is null");
+            return false;
+        }
         bundleStatusCallback->AsObject()->AddDeathRecipient(deathRecipient);
     }
     return true;
@@ -2204,7 +2208,7 @@ bool BundleDataMgr::AddDeathRecipient(const sptr<OnPermissionChangedCallback> &c
         return false;
     }
     // add callback death recipient.
-    sptr<PermissionChangedDeathRecipient> deathRecipient = new PermissionChangedDeathRecipient();
+    sptr<PermissionChangedDeathRecipient> deathRecipient = new (std::nothrow) PermissionChangedDeathRecipient();
     if (deathRecipient == nullptr) {
         APP_LOGE("create PermissionChangedDeathRecipient failed");
         return false;

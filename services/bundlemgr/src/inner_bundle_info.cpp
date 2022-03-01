@@ -1236,15 +1236,17 @@ std::optional<HapModuleInfo> InnerBundleInfo::FindHapModuleInfo(const std::strin
     } else {
         hapInfo.moduleType = ModuleType::UNKNOWN;
     }
+    std::string key;
+    key.append(".").append(modulePackage).append(".");
     for (const auto &extension : baseExtensionInfos_) {
-        if (extension.first.find(modulePackage) != std::string::npos) {
+        if (extension.first.find(key) != std::string::npos) {
             hapInfo.extensionInfos.emplace_back(extension.second);
         }
     }
     hapInfo.metadata = it->second.metadata;
     bool first = false;
     for (auto &ability : baseAbilityInfos_) {
-        if (ability.first.find(modulePackage) != std::string::npos) {
+        if (ability.first.find(key) != std::string::npos) {
             if (!first) {
                 hapInfo.label = ability.second.label;
                 hapInfo.iconPath = ability.second.iconPath;
@@ -1521,7 +1523,9 @@ void InnerBundleInfo::RemoveModuleInfo(const std::string &modulePackage)
         APP_LOGE("can not find module %{public}s", modulePackage.c_str());
         return;
     }
-    if (mainAbility_.find(modulePackage) != std::string::npos) {
+    std::string key;
+    key.append(".").append(modulePackage).append(".");
+    if (mainAbility_.find(key) != std::string::npos) {
         mainAbility_.clear();
         hasEntry_ = false;
         mainAbilityName_.clear();
@@ -1534,49 +1538,49 @@ void InnerBundleInfo::RemoveModuleInfo(const std::string &modulePackage)
         }
     }
     for (auto it = baseAbilityInfos_.begin(); it != baseAbilityInfos_.end();) {
-        if (it->first.find(modulePackage) != std::string::npos) {
+        if (it->first.find(key) != std::string::npos) {
             baseAbilityInfos_.erase(it++);
         } else {
             ++it;
         }
     }
     for (auto it = skillInfos_.begin(); it != skillInfos_.end();) {
-        if (it->first.find(modulePackage) != std::string::npos) {
+        if (it->first.find(key) != std::string::npos) {
             skillInfos_.erase(it++);
         } else {
             ++it;
         }
     }
     for (auto it = baseExtensionInfos_.begin(); it != baseExtensionInfos_.end();) {
-        if (it->first.find(modulePackage) != std::string::npos) {
+        if (it->first.find(key) != std::string::npos) {
             baseExtensionInfos_.erase(it++);
         } else {
             ++it;
         }
     }
     for (auto it = extensionSkillInfos_.begin(); it != extensionSkillInfos_.end();) {
-        if (it->first.find(modulePackage) != std::string::npos) {
+        if (it->first.find(key) != std::string::npos) {
             extensionSkillInfos_.erase(it++);
         } else {
             ++it;
         }
     }
     for (auto it = formInfos_.begin(); it != formInfos_.end();) {
-        if (it->first.find(modulePackage) != std::string::npos) {
+        if (it->first.find(key) != std::string::npos) {
             formInfos_.erase(it++);
         } else {
             ++it;
         }
     }
     for (auto it = shortcutInfos_.begin(); it != shortcutInfos_.end();) {
-        if (it->first.find(modulePackage) != std::string::npos) {
+        if (it->first.find(key) != std::string::npos) {
             shortcutInfos_.erase(it++);
         } else {
             ++it;
         }
     }
     for (auto it = commonEvents_.begin(); it != commonEvents_.end();) {
-        if (it->first.find(modulePackage) != std::string::npos) {
+        if (it->first.find(key) != std::string::npos) {
             commonEvents_.erase(it++);
         } else {
             ++it;
