@@ -30,13 +30,13 @@ namespace OHOS {
             return false;
         }
 
-        auto pFile = fopen("myHap.hap","wb");
+        auto pFile = fopen("myHap.hap", "wb");
         if (pFile == nullptr) {
             std::cout<< "fopen hap error!";
         }
 
         fputs(reinterpret_cast<const char*>(data), pFile);
-        fclose (pFile);
+        fclose(pFile);
         InnerBundleInfo info;
         BundleParser bundleParser;
         auto ret = bundleParser.Parse("myHap.hap", info);
