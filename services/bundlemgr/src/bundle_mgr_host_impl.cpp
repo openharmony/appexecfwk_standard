@@ -24,6 +24,7 @@
 #include "bundle_permission_mgr.h"
 #include "bundle_util.h"
 #include "directory_ex.h"
+#include "element_name.h"
 #include "installd_client.h"
 #include "ipc_skeleton.h"
 #include "json_serializer.h"
@@ -318,6 +319,10 @@ bool BundleMgrHostImpl::QueryKeepAliveBundleInfos(std::vector<BundleInfo> &bundl
 
 std::string BundleMgrHostImpl::GetAbilityLabel(const std::string &bundleName, const std::string &className)
 {
+    if (!VerifyQueryPermission(bundleName)) {
+        APP_LOGE("verify permission failed");
+        return Constants::EMPTY_STRING;
+    }
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
         APP_LOGE("DataMgr is nullptr");
@@ -886,6 +891,10 @@ std::string BundleMgrHostImpl::GetAbilityIcon(const std::string &bundleName, con
 std::shared_ptr<Media::PixelMap> BundleMgrHostImpl::GetAbilityPixelMapIcon(const std::string &bundleName,
     const std::string &abilityName)
 {
+    if (!VerifyQueryPermission(bundleName)) {
+        APP_LOGE("verify permission failed");
+        return nullptr;
+    }
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
         APP_LOGE("DataMgr is nullptr");
@@ -1363,6 +1372,15 @@ int BundleMgrHostImpl::GetUidByBundleName(const std::string &bundleName, const i
     }
     APP_LOGD("uid is %{public}d", uid);
     return uid;
+}
+
+bool BundleMgrHostImpl::GetAbilityInfo(
+    const std::string &bundleName, const std::string &abilityName, AbilityInfo &abilityInfo)
+{
+    ElementName elementName(Constants::CURRENT_DEVICE_ID, bundleName, abilityName);
+    Want want;
+    want.SetElement(elementName);
+    return QueryAbilityInfo(want, abilityInfo);
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS
