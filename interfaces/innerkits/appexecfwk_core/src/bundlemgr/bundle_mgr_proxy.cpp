@@ -1488,6 +1488,37 @@ bool BundleMgrProxy::SetAbilityEnabled(const AbilityInfo &abilityInfo, bool isEn
     return reply.ReadBool();
 }
 
+bool BundleMgrProxy::GetAbilityInfo(
+    const std::string &bundleName, const std::string &abilityName, AbilityInfo &abilityInfo)
+{
+    BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
+    APP_LOGD("bundleName :%{public}s, abilityName :%{public}s", bundleName.c_str(), abilityName.c_str());
+    if (bundleName.empty() || abilityName.empty()) {
+        APP_LOGE("fail to GetAbilityInfo due to params empty");
+        return false;
+    }
+
+    MessageParcel data;
+    if (!data.WriteInterfaceToken(GetDescriptor())) {
+        APP_LOGE("fail to GetAbilityInfo due to write MessageParcel fail");
+        return false;
+    }
+    if (!data.WriteString(bundleName)) {
+        APP_LOGE("fail to GetAbilityInfo due to write bundleName fail");
+        return false;
+    }
+    if (!data.WriteString(abilityName)) {
+        APP_LOGE("fail to GetAbilityInfo due to write flag fail");
+        return false;
+    }
+
+    if (!GetParcelableInfo<AbilityInfo>(IBundleMgr::Message::GET_ABILITY_INFO, data, abilityInfo)) {
+        APP_LOGE("fail to GetAbilityInfo from server");
+        return false;
+    }
+    return true;
+}
+
 std::string BundleMgrProxy::GetAbilityIcon(const std::string &bundleName, const std::string &className)
 {
     BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
