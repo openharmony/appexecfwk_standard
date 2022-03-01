@@ -624,6 +624,9 @@ public:
 
     virtual bool QueryExtensionAbilityInfoByUri(const std::string &uri, int32_t userId,
         ExtensionAbilityInfo &extensionAbilityInfo) override;
+
+    virtual std::shared_ptr<Media::PixelMap> GetAbilityPixelMapIcon(const std::string &bundleName,
+        const std::string &abilityName) override;
 private:
     /**
      * @brief Send a command message from the proxy object.

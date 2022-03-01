@@ -25,14 +25,15 @@
 #include "bundle_user_mgr_interface.h"
 #include "clean_cache_callback_interface.h"
 #include "common_event_info.h"
+#include "distributed_bundle_info.h"
 #include "form_info.h"
 #include "hap_module_info.h"
 #include "module_usage_record.h"
 #include "on_permission_changed_callback_interface.h"
 #include "ohos/aafwk/content/want.h"
 #include "permission_def.h"
+#include "pixel_map.h"
 #include "shortcut_info.h"
-#include "distributed_bundle_info.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -692,6 +693,12 @@ public:
         return false;
     }
 
+    virtual std::shared_ptr<Media::PixelMap> GetAbilityPixelMapIcon(const std::string &bundleName,
+        const std::string &abilityName)
+    {
+        return nullptr;
+    }
+
     enum class Message {
         GET_APPLICATION_INFO = 0,
         GET_APPLICATION_INFOS,
@@ -737,6 +744,7 @@ public:
         IS_ABILITY_ENABLED,
         SET_ABILITY_ENABLED,
         GET_ABILITY_ICON,
+        GET_ABILITY_PIXELMAP_ICON,
         CAN_REQUEST_PERMISSION,
         REQUEST_PERMISSION_FROM_USER,
         REGISTER_ALL_PERMISSIONS_CHANGED,
@@ -770,7 +778,7 @@ public:
         QUERY_EXTENSION_INFO_BY_TYPE,
         VERIFY_CALLING_PERMISSION,
         GET_ACCESSIBLE_APP_CODE_PATH,
-        QUERY_EXTENSION_ABILITY_INFO_BY_URI
+        QUERY_EXTENSION_ABILITY_INFO_BY_URI,
     };
 };
 }  // namespace AppExecFwk
