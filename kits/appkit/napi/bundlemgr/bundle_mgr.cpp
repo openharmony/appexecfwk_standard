@@ -1673,39 +1673,6 @@ static bool InnerGetAbilityInfo(const std::string &bundleName, const std::string
     return iBundleMgr->GetAbilityInfo(bundleName, abilityName, abilityInfo);
 }
 
-void PraseAbilityInfoParam(napi_env env, AsyncAbilityInfosCallbackInfo *asyncCallbackInfo)
-{
-    size_t argc = ARGS_SIZE_THREE;
-    napi_value argv[ARGS_SIZE_THREE] = {nullptr};
-    napi_get_cb_info(env, asyncCallbackInfo->info, &argc, argv, nullptr, nullptr);
-    APP_LOGD("argc = [%{public}zu]", argc);
-    for (size_t i = 0; i < argc; ++i) {
-        napi_valuetype valueType = napi_undefined;
-        napi_typeof(env, argv[i], &valueType);
-        if (valueType == napi_string) {
-            if (i == 0) {
-                ParseString(env, asyncCallbackInfo->bundleName, argv[i]);
-            } else if (i == ARGS_SIZE_ONE) {
-                ParseString(env, asyncCallbackInfo->abilityName, argv[i]);
-            } else {
-                asyncCallbackInfo->err = PARAM_TYPE_ERROR;
-                asyncCallbackInfo->message = "paramters size mismatch";
-            }
-        } else if (valueType == napi_function) {
-            if (i >= ARGS_SIZE_TWO) {
-                napi_create_reference(env, argv[i], NAPI_RETURN_ONE, &asyncCallbackInfo->callback);
-                break;
-            } else {
-                asyncCallbackInfo->err = PARAM_TYPE_ERROR;
-                asyncCallbackInfo->message = "paramters size mismatch";
-            }
-        } else {
-            asyncCallbackInfo->err = PARAM_TYPE_ERROR;
-            asyncCallbackInfo->message = "type mismatch";
-        }
-    }
-}
-
 void StartGetAbilityInfoExecuteCB(napi_env env, void *data)
 {
     APP_LOGI("%{public}s called.", __func__);
@@ -1761,19 +1728,41 @@ void StartGetAbilityInfoCompletedCB(napi_env env, napi_status status, void *data
 napi_value GetAbilityInfo(napi_env env, napi_callback_info info)
 {
     APP_LOGD("NAPI_GetAbilityInfo called");
+    size_t requireArgc = ARGS_SIZE_TWO;
+    size_t argc = ARGS_SIZE_THREE;
+    napi_value argv[ARGS_SIZE_THREE] = { 0 };
+    napi_value thisArg = nullptr;
+    void *data = nullptr;
+    NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, &thisArg, &data));
+    NAPI_ASSERT(env, argc >= requireArgc, "requires 2 parameter");
     AsyncAbilityInfosCallbackInfo *asyncCallbackInfo = new AsyncAbilityInfosCallbackInfo();
     if (asyncCallbackInfo == nullptr) {
         APP_LOGE("%{public}s, asyncCallbackInfo == nullptr.", __func__);
         return nullptr;
     }
-    asyncCallbackInfo->info = info;
-    PraseAbilityInfoParam(env, asyncCallbackInfo);
+    asyncCallbackInfo->env = env;
+    for (size_t i = 0; i < argc; ++i) {
+        napi_valuetype valueType = napi_undefined;
+        napi_typeof(env, argv[i], &valueType);
+        if ((i == 0) && (valueType == napi_string)) {
+            ParseString(env, asyncCallbackInfo->bundleName, argv[i]);
+        } else if (i == ARGS_SIZE_ONE && (valueType == napi_string)) {
+            ParseString(env, asyncCallbackInfo->abilityName, argv[i]);
+        } else if (i == ARGS_SIZE_TWO && (valueType == napi_function)) {
+            napi_create_reference(env, argv[i], NAPI_RETURN_ONE, &asyncCallbackInfo->callback);
+        } else {
+            asyncCallbackInfo->err = INVALID_PARAM;
+        }
+    }
+
+    napi_value promise = nullptr;
+    if (asyncCallbackInfo->callback == nullptr) {
+        napi_create_promise(env, &asyncCallbackInfo->deferred, &promise);
+    } else {
+        napi_get_undefined(env, &promise);
+    }
     napi_value resource = nullptr;
     NAPI_CALL(env, napi_create_string_latin1(env, __func__, NAPI_AUTO_LENGTH, &resource));
-    napi_deferred deferred;
-    napi_value promise = 0;
-    NAPI_CALL(env, napi_create_promise(env, &deferred, &promise));
-    asyncCallbackInfo->deferred = deferred;
     NAPI_CALL(env, napi_create_async_work(env, nullptr, resource, StartGetAbilityInfoExecuteCB,
                        StartGetAbilityInfoCompletedCB, (void *)asyncCallbackInfo, &asyncCallbackInfo->asyncWork));
     NAPI_CALL(env, napi_queue_async_work(env, asyncCallbackInfo->asyncWork));
@@ -4800,7 +4789,9 @@ void IsAbilityEnabledAsyncComplete(napi_env env, napi_status status, void *data)
     napi_value result[ARGS_SIZE_TWO] = {nullptr};
     napi_value callResult = nullptr;
     NAPI_CALL_RETURN_VOID(env, napi_get_undefined(env, &undefined));
-    result[PARAM0] = GetCallbackErrorValue(env, asyncCallbackInfo->errCode);
+    if (asyncCallbackInfo->errCode) {
+        result[PARAM0] = GetCallbackErrorValue(env, asyncCallbackInfo->errCode);
+    }
 
     if (asyncCallbackInfo->errCode == NAPI_ERR_NO_ERROR) {
         NAPI_CALL_RETURN_VOID(env, napi_get_boolean(env, asyncCallbackInfo->result, &result[PARAM1]));
@@ -5003,7 +4994,9 @@ void IsApplicationEnabledAsyncComplete(napi_env env, napi_status status, void *d
     napi_value result[ARGS_SIZE_TWO] = {nullptr};
     napi_value callResult = nullptr;
     NAPI_CALL_RETURN_VOID(env, napi_get_undefined(env, &undefined));
-    result[PARAM0] = GetCallbackErrorValue(env, asyncCallbackInfo->errCode);
+    if (asyncCallbackInfo->errCode) {
+        result[PARAM0] = GetCallbackErrorValue(env, asyncCallbackInfo->errCode);
+    }
 
     if (asyncCallbackInfo->errCode == NAPI_ERR_NO_ERROR) {
         NAPI_CALL_RETURN_VOID(env, napi_get_boolean(env, asyncCallbackInfo->result, &result[PARAM1]));
@@ -5195,7 +5188,9 @@ void GetAbilityLabelAsyncComplete(napi_env env, napi_status status, void *data)
     napi_value result[ARGS_SIZE_TWO] = {nullptr};
     napi_value callResult = nullptr;
     NAPI_CALL_RETURN_VOID(env, napi_get_undefined(env, &undefined));
-    result[PARAM0] = GetCallbackErrorValue(env, asyncCallbackInfo->err);
+    if (asyncCallbackInfo->err) {
+        result[PARAM0] = GetCallbackErrorValue(env, asyncCallbackInfo->err);
+    }
 
     if (asyncCallbackInfo->err == NAPI_ERR_NO_ERROR) {
         napi_create_string_utf8(env, asyncCallbackInfo->abilityLabel.c_str(), NAPI_AUTO_LENGTH, &result[PARAM1]);
