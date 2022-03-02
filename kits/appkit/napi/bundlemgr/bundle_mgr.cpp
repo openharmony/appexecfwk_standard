@@ -4980,7 +4980,7 @@ void IsAbilityEnabledAsyncComplete(napi_env env, napi_status status, void *data)
     napi_value callResult = nullptr;
     NAPI_CALL_RETURN_VOID(env, napi_get_undefined(env, &undefined));
     if (asyncCallbackInfo->errCode) {
-        result[PARAM0] = GetCallbackErrorValue(env, asyncCallbackInfo->errCode);
+        napi_create_int32(env, asyncCallbackInfo->errCode, &result[PARAM0]);
     }
 
     if (asyncCallbackInfo->errCode == NAPI_ERR_NO_ERROR) {
@@ -5011,7 +5011,7 @@ void IsAbilityEnabledPromiseComplete(napi_env env, napi_status status, void *dat
         NAPI_CALL_RETURN_VOID(env, napi_get_boolean(env, asyncCallbackInfo->result, &result));
         napi_resolve_deferred(env, asyncCallbackInfo->deferred, result);
     } else {
-        result = GetCallbackErrorValue(env, asyncCallbackInfo->errCode);
+        napi_create_int32(env, asyncCallbackInfo->errCode, &result);
         napi_reject_deferred(env, asyncCallbackInfo->deferred, result);
     }
 
@@ -5185,7 +5185,7 @@ void IsApplicationEnabledAsyncComplete(napi_env env, napi_status status, void *d
     napi_value callResult = nullptr;
     NAPI_CALL_RETURN_VOID(env, napi_get_undefined(env, &undefined));
     if (asyncCallbackInfo->errCode) {
-        result[PARAM0] = GetCallbackErrorValue(env, asyncCallbackInfo->errCode);
+        napi_create_int32(env, asyncCallbackInfo->errCode, &result[PARAM0]);
     }
 
     if (asyncCallbackInfo->errCode == NAPI_ERR_NO_ERROR) {
@@ -5216,7 +5216,7 @@ void IsApplicationEnabledPromiseComplete(napi_env env, napi_status status, void 
         NAPI_CALL_RETURN_VOID(env, napi_get_boolean(env, asyncCallbackInfo->result, &result));
         napi_resolve_deferred(env, asyncCallbackInfo->deferred, result);
     } else {
-        result = GetCallbackErrorValue(env, asyncCallbackInfo->errCode);
+        napi_create_int32(env, asyncCallbackInfo->errCode, &result);
         napi_reject_deferred(env, asyncCallbackInfo->deferred, result);
     }
 
@@ -5362,10 +5362,12 @@ void GetAbilityLabelExecute(napi_env env, void *data)
         APP_LOGE("NAPI_GetAbilityLabel, asyncCallbackInfo == nullptr");
         return;
     }
-    asyncCallbackInfo->abilityLabel =
+    if (!asyncCallbackInfo->err) {
+        asyncCallbackInfo->abilityLabel =
         InnerGetAbilityLabel(env, asyncCallbackInfo->bundleName, asyncCallbackInfo->className);
-    if (asyncCallbackInfo->abilityLabel == "") {
-        asyncCallbackInfo->err = INVALID_PARAM;
+        if (asyncCallbackInfo->abilityLabel == "") {
+            asyncCallbackInfo->err = OPERATION_FAILED;
+        }
     }
 }
 
@@ -5379,7 +5381,7 @@ void GetAbilityLabelAsyncComplete(napi_env env, napi_status status, void *data)
     napi_value callResult = nullptr;
     NAPI_CALL_RETURN_VOID(env, napi_get_undefined(env, &undefined));
     if (asyncCallbackInfo->err) {
-        result[PARAM0] = GetCallbackErrorValue(env, asyncCallbackInfo->err);
+        napi_create_int32(env, asyncCallbackInfo->err, &result[PARAM0]);
     }
 
     if (asyncCallbackInfo->err == NAPI_ERR_NO_ERROR) {
@@ -5411,7 +5413,7 @@ void GetAbilityLabelPromiseComplete(napi_env env, napi_status status, void *data
             env, napi_create_string_utf8(env, asyncCallbackInfo->abilityLabel.c_str(), NAPI_AUTO_LENGTH, &result));
         napi_resolve_deferred(env, asyncCallbackInfo->deferred, result);
     } else {
-        result = GetCallbackErrorValue(env, asyncCallbackInfo->err);
+        napi_create_int32(env, asyncCallbackInfo->err, &result);
         napi_reject_deferred(env, asyncCallbackInfo->deferred, result);
     }
 
@@ -5496,7 +5498,7 @@ napi_value GetAbilityLabelWrap(napi_env env, napi_callback_info info, AsyncAbili
     if (firstValueType == napi_string) {
         ParseString(env, asyncCallbackInfo->bundleName, args[PARAM0]);
     } else {
-        asyncCallbackInfo->err = PARAM_TYPE_ERROR;
+        asyncCallbackInfo->err = INVALID_PARAM;
     }
 
     napi_valuetype secondValueType = napi_undefined;
@@ -5504,7 +5506,7 @@ napi_value GetAbilityLabelWrap(napi_env env, napi_callback_info info, AsyncAbili
     if (secondValueType == napi_string) {
         ParseString(env, asyncCallbackInfo->className, args[PARAM1]);
     } else {
-        asyncCallbackInfo->err = PARAM_TYPE_ERROR;
+        asyncCallbackInfo->err = INVALID_PARAM;
     }
 
     if (argcAsync > argcPromise) {
