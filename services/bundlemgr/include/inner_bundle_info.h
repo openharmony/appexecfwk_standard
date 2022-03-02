@@ -17,7 +17,6 @@
 #define FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_INNER_BUNDLE_INFO_H
 
 #include "nocopyable.h"
-#include "permission/permission_kit.h"
 
 #include "ability_info.h"
 #include "bundle_constants.h"

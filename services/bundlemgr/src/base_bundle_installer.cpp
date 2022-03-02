@@ -789,7 +789,6 @@ ErrCode BaseBundleInstaller::RemoveBundle(InnerBundleInfo &info)
         AccessToken::AccessTokenKitRet::RET_SUCCESS) {
         APP_LOGE("delete accessToken failed");
     }
-    BundlePermissionMgr::UninstallPermissions(info, userId_, false);
     return ERR_OK;
 }
 
@@ -852,7 +851,6 @@ ErrCode BaseBundleInstaller::ProcessBundleInstallStatus(InnerBundleInfo &info, i
     stateGuard.Dismiss();
     bundleGuard.Dismiss();
 
-    BundlePermissionMgr::InstallPermissions(info, userId_, true);
     APP_LOGD("finish to call processBundleInstallStatus");
     return ERR_OK;
 }
@@ -902,7 +900,6 @@ ErrCode BaseBundleInstaller::ProcessBundleUpdateStatus(
         dataMgr_->SavePreInstallBundleInfo(bundleName_, preInstallBundleInfo);
     }
 
-    BundlePermissionMgr::UpdatePermissions(newInfo, userId_, newInfo.IsOnlyCreateBundleUser());
     APP_LOGD("finish to call ProcessBundleUpdateStatus");
     return ERR_OK;
 }
@@ -1785,7 +1782,6 @@ ErrCode BaseBundleInstaller::RemoveBundleUserData(InnerBundleInfo &innerBundleIn
     }
 
     innerBundleInfo.RemoveInnerBundleUserInfo(userId_);
-    BundlePermissionMgr::UninstallPermissions(innerBundleInfo, userId_, true);
     return UpdateUserInfoToDb(innerBundleInfo, true);
 }
 

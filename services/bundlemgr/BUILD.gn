@@ -104,7 +104,6 @@ ohos_source_set("bundle_parser") {
     "access_token:libaccesstoken_sdk",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
-    "permission_standard:libpermissionsdk_standard",
     "startup_l2:syspara",
     "utils_base:utils",
   ]
@@ -181,7 +180,6 @@ ohos_shared_library("libbms") {
     "init:libbegetutil",
     "ipc:ipc_core",
     "os_account_standard:os_account_innerkits",
-    "permission_standard:libpermissionsdk_standard",
     "resmgr_standard:global_resmgr",
     "safwk:system_ability_fwk",
     "samgr_standard:samgr_proxy",
