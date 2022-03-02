@@ -183,7 +183,7 @@ bool ZipFile::Open()
         return false;
     }
 
-    FILE *tmpFile = fopen(&(realPath[0]), "rb");
+    FILE *tmpFile = fopen(realPath.c_str(), "rb");
     if (tmpFile == nullptr) {
         APP_LOGE("open file(%{private}s) failed, error: %{public}d", pathName_.c_str(), errno);
         return false;
