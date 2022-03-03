@@ -916,35 +916,13 @@ sptr<IBundleUserMgr> BundleMgrHostImpl::GetBundleUserMgr()
 bool BundleMgrHostImpl::CanRequestPermission(
     const std::string &bundleName, const std::string &permissionName, const int userId)
 {
-    if (bundleName.empty() || permissionName.empty()) {
-        APP_LOGE("fail to CanRequestPermission due to params empty");
-        return false;
-    }
-    return BundlePermissionMgr::CanRequestPermission(bundleName, permissionName, userId);
+    return true;
 }
 
 bool BundleMgrHostImpl::RequestPermissionFromUser(
     const std::string &bundleName, const std::string &permissionName, const int userId)
 {
-    if (bundleName.empty() || permissionName.empty()) {
-        APP_LOGE("fail to CanRequestPermission due to params empty");
-        return false;
-    }
-    bool ret = BundlePermissionMgr::RequestPermissionFromUser(bundleName, permissionName, userId);
-    // send Permissions Changed event
-    APP_LOGI("send Permissions Changed event");
-    BundleInfo info;
-    bool ret_getInfo = GetBundleInfo(bundleName, BundleFlag::GET_BUNDLE_DEFAULT, info);
-    APP_LOGI("ret_getInfo = %{public}d", ret_getInfo);
-    if (ret && ret_getInfo) {
-        Want want;
-        want.SetAction("PERMISSIONS_CHANGED_EVENT");
-        EventFwk::CommonEventData commonData;
-        commonData.SetWant(want);
-        commonData.SetCode(info.uid);
-        EventFwk::CommonEventManager::PublishCommonEvent(commonData);
-    }
-    return ret;
+    return true;
 }
 
 bool BundleMgrHostImpl::RegisterAllPermissionsChanged(const sptr<OnPermissionChangedCallback> &callback)

@@ -18,7 +18,6 @@
 #include <cinttypes>
 #include <unistd.h>
 #include "datetime_ex.h"
-#include "permission/permission_kit.h"
 #include "string_ex.h"
 
 #include "bundle_util.h"
