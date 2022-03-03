@@ -52,8 +52,6 @@ public:
      */
     void DeleteBundleInfoFromStorage(const InnerBundleInfo &info);
 private:
-    void UninstallPermissions(const InnerBundleInfo &info);
-
     std::weak_ptr<BundleDataStorageDatabase> dataStorage_;
 };
 }  // namespace AppExecFwk
