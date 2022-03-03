@@ -2476,6 +2476,7 @@ bool BundleDataMgr::GetPreInstallBundleInfo(
         return false;
     }
 
+    preInstallBundleInfo.SetBundleName(bundleName);
     auto info = std::find_if(
         preInstallBundleInfos_.begin(), preInstallBundleInfos_.end(), preInstallBundleInfo);
     if (info != preInstallBundleInfos_.end()) {

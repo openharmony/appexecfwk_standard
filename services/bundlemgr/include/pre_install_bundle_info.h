@@ -92,6 +92,26 @@ public:
         }
     }
     /**
+     * @brief Delete bundle path.
+     * @param bundlePath bundle path.
+     */
+    void DeleteBundlePath(const std::string &bundlePath)
+    {
+        auto iter = std::find(bundlePaths_.begin(), bundlePaths_.end(), bundlePath);
+        if (iter != bundlePaths_.end()) {
+            bundlePaths_.erase(iter);
+        }
+    }
+    /**
+     * @brief Has bundle path.
+     * @param bundlePath bundle path.
+     */
+    bool HasBundlePath(const std::string &bundlePath)
+    {
+        return std::find(bundlePaths_.begin(), bundlePaths_.end(), bundlePath)
+            != bundlePaths_.end();
+    }
+    /**
      * @brief Get AppType.
      * @return Returns the AppType.
      */
