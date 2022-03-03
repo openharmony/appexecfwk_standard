@@ -69,19 +69,25 @@ bool EpollIoWaiter::Init()
     do {
         epollFd = epoll_create(MAX_EPOLL_EVENTS_SIZE);
         if (epollFd < 0) {
-            HILOGE("Init: Failed to create epoll, %{public}s", GetLastErr());
+            char errmsg[MAX_ERRORMSG_LEN] = {0};
+            GetLastErr(errmsg);
+            HILOGE("Init: Failed to create epoll, %{public}s", errmsg);
             break;
         }
 
         awakenFd = eventfd(0, EFD_CLOEXEC | EFD_NONBLOCK);
         if (awakenFd < 0) {
-            HILOGE("Init: Failed to create event fd, %{public}s", GetLastErr());
+            char errmsg[MAX_ERRORMSG_LEN] = {0};
+            GetLastErr(errmsg);
+            HILOGE("Init: Failed to create event fd, %{public}s", errmsg);
             break;
         }
 
         // Add readable file descriptor of pipe, used to wake up blocked thread.
         if (EpollCtrl(epollFd, EPOLL_CTL_ADD, awakenFd, EPOLLIN | EPOLLET) < 0) {
-            HILOGE("Init: Failed to add awaken file descriptor into epoll, %{public}s", GetLastErr());
+            char errmsg[MAX_ERRORMSG_LEN] = {0};
+            GetLastErr(errmsg);
+            HILOGE("Init: Failed to add awaken file descriptor into epoll, %{public}s", errmsg);
             break;
         }
 
@@ -127,7 +133,9 @@ bool EpollIoWaiter::WaitFor(std::unique_lock<std::mutex> &lock, int64_t nanoseco
 
     bool result = true;
     if (retVal < 0) {
-        HILOGE("WaitFor: Failed to wait epoll, %{public}s", GetLastErr());
+        char errmsg[MAX_ERRORMSG_LEN] = {0};
+        GetLastErr(errmsg);
+        HILOGE("WaitFor: Failed to wait epoll, %{public}s", errmsg);
         result = false;
     } else {
         for (int32_t i = 0; i < retVal; ++i) {
@@ -186,7 +194,9 @@ void EpollIoWaiter::NotifyAll()
     static const uint64_t increment = 1;
     ssize_t retVal = write(awakenFd_, &increment, sizeof(increment));
     if (retVal < 0) {
-        HILOGE("NotifyAll: Failed to write data into awaken pipe, %{public}s", GetLastErr());
+        char errmsg[MAX_ERRORMSG_LEN] = {0};
+        GetLastErr(errmsg);
+        HILOGE("NotifyAll: Failed to write data into awaken pipe, %{public}s", errmsg);
     }
 }
 
@@ -218,7 +228,9 @@ bool EpollIoWaiter::AddFileDescriptor(int32_t fileDescriptor, uint32_t events)
     }
 
     if (EpollCtrl(epollFd_, EPOLL_CTL_ADD, fileDescriptor, epollEvents) < 0) {
-        HILOGE("AddFileDescriptor: Failed to add file descriptor into epoll, %{public}s", GetLastErr());
+        char errmsg[MAX_ERRORMSG_LEN] = {0};
+        GetLastErr(errmsg);
+        HILOGE("AddFileDescriptor: Failed to add file descriptor into epoll, %{public}s", errmsg);
         return false;
     }
 
@@ -238,7 +250,9 @@ void EpollIoWaiter::RemoveFileDescriptor(int32_t fileDescriptor)
     }
 
     if (EpollCtrl(epollFd_, EPOLL_CTL_DEL, fileDescriptor, 0) < 0) {
-        HILOGE("RemoveFileDescriptor: Failed to remove file descriptor from epoll, %{public}s", GetLastErr());
+        char errmsg[MAX_ERRORMSG_LEN] = {0};
+        GetLastErr(errmsg);
+        HILOGE("RemoveFileDescriptor: Failed to remove file descriptor from epoll, %{public}s", errmsg);
         return;
     }
 }
@@ -248,7 +262,9 @@ void EpollIoWaiter::DrainAwakenPipe() const
     uint64_t value = 0;
     ssize_t retVal = read(awakenFd_, &value, sizeof(value));
     if (retVal < 0) {
-        HILOGE("DrainAwakenPipe: Failed to read data from awaken pipe, %{public}s", GetLastErr());
+        char errmsg[MAX_ERRORMSG_LEN] = {0};
+        GetLastErr(errmsg);
+        HILOGE("DrainAwakenPipe: Failed to read data from awaken pipe, %{public}s", errmsg);
     }
 }
 
