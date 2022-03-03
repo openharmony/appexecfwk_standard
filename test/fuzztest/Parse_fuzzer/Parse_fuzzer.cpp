@@ -22,8 +22,11 @@
 #include "bundle_parser.h"
 
 using namespace OHOS::AppExecFwk;
-
 namespace OHOS {
+    namespace {
+        const int FILE_RETURN_SUCCESS = 0;
+        int retCode = 0;
+    }
     bool DoSomethingInterestingWithMyAPI(const uint8_t* data, size_t size)
     {
         if (size <= 4) {
@@ -35,8 +38,15 @@ namespace OHOS {
             std::cout<< "fopen hap error!";
         }
 
-        fputs(reinterpret_cast<const char*>(data), pFile);
-        fclose(pFile);
+        retCode = fputs(reinterpret_cast<const char*>(data), pFile);
+        if (retCode != FILE_RETURN_SUCCESS) {
+            return false;
+        }
+        retCode = fclose(pFile);
+        if (retCode != FILE_RETURN_SUCCESS) {
+            return false;
+        }
+        pFile = nullptr;
         InnerBundleInfo info;
         BundleParser bundleParser;
         auto ret = bundleParser.Parse("myHap.hap", info);
@@ -55,4 +65,3 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
     OHOS::DoSomethingInterestingWithMyAPI(data, size);
     return 0;
 }
-
