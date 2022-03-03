@@ -117,7 +117,6 @@ bool BundleMgrService::Init()
     }
 
     APP_LOGI("init begin");
-
     if (!runner_) {
         runner_ = EventRunner::Create(Constants::BMS_SERVICE_NAME);
         if (!runner_) {
@@ -179,10 +178,12 @@ bool BundleMgrService::Init()
         cloneMgr_ = std::make_shared<BundleCloneMgr>();
     }
     APP_LOGI("create BundleCloneMgr success");
+
     if (!deviceManager_) {
         APP_LOGI("Create device manager");
         deviceManager_ = std::make_shared<BmsDeviceManager>();
     }
+
     CheckAllUser();
     ready_ = true;
     APP_LOGI("init end success");
