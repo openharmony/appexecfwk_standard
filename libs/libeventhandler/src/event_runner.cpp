@@ -39,7 +39,9 @@ namespace {
 inline void SystemCallSetThreadName(const std::string &name)
 {
     if (prctl(PR_SET_NAME, name.c_str()) < 0) {
-        HILOGW("SystemCallSetThreadName: Failed to set thread name, %{public}s", GetLastErr());
+        char errmsg[MAX_ERRORMSG_LEN] = {0};
+        GetLastErr(errmsg);
+        HILOGE("SystemCallSetThreadName: Failed to set thread name, %{public}s", errmsg);
     }
 }
 
@@ -327,7 +329,6 @@ public:
                         logging->Log("Dispatching to handler event task name = " + event->GetTaskName());
                     }
                 }
-
                 handler->DistributeEvent(event);
 
                 if (logging != nullptr) {
