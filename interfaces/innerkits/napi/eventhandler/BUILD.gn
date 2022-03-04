@@ -24,6 +24,7 @@ ohos_shared_library("emitter") {
     "${innerkits_path}/libeventhandler/include",
     "//third_party/node/src",
     "//third_party/libuv/include",
+    "//utils/native/base/include",
   ]
 
   configs = [ ":native_module_config" ]
@@ -40,7 +41,6 @@ ohos_shared_library("emitter") {
 
   external_deps = [
     "hiviewdfx_hilog_native:libhilog",
-    "ipc:ipc_core",
     "napi:ace_napi",
   ]
 
