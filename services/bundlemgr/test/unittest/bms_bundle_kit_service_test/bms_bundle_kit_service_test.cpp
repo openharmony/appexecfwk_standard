@@ -2942,19 +2942,6 @@ HWTEST_F(BmsBundleKitServiceTest, GetAllFormInfo_0200, Function | SmallTest | Le
 }
 
 /**
- * @tc.number: GetAllFormInfo_0300
- * @tc.name: test can not get have no form
- * @tc.desc: 1.system run normally
- *           2.get forms by all the bundle
- */
-HWTEST_F(BmsBundleKitServiceTest, GetAllFormInfo_0300, Function | SmallTest | Level1)
-{
-    std::vector<FormInfo> formInfos;
-    GetBundleDataMgr()->GetAllFormsInfo(formInfos);
-    EXPECT_TRUE(formInfos.empty());
-}
-
-/**
  * @tc.number: GetShortcutInfos_0100
  * @tc.name: test can get shortcutInfo by bundleName
  * @tc.desc: 1.can get shortcutInfo
