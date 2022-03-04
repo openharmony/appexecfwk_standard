@@ -42,6 +42,7 @@ public:
     int32_t ResizeRGBImage(std::shared_ptr<ImageBuffer>& imageBufferIn, std::shared_ptr<ImageBuffer>& imageBufferOut);
     std::shared_ptr<ImageBuffer> CompressImage(std::string inFileName);
     bool DoubleEqual(double left, double right);
+    bool IsPathValid(std::string& fileName);
     static void PngToBuffer(png_structp png_ptr, png_bytep data, png_size_t lenght);
 };
 }
