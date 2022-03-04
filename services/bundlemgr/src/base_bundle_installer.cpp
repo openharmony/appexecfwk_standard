@@ -86,7 +86,7 @@ ErrCode BaseBundleInstaller::InstallBundle(
 
     int32_t uid = Constants::INVALID_UID;
     ErrCode result = ProcessBundleInstall(bundlePaths, installParam, appType, uid);
-    if (dataMgr_ && !bundleName_.empty() && !isSingleton_) {
+    if (installParam.needSendEvent && dataMgr_ && !bundleName_.empty()) {
         dataMgr_->NotifyBundleStatus(bundleName_,
             Constants::EMPTY_STRING,
             mainAbility_,
@@ -108,7 +108,7 @@ ErrCode BaseBundleInstaller::Recover(
 
     int32_t uid = Constants::INVALID_UID;
     ErrCode result = ProcessRecover(bundleName, installParam, uid);
-    if (dataMgr_ && !bundleName_.empty() && !modulePackage_.empty()) {
+    if (installParam.needSendEvent && dataMgr_ && !bundleName_.empty() && !modulePackage_.empty()) {
         dataMgr_->NotifyBundleStatus(bundleName_,
             modulePackage_,
             mainAbility_,
@@ -129,7 +129,7 @@ ErrCode BaseBundleInstaller::UninstallBundle(const std::string &bundleName, cons
 
     int32_t uid = Constants::INVALID_UID;
     ErrCode result = ProcessBundleUninstall(bundleName, installParam, uid);
-    if (dataMgr_) {
+    if (installParam.needSendEvent && dataMgr_) {
         dataMgr_->NotifyBundleStatus(
             bundleName, Constants::EMPTY_STRING, Constants::EMPTY_STRING, result, NotifyType::UNINSTALL_BUNDLE, uid);
     }
@@ -147,7 +147,7 @@ ErrCode BaseBundleInstaller::UninstallBundle(
 
     int32_t uid = Constants::INVALID_UID;
     ErrCode result = ProcessBundleUninstall(bundleName, modulePackage, installParam, uid);
-    if (dataMgr_) {
+    if (installParam.needSendEvent && dataMgr_) {
         dataMgr_->NotifyBundleStatus(
             bundleName, modulePackage, Constants::EMPTY_STRING, result, NotifyType::UNINSTALL_MODULE, uid);
     }
@@ -168,12 +168,10 @@ ErrCode BaseBundleInstaller::InnerProcessBundleInstall(std::unordered_map<std::s
 {
     BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     bundleName_ = newInfos.begin()->second.GetBundleName();
-    isSingleton_ = newInfos.begin()->second.IsSingleUser();
     APP_LOGI("InnerProcessBundleInstall with bundleName %{public}s, userId is %{public}d", bundleName_.c_str(),
         userId_);
     if (installParam.needSavePreInstallInfo) {
         PreInstallBundleInfo preInstallBundleInfo;
-        preInstallBundleInfo.SetBundleName(bundleName_);
         dataMgr_->GetPreInstallBundleInfo(bundleName_, preInstallBundleInfo);
         preInstallBundleInfo.SetAppType(newInfos.begin()->second.GetAppType());
         preInstallBundleInfo.SetVersionCode(newInfos.begin()->second.GetVersionCode());
@@ -183,20 +181,17 @@ ErrCode BaseBundleInstaller::InnerProcessBundleInstall(std::unordered_map<std::s
         dataMgr_->SavePreInstallBundleInfo(bundleName_, preInstallBundleInfo);
     }
 
-    if (isSingleton_ && (userId_ != Constants::DEFAULT_USERID)) {
-        APP_LOGI("singleton app only install in user 0, bundleName %{public}s, userId is %{public}d",
-            bundleName_.c_str(), userId_);
-        return ERR_OK;
+    // singleton app can only be installed in U0 and U0 can only install singleton app.
+    bool isSingleton = newInfos.begin()->second.IsSingleUser();
+    if (isSingleton ^ (userId_ == Constants::DEFAULT_USERID)) {
+        APP_LOGI("singleton(%{public}d) app(%{public}s) and user(%{public}d) are not matched.",
+            isSingleton, bundleName_.c_str(), userId_);
+        return ERR_APPEXECFWK_INSTALL_ZERO_USER_WITH_NO_SINGLETON;
     }
 
     // try to get the bundle info to decide use install or update. Always keep other exceptions below this line.
     if (!GetInnerBundleInfo(oldInfo, isAppExist_)) {
         return ERR_APPEXECFWK_INSTALL_BUNDLE_MGR_SERVICE_ERROR;
-    }
-
-    if ((userId_ == Constants::DEFAULT_USERID) && !isSingleton_) {
-        APP_LOGE("user(0) can only install singleton app(%{public}s).", bundleName_.c_str());
-        return ERR_APPEXECFWK_INSTALL_ZERO_USER_WITH_NO_SINGLETON;
     }
 
     if (isAppExist_) {
@@ -574,6 +569,7 @@ ErrCode BaseBundleInstaller::ProcessBundleUninstall(
             return ERR_APPEXECFWK_UNINSTALL_KILLING_APP_ERROR;
         }
     }
+
     enableGuard.Dismiss();
     std::string packageName;
     oldInfo.SetInstallMark(bundleName, packageName, InstallExceptionStatus::UNINSTALL_BUNDLE_START);
@@ -581,18 +577,13 @@ ErrCode BaseBundleInstaller::ProcessBundleUninstall(
         APP_LOGE("save install mark failed");
         return ERR_APPEXECFWK_INSTALL_INTERNAL_ERROR;
     }
+
     ErrCode result = RemoveBundle(oldInfo);
     if (result != ERR_OK) {
         APP_LOGE("remove whole bundle failed");
         return result;
     }
-    if (installParam.needSavePreInstallInfo) {
-        PreInstallBundleInfo preInstallBundleInfo;
-        preInstallBundleInfo.SetBundleName(bundleName);
-        APP_LOGI("GetPreInstallBundleInfo bundleName %{public}s ", bundleName.c_str());
-        dataMgr_->GetPreInstallBundleInfo(bundleName, preInstallBundleInfo);
-        dataMgr_->DeletePreInstallBundleInfo(bundleName, preInstallBundleInfo);
-    }
+
     APP_LOGD("finish to process %{public}s bundle uninstall", bundleName.c_str());
     return ERR_OK;
 }
@@ -657,13 +648,18 @@ ErrCode BaseBundleInstaller::ProcessBundleUninstall(
         APP_LOGE("uninstall already start");
         return ERR_APPEXECFWK_INSTALL_BUNDLE_MGR_SERVICE_ERROR;
     }
-    ScopeGuard stateGuard([&] { dataMgr_->UpdateBundleInstallState(bundleName, InstallState::INSTALL_SUCCESS); });
-    // kill the bundle process during uninstall.
 
-    if (!UninstallApplicationProcesses(oldInfo.GetApplicationName(), uid)) {
-        APP_LOGE("can not kill process");
-        return ERR_APPEXECFWK_UNINSTALL_KILLING_APP_ERROR;
+    ScopeGuard stateGuard([&] { dataMgr_->UpdateBundleInstallState(bundleName, InstallState::INSTALL_SUCCESS); });
+
+    // kill the bundle for reboot scan.
+    if (installParam.noSkipsKill) {
+        // kill the bundle process during uninstall.
+        if (!UninstallApplicationProcesses(oldInfo.GetApplicationName(), uid)) {
+            APP_LOGE("can not kill process");
+            return ERR_APPEXECFWK_UNINSTALL_KILLING_APP_ERROR;
+        }
     }
+
     oldInfo.SetInstallMark(bundleName, modulePackage, InstallExceptionStatus::UNINSTALL_PACKAGE_START);
     if (!dataMgr_->SaveInstallMark(oldInfo, true)) {
         APP_LOGE("save install mark failed");
@@ -679,6 +675,7 @@ ErrCode BaseBundleInstaller::ProcessBundleUninstall(
             APP_LOGI("GetClonedBundleName new name %{public}s ", cloneName.c_str());
             cloneMgr_->RemoveClonedBundle(bundleName, cloneName);
         }
+
         enableGuard.Dismiss();
         stateGuard.Dismiss();
         if (onlyInstallInUser) {
@@ -699,11 +696,13 @@ ErrCode BaseBundleInstaller::ProcessBundleUninstall(
         APP_LOGE("remove module dir failed");
         return result;
     }
+
     oldInfo.SetInstallMark(bundleName, modulePackage, InstallExceptionStatus::INSTALL_FINISH);
     if (!dataMgr_->RemoveModuleInfo(bundleName, modulePackage, oldInfo)) {
         APP_LOGE("RemoveModuleInfo failed");
         return ERR_APPEXECFWK_INSTALL_BUNDLE_MGR_SERVICE_ERROR;
     }
+
     APP_LOGD("finish to process %{public}s in %{public}s uninstall", bundleName.c_str(), modulePackage.c_str());
     return ERR_OK;
 }
@@ -889,15 +888,6 @@ ErrCode BaseBundleInstaller::ProcessBundleUpdateStatus(
     if (result != ERR_OK) {
         APP_LOGE("install module failed %{public}d", result);
         return result;
-    }
-
-    if (!noSkipsKill) {
-        PreInstallBundleInfo preInstallBundleInfo;
-        dataMgr_->GetPreInstallBundleInfo(newInfo.GetBundleName(), preInstallBundleInfo);
-        preInstallBundleInfo.SetVersionCode(newInfo.GetVersionCode());
-        APP_LOGI("Up preInstallBundleInfo.SetVersionCode bundleName %{public}s ", newInfo.GetBundleName().c_str());
-        APP_LOGI("Up preInstallBundleInfo.SetVersionCode %{public}d ", newInfo.GetVersionCode());
-        dataMgr_->SavePreInstallBundleInfo(bundleName_, preInstallBundleInfo);
     }
 
     APP_LOGD("finish to call ProcessBundleUpdateStatus");

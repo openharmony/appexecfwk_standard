@@ -44,6 +44,13 @@ public:
      * @return Returns true if this function called successfully; returns false otherwise.
      */
     bool UninstallSystemBundle(const std::string &bundleName);
+    /**
+     * @brief Uninstall system and system vendor bundles.
+     * @param bundleName Indicates the bundle name.
+     * @param moduleName Indicates the module name.
+     * @return Returns true if this function called successfully; returns false otherwise.
+     */
+    bool UninstallSystemBundle(const std::string &bundleName, const std::string &modulePackage);
 
 private:
     const std::string filePath_;

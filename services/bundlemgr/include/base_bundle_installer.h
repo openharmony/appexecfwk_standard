@@ -431,7 +431,6 @@ private:
     uint32_t versionCode_ = 0;
     // value is packageName for uninstalling
     bool isFeatureNeedUninstall_ = false;
-    bool isSingleton_ = false;
     std::vector<std::string> uninstallModuleVec_;
 
     int32_t userId_ = Constants::INVALID_USERID;
