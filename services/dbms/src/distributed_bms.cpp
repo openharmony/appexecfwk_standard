@@ -26,7 +26,9 @@
 #include "if_system_ability_manager.h"
 #include "os_account_manager.h"
 #include "parameter.h"
+#ifdef SUPPORT_GRAPHICS
 #include "image_compress.h"
+#endif
 #include "system_ability_definition.h"
 
 
@@ -198,6 +200,7 @@ int32_t DistributedBms::GetAbilityInfo(
         return ERR_APPEXECFWK_FAILED_GET_RESOURCEMANAGER;
     }
 
+#ifdef SUPPORT_GRAPHICS
     std::shared_ptr<ImageCompress> imageCompress;
     if (imageCompress->NeedCompress(iconPath)) {
         std::shared_ptr<ImageBuffer> imageBuffer = imageCompress->CompressImage(iconPath.c_str());
@@ -218,6 +221,7 @@ int32_t DistributedBms::GetAbilityInfo(
             return ERR_APPEXECFWK_FAILED_GET_RESOURCEMANAGER;
         }
     }
+#endif
 
     APP_LOGD("DistributedBms GetAbilityInfo label:%{public}s", remoteAbilityInfo.label.c_str());
     APP_LOGD("DistributedBms GetAbilityInfo iconId:%{public}s", remoteAbilityInfo.icon.c_str());
@@ -272,6 +276,7 @@ std::shared_ptr<Global::Resource::ResourceManager> DistributedBms::GetResourceMa
     return resourceManager;
 }
 
+#ifdef SUPPORT_GRAPHICS
 bool DistributedBms::GetMediaBase64(std::string &path, std::string &value)
 {
     int len = 0;
@@ -297,6 +302,7 @@ bool DistributedBms::GetMediaBae64FromImageBuffer(std::shared_ptr<ImageBuffer>& 
     value = "data:image/" + imageBuffer->GetImageType() + ";base64," + base64Data.get();
     return true;
 }
+#endif
 
 std::unique_ptr<unsigned char[]> DistributedBms::LoadResourceFile(std::string &path, int &len)
 {
