@@ -292,7 +292,7 @@ bool DistributedBms::GetMediaBase64(std::string &path, std::string &value)
 bool DistributedBms::GetMediaBae64FromImageBuffer(std::shared_ptr<ImageBuffer>& imageBuffer, std::string& value)
 {
     std::unique_ptr<unsigned char[]>& imageData = imageBuffer->GetCompressDataBuffer();
-    int length = imageBuffer->GetCompressSize();
+    uint32_t length = imageBuffer->GetCompressSize();
     std::unique_ptr<char[]> base64Data = EncodeBase64(imageData, length);
     value = "data:image/" + imageBuffer->GetImageType() + ";base64," + base64Data.get();
     return true;
