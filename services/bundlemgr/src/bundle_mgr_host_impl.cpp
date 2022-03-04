@@ -353,10 +353,6 @@ bool BundleMgrHostImpl::GetBundleArchiveInfo(
         APP_LOGE("parse bundle info failed, error: %{public}d", ret);
         return false;
     }
-    if (!VerifyQueryPermission(info.GetBundleName())) {
-        APP_LOGE("verify permission failed");
-        return false;
-    }
     APP_LOGD("verify permission success, bgein to GetBundleArchiveInfo");
     info.GetBundleInfo(flags, bundleInfo, Constants::NOT_EXIST_USERID);
     return true;
@@ -423,6 +419,10 @@ int BundleMgrHostImpl::CheckPermissionByUid(
 
 bool BundleMgrHostImpl::GetPermissionDef(const std::string &permissionName, PermissionDef &permissionDef)
 {
+    if (!BundlePermissionMgr::VerifyCallingPermission(Constants::PERMISSION_GET_BUNDLE_INFO_PRIVILEGED)) {
+        APP_LOGE("verify GET_BUNDLE_INFO_PRIVILEGED failed");
+        return false;
+    }
     if (permissionName.empty()) {
         APP_LOGE("fail to GetPermissionDef due to params empty");
         return false;
