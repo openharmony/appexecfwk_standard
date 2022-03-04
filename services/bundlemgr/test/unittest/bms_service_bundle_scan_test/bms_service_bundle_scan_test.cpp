@@ -319,12 +319,10 @@ HWTEST_F(BmsServiceBundleScanTest, RebootBundleScan_0200, Function | SmallTest |
 HWTEST_F(BmsServiceBundleScanTest, RebootBundleScan_0300, Function | SmallTest | Level0)
 {
     std::shared_ptr<BMSEventHandler> handler_;
-    BundleInfo bundleInfo;
+    std::unordered_map<std::string, InnerBundleInfo> infos;
     const std::string PATH = SYSTEM_APP_SCAN_PATH + "/" + PHOTOS_HAP;
-    auto result = handler_->GetScanBundleArchiveInfo(PATH, bundleInfo);
+    auto result = handler_->ParseHapFiles(PATH, infos);
     EXPECT_TRUE(result);
-    EXPECT_EQ(1000000, bundleInfo.versionCode);
-    EXPECT_EQ(PHOTOS_HAP_NAME, bundleInfo.name);
 }
 
 /**
@@ -338,9 +336,9 @@ HWTEST_F(BmsServiceBundleScanTest, RebootBundleScan_0400, Function | SmallTest |
     runner_ = EventRunner::Create(Constants::BMS_SERVICE_NAME);
     std::shared_ptr<BMSEventHandler> handler_;
     handler_ = std::make_shared<BMSEventHandler>(runner_);
-    BundleInfo bundleInfo;
+    std::unordered_map<std::string, InnerBundleInfo> infos;
     const std::string PATH = TEST_ERROR_DIR + "/" + PHOTOS_HAP;
-    auto result = handler_->GetScanBundleArchiveInfo(PATH, bundleInfo);
+    auto result = handler_->ParseHapFiles(PATH, infos);
     EXPECT_FALSE(result);
     
 }
@@ -368,9 +366,9 @@ HWTEST_F(BmsServiceBundleScanTest, RebootBundleScan_0500, Function | SmallTest |
     runner_ = EventRunner::Create(Constants::BMS_SERVICE_NAME);
     std::shared_ptr<BMSEventHandler> handler_;
     handler_ = std::make_shared<BMSEventHandler>(runner_);
-    BundleInfo bundleInfo;
+    std::unordered_map<std::string, InnerBundleInfo> infos;
     for (auto &listIter : bundleList) {
-        result = handler_->GetScanBundleArchiveInfo(listIter, bundleInfo);
+        result = handler_->ParseHapFiles(listIter, infos);
         EXPECT_TRUE(result);
     }
 }
@@ -399,7 +397,7 @@ HWTEST_F(BmsServiceBundleScanTest, RebootBundleScan_0600, Function | SmallTest |
     }
     EXPECT_TRUE(result);
     handler_->RebootBundleInstall(bundleList, Constants::AppType::SYSTEM_APP);
-    EXPECT_LT(0, handler_->bundleInfoMap_.size());
+    EXPECT_LT(0, handler_->hapParseInfoMap_.size());
 }
 
 /**
@@ -426,5 +424,5 @@ HWTEST_F(BmsServiceBundleScanTest, RebootBundleScan_0700, Function | SmallTest |
     }
     EXPECT_TRUE(result);
     handler_->RebootBundleInstall(bundleList, Constants::AppType::THIRD_SYSTEM_APP);
-    EXPECT_LT(0, handler_->bundleInfoMap_.size());
+    EXPECT_LT(0, handler_->hapParseInfoMap_.size());
 }
