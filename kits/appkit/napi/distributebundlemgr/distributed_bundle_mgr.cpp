@@ -328,6 +328,7 @@ napi_value GetRemoteAbilityInfo(napi_env env, napi_callback_info info)
             }
             napi_delete_async_work(env, asyncCallbackInfo->asyncWork);
             delete asyncCallbackInfo;
+            asyncCallbackInfo = nullptr;
         },
         (void*)asyncCallbackInfo, &asyncCallbackInfo->asyncWork);
     napi_queue_async_work(env, asyncCallbackInfo->asyncWork);
@@ -409,6 +410,7 @@ napi_value GetRemoteAbilityInfos(napi_env env, napi_callback_info info)
             }
             napi_delete_async_work(env, asyncCallbackInfo->asyncWork);
             delete asyncCallbackInfo;
+            asyncCallbackInfo = nullptr;
         },
         (void*)asyncCallbackInfo, &asyncCallbackInfo->asyncWork);
     napi_queue_async_work(env, asyncCallbackInfo->asyncWork);
