@@ -1375,9 +1375,7 @@ bool ToInnerModuleInfo(const Profile::ModuleJson &moduleJson, InnerModuleInfo &i
     if (!moduleJson.module.process.empty()) {
         innerModuleInfo.process = moduleJson.module.process;
     } else {
-        std::string processName;
-        processName.append(moduleJson.app.bundleName).append(".").append(moduleJson.module.name);
-        innerModuleInfo.process = processName;
+        innerModuleInfo.process = moduleJson.app.bundleName;
     }
     for (const std::string &deviceType : moduleJson.module.deviceTypes) {
         if (Profile::DEVICE_TYPE_SET.find(deviceType) != Profile::DEVICE_TYPE_SET.end()) {
