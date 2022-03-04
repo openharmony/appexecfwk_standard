@@ -130,9 +130,9 @@ struct CompatibleAbilityInfo : public Parcelable {
     int32_t minFormWidth = 0; // minimum width of ability.
     int32_t defaultFormWidth = 0; // default width of ability.
 
-    uint32_t iconId = 0;
-    uint32_t labelId = 0;
-    uint32_t descriptionId = 0;
+    int32_t iconId = 0;
+    int32_t labelId = 0;
+    int32_t descriptionId = 0;
     bool enabled = true;
 
     bool ReadFromParcel(Parcel& parcel);

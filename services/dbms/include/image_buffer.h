@@ -29,43 +29,43 @@ public:
     ImageBuffer() = default;
     ~ImageBuffer();
     bool MallocImageMap(int components);
-    int32_t GetWidth() const
+    uint32_t GetWidth() const
     {
         return width; 
     }
-    void SetWidth(int32_t width)
+    void SetWidth(uint32_t width)
     {
         this->width = width;
     }
-    int32_t GetHeight() const
+    uint32_t GetHeight() const
     {
         return height;
     }
-    void SetHeight(int32_t height)
+    void SetHeight(uint32_t height)
     {
         this->height = height;
     }
-    int32_t GetFileSize() const
+    uint32_t GetFileSize() const
     {
         return fileSize;
     }
-    void SetFileSize(int32_t fileSize)
+    void SetFileSize(uint32_t fileSize)
     {
         this->fileSize = fileSize;
     }
-    int32_t GetComponents() const
+    uint32_t GetComponents() const
     {
         return components;
     }
-    void SetComponents(int32_t components)
+    void SetComponents(uint32_t components)
     {
         this->components = components;
     }
-    int32_t GetPngComponents() const
+    uint32_t GetPngComponents() const
     {
         return pngComponents;
     }
-    void SetPngComponents(int32_t pngComponents)
+    void SetPngComponents(uint32_t pngComponents)
     {
         this->pngComponents = pngComponents;
     }
@@ -120,11 +120,11 @@ public:
     int32_t SetCompressData(unsigned char* buffer, int32_t length); 
 
 private:
-    int32_t width;
-    int32_t height;
-    int32_t fileSize;
-    int32_t components;
-    int32_t pngComponents;
+    uint32_t width;
+    uint32_t height;
+    uint32_t fileSize;
+    uint32_t components;
+    uint32_t pngComponents;
     double ratio;
     ImageData colorType;
     ImageData bitDepth;

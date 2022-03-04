@@ -14,6 +14,7 @@
  */
 #include <cstdio>
 #include <cmath>
+#include <unistd.h>
 
 #include "image_compress.h"
 
@@ -45,8 +46,17 @@ namespace {
     };
 }
 
+bool ImageCompress::IsPathValid(std::string& fileName)
+{
+    return access(fileName.c_str(), F_OK) == 0;
+}
+
 double ImageCompress::CalRatio(std::string fileName)
 {
+    if (!IsPathValid(fileName)) {
+        APP_LOGE("%{public}s is unavailable", fileName.c_str());
+        return -1.0;
+    }
     FILE* file = fopen(fileName.c_str(), "rb");
     if (!file) {
         APP_LOGE("ImageCompress: CalRatio %{public}s is unavailable", fileName.c_str());
@@ -69,6 +79,10 @@ double ImageCompress::CalRatio(std::string fileName)
 
 bool ImageCompress::NeedCompress(std::string fileName)
 {
+    if (!IsPathValid(fileName)) {
+        APP_LOGE("%{public}s is unavailable", fileName.c_str());
+        return false;
+    }
     FILE* file = fopen(fileName.c_str(), "rb");
     if (!file) {
         APP_LOGE("ImageCompress: CalRatio %{public}s is unavailable", fileName.c_str());
@@ -137,20 +151,20 @@ bool ImageCompress::InitPngFile(std::shared_ptr<ImageBuffer>& imageBuffer,
     }
     imageBuffer->MallocImageMap(RGBA_COMPONENTS);
     imageBuffer->SetComponents(RGBA_COMPONENTS);
-    int32_t strides = imageBuffer->GetWidth() *  RGBA_COMPONENTS;
+    uint32_t strides = imageBuffer->GetWidth() *  RGBA_COMPONENTS;
     png_bytep* rowPointers = (png_bytep*)malloc(sizeof(png_bytep) * imageBuffer->GetHeight());
-    for (int32_t h = 0; h < imageBuffer->GetHeight(); ++h) {
+    for (uint32_t h = 0; h < imageBuffer->GetHeight(); ++h) {
         rowPointers[h] = (png_byte*)malloc(strides);
     }
     png_read_image(png, rowPointers);
     ImageRow imageRow = imageBuffer->GetImageDataPointer().get();
-    for (int32_t h = 0; h < imageBuffer->GetHeight(); ++h) {
+    for (uint32_t h = 0; h < imageBuffer->GetHeight(); ++h) {
         if (memcpy_s(imageRow, strides, rowPointers[h], strides) != EOK) {
             return false;
         }
         imageRow += strides;
     }
-    for (int32_t h = 0; h < imageBuffer->GetHeight(); ++h) {
+    for (uint32_t h = 0; h < imageBuffer->GetHeight(); ++h) {
         free(rowPointers[h]);
     }
     free(rowPointers);
@@ -159,9 +173,13 @@ bool ImageCompress::InitPngFile(std::shared_ptr<ImageBuffer>& imageBuffer,
 
 int ImageCompress::DecodePngFile(std::string fileName, std::shared_ptr<ImageBuffer>& imageBuffer)
 {
-    if (fileName.empty() || imageBuffer == nullptr) {
-        APP_LOGE("ImageCompress: DecodePngFile file %s is unavailable", fileName.c_str());
+    if (imageBuffer == nullptr) {
+        APP_LOGE("ImageCompress: DecodePngFile image buffer is unavailable");
         return -1;
+    }
+    if (!IsPathValid(fileName)) {
+        APP_LOGE("%{public}s is unavailable", fileName.c_str());
+        return -1.0;
     }
     double ratio = CalRatio(fileName);
     if (ratio < 0) {
@@ -232,7 +250,7 @@ int32_t ImageCompress::EncodePngFile(std::shared_ptr<ImageBuffer>& imageBuffer)
         PNG_COMPRESSION_TYPE_DEFAULT,
         PNG_FILTER_TYPE_DEFAULT
     );
-    int32_t strides = imageBuffer->GetWidth() * RGBA_COMPONENTS;
+    uint32_t strides = imageBuffer->GetWidth() * RGBA_COMPONENTS;
     struct EncodeMemo memo;
     memo.buffer = (ImageRow)malloc(FILE_MAX_SIZE * RGBA_COMPONENTS);
     memo.size = 0;
@@ -243,10 +261,10 @@ int32_t ImageCompress::EncodePngFile(std::shared_ptr<ImageBuffer>& imageBuffer)
     ImageRow imageRow = imageBuffer->GetImageDataPointer().get();
     png_bytep* rowPointers;
     rowPointers = (png_bytep*)malloc(sizeof(png_bytep) * imageBuffer->GetHeight());
-    for (int32_t h = 0; h < imageBuffer->GetHeight(); ++h) {
+    for (uint32_t h = 0; h < imageBuffer->GetHeight(); ++h) {
         rowPointers[h] = (png_byte*)malloc(strides);
     }
-    for (int32_t h = 0; h < imageBuffer->GetHeight(); ++h) {
+    for (uint32_t h = 0; h < imageBuffer->GetHeight(); ++h) {
         memcpy_s(rowPointers[h], strides, imageRow, strides);
         imageRow += strides;
     }
@@ -260,7 +278,7 @@ int32_t ImageCompress::EncodePngFile(std::shared_ptr<ImageBuffer>& imageBuffer)
         free(memo.buffer);
     }
     memo.buffer = nullptr;
-    for (int32_t h = 0; h < imageBuffer->GetHeight(); ++h) {
+    for (uint32_t h = 0; h < imageBuffer->GetHeight(); ++h) {
         free(rowPointers[h]);
     }
     free(rowPointers);
@@ -287,13 +305,13 @@ int32_t ImageCompress::ResizeRGBAImage(std::shared_ptr<ImageBuffer>& imageBuffer
     imageBufferOut->MallocImageMap(imageBufferOut->GetComponents());
     ImageRow imageRowIn = imageBufferIn->GetImageDataPointer().get();
     ImageRow imageRowOut = imageBufferOut->GetImageDataPointer().get();
-    int32_t outRowStride = imageBufferOut->GetWidth() * imageBufferOut->GetComponents();
-    int32_t inRowStride = imageBufferIn->GetWidth() * imageBufferIn->GetComponents();
-    int32_t components = imageBufferIn->GetComponents();
-    for (int32_t h = 0; h < imageBufferOut->GetHeight(); ++h) {
-        for (int32_t w = 0; w < imageBufferOut->GetWidth(); ++w) {
-            int32_t heightIndex = std::round(h / ratio);
-            int32_t widthIndex = std::round(w / ratio);
+    uint32_t outRowStride = imageBufferOut->GetWidth() * imageBufferOut->GetComponents();
+    uint32_t inRowStride = imageBufferIn->GetWidth() * imageBufferIn->GetComponents();
+    uint32_t components = imageBufferIn->GetComponents();
+    for (uint32_t h = 0; h < imageBufferOut->GetHeight(); ++h) {
+        for (uint32_t w = 0; w < imageBufferOut->GetWidth(); ++w) {
+            uint32_t heightIndex = std::round(h / ratio);
+            uint32_t widthIndex = std::round(w / ratio);
             if (heightIndex > imageBufferIn->GetHeight()) {
                 heightIndex = imageBufferIn->GetHeight() - 1;
             }
@@ -315,9 +333,13 @@ int32_t ImageCompress::ResizeRGBAImage(std::shared_ptr<ImageBuffer>& imageBuffer
 
 int32_t ImageCompress::DecodeJPGFile(std::string fileName, std::shared_ptr<ImageBuffer>& imageBuffer)
 {
-    if (fileName.empty() || imageBuffer == nullptr) {
-        APP_LOGE("ImageCompress: DecodeJPGFile file %s is unavailable", fileName.c_str());
+    if (imageBuffer == nullptr) {
+        APP_LOGE("ImageCompress: DecodeJPGFile imageBuffer is unavailable");
         return -1;
+    }
+    if (!IsPathValid(fileName)) {
+        APP_LOGE("%{public}s is unavailable", fileName.c_str());
+        return -1.0;
     }
     double ratio = CalRatio(fileName);
     if (ratio < 0) {
@@ -345,11 +367,14 @@ int32_t ImageCompress::DecodeJPGFile(std::string fileName, std::shared_ptr<Image
     imageBuffer->MallocImageMap(RGB_COMPONENTS);
     
     ImageRow imageRow = imageBuffer->GetImageDataPointer().get();
-    int32_t row_stride = cinfo.output_width * cinfo.output_components;
+    uint32_t row_stride = cinfo.output_width * cinfo.output_components;
     JSAMPARRAY buffer = (*cinfo.mem->alloc_sarray)((j_common_ptr)&cinfo, JPOOL_IMAGE, row_stride, 1);
     while (cinfo.output_scanline < cinfo.image_height) {
         jpeg_read_scanlines(&cinfo, buffer, 1);
-        memcpy_s(imageRow, row_stride, *buffer, row_stride);
+        if (memcpy_s(imageRow, row_stride, *buffer, row_stride) != EOK) {
+            APP_LOGE("ImageCompress: memcpy_s buffer failed");
+            return -1;
+        }
         imageRow += row_stride;
     }
     jpeg_finish_decompress(&cinfo);
@@ -381,7 +406,7 @@ int32_t ImageCompress::EncodeJPGFile(std::shared_ptr<ImageBuffer>& imageBuffer)
     jpeg_set_defaults(&cinfo);
     jpeg_set_quality(&cinfo, QUALITY, TRUE);
     jpeg_start_compress(&cinfo, TRUE);
-    int32_t rowStride = imageBuffer->GetWidth() * imageBuffer->GetComponents();
+    uint32_t rowStride = imageBuffer->GetWidth() * imageBuffer->GetComponents();
     ImageRow imageRow = imageBuffer->GetImageDataPointer().get();
     JSAMPROW rowdata[1];
     while (cinfo.next_scanline < static_cast<unsigned int>(imageBuffer->GetHeight())) {
@@ -416,13 +441,13 @@ int32_t ImageCompress::ResizeRGBImage(std::shared_ptr<ImageBuffer>& imageBufferI
     imageBufferOut->MallocImageMap(imageBufferOut->GetComponents());
     ImageRow imageRowIn = imageBufferIn->GetImageDataPointer().get();
     ImageRow imageRowOut = imageBufferOut->GetImageDataPointer().get();
-    int32_t outRowStride = imageBufferOut->GetWidth() * imageBufferOut->GetComponents();
-    int32_t inRowStride = imageBufferIn->GetWidth() * imageBufferIn->GetComponents();
-    int32_t components = imageBufferIn->GetComponents();
-    for (int32_t h = 0; h < imageBufferOut->GetHeight(); ++h) {
-        for (int32_t w = 0; w < imageBufferOut->GetWidth(); ++w) {
-            int32_t heightIndex = std::round(h / ratio);
-            int32_t widthIndex = std::round(w / ratio);
+    uint32_t outRowStride = imageBufferOut->GetWidth() * imageBufferOut->GetComponents();
+    uint32_t inRowStride = imageBufferIn->GetWidth() * imageBufferIn->GetComponents();
+    uint32_t components = imageBufferIn->GetComponents();
+    for (uint32_t h = 0; h < imageBufferOut->GetHeight(); ++h) {
+        for (uint32_t w = 0; w < imageBufferOut->GetWidth(); ++w) {
+            uint32_t heightIndex = std::round(h / ratio);
+            uint32_t widthIndex = std::round(w / ratio);
             if (heightIndex > imageBufferIn->GetHeight()) {
                 heightIndex = imageBufferIn->GetHeight() - 1;
             }

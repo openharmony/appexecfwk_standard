@@ -91,6 +91,7 @@ void FillFdOpenFileFunc(zlib_filefunc_def *pzlibFilefuncDef, PlatformFile fd)
     pzlibFilefuncDef->zclose_file = FdCloseFileFunc;
     int *ptrFd = static_cast<int *>(malloc(sizeof(fd)));
     if (ptrFd == nullptr) {
+        free(ptrFd);
         return;
     }
     *ptrFd = fd;
@@ -249,6 +250,7 @@ unzFile PrepareMemoryForUnzipping(const std::string &data)
     }
     ZipBuffer *buffer = static_cast<ZipBuffer *>(malloc(sizeof(ZipBuffer)));
     if (!buffer) {
+        free(buffer);
         return NULL;
     }
     buffer->data = data.data();
