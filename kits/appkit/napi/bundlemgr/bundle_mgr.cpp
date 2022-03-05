@@ -1631,6 +1631,7 @@ napi_value QueryAbilityInfos(napi_env env, napi_callback_info info)
             }
             napi_delete_async_work(env, asyncCallbackInfo->asyncWork);
             delete asyncCallbackInfo;
+            asyncCallbackInfo = nullptr;
         },
         (void*)asyncCallbackInfo, &asyncCallbackInfo->asyncWork);
     napi_queue_async_work(env, asyncCallbackInfo->asyncWork);
@@ -2304,6 +2305,7 @@ napi_value GetLaunchWantForBundle(napi_env env, napi_callback_info info)
             }
             napi_delete_async_work(env, asyncCallbackInfo->asyncWork);
             delete asyncCallbackInfo;
+            asyncCallbackInfo = nullptr;
         },
         (void*)asyncCallbackInfo, &asyncCallbackInfo->asyncWork);
     napi_queue_async_work(env, asyncCallbackInfo->asyncWork);
@@ -4648,6 +4650,7 @@ napi_value SetApplicationEnabled(napi_env env, napi_callback_info info)
             }
             napi_delete_async_work(env, asyncCallbackInfo->asyncWork);
             delete asyncCallbackInfo;
+            asyncCallbackInfo = nullptr;
         },
         (void*)asyncCallbackInfo, &asyncCallbackInfo->asyncWork);
     napi_queue_async_work(env, asyncCallbackInfo->asyncWork);
@@ -4731,6 +4734,7 @@ napi_value SetAbilityEnabled(napi_env env, napi_callback_info info)
             }
             napi_delete_async_work(env, asyncCallbackInfo->asyncWork);
             delete asyncCallbackInfo;
+            asyncCallbackInfo = nullptr;
         },
         (void*)asyncCallbackInfo, &asyncCallbackInfo->asyncWork);
     napi_queue_async_work(env, asyncCallbackInfo->asyncWork);
@@ -4832,10 +4836,10 @@ void IsAbilityEnabledPromiseComplete(napi_env env, napi_status status, void *dat
 }
 
 napi_value IsAbilityEnabledAsync(
-    napi_env env, napi_value *args, const size_t argCallback, EnabledInfo *asyncCallbackInfo)
+    napi_env env, napi_value args, EnabledInfo *asyncCallbackInfo)
 {
     APP_LOGI("%{public}s, asyncCallback.", __func__);
-    if (args == nullptr || asyncCallbackInfo == nullptr) {
+    if (asyncCallbackInfo == nullptr) {
         APP_LOGE("%{public}s, param == nullptr.", __func__);
         return nullptr;
     }
@@ -4844,9 +4848,9 @@ napi_value IsAbilityEnabledAsync(
     napi_create_string_latin1(env, __func__, NAPI_AUTO_LENGTH, &resourceName);
 
     napi_valuetype valuetype = napi_undefined;
-    NAPI_CALL(env, napi_typeof(env, args[argCallback], &valuetype));
+    NAPI_CALL(env, napi_typeof(env, args, &valuetype));
     if (valuetype == napi_function) {
-        NAPI_CALL(env, napi_create_reference(env, args[argCallback], NAPI_RETURN_ONE, &asyncCallbackInfo->callbackRef));
+        NAPI_CALL(env, napi_create_reference(env, args, NAPI_RETURN_ONE, &asyncCallbackInfo->callbackRef));
     } else {
         return nullptr;
     }
@@ -4912,7 +4916,7 @@ napi_value IsAbilityEnabledWrap(napi_env env, napi_callback_info info, EnabledIn
     }
 
     if (argcAsync > argcPromise) {
-        ret = IsAbilityEnabledAsync(env, args, PARAM1, asyncCallbackInfo);
+        ret = IsAbilityEnabledAsync(env, args[PARAM1], asyncCallbackInfo);
     } else {
         ret = IsAbilityEnabledPromise(env, asyncCallbackInfo);
     }
@@ -5421,6 +5425,7 @@ napi_value GetAppPrivilegeLevel(napi_env env, napi_callback_info info)
             }
             napi_delete_async_work(env, asyncCallbackInfo->asyncWork);
             delete asyncCallbackInfo;
+            asyncCallbackInfo = nullptr;
         },
         (void*)asyncCallbackInfo, &asyncCallbackInfo->asyncWork);
     napi_queue_async_work(env, asyncCallbackInfo->asyncWork);
@@ -5548,6 +5553,7 @@ napi_value GetAbilityIcon(napi_env env, napi_callback_info info)
             }
             napi_delete_async_work(env, asyncCallbackInfo->asyncWork);
             delete asyncCallbackInfo;
+            asyncCallbackInfo = nullptr;
         },
         (void*)asyncCallbackInfo, &asyncCallbackInfo->asyncWork);
     napi_queue_async_work(env, asyncCallbackInfo->asyncWork);
@@ -5635,6 +5641,7 @@ napi_value GetNameForUid(napi_env env, napi_callback_info info)
             }
             napi_delete_async_work(env, asyncCallbackInfo->commonNapiInfo.asyncWork);
             delete asyncCallbackInfo;
+            asyncCallbackInfo = nullptr;
         },
         (void*)asyncCallbackInfo, &asyncCallbackInfo->commonNapiInfo.asyncWork);
     napi_queue_async_work(env, asyncCallbackInfo->commonNapiInfo.asyncWork);
@@ -5726,6 +5733,7 @@ napi_value ClearBundleCache(napi_env env, napi_callback_info info)
             }
             napi_delete_async_work(env, asyncCallbackInfo->asyncWork);
             delete asyncCallbackInfo;
+            asyncCallbackInfo = nullptr;
         },
         (void*)asyncCallbackInfo, &asyncCallbackInfo->asyncWork);
     napi_queue_async_work(env, asyncCallbackInfo->asyncWork);
@@ -6311,6 +6319,7 @@ napi_value QueryExtensionInfoByWant(napi_env env, napi_callback_info info)
             }
             napi_delete_async_work(env, info->asyncWork);
             delete info;
+            info = nullptr;
         },
         (void*)callBackInfo, &callBackInfo->asyncWork);
     napi_queue_async_work(env, callBackInfo->asyncWork);

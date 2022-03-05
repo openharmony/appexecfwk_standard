@@ -1084,12 +1084,12 @@ bool ToApplicationInfo(const Profile::App &app, ApplicationInfo &applicationInfo
     applicationInfo.name = app.bundleName;
     applicationInfo.bundleName = app.bundleName;
 
-    applicationInfo.versionCode = app.versionCode;
+    applicationInfo.versionCode = static_cast<uint32_t>(app.versionCode);
     applicationInfo.versionName = app.versionName;
     if (app.minCompatibleVersionCode != -1) {
         applicationInfo.minCompatibleVersionCode = app.minCompatibleVersionCode;
     } else {
-        applicationInfo.minCompatibleVersionCode = applicationInfo.versionCode;
+        applicationInfo.minCompatibleVersionCode = static_cast<int32_t>(applicationInfo.versionCode);
     }
 
     applicationInfo.apiCompatibleVersion = app.minAPIVersion;
