@@ -312,8 +312,8 @@ HWTEST_F(BmsBundleCloneTest, BundleClone_0400, Function | SmallTest | Level0)
 
 /**
  * @tc.number: BundleClone_0500.
- * @tc.name: test The bundle name is not in the whitelist.
- * @tc.desc: 1.the bundle name is not in the whitelist.
+ * @tc.name: test The bundle name is not in the trustlist.
+ * @tc.desc: 1.the bundle name is not in the trustlist.
  *           2.the bundle can't be cloned success.
  */
 HWTEST_F(BmsBundleCloneTest, BundleClone_0500, Function | SmallTest | Level0)
