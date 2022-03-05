@@ -421,7 +421,7 @@ bool ZipFile::UnzipWithStore(const ZipEntry &zipEntry, const uint16_t extraSize,
         size_t readLen = (remainSize > UNZIP_BUF_OUT_LEN) ? UNZIP_BUF_OUT_LEN : remainSize;
         readBytes = fread(&(readBuffer[0]), sizeof(Byte), readLen, file_);
         if (readBytes == 0) {
-            APP_LOGE("unzip store read failed, error: %{public}d", errno);
+            APP_LOGE("unzip store read failed, error: %{public}d", ferror(file_));
             return false;
         }
         remainSize -= readBytes;
@@ -469,7 +469,7 @@ bool ZipFile::ReadZStream(const BytePtr &buffer, z_stream &zstream, uint32_t &re
         size_t remainBytes = (remainCompressedSize > UNZIP_BUF_IN_LEN) ? UNZIP_BUF_IN_LEN : remainCompressedSize;
         readBytes = fread(buffer, sizeof(Byte), remainBytes, file_);
         if (readBytes == 0) {
-            APP_LOGE("unzip inflated read failed, error: %{public}d", errno);
+            APP_LOGE("unzip inflated read failed, error: %{public}d", ferror(file_));
             return false;
         }
 

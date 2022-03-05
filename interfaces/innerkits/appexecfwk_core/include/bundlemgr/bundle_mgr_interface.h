@@ -83,7 +83,7 @@ public:
      * @return Returns true if the application is successfully obtained; returns false otherwise.
      */
     virtual bool GetApplicationInfos(
-        const ApplicationFlag flag, const int userId, std::vector<ApplicationInfo> &appInfos) = 0;
+        const ApplicationFlag flag, int userId, std::vector<ApplicationInfo> &appInfos) = 0;
     /**
      * @brief Obtains information about all installed applications of a specified user.
      * @param flags Indicates the flag used to specify information contained

@@ -63,7 +63,7 @@ public:
      * @return Returns true if the application is successfully obtained; returns false otherwise.
      */
     virtual bool GetApplicationInfos(
-        const ApplicationFlag flag, const int userId, std::vector<ApplicationInfo> &appInfos) override;
+        const ApplicationFlag flag, int userId, std::vector<ApplicationInfo> &appInfos) override;
     /**
      * @brief Obtains information about all installed applications of a specified user through the proxy object.
      * @param flags Indicates the flag used to specify information contained
