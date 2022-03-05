@@ -42,7 +42,7 @@ namespace {
     const std::string JPEG = "jpeg";
     struct EncodeMemo {
         ImageRow buffer;
-        int32_t size;
+        uint32_t size;
     };
 }
 

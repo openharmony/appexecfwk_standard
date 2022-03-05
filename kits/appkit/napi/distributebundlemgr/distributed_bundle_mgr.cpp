@@ -269,6 +269,9 @@ napi_value GetRemoteAbilityInfo(napi_env env, napi_callback_info info)
     NAPI_ASSERT(env, argc >= requireArgc, "requires 1 parameter");
 
     ElementNameInfo *asyncCallbackInfo = new ElementNameInfo();
+    if (asyncCallbackInfo == nullptr) {
+        return nullptr;
+    }
     asyncCallbackInfo->env = env;
     for (size_t i = 0; i < argc; ++i) {
         napi_valuetype valueType = napi_undefined;
