@@ -42,8 +42,16 @@ namespace {
     const std::string JPEG = "jpeg";
     struct EncodeMemo {
         ImageRow buffer;
-        int32_t size;
+        uint32_t size;
     };
+}
+
+void ImageCompress::ReleasePngPointer(png_bytep* rowPointers, uint32_t h)
+{
+    for (uint32_t i = 0; i < h; ++i) {
+        free(rowPointers[i]);
+    }
+    free(rowPointers);
 }
 
 bool ImageCompress::IsPathValid(std::string& fileName)
@@ -126,7 +134,6 @@ bool ImageCompress::InitPngFile(std::shared_ptr<ImageBuffer>& imageBuffer,
     imageBuffer->SetColorType(png_get_color_type(png, info));
     imageBuffer->SetBitDepth(png_get_bit_depth(png, info));
     imageBuffer->SetPngComponents(png_get_channels(png, info));
- 
     if (imageBuffer->GetBitDepth() == BITDEPTH_SIXTHEN) {
         png_set_strip_16(png);
     }
@@ -160,14 +167,12 @@ bool ImageCompress::InitPngFile(std::shared_ptr<ImageBuffer>& imageBuffer,
     ImageRow imageRow = imageBuffer->GetImageDataPointer().get();
     for (uint32_t h = 0; h < imageBuffer->GetHeight(); ++h) {
         if (memcpy_s(imageRow, strides, rowPointers[h], strides) != EOK) {
+            ReleasePngPointer(rowPointers, imageBuffer->GetHeight());
             return false;
         }
         imageRow += strides;
     }
-    for (uint32_t h = 0; h < imageBuffer->GetHeight(); ++h) {
-        free(rowPointers[h]);
-    }
-    free(rowPointers);
+    ReleasePngPointer(rowPointers, imageBuffer->GetHeight());
     return true;
 }
 
@@ -210,6 +215,11 @@ int ImageCompress::DecodePngFile(std::string fileName, std::shared_ptr<ImageBuff
     png_read_info(png, info);
 
     if (!InitPngFile(imageBuffer, png, info)) {
+        if (fclose(inFile) != EOK) {
+            APP_LOGE("ImageCompress: fclose file %{public}s error", fileName.c_str());
+            return -1;
+        }
+        png_destroy_read_struct(&png, &info, NULL);
         return -1;
     }
 
@@ -255,6 +265,7 @@ int32_t ImageCompress::EncodePngFile(std::shared_ptr<ImageBuffer>& imageBuffer)
     memo.buffer = (ImageRow)malloc(FILE_MAX_SIZE * RGBA_COMPONENTS);
     memo.size = 0;
     if (!imageBuffer->GetImageDataPointer()) {
+        free(memo.buffer);
         APP_LOGE("ImageCompress: EncodePngFile should input image buffer");
         return -1;
     }
