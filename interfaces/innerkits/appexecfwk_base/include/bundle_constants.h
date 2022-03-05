@@ -208,7 +208,7 @@ const std::string HOS_SYSTEM_APP = "hos_system_app";
 const std::string OHOS_SYSTEM_APP = "ohos_system_app";
 
 // ipc
-const int32_t MAX_CAPACITY_BUNDLES = 1024 * 1000; // 1M
+const int32_t MAX_CAPACITY_BUNDLES = 5 * 1024 * 1000; // 1M
 
 // file size
 const int32_t INVALID_FILE_SIZE = -1;
