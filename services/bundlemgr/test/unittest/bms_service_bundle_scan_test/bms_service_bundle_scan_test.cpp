@@ -344,41 +344,11 @@ HWTEST_F(BmsServiceBundleScanTest, RebootBundleScan_0400, Function | SmallTest |
 }
 
 /**
- * @tc.number: RebootBundleScan_0500
- * @tc.name: Get bundleinfo of HAP by path
- * @tc.desc: Pass multiple HAP of SYSTEM_APP path. Can find information
- */
-HWTEST_F(BmsServiceBundleScanTest, RebootBundleScan_0500, Function | SmallTest | Level0)
-{
-    auto scanner = std::make_unique<BundleScanner>();
-    if (!scanner) {
-        APP_LOGE("make scanner failed");
-        return;
-    }
-    std::string scanDir = Constants::SYSTEM_APP_SCAN_PATH;
-    std::list<std::string> bundleList = scanner->Scan(scanDir);
-    auto result = false;
-    if (bundleList.size() > 0) {
-        result = true;
-    }
-    EXPECT_TRUE(result);
-    std::shared_ptr<EventRunner> runner_;
-    runner_ = EventRunner::Create(Constants::BMS_SERVICE_NAME);
-    std::shared_ptr<BMSEventHandler> handler_;
-    handler_ = std::make_shared<BMSEventHandler>(runner_);
-    std::unordered_map<std::string, InnerBundleInfo> infos;
-    for (auto &listIter : bundleList) {
-        result = handler_->ParseHapFiles(listIter, infos);
-        EXPECT_TRUE(result);
-    }
-}
-
-/**
  * @tc.number: RebootBundleScan_0600
  * @tc.name: test reboot bundle install
  * @tc.desc: Pass multiple HAP of SYSTEM_APP path. Can find information
  */
-HWTEST_F(BmsServiceBundleScanTest, RebootBundleScan_0600, Function | SmallTest | Level0)
+HWTEST_F(BmsServiceBundleScanTest, RebootBundleScan_0500, Function | SmallTest | Level0)
 {
     std::shared_ptr<EventRunner> runner_;
     runner_ = EventRunner::Create(Constants::BMS_SERVICE_NAME);
@@ -405,7 +375,7 @@ HWTEST_F(BmsServiceBundleScanTest, RebootBundleScan_0600, Function | SmallTest |
  * @tc.name: test reboot bundle install
  * @tc.desc: Pass multiple HAP of THIRD_SYSTEM_APP path. Can find information
  */
-HWTEST_F(BmsServiceBundleScanTest, RebootBundleScan_0700, Function | SmallTest | Level0)
+HWTEST_F(BmsServiceBundleScanTest, RebootBundleScan_0600, Function | SmallTest | Level0)
 {
     std::shared_ptr<EventRunner> runner_;
     runner_ = EventRunner::Create(Constants::BMS_SERVICE_NAME);
