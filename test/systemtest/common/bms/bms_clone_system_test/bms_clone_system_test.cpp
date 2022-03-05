@@ -453,8 +453,8 @@ HWTEST_F(BmsCloneSystemTest, BMS_BundleClone_0300, Function | MediumTest | Level
 
 /**
  * @tc.number: BMS_BundleClone_0400
- * @tc.name: test the  BundleClone interface used bundleName that is not in whitelist
- * @tc.desc: 1.install a third-party application that is not in whitelist
+ * @tc.name: test the  BundleClone interface used bundleName that is not in trustlist
+ * @tc.desc: 1.install a third-party application that is not in trustlist
  *           2.clone this third-party app
  */
 HWTEST_F(BmsCloneSystemTest, BMS_BundleClone_0400, Function | MediumTest | Level2)
