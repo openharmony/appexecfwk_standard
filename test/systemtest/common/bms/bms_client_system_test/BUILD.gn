@@ -39,12 +39,14 @@ ohos_systemtest("BundleMgrClientSystemTest") {
 
   defines = [ "APP_LOG_TAG = \"BundleMgrTool\"" ]
 
-  public_deps = [
-    "//base/global/i18n_standard/frameworks/intl:intl_util",
-    "//base/global/resmgr_standard/frameworks/resmgr:global_resmgr",
-    "//third_party/icu/icu4c:shared_icuuc",
-    "//third_party/jsoncpp:jsoncpp",
-  ]
+  if (bundle_framework_graphics) {
+    public_deps = [
+      "//base/global/i18n_standard/frameworks/intl:intl_util",
+      "//base/global/resmgr_standard/frameworks/resmgr:global_resmgr",
+      "//third_party/icu/icu4c:shared_icuuc",
+      "//third_party/jsoncpp:jsoncpp",
+    ]
+  }
 
   external_deps = [
     "ces_standard:cesfwk_innerkits",
