@@ -63,8 +63,11 @@ ohos_unittest("BmsBundleDataStorageTest") {
     "ability_runtime:app_manager",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
-    "resmgr_standard:global_resmgr",
   ]
+
+  if (bundle_framework_graphics) {
+    external_deps += [ "resmgr_standard:global_resmgr" ]
+  }
 }
 
 ohos_unittest("BmsBundleDataStorageDatabaseTest") {
