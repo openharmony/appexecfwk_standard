@@ -561,7 +561,7 @@ ErrCode BaseBundleInstaller::ProcessBundleUninstall(
         return ERR_APPEXECFWK_INSTALL_BUNDLE_MGR_SERVICE_ERROR;
     }
 
-    // kill the bundle for reboot scan.
+    // reboot scan case will not kill the bundle
     if (installParam.noSkipsKill) {
         // kill the bundle process during uninstall.
         if (!UninstallApplicationProcesses(oldInfo.GetApplicationName(), uid)) {
@@ -652,7 +652,7 @@ ErrCode BaseBundleInstaller::ProcessBundleUninstall(
 
     ScopeGuard stateGuard([&] { dataMgr_->UpdateBundleInstallState(bundleName, InstallState::INSTALL_SUCCESS); });
 
-    // kill the bundle for reboot scan.
+    // reboot scan case will not kill the bundle
     if (installParam.noSkipsKill) {
         // kill the bundle process during uninstall.
         if (!UninstallApplicationProcesses(oldInfo.GetApplicationName(), uid)) {
@@ -1004,7 +1004,7 @@ ErrCode BaseBundleInstaller::ProcessModuleUpdate(InnerBundleInfo &newInfo,
         return ERR_OK;
     }
     APP_LOGE("ProcessModuleUpdate noSkipsKill = %{public}d", noSkipsKill);
-    // kill the bundle for reboot scan.
+    // reboot scan case will not kill the bundle
     if (noSkipsKill) {
         // kill the bundle process during updating
         if (!UninstallApplicationProcesses(oldInfo.GetApplicationName(), oldInfo.GetUid(userId_))) {
