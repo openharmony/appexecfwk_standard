@@ -50,7 +50,7 @@ void BundleStatusCallback::OnBundleAdded(const std::string& bundleName, const in
         loop, work, [](uv_work_t* work) {},
         [](uv_work_t* work, int status) {
             // JS Thread
-            AsyncCallbackInfo* asyncCallbackInfo = (AsyncCallbackInfo*)work->data;
+            AsyncCallbackInfo* asyncCallbackInfo =  reinterpret_cast<AsyncCallbackInfo*>(work->data);
             napi_value callback = nullptr;
             napi_value placeHolder = nullptr;
             napi_value result[2] = { 0 };
@@ -98,7 +98,7 @@ void BundleStatusCallback::OnBundleUpdated(const std::string& bundleName, const 
         loop, work, [](uv_work_t* work) {},
         [](uv_work_t* work, int status) {
             // JS Thread
-            AsyncCallbackInfo* asyncCallbackInfo = (AsyncCallbackInfo*)work->data;
+            AsyncCallbackInfo* asyncCallbackInfo = reinterpret_cast<AsyncCallbackInfo*>(work->data);
             napi_value callback = nullptr;
             napi_value placeHolder = nullptr;
             napi_value result[2] = { 0 };
@@ -146,7 +146,7 @@ void BundleStatusCallback::OnBundleRemoved(const std::string& bundleName, const 
         loop, work, [](uv_work_t* work) {},
         [](uv_work_t* work, int status) {
             // JS Thread
-            AsyncCallbackInfo* asyncCallbackInfo = (AsyncCallbackInfo*)work->data;
+            AsyncCallbackInfo* asyncCallbackInfo =  reinterpret_cast<AsyncCallbackInfo*>(work->data);
             napi_value callback = nullptr;
             napi_value placeHolder = nullptr;
             napi_value result[2] = { 0 };

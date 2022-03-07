@@ -24,7 +24,7 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-std::atomic_int g_installedHapNum = 0;
+std::atomic_uint g_installedHapNum = 0;
 
 class UserReceiverImpl : public StatusReceiverHost {
 public:
