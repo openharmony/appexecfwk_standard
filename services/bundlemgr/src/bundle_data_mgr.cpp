@@ -2900,15 +2900,24 @@ bool BundleDataMgr::QueryExtensionAbilityInfoByUri(const std::string &uri, int32
         APP_LOGE("uri empty");
         return false;
     }
-    if (uri.find(Constants::EXTENSION_URI_PARAM_SEPARATOR) == std::string::npos) {
-        APP_LOGE("uri not include ///, invalid");
+    // example of valid param uri : fileShare:///com.example.FileShare/person/10
+    // example of convertUri : fileShare:///com.example.FileShare
+    size_t schemePos = uri.find(Constants::EXTENSION_SCHEME_SEPARATOR);
+    if (schemePos == uri.npos) {
+        APP_LOGE("uri not include :///, invalid");
         return false;
     }
-    std::string convertUri = uri;
-    convertUri.replace(uri.find(Constants::EXTENSION_URI_PARAM_SEPARATOR),
-        Constants::EXTENSION_URI_PARAM_SEPARATOR_LEN, Constants::EXTENSION_URI_MODULE_JSON_SEPARATOR);
+    size_t cutPos = uri.find(Constants::SEPARATOR, schemePos + Constants::EXTENSION_SCHEME_SEPARATOR_LEN);
+    if (cutPos == uri.npos) {
+        APP_LOGE("uri not include /, invalid");
+        return false;
+    }
+    // 1. cut string
+    std::string convertUri = uri.substr(0, cutPos);
+    // 2. replace :/// with ://
+    convertUri.replace(schemePos, Constants::EXTENSION_SCHEME_SEPARATOR_LEN,
+        Constants::EXTENSION_URI_MODULE_JSON_SEPARATOR);
     APP_LOGD("convertUri : %{public}s", convertUri.c_str());
- 
     std::lock_guard<std::mutex> lock(bundleInfoMutex_);
     if (bundleInfos_.empty()) {
         APP_LOGE("bundleInfos_ data is empty");
