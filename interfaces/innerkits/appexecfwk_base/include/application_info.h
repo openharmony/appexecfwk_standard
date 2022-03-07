@@ -103,7 +103,7 @@ struct ApplicationInfo : public Parcelable {
     std::string versionName;
     int32_t minCompatibleVersionCode = 0;
 
-    int32_t apiCompatibleVersion = 0;
+    uint32_t apiCompatibleVersion = 0;
     int32_t apiTargetVersion = 0;
 
     std::string iconPath;
