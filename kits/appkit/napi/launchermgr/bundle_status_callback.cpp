@@ -42,6 +42,9 @@ void BundleStatusCallback::OnBundleAdded(const std::string& bundleName, const in
         .bundleName_ = bundleName,
         .userId_ = userId,
     };
+    if (work == nullptr || asyncCallbackInfo == nullptr) {
+        return;
+    }
     work->data = (void*)asyncCallbackInfo;
     int ret = uv_queue_work(
         loop, work, [](uv_work_t* work) {},
@@ -87,6 +90,9 @@ void BundleStatusCallback::OnBundleUpdated(const std::string& bundleName, const 
         .bundleName_ = bundleName,
         .userId_ = userId,
     };
+    if (work == nullptr || asyncCallbackInfo == nullptr) {
+        return;
+    }
     work->data = (void*)asyncCallbackInfo;
     int ret = uv_queue_work(
         loop, work, [](uv_work_t* work) {},
@@ -132,6 +138,9 @@ void BundleStatusCallback::OnBundleRemoved(const std::string& bundleName, const 
         .bundleName_ = bundleName,
         .userId_ = userId,
     };
+    if (work == nullptr || asyncCallbackInfo == nullptr) {
+        return;
+    }
     work->data = (void*)asyncCallbackInfo;
     int ret = uv_queue_work(
         loop, work, [](uv_work_t* work) {},
