@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,6 +15,7 @@
 
 #include "launcher_service.h"
 
+#include "bundle_mgr_proxy.h"
 #include "common_event_subscribe_info.h"
 #include "common_event_support.h"
 #include "matching_skills.h"
@@ -22,6 +23,9 @@
 
 namespace OHOS {
 namespace AppExecFwk {
+OHOS::sptr<OHOS::AppExecFwk::IBundleMgr> LauncherService::bundleMgr_ = nullptr;
+std::mutex LauncherService::bundleMgrMutex_;
+
 LauncherService::LauncherService()
 {
     init();
@@ -39,11 +43,27 @@ void LauncherService::init()
 
 OHOS::sptr<OHOS::AppExecFwk::IBundleMgr> LauncherService::GetBundleMgr()
 {
-    OHOS::sptr<OHOS::ISystemAbilityManager> systemAbilityManager =
-        OHOS::SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
-    OHOS::sptr<OHOS::IRemoteObject> remoteObject =
-        systemAbilityManager->GetSystemAbility(OHOS::BUNDLE_MGR_SERVICE_SYS_ABILITY_ID);
-    return OHOS::iface_cast<IBundleMgr>(remoteObject);
+    if (bundleMgr_ == nullptr) {
+        std::lock_guard<std::mutex> lock(bundleMgrMutex_);
+        if (bundleMgr_ == nullptr) {
+            auto systemAbilityManager = OHOS::SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
+            if (systemAbilityManager == nullptr) {
+                APP_LOGE("GetBundleMgr GetSystemAbilityManager is null");
+                return nullptr;
+            }
+            auto bundleMgrSa = systemAbilityManager->GetSystemAbility(OHOS::BUNDLE_MGR_SERVICE_SYS_ABILITY_ID);
+            if (bundleMgrSa == nullptr) {
+                APP_LOGE("GetBundleMgr GetSystemAbility is null");
+                return nullptr;
+            }
+            auto bundleMgr = OHOS::iface_cast<IBundleMgr>(bundleMgrSa);
+            if (bundleMgr == nullptr) {
+                APP_LOGE("GetBundleMgr iface_cast get null");
+            }
+            bundleMgr_ = bundleMgr;
+        }
+    }
+    return bundleMgr_;
 }
 
 bool LauncherService::RegisterCallback(const sptr<IBundleStatusCallback> &callback)

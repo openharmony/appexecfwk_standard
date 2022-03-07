@@ -1,4 +1,4 @@
-# Copyright (c) 2021 Huawei Device Co., Ltd.
+# Copyright (c) 2021-2022 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -72,13 +72,16 @@ ohos_shared_library("appexecfwk_core") {
     "ces_standard:cesfwk_core",
     "ces_standard:cesfwk_innerkits",
     "hiviewdfx_hilog_native:libhilog",
-    "i18n_standard:intl_util",
     "ipc:ipc_core",
     "resmgr_standard:global_resmgr",
     "samgr_standard:samgr_proxy",
     "utils_base:utils",
   ]
+  if (bundle_framework_graphics) {
+    defines += [ "SUPPORT_GRAPHICS" ]
 
+    external_deps += [ "i18n_standard:intl_util" ]
+  }
   subsystem_name = "appexecfwk"
   part_name = "bundle_framework"
 }

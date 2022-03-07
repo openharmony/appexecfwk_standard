@@ -44,8 +44,8 @@ bool CompatibleAbilityInfo::ReadFromParcel(Parcel& parcel)
     privacyName = Str16ToStr8(parcel.ReadString16());
     downloadUrl = Str16ToStr8(parcel.ReadString16());
     versionName = Str16ToStr8(parcel.ReadString16());
-    backgroundModes = parcel.ReadInt32();
-    packageSize = parcel.ReadInt32();
+    backgroundModes = parcel.ReadUint32();
+    packageSize = parcel.ReadUint32();
     visible = parcel.ReadBool();
     formEnabled = parcel.ReadBool();
     multiUserShared = parcel.ReadBool();
@@ -123,12 +123,12 @@ bool CompatibleAbilityInfo::ReadFromParcel(Parcel& parcel)
         return false;
     }
     applicationInfo = *appInfo;
-    formEntity = parcel.ReadInt32();
+    formEntity = static_cast<uint32_t>(parcel.ReadInt32());
     minFormHeight = parcel.ReadInt32();
     defaultFormHeight = parcel.ReadInt32();
     minFormWidth = parcel.ReadInt32();
     defaultFormWidth = parcel.ReadInt32();
-    iconId = parcel.ReadUint32();
+    iconId = parcel.ReadInt32();
     descriptionId = parcel.ReadInt32();
     labelId = parcel.ReadInt32();
     enabled = parcel.ReadBool();
@@ -165,8 +165,8 @@ bool CompatibleAbilityInfo::Marshalling(Parcel& parcel) const
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(privacyName));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(downloadUrl));
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String16, parcel, Str8ToStr16(versionName));
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, backgroundModes);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, packageSize);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Uint32, parcel, backgroundModes);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Uint32, parcel, packageSize);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, visible);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, formEnabled);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, multiUserShared);
@@ -207,7 +207,7 @@ bool CompatibleAbilityInfo::Marshalling(Parcel& parcel) const
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, defaultFormHeight);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, minFormWidth);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, defaultFormWidth);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Uint32, parcel, iconId);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, iconId);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, descriptionId);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, labelId);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, enabled);
