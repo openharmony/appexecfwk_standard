@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -23,7 +23,9 @@
 #include "distributed_bms_host.h"
 #include "if_system_ability_manager.h"
 #include "iremote_object.h"
+#ifdef SUPPORT_GRAPHICS
 #include "image_buffer.h"
+#endif
 #include "resource_manager.h"
 #include "system_ability.h"
 
@@ -83,7 +85,9 @@ public:
 private:
     std::shared_ptr<Global::Resource::ResourceManager> GetResourceManager(const AppExecFwk::BundleInfo &bundleInfo);
     bool GetMediaBase64(std::string &path, std::string &value);
+#ifdef SUPPORT_GRAPHICS
     bool GetMediaBae64FromImageBuffer(std::shared_ptr<ImageBuffer>& imageBuffer, std::string& value);
+#endif
     std::unique_ptr<unsigned char[]> LoadResourceFile(std::string &path, int &len);
     std::unique_ptr<char[]> EncodeBase64(std::unique_ptr<unsigned char[]> &data, int srcLen);
     bool GetCurrentUserId(int &userId);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -269,6 +269,9 @@ napi_value GetRemoteAbilityInfo(napi_env env, napi_callback_info info)
     NAPI_ASSERT(env, argc >= requireArgc, "requires 1 parameter");
 
     ElementNameInfo *asyncCallbackInfo = new ElementNameInfo();
+    if (asyncCallbackInfo == nullptr) {
+        return nullptr;
+    }
     asyncCallbackInfo->env = env;
     for (size_t i = 0; i < argc; ++i) {
         napi_valuetype valueType = napi_undefined;
@@ -328,6 +331,7 @@ napi_value GetRemoteAbilityInfo(napi_env env, napi_callback_info info)
             }
             napi_delete_async_work(env, asyncCallbackInfo->asyncWork);
             delete asyncCallbackInfo;
+            asyncCallbackInfo = nullptr;
         },
         (void*)asyncCallbackInfo, &asyncCallbackInfo->asyncWork);
     napi_queue_async_work(env, asyncCallbackInfo->asyncWork);
@@ -409,6 +413,7 @@ napi_value GetRemoteAbilityInfos(napi_env env, napi_callback_info info)
             }
             napi_delete_async_work(env, asyncCallbackInfo->asyncWork);
             delete asyncCallbackInfo;
+            asyncCallbackInfo = nullptr;
         },
         (void*)asyncCallbackInfo, &asyncCallbackInfo->asyncWork);
     napi_queue_async_work(env, asyncCallbackInfo->asyncWork);

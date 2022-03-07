@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -44,6 +44,13 @@ public:
      * @return Returns true if this function called successfully; returns false otherwise.
      */
     bool UninstallSystemBundle(const std::string &bundleName);
+    /**
+     * @brief Uninstall system and system vendor bundles.
+     * @param bundleName Indicates the bundle name.
+     * @param moduleName Indicates the module name.
+     * @return Returns true if this function called successfully; returns false otherwise.
+     */
+    bool UninstallSystemBundle(const std::string &bundleName, const std::string &modulePackage);
 
 private:
     const std::string filePath_;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -107,7 +107,10 @@ ErrCode BundleParser::ParseSysCap(const std::string &pathName, std::vector<std::
         return ERR_APPEXECFWK_PARSE_RPCID_FAILED;
     }
 
-    uint32_t rpcidLen = rpcidStream.tellp();
+    int32_t rpcidLen = rpcidStream.tellp();
+    if (rpcidLen < 0) {
+        return ERR_APPEXECFWK_PARSE_UNEXPECTED;
+    }
     char rpcidBuf[rpcidLen];
     rpcidStream.read(rpcidBuf, rpcidLen);
     uint32_t outLen;

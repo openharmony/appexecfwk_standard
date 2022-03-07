@@ -1,6 +1,6 @@
 
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -40,7 +40,7 @@ const std::string SEPARATOR = "/";
 bool AddFileContentToZip(zipFile zip_file, FilePath &file_path)
 {
     APP_LOGI("%{public}s called", __func__);
-    int num_bytes;
+    uint32_t num_bytes;
     char buf[kZipBufSize];
     if (!FilePathCheckValid(file_path.Value())) {
         APP_LOGI(

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,9 +16,9 @@
 #ifndef FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_BUNDLE_MGR_SERVICE_EVENT_HANDLER_H
 #define FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_BUNDLE_MGR_SERVICE_EVENT_HANDLER_H
 
-#include "event_handler.h"
 #include "bundle_constants.h"
 #include "bundle_data_mgr.h"
+#include "event_handler.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -70,7 +70,6 @@ private:
     void RebootStartScanning(int32_t userId = Constants::UNSPECIFIED_USERID);
     /**
      * @brief Install system and system vendor bundles.
-     * @param appType Indicates the bundle type.
      * @param userId Indicates userId.
      * @return
      */
@@ -78,10 +77,11 @@ private:
     /**
      * @brief Get bundleinfo of HAP by path.
      * @param hapFilePath Indicates the absolute file path of the HAP.
-     * @param bundleInfo Indicates the obtained BundleInfo object.
+     * @param infos Indicates the obtained BundleInfo object.
      * @return Returns true if the BundleInfo is successfully obtained; returns false otherwise.
      */
-    bool GetScanBundleArchiveInfo(const std::string &hapFilePath, BundleInfo &bundleInfo);
+    bool ParseHapFiles(const std::string &hapFilePath,
+        std::unordered_map<std::string, InnerBundleInfo> &infos);
     /**
      * @brief Reboot install system and system vendor bundles.
      * @param bundleList Indicates store bundle list.
@@ -95,9 +95,47 @@ private:
      * @return
      */
     void RebootBundleUninstall();
+    /**
+     * @brief To check the version code and bundleName in all haps.
+     * @param infos .Indicates all innerBundleInfo for all haps need to be installed.
+     * @return Returns ERR_OK if haps checking successfully; returns error code otherwise.
+     */
+    ErrCode CheckAppLabelInfo(const std::unordered_map<std::string, InnerBundleInfo> &infos);
+    /**
+     * @brief OTA Install system app and system vendor bundles.
+     * @param filePath Indicates the filePath.
+     * @param appType Indicates the bundle type.
+     * @return Returns true if this function called successfully; returns false otherwise.
+     */
+    bool OTAInstallSystemBundle(const std::string &filePath, Constants::AppType appType);
+    /**
+     * @brief Used to determine whether the module has been installed. If the installation has
+     *        been uninstalled, OTA install and upgrade will not be allowed.
+     * @param bundleName Indicates the bundleName.
+     * @param bundlePath Indicates the bundlePath.
+     * @return Returns true if this function called successfully; returns false otherwise.
+     */
+    bool HasModuleSavedInPreInstalledDb(
+        const std::string &bundleName, const std::string &bundlePath);
+    /**
+     * @brief Delete preInstallInfo to Db.
+     * @param bundleName Indicates the bundleName.
+     * @param bundlePath Indicates the bundlePath.
+     */
+    void DeletePreInfoInDb(
+        const std::string &bundleName, const std::string &bundlePath, bool bundleLevel);
+    /**
+     * @brief Add parseInfos to map.
+     * @param bundleName Indicates the bundleName.
+     * @param infos Indicates the infos.
+     */
+    void AddParseInfosToMap(const std::string &bundleName,
+        const std::unordered_map<std::string, InnerBundleInfo> &infos);
 
-    std::map<std::string, std::string> bundleInfoMap_;
-    std::map<std::string, BundleInfo> loadExistData_;
+    // Used to save the information parsed by Hap in the scanned directory.
+    std::map<std::string, std::unordered_map<std::string, InnerBundleInfo>> hapParseInfoMap_;
+    // used to save application information that already exists in the Db.
+    std::map<std::string, PreInstallBundleInfo> loadExistData_;
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS

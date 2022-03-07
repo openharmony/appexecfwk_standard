@@ -1,4 +1,4 @@
-# Copyright (c) 2021 Huawei Device Co., Ltd.
+# Copyright (c) 2021-2022 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -81,7 +81,6 @@ ohos_unittest("bm_command_dump_test") {
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
     "os_account_standard:os_account_innerkits",
-    "permission_standard:libpermissionsdk_standard",
     "resmgr_standard:global_resmgr",
     "samgr_standard:samgr_proxy",
     "startup_l2:syspara",
@@ -132,7 +131,6 @@ ohos_unittest("bm_command_install_test") {
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
     "os_account_standard:os_account_innerkits",
-    "permission_standard:libpermissionsdk_standard",
     "resmgr_standard:global_resmgr",
     "samgr_standard:samgr_proxy",
     "startup_l2:syspara",
@@ -183,7 +181,6 @@ ohos_unittest("bm_command_test") {
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
     "os_account_standard:os_account_innerkits",
-    "permission_standard:libpermissionsdk_standard",
     "resmgr_standard:global_resmgr",
     "samgr_standard:samgr_proxy",
     "startup_l2:syspara",
@@ -234,7 +231,6 @@ ohos_unittest("bm_command_uninstall_test") {
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
     "os_account_standard:os_account_innerkits",
-    "permission_standard:libpermissionsdk_standard",
     "resmgr_standard:global_resmgr",
     "samgr_standard:samgr_proxy",
     "startup_l2:syspara",

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -47,7 +47,6 @@ const std::string OPERATION_FAILURE = "Failure";
 const std::string OPERATION_SUCCESS = "Success";
 const int TIMEOUT = 10;
 const int DEFAULT_USERID = 100;
-const int TEST_UID = 20010025;
 } // namespace
 
 class StatusReceiverImpl : public StatusReceiverHost {
@@ -1706,32 +1705,6 @@ HWTEST_F(BundleMgrClientSystemTest, QueryExtensionAbilityInfos_0001, TestSize.Le
     UninstallBundle(BUNDLE_NAME, uninstallMsg);
     EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
     std::cout << "END QueryExtensionAbilityInfos_0001" << std::endl;
-    GTEST_LOG_(INFO) << name << " end";
-}
-
-/**
- * @tc.number: GetResourceConfigFile_04
- * @tc.name: GetResConfigFile
- * @tc.desc: Test the interface of GetUidByBundleName
- * @tc.require: AR000GNT9D
- */
-HWTEST_F(BundleMgrClientSystemTest, GetUidByBundleName_0001, TestSize.Level1)
-{
-    auto name = std::string("GetUidByBundleName_0001");
-    GTEST_LOG_(INFO) << name << " start";
-    std::string bundleFilePath = THIRD_PATH + "bundleClient1.hap";
-    std::string installMsg;
-    InstallBundle(bundleFilePath, InstallFlag::NORMAL, installMsg);
-    EXPECT_EQ(installMsg, "Success") << "install fail!" << bundleFilePath;
-
-    std::vector<ExtensionAbilityInfo> infos;
-    auto ret = GetBundleMgrProxy()->GetUidByBundleName(BUNDLE_NAME, DEFAULT_USERID);
-    EXPECT_EQ(TEST_UID, ret);
-
-    std::string uninstallMsg;
-    UninstallBundle(BUNDLE_NAME, uninstallMsg);
-    EXPECT_EQ(uninstallMsg, "Success") << "uninstall fail!" << bundleFilePath;
-    std::cout << "END GetUidByBundleName_0001" << std::endl;
     GTEST_LOG_(INFO) << name << " end";
 }
 }  // namespace AppExecFwk

@@ -1,4 +1,4 @@
-# Copyright (c) 2021 Huawei Device Co., Ltd.
+# Copyright (c) 2022 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -72,9 +72,12 @@ ohos_unittest("BmsDistributedDataStorageTest") {
     "init:libbegetutil",
     "ipc:ipc_core",
     "os_account_standard:os_account_innerkits",
-    "resmgr_standard:global_resmgr",
     "samgr_standard:samgr_proxy",
   ]
+
+  if (bundle_framework_graphics) {
+    external_deps += [ "resmgr_standard:global_resmgr" ]
+  }
 
   resource_config_file = "//foundation/appexecfwk/standard/test/resource/bundlemgrservice/ohos_test.xml"
 }
