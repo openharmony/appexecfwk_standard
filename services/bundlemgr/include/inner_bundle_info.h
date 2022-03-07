@@ -555,8 +555,11 @@ public:
     {
         APP_LOGD("uri : %{public}s", uri.c_str());
         for (const auto &item : baseExtensionInfos_) {
-            if (uri.find(item.second.uri) == 0) {
+            if (uri == item.second.uri) {
                 extensionAbilityInfo = item.second;
+                APP_LOGD("find target extension, bundleName : %{public}s, moduleName : %{public}s, name : %{public}s",
+                    extensionAbilityInfo.bundleName.c_str(), extensionAbilityInfo.moduleName.c_str(),
+                    extensionAbilityInfo.name.c_str());
                 return true;
             }
         }
