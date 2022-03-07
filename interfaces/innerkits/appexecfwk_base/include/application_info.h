@@ -74,9 +74,9 @@ struct CompatibleApplicationInfo : public Parcelable {
     std::string process;
     bool isCompressNativeLibs = true;
 
-    uint32_t iconId = 0;
-    uint32_t labelId = 0;
-    uint32_t descriptionId = 0;
+    int32_t iconId = 0;
+    int32_t labelId = 0;
+    int32_t descriptionId = 0;
     uint32_t accessTokenId = 0;
 
     bool systemApp = false;
@@ -84,7 +84,7 @@ struct CompatibleApplicationInfo : public Parcelable {
     std::vector<std::string> permissions;
     std::vector<ModuleInfo> moduleInfos;
 
-    uint32_t supportedModes = 0; // supported modes.
+    int32_t supportedModes = 0; // supported modes.
     bool enabled = true;
     bool debug = false;
 
@@ -134,7 +134,7 @@ struct ApplicationInfo : public Parcelable {
     bool distributedNotificationEnabled = true;
     std::string entityType;
     std::string process;
-    int supportedModes = 0;  // returns 0 if the application does not support the driving mode
+    int32_t supportedModes = 0;  // returns 0 if the application does not support the driving mode
     std::string vendor;
 
     // apl
@@ -143,7 +143,7 @@ struct ApplicationInfo : public Parcelable {
     // user related fields, assign when calling the get interface
     uint32_t accessTokenId = 0;
     bool enabled = false;
-    int uid = -1;
+    int32_t uid = -1;
 
     // native so
     std::string nativeLibraryPath;
@@ -160,7 +160,7 @@ struct ApplicationInfo : public Parcelable {
 
     // unused
     std::string icon;
-    int flags = 0;
+    int32_t flags = 0;
     std::string entryModuleName;
     bool isCompressNativeLibs = true;
     std::string signatureKey;

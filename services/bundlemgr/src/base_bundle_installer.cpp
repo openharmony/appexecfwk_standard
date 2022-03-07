@@ -183,7 +183,8 @@ ErrCode BaseBundleInstaller::InnerProcessBundleInstall(std::unordered_map<std::s
 
     // singleton app can only be installed in U0 and U0 can only install singleton app.
     bool isSingleton = newInfos.begin()->second.IsSingleUser();
-    if (isSingleton ^ (userId_ == Constants::DEFAULT_USERID)) {
+    if ((isSingleton && (userId_ != Constants::DEFAULT_USERID)) ||
+        (!isSingleton && (userId_ == Constants::DEFAULT_USERID))) {
         APP_LOGI("singleton(%{public}d) app(%{public}s) and user(%{public}d) are not matched.",
             isSingleton, bundleName_.c_str(), userId_);
         return ERR_APPEXECFWK_INSTALL_ZERO_USER_WITH_NO_SINGLETON;

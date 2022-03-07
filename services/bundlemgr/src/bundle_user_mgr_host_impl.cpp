@@ -140,7 +140,7 @@ void BundleUserMgrHostImpl::RemoveUser(int32_t userId)
 
     g_installedHapNum = 0;
     std::shared_ptr<BundlePromise> bundlePromise = std::make_shared<BundlePromise>();
-    uint32_t totalHapNum = bundleInfos.size();
+    int32_t totalHapNum = static_cast<int32_t>(bundleInfos.size());
     for (const auto &info : bundleInfos) {
         InstallParam installParam;
         installParam.userId = userId;
@@ -152,7 +152,7 @@ void BundleUserMgrHostImpl::RemoveUser(int32_t userId)
         installer->Uninstall(info.name, installParam, userReceiverImpl);
     }
 
-    if (g_installedHapNum < totalHapNum) {
+    if (static_cast<int32_t>(g_installedHapNum) < totalHapNum) {
         bundlePromise->WaitForAllTasksExecute();
     }
     dataMgr->RemoveUserId(userId);
