@@ -34,6 +34,7 @@ private:
     int HandleGetRemoteAbilityInfos(Parcel &data, Parcel &reply);
     int HandleGetAbilityInfo(Parcel &data, Parcel &reply);
     int HandleGetAbilityInfos(Parcel &data, Parcel &reply);
+    bool VerifyCallingPermission(const std::string &permissionName);
     template <typename T>
     bool GetParcelableInfos(Parcel &data, std::vector<T> &parcelableInfos);
     template<typename T>
