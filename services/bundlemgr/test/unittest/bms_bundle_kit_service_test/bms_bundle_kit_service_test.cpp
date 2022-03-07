@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -314,7 +314,7 @@ void BmsBundleKitServiceTest::AddApplicationInfo(const std::string &bundleName, 
 void BmsBundleKitServiceTest::AddInnerBundleInfoByTest(const std::string &bundleName,
     const std::string &moduleName, const std::string &abilityName, InnerBundleInfo &innerBundleInfo) const
 {
-    std::string keyName = bundleName + moduleName + abilityName;
+    std::string keyName = bundleName + "." + moduleName + "." + abilityName;
     if (bundleName == BUNDLE_NAME_TEST) {
         AppExecFwk::SkillUri uri {URI_SCHEME, URI_HOST};
         Skill skill {{ACTION}, {ENTITY}, {uri}};
@@ -379,7 +379,7 @@ void BmsBundleKitServiceTest::MockInstallBundle(
     MetaData metaData {{customizeData}};
     moduleInfo.metaData = metaData;
 
-    std::string keyName = bundleName + moduleName + abilityName;
+    std::string keyName = bundleName + "." + moduleName + "." + abilityName;
     AbilityInfo abilityInfo = MockAbilityInfo(bundleName, moduleName, abilityName);
     InnerBundleInfo innerBundleInfo;
     innerBundleInfo.SetBaseApplicationInfo(appInfo);
@@ -492,6 +492,7 @@ AbilityInfo BmsBundleKitServiceTest::MockAbilityInfo(
     abilityInfo.moduleName = moduleName;
     abilityInfo.deviceId = DEVICE_ID;
     abilityInfo.label = LABEL;
+    abilityInfo.labelId = 0;
     abilityInfo.description = DESCRIPTION;
     abilityInfo.theme = THEME;
     abilityInfo.iconPath = ICON_PATH;
@@ -539,7 +540,7 @@ void BmsBundleKitServiceTest::MockInnerBundleInfo(const std::string &bundleName,
     moduleInfo.description = BUNDLE_DESCRIPTION;
     innerBundleInfo.InsertInnerModuleInfo(moduleName, moduleInfo);
     AbilityInfo abilityInfo = MockAbilityInfo(bundleName, moduleName, abilityName);
-    std::string keyName = bundleName + moduleName + abilityName;
+    std::string keyName = bundleName + "." + moduleName + "." + abilityName;
     innerBundleInfo.InsertAbilitiesInfo(keyName, abilityInfo);
     innerBundleInfo.SetBaseApplicationInfo(appInfo);
 }
@@ -2938,19 +2939,6 @@ HWTEST_F(BmsBundleKitServiceTest, GetAllFormInfo_0200, Function | SmallTest | Le
     }
     MockUninstallBundle(BUNDLE_NAME_TEST);
     MockUninstallBundle(BUNDLE_NAME_DEMO);
-}
-
-/**
- * @tc.number: GetAllFormInfo_0300
- * @tc.name: test can not get have no form
- * @tc.desc: 1.system run normally
- *           2.get forms by all the bundle
- */
-HWTEST_F(BmsBundleKitServiceTest, GetAllFormInfo_0300, Function | SmallTest | Level1)
-{
-    std::vector<FormInfo> formInfos;
-    GetBundleDataMgr()->GetAllFormsInfo(formInfos);
-    EXPECT_TRUE(formInfos.empty());
 }
 
 /**

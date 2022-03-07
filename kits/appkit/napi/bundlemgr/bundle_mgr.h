@@ -72,7 +72,6 @@ struct AsyncAbilityInfosCallbackInfo {
     bool ret = false;
     int32_t err = 0;
     std::string message;
-    napi_callback_info info;
 };
 
 struct AsyncBundleInfoCallbackInfo {
@@ -206,18 +205,6 @@ struct AsyncFormInfosByAppCallbackInfo {
     std::string bundleName;
     std::vector<OHOS::AppExecFwk::FormInfo> formInfos;
     bool ret = false;
-};
-
-struct AsyncShortcutInfosCallbackInfo {
-    napi_env env;
-    napi_async_work asyncWork;
-    napi_deferred deferred;
-    napi_ref callback = 0;
-    std::string bundleName;
-    std::vector<OHOS::AppExecFwk::ShortcutInfo> shortcutInfos;
-    bool ret = false;
-    int32_t err = 0;
-    std::string message;
 };
 
 struct AsyncLaunchWantForBundleCallbackInfo {

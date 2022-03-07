@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -208,7 +208,7 @@ const std::string HOS_SYSTEM_APP = "hos_system_app";
 const std::string OHOS_SYSTEM_APP = "ohos_system_app";
 
 // ipc
-const int32_t MAX_CAPACITY_BUNDLES = 1024 * 1000; // 1M
+const int32_t MAX_CAPACITY_BUNDLES = 5 * 1024 * 1000; // 5M
 
 // file size
 const int32_t INVALID_FILE_SIZE = -1;

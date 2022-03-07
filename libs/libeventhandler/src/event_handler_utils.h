@@ -37,6 +37,7 @@ namespace AppExecFwk {
 inline const int64_t NANOSECONDS_PER_ONE_MILLISECOND = 1000000;
 inline const int64_t NANOSECONDS_PER_ONE_SECOND = 1000000000;
 inline const int32_t INFINITE_TIMEOUT = -1;
+inline const uint8_t MAX_ERRORMSG_LEN = 128;
 
 // Help to convert time point into delay time from now.
 static inline int64_t TimePointToTimeOut(const InnerEvent::TimePoint &when)
@@ -89,9 +90,10 @@ static inline void HiTracePointerOutPut(const std::shared_ptr<HiTraceId>& spanId
     }
 }
 
-static inline char *GetLastErr()
+static inline void GetLastErr(char *errmsg, size_t size = MAX_ERRORMSG_LEN)
 {
-    return strerror(errno);
+    size = size > MAX_ERRORMSG_LEN ? MAX_ERRORMSG_LEN : size;
+    strerror_r(errno, errmsg, size);
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS

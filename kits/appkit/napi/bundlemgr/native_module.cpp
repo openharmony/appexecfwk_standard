@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -112,7 +112,6 @@ static napi_value Init(napi_env env, napi_value exports)
         DECLARE_NAPI_FUNCTION("getFormsInfoByModule", GetFormsInfoByModule),
         DECLARE_NAPI_FUNCTION("getFormsInfo", GetFormsInfoByApp),
         DECLARE_NAPI_FUNCTION("getAllFormsInfo", GetAllFormsInfo),
-        DECLARE_NAPI_FUNCTION("getAllShortcutInfo", GetShortcutInfos),
         DECLARE_NAPI_FUNCTION("getModuleUsageRecords", GetModuleUsageRecords),
         DECLARE_NAPI_FUNCTION("on", RegisterAllPermissionsChanged),
         DECLARE_NAPI_FUNCTION("off", UnregisterPermissionsChanged),

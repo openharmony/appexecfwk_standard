@@ -10,12 +10,14 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+import("//foundation/appexecfwk/standard/appexecfwk.gni")
 group("bms_system_test_app") {
-  deps = [
-    "thirdPageDemo1:page_ability_native1",
-    "thirdPageDemo2:page_ability_native2",
-    "thirdPageDemo3:page_ability_native3",
-    "thirdPageDemo4:page_ability_native4",
-  ]
+  if (bundle_framework_graphics) {
+    deps = [
+      "thirdPageDemo1:page_ability_native1",
+      "thirdPageDemo2:page_ability_native2",
+      "thirdPageDemo3:page_ability_native3",
+      "thirdPageDemo4:page_ability_native4",
+    ]
+  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,12 +22,16 @@
 #include "bundle_constants.h"
 #include "bundle_mgr_interface.h"
 #include "iservice_registry.h"
+#ifdef SUPPORT_GRAPHICS
 #include "locale_config.h"
+#endif
 #include "nlohmann/json.hpp"
 #include "system_ability_definition.h"
 
 using namespace OHOS::Global::Resource;
+#ifdef SUPPORT_GRAPHICS
 using namespace OHOS::Global::I18n;
+#endif
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -197,8 +201,10 @@ std::shared_ptr<ResourceManager> BundleMgrClientImpl::InitResMgr(const std::stri
         APP_LOGE("InitResMgr resConfig is nullptr");
         return nullptr;
     }
+#ifdef SUPPORT_GRAPHICS
     resConfig->SetLocaleInfo(LocaleConfig::GetSystemLanguage().c_str(), LocaleConfig::GetSystemLocale().c_str(),
         LocaleConfig::GetSystemRegion().c_str());
+#endif
     resMgr->UpdateResConfig(*resConfig);
 
     APP_LOGD("resourcePath is %{public}s", resourcePath.c_str());

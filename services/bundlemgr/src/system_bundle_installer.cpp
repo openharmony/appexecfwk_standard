@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -36,6 +36,7 @@ bool SystemBundleInstaller::InstallSystemBundle(Constants::AppType appType, int3
     installParam.userId = userId;
     installParam.isPreInstallApp = true;
     installParam.noSkipsKill = false;
+    installParam.needSendEvent = false;
     if (appType == Constants::AppType::SYSTEM_APP
         || appType == Constants::AppType::THIRD_SYSTEM_APP) {
         installParam.needSavePreInstallInfo = true;
@@ -58,6 +59,7 @@ bool SystemBundleInstaller::OTAInstallSystemBundle(Constants::AppType appType)
     InstallParam installParam;
     installParam.isPreInstallApp = true;
     installParam.noSkipsKill = false;
+    installParam.needSendEvent = false;
     if (appType == Constants::AppType::SYSTEM_APP
     || appType == Constants::AppType::THIRD_SYSTEM_APP) {
         installParam.needSavePreInstallInfo = true;
@@ -85,7 +87,31 @@ bool SystemBundleInstaller::UninstallSystemBundle(const std::string &bundleName)
         installParam.userId = userId;
         installParam.needSavePreInstallInfo = true;
         installParam.noSkipsKill = false;
+        installParam.needSendEvent = false;
         ErrCode result = UninstallBundle(bundleName, installParam);
+        if (result != ERR_OK) {
+            APP_LOGW("uninstall system bundle fail, error: %{public}d", result);
+        }
+        ResetInstallProperties();
+    }
+    return true;
+}
+
+bool SystemBundleInstaller::UninstallSystemBundle(const std::string &bundleName, const std::string &modulePackage)
+{
+    auto dataMgr = DelayedSingleton<BundleMgrService>::GetInstance()->GetDataMgr();
+    if (!dataMgr) {
+        APP_LOGE("Get dataMgr shared_ptr nullptr");
+        return false;
+    }
+
+    InstallParam installParam;
+    for (auto userId : dataMgr->GetAllUser()) {
+        installParam.userId = userId;
+        installParam.needSavePreInstallInfo = true;
+        installParam.noSkipsKill = false;
+        installParam.needSendEvent = false;
+        ErrCode result = UninstallBundle(bundleName, modulePackage, installParam);
         if (result != ERR_OK) {
             APP_LOGW("uninstall system bundle fail, error: %{public}d", result);
         }

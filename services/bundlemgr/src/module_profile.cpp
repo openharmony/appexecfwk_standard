@@ -1084,12 +1084,12 @@ bool ToApplicationInfo(const Profile::App &app, ApplicationInfo &applicationInfo
     applicationInfo.name = app.bundleName;
     applicationInfo.bundleName = app.bundleName;
 
-    applicationInfo.versionCode = app.versionCode;
+    applicationInfo.versionCode = static_cast<uint32_t>(app.versionCode);
     applicationInfo.versionName = app.versionName;
     if (app.minCompatibleVersionCode != -1) {
         applicationInfo.minCompatibleVersionCode = app.minCompatibleVersionCode;
     } else {
-        applicationInfo.minCompatibleVersionCode = applicationInfo.versionCode;
+        applicationInfo.minCompatibleVersionCode = static_cast<int32_t>(applicationInfo.versionCode);
     }
 
     applicationInfo.apiCompatibleVersion = app.minAPIVersion;
@@ -1375,9 +1375,7 @@ bool ToInnerModuleInfo(const Profile::ModuleJson &moduleJson, InnerModuleInfo &i
     if (!moduleJson.module.process.empty()) {
         innerModuleInfo.process = moduleJson.module.process;
     } else {
-        std::string processName;
-        processName.append(moduleJson.app.bundleName).append(".").append(moduleJson.module.name);
-        innerModuleInfo.process = processName;
+        innerModuleInfo.process = moduleJson.app.bundleName;
     }
     for (const std::string &deviceType : moduleJson.module.deviceTypes) {
         if (Profile::DEVICE_TYPE_SET.find(deviceType) != Profile::DEVICE_TYPE_SET.end()) {
