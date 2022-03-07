@@ -434,6 +434,10 @@ ErrCode BMSEventHandler::CheckAppLabelInfo(
 {
     APP_LOGD("Check APP label");
     ErrCode ret = ERR_OK;
+    if (infos.empty()) {
+        return ret;
+    }
+
     std::string bundleName = (infos.begin()->second).GetBundleName();
     std::string vendor = (infos.begin()->second).GetVendor();
     auto versionCode = (infos.begin()->second).GetVersionCode();
