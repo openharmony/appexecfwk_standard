@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -353,10 +353,6 @@ bool BundleMgrHostImpl::GetBundleArchiveInfo(
         APP_LOGE("parse bundle info failed, error: %{public}d", ret);
         return false;
     }
-    if (!VerifyQueryPermission(info.GetBundleName())) {
-        APP_LOGE("verify permission failed");
-        return false;
-    }
     APP_LOGD("verify permission success, bgein to GetBundleArchiveInfo");
     info.GetBundleInfo(flags, bundleInfo, Constants::NOT_EXIST_USERID);
     return true;
@@ -423,6 +419,10 @@ int BundleMgrHostImpl::CheckPermissionByUid(
 
 bool BundleMgrHostImpl::GetPermissionDef(const std::string &permissionName, PermissionDef &permissionDef)
 {
+    if (!BundlePermissionMgr::VerifyCallingPermission(Constants::PERMISSION_GET_BUNDLE_INFO_PRIVILEGED)) {
+        APP_LOGE("verify GET_BUNDLE_INFO_PRIVILEGED failed");
+        return false;
+    }
     if (permissionName.empty()) {
         APP_LOGE("fail to GetPermissionDef due to params empty");
         return false;
@@ -916,35 +916,13 @@ sptr<IBundleUserMgr> BundleMgrHostImpl::GetBundleUserMgr()
 bool BundleMgrHostImpl::CanRequestPermission(
     const std::string &bundleName, const std::string &permissionName, const int userId)
 {
-    if (bundleName.empty() || permissionName.empty()) {
-        APP_LOGE("fail to CanRequestPermission due to params empty");
-        return false;
-    }
-    return BundlePermissionMgr::CanRequestPermission(bundleName, permissionName, userId);
+    return true;
 }
 
 bool BundleMgrHostImpl::RequestPermissionFromUser(
     const std::string &bundleName, const std::string &permissionName, const int userId)
 {
-    if (bundleName.empty() || permissionName.empty()) {
-        APP_LOGE("fail to CanRequestPermission due to params empty");
-        return false;
-    }
-    bool ret = BundlePermissionMgr::RequestPermissionFromUser(bundleName, permissionName, userId);
-    // send Permissions Changed event
-    APP_LOGI("send Permissions Changed event");
-    BundleInfo info;
-    bool ret_getInfo = GetBundleInfo(bundleName, BundleFlag::GET_BUNDLE_DEFAULT, info);
-    APP_LOGI("ret_getInfo = %{public}d", ret_getInfo);
-    if (ret && ret_getInfo) {
-        Want want;
-        want.SetAction("PERMISSIONS_CHANGED_EVENT");
-        EventFwk::CommonEventData commonData;
-        commonData.SetWant(want);
-        commonData.SetCode(info.uid);
-        EventFwk::CommonEventManager::PublishCommonEvent(commonData);
-    }
-    return ret;
+    return true;
 }
 
 bool BundleMgrHostImpl::RegisterAllPermissionsChanged(const sptr<OnPermissionChangedCallback> &callback)
@@ -1130,6 +1108,10 @@ bool BundleMgrHostImpl::QueryExtensionAbilityInfos(const Want &want, const int32
     std::vector<ExtensionAbilityInfo> &extensionInfos)
 {
     APP_LOGD("QueryExtensionAbilityInfos without type begin");
+    if (!VerifyQueryPermission(want.GetElement().GetBundleName())) {
+        APP_LOGE("verify permission failed");
+        return false;
+    }
     APP_LOGD("want uri is %{public}s", want.GetUriString().c_str());
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
@@ -1152,6 +1134,10 @@ bool BundleMgrHostImpl::QueryExtensionAbilityInfos(const Want &want, const Exten
     const int32_t &flag, const int32_t &userId, std::vector<ExtensionAbilityInfo> &extensionInfos)
 {
     APP_LOGD("QueryExtensionAbilityInfos begin");
+    if (!VerifyQueryPermission(want.GetElement().GetBundleName())) {
+        APP_LOGE("verify permission failed");
+        return false;
+    }
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
         APP_LOGE("DataMgr is nullptr");

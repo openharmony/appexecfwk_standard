@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -169,21 +169,6 @@ HWTEST_F(BmsBundlePermissionGrantTest, BmsBundlePermissionGrantTest_0100, Functi
  * @tc.number: BmsBundleAccessTokenIdTest
  * Function: Install
  * @tc.name: test install a hap with system_bacic/system_core permission and normal apl
- * @tc.require: SR000GP3LF
- * @tc.desc: 1. system running normally
- *           2. install a hap, the request permission does not exist in acls
- *           3. install failed
- */
-HWTEST_F(BmsBundlePermissionGrantTest, BmsBundlePermissionGrantTest_0200, Function | SmallTest | Level0)
-{
-    ErrCode installResult = InstallBundle(HAP_FILE_PATH + "bmsGrantPermission2.hap");
-    EXPECT_EQ(installResult, ERR_APPEXECFWK_INSTALL_GRANT_REQUEST_PERMISSIONS_FAILED);
-}
-
-/**
- * @tc.number: BmsBundleAccessTokenIdTest
- * Function: Install
- * @tc.name: test install a hap with system_bacic/system_core permission and normal apl
  * @tc.require: AR000GP3NU
  * @tc.desc: 1. system running normally
  *           2. install a hap, the request permission exists in acls
@@ -212,21 +197,6 @@ HWTEST_F(BmsBundlePermissionGrantTest, BmsBundlePermissionGrantTest_0400, Functi
     EXPECT_EQ(installResult, ERR_OK);
     ErrCode unInstallResult = UnInstallBundle(BUNDLE_NAME);
     EXPECT_EQ(unInstallResult, ERR_OK);
-}
-
-/**
- * @tc.number: BmsBundleAccessTokenIdTest
- * Function: Install
- * @tc.name: test install a hap with system_core permission and system_basic apl
- * @tc.require: AR000GP3NU
- * @tc.desc: 1. system running normally
- *           2. install a hap, the request permission does not exist in acls
- *           3. install failed
- */
-HWTEST_F(BmsBundlePermissionGrantTest, BmsBundlePermissionGrantTest_0500, Function | SmallTest | Level0)
-{
-    ErrCode installResult = InstallBundle(HAP_FILE_PATH + "bmsGrantPermission5.hap");
-    EXPECT_EQ(installResult, ERR_APPEXECFWK_INSTALL_GRANT_REQUEST_PERMISSIONS_FAILED);
 }
 
 /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -90,6 +90,26 @@ public:
         if (!ret) {
             bundlePaths_.emplace_back(bundlePath);
         }
+    }
+    /**
+     * @brief Delete bundle path.
+     * @param bundlePath bundle path.
+     */
+    void DeleteBundlePath(const std::string &bundlePath)
+    {
+        auto iter = std::find(bundlePaths_.begin(), bundlePaths_.end(), bundlePath);
+        if (iter != bundlePaths_.end()) {
+            bundlePaths_.erase(iter);
+        }
+    }
+    /**
+     * @brief Has bundle path.
+     * @param bundlePath bundle path.
+     */
+    bool HasBundlePath(const std::string &bundlePath)
+    {
+        return std::find(bundlePaths_.begin(), bundlePaths_.end(), bundlePath)
+            != bundlePaths_.end();
     }
     /**
      * @brief Get AppType.

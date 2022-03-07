@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -183,7 +183,7 @@ bool ZipFile::Open()
         return false;
     }
 
-    FILE *tmpFile = fopen(&(realPath[0]), "rb");
+    FILE *tmpFile = fopen(realPath.c_str(), "rb");
     if (tmpFile == nullptr) {
         APP_LOGE("open file(%{private}s) failed, error: %{public}d", pathName_.c_str(), errno);
         return false;
@@ -198,8 +198,9 @@ bool ZipFile::Open()
         int64_t fileLength = ftell(tmpFile);
         if (fileLength == -1) {
             APP_LOGE("open file %{private}s failed", pathName_.c_str());
+            return false;
         }
-        fileLength_ = fileLength;
+        fileLength_ = static_cast<ZipPos>(fileLength);
         if (fileStartPos_ >= fileLength_) {
             APP_LOGE("open start pos > length failed");
             fclose(tmpFile);

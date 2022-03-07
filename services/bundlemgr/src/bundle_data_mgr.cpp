@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -29,7 +29,6 @@
 #include "image_source.h"
 #include "json_serializer.h"
 #include "nlohmann/json.hpp"
-#include "permission/permission_kit.h"
 #include "permission_changed_death_recipient.h"
 #include "singleton.h"
 
@@ -652,7 +651,7 @@ bool BundleDataMgr::QueryLauncherAbilityInfos(
         // query all launcher ability
         for (const auto &item : bundleInfos_) {
             auto infoWithIdItem = item.second.find(Constants::CURRENT_DEVICE_ID);
-            if (infoWithIdItem->second.IsDisabled()) {
+            if (infoWithIdItem != item.second.end() && infoWithIdItem->second.IsDisabled()) {
                 APP_LOGI("app %{public}s is disabled", infoWithIdItem->second.GetBundleName().c_str());
                 continue;
             }
@@ -1632,7 +1631,12 @@ bool BundleDataMgr::RegisterBundleStatusCallback(const sptr<IBundleStatusCallbac
     std::lock_guard<std::mutex> lock(callbackMutex_);
     callbackList_.emplace_back(bundleStatusCallback);
     if (bundleStatusCallback->AsObject() != nullptr) {
-        sptr<BundleStatusCallbackDeathRecipient> deathRecipient = new BundleStatusCallbackDeathRecipient();
+        sptr<BundleStatusCallbackDeathRecipient> deathRecipient =
+            new (std::nothrow) BundleStatusCallbackDeathRecipient();
+        if (deathRecipient == nullptr) {
+            APP_LOGE("deathRecipient is null");
+            return false;
+        }
         bundleStatusCallback->AsObject()->AddDeathRecipient(deathRecipient);
     }
     return true;
@@ -2270,7 +2274,7 @@ bool BundleDataMgr::AddDeathRecipient(const sptr<OnPermissionChangedCallback> &c
         return false;
     }
     // add callback death recipient.
-    sptr<PermissionChangedDeathRecipient> deathRecipient = new PermissionChangedDeathRecipient();
+    sptr<PermissionChangedDeathRecipient> deathRecipient = new (std::nothrow) PermissionChangedDeathRecipient();
     if (deathRecipient == nullptr) {
         APP_LOGE("create PermissionChangedDeathRecipient failed");
         return false;
@@ -2472,6 +2476,7 @@ bool BundleDataMgr::GetPreInstallBundleInfo(
         return false;
     }
 
+    preInstallBundleInfo.SetBundleName(bundleName);
     auto info = std::find_if(
         preInstallBundleInfos_.begin(), preInstallBundleInfos_.end(), preInstallBundleInfo);
     if (info != preInstallBundleInfos_.end()) {
@@ -2564,7 +2569,7 @@ int32_t BundleDataMgr::GetUserId(int32_t userId) const
     }
 
     if (!HasUserId(userId)) {
-        APP_LOGE("user is not exit.");
+        APP_LOGE("user is not existed.");
         userId = Constants::INVALID_USERID;
     }
 

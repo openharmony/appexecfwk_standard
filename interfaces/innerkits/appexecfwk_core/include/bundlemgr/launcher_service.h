@@ -110,10 +110,11 @@ public:
 
 private:
     void init();
-    OHOS::sptr<OHOS::AppExecFwk::IBundleMgr> GetBundleMgr();
+    static OHOS::sptr<OHOS::AppExecFwk::IBundleMgr> GetBundleMgr();
 
     std::shared_ptr<BundleMonitor> bundleMonitor_ = nullptr;
-
+    static OHOS::sptr<OHOS::AppExecFwk::IBundleMgr> bundleMgr_;
+    static std::mutex bundleMgrMutex_;
     DISALLOW_COPY_AND_MOVE(LauncherService);
 };
 }  // namespace AppExecFwk

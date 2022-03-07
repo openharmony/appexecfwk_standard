@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -34,7 +34,6 @@ const std::string HELP_MSG = "usage: bm <command> <options>\n"
                              "  clean        clean the bundle data\n"
                              "  enable       enable the bundle\n"
                              "  disable      disable the bundle\n"
-                             "  query        query extensionInfo or profile\n"
                              "  get          obtain device udid\n";
 
 const std::string HELP_MSG_INSTALL =
@@ -93,15 +92,6 @@ const std::string HELP_MSG_DISABLE =
     "  -a, --ability-name <ability-name>      disable ability by ability name\n"
     "  -u, --user-id <user-id>                specify a user id\n";
 
-const std::string HELP_MSG_QUERY =
-    "usage: bm query <options>\n"
-    "options list:\n"
-    "  -h, --help                             list available commands\n"
-    "  -n, --bundle-name <bundle-name>        query bundle by bundle name\n"
-    "  -e, --element-name <element-name>      query info by element name\n"
-    "  -m, --metadata-name <metadata-name>    query metadata by metadata name\n"
-    "  -u, --user-id <usr-id>                 specify a user id\n";
-
 const std::string HELP_MSG_GET =
     "usage: bm get <options>\n"
     "options list:\n"
@@ -134,11 +124,6 @@ const std::string STRING_ENABLE_BUNDLE_NG = "error: failed to enable bundle.";
 const std::string STRING_DISABLE_BUNDLE_OK = "disable bundle successfully.";
 const std::string STRING_DISABLE_BUNDLE_NG = "error: failed to disable bundle.";
 
-const std::string STRING_QUERY_BUNDLE_OK = "query bundle successfully.";
-const std::string STRING_QUERY_BUNDLE_NG = "error: failed to query profile.";
-const std::string STRING_QUERY_NEED_CORRECT_ARGUMENTS = "error: need correct arguments!";
-const std::string NO_PROFILE = "no profile!\n";
-
 const std::string STRING_GET_UDID_OK = "udid of current device is :";
 const std::string STRING_GET_UDID_NG = "error: failed to get udid";
 
@@ -166,7 +151,6 @@ private:
     ErrCode RunAsCleanCommand();
     ErrCode RunAsEnableCommand();
     ErrCode RunAsDisableCommand();
-    ErrCode RunAsQueryCommand();
     ErrCode RunAsGetCommand();
 
     std::string DumpBundleList(int32_t userId) const;
@@ -187,10 +171,6 @@ private:
 
     bool SetApplicationEnabledOperation(const AbilityInfo &abilityInfo, bool isEnable, int32_t userId) const;
 
-    bool QueryOperation(const std::string &bundleName, const std::string &elementName,
-        const std::string &metadataName, const int32_t userId, std::string &result) const;
-
-    bool CheckArguments(const std::string &argument) const;
     int32_t GetCurrentUserId(int32_t userId) const;
 
     sptr<IBundleMgr> bundleMgrProxy_;

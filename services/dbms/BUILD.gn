@@ -1,4 +1,4 @@
-# Copyright (c) 2021 Huawei Device Co., Ltd.
+# Copyright (c) 2022 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -27,8 +27,6 @@ ohos_shared_library("libdbms") {
     "src/distributed_bms.cpp",
     "src/distributed_bms_host.cpp",
     "src/distributed_bms_proxy.cpp",
-    "src/image_buffer.cpp",
-    "src/image_compress.cpp",
   ]
 
   defines = [
@@ -38,11 +36,21 @@ ohos_shared_library("libdbms") {
 
   public_configs = [ ":distributed_bms_config" ]
 
-  deps = [
-    "${common_path}:libappexecfwk_common",
-    "//third_party/libjpeg:libjpeg_static",
-    "//third_party/libpng:libpng",
-  ]
+  deps = [ "${common_path}:libappexecfwk_common" ]
+
+  if (bundle_framework_graphics) {
+    defines += [ "SUPPORT_GRAPHICS" ]
+
+    sources += [
+      "src/image_buffer.cpp",
+      "src/image_compress.cpp",
+    ]
+
+    deps += [
+      "//third_party/libjpeg:libjpeg_static",
+      "//third_party/libpng:libpng",
+    ]
+  }
 
   external_deps = [
     "ability_base:want",

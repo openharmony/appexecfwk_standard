@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -319,12 +319,10 @@ HWTEST_F(BmsServiceBundleScanTest, RebootBundleScan_0200, Function | SmallTest |
 HWTEST_F(BmsServiceBundleScanTest, RebootBundleScan_0300, Function | SmallTest | Level0)
 {
     std::shared_ptr<BMSEventHandler> handler_;
-    BundleInfo bundleInfo;
+    std::unordered_map<std::string, InnerBundleInfo> infos;
     const std::string PATH = SYSTEM_APP_SCAN_PATH + "/" + PHOTOS_HAP;
-    auto result = handler_->GetScanBundleArchiveInfo(PATH, bundleInfo);
+    auto result = handler_->ParseHapFiles(PATH, infos);
     EXPECT_TRUE(result);
-    EXPECT_EQ(1000000, bundleInfo.versionCode);
-    EXPECT_EQ(PHOTOS_HAP_NAME, bundleInfo.name);
 }
 
 /**
@@ -338,20 +336,24 @@ HWTEST_F(BmsServiceBundleScanTest, RebootBundleScan_0400, Function | SmallTest |
     runner_ = EventRunner::Create(Constants::BMS_SERVICE_NAME);
     std::shared_ptr<BMSEventHandler> handler_;
     handler_ = std::make_shared<BMSEventHandler>(runner_);
-    BundleInfo bundleInfo;
+    std::unordered_map<std::string, InnerBundleInfo> infos;
     const std::string PATH = TEST_ERROR_DIR + "/" + PHOTOS_HAP;
-    auto result = handler_->GetScanBundleArchiveInfo(PATH, bundleInfo);
+    auto result = handler_->ParseHapFiles(PATH, infos);
     EXPECT_FALSE(result);
     
 }
 
 /**
- * @tc.number: RebootBundleScan_0500
- * @tc.name: Get bundleinfo of HAP by path
+ * @tc.number: RebootBundleScan_0600
+ * @tc.name: test reboot bundle install
  * @tc.desc: Pass multiple HAP of SYSTEM_APP path. Can find information
  */
 HWTEST_F(BmsServiceBundleScanTest, RebootBundleScan_0500, Function | SmallTest | Level0)
 {
+    std::shared_ptr<EventRunner> runner_;
+    runner_ = EventRunner::Create(Constants::BMS_SERVICE_NAME);
+    std::shared_ptr<BMSEventHandler> handler_;
+    handler_ = std::make_shared<BMSEventHandler>(runner_);
     auto scanner = std::make_unique<BundleScanner>();
     if (!scanner) {
         APP_LOGE("make scanner failed");
@@ -364,21 +366,14 @@ HWTEST_F(BmsServiceBundleScanTest, RebootBundleScan_0500, Function | SmallTest |
         result = true;
     }
     EXPECT_TRUE(result);
-    std::shared_ptr<EventRunner> runner_;
-    runner_ = EventRunner::Create(Constants::BMS_SERVICE_NAME);
-    std::shared_ptr<BMSEventHandler> handler_;
-    handler_ = std::make_shared<BMSEventHandler>(runner_);
-    BundleInfo bundleInfo;
-    for (auto &listIter : bundleList) {
-        result = handler_->GetScanBundleArchiveInfo(listIter, bundleInfo);
-        EXPECT_TRUE(result);
-    }
+    handler_->RebootBundleInstall(bundleList, Constants::AppType::SYSTEM_APP);
+    EXPECT_LT(0, handler_->hapParseInfoMap_.size());
 }
 
 /**
- * @tc.number: RebootBundleScan_0600
+ * @tc.number: RebootBundleScan_0700
  * @tc.name: test reboot bundle install
- * @tc.desc: Pass multiple HAP of SYSTEM_APP path. Can find information
+ * @tc.desc: Pass multiple HAP of THIRD_SYSTEM_APP path. Can find information
  */
 HWTEST_F(BmsServiceBundleScanTest, RebootBundleScan_0600, Function | SmallTest | Level0)
 {
@@ -398,33 +393,6 @@ HWTEST_F(BmsServiceBundleScanTest, RebootBundleScan_0600, Function | SmallTest |
         result = true;
     }
     EXPECT_TRUE(result);
-    handler_->RebootBundleInstall(bundleList, Constants::AppType::SYSTEM_APP);
-    EXPECT_LT(0, handler_->bundleInfoMap_.size());
-}
-
-/**
- * @tc.number: RebootBundleScan_0700
- * @tc.name: test reboot bundle install
- * @tc.desc: Pass multiple HAP of THIRD_SYSTEM_APP path. Can find information
- */
-HWTEST_F(BmsServiceBundleScanTest, RebootBundleScan_0700, Function | SmallTest | Level0)
-{
-    std::shared_ptr<EventRunner> runner_;
-    runner_ = EventRunner::Create(Constants::BMS_SERVICE_NAME);
-    std::shared_ptr<BMSEventHandler> handler_;
-    handler_ = std::make_shared<BMSEventHandler>(runner_);
-    auto scanner = std::make_unique<BundleScanner>();
-    if (!scanner) {
-        APP_LOGE("make scanner failed");
-        return;
-    }
-    std::string scanDir = Constants::SYSTEM_APP_SCAN_PATH;
-    std::list<std::string> bundleList = scanner->Scan(scanDir);
-    auto result = false;
-    if (bundleList.size() > 0) {
-        result = true;
-    }
-    EXPECT_TRUE(result);
     handler_->RebootBundleInstall(bundleList, Constants::AppType::THIRD_SYSTEM_APP);
-    EXPECT_LT(0, handler_->bundleInfoMap_.size());
+    EXPECT_LT(0, handler_->hapParseInfoMap_.size());
 }

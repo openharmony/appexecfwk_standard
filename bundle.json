@@ -13,7 +13,9 @@
             "SystemCapability.BundleManager.BundleFramework",
             "SystemCapability.BundleManager.Zlib"
         ],
-        "features": [],
+        "features": [
+            "bundle_framework_graphics"
+        ],
         "adapted_system_type": [
             "standard"
         ],
@@ -93,7 +95,6 @@
             "test": [
                 "//foundation/appexecfwk/standard/services/bundlemgr/test:unittest",
                 "//foundation/appexecfwk/standard/services/test/moduletest/common/bms:moduletest",
-                "//foundation/appexecfwk/standard/test/fuzztest:fuzztest",
                 "//foundation/appexecfwk/standard/test/systemtest/common/bms:systemtest_bms",
                 "//foundation/appexecfwk/standard/tools/zip/test:unittest"
             ]
