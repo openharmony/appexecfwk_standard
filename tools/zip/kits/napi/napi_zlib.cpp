@@ -796,6 +796,9 @@ void UnzipFilePromiseCallBack(int result)
 }
 void ZipAndUnzipFileAsyncCallBackInnerJsThread(uv_work_t *work)
 {
+    if (work == nullptr) {
+        return;
+    }
     // JS Thread
     ZlibCallbackInfo *asyncCallbackInfo = (ZlibCallbackInfo *)work->data;
     if (asyncCallbackInfo == nullptr) {
