@@ -2901,7 +2901,7 @@ bool BundleDataMgr::QueryExtensionAbilityInfoByUri(const std::string &uri, int32
         return false;
     }
     // example of valid param uri : fileShare:///com.example.FileShare/person/10
-    // example of convertUri : fileShare:///com.example.FileShare
+    // example of convertUri : fileShare://com.example.FileShare
     size_t schemePos = uri.find(Constants::EXTENSION_SCHEME_SEPARATOR);
     if (schemePos == uri.npos) {
         APP_LOGE("uri not include :///, invalid");
@@ -2918,6 +2918,7 @@ bool BundleDataMgr::QueryExtensionAbilityInfoByUri(const std::string &uri, int32
     convertUri.replace(schemePos, Constants::EXTENSION_SCHEME_SEPARATOR_LEN,
         Constants::EXTENSION_URI_MODULE_JSON_SEPARATOR);
     APP_LOGD("convertUri : %{public}s", convertUri.c_str());
+
     std::lock_guard<std::mutex> lock(bundleInfoMutex_);
     if (bundleInfos_.empty()) {
         APP_LOGE("bundleInfos_ data is empty");
