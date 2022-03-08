@@ -814,15 +814,7 @@ ErrCode BaseBundleInstaller::ProcessBundleInstallStatus(InnerBundleInfo &info, i
 
     ScopeGuard bundleGuard([&] { RemoveBundleAndDataDir(info, false); });
     std::string modulePath = info.GetAppCodePath() + Constants::PATH_SEPARATOR + modulePackage_;
-    std::string targetSoPath;
-    std::string nativeLibraryPath = info.GetBaseApplicationInfo().nativeLibraryPath;
-    if (!nativeLibraryPath.empty()) {
-        targetSoPath.append(Constants::BUNDLE_CODE_DIR).append(Constants::PATH_SEPARATOR)
-            .append(info.GetBundleName()).append(Constants::PATH_SEPARATOR)
-            .append(nativeLibraryPath).append(Constants::PATH_SEPARATOR);
-    }
-    std::string cpuAbi = info.GetBaseApplicationInfo().cpuAbi;
-    result = ExtractModule(info, modulePath, targetSoPath, cpuAbi);
+    result = ExtractModule(info, modulePath);
     if (result != ERR_OK) {
         APP_LOGE("extract module failed");
         return result;
@@ -923,15 +915,7 @@ ErrCode BaseBundleInstaller::ProcessNewModuleInstall(InnerBundleInfo &newInfo, I
         return ERR_APPEXECFWK_INSTALL_INTERNAL_ERROR;
     }
     std::string modulePath = newInfo.GetAppCodePath() + Constants::PATH_SEPARATOR + modulePackage_;
-    std::string targetSoPath;
-    std::string nativeLibraryPath = newInfo.GetBaseApplicationInfo().nativeLibraryPath;
-    if (!nativeLibraryPath.empty()) {
-        targetSoPath.append(Constants::BUNDLE_CODE_DIR).append(Constants::PATH_SEPARATOR)
-            .append(newInfo.GetBundleName()).append(Constants::PATH_SEPARATOR)
-            .append(nativeLibraryPath).append(Constants::PATH_SEPARATOR);
-    }
-    std::string cpuAbi = newInfo.GetBaseApplicationInfo().cpuAbi;
-    ErrCode result = ExtractModule(newInfo, modulePath, targetSoPath, cpuAbi);
+    ErrCode result = ExtractModule(newInfo, modulePath);
     if (result != ERR_OK) {
         APP_LOGE("extract module and rename failed");
         return result;
@@ -1023,15 +1007,7 @@ ErrCode BaseBundleInstaller::ProcessModuleUpdate(InnerBundleInfo &newInfo,
         return ERR_APPEXECFWK_INSTALL_INTERNAL_ERROR;
     }
     moduleTmpDir_ = newInfo.GetAppCodePath() + Constants::PATH_SEPARATOR + modulePackage_ + Constants::TMP_SUFFIX;
-    std::string targetSoPath;
-    std::string nativeLibraryPath = newInfo.GetBaseApplicationInfo().nativeLibraryPath;
-    if (!nativeLibraryPath.empty()) {
-        targetSoPath.append(Constants::BUNDLE_CODE_DIR).append(Constants::PATH_SEPARATOR)
-            .append(newInfo.GetBundleName()).append(Constants::PATH_SEPARATOR)
-            .append(nativeLibraryPath).append(Constants::PATH_SEPARATOR);
-    }
-    std::string cpuAbi = newInfo.GetBaseApplicationInfo().cpuAbi;
-    ErrCode result = ExtractModule(newInfo, moduleTmpDir_, targetSoPath, cpuAbi);
+    ErrCode result = ExtractModule(newInfo, moduleTmpDir_);
     if (result != ERR_OK) {
         APP_LOGE("extract module and rename failed");
         return result;
@@ -1161,9 +1137,16 @@ ErrCode BaseBundleInstaller::CreateBundleDataDir(InnerBundleInfo &info, bool onl
     return ERR_OK;
 }
 
-ErrCode BaseBundleInstaller::ExtractModule(InnerBundleInfo &info, const std::string &modulePath,
-    const std::string &targetSoPath, const std::string &cpuAbi)
+ErrCode BaseBundleInstaller::ExtractModule(InnerBundleInfo &info, const std::string &modulePath)
 {
+    std::string targetSoPath;
+    std::string nativeLibraryPath = info.GetBaseApplicationInfo().nativeLibraryPath;
+    if (!nativeLibraryPath.empty()) {
+        targetSoPath.append(Constants::BUNDLE_CODE_DIR).append(Constants::PATH_SEPARATOR)
+            .append(info.GetBundleName()).append(Constants::PATH_SEPARATOR)
+            .append(nativeLibraryPath).append(Constants::PATH_SEPARATOR);
+    }
+    std::string cpuAbi = info.GetBaseApplicationInfo().cpuAbi;
     APP_LOGD("begin to extract module files, modulePath : %{public}s, targetSoPath : %{public}s, cpuAbi : %{public}s",
         modulePath.c_str(), targetSoPath.c_str(), cpuAbi.c_str());
     auto result = ExtractModuleFiles(info, modulePath, targetSoPath, cpuAbi);
