@@ -17,7 +17,6 @@
 
 #include <cstdint>
 #include <unistd.h>
-#include <climits>
 #include <cstdlib>
 #include <fcntl.h>
 
