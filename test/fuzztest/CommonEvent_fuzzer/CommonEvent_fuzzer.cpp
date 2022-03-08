@@ -26,7 +26,7 @@ namespace OHOS {
         Parcel dataMessageParcel;
         int ret = dataMessageParcel.WriteBuffer(data, size);
         dataMessageParcel.RewindRead(0);
-        if(ret) {
+        if (ret) {
             CommonEventInfo::Unmarshalling(dataMessageParcel);
         }
     }
