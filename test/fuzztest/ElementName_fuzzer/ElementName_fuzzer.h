@@ -13,8 +13,10 @@
  * limitations under the License.
  */
 
-#define FUZZ_PROJECT_NAME "ElementName_fuzzer"
+#ifndef TEST_FUZZTEST_ELEMENTNAME_FUZZER_H
+#define TEST_FUZZTEST_ELEMENTNAME_FUZZER_H
 
+#include <cstddef>
 #include <cstdint>
 #include <unistd.h>
 #include <climits>
@@ -22,15 +24,13 @@
 #include <cstdlib>
 #include <fcntl.h>
 
-
 int UNIQ_ID = 0;
 
-
-int makeUniqFile(const uint8_t *data, size_t size, char* file_name_uniq, const char* ext){
-    int fd;
+int makeUniqFile(const uint8_t *data, size_t size, char* file_name_uniq, const char* ext)
+{
     snprintf(file_name_uniq, PATH_MAX, "fuzz_%d_%d%s", UNIQ_ID, rand(), ext);
-    fd = open(file_name_uniq, O_CREAT  | O_RDWR , 0666);
-    if (fd == -1){
+    int fd = open(file_name_uniq, O_CREAT | O_RDWR, 0666);
+    if (fd == -1) {
         return -1;
     }
 
@@ -40,12 +40,13 @@ int makeUniqFile(const uint8_t *data, size_t size, char* file_name_uniq, const c
     return 0;
 }
 
-uint16_t U16_AT(const uint8_t *ptr) {
-    return ptr[0] << 8 | ptr[1];
+uint16_t U16_AT(const uint8_t *ptr)
+{
+    return (ptr[0] << 8 | ptr[1]);
 }
 
-uint32_t U32_AT(const uint8_t *ptr) {
-    return ptr[0] << 24 | ptr[1] << 16 | ptr[2] << 8 | ptr[3];
+uint32_t U32_AT(const uint8_t *ptr)
+{
+    return (ptr[0] << 24 | ptr[1] << 16 | ptr[2] << 8 | ptr[3]);
 }
-
-
+#endif

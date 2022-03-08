@@ -13,9 +13,6 @@
  * limitations under the License.
  */
 
-#include <stddef.h>
-#include <stdint.h>
-
 #include "message_parcel.h"
 #include "message_option.h"
 #include "application_info.h"
@@ -25,21 +22,20 @@
 
 using namespace OHOS::AppExecFwk;
 namespace OHOS {
-    void fuzzapplicationinfo(const uint8_t* data, size_t size) {
+    void fuzzapplicationinfo(const uint8_t* data, size_t size)
+    {
         Parcel dataMessageParcel;
         int ret = dataMessageParcel.WriteBuffer(data, size);
-        if(ret){
+        if (ret) {
             ApplicationInfo::Unmarshalling(dataMessageParcel);
         }
     }
 }
 
-
-
 // Fuzzer entry point.
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
+{
     // Run your code on data.
-    OHOS::fuzzapplicationinfo(data , size);
+    OHOS::fuzzapplicationinfo(data, size);
     return 0;
 }
-

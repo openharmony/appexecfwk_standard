@@ -13,9 +13,6 @@
  * limitations under the License.
  */
 
-#include <stddef.h>
-#include <stdint.h>
-
 #include "message_parcel.h"
 #include "message_option.h"
 #include "element_name.h"
@@ -25,20 +22,18 @@
 
 using namespace OHOS::AppExecFwk;
 namespace OHOS {
-    
-    void fuzzelementname(const uint8_t* data, size_t size) {
+    void fuzzelementname(const uint8_t* data, size_t size)
+    {
         Parcel dataMessageParcel;
         int ret = dataMessageParcel.WriteBuffer(data, size);
-        if(ret){
+        if (ret) {
            ElementName* elname =  ElementName::Unmarshalling(dataMessageParcel);
-           if (elname != NULL){
+           if (elname != NULL) {
                delete elname;
            }
         }
     }
 }
-
-
 
 // Fuzzer entry point.
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
@@ -46,4 +41,3 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     OHOS::fuzzelementname(data , size);
     return 0;
 }
-

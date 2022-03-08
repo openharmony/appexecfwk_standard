@@ -13,35 +13,29 @@
  * limitations under the License.
  */
 
-#include <stddef.h>
-#include <stdint.h>
-
 #include "message_parcel.h"
 #include "message_option.h"
 #include "common_event_info.h"
 #include "parcel.h"
-
 #include "CommonEvent_fuzzer.h"
 
 using namespace OHOS::AppExecFwk;
 namespace OHOS {
-    
-    void fuzzelCommonEventInfo(const uint8_t* data, size_t size) {
+    void fuzzelCommonEventInfo(const uint8_t* data, size_t size)
+    {
         Parcel dataMessageParcel;
         int ret = dataMessageParcel.WriteBuffer(data, size);
         dataMessageParcel.RewindRead(0);
-        if(ret){
+        if(ret) {
             CommonEventInfo::Unmarshalling(dataMessageParcel);
         }
     }
 }
 
-
-
 // Fuzzer entry point.
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
+{
     // Run your code on data.
-    OHOS::fuzzelCommonEventInfo(data , size);
+    OHOS::fuzzelCommonEventInfo(data, size);
     return 0;
 }
-
