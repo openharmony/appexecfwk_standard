@@ -18,8 +18,8 @@
 
 #include "accesstoken_kit.h"
 #include "bundle_constants.h"
+#include "foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_base/include/permission_def.h"
 #include "inner_bundle_info.h"
-#include "permission_def.h"
 
 namespace OHOS {
 namespace AppExecFwk {
