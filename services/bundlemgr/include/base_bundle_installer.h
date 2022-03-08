@@ -188,12 +188,9 @@ private:
      * @brief Extract the code to temporilay directory and rename it.
      * @param info Indicates the InnerBundleInfo object of a bundle.
      * @param modulePath normal files decompression path.
-     * @param targetSoPath so files decompression path.
-     * @param cpuAbi cpuAbi.
      * @return Returns ERR_OK if the bundle extract and renamed successfully; returns error code otherwise.
      */
-    ErrCode ExtractModule(InnerBundleInfo &info, const std::string &modulePath,
-        const std::string &targetSoPath, const std::string &cpuAbi);
+    ErrCode ExtractModule(InnerBundleInfo &info, const std::string &modulePath);
     /**
      * @brief Remove the code and data directories of a bundle.
      * @param info Indicates the InnerBundleInfo object of a bundle.
