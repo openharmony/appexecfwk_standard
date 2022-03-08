@@ -13,9 +13,6 @@
  * limitations under the License.
  */
 
-#include <stddef.h>
-#include <stdint.h>
-
 #include "message_parcel.h"
 #include "message_option.h"
 #include "install_param.h"
@@ -23,7 +20,8 @@
 #include "InstallParamUnmarshalling_fuzzer.h"
 
 namespace OHOS {
-    void fuzzinstallparamunmarshalling(const uint8_t* data, size_t size) {
+    void fuzzinstallparamunmarshalling(const uint8_t* data, size_t size)
+    {
         MessageParcel reply;
         MessageOption option;
         MessageParcel dataMessageParcel;
@@ -32,12 +30,10 @@ namespace OHOS {
     }
 }
 
-
-
 // Fuzzer entry point.
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
+{
     // Run your code on data.
-    OHOS::fuzzinstallparamunmarshalling(data , size);
+    OHOS::fuzzinstallparamunmarshalling(data, size);
     return 0;
 }
-

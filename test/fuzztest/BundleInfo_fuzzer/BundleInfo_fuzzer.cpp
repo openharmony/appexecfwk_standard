@@ -13,9 +13,6 @@
  * limitations under the License.
  */
 
-#include <stddef.h>
-#include <stdint.h>
-
 #include "message_parcel.h"
 #include "message_option.h"
 #include "bundle_info.h"
@@ -23,7 +20,8 @@
 #include "BundleInfo_fuzzer.h"
 
 namespace OHOS {
-    void fuzzabundleinfounmarshalling(const uint8_t* data, size_t size) {
+    void fuzzabundleinfounmarshalling(const uint8_t* data, size_t size)
+    {
         MessageParcel reply;
         MessageOption option;
         MessageParcel dataMessageParcel;
@@ -32,12 +30,10 @@ namespace OHOS {
     }
 }
 
-
-
 // Fuzzer entry point.
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
+{
     // Run your code on data.
     OHOS::fuzzabundleinfounmarshalling(data , size);
     return 0;
 }
-
