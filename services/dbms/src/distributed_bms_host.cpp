@@ -15,10 +15,12 @@
 
 #include "distributed_bms_host.h"
 
+#include "accesstoken_kit.h"
 #include "app_log_wrapper.h"
 #include "appexecfwk_errors.h"
 #include "bundle_constants.h"
 #include "remote_ability_info.h"
+#include "ipc_skeleton.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -65,6 +67,10 @@ int DistributedBmsHost::OnRemoteRequest(uint32_t code, MessageParcel &data, Mess
 int DistributedBmsHost::HandleGetRemoteAbilityInfo(Parcel &data, Parcel &reply)
 {
     APP_LOGI("DistributedBmsHost handle get remote ability info");
+    if (!VerifyCallingPermission(Constants::PERMISSION_GET_BUNDLE_INFO_PRIVILEGED)) {
+        APP_LOGE("verify GET_BUNDLE_INFO_PRIVILEGED failed");
+        return ERR_APPEXECFWK_PERMISSION_DENIED;
+    }
     std::unique_ptr<ElementName> elementName(data.ReadParcelable<ElementName>());
     if (!elementName) {
         APP_LOGE("ReadParcelable<elementName> failed");
@@ -90,6 +96,10 @@ int DistributedBmsHost::HandleGetRemoteAbilityInfo(Parcel &data, Parcel &reply)
 int DistributedBmsHost::HandleGetRemoteAbilityInfos(Parcel &data, Parcel &reply)
 {
     APP_LOGI("DistributedBmsHost handle get remote ability infos");
+    if (!VerifyCallingPermission(Constants::PERMISSION_GET_BUNDLE_INFO_PRIVILEGED)) {
+        APP_LOGE("verify GET_BUNDLE_INFO_PRIVILEGED failed");
+        return ERR_APPEXECFWK_PERMISSION_DENIED;
+    }
     std::vector<ElementName> elementNames;
     if (!GetParcelableInfos<ElementName>(data, elementNames)) {
         APP_LOGE("GetRemoteAbilityInfos get parcelable infos failed");
@@ -160,6 +170,26 @@ int DistributedBmsHost::HandleGetAbilityInfos(Parcel &data, Parcel &reply)
         return ERR_APPEXECFWK_PARCEL_ERROR;
     }
     return NO_ERROR;
+}
+
+bool DistributedBmsHost::VerifyCallingPermission(const std::string &permissionName)
+{
+    APP_LOGD("VerifyCallingPermission permission %{public}s", permissionName.c_str());
+    OHOS::Security::AccessToken::AccessTokenID callerToken = IPCSkeleton::GetCallingTokenID();
+    APP_LOGD("callerToken : %{public}u", callerToken);
+    OHOS::Security::AccessToken::ATokenTypeEnum tokenType =
+        OHOS::Security::AccessToken::AccessTokenKit::GetTokenTypeFlag(callerToken);
+    if (tokenType == OHOS::Security::AccessToken::ATokenTypeEnum::TOKEN_NATIVE) {
+        APP_LOGD("caller tokenType is native, verify success");
+        return true;
+    }
+    int32_t ret = OHOS::Security::AccessToken::AccessTokenKit::VerifyAccessToken(callerToken, permissionName);
+    if (ret == OHOS::Security::AccessToken::PermissionState::PERMISSION_DENIED) {
+        APP_LOGE("permission %{public}s: PERMISSION_DENIED", permissionName.c_str());
+        return false;
+    }
+    APP_LOGD("verify AccessToken success");
+    return true;
 }
 
 template<typename T>
