@@ -24,8 +24,8 @@ namespace LIBZIP {
 using namespace testing::ext;
 
 namespace {
-define BASE_PATH   "/data/accounts/account_0/appdata/"\
-                   "com.example.zlib/com.example.zlib/com.example.zlib.MainAbility/files/"
+const std::string BASE_PATH = "/data/accounts/account_0/appdata/";
+const std::string APP_PATH = "com.example.zlib/com.example.zlib/com.example.zlib.MainAbility/files/";
 }  // namespac
 class ZipTest : public testing::Test {
 public:
@@ -68,8 +68,8 @@ void UnzipCallBack(int result)
  */
 HWTEST_F(ZipTest, AAFwk_LIBZIP_zip_0100_8file, Function | MediumTest | Level1)
 {
-    std::string src = BASE_PATH + "test";
-    std::string dest = BASE_PATH + "result/8file.zip";
+    std::string src = BASE_PATH + APP_PATH + "test";
+    std::string dest = BASE_PATH + APP_PATH + "result/8file.zip";
 
     OPTIONS options;
     Zip(FilePath(src), FilePath(dest), options, ZipCallBack, false);
@@ -83,8 +83,8 @@ HWTEST_F(ZipTest, AAFwk_LIBZIP_zip_0100_8file, Function | MediumTest | Level1)
  */
 HWTEST_F(ZipTest, AAFwk_LIBZIP_zip_0200_1file, Function | MediumTest | Level1)
 {
-    std::string src = BASE_PATH + "test/01";
-    std::string dest = BASE_PATH + "result/1file.zip";
+    std::string src = BASE_PATH + APP_PATH + "test/01";
+    std::string dest = BASE_PATH + APP_PATH + "result/1file.zip";
 
     OPTIONS options;
     Zip(FilePath(src), FilePath(dest), options, ZipCallBack, false);
@@ -98,8 +98,8 @@ HWTEST_F(ZipTest, AAFwk_LIBZIP_zip_0200_1file, Function | MediumTest | Level1)
  */
 HWTEST_F(ZipTest, AAFwk_LIBZIP_zip_0100_zip1file, Function | MediumTest | Level1)
 {
-    std::string src = BASE_PATH + "test/01/zip1.txt";
-    std::string dest = BASE_PATH + "result/zip1file.zip";
+    std::string src = BASE_PATH + APP_PATH + "test/01/zip1.txt";
+    std::string dest = BASE_PATH + APP_PATH + "result/zip1file.zip";
 
     OPTIONS options;
     Zip(FilePath(src), FilePath(dest), options, ZipCallBack, false);
@@ -113,8 +113,8 @@ HWTEST_F(ZipTest, AAFwk_LIBZIP_zip_0100_zip1file, Function | MediumTest | Level1
  */
 HWTEST_F(ZipTest, AAFwk_LIBZIP_unzip_0100_8file, Function | MediumTest | Level1)
 {
-    std::string src = BASE_PATH + "result/8file.zip";
-    std::string dest = BASE_PATH + "unzip/01";
+    std::string src = BASE_PATH + APP_PATH + "result/8file.zip";
+    std::string dest = BASE_PATH + APP_PATH + "unzip/01";
 
     OPTIONS options;
     Unzip(FilePath(src), FilePath(dest), options, UnzipCallBack);
@@ -127,8 +127,8 @@ HWTEST_F(ZipTest, AAFwk_LIBZIP_unzip_0100_8file, Function | MediumTest | Level1)
  */
 HWTEST_F(ZipTest, AAFwk_LIBZIP_unzip_single_0200_1file, Function | MediumTest | Level1)
 {
-    std::string src = BASE_PATH + "result/1file.zip";
-    std::string dest = BASE_PATH + "unzip/02";
+    std::string src = BASE_PATH + APP_PATH + "result/1file.zip";
+    std::string dest = BASE_PATH + APP_PATH + "unzip/02";
 
     OPTIONS options;
     Unzip(FilePath(src), FilePath(dest), options, UnzipCallBack);
@@ -141,8 +141,8 @@ HWTEST_F(ZipTest, AAFwk_LIBZIP_unzip_single_0200_1file, Function | MediumTest | 
  */
 HWTEST_F(ZipTest, AAFwk_LIBZIP_unzip_0100_zip1file, Function | MediumTest | Level1)
 {
-    std::string src = BASE_PATH + "result/zip1file.zip";
-    std::string dest = BASE_PATH + "unzip/zip1file";
+    std::string src = BASE_PATH + APP_PATH + "result/zip1file.zip";
+    std::string dest = BASE_PATH + APP_PATH + "unzip/zip1file";
 
     OPTIONS options;
     Unzip(FilePath(src), FilePath(dest), options, UnzipCallBack);
