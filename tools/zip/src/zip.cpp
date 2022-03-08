@@ -163,7 +163,7 @@ bool Zip(const ZipParams &params, const OPTIONS &options, CALLBACK callback)
                 }
                 if (iter->isDirectory) {
                     bool isSuccess = false;
-                    std::vector<FileAccessor::DirectoryContentEntry> subEntries = 
+                    std::vector<FileAccessor::DirectoryContentEntry> subEntries =
                         ListDirectoryContent(iter->path, isSuccess);
                     entries.insert(entries.end(), subEntries.begin(), subEntries.end());
                 }
