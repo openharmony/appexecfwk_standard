@@ -19,17 +19,13 @@
 #include <cstdint>
 #include <unistd.h>
 #include <climits>
-#include <cstdio>
 #include <cstdlib>
 #include <fcntl.h>
 
-int UNIQ_ID = 0;
-
 int makeUniqFile(const uint8_t *data, size_t size, char* file_name_uniq, const char* ext)
 {
-    int fd;
-    snprintf(file_name_uniq, PATH_MAX, "fuzz_%d_%d%s", UNIQ_ID, rand(), ext);
-    fd = open(file_name_uniq, O_CREAT | O_RDWR, 0666);
+    int UNIQ_ID = 0;
+    int fd = open(file_name_uniq, O_CREAT | O_RDWR, 0666);
     if (fd == -1) {
         return -1;
     }
@@ -42,11 +38,11 @@ int makeUniqFile(const uint8_t *data, size_t size, char* file_name_uniq, const c
 
 uint16_t U16_AT(const uint8_t *ptr)
 {
-    return (ptr[0] << 8 | ptr[1]);
+    return ((ptr[0] << 8) | ptr[1]);
 }
 
 uint32_t U32_AT(const uint8_t *ptr)
 {
-    return (ptr[0] << 24 | ptr[1] << 16 | ptr[2] << 8 | ptr[3]);
+    return ((ptr[0] << 24) | (ptr[1] << 16) | (ptr[2] << 8) | ptr[3]);
 }
 #endif

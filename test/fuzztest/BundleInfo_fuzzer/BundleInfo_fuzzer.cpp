@@ -34,6 +34,6 @@ namespace OHOS {
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
 {
     // Run your code on data.
-    OHOS::fuzzabundleinfounmarshalling(data , size);
+    OHOS::fuzzabundleinfounmarshalling(data, size);
     return 0;
 }
