@@ -40,6 +40,8 @@ bool BundleMgrHostImpl::GetApplicationInfo(
 bool BundleMgrHostImpl::GetApplicationInfo(
     const std::string &appName, int32_t flags, int32_t userId, ApplicationInfo &appInfo)
 {
+    APP_LOGD("start GetApplicationInfo, bundleName : %{public}s, flags : %{public}d, userId : %{public}d",
+        appName.c_str(), flags, userId);
     if (!VerifyQueryPermission(appName)) {
         APP_LOGE("verify permission failed");
         return false;
@@ -62,6 +64,7 @@ bool BundleMgrHostImpl::GetApplicationInfos(
 bool BundleMgrHostImpl::GetApplicationInfos(
     int32_t flags, int32_t userId, std::vector<ApplicationInfo> &appInfos)
 {
+    APP_LOGD("start GetApplicationInfos, flags : %{public}d, userId : %{public}d", flags, userId);
     if (!BundlePermissionMgr::VerifyCallingPermission(Constants::PERMISSION_GET_BUNDLE_INFO_PRIVILEGED)) {
         APP_LOGE("verify permission failed");
         return false;
@@ -84,6 +87,8 @@ bool BundleMgrHostImpl::GetBundleInfo(
 bool BundleMgrHostImpl::GetBundleInfo(
     const std::string &bundleName, int32_t flags, BundleInfo &bundleInfo, int32_t userId)
 {
+    APP_LOGD("start GetBundleInfo, bundleName : %{public}s, flags : %{public}d, userId : %{public}d",
+        bundleName.c_str(), flags, userId);
     if (!VerifyQueryPermission(bundleName)) {
         APP_LOGE("verify permission failed");
         return false;
@@ -126,6 +131,7 @@ bool BundleMgrHostImpl::GetBundleInfos(const BundleFlag flag, std::vector<Bundle
 
 bool BundleMgrHostImpl::GetBundleInfos(int32_t flags, std::vector<BundleInfo> &bundleInfos, int32_t userId)
 {
+    APP_LOGD("start GetBundleInfos, flags : %{public}d, userId : %{public}d", flags, userId);
     if (!BundlePermissionMgr::VerifyCallingPermission(Constants::PERMISSION_GET_BUNDLE_INFO_PRIVILEGED)) {
         APP_LOGE("verify permission failed");
         return false;

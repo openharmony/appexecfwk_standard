@@ -47,7 +47,6 @@ void InstalldHost::init()
     funcMap_.emplace(IInstalld::Message::SET_DIR_APL, &InstalldHost::HandleSetDirApl);
     funcMap_.emplace(IInstalld::Message::REMOVE_DIR, &InstalldHost::HandleRemoveDir);
     funcMap_.emplace(IInstalld::Message::GET_BUNDLE_STATS, &InstalldHost::HandleGetBundleStats);
-    funcMap_.emplace(IInstalld::Message::COPY_NATIVE_SO, &InstalldHost::HandleCopyNativeSo);
 }
 
 int InstalldHost::OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option)
@@ -85,8 +84,10 @@ bool InstalldHost::HandleExtractModuleFiles(MessageParcel &data, MessageParcel &
 {
     std::string srcModulePath = Str16ToStr8(data.ReadString16());
     std::string targetPath = Str16ToStr8(data.ReadString16());
+    std::string targetSoPath = Str16ToStr8(data.ReadString16());
+    std::string cpuAbi = Str16ToStr8(data.ReadString16());
     APP_LOGI("extract module %{public}s", targetPath.c_str());
-    ErrCode result = ExtractModuleFiles(srcModulePath, targetPath);
+    ErrCode result = ExtractModuleFiles(srcModulePath, targetPath, targetSoPath, cpuAbi);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, reply, result);
     return true;
 }
@@ -182,15 +183,6 @@ bool InstalldHost::HandleSetDirApl(MessageParcel &data, MessageParcel &reply)
     std::string bundleName = Str16ToStr8(data.ReadString16());
     std::string apl = Str16ToStr8(data.ReadString16());
     ErrCode result = SetDirApl(dataDir, bundleName, apl);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, reply, result);
-    return true;
-}
-
-bool InstalldHost::HandleCopyNativeSo(MessageParcel &data, MessageParcel &reply)
-{
-    std::string srcLibPath = Str16ToStr8(data.ReadString16());
-    std::string targetLibPath = Str16ToStr8(data.ReadString16());
-    ErrCode result = CopyNativeSo(srcLibPath, targetLibPath);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, reply, result);
     return true;
 }

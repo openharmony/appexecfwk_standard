@@ -64,7 +64,8 @@ ErrCode InstalldHostImpl::CreateBundleDir(const std::string &bundleDir)
     return ERR_OK;
 }
 
-ErrCode InstalldHostImpl::ExtractModuleFiles(const std::string &srcModulePath, const std::string &targetPath)
+ErrCode InstalldHostImpl::ExtractModuleFiles(const std::string &srcModulePath, const std::string &targetPath,
+    const std::string &targetSoPath, const std::string &cpuAbi)
 {
     APP_LOGD("ExtractModuleFiles extract original src %{public}s and target src %{public}s",
         srcModulePath.c_str(), targetPath.c_str());
@@ -76,7 +77,7 @@ ErrCode InstalldHostImpl::ExtractModuleFiles(const std::string &srcModulePath, c
         APP_LOGE("create target dir %{public}s failed", targetPath.c_str());
         return ERR_APPEXECFWK_INSTALLD_CREATE_DIR_FAILED;
     }
-    if (!InstalldOperator::ExtractFiles(srcModulePath, targetPath)) {
+    if (!InstalldOperator::ExtractFiles(srcModulePath, targetPath, targetSoPath, cpuAbi)) {
         APP_LOGE("extract %{public}s to %{public}s failed", srcModulePath.c_str(), targetPath.c_str());
         InstalldOperator::DeleteDir(targetPath);
         return ERR_APPEXECFWK_INSTALL_DISK_MEM_INSUFFICIENT;
@@ -392,32 +393,6 @@ ErrCode InstalldHostImpl::SetDirApl(const std::string &dir, const std::string &b
 #else
     return ERR_OK;
 #endif // WITH_SELINUX
-}
-
-ErrCode InstalldHostImpl::CopyNativeSo(const std::string &srcLibPath, const std::string &targetLibPath)
-{
-    APP_LOGD("srcLibPath : %{public}s, targetLibPath : %{public}s", srcLibPath.c_str(), targetLibPath.c_str());
-    if (srcLibPath.empty() || targetLibPath.empty()) {
-        APP_LOGE("Calling the function CopyNativeSo with invalid param");
-        return ERR_APPEXECFWK_INSTALLD_PARAM_ERROR;
-    }
-    if (!InstalldOperator::IsExistDir(srcLibPath)) {
-        APP_LOGW("srcLibPath : %{public}s not exist", srcLibPath.c_str());
-        return ERR_OK;
-    }
-    // create dir if not exist
-    if (!InstalldOperator::IsExistDir(targetLibPath)) {
-        if (!InstalldOperator::MkRecursiveDir(targetLibPath, true)) {
-            APP_LOGE("create targetLibPath %{public}s failed", targetLibPath.c_str());
-            return ERR_APPEXECFWK_INSTALLD_CREATE_DIR_FAILED;
-        }
-    }
-    // copy so to targetLibPath, modify so DAC
-    if (!InstalldOperator::CopyNativeSo(srcLibPath, targetLibPath)) {
-        APP_LOGE("copy native so failed");
-        return ERR_APPEXECFWK_INSTALLD_EXTRACT_FILES_FAILED;
-    }
-    return ERR_OK;
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS
