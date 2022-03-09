@@ -205,6 +205,11 @@ public:
         return 0;
     }
 
+    virtual int32_t GetMissionIdByToken(const sptr<IRemoteObject> &token) override
+    {
+        return 0;
+    }
+
     virtual sptr<AAFwk::IWantSender> GetWantSender(
         const WantSenderInfo &wantSenderInfo, const sptr<IRemoteObject> &callerToken) override
     {
