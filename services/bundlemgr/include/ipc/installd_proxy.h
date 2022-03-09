@@ -37,10 +37,13 @@ public:
     /**
      * @brief Extract the files of a HAP module to the code directory through a proxy object.
      * @param srcModulePath Indicates the HAP file path.
-     * @param targetPath Indicates the code directory path that the HAP to be extracted to.
+     * @param targetPath normal files decompression path.
+     * @param targetSoPath so files decompression path.
+     * @param cpuAbi cpuAbi.
      * @return Returns ERR_OK if the HAP file extracted successfully; returns error code otherwise.
      */
-    virtual ErrCode ExtractModuleFiles(const std::string &srcModulePath, const std::string &targetPath) override;
+    virtual ErrCode ExtractModuleFiles(const std::string &srcModulePath, const std::string &targetPath,
+        const std::string &targetSoPath, const std::string &cpuAbi) override;
     /**
      * @brief Rename the module directory from temporaily path to the real path through a proxy object.
      * @param oldPath Indicates the old path name.
@@ -113,8 +116,6 @@ public:
      * @return Returns ERR_OK if set apl successfully; returns error code otherwise.
      */
     virtual ErrCode SetDirApl(const std::string &dir, const std::string &bundleName, const std::string &apl) override;
-
-    virtual ErrCode CopyNativeSo(const std::string &srcLibPath, const std::string &targetLibPath) override;
 private:
     ErrCode TransactInstalldCmd(uint32_t code, MessageParcel &data, MessageParcel &reply,
         MessageOption &option);

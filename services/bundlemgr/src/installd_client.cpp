@@ -33,14 +33,15 @@ ErrCode InstalldClient::CreateBundleDir(const std::string &bundleDir)
     return CallService(&IInstalld::CreateBundleDir, bundleDir);
 }
 
-ErrCode InstalldClient::ExtractModuleFiles(const std::string &srcModulePath, const std::string &targetPath)
+ErrCode InstalldClient::ExtractModuleFiles(const std::string &srcModulePath, const std::string &targetPath,
+    const std::string &targetSoPath, const std::string &cpuAbi)
 {
     if (srcModulePath.empty() || targetPath.empty()) {
         APP_LOGE("src module path or target path is empty");
         return ERR_APPEXECFWK_INSTALLD_PARAM_ERROR;
     }
 
-    return CallService(&IInstalld::ExtractModuleFiles, srcModulePath, targetPath);
+    return CallService(&IInstalld::ExtractModuleFiles, srcModulePath, targetPath, targetSoPath, cpuAbi);
 }
 
 ErrCode InstalldClient::RenameModuleDir(const std::string &oldPath, const std::string &newPath)
@@ -135,16 +136,6 @@ ErrCode InstalldClient::SetDirApl(const std::string &dir, const std::string &bun
     }
 
     return CallService(&IInstalld::SetDirApl, dir, bundleName, apl);
-}
-
-ErrCode InstalldClient::CopyNativeSo(const std::string &srcLibPath, const std::string &targetLibPath)
-{
-    if (srcLibPath.empty() || targetLibPath.empty()) {
-        APP_LOGE("param invalid");
-        return ERR_APPEXECFWK_INSTALLD_PARAM_ERROR;
-    }
-
-    return CallService(&IInstalld::CopyNativeSo, srcLibPath, targetLibPath);
 }
 
 void InstalldClient::ResetInstalldProxy()

@@ -27,9 +27,7 @@
 
 #include "app_log_wrapper.h"
 #include "bundle_constants.h"
-#include "bundle_extractor.h"
 #include "directory_ex.h"
-#include "file_ex.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -81,7 +79,8 @@ bool InstalldOperator::DeleteDir(const std::string &path)
     return true;
 }
 
-bool InstalldOperator::ExtractFiles(const std::string &sourcePath, const std::string &targetPath)
+bool InstalldOperator::ExtractFiles(const std::string &sourcePath, const std::string &targetPath,
+    const std::string &targetSoPath, const std::string &cpuAbi)
 {
     BundleExtractor extractor(sourcePath);
     if (!extractor.Init()) {
@@ -106,6 +105,11 @@ bool InstalldOperator::ExtractFiles(const std::string &sourcePath, const std::st
         if (entryName.back() == Constants::PATH_SEPARATOR[0]) {
             continue;
         }
+        // handle native so
+        if (isNativeSo(entryName, targetSoPath, cpuAbi)) {
+            ExtractSo(extractor, entryName, targetSoPath, cpuAbi);
+            continue;
+        }
         const std::string dir = GetPathDir(entryName);
         std::string filePath = targetDir + dir;
         if (!dir.empty()) {
@@ -124,6 +128,59 @@ bool InstalldOperator::ExtractFiles(const std::string &sourcePath, const std::st
         filePath.clear();
     }
     return true;
+}
+
+bool InstalldOperator::isNativeSo(const std::string &entryName,
+    const std::string &targetSoPath, const std::string &cpuAbi)
+{
+    APP_LOGD("isNativeSo, entryName : %{public}s", entryName.c_str());
+    if (targetSoPath.empty()) {
+        APP_LOGD("current hap not include so");
+        return false;
+    }
+    std::string prefix = Constants::LIBS + cpuAbi + Constants::PATH_SEPARATOR;
+    if (entryName.find(prefix) == std::string::npos) {
+        APP_LOGD("entryName not start with %{public}s", prefix.c_str());
+        return false;
+    }
+    size_t len = entryName.length();
+    if (len <= Constants::SO_SUFFIX_LEN) {
+        APP_LOGD("entryName length invalid");
+        return false;
+    }
+    std::string suffix = entryName.substr(len - Constants::SO_SUFFIX_LEN, len);
+    if (suffix != Constants::SO_SUFFIX) {
+        APP_LOGD("entryName suffix not .so");
+        return false;
+    }
+    APP_LOGD("find native so, entryName : %{public}s", entryName.c_str());
+    return true;
+}
+
+void InstalldOperator::ExtractSo(const BundleExtractor &extractor, const std::string &entryName,
+    const std::string &targetSoPath, const std::string &cpuAbi)
+{
+    // create dir if not exist
+    if (!IsExistDir(targetSoPath)) {
+        if (!MkRecursiveDir(targetSoPath, true)) {
+            APP_LOGE("create targetSoPath %{public}s failed", targetSoPath.c_str());
+            return;
+        }
+    }
+    std::string prefix = Constants::LIBS + cpuAbi + Constants::PATH_SEPARATOR;
+    std::string targetSoName = entryName.substr(prefix.length());
+    std::string targetSo = targetSoPath + targetSoName;
+    bool ret = extractor.ExtractFile(entryName, targetSo);
+    if (!ret) {
+        APP_LOGE("extract so failed, entryName : %{public}s", entryName.c_str());
+        return;
+    }
+    mode_t mode = S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
+    if (!OHOS::ChangeModeFile(targetSo, mode)) {
+        APP_LOGE("change mode failed, targetSo : %{public}s", targetSo.c_str());
+        return;
+    }
+    APP_LOGD("extract so success, targetSo : %{public}s", targetSo.c_str());
 }
 
 bool InstalldOperator::RenameDir(const std::string &oldPath, const std::string &newPath)
@@ -339,37 +396,6 @@ int64_t InstalldOperator::GetDiskUsageFromPath(const std::vector<std::string> &p
         fileSize += GetDiskUsage(st);
     }
     return fileSize;
-}
-
-bool InstalldOperator::CopyNativeSo(const std::string &srcLibPath, const std::string &targetLibPath)
-{
-    APP_LOGD("begin to copy native so");
-    std::vector<std::string> nativeSoList;
-    GetDirFiles(srcLibPath, nativeSoList);
-
-    size_t pos = srcLibPath.size();
-    mode_t mode = S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
-    std::vector<char> content;
-
-    for (const std::string &fileName : nativeSoList) {
-        if (!OHOS::LoadBufferFromFile(fileName, content)) {
-            APP_LOGE("LoadBufferFromFile failed, fileName : %{public}s", fileName.c_str());
-            continue;
-        }
-        std::string targetFileName = targetLibPath + fileName.substr(pos);
-        if (!OHOS::SaveBufferToFile(targetFileName, content, true)) {
-            APP_LOGE("SaveBufferToFile failed, targetFileName : %{public}s", targetFileName.c_str());
-            continue;
-        }
-        if (!OHOS::ChangeModeFile(targetFileName, mode)) {
-            APP_LOGE("change mode failed, targetFileName : %{public}s", targetFileName.c_str());
-            continue;
-        }
-        APP_LOGD("copy native so success, targetFileName : %{public}s", targetFileName.c_str());
-    }
-
-    APP_LOGD("copy native so finish");
-    return true;
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS
