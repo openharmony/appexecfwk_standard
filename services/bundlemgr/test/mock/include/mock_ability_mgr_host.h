@@ -197,6 +197,11 @@ public:
         return 0;
     }
 
+    virtual int32_t GetMissionIdByToken(const sptr<IRemoteObject> &token) override
+    {
+        return 0;
+    }
+
     virtual bool IsFirstInMission(const sptr<IRemoteObject> &token) override
     {
         return true;
