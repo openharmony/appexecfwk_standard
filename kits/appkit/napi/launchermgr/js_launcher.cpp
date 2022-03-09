@@ -573,6 +573,9 @@ static napi_value JSLauncherServiceOff(napi_env env, napi_callback_info info)
     NAPI_ASSERT(env, argc >= requireArgc, "requires 1 parameter");
     std::string command;
     AsyncHandleBundleContext *asyncCallbackInfo = new AsyncHandleBundleContext();
+    if (asyncCallbackInfo == nullptr) {
+        return nullptr;
+    }
     asyncCallbackInfo->env = env;
     for (size_t i = 0; i < argc; ++i) {
         napi_valuetype valueType = napi_undefined;
