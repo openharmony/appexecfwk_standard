@@ -163,7 +163,7 @@ bool Zip(const ZipParams &params, const OPTIONS &options, CALLBACK callback)
                 }
                 if (iter->isDirectory) {
                     bool isSuccess = false;
-                    std::vector<FileAccessor::DirectoryContentEntry> subEntries =
+                    std::vector<FileAccessor::DirectoryContentEntry> subEntries = 
                         ListDirectoryContent(iter->path, isSuccess);
                     entries.insert(entries.end(), subEntries.begin(), subEntries.end());
                 }
@@ -176,12 +176,12 @@ bool Zip(const ZipParams &params, const OPTIONS &options, CALLBACK callback)
     if (params.DestFd() != kInvalidPlatformFile) {
         zipWriter = ZipWriter::CreateWithFd(params.DestFd(), paramPath);
         ZIP_WRITER_IS_NULL(zipWriter, "!!! ZipWriter::CreateWithFd ReturnValue is Null !!!",
-            callback, ERROR_CODE_STREAM_ERROR);
+            callback, ERROR_CODE_ERRNO);
     }
     if (!zipWriter) {
         zipWriter = ZipWriter::Create(params.DestFile(), paramPath);
         ZIP_WRITER_IS_NULL(zipWriter, "!!! ZipWriter::Create ReturnValue is Null !!!",
-            callback, ERROR_CODE_STREAM_ERROR);
+            callback, ERROR_CODE_ERRNO);
     }
     return zipWriter->WriteEntries(*filesToAdd, options, callback);
 }
@@ -244,7 +244,8 @@ bool UnzipWithFilterCallback(
 {
     FilePath src = srcFile;
     if (!FilePathCheckValid(src.Value())) {
-        CALLING_CALL_BACK(unzipParam.callback, ERROR_CODE_DATA_ERROR)
+        APP_LOGI("%{public}s called, FilePathCheckValid returnValue is false.", __func__);
+        CALLING_CALL_BACK(unzipParam.callback, ERROR_CODE_ERRNO)
         return false;
     }
 
@@ -256,15 +257,15 @@ bool UnzipWithFilterCallback(
         dest.Value().c_str());
 
     if (!FilePath::PathIsValid(srcFile)) {
-        CALLING_CALL_BACK(unzipParam.callback, ERROR_CODE_DATA_ERROR)
+        CALLING_CALL_BACK(unzipParam.callback, ERROR_CODE_ERRNO)
         APP_LOGI("%{public}s called,PathIsValid return value is false.", __func__);
         return false;
     }
 
     PlatformFile zipFd = open(src.Value().c_str(), S_IREAD);
     if (zipFd == kInvalidPlatformFile) {
-        CALLING_CALL_BACK(unzipParam.callback, ERROR_CODE_STREAM_ERROR)
         APP_LOGI("%{public}s called, Failed to open.", __func__);
+        CALLING_CALL_BACK(unzipParam.callback, ERROR_CODE_ERRNO)
         return false;
     }
     bool ret = UnzipWithFilterAndWriters(zipFd,
@@ -305,11 +306,13 @@ bool ZipWithFilterCallback(const FilePath &srcDir, const FilePath &destFile, con
     FilePath srcPath = srcDir;
     if (!EndsWith(srcPath.Value(), SEPARATOR)) {
         if (!FilePath::DirectoryExists(srcPath.DirName())) {
-            CALLING_CALL_BACK(callback, ERROR_CODE_DATA_ERROR)
+            APP_LOGI("%{public}s called, FilePath::DirectoryExists(srcPath) ReturnValue is false.", __func__);
+            CALLING_CALL_BACK(callback, ERROR_CODE_ERRNO)
             return false;
         }
     } else if (!FilePath::DirectoryExists(srcDir)) {
-        CALLING_CALL_BACK(callback, ERROR_CODE_DATA_ERROR)
+        APP_LOGI("%{public}s called, FilePath::DirectoryExists(srcDir) ReturnValue is false.", __func__);
+        CALLING_CALL_BACK(callback, ERROR_CODE_ERRNO)
         return false;
     }
     ZipParams params(srcDir, destFile);
