@@ -20,6 +20,7 @@ config("tools_bm_config_mock") {
   include_dirs = [
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_base/include",
     "${appexecfwk_path}/interfaces/innerkits/appexecfwk_core/include/bundlemgr",
+    "${aafwk_path}/interfaces/innerkits/uri/include",
     "${aafwk_path}/interfaces/innerkits/want/include",
     "${aafwk_path}/interfaces/innerkits/want/include/ohos/aafwk/content",
     "${appexecfwk_path}/interfaces/innerkits/libeventhandler/include",
@@ -27,7 +28,6 @@ config("tools_bm_config_mock") {
     "${appexecfwk_path}/tools/test/mock",
     "//base/security/permission/interfaces/innerkits/permission_standard/permissionsdk/main/cpp/include",
     "//base/security/appverify/interfaces/innerkits/appverify/include",
-    "//foundation/distributedschedule/dmsfwk/services/dtbschedmgr/include",
     "//third_party/googletest/googlemock/include",
     "//third_party/json/single_include",
   ]

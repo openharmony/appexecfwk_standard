@@ -63,7 +63,8 @@ public:
     int RemoveBundleDir(const std::string &bundleDir) const;
     int RemoveBundleDataDir(const std::string &bundleDataDir) const;
     int CleanBundleDataDir(const std::string &bundleDataDir) const;
-    int ExtractModuleFiles(const std::string &srcModulePath, const std::string &targetPath) const;
+    int ExtractModuleFiles(const std::string &srcModulePath, const std::string &targetPath,
+        const std::string &targetSoPath, const std::string &cpuAbi) const;
     int RenameModuleDir(const std::string &oldPath, const std::string &newPath) const;
     bool CheckBundleDirExist() const;
     bool CheckBundleDataDirExist() const;
@@ -152,12 +153,13 @@ int BmsInstallDaemonTest::CleanBundleDataDir(const std::string &bundleDataDir) c
     return InstalldClient::GetInstance()->CleanBundleDataDir(bundleDataDir);
 }
 
-int BmsInstallDaemonTest::ExtractModuleFiles(const std::string &srcModulePath, const std::string &targetPath) const
+int BmsInstallDaemonTest::ExtractModuleFiles(const std::string &srcModulePath, const std::string &targetPath,
+    const std::string &targetSoPath, const std::string &cpuAbi) const
 {
     if (!service_->IsServiceReady()) {
         service_->Start();
     }
-    return InstalldClient::GetInstance()->ExtractModuleFiles(srcModulePath, targetPath);
+    return InstalldClient::GetInstance()->ExtractModuleFiles(srcModulePath, targetPath, targetSoPath, cpuAbi);
 }
 
 int BmsInstallDaemonTest::RenameModuleDir(const std::string &oldPath, const std::string &newPath) const
@@ -498,7 +500,7 @@ HWTEST_F(BmsInstallDaemonTest, ExtractBundleFile_0100, Function | SmallTest | Le
     bool dirExist = CheckBundleDirExist();
     EXPECT_TRUE(dirExist);
     auto bundleFile = BUNDLE_FILE;
-    int result = ExtractModuleFiles(bundleFile, TEMP_DIR);
+    int result = ExtractModuleFiles(bundleFile, TEMP_DIR, "", "");
     EXPECT_EQ(result, 0);
     int result1 = RenameModuleDir(TEMP_DIR, MODULE_DIR);
     EXPECT_EQ(result1, 0);
@@ -516,7 +518,7 @@ HWTEST_F(BmsInstallDaemonTest, ExtractBundleFile_0200, Function | SmallTest | Le
     CreateBundleDir(BUNDLE_CODE_DIR);
     bool dirExist = CheckBundleDirExist();
     EXPECT_TRUE(dirExist);
-    int result = ExtractModuleFiles("", TEMP_DIR);
+    int result = ExtractModuleFiles("", TEMP_DIR, "", "");
     EXPECT_EQ(result, ERR_APPEXECFWK_INSTALLD_PARAM_ERROR);
 }
 
@@ -533,7 +535,7 @@ HWTEST_F(BmsInstallDaemonTest, ExtractBundleFile_0300, Function | SmallTest | Le
     bool dirExist = CheckBundleDirExist();
     EXPECT_TRUE(dirExist);
     auto bundleFile = BUNDLE_FILE;
-    int result = ExtractModuleFiles(bundleFile, "");
+    int result = ExtractModuleFiles(bundleFile, "", "", "");
     EXPECT_EQ(result, ERR_APPEXECFWK_INSTALLD_PARAM_ERROR);
 }
 
@@ -550,7 +552,7 @@ HWTEST_F(BmsInstallDaemonTest, ExtractBundleFile_0400, Function | SmallTest | Le
     bool dirExist = CheckBundleDirExist();
     EXPECT_TRUE(dirExist);
     auto bundleFile = BUNDLE_FILE;
-    int result = ExtractModuleFiles(bundleFile, TEMP_DIR);
+    int result = ExtractModuleFiles(bundleFile, TEMP_DIR, "", "");
     EXPECT_EQ(result, 0);
     int result1 = RenameModuleDir("", MODULE_DIR);
     EXPECT_EQ(result1, ERR_APPEXECFWK_INSTALLD_PARAM_ERROR);
@@ -569,7 +571,7 @@ HWTEST_F(BmsInstallDaemonTest, ExtractBundleFile_0500, Function | SmallTest | Le
     bool dirExist = CheckBundleDirExist();
     EXPECT_TRUE(dirExist);
     auto bundleFile = BUNDLE_FILE;
-    int result = ExtractModuleFiles(bundleFile, TEMP_DIR);
+    int result = ExtractModuleFiles(bundleFile, TEMP_DIR, "", "");
     EXPECT_EQ(result, 0);
     int result1 = RenameModuleDir(TEMP_DIR, "");
     EXPECT_EQ(result1, ERR_APPEXECFWK_INSTALLD_PARAM_ERROR);
