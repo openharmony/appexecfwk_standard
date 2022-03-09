@@ -49,12 +49,15 @@ ErrCode InstalldProxy::CreateBundleDir(const std::string &bundleDir)
     return TransactInstalldCmd(IInstalld::Message::CREATE_BUNDLE_DIR, data, reply, option);
 }
 
-ErrCode InstalldProxy::ExtractModuleFiles(const std::string &srcModulePath, const std::string &targetPath)
+ErrCode InstalldProxy::ExtractModuleFiles(const std::string &srcModulePath, const std::string &targetPath,
+    const std::string &targetSoPath, const std::string &cpuAbi)
 {
     MessageParcel data;
     INSTALLD_PARCEL_WRITE_INTERFACE_TOKEN(data, (GetDescriptor()));
     INSTALLD_PARCEL_WRITE(data, String16, Str8ToStr16(srcModulePath));
     INSTALLD_PARCEL_WRITE(data, String16, Str8ToStr16(targetPath));
+    INSTALLD_PARCEL_WRITE(data, String16, Str8ToStr16(targetSoPath));
+    INSTALLD_PARCEL_WRITE(data, String16, Str8ToStr16(cpuAbi));
 
     MessageParcel reply;
     MessageOption option;
@@ -182,18 +185,6 @@ ErrCode InstalldProxy::SetDirApl(const std::string &dir, const std::string &bund
     MessageParcel reply;
     MessageOption option(MessageOption::TF_SYNC);
     return TransactInstalldCmd(IInstalld::Message::SET_DIR_APL, data, reply, option);
-}
-
-ErrCode InstalldProxy::CopyNativeSo(const std::string &srcLibPath, const std::string &targetLibPath)
-{
-    MessageParcel data;
-    INSTALLD_PARCEL_WRITE_INTERFACE_TOKEN(data, (GetDescriptor()));
-    INSTALLD_PARCEL_WRITE(data, String16, Str8ToStr16(srcLibPath));
-    INSTALLD_PARCEL_WRITE(data, String16, Str8ToStr16(targetLibPath));
-
-    MessageParcel reply;
-    MessageOption option(MessageOption::TF_SYNC);
-    return TransactInstalldCmd(IInstalld::Message::COPY_NATIVE_SO, data, reply, option);
 }
 
 ErrCode InstalldProxy::TransactInstalldCmd(uint32_t code, MessageParcel &data, MessageParcel &reply,
