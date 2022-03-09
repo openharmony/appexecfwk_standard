@@ -187,6 +187,7 @@ private:
     /**
      * @brief Extract the code to temporilay directory and rename it.
      * @param info Indicates the InnerBundleInfo object of a bundle.
+     * @param modulePath normal files decompression path.
      * @return Returns ERR_OK if the bundle extract and renamed successfully; returns error code otherwise.
      */
     ErrCode ExtractModule(InnerBundleInfo &info, const std::string &modulePath);
@@ -222,9 +223,13 @@ private:
     /**
      * @brief Extract files of the current installing module package.
      * @param info Indicates the InnerBundleInfo object of a bundle under installing.
+     * @param modulePath normal files decompression path.
+     * @param targetSoPath so files decompression path.
+     * @param cpuAbi cpuAbi.
      * @return Returns ERR_OK if the module files extraced successfully; returns error code otherwise.
      */
-    ErrCode ExtractModuleFiles(const InnerBundleInfo &info, const std::string &modulePath);
+    ErrCode ExtractModuleFiles(const InnerBundleInfo &info, const std::string &modulePath,
+        const std::string &targetSoPath, const std::string &cpuAbi);
     /**
      * @brief Create the data directories of current installing module package.
      * @param info Indicates the InnerBundleInfo object of a bundle under installing.
@@ -413,7 +418,6 @@ private:
     ErrCode GrantRequestPermissions(const InnerBundleInfo &info, const uint32_t tokenId);
     ErrCode UpdateDefineAndRequestPermissions(const InnerBundleInfo &oldInfo, const InnerBundleInfo &newInfo);
     ErrCode SetDirApl(const InnerBundleInfo &info);
-    ErrCode CopyNativeSo(const InnerBundleInfo &info, const std::string &moduleDir);
 
     InstallerState state_ = InstallerState::INSTALL_START;
     std::shared_ptr<BundleDataMgr> dataMgr_ = nullptr;  // this pointer will get when public functions called
