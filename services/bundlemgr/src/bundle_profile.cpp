@@ -1897,7 +1897,7 @@ bool ToApplicationInfo(const ProfileReader::ConfigJson &configJson,
     if (configJson.app.version.minCompatibleVersionCode != -1) {
         applicationInfo.minCompatibleVersionCode = configJson.app.version.minCompatibleVersionCode;
     } else {
-        applicationInfo.minCompatibleVersionCode = static_cast<int32_t>(applicationInfo.versionCode);
+        applicationInfo.minCompatibleVersionCode = static_cast<uint32_t>(applicationInfo.versionCode);
     }
 
     applicationInfo.apiCompatibleVersion = configJson.app.apiVersion.compatible;

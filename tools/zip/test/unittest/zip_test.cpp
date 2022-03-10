@@ -23,10 +23,6 @@ namespace AAFwk {
 namespace LIBZIP {
 using namespace testing::ext;
 
-namespace {
-const std::string BASE_PATH = "/data/accounts/account_0/appdata/";
-const std::string APP_PATH = "com.example.zlib/com.example.zlib/com.example.zlib.MainAbility/files/";
-}  // namespac
 class ZipTest : public testing::Test {
 public:
     ZipTest()
@@ -62,14 +58,14 @@ void UnzipCallBack(int result)
 }
 
 /**
- * @tc.number: AAFwk_LIBZIP_zip_0100_8file
- * @tc.name: zip_0100_8file
+ * @tc.number:
+ * @tc.name:
  * @tc.desc:
  */
-HWTEST_F(ZipTest, AAFwk_LIBZIP_zip_0100_8file, Function | MediumTest | Level1)
+HWTEST_F(ZipTest, AAFwk_LIBZIP_zip_0100_fourfile, Function | MediumTest | Level1)
 {
-    std::string src = BASE_PATH + APP_PATH + "test";
-    std::string dest = BASE_PATH + APP_PATH + "result/8file.zip";
+    std::string src = "/ziptest/zipdata/";
+    std::string dest = "/ziptest/result/fourfile.zip";
 
     OPTIONS options;
     Zip(FilePath(src), FilePath(dest), options, ZipCallBack, false);
@@ -77,14 +73,14 @@ HWTEST_F(ZipTest, AAFwk_LIBZIP_zip_0100_8file, Function | MediumTest | Level1)
 }
 
 /**
- * @tc.number: AAFwk_LIBZIP_zip_0200_1file
- * @tc.name: zip_0200_1file
+ * @tc.number:
+ * @tc.name:
  * @tc.desc:
  */
-HWTEST_F(ZipTest, AAFwk_LIBZIP_zip_0200_1file, Function | MediumTest | Level1)
+HWTEST_F(ZipTest, AAFwk_LIBZIP_zip_0200_singlefile, Function | MediumTest | Level1)
 {
-    std::string src = BASE_PATH + APP_PATH + "test/01";
-    std::string dest = BASE_PATH + APP_PATH + "result/1file.zip";
+    std::string src = "/ziptest/zipdata/zip1/zip1-1/zip1-1.cpp";
+    std::string dest = "/ziptest/result/singlefile.zip";
 
     OPTIONS options;
     Zip(FilePath(src), FilePath(dest), options, ZipCallBack, false);
@@ -92,62 +88,30 @@ HWTEST_F(ZipTest, AAFwk_LIBZIP_zip_0200_1file, Function | MediumTest | Level1)
 }
 
 /**
- * @tc.number: AAFwk_LIBZIP_zip_0100_zip1file
- * @tc.name: zip_0100_zip1file
+ * @tc.number:
+ * @tc.name:
  * @tc.desc:
  */
-HWTEST_F(ZipTest, AAFwk_LIBZIP_zip_0100_zip1file, Function | MediumTest | Level1)
+HWTEST_F(ZipTest, AAFwk_LIBZIP_unzip_0100, Function | MediumTest | Level1)
 {
-    std::string src = BASE_PATH + APP_PATH + "test/01/zip1.txt";
-    std::string dest = BASE_PATH + APP_PATH + "result/zip1file.zip";
-
-    OPTIONS options;
-    Zip(FilePath(src), FilePath(dest), options, ZipCallBack, false);
-    std::this_thread::sleep_for(std::chrono::milliseconds(5000));
-}
-
-/**
- * @tc.number: AAFwk_LIBZIP_unzip_0100_8file
- * @tc.name: unzip_0100_8file
- * @tc.desc:
- */
-HWTEST_F(ZipTest, AAFwk_LIBZIP_unzip_0100_8file, Function | MediumTest | Level1)
-{
-    std::string src = BASE_PATH + APP_PATH + "result/8file.zip";
-    std::string dest = BASE_PATH + APP_PATH + "unzip/01";
+    std::string dest = "/ziptest/unzipdir/fourfile/";
+    std::string src = "/ziptest/result/fourfile.zip";
 
     OPTIONS options;
     Unzip(FilePath(src), FilePath(dest), options, UnzipCallBack);
     std::this_thread::sleep_for(std::chrono::milliseconds(5000));
 }
-/**
- * @tc.number: AAFwk_LIBZIP_unzip_single_0200_1file
- * @tc.name: unzip_single_0200_1file
- * @tc.desc:
- */
-HWTEST_F(ZipTest, AAFwk_LIBZIP_unzip_single_0200_1file, Function | MediumTest | Level1)
+
+HWTEST_F(ZipTest, AAFwk_LIBZIP_unzip_single_0200, Function | MediumTest | Level1)
 {
-    std::string src = BASE_PATH + APP_PATH + "result/1file.zip";
-    std::string dest = BASE_PATH + APP_PATH + "unzip/02";
+    std::string src = "/ziptest/result/singlefile.zip";
+    std::string dest = "/ziptest/unzipdir/single/";
 
     OPTIONS options;
     Unzip(FilePath(src), FilePath(dest), options, UnzipCallBack);
     std::this_thread::sleep_for(std::chrono::milliseconds(5000));
 }
-/**
- * @tc.number: AAFwk_LIBZIP_zip_0100_zip1file
- * @tc.name: zip_0100_zip1file
- * @tc.desc:
- */
-HWTEST_F(ZipTest, AAFwk_LIBZIP_unzip_0100_zip1file, Function | MediumTest | Level1)
-{
-    std::string src = BASE_PATH + APP_PATH + "result/zip1file.zip";
-    std::string dest = BASE_PATH + APP_PATH + "unzip/zip1file";
 
-    OPTIONS options;
-    Unzip(FilePath(src), FilePath(dest), options, UnzipCallBack);
-    std::this_thread::sleep_for(std::chrono::milliseconds(5000));
-}
 }  // namespace LIBZIP
 }  // namespace AAFwk
 }  // namespace OHOS

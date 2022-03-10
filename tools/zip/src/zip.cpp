@@ -47,13 +47,6 @@ const char HIDDEN_SEPARATOR = '.';
         callback(result);                   \
     }
 
-#define ZIP_WRITER_IS_NULL(zipWriter, logContent, callback, error) \
-    if (!(zipWriter)) {                                            \
-        APP_LOGI( logContent );                                    \
-        CALLING_CALL_BACK(callback, error)                         \
-        return false;                                              \
-    }
-
 struct UnzipParam {
     CALLBACK callback = nullptr;
     FilterCallback filterCB = nullptr;
@@ -79,20 +72,18 @@ bool ExcludeHiddenFilesFilter(const FilePath &filePath)
     return !IsHiddenFile(filePath);
 }
 
-std::vector<FileAccessor::DirectoryContentEntry> ListDirectoryContent(const FilePath &filePath, bool& isSuccess)
+std::vector<FileAccessor::DirectoryContentEntry> ListDirectoryContent(const FilePath &filePath)
 {
     FilePath curPath = filePath;
     std::vector<FileAccessor::DirectoryContentEntry> fileDirectoryVector;
     std::vector<std::string> filelist;
-    isSuccess = FilePath::GetZipAllDirFiles(curPath.Value(), filelist);
-    if (isSuccess) {
-        APP_LOGI("ListDirectoryContent filelist =====filelist.size=%{public}zu====", filelist.size());
-        for (size_t i = 0; i < filelist.size(); i++) {
-            std::string str(filelist[i]);
-            if (!str.empty()) {
-                fileDirectoryVector.push_back(
-                    FileAccessor::DirectoryContentEntry(FilePath(str), FilePath::DirectoryExists(FilePath(str))));
-            }
+    GetDirFiles(curPath.Value(), filelist);
+    APP_LOGI("filelist ========filelist.size=%{public}zu", filelist.size());
+    for (size_t i = 0; i < filelist.size(); i++) {
+        std::string str(filelist[i]);
+        if (!str.empty()) {
+            fileDirectoryVector.push_back(
+                FileAccessor::DirectoryContentEntry(FilePath(str), FilePath::DirectoryExists(FilePath(str))));
         }
     }
     return fileDirectoryVector;
@@ -127,44 +118,35 @@ ZipParams::ZipParams(const FilePath &srcDir, const FilePath &destFile) : srcDir_
 ZipParams::ZipParams(const FilePath &srcDir, int destFd) : srcDir_(srcDir), destFd_(destFd)
 {}
 
-FilePath FilePathEndIsSeparator(FilePath paramPath)
-{
-    bool endIsSeparator = EndsWith(paramPath.Value(), SEPARATOR);
-    if (FilePath::IsDir(paramPath)) {
-        if (!endIsSeparator) {
-            paramPath.AppendSeparator();
-        }
-    }
-    return paramPath;
-}
-
 bool Zip(const ZipParams &params, const OPTIONS &options, CALLBACK callback)
 {
     const std::vector<FilePath> *filesToAdd = &params.GetFilesTozip();
     std::vector<FilePath> allRelativeFiles;
-    FilePath paramPath = FilePathEndIsSeparator(params.SrcDir());
+    FilePath paramPath = params.SrcDir();
+    bool endIsSeparator = EndsWith(paramPath.Value(), SEPARATOR);
     if (filesToAdd->empty()) {
         filesToAdd = &allRelativeFiles;
         std::list<FileAccessor::DirectoryContentEntry> entries;
-        if (EndsWith(paramPath.Value(), SEPARATOR)) {
+        if (endIsSeparator) {
             entries.push_back(FileAccessor::DirectoryContentEntry(params.SrcDir(), true));
             FilterCallback filterCallback = params.GetFilterCallback();
             for (auto iter = entries.begin(); iter != entries.end(); ++iter) {
-                if (iter != entries.begin() && ((!params.GetIncludeHiddenFiles() && IsHiddenFile(iter->path)) ||
-                    (filterCallback && !filterCallback(iter->path)))) {
+                const FilePath &constEntryPath = iter->path;
+                if (iter != entries.begin() && ((!params.GetIncludeHiddenFiles() && IsHiddenFile(constEntryPath)) ||
+                    (filterCallback && !filterCallback(constEntryPath)))) {
                     continue;
                 }
                 if (iter != entries.begin()) {
                     FilePath relativePath;
+                    FilePath entryPath = constEntryPath;
                     FilePath paramsSrcPath = params.SrcDir();
-                    if (paramsSrcPath.AppendRelativePath(iter->path, &relativePath)) {
+                    bool success = paramsSrcPath.AppendRelativePath(entryPath, &relativePath);
+                    if (success) {
                         allRelativeFiles.push_back(relativePath);
                     }
                 }
                 if (iter->isDirectory) {
-                    bool isSuccess = false;
-                    std::vector<FileAccessor::DirectoryContentEntry> subEntries =
-                        ListDirectoryContent(iter->path, isSuccess);
+                    std::vector<FileAccessor::DirectoryContentEntry> subEntries = ListDirectoryContent(constEntryPath);
                     entries.insert(entries.end(), subEntries.begin(), subEntries.end());
                 }
             }
@@ -173,15 +155,20 @@ bool Zip(const ZipParams &params, const OPTIONS &options, CALLBACK callback)
         }
     }
     std::unique_ptr<ZipWriter> zipWriter = nullptr;
+    FilePath rootPath = (endIsSeparator == false) ? FilePath(paramPath.DirName().Value() + SEPARATOR) : params.SrcDir();
     if (params.DestFd() != kInvalidPlatformFile) {
-        zipWriter = ZipWriter::CreateWithFd(params.DestFd(), paramPath);
-        ZIP_WRITER_IS_NULL(zipWriter, "!!! ZipWriter::CreateWithFd ReturnValue is Null !!!",
-            callback, ERROR_CODE_ERRNO);
+        zipWriter = ZipWriter::CreateWithFd(params.DestFd(), rootPath);
+        if (!zipWriter) {
+            CALLING_CALL_BACK(callback, ERROR_CODE_STREAM_ERROR)
+            return false;
+        }
     }
     if (!zipWriter) {
-        zipWriter = ZipWriter::Create(params.DestFile(), paramPath);
-        ZIP_WRITER_IS_NULL(zipWriter, "!!! ZipWriter::Create ReturnValue is Null !!!",
-            callback, ERROR_CODE_ERRNO);
+        zipWriter = ZipWriter::Create(params.DestFile(), rootPath);
+        if (!zipWriter) {
+            CALLING_CALL_BACK(callback, ERROR_CODE_STREAM_ERROR)
+            return false;
+        }
     }
     return zipWriter->WriteEntries(*filesToAdd, options, callback);
 }
@@ -244,8 +231,7 @@ bool UnzipWithFilterCallback(
 {
     FilePath src = srcFile;
     if (!FilePathCheckValid(src.Value())) {
-        APP_LOGI("%{public}s called, FilePathCheckValid returnValue is false.", __func__);
-        CALLING_CALL_BACK(unzipParam.callback, ERROR_CODE_ERRNO)
+        CALLING_CALL_BACK(unzipParam.callback, ERROR_CODE_DATA_ERROR)
         return false;
     }
 
@@ -257,15 +243,15 @@ bool UnzipWithFilterCallback(
         dest.Value().c_str());
 
     if (!FilePath::PathIsValid(srcFile)) {
-        CALLING_CALL_BACK(unzipParam.callback, ERROR_CODE_ERRNO)
-        APP_LOGI("%{public}s called,PathIsValid return value is false.", __func__);
+        CALLING_CALL_BACK(unzipParam.callback, ERROR_CODE_DATA_ERROR)
+        APP_LOGI("%{public}s called, Failed to open.", __func__);
         return false;
     }
 
     PlatformFile zipFd = open(src.Value().c_str(), S_IREAD);
     if (zipFd == kInvalidPlatformFile) {
+        CALLING_CALL_BACK(unzipParam.callback, ERROR_CODE_STREAM_ERROR)
         APP_LOGI("%{public}s called, Failed to open.", __func__);
-        CALLING_CALL_BACK(unzipParam.callback, ERROR_CODE_ERRNO)
         return false;
     }
     bool ret = UnzipWithFilterAndWriters(zipFd,
@@ -306,13 +292,11 @@ bool ZipWithFilterCallback(const FilePath &srcDir, const FilePath &destFile, con
     FilePath srcPath = srcDir;
     if (!EndsWith(srcPath.Value(), SEPARATOR)) {
         if (!FilePath::DirectoryExists(srcPath.DirName())) {
-            APP_LOGI("%{public}s called, FilePath::DirectoryExists(srcPath) ReturnValue is false.", __func__);
-            CALLING_CALL_BACK(callback, ERROR_CODE_ERRNO)
+            CALLING_CALL_BACK(callback, ERROR_CODE_DATA_ERROR)
             return false;
         }
     } else if (!FilePath::DirectoryExists(srcDir)) {
-        APP_LOGI("%{public}s called, FilePath::DirectoryExists(srcDir) ReturnValue is false.", __func__);
-        CALLING_CALL_BACK(callback, ERROR_CODE_ERRNO)
+        CALLING_CALL_BACK(callback, ERROR_CODE_DATA_ERROR)
         return false;
     }
     ZipParams params(srcDir, destFile);
