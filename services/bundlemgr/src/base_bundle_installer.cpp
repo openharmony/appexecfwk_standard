@@ -51,7 +51,7 @@ bool UninstallApplicationProcesses(const std::string &bundleName, const int uid)
         APP_LOGE("fail to find the app mgr service to kill application");
         return false;
     }
-    if (abilityMgrProxy->UninstallApp(bundleName, uid) != 0) {
+    if (abilityMgrProxy->UninstallApp(bundleName) != 0) {
         APP_LOGE("kill application process failed");
         return false;
     }

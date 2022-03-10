@@ -145,7 +145,7 @@ public:
     {
         return 0;
     }
-    virtual int UninstallApp(const std::string &bundleName, int32_t uid) override
+    virtual int UninstallApp(const std::string &bundleName) override
     {
         return 0;
     }
@@ -201,11 +201,6 @@ public:
     }
 
     int UpdateConfiguration(const Configuration &config) override
-    {
-        return 0;
-    }
-
-    virtual int32_t GetMissionIdByToken(const sptr<IRemoteObject> &token) override
     {
         return 0;
     }

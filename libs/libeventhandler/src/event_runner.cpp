@@ -40,7 +40,7 @@ inline void SystemCallSetThreadName(const std::string &name)
 {
     if (prctl(PR_SET_NAME, name.c_str()) < 0) {
         char errmsg[MAX_ERRORMSG_LEN] = {0};
-        GetLastErr(errmsg, MAX_ERRORMSG_LEN);
+        GetLastErr(errmsg);
         HILOGE("SystemCallSetThreadName: Failed to set thread name, %{public}s", errmsg);
     }
 }

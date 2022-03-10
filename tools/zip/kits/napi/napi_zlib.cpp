@@ -181,15 +181,15 @@ napi_value CompressStrategyInit(napi_env env, napi_value exports)
 napi_value MemLevelInit(napi_env env, napi_value exports)
 {
     APP_LOGI("%{public}s called.", __func__);
-    const int MEM_LEVEL_MIN = 1;
-    const int MEM_LEVEL_DEFAULT = 8;
-    const int MEM_LEVEL_MAX = 9;
+    const int MEM_LEVEL_MIN_MEMLEVEL = 1;
+    const int MEM_LEVEL_DEFAULT_MEMLEVEL = 8;
+    const int MEM_LEVEL_MAX_MEMLEVEL = 9;
 
     napi_value memLevel = nullptr;
     napi_create_object(env, &memLevel);
-    SetNamedProperty(env, memLevel, "MEM_LEVEL_MIN", MEM_LEVEL_MIN);
-    SetNamedProperty(env, memLevel, "MEM_LEVEL_DEFAULT", MEM_LEVEL_DEFAULT);
-    SetNamedProperty(env, memLevel, "MEM_LEVEL_MAX", MEM_LEVEL_MAX);
+    SetNamedProperty(env, memLevel, "MEM_LEVEL_MIN_MEMLEVEL", MEM_LEVEL_MIN_MEMLEVEL);
+    SetNamedProperty(env, memLevel, "MEM_LEVEL_DEFAULT_MEMLEVEL", MEM_LEVEL_DEFAULT_MEMLEVEL);
+    SetNamedProperty(env, memLevel, "MEM_LEVEL_MAX_MEMLEVEL", MEM_LEVEL_MAX_MEMLEVEL);
 
     napi_property_descriptor properties[] = {
         DECLARE_NAPI_PROPERTY("MemLevel", memLevel),
