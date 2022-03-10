@@ -51,7 +51,8 @@ public:
     static bool CreateDirectory(const FilePath &fullPath);
     static bool DirectoryExists(const FilePath &path);
     static bool PathIsValid(const FilePath &path);
-
+    static bool IsDir(const FilePath &path);
+    static bool GetZipAllDirFiles(const std::string &path, std::vector<std::string> &files);
     // Returns a FilePath by appending a separator and the supplied path
     // component to this object's path.  Append takes care to avoid adding
     // excessive separators if this object's path already ends with a separator.
@@ -60,6 +61,7 @@ public:
     // it is an error to pass an absolute path.
     FilePath Append(const std::string &component);
     FilePath Append(FilePath &component);
+    void AppendSeparator(void);
     // If IsParent(child) holds, appends to path (if non-NULL) the
     // relative path to child and returns true.
     bool AppendRelativePath(const FilePath &child, FilePath *path);
@@ -70,7 +72,6 @@ public:
     FilePath BaseName();
     bool IsAbsolute();
     std::string Value();
-
 private:
     std::string path_;
 
