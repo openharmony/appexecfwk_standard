@@ -115,7 +115,7 @@ ohos_source_set("bundle_parser") {
 group("bms_target") {
   deps = [
     ":installs",
-    ":installs.rc",
+    ":installs.cfg",
     ":libbms",
   ]
 }
@@ -229,7 +229,7 @@ ohos_executable("installs") {
   part_name = "bundle_framework"
 }
 
-ohos_prebuilt_etc("installs.rc") {
+ohos_prebuilt_etc("installs.cfg") {
   source = "installs.cfg"
   relative_install_dir = "init"
   subsystem_name = "appexecfwk"
