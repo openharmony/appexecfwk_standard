@@ -16,8 +16,13 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <dirent.h>
 #include "zip_utils.h"
+#include "directory_ex.h"
+#include "app_log_wrapper.h"
 
+using namespace std;
+using namespace OHOS::AppExecFwk;
 namespace OHOS {
 namespace AAFwk {
 namespace LIBZIP {
@@ -138,8 +143,9 @@ FilePath FilePath::DirName()
     }
 
     newPath.StripTrailingSeparatorsInternal();
-    if (!newPath.path_.length())
+    if (!newPath.path_.length()) {
         newPath.path_ = kCurrentDirectory;
+    }
 
     return newPath;
 }
@@ -237,12 +243,24 @@ bool FilePath::CreateDirectory(const FilePath &fullPath)
 // static
 bool FilePath::DirectoryExists(const FilePath &path)
 {
-
     struct stat fileInfo;
     if (stat(const_cast<FilePath &>(path).Value().c_str(), &fileInfo) == 0) {
         return S_ISDIR(fileInfo.st_mode);
     }
+
+    APP_LOGI("!!!stat returns an error.!!!");
     return false;
+}
+bool FilePath::IsDir(const FilePath &path)
+{
+    std::string mPath(const_cast<FilePath &>(path).Value());
+    if (mPath.empty() || mPath == kCurrentDirectory || mPath == kParentDirectory) {
+        return true;
+    } else {
+        struct stat fileInfo;
+        int ret = stat(mPath.c_str(), &fileInfo);
+        return (ret == 0 && S_ISDIR(fileInfo.st_mode));
+    }
 }
 
 bool FilePath::PathIsValid(const FilePath &path)
@@ -295,6 +313,14 @@ FilePath FilePath::Append(FilePath &component)
     return Append(component.path_);
 }
 
+void FilePath::AppendSeparator(void)
+{
+    if (path_.empty()) {
+        path_ = SEPARATOR;
+    } else {
+        path_ += SEPARATOR;
+    }
+}
 // If IsParent(child) holds, appends to path (if non-NULL) the
 // relative path to child and returns true.
 bool FilePath::AppendRelativePath(const FilePath &child, FilePath *path)
@@ -340,7 +366,44 @@ bool FilePath::AppendRelativePath(const FilePath &child, FilePath *path)
     }
     return true;
 }
+bool FilePath::GetZipAllDirFiles(const std::string &path, std::vector<std::string> &files)
+{
+    std::string pathStringWithDelimiter;
+    if (path.empty() || path == kCurrentDirectory || path == kParentDirectory) {
+        return true;
+    }
+    DIR *dir = opendir(path.c_str());
+    if (dir == nullptr) {
+        return false;
+    }
 
+    bool result = false;
+    while (true) {
+        result = true;
+        struct dirent *ptr = readdir(dir);
+        if (ptr == nullptr) {
+            break;
+        }
+        // current dir OR parent dir
+        if ((strcmp(ptr->d_name, kCurrentDirectory) == 0) || (strcmp(ptr->d_name, kParentDirectory) == 0)) {
+            continue;
+        } else if (ptr->d_type == DT_DIR) {
+            pathStringWithDelimiter = IncludeTrailingPathDelimiter(path) + string(ptr->d_name);
+            std::vector<std::string> itemFiles;
+            result = GetZipAllDirFiles(pathStringWithDelimiter, itemFiles);
+
+            if (itemFiles.empty()) {
+                files.push_back(pathStringWithDelimiter);
+            } else {
+                files.insert(files.end(), itemFiles.begin(), itemFiles.end());
+            }
+        } else {
+            files.push_back(IncludeTrailingPathDelimiter(path) + string(ptr->d_name));
+        }
+    }
+    closedir(dir);
+    return result;
+}
 }  // namespace LIBZIP
 }  // namespace AAFwk
 }  // namespace OHOS
