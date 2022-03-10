@@ -207,11 +207,6 @@ public:
         return true;
     }
 
-    virtual int CompelVerifyPermission(const std::string &permission, int pid, int uid, std::string &message) override
-    {
-        return 0;
-    }
-
     virtual int PowerOff() override
     {
         return 0;
