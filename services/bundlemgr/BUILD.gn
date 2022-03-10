@@ -102,6 +102,7 @@ ohos_source_set("bundle_parser") {
   external_deps = [
     "ability_base:want",
     "access_token:libaccesstoken_sdk",
+    "bundle_framework:appexecfwk_base",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
     "startup_l2:syspara",
