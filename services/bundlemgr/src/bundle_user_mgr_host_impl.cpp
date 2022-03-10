@@ -47,7 +47,7 @@ public:
         g_installedHapNum++;
         APP_LOGD("OnFinished::resultCode:(%{public}d) resultMsg:(%{public}s).",
             resultCode, resultMsg.c_str());
-        if (g_installedHapNum >= totalHapNum_ && bundlePromise_ != nullptr) {
+        if (static_cast<int32_t>(g_installedHapNum) >= totalHapNum_ && bundlePromise_ != nullptr) {
             bundlePromise_->NotifyAllTasksExecuteFinished();
         }
     }

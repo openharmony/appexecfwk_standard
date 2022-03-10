@@ -1131,7 +1131,7 @@ bool ToApplicationInfo(const Profile::App &app, ApplicationInfo &applicationInfo
     if (app.deviceConfigs.find(deviceType) != app.deviceConfigs.end()) {
         Profile::DeviceConfig deviceConfig = app.deviceConfigs.at(deviceType);
         if (deviceConfig.minAPIVersion.first) {
-            applicationInfo.apiCompatibleVersion = deviceConfig.minAPIVersion.second;
+            applicationInfo.apiCompatibleVersion = static_cast<uint32_t>(deviceConfig.minAPIVersion.second);
         }
         if (deviceConfig.distributedNotificationEnabled.first) {
             applicationInfo.distributedNotificationEnabled = deviceConfig.distributedNotificationEnabled.second;
