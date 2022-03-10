@@ -176,7 +176,6 @@ bool DistributedBmsHost::VerifyCallingPermission(const std::string &permissionNa
 {
     APP_LOGD("VerifyCallingPermission permission %{public}s", permissionName.c_str());
     OHOS::Security::AccessToken::AccessTokenID callerToken = IPCSkeleton::GetCallingTokenID();
-    APP_LOGD("callerToken : %{public}u", callerToken);
     OHOS::Security::AccessToken::ATokenTypeEnum tokenType =
         OHOS::Security::AccessToken::AccessTokenKit::GetTokenTypeFlag(callerToken);
     if (tokenType == OHOS::Security::AccessToken::ATokenTypeEnum::TOKEN_NATIVE) {
