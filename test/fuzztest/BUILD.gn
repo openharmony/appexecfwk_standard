@@ -43,14 +43,16 @@ group("fuzztest") {
 
   deps += [
     # deps file
-    "BundleSysCap_fuzzer:BundleSysCapFuzzTest",
+    "ApplicationInfo_fuzzer:ApplicationInfoFuzzTest",
+    "BundleInfo_fuzzer:BundleInfoFuzzTest",
     "BundleSysCap_fuzzer:BundleSysCapFuzzTest",
     "CheckIsSystemAppByUid_fuzzer:CheckIsSystemAppByUidFuzzTest",
-    "GetAccessibleAppCodePaths_fuzzer:GetAccessibleAppCodePathsFuzzTest",
+    "CommonEvent_fuzzer:CommonEventFuzzTest",
+    "ElementName_fuzzer:ElementNameFuzzTest",
     "GetAccessibleAppCodePaths_fuzzer:GetAccessibleAppCodePathsFuzzTest",
     "GetApplicationInfos_fuzzer:GetApplicationInfosFuzzTest",
     "GetBundleInfos_fuzzer:GetBundleInfosFuzzTest",
-    "GetBundleInfos_fuzzer:GetBundleInfosFuzzTest",
+    "InstallParamUnmarshalling_fuzzer:InstallParamUnmarshallingFuzzTest",
     "ParseSysCap_fuzzer:ParseSysCapFuzzTest",
     "Parse_fuzzer:ParseFuzzTest",
     "VerifyCallingPermission_fuzzer:VerifyCallingPermissionFuzzTest",

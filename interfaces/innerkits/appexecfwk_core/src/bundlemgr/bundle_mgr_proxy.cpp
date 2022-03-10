@@ -107,7 +107,7 @@ bool BundleMgrProxy::GetApplicationInfo(
 }
 
 bool BundleMgrProxy::GetApplicationInfos(
-    const ApplicationFlag flag, const int userId, std::vector<ApplicationInfo> &appInfos)
+    const ApplicationFlag flag, int userId, std::vector<ApplicationInfo> &appInfos)
 {
     BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     APP_LOGD("begin to get GetApplicationInfos of specific userId id %{private}d", userId);

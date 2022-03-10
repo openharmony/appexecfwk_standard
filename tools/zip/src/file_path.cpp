@@ -165,9 +165,9 @@ void FilePath::StripTrailingSeparatorsInternal()
     if (path_.size() == 0) {
         return;
     }
-    int one = 1;
-    int two = 2;
-    int start = 1;
+    uint32_t one = 1;
+    uint32_t two = 2;
+    uint32_t start = 1;
     std::string::size_type lastStripped = std::string::npos;
     for (std::string::size_type pos = path_.length(); pos > start && FilePath::IsSeparator(path_[pos - one]); --pos) {
         if (pos != start + one || lastStripped == start + two || !FilePath::IsSeparator(path_[start - one])) {
