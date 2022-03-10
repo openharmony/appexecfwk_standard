@@ -130,7 +130,7 @@ int32_t CommonTool::GetPid(const std::string &processName)
     }
 
     for (std::string echoContent : echoContents) {
-        unsigned long index = echoContent.find(processName);
+        auto index = echoContent.find(processName);
         if (index != std::string::npos) {
             int32_t pid = 0;
             std::vector<std::string> strsRet;
