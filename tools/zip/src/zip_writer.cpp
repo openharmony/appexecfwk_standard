@@ -47,8 +47,8 @@ bool AddFileContentToZip(zipFile zip_file, FilePath &file_path)
             "%{public}s called, filePath is invalid!!! file_path=%{public}s", __func__, file_path.Value().c_str());
         return false;
     }
-
     if (!FilePath::PathIsValid(file_path)) {
+        APP_LOGI("!!! %{public}s called PathIsValid returns false !!!", __func__);
         return false;
     }
 
@@ -65,12 +65,13 @@ bool AddFileContentToZip(zipFile zip_file, FilePath &file_path)
         if (num_bytes > 0) {
             if (zipWriteInFileInZip(zip_file, buf, num_bytes) != ZIP_OK) {
                 APP_LOGI("%{public}s called, Could not write data to zip for path:%{public}s ",
-                    __func__,
-                    file_path.Value().c_str());
+                    __func__, file_path.Value().c_str());
                 fclose(fp);
                 fp = nullptr;
                 return false;
             }
+        } else {
+            break;
         }
     }
     fclose(fp);
@@ -79,11 +80,16 @@ bool AddFileContentToZip(zipFile zip_file, FilePath &file_path)
 }
 
 bool OpenNewFileEntry(
-    zipFile zip_file, FilePath &path, bool is_directory, struct tm *last_modified, const OPTIONS &options)
+    zipFile zip_file, FilePath &path, bool isDirectory, struct tm *lastModified, const OPTIONS &options)
 {
     APP_LOGI("%{public}s called", __func__);
     std::string strPath = path.Value();
-    return ZipOpenNewFileInZip(zip_file, strPath, options, last_modified);
+
+    if (isDirectory) {
+        strPath += SEPARATOR;
+    }
+    
+    return ZipOpenNewFileInZip(zip_file, strPath, options, lastModified);
 }
 
 bool CloseNewFileEntry(zipFile zip_file)
@@ -105,9 +111,9 @@ bool AddFileEntryToZip(zipFile zip_file, FilePath &relativePath, FilePath &absol
     }
     bool success = AddFileContentToZip(zip_file, absolutePath);
     if (!CloseNewFileEntry(zip_file)) {
+        APP_LOGI("!!! CloseNewFileEntry returnValule is false !!!");
         return false;
     }
-
     return success;
 }
 
@@ -187,7 +193,6 @@ bool ZipWriter::FlushEntriesIfNeeded(bool force, const OPTIONS &options, CALLBAC
     if (pendingEntries_.size() < g_MaxPendingEntriesCount && !force) {
         return true;
     }
-
     std::string rootDir = rootDir_.Value();
     if (EndsWith(rootDir_.Value(), SEPARATOR)) {
         rootDir = rootDir.substr(0, rootDir.size() - 1);
@@ -201,18 +206,19 @@ bool ZipWriter::FlushEntriesIfNeeded(bool force, const OPTIONS &options, CALLBAC
         relativePaths.insert(relativePaths.begin(), pendingEntries_.begin(), pendingEntries_.begin() + entry_count);
         for (auto iter = pendingEntries_.begin(); iter != pendingEntries_.begin() + entry_count; ++iter) {
             // The FileAccessor requires absolute paths.
-            absolutePaths.push_back(FilePath(rootDir_.Value() + iter->Value()));
+            if (FilePath::IsDir(rootDir_)) {
+                absolutePaths.push_back(FilePath(rootDir_.Value() + iter->Value()));
+            } else {
+                absolutePaths.push_back(FilePath(rootDir_.Value()));
+            }
         }
         pendingEntries_.erase(pendingEntries_.begin(), pendingEntries_.begin() + entry_count);
-
-        // We don't know which paths are files and which ones are directories, and
-        // we want to avoid making a call to file_accessor_ for each entry. Open the
-        // files instead, invalid files are returned for directories.
-
         for (size_t i = 0; i < absolutePaths.size(); i++) {
             FilePath &relativePath = relativePaths[i];
             FilePath &absolutePath = absolutePaths[i];
-            if (FilePath::PathIsValid(absolutePath)) {
+            bool isValid = FilePath::PathIsValid(absolutePath);
+            bool isDir = FilePath::IsDir(absolutePath);
+            if (isValid && !isDir) {
                 if (!AddFileEntryToZip(zipFile_, relativePath, absolutePath, options)) {
                     CALLING_CALL_BACK(callback, ERROR_CODE_ERRNO)
                     APP_LOGI("%{public}s called, Failed to write file", __func__);

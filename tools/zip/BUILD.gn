@@ -17,6 +17,7 @@ import("//foundation/appexecfwk/standard/appexecfwk.gni")
 config("zip_config") {
   include_dirs = [
     "include",
+    "//utils/native/base/include",
     "//third_party/libuv/include",
     "//third_party/node/src",
     "//third_party/zlib",
@@ -52,14 +53,15 @@ ohos_shared_library("zlib") {
     "${common_path}:libappexecfwk_common",
     "//third_party/libuv:uv_static",
     "//third_party/zlib:libz",
+    "//utils/native/base:utils",
   ]
 
   external_deps = [
     "ability_runtime:task_dispatcher",
     "bundle_framework:appexecfwk_base",
+    "hilog_native:libhilog_base",
     "hiviewdfx_hilog_native:libhilog",
     "napi:ace_napi",
-    "utils_base:utils",
   ]
 
   install_enable = true
