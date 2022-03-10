@@ -24,12 +24,9 @@
 
 namespace OHOS {
 namespace AppExecFwk {
+struct CentralDirEntry;
+struct ZipEntry;
 using ZipPos = ZPOS64_T;
-using CentralDirEntry = struct CentralDirEntry;
-using LocalHeader = struct LocalHeader;
-using EndDir = struct EndDir;
-using DataDesc = struct DataDesc;
-using ZipEntry = struct ZipEntry;
 using ZipEntryMap = std::map<std::string, ZipEntry>;
 using BytePtr = Byte *;
 

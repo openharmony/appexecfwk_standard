@@ -131,7 +131,7 @@ std::unique_ptr<ZipWriter> ZipWriter::CreateWithFd(PlatformFile zipFilefd, const
         APP_LOGI("%{public}s called, Couldn't create ZIP file for FD", __func__);
         return nullptr;
     }
-    return std::unique_ptr<ZipWriter>(new ZipWriter(zip_file, rootDir));
+    return std::unique_ptr<ZipWriter>(new (std::nothrow) ZipWriter(zip_file, rootDir));
 }
 
 // static

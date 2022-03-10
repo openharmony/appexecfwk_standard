@@ -25,33 +25,6 @@
 namespace OHOS {
 namespace AAFwk {
 namespace LIBZIP {
-#define NATIVE_C_BUFFER_SIZE 1024 /* Converted to C-style string buffer size */
-#define ARGS_MAX_COUNT 10
-#define ARGS_ASYNC_COUNT 1
-
-#define ARGS_ONE 1
-#define ARGS_TWO 2
-#define ARGS_THREE 3
-#define ARGS_FOUR 4
-#define ARGS_FIVE 5
-#define ARGS_SIX 6
-#define ARGS_SEVEN 7
-#define ARGS_EIGHT 8
-#define ARGS_NINE 9
-#define ARGS_TEN 10
-
-#define PARAM0 0
-#define PARAM1 1
-#define PARAM2 2
-#define PARAM3 3
-#define PARAM4 4
-#define PARAM5 5
-#define PARAM6 6
-#define PARAM7 7
-#define PARAM8 8
-#define PARAM9 9
-#define PARAM10 10
-
 #define NAPI_CALL_BASE_BOOL(theCall, retVal) \
     do {                                     \
         if ((theCall) == false) {            \
