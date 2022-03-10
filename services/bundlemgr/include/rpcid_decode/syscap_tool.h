@@ -46,8 +46,8 @@ int32_t RPCIDFileDecodeToBuffer(char *inputFile, char **syscapSetBuf, uint32_t *
  * @param syscapSetLength Indicates the length of syscapSetBuf, the length of single syscap is SINGLE_SYSCAP_LENGTH.
  * @return Returns 0 if prase successfully; returns -1 otherwise.
  */
-int32_t RPCIDStreamDecodeToBuffer(char *contextBuffer, uint32_t bufferLen,
-                                  char **syscapSetBuf, uint32_t *syscapSetLength);
+int32_t RPCIDStreamDecodeToBuffer(
+    char *contextBuffer, uint32_t bufferLen, char **syscapSetBuf, uint32_t *syscapSetLength);
 
 /**
  * @brief free the buffer alloced in RPCIDFileDecodeToBuffer() or RPCIDStreamDecodeToBuffer().
