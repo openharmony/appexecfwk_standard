@@ -158,7 +158,7 @@ uLong ReadZipBuffer(void *opaque, void *, void *buf, uLong size)
 // because this implementation is only for reading compressed data.
 uLong WriteZipBuffer(void *opaque, void *stream, const void *buf, uLong)
 {
-    APP_LOGI("%{public}s called. opaque=%p, stream=%p, buf=%p", __func__, opaque, stream, buf);
+    APP_LOGI("WriteZipBuffer opaque=%p, stream=%p, buf=%p", opaque, stream, buf);
     return 0;
 }
 

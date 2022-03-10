@@ -22,6 +22,7 @@
 
 #include "nocopyable.h"
 #include "appexecfwk_errors.h"
+#include "bundle_extractor.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -55,10 +56,19 @@ public:
     /**
      * @brief Extract the files of a compressed package to a specific directory.
      * @param srcModulePath Indicates the package file path.
-     * @param targetPath Indicates the destination directory path that to be extracted to.
+     * @param targetPath normal files decompression path.
+     * @param targetSoPath so files decompression path.
+     * @param cpuAbi cpuAbi.
      * @return Returns true if the package extracted successfully; returns false otherwise.
      */
-    static bool ExtractFiles(const std::string &sourcePath, const std::string &targetPath);
+    static bool ExtractFiles(const std::string &sourcePath, const std::string &targetPath,
+        const std::string &targetSoPath, const std::string &cpuAbi);
+
+    static bool isNativeSo(const std::string &entryName, const std::string &targetSoPath, const std::string &cpuAbi);
+
+    static void ExtractSo(const BundleExtractor &extractor, const std::string &entryName,
+        const std::string &targetSoPath, const std::string &cpuAbi);
+
     /**
      * @brief Rename a directory from old path to new path.
      * @param oldPath Indicates the old path name.
@@ -144,8 +154,6 @@ public:
      * @return Returns disk size.
      */
     static int64_t GetDiskUsageFromPath(const std::vector<std::string> &path);
-
-    static bool CopyNativeSo(const std::string &srcLibPath, const std::string &targetLibPath);
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS
