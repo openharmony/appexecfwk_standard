@@ -31,7 +31,7 @@ bool ImageBuffer::MallocImageMap(int components)
         APP_LOGE("ImageBuffer: get image width and height first");
         return false;
     }
-    int32_t rowStride = width * components;
+    uint32_t rowStride = width * components;
     imageDataPointer = std::make_unique<unsigned char[]>(rowStride * height);
     return true;
 }
