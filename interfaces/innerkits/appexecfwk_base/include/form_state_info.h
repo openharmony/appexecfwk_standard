@@ -13,34 +13,23 @@
  * limitations under the License.
  */
 
-#ifndef FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_TEST_MOCK_MOCK_APP_MGR_HOST_H
-#define FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_TEST_MOCK_MOCK_APP_MGR_HOST_H
+#ifndef FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_BASE_INCLUDE_FORM_STATE_INFO_H
+#define FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_BASE_INCLUDE_FORM_STATE_INFO_H
 
-#include <iremote_object.h>
-#include <iremote_stub.h>
-
-#include "ability_manager_test.h"
+#include "want.h"
 
 namespace OHOS {
 namespace AppExecFwk {
-using namespace AAFwk;
-
-class mock_ability_mgr_host {
-public:
-    mock_ability_mgr_host() {};
-    ~mock_ability_mgr_host() {};
+enum class FormState {
+    UNKNOWN = -1,
+    DEFAULT,
+    READY,
 };
 
-class MockAbilityMgrStub : public IRemoteStub<AAFwk::IAbilityManagerTest> {
-public:
-    MockAbilityMgrStub() = default;
-    virtual ~MockAbilityMgrStub() = default;
-
-    virtual int StartAbility() override
-    {
-        return 0;
-    }
+struct FormStateInfo {
+    FormState state = FormState::UNKNOWN;
+    AAFwk::Want want;
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS
-#endif  // FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_TEST_MOCK_MOCK_APP_MGR_HOST_H
+#endif // FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_BASE_INCLUDE_FORM_STATE_INFO_H
