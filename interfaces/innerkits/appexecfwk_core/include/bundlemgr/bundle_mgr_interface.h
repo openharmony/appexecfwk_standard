@@ -32,7 +32,9 @@
 #include "module_usage_record.h"
 #include "on_permission_changed_callback_interface.h"
 #include "ohos/aafwk/content/want.h"
+#ifdef SUPPORT_GRAPHICS
 #include "pixel_map.h"
+#endif
 #include "shortcut_info.h"
 
 namespace OHOS {
@@ -693,11 +695,13 @@ public:
         return false;
     }
 
+#ifdef SUPPORT_GRAPHICS
     virtual std::shared_ptr<Media::PixelMap> GetAbilityPixelMapIcon(const std::string &bundleName,
         const std::string &abilityName)
     {
         return nullptr;
     }
+#endif
 
     /**
      * @brief Obtains the AbilityInfo based on a given bundle name.

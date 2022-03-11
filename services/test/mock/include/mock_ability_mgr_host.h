@@ -125,10 +125,12 @@ public:
     {
         return 0;
     }
+#ifdef SUPPORT_GRAPHICS
     virtual int GetMissionSnapshot(const int32_t missionId, AAFwk::MissionPixelMap &missionPixelMap) override
     {
         return 0;
     }
+#endif
     virtual int MoveMissionToTop(int32_t missionId) override
     {
         return 0;

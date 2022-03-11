@@ -265,6 +265,7 @@ std::shared_ptr<Global::Resource::ResourceManager> DistributedBms::GetResourceMa
 
     std::unique_ptr<Global::Resource::ResConfig> resConfig(Global::Resource::CreateResConfig());
     resConfig->SetLocaleInfo("zh", "Hans", "CN");
+#ifdef SUPPORT_GRAPHICS
     if (resConfig->GetLocaleInfo() != nullptr) {
         APP_LOGD("DistributedBms::InitResourceManager language: %{public}s, script: %{public}s, region: %{public}s,",
             resConfig->GetLocaleInfo()->getLanguage(),
@@ -273,6 +274,7 @@ std::shared_ptr<Global::Resource::ResourceManager> DistributedBms::GetResourceMa
     } else {
         APP_LOGE("DistributedBms::InitResourceManager language: GetLocaleInfo is null.");
     }
+#endif
     resourceManager->UpdateResConfig(*resConfig);
     return resourceManager;
 }

@@ -21,10 +21,7 @@ module_output_path = "bundle_framework/bundlemgrservice"
 ohos_unittest("BmsServiceBundleScanTest") {
   use_exceptions = true
   module_out_path = module_output_path
-  include_dirs = [
-    "//third_party/jsoncpp/include",
-    "//foundation/multimedia/image_standard/interfaces/innerkits/include",
-  ]
+  include_dirs = [ "//third_party/jsoncpp/include" ]
   sources = [
     "${services_path}/bundlemgr/src/bms_device_manager.cpp",
     "${services_path}/bundlemgr/src/bundle_clone_mgr.cpp",
@@ -66,10 +63,16 @@ ohos_unittest("BmsServiceBundleScanTest") {
     "//foundation/aafwk/standard/interfaces/innerkits/want:want",
     "//foundation/distributeddatamgr/distributeddatamgr/interfaces/innerkits/distributeddata:distributeddata_inner",
     "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
-    "//foundation/multimedia/image_standard/interfaces/innerkits:image_native",
     "//third_party/googletest:gtest_main",
     "//third_party/jsoncpp:jsoncpp",
   ]
+
+  if (bundle_framework_graphics) {
+    include_dirs += [
+      "//foundation/multimedia/image_standard/interfaces/innerkits/include",
+    ]
+    deps += [ "//foundation/multimedia/image_standard/interfaces/innerkits:image_native" ]
+  }
 
   deps += bundle_install_deps
 

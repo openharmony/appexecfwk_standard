@@ -625,8 +625,10 @@ public:
     virtual bool QueryExtensionAbilityInfoByUri(const std::string &uri, int32_t userId,
         ExtensionAbilityInfo &extensionAbilityInfo) override;
 
+#ifdef SUPPORT_GRAPHICS
     virtual std::shared_ptr<Media::PixelMap> GetAbilityPixelMapIcon(const std::string &bundleName,
         const std::string &abilityName) override;
+#endif
     /**
      * @brief Obtains the AbilityInfo based on a given bundle name through the proxy object.
      * @param bundleName Indicates the bundle name to be queried.

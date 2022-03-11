@@ -894,6 +894,7 @@ std::string BundleMgrHostImpl::GetAbilityIcon(const std::string &bundleName, con
     return dataMgr->GetAbilityIcon(bundleName, className);
 }
 
+#ifdef SUPPORT_GRAPHICS
 std::shared_ptr<Media::PixelMap> BundleMgrHostImpl::GetAbilityPixelMapIcon(const std::string &bundleName,
     const std::string &abilityName)
 {
@@ -908,6 +909,7 @@ std::shared_ptr<Media::PixelMap> BundleMgrHostImpl::GetAbilityPixelMapIcon(const
     }
     return dataMgr->GetAbilityPixelMapIcon(bundleName, abilityName);
 }
+#endif
 
 sptr<IBundleInstaller> BundleMgrHostImpl::GetBundleInstaller()
 {
