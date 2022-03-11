@@ -13,26 +13,31 @@
  * limitations under the License.
  */
 
+#include <cstddef>
+#include <cstdint>
+
 #include "message_parcel.h"
 #include "message_option.h"
-#include "element_name.h"
-#include "parcel.h"
+#include "application_info.h"
+#include "json_serializer.h"
+#include "nlohmann/json.hpp"
 
-#include "ElementName_fuzzer.h"
+#include "ApplicationInfoFromJson_fuzzer.h"
 
 using namespace OHOS::AppExecFwk;
 namespace OHOS {
-    void fuzzelementname(const uint8_t* data, size_t size)
+namespace {
+const char NAME[] = "name";
+}
+    bool fuzzabilityinfromjson(const uint8_t* data, size_t size)
     {
-        Parcel dataMessageParcel;
-        ElementName elementName;
-        elementName.SetBundleName(reinterpret_cast<const char*>(data));
-        elementName.Marshalling(dataMessageParcel);
-        dataMessageParcel.RewindRead(0);
-        ElementName* elname = ElementName::Unmarshalling(dataMessageParcel);
-        if (elname != nullptr) {
-            delete elname;
+        if ((size < 2) || (size % 2 != 0)) {
+            return false;
         }
+        nlohmann::json infoJson;
+        infoJson[NAME] = reinterpret_cast<const char*>(data);
+        ApplicationInfo applicationInfo = infoJson;
+        return !applicationInfo.name.empty();
     }
 }
 
@@ -40,6 +45,6 @@ namespace OHOS {
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
 {
     // Run your code on data.
-    OHOS::fuzzelementname(data, size);
+    OHOS::fuzzabilityinfromjson(data, size);
     return 0;
 }
