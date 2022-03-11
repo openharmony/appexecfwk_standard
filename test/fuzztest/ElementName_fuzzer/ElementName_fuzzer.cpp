@@ -25,12 +25,13 @@ namespace OHOS {
     void fuzzelementname(const uint8_t* data, size_t size)
     {
         Parcel dataMessageParcel;
-        int ret = dataMessageParcel.WriteBuffer(data, size);
-        if (ret) {
-            ElementName* elname = ElementName::Unmarshalling(dataMessageParcel);
-            if (elname != NULL) {
-                delete elname;
-            }
+        ElementName elementName;
+        elementName.SetBundleName(reinterpret_cast<const char*>(data));
+        elementName.Marshalling(dataMessageParcel);
+        dataMessageParcel.RewindRead(0);
+        ElementName* elname = ElementName::Unmarshalling(dataMessageParcel);
+        if (elname != nullptr) {
+            delete elname;
         }
     }
 }

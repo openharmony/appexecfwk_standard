@@ -300,7 +300,7 @@ bool BundleDataMgr::UpdateInnerBundleInfo(
         if (newInfo.HasEntry()) {
             oldInfo.SetHasEntry(true);
         }
-        oldInfo.updateCommonHapInfo(newInfo); // to do
+        oldInfo.updateCommonHapInfo(newInfo);
         oldInfo.UpdateModuleInfo(newInfo);
         oldInfo.SetBundleStatus(InnerBundleInfo::BundleStatus::ENABLED);
         if (dataStorage_->DeleteStorageBundleInfo(Constants::CURRENT_DEVICE_ID, oldInfo)) {

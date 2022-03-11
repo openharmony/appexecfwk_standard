@@ -44,7 +44,7 @@ bool ModuleUsageRecord::ReadFromParcel(Parcel &parcel)
 ModuleUsageRecord *ModuleUsageRecord::Unmarshalling(Parcel &parcel)
 {
     ModuleUsageRecord *record = new ModuleUsageRecord();
-    if (!record->ReadFromParcel(parcel)) {
+    if (record && !record->ReadFromParcel(parcel)) {
         APP_LOGW("read ModuleUsageRecord from parcel failed");
         delete record;
         record = nullptr;

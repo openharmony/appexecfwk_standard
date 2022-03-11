@@ -132,7 +132,7 @@ std::string BundleExceptionHandler::GetBundleAndDataDir(const InnerBundleInfo &i
         basePath.append(Constants::PATH_SEPARATOR);
     }
 
-    struct dirent *entry = NULL;
+    struct dirent *entry = nullptr;
     while ((entry = readdir(dir)) != nullptr) {
         const std::string innerPath = basePath + entry->d_name;
         if (innerPath.find(info.GetBundleName()) != std::string::npos) {

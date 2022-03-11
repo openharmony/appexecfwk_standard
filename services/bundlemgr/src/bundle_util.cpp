@@ -182,7 +182,7 @@ bool BundleUtil::GetHapFilesFromBundlePath(const std::string& currentBundlePath,
     if (bundlePath.back() != Constants::FILE_SEPARATOR_CHAR) {
         bundlePath.append(Constants::PATH_SEPARATOR);
     }
-    struct dirent *entry = NULL;
+    struct dirent *entry = nullptr;
     while ((entry = readdir(dir)) != nullptr) {
         if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0) {
             continue;
@@ -289,7 +289,7 @@ void BundleUtil::MakeHmdfsConfig(const std::string &bundleName, int32_t bundleId
 
     realBundleDir += (Constants::PATH_SEPERATE + Constants::BUNDLE_ID_FILE);
 
-    int bundleIdFd = open(realBundleDir.c_str(), O_WRONLY | O_WRONLY | O_TRUNC);
+    int32_t bundleIdFd = open(realBundleDir.c_str(), O_WRONLY | O_TRUNC);
     if (bundleIdFd > 0) {
         std::string bundleIdStr = std::to_string(bundleId);
         if (write(bundleIdFd, bundleIdStr.c_str(), bundleIdStr.size()) < 0) {

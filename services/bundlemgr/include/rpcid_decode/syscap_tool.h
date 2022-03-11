@@ -24,8 +24,8 @@ extern "C" {
 #endif /* __cplusplus */
 #endif /* __cplusplus */
 
-#define SINGLE_FEAT_LENGTH  (32 * 8)
-#define SINGLE_SYSCAP_LENGTH  (SINGLE_FEAT_LENGTH + 17) // 17, size of prefix "SystemCapability."
+const int32_t SINGLE_FEAT_LENGTH = 32 * 8;
+const int32_t SINGLE_SYSCAP_LENGTH = SINGLE_FEAT_LENGTH + 17; // 17, size of prefix "SystemCapability."
 
 /**
  * @brief parse rpcid.sc, get the syscap info.
