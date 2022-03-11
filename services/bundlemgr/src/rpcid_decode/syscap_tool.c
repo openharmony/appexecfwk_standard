@@ -172,14 +172,14 @@ int32_t RPCIDStreamDecodeToBuffer(char *contextBuffer, uint32_t bufferLen,
         }
 
         ret = memcpy_s(bufferPtr, SINGLE_SYSCAP_LENGTH, SYSCAP_PREFIX_NAME, SYSCAP_PREFIX_NAME_LEN);
-        if (ret != 0) {
+        if (ret != EOK) {
             HILOG_ERROR(LOG_CORE, "context of \"os\" array is invaild\n");
             (void)free(syscapBuf);
             return ERROR;
         }
 
         ret = strncat_s(bufferPtr, SINGLE_SYSCAP_LENGTH, sysCapArrayPtr + i * SINGLE_FEAT_LENGTH, SINGLE_FEAT_LENGTH);
-        if (ret != 0) {
+        if (ret != EOK) {
             HILOG_ERROR(LOG_CORE, "strncat_s failed, (%s, %d, %s, %d)\n", bufferPtr, SINGLE_SYSCAP_LENGTH,
                         sysCapArrayPtr + i * SINGLE_FEAT_LENGTH, SINGLE_FEAT_LENGTH);
             (void)free(syscapBuf);
