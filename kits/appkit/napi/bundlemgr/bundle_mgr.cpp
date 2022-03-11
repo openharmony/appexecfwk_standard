@@ -28,7 +28,9 @@
 #include "napi/native_api.h"
 #include "napi/native_node_api.h"
 #include "permission_callback.h"
+#ifdef SUPPORT_GRAPHICS
 #include "pixel_map_napi.h"
+#endif
 #include "securec.h"
 #include "system_ability_definition.h"
 
@@ -5464,6 +5466,7 @@ bool UnwrapAbilityInfo(napi_env env, napi_value param, OHOS::AppExecFwk::Ability
     return true;
 }
 
+#ifdef SUPPORT_GRAPHICS
 static std::shared_ptr<Media::PixelMap> InnerGetAbilityIcon(
     napi_env env, std::string &bundleName, std::string &abilityName)
 {
@@ -5478,6 +5481,7 @@ static std::shared_ptr<Media::PixelMap> InnerGetAbilityIcon(
     }
     return iBundleMgr->GetAbilityPixelMapIcon(bundleName, abilityName);
 }
+#endif
 
 napi_value GetAbilityIcon(napi_env env, napi_callback_info info)
 {
@@ -5518,6 +5522,7 @@ napi_value GetAbilityIcon(napi_env env, napi_callback_info info)
     napi_create_async_work(
         env, nullptr, resource,
         [](napi_env env, void* data) {
+#ifdef SUPPORT_GRAPHICS
             AsyncAbilityInfo* asyncCallbackInfo = (AsyncAbilityInfo*)data;
             if (!asyncCallbackInfo->errCode) {
                 asyncCallbackInfo->pixelMap = InnerGetAbilityIcon(asyncCallbackInfo->env,
@@ -5527,6 +5532,7 @@ napi_value GetAbilityIcon(napi_env env, napi_callback_info info)
                     asyncCallbackInfo->errCode = OPERATION_FAILED;
                 }
             }
+#endif
         },
         [](napi_env env, napi_status status, void* data) {
             AsyncAbilityInfo* asyncCallbackInfo = (AsyncAbilityInfo*)data;
@@ -5536,7 +5542,9 @@ napi_value GetAbilityIcon(napi_env env, napi_callback_info info)
             } else {
                 napi_create_uint32(env, 0, &result[0]);
                 napi_create_object(env, &result[1]);
+#ifdef SUPPORT_GRAPHICS
                 result[1] = Media::PixelMapNapi::CreatePixelMap(env, asyncCallbackInfo->pixelMap);
+#endif
             }
             if (asyncCallbackInfo->callbackRef) {
                 napi_value callback = nullptr;

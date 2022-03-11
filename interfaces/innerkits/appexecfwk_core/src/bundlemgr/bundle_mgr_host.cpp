@@ -205,9 +205,11 @@ int BundleMgrHost::OnRemoteRequest(uint32_t code, MessageParcel &data, MessagePa
         case static_cast<uint32_t>(IBundleMgr::Message::GET_ABILITY_ICON):
             errCode = HandleGetAbilityIcon(data, reply);
             break;
+#ifdef SUPPORT_GRAPHICS
         case static_cast<uint32_t>(IBundleMgr::Message::GET_ABILITY_PIXELMAP_ICON):
             errCode = HandleGetAbilityPixelMapIcon(data, reply);
             break;
+#endif
         case static_cast<uint32_t>(IBundleMgr::Message::DUMP_INFOS):
             errCode = HandleDumpInfos(data, reply);
             break;
@@ -1280,12 +1282,13 @@ ErrCode BundleMgrHost::HandleGetAbilityIcon(Parcel &data, Parcel &reply)
     return ERR_OK;
 }
 
+#ifdef SUPPORT_GRAPHICS
 ErrCode BundleMgrHost::HandleGetAbilityPixelMapIcon(Parcel &data, Parcel &reply)
 {
     BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::string bundleName = data.ReadString();
     std::string abilityName = data.ReadString();
-    
+
     APP_LOGI("HandleGetAbilityPixelMapIcon:%{public}s, %{public}s", bundleName.c_str(), abilityName.c_str());
     std::shared_ptr<Media::PixelMap> pixelMap = GetAbilityPixelMapIcon(bundleName, abilityName);
     if (!pixelMap) {
@@ -1302,6 +1305,7 @@ ErrCode BundleMgrHost::HandleGetAbilityPixelMapIcon(Parcel &data, Parcel &reply)
     }
     return ERR_OK;
 }
+#endif
 
 ErrCode BundleMgrHost::HandleCanRequestPermission(Parcel &data, Parcel &reply)
 {

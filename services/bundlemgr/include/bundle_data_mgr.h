@@ -37,7 +37,9 @@
 #include "module_usage_data_storage.h"
 #include "module_usage_record.h"
 #include "on_permission_changed_callback_interface.h"
+#ifdef SUPPORT_GRAPHICS
 #include "pixel_map.h"
+#endif
 #include "preinstall_data_storage.h"
 #include "resource_manager.h"
 
@@ -690,9 +692,10 @@ public:
 
     bool QueryExtensionAbilityInfoByUri(const std::string &uri, int32_t userId,
         ExtensionAbilityInfo &extensionAbilityInfo) const;
-
+#ifdef SUPPORT_GRAPHICS
     std::shared_ptr<Media::PixelMap> GetAbilityPixelMapIcon(const std::string &bundleName,
         const std::string &abilityName) const;
+#endif
 private:
     /**
      * @brief Init transferStates.
@@ -764,7 +767,9 @@ private:
         std::vector<ExtensionAbilityInfo> &einfos) const;
     std::shared_ptr<Global::Resource::ResourceManager> GetResourceManager(
         const AppExecFwk::BundleInfo &bundleInfo) const;
+#ifdef SUPPORT_GRAPHICS
     std::shared_ptr<Media::PixelMap> LoadImageFile(const std::string &path) const;
+#endif
 
 private:
     mutable std::mutex bundleInfoMutex_;
