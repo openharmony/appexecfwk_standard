@@ -198,7 +198,7 @@ int32_t DistributedBmsProxy::SendRequest(IDistributedBms::Message code, MessageP
     MessageOption option(MessageOption::TF_SYNC);
     if (remote == nullptr) {
         APP_LOGE("fail to send %{public}d cmd to service due to remote object is null", code);
-        return false;
+        return ERR_APPEXECFWK_FAILED_GET_REMOTE_PROXY;
     }
     int32_t result = remote->SendRequest(static_cast<uint32_t>(code), data, reply, option);
     if (result != OHOS::NO_ERROR) {
