@@ -26,9 +26,6 @@ using namespace OHOS::AppExecFwk;
 namespace OHOS {
 namespace AAFwk {
 namespace LIBZIP {
-
-#define F_OK 0
-
 namespace {
 const std::string SEPARATOR = "/";
 }

@@ -31,7 +31,14 @@ using namespace OHOS::AppExecFwk;
 namespace OHOS {
 namespace AAFwk {
 namespace LIBZIP {
-#define NO_ERROR 0
+namespace {
+constexpr int32_t NO_ERROR = 0;
+constexpr size_t ARGS_TWO = 2;
+constexpr size_t ARGS_MAX_COUNT = 10;
+constexpr int32_t PARAM0 = 0;
+constexpr int32_t PARAM1 = 1;
+constexpr int32_t PARAM3 = 3;
+}
 
 #define COMPRESS_LEVE_CHECK(level, ret)                                                            \
     if (!(level == COMPRESS_LEVEL_NO_COMPRESSION || level == COMPRESS_LEVEL_DEFAULT_COMPRESSION || \

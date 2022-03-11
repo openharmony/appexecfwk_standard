@@ -28,7 +28,7 @@ namespace OHOS {
         int ret = dataMessageParcel.WriteBuffer(data, size);
         if (ret) {
             ElementName* elname = ElementName::Unmarshalling(dataMessageParcel);
-            if (elname != NULL) {
+            if (elname != nullptr) {
                 delete elname;
             }
         }
