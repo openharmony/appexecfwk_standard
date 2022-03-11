@@ -469,7 +469,7 @@ bool BundleMgrHostImpl::TraverseCacheDirectory(const std::string& rootDir, std::
     if (dir == nullptr) {
         return false;
     }
-    while ((ptr = readdir(dir)) != NULL) {
+    while ((ptr = readdir(dir)) != nullptr) {
         if (strcmp(ptr->d_name, ".") == 0 || strcmp(ptr->d_name, "..") == 0) {
             continue;
         }
