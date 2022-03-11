@@ -116,7 +116,7 @@ void ModuleUsageRecordStorage::UpdateUsageRecord(const std::string &jsonString, 
         return;
     }
     data.launchedCount = launchedCount + 1;
-    APP_LOGD("launchedCount = %{public}d", data.launchedCount);
+    APP_LOGD("launchedCount = %{public}u", data.launchedCount);
     return;
 }
 

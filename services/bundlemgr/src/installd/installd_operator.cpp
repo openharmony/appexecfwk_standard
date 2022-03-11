@@ -372,7 +372,7 @@ void InstalldOperator::TraverseCacheDirectory(const std::string &currentPath, st
         filePath.push_back(Constants::FILE_SEPARATOR_CHAR);
     }
     struct dirent *ptr = nullptr;
-    while ((ptr = readdir(dir)) != NULL) {
+    while ((ptr = readdir(dir)) != nullptr) {
         if (strcmp(ptr->d_name, ".") == 0 || strcmp(ptr->d_name, "..") == 0) {
             continue;
         }

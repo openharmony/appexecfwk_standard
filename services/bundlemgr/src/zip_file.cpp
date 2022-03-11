@@ -114,7 +114,7 @@ bool ZipFile::ParseAllEntries()
     CentralDirEntry directoryEntry = {0};
     size_t fileLength = 0;
 
-    for (int32_t i = 0; i < endDir_.totalEntries; i++) {
+    for (uint16_t i = 0; i < endDir_.totalEntries; i++) {
         std::string fileName;
         fileName.reserve(MAX_FILE_NAME);
         fileName.resize(MAX_FILE_NAME - 1);

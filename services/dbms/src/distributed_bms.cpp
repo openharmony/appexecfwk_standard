@@ -35,13 +35,14 @@
 namespace OHOS {
 namespace AppExecFwk {
 namespace {
-    const uint8_t DECODE_BUNBER_ONE = 1;
-    const uint8_t DECODE_BUNBER_TWO = 2;
-    const uint8_t DECODE_BUNBER_THREE = 3;
-    const uint8_t DECODE_BUNBER_FOUR = 4;
-    const uint8_t DECODE_BUNBER_SIX = 6;
-    const uint8_t DECODE_BUNBER_FIFTEEN = 0xf;
-    const uint8_t DECODE_BUNBER_SIXTY_THREE = 0x3F;
+    const uint8_t DECODE_VALUE_ONE = 1;
+    const uint8_t DECODE_VALUE_TWO = 2;
+    const uint8_t DECODE_VALUE_THREE = 3;
+    const unsigned char DECODE_VALUE_CHAR_THREE = 3;
+    const uint8_t DECODE_VALUE_FOUR = 4;
+    const uint8_t DECODE_VALUE_SIX = 6;
+    const unsigned char DECODE_VALUE_CHAR_FIFTEEN = 15;
+    const unsigned char DECODE_VALUE_CHAR_SIXTY_THREE = 63;
     const std::vector<char> DECODE_TABLE = {
         'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
         'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
@@ -323,37 +324,37 @@ std::unique_ptr<unsigned char[]> DistributedBms::LoadResourceFile(std::string &p
 
 std::unique_ptr<char[]> DistributedBms::EncodeBase64(std::unique_ptr<unsigned char[]> &data, int srcLen)
 {
-    int len = (srcLen / DECODE_BUNBER_THREE) * DECODE_BUNBER_FOUR; // Split 3 bytes to 4 parts, each containing 6 bits.
-    int outLen = ((srcLen % DECODE_BUNBER_THREE) != 0) ? (len + DECODE_BUNBER_FOUR) : len;
+    int len = (srcLen / DECODE_VALUE_THREE) * DECODE_VALUE_FOUR; // Split 3 bytes to 4 parts, each containing 6 bits.
+    int outLen = ((srcLen % DECODE_VALUE_THREE) != 0) ? (len + DECODE_VALUE_FOUR) : len;
     const unsigned char *srcData = data.get();
-    std::unique_ptr<char[]>  result = std::make_unique<char[]>(outLen + DECODE_BUNBER_ONE);
+    std::unique_ptr<char[]>  result = std::make_unique<char[]>(outLen + DECODE_VALUE_ONE);
     char *dstData = result.get();
     int j = 0;
     int i = 0;
-    for (; i < srcLen - DECODE_BUNBER_THREE; i += DECODE_BUNBER_THREE) {
+    for (; i < srcLen - DECODE_VALUE_THREE; i += DECODE_VALUE_THREE) {
         unsigned char byte1 = srcData[i];
-        unsigned char byte2 = srcData[i + DECODE_BUNBER_ONE];
-        unsigned char byte3 = srcData[i + DECODE_BUNBER_TWO];
-        dstData[j++] = DECODE_TABLE[byte1 >> DECODE_BUNBER_TWO];
+        unsigned char byte2 = srcData[i + DECODE_VALUE_ONE];
+        unsigned char byte3 = srcData[i + DECODE_VALUE_TWO];
+        dstData[j++] = DECODE_TABLE[byte1 >> DECODE_VALUE_TWO];
         dstData[j++] =
-            DECODE_TABLE[((byte1 & DECODE_BUNBER_THREE) << DECODE_BUNBER_FOUR) | (byte2 >> DECODE_BUNBER_FOUR)];
+            DECODE_TABLE[((byte1 & DECODE_VALUE_CHAR_THREE) << DECODE_VALUE_FOUR) | (byte2 >> DECODE_VALUE_FOUR)];
         dstData[j++] =
-            DECODE_TABLE[((byte2 & DECODE_BUNBER_FIFTEEN) << DECODE_BUNBER_TWO) | (byte3 >> DECODE_BUNBER_SIX)];
-        dstData[j++] = DECODE_TABLE[byte3 & DECODE_BUNBER_SIXTY_THREE];
+            DECODE_TABLE[((byte2 & DECODE_VALUE_CHAR_FIFTEEN) << DECODE_VALUE_TWO) | (byte3 >> DECODE_VALUE_SIX)];
+        dstData[j++] = DECODE_TABLE[byte3 & DECODE_VALUE_CHAR_SIXTY_THREE];
     }
-    if (srcLen % DECODE_BUNBER_THREE == DECODE_BUNBER_ONE) {
+    if (srcLen % DECODE_VALUE_THREE == DECODE_VALUE_ONE) {
         unsigned char byte1 = srcData[i];
-        dstData[j++] = DECODE_TABLE[byte1 >> DECODE_BUNBER_TWO];
-        dstData[j++] = DECODE_TABLE[(byte1 & DECODE_BUNBER_THREE) << DECODE_BUNBER_FOUR];
+        dstData[j++] = DECODE_TABLE[byte1 >> DECODE_VALUE_TWO];
+        dstData[j++] = DECODE_TABLE[(byte1 & DECODE_VALUE_CHAR_THREE) << DECODE_VALUE_FOUR];
         dstData[j++] = '=';
         dstData[j++] = '=';
     } else {
         unsigned char byte1 = srcData[i];
-        unsigned char byte2 = srcData[i + DECODE_BUNBER_ONE];
-        dstData[j++] = DECODE_TABLE[byte1 >> DECODE_BUNBER_TWO];
+        unsigned char byte2 = srcData[i + DECODE_VALUE_ONE];
+        dstData[j++] = DECODE_TABLE[byte1 >> DECODE_VALUE_TWO];
         dstData[j++] =
-            DECODE_TABLE[((byte1 & DECODE_BUNBER_THREE) << DECODE_BUNBER_FOUR) | (byte2 >> DECODE_BUNBER_FOUR)];
-        dstData[j++] = DECODE_TABLE[(byte2 & DECODE_BUNBER_FIFTEEN) << DECODE_BUNBER_TWO];
+            DECODE_TABLE[((byte1 & DECODE_VALUE_CHAR_THREE) << DECODE_VALUE_FOUR) | (byte2 >> DECODE_VALUE_FOUR)];
+        dstData[j++] = DECODE_TABLE[(byte2 & DECODE_VALUE_CHAR_FIFTEEN) << DECODE_VALUE_TWO];
         dstData[j++] = '=';
     }
     dstData[outLen] = '\0';
