@@ -64,7 +64,7 @@ int InstalldHost::OnRemoteRequest(uint32_t code, MessageParcel &data, MessagePar
     if (funcMap_.find(code) != funcMap_.end() && funcMap_[code] != nullptr) {
         result = (this->*funcMap_[code])(data, reply);
     } else {
-        APP_LOGW("installd host receives unknown code, code = %{public}d", code);
+        APP_LOGW("installd host receives unknown code, code = %{public}u", code);
         return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
     }
     APP_LOGD("installd host finish to process message from client");
