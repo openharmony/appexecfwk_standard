@@ -42,7 +42,12 @@ group("fuzztest") {
 
   deps += [
     # deps file
+    "AbilityInfoFromJson_fuzzer:AbilityInfoFromJsonFuzzTest",
+    "AbilityInfoMarshalling_fuzzer:AbilityInfoMarshallingFuzzTest",
+    "AbilityInfoUnmarshalling_fuzzer:AbilityInfoUnmarshallingFuzzTest",
+    "ApplicationInfoFromJson_fuzzer:ApplicationInfoFromJsonFuzzTest",
     "ApplicationInfo_fuzzer:ApplicationInfoFuzzTest",
+    "BundleInfoFromJson_fuzzer:BundleInfoFromJsonFuzzTest",
     "BundleInfo_fuzzer:BundleInfoFuzzTest",
     "BundleSysCap_fuzzer:BundleSysCapFuzzTest",
     "CheckIsSystemAppByUid_fuzzer:CheckIsSystemAppByUidFuzzTest",
@@ -54,6 +59,7 @@ group("fuzztest") {
     "InstallParamUnmarshalling_fuzzer:InstallParamUnmarshallingFuzzTest",
     "ParseSysCap_fuzzer:ParseSysCapFuzzTest",
     "Parse_fuzzer:ParseFuzzTest",
+    "ShortcutInfo_fuzzer:ShortcutInfoFuzzTest",
     "VerifyCallingPermission_fuzzer:VerifyCallingPermissionFuzzTest",
   ]
 }

@@ -12,9 +12,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef TEST_FUZZTEST_COMMONEVENT_FUZZER_H
-#define TEST_FUZZTEST_COMMONEVENT_FUZZER_H
 
-#define FUZZ_PROJECT_NAME "CommonEvent_fuzzer"
+#ifndef TEST_FUZZTEST_ApplicationInfoFromJson_FUZZER_H
+#define TEST_FUZZTEST_ApplicationInfoFromJson_FUZZER_H
+
+#define FUZZ_PROJECT_NAME "ApplicationInfoFromJson_fuzzer"
 
 #endif
