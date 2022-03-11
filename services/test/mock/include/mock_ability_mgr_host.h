@@ -145,7 +145,7 @@ public:
     {
         return 0;
     }
-    virtual int UninstallApp(const std::string &bundleName) override
+    virtual int UninstallApp(const std::string &bundleName, int32_t uid) override
     {
         return 0;
     }
@@ -162,11 +162,6 @@ public:
     virtual bool IsFirstInMission(const sptr<IRemoteObject> &token) override
     {
         return true;
-    }
-
-    virtual int CompelVerifyPermission(const std::string &permission, int pid, int uid, std::string &message) override
-    {
-        return 0;
     }
 
     virtual int PowerOff() override
@@ -201,6 +196,11 @@ public:
     }
 
     int UpdateConfiguration(const Configuration &config) override
+    {
+        return 0;
+    }
+
+    virtual int32_t GetMissionIdByToken(const sptr<IRemoteObject> &token) override
     {
         return 0;
     }
