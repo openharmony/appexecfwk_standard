@@ -77,11 +77,6 @@ ohos_shared_library("appexecfwk_core") {
     "samgr_standard:samgr_proxy",
     "utils_base:utils",
   ]
-  if (bundle_framework_graphics) {
-    defines += [ "SUPPORT_GRAPHICS" ]
-
-    external_deps += [ "i18n_standard:intl_util" ]
-  }
   subsystem_name = "appexecfwk"
   part_name = "bundle_framework"
 }

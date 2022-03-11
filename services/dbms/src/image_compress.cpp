@@ -35,11 +35,13 @@ namespace {
     constexpr int32_t COLOR_CHANNEL_GREEN = 1;
     constexpr int32_t COLOR_CHANNEL_BLUE = 2; 
     constexpr int32_t COLOR_CHANNEL_ALPHA = 3;
+    constexpr int32_t NUMBER_ONE = 1;
     constexpr int32_t QUALITY = 30;
     constexpr double EPSILON = 1e-5;
     const std::string JPG = "jpg";
     const std::string PNG = "png";
     const std::string JPEG = "jpeg";
+    const std::string BUNDLE_PATH = "/data/app/el1/bundle";
     struct EncodeMemo {
         ImageRow buffer;
         uint32_t size;
@@ -56,7 +58,11 @@ void ImageCompress::ReleasePngPointer(png_bytep* rowPointers, uint32_t h)
 
 bool ImageCompress::IsPathValid(std::string& fileName)
 {
-    return access(fileName.c_str(), F_OK) == 0;
+    if (fileName.find(BUNDLE_PATH) != std::string::npos) {
+        return access(fileName.c_str(), F_OK) == 0;
+    } else {
+        return false;
+    }
 }
 
 double ImageCompress::CalRatio(std::string fileName)
@@ -154,6 +160,7 @@ bool ImageCompress::InitPngFile(std::shared_ptr<ImageBuffer>& imageBuffer,
     }
     png_read_update_info(png, info);
     if (imageBuffer->GetImageDataPointer()) {
+        png_destroy_read_struct(&png, &info, NULL);
         return false;
     }
     imageBuffer->MallocImageMap(RGBA_COMPONENTS);
@@ -168,6 +175,7 @@ bool ImageCompress::InitPngFile(std::shared_ptr<ImageBuffer>& imageBuffer,
     for (uint32_t h = 0; h < imageBuffer->GetHeight(); ++h) {
         if (memcpy_s(imageRow, strides, rowPointers[h], strides) != EOK) {
             ReleasePngPointer(rowPointers, imageBuffer->GetHeight());
+            png_destroy_read_struct(&png, &info, NULL);
             return false;
         }
         imageRow += strides;
@@ -321,8 +329,8 @@ int32_t ImageCompress::ResizeRGBAImage(std::shared_ptr<ImageBuffer>& imageBuffer
     uint32_t components = imageBufferIn->GetComponents();
     for (uint32_t h = 0; h < imageBufferOut->GetHeight(); ++h) {
         for (uint32_t w = 0; w < imageBufferOut->GetWidth(); ++w) {
-            uint32_t heightIndex = std::round(h / ratio);
-            uint32_t widthIndex = std::round(w / ratio);
+            uint64_t heightIndex = std::round(h / ratio);
+            uint64_t widthIndex = std::round(w / ratio);
             if (heightIndex > imageBufferIn->GetHeight()) {
                 heightIndex = imageBufferIn->GetHeight() - 1;
             }
@@ -379,11 +387,12 @@ int32_t ImageCompress::DecodeJPGFile(std::string fileName, std::shared_ptr<Image
     
     ImageRow imageRow = imageBuffer->GetImageDataPointer().get();
     uint32_t row_stride = cinfo.output_width * cinfo.output_components;
-    JSAMPARRAY buffer = (*cinfo.mem->alloc_sarray)((j_common_ptr)&cinfo, JPOOL_IMAGE, row_stride, 1);
+    JSAMPARRAY buffer = (*cinfo.mem->alloc_sarray)((j_common_ptr)&cinfo, JPOOL_IMAGE, row_stride, NUMBER_ONE);
     while (cinfo.output_scanline < cinfo.image_height) {
-        jpeg_read_scanlines(&cinfo, buffer, 1);
+        jpeg_read_scanlines(&cinfo, buffer, NUMBER_ONE);
         if (memcpy_s(imageRow, row_stride, *buffer, row_stride) != EOK) {
             APP_LOGE("ImageCompress: memcpy_s buffer failed");
+            fclose(inFile);
             return -1;
         }
         imageRow += row_stride;
@@ -457,8 +466,8 @@ int32_t ImageCompress::ResizeRGBImage(std::shared_ptr<ImageBuffer>& imageBufferI
     uint32_t components = imageBufferIn->GetComponents();
     for (uint32_t h = 0; h < imageBufferOut->GetHeight(); ++h) {
         for (uint32_t w = 0; w < imageBufferOut->GetWidth(); ++w) {
-            uint32_t heightIndex = std::round(h / ratio);
-            uint32_t widthIndex = std::round(w / ratio);
+            uint64_t heightIndex = std::round(h / ratio);
+            uint64_t widthIndex = std::round(w / ratio);
             if (heightIndex > imageBufferIn->GetHeight()) {
                 heightIndex = imageBufferIn->GetHeight() - 1;
             }

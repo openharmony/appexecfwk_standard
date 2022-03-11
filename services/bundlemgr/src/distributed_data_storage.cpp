@@ -31,13 +31,13 @@ const int32_t SLEEP_INTERVAL = 100 * 1000;  // 100ms
 
 DistributedDataStorage::DistributedDataStorage()
 {
-    APP_LOGI("instance:%{private}p is created", this);
+    APP_LOGI("instance is created");
     TryTwice([this] { return GetKvStore(); });
 }
 
 DistributedDataStorage::~DistributedDataStorage()
 {
-    APP_LOGI("instance:%{private}p is destroyed", this);
+    APP_LOGI("instance is destroyed");
     dataManager_.CloseKvStore(appId_, storeId_);
 }
 
