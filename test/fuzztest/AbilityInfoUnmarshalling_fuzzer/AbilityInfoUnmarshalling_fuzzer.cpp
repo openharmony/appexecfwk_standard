@@ -13,26 +13,28 @@
  * limitations under the License.
  */
 
+#include <cstddef>
+#include <cstdint>
+
 #include "message_parcel.h"
 #include "message_option.h"
-#include "element_name.h"
+#include "ability_info.h"
 #include "parcel.h"
 
-#include "ElementName_fuzzer.h"
+#include "AbilityInfoUnmarshalling_fuzzer.h"
 
 using namespace OHOS::AppExecFwk;
 namespace OHOS {
-    void fuzzelementname(const uint8_t* data, size_t size)
+    bool fuzzabilityinfounmarshalling(const uint8_t* data, size_t size)
     {
         Parcel dataMessageParcel;
-        ElementName elementName;
-        elementName.SetBundleName(reinterpret_cast<const char*>(data));
-        elementName.Marshalling(dataMessageParcel);
-        dataMessageParcel.RewindRead(0);
-        ElementName* elname = ElementName::Unmarshalling(dataMessageParcel);
-        if (elname != nullptr) {
-            delete elname;
+        AbilityInfo abilityInfo;
+        abilityInfo.bundleName = reinterpret_cast<const char*>(data);
+        if (!abilityInfo.Marshalling(dataMessageParcel)) {
+            return false;
         }
+        auto ability = AbilityInfo::Unmarshalling(dataMessageParcel);
+        return ability != nullptr;
     }
 }
 
@@ -40,6 +42,6 @@ namespace OHOS {
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
 {
     // Run your code on data.
-    OHOS::fuzzelementname(data, size);
+    OHOS::fuzzabilityinfounmarshalling(data, size);
     return 0;
 }

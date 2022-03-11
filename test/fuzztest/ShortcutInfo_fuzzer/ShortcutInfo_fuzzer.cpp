@@ -13,26 +13,31 @@
  * limitations under the License.
  */
 
+#include <cstddef>
+#include <cstdint>
+
 #include "message_parcel.h"
 #include "message_option.h"
-#include "element_name.h"
+#include "shortcut_info.h"
 #include "parcel.h"
 
-#include "ElementName_fuzzer.h"
+#include "ShortcutInfo_fuzzer.h"
 
 using namespace OHOS::AppExecFwk;
 namespace OHOS {
-    void fuzzelementname(const uint8_t* data, size_t size)
+    bool fuzzelShortcutInfo(const uint8_t* data, size_t size)
     {
-        Parcel dataMessageParcel;
-        ElementName elementName;
-        elementName.SetBundleName(reinterpret_cast<const char*>(data));
-        elementName.Marshalling(dataMessageParcel);
-        dataMessageParcel.RewindRead(0);
-        ElementName* elname = ElementName::Unmarshalling(dataMessageParcel);
-        if (elname != nullptr) {
-            delete elname;
+        if (size <= 4) {
+            return false;
         }
+        Parcel dataMessageParcel;
+        ShortcutInfo shortcutInfo;
+        shortcutInfo.bundleName = reinterpret_cast<const char*>(data);
+        if (!shortcutInfo.Marshalling(dataMessageParcel)) {
+            return false;
+        };
+        auto shortCut = ShortcutInfo::Unmarshalling(dataMessageParcel);
+        return shortCut != nullptr;
     }
 }
 
@@ -40,6 +45,6 @@ namespace OHOS {
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
 {
     // Run your code on data.
-    OHOS::fuzzelementname(data, size);
+    OHOS::fuzzelShortcutInfo(data, size);
     return 0;
 }
