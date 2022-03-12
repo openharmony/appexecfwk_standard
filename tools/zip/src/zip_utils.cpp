@@ -14,8 +14,6 @@
  */
 #include "zip_utils.h"
 
-#include <memory>
-#include <pthread.h>
 #include <regex>
 
 #include "parallel_task_dispatcher.h"
@@ -85,13 +83,13 @@ bool IsPathAbsolute(const std::string &path)
 
 bool IsASCIIChar(const char *pszStr)
 {
-    if (pszStr == NULL) {
+    if (pszStr == nullptr) {
         return false;
     }
 
     // Judge whether the first character in the string is ASCII character (0 – 127), and ASCII character occupies one
     // byte
-    return ((unsigned char)pszStr[0] & 0x80) == 0x80 ? false : true;
+    return (static_cast<unsigned char>(pszStr[0]) & 0x80) == 0x80 ? false : true;
 }
 bool FilePathCheckValid(const std::string &str)
 {

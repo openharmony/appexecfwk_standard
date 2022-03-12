@@ -194,7 +194,7 @@ bool ZipReader::ExtractCurrentEntry(WriterDelegate *delegate, uint64_t numBytesT
     if (!delegate->PrepareOutput()) {
         return false;
     }
-    std::unique_ptr<char[]> buf(new char[kZipBufSize]);
+    auto buf = std::make_unique<char[]>(kZipBufSize);
     uint64_t remainingCapacity = numBytesToExtract;
     bool entirefileextracted = false;
 
@@ -250,7 +250,7 @@ bool ZipReader::OpenInternal()
 
 void ZipReader::Reset()
 {
-    zipFile_ = NULL;
+    zipFile_ = nullptr;
     numEntries_ = 0;
     reachedEnd_ = false;
     currentEntryInfo_.reset();

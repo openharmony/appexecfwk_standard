@@ -192,12 +192,12 @@ ErrCode InstalldProxy::TransactInstalldCmd(uint32_t code, MessageParcel &data, M
 {
     sptr<IRemoteObject> remote = Remote();
     if (remote == nullptr) {
-        APP_LOGE("fail to send %{public}d cmd to service due to remote object is null", code);
+        APP_LOGE("fail to send %{public}u cmd to service due to remote object is null", code);
         return ERR_APPEXECFWK_INSTALL_INSTALLD_SERVICE_ERROR;
     }
 
     if (remote->SendRequest(code, data, reply, option) != OHOS::NO_ERROR) {
-        APP_LOGE("fail to send %{public}d request to service due to transact error", code);
+        APP_LOGE("fail to send %{public}u request to service due to transact error", code);
         return ERR_APPEXECFWK_INSTALL_INSTALLD_SERVICE_ERROR;
     }
     return reply.ReadInt32();

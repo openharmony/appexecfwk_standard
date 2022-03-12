@@ -56,8 +56,8 @@ struct tm GetTmDataFromTickts(int64_t sec)
 // a file stream.
 void *FdOpenFileFunc(void *opaque, const char *filename, int mode)
 {
-    FILE *file = NULL;
-    const char *mode_fopen = NULL;
+    FILE *file = nullptr;
+    const char *mode_fopen = nullptr;
     uint32_t modeInner = static_cast<uint32_t>(mode);
     if ((modeInner & ZLIB_FILEFUNC_MODE_READWRITEFILTER) == ZLIB_FILEFUNC_MODE_READ)
         mode_fopen = "rb";
@@ -66,7 +66,7 @@ void *FdOpenFileFunc(void *opaque, const char *filename, int mode)
     else if (modeInner & ZLIB_FILEFUNC_MODE_CREATE)
         mode_fopen = "wb";
 
-    if ((filename != NULL) && (mode_fopen != NULL)) {
+    if ((filename != nullptr) && (mode_fopen != nullptr)) {
         int fd = dup(*static_cast<int *>(opaque));
         if (fd != -1)
             file = fdopen(fd, mode_fopen);
@@ -271,7 +271,7 @@ unzFile PrepareMemoryForUnzipping(const std::string &data)
 
 zipFile OpenForZipping(const std::string &fileNameUtf8, int appendFlag)
 {
-    zlib_filefunc_def *zipFuncPtrs = NULL;
+    zlib_filefunc_def *zipFuncPtrs = nullptr;
     return zipOpen2(fileNameUtf8.c_str(),
         appendFlag,
         NULL,
