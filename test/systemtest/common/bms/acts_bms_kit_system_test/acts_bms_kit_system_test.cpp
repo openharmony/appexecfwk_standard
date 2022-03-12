@@ -4062,7 +4062,7 @@ HWTEST_F(ActsBmsKitSystemTest, ApplicationInfoDump_0100, Function | MediumTest |
 /**
  * @tc.number: Errors_0100
  * @tc.name: test error hap
- * @tc.desc: 1.under '/data/test/bms_bundle',there exists a error hap
+ * @tc.desc: 1.under '/data/test/bms_bundle',there exists an error hap
  *           2.install the hap
  *           3.get ERR_INSTALL_ALREADY_EXIST
  */
@@ -4108,7 +4108,7 @@ HWTEST_F(ActsBmsKitSystemTest, Errors_0100, Function | MediumTest | Level1)
 /**
  * @tc.number: Errors_0200
  * @tc.name: test error hap
- * @tc.desc: 1.under '/data/test/bms_bundle',there exists a error hap
+ * @tc.desc: 1.under '/data/test/bms_bundle',there exists an error hap
  *           2.install the hap
  *           3.get ERR_INSTALL_VERSION_DOWNGRADE
  */
@@ -4153,7 +4153,7 @@ HWTEST_F(ActsBmsKitSystemTest, Errors_0200, Function | MediumTest | Level1)
 /**
  * @tc.number: Errors_0300
  * @tc.name: test error hap
- * @tc.desc: 1.under '/data/test/bms_bundle',there exists a error hap
+ * @tc.desc: 1.under '/data/test/bms_bundle',there exists an error hap
  *           2.install the hap
  *           3.get ERR_INSTALL_PARSE_PROFILE_MISSING_PROP
  */
@@ -4201,7 +4201,7 @@ HWTEST_F(ActsBmsKitSystemTest, Errors_0300, Function | MediumTest | Level1)
 /**
  * @tc.number: Errors_0400
  * @tc.name: test error hap
- * @tc.desc: 1.under '/data/test/bms_bundle',there exists a error hap
+ * @tc.desc: 1.under '/data/test/bms_bundle',there exists an error hap
  *           2.install the hap
  *           3.get ERR_INSTALL_PARSE_NO_PROFILE
  */
@@ -4267,7 +4267,7 @@ HWTEST_F(ActsBmsKitSystemTest, Errors_0500, Function | MediumTest | Level1)
 /**
  * @tc.number: Errors_0600
  * @tc.name: test error hap
- * @tc.desc: 1.under '/data/test/bms_bundle',there exists a error hap
+ * @tc.desc: 1.under '/data/test/bms_bundle',there exists an error hap
  *           2.install the hap
  *           3.get MSG_ERR_INSTALL_FILE_PATH_INVALID
  */
@@ -4302,7 +4302,7 @@ HWTEST_F(ActsBmsKitSystemTest, Errors_0600, Function | MediumTest | Level1)
 /**
  * @tc.number: Errors_0700
  * @tc.name: test error hap
- * @tc.desc: 1.under '/data/test/bms_bundle',there exists a error hap
+ * @tc.desc: 1.under '/data/test/bms_bundle',there exists an error hap
  *           2.install the hap
  *           3.uninstall hap with wrong appName
  *           4.get ERR_UNINSTALL_MISSING_INSTALLED_BUNDLE
@@ -4351,7 +4351,7 @@ HWTEST_F(ActsBmsKitSystemTest, Errors_0700, Function | MediumTest | Level1)
 /**
  * @tc.number: Errors_0800
  * @tc.name: test error hap
- * @tc.desc: 1.under '/data/test/bms_bundle',there exists a error hap
+ * @tc.desc: 1.under '/data/test/bms_bundle',there exists an error hap
  *           2.install the hap
  *           3.uninstall hap twice
  *           4.get ERR_UNINSTALL_MISSING_INSTALLED_BUNDLE
