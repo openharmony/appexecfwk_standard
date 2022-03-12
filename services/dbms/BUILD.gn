@@ -15,7 +15,9 @@ import("//build/ohos.gni")
 import("//foundation/appexecfwk/standard/appexecfwk.gni")
 
 group("dbms_target") {
-  deps = [ ":libdbms" ]
+  if (bundle_framework_graphics) {
+    deps = [ ":libdbms" ]
+  }
 }
 
 config("distributed_bms_config") {

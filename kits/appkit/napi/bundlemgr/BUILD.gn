@@ -44,6 +44,7 @@ ohos_shared_library("bundle") {
       "//foundation/multimedia/image_standard/interfaces/innerkits:image",
       "//foundation/multimedia/image_standard/interfaces/innerkits:image_native",
     ]
+    defines += [ "SUPPORT_GRAPHICS" ]
   }
 
   external_deps = [

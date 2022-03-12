@@ -202,10 +202,10 @@ int BundleMgrHost::OnRemoteRequest(uint32_t code, MessageParcel &data, MessagePa
         case static_cast<uint32_t>(IBundleMgr::Message::GET_ABILITY_INFO):
             errCode = HandleGetAbilityInfo(data, reply);
             break;
+#ifdef SUPPORT_GRAPHICS
         case static_cast<uint32_t>(IBundleMgr::Message::GET_ABILITY_ICON):
             errCode = HandleGetAbilityIcon(data, reply);
             break;
-#ifdef SUPPORT_GRAPHICS
         case static_cast<uint32_t>(IBundleMgr::Message::GET_ABILITY_PIXELMAP_ICON):
             errCode = HandleGetAbilityPixelMapIcon(data, reply);
             break;
@@ -1266,6 +1266,7 @@ ErrCode BundleMgrHost::HandleGetAbilityInfo(Parcel &data, Parcel &reply)
     return ERR_OK;
 }
 
+#ifdef SUPPORT_GRAPHICS
 ErrCode BundleMgrHost::HandleGetAbilityIcon(Parcel &data, Parcel &reply)
 {
     BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
@@ -1282,7 +1283,6 @@ ErrCode BundleMgrHost::HandleGetAbilityIcon(Parcel &data, Parcel &reply)
     return ERR_OK;
 }
 
-#ifdef SUPPORT_GRAPHICS
 ErrCode BundleMgrHost::HandleGetAbilityPixelMapIcon(Parcel &data, Parcel &reply)
 {
     BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
