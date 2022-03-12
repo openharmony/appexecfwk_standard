@@ -31,7 +31,14 @@ using namespace OHOS::AppExecFwk;
 namespace OHOS {
 namespace AAFwk {
 namespace LIBZIP {
-#define NO_ERROR 0
+namespace {
+constexpr int32_t NO_ERROR = 0;
+constexpr size_t ARGS_TWO = 2;
+constexpr size_t ARGS_MAX_COUNT = 10;
+constexpr int32_t PARAM0 = 0;
+constexpr int32_t PARAM1 = 1;
+constexpr int32_t PARAM3 = 3;
+}
 
 #define COMPRESS_LEVE_CHECK(level, ret)                                                            \
     if (!(level == COMPRESS_LEVEL_NO_COMPRESSION || level == COMPRESS_LEVEL_DEFAULT_COMPRESSION || \
@@ -181,15 +188,15 @@ napi_value CompressStrategyInit(napi_env env, napi_value exports)
 napi_value MemLevelInit(napi_env env, napi_value exports)
 {
     APP_LOGI("%{public}s called.", __func__);
-    const int MEM_LEVEL_MIN_MEMLEVEL = 1;
-    const int MEM_LEVEL_DEFAULT_MEMLEVEL = 8;
-    const int MEM_LEVEL_MAX_MEMLEVEL = 9;
+    const int MEM_LEVEL_MIN = 1;
+    const int MEM_LEVEL_DEFAULT = 8;
+    const int MEM_LEVEL_MAX = 9;
 
     napi_value memLevel = nullptr;
     napi_create_object(env, &memLevel);
-    SetNamedProperty(env, memLevel, "MEM_LEVEL_MIN_MEMLEVEL", MEM_LEVEL_MIN_MEMLEVEL);
-    SetNamedProperty(env, memLevel, "MEM_LEVEL_DEFAULT_MEMLEVEL", MEM_LEVEL_DEFAULT_MEMLEVEL);
-    SetNamedProperty(env, memLevel, "MEM_LEVEL_MAX_MEMLEVEL", MEM_LEVEL_MAX_MEMLEVEL);
+    SetNamedProperty(env, memLevel, "MEM_LEVEL_MIN", MEM_LEVEL_MIN);
+    SetNamedProperty(env, memLevel, "MEM_LEVEL_DEFAULT", MEM_LEVEL_DEFAULT);
+    SetNamedProperty(env, memLevel, "MEM_LEVEL_MAX", MEM_LEVEL_MAX);
 
     napi_property_descriptor properties[] = {
         DECLARE_NAPI_PROPERTY("MemLevel", memLevel),

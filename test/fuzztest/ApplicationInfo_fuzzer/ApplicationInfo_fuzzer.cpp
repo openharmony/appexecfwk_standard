@@ -13,8 +13,9 @@
  * limitations under the License.
  */
 
-#include "message_parcel.h"
-#include "message_option.h"
+#include <cstddef>
+#include <cstdint>
+
 #include "application_info.h"
 #include "parcel.h"
 
@@ -22,13 +23,13 @@
 
 using namespace OHOS::AppExecFwk;
 namespace OHOS {
-    void fuzzapplicationinfo(const uint8_t* data, size_t size)
+    bool fuzzapplicationinfo(const uint8_t* data, size_t size)
     {
         Parcel dataMessageParcel;
-        int ret = dataMessageParcel.WriteBuffer(data, size);
-        if (ret) {
-            ApplicationInfo::Unmarshalling(dataMessageParcel);
-        }
+        ApplicationInfo applicationInfo;
+        applicationInfo.bundleName = reinterpret_cast<const char*>(data);
+        auto application = ApplicationInfo::Unmarshalling(dataMessageParcel);
+        return application != nullptr;
     }
 }
 

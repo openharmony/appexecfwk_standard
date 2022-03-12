@@ -9,7 +9,9 @@
     "component": {
         "name": "eventhandler",
         "subsystem": "appexecfwk",
-        "syscap": [],
+        "syscap": [
+            "SystemCapability.Notification.Emitter"
+        ],
         "features": [],
         "adapted_system_type": [
             "standard"
@@ -27,7 +29,7 @@
         "build": {
             "sub_component": [
                 "//foundation/appexecfwk/standard/interfaces/innerkits:innerkits_target",
-		"//foundation/appexecfwk/standard/interfaces/innerkits/napi:napi_packages"
+                "//foundation/appexecfwk/standard/interfaces/innerkits/napi:napi_packages"
             ],
             "inner_kits": [
                 {
