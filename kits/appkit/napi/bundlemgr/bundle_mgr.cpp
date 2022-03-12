@@ -28,7 +28,9 @@
 #include "napi/native_api.h"
 #include "napi/native_node_api.h"
 #include "permission_callback.h"
+#ifdef SUPPORT_GRAPHICS
 #include "pixel_map_napi.h"
+#endif
 #include "securec.h"
 #include "system_ability_definition.h"
 
@@ -5464,6 +5466,7 @@ bool UnwrapAbilityInfo(napi_env env, napi_value param, OHOS::AppExecFwk::Ability
     return true;
 }
 
+#ifdef SUPPORT_GRAPHICS
 static std::shared_ptr<Media::PixelMap> InnerGetAbilityIcon(
     napi_env env, std::string &bundleName, std::string &abilityName)
 {
@@ -5559,6 +5562,7 @@ napi_value GetAbilityIcon(napi_env env, napi_callback_info info)
     napi_queue_async_work(env, asyncCallbackInfo->asyncWork);
     return promise;
 }
+#endif
 
 static bool InnerGetNameForUid(int32_t uid, std::string &bundleName)
 {

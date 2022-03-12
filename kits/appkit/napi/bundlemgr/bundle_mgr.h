@@ -24,8 +24,9 @@
 #include "application_info.h"
 #include "bundle_mgr_interface.h"
 #include "cleancache_callback.h"
+#ifdef SUPPORT_GRAPHICS
 #include "pixel_map.h"
-
+#endif
 #include "ohos/aafwk/content/want.h"
 
 namespace OHOS {
@@ -331,7 +332,9 @@ struct AsyncAbilityInfo {
     napi_ref callbackRef = 0;
     std::string bundleName;
     std::string abilityName;
+#ifdef SUPPORT_GRAPHICS
     std::shared_ptr<Media::PixelMap> pixelMap;
+#endif
     int32_t errCode = 0;
     bool result = false;
     std::string errMssage;

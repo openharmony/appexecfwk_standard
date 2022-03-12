@@ -28,7 +28,6 @@ ohos_unittest("BmsDataMgrTest") {
   include_dirs = [
     "${aafwk_path}/interfaces/innerkits/want/include/ohos/aafwk/content",
     "//third_party/jsoncpp/include",
-    "//foundation/multimedia/image_standard/interfaces/innerkits/include",
   ]
   sources = [
     "${services_path}/bundlemgr/src/bms_device_manager.cpp",
@@ -77,11 +76,17 @@ ohos_unittest("BmsDataMgrTest") {
     "//foundation/aafwk/standard/interfaces/innerkits/want:want",
     "//foundation/distributeddatamgr/distributeddatamgr/interfaces/innerkits/distributeddata:distributeddata_inner",
     "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
-    "//foundation/multimedia/image_standard/interfaces/innerkits:image_native",
     "//third_party/googletest:gtest_main",
     "//third_party/jsoncpp:jsoncpp",
     "//utils/native/base:utils",
   ]
+
+  if (bundle_framework_graphics) {
+    include_dirs += [
+      "//foundation/multimedia/image_standard/interfaces/innerkits/include",
+    ]
+    deps += [ "//foundation/multimedia/image_standard/interfaces/innerkits:image_native" ]
+  }
 
   deps += bundle_install_deps
 
