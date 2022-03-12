@@ -392,6 +392,7 @@ private:
      * @return Returns ERR_OK if called successfully; returns error code otherwise.
      */
     ErrCode HandleSetAbilityEnabled(Parcel &data, Parcel &reply);
+#ifdef SUPPORT_GRAPHICS
     /**
      * @brief Handles the GetAbilityIcon function called from a IBundleMgr proxy object.
      * @param data Indicates the data to be read.
@@ -399,6 +400,7 @@ private:
      * @return Returns ERR_OK if called successfully; returns error code otherwise.
      */
     ErrCode HandleGetAbilityIcon(Parcel &data, Parcel &reply);
+#endif
     /**
      * @brief Handles the CanRequestPermission function called from a IBundleMgr proxy object.
      * @param data Indicates the data to be read.
@@ -545,9 +547,9 @@ private:
     ErrCode HandleGetAppType(Parcel &data, Parcel &reply);
 
     ErrCode HandleGetUidByBundleName(Parcel &data, Parcel &reply);
-
+#ifdef SUPPORT_GRAPHICS
     ErrCode HandleGetAbilityPixelMapIcon(Parcel &data, Parcel &reply);
-
+#endif
     ErrCode HandleGetAbilityInfo(Parcel &data, Parcel &reply);
 private:
     /**

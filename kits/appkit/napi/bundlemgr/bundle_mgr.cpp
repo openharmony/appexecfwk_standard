@@ -5481,7 +5481,6 @@ static std::shared_ptr<Media::PixelMap> InnerGetAbilityIcon(
     }
     return iBundleMgr->GetAbilityPixelMapIcon(bundleName, abilityName);
 }
-#endif
 
 napi_value GetAbilityIcon(napi_env env, napi_callback_info info)
 {
@@ -5522,7 +5521,6 @@ napi_value GetAbilityIcon(napi_env env, napi_callback_info info)
     napi_create_async_work(
         env, nullptr, resource,
         [](napi_env env, void* data) {
-#ifdef SUPPORT_GRAPHICS
             AsyncAbilityInfo* asyncCallbackInfo = (AsyncAbilityInfo*)data;
             if (!asyncCallbackInfo->errCode) {
                 asyncCallbackInfo->pixelMap = InnerGetAbilityIcon(asyncCallbackInfo->env,
@@ -5532,7 +5530,6 @@ napi_value GetAbilityIcon(napi_env env, napi_callback_info info)
                     asyncCallbackInfo->errCode = OPERATION_FAILED;
                 }
             }
-#endif
         },
         [](napi_env env, napi_status status, void* data) {
             AsyncAbilityInfo* asyncCallbackInfo = (AsyncAbilityInfo*)data;
@@ -5542,9 +5539,7 @@ napi_value GetAbilityIcon(napi_env env, napi_callback_info info)
             } else {
                 napi_create_uint32(env, 0, &result[0]);
                 napi_create_object(env, &result[1]);
-#ifdef SUPPORT_GRAPHICS
                 result[1] = Media::PixelMapNapi::CreatePixelMap(env, asyncCallbackInfo->pixelMap);
-#endif
             }
             if (asyncCallbackInfo->callbackRef) {
                 napi_value callback = nullptr;
@@ -5567,6 +5562,7 @@ napi_value GetAbilityIcon(napi_env env, napi_callback_info info)
     napi_queue_async_work(env, asyncCallbackInfo->asyncWork);
     return promise;
 }
+#endif
 
 static bool InnerGetNameForUid(int32_t uid, std::string &bundleName)
 {
