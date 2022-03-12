@@ -48,12 +48,36 @@ namespace {
     };
 }
 
-void ImageCompress::ReleasePngPointer(png_bytep* rowPointers, uint32_t h)
+void ImageCompress::ReleasePngPointer(png_bytepp& rowPointers, uint32_t height)
 {
-    for (uint32_t i = 0; i < h; ++i) {
-        free(rowPointers[i]);
+    if (rowPointers != nullptr) {
+        for (uint32_t i = 0; i < height; ++i) {
+            if (rowPointers[i] != nullptr) {
+                free(rowPointers[i]);
+            }
+        }
+        free(rowPointers);
     }
-    free(rowPointers);
+    rowPointers = nullptr;
+}
+
+bool ImageCompress::MallocPngPointer(png_bytepp& rowPointers, uint32_t height, uint32_t strides)
+{
+    if (rowPointers != nullptr || height == 0 || strides == 0) {
+        return false;
+    }
+    rowPointers = (png_bytep*)malloc(sizeof(png_bytep) * height);
+    if (rowPointers == nullptr) {
+        APP_LOGE("ImageCompress: MallocPngPointer malloc buffer failed");
+        return false;
+    }
+    for (uint32_t h = 0; h < height; ++h) {
+        rowPointers[h] = (png_byte*)malloc(strides);
+        if (rowPointers[h] == nullptr) {
+            return false;
+        }
+    }
+    return true;
 }
 
 bool ImageCompress::IsPathValid(std::string& fileName)
@@ -140,6 +164,7 @@ bool ImageCompress::InitPngFile(std::shared_ptr<ImageBuffer>& imageBuffer,
     imageBuffer->SetColorType(png_get_color_type(png, info));
     imageBuffer->SetBitDepth(png_get_bit_depth(png, info));
     imageBuffer->SetPngComponents(png_get_channels(png, info));
+
     if (imageBuffer->GetBitDepth() == BITDEPTH_SIXTHEN) {
         png_set_strip_16(png);
     }
@@ -163,15 +188,20 @@ bool ImageCompress::InitPngFile(std::shared_ptr<ImageBuffer>& imageBuffer,
         png_destroy_read_struct(&png, &info, NULL);
         return false;
     }
+
     imageBuffer->MallocImageMap(RGBA_COMPONENTS);
     imageBuffer->SetComponents(RGBA_COMPONENTS);
     uint32_t strides = imageBuffer->GetWidth() *  RGBA_COMPONENTS;
-    png_bytep* rowPointers = (png_bytep*)malloc(sizeof(png_bytep) * imageBuffer->GetHeight());
-    for (uint32_t h = 0; h < imageBuffer->GetHeight(); ++h) {
-        rowPointers[h] = (png_byte*)malloc(strides);
+    png_bytepp rowPointers = nullptr;
+    if (!MallocPngPointer(rowPointers, imageBuffer->GetHeight(), strides)) {
+        APP_LOGE("ImageCompress: MallocPngPointer image buffer failed");
+        return false;
     }
     png_read_image(png, rowPointers);
     ImageRow imageRow = imageBuffer->GetImageDataPointer().get();
+    if (rowPointers == nullptr) {
+        return false;
+    }
     for (uint32_t h = 0; h < imageBuffer->GetHeight(); ++h) {
         if (memcpy_s(imageRow, strides, rowPointers[h], strides) != EOK) {
             ReleasePngPointer(rowPointers, imageBuffer->GetHeight());
@@ -297,10 +327,7 @@ int32_t ImageCompress::EncodePngFile(std::shared_ptr<ImageBuffer>& imageBuffer)
         free(memo.buffer);
     }
     memo.buffer = nullptr;
-    for (uint32_t h = 0; h < imageBuffer->GetHeight(); ++h) {
-        free(rowPointers[h]);
-    }
-    free(rowPointers);
+    ReleasePngPointer(rowPointers, imageBuffer->GetHeight());
     return 0;
 }
 
@@ -329,8 +356,8 @@ int32_t ImageCompress::ResizeRGBAImage(std::shared_ptr<ImageBuffer>& imageBuffer
     uint32_t components = imageBufferIn->GetComponents();
     for (uint32_t h = 0; h < imageBufferOut->GetHeight(); ++h) {
         for (uint32_t w = 0; w < imageBufferOut->GetWidth(); ++w) {
-            uint64_t heightIndex = std::round(h / ratio);
-            uint64_t widthIndex = std::round(w / ratio);
+            int64_t heightIndex = std::round(h / ratio);
+            int64_t widthIndex = std::round(w / ratio);
             if (heightIndex > imageBufferIn->GetHeight()) {
                 heightIndex = imageBufferIn->GetHeight() - 1;
             }
@@ -466,8 +493,8 @@ int32_t ImageCompress::ResizeRGBImage(std::shared_ptr<ImageBuffer>& imageBufferI
     uint32_t components = imageBufferIn->GetComponents();
     for (uint32_t h = 0; h < imageBufferOut->GetHeight(); ++h) {
         for (uint32_t w = 0; w < imageBufferOut->GetWidth(); ++w) {
-            uint64_t heightIndex = std::round(h / ratio);
-            uint64_t widthIndex = std::round(w / ratio);
+            int64_t heightIndex = std::round(h / ratio);
+            int64_t widthIndex = std::round(w / ratio);
             if (heightIndex > imageBufferIn->GetHeight()) {
                 heightIndex = imageBufferIn->GetHeight() - 1;
             }
