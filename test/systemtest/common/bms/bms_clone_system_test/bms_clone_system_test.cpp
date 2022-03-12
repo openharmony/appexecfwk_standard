@@ -1229,7 +1229,7 @@ HWTEST_F(BmsCloneSystemTest, BMS_QueryAbilityInfosForClone_0400, Function | Medi
 
 /**
  * @tc.number: BMS_QueryAbilityInfosForClone_0500
- * @tc.name: test the QueryAbilityInfosForClone interface to get abilityInfo from a application includes two haps
+ * @tc.name: test the QueryAbilityInfosForClone interface to get abilityInfo from an application includes two haps
  * @tc.desc: 1.install a third-party application
  *           2.clone this application
  *           3.get the ability information of the cloned application
@@ -1288,7 +1288,7 @@ HWTEST_F(BmsCloneSystemTest, BMS_QueryAbilityInfosForClone_0500, Function | Medi
 
 /**
  * @tc.number: BMS_QueryAbilityInfosForClone_0600
- * @tc.name: test the QueryAbilityInfosForClone interface to get abilityInfo from a application includes two haps
+ * @tc.name: test the QueryAbilityInfosForClone interface to get abilityInfo from an application includes two haps
  * @tc.desc: 1.install a third-party application
  *           2.call the QueryAbilityInfosForClone interface to get application's abilityInfo by invalid bundleName
  */
@@ -1322,7 +1322,7 @@ HWTEST_F(BmsCloneSystemTest, BMS_QueryAbilityInfosForClone_0600, Function | Medi
 
 /**
  * @tc.number: BMS_QueryAbilityInfosForClone_0700
- * @tc.name: test the QueryAbilityInfosForClone interface to get abilityInfo from a application includes two haps
+ * @tc.name: test the QueryAbilityInfosForClone interface to get abilityInfo from an application includes two haps
  * @tc.desc: 1.install a third-party application
  *           2.call the QueryAbilityInfosForClone interface to get application's abilityInfo by invalid abilityName
  */
