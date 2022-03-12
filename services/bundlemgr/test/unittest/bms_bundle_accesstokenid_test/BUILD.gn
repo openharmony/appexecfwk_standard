@@ -24,7 +24,6 @@ ohos_unittest("BmsBundleAccessTokenIdTest") {
     "//third_party/jsoncpp/include",
     "//third_party/json/include",
     "//base/startup/syspara_lite/interfaces/innerkits/native/syspara/include",
-    "//foundation/multimedia/image_standard/interfaces/innerkits/include",
   ]
   sources = [
     "${services_path}/bundlemgr/src/bms_device_manager.cpp",
@@ -76,11 +75,15 @@ ohos_unittest("BmsBundleAccessTokenIdTest") {
     "//foundation/distributeddatamgr/distributeddatamgr/interfaces/innerkits/distributeddata:distributeddata_inner",
     "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
-    "//foundation/multimedia/image_standard/interfaces/innerkits:image_native",
     "//third_party/googletest:gtest_main",
     "//third_party/jsoncpp:jsoncpp",
   ]
-
+  if (bundle_framework_graphics) {
+    include_dirs += [
+      "//foundation/multimedia/image_standard/interfaces/innerkits/include",
+    ]
+    deps += [ "//foundation/multimedia/image_standard/interfaces/innerkits:image_native" ]
+  }
   deps += bundle_install_deps
 
   external_deps = [
