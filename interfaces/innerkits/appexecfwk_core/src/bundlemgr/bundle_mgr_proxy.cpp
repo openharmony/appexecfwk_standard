@@ -1550,6 +1550,7 @@ std::string BundleMgrProxy::GetAbilityIcon(const std::string &bundleName, const 
     return reply.ReadString();
 }
 
+#ifdef SUPPORT_GRAPHICS
 std::shared_ptr<Media::PixelMap> BundleMgrProxy::GetAbilityPixelMapIcon(const std::string &bundleName,
     const std::string &abilityName)
 {
@@ -1590,6 +1591,7 @@ std::shared_ptr<Media::PixelMap> BundleMgrProxy::GetAbilityPixelMapIcon(const st
     APP_LOGD("get ability pixelmap icon success");
     return info;
 }
+#endif
 
 sptr<IBundleInstaller> BundleMgrProxy::GetBundleInstaller()
 {

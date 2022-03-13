@@ -1577,6 +1577,7 @@ std::string BundleDataMgr::GetAbilityIcon(const std::string &bundleName, const s
     return (*ability).iconPath;
 }
 
+#ifdef SUPPORT_GRAPHICS
 std::shared_ptr<Media::PixelMap> BundleDataMgr::GetAbilityPixelMapIcon(const std::string &bundleName,
     const std::string &abilityName) const
 {
@@ -1624,6 +1625,7 @@ std::shared_ptr<Media::PixelMap> BundleDataMgr::GetAbilityPixelMapIcon(const std
     }
     return pixelMapPtr;
 }
+#endif
 
 bool BundleDataMgr::RegisterBundleStatusCallback(const sptr<IBundleStatusCallback> &bundleStatusCallback)
 {
@@ -2972,6 +2974,7 @@ std::shared_ptr<Global::Resource::ResourceManager> BundleDataMgr::GetResourceMan
     return resourceManager;
 }
 
+#ifdef SUPPORT_GRAPHICS
 std::shared_ptr<Media::PixelMap> BundleDataMgr::LoadImageFile(const std::string &path) const
 {
     APP_LOGD("BundleDataMgr::LoadImageFile IN");
@@ -2996,5 +2999,6 @@ std::shared_ptr<Media::PixelMap> BundleDataMgr::LoadImageFile(const std::string 
     APP_LOGD("BundleDataMgr::LoadImageFile OUT");
     return std::shared_ptr<Media::PixelMap>(std::move(pixelMapPtr));
 }
+#endif
 }  // namespace AppExecFwk
 }  // namespace OHOS
