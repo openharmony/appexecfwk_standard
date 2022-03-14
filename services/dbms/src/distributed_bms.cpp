@@ -337,7 +337,8 @@ std::unique_ptr<char[]> DistributedBms::EncodeBase64(std::unique_ptr<unsigned ch
         unsigned char byte3 = srcData[i + DECODE_VALUE_TWO];
         dstData[j++] = DECODE_TABLE[byte1 >> DECODE_VALUE_TWO];
         dstData[j++] =
-            DECODE_TABLE[((byte1 & DECODE_VALUE_CHAR_THREE) << DECODE_VALUE_FOUR) | (byte2 >> DECODE_VALUE_FOUR)];
+            DECODE_TABLE[(static_cast<uint8_t>(byte1 & DECODE_VALUE_CHAR_THREE) << DECODE_VALUE_FOUR)
+             | (byte2 >> DECODE_VALUE_FOUR)];
         dstData[j++] =
             DECODE_TABLE[((byte2 & DECODE_VALUE_CHAR_FIFTEEN) << DECODE_VALUE_TWO) | (byte3 >> DECODE_VALUE_SIX)];
         dstData[j++] = DECODE_TABLE[byte3 & DECODE_VALUE_CHAR_SIXTY_THREE];
@@ -345,7 +346,7 @@ std::unique_ptr<char[]> DistributedBms::EncodeBase64(std::unique_ptr<unsigned ch
     if (srcLen % DECODE_VALUE_THREE == DECODE_VALUE_ONE) {
         unsigned char byte1 = srcData[i];
         dstData[j++] = DECODE_TABLE[byte1 >> DECODE_VALUE_TWO];
-        dstData[j++] = DECODE_TABLE[(byte1 & DECODE_VALUE_CHAR_THREE) << DECODE_VALUE_FOUR];
+        dstData[j++] = DECODE_TABLE[static_cast<uint8_t>(byte1 & DECODE_VALUE_CHAR_THREE) << DECODE_VALUE_FOUR];
         dstData[j++] = '=';
         dstData[j++] = '=';
     } else {
@@ -353,7 +354,8 @@ std::unique_ptr<char[]> DistributedBms::EncodeBase64(std::unique_ptr<unsigned ch
         unsigned char byte2 = srcData[i + DECODE_VALUE_ONE];
         dstData[j++] = DECODE_TABLE[byte1 >> DECODE_VALUE_TWO];
         dstData[j++] =
-            DECODE_TABLE[((byte1 & DECODE_VALUE_CHAR_THREE) << DECODE_VALUE_FOUR) | (byte2 >> DECODE_VALUE_FOUR)];
+            DECODE_TABLE[(static_cast<uint8_t>(byte1 & DECODE_VALUE_CHAR_THREE) << DECODE_VALUE_FOUR)
+             | (byte2 >> DECODE_VALUE_FOUR)];
         dstData[j++] = DECODE_TABLE[(byte2 & DECODE_VALUE_CHAR_FIFTEEN) << DECODE_VALUE_TWO];
         dstData[j++] = '=';
     }
