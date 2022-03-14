@@ -120,6 +120,7 @@ static napi_value Init(napi_env env, napi_value exports)
         DECLARE_NAPI_FUNCTION("setAbilityEnabled", SetAbilityEnabled),
         DECLARE_NAPI_FUNCTION("isAbilityEnabled", IsAbilityEnabled),
         DECLARE_NAPI_FUNCTION("isApplicationEnabled", IsApplicationEnabled),
+        DECLARE_NAPI_FUNCTION("hasInstalled", HasInstalled),
         DECLARE_NAPI_FUNCTION("getAppPrivilegeLevel", GetAppPrivilegeLevel),
         DECLARE_NAPI_FUNCTION("queryExtensionAbilityInfosByWant", QueryExtensionInfoByWant),
         DECLARE_NAPI_FUNCTION("getNameForUid", GetNameForUid),
