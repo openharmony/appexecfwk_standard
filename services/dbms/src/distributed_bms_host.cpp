@@ -187,7 +187,7 @@ bool DistributedBmsHost::VerifyCallingPermission(const std::string &permissionNa
         APP_LOGE("permission %{public}s: PERMISSION_DENIED", permissionName.c_str());
         return false;
     }
-    APP_LOGD("verify AccessToken success");
+    APP_LOGD("verify permission success");
     return true;
 }
 

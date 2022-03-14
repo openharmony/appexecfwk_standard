@@ -873,7 +873,7 @@ ErrCode BaseBundleInstaller::ProcessBundleUpdateStatus(
         APP_LOGE("the signature of the new bundle is not the same as old one");
         return ERR_APPEXECFWK_INSTALL_FAILED_INCONSISTENT_SIGNATURE;
     }
-    APP_LOGE("ProcessBundleUpdateStatus noSkipsKill = %{public}d", noSkipsKill);
+    APP_LOGD("ProcessBundleUpdateStatus noSkipsKill = %{public}d", noSkipsKill);
     // now there are two cases for updating:
     // 1. bundle exist, hap exist, update hap
     // 2. bundle exist, install new hap
