@@ -170,10 +170,10 @@ void BMSEventHandler::RebootBundleInstall(
     }
 
     for (auto &scanPathIter : scanPathList) {
-        APP_LOGD("reboot scan bundle path: %{public}s ", scanPathIter.c_str());
+        APP_LOGD("reboot scan bundle path: %{private}s ", scanPathIter.c_str());
         std::unordered_map<std::string, InnerBundleInfo> infos;
         if (!ParseHapFiles(scanPathIter, infos) || infos.empty()) {
-            APP_LOGE("obtain bundleinfo failed : %{public}s ", scanPathIter.c_str());
+            APP_LOGE("obtain bundleinfo failed : %{private}s ", scanPathIter.c_str());
             continue;
         }
 
@@ -182,7 +182,7 @@ void BMSEventHandler::RebootBundleInstall(
         AddParseInfosToMap(bundleName, infos);
         auto mapIter = loadExistData_.find(bundleName);
         if (mapIter == loadExistData_.end()) {
-            APP_LOGD("OTA Install new bundle(%{public}s) by path(%{public}s).",
+            APP_LOGD("OTA Install new bundle(%{public}s) by path(%{private}s).",
                 bundleName.c_str(), scanPathIter.c_str());
             if (!OTAInstallSystemBundle(scanPathIter, appType)) {
                 APP_LOGE("OTA Install new bundle(%{public}s) error.", bundleName.c_str());
@@ -191,7 +191,7 @@ void BMSEventHandler::RebootBundleInstall(
             continue;
         }
 
-        APP_LOGD("OTA process bundle(%{public}s) by path(%{public}s).",
+        APP_LOGD("OTA process bundle(%{public}s) by path(%{private}s).",
             bundleName.c_str(), scanPathIter.c_str());
         BundleInfo hasInstalledInfo;
         auto hasBundleInstalled = dataMgr->GetBundleInfo(
@@ -222,7 +222,7 @@ void BMSEventHandler::RebootBundleInstall(
             // Generally, when the versionCode of Hap is greater than the installed versionCode,
             // Except for the uninstalled app, they can be installed or upgraded directly by OTA.
             if (hasInstalledInfo.versionCode < hapVersionCode) {
-                APP_LOGD("OTA update module(%{public}s) by path(%{public}s)",
+                APP_LOGD("OTA update module(%{public}s) by path(%{private}s)",
                     parserModuleNames[0].c_str(), item.first.c_str());
                 if (!OTAInstallSystemBundle(item.first, appType)) {
                     APP_LOGE("OTA update module(%{public}s) failed", parserModuleNames[0].c_str());
@@ -238,7 +238,7 @@ void BMSEventHandler::RebootBundleInstall(
                     continue;
                 }
 
-                APP_LOGD("OTA install module(%{public}s) by path(%{public}s)",
+                APP_LOGD("OTA install module(%{public}s) by path(%{private}s)",
                     parserModuleNames[0].c_str(), item.first.c_str());
                 if (!OTAInstallSystemBundle(item.first, appType)) {
                     APP_LOGE("OTA install module(%{public}s) failed", parserModuleNames[0].c_str());
@@ -329,12 +329,12 @@ void BMSEventHandler::RebootBundleUninstall()
         for (auto preBundlePath : loadIter.second.GetBundlePaths()) {
             auto parserInfoIter = parserInfoMap.find(preBundlePath);
             if (parserInfoIter != parserInfoMap.end()) {
-                APP_LOGD("OTA uninstall app(%{public}s) module path(%{public}s) exits.",
+                APP_LOGD("OTA uninstall app(%{public}s) module path(%{private}s) exits.",
                     bundleName.c_str(), preBundlePath.c_str());
                 continue;
             }
 
-            APP_LOGD("OTA app(%{public}s) delete path(%{public}s).",
+            APP_LOGD("OTA app(%{public}s) delete path(%{private}s).",
                 bundleName.c_str(), preBundlePath.c_str());
             DeletePreInfoInDb(bundleName, preBundlePath, false);
         }
@@ -361,7 +361,7 @@ void BMSEventHandler::DeletePreInfoInDb(
         return;
     }
 
-    APP_LOGD("DeletePreInfoInDb bundle not bundleLevel with path(%{public}s)",
+    APP_LOGD("DeletePreInfoInDb bundle not bundleLevel with path(%{private}s)",
         bundlePath.c_str());
     dataMgr->GetPreInstallBundleInfo(bundleName, preInstallBundleInfo);
     preInstallBundleInfo.DeleteBundlePath(bundlePath);
@@ -387,7 +387,7 @@ bool BMSEventHandler::HasModuleSavedInPreInstalledDb(
 bool BMSEventHandler::OTAInstallSystemBundle(
     const std::string &filePath, Constants::AppType appType)
 {
-    APP_LOGD("OTA install start in bunlde: %{public}s", filePath.c_str());
+    APP_LOGD("OTA install start in bunlde: %{private}s", filePath.c_str());
     if (filePath.empty()) {
         return false;
     }
@@ -404,7 +404,7 @@ bool BMSEventHandler::ParseHapFiles(
     std::vector<std::string> realPaths;
     auto ret = BundleUtil::CheckFilePath(hapFilePathVec, realPaths);
     if (ret != ERR_OK) {
-        APP_LOGE("File path %{public}s invalid", hapFilePath.c_str());
+        APP_LOGE("File path %{private}s invalid", hapFilePath.c_str());
         return false;
     }
 

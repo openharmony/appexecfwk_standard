@@ -223,7 +223,7 @@ ErrCode BundleCloneMgr::CreateBundleAndDataDir(InnerBundleInfo &info) const
 {
     APP_LOGE("CreateBundleAndDataDir start");
     auto cloneCodePath = cloneInfo_.GetAppCodePath();
-    APP_LOGI("clone create bundle dir %{public}s", cloneCodePath.c_str());
+    APP_LOGI("clone create bundle dir %{private}s", cloneCodePath.c_str());
     InnerBundleUserInfo newInnerBundleUserInfo;
     newInnerBundleUserInfo.bundleUserInfo.userId = Constants::DEFAULT_USERID;
     newInnerBundleUserInfo.bundleName = bundleName_;

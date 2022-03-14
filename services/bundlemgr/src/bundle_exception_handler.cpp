@@ -121,10 +121,10 @@ std::string BundleExceptionHandler::GetBundleAndDataDir(const InnerBundleInfo &i
             APP_LOGE("App type error");
             return std::string();
     }
-    APP_LOGD("base path is %{public}s", basePath.c_str());
+    APP_LOGD("base path is %{private}s", basePath.c_str());
     DIR* dir = opendir(basePath.c_str());
     if (dir == nullptr) {
-        APP_LOGE("GetBundleAndDataDir open bundle dir:%{public}s is failure", basePath.c_str());
+        APP_LOGE("GetBundleAndDataDir open bundle dir:%{private}s is failure", basePath.c_str());
         return std::string();
     }
 
@@ -136,7 +136,7 @@ std::string BundleExceptionHandler::GetBundleAndDataDir(const InnerBundleInfo &i
     while ((entry = readdir(dir)) != nullptr) {
         const std::string innerPath = basePath + entry->d_name;
         if (innerPath.find(info.GetBundleName()) != std::string::npos) {
-            APP_LOGD("find bundle path or bundle data path %{public}s", innerPath.c_str());
+            APP_LOGD("find bundle path or bundle data path %{private}s", innerPath.c_str());
             closedir(dir);
             return innerPath;
         }

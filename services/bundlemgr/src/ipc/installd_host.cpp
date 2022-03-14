@@ -86,7 +86,7 @@ bool InstalldHost::HandleExtractModuleFiles(MessageParcel &data, MessageParcel &
     std::string targetPath = Str16ToStr8(data.ReadString16());
     std::string targetSoPath = Str16ToStr8(data.ReadString16());
     std::string cpuAbi = Str16ToStr8(data.ReadString16());
-    APP_LOGI("extract module %{public}s", targetPath.c_str());
+    APP_LOGI("extract module %{private}s", targetPath.c_str());
     ErrCode result = ExtractModuleFiles(srcModulePath, targetPath, targetSoPath, cpuAbi);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, reply, result);
     return true;
@@ -96,7 +96,7 @@ bool InstalldHost::HandleRenameModuleDir(MessageParcel &data, MessageParcel &rep
 {
     std::string oldPath = Str16ToStr8(data.ReadString16());
     std::string newPath = Str16ToStr8(data.ReadString16());
-    APP_LOGI("rename moduleDir %{public}s", oldPath.c_str());
+    APP_LOGI("rename moduleDir %{private}s", oldPath.c_str());
     ErrCode result = RenameModuleDir(oldPath, newPath);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, reply, result);
     return true;

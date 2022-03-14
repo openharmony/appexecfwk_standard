@@ -250,7 +250,7 @@ std::shared_ptr<Global::Resource::ResourceManager> DistributedBms::GetResourceMa
         "DistributedBms::InitResourceManager moduleResPaths count: %{public}zu", bundleInfo.moduleResPaths.size());
     for (auto moduleResPath : bundleInfo.moduleResPaths) {
         if (!moduleResPath.empty()) {
-            APP_LOGE("DistributedBms::InitResourceManager length: %{public}zu, moduleResPath: %{public}s",
+            APP_LOGE("DistributedBms::InitResourceManager length: %{public}zu, moduleResPath: %{private}s",
                 moduleResPath.length(),
                 moduleResPath.c_str());
             if (!resourceManager->AddResource(moduleResPath.c_str())) {

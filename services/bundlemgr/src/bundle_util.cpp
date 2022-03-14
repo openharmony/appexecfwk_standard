@@ -113,7 +113,7 @@ ErrCode BundleUtil::CheckFilePath(const std::vector<std::string> &bundlePaths, s
 
 bool BundleUtil::CheckFileType(const std::string &fileName, const std::string &extensionName)
 {
-    APP_LOGD("path is %{public}s, support suffix is %{public}s", fileName.c_str(), extensionName.c_str());
+    APP_LOGD("path is %{private}s, support suffix is %{public}s", fileName.c_str(), extensionName.c_str());
     if (!CheckFileName(fileName)) {
         return false;
     }
@@ -169,7 +169,7 @@ bool BundleUtil::CheckSystemSize(const std::string &bundlePath, const std::strin
 
 bool BundleUtil::GetHapFilesFromBundlePath(const std::string& currentBundlePath, std::vector<std::string>& hapFileList)
 {
-    APP_LOGD("GetHapFilesFromBundlePath with path is %{public}s", currentBundlePath.c_str());
+    APP_LOGD("GetHapFilesFromBundlePath with path is %{private}s", currentBundlePath.c_str());
     if (currentBundlePath.empty()) {
         return false;
     }
@@ -190,12 +190,12 @@ bool BundleUtil::GetHapFilesFromBundlePath(const std::string& currentBundlePath,
         const std::string hapFilePath = bundlePath + entry->d_name;
         std::string realPath = "";
         if (CheckFilePath(hapFilePath, realPath) != ERR_OK) {
-            APP_LOGE("find invalid hap path %{public}s", hapFilePath.c_str());
+            APP_LOGE("find invalid hap path %{private}s", hapFilePath.c_str());
             closedir(dir);
             return false;
         }
         hapFileList.emplace_back(realPath);
-        APP_LOGD("find hap path %{public}s", realPath.c_str());
+        APP_LOGD("find hap path %{private}s", realPath.c_str());
 
         if (!hapFileList.empty() && (hapFileList.size() > Constants::MAX_HAP_NUMBER)) {
             APP_LOGE("reach the max hap number 128, stop to add more.");

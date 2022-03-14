@@ -29,7 +29,7 @@ void PageAbilityDemo::OnStart(const Want &want)
     APP_LOGI("PageAbilityDemo::CreateDir");
     for (int i = 1; i < FOLDER_LAYERS; i++) {
         path += "dir" + std::to_string(i) + "/";
-        APP_LOGI("PageAbilityDemo::CreateDir %{public}s", path.c_str());
+        APP_LOGI("PageAbilityDemo::CreateDir %{private}s", path.c_str());
         CreateDir(path);
     }
     const std::string testCacheFileName =
@@ -79,7 +79,7 @@ void PageAbilityDemo::CreateFile(const std::string &path) const
     file.close();
 
     if (access(path.c_str(), F_OK) != 0) {
-        APP_LOGE("CreateFile-checkFile:%{public}s not exist", path.c_str());
+        APP_LOGE("CreateFile-checkFile:%{private}s not exist", path.c_str());
     }
 }
 
@@ -87,7 +87,7 @@ void PageAbilityDemo::CreateDir(const std::string &path) const
 {
     if (access(path.c_str(), F_OK) != 0) {
         if (mkdir(path.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH) != 0) {
-            APP_LOGE("CreateDir:%{public}s error", path.c_str());
+            APP_LOGE("CreateDir:%{private}s error", path.c_str());
         }
     }
 }

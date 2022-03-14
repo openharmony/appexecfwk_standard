@@ -646,7 +646,7 @@ ErrCode BundleManagerShellCommand::RunAsInstallCommand()
     }
 
     for (auto &path : bundlePath) {
-        APP_LOGD("install hap path %{public}s", path.c_str());
+        APP_LOGD("install hap path %{private}s", path.c_str());
     }
 
     if (result == OHOS::ERR_OK) {
