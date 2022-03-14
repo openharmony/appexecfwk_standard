@@ -256,7 +256,7 @@ void BmsLauncherServiceSystemTest::CheckApplicationInfo(const std::string &bundl
         "/data/app/el1/bundle/public/com.example.third1/com.example.third1");
     EXPECT_EQ(applicationInfo.entryDir, "/data/app/el1/bundle/public/com.example.third1/com.example.third1");
     EXPECT_EQ(applicationInfo.codePath, "/data/app/el1/bundle/public/com.example.third1");
-    EXPECT_EQ(applicationInfo.cacheDir, "/data/accounts/account_0/appdata/com.example.third1/cache");
+    EXPECT_EQ(applicationInfo.cacheDir, "/data/app/el2/100/base/com.example.third1/cache");
     EXPECT_GE(applicationInfo.flags, 0);
     EXPECT_GT(applicationInfo.enabled, 0);
 }

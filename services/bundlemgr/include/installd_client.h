@@ -55,16 +55,15 @@ public:
     ErrCode RenameModuleDir(const std::string &oldPath, const std::string &newPath);
     /**
      * @brief Create a bundle data directory.
-     * @param bundleDir Indicates the bundle data directory path that to be created.
+     * @param bundleName Indicates bundleName to be set to the directory.
      * @param userid Indicates userid to be set to the directory.
      * @param uid Indicates uid to be set to the directory.
      * @param gid Indicates gid to be set to the directory.
      * @param apl Indicates apl to be set to the directory.
-     * @param onlyOneUser Indicates is only one user or not.
      * @return Returns ERR_OK if the bundle data directory created successfully; returns error code otherwise.
      */
-    ErrCode CreateBundleDataDir(const std::string &bundleDir,
-        const int userid, const int uid, const int gid, const std::string &apl, bool onlyOneUser = true);
+    ErrCode CreateBundleDataDir(const std::string &bundleName,
+        const int userid, const int uid, const int gid, const std::string &apl);
     /**
      * @brief Remove a bundle data directory.
      * @param bundleName Indicates the bundleName data directory path that to be created.
@@ -72,18 +71,6 @@ public:
      * @return Returns ERR_OK if the bundle data directory created successfully; returns error code otherwise.
      */
     ErrCode RemoveBundleDataDir(const std::string &bundleName, const int userid);
-
-    /**
-     * @brief Create a module and it's abilities data directory.
-     * @param bundleDir Indicates the module data directory path that to be created.
-     * @param abilityDirs Indicates the abilities data directory name that to be created.
-     * @param uid Indicates uid to be set to the directory.
-     * @param gid Indicates gid to be set to the directory.
-     * @return Returns ERR_OK if the data directories created successfully; returns error code otherwise.
-     */
-    ErrCode CreateModuleDataDir(
-        const std::string &ModuleDir, const std::vector<std::string> &abilityDirs, const int uid, const int gid);
-
     /**
      * @brief Remove a module data directory.
      * @param ModuleDir Indicates the module data directory path that to be created.

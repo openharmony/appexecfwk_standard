@@ -17,7 +17,7 @@
 #include <fstream>
 namespace OHOS {
 namespace AppExecFwk {
-const std::string BUNDLE_DATA_ROOT_PATH = "/data/accounts/account_0/appdata/";
+const std::string BUNDLE_DATA_ROOT_PATH = "/data/app/el2/100/base/";
 void PageAbilityDemo::OnStart(const Want &want)
 {
     APP_LOGI("PageAbilityDemo::onStart");
