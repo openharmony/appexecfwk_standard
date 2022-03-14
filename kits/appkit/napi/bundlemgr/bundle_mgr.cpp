@@ -63,6 +63,7 @@ constexpr int32_t CODE_SUCCESS = 0;
 constexpr int32_t CODE_FAILED = -1;
 constexpr int32_t OPERATION_FAILED = 1;
 constexpr int32_t INVALID_PARAM = 2;
+constexpr int32_t INVALID_NUMBER = 202;
 constexpr int32_t PARAM_TYPE_ERROR = 1;
 constexpr int32_t UNDEFINED_ERROR = -1;
 enum class InstallErrorCode {
@@ -5150,6 +5151,157 @@ napi_value IsApplicationEnabled(napi_env env, napi_callback_info info)
     }
     APP_LOGI("%{public}s end.", __func__);
     return ret;
+}
+
+static void ParseCheckPackageHasInstalledOptions(napi_env env, napi_value param,
+    OHOS::AppExecFwk::CheckPackageHasInstalledOptions *hasInstalledOptions)
+{
+    if (hasInstalledOptions == nullptr) {
+        APP_LOGE("%{public}s hasInstalledOptions is nullptr", __func__);
+        return;
+    }
+    napi_valuetype valueType;
+    napi_value prop = nullptr;
+    // parse bundleName
+    napi_get_named_property(env, param, "bundleName", &prop);
+    napi_typeof(env, prop, &valueType);
+    if (valueType == napi_string) {
+        hasInstalledOptions->bundleName = GetStringFromNAPI(env, prop);
+        hasInstalledOptions->isString = true;
+    } else {
+        hasInstalledOptions->isString = false;
+    }
+    // parse success function
+    napi_value jsFunc = nullptr;
+    napi_ref jsFuncRef = nullptr;
+    napi_get_named_property(env, param, "success", &jsFunc);
+    napi_typeof(env, jsFunc, &valueType);
+    if (valueType == napi_function) {
+        napi_create_reference(env, jsFunc, NAPI_RETURN_ONE, &jsFuncRef);
+        hasInstalledOptions->successRef = jsFuncRef;
+    }
+    // parse fail function
+    napi_get_named_property(env, param, "fail", &jsFunc);
+    napi_typeof(env, jsFunc, &valueType);
+    if (valueType == napi_function) {
+        napi_create_reference(env, jsFunc, NAPI_RETURN_ONE, &jsFuncRef);
+        hasInstalledOptions->failRef = jsFuncRef;
+    }
+    // parse complete function
+    napi_get_named_property(env, param, "complete", &jsFunc);
+    napi_typeof(env, jsFunc, &valueType);
+    if (valueType == napi_function) {
+        napi_create_reference(env, jsFunc, NAPI_RETURN_ONE, &jsFuncRef);
+        hasInstalledOptions->completeRef = jsFuncRef;
+    }
+}
+
+static bool InnerHasInstalled(std::string bundleName)
+{
+    if (bundleName.empty()) {
+        APP_LOGE("bundleName is invalid param");
+        return false;
+    }
+    auto iBundleMgr = GetBundleMgr();
+    if (!iBundleMgr) {
+        APP_LOGE("can not get iBundleMgr");
+        return false;
+    }
+    BundleInfo bundleInfo;
+    bool ret = iBundleMgr->GetBundleInfo(bundleName, 0, bundleInfo);
+    if (!ret) {
+        APP_LOGE("bundleInfo is not find, bundleName=%{public}s.", bundleName.c_str());
+    }
+    return ret;
+}
+
+static void ConvertCheckPackageHasInstalledResponse(napi_env env, napi_value hasInstalledResponseObj,
+    const OHOS::AppExecFwk::CheckPackageHasInstalledResponse &response)
+{
+    APP_LOGD("convert CheckPackageHasInstalledResponse start");
+    napi_value nResult;
+    NAPI_CALL_RETURN_VOID(env, napi_get_boolean(env, response.result, &nResult));
+    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, hasInstalledResponseObj, "result", nResult));
+}
+
+napi_value HasInstalled(napi_env env, napi_callback_info info)
+{
+    APP_LOGI("%{public}s, asyncCallback.", __func__);
+    size_t requireArgc = ARGS_SIZE_ONE;
+    size_t argc = ARGS_SIZE_TWO;
+    napi_value argv[ARGS_SIZE_TWO] = { 0 };
+    napi_value thisArg = nullptr;
+    void *data = nullptr;
+
+    NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, &thisArg, &data));
+    if (argc != requireArgc) {
+        APP_LOGE("%{public}s, requires 1 parameter", __func__);
+        return nullptr;
+    }
+
+    CheckPackageHasInstalledOptions* asyncCallbackInfo = new (std::nothrow) CheckPackageHasInstalledOptions();
+    if (asyncCallbackInfo == nullptr) {
+        return nullptr;
+    }
+    asyncCallbackInfo->env = env;
+    napi_valuetype valueType = napi_undefined;
+    napi_typeof(env, argv[PARAM0], &valueType);
+    if (valueType == napi_object) {
+        ParseCheckPackageHasInstalledOptions(env, argv[PARAM0], asyncCallbackInfo);
+    } else {
+        asyncCallbackInfo->errCode = INVALID_PARAM;
+    }
+
+    napi_value resource = nullptr;
+    napi_create_string_utf8(env, "JSHasInstalled", NAPI_AUTO_LENGTH, &resource);
+    napi_create_async_work(
+        env, nullptr, resource,
+        [](napi_env env, void* data) {
+            CheckPackageHasInstalledOptions* asyncCallbackInfo = (CheckPackageHasInstalledOptions*)data;
+            if (!asyncCallbackInfo->errCode) {
+                if (!asyncCallbackInfo->isString) {
+                    napi_value callback = nullptr;
+                    napi_value placeHolder = nullptr;
+                    napi_value result[ARGS_SIZE_TWO] = { 0 };
+                    if (asyncCallbackInfo->failRef) {
+                        napi_create_string_utf8(env, "value is not an available number",
+                            NAPI_AUTO_LENGTH, &result[PARAM0]);
+                        napi_create_int32(env, INVALID_NUMBER, &result[PARAM1]);
+                        napi_get_reference_value(env, asyncCallbackInfo->failRef, &callback);
+                        napi_call_function(env, nullptr, callback, ARGS_SIZE_TWO, result, &placeHolder);
+                        napi_delete_reference(env, asyncCallbackInfo->failRef);
+                    }
+                    if (asyncCallbackInfo->completeRef) {
+                        napi_get_reference_value(env, asyncCallbackInfo->completeRef, &callback);
+                        napi_call_function(env, nullptr, callback, 0, result, &placeHolder);
+                        napi_delete_reference(env, asyncCallbackInfo->completeRef);
+                    }
+                } else {
+                    if (asyncCallbackInfo->successRef) {
+                        asyncCallbackInfo->response.result = InnerHasInstalled(asyncCallbackInfo->bundleName);
+                    }
+                }
+            }
+        },
+        [](napi_env env, napi_status status, void* data) {
+            CheckPackageHasInstalledOptions* asyncCallbackInfo = (CheckPackageHasInstalledOptions*)data;
+            if (asyncCallbackInfo->successRef) {
+                napi_value result[ARGS_SIZE_ONE] = { 0 };
+                NAPI_CALL_RETURN_VOID(env, napi_create_object(env, &result[PARAM0]));
+                ConvertCheckPackageHasInstalledResponse(env, result[PARAM0], asyncCallbackInfo->response);
+                napi_value callback = nullptr;
+                napi_value placeHolder = nullptr;
+                napi_get_reference_value(env, asyncCallbackInfo->successRef, &callback);
+                napi_call_function(env, nullptr, callback, ARGS_SIZE_ONE, result, &placeHolder);
+                napi_delete_reference(env, asyncCallbackInfo->successRef);
+            }
+            napi_delete_async_work(env, asyncCallbackInfo->asyncWork);
+            delete asyncCallbackInfo;
+            asyncCallbackInfo = nullptr;
+        },
+        (void*)asyncCallbackInfo, &asyncCallbackInfo->asyncWork);
+    napi_queue_async_work(env, asyncCallbackInfo->asyncWork);
+    return nullptr;
 }
 
 AsyncAbilityLabelCallbackInfo *CreateAbilityLabelCallbackInfo(napi_env env)
