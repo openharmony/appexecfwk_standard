@@ -120,7 +120,6 @@ static napi_value Init(napi_env env, napi_value exports)
         DECLARE_NAPI_FUNCTION("setAbilityEnabled", SetAbilityEnabled),
         DECLARE_NAPI_FUNCTION("isAbilityEnabled", IsAbilityEnabled),
         DECLARE_NAPI_FUNCTION("isApplicationEnabled", IsApplicationEnabled),
-        DECLARE_NAPI_FUNCTION("hasInstalled", HasInstalled),
         DECLARE_NAPI_FUNCTION("getAppPrivilegeLevel", GetAppPrivilegeLevel),
         DECLARE_NAPI_FUNCTION("queryExtensionAbilityInfosByWant", QueryExtensionInfoByWant),
         DECLARE_NAPI_FUNCTION("getNameForUid", GetNameForUid),
@@ -167,6 +166,18 @@ static napi_value Init(napi_env env, napi_value exports)
     APP_LOGI("-----Init end------");
     return exports;
 }
+
+/*
+ * function for package module exports
+ */
+static napi_value PackageInit(napi_env env, napi_value exports)
+{
+    napi_property_descriptor desc[] = {
+        DECLARE_NAPI_FUNCTION("hasInstalled", HasInstalled),
+    };
+    NAPI_CALL(env, napi_define_properties(env, exports, sizeof(desc) / sizeof(desc[0]), desc));
+    return exports;
+}
 EXTERN_C_END
 
 /*
@@ -181,12 +192,24 @@ static napi_module _module = {
     .nm_priv = ((void *)0),
     .reserved = {0}
 };
+
+static napi_module _packageModule = {
+    .nm_version = 1,
+    .nm_flags = 0,
+    .nm_filename = nullptr,
+    .nm_register_func = PackageInit,
+    .nm_modname = "package",
+    .nm_priv = ((void *)0),
+    .reserved = {0}
+};
+
 /*
  * Module register function
  */
 extern "C" __attribute__((constructor)) void RegisterModule(void)
 {
     napi_module_register(&_module);
+    napi_module_register(&_packageModule);
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS
