@@ -163,7 +163,7 @@ void InstalldOperator::ExtractSo(const BundleExtractor &extractor, const std::st
     // create dir if not exist
     if (!IsExistDir(targetSoPath)) {
         if (!MkRecursiveDir(targetSoPath, true)) {
-            APP_LOGE("create targetSoPath %{public}s failed", targetSoPath.c_str());
+            APP_LOGE("create targetSoPath %{private}s failed", targetSoPath.c_str());
             return;
         }
     }
@@ -196,7 +196,7 @@ bool InstalldOperator::RenameDir(const std::string &oldPath, const std::string &
     realOldPath.reserve(PATH_MAX);
     realOldPath.resize(PATH_MAX - 1);
     if (realpath(oldPath.c_str(), &(realOldPath[0])) == nullptr) {
-        APP_LOGE("realOldPath %{public}s", realOldPath.c_str());
+        APP_LOGE("realOldPath %{private}s", realOldPath.c_str());
         return false;
     }
 
@@ -316,7 +316,7 @@ int64_t InstalldOperator::GetDiskUsage(const std::string &dir)
     }
     std::string filePath = "";
     if (!PathToRealPath(dir, filePath)) {
-        APP_LOGE("file is not real path, file path: %{public}s", dir.c_str());
+        APP_LOGE("file is not real path, file path: %{private}s", dir.c_str());
         return 0;
     }
     DIR *dirPtr = opendir(filePath.c_str());
@@ -336,12 +336,12 @@ int64_t InstalldOperator::GetDiskUsage(const std::string &dir)
         std::string path = filePath + entry->d_name;
         std::string realPath = "";
         if (!PathToRealPath(path, realPath)) {
-            APP_LOGE("file is not real path %{public}s", path.c_str());
+            APP_LOGE("file is not real path %{private}s", path.c_str());
             continue;
         }
         struct stat fileInfo = {0};
         if (stat(realPath.c_str(), &fileInfo) != 0) {
-            APP_LOGE("call stat error %{public}s", realPath.c_str());
+            APP_LOGE("call stat error %{private}s", realPath.c_str());
             fileInfo.st_size = 0;
         }
         size += fileInfo.st_size;
@@ -361,7 +361,7 @@ void InstalldOperator::TraverseCacheDirectory(const std::string &currentPath, st
     }
     std::string filePath = "";
     if (!PathToRealPath(currentPath, filePath)) {
-        APP_LOGE("file is not real path, file path: %{public}s", currentPath.c_str());
+        APP_LOGE("file is not real path, file path: %{private}s", currentPath.c_str());
         return;
     }
     DIR* dir = opendir(filePath.c_str());

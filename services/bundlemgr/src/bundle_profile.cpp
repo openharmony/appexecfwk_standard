@@ -1972,7 +1972,7 @@ bool ToApplicationInfo(const ProfileReader::ConfigJson &configJson,
         applicationInfo.nativeLibraryPath = Constants::LIBS + targetLibName;
         applicationInfo.cpuAbi = targetAbi;
     }
-    APP_LOGD("nativeLibraryPath : %{public}s, cpuAbi : %{public}s",
+    APP_LOGD("nativeLibraryPath : %{private}s, cpuAbi : %{public}s",
         applicationInfo.nativeLibraryPath.c_str(), applicationInfo.cpuAbi.c_str());
 
     // for SystemResource

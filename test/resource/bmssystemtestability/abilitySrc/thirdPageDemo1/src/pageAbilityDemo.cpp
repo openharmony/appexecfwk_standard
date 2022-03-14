@@ -71,7 +71,7 @@ void PageAbilityDemo::CreateFile(const std::string &path) const
     file.close();
 
     if (access(path.c_str(), F_OK) != 0) {
-        APP_LOGE("CreateFile-checkFile:%{public}s not exist", path.c_str());
+        APP_LOGE("CreateFile-checkFile:%{private}s not exist", path.c_str());
     }
 }
 

@@ -96,7 +96,7 @@ void BmsServiceStartModuleTest::CreateDir(const std::string &path) const
 {
     if (access(path.c_str(), F_OK) != 0) {
         if (mkdir(path.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH) != 0) {
-            APP_LOGE("CreateDir:%{public}s error", path.c_str());
+            APP_LOGE("CreateDir:%{private}s error", path.c_str());
         }
     }
 }
@@ -105,7 +105,7 @@ void BmsServiceStartModuleTest::DeleteDir(const std::string &path) const
 {
     if (access(path.c_str(), F_OK) == 0) {
         if (rmdir(path.c_str()) != 0) {
-            APP_LOGE("DeleteDir:%{public}s error", path.c_str());
+            APP_LOGE("DeleteDir:%{private}s error", path.c_str());
         }
     }
 }
@@ -119,23 +119,23 @@ void BmsServiceStartModuleTest::CreateFile(const std::string &path) const
     mode_t mode = 0666;
     int fd = open(path.c_str(), O_RDWR | O_CREAT, mode);
     if (fd == -1) {
-        APP_LOGE("CreateFile-open:%{public}s error", path.c_str());
+        APP_LOGE("CreateFile-open:%{private}s error", path.c_str());
         return;
     }
     if (close(fd) != 0) {
-        APP_LOGW("CreateFile-close:%{public}s error", path.c_str());
+        APP_LOGW("CreateFile-close:%{private}s error", path.c_str());
         return;
     }
 
     if (access(path.c_str(), F_OK) != 0) {
-        APP_LOGE("CreateFile-checkFile:%{public}s not exist", path.c_str());
+        APP_LOGE("CreateFile-checkFile:%{private}s not exist", path.c_str());
     }
 }
 
 void BmsServiceStartModuleTest::DeleteFile(const std::string &path) const
 {
     if (remove(path.c_str()) != 0) {
-        APP_LOGE("DeleteFile:%{public}s fail", path.c_str());
+        APP_LOGE("DeleteFile:%{private}s fail", path.c_str());
     }
 }
 

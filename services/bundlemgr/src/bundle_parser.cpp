@@ -53,7 +53,7 @@ bool ParseStr(const char *buf, const int itemLen, int totalLen, std::vector<std:
 }
 ErrCode BundleParser::Parse(const std::string &pathName, InnerBundleInfo &innerBundleInfo) const
 {
-    APP_LOGI("parse from %{public}s", pathName.c_str());
+    APP_LOGI("parse from %{private}s", pathName.c_str());
     BundleExtractor bundleExtractor(pathName);
     if (!bundleExtractor.Init()) {
         APP_LOGE("bundle extractor init failed");
@@ -89,7 +89,7 @@ ErrCode BundleParser::Parse(const std::string &pathName, InnerBundleInfo &innerB
 
 ErrCode BundleParser::ParseSysCap(const std::string &pathName, std::vector<std::string> &sysCaps) const
 {
-    APP_LOGD("Parse sysCaps from %{public}s", pathName.c_str());
+    APP_LOGD("Parse sysCaps from %{private}s", pathName.c_str());
     BundleExtractor bundleExtractor(pathName);
     if (!bundleExtractor.Init()) {
         APP_LOGE("Bundle extractor init failed");
