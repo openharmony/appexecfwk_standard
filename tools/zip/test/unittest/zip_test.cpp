@@ -24,7 +24,7 @@ namespace LIBZIP {
 using namespace testing::ext;
 
 namespace {
-const std::string BASE_PATH = "/data/accounts/account_0/appdata/";
+const std::string BASE_PATH = "/data/app/el2/100/base/";
 const std::string APP_PATH = "com.example.zlib/com.example.zlib/com.example.zlib.MainAbility/files/";
 }  // namespac
 class ZipTest : public testing::Test {

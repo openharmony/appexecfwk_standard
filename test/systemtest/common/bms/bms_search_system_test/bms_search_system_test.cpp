@@ -38,7 +38,7 @@ const std::string SYSTEM_BUNDLE_PATH = "/system/app/";
 const std::string VENDOR_BUNDLE_PATH = "/system/vendor/";
 const std::string BASE_BUNDLE_NAME = "com.third.hiworld.example";
 const std::string SYSTEM_BASE_BUNDLE_NAME = "com.system.hiworld.example";
-const std::string BUNDLE_DATA_ROOT_PATH = "/data/accounts/account_0/appdata/";
+const std::string BUNDLE_DATA_ROOT_PATH = "/data/app/el2/100/base/";
 const std::string ERROR_INSTALL_FAILED = "install failed!";
 const std::string ERROR_UNINSTALL_FAILED = "uninstall failed!";
 const std::string MSG_SUCCESS = "[SUCCESS]";
@@ -1257,8 +1257,6 @@ HWTEST_F(BmsSearchSystemTest, BMS_Search_3300, Function | MediumTest | Level1)
     EXPECT_TRUE(getInfoResult);
     EXPECT_EQ(bundleInfo.name, appName);
     EXPECT_EQ(bundleInfo.label, "bmsThirdBundle_A1 Ability");
-    EXPECT_EQ(commonTool.VectorToStr(bundleInfo.modulePublicDirs),
-        "/data/accounts/account_0/appdata/com.third.hiworld.example1/com.third.hiworld.example.h1");
     EXPECT_EQ(commonTool.VectorToStr(bundleInfo.hapModuleNames), "com.third.hiworld.example.h1");
     EXPECT_EQ(commonTool.VectorToStr(bundleInfo.moduleNames), "testability");
     std::cout << "END BMS_Search_3300" << std::endl;

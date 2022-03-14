@@ -96,10 +96,10 @@ protected:
             },
             "baseApplicationInfo": {
                 "bundleName": "com.ohos.launcher",
-                "cacheDir": "/data/accounts/account_0/appdata/com.ohos.launcher/cache",
+                "cacheDir": "/data/app/el2/100/base/com.ohos.launcher/cache",
                 "codePath": "/data/app/el1/bundle/public/com.ohos.launcher",
-                "dataBaseDir": "/data/accounts/account_0/appdata/com.ohos.launcher/database",
-                "dataDir": "/data/accounts/account_0/appdata/com.ohos.launcher/files",
+                "dataBaseDir": "/data/app/el2/100/database/com.ohos.launcher",
+                "dataDir": "/data/app/el2/100/base/com.ohos.launcher/files",
                 "description": "$string:mainability_description",
                 "descriptionId": 16777217,
                 "deviceId": "PHONE-001",
@@ -180,7 +180,7 @@ protected:
                 "versionCode": 1,
                 "versionName": "1.0"
             },
-            "baseDataDir": "/data/accounts/account_0/appdata/com.ohos.launcher",
+            "baseDataDir": "/data/app/el2/100/base/com.ohos.launcher",
             "bundleStatus": 1,
             "hasEntry": true,
             "innerModuleInfos": {
@@ -199,7 +199,7 @@ protected:
                     "metaData": {
                         "customizeData": []
                     },
-                    "moduleDataDir": "/data/accounts/account_0/appdata/com.ohos.launcher/com.ohos.launcher",
+                    "moduleDataDir": "/data/app/el2/100/base/com.ohos.launcher/haps/com.ohos.launcher",
                     "moduleName": ".MyApplication",
                     "modulePackage": "com.ohos.launcher",
                     "modulePath": "/data/app/el1/bundle/public/com.ohos.launcher/com.ohos.launcher",

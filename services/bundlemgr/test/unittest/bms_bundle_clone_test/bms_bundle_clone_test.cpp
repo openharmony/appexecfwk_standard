@@ -54,8 +54,8 @@ namespace {
     const std::string ENTRY_MODULE_PACKAGE = "com.example.third1.entry";
     const std::string ERROR_BUNDLE = "ERROR";
     const std::string NULL_STR = "";
-    const std::string BUNDLE_DATA_DIR = "/data/accounts/account_0/appdata/";
-    const std::string BUNDLE_DATA_DIR1 = "/data/accounts/account_0/appdata/com.example.third*";
+    const std::string BUNDLE_DATA_DIR = "/data/app/el2/100/base/";
+    const std::string BUNDLE_DATA_DIR1 = "/data/app/el2/100/base/com.example.third*";
     const std::string BUNDLE_CODE_DIR = "/data/app/el1/bundle/public/bmsThirdBundleTest*";
     const std::string TEST_BUNDLE_DIR = "/data/bmsThirdBundleTest1.hap";
     const std::string DEMO_BUNDLE_DIR = "/data/bmsThirdBundleTest2.hap";

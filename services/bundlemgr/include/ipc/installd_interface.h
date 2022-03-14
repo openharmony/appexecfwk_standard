@@ -53,16 +53,15 @@ public:
     virtual ErrCode RenameModuleDir(const std::string &oldDir, const std::string &newDir) = 0;
     /**
      * @brief Create a bundle data directory.
-     * @param bundleDir Indicates the bundle data directory path that to be created.
+     * @param bundleName Indicates bundleName to be set to the directory.
      * @param userid Indicates userid to be set to the directory.
      * @param uid Indicates uid to be set to the directory.
      * @param gid Indicates gid to be set to the directory.
      * @param apl Indicates apl to be set to the directory.
-     * @param onlyOneUser Indicates is only one user or not.
      * @return Returns ERR_OK if the bundle data directory created successfully; returns error code otherwise.
      */
-    virtual ErrCode CreateBundleDataDir(const std::string &bundleDir,
-        const int userid, const int uid, const int gid, const std::string &apl, bool onlyOneUser = true) = 0;
+    virtual ErrCode CreateBundleDataDir(const std::string &bundleName,
+        const int userid, const int uid, const int gid, const std::string &apl) = 0;
     /**
      * @brief Remove a bundle data directory.
      * @param bundleDir Indicates the bundle data directory path that to be created.
@@ -70,16 +69,6 @@ public:
      * @return Returns ERR_OK if the bundle data directory created successfully; returns error code otherwise.
      */
     virtual ErrCode RemoveBundleDataDir(const std::string &bundleDir, const int userid) = 0;
-    /**
-     * @brief Create a module and it's abilities data directory.
-     * @param bundleDir Indicates the module data directory path that to be created.
-     * @param abilityDirs Indicates the abilities data directory name that to be created.
-     * @param uid Indicates uid to be set to the directory.
-     * @param gid Indicates gid to be set to the directory.
-     * @return Returns ERR_OK if the data directories created successfully; returns error code otherwise.
-     */
-    virtual ErrCode CreateModuleDataDir(
-        const std::string &ModuleDir, const std::vector<std::string> &abilityDirs, const int uid, const int gid) = 0;
     /**
      * @brief Remove a module and it's abilities data directory.
      * @param ModuleDir Indicates the module data directory path that to be created.
@@ -122,7 +111,6 @@ protected:
         EXTRACT_MODULE_FILES,
         RENAME_MODULE_DIR,
         CREATE_BUNDLE_DATA_DIR,
-        CREATE_MODULE_DATA_DIR,
         CLEAN_BUNDLE_DATA_DIR,
         REMOVE_BUNDLE_DATA_DIR,
         REMOVE_MODULE_DATA_DIR,

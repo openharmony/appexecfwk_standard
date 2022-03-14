@@ -45,11 +45,9 @@ const std::string ERROR_BUNDLE_NAME = "com.example.bundle.uninstall.error";
 const std::string ERROR_MODULE_PACKAGE_NAME = "com.example.module.uninstall.error";
 const std::string BUNDLE_FILE_PATH = "/data/test/resource/bms/uninstall_bundle/right.hap";
 const std::string BUNDLE_FILE_PATH1 = "/data/test/resource/bms/uninstall_bundle/right1.hap";
-const std::string BUNDLE_DATA_DIR = "/data/accounts/account_0/appdata/com.example.l3jsdemo";
+const std::string BUNDLE_DATA_DIR = "/data/app/el2/100/base/com.example.l3jsdemo";
 const std::string BUNDLE_CODE_DIR = "/data/app/el1/bundle/public/com.example.l3jsdemo";
-const std::string MODULE_DATA_DIR = "/data/accounts/account_0/appdata/com.example.l3jsdemo/com.example.l3jsdemo";
 const std::string MODULE_CODE_DIR = "/data/app/el1/bundle/public/com.example.l3jsdemo/com.example.l3jsdemo";
-const std::string MODULE_DATA_DIR1 = "/data/accounts/account_0/appdata/com.example.l3jsdemo/com.example.l3jsdemo1";
 const std::string MODULE_CODE_DIR1 = "/data/app/el1/bundle/public/com.example.l3jsdemo/com.example.l3jsdemo1";
 const std::string ROOT_DIR = "/data/accounts";
 const std::string DB_FILE_PATH = "/data/bundlemgr";
@@ -200,18 +198,12 @@ void BmsBundleUninstallerTest::CheckFileExist() const
 
 void BmsBundleUninstallerTest::CheckModuleFileExist() const
 {
-    int moduleDataExist = access(MODULE_DATA_DIR.c_str(), F_OK);
-    EXPECT_EQ(moduleDataExist, 0);
-
     int moduleCodeExist = access(MODULE_CODE_DIR.c_str(), F_OK);
     EXPECT_EQ(moduleCodeExist, 0);
 }
 
 void BmsBundleUninstallerTest::CheckModuleFileExist1() const
 {
-    int moduleDataExist1 = access(MODULE_DATA_DIR1.c_str(), F_OK);
-    EXPECT_EQ(moduleDataExist1, 0);
-
     int moduleCodeExist1 = access(MODULE_CODE_DIR1.c_str(), F_OK);
     EXPECT_EQ(moduleCodeExist1, 0);
 }
@@ -227,9 +219,6 @@ void BmsBundleUninstallerTest::CheckFileNonExist() const
 
 void BmsBundleUninstallerTest::CheckModuleFileNonExist() const
 {
-    int moduleDataExist = access(MODULE_DATA_DIR.c_str(), F_OK);
-    EXPECT_NE(moduleDataExist, 0);
-
     int moduleCodeExist = access(MODULE_CODE_DIR.c_str(), F_OK);
     EXPECT_NE(moduleCodeExist, 0);
 }

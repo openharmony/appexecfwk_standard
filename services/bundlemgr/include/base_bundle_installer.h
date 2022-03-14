@@ -231,30 +231,11 @@ private:
     ErrCode ExtractModuleFiles(const InnerBundleInfo &info, const std::string &modulePath,
         const std::string &targetSoPath, const std::string &cpuAbi);
     /**
-     * @brief Create the data directories of current installing module package.
-     * @param info Indicates the InnerBundleInfo object of a bundle under installing.
-     * @return Returns ERR_OK if the module directory created successfully; returns error code otherwise.
-     */
-    ErrCode CreateModuleDataDir(InnerBundleInfo &info) const;
-    /**
      * @brief Rename the directory of current installing module package.
      * @param info Indicates the InnerBundleInfo object of a bundle under installing.
      * @return Returns ERR_OK if the module directory renamed successfully; returns error code otherwise.
      */
     ErrCode RenameModuleDir(const InnerBundleInfo &info) const;
-    /**
-     * @brief Modify the install directory path for different install type.
-     * @param info Indicates the InnerBundleInfo object of a bundle under installing.
-     * @return Returns true if the path set successfully; returns false otherwise.
-     */
-    ErrCode ModifyInstallDirByHapType(const InstallParam &installParam, const Constants::AppType appType);
-    /**
-     * @brief Update the bundle paths in the InnerBundleInfo object.
-     * @param info Indicates the InnerBundleInfo object of a bundle under installing.
-     * @param baseDataPath Indicates the data file paths.
-     * @return Returns true if the path set successfully; returns false otherwise.
-     */
-    bool UpdateBundlePaths(InnerBundleInfo &info, const std::string baseDataPath) const;
     /**
      * @brief The process of install a new module package.
      * @param newInfo Indicates the InnerBundleInfo object parsed from the config.json in the HAP package.
@@ -408,8 +389,7 @@ private:
 
 private:
     ErrCode CreateBundleCodeDir(InnerBundleInfo &info) const;
-    ErrCode CreateBundleDataDir(InnerBundleInfo &info, bool onlyOneUser = true) const;
-    ErrCode RemoveModuleDataDir(const InnerBundleInfo &info, const std::string &modulePackage) const;
+    ErrCode CreateBundleDataDir(InnerBundleInfo &info) const;
     ErrCode RemoveHapModuleDataDir(const InnerBundleInfo &info,
         const std::string &modulePackage, int32_t userId = Constants::UNSPECIFIED_USERID) const;
     ErrCode RemoveBundleCodeDir(const InnerBundleInfo &info) const;
