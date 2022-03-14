@@ -15,7 +15,6 @@
 
 #ifndef FOUNDATION_APPEXECFWK_SERVICES_DBMS_INCLUDE_IMAGE_COMPRESS_H
 #define FOUNDATION_APPEXECFWK_SERVICES_DBMS_INCLUDE_IMAGE_COMPRESS_H
-#ifdef SUPPORT_GRAPHICS
 
 #include<stdio.h>
 #include <cstdlib>
@@ -42,7 +41,8 @@ public:
     int32_t EncodeJPGFile(std::shared_ptr<ImageBuffer>& imageBuffer);
     int32_t ResizeRGBImage(std::shared_ptr<ImageBuffer>& imageBufferIn, std::shared_ptr<ImageBuffer>& imageBufferOut);
     std::shared_ptr<ImageBuffer> CompressImage(std::string inFileName);
-    void ReleasePngPointer(png_bytep* p, uint32_t h);
+    void ReleasePngPointer(png_bytepp& rowPointers, uint32_t height);
+    bool MallocPngPointer(png_bytepp& rowPointers, uint32_t height, uint32_t strides);
     bool DoubleEqual(double left, double right);
     bool IsPathValid(std::string& fileName);
     static void PngToBuffer(png_structp png_ptr, png_bytep data, png_size_t lenght);
@@ -50,5 +50,4 @@ public:
 }
 }
 
-#endif
 #endif // FOUNDATION_APPEXECFWK_SERVICES_DBMS_INCLUDE_IMAGE_COMPRESS_H

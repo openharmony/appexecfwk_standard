@@ -92,24 +92,8 @@ static int32_t GetFileContext(char *inputFile, char **contextBufPtr, uint32_t *b
     return OK;
 }
 
-int32_t RPCIDFileDecodeToBuffer(char *inputFile, char **syscapSetBuf, uint32_t *syscapSetLength)
-{
-    int32_t ret;
-    char *contextBuffer = NULL;
-    uint32_t bufferLen;
-    ret = GetFileContext(inputFile, &contextBuffer, &bufferLen);
-    if (ret != 0) {
-        HILOG_ERROR(LOG_CORE, "GetFileContext failed, input file : %s\n", inputFile);
-        return ret;
-    }
-
-    ret = RPCIDStreamDecodeToBuffer(contextBuffer, bufferLen, syscapSetBuf, syscapSetLength);
-    FreeContextBuffer(contextBuffer);
-    return ret;
-}
-
-int32_t RPCIDStreamDecodeToBuffer(char *contextBuffer, uint32_t bufferLen,
-                                  char **syscapSetBuf, uint32_t *syscapSetLength)
+int32_t RPCIDStreamDecodeToBuffer(
+    char *contextBuffer, uint32_t bufferLen, char **syscapSetBuf, uint32_t *syscapSetLength)
 {
     errno_t ret;
     char *contextBufferTail = NULL;
@@ -164,7 +148,7 @@ int32_t RPCIDStreamDecodeToBuffer(char *contextBuffer, uint32_t bufferLen,
 
     (void)memset_s(syscapBuf, syscapBufLen, 0, syscapBufLen);
     char *bufferPtr = syscapBuf;
-    for (int32_t i = 0; i < (sysCapLength / SINGLE_FEAT_LENGTH); i++) {
+    for (int32_t i = 0; i < ((int32_t)sysCapLength / SINGLE_FEAT_LENGTH); i++) {
         if (*(sysCapArrayPtr + (i + 1) * SINGLE_FEAT_LENGTH - 1) != '\0') {
             HILOG_ERROR(LOG_CORE, "prase failed, format is invaild, in line %d\n", __LINE__);
             (void)free(syscapBuf);
@@ -172,14 +156,14 @@ int32_t RPCIDStreamDecodeToBuffer(char *contextBuffer, uint32_t bufferLen,
         }
 
         ret = memcpy_s(bufferPtr, SINGLE_SYSCAP_LENGTH, SYSCAP_PREFIX_NAME, SYSCAP_PREFIX_NAME_LEN);
-        if (ret != 0) {
+        if (ret != EOK) {
             HILOG_ERROR(LOG_CORE, "context of \"os\" array is invaild\n");
             (void)free(syscapBuf);
             return ERROR;
         }
 
         ret = strncat_s(bufferPtr, SINGLE_SYSCAP_LENGTH, sysCapArrayPtr + i * SINGLE_FEAT_LENGTH, SINGLE_FEAT_LENGTH);
-        if (ret != 0) {
+        if (ret != EOK) {
             HILOG_ERROR(LOG_CORE, "strncat_s failed, (%s, %d, %s, %d)\n", bufferPtr, SINGLE_SYSCAP_LENGTH,
                         sysCapArrayPtr + i * SINGLE_FEAT_LENGTH, SINGLE_FEAT_LENGTH);
             (void)free(syscapBuf);
@@ -192,6 +176,22 @@ int32_t RPCIDStreamDecodeToBuffer(char *contextBuffer, uint32_t bufferLen,
     *syscapSetBuf = syscapBuf;
     *syscapSetLength = syscapBufLen;
     return OK;
+}
+
+int32_t RPCIDFileDecodeToBuffer(char *inputFile, char **syscapSetBuf, uint32_t *syscapSetLength)
+{
+    int32_t ret;
+    char *contextBuffer = NULL;
+    uint32_t bufferLen;
+    ret = GetFileContext(inputFile, &contextBuffer, &bufferLen);
+    if (ret != 0) {
+        HILOG_ERROR(LOG_CORE, "GetFileContext failed, input file : %s\n", inputFile);
+        return ret;
+    }
+
+    ret = RPCIDStreamDecodeToBuffer(contextBuffer, bufferLen, syscapSetBuf, syscapSetLength);
+    FreeContextBuffer(contextBuffer);
+    return ret;
 }
 
 void FreeDecodeBuffer(char *syscapSetBuf)
