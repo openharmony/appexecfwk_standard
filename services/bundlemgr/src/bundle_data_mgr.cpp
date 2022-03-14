@@ -1505,26 +1505,9 @@ bool BundleDataMgr::SetApplicationEnabled(const std::string &bundleName, bool is
 
 bool BundleDataMgr::IsAbilityEnabled(const AbilityInfo &abilityInfo) const
 {
-    APP_LOGD("IsAbilityEnabled %{public}s", abilityInfo.name.c_str());
-    std::lock_guard<std::mutex> lock(bundleInfoMutex_);
-    if (bundleInfos_.empty()) {
-        APP_LOGE("bundleInfos_ data is empty");
-        return false;
-    }
-    APP_LOGD("IsAbilityEnabled %{public}s", abilityInfo.bundleName.c_str());
-    auto infoItem = bundleInfos_.find(abilityInfo.bundleName);
-    if (infoItem == bundleInfos_.end()) {
-        return false;
-    }
-    auto innerBundleInfo = infoItem->second.find(Constants::CURRENT_DEVICE_ID);
-    if (innerBundleInfo == infoItem->second.end()) {
-        return false;
-    }
-    auto ability = innerBundleInfo->second.FindAbilityInfo(abilityInfo.bundleName, abilityInfo.name, GetUserId());
-    if (!ability) {
-        return false;
-    }
-    return innerBundleInfo->second.IsAbilityEnabled((*ability), GetUserId());
+    int32_t flags = GET_ABILITY_INFO_DEFAULT;
+    AbilityInfo abilityInfoIn;
+    return ExplicitQueryAbilityInfo(abilityInfo.bundleName, abilityInfo.name, flags, GetUserId(), abilityInfoIn);
 }
 
 bool BundleDataMgr::SetAbilityEnabled(const AbilityInfo &abilityInfo, bool isEnabled, int32_t userId)
