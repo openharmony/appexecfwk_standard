@@ -553,7 +553,6 @@ public:
 
     bool FindExtensionAbilityInfoByUri(const std::string &uri, ExtensionAbilityInfo &extensionAbilityInfo) const
     {
-        APP_LOGD("uri : %{public}s", uri.c_str());
         for (const auto &item : baseExtensionInfos_) {
             if (uri == item.second.uri) {
                 extensionAbilityInfo = item.second;

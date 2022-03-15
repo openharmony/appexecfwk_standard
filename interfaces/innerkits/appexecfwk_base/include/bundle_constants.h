@@ -98,7 +98,6 @@ constexpr int PERMISSION_GRANTED = 0;
 constexpr int PERMISSION_NOT_GRANTED = -1;
 constexpr int DUMP_INDENT = 4;
 constexpr unsigned int INSTALLD_UMASK = 0000;
-constexpr unsigned int PERMISSION_COMPATIBLE_API_VERSION = 7;
 
 // native so
 const std::string ABI_DEFAULT = "default";
