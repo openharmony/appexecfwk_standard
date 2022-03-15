@@ -1197,7 +1197,7 @@ bool BundleMgrProxy::CleanBundleCacheFiles(
         APP_LOGE("fail to CleanBundleCacheFiles due to write bundleName fail");
         return false;
     }
-    if (!data.WriteParcelable(cleanCacheCallback->AsObject())) {
+    if (!data.WriteObject<IRemoteObject>(cleanCacheCallback->AsObject())) {
         APP_LOGE("fail to CleanBundleCacheFiles, for write parcel failed");
         return false;
     }
@@ -1263,7 +1263,7 @@ bool BundleMgrProxy::RegisterBundleStatusCallback(const sptr<IBundleStatusCallba
         APP_LOGE("fail to RegisterBundleStatusCallback due to write bundleName fail");
         return false;
     }
-    if (!data.WriteParcelable(bundleStatusCallback->AsObject())) {
+    if (!data.WriteObject<IRemoteObject>(bundleStatusCallback->AsObject())) {
         APP_LOGE("fail to RegisterBundleStatusCallback, for write parcel failed");
         return false;
     }
@@ -1290,7 +1290,7 @@ bool BundleMgrProxy::ClearBundleStatusCallback(const sptr<IBundleStatusCallback>
         APP_LOGE("fail to ClearBundleStatusCallback due to write InterfaceToken fail");
         return false;
     }
-    if (!data.WriteParcelable(bundleStatusCallback->AsObject())) {
+    if (!data.WriteObject<IRemoteObject>(bundleStatusCallback->AsObject())) {
         APP_LOGE("fail to ClearBundleStatusCallback, for write parcel failed");
         return false;
     }
@@ -1607,7 +1607,11 @@ sptr<IBundleInstaller> BundleMgrProxy::GetBundleInstaller()
         return nullptr;
     }
 
-    sptr<IRemoteObject> object = reply.ReadParcelable<IRemoteObject>();
+    sptr<IRemoteObject> object = reply.ReadObject<IRemoteObject>();
+    if (object == nullptr) {
+        APP_LOGE("read failed");
+        return nullptr;
+    }
     sptr<IBundleInstaller> installer = iface_cast<IBundleInstaller>(object);
     if (!installer) {
         APP_LOGE("bundle installer is nullptr");
@@ -1630,7 +1634,11 @@ sptr<IBundleUserMgr> BundleMgrProxy::GetBundleUserMgr()
         return nullptr;
     }
 
-    sptr<IRemoteObject> object = reply.ReadParcelable<IRemoteObject>();
+    sptr<IRemoteObject> object = reply.ReadObject<IRemoteObject>();
+    if (object == nullptr) {
+        APP_LOGE("read failed");
+        return nullptr;
+    }
     sptr<IBundleUserMgr> bundleUserMgr = iface_cast<IBundleUserMgr>(object);
     if (!bundleUserMgr) {
         APP_LOGE("bundleUserMgr is nullptr");
@@ -1725,7 +1733,7 @@ bool BundleMgrProxy::RegisterAllPermissionsChanged(const sptr<OnPermissionChange
         APP_LOGE("fail to RegisterAllPermissionsChanged due to write InterfaceToken fail");
         return false;
     }
-    if (!data.WriteParcelable(callback->AsObject())) {
+    if (!data.WriteObject<IRemoteObject>(callback->AsObject())) {
         APP_LOGE("fail to RegisterAllPermissionsChanged, for write parcel failed");
         return false;
     }
@@ -1757,7 +1765,7 @@ bool BundleMgrProxy::RegisterPermissionsChanged(
         APP_LOGE("fail to RegisterAllPermissionsChanged due to write permissions fail");
         return false;
     }
-    if (!data.WriteParcelable(callback->AsObject())) {
+    if (!data.WriteObject<IRemoteObject>(callback->AsObject())) {
         APP_LOGE("fail to RegisterAllPermissionsChanged, for write parcel failed");
         return false;
     }
@@ -1784,7 +1792,7 @@ bool BundleMgrProxy::UnregisterPermissionsChanged(const sptr<OnPermissionChanged
         APP_LOGE("fail to UnregisterPermissionsChanged due to write InterfaceToken fail");
         return false;
     }
-    if (!data.WriteParcelable(callback->AsObject())) {
+    if (!data.WriteObject<IRemoteObject>(callback->AsObject())) {
         APP_LOGE("fail to UnregisterPermissionsChanged, for write parcel failed");
         return false;
     }
