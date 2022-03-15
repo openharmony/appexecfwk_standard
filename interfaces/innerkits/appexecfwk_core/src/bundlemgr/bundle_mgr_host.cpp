@@ -850,7 +850,7 @@ ErrCode BundleMgrHost::HandleGetBundleArchiveInfo(Parcel &data, Parcel &reply)
     BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::string hapFilePath = data.ReadString();
     BundleFlag flag = static_cast<BundleFlag>(data.ReadInt32());
-    APP_LOGD("hapFilePath %{public}s, flag %{public}d", hapFilePath.c_str(), flag);
+    APP_LOGD("hapFilePath %{private}s, flag %{public}d", hapFilePath.c_str(), flag);
 
     BundleInfo info;
     bool ret = GetBundleArchiveInfo(hapFilePath, flag, info);
@@ -872,7 +872,7 @@ ErrCode BundleMgrHost::HandleGetBundleArchiveInfoWithIntFlags(Parcel &data, Parc
     BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::string hapFilePath = data.ReadString();
     int32_t flags = data.ReadInt32();
-    APP_LOGD("hapFilePath %{public}s, flagS %{public}d", hapFilePath.c_str(), flags);
+    APP_LOGD("hapFilePath %{private}s, flagS %{public}d", hapFilePath.c_str(), flags);
 
     BundleInfo info;
     bool ret = GetBundleArchiveInfo(hapFilePath, flags, info);

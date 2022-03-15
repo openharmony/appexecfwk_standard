@@ -830,7 +830,7 @@ std::string BundleMgrProxy::GetAbilityLabel(const std::string &bundleName, const
 bool BundleMgrProxy::GetBundleArchiveInfo(const std::string &hapFilePath, const BundleFlag flag, BundleInfo &bundleInfo)
 {
     BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
-    APP_LOGD("begin to GetBundleArchiveInfo of %{public}s", hapFilePath.c_str());
+    APP_LOGD("begin to GetBundleArchiveInfo of %{private}s", hapFilePath.c_str());
     if (hapFilePath.empty()) {
         APP_LOGE("fail to GetBundleArchiveInfo due to params empty");
         return false;
@@ -860,7 +860,7 @@ bool BundleMgrProxy::GetBundleArchiveInfo(const std::string &hapFilePath, const 
 bool BundleMgrProxy::GetBundleArchiveInfo(const std::string &hapFilePath, int32_t flags, BundleInfo &bundleInfo)
 {
     BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
-    APP_LOGD("begin to GetBundleArchiveInfo with int flags of %{public}s", hapFilePath.c_str());
+    APP_LOGD("begin to GetBundleArchiveInfo with int flags of %{private}s", hapFilePath.c_str());
     if (hapFilePath.empty()) {
         APP_LOGE("fail to GetBundleArchiveInfo due to params empty");
         return false;

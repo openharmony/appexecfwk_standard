@@ -23,7 +23,7 @@ bool MockBundleInstallerHost::Install(
 {
     APP_LOGI("enter");
 
-    APP_LOGI("bundleFilePath: %{public}s", bundleFilePath.c_str());
+    APP_LOGI("bundleFilePath: %{private}s", bundleFilePath.c_str());
     APP_LOGI("installParam.installFlag: %{public}d", installParam.installFlag);
 
     statusReceiver->OnFinished(OHOS::ERR_OK, MSG_SUCCESS);
@@ -37,7 +37,7 @@ bool MockBundleInstallerHost::Install(const std::vector<std::string> &bundleFile
     APP_LOGI("enter");
 
     for_each(bundleFilePath.begin(), bundleFilePath.end(), [](const auto &path)->decltype(auto) {
-        APP_LOGI("bundleFilePath: %{public}s", path.c_str());
+        APP_LOGI("bundleFilePath: %{private}s", path.c_str());
     });
     APP_LOGI("installParam.installFlag: %{public}d", installParam.installFlag);
 

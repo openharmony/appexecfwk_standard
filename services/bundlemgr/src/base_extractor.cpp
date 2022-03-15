@@ -85,11 +85,11 @@ bool BaseExtractor::ExtractByName(const std::string &fileName, std::ostream &des
 
 bool BaseExtractor::ExtractFile(const std::string &fileName, const std::string &targetPath) const
 {
-    APP_LOGD("begin to extract %{public}s file into %{public}s targetPath", fileName.c_str(), targetPath.c_str());
+    APP_LOGD("begin to extract %{public}s file into %{private}s targetPath", fileName.c_str(), targetPath.c_str());
     std::ofstream fileStream;
     fileStream.open(targetPath, std::ios_base::out | std::ios_base::binary);
     if (!fileStream.is_open()) {
-        APP_LOGE("fail to open %{public}s file to write", targetPath.c_str());
+        APP_LOGE("fail to open %{private}s file to write", targetPath.c_str());
         return false;
     }
     if ((!ExtractByName(fileName, fileStream)) || (!fileStream.good())) {

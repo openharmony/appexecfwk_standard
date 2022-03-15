@@ -653,7 +653,7 @@ static void ConvertHapModuleInfo(napi_env env, napi_value objHapModuleInfo, cons
     NAPI_CALL_RETURN_VOID(
         env, napi_create_string_utf8(env, hapModuleInfo.iconPath.c_str(), NAPI_AUTO_LENGTH, &nIconPath));
     NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, objHapModuleInfo, "iconPath", nIconPath));
-    APP_LOGI("ConvertHapModuleInfo iconPath=%{public}s.", hapModuleInfo.iconPath.c_str());
+    APP_LOGI("ConvertHapModuleInfo iconPath=%{private}s.", hapModuleInfo.iconPath.c_str());
 
     napi_value nIcon;
     std::string theIcon = "";
