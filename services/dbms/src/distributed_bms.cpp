@@ -368,9 +368,6 @@ bool DistributedBms::GetCurrentUserId(int &userId)
         APP_LOGE("QueryActiveOsAccountIds activeIds empty");
         return false;
     }
-    if (activeIds.empty()) {
-        return false;
-    }
     userId = activeIds[0];
     return true;
 }
