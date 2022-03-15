@@ -147,6 +147,7 @@ bool BundleMgrHostImpl::GetBundleInfos(int32_t flags, std::vector<BundleInfo> &b
 
 bool BundleMgrHostImpl::GetBundleNameForUid(const int uid, std::string &bundleName)
 {
+    APP_LOGD("start GetBundleNameForUid, uid : %{public}d", uid);
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
         APP_LOGE("DataMgr is nullptr");
@@ -157,6 +158,7 @@ bool BundleMgrHostImpl::GetBundleNameForUid(const int uid, std::string &bundleNa
 
 bool BundleMgrHostImpl::GetBundlesForUid(const int uid, std::vector<std::string> &bundleNames)
 {
+    APP_LOGD("start GetBundlesForUid, uid : %{public}d", uid);
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
         APP_LOGE("DataMgr is nullptr");
@@ -167,6 +169,7 @@ bool BundleMgrHostImpl::GetBundlesForUid(const int uid, std::vector<std::string>
 
 bool BundleMgrHostImpl::GetNameForUid(const int uid, std::string &name)
 {
+    APP_LOGD("start GetNameForUid, uid : %{public}d", uid);
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
         APP_LOGE("DataMgr is nullptr");
@@ -177,6 +180,7 @@ bool BundleMgrHostImpl::GetNameForUid(const int uid, std::string &name)
 
 bool BundleMgrHostImpl::GetBundleGids(const std::string &bundleName, std::vector<int> &gids)
 {
+    APP_LOGD("start GetBundleGids, bundleName : %{public}s", bundleName.c_str());
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
         APP_LOGE("DataMgr is nullptr");
@@ -187,6 +191,7 @@ bool BundleMgrHostImpl::GetBundleGids(const std::string &bundleName, std::vector
 
 bool BundleMgrHostImpl::GetBundleGidsByUid(const std::string &bundleName, const int &uid, std::vector<int> &gids)
 {
+    APP_LOGD("start GetBundleGidsByUid, bundleName : %{public}s, uid : %{public}d", bundleName.c_str(), uid);
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
         APP_LOGE("DataMgr is nullptr");
@@ -197,6 +202,7 @@ bool BundleMgrHostImpl::GetBundleGidsByUid(const std::string &bundleName, const 
 
 bool BundleMgrHostImpl::CheckIsSystemAppByUid(const int uid)
 {
+    APP_LOGD("start CheckIsSystemAppByUid, uid : %{public}d", uid);
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
         APP_LOGE("DataMgr is nullptr");
@@ -207,6 +213,7 @@ bool BundleMgrHostImpl::CheckIsSystemAppByUid(const int uid)
 
 bool BundleMgrHostImpl::GetBundleInfosByMetaData(const std::string &metaData, std::vector<BundleInfo> &bundleInfos)
 {
+    APP_LOGD("start GetBundleInfosByMetaData, metaData : %{public}s", metaData.c_str());
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
         APP_LOGE("DataMgr is nullptr");
@@ -222,6 +229,7 @@ bool BundleMgrHostImpl::QueryAbilityInfo(const Want &want, AbilityInfo &abilityI
 
 bool BundleMgrHostImpl::QueryAbilityInfo(const Want &want, int32_t flags, int32_t userId, AbilityInfo &abilityInfo)
 {
+    APP_LOGD("start QueryAbilityInfo, flags : %{public}d, userId : %{public}d", flags, userId);
     if (!VerifyQueryPermission(want.GetElement().GetBundleName())) {
         APP_LOGE("verify permission failed");
         return false;
@@ -244,6 +252,7 @@ bool BundleMgrHostImpl::QueryAbilityInfos(const Want &want, std::vector<AbilityI
 bool BundleMgrHostImpl::QueryAbilityInfos(
     const Want &want, int32_t flags, int32_t userId, std::vector<AbilityInfo> &abilityInfos)
 {
+    APP_LOGD("start QueryAbilityInfos, flags : %{public}d, userId : %{public}d", flags, userId);
     if (!VerifyQueryPermission(want.GetElement().GetBundleName())) {
         APP_LOGE("verify permission failed");
         return false;
@@ -269,6 +278,7 @@ bool BundleMgrHostImpl::QueryAbilityInfosForClone(const Want &want, std::vector<
 
 bool BundleMgrHostImpl::QueryAllAbilityInfos(const Want &want, int32_t userId, std::vector<AbilityInfo> &abilityInfos)
 {
+    APP_LOGD("start QueryAllAbilityInfos, userId : %{public}d", userId);
     if (!BundlePermissionMgr::VerifyCallingPermission(Constants::PERMISSION_GET_BUNDLE_INFO_PRIVILEGED)) {
         APP_LOGE("verify permission failed");
         return false;
@@ -284,6 +294,7 @@ bool BundleMgrHostImpl::QueryAllAbilityInfos(const Want &want, int32_t userId, s
 
 bool BundleMgrHostImpl::QueryAbilityInfoByUri(const std::string &abilityUri, AbilityInfo &abilityInfo)
 {
+    APP_LOGD("start QueryAbilityInfoByUri, uri : %{public}s", abilityUri.c_str());
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
         APP_LOGE("DataMgr is nullptr");
@@ -294,6 +305,7 @@ bool BundleMgrHostImpl::QueryAbilityInfoByUri(const std::string &abilityUri, Abi
 
 bool BundleMgrHostImpl::QueryAbilityInfosByUri(const std::string &abilityUri, std::vector<AbilityInfo> &abilityInfos)
 {
+    APP_LOGD("start QueryAbilityInfosByUri, uri : %{public}s", abilityUri.c_str());
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
         APP_LOGE("DataMgr is nullptr");
@@ -305,6 +317,7 @@ bool BundleMgrHostImpl::QueryAbilityInfosByUri(const std::string &abilityUri, st
 bool BundleMgrHostImpl::QueryAbilityInfoByUri(
     const std::string &abilityUri, int32_t userId, AbilityInfo &abilityInfo)
 {
+    APP_LOGD("start QueryAbilityInfoByUri, uri : %{public}s, userId : %{public}d", abilityUri.c_str(), userId);
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
         APP_LOGE("DataMgr is nullptr");
@@ -325,6 +338,8 @@ bool BundleMgrHostImpl::QueryKeepAliveBundleInfos(std::vector<BundleInfo> &bundl
 
 std::string BundleMgrHostImpl::GetAbilityLabel(const std::string &bundleName, const std::string &className)
 {
+    APP_LOGD("start GetAbilityLabel, bundleName : %{public}s, className : %{public}s",
+        bundleName.c_str(), className.c_str());
     if (!VerifyQueryPermission(bundleName)) {
         APP_LOGE("verify permission failed");
         return Constants::EMPTY_STRING;
@@ -346,6 +361,7 @@ bool BundleMgrHostImpl::GetBundleArchiveInfo(
 bool BundleMgrHostImpl::GetBundleArchiveInfo(
     const std::string &hapFilePath, int32_t flags, BundleInfo &bundleInfo)
 {
+    APP_LOGD("start GetBundleArchiveInfo, hapFilePath : %{public}s, flags : %{public}d", hapFilePath.c_str(), flags);
     std::string realPath;
     auto ret = BundleUtil::CheckFilePath(hapFilePath, realPath);
     if (ret != ERR_OK) {
@@ -366,6 +382,7 @@ bool BundleMgrHostImpl::GetBundleArchiveInfo(
 
 bool BundleMgrHostImpl::GetHapModuleInfo(const AbilityInfo &abilityInfo, HapModuleInfo &hapModuleInfo)
 {
+    APP_LOGD("start GetHapModuleInfo");
     if (abilityInfo.bundleName.empty() || abilityInfo.package.empty()) {
         APP_LOGE("fail to GetHapModuleInfo due to params empty");
         return false;
@@ -380,6 +397,7 @@ bool BundleMgrHostImpl::GetHapModuleInfo(const AbilityInfo &abilityInfo, HapModu
 
 bool BundleMgrHostImpl::GetLaunchWantForBundle(const std::string &bundleName, Want &want)
 {
+    APP_LOGD("start GetLaunchWantForBundle, bundleName : %{public}s", bundleName.c_str());
     if (!BundlePermissionMgr::VerifyCallingPermission(Constants::PERMISSION_GET_BUNDLE_INFO_PRIVILEGED)) {
         APP_LOGE("verify permission failed");
         return false;
@@ -395,6 +413,8 @@ bool BundleMgrHostImpl::GetLaunchWantForBundle(const std::string &bundleName, Wa
 
 int BundleMgrHostImpl::CheckPublicKeys(const std::string &firstBundleName, const std::string &secondBundleName)
 {
+    APP_LOGD("start CheckPublicKeys, firstBundleName : %{public}s, secondBundleName : %{public}s",
+        firstBundleName.c_str(), secondBundleName.c_str());
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
         APP_LOGE("DataMgr is nullptr");
@@ -464,6 +484,7 @@ bool BundleMgrHostImpl::IsSafeMode()
 
 bool BundleMgrHostImpl::TraverseCacheDirectory(const std::string& rootDir, std::vector<std::string>& cacheDirs)
 {
+    APP_LOGD("start TraverseCacheDirectory, rootDir : %{public}s", rootDir.c_str());
     DIR* dir = opendir(rootDir.c_str());
     struct dirent *ptr = nullptr;
     if (dir == nullptr) {
@@ -492,6 +513,7 @@ bool BundleMgrHostImpl::CleanBundleCacheFiles(
     const std::string &bundleName, const sptr<ICleanCacheCallback> &cleanCacheCallback,
     int32_t userId)
 {
+    APP_LOGD("start CleanBundleCacheFiles, bundleName : %{public}s, userId : %{public}d", bundleName.c_str(), userId);
     if (bundleName.empty() || !cleanCacheCallback) {
         APP_LOGE("the cleanCacheCallback is nullptr or bundleName empty");
         return false;
@@ -529,6 +551,7 @@ bool BundleMgrHostImpl::CleanBundleCacheFiles(
 
 bool BundleMgrHostImpl::CleanBundleDataFiles(const std::string &bundleName, const int userId)
 {
+    APP_LOGD("start CleanBundleDataFiles, bundleName : %{public}s, userId : %{public}d", bundleName.c_str(), userId);
     if (bundleName.empty() || userId < 0) {
         APP_LOGE("the  bundleName empty or invalid userid");
         return false;
@@ -569,6 +592,7 @@ bool BundleMgrHostImpl::CleanBundleDataFiles(const std::string &bundleName, cons
 
 bool BundleMgrHostImpl::RegisterBundleStatusCallback(const sptr<IBundleStatusCallback> &bundleStatusCallback)
 {
+    APP_LOGD("start RegisterBundleStatusCallback");
     if ((!bundleStatusCallback) || (bundleStatusCallback->GetBundleName().empty())) {
         APP_LOGE("the bundleStatusCallback is nullptr or bundleName empty");
         return false;
@@ -589,6 +613,7 @@ bool BundleMgrHostImpl::RegisterBundleStatusCallback(const sptr<IBundleStatusCal
 
 bool BundleMgrHostImpl::ClearBundleStatusCallback(const sptr<IBundleStatusCallback> &bundleStatusCallback)
 {
+    APP_LOGD("start ClearBundleStatusCallback");
     if (!bundleStatusCallback) {
         APP_LOGE("the bundleStatusCallback is nullptr");
         return false;
@@ -610,6 +635,7 @@ bool BundleMgrHostImpl::ClearBundleStatusCallback(const sptr<IBundleStatusCallba
 
 bool BundleMgrHostImpl::UnregisterBundleStatusCallback()
 {
+    APP_LOGD("start UnregisterBundleStatusCallback");
     // check permission
     if (!BundlePermissionMgr::VerifyCallingPermission(Constants::LISTEN_BUNDLE_CHANGE)) {
         APP_LOGE("register bundle status callback failed due to lack of permission");
@@ -800,6 +826,7 @@ bool BundleMgrHostImpl::DumpShortcutInfo(
 
 bool BundleMgrHostImpl::IsApplicationEnabled(const std::string &bundleName)
 {
+    APP_LOGD("start IsApplicationEnabled, bundleName : %{public}s", bundleName.c_str());
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
         APP_LOGE("DataMgr is nullptr");
@@ -810,6 +837,7 @@ bool BundleMgrHostImpl::IsApplicationEnabled(const std::string &bundleName)
 
 bool BundleMgrHostImpl::SetApplicationEnabled(const std::string &bundleName, bool isEnable, int32_t userId)
 {
+    APP_LOGD("start SetApplicationEnabled");
     if (!BundlePermissionMgr::VerifyCallingPermission(Constants::PERMISSION_CHANGE_ABILITY_ENABLED_STATE)) {
         APP_LOGE("verify permission failed");
         return false;
@@ -843,6 +871,7 @@ bool BundleMgrHostImpl::SetApplicationEnabled(const std::string &bundleName, boo
 
 bool BundleMgrHostImpl::IsAbilityEnabled(const AbilityInfo &abilityInfo)
 {
+    APP_LOGD("start IsAbilityEnabled");
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
         APP_LOGE("DataMgr is nullptr");
@@ -853,6 +882,7 @@ bool BundleMgrHostImpl::IsAbilityEnabled(const AbilityInfo &abilityInfo)
 
 bool BundleMgrHostImpl::SetAbilityEnabled(const AbilityInfo &abilityInfo, bool isEnabled, int32_t userId)
 {
+    APP_LOGD("start SetAbilityEnabled");
     if (!BundlePermissionMgr::VerifyCallingPermission(Constants::PERMISSION_CHANGE_ABILITY_ENABLED_STATE)) {
         APP_LOGE("verify permission failed");
         return false;
@@ -886,6 +916,8 @@ bool BundleMgrHostImpl::SetAbilityEnabled(const AbilityInfo &abilityInfo, bool i
 
 std::string BundleMgrHostImpl::GetAbilityIcon(const std::string &bundleName, const std::string &className)
 {
+    APP_LOGD("start GetAbilityIcon, bundleName : %{public}s, className : %{public}s",
+        bundleName.c_str(), className.c_str());
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
         APP_LOGE("DataMgr is nullptr");
@@ -898,6 +930,8 @@ std::string BundleMgrHostImpl::GetAbilityIcon(const std::string &bundleName, con
 std::shared_ptr<Media::PixelMap> BundleMgrHostImpl::GetAbilityPixelMapIcon(const std::string &bundleName,
     const std::string &abilityName)
 {
+    APP_LOGD("start GetAbilityPixelMapIcon, bundleName : %{public}s, abilityName : %{public}s",
+        bundleName.c_str(), abilityName.c_str());
     if (!VerifyQueryPermission(bundleName)) {
         APP_LOGE("verify permission failed");
         return nullptr;
@@ -913,6 +947,7 @@ std::shared_ptr<Media::PixelMap> BundleMgrHostImpl::GetAbilityPixelMapIcon(const
 
 sptr<IBundleInstaller> BundleMgrHostImpl::GetBundleInstaller()
 {
+    APP_LOGD("start GetBundleInstaller");
     return DelayedSingleton<BundleMgrService>::GetInstance()->GetBundleInstaller();
 }
 
@@ -966,6 +1001,7 @@ bool BundleMgrHostImpl::UnregisterPermissionsChanged(const sptr<OnPermissionChan
 
 bool BundleMgrHostImpl::GetAllFormsInfo(std::vector<FormInfo> &formInfos)
 {
+    APP_LOGD("start GetAllFormsInfo");
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
         APP_LOGE("DataMgr is nullptr");
@@ -976,6 +1012,7 @@ bool BundleMgrHostImpl::GetAllFormsInfo(std::vector<FormInfo> &formInfos)
 
 bool BundleMgrHostImpl::GetFormsInfoByApp(const std::string &bundleName, std::vector<FormInfo> &formInfos)
 {
+    APP_LOGD("start GetFormsInfoByApp, bundleName : %{public}s", bundleName.c_str());
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
         APP_LOGE("DataMgr is nullptr");
@@ -987,6 +1024,8 @@ bool BundleMgrHostImpl::GetFormsInfoByApp(const std::string &bundleName, std::ve
 bool BundleMgrHostImpl::GetFormsInfoByModule(
     const std::string &bundleName, const std::string &moduleName, std::vector<FormInfo> &formInfos)
 {
+    APP_LOGD("start GetFormsInfoByModule, bundleName : %{public}s, moduleName : %{public}s",
+        bundleName.c_str(), moduleName.c_str());
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
         APP_LOGE("DataMgr is nullptr");
@@ -1004,6 +1043,7 @@ bool BundleMgrHostImpl::GetShortcutInfos(
 bool BundleMgrHostImpl::GetShortcutInfos(
     const std::string &bundleName, int32_t userId, std::vector<ShortcutInfo> &shortcutInfos)
 {
+    APP_LOGD("start GetShortcutInfos, bundleName : %{public}s, userId : %{public}d", bundleName.c_str(), userId);
     if (!BundlePermissionMgr::VerifyCallingPermission(Constants::PERMISSION_GET_BUNDLE_INFO_PRIVILEGED)) {
         APP_LOGE("verify permission failed");
         return false;
@@ -1020,6 +1060,7 @@ bool BundleMgrHostImpl::GetShortcutInfos(
 bool BundleMgrHostImpl::GetAllCommonEventInfo(const std::string &eventKey,
     std::vector<CommonEventInfo> &commonEventInfos)
 {
+    APP_LOGD("start GetAllCommonEventInfo, eventKey : %{public}s", eventKey.c_str());
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
         APP_LOGE("DataMgr is nullptr");
@@ -1030,6 +1071,7 @@ bool BundleMgrHostImpl::GetAllCommonEventInfo(const std::string &eventKey,
 
 bool BundleMgrHostImpl::GetModuleUsageRecords(const int32_t number, std::vector<ModuleUsageRecord> &moduleUsageRecords)
 {
+    APP_LOGD("start GetModuleUsageRecords, number : %{public}d", number);
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
         APP_LOGE("DataMgr is nullptr");
@@ -1104,6 +1146,8 @@ bool BundleMgrHostImpl::GetDistributedBundleInfo(
     const std::string &networkId, int32_t userId, const std::string &bundleName,
     DistributedBundleInfo &distributedBundleInfo)
 {
+    APP_LOGD("start GetDistributedBundleInfo, networkId : %{public}s, userId : %{public}d, bundleName : %{public}s",
+        networkId.c_str(), userId, bundleName.c_str());
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
         APP_LOGE("DataMgr is nullptr");
@@ -1224,33 +1268,18 @@ bool BundleMgrHostImpl::VerifyQueryPermission(const std::string &queryBundleName
 {
     std::string callingBundleName;
     bool ret = GetBundleNameForUid(IPCSkeleton::GetCallingUid(), callingBundleName);
+    APP_LOGD("callingBundleName : %{public}s", callingBundleName.c_str());
     if (ret && (queryBundleName == callingBundleName)) {
         APP_LOGD("query own info, verify success");
+        return true;
+    }
+    if (BundlePermissionMgr::VerifyCallingPermission(Constants::PERMISSION_GET_BUNDLE_INFO)) {
+        APP_LOGD("verify PERMISSION_GET_BUNDLE_INFO success");
         return true;
     }
     if (BundlePermissionMgr::VerifyCallingPermission(Constants::PERMISSION_GET_BUNDLE_INFO_PRIVILEGED)) {
         APP_LOGD("verify GET_BUNDLE_INFO_PRIVILEGED success");
         return true;
-    }
-    // adapt HO
-    ApplicationInfo applicationInfo;
-    auto dataMgr = GetDataMgrFromService();
-    if (dataMgr == nullptr) {
-        APP_LOGE("get DataMgr failed");
-        return false;
-    }
-    bool retVal = dataMgr->GetApplicationInfo(
-        callingBundleName, GET_BASIC_APPLICATION_INFO, Constants::UNSPECIFIED_USERID, applicationInfo);
-    if (!retVal) {
-        APP_LOGE("GetApplicationInfo failed");
-        return false;
-    }
-    if (applicationInfo.apiCompatibleVersion <= Constants::PERMISSION_COMPATIBLE_API_VERSION) {
-        APP_LOGD("begin to verify GET_BUNDLE_INFO");
-        if (BundlePermissionMgr::VerifyCallingPermission(Constants::PERMISSION_GET_BUNDLE_INFO)) {
-            APP_LOGD("verify GET_BUNDLE_INFO success");
-            return true;
-        }
     }
     APP_LOGE("verify query permission failed");
     return false;
@@ -1258,6 +1287,7 @@ bool BundleMgrHostImpl::VerifyQueryPermission(const std::string &queryBundleName
 
 std::string BundleMgrHostImpl::GetAppPrivilegeLevel(const std::string &bundleName, int32_t userId)
 {
+    APP_LOGD("start GetAppPrivilegeLevel");
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
         APP_LOGE("DataMgr is nullptr");
@@ -1371,6 +1401,8 @@ int BundleMgrHostImpl::GetUidByBundleName(const std::string &bundleName, const i
 bool BundleMgrHostImpl::GetAbilityInfo(
     const std::string &bundleName, const std::string &abilityName, AbilityInfo &abilityInfo)
 {
+    APP_LOGD("start GetAbilityInfo, bundleName : %{public}s, abilityName : %{public}s",
+        bundleName.c_str(), abilityName.c_str());
     ElementName elementName(Constants::CURRENT_DEVICE_ID, bundleName, abilityName);
     Want want;
     want.SetElement(elementName);
