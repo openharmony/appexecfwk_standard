@@ -560,7 +560,24 @@ private:
      */
     template<typename T>
     bool WriteParcelableVector(std::vector<T> &parcelableVector, Parcel &reply);
+    /**
+     * @brief Write a parcelabe vector objects to ashmem.
+     * @param parcelableVector Indicates the objects to be write.
+     * @param ashmemName Indicates the ashmem name;
+     * @param reply Indicates the reply to be sent;
+     * @return Returns true if objects send successfully; returns false otherwise.
+     */
+    template<typename T>
+    bool WriteParcelableVectorIntoAshmem(
+        std::vector<T> &parcelableVector, const char *ashmemName, Parcel &reply);
+    /**
+     * @brief Allocat ashmem num.
+     * @return Returns ashmem num.
+     */
+    int32_t AllocatAshmemNum();
 
+    std::mutex bundleAshmemMutex_;
+    int32_t ashmemNum_ = 0;
     DISALLOW_COPY_AND_MOVE(BundleMgrHost);
 };
 }  // namespace AppExecFwk

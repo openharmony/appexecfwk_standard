@@ -665,6 +665,16 @@ private:
      */
     template <typename T>
     bool GetParcelableInfos(IBundleMgr::Message code, MessageParcel &data, std::vector<T> &parcelableInfos);
+    /**
+     * @brief Send a command message and then get a vector of parcelable information objects from the reply Ashmem.
+     * @param code Indicates the message code to be sent.
+     * @param data Indicates the objects to be sent.
+     * @param parcelableInfos Indicates the vector objects to be got;
+     * @return Returns true if the vector get successfully; returns false otherwise.
+     */
+    template <typename T>
+    bool GetParcelableInfosFromAshmem(
+        IBundleMgr::Message code, MessageParcel &data, std::vector<T> &parcelableInfos);
     static inline BrokerDelegator<BundleMgrProxy> delegator_;
 };
 
