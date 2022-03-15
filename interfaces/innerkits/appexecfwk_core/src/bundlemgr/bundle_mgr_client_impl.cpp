@@ -197,7 +197,7 @@ std::shared_ptr<ResourceManager> BundleMgrClientImpl::InitResMgr(const std::stri
     }
     resMgr->UpdateResConfig(*resConfig);
 
-    APP_LOGD("resourcePath is %{public}s", resourcePath.c_str());
+    APP_LOGD("resourcePath is %{private}s", resourcePath.c_str());
     if (!resourcePath.empty() && !resMgr->AddResource(resourcePath.c_str())) {
         APP_LOGE("InitResMgr AddResource failed");
         return nullptr;
@@ -225,7 +225,7 @@ bool BundleMgrClientImpl::GetResFromResMgr(const std::string &resName, const std
         APP_LOGE("GetResFromResMgr profileName cannot be found");
         return false;
     }
-    APP_LOGD("GetResFromResMgr resPath is %{public}s", resPath.c_str());
+    APP_LOGD("GetResFromResMgr resPath is %{private}s", resPath.c_str());
     std::string profile;
     if (!TransformFileToJsonString(resPath, profile)) {
         return false;

@@ -64,7 +64,7 @@ bool AddFileContentToZip(zipFile zip_file, FilePath &file_path)
         num_bytes = fread(buf, 1, kZipBufSize, fp);
         if (num_bytes > 0) {
             if (zipWriteInFileInZip(zip_file, buf, num_bytes) != ZIP_OK) {
-                APP_LOGI("%{public}s called, Could not write data to zip for path:%{public}s ",
+                APP_LOGI("%{public}s called, Could not write data to zip for path:%{private}s ",
                     __func__, file_path.Value().c_str());
                 fclose(fp);
                 fp = nullptr;

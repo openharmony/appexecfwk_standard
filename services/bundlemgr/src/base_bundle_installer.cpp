@@ -1097,7 +1097,7 @@ ErrCode BaseBundleInstaller::CreateBundleAndDataDir(InnerBundleInfo &info) const
 ErrCode BaseBundleInstaller::CreateBundleCodeDir(InnerBundleInfo &info) const
 {
     auto appCodePath = Constants::BUNDLE_CODE_DIR + Constants::PATH_SEPARATOR + bundleName_;
-    APP_LOGD("create bundle dir %{public}s", appCodePath.c_str());
+    APP_LOGD("create bundle dir %{private}s", appCodePath.c_str());
     ErrCode result = InstalldClient::GetInstance()->CreateBundleDir(appCodePath);
     if (result != ERR_OK) {
         APP_LOGE("fail to create bundle dir, error is %{public}d", result);
@@ -1148,7 +1148,7 @@ ErrCode BaseBundleInstaller::ExtractModule(InnerBundleInfo &info, const std::str
             .append(nativeLibraryPath).append(Constants::PATH_SEPARATOR);
     }
     std::string cpuAbi = info.GetBaseApplicationInfo().cpuAbi;
-    APP_LOGD("begin to extract module files, modulePath : %{public}s, targetSoPath : %{public}s, cpuAbi : %{public}s",
+    APP_LOGD("begin to extract module files, modulePath : %{private}s, targetSoPath : %{private}s, cpuAbi : %{public}s",
         modulePath.c_str(), targetSoPath.c_str(), cpuAbi.c_str());
     auto result = ExtractModuleFiles(info, modulePath, targetSoPath, cpuAbi);
     if (result != ERR_OK) {
@@ -1166,7 +1166,7 @@ ErrCode BaseBundleInstaller::RemoveBundleAndDataDir(const InnerBundleInfo &info,
     // remove bundle dir
     auto result = RemoveBundleCodeDir(info);
     if (result != ERR_OK) {
-        APP_LOGE("fail to remove bundle dir %{public}s, error is %{public}d", info.GetAppCodePath().c_str(), result);
+        APP_LOGE("fail to remove bundle dir %{private}s, error is %{public}d", info.GetAppCodePath().c_str(), result);
         return result;
     }
     if (!info.GetIsKeepData() || !isUninstall) {
@@ -1244,7 +1244,7 @@ ErrCode BaseBundleInstaller::RemoveModuleAndDataDir(
 
 ErrCode BaseBundleInstaller::RemoveModuleDir(const std::string &modulePath) const
 {
-    APP_LOGD("module dir %{public}s to be removed", modulePath.c_str());
+    APP_LOGD("module dir %{private}s to be removed", modulePath.c_str());
     return InstalldClient::GetInstance()->RemoveDir(modulePath);
 }
 
@@ -1287,7 +1287,7 @@ ErrCode BaseBundleInstaller::ParseBundleInfo(const std::string &bundleFilePath, 
 ErrCode BaseBundleInstaller::ExtractModuleFiles(const InnerBundleInfo &info, const std::string &modulePath,
     const std::string &targetSoPath, const std::string &cpuAbi)
 {
-    APP_LOGD("extract module to %{public}s", modulePath.c_str());
+    APP_LOGD("extract module to %{private}s", modulePath.c_str());
     auto result = InstalldClient::GetInstance()->ExtractModuleFiles(modulePath_, modulePath, targetSoPath, cpuAbi);
     if (result != ERR_OK) {
         APP_LOGE("extract module files failed, error is %{public}d", result);

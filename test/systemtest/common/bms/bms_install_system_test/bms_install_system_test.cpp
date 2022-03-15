@@ -270,7 +270,7 @@ bool BmsInstallSystemTest::CheckFilePath(const std::string &checkFilePath) const
     CommonTool commonTool;
     bool checkIsExist = commonTool.CheckFilePathISExist(checkFilePath);
     if (!checkIsExist) {
-        APP_LOGE("%{public}s does not exist!", checkFilePath.c_str());
+        APP_LOGE("%{private}s does not exist!", checkFilePath.c_str());
         return false;
     }
     return true;

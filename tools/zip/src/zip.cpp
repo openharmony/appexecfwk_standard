@@ -213,7 +213,7 @@ bool UnzipWithFilterAndWriters(const PlatformFile &srcFile, FilePath &destDir, W
         if (unzipParam.filterCB(entryPath)) {
             if (reader.CurrentEntryInfo()->IsDirectory()) {
                 if (!directoryCreator(destDir, entryPath)) {
-                    APP_LOGI("!!!directory_creator(%{public}s) Failed!!!.", entryPath.Value().c_str());
+                    APP_LOGI("!!!directory_creator(%{private}s) Failed!!!.", entryPath.Value().c_str());
                     CALLING_CALL_BACK(unzipParam.callback, ERROR_CODE_ERRNO)
                     return false;
                 }

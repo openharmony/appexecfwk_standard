@@ -1600,7 +1600,7 @@ std::shared_ptr<Media::PixelMap> BundleDataMgr::GetAbilityPixelMapIcon(const std
         APP_LOGE("GetMediaById iconPath failed");
         return nullptr;
     }
-    APP_LOGD("GetMediaById iconPath: %{public}s", iconPath.c_str());
+    APP_LOGD("GetMediaById iconPath: %{private}s", iconPath.c_str());
     auto pixelMapPtr = LoadImageFile(iconPath);
     if (!pixelMapPtr) {
         APP_LOGE("LoadImageFile failed");
@@ -2944,7 +2944,7 @@ std::shared_ptr<Global::Resource::ResourceManager> BundleDataMgr::GetResourceMan
     std::shared_ptr<Global::Resource::ResourceManager> resourceManager(Global::Resource::CreateResourceManager());
     for (auto moduleResPath : bundleInfo.moduleResPaths) {
         if (!moduleResPath.empty()) {
-            APP_LOGE("DistributedBms::InitResourceManager, moduleResPath: %{public}s", moduleResPath.c_str());
+            APP_LOGE("DistributedBms::InitResourceManager, moduleResPath: %{private}s", moduleResPath.c_str());
             if (!resourceManager->AddResource(moduleResPath.c_str())) {
                 APP_LOGE("DistributedBms::InitResourceManager AddResource failed");
             }
@@ -2967,7 +2967,7 @@ std::shared_ptr<Media::PixelMap> BundleDataMgr::LoadImageFile(const std::string 
                                                                                             opts,
                                                                                             errorCode);
     if (errorCode != 0) {
-        APP_LOGE("Failed to create image source path %{public}s err %{public}d",
+        APP_LOGE("Failed to create image source path %{private}s err %{public}d",
             path.c_str(), errorCode);
         return nullptr;
     }
@@ -2975,7 +2975,7 @@ std::shared_ptr<Media::PixelMap> BundleDataMgr::LoadImageFile(const std::string 
     Media::DecodeOptions decodeOpts;
     auto pixelMapPtr = imageSource->CreatePixelMap(decodeOpts, errorCode);
     if (errorCode != 0) {
-        APP_LOGE("Failed to create pixelmap path %{public}s err %{public}d",
+        APP_LOGE("Failed to create pixelmap path %{private}s err %{public}d",
             path.c_str(), errorCode);
         return nullptr;
     }

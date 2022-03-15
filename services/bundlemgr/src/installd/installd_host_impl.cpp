@@ -74,11 +74,11 @@ ErrCode InstalldHostImpl::ExtractModuleFiles(const std::string &srcModulePath, c
         return ERR_APPEXECFWK_INSTALLD_PARAM_ERROR;
     }
     if (!InstalldOperator::MkRecursiveDir(targetPath, true)) {
-        APP_LOGE("create target dir %{public}s failed", targetPath.c_str());
+        APP_LOGE("create target dir %{private}s failed", targetPath.c_str());
         return ERR_APPEXECFWK_INSTALLD_CREATE_DIR_FAILED;
     }
     if (!InstalldOperator::ExtractFiles(srcModulePath, targetPath, targetSoPath, cpuAbi)) {
-        APP_LOGE("extract %{public}s to %{public}s failed", srcModulePath.c_str(), targetPath.c_str());
+        APP_LOGE("extract %{private}s to %{private}s failed", srcModulePath.c_str(), targetPath.c_str());
         InstalldOperator::DeleteDir(targetPath);
         return ERR_APPEXECFWK_INSTALL_DISK_MEM_INSUFFICIENT;
     }
@@ -87,13 +87,13 @@ ErrCode InstalldHostImpl::ExtractModuleFiles(const std::string &srcModulePath, c
 
 ErrCode InstalldHostImpl::RenameModuleDir(const std::string &oldPath, const std::string &newPath)
 {
-    APP_LOGD("rename %{public}s to %{public}s", oldPath.c_str(), newPath.c_str());
+    APP_LOGD("rename %{private}s to %{private}s", oldPath.c_str(), newPath.c_str());
     if (oldPath.empty() || newPath.empty()) {
         APP_LOGE("Calling the function RenameModuleDir with invalid param");
         return ERR_APPEXECFWK_INSTALLD_PARAM_ERROR;
     }
     if (!InstalldOperator::RenameDir(oldPath, newPath)) {
-        APP_LOGE("rename module dir %{public}s to %{public}s failed", oldPath.c_str(), newPath.c_str());
+        APP_LOGE("rename module dir %{private}s to %{private}s failed", oldPath.c_str(), newPath.c_str());
         return ERR_APPEXECFWK_INSTALLD_RNAME_DIR_FAILED;
     }
     return ERR_OK;
@@ -387,7 +387,7 @@ ErrCode InstalldHostImpl::SetDirApl(const std::string &dir, const std::string &b
     HapContext hapContext;
     int ret = hapContext.HapFileRestorecon(dir, aplLevel, bundleName, SELINUX_HAP_RESTORECON_RECURSE);
     if (ret != 0) {
-        APP_LOGE("HapFileRestorecon path: %{public}s failed, ret:%{public}d", dir.c_str(), ret);
+        APP_LOGE("HapFileRestorecon path: %{private}s failed, ret:%{public}d", dir.c_str(), ret);
     }
     return ret;
 #else

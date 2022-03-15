@@ -68,7 +68,7 @@ void PageAbilityDemo::CreateDir(const std::string &path) const
 {
     if (access(path.c_str(), F_OK) != 0) {
         if (mkdir(path.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH) != 0) {
-            APP_LOGE("CreateDir:%{public}s error", path.c_str());
+            APP_LOGE("CreateDir:%{private}s error", path.c_str());
         }
     }
 }

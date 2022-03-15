@@ -349,7 +349,7 @@ bool BundleMgrHostImpl::GetBundleArchiveInfo(
     std::string realPath;
     auto ret = BundleUtil::CheckFilePath(hapFilePath, realPath);
     if (ret != ERR_OK) {
-        APP_LOGE("GetBundleArchiveInfo file path %{public}s invalid", hapFilePath.c_str());
+        APP_LOGE("GetBundleArchiveInfo file path %{private}s invalid", hapFilePath.c_str());
         return false;
     }
     InnerBundleInfo info;
