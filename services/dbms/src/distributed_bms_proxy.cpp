@@ -203,6 +203,7 @@ int32_t DistributedBmsProxy::SendRequest(IDistributedBms::Message code, MessageP
     int32_t result = remote->SendRequest(static_cast<uint32_t>(code), data, reply, option);
     if (result != OHOS::NO_ERROR) {
         APP_LOGE("fail to send %{public}d cmd to service due to transact error", code);
+        return ERR_APPEXECFWK_FAILED_GET_REMOTE_PROXY;
     }
     return result;
 }
