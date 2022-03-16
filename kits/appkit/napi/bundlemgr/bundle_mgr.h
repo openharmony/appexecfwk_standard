@@ -340,21 +340,6 @@ struct AsyncAbilityInfo {
     std::string errMssage;
 };
 
-struct CheckPackageHasInstalledResponse {
-    bool result = false;
-};
-struct CheckPackageHasInstalledOptions {
-    napi_env env = nullptr;
-    napi_async_work asyncWork = nullptr;
-    napi_ref successRef = nullptr;
-    napi_ref failRef = nullptr;
-    napi_ref completeRef = nullptr;
-    std::string bundleName;
-    bool isString = false;
-    CheckPackageHasInstalledResponse response;
-    int32_t errCode = 0;
-};
-
 extern thread_local napi_ref g_classBundleInstaller;
 
 napi_value WrapVoidToJS(napi_env env);
@@ -390,7 +375,6 @@ napi_value GetAbilityIcon(napi_env env, napi_callback_info info);
 napi_value GetBundleGids(napi_env env, napi_callback_info info);
 napi_value IsAbilityEnabled(napi_env env, napi_callback_info info);
 napi_value IsApplicationEnabled(napi_env env, napi_callback_info info);
-napi_value HasInstalled(napi_env env, napi_callback_info info);
 bool UnwrapAbilityInfo(napi_env env, napi_value param, OHOS::AppExecFwk::AbilityInfo& abilityInfo);
 void CreateAbilityTypeObject(napi_env env, napi_value value);
 void CreateAbilitySubTypeObject(napi_env env, napi_value value);
