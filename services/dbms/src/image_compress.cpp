@@ -164,7 +164,6 @@ bool ImageCompress::InitPngFile(std::shared_ptr<ImageBuffer>& imageBuffer,
     imageBuffer->SetColorType(png_get_color_type(png, info));
     imageBuffer->SetBitDepth(png_get_bit_depth(png, info));
     imageBuffer->SetPngComponents(png_get_channels(png, info));
-
     if (imageBuffer->GetBitDepth() == BITDEPTH_SIXTHEN) {
         png_set_strip_16(png);
     }
@@ -356,13 +355,13 @@ int32_t ImageCompress::ResizeRGBAImage(std::shared_ptr<ImageBuffer>& imageBuffer
     uint32_t components = imageBufferIn->GetComponents();
     for (uint32_t h = 0; h < imageBufferOut->GetHeight(); ++h) {
         for (uint32_t w = 0; w < imageBufferOut->GetWidth(); ++w) {
-            int64_t heightIndex = std::round(h / ratio);
-            int64_t widthIndex = std::round(w / ratio);
+            uint64_t heightIndex = std::round(h / ratio);
+            uint64_t widthIndex = std::round(w / ratio);
             if (heightIndex > imageBufferIn->GetHeight()) {
-                heightIndex = imageBufferIn->GetHeight() - 1;
+                heightIndex = imageBufferIn->GetHeight() == 0 ? 0 : imageBufferIn->GetHeight() - 1;
             }
             if (widthIndex > imageBufferIn->GetWidth()) {
-                widthIndex = imageBufferIn->GetWidth() - 1;
+                widthIndex = imageBufferIn->GetWidth() == 0 ? 0 : imageBufferIn->GetWidth() - 1;
             }
             imageRowOut[h * outRowStride +  w * components] =
                 imageRowIn[heightIndex * inRowStride + widthIndex * components];
@@ -493,13 +492,13 @@ int32_t ImageCompress::ResizeRGBImage(std::shared_ptr<ImageBuffer>& imageBufferI
     uint32_t components = imageBufferIn->GetComponents();
     for (uint32_t h = 0; h < imageBufferOut->GetHeight(); ++h) {
         for (uint32_t w = 0; w < imageBufferOut->GetWidth(); ++w) {
-            int64_t heightIndex = std::round(h / ratio);
-            int64_t widthIndex = std::round(w / ratio);
+            uint64_t heightIndex = std::round(h / ratio);
+            uint64_t widthIndex = std::round(w / ratio);
             if (heightIndex > imageBufferIn->GetHeight()) {
-                heightIndex = imageBufferIn->GetHeight() - 1;
+                heightIndex = imageBufferIn->GetHeight() == 0 ? 0 : imageBufferIn->GetHeight() - 1;
             }
             if (widthIndex > imageBufferIn->GetWidth()) {
-                widthIndex = imageBufferIn->GetWidth() - 1;
+                widthIndex = imageBufferIn->GetWidth() == 0 ? 0 : imageBufferIn->GetWidth() - 1;
             }
             imageRowOut[h * outRowStride +  w * components] =
                 imageRowIn[heightIndex * inRowStride + widthIndex * components];
