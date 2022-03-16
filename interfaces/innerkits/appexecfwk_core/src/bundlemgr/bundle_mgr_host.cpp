@@ -1100,7 +1100,11 @@ ErrCode BundleMgrHost::HandleCleanBundleCacheFiles(Parcel &data, Parcel &reply)
 {
     BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::string bundleName = data.ReadString();
-    sptr<IRemoteObject> object = data.ReadParcelable<IRemoteObject>();
+    sptr<IRemoteObject> object = data.ReadObject<IRemoteObject>();
+    if (object == nullptr) {
+        APP_LOGE("read failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
     sptr<ICleanCacheCallback> cleanCacheCallback = iface_cast<ICleanCacheCallback>(object);
     int32_t userId = data.ReadInt32();
 
@@ -1130,7 +1134,11 @@ ErrCode BundleMgrHost::HandleRegisterBundleStatusCallback(Parcel &data, Parcel &
 {
     BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
     std::string bundleName = data.ReadString();
-    sptr<IRemoteObject> object = data.ReadParcelable<IRemoteObject>();
+    sptr<IRemoteObject> object = data.ReadObject<IRemoteObject>();
+    if (object == nullptr) {
+        APP_LOGE("read failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
     sptr<IBundleStatusCallback> BundleStatusCallback = iface_cast<IBundleStatusCallback>(object);
 
     bool ret = false;
@@ -1150,7 +1158,11 @@ ErrCode BundleMgrHost::HandleRegisterBundleStatusCallback(Parcel &data, Parcel &
 ErrCode BundleMgrHost::HandleClearBundleStatusCallback(Parcel &data, Parcel &reply)
 {
     BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
-    sptr<IRemoteObject> object = data.ReadParcelable<IRemoteObject>();
+    sptr<IRemoteObject> object = data.ReadObject<IRemoteObject>();
+    if (object == nullptr) {
+        APP_LOGE("read failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
     sptr<IBundleStatusCallback> BundleStatusCallback = iface_cast<IBundleStatusCallback>(object);
 
     bool ret = ClearBundleStatusCallback(BundleStatusCallback);
@@ -1352,7 +1364,11 @@ ErrCode BundleMgrHost::HandleRequestPermissionFromUser(Parcel &data, Parcel &rep
 ErrCode BundleMgrHost::HandleRegisterAllPermissionsChanged(Parcel &data, Parcel &reply)
 {
     BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
-    sptr<IRemoteObject> object = data.ReadParcelable<IRemoteObject>();
+    sptr<IRemoteObject> object = data.ReadObject<IRemoteObject>();
+    if (object == nullptr) {
+        APP_LOGE("read failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
     sptr<OnPermissionChangedCallback> callback = iface_cast<OnPermissionChangedCallback>(object);
 
     bool ret = false;
@@ -1376,7 +1392,11 @@ ErrCode BundleMgrHost::HandleRegisterPermissionsChanged(Parcel &data, Parcel &re
         APP_LOGE("read parcel failed");
         return ERR_APPEXECFWK_PARCEL_ERROR;
     }
-    sptr<IRemoteObject> object = data.ReadParcelable<IRemoteObject>();
+    sptr<IRemoteObject> object = data.ReadObject<IRemoteObject>();
+    if (object == nullptr) {
+        APP_LOGE("read failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    }
     sptr<OnPermissionChangedCallback> callback = iface_cast<OnPermissionChangedCallback>(object);
     bool ret = false;
     if (!callback) {
@@ -1394,7 +1414,11 @@ ErrCode BundleMgrHost::HandleRegisterPermissionsChanged(Parcel &data, Parcel &re
 ErrCode BundleMgrHost::HandleUnregisterPermissionsChanged(Parcel &data, Parcel &reply)
 {
     BYTRACE_NAME(BYTRACE_TAG_APP, __PRETTY_FUNCTION__);
-    sptr<IRemoteObject> object = data.ReadParcelable<IRemoteObject>();
+    sptr<IRemoteObject> object = data.ReadObject<IRemoteObject>();
+    if (object == nullptr) {
+        APP_LOGE("read failed");
+        return ERR_APPEXECFWK_PARCEL_ERROR;
+    };
     sptr<OnPermissionChangedCallback> callback = iface_cast<OnPermissionChangedCallback>(object);
     bool ret = false;
     if (!callback) {
@@ -1418,7 +1442,7 @@ ErrCode BundleMgrHost::HandleGetBundleInstaller(Parcel &data, Parcel &reply)
         return ERR_APPEXECFWK_INSTALL_HOST_INSTALLER_FAILED;
     }
 
-    if (!reply.WriteParcelable(installer->AsObject())) {
+    if (!reply.WriteObject<IRemoteObject>(installer->AsObject())) {
         APP_LOGE("failed to reply bundle installer to client, for write parcel error");
         return ERR_APPEXECFWK_PARCEL_ERROR;
     }
@@ -1434,7 +1458,7 @@ ErrCode BundleMgrHost::HandleGetBundleUserMgr(Parcel &data, Parcel &reply)
         return ERR_APPEXECFWK_INSTALL_HOST_INSTALLER_FAILED;
     }
 
-    if (!reply.WriteParcelable(bundleUserMgr->AsObject())) {
+    if (!reply.WriteObject<IRemoteObject>(bundleUserMgr->AsObject())) {
         APP_LOGE("failed to reply bundle installer to client, for write parcel error");
         return ERR_APPEXECFWK_PARCEL_ERROR;
     }
