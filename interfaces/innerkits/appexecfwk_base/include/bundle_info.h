@@ -25,6 +25,7 @@
 #include "application_info.h"
 #include "extension_ability_info.h"
 #include "hap_module_info.h"
+#include "message_parcel.h"
 
 namespace OHOS {
 namespace AppExecFwk {
