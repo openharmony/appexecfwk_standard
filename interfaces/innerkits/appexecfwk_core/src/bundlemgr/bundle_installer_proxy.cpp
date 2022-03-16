@@ -51,7 +51,10 @@ bool BundleInstallerProxy::Install(
         APP_LOGE("fail to install, for statusReceiver is nullptr");
         return false;
     }
-    PARCEL_WRITE(data, Parcelable, statusReceiver->AsObject());
+    if (!data.WriteObject<IRemoteObject>(statusReceiver->AsObject())) {
+        APP_LOGE("write parcel failed");
+        return false;
+    }
 
     return SendInstallRequest(static_cast<int32_t>(IBundleInstaller::Message::INSTALL), data, reply, option);
 }
@@ -76,7 +79,10 @@ bool BundleInstallerProxy::Install(const std::vector<std::string> &bundleFilePat
         APP_LOGE("fail to install, for statusReceiver is nullptr");
         return false;
     }
-    PARCEL_WRITE(data, Parcelable, statusReceiver->AsObject());
+    if (!data.WriteObject<IRemoteObject>(statusReceiver->AsObject())) {
+        APP_LOGE("write parcel failed");
+        return false;
+    }
 
     return SendInstallRequest(static_cast<int32_t>(IBundleInstaller::Message::INSTALL_MULTIPLE_HAPS), data, reply,
         option);
@@ -97,7 +103,10 @@ bool BundleInstallerProxy::Recover(const std::string &bundleName,
         APP_LOGE("fail to install, for statusReceiver is nullptr");
         return false;
     }
-    PARCEL_WRITE(data, Parcelable, statusReceiver->AsObject());
+    if (!data.WriteObject<IRemoteObject>(statusReceiver->AsObject())) {
+        APP_LOGE("write parcel failed");
+        return false;
+    }
 
     return SendInstallRequest(static_cast<int32_t>(IBundleInstaller::Message::RECOVER), data, reply,
         option);
@@ -118,7 +127,10 @@ bool BundleInstallerProxy::Uninstall(
         APP_LOGE("fail to uninstall, for statusReceiver is nullptr");
         return false;
     }
-    PARCEL_WRITE(data, Parcelable, statusReceiver->AsObject());
+    if (!data.WriteObject<IRemoteObject>(statusReceiver->AsObject())) {
+        APP_LOGE("write parcel failed");
+        return false;
+    }
 
     return SendInstallRequest(static_cast<int32_t>(IBundleInstaller::Message::UNINSTALL), data, reply, option);
 }
@@ -139,7 +151,10 @@ bool BundleInstallerProxy::Uninstall(const std::string &bundleName, const std::s
         APP_LOGE("fail to uninstall, for statusReceiver is nullptr");
         return false;
     }
-    PARCEL_WRITE(data, Parcelable, statusReceiver->AsObject());
+    if (!data.WriteObject<IRemoteObject>(statusReceiver->AsObject())) {
+        APP_LOGE("write parcel failed");
+        return false;
+    }
 
     return SendInstallRequest(static_cast<int32_t>(IBundleInstaller::Message::UNINSTALL_MODULE), data, reply, option);
 }
