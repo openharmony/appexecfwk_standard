@@ -1555,7 +1555,7 @@ napi_value QueryAbilityInfos(napi_env env, napi_callback_info info)
         .deferred = nullptr,
         .want = want,
         .flags = 0,
-        .userId = 0,
+        .userId = IPCSkeleton::GetCallingUid() / Constants::BASE_USER_RANGE,
         .err = 0
     };
     if (asyncCallbackInfo == nullptr) {
