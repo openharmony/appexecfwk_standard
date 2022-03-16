@@ -22,12 +22,14 @@
 #include "bytrace.h"
 #include "datetime_ex.h"
 #include "ipc_types.h"
+#include "json_util.h"
 #include "string_ex.h"
 
 namespace OHOS {
 namespace AppExecFwk {
 namespace {
 const int32_t LIMIT_PARCEL_SIZE = 1024;
+const int32_t ASHMEM_LEN = 16;
 
 void SplitString(const std::string &source, std::vector<std::string> &strings)
 {
@@ -39,6 +41,14 @@ void SplitString(const std::string &source, std::vector<std::string> &strings)
     for (int i = 0; i < splitSize; i++) {
         int32_t start = LIMIT_PARCEL_SIZE * i;
         strings.emplace_back(source.substr(start, LIMIT_PARCEL_SIZE));
+    }
+}
+
+inline void ClearAshMem(sptr<Ashmem> &optMem)
+{
+    if (optMem != nullptr) {
+        optMem->UnmapAshmem();
+        optMem->CloseAshmem();
     }
 }
 }  // namespace
@@ -448,7 +458,7 @@ ErrCode BundleMgrHost::HandleGetBundleInfos(Parcel &data, Parcel &reply)
         return ERR_APPEXECFWK_PARCEL_ERROR;
     }
     if (ret) {
-        if (!WriteParcelableVector(infos, reply)) {
+        if (!WriteParcelableVectorIntoAshmem(infos, __func__, reply)) {
             APP_LOGE("write failed");
             return ERR_APPEXECFWK_PARCEL_ERROR;
         }
@@ -470,7 +480,7 @@ ErrCode BundleMgrHost::HandleGetBundleInfosWithIntFlags(Parcel &data, Parcel &re
         return ERR_APPEXECFWK_PARCEL_ERROR;
     }
     if (ret) {
-        if (!WriteParcelableVector(infos, reply)) {
+        if (!WriteParcelableVectorIntoAshmem(infos, __func__, reply)) {
             APP_LOGE("write failed");
             return ERR_APPEXECFWK_PARCEL_ERROR;
         }
@@ -1813,6 +1823,98 @@ bool BundleMgrHost::WriteParcelableVector(std::vector<T> &parcelableVector, Parc
         }
     }
     return true;
+}
+
+template<typename T>
+bool BundleMgrHost::WriteParcelableVectorIntoAshmem(
+    std::vector<T> &parcelableVector, const char *ashmemName, Parcel &reply)
+{
+    APP_LOGD("Write parcelable vector into ashmem");
+    if (ashmemName == nullptr) {
+        APP_LOGE("AshmemName is null");
+        return false;
+    }
+
+    if (!reply.WriteInt32(parcelableVector.size())) {
+        APP_LOGE("Write parcelable vector size failed");
+        return false;
+    }
+
+    MessageParcel *messageParcel = reinterpret_cast<MessageParcel *>(&reply);
+    if (!messageParcel) {
+        APP_LOGE("Type conversion failed");
+        return false;
+    }
+
+    // Calculate the size of the ashmem,
+    // and get content that needs to be stored in ashmem.
+    int32_t totalSize = 0;
+    std::vector<std::string> infoStrs;
+    for (auto &parcelable : parcelableVector) {
+        auto str = GetJsonStrFromInfo<T>(parcelable);
+        infoStrs.emplace_back(str);
+        totalSize += ASHMEM_LEN;
+        totalSize += strlen(str.c_str());
+    }
+
+    if (infoStrs.empty() || totalSize <= 0) {
+        APP_LOGE("The size of the ashmem is invalid or the content is empty");
+        return false;
+    }
+
+    // The ashmem name must be unique.
+    sptr<Ashmem> ashmem = Ashmem::CreateAshmem(
+        (ashmemName + std::to_string(AllocatAshmemNum())).c_str(), totalSize);
+    if (ashmem == nullptr) {
+        APP_LOGE("Create shared memory fail");
+        return false;
+    }
+
+    // Set the read/write mode of the ashme.
+    bool ret = ashmem->MapReadAndWriteAshmem();
+    if (!ret) {
+        APP_LOGE("Map shared memory fail");
+        return false;
+    }
+
+    // Write the size and content of each item to the ashmem.
+    // The size of item use ASHMEM_LEN.
+    int32_t offset = 0;
+    for (auto &infoStr : infoStrs) {
+        int itemLen = static_cast<int>(strlen(infoStr.c_str()));
+        ret = ashmem->WriteToAshmem(std::to_string(itemLen).c_str(), ASHMEM_LEN, offset);
+        if (!ret) {
+            APP_LOGE("Write itemLen to shared memory fail");
+            ClearAshMem(ashmem);
+            return false;
+        }
+
+        offset += ASHMEM_LEN;
+        ret = ashmem->WriteToAshmem(infoStr.c_str(), itemLen, offset);
+        if (!ret) {
+            APP_LOGE("Write info to shared memory fail");
+            ClearAshMem(ashmem);
+            return false;
+        }
+
+        offset += itemLen;
+    }
+
+    ret = messageParcel->WriteAshmem(ashmem);
+    ClearAshMem(ashmem);
+    if (!ret) {
+        APP_LOGE("Write ashmem to parcel fail");
+        return false;
+    }
+
+    APP_LOGD("Write parcelable vector into ashmem success");
+    return true;
+}
+
+int32_t BundleMgrHost::AllocatAshmemNum()
+{
+    std::lock_guard<std::mutex> lock(bundleAshmemMutex_);
+    return ashmemNum_++;
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS
