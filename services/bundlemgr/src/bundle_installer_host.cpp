@@ -96,7 +96,11 @@ void BundleInstallerHost::HandleInstallMessage(Parcel &data)
         APP_LOGE("ReadParcelable<InstallParam> failed");
         return;
     }
-    sptr<IRemoteObject> object = data.ReadParcelable<IRemoteObject>();
+    sptr<IRemoteObject> object = data.ReadObject<IRemoteObject>();
+    if (object == nullptr) {
+        APP_LOGE("read failed");
+        return;
+    }
     sptr<IStatusReceiver> statusReceiver = iface_cast<IStatusReceiver>(object);
 
     Install(bundlePath, *installParam, statusReceiver);
@@ -113,7 +117,11 @@ void BundleInstallerHost::HandleRecoverMessage(Parcel &data)
         APP_LOGE("ReadParcelable<InstallParam> failed");
         return;
     }
-    sptr<IRemoteObject> object = data.ReadParcelable<IRemoteObject>();
+    sptr<IRemoteObject> object = data.ReadObject<IRemoteObject>();
+    if (object == nullptr) {
+        APP_LOGE("read failed");
+        return;
+    }
     sptr<IStatusReceiver> statusReceiver = iface_cast<IStatusReceiver>(object);
 
     Recover(bundleName, *installParam, statusReceiver);
@@ -140,7 +148,11 @@ void BundleInstallerHost::HandleInstallMultipleHapsMessage(Parcel &data)
         APP_LOGE("ReadParcelable<InstallParam> failed");
         return;
     }
-    sptr<IRemoteObject> object = data.ReadParcelable<IRemoteObject>();
+    sptr<IRemoteObject> object = data.ReadObject<IRemoteObject>();
+    if (object == nullptr) {
+        APP_LOGE("read failed");
+        return;
+    }
     sptr<IStatusReceiver> statusReceiver = iface_cast<IStatusReceiver>(object);
 
     Install(pathVec, *installParam, statusReceiver);
@@ -156,7 +168,11 @@ void BundleInstallerHost::HandleUninstallMessage(Parcel &data)
         APP_LOGE("ReadParcelable<InstallParam> failed");
         return;
     }
-    sptr<IRemoteObject> object = data.ReadParcelable<IRemoteObject>();
+    sptr<IRemoteObject> object = data.ReadObject<IRemoteObject>();
+    if (object == nullptr) {
+        APP_LOGE("read failed");
+        return;
+    }
     sptr<IStatusReceiver> statusReceiver = iface_cast<IStatusReceiver>(object);
 
     Uninstall(bundleName, *installParam, statusReceiver);
@@ -173,7 +189,11 @@ void BundleInstallerHost::HandleUninstallModuleMessage(Parcel &data)
         APP_LOGE("ReadParcelable<InstallParam> failed");
         return;
     }
-    sptr<IRemoteObject> object = data.ReadParcelable<IRemoteObject>();
+    sptr<IRemoteObject> object = data.ReadObject<IRemoteObject>();
+    if (object == nullptr) {
+        APP_LOGE("read failed");
+        return;
+    }
     sptr<IStatusReceiver> statusReceiver = iface_cast<IStatusReceiver>(object);
 
     Uninstall(bundleName, modulePackage, *installParam, statusReceiver);
