@@ -17,7 +17,6 @@
 
 #include "json_util.h"
 #include "parcel_macro.h"
-#include "message_parcel.h"
 #include "string_ex.h"
 
 namespace OHOS {
