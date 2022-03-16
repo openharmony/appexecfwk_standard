@@ -23,9 +23,41 @@
 #include "appexecfwk_errors.h"
 #include "bundle_constants.h"
 #include "bytrace.h"
+#include "json_util.h"
+#include "securec.h"
 
 namespace OHOS {
 namespace AppExecFwk {
+namespace {
+const int32_t ASHMEM_LEN = 16;
+
+inline void ClearAshMem(sptr<Ashmem> &optMem)
+{
+    if (optMem != nullptr) {
+        optMem->UnmapAshmem();
+        optMem->CloseAshmem();
+    }
+}
+
+bool ParseStr(const char *buf, const int itemLen, int index, std::string &result)
+{
+    APP_LOGD("ParseStr itemLen:%{public}d  index:%{public}d.", itemLen, index);
+    if (buf == nullptr || itemLen <= 0 || index < 0) {
+        APP_LOGE("param invalid.");
+        return false;
+    }
+
+    char item[itemLen + 1];
+    if (strncpy_s(item, sizeof(item), buf + index, itemLen) != 0) {
+        APP_LOGE("ParseStr failed due to strncpy_s error.");
+        return false;
+    }
+
+    std::string str(item, 0, itemLen);
+    result = str;
+    return true;
+}
+}
 BundleMgrProxy::BundleMgrProxy(const sptr<IRemoteObject> &impl) : IRemoteProxy<IBundleMgr>(impl)
 {
     APP_LOGI("create bundle mgr proxy instance");
@@ -248,7 +280,8 @@ bool BundleMgrProxy::GetBundleInfos(
         return false;
     }
 
-    if (!GetParcelableInfos<BundleInfo>(IBundleMgr::Message::GET_BUNDLE_INFOS, data, bundleInfos)) {
+    if (!GetParcelableInfosFromAshmem<BundleInfo>(
+        IBundleMgr::Message::GET_BUNDLE_INFOS, data, bundleInfos)) {
         APP_LOGE("fail to GetBundleInfos from server");
         return false;
     }
@@ -274,7 +307,8 @@ bool BundleMgrProxy::GetBundleInfos(
         return false;
     }
 
-    if (!GetParcelableInfos<BundleInfo>(IBundleMgr::Message::GET_BUNDLE_INFOS_WITH_INT_FLAGS, data, bundleInfos)) {
+    if (!GetParcelableInfosFromAshmem<BundleInfo>(
+        IBundleMgr::Message::GET_BUNDLE_INFOS_WITH_INT_FLAGS, data, bundleInfos)) {
         APP_LOGE("fail to GetBundleInfos from server");
         return false;
     }
@@ -2345,6 +2379,77 @@ bool BundleMgrProxy::GetParcelableInfos(IBundleMgr::Message code, MessageParcel 
         parcelableInfos.emplace_back(*info);
     }
     APP_LOGD("get parcelable infos success");
+    return true;
+}
+
+template <typename T>
+bool BundleMgrProxy::GetParcelableInfosFromAshmem(
+    IBundleMgr::Message code, MessageParcel &data, std::vector<T> &parcelableInfos)
+{
+    APP_LOGD("Get parcelable vector from ashmem");
+    MessageParcel reply;
+    if (!SendTransactCmd(code, data, reply)) {
+        return false;
+    }
+
+    if (!reply.ReadBool()) {
+        APP_LOGE("ReadParcelableInfo failed");
+        return false;
+    }
+
+    int32_t infoSize = reply.ReadInt32();
+    sptr<Ashmem> ashmem = reply.ReadAshmem();
+    if (ashmem == nullptr) {
+        APP_LOGE("Ashmem is nullptr");
+        return false;
+    }
+
+    bool ret = ashmem->MapReadOnlyAshmem();
+    if (!ret) {
+        APP_LOGE("Map read only ashmem fail");
+        ClearAshMem(ashmem);
+        return false;
+    }
+
+    int32_t offset = 0;
+    const char* dataStr = static_cast<const char*>(
+        ashmem->ReadFromAshmem(ashmem->GetAshmemSize(), offset));
+    if (dataStr == nullptr) {
+        APP_LOGE("Data is nullptr when read from ashmem");
+        ClearAshMem(ashmem);
+        return false;
+    }
+
+    while (infoSize > 0) {
+        std::string lenStr;
+        if (!ParseStr(dataStr, ASHMEM_LEN, offset, lenStr)) {
+            APP_LOGE("Parse lenStr fail");
+            ClearAshMem(ashmem);
+            return false;
+        }
+
+        int strLen = atoi(lenStr.c_str());
+        offset += ASHMEM_LEN;
+        std::string infoStr;
+        if (!ParseStr(dataStr, strLen, offset, infoStr)) {
+            APP_LOGE("Parse infoStr fail");
+            ClearAshMem(ashmem);
+            return false;
+        }
+
+        T info;
+        if (!ParseInfoFromJsonStr(infoStr.c_str(), info)) {
+            APP_LOGE("Parse info from json fail");
+            ClearAshMem(ashmem);
+            return false;
+        }
+
+        parcelableInfos.emplace_back(info);
+        infoSize--;
+        offset += strLen;
+    }
+
+    APP_LOGD("Get parcelable vector from ashmem success");
     return true;
 }
 

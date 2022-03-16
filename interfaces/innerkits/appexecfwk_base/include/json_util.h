@@ -157,6 +157,31 @@ void GetValueIfFindKey(const nlohmann::json &jsonObject, const nlohmann::detail:
         parseResult = ERR_APPEXECFWK_PARSE_PROFILE_MISSING_PROP;
     }
 }
+
+template<typename T>
+const std::string GetJsonStrFromInfo(T &t)
+{
+    nlohmann::json json = t;
+    return json.dump();
+}
+
+template<typename T>
+bool ParseInfoFromJsonStr(const char *data, T &t)
+{
+    if (data == nullptr) {
+        APP_LOGE("%{public}s faile due to data is nullptr", __func__);
+        return false;
+    }
+
+    nlohmann::json jsonObject = nlohmann::json::parse(data, nullptr, false);
+    if (jsonObject.is_discarded()) {
+        APP_LOGE("%{public}s faile due to data is discarded", __func__);
+        return false;
+    }
+
+    t = jsonObject.get<T>();
+    return true;
+}
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_INTERFACES_INNERKITS_APPEXECFWK_BASE_INCLUDE_JSON_UTIL_H
