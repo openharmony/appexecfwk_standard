@@ -301,6 +301,9 @@ int32_t ImageCompress::EncodePngFile(std::shared_ptr<ImageBuffer>& imageBuffer)
     uint32_t strides = imageBuffer->GetWidth() * RGBA_COMPONENTS;
     struct EncodeMemo memo;
     memo.buffer = (ImageRow)malloc(FILE_MAX_SIZE * RGBA_COMPONENTS);
+    if (memo.buffer == nullptr) {
+        return false;
+    }
     memo.size = 0;
     if (!imageBuffer->GetImageDataPointer()) {
         free(memo.buffer);
@@ -308,10 +311,10 @@ int32_t ImageCompress::EncodePngFile(std::shared_ptr<ImageBuffer>& imageBuffer)
         return -1;
     }
     ImageRow imageRow = imageBuffer->GetImageDataPointer().get();
-    png_bytep* rowPointers;
-    rowPointers = (png_bytep*)malloc(sizeof(png_bytep) * imageBuffer->GetHeight());
-    for (uint32_t h = 0; h < imageBuffer->GetHeight(); ++h) {
-        rowPointers[h] = (png_byte*)malloc(strides);
+    png_bytepp rowPointers;
+    if (!MallocPngPointer(rowPointers, imageBuffer->GetHeight(), strides)) {
+        APP_LOGE("ImageCompress: MallocPngPointer image buffer failed");
+        return false;
     }
     for (uint32_t h = 0; h < imageBuffer->GetHeight(); ++h) {
         memcpy_s(rowPointers[h], strides, imageRow, strides);
