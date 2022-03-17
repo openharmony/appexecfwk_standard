@@ -50,4 +50,11 @@ struct AsyncCallbackInfo {
     int32_t userId_;
 };
 
+struct DelRefCallbackInfo {
+    napi_env env_;
+    napi_ref addedCallback_;
+    napi_ref updatedCallback_;
+    napi_ref removeCallback_;
+};
+
 #endif  // LAUNCHER_STATUS_CALLBACK_H
