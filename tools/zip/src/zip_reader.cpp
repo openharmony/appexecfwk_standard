@@ -184,7 +184,7 @@ bool ZipReader::OpenCurrentEntryInZip()
 
 bool ZipReader::ExtractCurrentEntry(WriterDelegate *delegate, uint64_t numBytesToExtract) const
 {
-    if (zipFile_ == nullptr) {
+    if ((zipFile_ == nullptr) || (delegate == nullptr)) {
         return false;
     }
     const int openResult = unzOpenCurrentFile(zipFile_);
@@ -281,7 +281,7 @@ bool FilePathWriterDelegate::PrepareOutput()
 
 bool FilePathWriterDelegate::WriteBytes(const char *data, int numBytes)
 {
-    if (file_ == nullptr || numBytes <= 0) {
+    if ((file_ == nullptr) || (numBytes <= 0) || (data == nullptr)) {
         return false;
     }
     int writebytes = fwrite(data, 1, numBytes, file_);
