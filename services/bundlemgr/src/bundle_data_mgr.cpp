@@ -2549,6 +2549,10 @@ bool BundleDataMgr::GetInnerBundleUserInfoByUserId(const std::string &bundleName
 
 int32_t BundleDataMgr::GetUserId(int32_t userId) const
 {
+    if (userId == Constants::ANY_USERID || userId == Constants::ALL_USERID) {
+        return userId;
+    }
+
     if (userId == Constants::UNSPECIFIED_USERID) {
         userId = GetUserIdByCallingUid();
     }
@@ -2955,6 +2959,11 @@ std::shared_ptr<Global::Resource::ResourceManager> BundleDataMgr::GetResourceMan
     resConfig->SetLocaleInfo("zh", "Hans", "CN");
     resourceManager->UpdateResConfig(*resConfig);
     return resourceManager;
+}
+
+bool BundleDataMgr::QueryAllDeviceIds(std::vector<std::string> &deviceIds)
+{
+    return distributedDataStorage_->QueryAllDeviceIds(deviceIds);
 }
 
 #ifdef SUPPORT_GRAPHICS

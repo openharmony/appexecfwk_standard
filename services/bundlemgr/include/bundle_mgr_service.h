@@ -21,6 +21,7 @@
 #include "singleton.h"
 #include "system_ability.h"
 
+#include "bms_device_manager.h"
 #include "bundle_clone_mgr.h"
 #include "bundle_constants.h"
 #include "bundle_data_mgr.h"
@@ -29,7 +30,7 @@
 #include "bundle_mgr_service_event_handler.h"
 #include "bundle_permissions_changed_monitor.h"
 #include "bundle_user_mgr_host_impl.h"
-#include "bms_device_manager.h"
+#include "hidump_helper.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -78,6 +79,13 @@ public:
      * @brief register bms sa to samgr
      */
     void RegisterService();
+    /**
+     * @brief Process hidump.
+     * @param args Indicates the args.
+     * @param result Indicates the result.
+     * @return Returns whether the interface is called successfully.
+     */
+    bool Hidump(const std::vector<std::string> &args, std::string& result) const;
 protected:
     void OnAddSystemAbility(int32_t systemAbilityId, const std::string& deviceId) override;
     void OnRemoveSystemAbility(int32_t systemAbilityId, const std::string& deviceId) override;
@@ -107,6 +115,7 @@ private:
     std::shared_ptr<BundleDataMgr> dataMgr_;
     std::shared_ptr<BundleCloneMgr> cloneMgr_;
     std::shared_ptr<BmsDeviceManager> deviceManager_;
+    std::shared_ptr<HidumpHelper> hidumpHelper_;
     sptr<BundleMgrHostImpl> host_;
     sptr<BundleInstallerHost> installer_;
     sptr<BundleUserMgrHostImpl> userMgrHost_;
