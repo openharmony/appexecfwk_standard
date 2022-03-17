@@ -41,7 +41,6 @@ void InstalldHost::init()
     funcMap_.emplace(IInstalld::Message::RENAME_MODULE_DIR, &InstalldHost::HandleRenameModuleDir);
     funcMap_.emplace(IInstalld::Message::CREATE_BUNDLE_DATA_DIR, &InstalldHost::HandleCreateBundleDataDir);
     funcMap_.emplace(IInstalld::Message::REMOVE_BUNDLE_DATA_DIR, &InstalldHost::HandleRemoveBundleDataDir);
-    funcMap_.emplace(IInstalld::Message::CREATE_MODULE_DATA_DIR, &InstalldHost::HandleCreateModuleDataDir);
     funcMap_.emplace(IInstalld::Message::REMOVE_MODULE_DATA_DIR, &InstalldHost::HandleRemoveModuleDataDir);
     funcMap_.emplace(IInstalld::Message::CLEAN_BUNDLE_DATA_DIR, &InstalldHost::HandleCleanBundleDataDir);
     funcMap_.emplace(IInstalld::Message::SET_DIR_APL, &InstalldHost::HandleSetDirApl);
@@ -104,27 +103,12 @@ bool InstalldHost::HandleRenameModuleDir(MessageParcel &data, MessageParcel &rep
 
 bool InstalldHost::HandleCreateBundleDataDir(MessageParcel &data, MessageParcel &reply)
 {
-    std::string bundleDir = Str16ToStr8(data.ReadString16());
+    std::string bundleName = Str16ToStr8(data.ReadString16());
     int userid = data.ReadInt32();
     int uid = data.ReadInt32();
     int gid = data.ReadInt32();
     std::string apl = Str16ToStr8(data.ReadString16());
-    bool onlyOneUser = data.ReadBool();
-    ErrCode result = CreateBundleDataDir(bundleDir, userid, uid, gid, apl, onlyOneUser);
-    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, reply, result);
-    return true;
-}
-
-bool InstalldHost::HandleCreateModuleDataDir(MessageParcel &data, MessageParcel &reply)
-{
-    std::string bundleDir = Str16ToStr8(data.ReadString16());
-    std::vector<std::string> abilityDirs;
-    if (!data.ReadStringVector(&abilityDirs)) {
-        return false;
-    }
-    int uid = data.ReadInt32();
-    int gid = data.ReadInt32();
-    ErrCode result = CreateModuleDataDir(bundleDir, abilityDirs, uid, gid);
+    ErrCode result = CreateBundleDataDir(bundleName, userid, uid, gid, apl);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, reply, result);
     return true;
 }

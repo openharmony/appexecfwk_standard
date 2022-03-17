@@ -346,9 +346,6 @@ ErrCode BaseBundleInstaller::ProcessBundleInstall(const std::vector<std::string>
     CHECK_RESULT_WITHOUT_ROLLBACK(result, "hap files check signature info failed %{public}d");
     UpdateInstallerState(InstallerState::INSTALL_SIGNATURE_CHECKED);               // ---- 15%
 
-    result = ModifyInstallDirByHapType(installParam, appType);
-    CHECK_RESULT_WITHOUT_ROLLBACK(result, "modify bundle install dir failed %{public}d");
-
     // parse the bundle infos for all haps
     // key is bundlePath , value is innerBundleInfo
     std::unordered_map<std::string, InnerBundleInfo> newInfos;
@@ -459,7 +456,6 @@ void BaseBundleInstaller::RollBack(const InnerBundleInfo &info, InnerBundleInfo 
     } else {
         auto modulePackage = info.GetCurrentModulePackage();
         RemoveModuleDir(info.GetModuleDir(modulePackage));
-        RemoveModuleDataDir(info, modulePackage);
         // remove module info
         RemoveInfo(bundleName_, modulePackage);
     }
@@ -821,12 +817,6 @@ ErrCode BaseBundleInstaller::ProcessBundleInstallStatus(InnerBundleInfo &info, i
         return result;
     }
 
-    result = CreateModuleDataDir(info);
-    if (result != ERR_OK) {
-        APP_LOGE("create module data dir failed");
-        return result;
-    }
-
     info.SetInstallMark(bundleName_, modulePackage_, InstallExceptionStatus::INSTALL_FINISH);
     uid = info.GetUid(userId_);
     info.SetBundleInstallTime(BundleUtil::GetCurrentTime(), userId_);
@@ -922,12 +912,6 @@ ErrCode BaseBundleInstaller::ProcessNewModuleInstall(InnerBundleInfo &newInfo, I
         return result;
     }
     ScopeGuard moduleGuard([&] { RemoveModuleDir(modulePath); });
-    result = CreateModuleDataDir(newInfo);
-    if (result != ERR_OK) {
-        APP_LOGE("create module data dir failed");
-        return result;
-    }
-    ScopeGuard moduleDataGuard([&] { RemoveModuleDataDir(newInfo, modulePackage_); });
     if (!dataMgr_->UpdateBundleInstallState(bundleName_, InstallState::UPDATING_SUCCESS)) {
         APP_LOGE("new moduleupdate state failed");
         return ERR_APPEXECFWK_INSTALL_BUNDLE_MGR_SERVICE_ERROR;
@@ -960,7 +944,6 @@ ErrCode BaseBundleInstaller::ProcessNewModuleInstall(InnerBundleInfo &newInfo, I
     }
 
     moduleGuard.Dismiss();
-    moduleDataGuard.Dismiss();
     userGuard.Dismiss();
     return ERR_OK;
 }
@@ -1108,7 +1091,7 @@ ErrCode BaseBundleInstaller::CreateBundleCodeDir(InnerBundleInfo &info) const
     return ERR_OK;
 }
 
-ErrCode BaseBundleInstaller::CreateBundleDataDir(InnerBundleInfo &info, bool onlyOneUser) const
+ErrCode BaseBundleInstaller::CreateBundleDataDir(InnerBundleInfo &info) const
 {
     InnerBundleUserInfo newInnerBundleUserInfo;
     if (!info.GetInnerBundleUserInfo(userId_, newInnerBundleUserInfo)) {
@@ -1122,18 +1105,15 @@ ErrCode BaseBundleInstaller::CreateBundleDataDir(InnerBundleInfo &info, bool onl
         return ERR_APPEXECFWK_INSTALL_GENERATE_UID_ERROR;
     }
 
-    auto appDataPath = baseDataPath_ + Constants::PATH_SEPARATOR + info.GetBundleName();
-    auto result = InstalldClient::GetInstance()->CreateBundleDataDir(appDataPath, userId_,
-        newInnerBundleUserInfo.uid, newInnerBundleUserInfo.uid, info.GetAppPrivilegeLevel(), onlyOneUser);
+    auto result = InstalldClient::GetInstance()->CreateBundleDataDir(info.GetBundleName(), userId_,
+        newInnerBundleUserInfo.uid, newInnerBundleUserInfo.uid, info.GetAppPrivilegeLevel());
     if (result != ERR_OK) {
         APP_LOGE("fail to create bundle data dir, error is %{public}d", result);
         return result;
     }
-
-    if (onlyOneUser) {
-        UpdateBundlePaths(info, appDataPath);
-    }
-
+    std::string dataBaseDir = Constants::BUNDLE_APP_DATA_BASE_DIR + Constants::BUNDLE_EL[1] +
+        Constants::DATABASE + info.GetBundleName();
+    info.SetAppDataBaseDir(dataBaseDir);
     info.AddInnerBundleUserInfo(newInnerBundleUserInfo);
     return ERR_OK;
 }
@@ -1170,14 +1150,6 @@ ErrCode BaseBundleInstaller::RemoveBundleAndDataDir(const InnerBundleInfo &info,
         return result;
     }
     if (!info.GetIsKeepData() || !isUninstall) {
-        // remove data dir
-        result = InstalldClient::GetInstance()->RemoveDir(info.GetBaseDataDir());
-        if (result != ERR_OK) {
-            APP_LOGE("fail to remove bundle dir %{public}s, error is %{public}d",
-                info.GetBaseDataDir().c_str(), result);
-            return result;
-        }
-
         result = RemoveBundleDataDir(info);
         if (result != ERR_OK) {
             APP_LOGE("fail to remove newbundleName: %{public}s, error is %{public}d",
@@ -1219,12 +1191,6 @@ ErrCode BaseBundleInstaller::RemoveModuleAndDataDir(
     }
 
     if (!info.GetIsKeepData()) {
-        result = RemoveModuleDataDir(info, modulePackage);
-        if (result != ERR_OK) {
-            APP_LOGE("fail to remove bundle data dir, error is %{public}d", result);
-            return result;
-        }
-
         if (userId != Constants::UNSPECIFIED_USERID) {
             RemoveHapModuleDataDir(info, modulePackage, userId);
             return ERR_OK;
@@ -1246,11 +1212,6 @@ ErrCode BaseBundleInstaller::RemoveModuleDir(const std::string &modulePath) cons
 {
     APP_LOGD("module dir %{private}s to be removed", modulePath.c_str());
     return InstalldClient::GetInstance()->RemoveDir(modulePath);
-}
-
-ErrCode BaseBundleInstaller::RemoveModuleDataDir(const InnerBundleInfo &info, const std::string &modulePackage) const
-{
-    return InstalldClient::GetInstance()->RemoveDir(info.GetModuleDataDir(modulePackage));
 }
 
 ErrCode BaseBundleInstaller::RemoveHapModuleDataDir(
@@ -1306,59 +1267,6 @@ ErrCode BaseBundleInstaller::RenameModuleDir(const InnerBundleInfo &info) const
         return result;
     }
     return ERR_OK;
-}
-
-ErrCode BaseBundleInstaller::CreateModuleDataDir(InnerBundleInfo &info) const
-{
-    auto moduleDataDir = info.GetBaseDataDir() + Constants::PATH_SEPARATOR + modulePackage_;
-    InnerBundleUserInfo curInnerBundleUserInfo;
-    if (!info.GetInnerBundleUserInfo(userId_, curInnerBundleUserInfo)) {
-        APP_LOGE("bundle(%{public}s) get user(%{public}d) failed.",
-            info.GetBundleName().c_str(), userId_);
-        return ERR_APPEXECFWK_USER_NOT_EXIST;
-    }
-
-    auto result = InstalldClient::GetInstance()->CreateModuleDataDir(
-        moduleDataDir, info.GetAbilityNames(), curInnerBundleUserInfo.uid, curInnerBundleUserInfo.uid);
-    if (result != ERR_OK) {
-        APP_LOGE("create module data dir failed, error is %{public}d", result);
-        return result;
-    }
-
-    info.AddModuleDataDir(moduleDataDir);
-    return ERR_OK;
-}
-
-ErrCode BaseBundleInstaller::ModifyInstallDirByHapType(const InstallParam &installParam,
-    const Constants::AppType appType)
-{
-    auto dirUser = (userId_ == Constants::START_USERID) ? Constants::DEFAULT_USERID : userId_;
-    auto internalPath = Constants::PATH_SEPARATOR + Constants::USER_ACCOUNT_DIR + Constants::FILE_UNDERLINE +
-                        std::to_string(dirUser) + Constants::PATH_SEPARATOR;
-    switch (appType) {
-        case Constants::AppType::SYSTEM_APP:
-            baseDataPath_ = Constants::SYSTEM_APP_INSTALL_PATH + internalPath + Constants::APP_DATA_DIR;
-            break;
-        case Constants::AppType::THIRD_SYSTEM_APP:
-            baseDataPath_ = Constants::THIRD_SYSTEM_APP_INSTALL_PATH + internalPath + Constants::APP_DATA_DIR;
-            break;
-        case Constants::AppType::THIRD_PARTY_APP:
-            baseDataPath_ = Constants::THIRD_PARTY_APP_INSTALL_PATH + internalPath + Constants::APP_DATA_DIR;
-            break;
-        default:
-            APP_LOGE("App type error");
-            return ERR_APPEXECFWK_INSTALL_PARAM_ERROR;
-    }
-    return ERR_OK;
-}
-
-bool BaseBundleInstaller::UpdateBundlePaths(InnerBundleInfo &info, const std::string baseDataPath) const
-{
-    info.SetBaseDataDir(baseDataPath);
-    info.SetAppDataDir(baseDataPath);
-    info.SetAppDataBaseDir(baseDataPath + Constants::PATH_SEPARATOR + Constants::DATA_BASE_DIR);
-    info.SetAppCacheDir(baseDataPath + Constants::PATH_SEPARATOR + Constants::CACHE_DIR);
-    return true;
 }
 
 ErrCode BaseBundleInstaller::CheckSysCap(const std::vector<std::string> &bundlePaths)
@@ -1679,7 +1587,7 @@ ErrCode BaseBundleInstaller::CreateBundleUserData(
         return ERR_APPEXECFWK_USER_NOT_EXIST;
     }
 
-    ErrCode result = CreateBundleDataDir(innerBundleInfo, false);
+    ErrCode result = CreateBundleDataDir(innerBundleInfo);
     if (result != ERR_OK) {
         return result;
     }

@@ -256,11 +256,11 @@ protected:
                 "apiTargetVersion": 8,
                 "appPrivilegeLevel": "normal",
                 "bundleName": "com.ohos.launcher",
-                "cacheDir": "/data/accounts/account_0/appdata/com.ohos.launcher/cache",
+                "cacheDir": "/data/app/el2/100/base/com.ohos.launcher/cache",
                 "codePath": "/data/app/el1/bundle/public/com.ohos.launcher",
                 "cpuAbi": "armeabi-v7a",
-                "dataBaseDir": "/data/accounts/account_0/appdata/com.ohos.launcher/database",
-                "dataDir": "/data/accounts/account_0/appdata/com.ohos.launcher",
+                "dataBaseDir": "/data/app/el2/100/database/com.ohos.launcher",
+                "dataDir": "/data/app/el2/100/base/com.ohos.launcher",
                 "debug": false,
                 "description": "$string: mainability_description",
                 "descriptionId": 218103837,
@@ -416,7 +416,7 @@ protected:
                 "versionCode": 1000000,
                 "versionName": "1.0.0"
             },
-            "baseDataDir": "/data/accounts/account_0/appdata/com.ohos.launcher",
+            "baseDataDir": "/data/app/el2/100/base/com.ohos.launcher",
             "baseExtensionInfos_": {
             },
             "bundleStatus": 1,
@@ -491,7 +491,7 @@ protected:
                     },
                     "metadata": [
                     ],
-                    "moduleDataDir": "/data/accounts/account_0/appdata/com.ohos.launcher/com.ohos.launcher",
+                    "moduleDataDir": "/data/app/el2/100/base/com.ohos.launcher/haps/com.ohos.launcher",
                     "moduleName": "phone",
                     "modulePackage": "com.ohos.launcher",
                     "modulePath": "/data/app/el1/bundle/public/com.ohos.launcher/com.ohos.launcher",
@@ -596,7 +596,7 @@ protected:
                     },
                     "metadata": [
                     ],
-                    "moduleDataDir": "/data/accounts/account_0/appdata/com.ohos.launcher/com.ohos.launcher.recents",
+                    "moduleDataDir": "/data/app/el2/100/base/com.ohos.launcher/haps/com.ohos.launcher.recents",
                     "moduleName": "recents",
                     "modulePackage": "com.ohos.launcher.recents",
                     "modulePath": "/data/app/el1/bundle/public/com.ohos.launcher/com.ohos.launcher.recents",
@@ -651,7 +651,7 @@ protected:
                     },
                     "metadata": [
                     ],
-                    "moduleDataDir": "/data/accounts/account_0/appdata/com.ohos.launcher/com.ohos.launcher.settings",
+                    "moduleDataDir": "/data/app/el2/100/base/com.ohos.launcher/haps/com.ohos.launcher.settings",
                     "moduleName": "settings",
                     "modulePackage": "com.ohos.launcher.settings",
                     "modulePath": "/data/app/el1/bundle/public/com.ohos.launcher/com.ohos.launcher.settings",

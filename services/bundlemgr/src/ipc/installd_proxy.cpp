@@ -76,17 +76,16 @@ ErrCode InstalldProxy::RenameModuleDir(const std::string &oldPath, const std::st
     return TransactInstalldCmd(IInstalld::Message::RENAME_MODULE_DIR, data, reply, option);
 }
 
-ErrCode InstalldProxy::CreateBundleDataDir(const std::string &bundleDir,
-    const int userid, const int uid, const int gid, const std::string &apl, bool onlyOneUser)
+ErrCode InstalldProxy::CreateBundleDataDir(const std::string &bundleName,
+    const int userid, const int uid, const int gid, const std::string &apl)
 {
     MessageParcel data;
     INSTALLD_PARCEL_WRITE_INTERFACE_TOKEN(data, (GetDescriptor()));
-    INSTALLD_PARCEL_WRITE(data, String16, Str8ToStr16(bundleDir));
+    INSTALLD_PARCEL_WRITE(data, String16, Str8ToStr16(bundleName));
     INSTALLD_PARCEL_WRITE(data, Int32, userid);
     INSTALLD_PARCEL_WRITE(data, Int32, uid);
     INSTALLD_PARCEL_WRITE(data, Int32, gid);
     INSTALLD_PARCEL_WRITE(data, String16, Str8ToStr16(apl));
-    INSTALLD_PARCEL_WRITE(data, Bool, onlyOneUser);
 
     MessageParcel reply;
     MessageOption option;
@@ -103,21 +102,6 @@ ErrCode InstalldProxy::RemoveBundleDataDir(const std::string &bundleName, const 
     MessageParcel reply;
     MessageOption option;
     return TransactInstalldCmd(IInstalld::Message::REMOVE_BUNDLE_DATA_DIR, data, reply, option);
-}
-
-ErrCode InstalldProxy::CreateModuleDataDir(
-    const std::string &ModuleDir, const std::vector<std::string> &abilityDirs, const int uid, const int gid)
-{
-    MessageParcel data;
-    INSTALLD_PARCEL_WRITE_INTERFACE_TOKEN(data, (GetDescriptor()));
-    INSTALLD_PARCEL_WRITE(data, String16, Str8ToStr16(ModuleDir));
-    INSTALLD_PARCEL_WRITE(data, StringVector, abilityDirs);
-    INSTALLD_PARCEL_WRITE(data, Int32, uid);
-    INSTALLD_PARCEL_WRITE(data, Int32, gid);
-
-    MessageParcel reply;
-    MessageOption option;
-    return TransactInstalldCmd(IInstalld::Message::CREATE_MODULE_DATA_DIR, data, reply, option);
 }
 
 ErrCode InstalldProxy::RemoveModuleDataDir(const std::string &ModuleName, const int userid)

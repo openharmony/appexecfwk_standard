@@ -45,7 +45,7 @@ const std::string SYSTEM_BUNDLE_PATH = "/system/app/";
 const std::string THIRD_BUNDLE_NAME = "com.third.hiworld.example";
 const std::string SYSTEM_BUNDLE_NAME = "com.system.hiworld.example";
 const std::string BUNDLE_CODE_PATH = "/data/app/el1/bundle/public/";
-const std::string BUNDLE_DATA_PATH = "/data/accounts/account_0/appdata/";
+const std::string BUNDLE_DATA_PATH = "/data/app/el2/100/base/";
 const std::string ROOT_DIR = "/data/accounts";
 const std::string ERROR_SUFFIX = ".rpk";
 const int32_t ROOT_UID = 0;
@@ -186,10 +186,10 @@ protected:
             },
             "baseApplicationInfo": {
                 "bundleName": "com.ohos.launcher",
-                "cacheDir": "/data/accounts/account_0/appdata/com.ohos.launcher/cache",
+                "cacheDir": "/data/app/el2/100/base/com.ohos.launcher/cache",
                 "codePath": "/data/app/el1/bundle/public/com.ohos.launcher",
-                "dataBaseDir": "/data/accounts/account_0/appdata/com.ohos.launcher/database",
-                "dataDir": "/data/accounts/account_0/appdata/com.ohos.launcher/files",
+                "dataBaseDir": "/data/app/el2/100/database/com.ohos.launcher",
+                "dataDir": "/data/app/el2/100/base/com.ohos.launcher/files",
                 "description": "$string:mainability_description",
                 "descriptionId": 16777217,
                 "deviceId": "PHONE-001",
@@ -274,7 +274,7 @@ protected:
                 "versionCode": 1,
                 "versionName": "1.0"
             },
-            "baseDataDir": "/data/accounts/account_0/appdata/com.ohos.launcher",
+            "baseDataDir": "/data/app/el2/100/base/com.ohos.launcher",
             "bundleStatus": 1,
             "gid": 10000,
             "hasEntry": true,
@@ -296,7 +296,7 @@ protected:
                         "parameters": [],
                         "results": []
                     },
-                    "moduleDataDir": "/data/accounts/account_0/appdata/com.ohos.launcher/com.ohos.launcher",
+                    "moduleDataDir": "/data/app/el2/100/base/com.ohos.launcher/com.ohos.launcher",
                     "moduleName": ".MyApplication",
                     "modulePackage": "com.ohos.launcher",
                     "modulePath": "/data/app/el1/bundle/public/com.ohos.launcher/com.ohos.launcher",
