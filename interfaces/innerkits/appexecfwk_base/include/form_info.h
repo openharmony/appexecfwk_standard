@@ -41,7 +41,7 @@ struct FormInfo : public Parcelable {
     std::string jsComponentName;
     std::string deepLink;
     std::string formConfigAbility;
-    std::string scheduledUpdateTime = "0:0";
+    std::string scheduledUpdateTime = "";
     std::string src;
     FormWindow window;
     int32_t descriptionId = 0;
