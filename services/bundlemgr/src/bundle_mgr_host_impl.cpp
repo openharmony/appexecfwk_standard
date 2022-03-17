@@ -1404,5 +1404,27 @@ bool BundleMgrHostImpl::GetAbilityInfo(
     want.SetElement(elementName);
     return QueryAbilityInfo(want, abilityInfo);
 }
+
+int BundleMgrHostImpl::Dump(int fd, const std::vector<std::u16string> &args)
+{
+    std::string result;
+    std::vector<std::string> argsStr;
+    for (auto item : args) {
+        argsStr.emplace_back(Str16ToStr8(item));
+    }
+
+    if (!DelayedSingleton<BundleMgrService>::GetInstance()->Hidump(argsStr, result)) {
+        APP_LOGE("Hidump error");
+        return ERR_APPEXECFWK_HIDUMP_ERROR;
+    }
+
+    int ret = dprintf(fd, "%s\n", result.c_str());
+    if (ret < 0) {
+        APP_LOGE("dprintf error");
+        return ERR_APPEXECFWK_HIDUMP_ERROR;
+    }
+
+    return ERR_OK;
+}
 }  // namespace AppExecFwk
 }  // namespace OHOS

@@ -36,6 +36,7 @@ public:
         const std::string &bundleName, int32_t userId, const std::string &networkId,
         DistributedBundleInfo &info);
     bool SetDeviceId();
+    bool QueryAllDeviceIds(std::vector<std::string> &deviceIds);
 
 private:
     void DeviceAndNameToKey(const std::string &deviceId, const std::string &bundleName, std::string &key) const;
