@@ -26,9 +26,44 @@ BundleStatusCallback::BundleStatusCallback(napi_env env, napi_ref addedCallback,
 
 BundleStatusCallback::~BundleStatusCallback()
 {
-    napi_delete_reference(env_, addedCallback_);
-    napi_delete_reference(env_, updatedCallback_);
-    napi_delete_reference(env_, removeCallback_);
+    uv_loop_s* loop = nullptr;
+    napi_get_uv_event_loop(env_, &loop);
+    uv_work_t* work = new uv_work_t;
+    DelRefCallbackInfo* delRefCallbackInfo = new DelRefCallbackInfo {
+        .env_ = env_,
+        .addedCallback_ = addedCallback_,
+        .updatedCallback_ = updatedCallback_,
+        .removeCallback_ = removeCallback_,
+    };
+    if (work == nullptr || delRefCallbackInfo == nullptr) {
+        return;
+    }
+    work->data = (void*)delRefCallbackInfo;
+    int ret = uv_queue_work(
+        loop, work, [](uv_work_t* work) {},
+        [](uv_work_t* work, int status) {
+            // JS Thread
+            DelRefCallbackInfo* delRefCallbackInfo =  reinterpret_cast<DelRefCallbackInfo*>(work->data);
+            napi_delete_reference(delRefCallbackInfo->env_, delRefCallbackInfo->addedCallback_);
+            napi_delete_reference(delRefCallbackInfo->env_, delRefCallbackInfo->updatedCallback_);
+            napi_delete_reference(delRefCallbackInfo->env_, delRefCallbackInfo->removeCallback_);
+            if (delRefCallbackInfo != nullptr) {
+                delete delRefCallbackInfo;
+                delRefCallbackInfo = nullptr;
+            }
+            if (work != nullptr) {
+                delete work;
+                work = nullptr;
+            }
+        });
+    if (ret != 0) {
+        if (delRefCallbackInfo != nullptr) {
+            delete delRefCallbackInfo;
+        }
+        if (work != nullptr) {
+            delete work;
+        }
+    }
 }
 
 void BundleStatusCallback::OnBundleAdded(const std::string& bundleName, const int userId)
