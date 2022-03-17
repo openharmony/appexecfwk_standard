@@ -45,12 +45,13 @@ void BundleExceptionHandler::HandleInvalidBundle(InnerBundleInfo &info, bool &is
         return;
     }
 
-    std::string appCodePath = GetBundleAndDataDir(info, Constants::APP_CODE_DIR);
-    std::string appDataPath = GetBundleAndDataDir(info, Constants::APP_DATA_DIR);
-    auto moduleDir = appCodePath.empty() ? "" : (appCodePath + Constants::PATH_SEPARATOR + mark.packageName);
-    auto moduleDataDir = appDataPath.empty() ? "" : (appDataPath + Constants::PATH_SEPARATOR + mark.packageName);
+    std::string appCodePath = Constants::BUNDLE_CODE_DIR + info.GetBundleName();
+    auto moduleDir = appCodePath + Constants::PATH_SEPARATOR + mark.packageName;
+    auto moduleDataDir = info.GetBundleName() + Constants::HAPS + mark.packageName;
+
     // install and update failed before service restart
-    if (mark.status == InstallExceptionStatus::INSTALL_START && RemoveBundleAndDataDir(appCodePath, appDataPath)) {
+    if (mark.status == InstallExceptionStatus::INSTALL_START &&
+        RemoveBundleAndDataDir(appCodePath, info.GetBundleName(), info.GetUserId())) {
         DeleteBundleInfoFromStorage(info);
         isBundleValid = false;
     } else if (mark.status == InstallExceptionStatus::UPDATING_EXISTED_START) {
@@ -59,20 +60,21 @@ void BundleExceptionHandler::HandleInvalidBundle(InnerBundleInfo &info, bool &is
             info.SetBundleStatus(InnerBundleInfo::BundleStatus::ENABLED);
         }
     } else if (mark.status == InstallExceptionStatus::UPDATING_NEW_START &&
-        RemoveBundleAndDataDir(moduleDir, moduleDataDir)) {
+        RemoveBundleAndDataDir(moduleDir, moduleDataDir, info.GetUserId())) {
         info.SetInstallMark(mark.bundleName, mark.packageName, InstallExceptionStatus::INSTALL_FINISH);
         info.SetBundleStatus(InnerBundleInfo::BundleStatus::ENABLED);
     } else if (mark.status == InstallExceptionStatus::UNINSTALL_BUNDLE_START &&
-        RemoveBundleAndDataDir(appCodePath, appDataPath)) {   // continue to uninstall
+        RemoveBundleAndDataDir(appCodePath, info.GetBundleName(), info.GetUserId())) {  // continue to uninstall
         DeleteBundleInfoFromStorage(info);
         isBundleValid = false;
     } else if (mark.status == InstallExceptionStatus::UNINSTALL_PACKAGE_START) {
-        if (info.IsOnlyModule(mark.packageName) && RemoveBundleAndDataDir(appCodePath, appDataPath)) {
+        if (info.IsOnlyModule(mark.packageName) &&
+            RemoveBundleAndDataDir(appCodePath, info.GetBundleName(), info.GetUserId())) {
             DeleteBundleInfoFromStorage(info);
             isBundleValid = false;
             return;
         }
-        if (RemoveBundleAndDataDir(moduleDir, moduleDataDir)) {
+        if (RemoveBundleAndDataDir(moduleDir, moduleDataDir, info.GetUserId())) {
             info.RemoveModuleInfo(mark.packageName);
             info.SetInstallMark(mark.bundleName, mark.packageName, InstallExceptionStatus::INSTALL_FINISH);
             info.SetBundleStatus(InnerBundleInfo::BundleStatus::ENABLED);
@@ -86,63 +88,31 @@ void BundleExceptionHandler::HandleInvalidBundle(InnerBundleInfo &info, bool &is
     }
 }
 
-bool BundleExceptionHandler::RemoveBundleAndDataDir(const std::string &bundleDir, const std::string &dataDir) const
+bool BundleExceptionHandler::RemoveBundleAndDataDir(const std::string &bundleDir,
+    const std::string &bundleOrMoudleDir, int32_t userId) const
 {
     ErrCode result = InstalldClient::GetInstance()->RemoveDir(bundleDir);
     if (result != ERR_OK) {
         APP_LOGE("fail to remove bundle dir %{public}s, error is %{public}d", bundleDir.c_str(), result);
         return false;
     }
-    result = InstalldClient::GetInstance()->RemoveDir(dataDir);
-    if (result != ERR_OK) {
-        APP_LOGE("fail to remove data dir %{public}s, error is %{public}d", dataDir.c_str(), result);
-        return false;
-    }
-    return true;
-}
 
-std::string BundleExceptionHandler::GetBundleAndDataDir(const InnerBundleInfo &info, const std::string &path)
-{
-    std::string innerBasePath = Constants::PATH_SEPARATOR + Constants::USER_ACCOUNT_DIR + Constants::FILE_UNDERLINE +
-                        std::to_string(info.GetUserId()) + Constants::PATH_SEPARATOR;
-    std::string basePath;
-    APP_LOGD("App type is %{public}d", static_cast<int32_t>(info.GetAppType()));
-    switch (info.GetAppType()) {
-        case Constants::AppType::SYSTEM_APP:
-            basePath = Constants::SYSTEM_APP_INSTALL_PATH + innerBasePath + path;
-            break;
-        case Constants::AppType::THIRD_SYSTEM_APP:
-            basePath = Constants::THIRD_SYSTEM_APP_INSTALL_PATH + innerBasePath + path;
-            break;
-        case Constants::AppType::THIRD_PARTY_APP:
-            basePath = Constants::THIRD_PARTY_APP_INSTALL_PATH + innerBasePath + path;
-            break;
-        default:
-            APP_LOGE("App type error");
-            return std::string();
-    }
-    APP_LOGD("base path is %{private}s", basePath.c_str());
-    DIR* dir = opendir(basePath.c_str());
-    if (dir == nullptr) {
-        APP_LOGE("GetBundleAndDataDir open bundle dir:%{private}s is failure", basePath.c_str());
-        return std::string();
-    }
-
-    if (basePath.back() != Constants::FILE_SEPARATOR_CHAR) {
-        basePath.append(Constants::PATH_SEPARATOR);
-    }
-
-    struct dirent *entry = nullptr;
-    while ((entry = readdir(dir)) != nullptr) {
-        const std::string innerPath = basePath + entry->d_name;
-        if (innerPath.find(info.GetBundleName()) != std::string::npos) {
-            APP_LOGD("find bundle path or bundle data path %{private}s", innerPath.c_str());
-            closedir(dir);
-            return innerPath;
+    if (bundleOrMoudleDir.find(Constants::HAPS) != std::string::npos) {
+        result = InstalldClient::GetInstance()->RemoveModuleDataDir(bundleOrMoudleDir, userId);
+        if (result != ERR_OK) {
+            APP_LOGE("fail to remove module data dir %{public}s, error is %{public}d", bundleOrMoudleDir.c_str(),
+                result);
+            return false;
+        }
+    } else {
+        result = InstalldClient::GetInstance()->RemoveBundleDataDir(bundleOrMoudleDir, userId);
+        if (result != ERR_OK) {
+            APP_LOGE("fail to remove bundle data dir %{public}s, error is %{public}d", bundleOrMoudleDir.c_str(),
+                result);
+            return false;
         }
     }
-    closedir(dir);
-    return std::string();
+    return true;
 }
 
 void BundleExceptionHandler::DeleteBundleInfoFromStorage(const InnerBundleInfo &info)
