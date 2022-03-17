@@ -21,6 +21,7 @@
 #include "app_log_wrapper.h"
 #include "bundle_constants.h"
 #include "bundle_mgr_interface.h"
+#include "bundle_mgr_proxy.h"
 #include "iservice_registry.h"
 #include "nlohmann/json.hpp"
 #include "system_ability_definition.h"
