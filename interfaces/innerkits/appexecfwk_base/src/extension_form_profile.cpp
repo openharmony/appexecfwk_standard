@@ -57,7 +57,7 @@ struct ExtensionFormProfileInfo {
     bool formVisibleNotify = false;
     bool isDefault = false;
     bool updateEnabled = false;
-    std::string scheduledUpdateTime = "0:0";
+    std::string scheduledUpdateTime = "";
     int32_t updateDuration = 0;
     std::string defaultDimension;
     std::vector<std::string> supportDimensions {};
