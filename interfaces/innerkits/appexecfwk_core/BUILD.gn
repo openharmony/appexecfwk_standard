@@ -80,7 +80,7 @@ ohos_shared_library("appexecfwk_core") {
   if (bundle_framework_graphics) {
     defines += [ "SUPPORT_GRAPHICS" ]
 
-    deps += [ "//foundation/multimedia/image_standard/interfaces/innerkits:image_native" ]
+    external_deps += [ "multimedia_image_standard:image_native" ]
   }
 
   subsystem_name = "appexecfwk"

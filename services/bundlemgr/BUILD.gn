@@ -26,12 +26,6 @@ config("bundlemgr_common_config") {
     "APP_LOG_TAG = \"BundleMgrService\"",
     "LOG_DOMAIN = 0xD001120",
   ]
-
-  if (bundle_framework_graphics) {
-    include_dirs += [
-      "//foundation/multimedia/image_standard/interfaces/innerkits/include",
-    ]
-  }
 }
 
 config("bundlemgr_parse_config") {
@@ -167,11 +161,6 @@ ohos_shared_library("libbms") {
     "${common_path}:libappexecfwk_common",
   ]
 
-  if (bundle_framework_graphics) {
-    deps += [ "//foundation/multimedia/image_standard/interfaces/innerkits:image_native" ]
-    defines += [ "SUPPORT_GRAPHICS" ]
-  }
-
   external_deps = [
     "ability_base:want",
     "ability_runtime:app_manager",
@@ -194,6 +183,11 @@ ohos_shared_library("libbms") {
     "safwk:system_ability_fwk",
     "samgr_standard:samgr_proxy",
   ]
+
+  if (bundle_framework_graphics) {
+    external_deps += [ "multimedia_image_standard:image_native" ]
+    defines += [ "SUPPORT_GRAPHICS" ]
+  }
 
   subsystem_name = "appexecfwk"
   part_name = "bundle_framework"

@@ -35,18 +35,6 @@ ohos_shared_library("bundle") {
 
   deps = [ "${common_path}:libappexecfwk_common" ]
 
-  if (bundle_framework_graphics) {
-    include_dirs += [
-      "//foundation/multimedia/image_standard/interfaces/innerkits/include",
-      "//foundation/multimedia/image_standard/interfaces/kits/js/common/include",
-    ]
-    deps += [
-      "//foundation/multimedia/image_standard/interfaces/innerkits:image",
-      "//foundation/multimedia/image_standard/interfaces/innerkits:image_native",
-    ]
-    defines += [ "SUPPORT_GRAPHICS" ]
-  }
-
   external_deps = [
     "ability_base:want",
     "bundle_framework:appexecfwk_base",
@@ -59,6 +47,15 @@ ohos_shared_library("bundle") {
     "samgr_standard:samgr_proxy",
     "utils_base:utils",
   ]
+
+  if (bundle_framework_graphics) {
+    defines += [ "SUPPORT_GRAPHICS" ]
+
+    external_deps += [
+      "multimedia_image_standard:image",
+      "multimedia_image_standard:image_native",
+    ]
+  }
 
   relative_install_dir = "module"
   subsystem_name = "appexecfwk"
