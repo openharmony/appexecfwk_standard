@@ -528,7 +528,11 @@ bool BundleMgrHostImpl::CleanBundleCacheFiles(
         APP_LOGE("DataMgr is nullptr");
         return false;
     }
-    dataMgr->GetApplicationInfo(bundleName, ApplicationFlag::GET_BASIC_APPLICATION_INFO, userId, applicationInfo);
+    if (!dataMgr->GetApplicationInfo(bundleName, ApplicationFlag::GET_BASIC_APPLICATION_INFO,
+        userId, applicationInfo)) {
+        APP_LOGE("can not get application info of %{public}s", bundleName.c_str());
+        return false;
+    }
     std::string rootDir = applicationInfo.dataDir;
     auto cleanCache = [this, rootDir, cleanCacheCallback]() {
         std::vector<std::string> caches;
