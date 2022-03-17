@@ -31,7 +31,7 @@ using OHOS::DelayedSingleton;
 
 namespace {
 const std::string BUNDLE_CODE_PATH = "/data/app/el1/bundle/public/";
-const std::string BUNDLE_DATA_PATH = "/data/accounts/account_0/appdata/";
+const std::string BUNDLE_DATA_PATH = "/data/app/el2/100/base/";
 const std::string THIRD_BUNDLE_PATH = "/data/test/bms_bundle/";
 const std::string BUNDLE_NAME = "com.third.hiworld.example1";
 const std::string MODULE_PACKAGE = "com.third.hiworld.example.h1";

@@ -18,7 +18,7 @@
 #include <sys/stat.h>
 namespace OHOS {
 namespace AppExecFwk {
-const std::string BUNDLE_DATA_ROOT_PATH = "/data/accounts/account_0/appdata/";
+const std::string BUNDLE_DATA_ROOT_PATH = "/data/app/el2/100/base/";
 const int32_t FOLDER_LAYERS = 7;
 void PageAbilityDemo::OnStart(const Want &want)
 {

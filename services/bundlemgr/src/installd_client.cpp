@@ -54,15 +54,15 @@ ErrCode InstalldClient::RenameModuleDir(const std::string &oldPath, const std::s
     return CallService(&IInstalld::RenameModuleDir, oldPath, newPath);
 }
 
-ErrCode InstalldClient::CreateBundleDataDir(const std::string &bundleDir,
-    const int userid, const int uid, const int gid, const std::string &apl, bool onlyOneUser)
+ErrCode InstalldClient::CreateBundleDataDir(const std::string &bundleName,
+    const int userid, const int uid, const int gid, const std::string &apl)
 {
-    if (bundleDir.empty() || userid < 0 || uid < 0 || gid < 0) {
+    if (bundleName.empty() || userid < 0 || uid < 0 || gid < 0) {
         APP_LOGE("params are invalid");
         return ERR_APPEXECFWK_INSTALLD_PARAM_ERROR;
     }
 
-    return CallService(&IInstalld::CreateBundleDataDir, bundleDir, userid, uid, gid, apl, onlyOneUser);
+    return CallService(&IInstalld::CreateBundleDataDir, bundleName, userid, uid, gid, apl);
 }
 
 ErrCode InstalldClient::RemoveBundleDataDir(
@@ -74,17 +74,6 @@ ErrCode InstalldClient::RemoveBundleDataDir(
     }
 
     return CallService(&IInstalld::RemoveBundleDataDir, bundleName, userid);
-}
-
-ErrCode InstalldClient::CreateModuleDataDir(
-    const std::string &ModuleDir, const std::vector<std::string> &abilityDirs, const int uid, const int gid)
-{
-    if (ModuleDir.empty() || uid < 0 || gid < 0) {
-        APP_LOGE("params are invalid");
-        return ERR_APPEXECFWK_INSTALLD_PARAM_ERROR;
-    }
-
-    return CallService(&IInstalld::CreateModuleDataDir, ModuleDir, abilityDirs, uid, gid);
 }
 
 ErrCode InstalldClient::RemoveModuleDataDir(const std::string &ModuleName, const int userid)

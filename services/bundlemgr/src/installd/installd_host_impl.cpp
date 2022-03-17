@@ -99,53 +99,8 @@ ErrCode InstalldHostImpl::RenameModuleDir(const std::string &oldPath, const std:
     return ERR_OK;
 }
 
-ErrCode InstalldHostImpl::CreateBundleDataDir(const std::string &bundleDataDir,
-    const int userid, const int uid, const int gid, const std::string &apl, bool onlyOneUser)
-{
-    if (bundleDataDir.empty() || uid < 0 || gid < 0) {
-        APP_LOGE("Calling the function CreateBundleDataDir with invalid param");
-        return ERR_APPEXECFWK_INSTALLD_PARAM_ERROR;
-    }
-    std::string bundleName = strrchr(bundleDataDir.c_str(), Constants::FILE_SEPARATOR_CHAR);
-    if (onlyOneUser) {
-        std::string createDir;
-        if (bundleDataDir.back() != Constants::PATH_SEPARATOR[0]) {
-            createDir = bundleDataDir + Constants::PATH_SEPARATOR;
-        } else {
-            createDir = bundleDataDir;
-        }
-        if (!InstalldOperator::MkOwnerDir(createDir + Constants::DATA_DIR, true, uid, gid)) {
-            APP_LOGE("CreateBundleDataDir MkOwnerDir DATA_DIR failed");
-            return ERR_APPEXECFWK_INSTALLD_CREATE_DIR_FAILED;
-        }
-
-        if (!InstalldOperator::MkOwnerDir(createDir + Constants::DATA_BASE_DIR,
-                                          S_IRWXU | S_IRWXG | S_ISGID,
-                                          uid,
-                                          Constants::DATABASE_DIR_GID)) {
-            APP_LOGE("CreateBundleDataDir MkOwnerDir DATA_BASE_DIR failed");
-            return ERR_APPEXECFWK_INSTALLD_CREATE_DIR_FAILED;
-        }
-
-        if (!InstalldOperator::MkOwnerDir(createDir + Constants::CACHE_DIR, true, uid, gid)) {
-            APP_LOGE("CreateBundleDataDir MkOwnerDir CACHE_DIR failed");
-            return ERR_APPEXECFWK_INSTALLD_CREATE_DIR_FAILED;
-        }
-
-        if (!InstalldOperator::MkOwnerDir(createDir + Constants::SHARED_PREFERENCE_DIR, true, uid, gid)) {
-            APP_LOGE("CreateBundleDataDir MkOwnerDir SHARED_PREFERENCE_DIR failed");
-            return ERR_APPEXECFWK_INSTALLD_CREATE_DIR_FAILED;
-        }
-    }
-
-    if (CreateNewBundleDataDir(bundleName, userid, uid, gid, apl) != ERR_OK) {
-        APP_LOGE("CreateNewBundleDataDir MkOwnerDir failed");
-    }
-    return ERR_OK;
-}
-
-ErrCode InstalldHostImpl::CreateNewBundleDataDir(
-    const std::string &bundleName, const int userid, const int uid, const int gid, const std::string &apl)
+ErrCode InstalldHostImpl::CreateBundleDataDir(const std::string &bundleName,
+    const int userid, const int uid, const int gid, const std::string &apl)
 {
     if (bundleName.empty() || userid < 0 || uid < 0 || gid < 0) {
         APP_LOGE("Calling the function CreateBundleDataDir with invalid param");
@@ -218,50 +173,6 @@ ErrCode InstalldHostImpl::RemoveBundleDataDir(const std::string &bundleName, con
         if (!InstalldOperator::DeleteDir(databaseDir)) {
             APP_LOGE("remove dir %{public}s failed", databaseDir.c_str());
             return ERR_APPEXECFWK_INSTALLD_REMOVE_DIR_FAILED;
-        }
-    }
-    return ERR_OK;
-}
-
-ErrCode InstalldHostImpl::CreateModuleDataDir(
-    const std::string &ModuleDir, const std::vector<std::string> &abilityDirs, const int uid, const int gid)
-{
-    if (ModuleDir.empty() || uid < 0 || gid < 0) {
-        APP_LOGE("Calling the function CreateModuleDataDir with invalid param");
-        return ERR_APPEXECFWK_INSTALLD_PARAM_ERROR;
-    }
-    std::string createDir;
-    if (ModuleDir.back() != Constants::PATH_SEPARATOR[0]) {
-        createDir = ModuleDir + Constants::PATH_SEPARATOR;
-    } else {
-        createDir = ModuleDir;
-    }
-
-    if (!InstalldOperator::MkOwnerDir(createDir + Constants::SHARED_DIR, true, uid, gid)) {
-        APP_LOGE("CreateModuleDataDir MkOwnerDir %{public}s failed", Constants::SHARED_DIR.c_str());
-        return ERR_APPEXECFWK_INSTALLD_CREATE_DIR_FAILED;
-    }
-
-    for (auto &abilityDir : abilityDirs) {
-        std::string dataDir = createDir + abilityDir + Constants::PATH_SEPARATOR + Constants::DATA_DIR;
-        if (!InstalldOperator::MkOwnerDir(dataDir, true, uid, gid)) {
-            APP_LOGE("CreateModuleDataDir MkOwnerDir %{public}s failed", dataDir.c_str());
-            return ERR_APPEXECFWK_INSTALLD_CREATE_DIR_FAILED;
-        }
-        std::string cacheDir = createDir + abilityDir + Constants::PATH_SEPARATOR + Constants::CACHE_DIR;
-        if (!InstalldOperator::MkOwnerDir(cacheDir, true, uid, gid)) {
-            APP_LOGE("CreateModuleDataDir MkOwnerDir %{public}s failed", cacheDir.c_str());
-            return ERR_APPEXECFWK_INSTALLD_CREATE_DIR_FAILED;
-        }
-        std::string dataBaseDir = createDir + abilityDir + Constants::PATH_SEPARATOR + Constants::DATA_BASE_DIR;
-        if (!InstalldOperator::MkOwnerDir(dataBaseDir, true, uid, gid)) {
-            APP_LOGE("CreateModuleDataDir MkOwnerDir %{public}s failed", dataBaseDir.c_str());
-            return ERR_APPEXECFWK_INSTALLD_CREATE_DIR_FAILED;
-        }
-        std::string sharedDir = createDir + abilityDir + Constants::PATH_SEPARATOR + Constants::SHARED_PREFERENCE_DIR;
-        if (!InstalldOperator::MkOwnerDir(sharedDir, true, uid, gid)) {
-            APP_LOGE("CreateModuleDataDir MkOwnerDir %{public}s failed", sharedDir.c_str());
-            return ERR_APPEXECFWK_INSTALLD_CREATE_DIR_FAILED;
         }
     }
     return ERR_OK;
