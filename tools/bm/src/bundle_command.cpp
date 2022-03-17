@@ -94,17 +94,22 @@ private:
 
 void CleanCacheCallbackImpl::OnCleanCacheFinished(bool error)
 {
-    signal_->set_value(!error);
+    if (signal_ != nullptr) {
+        signal_->set_value(!error);
+    }
 }
 
 bool CleanCacheCallbackImpl::GetResultCode()
 {
-    auto future = signal_->get_future();
-    std::chrono::milliseconds span(MAX_WAITING_TIME);
-    if (future.wait_for(span) == std::future_status::timeout) {
-        return false;
+    if (signal_ != nullptr) {
+        auto future = signal_->get_future();
+        std::chrono::milliseconds span(MAX_WAITING_TIME);
+        if (future.wait_for(span) == std::future_status::timeout) {
+            return false;
+        }
+        return future.get();
     }
-    return future.get();
+    return false;
 }
 
 BundleManagerShellCommand::BundleManagerShellCommand(int argc, char *argv[]) : ShellCommand(argc, argv, TOOL_NAME)
