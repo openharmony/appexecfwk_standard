@@ -40,6 +40,7 @@ ohos_unittest("BmsBundlePermissionGrantTest") {
     "${services_path}/bundlemgr/src/bundle_status_callback_death_recipient.cpp",
     "${services_path}/bundlemgr/src/bundle_user_mgr_host_impl.cpp",
     "${services_path}/bundlemgr/src/distributed_data_storage.cpp",
+    "${services_path}/bundlemgr/src/hidump_helper.cpp",
     "${services_path}/bundlemgr/src/installd/installd_host_impl.cpp",
     "${services_path}/bundlemgr/src/installd/installd_operator.cpp",
     "${services_path}/bundlemgr/src/installd/installd_service.cpp",

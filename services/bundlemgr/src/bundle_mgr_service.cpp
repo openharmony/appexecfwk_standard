@@ -57,6 +57,9 @@ BundleMgrService::~BundleMgrService()
     if (perChangeSub_) {
         perChangeSub_.reset();
     }
+    if (hidumpHelper_) {
+        hidumpHelper_.reset();
+    }
     APP_LOGI("instance is destroyed");
 }
 
@@ -184,6 +187,11 @@ bool BundleMgrService::Init()
         deviceManager_ = std::make_shared<BmsDeviceManager>();
     }
 
+    if (!hidumpHelper_) {
+        APP_LOGI("Create hidump helper");
+        hidumpHelper_ = std::make_shared<HidumpHelper>(dataMgr_);
+    }
+
     CheckAllUser();
     ready_ = true;
     APP_LOGI("init end success");
@@ -272,6 +280,16 @@ void BundleMgrService::OnRemoveSystemAbility(int32_t systemAbilityId, const std:
     if (deviceManager_) {
         deviceManager_->OnRemoveSystemAbility(systemAbilityId, deviceId);
     }
+}
+
+bool BundleMgrService::Hidump(const std::vector<std::string> &args, std::string& result) const
+{
+    if (hidumpHelper_ && hidumpHelper_->Dump(args, result)) {
+        return true;
+    }
+
+    APP_LOGD("HidumpHelper failed");
+    return false;
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS

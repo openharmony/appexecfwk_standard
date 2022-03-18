@@ -271,5 +271,29 @@ bool DistributedDataStorage::SetDeviceId()
     }
     return false;
 }
+
+bool DistributedDataStorage::QueryAllDeviceIds(std::vector<std::string> &deviceIds)
+{
+    std::vector<DeviceInfo> deviceInfoList;
+    Status status = dataManager_.GetDeviceList(deviceInfoList, DeviceFilterStrategy::FILTER);
+    if (status != Status::SUCCESS) {
+        APP_LOGE("get GetDeviceList error: %{public}d", status);
+        return false;
+    }
+
+    DeviceInfo localDeviceInfo;
+    status = dataManager_.GetLocalDevice(localDeviceInfo);
+    if (status != Status::SUCCESS) {
+        APP_LOGE("get GetLocalDevice error: %{public}d", status);
+        return false;
+    }
+
+    deviceInfoList.emplace_back(localDeviceInfo);
+    for (auto deviceInfo : deviceInfoList) {
+        deviceIds.emplace_back(deviceInfo.deviceId);
+    }
+
+    return !deviceIds.empty();
+}
 }  // namespace AppExecFwk
 }  // namespace OHOS
