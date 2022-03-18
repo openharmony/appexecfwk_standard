@@ -1759,6 +1759,10 @@ bool BaseBundleInstaller::verifyUriPrefix(const InnerBundleInfo &info, bool isUp
     // verify current module uriPrefix
     std::vector<std::string> currentUriPrefixList;
     info.GetUriPrefixList(currentUriPrefixList);
+    if (currentUriPrefixList.empty()) {
+        APP_LOGD("current module not include uri, verify uriPrefix success");
+        return true;
+    }
     std::set<std::string> set;
     for (const std::string &currentUriPrefix : currentUriPrefixList) {
         if (!set.insert(currentUriPrefix).second) {
