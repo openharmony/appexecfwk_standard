@@ -22,4 +22,5 @@ innerkits_path = "${appexecfwk_path}/interfaces/innerkits"
 tools_path = "${appexecfwk_path}/tools"
 declare_args() {
   bundle_framework_graphics = true
+  print("bundle_framework_graphics = " + "$bundle_framework_graphics")
 }
