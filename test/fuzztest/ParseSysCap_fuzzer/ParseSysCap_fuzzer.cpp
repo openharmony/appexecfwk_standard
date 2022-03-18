@@ -30,7 +30,7 @@ namespace OHOS {
     }
     bool DoSomethingInterestingWithMyAPI(const uint8_t* data, size_t size)
     {
-        if (size <= 4) {
+        if ((size <= 4) || (data == nullptr)) {
             return false;
         }
 

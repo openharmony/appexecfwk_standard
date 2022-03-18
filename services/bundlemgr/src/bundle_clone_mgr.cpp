@@ -58,7 +58,7 @@ BundleCloneMgr::~BundleCloneMgr()
 
 bool BundleCloneMgr::BundleClone(const std::string &bundleName)
 {
-    APP_LOGE("BundleClone start");
+    APP_LOGD("BundleClone start");
     auto result = CheckBundleNameInAllowList(bundleName);
     if (result != true) {
         APP_LOGE("The APP is not on the AllowList");
@@ -85,13 +85,13 @@ bool BundleCloneMgr::BundleClone(const std::string &bundleName)
         APP_LOGE("BundleClone fail");
         return false;
     }
-    APP_LOGE("clone app success");
+    APP_LOGD("clone app success");
     return true;
 }
 
 bool BundleCloneMgr::SetCloneAppName(const std::string &bundleName)
 {
-    APP_LOGE("SetCloneAppName start");
+    APP_LOGD("SetCloneAppName start");
     std::fstream f("/data/clonefile/CloneAppName.json");
     bool isExist = f.good();
     if (isExist) {
@@ -101,25 +101,24 @@ bool BundleCloneMgr::SetCloneAppName(const std::string &bundleName)
         if (len == 0) {
             jParse[bundleName] = bundleName;
             f << std::setw(Constants::DUMP_INDENT) << jParse << std::endl;
-            APP_LOGE("clone bundleName Of file success (first)");
-            return true;
+            APP_LOGD("clone bundleName Of file success (first)");
         } else {
             f.seekg(0, std::ios::beg);
             nlohmann::json jsonFile;
             f >> jsonFile;
             if (jsonFile.find(bundleName) != jsonFile.end()) {
                 APP_LOGE("clone bundleName = %{public}s is exist", bundleName.c_str());
+                f.close();
                 return false;
             } else {
                 jsonFile[bundleName] = bundleName;
                 f.seekp(0, std::ios::beg);
                 f << std::setw(Constants::DUMP_INDENT) << jsonFile << std::endl;
-                APP_LOGE("clone bundleName = %{public}s Of file success", bundleName.c_str());
-                return true;
+                APP_LOGD("clone bundleName = %{public}s Of file success", bundleName.c_str());
             }
         }
     } else {
-        APP_LOGI("clone file not exist");
+        APP_LOGE("clone file not exist");
         return false;
     }
     f.close();
@@ -164,13 +163,13 @@ bool BundleCloneMgr::DeleteCloneAppName(const std::string &bundleName)
         }
     }
     o.close();
-    APP_LOGE("clone file AppName delete success");
+    APP_LOGD("clone file AppName delete success");
     return true;
 }
 
 bool BundleCloneMgr::CreateCloneBundleInfo(const std::string &bundleName)
 {
-    APP_LOGE("CreateCloneBundleInfo start");
+    APP_LOGD("CreateCloneBundleInfo start");
     dataMgr_ = DelayedSingleton<BundleMgrService>::GetInstance()->GetDataMgr();
     if (dataMgr_ == nullptr) {
         APP_LOGE("datamgr is nullptr");
@@ -181,16 +180,16 @@ bool BundleCloneMgr::CreateCloneBundleInfo(const std::string &bundleName)
         APP_LOGE("Clone AppName BundleInfo fail");
         return false;
     }
-    APP_LOGE("finish CreateCloneBundleInfo");
+    APP_LOGD("finish CreateCloneBundleInfo");
     cloneInfo_.SetIsCloned(true);
     bool LogisCloned = cloneInfo_.GetisCloned();
-    APP_LOGE("cloneInfo_.GetisCloned() is %{public}d", LogisCloned);
+    APP_LOGD("cloneInfo_.GetisCloned() is %{public}d", LogisCloned);
     return result;
 }
 
 ErrCode BundleCloneMgr::ProcessCloneInstall(const std::string &bundleName)
 {
-    APP_LOGE("ProcessCloneInstall start");
+    APP_LOGD("ProcessCloneInstall start");
     ErrCode result = 0;
     dataMgr_ = DelayedSingleton<BundleMgrService>::GetInstance()->GetDataMgr();
     if (!ModifyInstallDirByHapType(cloneInfo_)) {
@@ -215,13 +214,13 @@ ErrCode BundleCloneMgr::ProcessCloneInstall(const std::string &bundleName)
     std::string Newbundlename = cloneInfo_.GetDBKeyBundleName();
     dataMgr_->EnableBundle(Newbundlename);
     dataMgr_->EnableBundle(bundleName_);
-    APP_LOGE("ProcessCloneInstall finish");
+    APP_LOGD("ProcessCloneInstall finish");
     return ERR_OK;
 }
 
 ErrCode BundleCloneMgr::CreateBundleAndDataDir(InnerBundleInfo &info) const
 {
-    APP_LOGE("CreateBundleAndDataDir start");
+    APP_LOGD("CreateBundleAndDataDir start");
     auto cloneCodePath = cloneInfo_.GetAppCodePath();
     APP_LOGI("clone create bundle dir %{private}s", cloneCodePath.c_str());
     InnerBundleUserInfo newInnerBundleUserInfo;
@@ -233,10 +232,10 @@ ErrCode BundleCloneMgr::CreateBundleAndDataDir(InnerBundleInfo &info) const
     }
     info.SetApplicationInfoUid();
     int logUid = info.GetApplicationInfoUid();
-    APP_LOGE("info.uid is %{public}d", logUid);
+    APP_LOGD("info.uid is %{public}d", logUid);
 
     bool LogisCloned = info.GetisCloned();
-    APP_LOGE("info.GetisCloned is %{public}d", LogisCloned);
+    APP_LOGD("info.GetisCloned is %{public}d", LogisCloned);
 
     info.SetNewBundleName(bundleName_);
     std::string Newbundlename = info.GetDBKeyBundleName();
@@ -250,7 +249,7 @@ ErrCode BundleCloneMgr::CreateBundleAndDataDir(InnerBundleInfo &info) const
         return result;
     }
     UpdateBundlePaths(info, cloneDataPath);
-    APP_LOGE("CreateBundleAndDataDir finish");
+    APP_LOGD("CreateBundleAndDataDir finish");
     return ERR_OK;
 }
 
@@ -280,7 +279,7 @@ bool BundleCloneMgr::ModifyInstallDirByHapType(InnerBundleInfo &info)
 
 bool BundleCloneMgr::UpdateBundlePaths(InnerBundleInfo &info, const std::string baseDataPath) const
 {
-    APP_LOGE("Clone UpdateBundlePaths");
+    APP_LOGD("Clone UpdateBundlePaths");
     info.SetBaseDataDir(baseDataPath);
     info.SetAppDataDir(baseDataPath);
     info.SetAppDataBaseDir(baseDataPath + Constants::PATH_SEPARATOR + Constants::DATA_BASE_DIR);
@@ -307,9 +306,9 @@ bool BundleCloneMgr::RemoveClonedBundle(const std::string &oldName, const std::s
     }
     auto uid = newcloneInfo_.GetUid();
     std::string Newbundlename = cloneInfo_.GetDBKeyBundleName();
-    APP_LOGE("Newbundlename is %{public}s", Newbundlename.c_str());
+    APP_LOGD("Newbundlename is %{public}s", Newbundlename.c_str());
     ScopeGuard enableCloneGuard([&] { dataMgr_->EnableBundle(Newbundlename); });
-    APP_LOGE("bundleName_ is %{public}s", bundleName_.c_str());
+    APP_LOGD("bundleName_ is %{public}s", bundleName_.c_str());
     ScopeGuard enableGuard([&] { dataMgr_->EnableBundle(bundleName_); });
 
     if (!UninstallApplicationProcesses(newcloneInfo_.GetApplicationName(), uid)) {
@@ -341,10 +340,12 @@ bool BundleCloneMgr::CheckBundleNameInAllowList(const std::string &bundleName)
     if (ifs.is_open()) {
         jsonObject=nlohmann::json::parse(ifs);
         if (jsonObject.empty()) {
+            ifs.close();
             return false;
         }
         for (auto item : jsonObject) {
             if (item ["bundlename"] == bundleName) {
+                ifs.close();
                 return true;
             }
         }
