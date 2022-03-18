@@ -154,7 +154,7 @@ bool BundleDataMgr::AddInnerBundleInfo(const std::string &bundleName, InnerBundl
 
 bool BundleDataMgr::SaveNewInfoToDB(const std::string &bundleName, InnerBundleInfo &info)
 {
-    APP_LOGE("SaveNewInfoToDB start");
+    APP_LOGD("SaveNewInfoToDB start");
     std::string Newbundlename = info.GetDBKeyBundleName();
     APP_LOGI("to save clone newinfo to DB info:%{public}s", Newbundlename.c_str());
     if (bundleName.empty()) {
@@ -184,7 +184,7 @@ bool BundleDataMgr::SaveNewInfoToDB(const std::string &bundleName, InnerBundleIn
         }
         return true;
     }
-    APP_LOGE("SaveNewInfoToDB finish");
+    APP_LOGD("SaveNewInfoToDB finish");
     return false;
 }
 
