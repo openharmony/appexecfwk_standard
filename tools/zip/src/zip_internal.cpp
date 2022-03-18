@@ -56,6 +56,9 @@ struct tm GetTmDataFromTickts(int64_t sec)
 // a file stream.
 void *FdOpenFileFunc(void *opaque, const char *filename, int mode)
 {
+    if ((opaque == nullptr) || (filename == nullptr)) {
+        return nullptr;
+    }
     FILE *file = nullptr;
     const char *mode_fopen = nullptr;
     uint32_t modeInner = static_cast<uint32_t>(mode);
@@ -86,6 +89,9 @@ int FdCloseFileFunc(void *opaque, void *stream)
 // referred to by |fd|.
 void FillFdOpenFileFunc(zlib_filefunc_def *pzlibFilefuncDef, PlatformFile fd)
 {
+    if (pzlibFilefuncDef == nullptr) {
+        return;
+    }
     fill_fopen_filefunc(pzlibFilefuncDef);
     pzlibFilefuncDef->zopen_file = FdOpenFileFunc;
     pzlibFilefuncDef->zclose_file = FdCloseFileFunc;
