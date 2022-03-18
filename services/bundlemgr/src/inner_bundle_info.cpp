@@ -2097,6 +2097,15 @@ void InnerBundleInfo::SetApplicationEnabled(bool enabled, int32_t userId)
 
 int32_t InnerBundleInfo::GetResponseUserId(int32_t requestUserId) const
 {
+    if (innerBundleUserInfos_.empty()) {
+        APP_LOGE("Get responseUserId failed due to user map is empty.");
+        return Constants::INVALID_USERID;
+    }
+
+    if (requestUserId == Constants::ANY_USERID) {
+        return innerBundleUserInfos_.begin()->second.bundleUserInfo.userId;
+    }
+
     if (HasInnerBundleUserInfo(requestUserId)) {
         return requestUserId;
     }
