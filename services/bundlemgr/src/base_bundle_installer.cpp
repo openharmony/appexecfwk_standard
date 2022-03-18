@@ -839,7 +839,7 @@ ErrCode BaseBundleInstaller::ProcessBundleInstallStatus(InnerBundleInfo &info, i
     }
     if (!verifyUriPrefix(info)) {
         APP_LOGE("verifyUriPrefix failed");
-        return ERR_APPEXECFWK_INSTALL_INTERNAL_ERROR;
+        return ERR_APPEXECFWK_INSTALL_URI_DUPLICATE;
     }
     if (!dataMgr_->AddInnerBundleInfo(bundleName_, info)) {
         APP_LOGE("add bundle %{public}s info failed", bundleName_.c_str());
@@ -960,7 +960,7 @@ ErrCode BaseBundleInstaller::ProcessNewModuleInstall(InnerBundleInfo &newInfo, I
     oldInfo.SetBundleUpdateTime(BundleUtil::GetCurrentTime(), userId_);
     if (!verifyUriPrefix(newInfo)) {
         APP_LOGE("verifyUriPrefix failed");
-        return ERR_APPEXECFWK_INSTALL_INTERNAL_ERROR;
+        return ERR_APPEXECFWK_INSTALL_URI_DUPLICATE;
     }
     if (!dataMgr_->AddNewModuleInfo(bundleName_, newInfo, oldInfo)) {
         APP_LOGE(
@@ -1033,7 +1033,7 @@ ErrCode BaseBundleInstaller::ProcessModuleUpdate(InnerBundleInfo &newInfo,
     auto noUpdateInfo = oldInfo;
     if (!verifyUriPrefix(newInfo, true)) {
         APP_LOGE("verifyUriPrefix failed");
-        return ERR_APPEXECFWK_INSTALL_INTERNAL_ERROR;
+        return ERR_APPEXECFWK_INSTALL_URI_DUPLICATE;
     }
     if (!dataMgr_->UpdateInnerBundleInfo(bundleName_, newInfo, oldInfo)) {
         APP_LOGE("update innerBundleInfo %{public}s failed", bundleName_.c_str());
