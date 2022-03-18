@@ -5346,7 +5346,7 @@ napi_value GetAbilityLabel(napi_env env, napi_callback_info info)
     napi_value ret = GetAbilityLabelWrap(env, info, asyncCallbackInfo);
 
     if (ret == nullptr) {
-        APP_LOGE("%{public}s ret == nullptr", __func__);
+        APP_LOGD("%{public}s ret == nullptr", __func__);
         if (asyncCallbackInfo != nullptr) {
             delete asyncCallbackInfo;
             asyncCallbackInfo = nullptr;
