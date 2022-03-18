@@ -71,6 +71,7 @@ bool BundleDataStorage::LoadAllData(std::map<std::string, std::map<std::string, 
         jParse = nlohmann::json::parse(i, nullptr, false);
         if (jParse.is_discarded()) {
             APP_LOGE("bad bundle database file");
+            i.close();
             return false;
         }
         for (auto &app : jParse.items()) {
