@@ -49,7 +49,7 @@ const std::string BUNDLE_DATA_DIR = "/data/app/el2/100/base/com.example.l3jsdemo
 const std::string BUNDLE_CODE_DIR = "/data/app/el1/bundle/public/com.example.l3jsdemo";
 const std::string MODULE_CODE_DIR = "/data/app/el1/bundle/public/com.example.l3jsdemo/com.example.l3jsdemo";
 const std::string MODULE_CODE_DIR1 = "/data/app/el1/bundle/public/com.example.l3jsdemo/com.example.l3jsdemo1";
-const std::string ROOT_DIR = "/data/accounts";
+const std::string ROOT_DIR = "/data/app";
 const std::string DB_FILE_PATH = "/data/bundlemgr";
 const int32_t ROOT_UID = 0;
 }  // namespace

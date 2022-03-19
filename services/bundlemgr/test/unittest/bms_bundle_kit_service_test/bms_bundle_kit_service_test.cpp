@@ -93,9 +93,9 @@ const std::string META_DATA_TYPE = "type";
 const std::string META_DATA_VALUE = "value";
 const std::string META_DATA_EXTRA = "extra";
 const ModuleColorMode COLOR_MODE = ModuleColorMode::AUTO;
-const std::string CODE_PATH = "/data/accounts/account_0/com.example.bundlekit.test/code";
-const std::string RESOURCE_PATH = "/data/accounts/account_0/com.example.bundlekit.test/res";
-const std::string LIB_PATH = "/data/accounts/account_0/com.example.bundlekit.test/lib";
+const std::string CODE_PATH = "/data/app/el1/bundle/public/com.example.bundlekit.test";
+const std::string RESOURCE_PATH = "/data/app/el1/bundle/public/com.example.bundlekit.test/res";
+const std::string LIB_PATH = "/data/app/el1/bundle/public/com.example.bundlekit.test/lib";
 const bool VISIBLE = true;
 const std::string MAIN_ENTRY = "com.example.bundlekit.test.entry";
 const uint32_t ABILITY_SIZE_ZERO = 0;
@@ -2179,9 +2179,9 @@ HWTEST_F(BmsBundleKitServiceTest, CleanBundleDataFiles_0100, Function | SmallTes
     auto hostImpl = std::make_unique<BundleMgrHostImpl>();
     bool testRet = hostImpl->CleanBundleDataFiles(BUNDLE_NAME_TEST, DEFAULT_USERID);
     EXPECT_TRUE(testRet);
-    CheckFileNonExist();
 
     CleanFileDir();
+    CheckFileNonExist();
     MockUninstallBundle(BUNDLE_NAME_TEST);
 }
 
