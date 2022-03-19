@@ -78,11 +78,20 @@ const std::string BUNDLE_CODE_DIR = "/data/app/el1/bundle/public/com.example.l3j
 const std::string PACKAGE_NAME_FIRST = "com.example.l3jsdemo";
 const std::string PACKAGE_NAME_SECOND = "com.example.l2jsdemo";
 const std::string PACKAGE_NAME_THIRD = "com.example.l1jsdemo";
-const std::string ROOT_DIR = "/data/accounts";
+const std::string ROOT_DIR = "/data/app";
 const int32_t ROOT_UID = 0;
 const int32_t USERID = 100;
 const std::string INSTALL_THREAD = "TestInstall";
 const int32_t WAIT_TIME = 5; // init mocked bms
+const std::vector<std::string> BUNDLE_DATA_DIR_PAGENAME = {
+    "cache",
+    "files",
+    "temp",
+    "preferences",
+    "haps",
+    "el3/base",
+    "el4/base"
+};
 }  // namespace
 
 class BmsMultipleInstallerTest : public testing::Test {
@@ -233,10 +242,13 @@ void BmsMultipleInstallerTest::CheckFileNonExist() const
 
 void BmsMultipleInstallerTest::CheckModuleFileExist(const std::string &packageName) const
 {
+    for(auto i = 0;i < BUNDLE_DATA_DIR_PAGENAME.size();i++)
+    {
+        auto moduleDataExist = access((BUNDLE_DATA_DIR + "/" + BUNDLE_DATA_DIR_PAGENAME[i]).c_str(), F_OK);
+        EXPECT_EQ(moduleDataExist, 0);
+    }
     int moduleCodeExist = access((BUNDLE_CODE_DIR + "/" + packageName).c_str(), F_OK);
-    int moduleDataExist = access((BUNDLE_DATA_DIR + "/" + packageName).c_str(), F_OK);
     EXPECT_EQ(moduleCodeExist, 0);
-    EXPECT_EQ(moduleDataExist, 0);
 }
 
 void BmsMultipleInstallerTest::CheckModuleFileNonExist(const std::string &packageName) const

@@ -46,7 +46,7 @@ const std::string THIRD_BUNDLE_NAME = "com.third.hiworld.example";
 const std::string SYSTEM_BUNDLE_NAME = "com.system.hiworld.example";
 const std::string BUNDLE_CODE_PATH = "/data/app/el1/bundle/public/";
 const std::string BUNDLE_DATA_PATH = "/data/app/el2/100/base/";
-const std::string ROOT_DIR = "/data/accounts";
+const std::string ROOT_DIR = "/data/app";
 const std::string ERROR_SUFFIX = ".rpk";
 const int32_t ROOT_UID = 0;
 }  // namespace
