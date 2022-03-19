@@ -245,7 +245,7 @@ void BmsBundleUpdaterTest::CheckFileExist() const
     CommonTool tool;
     bool isCodeExist = tool.CheckFilePathISExist(BUNDLE_CODE_DIR + SEPARATOR + PACKAGE_NAME);
     EXPECT_TRUE(isCodeExist);
-    bool isDataExist = tool.CheckFilePathISExist(BUNDLE_DATA_DIR + SEPARATOR + PACKAGE_NAME);
+    bool isDataExist = tool.CheckFilePathISExist(BUNDLE_DATA_DIR);
     EXPECT_TRUE(isDataExist);
 }
 
