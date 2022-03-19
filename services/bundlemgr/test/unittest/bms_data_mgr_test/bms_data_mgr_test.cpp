@@ -42,9 +42,9 @@ const std::string KIND = "test";
 const AbilityType ABILITY_TYPE = AbilityType::PAGE;
 const DisplayOrientation ORIENTATION = DisplayOrientation::PORTRAIT;
 const LaunchMode LAUNCH_MODE = LaunchMode::SINGLETON;
-const std::string CODE_PATH = "/data/accounts/account_/com.example.l3jsdemo";
-const std::string RESOURCE_PATH = "/data/accounts/account_/com.example.l3jsdemo";
-const std::string LIB_PATH = "/data/accounts/account_/com.example.l3jsdemo";
+const std::string CODE_PATH = "/data/app/el1/bundle/public/com.example.l3jsdemo";
+const std::string RESOURCE_PATH = "/data/app/el1/bundle/public/com.example.l3jsdemo";
+const std::string LIB_PATH = "/data/app/el1/bundle/public/com.example.l3jsdemo";
 const bool VISIBLE = true;
 const int32_t USERID = 100;
 }  // namespace
