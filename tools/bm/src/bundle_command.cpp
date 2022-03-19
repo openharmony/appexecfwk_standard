@@ -327,7 +327,10 @@ ErrCode BundleManagerShellCommand::CreateMessageMap()
             IStatusReceiver::ERR_INSTALL_APPTYPE_NOT_SAME,
             "error: install failed due to apptype not same",
         },
-
+        {
+            IStatusReceiver::ERR_INSTALL_URI_DUPLICATE,
+            "error: install failed due to uri prefix duplicate",
+        },
         {
             IStatusReceiver::ERR_INSTALL_PARSE_UNEXPECTED,
             "error: install parse unexpected.",
