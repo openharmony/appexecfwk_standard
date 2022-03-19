@@ -26,6 +26,7 @@ using namespace testing::ext;
 using namespace OHOS::AppExecFwk;
 namespace OHOS {
 namespace {
+const std::string BUNDLE_NAME13 = "com.example.l3jsdemo";
 const std::string BUNDLE_FILE = "/data/test/resource/bms/install_daemon/right.hap";
 const std::string SYSTEM_DIR = "/sys/com.example.l3jsdemo";
 const std::string TEMP_DIR = "/data/app/el1/bundle/public/com.example.l3jsdemo/temp";
@@ -41,7 +42,7 @@ const std::string BUNDLE_EL3_BASE_DIR = "/data/app/el3/101/base/com.example.l4js
 const std::string BUNDLE_EL4_BASE_DIR = "/data/app/el4/101/base/com.example.l4jsdemo/temp";
 const std::string BUNDLE_NAME = "com.example.l4jsdemo";
 const int32_t ROOT_UID = 0;
-const int32_t USERID = 0;
+const int32_t USERID = 100;
 const int32_t UID = 1000;
 const int32_t GID = 1000;
 const std::string APL = "normal";
@@ -398,7 +399,7 @@ HWTEST_F(BmsInstallDaemonTest, BundleDir_0300, Function | SmallTest | Level0)
 */
 HWTEST_F(BmsInstallDaemonTest, BundleDataDir_0100, Function | SmallTest | Level0)
 {
-    int result = CreateBundleDataDir(BUNDLE_DATA_DIR, USERID, UID, GID, APL);
+    int result = CreateBundleDataDir(BUNDLE_NAME13, USERID, UID, GID, APL);
     EXPECT_EQ(result, 0);
     bool dirExist = CheckBundleDataDirExist();
     EXPECT_TRUE(dirExist);
@@ -417,7 +418,7 @@ HWTEST_F(BmsInstallDaemonTest, BundleDataDir_0100, Function | SmallTest | Level0
 */
 HWTEST_F(BmsInstallDaemonTest, BundleDataDir_0200, Function | SmallTest | Level0)
 {
-    int result = CreateBundleDataDir(BUNDLE_DATA_DIR, USERID, UID, GID, APL);
+    int result = CreateBundleDataDir(BUNDLE_NAME13, USERID, UID, GID, APL);
     EXPECT_EQ(result, 0);
     bool dirExist = CheckBundleDataDirExist();
     EXPECT_TRUE(dirExist);
@@ -481,8 +482,8 @@ HWTEST_F(BmsInstallDaemonTest, BundleDataDir_0500, Function | SmallTest | Level0
 */
 HWTEST_F(BmsInstallDaemonTest, BundleDataDir_0600, Function | SmallTest | Level0)
 {
-    int result = CreateBundleDataDir(SYSTEM_DIR, USERID, UID, GID, APL);
-    EXPECT_EQ(result, ERR_APPEXECFWK_INSTALLD_CREATE_DIR_FAILED);
+    int result = CreateBundleDataDir("", USERID, UID, GID, APL);
+    EXPECT_EQ(result, ERR_APPEXECFWK_INSTALLD_PARAM_ERROR);
     bool dirExist = CheckBundleDataDirExist();
     EXPECT_FALSE(dirExist);
 }
