@@ -16,6 +16,7 @@
 #include "base_bundle_installer.h"
 
 #include <unistd.h>
+#include <set>
 #include <vector>
 
 #include "ability_manager_interface.h"
@@ -836,6 +837,10 @@ ErrCode BaseBundleInstaller::ProcessBundleInstallStatus(InnerBundleInfo &info, i
     if (result != ERR_OK) {
         return result;
     }
+    if (!verifyUriPrefix(info)) {
+        APP_LOGE("verifyUriPrefix failed");
+        return ERR_APPEXECFWK_INSTALL_URI_DUPLICATE;
+    }
     if (!dataMgr_->AddInnerBundleInfo(bundleName_, info)) {
         APP_LOGE("add bundle %{public}s info failed", bundleName_.c_str());
         dataMgr_->UpdateBundleInstallState(bundleName_, InstallState::UNINSTALL_START);
@@ -953,6 +958,10 @@ ErrCode BaseBundleInstaller::ProcessNewModuleInstall(InnerBundleInfo &newInfo, I
     }
 
     oldInfo.SetBundleUpdateTime(BundleUtil::GetCurrentTime(), userId_);
+    if (!verifyUriPrefix(newInfo)) {
+        APP_LOGE("verifyUriPrefix failed");
+        return ERR_APPEXECFWK_INSTALL_URI_DUPLICATE;
+    }
     if (!dataMgr_->AddNewModuleInfo(bundleName_, newInfo, oldInfo)) {
         APP_LOGE(
             "add module %{public}s to innerBundleInfo %{public}s failed", modulePackage_.c_str(), bundleName_.c_str());
@@ -1022,6 +1031,10 @@ ErrCode BaseBundleInstaller::ProcessModuleUpdate(InnerBundleInfo &newInfo,
     oldInfo.SetInstallMark(bundleName_, modulePackage_, InstallExceptionStatus::UPDATING_FINISH);
     oldInfo.SetBundleUpdateTime(BundleUtil::GetCurrentTime(), userId_);
     auto noUpdateInfo = oldInfo;
+    if (!verifyUriPrefix(newInfo, true)) {
+        APP_LOGE("verifyUriPrefix failed");
+        return ERR_APPEXECFWK_INSTALL_URI_DUPLICATE;
+    }
     if (!dataMgr_->UpdateInnerBundleInfo(bundleName_, newInfo, oldInfo)) {
         APP_LOGE("update innerBundleInfo %{public}s failed", bundleName_.c_str());
         return ERR_APPEXECFWK_INSTALL_BUNDLE_MGR_SERVICE_ERROR;
@@ -1738,6 +1751,53 @@ ErrCode BaseBundleInstaller::RemoveBundleUserData(InnerBundleInfo &innerBundleIn
 
     innerBundleInfo.RemoveInnerBundleUserInfo(userId_);
     return UpdateUserInfoToDb(innerBundleInfo, true);
+}
+
+bool BaseBundleInstaller::verifyUriPrefix(const InnerBundleInfo &info, bool isUpdate) const
+{
+    // uriPrefix must be unique
+    // verify current module uriPrefix
+    std::vector<std::string> currentUriPrefixList;
+    info.GetUriPrefixList(currentUriPrefixList);
+    if (currentUriPrefixList.empty()) {
+        APP_LOGD("current module not include uri, verify uriPrefix success");
+        return true;
+    }
+    std::set<std::string> set;
+    for (const std::string &currentUriPrefix : currentUriPrefixList) {
+        if (!set.insert(currentUriPrefix).second) {
+            APP_LOGE("current module contains duplicate uriPrefix, verify uriPrefix failed");
+            APP_LOGE("bundleName : %{public}s, moduleName : %{public}s, uriPrefix : %{public}s",
+                info.GetBundleName().c_str(), info.GetCurrentModulePackage().c_str(), currentUriPrefix.c_str());
+            return false;
+        }
+    }
+    set.clear();
+    // verify exist bundle uriPrefix
+    if (dataMgr_ == nullptr) {
+        APP_LOGE("dataMgr_ is null, verify uriPrefix failed");
+        return false;
+    }
+    std::vector<std::string> uriPrefixList;
+    std::string excludeModule;
+    if (isUpdate) {
+        excludeModule.append(info.GetBundleName()).append(".").append(info.GetCurrentModulePackage()).append(".");
+    }
+    dataMgr_->GetAllUriPrefix(uriPrefixList, excludeModule);
+    if (uriPrefixList.empty()) {
+        APP_LOGD("uriPrefixList empty, verify uriPrefix success");
+        return true;
+    }
+    for (const std::string &currentUriPrefix : currentUriPrefixList) {
+        auto iter = std::find(uriPrefixList.cbegin(), uriPrefixList.cend(), currentUriPrefix);
+        if (iter != uriPrefixList.cend()) {
+            APP_LOGE("uriPrefix alread exist in device, uriPrefix : %{public}s", currentUriPrefix.c_str());
+            APP_LOGE("verify uriPrefix failed");
+            return false;
+        }
+    }
+    APP_LOGD("verify uriPrefix success");
+    return true;
 }
 
 void BaseBundleInstaller::ResetInstallProperties()
