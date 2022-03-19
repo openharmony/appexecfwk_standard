@@ -46,7 +46,7 @@ const std::string V3_BUNDLE = "version3.hap";
 const std::string ERROR_FORMART_BUNDLE = "format_error_profile.hap";
 const std::string BUNDLE_DATA_DIR = "/data/app/el2/100/base/com.example.l3jsdemo";
 const std::string BUNDLE_CODE_DIR = "/data/app/el1/bundle/public/com.example.l3jsdemo";
-const std::string ROOT_DIR = "/data/accounts";
+const std::string ROOT_DIR = "/data/app";
 const std::string PROFILE_FILE = "config.json";
 const std::string SEPARATOR = "/";
 const std::chrono::seconds SLEEP_TIME {2};
