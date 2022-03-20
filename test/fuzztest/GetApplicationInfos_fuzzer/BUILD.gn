@@ -40,7 +40,6 @@ ohos_fuzztest("GetApplicationInfosFuzzTest") {
     "hiviewdfx_hilog_native:libhilog",
     "init:libbegetutil",
     "ipc:ipc_core",
-    "napi:ace_napi",
     "safwk:system_ability_fwk",
     "samgr_standard:samgr_proxy",
     "utils_base:utils",
