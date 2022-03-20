@@ -80,8 +80,9 @@ ohos_shared_library("z") {
 }
 
 group("tools_zip") {
-  deps = [
-    ":z",
-    ":zlib",
-  ]
+  deps = [ ":z" ]
+
+  if (support_jsapi) {
+    deps += [ ":zlib" ]
+  }
 }
