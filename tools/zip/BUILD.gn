@@ -53,7 +53,6 @@ ohos_shared_library("zlib") {
     "${common_path}:libappexecfwk_common",
     "//third_party/libuv:uv_static",
     "//third_party/zlib:libz",
-    "//utils/native/base:utils",
   ]
 
   external_deps = [
@@ -62,6 +61,7 @@ ohos_shared_library("zlib") {
     "hilog_native:libhilog_base",
     "hiviewdfx_hilog_native:libhilog",
     "napi:ace_napi",
+    "utils_base:utils",
   ]
 
   install_enable = true
