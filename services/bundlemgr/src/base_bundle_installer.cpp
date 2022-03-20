@@ -897,10 +897,6 @@ ErrCode BaseBundleInstaller::ProcessBundleUpdateStatus(
 
 ErrCode BaseBundleInstaller::ProcessNewModuleInstall(InnerBundleInfo &newInfo, InnerBundleInfo &oldInfo)
 {
-    if (!verifyUriPrefix(newInfo, userId_)) {
-        APP_LOGE("verifyUriPrefix failed");
-        return ERR_APPEXECFWK_INSTALL_URI_DUPLICATE;
-    }
     APP_LOGD("ProcessNewModuleInstall %{public}s, userId: %{public}d.",
         newInfo.GetBundleName().c_str(), userId_);
     ScopeGuard userGuard([&] {
@@ -908,6 +904,11 @@ ErrCode BaseBundleInstaller::ProcessNewModuleInstall(InnerBundleInfo &newInfo, I
             RemoveBundleUserData(oldInfo);
         }
     });
+
+    if (!verifyUriPrefix(newInfo, userId_)) {
+        APP_LOGE("verifyUriPrefix failed");
+        return ERR_APPEXECFWK_INSTALL_URI_DUPLICATE;
+    }
 
     if (newInfo.IsSingleUser() && (userId_ != Constants::DEFAULT_USERID)) {
         APP_LOGE("singleton app(%{public}s) must be installed in user 0.", bundleName_.c_str());
@@ -977,10 +978,6 @@ ErrCode BaseBundleInstaller::ProcessNewModuleInstall(InnerBundleInfo &newInfo, I
 ErrCode BaseBundleInstaller::ProcessModuleUpdate(InnerBundleInfo &newInfo,
     InnerBundleInfo &oldInfo, bool isReplace, bool noSkipsKill)
 {
-    if (!verifyUriPrefix(newInfo, userId_, true)) {
-        APP_LOGE("verifyUriPrefix failed");
-        return ERR_APPEXECFWK_INSTALL_URI_DUPLICATE;
-    }
     APP_LOGD("ProcessModuleUpdate, bundleName : %{public}s, moduleName : %{public}s, userId: %{public}d.",
         newInfo.GetBundleName().c_str(), newInfo.GetCurrentModulePackage().c_str(), userId_);
     ScopeGuard userGuard([&] {
@@ -988,6 +985,11 @@ ErrCode BaseBundleInstaller::ProcessModuleUpdate(InnerBundleInfo &newInfo,
             RemoveBundleUserData(oldInfo);
         }
     });
+
+    if (!verifyUriPrefix(newInfo, userId_, true)) {
+        APP_LOGE("verifyUriPrefix failed");
+        return ERR_APPEXECFWK_INSTALL_URI_DUPLICATE;
+    }
 
     if (newInfo.IsSingleUser() && (userId_ != Constants::DEFAULT_USERID)) {
         APP_LOGE("singleton app(%{public}s) must be installed in user 0.", bundleName_.c_str());
