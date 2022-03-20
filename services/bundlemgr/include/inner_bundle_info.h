@@ -1342,6 +1342,7 @@ public:
         return baseApplicationInfo_.accessible;
     }
 
+    void GetUriPrefixList(std::vector<std::string> &uriPrefixList, const std::string &excludeModule = "") const;
     void GetUriPrefixList(std::vector<std::string> &uriPrefixList, int32_t userId,
         const std::string &excludeModule = "") const;
 private:

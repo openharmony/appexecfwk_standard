@@ -2143,15 +2143,9 @@ void InnerBundleInfo::GetDistributedBundleInfo(DistributedBundleInfo &distribute
     }
 }
 
-void InnerBundleInfo::GetUriPrefixList(std::vector<std::string> &uriPrefixList, int32_t userId,
+void InnerBundleInfo::GetUriPrefixList(std::vector<std::string> &uriPrefixList,
     const std::string &excludeModule) const
 {
-    auto& key = NameAndUserIdToKey(GetBundleName(), userId);
-    auto infoItem = innerBundleUserInfos_.find(key);
-    if (infoItem == innerBundleUserInfos_.end()) {
-        return;
-    }
-
     std::vector<std::string> uriList;
     for (const auto &abilityInfoPair : baseAbilityInfos_) {
         if (abilityInfoPair.second.uri.empty()) {
@@ -2185,6 +2179,17 @@ void InnerBundleInfo::GetUriPrefixList(std::vector<std::string> &uriPrefixList, 
         }
         uriPrefixList.emplace_back(uriPrefix);
     }
+}
+
+void InnerBundleInfo::GetUriPrefixList(std::vector<std::string> &uriPrefixList, int32_t userId,
+    const std::string &excludeModule) const
+{
+    auto& key = NameAndUserIdToKey(GetBundleName(), userId);
+    auto infoItem = innerBundleUserInfos_.find(key);
+    if (infoItem == innerBundleUserInfos_.end()) {
+        return;
+    }
+    GetUriPrefixList(uriPrefixList, excludeModule);
 }
 }  // namespace AppExecFwk
 }  // namespace OHOS
