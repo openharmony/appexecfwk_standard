@@ -42,6 +42,7 @@ bool BundleMonitor::UnSubscribe()
         APP_LOGE("UnsubscribeCommonEvent occur exception.");
         return false;
     }
+    callback_ = nullptr;
     return true;
 }
 
