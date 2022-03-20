@@ -1758,7 +1758,7 @@ bool BaseBundleInstaller::verifyUriPrefix(const InnerBundleInfo &info, int32_t u
     // uriPrefix must be unique
     // verify current module uriPrefix
     std::vector<std::string> currentUriPrefixList;
-    info.GetUriPrefixList(currentUriPrefixList, userId);
+    info.GetUriPrefixList(currentUriPrefixList);
     if (currentUriPrefixList.empty()) {
         APP_LOGD("current module not include uri, verify uriPrefix success");
         return true;
