@@ -837,7 +837,7 @@ ErrCode BaseBundleInstaller::ProcessBundleInstallStatus(InnerBundleInfo &info, i
     if (result != ERR_OK) {
         return result;
     }
-    if (!verifyUriPrefix(info)) {
+    if (!verifyUriPrefix(info, userId_)) {
         APP_LOGE("verifyUriPrefix failed");
         return ERR_APPEXECFWK_INSTALL_URI_DUPLICATE;
     }
@@ -958,7 +958,7 @@ ErrCode BaseBundleInstaller::ProcessNewModuleInstall(InnerBundleInfo &newInfo, I
     }
 
     oldInfo.SetBundleUpdateTime(BundleUtil::GetCurrentTime(), userId_);
-    if (!verifyUriPrefix(newInfo)) {
+    if (!verifyUriPrefix(newInfo, userId_)) {
         APP_LOGE("verifyUriPrefix failed");
         return ERR_APPEXECFWK_INSTALL_URI_DUPLICATE;
     }
@@ -1031,7 +1031,7 @@ ErrCode BaseBundleInstaller::ProcessModuleUpdate(InnerBundleInfo &newInfo,
     oldInfo.SetInstallMark(bundleName_, modulePackage_, InstallExceptionStatus::UPDATING_FINISH);
     oldInfo.SetBundleUpdateTime(BundleUtil::GetCurrentTime(), userId_);
     auto noUpdateInfo = oldInfo;
-    if (!verifyUriPrefix(newInfo, true)) {
+    if (!verifyUriPrefix(newInfo, userId_, true)) {
         APP_LOGE("verifyUriPrefix failed");
         return ERR_APPEXECFWK_INSTALL_URI_DUPLICATE;
     }
@@ -1753,12 +1753,12 @@ ErrCode BaseBundleInstaller::RemoveBundleUserData(InnerBundleInfo &innerBundleIn
     return UpdateUserInfoToDb(innerBundleInfo, true);
 }
 
-bool BaseBundleInstaller::verifyUriPrefix(const InnerBundleInfo &info, bool isUpdate) const
+bool BaseBundleInstaller::verifyUriPrefix(const InnerBundleInfo &info, int32_t userId, bool isUpdate) const
 {
     // uriPrefix must be unique
     // verify current module uriPrefix
     std::vector<std::string> currentUriPrefixList;
-    info.GetUriPrefixList(currentUriPrefixList);
+    info.GetUriPrefixList(currentUriPrefixList, userId);
     if (currentUriPrefixList.empty()) {
         APP_LOGD("current module not include uri, verify uriPrefix success");
         return true;
@@ -1783,7 +1783,7 @@ bool BaseBundleInstaller::verifyUriPrefix(const InnerBundleInfo &info, bool isUp
     if (isUpdate) {
         excludeModule.append(info.GetBundleName()).append(".").append(info.GetCurrentModulePackage()).append(".");
     }
-    dataMgr_->GetAllUriPrefix(uriPrefixList, excludeModule);
+    dataMgr_->GetAllUriPrefix(uriPrefixList, userId, excludeModule);
     if (uriPrefixList.empty()) {
         APP_LOGD("uriPrefixList empty, verify uriPrefix success");
         return true;

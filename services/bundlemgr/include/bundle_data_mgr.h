@@ -693,7 +693,8 @@ public:
     bool QueryExtensionAbilityInfoByUri(const std::string &uri, int32_t userId,
         ExtensionAbilityInfo &extensionAbilityInfo) const;
 
-    void GetAllUriPrefix(std::vector<std::string> &uriPrefixList, const std::string &excludeModule = "") const;
+    void GetAllUriPrefix(std::vector<std::string> &uriPrefixList, int32_t userId,
+        const std::string &excludeModule = "") const;
 #ifdef SUPPORT_GRAPHICS
     std::shared_ptr<Media::PixelMap> GetAbilityPixelMapIcon(const std::string &bundleName,
         const std::string &abilityName) const;
