@@ -841,13 +841,13 @@ ErrCode BaseBundleInstaller::ProcessBundleInstallStatus(InnerBundleInfo &info, i
     if (result != ERR_OK) {
         return result;
     }
-
     if (!dataMgr_->AddInnerBundleInfo(bundleName_, info)) {
         APP_LOGE("add bundle %{public}s info failed", bundleName_.c_str());
         dataMgr_->UpdateBundleInstallState(bundleName_, InstallState::UNINSTALL_START);
         dataMgr_->UpdateBundleInstallState(bundleName_, InstallState::UNINSTALL_SUCCESS);
         return ERR_APPEXECFWK_INSTALL_BUNDLE_MGR_SERVICE_ERROR;
     }
+
     stateGuard.Dismiss();
     bundleGuard.Dismiss();
 
