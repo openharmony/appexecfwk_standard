@@ -500,13 +500,12 @@ static napi_value JSLauncherServiceOn(napi_env env, napi_callback_info info)
     napi_create_async_work(
         env, nullptr, resource,
         [](napi_env env, void* data) {
+        },
+        [](napi_env env, napi_status status, void* data) {
             AsyncHandleBundleContext* asyncCallbackInfo = (AsyncHandleBundleContext*)data;
             if (!asyncCallbackInfo->err) {
                 asyncCallbackInfo->ret = InnerJSLauncherServiceOn(env, asyncCallbackInfo->bundleStatusCallback);
             }
-        },
-        [](napi_env env, napi_status status, void* data) {
-            AsyncHandleBundleContext* asyncCallbackInfo = (AsyncHandleBundleContext*)data;
             napi_value result[2] = { 0 };
             // wrap result
             if (asyncCallbackInfo->err) {
@@ -611,11 +610,12 @@ static napi_value JSLauncherServiceOff(napi_env env, napi_callback_info info)
     napi_create_async_work(
         env, nullptr, resource,
         [](napi_env env, void* data) {
-            AsyncHandleBundleContext* asyncCallbackInfo = (AsyncHandleBundleContext*)data;
-            asyncCallbackInfo->ret = InnerJSLauncherServiceOff();
         },
         [](napi_env env, napi_status status, void* data) {
             AsyncHandleBundleContext* asyncCallbackInfo = (AsyncHandleBundleContext*)data;
+            if (!asyncCallbackInfo->err) {
+                asyncCallbackInfo->ret = InnerJSLauncherServiceOff();
+            }
             napi_value result[INDEX_TWO] = { 0 };
             if (asyncCallbackInfo->ret) {
                 napi_create_uint32(env, 0, &result[0]);
