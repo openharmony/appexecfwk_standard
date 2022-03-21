@@ -92,7 +92,7 @@ private:
 class STPageAbilityEvent {
 public:
     STPageAbilityEvent() = default;
-    STPageAbilityEvent(const std::string &className);
+    explicit STPageAbilityEvent(const std::string &className);
     ~STPageAbilityEvent() = default;
 
     static bool PublishEvent(const std::string &eventName, const int &code, const std::string &data);

@@ -27,7 +27,7 @@ typedef void (*FileFDCallback)(int32_t filedescriptor);
 struct FileDescriptorCallbacks;
 struct EventRunnerNativeImplement {
 public:
-    EventRunnerNativeImplement(bool current);
+    explicit EventRunnerNativeImplement(bool current);
     ~EventRunnerNativeImplement();
 
     /**
