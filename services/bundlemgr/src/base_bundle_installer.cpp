@@ -16,6 +16,7 @@
 #include "base_bundle_installer.h"
 
 #include <unistd.h>
+#include <set>
 #include <vector>
 
 #include "ability_manager_interface.h"
@@ -790,6 +791,10 @@ ErrCode BaseBundleInstaller::RemoveBundle(InnerBundleInfo &info)
 
 ErrCode BaseBundleInstaller::ProcessBundleInstallStatus(InnerBundleInfo &info, int32_t &uid)
 {
+    if (!verifyUriPrefix(info, userId_)) {
+        APP_LOGE("verifyUriPrefix failed");
+        return ERR_APPEXECFWK_INSTALL_URI_DUPLICATE;
+    }
     modulePackage_ = info.GetCurrentModulePackage();
     APP_LOGD("ProcessBundleInstallStatus with bundleName %{public}s and packageName %{public}s",
         bundleName_.c_str(), modulePackage_.c_str());
@@ -890,6 +895,11 @@ ErrCode BaseBundleInstaller::ProcessNewModuleInstall(InnerBundleInfo &newInfo, I
         }
     });
 
+    if (!verifyUriPrefix(newInfo, userId_)) {
+        APP_LOGE("verifyUriPrefix failed");
+        return ERR_APPEXECFWK_INSTALL_URI_DUPLICATE;
+    }
+
     if (newInfo.IsSingleUser() && (userId_ != Constants::DEFAULT_USERID)) {
         APP_LOGE("singleton app(%{public}s) must be installed in user 0.", bundleName_.c_str());
         return ERR_APPEXECFWK_INSTALL_ZERO_USER_WITH_NO_SINGLETON;
@@ -958,6 +968,11 @@ ErrCode BaseBundleInstaller::ProcessModuleUpdate(InnerBundleInfo &newInfo,
             RemoveBundleUserData(oldInfo);
         }
     });
+
+    if (!verifyUriPrefix(newInfo, userId_, true)) {
+        APP_LOGE("verifyUriPrefix failed");
+        return ERR_APPEXECFWK_INSTALL_URI_DUPLICATE;
+    }
 
     if (newInfo.IsSingleUser() && (userId_ != Constants::DEFAULT_USERID)) {
         APP_LOGE("singleton app(%{public}s) must be installed in user 0.", bundleName_.c_str());
@@ -1646,6 +1661,53 @@ ErrCode BaseBundleInstaller::RemoveBundleUserData(InnerBundleInfo &innerBundleIn
 
     innerBundleInfo.RemoveInnerBundleUserInfo(userId_);
     return UpdateUserInfoToDb(innerBundleInfo, true);
+}
+
+bool BaseBundleInstaller::verifyUriPrefix(const InnerBundleInfo &info, int32_t userId, bool isUpdate) const
+{
+    // uriPrefix must be unique
+    // verify current module uriPrefix
+    std::vector<std::string> currentUriPrefixList;
+    info.GetUriPrefixList(currentUriPrefixList);
+    if (currentUriPrefixList.empty()) {
+        APP_LOGD("current module not include uri, verify uriPrefix success");
+        return true;
+    }
+    std::set<std::string> set;
+    for (const std::string &currentUriPrefix : currentUriPrefixList) {
+        if (!set.insert(currentUriPrefix).second) {
+            APP_LOGE("current module contains duplicate uriPrefix, verify uriPrefix failed");
+            APP_LOGE("bundleName : %{public}s, moduleName : %{public}s, uriPrefix : %{public}s",
+                info.GetBundleName().c_str(), info.GetCurrentModulePackage().c_str(), currentUriPrefix.c_str());
+            return false;
+        }
+    }
+    set.clear();
+    // verify exist bundle uriPrefix
+    if (dataMgr_ == nullptr) {
+        APP_LOGE("dataMgr_ is null, verify uriPrefix failed");
+        return false;
+    }
+    std::vector<std::string> uriPrefixList;
+    std::string excludeModule;
+    if (isUpdate) {
+        excludeModule.append(info.GetBundleName()).append(".").append(info.GetCurrentModulePackage()).append(".");
+    }
+    dataMgr_->GetAllUriPrefix(uriPrefixList, userId, excludeModule);
+    if (uriPrefixList.empty()) {
+        APP_LOGD("uriPrefixList empty, verify uriPrefix success");
+        return true;
+    }
+    for (const std::string &currentUriPrefix : currentUriPrefixList) {
+        auto iter = std::find(uriPrefixList.cbegin(), uriPrefixList.cend(), currentUriPrefix);
+        if (iter != uriPrefixList.cend()) {
+            APP_LOGE("uriPrefix alread exist in device, uriPrefix : %{public}s", currentUriPrefix.c_str());
+            APP_LOGE("verify uriPrefix failed");
+            return false;
+        }
+    }
+    APP_LOGD("verify uriPrefix success");
+    return true;
 }
 
 void BaseBundleInstaller::ResetInstallProperties()
