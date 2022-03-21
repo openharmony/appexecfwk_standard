@@ -20,7 +20,7 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-class XcollieHelper {
+class XCollieHelper {
 public:
     // set timer
     // name : timer name

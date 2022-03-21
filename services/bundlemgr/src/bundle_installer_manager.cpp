@@ -66,9 +66,9 @@ void BundleInstallerManager::CreateInstallTask(
         return;
     }
     auto task = [installer, bundleFilePath, installParam] {
-        int timerId = XcollieHelper::SetTimer(INSTALL_TASK, TIME_OUT_SECONDS, nullptr, nullptr);
+        int timerId = XCollieHelper::SetTimer(INSTALL_TASK, TIME_OUT_SECONDS, nullptr, nullptr);
         installer->Install(bundleFilePath, installParam);
-        XcollieHelper::CancelTimer(timerId);
+        XCollieHelper::CancelTimer(timerId);
     };
     installersPool_.AddTask(task);
 }
@@ -82,9 +82,9 @@ void BundleInstallerManager::CreateRecoverTask(
         return;
     }
     auto task = [installer, bundleName, installParam] {
-        int timerId = XcollieHelper::SetTimer(RECOVER_TASK, TIME_OUT_SECONDS, nullptr, nullptr);
+        int timerId = XCollieHelper::SetTimer(RECOVER_TASK, TIME_OUT_SECONDS, nullptr, nullptr);
         installer->Recover(bundleName, installParam);
-        XcollieHelper::CancelTimer(timerId);
+        XCollieHelper::CancelTimer(timerId);
     };
     installersPool_.AddTask(task);
 }
@@ -98,9 +98,9 @@ void BundleInstallerManager::CreateInstallTask(const std::vector<std::string> &b
         return;
     }
     auto task = [installer, bundleFilePaths, installParam] {
-        int timerId = XcollieHelper::SetTimer(INSTALL_TASK, TIME_OUT_SECONDS, nullptr, nullptr);
+        int timerId = XCollieHelper::SetTimer(INSTALL_TASK, TIME_OUT_SECONDS, nullptr, nullptr);
         installer->Install(bundleFilePaths, installParam);
-        XcollieHelper::CancelTimer(timerId);
+        XCollieHelper::CancelTimer(timerId);
     };
     installersPool_.AddTask(task);
 }
@@ -114,9 +114,9 @@ void BundleInstallerManager::CreateUninstallTask(
         return;
     }
     auto task = [installer, bundleName, installParam] {
-        int timerId = XcollieHelper::SetTimer(UNINSTALL_TASK, TIME_OUT_SECONDS, nullptr, nullptr);
+        int timerId = XCollieHelper::SetTimer(UNINSTALL_TASK, TIME_OUT_SECONDS, nullptr, nullptr);
         installer->Uninstall(bundleName, installParam);
-        XcollieHelper::CancelTimer(timerId);
+        XCollieHelper::CancelTimer(timerId);
     };
     installersPool_.AddTask(task);
 }
@@ -130,9 +130,9 @@ void BundleInstallerManager::CreateUninstallTask(const std::string &bundleName, 
         return;
     }
     auto task = [installer, bundleName, modulePackage, installParam] {
-        int timerId = XcollieHelper::SetTimer(UNINSTALL_TASK, TIME_OUT_SECONDS, nullptr, nullptr);
+        int timerId = XCollieHelper::SetTimer(UNINSTALL_TASK, TIME_OUT_SECONDS, nullptr, nullptr);
         installer->Uninstall(bundleName, modulePackage, installParam);
-        XcollieHelper::CancelTimer(timerId);
+        XCollieHelper::CancelTimer(timerId);
     };
     installersPool_.AddTask(task);
 }
