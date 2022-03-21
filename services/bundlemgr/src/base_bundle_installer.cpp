@@ -795,6 +795,10 @@ ErrCode BaseBundleInstaller::RemoveBundle(InnerBundleInfo &info)
 
 ErrCode BaseBundleInstaller::ProcessBundleInstallStatus(InnerBundleInfo &info, int32_t &uid)
 {
+    if (!verifyUriPrefix(info, userId_)) {
+        APP_LOGE("verifyUriPrefix failed");
+        return ERR_APPEXECFWK_INSTALL_URI_DUPLICATE;
+    }
     modulePackage_ = info.GetCurrentModulePackage();
     APP_LOGD("ProcessBundleInstallStatus with bundleName %{public}s and packageName %{public}s",
         bundleName_.c_str(), modulePackage_.c_str());
@@ -836,10 +840,6 @@ ErrCode BaseBundleInstaller::ProcessBundleInstallStatus(InnerBundleInfo &info, i
     result = GrantRequestPermissions(info, tokenId);
     if (result != ERR_OK) {
         return result;
-    }
-    if (!verifyUriPrefix(info)) {
-        APP_LOGE("verifyUriPrefix failed");
-        return ERR_APPEXECFWK_INSTALL_URI_DUPLICATE;
     }
     if (!dataMgr_->AddInnerBundleInfo(bundleName_, info)) {
         APP_LOGE("add bundle %{public}s info failed", bundleName_.c_str());
@@ -905,6 +905,11 @@ ErrCode BaseBundleInstaller::ProcessNewModuleInstall(InnerBundleInfo &newInfo, I
         }
     });
 
+    if (!verifyUriPrefix(newInfo, userId_)) {
+        APP_LOGE("verifyUriPrefix failed");
+        return ERR_APPEXECFWK_INSTALL_URI_DUPLICATE;
+    }
+
     if (newInfo.IsSingleUser() && (userId_ != Constants::DEFAULT_USERID)) {
         APP_LOGE("singleton app(%{public}s) must be installed in user 0.", bundleName_.c_str());
         return ERR_APPEXECFWK_INSTALL_ZERO_USER_WITH_NO_SINGLETON;
@@ -958,10 +963,6 @@ ErrCode BaseBundleInstaller::ProcessNewModuleInstall(InnerBundleInfo &newInfo, I
     }
 
     oldInfo.SetBundleUpdateTime(BundleUtil::GetCurrentTime(), userId_);
-    if (!verifyUriPrefix(newInfo)) {
-        APP_LOGE("verifyUriPrefix failed");
-        return ERR_APPEXECFWK_INSTALL_URI_DUPLICATE;
-    }
     if (!dataMgr_->AddNewModuleInfo(bundleName_, newInfo, oldInfo)) {
         APP_LOGE(
             "add module %{public}s to innerBundleInfo %{public}s failed", modulePackage_.c_str(), bundleName_.c_str());
@@ -984,6 +985,11 @@ ErrCode BaseBundleInstaller::ProcessModuleUpdate(InnerBundleInfo &newInfo,
             RemoveBundleUserData(oldInfo);
         }
     });
+
+    if (!verifyUriPrefix(newInfo, userId_, true)) {
+        APP_LOGE("verifyUriPrefix failed");
+        return ERR_APPEXECFWK_INSTALL_URI_DUPLICATE;
+    }
 
     if (newInfo.IsSingleUser() && (userId_ != Constants::DEFAULT_USERID)) {
         APP_LOGE("singleton app(%{public}s) must be installed in user 0.", bundleName_.c_str());
@@ -1031,10 +1037,6 @@ ErrCode BaseBundleInstaller::ProcessModuleUpdate(InnerBundleInfo &newInfo,
     oldInfo.SetInstallMark(bundleName_, modulePackage_, InstallExceptionStatus::UPDATING_FINISH);
     oldInfo.SetBundleUpdateTime(BundleUtil::GetCurrentTime(), userId_);
     auto noUpdateInfo = oldInfo;
-    if (!verifyUriPrefix(newInfo, true)) {
-        APP_LOGE("verifyUriPrefix failed");
-        return ERR_APPEXECFWK_INSTALL_URI_DUPLICATE;
-    }
     if (!dataMgr_->UpdateInnerBundleInfo(bundleName_, newInfo, oldInfo)) {
         APP_LOGE("update innerBundleInfo %{public}s failed", bundleName_.c_str());
         return ERR_APPEXECFWK_INSTALL_BUNDLE_MGR_SERVICE_ERROR;
@@ -1753,7 +1755,7 @@ ErrCode BaseBundleInstaller::RemoveBundleUserData(InnerBundleInfo &innerBundleIn
     return UpdateUserInfoToDb(innerBundleInfo, true);
 }
 
-bool BaseBundleInstaller::verifyUriPrefix(const InnerBundleInfo &info, bool isUpdate) const
+bool BaseBundleInstaller::verifyUriPrefix(const InnerBundleInfo &info, int32_t userId, bool isUpdate) const
 {
     // uriPrefix must be unique
     // verify current module uriPrefix
@@ -1783,7 +1785,7 @@ bool BaseBundleInstaller::verifyUriPrefix(const InnerBundleInfo &info, bool isUp
     if (isUpdate) {
         excludeModule.append(info.GetBundleName()).append(".").append(info.GetCurrentModulePackage()).append(".");
     }
-    dataMgr_->GetAllUriPrefix(uriPrefixList, excludeModule);
+    dataMgr_->GetAllUriPrefix(uriPrefixList, userId, excludeModule);
     if (uriPrefixList.empty()) {
         APP_LOGD("uriPrefixList empty, verify uriPrefix success");
         return true;

@@ -2938,10 +2938,12 @@ bool BundleDataMgr::QueryExtensionAbilityInfoByUri(const std::string &uri, int32
     return false;
 }
 
-void BundleDataMgr::GetAllUriPrefix(std::vector<std::string> &uriPrefixList, const std::string &excludeModule) const
+void BundleDataMgr::GetAllUriPrefix(std::vector<std::string> &uriPrefixList, int32_t userId,
+    const std::string &excludeModule) const
 {
     std::lock_guard<std::mutex> lock(bundleInfoMutex_);
-    APP_LOGD("begin to GetAllUriPrefix, excludeModule : %{public}s", excludeModule.c_str());
+    APP_LOGD("begin to GetAllUriPrefix, userId : %{public}d, excludeModule : %{public}s",
+        userId, excludeModule.c_str());
     if (bundleInfos_.empty()) {
         APP_LOGE("bundleInfos_ is empty");
         return;
@@ -2951,7 +2953,8 @@ void BundleDataMgr::GetAllUriPrefix(std::vector<std::string> &uriPrefixList, con
         if (infoWithIdItem == item.second.end()) {
             continue;
         }
-        infoWithIdItem->second.GetUriPrefixList(uriPrefixList, excludeModule);
+        infoWithIdItem->second.GetUriPrefixList(uriPrefixList, userId, excludeModule);
+        infoWithIdItem->second.GetUriPrefixList(uriPrefixList, Constants::DEFAULT_USERID, excludeModule);
     }
 }
 
