@@ -14,8 +14,12 @@
 import("//build/ohos.gni")
 
 group("napi_packages") {
-  deps = [
-    "//foundation/appexecfwk/standard/kits/appkit/napi/launchermgr:innerbundlemanager",
-    "//foundation/appexecfwk/standard/kits/appkit/napi/package:package",
-  ]
+  deps = []
+  if (support_jsapi) {
+    deps += [
+      "bundlemgr:bundle",
+      "launchermgr:innerbundlemanager",
+      "package:package",
+    ]
+  }
 }
