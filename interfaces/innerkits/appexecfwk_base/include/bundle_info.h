@@ -77,13 +77,13 @@ struct BundleInfo : public Parcelable {
     std::string vendor;
     std::string releaseType;
     bool isNativeApp = false;
-    
+
     std::string mainEntry; // modulePackage
     std::string entryModuleName; // moduleName
     bool entryInstallationFree = false;
 
     std::string appId;
-    
+
     // user related fields, assign when calling the get interface
     int uid = -1;
     int gid = -1;

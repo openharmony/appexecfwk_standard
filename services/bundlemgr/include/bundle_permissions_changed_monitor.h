@@ -24,7 +24,6 @@
 #include "common_event_subscribe_info.h"
 #include "bundle_util.h"
 
-#include "bundle_data_mgr.h"
 #include "json_serializer.h"
 #include "app_log_wrapper.h"
 

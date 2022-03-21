@@ -30,7 +30,7 @@ class BundleMonitor : public EventFwk::CommonEventSubscriber, public std::enable
 public:
     using Want = OHOS::AAFwk::Want;
 
-    BundleMonitor(const EventFwk::CommonEventSubscribeInfo &subscribeInfo);
+    explicit BundleMonitor(const EventFwk::CommonEventSubscribeInfo &subscribeInfo);
     ~BundleMonitor() = default;
 
     /**
