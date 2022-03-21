@@ -20,7 +20,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 class XcollieHelper {
 public:
     // set timer
@@ -35,7 +34,6 @@ public:
     // id: timer id
     static void CancelTimer(int id);
 };
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // FOUNDATION_APPEXECFWK_SERVICES_BUNDLEMGR_INCLUDE_XCOLLIE_HELPER_H

@@ -145,7 +145,6 @@ ohos_shared_library("libbms") {
     "src/permission_changed_death_recipient.cpp",
     "src/preinstall_data_storage.cpp",
     "src/system_ability_helper.cpp",
-    "src/xcollie_helper.cpp",
   ]
 
   sources += bundle_install_sources
