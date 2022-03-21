@@ -52,6 +52,7 @@ const std::string MODULE_CODE_DIR1 = "/data/app/el1/bundle/public/com.example.l3
 const std::string ROOT_DIR = "/data/app";
 const std::string DB_FILE_PATH = "/data/bundlemgr";
 const int32_t ROOT_UID = 0;
+const int32_t WAIT_TIME = 5; // init mocked bms
 }  // namespace
 
 class BmsBundleUninstallerTest : public testing::Test {
@@ -117,8 +118,6 @@ void BmsBundleUninstallerTest::SetUp()
 
 void BmsBundleUninstallerTest::TearDown()
 {
-    StopInstalldService();
-    StopBundleService();
 }
 
 ErrCode BmsBundleUninstallerTest::InstallBundle(const std::string &bundlePath) const
@@ -225,28 +224,30 @@ void BmsBundleUninstallerTest::CheckModuleFileNonExist() const
 
 void BmsBundleUninstallerTest::StopInstalldService() const
 {
-    installdService_->Stop();
-    InstalldClient::GetInstance()->ResetInstalldProxy();
+    if (installdService_->IsServiceReady()) {
+        installdService_->Stop();
+        InstalldClient::GetInstance()->ResetInstalldProxy();
+    }
 }
 
 void BmsBundleUninstallerTest::StartInstalldService() const
 {
-    installdService_->Start();
+    if (!installdService_->IsServiceReady()) {
+        installdService_->Start();
+    }
 }
 
 void BmsBundleUninstallerTest::StartBundleService()
 {
-    if (!bundleMgrService_) {
-        bundleMgrService_ = DelayedSingleton<BundleMgrService>::GetInstance();
-    }
-    if (bundleMgrService_) {
+    if (!bundleMgrService_->IsServiceReady()) {
         bundleMgrService_->OnStart();
+        std::this_thread::sleep_for(std::chrono::seconds(WAIT_TIME));
     }
 }
 
 void BmsBundleUninstallerTest::StopBundleService()
 {
-    if (bundleMgrService_) {
+    if (bundleMgrService_->IsServiceReady()) {
         bundleMgrService_->OnStop();
         bundleMgrService_ = nullptr;
     }
