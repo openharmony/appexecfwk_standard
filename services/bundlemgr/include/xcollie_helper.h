@@ -28,11 +28,6 @@ public:
     // timeout : timeout, unit s
     // func : callback
     // arg : the callback's param
-    // flag : timer timeout operation. the value can be:
-    //                               XCOLLIE_FLAG_DEFAULT :do all callback function
-    //                               XCOLLIE_FLAG_NOOP  : do nothing but the caller defined function
-    //                               XCOLLIE_FLAG_LOG :  generate log file
-    //                               XCOLLIE_FLAG_RECOVERY  : die when timeout
     // return: the timer id
     static int SetTimer(const std::string &name, unsigned int timeout, std::function<void (void *)> func, void *arg);
 
