@@ -2267,7 +2267,7 @@ bool ToInnerBundleInfo(ProfileReader::ConfigJson &configJson, const BundleExtrac
                     find = true;
                 }
                 if (std::find(skill.entities.begin(), skill.entities.end(), Constants::FLAG_HOME_INTENT_FROM_SYSTEM) !=
-                    skill.entities.end()) {
+                    skill.entities.end() && isPreInstallApp) {
                     applicationInfo.isLauncherApp = true;
                     abilityInfo.isLauncherAbility = true;
                 }
