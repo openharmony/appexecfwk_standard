@@ -23,7 +23,7 @@ namespace OHOS {
 namespace AppExecFwk {
 class BundleExceptionHandler {
 public:
-    BundleExceptionHandler(const std::shared_ptr<BundleDataStorageDatabase> &dataStorage);
+    explicit BundleExceptionHandler(const std::shared_ptr<BundleDataStorageDatabase> &dataStorage);
     virtual ~BundleExceptionHandler();
 
     /**

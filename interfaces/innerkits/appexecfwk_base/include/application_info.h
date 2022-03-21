@@ -127,7 +127,7 @@ struct ApplicationInfo : public Parcelable {
     std::string dataBaseDir;
     std::string cacheDir;
     std::string entryDir;
-    
+
     std::string apiReleaseType;
     bool debug = false;
     std::string deviceId;

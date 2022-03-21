@@ -22,7 +22,7 @@ namespace OHOS {
 namespace AppExecFwk {
 class SystemBundleInstaller : public BaseBundleInstaller {
 public:
-    SystemBundleInstaller(const std::string &filePath);
+    explicit SystemBundleInstaller(const std::string &filePath);
     virtual ~SystemBundleInstaller() override;
     /**
      * @brief Install system and system vendor bundles.
