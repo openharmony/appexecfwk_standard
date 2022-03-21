@@ -114,7 +114,7 @@ private:
 
     static std::vector<std::string> GetNeedDeleteDefinePermissionName(const InnerBundleInfo &oldInfo,
         const InnerBundleInfo &newInfo);
-    
+
     static std::vector<std::string> GetNeedDeleteRequestPermissionName(const InnerBundleInfo &oldInfo,
         const InnerBundleInfo &newInfo);
 };

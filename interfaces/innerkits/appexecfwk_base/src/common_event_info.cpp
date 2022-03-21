@@ -24,7 +24,6 @@
 #include "string_ex.h"
 #include "parcel_macro.h"
 #include "app_log_wrapper.h"
-#include "nlohmann/json.hpp"
 #include "bundle_constants.h"
 
 namespace OHOS {
