@@ -48,6 +48,9 @@ static void FreeContextBuffer(char *contextBuffer)
 
 static int32_t GetFileContext(char *inputFile, char **contextBufPtr, uint32_t *bufferLen)
 {
+    if (inputFile == NULL) {
+        return ERROR;
+    }
     int32_t ret;
     FILE *fp = NULL;
     struct stat statBuf;
