@@ -31,12 +31,13 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
-struct CommonNapiInfo {
+struct AsyncWorkData {
+    explicit AsyncWorkData(napi_env napiEnv);
+    virtual ~AsyncWorkData();
     napi_env env;
-    napi_async_work asyncWork;
-    napi_deferred deferred;
-    napi_ref callback = 0;
+    napi_async_work asyncWork = nullptr;
+    napi_deferred deferred = nullptr;
+    napi_ref callback = nullptr;
 };
 
 struct QueryParameter {
@@ -48,11 +49,8 @@ struct BundleOptions {
     int32_t userId = Constants::UNSPECIFIED_USERID;
 };
 
-struct AsyncAbilityInfoCallbackInfo {
-    napi_env env;
-    napi_async_work asyncWork;
-    napi_deferred deferred;
-    napi_ref callback = 0;
+struct AsyncAbilityInfoCallbackInfo : public AsyncWorkData {
+    explicit AsyncAbilityInfoCallbackInfo(napi_env env) : AsyncWorkData(env) {}
     OHOS::AAFwk::Want want;
     int32_t flags = 0;
     int32_t userId = Constants::UNSPECIFIED_USERID;
@@ -61,11 +59,8 @@ struct AsyncAbilityInfoCallbackInfo {
     int32_t err = 0;
 };
 
-struct AsyncAbilityInfosCallbackInfo {
-    napi_env env;
-    napi_async_work asyncWork;
-    napi_deferred deferred;
-    napi_ref callback = 0;
+struct AsyncAbilityInfosCallbackInfo : public AsyncWorkData {
+    explicit AsyncAbilityInfosCallbackInfo(napi_env env) : AsyncWorkData(env) {}
     int32_t flags = 0;
     std::string bundleName;
     std::string abilityName;
@@ -75,11 +70,8 @@ struct AsyncAbilityInfosCallbackInfo {
     std::string message;
 };
 
-struct AsyncBundleInfoCallbackInfo {
-    napi_env env;
-    napi_async_work asyncWork;
-    napi_deferred deferred;
-    napi_ref callback = 0;
+struct AsyncBundleInfoCallbackInfo : public AsyncWorkData {
+    explicit AsyncBundleInfoCallbackInfo(napi_env env) : AsyncWorkData(env) {}
     std::string param;
     int32_t flags = 0;
     OHOS::AppExecFwk::BundleInfo bundleInfo;
@@ -89,11 +81,8 @@ struct AsyncBundleInfoCallbackInfo {
     BundleOptions bundleOptions;
 };
 
-struct AsyncApplicationInfoCallbackInfo {
-    napi_env env;
-    napi_async_work asyncWork;
-    napi_deferred deferred;
-    napi_ref callback = 0;
+struct AsyncApplicationInfoCallbackInfo : public AsyncWorkData {
+    explicit AsyncApplicationInfoCallbackInfo(napi_env env) : AsyncWorkData(env) {}
     std::string bundleName;
     int32_t flags = 0;
     int32_t userId;
@@ -103,11 +92,8 @@ struct AsyncApplicationInfoCallbackInfo {
     std::string message;
 };
 
-struct AsyncPermissionDefCallbackInfo {
-    napi_env env;
-    napi_async_work asyncWork;
-    napi_deferred deferred;
-    napi_ref callback = 0;
+struct AsyncPermissionDefCallbackInfo : public AsyncWorkData {
+    explicit AsyncPermissionDefCallbackInfo(napi_env env) : AsyncWorkData(env) {}
     std::string permissionName;
     OHOS::AppExecFwk::PermissionDef permissionDef;
     bool ret = false;
@@ -115,11 +101,8 @@ struct AsyncPermissionDefCallbackInfo {
     std::string message;
 };
 
-struct AsyncBundleInfosCallbackInfo {
-    napi_env env;
-    napi_async_work asyncWork;
-    napi_deferred deferred;
-    napi_ref callback = 0;
+struct AsyncBundleInfosCallbackInfo : public AsyncWorkData {
+    explicit AsyncBundleInfosCallbackInfo(napi_env env) : AsyncWorkData(env) {}
     int32_t flags = 0;
     std::vector<OHOS::AppExecFwk::BundleInfo> bundleInfos;
     bool ret = false;
@@ -128,11 +111,8 @@ struct AsyncBundleInfosCallbackInfo {
     int32_t userId = Constants::UNSPECIFIED_USERID;
 };
 
-struct AsyncApplicationInfosCallbackInfo {
-    napi_env env;
-    napi_async_work asyncWork;
-    napi_deferred deferred;
-    napi_ref callback = 0;
+struct AsyncApplicationInfosCallbackInfo : public AsyncWorkData {
+    explicit AsyncApplicationInfosCallbackInfo(napi_env env) : AsyncWorkData(env) {}
     int32_t flags = 0;
     int32_t userId = 0;
     std::vector<OHOS::AppExecFwk::ApplicationInfo> appInfos;
@@ -141,11 +121,8 @@ struct AsyncApplicationInfosCallbackInfo {
     std::string message;
 };
 
-struct AsyncAbilityLabelCallbackInfo {
-    napi_env env;
-    napi_async_work asyncWork;
-    napi_deferred deferred;
-    napi_ref callback = 0;
+struct AsyncAbilityLabelCallbackInfo : public AsyncWorkData {
+    explicit AsyncAbilityLabelCallbackInfo(napi_env env) : AsyncWorkData(env) {}
     std::string bundleName;
     std::string className;
     std::string abilityLabel;
@@ -158,11 +135,8 @@ struct InstallResult {
     int32_t resultCode;
 };
 
-struct AsyncInstallCallbackInfo {
-    napi_env env;
-    napi_async_work asyncWork;
-    napi_deferred deferred;
-    napi_ref callback = 0;
+struct AsyncInstallCallbackInfo : public AsyncWorkData {
+    explicit AsyncInstallCallbackInfo(napi_env env) : AsyncWorkData(env) {}
     std::vector<std::string> hapFiles;
     std::string bundleName;
     std::string param;
@@ -171,59 +145,41 @@ struct AsyncInstallCallbackInfo {
     int32_t errCode = 0;
 };
 
-struct AsyncGetBundleInstallerCallbackInfo {
-    napi_env env;
-    napi_async_work asyncWork;
-    napi_deferred deferred;
-    napi_ref callback = 0;
+struct AsyncGetBundleInstallerCallbackInfo : public AsyncWorkData {
+    explicit AsyncGetBundleInstallerCallbackInfo(napi_env env) : AsyncWorkData(env) {}
 };
 
-struct AsyncFormInfosCallbackInfo {
-    napi_env env;
-    napi_async_work asyncWork;
-    napi_deferred deferred;
-    napi_ref callback = 0;
+struct AsyncFormInfosCallbackInfo : public AsyncWorkData {
+    explicit AsyncFormInfosCallbackInfo(napi_env env) : AsyncWorkData(env) {}
     std::vector<OHOS::AppExecFwk::FormInfo> formInfos;
     bool ret = false;
 };
 
-struct AsyncFormInfosByModuleCallbackInfo {
-    napi_env env;
-    napi_async_work asyncWork;
-    napi_deferred deferred;
-    napi_ref callback = 0;
+struct AsyncFormInfosByModuleCallbackInfo : public AsyncWorkData {
+    explicit AsyncFormInfosByModuleCallbackInfo(napi_env env) : AsyncWorkData(env) {}
     std::string bundleName;
     std::string moduleName;
     std::vector<OHOS::AppExecFwk::FormInfo> formInfos;
     bool ret = false;
 };
 
-struct AsyncFormInfosByAppCallbackInfo {
-    napi_env env;
-    napi_async_work asyncWork;
-    napi_deferred deferred;
-    napi_ref callback = 0;
+struct AsyncFormInfosByAppCallbackInfo : public AsyncWorkData {
+    explicit AsyncFormInfosByAppCallbackInfo(napi_env env) : AsyncWorkData(env) {}
     std::string bundleName;
     std::vector<OHOS::AppExecFwk::FormInfo> formInfos;
     bool ret = false;
 };
 
-struct AsyncLaunchWantForBundleCallbackInfo {
-    napi_env env;
-    napi_async_work asyncWork;
-    napi_deferred deferred;
-    napi_ref callback = 0;
+struct AsyncLaunchWantForBundleCallbackInfo : public AsyncWorkData {
+    explicit AsyncLaunchWantForBundleCallbackInfo(napi_env env) : AsyncWorkData(env) {}
     std::string bundleName;
     OHOS::AAFwk::Want want;
     bool ret = false;
     int32_t err = 0;
 };
 
-struct AsyncGetBundleGidsCallbackInfo {
-    napi_env env;
-    napi_async_work asyncWork;
-    napi_deferred deferred;
-    napi_ref callback = 0;
+struct AsyncGetBundleGidsCallbackInfo : public AsyncWorkData {
+    explicit AsyncGetBundleGidsCallbackInfo(napi_env env) : AsyncWorkData(env) {}
     std::string bundleName;
     std::vector<int32_t> gids;
     int32_t err = 0;
@@ -231,21 +187,15 @@ struct AsyncGetBundleGidsCallbackInfo {
     std::string message;
 };
 
-struct AsyncModuleUsageRecordsCallbackInfo {
-    napi_env env;
-    napi_async_work asyncWork;
-    napi_deferred deferred;
-    napi_ref callback = 0;
+struct AsyncModuleUsageRecordsCallbackInfo : public AsyncWorkData {
+    explicit AsyncModuleUsageRecordsCallbackInfo(napi_env env) : AsyncWorkData(env) {}
     int32_t number;
     std::vector<OHOS::AppExecFwk::ModuleUsageRecord> moduleUsageRecords;
     bool ret = false;
 };
 
-struct AsyncExtensionInfoCallbackInfo {
-    napi_env env;
-    napi_async_work asyncWork;
-    napi_deferred deferred;
-    napi_ref callback = 0;
+struct AsyncExtensionInfoCallbackInfo : public AsyncWorkData {
+    explicit AsyncExtensionInfoCallbackInfo(napi_env env) : AsyncWorkData(env) {}
     OHOS::AAFwk::Want want;
     std::string extensionAbilityName;
     int32_t extensionAbilityType = -1;
@@ -256,41 +206,31 @@ struct AsyncExtensionInfoCallbackInfo {
     int32_t err = 0;
 };
 
-struct AsyncGetNameByUidInfo {
-    CommonNapiInfo commonNapiInfo;
+struct AsyncGetNameByUidInfo : public AsyncWorkData {
+    explicit AsyncGetNameByUidInfo(napi_env env) : AsyncWorkData(env) {}
     int32_t uid;
     std::string bundleName;
     int32_t err = 0;
     bool ret = false;
 };
 
-struct AsyncRegisterAllPermissions {
-    napi_env env;
-    napi_async_work asyncWork;
-    napi_ref callback = 0;
+struct AsyncRegisterAllPermissions : public AsyncWorkData {
+    explicit AsyncRegisterAllPermissions(napi_env env) : AsyncWorkData(env) {}
 };
 
-struct AsyncRegisterPermissions {
-    napi_env env;
-    napi_async_work asyncWork;
-    napi_ref callback = 0;
+struct AsyncRegisterPermissions : public AsyncWorkData {
+    explicit AsyncRegisterPermissions(napi_env env) : AsyncWorkData(env) {}
     std::vector<int32_t> uids;
 };
 
-struct AsyncUnregisterPermissions {
-    napi_env env;
-    napi_async_work asyncWork;
-    napi_ref callback = 0;
+struct AsyncUnregisterPermissions : public AsyncWorkData {
+    explicit AsyncUnregisterPermissions(napi_env env) : AsyncWorkData(env) {}
     std::vector<int32_t> uids;
     bool ret = false;
 };
 
-struct AsyncHandleBundleContext {
-    napi_env env = nullptr;
-    napi_async_work asyncWork = nullptr;
-    napi_deferred deferred = nullptr;
-    napi_ref callbackRef = 0;
-    napi_ref handleCallback = nullptr;
+struct AsyncHandleBundleContext : public AsyncWorkData {
+    explicit AsyncHandleBundleContext(napi_env env) : AsyncWorkData(env) {}
     OHOS::sptr<CleanCacheCallback> cleanCacheCallback;
     std::string bundleName;
     std::string className;
@@ -300,11 +240,8 @@ struct AsyncHandleBundleContext {
     int32_t err = 0;
 };
 
-struct EnabledInfo {
-    napi_env env = nullptr;
-    napi_async_work asyncWork = nullptr;
-    napi_deferred deferred = nullptr;
-    napi_ref callbackRef = 0;
+struct EnabledInfo : public AsyncWorkData {
+    explicit EnabledInfo(napi_env env) : AsyncWorkData(env) {}
     std::string bundleName;
     OHOS::AppExecFwk::AbilityInfo abilityInfo;
     bool isEnable = false;
@@ -313,11 +250,8 @@ struct EnabledInfo {
     std::string errMssage;
 };
 
-struct AppPrivilegeLevel {
-    napi_env env = nullptr;
-    napi_async_work asyncWork = nullptr;
-    napi_deferred deferred = nullptr;
-    napi_ref callbackRef = 0;
+struct AppPrivilegeLevel : public AsyncWorkData {
+    explicit AppPrivilegeLevel(napi_env env) : AsyncWorkData(env) {}
     std::string bundleName;
     std::string appPrivilegeLevel;
     int32_t errCode = 0;
@@ -325,11 +259,8 @@ struct AppPrivilegeLevel {
     std::string errMssage;
 };
 
-struct AsyncAbilityInfo {
-    napi_env env = nullptr;
-    napi_async_work asyncWork = nullptr;
-    napi_deferred deferred = nullptr;
-    napi_ref callbackRef = 0;
+struct AsyncAbilityInfo : public AsyncWorkData {
+    explicit AsyncAbilityInfo(napi_env env) : AsyncWorkData(env) {}
     std::string bundleName;
     std::string abilityName;
 #ifdef SUPPORT_GRAPHICS
