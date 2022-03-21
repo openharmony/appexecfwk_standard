@@ -1343,6 +1343,8 @@ public:
     }
 
     void GetUriPrefixList(std::vector<std::string> &uriPrefixList, const std::string &excludeModule = "") const;
+    void GetUriPrefixList(std::vector<std::string> &uriPrefixList, int32_t userId,
+        const std::string &excludeModule = "") const;
 private:
     void GetBundleWithAbilities(
         int32_t flags, BundleInfo &bundleInfo, int32_t userId = Constants::UNSPECIFIED_USERID) const;
