@@ -24,7 +24,6 @@
 
 namespace OHOS {
 namespace AppExecFwk {
-
 int XcollieHelper::SetTimer(const std::string &name, unsigned int timeout, std::function<void(void *)> func, void *arg)
 {
 #ifdef HICOLLIE_ENABLE
@@ -42,6 +41,5 @@ void XcollieHelper::CancelTimer(int id)
     HiviewDFX::XCollie::GetInstance().CancelTimer(id);
 #endif
 }
-
 }  // namespace AppExecFwk
 }  // namespace OHOS
