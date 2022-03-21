@@ -20,8 +20,7 @@
 #include "appexecfwk_errors.h"
 #include "app_log_wrapper.h"
 #include "datetime_ex.h"
-#include "xcollie/xcollie.h"
-#include "xcollie/xcollie_define.h"
+#include "xcollie_helper.h"
 
 namespace OHOS {
 namespace AppExecFwk {
@@ -67,10 +66,9 @@ void BundleInstallerManager::CreateInstallTask(
         return;
     }
     auto task = [installer, bundleFilePath, installParam] {
-        int timerId = HiviewDFX::XCollie::GetInstance().SetTimer(INSTALL_TASK, TIME_OUT_SECONDS,
-            nullptr, nullptr, HiviewDFX::XCOLLIE_FLAG_LOG);
+        int timerId = XCollieHelper::SetTimer(INSTALL_TASK, TIME_OUT_SECONDS, nullptr, nullptr);
         installer->Install(bundleFilePath, installParam);
-        HiviewDFX::XCollie::GetInstance().CancelTimer(timerId);
+        XCollieHelper::CancelTimer(timerId);
     };
     installersPool_.AddTask(task);
 }
@@ -84,10 +82,9 @@ void BundleInstallerManager::CreateRecoverTask(
         return;
     }
     auto task = [installer, bundleName, installParam] {
-        int timerId = HiviewDFX::XCollie::GetInstance().SetTimer(RECOVER_TASK, TIME_OUT_SECONDS,
-            nullptr, nullptr, HiviewDFX::XCOLLIE_FLAG_LOG);
+        int timerId = XCollieHelper::SetTimer(RECOVER_TASK, TIME_OUT_SECONDS, nullptr, nullptr);
         installer->Recover(bundleName, installParam);
-        HiviewDFX::XCollie::GetInstance().CancelTimer(timerId);
+        XCollieHelper::CancelTimer(timerId);
     };
     installersPool_.AddTask(task);
 }
@@ -101,10 +98,9 @@ void BundleInstallerManager::CreateInstallTask(const std::vector<std::string> &b
         return;
     }
     auto task = [installer, bundleFilePaths, installParam] {
-        int timerId = HiviewDFX::XCollie::GetInstance().SetTimer(INSTALL_TASK, TIME_OUT_SECONDS,
-            nullptr, nullptr, HiviewDFX::XCOLLIE_FLAG_LOG);
+        int timerId = XCollieHelper::SetTimer(INSTALL_TASK, TIME_OUT_SECONDS, nullptr, nullptr);
         installer->Install(bundleFilePaths, installParam);
-        HiviewDFX::XCollie::GetInstance().CancelTimer(timerId);
+        XCollieHelper::CancelTimer(timerId);
     };
     installersPool_.AddTask(task);
 }
@@ -118,10 +114,9 @@ void BundleInstallerManager::CreateUninstallTask(
         return;
     }
     auto task = [installer, bundleName, installParam] {
-        int timerId = HiviewDFX::XCollie::GetInstance().SetTimer(UNINSTALL_TASK, TIME_OUT_SECONDS,
-            nullptr, nullptr, HiviewDFX::XCOLLIE_FLAG_LOG);
+        int timerId = XCollieHelper::SetTimer(UNINSTALL_TASK, TIME_OUT_SECONDS, nullptr, nullptr);
         installer->Uninstall(bundleName, installParam);
-        HiviewDFX::XCollie::GetInstance().CancelTimer(timerId);
+        XCollieHelper::CancelTimer(timerId);
     };
     installersPool_.AddTask(task);
 }
@@ -135,10 +130,9 @@ void BundleInstallerManager::CreateUninstallTask(const std::string &bundleName, 
         return;
     }
     auto task = [installer, bundleName, modulePackage, installParam] {
-        int timerId = HiviewDFX::XCollie::GetInstance().SetTimer(UNINSTALL_TASK, TIME_OUT_SECONDS,
-            nullptr, nullptr, HiviewDFX::XCOLLIE_FLAG_LOG);
+        int timerId = XCollieHelper::SetTimer(UNINSTALL_TASK, TIME_OUT_SECONDS, nullptr, nullptr);
         installer->Uninstall(bundleName, modulePackage, installParam);
-        HiviewDFX::XCollie::GetInstance().CancelTimer(timerId);
+        XCollieHelper::CancelTimer(timerId);
     };
     installersPool_.AddTask(task);
 }

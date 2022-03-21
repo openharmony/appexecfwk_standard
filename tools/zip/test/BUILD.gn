@@ -28,45 +28,38 @@ config("module_private_config") {
 ohos_unittest("zip_test") {
   module_out_path = module_output_path
 
-  include_dirs = [ "//foundation/appexecfwk/standard/tools/zip/include" ]
   sources = [
-    "//foundation/appexecfwk/standard/tools/zip/src/file_path.cpp",
-    "//foundation/appexecfwk/standard/tools/zip/src/zip.cpp",
-    "//foundation/appexecfwk/standard/tools/zip/src/zip_internal.cpp",
-    "//foundation/appexecfwk/standard/tools/zip/src/zip_reader.cpp",
-    "//foundation/appexecfwk/standard/tools/zip/src/zip_utils.cpp",
-    "//foundation/appexecfwk/standard/tools/zip/src/zip_writer.cpp",
-    "//foundation/appexecfwk/standard/tools/zip/test/unittest/zip_test.cpp",
+    "../src/file_path.cpp",
+    "../src/zip.cpp",
+    "../src/zip_internal.cpp",
+    "../src/zip_reader.cpp",
+    "../src/zip_utils.cpp",
+    "../src/zip_writer.cpp",
+    "unittest/zip_test.cpp",
   ]
 
   configs = [
-    "//foundation/appexecfwk/standard/tools/zip:zip_config",
+    "../:zip_config",
     ":module_private_config",
   ]
 
   deps = [
     "${common_path}:libappexecfwk_common",
-    "//foundation/aafwk/standard/common/task_dispatcher:task_dispatcher",
-    "//foundation/aafwk/standard/interfaces/innerkits/want:want",
-    "//foundation/ace/napi:ace_napi",
     "//third_party/googletest:gmock_main",
     "//third_party/googletest:gtest_main",
-    "//third_party/libuv:uv_static",
     "//third_party/zlib:libz",
-    "//utils/native/base:utils",
-    "//utils/native/base:utils",
   ]
 
   external_deps = [
+    "ability_runtime:task_dispatcher",
     "bundle_framework:appexecfwk_base",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
+    "utils_base:utils",
   ]
 }
 
 group("unittest") {
   testonly = true
-  deps = []
-
-  deps += [ ":zip_test" ]
+  deps = [ ":zip_test" ]
 }

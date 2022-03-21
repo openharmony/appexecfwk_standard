@@ -175,7 +175,6 @@ ohos_shared_library("libbms") {
     "device_manager_base:devicemanagersdk",
     "distributeddatamgr:distributeddata_inner",
     "eventhandler:libeventhandler",
-    "hicollie_native:libhicollie",
     "hiviewdfx_hilog_native:libhilog",
     "init:libbegetutil",
     "ipc:ipc_core",
@@ -188,6 +187,11 @@ ohos_shared_library("libbms") {
   if (bundle_framework_graphics) {
     external_deps += [ "multimedia_image_standard:image_native" ]
     defines += [ "SUPPORT_GRAPHICS" ]
+  }
+
+  if (hicollie_enable) {
+    external_deps += [ "hicollie_native:libhicollie" ]
+    defines += [ "HICOLLIE_ENABLE" ]
   }
 
   subsystem_name = "appexecfwk"

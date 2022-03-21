@@ -25,7 +25,6 @@
 #include "iservice_registry.h"
 #include "if_system_ability_manager.h"
 #include "os_account_manager.h"
-#include "parameter.h"
 #include "image_compress.h"
 #include "system_ability_definition.h"
 
