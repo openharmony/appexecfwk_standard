@@ -387,6 +387,7 @@ private:
     ErrCode UpdateUserInfoToDb(
         InnerBundleInfo &innerBundleInfo, bool needResetInstallState = true);
 
+    bool verifyUriPrefix(const InnerBundleInfo &info, int32_t userId, bool isUpdate = false) const;
 private:
     ErrCode CreateBundleCodeDir(InnerBundleInfo &info) const;
     ErrCode CreateBundleDataDir(InnerBundleInfo &info) const;

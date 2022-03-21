@@ -2151,5 +2151,54 @@ void InnerBundleInfo::GetDistributedBundleInfo(DistributedBundleInfo &distribute
         distributedBundleInfo.bundleUserInfos.emplace_back(bundleUserInfo);
     }
 }
+
+void InnerBundleInfo::GetUriPrefixList(std::vector<std::string> &uriPrefixList,
+    const std::string &excludeModule) const
+{
+    std::vector<std::string> uriList;
+    for (const auto &abilityInfoPair : baseAbilityInfos_) {
+        if (abilityInfoPair.second.uri.empty()) {
+            continue;
+        }
+        if (!excludeModule.empty() && abilityInfoPair.first.find(excludeModule) == 0) {
+            continue;
+        }
+        uriList.emplace_back(abilityInfoPair.second.uri);
+    }
+    for (const auto &extensionInfoPair : baseExtensionInfos_) {
+        if (extensionInfoPair.second.uri.empty()) {
+            continue;
+        }
+        if (!excludeModule.empty() && extensionInfoPair.first.find(excludeModule) == 0) {
+            continue;
+        }
+        uriList.emplace_back(extensionInfoPair.second.uri);
+    }
+    for (const std::string &uri : uriList) {
+        size_t schemePos = uri.find(Constants::URI_SEPARATOR);
+        if (schemePos == uri.npos) {
+            continue;
+        }
+        size_t cutPos = uri.find(Constants::SEPARATOR, schemePos + Constants::URI_SEPARATOR_LEN);
+        std::string uriPrefix;
+        if (cutPos == uri.npos) {
+            uriPrefix = uri;
+        } else {
+            uriPrefix = uri.substr(0, cutPos);
+        }
+        uriPrefixList.emplace_back(uriPrefix);
+    }
+}
+
+void InnerBundleInfo::GetUriPrefixList(std::vector<std::string> &uriPrefixList, int32_t userId,
+    const std::string &excludeModule) const
+{
+    auto& key = NameAndUserIdToKey(GetBundleName(), userId);
+    auto infoItem = innerBundleUserInfos_.find(key);
+    if (infoItem == innerBundleUserInfos_.end()) {
+        return;
+    }
+    GetUriPrefixList(uriPrefixList, excludeModule);
+}
 }  // namespace AppExecFwk
 }  // namespace OHOS

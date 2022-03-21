@@ -2891,12 +2891,12 @@ bool BundleDataMgr::QueryExtensionAbilityInfoByUri(const std::string &uri, int32
     }
     // example of valid param uri : fileShare:///com.example.FileShare/person/10
     // example of convertUri : fileShare://com.example.FileShare
-    size_t schemePos = uri.find(Constants::EXTENSION_SCHEME_SEPARATOR);
+    size_t schemePos = uri.find(Constants::PARAM_URI_SEPARATOR);
     if (schemePos == uri.npos) {
         APP_LOGE("uri not include :///, invalid");
         return false;
     }
-    size_t cutPos = uri.find(Constants::SEPARATOR, schemePos + Constants::EXTENSION_SCHEME_SEPARATOR_LEN);
+    size_t cutPos = uri.find(Constants::SEPARATOR, schemePos + Constants::PARAM_URI_SEPARATOR_LEN);
     if (cutPos == uri.npos) {
         APP_LOGE("uri not include /, invalid");
         return false;
@@ -2904,8 +2904,8 @@ bool BundleDataMgr::QueryExtensionAbilityInfoByUri(const std::string &uri, int32
     // 1. cut string
     std::string convertUri = uri.substr(0, cutPos);
     // 2. replace :/// with ://
-    convertUri.replace(schemePos, Constants::EXTENSION_SCHEME_SEPARATOR_LEN,
-        Constants::EXTENSION_URI_MODULE_JSON_SEPARATOR);
+    convertUri.replace(schemePos, Constants::PARAM_URI_SEPARATOR_LEN,
+        Constants::URI_SEPARATOR);
     APP_LOGD("convertUri : %{public}s", convertUri.c_str());
 
     std::lock_guard<std::mutex> lock(bundleInfoMutex_);
@@ -2940,6 +2940,26 @@ bool BundleDataMgr::QueryExtensionAbilityInfoByUri(const std::string &uri, int32
     }
     APP_LOGE("QueryExtensionAbilityInfoByUri (%{public}s) failed.", uri.c_str());
     return false;
+}
+
+void BundleDataMgr::GetAllUriPrefix(std::vector<std::string> &uriPrefixList, int32_t userId,
+    const std::string &excludeModule) const
+{
+    std::lock_guard<std::mutex> lock(bundleInfoMutex_);
+    APP_LOGD("begin to GetAllUriPrefix, userId : %{public}d, excludeModule : %{public}s",
+        userId, excludeModule.c_str());
+    if (bundleInfos_.empty()) {
+        APP_LOGE("bundleInfos_ is empty");
+        return;
+    }
+    for (const auto &item : bundleInfos_) {
+        auto infoWithIdItem = item.second.find(Constants::CURRENT_DEVICE_ID);
+        if (infoWithIdItem == item.second.end()) {
+            continue;
+        }
+        infoWithIdItem->second.GetUriPrefixList(uriPrefixList, userId, excludeModule);
+        infoWithIdItem->second.GetUriPrefixList(uriPrefixList, Constants::DEFAULT_USERID, excludeModule);
+    }
 }
 
 std::shared_ptr<Global::Resource::ResourceManager> BundleDataMgr::GetResourceManager(

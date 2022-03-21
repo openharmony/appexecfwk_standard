@@ -1446,7 +1446,7 @@ bool ToInnerBundleInfo(const Profile::ModuleJson &moduleJson, const BundleExtrac
                 // get launcher application and ability
                 bool isLauncherEntity = std::find(skill.entities.begin(), skill.entities.end(),
                     Constants::FLAG_HOME_INTENT_FROM_SYSTEM) != skill.entities.end();
-                if (isLauncherEntity) {
+                if (isLauncherEntity && isPreInstallApp) {
                     applicationInfo.isLauncherApp = true;
                     abilityInfo.isLauncherAbility = true;
                 }

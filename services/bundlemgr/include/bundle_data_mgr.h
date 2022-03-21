@@ -694,6 +694,9 @@ public:
         ExtensionAbilityInfo &extensionAbilityInfo) const;
 
     bool QueryAllDeviceIds(std::vector<std::string> &deviceIds);
+
+    void GetAllUriPrefix(std::vector<std::string> &uriPrefixList, int32_t userId,
+        const std::string &excludeModule = "") const;
 #ifdef SUPPORT_GRAPHICS
     std::shared_ptr<Media::PixelMap> GetAbilityPixelMapIcon(const std::string &bundleName,
         const std::string &abilityName) const;
