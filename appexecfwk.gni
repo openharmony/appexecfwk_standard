@@ -23,3 +23,9 @@ tools_path = "${appexecfwk_path}/tools"
 declare_args() {
   bundle_framework_graphics = true
 }
+
+configpolicy_enable = true
+if (defined(global_parts_info) &&
+    !defined(global_parts_info.customization_config_policy)) {
+  configpolicy_enable = false
+}

@@ -91,6 +91,11 @@ ohos_moduletest("BmsServiceStartModuleTest") {
     "os_account_standard:os_account_innerkits",
     "resmgr_standard:global_resmgr",
   ]
+  defines = []
+  if (configpolicy_enable) {
+    external_deps += [ "config_policy:configpolicy_util" ]
+    defines += [ "CONFIG_POLOCY_ENABLE" ]
+  }
   resource_config_file = "//foundation/appexecfwk/standard/test/resource/mstbundlemgrservice/ohos_test.xml"
 }
 
