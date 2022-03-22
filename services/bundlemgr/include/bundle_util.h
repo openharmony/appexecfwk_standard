@@ -94,17 +94,6 @@ public:
     static bool KeyToDeviceAndName(
         const std::string &key, std::string &deviceId, std::string &bundleName);
     /**
-     * @brief set current DeviceId.
-     * @param deviceId Indicates DeviceId.
-     * @return Returns result.
-     */
-    static void SetCurrentDeviceId(const std::string &deviceId);
-    /**
-     * @brief get DeviceId of local device.
-     * @return Returns DeviceId.
-     */
-    static std::string GetCurrentDeviceId();
-    /**
      * @brief get userId by callinguid.
      * @return Returns userId.
      */
