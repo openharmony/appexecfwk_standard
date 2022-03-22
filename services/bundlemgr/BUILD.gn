@@ -194,6 +194,7 @@ ohos_shared_library("libbms") {
     "resmgr_standard:global_resmgr",
     "safwk:system_ability_fwk",
     "samgr_standard:samgr_proxy",
+    "startup_l2:syspara",
   ]
 
   subsystem_name = "appexecfwk"
