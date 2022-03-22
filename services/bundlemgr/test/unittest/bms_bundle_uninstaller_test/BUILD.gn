@@ -108,6 +108,11 @@ ohos_unittest("BmsBundleUninstallerTest") {
     "resmgr_standard:global_resmgr",
     "samgr_standard:samgr_proxy",
   ]
+  defines = []
+  if (configpolicy_enable) {
+    external_deps += [ "config_policy:configpolicy_util" ]
+    defines += [ "CONFIG_POLOCY_ENABLE" ]
+  }
   if (build_selinux) {
     external_deps += [ "selinux:libhap_restorecon" ]
     cflags += [ "-DWITH_SELINUX" ]

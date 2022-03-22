@@ -29,6 +29,7 @@
                 "appverify",
                 "bytrace_standard",
                 "ces_standard",
+                "config_policy",
                 "device_manager_base",
                 "distributeddatamgr",
                 "eventhandler",
