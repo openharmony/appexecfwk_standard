@@ -158,7 +158,7 @@ void from_json(const nlohmann::json &jsonObject, ExtensionFormProfileInfo &exten
         ExtensionFormProfileReader::FORM_CONFIG_ABILITY,
         extensionFormProfileInfo.formConfigAbility,
         JsonType::STRING,
-        true,
+        false,
         parseResult,
         ArrayType::NOT_ARRAY);
     GetValueIfFindKey<bool>(jsonObject,
@@ -303,10 +303,6 @@ bool TransformToExtensionFormInfo(const ExtensionFormProfileInfo &form, Extensio
         info.colorMode = colorMode->second;
     }
 
-    if (form.formConfigAbility.empty()) {
-        APP_LOGE("formConfigAbility is invalid, form name is %{public}s", form.name.c_str());
-        return false;
-    }
     info.formConfigAbility = form.formConfigAbility;
     info.formVisibleNotify = form.formVisibleNotify;
     info.isDefault = form.isDefault;
