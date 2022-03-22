@@ -20,11 +20,17 @@
 #include "app_log_wrapper.h"
 #include "bundle_mgr_service.h"
 #include "bundle_scanner.h"
+#ifdef CONFIG_POLOCY_ENABLE
+#include "config_policy_utils.h"
+#endif
 #include "perf_profile.h"
 #include "system_bundle_installer.h"
 
 namespace OHOS {
 namespace AppExecFwk {
+namespace {
+const std::string APP_SUFFIX = "/app";
+}
 BMSEventHandler::BMSEventHandler(const std::shared_ptr<EventRunner> &runner) : EventHandler(runner)
 {
     APP_LOGD("instance is created");
@@ -62,25 +68,42 @@ void BMSEventHandler::ProcessEvent(const InnerEvent::Pointer &event)
 
 void BMSEventHandler::OnStartScanning(int32_t userId)
 {
-    auto future = std::async(std::launch::async, [this, userId] {
-        ProcessSystemBundleInstall(Constants::AppType::SYSTEM_APP, userId);
-        ProcessSystemBundleInstall(Constants::AppType::THIRD_SYSTEM_APP, userId);
-    });
-    future.get();
-}
-
-void BMSEventHandler::ProcessSystemBundleInstall(Constants::AppType appType, int32_t userId) const
-{
-    APP_LOGD("scan thread start");
-    auto scanner = std::make_unique<BundleScanner>();
-    if (!scanner) {
-        APP_LOGE("make scanner failed");
+    scanPaths_.clear();
+    ProcessSystemBundleInstall(
+        Constants::SYSTEM_APP_SCAN_PATH, Constants::AppType::SYSTEM_APP, userId);
+    ProcessSystemBundleInstall(
+        Constants::THIRD_SYSTEM_APP_SCAN_PATH, Constants::AppType::THIRD_SYSTEM_APP, userId);
+#ifdef CONFIG_POLOCY_ENABLE
+    auto cfgDirList = GetCfgDirList();
+    if (cfgDirList == nullptr) {
+        APP_LOGD("cfgDirList is empty");
         return;
     }
 
-    std::string scanDir = (appType == Constants::AppType::SYSTEM_APP) ? Constants::SYSTEM_APP_SCAN_PATH
-                                                                      : Constants::THIRD_SYSTEM_APP_SCAN_PATH;
+    for (auto cfgDir : cfgDirList->paths) {
+        if (!cfgDir) {
+            continue;
+        }
+
+        APP_LOGD("cfgDir: %{public}s ", cfgDir);
+        ProcessSystemBundleInstall(
+            cfgDir + APP_SUFFIX, Constants::AppType::SYSTEM_APP, userId);
+    }
+#endif
+}
+
+void BMSEventHandler::ProcessSystemBundleInstall(
+    const std::string &scanDir, Constants::AppType appType, int32_t userId)
+{
+    APP_LOGD("scan thread start");
+    if (std::find(scanPaths_.begin(), scanPaths_.end(), scanDir) != scanPaths_.end()) {
+        APP_LOGD("scanDir(%{public}s) has scan", scanDir.c_str());
+        return;
+    }
+
     APP_LOGD("scanDir: %{public}s and userId: %{public}d", scanDir.c_str(), userId);
+    scanPaths_.emplace_back(scanDir);
+    auto scanner = std::make_unique<BundleScanner>();
     std::list<std::string> bundleList = scanner->Scan(scanDir);
     auto iter = std::find(bundleList.begin(), bundleList.end(), Constants::SYSTEM_RESOURCES_APP_PATH);
     if (iter != bundleList.end()) {
@@ -112,6 +135,7 @@ void BMSEventHandler::SetAllInstallFlag() const
 
 void BMSEventHandler::RebootStartScanning(int32_t userId)
 {
+    scanPaths_.clear();
     auto future = std::async(std::launch::async, [this, userId] {
         RebootProcessSystemBundle(userId);
     });
@@ -121,33 +145,47 @@ void BMSEventHandler::RebootStartScanning(int32_t userId)
 void BMSEventHandler::RebootProcessSystemBundle(int32_t userId)
 {
     APP_LOGD("reboot scan thread start");
+    if (!LoadAllPreInstallBundleInfos()) {
+        APP_LOGE("Load all preInstall bundleInfos failed.");
+        return;
+    }
+
+    RebootProcessBundleInstall(
+        Constants::SYSTEM_APP_SCAN_PATH, Constants::AppType::SYSTEM_APP);
+    RebootProcessBundleInstall(
+        Constants::THIRD_SYSTEM_APP_SCAN_PATH, Constants::AppType::THIRD_SYSTEM_APP);
+#ifdef CONFIG_POLOCY_ENABLE
+    auto cfgDirList = GetCfgDirList();
+    if (cfgDirList == nullptr) {
+        APP_LOGD("cfgDirList is empty");
+        return;
+    }
+
+    for (auto cfgDir : cfgDirList->paths) {
+        if (!cfgDir) {
+            continue;
+        }
+
+        APP_LOGD("cfgDir: %{public}s ", cfgDir);
+        RebootProcessBundleInstall(cfgDir + APP_SUFFIX, Constants::AppType::SYSTEM_APP);
+    }
+#endif
+
+    RebootBundleUninstall();
+}
+
+bool BMSEventHandler::LoadAllPreInstallBundleInfos()
+{
     auto dataMgr = DelayedSingleton<BundleMgrService>::GetInstance()->GetDataMgr();
     if (dataMgr == nullptr) {
         APP_LOGE("DataMgr is nullptr");
-        return;
+        return false;
     }
 
-    auto scanner = std::make_unique<BundleScanner>();
-    if (!scanner) {
-        APP_LOGE("make scanner failed");
-        return;
-    }
-
-    std::list<std::string> appBundleList = scanner->Scan(Constants::SYSTEM_APP_SCAN_PATH);
-    auto iter = std::find(
-        appBundleList.begin(), appBundleList.end(), Constants::SYSTEM_RESOURCES_APP_PATH);
-    if (iter != appBundleList.end()) {
-        appBundleList.erase(iter);
-        appBundleList.insert(appBundleList.begin(), Constants::SYSTEM_RESOURCES_APP_PATH);
-    }
-
-    std::list<std::string> vendorBundleList =
-        scanner->Scan(Constants::THIRD_SYSTEM_APP_SCAN_PATH);
-    BundleInfo bundleInfo;
     std::vector<PreInstallBundleInfo> preInstallBundleInfos;
     if (!dataMgr->LoadAllPreInstallBundleInfos(preInstallBundleInfos)) {
         APP_LOGE("LoadAllPreInstallBundleInfos failed.");
-        return;
+        return false;
     }
 
     for (auto &iter : preInstallBundleInfos) {
@@ -155,9 +193,29 @@ void BMSEventHandler::RebootProcessSystemBundle(int32_t userId)
         loadExistData_.emplace(iter.GetBundleName(), iter);
     }
 
-    RebootBundleInstall(appBundleList, Constants::AppType::SYSTEM_APP);
-    RebootBundleInstall(vendorBundleList, Constants::AppType::THIRD_SYSTEM_APP);
-    RebootBundleUninstall();
+    return true;
+}
+
+void BMSEventHandler::RebootProcessBundleInstall(
+    const std::string &scanDir, Constants::AppType appType)
+{
+    if (std::find(scanPaths_.begin(), scanPaths_.end(), scanDir) != scanPaths_.end()) {
+        APP_LOGD("Reboot scanDir(%{public}s) has scan", scanDir.c_str());
+        return;
+    }
+
+    APP_LOGD("Reboot scanDir: %{public}s", scanDir.c_str());
+    scanPaths_.emplace_back(scanDir);
+    auto scanner = std::make_unique<BundleScanner>();
+    std::list<std::string> bundleList = scanner->Scan(scanDir);
+    auto iter = std::find(
+        bundleList.begin(), bundleList.end(), Constants::SYSTEM_RESOURCES_APP_PATH);
+    if (iter != bundleList.end()) {
+        bundleList.erase(iter);
+        bundleList.insert(bundleList.begin(), Constants::SYSTEM_RESOURCES_APP_PATH);
+    }
+
+    RebootBundleInstall(bundleList, appType);
 }
 
 void BMSEventHandler::RebootBundleInstall(

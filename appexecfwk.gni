@@ -34,3 +34,9 @@ declare_args() {
   print("hicollie_enable = " + "$hicollie_enable")
   print("support_jsapi = " + "$support_jsapi")
 }
+
+configpolicy_enable = true
+if (defined(global_parts_info) &&
+    !defined(global_parts_info.customization_config_policy)) {
+  configpolicy_enable = false
+}
