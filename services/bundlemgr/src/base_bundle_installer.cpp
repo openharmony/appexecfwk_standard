@@ -1436,9 +1436,9 @@ ErrCode BaseBundleInstaller::CheckMultipleHapsSignInfo(const std::vector<std::st
         return ERR_APPEXECFWK_INSTALL_FAILED_INCOMPATIBLE_SIGNATURE;
     }
     auto appId = hapVerifyRes[0].GetProvisionInfo().appId;
-    APP_LOGD("bundle appid is %{public}s", appId.c_str());
+    APP_LOGD("bundle appid is %{private}s", appId.c_str());
     auto isValid = std::any_of(hapVerifyRes.begin(), hapVerifyRes.end(), [&](auto &hapVerifyResult) {
-        APP_LOGD("module appid is %{public}s", hapVerifyResult.GetProvisionInfo().appId.c_str());
+        APP_LOGD("module appid is %{private}s", hapVerifyResult.GetProvisionInfo().appId.c_str());
         return appId != hapVerifyResult.GetProvisionInfo().appId;
     });
     if (isValid) {
@@ -1448,7 +1448,7 @@ ErrCode BaseBundleInstaller::CheckMultipleHapsSignInfo(const std::vector<std::st
     auto apl = hapVerifyRes[0].GetProvisionInfo().bundleInfo.apl;
     APP_LOGD("bundle apl is %{public}s", apl.c_str());
     isValid = std::any_of(hapVerifyRes.begin(), hapVerifyRes.end(), [&](auto &hapVerifyResult) {
-        APP_LOGD("module appid is %{public}s", hapVerifyResult.GetProvisionInfo().bundleInfo.apl.c_str());
+        APP_LOGD("module appid is %{private}s", hapVerifyResult.GetProvisionInfo().bundleInfo.apl.c_str());
         return apl != hapVerifyResult.GetProvisionInfo().bundleInfo.apl;
     });
     if (isValid) {
