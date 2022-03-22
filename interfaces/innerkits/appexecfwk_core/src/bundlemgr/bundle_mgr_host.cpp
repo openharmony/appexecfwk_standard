@@ -1797,7 +1797,7 @@ ErrCode BundleMgrHost::HandleGetAppIdByBundleName(Parcel &data, Parcel &reply)
     std::string bundleName = data.ReadString();
     int32_t userId = data.ReadInt32();
     std::string appId = GetAppIdByBundleName(bundleName, userId);
-    APP_LOGD("appId is %{public}s", appId.c_str());
+    APP_LOGD("appId is %{private}s", appId.c_str());
     if (!reply.WriteString(appId)) {
         APP_LOGE("write failed");
         return ERR_APPEXECFWK_PARCEL_ERROR;

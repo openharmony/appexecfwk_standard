@@ -230,6 +230,10 @@ int ImageCompress::DecodePngFile(std::string fileName, std::shared_ptr<ImageBuff
     }
 
     FILE* inFile = fopen(fileName.c_str(), "rb");
+    if (inFile == nullptr) {
+        APP_LOGE("open file %{private}s failed", fileName.c_str());
+        return -1;
+    }
     imageBuffer->SetRatio(ratio);
     png_structp png = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
     if (!png) {
@@ -272,6 +276,7 @@ int32_t ImageCompress::EncodePngFile(std::shared_ptr<ImageBuffer>& imageBuffer)
 {
     if (imageBuffer == nullptr) {
         APP_LOGE("ImageCompress: Encode none data");
+        return -1;
     }
 
     png_structp png = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
@@ -314,6 +319,7 @@ int32_t ImageCompress::EncodePngFile(std::shared_ptr<ImageBuffer>& imageBuffer)
     rowPointers = (png_bytep*)malloc(sizeof(png_bytep) * imageBuffer->GetHeight());
     if (rowPointers == nullptr) {
         APP_LOGE("ImageCompress: malloc failed");
+        free(memo.buffer);
         return -1;
     }
     for (uint32_t h = 0; h < imageBuffer->GetHeight(); ++h) {
@@ -443,6 +449,7 @@ int32_t ImageCompress::EncodeJPGFile(std::shared_ptr<ImageBuffer>& imageBuffer)
 
     if (imageBuffer == nullptr) {
         APP_LOGE("ImageCompress: EncodeJPGFile should read image buffer first");
+        return -1;
     }
     
     struct jpeg_compress_struct cinfo;
