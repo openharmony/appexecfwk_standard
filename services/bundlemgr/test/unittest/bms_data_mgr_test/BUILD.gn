@@ -105,6 +105,7 @@ ohos_unittest("BmsDataMgrTest") {
     "os_account_standard:os_account_innerkits",
     "resmgr_standard:global_resmgr",
     "samgr_standard:samgr_proxy",
+    "startup_l2:syspara",
   ]
 }
 

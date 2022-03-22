@@ -35,17 +35,15 @@ public:
     bool QueryStroageDistributeInfo(
         const std::string &bundleName, int32_t userId, const std::string &networkId,
         DistributedBundleInfo &info);
-    bool SetDeviceId();
 
 private:
-    void DeviceAndNameToKey(const std::string &deviceId, const std::string &bundleName, std::string &key) const;
-    bool GetDeviceIdByNetworkId(const std::string &networkId, std::string &deviceId);
+    void DeviceAndNameToKey(const std::string &udid, const std::string &bundleName, std::string &key) const;
     void TryTwice(const std::function<DistributedKv::Status()> &func) const;
     bool CheckKvStore();
     DistributedKv::Status GetKvStore();
     bool GetDistributeInfoByUserId(
         int32_t userId, const DistributedKv::Key &key, const DistributedKv::Value &value, DistributedBundleInfo &info);
-
+    bool GetLocalUdid(std::string &udid);
 private:
     const DistributedKv::AppId appId_ {Constants::APP_ID};
     const DistributedKv::StoreId storeId_ {Constants::DISTRIBUTE_DATA_STORE_ID};

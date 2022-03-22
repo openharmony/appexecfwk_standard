@@ -242,18 +242,6 @@ bool BundleUtil::KeyToDeviceAndName(
     return ret;
 }
 
-void BundleUtil::SetCurrentDeviceId(const std::string &deviceId)
-{
-    std::lock_guard<std::mutex> lock(g_mutex);
-    g_deviceUdid = deviceId;
-}
-
-std::string BundleUtil::GetCurrentDeviceId()
-{
-    std::lock_guard<std::mutex> lock(g_mutex);
-    return g_deviceUdid;
-}
-
 int32_t BundleUtil::GetUserIdByCallingUid()
 {
     int32_t uid = IPCSkeleton::GetCallingUid();
