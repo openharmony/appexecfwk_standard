@@ -43,7 +43,6 @@ BundleDataMgr::BundleDataMgr()
     usageRecordStorage_->RegisterKvStoreDeathListener();
     preInstallDataStorage_ = std::make_shared<PreInstallDataStorage>();
     distributedDataStorage_ = std::make_shared<DistributedDataStorage>();
-    distributedDataStorage_->SetDeviceId();
     APP_LOGI("BundleDataMgr instance is created");
 }
 
