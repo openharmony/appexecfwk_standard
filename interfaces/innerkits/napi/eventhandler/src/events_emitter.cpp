@@ -130,6 +130,8 @@ namespace AppExecFwk {
             uv_work_t *work = new uv_work_t;
             if (work == nullptr) {
                 HILOGI("uv_work_t instance is nullptr");
+                delete eventDataWorker;
+                eventDataWorker = nullptr;
                 return;
             }
             work->data = (void *)eventDataWorker;
