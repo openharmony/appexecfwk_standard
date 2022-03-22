@@ -104,6 +104,12 @@ void BmsDeviceManager::StopDynamicSystemProcess(int32_t systemAbilityId)
     APP_LOGD("StopDynamicSystemProcess, ret:%{public}d", ret);
 }
 
+int32_t BmsDeviceManager::GetUdidByNetworkId(const std::string &netWorkId, std::string &udid)
+{
+    APP_LOGD("GetUdidByNetworkId");
+    return DistributedHardware::DeviceManager::GetInstance().GetUdidByNetworkId(BUNDLE_NAME, netWorkId, udid);
+}
+
 void BmsDeviceManager::DeviceInitCallBack::OnRemoteDied()
 {
     APP_LOGD("DeviceInitCallBack OnRemoteDied");

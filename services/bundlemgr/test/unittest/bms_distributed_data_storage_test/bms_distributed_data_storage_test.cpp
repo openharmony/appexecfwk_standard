@@ -77,8 +77,6 @@ void BmsDistributedDataStorageTest::TearDownTestCase()
 
 void BmsDistributedDataStorageTest::SetUp()
 {
-    bool result = distributedDataStorage_->SetDeviceId();
-    EXPECT_TRUE(result);
 }
 
 void BmsDistributedDataStorageTest::TearDown()
