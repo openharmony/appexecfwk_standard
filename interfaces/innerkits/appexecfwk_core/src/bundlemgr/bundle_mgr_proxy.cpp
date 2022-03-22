@@ -377,7 +377,7 @@ std::string BundleMgrProxy::GetAppIdByBundleName(const std::string &bundleName, 
         return Constants::EMPTY_STRING;
     }
     std::string appId = reply.ReadString();
-    APP_LOGD("appId is %{public}s", appId.c_str());
+    APP_LOGD("appId is %{private}s", appId.c_str());
     return appId;
 }
 

@@ -1524,7 +1524,7 @@ static bool ParseWant(napi_env env, Want &want, napi_value args)
     }
     APP_LOGD("deviceId:%{public}s, bundleName:%{public}s, abilityName:%{public}s",
         elementDeviceId.c_str(), elementBundleName.c_str(), elementAbilityName.c_str());
-    APP_LOGD("action:%{public}s, uri:%{public}s, type:%{public}s, flags:%{public}d",
+    APP_LOGD("action:%{public}s, uri:%{private}s, type:%{public}s, flags:%{public}d",
         wantAction.c_str(), elementUri.c_str(), wantType.c_str(), wantFlags);
     want.SetAction(wantAction);
     want.SetUri(elementUri);
@@ -2882,6 +2882,7 @@ napi_value Install(napi_env env, napi_callback_info info)
         NAPI_CALL(env, napi_typeof(env, argv[ARGS_SIZE_TWO], &valuetype));
         if (valuetype != napi_function) {
             APP_LOGE("Wrong argument type. Function expected.");
+            delete asyncCallbackInfo;
             return nullptr;
         }
         napi_create_reference(env, argv[ARGS_SIZE_TWO], NAPI_RETURN_ONE, &asyncCallbackInfo->callback);
@@ -6212,7 +6213,7 @@ static bool InnerQueryExtensionInfo(napi_env env, AsyncExtensionInfoCallbackInfo
         APP_LOGE("can not get iBundleMgr");
         return false;
     }
-    APP_LOGD("action:%{public}s, uri:%{public}s, type:%{public}s, flags:%{public}d",
+    APP_LOGD("action:%{public}s, uri:%{private}s, type:%{public}s, flags:%{public}d",
         info.want.GetAction().c_str(), info.want.GetUriString().c_str(), info.want.GetType().c_str(), info.flags);
 
     if (info.extensionAbilityType < 0) {
@@ -6250,6 +6251,7 @@ napi_value QueryExtensionInfoByWant(napi_env env, napi_callback_info info)
 
     if (argc < ARGS_SIZE_TWO || argc > ARGS_SIZE_FOUR) {
         APP_LOGE("the number of input arguments is invalid");
+        delete callBackInfo;
         return nullptr;
     }
     for (size_t i = 0; i < argc; ++i) {

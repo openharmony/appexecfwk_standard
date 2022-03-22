@@ -58,6 +58,7 @@ void PermissionCallback::OnChanged(const int32_t uid)
     };
     if (callbackInfo == nullptr) {
         APP_LOGE("new CallbackInfo failed");
+        delete work;
         return;
     }
     work->data = (void *)callbackInfo;
