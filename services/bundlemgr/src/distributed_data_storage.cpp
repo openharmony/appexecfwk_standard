@@ -16,9 +16,11 @@
 #include "distributed_data_storage.h"
 
 #include <unistd.h>
-#include "app_log_wrapper.h"
 
+#include "app_log_wrapper.h"
+#include "bms_device_manager.h"
 #include "bundle_util.h"
+#include "parameter.h"
 
 using namespace OHOS::DistributedKv;
 
@@ -27,6 +29,7 @@ namespace AppExecFwk {
 namespace {
 const int32_t MAX_TIMES = 600;              // 1min
 const int32_t SLEEP_INTERVAL = 100 * 1000;  // 100ms
+const uint32_t DEVICE_UDID_LENGTH = 65;
 }  // namespace
 
 DistributedDataStorage::DistributedDataStorage()
@@ -51,8 +54,14 @@ bool DistributedDataStorage::SaveStorageDistributeInfo(const DistributedBundleIn
             return false;
         }
     }
+    std::string udid;
+    bool ret = GetLocalUdid(udid);
+    if (!ret) {
+        APP_LOGE("GetLocalUdid error");
+        return false;
+    }
     std::string keyOfData;
-    DeviceAndNameToKey(BundleUtil::GetCurrentDeviceId(), info.name, keyOfData);
+    DeviceAndNameToKey(udid, info.name, keyOfData);
     Key key(keyOfData);
     Value value(info.ToString());
     Status status;
@@ -83,8 +92,14 @@ bool DistributedDataStorage::DeleteStorageDistributeInfo(const std::string &bund
             return false;
         }
     }
+    std::string udid;
+    bool ret = GetLocalUdid(udid);
+    if (!ret) {
+        APP_LOGE("GetLocalUdid error");
+        return false;
+    }
     std::string keyOfData;
-    DeviceAndNameToKey(BundleUtil::GetCurrentDeviceId(), bundleName, keyOfData);
+    DeviceAndNameToKey(udid, bundleName, keyOfData);
     Key key(keyOfData);
     Status status;
     {
@@ -136,11 +151,10 @@ bool DistributedDataStorage::QueryStroageDistributeInfo(
     DistributedBundleInfo &info)
 {
     APP_LOGI("query DistributedBundleInfo");
-    std::string deviceId;
-    bool ret = true;
-    ret = GetDeviceIdByNetworkId(networkId, deviceId);
-    if (!ret) {
-        APP_LOGI("can not query networkId online");
+    std::string udid;
+    int32_t ret = BmsDeviceManager::GetUdidByNetworkId(networkId, udid);
+    if (ret != 0) {
+        APP_LOGI("can not get udid by networkId error:%{public}d", ret);
         return false;
     }
 
@@ -153,7 +167,7 @@ bool DistributedDataStorage::QueryStroageDistributeInfo(
     }
 
     std::string keyOfData;
-    DeviceAndNameToKey(deviceId, bundleName, keyOfData);
+    DeviceAndNameToKey(udid, bundleName, keyOfData);
     APP_LOGI("keyOfData: [%{public}s]", keyOfData.c_str());
     Key key(keyOfData);
     Value value;
@@ -185,35 +199,11 @@ bool DistributedDataStorage::QueryStroageDistributeInfo(
 }
 
 void DistributedDataStorage::DeviceAndNameToKey(
-    const std::string &deviceId, const std::string &bundleName, std::string &key) const
+    const std::string &udid, const std::string &bundleName, std::string &key) const
 {
-    key.append(deviceId);
+    key.append(udid);
     key.append(Constants::FILE_UNDERLINE);
     key.append(bundleName);
-}
-
-bool DistributedDataStorage::GetDeviceIdByNetworkId(const std::string &networkId, std::string &deviceId)
-{
-    std::vector<DeviceInfo> deviceInfoList;
-    Status status = dataManager_.GetDeviceList(deviceInfoList, DeviceFilterStrategy::FILTER);
-    if (status != Status::SUCCESS) {
-        APP_LOGE("get GetDeviceList error: %{public}d", status);
-        return false;
-    }
-    DeviceInfo localDeviceInfo;
-    status = dataManager_.GetLocalDevice(localDeviceInfo);
-    if (status != Status::SUCCESS) {
-        APP_LOGE("get GetLocalDevice error: %{public}d", status);
-        return false;
-    }
-    deviceInfoList.emplace_back(localDeviceInfo);
-    auto it = std::find_if(std::begin(deviceInfoList), std::end(deviceInfoList),
-        [&networkId](const auto &item) { return item.deviceId == networkId; });
-    if (it == std::end(deviceInfoList)) {
-        return false;
-    }
-    deviceId = it->deviceName;
-    return true;
 }
 
 bool DistributedDataStorage::CheckKvStore()
@@ -260,16 +250,16 @@ void DistributedDataStorage::TryTwice(const std::function<Status()> &func) const
     }
 }
 
-bool DistributedDataStorage::SetDeviceId()
+bool DistributedDataStorage::GetLocalUdid(std::string &udid)
 {
-    Status status;
-    DeviceInfo deviceInfo;
-    status = dataManager_.GetLocalDevice(deviceInfo);
-    if (status == Status::SUCCESS) {
-        BundleUtil::SetCurrentDeviceId(deviceInfo.deviceName);
-        return true;
+    char innerUdid[DEVICE_UDID_LENGTH] = {0};
+    int ret = GetDevUdid(innerUdid, DEVICE_UDID_LENGTH);
+    if (ret != 0) {
+        APP_LOGI("GetDevUdid failed ,ret:%{public}d", ret);
+        return false;
     }
-    return false;
+    udid = std::string(innerUdid);
+    return true;
 }
 
 bool DistributedDataStorage::QueryAllDeviceIds(std::vector<std::string> &deviceIds)

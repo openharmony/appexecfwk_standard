@@ -30,6 +30,7 @@ public:
     BmsDeviceManager();
     void OnAddSystemAbility(int32_t systemAbilityId, const std::string& deviceId);
     void OnRemoveSystemAbility(int32_t systemAbilityId, const std::string& deviceId);
+    static int32_t GetUdidByNetworkId(const std::string &netWorkId, std::string &udid);
     
 private:
     static void StartDynamicSystemProcess(int32_t systemAbilityId);
