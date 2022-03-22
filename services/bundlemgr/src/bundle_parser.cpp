@@ -123,10 +123,12 @@ ErrCode BundleParser::ParseSysCap(const std::string &pathName, std::vector<std::
 
     if (!ParseStr(outBuffer, SINGLE_SYSCAP_LENGTH, outLen, sysCaps)) {
         APP_LOGE("Parse syscaps str failed");
+        free(outBuffer);
         return ERR_APPEXECFWK_PARSE_RPCID_FAILED;
     }
 
-    APP_LOGE("Parse sysCaps str success");
+    APP_LOGD("Parse sysCaps str success");
+    free(outBuffer);
     return ERR_OK;
 }
 }  // namespace AppExecFwk
