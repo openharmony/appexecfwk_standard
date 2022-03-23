@@ -115,30 +115,30 @@ int32_t RPCIDStreamDecodeToBuffer(
     contextBufferTail = contextBuffer + bufferLen;
     sysCapArrayPtr = contextBuffer + sizeof(RPCIDHead) + APP_SYSCAP_TYPE * sizeof(uint16_t);
     if (contextBufferTail <= sysCapArrayPtr) {
-        HILOG_ERROR(LOG_CORE, "format error：sysCapArray head over to buffer\n");
+        HILOG_ERROR(LOG_CORE, "format error:sysCapArray head over to buffer\n");
         return ERROR;
     }
 
     headPtr = (RPCIDHead *)contextBuffer;
     if (headPtr->apiVersionType != API_VERSION_TYPE) {
-        HILOG_ERROR(LOG_CORE, "format error：apiVersionType is invaild\n");
+        HILOG_ERROR(LOG_CORE, "format error:apiVersionType is invaild\n");
         return ERROR;
     }
 
     sysCaptype = ntohs(*(uint16_t *)(sysCapArrayPtr - APP_SYSCAP_TYPE * sizeof(uint16_t)));
     if (sysCaptype != APP_SYSCAP_TYPE) {
-        HILOG_ERROR(LOG_CORE, "format error：sysCaptype is invaild\n");
+        HILOG_ERROR(LOG_CORE, "format error:sysCaptype is invaild\n");
         return ERROR;
     }
 
     sysCapLength = ntohs(*(uint16_t *)(sysCapArrayPtr - sizeof(uint16_t)));
     if (contextBufferTail < sysCapArrayPtr + sysCapLength) {
-        HILOG_ERROR(LOG_CORE, "format error：sysCapArray tail over to buffer\n");
+        HILOG_ERROR(LOG_CORE, "format error:sysCapArray tail over to buffer\n");
         return ERROR;
     }
 
     if (sysCapLength == 0 || (sysCapLength % SINGLE_FEAT_LENGTH) != 0) {
-        HILOG_ERROR(LOG_CORE, "format error：sysCapLength is invalid\n");
+        HILOG_ERROR(LOG_CORE, "format error:sysCapLength is invalid\n");
         return ERROR;
     }
 
