@@ -194,11 +194,13 @@ bool ImageCompress::InitPngFile(std::shared_ptr<ImageBuffer>& imageBuffer,
     png_bytepp rowPointers = nullptr;
     if (!MallocPngPointer(rowPointers, imageBuffer->GetHeight(), strides)) {
         APP_LOGE("ImageCompress: MallocPngPointer image buffer failed");
+        png_destroy_read_struct(&png, &info, NULL);
         return false;
     }
     png_read_image(png, rowPointers);
     ImageRow imageRow = imageBuffer->GetImageDataPointer().get();
     if (rowPointers == nullptr) {
+        png_destroy_read_struct(&png, &info, NULL);
         return false;
     }
     for (uint32_t h = 0; h < imageBuffer->GetHeight(); ++h) {
@@ -237,17 +239,20 @@ int ImageCompress::DecodePngFile(std::string fileName, std::shared_ptr<ImageBuff
     imageBuffer->SetRatio(ratio);
     png_structp png = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
     if (!png) {
+        png_destroy_read_struct(&png, NULL, NULL);
         fclose(inFile);
         return -1;
     }
 
     png_infop info = png_create_info_struct(png);
     if (!info) {
+        png_destroy_read_struct(&png, NULL, NULL);
         fclose(inFile);
         return -1;
     }
 
     if (setjmp(png_jmpbuf(png))) {
+        png_destroy_read_struct(&png, &info, NULL);
         fclose(inFile);
         return -1;
     }
@@ -260,11 +265,11 @@ int ImageCompress::DecodePngFile(std::string fileName, std::shared_ptr<ImageBuff
             APP_LOGE("ImageCompress: fclose file %{public}s error", fileName.c_str());
             return -1;
         }
-        png_destroy_read_struct(&png, &info, NULL);
         return -1;
     }
 
     if (fclose(inFile) != EOK) {
+        png_destroy_read_struct(&png, &info, NULL);
         APP_LOGE("ImageCompress: fclose file %{public}s error", fileName.c_str());
         return -1;
     }
@@ -281,14 +286,17 @@ int32_t ImageCompress::EncodePngFile(std::shared_ptr<ImageBuffer>& imageBuffer)
 
     png_structp png = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
     if (!png) {
+        png_destroy_read_struct(&png, NULL, NULL);
         return -1;
     }
 
     png_infop info = png_create_info_struct(png);
     if (!info) {
+        png_destroy_read_struct(&png, &info, NULL);
         return -1;
     }
     if (setjmp(png_jmpbuf(png))) {
+        png_destroy_read_struct(&png, &info, NULL);
         return -1;
     }
     png_set_IHDR(
@@ -306,11 +314,13 @@ int32_t ImageCompress::EncodePngFile(std::shared_ptr<ImageBuffer>& imageBuffer)
     struct EncodeMemo memo;
     memo.buffer = (ImageRow)malloc(FILE_MAX_SIZE * RGBA_COMPONENTS);
     if (memo.buffer == nullptr) {
+        png_destroy_read_struct(&png, &info, NULL);
         return -1;
     }
     memo.size = 0;
     if (!imageBuffer->GetImageDataPointer()) {
         free(memo.buffer);
+        png_destroy_read_struct(&png, &info, NULL);
         APP_LOGE("ImageCompress: EncodePngFile should input image buffer");
         return -1;
     }
@@ -318,6 +328,8 @@ int32_t ImageCompress::EncodePngFile(std::shared_ptr<ImageBuffer>& imageBuffer)
     png_bytep* rowPointers;
     rowPointers = (png_bytep*)malloc(sizeof(png_bytep) * imageBuffer->GetHeight());
     if (rowPointers == nullptr) {
+        free(memo.buffer);
+        png_destroy_read_struct(&png, &info, NULL);
         APP_LOGE("ImageCompress: malloc failed");
         free(memo.buffer);
         return -1;
