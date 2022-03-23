@@ -12,8 +12,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef PACKAGE_H
-#define PACKAGE_H
+#ifndef APPEXECFWK_STANDARD_KITS_APPKIT_NAPI_PACKAGE_PACKAGE_H
+#define APPEXECFWK_STANDARD_KITS_APPKIT_NAPI_PACKAGE_PACKAGE_H
 #include "napi/native_api.h"
 #include "napi/native_common.h"
 #include "napi/native_node_api.h"
@@ -33,8 +33,9 @@ struct CheckPackageHasInstalledOptions {
     bool isString = false;
     CheckPackageHasInstalledResponse response;
     int32_t errCode = 0;
+    ~CheckPackageHasInstalledOptions();
 };
 napi_value HasInstalled(napi_env env, napi_callback_info info);
 }  // namespace AppExecFwk
 }  // namespace OHOS
-#endif /* PACKAGE_H */
+#endif /* APPEXECFWK_STANDARD_KITS_APPKIT_NAPI_PACKAGE_PACKAGE_H */
