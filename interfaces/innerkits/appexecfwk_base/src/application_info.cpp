@@ -731,7 +731,6 @@ void ApplicationInfo::ConvertToCompatibleApplicationInfo(CompatibleApplicationIn
     compatibleApplicationInfo.iconId = iconId;
     compatibleApplicationInfo.labelId = labelId;
     compatibleApplicationInfo.descriptionId = descriptionId;
-    compatibleApplicationInfo.accessTokenId = accessTokenId;
     compatibleApplicationInfo.permissions = permissions;
     compatibleApplicationInfo.moduleInfos = moduleInfos;
     compatibleApplicationInfo.supportedModes = supportedModes;

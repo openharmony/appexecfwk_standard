@@ -77,7 +77,6 @@ struct CompatibleApplicationInfo : public Parcelable {
     int32_t iconId = 0;
     int32_t labelId = 0;
     int32_t descriptionId = 0;
-    uint32_t accessTokenId = 0;
 
     bool systemApp = false;
 
