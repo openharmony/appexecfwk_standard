@@ -525,7 +525,7 @@ bool BundleDataMgr::ImplicitQueryAbilityInfos(
         APP_LOGE("param invalid");
         return false;
     }
-    APP_LOGD("action:%{public}s, uri:%{public}s, type:%{public}s",
+    APP_LOGD("action:%{public}s, uri:%{private}s, type:%{public}s",
         want.GetAction().c_str(), want.GetUriString().c_str(), want.GetType().c_str());
     APP_LOGD("flags:%{public}d, userId:%{public}d", flags, userId);
     std::lock_guard<std::mutex> lock(bundleInfoMutex_);
@@ -677,7 +677,7 @@ bool BundleDataMgr::QueryLauncherAbilityInfos(
 bool BundleDataMgr::QueryAbilityInfoByUri(
     const std::string &abilityUri, int32_t userId, AbilityInfo &abilityInfo) const
 {
-    APP_LOGD("abilityUri is %{public}s", abilityUri.c_str());
+    APP_LOGD("abilityUri is %{private}s", abilityUri.c_str());
     int32_t requestUserId = GetUserId(userId);
     if (requestUserId == Constants::INVALID_USERID) {
         return false;
@@ -740,13 +740,13 @@ bool BundleDataMgr::QueryAbilityInfoByUri(
         return true;
     }
 
-    APP_LOGE("query abilityUri(%{public}s) failed.", abilityUri.c_str());
+    APP_LOGE("query abilityUri(%{private}s) failed.", abilityUri.c_str());
     return false;
 }
 
 bool BundleDataMgr::QueryAbilityInfosByUri(const std::string &abilityUri, std::vector<AbilityInfo> &abilityInfos)
 {
-    APP_LOGI("abilityUri is %{public}s", abilityUri.c_str());
+    APP_LOGI("abilityUri is %{private}s", abilityUri.c_str());
     if (abilityUri.empty()) {
         return false;
     }
@@ -2402,7 +2402,6 @@ bool BundleDataMgr::GetClonedBundleName(const std::string &bundleName, std::stri
         }
     }
     return false;
-    APP_LOGI("GetCloneBundleName finish");
 }
 
 bool BundleDataMgr::SavePreInstallBundleInfo(
@@ -2749,7 +2748,7 @@ bool BundleDataMgr::ImplicitQueryExtensionInfos(
         APP_LOGE("param invalid");
         return false;
     }
-    APP_LOGD("action:%{public}s, uri:%{public}s, type:%{public}s",
+    APP_LOGD("action:%{public}s, uri:%{private}s, type:%{public}s",
         want.GetAction().c_str(), want.GetUriString().c_str(), want.GetType().c_str());
     APP_LOGD("flags:%{public}d, userId:%{public}d", flags, userId);
 
@@ -2905,7 +2904,7 @@ bool BundleDataMgr::QueryExtensionAbilityInfoByUri(const std::string &uri, int32
     // 2. replace :/// with ://
     convertUri.replace(schemePos, Constants::PARAM_URI_SEPARATOR_LEN,
         Constants::URI_SEPARATOR);
-    APP_LOGD("convertUri : %{public}s", convertUri.c_str());
+    APP_LOGD("convertUri : %{private}s", convertUri.c_str());
 
     std::lock_guard<std::mutex> lock(bundleInfoMutex_);
     if (bundleInfos_.empty()) {
@@ -2937,7 +2936,7 @@ bool BundleDataMgr::QueryExtensionAbilityInfoByUri(const std::string &uri, int32
             ApplicationFlag::GET_BASIC_APPLICATION_INFO, responseUserId, extensionAbilityInfo.applicationInfo);
         return true;
     }
-    APP_LOGE("QueryExtensionAbilityInfoByUri (%{public}s) failed.", uri.c_str());
+    APP_LOGE("QueryExtensionAbilityInfoByUri (%{private}s) failed.", uri.c_str());
     return false;
 }
 
