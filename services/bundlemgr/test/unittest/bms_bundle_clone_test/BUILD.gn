@@ -87,7 +87,6 @@ ohos_unittest("BmsBundleCloneTest") {
     "ability_runtime:app_manager",
     "bytrace_standard:bytrace_core",
     "ces_standard:cesfwk_innerkits",
-    "config_policy:configpolicy_util",
     "device_manager_base:devicemanagersdk",
     "hicollie_native:libhicollie",
     "hiviewdfx_hilog_native:libhilog",

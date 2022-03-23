@@ -182,7 +182,6 @@ ohos_shared_library("libbms") {
     "bytrace_standard:bytrace_core",
     "ces_standard:cesfwk_core",
     "ces_standard:cesfwk_innerkits",
-    "config_policy:configpolicy_util",
     "device_manager_base:devicemanagersdk",
     "distributeddatamgr:distributeddata_inner",
     "eventhandler:libeventhandler",
