@@ -51,6 +51,25 @@ enum GetRemoteAbilityInfoErrorCode : int32_t {
 };
 }
 
+AsyncWorkData::AsyncWorkData(napi_env napiEnv)
+{
+    env = napiEnv;
+}
+
+AsyncWorkData::~AsyncWorkData()
+{
+    if (callbackRef) {
+        APP_LOGD("AsyncWorkData::~AsyncWorkData delete callbackRef");
+        napi_delete_reference(env, callbackRef);
+        callbackRef = nullptr;
+    }
+    if (asyncWork) {
+        APP_LOGD("AsyncWorkData::~AsyncWorkData delete asyncWork");
+        napi_delete_async_work(env, asyncWork);
+        asyncWork = nullptr;
+    }
+}
+
 static OHOS::sptr<OHOS::AppExecFwk::IDistributedBms> GetDistributedBundleMgr()
 {
     APP_LOGI("GetDistributedBundleMgr");
@@ -268,20 +287,20 @@ napi_value GetRemoteAbilityInfo(napi_env env, napi_callback_info info)
     NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, &thisArg, &data));
     NAPI_ASSERT(env, argc >= requireArgc, "requires 1 parameter");
 
-    ElementNameInfo *asyncCallbackInfo = new ElementNameInfo();
+    ElementNameInfo *asyncCallbackInfo = new (std::nothrow) ElementNameInfo(env);
     if (asyncCallbackInfo == nullptr) {
         return nullptr;
     }
-    asyncCallbackInfo->env = env;
+    std::unique_ptr<ElementNameInfo> callbackPtr {asyncCallbackInfo};
     for (size_t i = 0; i < argc; ++i) {
         napi_valuetype valueType = napi_undefined;
-        napi_typeof(env, argv[i], &valueType);
+        NAPI_CALL(env, napi_typeof(env, argv[i], &valueType));
         if ((i == PARAM0) && (valueType == napi_object)) {
             if (!ParseElementName(env, asyncCallbackInfo->elementName, argv[i])) {
                 asyncCallbackInfo->errCode = ERR_INVALID_PARAM;
             }
         } else if ((i == PARAM1) && (valueType == napi_function)) {
-            napi_create_reference(env, argv[i], NAPI_RETURN_ONE, &asyncCallbackInfo->callbackRef);
+            NAPI_CALL(env, napi_create_reference(env, argv[i], NAPI_RETURN_ONE, &asyncCallbackInfo->callbackRef));
             break;
         } else {
             asyncCallbackInfo->errCode = ERR_INVALID_PARAM;
@@ -291,13 +310,13 @@ napi_value GetRemoteAbilityInfo(napi_env env, napi_callback_info info)
 
     napi_value promise = nullptr;
     if (asyncCallbackInfo->callbackRef == nullptr) {
-        napi_create_promise(env, &asyncCallbackInfo->deferred, &promise);
+        NAPI_CALL(env, napi_create_promise(env, &asyncCallbackInfo->deferred, &promise));
     } else {
-        napi_get_undefined(env, &promise);
+        NAPI_CALL(env, napi_get_undefined(env, &promise));
     }
     napi_value resource = nullptr;
-    napi_create_string_utf8(env, "getRemoteAbilityInfo", NAPI_AUTO_LENGTH, &resource);
-    napi_create_async_work(
+    NAPI_CALL(env, napi_create_string_utf8(env, "getRemoteAbilityInfo", NAPI_AUTO_LENGTH, &resource));
+    NAPI_CALL(env, napi_create_async_work(
         env, nullptr, resource,
         [](napi_env env, void* data) {
             ElementNameInfo* asyncCallbackInfo = (ElementNameInfo*)data;
@@ -308,33 +327,31 @@ napi_value GetRemoteAbilityInfo(napi_env env, napi_callback_info info)
         },
         [](napi_env env, napi_status status, void* data) {
             ElementNameInfo* asyncCallbackInfo = (ElementNameInfo*)data;
+            std::unique_ptr<ElementNameInfo> callbackPtr {asyncCallbackInfo};
             napi_value result[2] = { 0 };
             if (asyncCallbackInfo->errCode) {
                 napi_create_int32(env, asyncCallbackInfo->errCode, &result[0]);
             } else {
                 napi_create_uint32(env, 0, &result[0]);
-                napi_create_object(env, &result[1]);
+                NAPI_CALL_RETURN_VOID(env, napi_create_object(env, &result[1]));
                 ConvertRemoteAbilityInfo(env, result[1], asyncCallbackInfo->remoteAbilityInfo);
             }
             if (asyncCallbackInfo->callbackRef) {
                 napi_value callback = nullptr;
                 napi_value placeHolder = nullptr;
-                napi_get_reference_value(env, asyncCallbackInfo->callbackRef, &callback);
+                NAPI_CALL_RETURN_VOID(env, napi_get_reference_value(env, asyncCallbackInfo->callbackRef, &callback));
                 napi_call_function(env, nullptr, callback, sizeof(result) / sizeof(result[0]), result, &placeHolder);
-                napi_delete_reference(env, asyncCallbackInfo->callbackRef);
             } else {
                 if (asyncCallbackInfo->errCode) {
-                    napi_reject_deferred(env, asyncCallbackInfo->deferred, result[0]);
+                    NAPI_CALL_RETURN_VOID(env, napi_reject_deferred(env, asyncCallbackInfo->deferred, result[0]));
                 } else {
-                    napi_resolve_deferred(env, asyncCallbackInfo->deferred, result[1]);
+                    NAPI_CALL_RETURN_VOID(env, napi_resolve_deferred(env, asyncCallbackInfo->deferred, result[1]));
                 }
             }
-            napi_delete_async_work(env, asyncCallbackInfo->asyncWork);
-            delete asyncCallbackInfo;
-            asyncCallbackInfo = nullptr;
         },
-        (void*)asyncCallbackInfo, &asyncCallbackInfo->asyncWork);
-    napi_queue_async_work(env, asyncCallbackInfo->asyncWork);
+        (void*)asyncCallbackInfo, &asyncCallbackInfo->asyncWork));
+    NAPI_CALL(env, napi_queue_async_work(env, asyncCallbackInfo->asyncWork));
+    callbackPtr.release();
     return promise;
 }
 
@@ -349,8 +366,11 @@ napi_value GetRemoteAbilityInfos(napi_env env, napi_callback_info info)
     NAPI_CALL(env, napi_get_cb_info(env, info, &argc, argv, &thisArg, &data));
     NAPI_ASSERT(env, argc >= requireArgc, "requires 1 parameter");
 
-    ElementNameInfos *asyncCallbackInfo = new ElementNameInfos();
-    asyncCallbackInfo->env = env;
+    ElementNameInfos *asyncCallbackInfo = new (std::nothrow) ElementNameInfos(env);
+    if (asyncCallbackInfo == nullptr) {
+        return nullptr;
+    }
+    std::unique_ptr<ElementNameInfos> callbackPtr {asyncCallbackInfo};
     for (size_t i = 0; i < argc; ++i) {
         napi_valuetype valueType = napi_undefined;
         napi_typeof(env, argv[i], &valueType);
@@ -363,7 +383,7 @@ napi_value GetRemoteAbilityInfos(napi_env env, napi_callback_info info)
                 asyncCallbackInfo->errCode = ERR_PARAMETERS_MORE_THAN_MAX;
             }
         } else if ((i == PARAM1) && (valueType == napi_function)) {
-            napi_create_reference(env, argv[i], NAPI_RETURN_ONE, &asyncCallbackInfo->callbackRef);
+            NAPI_CALL(env, napi_create_reference(env, argv[i], NAPI_RETURN_ONE, &asyncCallbackInfo->callbackRef));
             break;
         } else {
             asyncCallbackInfo->errCode = ERR_INVALID_PARAM;
@@ -373,13 +393,13 @@ napi_value GetRemoteAbilityInfos(napi_env env, napi_callback_info info)
 
     napi_value promise = nullptr;
     if (asyncCallbackInfo->callbackRef == nullptr) {
-        napi_create_promise(env, &asyncCallbackInfo->deferred, &promise);
+        NAPI_CALL(env, napi_create_promise(env, &asyncCallbackInfo->deferred, &promise));
     } else {
-        napi_get_undefined(env, &promise);
+        NAPI_CALL(env, napi_get_undefined(env, &promise));
     }
     napi_value resource = nullptr;
-    napi_create_string_utf8(env, "getRemoteAbilityInfos", NAPI_AUTO_LENGTH, &resource);
-    napi_create_async_work(
+    NAPI_CALL(env, napi_create_string_utf8(env, "getRemoteAbilityInfos", NAPI_AUTO_LENGTH, &resource));
+    NAPI_CALL(env, napi_create_async_work(
         env, nullptr, resource,
         [](napi_env env, void* data) {
             ElementNameInfos* asyncCallbackInfo = (ElementNameInfos*)data;
@@ -390,20 +410,20 @@ napi_value GetRemoteAbilityInfos(napi_env env, napi_callback_info info)
         },
         [](napi_env env, napi_status status, void* data) {
             ElementNameInfos* asyncCallbackInfo = (ElementNameInfos*)data;
+            std::unique_ptr<ElementNameInfos> callbackPtr {asyncCallbackInfo};
             napi_value result[2] = { 0 };
             if (asyncCallbackInfo->errCode) {
                 napi_create_int32(env, asyncCallbackInfo->errCode, &result[0]);
             } else {
                 napi_create_uint32(env, 0, &result[0]);
-                napi_create_array(env, &result[1]);
+                NAPI_CALL_RETURN_VOID(env, napi_create_array(env, &result[1]));
                 ConvertRemoteAbilityInfos(env, result[1], asyncCallbackInfo->remoteAbilityInfos);
             }
             if (asyncCallbackInfo->callbackRef) {
                 napi_value callback = nullptr;
                 napi_value placeHolder = nullptr;
-                napi_get_reference_value(env, asyncCallbackInfo->callbackRef, &callback);
+                NAPI_CALL_RETURN_VOID(env, napi_get_reference_value(env, asyncCallbackInfo->callbackRef, &callback));
                 napi_call_function(env, nullptr, callback, sizeof(result) / sizeof(result[0]), result, &placeHolder);
-                napi_delete_reference(env, asyncCallbackInfo->callbackRef);
             } else {
                 if (asyncCallbackInfo->errCode) {
                     napi_reject_deferred(env, asyncCallbackInfo->deferred, result[0]);
@@ -411,12 +431,10 @@ napi_value GetRemoteAbilityInfos(napi_env env, napi_callback_info info)
                     napi_resolve_deferred(env, asyncCallbackInfo->deferred, result[1]);
                 }
             }
-            napi_delete_async_work(env, asyncCallbackInfo->asyncWork);
-            delete asyncCallbackInfo;
-            asyncCallbackInfo = nullptr;
         },
-        (void*)asyncCallbackInfo, &asyncCallbackInfo->asyncWork);
-    napi_queue_async_work(env, asyncCallbackInfo->asyncWork);
+        (void*)asyncCallbackInfo, &asyncCallbackInfo->asyncWork));
+    NAPI_CALL(env, napi_queue_async_work(env, asyncCallbackInfo->asyncWork));
+    callbackPtr.release();
     return promise;
 }
 }
