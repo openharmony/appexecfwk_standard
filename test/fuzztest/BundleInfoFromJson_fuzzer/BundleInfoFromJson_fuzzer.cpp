@@ -16,8 +16,6 @@
 #include <cstddef>
 #include <cstdint>
 
-#include "message_parcel.h"
-#include "message_option.h"
 #include "bundle_info.h"
 #include "json_serializer.h"
 #include "nlohmann/json.hpp"

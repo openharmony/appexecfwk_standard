@@ -23,7 +23,7 @@ ohos_fuzztest("ApplicationInfoFromJsonFuzzTest") {
   module_out_path = module_output_path
 
   include_dirs = [ "//utils/system/safwk/native/include" ]
-  configs = [ "//foundation/appexecfwk/standard/services/bundlemgr/test/unittest/bms_bundle_data_storage_test:private_config" ]
+
   cflags = [
     "-g",
     "-O0",
@@ -34,14 +34,7 @@ ohos_fuzztest("ApplicationInfoFromJsonFuzzTest") {
 
   deps = [ "${common_path}:libappexecfwk_common" ]
   external_deps = [
-    "ability_base:want",
     "bundle_framework:appexecfwk_base",
-    "bundle_framework:appexecfwk_core",
-    "eventhandler:libeventhandler",
-    "hiviewdfx_hilog_native:libhilog",
-    "ipc:ipc_core",
-    "safwk:system_ability_fwk",
-    "samgr_standard:samgr_proxy",
     "utils_base:utils",
   ]
 }

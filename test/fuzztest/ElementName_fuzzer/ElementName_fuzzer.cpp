@@ -13,8 +13,6 @@
  * limitations under the License.
  */
 
-#include "message_parcel.h"
-#include "message_option.h"
 #include "element_name.h"
 #include "parcel.h"
 
