@@ -137,7 +137,7 @@ int32_t RPCIDStreamDecodeToBuffer(
         return ERROR;
     }
 
-    if (sysCapLength == 0 || (sysCapLength % SINGLE_FEAT_LENGTH) != 0) {
+    if ((sysCapLength % SINGLE_FEAT_LENGTH) != 0) {
         HILOG_ERROR(LOG_CORE, "format error:sysCapLength is invalid\n");
         return ERROR;
     }
