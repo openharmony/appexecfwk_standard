@@ -294,7 +294,7 @@ bool BundleMgrHostImpl::QueryAllAbilityInfos(const Want &want, int32_t userId, s
 
 bool BundleMgrHostImpl::QueryAbilityInfoByUri(const std::string &abilityUri, AbilityInfo &abilityInfo)
 {
-    APP_LOGD("start QueryAbilityInfoByUri, uri : %{public}s", abilityUri.c_str());
+    APP_LOGD("start QueryAbilityInfoByUri, uri : %{private}s", abilityUri.c_str());
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
         APP_LOGE("DataMgr is nullptr");
@@ -305,7 +305,7 @@ bool BundleMgrHostImpl::QueryAbilityInfoByUri(const std::string &abilityUri, Abi
 
 bool BundleMgrHostImpl::QueryAbilityInfosByUri(const std::string &abilityUri, std::vector<AbilityInfo> &abilityInfos)
 {
-    APP_LOGD("start QueryAbilityInfosByUri, uri : %{public}s", abilityUri.c_str());
+    APP_LOGD("start QueryAbilityInfosByUri, uri : %{private}s", abilityUri.c_str());
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
         APP_LOGE("DataMgr is nullptr");
@@ -317,7 +317,7 @@ bool BundleMgrHostImpl::QueryAbilityInfosByUri(const std::string &abilityUri, st
 bool BundleMgrHostImpl::QueryAbilityInfoByUri(
     const std::string &abilityUri, int32_t userId, AbilityInfo &abilityInfo)
 {
-    APP_LOGD("start QueryAbilityInfoByUri, uri : %{public}s, userId : %{public}d", abilityUri.c_str(), userId);
+    APP_LOGD("start QueryAbilityInfoByUri, uri : %{private}s, userId : %{public}d", abilityUri.c_str(), userId);
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
         APP_LOGE("DataMgr is nullptr");
@@ -1160,7 +1160,7 @@ bool BundleMgrHostImpl::QueryExtensionAbilityInfos(const Want &want, const int32
         APP_LOGE("verify permission failed");
         return false;
     }
-    APP_LOGD("want uri is %{public}s", want.GetUriString().c_str());
+    APP_LOGD("want uri is %{private}s", want.GetUriString().c_str());
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
         APP_LOGE("DataMgr is nullptr");
@@ -1314,7 +1314,7 @@ std::vector<std::string> BundleMgrHostImpl::GetAccessibleAppCodePaths(int32_t us
 bool BundleMgrHostImpl::QueryExtensionAbilityInfoByUri(const std::string &uri, int32_t userId,
     ExtensionAbilityInfo &extensionAbilityInfo)
 {
-    APP_LOGD("uri : %{public}s, userId : %{public}d", uri.c_str(), userId);
+    APP_LOGD("uri : %{private}s, userId : %{public}d", uri.c_str(), userId);
     auto dataMgr = GetDataMgrFromService();
     if (dataMgr == nullptr) {
         APP_LOGE("DataMgr is nullptr");
@@ -1337,7 +1337,7 @@ std::string BundleMgrHostImpl::GetAppIdByBundleName(const std::string &bundleNam
         APP_LOGE("get bundleInfo failed");
         return Constants::EMPTY_STRING;
     }
-    APP_LOGD("appId is %{public}s", bundleInfo.appId.c_str());
+    APP_LOGD("appId is %{private}s", bundleInfo.appId.c_str());
     return bundleInfo.appId;
 }
 
