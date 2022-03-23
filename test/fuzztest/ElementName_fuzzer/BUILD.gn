@@ -35,12 +35,6 @@ ohos_fuzztest("ElementNameFuzzTest") {
   external_deps = [
     "ability_base:want",
     "bundle_framework:appexecfwk_base",
-    "bundle_framework:appexecfwk_core",
-    "eventhandler:libeventhandler",
-    "hiviewdfx_hilog_native:libhilog",
-    "ipc:ipc_core",
-    "safwk:system_ability_fwk",
-    "samgr_standard:samgr_proxy",
     "utils_base:utils",
   ]
 }

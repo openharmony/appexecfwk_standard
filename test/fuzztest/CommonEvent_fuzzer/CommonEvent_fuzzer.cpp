@@ -13,8 +13,6 @@
  * limitations under the License.
  */
 
-#include "message_parcel.h"
-#include "message_option.h"
 #include "common_event_info.h"
 #include "parcel.h"
 #include "CommonEvent_fuzzer.h"

@@ -16,10 +16,7 @@
 #include <cstddef>
 #include <cstdint>
 
-#include "message_parcel.h"
-#include "message_option.h"
 #include "ability_info.h"
-
 #include "AbilityInfoMarshalling_fuzzer.h"
 
 using namespace OHOS::AppExecFwk;
