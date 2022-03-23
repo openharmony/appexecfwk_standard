@@ -45,13 +45,12 @@ public:
 private:
     /**
      * @brief Install system and system vendor bundles.
-     * @param scanDir Indicates the scanDir.
      * @param appType Indicates the bundle type.
      * @param userId Indicates userId.
      * @return
      */
-    void ProcessSystemBundleInstall(const std::string &scanDir,
-        Constants::AppType appType, int32_t userId = Constants::UNSPECIFIED_USERID);
+    void ProcessSystemBundleInstall(
+        Constants::AppType appType, int32_t userId = Constants::UNSPECIFIED_USERID) const;
     /**
      * @brief Set the flag indicates that all system and vendor applications installed.
      * @return
@@ -132,16 +131,11 @@ private:
      */
     void AddParseInfosToMap(const std::string &bundleName,
         const std::unordered_map<std::string, InnerBundleInfo> &infos);
-    bool LoadAllPreInstallBundleInfos();
-    void RebootProcessBundleInstall(
-        const std::string &scanDir, Constants::AppType appType);
 
     // Used to save the information parsed by Hap in the scanned directory.
     std::map<std::string, std::unordered_map<std::string, InnerBundleInfo>> hapParseInfoMap_;
     // used to save application information that already exists in the Db.
     std::map<std::string, PreInstallBundleInfo> loadExistData_;
-
-    std::vector<std::string> scanPaths_;
 };
 }  // namespace AppExecFwk
 }  // namespace OHOS
