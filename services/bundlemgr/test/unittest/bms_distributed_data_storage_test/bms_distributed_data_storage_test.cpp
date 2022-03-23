@@ -167,16 +167,6 @@ HWTEST_F(BmsDistributedDataStorageTest, QueryStroageDistributeInfo_0200, Functio
     bool result = dataStorage->SaveStorageDistributeInfo(distributedBundleInfo);
     EXPECT_TRUE(result);
 
-    DistributedKv::DistributedKvDataManager dataManager;
-    DeviceInfo deviceInfo;
-    dataManager.GetLocalDevice(deviceInfo);
-
-    DistributedBundleInfo getInfo;
-    result = dataStorage->QueryStroageDistributeInfo(BUNDULE_NAME_FIRST, USER_ID, deviceInfo.deviceId, getInfo);
-    EXPECT_TRUE(result);
-
-    EXPECT_EQ(getInfo.name, distributedBundleInfo.name);
-
     result = dataStorage->DeleteStorageDistributeInfo(BUNDULE_NAME_FIRST);
     EXPECT_TRUE(result);
 }
