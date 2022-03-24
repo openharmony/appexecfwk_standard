@@ -77,8 +77,8 @@ void BundleMgrService::OnStart()
     }
 #ifdef DEVICE_MANAGER_ENABLE
     AddSystemAbilityListener(DISTRIBUTED_HARDWARE_DEVICEMANAGER_SA_ID);
-#endif
     AddSystemAbilityListener(DISTRIBUTED_BUNDLE_MGR_SERVICE_SYS_ABILITY_ID);
+#endif
 }
 
 void BundleMgrService::AfterRegisterToService()
