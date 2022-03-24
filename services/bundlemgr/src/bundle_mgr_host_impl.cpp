@@ -1375,12 +1375,12 @@ int BundleMgrHostImpl::GetUidByBundleName(const std::string &bundleName, const i
     if (ret) {
         for (auto bundleInfo : bundleInfos) {
             if (userId == Constants::C_UESRID) {
-                if (bundleInfo.name == bundleName && bundleInfo.applicationInfo.isCloned == true) {
+                if (bundleInfo.name == bundleName && bundleInfo.applicationInfo.isCloned) {
                     uid = bundleInfo.uid;
                     break;
                 }
             } else {
-                if (bundleInfo.name == bundleName && bundleInfo.applicationInfo.isCloned == false) {
+                if (bundleInfo.name == bundleName && !bundleInfo.applicationInfo.isCloned) {
                     uid = bundleInfo.uid;
                     break;
                 }
