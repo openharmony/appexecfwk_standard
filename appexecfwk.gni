@@ -23,6 +23,7 @@ tools_path = "${appexecfwk_path}/tools"
 declare_args() {
   bundle_framework_graphics = true
 
+  device_manager_enable = true
   hicollie_enable = true
 
   if (defined(global_parts_info) &&
@@ -30,7 +31,15 @@ declare_args() {
     hicollie_enable = false
   }
 
+  if (defined(global_parts_info) &&
+      !defined(global_parts_info.distributedhardware_device_manager_base)) {
+    device_manager_enable = false
+  }
+
+device_manager_enable = false
+
   print("bundle_framework_graphics = " + "$bundle_framework_graphics")
+  print("device_manager_enable = " + "$device_manager_enable")
   print("hicollie_enable = " + "$hicollie_enable")
   print("support_jsapi = " + "$support_jsapi")
 }
