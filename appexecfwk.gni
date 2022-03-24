@@ -36,8 +36,6 @@ declare_args() {
     device_manager_enable = false
   }
 
-device_manager_enable = false
-
   print("bundle_framework_graphics = " + "$bundle_framework_graphics")
   print("device_manager_enable = " + "$device_manager_enable")
   print("hicollie_enable = " + "$hicollie_enable")
