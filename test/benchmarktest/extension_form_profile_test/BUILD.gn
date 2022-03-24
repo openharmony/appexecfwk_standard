@@ -16,9 +16,9 @@ import("//foundation/appexecfwk/standard/appexecfwk.gni")
 
 module_output_path = "bundle_framework/benchmark/bundle_framework"
 
-ohos_benchmarktest("BenchmarkTestForAbilityInfo") {
+ohos_benchmarktest("BenchmarkTestForExtensionFormProfile") {
   module_out_path = module_output_path
-  sources = [ "ability_info_test.cpp" ]
+  sources = [ "extension_form_profile_test.cpp" ]
 
   cflags = []
   if (target_cpu == "arm") {
@@ -45,6 +45,6 @@ group("benchmarktest") {
 
   deps += [
     # deps file
-    ":BenchmarkTestForAbilityInfo",
+    ":BenchmarkTestForExtensionFormProfile",
   ]
 }

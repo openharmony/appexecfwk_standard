@@ -16,9 +16,9 @@ import("//foundation/appexecfwk/standard/appexecfwk.gni")
 
 module_output_path = "bundle_framework/benchmark/bundle_framework"
 
-ohos_benchmarktest("BenchmarkTestForAbilityInfo") {
+ohos_benchmarktest("BenchmarkTestForRemoteAbilityInfo") {
   module_out_path = module_output_path
-  sources = [ "ability_info_test.cpp" ]
+  sources = [ "remote_ability_info_test.cpp" ]
 
   cflags = []
   if (target_cpu == "arm") {
@@ -33,6 +33,7 @@ ohos_benchmarktest("BenchmarkTestForAbilityInfo") {
   ]
 
   external_deps = [
+    "ability_base:want",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
     "utils_base:utils",
@@ -45,6 +46,6 @@ group("benchmarktest") {
 
   deps += [
     # deps file
-    ":BenchmarkTestForAbilityInfo",
+    ":BenchmarkTestForRemoteAbilityInfo",
   ]
 }
