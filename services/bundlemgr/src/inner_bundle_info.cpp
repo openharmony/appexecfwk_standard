@@ -1209,6 +1209,8 @@ std::optional<HapModuleInfo> InnerBundleInfo::FindHapModuleInfo(const std::strin
     hapInfo.moduleName = it->second.moduleName;
     hapInfo.description = it->second.description;
     hapInfo.descriptionId = it->second.descriptionId;
+    hapInfo.label = it->second.label;
+    hapInfo.labelId = it->second.labelId;
     hapInfo.mainAbility = it->second.mainAbility;
     hapInfo.srcPath = it->second.srcPath;
     hapInfo.supportedModes = baseApplicationInfo_.supportedModes;
@@ -1249,8 +1251,6 @@ std::optional<HapModuleInfo> InnerBundleInfo::FindHapModuleInfo(const std::strin
     for (auto &ability : baseAbilityInfos_) {
         if (ability.first.find(key) != std::string::npos) {
             if (!first) {
-                hapInfo.label = ability.second.label;
-                hapInfo.labelId = ability.second.labelId;
                 hapInfo.iconPath = ability.second.iconPath;
                 hapInfo.deviceTypes = ability.second.deviceTypes;
                 first = true;
