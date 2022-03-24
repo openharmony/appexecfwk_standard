@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-#include "ability_info.h"
+#include "hap_module_info.h"
 
 #include <benchmark/benchmark.h>
 
@@ -30,28 +30,15 @@ namespace {
      */
     static void BenchmarkTestForReadFromParcel(benchmark::State &state)
     {
-        AbilityInfo info;
-        info.name = "allLogAbility";
+        HapModuleInfo info;
+        info.name = "com.ohos.contactsdataability";
+        info.moduleName = "entry";
         info.description = "dataability_description";
         info.iconPath = "$media:icon";
-        info.labelId = 0;
-        info.descriptionId = 0;
-        info.iconId = 0;
-        info.kind = "data";
         info.deviceTypes = {"smartVision"};
-        info.uri = "dataability://com.ohos.callogability";
-        info.readPermission = "ohos.permission.READ_CALL_LOG";
-        info.writePermission = "ohos.permission.WRITE_CALL_LOG";
-        info.package = "com.ohos.contactsdataability";
         info.bundleName = "com.ohos.contactsdataability";
-        info.moduleName = "entry";
-        info.applicationName = "com.ohos.contactsdataability";
         info.resourcePath = "/data/app/el1/budle/public/com.ohos.contactsdataability"\
             "/com.ohos.contactsdataability/assets/entry/resources.index";
-        info.versionName = "1.0";
-        info.applicationInfo.name = "com.ohos.contactsdataability";
-        info.applicationInfo.description = "dataability_description";
-        info.applicationInfo.cpuAbi = "armeabi";
         Parcel parcel;
         info.Marshalling(parcel);
         for (auto _ : state) {
@@ -68,28 +55,15 @@ namespace {
      */
     static void BenchmarkTestForMarshalling(benchmark::State &state)
     {
-        AbilityInfo info;
-        info.name = "allLogAbility";
+        HapModuleInfo info;
+        info.name = "com.ohos.contactsdataability";
+        info.moduleName = "entry";
         info.description = "dataability_description";
         info.iconPath = "$media:icon";
-        info.labelId = 0;
-        info.descriptionId = 0;
-        info.iconId = 0;
-        info.kind = "data";
         info.deviceTypes = {"smartVision"};
-        info.uri = "dataability://com.ohos.callogability";
-        info.readPermission = "ohos.permission.READ_CALL_LOG";
-        info.writePermission = "ohos.permission.WRITE_CALL_LOG";
-        info.package = "com.ohos.contactsdataability";
         info.bundleName = "com.ohos.contactsdataability";
-        info.moduleName = "entry";
-        info.applicationName = "com.ohos.contactsdataability";
         info.resourcePath = "/data/app/el1/budle/public/com.ohos.contactsdataability"\
             "/com.ohos.contactsdataability/assets/entry/resources.index";
-        info.versionName = "1.0";
-        info.applicationInfo.name = "com.ohos.contactsdataability";
-        info.applicationInfo.description = "dataability_description";
-        info.applicationInfo.cpuAbi = "armeabi";
         Parcel parcel;
         for (auto _ : state) {
             /* @tc.steps: step1.call Marshalling in loop */
@@ -105,28 +79,15 @@ namespace {
      */
     static void BenchmarkTestForUnmarshalling(benchmark::State &state)
     {
-        AbilityInfo info;
-        info.name = "allLogAbility";
+        HapModuleInfo info;
+        info.name = "com.ohos.contactsdataability";
+        info.moduleName = "entry";
         info.description = "dataability_description";
         info.iconPath = "$media:icon";
-        info.labelId = 0;
-        info.descriptionId = 0;
-        info.iconId = 0;
-        info.kind = "data";
         info.deviceTypes = {"smartVision"};
-        info.uri = "dataability://com.ohos.callogability";
-        info.readPermission = "ohos.permission.READ_CALL_LOG";
-        info.writePermission = "ohos.permission.WRITE_CALL_LOG";
-        info.package = "com.ohos.contactsdataability";
         info.bundleName = "com.ohos.contactsdataability";
-        info.moduleName = "entry";
-        info.applicationName = "com.ohos.contactsdataability";
         info.resourcePath = "/data/app/el1/budle/public/com.ohos.contactsdataability"\
             "/com.ohos.contactsdataability/assets/entry/resources.index";
-        info.versionName = "1.0";
-        info.applicationInfo.name = "com.ohos.contactsdataability";
-        info.applicationInfo.description = "dataability_description";
-        info.applicationInfo.cpuAbi = "armeabi";
         Parcel parcel;
         info.Marshalling(parcel);
         for (auto _ : state) {

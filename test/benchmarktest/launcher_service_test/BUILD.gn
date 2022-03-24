@@ -16,9 +16,9 @@ import("//foundation/appexecfwk/standard/appexecfwk.gni")
 
 module_output_path = "bundle_framework/benchmark/bundle_framework"
 
-ohos_benchmarktest("BenchmarkTestForAbilityInfo") {
+ohos_benchmarktest("BenchmarkTestForLauncherService") {
   module_out_path = module_output_path
-  sources = [ "ability_info_test.cpp" ]
+  sources = [ "launcher_service_test.cpp" ]
 
   cflags = []
   if (target_cpu == "arm") {
@@ -27,14 +27,21 @@ ohos_benchmarktest("BenchmarkTestForAbilityInfo") {
 
   deps = [
     "${common_path}:libappexecfwk_common",
-    "${innerkits_path}/appexecfwk_base:appexecfwk_base",
+    "${innerkits_path}/appexecfwk_core:appexecfwk_core",
     "//third_party/benchmark:benchmark",
     "//third_party/googletest:gtest_main",
   ]
 
   external_deps = [
+    "ability_base:want",
+    "bundle_framework:appexecfwk_base",
+    "bytrace_standard:bytrace_core",
+    "ces_standard:cesfwk_core",
+    "ces_standard:cesfwk_innerkits",
     "hiviewdfx_hilog_native:libhilog",
     "ipc:ipc_core",
+    "resmgr_standard:global_resmgr",
+    "samgr_standard:samgr_proxy",
     "utils_base:utils",
   ]
 }
@@ -45,6 +52,6 @@ group("benchmarktest") {
 
   deps += [
     # deps file
-    ":BenchmarkTestForAbilityInfo",
+    ":BenchmarkTestForLauncherService",
   ]
 }
