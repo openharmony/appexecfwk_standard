@@ -123,15 +123,15 @@ AsyncWorkData::AsyncWorkData(napi_env napiEnv)
 
 AsyncWorkData::~AsyncWorkData()
 {
-    if (asyncWork) {
-        APP_LOGD("AsyncWorkData::~AsyncWorkData delete asyncWork");
-        napi_delete_async_work(env, asyncWork);
-        asyncWork = nullptr;
-    }
     if (callback) {
         APP_LOGD("AsyncWorkData::~AsyncWorkData delete callback");
         napi_delete_reference(env, callback);
         callback = nullptr;
+    }
+    if (asyncWork) {
+        APP_LOGD("AsyncWorkData::~AsyncWorkData delete asyncWork");
+        napi_delete_async_work(env, asyncWork);
+        asyncWork = nullptr;
     }
 }
 
@@ -3569,6 +3569,7 @@ napi_value GetFormsInfoByApp(napi_env env, napi_callback_info info)
             },
             [](napi_env env, napi_status status, void *data) {
                 AsyncFormInfosByAppCallbackInfo *asyncCallbackInfo = (AsyncFormInfosByAppCallbackInfo *)data;
+                std::unique_ptr<AsyncFormInfosByAppCallbackInfo> callbackPtr {asyncCallbackInfo};
                 napi_value result[ARGS_SIZE_TWO] = {0};
                 napi_value callback = 0;
                 napi_value undefined = 0;
