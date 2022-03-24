@@ -1811,7 +1811,7 @@ void InnerBundleInfo::GetShortcutInfos(std::vector<ShortcutInfo> &shortcutInfos)
             std::vector<std::string> rawJson;
             BundleMgrClient bundleMgrClient;
             bool ret = bundleMgrClient.GetResConfigFile(abilityInfo, META_DATA_SHORTCUTS_NAME, rawJson);
-            if (ret == false) {
+            if (!ret) {
                 APP_LOGD("GetResConfigFile return false");
                 return;
             }

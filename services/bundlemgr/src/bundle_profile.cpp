@@ -2247,7 +2247,7 @@ bool ToInnerBundleInfo(ProfileReader::ConfigJson &configJson, const BundleExtrac
                         skill.actions.end() &&
                     std::find(skill.entities.begin(), skill.entities.end(), Constants::INTENT_ENTITY_HOME) !=
                         skill.entities.end() &&
-                    (find == false)) {
+                    (!find)) {
                     innerBundleInfo.SetMainAbility(keyName);
                     innerBundleInfo.SetMainAbilityName(ability.name);
                     if (ability.srcLanguage != "c++" && ability.name.substr(0, 1) == ".") {

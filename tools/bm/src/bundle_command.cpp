@@ -1088,14 +1088,14 @@ ErrCode BundleManagerShellCommand::RunAsCleanCommand()
                 // 'bm clean -c'
                 // 'bm clean --cache'
                 APP_LOGD("'bm clean %{public}s'", argv_[optind - OFFSET_REQUIRED_ARGUMENT]);
-                cleanCache = (cleanData == true) ? false : true;
+                cleanCache = cleanData ? false : true;
                 break;
             }
             case 'd': {
                 // 'bm clean -d'
                 // 'bm clean --data'
                 APP_LOGD("'bm clean %{public}s '", argv_[optind - OFFSET_REQUIRED_ARGUMENT]);
-                cleanData = (cleanCache == true) ? false : true;
+                cleanData = cleanCache ? false : true;
                 break;
             }
             case 'u': {
@@ -1273,7 +1273,7 @@ ErrCode BundleManagerShellCommand::RunAsEnableCommand()
         abilityInfo.name = abilityName;
         abilityInfo.bundleName = bundleName;
         bool enableResult = SetApplicationEnabledOperation(abilityInfo, true, userId);
-        if (enableResult == true) {
+        if (enableResult) {
             resultReceiver_ = STRING_ENABLE_BUNDLE_OK + "\n";
         } else {
             resultReceiver_ = STRING_ENABLE_BUNDLE_NG + "\n";
@@ -1400,7 +1400,7 @@ ErrCode BundleManagerShellCommand::RunAsDisableCommand()
         abilityInfo.name = abilityName;
         abilityInfo.bundleName = bundleName;
         bool enableResult = SetApplicationEnabledOperation(abilityInfo, false, userId);
-        if (enableResult == true) {
+        if (enableResult) {
             resultReceiver_ = STRING_DISABLE_BUNDLE_OK + "\n";
         } else {
             resultReceiver_ = STRING_DISABLE_BUNDLE_NG + "\n";

@@ -349,7 +349,7 @@ bool BundleDataMgr::QueryAbilityInfo(const Want &want, int32_t flags, int32_t us
     // explicit query
     if (!bundleName.empty() && !abilityName.empty()) {
         bool ret = ExplicitQueryAbilityInfo(bundleName, abilityName, flags, requestUserId, abilityInfo);
-        if (ret == false) {
+        if (!ret) {
             APP_LOGE("explicit queryAbilityInfo error");
             return false;
         }
@@ -357,7 +357,7 @@ bool BundleDataMgr::QueryAbilityInfo(const Want &want, int32_t flags, int32_t us
     }
     std::vector<AbilityInfo> abilityInfos;
     bool ret = ImplicitQueryAbilityInfos(want, flags, requestUserId, abilityInfos);
-    if (ret == false) {
+    if (!ret) {
         APP_LOGE("implicit queryAbilityInfos error");
         return false;
     }
@@ -386,7 +386,7 @@ bool BundleDataMgr::QueryAbilityInfos(
         AbilityInfo abilityInfo;
         bool ret = ExplicitQueryAbilityInfo(
             bundleName, abilityName, flags, requestUserId, abilityInfo);
-        if (ret == false) {
+        if (!ret) {
             APP_LOGE("explicit queryAbilityInfo error");
             return false;
         }
@@ -395,7 +395,7 @@ bool BundleDataMgr::QueryAbilityInfos(
     }
     // implicit query
     bool ret = ImplicitQueryAbilityInfos(want, flags, requestUserId, abilityInfos);
-    if (ret == false) {
+    if (!ret) {
         APP_LOGE("implicit queryAbilityInfos error");
         return false;
     }
@@ -778,7 +778,7 @@ bool BundleDataMgr::QueryAbilityInfosByUri(const std::string &abilityUri, std::v
     for (auto &item : bundleInfos_) {
         auto infoWithIdItem = item.second.find(deviceId);
         if (infoWithIdItem == item.second.end()) {
-            APP_LOGI("bundle device id:%{public}s not find", deviceId.c_str());
+            APP_LOGI("bundle device id:%{private}s not find", deviceId.c_str());
             return false;
         }
         if (infoWithIdItem->second.IsDisabled()) {
@@ -2105,7 +2105,7 @@ bool BundleDataMgr::NotifyAbilityLifeStatus(
     if (!ability) {
         return false;
     }
-    if (ability->applicationInfo.isCloned == true) {
+    if (ability->applicationInfo.isCloned) {
         userId = Constants::C_UESRID;
     }
     if (ability->type != AbilityType::PAGE) {
@@ -2683,7 +2683,7 @@ bool BundleDataMgr::QueryExtensionAbilityInfos(const Want &want, int32_t flags, 
     if (!bundleName.empty() && !extensionName.empty()) {
         ExtensionAbilityInfo info;
         bool ret = ExplicitQueryExtensionInfo(bundleName, extensionName, flags, requestUserId, info);
-        if (ret == false) {
+        if (!ret) {
             APP_LOGE("explicit queryExtensionInfo error");
             return false;
         }
@@ -2692,7 +2692,7 @@ bool BundleDataMgr::QueryExtensionAbilityInfos(const Want &want, int32_t flags, 
     }
 
     bool ret = ImplicitQueryExtensionInfos(want, flags, requestUserId, extensionInfos);
-    if (ret == false) {
+    if (!ret) {
         APP_LOGE("implicit queryExtensionAbilityInfos error");
         return false;
     }
