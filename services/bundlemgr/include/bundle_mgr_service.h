@@ -21,7 +21,9 @@
 #include "singleton.h"
 #include "system_ability.h"
 
+#ifdef DEVICE_MANAGER_ENABLE
 #include "bms_device_manager.h"
+#endif
 #include "bundle_clone_mgr.h"
 #include "bundle_constants.h"
 #include "bundle_data_mgr.h"
@@ -87,8 +89,10 @@ public:
      */
     bool Hidump(const std::vector<std::string> &args, std::string& result) const;
 protected:
+#ifdef DEVICE_MANAGER_ENABLE
     void OnAddSystemAbility(int32_t systemAbilityId, const std::string& deviceId) override;
     void OnRemoveSystemAbility(int32_t systemAbilityId, const std::string& deviceId) override;
+#endif
 private:
     /**
      * @brief Initialize the bundle manager service context.
@@ -114,7 +118,9 @@ private:
     std::shared_ptr<BMSEventHandler> handler_;
     std::shared_ptr<BundleDataMgr> dataMgr_;
     std::shared_ptr<BundleCloneMgr> cloneMgr_;
+#ifdef DEVICE_MANAGER_ENABLE
     std::shared_ptr<BmsDeviceManager> deviceManager_;
+#endif
     std::shared_ptr<HidumpHelper> hidumpHelper_;
     sptr<BundleMgrHostImpl> host_;
     sptr<BundleInstallerHost> installer_;
