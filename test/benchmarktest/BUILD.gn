@@ -11,8 +11,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-group("unittest") {
+group("benchmarktest") {
   testonly = true
 
-  deps = [ "ability_info_test:unittest" ]
+  deps = [
+    "ability_info_test:benchmarktest",
+    "bundlemgr_proxy_test:benchmarktest",
+    "installer_proxy_test:benchmarktest",
+  ]
 }
