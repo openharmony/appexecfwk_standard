@@ -30,21 +30,16 @@ ohos_benchmarktest("BenchmarkTestInstallerProxy") {
   deps = [
     "${common_path}:libappexecfwk_common",
     "${innerkits_path}/appexecfwk_base:appexecfwk_base",
-    "${innerkits_path}/appexecfwk_core:appexecfwk_core",
     "${services_path}/test/moduletest/utils:tool_common",
-    "//foundation/aafwk/standard/interfaces/innerkits/base:base",
-    "//foundation/aafwk/standard/interfaces/innerkits/want:want",
     "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
     "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
     "//third_party/benchmark:benchmark",
-    "//third_party/googletest:gtest_main",
   ]
 
   external_deps = [
     "ability_base:want",
     "bundle_framework:appexecfwk_base",
     "bundle_framework:appexecfwk_core",
-    "ces_standard:cesfwk_innerkits",
     "ipc:ipc_core",
     "utils_base:utils",
   ]

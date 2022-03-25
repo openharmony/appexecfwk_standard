@@ -13,26 +13,18 @@
  * limitations under the License.
  */
 
-#include <fstream>
-#include <future>
-#include <gtest/gtest.h>
 #include <benchmark/benchmark.h>
 
 #include "bundle_constants.h"
 #include "bundle_installer_interface.h"
 #include "bundle_mgr_interface.h"
-#include "common_event_manager.h"
-#include "common_event_support.h"
-#include "common_tool.h"
 #include "iservice_registry.h"
 #include "system_ability_definition.h"
 #include "status_receiver_host.h"
 
-using namespace testing::ext;
 using namespace std::chrono_literals;
 using namespace OHOS;
 using namespace OHOS::AppExecFwk;
-using namespace OHOS::EventFwk;
 namespace {
 const std::string THIRD_BUNDLE_PATH = "/data/test/benchmark/";
 

@@ -16,11 +16,9 @@ import("//foundation/appexecfwk/standard/appexecfwk.gni")
 
 module_output_path = "bundle_framework/benchmark/bundle_framework"
 
-ohos_benchmarktest("BenchmarkTestBundleMgrProxy") {
+ohos_benchmarktest("BenchmarkTestForBundleMgrClient") {
   module_out_path = module_output_path
-  include_dirs = [ "//third_party/json/include" ]
-
-  sources = [ "bundlemgr_proxy_test.cpp" ]
+  sources = [ "bundle_mgr_client_test.cpp" ]
 
   cflags = []
   if (target_cpu == "arm") {
@@ -29,18 +27,23 @@ ohos_benchmarktest("BenchmarkTestBundleMgrProxy") {
 
   deps = [
     "${common_path}:libappexecfwk_common",
-    "${innerkits_path}/appexecfwk_base:appexecfwk_base",
-    "${services_path}/test/moduletest/utils:tool_common",
-    "//foundation/aafwk/standard/interfaces/innerkits/base:base",
-    "//foundation/aafwk/standard/interfaces/innerkits/want:want",
-    "//foundation/appexecfwk/standard/interfaces/innerkits/appexecfwk_core:appexecfwk_core",
-    "//foundation/distributedschedule/safwk/interfaces/innerkits/safwk:system_ability_fwk",
-    "//foundation/distributedschedule/samgr/interfaces/innerkits/samgr_proxy:samgr_proxy",
+    "${innerkits_path}/appexecfwk_core:appexecfwk_core",
     "//third_party/benchmark:benchmark",
+    "//third_party/googletest:gtest_main",
   ]
 
-  external_deps = [ "ipc:ipc_core" ]
-  resource_config_file = "//foundation/appexecfwk/standard/test/benchmarktest/resource/ohos_test.xml"
+  external_deps = [
+    "ability_base:want",
+    "bundle_framework:appexecfwk_base",
+    "bytrace_standard:bytrace_core",
+    "ces_standard:cesfwk_core",
+    "ces_standard:cesfwk_innerkits",
+    "hiviewdfx_hilog_native:libhilog",
+    "ipc:ipc_core",
+    "resmgr_standard:global_resmgr",
+    "samgr_standard:samgr_proxy",
+    "utils_base:utils",
+  ]
 }
 
 group("benchmarktest") {
@@ -49,6 +52,6 @@ group("benchmarktest") {
 
   deps += [
     # deps file
-    ":BenchmarkTestBundleMgrProxy",
+    ":BenchmarkTestForBundleMgrClient",
   ]
 }
