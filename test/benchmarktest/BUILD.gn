@@ -11,8 +11,28 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-group("unittest") {
+group("benchmarktest") {
   testonly = true
 
-  deps = [ "ability_info_test:unittest" ]
+  deps = [
+    "ability_info_test:benchmarktest",
+    "application_info_test:benchmarktest",
+    "bundle_info_test:benchmarktest",
+    "bundle_mgr_client_test:benchmarktest",
+    "bundle_user_info_test:benchmarktest",
+    "common_event_info_test:benchmarktest",
+    "distributed_bundle_info_test:benchmarktest",
+    "extension_ability_info_test:benchmarktest",
+    "extension_form_profile_test:benchmarktest",
+    "form_info_test:benchmarktest",
+    "hap_module_info_test:benchmarktest",
+    "install_param_test:benchmarktest",
+    "json_serializer_test:benchmarktest",
+    "launcher_service_test:benchmarktest",
+    "module_info_test:benchmarktest",
+    "module_usage_record_test:benchmarktest",
+    "permission_def_test:benchmarktest",
+    "remote_ability_info_test:benchmarktest",
+    "shortcut_info_test:benchmarktest",
+  ]
 }
