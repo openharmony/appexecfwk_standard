@@ -339,16 +339,14 @@ bool BundleCloneMgr::CheckBundleNameInAllowList(const std::string &bundleName)
     std::ifstream ifs("/data/clonefile/BundleNameAllowList.json", std::ifstream::in);
     if (ifs.is_open()) {
         jsonObject=nlohmann::json::parse(ifs);
-        if (jsonObject.empty()) {
-            ifs.close();
-            return false;
-        }
         for (auto item : jsonObject) {
             if (item ["bundlename"] == bundleName) {
                 ifs.close();
                 return true;
             }
         }
+        ifs.close();
+        return false;
     }
     return false;
 }
