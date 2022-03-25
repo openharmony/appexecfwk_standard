@@ -43,6 +43,8 @@ using namespace OHOS;
 using OHOS::DelayedSingleton;
 
 namespace {
+const std::string SYSTEMFIEID_NAME = "com.query.test";
+const std::string SYSTEMFIEID_BUNDLE = "system_module.hap";
 const std::string BUNDLE_NAME = "com.example.l3jsdemo";
 const std::string RESOURCE_ROOT_PATH = "/data/test/resource/bms/install_bundle/";
 const std::string INVALID_PATH = "/install_bundle/";
@@ -71,6 +73,7 @@ public:
     bool InstallSystemBundle(const std::string &filePath) const;
     ErrCode InstallThirdPartyBundle(const std::string &filePath) const;
     ErrCode UpdateThirdPartyBundle(const std::string &filePath) const;
+    ErrCode UnInstallBundle(const std::string &bundleName) const;
     void CheckFileExist() const;
     void CheckFileNonExist() const;
     const std::shared_ptr<BundleDataMgr> GetBundleDataMgr() const;
@@ -134,6 +137,26 @@ ErrCode BmsBundleInstallerTest::UpdateThirdPartyBundle(const std::string &filePa
     installParam.userId = USERID;
     installParam.installFlag = InstallFlag::REPLACE_EXISTING;
     bool result = installer->Install(filePath, installParam, receiver);
+    EXPECT_TRUE(result);
+    return receiver->GetResultCode();
+}
+
+ErrCode BmsBundleInstallerTest::UnInstallBundle(const std::string &bundleName) const
+{
+    auto installer = DelayedSingleton<BundleMgrService>::GetInstance()->GetBundleInstaller();
+    if (!installer) {
+        EXPECT_FALSE(true) << "the installer is nullptr";
+        return ERR_APPEXECFWK_INSTALL_INTERNAL_ERROR;
+    }
+    sptr<MockStatusReceiver> receiver = new (std::nothrow) MockStatusReceiver();
+    if (!receiver) {
+        EXPECT_FALSE(true) << "the receiver is nullptr";
+        return ERR_APPEXECFWK_INSTALL_INTERNAL_ERROR;
+    }
+    InstallParam installParam;
+    installParam.userId = USERID;
+    installParam.installFlag = InstallFlag::NORMAL;
+    bool result = installer->Uninstall(bundleName, installParam, receiver);
     EXPECT_TRUE(result);
     return receiver->GetResultCode();
 }
@@ -509,4 +532,87 @@ HWTEST_F(BmsBundleInstallerTest, CreateUninstallTask_0200, Function | SmallTest 
     GetBundleInstallerManager()->CreateUninstallTask(bundleFile, installParam, receiver);
     ErrCode result = receiver->GetResultCode();
     EXPECT_NE(ERR_OK, result);
+}
+
+
+/**
+ * @tc.number: ParseModuleJson_0100
+ * @tc.name: parse module json
+ * @tc.desc: 1.the bundle is already installing.
+ *           2.You can query the related moudle.json information
+ *           3.The system field tested is the configured field
+ * @tc.require: AR000GHLL7
+ */
+HWTEST_F(BmsBundleInstallerTest, ParseModuleJson_0100, Function | SmallTest | Level0)
+{
+    ApplicationInfo info;
+    auto dataMgr = GetBundleDataMgr();
+    EXPECT_NE(dataMgr, nullptr);
+    std::string bundleFile = RESOURCE_ROOT_PATH + SYSTEMFIEID_BUNDLE;
+    bool installResult = InstallSystemBundle(bundleFile);
+    EXPECT_TRUE(installResult);
+    bool result =
+        dataMgr->GetApplicationInfo(SYSTEMFIEID_NAME, ApplicationFlag::GET_BASIC_APPLICATION_INFO, USERID, info);
+    EXPECT_TRUE(result);
+    EXPECT_EQ(info.name, "com.query.test");
+    EXPECT_EQ(info.description, "$string:description_application");
+    EXPECT_EQ(info.descriptionId, 1010);
+    EXPECT_EQ(info.label, "$string:app_name");
+    EXPECT_EQ(info.labelId, 16777216);
+    EXPECT_EQ(info.iconPath, "$media:app_icon");
+    EXPECT_EQ(info.iconId, 16777217);
+    EXPECT_EQ(info.entityType, "game");
+    EXPECT_EQ(static_cast<uint32_t>(info.versionCode), 1);
+    EXPECT_EQ(info.versionName, "1.0");
+    EXPECT_EQ(info.minCompatibleVersionCode, 1);
+    EXPECT_EQ(info.apiCompatibleVersion, 8);
+    EXPECT_EQ(info.apiTargetVersion, 8);
+    EXPECT_EQ(info.apiReleaseType, "Beta2");
+    EXPECT_EQ(info.keepAlive, true);
+    EXPECT_EQ(info.removable, false);
+    EXPECT_EQ(info.userDataClearable, false);
+    EXPECT_EQ(info.accessible, true);
+    AbilityInfo abilityInfo;
+    abilityInfo.bundleName = SYSTEMFIEID_NAME;
+    abilityInfo.package = "module01";
+    HapModuleInfo hapModuleInfo;
+    bool ret = dataMgr->GetHapModuleInfo(abilityInfo, hapModuleInfo);
+    EXPECT_TRUE(ret);
+    EXPECT_EQ(hapModuleInfo.name, "module01");
+    EXPECT_EQ(hapModuleInfo.description, "$string:description_application");
+    EXPECT_EQ(hapModuleInfo.mainAbility, "MainAbility");
+    EXPECT_EQ(hapModuleInfo.process, "bba");
+    EXPECT_EQ(hapModuleInfo.virtualMachine, "ark");
+    EXPECT_EQ(hapModuleInfo.uiSyntax, "hml");
+    EXPECT_EQ(hapModuleInfo.pages, "$profile:page_config");
+    EXPECT_EQ(hapModuleInfo.deliveryWithInstall, true);
+    EXPECT_EQ(hapModuleInfo.installationFree, false);
+    EXPECT_EQ(hapModuleInfo.srcEntrance, "./MyAbilityStage.ts");
+
+    auto abilityInfos = hapModuleInfo.abilityInfos.front();
+    EXPECT_EQ(abilityInfos.name, "MainAbility");
+    EXPECT_EQ(abilityInfos.srcEntrance, "./login/MyLoginAbility.ts");
+    EXPECT_EQ(abilityInfos.description, "$string:description_main_ability");
+    EXPECT_EQ(abilityInfos.descriptionId, 3030);
+    EXPECT_EQ(hapModuleInfo.label, "Login");
+
+    auto metadata = abilityInfos.metadata.front();
+    EXPECT_EQ(metadata.name, "a01");
+    EXPECT_EQ(metadata.value, "v01");
+    EXPECT_EQ(metadata.resource, "hello");
+
+    auto extensionInfos = hapModuleInfo.extensionInfos.front();
+    EXPECT_EQ(extensionInfos.name, "FormName");
+    EXPECT_EQ(extensionInfos.srcEntrance, "./form/MyForm.ts");
+    EXPECT_EQ(extensionInfos.description, "$string:form_description");
+    EXPECT_EQ(extensionInfos.descriptionId, 7070);
+    EXPECT_EQ(extensionInfos.visible, true);
+    EXPECT_EQ(extensionInfos.icon, "$media:icon");
+    EXPECT_EQ(extensionInfos.iconId, 16777223);
+    EXPECT_EQ(extensionInfos.label, "$string:extension_name");
+    EXPECT_EQ(extensionInfos.labelId, 6060);
+    EXPECT_EQ(extensionInfos.readPermission, "readPermission---");
+    EXPECT_EQ(extensionInfos.writePermission, "writePermission---");
+
+    UnInstallBundle(SYSTEMFIEID_NAME);
 }
