@@ -75,8 +75,10 @@ void BundleMgrService::OnStart()
     if (!needToScan_) {
         PerfProfile::GetInstance().Dump();
     }
+#ifdef DEVICE_MANAGER_ENABLE
     AddSystemAbilityListener(DISTRIBUTED_HARDWARE_DEVICEMANAGER_SA_ID);
     AddSystemAbilityListener(DISTRIBUTED_BUNDLE_MGR_SERVICE_SYS_ABILITY_ID);
+#endif
 }
 
 void BundleMgrService::AfterRegisterToService()
@@ -182,10 +184,12 @@ bool BundleMgrService::Init()
     }
     APP_LOGI("create BundleCloneMgr success");
 
+#ifdef DEVICE_MANAGER_ENABLE
     if (!deviceManager_) {
         APP_LOGI("Create device manager");
         deviceManager_ = std::make_shared<BmsDeviceManager>();
     }
+#endif
 
     if (!hidumpHelper_) {
         APP_LOGI("Create hidump helper");
@@ -266,6 +270,7 @@ void BundleMgrService::RegisterService()
     AfterRegisterToService();
 }
 
+#ifdef DEVICE_MANAGER_ENABLE
 void BundleMgrService::OnAddSystemAbility(int32_t systemAbilityId, const std::string& deviceId)
 {
     APP_LOGD("OnAddSystemAbility systemAbilityId:%{public}d added!", systemAbilityId);
@@ -281,6 +286,7 @@ void BundleMgrService::OnRemoveSystemAbility(int32_t systemAbilityId, const std:
         deviceManager_->OnRemoveSystemAbility(systemAbilityId, deviceId);
     }
 }
+#endif
 
 bool BundleMgrService::Hidump(const std::vector<std::string> &args, std::string& result) const
 {
